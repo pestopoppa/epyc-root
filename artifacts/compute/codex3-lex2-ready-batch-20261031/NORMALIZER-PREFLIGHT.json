@@ -1,0 +1,268 @@
+{
+  "counts": {
+    "keywords_numeral_uncovered": 5,
+    "keywords_ok": 1457,
+    "refs_numeral_uncovered": 28,
+    "refs_ok": 68,
+    "refs_unknown_marker": 4
+  },
+  "manifest_sha256": "bb5ddf90b39be061e9f88b7337a39fa7c65e688c7800b699506b97d426b7eaa6",
+  "model_accessed": false,
+  "normalizer_sha256": "5120f730370d92e0c8901ce63d5a3a32f379d7b676c0a28b842baf338ff03931",
+  "problem_rows": [
+    {
+      "clip_id": "4351517_chunk0",
+      "keyword_status_counts": {
+        "ok": 22
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4351517_chunk12",
+      "keyword_status_counts": {
+        "ok": 22
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4351517_chunk34",
+      "keyword_status_counts": {
+        "ok": 22
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4351517_chunk64",
+      "keyword_status_counts": {
+        "ok": 22
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4351517_chunk67",
+      "keyword_status_counts": {
+        "ok": 22
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4423872_chunk215",
+      "keyword_status_counts": {
+        "ok": 14
+      },
+      "reference_status": "unknown_marker"
+    },
+    {
+      "clip_id": "4423872_chunk71",
+      "keyword_status_counts": {
+        "ok": 14
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4423872_chunk8",
+      "keyword_status_counts": {
+        "ok": 14
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4423872_chunk84",
+      "keyword_status_counts": {
+        "ok": 14
+      },
+      "reference_status": "unknown_marker"
+    },
+    {
+      "clip_id": "4430051_chunk112",
+      "keyword_status_counts": {
+        "ok": 10
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4430051_chunk158",
+      "keyword_status_counts": {
+        "ok": 10
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4430051_chunk2",
+      "keyword_status_counts": {
+        "ok": 10
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4430051_chunk58",
+      "keyword_status_counts": {
+        "ok": 10
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4453076_chunk53",
+      "keyword_status_counts": {
+        "ok": 9
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4453225_chunk100",
+      "keyword_status_counts": {
+        "ok": 9
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4453225_chunk102",
+      "keyword_status_counts": {
+        "ok": 9
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4453225_chunk130",
+      "keyword_status_counts": {
+        "ok": 9
+      },
+      "reference_status": "unknown_marker"
+    },
+    {
+      "clip_id": "4453225_chunk136",
+      "keyword_status_counts": {
+        "ok": 9
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4453225_chunk205",
+      "keyword_status_counts": {
+        "ok": 9
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4453225_chunk209",
+      "keyword_status_counts": {
+        "ok": 9
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4453225_chunk259",
+      "keyword_status_counts": {
+        "ok": 9
+      },
+      "reference_status": "unknown_marker"
+    },
+    {
+      "clip_id": "4469528_chunk0",
+      "keyword_status_counts": {
+        "ok": 5
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4469528_chunk16",
+      "keyword_status_counts": {
+        "ok": 5
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4469669_chunk132",
+      "keyword_status_counts": {
+        "ok": 19
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4469669_chunk235",
+      "keyword_status_counts": {
+        "ok": 19
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4469669_chunk322",
+      "keyword_status_counts": {
+        "ok": 19
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4469669_chunk414",
+      "keyword_status_counts": {
+        "ok": 19
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4469669_chunk479",
+      "keyword_status_counts": {
+        "ok": 19
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4469669_chunk484",
+      "keyword_status_counts": {
+        "ok": 19
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4469669_chunk58",
+      "keyword_status_counts": {
+        "ok": 19
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4479741_chunk0",
+      "keyword_status_counts": {
+        "numeral_uncovered": 1,
+        "ok": 8
+      },
+      "reference_status": "ok"
+    },
+    {
+      "clip_id": "4479741_chunk20",
+      "keyword_status_counts": {
+        "numeral_uncovered": 1,
+        "ok": 8
+      },
+      "reference_status": "numeral_uncovered"
+    },
+    {
+      "clip_id": "4479741_chunk218",
+      "keyword_status_counts": {
+        "numeral_uncovered": 1,
+        "ok": 8
+      },
+      "reference_status": "ok"
+    },
+    {
+      "clip_id": "4479741_chunk23",
+      "keyword_status_counts": {
+        "numeral_uncovered": 1,
+        "ok": 8
+      },
+      "reference_status": "ok"
+    },
+    {
+      "clip_id": "4479741_chunk3",
+      "keyword_status_counts": {
+        "numeral_uncovered": 1,
+        "ok": 8
+      },
+      "reference_status": "numeral_uncovered"
+    }
+  ],
+  "raw_token_unk": "not observed; preflight does not infer it",
+  "records": 100,
+  "schema": "cs8.lex2.dev-reference-normalizer-preflight.v1",
+  "test_accessed": false
+}

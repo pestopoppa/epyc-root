@@ -1,0 +1,5 @@
+WARN line 2 codex3-cs8-lex2-dev-grid-20261031: ready=y but status 'BACKLOG': a queued row is ARMED with a live launcher; otherwise set ready=n and status BACKLOG
+WARN line 2 codex3-cs8-lex2-dev-grid-20261031: ready=y but no launcher PID: put `pid=<N>` in the launcher + PID cell (the launcher must be alive and polling its grant), else make it BACKLOG
+WARN line 2 codex3-cs8-lex2-dev-grid-20261031: BACKLOG row needs `blocker=<missing launcher|harness fix|build|operator decision>[: text]` in notes
+WARN line 2 codex3-cs8-lex2-dev-grid-20261031: status BACKLOG with ready=y is contradictory
+OK: 1 row(s) checked, 0 refusal(s), 4 warning(s)

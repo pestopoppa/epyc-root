@@ -1,0 +1,1 @@
+{"epoch": 1793417113.2120585, "request": {"cache_prompt": false, "id_slot": 0, "n_predict": 16, "prompt": "The red kite moved above the", "speculative.n_max": 0, "temperature": 0.0, "top_k": 1}, "request_sha256": "1ddaea29d7ff9d838dcce43f09bb8a9f9e4d4ce5013b0dd7255995c8240d33eb", "server_session": "1793417112691002430", "slot_requested": 0}

@@ -1,0 +1,22 @@
+warning: no usable GPU found, --gpu-layers option will be ignored
+warning: one possible reason is that llama.cpp was compiled without GPU support
+warning: consult docs/build.md for compilation instructions
+0.00.003.867 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.004.587 W srv  llama_server: -----------------
+0.00.004.592 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.004.592 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.004.592 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.004.593 W srv  llama_server: -----------------
+0.00.006.003 I srv    load_model: loading model '/mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf'
+0.00.892.348 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+0.01.232.911 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 2048, kv_unified = 'false'
+0.01.246.507 I srv  llama_server: model loaded
+0.01.246.528 I srv  llama_server: listening on http://127.0.0.1:35679
+0.01.308.309 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = -1
+0.01.308.378 I slot launch_slot_: id  0 | task 0 | processing task, is_child = 0
+0.32.752.278 I slot print_timing: id  0 | task 0 | prompt eval time =   30222.74 ms /  1408 tokens (   21.47 ms per token,    46.59 tokens per second)
+0.32.752.412 I slot print_timing: id  0 | task 0 |        eval time =    1221.12 ms /    16 tokens (   76.32 ms per token,    13.10 tokens per second)
+0.32.752.413 I slot print_timing: id  0 | task 0 |       total time =   31443.85 ms /  1424 tokens
+0.32.752.420 I slot print_timing: id  0 | task 0 |    graphs reused =         15
+0.32.753.075 I slot      release: id  0 | task 0 | stop processing: n_tokens = 1423, truncated = 0
+0.32.756.183 I srv    operator(): operator(): cleaning up before exit...

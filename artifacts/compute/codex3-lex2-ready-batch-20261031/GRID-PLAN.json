@@ -1,0 +1,45 @@
+{
+  "aa_overlap_unknown": 19,
+  "dev_grid": {
+    "configured_alpha_input": "asr.decoder.boosting_tree_alpha",
+    "context_source_global": "DOMAIN-LEXICON-PROPOSAL.json",
+    "context_source_local": "CONVERSATION-CONTEXTS.json: sorted exact-string union of the supplied dictionary fields for each call, outcome-independent, no reference or keyword fields used",
+    "conversation_contexts_sha256": "0810df48426dc635b777b034708cf1fc6546ada9ad0cf08c73b960083ff04081",
+    "nemo_alpha": [
+      0,
+      0.5,
+      1,
+      2,
+      3,
+      5
+    ],
+    "nemo_scope": [
+      "global",
+      "local"
+    ],
+    "no_context": "no positive-trie claim; retain row",
+    "request_boost": 1,
+    "stream": true,
+    "whisper_scope": [
+      "none",
+      "global",
+      "local"
+    ]
+  },
+  "dev_manifest_sha256": "bb5ddf90b39be061e9f88b7337a39fa7c65e688c7800b699506b97d426b7eaa6",
+  "dev_selection": "Choose the alpha and scope with highest pooled LEX1 keyword F on all 100 dev items, using uniform NFKC/punctuation-to-space then casefold lexical tokenization; ties choose lower alpha then global. Interrupted or missing native attempts block selection, never redraw. This is lexical reference agreement, not P-STT-1 v1 WER. Freeze selection and this plan digest before any held-out inference or scoring.",
+  "domain_lexicon_sha256": "4f5f5a2dcdeb6ba1867a7a48d0ec8f4a6420c0ba33d05a34b446ae861089b774",
+  "membership_sha256": "c12a3df3fb697e172585f3016d4531ad0dd16884ba90640589f5656617d25931",
+  "quality_verdict": "unrun",
+  "resume_contract": "Each unexposed full cell starts only if at least 600 s native cap plus 30 s cleanup/metadata reserve remain before worker deadline. Cached exposed/results must match current plan, source, model, tokenizer, runtime, manifest, clip, context and exact recipe; old grant/affinity remain recorded and may differ from a legitimate new segment. Exposed interruptions stay UNKNOWN and are not redrawn.",
+  "schema": "cs8.lex2.plan.proposal.v1",
+  "score": "CS-8.LEX1 aligned keyword P/R/F and term-masked non-list WER use the same uniform NFKC/punctuation-to-space word tokenization on all 100 original clips, casefolded and separate case-sensitive columns. Explicitly label these LEX1 lexical reference agreement, not P-STT-1 v1 WER or a speech release claim. Independently retain unmodified P-STT-1 v1 normalizer flags as UNKNOWN where flagged and raw-token UNK as unobserved, never inferred zero. Call-cluster bootstrap, 2000 resamples, seed 42, percentile 95% intervals. Engine errors/timeouts are full deletions; interrupted exposures remain UNKNOWN. The paired alpha-zero global/local lexical term-masked WER repeat defines the prospective noise floor; undefined denominators leave it UNKNOWN.",
+  "shared_audio_policy": "Preserve all 755 non-dev Contextual test items and all original 341 AA benchmark items; before any test score produce a separately named AA comparison view excluding only AA segments with corroborated shared audio, recording exact IDs and digest. The unresolved contextual 4471586_chunk45 remains UNKNOWN in cross-anchor overlap coverage; do not claim full decontamination or assign false zero.",
+  "source_task": "CS-8.LEX2",
+  "state": "PREDECLARED_DEV_RAW",
+  "test_dev_call_excluded": 17,
+  "test_heldout": 755,
+  "test_manifest_sha256": "bf5a32fb1a74d6cac4950f8973abc2583c08ad4e71a1169399aa8eb443188fd7",
+  "test_original": 772,
+  "warning": "Predeclared dev raw-only diagnostic; no test inference or score before actual dev selection and lexical noise floor are frozen. AA overlap remains unresolved; planning-context canary pending; no formal speech release claim."
+}

@@ -1,0 +1,67 @@
+{
+  "id": "codex3-sw2-v9-clamp-20261031",
+  "owner": "codex3",
+  "priority_rank": 100,
+  "regions": "any-cpu-quarter",
+  "min_window_s": 900,
+  "window_s": 1200,
+  "gib": 4,
+  "booking_class": "block-correctness",
+  "class": "diagnostic",
+  "decision_rule": "n/a (private v9 tiny-model behavioral diagnostic; no current production or throughput conclusion)",
+  "enrollment": "n/a: diagnostic",
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2/launch.sh",
+    "sha256": "8621cb36dfd3dd9b0e0fd2e290a7de9748789c307e2ba3c193a4d5687ef2ded3"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2/worker.py",
+    "sha256": "714b078a1f0a35efe8714abfacaf0d651479f5e5cb95559731d7485597d6fc2f"
+  },
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2/SOURCE-SHA256SUMS",
+    "sha256": "870f555b87ee4c217b01559c9896423a609d8d0add1cada5df19c3bb6e4a41f3"
+  },
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2",
+  "keep": [
+    "KEEP",
+    "PLAN.json",
+    "SOURCE-SHA256SUMS",
+    "ORIGINAL-INPUT-SHA256SUMS",
+    "RUNTIME-LIBS.sha256",
+    "runtime-libs/*",
+    "*.py",
+    "*.sh",
+    "*.json",
+    "*.log",
+    "*.txt",
+    "*.out",
+    "engine/*.sh",
+    "engine/*.py",
+    "engine/*.json",
+    "run/*.json",
+    "run/*.log",
+    "run/.tmp-*",
+    "smoke-real3/*",
+    "smoke-stop2/*"
+  ],
+  "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2/run/TERMINAL.json",
+  "est_output_GiB": 0.1,
+  "feasibility": "Four distinct 16-token requests on one tiny target/drafter server; all four real control requests, writer and drain took 1.223 s on two R11 CPUs. A 1200 s window permits startup and full atomic slot sequence; an exposed interruption is terminally incomplete and never redrawn.",
+  "smoke": {
+    "ran_at": "2026-10-31T03:25:13.817239+00:00",
+    "regions": "R11 CPU 122,123",
+    "model": "pinned stories15M MoE F16 + stories15M Q4_0 draft",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "wall_s": 1.2233632809948176,
+    "peak_sampled_tree_rss_bytes": 233820160,
+    "launcher_sha256": "8621cb36dfd3dd9b0e0fd2e290a7de9748789c307e2ba3c193a4d5687ef2ded3",
+    "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-sw2-v9-clamp-20261031.smoke.log",
+    "log_sha256": "34e339ea8ee4fb699186ce9f19e892a0076d188566e5fc6c26f0e32fdf8066f1"
+  },
+  "hold": null,
+  "log_consumer": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2/log_consumer.py",
+  "completion": "Terminal records response count and raw native data; absent draft count stays absent/unknown, never invented zero. An exposed interrupted sequence is incomplete because fresh-server slot continuity cannot be substituted; rc75 STOP partial and drain."
+}

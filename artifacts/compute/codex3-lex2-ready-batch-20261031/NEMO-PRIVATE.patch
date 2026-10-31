@@ -1,0 +1,42 @@
+--- a/src/asr/model.cpp
++++ b/src/asr/model.cpp
+@@ -1318,6 +1318,20 @@
+                 st.ToString().c_str());
+         }
+     }
++    // Private LEX2 diagnostic: only attach an explicitly supplied tokenizer
++    // if every piece ID matches the loaded GGUF vocabulary.
++    const char* lex2_spm = std::getenv("LEX2_SPM_PATH");
++    if (!spm_ && lex2_spm && *lex2_spm) {
++        auto sp = std::make_unique<sentencepiece::SentencePieceProcessor>();
++        const auto st = sp->Load(lex2_spm);
++        if (!st.ok() || static_cast<size_t>(sp->GetPieceSize()) != vocab_.size())
++            throw std::runtime_error("LEX2 tokenizer load or vocabulary size mismatch");
++        for (size_t i = 0; i < vocab_.size(); ++i)
++            if (sp->IdToPiece(static_cast<int>(i)) != vocab_[i])
++                throw std::runtime_error("LEX2 tokenizer vocabulary ID mismatch");
++        spm_ = std::move(sp);
++        GGMLF_LOG_INFO("[asr_model] LEX2 external tokenizer vocabulary verified (%zu pieces)\n", vocab_.size());
++    }
+ }
+ 
+ void
+--- a/src/asr/decoders/rnnt_greedy_decoder.cpp
++++ b/src/asr/decoders/rnnt_greedy_decoder.cpp
+@@ -8,6 +8,7 @@
+ #include <cmath>
+ #include <cstdint>
+ #include <cstdio>
++#include <cstdlib>
+ #include <memory>
+ #include <stdexcept>
+ #include <string>
+@@ -102,6 +103,8 @@
+     const std::vector<float> scores(phrases.size(), 1.0f);  // context_score = 1.0, as in riva
+     bias_tree_.build(phrases, scores, bias_depth_scaling_);
+     bias_on_ = !bias_tree_.empty();
++    if (bias_on_ && std::getenv("LEX2_BOOST_TRACE"))
++        std::fprintf(stderr, "[asr] RNNT word boosting active phrases=%zu effective_alpha=%.6f\n", phrases.size(), bias_eff_alpha_);
+ }
+ 
+ void

@@ -1,0 +1,2 @@
+/mnt/raid0/llm/kernels/archive/cpu-20260810-0db32c06e/bin/llama-server: /lib/x86_64-linux-gnu/libcrypto.so.3: version `OPENSSL_3.3.0' not found (required by /mnt/raid0/llm/kernels/archive/cpu-20260810-0db32c06e/bin/libllama-server-impl.so)
+/mnt/raid0/llm/kernels/archive/cpu-20260810-0db32c06e/bin/llama-server: /lib/x86_64-linux-gnu/libcrypto.so.3: version `OPENSSL_3.3.0' not found (required by /mnt/raid0/llm/kernels/archive/cpu-20260810-0db32c06e/bin/libllama-common.so.0)

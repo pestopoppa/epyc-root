@@ -1,0 +1,10 @@
+{
+ "schema":"sw2.private-v9.plan.v1",
+ "scope":"Private v9 server request-budget clamp and reused-slot isolation; does not establish behavior of the current v10 production server.",
+ "v9_binary_sha256":"8ebb1355593121a231735d7b58ad076f4539d2c5e3847fa09d2922fa8a980499",
+ "target_sha256":"1240dfc1957df9f3550dd6c1d9e64b466fc2f452d8bc34bd4e45e1a1e2ca6055",
+ "draft_sha256":"6151b1929d7f5aa3385d9ddef3393e55587c0a55de661562322bc51dfda93a04",
+ "launch_cap":8,"draft_min":0,"request_caps":[0,7,12,null],"slot":0,
+ "rule":"Use one freshly launched private single-slot server, four distinct prompts, cache_prompt=false, greedy 16 tokens. Capture exact requests, native raw responses, echoed caps and actual draft_n presence/count for every request. Effective settings expected 0,7,8,8 in order; omit request cap in last request to test reuse reset. No field absence is converted to an invented zero; if the server cannot witness zero drafted steps the zero-draft clause remains unknown. Any failed, interrupted or missing request remains unknown and is never redrawn as though unexposed. A bounded tiny-model v9 result does not assert production v10 behavior.",
+ "status":"predeclared diagnostic; prospective write-side source task proposed; no quality/timing claim"
+}

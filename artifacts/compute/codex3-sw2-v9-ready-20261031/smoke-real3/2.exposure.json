@@ -1,0 +1,1 @@
+{"epoch": 1793417113.4180686, "request": {"cache_prompt": false, "id_slot": 0, "n_predict": 16, "prompt": "The baker carried a warm", "speculative.n_max": 12, "temperature": 0.0, "top_k": 1}, "request_sha256": "b1b72e60963cebb58d647b2a24bbbfe84441b3d2d9ebcc4d694f13f0bdc49e52", "server_session": "1793417112691002430", "slot_requested": 0}

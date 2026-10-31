@@ -1,0 +1,1 @@
+{"epoch": 1793417113.3016622, "request": {"cache_prompt": false, "id_slot": 0, "n_predict": 16, "prompt": "A small boat crossed the", "speculative.n_max": 7, "temperature": 0.0, "top_k": 1}, "request_sha256": "0ee6ee2abcf62a5e39fb39b91d60846dd2046c470aaa658bdca9b997d2d28a2e", "server_session": "1793417112691002430", "slot_requested": 0}

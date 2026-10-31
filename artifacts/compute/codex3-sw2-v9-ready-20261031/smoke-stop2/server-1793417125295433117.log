@@ -1,0 +1,26 @@
+warning: no usable GPU found, --gpu-layers option will be ignored
+warning: one possible reason is that llama.cpp was compiled without GPU support
+warning: consult docs/build.md for compilation instructions
+0.00.004.008 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.004.724 W srv  llama_server: -----------------
+0.00.004.732 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.004.733 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.004.733 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.004.733 W srv  llama_server: -----------------
+0.00.006.545 I srv    load_model: loading model '/mnt/raid0/llm/models/sw2-stories15m-pinned-20261031/target.gguf'
+0.00.242.560 W llama_context: n_ctx_seq (2048) > n_ctx_train (256) -- possible training context overflow
+0.00.321.969 W load: bad special token: 'tokenizer.ggml.seperator_token_id' = 4294967295, using default id -1
+0.00.321.990 W load: bad special token: 'tokenizer.ggml.padding_token_id' = 4294967295, using default id -1
+0.00.361.149 W llama_context: n_ctx_seq (2048) > n_ctx_train (128) -- possible training context overflow
+0.00.392.510 W srv    load_model: the slot context (2048) exceeds the training context of the model (256) - capping
+0.00.418.778 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 256, kv_unified = 'false'
+0.00.439.574 I srv  llama_server: model loaded
+0.00.439.664 I srv  llama_server: listening on http://127.0.0.1:40411
+0.00.537.425 I slot get_availabl: id  0 | task -1 | selected slot by id (0)
+0.00.537.484 I slot launch_slot_: id  0 | task 0 | processing task, is_child = 0
+0.00.630.636 I slot print_timing: id  0 | task 0 | prompt eval time =      11.00 ms /     8 tokens (    1.38 ms per token,   727.14 tokens per second)
+0.00.630.667 I slot print_timing: id  0 | task 0 |        eval time =      82.09 ms /    16 tokens (    5.13 ms per token,   194.90 tokens per second)
+0.00.630.667 I slot print_timing: id  0 | task 0 |       total time =      93.10 ms /    24 tokens
+0.00.630.676 I slot print_timing: id  0 | task 0 |    graphs reused =         14
+0.00.630.788 I slot      release: id  0 | task 0 | stop processing: n_tokens = 23, truncated = 0
+0.00.632.775 I srv    operator(): operator(): cleaning up before exit...

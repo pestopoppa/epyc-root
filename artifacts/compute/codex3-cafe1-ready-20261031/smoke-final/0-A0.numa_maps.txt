@@ -1,0 +1,515 @@
+5b969222a000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server mapped=1 active=0 N1=1 kernelpagesize_kB=4
+5b969222b000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server mapped=1 active=0 N1=1 kernelpagesize_kB=4
+5b969222c000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server mapped=1 active=0 N1=1 kernelpagesize_kB=4
+5b969222d000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server anon=1 dirty=1 active=0 N2=1 kernelpagesize_kB=4
+5b969222e000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server anon=1 dirty=1 active=0 N2=1 kernelpagesize_kB=4
+5b9695a3c000 default heap anon=228 dirty=228 active=0 N1=152 N2=76 kernelpagesize_kB=4
+5b9695b31000 default heap anon=27 dirty=27 active=0 N0=10 N1=7 N2=9 N3=1 kernelpagesize_kB=4
+5b9695b4c000 default heap anon=13 dirty=13 active=0 N0=12 N1=1 kernelpagesize_kB=4
+5b9695b59000 default heap anon=11 dirty=11 active=0 N0=9 N1=2 kernelpagesize_kB=4
+5b9695b64000 default heap anon=142 dirty=142 active=0 N0=124 N1=2 N2=16 kernelpagesize_kB=4
+5b9695bf2000 default heap anon=147 dirty=147 active=0 N1=40 N2=107 kernelpagesize_kB=4
+5b9695c85000 default heap anon=8867 dirty=8867 active=0 N0=859 N1=2377 N2=5221 N3=410 kernelpagesize_kB=4
+5b9697f28000 default heap anon=148 dirty=148 active=0 N2=148 kernelpagesize_kB=4
+5b9697fbc000 default heap anon=1081 dirty=1081 active=0 N0=5 N1=35 N2=1041 kernelpagesize_kB=4
+5b96983f5000 default heap anon=32 dirty=32 active=0 N1=22 N2=10 kernelpagesize_kB=4
+5b9698415000 default heap anon=2640 dirty=2640 active=0 N0=1114 N1=579 N2=681 N3=266 kernelpagesize_kB=4
+5b9698e65000 default heap anon=28 dirty=28 active=0 N1=24 N2=4 kernelpagesize_kB=4
+5b9698e85000 default heap anon=10 dirty=10 active=0 N1=2 N2=8 kernelpagesize_kB=4
+7b34dc000000 default anon=6 dirty=6 N2=6 kernelpagesize_kB=4
+7b34dc021000 default
+7b34e4000000 default anon=3 dirty=3 active=2 N2=3 kernelpagesize_kB=4
+7b34e4021000 default
+7b34e9fe7000 default anon=1 dirty=1 active=0 N0=1 kernelpagesize_kB=4
+7b34e9fe8000 default anon=224 dirty=224 active=12 N1=139 N2=85 kernelpagesize_kB=4
+7b34f1007000 default anon=4 dirty=4 active=0 N2=4 kernelpagesize_kB=4
+7b34f4021000 default
+7b34f8eac000 default anon=1 dirty=1 active=0 N2=1 kernelpagesize_kB=4
+7b34f8ead000 default anon=30453 dirty=30453 active=22 N1=18030 N2=11246 N3=1177 kernelpagesize_kB=4
+7b35005ac000 default anon=1 dirty=1 active=0 N2=1 kernelpagesize_kB=4
+7b35005ad000 default file=/mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf mapped=195021 active=0 N0=5094 N2=94770 N3=95157 kernelpagesize_kB=4
+7b3530000000 default anon=3 dirty=3 active=0 N1=3 kernelpagesize_kB=4
+7b3530021000 default
+7b3534000000 default anon=3 dirty=3 active=0 N2=3 kernelpagesize_kB=4
+7b3534021000 default
+7b3538000000 default anon=3 dirty=3 active=0 N1=3 kernelpagesize_kB=4
+7b3538021000 default
+7b353c000000 default anon=3 dirty=3 active=0 N0=3 kernelpagesize_kB=4
+7b353c021000 default
+7b3540000000 default anon=3 dirty=3 active=0 N2=3 kernelpagesize_kB=4
+7b3540021000 default
+7b3544000000 default anon=3 dirty=3 active=0 N2=3 kernelpagesize_kB=4
+7b3544021000 default
+7b3548000000 default anon=3 dirty=3 active=0 N1=1 N2=2 kernelpagesize_kB=4
+7b3548021000 default
+7b354e745000 default
+7b354e746000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b354ef46000 default
+7b354ef47000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b354f747000 default
+7b354f748000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b354ff48000 default
+7b354ff49000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3550749000 default
+7b355074a000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3550f4a000 default
+7b3550f4b000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b355174b000 default
+7b355174c000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3551f4c000 default
+7b3551f4d000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b355274d000 default
+7b355274e000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3552f4e000 default
+7b3552f4f000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b355374f000 default
+7b3553750000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3553f50000 default
+7b3553f51000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3554751000 default
+7b3554752000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3554f52000 default
+7b3554f53000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3555753000 default
+7b3555754000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3555f54000 default
+7b3555f55000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3556755000 default
+7b3556756000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3556f56000 default
+7b3556f57000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3557757000 default
+7b3557758000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3557f58000 default
+7b3557f59000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3558759000 default
+7b355875a000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3558f5a000 default
+7b3558f5b000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b355975b000 default
+7b355975c000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3559f5c000 default
+7b3559f5d000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b355a75d000 default
+7b355a75e000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b355af5e000 default
+7b355af5f000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b355b75f000 default
+7b355b760000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b355bf60000 default
+7b355bf61000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b355c761000 default
+7b355c762000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b355cf62000 default
+7b355cf63000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b355d763000 default
+7b355d764000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b355df64000 default
+7b355df65000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b355e765000 default
+7b355e766000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b355ef66000 default
+7b355ef67000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b355f767000 default
+7b355f768000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b355ff68000 default
+7b355ff69000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3560769000 default
+7b356076a000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3560f6a000 default
+7b3560f6b000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b356176b000 default
+7b356176c000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3561f6c000 default
+7b3561f6d000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b356276d000 default
+7b356276e000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3562f6e000 default
+7b3562f6f000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b356376f000 default
+7b3563770000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3563f70000 default
+7b3563f71000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3564771000 default
+7b3564772000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3564f72000 default
+7b3564f73000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3565773000 default
+7b3565774000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3565f74000 default
+7b3565f75000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3566775000 default
+7b3566776000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3566f76000 default
+7b3566f77000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3567777000 default
+7b3567778000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3567f78000 default
+7b3567f79000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3568779000 default
+7b356877a000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3568f7a000 default
+7b3568f7b000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b356977b000 default
+7b356977c000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3569f7c000 default
+7b3569f7d000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b356a77d000 default
+7b356a77e000 default anon=11 dirty=11 active=0 N3=11 kernelpagesize_kB=4
+7b356af7e000 default
+7b356af7f000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b356b77f000 default
+7b356b780000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b356bf80000 default
+7b356bf81000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b356c781000 default
+7b356c782000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b356cf82000 default
+7b356cf83000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b356d783000 default
+7b356d784000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b356df84000 default
+7b356df85000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b356e785000 default
+7b356e786000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b356ef86000 default
+7b356ef87000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b356f787000 default
+7b356f788000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b356ff88000 default
+7b356ff89000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3570789000 default
+7b357078a000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3570f8a000 default
+7b3570f8b000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b357178b000 default
+7b357178c000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3571f8c000 default
+7b3571f8d000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b357278d000 default
+7b357278e000 default anon=11 dirty=11 active=0 N1=6 N3=5 kernelpagesize_kB=4
+7b3572f8e000 default
+7b3572f8f000 default anon=11 dirty=11 active=0 N1=2 N3=9 kernelpagesize_kB=4
+7b357378f000 default
+7b3573790000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3573f90000 default
+7b3573f91000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3574791000 default
+7b3574792000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3574f92000 default
+7b3574f93000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3575793000 default
+7b3575794000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3575f94000 default
+7b3575f95000 default anon=11 dirty=11 active=0 N1=2 N3=9 kernelpagesize_kB=4
+7b3576795000 default
+7b3576796000 default anon=11 dirty=11 active=0 N1=3 N3=8 kernelpagesize_kB=4
+7b3576f96000 default
+7b3576f97000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3577797000 default
+7b3577798000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3577f98000 default
+7b3577f99000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3578799000 default
+7b357879a000 default anon=11 dirty=11 active=0 N1=8 N3=3 kernelpagesize_kB=4
+7b3578f9a000 default
+7b3578f9b000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b357979b000 default
+7b357979c000 default anon=11 dirty=11 active=0 N1=1 N3=10 kernelpagesize_kB=4
+7b3579f9c000 default
+7b3579f9d000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b357a79d000 default
+7b357a79e000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b357af9e000 default
+7b357af9f000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b357b79f000 default
+7b357b7a0000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b357bfa0000 default
+7b357bfa1000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b357c7a1000 default
+7b357c7a2000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b357cfa2000 default
+7b357cfa3000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b357d7a3000 default
+7b357d7a4000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b357dfa4000 default
+7b357dfa5000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b357e7a5000 default
+7b357e7a6000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b357efa6000 default
+7b357efa7000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b357f7a7000 default
+7b357f7a8000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b357ffa8000 default
+7b357ffa9000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b35807a9000 default
+7b35807aa000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b3580faa000 default
+7b3580fab000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b35817ab000 default
+7b35817ac000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b3581fac000 default
+7b3581fad000 default anon=11 dirty=11 active=0 N2=10 N3=1 kernelpagesize_kB=4
+7b35827ad000 default
+7b35827ae000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3582fae000 default
+7b3582faf000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b35837af000 default
+7b35837b0000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3583fb0000 default
+7b3583fb1000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b35847b1000 default
+7b35847b2000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b3584fb2000 default
+7b3584fb3000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b35857b3000 default
+7b35857b4000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b3585fb4000 default
+7b3585fb5000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b35867b5000 default
+7b35867b6000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b3586fb6000 default
+7b3586fb7000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b35877b7000 default
+7b35877b8000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b3587fb8000 default
+7b3587fb9000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b35887b9000 default
+7b35887ba000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b3588fba000 default
+7b3588fbb000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b35897bb000 default
+7b35897bc000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b3589fbc000 default
+7b3589fbd000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b358a7bd000 default
+7b358a7be000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b358afbe000 default
+7b358afbf000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b358b7bf000 default
+7b358b7c0000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b358bfc0000 default
+7b358bfc1000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b358c7c1000 default
+7b358c7c2000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b358cfc2000 default
+7b358cfc3000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b358d7c3000 default
+7b358d7c4000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b358dfc4000 default
+7b358dfc5000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b358e7c5000 default
+7b358e7c6000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b358efc6000 default
+7b358efc7000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b358f7c7000 default
+7b358f7c8000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b358ffc8000 default
+7b358ffc9000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b35907c9000 default
+7b35907ca000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3590fca000 default
+7b3590fcb000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b35917cb000 default
+7b35917cc000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3591fcc000 default
+7b3591fcd000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b35927cd000 default
+7b35927ce000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3592fce000 default
+7b3592fcf000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b35937cf000 default
+7b35937d0000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3593fd0000 default
+7b3593fd1000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b35947d1000 default
+7b35947d2000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3594fd2000 default
+7b3594fd3000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b35957d3000 default
+7b35957d4000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3595fd4000 default
+7b3595fd5000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b35967d5000 default
+7b35967d6000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3596fd6000 default
+7b3596fd7000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b35977d7000 default
+7b35977d8000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3597fd8000 default
+7b3597fd9000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b35987d9000 default
+7b35987da000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3598fda000 default
+7b3598fdb000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b35997db000 default
+7b35997dc000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b3599fdc000 default
+7b3599fdd000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b359a7dd000 default
+7b359a7de000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b359afde000 default
+7b359afdf000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b359b7df000 default
+7b359b7e0000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b359bfe0000 default
+7b359bfe1000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b359c7e1000 default
+7b359c7e2000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b359cfe2000 default
+7b359cfe3000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b359d7e3000 default
+7b359d7e4000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b359dfe4000 default
+7b359dfe5000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b359e7e5000 default
+7b359e7e6000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b359efe6000 default
+7b359efe7000 default anon=11 dirty=11 active=0 N2=11 kernelpagesize_kB=4
+7b359f7e7000 default
+7b359f7e8000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b359ffe8000 default
+7b359ffe9000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b35a07e9000 default
+7b35a07ea000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b35a0fea000 default
+7b35a0feb000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b35a17eb000 default
+7b35a17ec000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b35a1fec000 default
+7b35a1fed000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b35a27ed000 default
+7b35a27ee000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b35a2fee000 default
+7b35a2fef000 default anon=11 dirty=11 active=0 N2=11 kernelpagesize_kB=4
+7b35a37ef000 default
+7b35a37f0000 default anon=11 dirty=11 active=0 N2=11 kernelpagesize_kB=4
+7b35a3ff0000 default
+7b35a3ff1000 default anon=11 dirty=11 active=0 N2=11 kernelpagesize_kB=4
+7b35a47f1000 default
+7b35a47f2000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b35a4ff2000 default
+7b35a4ff3000 default anon=11 dirty=11 active=0 N2=11 kernelpagesize_kB=4
+7b35a57f3000 default
+7b35a57f4000 default anon=11 dirty=11 active=0 N2=11 kernelpagesize_kB=4
+7b35a5ff4000 default
+7b35a5ff5000 default anon=12 dirty=12 active=0 N2=12 kernelpagesize_kB=4
+7b35a67f5000 default
+7b35a67f6000 default anon=11 dirty=11 active=0 N2=11 kernelpagesize_kB=4
+7b35a6ff6000 default
+7b35a6ff7000 default anon=12 dirty=12 active=0 N1=10 N2=2 kernelpagesize_kB=4
+7b35a77f7000 default
+7b35a77f8000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b35a7ff8000 default
+7b35a7ff9000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b35a87f9000 default
+7b35a87fa000 default anon=12 dirty=12 active=0 N1=11 N2=1 kernelpagesize_kB=4
+7b35a8ffa000 default
+7b35a8ffb000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b35a97fb000 default
+7b35a97fc000 default anon=12 dirty=12 active=0 N0=1 N1=10 N2=1 kernelpagesize_kB=4
+7b35a9ffc000 default
+7b35a9ffd000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b35aa7fd000 default
+7b35aa7fe000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b35aaffe000 default
+7b35aafff000 default anon=12 dirty=12 active=0 N1=11 N2=1 kernelpagesize_kB=4
+7b35ab7ff000 default
+7b35ab800000 default anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b35ac000000 default anon=22 dirty=22 active=0 N1=13 N2=5 N3=4 kernelpagesize_kB=4
+7b35ac021000 default
+7b35b05f8000 default
+7b35b05f9000 default anon=12 dirty=12 active=0 N1=10 N2=2 kernelpagesize_kB=4
+7b35b0df9000 default
+7b35b0dfa000 default anon=13 dirty=13 active=2 N1=10 N2=3 kernelpagesize_kB=4
+7b35b15fa000 default
+7b35b15fb000 default anon=12 dirty=12 active=0 N1=10 N2=2 kernelpagesize_kB=4
+7b35b1dfb000 default
+7b35b1dfc000 default anon=12 dirty=12 active=0 N1=10 N2=2 kernelpagesize_kB=4
+7b35b25fc000 default
+7b35b25fd000 default anon=13 dirty=13 active=0 N1=11 N2=2 kernelpagesize_kB=4
+7b35b2dfd000 default
+7b35b2dfe000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b35b35fe000 default
+7b35b35ff000 default anon=11 dirty=11 active=0 N1=11 kernelpagesize_kB=4
+7b35b3dff000 default
+7b35b3e00000 default anon=11 dirty=11 active=0 N1=1 N2=10 kernelpagesize_kB=4
+7b35b4600000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0 mapped=20 active=0 N0=6 N3=14 kernelpagesize_kB=4
+7b35b4614000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0 mapped=220 active=0 N0=33 N1=78 N3=109 kernelpagesize_kB=4
+7b35b4880000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0 mapped=32 active=0 N1=32 kernelpagesize_kB=4
+7b35b48b0000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0 anon=2 dirty=2 active=0 N1=2 kernelpagesize_kB=4
+7b35b48b2000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0 anon=1 dirty=1 active=0 N1=1 kernelpagesize_kB=4
+7b35b48b3000 default anon=130 dirty=130 active=0 N1=127 N2=3 kernelpagesize_kB=4
+7b35b4a00000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303 mapped=155 active=0 N1=130 N2=25 kernelpagesize_kB=4
+7b35b4a9b000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303 mapped=320 active=0 N0=28 N1=228 N2=64 kernelpagesize_kB=4
+7b35b4d21000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303 mapped=63 active=0 N0=26 N1=37 kernelpagesize_kB=4
+7b35b4da4000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303 anon=13 dirty=13 active=0 N1=12 N2=1 kernelpagesize_kB=4
+7b35b4db1000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303 anon=5 dirty=5 active=0 N1=4 N2=1 kernelpagesize_kB=4
+7b35b4db6000 default anon=1 dirty=1 active=0 N1=1 kernelpagesize_kB=4
+7b35b4e00000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303 mapped=165 active=0 N0=28 N1=119 N2=18 kernelpagesize_kB=4
+7b35b4ea5000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303 mapped=656 active=0 N0=90 N1=480 N2=86 kernelpagesize_kB=4
+7b35b51d4000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303 mapped=153 active=0 N0=80 N1=73 kernelpagesize_kB=4
+7b35b527d000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303 anon=8 dirty=8 active=0 N1=8 kernelpagesize_kB=4
+7b35b5285000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303 anon=5 dirty=5 active=0 N1=5 kernelpagesize_kB=4
+7b35b528a000 default anon=2 dirty=2 active=0 N2=2 kernelpagesize_kB=4
+7b35b5400000 default file=/usr/lib/x86_64-linux-gnu/libc.so.6 mapped=39 mapmax=143 N0=39 kernelpagesize_kB=4
+7b35b5428000 default file=/usr/lib/x86_64-linux-gnu/libc.so.6 mapped=373 mapmax=149 active=323 N0=371 N3=2 kernelpagesize_kB=4
+7b35b55b1000 default file=/usr/lib/x86_64-linux-gnu/libc.so.6 mapped=46 mapmax=149 active=45 N0=46 kernelpagesize_kB=4
+7b35b5600000 default file=/usr/lib/x86_64-linux-gnu/libc.so.6 anon=4 dirty=4 active=0 N1=4 kernelpagesize_kB=4
+7b35b5604000 default file=/usr/lib/x86_64-linux-gnu/libc.so.6 anon=2 dirty=2 active=0 N1=2 kernelpagesize_kB=4
+7b35b5606000 default anon=5 dirty=5 active=0 N1=5 kernelpagesize_kB=4
+7b35b5642000 default file=/usr/lib/x86_64-linux-gnu/libm.so.6 mapped=16 mapmax=111 active=0 N0=16 kernelpagesize_kB=4
+7b35b5652000 default file=/usr/lib/x86_64-linux-gnu/libm.so.6 mapped=94 mapmax=111 active=0 N0=91 N3=3 kernelpagesize_kB=4
+7b35b56d1000 default file=/usr/lib/x86_64-linux-gnu/libm.so.6 mapped=32 mapmax=35 active=0 N0=30 N3=2 kernelpagesize_kB=4
+7b35b5729000 default file=/usr/lib/x86_64-linux-gnu/libm.so.6 anon=1 dirty=1 active=0 N1=1 kernelpagesize_kB=4
+7b35b572a000 default file=/usr/lib/x86_64-linux-gnu/libm.so.6 anon=1 dirty=1 active=0 N1=1 kernelpagesize_kB=4
+7b35b572b000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0 mapped=20 active=0 N1=20 kernelpagesize_kB=4
+7b35b573f000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0 mapped=123 active=0 N1=90 N2=4 N3=29 kernelpagesize_kB=4
+7b35b57da000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0 mapped=22 active=0 N1=22 kernelpagesize_kB=4
+7b35b57fc000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0 anon=2 dirty=2 active=0 N1=2 kernelpagesize_kB=4
+7b35b57fe000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0 anon=2 dirty=2 active=0 N1=2 kernelpagesize_kB=4
+7b35b5800000 default file=/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33 mapped=157 mapmax=24 active=0 N0=157 kernelpagesize_kB=4
+7b35b589d000 default file=/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33 mapped=223 mapmax=24 active=0 N0=205 N1=3 N3=15 kernelpagesize_kB=4
+7b35b59e5000 default file=/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33 mapped=47 mapmax=23 active=0 N0=23 N1=7 N2=5 N3=12 kernelpagesize_kB=4
+7b35b5a6c000 default file=/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33 anon=11 dirty=11 active=0 N1=10 N2=1 kernelpagesize_kB=4
+7b35b5a77000 default file=/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33 anon=3 dirty=3 active=0 N1=2 N2=1 kernelpagesize_kB=4
+7b35b5a7a000 default anon=3 dirty=3 active=0 N1=3 kernelpagesize_kB=4
+7b35b5ab8000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libmtmd.so.0.0.10303 mapped=24 active=0 N1=24 kernelpagesize_kB=4
+7b35b5ad0000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libmtmd.so.0.0.10303 mapped=112 active=0 N0=19 N1=93 kernelpagesize_kB=4
+7b35b5bd5000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libmtmd.so.0.0.10303 mapped=16 active=0 N0=11 N1=5 kernelpagesize_kB=4
+7b35b5bfc000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libmtmd.so.0.0.10303 anon=2 dirty=2 active=0 N1=1 N2=1 kernelpagesize_kB=4
+7b35b5bfe000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libmtmd.so.0.0.10303 anon=2 dirty=2 active=0 N1=1 N2=1 kernelpagesize_kB=4
+7b35b5c00000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-server-impl.so mapped=127 active=0 N0=1 N1=125 N2=1 kernelpagesize_kB=4
+7b35b5c7f000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-server-impl.so mapped=460 active=0 N0=28 N1=366 N2=66 kernelpagesize_kB=4
+7b35b5edb000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-server-impl.so mapped=117 active=0 N0=11 N1=77 N2=29 kernelpagesize_kB=4
+7b35b6209000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-server-impl.so anon=5 dirty=5 active=0 N1=4 N2=1 kernelpagesize_kB=4
+7b35b620e000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-server-impl.so anon=4 dirty=4 active=0 N1=3 N2=1 kernelpagesize_kB=4
+7b35b6212000 default anon=2 dirty=2 active=0 N2=2 kernelpagesize_kB=4
+7b35b6274000 default anon=17 dirty=17 active=0 N1=17 kernelpagesize_kB=4
+7b35b6286000 default file=/usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0 mapped=11 mapmax=6 active=0 N2=10 N3=1 kernelpagesize_kB=4
+7b35b6291000 default file=/usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0 mapped=44 mapmax=6 active=0 N1=2 N2=28 N3=14 kernelpagesize_kB=4
+7b35b62cd000 default file=/usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0 mapped=13 mapmax=6 active=0 N2=13 kernelpagesize_kB=4
+7b35b62da000 default file=/usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0 anon=1 dirty=1 active=0 N1=1 kernelpagesize_kB=4
+7b35b62db000 default file=/usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0 anon=1 dirty=1 active=0 N1=1 kernelpagesize_kB=4
+7b35b62dc000 default anon=2 dirty=2 active=0 N1=2 kernelpagesize_kB=4
+7b35b62de000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml.so.0.16.0 mapped=3 active=0 N1=3 kernelpagesize_kB=4
+7b35b62e1000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml.so.0.16.0 mapped=7 active=0 N1=7 kernelpagesize_kB=4
+7b35b62e8000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml.so.0.16.0
+7b35b62ea000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml.so.0.16.0 anon=1 dirty=1 active=0 N1=1 kernelpagesize_kB=4
+7b35b62eb000 default file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml.so.0.16.0 anon=1 dirty=1 active=0 N1=1 kernelpagesize_kB=4
+7b35b62ec000 default anon=2 dirty=2 active=0 N1=2 kernelpagesize_kB=4
+7b35b62ee000 default file=/usr/lib/x86_64-linux-gnu/libgcc_s.so.1 mapped=4 mapmax=24 active=0 N0=4 kernelpagesize_kB=4
+7b35b62f2000 default file=/usr/lib/x86_64-linux-gnu/libgcc_s.so.1 mapped=35 mapmax=24 active=0 N0=16 N1=15 N3=4 kernelpagesize_kB=4
+7b35b6316000 default file=/usr/lib/x86_64-linux-gnu/libgcc_s.so.1 mapped=4 mapmax=24 active=0 N0=4 kernelpagesize_kB=4
+7b35b631a000 default file=/usr/lib/x86_64-linux-gnu/libgcc_s.so.1 anon=1 dirty=1 active=0 N1=1 kernelpagesize_kB=4
+7b35b631b000 default file=/usr/lib/x86_64-linux-gnu/libgcc_s.so.1 anon=1 dirty=1 active=0 N1=1 kernelpagesize_kB=4
+7b35b6333000 default anon=2 dirty=2 active=0 N1=1 N2=1 kernelpagesize_kB=4
+7b35b6335000 default
+7b35b6337000 default
+7b35b6339000 default
+7b35b633b000 default file=/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 mapped=1 mapmax=143 N0=1 kernelpagesize_kB=4
+7b35b633c000 default file=/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 mapped=43 mapmax=146 N0=43 kernelpagesize_kB=4
+7b35b6367000 default file=/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 mapped=10 mapmax=144 N0=10 kernelpagesize_kB=4
+7b35b6371000 default file=/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 anon=2 dirty=2 active=0 N2=2 kernelpagesize_kB=4
+7b35b6373000 default file=/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 anon=2 dirty=2 active=0 N2=2 kernelpagesize_kB=4
+7ffcbf652000 default stack anon=27 dirty=27 active=0 N1=18 N2=9 kernelpagesize_kB=4

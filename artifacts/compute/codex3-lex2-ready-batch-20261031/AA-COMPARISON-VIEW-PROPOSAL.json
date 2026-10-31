@@ -1,0 +1,2778 @@
+{
+  "membership_sha256": "c12a3df3fb697e172585f3016d4531ad0dd16884ba90640589f5656617d25931",
+  "original_aa_manifest_sha256": "35b9d6b39b5485358503c75bbeff9d9f6241d64a2ab98a2bbf179f40e31c73da",
+  "overlap_pairs": [
+    {
+      "aa_file": "4471586_chunk_0.wav",
+      "aa_id": "f9c9e800-8afa-506d-91e0-a12a38ae001e",
+      "audio_sample": {
+        "aa_file": "4471586_chunk_0.wav",
+        "aa_pcm_sha256": "cea2c4470fedacb9985282d99c323e28a97eebd1e296a7bbb72180bff2d488cd",
+        "file_id": "4471586_chunk1",
+        "intersection_s": [
+          15.0,
+          21.218
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.9999445904999361,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4471586_chunk1",
+      "intersection_s": [
+        15.0,
+        21.218
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4471586_chunk_1.wav",
+      "aa_id": "35b56cf2-ab88-5e87-aa85-2d13296e38bc",
+      "audio_sample": {
+        "aa_file": "4471586_chunk_1.wav",
+        "aa_pcm_sha256": "2c512a57f8e3432b9209ea5f2ee272698efef07e9b062922b83fa9c1c7476cd3",
+        "file_id": "4471586_chunk1",
+        "intersection_s": [
+          21.218,
+          30.0
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.9999433134189206,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4471586_chunk1",
+      "intersection_s": [
+        21.218,
+        30.0
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4471586_chunk_25.wav",
+      "aa_id": "ecf9fcce-a532-536a-9e82-505da2380b4d",
+      "audio_sample": {
+        "aa_file": "4471586_chunk_25.wav",
+        "aa_pcm_sha256": "0d952d57aba7dcd82ca41bf2928333d511549c131fc4e44322cb91a181e21b71",
+        "file_id": "4471586_chunk37",
+        "intersection_s": [
+          555.0,
+          564.5
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.9999429482597155,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4471586_chunk37",
+      "intersection_s": [
+        555.0,
+        564.5
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4471586_chunk_26.wav",
+      "aa_id": "b43711b6-2350-5bd0-aaca-4b66ecd3446f",
+      "audio_sample": {
+        "aa_file": "4471586_chunk_26.wav",
+        "aa_pcm_sha256": "f432e6d6425fd225bd91a0eb0f57b49c45ad61c8ff485fe6ad64d7f43a6aa0f0",
+        "file_id": "4471586_chunk37",
+        "intersection_s": [
+          564.5,
+          570.0
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.9996686770558384,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4471586_chunk37",
+      "intersection_s": [
+        564.5,
+        570.0
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4471586_chunk_30.wav",
+      "aa_id": "a781c268-a299-5145-a984-25d945894ab9",
+      "audio_sample": {
+        "aa_file": "4471586_chunk_30.wav",
+        "aa_pcm_sha256": "1d7f1188da44507127f46bc33c657f77e58d60a679c4edebb0beabdb4b957c21",
+        "file_id": "4471586_chunk45",
+        "intersection_s": [
+          675.0,
+          682.3
+        ],
+        "lag_samples": -5782,
+        "normalized_correlation": -0.0643786217262537,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4471586_chunk45",
+      "intersection_s": [
+        675.0,
+        682.3
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4471586_chunk_31.wav",
+      "aa_id": "b99f131f-01ee-577e-8f5d-0dc49181a929",
+      "audio_sample": {
+        "aa_file": "4471586_chunk_31.wav",
+        "aa_pcm_sha256": "b53284a9f5bd4bb2cf873dbe5ebd9792d135087060e55a8866d4a8bdaa62959e",
+        "file_id": "4471586_chunk45",
+        "intersection_s": [
+          682.3,
+          688.194
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.9999438079083997,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4471586_chunk45",
+      "intersection_s": [
+        682.3,
+        688.194
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4471586_chunk_32.wav",
+      "aa_id": "17c6247f-8c13-5d27-b43b-94da42e140a7",
+      "audio_sample": null,
+      "contextual_id": "4471586_chunk45",
+      "intersection_s": [
+        688.194,
+        690.0
+      ],
+      "status": "unknown_short_or_unsampled"
+    },
+    {
+      "aa_file": "4474955_chunk_25.wav",
+      "aa_id": "ea7a20ff-20e2-5579-8472-8ea57bde1849",
+      "audio_sample": {
+        "aa_file": "4474955_chunk_25.wav",
+        "aa_pcm_sha256": "3934c46dd979cc0e94372b7143d20665bc5f68c7a2c2f2136f166cd470c65998",
+        "file_id": "4474955_chunk34",
+        "intersection_s": [
+          510.0,
+          516.098
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.9993222776361589,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4474955_chunk34",
+      "intersection_s": [
+        510.0,
+        516.098
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4474955_chunk_26.wav",
+      "aa_id": "6ca9fc92-4f5c-52dc-bca5-2e8d53671370",
+      "audio_sample": {
+        "aa_file": "4474955_chunk_26.wav",
+        "aa_pcm_sha256": "89a1128e651e43ce4bcb0b87d5f9f5962f6bbd1defd996fb096cdb3d40bc3c0d",
+        "file_id": "4474955_chunk34",
+        "intersection_s": [
+          516.098,
+          525.0
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.9992132555511131,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4474955_chunk34",
+      "intersection_s": [
+        516.098,
+        525.0
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4474955_chunk_5.wav",
+      "aa_id": "61f2279d-6a2a-508a-83a8-20562d4a71e5",
+      "audio_sample": {
+        "aa_file": "4474955_chunk_5.wav",
+        "aa_pcm_sha256": "a7a7cbd1dd12d4ef73e49f9c1e9fe644d7d2c2b8856b39126c24e9f7f040e8e5",
+        "file_id": "4474955_chunk7",
+        "intersection_s": [
+          105.0,
+          120.0
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.9985257382812164,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4474955_chunk7",
+      "intersection_s": [
+        105.0,
+        120.0
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4475604_chunk_8.wav",
+      "aa_id": "6686b097-eff7-579f-b4ba-d9395f8c5d01",
+      "audio_sample": null,
+      "contextual_id": "4475604_chunk12",
+      "intersection_s": [
+        180.0,
+        182.082
+      ],
+      "status": "unknown_short_or_unsampled"
+    },
+    {
+      "aa_file": "4475604_chunk_9.wav",
+      "aa_id": "5f601bc1-b903-57ee-bf36-c025c09712f9",
+      "audio_sample": {
+        "aa_file": "4475604_chunk_9.wav",
+        "aa_pcm_sha256": "9df298ff1fd14410e866cbc8966a46c37ebbd9b9f0fd4bc782832a35d31376aa",
+        "file_id": "4475604_chunk12",
+        "intersection_s": [
+          182.082,
+          195.0
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.9993971145451456,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4475604_chunk12",
+      "intersection_s": [
+        182.082,
+        195.0
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4475604_chunk_9.wav",
+      "aa_id": "5f601bc1-b903-57ee-bf36-c025c09712f9",
+      "audio_sample": null,
+      "contextual_id": "4475604_chunk14",
+      "intersection_s": [
+        210.0,
+        210.8
+      ],
+      "status": "unknown_short_or_unsampled"
+    },
+    {
+      "aa_file": "4475604_chunk_10.wav",
+      "aa_id": "a4851a9b-3c39-5d4a-8839-cbee8166dac3",
+      "audio_sample": {
+        "aa_file": "4475604_chunk_10.wav",
+        "aa_pcm_sha256": "40802d151649c19d1feef73ee4e76a92a4c13bbab2fe16be65ca70fe6264cc9c",
+        "file_id": "4475604_chunk14",
+        "intersection_s": [
+          210.8,
+          216.002
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.9987168094477055,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4475604_chunk14",
+      "intersection_s": [
+        210.8,
+        216.002
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4475604_chunk_11.wav",
+      "aa_id": "f5f7d434-06f6-51eb-a9b0-1ae1ecc15705",
+      "audio_sample": {
+        "aa_file": "4475604_chunk_11.wav",
+        "aa_pcm_sha256": "f367ab42efeae2e18e689d64ad2091dffe6ab45c8414c92238eb2c8f8c52846b",
+        "file_id": "4475604_chunk14",
+        "intersection_s": [
+          216.002,
+          225.0
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.9986279197278719,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4475604_chunk14",
+      "intersection_s": [
+        216.002,
+        225.0
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4475604_chunk_11.wav",
+      "aa_id": "f5f7d434-06f6-51eb-a9b0-1ae1ecc15705",
+      "audio_sample": {
+        "aa_file": "4475604_chunk_11.wav",
+        "aa_pcm_sha256": "f367ab42efeae2e18e689d64ad2091dffe6ab45c8414c92238eb2c8f8c52846b",
+        "file_id": "4475604_chunk15",
+        "intersection_s": [
+          225.0,
+          238.274
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.9994126280312383,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4475604_chunk15",
+      "intersection_s": [
+        225.0,
+        238.274
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4475604_chunk_12.wav",
+      "aa_id": "bbbb2457-8140-5483-a6fb-d8753656fc36",
+      "audio_sample": null,
+      "contextual_id": "4475604_chunk15",
+      "intersection_s": [
+        238.274,
+        240.0
+      ],
+      "status": "unknown_short_or_unsampled"
+    },
+    {
+      "aa_file": "4475604_chunk_12.wav",
+      "aa_id": "bbbb2457-8140-5483-a6fb-d8753656fc36",
+      "audio_sample": {
+        "aa_file": "4475604_chunk_12.wav",
+        "aa_pcm_sha256": "7d021e0267f6f177ca0fcc665c92ebb112739f0fa454bdb7eaef2b945b519c8a",
+        "file_id": "4475604_chunk17",
+        "intersection_s": [
+          255.0,
+          266.402
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.9994898225441821,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4475604_chunk17",
+      "intersection_s": [
+        255.0,
+        266.402
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4475604_chunk_13.wav",
+      "aa_id": "39fd968c-0f28-5769-abe5-58c6de238d63",
+      "audio_sample": {
+        "aa_file": "4475604_chunk_13.wav",
+        "aa_pcm_sha256": "c6a804545eb8f81a0718cff732eb4e9367d04a83d61eef03d6e69d7ea18aba75",
+        "file_id": "4475604_chunk17",
+        "intersection_s": [
+          266.402,
+          270.0
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.999082120579833,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4475604_chunk17",
+      "intersection_s": [
+        266.402,
+        270.0
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4475604_chunk_15.wav",
+      "aa_id": "b8d25ee8-9994-594d-b323-77efc183b07b",
+      "audio_sample": {
+        "aa_file": "4475604_chunk_15.wav",
+        "aa_pcm_sha256": "4ba7bd5d7f297bff457159007ce7c2398774461f78af23fbc560fabed3940e30",
+        "file_id": "4475604_chunk21",
+        "intersection_s": [
+          315.0,
+          328.258
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.9995032724936364,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4475604_chunk21",
+      "intersection_s": [
+        315.0,
+        328.258
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4475604_chunk_16.wav",
+      "aa_id": "b3bed916-1310-550c-a3d6-f389a3eede09",
+      "audio_sample": null,
+      "contextual_id": "4475604_chunk21",
+      "intersection_s": [
+        328.258,
+        330.0
+      ],
+      "status": "unknown_short_or_unsampled"
+    },
+    {
+      "aa_file": "4475604_chunk_17.wav",
+      "aa_id": "72fc0865-69f4-506f-9d3f-98953eaed26d",
+      "audio_sample": null,
+      "contextual_id": "4475604_chunk24",
+      "intersection_s": [
+        360.0,
+        360.93
+      ],
+      "status": "unknown_short_or_unsampled"
+    },
+    {
+      "aa_file": "4475604_chunk_18.wav",
+      "aa_id": "852bec23-25ca-54c7-a9c5-41584688efa1",
+      "audio_sample": {
+        "aa_file": "4475604_chunk_18.wav",
+        "aa_pcm_sha256": "c8952da01063c515b4adb128a8bf9ec3b3668e45ab71e1c96a33f04e322dc6a5",
+        "file_id": "4475604_chunk24",
+        "intersection_s": [
+          360.93,
+          375.0
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.9991602034675925,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4475604_chunk24",
+      "intersection_s": [
+        360.93,
+        375.0
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4475604_chunk_25.wav",
+      "aa_id": "819a7e0f-a638-50c5-af0c-ab0e9b8258fe",
+      "audio_sample": {
+        "aa_file": "4475604_chunk_25.wav",
+        "aa_pcm_sha256": "c5888d19fe14949075b77a18f2731b5bae748ab84010b3d9b4cad98d7a4963aa",
+        "file_id": "4475604_chunk37",
+        "intersection_s": [
+          555.0,
+          566.9
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.9991332500061529,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4475604_chunk37",
+      "intersection_s": [
+        555.0,
+        566.9
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4475604_chunk_26.wav",
+      "aa_id": "237b8a92-01ee-51c4-95c0-535882e6c496",
+      "audio_sample": {
+        "aa_file": "4475604_chunk_26.wav",
+        "aa_pcm_sha256": "734b4e0f0d76f6dc35c1767a3ba7b344327611dd0643199f2758d28d117480de",
+        "file_id": "4475604_chunk37",
+        "intersection_s": [
+          566.9,
+          570.0
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.9993886222941512,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4475604_chunk37",
+      "intersection_s": [
+        566.9,
+        570.0
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4475604_chunk_31.wav",
+      "aa_id": "56bb70c5-2a0a-550a-893b-4af103405f3f",
+      "audio_sample": {
+        "aa_file": "4475604_chunk_31.wav",
+        "aa_pcm_sha256": "e51aa838689b64e30ac3c70d9187747b778ed57d3d117ca433e25ce338b1a360",
+        "file_id": "4475604_chunk44",
+        "intersection_s": [
+          660.0,
+          675.0
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.9992667690939399,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4475604_chunk44",
+      "intersection_s": [
+        660.0,
+        675.0
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4475604_chunk_34.wav",
+      "aa_id": "850ae947-8a19-5d73-851a-e7c47d09506e",
+      "audio_sample": null,
+      "contextual_id": "4475604_chunk48",
+      "intersection_s": [
+        720.0,
+        720.226
+      ],
+      "status": "unknown_short_or_unsampled"
+    },
+    {
+      "aa_file": "4475604_chunk_35.wav",
+      "aa_id": "8a73549b-6156-5c19-9ee6-7bcfe877028a",
+      "audio_sample": {
+        "aa_file": "4475604_chunk_35.wav",
+        "aa_pcm_sha256": "495d0e70ae1c50b69c319c6f554e7c68ff37da8ea2fb94148a7e79d00a33ff87",
+        "file_id": "4475604_chunk48",
+        "intersection_s": [
+          720.226,
+          735.0
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.9977688772722539,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4475604_chunk48",
+      "intersection_s": [
+        720.226,
+        735.0
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4475604_chunk_42.wav",
+      "aa_id": "7a1db330-f831-5cc5-99a7-dd757beae59a",
+      "audio_sample": {
+        "aa_file": "4475604_chunk_42.wav",
+        "aa_pcm_sha256": "e9497cb384ab9ec5f153df1c9a5c05cbd475c35202358a0995d793db720f2924",
+        "file_id": "4475604_chunk58",
+        "intersection_s": [
+          870.0,
+          885.0
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.9987019070591366,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4475604_chunk58",
+      "intersection_s": [
+        870.0,
+        885.0
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4475604_chunk_47.wav",
+      "aa_id": "ba8e8288-0b63-5d0c-a6b9-b279544e38b9",
+      "audio_sample": {
+        "aa_file": "4475604_chunk_47.wav",
+        "aa_pcm_sha256": "7ce2ea9fbb3b12df0ebb2eaf388b7312d3e626cb8e54f97a6e23648920373284",
+        "file_id": "4475604_chunk65",
+        "intersection_s": [
+          975.0,
+          990.0
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.9987914472735694,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4475604_chunk65",
+      "intersection_s": [
+        975.0,
+        990.0
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4475604_chunk_49.wav",
+      "aa_id": "99a4d71b-5c1c-55cb-9c5d-667a266af578",
+      "audio_sample": {
+        "aa_file": "4475604_chunk_49.wav",
+        "aa_pcm_sha256": "d9a656ccc776124dcb4e6ed85cc8916e4c0be96dae32c85bd609b5042e9f6477",
+        "file_id": "4475604_chunk69",
+        "intersection_s": [
+          1035.0,
+          1044.0
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.9990350810324281,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4475604_chunk69",
+      "intersection_s": [
+        1035.0,
+        1044.0
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4475604_chunk_50.wav",
+      "aa_id": "1ca2c696-4387-589e-986b-f19a146fe069",
+      "audio_sample": {
+        "aa_file": "4475604_chunk_50.wav",
+        "aa_pcm_sha256": "5eb5687dd3558737b37a7ced76151cae344a8711402274a7dfca70d0ed5f4090",
+        "file_id": "4475604_chunk69",
+        "intersection_s": [
+          1044.0,
+          1050.0
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.9988494072475598,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4475604_chunk69",
+      "intersection_s": [
+        1044.0,
+        1050.0
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4475604_chunk_58.wav",
+      "aa_id": "1e170a68-8456-52b4-8fd3-b73b9f17d5a8",
+      "audio_sample": {
+        "aa_file": "4475604_chunk_58.wav",
+        "aa_pcm_sha256": "eff3d3c78e1463731dd0bc80b4ea57da9627be59b8ba9afbb421ab83da568ef8",
+        "file_id": "4475604_chunk80",
+        "intersection_s": [
+          1200.0,
+          1215.0
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.9997439328241112,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4475604_chunk80",
+      "intersection_s": [
+        1200.0,
+        1215.0
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4475604_chunk_6.wav",
+      "aa_id": "1eda13fa-b414-532d-b21c-d859e9b43ab9",
+      "audio_sample": {
+        "aa_file": "4475604_chunk_6.wav",
+        "aa_pcm_sha256": "6b1192e395847e927aaa8895ef0856df7a28adef7c9e33f44a8890bfa9ac212e",
+        "file_id": "4475604_chunk9",
+        "intersection_s": [
+          135.0,
+          141.794
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.9997632306403741,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4475604_chunk9",
+      "intersection_s": [
+        135.0,
+        141.794
+      ],
+      "status": "sampled_descriptive"
+    },
+    {
+      "aa_file": "4475604_chunk_7.wav",
+      "aa_id": "a51639e2-f4e6-58df-9d14-88b8879dfea9",
+      "audio_sample": {
+        "aa_file": "4475604_chunk_7.wav",
+        "aa_pcm_sha256": "dbd2056b18dd5bb0f7e2b091b0370d2749a4b74d1b880abfcaa20560e88ab93e",
+        "file_id": "4475604_chunk9",
+        "intersection_s": [
+          141.794,
+          150.0
+        ],
+        "lag_samples": 0,
+        "normalized_correlation": 0.9979811713733173,
+        "segment_s": 2,
+        "status": "measured_not_identity_verdict"
+      },
+      "contextual_id": "4475604_chunk9",
+      "intersection_s": [
+        141.794,
+        150.0
+      ],
+      "status": "sampled_descriptive"
+    }
+  ],
+  "policy": "Separate comparison view conservatively removes AA chunks with same reported call and overlapping timestamps; all original AA rows remain unchanged. Sample correlations are descriptive; unresolved pairs remain explicit, not a decontamination verdict.",
+  "rows": [
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_0.wav",
+      "id": "cc0d620b-863a-5969-83e2-f6415b084d7b"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_1.wav",
+      "id": "77d631dc-e7f4-55d0-94a0-a8594abed77a"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_2.wav",
+      "id": "47c959c2-4163-5f7a-afba-ad1fd15f3705"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_3.wav",
+      "id": "f466c53a-f193-50fb-9c83-b734153083cb"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_4.wav",
+      "id": "3cf101aa-8663-510b-866c-a0f4070e307b"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_5.wav",
+      "id": "10793ea8-44a5-5699-aa20-4e74cd1976d6"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_6.wav",
+      "id": "0da2d4a9-21b4-5d21-b9e3-855a62d634e5"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_7.wav",
+      "id": "8b60b2f1-0c4e-5cb4-8d23-7b4297cadbe3"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_8.wav",
+      "id": "5feec360-a921-5b11-9960-9d157c7d07b8"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_9.wav",
+      "id": "9282d949-8e46-5269-aad3-ebf877cc1d4a"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_10.wav",
+      "id": "037535f2-d245-5eb5-b150-238eb22074b4"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_11.wav",
+      "id": "d0ac4a29-ef3b-5caf-9175-c2ff8fa01d48"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_12.wav",
+      "id": "13e45e99-8cd8-5db8-ab4f-c23376a57cd2"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_13.wav",
+      "id": "400709ce-75ab-55be-a121-363821f379ce"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_14.wav",
+      "id": "25c86fa0-1950-5bbf-9ba4-366a50b77d46"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_15.wav",
+      "id": "f8191b66-a8c1-52f8-b3a4-9e9c76352cb7"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_16.wav",
+      "id": "613b5c3a-211d-5802-a455-b77615dddead"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_17.wav",
+      "id": "29c95358-53c7-5cbb-962a-4f5af043d567"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_18.wav",
+      "id": "99f0d0a2-96ff-5feb-9836-7fd54a62112e"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_19.wav",
+      "id": "b3b726c2-dba5-54e8-a27a-b5c13cfff63d"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_20.wav",
+      "id": "6d53fc60-f5fa-521f-ba49-384a7edb100a"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_21.wav",
+      "id": "897c3cfe-1671-53d8-b6ba-b9cba00bc103"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_22.wav",
+      "id": "1c20b1a2-9c33-58d3-a3b6-d7aec8f1cc7b"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_23.wav",
+      "id": "e50ad365-6848-57b1-9bec-da6342638c78"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_24.wav",
+      "id": "9a7a2090-d19d-521e-8560-8468619e9f0b"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_25.wav",
+      "id": "062257f5-e3cd-5780-b323-f3d80ebc862d"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_26.wav",
+      "id": "309d30f0-f623-5b68-80cb-b3360522dac9"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_27.wav",
+      "id": "e2ffb79d-dd4b-50ac-915f-74ae76871720"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_28.wav",
+      "id": "bd94cc4b-a170-5dba-b105-2d7b829cd68e"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_29.wav",
+      "id": "03063ee5-44cd-5ba4-99e4-28a755ad9de7"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_30.wav",
+      "id": "264155b9-1c0c-5d34-ad62-a72eb7ae08b4"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_31.wav",
+      "id": "d97aa64c-a6f6-52c4-9b18-83a1c375e160"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_32.wav",
+      "id": "e042b92f-7ed9-5231-9eaa-a56898b3badc"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_33.wav",
+      "id": "ec7b4b48-7cf6-56c2-a1e5-5025b90d7f5b"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_34.wav",
+      "id": "c1ab91cc-f14e-5c03-8646-3f380b7966f8"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_35.wav",
+      "id": "28c56044-2c7a-592a-9d1a-9441f4bb2a16"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_36.wav",
+      "id": "caf208a1-c766-5a85-b5c0-d8dbb7f6a334"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_37.wav",
+      "id": "e893799a-34a3-5878-8332-df9f657a05ea"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_38.wav",
+      "id": "e08baeab-d369-5ca7-a664-777748d76ffb"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_39.wav",
+      "id": "d7df93b7-0e60-5b50-b694-c8a31c42c3c8"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_40.wav",
+      "id": "c5147516-acac-5e03-b9da-060b7bd4869f"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_41.wav",
+      "id": "82e36c7c-1704-5dd1-9b79-eec0efe820f0"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_42.wav",
+      "id": "ac28b0a2-2d81-5b85-8533-38190ef4a070"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_43.wav",
+      "id": "1a2b9e8e-df74-54a7-b59c-885afb18daf4"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_44.wav",
+      "id": "90a6233f-db5e-5611-ba2b-80e7fc12aea7"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_45.wav",
+      "id": "7c724654-2a31-5e7d-ade6-27ea9305c3d4"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_46.wav",
+      "id": "18e77379-37e7-5661-b411-320497f9b86a"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_47.wav",
+      "id": "767c3657-b33d-5130-8b62-79b8baf9cb02"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_48.wav",
+      "id": "9a2033ee-90de-5119-8234-909d7bbec02c"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_49.wav",
+      "id": "e53cccd2-8f1d-50b4-935c-31f2d75c96e4"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4468919_trimmed_chunk_50.wav",
+      "id": "39ee9f86-4cce-5211-8b30-f1fc8cbdcbec"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4471586_chunk_0.wav",
+      "id": "f9c9e800-8afa-506d-91e0-a12a38ae001e"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4471586_chunk_1.wav",
+      "id": "35b56cf2-ab88-5e87-aa85-2d13296e38bc"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_2.wav",
+      "id": "5686f92f-cd6e-518c-92ff-96ddc85dc028"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_3.wav",
+      "id": "e9c6f444-0e53-552f-b620-e7d4e8698f06"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_4.wav",
+      "id": "fff1dd6b-2a7f-5eb1-8e76-7abdcc70592f"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_5.wav",
+      "id": "2570fa03-42a1-57a7-a465-2482b6d169f3"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_6.wav",
+      "id": "b047df1c-a179-5ab4-a877-c8dc67823b26"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_7.wav",
+      "id": "c6daf1e7-9f38-5b4e-8ba6-4323b9ff254f"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_8.wav",
+      "id": "d1e06d25-0590-50a9-a8b1-8a9e6340aa5c"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_9.wav",
+      "id": "cd1188fe-8d81-5bfe-bbee-9e37c267d793"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_10.wav",
+      "id": "6e54f6f6-5e70-58d0-b6ea-b74680303d57"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_11.wav",
+      "id": "481dccc3-00ba-5b18-839a-7104ca4bd009"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_12.wav",
+      "id": "ff96be4a-8d0a-567b-acff-f54063f35a52"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_13.wav",
+      "id": "fdfcd517-d8b3-5755-844e-35ba1a362059"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_14.wav",
+      "id": "d01e1623-f0e5-577c-bf7d-80a359b9aaf1"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_15.wav",
+      "id": "41c72076-30b1-51e0-b036-82799b5ba2f2"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_16.wav",
+      "id": "03d29ab7-3021-5407-b0f9-ff3d6707ee61"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_17.wav",
+      "id": "4456dbfa-c247-5e33-b4da-fadd7e080b6c"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_18.wav",
+      "id": "38b9bb70-70cb-5e42-9ee1-92131bcf3172"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_19.wav",
+      "id": "312c9c53-fbb4-5763-a1bd-2c8d1f12015f"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_20.wav",
+      "id": "b029ccb8-365f-510d-ada4-a40cdbdb7d32"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_21.wav",
+      "id": "17e3a94a-5c76-55f4-8e7f-c18dfd33c13b"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_22.wav",
+      "id": "460bbd68-5b0d-59fb-9138-56214d5aadfa"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_23.wav",
+      "id": "5a61eb84-bca8-556c-a5a3-9207cedd968a"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_24.wav",
+      "id": "9d3ce16b-47c2-5d75-8ed2-5a4989527b34"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4471586_chunk_25.wav",
+      "id": "ecf9fcce-a532-536a-9e82-505da2380b4d"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4471586_chunk_26.wav",
+      "id": "b43711b6-2350-5bd0-aaca-4b66ecd3446f"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_27.wav",
+      "id": "3d96161b-3445-5b1b-a6b1-bbaa1d04f6bf"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_28.wav",
+      "id": "0cb154c0-45af-5dd7-97b9-0c41e30a8d63"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_29.wav",
+      "id": "66708924-3c8c-50e1-a264-acac4602352f"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4471586_chunk_30.wav",
+      "id": "a781c268-a299-5145-a984-25d945894ab9"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4471586_chunk_31.wav",
+      "id": "b99f131f-01ee-577e-8f5d-0dc49181a929"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4471586_chunk_32.wav",
+      "id": "17c6247f-8c13-5d27-b43b-94da42e140a7"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_33.wav",
+      "id": "b3fbcf01-f5a2-5752-af3a-2b3265eacf1a"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_34.wav",
+      "id": "4a06b800-90ab-5e19-ba16-e17aab297430"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_35.wav",
+      "id": "3608444d-0cbd-5b96-aecd-7eaf04874f85"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_36.wav",
+      "id": "ea00a4b6-f403-5b2a-bc92-bd6410f60045"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_37.wav",
+      "id": "8dfd69a4-9082-574c-b746-f97334e18567"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_38.wav",
+      "id": "bd350443-0441-58e0-8557-f93492a39176"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_39.wav",
+      "id": "09ad9c1f-5c44-5c82-a92c-a0a6ead09700"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_40.wav",
+      "id": "0d3a3f85-dfc6-5b02-874a-b3e3f04037d1"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_41.wav",
+      "id": "3080c0a1-dc91-59d7-a122-c5d37d355411"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_42.wav",
+      "id": "6c32e061-434d-55df-aef5-a9889b41d432"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_43.wav",
+      "id": "54cc0ea6-e633-51ed-b50a-0b805247d274"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_44.wav",
+      "id": "47f75751-cd4c-5bc7-a3b0-2946334e2de1"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_45.wav",
+      "id": "a4aa8a30-0b6d-553c-bd6f-4e26df7b3a14"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_46.wav",
+      "id": "cb908a50-1c42-5c24-8952-3b1e5546c441"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_47.wav",
+      "id": "75e7b110-1f86-56fc-9626-63412eea793b"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_48.wav",
+      "id": "3c69c64e-bfd0-5850-a135-4b559c59b126"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_49.wav",
+      "id": "8a0e98a9-c34e-5fb4-91fd-761cd43a52d7"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_50.wav",
+      "id": "bb6583d1-323f-534c-8f49-ff475b6fd2a6"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_51.wav",
+      "id": "78a9982c-610a-56ac-97e8-e89a6697f9b9"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_52.wav",
+      "id": "46418812-0341-5022-bcd3-ad57d5136306"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_53.wav",
+      "id": "ad423876-47b6-50b6-b51e-a7434e9cffc5"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_54.wav",
+      "id": "eecbf08f-f665-5686-aab7-37c9147c3605"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_55.wav",
+      "id": "05364089-6563-5f9c-89e6-b338f6e47334"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_56.wav",
+      "id": "7de5dda7-ce2e-564f-b9b1-5565d5037231"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_57.wav",
+      "id": "645cf97e-28ec-5e3f-bffa-9fe65c4108ab"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_58.wav",
+      "id": "45d036c2-f4eb-5a06-a4b3-4903d2061d42"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_59.wav",
+      "id": "83fda630-7b99-5326-b536-d66aa21c10f2"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_60.wav",
+      "id": "8a4cb450-0db1-58ce-8bab-7f4db70fabe5"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4471586_chunk_61.wav",
+      "id": "d2d73f76-88b7-5afe-8fa1-01b79a4ed03e"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_0.wav",
+      "id": "51d4927d-5df3-5dd9-8496-e49e04e98db1"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_1.wav",
+      "id": "f3b116d4-11de-5eef-8beb-6d303b017608"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_2.wav",
+      "id": "61e16538-9ff6-5987-8ff3-96d003fe4f26"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_3.wav",
+      "id": "6e37f8ca-8b29-54f6-9d35-260f2e0bcb7f"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_4.wav",
+      "id": "8592bf6a-1f27-57ca-8d4e-b6050d49b1cc"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4474955_chunk_5.wav",
+      "id": "61f2279d-6a2a-508a-83a8-20562d4a71e5"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_6.wav",
+      "id": "89728a31-efe8-5aaf-a818-4d8c59ff861c"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_7.wav",
+      "id": "1e513599-e0ed-565e-9ac8-7fac3ff86f89"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_8.wav",
+      "id": "46452b7a-ab3c-5a32-9780-9d30935c25d7"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_9.wav",
+      "id": "3d024b2c-4770-556b-9bbe-be49e310fa95"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_10.wav",
+      "id": "a68a4bf4-6711-5a6d-ab04-e8d240c0e311"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_11.wav",
+      "id": "2b6f28ab-45a2-59fc-b4ba-ff23567dd270"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_12.wav",
+      "id": "48d48dbb-54d5-5efa-bfdc-19b74fa99f2e"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_13.wav",
+      "id": "0833a664-72ac-516f-ab78-bbcf287a364a"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_14.wav",
+      "id": "0cb97204-52d8-53b3-99c8-4979176b0469"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_15.wav",
+      "id": "38cf859c-d442-5def-ae47-7446e12cf9aa"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_16.wav",
+      "id": "a0025f7d-10ca-503a-9672-72890e69e99d"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_17.wav",
+      "id": "e5ded449-7778-5280-ac87-8e7968fab5fb"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_18.wav",
+      "id": "d0a6a92f-ed34-5b0e-b1f6-5ce9e754aa43"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_19.wav",
+      "id": "2ca9c1e6-32fd-54db-bb9a-333cc0069c32"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_20.wav",
+      "id": "d5a0a200-95bf-563f-885e-477642e78b27"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_21.wav",
+      "id": "03185c15-ffa4-52bf-b357-760dd2fa15a0"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_22.wav",
+      "id": "33964e39-01ca-58dd-99d7-3e44a664ec2e"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_23.wav",
+      "id": "d80a9a10-1c23-573f-a995-4d2e59e600b3"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_24.wav",
+      "id": "9061a8fd-3a1f-5db6-8c4f-2e37aa675adc"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4474955_chunk_25.wav",
+      "id": "ea7a20ff-20e2-5579-8472-8ea57bde1849"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4474955_chunk_26.wav",
+      "id": "6ca9fc92-4f5c-52dc-bca5-2e8d53671370"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_27.wav",
+      "id": "b249e01f-1d4b-5331-8457-c7c6bccb7382"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_28.wav",
+      "id": "14c058c0-1bfb-560d-afb9-73dd7a1160f9"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_29.wav",
+      "id": "ed8f6d7d-6a61-5bd3-b8e7-dcf5a7bca083"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_30.wav",
+      "id": "3adcece2-b00e-5b58-a03c-6b06f65ce8f2"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_31.wav",
+      "id": "8f4f3e62-d64e-52b9-bcdd-9ccec1d146b5"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_32.wav",
+      "id": "72e8c9ac-d297-5a1c-b862-31dafdd8def8"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_33.wav",
+      "id": "f2fa78a6-54ff-556e-8bc7-bdab3deb8ec5"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_34.wav",
+      "id": "ecc77280-e789-5333-99d9-6d06086338e7"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_35.wav",
+      "id": "32264305-4017-5912-800d-6eddfa4f9e50"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_36.wav",
+      "id": "6e4db048-dca9-565c-8f8c-602da70226ac"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_37.wav",
+      "id": "c6ee89f8-9159-565f-af9d-358267103835"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_38.wav",
+      "id": "d8768177-1de3-5af0-afa4-ab3cc116062c"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_39.wav",
+      "id": "886f6e3e-81d6-538c-8f50-7f5925c18931"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_40.wav",
+      "id": "bc09eab7-bc1f-584a-9cf5-24e06ee16a83"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_41.wav",
+      "id": "b4dad41e-ac48-57d4-a3ce-6506e3d1f18a"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_42.wav",
+      "id": "94c30e64-37a1-596c-a0b2-6f2c68f1c00b"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4474955_chunk_43.wav",
+      "id": "b4adf3a8-fa6b-52b8-aa60-4b1aa2e08a02"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_0.wav",
+      "id": "f4e86c1b-3f8f-56c4-a19b-1fcceb16d682"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_1.wav",
+      "id": "822a50ee-3753-56f3-b74f-07fe75ac67ad"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_2.wav",
+      "id": "beb2f6cb-feb7-5b9f-94ee-0a3a595a4016"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_3.wav",
+      "id": "2c4b95dd-dcec-58c0-a52d-35c6db3206a6"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_4.wav",
+      "id": "a202e7d0-4b7f-5fa7-8f10-9f049ff4b901"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_5.wav",
+      "id": "8bcefc6a-bc3e-58b5-8f1c-52f7b2a431f8"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4475604_chunk_6.wav",
+      "id": "1eda13fa-b414-532d-b21c-d859e9b43ab9"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4475604_chunk_7.wav",
+      "id": "a51639e2-f4e6-58df-9d14-88b8879dfea9"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4475604_chunk_8.wav",
+      "id": "6686b097-eff7-579f-b4ba-d9395f8c5d01"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4475604_chunk_9.wav",
+      "id": "5f601bc1-b903-57ee-bf36-c025c09712f9"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4475604_chunk_10.wav",
+      "id": "a4851a9b-3c39-5d4a-8839-cbee8166dac3"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4475604_chunk_11.wav",
+      "id": "f5f7d434-06f6-51eb-a9b0-1ae1ecc15705"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4475604_chunk_12.wav",
+      "id": "bbbb2457-8140-5483-a6fb-d8753656fc36"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4475604_chunk_13.wav",
+      "id": "39fd968c-0f28-5769-abe5-58c6de238d63"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_14.wav",
+      "id": "783e1758-f701-53ac-b468-33165f7832b0"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4475604_chunk_15.wav",
+      "id": "b8d25ee8-9994-594d-b323-77efc183b07b"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4475604_chunk_16.wav",
+      "id": "b3bed916-1310-550c-a3d6-f389a3eede09"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4475604_chunk_17.wav",
+      "id": "72fc0865-69f4-506f-9d3f-98953eaed26d"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4475604_chunk_18.wav",
+      "id": "852bec23-25ca-54c7-a9c5-41584688efa1"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_19.wav",
+      "id": "1af4f2f0-f011-52b1-8a94-620cf83f957f"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_20.wav",
+      "id": "c84f03f5-8af2-5bbd-8152-3cd4de6a39dc"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_21.wav",
+      "id": "cb113cbe-ba23-5fba-b490-7c17bc4d3ee3"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_22.wav",
+      "id": "cb8dd2b1-6bc7-55d8-a5da-bb6e994c57fa"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_23.wav",
+      "id": "676f2524-d6c4-5030-a707-65a24e07fb1a"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_24.wav",
+      "id": "4ae5a330-0e0c-5ff3-a5c3-3eae24f2b8c0"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4475604_chunk_25.wav",
+      "id": "819a7e0f-a638-50c5-af0c-ab0e9b8258fe"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4475604_chunk_26.wav",
+      "id": "237b8a92-01ee-51c4-95c0-535882e6c496"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_27.wav",
+      "id": "6240713d-fd30-5db0-8446-bc1647d185a2"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_28.wav",
+      "id": "9ccb8ddd-f825-59d2-815a-ac96d456973f"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_29.wav",
+      "id": "eae85b28-9e4a-538c-8e68-b297db1cadf4"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_30.wav",
+      "id": "f91a94d0-133b-55f1-8b9a-e9429c6648e3"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4475604_chunk_31.wav",
+      "id": "56bb70c5-2a0a-550a-893b-4af103405f3f"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_32.wav",
+      "id": "364561f0-a854-52f6-8bab-d5f18c9a1686"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_33.wav",
+      "id": "c1d688ef-73eb-5a20-968f-db6d04b95ea2"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4475604_chunk_34.wav",
+      "id": "850ae947-8a19-5d73-851a-e7c47d09506e"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4475604_chunk_35.wav",
+      "id": "8a73549b-6156-5c19-9ee6-7bcfe877028a"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_36.wav",
+      "id": "742c1e95-5e89-5f46-a97a-c7c55dc11a50"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_37.wav",
+      "id": "1d3d23a0-e856-50e5-8b47-3893e9413830"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_38.wav",
+      "id": "c9ddfd53-80f6-527e-9554-6df950f3925f"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_39.wav",
+      "id": "007f797c-7150-50c8-9819-9863078271b9"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_40.wav",
+      "id": "396f7213-abaa-5f92-8efc-9a0ba44b7039"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_41.wav",
+      "id": "c3e32ce5-3157-55c0-92dc-e86429240b65"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4475604_chunk_42.wav",
+      "id": "7a1db330-f831-5cc5-99a7-dd757beae59a"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_43.wav",
+      "id": "29443c05-d9ec-5328-9302-910ce756ddb4"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_44.wav",
+      "id": "84b2c1c0-5636-51a5-8648-66e0d8bc4160"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_45.wav",
+      "id": "02f98a8a-fc28-5ccf-a1c1-967d39dca077"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_46.wav",
+      "id": "f3681e31-d107-5e87-a321-df26a490e7d8"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4475604_chunk_47.wav",
+      "id": "ba8e8288-0b63-5d0c-a6b9-b279544e38b9"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_48.wav",
+      "id": "4cf02ef3-e2fe-509d-87e4-4adc38b704b9"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4475604_chunk_49.wav",
+      "id": "99a4d71b-5c1c-55cb-9c5d-667a266af578"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4475604_chunk_50.wav",
+      "id": "1ca2c696-4387-589e-986b-f19a146fe069"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_51.wav",
+      "id": "b0ad54fc-d715-526a-a168-9c4cba88f094"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_52.wav",
+      "id": "777a14a1-ff06-5936-8de4-286c6371dfb8"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_53.wav",
+      "id": "8b55fbe2-398e-5497-aae8-0eea07ce51ad"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_54.wav",
+      "id": "8c0ece96-8035-533d-b429-f632c921c04b"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_55.wav",
+      "id": "0d93a295-09ac-512e-b116-4c9bf0304c7b"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_56.wav",
+      "id": "0f1c8b5f-389b-5d8b-a901-612e85f9e3d4"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_57.wav",
+      "id": "c3e8df1c-f3bd-5fcc-a7a1-8af22d968199"
+    },
+    {
+      "eligible_in_derived_view": false,
+      "exclusion_reason": "timestamp_overlap_candidate_not_proven_complete_identity",
+      "file_name": "4475604_chunk_58.wav",
+      "id": "1e170a68-8456-52b4-8fd3-b73b9f17d5a8"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_59.wav",
+      "id": "04bbc729-9581-5f1e-8f50-3e3095f0eaab"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4475604_chunk_60.wav",
+      "id": "4ea8fa18-16cc-5179-be1b-72124f82d216"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_0.wav",
+      "id": "5300bd4f-48a6-5283-a667-446464983f37"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_1.wav",
+      "id": "4c437162-562d-52f3-a3d9-dfb47aeab3e6"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_2.wav",
+      "id": "8b83403a-83df-544c-8eab-26b14cd366ad"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_3.wav",
+      "id": "47df68fc-6aae-58eb-b7e2-2fbd5432c7b8"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_4.wav",
+      "id": "0daaab5d-caea-5893-a2e8-be2c4524636e"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_5.wav",
+      "id": "33be7c8a-2474-537f-bc1b-5205e78112c8"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_6.wav",
+      "id": "154b4604-6e2d-59bb-ac19-c3faa7dfba35"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_7.wav",
+      "id": "8233524c-526a-5459-84df-06eb3d80adda"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_8.wav",
+      "id": "7b463346-95a8-5db3-a8cd-6b5892532cc6"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_9.wav",
+      "id": "b57ef451-3b14-5492-a2b5-4ee94190c4fd"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_10.wav",
+      "id": "e9d8a7b9-3b54-5aae-9500-7e1881a365fc"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_11.wav",
+      "id": "e022aeac-f22e-5524-9b39-68e80b8e52a2"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_12.wav",
+      "id": "a6ca1bb0-e8fd-5ad8-a281-b30bed60d94c"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_13.wav",
+      "id": "048bef77-f456-5e05-825d-298cf458fe23"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_14.wav",
+      "id": "e491a032-c75d-5e39-a4ca-f39b687f2d9e"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_15.wav",
+      "id": "664987ec-d8ae-59cc-8da4-1f5fc3ffce80"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_16.wav",
+      "id": "ffed2a8e-8a7d-57a0-9eb6-0304e45db813"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_17.wav",
+      "id": "60d707cc-c57b-531b-abb9-87e475564232"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_18.wav",
+      "id": "23729f53-7641-518c-9bee-176cfa4f9514"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_19.wav",
+      "id": "9dac1e6d-e7e2-522c-b6bd-1cca00da9670"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_20.wav",
+      "id": "344a5fc8-91a7-51e2-9b5c-b969f14f9b00"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_21.wav",
+      "id": "ecccb0f9-1d82-5b4b-8bc2-fe28281152f4"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_22.wav",
+      "id": "a89709be-5f4d-52c3-8262-5a778d701cfe"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_23.wav",
+      "id": "940a54a6-e4a0-508b-bfb8-26fc098316d4"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_24.wav",
+      "id": "5fd0cb88-b5b5-5e21-bca8-fb297bce703f"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_25.wav",
+      "id": "74f123b8-98dc-51dc-8377-c16083b5b424"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_26.wav",
+      "id": "326b7f3a-7cdd-5ea7-ae3f-da06859dee59"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_27.wav",
+      "id": "d11340b7-ad35-51d9-afba-1c167f2f456d"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_28.wav",
+      "id": "8955168b-954a-55f0-9d53-43639f961045"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_29.wav",
+      "id": "2d059871-ed7f-5a3a-8236-9d43281b8e02"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_30.wav",
+      "id": "e93fc209-6b96-536c-b89e-06bc4607bfd0"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_31.wav",
+      "id": "92aaf2d0-e70a-5ffc-b3c2-aa5cf747cd30"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_32.wav",
+      "id": "58844481-438c-528b-bbfa-949ed8568818"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_33.wav",
+      "id": "c053dc07-a2c3-50f8-9226-4b7bcaa24d93"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_34.wav",
+      "id": "724e9547-3eea-5328-8327-59f8882d5e56"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_35.wav",
+      "id": "59df3972-ffa7-5220-8057-69bd8c786103"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_36.wav",
+      "id": "b44f3323-241d-55a8-ae8d-ef2f1fa3f286"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_37.wav",
+      "id": "ef4ba6f4-dba1-5505-b2a0-cbd776802c65"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_38.wav",
+      "id": "0894e39a-ecc9-5f13-9903-7756a277319f"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_39.wav",
+      "id": "af5839c1-6f9d-5761-afba-1344c93e8eba"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_40.wav",
+      "id": "db2dc907-560e-5297-9a04-9ef808dc43f8"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_41.wav",
+      "id": "62a81769-8784-5d08-9452-0836bb573c2d"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_42.wav",
+      "id": "f0e19028-1a8b-5249-b713-9c21b5342519"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_43.wav",
+      "id": "5a799789-6769-55de-8e61-62317aa9e5ff"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_44.wav",
+      "id": "94633e16-91a4-5c30-a5a1-ae0984904d6a"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_45.wav",
+      "id": "37de2d61-cb31-5718-9b21-cc428f7fb6d8"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_46.wav",
+      "id": "08de1a01-9ede-512a-a985-36def01ee950"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_47.wav",
+      "id": "d3d2fdf6-695f-5228-a0a3-511619498d46"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_48.wav",
+      "id": "efcbbe84-fa5e-59d6-8e4a-f5e4e4f877a5"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_49.wav",
+      "id": "f518bce8-7040-598b-a6fa-b0076c970a21"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_50.wav",
+      "id": "cb7187a1-9196-5d44-917a-e3baae970570"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_51.wav",
+      "id": "7af67878-1bbe-5066-bd11-42f5db852ae6"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_52.wav",
+      "id": "1101b8b2-08c8-5381-bd0d-6648005e13fe"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_53.wav",
+      "id": "7063710d-8d4b-5710-8779-ea11511a4afc"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_54.wav",
+      "id": "96ddc790-66cd-526b-aa05-e144ce96f3c0"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_55.wav",
+      "id": "50bb84d4-8ba4-5cb4-af79-c861d2649a2b"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_56.wav",
+      "id": "5e93a267-3752-5883-b770-fa05a5987551"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_57.wav",
+      "id": "0475a241-8cf9-544e-b6e7-60f963681a8d"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_58.wav",
+      "id": "da1b56b3-858a-5e31-ae85-61d29abf42ae"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_59.wav",
+      "id": "71956d5e-60a0-5838-b907-5e0ead536fcc"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_60.wav",
+      "id": "cc796630-ac23-54f3-b352-10fc1a7ede11"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_61.wav",
+      "id": "3846bce0-a80f-537d-a329-a6e151af8b34"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_62.wav",
+      "id": "50543c91-41c6-5dc5-83d3-cfbe3315716d"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_63.wav",
+      "id": "1bc5512b-1d54-5c21-b9b0-6590522cfadb"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_64.wav",
+      "id": "75dbc1c7-4241-5482-be43-34ac79ce2b3f"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4482968_chunk_65.wav",
+      "id": "6a72d335-fea8-5a58-9bcc-e2e1d2ede59e"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_0.wav",
+      "id": "0194d182-df0f-5f18-8c24-792440d2753b"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_1.wav",
+      "id": "2c6ba6d7-abce-5b61-be25-27c2d133b4a3"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_2.wav",
+      "id": "4bf240bb-52a2-534e-8ece-6af526f6ed14"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_3.wav",
+      "id": "7e4dbe1e-d8ca-5134-aa57-5ed0fb151e36"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_4.wav",
+      "id": "b7e9f015-27ee-5fd2-a1b6-d40e83044a9d"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_5.wav",
+      "id": "abd13b14-86b1-5009-966a-bc7256d717fc"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_6.wav",
+      "id": "d62bb3c2-b16c-5e5f-92a5-464fc7aa3f6c"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_7.wav",
+      "id": "8a44ebeb-e7e5-5d5f-bcb9-3d42f2cb1b0b"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_8.wav",
+      "id": "7bbc8214-011e-54b9-a181-dc08e657586b"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_9.wav",
+      "id": "c376aae1-9987-54c6-81d8-7c4edd0f4ab4"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_10.wav",
+      "id": "064ed7f8-2a61-5cf9-9f4d-b7853d7bafec"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_11.wav",
+      "id": "93a61271-463f-577e-b616-0a11c572c11b"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_12.wav",
+      "id": "cfa673c7-b41b-54ae-989c-669c2418931f"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_13.wav",
+      "id": "de96e469-7447-5cb3-9134-4fb9118a453f"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_14.wav",
+      "id": "9485df67-7fef-5cb3-ab69-38f88bbb3465"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_15.wav",
+      "id": "cadfa0be-747b-5fa3-a19c-33ec7b7b7145"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_16.wav",
+      "id": "6ea0d6c0-86bf-5c5c-a691-f80d7b14123b"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_17.wav",
+      "id": "9e85954d-5074-56d8-928a-858c858a6701"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_18.wav",
+      "id": "b428cd9a-780b-5757-8388-c11fdf2938f2"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_19.wav",
+      "id": "35f42248-16d5-5105-999f-91da7c7da55d"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_20.wav",
+      "id": "a82bb310-a3cb-517c-af4d-fb0342df6672"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_21.wav",
+      "id": "4c715351-c62b-5a4a-977c-3a2379dbb151"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_22.wav",
+      "id": "22ae6be1-2d8d-5fc3-8457-155f03633b48"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_23.wav",
+      "id": "8a85a221-aa4f-5a12-8226-8b14be0f44e4"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_24.wav",
+      "id": "0a745d63-b411-5ab8-ae99-95aae574838c"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_25.wav",
+      "id": "1a92787f-c5dd-5f43-b961-be57799762a3"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_26.wav",
+      "id": "878464b0-dd02-5aa2-912c-a14865d1f1d1"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_27.wav",
+      "id": "9c921dd1-7f3e-532a-b7cb-34dc240d1f1d"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_28.wav",
+      "id": "8f97faeb-1a75-510b-954a-e41500764809"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_29.wav",
+      "id": "5a901ec9-743e-5909-8871-3e1cf4f20bbe"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_30.wav",
+      "id": "57f95975-f910-518d-a6e6-d5c5c8b5b8e7"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_31.wav",
+      "id": "2ef1b66d-1a93-5793-9766-6ab175dc1be8"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_32.wav",
+      "id": "18b93784-460f-5908-bad2-6fe179f8a66c"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_33.wav",
+      "id": "d7c3be33-2235-502c-b141-dbf3ed0d3b48"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_34.wav",
+      "id": "33ea6d3b-24ab-5008-852b-1e99ca4695b0"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_35.wav",
+      "id": "03436f16-2bd2-522e-982d-03263fb3d7db"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_36.wav",
+      "id": "70b34f13-9639-5b0d-9727-af2bd046cb85"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_37.wav",
+      "id": "9de01682-2386-5211-b2a4-bf8c999a22a2"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_38.wav",
+      "id": "ddb92495-d07b-5ed7-b5da-d36453fed1fa"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_39.wav",
+      "id": "2262137b-af62-5647-a23f-9f998261c1d4"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_40.wav",
+      "id": "19857814-45e0-561c-80d7-138b96529c6e"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_41.wav",
+      "id": "e3644824-0b91-51ab-8dbf-31d724516a34"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_42.wav",
+      "id": "9467feec-e99c-5536-ab25-6fd010790c79"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_43.wav",
+      "id": "93e71988-a88f-5f77-81e2-68895a668ce0"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_44.wav",
+      "id": "4141951f-c868-53cf-bcff-5ee42a41d902"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_45.wav",
+      "id": "d7403083-7f4f-5545-a220-628a45924e64"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_46.wav",
+      "id": "3cfac3e5-6622-53e8-ba49-cd0ffb9f8a51"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_47.wav",
+      "id": "580131ff-b9e2-5d80-acd2-5149af2faa36"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_48.wav",
+      "id": "6f6fe4ee-2961-5077-adbf-10868b208520"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_49.wav",
+      "id": "60ea9a8c-828f-5f37-a376-1a6def67a45a"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_50.wav",
+      "id": "f8ef4521-b423-536d-88df-0202d851d51a"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_51.wav",
+      "id": "af997b79-bb0a-5f41-97b9-e12254cd2d75"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_52.wav",
+      "id": "b11c3907-22fe-514a-9c13-178d37386e8e"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_53.wav",
+      "id": "7b890d91-8b9e-5694-bf1a-1dc827d73dc5"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_54.wav",
+      "id": "e55005bd-efba-532e-ac85-754499bca6fd"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_55.wav",
+      "id": "b156c88e-d049-5eaa-81ac-c70d0ee11418"
+    },
+    {
+      "eligible_in_derived_view": true,
+      "exclusion_reason": null,
+      "file_name": "4483046_chunk_56.wav",
+      "id": "7e72ffd1-568c-5781-af1e-7a761e8dbd3f"
+    }
+  ],
+  "schema": "cs8.lex2.aa_comparison_view.proposal.v1",
+  "signal_evidence_sha256": "e665271fd4017547bcf89f3594926b9f77c7fec535abcf22db8f28dd578a223d"
+}

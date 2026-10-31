@@ -1,0 +1,16 @@
+warning: no usable GPU found, --gpu-layers option will be ignored
+warning: one possible reason is that llama.cpp was compiled without GPU support
+warning: consult docs/build.md for compilation instructions
+0.00.003.879 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.004.581 W srv  llama_server: -----------------
+0.00.004.592 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.004.592 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.004.593 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.004.593 W srv  llama_server: -----------------
+0.00.006.625 I srv    load_model: loading model '/mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf'
+0.00.842.873 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+0.01.188.037 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 2048, kv_unified = 'false'
+0.01.274.900 I srv  llama_server: model loaded
+0.01.274.929 I srv  llama_server: listening on http://127.0.0.1:41985
+0.01.522.475 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = -1
+0.01.522.539 I slot launch_slot_: id  0 | task 0 | processing task, is_child = 0

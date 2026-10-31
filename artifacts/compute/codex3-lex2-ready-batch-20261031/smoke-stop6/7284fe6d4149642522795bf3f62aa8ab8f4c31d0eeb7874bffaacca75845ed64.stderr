@@ -1,0 +1,4 @@
+[nemo-speech] transcribe session started
+[asr] model=.nemotron-3.5-asr-streaming-0.6b.q8_0.gguf head=rnnt backend=CPU
+[asr] mode=streaming head=rnnt left=56 center=1 right=1 attention=58 encoder-frames step=160ms
+[asr] RNNT word boosting active phrases=1 effective_alpha=0.500000

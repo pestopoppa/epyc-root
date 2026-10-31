@@ -1,0 +1,19 @@
+{
+  "control_state": "HELD_PENDING_ACTUAL_DEV_SELECTION_AND_FINAL_QUALIFICATION",
+  "decision_rule": "Existing CS-8.LEX2 rule only on explicitly labelled LEX1 lexical reference agreement: test keyword F-gain paired 95% interval above zero; lexicon-free insertions <=1/hour; term-masked lexical WER rise <= frozen dev lexical noise floor. V1 status and raw token UNK remain separate; undefined evidence cannot pass. No P-STT-1 release claim.",
+  "denominator": "Every predeclared original item and requested arm is represented. Native failures/timeouts are counted and scored as declared; interrupted exposed cases remain UNKNOWN, no retry or redraw; no nonexistent result is a zero.",
+  "model_inference_started": false,
+  "preconditions": [
+    "Actual DEV-SELECTION.json exists, was written create-exclusively by the pinned scorer after all 1500 original dev attempts are represented and every selection-affecting unknown is resolved without redraw; its SHA256 is captured before test inference or scoring.",
+    "Its grid-plan, scorer-predeclaration, raw terminal and native input hashes verify; alpha 0 is allowed and a selected alpha 0 means no boosting, not an invented positive trace.",
+    "Construct a final held-out plan binding the actual selection, original 772 test IDs, 17 dev-call exclusions, all 755 remaining candidates, model, tokenizer, scorer, native binaries, context identity and runner source; do not alter a sealed plan after exposure.",
+    "Bind the FLEURS test en/it/de/fr lexicon-free original manifest and the frozen production Whisper store comparator, with exact decoding options and same context lists.",
+    "Bind and report separately the immutable original Earnings22-Cleaned-AA 341-row benchmark and the derived AA comparison view. Preserve all original rows and denominators; 7 unsampled and 1 discordant timestamp-overlap pairs in the current comparison evidence are unknown, not an asserted complete decontamination.",
+    "Per original source requirement, choose the retained/dropped anchor based on actual shared-audio evidence; keep every original row and every exclusion/unknown reason, and report coverage/bounds when identities remain unresolved.",
+    "Before READY, implement and run the same final launcher's real selected and baseline request paths, result writer, rc75 STOP/partial and own-child drain; actual selection may make the alpha-0 no-boost control the selected arm.",
+    "Contemporaneously capture native attempt/exposure/result, timestamps, exact request alpha and context hash, positive nonempty-trie/effective-alpha proof when boosting is requested, SPM/vocab match, input/model/binary/library/source/grant identities, co-tenant observations and unobservable state as unknown. Route through existing Speech source; no new grading ladder or retrospective warrant. Planning-context canary remains pending until passed."
+  ],
+  "purpose": "Future original held-out execution; no request may start from this document alone.",
+  "schema": "cs8.lex2.heldout-contract.proposal.v1",
+  "score_started": false
+}

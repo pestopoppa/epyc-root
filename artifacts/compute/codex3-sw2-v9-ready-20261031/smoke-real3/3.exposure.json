@@ -1,0 +1,1 @@
+{"epoch": 1793417113.5569665, "request": {"cache_prompt": false, "id_slot": 0, "n_predict": 16, "prompt": "A quiet fox waited near the", "temperature": 0.0, "top_k": 1}, "request_sha256": "ca8cb96a75c86d1531ac25e1f2854b917dc49c918e8e039c93fe0c17f1643f3d", "server_session": "1793417112691002430", "slot_requested": 0}
