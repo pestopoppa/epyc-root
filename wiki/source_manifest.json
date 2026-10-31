@@ -1,32 +1,212 @@
 {
   "by_type": {
-    "docs": 237,
+    "docs": 239,
     "handoff-active": 179,
     "handoff-blocked": 2,
     "handoff-completed": 221,
-    "progress": 957,
+    "progress": 1077,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-10-29T23:19:19Z",
   "last_touch": {
     "advanced": {
-      "added": 2,
-      "changed": 1,
+      "added": 122,
+      "changed": 61,
       "removed": 0
     },
-    "at": "2026-10-30T14:21:42Z",
+    "at": "2026-10-31T08:40:40Z",
     "scope_paths": [
+      "docs/guides/agent-workflows/codex3-lane-checkouts.md",
+      "docs/reference/repl-emb-2-13-side-callsite-audit-20261031.md",
+      "handoffs/active/agentic-serving-harness-fixes.md",
+      "handoffs/active/architect-model-selection-bench.md",
+      "handoffs/active/autokernel-all-devices-all-dimensions.md",
+      "handoffs/active/autokernel-champion-aggregate.md",
+      "handoffs/active/autokernel-cross-workload-keep-gate.md",
+      "handoffs/active/autokernel-orchestrator-actor-backend.md",
+      "handoffs/active/autokernel-rebuild-program.md",
+      "handoffs/active/autokernel-research-loop.md",
+      "handoffs/active/autokernel-unified-surface-program.md",
+      "handoffs/active/autopilot-continuous-optimization.md",
+      "handoffs/active/canonical-judge-suite-revamp.md",
+      "handoffs/active/colbert-reranker-web-research.md",
+      "handoffs/active/context-folding-progressive.md",
+      "handoffs/active/conversation-stack.md",
+      "handoffs/active/cpu-decode-roofline-program.md",
+      "handoffs/active/deepseek-v41-flash-evaluation.md",
+      "handoffs/active/delta-mem-reproduction.md",
+      "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "handoffs/active/document-parser-table-bench.md",
+      "handoffs/active/dynamic-stack-concurrency.md",
+      "handoffs/active/episodic-memory-integrity.md",
+      "handoffs/active/ernie-image-turbo-evaluation.md",
+      "handoffs/active/eval-tower-verification.md",
+      "handoffs/active/evidence-plane-instrument-repair.md",
+      "handoffs/active/gpu-acceleration-path.md",
+      "handoffs/active/gpu-serving-tie-in-program.md",
+      "handoffs/active/harness-improvement-loop.md",
+      "handoffs/active/harness-selection-and-integration.md",
+      "handoffs/active/heterogeneous-slot-fabric-residency.md",
+      "handoffs/active/internal-kb-rag.md",
+      "handoffs/active/kv-prefix-fork-and-paged-attention.md",
+      "handoffs/active/kv-unified-stack-rollout.md",
+      "handoffs/active/lightning-attention-port.md",
+      "handoffs/active/log-linear-gated-deltanet-readiness.md",
       "handoffs/active/non-inference-backlog.md",
+      "handoffs/active/numa-topology-cutover-resume-20260730.md",
+      "handoffs/active/paw-compiled-specialists.md",
+      "handoffs/active/per-request-reasoning-budget.md",
+      "handoffs/active/rao-redel-substrate-spike.md",
+      "handoffs/active/refactoring-multirepo-2026-10.md",
+      "handoffs/active/repl-embedding-retrieval.md",
+      "handoffs/active/repl-session-memory-maturity.md",
+      "handoffs/active/repl-turn-efficiency.md",
+      "handoffs/active/reviewer-escalation-and-human-gate-policy.md",
+      "handoffs/active/reviewer-model-ablations.md",
+      "handoffs/active/rocm-verify-profile-backend.md",
+      "handoffs/active/scoring-infra-standardization.md",
+      "handoffs/active/shape-keyed-contention-gating.md",
+      "handoffs/active/speculative-decoding-mtp-refresh.md",
+      "handoffs/active/stack-change-governance-pipeline.md",
+      "handoffs/active/tool-output-compression.md",
+      "handoffs/active/tool-use-eval-contract.md",
+      "handoffs/active/typed-decision-plane.md",
+      "handoffs/active/vidya-belief-substrate-program.md",
+      "handoffs/active/yarn-context-extension-research.md",
+      "progress/2026-10/2026-10-27-refactor-ci-checkpoint-01a16fc3.md",
+      "progress/2026-10/2026-10-28-inf12-lb49-ready.md",
+      "progress/2026-10/2026-10-28-inf33-cpu-seam.md",
+      "progress/2026-10/2026-10-29-codex3-delivered-routing-and-scoring.md",
+      "progress/2026-10/2026-10-29-codex3-parallel-dispatch-and-env.md",
+      "progress/2026-10/2026-10-29.md",
+      "progress/2026-10/2026-10-30-codex-ni-01a16d6b-thinkprm.md",
+      "progress/2026-10/2026-10-30-codex-ni-accepted-ready-wrap.md",
+      "progress/2026-10/2026-10-30-codex-ni-ak-pm16-closeout.md",
+      "progress/2026-10/2026-10-30-codex-ni-ak29-native-token-profile.md",
+      "progress/2026-10/2026-10-30-codex-ni-app-lane-reclassification.md",
+      "progress/2026-10/2026-10-30-codex-ni-ch27-meta-wrap-1630.md",
+      "progress/2026-10/2026-10-30-codex-ni-g14-checkpoint.md",
+      "progress/2026-10/2026-10-30-codex-ni-gpu-prep-boundary.md",
+      "progress/2026-10/2026-10-30-codex-ni-gpu-priority-packing-audit.md",
+      "progress/2026-10/2026-10-30-codex-ni-hpr-r5.md",
+      "progress/2026-10/2026-10-30-codex-ni-hymt-q4-r1.md",
+      "progress/2026-10/2026-10-30-codex-ni-jetlong-small4x-prep.md",
+      "progress/2026-10/2026-10-30-codex-ni-kbrag-g11-r2-checkpoint.md",
+      "progress/2026-10/2026-10-30-codex-ni-kbrag-g12-queryshift-checkpoint.md",
+      "progress/2026-10/2026-10-30-codex-ni-kbrag-g13-r2.md",
+      "progress/2026-10/2026-10-30-codex-ni-lb49-ready-wrap-1610.md",
+      "progress/2026-10/2026-10-30-codex-ni-lb49-write-wiring.md",
+      "progress/2026-10/2026-10-30-codex-ni-legacy-orch-retirement.md",
+      "progress/2026-10/2026-10-30-codex-ni-repo-legacy-retirement.md",
+      "progress/2026-10/2026-10-30-codex-ni-retirement-rte-wrap.md",
+      "progress/2026-10/2026-10-30-codex-ni-root-lane-reclassification.md",
+      "progress/2026-10/2026-10-30-codex-ni-root-legacy-retirement.md",
+      "progress/2026-10/2026-10-30-codex-ni-rte-t2-source-checkpoint.md",
+      "progress/2026-10/2026-10-30-codex-ni-ufh14-a3af1-checkpoint.md",
+      "progress/2026-10/2026-10-30-codex-ni-wg-lfmi-quality.md",
+      "progress/2026-10/2026-10-30-codex-ni-worktree-retirement.md",
+      "progress/2026-10/2026-10-30-codex3-c3-g12-filing.md",
+      "progress/2026-10/2026-10-30-codex3-evl34-r11-original.md",
+      "progress/2026-10/2026-10-30-codex3-fa4-lb51-filing.md",
+      "progress/2026-10/2026-10-30-codex3-hil-c3-r18a-filing.md",
+      "progress/2026-10/2026-10-30-codex3-hil15b-r9-finalization.md",
+      "progress/2026-10/2026-10-30-codex3-inf12-r11-failed-admission.md",
+      "progress/2026-10/2026-10-30-codex3-inf12-r13-original.md",
+      "progress/2026-10/2026-10-30-codex3-inference-pipeline.md",
+      "progress/2026-10/2026-10-30-codex3-kpf-planner-continuation.md",
+      "progress/2026-10/2026-10-30-codex3-ni-native-filings.md",
+      "progress/2026-10/2026-10-30-codex3-original-events-1842.md",
+      "progress/2026-10/2026-10-30-codex3-pip-incremental-stt3-plan.md",
+      "progress/2026-10/2026-10-30-codex3-pip-lid-evl-v7.md",
+      "progress/2026-10/2026-10-30-codex3-pip-shard-scores.md",
+      "progress/2026-10/2026-10-30-codex3-publications-wrapup.md",
+      "progress/2026-10/2026-10-30-codex3-r18-private-anchor.md",
+      "progress/2026-10/2026-10-30-codex3-r18-r2-filing.md",
+      "progress/2026-10/2026-10-30-codex3-r7-r4-original-filing.md",
+      "progress/2026-10/2026-10-30-codex3-s0-original-filing.md",
+      "progress/2026-10/2026-10-30-codex3-speech-lid-preparation.md",
+      "progress/2026-10/2026-10-30-codex3-ufh14-a3af1-filing.md",
+      "progress/2026-10/2026-10-30-codex3-wrapup-checkpoints.md",
+      "progress/2026-10/2026-10-30-codex3-yarn-s0-v27-filing.md",
+      "progress/2026-10/2026-10-30-fa4-r11-original-event-filing.md",
+      "progress/2026-10/2026-10-30-hpr-r4-kpf18-r7-repairs.md",
+      "progress/2026-10/2026-10-30-refactor-c6-preparation.md",
       "progress/2026-10/2026-10-30-workspace-58.md",
-      "progress/2026-10/2026-10-30.md"
+      "progress/2026-10/2026-10-30.md",
+      "progress/2026-10/2026-10-31-allowner-results-0805.md",
+      "progress/2026-10/2026-10-31-c5-cpu-r6-result.md",
+      "progress/2026-10/2026-10-31-c5-hil15-filings.md",
+      "progress/2026-10/2026-10-31-c6-full-paw-a-failures.md",
+      "progress/2026-10/2026-10-31-codex-ni-01a16d6b-lb49-first-native-v3-wrap.md",
+      "progress/2026-10/2026-10-31-codex-ni-01a16d6b-ufh14-b1c.md",
+      "progress/2026-10/2026-10-31-codex-ni-01a16d6b.md",
+      "progress/2026-10/2026-10-31-codex-ni-accepted-closeouts-wrap.md",
+      "progress/2026-10/2026-10-31-codex-ni-fa4-r17-qualified-ready.md",
+      "progress/2026-10/2026-10-31-codex-ni-gnx-r4-prep-checkpoint.md",
+      "progress/2026-10/2026-10-31-codex-ni-lb49-fu06-closeout.md",
+      "progress/2026-10/2026-10-31-codex-ni-m4-source-audit.md",
+      "progress/2026-10/2026-10-31-codex-ni-nemo-accepted-wrap.md",
+      "progress/2026-10/2026-10-31-codex-ni-nemo-prof-reseg.md",
+      "progress/2026-10/2026-10-31-codex-ni-repl-emb-213.md",
+      "progress/2026-10/2026-10-31-codex-ni-yarn-r10.md",
+      "progress/2026-10/2026-10-31-codex3-c6-dtap-pip.md",
+      "progress/2026-10/2026-10-31-codex3-c6-q4-r2.md",
+      "progress/2026-10/2026-10-31-codex3-c6-r3-correctness.md",
+      "progress/2026-10/2026-10-31-codex3-cafe-source-pip.md",
+      "progress/2026-10/2026-10-31-codex3-e332-hip-r13-repair.md",
+      "progress/2026-10/2026-10-31-codex3-fu03-r13-repair.md",
+      "progress/2026-10/2026-10-31-codex3-g13-truncskip.md",
+      "progress/2026-10/2026-10-31-codex3-gpu-ds41-lex.md",
+      "progress/2026-10/2026-10-31-codex3-kpf-td29-results.md",
+      "progress/2026-10/2026-10-31-codex3-kpf-trace-prep.md",
+      "progress/2026-10/2026-10-31-codex3-kpf181-cpu-ready.md",
+      "progress/2026-10/2026-10-31-codex3-kpf181-fu03-results.md",
+      "progress/2026-10/2026-10-31-codex3-lex-sw2-ready.md",
+      "progress/2026-10/2026-10-31-codex3-lex2-hip-prereq.md",
+      "progress/2026-10/2026-10-31-codex3-ni-five-filings.md",
+      "progress/2026-10/2026-10-31-codex3-paw-pip-failures.md",
+      "progress/2026-10/2026-10-31-codex3-pip-r28-pool3.md",
+      "progress/2026-10/2026-10-31-codex3-pip-r28-ready.md",
+      "progress/2026-10/2026-10-31-codex3-ready-and-source-checkpoint-0105.md",
+      "progress/2026-10/2026-10-31-codex3-runtime-checkpoint-0135.md",
+      "progress/2026-10/2026-10-31-codex3-speech-prep-checkpoint.md",
+      "progress/2026-10/2026-10-31-codex3-zos-kpf-filing.md",
+      "progress/2026-10/2026-10-31-emb214-native-parity-0821.md",
+      "progress/2026-10/2026-10-31-ernie-pareval-ready.md",
+      "progress/2026-10/2026-10-31-fu03-cli-r3-0817.md",
+      "progress/2026-10/2026-10-31-fu03-r3-kpf-gpu-draft.md",
+      "progress/2026-10/2026-10-31-g16a-native.md",
+      "progress/2026-10/2026-10-31-hpr-paw-stt3-filings.md",
+      "progress/2026-10/2026-10-31-kpf181-gpu-first-segment.md",
+      "progress/2026-10/2026-10-31-kpf182-v3-runtime.md",
+      "progress/2026-10/2026-10-31-native-results-0800.md",
+      "progress/2026-10/2026-10-31-paw-b-yarn-interim.md",
+      "progress/2026-10/2026-10-31-paw-compact-a-cs22-f32.md",
+      "progress/2026-10/2026-10-31-paw-compact-b-admission-0804.md",
+      "progress/2026-10/2026-10-31-paw-host-qualified.md",
+      "progress/2026-10/2026-10-31-paw-standard-a-filing.md",
+      "progress/2026-10/2026-10-31-pip-head-recovery-cs53.md",
+      "progress/2026-10/2026-10-31-pip-r29-c6-gpu-r2-filings.md",
+      "progress/2026-10/2026-10-31-pip-r29-continuation.md",
+      "progress/2026-10/2026-10-31-pip-r29-scorer-344.md",
+      "progress/2026-10/2026-10-31-pip-r31-pool3-ready.md",
+      "progress/2026-10/2026-10-31-pip-r32-pool1-ready.md",
+      "progress/2026-10/2026-10-31-pip-r33-r34-ready.md",
+      "progress/2026-10/2026-10-31-preparation-kpf-offline-audit.md",
+      "progress/2026-10/2026-10-31-refactor-c6-writer-enrollment.md",
+      "progress/2026-10/2026-10-31-unlimited-source-emb-kpf-audit.md",
+      "progress/2026-10/2026-10-31-vkq3-pip-r30-preparation.md",
+      "progress/2026-10/2026-10-31-yarn-v33-admission-0816.md",
+      "progress/2026-10/2026-10-31-zos23-serial-r4.md",
+      "progress/2026-10/2026-10-31.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-10-30T14:21:42Z",
+  "scan_time": "2026-10-31T08:40:40Z",
   "schema_version": 1,
-  "source_set_hash": "45c30617338e70e8f77114c34d46eb7b02b4e7a41a1d55ab35fb8662e1928b8a",
+  "source_set_hash": "0673338d2a8f375a54d47e1b9ac5a7d665d5afaa7bab57f53d55de33e7ae1b37",
   "sources": [
     {
       "content_hash": "79865b0c101f4b6a9b14665950a430467345202b33986b3ba348bc3df428170a",
@@ -69,10 +249,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "78159740e28cf6bff9badc0475d18e434fbf70c48fa52610009734d3c13e2bbc",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "9c9c91d41245ade6f0b3ec8fa6d3eef6880743cdc8fc3f98284885cc99a90c8c",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/agentic-serving-harness-fixes.md",
-      "size": 131126,
+      "size": 143555,
       "title": "Agentic serving harness fixes \u2014 demonstrate on the 27B, generalize, then audit",
       "type": "handoff-active"
     },
@@ -93,10 +273,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "af4ba48fa032f0831a50a605dc45997782706e2b1ce6c8fd448fd5b2aef82693",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "dbbe2a0fb4a542cf59fe4343e13b4a96d87508e05aa672383d7014bd77d1a061",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/architect-model-selection-bench.md",
-      "size": 120459,
+      "size": 126007,
       "title": "Architect Model Comparison Benchmark",
       "type": "handoff-active"
     },
@@ -109,18 +289,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "bf6ba54f69365f4473101eed6ef0049bd53e0c0f8bf32bdbae9ee512ddd4f03e",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "78a18dd2c19e8527ea6572ce7e29465e1591cb1370875fd6baebfdb8b1915cf8",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/autokernel-all-devices-all-dimensions.md",
-      "size": 206325,
+      "size": 226286,
       "title": "AutoKernel on every device and every dimension: long-context surfaces, attention routes, GPU serving, profilers as planner inputs",
       "type": "handoff-active"
     },
     {
-      "content_hash": "8470a5c2ccbb54be5da5ff0ebfd1e58e3bcf2eaaab0a232c9a48653a004616cc",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "f824d6256220c1ceafb4455f07e71b0277a861229ba5b2e70b191993425cdf68",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/autokernel-champion-aggregate.md",
-      "size": 203523,
+      "size": 227650,
       "title": "AutoKernel \u2014 the standing aggregate candidate (champion)",
       "type": "handoff-active"
     },
@@ -133,34 +313,34 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "0be1b8900689f824501e2ac98b4aedea6ef9d02b02f51169ad62adf716eaeb68",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "16107a60b7fd1846f8f0b5ea51e412c55aa95fa8de8f4c12fc88d0cb44c91061",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/autokernel-cross-workload-keep-gate.md",
-      "size": 100156,
+      "size": 106589,
       "title": "AutoKernel Cross-Workload Keep Gate \u2014 census, blast-radius screen, multi-workload non-regression",
       "type": "handoff-active"
     },
     {
-      "content_hash": "ad05142d4128767ac10a44d6d9d5ea294bb49b9f70237b77fe334fef4ae10ebc",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "5ab880d481a1a83602a349957117d46a07d86263d12d2aa0a9d05095c5ff9c44",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/autokernel-orchestrator-actor-backend.md",
-      "size": 70073,
+      "size": 70846,
       "title": "AutoKernel \u2014 the orchestrator as planner/author backend",
       "type": "handoff-active"
     },
     {
-      "content_hash": "d64103dcc101fddb9d39e981e43fa1dcef041a485eacfc4b1ca15b5f42f6e2f1",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "5d016ff0de840d822cf8ebda9ccc11a26318875d33904dbd12aae1ef40dda14a",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/autokernel-rebuild-program.md",
-      "size": 282680,
+      "size": 292042,
       "title": "AutoKernel \u2014 teardown and rebuild program",
       "type": "handoff-active"
     },
     {
-      "content_hash": "97d69d77eceaed448a2453272f7ede6abf65c20ce778ffe90e05bbc05c8b4720",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "0ff26cfda53260af84e65af823279af6dcf3b52c4a787b82ded2f8bd11c58358",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/autokernel-research-loop.md",
-      "size": 556771,
+      "size": 558162,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -173,18 +353,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "fb3746ed08f74ec6d80fe20a9e07fed19897c75dcf5058a3adcbc2de7f9ebed7",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "e4accc3700234e9cc08dece6aef1799c9ee83c43b3e6b816842b8137a9ca6f15",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/autokernel-unified-surface-program.md",
-      "size": 446940,
+      "size": 448653,
       "title": "AutoKernel Unified-Surface Program \u2014 one champion, one accumulator, one runbook for CPU + GPU kernel work",
       "type": "handoff-active"
     },
     {
-      "content_hash": "91e056ee27e57601a83a2bd10c4407f4485381d0cdfa7b6ff0ef4c48d6f26bd5",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "3be7abf4e4804706796d644eff78f60864e462f6d00d0827c1a5ec1702e37e40",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/autopilot-continuous-optimization.md",
-      "size": 91244,
+      "size": 96577,
       "title": "AutoPilot: Continuous Recursive Optimization",
       "type": "handoff-active"
     },
@@ -253,10 +433,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "a5593f2bb926da9711b6e749bdb05821d91051c8b7ff7ce3a12180aee2b12b0c",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "b280f8b134c4315267560587132ad443663eaa79da6696cf652b1cb058c58426",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/canonical-judge-suite-revamp.md",
-      "size": 57467,
+      "size": 58205,
       "title": "Canonical Judge Suite Revamp \u2014 Replace a Saturated Instrument with Execution-Verified Ones",
       "type": "handoff-active"
     },
@@ -269,10 +449,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "7d689b167e949f8ff0d854c1afba7a423cd26ad9867d15f65df1942cfbf87e7d",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "a92c5f065a49faa663b52f12cb7f5dca250e9bc67c9da78adf3afc734cb8f702",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/colbert-reranker-web-research.md",
-      "size": 68711,
+      "size": 74838,
       "title": "ColBERT Reranker for web_research Pipeline",
       "type": "handoff-active"
     },
@@ -285,18 +465,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "e070ab231eb69589269bb0d1b0d48ace14a8847fd644f828756239ee4d65b1ce",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "4e20c775bcef32dcae73e787516ff56b414b9ac5072c0a11fbb782d63d53da9a",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/context-folding-progressive.md",
-      "size": 35501,
+      "size": 36291,
       "title": "Context-Folding: Progressive Session Compaction Upgrade",
       "type": "handoff-active"
     },
     {
-      "content_hash": "4bfe83886eec3af429188818fdf102eabb25de3fcb1aaf9dba0bfa40a1fb0a90",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "b088ae85e10fef5f0e0685dfd47be4c8e4747904d711b942c23c59c79a7350cd",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/conversation-stack.md",
-      "size": 232479,
+      "size": 253726,
       "title": "Conversation stack: speech-native interlocutor, orchestrator voice-turn contract, cascade fallback",
       "type": "handoff-active"
     },
@@ -309,10 +489,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "fddfed9a77b76db7a1aa37130f4a6ecfb1e9656cede879ec9a851d1ac5356c11",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "4cb1f8017a51a0d04c381460de6de63323c4db260b272fbc8186e26952a63ba6",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/cpu-decode-roofline-program.md",
-      "size": 489296,
+      "size": 490117,
       "title": "CPU Decode Roofline Program \u2014 Qwen3.8-Flash-Next (qwen4exp) at the machine ceiling",
       "type": "handoff-active"
     },
@@ -357,10 +537,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "d732ac589dc7b79cafe35b9c14edd81ef3583c0e615e252a03f424d3951ee2c1",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "3ebaf7f55a7b13f17cc78d868870ab5246ec131dd1e344239884ab0a256618a1",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/deepseek-v41-flash-evaluation.md",
-      "size": 238047,
+      "size": 241683,
       "title": "DeepSeek-V4.1-Flash Evaluation (deepseek41)",
       "type": "handoff-active"
     },
@@ -373,10 +553,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b5037c8703013e60126dcb795cc25b1846d8636766f4a26f39906947f5afeaa6",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "ac5efc42d63981710250ee92af7cafb9110f1c62a836716f4439b10bbe1478fd",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/delta-mem-reproduction.md",
-      "size": 25355,
+      "size": 26937,
       "title": "\u03b4-mem Reproduction + Frozen-Memory Topology Spike",
       "type": "handoff-active"
     },
@@ -397,26 +577,26 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "e77f990138d5fa37c7b4400f08bbdd1000b40bc396f635af5ae5abc0d443599c",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "5659babd6689ff595c56975d3cde3a76999f8ff71b9787d68b1dc4afbbdf9a5c",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/dflash2-block-drafter-experimental-build.md",
-      "size": 93008,
+      "size": 98130,
       "title": "dFlash2 block drafter \u2014 experimental build + measured comparison vs MTP",
       "type": "handoff-active"
     },
     {
-      "content_hash": "428bcbdef16daa7e31a19f4dc28a141049c821d93e0ee6665209a50f7bee924c",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "cf097ed794ecf06fd7f9dc1c23f25e030fd86024c7064837898f041647e243d8",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/document-parser-table-bench.md",
-      "size": 25367,
+      "size": 108128,
       "title": "Document Parser Table-Extraction Benchmark \u2014 PaddleOCR-VL-1.6 pipeline vs ODL",
       "type": "handoff-active"
     },
     {
-      "content_hash": "c0132f980fcc07aa9aaf19a3602ec13a06c3463464e7ad458e0f4da532d6cdbf",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "3301fe882395a33202d57dd0c01a73681ce83d1b08c61366488ad5bbf54cf78d",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/dynamic-stack-concurrency.md",
-      "size": 38798,
+      "size": 41163,
       "title": "Dynamic Stack Assembly & Concurrency Management",
       "type": "handoff-active"
     },
@@ -429,18 +609,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "eca3b4a6ac96f09e4bf2e6c6e46de725b2de09fec316631ff668f147f271dd3b",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "3234a454567498271eb0aa4678e969522026d55052e3c7d0dc874f083ad3841e",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/episodic-memory-integrity.md",
-      "size": 115700,
+      "size": 115799,
       "title": "Episodic Memory Integrity \u2014 2026-07-05 corruption, root cause and repair",
       "type": "handoff-active"
     },
     {
-      "content_hash": "c750849c5fb49ad307dcd8edceb88a08c28d3d74c56aaf66cb743ae7307502f2",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "ff04d7658b7cd1665294e5b09475756b880474b85640fa596062f3720e856af5",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/ernie-image-turbo-evaluation.md",
-      "size": 23761,
+      "size": 24913,
       "title": "ERNIE-Image-Turbo Evaluation",
       "type": "handoff-active"
     },
@@ -469,10 +649,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "da439e5a144e558e1cad77ff209631000871110dab4781b47d9a74c3024caedc",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "34bf2c2ce7951f8ad4c9be6b739dd248a24e6ca49f967ff249ea20bc71fa4d80",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/eval-tower-verification.md",
-      "size": 146678,
+      "size": 150250,
       "title": "Eval Tower Verification Framework",
       "type": "handoff-active"
     },
@@ -485,10 +665,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "22d8a46445d9b2b4780f8bfa560da7c1a5c22a9dbe3ef2a1a0b4cc3883a77bd7",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "6b603cf0a417a282b75247d23dc485a28b2c27022ff06e3e05e7dc120f9c4d44",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/evidence-plane-instrument-repair.md",
-      "size": 44389,
+      "size": 45072,
       "title": "Evidence Plane \u2014 Instrument Repair (Phase-0 hotfixes + pool sampling)",
       "type": "handoff-active"
     },
@@ -605,10 +785,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "42de6980a47014be13d526c3689ccfed155fa8416bc71830972864e625960dd7",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "694b299e8afb8eb7b1a862d7c511c0c313426d5367b832a8b8dacc6bdcf385bc",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/gpu-acceleration-path.md",
-      "size": 78572,
+      "size": 84149,
       "title": "GPU Acceleration Path \u2014 CPU+GPU Hybrid Inference",
       "type": "handoff-active"
     },
@@ -629,10 +809,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "e9a76b01dbc5eac4a8580f099056cd9390ced46cd3685b7de98621b3030438e7",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "d66ace856b32b31e439ab189786ffa97bd2325b088085f8de8de0b58fb45cc1d",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/gpu-serving-tie-in-program.md",
-      "size": 179893,
+      "size": 187630,
       "title": "GPU Serving Tie-In Program \u2014 one fabric, two devices",
       "type": "handoff-active"
     },
@@ -645,26 +825,26 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "c93392522d6490978557c941f4350bae6d3c2e70b9316ab21c80c42d28cbcc9d",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "eae96241a90dac9a416719c8af9e658b632a1b9b80448107386723ed915cfe6a",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/harness-improvement-loop.md",
-      "size": 178079,
+      "size": 197208,
       "title": "Harness Improvement Loop \u2014 self-improvement for orchestrator-side harness features",
       "type": "handoff-active"
     },
     {
-      "content_hash": "5ebc5ed80f51b815910b478a17b4dc160a15967218a5e8ebaf129f00d9d4582f",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "3491d8d1594489a3835ff6ceb972cd6b9587d3b44ad06a839a308bd6ab565573",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/harness-selection-and-integration.md",
-      "size": 77904,
+      "size": 78008,
       "title": "Harness Selection & Integration \u2014 Orchestrator \u2194 User-Facing Harness",
       "type": "handoff-active"
     },
     {
-      "content_hash": "35776796a2656f06a6c37e5a2be02fbd37fbda01332378c548ccf3c81ba19f2d",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "3306511518fa2f1f0ac27bbe5ce491c19af353f8c484c3985249d1bd02307c2e",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/heterogeneous-slot-fabric-residency.md",
-      "size": 61627,
+      "size": 65679,
       "title": "Heterogeneous CPU\u00d7GPU Slot Fabric + Dynamic Residency",
       "type": "handoff-active"
     },
@@ -701,10 +881,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "f9ecd6643d2b0b16cb7e5d26ce59690fb75a966a6ce3029e3089bd9822004d2a",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "da116d58a190eab4470418bcfa5dd8e968deb5f8e0e0d6ab82e5f40acb10f7ef",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/internal-kb-rag.md",
-      "size": 133291,
+      "size": 142969,
       "title": "Internal Knowledge-Base RAG",
       "type": "handoff-active"
     },
@@ -717,18 +897,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "8f9751e0c25b6cf4e9a90d51cd307589a79952d34af2abd81592d2626fd1e5b9",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "7d3bb8a82048963be17481ada9d6d8714bddeaba5d9fab9d1f4c272dba1bdacd",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
-      "size": 267826,
+      "size": 297932,
       "title": "KV prefix fork and paged attention: cross-slot prefix sharing, cache-aware dispatch, per-sequence KV views",
       "type": "handoff-active"
     },
     {
-      "content_hash": "6633d17ac2f256660ab9d3ff49144f79a11b1ff83faa46465c1c545ff4096f69",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "90d3163b0a868392d3b8a815ed087e5759301ee81f20c3228a019f35146be6a3",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/kv-unified-stack-rollout.md",
-      "size": 221862,
+      "size": 239799,
       "title": "Unified KV (`--kv-unified`) stack rollout and shared-pool serving",
       "type": "handoff-active"
     },
@@ -757,10 +937,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "78cd0ec7c22d53019e4eb6791e25c2823a9858dd21dbfe020eb9eb9b2a8c661d",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "a2ddc84afaa1639241c518b826d34cd364cf67c85b40e8f382a5d8d270ef7409",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/lightning-attention-port.md",
-      "size": 12747,
+      "size": 13373,
       "title": "Lightning Attention Port to llama.cpp",
       "type": "handoff-active"
     },
@@ -773,10 +953,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9137dbc680694fdf6eaa28ab8b9b38bc493d3ee1e70faec698c3a793661faeee",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "b9510698e072ea50dc83d2c3e7755decaa4717674fc8f16fe8fef488307f992b",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/log-linear-gated-deltanet-readiness.md",
-      "size": 43685,
+      "size": 45476,
       "title": "Log-Linear Gated DeltaNet \u2014 Readiness Tracker",
       "type": "handoff-active"
     },
@@ -941,10 +1121,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "0cafdd3ddaa547d69d8ccb127ff8d7803a80ba2a542de0a7232edc2391a92e76",
-      "modified": "2026-10-30T14:19:07Z",
+      "content_hash": "0dbb3501cdf69dfcb9a342496795f327bd036cab90d5fbaf44fad07e895024e1",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/non-inference-backlog.md",
-      "size": 228387,
+      "size": 228518,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -965,10 +1145,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "bb3cb75099741ff5c4201dcc2f197fdac724a26053d58238b40937569c95c9f8",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "d7cd45370dafb2766c8bdb8c58245d8046d98c6b5ec5ac882aaf97b73cdeee50",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/numa-topology-cutover-resume-20260730.md",
-      "size": 118969,
+      "size": 120223,
       "title": "NUMA Topology Cutover \u2014 RESUME DOCUMENT",
       "type": "handoff-active"
     },
@@ -1005,18 +1185,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ba6a17c86fca14ea9e7fecad4f2fc9001f1defab889915b9c12d290f09fb14e5",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "5d7674bb24f93c8f9c29ddad5acbc80d997f692a3d697ea5e932b74bdbab70a0",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/paw-compiled-specialists.md",
-      "size": 17285,
+      "size": 30598,
       "title": "PAW Compiled Specialists \u2014 compile-once fuzzy functions on the local stack",
       "type": "handoff-active"
     },
     {
-      "content_hash": "bc262ffffed0393c6bd0f0f664f8f589a3ec2c0b9c2a0145413e1098b9a6ebfa",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "e3e4a5678888fa2bd77e7d1da51cf5c177857668b34b9bb96784cafe3eac3735",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/per-request-reasoning-budget.md",
-      "size": 53389,
+      "size": 53760,
       "title": "Per-Request Reasoning Budget for Hybrid SSM+MoE Models",
       "type": "handoff-active"
     },
@@ -1061,10 +1241,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "c7ede198c89be2e36e937063c911243794d89c79ad4bc1a7ec100435e7771c0b",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "9eaba9d4134bd06da952791f933d700e5c7f79788e85203d09b23f89d602b4d9",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/rao-redel-substrate-spike.md",
-      "size": 51613,
+      "size": 63520,
       "title": "RAO + ReDel Substrate Spike",
       "type": "handoff-active"
     },
@@ -1101,34 +1281,34 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4a1d8ed827f2bb687b3dc798499d3587271b15867bd28f3c29cab219f63b8e3c",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "caf9e10f42f51230fccb9ab0a0fa3c082447677a0fab67ba1c3fee7f8c6cfb27",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/refactoring-multirepo-2026-10.md",
-      "size": 79399,
+      "size": 96432,
       "title": "Handoff: Refactoring \u2014 orchestrator, autopilot and AutoKernel (multi-repo debt program)",
       "type": "handoff-active"
     },
     {
-      "content_hash": "9a858151ebd90deac0be6d048892811829874c3aca220f42402e80d5ef1fc439",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "59b12ef1e09e6ed044774a5df388f714e91a21d36a62910d5d8f22a3f717377d",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/repl-embedding-retrieval.md",
-      "size": 97374,
+      "size": 100460,
       "title": "REPL Embedding Retrieval \u2014 hybrid search that returns pointers",
       "type": "handoff-active"
     },
     {
-      "content_hash": "9090e9538317557e6ce611368d9ac17b590234d9592902d143d9cfb80a97319f",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "5968a0c00286aa662b8172481004d30b7c9563f50953302937a4e485e06156c2",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/repl-session-memory-maturity.md",
-      "size": 43834,
+      "size": 45304,
       "title": "REPL Session Memory \u2014 Maturity Deltas",
       "type": "handoff-active"
     },
     {
-      "content_hash": "3bff9e4e4834c19faea95c85459d3be0ccac02a1bf23433eb54849dfc4d26929",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "0eb7e3de97134094e0dc1fc056edaa85b5cc570982c0b43c7bc8015705de4034",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/repl-turn-efficiency.md",
-      "size": 77650,
+      "size": 79511,
       "title": "REPL Turn Efficiency - Active Gates",
       "type": "handoff-active"
     },
@@ -1157,10 +1337,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ff5b60b461a0447ceae9cee71d2aa18c40aca95293671b50f3fa577e7a8237bb",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "190bf2517acd92d25db17106cea60f8e001e2c6cb914b750e9dd63bf1e0c5166",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/reviewer-escalation-and-human-gate-policy.md",
-      "size": 12525,
+      "size": 12601,
       "title": "Reviewer Control Plane \u2014 Escalation & Human-Gate Policy (H7, stub-grade)",
       "type": "handoff-active"
     },
@@ -1173,10 +1353,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "07ca1fcd6ef6ee84ef71cbe5bddd509cdc7c96781b26dceadbe2464ca52ef926",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "177bc472b49933142a8b170a8bfc20ef9ed7b89852243914ff32596ff09d9d09",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/reviewer-model-ablations.md",
-      "size": 21088,
+      "size": 22078,
       "title": "Reviewer Control Plane \u2014 Registry-Driven Model-Role Ablation Tournament (H5)",
       "type": "handoff-active"
     },
@@ -1197,10 +1377,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "15b7d2093e0276472507300412f89a2d655c86487a056c295aa4f2ea129252b0",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "52e6e3d6daa8c4a605802286560402cf5f3265dd565f6f174bd32f765ad4dbe1",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/rocm-verify-profile-backend.md",
-      "size": 168623,
+      "size": 169426,
       "title": "ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring",
       "type": "handoff-active"
     },
@@ -1229,10 +1409,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "56e00d01d3132106e617e80c96a03499ae5d28a8324d210ee588b0b586eac2b6",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "e2975866a82e24d0f01bb5f26bf24f4b59ddac2cce842117744c479bb7f22a37",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/scoring-infra-standardization.md",
-      "size": 47776,
+      "size": 48194,
       "title": "Scoring Infrastructure Standardization + Tool-Use Eval Harness",
       "type": "handoff-active"
     },
@@ -1253,10 +1433,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "a792811b7646aba67ef70b8d37f7ca5f0cbd8242a68a9925d0477a0699bef726",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "ebbe4e7972c189dbb966f847a387a1c316fdea4cc2c6914b7d3830de612e3fb1",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/shape-keyed-contention-gating.md",
-      "size": 70422,
+      "size": 70475,
       "title": "Shape-Keyed Contention Gating + Cross-Role Disjoint Placement",
       "type": "handoff-active"
     },
@@ -1269,18 +1449,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "256cf20518ce7ae9296b1c1aec954746ee178bb597c2c2af96bdfcf748e7f273",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "4df000b4928b42cf44d0cbfb386b23a3dde17bca0ab4bf2aa8a8d8b62fa7e097",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
-      "size": 126709,
+      "size": 143269,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
     {
-      "content_hash": "fd41f9fea4d4085cece29dfef4085ef0282a3f08f4877ed25150e4b450e4daa1",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "d5183955a7d95f2f30d4d414faa23a2e57e81ec2c2dd759658f2ca031a5bdbae",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/stack-change-governance-pipeline.md",
-      "size": 31806,
+      "size": 31958,
       "title": "Stack Change Governance Pipeline",
       "type": "handoff-active"
     },
@@ -1349,18 +1529,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "17e11c0f7648732b14ebd72c1cd7851b651ac4e2d763257f4a368b288d8125fc",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "344a5806b2e8eb5e3d1d8a3a28e624940c80c9202794baf1285d7b79a989bd06",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/tool-output-compression.md",
-      "size": 97186,
+      "size": 102091,
       "title": "Tool Token Optimization \u2014 Output Compression + Definition Reduction",
       "type": "handoff-active"
     },
     {
-      "content_hash": "074eae354847fbeda0c3f10e4ae065c900e675b4d4a1d7b9f9c45bd46d3dc0c0",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "7443a90d09420b370f2c3f2e22c63c60ec95d466b55a25e25a675b1da1e5544b",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/tool-use-eval-contract.md",
-      "size": 81656,
+      "size": 83442,
       "title": "Tool-Use Eval Contract \u2014 make autopilot trials actually exercise tools",
       "type": "handoff-active"
     },
@@ -1389,10 +1569,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "32e70cee13179b1b404ed5231c09550ae21251e276ac9d96379fc71a4809cfde",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "a4b47e5eb4f03c466bf4e4b097ecdbeeee2f429ec0a0a372b81cba5b71e175b7",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/typed-decision-plane.md",
-      "size": 84603,
+      "size": 90130,
       "title": "Typed Decision Plane \u2014 one-pass typed decisions over the local stack",
       "type": "handoff-active"
     },
@@ -1413,10 +1593,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "f07bfc8211545a38ed5d889b7e31cac46740c03f768de3117792bf4cbcd09847",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "8dc3be0661b4228a72e4c5d8be369be4fbbacf2c8f2b2c21496872f46f9d7e59",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 702945,
+      "size": 761659,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -1453,10 +1633,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "49795786afae6b32466f49efad0711f622124e89cf37fac51ed476c8f54b0939",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "09e926ff95f9f927feeb2d12ab3187665a5109ab285d7ee3826bbc16cabbefef",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "handoffs/active/yarn-context-extension-research.md",
-      "size": 72861,
+      "size": 93793,
       "title": "YaRN Context Extension Research",
       "type": "handoff-active"
     },
@@ -11253,6 +11433,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "45801f56d2f50e0230dc72ef220615ac5a003c59d848ade6e143435a87a1f910",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-27-refactor-ci-checkpoint-01a16fc3.md",
+      "size": 6025,
+      "title": "Refactoring CI checkpoint \u2014 2026-10-27",
+      "type": "progress"
+    },
+    {
       "content_hash": "8f2a5beab9c4cc3adb79488015721e433a3738db1ca65513ecaa2eb68c837b47",
       "modified": "2026-10-29T23:14:21Z",
       "path": "progress/2026-10/2026-10-27-rtg57-f32-prep.md",
@@ -11525,11 +11713,19 @@
       "type": "progress"
     },
     {
-      "content_hash": "134d72e9084d3bfe8601172b85687960fa06f25385318b8c4d5ee0d6385fdaf3",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "532ea1b2436507debbae7a800d2f794501bd8f8b313394699c5f55353fd3a6fb",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "progress/2026-10/2026-10-28-inf12-lb49-ready.md",
-      "size": 9111,
+      "size": 9925,
       "title": "INF-12 and LB4.9 readiness \u2014 2026-10-28",
+      "type": "progress"
+    },
+    {
+      "content_hash": "4fa2e7932952dfa0ba864a75b9857baba36d08de56b4cd5cd6dc3831ccde6fa5",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-28-inf33-cpu-seam.md",
+      "size": 1353,
+      "title": "INF-33 CPU seam integration checkpoint \u2014 2026-10-28",
       "type": "progress"
     },
     {
@@ -11781,10 +11977,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "62ad129b25ca3c27adf15c822515070438bebd8c359acceb57fa800551ef76d7",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "0f7f8255adeb95a64649247c66c5c046bc93098ffab4c015df4a4ee20cdb4d97",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "progress/2026-10/2026-10-29-codex3-delivered-routing-and-scoring.md",
-      "size": 2880,
+      "size": 3458,
       "title": "Delivered routing and table-scoring code",
       "type": "progress"
     },
@@ -11853,10 +12049,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "856ec7210fdb0f058803d04776de7b568aa2bdee486d257532748bd05ee874dc",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "f9d36729623cbbf3424184df6102cfff1b73722a24fb6baaac5aef51e6ebd7b1",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "progress/2026-10/2026-10-29-codex3-parallel-dispatch-and-env.md",
-      "size": 11940,
+      "size": 14054,
       "title": "Parallel parser dispatch and launch-environment repair",
       "type": "progress"
     },
@@ -11973,27 +12169,971 @@
       "type": "progress"
     },
     {
-      "content_hash": "4d1a5eb5fc24f4d1cf23f95176c220e69fd78780913475c4895e2f4f4e8ba9e3",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "ce9ecb87c08a3e2c3cf29201424078efaaf48964cc033070f9f1254bab5d4aa6",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "progress/2026-10/2026-10-29.md",
-      "size": 168812,
+      "size": 175584,
       "title": "2026-10-29 results filing",
       "type": "progress"
     },
     {
-      "content_hash": "0cba5a2693b4e137bfe49ea9015e959656db47a9a045ad2c03bd9d9a587be033",
-      "modified": "2026-10-30T14:19:07Z",
+      "content_hash": "6e8d967c323b653a4bf458ef16b371dd95d4d4a9edb5f52d08701f8493e888d9",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex-ni-01a16d6b-thinkprm.md",
+      "size": 2342,
+      "title": "ThinkPRM EV-5 acquisition checkpoint \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "8a48885aaacacacdbfedf3ab0a9cdb0c50172ee58bec6ca10e62ca5bd27704ae",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex-ni-accepted-ready-wrap.md",
+      "size": 1918,
+      "title": "Accepted READY preparation outcomes \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "8757ec93428f9a4375d5e97894540a202ea4d9cd8944204383a0cf747c979e87",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex-ni-ak-pm16-closeout.md",
+      "size": 2646,
+      "title": "2026-10-30-codex-ni-ak-pm16-closeout",
+      "type": "progress"
+    },
+    {
+      "content_hash": "16c5f793a63c44f2020c8b4abe8badb49a3d1a9502720d11f74169de7dfacfc0",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex-ni-ak29-native-token-profile.md",
+      "size": 2357,
+      "title": "AKX-ALL-29.2a native GPU serving-profile preparation \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "51ba70320bfe820e56cf9e680635cdce663590492d93517fcba5a695152ae797",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex-ni-app-lane-reclassification.md",
+      "size": 2760,
+      "title": "Orchestrator task-directory reclassification and reusable lane \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "3ae2c8ef82e4911f6ac89d26b49acc8345da35772f472a272c1056285017265c",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex-ni-ch27-meta-wrap-1630.md",
+      "size": 1930,
+      "title": "CH-27 and META-ASSERT-1 preparation wrap-up \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "6a5fad5414df23ddd0c2b5ec1c0fb9ef8480ca01b85ebaa901f4082f7cf73d54",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex-ni-g14-checkpoint.md",
+      "size": 2636,
+      "title": "G14 exporter preparation checkpoint \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "9cf232313ef60709b73b7b7a285fe41b0af3c4836f1aec7fd656a7fcfee59dd8",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex-ni-gpu-prep-boundary.md",
+      "size": 4552,
+      "title": "NI GPU preparation boundary \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "c90287a5b9495381bdddf117dd820bfa11e6b70c962d801d783ec4cc70baee6a",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex-ni-gpu-priority-packing-audit.md",
+      "size": 2290,
+      "title": "GPU priority-packing F1 owner handoff \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "f333009cad07c943c6b4d07e91bc791a5afaafcdac3ce19d60d9c01b3fb6451d",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex-ni-hpr-r5.md",
+      "size": 1905,
+      "title": "HPR R5 native-admission checkpoint \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "f7529f2f4aa60b2c166fc1b18b8d3e0c5ae703cce76b6aca1f18622b5505d43c",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex-ni-hymt-q4-r1.md",
+      "size": 1564,
+      "title": "2026-10-30 \u2014 Hy-MT2 Q4_K_M alternative recipe prerequisite checkpoint",
+      "type": "progress"
+    },
+    {
+      "content_hash": "ba606c7e5abbc5270f3c076776b2c8690717cd519b272681bc2511b2e57cd064",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex-ni-jetlong-small4x-prep.md",
+      "size": 2992,
+      "title": "JETLONG-SMALL-RECALL 4xJ preparation \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "0c0a57ce404e7c4e03bcb530de073f4cf98bbf299b6c7fdedc134152a14e72bf",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex-ni-kbrag-g11-r2-checkpoint.md",
+      "size": 2577,
+      "title": "KB-RAG G11 R2 preparation checkpoint \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "a384d54e3f15995a9e86d36523a9eafd3ac2d5f456d8481598ae3f60056998f3",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex-ni-kbrag-g12-queryshift-checkpoint.md",
+      "size": 2005,
+      "title": "KB-RAG G12 query-shift preparation checkpoint \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "a98fb915142c3e9353a763359e1320b715a484fb99510fa8a3ed253116a76911",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex-ni-kbrag-g13-r2.md",
+      "size": 1579,
+      "title": "2026-10-30 \u2014 G13 doc-truncation sweep R2 preparation checkpoint",
+      "type": "progress"
+    },
+    {
+      "content_hash": "9b353fa191226a3e58ae8a0247044370949b871c5ba2ea0210fd1e0fca6e119e",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex-ni-lb49-ready-wrap-1610.md",
+      "size": 2586,
+      "title": "2026-10-30 \u2014 LB4.9 combined READY focused wrap",
+      "type": "progress"
+    },
+    {
+      "content_hash": "bddd6ca892da2a4492bc2c753c504e85b228d86d114194ab6d9d42479c362f6b",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex-ni-lb49-write-wiring.md",
+      "size": 5232,
+      "title": "LB4.9 prospective combined diagnostic wiring \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "d4fe77c6051ae81aa72d0252203e161a0d65b97e2105ddebe8a43f5ef5b8dc6f",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex-ni-legacy-orch-retirement.md",
+      "size": 2059,
+      "title": "Owned NI07/NI08 orchestrator task checkout retirement \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "ff0a457045b56e2839830f1beb27998fd5ec528337f2a8ed2920fa8c2acfa682",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex-ni-repo-legacy-retirement.md",
+      "size": 2320,
+      "title": "NI Orchestrator/Research legacy worktree retirement \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "c44a4ad85e4659f1bd57bc4d86057ab33ef55bd83baf42958e5c387c1a85bc69",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex-ni-retirement-rte-wrap.md",
+      "size": 2576,
+      "title": "2026-10-30 \u2014 source retirement custody and RTE-LOG1 source recovery",
+      "type": "progress"
+    },
+    {
+      "content_hash": "c8cd569433c6f0f71e4cbe9f69bb3ae69412fea7458e4b7de5400062cb628059",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex-ni-root-lane-reclassification.md",
+      "size": 2303,
+      "title": "ROOT task-directory reclassification and reusable lane \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "8ee30587243b944d9b407fa551f39924c00f132ea7237709fbc6e90ac3757580",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex-ni-root-legacy-retirement.md",
+      "size": 2016,
+      "title": "ROOT NI legacy worktree retirement \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "2275de523050bfab6f46196f817466a6a45071fddf375174e0111dd153715f11",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex-ni-rte-t2-source-checkpoint.md",
+      "size": 2529,
+      "title": "Request-source publication and prospective T2 verifier wiring \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "9b1fcd9bfa5ce099a2037306600961fd64cc8e49343e44aa43d7fa10d91a4781",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex-ni-ufh14-a3af1-checkpoint.md",
+      "size": 2058,
+      "title": "UFH14-A3A-F1 preparation checkpoint \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "49ee277fe425780077879462b4087d36f336cdc4dbb7cdd3ddc15e681099efc4",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex-ni-wg-lfmi-quality.md",
+      "size": 2318,
+      "title": "2026-10-30-codex-ni-wg-lfmi-quality",
+      "type": "progress"
+    },
+    {
+      "content_hash": "947679488694a46866f4d7bca136db017571cb07e2e2b18acbe2e3a7025ca654",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex-ni-worktree-retirement.md",
+      "size": 1297,
+      "title": "NI-owned worktree cleanup checkpoint \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "97611164d270b6854d20cd6a8b5ac4271bc570a8a32c9f0ff775e5fb9006490e",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex3-c3-g12-filing.md",
+      "size": 737,
+      "title": "2026-10-30 \u2014 C3 R3 and G12 original results filing",
+      "type": "progress"
+    },
+    {
+      "content_hash": "8e9e6fb876f3e983ae8c44f4170d66639e8eb5fbef2cc984b47cc33681d8e5bb",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex3-evl34-r11-original.md",
+      "size": 1201,
+      "title": "2026-10-30 EVL34 R11 original pilot filing",
+      "type": "progress"
+    },
+    {
+      "content_hash": "0f0dfcccdb4379f8a7c4054bb2dbb539bdf24156f4a5127bc3b1a4c54b5c69db",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex3-fa4-lb51-filing.md",
+      "size": 1899,
+      "title": "FA4 R13 and UFH14-LB5.1 original results \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "44ab7b46f5ee403ae5c8a17fcab42924960e7b014537977c18426a4c5fa32cb5",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex3-hil-c3-r18a-filing.md",
+      "size": 1439,
+      "title": "Codex3 original HIL/C3/R18-A results filing \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "6ee16a3524da998f8fedd1afe6ee650990815293c49bbc63dff9b674621a6996",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex3-hil15b-r9-finalization.md",
+      "size": 1848,
+      "title": "HIL15b heavy R9 retained collection finalization \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "54d1885623dfc70d0d90b0b6a8c6adc9cc767bc6959c52b05cb27929a04c312d",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex3-inf12-r11-failed-admission.md",
+      "size": 678,
+      "title": "INF-12 Gate 2 R11 admission failure",
+      "type": "progress"
+    },
+    {
+      "content_hash": "361de46ca1787c831b7b6482635a46f00c48fb041fede0ef225bb8a34b64920c",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex3-inf12-r13-original.md",
+      "size": 1753,
+      "title": "INF-12 R13 original run: partial native results",
+      "type": "progress"
+    },
+    {
+      "content_hash": "fbd9bdd65dd5099c930c18d144aa7f317b44696be8962fb5840501c1f3eabb1f",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex3-inference-pipeline.md",
+      "size": 16278,
+      "title": "Inference pipeline \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "25b568f3f54116df759e07da1d3187e08cb2453175f7bef151e1ac3dbe8c8c27",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex3-kpf-planner-continuation.md",
+      "size": 1827,
+      "title": "2026-10-30-codex3-kpf-planner-continuation",
+      "type": "progress"
+    },
+    {
+      "content_hash": "68259a8b863fe02689772613e0fdbe5a565da34233621f21c7db32505409c56d",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex3-ni-native-filings.md",
+      "size": 4731,
+      "title": "2026-10-30 \u2014 NI native diagnostic filings",
+      "type": "progress"
+    },
+    {
+      "content_hash": "169ea2d18c5c82f295395044cc7dbe8c0dca1d306e95e6258d2e21e5d2688e92",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex3-original-events-1842.md",
+      "size": 2199,
+      "title": "2026-10-30-codex3-original-events-1842",
+      "type": "progress"
+    },
+    {
+      "content_hash": "a4e4c2ce311b6a2c0e85c8c58ee926e7bb2df7db47cb03c0f2869d100a4f9190",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex3-pip-incremental-stt3-plan.md",
+      "size": 1211,
+      "title": "Codex3 incremental PIP scores and prospective speech plan \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "3dc5ea93b33ed871c99b0a57252bc633c9eab277252cab9c862e7d7f74c9d8ef",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex3-pip-lid-evl-v7.md",
+      "size": 823,
+      "title": "Codex3 evidence checkpoint \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "5e8d4626a3f6b29a0c0aac8342c0066bc38486d870d8a86c144e7e779d386828",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex3-pip-shard-scores.md",
+      "size": 2265,
+      "title": "2026-10-30-codex3-pip-shard-scores",
+      "type": "progress"
+    },
+    {
+      "content_hash": "db13096b4e4f5b9293c3154121e7ad734db933d019e488024f50661325ac68e5",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex3-publications-wrapup.md",
+      "size": 2973,
+      "title": "Codex3 approved publication wrap-up \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "34e1478fafdf77798de7144efbc8a257c28a19403ae0a0333bef18c37ed093e0",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex3-r18-private-anchor.md",
+      "size": 550,
+      "title": "2026-10-30 R18-A private-anchor comparison filing",
+      "type": "progress"
+    },
+    {
+      "content_hash": "14fc99f085629434d3ceeac86c5322a344fde2af444a88530504c7f838e39dad",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex3-r18-r2-filing.md",
+      "size": 996,
+      "title": "R18-A r2 original event \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "9fabc916d719217cce94e12df142141bf18f244964600e9fa63a03fbf80270fb",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex3-r7-r4-original-filing.md",
+      "size": 1487,
+      "title": "2026-10-30-codex3-r7-r4-original-filing",
+      "type": "progress"
+    },
+    {
+      "content_hash": "4d48a0ef845f74b603ce8339f70d40e9eef0794bacc7071ef27878be1341c0a0",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex3-s0-original-filing.md",
+      "size": 882,
+      "title": "2026-10-30-codex3-s0-original-filing",
+      "type": "progress"
+    },
+    {
+      "content_hash": "3ae52436453897eea4376f2200dba800a41db9ddac10776c5f60474aecd13507",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex3-speech-lid-preparation.md",
+      "size": 851,
+      "title": "Speech CPU LID and STT5 preparation \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "a0e76c75dff6acc5815ce766a77383f326a245134b59aaf18951920817dec605",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex3-ufh14-a3af1-filing.md",
+      "size": 1181,
+      "title": "UFH14-A3A-F1 original diagnostic filing \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "874eda75dfe37986c4112c07c2045a38d21580d191c779a73c171e00eab80af9",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex3-wrapup-checkpoints.md",
+      "size": 3376,
+      "title": "Codex3 root-lane checkpoints \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "9ca1472d59466875601aed58e59e584483e8b31b35825c84370c9f8bedfce642",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-codex3-yarn-s0-v27-filing.md",
+      "size": 312,
+      "title": "2026-10-30 \u2014 YaRN s0 v27 original-event filing",
+      "type": "progress"
+    },
+    {
+      "content_hash": "6202eaae0fb3fe3ee02b39af886dd411874200f1f0a12de31b9fd67f8a7b2fb5",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-fa4-r11-original-event-filing.md",
+      "size": 1314,
+      "title": "FA4 R11 original-event results audit \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "03f3cb6f17f6271486001b49e55753d89f2a89dd5b1ec3a2f85c672044864515",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-hpr-r4-kpf18-r7-repairs.md",
+      "size": 2771,
+      "title": "HPR R4 and KPF18 R7 accepted repairs \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "610320089edb548621a90996e14c10b2907ee4fd6a9adead9a28c69ff8edb99d",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-30-refactor-c6-preparation.md",
+      "size": 9498,
+      "title": "Refactor source-preparation checkpoint \u2014 2026-10-30/31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "d20067496d494221a4955c67629dfd2b20f7d88b2d6f71fa3e0761e0324bcf03",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "progress/2026-10/2026-10-30-workspace-58.md",
-      "size": 2393,
+      "size": 3072,
       "title": "2026-10-30 workspace-58 filing",
       "type": "progress"
     },
     {
-      "content_hash": "277fc80c0d3219501b74d830960e0e389869f5593ad861572dbd40f6ff54637d",
-      "modified": "2026-10-30T14:18:39Z",
+      "content_hash": "fff92a0da41fd16d6045665846ebaf1cdb4f9ef9f97e05c3bd6b518dd8d8f80a",
+      "modified": "2026-10-31T08:33:07Z",
       "path": "progress/2026-10/2026-10-30.md",
-      "size": 65925,
+      "size": 105123,
       "title": "Progress \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
+      "content_hash": "661c9a88e857916cc84a1f6c67dbffcc875be47aeb19d8d65611882d7f98b649",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-allowner-results-0805.md",
+      "size": 1015,
+      "title": "Native operational results \u2014 2026-10-31 08:05\u201308:09 UTC",
+      "type": "progress"
+    },
+    {
+      "content_hash": "d9c17e284fef13d7d54c5282a05a8fb10ae0705b3d2d4b9eef8bb0257a730146",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-c5-cpu-r6-result.md",
+      "size": 1036,
+      "title": "C5 CPU post-link R6 \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "7c8c5af585e9c2fad9564800589f7105c6f3b6ab91ade92b871e1321cfafc7c9",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-c5-hil15-filings.md",
+      "size": 2507,
+      "title": "C5 and HIL-15 result filings \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "cf7264fd01ffcdcd7c9723b75a221f73e23da2bb49a8b57d39c6f4e290c06cfc",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-c6-full-paw-a-failures.md",
+      "size": 3333,
+      "title": "C6 GPU component and PAW A continuation \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "b2ba545bed3e47a228d8ef17eb49c871ffea1728004bc2f4c66774c6c870594b",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex-ni-01a16d6b-lb49-first-native-v3-wrap.md",
+      "size": 2840,
+      "title": "2026-10-31 \u2014 LB4.9 DS41 FIRST_NATIVE v3 per-task wrap-up",
+      "type": "progress"
+    },
+    {
+      "content_hash": "56481155e411605d9f5a263212f3be4f6bc4928486f063ca33c04c6854a9cd2a",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex-ni-01a16d6b-ufh14-b1c.md",
+      "size": 3505,
+      "title": "UFH14-B1c Codex local-provider source closeout \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "597022225ceb0a6edc1e12c5e0e7db984febfa00f6e5651952eda1e6914f9979",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex-ni-01a16d6b.md",
+      "size": 2881,
+      "title": "codex-ni progress \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "6052f1efcacc3818b7d0e0e7ac14ca04949cbb7cb86eb89331fd9e6e5098de8a",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex-ni-accepted-closeouts-wrap.md",
+      "size": 6156,
+      "title": "Accepted closeouts and TD-29 source checkpoint \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "cb19f94ec934cd01598b89479b37ecb7d6ec677ed8216b5c4c0ee90ded832014",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex-ni-fa4-r17-qualified-ready.md",
+      "size": 2136,
+      "title": "FA4 exact-set R17 qualification and READY publication \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "0b8bef02d3ddd25be5fd5973f7bf237c6a2b806b062b0a5191cb1351ec93a6bb",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex-ni-gnx-r4-prep-checkpoint.md",
+      "size": 3163,
+      "title": "GNX R4 preparation checkpoint \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "3aca54c7adc78071f510be8d59d70d628985fbf5b9f3580029af183ce130ca10",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex-ni-lb49-fu06-closeout.md",
+      "size": 841,
+      "title": "2026-10-31-codex-ni-lb49-fu06-closeout",
+      "type": "progress"
+    },
+    {
+      "content_hash": "6f49c0e6b31149ff95d7b2c3d6abe698fa9388c86d686605a68028c1c741fc7e",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex-ni-m4-source-audit.md",
+      "size": 1960,
+      "title": "TD-29.M4 full18 source audit and bounded harness repair",
+      "type": "progress"
+    },
+    {
+      "content_hash": "52304071fd2ec455854c2c675d356ccfb3c5c1cc9d75bc946ba1c121a6aa0d16",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex-ni-nemo-accepted-wrap.md",
+      "size": 3868,
+      "title": "NEMO-LILI-2 accepted closure \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "be055f6659c55dabc27ec7754d138fc335fff134752eea15e7bf85e2007b707d",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex-ni-nemo-prof-reseg.md",
+      "size": 1943,
+      "title": "NEMO-PROF-RESEG accepted closure \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "9bc168af336f89fde51bde08e48247beb5f65ebf6851394b346944f7523cdf41",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex-ni-repl-emb-213.md",
+      "size": 630,
+      "title": "REPL-EMB-2.13 accepted closure \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "3de799624ee92090eee047af9414796509385526423957a6815dac7243cdab2d",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex-ni-yarn-r10.md",
+      "size": 1678,
+      "title": "YaRN-128K MI210 R10 accepted preparation \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "a7156b31c6c16892f596274d89570350f6d6801cb87b438e59cf95fb052ddac8",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex3-c6-dtap-pip.md",
+      "size": 3039,
+      "title": "2026-10-31 \u2014 C6, DTAP and PIP results filing",
+      "type": "progress"
+    },
+    {
+      "content_hash": "0dc2440365cd0204e58742e03b147d9296dc38e062d77639c48fe654693fd914",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex3-c6-q4-r2.md",
+      "size": 1057,
+      "title": "C6 Q4 component diagnostic R2 \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "fb35668729eea2ef442ffc81e469e2a0f4a2dd70b74d9a6ecd6f701b9a190ced",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex3-c6-r3-correctness.md",
+      "size": 2073,
+      "title": "C6 CPU operations R3 and Q4 outer failure \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "9cafa498983c95c8490ae8656e95182d8e3a0d854f7e7759f482b57a9ceaabad",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex3-cafe-source-pip.md",
+      "size": 887,
+      "title": "CAFE source enrollment and Paddle incremental filing \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "841c34f0c34ebe3c921d6e1e92301a9f32352587d50ef51332a2233594699d6e",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex3-e332-hip-r13-repair.md",
+      "size": 758,
+      "title": "KPF exact-e332 HIP R13 completion repair \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "eac3c5a4a758903f9ad18db926ed9ae7fd12578c82a6b5d39554b05ad938e97b",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex3-fu03-r13-repair.md",
+      "size": 970,
+      "title": "FU-03 R13 completion repair \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "65b062c5765ad39367525bae18ff2a0e3ef7fa3b646a50f029d8690371a5f7e9",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex3-g13-truncskip.md",
+      "size": 1883,
+      "title": "G13 full native diagnostic \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "dd0e14634d251e3158ffd629b4cee5a1329e04bcd9fde2cea5b8e3ca078bdb94",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex3-gpu-ds41-lex.md",
+      "size": 3312,
+      "title": "GPU diagnostics and DS41 / LEX2 preparation \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "d9b9da9e9a68c649419d2a6de64a817eed28276a5c47748619571b566886d76e",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex3-kpf-td29-results.md",
+      "size": 1515,
+      "title": "KPF-18.3 successor and TD29 R4 \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "fb7a91526837cc55119769391973fb3b723090f03bace93a11f90e03598d356b",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex3-kpf-trace-prep.md",
+      "size": 2211,
+      "title": "KPF-18.3 trace preparation and item 4 correction \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "88a47eee8eec6416da9bb20051f3ed1264c5bb48ddba953e4c6ed6f0f389d2d0",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex3-kpf181-cpu-ready.md",
+      "size": 1472,
+      "title": "KPF-18.1 CPU subset preparation \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "c4ea1a4a4c2fe5c2eb8438e97cfbc31d59c5531d053e7ab1fe441cd877ecc8a8",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex3-kpf181-fu03-results.md",
+      "size": 3265,
+      "title": "KPF-18.1 CPU, e332 HIP build and FU-03 admission \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "cefdbb6612505629cb9edb8fef2001f5617ce19e07ebe4c925a560a34625b4ad",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex3-lex-sw2-ready.md",
+      "size": 2753,
+      "title": "LEX2 and private v9 SW-2 READY \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "28bbae27b77c07c65d44c3c10f9df815b14a3921ea2108c31e17e9d57f43eede",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex3-lex2-hip-prereq.md",
+      "size": 1367,
+      "title": "LEX2 future source and KPF HIP prerequisite \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "4afac99d0eac9f8b809266f4a6dd2d08568748a2cc30a96016bcd0d3890d42c0",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex3-ni-five-filings.md",
+      "size": 971,
+      "title": "NI five-run filing \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "f8ca88fbbd8b7997c4b12acbbde73bcc6d79a32555ce024993f26ac34fb69a92",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex3-paw-pip-failures.md",
+      "size": 2663,
+      "title": "PAW compact and PIP head results filing \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "174d35bca54c7b4b4b4d3d57a0960a5a867da0e7b534ba126933a80843c1d535",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex3-pip-r28-pool3.md",
+      "size": 1301,
+      "title": "2026-10-31 \u2014 Paddle pool 3 successor",
+      "type": "progress"
+    },
+    {
+      "content_hash": "e17102fd8111acaf24771d92029ef2ed207b3890bbac8d6a5159e39a3543f838",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex3-pip-r28-ready.md",
+      "size": 2215,
+      "title": "2026-10-31 \u2014 Paddle R28 successor preparation",
+      "type": "progress"
+    },
+    {
+      "content_hash": "f8598e09a15d270fcbf616b9736954a04cbb9a34cc44fe1ef43207cdb915fda6",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex3-ready-and-source-checkpoint-0105.md",
+      "size": 2707,
+      "title": "Codex3 READY and source checkpoint \u2014 2026-10-31 01:05 UTC",
+      "type": "progress"
+    },
+    {
+      "content_hash": "920219e80a65dd8e3ef2583a40c3334b5d45b37e783078eee8b2f578b74b13b9",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex3-runtime-checkpoint-0135.md",
+      "size": 4100,
+      "title": "Runtime preparation checkpoint \u2014 2026-10-31 01:35 UTC",
+      "type": "progress"
+    },
+    {
+      "content_hash": "258ce8f1ef7c89affc924f467ade6ac617a408098fe02572b061f9023bd77ebb",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex3-speech-prep-checkpoint.md",
+      "size": 3470,
+      "title": "Codex3 speech preparation checkpoint \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "6fb64f9eb803fa763596aae4b826018ba1af782beaab101a214db02b5037f66d",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-codex3-zos-kpf-filing.md",
+      "size": 1938,
+      "title": "2026-10-31 progress",
+      "type": "progress"
+    },
+    {
+      "content_hash": "ebcf970702f0b58931128f05974c4f3b41b1fdc02bd690acb8e3072fc441340c",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-emb214-native-parity-0821.md",
+      "size": 505,
+      "title": "REPL-EMB-2.14 native parity \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "68d8acf4f44eb9fb50264b33e7d975f99b5075456c05c01c87b68bddc9151de9",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-ernie-pareval-ready.md",
+      "size": 1445,
+      "title": "ERNIE and ParEval preparation \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "1b2d6630659f9a09cd3dcd10323812bddf55399561a02afbd5418f0546e3d06e",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-fu03-cli-r3-0817.md",
+      "size": 700,
+      "title": "FU-DIVERGE-03 CLI repeat \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "6ceafd3541188be76d9234e865883c4ce08dde44b57c8108aba948ed0aa875ae",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-fu03-r3-kpf-gpu-draft.md",
+      "size": 5009,
+      "title": "FU03 R3 and KPF GPU draft \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "bb9d82bf94c761701de9cbfb153895e82684804f5748836b5fd29d556a53db94",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-g16a-native.md",
+      "size": 1230,
+      "title": "2026-10-31 - NI G16a native completion",
+      "type": "progress"
+    },
+    {
+      "content_hash": "72baeb26affcabee99769800f53bcf959b306907bf17b9d2418dc7ec7ae4c3b9",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-hpr-paw-stt3-filings.md",
+      "size": 2689,
+      "title": "HPR, PAW and STT3 results \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "322a3bf96217752866ca9fdd8a1073d21567191689ead3e7a72bed188cd2e5e4",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-kpf181-gpu-first-segment.md",
+      "size": 1417,
+      "title": "KPF-18.1 GPU first segment \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "1dd17f25aa41e68d1fafebb34cfa2911131ba37e8fc153a1595f5d008fe9b371",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-kpf182-v3-runtime.md",
+      "size": 2536,
+      "title": "KPF-18.2 private native custody control \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "c8664e47ecefb7ef27c498bd292bfb323f4090853726dc0a0acf49800abdab65",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-native-results-0800.md",
+      "size": 920,
+      "title": "Native diagnostic results \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "754e4a47e13ad2c140a78a27a20ca7d959806a1760ee0f639c6e8deb405873dd",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-paw-b-yarn-interim.md",
+      "size": 2078,
+      "title": "PAW standard B and YARN interim \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "f31de18c3b741512f97d327bd8a39050e98d04a6a9f022212a7aaf8b9b4601d6",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-paw-compact-a-cs22-f32.md",
+      "size": 1421,
+      "title": "PAW compact A and CS22 F32 parity \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "c4dab4b52d642435fdb99ed710936f738a6d83077c34f5e6394cdce6c489c167",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-paw-compact-b-admission-0804.md",
+      "size": 710,
+      "title": "PAW compact B admission loss \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "95ec51e8d59ca2012946d6c9f742aecc5a8727840b16995f1ceddd3c4f15528a",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-paw-host-qualified.md",
+      "size": 1416,
+      "title": "PAW host-qualified successors \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "41fe8b39370eb9c4096d5ce28bf7c5ea347e72211448fd2c03b53533964b9222",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-paw-standard-a-filing.md",
+      "size": 1269,
+      "title": "PAW standard A filing \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "df888941941647cada0740d4f9d0df6697ff8c2da43c7672dd07aba827f213dd",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-pip-head-recovery-cs53.md",
+      "size": 3741,
+      "title": "PIP head recovery and CS-53 \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "9d67dc8737d10e57f4763126d0bb70d399821b4ca7abeb5c07fa1c491deeb615",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-pip-r29-c6-gpu-r2-filings.md",
+      "size": 1866,
+      "title": "PIP R29 and C6 GPU R2 filings \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "475f55601831964010eb167077eef1bc7b7eb14472e58c5358dbb72beed1fbc3",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-pip-r29-continuation.md",
+      "size": 2826,
+      "title": "2026-10-31 \u2014 Paddle head checkpoint continuation",
+      "type": "progress"
+    },
+    {
+      "content_hash": "fab332099a53d0eaf186fbf5cbac99d91efdbead4c62355587d2e2e9cb4d32fa",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-pip-r29-scorer-344.md",
+      "size": 1183,
+      "title": "PIP R29 strict scoring \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "a7d42cdfc9075671cf16e05db2ae39e45ffdf5625d5f6cff4738d5947be90cde",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-pip-r31-pool3-ready.md",
+      "size": 1879,
+      "title": "PIP-02 pool3 tail publication \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "85ef1b7011813d358eca2cf5218dd46b2968d4bc57fc2fea2a40cc7480994823",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-pip-r32-pool1-ready.md",
+      "size": 1854,
+      "title": "PIP-02 R32 pool1 continuation \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "e6238dd0c52f90ad93a95a7c9bb8f445f611272f45bcb0ae31b69dffbf9d336b",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-pip-r33-r34-ready.md",
+      "size": 2925,
+      "title": "PIP-02 pool0 continuation \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "fd86e5c93dedd54b9868dac089fe15674904229ef5350249e34a5616181e058b",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-preparation-kpf-offline-audit.md",
+      "size": 3331,
+      "title": "Preparation and KPF offline audit \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "b6c7427fe2c19078ada41e8b5ab6e62cd213c6bb7476a1d6751979a1af23c591",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-refactor-c6-writer-enrollment.md",
+      "size": 2106,
+      "title": "C6 microbench prospective source enrollment \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "111573e301542f984b7a93e4f1ea831f526eabef123d3db56e22224663de62eb",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-unlimited-source-emb-kpf-audit.md",
+      "size": 1300,
+      "title": "Unlimited OCR source, embedding READY and retired-model audit \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "6adee2a67db6cb00380ca6c7c080ddd04a807020501681237c18b16ac013d7b0",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-vkq3-pip-r30-preparation.md",
+      "size": 6964,
+      "title": "VKQ3 and PIP R30 preparation \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "6688cee5787a77a7af11d1e87ed7fe6b2d5549f0e0d16acd245d3f020a66a4b2",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-yarn-v33-admission-0816.md",
+      "size": 638,
+      "title": "OOLONG S0 v33 admission failure \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "19b2700df788e2a8cf0aa657d229155e86b24a5f6bed52c6661efa68f282a107",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31-zos23-serial-r4.md",
+      "size": 1109,
+      "title": "GPU-ZOS-2.3 serial fallback \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
+      "content_hash": "069e8431f5bc74bbb1c0293fbeae945e71bf4b1b1b3efb718260ece600c4e64f",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "progress/2026-10/2026-10-31.md",
+      "size": 9649,
+      "title": "Progress \u2014 2026-10-31",
       "type": "progress"
     },
     {
@@ -12506,6 +13646,14 @@
       "path": "docs/guides/agent-workflows/cleanup-reference-check.md",
       "size": 8124,
       "title": "Cleanup reference check: \"unused\" includes environments and launchers",
+      "type": "docs"
+    },
+    {
+      "content_hash": "884e846be53c4d1028dc890e76099a19e08c6dbbd37f03414dcdeaad9898771d",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "docs/guides/agent-workflows/codex3-lane-checkouts.md",
+      "size": 2912,
+      "title": "Codex3 persistent editing lanes",
       "type": "docs"
     },
     {
@@ -13389,6 +14537,14 @@
       "type": "docs"
     },
     {
+      "content_hash": "77af96c7de3256677a85e226624645b7c48f74d412fcebea59e91ed163a59b90",
+      "modified": "2026-10-31T08:33:07Z",
+      "path": "docs/reference/repl-emb-2-13-side-callsite-audit-20261031.md",
+      "size": 1926,
+      "title": "REPL-EMB-2.13 side call-site audit \u2014 2026-10-31",
+      "type": "docs"
+    },
+    {
       "content_hash": "703b10729c18749dc35889f45d89aa1a8c430493de3d2733701ba7605188c7ef",
       "modified": "2026-10-29T23:14:21Z",
       "path": "docs/reference/repl-terminal-timeout-state.md",
@@ -13917,7 +15073,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1736,
+  "total_new": 1858,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

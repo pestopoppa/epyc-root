@@ -2,7 +2,7 @@
 
 **Category**: `rag_alternatives`
 **Confidence**: research (pre-deployment, evaluation-gated)
-**Last compiled**: 2026-06-21
+**Last compiled**: 2026-10-31 (operator wiki sweep, workspace-58): Mainplane 'retrieval over compaction' intake verdict. Earlier: 2026-06-21. Earlier: 2026-06-21
 **Sources**: 1 active handoff (sliders-local-validation), 3 intake entries (intake-494, intake-710/711 OKF, intake-698 MRAgent)
 
 ## Summary
@@ -104,3 +104,11 @@ Document the closure scope explicitly in the closure block when the gate is deci
 - [`research/intake_index.yaml`](../research/intake_index.yaml) intake-494 — full Tier 2b critique enumerating frontier-API-only architecture, headline-number disagreement, schema-hallucination as #1 LLM-to-SQL production failure, long-context relational reasoning underprediction (arxiv:2510.03611), single-source results, per-document amortization caveat
 - [intake-710/711](https://arxiv.org/abs/2606.09821) OKF — Open Knowledge Format v0.1 (Google Cloud): markdown+YAML-frontmatter knowledge bundles as a structured-knowledge / compilation-vs-retrieval alternative; 5/6 conventions already in the KB, only `schema_version` stamp + permissive-consumption contract adopted (now in [`wiki/SCHEMA.md`](SCHEMA.md) ## Conformance, 2026-06-20)
 - [intake-698](https://arxiv.org/abs/2606.06036) MRAgent ("Memory is Reconstructed, Not Retrieved") — active-reconstruction retrieval policy (Cue-Tag-Content graph + evidence-conditioned path pruning) as a process-level RAG alternative to static retrieve-then-reason; cloud-LLM-bound comparator, token-cost discipline is the transferable lever; cross-linked from [Search & Retrieval](search-retrieval.md)
+
+## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
+
+**Confidence: judged** (intake analysis, no compute); no measurement exists for the one new element.
+
+- **Retrieval over compaction is prior art, not a new technique.** The Mainplane pointer-only hand-off keeps the full transcript searchable and drops the summary; MemGPT, Cursor dynamic context discovery, Claude Code and OpenClaw already keep transcripts searchable beside a summary, and our REPL already emits read_file/peek pointers. The only new element is dropping the summary, and its evidence is n=1 hand-off cost with no accuracy measurement. Stage 4 files TOC-MP-1..4 plus monitor notes rather than an adoption. ([progress 2026-10-30](../progress/2026-10/2026-10-30.md); [repl-session-memory-maturity](../handoffs/active/repl-session-memory-maturity.md))
+
+Sources: [2026-10-30 progress](../progress/2026-10/2026-10-30.md) · [repl-session-memory-maturity](../handoffs/active/repl-session-memory-maturity.md) · [tool-output-compression](../handoffs/active/tool-output-compression.md)

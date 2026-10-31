@@ -1,7 +1,7 @@
 # Chat Templates — Per-Model Turn Markers and Routing Endpoints
 
 **Category**: `chat_templates`
-**Last compiled**: 2026-10-28 (workspace-58 wrap): CT-21 HOLD and the failed v2 exploratory run. Earlier: 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): the control-token neutraliser is widened to the non-Qwen lineup (CT-12.1b). Earlier: 2026-10-24 (wrap-up sweep 9). Earlier: 2026-10-22 (wrap-up sweep 10: stock Qwen3.6-35B template breaks prefix property). Earlier: 2026-10-22 (wrap-up sweep 9: Qwen3.x thinking is turned off at the server source). Earlier: 2026-10-22 (wrap-up sweep 7: CT-18 closed, DP-G ruling, prefix-property render test filed). Earlier: 2026-10-21 (wrap-up sweep 3: the CT-12 injection surface is closed at the orchestrator an). Earlier: 2026-10-20 (wrap-up sweep 2: DeepInfer intake, DS41 1017 swap). Earlier: 2026-09-17 (incremental: CT-series mmlu_pro cells under-scored by the A–H scorer; re-score estimates); earlier: 2026-08-23
+**Last compiled**: 2026-10-31 (operator wiki sweep, workspace-58): LB5.1 live-server template check confirmed on four residual rows. Earlier: 2026-10-28 (workspace-58 wrap): CT-21 HOLD and the failed v2 exploratory run. Earlier: 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): the control-token neutraliser is widened to the non-Qwen lineup (CT-12.1b). Earlier: 2026-10-24 (wrap-up sweep 9). Earlier: 2026-10-22 (wrap-up sweep 10: stock Qwen3.6-35B template breaks prefix property). Earlier: 2026-10-22 (wrap-up sweep 9: Qwen3.x thinking is turned off at the server source). Earlier: 2026-10-22 (wrap-up sweep 7: CT-18 closed, DP-G ruling, prefix-property render test filed). Earlier: 2026-10-21 (wrap-up sweep 3: the CT-12 injection surface is closed at the orchestrator an). Earlier: 2026-10-20 (wrap-up sweep 2: DeepInfer intake, DS41 1017 swap). Earlier: 2026-09-17 (incremental: CT-series mmlu_pro cells under-scored by the A–H scorer; re-score estimates); earlier: 2026-08-23
 
 > Quick reference for which chat template each production model uses, which
 > orchestrator code path applies the template (client-side vs server-side
@@ -705,3 +705,12 @@ Sources: [Qwen chat template evaluation](../handoffs/active/qwen-chat-template-e
 - **CT-12.5 closed by audit:** the `6dfbc9e86` fix is folded into the champion (patch-id equal commit `9a44414c4`, ancestor of champion `c72ec82f5`), with test-chat-input-spans and `test_chat_special_tokens.py` recorded as PASS.
 
 Sources: [qwen-chat-template-evaluation handoff](../handoffs/active/qwen-chat-template-evaluation.md); [CT-21 aggregate verdict](../artifacts/chat-templates/ct21-verdict-20261027/AGGREGATE.md); [ct21-direct-ready progress](../progress/2026-10/2026-10-28-ct21-direct-ready.md); [codex-ni-01a16d6b progress](../progress/2026-10/2026-10-28-codex-ni-01a16d6b.md)
+
+## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
+
+**Confidence: verified** for the template-rendering confirmation (CPU rendering/tokenization only); no GPU compute, throughput or quality claim.
+
+- **Static template results held on the live server path.** The predeclared all-four P1/P2/P3 rule confirmed `35b-terse`, `27b-embedded`, `vl-embedded` and `fn-embedded` (each passed four original fixtures and the shared trunk), joining the earlier 27b-terse result. HIP/KFD/VRAM samples prove model residency only; this closes LB5.1's live-path check, nothing broader. ([source](../handoffs/active/agentic-serving-harness-fixes.md))
+- **The typed-vs-tool prompt diverges right after the user turn marker.** In the TD-29 pair, rendered prompts shared 17 bytes / 3 tokens, diverging immediately after `<|im_start|>user\n` (`Fill in` vs `Answer`); reported and tokenized lengths matched. One pair, no cohort cache verdict. ([source](../handoffs/active/typed-decision-plane.md))
+
+Sources: [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md) · [typed-decision-plane](../handoffs/active/typed-decision-plane.md)
