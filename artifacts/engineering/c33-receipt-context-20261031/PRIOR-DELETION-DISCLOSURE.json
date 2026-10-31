@@ -1,0 +1,32 @@
+{
+  "status": "Prior execution did not comply with the standing no-delete/no-rename rule; it is not the final approved execution path.",
+  "confirmed_operations": [
+    "Existing broad tests test_c8_endpoint_lint_absent_config_warns_without_raising and test_c19_unreadable_state_is_skipped_never_read_as_zero_unread passed and explicitly unlinked their synthetic config/cursor fixtures.",
+    "Existing bus.provision fixtures call session_bus._write_atomic, which uses os.replace.",
+    "Default pytest numbered fixture management unlinks current symlinks and cleanup locks and registers older-tree rename/removal."
+  ],
+  "observations": [
+    {
+      "path": "/tmp/pytest-of-node/pytest-11442",
+      "exists_now": false,
+      "is_symlink_now": false
+    },
+    {
+      "path": "/tmp/pytest-of-node/pytest-11449",
+      "exists_now": false,
+      "is_symlink_now": false
+    },
+    {
+      "path": "/tmp/pytest-of-node/pytest-11450/.lock",
+      "exists_now": false,
+      "is_symlink_now": false
+    },
+    {
+      "path": "/tmp/pytest-of-node/pytest-11449/test_c8_endpoint_lint_absent_c0/session-bus/config.yaml",
+      "exists_now": false,
+      "is_symlink_now": false
+    }
+  ],
+  "attribution_limit": "There was no syscall log or pre-run filesystem inventory. Exact cleanup counts and which process removed an older shared pytest root cannot be reconstructed amid concurrent sessions. Do not assert zero deletion or invent counts.",
+  "corrective_path": "No more default pytest runs. Use the retained guarded runner; no shared source/daemon/index change was made to bypass this constraint."
+}

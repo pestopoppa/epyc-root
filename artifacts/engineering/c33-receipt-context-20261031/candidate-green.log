@@ -1,0 +1,3 @@
+...................                                                      [100%]
+19 passed in 0.58s
+{"pytest_returncode": 0, "retained_files": 57, "fixture_count": 19, "pytest_factory_fixture_count": 4, "blocked_real_operations": 0, "receipt": "/mnt/raid0/llm/tmp/refactor-c33-receipt-context-20261031/retained-v2-candidate-01/RECEIPT.json"}

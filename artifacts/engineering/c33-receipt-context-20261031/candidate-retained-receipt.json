@@ -1,0 +1,324 @@
+{
+  "scope": "C33 retained model-free source controls; no live bus/model/native run",
+  "pytest_returncode": 0,
+  "source_root": "/mnt/raid0/llm/tmp/refactor-c33-receipt-context-20261031/candidate",
+  "coordinator_sha256": "02fa9843181c38569a2e5fcd6e2941100c240cf8d667462fcd2433d049c81ba9",
+  "test_sha256": "da9dc3380aae404fcde9d82b21669acb41ff8760e5e09e87babe58e11bc9e3cd",
+  "fixture_count": 19,
+  "pytest_factory_fixture_count": 4,
+  "retained_files": [
+    {
+      "path": "fixtures/test_a_gate_already_in_the_queue_gets_a_notice_because_the_block_is_never_rewrit-4/receipts/RATIFY-OLD-20260729.json",
+      "sha256": "3726182ad7894b8077dbf4bef9e17af65c317b1368de208ad1b711cada911b50",
+      "bytes": 56
+    },
+    {
+      "path": "fixtures/test_a_gate_already_in_the_queue_gets_a_notice_because_the_block_is_never_rewrit-4/session-bus/config.yaml",
+      "sha256": "f7d81c4be8bc5d6977b4cb0feea6cf1182841316988d73c3329a16338e3d2d80",
+      "bytes": 373
+    },
+    {
+      "path": "fixtures/test_a_gate_already_in_the_queue_gets_a_notice_because_the_block_is_never_rewrit-4/session-bus/session_bus.schema.json",
+      "sha256": "280060ce7d9d1393a33bfc7bcffe29b75740901d2591937e7d2202023fe6426d",
+      "bytes": 71241
+    },
+    {
+      "path": "fixtures/test_a_gate_already_in_the_queue_gets_a_notice_because_the_block_is_never_rewrit-4/session-bus/tokens/token-queue.md",
+      "sha256": "ad0c643cd0ef7b2505965294f269e239a5200174364cbd31cdd614db0e2fa655",
+      "bytes": 63
+    },
+    {
+      "path": "fixtures/test_a_spent_gate_is_ANNOTATED_and_never_suppressed-2/receipts/RATIFY-X-20260729.json",
+      "sha256": "e65740d4c1d77b4c5ab3d5a0b6c06c3df105de8ed36a24b40ab078c26c069e0c",
+      "bytes": 54
+    },
+    {
+      "path": "fixtures/test_a_spent_gate_is_ANNOTATED_and_never_suppressed-2/session-bus/config.yaml",
+      "sha256": "f7d81c4be8bc5d6977b4cb0feea6cf1182841316988d73c3329a16338e3d2d80",
+      "bytes": 373
+    },
+    {
+      "path": "fixtures/test_a_spent_gate_is_ANNOTATED_and_never_suppressed-2/session-bus/session_bus.schema.json",
+      "sha256": "280060ce7d9d1393a33bfc7bcffe29b75740901d2591937e7d2202023fe6426d",
+      "bytes": 71241
+    },
+    {
+      "path": "fixtures/test_a_spent_gate_is_ANNOTATED_and_never_suppressed-2/session-bus/tokens/token-queue.md",
+      "sha256": "5d26c2e9c9f1969e0dc84501d407f1e14091e2030809c56e84dcce2928c9861e",
+      "bytes": 18
+    },
+    {
+      "path": "fixtures/test_absent_unreadable_unspent_receipt_retains_original_refusal_None_-89fab5cfb5cc4db5a6ffbdf2d8dab1e2/bus/inbox/coordinator-agent.jsonl",
+      "sha256": "448db706980ef54644ba94190cd39c5a8efd9c6552a0d303e78262dd49f7001f",
+      "bytes": 633
+    },
+    {
+      "path": "fixtures/test_absent_unreadable_unspent_receipt_retains_original_refusal_None_-89fab5cfb5cc4db5a6ffbdf2d8dab1e2/bus/outbox/alice.jsonl",
+      "sha256": "ae274f86633c894f4cdf5d94302cc940b35d61729cb1b81af8d63635193c9c00",
+      "bytes": 345
+    },
+    {
+      "path": "fixtures/test_absent_unreadable_unspent_receipt_retains_original_refusal_None_-89fab5cfb5cc4db5a6ffbdf2d8dab1e2/bus/tokens/token-queue.md",
+      "sha256": "5d26c2e9c9f1969e0dc84501d407f1e14091e2030809c56e84dcce2928c9861e",
+      "bytes": 18
+    },
+    {
+      "path": "fixtures/test_absent_unreadable_unspent_receipt_retains_original_refusal___status___pendi-fa4ba9a9541a43d8b80ae8d343132779/bus/inbox/coordinator-agent.jsonl",
+      "sha256": "448db706980ef54644ba94190cd39c5a8efd9c6552a0d303e78262dd49f7001f",
+      "bytes": 633
+    },
+    {
+      "path": "fixtures/test_absent_unreadable_unspent_receipt_retains_original_refusal___status___pendi-fa4ba9a9541a43d8b80ae8d343132779/bus/outbox/alice.jsonl",
+      "sha256": "ae274f86633c894f4cdf5d94302cc940b35d61729cb1b81af8d63635193c9c00",
+      "bytes": 345
+    },
+    {
+      "path": "fixtures/test_absent_unreadable_unspent_receipt_retains_original_refusal___status___pendi-fa4ba9a9541a43d8b80ae8d343132779/bus/tokens/token-queue.md",
+      "sha256": "5d26c2e9c9f1969e0dc84501d407f1e14091e2030809c56e84dcce2928c9861e",
+      "bytes": 18
+    },
+    {
+      "path": "fixtures/test_absent_unreadable_unspent_receipt_retains_original_refusal___status___pendi-fa4ba9a9541a43d8b80ae8d343132779/receipts/TEST-C33-RECEIPT-CONTEXT.json",
+      "sha256": "a839711b15b8e9862282ec0ed1034f134efb54b5d9969e66ea285babef923d4a",
+      "bytes": 20
+    },
+    {
+      "path": "fixtures/test_absent_unreadable_unspent_receipt_retains_original_refusal_not_json_-1adae6ee37ce45e8984896427ea426b8/bus/inbox/coordinator-agent.jsonl",
+      "sha256": "448db706980ef54644ba94190cd39c5a8efd9c6552a0d303e78262dd49f7001f",
+      "bytes": 633
+    },
+    {
+      "path": "fixtures/test_absent_unreadable_unspent_receipt_retains_original_refusal_not_json_-1adae6ee37ce45e8984896427ea426b8/bus/outbox/alice.jsonl",
+      "sha256": "ae274f86633c894f4cdf5d94302cc940b35d61729cb1b81af8d63635193c9c00",
+      "bytes": 345
+    },
+    {
+      "path": "fixtures/test_absent_unreadable_unspent_receipt_retains_original_refusal_not_json_-1adae6ee37ce45e8984896427ea426b8/bus/tokens/token-queue.md",
+      "sha256": "5d26c2e9c9f1969e0dc84501d407f1e14091e2030809c56e84dcce2928c9861e",
+      "bytes": 18
+    },
+    {
+      "path": "fixtures/test_absent_unreadable_unspent_receipt_retains_original_refusal_not_json_-1adae6ee37ce45e8984896427ea426b8/receipts/TEST-C33-RECEIPT-CONTEXT.json",
+      "sha256": "7ccfa1fbf3940e6f0c0375d87c0f9235a50514e14cb427bdfaf5077987b26ccf",
+      "bytes": 8
+    },
+    {
+      "path": "fixtures/test_an_unspent_gate_is_presented_with_no_annotation-3/session-bus/config.yaml",
+      "sha256": "f7d81c4be8bc5d6977b4cb0feea6cf1182841316988d73c3329a16338e3d2d80",
+      "bytes": 373
+    },
+    {
+      "path": "fixtures/test_an_unspent_gate_is_presented_with_no_annotation-3/session-bus/session_bus.schema.json",
+      "sha256": "280060ce7d9d1393a33bfc7bcffe29b75740901d2591937e7d2202023fe6426d",
+      "bytes": 71241
+    },
+    {
+      "path": "fixtures/test_an_unspent_gate_is_presented_with_no_annotation-3/session-bus/tokens/token-queue.md",
+      "sha256": "5d26c2e9c9f1969e0dc84501d407f1e14091e2030809c56e84dcce2928c9861e",
+      "bytes": 18
+    },
+    {
+      "path": "fixtures/test_malformed_unvalidated_gate_cannot_trigger_an_extra_path_read-045fa81fa8dd464e817272514dfb76b8/bus/tokens/token-queue.md",
+      "sha256": "5d26c2e9c9f1969e0dc84501d407f1e14091e2030809c56e84dcce2928c9861e",
+      "bytes": 18
+    },
+    {
+      "path": "fixtures/test_non_mapping_receipt_cannot_drop_existing_validation_refusal_1_-2886b07607f84de281a8df18bf3b9bff/bus/inbox/coordinator-agent.jsonl",
+      "sha256": "448db706980ef54644ba94190cd39c5a8efd9c6552a0d303e78262dd49f7001f",
+      "bytes": 633
+    },
+    {
+      "path": "fixtures/test_non_mapping_receipt_cannot_drop_existing_validation_refusal_1_-2886b07607f84de281a8df18bf3b9bff/bus/outbox/alice.jsonl",
+      "sha256": "ae274f86633c894f4cdf5d94302cc940b35d61729cb1b81af8d63635193c9c00",
+      "bytes": 345
+    },
+    {
+      "path": "fixtures/test_non_mapping_receipt_cannot_drop_existing_validation_refusal_1_-2886b07607f84de281a8df18bf3b9bff/bus/tokens/token-queue.md",
+      "sha256": "5d26c2e9c9f1969e0dc84501d407f1e14091e2030809c56e84dcce2928c9861e",
+      "bytes": 18
+    },
+    {
+      "path": "fixtures/test_non_mapping_receipt_cannot_drop_existing_validation_refusal_1_-2886b07607f84de281a8df18bf3b9bff/receipts/TEST-C33-RECEIPT-CONTEXT.json",
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+      "bytes": 1
+    },
+    {
+      "path": "fixtures/test_non_mapping_receipt_cannot_drop_existing_validation_refusal____status___rat-f4293139b8c0494682556952a04cf1e7/bus/inbox/coordinator-agent.jsonl",
+      "sha256": "448db706980ef54644ba94190cd39c5a8efd9c6552a0d303e78262dd49f7001f",
+      "bytes": 633
+    },
+    {
+      "path": "fixtures/test_non_mapping_receipt_cannot_drop_existing_validation_refusal____status___rat-f4293139b8c0494682556952a04cf1e7/bus/outbox/alice.jsonl",
+      "sha256": "ae274f86633c894f4cdf5d94302cc940b35d61729cb1b81af8d63635193c9c00",
+      "bytes": 345
+    },
+    {
+      "path": "fixtures/test_non_mapping_receipt_cannot_drop_existing_validation_refusal____status___rat-f4293139b8c0494682556952a04cf1e7/bus/tokens/token-queue.md",
+      "sha256": "5d26c2e9c9f1969e0dc84501d407f1e14091e2030809c56e84dcce2928c9861e",
+      "bytes": 18
+    },
+    {
+      "path": "fixtures/test_non_mapping_receipt_cannot_drop_existing_validation_refusal____status___rat-f4293139b8c0494682556952a04cf1e7/receipts/TEST-C33-RECEIPT-CONTEXT.json",
+      "sha256": "8b0acda8352040c50884c124a04a8e49b6bc814eccb3d8bf1355935ab6f672f1",
+      "bytes": 23
+    },
+    {
+      "path": "fixtures/test_non_mapping_receipt_cannot_drop_existing_validation_refusal__ratified__-fa5644b082e34383bc2812f3867ed6e7/bus/inbox/coordinator-agent.jsonl",
+      "sha256": "448db706980ef54644ba94190cd39c5a8efd9c6552a0d303e78262dd49f7001f",
+      "bytes": 633
+    },
+    {
+      "path": "fixtures/test_non_mapping_receipt_cannot_drop_existing_validation_refusal__ratified__-fa5644b082e34383bc2812f3867ed6e7/bus/outbox/alice.jsonl",
+      "sha256": "ae274f86633c894f4cdf5d94302cc940b35d61729cb1b81af8d63635193c9c00",
+      "bytes": 345
+    },
+    {
+      "path": "fixtures/test_non_mapping_receipt_cannot_drop_existing_validation_refusal__ratified__-fa5644b082e34383bc2812f3867ed6e7/bus/tokens/token-queue.md",
+      "sha256": "5d26c2e9c9f1969e0dc84501d407f1e14091e2030809c56e84dcce2928c9861e",
+      "bytes": 18
+    },
+    {
+      "path": "fixtures/test_non_mapping_receipt_cannot_drop_existing_validation_refusal__ratified__-fa5644b082e34383bc2812f3867ed6e7/receipts/TEST-C33-RECEIPT-CONTEXT.json",
+      "sha256": "06a493b9b3019d70a4865311d8f32cd8fdafc5957db036de37d6a94fbc6851ce",
+      "bytes": 10
+    },
+    {
+      "path": "fixtures/test_non_mapping_receipt_cannot_drop_existing_validation_refusal_true_-826a9e0b8a1f42039e073c8487976387/bus/inbox/coordinator-agent.jsonl",
+      "sha256": "448db706980ef54644ba94190cd39c5a8efd9c6552a0d303e78262dd49f7001f",
+      "bytes": 633
+    },
+    {
+      "path": "fixtures/test_non_mapping_receipt_cannot_drop_existing_validation_refusal_true_-826a9e0b8a1f42039e073c8487976387/bus/outbox/alice.jsonl",
+      "sha256": "ae274f86633c894f4cdf5d94302cc940b35d61729cb1b81af8d63635193c9c00",
+      "bytes": 345
+    },
+    {
+      "path": "fixtures/test_non_mapping_receipt_cannot_drop_existing_validation_refusal_true_-826a9e0b8a1f42039e073c8487976387/bus/tokens/token-queue.md",
+      "sha256": "5d26c2e9c9f1969e0dc84501d407f1e14091e2030809c56e84dcce2928c9861e",
+      "bytes": 18
+    },
+    {
+      "path": "fixtures/test_non_mapping_receipt_cannot_drop_existing_validation_refusal_true_-826a9e0b8a1f42039e073c8487976387/receipts/TEST-C33-RECEIPT-CONTEXT.json",
+      "sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+      "bytes": 4
+    },
+    {
+      "path": "fixtures/test_receipt_transition_gets_one_new_notice_after_old_notice_was_consumed-179e04efa9364cdf982d67cdaaa3ca43/bus/inbox/coordinator-agent.jsonl",
+      "sha256": "68ba68bc3276a5be0f109da1e87f57c6620d53e9e5afc3576d81f0430d9eff28",
+      "bytes": 1619
+    },
+    {
+      "path": "fixtures/test_receipt_transition_gets_one_new_notice_after_old_notice_was_consumed-179e04efa9364cdf982d67cdaaa3ca43/bus/outbox/alice.jsonl",
+      "sha256": "ae274f86633c894f4cdf5d94302cc940b35d61729cb1b81af8d63635193c9c00",
+      "bytes": 345
+    },
+    {
+      "path": "fixtures/test_receipt_transition_gets_one_new_notice_after_old_notice_was_consumed-179e04efa9364cdf982d67cdaaa3ca43/bus/tokens/token-queue.md",
+      "sha256": "5d26c2e9c9f1969e0dc84501d407f1e14091e2030809c56e84dcce2928c9861e",
+      "bytes": 18
+    },
+    {
+      "path": "fixtures/test_receipt_transition_gets_one_new_notice_after_old_notice_was_consumed-179e04efa9364cdf982d67cdaaa3ca43/receipts/TEST-C33-RECEIPT-CONTEXT.json",
+      "sha256": "fac6c8d0d237ede014db78093d843ab071558dc798e0af6e4b6ceeaa63273797",
+      "bytes": 21
+    },
+    {
+      "path": "fixtures/test_receipted_invalid_request_preserves_existing_operator_block-7b84fe927b734f23926517c8d5fab869/bus/tokens/token-queue.md",
+      "sha256": "09c88f547e89ca9e432ce9704fdddb55cef9f3e6a94f4c522d66eb34baddb7f4",
+      "bytes": 75
+    },
+    {
+      "path": "fixtures/test_receipted_invalid_request_preserves_existing_operator_block-7b84fe927b734f23926517c8d5fab869/receipts/TEST-C33-RECEIPT-CONTEXT.json",
+      "sha256": "fac6c8d0d237ede014db78093d843ab071558dc798e0af6e4b6ceeaa63273797",
+      "bytes": 21
+    },
+    {
+      "path": "fixtures/test_spent_receipt_is_found_only_for_a_status_that_means_signed-1/G.json",
+      "sha256": "7f712f7fa50efa40cd389e5c5e876f160c1a5c7e2018144c2bb0fdf322ffd410",
+      "bytes": 37
+    },
+    {
+      "path": "fixtures/test_spent_receipt_is_found_only_for_a_status_that_means_signed-1/TORN.json",
+      "sha256": "92072df399cb74703f8e86f450d552bc0bb01eeeb98a90985a1b7772c8fd0016",
+      "bytes": 9
+    },
+    {
+      "path": "fixtures/test_unvalidated_receipted_request_has_review_context_but_never_permission_appli-c3ac79e9b2a94daeb5eeb1659cad4a9b/bus/tokens/token-queue.md",
+      "sha256": "5d26c2e9c9f1969e0dc84501d407f1e14091e2030809c56e84dcce2928c9861e",
+      "bytes": 18
+    },
+    {
+      "path": "fixtures/test_unvalidated_receipted_request_has_review_context_but_never_permission_appli-c3ac79e9b2a94daeb5eeb1659cad4a9b/receipts/TEST-C33-RECEIPT-CONTEXT.json",
+      "sha256": "031b1e44415fc58716e255ed2aaa9c421dc9ada49a260043c5e6f109222fc3bd",
+      "bytes": 21
+    },
+    {
+      "path": "fixtures/test_unvalidated_receipted_request_has_review_context_but_never_permission_attes-07bce3634aeb4be18f4114d89f0a1f30/bus/tokens/token-queue.md",
+      "sha256": "5d26c2e9c9f1969e0dc84501d407f1e14091e2030809c56e84dcce2928c9861e",
+      "bytes": 18
+    },
+    {
+      "path": "fixtures/test_unvalidated_receipted_request_has_review_context_but_never_permission_attes-07bce3634aeb4be18f4114d89f0a1f30/receipts/TEST-C33-RECEIPT-CONTEXT.json",
+      "sha256": "aadbb15930eb76340d3240276fca47b4893237a15d61c62ec1cf4575f4891e3f",
+      "bytes": 22
+    },
+    {
+      "path": "fixtures/test_unvalidated_receipted_request_has_review_context_but_never_permission_ratif-ebe9f282c3f84eb1893f118d29f2a969/bus/tokens/token-queue.md",
+      "sha256": "5d26c2e9c9f1969e0dc84501d407f1e14091e2030809c56e84dcce2928c9861e",
+      "bytes": 18
+    },
+    {
+      "path": "fixtures/test_unvalidated_receipted_request_has_review_context_but_never_permission_ratif-ebe9f282c3f84eb1893f118d29f2a969/receipts/TEST-C33-RECEIPT-CONTEXT.json",
+      "sha256": "3914c67286a8423955a87124e88a43afd4c0120edbec8ab6b0385111e53f7048",
+      "bytes": 22
+    },
+    {
+      "path": "fixtures/test_unvalidated_receipted_request_has_review_context_but_never_permission_spent-56f69bc3eaba47f7ae34ae3a7e13b4c8/bus/tokens/token-queue.md",
+      "sha256": "5d26c2e9c9f1969e0dc84501d407f1e14091e2030809c56e84dcce2928c9861e",
+      "bytes": 18
+    },
+    {
+      "path": "fixtures/test_unvalidated_receipted_request_has_review_context_but_never_permission_spent-56f69bc3eaba47f7ae34ae3a7e13b4c8/receipts/TEST-C33-RECEIPT-CONTEXT.json",
+      "sha256": "b05e957132164fd0df36196feb1e8e20f717a5181cead8df1e2f332cd6830f61",
+      "bytes": 19
+    },
+    {
+      "path": "fixtures/test_validated_receipted_request_is_still_presented_unchecked-fb560926fedf4407bce4bbe4ac2fd6e4/bus/tokens/token-queue.md",
+      "sha256": "5d26c2e9c9f1969e0dc84501d407f1e14091e2030809c56e84dcce2928c9861e",
+      "bytes": 18
+    },
+    {
+      "path": "fixtures/test_validated_receipted_request_is_still_presented_unchecked-fb560926fedf4407bce4bbe4ac2fd6e4/receipts/TEST-C33-RECEIPT-CONTEXT.json",
+      "sha256": "fac6c8d0d237ede014db78093d843ab071558dc798e0af6e4b6ceeaa63273797",
+      "bytes": 21
+    }
+  ],
+  "blocked_real_operations": [],
+  "synthetic_audit_probes": [
+    {
+      "event": "os.remove",
+      "arguments": "('synthetic guard probe only',)"
+    },
+    {
+      "event": "os.rmdir",
+      "arguments": "('synthetic guard probe only',)"
+    },
+    {
+      "event": "os.rename",
+      "arguments": "('synthetic guard probe only',)"
+    },
+    {
+      "event": "shutil.rmtree",
+      "arguments": "('synthetic guard probe only',)"
+    },
+    {
+      "event": "subprocess.Popen",
+      "arguments": "('synthetic guard probe only',)"
+    }
+  ],
+  "pytest_tmpdir_plugin": false,
+  "pytest_cache_plugin": false,
+  "plugin_autoload": false,
+  "retention": "all fixtures retained; no cleanup/current symlink/lock files created",
+  "public_evidence": "synthetic fixtures and source hashes only; historical deletion audit remains separate"
+}

@@ -3366,14 +3366,29 @@ def relay_tokens(bus_root: Path, reports: dict[str, list[dict]], latest: dict[st
                 continue
             validated = payload.get("validated") or {}
             if not validated.get("cmd") or validated.get("dry_run_exit") is None:
-                defects.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
-                                "epoch": epoch, "kind": "defect", "check": "token-prevalidation",
-                                "subject": msg.get("from"),
-                                # C33: carried as a FIELD, not only inside the prose, so the
-                                # notice built from this row does not have to parse `detail`.
-                                "gate_id": gate, "msg_id": msg.get("id"),
-                                "detail": f"token-request {gate} lacks dry-run evidence; "
-                                          f"presenting an unvalidated command is an agent defect"})
+                defect = {"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                          "epoch": epoch, "kind": "defect", "check": "token-prevalidation",
+                          "subject": msg.get("from"),
+                          "gate_id": gate, "msg_id": msg.get("id"),
+                          "detail": f"token-request {gate} lacks dry-run evidence; "
+                                    f"presenting an unvalidated command is an agent defect"}
+                # Receipt context does not validate this request or authorize a rerun.
+                # Only a token-shaped identifier may trigger the extra keyed read.
+                found = None
+                if isinstance(gate, str) and re.fullmatch(r"[A-Za-z0-9._-]+", gate):
+                    try:
+                        found = spent_receipt_for(gate)
+                    except (AttributeError, TypeError):
+                        # A non-mapping keyed receipt cannot drop the original refusal.
+                        pass
+                if found is not None:
+                    receipt = str(found[0].relative_to(REPO_ROOT))
+                    defect.update(check="token-prevalidation-receipt-context",
+                                  receipt=receipt, receipt_status=found[1])
+                    defect["detail"] += (
+                        f"; existing keyed receipt {receipt} reads status: {found[1]}. "
+                        "This does not establish that a new signature or rerun is needed")
+                defects.append(defect)
                 continue
             if gate in existing or gate in seen:
                 self_block = None            # already presented; the hold below still applies
@@ -3748,6 +3763,15 @@ def relay_token_blocks(bus_root: Path, config: dict, epoch: int) -> list[dict]:
                     f"{gate} is NOT in token-queue.md and the operator has not been asked. "
                     f"Have {item.get('subject')!r} re-file it with payload.validated = "
                     f"{{cmd, dry_run_exit, dry_run_evidence}}"))
+        # Separate event: an old unpresented notice may already be consumed.
+        # Send one corrective receipt context without re-presenting the request.
+        _notify("token-prevalidation-receipt-context", "token-prevalidation-receipt-context",
+                lambda item, gate: (
+                    f"{gate} lacks the required dry-run evidence, but an existing keyed "
+                    f"receipt ({item.get('receipt')}) reads status: {item.get('receipt_status')}. "
+                    f"Verify the receipt and SURFACE IT TO THE OPERATOR. Do not re-file or "
+                    f"re-sign blindly, do not apply or rerun work, and do not tick or delete "
+                    f"an operator block: only the operator decides what the receipt permits."))
         # C39-advice (2026-08-11, raised by `coordinator-agent` against this tooling):
         # this notice used to end "verify the receipt, then tick or remove the block
         # yourself". That instructed the ONE action the coordinator is forbidden to

@@ -1,0 +1,31 @@
+{
+  "status": "Source/control qualification; implementation commit is cited in the separate handoff checkpoint",
+  "implementation_commit": "See the C33 handoff checkbox",
+  "source_base_commit": "2a2421e5d63a6bd05377a9fb542790a36726897a",
+  "source_patch_sha256": "cd5bad5130ffe370d825a069c8166e67537d936fd5fdb2d931523079e65d4116",
+  "task_text_sha256": "ebf2660d01b722f99e56e3de3f96688443f91073719af2feacfa4fb9818fedfb",
+  "current_source_sha256": "02fa9843181c38569a2e5fcd6e2941100c240cf8d667462fcd2433d049c81ba9",
+  "test_source_sha256": "da9dc3380aae404fcde9d82b21669acb41ff8760e5e09e87babe58e11bc9e3cd",
+  "retained_controls": {
+    "candidate": "19 passed (15 new +4 existing pure receipt/relay cases)",
+    "baseline": "6 intended failures,13 passes (same19 cases)",
+    "candidate_retained_files": 57,
+    "baseline_retained_files": 57,
+    "candidate_forbidden_operations": 0,
+    "baseline_forbidden_operations": 0,
+    "self_probes": "synthetic sys.audit events only; no OS deletion/rename call"
+  },
+  "scope": "Model-free source/control evidence only; no live bus, daemon reload, signing, runtime adoption, inference or new measurement/authority rule.",
+  "not_rerun": "Other original tests invoke existing atomic rename/delete helpers and were not silently emulated under the retained path. Historical32-pass and376+same6 broad results remain historical, with prior policy nonconformance disclosed.",
+  "impact": "Stale GNX LOW5/LOW3; exact current manual caller closure accepted by parent; no fresh-index claim.",
+  "files": {
+    "ORIGINAL-TASK.md": "ebf2660d01b722f99e56e3de3f96688443f91073719af2feacfa4fb9818fedfb",
+    "PRIOR-DELETION-DISCLOSURE.json": "39541dc77617bcb48a991e5e586dc934131972e067cadf44f2c38cbdb0ae3bad",
+    "baseline-red.log": "d4c0ab7ff82811192f3e2a97e76a4c0f38e5be18a5f0ec53066e8ca553fe2300",
+    "baseline-retained-receipt.json": "374987264a194eb49bf34157c1e000398d26d562e64e877aaec5acaa0c759495",
+    "candidate-green.log": "611ae991559c2aa77b70257f7b2861f1c2088e2b3540da94f1e8fbe4c7d9f8e3",
+    "candidate-retained-receipt.json": "04dfd240375af52c94a7ae3e452855d6249f5b3963dd109f06624e4a5ad84536",
+    "retained_runner.py": "30f8fc70994006d207f645c1dc323bc192486b4d3ace5dedab982e710a27ba47"
+  },
+  "integrated_controls": "19 passed; zero blocked destructive events; see integrated-controls.log and integrated-retained-receipt.json"
+}

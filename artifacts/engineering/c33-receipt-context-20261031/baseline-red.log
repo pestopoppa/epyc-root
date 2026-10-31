@@ -1,0 +1,131 @@
+FFFFF....F.........                                                      [100%]
+=================================== FAILURES ===================================
+_ test_unvalidated_receipted_request_has_review_context_but_never_permission[ratified] _
+
+isolated = (PosixPath('/mnt/raid0/llm/tmp/refactor-c33-receipt-context-20261031/retained-v2-baseline-01/fixtures/test_unvalidated...rmission_ratif-9ebb8963eb9d4736a6292cff75ba390b/receipts'), {'roster': [{'id': 'alice'}, {'id': 'coordinator-agent'}]})
+status = 'ratified'
+
+    @pytest.mark.parametrize("status", ["ratified", "spent", "applied", "attested"])
+    def test_unvalidated_receipted_request_has_review_context_but_never_permission(
+        isolated, status
+    ):
+        root, receipts, _ = isolated
+        (receipts / (GATE + ".json")).write_text(json.dumps({"status": status}))
+        blocks, rows = c.relay_tokens(root, {"synthetic-c33": [request()]}, {}, 1)
+        assert blocks == []
+        context = [row for row in rows if row.get("check") == EVENT]
+>       assert len(context) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+../refactor-c33-receipt-context-20261031/test_c33_receipt_context_retained.py:88: AssertionError
+_ test_unvalidated_receipted_request_has_review_context_but_never_permission[spent] _
+
+isolated = (PosixPath('/mnt/raid0/llm/tmp/refactor-c33-receipt-context-20261031/retained-v2-baseline-01/fixtures/test_unvalidated...rmission_spent-acdb7f890c7c46bdb51bfbe37f905275/receipts'), {'roster': [{'id': 'alice'}, {'id': 'coordinator-agent'}]})
+status = 'spent'
+
+    @pytest.mark.parametrize("status", ["ratified", "spent", "applied", "attested"])
+    def test_unvalidated_receipted_request_has_review_context_but_never_permission(
+        isolated, status
+    ):
+        root, receipts, _ = isolated
+        (receipts / (GATE + ".json")).write_text(json.dumps({"status": status}))
+        blocks, rows = c.relay_tokens(root, {"synthetic-c33": [request()]}, {}, 1)
+        assert blocks == []
+        context = [row for row in rows if row.get("check") == EVENT]
+>       assert len(context) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+../refactor-c33-receipt-context-20261031/test_c33_receipt_context_retained.py:88: AssertionError
+_ test_unvalidated_receipted_request_has_review_context_but_never_permission[applied] _
+
+isolated = (PosixPath('/mnt/raid0/llm/tmp/refactor-c33-receipt-context-20261031/retained-v2-baseline-01/fixtures/test_unvalidated...rmission_appli-29b1d04ef3bb4ba9a92be46131c5286a/receipts'), {'roster': [{'id': 'alice'}, {'id': 'coordinator-agent'}]})
+status = 'applied'
+
+    @pytest.mark.parametrize("status", ["ratified", "spent", "applied", "attested"])
+    def test_unvalidated_receipted_request_has_review_context_but_never_permission(
+        isolated, status
+    ):
+        root, receipts, _ = isolated
+        (receipts / (GATE + ".json")).write_text(json.dumps({"status": status}))
+        blocks, rows = c.relay_tokens(root, {"synthetic-c33": [request()]}, {}, 1)
+        assert blocks == []
+        context = [row for row in rows if row.get("check") == EVENT]
+>       assert len(context) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+../refactor-c33-receipt-context-20261031/test_c33_receipt_context_retained.py:88: AssertionError
+_ test_unvalidated_receipted_request_has_review_context_but_never_permission[attested] _
+
+isolated = (PosixPath('/mnt/raid0/llm/tmp/refactor-c33-receipt-context-20261031/retained-v2-baseline-01/fixtures/test_unvalidated...rmission_attes-c2d0112ec55c447684ce24cd85c39066/receipts'), {'roster': [{'id': 'alice'}, {'id': 'coordinator-agent'}]})
+status = 'attested'
+
+    @pytest.mark.parametrize("status", ["ratified", "spent", "applied", "attested"])
+    def test_unvalidated_receipted_request_has_review_context_but_never_permission(
+        isolated, status
+    ):
+        root, receipts, _ = isolated
+        (receipts / (GATE + ".json")).write_text(json.dumps({"status": status}))
+        blocks, rows = c.relay_tokens(root, {"synthetic-c33": [request()]}, {}, 1)
+        assert blocks == []
+        context = [row for row in rows if row.get("check") == EVENT]
+>       assert len(context) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+../refactor-c33-receipt-context-20261031/test_c33_receipt_context_retained.py:88: AssertionError
+__ test_receipt_transition_gets_one_new_notice_after_old_notice_was_consumed ___
+
+isolated = (PosixPath('/mnt/raid0/llm/tmp/refactor-c33-receipt-context-20261031/retained-v2-baseline-01/fixtures/test_receipt_tra...e_was_consumed-59c3f83a87b14ebe935cccb718aefb26/receipts'), {'roster': [{'id': 'alice'}, {'id': 'coordinator-agent'}]})
+
+    def test_receipt_transition_gets_one_new_notice_after_old_notice_was_consumed(isolated):
+        root, receipts, config = isolated
+        append_request(root)
+        c.relay_token_blocks(root, config, 1)
+        assert (
+            len(
+                [
+                    p
+                    for p in notices(root)
+                    if p.get("event") == "token-request-not-presented"
+                ]
+            )
+            == 1
+        )
+        (receipts / (GATE + ".json")).write_text('{"status":"ratified"}')
+        for epoch in range(2, 5):
+            c.relay_token_blocks(root, config, epoch)
+        receipt_notices = [p for p in notices(root) if p.get("event") == EVENT]
+>       assert len(receipt_notices) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+../refactor-c33-receipt-context-20261031/test_c33_receipt_context_retained.py:114: AssertionError
+_______ test_receipted_invalid_request_preserves_existing_operator_block _______
+
+isolated = (PosixPath('/mnt/raid0/llm/tmp/refactor-c33-receipt-context-20261031/retained-v2-baseline-01/fixtures/test_receipted_i...operator_block-37a292b4eb454d8997561343044686a4/receipts'), {'roster': [{'id': 'alice'}, {'id': 'coordinator-agent'}]})
+
+    def test_receipted_invalid_request_preserves_existing_operator_block(isolated):
+        root, receipts, _ = isolated
+        original = "# operator tokens\n\n- [ ] **" + GATE + "** — original request\n"
+        path = root / "tokens/token-queue.md"
+        path.write_text(original)
+        (receipts / (GATE + ".json")).write_text('{"status":"ratified"}')
+        blocks, rows = c.relay_tokens(root, {"synthetic-c33": [request()]}, {}, 1)
+        assert blocks == [] and path.read_text() == original
+>       assert len([row for row in rows if row.get("check") == EVENT]) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+../refactor-c33-receipt-context-20261031/test_c33_receipt_context_retained.py:155: AssertionError
+=========================== short test summary info ============================
+FAILED ../refactor-c33-receipt-context-20261031/test_c33_receipt_context_retained.py::test_unvalidated_receipted_request_has_review_context_but_never_permission[ratified]
+FAILED ../refactor-c33-receipt-context-20261031/test_c33_receipt_context_retained.py::test_unvalidated_receipted_request_has_review_context_but_never_permission[spent]
+FAILED ../refactor-c33-receipt-context-20261031/test_c33_receipt_context_retained.py::test_unvalidated_receipted_request_has_review_context_but_never_permission[applied]
+FAILED ../refactor-c33-receipt-context-20261031/test_c33_receipt_context_retained.py::test_unvalidated_receipted_request_has_review_context_but_never_permission[attested]
+FAILED ../refactor-c33-receipt-context-20261031/test_c33_receipt_context_retained.py::test_receipt_transition_gets_one_new_notice_after_old_notice_was_consumed
+FAILED ../refactor-c33-receipt-context-20261031/test_c33_receipt_context_retained.py::test_receipted_invalid_request_preserves_existing_operator_block
+6 failed, 13 passed in 0.84s
+{"pytest_returncode": 1, "retained_files": 57, "fixture_count": 19, "pytest_factory_fixture_count": 4, "blocked_real_operations": 0, "receipt": "/mnt/raid0/llm/tmp/refactor-c33-receipt-context-20261031/retained-v2-baseline-01/RECEIPT.json"}
