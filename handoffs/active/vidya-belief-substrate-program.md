@@ -2589,6 +2589,8 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
   green, and the next `inf70-arms` ingest shows the census.
   - 2026-10-31 source partial, not acceptance: ROOT `fc5688b802491af08243f57d2812937bcc3efa56` records the actual classifier ID and explicit synthetic-token input basis at the client boundary; SC75 preserves the exact pair, and missing/malformed legacy dimensions remain `UNREPORTED`. No verdict, measurement, shared grade or historical metadata is changed. Actual stubbed client → rows → sidecar → strict-reader/CLI fixture controls: 45 PASS; Git proof `artifacts/vidya/inf70-classifier-census-20261031/README.md`. The bounded `/mnt/raid0/llm/tmp/inf70/agents` scan covered 29 run directories/403 row files/9,654 rows and found no original sidecars or identity fields under the native writer/reader patterns. The original checkbox stays open for a genuine future producer sidecar and strict `inf70-arms` ingest; fixtures do not satisfy that event. [no-belief: source controls; no original producer/ingest warrant]
 
+The 2026-10-31 Research `0e4321f24bae29355333fcf2cb712a41ce080e2f` E1 runner copy fixes the proof matcher in offline controls only; its prospective native write side remains owed.
+
 - [ ] **VB-YARN-E1 — write side for the INF-59 long-context needle runs (E0 runner, E1 window).** (CLAUDE.md *Belief
   Kernel — wiring new sources*; ASSESSMENT §6 E0.) The runner forked from Q38-T7's needle logic
   (`yarn-context-extension-research.md` YARN-E0) produces, per (arm, length): needle correctness in `coherence_gate`
