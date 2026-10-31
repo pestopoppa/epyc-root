@@ -2579,6 +2579,8 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
   `classifier` are named `inf70-classify.v1|synthetic-ids(uniq/top/run vacuous)`. It also adds one test. All 37
   adapter tests pass on the patched copy, and the grade is unchanged. Done when the patch is on root main with tests
   green, and the next `inf70-arms` ingest shows the census.
+  - 2026-10-31 source partial, not acceptance: ROOT `fc5688b802491af08243f57d2812937bcc3efa56` records the actual classifier ID and explicit synthetic-token input basis at the client boundary; SC75 preserves the exact pair, and missing/malformed legacy dimensions remain `UNREPORTED`. No verdict, measurement, shared grade or historical metadata is changed. Actual stubbed client → rows → sidecar → strict-reader/CLI fixture controls: 45 PASS; Git proof `artifacts/vidya/inf70-classifier-census-20261031/README.md`. The bounded `/mnt/raid0/llm/tmp/inf70/agents` scan covered 29 run directories/403 row files/9,654 rows and found no original sidecars or identity fields under the native writer/reader patterns. The original checkbox stays open for a genuine future producer sidecar and strict `inf70-arms` ingest; fixtures do not satisfy that event. [no-belief: source controls; no original producer/ingest warrant]
+
 - [ ] **VB-YARN-E1 — write side for the INF-59 long-context needle runs (E0 runner, E1 window).** (CLAUDE.md *Belief
   Kernel — wiring new sources*; ASSESSMENT §6 E0.) The runner forked from Q38-T7's needle logic
   (`yarn-context-extension-research.md` YARN-E0) produces, per (arm, length): needle correctness in `coherence_gate`

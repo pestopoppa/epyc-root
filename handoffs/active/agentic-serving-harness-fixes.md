@@ -493,7 +493,7 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
     - Stance (operator, 2026-10-03): the upcoming AutoKernel campaign is **CPU-only**, so the standing
       GPU-lending pattern this was built for is moot. Parked-role stays as infrastructure for one-off GPU windows
       (X0-style measurement blocks, KVU-19 P3 re-runs).
-  - [ ] **UFH14-B6d — route escalations around a parked target.** (filed 2026-10-03, workspace-ec, the part of
+  - [x] **UFH14-B6d — route escalations around a parked target.** (filed 2026-10-03, workspace-ec, the part of ✅ 2026-10-31 — implementation APP `d0059590fc1eb8e42ef290c4bfc9fb81783dfc91`; `tests/unit/test_gpu_window_parked_role.py` / `tests/unit/test_v1_escalation.py`; Git proof `docs/evidence/ufh14-b6d-20261031/CAPSULE.md` (68 parked/v1 + 65 existing caller controls PASS). Typed parked refusal alone advances the declared chain and records skips; exhausted chains and named force/direct/passthrough retain refusal semantics. [no-belief: deterministic source routing controls; no measurement]
     B6c that was not built) Today a request whose role is parked gets a fast 503 `role_parked`; nothing re-routes
     it. An escalation chain whose next hop is parked (for example `coder_escalation` or `architect_critic` on :8083)
     fails instead of trying the next eligible role. In the routing/escalation layer, treat a parked target like an
