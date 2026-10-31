@@ -314,7 +314,7 @@ Evidence: intake-1196#record (KVFlow, dive-overturned), intake-1207 (SGLang Rust
   there is no eviction order to improve**, and at 2 it is a coin flip. This gate has now been named
   in two consecutive passes (intake-1182's dive, then intake-1196#record) with an unchanged blocker — by
   the CLAUDE.md recurrence check that is proof it was never blocked. Do it before anything else here.
-- [x] **KV-2 — Pass `role` and `session_id` into `PrefixRouter.get_slot_for_prompt`.** ✅ 2026-10-29 [belief: cc] Both are
+- [x] **KV-2 — Pass `role` and `session_id` into `PrefixRouter.get_slot_for_prompt`.** ✅ 2026-10-29 [belief: cc] [source: epyc-orchestrator@9c507dfff650aa1999b9e5816fc4c8216fb5bd45; test: epyc-orchestrator/tests/unit/test_prefix_cache.py] Both are
   already present at the call site (`model_server.py:91` requires `role`;
   `inference.py:755-767` attaches the session id) and the router receives **only prompt text**; role
   is consulted at exactly one hardcoded frontdoor-REPL bypass. We are discarding for free the
