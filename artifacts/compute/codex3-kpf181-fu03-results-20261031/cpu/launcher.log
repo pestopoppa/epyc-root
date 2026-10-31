@@ -1,0 +1,255 @@
+2026-10-31T02:52:35Z [codex3-kpf181-cpu-r1-20261031] launcher up pid=2329624 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/STOP minwin=3600s ports=19627
+2026-10-31T02:54:05Z [codex3-kpf181-cpu-r1-20261031] START regions=0-23 cpus=0-23 threads=24 gpu=0 end=2026-10-31T06:00Z
+[region-lock] acquiring regions ['q0'] as role='build' (timeout_s=11155.0) …
+[region-lock] held ['q0'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/codex3-kpf-item4-control-20261030/engine/filler_run13.sh --inner --id codex3-kpf181-cpu-r1-20261031 --class cpu --cmd taskset -c ${FILLER_CPUS} /bin/bash /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/launch.sh --job --min-window 3600 --stop /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/STOP --port 19627 --workdir /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240 --gpu-threads 184-191
+====================================================================================================
+KPF-18 gate plan (EXECUTE)  host Beelzebub  2026-10-31T02:54:05Z
+  out /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full | port 19627 | fork-min 128 | n_predict 16 | n_probs 20 | window-id kpf18-20261031T025405Z | gpu-window-id None
+  launch prefix: taskset -c 0-23
+  gate argv (/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full-argv.txt): -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 -np 4 -c 98304 -t 24 -tb 24 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 32768 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-type draft-mtp --spec-draft-n-max 4 --reasoning off --device none --device-draft none --kv-unified --no-cache-idle-slots
+  - --fork-bin /mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server (bin dir /mnt/micron/codex3-lanes/kpf183-chat-build/bin; LD_LIBRARY_PATH /mnt/micron/codex3-lanes/kpf183-chat-build/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib)
+  - CPU mode: no KFD/VRAM sampler, no :8083 refusal, no HIP residency, no mi210 claim, no GPU window
+  - 181 C lengths 2048..3968 stride 128 (ub 2048) on group 0
+  - 181 drafter configurations: ['mtp', 'nodraft']; fork-off baseline launch added for arms A/B
+  - shape drift ALLOWED and recorded: ["-c = '98304', gate shape expects '393216'", "-ngl = None, gate shape expects 'all'", "--spec-type = 'draft-mtp', gate shape expects 'draft-dflash'", "--spec-draft-n-max = '4', gate shape expects '7'", "--device = 'none', gate shape expects 'ROCm0'", "-b = None, gate shape expects '512'", "-ub = '2048', gate shape expects '512'", "--cache-ram = '32768', gate shape expects '65536'", "-md '' is not the DFlash2 drafter"]
+  - prompt set /mnt/raid0/llm/tmp/kv-prefix-fork/p1r-20261020/kpf18cpu/run-20261020T163128Z/prompt_set.jsonl sha256 fe8c8c9202f71e678435717a931d3a97236968fe7b883a8748a88d1215b26662: 16 pairs
+  rate model: prefill ms/tok = (1.15 + 0.0235 x occupied_k) x 1.1; decode DFlash2 37.0-0.09/k tok/s, no-draft 30.8-0.15/k; 4-stream agg x1.3; load 90s, stop 45s
+----------------------------------------------------------------------------------------------------
+ITEM 181: 46 steps, est 24m16s
+      1m35s  [kpf181-on-mtp-20261031T025405Z] linkage + launch + healthy + read-back: taskset -c 0-23 /mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 -np 4 -c 98304 -t 24 -tb 24 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 32768 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-type draft-mtp --spec-draft-n-max 4 --reasoning off --device none --device-draft none --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/slot-save/kpf181-on-mtp-20261031T025405Z --port 19627 --metrics --slot-fork-min-tokens 128
+      0m14s  181 A [checkpoint_at=[T]] groups [0]: source slot 0 trunk+tail, 3 siblings on slot 1, fork on (rule A)
+      0m14s  181 A [tail only, no checkpoint_at] groups [0]: source slot 0 trunk+tail, 3 siblings on slot 1, fork on (rule A)
+      1m07s  181 B g0: identical resend (no ckpt / ckpt [-1]) and child==trunk (junction source / trunk source), cold A+B controls (rule B)
+      0m24s  181 C g0 drafter on length=2048 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter on length=2176 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter on length=2304 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter on length=2432 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter on length=2560 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter on length=2688 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter on length=2816 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter on length=2944 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter on length=3072 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter on length=3200 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter on length=3328 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter on length=3456 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter on length=3584 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter on length=3712 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter on length=3840 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter on length=3968 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter off length=2048 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter off length=2176 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter off length=2304 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter off length=2432 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter off length=2560 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter off length=2688 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter off length=2816 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter off length=2944 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter off length=3072 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter off length=3200 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter off length=3328 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter off length=3456 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter off length=3584 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter off length=3712 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter off length=3840 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m24s  181 C g0 drafter off length=3968 (full sweep, ub 2048): source+child+2 cold (partial C)
+      0m43s  181 D [mtp] g0: source T=4096+long tail, 9 cells c-1/c/c+1 over {junction, N-4-ub, N-4} + 1 held-out length (rule D)
+      0m45s  [kpf181-on-mtp-20261031T025405Z] SIGTERM own pid, verify dead, then finalize its records
+      1m35s  [kpf181-off-mtp-20261031T025405Z] linkage + launch + healthy + read-back: taskset -c 0-23 /mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 -np 4 -c 98304 -t 24 -tb 24 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 32768 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-type draft-mtp --spec-draft-n-max 4 --reasoning off --device none --device-draft none --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/slot-save/kpf181-off-mtp-20261031T025405Z --port 19627 --metrics --slot-fork-min-tokens 0
+      0m14s  181 A fork-OFF baseline [ckpt]: every sibling must report n_fork_tokens 0
+      0m14s  181 A fork-OFF baseline [tail only]: every sibling must report n_fork_tokens 0
+      0m58s  181 B fork-OFF baseline g0: the four cases, every child n_fork_tokens 0
+      0m45s  [kpf181-off-mtp-20261031T025405Z] SIGTERM own pid, verify dead, then finalize its records
+      1m35s  [kpf181-on-nodraft-20261031T025405Z] linkage + launch + healthy + read-back: taskset -c 0-23 /mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 -np 4 -c 98304 -t 24 -tb 24 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 32768 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --reasoning off --device none --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/slot-save/kpf181-on-nodraft-20261031T025405Z --port 19627 --metrics --slot-fork-min-tokens 128
+      0m43s  181 D [nodraft] g0: same nine cells + held-out length on a nodraft launch (rule D)
+      0m45s  [kpf181-on-nodraft-20261031T025405Z] SIGTERM own pid, verify dead, then finalize its records
+====================================================================================================
+TOTAL estimate: 24m16s (24 min) for items [181]; budget --budget-min 1440
+PREFLIGHT: inputs PASS (live-only checks run at execute: linkage, read-back, residency, claim)
+[kpf18 02:54:05Z] item 181: [kpf181-on-mtp-20261031T025405Z] linkage + launch + healthy + read-back: taskset -c 0-23 /mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 -np 4 -c 98304 -t 24 -tb 24 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 32768 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-type draft-mtp --spec-draft-n-max 4 --reasoning off --device none --device-draft none --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/slot-save/kpf181-on-mtp-20261031T025405Z --port 19627 --metrics --slot-fork-min-tokens 128 (est 1m35s)
+[kpf18] launch kpf181-on-mtp-20261031T025405Z: taskset -c 0-23 /mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 -np 4 -c 98304 -t 24 -tb 24 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 32768 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-type draft-mtp --spec-draft-n-max 4 --reasoning off --device none --device-draft none --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/slot-save/kpf181-on-mtp-20261031T025405Z --port 19627 --metrics --slot-fork-min-tokens 128
+[kpf18]   done in 0m04s
+[kpf18 02:54:09Z] item 181: 181 A [checkpoint_at=[T]] groups [0]: source slot 0 trunk+tail, 3 siblings on slot 1, fork on (rule A) (est 0m14s)
+[kpf18]   done in 0m45s
+[kpf18 02:54:54Z] item 181: 181 A [tail only, no checkpoint_at] groups [0]: source slot 0 trunk+tail, 3 siblings on slot 1, fork on (rule A) (est 0m14s)
+[kpf18]   done in 1m14s
+[kpf18 02:56:08Z] item 181: 181 B g0: identical resend (no ckpt / ckpt [-1]) and child==trunk (junction source / trunk source), cold A+B controls (rule B) (est 1m07s)
+[kpf18]   done in 3m42s
+[kpf18 02:59:50Z] item 181: 181 C g0 drafter on length=2048 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 0m41s
+[kpf18 03:00:32Z] item 181: 181 C g0 drafter on length=2176 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 0m40s
+[kpf18 03:01:12Z] item 181: 181 C g0 drafter on length=2304 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 0m45s
+[kpf18 03:01:57Z] item 181: 181 C g0 drafter on length=2432 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 0m46s
+[kpf18 03:02:43Z] item 181: 181 C g0 drafter on length=2560 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 0m48s
+[kpf18 03:03:31Z] item 181: 181 C g0 drafter on length=2688 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 0m52s
+[kpf18 03:04:23Z] item 181: 181 C g0 drafter on length=2816 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 0m56s
+[kpf18 03:05:19Z] item 181: 181 C g0 drafter on length=2944 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 1m00s
+[kpf18 03:06:19Z] item 181: 181 C g0 drafter on length=3072 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 1m03s
+[kpf18 03:07:23Z] item 181: 181 C g0 drafter on length=3200 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 1m05s
+[kpf18 03:08:28Z] item 181: 181 C g0 drafter on length=3328 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 1m09s
+[kpf18 03:09:36Z] item 181: 181 C g0 drafter on length=3456 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 1m10s
+[kpf18 03:10:46Z] item 181: 181 C g0 drafter on length=3584 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 1m10s
+[kpf18 03:11:57Z] item 181: 181 C g0 drafter on length=3712 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 1m12s
+[kpf18 03:13:09Z] item 181: 181 C g0 drafter on length=3840 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 1m15s
+[kpf18 03:14:24Z] item 181: 181 C g0 drafter on length=3968 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 1m18s
+[kpf18 03:15:43Z] item 181: 181 C g0 drafter off length=2048 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 0m39s
+[kpf18 03:16:22Z] item 181: 181 C g0 drafter off length=2176 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 0m43s
+[kpf18 03:17:05Z] item 181: 181 C g0 drafter off length=2304 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 0m43s
+[kpf18 03:17:48Z] item 181: 181 C g0 drafter off length=2432 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 0m47s
+[kpf18 03:18:35Z] item 181: 181 C g0 drafter off length=2560 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 0m50s
+[kpf18 03:19:25Z] item 181: 181 C g0 drafter off length=2688 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 0m50s
+[kpf18 03:20:15Z] item 181: 181 C g0 drafter off length=2816 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 0m55s
+[kpf18 03:21:10Z] item 181: 181 C g0 drafter off length=2944 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 0m59s
+[kpf18 03:22:09Z] item 181: 181 C g0 drafter off length=3072 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 1m00s
+[kpf18 03:23:09Z] item 181: 181 C g0 drafter off length=3200 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 1m02s
+[kpf18 03:24:11Z] item 181: 181 C g0 drafter off length=3328 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 1m04s
+[kpf18 03:25:15Z] item 181: 181 C g0 drafter off length=3456 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 1m08s
+[kpf18 03:26:23Z] item 181: 181 C g0 drafter off length=3584 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 1m09s
+[kpf18 03:27:32Z] item 181: 181 C g0 drafter off length=3712 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 1m12s
+[kpf18 03:28:44Z] item 181: 181 C g0 drafter off length=3840 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 1m16s
+[kpf18 03:30:00Z] item 181: 181 C g0 drafter off length=3968 (full sweep, ub 2048): source+child+2 cold (partial C) (est 0m24s)
+[kpf18]   done in 1m18s
+[kpf18 03:31:19Z] item 181: 181 D [mtp] g0: source T=4096+long tail, 9 cells c-1/c/c+1 over {junction, N-4-ub, N-4} + 1 held-out length (rule D) (est 0m43s)
+[kpf18]   done in 3m40s
+[kpf18 03:34:59Z] item 181: [kpf181-on-mtp-20261031T025405Z] SIGTERM own pid, verify dead, then finalize its records (est 0m45s)
+[kpf18] stopped kpf181-on-mtp-20261031T025405Z pid 2346956: {'pid': 2346956, 'sent': ['TERM'], 'at': '2026-10-31T03:34:59Z', 'returncode': 0, 'verified_dead': True}
+[kpf18] record kpf18-20261031T025409Z-1 item 181 arm A_ckpt: {"control_floor": [0, 0], "vs_fresh": [0, 0], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T025454Z-2 item 181 arm A_tailonly: {"control_floor": [0, 0], "vs_fresh": [0, 0], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T025608Z-3 item 181 arm B_identical_resend_and_child_eq_trunk: {"control_floor": [2, 2], "vs_fresh": [4, 4], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T025950Z-4 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T030032Z-5 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T030112Z-6 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T030157Z-7 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T030243Z-8 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T030331Z-9 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T030423Z-10 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T030519Z-11 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T030619Z-12 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T030723Z-13 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T030828Z-14 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T030936Z-15 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T031046Z-16 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T031157Z-17 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T031309Z-18 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T031424Z-19 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T031543Z-20 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T031622Z-21 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T031705Z-22 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T031748Z-23 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T031835Z-24 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T031925Z-25 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T032015Z-26 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T032110Z-27 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T032209Z-28 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T032309Z-29 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T032411Z-30 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T032515Z-31 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T032623Z-32 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T032732Z-33 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T032844Z-34 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T033000Z-35 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T033119Z-36 item 181 arm D_hit_count_prediction_mtp: {"control_floor": [0, 0], "vs_fresh": [0, 0], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0], "holdout_vs_cold": [1, 1]}
+[kpf18]   done in 0m04s
+[kpf18 03:35:03Z] item 181: [kpf181-off-mtp-20261031T025405Z] linkage + launch + healthy + read-back: taskset -c 0-23 /mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 -np 4 -c 98304 -t 24 -tb 24 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 32768 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-type draft-mtp --spec-draft-n-max 4 --reasoning off --device none --device-draft none --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/slot-save/kpf181-off-mtp-20261031T025405Z --port 19627 --metrics --slot-fork-min-tokens 0 (est 1m35s)
+[kpf18] launch kpf181-off-mtp-20261031T025405Z: taskset -c 0-23 /mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 -np 4 -c 98304 -t 24 -tb 24 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 32768 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-type draft-mtp --spec-draft-n-max 4 --reasoning off --device none --device-draft none --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/slot-save/kpf181-off-mtp-20261031T025405Z --port 19627 --metrics --slot-fork-min-tokens 0
+[kpf18]   done in 0m06s
+[kpf18 03:35:09Z] item 181: 181 A fork-OFF baseline [ckpt]: every sibling must report n_fork_tokens 0 (est 0m14s)
+[kpf18]   done in 1m48s
+[kpf18 03:36:57Z] item 181: 181 A fork-OFF baseline [tail only]: every sibling must report n_fork_tokens 0 (est 0m14s)
+[kpf18]   done in 1m46s
+[kpf18 03:38:42Z] item 181: 181 B fork-OFF baseline g0: the four cases, every child n_fork_tokens 0 (est 0m58s)
+[kpf18]   done in 3m14s
+[kpf18 03:41:56Z] item 181: [kpf181-off-mtp-20261031T025405Z] SIGTERM own pid, verify dead, then finalize its records (est 0m45s)
+[kpf18] stopped kpf181-off-mtp-20261031T025405Z pid 3034667: {'pid': 3034667, 'sent': ['TERM'], 'at': '2026-10-31T03:41:56Z', 'returncode': 0, 'verified_dead': True}
+[kpf18] record kpf18-20261031T033509Z-37 item 181 arm A_ckpt_forkoff: {"control_floor": [0, 0], "vs_fresh": [0, 0], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T033657Z-38 item 181 arm A_tailonly_forkoff: {"control_floor": [0, 0], "vs_fresh": [0, 0], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T033842Z-39 item 181 arm B_identical_resend_and_child_eq_trunk_forkoff: {"control_floor": [0, 0], "vs_fresh": [0, 0], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18]   done in 0m04s
+[kpf18 03:42:00Z] item 181: [kpf181-on-nodraft-20261031T025405Z] linkage + launch + healthy + read-back: taskset -c 0-23 /mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 -np 4 -c 98304 -t 24 -tb 24 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 32768 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --reasoning off --device none --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/slot-save/kpf181-on-nodraft-20261031T025405Z --port 19627 --metrics --slot-fork-min-tokens 128 (est 1m35s)
+[kpf18] launch kpf181-on-nodraft-20261031T025405Z: taskset -c 0-23 /mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 -np 4 -c 98304 -t 24 -tb 24 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 32768 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --reasoning off --device none --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/slot-save/kpf181-on-nodraft-20261031T025405Z --port 19627 --metrics --slot-fork-min-tokens 128
+[kpf18]   done in 0m04s
+[kpf18 03:42:04Z] item 181: 181 D [nodraft] g0: same nine cells + held-out length on a nodraft launch (rule D) (est 0m43s)
+[kpf18]   done in 3m37s
+[kpf18 03:45:41Z] item 181: [kpf181-on-nodraft-20261031T025405Z] SIGTERM own pid, verify dead, then finalize its records (est 0m45s)
+[kpf18] stopped kpf181-on-nodraft-20261031T025405Z pid 3116754: {'pid': 3116754, 'sent': ['TERM'], 'at': '2026-10-31T03:45:41Z', 'returncode': 0, 'verified_dead': True}
+[kpf18] record kpf18-20261031T034204Z-40 item 181 arm D_hit_count_prediction_nodraft: {"control_floor": [0, 0], "vs_fresh": [0, 0], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0], "holdout_vs_cold": [1, 1]}
+[kpf18]   done in 0m03s
+[kpf18] exit rc=0 (0 ok, 2 refused, 3 abort, 4 error, 75 partial or claim held)
+====================================================================================================
+KPF-18 gate plan (EXECUTE)  host Beelzebub  2026-10-31T03:45:45Z
+  out /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/champion | port 19627 | fork-min 128 | n_predict 16 | n_probs 20 | window-id kpf18-20261031T034545Z | gpu-window-id None
+  launch prefix: taskset -c 0-23
+  gate argv (/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full-argv.txt): -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 -np 4 -c 98304 -t 24 -tb 24 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 32768 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-type draft-mtp --spec-draft-n-max 4 --reasoning off --device none --device-draft none --kv-unified --no-cache-idle-slots
+  - --fork-bin /mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server (bin dir /mnt/micron/codex3-lanes/kpf183-chat-build/bin; LD_LIBRARY_PATH /mnt/micron/codex3-lanes/kpf183-chat-build/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib)
+  - --champion-bin /mnt/micron/codex3-lanes/kpf-e332-build/bin/llama-server (bin dir /mnt/micron/codex3-lanes/kpf-e332-build/bin; LD_LIBRARY_PATH /mnt/micron/codex3-lanes/kpf-e332-build/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib)
+  - CPU mode: no KFD/VRAM sampler, no :8083 refusal, no HIP residency, no mi210 claim, no GPU window
+  - shape drift ALLOWED and recorded: ["-c = '98304', gate shape expects '393216'", "-ngl = None, gate shape expects 'all'", "--spec-type = 'draft-mtp', gate shape expects 'draft-dflash'", "--spec-draft-n-max = '4', gate shape expects '7'", "--device = 'none', gate shape expects 'ROCm0'", "-b = None, gate shape expects '512'", "-ub = '2048', gate shape expects '512'", "--cache-ram = '32768', gate shape expects '65536'", "-md '' is not the DFlash2 drafter"]
+  - prompt set /mnt/raid0/llm/tmp/kv-prefix-fork/p1r-20261020/kpf18cpu/run-20261020T163128Z/prompt_set.jsonl sha256 fe8c8c9202f71e678435717a931d3a97236968fe7b883a8748a88d1215b26662: 16 pairs
+  rate model: prefill ms/tok = (1.15 + 0.0235 x occupied_k) x 1.1; decode DFlash2 37.0-0.09/k tok/s, no-draft 30.8-0.15/k; 4-stream agg x1.3; load 90s, stop 45s
+----------------------------------------------------------------------------------------------------
+ITEM 6: 8 steps, est 5m01s
+      1m35s  [item6-champion-20261031T034545Z] linkage + launch + healthy + read-back: taskset -c 0-23 /mnt/micron/codex3-lanes/kpf-e332-build/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 -np 4 -c 98304 -t 24 -tb 24 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 32768 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-type draft-mtp --spec-draft-n-max 4 --reasoning off --device none --device-draft none --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/champion/slot-save/item6-champion-20261031T034545Z --port 19627 --metrics
+      0m00s  open item-6 record (champion)
+      0m10s  item6 [champion] groups [0]: per group erase, trunk+s0 then trunk+s1 on slot 0 (own-cache reuse), 16 tok, no fork-specific request fields
+      0m45s  [item6-champion-20261031T034545Z] SIGTERM own pid, verify dead, then finalize its records
+      1m35s  [item6-fork_off-20261031T034545Z] linkage + launch + healthy + read-back: taskset -c 0-23 /mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 -np 4 -c 98304 -t 24 -tb 24 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 32768 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-type draft-mtp --spec-draft-n-max 4 --reasoning off --device none --device-draft none --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/champion/slot-save/item6-fork_off-20261031T034545Z --port 19627 --metrics --slot-fork-min-tokens 0
+      0m00s  open item-6 record (fork_off)
+      0m10s  item6 [fork_off] groups [0]: per group erase, trunk+s0 then trunk+s1 on slot 0 (own-cache reuse), 16 tok, no fork-specific request fields
+      0m45s  [item6-fork_off-20261031T034545Z] SIGTERM own pid, verify dead, then finalize its records
+====================================================================================================
+TOTAL estimate: 5m01s (5 min) for items [6]; budget --budget-min 1440
+PREFLIGHT: inputs PASS (live-only checks run at execute: linkage, read-back, residency, claim)
+[kpf18 03:45:45Z] item 6: [item6-champion-20261031T034545Z] linkage + launch + healthy + read-back: taskset -c 0-23 /mnt/micron/codex3-lanes/kpf-e332-build/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 -np 4 -c 98304 -t 24 -tb 24 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 32768 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-type draft-mtp --spec-draft-n-max 4 --reasoning off --device none --device-draft none --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/champion/slot-save/item6-champion-20261031T034545Z --port 19627 --metrics (est 1m35s)
+[kpf18] launch item6-champion-20261031T034545Z: taskset -c 0-23 /mnt/micron/codex3-lanes/kpf-e332-build/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 -np 4 -c 98304 -t 24 -tb 24 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 32768 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-type draft-mtp --spec-draft-n-max 4 --reasoning off --device none --device-draft none --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/champion/slot-save/item6-champion-20261031T034545Z --port 19627 --metrics
+[kpf18]   done in 0m06s
+[kpf18 03:45:51Z] item 6: open item-6 record (champion) (est 0m00s)
+[kpf18]   done in 0m00s
+[kpf18 03:45:51Z] item 6: item6 [champion] groups [0]: per group erase, trunk+s0 then trunk+s1 on slot 0 (own-cache reuse), 16 tok, no fork-specific request fields (est 0m10s)
+[kpf18]   done in 0m45s
+[kpf18 03:46:36Z] item 6: [item6-champion-20261031T034545Z] SIGTERM own pid, verify dead, then finalize its records (est 0m45s)
+[kpf18] stopped item6-champion-20261031T034545Z pid 3172004: {'pid': 3172004, 'sent': ['TERM'], 'at': '2026-10-31T03:46:36Z', 'returncode': 0, 'verified_dead': True}
+[kpf18] record kpf18-20261031T034551Z-1 item 6 arm champion: {"control_floor": [0, 0], "vs_fresh": [0, 0], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18]   done in 0m04s
+[kpf18 03:46:39Z] item 6: [item6-fork_off-20261031T034545Z] linkage + launch + healthy + read-back: taskset -c 0-23 /mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 -np 4 -c 98304 -t 24 -tb 24 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 32768 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-type draft-mtp --spec-draft-n-max 4 --reasoning off --device none --device-draft none --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/champion/slot-save/item6-fork_off-20261031T034545Z --port 19627 --metrics --slot-fork-min-tokens 0 (est 1m35s)
+[kpf18] launch item6-fork_off-20261031T034545Z: taskset -c 0-23 /mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 -np 4 -c 98304 -t 24 -tb 24 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 32768 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-type draft-mtp --spec-draft-n-max 4 --reasoning off --device none --device-draft none --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/champion/slot-save/item6-fork_off-20261031T034545Z --port 19627 --metrics --slot-fork-min-tokens 0
+[kpf18]   done in 0m06s
+[kpf18 03:46:45Z] item 6: open item-6 record (fork_off) (est 0m00s)
+[kpf18]   done in 0m00s
+[kpf18 03:46:45Z] item 6: item6 [fork_off] groups [0]: per group erase, trunk+s0 then trunk+s1 on slot 0 (own-cache reuse), 16 tok, no fork-specific request fields (est 0m10s)
+[kpf18]   done in 0m47s
+[kpf18 03:47:32Z] item 6: [item6-fork_off-20261031T034545Z] SIGTERM own pid, verify dead, then finalize its records (est 0m45s)
+[kpf18] stopped item6-fork_off-20261031T034545Z pid 3181236: {'pid': 3181236, 'sent': ['TERM'], 'at': '2026-10-31T03:47:32Z', 'returncode': 0, 'verified_dead': True}
+[kpf18] record kpf18-20261031T034645Z-2 item 6 arm fork_off: {"control_floor": [0, 0], "vs_fresh": [0, 0], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [2, 2]}
+[kpf18]   done in 0m03s
+[kpf18] exit rc=0 (0 ok, 2 refused, 3 abort, 4 error, 75 partial or claim held)
+job rc=0
+2026-10-31T03:47:36Z [codex3-kpf181-cpu-r1-20261031] ended rc=1 reason=job-rc-1:incomplete:exited (grant deleted)

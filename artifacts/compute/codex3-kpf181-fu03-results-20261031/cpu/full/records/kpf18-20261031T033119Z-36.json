@@ -1,0 +1,1270 @@
+{
+ "schema": "epyc.kpf.run.v1",
+ "kpf_task": "KPF-18.1",
+ "kpf18_item": 181,
+ "run_id": "kpf18-20261031T033119Z-36",
+ "arm": "D_hit_count_prediction_mtp",
+ "binary": "/mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server",
+ "binary_realpath": "/mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server",
+ "binary_sha256": "849bd4cc2f7722d8535e8244a2035740a2fbb959f7782ac705d856a912a56176",
+ "build_from_launch_log": null,
+ "argv": [
+  "/mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server",
+  "-m",
+  "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+  "--host",
+  "127.0.0.1",
+  "-np",
+  "4",
+  "-c",
+  "98304",
+  "-t",
+  "24",
+  "-tb",
+  "24",
+  "-ub",
+  "2048",
+  "--flash-attn",
+  "on",
+  "--jinja",
+  "-ctk",
+  "q8_0",
+  "-ctv",
+  "q8_0",
+  "--no-mmap",
+  "--cache-ram",
+  "32768",
+  "--chat-template-file",
+  "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+  "--spec-type",
+  "draft-mtp",
+  "--spec-draft-n-max",
+  "4",
+  "--reasoning",
+  "off",
+  "--device",
+  "none",
+  "--device-draft",
+  "none",
+  "--kv-unified",
+  "--no-cache-idle-slots",
+  "--slot-save-path",
+  "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/slot-save/kpf181-on-mtp-20261031T025405Z",
+  "--port",
+  "19627",
+  "--metrics",
+  "--slot-fork-min-tokens",
+  "128"
+ ],
+ "launch_prefix": [
+  "taskset",
+  "-c",
+  "0-23"
+ ],
+ "argv_readback": {
+  "proc_cmdline_matches_argv": true,
+  "exe_matches_binary": true
+ },
+ "argv_source": {
+  "argv_file": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full-argv.txt",
+  "argv_file_sha256": "d52c880c05742135cc727263c66b4f4fe538f0f93b22b7b7043c65cb38e67fde",
+  "argv_file_header": [
+   "# KPF-18 CPU subset argv: production frontdoor (:8070) argv as rendered by",
+   "#   epyc-orchestrator scripts/server/orchestrator_stack.py build_server_command(registry.get_role('frontdoor'), ...)",
+   "#   on 2026-10-20 (no launch):",
+   "#   llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 --port <p> -np 4 -c 262144 -t 96",
+   "#   -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --mlock --no-mmap --cache-ram 32768",
+   "#   --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-type draft-mtp",
+   "#   --spec-draft-n-max 4 --reasoning off --slot-save-path /mnt/raid0/llm/cache/kv_slots/frontdoor --device none --device-draft none",
+   "# Changes for the one-quarter CPU gate: -t 96 -> -t 24 -tb 24 (q3 = cores 72-95); -c 262144 -> -c 98304 (4 x 16k trunks",
+   "# + suffixes fit); --mlock dropped (shared host); --kv-unified added (gate shape); --no-cache-idle-slots added (the GPU",
+   "# gate's shape: a trunk-first source must stay resident while fresh controls run on other slots; item 5 toggles it);",
+   "# --port / --slot-save-path / --metrics / --slot-fork-min-tokens are set by the runner."
+  ],
+  "shape_drift": [
+   "-c = '98304', gate shape expects '393216'",
+   "-ngl = None, gate shape expects 'all'",
+   "--spec-type = 'draft-mtp', gate shape expects 'draft-dflash'",
+   "--spec-draft-n-max = '4', gate shape expects '7'",
+   "--device = 'none', gate shape expects 'ROCm0'",
+   "-b = None, gate shape expects '512'",
+   "-ub = '2048', gate shape expects '512'",
+   "--cache-ram = '32768', gate shape expects '65536'",
+   "-md '' is not the DFlash2 drafter"
+  ],
+  "shape_drift_allowed": true
+ },
+ "env": {
+  "dropped_ambient": [
+   "LD_LIBRARY_PATH"
+  ],
+  "set": {
+   "HIP_PATH": "/opt/rocm",
+   "ROCM_PATH": "/opt/rocm",
+   "OMP_PROC_BIND": "spread",
+   "OMP_PLACES": "cores",
+   "OMP_WAIT_POLICY": "active",
+   "OMP_DYNAMIC": "false",
+   "GGML_IQK": "1",
+   "LD_LIBRARY_PATH": "/mnt/micron/codex3-lanes/kpf183-chat-build/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib"
+  }
+ },
+ "kv_mode_from_launch_log": "kv_unified = 'true'",
+ "slot_fork_from_launch_log": "cross-slot prefix fork enabled: mode = checkpoint, min tokens = 128, cache_idle_slots = 0",
+ "n_slots_n_ctx_slot_from_launch_log": [
+  4,
+  98304
+ ],
+ "prompt_set": "/mnt/raid0/llm/tmp/kv-prefix-fork/p1r-20261020/kpf18cpu/run-20261020T163128Z/prompt_set.jsonl",
+ "prompt_set_sha256": "fe8c8c9202f71e678435717a931d3a97236968fe7b883a8748a88d1215b26662",
+ "dflash2": false,
+ "spec_type_from_argv": "draft-mtp",
+ "draft_model_from_argv": null,
+ "speculative_requested": true,
+ "equivalence": {
+  "control_floor": {
+   "top1_agree": 0,
+   "n": 0,
+   "logit_maxabs": 0.0,
+   "kld": 0.0,
+   "greedy_prefix_len_min": 0,
+   "first_token_top1_agree": 0,
+   "max_abs_logit": null,
+   "max_kld": null,
+   "identical_greedy_prefix_min": 0,
+   "measured": false
+  },
+  "vs_fresh": {
+   "top1_agree": 0,
+   "n": 0,
+   "logit_maxabs": 0.0,
+   "kld": 0.0,
+   "greedy_prefix_len_min": 0,
+   "first_token_top1_agree": 0,
+   "max_abs_logit": null,
+   "max_kld": null,
+   "identical_greedy_prefix_min": 0,
+   "measured": false
+  },
+  "bit_exact_ckpt": {
+   "identical": 0,
+   "n": 0,
+   "tokens_identical": 0,
+   "measured": false
+  },
+  "source_invariance": {
+   "identical": 0,
+   "n": 0,
+   "tokens_identical": 0,
+   "measured": false
+  },
+  "off_equals_champion": {
+   "identical": 0,
+   "n": 0,
+   "tokens_identical": 0,
+   "measured": false
+  },
+  "holdout_vs_cold": {
+   "top1_agree": 1,
+   "n": 1,
+   "logit_maxabs": 0.0,
+   "kld": 0.0,
+   "greedy_prefix_len_min": 16,
+   "measured": true,
+   "first_token_top1_agree": 1,
+   "max_abs_logit": 0.0,
+   "max_kld": 0.0,
+   "identical_greedy_prefix_min": 16,
+   "kld_mean": 0.0,
+   "prob_maxabs_intersection": 0.0,
+   "greedy_prefix_full": 1,
+   "greedy_prefix_quartiles": [
+    16,
+    16,
+    16,
+    16,
+    16
+   ],
+   "tokens_identical": 1,
+   "bit_identical": 1
+  }
+ },
+ "equivalence_basis": "First-token top-k probabilities from /completion `n_probs` (completion_probabilities, post_sampling_probs false = softmax over the full vocabulary before sampling). The server cannot return full logits, so `logit_maxabs` is max |p_a - p_b| over the UNION of the two top-k sets (an id absent from one side counts as 0 there: an upper bound) and `kld` is KL(a||b) over the top-k union plus one tail bucket, absent ids imputed from that side's tail mass capped at its k-th prob (a coarse-grained KL: a lower bound on the full-vocab KL when the imputation is exact). Greedy-prefix length compares returned token ids over n_predict tokens (ignore_eos). `identical` = all token ids AND every per-position top-k entry equal.",
+ "n_probs": 20,
+ "n_predict": 16,
+ "ttft_ms": [],
+ "prompt_tokens_processed": 29446,
+ "cache_n": 47096,
+ "n_fork_tokens": 47096,
+ "unique_cells_peak": 14900,
+ "unique_cells_method": "max llamacpp:kv_cells_used sampled once after each request (a lower bound of the true peak; item 7 polls at 1 Hz instead)",
+ "decode_tok_s": {
+  "per_slot": [
+   1000000.0,
+   1000000.0,
+   1000000.0,
+   1000000.0,
+   1000000.0,
+   1000000.0,
+   1000000.0,
+   1000000.0,
+   1000000.0,
+   1000000.0,
+   33.66748310313192,
+   33.37818526978961
+  ],
+  "aggregate": 43.997,
+  "aggregate_method": "sum predicted_n / sum predicted_ms over this run's requests (token-weighted mean decode rate; requests are sequential, not a concurrent aggregate)"
+ },
+ "window_id": "kpf18-20261031T025405Z-item181",
+ "gpu_window_id": null,
+ "start_utc": "2026-10-31T03:31:19Z",
+ "end_utc": "2026-10-31T03:35:03Z",
+ "host": "Beelzebub",
+ "checks": {
+  "counter_slot_forks_equal_requests_with_fork": {
+   "ok": 1,
+   "n": 1,
+   "failed": []
+  },
+  "counter_fork_tokens_equal_sum_n_fork": {
+   "ok": 1,
+   "n": 1,
+   "failed": []
+  },
+  "n_fork_tokens_timings_equal_slot": {
+   "ok": 0,
+   "n": 1,
+   "failed": [
+    [
+     "junction+0",
+     "junction+1",
+     "n_minus_4_minus_ub-1",
+     "n_minus_4_minus_ub+0",
+     "n_minus_4_minus_ub+1",
+     "n_minus_4-1",
+     "n_minus_4+0",
+     "n_minus_4+1",
+     "holdout5131"
+    ]
+   ]
+  }
+ },
+ "server_log": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/logs/kpf181-on-mtp-20261031T025405Z.server.log",
+ "server_log_counts": {
+  "failed_to_find_memory_slot": 0,
+  "fork_lines": 51,
+  "fork_lines_busy": 0,
+  "fork_kinds": [
+   "checkpoint"
+  ],
+  "prefill_budget_iters": 486,
+  "prefill_budget_mixed_iters": 0,
+  "n_batch_observed": 2044
+ },
+ "residency": {
+  "linkage": {
+   "rc": 0,
+   "pass": true,
+   "report": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/logs/kpf181-on-mtp-20261031T025405Z.linkage.txt",
+   "s": 0.02,
+   "cmd": "LD_LIBRARY_PATH=/mnt/micron/codex3-lanes/kpf183-chat-build/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib bash /mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh /mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server /mnt/micron/codex3-lanes/kpf183-chat-build/bin"
+  },
+  "hip_mapped": [],
+  "ggml_all_from_bin_dir": true,
+  "smi_tool": null,
+  "vram": null,
+  "process_start_utc": "2026-10-31T02:54:05Z",
+  "process_stop_utc": "2026-10-31T03:35:01Z",
+  "stop": {
+   "pid": 2346956,
+   "sent": [
+    "TERM"
+   ],
+   "at": "2026-10-31T03:34:59Z",
+   "returncode": 0,
+   "verified_dead": true
+  }
+ },
+ "rows": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/rows/kpf18-20261031T033119Z-36.jsonl",
+ "rows_sha256": "4ec4f5677e83ece21223b7a56af69bc833a59844c7f6e0210f2f24f2dd36e18c",
+ "kpf_ext": {
+  "ext_version": 1,
+  "checkpoint_set": [
+   {
+    "role": "source",
+    "positions": []
+   },
+   {
+    "role": "child",
+    "positions": [
+     4096,
+     6144,
+     8188
+    ]
+   },
+   {
+    "role": "child",
+    "positions": [
+     4096,
+     6144,
+     8188
+    ]
+   },
+   {
+    "role": "child",
+    "positions": [
+     4096,
+     6144,
+     8188
+    ]
+   },
+   {
+    "role": "child",
+    "positions": [
+     4096,
+     6144,
+     8188
+    ]
+   },
+   {
+    "role": "child",
+    "positions": [
+     4096,
+     6144,
+     8188
+    ]
+   },
+   {
+    "role": "child",
+    "positions": [
+     4096,
+     6144,
+     8188
+    ]
+   },
+   {
+    "role": "child",
+    "positions": [
+     4096,
+     6144,
+     8188
+    ]
+   },
+   {
+    "role": "child",
+    "positions": [
+     4096,
+     6144,
+     8188
+    ]
+   },
+   {
+    "role": "child",
+    "positions": [
+     4096,
+     6144,
+     8188
+    ]
+   },
+   {
+    "role": "child",
+    "positions": [
+     4096,
+     6144,
+     8188
+    ]
+   },
+   {
+    "role": "cold",
+    "positions": [
+     4096,
+     5383,
+     6144,
+     8188
+    ]
+   }
+  ],
+  "hit_components": [
+   {
+    "role": "source",
+    "tgt_kv_hit": 0,
+    "min": 0,
+    "n_fork_tokens": 0
+   },
+   {
+    "role": "child",
+    "tgt_kv_hit": 4095,
+    "min": 4095,
+    "n_fork_tokens": 0
+   },
+   {
+    "role": "child",
+    "tgt_kv_hit": 4096,
+    "recurrent_ckpt_pos": 4096,
+    "min": 4096,
+    "n_fork_tokens": 4096
+   },
+   {
+    "role": "child",
+    "tgt_kv_hit": 4097,
+    "recurrent_ckpt_pos": 4096,
+    "min": 4096,
+    "n_fork_tokens": 4096
+   },
+   {
+    "role": "child",
+    "tgt_kv_hit": 6139,
+    "recurrent_ckpt_pos": 4096,
+    "min": 4096,
+    "n_fork_tokens": 4096
+   },
+   {
+    "role": "child",
+    "tgt_kv_hit": 6140,
+    "recurrent_ckpt_pos": 4096,
+    "min": 4096,
+    "n_fork_tokens": 4096
+   },
+   {
+    "role": "child",
+    "tgt_kv_hit": 6141,
+    "recurrent_ckpt_pos": 4096,
+    "min": 4096,
+    "n_fork_tokens": 4096
+   },
+   {
+    "role": "child",
+    "tgt_kv_hit": 8187,
+    "recurrent_ckpt_pos": 6144,
+    "min": 6144,
+    "n_fork_tokens": 6144
+   },
+   {
+    "role": "child",
+    "tgt_kv_hit": 8188,
+    "recurrent_ckpt_pos": 8188,
+    "min": 8188,
+    "n_fork_tokens": 8188
+   },
+   {
+    "role": "child",
+    "tgt_kv_hit": 8189,
+    "recurrent_ckpt_pos": 8188,
+    "min": 8188,
+    "n_fork_tokens": 8188
+   },
+   {
+    "role": "child",
+    "tgt_kv_hit": 5131,
+    "recurrent_ckpt_pos": 4096,
+    "min": 4096,
+    "n_fork_tokens": 4096
+   },
+   {
+    "role": "cold",
+    "tgt_kv_hit": 5386,
+    "min": 5386,
+    "n_fork_tokens": 0
+   }
+  ],
+  "hit_length_min": 0,
+  "hit_tokens": 47096,
+  "tokens_lost_to_missing_checkpoint": 13307,
+  "drafter_drop_kind": null,
+  "request_lane": [
+   "completion_raw"
+  ],
+  "cache_skip_control": {
+   "requests_cache_prompt_false": 1,
+   "cache_n_zero": 1
+  },
+  "pinned_count": {
+   "max": 2,
+   "samples": 12
+  }
+ },
+ "instrument_class": "serving",
+ "category": "CANDIDATE",
+ "grading_note": "n=1 per cell, no codified protocol cited: an OBSERVATION; projects under VB-KVU-PF and grades Judged/Located through claim_tuple.grade(). Counts, not a pass word.",
+ "kpf18_arm": "D_hit_count_prediction_mtp",
+ "kpf_config": "mtp",
+ "fork_min_tokens": 128,
+ "fork_mode": "checkpoint",
+ "predeclared_rule": "Hit-count prediction: one source (trunk T + long tail, checkpoint_at=[T]) holds the junction T and the two near-end checkpoints N-4-ub and N-4. For each c in {T, N-4-ub, N-4} and delta in {-1, 0, +1} a child shares exactly c+delta tokens with the source and then diverges (distinct next token). One launch per drafter configuration (as given, no drafter, others given). SATISFIED for a configuration iff every cell n_fork_tokens == the KPF-11 prediction and no cell has n_fork_tokens == 0 while the prediction is > 0 (an unidentified drafter configuration must not disable fork reuse). A drafter-dependent drop is MEASURED once, at a held-out shared length that is not any c-1/c/c+1: drop = predicted - observed there, plus a cold-run first-token comparison at that length; the drop is recorded, never subtracted from the main cells.",
+ "predeclared_rules_sha256": "049d663e7a57cbd70b56bb5bd1e8d1551aedcca3275dc728c8e57af90889b8c9",
+ "cells": [
+  {
+   "arm": "D_hit_count_prediction_mtp",
+   "cell": "src",
+   "role": "source",
+   "slot": 0,
+   "n_task": 8192,
+   "lcp_client": 0,
+   "n_fork_tokens": 0,
+   "n_fork_tokens_slot": 0,
+   "fork_src_kind": "none",
+   "fork_src_slot": -1,
+   "cache_n": 0,
+   "prompt_n": 8192,
+   "predicted_p": 0,
+   "predicted_kind": "none",
+   "predicted_src": null,
+   "predicted_tie": false,
+   "n_candidates": 0,
+   "expected": null,
+   "checkpoint_set_before": [],
+   "pinned_before": [],
+   "error": null,
+   "ckpt_sets_by_slot": {
+    "1": [],
+    "2": [],
+    "3": []
+   },
+   "checkpoint_at": [
+    4096
+   ],
+   "cache_prompt": true,
+   "fork_requested": false,
+   "dflash_requested": true,
+   "n_predict": 0,
+   "components": {
+    "tgt_kv_hit": 0,
+    "recurrent_ckpt_pos": null,
+    "drafter_kv_hit": null,
+    "source": {
+     "tgt_kv_hit": "client"
+    },
+    "drafter_exposed": false
+   },
+   "tokens_lost_to_missing_checkpoint": null
+  },
+  {
+   "arm": "D_hit_count_prediction_mtp",
+   "cell": "junction-1",
+   "role": "child",
+   "slot": 1,
+   "n_task": 4351,
+   "lcp_client": 4095,
+   "n_fork_tokens": 0,
+   "n_fork_tokens_slot": 0,
+   "fork_src_kind": "none",
+   "fork_src_slot": -1,
+   "cache_n": 0,
+   "prompt_n": 4351,
+   "predicted_p": 0,
+   "predicted_kind": "none",
+   "predicted_src": null,
+   "predicted_tie": false,
+   "n_candidates": 0,
+   "expected": null,
+   "checkpoint_set_before": [
+    4096,
+    6144,
+    8188
+   ],
+   "pinned_before": [
+    4096
+   ],
+   "error": null,
+   "ckpt_sets_by_slot": {
+    "0": [
+     4096,
+     6144,
+     8188
+    ],
+    "2": [],
+    "3": []
+   },
+   "checkpoint_at": null,
+   "cache_prompt": true,
+   "fork_requested": true,
+   "dflash_requested": true,
+   "n_predict": 1,
+   "group": 0,
+   "suffix": 0,
+   "position_name": "junction",
+   "c": 4096,
+   "delta": -1,
+   "lcp_target": 4095,
+   "components": {
+    "tgt_kv_hit": 4095,
+    "recurrent_ckpt_pos": null,
+    "drafter_kv_hit": null,
+    "source": {
+     "tgt_kv_hit": "client"
+    },
+    "drafter_exposed": false
+   },
+   "tokens_lost_to_missing_checkpoint": 4095
+  },
+  {
+   "arm": "D_hit_count_prediction_mtp",
+   "cell": "junction+0",
+   "role": "child",
+   "slot": 1,
+   "n_task": 4352,
+   "lcp_client": 4096,
+   "n_fork_tokens": 4096,
+   "n_fork_tokens_slot": 0,
+   "fork_src_kind": "checkpoint",
+   "fork_src_slot": 0,
+   "cache_n": 4096,
+   "prompt_n": 256,
+   "predicted_p": 4096,
+   "predicted_kind": "checkpoint",
+   "predicted_src": 0,
+   "predicted_tie": false,
+   "n_candidates": 1,
+   "expected": null,
+   "checkpoint_set_before": [
+    4096,
+    6144,
+    8188
+   ],
+   "pinned_before": [
+    4096
+   ],
+   "error": null,
+   "ckpt_sets_by_slot": {
+    "0": [
+     4096,
+     6144,
+     8188
+    ],
+    "2": [],
+    "3": []
+   },
+   "checkpoint_at": null,
+   "cache_prompt": true,
+   "fork_requested": true,
+   "dflash_requested": true,
+   "n_predict": 1,
+   "group": 0,
+   "suffix": 0,
+   "position_name": "junction",
+   "c": 4096,
+   "delta": 0,
+   "lcp_target": 4096,
+   "components": {
+    "tgt_kv_hit": 4096,
+    "recurrent_ckpt_pos": 4096,
+    "drafter_kv_hit": null,
+    "source": {
+     "tgt_kv_hit": "client",
+     "recurrent_ckpt_pos": "client-predicted"
+    },
+    "drafter_exposed": false
+   },
+   "tokens_lost_to_missing_checkpoint": 0
+  },
+  {
+   "arm": "D_hit_count_prediction_mtp",
+   "cell": "junction+1",
+   "role": "child",
+   "slot": 1,
+   "n_task": 4353,
+   "lcp_client": 4097,
+   "n_fork_tokens": 4096,
+   "n_fork_tokens_slot": 0,
+   "fork_src_kind": "checkpoint",
+   "fork_src_slot": 0,
+   "cache_n": 4096,
+   "prompt_n": 257,
+   "predicted_p": 4096,
+   "predicted_kind": "checkpoint",
+   "predicted_src": 0,
+   "predicted_tie": false,
+   "n_candidates": 1,
+   "expected": null,
+   "checkpoint_set_before": [
+    4096,
+    6144,
+    8188
+   ],
+   "pinned_before": [
+    4096
+   ],
+   "error": null,
+   "ckpt_sets_by_slot": {
+    "0": [
+     4096,
+     6144,
+     8188
+    ],
+    "2": [],
+    "3": []
+   },
+   "checkpoint_at": null,
+   "cache_prompt": true,
+   "fork_requested": true,
+   "dflash_requested": true,
+   "n_predict": 1,
+   "group": 0,
+   "suffix": 0,
+   "position_name": "junction",
+   "c": 4096,
+   "delta": 1,
+   "lcp_target": 4097,
+   "components": {
+    "tgt_kv_hit": 4097,
+    "recurrent_ckpt_pos": 4096,
+    "drafter_kv_hit": null,
+    "source": {
+     "tgt_kv_hit": "client",
+     "recurrent_ckpt_pos": "client-predicted"
+    },
+    "drafter_exposed": false
+   },
+   "tokens_lost_to_missing_checkpoint": 1
+  },
+  {
+   "arm": "D_hit_count_prediction_mtp",
+   "cell": "n_minus_4_minus_ub-1",
+   "role": "child",
+   "slot": 1,
+   "n_task": 6395,
+   "lcp_client": 6139,
+   "n_fork_tokens": 4096,
+   "n_fork_tokens_slot": 0,
+   "fork_src_kind": "checkpoint",
+   "fork_src_slot": 0,
+   "cache_n": 4096,
+   "prompt_n": 2299,
+   "predicted_p": 4096,
+   "predicted_kind": "checkpoint",
+   "predicted_src": 0,
+   "predicted_tie": false,
+   "n_candidates": 1,
+   "expected": null,
+   "checkpoint_set_before": [
+    4096,
+    6144,
+    8188
+   ],
+   "pinned_before": [
+    4096
+   ],
+   "error": null,
+   "ckpt_sets_by_slot": {
+    "0": [
+     4096,
+     6144,
+     8188
+    ],
+    "2": [],
+    "3": []
+   },
+   "checkpoint_at": null,
+   "cache_prompt": true,
+   "fork_requested": true,
+   "dflash_requested": true,
+   "n_predict": 1,
+   "group": 0,
+   "suffix": 0,
+   "position_name": "n_minus_4_minus_ub",
+   "c": 6140,
+   "delta": -1,
+   "lcp_target": 6139,
+   "components": {
+    "tgt_kv_hit": 6139,
+    "recurrent_ckpt_pos": 4096,
+    "drafter_kv_hit": null,
+    "source": {
+     "tgt_kv_hit": "client",
+     "recurrent_ckpt_pos": "client-predicted"
+    },
+    "drafter_exposed": false
+   },
+   "tokens_lost_to_missing_checkpoint": 2043
+  },
+  {
+   "arm": "D_hit_count_prediction_mtp",
+   "cell": "n_minus_4_minus_ub+0",
+   "role": "child",
+   "slot": 1,
+   "n_task": 6396,
+   "lcp_client": 6140,
+   "n_fork_tokens": 4096,
+   "n_fork_tokens_slot": 0,
+   "fork_src_kind": "checkpoint",
+   "fork_src_slot": 0,
+   "cache_n": 4096,
+   "prompt_n": 2300,
+   "predicted_p": 4096,
+   "predicted_kind": "checkpoint",
+   "predicted_src": 0,
+   "predicted_tie": false,
+   "n_candidates": 1,
+   "expected": null,
+   "checkpoint_set_before": [
+    4096,
+    6144,
+    8188
+   ],
+   "pinned_before": [
+    4096
+   ],
+   "error": null,
+   "ckpt_sets_by_slot": {
+    "0": [
+     4096,
+     6144,
+     8188
+    ],
+    "2": [],
+    "3": []
+   },
+   "checkpoint_at": null,
+   "cache_prompt": true,
+   "fork_requested": true,
+   "dflash_requested": true,
+   "n_predict": 1,
+   "group": 0,
+   "suffix": 0,
+   "position_name": "n_minus_4_minus_ub",
+   "c": 6140,
+   "delta": 0,
+   "lcp_target": 6140,
+   "components": {
+    "tgt_kv_hit": 6140,
+    "recurrent_ckpt_pos": 4096,
+    "drafter_kv_hit": null,
+    "source": {
+     "tgt_kv_hit": "client",
+     "recurrent_ckpt_pos": "client-predicted"
+    },
+    "drafter_exposed": false
+   },
+   "tokens_lost_to_missing_checkpoint": 2044
+  },
+  {
+   "arm": "D_hit_count_prediction_mtp",
+   "cell": "n_minus_4_minus_ub+1",
+   "role": "child",
+   "slot": 1,
+   "n_task": 6397,
+   "lcp_client": 6141,
+   "n_fork_tokens": 4096,
+   "n_fork_tokens_slot": 0,
+   "fork_src_kind": "checkpoint",
+   "fork_src_slot": 0,
+   "cache_n": 4096,
+   "prompt_n": 2301,
+   "predicted_p": 4096,
+   "predicted_kind": "checkpoint",
+   "predicted_src": 0,
+   "predicted_tie": false,
+   "n_candidates": 1,
+   "expected": null,
+   "checkpoint_set_before": [
+    4096,
+    6144,
+    8188
+   ],
+   "pinned_before": [
+    4096
+   ],
+   "error": null,
+   "ckpt_sets_by_slot": {
+    "0": [
+     4096,
+     6144,
+     8188
+    ],
+    "2": [],
+    "3": []
+   },
+   "checkpoint_at": null,
+   "cache_prompt": true,
+   "fork_requested": true,
+   "dflash_requested": true,
+   "n_predict": 1,
+   "group": 0,
+   "suffix": 0,
+   "position_name": "n_minus_4_minus_ub",
+   "c": 6140,
+   "delta": 1,
+   "lcp_target": 6141,
+   "components": {
+    "tgt_kv_hit": 6141,
+    "recurrent_ckpt_pos": 4096,
+    "drafter_kv_hit": null,
+    "source": {
+     "tgt_kv_hit": "client",
+     "recurrent_ckpt_pos": "client-predicted"
+    },
+    "drafter_exposed": false
+   },
+   "tokens_lost_to_missing_checkpoint": 2045
+  },
+  {
+   "arm": "D_hit_count_prediction_mtp",
+   "cell": "n_minus_4-1",
+   "role": "child",
+   "slot": 1,
+   "n_task": 8443,
+   "lcp_client": 8187,
+   "n_fork_tokens": 6144,
+   "n_fork_tokens_slot": 0,
+   "fork_src_kind": "checkpoint",
+   "fork_src_slot": 0,
+   "cache_n": 6144,
+   "prompt_n": 2299,
+   "predicted_p": 6144,
+   "predicted_kind": "checkpoint",
+   "predicted_src": 0,
+   "predicted_tie": false,
+   "n_candidates": 2,
+   "expected": null,
+   "checkpoint_set_before": [
+    4096,
+    6144,
+    8188
+   ],
+   "pinned_before": [
+    4096
+   ],
+   "error": null,
+   "ckpt_sets_by_slot": {
+    "0": [
+     4096,
+     6144,
+     8188
+    ],
+    "2": [],
+    "3": []
+   },
+   "checkpoint_at": null,
+   "cache_prompt": true,
+   "fork_requested": true,
+   "dflash_requested": true,
+   "n_predict": 1,
+   "group": 0,
+   "suffix": 0,
+   "position_name": "n_minus_4",
+   "c": 8188,
+   "delta": -1,
+   "lcp_target": 8187,
+   "components": {
+    "tgt_kv_hit": 8187,
+    "recurrent_ckpt_pos": 6144,
+    "drafter_kv_hit": null,
+    "source": {
+     "tgt_kv_hit": "client",
+     "recurrent_ckpt_pos": "client-predicted"
+    },
+    "drafter_exposed": false
+   },
+   "tokens_lost_to_missing_checkpoint": 2043
+  },
+  {
+   "arm": "D_hit_count_prediction_mtp",
+   "cell": "n_minus_4+0",
+   "role": "child",
+   "slot": 1,
+   "n_task": 8444,
+   "lcp_client": 8188,
+   "n_fork_tokens": 8188,
+   "n_fork_tokens_slot": 0,
+   "fork_src_kind": "checkpoint",
+   "fork_src_slot": 0,
+   "cache_n": 8188,
+   "prompt_n": 256,
+   "predicted_p": 8188,
+   "predicted_kind": "checkpoint",
+   "predicted_src": 0,
+   "predicted_tie": false,
+   "n_candidates": 3,
+   "expected": null,
+   "checkpoint_set_before": [
+    4096,
+    6144,
+    8188
+   ],
+   "pinned_before": [
+    4096
+   ],
+   "error": null,
+   "ckpt_sets_by_slot": {
+    "0": [
+     4096,
+     6144,
+     8188
+    ],
+    "2": [],
+    "3": []
+   },
+   "checkpoint_at": null,
+   "cache_prompt": true,
+   "fork_requested": true,
+   "dflash_requested": true,
+   "n_predict": 1,
+   "group": 0,
+   "suffix": 0,
+   "position_name": "n_minus_4",
+   "c": 8188,
+   "delta": 0,
+   "lcp_target": 8188,
+   "components": {
+    "tgt_kv_hit": 8188,
+    "recurrent_ckpt_pos": 8188,
+    "drafter_kv_hit": null,
+    "source": {
+     "tgt_kv_hit": "client",
+     "recurrent_ckpt_pos": "client-predicted"
+    },
+    "drafter_exposed": false
+   },
+   "tokens_lost_to_missing_checkpoint": 0
+  },
+  {
+   "arm": "D_hit_count_prediction_mtp",
+   "cell": "n_minus_4+1",
+   "role": "child",
+   "slot": 1,
+   "n_task": 8445,
+   "lcp_client": 8189,
+   "n_fork_tokens": 8188,
+   "n_fork_tokens_slot": 0,
+   "fork_src_kind": "checkpoint",
+   "fork_src_slot": 0,
+   "cache_n": 8188,
+   "prompt_n": 257,
+   "predicted_p": 8188,
+   "predicted_kind": "checkpoint",
+   "predicted_src": 0,
+   "predicted_tie": false,
+   "n_candidates": 3,
+   "expected": null,
+   "checkpoint_set_before": [
+    4096,
+    6144,
+    8188
+   ],
+   "pinned_before": [
+    4096
+   ],
+   "error": null,
+   "ckpt_sets_by_slot": {
+    "0": [
+     4096,
+     6144,
+     8188
+    ],
+    "2": [],
+    "3": []
+   },
+   "checkpoint_at": null,
+   "cache_prompt": true,
+   "fork_requested": true,
+   "dflash_requested": true,
+   "n_predict": 1,
+   "group": 0,
+   "suffix": 0,
+   "position_name": "n_minus_4",
+   "c": 8188,
+   "delta": 1,
+   "lcp_target": 8189,
+   "components": {
+    "tgt_kv_hit": 8189,
+    "recurrent_ckpt_pos": 8188,
+    "drafter_kv_hit": null,
+    "source": {
+     "tgt_kv_hit": "client",
+     "recurrent_ckpt_pos": "client-predicted"
+    },
+    "drafter_exposed": false
+   },
+   "tokens_lost_to_missing_checkpoint": 1
+  },
+  {
+   "arm": "D_hit_count_prediction_mtp",
+   "cell": "holdout5131",
+   "role": "child",
+   "slot": 1,
+   "n_task": 5387,
+   "lcp_client": 5131,
+   "n_fork_tokens": 4096,
+   "n_fork_tokens_slot": 0,
+   "fork_src_kind": "checkpoint",
+   "fork_src_slot": 0,
+   "cache_n": 4096,
+   "prompt_n": 1291,
+   "predicted_p": 4096,
+   "predicted_kind": "checkpoint",
+   "predicted_src": 0,
+   "predicted_tie": false,
+   "n_candidates": 1,
+   "expected": null,
+   "checkpoint_set_before": [
+    4096,
+    6144,
+    8188
+   ],
+   "pinned_before": [
+    4096
+   ],
+   "error": null,
+   "ckpt_sets_by_slot": {
+    "0": [
+     4096,
+     6144,
+     8188
+    ],
+    "2": [],
+    "3": []
+   },
+   "checkpoint_at": null,
+   "cache_prompt": true,
+   "fork_requested": true,
+   "dflash_requested": true,
+   "n_predict": 16,
+   "group": 0,
+   "suffix": 0,
+   "holdout": true,
+   "lcp_target": 5131,
+   "components": {
+    "tgt_kv_hit": 5131,
+    "recurrent_ckpt_pos": 4096,
+    "drafter_kv_hit": null,
+    "source": {
+     "tgt_kv_hit": "client",
+     "recurrent_ckpt_pos": "client-predicted"
+    },
+    "drafter_exposed": false
+   },
+   "tokens_lost_to_missing_checkpoint": 1035,
+   "vs_cold": {
+    "top1": true,
+    "prefix": 16,
+    "n_cmp": 16,
+    "maxabs_union": 0.0,
+    "maxabs_intersection": 0.0,
+    "kld": 0.0,
+    "tokens_identical": true,
+    "identical": true,
+    "len_a": 16,
+    "len_b": 16
+   }
+  },
+  {
+   "arm": "D_hit_count_prediction_mtp",
+   "cell": "holdout5131.cold",
+   "role": "cold",
+   "slot": 2,
+   "n_task": 5387,
+   "lcp_client": 5387,
+   "n_fork_tokens": 0,
+   "n_fork_tokens_slot": 0,
+   "fork_src_kind": "none",
+   "fork_src_slot": -1,
+   "cache_n": 0,
+   "prompt_n": 5387,
+   "predicted_p": 0,
+   "predicted_kind": "none",
+   "predicted_src": null,
+   "predicted_tie": false,
+   "n_candidates": 0,
+   "expected": null,
+   "checkpoint_set_before": [
+    4096,
+    6144,
+    8188,
+    4096,
+    5383
+   ],
+   "pinned_before": [
+    4096,
+    4096
+   ],
+   "error": null,
+   "ckpt_sets_by_slot": {
+    "0": [
+     4096,
+     6144,
+     8188
+    ],
+    "1": [
+     4096,
+     5383
+    ],
+    "3": []
+   },
+   "checkpoint_at": null,
+   "cache_prompt": false,
+   "fork_requested": false,
+   "dflash_requested": true,
+   "n_predict": 16,
+   "components": {
+    "tgt_kv_hit": 5386,
+    "recurrent_ckpt_pos": null,
+    "drafter_kv_hit": null,
+    "source": {
+     "tgt_kv_hit": "client"
+    },
+    "drafter_exposed": false
+   },
+   "tokens_lost_to_missing_checkpoint": null
+  }
+ ],
+ "controls": {
+  "manifest": "prompt_set_sha256 + binary_sha256 + argv (read back from /proc and the launch log) are in this record; per-sibling raw cells (n_fork_tokens from timings and from /slots, prediction, checkpoint sets, errors) are under `cells`",
+  "baseline": "the fork-off arm (--slot-fork-min-tokens 0) of the same command on the same binary, and champion tip e33229348 (item 6 / KPF-18.0b)",
+  "held_out": "lengths or prompts used to SET a rule are never used to judge it (arm D holdout cell; arm C/D positions come from the server's own checkpoint offsets, not from fitted numbers)",
+  "counted": "every sibling is a cell, including errors, aborts and abstentions",
+  "reported_as": "counts under rule_result; no pass word",
+  "config": "mtp",
+  "kpf_task": "KPF-18.1"
+ },
+ "arm_key": "D",
+ "ub": 2048,
+ "counters_start": {
+  "slot_forks_total": 42.0,
+  "slot_fork_tokens_total": 131316.0
+ },
+ "positions": {
+  "junction": 4096,
+  "n_minus_4_minus_ub": 6140,
+  "n_minus_4": 8188
+ },
+ "source_checkpoint_set": [
+  4096,
+  6144,
+  8188
+ ],
+ "counters_end": {
+  "slot_forks_total": 51.0,
+  "slot_fork_tokens_total": 178412.0
+ },
+ "counters_delta": {
+  "slot_forks_total": 9.0,
+  "slot_fork_tokens_total": 47096.0
+ },
+ "armed": {
+  "n_requests": 12,
+  "n_requests_with_fork": 9,
+  "sum_n_fork_tokens": 47096,
+  "checkpoint_sets_nonempty": 11
+ },
+ "rule_result": {
+  "n_cells": 9,
+  "n": 9,
+  "n_error": 0,
+  "n_equal_predicted": 9,
+  "n_not_equal_predicted": 0,
+  "n_zero_while_checkpoint_usable": 0,
+  "zero_while_checkpoint_usable": [],
+  "n_ties": 0,
+  "holdout_drop": {
+   "cell": "holdout5131",
+   "lcp": 5131,
+   "predicted": 4096,
+   "observed": 4096,
+   "drop": 0,
+   "kind": "none"
+  },
+  "predeclared_rule_satisfied": true
+ },
+ "record_sha256": "98d876c02eacc3c39b7b0885844b7dbd5db478c73d39c3f713441ceea9b1eee5"
+}

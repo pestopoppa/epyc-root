@@ -1,0 +1,462 @@
+{
+  "schema": "epyc.kpf181.cpu-subset.v1",
+  "partial": false,
+  "task_gate_complete": false,
+  "scope": "CPU Qwen3.6-35B Q8 MTP and no-drafter; GPU DFlash2 not run",
+  "record_paths": [
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T025409Z-1.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T025454Z-2.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T025608Z-3.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T025950Z-4.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030032Z-5.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030112Z-6.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030157Z-7.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030243Z-8.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030331Z-9.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030423Z-10.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030519Z-11.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030619Z-12.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030723Z-13.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030828Z-14.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030936Z-15.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031046Z-16.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031157Z-17.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031309Z-18.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031424Z-19.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031543Z-20.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031622Z-21.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031705Z-22.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031748Z-23.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031835Z-24.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031925Z-25.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032015Z-26.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032110Z-27.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032209Z-28.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032309Z-29.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032411Z-30.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032515Z-31.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032623Z-32.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032732Z-33.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032844Z-34.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T033000Z-35.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T033119Z-36.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T033509Z-37.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T033657Z-38.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T033842Z-39.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T034204Z-40.json"
+  ],
+  "champion_record_paths": [
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/champion/records/kpf18-20261031T034551Z-1.json",
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/champion/records/kpf18-20261031T034645Z-2.json"
+  ],
+  "C": {
+    "on": {
+      "expected": [
+        2048,
+        2176,
+        2304,
+        2432,
+        2560,
+        2688,
+        2816,
+        2944,
+        3072,
+        3200,
+        3328,
+        3456,
+        3584,
+        3712,
+        3840,
+        3968
+      ],
+      "observed": [
+        2048,
+        2176,
+        2304,
+        2432,
+        2560,
+        2688,
+        2816,
+        2944,
+        3072,
+        3200,
+        3328,
+        3456,
+        3584,
+        3712,
+        3840,
+        3968
+      ],
+      "problems": [],
+      "result": {
+        "n_lengths": 16,
+        "n_forked_at_L": 16,
+        "n_not_forked_at_L": 0,
+        "n_top1_equal": 16,
+        "n_within_floor": 16,
+        "n_outside_floor": 0,
+        "floor": {
+          "n": 16,
+          "max_maxabs": 0.0,
+          "max_kld": 0.0,
+          "prefix_median": 16.0,
+          "prefix_min": 16
+        },
+        "greedy_prefix_vs_fresh_median": 16.0,
+        "greedy_prefix_floor_median": 16.0,
+        "lengths": [
+          {
+            "cell": "L2048",
+            "L": 2048,
+            "n_fork_tokens": 2048,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L2176",
+            "L": 2176,
+            "n_fork_tokens": 2176,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L2304",
+            "L": 2304,
+            "n_fork_tokens": 2304,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L2432",
+            "L": 2432,
+            "n_fork_tokens": 2432,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L2560",
+            "L": 2560,
+            "n_fork_tokens": 2560,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L2688",
+            "L": 2688,
+            "n_fork_tokens": 2688,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L2816",
+            "L": 2816,
+            "n_fork_tokens": 2816,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L2944",
+            "L": 2944,
+            "n_fork_tokens": 2944,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L3072",
+            "L": 3072,
+            "n_fork_tokens": 3072,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L3200",
+            "L": 3200,
+            "n_fork_tokens": 3200,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L3328",
+            "L": 3328,
+            "n_fork_tokens": 3328,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L3456",
+            "L": 3456,
+            "n_fork_tokens": 3456,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L3584",
+            "L": 3584,
+            "n_fork_tokens": 3584,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L3712",
+            "L": 3712,
+            "n_fork_tokens": 3712,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L3840",
+            "L": 3840,
+            "n_fork_tokens": 3840,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L3968",
+            "L": 3968,
+            "n_fork_tokens": 3968,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          }
+        ],
+        "predeclared_rule_satisfied": true
+      }
+    },
+    "off": {
+      "expected": [
+        2048,
+        2176,
+        2304,
+        2432,
+        2560,
+        2688,
+        2816,
+        2944,
+        3072,
+        3200,
+        3328,
+        3456,
+        3584,
+        3712,
+        3840,
+        3968
+      ],
+      "observed": [
+        2048,
+        2176,
+        2304,
+        2432,
+        2560,
+        2688,
+        2816,
+        2944,
+        3072,
+        3200,
+        3328,
+        3456,
+        3584,
+        3712,
+        3840,
+        3968
+      ],
+      "problems": [],
+      "result": {
+        "n_lengths": 16,
+        "n_forked_at_L": 16,
+        "n_not_forked_at_L": 0,
+        "n_top1_equal": 16,
+        "n_within_floor": 16,
+        "n_outside_floor": 0,
+        "floor": {
+          "n": 16,
+          "max_maxabs": 0.0,
+          "max_kld": 0.0,
+          "prefix_median": 16.0,
+          "prefix_min": 16
+        },
+        "greedy_prefix_vs_fresh_median": 16.0,
+        "greedy_prefix_floor_median": 16.0,
+        "lengths": [
+          {
+            "cell": "L2048",
+            "L": 2048,
+            "n_fork_tokens": 2048,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L2176",
+            "L": 2176,
+            "n_fork_tokens": 2176,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L2304",
+            "L": 2304,
+            "n_fork_tokens": 2304,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L2432",
+            "L": 2432,
+            "n_fork_tokens": 2432,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L2560",
+            "L": 2560,
+            "n_fork_tokens": 2560,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L2688",
+            "L": 2688,
+            "n_fork_tokens": 2688,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L2816",
+            "L": 2816,
+            "n_fork_tokens": 2816,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L2944",
+            "L": 2944,
+            "n_fork_tokens": 2944,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L3072",
+            "L": 3072,
+            "n_fork_tokens": 3072,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L3200",
+            "L": 3200,
+            "n_fork_tokens": 3200,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L3328",
+            "L": 3328,
+            "n_fork_tokens": 3328,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L3456",
+            "L": 3456,
+            "n_fork_tokens": 3456,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L3584",
+            "L": 3584,
+            "n_fork_tokens": 3584,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L3712",
+            "L": 3712,
+            "n_fork_tokens": 3712,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L3840",
+            "L": 3840,
+            "n_fork_tokens": 3840,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          },
+          {
+            "cell": "L3968",
+            "L": 3968,
+            "n_fork_tokens": 3968,
+            "forked_at_L": true,
+            "top1": true,
+            "within": true,
+            "prefix_vs_fresh": 16
+          }
+        ],
+        "predeclared_rule_satisfied": true
+      }
+    }
+  },
+  "unknown": "GPU DFlash2 and unexposed/missing native fields",
+  "gate_note": "Original full KPF-18.1 criteria remain open; no cross-model pooling."
+}

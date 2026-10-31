@@ -1,0 +1,7 @@
+rc=1 time=2026-10-31T03:47:36Z reason=job-rc-1:incomplete:exited
+job_id=codex3-kpf181-cpu-r1-20261031
+owner=codex3
+step=job-run
+estimated_wall_s=86400
+started=2026-10-31T02:54:05Z
+regions=0-23

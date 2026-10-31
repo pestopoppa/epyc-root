@@ -1,0 +1,7 @@
+rc=1 time=2026-10-31T03:54:11Z reason=job-rc-1:exited
+job_id=codex3-lb49-fu03-cli-r1-20261031
+owner=codex3
+step=job-run
+estimated_wall_s=3600
+started=2026-10-31T03:54:05Z
+regions=0-23

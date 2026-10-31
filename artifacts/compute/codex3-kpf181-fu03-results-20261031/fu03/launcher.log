@@ -1,0 +1,12 @@
+2026-10-31T03:53:20Z [codex3-lb49-fu03-cli-r1-20261031] launcher up pid=3263113 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex3-next-backlog-20261031-0255/r2/STOP minwin=1800s ports=19633
+2026-10-31T03:54:05Z [codex3-lb49-fu03-cli-r1-20261031] START regions=0-23 cpus=0-23 threads=24 gpu=0 end=2026-10-31T04:53Z
+[region-lock] acquiring regions ['q0'] as role='build' (timeout_s=3535.0) …
+[region-lock] held ['q0'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/codex3-kpf-item4-control-20261030/engine/filler_run13.sh --inner --id codex3-lb49-fu03-cli-r1-20261031 --class cpu --cmd taskset -c ${FILLER_CPUS} /bin/bash /mnt/raid0/llm/tmp/codex3-next-backlog-20261031-0255/r2/launch.sh --job --min-window 1800 --stop /mnt/raid0/llm/tmp/codex3-next-backlog-20261031-0255/r2/STOP --port 19633 --workdir /mnt/raid0/llm/tmp/codex3-next-backlog-20261031-0255/r2 --gpu-threads 184-191
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/codex3-next-backlog-20261031-0255/r2/job.py", line 16, in <module>
+    if r.returncode: raise RuntimeError('RAM admission refused: '+r.stdout+r.stderr)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: RAM admission refused: refuse: DS41-class server live: HOLDER pid=3275610 via=cmdline artifact=DeepSeek-V4.1-Flash-1017-MXFP4-experts-00001-of-00009.gguf        started: Sat Oct 31 03:53:52 2026        argv0:   /mnt/raid0/llm/tmp/codex-ni-lb49-qkv-ds41-la
+
+job rc=1
+2026-10-31T03:54:11Z [codex3-lb49-fu03-cli-r1-20261031] ended rc=1 reason=job-rc-1:exited (grant deleted)

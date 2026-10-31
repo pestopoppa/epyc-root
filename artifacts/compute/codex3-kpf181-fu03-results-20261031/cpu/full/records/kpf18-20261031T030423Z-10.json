@@ -1,0 +1,682 @@
+{
+ "schema": "epyc.kpf.run.v1",
+ "kpf_task": "KPF-18.1",
+ "kpf18_item": 181,
+ "run_id": "kpf18-20261031T030423Z-10",
+ "arm": "C_length_sweep_drafter_on",
+ "binary": "/mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server",
+ "binary_realpath": "/mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server",
+ "binary_sha256": "849bd4cc2f7722d8535e8244a2035740a2fbb959f7782ac705d856a912a56176",
+ "build_from_launch_log": null,
+ "argv": [
+  "/mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server",
+  "-m",
+  "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+  "--host",
+  "127.0.0.1",
+  "-np",
+  "4",
+  "-c",
+  "98304",
+  "-t",
+  "24",
+  "-tb",
+  "24",
+  "-ub",
+  "2048",
+  "--flash-attn",
+  "on",
+  "--jinja",
+  "-ctk",
+  "q8_0",
+  "-ctv",
+  "q8_0",
+  "--no-mmap",
+  "--cache-ram",
+  "32768",
+  "--chat-template-file",
+  "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+  "--spec-type",
+  "draft-mtp",
+  "--spec-draft-n-max",
+  "4",
+  "--reasoning",
+  "off",
+  "--device",
+  "none",
+  "--device-draft",
+  "none",
+  "--kv-unified",
+  "--no-cache-idle-slots",
+  "--slot-save-path",
+  "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/slot-save/kpf181-on-mtp-20261031T025405Z",
+  "--port",
+  "19627",
+  "--metrics",
+  "--slot-fork-min-tokens",
+  "128"
+ ],
+ "launch_prefix": [
+  "taskset",
+  "-c",
+  "0-23"
+ ],
+ "argv_readback": {
+  "proc_cmdline_matches_argv": true,
+  "exe_matches_binary": true
+ },
+ "argv_source": {
+  "argv_file": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full-argv.txt",
+  "argv_file_sha256": "d52c880c05742135cc727263c66b4f4fe538f0f93b22b7b7043c65cb38e67fde",
+  "argv_file_header": [
+   "# KPF-18 CPU subset argv: production frontdoor (:8070) argv as rendered by",
+   "#   epyc-orchestrator scripts/server/orchestrator_stack.py build_server_command(registry.get_role('frontdoor'), ...)",
+   "#   on 2026-10-20 (no launch):",
+   "#   llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 --port <p> -np 4 -c 262144 -t 96",
+   "#   -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --mlock --no-mmap --cache-ram 32768",
+   "#   --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-type draft-mtp",
+   "#   --spec-draft-n-max 4 --reasoning off --slot-save-path /mnt/raid0/llm/cache/kv_slots/frontdoor --device none --device-draft none",
+   "# Changes for the one-quarter CPU gate: -t 96 -> -t 24 -tb 24 (q3 = cores 72-95); -c 262144 -> -c 98304 (4 x 16k trunks",
+   "# + suffixes fit); --mlock dropped (shared host); --kv-unified added (gate shape); --no-cache-idle-slots added (the GPU",
+   "# gate's shape: a trunk-first source must stay resident while fresh controls run on other slots; item 5 toggles it);",
+   "# --port / --slot-save-path / --metrics / --slot-fork-min-tokens are set by the runner."
+  ],
+  "shape_drift": [
+   "-c = '98304', gate shape expects '393216'",
+   "-ngl = None, gate shape expects 'all'",
+   "--spec-type = 'draft-mtp', gate shape expects 'draft-dflash'",
+   "--spec-draft-n-max = '4', gate shape expects '7'",
+   "--device = 'none', gate shape expects 'ROCm0'",
+   "-b = None, gate shape expects '512'",
+   "-ub = '2048', gate shape expects '512'",
+   "--cache-ram = '32768', gate shape expects '65536'",
+   "-md '' is not the DFlash2 drafter"
+  ],
+  "shape_drift_allowed": true
+ },
+ "env": {
+  "dropped_ambient": [
+   "LD_LIBRARY_PATH"
+  ],
+  "set": {
+   "HIP_PATH": "/opt/rocm",
+   "ROCM_PATH": "/opt/rocm",
+   "OMP_PROC_BIND": "spread",
+   "OMP_PLACES": "cores",
+   "OMP_WAIT_POLICY": "active",
+   "OMP_DYNAMIC": "false",
+   "GGML_IQK": "1",
+   "LD_LIBRARY_PATH": "/mnt/micron/codex3-lanes/kpf183-chat-build/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib"
+  }
+ },
+ "kv_mode_from_launch_log": "kv_unified = 'true'",
+ "slot_fork_from_launch_log": "cross-slot prefix fork enabled: mode = checkpoint, min tokens = 128, cache_idle_slots = 0",
+ "n_slots_n_ctx_slot_from_launch_log": [
+  4,
+  98304
+ ],
+ "prompt_set": "/mnt/raid0/llm/tmp/kv-prefix-fork/p1r-20261020/kpf18cpu/run-20261020T163128Z/prompt_set.jsonl",
+ "prompt_set_sha256": "fe8c8c9202f71e678435717a931d3a97236968fe7b883a8748a88d1215b26662",
+ "dflash2": false,
+ "spec_type_from_argv": "draft-mtp",
+ "draft_model_from_argv": null,
+ "speculative_requested": true,
+ "equivalence": {
+  "control_floor": {
+   "top1_agree": 1,
+   "n": 1,
+   "logit_maxabs": 0.0,
+   "kld": 0.0,
+   "greedy_prefix_len_min": 16,
+   "measured": true,
+   "first_token_top1_agree": 1,
+   "max_abs_logit": 0.0,
+   "max_kld": 0.0,
+   "identical_greedy_prefix_min": 16,
+   "kld_mean": 0.0,
+   "prob_maxabs_intersection": 0.0,
+   "greedy_prefix_full": 1,
+   "greedy_prefix_quartiles": [
+    16,
+    16,
+    16,
+    16,
+    16
+   ],
+   "tokens_identical": 1,
+   "bit_identical": 1
+  },
+  "vs_fresh": {
+   "top1_agree": 1,
+   "n": 1,
+   "logit_maxabs": 0.0,
+   "kld": 0.0,
+   "greedy_prefix_len_min": 16,
+   "measured": true,
+   "first_token_top1_agree": 1,
+   "max_abs_logit": 0.0,
+   "max_kld": 0.0,
+   "identical_greedy_prefix_min": 16,
+   "kld_mean": 0.0,
+   "prob_maxabs_intersection": 0.0,
+   "greedy_prefix_full": 1,
+   "greedy_prefix_quartiles": [
+    16,
+    16,
+    16,
+    16,
+    16
+   ],
+   "tokens_identical": 1,
+   "bit_identical": 1
+  },
+  "bit_exact_ckpt": {
+   "identical": 0,
+   "n": 0,
+   "tokens_identical": 0,
+   "measured": false
+  },
+  "source_invariance": {
+   "identical": 0,
+   "n": 0,
+   "tokens_identical": 0,
+   "measured": false
+  },
+  "off_equals_champion": {
+   "identical": 0,
+   "n": 0,
+   "tokens_identical": 0,
+   "measured": false
+  }
+ },
+ "equivalence_basis": "First-token top-k probabilities from /completion `n_probs` (completion_probabilities, post_sampling_probs false = softmax over the full vocabulary before sampling). The server cannot return full logits, so `logit_maxabs` is max |p_a - p_b| over the UNION of the two top-k sets (an id absent from one side counts as 0 there: an upper bound) and `kld` is KL(a||b) over the top-k union plus one tail bucket, absent ids imputed from that side's tail mass capped at its k-th prob (a coarse-grained KL: a lower bound on the full-vocab KL when the imputation is exact). Greedy-prefix length compares returned token ids over n_predict tokens (ignore_eos). `identical` = all token ids AND every per-position top-k entry equal.",
+ "n_probs": 20,
+ "n_predict": 16,
+ "ttft_ms": [],
+ "prompt_tokens_processed": 9728,
+ "cache_n": 2816,
+ "n_fork_tokens": 2816,
+ "unique_cells_peak": 9773,
+ "unique_cells_method": "max llamacpp:kv_cells_used sampled once after each request (a lower bound of the true peak; item 7 polls at 1 Hz instead)",
+ "decode_tok_s": {
+  "per_slot": [
+   1000000.0,
+   26.186793672615977,
+   25.443714527883923,
+   23.960237985063785
+  ],
+  "aggregate": 25.687,
+  "aggregate_method": "sum predicted_n / sum predicted_ms over this run's requests (token-weighted mean decode rate; requests are sequential, not a concurrent aggregate)"
+ },
+ "window_id": "kpf18-20261031T025405Z-item181",
+ "gpu_window_id": null,
+ "start_utc": "2026-10-31T03:04:23Z",
+ "end_utc": "2026-10-31T03:35:03Z",
+ "host": "Beelzebub",
+ "checks": {
+  "counter_slot_forks_equal_requests_with_fork": {
+   "ok": 1,
+   "n": 1,
+   "failed": []
+  },
+  "counter_fork_tokens_equal_sum_n_fork": {
+   "ok": 1,
+   "n": 1,
+   "failed": []
+  },
+  "n_fork_tokens_timings_equal_slot": {
+   "ok": 0,
+   "n": 1,
+   "failed": [
+    [
+     "L2816"
+    ]
+   ]
+  }
+ },
+ "server_log": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/logs/kpf181-on-mtp-20261031T025405Z.server.log",
+ "server_log_counts": {
+  "failed_to_find_memory_slot": 0,
+  "fork_lines": 51,
+  "fork_lines_busy": 0,
+  "fork_kinds": [
+   "checkpoint"
+  ],
+  "prefill_budget_iters": 486,
+  "prefill_budget_mixed_iters": 0,
+  "n_batch_observed": 2044
+ },
+ "residency": {
+  "linkage": {
+   "rc": 0,
+   "pass": true,
+   "report": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/logs/kpf181-on-mtp-20261031T025405Z.linkage.txt",
+   "s": 0.02,
+   "cmd": "LD_LIBRARY_PATH=/mnt/micron/codex3-lanes/kpf183-chat-build/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib bash /mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh /mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server /mnt/micron/codex3-lanes/kpf183-chat-build/bin"
+  },
+  "hip_mapped": [],
+  "ggml_all_from_bin_dir": true,
+  "smi_tool": null,
+  "vram": null,
+  "process_start_utc": "2026-10-31T02:54:05Z",
+  "process_stop_utc": "2026-10-31T03:35:01Z",
+  "stop": {
+   "pid": 2346956,
+   "sent": [
+    "TERM"
+   ],
+   "at": "2026-10-31T03:34:59Z",
+   "returncode": 0,
+   "verified_dead": true
+  }
+ },
+ "rows": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/rows/kpf18-20261031T030423Z-10.jsonl",
+ "rows_sha256": "64520ba8c5c744d3da1b3432acf2b4c67350cd9279069b9b8350e11354286166",
+ "kpf_ext": {
+  "ext_version": 1,
+  "checkpoint_set": [
+   {
+    "role": "source",
+    "positions": []
+   },
+   {
+    "role": "child",
+    "positions": [
+     1280,
+     2816,
+     3324
+    ]
+   },
+   {
+    "role": "fresh_A",
+    "positions": [
+     1280,
+     2816,
+     3068,
+     3324
+    ]
+   },
+   {
+    "role": "fresh_B",
+    "positions": [
+     1024,
+     1280,
+     2816,
+     3068,
+     3324
+    ]
+   }
+  ],
+  "hit_components": [
+   {
+    "role": "source",
+    "tgt_kv_hit": 0,
+    "min": 0,
+    "n_fork_tokens": 0
+   },
+   {
+    "role": "child",
+    "tgt_kv_hit": 2816,
+    "recurrent_ckpt_pos": 2816,
+    "min": 2816,
+    "n_fork_tokens": 2816
+   },
+   {
+    "role": "fresh_A",
+    "tgt_kv_hit": 3071,
+    "min": 3071,
+    "n_fork_tokens": 0
+   },
+   {
+    "role": "fresh_B",
+    "tgt_kv_hit": 3071,
+    "min": 3071,
+    "n_fork_tokens": 0
+   }
+  ],
+  "hit_length_min": 0,
+  "hit_tokens": 2816,
+  "tokens_lost_to_missing_checkpoint": 0,
+  "drafter_drop_kind": null,
+  "request_lane": [
+   "completion_raw"
+  ],
+  "cache_skip_control": {
+   "requests_cache_prompt_false": 2,
+   "cache_n_zero": 2
+  },
+  "pinned_count": {
+   "max": 2,
+   "samples": 4
+  }
+ },
+ "instrument_class": "serving",
+ "category": "CANDIDATE",
+ "grading_note": "n=1 per cell, no codified protocol cited: an OBSERVATION; projects under VB-KVU-PF and grades Judged/Located through claim_tuple.grade(). Counts, not a pass word.",
+ "kpf18_arm": "C_length_sweep_drafter_on",
+ "kpf_config": "mtp",
+ "fork_min_tokens": 128,
+ "fork_mode": "checkpoint",
+ "predeclared_rule": "Trunk-length sweep: >= 16 lengths L0 + k*stride (stride = ub // 16, one -ub period), one trunk group; for each length slot 0 prefills trunk[:L]+tail with checkpoint_at=[L]; the fork child (trunk[:L]+suffix0), then two cold runs (cache_prompt false) on slots 2 and 3 give the fresh-vs-fresh floor. Run with the drafter on and off (speculative.n_max 0 on every request). SATISFIED iff for EVERY length n_fork_tokens == L and the child is within the floor: top-1 equal, max-abs prob and coarse KL each <= max(the largest fresh-vs-fresh value over this run's lengths, 1e-4).",
+ "predeclared_rules_sha256": "049d663e7a57cbd70b56bb5bd1e8d1551aedcca3275dc728c8e57af90889b8c9",
+ "cells": [
+  {
+   "arm": "C_length_sweep_drafter_on",
+   "cell": "L2816.src",
+   "role": "source",
+   "slot": 0,
+   "n_task": 3328,
+   "lcp_client": 0,
+   "n_fork_tokens": 0,
+   "n_fork_tokens_slot": 0,
+   "fork_src_kind": "none",
+   "fork_src_slot": -1,
+   "cache_n": 0,
+   "prompt_n": 3328,
+   "predicted_p": 0,
+   "predicted_kind": "none",
+   "predicted_src": null,
+   "predicted_tie": false,
+   "n_candidates": 0,
+   "expected": null,
+   "checkpoint_set_before": [],
+   "pinned_before": [],
+   "error": null,
+   "ckpt_sets_by_slot": {
+    "1": [],
+    "2": [],
+    "3": []
+   },
+   "checkpoint_at": [
+    2816
+   ],
+   "cache_prompt": true,
+   "fork_requested": false,
+   "dflash_requested": true,
+   "n_predict": 0,
+   "length": 2816,
+   "components": {
+    "tgt_kv_hit": 0,
+    "recurrent_ckpt_pos": null,
+    "drafter_kv_hit": null,
+    "source": {
+     "tgt_kv_hit": "client"
+    },
+    "drafter_exposed": false
+   },
+   "tokens_lost_to_missing_checkpoint": null
+  },
+  {
+   "arm": "C_length_sweep_drafter_on",
+   "cell": "L2816",
+   "role": "child",
+   "slot": 1,
+   "n_task": 3072,
+   "lcp_client": 2816,
+   "n_fork_tokens": 2816,
+   "n_fork_tokens_slot": 0,
+   "fork_src_kind": "checkpoint",
+   "fork_src_slot": 0,
+   "cache_n": 2816,
+   "prompt_n": 256,
+   "predicted_p": 2816,
+   "predicted_kind": "checkpoint",
+   "predicted_src": 0,
+   "predicted_tie": false,
+   "n_candidates": 2,
+   "expected": 2816,
+   "checkpoint_set_before": [
+    1280,
+    2816,
+    3324
+   ],
+   "pinned_before": [
+    2816
+   ],
+   "error": null,
+   "ckpt_sets_by_slot": {
+    "0": [
+     1280,
+     2816,
+     3324
+    ],
+    "2": [],
+    "3": []
+   },
+   "checkpoint_at": null,
+   "cache_prompt": true,
+   "fork_requested": true,
+   "dflash_requested": true,
+   "n_predict": 16,
+   "length": 2816,
+   "components": {
+    "tgt_kv_hit": 2816,
+    "recurrent_ckpt_pos": 2816,
+    "drafter_kv_hit": null,
+    "source": {
+     "tgt_kv_hit": "client",
+     "recurrent_ckpt_pos": "client-predicted"
+    },
+    "drafter_exposed": false
+   },
+   "tokens_lost_to_missing_checkpoint": 0,
+   "vs_fresh": {
+    "top1": true,
+    "prefix": 16,
+    "n_cmp": 16,
+    "maxabs_union": 0.0,
+    "maxabs_intersection": 0.0,
+    "kld": 0.0,
+    "tokens_identical": true,
+    "identical": true,
+    "len_a": 16,
+    "len_b": 16
+   },
+   "floor": {
+    "top1": true,
+    "prefix": 16,
+    "n_cmp": 16,
+    "maxabs_union": 0.0,
+    "maxabs_intersection": 0.0,
+    "kld": 0.0,
+    "tokens_identical": true,
+    "identical": true,
+    "len_a": 16,
+    "len_b": 16
+   }
+  },
+  {
+   "arm": "C_length_sweep_drafter_on",
+   "cell": "L2816.freshA",
+   "role": "fresh_A",
+   "slot": 2,
+   "n_task": 3072,
+   "lcp_client": 3072,
+   "n_fork_tokens": 0,
+   "n_fork_tokens_slot": 0,
+   "fork_src_kind": "none",
+   "fork_src_slot": -1,
+   "cache_n": 0,
+   "prompt_n": 3072,
+   "predicted_p": 0,
+   "predicted_kind": "none",
+   "predicted_src": null,
+   "predicted_tie": false,
+   "n_candidates": 0,
+   "expected": null,
+   "checkpoint_set_before": [
+    1280,
+    2816,
+    3324,
+    1280,
+    2816,
+    3068
+   ],
+   "pinned_before": [
+    2816,
+    2816
+   ],
+   "error": null,
+   "ckpt_sets_by_slot": {
+    "0": [
+     1280,
+     2816,
+     3324
+    ],
+    "1": [
+     1280,
+     2816,
+     3068
+    ],
+    "3": []
+   },
+   "checkpoint_at": null,
+   "cache_prompt": false,
+   "fork_requested": false,
+   "dflash_requested": true,
+   "n_predict": 16,
+   "components": {
+    "tgt_kv_hit": 3071,
+    "recurrent_ckpt_pos": null,
+    "drafter_kv_hit": null,
+    "source": {
+     "tgt_kv_hit": "client"
+    },
+    "drafter_exposed": false
+   },
+   "tokens_lost_to_missing_checkpoint": null
+  },
+  {
+   "arm": "C_length_sweep_drafter_on",
+   "cell": "L2816.freshB",
+   "role": "fresh_B",
+   "slot": 3,
+   "n_task": 3072,
+   "lcp_client": 3072,
+   "n_fork_tokens": 0,
+   "n_fork_tokens_slot": 0,
+   "fork_src_kind": "none",
+   "fork_src_slot": -1,
+   "cache_n": 0,
+   "prompt_n": 3072,
+   "predicted_p": 0,
+   "predicted_kind": "none",
+   "predicted_src": null,
+   "predicted_tie": false,
+   "n_candidates": 0,
+   "expected": null,
+   "checkpoint_set_before": [
+    1280,
+    2816,
+    3324,
+    1280,
+    2816,
+    3068,
+    1024,
+    3068
+   ],
+   "pinned_before": [
+    2816,
+    2816
+   ],
+   "error": null,
+   "ckpt_sets_by_slot": {
+    "0": [
+     1280,
+     2816,
+     3324
+    ],
+    "1": [
+     1280,
+     2816,
+     3068
+    ],
+    "2": [
+     1024,
+     3068
+    ]
+   },
+   "checkpoint_at": null,
+   "cache_prompt": false,
+   "fork_requested": false,
+   "dflash_requested": true,
+   "n_predict": 16,
+   "components": {
+    "tgt_kv_hit": 3071,
+    "recurrent_ckpt_pos": null,
+    "drafter_kv_hit": null,
+    "source": {
+     "tgt_kv_hit": "client"
+    },
+    "drafter_exposed": false
+   },
+   "tokens_lost_to_missing_checkpoint": null
+  }
+ ],
+ "controls": {
+  "manifest": "prompt_set_sha256 + binary_sha256 + argv (read back from /proc and the launch log) are in this record; per-sibling raw cells (n_fork_tokens from timings and from /slots, prediction, checkpoint sets, errors) are under `cells`",
+  "baseline": "the fork-off arm (--slot-fork-min-tokens 0) of the same command on the same binary, and champion tip e33229348 (item 6 / KPF-18.0b)",
+  "held_out": "lengths or prompts used to SET a rule are never used to judge it (arm D holdout cell; arm C/D positions come from the server's own checkpoint offsets, not from fitted numbers)",
+  "counted": "every sibling is a cell, including errors, aborts and abstentions",
+  "reported_as": "counts under rule_result; no pass word",
+  "config": "mtp",
+  "kpf_task": "KPF-18.1"
+ },
+ "arm_key": "C",
+ "lengths": [
+  2816
+ ],
+ "drafter_requested": true,
+ "counters_start": {
+  "slot_forks_total": 16.0,
+  "slot_fork_tokens_total": 49268.0
+ },
+ "counters_end": {
+  "slot_forks_total": 17.0,
+  "slot_fork_tokens_total": 52084.0
+ },
+ "counters_delta": {
+  "slot_forks_total": 1.0,
+  "slot_fork_tokens_total": 2816.0
+ },
+ "armed": {
+  "n_requests": 4,
+  "n_requests_with_fork": 1,
+  "sum_n_fork_tokens": 2816,
+  "checkpoint_sets_nonempty": 3
+ },
+ "single_length_comparison": {
+  "n_lengths": 1,
+  "n_forked_at_L": 1,
+  "n_not_forked_at_L": 0,
+  "n_top1_equal": 1,
+  "n_within_floor": 1,
+  "n_outside_floor": 0,
+  "floor": {
+   "n": 1,
+   "max_maxabs": 0.0,
+   "max_kld": 0.0,
+   "prefix_median": 16,
+   "prefix_min": 16
+  },
+  "greedy_prefix_vs_fresh_median": 16,
+  "greedy_prefix_floor_median": 16,
+  "lengths": [
+   {
+    "cell": "L2816",
+    "L": 2816,
+    "n_fork_tokens": 2816,
+    "forked_at_L": true,
+    "top1": true,
+    "within": true,
+    "prefix_vs_fresh": 16
+   }
+  ],
+  "predeclared_rule_satisfied": true
+ },
+ "rule_result": null,
+ "grid_complete": false,
+ "grid_verdict": null,
+ "grid_note": "Partial grid only; aggregate the frozen >=16 lengths and shared floor before judging C.",
+ "record_sha256": "843925bc3954fd42bcba2d8210e7e979b310f4150ee602fb5e8ac933eb47b255"
+}

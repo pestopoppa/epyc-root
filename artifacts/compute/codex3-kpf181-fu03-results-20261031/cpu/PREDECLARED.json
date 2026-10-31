@@ -1,0 +1,9 @@
+{
+  "scope": "KPF-18.1 prospective CPU subset: A/B/C/D on 35B Q8, MTP and no-drafter, fork-on/fork-off, plus e332 CPU comparison; GPU DFlash2 remains open",
+  "cohort": "retained CPU prompt set fe8c8c9202f71e678435717a931d3a97236968fe7b883a8748a88d1215b26662; prospective observations are explicit new CPU replicates and do not replace or redraw original S1 outcomes",
+  "arm_c": "16 lengths 2048 + 128k, k=0..15, ub=2048, request-level MTP on/off. Each child compared against two cold requests; aggregate original runner rule over whole grid and native measured fresh-fresh floor. Partial grid is never a verdict.",
+  "arm_d": "junction, n-4-ub, n-4 at each -1/0/+1, plus held-out position probe; MTP and no-drafter CPU launches. DFlash2 on its actual 27B GPU target remains unknown and is never combined as if matched on the 35B.",
+  "comparison": "same experimental binary fork-off, plus e332 champion item6 matched prompt-set; per-request source, sibling, checkpoint snapshots and returned probability entries retained. Missing native fields are unknown, including omitted fork-off n_fork_tokens; no raw logits are claimed.",
+  "resume": "each C length and each A/B/D body step is durably marked before exposure; interrupted steps are unknown, are not replayed, and remain partial. STOP/deadline rc75; completed steps resume without duplicate model requests.",
+  "verdict": "Report counts and unknowns; this CPU subset cannot close the full KPF-18.1 gate. Preserve all historical S1 records and their denominators separately."
+}

@@ -1,0 +1,1099 @@
+{
+  "records_checked": 42,
+  "records": [
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T025409Z-1.json",
+      "record_sha256": "53e11b61ffba7aebf46b1b8d2951a2a28f58f3491a90ab01a9b838395d281921",
+      "rows_sha256": "089f810040047fdfdc391ad02b3f531ea0811acbc38086c8668e4322068632ea",
+      "arm": "A_ckpt",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "g0.s0",
+              "g0.s1",
+              "g0.s2"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T025454Z-2.json",
+      "record_sha256": "df66c561b2621aa9e63488180731952a6c5cb2b3e0e2b4ac062ee960f3d6626c",
+      "rows_sha256": "1b274833148af835c91f5315288754babfaa43ec2a7665ffeff1b02e3b5706b7",
+      "arm": "A_tailonly",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "g0.s0",
+              "g0.s1",
+              "g0.s2"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T025608Z-3.json",
+      "record_sha256": "83f05589b709c59bbecd5629c7ef500037ebe97ec56ca64148b048d7fb47e6c7",
+      "rows_sha256": "21dc6fbce6183ce85f70bb914bfa5f9e86473c5fc0f05c75c7a6b3b51bb8ff44",
+      "arm": "B_identical_resend_and_child_eq_trunk",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "B1_resend_no_ckpt",
+              "B2_resend_ckpt_end",
+              "B3_child_eq_trunk_junction",
+              "B4_child_eq_trunk_trunk_source"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T025950Z-4.json",
+      "record_sha256": "3f319fac510ad0bbe2df99f1a1eaf4d397577bc16a41041b47c1f10c0b81b58d",
+      "rows_sha256": "8ac29bf284d1f91c385996a3589b3e03169fa4be7ebd27103b3fd78eb9feddc4",
+      "arm": "C_length_sweep_drafter_on",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L2048"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030032Z-5.json",
+      "record_sha256": "337251bb68361b17d4d0c2c36aeda3001b258d9bcfff6b7cca91bc0d7c465c43",
+      "rows_sha256": "4312373a87adc37e1ea505063a359fd54c9a72175ef31aa1a1aa90e1a29e152a",
+      "arm": "C_length_sweep_drafter_on",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L2176"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030112Z-6.json",
+      "record_sha256": "5c5b6f7d7719087671f0c0a4410f64e8d5f5bf9e0945b0eddcd8216fc1ada9ef",
+      "rows_sha256": "337e355910997503d68cf27a9c42173b5b7dcf49d12f7f437ace0b6d169057ec",
+      "arm": "C_length_sweep_drafter_on",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L2304"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030157Z-7.json",
+      "record_sha256": "d52ba2071e13869503f72a0f89dc3521006a4fa34f80891162a0b351fb4717d1",
+      "rows_sha256": "ed1722a1f9e6d5e1c565a3940de37484b88baf0d8ce174c84b39f6be4e2d00d9",
+      "arm": "C_length_sweep_drafter_on",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L2432"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030243Z-8.json",
+      "record_sha256": "0761466e8883a76d0e89b16dcfe6e4b9e02cdccb83c4253b85e40e3d26160443",
+      "rows_sha256": "ee37ffaf9e54ffae770b6227884a4886c2b2ce6128cfd98c379a3267b111983c",
+      "arm": "C_length_sweep_drafter_on",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L2560"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030331Z-9.json",
+      "record_sha256": "26906af06ca08d172261a83da4d119b0f90a0c997f80ddeb051c4931528ccc20",
+      "rows_sha256": "4b419de082e7983a9eb9dffe36210043153d3bc31f07f97250c4399d02c80db0",
+      "arm": "C_length_sweep_drafter_on",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L2688"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030423Z-10.json",
+      "record_sha256": "843925bc3954fd42bcba2d8210e7e979b310f4150ee602fb5e8ac933eb47b255",
+      "rows_sha256": "64520ba8c5c744d3da1b3432acf2b4c67350cd9279069b9b8350e11354286166",
+      "arm": "C_length_sweep_drafter_on",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L2816"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030519Z-11.json",
+      "record_sha256": "a0f0e056445cab6c50e0808d90840737676af149fbcc8c5eb8f26c171c282990",
+      "rows_sha256": "70b86bc87d7486c8d0c4234816237fd571c105d56d9408aaa149ff6163961d03",
+      "arm": "C_length_sweep_drafter_on",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L2944"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030619Z-12.json",
+      "record_sha256": "c79b3ea664b5eeb121f40d0eea7bdef59231b99f4ca0551f3b0ccf14fc21a539",
+      "rows_sha256": "0b326fe9042b0f0bc2f490565a17b22c247452d7af1668da1f077558ae1c2ff4",
+      "arm": "C_length_sweep_drafter_on",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L3072"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030723Z-13.json",
+      "record_sha256": "2bec06a093ea53cb540f0e93a6d9d47289fbc8adae61fea937ea33bdd9c34693",
+      "rows_sha256": "2e00b1c0ba59ccd6073fe7ddb0649daafbff3e2f23e9f3ef5123dd76debf0167",
+      "arm": "C_length_sweep_drafter_on",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L3200"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030828Z-14.json",
+      "record_sha256": "a20d1e924a66dc21eb6a6b9a0d03d2148df90830fa9430942c66896e93ce8d68",
+      "rows_sha256": "35d3ed32ffa0f52d224240e674145270e1fd4c5098ca3a8fedf37bcc2849cdb3",
+      "arm": "C_length_sweep_drafter_on",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L3328"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030936Z-15.json",
+      "record_sha256": "74502ed2213c47570551bc545103b1154d819affeb97b3a0cec93079f7ebf61f",
+      "rows_sha256": "74e47c4a5f4a9bad958bd8b0f464504358f3e4efc40cd3eb63f5029706f4dcbd",
+      "arm": "C_length_sweep_drafter_on",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L3456"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031046Z-16.json",
+      "record_sha256": "07abd6ece05b7d424bbc00233ceb5779b0489ba884f3564054ef0d75384728f9",
+      "rows_sha256": "7069b9c69f8af6a42545e91ac2aefe1fe10f4730f9bc4c1f2ec57db6a2fc8df1",
+      "arm": "C_length_sweep_drafter_on",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L3584"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031157Z-17.json",
+      "record_sha256": "8cb1b0026ae5a676fc6a461efd92bfa4ae7f796997377d077b9e9bd5ce87da73",
+      "rows_sha256": "5921f90088350c3616d3872590fa0a9c185d3565815c7e325bdd64e0bd9162b5",
+      "arm": "C_length_sweep_drafter_on",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L3712"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031309Z-18.json",
+      "record_sha256": "cc5043dc6ebecca1aa0b731c8bf6ce42b870f5f0a0f7c2fb0c5466cddd9516a7",
+      "rows_sha256": "3d29a790cc0402b3d76716b93a5a8701692a3945bacb44f78aac77b7212548e3",
+      "arm": "C_length_sweep_drafter_on",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L3840"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031424Z-19.json",
+      "record_sha256": "098eec15593f1a22ae01c09830532318a2ee3e0c9a5176fe9a68138bfc3e6748",
+      "rows_sha256": "fc006d1e53a71218911ac9655b9f54aaf9c710e9d6febd95189a477c5b91ad1c",
+      "arm": "C_length_sweep_drafter_on",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L3968"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031543Z-20.json",
+      "record_sha256": "6faa671cb7b0a5c1dc14f835c2a2d99031130d1765357c2a0d9e84806ae1b71c",
+      "rows_sha256": "20675f429aef221cdfa3d6e23d258934fbbf479732bc9819b12175b9e8d004a8",
+      "arm": "C_length_sweep_drafter_off",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L2048"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031622Z-21.json",
+      "record_sha256": "7ca887e9f770eefcbd96e19f075c7b6a9d1d1ce61b2f83dce2bf1682e6372f53",
+      "rows_sha256": "6bd27fc9aea65b70f5600ed2bf47855d18474574a479e6a1b43e3f5d566d9e00",
+      "arm": "C_length_sweep_drafter_off",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L2176"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031705Z-22.json",
+      "record_sha256": "0c661ef2b20c519dbbf670f7a81b3feb9458ddac99e975b664f567ca642ed64c",
+      "rows_sha256": "8b3f50f65455d5354303e93e5d059a4c59d75672505e163bc4ca79f0c36506df",
+      "arm": "C_length_sweep_drafter_off",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L2304"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031748Z-23.json",
+      "record_sha256": "8e5cdfe75d60efac410f545384eb34fc71388de690536ee73b9782f67d5ee548",
+      "rows_sha256": "49a977bad43ba87c60d7d3957156a565622d1c700afb42b8e40099be8a1e91cf",
+      "arm": "C_length_sweep_drafter_off",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L2432"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031835Z-24.json",
+      "record_sha256": "70edf4e706e07dcde338cd453f38d69b3f585fcb1dca6de329c45baa7b8e7627",
+      "rows_sha256": "a48568e0ceb46578597f4b13cdb1c695a83372b1d19fb855ba90b381aa557e16",
+      "arm": "C_length_sweep_drafter_off",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L2560"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031925Z-25.json",
+      "record_sha256": "5d4040b4104a09a736b35acf46bf51f28a55635a8028d21433b349a90727bc06",
+      "rows_sha256": "747ff127aa76356f5f6d6e3dd835450cdee5cd25f42173bb6cd2c34f6a409ab8",
+      "arm": "C_length_sweep_drafter_off",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L2688"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032015Z-26.json",
+      "record_sha256": "fcee1052f73096cbe7020a451558c7709273135a194438c0b4c9565187e97422",
+      "rows_sha256": "a718b1eb462aa62a412cece634854d3df7b0262315affdee42037733b7e32123",
+      "arm": "C_length_sweep_drafter_off",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L2816"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032110Z-27.json",
+      "record_sha256": "3fff6d7f56768fe2dc67c3c1055edc1439cad0d1381a66720d02e00b091b57d4",
+      "rows_sha256": "f8077e2f19b55f5aa5487f997bcffcb17ed82410a91e4842c83ed23e77c49501",
+      "arm": "C_length_sweep_drafter_off",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L2944"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032209Z-28.json",
+      "record_sha256": "84155403ac6ad4b48129c48be90b8683d768aea3fd17cd22c6f6590d97994ee9",
+      "rows_sha256": "c05ca809b731cad25726790d8d567d935e05d535aa06ce9454c2765c082f69ca",
+      "arm": "C_length_sweep_drafter_off",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L3072"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032309Z-29.json",
+      "record_sha256": "076cc521407ec1f7e1efd407a6f325e029cd9d169ada5699e9001d2c4705bd13",
+      "rows_sha256": "e48645bbbc7ad99a5106258394c05d251b32a2ff334036dfce64848dec01884b",
+      "arm": "C_length_sweep_drafter_off",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L3200"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032411Z-30.json",
+      "record_sha256": "169e216660a0670c2af8ab919ddaf883fe529a862749cee56edbc035f7f50029",
+      "rows_sha256": "17a65bb58491f6c6ae9e4e2182dd3f4318128c228c47dab16bf11828ddb6219a",
+      "arm": "C_length_sweep_drafter_off",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L3328"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032515Z-31.json",
+      "record_sha256": "6e703ddaf83a56b30c3911dac02b2c1195affc7bc5641f02a83c5e68c6e3f0e7",
+      "rows_sha256": "728dbc874e79cbccc5bbf59dc93fa78c7cfe6d141d376827a6f3ca2bab535891",
+      "arm": "C_length_sweep_drafter_off",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L3456"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032623Z-32.json",
+      "record_sha256": "bb3832d015603dc29319b865c0330399755df9026f22ce0a3c79e1956b302319",
+      "rows_sha256": "4add3105fb5512717215c373fdb31157fa76d17075afbe08838418c4ab6538d9",
+      "arm": "C_length_sweep_drafter_off",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L3584"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032732Z-33.json",
+      "record_sha256": "64edfb2cf1bb1765775a80f60194d4760daa1eb2504d72dfb726b30def210d19",
+      "rows_sha256": "8d070692eed0caa39de3163baff04b81f65cad38f5042462aab84c632df0978f",
+      "arm": "C_length_sweep_drafter_off",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L3712"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032844Z-34.json",
+      "record_sha256": "dade2c8973f4b47fef384bdac926c0b465f5bb403d6573c1a8cb1a9ebaa63dbd",
+      "rows_sha256": "604cf88329a0733208fff8fcb4e619a31669315319d046d4ca344a4f09a22f92",
+      "arm": "C_length_sweep_drafter_off",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L3840"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T033000Z-35.json",
+      "record_sha256": "fb6420fd9f605cc211a213acda8a417e9f1b5b2f8574c9ed628441c0f376ec3f",
+      "rows_sha256": "b54b39444abc2efc85edb8068f94911cdd3326bbd7c6df66171457a2652ef960",
+      "arm": "C_length_sweep_drafter_off",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "L3968"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T033119Z-36.json",
+      "record_sha256": "98d876c02eacc3c39b7b0885844b7dbd5db478c73d39c3f713441ceea9b1eee5",
+      "rows_sha256": "4ec4f5677e83ece21223b7a56af69bc833a59844c7f6e0210f2f24f2dd36e18c",
+      "arm": "D_hit_count_prediction_mtp",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "junction+0",
+              "junction+1",
+              "n_minus_4_minus_ub-1",
+              "n_minus_4_minus_ub+0",
+              "n_minus_4_minus_ub+1",
+              "n_minus_4-1",
+              "n_minus_4+0",
+              "n_minus_4+1",
+              "holdout5131"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T033509Z-37.json",
+      "record_sha256": "fe19e85f41c4d5db99733e402f1e506ac98595c3df4fdd3061cb3d92fc387c73",
+      "rows_sha256": "f7c71d873b1350f8675e0b6815c219e30b3ed05cbb3656853812751e227e90e3",
+      "arm": "A_ckpt_forkoff",
+      "checks": {
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T033657Z-38.json",
+      "record_sha256": "18c08109754571235a2e124fe410df07c4e8b6a3e3d9126a2259111a955673f1",
+      "rows_sha256": "b4f4872a6b8c1d8930b8ab0f53e76866d28a821d9dd4c9ac4ad71bb20f664afe",
+      "arm": "A_tailonly_forkoff",
+      "checks": {
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T033842Z-39.json",
+      "record_sha256": "fb35f0f0de4ecba6b8de9937d2f70dd49e264626604f490df28ce710be07c90d",
+      "rows_sha256": "6b30c8108d2de0cf7fd18b931b4b0009b1acbfe762f06105b1a8e7fb0fcefdc3",
+      "arm": "B_identical_resend_and_child_eq_trunk_forkoff",
+      "checks": {
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T034204Z-40.json",
+      "record_sha256": "770d658c1d0e493232bb99115a10e995fbe8851b8079c68feac1e3c88317adfb",
+      "rows_sha256": "ae7212ad007bac503ecc158a3c8d266d15e50b4c07fb0719d35d75a931e06e2d",
+      "arm": "D_hit_count_prediction_nodraft",
+      "checks": {
+        "counter_slot_forks_equal_requests_with_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "counter_fork_tokens_equal_sum_n_fork": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "n_fork_tokens_timings_equal_slot": {
+          "ok": 0,
+          "n": 1,
+          "failed": [
+            [
+              "junction+0",
+              "junction+1",
+              "n_minus_4_minus_ub-1",
+              "n_minus_4_minus_ub+0",
+              "n_minus_4_minus_ub+1",
+              "n_minus_4-1",
+              "n_minus_4+0",
+              "n_minus_4+1",
+              "holdout5131"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/champion/records/kpf18-20261031T034551Z-1.json",
+      "record_sha256": "9e8de3d5fc6bd6ac8adfcf0f15ea851ded7808b1a0444d37bfc2e4733cdd4ae0",
+      "rows_sha256": "9ffc2950065be534b938ddf8ad06aa0dd6a6a746cdad94074a76cc66d6c74b37",
+      "arm": "champion",
+      "checks": {}
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/champion/records/kpf18-20261031T034645Z-2.json",
+      "record_sha256": "35b957d6848658b8149891e874670f94dabd7a7469b59d3cdf6adaae961ce1a0",
+      "rows_sha256": "2d24e2029eb32f788453426c4c81a6c5b2e8df46751dac088b7cbbf3833fb696",
+      "arm": "fork_off",
+      "checks": {
+        "timings_keys_equal": {
+          "ok": 2,
+          "n": 2,
+          "failed": []
+        },
+        "slots_keys_equal": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        },
+        "metrics_keys_equal": {
+          "ok": 1,
+          "n": 1,
+          "failed": []
+        }
+      }
+    }
+  ],
+  "fu03_full_directory_empty": true,
+  "hip_hash_catalog": "23 actual entries independently verified on host",
+  "scope": "no full GPU correctness or KPF gate closure"
+}

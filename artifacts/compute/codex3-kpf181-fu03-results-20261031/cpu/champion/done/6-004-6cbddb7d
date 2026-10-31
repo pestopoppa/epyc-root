@@ -1,0 +1,1 @@
+2026-10-31T03:46:45Z [item6-fork_off-20261031T034545Z] linkage + launch + healthy + read-back: taskset -c 0-23 /mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.

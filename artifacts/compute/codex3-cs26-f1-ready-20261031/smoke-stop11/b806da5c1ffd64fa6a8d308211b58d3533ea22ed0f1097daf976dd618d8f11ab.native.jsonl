@@ -1,0 +1,9 @@
+{"argv": ["taskset", "-c", "122,123", "/mnt/raid0/llm/kernels/builds/stt-20260731-b30737922/bin/whisper-cli", "-m", "/mnt/raid0/llm/models/whisper-ggml/ggml-tiny.bin", "-f", "/mnt/raid0/llm/whisper.cpp/samples/jfk.wav", "-ng", "-nfa", "-t", "1", "-bo", "1", "-bs", "1", "-tp", "0", "-nf", "-l", "en", "-nt"], "birth": "154177987", "epoch": 1793419306.6423435, "kind": "solo_start", "pid": 3435374}
+{"epoch": 1793419306.6429288, "kind": "solo_thread_ticks", "threads": [{"stime_ticks": 0, "tid": 3435374, "utime_ticks": 0}]}
+{"epoch": 1793419307.1436732, "kind": "solo_thread_ticks", "threads": [{"stime_ticks": 7, "tid": 3435374, "utime_ticks": 42}]}
+{"epoch": 1793419307.6449556, "kind": "solo_thread_ticks", "threads": [{"stime_ticks": 7, "tid": 3435374, "utime_ticks": 92}]}
+{"epoch": 1793419308.147072, "kind": "solo_thread_ticks", "threads": [{"stime_ticks": 7, "tid": 3435374, "utime_ticks": 142}]}
+{"epoch": 1793419308.648258, "kind": "solo_thread_ticks", "threads": [{"stime_ticks": 8, "tid": 3435374, "utime_ticks": 192}]}
+{"elapsed_s": 2.3578916389960796, "epoch": 1793419308.9999766, "kind": "solo_end", "rc": 0}
+{"argv": ["taskset", "-c", "122,123", "/mnt/raid0/llm/kernels/production/cpu/llama-bench", "-m", "/mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf", "-p", "0", "-n", "1", "-t", "2", "-r", "400", "--progress", "-o", "jsonl", "-ngl", "0"], "birth": "154178238", "epoch": 1793419309.1511946, "kind": "neighbor_start", "label": "A-before", "pid": 3435560}
+{"epoch": 1793419309.153245, "kind": "drain", "label": "A-before", "pid": 3435560, "rc": -15}

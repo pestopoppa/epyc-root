@@ -1,0 +1,22 @@
+binary : /mnt/micron/codex3-lanes/kpf181-e332-hip-build/bin/llama-server
+expect : libraries under /mnt/micron/codex3-lanes/kpf181-e332-hip-build/bin
+
+  OK   libllama-server-impl.so      -> /mnt/micron/codex3-lanes/kpf181-e332-hip-build/bin/libllama-server-impl.so
+  OK   libllama-common.so.0         -> /mnt/micron/codex3-lanes/kpf181-e332-hip-build/bin/libllama-common.so.0
+  OK   libmtmd.so.0                 -> /mnt/micron/codex3-lanes/kpf181-e332-hip-build/bin/libmtmd.so.0
+  OK   libllama.so.0                -> /mnt/micron/codex3-lanes/kpf181-e332-hip-build/bin/libllama.so.0
+  OK   libggml.so.0                 -> /mnt/micron/codex3-lanes/kpf181-e332-hip-build/bin/libggml.so.0
+  OK   libggml-base.so.0            -> /mnt/micron/codex3-lanes/kpf181-e332-hip-build/bin/libggml-base.so.0
+  OK   libggml-cpu.so.0             -> /mnt/micron/codex3-lanes/kpf181-e332-hip-build/bin/libggml-cpu.so.0
+  OK   libggml-hip.so.0             -> /mnt/micron/codex3-lanes/kpf181-e332-hip-build/bin/libggml-hip.so.0
+
+LD_LIBRARY_PATH order as the loader sees it:
+         1	/mnt/micron/codex3-lanes/kpf181-e332-hip-build/bin
+         2	/opt/rocm/lib
+
+PASS: all linked ggml libraries resolve inside /mnt/micron/codex3-lanes/kpf181-e332-hip-build/bin
+NOTE: ggml backends (ggml-hip, ggml-cpu-<arch>) are dlopened at RUNTIME and
+      are not covered by ldd. Confirm the intended device appears in the
+      program's own startup log (e.g. 'Device 0: AMD Instinct MI210') and
+      do not trust a 'use gpu = 1' flag alone — that flag reports what was
+      REQUESTED, not what was loaded.

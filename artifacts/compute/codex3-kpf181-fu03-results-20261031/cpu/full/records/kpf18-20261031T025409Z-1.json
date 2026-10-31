@@ -1,0 +1,609 @@
+{
+ "schema": "epyc.kpf.run.v1",
+ "kpf_task": "KPF-18.1",
+ "kpf18_item": 181,
+ "run_id": "kpf18-20261031T025409Z-1",
+ "arm": "A_ckpt",
+ "binary": "/mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server",
+ "binary_realpath": "/mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server",
+ "binary_sha256": "849bd4cc2f7722d8535e8244a2035740a2fbb959f7782ac705d856a912a56176",
+ "build_from_launch_log": null,
+ "argv": [
+  "/mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server",
+  "-m",
+  "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+  "--host",
+  "127.0.0.1",
+  "-np",
+  "4",
+  "-c",
+  "98304",
+  "-t",
+  "24",
+  "-tb",
+  "24",
+  "-ub",
+  "2048",
+  "--flash-attn",
+  "on",
+  "--jinja",
+  "-ctk",
+  "q8_0",
+  "-ctv",
+  "q8_0",
+  "--no-mmap",
+  "--cache-ram",
+  "32768",
+  "--chat-template-file",
+  "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+  "--spec-type",
+  "draft-mtp",
+  "--spec-draft-n-max",
+  "4",
+  "--reasoning",
+  "off",
+  "--device",
+  "none",
+  "--device-draft",
+  "none",
+  "--kv-unified",
+  "--no-cache-idle-slots",
+  "--slot-save-path",
+  "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/slot-save/kpf181-on-mtp-20261031T025405Z",
+  "--port",
+  "19627",
+  "--metrics",
+  "--slot-fork-min-tokens",
+  "128"
+ ],
+ "launch_prefix": [
+  "taskset",
+  "-c",
+  "0-23"
+ ],
+ "argv_readback": {
+  "proc_cmdline_matches_argv": true,
+  "exe_matches_binary": true
+ },
+ "argv_source": {
+  "argv_file": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full-argv.txt",
+  "argv_file_sha256": "d52c880c05742135cc727263c66b4f4fe538f0f93b22b7b7043c65cb38e67fde",
+  "argv_file_header": [
+   "# KPF-18 CPU subset argv: production frontdoor (:8070) argv as rendered by",
+   "#   epyc-orchestrator scripts/server/orchestrator_stack.py build_server_command(registry.get_role('frontdoor'), ...)",
+   "#   on 2026-10-20 (no launch):",
+   "#   llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 --port <p> -np 4 -c 262144 -t 96",
+   "#   -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --mlock --no-mmap --cache-ram 32768",
+   "#   --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-type draft-mtp",
+   "#   --spec-draft-n-max 4 --reasoning off --slot-save-path /mnt/raid0/llm/cache/kv_slots/frontdoor --device none --device-draft none",
+   "# Changes for the one-quarter CPU gate: -t 96 -> -t 24 -tb 24 (q3 = cores 72-95); -c 262144 -> -c 98304 (4 x 16k trunks",
+   "# + suffixes fit); --mlock dropped (shared host); --kv-unified added (gate shape); --no-cache-idle-slots added (the GPU",
+   "# gate's shape: a trunk-first source must stay resident while fresh controls run on other slots; item 5 toggles it);",
+   "# --port / --slot-save-path / --metrics / --slot-fork-min-tokens are set by the runner."
+  ],
+  "shape_drift": [
+   "-c = '98304', gate shape expects '393216'",
+   "-ngl = None, gate shape expects 'all'",
+   "--spec-type = 'draft-mtp', gate shape expects 'draft-dflash'",
+   "--spec-draft-n-max = '4', gate shape expects '7'",
+   "--device = 'none', gate shape expects 'ROCm0'",
+   "-b = None, gate shape expects '512'",
+   "-ub = '2048', gate shape expects '512'",
+   "--cache-ram = '32768', gate shape expects '65536'",
+   "-md '' is not the DFlash2 drafter"
+  ],
+  "shape_drift_allowed": true
+ },
+ "env": {
+  "dropped_ambient": [
+   "LD_LIBRARY_PATH"
+  ],
+  "set": {
+   "HIP_PATH": "/opt/rocm",
+   "ROCM_PATH": "/opt/rocm",
+   "OMP_PROC_BIND": "spread",
+   "OMP_PLACES": "cores",
+   "OMP_WAIT_POLICY": "active",
+   "OMP_DYNAMIC": "false",
+   "GGML_IQK": "1",
+   "LD_LIBRARY_PATH": "/mnt/micron/codex3-lanes/kpf183-chat-build/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib"
+  }
+ },
+ "kv_mode_from_launch_log": "kv_unified = 'true'",
+ "slot_fork_from_launch_log": "cross-slot prefix fork enabled: mode = checkpoint, min tokens = 128, cache_idle_slots = 0",
+ "n_slots_n_ctx_slot_from_launch_log": [
+  4,
+  98304
+ ],
+ "prompt_set": "/mnt/raid0/llm/tmp/kv-prefix-fork/p1r-20261020/kpf18cpu/run-20261020T163128Z/prompt_set.jsonl",
+ "prompt_set_sha256": "fe8c8c9202f71e678435717a931d3a97236968fe7b883a8748a88d1215b26662",
+ "dflash2": false,
+ "spec_type_from_argv": "draft-mtp",
+ "draft_model_from_argv": null,
+ "speculative_requested": true,
+ "equivalence": {
+  "control_floor": {
+   "top1_agree": 0,
+   "n": 0,
+   "logit_maxabs": 0.0,
+   "kld": 0.0,
+   "greedy_prefix_len_min": 0,
+   "first_token_top1_agree": 0,
+   "max_abs_logit": null,
+   "max_kld": null,
+   "identical_greedy_prefix_min": 0,
+   "measured": false
+  },
+  "vs_fresh": {
+   "top1_agree": 0,
+   "n": 0,
+   "logit_maxabs": 0.0,
+   "kld": 0.0,
+   "greedy_prefix_len_min": 0,
+   "first_token_top1_agree": 0,
+   "max_abs_logit": null,
+   "max_kld": null,
+   "identical_greedy_prefix_min": 0,
+   "measured": false
+  },
+  "bit_exact_ckpt": {
+   "identical": 0,
+   "n": 0,
+   "tokens_identical": 0,
+   "measured": false
+  },
+  "source_invariance": {
+   "identical": 0,
+   "n": 0,
+   "tokens_identical": 0,
+   "measured": false
+  },
+  "off_equals_champion": {
+   "identical": 0,
+   "n": 0,
+   "tokens_identical": 0,
+   "measured": false
+  }
+ },
+ "equivalence_basis": "First-token top-k probabilities from /completion `n_probs` (completion_probabilities, post_sampling_probs false = softmax over the full vocabulary before sampling). The server cannot return full logits, so `logit_maxabs` is max |p_a - p_b| over the UNION of the two top-k sets (an id absent from one side counts as 0 there: an upper bound) and `kld` is KL(a||b) over the top-k union plus one tail bucket, absent ids imputed from that side's tail mass capped at its k-th prob (a coarse-grained KL: a lower bound on the full-vocab KL when the imputation is exact). Greedy-prefix length compares returned token ids over n_predict tokens (ignore_eos). `identical` = all token ids AND every per-position top-k entry equal.",
+ "n_probs": 20,
+ "n_predict": 16,
+ "ttft_ms": [],
+ "prompt_tokens_processed": 6144,
+ "cache_n": 12288,
+ "n_fork_tokens": 12288,
+ "unique_cells_peak": 5376,
+ "unique_cells_method": "max llamacpp:kv_cells_used sampled once after each request (a lower bound of the true peak; item 7 polls at 1 Hz instead)",
+ "decode_tok_s": {
+  "per_slot": [
+   1000000.0,
+   1000000.0,
+   1000000.0,
+   1000000.0
+  ],
+  "aggregate": 1000000.0,
+  "aggregate_method": "sum predicted_n / sum predicted_ms over this run's requests (token-weighted mean decode rate; requests are sequential, not a concurrent aggregate)"
+ },
+ "window_id": "kpf18-20261031T025405Z-item181",
+ "gpu_window_id": null,
+ "start_utc": "2026-10-31T02:54:09Z",
+ "end_utc": "2026-10-31T03:35:03Z",
+ "host": "Beelzebub",
+ "checks": {
+  "counter_slot_forks_equal_requests_with_fork": {
+   "ok": 1,
+   "n": 1,
+   "failed": []
+  },
+  "counter_fork_tokens_equal_sum_n_fork": {
+   "ok": 1,
+   "n": 1,
+   "failed": []
+  },
+  "n_fork_tokens_timings_equal_slot": {
+   "ok": 0,
+   "n": 1,
+   "failed": [
+    [
+     "g0.s0",
+     "g0.s1",
+     "g0.s2"
+    ]
+   ]
+  }
+ },
+ "server_log": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/logs/kpf181-on-mtp-20261031T025405Z.server.log",
+ "server_log_counts": {
+  "failed_to_find_memory_slot": 0,
+  "fork_lines": 51,
+  "fork_lines_busy": 0,
+  "fork_kinds": [
+   "checkpoint"
+  ],
+  "prefill_budget_iters": 486,
+  "prefill_budget_mixed_iters": 0,
+  "n_batch_observed": 2044
+ },
+ "residency": {
+  "linkage": {
+   "rc": 0,
+   "pass": true,
+   "report": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/logs/kpf181-on-mtp-20261031T025405Z.linkage.txt",
+   "s": 0.02,
+   "cmd": "LD_LIBRARY_PATH=/mnt/micron/codex3-lanes/kpf183-chat-build/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib bash /mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh /mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server /mnt/micron/codex3-lanes/kpf183-chat-build/bin"
+  },
+  "hip_mapped": [],
+  "ggml_all_from_bin_dir": true,
+  "smi_tool": null,
+  "vram": null,
+  "process_start_utc": "2026-10-31T02:54:05Z",
+  "process_stop_utc": "2026-10-31T03:35:01Z",
+  "stop": {
+   "pid": 2346956,
+   "sent": [
+    "TERM"
+   ],
+   "at": "2026-10-31T03:34:59Z",
+   "returncode": 0,
+   "verified_dead": true
+  }
+ },
+ "rows": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/rows/kpf18-20261031T025409Z-1.jsonl",
+ "rows_sha256": "089f810040047fdfdc391ad02b3f531ea0811acbc38086c8668e4322068632ea",
+ "kpf_ext": {
+  "ext_version": 1,
+  "checkpoint_set": [
+   {
+    "role": "source",
+    "positions": []
+   },
+   {
+    "role": "sibling",
+    "positions": [
+     2560,
+     4096,
+     4604
+    ]
+   },
+   {
+    "role": "sibling",
+    "positions": [
+     2560,
+     4096,
+     4604
+    ]
+   },
+   {
+    "role": "sibling",
+    "positions": [
+     2560,
+     4096,
+     4604
+    ]
+   }
+  ],
+  "hit_components": [
+   {
+    "role": "source",
+    "tgt_kv_hit": 0,
+    "min": 0,
+    "n_fork_tokens": 0
+   },
+   {
+    "role": "sibling",
+    "tgt_kv_hit": 4096,
+    "recurrent_ckpt_pos": 4096,
+    "min": 4096,
+    "n_fork_tokens": 4096
+   },
+   {
+    "role": "sibling",
+    "tgt_kv_hit": 4096,
+    "recurrent_ckpt_pos": 4096,
+    "min": 4096,
+    "n_fork_tokens": 4096
+   },
+   {
+    "role": "sibling",
+    "tgt_kv_hit": 4096,
+    "recurrent_ckpt_pos": 4096,
+    "min": 4096,
+    "n_fork_tokens": 4096
+   }
+  ],
+  "hit_length_min": 0,
+  "hit_tokens": 12288,
+  "tokens_lost_to_missing_checkpoint": 0,
+  "drafter_drop_kind": null,
+  "request_lane": [
+   "completion_raw"
+  ],
+  "cache_skip_control": {
+   "requests_cache_prompt_false": 0,
+   "cache_n_zero": 0
+  },
+  "pinned_count": {
+   "max": 1,
+   "samples": 4
+  }
+ },
+ "instrument_class": "serving",
+ "category": "CANDIDATE",
+ "grading_note": "n=1 per cell, no codified protocol cited: an OBSERVATION; projects under VB-KVU-PF and grades Judged/Located through claim_tuple.grade(). Counts, not a pass word.",
+ "kpf18_arm": "A_ckpt",
+ "kpf_config": "mtp",
+ "fork_min_tokens": 128,
+ "fork_mode": "checkpoint",
+ "predeclared_rule": "A_ckpt: slot 0 prefills trunk(T)+private tail with checkpoint_at=[T]; each sibling = trunk + its own suffix (distinct first tokens) on slot 1, one at a time, fork on. SATISFIED iff every sibling n_fork_tokens == T. A_tailonly: same without checkpoint_at; RECORDED only (expected near 0: the source's near-end checkpoints lie past the shared prefix): counts of n_fork_tokens == 0 and the max. Fork-off arms (min tokens 0): SATISFIED iff every sibling n_fork_tokens == 0.",
+ "predeclared_rules_sha256": "049d663e7a57cbd70b56bb5bd1e8d1551aedcca3275dc728c8e57af90889b8c9",
+ "cells": [
+  {
+   "arm": "A_ckpt",
+   "cell": "g0.src",
+   "role": "source",
+   "slot": 0,
+   "n_task": 4608,
+   "lcp_client": 0,
+   "n_fork_tokens": 0,
+   "n_fork_tokens_slot": 0,
+   "fork_src_kind": "none",
+   "fork_src_slot": -1,
+   "cache_n": 0,
+   "prompt_n": 4608,
+   "predicted_p": 0,
+   "predicted_kind": "none",
+   "predicted_src": null,
+   "predicted_tie": false,
+   "n_candidates": 0,
+   "expected": null,
+   "checkpoint_set_before": [],
+   "pinned_before": [],
+   "error": null,
+   "ckpt_sets_by_slot": {
+    "1": [],
+    "2": [],
+    "3": []
+   },
+   "checkpoint_at": [
+    4096
+   ],
+   "cache_prompt": true,
+   "fork_requested": false,
+   "dflash_requested": true,
+   "n_predict": 0,
+   "group": 0,
+   "components": {
+    "tgt_kv_hit": 0,
+    "recurrent_ckpt_pos": null,
+    "drafter_kv_hit": null,
+    "source": {
+     "tgt_kv_hit": "client"
+    },
+    "drafter_exposed": false
+   },
+   "tokens_lost_to_missing_checkpoint": null
+  },
+  {
+   "arm": "A_ckpt",
+   "cell": "g0.s0",
+   "role": "sibling",
+   "slot": 1,
+   "n_task": 4352,
+   "lcp_client": 4096,
+   "n_fork_tokens": 4096,
+   "n_fork_tokens_slot": 0,
+   "fork_src_kind": "checkpoint",
+   "fork_src_slot": 0,
+   "cache_n": 4096,
+   "prompt_n": 256,
+   "predicted_p": 4096,
+   "predicted_kind": "checkpoint",
+   "predicted_src": 0,
+   "predicted_tie": false,
+   "n_candidates": 2,
+   "expected": 4096,
+   "checkpoint_set_before": [
+    2560,
+    4096,
+    4604
+   ],
+   "pinned_before": [
+    4096
+   ],
+   "error": null,
+   "ckpt_sets_by_slot": {
+    "0": [
+     2560,
+     4096,
+     4604
+    ],
+    "2": [],
+    "3": []
+   },
+   "checkpoint_at": null,
+   "cache_prompt": true,
+   "fork_requested": true,
+   "dflash_requested": true,
+   "n_predict": 1,
+   "group": 0,
+   "suffix": 0,
+   "components": {
+    "tgt_kv_hit": 4096,
+    "recurrent_ckpt_pos": 4096,
+    "drafter_kv_hit": null,
+    "source": {
+     "tgt_kv_hit": "client",
+     "recurrent_ckpt_pos": "client-predicted"
+    },
+    "drafter_exposed": false
+   },
+   "tokens_lost_to_missing_checkpoint": 0
+  },
+  {
+   "arm": "A_ckpt",
+   "cell": "g0.s1",
+   "role": "sibling",
+   "slot": 1,
+   "n_task": 4608,
+   "lcp_client": 4096,
+   "n_fork_tokens": 4096,
+   "n_fork_tokens_slot": 0,
+   "fork_src_kind": "checkpoint",
+   "fork_src_slot": 0,
+   "cache_n": 4096,
+   "prompt_n": 512,
+   "predicted_p": 4096,
+   "predicted_kind": "checkpoint",
+   "predicted_src": 0,
+   "predicted_tie": false,
+   "n_candidates": 2,
+   "expected": 4096,
+   "checkpoint_set_before": [
+    2560,
+    4096,
+    4604
+   ],
+   "pinned_before": [
+    4096
+   ],
+   "error": null,
+   "ckpt_sets_by_slot": {
+    "0": [
+     2560,
+     4096,
+     4604
+    ],
+    "2": [],
+    "3": []
+   },
+   "checkpoint_at": null,
+   "cache_prompt": true,
+   "fork_requested": true,
+   "dflash_requested": true,
+   "n_predict": 1,
+   "group": 0,
+   "suffix": 1,
+   "components": {
+    "tgt_kv_hit": 4096,
+    "recurrent_ckpt_pos": 4096,
+    "drafter_kv_hit": null,
+    "source": {
+     "tgt_kv_hit": "client",
+     "recurrent_ckpt_pos": "client-predicted"
+    },
+    "drafter_exposed": false
+   },
+   "tokens_lost_to_missing_checkpoint": 0
+  },
+  {
+   "arm": "A_ckpt",
+   "cell": "g0.s2",
+   "role": "sibling",
+   "slot": 1,
+   "n_task": 4864,
+   "lcp_client": 4096,
+   "n_fork_tokens": 4096,
+   "n_fork_tokens_slot": 0,
+   "fork_src_kind": "checkpoint",
+   "fork_src_slot": 0,
+   "cache_n": 4096,
+   "prompt_n": 768,
+   "predicted_p": 4096,
+   "predicted_kind": "checkpoint",
+   "predicted_src": 0,
+   "predicted_tie": false,
+   "n_candidates": 2,
+   "expected": 4096,
+   "checkpoint_set_before": [
+    2560,
+    4096,
+    4604
+   ],
+   "pinned_before": [
+    4096
+   ],
+   "error": null,
+   "ckpt_sets_by_slot": {
+    "0": [
+     2560,
+     4096,
+     4604
+    ],
+    "2": [],
+    "3": []
+   },
+   "checkpoint_at": null,
+   "cache_prompt": true,
+   "fork_requested": true,
+   "dflash_requested": true,
+   "n_predict": 1,
+   "group": 0,
+   "suffix": 2,
+   "components": {
+    "tgt_kv_hit": 4096,
+    "recurrent_ckpt_pos": 4096,
+    "drafter_kv_hit": null,
+    "source": {
+     "tgt_kv_hit": "client",
+     "recurrent_ckpt_pos": "client-predicted"
+    },
+    "drafter_exposed": false
+   },
+   "tokens_lost_to_missing_checkpoint": 0
+  }
+ ],
+ "controls": {
+  "manifest": "prompt_set_sha256 + binary_sha256 + argv (read back from /proc and the launch log) are in this record; per-sibling raw cells (n_fork_tokens from timings and from /slots, prediction, checkpoint sets, errors) are under `cells`",
+  "baseline": "the fork-off arm (--slot-fork-min-tokens 0) of the same command on the same binary, and champion tip e33229348 (item 6 / KPF-18.0b)",
+  "held_out": "lengths or prompts used to SET a rule are never used to judge it (arm D holdout cell; arm C/D positions come from the server's own checkpoint offsets, not from fitted numbers)",
+  "counted": "every sibling is a cell, including errors, aborts and abstentions",
+  "reported_as": "counts under rule_result; no pass word",
+  "config": "mtp",
+  "kpf_task": "KPF-18.1"
+ },
+ "arm_key": "A",
+ "with_checkpoint_at": true,
+ "expect": "T",
+ "counters_start": {
+  "slot_forks_total": 0.0,
+  "slot_fork_tokens_total": 0.0
+ },
+ "counters_end": {
+  "slot_forks_total": 3.0,
+  "slot_fork_tokens_total": 12288.0
+ },
+ "counters_delta": {
+  "slot_forks_total": 3.0,
+  "slot_fork_tokens_total": 12288.0
+ },
+ "armed": {
+  "n_requests": 4,
+  "n_requests_with_fork": 3,
+  "sum_n_fork_tokens": 12288,
+  "checkpoint_sets_nonempty": 3
+ },
+ "rule_result": {
+  "n": 3,
+  "n_error": 0,
+  "n_equal_expected": 3,
+  "n_not_equal_expected": 0,
+  "observed": [
+   4096,
+   4096,
+   4096
+  ],
+  "expected": [
+   4096,
+   4096,
+   4096
+  ],
+  "predeclared_rule_satisfied": true,
+  "n_siblings": 3,
+  "n_fork_min": 4096,
+  "n_fork_max": 4096,
+  "n_fork_zero": 0,
+  "n_fork_positive": 3,
+  "n_error_cells": 0
+ },
+ "record_sha256": "53e11b61ffba7aebf46b1b8d2951a2a28f58f3491a90ab01a9b838395d281921"
+}

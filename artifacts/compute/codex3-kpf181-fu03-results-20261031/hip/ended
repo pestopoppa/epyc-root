@@ -1,0 +1,7 @@
+rc=0 time=2026-10-31T03:52:56Z reason=complete
+job_id=codex3-kpf181-e332-hip-build-r2-20261031
+owner=codex3
+step=job-run
+estimated_wall_s=14400
+started=2026-10-31T03:49:55Z
+regions=0-23

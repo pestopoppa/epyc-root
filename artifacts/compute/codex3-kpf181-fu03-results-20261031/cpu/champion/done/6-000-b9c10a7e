@@ -1,0 +1,1 @@
+2026-10-31T03:45:51Z [item6-champion-20261031T034545Z] linkage + launch + healthy + read-back: taskset -c 0-23 /mnt/micron/codex3-lanes/kpf-e332-build/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.ggu
