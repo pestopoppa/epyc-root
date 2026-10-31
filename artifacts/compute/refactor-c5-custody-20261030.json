@@ -1,0 +1,356 @@
+{
+  "schema": "c5-custody-readonly-verification-v1",
+  "observed_at_utc": "2026-10-30T23:36:00Z",
+  "source_commit": "c72ec82f5417bb2937310326120f149b665e8400",
+  "store_builds": [
+    {
+      "root": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5",
+      "manifest_sha256": "bc272ae3b6169e6cd924f390e664dd4c3c2117992844888f8c4226faafdbe58e",
+      "manifest_bytes": 10105,
+      "manifest_mtime_utc": "2026-10-24T10:35:09Z",
+      "manifest_ctime_utc": "2026-10-24T10:35:09Z",
+      "manifest_file_count": 117,
+      "sha256_check_returncode": 0,
+      "sha256_check_summary": {
+        "ok": 117,
+        "failed": 0,
+        "stderr": ""
+      },
+      "all_manifest_files_match": true,
+      "version_txt": "version: 10419 (c72ec82f5)\nbuilt with GNU 15.2.0 for Linux x86_64",
+      "aliases": [
+        {
+          "name": "libggml-base.so",
+          "type": "symlink",
+          "target": "libggml-base.so.0",
+          "resolved_basename": "libggml-base.so.0.16.0",
+          "resolved_regular": true,
+          "resolved_in_manifest": true
+        },
+        {
+          "name": "libggml-base.so.0",
+          "type": "symlink",
+          "target": "libggml-base.so.0.16.0",
+          "resolved_basename": "libggml-base.so.0.16.0",
+          "resolved_regular": true,
+          "resolved_in_manifest": true
+        },
+        {
+          "name": "libggml-cpu.so",
+          "type": "symlink",
+          "target": "libggml-cpu.so.0",
+          "resolved_basename": "libggml-cpu.so.0.16.0",
+          "resolved_regular": true,
+          "resolved_in_manifest": true
+        },
+        {
+          "name": "libggml-cpu.so.0",
+          "type": "symlink",
+          "target": "libggml-cpu.so.0.16.0",
+          "resolved_basename": "libggml-cpu.so.0.16.0",
+          "resolved_regular": true,
+          "resolved_in_manifest": true
+        },
+        {
+          "name": "libggml.so",
+          "type": "symlink",
+          "target": "libggml.so.0",
+          "resolved_basename": "libggml.so.0.16.0",
+          "resolved_regular": true,
+          "resolved_in_manifest": true
+        },
+        {
+          "name": "libggml.so.0",
+          "type": "symlink",
+          "target": "libggml.so.0.16.0",
+          "resolved_basename": "libggml.so.0.16.0",
+          "resolved_regular": true,
+          "resolved_in_manifest": true
+        },
+        {
+          "name": "libllama-common.so",
+          "type": "symlink",
+          "target": "libllama-common.so.0",
+          "resolved_basename": "libllama-common.so.0.0.10419",
+          "resolved_regular": true,
+          "resolved_in_manifest": true
+        },
+        {
+          "name": "libllama-common.so.0",
+          "type": "symlink",
+          "target": "libllama-common.so.0.0.10419",
+          "resolved_basename": "libllama-common.so.0.0.10419",
+          "resolved_regular": true,
+          "resolved_in_manifest": true
+        },
+        {
+          "name": "libllama.so",
+          "type": "symlink",
+          "target": "libllama.so.0",
+          "resolved_basename": "libllama.so.0.0.10419",
+          "resolved_regular": true,
+          "resolved_in_manifest": true
+        },
+        {
+          "name": "libllama.so.0",
+          "type": "symlink",
+          "target": "libllama.so.0.0.10419",
+          "resolved_basename": "libllama.so.0.0.10419",
+          "resolved_regular": true,
+          "resolved_in_manifest": true
+        },
+        {
+          "name": "libmtmd.so",
+          "type": "symlink",
+          "target": "libmtmd.so.0",
+          "resolved_basename": "libmtmd.so.0.0.10419",
+          "resolved_regular": true,
+          "resolved_in_manifest": true
+        },
+        {
+          "name": "libmtmd.so.0",
+          "type": "symlink",
+          "target": "libmtmd.so.0.0.10419",
+          "resolved_basename": "libmtmd.so.0.0.10419",
+          "resolved_regular": true,
+          "resolved_in_manifest": true
+        }
+      ],
+      "all_lib_aliases_symlink_or_expected_nonalias": false,
+      "versioned_libraries": [
+        {
+          "name": "libggml-base.so.0.16.0",
+          "type": "regular",
+          "sha256": "7d99abc4a3fe58112c324aa0b5ebd3b2293f24b1e923d5f72bd626fe58528b84",
+          "in_manifest": true
+        },
+        {
+          "name": "libggml-cpu.so.0.16.0",
+          "type": "regular",
+          "sha256": "27c7e27656fb413028c8c9ba16da44267ecaf20dc7dfdcc177c0e90bced25c3f",
+          "in_manifest": true
+        },
+        {
+          "name": "libggml.so.0.16.0",
+          "type": "regular",
+          "sha256": "838262cb0bbd3f192ac7a4d036e567fce2b7bcbacbc7c322cfa9cd46ae8d951a",
+          "in_manifest": true
+        },
+        {
+          "name": "libllama-common.so.0.0.10419",
+          "type": "regular",
+          "sha256": "e0ed8e7ee7641977ce60f8dc03ee1abc026159c647badae7495cf5b6253e68fe",
+          "in_manifest": true
+        },
+        {
+          "name": "libllama.so.0.0.10419",
+          "type": "regular",
+          "sha256": "ec45054f0f729d84c776a125d7fdd75457f66256f555c28851fa7ad318319081",
+          "in_manifest": true
+        },
+        {
+          "name": "libmtmd.so.0.0.10419",
+          "type": "regular",
+          "sha256": "8f19c153fa7785bb78a6b037016b014a467cbd2c8d55704bfe1750cc5f7a4f4f",
+          "in_manifest": true
+        }
+      ],
+      "all_shared_object_aliases_are_links": true,
+      "all_versioned_libraries_are_manifested": true
+    },
+    {
+      "root": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5",
+      "manifest_sha256": "33800df52d92efe54caac213ef6ef960bb2f92fc6053d7881846b4641a3b9a0e",
+      "manifest_bytes": 10195,
+      "manifest_mtime_utc": "2026-10-24T10:38:36Z",
+      "manifest_ctime_utc": "2026-10-24T10:38:36Z",
+      "manifest_file_count": 118,
+      "sha256_check_returncode": 0,
+      "sha256_check_summary": {
+        "ok": 118,
+        "failed": 0,
+        "stderr": ""
+      },
+      "all_manifest_files_match": true,
+      "version_txt": "version: 10419 (c72ec82f5)\nbuilt with GNU 15.2.0 for Linux x86_64",
+      "aliases": [
+        {
+          "name": "libggml-base.so",
+          "type": "symlink",
+          "target": "libggml-base.so.0",
+          "resolved_basename": "libggml-base.so.0.16.0",
+          "resolved_regular": true,
+          "resolved_in_manifest": true
+        },
+        {
+          "name": "libggml-base.so.0",
+          "type": "symlink",
+          "target": "libggml-base.so.0.16.0",
+          "resolved_basename": "libggml-base.so.0.16.0",
+          "resolved_regular": true,
+          "resolved_in_manifest": true
+        },
+        {
+          "name": "libggml-cpu.so",
+          "type": "symlink",
+          "target": "libggml-cpu.so.0",
+          "resolved_basename": "libggml-cpu.so.0.16.0",
+          "resolved_regular": true,
+          "resolved_in_manifest": true
+        },
+        {
+          "name": "libggml-cpu.so.0",
+          "type": "symlink",
+          "target": "libggml-cpu.so.0.16.0",
+          "resolved_basename": "libggml-cpu.so.0.16.0",
+          "resolved_regular": true,
+          "resolved_in_manifest": true
+        },
+        {
+          "name": "libggml-hip.so",
+          "type": "symlink",
+          "target": "libggml-hip.so.0",
+          "resolved_basename": "libggml-hip.so.0.16.0",
+          "resolved_regular": true,
+          "resolved_in_manifest": true
+        },
+        {
+          "name": "libggml-hip.so.0",
+          "type": "symlink",
+          "target": "libggml-hip.so.0.16.0",
+          "resolved_basename": "libggml-hip.so.0.16.0",
+          "resolved_regular": true,
+          "resolved_in_manifest": true
+        },
+        {
+          "name": "libggml.so",
+          "type": "symlink",
+          "target": "libggml.so.0",
+          "resolved_basename": "libggml.so.0.16.0",
+          "resolved_regular": true,
+          "resolved_in_manifest": true
+        },
+        {
+          "name": "libggml.so.0",
+          "type": "symlink",
+          "target": "libggml.so.0.16.0",
+          "resolved_basename": "libggml.so.0.16.0",
+          "resolved_regular": true,
+          "resolved_in_manifest": true
+        },
+        {
+          "name": "libllama-common.so",
+          "type": "symlink",
+          "target": "libllama-common.so.0",
+          "resolved_basename": "libllama-common.so.0.0.10419",
+          "resolved_regular": true,
+          "resolved_in_manifest": true
+        },
+        {
+          "name": "libllama-common.so.0",
+          "type": "symlink",
+          "target": "libllama-common.so.0.0.10419",
+          "resolved_basename": "libllama-common.so.0.0.10419",
+          "resolved_regular": true,
+          "resolved_in_manifest": true
+        },
+        {
+          "name": "libllama.so",
+          "type": "symlink",
+          "target": "libllama.so.0",
+          "resolved_basename": "libllama.so.0.0.10419",
+          "resolved_regular": true,
+          "resolved_in_manifest": true
+        },
+        {
+          "name": "libllama.so.0",
+          "type": "symlink",
+          "target": "libllama.so.0.0.10419",
+          "resolved_basename": "libllama.so.0.0.10419",
+          "resolved_regular": true,
+          "resolved_in_manifest": true
+        },
+        {
+          "name": "libmtmd.so",
+          "type": "symlink",
+          "target": "libmtmd.so.0",
+          "resolved_basename": "libmtmd.so.0.0.10419",
+          "resolved_regular": true,
+          "resolved_in_manifest": true
+        },
+        {
+          "name": "libmtmd.so.0",
+          "type": "symlink",
+          "target": "libmtmd.so.0.0.10419",
+          "resolved_basename": "libmtmd.so.0.0.10419",
+          "resolved_regular": true,
+          "resolved_in_manifest": true
+        }
+      ],
+      "all_lib_aliases_symlink_or_expected_nonalias": false,
+      "versioned_libraries": [
+        {
+          "name": "libggml-base.so.0.16.0",
+          "type": "regular",
+          "sha256": "1c21cf133f35877a9d59c9d82bca08932bff8f29a77b30a8bb109a573eaf8a8c",
+          "in_manifest": true
+        },
+        {
+          "name": "libggml-cpu.so.0.16.0",
+          "type": "regular",
+          "sha256": "e2fb59ee4d34fd5cb726f89f4039cdc7c28dd01d7b9e9c217b01db086d6d605e",
+          "in_manifest": true
+        },
+        {
+          "name": "libggml-hip.so.0.16.0",
+          "type": "regular",
+          "sha256": "23d39c91a82fad0a83743829dd59a10df91bfe0c4a933f0cce693fc7a831beb4",
+          "in_manifest": true
+        },
+        {
+          "name": "libggml.so.0.16.0",
+          "type": "regular",
+          "sha256": "bb7e5a7a33787ddce1133d414d0f7d86f06dfb512d7f38a5e2e43b4aabe98b3a",
+          "in_manifest": true
+        },
+        {
+          "name": "libllama-common.so.0.0.10419",
+          "type": "regular",
+          "sha256": "82f0dcde53ed851b150b6e3405aaeba862cadd4711de657637d51225c64dd5fe",
+          "in_manifest": true
+        },
+        {
+          "name": "libllama.so.0.0.10419",
+          "type": "regular",
+          "sha256": "d4975083d1ae78c70a8c18017e9149a94a6abe917035ac72fe30b8e0757ee01e",
+          "in_manifest": true
+        },
+        {
+          "name": "libmtmd.so.0.0.10419",
+          "type": "regular",
+          "sha256": "8312d178cd5c90875a0d61694c510bb827634ae39d1ebccb1a0360d29f78e3a6",
+          "in_manifest": true
+        }
+      ],
+      "all_shared_object_aliases_are_links": true,
+      "all_versioned_libraries_are_manifested": true
+    }
+  ],
+  "historical_writer": {
+    "path": "/mnt/raid0/llm/tmp/c5-fold-prep/build_store.sh",
+    "sha256": "d2799452f8df5d302e2000e340f5bfc468097bbfc97bc7d7c847d5d9891f1c8a",
+    "mtime_ns": 1792837323957697780,
+    "writer_line": "(cd \"$B/bin\" && sha256sum $(find . -maxdepth 1 -type f | sort) > ../SHA256SUMS)",
+    "recorded_in_provenance": true
+  },
+  "historical_provenance": {
+    "path": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/PROVENANCE.md",
+    "sha256": "d437c5cdcc71b51e4a18ab0efe60339f930280e7ac9279e06927efbcba4ea793",
+    "states_source_commit": "c72ec82f5417bb2937310326120f149b665e8400",
+    "states_cpu_build_start_utc": "2026-10-24T10:33:32Z",
+    "states_gpu_build_start_utc": "2026-10-24T10:36:06Z",
+    "states_counts_cpu_117_gpu_118": true,
+    "states_not_production_v10": true
+  },
+  "interpretation": "Read-only current bytes match both extant SHA256SUMS lists and aliases resolve through versioned shared objects. Historical PROVENANCE.md and build_store.sh identify original manifest-generation recipe/timing. This verifies current store bytes against the lists; does not prove custody continuity for intervals not captured by an immutable prior digest."
+}

@@ -1,0 +1,148 @@
+{
+  "schema": "epyc-root-source-closure/v1",
+  "status": "SOURCE_PUBLISHED",
+  "root_base": "f1de261854772b61c1741ed0afc0f43b08c162f2",
+  "task": "UFH14-B1f",
+  "task_text": "wire the per-turn thinking budget behind its own flag, default off",
+  "source_repo": "epyc-orchestrator",
+  "source_commit": "6ed745fa1dde7e7c7fea4e5443a8fbd729449c3f",
+  "source_parent": "de6c56e34f5f23c2155d2b7dc839554ae692f771",
+  "accepted_patch_sha256": "844376ddd3bcc633c9e737d56ce7fc6da94cbfb81bfefced80fa4968085fa8f6",
+  "changed_source_paths": [
+    "src/api/routes/chat.py",
+    "src/api/routes/chat_pipeline/repl_executor.py",
+    "src/api/routes/chat_pipeline/stream_adapter.py",
+    "src/backends/llama_server.py",
+    "src/backends/repl_thinking_budget.py",
+    "src/features.py",
+    "src/inference/model_server.py",
+    "src/llm_primitives/inference.py",
+    "tests/unit/test_repl_thinking_budget.py"
+  ],
+  "published_source_sha256": {
+    "src/api/routes/chat.py": "9d67778841a6f773bded75f6490b24fc6fd50350f3d109af4da634c01d0fef62",
+    "src/api/routes/chat_pipeline/repl_executor.py": "e007f2ffdfe55ab38abfd6eadb1240a3dd86ae66453c1934464b426e39b3f8b0",
+    "src/api/routes/chat_pipeline/stream_adapter.py": "37cd9e39eab9f0e10a4b437503d4e7f6d685c48d52ecbd0be4d37b6cdffa38fa",
+    "src/backends/llama_server.py": "7a819b04eb11ecdd57eb9c5a8bf86700a9ce258298c45d13068b74242549b949",
+    "src/backends/repl_thinking_budget.py": "62489ace27a9e5085e739509685378868ddf37a4459b48c8d1f24a3ec9aed680",
+    "src/features.py": "030b1293d9c5bffbb1c1793eeda12d1f8b227109f6eed267c22087b0eadb0bb4",
+    "src/inference/model_server.py": "a9beac72278b0a8972e45a83557f64de3d199f63f30f0e4746b00e4efee883cf",
+    "src/llm_primitives/inference.py": "0ee3561d9eb2ed9940c7070cd45b1a5f5a3d4cfad8ddb24f1629cb1b168d1ee9",
+    "tests/unit/test_repl_thinking_budget.py": "36758954431b9cd3317a302ce9cf5708d2f38b69e723bb43a5a8148746133184"
+  },
+  "behavior": "Dedicated default-off request-local REPL budget reaches both chat body builders; positive budgets separate completed-response cache entries; off/unset/zero preserve old keys and payloads. Scopes reset on failure/cancel and before SSE yields.",
+  "flag": {
+    "name": "repl_thinking_budget",
+    "env": "ORCHESTRATOR_REPL_THINKING_BUDGET",
+    "test_default": false,
+    "production_default": false,
+    "enabled_this_session": false
+  },
+  "zero_budget_semantics": "Existing helper returns no fields; zero does not force thinking off.",
+  "verification": {
+    "passed": 140,
+    "new_behavioral_tests": 29,
+    "existing_passed": 111,
+    "existing_failures_excluded_from_final_run": 4,
+    "failure_control": "Untouched upstream and candidate match all four failure identities and assertion lines exactly; no repository test removed or changed.",
+    "content_cache_regression": "Real ContentAddressableCache 100 \u2192 200 \u2192 100 returns distinct 200 then cached 100; exactly two fake backend dispatches. Restoring original lookup incorrectly returns 100 for 200.",
+    "transport_negatives": "Exact upstream transport yields 3 expected failures; exact upstream routes yield6 expected failures.",
+    "thread_and_stream_boundaries": "Actual graph asyncio.to_thread with inline shortcut disabled overlaps two budgets plus unset in real workers; actual nonstream route failure/cancel and legacy/unified SSE error/aclose reset tests.",
+    "fresh_source_paths_checked": 9,
+    "fresh_dependency_fixtures_checked": 951,
+    "r6_final_supervisor": {
+      "schema": "bounded-r11-native-profile-supervisor/v1",
+      "elapsed_s": 32.69001960102469,
+      "sampled_peak_tree_rss_bytes": 188567552,
+      "samples": 322,
+      "verified_exited_processes": 0,
+      "verified_exited_threads": 0,
+      "per_process_address_space_limit_bytes": null,
+      "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages",
+      "leader_pid": 1787641,
+      "leader_birth": 151985470,
+      "child_rc": 0,
+      "children_drained": true,
+      "failure": null
+    }
+  },
+  "gitnexus": {
+    "index_commit": "84f6f6f",
+    "direct_current_origin_source_review": true,
+    "additive_Features_FeatureSpec": "CRITICAL288/77direct; nine-file scope explicitly accepted by MAIN within prior operator REPL authorization. No framework refactor.",
+    "new_cache_helper": "LOW5/1direct",
+    "other_chosen_existing_symbols": "LOW0-3",
+    "rejected_shared_request_context": "HIGH6 route untouched",
+    "voice_or_shared_context_api_changed": false
+  },
+  "publication": {
+    "remote_sha_verified": "6ed745fa1dde7e7c7fea4e5443a8fbd729449c3f",
+    "private_index_commit_tree": true,
+    "canonical_head_branch_real_index_and_all_tracked_content_preserved": true,
+    "push_lease_released": true
+  },
+  "scope": {
+    "B1f_source_complete": true,
+    "overall_UFH14_program_complete": false,
+    "runtime_adoption": false,
+    "flag_enablement": false,
+    "api_reload": false,
+    "native_inference": false,
+    "historical_rescore": false,
+    "new_grading_rule": false,
+    "measurement_protocol_change": false,
+    "performance_or_quality_claim": false
+  },
+  "future_source_epoch": "Remote publication is source availability only. Future inference qualification must pin the ORCH source actually loaded, retain the existing serving protocol and preserve the boundary from prior budget-unwired runs. Enablement belongs to the inference owner at its own boundary.",
+  "progress_target": "progress/2026-10/2026-10-30.md",
+  "evidence": [
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-ufh14-b1f-20261030/publication-receipt.json",
+      "sha256": "5a90549544f2bb322bc66977fa0badacb60600e7c17ade22093cd888fdfb4e4d"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-ufh14-b1f-20261030/REVIEW-RECEIPT.json",
+      "sha256": "5bbe220e26b342efc2d46b23447a77135e84f26439aaef102a02edcf7db55146"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-ufh14-b1f-20261030/PROPOSED.patch",
+      "sha256": "844376ddd3bcc633c9e737d56ce7fc6da94cbfb81bfefced80fa4968085fa8f6"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-ufh14-b1f-20261030/source-closure-check.json",
+      "sha256": "e1cb321e0ce62e270befb55e3de770debf8d8858649e61b50274160b568c4987"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-ufh14-b1f-20261030/validation.log",
+      "sha256": "eb1ca44ed362cae1c02fb6a6d5eda57a783172725b425432796cdedbfbbf645f"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-ufh14-b1f-20261030/negative-controls-supervisor.log",
+      "sha256": "ebe77d74d7eb3d695d68ceb5ff260839e594ebdca4e7dfd641a421032542a7a8"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-ufh14-b1f-20261030/negative-cache.log",
+      "sha256": "286ecf05e0e87706790cf704e727747348d20e2021f04869dcdba78daa979660"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-ufh14-b1f-20261030/baseline-inference-controls.log",
+      "sha256": "2acd9ea4c66dcf6cc7c910df69d3bb48f11fe873028177010bb6023cabb2d4e0"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-ufh14-b1f-20261030/candidate-inference-controls.log",
+      "sha256": "45016ad1f6c4d17c3cb5d48993f660b5dbad767d4cb5ed097e75bccb40b615de"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-ufh14-b1f-20261030/cache-controls-supervisor.log",
+      "sha256": "ff8d79c9124d1ea1a0096050e5e267c77d9ad84ebd999bf0a04501e3271ddb00"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-ufh14-b1f-20261030/GNX-_sampling_cache_key-impact.json",
+      "sha256": "be4e2726229578fd73e9689648df55057ce2c018781e54c44c398d2fc8233ca7"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-ufh14-b1f-20261030/GNX-Features-impact.json",
+      "sha256": "38f9d59e6345ee6dfa04dddabf2521daaafde5051af3852c3512687cef2c6aa4"
+    }
+  ]
+}
