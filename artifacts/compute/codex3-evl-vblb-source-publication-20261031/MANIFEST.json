@@ -1,0 +1,82 @@
+[
+  {
+    "path": "README.md",
+    "sha256": "25ec669c7c151c1450b783e84965055483aa624bc1bf73c477248d95e6d7c6ef"
+  },
+  {
+    "path": "final-candidate-hooks-r2.log",
+    "sha256": "59ec5747a8b6bb0568bbc33b446ac9e8b94224db2afa62cb5d2a6c1a14b0ce52"
+  },
+  {
+    "path": "final-candidate-hooks-r3.log",
+    "sha256": "468990362ce310a701c17827d1e2dea5f15b718e7143e6f2f534865af21a3484"
+  },
+  {
+    "path": "final-candidate-hooks-r4.log",
+    "sha256": "40b802a762d3ee53f39298f73e1ab1b3fa04afa2beb57473d4d29301ef731bed"
+  },
+  {
+    "path": "final-candidate-hooks.log",
+    "sha256": "7f239b86c06a4cadd891d111df57e92cd67d62276e1edd569be98525e8f94db2"
+  },
+  {
+    "path": "final-private-candidate.json",
+    "sha256": "afe0a4683749bfc17146e754ece3ebd7cb2836cabf1f707ee7e4354d2d36f217"
+  },
+  {
+    "path": "finalize-private-candidate.sh",
+    "sha256": "0b173ac626a5a31c1ab4c5bb7bf253a7c580f9797ee6487811ce111832df80d8"
+  },
+  {
+    "path": "integration-focused-r2.log",
+    "sha256": "c3b409c0f42b7756bcb42efb8eaa0e8c6244154d592fb558d364dc207b73965e"
+  },
+  {
+    "path": "integration-focused-r3.log",
+    "sha256": "783d3dd4d88d42ab84146d710c1b8f8ad975ca7a4d77db4c70cdda204206c02f"
+  },
+  {
+    "path": "integration-focused-r4.log",
+    "sha256": "7c3ac6ecbacda6c50dee81cc2f505cfa9d7a2d8862de652af71df22a8dfd057a"
+  },
+  {
+    "path": "integration-focused.log",
+    "sha256": "ce794febe23fad610b490c1cb9786236138c32061c5b248589163882786e3700"
+  },
+  {
+    "path": "integration-pins-authority.log",
+    "sha256": "ff7200f592926ea5a5817b8b3a03d8ee6016f0c596db1a170939807981deac5d"
+  },
+  {
+    "path": "integration-receipt.json",
+    "sha256": "56478abe7d00227c71c25585ac0bd8ba8581407a7519489511b1cccc70190333"
+  },
+  {
+    "path": "merge-current-main.sh",
+    "sha256": "ee04c39208b7b29ae57890133caa1c4f43706c44853f5d859f5b44d402652dfb"
+  },
+  {
+    "path": "publication-receipt.json",
+    "sha256": "2b49f30a8bc98398b4a1b61dd310ab37d6788e7bd2454629fe2404470ca13522"
+  },
+  {
+    "path": "push.log",
+    "sha256": "55939128872c0ead15338e477536d28cd00a7899cb41e6ab9c3049fa994c9a62"
+  },
+  {
+    "path": "remote-verified.txt",
+    "sha256": "d22caba6d4de27c56bd67f429b59975d9ec04a0934bb45e82fbe69901b7a660b"
+  },
+  {
+    "path": "resume-current-main.sh",
+    "sha256": "c2fd9a3d83bbbc897380e4d822e910ec509af0d4706f8a0790b6af17c7c62bf3"
+  },
+  {
+    "path": "resume-private-candidate.sh",
+    "sha256": "8c68aedb29aa9428ebf0994b1764658c9cf7780465282f2f0a60e28e9818d80f"
+  },
+  {
+    "path": "watch-ci.sh",
+    "sha256": "f37c262e46fa5caed6755578c6077ee26ee15f85727f1469e5a61d6593f94ebc"
+  }
+]

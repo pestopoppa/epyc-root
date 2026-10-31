@@ -1,0 +1,18 @@
+observer census: OK (25 observers registered)
+checked 11 test file(s); 0 blocking, 0 advisory
+[codex3/evl-vblb-source-20261031 f38c4e9] Integrate duplicate-frame repair and prospective dev-harness capture
+ Committer: daniele <daniele@Beelzebub.tail298675.ts.net>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+f38c4e9f9e32441c9bdf7dd2b25d2577db7598f3
+{"schema": "bounded-r11-native-profile-supervisor/v1", "elapsed_s": 7.32788734510541, "sampled_peak_tree_rss_bytes": 101781504, "samples": 72, "verified_exited_processes": 4, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 1067169, "leader_birth": 157293717, "child_rc": 0, "children_drained": true, "failure": null}

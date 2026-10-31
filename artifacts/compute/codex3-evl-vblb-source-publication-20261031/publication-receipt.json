@@ -1,0 +1,70 @@
+{
+  "task": "codex3 approved EVL + dev-harness source publication",
+  "published_commit": "1103bccc540a04c535a5fa3baf7a81cdea512595",
+  "remote_main": "1103bccc540a04c535a5fa3baf7a81cdea512595",
+  "remote_own_branch": "1103bccc540a04c535a5fa3baf7a81cdea512595",
+  "verified_at": "2026-10-31T12:46:26.054869+00:00",
+  "ci": {
+    "run_id": 41202443172,
+    "url": "https://github.com/pestopoppa/epyc-root/actions/runs/41202443172",
+    "status_at_publication": "in_progress",
+    "terminal_flag": "/mnt/raid0/llm/tmp/codex3-evl-vblb-source-publish-20261031/CI-TERMINAL.json",
+    "tool_session_id": 54525,
+    "watch_pid": 1122113
+  },
+  "tests": {
+    "integration_passed": 233,
+    "integration_subtests_passed": 24,
+    "producer_pin_and_authority_passed": 10
+  },
+  "normal_precommit_passed": true,
+  "normal_pre_push_guard_passed": true,
+  "canonical_leases_released": true,
+  "canonical_index_or_checkout_commands_used": false,
+  "object_import": "explicit 34345-byte thin pack through canonical index-pack; initial local fetch refused invisible private core.worktree before any ref update",
+  "canonical_ledger_modified": false,
+  "checkboxes_modified": 0,
+  "source_table_rows_modified": 0,
+  "evidence": [
+    {
+      "file": "integration-receipt.json",
+      "sha256": "56478abe7d00227c71c25585ac0bd8ba8581407a7519489511b1cccc70190333"
+    },
+    {
+      "file": "integration-focused-r4.log",
+      "sha256": "7c3ac6ecbacda6c50dee81cc2f505cfa9d7a2d8862de652af71df22a8dfd057a"
+    },
+    {
+      "file": "integration-pins-authority.log",
+      "sha256": "ff7200f592926ea5a5817b8b3a03d8ee6016f0c596db1a170939807981deac5d"
+    },
+    {
+      "file": "final-private-candidate.json",
+      "sha256": "afe0a4683749bfc17146e754ece3ebd7cb2836cabf1f707ee7e4354d2d36f217"
+    },
+    {
+      "file": "final-candidate-hooks.log",
+      "sha256": "7f239b86c06a4cadd891d111df57e92cd67d62276e1edd569be98525e8f94db2"
+    },
+    {
+      "file": "final-candidate-hooks-r2.log",
+      "sha256": "59ec5747a8b6bb0568bbc33b446ac9e8b94224db2afa62cb5d2a6c1a14b0ce52"
+    },
+    {
+      "file": "final-candidate-hooks-r3.log",
+      "sha256": "468990362ce310a701c17827d1e2dea5f15b718e7143e6f2f534865af21a3484"
+    },
+    {
+      "file": "final-candidate-hooks-r4.log",
+      "sha256": "40b802a762d3ee53f39298f73e1ab1b3fa04afa2beb57473d4d29301ef731bed"
+    },
+    {
+      "file": "push.log",
+      "sha256": "55939128872c0ead15338e477536d28cd00a7899cb41e6ab9c3049fa994c9a62"
+    },
+    {
+      "file": "remote-verified.txt",
+      "sha256": "d22caba6d4de27c56bd67f429b59975d9ec04a0934bb45e82fbe69901b7a660b"
+    }
+  ]
+}

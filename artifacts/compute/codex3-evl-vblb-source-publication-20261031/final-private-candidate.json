@@ -1,0 +1,9 @@
+{
+  "candidate": "1103bccc540a04c535a5fa3baf7a81cdea512595",
+  "base_main": "a37cb60cbfbaf0d7770e57173d374e94a819abbe",
+  "approved_preliminary": "e4adf8d645d6b6ac9f26c680cd07f63928e0333c",
+  "source_file_count": 23,
+  "source_bytes_match_integration_receipt": true,
+  "normal_precommit_hook": "/mnt/raid0/llm/epyc-root/.git/hooks/pre-commit",
+  "publication": false
+}

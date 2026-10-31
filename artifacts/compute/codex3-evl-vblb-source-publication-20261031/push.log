@@ -1,0 +1,4 @@
+pre-push serialization guard: serialization lock held by codex3-evl-vblb-source-1225 (JSON field 'agent'; declared: lock holder id == this session (codex3-evl-vblb-source-1225)) — allowing push of: update refs/heads/main (from 1103bccc540a04c535a5fa3baf7a81cdea512595)
+To https://github.com/pestopoppa/epyc-root.git
+   169a8a510..1103bccc5  1103bccc540a04c535a5fa3baf7a81cdea512595 -> codex3-root-lane
+   a37cb60cb..1103bccc5  1103bccc540a04c535a5fa3baf7a81cdea512595 -> main

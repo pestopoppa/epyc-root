@@ -1,0 +1,325 @@
+................................................ [ 11%]
+...FF...................................................FF.............. [ 29%]
+.......F................................................................ [ 46%]
+........................................................................ [ 64%]
+..............................F......................................... [ 81%]
+........................................................................ [ 99%]
+.F..                                                                     [100%]
+=================================== FAILURES ===================================
+_______ test_every_source_has_an_end_to_end_fixture_or_a_named_exemption _______
+
+    def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
+        # KVQ's exact producer pin and external-repo artifact path are exercised by
+        # test_kv_quant_27b_v10_adapter.py, including its CLI source and ledger fold.
+>       assert set(ingest_sources.SOURCES) == set(BUILDERS) | {
+            "pip02-incremental-teds",  # Prospective writer, strict projection and private CLI: test_pip02_teds.py.
+            "kpf261-plan-steps",  # Synthetic refusal: test_kpf261_plan_steps.py; native canary uses pinned external capture.
+            # Prospective real native custody, 13 refusal controls and CLI reingest:
+            # test_lb49_combined_diagnostic.py (external capture; no fabricated measurement fixture).
+            "lb49-combined-diagnostic",
+            "ufh12-irt-paired",  # Synthetic producer, CLI ingest, tamper and planning: test_ufh12_irt_paired_canary.py.
+            # Real original oracle plus synthetic native timing writer -> planner and tamper.
+            "rtg57-vkq-oracle", "rtg57-vkq-comparison",
+            # Prospective write-once CPU process and dry-run CLI: test_m4_cpu_speed_ingest.py.
+            "m4-cpu-recipe-speed",
+            "df2-row-exact-akx",  # synthetic producer to actual registry and planning context: test_df2_native_integration.py
+            "ufh12-gs-coverage",  # synthetic producer, registry and planning canary: test_ufh12_gs_coverage.py
+            # Actual accepted writer -> strict reader/CLI ledger custody: tests/test_hg5_request_event_reader.py.
+            "hg5-request-event",
+            # Strict re-derivation, refusals and grading on fixture trees: test_autokernel_width_dimension.py
+            # (HIP) and test_autokernel_width_cells_cpu.py (CPU, plus the real stored record).
+            "ak-width-dimension", "ak-width-cells-cpu",
+            # Strict re-derivation over the real U4-NOISE-1 sessions, tamper refusals on a tmp copy and the
+            # CLI dispatch count: test_gpu_cpu_noise_adapter.py. v1 readings + pre-hook dumps, refusals and the
+            # real STACKCHG-GPUPIN evidence dispatch: test_launch_affinity_adapter.py.
+            # FD-DIV-1a/1b strict re-derivation + real receipts: test_fused_decode_div_adapter.py.
+            "gpu-cpu-noise", "launch-affinity", "fused-decode-div",
+            # Structured fold_gate v4 producer, strict per-library verifier projection and CLI dispatch:
+            # test_champion_fold_gate_adapter.py.
+            "champion-fold-gate",
+            # HSF-5.P sidecar written by the real analyzer, re-derivation refusals and CLI dispatch:
+            # test_hsf5p_microbench_adapter.py.
+            "hsf5p-microbench",
+            "calendar-overrun", "floor-registry", "weight-handoff",
+            # Exact producer pin + 9-shard binding refusal: test_ds41_1017_validation_adapter.py.
+            "ds41-1017-validation",
+            # Actual prospective DTAP producer/private CLI: test_dtap_timeout_report.py.
+            "dtap-timeout-report",
+            # Actual private native gate/frames and CLI dry-run privacy roundtrip:
+            # scripts/hooks/tests/test_pii_staged_capture.py.
+            "pii-staged-gate",
+            # Original command capture and CLI->Ledger roundtrip: test_ci_conformance.py.
+            "ci-fixture-conformance",
+            # Named interpreter child-custody and CLI dry-run: test_managed_tooling_check.py.
+            "managed-tooling-check",
+            # Explicit off-host synthetic ContextBench producer and shared-grade roundtrip:
+            # test_contextbench_score_capture.py.
+            "contextbench-discovery-score",
+            # Explicit private StrategyStore report custody and shared-grade fixture:
+            # test_strategy_projection_report.py.
+            "strategy-projection-report",
+            "sealed-manifest", "kv-quant-27b-v10-measurement",
+            # Retrofit run dirs (re-hash refusals, error-run decline, loop_beliefs knob tier): test_kv_quant_27b_v10_retrofit.py.
+            "kv-quant-27b-v10-retrofit",
+            # Re-derived caps, rehash refusals, launch drift, scoped-store wiring: test_autokernel_served_shape.py.
+            "autokernel-served-shape",
+            # Cross-repo producer pin, both class dispatches and grading: test_exl3_adapter.py.
+            "exl3-measurement", "exl3-verifier",
+            # Cross-repo capture-module pin, whole-file refusal and ledger ingest:
+            # test_embedder_placement_gate_adapter.py.
+            "embedder-placement-gate",
+            # Cross-repo capture-module pin, two instruments kept apart, whole-file refusal and
+            # ledger ingest of both sources: test_repl_retrieval_eval_adapter.py.
+            "repl-retrieval-eval", "repl-embedder-speed",
+            # Cross-repo producer pin (research e603216f), whole-document refusal, pre-hook
+            # decline and ledger ingest: test_gfx90a_static_register_adapter.py.
+            "gfx90a-static-register",
+            # Immutable native writer roundtrip and registered CLI dispatch:
+            # test_evidence_durability_adapter.py.
+            "evidence-durability",
+            # Dedicated full native-ingest contract: tests/test_graph_profile_measurement.py.
+            "graph-profiler-measurement",
+            # Dedicated ODL identity, refusal and CLI controls: tests/vidya/test_odl_model_gated.py.
+            "odl-unlimited-ocr-run",
+            # Prospective SC54 receipt writer, pinned reader and shared-ladder adapter:
+            # test_sc54_qwen4exp_quality_adapter.py; no historical backfill.
+            "qwen4exp-quality-measurement",
+            # The reports bind cross-repository producer/input bytes; the dedicated
+            # adapter tests exercise producer-shaped native envelopes and shared-grade CLI dispatch.
+            "verify-before-stop-measurement", "eval-suite-discriminability",
+            # Cross-repo capture-module pin (research speech_cpu_capture.py), censored-row counting,
+            # legacy zero-tuple refusal and ledger ingest: test_speech_cpu_measurement_adapter.py.
+            "speech-cpu-measurement",
+            # Real operator listen aggregate (CS-8.L, 7 observation tuples) through ingest + CLI:
+            # test_speech_listen_rating_adapter.py (VB-SPEECH-LISTEN-1).
+            "speech-listen-rating",
+            # Full original C6 R2 native run and tamper/missing/qualification/case mismatch controls:
+            # test_c6_q4_microbench_adapter.py (component observations only; no historical backfill).
+            "c6-q4-microbench"}
+E       AssertionError: assert {'ak-actor-se...d-shape', ...} == {'ak-actor-se...d-shape', ...}
+E         
+E         Extra items in the left set:
+E         'dev-harness-aggregate'
+E         Use -v to get more diff
+
+tests/vidya/test_ingest_sources.py:304: AssertionError
+______ test_every_wired_adapter_projects_through_a_registered_projection _______
+
+    def test_every_wired_adapter_projects_through_a_registered_projection():
+        for src in ingest_sources.SOURCES.values():
+            if src.frames:
+                continue
+>           mod = src.load()
+                  ^^^^^^^^^^
+
+tests/vidya/test_ingest_sources.py:395: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/vidya/ingest_sources.py:146: in load
+    return importlib.import_module(f"adapters.{self.module}")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+<frozen importlib._bootstrap_external>:1026: in exec_module
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    """Project original prospective fixture receipts through the shared verifier carrier."""
+    from pathlib import Path
+    import sys
+    
+    ROOT = Path(__file__).resolve().parents[3]
+    sys.path.insert(0, str(ROOT))
+    sys.path.insert(0, str(ROOT / "scripts" / "vidya"))
+>   from scripts.ci.native_conformance import read_receipt
+E   ModuleNotFoundError: No module named 'scripts.ci'
+
+scripts/vidya/adapters/ci_conformance.py:8: ModuleNotFoundError
+____________ test_source_ingests_a_fixture_end_to_end[s4-omega-ab] _____________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-11159/test_source_ingests_a_fixture_51')
+capsys = <_pytest.capture.CaptureFixture object at 0x7f26356382d0>
+name = 's4-omega-ab'
+
+    @pytest.mark.parametrize("name", sorted(BUILDERS))
+    def test_source_ingests_a_fixture_end_to_end(tmp_path, capsys, name):
+        fixture_root = tmp_path / "fx"
+        fixture_root.mkdir()
+>       path = BUILDERS[name](fixture_root)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/vidya/test_ingest_sources.py:413: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/vidya/test_ingest_sources.py:210: in _s4_omega_ab
+    return _helpers("test_s4_omega_ab_adapter").write_fixture(tmp)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/vidya/test_s4_omega_ab_adapter.py:130: in write_fixture
+    return _write_live_fixture(tmp_path)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/vidya/test_s4_omega_ab_adapter.py:71: in _write_live_fixture
+    producer = _producer()
+               ^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _producer():
+        runner_pin = os.environ.get("S4_OMEGA_RUNNER_PATH")
+        source_root = os.environ.get("EPYC_ORCHESTRATOR_SOURCE_ROOT")
+        if runner_pin:
+            path = Path(runner_pin)
+        elif source_root:
+            path = Path(source_root) / "scripts/benchmark/s4_omega_ab.py"
+        else:
+>           raise RuntimeError("set EPYC_ORCHESTRATOR_SOURCE_ROOT to the pinned producer checkout")
+E           RuntimeError: set EPYC_ORCHESTRATOR_SOURCE_ROOT to the pinned producer checkout
+
+tests/vidya/test_s4_omega_ab_adapter.py:40: RuntimeError
+_______ test_source_ingests_a_fixture_end_to_end[session-intercall-gap] ________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-11159/test_source_ingests_a_fixture_52')
+capsys = <_pytest.capture.CaptureFixture object at 0x7f26358cb0d0>
+name = 'session-intercall-gap'
+
+    @pytest.mark.parametrize("name", sorted(BUILDERS))
+    def test_source_ingests_a_fixture_end_to_end(tmp_path, capsys, name):
+        fixture_root = tmp_path / "fx"
+        fixture_root.mkdir()
+>       path = BUILDERS[name](fixture_root)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/vidya/test_ingest_sources.py:413: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/vidya/test_ingest_sources.py:215: in <lambda>
+    "session-intercall-gap": lambda tmp: _helpers("test_session_gap_adapter").write_fixture(tmp),
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/vidya/test_ingest_sources.py:43: in _helpers
+    spec.loader.exec_module(mod)
+<frozen importlib._bootstrap_external>:1026: in exec_module
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    """Gap extraction: honest coverage and prospective native-pair integrity only."""
+    from __future__ import annotations
+    import json
+    import sys
+    from decimal import Decimal
+    from pathlib import Path
+    import pytest
+    ROOT = Path(__file__).resolve().parents[2]
+    sys.path.insert(0, str(ROOT / "scripts" / "vidya"))
+    sys.path.insert(0, str(ROOT / "scripts" / "harness"))
+>   import session_gap_measure as producer
+E   ModuleNotFoundError: No module named 'session_gap_measure'
+
+tests/vidya/test_session_gap_adapter.py:11: ModuleNotFoundError
+_____________ test_every_dispatched_adapter_declares_its_authority _____________
+
+    def test_every_dispatched_adapter_declares_its_authority():
+        for src in ingest_sources.SOURCES.values():
+>           assert getattr(src.load(), "AUTHORITY", None), src.name
+                           ^^^^^^^^^^
+
+tests/vidya/test_ingest_sources.py:581: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/vidya/ingest_sources.py:146: in load
+    return importlib.import_module(f"adapters.{self.module}")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+<frozen importlib._bootstrap_external>:1026: in exec_module
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    """Project original prospective fixture receipts through the shared verifier carrier."""
+    from pathlib import Path
+    import sys
+    
+    ROOT = Path(__file__).resolve().parents[3]
+    sys.path.insert(0, str(ROOT))
+    sys.path.insert(0, str(ROOT / "scripts" / "vidya"))
+>   from scripts.ci.native_conformance import read_receipt
+E   ModuleNotFoundError: No module named 'scripts.ci'
+
+scripts/vidya/adapters/ci_conformance.py:8: ModuleNotFoundError
+_ TestAnchorNormalization.test_the_landed_intake_1038_anchor_matches_its_recorded_hash _
+
+self = <test_vidya_p1.TestAnchorNormalization object at 0x7f26364ae7a0>
+
+    def test_the_landed_intake_1038_anchor_matches_its_recorded_hash(self):
+        """End-to-end: the real anchor in the index verifies against its own quote."""
+        import yaml
+    
+        idx = Path(__file__).resolve().parents[2] / "research" / "intake_index.yaml"
+>       entry = next(e for e in yaml.safe_load(idx.read_text()) if e["id"] == "intake-1038")
+                                               ^^^^^^^^^^^^^^^
+
+tests/vidya/test_vidya_p1.py:611: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.13/pathlib/_local.py:548: in read_text
+    return PathBase.read_text(self, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.13/pathlib/_abc.py:632: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/mnt/raid0/llm/tmp/codex3-evl-vblb-source-publish-20261031/snapshot/research/intake_index.yaml')
+mode = 'r', buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/mnt/raid0/llm/tmp/codex3-evl-vblb-source-publish-20261031/snapshot/research/intake_index.yaml'
+
+/usr/lib/python3.13/pathlib/_local.py:539: FileNotFoundError
+__________________________ test_private_path_refusals __________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-11159/test_private_path_refusals0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2634f48600>
+
+    def test_private_path_refusals(tmp_path, monkeypatch):
+>       with pytest.raises(dh_privacy.PrivacyError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE PrivacyError
+
+tests/dev_harness/test_dev_harness.py:318: Failed
+P1-A carrier invariants: 1351 tuples from 64 source kinds checked (byte identity / grade invariance), 0 violation(s)
+=========================== short test summary info ============================
+FAILED tests/vidya/test_ingest_sources.py::test_every_source_has_an_end_to_end_fixture_or_a_named_exemption
+FAILED tests/vidya/test_ingest_sources.py::test_every_wired_adapter_projects_through_a_registered_projection
+FAILED tests/vidya/test_ingest_sources.py::test_source_ingests_a_fixture_end_to_end[s4-omega-ab]
+FAILED tests/vidya/test_ingest_sources.py::test_source_ingests_a_fixture_end_to_end[session-intercall-gap]
+FAILED tests/vidya/test_ingest_sources.py::test_every_dispatched_adapter_declares_its_authority
+FAILED tests/vidya/test_vidya_p1.py::TestAnchorNormalization::test_the_landed_intake_1038_anchor_matches_its_recorded_hash
+FAILED tests/dev_harness/test_dev_harness.py::test_private_path_refusals - Fa...
+7 failed, 405 passed, 24 subtests passed in 23.27s
+{"schema": "bounded-r11-native-profile-supervisor/v1", "elapsed_s": 23.56128230597824, "sampled_peak_tree_rss_bytes": 213274624, "samples": 233, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 867293, "leader_birth": 157203374, "child_rc": 1, "children_drained": true, "failure": null}

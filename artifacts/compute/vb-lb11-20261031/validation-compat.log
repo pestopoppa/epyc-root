@@ -1,0 +1,5 @@
+........................................................................ [ 83%]
+..............                                                           [100%]
+P1-A carrier invariants: 1 tuples from 1 source kinds checked (byte identity / grade invariance), 0 violation(s)
+86 passed in 17.54s
+{"schema": "bounded-r11-native-profile-supervisor/v1", "elapsed_s": 17.770682174013928, "sampled_peak_tree_rss_bytes": 175640576, "samples": 176, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 690703, "leader_birth": 157116673, "child_rc": 0, "children_drained": true, "failure": null}

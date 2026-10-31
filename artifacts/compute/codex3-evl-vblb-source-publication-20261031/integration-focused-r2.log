@@ -1,0 +1,47 @@
+
+==================================== ERRORS ====================================
+__________ ERROR collecting tests/dev_harness/test_backup_coverage.py __________
+tests/dev_harness/test_backup_coverage.py:13: in <module>
+    spec.loader.exec_module(bc)
+<frozen importlib._bootstrap_external>:1022: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1159: in get_code
+    ???
+<frozen importlib._bootstrap_external>:1217: in get_data
+    ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/mnt/raid0/llm/tmp/codex3-evl-vblb-source-publish-20261031/snapshot/scripts/system/backup_coverage.py'
+_____________ ERROR collecting tests/dev_harness/test_mining_m2.py _____________
+ImportError while importing test module '/mnt/raid0/llm/tmp/codex3-evl-vblb-source-publish-20261031/snapshot/tests/dev_harness/test_mining_m2.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/dev_harness/test_mining_m2.py:22: in <module>
+    import m2_lessons  # noqa: E402
+    ^^^^^^^^^^^^^^^^^
+scripts/dev_harness/m2_lessons.py:35: in <module>
+    from m2_guards import HOOK_COVERAGE  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/dev_harness/m2_guards.py:33: in <module>
+    import filesystem_containment_scan as fcs  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   ModuleNotFoundError: No module named 'filesystem_containment_scan'
+____________ ERROR collecting tests/dev_harness/test_opencode_ro.py ____________
+tests/dev_harness/test_opencode_ro.py:24: in <module>
+    spec.loader.exec_module(bc)
+<frozen importlib._bootstrap_external>:1022: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1159: in get_code
+    ???
+<frozen importlib._bootstrap_external>:1217: in get_data
+    ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/mnt/raid0/llm/tmp/codex3-evl-vblb-source-publish-20261031/snapshot/scripts/system/backup_coverage.py'
+P1-A carrier invariants: 2 tuples from 1 source kinds checked (byte identity / grade invariance), 0 violation(s)
+=========================== short test summary info ============================
+ERROR tests/dev_harness/test_backup_coverage.py - FileNotFoundError: [Errno 2...
+ERROR tests/dev_harness/test_mining_m2.py
+ERROR tests/dev_harness/test_opencode_ro.py - FileNotFoundError: [Errno 2] No...
+!!!!!!!!!!!!!!!!!!! Interrupted: 3 errors during collection !!!!!!!!!!!!!!!!!!!!
+3 errors in 0.61s
+{"schema": "bounded-r11-native-profile-supervisor/v1", "elapsed_s": 0.914577160961926, "sampled_peak_tree_rss_bytes": 73502720, "samples": 10, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 866412, "leader_birth": 157202112, "child_rc": 2, "children_drained": true, "failure": null}

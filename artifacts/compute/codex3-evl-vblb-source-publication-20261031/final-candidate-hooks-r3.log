@@ -1,0 +1,13 @@
+Automatic merge went well; stopped before committing as requested
+
+OBSERVER CONTRACT VIOLATION
+
+  [no-stale-rows]
+    - operator_ratifier_autopilot_gates: registry row points at artifacts/operator/ratify_e8_autopilot_quality_fence_20260726.sh, which does not exist
+
+  Context: a watchdog that cannot observe its target must say so. On 2026-08-12 one
+  identified a healthy daemon by an argv pattern that had drifted, called it dead
+  forever, and relaunch-looped for hours in silence. Registry:
+  scripts/coordination/observer_registry.json   Contract: scripts/coordination/observer_guard.sh
+
+{"schema": "bounded-r11-native-profile-supervisor/v1", "elapsed_s": 6.174895124975592, "sampled_peak_tree_rss_bytes": 101421056, "samples": 61, "verified_exited_processes": 3, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 1084538, "leader_birth": 157301353, "child_rc": 1, "children_drained": true, "failure": null}

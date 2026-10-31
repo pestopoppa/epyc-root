@@ -1,0 +1,8 @@
+3be9baad24fd6bf7c488a94b3250272d0bf1bad2e59956c79d46b5b89e39b31a  /mnt/raid0/llm/tmp/codex3-k4a-20261031/capsule/research-master.yaml
+448535e1bef4e7062513d9b4fd7bcc01c198a820683a0d218cf525a0363ad103  /mnt/raid0/llm/tmp/codex3-k4a-20261031/capsule/app-lean.yaml
+2bc7042f17dde0979fb4ff104baa82b02905f03e00e4a10edaf9dd489bb3990a  scripts/lib/registry.py
+51d9d283b7bfbe7dd4fb23b93a61f77f2fa38600ab0bf8d7d2f1740a6d6f22cc  src/registry/registry_compiler.py
+e858064ef71adc9da760a275add2ef6b1929c45906f02cc945840ca68ffd35e2  tests/unit/test_registry_compiler.py
+96e7166cc804786316db5501ad879e8841989040412770f2c88d88009e485640  tests/unit/test_script_lib_registry.py
+63222eb38697a0d15a7cee063d6e26fcbb9355c7e0c8701647a0dd9b7009ff65  /mnt/raid0/llm/tmp/codex3-k4a-20261031/capsule/prep_supervisor.py
+6e0340cd380b7d268e0b68c18b35adeb5f71e7afaf5d7a6b408fd27d35abc2c0  /mnt/raid0/llm/tmp/codex3-k4a-20261031/capsule/prep_admission.py

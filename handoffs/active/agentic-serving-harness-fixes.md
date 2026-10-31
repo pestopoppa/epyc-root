@@ -237,7 +237,7 @@ Client and harness side (ak-ds41-main):
     off; rescue rate and accuracy per suite. `derived_prefill_timeout`'s enable rides B1d (Option A). Declined, not
     filed: enabling `session_compaction_llm_index` — OFF is the intended posture, because the compacted field is
     never rendered into a turn prompt.
-  - [x] **UFH14-B1h — retire `DEFAULT_PREFILL_FLOOR_TPS = 250` (`kv_pool_admission.py:169`) for the measured rate.** ✅ 2026-10-29 [belief: cc]
+  - [x] **UFH14-B1h — retire `DEFAULT_PREFILL_FLOOR_TPS = 250` (`kv_pool_admission.py:169`) for the measured rate.** ✅ 2026-10-29 [belief: cc] [source: epyc-orchestrator@a446ae62c4ff718acab7eb6070f6818db63908e8; test: epyc-orchestrator/tests/unit/test_kv_pool_long_prefill.py]
     (filed 2026-10-04, workspace-ec, from the B1 design note's "other constant to retire next") The long-prefill lease
     expiry should read `serving_params.rate_at(samples, prompt)`, keeping 250 as the floor. Done when the lease
     expiry uses the measured rate with a test, and the env override still wins.
@@ -612,7 +612,7 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
       restored it, because the A3/A4-done notice was missed, so `declared_env_attestation` sat in its post-expiry ERROR
       state for ~6 h (19:44Z → 01:58Z). The same missed notices delayed the GPU block from 18:15Z to 01:59Z.
       Follow-up: UFH14-DIAG-EC-b.
-  - [x] **UFH14-DIAG-EC-b — an expired diagnostic override must reach its owner, not only the attestation.** ✅ 2026-10-29 [belief: cc]
+  - [x] **UFH14-DIAG-EC-b — an expired diagnostic override must reach its owner, not only the attestation.** ✅ 2026-10-29 [belief: cc] [source: epyc-root@1ce4056f24e6b4e4aa0f9e3afc20228c42df902b + epyc-orchestrator@7b7f6217d919b032b8fb701e48f5be77526e9175; test: epyc-root/tests/test_diagnostic_override_expiry.py]
     (filed 2026-10-04, workspace-ec, from DIAG-EC-a's ~6 h expired ERROR) The expiry is already an ERROR in
     `declared_env_attestation`, but nothing routed it to a session. At expiry, post a bus nudge to the session that
     applied the override (recorded in `logs/env_overrides/<component>.json`) and raise it on the hub's health fold.
