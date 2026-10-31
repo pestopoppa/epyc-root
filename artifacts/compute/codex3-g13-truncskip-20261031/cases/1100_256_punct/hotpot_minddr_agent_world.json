@@ -1,0 +1,196 @@
+{
+  "arm": "1100_256_punct",
+  "id": "hotpot_minddr_agent_world",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/minddr-deep-research-mode.md",
+    "/workspace/handoffs/active/agent-world-env-synthesis.md",
+    "/workspace/research/deep-dives/agent-world-environment-synthesis.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/minddr-deep-research-mode.md",
+    "/workspace/handoffs/active/agent-world-env-synthesis.md",
+    "/workspace/research/deep-dives/agent-world-environment-synthesis.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 2,
+    "found_files": [
+      "/workspace/handoffs/active/minddr-deep-research-mode.md",
+      "/workspace/research/deep-dives/agent-world-environment-synthesis.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/agent-world-env-synthesis.md"
+    ],
+    "first_evidence_rank": 3,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md",
+      "/workspace/progress/2026-04/2026-04-22.md",
+      "/workspace/handoffs/active/minddr-deep-research-mode.md",
+      "/workspace/progress/2026-06/master-index-pre-rewrite-archive-2026-06-12.md",
+      "/workspace/handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md",
+      "/workspace/research/deep-dives/agent-world-environment-synthesis.md",
+      "/workspace/research/deep-dives/agent-world-environment-synthesis.md",
+      "/workspace/handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md",
+      "/workspace/progress/2026-04/2026-04-22.md",
+      "/workspace/handoffs/completed/non-inference-backlog-completed-through-2026-04-12.md"
+    ],
+    "recall@3": 0.3333333333333333,
+    "perfect@3": false,
+    "recall@5": 0.3333333333333333,
+    "perfect@5": false,
+    "recall@10": 0.6666666666666666,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md",
+      "heading_path": [
+        "Meta-Harness: Automated Harness Optimization",
+        "Deep-Dive Integration \u2014 2026-04-22",
+        "Cross-references"
+      ],
+      "line_range": [
+        317,
+        323
+      ],
+      "snippet": "### Cross-references\n\n- `routing-and-optimization-index.md` P17 (Agent-World pointer) + P18 (MindDR pointer)\n- `agent-world-env-synthesis.md` + `minddr-deep-research-mode.md`\n- `/workspace/research/deep-dives/agent-world-environment-synthes",
+      "score": 0.9437,
+      "content_hash": "98d295fcb6a38665"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-22.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-22",
+        "Session 1 \u2014 Deep-dive integration pass (8 deep dives \u2192 46 action items \u2192 21 file changes)",
+        "Two new handoff files"
+      ],
+      "line_range": [
+        9,
+        13
+      ],
+      "snippet": "### Two new handoff files\n\n- **`handoffs/active/agent-world-env-synthesis.md`** \u2014 DD6 Agent-World environment synthesis (5th autopilot species). AW-1..AW-9 tasks, Phase 1 training-free and CPU-feasible today, Phase 2 multi-env GRPO GPU-gate",
+      "score": 0.9397,
+      "content_hash": "feaf1dd1c86e33a4"
+    },
+    {
+      "file": "/workspace/handoffs/active/minddr-deep-research-mode.md",
+      "heading_path": [
+        "MindDR Deep Research Mode",
+        "Research Context"
+      ],
+      "line_range": [
+        36,
+        45
+      ],
+      "snippet": "## Research Context\n\n| Intake ID | Title | Relevance | Verdict |\n|-----------|-------|-----------|---------|\n| intake-438 | Mind DeepResearch Technical Report (arxiv:2604.14518, Li Auto) | high | worth_investigating |\n| intake-412 | DeepPla",
+      "score": 0.9367,
+      "content_hash": "edf3c75e28c867e5"
+    },
+    {
+      "file": "/workspace/progress/2026-06/master-index-pre-rewrite-archive-2026-06-12.md",
+      "heading_path": [
+        "EPYC Handoff \u2014 Master Index",
+        "Standalone Handoffs"
+      ],
+      "line_range": [
+        155,
+        157
+      ],
+      "snippet": "| [agent-world-env-synthesis.md](agent-world-env-synthesis.md) | Autopilot 5th species: environment + task synthesis (DD6, intake-444) | stub / in-planning \u2014 Phase 1 training-free, Phase 2 GPU-gated. 2026-04-28 reframed as L2-Simulator \u2192 L3",
+      "score": 0.9336,
+      "content_hash": "87fea61e5c94282b"
+    },
+    {
+      "file": "/workspace/handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md",
+      "heading_path": [
+        "Meta-Harness: Automated Harness Optimization",
+        "Deep-Dive Integration \u2014 2026-04-22",
+        "Tier 3 \u2014 Concrete Outer-Loop Rebuild Recipes (now split into 2 dedicated handoffs)"
+      ],
+      "line_range": [
+        224,
+        236
+      ],
+      "snippet": "### Tier 3 \u2014 Concrete Outer-Loop Rebuild Recipes (now split into 2 dedicated handoffs)\n\nThe long-deferred Tier 3 outer-loop rebuild now has two concrete forward paths, each with its own dedicated handoff:\n\n**1. [`agent-world-env-synthesis.m",
+      "score": 0.9318,
+      "content_hash": "5694b5a200dd40a2"
+    },
+    {
+      "file": "/workspace/research/deep-dives/agent-world-environment-synthesis.md",
+      "heading_path": [
+        "Agent-World: Scaling Real-World Environment Synthesis for Evolving General Agent Intelligence",
+        "11. Cross-References",
+        "11.2 Related intakes / deep dives"
+      ],
+      "line_range": [
+        384,
+        391
+      ],
+      "snippet": "### 11.2 Related intakes / deep dives\n- **intake-411** (Qwen-Agent MCP singleton) \u2014 MCP adoption path, already in stack.\n- **intake-412** (DeepPlanning) \u2014 long-horizon planning benchmark; Agent-World complements at environment-synthesis lay",
+      "score": 0.9299,
+      "content_hash": "131252d95eb66391"
+    },
+    {
+      "file": "/workspace/research/deep-dives/agent-world-environment-synthesis.md",
+      "heading_path": [
+        "Agent-World: Scaling Real-World Environment Synthesis for Evolving General Agent Intelligence"
+      ],
+      "line_range": [
+        1,
+        10
+      ],
+      "snippet": "# Agent-World: Scaling Real-World Environment Synthesis for Evolving General Agent Intelligence\n\n**Intake**: intake-444\n**ArXiv**: 2604.18292\n**Categories**: agent_architecture, self_evolving_agents, environment_synthesis, mcp, reinforcemen",
+      "score": 0.9296,
+      "content_hash": "8966048d2787c40f"
+    },
+    {
+      "file": "/workspace/handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md",
+      "heading_path": [
+        "Meta-Harness: Automated Harness Optimization",
+        "Deep-Dive Integration \u2014 2026-04-22",
+        "Tier 3 \u2014 Concrete Outer-Loop Rebuild Recipes (now split into 2 dedicated handoffs)"
+      ],
+      "line_range": [
+        236,
+        241
+      ],
+      "snippet": "- Phase 1 prompt-level three-agent pipeline (Planning/DeepSearch/Report): zero-infra, falsifiable under eval tower, ~3w code.\n- Phase 2 four-stage training recipe: SFT \u2192 Search-RL (GSPO/GRPO) \u2192 Report-RL (DAPO) \u2192 preference alignment (DPO +",
+      "score": 0.9294,
+      "content_hash": "e944c64b14066aa8"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-22.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-22",
+        "Session 7 \u2014 NIB2-44 Agent-World env_synth scaffold complete (AW-1..AW-5)",
+        "Phase D summary \u2014 NIB2-45 + NIB2-44 both closed"
+      ],
+      "line_range": [
+        264,
+        269
+      ],
+      "snippet": "### Phase D summary \u2014 NIB2-45 + NIB2-44 both closed\n\n- NIB2-45 MindDR Phase 1: feature flag, research-like classifier (pure-python + 7 config exemplars), three agent prompts, standalone pydantic_graph subpackage (Planning \u2192 DeepSearchFanOut",
+      "score": 0.9285,
+      "content_hash": "1284e1debe6763f9"
+    },
+    {
+      "file": "/workspace/handoffs/completed/non-inference-backlog-completed-through-2026-04-12.md",
+      "heading_path": [
+        "Non-Inference Backlog \u2014 Tasks Actionable Without Compute",
+        "Round 2 + supplements \u2014 closed through 2026-09-27",
+        "Round 2 supplement (added 2026-04-22 \u2014 deep-dive integration pass)"
+      ],
+      "line_range": [
+        136,
+        136
+      ],
+      "snippet": "- [x] **NIB2-45**: MindDR Phase 1 `deep_research_mode` scaffold (DD7, intake-438). ~3w code + sentinel suite. Feature flag + classifier extension + 3 agent prompts + pydantic_graph nodes + sentinel suite. \u2192 [`minddr-deep-research-mode.md`](",
+      "score": 0.928,
+      "content_hash": "bb5242dd49ae2aee"
+    }
+  ],
+  "wall_s": 22.82482388499193
+}

@@ -1,0 +1,191 @@
+{
+  "arm": "1100_256_plain",
+  "id": "hotpot_bulk_campaign_master_index",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/bulk-inference-campaign.md",
+    "/workspace/handoffs/active/master-handoff-index.md",
+    "/workspace/handoffs/active/fable5-proposed-master-index-rewrite.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/fable5-proposed-master-index-rewrite.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/bulk-inference-campaign.md",
+    "/workspace/handoffs/active/master-handoff-index.md",
+    "/workspace/handoffs/active/fable5-proposed-master-index-rewrite.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/bulk-inference-campaign.md",
+      "/workspace/handoffs/active/fable5-proposed-master-index-rewrite.md",
+      "/workspace/handoffs/active/master-handoff-index.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/handoffs/active/fable5-window2-findings-03-portfolio-and-master-queue.md",
+      "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "/workspace/handoffs/completed/fable5-findings-04-impl-plan.md",
+      "/workspace/progress/2026-07/2026-07-06.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/progress/2026-06/2026-06-20.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue - J13 BT-hint verdict",
+        "Coordination updates"
+      ],
+      "line_range": [
+        514,
+        522
+      ],
+      "snippet": "### Coordination updates\n\n- `bulk-inference-campaign.md`: Queue 1 no longer lists J13 as open; Package J records the negative/non-certifying result.\n- `master-handoff-index.md` and `fable5-proposed-master-index-rewrite.md`: N7 now lists onl",
+      "score": 0.9238,
+      "content_hash": "89835fa2cacdd92f"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 one-shot architectural review \u2014 EXECUTED (F5)",
+        "Fable 5 review \u2014 portfolio prioritization pass (operator-requested)"
+      ],
+      "line_range": [
+        126,
+        127
+      ],
+      "snippet": "- **Full handoff portfolio reviewed** (96 active + blocked + bulk-campaign deep audit; 5 agents, 108 rows): 7 NOW / 5 ACTIVE-HIGH / 16 MED / 21 LOW / 36 GATED / 3 HW-GATED / 5 MERGE / 15 ARCHIVE. `fable5-proposed-master-index-rewrite.md` re",
+      "score": 0.921,
+      "content_hash": "83c4038fe3fd85ab"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 A5 campaign model-role respecification"
+      ],
+      "line_range": [
+        1167,
+        1181
+      ],
+      "snippet": "## Fable 5 A5 campaign model-role respecification\n\nClosed the remaining doc-only A5 cleanup in `bulk-inference-campaign.md` before the next expensive inference window.\n\nChanges:\n- G9 no longer targets the removed `architect_coding` role or ",
+      "score": 0.9179,
+      "content_hash": "3e485ddbabd6e586"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "bulkCampaign NOTABLE",
+        "1. Staleness audit \u2014 premises invalidated by live state"
+      ],
+      "line_range": [
+        1348,
+        1354
+      ],
+      "snippet": "## 1. Staleness audit \u2014 premises invalidated by live state\n\n**Document-level drift**\n- `bulk-inference-campaign.md:5` says **Updated: 2026-05-27**, but content was appended 2026-05-31 (J17 row line 384, two TRACKING sections lines 492-521; ",
+      "score": 0.9178,
+      "content_hash": "53c0391233f17e96"
+    },
+    {
+      "file": "/workspace/handoffs/active/fable5-window2-findings-03-portfolio-and-master-queue.md",
+      "heading_path": [
+        "Window-2 findings 03 \u2014 Portfolio audit, resurrection sweep, and proposed master-queue rewrite (\u00a73 + \u00a78.4)"
+      ],
+      "line_range": [
+        1,
+        7
+      ],
+      "snippet": "# Window-2 findings 03 \u2014 Portfolio audit, resurrection sweep, and proposed master-queue rewrite (\u00a73 + \u00a78.4)\n\n**Method**: index-driven per the brief \u2014 master index + 6 domain indices + `bulk-inference-campaign.md` read in full by dedicated a",
+      "score": 0.9171,
+      "content_hash": "82e68b3f8d26bc49"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "heading_path": [
+        "PROPOSAL v2 - master-handoff-index.md rewritten (full-portfolio review, 2026-06-12)"
+      ],
+      "line_range": [
+        12,
+        15
+      ],
+      "snippet": "> **v2 supersedes v1** (same day). v1 was seeded from the old queue's live rows; **v2 is grounded in a full review of all 96 active handoffs + blocked/ + a deep audit of bulk-inference-campaign.md** (5 reviewer agents, 108 classified rows; ",
+      "score": 0.9163,
+      "content_hash": "b008c2fcb0bb0291"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-04-impl-plan.md",
+      "heading_path": [
+        "Fable 5 findings 04 \u2014 IMPLEMENTATION PLAN: invariant interfaces, capability registry, index migration",
+        "E. Index migration mechanics (executing the rewrite)"
+      ],
+      "line_range": [
+        54,
+        56
+      ],
+      "snippet": "1. **One-shot migration script** `scripts/maintenance/migrate_master_index.py`: parse the current 66-row queue; rows matching terminal markers (`\u2705|DONE|CLOSED|DEPRECATED|~~`) \u2192 emit a `handoffs/completed/master-index-terminal-ledger-2026-06",
+      "score": 0.9162,
+      "content_hash": "b4d1cf697142d074"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-06.md",
+      "heading_path": [
+        "2026-07-06 Progress",
+        "Quiet-window queue propagation"
+      ],
+      "line_range": [
+        1598,
+        1611
+      ],
+      "snippet": "## Quiet-window queue propagation\n\n- **Problem**: after the master-index cleanup, the same stale DS-E1/E2\n  scheduling language still existed in `bulk-inference-campaign.md` and\n  `routing-and-optimization-index.md`, which could lead a late",
+      "score": 0.9155,
+      "content_hash": "2b89749242005798"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "groupA NOTABLE",
+        "Load-bearing findings"
+      ],
+      "line_range": [
+        1298,
+        1302
+      ],
+      "snippet": "**3. retrain-routing-models is the cheapest production-correctness win.** Live state: routing-classifier flag ON, weights MISSING, fast-path dead since 2026-05-25. The unblock is a single operator command sequence (`repair_episodic_embeddin",
+      "score": 0.9131,
+      "content_hash": "e1b47bc00d324119"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-20.md",
+      "heading_path": [
+        "2026-06-20 Progress",
+        "Full wrap-up pruning and G5 clean-window checkpoint"
+      ],
+      "line_range": [
+        198,
+        211
+      ],
+      "snippet": "- Archived stale transient pickup\n  `handoffs/active/fable5-long-horizon-session-pickup.md` to\n  `handoffs/archived/fable5-long-horizon-session-pickup-history-through-2026-06-20.md`.\n  It still pointed at June 15 PID/trial state (`2730020`,",
+      "score": 0.9122,
+      "content_hash": "bea771d2f29f5138"
+    }
+  ],
+  "wall_s": 25.867781836073846
+}

@@ -1,0 +1,193 @@
+{
+  "arm": "1100_256_punct",
+  "id": "hotpot_summary_token_attention",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/summary-token-attention-readiness.md",
+    "/workspace/handoffs/active/multiscreen-attention-evaluation.md",
+    "/workspace/handoffs/active/context-folding-progressive.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/summary-token-attention-readiness.md",
+    "/workspace/handoffs/active/multiscreen-attention-evaluation.md",
+    "/workspace/handoffs/active/context-folding-progressive.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 2,
+    "found_files": [
+      "/workspace/handoffs/active/multiscreen-attention-evaluation.md",
+      "/workspace/handoffs/active/summary-token-attention-readiness.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/context-folding-progressive.md"
+    ],
+    "first_evidence_rank": 1,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/active/multiscreen-attention-evaluation.md",
+      "/workspace/research/deep-dives/2026-05-19-kv-admission-cluster.md",
+      "/workspace/progress/2026-06/master-index-pre-rewrite-archive-2026-06-12.md",
+      "/workspace/handoffs/active/multiscreen-attention-evaluation.md",
+      "/workspace/wiki/context-management.md",
+      "/workspace/handoffs/active/multiscreen-attention-evaluation.md",
+      "/workspace/handoffs/active/summary-token-attention-readiness.md",
+      "/workspace/handoffs/active/streaming-llm-baseline.md",
+      "/workspace/handoffs/completed/kv-cache-quantization.md",
+      "/workspace/wiki/ssm-hybrid.md"
+    ],
+    "recall@3": 0.3333333333333333,
+    "perfect@3": false,
+    "recall@5": 0.3333333333333333,
+    "perfect@5": false,
+    "recall@10": 0.6666666666666666,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/active/multiscreen-attention-evaluation.md",
+      "heading_path": [
+        "Multiscreen Attention \u2014 Evaluation for EPYC Inference",
+        "Research Intake Update \u2014 2026-04-29",
+        "New Related Research"
+      ],
+      "line_range": [
+        246,
+        247
+      ],
+      "snippet": "- **[intake-502] \"Kwai Summary Attention Technical Report\"** (arxiv:2604.24432, Kuaishou OneRec team, submitted 2026-04-27 \u2014 full extraction via local LightOnOCR pipeline 2026-04-29) \u2192 **READINESS TRACKER**: [`summary-token-attention-readin",
+      "score": 0.9425,
+      "content_hash": "1181a8baf0c9df77"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-05-19-kv-admission-cluster.md",
+      "heading_path": [
+        "KV Cache Admission / Eviction Cluster \u2014 2026-05-19",
+        "Cross-Cutting Concerns vs Active Handoffs"
+      ],
+      "line_range": [
+        298,
+        301
+      ],
+      "snippet": "- `attention-matching-kv-compaction.md` \u2014 already updated per intake-538 notes. AttentionMatching is a **complementary** approach: it does post-prefill compaction (closed-form, frozen-weights) of an already-selected KV subset. **AttentionMa",
+      "score": 0.9387,
+      "content_hash": "db9f0ed1b816c1fd"
+    },
+    {
+      "file": "/workspace/progress/2026-06/master-index-pre-rewrite-archive-2026-06-12.md",
+      "heading_path": [
+        "EPYC Handoff \u2014 Master Index",
+        "Priority Queue"
+      ],
+      "line_range": [
+        87,
+        87
+      ],
+      "snippet": "| 31 | REFRESHED 2026-05-28 \u2014 monitoring-only readiness | **Summary-token cluster (KSA + GSA)** (intake-502 + intake-507). Requires checkpoint/upstream-support/GPU-CPT gate before any implementation. Fill the activation evidence template in",
+      "score": 0.9387,
+      "content_hash": "81b5afaa2edba6ba"
+    },
+    {
+      "file": "/workspace/handoffs/active/multiscreen-attention-evaluation.md",
+      "heading_path": [
+        "Multiscreen Attention \u2014 Evaluation for EPYC Inference",
+        "Research Intake Update \u2014 2026-04-29",
+        "Late-day expansion (2026-04-29 PM) \u2014 Gist Sparse Attention (closest KSA sibling)"
+      ],
+      "line_range": [
+        300,
+        302
+      ],
+      "snippet": "- **[intake-507] \"Forget, Then Recall: Learnable Compression and Selective Unfolding via Gist Sparse Attention\"** (arxiv:2604.20920, Mao / Li / Fox \u2014 Stanford, April 2026) \u2192 **READINESS TRACKER**: [`summary-token-attention-readiness.md`](su",
+      "score": 0.9375,
+      "content_hash": "9658d303e72e6015"
+    },
+    {
+      "file": "/workspace/wiki/context-management.md",
+      "heading_path": [
+        "Context Management",
+        "Key Findings",
+        "New Finding (2026-06-21)"
+      ],
+      "line_range": [
+        50,
+        52
+      ],
+      "snippet": "- **Amortized KV-cache compaction enables iterative compaction over a long-horizon trajectory \u2014 the streaming-context residency angle.** Still (intake-708, arXiv:2606.07878) trains a small per-layer Perceiver once against a frozen base mode",
+      "score": 0.9364,
+      "content_hash": "26ce96daf14d2217"
+    },
+    {
+      "file": "/workspace/handoffs/active/multiscreen-attention-evaluation.md",
+      "heading_path": [
+        "Multiscreen Attention \u2014 Evaluation for EPYC Inference"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# Multiscreen Attention \u2014 Evaluation for EPYC Inference\n\n**Status**: ACTIVE \u2014 G1 CLOSED 2026-10-24 (no long-context recall drop to 128K on the frontdoor; ceiling result, see G1 RESULT); remaining rows open\n**Created**: 2026-04-04 (via resea",
+      "score": 0.9362,
+      "content_hash": "a9402d070dfd98a5"
+    },
+    {
+      "file": "/workspace/handoffs/active/summary-token-attention-readiness.md",
+      "heading_path": [
+        "Summary-Token Attention Readiness Tracker \u2014 KSA + GSA Cluster"
+      ],
+      "line_range": [
+        3,
+        13
+      ],
+      "snippet": "**Status**: REFRESHED 2026-05-28 \u2014 monitoring-only readiness tracker; no implementation until a gate fires\n**Created**: 2026-04-29 (via research-intake of intake-502 KSA + intake-507 GSA)\n**Updated**: 2026-07-26 (activation gates reviewed; ",
+      "score": 0.935,
+      "content_hash": "9abcf479e023718b"
+    },
+    {
+      "file": "/workspace/handoffs/active/streaming-llm-baseline.md",
+      "heading_path": [
+        "StreamingLLM Baseline for KV Reduction Cluster",
+        "References"
+      ],
+      "line_range": [
+        113,
+        120
+      ],
+      "snippet": "## References\n\n- Deep-dive: `/workspace/research/deep-dives/2026-05-19-kv-admission-cluster.md`\n- StreamingLLM paper: `https://arxiv.org/abs/2309.17453` (Xiao et al., ICLR 2024)\n- StreamingLLM reference impl: `https://github.com/mit-han-lab",
+      "score": 0.935,
+      "content_hash": "17cbb1b269110b2a"
+    },
+    {
+      "file": "/workspace/handoffs/completed/kv-cache-quantization.md",
+      "heading_path": [
+        "KV Cache Quantization (TurboQuant / PolarQuant / QJL)",
+        "Research Intake Update \u2014 2026-04-04",
+        "New Related Research"
+      ],
+      "line_range": [
+        1496,
+        1503
+      ],
+      "snippet": "### New Related Research\n- **[intake-256] \"Screening Is Enough \u2014 Multiscreen Architecture\"** (arxiv:2604.01178)\n  - Relevance: Alternative attention mechanism that replaces softmax with absolute key screening\n  - Key technique: Screening ev",
+      "score": 0.9339,
+      "content_hash": "f7904106e0a0a486"
+    },
+    {
+      "file": "/workspace/wiki/ssm-hybrid.md",
+      "heading_path": [
+        "SSM Hybrid Architectures",
+        "Updates \u2014 2026-04-28",
+        "Multiscreen attention survey (cluster expansion)"
+      ],
+      "line_range": [
+        165,
+        172
+      ],
+      "snippet": "### Multiscreen attention survey (cluster expansion)\n\nPer [`multiscreen-attention-evaluation.md`](../handoffs/active/multiscreen-attention-evaluation.md). The sub-quadratic attention cluster has expanded beyond the original Multiscreen mech",
+      "score": 0.9338,
+      "content_hash": "25f698415b4a7f89"
+    }
+  ],
+  "wall_s": 22.386869759997353
+}

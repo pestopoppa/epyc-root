@@ -1,0 +1,194 @@
+{
+  "arm": "canonical_stored",
+  "id": "hotpot_large_moe_parallelism",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/large-moe-expert-parallelism.md",
+    "/workspace/handoffs/active/intra-process-tensor-parallel-decode.md",
+    "/workspace/handoffs/active/numa-prefill-decode-disaggregation.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/intra-process-tensor-parallel-decode.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/large-moe-expert-parallelism.md",
+    "/workspace/handoffs/active/intra-process-tensor-parallel-decode.md",
+    "/workspace/handoffs/active/numa-prefill-decode-disaggregation.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/large-moe-expert-parallelism.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/intra-process-tensor-parallel-decode.md",
+      "/workspace/handoffs/active/numa-prefill-decode-disaggregation.md"
+    ],
+    "first_evidence_rank": 2,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/wiki/knowledge-management.md",
+      "/workspace/handoffs/active/large-moe-expert-parallelism.md",
+      "/workspace/wiki/moe-optimization.md",
+      "/workspace/handoffs/completed/large-moe-expert-parallelism-completed-through-2026-05-28.md",
+      "/workspace/progress/2026-04/2026-04-25.md",
+      "/workspace/progress/2026-05/2026-05-28.md",
+      "/workspace/handoffs/active/large-moe-expert-parallelism.md",
+      "/workspace/handoffs/completed/intra-process-tensor-parallel-decode-completed-through-2026-05-28.md",
+      "/workspace/wiki/moe-optimization.md",
+      "/workspace/wiki/moe-optimization.md"
+    ],
+    "recall@3": 0.3333333333333333,
+    "perfect@3": false,
+    "recall@5": 0.3333333333333333,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/wiki/knowledge-management.md",
+      "heading_path": [
+        "Knowledge Management",
+        "Active/completed twin compaction (2026-05-28)"
+      ],
+      "line_range": [
+        235,
+        247
+      ],
+      "snippet": "## Active/completed twin compaction (2026-05-28)\n\nThe next governance refinement is for partially complete handoffs whose live task is buried under validated history. The wrap-up routine now uses active/completed twins instead of all-or-not",
+      "score": 0.9283,
+      "content_hash": "e051c96bc326235d"
+    },
+    {
+      "file": "/workspace/handoffs/active/large-moe-expert-parallelism.md",
+      "heading_path": [
+        "CPU15 \u2014 Large-MoE Expert Parallelism Disposition",
+        "Completed Scope"
+      ],
+      "line_range": [
+        94,
+        103
+      ],
+      "snippet": "## Completed Scope\n\n| Scope | Outcome | Evidence |\n|-------|---------|----------|\n| Phase 0 large-MoE baseline | REAP-246B and MiniMax measured; D1 failed the \"large MoE alone solves it\" threshold. | [completed ledger](../completed/large-mo",
+      "score": 0.9274,
+      "content_hash": "6169fc8724756860"
+    },
+    {
+      "file": "/workspace/wiki/moe-optimization.md",
+      "heading_path": [
+        "MoE Optimization",
+        "Updates \u2014 2026-04-28",
+        "Per-CCD / per-process expert sharding variants (Phase 1+)"
+      ],
+      "line_range": [
+        282,
+        291
+      ],
+      "snippet": "### Per-CCD / per-process expert sharding variants (Phase 1+)\n\nPer [`large-moe-expert-parallelism.md`](../handoffs/active/large-moe-expert-parallelism.md). Two variants tracked under the EP umbrella:\n\n- **Variant 1 \u2014 intra-process per-CCD**",
+      "score": 0.9271,
+      "content_hash": "9adfa52664c3c5a0"
+    },
+    {
+      "file": "/workspace/handoffs/completed/large-moe-expert-parallelism-completed-through-2026-05-28.md",
+      "heading_path": [
+        "CPU15 \u2014 Large-MoE as Primary Target + Expert Parallelism",
+        "Objective"
+      ],
+      "line_range": [
+        87,
+        100
+      ],
+      "snippet": "## Objective\n\nTwo linked tracks:\n\n**Track A (strategic).** Reframe the primary single-stream CPU inference target from small dense / small hybrid MoE (30B-A3B class) to **large sparse MoE** (\u2265100B total, \u226510B activated, \u226564 experts). The hy",
+      "score": 0.9262,
+      "content_hash": "1eba3421b3da27db"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-25.md",
+      "heading_path": [
+        "2026-04-25",
+        "CPU15 Phase 1 + Phase 2 + Phase 3.0 \u2014 intra-process EP exhausted; inter-process IPC validated"
+      ],
+      "line_range": [
+        3,
+        6
+      ],
+      "snippet": "## CPU15 Phase 1 + Phase 2 + Phase 3.0 \u2014 intra-process EP exhausted; inter-process IPC validated\n\nContinuation of 2026-04-24's Session 15 + 16 on the `cpu-optimization/q8-8x8-avx512bw` branch and CPU15 (large-MoE expert parallelism) work. T",
+      "score": 0.9256,
+      "content_hash": "b9d85eb0711d7ed8"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-28.md",
+      "heading_path": [
+        "2026-05-28 \u2014 manual session log",
+        "Handoff compaction split pilot \u2014 active/completed twins",
+        "Work completed"
+      ],
+      "line_range": [
+        521,
+        538
+      ],
+      "snippet": "### Work completed\n\nCreated completed ledgers plus lean active twins for 11 oversized or ambiguity-prone handoffs:\n\n- `lightning-attention-port.md`\n- `integration-test-coverage.md`\n- `repl-turn-efficiency.md`\n- `triattention-kv-selection.md",
+      "score": 0.9254,
+      "content_hash": "c7e03d7624902fb5"
+    },
+    {
+      "file": "/workspace/handoffs/active/large-moe-expert-parallelism.md",
+      "heading_path": [
+        "CPU15 \u2014 Large-MoE Expert Parallelism Disposition"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# CPU15 \u2014 Large-MoE Expert Parallelism Disposition\n\n**Status**: COMPACTED 2026-05-28. Phase 0-3 implementation/evidence history moved to the completed ledger. Current state: EP machinery is bit-correct and useful as default-off experimental",
+      "score": 0.9242,
+      "content_hash": "d92801282408c078"
+    },
+    {
+      "file": "/workspace/handoffs/completed/intra-process-tensor-parallel-decode-completed-through-2026-05-28.md",
+      "heading_path": [
+        "Intra-Process Tensor-Parallel Decode - Completion Ledger"
+      ],
+      "line_range": [
+        1,
+        40
+      ],
+      "snippet": "# Intra-Process Tensor-Parallel Decode - Completion Ledger\n\n> Historical completion ledger only. **There is no longer an active handoff** \u2014 the reopen gate that\n> used to live at `handoffs/active/intra-process-tensor-parallel-decode.md` was",
+      "score": 0.9241,
+      "content_hash": "a665f26a688209c9"
+    },
+    {
+      "file": "/workspace/wiki/moe-optimization.md",
+      "heading_path": [
+        "MoE Optimization",
+        "Key Findings",
+        "Inter-process Expert Parallelism (CPU15 Phase 3, 2026-04-25)"
+      ],
+      "line_range": [
+        176,
+        203
+      ],
+      "snippet": "### Inter-process Expert Parallelism (CPU15 Phase 3, 2026-04-25)\n\nAfter REAP made REAP-246B production-viable in absolute terms, the open question shifted to whether *single-stream* throughput on large MoE could exceed the 6.16 t/s Phase 0 ",
+      "score": 0.9237,
+      "content_hash": "1c3dd69d8a7fde2b"
+    },
+    {
+      "file": "/workspace/wiki/moe-optimization.md",
+      "heading_path": [
+        "MoE Optimization",
+        "Updates \u2014 2026-04-28",
+        "Large-MoE as primary CPU target (2026-04-26 reframe)"
+      ],
+      "line_range": [
+        231,
+        236
+      ],
+      "snippet": "### Large-MoE as primary CPU target (2026-04-26 reframe)\n\nPer [`large-moe-expert-parallelism.md`](../handoffs/active/large-moe-expert-parallelism.md). The single-instance vs concurrent gap on Coder-30B-A3B Q4_K_M is 2.13\u00d7: single-instance N",
+      "score": 0.9235,
+      "content_hash": "0ab9121de632f8b0"
+    }
+  ],
+  "wall_s": 14.911687911953777
+}

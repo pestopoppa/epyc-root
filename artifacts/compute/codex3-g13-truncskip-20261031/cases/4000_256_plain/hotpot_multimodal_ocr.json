@@ -1,0 +1,194 @@
+{
+  "arm": "4000_256_plain",
+  "id": "hotpot_multimodal_ocr",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/multimodal-pipeline.md",
+    "/workspace/handoffs/active/opendataloader-pipeline-integration.md",
+    "/workspace/handoffs/active/ernie-image-turbo-evaluation.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/multimodal-pipeline.md",
+    "/workspace/handoffs/active/opendataloader-pipeline-integration.md",
+    "/workspace/handoffs/active/ernie-image-turbo-evaluation.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/opendataloader-pipeline-integration.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/ernie-image-turbo-evaluation.md",
+      "/workspace/handoffs/active/multimodal-pipeline.md"
+    ],
+    "first_evidence_rank": 2,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/wiki/multimodal.md",
+      "/workspace/handoffs/active/opendataloader-pipeline-integration.md",
+      "/workspace/research/deep-dives/ernie-image-turbo-dit-text-to-image.md",
+      "/workspace/handoffs/active/reboot-gated-inventory-and-staging.md",
+      "/workspace/handoffs/completed/docs-chapters-audit/cluster-D-edits.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/progress/2026-03/2026-03-18.md",
+      "/workspace/progress/2026-04/2026-04-04.md",
+      "/workspace/handoffs/completed/docs-chapters-audit/cluster-D.md",
+      "/workspace/progress/2026-07/2026-07-29.md"
+    ],
+    "recall@3": 0.3333333333333333,
+    "perfect@3": false,
+    "recall@5": 0.3333333333333333,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/wiki/multimodal.md",
+      "heading_path": [
+        "Multimodal",
+        "ERNIE-Image-Turbo (Baidu, 2026-05-06)"
+      ],
+      "line_range": [
+        217,
+        224
+      ],
+      "snippet": "## ERNIE-Image-Turbo (Baidu, 2026-05-06)\n\n8B distilled DiT (Diffusion Transformer) text-to-image model evaluated for the multimodal pipeline. Apache-2.0. Distilled from a larger ERNIE-Image base via consistency distillation; targets fast in",
+      "score": 0.9333,
+      "content_hash": "d0a453308ed16fc0"
+    },
+    {
+      "file": "/workspace/handoffs/active/opendataloader-pipeline-integration.md",
+      "heading_path": [
+        "OpenDataLoader PDF \u2014 Pipeline Integration"
+      ],
+      "line_range": [
+        1,
+        7
+      ],
+      "snippet": "# OpenDataLoader PDF \u2014 Pipeline Integration\n\n**Status**: Active. The default ODL extractor and structured-context substrate are landed; parser-quality, routing, intrinsic-metric, LiteParse, and model-backed comparison gates remain open.\n**C",
+      "score": 0.9329,
+      "content_hash": "e1d81b584f9ab6a3"
+    },
+    {
+      "file": "/workspace/research/deep-dives/ernie-image-turbo-dit-text-to-image.md",
+      "heading_path": [
+        "Deep Dive: ERNIE-Image-Turbo (Baidu, 8B distilled DiT text-to-image)",
+        "Cross-references"
+      ],
+      "line_range": [
+        284,
+        290
+      ],
+      "snippet": "## Cross-references\n\n- [`research/intake_index.yaml`](../intake_index.yaml) \u2014 intake-937 (created 2026-07-29; supersedes the mis-cited `intake-528` \u2014 see the header note)\n- [`handoffs/active/ernie-image-turbo-evaluation.md`](../../handoffs/",
+      "score": 0.9325,
+      "content_hash": "91b64c6bbd2709e3"
+    },
+    {
+      "file": "/workspace/handoffs/active/reboot-gated-inventory-and-staging.md",
+      "heading_path": [
+        "Reboot-Gated Inventory & Pre-Reboot Staging",
+        "5. Inventory",
+        "5.1 Category A \u2014 genuinely reboot-gated"
+      ],
+      "line_range": [
+        141,
+        146
+      ],
+      "snippet": "| A16 | **Parser bake-offs with a speed axis:** ODL 200-PDF five-way \u00b7 LiteParse-vs-ODL-vs-pdftotext \u00b7 LightOnOCR latency \u00b7 ERNIE MI210 rebench | `opendataloader-pipeline-integration.md`, `ernie-image-turbo-evaluation.md` | Speed is a score",
+      "score": 0.9297,
+      "content_hash": "3c42ec85a050560c"
+    },
+    {
+      "file": "/workspace/handoffs/completed/docs-chapters-audit/cluster-D-edits.md",
+      "heading_path": [
+        "Cluster D \u2014 Edit Pass Report",
+        "Files modified"
+      ],
+      "line_range": [
+        3,
+        20
+      ],
+      "snippet": "## Files modified\n\n1. `/workspace/repos/epyc-orchestrator/docs/chapters/05-data-processing-pipelines.md`\n   - Added a new top-level **Recent Additions (2026-04 / 2026-05)** section documenting:\n     - ODL Phase 2 structured output (commit `",
+      "score": 0.9286,
+      "content_hash": "0f9df3ca55b82a73"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Research Intake \u2014 deep-dive round on the 9-entry batch (intake-686 \u2192 694)",
+        "Artifacts"
+      ],
+      "line_range": [
+        21,
+        25
+      ],
+      "snippet": "### Artifacts\n- 9 deep-dive docs: `research/deep-dives/2026-06-12-{turbovec-vector-index, lollms-smart-router-dataset, pibot-agent-harness, obliq-bench-retrieval-eval, agents-last-exam, holo-3.1-4b-gui-vlm, economy-of-minds, rlm-structured-",
+      "score": 0.9269,
+      "content_hash": "bb26d41da4846e5d"
+    },
+    {
+      "file": "/workspace/progress/2026-03/2026-03-18.md",
+      "heading_path": [
+        "2026-03-18 Progress",
+        "Research Intake: OpenDataLoader PDF (intake-161)",
+        "Artifacts Created"
+      ],
+      "line_range": [
+        108,
+        114
+      ],
+      "snippet": "### Artifacts Created\n- Deep dive: `research/deep-dives/opendataloader-pdf-pipeline-integration.md`\n- Handoff: `handoffs/active/opendataloader-pipeline-integration.md`\n- Taxonomy: Added `document_processing` category\n- Updated: `handoffs/ac",
+      "score": 0.9269,
+      "content_hash": "09ac09910b3c8496"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-04.md",
+      "heading_path": [
+        "Research Deep Dive: Goose + Clido Architecture Analysis",
+        "Handoff Index Audit & Master Index (Session 4)",
+        "Actions Taken"
+      ],
+      "line_range": [
+        554,
+        590
+      ],
+      "snippet": "### Actions Taken\n\n**Step 0 \u2014 Archive stale artifacts**:\n- Moved `continuation-prompt-2026-03-18c.md` and `continuation-prompt-2026-03-29b.md` to `handoffs/archived/`\n\n**Step 1 \u2014 Created `research-evaluation-index.md`** (new):\n- Covers 7 ha",
+      "score": 0.9265,
+      "content_hash": "1ee35b1556c8d970"
+    },
+    {
+      "file": "/workspace/handoffs/completed/docs-chapters-audit/cluster-D.md",
+      "heading_path": [
+        "Cluster D Audit: Tools & Pipelines Documentation Chapters",
+        "Chapter 05: Data Processing Pipelines",
+        "Proposed edits"
+      ],
+      "line_range": [
+        44,
+        55
+      ],
+      "snippet": "### Proposed edits\n\n1. **Line 41 & 126**: Replace `src/services/` paths with `src/` (flat structure):\n   - `src/services/pdf_router.py` \u2192 `src/pdf_router.py`\n   - `src/services/document_chunker.py` \u2192 `src/document_chunker.py`\n\n2. **Line 170",
+      "score": 0.9258,
+      "content_hash": "837f6b4079df72ad"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-29.md",
+      "heading_path": [
+        "Progress \u2014 2026-07-29",
+        "OpenDataLoader none-lane churn"
+      ],
+      "line_range": [
+        1026,
+        1041
+      ],
+      "snippet": "## OpenDataLoader none-lane churn\n\nCompleted the five assigned design/evidence-accounting actions in\n`handoffs/active/opendataloader-pipeline-integration.md`: W-RAC's constrained\nID-addressable evaluation shape, a Phase-2 chunker evaluation",
+      "score": 0.9258,
+      "content_hash": "212c6db7c7bd1606"
+    }
+  ],
+  "wall_s": 15.013676302041858
+}

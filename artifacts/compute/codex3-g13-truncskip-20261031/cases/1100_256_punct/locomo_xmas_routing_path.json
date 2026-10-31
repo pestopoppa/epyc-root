@@ -1,0 +1,191 @@
+{
+  "arm": "1100_256_punct",
+  "id": "locomo_xmas_routing_path",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/x-mas-text-routing.md",
+    "/workspace/handoffs/active/routing-and-optimization-index.md",
+    "/workspace/progress/2026-06/2026-06-13.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/x-mas-text-routing.md",
+    "/workspace/handoffs/active/routing-and-optimization-index.md",
+    "/workspace/progress/2026-06/2026-06-13.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/x-mas-text-routing.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/routing-and-optimization-index.md",
+      "/workspace/progress/2026-06/2026-06-13.md"
+    ],
+    "first_evidence_rank": 10,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/progress/2026-06/2026-06-19.md",
+      "/workspace/progress/2026-07/2026-07-05.md",
+      "/workspace/progress/2026-06/2026-06-19.md",
+      "/workspace/progress/2026-06/2026-06-19.md",
+      "/workspace/wiki/routing-intelligence.md",
+      "/workspace/wiki/routing-intelligence.md",
+      "/workspace/progress/2026-06/2026-06-19.md",
+      "/workspace/progress/2026-06/2026-06-19.md",
+      "/workspace/handoffs/active/x-mas-text-routing.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "X-MAS default-off telemetry documented",
+        "Root docs updated"
+      ],
+      "line_range": [
+        742,
+        753
+      ],
+      "snippet": "### Root docs updated\n\n- `handoffs/active/x-mas-text-routing.md`: status, spike-plan progress, and\n  remaining gates now distinguish default-off shadow telemetry from future\n  enforcing override.\n- `handoffs/active/non-inference-backlog.md`",
+      "score": 0.9296,
+      "content_hash": "29c0d267e1755aa2"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-19.md",
+      "heading_path": [
+        "2026-06-19 Progress",
+        "Full wrap-up checkpoint"
+      ],
+      "line_range": [
+        1478,
+        1493
+      ],
+      "snippet": "- Refreshed the routing index N11a row so it names GraphRouter training\n  fallback as a completed consumer slice and keeps only open dispatch work:\n  X-MAS regression diagnosis, remaining high-risk P2 consumer migrations,\n  waiver hygiene, ",
+      "score": 0.9292,
+      "content_hash": "56d0a0cbf0c1987a"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-05.md",
+      "heading_path": [
+        "Progress - 2026-07-05",
+        "Wiki full-backlog compile (2026-07-05, project-wiki skill)"
+      ],
+      "line_range": [
+        1262,
+        1275
+      ],
+      "snippet": "Executed the deferred \"47-source cross-session backlog\" compile flagged in the\nhardware-optimization.md header: 49 changed sources since the 2026-07-04\ncompile (35 active handoffs, 13 progress logs, 1 completed handoff) merged into\n10 artic",
+      "score": 0.9267,
+      "content_hash": "39e4e883461bf657"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-19.md",
+      "heading_path": [
+        "2026-06-19 Progress",
+        "Final wrap-up closeout"
+      ],
+      "line_range": [
+        1659,
+        1674
+      ],
+      "snippet": "- Updated N11a handoff and routing/master indices so the latest OpenAI\n  `/v1/models` shared-helper migration is durable alongside the already\n  recorded X-MAS constrained policy.\n- Extended the compacted N11a history ledger so OpenAI model",
+      "score": 0.9263,
+      "content_hash": "ea92744feb5a037e"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-19.md",
+      "heading_path": [
+        "2026-06-19 Progress",
+        "Full wrap-up handoff/wiki compaction"
+      ],
+      "line_range": [
+        1305,
+        1324
+      ],
+      "snippet": "## Full wrap-up handoff/wiki compaction\n\nRan the operator-requested full wrap-up routine focused on pruning active\nhandoffs and indices after the long 2026-06-19 push. No application code was\nchanged. The large completed-work narration in a",
+      "score": 0.9245,
+      "content_hash": "26ce9a4a44febaa1"
+    },
+    {
+      "file": "/workspace/wiki/routing-intelligence.md",
+      "heading_path": [
+        "Routing Intelligence",
+        "Remaining parked consumer candidates (2026-06-15)"
+      ],
+      "line_range": [
+        626,
+        639
+      ],
+      "snippet": "  [X-MAS Heterogeneous Text-MAS Routing Spike](../handoffs/active/x-mas-text-routing.md),\n  `src/classifiers/xmas_routing.py`, `src/api/routes/chat_pipeline/routing.py`.\n\n- **X-MAS winner-table production path now has true function-axis evi",
+      "score": 0.9244,
+      "content_hash": "5d2bb421b00a6a30"
+    },
+    {
+      "file": "/workspace/wiki/routing-intelligence.md",
+      "heading_path": [
+        "Routing Intelligence",
+        "Updates \u2014 2026-04-28",
+        "New Findings (2026-06-13 \u2014 Routing Truth, Descriptors, And X-MAS)"
+      ],
+      "line_range": [
+        385,
+        385
+      ],
+      "snippet": "- **X-MAS has moved from scaffold to measured default-off decision table, with a diagnosed held-out failure mode.** The deterministic 5-domain x 5-function classifier, guarded production hook, validator, true function-axis sweep, and compil",
+      "score": 0.9242,
+      "content_hash": "2c0a2c3d08e3bb20"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-19.md",
+      "heading_path": [
+        "2026-06-19 Progress",
+        "Final operator wrap-up audit"
+      ],
+      "line_range": [
+        1799,
+        1813
+      ],
+      "snippet": "- Active N11/N11a handoffs and the master/routing/research indices already\n  name the current pickup state: seeding descriptor fallback and its swap-CI\n  witness are complete; `health_preflight_probes` is not a remaining migration\n  tail; X",
+      "score": 0.9231,
+      "content_hash": "b6b074482048348e"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-19.md",
+      "heading_path": [
+        "2026-06-19 Progress",
+        "N11a admission degraded fallback manifest migration"
+      ],
+      "line_range": [
+        2102,
+        2111
+      ],
+      "snippet": "Root wrap-up updates recorded this slice in the active N11/N11a handoffs,\nmaster and routing indices, `wiki/inference-serving.md`, and this progress\nfile. GitNexus impact before root documentation edits remained high for the\ncoordination hu",
+      "score": 0.9231,
+      "content_hash": "4864b76a71203e98"
+    },
+    {
+      "file": "/workspace/handoffs/active/x-mas-text-routing.md",
+      "heading_path": [
+        "X-MAS Heterogeneous Text-MAS Routing Spike"
+      ],
+      "line_range": [
+        7,
+        11
+      ],
+      "snippet": "**Depends on**: `routing-intelligence.md`, `routing-and-optimization-index.md`, `../completed/meta-harness-optimization.md`, `hermes-outer-shell.md`\n**History**: [x-mas-text-routing-history-through-2026-06-19.md](../archived/x-mas-text-rout",
+      "score": 0.923,
+      "content_hash": "d9e0fed31be27550"
+    }
+  ],
+  "wall_s": 22.15877676778473
+}

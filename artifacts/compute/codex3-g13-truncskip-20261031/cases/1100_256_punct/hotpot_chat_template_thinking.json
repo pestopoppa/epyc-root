@@ -1,0 +1,189 @@
+{
+  "arm": "1100_256_punct",
+  "id": "hotpot_chat_template_thinking",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/bulk-inference-campaign.md",
+    "/workspace/handoffs/active/reasoning-compression.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/bulk-inference-campaign.md",
+    "/workspace/handoffs/active/reasoning-compression.md"
+  ],
+  "metrics": {
+    "evidence_count": 2,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/bulk-inference-campaign.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/reasoning-compression.md"
+    ],
+    "first_evidence_rank": 7,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/active/architect-model-selection-bench.md",
+      "/workspace/handoffs/active/qwen-chat-template-evaluation.md",
+      "/workspace/progress/2026-10/2026-10-22-qwen-thinking-source-fix.md",
+      "/workspace/handoffs/active/bulk-inference-campaign.md",
+      "/workspace/handoffs/active/per-request-reasoning-budget.md",
+      "/workspace/handoffs/active/qwen-chat-template-evaluation.md",
+      "/workspace/progress/2026-10/2026-10-22-cme7-fix.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.5,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "bulkCampaign NOTABLE",
+        "1. Staleness audit \u2014 premises invalidated by live state"
+      ],
+      "line_range": [
+        1358,
+        1359
+      ],
+      "snippet": "- **J12 (line 379)**: anchors the shipped data plane at `src/backends/openai.py` \u2014 but production uses **LlamaServerBackend**, and `enable_thinking` only applies on the /v1/chat/completions path (memory: `feedback_enable_thinking_requires_c",
+      "score": 0.9338,
+      "content_hash": "ef0755b23b641adc"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "PORTFOLIO REVIEW (2026-06-12, 5 agents, 108 rows): classified verdicts",
+        "NOW"
+      ],
+      "line_range": [
+        1170,
+        1171
+      ],
+      "snippet": "- **bulk-inference-campaign:J12 chat_template_kwargs wiring + THINK-ABL-1** [live-active] out: ~1h registry-driven auto-population wiring (non-inference) + ~2h 15-task probe + ingest thinking ablation at fixed non-truncating max_tokens | ga",
+      "score": 0.9329,
+      "content_hash": "6345608e4239cd4f"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue \u2014 stack reload hygiene, AutoPilot restart, J12 closure",
+        "Queue-1 closure"
+      ],
+      "line_range": [
+        230,
+        234
+      ],
+      "snippet": "### Queue-1 closure\n\n- **J12 wiring half is closed**: registry-driven `chat_template_kwargs` is present, production `LlamaServerBackend` forwards it on `/v1/chat/completions`, and chat-completions role selection uses one shared source of tr",
+      "score": 0.9326,
+      "content_hash": "8835a334cebf4964"
+    },
+    {
+      "file": "/workspace/handoffs/active/architect-model-selection-bench.md",
+      "heading_path": [
+        "Architect Model Comparison Benchmark",
+        "Prioritized task list",
+        "R2 (in flight) \u2014 reasoning budget dominates, and the stack-wide `enable_thinking=false` default is now in question"
+      ],
+      "line_range": [
+        240,
+        242
+      ],
+      "snippet": "**The deeper problem.** The stack-wide default (`chat_template_kwargs.enable_thinking: false` on `architect_general`, `frontdoor`, `coder_escalation`, \u2026) traces to the 2026-05-20 probe recorded in `feedback_qwen3x_enable_thinking_false` (+3",
+      "score": 0.9324,
+      "content_hash": "abdd72ab53397840"
+    },
+    {
+      "file": "/workspace/handoffs/active/qwen-chat-template-evaluation.md",
+      "heading_path": [
+        "Qwen Chat-Template Evaluation",
+        "Fleet sweep \u2014 the embedded template of every production model (2026-08-21)"
+      ],
+      "line_range": [
+        60,
+        72
+      ],
+      "snippet": "- **Every defect is Qwen3.8-only.** The `xhigh` default, the `reasoning_effort` raise/coercion and\n  the empty-`<think>` duplication do not exist on the three incumbent templates. Those are scoped to\n  the model swapped in 2026-08-20 and ar",
+      "score": 0.932,
+      "content_hash": "3257f564cc6e0f1b"
+    },
+    {
+      "file": "/workspace/progress/2026-10/2026-10-22-qwen-thinking-source-fix.md",
+      "heading_path": [
+        "2026-10-22 Qwen3.x thinking-off at the source (coordinator 3c4ca599)"
+      ],
+      "line_range": [
+        1,
+        10
+      ],
+      "snippet": "# 2026-10-22 Qwen3.x thinking-off at the source (coordinator 3c4ca599)\n\nCause: Qwen3.6 defaults to thinking-ON; under a token cap reasoning consumed the budget and content was empty (cme7, hsprof1, kpf64 voided).\n\nFrozen v10 source semantic",
+      "score": 0.932,
+      "content_hash": "023a665d031a04d2"
+    },
+    {
+      "file": "/workspace/handoffs/active/bulk-inference-campaign.md",
+      "heading_path": [
+        "Bulk Inference Campaign \u2014 active backlog (Packages G\u2013K)",
+        "Package J: Within-Role Placement + Audit-Batch Inference Gates (2026-05-26)",
+        "Other agents' inference-gated work \u2014 add here"
+      ],
+      "line_range": [
+        495,
+        495
+      ],
+      "snippet": "| J12 | chat_template_kwargs empirical probe + THINK-ABL-1 | epyc-orchestrator `cac4148` (chat_template_kwargs passthrough merge), later registry/production-backend wiring tests, and [x-mas-text-routing.md](x-mas-text-routing.md) | **Non-in",
+      "score": 0.931,
+      "content_hash": "b485d5544b344da3"
+    },
+    {
+      "file": "/workspace/handoffs/active/per-request-reasoning-budget.md",
+      "heading_path": [
+        "Test 3: No regression on pure MoE (port 8082)",
+        "Research Intake Update \u2014 2026-08-21 (chat-template dive, intake-1212\u20261217)"
+      ],
+      "line_range": [
+        260,
+        269
+      ],
+      "snippet": "      estimator call, and neither intake-1215 anchor suite (GSM8K, MathBench) is in our question pool.\n- [x] **PRB-T3** \u2014 Confirm whether a top-level `reasoning_effort` field survives to the template on\n      our llama-server path or is con",
+      "score": 0.9308,
+      "content_hash": "6a535c28addce00b"
+    },
+    {
+      "file": "/workspace/handoffs/active/qwen-chat-template-evaluation.md",
+      "heading_path": [
+        "Qwen Chat-Template Evaluation",
+        "Fleet sweep \u2014 the embedded template of every production model (2026-08-21)",
+        "CT-3 \u2014 input-marking analysis of the community templates (2026-08-21)"
+      ],
+      "line_range": [
+        207,
+        215
+      ],
+      "snippet": "**Impact on our posture.** The stack sets `chat_template_kwargs.enable_thinking: false` role-keyed on\n`architect_general`, `coder_escalation`, `frontdoor` and `architect_critic`. Under frog or sharp, **any\nclient able to place fourteen lite",
+      "score": 0.9307,
+      "content_hash": "25d2804d712f0a7f"
+    },
+    {
+      "file": "/workspace/progress/2026-10/2026-10-22-cme7-fix.md",
+      "heading_path": [
+        "2026-10-22 CME-7 s5-cme7-poker-smoke failure: root cause and fix (3c4ca599)"
+      ],
+      "line_range": [
+        6,
+        8
+      ],
+      "snippet": "- Fix (research cd69f694c, pushed): `enable_thinking=False` default sent as `chat_template_kwargs`; empty content raises a loud EndpointError (finish_reason, reasoning_content presence). Regression test added; 10 tests pass. Job file unchan",
+      "score": 0.9307,
+      "content_hash": "0f37a8a371706925"
+    }
+  ],
+  "wall_s": 22.787257418967783
+}

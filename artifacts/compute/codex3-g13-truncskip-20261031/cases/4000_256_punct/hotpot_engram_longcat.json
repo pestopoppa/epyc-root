@@ -1,0 +1,193 @@
+{
+  "arm": "4000_256_punct",
+  "id": "hotpot_engram_longcat",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/engram-conditional-memory.md",
+    "/workspace/research/deep-dives/longcat-flash-lite-engram-cpu-poc.md",
+    "/workspace/wiki/memory-augmented.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/engram-conditional-memory.md",
+    "/workspace/research/deep-dives/longcat-flash-lite-engram-cpu-poc.md",
+    "/workspace/wiki/memory-augmented.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 2,
+    "found_files": [
+      "/workspace/handoffs/active/engram-conditional-memory.md",
+      "/workspace/research/deep-dives/longcat-flash-lite-engram-cpu-poc.md"
+    ],
+    "missing_files": [
+      "/workspace/wiki/memory-augmented.md"
+    ],
+    "first_evidence_rank": 2,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-05/2026-05-24.md",
+      "/workspace/research/deep-dives/longcat-flash-lite-engram-cpu-poc.md",
+      "/workspace/progress/2026-05/2026-05-24.md",
+      "/workspace/handoffs/active/engram-conditional-memory.md",
+      "/workspace/handoffs/active/engram-conditional-memory.md",
+      "/workspace/progress/2026-05/2026-05-24.md",
+      "/workspace/progress/2026-05/2026-05-24.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/progress/2026-05/2026-05-24.md",
+      "/workspace/research/deep-dives/longcat-flash-lite-engram-cpu-poc.md"
+    ],
+    "recall@3": 0.3333333333333333,
+    "perfect@3": false,
+    "recall@5": 0.6666666666666666,
+    "perfect@5": false,
+    "recall@10": 0.6666666666666666,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-05/2026-05-24.md",
+      "heading_path": [
+        "2026-05-24 \u2014 manual session log",
+        "Session 7 \u2014 DeepSeek Engram research intake + dual-track handoff",
+        "Files changed (epyc-root)"
+      ],
+      "line_range": [
+        722,
+        731
+      ],
+      "snippet": "### Files changed (epyc-root)\n\n| File | Status |\n|---|---|\n| `research/intake_index.yaml` | + intake-599 (Engram paper) + intake-600 (CXL pooling), then synthesized `notes:` block on intake-599 with deep-dive findings; 604 entries validated",
+      "score": 0.9373,
+      "content_hash": "3d922f4a11e07e9b"
+    },
+    {
+      "file": "/workspace/research/deep-dives/longcat-flash-lite-engram-cpu-poc.md",
+      "heading_path": [
+        "LongCat-Flash-Lite Engram-Family CPU POC"
+      ],
+      "line_range": [
+        1,
+        7
+      ],
+      "snippet": "# LongCat-Flash-Lite Engram-Family CPU POC\n\n**Date**: 2026-05-25\n**Status**: Negative Track A result, reporting closed 2026-06-12\n**Linked handoff**: `handoffs/active/engram-conditional-memory.md`\n**Full artifacts**: `/mnt/raid0/llm/epyc-in",
+      "score": 0.9283,
+      "content_hash": "80a15dde72fd5493"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-24.md",
+      "heading_path": [
+        "2026-05-24 \u2014 manual session log",
+        "Session 7 \u2014 DeepSeek Engram research intake + dual-track handoff",
+        "Operational state at session end"
+      ],
+      "line_range": [
+        738,
+        747
+      ],
+      "snippet": "### Operational state at session end\n\n- \u2705 Two intake entries (599, 600) persisted with deep-dive notes and validated\n- \u2705 One new active handoff (`engram-conditional-memory.md`) with dual-track plan + sequencing diagram + falsification gates",
+      "score": 0.9272,
+      "content_hash": "cb4446713cee138d"
+    },
+    {
+      "file": "/workspace/handoffs/active/engram-conditional-memory.md",
+      "heading_path": [
+        "Engram \u2014 Conditional Memory via Scalable Lookup",
+        "Research Context"
+      ],
+      "line_range": [
+        74,
+        83
+      ],
+      "snippet": "## Research Context\n\n| Intake ID | Title | Relevance | Verdict |\n|-----------|-------|-----------|---------|\n| intake-599 | Conditional Memory via Scalable Lookup (DeepSeek+PKU, arxiv:2601.07372) | high | new_opportunity |\n| intake-600 | Po",
+      "score": 0.9262,
+      "content_hash": "bd2273a2e52ecf55"
+    },
+    {
+      "file": "/workspace/handoffs/active/engram-conditional-memory.md",
+      "heading_path": [
+        "Engram \u2014 Conditional Memory via Scalable Lookup"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# Engram \u2014 Conditional Memory via Scalable Lookup\n\n**Status**: active (Track A closed negative; Track B proxy open)\n**Created**: 2026-05-24 (via research intake)\n**Updated**: 2026-06-12 (stale Track A queue reconciled with decision log)\n**C",
+      "score": 0.9247,
+      "content_hash": "632d5f5f3dfb97fb"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-24.md",
+      "heading_path": [
+        "2026-05-24 \u2014 manual session log",
+        "Session 7 \u2014 DeepSeek Engram research intake + dual-track handoff",
+        "Trigger"
+      ],
+      "line_range": [
+        685,
+        688
+      ],
+      "snippet": "### Trigger\n\nUser flagged the LongCat-Flash-Lite probe and the frozen-backbone Engram retrofit as \"totally up our alley\" after seeing the first-pass intake of DeepSeek's \"Conditional Memory via Scalable Lookup\" paper (arxiv:2601.07372) and ",
+      "score": 0.9238,
+      "content_hash": "7a45597e25da64e4"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-24.md",
+      "heading_path": [
+        "2026-05-24 \u2014 manual session log",
+        "Session 7 \u2014 DeepSeek Engram research intake + dual-track handoff",
+        "Work done"
+      ],
+      "line_range": [
+        689,
+        709
+      ],
+      "snippet": "### Work done\n\n**Phase 1 \u2014 research intake (single-pass)**\n\n- Confirmed no prior dedicated Engram entry; only a peripheral mention in `intake-504` contradicting_evidence (LongCat-Flash-Thinking flagged Engram-family layer's vLLM memory over",
+      "score": 0.9222,
+      "content_hash": "0a80ee35737ab4bb"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Engram Track A stale queue cleanup"
+      ],
+      "line_range": [
+        1256,
+        1281
+      ],
+      "snippet": "## Engram Track A stale queue cleanup\n\nReconciled `engram-conditional-memory.md` with its own 2026-05-25 decision log.\n\nFindings:\n- Track A LongCat-Flash-Lite CPU probe already closed negative on 2026-05-25.\n- The detailed decision log reco",
+      "score": 0.9218,
+      "content_hash": "8fd2b815d3ef5b1a"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-24.md",
+      "heading_path": [
+        "2026-05-24 \u2014 manual session log",
+        "Session 7 \u2014 DeepSeek Engram research intake + dual-track handoff",
+        "Work done"
+      ],
+      "line_range": [
+        709,
+        721
+      ],
+      "snippet": "Rewrote `handoffs/active/engram-conditional-memory.md` from stub into a complete dual-track active plan:\n- TL;DR / next action header\n- Sequencing diagram (ASCII flow): Track A \u2192 Gate A \u2192 parallel(Track A Phase 6, Track B Phase 0) \u2192 Gate B0",
+      "score": 0.9205,
+      "content_hash": "a6385e2675a7aa86"
+    },
+    {
+      "file": "/workspace/research/deep-dives/longcat-flash-lite-engram-cpu-poc.md",
+      "heading_path": [
+        "LongCat-Flash-Lite Engram-Family CPU POC",
+        "Architectural Scope"
+      ],
+      "line_range": [
+        34,
+        49
+      ],
+      "snippet": "## Architectural Scope\n\nThis is a negative result for LongCat-Flash-Lite as a production checkpoint on our stack, not a negative result for paper-faithful Engram.\n\nLongCat is an Engram-family architecture, but it is simpler than the DeepSee",
+      "score": 0.9202,
+      "content_hash": "0ff4ac8eae364840"
+    }
+  ],
+  "wall_s": 12.515344833023846
+}

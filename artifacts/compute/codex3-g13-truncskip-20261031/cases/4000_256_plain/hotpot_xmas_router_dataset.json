@@ -1,0 +1,193 @@
+{
+  "arm": "4000_256_plain",
+  "id": "hotpot_xmas_router_dataset",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/x-mas-text-routing.md",
+    "/workspace/handoffs/active/routing-and-optimization-index.md",
+    "/workspace/research/deep-dives/2026-06-12-lollms-smart-router-dataset.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/x-mas-text-routing.md",
+    "/workspace/handoffs/active/routing-and-optimization-index.md",
+    "/workspace/research/deep-dives/2026-06-12-lollms-smart-router-dataset.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 2,
+    "found_files": [
+      "/workspace/handoffs/active/x-mas-text-routing.md",
+      "/workspace/research/deep-dives/2026-06-12-lollms-smart-router-dataset.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/routing-and-optimization-index.md"
+    ],
+    "first_evidence_rank": 5,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/wiki/routing-intelligence.md",
+      "/workspace/handoffs/active/retrain-routing-models.md",
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/research/deep-dives/2026-06-12-lollms-smart-router-dataset.md",
+      "/workspace/research/deep-dives/2026-06-12-lollms-smart-router-dataset.md",
+      "/workspace/progress/2026-06/2026-06-20.md",
+      "/workspace/progress/2026-06/2026-06-19.md",
+      "/workspace/handoffs/active/x-mas-text-routing.md",
+      "/workspace/research/deep-dives/2026-06-12-lollms-smart-router-dataset.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.3333333333333333,
+    "perfect@5": false,
+    "recall@10": 0.6666666666666666,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Research Intake \u2014 deep-dive round on the 9-entry batch (intake-686 \u2192 694)",
+        "Artifacts"
+      ],
+      "line_range": [
+        21,
+        25
+      ],
+      "snippet": "### Artifacts\n- 9 deep-dive docs: `research/deep-dives/2026-06-12-{turbovec-vector-index, lollms-smart-router-dataset, pibot-agent-harness, obliq-bench-retrieval-eval, agents-last-exam, holo-3.1-4b-gui-vlm, economy-of-minds, rlm-structured-",
+      "score": 0.94,
+      "content_hash": "bb26d41da4846e5d"
+    },
+    {
+      "file": "/workspace/wiki/routing-intelligence.md",
+      "heading_path": [
+        "Routing Intelligence",
+        "LOLLMS Smart Router Dataset \u2014 and the real retrain blocker (2026-06-12)"
+      ],
+      "line_range": [
+        574,
+        584
+      ],
+      "snippet": "## LOLLMS Smart Router Dataset \u2014 and the real retrain blocker (2026-06-12)\n\nintake-687 (`ParisNeo/lollms_smart_router_dataset`, Apache-2.0) is a 464-row instruction-tuning set: `task_prompt` (task + enumerated candidate-model list with capa",
+      "score": 0.9369,
+      "content_hash": "7ffff7f5851549d5"
+    },
+    {
+      "file": "/workspace/handoffs/active/retrain-routing-models.md",
+      "heading_path": [
+        "Verify",
+        "Research Intake Update \u2014 2026-06-10",
+        "New Related Research"
+      ],
+      "line_range": [
+        108,
+        113
+      ],
+      "snippet": "### New Related Research\n- **[intake-687] \"LOLLMS Smart Router Dataset\"** (huggingface.co/datasets/ParisNeo/lollms_smart_router_dataset)\n  - Relevance: this handoff is data-starved (gated on accumulating ~500+ routing examples). The lollms ",
+      "score": 0.9365,
+      "content_hash": "5d9b6370ea64f00d"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "X-MAS default-off telemetry documented",
+        "Root docs updated"
+      ],
+      "line_range": [
+        742,
+        753
+      ],
+      "snippet": "### Root docs updated\n\n- `handoffs/active/x-mas-text-routing.md`: status, spike-plan progress, and\n  remaining gates now distinguish default-off shadow telemetry from future\n  enforcing override.\n- `handoffs/active/non-inference-backlog.md`",
+      "score": 0.9361,
+      "content_hash": "29c0d267e1755aa2"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-06-12-lollms-smart-router-dataset.md",
+      "heading_path": [
+        "LOLLMS Smart Router Dataset \u2014 Deep-Dive (intake-687)"
+      ],
+      "line_range": [
+        1,
+        11
+      ],
+      "snippet": "# LOLLMS Smart Router Dataset \u2014 Deep-Dive (intake-687)\n\n**Date**: 2026-06-12\n**Intake**: intake-687\n**Source**: https://huggingface.co/datasets/ParisNeo/lollms_smart_router_dataset\n**License**: Apache-2.0 (464 rows, 446 kB)\n**Prior verdict*",
+      "score": 0.9326,
+      "content_hash": "43747b2eb8861de8"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-06-12-lollms-smart-router-dataset.md",
+      "heading_path": [
+        "LOLLMS Smart Router Dataset \u2014 Deep-Dive (intake-687)",
+        "Fit to EPYC",
+        "Dataset vs methodology"
+      ],
+      "line_range": [
+        59,
+        65
+      ],
+      "snippet": "### Dataset vs methodology\n\n- **Dataset value: ~nil for our current MLP.** It feeds a generative-router surface we do not have.\n- **Methodology value: low-but-real, for a hypothetical NEW surface.** The transferable idea is: *synthesize rou",
+      "score": 0.9308,
+      "content_hash": "99d8cfb1a516ee56"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-20.md",
+      "heading_path": [
+        "2026-06-20 Progress",
+        "Final full wrap-up hygiene routine"
+      ],
+      "line_range": [
+        1048,
+        1094
+      ],
+      "snippet": "## Final full wrap-up hygiene routine\n\nRan the operator-requested full wrap-up routine after the launch-map auxiliary\nclassification checkpoint. Scope was documentation/governance only: no\napplication code changed after orchestrator `471a4d",
+      "score": 0.9307,
+      "content_hash": "1ac07f2983893734"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-19.md",
+      "heading_path": [
+        "2026-06-19 Progress",
+        "Final wrap-up closeout"
+      ],
+      "line_range": [
+        1646,
+        1674
+      ],
+      "snippet": "## Final wrap-up closeout\n\nRan the operator-requested full wrap-up routine after the X-MAS constrained\npolicy and OpenAI helper migration. Root and orchestrator GitNexus were both\nfresh before documentation edits (`epyc-root` at `06175fa`,\n",
+      "score": 0.9303,
+      "content_hash": "dc34cd3281988231"
+    },
+    {
+      "file": "/workspace/handoffs/active/x-mas-text-routing.md",
+      "heading_path": [
+        "X-MAS Heterogeneous Text-MAS Routing Spike",
+        "References"
+      ],
+      "line_range": [
+        70,
+        75
+      ],
+      "snippet": "## References\n\n- Deep-dive: `/workspace/research/deep-dives/2026-05-19-latent-mas-cluster.md`\n- X-MAS paper: `https://arxiv.org/abs/2505.16997`\n- X-MAS repo: `https://github.com/MASWorks/X-MAS` (no license \u2014 methodology only)\n- Related hand",
+      "score": 0.9295,
+      "content_hash": "2a3a2915af1a7e0b"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-06-12-lollms-smart-router-dataset.md",
+      "heading_path": [
+        "LOLLMS Smart Router Dataset \u2014 Deep-Dive (intake-687)",
+        "TL;DR / Refined recommendation"
+      ],
+      "line_range": [
+        12,
+        21
+      ],
+      "snippet": "## TL;DR / Refined recommendation\n\n- Our blocked retrain (`retrain-routing-models.md`) is **not** label-starved in the way the intake note implies \u2014 it is **embedding-starved**. The live `episodic.db` already holds **52K\u201353K routing memorie",
+      "score": 0.9291,
+      "content_hash": "966611c7fcf7e2d0"
+    }
+  ],
+  "wall_s": 15.512951685115695
+}

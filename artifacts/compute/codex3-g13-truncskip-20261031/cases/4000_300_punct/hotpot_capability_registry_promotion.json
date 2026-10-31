@@ -1,0 +1,188 @@
+{
+  "arm": "4000_300_punct",
+  "id": "hotpot_capability_registry_promotion",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/model-capability-descriptors.md",
+    "/workspace/handoffs/active/capability-registry-and-promotion.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/model-capability-descriptors.md",
+    "/workspace/handoffs/active/capability-registry-and-promotion.md"
+  ],
+  "metrics": {
+    "evidence_count": 2,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/model-capability-descriptors.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/capability-registry-and-promotion.md"
+    ],
+    "first_evidence_rank": 5,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/progress/2026-07/2026-07-03.md",
+      "/workspace/progress/2026-06/2026-06-13.md",
+      "/workspace/handoffs/active/routing-and-optimization-index.md",
+      "/workspace/handoffs/active/model-capability-descriptors.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/completed/fable5-findings-02-routing-decision-architecture.md",
+      "/workspace/handoffs/completed/fable5-findings-04-impl-plan.md",
+      "/workspace/handoffs/completed/fable5-findings-02-impl-plan.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.5,
+    "perfect@5": false,
+    "recall@10": 0.5,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "Stack-prior launcher consumer documented",
+        "Root docs updated"
+      ],
+      "line_range": [
+        842,
+        854
+      ],
+      "snippet": "### Root docs updated\n\n- `handoffs/active/model-capability-descriptors.md`: W3 first-consumer\n  migration is now complete through `7121f38`; W4 swap-CI remains open.\n- `handoffs/active/standardized-stack-update-pipeline-finalization.md` and",
+      "score": 0.9269,
+      "content_hash": "92d8b25f8cf88a07"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-03.md",
+      "heading_path": [
+        "2026-07-03",
+        "Capability registry restart protocol hardening"
+      ],
+      "line_range": [
+        239,
+        245
+      ],
+      "snippet": "## Capability registry restart protocol hardening\n\n- Advanced the live-AutoPilot-safe part of `capability-registry-and-promotion.md` without promoting any row or triggering any restart. GitNexus impact was LOW for `load_capability_registry`",
+      "score": 0.9256,
+      "content_hash": "06e4632f1d7f9441"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-13.md",
+      "heading_path": [
+        "2026-06-13",
+        "Descriptor-backed q_scorer priors and stack-change governance"
+      ],
+      "line_range": [
+        1246,
+        1258
+      ],
+      "snippet": "## Descriptor-backed q_scorer priors and stack-change governance\n\nImplemented the second W3 model-capability descriptor consumer while AutoPilot remained paused after clean `#803`.\n\n- AutoPilot `#803` completed cleanly before this window: q",
+      "score": 0.9255,
+      "content_hash": "1954ad1e9a08812f"
+    },
+    {
+      "file": "/workspace/handoffs/active/routing-and-optimization-index.md",
+      "heading_path": [
+        "Routing, Autopilot & Stack \u2014 Active Backlog"
+      ],
+      "line_range": [
+        29,
+        45
+      ],
+      "snippet": "| RTG-17 | model capability descriptors | [model-capability-descriptors.md](model-capability-descriptors.md) | W5 \u2014 GATED tail: unified cascade (Phase 3) (2\u20133 weeks IF ever opened): one calibrated bilinear P(success \\| task_features, model_",
+      "score": 0.9241,
+      "content_hash": "d6dbb5a48883d62c"
+    },
+    {
+      "file": "/workspace/handoffs/active/model-capability-descriptors.md",
+      "heading_path": [
+        "Model-Capability Descriptors: The Model-Agnosticism Interface",
+        "Waypoints"
+      ],
+      "line_range": [
+        29,
+        31
+      ],
+      "snippet": "- [x] **W1 \u2014 schema** (~1 day): `orchestration/model_descriptors.yaml`, one entry per MODEL (canonical id `family-params-quant`), NEVER per role; fields per spec 2.1: quality suite_vector with source/eval_protocol, speed with bench provenan",
+      "score": 0.9235,
+      "content_hash": "a00b1624aaae9e47"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 model-capability descriptors W2 enrichment",
+        "Code"
+      ],
+      "line_range": [
+        989,
+        994
+      ],
+      "snippet": "### Code\n\n- Worktree: `/mnt/raid0/llm/tmp/model-descriptor-worktree`\n- Branch: `feat/model-capability-descriptors`\n- Commit: `32b8c65` (`Enrich model descriptors from registry evidence`)\n",
+      "score": 0.9234,
+      "content_hash": "bef8f356b50b9d19"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-02-routing-decision-architecture.md",
+      "heading_path": [
+        "Fable 5 findings 02 \u2014 Routing/serving decision architecture (facet 3)",
+        "3. The recommended decision architecture"
+      ],
+      "line_range": [
+        30,
+        38
+      ],
+      "snippet": "## 3. The recommended decision architecture\n\n**Name**: a single **capability-conditioned cascade** \u2014 one calibrated `P(success | task-features, model-descriptor)` + explicit `cost(model, placement-state)` + preference vector \u03c9, executed as ",
+      "score": 0.9233,
+      "content_hash": "52960a9728ae230a"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-04-impl-plan.md",
+      "heading_path": [
+        "Fable 5 findings 04 \u2014 IMPLEMENTATION PLAN: invariant interfaces, capability registry, index migration",
+        "C. Capability registry + promotion mechanics (interface: backlog \u2192 autopilot-actionable is a state transition, not a rewrite)"
+      ],
+      "line_range": [
+        29,
+        47
+      ],
+      "snippet": "## C. Capability registry + promotion mechanics (interface: backlog \u2192 autopilot-actionable is a state transition, not a rewrite)\n\n**C.1 The registry** \u2014 `orchestration/capability_registry.yaml`, one row per lever:\n```yaml\n- id: moe_spec_bud",
+      "score": 0.9232,
+      "content_hash": "fdee22c8991203fb"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-02-impl-plan.md",
+      "heading_path": [
+        "Fable 5 findings 02 \u2014 IMPLEMENTATION PLAN: routing decision architecture",
+        "Phase 2 \u2014 Model-capability descriptors (the model-agnosticism interface; ~1 week; valuable even if Phase 3 never happens)"
+      ],
+      "line_range": [
+        33,
+        48
+      ],
+      "snippet": "## Phase 2 \u2014 Model-capability descriptors (the model-agnosticism interface; ~1 week; valuable even if Phase 3 never happens)\n\n**2.1 Schema** \u2014 `orchestration/model_descriptors.yaml`, one entry per model (NOT per role; `feedback_model_not_ro",
+      "score": 0.9229,
+      "content_hash": "9628cd87c673f26f"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "Handoff/Index Portfolio Audit \u2014 vs the North Star",
+        "5. STRATEGIC GAPS"
+      ],
+      "line_range": [
+        861,
+        869
+      ],
+      "snippet": "## 5. STRATEGIC GAPS\n\n1. **No model-capability descriptor schema** (model-agnosticism clause). Registries are launch configs; routing intelligence is learned per-stack and **dies on stack change** \u2014 the 2026-05-25 memory reset simultaneousl",
+      "score": 0.9228,
+      "content_hash": "b19c882436a450dd"
+    }
+  ],
+  "wall_s": 13.571843799902126
+}

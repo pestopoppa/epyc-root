@@ -1,0 +1,195 @@
+{
+  "arm": "1100_256_punct",
+  "id": "locomo_routing_repair_family",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/routing-truth-restoration.md",
+    "/workspace/handoffs/active/learned-routing-controller.md",
+    "/workspace/handoffs/active/retrain-routing-models.md",
+    "/workspace/handoffs/active/x-mas-text-routing.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/routing-truth-restoration.md",
+    "/workspace/handoffs/active/learned-routing-controller.md",
+    "/workspace/handoffs/active/retrain-routing-models.md",
+    "/workspace/handoffs/active/x-mas-text-routing.md"
+  ],
+  "metrics": {
+    "evidence_count": 4,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/x-mas-text-routing.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/learned-routing-controller.md",
+      "/workspace/handoffs/active/retrain-routing-models.md",
+      "/workspace/handoffs/active/routing-truth-restoration.md"
+    ],
+    "first_evidence_rank": 7,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/active/tri-role-coordinator-architecture.md",
+      "/workspace/wiki/routing-intelligence.md",
+      "/workspace/wiki/routing-intelligence.md",
+      "/workspace/wiki/routing-intelligence.md",
+      "/workspace/progress/2026-06/master-index-pre-rewrite-archive-2026-06-12.md",
+      "/workspace/progress/2026-07/2026-07-03.md",
+      "/workspace/handoffs/active/x-mas-text-routing.md",
+      "/workspace/wiki/routing-intelligence.md",
+      "/workspace/progress/2026-06/2026-06-19.md",
+      "/workspace/handoffs/completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.25,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/active/tri-role-coordinator-architecture.md",
+      "heading_path": [
+        "Tri-Role Coordinator Architecture (Thinker / Worker / Verifier)",
+        "Relationship to Existing Systems"
+      ],
+      "line_range": [
+        121,
+        130
+      ],
+      "snippet": "## Relationship to Existing Systems\n\n| System | Relationship | Impact |\n|---|---|---|\n| `learned-routing-controller.md` | Supplies the model-selection axis; this handoff adds the role axis | Routing classifier output dim grows from `N_model",
+      "score": 0.9395,
+      "content_hash": "ce945ad0aca8ddab"
+    },
+    {
+      "file": "/workspace/wiki/routing-intelligence.md",
+      "heading_path": [
+        "Routing Intelligence",
+        "Updates \u2014 2026-04-28",
+        "New Findings (2026-06-13 \u2014 Routing Truth, Descriptors, And X-MAS)"
+      ],
+      "line_range": [
+        382,
+        383
+      ],
+      "snippet": "- **The immediate routing defect was running-state truth, not a missing decision theory.** Fable 5 found production using test feature defaults and runtime flag mutation reaching only one of six uvicorn workers. The repair handoff landed ex",
+      "score": 0.937,
+      "content_hash": "660ff95b17f74606"
+    },
+    {
+      "file": "/workspace/wiki/routing-intelligence.md",
+      "heading_path": [
+        "Routing Intelligence",
+        "Key Findings",
+        "New (2026-07-07, learned routing classifier repair run confirmed 81.0% ceiling, Phases 1.5+ FROZEN; bulk-inference Package I frozen, Queue 2/3 backlog)"
+      ],
+      "line_range": [
+        146,
+        148
+      ],
+      "snippet": "- **The learned routing classifier (BGE+MLP) repair is confirmed at an 81.0% validation accuracy ceiling.** The 2026-07-07 retrain (`learned_routing_retrain_20260707T201739Z/`) shows training accuracy climbing to 95.0% by epoch 9, but valid",
+      "score": 0.9368,
+      "content_hash": "7e9fe2aaeaad9584"
+    },
+    {
+      "file": "/workspace/wiki/routing-intelligence.md",
+      "heading_path": [
+        "Routing Intelligence",
+        "Key Findings",
+        "New (2026-06-22, learned-router verifier staging + episodic-embedding repair gate)"
+      ],
+      "line_range": [
+        199,
+        199
+      ],
+      "snippet": "- **The learned-routing MLP is staged but NOT in production, and a counterfactual probe is the reason for caution.** The BGE+MLP classifier was retrained 2026-06-12 to 81.0% val accuracy and wiring preflight passed, but production still att",
+      "score": 0.9365,
+      "content_hash": "033283eff5157fce"
+    },
+    {
+      "file": "/workspace/progress/2026-06/master-index-pre-rewrite-archive-2026-06-12.md",
+      "heading_path": [
+        "EPYC Handoff \u2014 Master Index",
+        "Priority Queue"
+      ],
+      "line_range": [
+        107,
+        107
+      ],
+      "snippet": "ing-layer wiring to actually pass `chat_template_kwargs` from registry into `request.extra` is the open follow-up. Remaining: x-mas full 5\u00d75 functions axis (separate harness varying solve/verify/plan/refine/extract). | [x-mas-text-routing.m",
+      "score": 0.9363,
+      "content_hash": "933b032d1eea84b1"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-03.md",
+      "heading_path": [
+        "2026-07-03",
+        "X-MAS repaired-policy A/B promotion candidate"
+      ],
+      "line_range": [
+        405,
+        407
+      ],
+      "snippet": "- Used the AutoPilot-stopped quiet window after the W8 checkpoint to run the repaired constrained-policy X-MAS held-out A/B: `benchmarks/results/runs/xmas_live_ab/20260703T213541Z-constrained-policy-v2` in `epyc-orchestrator`.\n- The run wro",
+      "score": 0.936,
+      "content_hash": "a69c9b6adf3048d7"
+    },
+    {
+      "file": "/workspace/handoffs/active/x-mas-text-routing.md",
+      "heading_path": [
+        "X-MAS Heterogeneous Text-MAS Routing Spike",
+        "References"
+      ],
+      "line_range": [
+        70,
+        75
+      ],
+      "snippet": "## References\n\n- Deep-dive: `/workspace/research/deep-dives/2026-05-19-latent-mas-cluster.md`\n- X-MAS paper: `https://arxiv.org/abs/2505.16997`\n- X-MAS repo: `https://github.com/MASWorks/X-MAS` (no license \u2014 methodology only)\n- Related hand",
+      "score": 0.9353,
+      "content_hash": "2a3a2915af1a7e0b"
+    },
+    {
+      "file": "/workspace/wiki/routing-intelligence.md",
+      "heading_path": [
+        "Routing Intelligence",
+        "LOLLMS Smart Router Dataset \u2014 and the real retrain blocker (2026-06-12)"
+      ],
+      "line_range": [
+        578,
+        581
+      ],
+      "snippet": "1. **The retrain is not label-starved.** The live `episodic.db` already holds **52K+ labeled routing memories**; the actual blocker for `retrain-routing-models.md` is **missing BGE embeddings** (the FAISS store was reset; `reembedded.npz` i",
+      "score": 0.9351,
+      "content_hash": "239c3939e06a3f9e"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-19.md",
+      "heading_path": [
+        "2026-06-19 Progress",
+        "Full wrap-up checkpoint"
+      ],
+      "line_range": [
+        1478,
+        1493
+      ],
+      "snippet": "- Refreshed the routing index N11a row so it names GraphRouter training\n  fallback as a completed consumer slice and keeps only open dispatch work:\n  X-MAS regression diagnosis, remaining high-risk P2 consumer migrations,\n  waiver hygiene, ",
+      "score": 0.9349,
+      "content_hash": "56d0a0cbf0c1987a"
+    },
+    {
+      "file": "/workspace/handoffs/completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md",
+      "heading_path": [
+        "AutoPilot: Continuous Recursive Optimization"
+      ],
+      "line_range": [
+        141,
+        146
+      ],
+      "snippet": "Focused verification passed (`122` tests: X-MAS routing, q-scorer, seeding\nrewards). AutoPilot can be restarted through the authority daemon for a clean\nshadow-X-MAS evidence window; keep X-MAS enforce disabled until a fresh\nfunction-axis t",
+      "score": 0.9346,
+      "content_hash": "7963c64e0785735d"
+    }
+  ],
+  "wall_s": 22.04768156213686
+}

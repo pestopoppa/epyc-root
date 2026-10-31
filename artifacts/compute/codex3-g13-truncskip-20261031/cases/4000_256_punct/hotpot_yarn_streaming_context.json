@@ -1,0 +1,192 @@
+{
+  "arm": "4000_256_punct",
+  "id": "hotpot_yarn_streaming_context",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/yarn-context-extension-research.md",
+    "/workspace/research/deep-dives/2026-05-20-rope-long-context-bounds.md",
+    "/workspace/handoffs/active/streaming-llm-baseline.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/yarn-context-extension-research.md",
+    "/workspace/research/deep-dives/2026-05-20-rope-long-context-bounds.md",
+    "/workspace/handoffs/active/streaming-llm-baseline.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 2,
+    "found_files": [
+      "/workspace/handoffs/active/yarn-context-extension-research.md",
+      "/workspace/research/deep-dives/2026-05-20-rope-long-context-bounds.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/streaming-llm-baseline.md"
+    ],
+    "first_evidence_rank": 1,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/research/deep-dives/2026-05-20-rope-long-context-bounds.md",
+      "/workspace/progress/2026-03/2026-03-07.md",
+      "/workspace/wiki/context-management.md",
+      "/workspace/wiki/context-extension.md",
+      "/workspace/handoffs/active/yarn-context-extension-research.md",
+      "/workspace/wiki/SCHEMA.md",
+      "/workspace/wiki/context-extension.md",
+      "/workspace/research/deep-dives/2026-05-20-rope-long-context-bounds.md",
+      "/workspace/research/deep-dives/2026-05-20-rope-long-context-bounds.md",
+      "/workspace/progress/2026-10/2026-10-04-workspace-ec.md"
+    ],
+    "recall@3": 0.3333333333333333,
+    "perfect@3": false,
+    "recall@5": 0.6666666666666666,
+    "perfect@5": false,
+    "recall@10": 0.6666666666666666,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/research/deep-dives/2026-05-20-rope-long-context-bounds.md",
+      "heading_path": [
+        "RoPE Long-Context Bounds Deep-Dive \u2014 2026-05-20"
+      ],
+      "line_range": [
+        1,
+        9
+      ],
+      "snippet": "# RoPE Long-Context Bounds Deep-Dive \u2014 2026-05-20\n\n**Author**: research-intake deep-dive on intake-569\n**Anchor paper**: arxiv:2605.15514 \u2014 \"RoPE Distinguishes Neither Positions Nor Tokens in Long Contexts, Provably\" (Du, Harris, Tian, Huer",
+      "score": 0.9347,
+      "content_hash": "0a376727ca25a9e5"
+    },
+    {
+      "file": "/workspace/progress/2026-03/2026-03-07.md",
+      "heading_path": [
+        "Progress Report \u2014 2026-03-07",
+        "Stack Swap Analysis & TPS Statistics (2026-03-09, late)",
+        "YaRN Context Extension"
+      ],
+      "line_range": [
+        232,
+        235
+      ],
+      "snippet": "### YaRN Context Extension\n\nCreated research stub handoff for YaRN (Yet another RoPE extensioN) \u2014 method to extend context from 256K to 1M tokens. Fully supported in llama.cpp. Relevant for future ingest role optimization. See `handoffs/act",
+      "score": 0.9307,
+      "content_hash": "2be34e36d7b57610"
+    },
+    {
+      "file": "/workspace/wiki/context-management.md",
+      "heading_path": [
+        "Context Management",
+        "Related Categories"
+      ],
+      "line_range": [
+        164,
+        169
+      ],
+      "snippet": "## Related Categories\n\n- [Context Extension](context-extension.md) -- Fundamental methods (RoPE scaling, YaRN, sparse attention) that determine the raw context budget within which management techniques operate\n- [Cost-Aware Routing](cost-aw",
+      "score": 0.9281,
+      "content_hash": "4e3b53a9ab98657c"
+    },
+    {
+      "file": "/workspace/wiki/context-extension.md",
+      "heading_path": [
+        "Context Extension",
+        "Key Findings",
+        "Positional Encoding Extension (YaRN)"
+      ],
+      "line_range": [
+        22,
+        31
+      ],
+      "snippet": "### Positional Encoding Extension (YaRN)\n\n- **YaRN extends context 2-4x with zero inference overhead**: RoPE dimensions are divided into groups with different linear scaling factors. Fine-tuned mode extends ~2x with 0.1% of pre-training dat",
+      "score": 0.9271,
+      "content_hash": "a2e6f9d0d0dfaca0"
+    },
+    {
+      "file": "/workspace/handoffs/active/yarn-context-extension-research.md",
+      "heading_path": [
+        "YaRN Context Extension Research"
+      ],
+      "line_range": [
+        1,
+        14
+      ],
+      "snippet": "# YaRN Context Extension Research\n\n**Status**: ACTIVE. ADAPTED on 2026-10-04: the scope is now Qwen3.8-27B under YaRN factor 2 (524,288 tokens) as a\ndedicated np 1 MI210 mode. The operator approved running E0 and E1 on 2026-10-04. **E1 ran ",
+      "score": 0.9245,
+      "content_hash": "c666a0b42734a813"
+    },
+    {
+      "file": "/workspace/wiki/SCHEMA.md",
+      "heading_path": [
+        "Wiki Schema \u2014 Living Taxonomy",
+        "Categories",
+        "Context & Compression"
+      ],
+      "line_range": [
+        46,
+        53
+      ],
+      "snippet": "### Context & Compression\n\n| Key | Label | Description | Related Chapters |\n|-----|-------|-------------|------------------|\n| `context_extension` | Context Extension | Long-context methods including YaRN, RoPE scaling, sliding window, and ",
+      "score": 0.9244,
+      "content_hash": "f73dee042a0fc644"
+    },
+    {
+      "file": "/workspace/wiki/context-extension.md",
+      "heading_path": [
+        "Context Extension",
+        "Summary"
+      ],
+      "line_range": [
+        8,
+        19
+      ],
+      "snippet": "## Summary\n\nContext extension research addresses the fundamental question: how do you process sequences longer than a model's training context? This category spans the spectrum from positional encoding methods (RoPE scaling, YaRN) that stre",
+      "score": 0.9234,
+      "content_hash": "0d7c2d4047022303"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-05-20-rope-long-context-bounds.md",
+      "heading_path": [
+        "RoPE Long-Context Bounds Deep-Dive \u2014 2026-05-20",
+        "Executive Summary"
+      ],
+      "line_range": [
+        10,
+        23
+      ],
+      "snippet": "## Executive Summary\n\nThe paper proves four mathematical failure modes of Rotary Positional Embeddings (RoPE) at long context, each derived from a single statistical model (the RoPE Product as a zero-mean Normal random variable). The headli",
+      "score": 0.9234,
+      "content_hash": "935990da126c01b9"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-05-20-rope-long-context-bounds.md",
+      "heading_path": [
+        "RoPE Long-Context Bounds Deep-Dive \u2014 2026-05-20",
+        "References",
+        "Triangulating papers"
+      ],
+      "line_range": [
+        241,
+        246
+      ],
+      "snippet": "### Triangulating papers\n- arxiv:2603.02615 \u2014 Wang, \"Think, But Don't Overthink: Reproducing Recursive Language Models\" (intake-547). The empirical-side companion.\n- arxiv:2602.10959 \u2014 Liu 2026, \"Rotary Positional Embeddings as Phase Modula",
+      "score": 0.9221,
+      "content_hash": "0a08c703c8e98dcf"
+    },
+    {
+      "file": "/workspace/progress/2026-10/2026-10-04-workspace-ec.md",
+      "heading_path": [
+        "Wrap-up 2 (since root e4bae1c1): GPU block results, coherence_gate, the KVU-16b root cause, INF-59 rewrite",
+        "INF-59 RoPE/YaRN: ADAPT (handoff rewritten)"
+      ],
+      "line_range": [
+        234,
+        250
+      ],
+      "snippet": "## INF-59 RoPE/YaRN: ADAPT (handoff rewritten)\n\n- **Assessment** (`analysis/rope-ctx-ASSESSMENT.md`):\n  - The target is Qwen3.8-27B at YaRN factor 2 (524K) as a dedicated np 1 MI210 mode, \u2248 48.9 GiB.\n  - Two v10 traps:\n    - the uncondition",
+      "score": 0.9189,
+      "content_hash": "fdfa2a08898d4242"
+    }
+  ],
+  "wall_s": 12.924760486930609
+}

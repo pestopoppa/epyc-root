@@ -1,0 +1,191 @@
+{
+  "arm": "1100_256_plain",
+  "id": "locomo_measurement_integrity_chain",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md",
+    "/workspace/handoffs/active/fable5-proposed-MEASUREMENT.md",
+    "/workspace/handoffs/active/evidence-plane-instrument-repair.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md",
+    "/workspace/handoffs/active/fable5-proposed-MEASUREMENT.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md",
+    "/workspace/handoffs/active/fable5-proposed-MEASUREMENT.md",
+    "/workspace/handoffs/active/evidence-plane-instrument-repair.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/evidence-plane-instrument-repair.md",
+      "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md",
+      "/workspace/handoffs/active/fable5-proposed-MEASUREMENT.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/completed/fable5-findings-01-impl-plan.md",
+      "/workspace/handoffs/completed/fable5-findings-04-impl-plan.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md",
+      "/workspace/wiki/benchmark-methodology.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/wiki/agent-architecture.md",
+      "/workspace/progress/2026-06/2026-06-28.md",
+      "/workspace/handoffs/completed/fable5-proposed-MEASUREMENT.md",
+      "/workspace/wiki/autonomous-research.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-01-impl-plan.md",
+      "heading_path": [
+        "Fable 5 findings 01 \u2014 IMPLEMENTATION PLAN: the evidence plane"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# Fable 5 findings 01 \u2014 IMPLEMENTATION PLAN: the evidence plane\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.\n\n**Date**: 2026-06-12 (refinement pa",
+      "score": 0.95,
+      "content_hash": "50e321d95c9eaf18"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-04-impl-plan.md",
+      "heading_path": [
+        "Fable 5 findings 04 \u2014 IMPLEMENTATION PLAN: invariant interfaces, capability registry, index migration"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# Fable 5 findings 04 \u2014 IMPLEMENTATION PLAN: invariant interfaces, capability registry, index migration\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indic",
+      "score": 0.941,
+      "content_hash": "3328c7828e925bfe"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 one-shot architectural review \u2014 EXECUTED (F5)",
+        "Fable 5 review \u2014 execution + wrap-up (final pass)"
+      ],
+      "line_range": [
+        131,
+        135
+      ],
+      "snippet": "**17 new owning handoffs created** (all SPEC'D, \u226470 lines, claim-grammar compliant, spec-pointer style): frontier-f1..f7; evidence-plane-{instrument-repair, ledger-and-sequential-verdicts, event-sourcing-and-narrative}; objective-task-rate-",
+      "score": 0.9408,
+      "content_hash": "16f44ef4bb5fea49"
+    },
+    {
+      "file": "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md",
+      "heading_path": [
+        "Evidence Plane \u2014 Event-Sourced Runtime + Narrative Regeneration"
+      ],
+      "line_range": [
+        6,
+        12
+      ],
+      "snippet": "er audits, and coordination with N2 ledger/readiness.\n**Created**: 2026-06-12\n**Priority**: HIGH \u2014 sequenced after [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md); the adoption gate is al",
+      "score": 0.9407,
+      "content_hash": "e9d9ec7e7d021daf"
+    },
+    {
+      "file": "/workspace/wiki/benchmark-methodology.md",
+      "heading_path": [
+        "Benchmark Methodology",
+        "Math-Verify Integration for Math Benchmarks",
+        "New Findings (2026-06-13 \u2014 Evidence Plane And Claim Discipline)"
+      ],
+      "line_range": [
+        1105,
+        1105
+      ],
+      "snippet": "- **The current T1 instrument had lower effective power than its nominal 43 questions implied.** Fable 5's review found that about 8 fixed T1 items could never pass under the live scoring path, while another large block was saturated. The e",
+      "score": 0.9401,
+      "content_hash": "a285df2f49f4eb5d"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 one-shot architectural review \u2014 EXECUTED (F5)"
+      ],
+      "line_range": [
+        87,
+        96
+      ],
+      "snippet": "**Output** (all in `handoffs/active/`):\n- `fable5-findings-00-executive-summary.md` \u2014 verdicts on all 6 brief hypotheses + \"what you're missing\" + 5-action shortlist\n- `fable5-findings-01-measurement-and-integrity.md` \u2014 facets 1+2: evidence",
+      "score": 0.9386,
+      "content_hash": "a1fc5119e8b27648"
+    },
+    {
+      "file": "/workspace/wiki/agent-architecture.md",
+      "heading_path": [
+        "Agent Architecture",
+        "Key Findings",
+        "New Findings (2026-07-02 \u2014 fixed-model harness evolution + Fable 5 window-2 architecture co-leads)"
+      ],
+      "line_range": [
+        664,
+        666
+      ],
+      "snippet": "- **A repeated calibration no-go poses the objective-specification question: is the instrument correctly rejecting a mis-specified objective, or is it mis-built?** The W5 `core_v2` calibration remains a \"do not promote\" (33/40, held since 2",
+      "score": 0.9378,
+      "content_hash": "99b06985507f34d8"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-28.md",
+      "heading_path": [
+        "Reboot wrap-up: Fable5 readiness and dashboard state"
+      ],
+      "line_range": [
+        2602,
+        2619
+      ],
+      "snippet": "## Reboot wrap-up: Fable5 readiness and dashboard state\n\nThe operator requested a reboot-oriented wrap-up. Closed all registered\nsubagent sessions; the two still-open agents had no final output, while prior\ncompleted sidecar reports were fo",
+      "score": 0.9377,
+      "content_hash": "e71b858e74b5baf0"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-proposed-MEASUREMENT.md",
+      "heading_path": [
+        "PROPOSAL - MEASUREMENT.md (the instrument constitution)"
+      ],
+      "line_range": [
+        1,
+        14
+      ],
+      "snippet": "# PROPOSAL - MEASUREMENT.md (the instrument constitution)\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.\n\n> **Historical ledger only; current measu",
+      "score": 0.9377,
+      "content_hash": "09bcbf2c85ed816d"
+    },
+    {
+      "file": "/workspace/wiki/autonomous-research.md",
+      "heading_path": [
+        "Autonomous Research",
+        "Key Findings",
+        "New (2026-06-13, Evidence Plane And Lab Automation)"
+      ],
+      "line_range": [
+        424,
+        424
+      ],
+      "snippet": "- **The binding constraint for AutoPilot is decision-grade evidence, not planner cleverness.** The Fable 5 review reframed the recurring contamination incidents as a metrology problem: the optimizer was chasing 0-2 question-flip effects wit",
+      "score": 0.9373,
+      "content_hash": "18d0cf13b04c326b"
+    }
+  ],
+  "wall_s": 25.998418679926544
+}

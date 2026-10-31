@@ -1,0 +1,191 @@
+{
+  "arm": "4000_256_punct",
+  "id": "hotpot_leanstral_planning",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/pipeline-integration-index.md",
+    "/workspace/research/deep-dives/leanstral-architecture-analysis.md",
+    "/workspace/handoffs/active/mathsmith-hc-formalizer-eval.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/pipeline-integration-index.md",
+    "/workspace/research/deep-dives/leanstral-architecture-analysis.md",
+    "/workspace/handoffs/active/mathsmith-hc-formalizer-eval.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 2,
+    "found_files": [
+      "/workspace/handoffs/active/mathsmith-hc-formalizer-eval.md",
+      "/workspace/research/deep-dives/leanstral-architecture-analysis.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/pipeline-integration-index.md"
+    ],
+    "first_evidence_rank": 8,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/wiki/formal-verification.md",
+      "/workspace/wiki/formal-verification.md",
+      "/workspace/wiki/formal-verification.md",
+      "/workspace/handoffs/completed/lean-proving-pipeline.md",
+      "/workspace/handoffs/completed/lean-proving-pipeline.md",
+      "/workspace/handoffs/completed/lean-proving-pipeline.md",
+      "/workspace/handoffs/completed/lean-proving-pipeline.md",
+      "/workspace/handoffs/active/mathsmith-hc-formalizer-eval.md",
+      "/workspace/wiki/formal-verification.md",
+      "/workspace/research/deep-dives/leanstral-architecture-analysis.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.6666666666666666,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/wiki/formal-verification.md",
+      "heading_path": [
+        "Formal Verification",
+        "Open Questions"
+      ],
+      "line_range": [
+        44,
+        52
+      ],
+      "snippet": "## Open Questions\n\n- Does the formalizer-as-cost-reduction hypothesis (arxiv:2504.06514) generalize beyond math to code verification domains?\n- Does Leanstral's planning output format align with Goedel-CP's input expectations, or is signifi",
+      "score": 0.9318,
+      "content_hash": "8120406799e8e5d4"
+    },
+    {
+      "file": "/workspace/wiki/formal-verification.md",
+      "heading_path": [
+        "Formal Verification",
+        "Summary"
+      ],
+      "line_range": [
+        8,
+        19
+      ],
+      "snippet": "## Summary\n\nFormal verification research for the EPYC stack centers on deploying a two-tier Lean 4 proving pipeline using local models. Two complementary systems have been evaluated: Goedel-Code-Prover-8B (function-level code verification, ",
+      "score": 0.9312,
+      "content_hash": "9d6b4d5afe78e87e"
+    },
+    {
+      "file": "/workspace/wiki/formal-verification.md",
+      "heading_path": [
+        "Formal Verification",
+        "Source References"
+      ],
+      "line_range": [
+        139,
+        150
+      ],
+      "snippet": "## Source References\n\n- [Goedel-Code-Prover analysis](/workspace/research/deep-dives/goedel-code-prover-analysis.md) -- Architecture, training pipeline, decomposition scoring, deployment estimates\n- [Leanstral architecture analysis](/worksp",
+      "score": 0.9288,
+      "content_hash": "45e92e4884bd7e9d"
+    },
+    {
+      "file": "/workspace/handoffs/completed/lean-proving-pipeline.md",
+      "heading_path": [
+        "Lean 4 Proving Pipeline \u2014 Leanstral + Goedel-Code-Prover",
+        "Objective"
+      ],
+      "line_range": [
+        9,
+        16
+      ],
+      "snippet": "## Objective\n\nDeploy a two-tier Lean 4 proving pipeline on EPYC hardware using local models:\n- **Tier 1 (Planner)**: Leanstral (119B MoE, 6.5B active) \u2014 repo-scale proof strategy, context selection, proof decomposition at architectural leve",
+      "score": 0.9283,
+      "content_hash": "bd4b1c2b8458c8da"
+    },
+    {
+      "file": "/workspace/handoffs/completed/lean-proving-pipeline.md",
+      "heading_path": [
+        "Lean 4 Proving Pipeline \u2014 Leanstral + Goedel-Code-Prover",
+        "Open Questions"
+      ],
+      "line_range": [
+        119,
+        126
+      ],
+      "snippet": "## Open Questions\n\n- Does Leanstral's planning output format align with Goedel-CP's input expectations, or is significant adapter work needed?\n- Can the lean-ray-server and lean-lsp-mcp coexist, or do they need separate Lean toolchain insta",
+      "score": 0.9266,
+      "content_hash": "a288b991b448995e"
+    },
+    {
+      "file": "/workspace/handoffs/completed/lean-proving-pipeline.md",
+      "heading_path": [
+        "Lean 4 Proving Pipeline \u2014 Leanstral + Goedel-Code-Prover"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# Lean 4 Proving Pipeline \u2014 Leanstral + Goedel-Code-Prover\n\n**Status**: MERGED 2026-04-21 into `pipeline-integration-index.md` \u00a7 P2. Goedel-CP-8B GGUF conversion tracked as NIB2-15 in `non-inference-backlog.md`. Architecture content preserv",
+      "score": 0.9265,
+      "content_hash": "299c5ca2e4e0e59f"
+    },
+    {
+      "file": "/workspace/handoffs/completed/lean-proving-pipeline.md",
+      "heading_path": [
+        "Lean 4 Proving Pipeline \u2014 Leanstral + Goedel-Code-Prover",
+        "Work Items",
+        "S5: Two-Tier Integration [Priority: P3, depends on S3 + S4]"
+      ],
+      "line_range": [
+        105,
+        110
+      ],
+      "snippet": "### S5: Two-Tier Integration [Priority: P3, depends on S3 + S4]\n- Design routing: Leanstral for planning/decomposition, Goedel-CP for execution\n- Implement: adapter between Leanstral's MCP-based output and Goedel-CP's input format\n- Test on",
+      "score": 0.9225,
+      "content_hash": "a5eb026789f9ad42"
+    },
+    {
+      "file": "/workspace/handoffs/active/mathsmith-hc-formalizer-eval.md",
+      "heading_path": [
+        "MathSmith HC Formalizer Evaluation & A/B Testing",
+        "Research Intake Update \u2014 2026-03-28",
+        "New Related Research"
+      ],
+      "line_range": [
+        151,
+        157
+      ],
+      "snippet": "### New Related Research\n- **[intake-233] \"Goedel-Code-Prover: Hierarchical Proof Search for Open State-of-the-Art Code Verification\"** (arxiv:2603.19329)\n  - Relevance: Uses same Qwen3-8B base + GRPO training pipeline for Lean 4 proof gene",
+      "score": 0.9222,
+      "content_hash": "74a0f94076e8d3fa"
+    },
+    {
+      "file": "/workspace/wiki/formal-verification.md",
+      "heading_path": [
+        "Formal Verification",
+        "Actionable for EPYC"
+      ],
+      "line_range": [
+        34,
+        43
+      ],
+      "snippet": "## Actionable for EPYC\n\n- **S1 (P0): Convert Goedel-CP-8B to GGUF**: Download safetensors, convert with `convert_hf_to_gguf.py`, quantize to Q4_K_M and Q8_0. Validate with simple Lean proof generation test. Trivial -- vanilla Qwen3-8B.\n- **",
+      "score": 0.9222,
+      "content_hash": "ff6e0459055c447b"
+    },
+    {
+      "file": "/workspace/research/deep-dives/leanstral-architecture-analysis.md",
+      "heading_path": [
+        "Leanstral: Architecture & Deployment Analysis",
+        "Leanstral vs Goedel-Code-Prover-8B"
+      ],
+      "line_range": [
+        79,
+        92
+      ],
+      "snippet": "## Leanstral vs Goedel-Code-Prover-8B\n\n| Dimension | Leanstral | Goedel-CP-8B |\n|-----------|-----------|-------------|\n| Architecture | 119B MoE (6.5B active) | 8B dense |\n| Task focus | Repo-scale proof engineering | Function-level code v",
+      "score": 0.919,
+      "content_hash": "b24bb7015d98fee8"
+    }
+  ],
+  "wall_s": 13.198547160020098
+}

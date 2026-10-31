@@ -1,0 +1,192 @@
+{
+  "arm": "1100_256_plain",
+  "id": "hotpot_multimodal_ocr",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/multimodal-pipeline.md",
+    "/workspace/handoffs/active/opendataloader-pipeline-integration.md",
+    "/workspace/handoffs/active/ernie-image-turbo-evaluation.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/multimodal-pipeline.md",
+    "/workspace/handoffs/active/opendataloader-pipeline-integration.md",
+    "/workspace/handoffs/active/ernie-image-turbo-evaluation.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/opendataloader-pipeline-integration.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/ernie-image-turbo-evaluation.md",
+      "/workspace/handoffs/active/multimodal-pipeline.md"
+    ],
+    "first_evidence_rank": 2,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/wiki/multimodal.md",
+      "/workspace/handoffs/active/opendataloader-pipeline-integration.md",
+      "/workspace/research/deep-dives/ernie-image-turbo-dit-text-to-image.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/wiki/document-processing.md",
+      "/workspace/handoffs/completed/docs-chapters-audit/cluster-D-edits.md",
+      "/workspace/progress/2026-05/2026-05-28.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/progress/2026-03/2026-03-18.md",
+      "/workspace/wiki/multimodal.md"
+    ],
+    "recall@3": 0.3333333333333333,
+    "perfect@3": false,
+    "recall@5": 0.3333333333333333,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/wiki/multimodal.md",
+      "heading_path": [
+        "Multimodal",
+        "ERNIE-Image-Turbo (Baidu, 2026-05-06)"
+      ],
+      "line_range": [
+        217,
+        224
+      ],
+      "snippet": "## ERNIE-Image-Turbo (Baidu, 2026-05-06)\n\n8B distilled DiT (Diffusion Transformer) text-to-image model evaluated for the multimodal pipeline. Apache-2.0. Distilled from a larger ERNIE-Image base via consistency distillation; targets fast in",
+      "score": 0.9333,
+      "content_hash": "d0a453308ed16fc0"
+    },
+    {
+      "file": "/workspace/handoffs/active/opendataloader-pipeline-integration.md",
+      "heading_path": [
+        "OpenDataLoader PDF \u2014 Pipeline Integration"
+      ],
+      "line_range": [
+        1,
+        7
+      ],
+      "snippet": "# OpenDataLoader PDF \u2014 Pipeline Integration\n\n**Status**: Active. The default ODL extractor and structured-context substrate are landed; parser-quality, routing, intrinsic-metric, LiteParse, and model-backed comparison gates remain open.\n**C",
+      "score": 0.9329,
+      "content_hash": "e1d81b584f9ab6a3"
+    },
+    {
+      "file": "/workspace/research/deep-dives/ernie-image-turbo-dit-text-to-image.md",
+      "heading_path": [
+        "Deep Dive: ERNIE-Image-Turbo (Baidu, 8B distilled DiT text-to-image)",
+        "Cross-references"
+      ],
+      "line_range": [
+        284,
+        290
+      ],
+      "snippet": "## Cross-references\n\n- [`research/intake_index.yaml`](../intake_index.yaml) \u2014 intake-937 (created 2026-07-29; supersedes the mis-cited `intake-528` \u2014 see the header note)\n- [`handoffs/active/ernie-image-turbo-evaluation.md`](../../handoffs/",
+      "score": 0.9325,
+      "content_hash": "91b64c6bbd2709e3"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "PORTFOLIO REVIEW (2026-06-12, 5 agents, 108 rows): classified verdicts",
+        "ACTIVE-LOW"
+      ],
+      "line_range": [
+        1207,
+        1209
+      ],
+      "snippet": "- **multimodal-pipeline** [live-active] out: Vision live validation; OpenAI-compat image_url parsing; register vision tools; TTS path decision; MiniCPM-O Ph1; many intake sub-decisions. | gate:  | merge:  | why: LOW by its own header; visio",
+      "score": 0.9294,
+      "content_hash": "b589ddccf91b6d8e"
+    },
+    {
+      "file": "/workspace/wiki/document-processing.md",
+      "heading_path": [
+        "Document Processing",
+        "Key Findings",
+        "New (2026-06-22, OpenDataLoader pipeline Phase 2 landed; hybrid-table routing still open)"
+      ],
+      "line_range": [
+        66,
+        71
+      ],
+      "snippet": "- Current pipeline has NO table extraction -- pdftotext mangles tables, LightOnOCR outputs bboxes but no structured table data [opendataloader-pdf-pipeline-integration.md]\n- OpenDataLoader local mode matches pdftotext latency (0.05s/page) w",
+      "score": 0.9291,
+      "content_hash": "907f08cd4fbf8671"
+    },
+    {
+      "file": "/workspace/handoffs/completed/docs-chapters-audit/cluster-D-edits.md",
+      "heading_path": [
+        "Cluster D \u2014 Edit Pass Report",
+        "Files modified"
+      ],
+      "line_range": [
+        3,
+        11
+      ],
+      "snippet": "## Files modified\n\n1. `/workspace/repos/epyc-orchestrator/docs/chapters/05-data-processing-pipelines.md`\n   - Added a new top-level **Recent Additions (2026-04 / 2026-05)** section documenting:\n     - ODL Phase 2 structured output (commit `",
+      "score": 0.9286,
+      "content_hash": "21228120c5b85468"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-28.md",
+      "heading_path": [
+        "2026-05-28 \u2014 manual session log",
+        "Handoff Structure Audit \u2014 Final Aging Set"
+      ],
+      "line_range": [
+        337,
+        347
+      ],
+      "snippet": "- `summary-token-attention-readiness.md`: monitoring-only readiness tracker; added activation evidence template.\n- `triattention-kv-selection.md`: Expected Attention is deployed; live work is S8 per-role autopilot profiles then S9 auto-trig",
+      "score": 0.9278,
+      "content_hash": "0289dcf9d151d363"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Research Intake \u2014 deep-dive round on the 9-entry batch (intake-686 \u2192 694)",
+        "Artifacts"
+      ],
+      "line_range": [
+        21,
+        25
+      ],
+      "snippet": "### Artifacts\n- 9 deep-dive docs: `research/deep-dives/2026-06-12-{turbovec-vector-index, lollms-smart-router-dataset, pibot-agent-harness, obliq-bench-retrieval-eval, agents-last-exam, holo-3.1-4b-gui-vlm, economy-of-minds, rlm-structured-",
+      "score": 0.9269,
+      "content_hash": "bb26d41da4846e5d"
+    },
+    {
+      "file": "/workspace/progress/2026-03/2026-03-18.md",
+      "heading_path": [
+        "2026-03-18 Progress",
+        "Research Intake: OpenDataLoader PDF (intake-161)",
+        "Artifacts Created"
+      ],
+      "line_range": [
+        108,
+        114
+      ],
+      "snippet": "### Artifacts Created\n- Deep dive: `research/deep-dives/opendataloader-pdf-pipeline-integration.md`\n- Handoff: `handoffs/active/opendataloader-pipeline-integration.md`\n- Taxonomy: Added `document_processing` category\n- Updated: `handoffs/ac",
+      "score": 0.9269,
+      "content_hash": "09ac09910b3c8496"
+    },
+    {
+      "file": "/workspace/wiki/multimodal.md",
+      "heading_path": [
+        "Multimodal",
+        "Source References"
+      ],
+      "line_range": [
+        151,
+        157
+      ],
+      "snippet": "- [OpenDataLoader deep dive](/workspace/research/deep-dives/opendataloader-pdf-pipeline-integration.md) -- Structured context for VL models (Phase 2)\n- [LuxTTS / ZipVoice-Distill deep dive](/workspace/research/deep-dives/luxtts-cpu-tts-cand",
+      "score": 0.9267,
+      "content_hash": "385f9c4154dff0bb"
+    }
+  ],
+  "wall_s": 26.925856383051723
+}

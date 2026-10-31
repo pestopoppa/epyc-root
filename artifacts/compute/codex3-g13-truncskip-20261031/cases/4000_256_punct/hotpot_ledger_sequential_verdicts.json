@@ -1,0 +1,194 @@
+{
+  "arm": "4000_256_punct",
+  "id": "hotpot_ledger_sequential_verdicts",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md",
+    "/workspace/handoffs/active/fable5-findings-01c-sequential-verdict-spec.md",
+    "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/fable5-findings-01c-sequential-verdict-spec.md",
+    "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md",
+    "/workspace/handoffs/active/fable5-findings-01c-sequential-verdict-spec.md",
+    "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md",
+      "/workspace/handoffs/active/fable5-findings-01c-sequential-verdict-spec.md"
+    ],
+    "first_evidence_rank": 6,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/completed/fable5-findings-01c-sequential-verdict-spec.md",
+      "/workspace/handoffs/active/objective-task-rate-goodput.md",
+      "/workspace/wiki/autonomous-research.md",
+      "/workspace/wiki/autonomous-research.md",
+      "/workspace/handoffs/completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md",
+      "/workspace/handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md",
+      "/workspace/handoffs/completed/fable5-proposed-MEASUREMENT.md",
+      "/workspace/wiki/agent-architecture.md",
+      "/workspace/progress/2026-06/2026-06-13.md",
+      "/workspace/progress/2026-06/2026-06-12.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-01c-sequential-verdict-spec.md",
+      "heading_path": [
+        "Fable 5 findings 01c \u2014 Sequential verdict: worked e-process specification"
+      ],
+      "line_range": [
+        1,
+        6
+      ],
+      "snippet": "# Fable 5 findings 01c \u2014 Sequential verdict: worked e-process specification\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.\n\n**Date**: 2026-06-12. *",
+      "score": 0.9573,
+      "content_hash": "354116dbf3d9d71c"
+    },
+    {
+      "file": "/workspace/handoffs/active/objective-task-rate-goodput.md",
+      "heading_path": [
+        "Objective: task_rate Axis + Goodput Frontier Rebuild",
+        "2026-06-13 Policy Decision"
+      ],
+      "line_range": [
+        284,
+        300
+      ],
+      "snippet": "## 2026-06-13 Policy Decision\n\n**Verdict: HOLD the live vector flip; continue shadow telemetry.**\n\nRationale:\n\n- The replay did not meet the Fable proof gate: only 1/5 legacy canonical T1 frontier points fell off under `task_rate_3d_v1`; th",
+      "score": 0.9457,
+      "content_hash": "139cc2f57a0bdfa2"
+    },
+    {
+      "file": "/workspace/wiki/autonomous-research.md",
+      "heading_path": [
+        "Autonomous Research",
+        "Key Findings",
+        "New (2026-06-13, Evidence Plane And Lab Automation)"
+      ],
+      "line_range": [
+        422,
+        429
+      ],
+      "snippet": "### New (2026-06-13, Evidence Plane And Lab Automation)\n\n- **The binding constraint for AutoPilot is decision-grade evidence, not planner cleverness.** The Fable 5 review reframed the recurring contamination incidents as a metrology problem",
+      "score": 0.945,
+      "content_hash": "01428eb8547e1d6c"
+    },
+    {
+      "file": "/workspace/wiki/autonomous-research.md",
+      "heading_path": [
+        "Autonomous Research",
+        "Source References"
+      ],
+      "line_range": [
+        550,
+        556
+      ],
+      "snippet": "- [evidence-plane-ledger-and-sequential-verdicts.md](../handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md) -- per-question ledger + e-process sequential verdicts + W7 game layer; contributed the 2026-07-04/05 checkpoints (Fab",
+      "score": 0.944,
+      "content_hash": "471b05ddc4d50296"
+    },
+    {
+      "file": "/workspace/handoffs/completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md",
+      "heading_path": [
+        "AutoPilot: Continuous Recursive Optimization"
+      ],
+      "line_range": [
+        181,
+        196
+      ],
+      "snippet": "> **Fable 5 review (2026-06-12)**: the review's architecture recommendations now have owning handoffs: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) (LIVE t775 baseline-ratchet hotfix + dead-question repair), [e",
+      "score": 0.9432,
+      "content_hash": "7a1cc6f1a69c848e"
+    },
+    {
+      "file": "/workspace/handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md",
+      "heading_path": [
+        "Evidence Plane \u2014 Per-Question Ledger + Sequential Verdicts (+ game layer)"
+      ],
+      "line_range": [
+        1,
+        58
+      ],
+      "snippet": "# Evidence Plane \u2014 Per-Question Ledger + Sequential Verdicts (+ game layer)\n\n**Current checkpoint - 2026-07-06T08:01Z W8 forced replay/AP-9 repair\ndeployed**: AutoPilot is live as PID `3935151` with\n`--max-trials 3000`, launched through the",
+      "score": 0.9429,
+      "content_hash": "5d46918ffefcf9aa"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-proposed-MEASUREMENT.md",
+      "heading_path": [
+        "MEASUREMENT.md \u2014 How numbers become claims in this project",
+        "1. Protocol registry",
+        "P-QUAL-T1 \u2014 Autopilot trial-gate quality (the production instrument card)"
+      ],
+      "line_range": [
+        36,
+        41
+      ],
+      "snippet": "### P-QUAL-T1 \u2014 Autopilot trial-gate quality (the production instrument card)\n- Instrument: **core_id** (versioned question set; currently the seed-42 accidental set \u2014 to be replaced per findings-01-impl Phase 2), n, per-question ledger ON,",
+      "score": 0.9427,
+      "content_hash": "f7dd33fcd65051fa"
+    },
+    {
+      "file": "/workspace/wiki/agent-architecture.md",
+      "heading_path": [
+        "Agent Architecture",
+        "Key Findings",
+        "New Findings (2026-07-02 \u2014 fixed-model harness evolution + Fable 5 window-2 architecture co-leads)"
+      ],
+      "line_range": [
+        662,
+        668
+      ],
+      "snippet": "- **The self-optimizer integrity architecture shifted from mechanism-building to a guarantee question: the evidence plane went live-authority on 2026-07-02.** The event-sourced per-question ledger plus sequential e-process verdicts now run ",
+      "score": 0.94,
+      "content_hash": "d1b121c5cc3538e5"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-13.md",
+      "heading_path": [
+        "2026-06-13",
+        "N6 task-rate/goodput policy decision"
+      ],
+      "line_range": [
+        706,
+        730
+      ],
+      "snippet": "## N6 task-rate/goodput policy decision\n\nClosed the zero-inference N6 policy review without changing live dominance.\n\nInputs reviewed:\n\n- Fable findings-05 objective redesign.\n- `epyc-orchestrator/orchestration/reports/task_rate_goodput_rep",
+      "score": 0.9384,
+      "content_hash": "19e7f234444da96d"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue - N8 AutoPilot shared-clone cleanup and restart checkpoint",
+        "Next work"
+      ],
+      "line_range": [
+        468,
+        473
+      ],
+      "snippet": "### Next work\n\nContinue the live trial-778+ stability watch while prioritizing the Fable queue's strategic gates: evidence-plane instrument repair N1+N4, then N2 ledger/sequential verdicts. Run N7 zero-inference analyses opportunistically w",
+      "score": 0.9366,
+      "content_hash": "dd142f4596b38c24"
+    }
+  ],
+  "wall_s": 12.60311438399367
+}

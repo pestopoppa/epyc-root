@@ -1,0 +1,189 @@
+{
+  "arm": "1100_256_punct",
+  "id": "hotpot_minddr_md9",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/minddr-deep-research-mode.md",
+    "/workspace/handoffs/active/bulk-inference-campaign.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/minddr-deep-research-mode.md",
+    "/workspace/handoffs/active/bulk-inference-campaign.md"
+  ],
+  "metrics": {
+    "evidence_count": 2,
+    "found_count": 2,
+    "found_files": [
+      "/workspace/handoffs/active/bulk-inference-campaign.md",
+      "/workspace/handoffs/active/minddr-deep-research-mode.md"
+    ],
+    "missing_files": [],
+    "first_evidence_rank": 1,
+    "all_evidence_rank": 9,
+    "ranked_files": [
+      "/workspace/handoffs/active/bulk-inference-campaign.md",
+      "/workspace/handoffs/active/bulk-inference-campaign.md",
+      "/workspace/handoffs/active/bulk-inference-campaign.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/progress/2026-05/2026-05-28.md",
+      "/workspace/handoffs/active/design-backlog-triage-2026-07-23.md",
+      "/workspace/handoffs/active/reboot-gated-inventory-and-staging.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/handoffs/active/minddr-deep-research-mode.md",
+      "/workspace/progress/2026-04/2026-04-22.md"
+    ],
+    "recall@3": 0.5,
+    "perfect@3": false,
+    "recall@5": 0.5,
+    "perfect@5": false,
+    "recall@10": 1.0,
+    "perfect@10": true
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/active/bulk-inference-campaign.md",
+      "heading_path": [
+        "Bulk Inference Campaign \u2014 active backlog (Packages G\u2013K)",
+        "Package J: Within-Role Placement + Audit-Batch Inference Gates (2026-05-26)",
+        "Other agents' inference-gated work \u2014 add here"
+      ],
+      "line_range": [
+        500,
+        500
+      ],
+      "snippet": "| J15 | MD-9 deep_research_mode sentinel A/B | [minddr-deep-research-mode.md](minddr-deep-research-mode.md) MD-9 | Phase 1 MindDR readiness gate. Sentinel suite at `orchestration/deep_research_sentinel.yaml` (20 curated queries: 7 BrowseCom",
+      "score": 0.9269,
+      "content_hash": "adda53f25e041ef4"
+    },
+    {
+      "file": "/workspace/handoffs/active/bulk-inference-campaign.md",
+      "heading_path": [
+        "Bulk Inference Campaign \u2014 active backlog (Packages G\u2013K)",
+        "Package J: Within-Role Placement + Audit-Batch Inference Gates (2026-05-26)",
+        "Per-gate conditional workflows + mitigation policies (intake-607 gates J7\u2013J11 \u2014 READ BEFORE RUNNING)"
+      ],
+      "line_range": [
+        565,
+        568
+      ],
+      "snippet": "**J15 \u2014 MD-9 deep_research_mode sentinel A/B (Phase 1 promotion gate):**\n- \u2705 Aggregate rubric uplift \u2265+5pp on `deep_research_sentinel.yaml` AND no regression on existing eval-tower sentinels \u2192 set `deep_research_mode` production-default ON ",
+      "score": 0.9255,
+      "content_hash": "13bb623a8186c60d"
+    },
+    {
+      "file": "/workspace/handoffs/active/bulk-inference-campaign.md",
+      "heading_path": [
+        "Bulk Inference Campaign \u2014 active backlog (Packages G\u2013K)",
+        "Current State (2026-06-12) \u2014 Three-Queue Structure",
+        "Queue 2 \u2014 ONE consolidated quiesce window (t1000 or operator SIGTERM; ~28\u201331h; one attested reload serves all)"
+      ],
+      "line_range": [
+        68,
+        70
+      ],
+      "snippet": "4. **J2/J3** single-worker live migration probe (`--workers 1`).\n5. **THINK-ABL-1** (best leverage/hour, +33pp class effect; real ablation needs a non-no-op suppressor at fixed non-truncating `max_tokens`, same tasks both arms). **J12 clean",
+      "score": 0.9251,
+      "content_hash": "87cdf156dbe40cb8"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "PORTFOLIO REVIEW (2026-06-12, 5 agents, 108 rows): classified verdicts",
+        "ACTIVE-MED"
+      ],
+      "line_range": [
+        1195,
+        1196
+      ],
+      "snippet": "- **bulk-inference-campaign:J7 DCP-6 eval** [live-active] out: Offline replay over historical tasks (ZERO inference \u2014 runnable now), then ~3-4h delegation-heavy inference eval | gate:  | merge:  | why: The offline replay is a free decision ",
+      "score": 0.9245,
+      "content_hash": "9e5068269b0eac73"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-28.md",
+      "heading_path": [
+        "2026-05-28 \u2014 manual session log",
+        "Handoff Structure Audit \u2014 Research/Architecture Batch"
+      ],
+      "line_range": [
+        309,
+        320
+      ],
+      "snippet": "## Handoff Structure Audit \u2014 Research/Architecture Batch\n\nRefined six more aging handoffs where old implementation history or stub labels obscured the live gate:\n\n- `lightning-attention-port.md`: added validation-only executor reset; v1 por",
+      "score": 0.9242,
+      "content_hash": "194ac0a0ae9fd818"
+    },
+    {
+      "file": "/workspace/handoffs/active/design-backlog-triage-2026-07-23.md",
+      "heading_path": [
+        "Design-Backlog Triage (2026-07-23)",
+        "SECTION 2 \u2014 Autopilot-exposable surfaces"
+      ],
+      "line_range": [
+        202,
+        203
+      ],
+      "snippet": "| 26 | MindDR deep-research A/B (MD-9) | minddr Phase 1 | deep_research_mode flag routing research queries through the 3-agent pydantic_graph pipeline | MD-9 on deep_research_sentinel scored by EV-9: promote default-on only if \u2265+5pp rubric ",
+      "score": 0.9235,
+      "content_hash": "147e514b4d955ad3"
+    },
+    {
+      "file": "/workspace/handoffs/active/reboot-gated-inventory-and-staging.md",
+      "heading_path": [
+        "Reboot-Gated Inventory & Pre-Reboot Staging",
+        "6. Run now at screening tier \u2014 do not leave these waiting"
+      ],
+      "line_range": [
+        207,
+        214
+      ],
+      "snippet": "7. **AP-WM-1 offline archive comparison**, **`gpqa_diamond_cot` A4 arm**, **MD-9 sentinel A/B**, **TM-8\n   coverage** (after its introspection probe lands), **document-parser Phase B binary `<table>` gate**.\n8. **The seven `max_uptime_days:",
+      "score": 0.9232,
+      "content_hash": "f96827e0da24cefe"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "PORTFOLIO REVIEW (2026-06-12, 5 agents, 108 rows): classified verdicts",
+        "ACTIVE-MED"
+      ],
+      "line_range": [
+        1192,
+        1194
+      ],
+      "snippet": "- **minddr-deep-research-mode** [live-active] out: MD-9 A/B: deep_research_sentinel.yaml with flag 0 vs 1 (EV-9 rubric if available, else structural-only label); dispatcher wiring deferred until pass; Phase 2 GPU-gated | gate: MD-9: inferen",
+      "score": 0.9227,
+      "content_hash": "9e0e6b7270aaf030"
+    },
+    {
+      "file": "/workspace/handoffs/active/minddr-deep-research-mode.md",
+      "heading_path": [
+        "MindDR Deep Research Mode",
+        "2026-05-28 Audit Reset \u2014 Executor Start Here"
+      ],
+      "line_range": [
+        15,
+        28
+      ],
+      "snippet": "## 2026-05-28 Audit Reset \u2014 Executor Start Here\n\nPhase 1 is no longer a stub. The flag, classifier, prompts, pydantic_graph subpackage, rubric fields, and sentinel suite are already in place. The remaining question is whether the pipeline b",
+      "score": 0.9223,
+      "content_hash": "cc6b1ae2849059f0"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-22.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-22",
+        "Session wrap-up \u2014 2026-04-22 end of day"
+      ],
+      "line_range": [
+        311,
+        318
+      ],
+      "snippet": "- **NIB2-46 STOP Phase 0**: awaits Package D n\u2265100 and `scripts/analysis/difficulty_signal_validation.py` PROCEED. Plan document at `/home/node/.claude/plans/lets-make-a-plan-glittery-tide.md` details the pull-into-experimental + patch step",
+      "score": 0.9216,
+      "content_hash": "5290d9e47e41448d"
+    }
+  ],
+  "wall_s": 22.584490677108988
+}

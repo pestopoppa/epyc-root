@@ -1,0 +1,195 @@
+{
+  "arm": "1100_256_punct",
+  "id": "hotpot_tq3_quantization",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/tq3-quantization-evaluation.md",
+    "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+    "/workspace/handoffs/active/inference-acceleration-index.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+    "/workspace/handoffs/active/inference-acceleration-index.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/tq3-quantization-evaluation.md",
+    "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+    "/workspace/handoffs/active/inference-acceleration-index.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+      "/workspace/handoffs/active/inference-acceleration-index.md",
+      "/workspace/handoffs/active/tq3-quantization-evaluation.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-07/2026-07-17.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/progress/2026-04/2026-04-01.md",
+      "/workspace/progress/2026-04/2026-04-21.md",
+      "/workspace/progress/2026-07/2026-07-20.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/handoffs/active/angelslim-techniques-evaluation.md",
+      "/workspace/progress/2026-07/2026-07-14.md",
+      "/workspace/wiki/quantization.md",
+      "/workspace/progress/2026-07/2026-07-19.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-07/2026-07-17.md",
+      "heading_path": [
+        "Progress - 2026-07-17",
+        "Bonsai Q1_0 corrected prompting gate",
+        "Code/docs"
+      ],
+      "line_range": [
+        421,
+        429
+      ],
+      "snippet": "### Code/docs\n\n| Repo | File | Change |\n|---|---|---|\n| `epyc-inference-research` | `scripts/benchmark/bonsai_q1_quality_gate_runner.py` | Added execute mode, clean command templates, generated-text extraction, per-arm result records, and s",
+      "score": 0.9221,
+      "content_hash": "46a995a46c145508"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "CPU Kernel/Fork Program \u2014 Current State and Remaining Option Space",
+        "2. Low-BPW / ternary track \u2014 strategically right, externally blocked"
+      ],
+      "line_range": [
+        930,
+        933
+      ],
+      "snippet": "- **Quality/validation gates defined**: when #22836 lands \u2192 rebuild fork \u2192 canonical llama-bench the 1.8B artifact to verify the claimed 1.5\u00d7 decode speedup transfers to a 12-channel BW-bound host (`tq3-quantization-evaluation.md:80-82`); S",
+      "score": 0.922,
+      "content_hash": "451b81f66ad5323d"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-01.md",
+      "heading_path": [
+        "2026-04-01 \u2014 AR-3 First Live Run: Debug & Fix Session",
+        "Research Intake Session (9 entries, 4 deep-dives)",
+        "Artifacts Modified"
+      ],
+      "line_range": [
+        96,
+        108
+      ],
+      "snippet": "### Artifacts Modified\n\n- `research/intake_index.yaml` \u2014 +9 entries, 3 revised post deep-dive\n- `references/cross-reference-map.md` \u2014 +1 category, 7 refreshed\n- `handoffs/active/autopilot-continuous-optimization.md` \u2014 +5 concrete changes fr",
+      "score": 0.9206,
+      "content_hash": "cdfdb885fc34de5a"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-21.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-21",
+        "Session 1 \u2014 Handoff Hygiene Audit Pass",
+        "Changes"
+      ],
+      "line_range": [
+        19,
+        29
+      ],
+      "snippet": "### Changes\n\n**Refreshed (6 handoffs)** with \"Status as of 2026-04-21\" blocks:\n- `log-linear-gated-deltanet-readiness.md` \u2014 monitoring confirmed, no upstream pretrained release\n- `multiscreen-attention-evaluation.md` \u2014 monitoring confirmed,",
+      "score": 0.9194,
+      "content_hash": "1425d10f48c6e956"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-20.md",
+      "heading_path": [
+        "Progress - 2026-07-20",
+        "Artifact Admission + Stale-Route Cleanup"
+      ],
+      "line_range": [
+        679,
+        693
+      ],
+      "snippet": "- `epyc-inference-research/docs/reference/models/model-admission-2026-07-16.md`\n  now has a 2026-07-20 artifact-audit note with the exact PASS/GAP split.\n- `handoffs/active/inference-batch-loop.md` now records that OP-2/v6+iqk\n  closed outs",
+      "score": 0.9184,
+      "content_hash": "e7f1254303d54a8a"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "FINDINGS"
+      ],
+      "line_range": [
+        906,
+        907
+      ],
+      "snippet": "  EVIDENCE: git branch --show-current + git log at /mnt/raid0/llm/llama.cpp; source greps cited inline; cpu-inference-optimization-index.md:360 (v5 cleanup audit, validation gates ALL PASS, push pending user-manual); qkernel-q5q6-default-on",
+      "score": 0.9182,
+      "content_hash": "a7aa03615239dff5"
+    },
+    {
+      "file": "/workspace/handoffs/active/angelslim-techniques-evaluation.md",
+      "heading_path": [
+        "AngelSlim Techniques Evaluation \u2014 Sub-2-Bit Quantization + Reasoning Speculative-Exit"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# AngelSlim Techniques Evaluation \u2014 Sub-2-Bit Quantization + Reasoning Speculative-Exit\n\n**Status**: stub\n**Created**: 2026-05-21 (via research intake)\n**Categories**: quantization, hardware_optimization, speculative_decoding, context_manag",
+      "score": 0.918,
+      "content_hash": "f263af4c14371055"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-14.md",
+      "heading_path": [
+        "Progress \u2014 2026-07-14",
+        "Research-intake batch 813\u2013819, adversarial audit, and coordination-layer reflection",
+        "What changed"
+      ],
+      "line_range": [
+        245,
+        245
+      ],
+      "snippet": "- **Coordination reflection**: refined the 3 Phase-4a notes to attach to existing anchors (819 = rider on AP-29 KnowledgeDistiller wiring; 813 checkbox\u2192prose monitor per anti-bloat; 818 credibility propagated into tq3 note); added intake-81",
+      "score": 0.9178,
+      "content_hash": "24a1ad3ab5abbdba"
+    },
+    {
+      "file": "/workspace/wiki/quantization.md",
+      "heading_path": [
+        "Quantization",
+        "Compiled Update \u2014 2026-07-20",
+        "Key Findings (2026-07-20)"
+      ],
+      "line_range": [
+        67,
+        68
+      ],
+      "snippet": "- **External FP4 / lossless-exponent formats stay non-deployable here.** NVFP4 (intake-756) is GPU-native (no GGUF/MI210 path); its FP8-parity table is an external *bar* for our CPU 4-bit path only. Lossless entropy-coded weight compression",
+      "score": 0.9172,
+      "content_hash": "21ca98b3c829d75a"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-19.md",
+      "heading_path": [
+        "Progress - 2026-07-19",
+        "Stale Model-Probe Instruction Cleanup"
+      ],
+      "line_range": [
+        1385,
+        1402
+      ],
+      "snippet": "## Stale Model-Probe Instruction Cleanup\n\nFollowed the scoreboard audit by rewriting stale future-work language that still invited broad\nspeed-only reruns. The parked/reopen-only wording now covers Bonsai Q1_0/8B, Ternary Q2_g64/Q2_0,\nNemot",
+      "score": 0.9169,
+      "content_hash": "850d9cc4fbf7214b"
+    }
+  ],
+  "wall_s": 22.33983922121115
+}

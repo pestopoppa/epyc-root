@@ -1,0 +1,11 @@
+{
+  "worker": 4,
+  "pid": 2990709,
+  "birth": 152539146,
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "invocation": "cce4caecce9c450882e46b59bae89fb2",
+  "exit_rc": 0,
+  "native_new_encodes": 13277,
+  "cache_skips": 2830,
+  "cache_loads": 0
+}

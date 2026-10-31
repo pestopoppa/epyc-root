@@ -1,0 +1,196 @@
+{
+  "arm": "4000_300_punct",
+  "id": "hotpot_privacy_security_hooks",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/privacy-hygiene-precommit-hooks.md",
+    "/workspace/handoffs/active/security-review-skill.md",
+    "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/privacy-hygiene-precommit-hooks.md",
+    "/workspace/handoffs/active/security-review-skill.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/privacy-hygiene-precommit-hooks.md",
+    "/workspace/handoffs/active/security-review-skill.md",
+    "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md",
+      "/workspace/handoffs/active/privacy-hygiene-precommit-hooks.md",
+      "/workspace/handoffs/active/security-review-skill.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/wiki/safety.md",
+      "/workspace/wiki/safety.md",
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/handoffs/completed/security-review-skill.md",
+      "/workspace/wiki/safety.md",
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/wiki/safety.md",
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/handoffs/completed/reviewer-trace-materialization.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/wiki/safety.md",
+      "heading_path": [
+        "Safety",
+        "2026-06-15 Update \u2014 Safety Became Tooling"
+      ],
+      "line_range": [
+        34,
+        39
+      ],
+      "snippet": "## 2026-06-15 Update \u2014 Safety Became Tooling\n\n- **Security review is now a dedicated skill scaffold.** The new review skill applies STRIDE, OWASP, and supply-chain checks, but only records findings after exploit-path validation succeeds. So",
+      "score": 0.9397,
+      "content_hash": "dc80a5d3e03a7bb3"
+    },
+    {
+      "file": "/workspace/wiki/safety.md",
+      "heading_path": [
+        "Safety",
+        "Source References"
+      ],
+      "line_range": [
+        52,
+        57
+      ],
+      "snippet": "## Source References\n\n- [Frontier F5 intake injection hardening](../handoffs/completed/frontier-f5-intake-injection-hardening.md) \u2014 completed quarantine policy, renderer, validator, and canary.\n- [Security-review skill](../handoffs/active/s",
+      "score": 0.9351,
+      "content_hash": "d40edd96d30c1447"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "PII pre-commit handoff archived",
+        "Root changes"
+      ],
+      "line_range": [
+        4202,
+        4212
+      ],
+      "snippet": "### Root changes\n\n- Moved `handoffs/active/privacy-hygiene-precommit-hooks.md` to\n  `handoffs/completed/privacy-hygiene-precommit-hooks.md`.\n- Updated its status to complete, added a 2026-06-14 completion note, and\n  replaced the stale \"arc",
+      "score": 0.935,
+      "content_hash": "122dec878464d60c"
+    },
+    {
+      "file": "/workspace/handoffs/completed/security-review-skill.md",
+      "heading_path": [
+        "Security-Review Skill (two-pass STRIDE + OWASP)",
+        "Notes"
+      ],
+      "line_range": [
+        59,
+        63
+      ],
+      "snippet": "## Notes\n\n- Pairs with the **code-review 8-gate bug filter + P0\u2013P3 + finding schema** upgrade to our existing code-review skill (harvest Part 3E) \u2014 adopt both together so they share the finding schema.\n- Cross-refs: `eval-tower-verification",
+      "score": 0.9334,
+      "content_hash": "0f7c8105d95f2d74"
+    },
+    {
+      "file": "/workspace/wiki/safety.md",
+      "heading_path": [
+        "Safety",
+        "Key Findings",
+        "New (2026-06-22, privacy-hygiene pre-commit secret scanning \u2014 COMPLETED)"
+      ],
+      "line_range": [
+        18,
+        26
+      ],
+      "snippet": "### New (2026-06-22, privacy-hygiene pre-commit secret scanning \u2014 COMPLETED)\n\n- **A regex-only pre-commit secret-scanning hook shipped across three repos; a model-based scanner was deliberately rejected as unjustified.** The hook passed 40/",
+      "score": 0.9315,
+      "content_hash": "b5f96f6e2697db70"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "Archive authority report and repair documented",
+        "Root docs updated"
+      ],
+      "line_range": [
+        954,
+        965
+      ],
+      "snippet": "### Root docs updated\n\n- `handoffs/active/evidence-plane-event-sourcing-and-narrative.md`: W1 now\n  records the report CLI, dry-run repair CLI, completed live state repair, and\n  the remaining distinction between repaired state projection a",
+      "score": 0.931,
+      "content_hash": "894f183057528ebc"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "Supersession fold coverage extended to dashboard, analytics, preflight, and scrub defaults",
+        "Root docs updated"
+      ],
+      "line_range": [
+        2133,
+        2153
+      ],
+      "snippet": "### Root docs updated\n\n- `handoffs/active/evidence-plane-event-sourcing-and-narrative.md`: W2 now\n  records append-only scrub as the default workflow, dashboard/offline/preflight\n  read coverage, and narrows remaining rewrite work to retiri",
+      "score": 0.9306,
+      "content_hash": "21d02329f65f668e"
+    },
+    {
+      "file": "/workspace/wiki/safety.md",
+      "heading_path": [
+        "Safety"
+      ],
+      "line_range": [
+        1,
+        7
+      ],
+      "snippet": "# Safety\n\n**Category**: `safety`\n**Confidence**: verified\n**Last compiled**: 2026-06-22\n**Sources**: 5 documents (added 2026-06-22 the privacy-hygiene pre-commit secret-scanning hook)\n",
+      "score": 0.9301,
+      "content_hash": "0fd35571b89f1398"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "W6 per-insight strategy evidence documented",
+        "Root docs updated"
+      ],
+      "line_range": [
+        1872,
+        1882
+      ],
+      "snippet": "### Root docs updated\n\n- `handoffs/active/evidence-plane-event-sourcing-and-narrative.md`: W6 now\n  records `e78a380` as the per-insight evidence requirement and narrows\n  remaining W6 work to full W1 ledger-keyed strategy view integration.",
+      "score": 0.9299,
+      "content_hash": "6e631a83d2fb9ed8"
+    },
+    {
+      "file": "/workspace/handoffs/completed/reviewer-trace-materialization.md",
+      "heading_path": [
+        "Reviewer Control Plane \u2014 Trace Materialization & Durable Execution (H1)",
+        "TM-6 \u2014 Trace store \u2194 evidence-plane relationship (documented 2026-07-17)"
+      ],
+      "line_range": [
+        65,
+        71
+      ],
+      "snippet": "## TM-6 \u2014 Trace store \u2194 evidence-plane relationship (documented 2026-07-17)\n\n**Contract**: the trace store (`data/trace/events.sqlite`) is a **queryable index + decision ledger**, not a second event-sourcing pipeline. Three row classes, one",
+      "score": 0.9299,
+      "content_hash": "e3a69285f9d95701"
+    }
+  ],
+  "wall_s": 13.433856311021373
+}

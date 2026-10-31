@@ -1,0 +1,197 @@
+{
+  "arm": "4000_256_plain",
+  "id": "hotpot_minddr_agent_world",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/minddr-deep-research-mode.md",
+    "/workspace/handoffs/active/agent-world-env-synthesis.md",
+    "/workspace/research/deep-dives/agent-world-environment-synthesis.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/minddr-deep-research-mode.md",
+    "/workspace/handoffs/active/agent-world-env-synthesis.md",
+    "/workspace/research/deep-dives/agent-world-environment-synthesis.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 2,
+    "found_files": [
+      "/workspace/handoffs/active/minddr-deep-research-mode.md",
+      "/workspace/research/deep-dives/agent-world-environment-synthesis.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/agent-world-env-synthesis.md"
+    ],
+    "first_evidence_rank": 3,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md",
+      "/workspace/progress/2026-04/2026-04-22.md",
+      "/workspace/handoffs/active/minddr-deep-research-mode.md",
+      "/workspace/handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md",
+      "/workspace/handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md",
+      "/workspace/research/deep-dives/agent-world-environment-synthesis.md",
+      "/workspace/research/deep-dives/agent-world-environment-synthesis.md",
+      "/workspace/progress/2026-04/2026-04-22.md",
+      "/workspace/research/deep-dives/meta-harness-official-reference-code.md",
+      "/workspace/progress/2026-04/2026-04-22.md"
+    ],
+    "recall@3": 0.3333333333333333,
+    "perfect@3": false,
+    "recall@5": 0.3333333333333333,
+    "perfect@5": false,
+    "recall@10": 0.6666666666666666,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md",
+      "heading_path": [
+        "Meta-Harness: Automated Harness Optimization",
+        "Deep-Dive Integration \u2014 2026-04-22",
+        "Cross-references"
+      ],
+      "line_range": [
+        317,
+        323
+      ],
+      "snippet": "### Cross-references\n\n- `routing-and-optimization-index.md` P17 (Agent-World pointer) + P18 (MindDR pointer)\n- `agent-world-env-synthesis.md` + `minddr-deep-research-mode.md`\n- `/workspace/research/deep-dives/agent-world-environment-synthes",
+      "score": 0.9446,
+      "content_hash": "98d295fcb6a38665"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-22.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-22",
+        "Session 1 \u2014 Deep-dive integration pass (8 deep dives \u2192 46 action items \u2192 21 file changes)",
+        "Two new handoff files"
+      ],
+      "line_range": [
+        9,
+        13
+      ],
+      "snippet": "### Two new handoff files\n\n- **`handoffs/active/agent-world-env-synthesis.md`** \u2014 DD6 Agent-World environment synthesis (5th autopilot species). AW-1..AW-9 tasks, Phase 1 training-free and CPU-feasible today, Phase 2 multi-env GRPO GPU-gate",
+      "score": 0.9406,
+      "content_hash": "feaf1dd1c86e33a4"
+    },
+    {
+      "file": "/workspace/handoffs/active/minddr-deep-research-mode.md",
+      "heading_path": [
+        "MindDR Deep Research Mode",
+        "Research Context"
+      ],
+      "line_range": [
+        36,
+        45
+      ],
+      "snippet": "## Research Context\n\n| Intake ID | Title | Relevance | Verdict |\n|-----------|-------|-----------|---------|\n| intake-438 | Mind DeepResearch Technical Report (arxiv:2604.14518, Li Auto) | high | worth_investigating |\n| intake-412 | DeepPla",
+      "score": 0.9378,
+      "content_hash": "edf3c75e28c867e5"
+    },
+    {
+      "file": "/workspace/handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md",
+      "heading_path": [
+        "Meta-Harness: Automated Harness Optimization",
+        "Research Intake Update \u2014 2026-04-22",
+        "New Related Research"
+      ],
+      "line_range": [
+        208,
+        221
+      ],
+      "snippet": "### New Related Research\n\n- **[intake-438] \"Mind DeepResearch Technical Report\"** (arxiv:2604.14518, Li Auto, production deployment)\n  - Relevance: Multi-agent framework with role specialization via RL. Production deployment demonstrates me",
+      "score": 0.9357,
+      "content_hash": "e1add58aa8da4b8b"
+    },
+    {
+      "file": "/workspace/handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md",
+      "heading_path": [
+        "Meta-Harness: Automated Harness Optimization",
+        "Deep-Dive Integration \u2014 2026-04-22",
+        "Tier 3 \u2014 Concrete Outer-Loop Rebuild Recipes (now split into 2 dedicated handoffs)"
+      ],
+      "line_range": [
+        224,
+        241
+      ],
+      "snippet": "### Tier 3 \u2014 Concrete Outer-Loop Rebuild Recipes (now split into 2 dedicated handoffs)\n\nThe long-deferred Tier 3 outer-loop rebuild now has two concrete forward paths, each with its own dedicated handoff:\n\n**1. [`agent-world-env-synthesis.m",
+      "score": 0.934,
+      "content_hash": "c4c088c374cd9c11"
+    },
+    {
+      "file": "/workspace/research/deep-dives/agent-world-environment-synthesis.md",
+      "heading_path": [
+        "Agent-World: Scaling Real-World Environment Synthesis for Evolving General Agent Intelligence",
+        "11. Cross-References",
+        "11.2 Related intakes / deep dives"
+      ],
+      "line_range": [
+        384,
+        395
+      ],
+      "snippet": "### 11.2 Related intakes / deep dives\n- **intake-411** (Qwen-Agent MCP singleton) \u2014 MCP adoption path, already in stack.\n- **intake-412** (DeepPlanning) \u2014 long-horizon planning benchmark; Agent-World complements at environment-synthesis lay",
+      "score": 0.9308,
+      "content_hash": "36afb52d12733203"
+    },
+    {
+      "file": "/workspace/research/deep-dives/agent-world-environment-synthesis.md",
+      "heading_path": [
+        "Agent-World: Scaling Real-World Environment Synthesis for Evolving General Agent Intelligence"
+      ],
+      "line_range": [
+        1,
+        10
+      ],
+      "snippet": "# Agent-World: Scaling Real-World Environment Synthesis for Evolving General Agent Intelligence\n\n**Intake**: intake-444\n**ArXiv**: 2604.18292\n**Categories**: agent_architecture, self_evolving_agents, environment_synthesis, mcp, reinforcemen",
+      "score": 0.9307,
+      "content_hash": "8966048d2787c40f"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-22.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-22",
+        "Session 7 \u2014 NIB2-44 Agent-World env_synth scaffold complete (AW-1..AW-5)",
+        "Phase D summary \u2014 NIB2-45 + NIB2-44 both closed"
+      ],
+      "line_range": [
+        264,
+        269
+      ],
+      "snippet": "### Phase D summary \u2014 NIB2-45 + NIB2-44 both closed\n\n- NIB2-45 MindDR Phase 1: feature flag, research-like classifier (pure-python + 7 config exemplars), three agent prompts, standalone pydantic_graph subpackage (Planning \u2192 DeepSearchFanOut",
+      "score": 0.9295,
+      "content_hash": "1284e1debe6763f9"
+    },
+    {
+      "file": "/workspace/research/deep-dives/meta-harness-official-reference-code.md",
+      "heading_path": [
+        "Deep Dive: Meta-Harness \u2014 Official Reference Code (stanford-iris-lab/meta-harness)",
+        "Mapping to EPYC Active Work",
+        "autopilot-continuous-optimization.md \u2014 onboarding pattern reuse"
+      ],
+      "line_range": [
+        120,
+        123
+      ],
+      "snippet": "### autopilot-continuous-optimization.md \u2014 onboarding pattern reuse\n\n`ONBOARDING.md` + `domain_spec.md` \u2192 `scripts/autopilot/onboard_role.md` skill + `role_spec.md` template. Replaces today's ad-hoc manual wiring when a new role or benchmar",
+      "score": 0.9279,
+      "content_hash": "82848a30f71d351c"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-22.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-22",
+        "Session 5 \u2014 Phase D.0 re-audit",
+        "Next"
+      ],
+      "line_range": [
+        186,
+        189
+      ],
+      "snippet": "### Next\n\n- NIB2-45 Phase 1 (MindDR deep_research_mode) \u2014 Week 1 focus: feature flag + classifier extension + 3 agent prompts. Week 2: pydantic_graph nodes (PlanningNode / DeepSearchFanOutNode / ReportSynthesisNode) on top of the existing g",
+      "score": 0.9266,
+      "content_hash": "f8efc60e3b7f817b"
+    }
+  ],
+  "wall_s": 15.017280615167692
+}

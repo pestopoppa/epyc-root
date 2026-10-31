@@ -1,0 +1,192 @@
+{
+  "arm": "4000_300_punct",
+  "id": "locomo_autopilot_degradation_response",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/autopilot-continuous-optimization.md",
+    "/workspace/handoffs/active/evidence-plane-instrument-repair.md",
+    "/workspace/handoffs/active/objective-task-rate-goodput.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/autopilot-continuous-optimization.md",
+    "/workspace/handoffs/active/evidence-plane-instrument-repair.md",
+    "/workspace/handoffs/active/objective-task-rate-goodput.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/autopilot-continuous-optimization.md",
+      "/workspace/handoffs/active/evidence-plane-instrument-repair.md",
+      "/workspace/handoffs/active/objective-task-rate-goodput.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/wiki/cost-aware-routing.md",
+      "/workspace/handoffs/completed/autopilot-continuous-optimization-history-through-2026-06-20.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/wiki/autonomous-research.md",
+      "/workspace/progress/2026-06/2026-06-19.md",
+      "/workspace/handoffs/completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/completed/fable5-findings-05-objective-design.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/wiki/cost-aware-routing.md",
+      "heading_path": [
+        "Cost-Aware Routing",
+        "2026-06-13 Update \u2014 Task Rate, Goodput, And Bloat"
+      ],
+      "line_range": [
+        130,
+        137
+      ],
+      "snippet": "## 2026-06-13 Update \u2014 Task Rate, Goodput, And Bloat\n\nFable 5 identified a cost blind spot in the live AutoPilot objective: `quality`, generated-token throughput, tier-cost proxy, and reliability can all fail to distinguish a terse correct ",
+      "score": 0.9513,
+      "content_hash": "1e6cf7e3f28ce5a1"
+    },
+    {
+      "file": "/workspace/handoffs/completed/autopilot-continuous-optimization-history-through-2026-06-20.md",
+      "heading_path": [
+        "AutoPilot continuous optimization history through 2026-06-20",
+        "Current Resume Pointer"
+      ],
+      "line_range": [
+        35,
+        43
+      ],
+      "snippet": "## Current Resume Pointer\n\nResume from `../active/autopilot-continuous-optimization.md`, then coordinate\nwith:\n\n- `../active/evidence-plane-ledger-and-sequential-verdicts.md`;\n- `../active/evidence-plane-event-sourcing-and-narrative.md`;\n- ",
+      "score": 0.9483,
+      "content_hash": "094e78c2e2bd4a66"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue \u2014 W4 instrument/VL repair + goodput doc-truth checkpoint",
+        "Updated root docs"
+      ],
+      "line_range": [
+        202,
+        208
+      ],
+      "snippet": "### Updated root docs\n\n- `handoffs/active/evidence-plane-instrument-repair.md`: W4 checked off; status now W1-W4 repaired, W5 core_v2 next.\n- `handoffs/active/objective-task-rate-goodput.md`: W4 doc-truth checked off; W3 remains gated by re",
+      "score": 0.948,
+      "content_hash": "e4528eb7857c4f16"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "W4a baseline promotion evidence consumers documented",
+        "Root docs updated"
+      ],
+      "line_range": [
+        1955,
+        1968
+      ],
+      "snippet": "### Root docs updated\n\n- `handoffs/active/evidence-plane-event-sourcing-and-narrative.md`: W4 now\n  records the dashboard and replay evidence consumers while keeping\n  baseline-as-fold authority open.\n- `handoffs/active/autopilot-continuous",
+      "score": 0.9461,
+      "content_hash": "e36bd1992104c871"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue \u2014 W4 instrument/VL repair + goodput doc-truth checkpoint",
+        "Next work"
+      ],
+      "line_range": [
+        209,
+        216
+      ],
+      "snippet": "### Next work\n\n1. Restart AutoPilot from `epyc-orchestrator` HEAD `9bc4c3a` or later after this checkpoint.\n2. Continue inference-free Queue 1: N2 ledger/sequential verdicts design implementation, W5 core_v2 prep, N7 offline analyses (super",
+      "score": 0.9459,
+      "content_hash": "5b1b9f7b8f8f3ae6"
+    },
+    {
+      "file": "/workspace/wiki/autonomous-research.md",
+      "heading_path": [
+        "Autonomous Research",
+        "Compiled Update \u2014 2026-08-05: least-commitment selection starts as a shadow diagnostic"
+      ],
+      "line_range": [
+        882,
+        900
+      ],
+      "snippet": "## Compiled Update \u2014 2026-08-05: least-commitment selection starts as a shadow diagnostic\n\nThe world-model intake changes the immediate AutoPilot/AutoKernel question from \u201cwhich richer model\nshould choose actions?\u201d to \u201ccan alternative repre",
+      "score": 0.9457,
+      "content_hash": "b43e61eaea0293d3"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-19.md",
+      "heading_path": [
+        "2026-06-19 Progress",
+        "N6 task-rate/goodput replay refresh"
+      ],
+      "line_range": [
+        318,
+        325
+      ],
+      "snippet": "## N6 task-rate/goodput replay refresh\n\nAdvanced the inference-free N6 objective-design lane while the AutoPilot W4/W6 shadow run continued. Current code already has the task-rate objective/replay substrate (`src/autopilot_core/tier_specs.p",
+      "score": 0.9451,
+      "content_hash": "0f264d789a5bd904"
+    },
+    {
+      "file": "/workspace/handoffs/completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md",
+      "heading_path": [
+        "AutoPilot: Continuous Recursive Optimization"
+      ],
+      "line_range": [
+        181,
+        196
+      ],
+      "snippet": "> **Fable 5 review (2026-06-12)**: the review's architecture recommendations now have owning handoffs: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) (LIVE t775 baseline-ratchet hotfix + dead-question repair), [e",
+      "score": 0.9444,
+      "content_hash": "7a1cc6f1a69c848e"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue \u2014 evidence-plane hotfix batch + task-rate replay checkpoint",
+        "Next work"
+      ],
+      "line_range": [
+        165,
+        172
+      ],
+      "snippet": "### Next work\n\n1. Checkpoint/commit this batch with explicit pathspecs because the orchestrator worktree contains unrelated dirty files from prior Fable/autopilot work.\n2. Pick up `routing-truth-restoration.md` W1-W4 next: declared producti",
+      "score": 0.9443,
+      "content_hash": "2d69346c8b907496"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-05-objective-design.md",
+      "heading_path": [
+        "Fable 5 findings 05 \u2014 Objective design: quality \u00d7 tokens/sec is the wrong product; measure goodput",
+        "2026-06-19 Replay Refresh"
+      ],
+      "line_range": [
+        40,
+        58
+      ],
+      "snippet": "## 2026-06-19 Replay Refresh\n\nThe replay tool and shadow objective path already exist in current\n`epyc-orchestrator` (`scripts/analysis/task_rate_goodput_replay.py`,\n`src/autopilot_core/tier_specs.py`, and\n`src/autopilot_core/journal_recons",
+      "score": 0.9438,
+      "content_hash": "54f884786577d9a6"
+    }
+  ],
+  "wall_s": 13.531874354928732
+}

@@ -1,0 +1,187 @@
+{
+  "arm": "4000_300_plain",
+  "id": "locomo_measurement_integrity_chain",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md",
+    "/workspace/handoffs/active/fable5-proposed-MEASUREMENT.md",
+    "/workspace/handoffs/active/evidence-plane-instrument-repair.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md",
+    "/workspace/handoffs/active/fable5-proposed-MEASUREMENT.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md",
+    "/workspace/handoffs/active/fable5-proposed-MEASUREMENT.md",
+    "/workspace/handoffs/active/evidence-plane-instrument-repair.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/evidence-plane-instrument-repair.md",
+      "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md",
+      "/workspace/handoffs/active/fable5-proposed-MEASUREMENT.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/completed/fable5-findings-01-impl-plan.md",
+      "/workspace/handoffs/completed/fable5-findings-00-executive-summary.md",
+      "/workspace/handoffs/completed/fable5-findings-04-impl-plan.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/progress/2026-07/2026-07-03-fable5-window2.md",
+      "/workspace/wiki/benchmark-methodology.md",
+      "/workspace/handoffs/completed/fable5-proposed-MEASUREMENT.md",
+      "/workspace/wiki/autonomous-research.md",
+      "/workspace/handoffs/completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md",
+      "/workspace/progress/2026-06/2026-06-28.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-01-impl-plan.md",
+      "heading_path": [
+        "Fable 5 findings 01 \u2014 IMPLEMENTATION PLAN: the evidence plane"
+      ],
+      "line_range": [
+        1,
+        11
+      ],
+      "snippet": "# Fable 5 findings 01 \u2014 IMPLEMENTATION PLAN: the evidence plane\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.\n\n**Date**: 2026-06-12 (refinement pa",
+      "score": 0.9482,
+      "content_hash": "3fb6fa186d024a80"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-00-executive-summary.md",
+      "heading_path": [
+        "Fable 5 architectural review \u2014 executive summary"
+      ],
+      "line_range": [
+        1,
+        11
+      ],
+      "snippet": "# Fable 5 architectural review \u2014 executive summary\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.\n\n**Date**: 2026-06-12. **Session**: one-shot cons",
+      "score": 0.9427,
+      "content_hash": "6386af5a47801afe"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-04-impl-plan.md",
+      "heading_path": [
+        "Fable 5 findings 04 \u2014 IMPLEMENTATION PLAN: invariant interfaces, capability registry, index migration"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# Fable 5 findings 04 \u2014 IMPLEMENTATION PLAN: invariant interfaces, capability registry, index migration\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indic",
+      "score": 0.9412,
+      "content_hash": "3328c7828e925bfe"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 one-shot architectural review \u2014 EXECUTED (F5)"
+      ],
+      "line_range": [
+        83,
+        104
+      ],
+      "snippet": "## Fable 5 one-shot architectural review \u2014 EXECUTED (F5)\n\nRan the consult per `handoffs/active/fable5-architecture-review.md`. Preflight audit first (brief sound; 6 amendments at `fable5-preflight-amendments.md`: stale epyc-root index re-an",
+      "score": 0.9408,
+      "content_hash": "6537fb62706efc5e"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-03-fable5-window2.md",
+      "heading_path": [
+        "2026-07-03 \u2014 Fable 5 architecture review, window 2 (one-shot consult)"
+      ],
+      "line_range": [
+        1,
+        13
+      ],
+      "snippet": "# 2026-07-03 \u2014 Fable 5 architecture review, window 2 (one-shot consult)\n\n**Brief**: `handoffs/active/fable5-architecture-review-2.md`. **Output**: 5 findings artifacts `handoffs/active/fable5-window2-findings-{00..04}-*.md`. No live index o",
+      "score": 0.9405,
+      "content_hash": "aa7c498844c2cf7d"
+    },
+    {
+      "file": "/workspace/wiki/benchmark-methodology.md",
+      "heading_path": [
+        "Benchmark Methodology",
+        "Math-Verify Integration for Math Benchmarks",
+        "New Findings (2026-06-13 \u2014 Evidence Plane And Claim Discipline)"
+      ],
+      "line_range": [
+        1103,
+        1109
+      ],
+      "snippet": "### New Findings (2026-06-13 \u2014 Evidence Plane And Claim Discipline)\n\n- **The current T1 instrument had lower effective power than its nominal 43 questions implied.** Fable 5's review found that about 8 fixed T1 items could never pass under ",
+      "score": 0.9388,
+      "content_hash": "67dd210a4c597ec2"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-proposed-MEASUREMENT.md",
+      "heading_path": [
+        "PROPOSAL - MEASUREMENT.md (the instrument constitution)"
+      ],
+      "line_range": [
+        1,
+        14
+      ],
+      "snippet": "# PROPOSAL - MEASUREMENT.md (the instrument constitution)\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.\n\n> **Historical ledger only; current measu",
+      "score": 0.9385,
+      "content_hash": "09bcbf2c85ed816d"
+    },
+    {
+      "file": "/workspace/wiki/autonomous-research.md",
+      "heading_path": [
+        "Autonomous Research",
+        "Key Findings",
+        "New (2026-06-13, Evidence Plane And Lab Automation)"
+      ],
+      "line_range": [
+        422,
+        429
+      ],
+      "snippet": "### New (2026-06-13, Evidence Plane And Lab Automation)\n\n- **The binding constraint for AutoPilot is decision-grade evidence, not planner cleverness.** The Fable 5 review reframed the recurring contamination incidents as a metrology problem",
+      "score": 0.9373,
+      "content_hash": "01428eb8547e1d6c"
+    },
+    {
+      "file": "/workspace/handoffs/completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md",
+      "heading_path": [
+        "AutoPilot: Continuous Recursive Optimization"
+      ],
+      "line_range": [
+        181,
+        196
+      ],
+      "snippet": "> **Fable 5 review (2026-06-12)**: the review's architecture recommendations now have owning handoffs: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) (LIVE t775 baseline-ratchet hotfix + dead-question repair), [e",
+      "score": 0.9372,
+      "content_hash": "7a1cc6f1a69c848e"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-28.md",
+      "heading_path": [
+        "Reboot wrap-up: Fable5 readiness and dashboard state"
+      ],
+      "line_range": [
+        2602,
+        2675
+      ],
+      "snippet": "## Reboot wrap-up: Fable5 readiness and dashboard state\n\nThe operator requested a reboot-oriented wrap-up. Closed all registered\nsubagent sessions; the two still-open agents had no final output, while prior\ncompleted sidecar reports were fo",
+      "score": 0.9365,
+      "content_hash": "48b324f042b33829"
+    }
+  ],
+  "wall_s": 16.516876637004316
+}

@@ -1,0 +1,196 @@
+{
+  "arm": "1100_256_plain",
+  "id": "locomo_evidence_plane_family",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/fable5-proposed-MEASUREMENT.md",
+    "/workspace/handoffs/active/evidence-plane-instrument-repair.md",
+    "/workspace/handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md",
+    "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/fable5-proposed-MEASUREMENT.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/fable5-proposed-MEASUREMENT.md",
+    "/workspace/handoffs/active/evidence-plane-instrument-repair.md",
+    "/workspace/handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md",
+    "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md"
+  ],
+  "metrics": {
+    "evidence_count": 4,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/evidence-plane-instrument-repair.md",
+      "/workspace/handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md",
+      "/workspace/handoffs/active/fable5-proposed-MEASUREMENT.md"
+    ],
+    "first_evidence_rank": 5,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/completed/fable5-findings-01-measurement-and-integrity.md",
+      "/workspace/handoffs/completed/reviewer-trace-materialization.md",
+      "/workspace/research/deep-dives/vidya-belief-substrate-audit.md",
+      "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md",
+      "/workspace/research/deep-dives/vidya-belief-substrate-audit.md",
+      "/workspace/handoffs/completed/autopilot-continuous-optimization-history-through-2026-06-20.md",
+      "/workspace/progress/2026-06/2026-06-13.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/handoffs/completed/reviewer-trace-materialization.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.25,
+    "perfect@5": false,
+    "recall@10": 0.25,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 one-shot architectural review \u2014 EXECUTED (F5)",
+        "Fable 5 review \u2014 execution + wrap-up (final pass)"
+      ],
+      "line_range": [
+        131,
+        135
+      ],
+      "snippet": "**17 new owning handoffs created** (all SPEC'D, \u226470 lines, claim-grammar compliant, spec-pointer style): frontier-f1..f7; evidence-plane-{instrument-repair, ledger-and-sequential-verdicts, event-sourcing-and-narrative}; objective-task-rate-",
+      "score": 0.9486,
+      "content_hash": "16f44ef4bb5fea49"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-01-measurement-and-integrity.md",
+      "heading_path": [
+        "Fable 5 findings 01 \u2014 Epistemic integrity & the optimizer\u2194evaluator game (facets 1+2, merged)",
+        "2. The architecture (\"name and theorem\")",
+        "2.1 The evidence plane: event-sourced measurement ledger (CQRS for experiments)"
+      ],
+      "line_range": [
+        30,
+        34
+      ],
+      "snippet": "### 2.1 The evidence plane: event-sourced measurement ledger (CQRS for experiments)\n\n**Name**: single append-only measurement ledger; every other store is a *derived view* \u2014 a pure fold over (ledger, policy-version). **Theorem**: if (a) fac",
+      "score": 0.9468,
+      "content_hash": "041e34bdcb0c2c8c"
+    },
+    {
+      "file": "/workspace/handoffs/completed/reviewer-trace-materialization.md",
+      "heading_path": [
+        "Reviewer Control Plane \u2014 Trace Materialization & Durable Execution (H1)",
+        "TM-6 \u2014 Trace store \u2194 evidence-plane relationship (documented 2026-07-17)"
+      ],
+      "line_range": [
+        70,
+        71
+      ],
+      "snippet": "3. The evidence-plane event-sourcing/narrative pipeline (`evidence-plane-event-sourcing-and-narrative.md`) stays authoritative for trial/verdict events; the trace store may INDEX those sources but never re-emits or transforms them into new ",
+      "score": 0.9466,
+      "content_hash": "e10537131b0e907e"
+    },
+    {
+      "file": "/workspace/research/deep-dives/vidya-belief-substrate-audit.md",
+      "heading_path": [
+        "Vidya Belief-Substrate Audit \u2014 Consolidated Deep Dive",
+        "3. In-project reconciliation (verified 2026-08-09)"
+      ],
+      "line_range": [
+        116,
+        127
+      ],
+      "snippet": "- **`evidence-plane-ledger-and-sequential-verdicts.md`** \u2014 13/14 checkboxes done (only W8b\n  evidence accrual open; master-index N2, restart-bundle owner, operator lane): per-question\n  append-only ledger, typed `seq` blocks, capped-Kelly e",
+      "score": 0.9461,
+      "content_hash": "07b9d3cfbbd4f5a3"
+    },
+    {
+      "file": "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md",
+      "heading_path": [
+        "Evidence Plane \u2014 Event-Sourced Runtime + Narrative Regeneration"
+      ],
+      "line_range": [
+        6,
+        12
+      ],
+      "snippet": "er audits, and coordination with N2 ledger/readiness.\n**Created**: 2026-06-12\n**Priority**: HIGH \u2014 sequenced after [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md); the adoption gate is al",
+      "score": 0.946,
+      "content_hash": "e9d9ec7e7d021daf"
+    },
+    {
+      "file": "/workspace/research/deep-dives/vidya-belief-substrate-audit.md",
+      "heading_path": [
+        "Vidya Belief-Substrate Audit \u2014 Consolidated Deep Dive",
+        "7. Machine-wide generalization"
+      ],
+      "line_range": [
+        359,
+        371
+      ],
+      "snippet": "## 7. Machine-wide generalization\n\nWhat generalizes: the four planes, graded evidence with honest abstention, refusal-semantics\nfreshness gates, event-sourced derivation, the judge discipline. What does not scale: claim\natomization and anch",
+      "score": 0.9451,
+      "content_hash": "82ec4103b3292651"
+    },
+    {
+      "file": "/workspace/handoffs/completed/autopilot-continuous-optimization-history-through-2026-06-20.md",
+      "heading_path": [
+        "AutoPilot continuous optimization history through 2026-06-20",
+        "Current Resume Pointer"
+      ],
+      "line_range": [
+        35,
+        43
+      ],
+      "snippet": "## Current Resume Pointer\n\nResume from `../active/autopilot-continuous-optimization.md`, then coordinate\nwith:\n\n- `../active/evidence-plane-ledger-and-sequential-verdicts.md`;\n- `../active/evidence-plane-event-sourcing-and-narrative.md`;\n- ",
+      "score": 0.945,
+      "content_hash": "094e78c2e2bd4a66"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-13.md",
+      "heading_path": [
+        "2026-06-13",
+        "Append-only supersession substrate and #795 clean-vector checkpoint"
+      ],
+      "line_range": [
+        1202,
+        1205
+      ],
+      "snippet": "- Validation for `3ff7af4`: `py_compile` on touched AutoPilot/journal/scrub/test files passed; focused pytest suite passed (`22 passed`) across system-card, supersession-event, prompt-sanitization, and recovery tests; focused ruff passed on",
+      "score": 0.9447,
+      "content_hash": "d4ac78640fa94e8a"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "groupA NOTABLE",
+        "Load-bearing findings"
+      ],
+      "line_range": [
+        1306,
+        1309
+      ],
+      "snippet": "**7. Schema-collision risk between fable5 evidence-plane and unified-trace.** `unified-trace-memory-service.md` declares itself owner of the shared harness/trace event schema (HLE/BSV/URE/EXM families, merged `15350fe`). fable5-findings-01/",
+      "score": 0.9441,
+      "content_hash": "1d6442c087120bd4"
+    },
+    {
+      "file": "/workspace/handoffs/completed/reviewer-trace-materialization.md",
+      "heading_path": [
+        "Reviewer Control Plane \u2014 Trace Materialization & Durable Execution (H1)",
+        "TM-6 \u2014 Trace store \u2194 evidence-plane relationship (documented 2026-07-17)"
+      ],
+      "line_range": [
+        67,
+        69
+      ],
+      "snippet": "**Contract**: the trace store (`data/trace/events.sqlite`) is a **queryable index + decision ledger**, not a second event-sourcing pipeline. Three row classes, one entry path each (no double-sourcing \u2014 enforced by the source-key convention)",
+      "score": 0.944,
+      "content_hash": "0486ce2df7321121"
+    }
+  ],
+  "wall_s": 24.102129318984225
+}

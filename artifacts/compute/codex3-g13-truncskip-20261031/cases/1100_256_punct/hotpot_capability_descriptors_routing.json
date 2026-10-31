@@ -1,0 +1,192 @@
+{
+  "arm": "1100_256_punct",
+  "id": "hotpot_capability_descriptors_routing",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/model-capability-descriptors.md",
+    "/workspace/handoffs/active/capability-registry-and-promotion.md",
+    "/workspace/handoffs/active/routing-and-optimization-index.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/model-capability-descriptors.md",
+    "/workspace/handoffs/active/capability-registry-and-promotion.md",
+    "/workspace/handoffs/active/routing-and-optimization-index.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/capability-registry-and-promotion.md",
+      "/workspace/handoffs/active/model-capability-descriptors.md",
+      "/workspace/handoffs/active/routing-and-optimization-index.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/handoffs/completed/fable5-findings-02-routing-decision-architecture.md",
+      "/workspace/progress/2026-06/2026-06-15.md",
+      "/workspace/research/deep-dives/deepplanning-agent-benchmark.md",
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/handoffs/active/multi-file-coding-completion-capability.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/progress/2026-06/2026-06-13.md",
+      "/workspace/handoffs/completed/fable5-findings-00-executive-summary.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "Stack-prior launcher consumer documented",
+        "Root docs updated"
+      ],
+      "line_range": [
+        842,
+        854
+      ],
+      "snippet": "### Root docs updated\n\n- `handoffs/active/model-capability-descriptors.md`: W3 first-consumer\n  migration is now complete through `7121f38`; W4 swap-CI remains open.\n- `handoffs/active/standardized-stack-update-pipeline-finalization.md` and",
+      "score": 0.9359,
+      "content_hash": "92d8b25f8cf88a07"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-02-routing-decision-architecture.md",
+      "heading_path": [
+        "Fable 5 findings 02 \u2014 Routing/serving decision architecture (facet 3)",
+        "3. The recommended decision architecture"
+      ],
+      "line_range": [
+        34,
+        35
+      ],
+      "snippet": "What makes it *model-agnostic* (the North Star clause routing currently violates):\n- **Model-capability descriptors** as the router's input, not role names. Today routing intelligence is keyed to the deployed stack and *dies on stack change",
+      "score": 0.9333,
+      "content_hash": "bfe6a4b08be3aaa2"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-15.md",
+      "heading_path": [
+        "2026-06-15",
+        "W4 swap-CI documentation tail (2026-06-15T19:14Z)"
+      ],
+      "line_range": [
+        2404,
+        2411
+      ],
+      "snippet": "## W4 swap-CI documentation tail (2026-06-15T19:14Z)\n\n- `handoffs/active/model-capability-descriptors.md` now records the current\n  no-inference W4 state more precisely: the promotion-gate fixture suite\n  already exercises the swapped front",
+      "score": 0.9329,
+      "content_hash": "fdcba11928e0263a"
+    },
+    {
+      "file": "/workspace/research/deep-dives/deepplanning-agent-benchmark.md",
+      "heading_path": [
+        "DeepPlanning: Benchmarking Long-Horizon Agentic Planning with Verifiable Constraints \u2014 Deep Dive",
+        "9. EPYC Applicability \u2014 Concrete Integration Points",
+        "9f. Learned Routing Controller Training Data"
+      ],
+      "line_range": [
+        441,
+        452
+      ],
+      "snippet": "### 9f. Learned Routing Controller Training Data\n\n**Finding**: The 26-model leaderboard with per-dimension scores constitutes a rich dataset of model capabilities across task types. The domain-specialization finding (Gemini-3-Flash: 5.9% tr",
+      "score": 0.9292,
+      "content_hash": "30c994cd93fdb17c"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "Stack-change W5/W6 status reconciled"
+      ],
+      "line_range": [
+        5378,
+        5393
+      ],
+      "snippet": "- `handoffs/active/stack-change-governance-pipeline.md`: W5 and W6 are now\n  checked off for the current no-inference stack-change pipeline. W5 cites the\n  simulated frontdoor/coder shared-runtime swap, shared alias descriptor\n  provenance,",
+      "score": 0.9291,
+      "content_hash": "8a19dc5509432fcc"
+    },
+    {
+      "file": "/workspace/handoffs/active/multi-file-coding-completion-capability.md",
+      "heading_path": [
+        "Multi-file coding completion \u2014 diagnosed agentic read\u2192edit\u2192finish protocol gap",
+        "A2 rollout contract (prepared 2026-06-12)"
+      ],
+      "line_range": [
+        221,
+        234
+      ],
+      "snippet": "**Promotion route:** register `edit_transaction_auto_routing` as a first-cohort capability row under\n`capability-registry-and-promotion.md` once W1 exists. Keep `actionable_by=operator` until descriptor,\napplicator, validated range, kill co",
+      "score": 0.9283,
+      "content_hash": "f3107591bf1a0533"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "Handoff/Index Portfolio Audit \u2014 vs the North Star",
+        "5. STRATEGIC GAPS"
+      ],
+      "line_range": [
+        863,
+        863
+      ],
+      "snippet": "1. **No model-capability descriptor schema** (model-agnosticism clause). Registries are launch configs; routing intelligence is learned per-stack and **dies on stack change** \u2014 the 2026-05-25 memory reset simultaneously invalidated classifi",
+      "score": 0.9283,
+      "content_hash": "55cf998fc9717038"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 one-shot architectural review \u2014 EXECUTED (F5)",
+        "Fable 5 review \u2014 execution + wrap-up (final pass)"
+      ],
+      "line_range": [
+        131,
+        135
+      ],
+      "snippet": "**17 new owning handoffs created** (all SPEC'D, \u226470 lines, claim-grammar compliant, spec-pointer style): frontier-f1..f7; evidence-plane-{instrument-repair, ledger-and-sequential-verdicts, event-sourcing-and-narrative}; objective-task-rate-",
+      "score": 0.9274,
+      "content_hash": "16f44ef4bb5fea49"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-13.md",
+      "heading_path": [
+        "2026-06-13",
+        "Descriptor-backed q_scorer priors and stack-change governance"
+      ],
+      "line_range": [
+        1257,
+        1258
+      ],
+      "snippet": "- Central index registration was deliberately deferred: GitNexus rates `master-handoff-index.md` HIGH, `model-capability-descriptors.md` HIGH, and `routing-and-optimization-index.md` CRITICAL because they are broad coordination docs. This p",
+      "score": 0.927,
+      "content_hash": "2c32a486a2f13dc4"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-00-executive-summary.md",
+      "heading_path": [
+        "Fable 5 architectural review \u2014 executive summary",
+        "What you are missing (the highest-value contribution, per your \u00a70)"
+      ],
+      "line_range": [
+        30,
+        32
+      ],
+      "snippet": "4. **The descriptor seam.** Months of benchmarking feed a registry the router never reads. A versioned model-capability descriptor is the missing interface that makes model-agnosticism real, makes routing transferable across swaps, and lets",
+      "score": 0.9269,
+      "content_hash": "69decea5120643fb"
+    }
+  ],
+  "wall_s": 24.313382868887857
+}

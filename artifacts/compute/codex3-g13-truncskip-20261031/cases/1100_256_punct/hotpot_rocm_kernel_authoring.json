@@ -1,0 +1,194 @@
+{
+  "arm": "1100_256_punct",
+  "id": "hotpot_rocm_kernel_authoring",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/rocm-verify-profile-backend.md",
+    "/workspace/handoffs/active/agentic-rocm-kernel-authoring.md",
+    "/workspace/research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/rocm-verify-profile-backend.md",
+    "/workspace/handoffs/active/agentic-rocm-kernel-authoring.md",
+    "/workspace/research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 2,
+    "found_files": [
+      "/workspace/handoffs/active/agentic-rocm-kernel-authoring.md",
+      "/workspace/research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/rocm-verify-profile-backend.md"
+    ],
+    "first_evidence_rank": 1,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/active/agentic-rocm-kernel-authoring.md",
+      "/workspace/wiki/hardware-optimization.md",
+      "/workspace/wiki/hardware-optimization.md",
+      "/workspace/research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md",
+      "/workspace/handoffs/active/design-backlog-triage-2026-07-23.md",
+      "/workspace/wiki/hardware-optimization.md",
+      "/workspace/handoffs/active/gpu-acceleration-path.md",
+      "/workspace/wiki/hardware-optimization.md",
+      "/workspace/wiki/hardware-optimization.md",
+      "/workspace/wiki/hardware-optimization.md"
+    ],
+    "recall@3": 0.3333333333333333,
+    "perfect@3": false,
+    "recall@5": 0.6666666666666666,
+    "perfect@5": false,
+    "recall@10": 0.6666666666666666,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/active/agentic-rocm-kernel-authoring.md",
+      "heading_path": [
+        "Agentic ROCm Kernel Authoring \u2014 MI210 Verify+Profile Harness"
+      ],
+      "line_range": [
+        1,
+        5
+      ],
+      "snippet": "# Agentic ROCm Kernel Authoring \u2014 MI210 Verify+Profile Harness\n\n**Scratch**: `/mnt/raid0/llm/tmp/isa-audit-runner-bind/` \u00b7 worktrees: `/mnt/raid0/llm/worktrees/isa-audit-runner-*` (new runner-binding work; historical evidence paths remain u",
+      "score": 0.9433,
+      "content_hash": "b72cb76e08805131"
+    },
+    {
+      "file": "/workspace/wiki/hardware-optimization.md",
+      "heading_path": [
+        "Hardware Optimization",
+        "Compiled Update \u2014 2026-08-12 (AutoKernel paired decode routing and ROCm provider execution)",
+        "Source References (2026-08-12 AutoKernel decode and providers)"
+      ],
+      "line_range": [
+        2883,
+        2893
+      ],
+      "snippet": "### Source References (2026-08-12 AutoKernel decode and providers)\n\n- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) \u2014 paired\n  RVP-C4-4a/4b identities, attribution, released claims, and deterministic route",
+      "score": 0.9419,
+      "content_hash": "db2a579b603de01b"
+    },
+    {
+      "file": "/workspace/wiki/hardware-optimization.md",
+      "heading_path": [
+        "Hardware Optimization",
+        "Compiled Update \u2014 2026-08-12 (r18\u2192r19 staged-input recovery and Q4_K_M decode routing)",
+        "Source References (2026-08-12 r19/Q4 checkpoint)"
+      ],
+      "line_range": [
+        135,
+        145
+      ],
+      "snippet": "### Source References (2026-08-12 r19/Q4 checkpoint)\n\n- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) \u2014 r18\n  disposition, copy-time identity repair, r19 live boundary, and overlap implementation task\n",
+      "score": 0.9414,
+      "content_hash": "9fe92c92b307430a"
+    },
+    {
+      "file": "/workspace/research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md",
+      "heading_path": [
+        "Agentic ROCm Kernel Authoring on MI210 \u2014 GEAK-Family Synthesis (deep dive)"
+      ],
+      "line_range": [
+        1,
+        10
+      ],
+      "snippet": "# Agentic ROCm Kernel Authoring on MI210 \u2014 GEAK-Family Synthesis (deep dive)\n\n**Created:** 2026-06-03 \u00b7 **Status:** durable synthesis (the verbose reasoning home for the two operational handoffs)\n**Operational handoffs:** [`../../handoffs/a",
+      "score": 0.9403,
+      "content_hash": "910bb337d2a06537"
+    },
+    {
+      "file": "/workspace/handoffs/active/design-backlog-triage-2026-07-23.md",
+      "heading_path": [
+        "Design-Backlog Triage (2026-07-23)",
+        "SECTION 1 \u2014 Strategic design concepts (operator decides)"
+      ],
+      "line_range": [
+        142,
+        143
+      ],
+      "snippet": "| C47 | Agentic ROCm kernel-authoring loop + eval backend | agentic-rocm-kernel-authoring; rocm-verify-profile-backend | GEAK/Apex/AgentKernelArena substrate + actor-critic controller to close the ~33/47% dequant-MMQ roofline gap; net-new C",
+      "score": 0.9399,
+      "content_hash": "996552605c694543"
+    },
+    {
+      "file": "/workspace/wiki/hardware-optimization.md",
+      "heading_path": [
+        "Hardware Optimization",
+        "Key Findings",
+        "New (2026-06-25, iqk-port complete + v6 consolidation + draft-head precision)"
+      ],
+      "line_range": [
+        874,
+        874
+      ],
+      "snippet": "- **MI210 GPU work should start with verify/profile harness discipline, not kernel generation alone (2026-06-05).** The active ROCm kernel-authoring cluster frames the first useful deliverable as a local MI210 verify/profile/benchmark backe",
+      "score": 0.9396,
+      "content_hash": "f2d08ebf6d7439b6"
+    },
+    {
+      "file": "/workspace/handoffs/active/gpu-acceleration-path.md",
+      "heading_path": [
+        "Runtime environment",
+        "Research Intake Update \u2014 2026-06-03",
+        "New Related Research"
+      ],
+      "line_range": [
+        503,
+        506
+      ],
+      "snippet": "### New Related Research\n- **[intake-660] \"CUDA Agent: Large-Scale Agentic RL for High-Performance CUDA Kernel Generation\"** (arxiv:2602.24286, ByteDance Seed + Tsinghua AIR)\n  - Relevance: this is the **agentic-authoring counterpart** to t",
+      "score": 0.9392,
+      "content_hash": "44d335ee974446b9"
+    },
+    {
+      "file": "/workspace/wiki/hardware-optimization.md",
+      "heading_path": [
+        "Hardware Optimization",
+        "Compiled Update \u2014 2026-08-12 (INF-03 live campaign and GPU-claim scope)",
+        "Source References (2026-08-12 INF-03 checkpoint)"
+      ],
+      "line_range": [
+        290,
+        296
+      ],
+      "snippet": "### Source References (2026-08-12 INF-03 checkpoint)\n\n- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) \u2014 r1/r2 invalidation boundaries, r4 receipt state, and claim-window closure\n- [ROCm verify/profile ",
+      "score": 0.9391,
+      "content_hash": "a1d6c8d66eb85bb8"
+    },
+    {
+      "file": "/workspace/wiki/hardware-optimization.md",
+      "heading_path": [
+        "Hardware Optimization",
+        "2026-06-03 \u2014 Agentic ROCm kernel authoring on MI210 (GEAK family, intake-660\u2013679)"
+      ],
+      "line_range": [
+        2051,
+        2055
+      ],
+      "snippet": "## 2026-06-03 \u2014 Agentic ROCm kernel authoring on MI210 (GEAK family, intake-660\u2013679)\n\nThe GPU path (previously \"parked behind hardware acquisition\") gained a concrete near-term program when an **AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB, ~J",
+      "score": 0.9362,
+      "content_hash": "9e644218212b73a2"
+    },
+    {
+      "file": "/workspace/wiki/hardware-optimization.md",
+      "heading_path": [
+        "Hardware Optimization",
+        "Compiled Update \u2014 2026-08-12 (INF-03 r4 feedback-integrity retraction)",
+        "Source References (2026-08-12 INF-03 retraction)"
+      ],
+      "line_range": [
+        2833,
+        2841
+      ],
+      "snippet": "### Source References (2026-08-12 INF-03 retraction)\n\n- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) \u2014 owning repair,\n  isolation, fresh-pilot tasks, exact r4 counts, and authority limits.\n- [AutoKern",
+      "score": 0.9352,
+      "content_hash": "88a9a2b003ca4ff0"
+    }
+  ],
+  "wall_s": 22.625612106872723
+}

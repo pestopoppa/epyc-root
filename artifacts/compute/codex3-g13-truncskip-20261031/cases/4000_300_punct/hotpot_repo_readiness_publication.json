@@ -1,0 +1,191 @@
+{
+  "arm": "4000_300_punct",
+  "id": "hotpot_repo_readiness_publication",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/repo-readiness-scorer.md",
+    "/workspace/handoffs/active/frontier-f6-upstream-publication.md",
+    "/workspace/handoffs/active/privacy-hygiene-precommit-hooks.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/privacy-hygiene-precommit-hooks.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/repo-readiness-scorer.md",
+    "/workspace/handoffs/active/frontier-f6-upstream-publication.md",
+    "/workspace/handoffs/active/privacy-hygiene-precommit-hooks.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/frontier-f6-upstream-publication.md",
+      "/workspace/handoffs/active/privacy-hygiene-precommit-hooks.md",
+      "/workspace/handoffs/active/repo-readiness-scorer.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-08/2026-08-25-mainA-evl38.md",
+      "/workspace/progress/2026-09/2026-09-17-sub-op-decisions.md",
+      "/workspace/research/deep-dives/chiefautism-privacy-parser-span-extraction.md",
+      "/workspace/research/deep-dives/chiefautism-privacy-parser-span-extraction.md",
+      "/workspace/research/factory-ai-harvest-2026-06-03.md",
+      "/workspace/progress/2026-06/repo-readiness-remediation-2026-06-28.md",
+      "/workspace/progress/2026-06/2026-06-28.md",
+      "/workspace/progress/2026-05/2026-05-24.md",
+      "/workspace/progress/2026-06/repo-readiness-remediation-2026-06-21.md",
+      "/workspace/progress/2026-07/2026-07-03.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-08/2026-08-25-mainA-evl38.md",
+      "heading_path": [
+        "mainA \u2014 2026-08-25: EVL-38 root L5.self_optimizing_loop gap",
+        "Validation"
+      ],
+      "line_range": [
+        47,
+        68
+      ],
+      "snippet": "## Validation\n\n- `gitnexus impact build_criteria --direction upstream --repo /workspace`:\n  **LOW** risk, impactedCount=3 (score_repositories \u2192 main \u2192 file), all within\n  the scorer file. NOTE: index is stale (indexed `a787806` vs current\n ",
+      "score": 0.9176,
+      "content_hash": "a07f4f17767e9617"
+    },
+    {
+      "file": "/workspace/progress/2026-09/2026-09-17-sub-op-decisions.md",
+      "heading_path": [
+        "2026-09-17 \u2014 sub-op-decisions (three operator rulings applied; zero inference)",
+        "D2 \u2014 security-review CI gate \u2192 Option A (dropped; handoff completed)"
+      ],
+      "line_range": [
+        45,
+        63
+      ],
+      "snippet": "## D2 \u2014 security-review CI gate \u2192 Option A (dropped; handoff completed)\n\n- **Handoff.**\n  - The last box is struck through and ticked as DROPPED, and the Status line is updated.\n  - The Open Questions section is marked as design notes with ",
+      "score": 0.9172,
+      "content_hash": "205264941a87aab6"
+    },
+    {
+      "file": "/workspace/research/deep-dives/chiefautism-privacy-parser-span-extraction.md",
+      "heading_path": [
+        "Deep Dive: Privacy Parser \u2014 Hybrid Wrapper over OpenAI Privacy Filter",
+        "Cross-EPYC Applicability",
+        "KB-hygiene use case (pre-commit hook for accidental secrets/emails)"
+      ],
+      "line_range": [
+        70,
+        87
+      ],
+      "snippet": "### KB-hygiene use case (pre-commit hook for accidental secrets/emails)\n\nThis is the slot where privacy-parser earns its keep. Concretely:\n\n- **Hook location**: `/workspace/.git/hooks/pre-commit` (and in sibling repos `/mnt/raid0/llm/epyc-o",
+      "score": 0.9166,
+      "content_hash": "469dbd05d0d7adcd"
+    },
+    {
+      "file": "/workspace/research/deep-dives/chiefautism-privacy-parser-span-extraction.md",
+      "heading_path": [
+        "Deep Dive: Privacy Parser \u2014 Hybrid Wrapper over OpenAI Privacy Filter",
+        "Refined Assessment"
+      ],
+      "line_range": [
+        92,
+        103
+      ],
+      "snippet": "## Refined Assessment\n\nOriginal intake verdict: **`adopt_patterns`** (learn from the regex-backstop and span-merge design but don't deploy).\n\n**Refined verdict: `adopt_patterns` for the orchestrator hot path (unchanged), narrow `adopt_compo",
+      "score": 0.9166,
+      "content_hash": "4eccd7359bcae911"
+    },
+    {
+      "file": "/workspace/research/factory-ai-harvest-2026-06-03.md",
+      "heading_path": [
+        "Factory.ai (Droid) Feature-Mining Harvest \u2014 2026-06-03",
+        "Part 3 \u2014 Harvest by theme",
+        "3E. Flagship features: code-review / security-review / readiness / AutoWiki / incident \u2192 eval-tower, code-review skill, KB/wiki, autopilot"
+      ],
+      "line_range": [
+        113,
+        128
+      ],
+      "snippet": "### 3E. Flagship features: code-review / security-review / readiness / AutoWiki / incident \u2192 eval-tower, code-review skill, KB/wiki, autopilot\n\n**Cross-cutting principle worth adopting wholesale**: all three review/scoring features emit a f",
+      "score": 0.9156,
+      "content_hash": "017f3781f7cf6082"
+    },
+    {
+      "file": "/workspace/progress/2026-06/repo-readiness-remediation-2026-06-28.md",
+      "heading_path": [
+        "EPYC Repo Readiness Remediation Queue"
+      ],
+      "line_range": [
+        12,
+        36
+      ],
+      "snippet": "| Priority | Repo | Criterion | Level | Pillar | Blocking next gate | Acceptance |\n|---|---|---|---:|---|---|---|\n| P0 | epyc-llama | `L4.incremental_validation` | 4 | Style & Validation | yes | `L4.incremental_validation` passes for `epyc-",
+      "score": 0.9154,
+      "content_hash": "3a9ec5009930f8d2"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-28.md",
+      "heading_path": [
+        "Orchestrator repo-readiness L3 setup gate"
+      ],
+      "line_range": [
+        520,
+        534
+      ],
+      "snippet": "## Orchestrator repo-readiness L3 setup gate\n\nAdvanced `epyc-orchestrator` from Documented (L2) to Standardized (L3) by\nlanding commit `c1cac72e`, which adds a top-level `scripts/setup.sh` wrapper\nover the existing bootstrap script and alig",
+      "score": 0.9151,
+      "content_hash": "ff12a2bab0104b05"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-24.md",
+      "heading_path": [
+        "2026-05-24 \u2014 manual session log",
+        "Session 1 \u2014 dashboard topology panel: in-flight tasks now track live slots",
+        "Pre-edit gate (per repo policy)"
+      ],
+      "line_range": [
+        59,
+        64
+      ],
+      "snippet": "### Pre-edit gate (per repo policy)\n\n- `gitnexus status`: up-to-date. `gitnexus impact --direction upstream` on both\n  `scan_orchestrator_tasks` and `topology_activity`: **LOW** risk, hits confined\n  to the dashboard route layer (no cross-r",
+      "score": 0.9151,
+      "content_hash": "26b474c236b517b8"
+    },
+    {
+      "file": "/workspace/progress/2026-06/repo-readiness-remediation-2026-06-21.md",
+      "heading_path": [
+        "EPYC Repo Readiness Remediation Queue"
+      ],
+      "line_range": [
+        12,
+        35
+      ],
+      "snippet": "| Priority | Repo | Criterion | Level | Pillar | Blocking next gate | Acceptance |\n|---|---|---|---:|---|---|---|\n| P0 | epyc-inference-research | `L3.style_enforced` | 3 | Style & Validation | yes | `L3.style_enforced` passes for `epyc-inf",
+      "score": 0.915,
+      "content_hash": "b7bba25deb4565e3"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-03.md",
+      "heading_path": [
+        "2026-07-03",
+        "Repo-readiness pickup enrichment"
+      ],
+      "line_range": [
+        10,
+        15
+      ],
+      "snippet": "## Repo-readiness pickup enrichment\n\n- Enriched `scripts/validate/repo_readiness_scorer.py` so the advisory remediation queue and passive AutoPilot pickup now carry each repo's current maturity label plus next-gate level/label, and the Mark",
+      "score": 0.9145,
+      "content_hash": "75ac0176868febc8"
+    }
+  ],
+  "wall_s": 13.76986756012775
+}

@@ -1,0 +1,192 @@
+{
+  "arm": "canonical_stored",
+  "id": "hotpot_gpu_drafter_mi200",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/gpu-drafter-mi200-investigation.md",
+    "/workspace/handoffs/active/gpu-acceleration-path.md",
+    "/workspace/handoffs/active/fable5-findings-03-serving-and-gpu.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/gpu-drafter-mi200-investigation.md",
+    "/workspace/handoffs/active/fable5-findings-03-serving-and-gpu.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/gpu-drafter-mi200-investigation.md",
+    "/workspace/handoffs/active/gpu-acceleration-path.md",
+    "/workspace/handoffs/active/fable5-findings-03-serving-and-gpu.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/gpu-acceleration-path.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/fable5-findings-03-serving-and-gpu.md",
+      "/workspace/handoffs/active/gpu-drafter-mi200-investigation.md"
+    ],
+    "first_evidence_rank": 4,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/wiki/inference-serving.md",
+      "/workspace/handoffs/active/gpu-cot-scaffold-sidecar.md",
+      "/workspace/handoffs/active/gpu-drafter-control-redesign.md",
+      "/workspace/handoffs/active/gpu-acceleration-path.md",
+      "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "/workspace/handoffs/active/mi210-big-model-and-acceleration-roadmap.md",
+      "/workspace/wiki/hardware-optimization.md",
+      "/workspace/progress/2026-07/2026-07-03-qwen36-27b-q8-mtp-acquisition.md",
+      "/workspace/wiki/inference-serving.md",
+      "/workspace/handoffs/active/fable5-window2-findings-03-portfolio-and-master-queue.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.3333333333333333,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/wiki/inference-serving.md",
+      "heading_path": [
+        "Inference Serving",
+        "Source References"
+      ],
+      "line_range": [
+        557,
+        566
+      ],
+      "snippet": "- [GPU-Drafter on MI200 investigation](../handoffs/active/gpu-drafter-mi200-investigation.md) -- the 2026-07-02 MI210 advancement (HIP build verified on gfx90a, GPU-side gemma4-31B + NEXTN MTP at 43.25 t/s/1.44x/59.7% accept, clean qwen35 G",
+      "score": 0.9353,
+      "content_hash": "398c305b8c0b8672"
+    },
+    {
+      "file": "/workspace/handoffs/active/gpu-cot-scaffold-sidecar.md",
+      "heading_path": [
+        "GPU CoT-Scaffold Sidecar \u2014 Preliminary Pure-GPU Research Lane",
+        "Dependencies / cross-cutting"
+      ],
+      "line_range": [
+        309,
+        316
+      ],
+      "snippet": "## Dependencies / cross-cutting\n\n- **`gpu-drafter-mi200-investigation.md`** \u2014 this lane is the **text-level alternative** to the spec-dec drafter farm; it deliberately sidesteps the N5 vocab/M-RoPE/GDN blocker class. If both land, the sidec",
+      "score": 0.9245,
+      "content_hash": "c29f2a5d81d75495"
+    },
+    {
+      "file": "/workspace/handoffs/active/gpu-drafter-control-redesign.md",
+      "heading_path": [
+        "GPU-Drafter Control Redesign"
+      ],
+      "line_range": [
+        1,
+        7
+      ],
+      "snippet": "# GPU-Drafter Control Redesign\n\n**Status**: NEW / SCOPING (opened 2026-07-18 from the v7 lever audit). Design + \u03b1-measurement\nonly \u2014 **no serving bench without operator approval** (`feedback_no_concurrent_inference`).\n**Owner handoff**: thi",
+      "score": 0.9238,
+      "content_hash": "273478334b4eddb2"
+    },
+    {
+      "file": "/workspace/handoffs/active/gpu-acceleration-path.md",
+      "heading_path": [
+        "GPU Acceleration Path \u2014 CPU+GPU Hybrid Inference"
+      ],
+      "line_range": [
+        1,
+        13
+      ],
+      "snippet": "# GPU Acceleration Path \u2014 CPU+GPU Hybrid Inference\n\n**Status**: researched (literature survey complete 2026-04-14, RX 7900 XTX + hybrid MoE path prioritized)\n**Created**: 2026-04-10 (via research intake deep-dive)\n**Updated**: 2026-04-21 (n",
+      "score": 0.9237,
+      "content_hash": "b83853637ffc465e"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "heading_path": [
+        "EPYC Handoff \u2014 Master Index",
+        "F. HW-GATED \u2014 MI210 (~July 2026; **all gated per operator instruction**)"
+      ],
+      "line_range": [
+        77,
+        79
+      ],
+      "snippet": "## F. HW-GATED \u2014 MI210 (~July 2026; **all gated per operator instruction**)\ngpu-drafter-mi200 (G1 \u03b1 moved to N5 \u2014 CPU-testable; all GPU stages gated) \u00b7 gpu-acceleration-path (internal order per findings-03: residency \u2192 eval-engine \u2192 embedde",
+      "score": 0.9234,
+      "content_hash": "0a1cf61f5f92e4bb"
+    },
+    {
+      "file": "/workspace/handoffs/active/mi210-big-model-and-acceleration-roadmap.md",
+      "heading_path": [
+        "MI210 big-model residency + acceleration roadmap",
+        "Cross-links"
+      ],
+      "line_range": [
+        58,
+        62
+      ],
+      "snippet": "## Cross-links\n[summary](../completed/mi210-speed-campaign-summary.md) \u00b7 [findings-05b](../completed/fable5-window2-findings-05b-mi210-inference-architecture.md) (Gate R, GPU-draft \u00a77) \u00b7 [findings-05c](fable5-window2-findings-05c-mi210-leve",
+      "score": 0.923,
+      "content_hash": "34a0cf7327b98c00"
+    },
+    {
+      "file": "/workspace/wiki/hardware-optimization.md",
+      "heading_path": [
+        "Hardware Optimization",
+        "2026-06-13 Update \u2014 What Is Actually Exhausted"
+      ],
+      "line_range": [
+        917,
+        931
+      ],
+      "snippet": "## 2026-06-13 Update \u2014 What Is Actually Exhausted\n\nThe Fable 5 kernel review draws a sharper boundary than earlier shorthand. Batch=1 decode micro-optimization is genuinely exhausted under the current evidence: the CPU is compute-idle but p",
+      "score": 0.9215,
+      "content_hash": "120d2b0f3809e573"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-03-qwen36-27b-q8-mtp-acquisition.md",
+      "heading_path": [
+        "2026-07-03 \u2014 Acquired Qwen3.6-27B Q8 MTP variant (+ Fable5 window-2 / MI210 inventory readout)",
+        "Downstream / cross-links"
+      ],
+      "line_range": [
+        50,
+        57
+      ],
+      "snippet": "## Downstream / cross-links\n\n- This file is the subject of the parallel operator session's **living checkpoint**\n  `progress/2026-07/2026-07-03-mi210-qwen36-27b-speed-campaign.md` (P0 already logging plain-Q8 29.51 t/s\n  single-stream). The",
+      "score": 0.9212,
+      "content_hash": "5372cee96d7a8010"
+    },
+    {
+      "file": "/workspace/wiki/inference-serving.md",
+      "heading_path": [
+        "Inference Serving",
+        "2026-07-02 Update \u2014 GPU Serving Tier Arrives (MI210 installed, HIP verified)"
+      ],
+      "line_range": [
+        859,
+        869
+      ],
+      "snippet": "## 2026-07-02 Update \u2014 GPU Serving Tier Arrives (MI210 installed, HIP verified)\n\nThe long-dormant GPU-acceleration workstream activated: an AMD Instinct **MI210 (gfx90a, CDNA2, 64 GB HBM2e)** is physically installed, passed into the devcont",
+      "score": 0.9206,
+      "content_hash": "1ffb62bf927b23bd"
+    },
+    {
+      "file": "/workspace/handoffs/active/fable5-window2-findings-03-portfolio-and-master-queue.md",
+      "heading_path": [
+        "Window-2 findings 03 \u2014 Portfolio audit, resurrection sweep, and proposed master-queue rewrite (\u00a73 + \u00a78.4)",
+        "2. Resurrection sweep (\u00a73) \u2014 MI210 (T1) and evidence-plane-live (T2) triggers",
+        "Revive (criterion verbatim-matched; honest caveats noted)"
+      ],
+      "line_range": [
+        19,
+        33
+      ],
+      "snippet": "### Revive (criterion verbatim-matched; honest caveats noted)\n\n| Item | Reopen criterion (source) | Trigger | Caveat |\n|---|---|---|---|\n| Qwen3.5-hybrid spec-dec via DFlash/DDTree on GPU | \"Activation trigger unchanged: acquisition of trai",
+      "score": 0.9201,
+      "content_hash": "a7f77b377718a823"
+    }
+  ],
+  "wall_s": 14.712121010990813
+}

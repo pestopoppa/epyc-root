@@ -1,0 +1,197 @@
+{
+  "arm": "4000_300_punct",
+  "id": "locomo_streamingllm_path",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/streaming-llm-baseline.md",
+    "/workspace/handoffs/active/inference-acceleration-index.md",
+    "/workspace/progress/2026-06/2026-06-13.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/inference-acceleration-index.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/streaming-llm-baseline.md",
+    "/workspace/handoffs/active/inference-acceleration-index.md",
+    "/workspace/progress/2026-06/2026-06-13.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/streaming-llm-baseline.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/inference-acceleration-index.md",
+      "/workspace/progress/2026-06/2026-06-13.md"
+    ],
+    "first_evidence_rank": 4,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/completed/non-inference-backlog-completed-through-2026-04-12.md",
+      "/workspace/wiki/kv-cache.md",
+      "/workspace/handoffs/completed/security-review-skill.md",
+      "/workspace/handoffs/active/streaming-llm-baseline.md",
+      "/workspace/handoffs/active/streaming-llm-baseline.md",
+      "/workspace/progress/2026-03/2026-03-28.md",
+      "/workspace/progress/2026-05/2026-05-19.md",
+      "/workspace/progress/2026-05/2026-05-19.md",
+      "/workspace/research/deep-dives/halo-rlm-trace-loop-integration.md",
+      "/workspace/research/deep-dives/2026-05-19-kv-admission-cluster.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.3333333333333333,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/non-inference-backlog-completed-through-2026-04-12.md",
+      "heading_path": [
+        "Non-Inference Backlog \u2014 Tasks Actionable Without Compute",
+        "Round 2 + supplements \u2014 closed through 2026-09-27",
+        "Round 2 supplement (added 2026-05-19 \u2014 May 2026 research cluster deep-dives)"
+      ],
+      "line_range": [
+        145,
+        152
+      ],
+      "snippet": "- [x] **NIB2-52**: StreamingLLM sink + sliding-window scaffold in `epyc-llama` \u2014 [`streaming-llm-baseline.md`](../active/streaming-llm-baseline.md). **DONE 2026-06-13 (code scaffold)**: `llama.cpp` commit `632ce0f92` adds disabled-by-defaul",
+      "score": 0.9216,
+      "content_hash": "a2ab7fcab46a2585"
+    },
+    {
+      "file": "/workspace/wiki/kv-cache.md",
+      "heading_path": [
+        "KV Cache Optimization",
+        "Compiled Update \u2014 2026-07-20",
+        "Key Findings (2026-07-20)"
+      ],
+      "line_range": [
+        36,
+        41
+      ],
+      "snippet": "### Key Findings (2026-07-20)\n\n- **StreamingLLM (attention-sink + sliding-window) is the easy-floor gate, and no simple KV cluster is admitted yet.** The scaffold landed in the fork (`632ce0f92`, default-off, via server context-shift `llama",
+      "score": 0.9182,
+      "content_hash": "88df58ddb59b4bbd"
+    },
+    {
+      "file": "/workspace/handoffs/completed/security-review-skill.md",
+      "heading_path": [
+        "Security-Review Skill (two-pass STRIDE + OWASP)",
+        "Progress checklist"
+      ],
+      "line_range": [
+        92,
+        96
+      ],
+      "snippet": "## Progress checklist\n\n- [x] v1 skill scaffold landed 2026-06-13 \u2705\n- [x] Slash-command integration landed 2026-06-18 \u2705\n- [x] ~~CI gate integration~~ \u2014 DROPPED by operator 2026-09-17 (no enforcement workflow exists; an LLM gate needs model c",
+      "score": 0.9182,
+      "content_hash": "c29a4e9f9ea15e9e"
+    },
+    {
+      "file": "/workspace/handoffs/active/streaming-llm-baseline.md",
+      "heading_path": [
+        "StreamingLLM Baseline for KV Reduction Cluster",
+        "Progress checklist"
+      ],
+      "line_range": [
+        131,
+        141
+      ],
+      "snippet": "## Progress checklist\n\n- [x] StreamingLLM sink+window scaffold landed in epyc-llama (commit 632ce0f92, disabled by default) \u2705\n- [x] Current-v7 source/build surface reconciled at `111bff89d` + `cf051d3e1` on `fork/experimental-v7-refresh-202",
+      "score": 0.9178,
+      "content_hash": "8aef23554946861d"
+    },
+    {
+      "file": "/workspace/handoffs/active/streaming-llm-baseline.md",
+      "heading_path": [
+        "StreamingLLM Baseline for KV Reduction Cluster",
+        "Non-Goals"
+      ],
+      "line_range": [
+        95,
+        100
+      ],
+      "snippet": "## Non-Goals\n\n- **No fine-tuning**: StreamingLLM is purely inference-time, no model surgery.\n- **No KV quantization changes**: orthogonal to `kv-cache-quantization.md` (completed); StreamingLLM operates on the *selection* axis, not the *pre",
+      "score": 0.9177,
+      "content_hash": "802a7e167669c49e"
+    },
+    {
+      "file": "/workspace/progress/2026-03/2026-03-28.md",
+      "heading_path": [
+        "2026-03-28 Progress",
+        "llama.cpp Working Tree Cleanup + Commit (Session 2026-03-28f)",
+        "Summary"
+      ],
+      "line_range": [
+        263,
+        266
+      ],
+      "snippet": "### Summary\n\nReviewed all 20 uncommitted modified files on `production-consolidated-v2` branch of `/mnt/raid0/llm/llama.cpp`. Cross-referenced with progress reports (03-15 through 03-17), handoffs (ssm-hybrid-acceleration, inference-acceler",
+      "score": 0.9176,
+      "content_hash": "b496fc8ecb2d2064"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-19.md",
+      "heading_path": [
+        "Session 2 (afternoon) \u2014 Research intake batch + 8 cluster deep-dives + 4 ready-to-claim handoff stubs",
+        "What ran",
+        "Phase 7 \u2014 reassessment + 4 ready-to-claim stubs"
+      ],
+      "line_range": [
+        111,
+        117
+      ],
+      "snippet": "### Phase 7 \u2014 reassessment + 4 ready-to-claim stubs\n- Reassessed priorities; key surfaced changes: ReDel and \u03b4-mem both have released code \u2192 cheaper first-spikes than initial intake suggested; \"when-to-stop\" gap (intake-548) is uniquely EPY",
+      "score": 0.9171,
+      "content_hash": "109c7a7acc6b0526"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-19.md",
+      "heading_path": [
+        "Session 2 (afternoon) \u2014 Research intake batch + 8 cluster deep-dives + 4 ready-to-claim handoff stubs",
+        "Files changed (this session)",
+        "`epyc-root` (`/workspace`)"
+      ],
+      "line_range": [
+        120,
+        145
+      ],
+      "snippet": "### `epyc-root` (`/workspace`)\n| Path | Change | Notes |\n|------|--------|-------|\n| `research/intake_index.yaml` | +37 entries (532-568) | Validator passes (568 total) |\n| `handoffs/active/rao-redel-substrate-spike.md` | NEW | Master P#42 ",
+      "score": 0.9157,
+      "content_hash": "2342a34cc2ea9a0f"
+    },
+    {
+      "file": "/workspace/research/deep-dives/halo-rlm-trace-loop-integration.md",
+      "heading_path": [
+        "--model gpt-5.4-mini --max-depth 1 --max-turns 8 --max-parallel 2 --instructions ...",
+        "10) Cross-References"
+      ],
+      "line_range": [
+        373,
+        392
+      ],
+      "snippet": "## 10) Cross-References\n\n- **Intake records**: `research/intake_index.yaml` intake-516, intake-517, intake-518, intake-153.\n- **Active handoffs**:\n  - `handoffs/completed/meta-harness-optimization.md` \u00a7 Research Intake Update 2026-04-30 (HA",
+      "score": 0.9156,
+      "content_hash": "fc84bd40886463d9"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-05-19-kv-admission-cluster.md",
+      "heading_path": [
+        "KV Cache Admission / Eviction Cluster \u2014 2026-05-19",
+        "Open Questions for User"
+      ],
+      "line_range": [
+        307,
+        316
+      ],
+      "snippet": "## Open Questions for User\n\n1. **PBKV spike approval.** Do you want a `handoffs/active/pbkv-orchestrator-residency.md` stub drafted (subject to your usual no-sub-agent-driven-index-changes policy)? PBKV is the highest-ROI lever in the clust",
+      "score": 0.9153,
+      "content_hash": "dafa3760c951cdb9"
+    }
+  ],
+  "wall_s": 13.645278327167034
+}

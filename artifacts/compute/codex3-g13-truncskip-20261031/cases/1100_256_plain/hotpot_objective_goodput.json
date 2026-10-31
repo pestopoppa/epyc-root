@@ -1,0 +1,193 @@
+{
+  "arm": "1100_256_plain",
+  "id": "hotpot_objective_goodput",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/objective-task-rate-goodput.md",
+    "/workspace/handoffs/active/autopilot-continuous-optimization.md",
+    "/workspace/handoffs/active/fable5-findings-05-objective-design.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/fable5-findings-05-objective-design.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/objective-task-rate-goodput.md",
+    "/workspace/handoffs/active/autopilot-continuous-optimization.md",
+    "/workspace/handoffs/active/fable5-findings-05-objective-design.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/objective-task-rate-goodput.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/autopilot-continuous-optimization.md",
+      "/workspace/handoffs/active/fable5-findings-05-objective-design.md"
+    ],
+    "first_evidence_rank": 10,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/wiki/cost-aware-routing.md",
+      "/workspace/wiki/cost-aware-routing.md",
+      "/workspace/wiki/autonomous-research.md",
+      "/workspace/handoffs/completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md",
+      "/workspace/progress/2026-06/2026-06-19.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/wiki/routing-intelligence.md",
+      "/workspace/wiki/cost-aware-routing.md",
+      "/workspace/handoffs/active/objective-task-rate-goodput.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/wiki/cost-aware-routing.md",
+      "heading_path": [
+        "Cost-Aware Routing",
+        "2026-06-13 Update \u2014 Task Rate, Goodput, And Bloat"
+      ],
+      "line_range": [
+        130,
+        134
+      ],
+      "snippet": "## 2026-06-13 Update \u2014 Task Rate, Goodput, And Bloat\n\nFable 5 identified a cost blind spot in the live AutoPilot objective: `quality`, generated-token throughput, tier-cost proxy, and reliability can all fail to distinguish a terse correct ",
+      "score": 0.9441,
+      "content_hash": "dafdcceb5365a996"
+    },
+    {
+      "file": "/workspace/wiki/cost-aware-routing.md",
+      "heading_path": [
+        "Cost-Aware Routing",
+        "2026-06-15 Update \u2014 Decision-Aware Routing Stayed Frozen"
+      ],
+      "line_range": [
+        228,
+        229
+      ],
+      "snippet": "- **Shadow telemetry now covers task-rate and goodput, but it is not yet a live objective.** The Fable 5 objective change tracks solved-task throughput, not just token throughput, yet the old Pareto vector remains authoritative until eviden",
+      "score": 0.9398,
+      "content_hash": "1e1056bd23593076"
+    },
+    {
+      "file": "/workspace/wiki/autonomous-research.md",
+      "heading_path": [
+        "Autonomous Research",
+        "2026-06-19 Update \u2014 Evidence Plane Authority Remains Sample-Gated"
+      ],
+      "line_range": [
+        444,
+        445
+      ],
+      "snippet": "- **Goodput and task-rate are useful only as shadow telemetry for now.** The objective work explicitly stops short of flipping live dominance until the evidence-plane restart and replay gates can validate the new metric surface. Sources: [o",
+      "score": 0.9386,
+      "content_hash": "7923faf3dbcfa1bb"
+    },
+    {
+      "file": "/workspace/handoffs/completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md",
+      "heading_path": [
+        "AutoPilot: Continuous Recursive Optimization"
+      ],
+      "line_range": [
+        181,
+        185
+      ],
+      "snippet": "> **Fable 5 review (2026-06-12)**: the review's architecture recommendations now have owning handoffs: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) (LIVE t775 baseline-ratchet hotfix + dead-question repair), [e",
+      "score": 0.9378,
+      "content_hash": "ef121474af5df13c"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-19.md",
+      "heading_path": [
+        "2026-06-19 Progress",
+        "N6 task-rate/goodput replay refresh"
+      ],
+      "line_range": [
+        318,
+        324
+      ],
+      "snippet": "## N6 task-rate/goodput replay refresh\n\nAdvanced the inference-free N6 objective-design lane while the AutoPilot W4/W6 shadow run continued. Current code already has the task-rate objective/replay substrate (`src/autopilot_core/tier_specs.p",
+      "score": 0.9377,
+      "content_hash": "59ebaeee075db93e"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue \u2014 W4 instrument/VL repair + goodput doc-truth checkpoint",
+        "Next work"
+      ],
+      "line_range": [
+        209,
+        216
+      ],
+      "snippet": "### Next work\n\n1. Restart AutoPilot from `epyc-orchestrator` HEAD `9bc4c3a` or later after this checkpoint.\n2. Continue inference-free Queue 1: N2 ledger/sequential verdicts design implementation, W5 core_v2 prep, N7 offline analyses (super",
+      "score": 0.9374,
+      "content_hash": "5b1b9f7b8f8f3ae6"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue \u2014 evidence-plane hotfix batch + task-rate replay checkpoint",
+        "Next work"
+      ],
+      "line_range": [
+        165,
+        172
+      ],
+      "snippet": "### Next work\n\n1. Checkpoint/commit this batch with explicit pathspecs because the orchestrator worktree contains unrelated dirty files from prior Fable/autopilot work.\n2. Pick up `routing-truth-restoration.md` W1-W4 next: declared producti",
+      "score": 0.9373,
+      "content_hash": "2d69346c8b907496"
+    },
+    {
+      "file": "/workspace/wiki/routing-intelligence.md",
+      "heading_path": [
+        "Routing Intelligence",
+        "2026-06-15 Update \u2014 Generated Stack Priors And Frozen Expansion"
+      ],
+      "line_range": [
+        428,
+        429
+      ],
+      "snippet": "- **Lab-level cost metrics are now `task_rate` and `goodput`, but only as shadow telemetry.** The Fable 5 objective work frames wall-time and solved-task throughput as the right cost surface, yet live Pareto dominance stays on the existing ",
+      "score": 0.9364,
+      "content_hash": "52426c57bd75139f"
+    },
+    {
+      "file": "/workspace/wiki/cost-aware-routing.md",
+      "heading_path": [
+        "Cost-Aware Routing",
+        "2026-06-13 Update \u2014 Task Rate, Goodput, And Bloat"
+      ],
+      "line_range": [
+        134,
+        137
+      ],
+      "snippet": "The first implementation deliberately stopped short of flipping live dominance. `task_rate_qph`, `goodput_qph`, and `tokens_per_solved_task` are now journaled as shadow telemetry, and historical replay over 656 rows parsed cleanly. The proo",
+      "score": 0.9364,
+      "content_hash": "ed03369b3a47cece"
+    },
+    {
+      "file": "/workspace/handoffs/active/objective-task-rate-goodput.md",
+      "heading_path": [
+        "Objective: task_rate Axis + Goodput Frontier Rebuild",
+        "Checkpoints"
+      ],
+      "line_range": [
+        320,
+        321
+      ],
+      "snippet": "- 2026-06-12 W2 replay result: 656 journal rows parsed, 0 malformed skipped; legacy canonical T1 frontier = 5 points, task-rate replay frontier = 8 points, admitted entries = 247 in both views. Dropped legacy point: trial 776 (quality 1.884",
+      "score": 0.9359,
+      "content_hash": "71d0b739c1fee8a1"
+    }
+  ],
+  "wall_s": 26.23642435995862
+}

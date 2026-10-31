@@ -1,0 +1,188 @@
+{
+  "arm": "4000_300_punct",
+  "id": "hotpot_routing_retrain_block",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/retrain-routing-models.md",
+    "/workspace/handoffs/active/routing-and-optimization-index.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/retrain-routing-models.md",
+    "/workspace/handoffs/active/routing-and-optimization-index.md"
+  ],
+  "metrics": {
+    "evidence_count": 2,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/retrain-routing-models.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/routing-and-optimization-index.md"
+    ],
+    "first_evidence_rank": 2,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/research/deep-dives/2026-06-12-lollms-smart-router-dataset.md",
+      "/workspace/handoffs/active/retrain-routing-models.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/research/deep-dives/2026-06-12-lollms-smart-router-dataset.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/wiki/routing-intelligence.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/active/retrain-routing-models.md",
+      "/workspace/handoffs/active/retrain-routing-models.md",
+      "/workspace/research/deep-dives/2026-06-12-lollms-smart-router-dataset.md"
+    ],
+    "recall@3": 0.5,
+    "perfect@3": false,
+    "recall@5": 0.5,
+    "perfect@5": false,
+    "recall@10": 0.5,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/research/deep-dives/2026-06-12-lollms-smart-router-dataset.md",
+      "heading_path": [
+        "LOLLMS Smart Router Dataset \u2014 Deep-Dive (intake-687)",
+        "Cross-refs"
+      ],
+      "line_range": [
+        104,
+        111
+      ],
+      "snippet": "## Cross-refs\n\n- `handoffs/active/retrain-routing-models.md` \u2014 the blocked handoff. Real blocker = BGE re-embed of 52K orphan memories, not label count.\n- `handoffs/active/learned-routing-controller.md` \u2014 feature schema (1031-d BGE\u2295task-typ",
+      "score": 0.9243,
+      "content_hash": "1432a7944f6990a9"
+    },
+    {
+      "file": "/workspace/handoffs/active/retrain-routing-models.md",
+      "heading_path": [
+        "Retrain Routing Models"
+      ],
+      "line_range": [
+        1,
+        7
+      ],
+      "snippet": "# Retrain Routing Models\n\n**Status**: ACTIVE/PARTIAL \u2014 BGE repair + current-data MLP retrain completed 2026-06-12; classifier weights are staged, the clean-window rollout harness landed 2026-07-05, and the production flag remains OFF pendin",
+      "score": 0.9239,
+      "content_hash": "5ba378d2cbf3bf91"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "PORTFOLIO REVIEW (2026-06-12, 5 agents, 108 rows): classified verdicts",
+        "NOW"
+      ],
+      "line_range": [
+        1165,
+        1173
+      ],
+      "snippet": "## NOW\n- **retrain-routing-models** [blocked] out: Operator BGE re-embed (repair_episodic_embeddings.py --repair) \u2192 extract_training_data.py \u2192 train_routing_classifier.py \u2192 GAT retrain \u2192 SkillBank re-distill \u2192 flag verification. lollms data",
+      "score": 0.9235,
+      "content_hash": "22cbeb6744d6f0c8"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-06-12-lollms-smart-router-dataset.md",
+      "heading_path": [
+        "LOLLMS Smart Router Dataset \u2014 Deep-Dive (intake-687)",
+        "Decision gates & exact next steps"
+      ],
+      "line_range": [
+        66,
+        93
+      ],
+      "snippet": "## Decision gates & exact next steps\n\n1. **Do NOT add lollms to the retrain pipeline.** No `extract_training_data.py` change, no relabel table. Rationale: surface + taxonomy + scale mismatch; the retrain blocker is embeddings.\n\n2. **Unblock",
+      "score": 0.9233,
+      "content_hash": "6ec52c57824a88e0"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Research Intake \u2014 deep-dive round on the 9-entry batch (intake-686 \u2192 694)",
+        "Net: only one genuine \"do something soon\" item"
+      ],
+      "line_range": [
+        26,
+        30
+      ],
+      "snippet": "### Net: only one genuine \"do something soon\" item\nThe deep-dives mostly **down-graded** the batch (4 parked/NO-GO/metaphor, 2 corrections that the work is already done). The clearest live actions: (1) operator **BGE re-embed** to unblock r",
+      "score": 0.9208,
+      "content_hash": "dba7516025acee03"
+    },
+    {
+      "file": "/workspace/wiki/routing-intelligence.md",
+      "heading_path": [
+        "Routing Intelligence",
+        "LOLLMS Smart Router Dataset \u2014 and the real retrain blocker (2026-06-12)"
+      ],
+      "line_range": [
+        574,
+        584
+      ],
+      "snippet": "## LOLLMS Smart Router Dataset \u2014 and the real retrain blocker (2026-06-12)\n\nintake-687 (`ParisNeo/lollms_smart_router_dataset`, Apache-2.0) is a 464-row instruction-tuning set: `task_prompt` (task + enumerated candidate-model list with capa",
+      "score": 0.9205,
+      "content_hash": "7ffff7f5851549d5"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "BGE episodic embedding repair complete; routing retrain unblocked"
+      ],
+      "line_range": [
+        1308,
+        1345
+      ],
+      "snippet": "## BGE episodic embedding repair complete; routing retrain unblocked\n\nAccelerated repair finished successfully in `epyc-orchestrator`:\n\n```bash\nuv run python scripts/maintenance/repair_episodic_embeddings.py --repair --servers 90 --batch-si",
+      "score": 0.9205,
+      "content_hash": "fab516f18771a879"
+    },
+    {
+      "file": "/workspace/handoffs/active/retrain-routing-models.md",
+      "heading_path": [
+        "Verify",
+        "Research Intake Update \u2014 2026-06-10",
+        "Deep-Dive Refinement (2026-06-12) \u2014 correction: lollms is NOT the unblock"
+      ],
+      "line_range": [
+        114,
+        116
+      ],
+      "snippet": "### Deep-Dive Refinement (2026-06-12) \u2014 correction: lollms is NOT the unblock\n**This retrain is NOT short on labels.** The live `episodic.db` already holds **52K+ labeled routing memories**; the real blocker is **missing BGE embeddings** (F",
+      "score": 0.9202,
+      "content_hash": "39ba7422103a9199"
+    },
+    {
+      "file": "/workspace/handoffs/active/retrain-routing-models.md",
+      "heading_path": [
+        "Retrain Routing Models",
+        "Context"
+      ],
+      "line_range": [
+        8,
+        18
+      ],
+      "snippet": "## Context\nEpisodic memory was reset on 2026-05-25. The routing classifier weights,\nGraphRouter GAT weights, and SkillBank skills were invalidated. Normal\nFAISS retrieval is active as fallback. The former blocker was not label\nvolume: by 20",
+      "score": 0.9198,
+      "content_hash": "ed561074bf4810c7"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-06-12-lollms-smart-router-dataset.md",
+      "heading_path": [
+        "LOLLMS Smart Router Dataset \u2014 Deep-Dive (intake-687)",
+        "TL;DR / Refined recommendation"
+      ],
+      "line_range": [
+        12,
+        21
+      ],
+      "snippet": "## TL;DR / Refined recommendation\n\n- Our blocked retrain (`retrain-routing-models.md`) is **not** label-starved in the way the intake note implies \u2014 it is **embedding-starved**. The live `episodic.db` already holds **52K\u201353K routing memorie",
+      "score": 0.9191,
+      "content_hash": "966611c7fcf7e2d0"
+    }
+  ],
+  "wall_s": 13.756747109116986
+}

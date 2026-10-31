@@ -1,0 +1,192 @@
+{
+  "arm": "4000_256_punct",
+  "id": "locomo_xmas_routing_path",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/x-mas-text-routing.md",
+    "/workspace/handoffs/active/routing-and-optimization-index.md",
+    "/workspace/progress/2026-06/2026-06-13.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/x-mas-text-routing.md",
+    "/workspace/handoffs/active/routing-and-optimization-index.md",
+    "/workspace/progress/2026-06/2026-06-13.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/routing-and-optimization-index.md",
+      "/workspace/handoffs/active/x-mas-text-routing.md",
+      "/workspace/progress/2026-06/2026-06-13.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/progress/2026-06/2026-06-19.md",
+      "/workspace/progress/2026-06/2026-06-19.md",
+      "/workspace/wiki/routing-intelligence.md",
+      "/workspace/progress/2026-06/2026-06-19.md",
+      "/workspace/handoffs/active/prompt-construction-determinism.md",
+      "/workspace/progress/2026-06/2026-06-18.md",
+      "/workspace/progress/2026-07/2026-07-05.md",
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/progress/2026-06/2026-06-20.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "X-MAS default-off telemetry documented",
+        "Root docs updated"
+      ],
+      "line_range": [
+        742,
+        753
+      ],
+      "snippet": "### Root docs updated\n\n- `handoffs/active/x-mas-text-routing.md`: status, spike-plan progress, and\n  remaining gates now distinguish default-off shadow telemetry from future\n  enforcing override.\n- `handoffs/active/non-inference-backlog.md`",
+      "score": 0.9296,
+      "content_hash": "29c0d267e1755aa2"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-19.md",
+      "heading_path": [
+        "2026-06-19 Progress",
+        "Final wrap-up acceleration-index compaction"
+      ],
+      "line_range": [
+        2279,
+        2313
+      ],
+      "snippet": "## Final wrap-up acceleration-index compaction\n\nRan the operator-requested full wrap-up routine across active handoffs, domain\nindices, README freshness, and wiki source state. The central evidence-plane,\nmodel-stack, X-MAS, routing, Hermes",
+      "score": 0.9265,
+      "content_hash": "ba084071dac06228"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-19.md",
+      "heading_path": [
+        "2026-06-19 Progress",
+        "Full wrap-up handoff/wiki compaction"
+      ],
+      "line_range": [
+        1305,
+        1338
+      ],
+      "snippet": "## Full wrap-up handoff/wiki compaction\n\nRan the operator-requested full wrap-up routine focused on pruning active\nhandoffs and indices after the long 2026-06-19 push. No application code was\nchanged. The large completed-work narration in a",
+      "score": 0.9245,
+      "content_hash": "524b44375bf2af0d"
+    },
+    {
+      "file": "/workspace/wiki/routing-intelligence.md",
+      "heading_path": [
+        "Routing Intelligence",
+        "Updates \u2014 2026-04-28",
+        "New Findings (2026-06-13 \u2014 Routing Truth, Descriptors, And X-MAS)"
+      ],
+      "line_range": [
+        380,
+        387
+      ],
+      "snippet": "### New Findings (2026-06-13 \u2014 Routing Truth, Descriptors, And X-MAS)\n\n- **The immediate routing defect was running-state truth, not a missing decision theory.** Fable 5 found production using test feature defaults and runtime flag mutation",
+      "score": 0.9227,
+      "content_hash": "39d59c61c09fdcb6"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-19.md",
+      "heading_path": [
+        "2026-06-19 Progress",
+        "Final wrap-up closeout"
+      ],
+      "line_range": [
+        1646,
+        1674
+      ],
+      "snippet": "## Final wrap-up closeout\n\nRan the operator-requested full wrap-up routine after the X-MAS constrained\npolicy and OpenAI helper migration. Root and orchestrator GitNexus were both\nfresh before documentation edits (`epyc-root` at `06175fa`,\n",
+      "score": 0.9217,
+      "content_hash": "dc34cd3281988231"
+    },
+    {
+      "file": "/workspace/handoffs/active/prompt-construction-determinism.md",
+      "heading_path": [
+        "Prompt-Construction & Sampling Determinism",
+        "Reporting"
+      ],
+      "line_range": [
+        99,
+        102
+      ],
+      "snippet": "## Reporting\n\nOn closing a task: check the box here, update master row **N14** + the routing-index subsystem row, append to `progress/2026-06/`. On full closure (D1\u2013D4 done): extract findings to wiki, move this handoff to `completed/`, dele",
+      "score": 0.9217,
+      "content_hash": "4c4b85814e437a4b"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-18.md",
+      "heading_path": [
+        "2026-06-18",
+        "W4 sequential verdict shadow wiring + X-MAS table evidence checkpoint"
+      ],
+      "line_range": [
+        77,
+        87
+      ],
+      "snippet": "- `handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md`: updated W4 status to distinguish default-off shadow wiring from still-blocked authority/cutover.\n- `handoffs/active/routing-and-optimization-index.md`: updated AutoPilot ",
+      "score": 0.9205,
+      "content_hash": "af22e83efddc74b8"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-05.md",
+      "heading_path": [
+        "Progress - 2026-07-05",
+        "Wiki full-backlog compile (2026-07-05, project-wiki skill)"
+      ],
+      "line_range": [
+        1260,
+        1283
+      ],
+      "snippet": "## Wiki full-backlog compile (2026-07-05, project-wiki skill)\n\nExecuted the deferred \"47-source cross-session backlog\" compile flagged in the\nhardware-optimization.md header: 49 changed sources since the 2026-07-04\ncompile (35 active handof",
+      "score": 0.9204,
+      "content_hash": "73280554af4eaf23"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "X-MAS default-off telemetry documented",
+        "Status impact"
+      ],
+      "line_range": [
+        722,
+        728
+      ],
+      "snippet": "### Status impact\n\n- This closes the safe live frontdoor-hook portion of NIB2-51 as default-off\n  X-MAS telemetry.\n- The canonical X-MAS handoff remains open for the inference/eval-gated 5x5\n  winner-table sweep and any later enforcing rout",
+      "score": 0.9197,
+      "content_hash": "81afa631c90982c7"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-20.md",
+      "heading_path": [
+        "2026-06-20 Progress",
+        "Final manual wrap-up and launch-map audit checkpoint"
+      ],
+      "line_range": [
+        949,
+        998
+      ],
+      "snippet": "## Final manual wrap-up and launch-map audit checkpoint\n\nRan the operator-requested full wrap-up routine after the interrupted\n`launch_maps` read-only audit. This pass made no application-code edits and did\nnot archive or split any addition",
+      "score": 0.9195,
+      "content_hash": "ca3f812ff7ec3a81"
+    }
+  ],
+  "wall_s": 12.947973350062966
+}

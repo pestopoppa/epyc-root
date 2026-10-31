@@ -1,0 +1,41 @@
+STAGE_START cmake-configure ['cmake', '-G', 'Ninja', '-S', '/mnt/micron/codex3-lanes/kpf-e332-src', '-B', '/mnt/micron/codex3-lanes/kpf181-e332-hip-build', '-DCMAKE_BUILD_TYPE=Release', '-DGGML_HIP=ON', '-DAMDGPU_TARGETS=gfx90a', '-DGGML_HIP_ROCWMMA_FATTN=ON', '-DGGML_HIP_MMQ_MFMA=ON', '-DGGML_HIP_GRAPHS=ON', '-DGGML_HIP_NO_VMM=ON', '-DGGML_NATIVE=ON', '-DCMAKE_BUILD_RPATH_USE_ORIGIN=ON', '-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON', '-DCMAKE_INSTALL_RPATH=$ORIGIN;/opt/rocm/lib', '-DLLAMA_BUILD_COMMIT=e332293486', '-DLLAMA_BUILD_NUMBER=0']
+PROCESS_STARTED stage=cmake-configure pid=2550668 birth=153828019
+CMAKE_BUILD_TYPE=Release
+fatal: not a git repository (or any parent up to mount point /mnt)
+Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).
+fatal: not a git repository (or any parent up to mount point /mnt)
+Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).
+-- ccache found, compilation results will be cached. Disable with GGML_CCACHE=OFF.
+-- CMAKE_SYSTEM_PROCESSOR: x86_64
+-- GGML_SYSTEM_ARCH: x86
+-- Including CPU backend
+-- x86 detected
+-- Adding CPU backend variant ggml-cpu: -march=native 
+COMPILER_OBSERVED pid=2550721 birth=153828037 args=/usr/bin/c++ -print-libgcc-file-name --rtlib=compiler-rt 
+-- HIP and hipBLAS found
+-- Including HIP backend
+-- ggml version: 0.16.0
+-- ggml commit:  unknown
+CMake Warning at common/CMakeLists.txt:33 (message):
+  Git repository not found; to enable automatic generation of build info,
+  make sure Git is installed and the project is a Git repository.
+
+
+-- OpenSSL found: 3.0.13
+-- Generating embedded license file for target: llama-app
+-- Configuring done (0.5s)
+-- Generating done (0.2s)
+-- Build files have been written to: /mnt/micron/codex3-lanes/kpf181-e332-hip-build
+DRAIN_COMPLETE leader=2550668 leader_rc=0 term=0 kill=0 children=0
+STAGE_DONE cmake-configure
+STAGE_START native-hip-compile ['ninja', '-C', '/mnt/micron/codex3-lanes/kpf181-e332-hip-build', '-j2', 'ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/acc.cu.o']
+PROCESS_STARTED stage=native-hip-compile pid=2550816 birth=153828100
+ninja: Entering directory `/mnt/micron/codex3-lanes/kpf181-e332-hip-build'
+COMPILER_OBSERVED pid=2550820 birth=153828102 args=/opt/rocm-6.2.0/lib/llvm/bin/clang++ -DGGML_BACKEND_BUILD -DGGML_BACKEND_SHARED -DGGML_HIP_GRAPHS -DGGML_HIP_NO_VMM -DGGML_HIP_ROCWMMA_FATTN -DGGML_SCHED_MAX_COPIES=4 -DGGML_SHARED -DGGML_USE_HIP -DUSE_PROF_API=1 -D_GNU_SOURCE -D_XOPEN_SOURCE=600 -D__HIP_PLATFORM_AMD__=1 -D__HIP_ROCclr__=1 -Dggml_hi
+CAPTURED_CHILD pid=2550816 birth=153828100
+ninja: build stopped: interrupted by user.
+CAPTURED_CHILD pid=2550820 birth=153828102
+CAPTURED_CHILD pid=2550823 birth=153828103
+DRAIN_COMPLETE leader=2550816 leader_rc=2 term=1 kill=0 children=0
+GUARD_CUTOFF reason=STOP compiler_seen=True leader_reaped=True children_drained=true
+{"schema": "hil15-r11-smoke-supervisor/v1", "elapsed_s": 1.2602553369943053, "sampled_peak_tree_rss_bytes": 279162880, "samples": 13, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": 17179869184, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 2550620, "leader_birth": 153827995, "child_rc": 75, "children_drained": true, "failure": null}

@@ -1,0 +1,195 @@
+{
+  "arm": "1100_256_punct",
+  "id": "hotpot_multifile_coding_capability",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/multi-file-coding-completion-capability.md",
+    "/workspace/handoffs/active/frontier-f1-real-task-corpus.md",
+    "/workspace/handoffs/active/model-capability-descriptors.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/frontier-f1-real-task-corpus.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/multi-file-coding-completion-capability.md",
+    "/workspace/handoffs/active/frontier-f1-real-task-corpus.md",
+    "/workspace/handoffs/active/model-capability-descriptors.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/multi-file-coding-completion-capability.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/frontier-f1-real-task-corpus.md",
+      "/workspace/handoffs/active/model-capability-descriptors.md"
+    ],
+    "first_evidence_rank": 6,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/wiki/agent-architecture.md",
+      "/workspace/progress/2026-05/2026-05-27.md",
+      "/workspace/wiki/agent-architecture.md",
+      "/workspace/handoffs/completed/bep-dcp-falsification-harness-completed-through-2026-05-28.md",
+      "/workspace/progress/2026-06/master-index-pre-rewrite-archive-2026-06-12.md",
+      "/workspace/handoffs/active/multi-file-coding-completion-capability.md",
+      "/workspace/progress/2026-06/master-index-pre-rewrite-archive-2026-06-12.md",
+      "/workspace/handoffs/active/routing-and-optimization-index.md",
+      "/workspace/wiki/agent-architecture.md",
+      "/workspace/research/factory-ai-harvest-2026-06-03.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/wiki/agent-architecture.md",
+      "heading_path": [
+        "Agent Architecture",
+        "Key Findings",
+        "New Findings (2026-05-27 - edit-transaction protocol fix)"
+      ],
+      "line_range": [
+        702,
+        706
+      ],
+      "snippet": "### New Findings (2026-05-27 - edit-transaction protocol fix)\n\n- **The multi-file coding failure was an agentic protocol failure, not a model capability failure.** The deployed `coder_escalation` role (`Qwen3.6-35B-A3B Q8`) solved the exact",
+      "score": 0.9355,
+      "content_hash": "062f637f2d0081e8"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-27.md",
+      "heading_path": [
+        "2026-05-27 \u2014 manual session log (continued from 2026-05-26 late session)",
+        "Multi-file coding edit-transaction audit + wrap-up (2026-05-27, Codex session)"
+      ],
+      "line_range": [
+        805,
+        811
+      ],
+      "snippet": "## Multi-file coding edit-transaction audit + wrap-up (2026-05-27, Codex session)\n\n**Scope:** audited the completed `force_mode=\"edit\"` remediation for the BEP multi-file coding completion failure, then ran the manual wrap-up routine. No ap",
+      "score": 0.9351,
+      "content_hash": "0efa1b5c237ccbea"
+    },
+    {
+      "file": "/workspace/wiki/agent-architecture.md",
+      "heading_path": [
+        "Agent Architecture",
+        "Compiled Update \u2014 2026-07-29: the harness is a first-class, re-targetable layer \u2014 and a merged fix is not a running fix",
+        "Model choice is not the lever for a protocol gap"
+      ],
+      "line_range": [
+        1493,
+        1502
+      ],
+      "snippet": "### Model choice is not the lever for a protocol gap\n\nThe multi-file coding shortfall remains diagnosed as a **protocol/tooling gap,\nnot a capability gap**, and the 2026-07-29 intake explicitly declines to reopen\nthe model-swap question on ",
+      "score": 0.9337,
+      "content_hash": "e7b0daa370e1a3fe"
+    },
+    {
+      "file": "/workspace/handoffs/completed/bep-dcp-falsification-harness-completed-through-2026-05-28.md",
+      "heading_path": [
+        "BEP-2 / DCP-6 Falsification-Harness Construction",
+        "Rework-gate execution (2026-05-27, cont.) \u2014 leak fix + canary DONE; OFF arm STILL blocked",
+        "Track (A) PROVEN (results-readfix7, 2026-05-27) \u2014 loop-guard fixed + fires; capability verdict corrected below"
+      ],
+      "line_range": [
+        792,
+        804
+      ],
+      "snippet": "**CORRECTION (operator review + one-shot ablation 2026-05-27):** the \"tasks still fail both arms \u2192\ncoder-capability\" claim above is wrong for this issue. `results-readfix7` is **contaminated** \u2014 t4/t5-off +\nt4-on were backend `:8070` unavai",
+      "score": 0.9335,
+      "content_hash": "c229f2b33055d224"
+    },
+    {
+      "file": "/workspace/progress/2026-06/master-index-pre-rewrite-archive-2026-06-12.md",
+      "heading_path": [
+        "EPYC Handoff \u2014 Master Index",
+        "Standalone Handoffs"
+      ],
+      "line_range": [
+        144,
+        144
+      ],
+      "snippet": "| [multi-file-coding-completion-capability.md](multi-file-coding-completion-capability.md) | Agentic coding completion (`coder_escalation`) | **REMEDIATION BUILT 2026-05-27 \u2014 protocol/tooling fix shipped (flag-gated, default-OFF).** Diagnos",
+      "score": 0.9326,
+      "content_hash": "8416cd5597e86e65"
+    },
+    {
+      "file": "/workspace/handoffs/active/multi-file-coding-completion-capability.md",
+      "heading_path": [
+        "Multi-file coding completion \u2014 diagnosed agentic read\u2192edit\u2192finish protocol gap",
+        "\u2705 RESOLVED via one-shot ablation (2026-05-27) \u2014 it's protocol/tooling, NOT capability"
+      ],
+      "line_range": [
+        53,
+        58
+      ],
+      "snippet": "**Conclusion:** the model produces every correct edit one-shot \u2192 the multi-file failures are an **agentic\nprotocol / tool-interaction problem** (read\u2192`peek`\u2192edit\u2192`FINAL` loop discipline), **NOT coding capability and\nNOT a thinking misconfig",
+      "score": 0.9304,
+      "content_hash": "f10559ad531bcfdf"
+    },
+    {
+      "file": "/workspace/progress/2026-06/master-index-pre-rewrite-archive-2026-06-12.md",
+      "heading_path": [
+        "EPYC Handoff \u2014 Master Index",
+        "Priority Queue"
+      ],
+      "line_range": [
+        122,
+        122
+      ],
+      "snippet": "rence-campaign.md) Package J \u00b7 [multi-file-coding-completion-capability.md](multi-file-coding-completion-capability.md) |",
+      "score": 0.9303,
+      "content_hash": "eb6094aad0f8ce74"
+    },
+    {
+      "file": "/workspace/handoffs/active/routing-and-optimization-index.md",
+      "heading_path": [
+        "Routing, Autopilot & Stack \u2014 Active Backlog"
+      ],
+      "line_range": [
+        33,
+        36
+      ],
+      "snippet": "| RTG-21 | multi file coding completion capability | [multi-file-coding-completion-capability.md](multi-file-coding-completion-capability.md) | If a coder-role A/B is authorized, use bartowski's Q8_0 (34.38 GB) for a quant-matched run again",
+      "score": 0.9302,
+      "content_hash": "2250f2048d852020"
+    },
+    {
+      "file": "/workspace/wiki/agent-architecture.md",
+      "heading_path": [
+        "Agent Architecture",
+        "Key Findings",
+        "New Findings (2026-05-27 - edit-transaction protocol fix)"
+      ],
+      "line_range": [
+        706,
+        708
+      ],
+      "snippet": "- **For routine file edits, one-shot full-file edit transactions are the safe alternative to free-form tool choreography.** The shipped edit path is default-off and requires both `ORCHESTRATOR_EDIT_TRANSACTION=1` and a scoped `ORCHESTRATOR_",
+      "score": 0.9295,
+      "content_hash": "0c807d3ba0e2bbe7"
+    },
+    {
+      "file": "/workspace/research/factory-ai-harvest-2026-06-03.md",
+      "heading_path": [
+        "Factory.ai (Droid) Feature-Mining Harvest \u2014 2026-06-03",
+        "Part 4 \u2014 Code-review benchmark: full reproducible methodology (intake-658)"
+      ],
+      "line_range": [
+        147,
+        150
+      ],
+      "snippet": "- **Slot-in**: new suite under `multi-file-coding-completion-capability.md`; register the judge-swap as a concrete EV-6 instance; **index by model/quant not role** (`feedback_model_not_role_indexing`); incremental per-PR persistence (`feedb",
+      "score": 0.9293,
+      "content_hash": "52d019a8f82858c6"
+    }
+  ],
+  "wall_s": 22.277245200937614
+}

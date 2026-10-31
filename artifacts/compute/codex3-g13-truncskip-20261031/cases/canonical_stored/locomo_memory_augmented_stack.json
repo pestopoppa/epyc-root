@@ -1,0 +1,191 @@
+{
+  "arm": "canonical_stored",
+  "id": "locomo_memory_augmented_stack",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/wiki/memory-augmented.md",
+    "/workspace/handoffs/active/engram-conditional-memory.md",
+    "/workspace/handoffs/active/unified-trace-memory-service.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/wiki/memory-augmented.md",
+    "/workspace/handoffs/active/engram-conditional-memory.md",
+    "/workspace/handoffs/active/unified-trace-memory-service.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 2,
+    "found_files": [
+      "/workspace/handoffs/active/engram-conditional-memory.md",
+      "/workspace/wiki/memory-augmented.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/unified-trace-memory-service.md"
+    ],
+    "first_evidence_rank": 2,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/wiki/context-management.md",
+      "/workspace/handoffs/active/engram-conditional-memory.md",
+      "/workspace/wiki/context-management.md",
+      "/workspace/handoffs/active/conversational-memory-eval-instrument.md",
+      "/workspace/wiki/memory-augmented.md",
+      "/workspace/progress/2026-05/2026-05-24.md",
+      "/workspace/wiki/search-retrieval.md",
+      "/workspace/wiki/memory-augmented.md",
+      "/workspace/progress/2026-09/2026-09-16-sub-recall.md",
+      "/workspace/progress/2026-09/2026-09-16-sub-hermes-memory.md"
+    ],
+    "recall@3": 0.3333333333333333,
+    "perfect@3": false,
+    "recall@5": 0.6666666666666666,
+    "perfect@5": false,
+    "recall@10": 0.6666666666666666,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/wiki/context-management.md",
+      "heading_path": [
+        "Context Management",
+        "Compiled Update \u2014 2026-07-29: the masking anchor, verbatim-log-plus-grep, and total-token accounting",
+        "Long-context memory injection competes with the conversation"
+      ],
+      "line_range": [
+        393,
+        405
+      ],
+      "snippet": "### Long-context memory injection competes with the conversation\n\nA distinct failure mode, filed here because it changes compaction policy rather\nthan store design: at a **128K** budget, six of fifteen memory methods score\n**below** a no-me",
+      "score": 0.9474,
+      "content_hash": "88feb41acbfcadc6"
+    },
+    {
+      "file": "/workspace/handoffs/active/engram-conditional-memory.md",
+      "heading_path": [
+        "Engram \u2014 Conditional Memory via Scalable Lookup"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# Engram \u2014 Conditional Memory via Scalable Lookup\n\n**Status**: active (Track A closed negative; Track B proxy open)\n**Created**: 2026-05-24 (via research intake)\n**Updated**: 2026-06-12 (stale Track A queue reconciled with decision log)\n**C",
+      "score": 0.9419,
+      "content_hash": "632d5f5f3dfb97fb"
+    },
+    {
+      "file": "/workspace/wiki/context-management.md",
+      "heading_path": [
+        "Context Management",
+        "Compiled Update \u2014 2026-07-29: the masking anchor, verbatim-log-plus-grep, and total-token accounting",
+        "Source References"
+      ],
+      "line_range": [
+        418,
+        423
+      ],
+      "snippet": "### Source References\n\n- [`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) \u2014 mandatory masking anchor; the four pieces of agent-initiated compaction; the unreported archive-query ablation; non-termination",
+      "score": 0.9384,
+      "content_hash": "e6ed01b188304fa7"
+    },
+    {
+      "file": "/workspace/handoffs/active/conversational-memory-eval-instrument.md",
+      "heading_path": [
+        "Conversational / Episodic Memory Eval Instruments \u2014 BEAM + Tulving adapters"
+      ],
+      "line_range": [
+        1,
+        10
+      ],
+      "snippet": "# Conversational / Episodic Memory Eval Instruments \u2014 BEAM + Tulving adapters\n\n**Status**: stub\n**Created**: 2026-09-07 (via research intake, operator-approved plan 2026-09-07)\n**Categories**: benchmark_methodology, memory_augmented, contex",
+      "score": 0.9374,
+      "content_hash": "135554fe96e8073b"
+    },
+    {
+      "file": "/workspace/wiki/memory-augmented.md",
+      "heading_path": [
+        "Memory-Augmented Systems",
+        "Compiled Update \u2014 2026-07-29: agent-experience memory \u2014 store shape, budget-conditional retrieval, and the curve nobody has measured",
+        "Source References"
+      ],
+      "line_range": [
+        526,
+        532
+      ],
+      "snippet": "### Source References\n\n- [`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) \u2014 UTM-M1..M10: store shape, additive layering over `src/trace/`, three-verb write API, the missing per-window instrument, 128K ",
+      "score": 0.9372,
+      "content_hash": "9ee92f8a75969d2d"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-24.md",
+      "heading_path": [
+        "2026-05-24 \u2014 manual session log",
+        "Session 7 \u2014 DeepSeek Engram research intake + dual-track handoff",
+        "Files changed (epyc-root)"
+      ],
+      "line_range": [
+        722,
+        731
+      ],
+      "snippet": "### Files changed (epyc-root)\n\n| File | Status |\n|---|---|\n| `research/intake_index.yaml` | + intake-599 (Engram paper) + intake-600 (CXL pooling), then synthesized `notes:` block on intake-599 with deep-dive findings; 604 entries validated",
+      "score": 0.9371,
+      "content_hash": "3d922f4a11e07e9b"
+    },
+    {
+      "file": "/workspace/wiki/search-retrieval.md",
+      "heading_path": [
+        "Search & Retrieval",
+        "Compiled Update \u2014 2026-07-29: the LFM2.5-ColBERT path is open \u2014 which makes it a scope question, not a cost question",
+        "Source References"
+      ],
+      "line_range": [
+        425,
+        430
+      ],
+      "snippet": "### Source References\n\n- [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) \u2014 the struck PyLate/PLAID-only premise; three GGUF repos and the seven-quant/reference-script surface; the v8 conversion + graph-builder support chain; t",
+      "score": 0.9364,
+      "content_hash": "78744a9b2ba01887"
+    },
+    {
+      "file": "/workspace/wiki/memory-augmented.md",
+      "heading_path": [
+        "Memory-Augmented Systems"
+      ],
+      "line_range": [
+        1,
+        7
+      ],
+      "snippet": "# Memory-Augmented Systems\n\n**Category**: `memory_augmented`\n**Confidence**: verified\n**Last compiled**: 2026-08-08\n**Sources**: 35+ documents (2 deep-dives, 28+ intake entries, active handoffs, progress logs, K-MEM/Tulving measurement cont",
+      "score": 0.9358,
+      "content_hash": "412571bc30c1624b"
+    },
+    {
+      "file": "/workspace/progress/2026-09/2026-09-16-sub-recall.md",
+      "heading_path": [
+        "2026-09-16 \u2014 sub-recall: dead `recall()` on `/v1` fixed",
+        "`/v1` recall decision: YES, `/v1` should get recall"
+      ],
+      "line_range": [
+        31,
+        37
+      ],
+      "snippet": "## `/v1` recall decision: YES, `/v1` should get recall\n\n- `hermes-outer-shell.md` says that with no override, `/v1` runs the \"full frontdoor \u2192 MemRL \u2192 specialist \u2192 escalation graph\". It also says MemRL \"powers Hermes's reasoning\".\n- \"Hermes",
+      "score": 0.9321,
+      "content_hash": "050f550317529b94"
+    },
+    {
+      "file": "/workspace/progress/2026-09/2026-09-16-sub-hermes-memory.md",
+      "heading_path": [
+        "Hermes memory vs orchestrator episodic memory \u2014 HS-4 input (sub-hermes-memory, 2026-09-16)"
+      ],
+      "line_range": [
+        1,
+        23
+      ],
+      "snippet": "# Hermes memory vs orchestrator episodic memory \u2014 HS-4 input (sub-hermes-memory, 2026-09-16)\n\n**Operator question:** will Hermes' memory and delegation features compete with, or interfere with, the orchestrator's episodic memory? Or are the",
+      "score": 0.932,
+      "content_hash": "92707a41d7d59443"
+    }
+  ],
+  "wall_s": 14.936437315074727
+}

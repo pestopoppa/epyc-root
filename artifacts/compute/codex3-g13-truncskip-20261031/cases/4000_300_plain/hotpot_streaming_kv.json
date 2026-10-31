@@ -1,0 +1,189 @@
+{
+  "arm": "4000_300_plain",
+  "id": "hotpot_streaming_kv",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/streaming-llm-baseline.md",
+    "/workspace/wiki/kv-cache.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/streaming-llm-baseline.md",
+    "/workspace/wiki/kv-cache.md"
+  ],
+  "metrics": {
+    "evidence_count": 2,
+    "found_count": 2,
+    "found_files": [
+      "/workspace/handoffs/active/streaming-llm-baseline.md",
+      "/workspace/wiki/kv-cache.md"
+    ],
+    "missing_files": [],
+    "first_evidence_rank": 1,
+    "all_evidence_rank": 5,
+    "ranked_files": [
+      "/workspace/handoffs/active/streaming-llm-baseline.md",
+      "/workspace/handoffs/active/streaming-llm-baseline.md",
+      "/workspace/research/deep-dives/2026-05-19-kv-admission-cluster.md",
+      "/workspace/handoffs/active/streaming-llm-baseline.md",
+      "/workspace/wiki/kv-cache.md",
+      "/workspace/handoffs/active/streaming-llm-baseline.md",
+      "/workspace/handoffs/active/streaming-llm-baseline.md",
+      "/workspace/wiki/kv-cache.md",
+      "/workspace/wiki/kv-cache.md",
+      "/workspace/handoffs/completed/non-inference-backlog-completed-through-2026-04-12.md"
+    ],
+    "recall@3": 0.5,
+    "perfect@3": false,
+    "recall@5": 1.0,
+    "perfect@5": true,
+    "recall@10": 1.0,
+    "perfect@10": true
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/active/streaming-llm-baseline.md",
+      "heading_path": [
+        "StreamingLLM Baseline for KV Reduction Cluster",
+        "Research Context"
+      ],
+      "line_range": [
+        45,
+        57
+      ],
+      "snippet": "## Research Context\n\n| Intake ID | Title | Relevance | Notes |\n|-----------|-------|-----------|-------|\n| intake-538 | SP-KV (arxiv:2605.14037) \u2014 write-time admission | medium | empirically refuted by Steele's sink+window floor (arxiv:2601",
+      "score": 0.9277,
+      "content_hash": "4f6f134c55a672b8"
+    },
+    {
+      "file": "/workspace/handoffs/active/streaming-llm-baseline.md",
+      "heading_path": [
+        "StreamingLLM Baseline for KV Reduction Cluster",
+        "Objective"
+      ],
+      "line_range": [
+        10,
+        35
+      ],
+      "snippet": "## Objective\n\nLand a clean **StreamingLLM (attention sink + sliding window)** baseline in our llama.cpp fork (`epyc-llama`) to measure the **easy-floor** that any KV reduction method must beat. Without this floor, the relative gains claimed",
+      "score": 0.9263,
+      "content_hash": "32c89ea7456883fb"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-05-19-kv-admission-cluster.md",
+      "heading_path": [
+        "KV Cache Admission / Eviction Cluster \u2014 2026-05-19",
+        "Comparison: All 5 vs Heuristic Baselines \u2014 The Missing Experiment"
+      ],
+      "line_range": [
+        249,
+        268
+      ],
+      "snippet": "## Comparison: All 5 vs Heuristic Baselines \u2014 The Missing Experiment\n\nA consistent gap across the cluster: **none of the five papers presents a clean \"sink + sliding-window\" baseline (StreamingLLM) at matched cache budget**.\n\n| Method | Str",
+      "score": 0.9256,
+      "content_hash": "038cfc6e3d973468"
+    },
+    {
+      "file": "/workspace/handoffs/active/streaming-llm-baseline.md",
+      "heading_path": [
+        "StreamingLLM Baseline for KV Reduction Cluster",
+        "Spike Plan (single phase)",
+        "StreamingLLM patch in `epyc-llama` (~200 LoC, 1 nightshift sweep)"
+      ],
+      "line_range": [
+        60,
+        87
+      ],
+      "snippet": "### StreamingLLM patch in `epyc-llama` (~200 LoC, 1 nightshift sweep)\n\n**Mechanism**: keep the first K_sink tokens permanently (attention sink), keep a sliding window of the last K_win tokens, evict everything in between. Standard implement",
+      "score": 0.9254,
+      "content_hash": "532d726301055cef"
+    },
+    {
+      "file": "/workspace/wiki/kv-cache.md",
+      "heading_path": [
+        "KV Cache Optimization",
+        "Compiled Update \u2014 2026-07-20",
+        "Key Findings (2026-07-20)"
+      ],
+      "line_range": [
+        36,
+        41
+      ],
+      "snippet": "### Key Findings (2026-07-20)\n\n- **StreamingLLM (attention-sink + sliding-window) is the easy-floor gate, and no simple KV cluster is admitted yet.** The scaffold landed in the fork (`632ce0f92`, default-off, via server context-shift `llama",
+      "score": 0.9247,
+      "content_hash": "88df58ddb59b4bbd"
+    },
+    {
+      "file": "/workspace/handoffs/active/streaming-llm-baseline.md",
+      "heading_path": [
+        "StreamingLLM Baseline for KV Reduction Cluster",
+        "Open Questions for User"
+      ],
+      "line_range": [
+        107,
+        112
+      ],
+      "snippet": "## Open Questions for User\n\n1. **K_sink, K_win defaults**: StreamingLLM paper uses 4 + 1024. For our coder/frontdoor traces (often 5-10 K tokens of context), the window should likely be larger. Sweep K_win \u2208 {1024, 2048, 4096} per workload?",
+      "score": 0.9243,
+      "content_hash": "2fe1d4b4ae0f5499"
+    },
+    {
+      "file": "/workspace/handoffs/active/streaming-llm-baseline.md",
+      "heading_path": [
+        "StreamingLLM Baseline for KV Reduction Cluster"
+      ],
+      "line_range": [
+        1,
+        9
+      ],
+      "snippet": "# StreamingLLM Baseline for KV Reduction Cluster\n\n**Status**: current-v7 source surface, CPU mechanical smoke, and pre-v7 floor/admission sweep recorded; no KV cluster admitted from the floor. Full 4-axis research sweep remains open.\n**Crea",
+      "score": 0.9226,
+      "content_hash": "505ccdb05a59eea6"
+    },
+    {
+      "file": "/workspace/wiki/kv-cache.md",
+      "heading_path": [
+        "KV Cache Optimization",
+        "Compiled Update \u2014 2026-07-20",
+        "Open Questions (2026-07-20)"
+      ],
+      "line_range": [
+        42,
+        47
+      ],
+      "snippet": "### Open Questions (2026-07-20)\n\n- Does StreamingLLM at 50% budget preserve \u226595% accuracy on our representative workloads (the 4-axis sweep is still pending)? The answer sets whether LU-KV/KVP/ForesightKV get demoted or LU-KV promoted.\n- Do",
+      "score": 0.922,
+      "content_hash": "9b84ccd34d972211"
+    },
+    {
+      "file": "/workspace/wiki/kv-cache.md",
+      "heading_path": [
+        "KV Cache Optimization",
+        "KV admission / eviction cluster + cluster-wide gate (2026-05-19)"
+      ],
+      "line_range": [
+        212,
+        228
+      ],
+      "snippet": "## KV admission / eviction cluster + cluster-wide gate (2026-05-19)\n\nFive May 2026 papers spanning write-time admission, read-time eviction, per-head budget allocation, workflow-aware residency, and reasoning-domain oracle distillation. Dee",
+      "score": 0.9215,
+      "content_hash": "01556d8219d39e6f"
+    },
+    {
+      "file": "/workspace/handoffs/completed/non-inference-backlog-completed-through-2026-04-12.md",
+      "heading_path": [
+        "Non-Inference Backlog \u2014 Tasks Actionable Without Compute",
+        "Round 2 + supplements \u2014 closed through 2026-09-27",
+        "Round 2 supplement (added 2026-05-19 \u2014 May 2026 research cluster deep-dives)"
+      ],
+      "line_range": [
+        145,
+        152
+      ],
+      "snippet": "- [x] **NIB2-52**: StreamingLLM sink + sliding-window scaffold in `epyc-llama` \u2014 [`streaming-llm-baseline.md`](../active/streaming-llm-baseline.md). **DONE 2026-06-13 (code scaffold)**: `llama.cpp` commit `632ce0f92` adds disabled-by-defaul",
+      "score": 0.921,
+      "content_hash": "a2ab7fcab46a2585"
+    }
+  ],
+  "wall_s": 16.45165198412724
+}

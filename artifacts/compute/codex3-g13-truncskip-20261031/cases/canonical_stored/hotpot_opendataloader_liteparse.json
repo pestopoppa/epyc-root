@@ -1,0 +1,191 @@
+{
+  "arm": "canonical_stored",
+  "id": "hotpot_opendataloader_liteparse",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/opendataloader-pipeline-integration.md",
+    "/workspace/research/deep-dives/liteparse-document-parser-deep-dive.md",
+    "/workspace/handoffs/active/multimodal-pipeline.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/opendataloader-pipeline-integration.md",
+    "/workspace/research/deep-dives/liteparse-document-parser-deep-dive.md",
+    "/workspace/handoffs/active/multimodal-pipeline.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 2,
+    "found_files": [
+      "/workspace/handoffs/active/opendataloader-pipeline-integration.md",
+      "/workspace/research/deep-dives/liteparse-document-parser-deep-dive.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/multimodal-pipeline.md"
+    ],
+    "first_evidence_rank": 1,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/active/opendataloader-pipeline-integration.md",
+      "/workspace/handoffs/completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md",
+      "/workspace/wiki/document-processing.md",
+      "/workspace/research/deep-dives/liteparse-document-parser-deep-dive.md",
+      "/workspace/wiki/document-processing.md",
+      "/workspace/wiki/document-processing.md",
+      "/workspace/handoffs/active/opendataloader-pipeline-integration.md",
+      "/workspace/handoffs/active/opendataloader-pipeline-integration.md",
+      "/workspace/progress/2026-03/2026-03-18.md",
+      "/workspace/handoffs/completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md"
+    ],
+    "recall@3": 0.3333333333333333,
+    "perfect@3": false,
+    "recall@5": 0.6666666666666666,
+    "perfect@5": false,
+    "recall@10": 0.6666666666666666,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/active/opendataloader-pipeline-integration.md",
+      "heading_path": [
+        "OpenDataLoader PDF \u2014 Pipeline Integration"
+      ],
+      "line_range": [
+        1,
+        7
+      ],
+      "snippet": "# OpenDataLoader PDF \u2014 Pipeline Integration\n\n**Status**: Active. The default ODL extractor and structured-context substrate are landed; parser-quality, routing, intrinsic-metric, LiteParse, and model-backed comparison gates remain open.\n**C",
+      "score": 0.949,
+      "content_hash": "e1d81b584f9ab6a3"
+    },
+    {
+      "file": "/workspace/handoffs/completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md",
+      "heading_path": [
+        "OpenDataLoader PDF \u2014 Completed Scope Through 2026-08-13",
+        "Durable references"
+      ],
+      "line_range": [
+        57,
+        63
+      ],
+      "snippet": "## Durable references\n\n- [Current active handoff](../active/opendataloader-pipeline-integration.md)\n- [Document Parser Table Bench](../active/document-parser-table-bench.md)\n- [OpenDataLoader deep dive](../../research/deep-dives/opendataloa",
+      "score": 0.9334,
+      "content_hash": "08282d1581904427"
+    },
+    {
+      "file": "/workspace/wiki/document-processing.md",
+      "heading_path": [
+        "Document Processing",
+        "Key Findings",
+        "New (2026-06-22, OpenDataLoader pipeline Phase 2 landed; hybrid-table routing still open)"
+      ],
+      "line_range": [
+        62,
+        76
+      ],
+      "snippet": "### New (2026-06-22, OpenDataLoader pipeline Phase 2 landed; hybrid-table routing still open)\n\n- **ODL structured extraction is wired and Phase 2 is complete, but the hybrid-table path remains unbuilt (Phase 3 open).** Phase 1 wired ODL beh",
+      "score": 0.9333,
+      "content_hash": "f25a1bd71f1c1b8c"
+    },
+    {
+      "file": "/workspace/research/deep-dives/liteparse-document-parser-deep-dive.md",
+      "heading_path": [
+        "LiteParse \u2014 Document Parser Deep Dive"
+      ],
+      "line_range": [
+        1,
+        7
+      ],
+      "snippet": "# LiteParse \u2014 Document Parser Deep Dive\n\n**Date**: 2026-05-29\n**Intakes**: intake-646 (LlamaIndex v2 blog), intake-647 (github.com/run-llama/liteparse)\n**Trigger**: post-intake deep dive to validate/revise the `adopt_component` call.\n**Verd",
+      "score": 0.9299,
+      "content_hash": "c6cd0817f35e1911"
+    },
+    {
+      "file": "/workspace/wiki/document-processing.md",
+      "heading_path": [
+        "Document Processing",
+        "Summary"
+      ],
+      "line_range": [
+        40,
+        49
+      ],
+      "snippet": "## Summary\n\nDocument processing in the EPYC orchestrator currently uses a binary routing pipeline by default: born-digital PDFs go through `pdftotext -layout` (fast, ~100ms/page, no structure) while scanned/image PDFs route to LightOnOCR-2-",
+      "score": 0.9291,
+      "content_hash": "21547a64a6829f27"
+    },
+    {
+      "file": "/workspace/wiki/document-processing.md",
+      "heading_path": [
+        "Document Processing",
+        "LiteParse \u2014 JVM-free born-digital fast-path candidate (2026-05-29)"
+      ],
+      "line_range": [
+        127,
+        138
+      ],
+      "snippet": "## LiteParse \u2014 JVM-free born-digital fast-path candidate (2026-05-29)\n\nLiteParse (run-llama/LlamaIndex, Apache-2.0, intake-646 blog / intake-647 repo) is a pure-Rust document parser that occupies a **different design point** from OpenDataLo",
+      "score": 0.9271,
+      "content_hash": "90347f2fe8340f2a"
+    },
+    {
+      "file": "/workspace/handoffs/active/opendataloader-pipeline-integration.md",
+      "heading_path": [
+        "OpenDataLoader PDF \u2014 Pipeline Integration",
+        "Outstanding Tasks",
+        "ODL-013 \u2014 LiteParse fast path"
+      ],
+      "line_range": [
+        53,
+        59
+      ],
+      "snippet": "### ODL-013 \u2014 LiteParse fast path\n\n- [x] Bench LiteParse-local vs OpenDataLoader-local vs pdftotext on a representative born-digital corpus: reading order, table fidelity, speed, and JVM-free deploy footprint. Use LiteParse-aware scoring an",
+      "score": 0.9271,
+      "content_hash": "5a09a016ec3ed723"
+    },
+    {
+      "file": "/workspace/handoffs/active/opendataloader-pipeline-integration.md",
+      "heading_path": [
+        "OpenDataLoader PDF \u2014 Pipeline Integration",
+        "Objective"
+      ],
+      "line_range": [
+        17,
+        20
+      ],
+      "snippet": "## Objective\n\nUse OpenDataLoader PDF as the structured document path, preserve a cheap born-digital fast path, and route scanned or structurally difficult pages to model-backed parsing. Any parser choice must report reading order, table fid",
+      "score": 0.9268,
+      "content_hash": "782f7990049c557e"
+    },
+    {
+      "file": "/workspace/progress/2026-03/2026-03-18.md",
+      "heading_path": [
+        "2026-03-18 Progress",
+        "Research Intake: OpenDataLoader PDF (intake-161)",
+        "Artifacts Created"
+      ],
+      "line_range": [
+        108,
+        114
+      ],
+      "snippet": "### Artifacts Created\n- Deep dive: `research/deep-dives/opendataloader-pdf-pipeline-integration.md`\n- Handoff: `handoffs/active/opendataloader-pipeline-integration.md`\n- Taxonomy: Added `document_processing` category\n- Updated: `handoffs/ac",
+      "score": 0.9268,
+      "content_hash": "09ac09910b3c8496"
+    },
+    {
+      "file": "/workspace/handoffs/completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md",
+      "heading_path": [
+        "OpenDataLoader PDF \u2014 Completed Scope Through 2026-08-13",
+        "Historical observations, not promotion evidence"
+      ],
+      "line_range": [
+        21,
+        27
+      ],
+      "snippet": "## Historical observations, not promotion evidence\n\n- The 8-PDF valid born-digital probe had 7/8 successes per non-hybrid backend. ODL's median heuristic quality was `0.987`, but latency was roughly `645\u2013703 ms` versus `21 ms` pdftotext and",
+      "score": 0.9268,
+      "content_hash": "eb084e693ff412d1"
+    }
+  ],
+  "wall_s": 16.042725494131446
+}

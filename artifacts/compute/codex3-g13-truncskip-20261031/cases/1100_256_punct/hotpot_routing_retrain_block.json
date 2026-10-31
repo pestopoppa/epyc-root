@@ -1,0 +1,190 @@
+{
+  "arm": "1100_256_punct",
+  "id": "hotpot_routing_retrain_block",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/retrain-routing-models.md",
+    "/workspace/handoffs/active/routing-and-optimization-index.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/retrain-routing-models.md",
+    "/workspace/handoffs/active/routing-and-optimization-index.md"
+  ],
+  "metrics": {
+    "evidence_count": 2,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/retrain-routing-models.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/routing-and-optimization-index.md"
+    ],
+    "first_evidence_rank": 10,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/research/deep-dives/2026-06-12-lollms-smart-router-dataset.md",
+      "/workspace/research/deep-dives/2026-06-12-lollms-smart-router-dataset.md",
+      "/workspace/research/deep-dives/2026-06-12-lollms-smart-router-dataset.md",
+      "/workspace/wiki/routing-intelligence.md",
+      "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/research/deep-dives/2026-06-12-lollms-smart-router-dataset.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/completed/fable5-findings-02-routing-decision-architecture.md",
+      "/workspace/handoffs/active/retrain-routing-models.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.5,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/research/deep-dives/2026-06-12-lollms-smart-router-dataset.md",
+      "heading_path": [
+        "LOLLMS Smart Router Dataset \u2014 Deep-Dive (intake-687)",
+        "Fit to EPYC",
+        "Why lollms does NOT slot into `retrain-routing-models.md`"
+      ],
+      "line_range": [
+        57,
+        58
+      ],
+      "snippet": "4. **The blocker is embeddings, not labels.** Per `learned-routing-controller.md` Operational Findings (2026-05-21): live db has 52,993 orphan routing memories with **no FAISS embeddings**; `reembedded.npz` is a frozen, 100%-disjoint 2026-0",
+      "score": 0.9267,
+      "content_hash": "00dc014880c95efc"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-06-12-lollms-smart-router-dataset.md",
+      "heading_path": [
+        "LOLLMS Smart Router Dataset \u2014 Deep-Dive (intake-687)",
+        "Cross-refs"
+      ],
+      "line_range": [
+        106,
+        110
+      ],
+      "snippet": "- `handoffs/active/retrain-routing-models.md` \u2014 the blocked handoff. Real blocker = BGE re-embed of 52K orphan memories, not label count.\n- `handoffs/active/learned-routing-controller.md` \u2014 feature schema (1031-d BGE\u2295task-type\u2295ctx\u2295images), ",
+      "score": 0.9257,
+      "content_hash": "c0a6d6f187288d4f"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-06-12-lollms-smart-router-dataset.md",
+      "heading_path": [
+        "LOLLMS Smart Router Dataset \u2014 Deep-Dive (intake-687)",
+        "Decision gates & exact next steps"
+      ],
+      "line_range": [
+        66,
+        81
+      ],
+      "snippet": "## Decision gates & exact next steps\n\n1. **Do NOT add lollms to the retrain pipeline.** No `extract_training_data.py` change, no relabel table. Rationale: surface + taxonomy + scale mismatch; the retrain blocker is embeddings.\n\n2. **Unblock",
+      "score": 0.9256,
+      "content_hash": "a3b634c068f5bcd8"
+    },
+    {
+      "file": "/workspace/wiki/routing-intelligence.md",
+      "heading_path": [
+        "Routing Intelligence",
+        "LOLLMS Smart Router Dataset \u2014 and the real retrain blocker (2026-06-12)"
+      ],
+      "line_range": [
+        578,
+        581
+      ],
+      "snippet": "1. **The retrain is not label-starved.** The live `episodic.db` already holds **52K+ labeled routing memories**; the actual blocker for `retrain-routing-models.md` is **missing BGE embeddings** (the FAISS store was reset; `reembedded.npz` i",
+      "score": 0.9242,
+      "content_hash": "239c3939e06a3f9e"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "heading_path": [
+        "EPYC Handoff \u2014 Master Index",
+        "A. NOW \u2014 live damage, zero-inference quick wins, or this-week leverage"
+      ],
+      "line_range": [
+        37,
+        41
+      ],
+      "snippet": "| N7 | **Zero-inference campaign cleanup**: K-RAG formal K7 prep/sweep + DCP-6a content-depth/freshness repair before J7 inference | either | J7 offline replay closed 2026-06-12 but found one-line slices + missing content hashes; K-RAG diag",
+      "score": 0.9237,
+      "content_hash": "b60f8a0f7c55cf56"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "PORTFOLIO REVIEW (2026-06-12, 5 agents, 108 rows): classified verdicts",
+        "NOW"
+      ],
+      "line_range": [
+        1165,
+        1167
+      ],
+      "snippet": "## NOW\n- **retrain-routing-models** [blocked] out: Operator BGE re-embed (repair_episodic_embeddings.py --repair) \u2192 extract_training_data.py \u2192 train_routing_classifier.py \u2192 GAT retrain \u2192 SkillBank re-distill \u2192 flag verification. lollms data",
+      "score": 0.9236,
+      "content_hash": "b336fef32aefcd45"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-06-12-lollms-smart-router-dataset.md",
+      "heading_path": [
+        "LOLLMS Smart Router Dataset \u2014 Deep-Dive (intake-687)",
+        "TL;DR / Refined recommendation"
+      ],
+      "line_range": [
+        14,
+        15
+      ],
+      "snippet": "- Our blocked retrain (`retrain-routing-models.md`) is **not** label-starved in the way the intake note implies \u2014 it is **embedding-starved**. The live `episodic.db` already holds **52K\u201353K routing memories with canonical role labels**; wha",
+      "score": 0.9213,
+      "content_hash": "bf3b4e3e7df8bfdc"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Research Intake \u2014 deep-dive round on the 9-entry batch (intake-686 \u2192 694)",
+        "Net: only one genuine \"do something soon\" item"
+      ],
+      "line_range": [
+        26,
+        30
+      ],
+      "snippet": "### Net: only one genuine \"do something soon\" item\nThe deep-dives mostly **down-graded** the batch (4 parked/NO-GO/metaphor, 2 corrections that the work is already done). The clearest live actions: (1) operator **BGE re-embed** to unblock r",
+      "score": 0.9208,
+      "content_hash": "dba7516025acee03"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-02-routing-decision-architecture.md",
+      "heading_path": [
+        "Fable 5 findings 02 \u2014 Routing/serving decision architecture (facet 3)",
+        "2. What is actually broken (and invisible from inside)",
+        "2.3 The learner is data-starved, and the learned layer is regrowing from zero"
+      ],
+      "line_range": [
+        28,
+        29
+      ],
+      "snippet": "**2026-06-12 follow-up**: the BGE embedding blocker has been cleared by `repair_episodic_embeddings.py --repair` (diagnose-only HEALTHY: 275,960 FAISS vectors, 94.6% coverage). Current-data MLP retrain is staged (81.0% validation accuracy; ",
+      "score": 0.9206,
+      "content_hash": "fe8a44983a6846c7"
+    },
+    {
+      "file": "/workspace/handoffs/active/retrain-routing-models.md",
+      "heading_path": [
+        "Retrain Routing Models",
+        "Context"
+      ],
+      "line_range": [
+        8,
+        18
+      ],
+      "snippet": "## Context\nEpisodic memory was reset on 2026-05-25. The routing classifier weights,\nGraphRouter GAT weights, and SkillBank skills were invalidated. Normal\nFAISS retrieval is active as fallback. The former blocker was not label\nvolume: by 20",
+      "score": 0.9203,
+      "content_hash": "ed561074bf4810c7"
+    }
+  ],
+  "wall_s": 22.497506079031155
+}

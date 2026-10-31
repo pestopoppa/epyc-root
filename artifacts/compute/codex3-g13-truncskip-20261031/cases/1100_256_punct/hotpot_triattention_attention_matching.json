@@ -1,0 +1,192 @@
+{
+  "arm": "1100_256_punct",
+  "id": "hotpot_triattention_attention_matching",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/triattention-kv-selection.md",
+    "/workspace/handoffs/active/attention-matching-kv-compaction.md",
+    "/workspace/handoffs/active/inference-acceleration-index.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/inference-acceleration-index.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/triattention-kv-selection.md",
+    "/workspace/handoffs/active/attention-matching-kv-compaction.md",
+    "/workspace/handoffs/active/inference-acceleration-index.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/attention-matching-kv-compaction.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/inference-acceleration-index.md",
+      "/workspace/handoffs/active/triattention-kv-selection.md"
+    ],
+    "first_evidence_rank": 10,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-05/2026-05-28.md",
+      "/workspace/handoffs/active/streaming-llm-baseline.md",
+      "/workspace/handoffs/completed/handoff-backlog-hygiene-audit.md",
+      "/workspace/handoffs/active/summary-token-attention-readiness.md",
+      "/workspace/progress/2026-04/2026-04-08.md",
+      "/workspace/progress/2026-06/2026-06-20.md",
+      "/workspace/research/deep-dives/2026-05-19-kv-admission-cluster.md",
+      "/workspace/handoffs/completed/triattention-kv-selection-deployment-completed-through-2026-05-28.md",
+      "/workspace/handoffs/completed/lightning-attention-port-v1-completed-through-2026-05-28.md",
+      "/workspace/handoffs/active/attention-matching-kv-compaction.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-05/2026-05-28.md",
+      "heading_path": [
+        "2026-05-28 \u2014 manual session log",
+        "Handoff Structure Audit \u2014 Final Aging Set"
+      ],
+      "line_range": [
+        337,
+        347
+      ],
+      "snippet": "- `summary-token-attention-readiness.md`: monitoring-only readiness tracker; added activation evidence template.\n- `triattention-kv-selection.md`: Expected Attention is deployed; live work is S8 per-role autopilot profiles then S9 auto-trig",
+      "score": 0.9295,
+      "content_hash": "0289dcf9d151d363"
+    },
+    {
+      "file": "/workspace/handoffs/active/streaming-llm-baseline.md",
+      "heading_path": [
+        "StreamingLLM Baseline for KV Reduction Cluster",
+        "Non-Goals"
+      ],
+      "line_range": [
+        95,
+        100
+      ],
+      "snippet": "## Non-Goals\n\n- **No fine-tuning**: StreamingLLM is purely inference-time, no model surgery.\n- **No KV quantization changes**: orthogonal to `kv-cache-quantization.md` (completed); StreamingLLM operates on the *selection* axis, not the *pre",
+      "score": 0.9289,
+      "content_hash": "802a7e167669c49e"
+    },
+    {
+      "file": "/workspace/handoffs/completed/handoff-backlog-hygiene-audit.md",
+      "heading_path": [
+        "Handoff backlog hygiene audit",
+        "Sixth pass executed 2026-05-28 \u2014 final aging-set refresh"
+      ],
+      "line_range": [
+        220,
+        230
+      ],
+      "snippet": "| `summary-token-attention-readiness.md` | Readiness tracker needed the same monitoring-only discipline as Log-Linear GDN. | Added activation evidence template and no-code rules; GPU arrival triggers CPT scoping, not automatic implementatio",
+      "score": 0.9276,
+      "content_hash": "959659447993c8ea"
+    },
+    {
+      "file": "/workspace/handoffs/active/summary-token-attention-readiness.md",
+      "heading_path": [
+        "Summary-Token Attention Readiness Tracker \u2014 KSA + GSA Cluster"
+      ],
+      "line_range": [
+        3,
+        13
+      ],
+      "snippet": "**Status**: REFRESHED 2026-05-28 \u2014 monitoring-only readiness tracker; no implementation until a gate fires\n**Created**: 2026-04-29 (via research-intake of intake-502 KSA + intake-507 GSA)\n**Updated**: 2026-07-26 (activation gates reviewed; ",
+      "score": 0.9266,
+      "content_hash": "9abcf479e023718b"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-08.md",
+      "heading_path": [
+        "2026-04-08 \u2014 Research Intake 282-283: Amazon S3 Files",
+        "Session 3 \u2014 Research Intake 284-288: KV Cache Selection Cluster + Deep Dive + Handoff Promotion",
+        "Handoff Promotion: triattention-kv-selection.md (stub \u2192 ACTIVE)"
+      ],
+      "line_range": [
+        134,
+        141
+      ],
+      "snippet": "### Handoff Promotion: triattention-kv-selection.md (stub \u2192 ACTIVE)\n\nPromoted to ACTIVE with full governance format (55 \u2192 106 lines):\n- Title broadened: \"KV Cache Selection/Eviction (TriAttention / Expected Attention)\"\n- Added: Current Work",
+      "score": 0.926,
+      "content_hash": "4216f95f3bb4096d"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-20.md",
+      "heading_path": [
+        "2026-06-20 Progress",
+        "Wrap-up index and wiki hygiene"
+      ],
+      "line_range": [
+        763,
+        782
+      ],
+      "snippet": "- Archived the superseded\n  `handoffs/active/shape-keyed-contention-gating-B-RESUME.md` checkpoint to\n  `handoffs/archived/shape-keyed-contention-gating-B-RESUME-history-through-2026-06-20.md`.\n  The current active rollout instructions rema",
+      "score": 0.9255,
+      "content_hash": "0303175e3be916bc"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-05-19-kv-admission-cluster.md",
+      "heading_path": [
+        "KV Cache Admission / Eviction Cluster \u2014 2026-05-19",
+        "Cross-Cutting Concerns vs Active Handoffs"
+      ],
+      "line_range": [
+        298,
+        301
+      ],
+      "snippet": "- `attention-matching-kv-compaction.md` \u2014 already updated per intake-538 notes. AttentionMatching is a **complementary** approach: it does post-prefill compaction (closed-form, frozen-weights) of an already-selected KV subset. **AttentionMa",
+      "score": 0.9251,
+      "content_hash": "db9f0ed1b816c1fd"
+    },
+    {
+      "file": "/workspace/handoffs/completed/triattention-kv-selection-deployment-completed-through-2026-05-28.md",
+      "heading_path": [
+        "KV Cache Selection/Eviction (TriAttention / Expected Attention)",
+        "Decision Framework"
+      ],
+      "line_range": [
+        148,
+        154
+      ],
+      "snippet": "## Decision Framework\n\n- **Gate 1 (after S1)**: IF Expected Attention >= 90% RULER at 50% compression on Qwen2.5-7B THEN proceed to S3 stacking test. ELSE evaluate TriAttention via S2 before concluding.\n- **Gate 2 (after S2)**: IF Q/K conce",
+      "score": 0.9233,
+      "content_hash": "ebcb46cbcaf3471c"
+    },
+    {
+      "file": "/workspace/handoffs/completed/lightning-attention-port-v1-completed-through-2026-05-28.md",
+      "heading_path": [
+        "Lightning Attention Port to llama.cpp"
+      ],
+      "line_range": [
+        9,
+        16
+      ],
+      "snippet": "**Status**: COMPLETED / historical v1 ledger \u2014 v1 port complete; current quality, long-context, drafter, and profile-gated L5 validation lives in `../active/lightning-attention-port.md`. Do not redo L1-L4 unless the branch no longer builds.",
+      "score": 0.9231,
+      "content_hash": "d48f79127239ace3"
+    },
+    {
+      "file": "/workspace/handoffs/active/attention-matching-kv-compaction.md",
+      "heading_path": [
+        "Attention Matching KV Compaction",
+        "Research Intake Update \u2014 2026-05-19",
+        "SP-KV cluster \u2014 write-time admission and four neighboring KV reduction methods"
+      ],
+      "line_range": [
+        251,
+        255
+      ],
+      "snippet": "- **[intake-538] SP-KV: Self-Pruned Key-Value Attention** (arxiv:2605.14037, FAIR \u2014 J\u00e9gou/Douze/Faysse/Yih/Lomeli/Mazar\u00e9/Cabannes/Szilvasy)\n  - **New axis**: jointly trained lightweight **utility predictor** decides at **write time** whethe",
+      "score": 0.9229,
+      "content_hash": "d2e53cd52bf9c908"
+    }
+  ],
+  "wall_s": 22.517538173822686
+}

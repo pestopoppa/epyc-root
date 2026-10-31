@@ -1,0 +1,185 @@
+{
+  "arm": "4000_300_punct",
+  "id": "locomo_objective_design_trace",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/fable5-findings-05-objective-design.md",
+    "/workspace/handoffs/active/autopilot-continuous-optimization.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/fable5-findings-05-objective-design.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/fable5-findings-05-objective-design.md",
+    "/workspace/handoffs/active/autopilot-continuous-optimization.md"
+  ],
+  "metrics": {
+    "evidence_count": 2,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/autopilot-continuous-optimization.md",
+      "/workspace/handoffs/active/fable5-findings-05-objective-design.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md",
+      "/workspace/handoffs/completed/reboot-validation-resume-2026-05-19.md",
+      "/workspace/handoffs/completed/fable5-findings-05-objective-design.md",
+      "/workspace/handoffs/completed/fable5-findings-04-northstar-portfolio-indices.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/wiki/routing-intelligence.md",
+      "/workspace/handoffs/completed/fable5-findings-01-impl-plan.md",
+      "/workspace/handoffs/active/agent-collab-rnd-harness.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/wiki/autonomous-research.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md",
+      "heading_path": [
+        "AutoPilot: Continuous Recursive Optimization"
+      ],
+      "line_range": [
+        181,
+        196
+      ],
+      "snippet": "> **Fable 5 review (2026-06-12)**: the review's architecture recommendations now have owning handoffs: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) (LIVE t775 baseline-ratchet hotfix + dead-question repair), [e",
+      "score": 0.9368,
+      "content_hash": "7a1cc6f1a69c848e"
+    },
+    {
+      "file": "/workspace/handoffs/completed/reboot-validation-resume-2026-05-19.md",
+      "heading_path": [
+        "Reboot validation + resume \u2014 picking up from 2026-05-16 session",
+        "Closure note (2026-06-12, Fable 5 portfolio pass)"
+      ],
+      "line_range": [
+        3,
+        22
+      ],
+      "snippet": "## Closure note (2026-06-12, Fable 5 portfolio pass)\n\n**Final outcome**: One-shot session-resume runbook whose steps were all carried out in the weeks following 2026-05-19: the four pre-reboot commits were pushed, the reboot happened, the i",
+      "score": 0.9327,
+      "content_hash": "ba28e46b501bda18"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-05-objective-design.md",
+      "heading_path": [
+        "Fable 5 findings 05 \u2014 Objective design: quality \u00d7 tokens/sec is the wrong product; measure goodput"
+      ],
+      "line_range": [
+        1,
+        6
+      ],
+      "snippet": "# Fable 5 findings 05 \u2014 Objective design: quality \u00d7 tokens/sec is the wrong product; measure goodput\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.",
+      "score": 0.932,
+      "content_hash": "a0026d7024578282"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-04-northstar-portfolio-indices.md",
+      "heading_path": [
+        "Fable 5 findings 04 \u2014 North Star critique, backlog-relevance map, index reorganization (deliverables \u00a78.2\u20138.3, \u00a78.5)"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# Fable 5 findings 04 \u2014 North Star critique, backlog-relevance map, index reorganization (deliverables \u00a78.2\u20138.3, \u00a78.5)\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs a",
+      "score": 0.9319,
+      "content_hash": "f26c5145e778d925"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "FINDINGS"
+      ],
+      "line_range": [
+        785,
+        786
+      ],
+      "snippet": "  EVIDENCE: Session gitStatus: '?? handoffs/active/fable5-architecture-review.md', '?? handoffs/active/tool-use-eval-contract.md', 'M handoffs/active/master-handoff-index.md'; autopilot-continuous-optimization.md:8-9 ('UNCOMMITTED in autopi",
+      "score": 0.9313,
+      "content_hash": "78bcd826dba1545e"
+    },
+    {
+      "file": "/workspace/wiki/routing-intelligence.md",
+      "heading_path": [
+        "Routing Intelligence",
+        "Key Findings",
+        "New Findings (2026-06-05 \u2014 decision-aware routing and AutoPilot signal boundaries)"
+      ],
+      "line_range": [
+        203,
+        207
+      ],
+      "snippet": "### New Findings (2026-06-05 \u2014 decision-aware routing and AutoPilot signal boundaries)\n\n- **Decision-aware routing remains an offline-analysis-first track.** The current handoff scopes regret analysis, contrastive updates, SPO+, and bilinea",
+      "score": 0.931,
+      "content_hash": "c68a3fe1d15a1e47"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-01-impl-plan.md",
+      "heading_path": [
+        "Fable 5 findings 01 \u2014 IMPLEMENTATION PLAN: the evidence plane"
+      ],
+      "line_range": [
+        1,
+        11
+      ],
+      "snippet": "# Fable 5 findings 01 \u2014 IMPLEMENTATION PLAN: the evidence plane\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.\n\n**Date**: 2026-06-12 (refinement pa",
+      "score": 0.9307,
+      "content_hash": "3fb6fa186d024a80"
+    },
+    {
+      "file": "/workspace/handoffs/active/agent-collab-rnd-harness.md",
+      "heading_path": [
+        "Agent-Collaboration Harness for Kernel/Orchestration R&D",
+        "Research Context"
+      ],
+      "line_range": [
+        12,
+        24
+      ],
+      "snippet": "## Research Context\n\n| Intake ID | Title | Relevance | Verdict |\n|-----------|-------|-----------|---------|\n| intake-798 | The Gemma Challenge and the Case for Agent Collabs | high | adopt_patterns |\n\nRelated existing work (do NOT duplicat",
+      "score": 0.9302,
+      "content_hash": "40f3a95546f1f77c"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "Handoff/Index Portfolio Audit \u2014 vs the North Star",
+        "Method note"
+      ],
+      "line_range": [
+        870,
+        872
+      ],
+      "snippet": "## Method note\nIndices read in full (master 217 lines; all 6 domain indices' structural sections); ~12 handoffs sampled (autopilot-continuous-optimization, tool-use-eval-contract, fable5-architecture-review, handoff-backlog-hygiene-audit, e",
+      "score": 0.9302,
+      "content_hash": "3c8f6a3a28969997"
+    },
+    {
+      "file": "/workspace/wiki/autonomous-research.md",
+      "heading_path": [
+        "Autonomous Research",
+        "Key Findings",
+        "New (2026-06-13, Evidence Plane And Lab Automation)"
+      ],
+      "line_range": [
+        422,
+        429
+      ],
+      "snippet": "### New (2026-06-13, Evidence Plane And Lab Automation)\n\n- **The binding constraint for AutoPilot is decision-grade evidence, not planner cleverness.** The Fable 5 review reframed the recurring contamination incidents as a metrology problem",
+      "score": 0.9301,
+      "content_hash": "01428eb8547e1d6c"
+    }
+  ],
+  "wall_s": 13.419064056128263
+}

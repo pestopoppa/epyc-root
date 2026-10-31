@@ -1,0 +1,185 @@
+{
+  "arm": "1100_256_plain",
+  "id": "hotpot_shape_placement",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/shape-keyed-contention-gating.md",
+    "/workspace/handoffs/active/within-role-placement-state-machine.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/shape-keyed-contention-gating.md",
+    "/workspace/handoffs/active/within-role-placement-state-machine.md"
+  ],
+  "metrics": {
+    "evidence_count": 2,
+    "found_count": 2,
+    "found_files": [
+      "/workspace/handoffs/active/shape-keyed-contention-gating.md",
+      "/workspace/handoffs/active/within-role-placement-state-machine.md"
+    ],
+    "missing_files": [],
+    "first_evidence_rank": 5,
+    "all_evidence_rank": 8,
+    "ranked_files": [
+      "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/handoffs/active/bulk-inference-campaign.md",
+      "/workspace/handoffs/active/design-backlog-triage-2026-07-23.md",
+      "/workspace/handoffs/active/shape-keyed-contention-gating.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/wiki/inference-serving.md",
+      "/workspace/handoffs/active/within-role-placement-state-machine.md",
+      "/workspace/progress/2026-05/2026-05-30.md",
+      "/workspace/progress/2026-05/2026-05-31.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.5,
+    "perfect@5": false,
+    "recall@10": 1.0,
+    "perfect@10": true
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "heading_path": [
+        "EPYC Handoff \u2014 Master Index",
+        "B. ACTIVE \u2014 claimable now (HIGH \u2192 LOW)"
+      ],
+      "line_range": [
+        42,
+        49
+      ],
+      "snippet": "## B. ACTIVE \u2014 claimable now (HIGH \u2192 LOW)\n| # | Item | Gate/note |\n|---|---|---|\n| A1 | **shape-keyed-contention rollout** \u2014 analyze Step-1 observation JSONL (free), then the quiesce-window flag bracket | bracket owns the reload (see \u00a7C) |\n",
+      "score": 0.9442,
+      "content_hash": "e57c02ff0d249db9"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "FINDINGS"
+      ],
+      "line_range": [
+        775,
+        775
+      ],
+      "snippet": "  EVIDENCE: inference-acceleration-index.md:126-128 (draft_max +17-21% deployed via registry edits); cpu-inference-optimization-index.md MoE-Spec row (Prioritized Task List, '+7.3% at B=64... +15.2% at B=40... CLI --moe-spec-budget N / env ",
+      "score": 0.9422,
+      "content_hash": "5d12a722d58532cc"
+    },
+    {
+      "file": "/workspace/handoffs/active/bulk-inference-campaign.md",
+      "heading_path": [
+        "Bulk Inference Campaign \u2014 active backlog (Packages G\u2013K)",
+        "Cross-Role Contention + Placement (shape-keyed-contention-gating) \u2014 TRACKING [added 2026-05-30]"
+      ],
+      "line_range": [
+        620,
+        626
+      ],
+      "snippet": "## Cross-Role Contention + Placement (shape-keyed-contention-gating) \u2014 TRACKING [added 2026-05-30]\n\nSibling to **Package J** (within-role placement). Where Package J makes *one role* fan out across disjoint quarters, this work (`handoffs/ac",
+      "score": 0.942,
+      "content_hash": "b19d1f294c4df6f2"
+    },
+    {
+      "file": "/workspace/handoffs/active/design-backlog-triage-2026-07-23.md",
+      "heading_path": [
+        "Design-Backlog Triage (2026-07-23)",
+        "SECTION 1 \u2014 Strategic design concepts (operator decides)"
+      ],
+      "line_range": [
+        65,
+        66
+      ],
+      "snippet": "| B17 | Shape-keyed contention rollout | shape-keyed-contention-gating.md (Step 2, Part C, bridge residuals) | Arm SHAPE_AWARE_CONTENTION so admit_set is authoritative; then work-conserving backfill (Part C); sub-fixes: GateDecision respons",
+      "score": 0.9403,
+      "content_hash": "e60cac9330d7a273"
+    },
+    {
+      "file": "/workspace/handoffs/active/shape-keyed-contention-gating.md",
+      "heading_path": [
+        "Shape-Keyed Contention Gating + Cross-Role Disjoint Placement"
+      ],
+      "line_range": [
+        1,
+        3
+      ],
+      "snippet": "# Shape-Keyed Contention Gating + Cross-Role Disjoint Placement",
+      "score": 0.9402,
+      "content_hash": "2871aa3e6d5459ad"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "Handoff/Index Portfolio Audit \u2014 vs the North Star",
+        "3. PORTFOLIO MAP (~75 outstanding workstreams; counts are workstream-level estimates)"
+      ],
+      "line_range": [
+        824,
+        824
+      ],
+      "snippet": "**(a) Runtime-deployable capabilities \u2014 ~22.** Flag/knob/policy shaped; the orchestration could wield them. Standouts: registered-but-ungated feature flags awaiting validation A/Bs \u2014 `swarm_fanout` (features.py:186), `deep_research_mode` (:",
+      "score": 0.9392,
+      "content_hash": "318e38cd742d8faf"
+    },
+    {
+      "file": "/workspace/wiki/inference-serving.md",
+      "heading_path": [
+        "Inference Serving",
+        "Key Findings",
+        "New (2026-07-04, DS-7 profile decision + dashboard transport hardening)"
+      ],
+      "line_range": [
+        433,
+        433
+      ],
+      "snippet": "- **Cross-role contention must be keyed to physical CPU regions, not just role pairs (2026-05-31).** A live dashboard/tap discrepancy showed `frontdoor.half0` streaming on q0/q1 while `worker_general.full` held q0-q3: same-role/full waits w",
+      "score": 0.9384,
+      "content_hash": "8e71393e38351d0d"
+    },
+    {
+      "file": "/workspace/handoffs/active/within-role-placement-state-machine.md",
+      "heading_path": [
+        "Executive summary"
+      ],
+      "line_range": [
+        27,
+        31
+      ],
+      "snippet": "## Executive summary\n\nThe `ConcurrencyAwareBackend` dispatcher and `ContentionGate` admit and place requests by lock availability + NUMA disjointness, but they do not model the within-role full\u2194quarter cpuset overlap relation. Full and over",
+      "score": 0.9381,
+      "content_hash": "63d59eb9766146d6"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-30.md",
+      "heading_path": [
+        "2026-05-30 \u2014 manual session log",
+        "Session 2 (2026-05-30, cont.): shape-keyed contention gating \u2014 B core, B wiring, C prep",
+        "Manual wrap-up: shape-keyed contention checkpoint"
+      ],
+      "line_range": [
+        290,
+        299
+      ],
+      "snippet": "### Manual wrap-up: shape-keyed contention checkpoint\n\nRan the manual wrap-up routine for the shape-keyed contention / GitNexus work.\n\nDocumentation updated:\n- `handoffs/active/shape-keyed-contention-gating.md` first screen now reflects the",
+      "score": 0.9379,
+      "content_hash": "f088109781f8bec7"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-31.md",
+      "heading_path": [
+        "2026-05-31 \u2014 manual session log",
+        "Cross-role region mutex default staged"
+      ],
+      "line_range": [
+        90,
+        102
+      ],
+      "snippet": "## Cross-role region mutex default staged\n\nStaged Step 1 of the shape-keyed contention rollout in `/mnt/raid0/llm/epyc-orchestrator` without reloading the live API because a 185-trial autopilot run was active and a mid-run contention-physic",
+      "score": 0.9355,
+      "content_hash": "12954523a4cd561d"
+    }
+  ],
+  "wall_s": 26.50602604006417
+}

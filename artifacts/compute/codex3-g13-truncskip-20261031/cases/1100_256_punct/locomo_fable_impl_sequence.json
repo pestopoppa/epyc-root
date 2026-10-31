@@ -1,0 +1,192 @@
+{
+  "arm": "1100_256_punct",
+  "id": "locomo_fable_impl_sequence",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/fable5-findings-01-impl-plan.md",
+    "/workspace/handoffs/active/fable5-findings-02-impl-plan.md",
+    "/workspace/handoffs/active/fable5-findings-04-impl-plan.md",
+    "/workspace/handoffs/active/fable5-proposed-master-index-rewrite.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/fable5-findings-01-impl-plan.md",
+    "/workspace/handoffs/active/fable5-findings-02-impl-plan.md",
+    "/workspace/handoffs/active/fable5-findings-04-impl-plan.md",
+    "/workspace/handoffs/active/fable5-proposed-master-index-rewrite.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/fable5-findings-01-impl-plan.md",
+    "/workspace/handoffs/active/fable5-findings-02-impl-plan.md",
+    "/workspace/handoffs/active/fable5-findings-04-impl-plan.md",
+    "/workspace/handoffs/active/fable5-proposed-master-index-rewrite.md"
+  ],
+  "metrics": {
+    "evidence_count": 4,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/fable5-findings-01-impl-plan.md",
+      "/workspace/handoffs/active/fable5-findings-02-impl-plan.md",
+      "/workspace/handoffs/active/fable5-findings-04-impl-plan.md",
+      "/workspace/handoffs/active/fable5-proposed-master-index-rewrite.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/handoffs/completed/fable5-findings-02-impl-plan.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/completed/fable5-findings-04-impl-plan.md",
+      "/workspace/handoffs/completed/fable5-findings-00-executive-summary.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/completed/fable5-findings-01-impl-plan.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/active/model-stack-change-standardization-audit.md",
+      "/workspace/progress/2026-06/2026-06-12.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "groupA NOTABLE",
+        "Load-bearing findings"
+      ],
+      "line_range": [
+        1298,
+        1302
+      ],
+      "snippet": "**3. retrain-routing-models is the cheapest production-correctness win.** Live state: routing-classifier flag ON, weights MISSING, fast-path dead since 2026-05-25. The unblock is a single operator command sequence (`repair_episodic_embeddin",
+      "score": 0.9256,
+      "content_hash": "e1b47bc00d324119"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-02-impl-plan.md",
+      "heading_path": [
+        "Fable 5 findings 02 \u2014 IMPLEMENTATION PLAN: routing decision architecture"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# Fable 5 findings 02 \u2014 IMPLEMENTATION PLAN: routing decision architecture\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.\n\n**Date**: 2026-06-12 (re",
+      "score": 0.925,
+      "content_hash": "13a47620ddf2a452"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 one-shot architectural review \u2014 EXECUTED (F5)"
+      ],
+      "line_range": [
+        87,
+        96
+      ],
+      "snippet": "**Output** (all in `handoffs/active/`):\n- `fable5-findings-00-executive-summary.md` \u2014 verdicts on all 6 brief hypotheses + \"what you're missing\" + 5-action shortlist\n- `fable5-findings-01-measurement-and-integrity.md` \u2014 facets 1+2: evidence",
+      "score": 0.9247,
+      "content_hash": "a1fc5119e8b27648"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-04-impl-plan.md",
+      "heading_path": [
+        "Fable 5 findings 04 \u2014 IMPLEMENTATION PLAN: invariant interfaces, capability registry, index migration"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# Fable 5 findings 04 \u2014 IMPLEMENTATION PLAN: invariant interfaces, capability registry, index migration\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indic",
+      "score": 0.9236,
+      "content_hash": "3328c7828e925bfe"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-00-executive-summary.md",
+      "heading_path": [
+        "Fable 5 architectural review \u2014 executive summary"
+      ],
+      "line_range": [
+        5,
+        6
+      ],
+      "snippet": "**Date**: 2026-06-12. **Session**: one-shot consult per `fable5-architecture-review.md` (preflight amendments: `fable5-preflight-amendments.md`).\n**Companion docs**: `fable5-findings-01-measurement-and-integrity.md` (facets 1+2) \u00b7 `fable5-f",
+      "score": 0.923,
+      "content_hash": "a26edda7dea8e339"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue \u2014 routing truth W8 DAR-1/counter checkpoint"
+      ],
+      "line_range": [
+        367,
+        370
+      ],
+      "snippet": "## Fable 5 execution queue \u2014 routing truth W8 DAR-1/counter checkpoint\n\nCompleted `routing-truth-restoration.md` W8 and closed master-index N3. The measured verdict keeps the routing-expansion cluster frozen.\n",
+      "score": 0.9229,
+      "content_hash": "aa31d1425bc82a4d"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-01-impl-plan.md",
+      "heading_path": [
+        "Fable 5 findings 01 \u2014 IMPLEMENTATION PLAN: the evidence plane"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# Fable 5 findings 01 \u2014 IMPLEMENTATION PLAN: the evidence plane\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.\n\n**Date**: 2026-06-12 (refinement pa",
+      "score": 0.9211,
+      "content_hash": "50e321d95c9eaf18"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 one-shot architectural review \u2014 EXECUTED (F5)"
+      ],
+      "line_range": [
+        83,
+        87
+      ],
+      "snippet": "## Fable 5 one-shot architectural review \u2014 EXECUTED (F5)\n\nRan the consult per `handoffs/active/fable5-architecture-review.md`. Preflight audit first (brief sound; 6 amendments at `fable5-preflight-amendments.md`: stale epyc-root index re-an",
+      "score": 0.9203,
+      "content_hash": "a34db2033624edef"
+    },
+    {
+      "file": "/workspace/handoffs/active/model-stack-change-standardization-audit.md",
+      "heading_path": [
+        "Model Stack Change Standardization Audit"
+      ],
+      "line_range": [
+        1,
+        9
+      ],
+      "snippet": "# Model Stack Change Standardization Audit\n\n**Status**: READY FOR MAIN IMPLEMENTATION\n**Created**: 2026-06-13\n**Priority**: HIGH - stale model constants can silently bias routing, scoring, launch, planner prompts, and benchmark interpretati",
+      "score": 0.9202,
+      "content_hash": "8c80e230527fa283"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "BGE episodic embedding repair complete; routing retrain unblocked"
+      ],
+      "line_range": [
+        1331,
+        1345
+      ],
+      "snippet": "Docs updated:\n- `handoffs/active/retrain-routing-models.md`\n- `handoffs/active/learned-routing-controller.md`\n- `handoffs/active/routing-and-optimization-index.md`\n- `handoffs/active/master-handoff-index.md`\n- `handoffs/active/fable5-findin",
+      "score": 0.92,
+      "content_hash": "9ef3c534f50f7f2c"
+    }
+  ],
+  "wall_s": 22.137708824127913
+}

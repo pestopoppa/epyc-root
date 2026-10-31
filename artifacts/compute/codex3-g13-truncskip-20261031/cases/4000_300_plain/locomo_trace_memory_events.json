@@ -1,0 +1,194 @@
+{
+  "arm": "4000_300_plain",
+  "id": "locomo_trace_memory_events",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/unified-trace-memory-service.md",
+    "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md",
+    "/workspace/handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/unified-trace-memory-service.md",
+    "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md",
+    "/workspace/handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md",
+      "/workspace/handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md",
+      "/workspace/handoffs/active/unified-trace-memory-service.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/completed/reviewer-trace-materialization.md",
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/handoffs/completed/reviewer-trace-materialization.md",
+      "/workspace/wiki/autonomous-research.md",
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/wiki/safety.md",
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/progress/2026-06/2026-06-14.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/reviewer-trace-materialization.md",
+      "heading_path": [
+        "Reviewer Control Plane \u2014 Trace Materialization & Durable Execution (H1)",
+        "TM-6 \u2014 Trace store \u2194 evidence-plane relationship (documented 2026-07-17)"
+      ],
+      "line_range": [
+        65,
+        71
+      ],
+      "snippet": "## TM-6 \u2014 Trace store \u2194 evidence-plane relationship (documented 2026-07-17)\n\n**Contract**: the trace store (`data/trace/events.sqlite`) is a **queryable index + decision ledger**, not a second event-sourcing pipeline. Three row classes, one",
+      "score": 0.9446,
+      "content_hash": "e3a69285f9d95701"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "W3 journal snapshot builder documented",
+        "Root docs updated"
+      ],
+      "line_range": [
+        1486,
+        1495
+      ],
+      "snippet": "### Root docs updated\n\n- `handoffs/active/evidence-plane-event-sourcing-and-narrative.md`: W3 now\n  records `5035987`, dry-run/append semantics, and the verified live snapshot\n  event while keeping replay/archive/baseline/planner authority ",
+      "score": 0.9409,
+      "content_hash": "75cf5fa31d8ae9a1"
+    },
+    {
+      "file": "/workspace/handoffs/completed/reviewer-trace-materialization.md",
+      "heading_path": [
+        "Reviewer Control Plane \u2014 Trace Materialization & Durable Execution (H1)"
+      ],
+      "line_range": [
+        4,
+        12
+      ],
+      "snippet": "# Reviewer Control Plane \u2014 Trace Materialization & Durable Execution (H1)\n\n**Status**: active \u2014 M1 \"observable\" milestone owner; no reviewer metric is computable until this lands\n**Created**: 2026-07-16 (Architect\u2192Reviewer control-plane ser",
+      "score": 0.9401,
+      "content_hash": "21c1b44c74445808"
+    },
+    {
+      "file": "/workspace/wiki/autonomous-research.md",
+      "heading_path": [
+        "Autonomous Research",
+        "2026-06-19 Update \u2014 Evidence Plane Authority Remains Sample-Gated"
+      ],
+      "line_range": [
+        441,
+        447
+      ],
+      "snippet": "- **Archive reconstruction, supersession, baseline narrative, and strategy quarantine now live on source-derived paths.** The evidence-plane handoff has concrete journal-derived archive reconstruction, append-only supersession events with t",
+      "score": 0.94,
+      "content_hash": "dac9e62ad31197ce"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "W3 snapshot bounded replay readiness documented",
+        "Root docs updated"
+      ],
+      "line_range": [
+        1258,
+        1265
+      ],
+      "snippet": "### Root docs updated\n\n- `handoffs/active/evidence-plane-event-sourcing-and-narrative.md`: W3 now\n  records bounded replay readiness states and strict-readiness behavior.\n- `handoffs/active/routing-and-optimization-index.md` and\n  `handoffs",
+      "score": 0.9398,
+      "content_hash": "5686e207c321e69a"
+    },
+    {
+      "file": "/workspace/wiki/safety.md",
+      "heading_path": [
+        "Safety",
+        "Source References"
+      ],
+      "line_range": [
+        52,
+        57
+      ],
+      "snippet": "## Source References\n\n- [Frontier F5 intake injection hardening](../handoffs/completed/frontier-f5-intake-injection-hardening.md) \u2014 completed quarantine policy, renderer, validator, and canary.\n- [Security-review skill](../handoffs/active/s",
+      "score": 0.9396,
+      "content_hash": "d40edd96d30c1447"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "W5 STM preview path handling documented",
+        "Root docs updated"
+      ],
+      "line_range": [
+        1300,
+        1305
+      ],
+      "snippet": "### Root docs updated\n\n- `handoffs/active/evidence-plane-event-sourcing-and-narrative.md`: W5 now\n  records `e5205b1` as generated-STM-preview path handling hardening, not live\n  STM cutover.\n",
+      "score": 0.9391,
+      "content_hash": "b39dcac1f383c631"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "W4a baseline promotion evidence consumers documented",
+        "Root docs updated"
+      ],
+      "line_range": [
+        1955,
+        1968
+      ],
+      "snippet": "### Root docs updated\n\n- `handoffs/active/evidence-plane-event-sourcing-and-narrative.md`: W4 now\n  records the dashboard and replay evidence consumers while keeping\n  baseline-as-fold authority open.\n- `handoffs/active/autopilot-continuous",
+      "score": 0.9391,
+      "content_hash": "e36bd1992104c871"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "W6 promoted strategy evidence propagation documented",
+        "Root docs updated"
+      ],
+      "line_range": [
+        1815,
+        1825
+      ],
+      "snippet": "### Root docs updated\n\n- `handoffs/active/evidence-plane-event-sourcing-and-narrative.md`: W6 now\n  records `433f6e8` as promoted-strategy evidence propagation and keeps full W1\n  ledger-keyed strategy view integration open.\n- `handoffs/act",
+      "score": 0.9391,
+      "content_hash": "40ec87cced58610e"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "W4a baseline promotion ledger events documented",
+        "Root docs updated"
+      ],
+      "line_range": [
+        2474,
+        2485
+      ],
+      "snippet": "### Root docs updated\n\n- `handoffs/active/evidence-plane-event-sourcing-and-narrative.md`: status, W4\n  waypoint, and progress entries now record `0202835` as W4a evidence-event\n  scaffolding while keeping baseline-as-fold authority open.\n-",
+      "score": 0.9391,
+      "content_hash": "7f7b4b2e38a01bf6"
+    }
+  ],
+  "wall_s": 16.469122784910724
+}

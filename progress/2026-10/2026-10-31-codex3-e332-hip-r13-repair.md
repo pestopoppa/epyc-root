@@ -1,0 +1,3 @@
+# KPF exact-e332 HIP R13 completion repair — 2026-10-31
+
+  - *(2026-10-31, R2 R13 completion repair.)* The earlier R2 READY snapshot above predates a completion-contract correction: the unstarted packet was withdrawn and republished with `--complete-cmd` checking the real BUILD-SUCCESS marker. Corrected launcher SHA-256 `32e2c0a9e3dd2f0698ff9da73a8bfa43138cc34f4d4fdf95741f571106bf3efb`. Exact-source native `acc.cu` configure/compile/link control requalified rc0 in 4.499s, sampled 280,338,432 bytes, drained; active clang STOP rc75 in 1.260s, partial retained and drained. No full build, GPU execution or model load. [Updated capsule](../../artifacts/compute/codex3-kpf181-e332-hip-r13-repair-20261031/SHA256SUMS). [no-belief: preparation repair only]

@@ -1,0 +1,195 @@
+{
+  "arm": "4000_256_punct",
+  "id": "hotpot_meta_harness_halo",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/meta-harness-optimization.md",
+    "/workspace/handoffs/active/halo-trace-loop-spike.md",
+    "/workspace/research/deep-dives/hcc-cognitive-accumulation-autopilot.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/meta-harness-optimization.md",
+    "/workspace/handoffs/active/halo-trace-loop-spike.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/meta-harness-optimization.md",
+    "/workspace/handoffs/active/halo-trace-loop-spike.md",
+    "/workspace/research/deep-dives/hcc-cognitive-accumulation-autopilot.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/halo-trace-loop-spike.md",
+      "/workspace/handoffs/active/meta-harness-optimization.md",
+      "/workspace/research/deep-dives/hcc-cognitive-accumulation-autopilot.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md",
+      "/workspace/handoffs/completed/halo-trace-loop-spike.md",
+      "/workspace/handoffs/completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md",
+      "/workspace/handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md",
+      "/workspace/handoffs/completed/meta-harness-optimization.md",
+      "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md",
+      "/workspace/handoffs/completed/halo-trace-loop-spike.md",
+      "/workspace/progress/2026-04/2026-04-30.md",
+      "/workspace/handoffs/active/rao-redel-substrate-spike.md",
+      "/workspace/handoffs/active/rao-redel-substrate-spike.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md",
+      "heading_path": [
+        "RAO + RLM Cluster Deep-Dive \u2014 2026-05-19",
+        "EPYC Integration Path",
+        "Connection to existing handoffs"
+      ],
+      "line_range": [
+        137,
+        148
+      ],
+      "snippet": "### Connection to existing handoffs\n\n| Handoff | What this cluster changes | Specific edit |\n|---|---|---|\n| `handoffs/completed/meta-harness-optimization.md` | Already updated (line 419) with RAO. Add ReDel evaluation as Tier 3 substrate o",
+      "score": 0.9272,
+      "content_hash": "3c737e957adf0f25"
+    },
+    {
+      "file": "/workspace/handoffs/completed/halo-trace-loop-spike.md",
+      "heading_path": [
+        "Verify OPENAI_BASE_URL swap to local llama-server",
+        "Cross-references"
+      ],
+      "line_range": [
+        150,
+        155
+      ],
+      "snippet": "## Cross-references\n\n- Deep-dive: `/workspace/research/deep-dives/halo-rlm-trace-loop-integration.md`\n- Intake entries: intake-516, intake-517, intake-518, intake-153 (RLM foundational, already_integrated)\n- Active handoffs: meta-harness-op",
+      "score": 0.927,
+      "content_hash": "41d98a77822bdfe5"
+    },
+    {
+      "file": "/workspace/handoffs/completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md",
+      "heading_path": [
+        "Checkpoint / restore",
+        "Research Intake Update \u2014 2026-04-30",
+        "New Related Research"
+      ],
+      "line_range": [
+        1071,
+        1095
+      ],
+      "snippet": "### New Related Research\n\n- **[intake-517] \"HALO \u2014 Hierarchical Agent Loop Optimizer\"** (`github.com/context-labs/halo`, MIT, by inference.net / Context Labs) and **[intake-518] halo-engine PyPI** (pip-installable wrapper, MIT, v0.1.2 relea",
+      "score": 0.9266,
+      "content_hash": "4c3f661150164d3f"
+    },
+    {
+      "file": "/workspace/handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md",
+      "heading_path": [
+        "Meta-Harness: Automated Harness Optimization",
+        "Research Intake Update \u2014 2026-04-30",
+        "New Related Research"
+      ],
+      "line_range": [
+        394,
+        414
+      ],
+      "snippet": "- **[intake-516] \"HALO-Gemini-3-Flash-AppWorld dataset\"** + **[intake-517] context-labs/HALO** + **[intake-518] halo-engine PyPI** (HALO project trio \u2014 same intake batch)\n  - Relevance to Meta-Harness: **HIGH**. HALO directly implements the",
+      "score": 0.9254,
+      "content_hash": "4be1e4550380a739"
+    },
+    {
+      "file": "/workspace/handoffs/completed/meta-harness-optimization.md",
+      "heading_path": [
+        "Meta-Harness: Automated Harness Optimization",
+        "Research Intake Update \u2014 2026-07-11 (batch 2)",
+        "New Related Research"
+      ],
+      "line_range": [
+        131,
+        142
+      ],
+      "snippet": "### New Related Research\n- **[intake-809] \"AutoMem: Automated Learning of Memory as a Cognitive Skill\"** (arxiv:2607.01224; Stanford / Serena Yeung-Levy)\n  - Relevance: frames memory management as **two independently optimizable axes** \u2014 (1",
+      "score": 0.9254,
+      "content_hash": "dd3ed71cb3544105"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md",
+      "heading_path": [
+        "RAO + RLM Cluster Deep-Dive \u2014 2026-05-19"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# RAO + RLM Cluster Deep-Dive \u2014 2026-05-19\n\n**Author**: research-intake follow-up (Phase 6, deep-dive cluster #1 of 8)\n**Scope**: 7 intakes (intake-536, 541, 537, 547, 548, 549, 550) + canonical RLM (intake-153) context.\n**Status**: deep-di",
+      "score": 0.9251,
+      "content_hash": "7c5a3d2d6e13145e"
+    },
+    {
+      "file": "/workspace/handoffs/completed/halo-trace-loop-spike.md",
+      "heading_path": [
+        "Verify OPENAI_BASE_URL swap to local llama-server",
+        "HALO-4: Day 2 \u2014 Manual pattern lift (only on full-go)"
+      ],
+      "line_range": [
+        101,
+        110
+      ],
+      "snippet": "### HALO-4: Day 2 \u2014 Manual pattern lift (only on full-go)\n\n**DO NOT VENDOR halo-engine.** Lift the 3 net-new patterns into existing scoped work:\n\n- **Six-tool trace-query analyzer surface** + **two-file JSONL+byte-offset store**: extends `u",
+      "score": 0.9236,
+      "content_hash": "8aa3f64c5d6f8f8b"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-30.md",
+      "heading_path": [
+        "2026-04-30",
+        "Research intake \u2014 9 URLs (KAME \u00d7 5, HALO \u00d7 3, Granite-97m-r2) + 3 deep-dives + finalization",
+        "New ready-to-claim handoffs (2)"
+      ],
+      "line_range": [
+        295,
+        301
+      ],
+      "snippet": "### New ready-to-claim handoffs (2)\n\n| Path | Status | Scope |\n|------|--------|-------|\n| `handoffs/active/halo-trace-loop-spike.md` | READY-TO-CLAIM | 1-day spike + 4-criterion gate + conditional Day 2 manual lift. Lifts patterns into `un",
+      "score": 0.9228,
+      "content_hash": "488a2ac5a44a472c"
+    },
+    {
+      "file": "/workspace/handoffs/active/rao-redel-substrate-spike.md",
+      "heading_path": [
+        "4. Inspect summary",
+        "References"
+      ],
+      "line_range": [
+        399,
+        408
+      ],
+      "snippet": "## References\n\n- Deep-dive: `/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md`\n- ReDel repo: `https://github.com/zhudotexe/redel`\n- RAO paper: `https://arxiv.org/abs/2605.06639`\n- Wang RLM reproduction: `https://arxiv.org/abs/26",
+      "score": 0.9227,
+      "content_hash": "5b173d02f784ffa1"
+    },
+    {
+      "file": "/workspace/handoffs/active/rao-redel-substrate-spike.md",
+      "heading_path": [
+        "RAO + ReDel Substrate Spike"
+      ],
+      "line_range": [
+        1,
+        11
+      ],
+      "snippet": "# RAO + ReDel Substrate Spike\n\n**Status**: Step 1 PASS + Step 2 harness prepared; Step 2 execution awaits clean inference window\n\n> **2026-07-14 audit note \u2014 FUND-OR-CLOSE**: schedule the ~10-60min naturally-delegating A/B in the next infer",
+      "score": 0.9223,
+      "content_hash": "6759cd77c9168b46"
+    }
+  ],
+  "wall_s": 12.737943335901946
+}

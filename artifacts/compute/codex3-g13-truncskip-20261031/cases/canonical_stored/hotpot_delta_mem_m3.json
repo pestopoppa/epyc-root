@@ -1,0 +1,191 @@
+{
+  "arm": "canonical_stored",
+  "id": "hotpot_delta_mem_m3",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/delta-mem-reproduction.md",
+    "/workspace/research/deep-dives/2026-05-19-frozen-memory-cluster.md",
+    "/workspace/wiki/memory-augmented.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/delta-mem-reproduction.md",
+    "/workspace/research/deep-dives/2026-05-19-frozen-memory-cluster.md",
+    "/workspace/wiki/memory-augmented.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 2,
+    "found_files": [
+      "/workspace/handoffs/active/delta-mem-reproduction.md",
+      "/workspace/research/deep-dives/2026-05-19-frozen-memory-cluster.md"
+    ],
+    "missing_files": [
+      "/workspace/wiki/memory-augmented.md"
+    ],
+    "first_evidence_rank": 1,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/active/delta-mem-reproduction.md",
+      "/workspace/research/deep-dives/2026-05-19-frozen-memory-cluster.md",
+      "/workspace/handoffs/active/delta-mem-reproduction.md",
+      "/workspace/handoffs/active/delta-mem-reproduction.md",
+      "/workspace/handoffs/active/delta-mem-reproduction.md",
+      "/workspace/handoffs/active/delta-mem-reproduction.md",
+      "/workspace/research/deep-dives/2026-05-19-frozen-memory-cluster.md",
+      "/workspace/handoffs/active/delta-mem-reproduction.md",
+      "/workspace/handoffs/active/delta-mem-reproduction.md",
+      "/workspace/progress/2026-10/2026-10-22-workspace-58.md"
+    ],
+    "recall@3": 0.6666666666666666,
+    "perfect@3": false,
+    "recall@5": 0.6666666666666666,
+    "perfect@5": false,
+    "recall@10": 0.6666666666666666,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/active/delta-mem-reproduction.md",
+      "heading_path": [
+        "\u03b4-mem Reproduction + Frozen-Memory Topology Spike",
+        "Objective"
+      ],
+      "line_range": [
+        11,
+        16
+      ],
+      "snippet": "## Objective\n\nReproduce the \u03b4-mem (intake-539, `github.com/declare-lab/delta-Mem`, CC-BY-4.0) 1.31\u00d7 MemoryAgentBench / 1.20\u00d7 LoCoMo claim on our hardware using the released Qwen3-4B-Instruct-2507 adapter checkpoint. If reproduction validate",
+      "score": 0.9486,
+      "content_hash": "dae05b773e76642c"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-05-19-frozen-memory-cluster.md",
+      "heading_path": [
+        "Frozen-Backbone Persistent Memory Cluster \u2014 2026-05-19",
+        "Spike Proposal"
+      ],
+      "line_range": [
+        86,
+        93
+      ],
+      "snippet": "## Spike Proposal\n\n1. **(cheapest \u2014 ~3 days) Reference-impl reproduction.** Clone `declare-lab/delta-Mem`, run the released Qwen3-4B-Instruct-2507 adapter through MemoryAgentBench + LoCoMo on a GPU rental (or our CPU stack if HF transformer",
+      "score": 0.9443,
+      "content_hash": "e67a1937f1233823"
+    },
+    {
+      "file": "/workspace/handoffs/active/delta-mem-reproduction.md",
+      "heading_path": [
+        "(per repo README \u2014 verify checkpoint path before running)",
+        "Progress checklist"
+      ],
+      "line_range": [
+        211,
+        218
+      ],
+      "snippet": "## Progress checklist\n\n- [x] Phase 1 Gate 1 (adapter loads) + Gate 4 (CPU tractable, 5% overhead) PASS \u2705\n- [x] Gate 3 LoCoMo N=5 smoke (1.65x, directional); magnitude inconclusive \u2705\n- [ ] Gate 2 MemoryAgentBench accuracy reproduction - GPU-",
+      "score": 0.9365,
+      "content_hash": "14f5afcf132fd4c8"
+    },
+    {
+      "file": "/workspace/handoffs/active/delta-mem-reproduction.md",
+      "heading_path": [
+        "(per repo README \u2014 verify checkpoint path before running)",
+        "Phase 2 \u2014 M.3 KV-Extension prototype on gemma4 worker_general (3 weeks)"
+      ],
+      "line_range": [
+        56,
+        70
+      ],
+      "snippet": "### Phase 2 \u2014 M.3 KV-Extension prototype on gemma4 worker_general (3 weeks)\n\n**Goal**: ship M.3 KV-Extension (intake-568's 4.2M-param topology, **no custom GGML ops needed**) as a sidecar memory module for gemma4-26B-A4B Q4_K_M MTP, wired i",
+      "score": 0.9354,
+      "content_hash": "7c31ab37da6d0fcc"
+    },
+    {
+      "file": "/workspace/handoffs/active/delta-mem-reproduction.md",
+      "heading_path": [
+        "\u03b4-mem Reproduction + Frozen-Memory Topology Spike"
+      ],
+      "line_range": [
+        1,
+        10
+      ],
+      "snippet": "# \u03b4-mem Reproduction + Frozen-Memory Topology Spike\n\n**Status**: Phase 1 setup/mechanical gates PASS; accuracy reproduction/gpu-scale gates remain open\n**Created**: 2026-05-19 (post-cluster-deep-dive)\n**Categories**: memory_augmented, conte",
+      "score": 0.9352,
+      "content_hash": "b0950b8a8d330d0c"
+    },
+    {
+      "file": "/workspace/handoffs/active/delta-mem-reproduction.md",
+      "heading_path": [
+        "(per repo README \u2014 verify checkpoint path before running)",
+        "Research Intake Update \u2014 2026-05-27",
+        "New Related Research"
+      ],
+      "line_range": [
+        188,
+        198
+      ],
+      "snippet": "### New Related Research\n- **[intake-612] \"LongMemEval-V2: Evaluating Long-Term Agent Memory Toward Experienced Colleagues\"** (arxiv:2605.12493)\n  - Relevance: updated eval target for the B1 / memory prototypes this handoff builds; reframes",
+      "score": 0.9351,
+      "content_hash": "9fd0b4526cf8172b"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-05-19-frozen-memory-cluster.md",
+      "heading_path": [
+        "Frozen-Backbone Persistent Memory Cluster \u2014 2026-05-19",
+        "Executive Summary"
+      ],
+      "line_range": [
+        9,
+        12
+      ],
+      "snippet": "## Executive Summary\n\n\u03b4-mem provides a single, opinionated *online* memory mechanism: a compact state matrix updated by the delta rule, read out as low-rank corrections to the frozen backbone's attention \u2014 reported +10% avg, +31% MemoryAgen",
+      "score": 0.9344,
+      "content_hash": "5743700327702184"
+    },
+    {
+      "file": "/workspace/handoffs/active/delta-mem-reproduction.md",
+      "heading_path": [
+        "(per repo README \u2014 verify checkpoint path before running)",
+        "Phase 1 Partial Result (2026-05-19) \u2014 Gates 1 + 4 PASS, Gates 2 + 3 deferred",
+        "Phase 1 overall verdict"
+      ],
+      "line_range": [
+        158,
+        166
+      ],
+      "snippet": "### Phase 1 overall verdict\n\n- **Gate 1** (adapter loads cleanly on Qwen3-4B-Instruct-2507): \u2705 PASS\n- **Gate 4** (CPU inference tractable, \u22642\u00d7 baseline): \u2705 PASS by 20\u00d7 margin (5% overhead)\n- **Gate 3** (LoCoMo within \u00b120% of 1.20\u00d7): \u2705 PASS ",
+      "score": 0.9335,
+      "content_hash": "7fd0910a2f0b7365"
+    },
+    {
+      "file": "/workspace/handoffs/active/delta-mem-reproduction.md",
+      "heading_path": [
+        "(per repo README \u2014 verify checkpoint path before running)",
+        "Open Questions for User"
+      ],
+      "line_range": [
+        82,
+        87
+      ],
+      "snippet": "## Open Questions for User\n\n1. **Phase 2 model target**: gemma4-26B-A4B worker_general is the natural choice (matches `project_worker_general_swap_2026_05_08`), but the released \u03b4-mem adapter is for Qwen3-4B-Instruct-2507. We'd need to trai",
+      "score": 0.9287,
+      "content_hash": "2b4684a426d66aed"
+    },
+    {
+      "file": "/workspace/progress/2026-10/2026-10-22-workspace-58.md",
+      "heading_path": [
+        "2026-10-22 workspace-58, 08:40Z-11:30Z (operator-invoked /wrap-up, run by a subagent)",
+        "Wrap-up checks (sweep 7)"
+      ],
+      "line_range": [
+        96,
+        105
+      ],
+      "snippet": "## Wrap-up checks (sweep 7)\n- `index_state.py` regen + `--check`: rc 0, 0 problems. Prune signal: 0 candidates.\n- Wiki compilation sweep 7, run under the `wrapup` lease. 66 new sources since sweep 6: 37 active handoffs, 25 progress notes, 4",
+      "score": 0.9287,
+      "content_hash": "22a1c40e32f16429"
+    }
+  ],
+  "wall_s": 14.915055434918031
+}

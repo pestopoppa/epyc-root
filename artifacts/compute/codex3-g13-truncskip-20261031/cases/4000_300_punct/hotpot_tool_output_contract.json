@@ -1,0 +1,190 @@
+{
+  "arm": "4000_300_punct",
+  "id": "hotpot_tool_output_contract",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/tool-output-compression.md",
+    "/workspace/handoffs/active/tool-use-eval-contract.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/tool-output-compression.md",
+    "/workspace/handoffs/active/tool-use-eval-contract.md"
+  ],
+  "metrics": {
+    "evidence_count": 2,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/tool-output-compression.md",
+      "/workspace/handoffs/active/tool-use-eval-contract.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-04/2026-04-05.md",
+      "/workspace/wiki/tool-implementation.md",
+      "/workspace/wiki/tool-implementation.md",
+      "/workspace/progress/2026-09/2026-09-14-research-intake.md",
+      "/workspace/handoffs/completed/repl-turn-efficiency-completed-through-2026-05-28.md",
+      "/workspace/handoffs/completed/bulk-inference-2026-04-packages.md",
+      "/workspace/handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md",
+      "/workspace/progress/2026-04/2026-04-09.md",
+      "/workspace/progress/2026-04/2026-04-11.md",
+      "/workspace/progress/2026-02/2026-02-05.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-04/2026-04-05.md",
+      "heading_path": [
+        "2026-04-05 \u2014 Non-Inference Task Sprint: 8 tasks (LC-1\u20135, CF-1, AP-9/11/13)",
+        "Session 5: P1 Tool Output Compression + P3 Long-Context Eval Datasets"
+      ],
+      "line_range": [
+        269,
+        270
+      ],
+      "snippet": "## Session 5: P1 Tool Output Compression + P3 Long-Context Eval Datasets\n",
+      "score": 0.9212,
+      "content_hash": "b5d1ce6e925e98c5"
+    },
+    {
+      "file": "/workspace/wiki/tool-implementation.md",
+      "heading_path": [
+        "Tool Implementation",
+        "Key Findings",
+        "New (2026-07-06, tool-use smoke follow-up)"
+      ],
+      "line_range": [
+        64,
+        67
+      ],
+      "snippet": "### New (2026-07-06, tool-use smoke follow-up)\n\n- **Tool-use activation is env-ready, but the current local REPL behavior still fails on executable tool turns.** A five-way parallel Gate-3 smoke on PID `981677` confirmed the orchestrator AP",
+      "score": 0.9212,
+      "content_hash": "12bbc466a75d612d"
+    },
+    {
+      "file": "/workspace/wiki/tool-implementation.md",
+      "heading_path": [
+        "Tool Implementation",
+        "Summary",
+        "New Findings (2026-07-16 \u2014 harness cooperation is now part of the tool-surface contract)"
+      ],
+      "line_range": [
+        22,
+        27
+      ],
+      "snippet": "### New Findings (2026-07-16 \u2014 harness cooperation is now part of the tool-surface contract)\n\n- **Tool-output compression still lives at the orchestrator boundary, but its end-to-end value now depends on the harness not competing with its o",
+      "score": 0.9205,
+      "content_hash": "6dcd7302bdeb8c03"
+    },
+    {
+      "file": "/workspace/progress/2026-09/2026-09-14-research-intake.md",
+      "heading_path": [
+        "2026-09-14 \u2014 Research intake: ripwire / pd-bridge / 2609.09153 / 2609.05364 / SoL-Pi / GPT-OSS-20B harness search",
+        "Handoffs updated (25 new tasks, 6 ticked on merge, 19 open)"
+      ],
+      "line_range": [
+        18,
+        26
+      ],
+      "snippet": "## Handoffs updated (25 new tasks, 6 ticked on merge, 19 open)\n- delegation-context-preassembly.md \u2014 DCP-10/10a\u2705/10b/10c/11/12/13, DCP-2 correction, DCP-7 priors, stale P22\u2192RTG-10 pointer\n- tool-output-compression.md \u2014 TOC-SP-1\u2705, TOC-SP-2, ",
+      "score": 0.9194,
+      "content_hash": "49576a2a1d370eca"
+    },
+    {
+      "file": "/workspace/handoffs/completed/repl-turn-efficiency-completed-through-2026-05-28.md",
+      "heading_path": [
+        "REPL Turn Efficiency \u2014 Frecency Discovery + Combined Operations",
+        "Cross-References"
+      ],
+      "line_range": [
+        304,
+        314
+      ],
+      "snippet": "## Cross-References\n\n| Handoff | Relationship |\n|---------|-------------|\n| [tool-output-compression.md](../active/tool-output-compression.md) | Complementary: definition compression + turn reduction |\n| [meta-harness-optimization.md](meta-",
+      "score": 0.9188,
+      "content_hash": "5f7897b426cf0fe9"
+    },
+    {
+      "file": "/workspace/handoffs/completed/bulk-inference-2026-04-packages.md",
+      "heading_path": [
+        "(b) run GPQA separately with --suites gpqa and a patched timeout",
+        "Expected Output"
+      ],
+      "line_range": [
+        171,
+        181
+      ],
+      "snippet": "### Expected Output\n\n| File | Content |\n|------|---------|\n| `data/package_b/seeding_arm_a.json` | 3-way eval, tool compression ON |\n| `data/package_b/seeding_arm_b.json` | 3-way eval, tool compression OFF |\n| `data/package_b/trimr_results.",
+      "score": 0.9184,
+      "content_hash": "333730bdffe07a97"
+    },
+    {
+      "file": "/workspace/handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md",
+      "heading_path": [
+        "Default profiles \u2014 calibrate from Phase 2b sweep results",
+        "Cross-References"
+      ],
+      "line_range": [
+        750,
+        760
+      ],
+      "snippet": "## Cross-References\n\n| Handoff | Relationship |\n|---------|-------------|\n| `reasoning-compression.md` | Phase 2a shares eval methodology (Claude-as-Judge scoring, `eval_trimr.py` pattern); SFT data collection mirrors TrimR pattern |\n| `rou",
+      "score": 0.9179,
+      "content_hash": "e6075e5a420bfb62"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-09.md",
+      "heading_path": [
+        "2026-04-09 \u2014 Package B Phase 4 Analysis + TrimR + WS-3 + DS-6/DS-7 Audit",
+        "Session 3: Web Search Over-Reliance Fix + Arm B Launch",
+        "Arm B Status"
+      ],
+      "line_range": [
+        158,
+        168
+      ],
+      "snippet": "### Arm B Status\n\nAPI restarted with:\n- `TOOL_OUTPUT_COMPRESSION=0`\n- Fixed `DEFAULT_ROOT_LM_RULES` (compute-first priority)\n- Thinking enabled (`--jinja` + rebuilt binary)\n\nSeeding eval running: `seed_specialist_routing.py --3way --tui --s",
+      "score": 0.9178,
+      "content_hash": "6ccd0b88345ce2b0"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-11.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-11",
+        "Session 3 \u2014 Non-Inference Backlog: 3 Tasks Completed",
+        "Task 8: Tool Output Compression Monitoring"
+      ],
+      "line_range": [
+        152,
+        157
+      ],
+      "snippet": "### Task 8: Tool Output Compression Monitoring\n\n**What**: Wired compression metrics (original/compressed sizes, ratio, command) through the full diagnostic pipeline \u2014 from the compression callsite in `helpers.py` through `TaskState`, API re",
+      "score": 0.9178,
+      "content_hash": "5be5fd2931dfe58c"
+    },
+    {
+      "file": "/workspace/progress/2026-02/2026-02-05.md",
+      "heading_path": [
+        "All checks passed",
+        "Session 30: Condense Tool Timing Log Output"
+      ],
+      "line_range": [
+        513,
+        514
+      ],
+      "snippet": "## Session 30: Condense Tool Timing Log Output\n",
+      "score": 0.9174,
+      "content_hash": "de35e6d0bbde44a3"
+    }
+  ],
+  "wall_s": 14.121491857105866
+}

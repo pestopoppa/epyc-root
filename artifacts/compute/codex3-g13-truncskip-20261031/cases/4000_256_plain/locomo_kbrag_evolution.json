@@ -1,0 +1,192 @@
+{
+  "arm": "4000_256_plain",
+  "id": "locomo_kbrag_evolution",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/internal-kb-rag.md",
+    "/workspace/progress/2026-06/2026-06-12.md",
+    "/workspace/progress/2026-06/2026-06-13.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/internal-kb-rag.md",
+    "/workspace/progress/2026-06/2026-06-12.md",
+    "/workspace/progress/2026-06/2026-06-13.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/progress/2026-06/2026-06-12.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/internal-kb-rag.md",
+      "/workspace/progress/2026-06/2026-06-13.md"
+    ],
+    "first_evidence_rank": 6,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/wiki/search-retrieval.md",
+      "/workspace/wiki/search-retrieval.md",
+      "/workspace/wiki/knowledge-management.md",
+      "/workspace/wiki/search-retrieval.md",
+      "/workspace/progress/2026-07/2026-07-05-dashboard-recency-and-blocked-routing.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/progress/2026-06/2026-06-20-research-intake-refine-merge.md",
+      "/workspace/wiki/knowledge-management.md",
+      "/workspace/progress/2026-07/2026-07-02.md",
+      "/workspace/wiki/knowledge-management.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/wiki/search-retrieval.md",
+      "heading_path": [
+        "Search & Retrieval",
+        "2026-06-13 Internal KB-RAG Status"
+      ],
+      "line_range": [
+        70,
+        77
+      ],
+      "snippet": "## 2026-06-13 Internal KB-RAG Status\n\nThe internal markdown KB-RAG path has moved from planned architecture to measurable retrieval system. K1-K6 are landed, and the fresh K7 build covers 577 files / 18,010 chunks / 1.2 GiB embeddings. The ",
+      "score": 0.9443,
+      "content_hash": "a29efb30785b4cfa"
+    },
+    {
+      "file": "/workspace/wiki/search-retrieval.md",
+      "heading_path": [
+        "Search & Retrieval",
+        "2026-06-15 Update \u2014 K7 Certification, Not Just Seed Calibration"
+      ],
+      "line_range": [
+        78,
+        83
+      ],
+      "snippet": "## 2026-06-15 Update \u2014 K7 Certification, Not Just Seed Calibration\n\n- **Internal KB-RAG has crossed from seed calibration to certification planning.** The fresh K7 build indexed 577 files into 18,010 chunks with roughly 1.2 GiB of embedding",
+      "score": 0.9417,
+      "content_hash": "6770e3c4b8d3a34a"
+    },
+    {
+      "file": "/workspace/wiki/knowledge-management.md",
+      "heading_path": [
+        "Knowledge Management",
+        "Internal KB-RAG Architecture (K1\u2013K8 work items)"
+      ],
+      "line_range": [
+        166,
+        174
+      ],
+      "snippet": "## Internal KB-RAG Architecture (K1\u2013K8 work items)\n\nPer [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md), the planned KB-RAG indexes the wiki + active handoffs + completed handoffs + research/deep-dives + progress logs + (cross",
+      "score": 0.9415,
+      "content_hash": "efcde145cb6d9e2a"
+    },
+    {
+      "file": "/workspace/wiki/search-retrieval.md",
+      "heading_path": [
+        "Search & Retrieval",
+        "Updates \u2014 2026-04-28",
+        "Internal KB-RAG architecture extension (2026-04-28)"
+      ],
+      "line_range": [
+        150,
+        158
+      ],
+      "snippet": "### Internal KB-RAG architecture extension (2026-04-28)\n\nPer [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md):\n\n- ColBERT-based RAG over the project's own wiki + handoffs + research + progress logs. Same multi-vector late-inter",
+      "score": 0.9403,
+      "content_hash": "ff1159e6161af72b"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-05-dashboard-recency-and-blocked-routing.md",
+      "heading_path": [
+        "Handoff dashboard hub \u2014 card recency signal + Blocked-column routing (2026-07-05)",
+        "Results (live board, verified)"
+      ],
+      "line_range": [
+        28,
+        34
+      ],
+      "snippet": "## Results (live board, verified)\n\n- Active/blocked recency: **133 of 134 active cards now date+sort by real git activity, 1 by uncommitted-edit mtime** (was 57 created / 45 updated / 31 undated). The \"Internal Interaction Lifecycle\" card t",
+      "score": 0.9402,
+      "content_hash": "310529edda007e7c"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue - J9 HLE-4 harness-metrics verdict",
+        "Coordination updates"
+      ],
+      "line_range": [
+        491,
+        499
+      ],
+      "snippet": "### Coordination updates\n\n- `bulk-inference-campaign.md`: Queue 1 no longer lists J9 as open; Package J records the diagnostic-only verdict.\n- `master-handoff-index.md`: N7 then listed only J13, J7, and K-RAG as remaining zero-inference cam",
+      "score": 0.9401,
+      "content_hash": "af545d88f14a1bc8"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-20-research-intake-refine-merge.md",
+      "heading_path": [
+        "2026-06-20 \u2014 Research-intake refinement + handoff merge (intake-695..720)",
+        "Changes made"
+      ],
+      "line_range": [
+        13,
+        30
+      ],
+      "snippet": "## Changes made\n\n| Part | Artifact | Change |\n|------|----------|--------|\n| A | `research/intake_index.yaml` | Rewrote all 25 `recommended_actions` to verified text; fixed factual errors (see below); backfilled `handoffs_updated`/`handoffs",
+      "score": 0.94,
+      "content_hash": "dfbe9df68606ebc9"
+    },
+    {
+      "file": "/workspace/wiki/knowledge-management.md",
+      "heading_path": [
+        "Knowledge Management",
+        "Source References"
+      ],
+      "line_range": [
+        318,
+        331
+      ],
+      "snippet": "- [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) \u2014 ColBERT-based RAG architecture, K1\u2013K8 work items, K7 Flywheel-template eval methodology, K8 deferred wikilink learning-loop scorer\n- [`sliders-local-validation.md`](../handof",
+      "score": 0.9396,
+      "content_hash": "a8354afc44fb729c"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-02.md",
+      "heading_path": [
+        "2026-07-02",
+        "KB-RAG follow-up triage"
+      ],
+      "line_range": [
+        103,
+        107
+      ],
+      "snippet": "## KB-RAG follow-up triage\n\n- Confirmed the remaining internal KB-RAG follow-up is doc-only: the default-signal decision is inference-gated and K8 remains deferred until there is a measured wiki cross-link gap.\n- Tightened the KB-RAG handof",
+      "score": 0.9389,
+      "content_hash": "111ccf9e10d821af"
+    },
+    {
+      "file": "/workspace/wiki/knowledge-management.md",
+      "heading_path": [
+        "Knowledge Management",
+        "Certified KB-RAG Consumer and Parked Two-Pass Retrieval (2026-06-13 / 2026-06-20)"
+      ],
+      "line_range": [
+        259,
+        265
+      ],
+      "snippet": "## Certified KB-RAG Consumer and Parked Two-Pass Retrieval (2026-06-13 / 2026-06-20)\n\nKB-RAG is no longer pre-deployment: K1\u2013K7 are **CERTIFIED 2026-06-13** and shipped under `epyc-orchestrator/src/retrieval/` (additive `colbert_encoder.py`",
+      "score": 0.9383,
+      "content_hash": "820c1257f6a5d543"
+    }
+  ],
+  "wall_s": 15.221217249054462
+}

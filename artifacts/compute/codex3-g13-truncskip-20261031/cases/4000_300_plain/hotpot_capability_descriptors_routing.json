@@ -1,0 +1,192 @@
+{
+  "arm": "4000_300_plain",
+  "id": "hotpot_capability_descriptors_routing",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/model-capability-descriptors.md",
+    "/workspace/handoffs/active/capability-registry-and-promotion.md",
+    "/workspace/handoffs/active/routing-and-optimization-index.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/model-capability-descriptors.md",
+    "/workspace/handoffs/active/capability-registry-and-promotion.md",
+    "/workspace/handoffs/active/routing-and-optimization-index.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/capability-registry-and-promotion.md",
+      "/workspace/handoffs/active/model-capability-descriptors.md",
+      "/workspace/handoffs/active/routing-and-optimization-index.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/handoffs/completed/fable5-findings-02-routing-decision-architecture.md",
+      "/workspace/progress/2026-06/2026-06-15.md",
+      "/workspace/handoffs/completed/fable5-findings-00-executive-summary.md",
+      "/workspace/wiki/routing-intelligence.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/handoffs/completed/fable5-findings-00-executive-summary.md",
+      "/workspace/handoffs/completed/fable5-findings-04-northstar-portfolio-indices.md",
+      "/workspace/research/deep-dives/deepplanning-agent-benchmark.md",
+      "/workspace/handoffs/completed/fable5-architecture-review.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "Stack-prior launcher consumer documented",
+        "Root docs updated"
+      ],
+      "line_range": [
+        842,
+        854
+      ],
+      "snippet": "### Root docs updated\n\n- `handoffs/active/model-capability-descriptors.md`: W3 first-consumer\n  migration is now complete through `7121f38`; W4 swap-CI remains open.\n- `handoffs/active/standardized-stack-update-pipeline-finalization.md` and",
+      "score": 0.9352,
+      "content_hash": "92d8b25f8cf88a07"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-02-routing-decision-architecture.md",
+      "heading_path": [
+        "Fable 5 findings 02 \u2014 Routing/serving decision architecture (facet 3)",
+        "3. The recommended decision architecture"
+      ],
+      "line_range": [
+        30,
+        38
+      ],
+      "snippet": "## 3. The recommended decision architecture\n\n**Name**: a single **capability-conditioned cascade** \u2014 one calibrated `P(success | task-features, model-descriptor)` + explicit `cost(model, placement-state)` + preference vector \u03c9, executed as ",
+      "score": 0.9343,
+      "content_hash": "52960a9728ae230a"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-15.md",
+      "heading_path": [
+        "2026-06-15",
+        "W4 swap-CI documentation tail (2026-06-15T19:14Z)"
+      ],
+      "line_range": [
+        2404,
+        2411
+      ],
+      "snippet": "## W4 swap-CI documentation tail (2026-06-15T19:14Z)\n\n- `handoffs/active/model-capability-descriptors.md` now records the current\n  no-inference W4 state more precisely: the promotion-gate fixture suite\n  already exercises the swapped front",
+      "score": 0.9321,
+      "content_hash": "fdcba11928e0263a"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-00-executive-summary.md",
+      "heading_path": [
+        "Fable 5 architectural review \u2014 executive summary",
+        "The one-paragraph answer"
+      ],
+      "line_range": [
+        12,
+        15
+      ],
+      "snippet": "## The one-paragraph answer\n\nYou asked four architecture questions. The evidence says they are one problem wearing four costumes: **your system's binding constraint is decision-grade evidence \u2014 the ability to measure an effect, attribute it",
+      "score": 0.9312,
+      "content_hash": "84e20ad60e3388c6"
+    },
+    {
+      "file": "/workspace/wiki/routing-intelligence.md",
+      "heading_path": [
+        "Routing Intelligence",
+        "Updates \u2014 2026-04-28",
+        "New Findings (2026-06-13 \u2014 Routing Truth, Descriptors, And X-MAS)"
+      ],
+      "line_range": [
+        380,
+        387
+      ],
+      "snippet": "### New Findings (2026-06-13 \u2014 Routing Truth, Descriptors, And X-MAS)\n\n- **The immediate routing defect was running-state truth, not a missing decision theory.** Fable 5 found production using test feature defaults and runtime flag mutation",
+      "score": 0.9307,
+      "content_hash": "39d59c61c09fdcb6"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "Handoff/Index Portfolio Audit \u2014 vs the North Star",
+        "5. STRATEGIC GAPS"
+      ],
+      "line_range": [
+        861,
+        869
+      ],
+      "snippet": "## 5. STRATEGIC GAPS\n\n1. **No model-capability descriptor schema** (model-agnosticism clause). Registries are launch configs; routing intelligence is learned per-stack and **dies on stack change** \u2014 the 2026-05-25 memory reset simultaneousl",
+      "score": 0.9305,
+      "content_hash": "b19c882436a450dd"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-00-executive-summary.md",
+      "heading_path": [
+        "Fable 5 architectural review \u2014 executive summary",
+        "What you are missing (the highest-value contribution, per your \u00a70)"
+      ],
+      "line_range": [
+        25,
+        32
+      ],
+      "snippet": "## What you are missing (the highest-value contribution, per your \u00a70)\n\n1. **The instrument is the product.** Your traffic is mostly your own evaluator; your optimizer's ceiling is your evaluator's resolution; your operator-trust budget is s",
+      "score": 0.9303,
+      "content_hash": "f2462c7ae3173e02"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-04-northstar-portfolio-indices.md",
+      "heading_path": [
+        "Fable 5 findings 04 \u2014 North Star critique, backlog-relevance map, index reorganization (deliverables \u00a78.2\u20138.3, \u00a78.5)",
+        "1. The North Star, critiqued clause by clause"
+      ],
+      "line_range": [
+        9,
+        20
+      ],
+      "snippet": "## 1. The North Star, critiqued clause by clause\n\n> *\"orchestration infrastructure agnostic to the specific models, cures itself organically, optimally learns to use every tool available \u2014 implemented and backlogged \u2014 to maximize inference ",
+      "score": 0.9295,
+      "content_hash": "fdd8dc39ff8470a6"
+    },
+    {
+      "file": "/workspace/research/deep-dives/deepplanning-agent-benchmark.md",
+      "heading_path": [
+        "DeepPlanning: Benchmarking Long-Horizon Agentic Planning with Verifiable Constraints \u2014 Deep Dive",
+        "9. EPYC Applicability \u2014 Concrete Integration Points",
+        "9f. Learned Routing Controller Training Data"
+      ],
+      "line_range": [
+        441,
+        452
+      ],
+      "snippet": "### 9f. Learned Routing Controller Training Data\n\n**Finding**: The 26-model leaderboard with per-dimension scores constitutes a rich dataset of model capabilities across task types. The domain-specialization finding (Gemini-3-Flash: 5.9% tr",
+      "score": 0.9285,
+      "content_hash": "30c994cd93fdb17c"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-architecture-review.md",
+      "heading_path": [
+        "Fable 5 Architectural Review \u2014 entry handoff (a prompt, not a task list)",
+        "8.5 Negative-space audit"
+      ],
+      "line_range": [
+        293,
+        306
+      ],
+      "snippet": "## 8.5 Negative-space audit\n\nIn addition to proposing architectures, explicitly tell us:\n- What should we **delete, merge, freeze, or stop optimizing** \u2014 subsystems, handoffs, or\n  assumptions that consume attention without moving the North",
+      "score": 0.9279,
+      "content_hash": "e4f12e8ffd12e627"
+    }
+  ],
+  "wall_s": 15.988742858869955
+}

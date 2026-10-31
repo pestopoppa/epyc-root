@@ -1,0 +1,192 @@
+{
+  "arm": "4000_300_plain",
+  "id": "hotpot_triattention_attention_matching",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/triattention-kv-selection.md",
+    "/workspace/handoffs/active/attention-matching-kv-compaction.md",
+    "/workspace/handoffs/active/inference-acceleration-index.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/inference-acceleration-index.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/triattention-kv-selection.md",
+    "/workspace/handoffs/active/attention-matching-kv-compaction.md",
+    "/workspace/handoffs/active/inference-acceleration-index.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/attention-matching-kv-compaction.md",
+      "/workspace/handoffs/active/inference-acceleration-index.md",
+      "/workspace/handoffs/active/triattention-kv-selection.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/active/streaming-llm-baseline.md",
+      "/workspace/handoffs/active/summary-token-attention-readiness.md",
+      "/workspace/progress/2026-04/2026-04-13.md",
+      "/workspace/progress/2026-04/2026-04-08.md",
+      "/workspace/progress/2026-06/2026-06-20.md",
+      "/workspace/research/deep-dives/2026-05-19-kv-admission-cluster.md",
+      "/workspace/progress/2026-04/2026-04-08.md",
+      "/workspace/wiki/kv-cache.md",
+      "/workspace/handoffs/completed/triattention-kv-selection-deployment-completed-through-2026-05-28.md",
+      "/workspace/handoffs/completed/lightning-attention-port-v1-completed-through-2026-05-28.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/active/streaming-llm-baseline.md",
+      "heading_path": [
+        "StreamingLLM Baseline for KV Reduction Cluster",
+        "Non-Goals"
+      ],
+      "line_range": [
+        95,
+        100
+      ],
+      "snippet": "## Non-Goals\n\n- **No fine-tuning**: StreamingLLM is purely inference-time, no model surgery.\n- **No KV quantization changes**: orthogonal to `kv-cache-quantization.md` (completed); StreamingLLM operates on the *selection* axis, not the *pre",
+      "score": 0.9295,
+      "content_hash": "802a7e167669c49e"
+    },
+    {
+      "file": "/workspace/handoffs/active/summary-token-attention-readiness.md",
+      "heading_path": [
+        "Summary-Token Attention Readiness Tracker \u2014 KSA + GSA Cluster"
+      ],
+      "line_range": [
+        1,
+        15
+      ],
+      "snippet": "# Summary-Token Attention Readiness Tracker \u2014 KSA + GSA Cluster\n\n**Status**: REFRESHED 2026-05-28 \u2014 monitoring-only readiness tracker; no implementation until a gate fires\n**Created**: 2026-04-29 (via research-intake of intake-502 KSA + int",
+      "score": 0.929,
+      "content_hash": "0bf5902aba8da56c"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-13.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-13",
+        "Session 12 \u2014 Research Intake: KV Cache Compaction (Latent Briefing + Attention Matching)",
+        "Changes"
+      ],
+      "line_range": [
+        529,
+        544
+      ],
+      "snippet": "### Changes\n\n| Repo | File | Change |\n|------|------|--------|\n| epyc-root | research/intake_index.yaml | 4 entries added (intake-350 to 353), all updated with deep-dive findings |\n| epyc-root | research/deep-dives/kv-compaction-attention-m",
+      "score": 0.9281,
+      "content_hash": "5ae5ff842d3c1745"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-08.md",
+      "heading_path": [
+        "2026-04-08 \u2014 Research Intake 282-283: Amazon S3 Files",
+        "Session 3 \u2014 Research Intake 284-288: KV Cache Selection Cluster + Deep Dive + Handoff Promotion",
+        "Handoff Promotion: triattention-kv-selection.md (stub \u2192 ACTIVE)"
+      ],
+      "line_range": [
+        134,
+        141
+      ],
+      "snippet": "### Handoff Promotion: triattention-kv-selection.md (stub \u2192 ACTIVE)\n\nPromoted to ACTIVE with full governance format (55 \u2192 106 lines):\n- Title broadened: \"KV Cache Selection/Eviction (TriAttention / Expected Attention)\"\n- Added: Current Work",
+      "score": 0.927,
+      "content_hash": "4216f95f3bb4096d"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-20.md",
+      "heading_path": [
+        "2026-06-20 Progress",
+        "Wrap-up index and wiki hygiene"
+      ],
+      "line_range": [
+        755,
+        792
+      ],
+      "snippet": "## Wrap-up index and wiki hygiene\n\nRan the full wrap-up hygiene pass after the G11 scoring checkpoint and cleaned\nthe durable coordination surfaces rather than leaving lint drift for the next\nsession.\n\nIndex and handoff pruning:\n\n- Archived",
+      "score": 0.9261,
+      "content_hash": "ddd56bb8f1515940"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-05-19-kv-admission-cluster.md",
+      "heading_path": [
+        "KV Cache Admission / Eviction Cluster \u2014 2026-05-19",
+        "Cross-Cutting Concerns vs Active Handoffs"
+      ],
+      "line_range": [
+        296,
+        306
+      ],
+      "snippet": "## Cross-Cutting Concerns vs Active Handoffs\n\n- `attention-matching-kv-compaction.md` \u2014 already updated per intake-538 notes. AttentionMatching is a **complementary** approach: it does post-prefill compaction (closed-form, frozen-weights) o",
+      "score": 0.9251,
+      "content_hash": "7e2b72ac12ba5ecf"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-08.md",
+      "heading_path": [
+        "2026-04-08 \u2014 Research Intake 282-283: Amazon S3 Files",
+        "Session 3 \u2014 Research Intake 284-288: KV Cache Selection Cluster + Deep Dive + Handoff Promotion",
+        "Artifacts Modified"
+      ],
+      "line_range": [
+        153,
+        165
+      ],
+      "snippet": "### Artifacts Modified\n\n- `research/intake_index.yaml` \u2014 Added intake-284 through 288, updated 4 entries with deep-dive revisions\n- `research/deep-dives/triattention-kv-selection-cluster.md` \u2014 Created (267 lines, cluster analysis)\n- `handof",
+      "score": 0.9239,
+      "content_hash": "945838f4d0de36d5"
+    },
+    {
+      "file": "/workspace/wiki/kv-cache.md",
+      "heading_path": [
+        "KV Cache Optimization",
+        "Open Questions"
+      ],
+      "line_range": [
+        150,
+        160
+      ],
+      "snippet": "## Open Questions\n\n- Does Attention Matching maintain 5x quality on coding benchmarks (Coder-32B at production-length contexts)? Information-dense content degrades faster than narrative in the paper. Short-prompt P2 results (0.807 at 10x) m",
+      "score": 0.9233,
+      "content_hash": "f39849c0b3bdde39"
+    },
+    {
+      "file": "/workspace/handoffs/completed/triattention-kv-selection-deployment-completed-through-2026-05-28.md",
+      "heading_path": [
+        "KV Cache Selection/Eviction (TriAttention / Expected Attention)",
+        "Decision Framework"
+      ],
+      "line_range": [
+        148,
+        154
+      ],
+      "snippet": "## Decision Framework\n\n- **Gate 1 (after S1)**: IF Expected Attention >= 90% RULER at 50% compression on Qwen2.5-7B THEN proceed to S3 stacking test. ELSE evaluate TriAttention via S2 before concluding.\n- **Gate 2 (after S2)**: IF Q/K conce",
+      "score": 0.923,
+      "content_hash": "ebcb46cbcaf3471c"
+    },
+    {
+      "file": "/workspace/handoffs/completed/lightning-attention-port-v1-completed-through-2026-05-28.md",
+      "heading_path": [
+        "Lightning Attention Port to llama.cpp"
+      ],
+      "line_range": [
+        7,
+        22
+      ],
+      "snippet": "# Lightning Attention Port to llama.cpp\n\n**Status**: COMPLETED / historical v1 ledger \u2014 v1 port complete; current quality, long-context, drafter, and profile-gated L5 validation lives in `../active/lightning-attention-port.md`. Do not redo ",
+      "score": 0.9229,
+      "content_hash": "b9b4316a9c99a130"
+    }
+  ],
+  "wall_s": 16.148018131032586
+}

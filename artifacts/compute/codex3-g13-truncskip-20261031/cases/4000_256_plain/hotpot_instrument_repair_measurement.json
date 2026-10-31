@@ -1,0 +1,196 @@
+{
+  "arm": "4000_256_plain",
+  "id": "hotpot_instrument_repair_measurement",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/evidence-plane-instrument-repair.md",
+    "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md",
+    "/workspace/handoffs/active/fable5-proposed-MEASUREMENT.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md",
+    "/workspace/handoffs/active/fable5-proposed-MEASUREMENT.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/evidence-plane-instrument-repair.md",
+    "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md",
+    "/workspace/handoffs/active/fable5-proposed-MEASUREMENT.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/evidence-plane-instrument-repair.md",
+      "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md",
+      "/workspace/handoffs/active/fable5-proposed-MEASUREMENT.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/completed/fable5-proposed-MEASUREMENT.md",
+      "/workspace/handoffs/active/numa-placement-defect-20260730.md",
+      "/workspace/handoffs/active/frontier-f2-self-running-lab.md",
+      "/workspace/handoffs/active/autokernel-unified-surface-program.md",
+      "/workspace/handoffs/active/rocm-verify-profile-backend.md",
+      "/workspace/progress/2026-10/2026-10-04-intake-decision-tools-stage4.md",
+      "/workspace/handoffs/active/autokernel-unified-surface-program.md",
+      "/workspace/progress/2026-09/2026-09-04-inf70-audit.md",
+      "/workspace/handoffs/active/coordinator-role-failure-modes-and-refactor.md",
+      "/workspace/progress/2026-08/2026-08-28-champion-attest.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/fable5-proposed-MEASUREMENT.md",
+      "heading_path": [
+        "PROPOSAL - MEASUREMENT.md (the instrument constitution)"
+      ],
+      "line_range": [
+        1,
+        14
+      ],
+      "snippet": "# PROPOSAL - MEASUREMENT.md (the instrument constitution)\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.\n\n> **Historical ledger only; current measu",
+      "score": 0.9355,
+      "content_hash": "09bcbf2c85ed816d"
+    },
+    {
+      "file": "/workspace/handoffs/active/numa-placement-defect-20260730.md",
+      "heading_path": [
+        "NUMA placement defect \u2014 two production CPU roles serving at ~half speed",
+        "Measurement-program repairs landed 2026-07-30"
+      ],
+      "line_range": [
+        703,
+        723
+      ],
+      "snippet": "## Measurement-program repairs landed 2026-07-30\n\n* **`MRG-1` model-registration runbook** \u2014\n  `epyc-inference-research/docs/protocols/model-registration-runbook.md`. It is a **GATE, not a\n  guide**: a model that has not completed **Steps 0",
+      "score": 0.9353,
+      "content_hash": "ddc217037841860f"
+    },
+    {
+      "file": "/workspace/handoffs/active/frontier-f2-self-running-lab.md",
+      "heading_path": [
+        "Frontier F2 \u2014 The Self-Running Lab: Local Agents Take Over Lab Maintenance",
+        "Gates & pitfalls"
+      ],
+      "line_range": [
+        41,
+        48
+      ],
+      "snippet": "## Gates & pitfalls\n\n- HARD GATES: N1\u2013N4 instrument repair done; N2 ledger/restart-bundle gates satisfied for live promotion. F5 injection policy is complete; intake-touching jobs must preserve the `SOURCE-QUARANTINE` convention.\n- Review q",
+      "score": 0.935,
+      "content_hash": "3aa0d7a66f8df6fe"
+    },
+    {
+      "file": "/workspace/handoffs/active/autokernel-unified-surface-program.md",
+      "heading_path": [
+        "AutoKernel Unified-Surface Program \u2014 one champion, one accumulator, one runbook for CPU + GPU kernel work",
+        "8. Autonomy design notebook \u2014 2026-09-08, evolving and documentation-only",
+        "8.9 Proposed runtime fast path and measurement repairs"
+      ],
+      "line_range": [
+        1838,
+        1874
+      ],
+      "snippet": "### 8.9 Proposed runtime fast path and measurement repairs\n\nVersioned recipe option sets declare supported model/backend, argv/env mapping, compatibility and\neffective-path witness. In-contract combinations are deterministic, reuse binary, ",
+      "score": 0.935,
+      "content_hash": "cb54d6f61c4fca57"
+    },
+    {
+      "file": "/workspace/handoffs/active/rocm-verify-profile-backend.md",
+      "heading_path": [
+        "ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring",
+        "2026-08-10 \u2014 C2 correctness oracle, C6 reward integrity, and three zero-cost probes (research-intake Stage-3)",
+        "C6 \u2014 reward integrity: close the instrument gap first"
+      ],
+      "line_range": [
+        761,
+        783
+      ],
+      "snippet": "- [x] **RVP-C6-1 \u2014 Hash-pin the measurement translation units.** `tests/test-backend-ops.cpp`,\n  `tests/test-quantize-perf.cpp` and `tools/llama-bench/llama-bench.cpp` are hashed against the\n  production anchor before every measured round; ",
+      "score": 0.9341,
+      "content_hash": "33893a8091e0f76c"
+    },
+    {
+      "file": "/workspace/progress/2026-10/2026-10-04-intake-decision-tools-stage4.md",
+      "heading_path": [
+        "Decision-tools intake \u2014 approved Stage 4",
+        "Scope and filing"
+      ],
+      "line_range": [
+        5,
+        14
+      ],
+      "snippet": "## Scope and filing\n\nStage 4 files the approved operational tasks and implements the one intake-workflow repair. It does not execute application experiments, download models, train weights, install dependencies, reload services, amend measu",
+      "score": 0.9334,
+      "content_hash": "c98d2cef87c851c9"
+    },
+    {
+      "file": "/workspace/handoffs/active/autokernel-unified-surface-program.md",
+      "heading_path": [
+        "AutoKernel Unified-Surface Program \u2014 one champion, one accumulator, one runbook for CPU + GPU kernel work",
+        "8. Autonomy design notebook \u2014 2026-09-08, evolving and documentation-only",
+        "8.1 Purpose, authority, and accepted decisions"
+      ],
+      "line_range": [
+        1551,
+        1594
+      ],
+      "snippet": "### 8.1 Purpose, authority, and accepted decisions\n\n**Session purpose:** collect and refine the plan in this handoff across multiple operator iterations,\nincluding implementation details. Do not implement, deploy, launch experiments, modify",
+      "score": 0.9334,
+      "content_hash": "2515393850976265"
+    },
+    {
+      "file": "/workspace/progress/2026-09/2026-09-04-inf70-audit.md",
+      "heading_path": [
+        "C9 CLOSED \u2014 `llama-perplexity` on qwen4exp, verified to the same-binary standard",
+        "Derived actionables filed"
+      ],
+      "line_range": [
+        50,
+        59
+      ],
+      "snippet": "### Derived actionables filed\n\n- **SC54** (`vidya-belief-substrate-program.md`) + a source-table row in `scripts/vidya/adapters/README.md`:\n  wire the restored PPL/KLD gate as a measurement source, write side first, per the CLAUDE.md rule t",
+      "score": 0.9329,
+      "content_hash": "a6d0ba4794041cba"
+    },
+    {
+      "file": "/workspace/handoffs/active/coordinator-role-failure-modes-and-refactor.md",
+      "heading_path": [
+        "Coordinator role \u2014 failure modes, root causes, and the refactor",
+        "Refactor \u2014 open tasks",
+        "Measurement discipline"
+      ],
+      "line_range": [
+        588,
+        610
+      ],
+      "snippet": "### Measurement discipline\n\n- [x] **R-12 \u2014 Extend `a90870ec`'s pattern from counts to instruments.** *Reporting Units* fixed the\n      counting case. The remaining RC-2 sub-shapes have no written rule: instantaneous sample as a\n      rate (",
+      "score": 0.9326,
+      "content_hash": "9603d1eed916c10a"
+    },
+    {
+      "file": "/workspace/progress/2026-08/2026-08-28-champion-attest.md",
+      "heading_path": [
+        "2026-08-28 \u2014 champion-attest",
+        "Changes",
+        "The design decision worth carrying"
+      ],
+      "line_range": [
+        33,
+        51
+      ],
+      "snippet": "### The design decision worth carrying\n\nThe cheap fix was to emit a `epyc.autokernel.cumulative_performance.v2` \u2014 the receipt the card\nalready read. **Deliberately not done.** That schema's authority derives from a chain only a\ncampaign bui",
+      "score": 0.9325,
+      "content_hash": "4946a98f865e444b"
+    }
+  ],
+  "wall_s": 15.589041593950242
+}

@@ -1,0 +1,195 @@
+{
+  "arm": "1100_256_plain",
+  "id": "hotpot_instrument_repair_measurement",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/evidence-plane-instrument-repair.md",
+    "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md",
+    "/workspace/handoffs/active/fable5-proposed-MEASUREMENT.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md",
+    "/workspace/handoffs/active/fable5-proposed-MEASUREMENT.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/evidence-plane-instrument-repair.md",
+    "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md",
+    "/workspace/handoffs/active/fable5-proposed-MEASUREMENT.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/evidence-plane-instrument-repair.md",
+      "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md",
+      "/workspace/handoffs/active/fable5-proposed-MEASUREMENT.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/wiki/knowledge-management.md",
+      "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md",
+      "/workspace/handoffs/completed/fable5-proposed-MEASUREMENT.md",
+      "/workspace/handoffs/active/autokernel-unified-surface-program.md",
+      "/workspace/handoffs/active/frontier-f2-self-running-lab.md",
+      "/workspace/handoffs/active/rocm-verify-profile-backend.md",
+      "/workspace/progress/2026-08/2026-08-11.md",
+      "/workspace/progress/2026-09/2026-09-04-inf70-audit.md",
+      "/workspace/handoffs/active/autopilot-decision-plane-audit-2026-07-22.md",
+      "/workspace/progress/2026-08/2026-08-28-champion-attest.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/wiki/knowledge-management.md",
+      "heading_path": [
+        "Knowledge Management",
+        "Belief-kernel ingestion contract \u2014 one carrier, one ladder per source class (2026-08-10)"
+      ],
+      "line_range": [
+        937,
+        947
+      ],
+      "snippet": "**The standing practice this exists to support.** A process that produces measurements or verified\nfindings gets its wiring task filed the moment it is noticed, because the asymmetry is total:\ninstrumenting the WRITE side is cheap and perma",
+      "score": 0.9358,
+      "content_hash": "efba92157ccaa2c5"
+    },
+    {
+      "file": "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md",
+      "heading_path": [
+        "Evidence Plane \u2014 Event-Sourced Runtime + Narrative Regeneration"
+      ],
+      "line_range": [
+        6,
+        12
+      ],
+      "snippet": "er audits, and coordination with N2 ledger/readiness.\n**Created**: 2026-06-12\n**Priority**: HIGH \u2014 sequenced after [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md); the adoption gate is al",
+      "score": 0.9358,
+      "content_hash": "e9d9ec7e7d021daf"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-proposed-MEASUREMENT.md",
+      "heading_path": [
+        "PROPOSAL - MEASUREMENT.md (the instrument constitution)"
+      ],
+      "line_range": [
+        1,
+        14
+      ],
+      "snippet": "# PROPOSAL - MEASUREMENT.md (the instrument constitution)\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.\n\n> **Historical ledger only; current measu",
+      "score": 0.9355,
+      "content_hash": "09bcbf2c85ed816d"
+    },
+    {
+      "file": "/workspace/handoffs/active/autokernel-unified-surface-program.md",
+      "heading_path": [
+        "AutoKernel Unified-Surface Program \u2014 one champion, one accumulator, one runbook for CPU + GPU kernel work",
+        "8. Autonomy design notebook \u2014 2026-09-08, evolving and documentation-only",
+        "8.9 Proposed runtime fast path and measurement repairs"
+      ],
+      "line_range": [
+        1838,
+        1848
+      ],
+      "snippet": "### 8.9 Proposed runtime fast path and measurement repairs\n\nVersioned recipe option sets declare supported model/backend, argv/env mapping, compatibility and\neffective-path witness. In-contract combinations are deterministic, reuse binary, ",
+      "score": 0.9353,
+      "content_hash": "7d5c92f000cbb002"
+    },
+    {
+      "file": "/workspace/handoffs/active/frontier-f2-self-running-lab.md",
+      "heading_path": [
+        "Frontier F2 \u2014 The Self-Running Lab: Local Agents Take Over Lab Maintenance",
+        "Gates & pitfalls"
+      ],
+      "line_range": [
+        41,
+        48
+      ],
+      "snippet": "## Gates & pitfalls\n\n- HARD GATES: N1\u2013N4 instrument repair done; N2 ledger/restart-bundle gates satisfied for live promotion. F5 injection policy is complete; intake-touching jobs must preserve the `SOURCE-QUARANTINE` convention.\n- Review q",
+      "score": 0.935,
+      "content_hash": "3aa0d7a66f8df6fe"
+    },
+    {
+      "file": "/workspace/handoffs/active/rocm-verify-profile-backend.md",
+      "heading_path": [
+        "ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring",
+        "2026-08-10 \u2014 C2 correctness oracle, C6 reward integrity, and three zero-cost probes (research-intake Stage-3)",
+        "C6 \u2014 reward integrity: close the instrument gap first"
+      ],
+      "line_range": [
+        761,
+        771
+      ],
+      "snippet": "- [x] **RVP-C6-1 \u2014 Hash-pin the measurement translation units.** `tests/test-backend-ops.cpp`,\n  `tests/test-quantize-perf.cpp` and `tools/llama-bench/llama-bench.cpp` are hashed against the\n  production anchor before every measured round; ",
+      "score": 0.9341,
+      "content_hash": "091b1374349c8c20"
+    },
+    {
+      "file": "/workspace/progress/2026-08/2026-08-11.md",
+      "heading_path": [
+        "2026-08-11",
+        "Governance, backlog repair & evidence hygiene \u2014 `mainC` (written under standing-wrapup-discipline)",
+        "`mainB` \u2014 queue row: E8-PANELS-a (rerun counter reconciliation)"
+      ],
+      "line_range": [
+        1222,
+        1232
+      ],
+      "snippet": "Reporting only, and I tested for the hazard rather than assuming it away: a test pins that a missing\nor zero count still HOLDS the gate, because the thing to fear here is a cosmetic fix that quietly\nwires a fail-closed hold to a display fie",
+      "score": 0.934,
+      "content_hash": "1e3cc2b4bb5caaa0"
+    },
+    {
+      "file": "/workspace/progress/2026-09/2026-09-04-inf70-audit.md",
+      "heading_path": [
+        "C9 CLOSED \u2014 `llama-perplexity` on qwen4exp, verified to the same-binary standard",
+        "Derived actionables filed"
+      ],
+      "line_range": [
+        50,
+        59
+      ],
+      "snippet": "### Derived actionables filed\n\n- **SC54** (`vidya-belief-substrate-program.md`) + a source-table row in `scripts/vidya/adapters/README.md`:\n  wire the restored PPL/KLD gate as a measurement source, write side first, per the CLAUDE.md rule t",
+      "score": 0.9329,
+      "content_hash": "a6d0ba4794041cba"
+    },
+    {
+      "file": "/workspace/handoffs/active/autopilot-decision-plane-audit-2026-07-22.md",
+      "heading_path": [
+        "Autopilot Decision-Plane Adversarial Audit \u2014 2026-07-22",
+        "IMPLEMENTATION RECORD \u2014 C1/H1 quality-axis era fence (2026-07-22)",
+        "What remains (owner action, out of this session's scope)"
+      ],
+      "line_range": [
+        265,
+        271
+      ],
+      "snippet": "- [x] **E8 c1 successor coherence-admission instrument repair** \u2705 2026-07-28 \u2014 root `1970977a` and E8 branch `a3738507` make P-BENCH-4, final-C1, the v5 wrapper, and the direct v5 adapter serialize on the same canonical trust-boundary lock.",
+      "score": 0.9327,
+      "content_hash": "c74584dab95b3baf"
+    },
+    {
+      "file": "/workspace/progress/2026-08/2026-08-28-champion-attest.md",
+      "heading_path": [
+        "2026-08-28 \u2014 champion-attest",
+        "Changes",
+        "The design decision worth carrying"
+      ],
+      "line_range": [
+        33,
+        51
+      ],
+      "snippet": "### The design decision worth carrying\n\nThe cheap fix was to emit a `epyc.autokernel.cumulative_performance.v2` \u2014 the receipt the card\nalready read. **Deliberately not done.** That schema's authority derives from a chain only a\ncampaign bui",
+      "score": 0.9325,
+      "content_hash": "4946a98f865e444b"
+    }
+  ],
+  "wall_s": 26.188973309006542
+}

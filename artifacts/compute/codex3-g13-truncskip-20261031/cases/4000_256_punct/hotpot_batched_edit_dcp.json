@@ -1,0 +1,194 @@
+{
+  "arm": "4000_256_punct",
+  "id": "hotpot_batched_edit_dcp",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/batched-edit-parallel-apply.md",
+    "/workspace/handoffs/active/delegation-context-preassembly.md",
+    "/workspace/handoffs/active/bep-dcp-falsification-harness.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/batched-edit-parallel-apply.md",
+    "/workspace/handoffs/active/delegation-context-preassembly.md",
+    "/workspace/handoffs/active/bep-dcp-falsification-harness.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/delegation-context-preassembly.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/batched-edit-parallel-apply.md",
+      "/workspace/handoffs/active/bep-dcp-falsification-harness.md"
+    ],
+    "first_evidence_rank": 10,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/completed/bep-dcp-falsification-harness-completed-through-2026-05-28.md",
+      "/workspace/wiki/agent-architecture.md",
+      "/workspace/handoffs/completed/bep-dcp-falsification-harness-completed-through-2026-05-28.md",
+      "/workspace/progress/2026-05/2026-05-26.md",
+      "/workspace/progress/2026-05/2026-05-25.md",
+      "/workspace/handoffs/active/backlog-roi-audit-2026-07-14.md",
+      "/workspace/wiki/autonomous-research.md",
+      "/workspace/wiki/autonomous-research.md",
+      "/workspace/progress/2026-05/2026-05-26.md",
+      "/workspace/handoffs/active/delegation-context-preassembly.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/bep-dcp-falsification-harness-completed-through-2026-05-28.md",
+      "heading_path": [
+        "BEP-2 / DCP-6 Falsification-Harness Construction"
+      ],
+      "line_range": [
+        7,
+        17
+      ],
+      "snippet": "# BEP-2 / DCP-6 Falsification-Harness Construction\n\nstatus: BEP-2 REMEDIATED 2026-05-27 (harness built+run; multi-file read-loop diagnosed as agentic protocol/tooling NOT capability, then bypassed by a shipped flag-gated `force_mode=\"edit\"`",
+      "score": 0.9377,
+      "content_hash": "74303e1b5e60b3a9"
+    },
+    {
+      "file": "/workspace/wiki/agent-architecture.md",
+      "heading_path": [
+        "Agent Architecture",
+        "Source References"
+      ],
+      "line_range": [
+        916,
+        920
+      ],
+      "snippet": "- [batched-edit-parallel-apply.md](../handoffs/active/batched-edit-parallel-apply.md) \u2014 think-then-act batch editing + parallel apply fan-out (intake-605); 2026-06-28\u219207-05 hardening arc: verified-only promotion, DCP `omitted_context_paths`",
+      "score": 0.9373,
+      "content_hash": "d3515d710476d089"
+    },
+    {
+      "file": "/workspace/handoffs/completed/bep-dcp-falsification-harness-completed-through-2026-05-28.md",
+      "heading_path": [
+        "BEP-2 / DCP-6 Falsification-Harness Construction",
+        "Builder Prompt"
+      ],
+      "line_range": [
+        495,
+        539
+      ],
+      "snippet": "## Builder Prompt\n\nUse this when starting the implementation agent:\n\n```text\nYou are implementing the reviewed BEP-2 / DCP-6 falsification harness. Read /workspace/AGENTS.md first and obey GitNexus requirements. Then read:\n\n- /workspace/han",
+      "score": 0.9372,
+      "content_hash": "39189d111c0c90cf"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-26.md",
+      "heading_path": [
+        "2026-05-26 \u2014 manual session log",
+        "Session 22 \u2014 BEP/DCP falsification-harness review incorporated and tightened",
+        "Files updated"
+      ],
+      "line_range": [
+        574,
+        583
+      ],
+      "snippet": "### Files updated\n\n| File | Change |\n|---|---|\n| `handoffs/active/bep-dcp-falsification-harness.md` | Rewritten from DRAFT/open-questions into **REVIEWED / READY TO BUILD**. Added Executive Decision, hard invariants, mandatory Phase 0 surfa",
+      "score": 0.9369,
+      "content_hash": "410becca51f9f8c9"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-25.md",
+      "heading_path": [
+        "3. Optional: clean backup files",
+        "Session 12 \u2014 Research intake (5 URLs) + Repo Prompt / Code-as-Agent-Harness deep dive \u2192 handoff integration",
+        "Part 3 \u2014 Handoff + index integration (user-approved)"
+      ],
+      "line_range": [
+        346,
+        360
+      ],
+      "snippet": "### Part 3 \u2014 Handoff + index integration (user-approved)\n\nCreated 2 new handoffs and merged 607's ideas into 4 existing ones (+ 3 intake-update appends), all marked **draft / first-draft for brainstorming**. A parallel agent is auditing/ref",
+      "score": 0.934,
+      "content_hash": "d450fe029c9c99c1"
+    },
+    {
+      "file": "/workspace/handoffs/active/backlog-roi-audit-2026-07-14.md",
+      "heading_path": [
+        "Backlog ROI Audit \u2014 2026-07-14",
+        "F. Checkbox-discipline repairs"
+      ],
+      "line_range": [
+        76,
+        79
+      ],
+      "snippet": "## F. Checkbox-discipline repairs\n\n~40 done-in-prose-but-unchecked items flipped (`- [x] \u2026 \u2705 date`) across 19 handoffs: learned-routing-controller (P6.1.1-3), evidence-plane-event-sourcing (W1, W4), cpu-shape-specialized-gemv (4), opendatal",
+      "score": 0.9253,
+      "content_hash": "b58a9250575d8dc2"
+    },
+    {
+      "file": "/workspace/wiki/autonomous-research.md",
+      "heading_path": [
+        "Autonomous Research",
+        "2026-05-26 update \u2014 intake-607 harness instrumentation cluster MERGED",
+        "Sources (2026-05-26)"
+      ],
+      "line_range": [
+        731,
+        741
+      ],
+      "snippet": "### Sources (2026-05-26)\n\n- `epyc-orchestrator` merge `15350fe` (10 squashed commits from former branch `intake607-harness-impl`)\n- [`handoffs/active/unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) \u2014 ow",
+      "score": 0.9252,
+      "content_hash": "24fc0940a1007131"
+    },
+    {
+      "file": "/workspace/wiki/autonomous-research.md",
+      "heading_path": [
+        "Autonomous Research",
+        "2026-05-26 update \u2014 intake-607 harness instrumentation cluster MERGED",
+        "What landed (code on main)"
+      ],
+      "line_range": [
+        703,
+        713
+      ],
+      "snippet": "### What landed (code on main)\n\n| Module | Purpose | Owning handoff |\n|---|---|---|\n| `src/trace/harness_schema.py` + `src/trace/store.py` | **Shared event schema** \u2014 single source of truth for HLE/BSV/URE/EXM record families. Extends the e",
+      "score": 0.9252,
+      "content_hash": "88bd6d4c4ead8fba"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-26.md",
+      "heading_path": [
+        "2026-05-26 \u2014 manual session log",
+        "Session 15 \u2014 wire within-role inference gates into bulk-inference Package J + priority-zero sequencing",
+        "Changes (epyc-root only)"
+      ],
+      "line_range": [
+        11,
+        19
+      ],
+      "snippet": "### Changes (epyc-root only)\n\n| Files | What |\n|---|---|\n| `handoffs/active/bulk-inference-campaign.md` | New `Package J: Within-Role Placement + Audit-Batch Inference Gates` (9 tasks J1-J9). J1=WP-2 gate, J2=WP-3 verification, J3=WP-4 veri",
+      "score": 0.9245,
+      "content_hash": "5d4646c32122526f"
+    },
+    {
+      "file": "/workspace/handoffs/active/delegation-context-preassembly.md",
+      "heading_path": [
+        "Delegation Context Pre-Assembly (Budget-Bounded)",
+        "Dependencies / cross-cutting"
+      ],
+      "line_range": [
+        80,
+        87
+      ],
+      "snippet": "## Dependencies / cross-cutting\n\n- **context-folding-progressive** \u2014 assemble vs evict; should share segment-importance heuristics (extends routing-index CCC #7).\n- **meta-harness (completed ledger) / autopilot-continuous-optimization** \u2014 D",
+      "score": 0.9243,
+      "content_hash": "6c780bb0c06747b6"
+    }
+  ],
+  "wall_s": 12.739571479149163
+}

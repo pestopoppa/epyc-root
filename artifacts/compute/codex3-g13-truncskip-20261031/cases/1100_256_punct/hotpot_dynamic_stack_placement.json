@@ -1,0 +1,193 @@
+{
+  "arm": "1100_256_punct",
+  "id": "hotpot_dynamic_stack_placement",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/dynamic-stack-concurrency.md",
+    "/workspace/handoffs/active/launcher-numa-mode-gating.md",
+    "/workspace/handoffs/active/within-role-placement-state-machine.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/launcher-numa-mode-gating.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/dynamic-stack-concurrency.md",
+    "/workspace/handoffs/active/launcher-numa-mode-gating.md",
+    "/workspace/handoffs/active/within-role-placement-state-machine.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/within-role-placement-state-machine.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/dynamic-stack-concurrency.md",
+      "/workspace/handoffs/active/launcher-numa-mode-gating.md"
+    ],
+    "first_evidence_rank": 3,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-05/2026-05-25.md",
+      "/workspace/wiki/inference-serving.md",
+      "/workspace/handoffs/active/within-role-placement-state-machine.md",
+      "/workspace/progress/2026-07/2026-07-11.md",
+      "/workspace/progress/2026-07/2026-07-20.md",
+      "/workspace/wiki/inference-serving.md",
+      "/workspace/handoffs/completed/fable5-findings-06-kernel-and-concurrency.md",
+      "/workspace/handoffs/active/wp12-fleet-layer-design.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/mnt/raid0/llm/epyc-inference-research/docs/protocols/numa-placement-measurement-protocol.md"
+    ],
+    "recall@3": 0.3333333333333333,
+    "perfect@3": false,
+    "recall@5": 0.3333333333333333,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-05/2026-05-25.md",
+      "heading_path": [
+        "3. Optional: clean backup files",
+        "Session 10 \u2014 per-region-locks panel accuracy + autopilot eval fan-out + within-role-placement handoff",
+        "Changes (epyc-root)"
+      ],
+      "line_range": [
+        222,
+        225
+      ],
+      "snippet": "| Files | What |\n|---|---|\n| `handoffs/active/within-role-placement-state-machine.md` (NEW, 226 lines) | 7-phase handoff (P0..P7) drafted in plan mode after operator review. Phase 0 = revert `AUTOPILOT_EVAL_CONCURRENCY` default to 1. Phase ",
+      "score": 0.9251,
+      "content_hash": "83fa16c17b00b232"
+    },
+    {
+      "file": "/workspace/wiki/inference-serving.md",
+      "heading_path": [
+        "Inference Serving",
+        "2026-05-25 \u2014 Within-role full\u2194quarter placement is unmodeled (architectural gap)"
+      ],
+      "line_range": [
+        765,
+        771
+      ],
+      "snippet": "## 2026-05-25 \u2014 Within-role full\u2194quarter placement is unmodeled (architectural gap)\n\n`ConcurrencyAwareBackend` (`epyc-orchestrator/src/backends/concurrency_aware.py`) and `ContentionGate` (`src/scheduling/contention_gate.py`) admit and plac",
+      "score": 0.923,
+      "content_hash": "7613742726fc53a7"
+    },
+    {
+      "file": "/workspace/handoffs/active/within-role-placement-state-machine.md",
+      "heading_path": [
+        "Executive summary"
+      ],
+      "line_range": [
+        27,
+        31
+      ],
+      "snippet": "## Executive summary\n\nThe `ConcurrencyAwareBackend` dispatcher and `ContentionGate` admit and place requests by lock availability + NUMA disjointness, but they do not model the within-role full\u2194quarter cpuset overlap relation. Full and over",
+      "score": 0.9214,
+      "content_hash": "63d59eb9766146d6"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-11.md",
+      "heading_path": [
+        "Progress \u2014 2026-07-11",
+        "Region-locks dashboard panel: shows all configured NUMA instances (full + quarters)",
+        "Root cause \u2014 two independent gates"
+      ],
+      "line_range": [
+        52,
+        56
+      ],
+      "snippet": "### Root cause \u2014 two independent gates\n\n1. **NUMA mode read as `full`.** `active_stack_numa_mode()` (dashboard_topology.py) defaults to `full` when `ORCHESTRATOR_STACK_NUMA_MODE` is unset \u2014 and **nothing in the codebase exports it** (the do",
+      "score": 0.9196,
+      "content_hash": "a2866cc7ef25acaa"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-20.md",
+      "heading_path": [
+        "Progress - 2026-07-20",
+        "Heterogeneous CPU\u00d7GPU slot fabric \u2014 E5 sweep + architecture design doc (strategy \u2192 persist)"
+      ],
+      "line_range": [
+        1757,
+        1765
+      ],
+      "snippet": "## Heterogeneous CPU\u00d7GPU slot fabric \u2014 E5 sweep + architecture design doc (strategy \u2192 persist)\n\n**Context.** A long strategic discussion worked out a target architecture for max throughput/concurrency across NUMA-split \u00d7 batch-decode on CPU",
+      "score": 0.9172,
+      "content_hash": "c2898de65801d1a2"
+    },
+    {
+      "file": "/workspace/wiki/inference-serving.md",
+      "heading_path": [
+        "Inference Serving",
+        "2026-07-05 Update \u2014 Launcher NUMA Default Flip, DS-7 Profile Codified, Restart-Applicator Hardening, MoE-on-GPU Deployment Wins",
+        "MoE-on-GPU aggregate deployment wins (measured, production-hold)"
+      ],
+      "line_range": [
+        924,
+        924
+      ],
+      "snippet": "Sources: [launcher-numa-mode-gating.md](../handoffs/active/launcher-numa-mode-gating.md), [dynamic-stack-concurrency.md](../handoffs/active/dynamic-stack-concurrency.md), [capability-registry-and-promotion.md](../handoffs/active/capability-",
+      "score": 0.916,
+      "content_hash": "d9510f4216973591"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-06-kernel-and-concurrency.md",
+      "heading_path": [
+        "Fable 5 findings 06 \u2014 The kernel program & concurrent serving: what is exhausted, what was avoided",
+        "2. Concurrent-inference infrastructure: what you built is good; what you never measured is the gap"
+      ],
+      "line_range": [
+        30,
+        36
+      ],
+      "snippet": "## 2. Concurrent-inference infrastructure: what you built is good; what you never measured is the gap\n\n**What exists and works** (verified live): NUMA quarter-splits (6\u20137\u00d7 aggregate \u226465GB), the placement state machine + per-region locks + c",
+      "score": 0.9157,
+      "content_hash": "b6021c0b6145e8bc"
+    },
+    {
+      "file": "/workspace/handoffs/active/wp12-fleet-layer-design.md",
+      "heading_path": [
+        "9. Explicit non-goals"
+      ],
+      "line_range": [
+        197,
+        205
+      ],
+      "snippet": "## 9. Explicit non-goals\n\n- **Not** a NUMA/cpuset change \u2014 no new topology fingerprint, no contention-matrix re-measure, no \u00a7H recert cascade (that is WP-9/WP-10).\n- **Not** a change to the placement state machine, KV migration, or the mode",
+      "score": 0.9156,
+      "content_hash": "eed2f7b46789ce62"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "Serving Substrate Characterization + MI210 Hypothesis Critique",
+        "1. CURRENT TOPOLOGY \u2014 the deployed stack"
+      ],
+      "line_range": [
+        633,
+        640
+      ],
+      "snippet": "**Per-instance shape**: every full+quarter role launches a 1\u00d796t \"full\" instance plus four 48t NUMA-quarter instances on overlapping cores; `ConcurrencyAwareBackend` routes solo\u2192full and burst\u2192quarters and migrates KV via slot save/restore ",
+      "score": 0.9153,
+      "content_hash": "b4c3dd552be9cdf1"
+    },
+    {
+      "file": "/mnt/raid0/llm/epyc-inference-research/docs/protocols/numa-placement-measurement-protocol.md",
+      "heading_path": [
+        "P-BENCH-PLACEMENT-1 \u2014 NUMA placement and concurrency measurement protocol",
+        "P-BENCH-PLACEMENT-1 \u2014 NUMA placement and concurrency (STAGED)"
+      ],
+      "line_range": [
+        612,
+        622
+      ],
+      "snippet": "## P-BENCH-PLACEMENT-1 \u2014 NUMA placement and concurrency (STAGED)\n\nScope: any decision-gating throughput number that varies or depends on CPU affinity, NUMA\nmemory policy, mmap mode, instance count, or slot concurrency. Direction: higher-bet",
+      "score": 0.915,
+      "content_hash": "39702a9fcbb0c1dc"
+    }
+  ],
+  "wall_s": 23.085922221885994
+}

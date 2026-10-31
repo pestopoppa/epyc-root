@@ -1,0 +1,195 @@
+{
+  "arm": "1100_256_punct",
+  "id": "locomo_tool_contract_to_eval",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/tool-use-eval-contract.md",
+    "/workspace/handoffs/active/eval-tower-verification.md",
+    "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/tool-use-eval-contract.md",
+    "/workspace/handoffs/active/eval-tower-verification.md",
+    "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/eval-tower-verification.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md",
+      "/workspace/handoffs/active/tool-use-eval-contract.md"
+    ],
+    "first_evidence_rank": 6,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/handoffs/completed/fable5-findings-04-northstar-portfolio-indices.md",
+      "/workspace/research/deep-dives/2026-07-24-autopilot-scoring-tooluse-audit.md",
+      "/workspace/wiki/benchmark-methodology.md",
+      "/workspace/handoffs/completed/learned-routing-controller-completed-through-2026-09-27.md",
+      "/workspace/handoffs/active/eval-tower-verification.md",
+      "/workspace/wiki/benchmark-methodology.md",
+      "/workspace/handoffs/active/typed-decision-plane.md",
+      "/workspace/progress/2026-07/2026-07-20.md",
+      "/workspace/handoffs/active/research-evaluation-index.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "Handoff/Index Portfolio Audit \u2014 vs the North Star",
+        "5. STRATEGIC GAPS"
+      ],
+      "line_range": [
+        866,
+        866
+      ],
+      "snippet": "4. **Eval provenance is reactive.** The tool-use contract handoff exists only because a review asked whether trials used tools at all (`tool-use-eval-contract.md:48`); secrets were greppable, telemetry was process-global, sentinels journale",
+      "score": 0.9407,
+      "content_hash": "5214c2e781d41de1"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-04-northstar-portfolio-indices.md",
+      "heading_path": [
+        "Fable 5 findings 04 \u2014 North Star critique, backlog-relevance map, index reorganization (deliverables \u00a78.2\u20138.3, \u00a78.5)",
+        "2. Backlog-relevance map (per recommended architectures; full inventory in agent report)"
+      ],
+      "line_range": [
+        23,
+        29
+      ],
+      "snippet": "**Load-bearing (the recommended architectures make these MORE important):**\n- `tool-use-eval-contract.md` \u2014 prototype of the eval-provenance discipline; generalize it into the standing instrument contract (and commit it \u2014 it is untracked in",
+      "score": 0.9391,
+      "content_hash": "6bafc47210b1cf9c"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-07-24-autopilot-scoring-tooluse-audit.md",
+      "heading_path": [
+        "Autopilot scoring & tool-use audit (orchestrator, read-only)",
+        "Q3 \u2014 tool-use wiring map",
+        "(c) Running a coding/tool-use eval through the orchestrator \u2014 mostly already built"
+      ],
+      "line_range": [
+        127,
+        128
+      ],
+      "snippet": "- **Existing tool-use eval**: the eval tower appends tool-use sentinels to T0 when `AUTOPILOT_TOOL_SENTINELS=1` (`scripts/autopilot/eval_tower.py:2255-2290`): questions pin `force_mode=\"repl\"`, require a counted `get_eval_secret` call, and ",
+      "score": 0.9353,
+      "content_hash": "624a14e8e2fafda2"
+    },
+    {
+      "file": "/workspace/wiki/benchmark-methodology.md",
+      "heading_path": [
+        "Benchmark Methodology",
+        "Source References"
+      ],
+      "line_range": [
+        1175,
+        1177
+      ],
+      "snippet": "- [intake-759 AITER](/workspace/research/intake_index.yaml) -- AMD ROCm kernel library as an honest vendor performance-ceiling reference; gfx90a/MI210 absent from its support matrix, no llama.cpp binding (part of the 2026-07-02 ROCm/MI210 i",
+      "score": 0.9352,
+      "content_hash": "dbe4fa12dc86aa56"
+    },
+    {
+      "file": "/workspace/handoffs/completed/learned-routing-controller-completed-through-2026-09-27.md",
+      "heading_path": [
+        "Learned Routing Controller \u2014 completed history through 2026-09-27",
+        "Research Intake Update \u2014 2026-06-20",
+        "Implementation checkpoint \u2014 2026-06-21"
+      ],
+      "line_range": [
+        294,
+        309
+      ],
+      "snippet": "improve data/model calibration for the broader multi-action consumer before any\nruntime verifier gate change. The source-family and model-family repairs are\nnow measured and insufficient for promotion, so prefer source-stratified\ncalibratio",
+      "score": 0.9341,
+      "content_hash": "1b8aa83b2e7812af"
+    },
+    {
+      "file": "/workspace/handoffs/active/eval-tower-verification.md",
+      "heading_path": [
+        "Eval Tower Verification Framework",
+        "Research Intake Update \u2014 2026-08-21 (intake-1217, Claw-Eval)"
+      ],
+      "line_range": [
+        869,
+        881
+      ],
+      "snippet": "## Research Intake Update \u2014 2026-08-21 (intake-1217, Claw-Eval)\n\n- [x] **ETV-T1** \u2014 Claw-Eval (intake-1217, arXiv:2604.06132v3) reports that **trajectory-opaque\n      grading misses 44% of safety violations and 13% of robustness failures** ",
+      "score": 0.934,
+      "content_hash": "0d54f22a1e357c94"
+    },
+    {
+      "file": "/workspace/wiki/benchmark-methodology.md",
+      "heading_path": [
+        "Benchmark Methodology",
+        "Key Findings",
+        "New (2026-06-22, real-task-corpus eval suite + publication protocol-backfill gate)"
+      ],
+      "line_range": [
+        981,
+        981
+      ],
+      "snippet": "- **Tool-use experiments must prove the trial actually exercised tools before using the result as optimization signal (2026-06-05).** The active tool-use eval contract separates \"model with tools available\" from \"model actually used the too",
+      "score": 0.934,
+      "content_hash": "7ce5c3e84bfe175e"
+    },
+    {
+      "file": "/workspace/handoffs/active/typed-decision-plane.md",
+      "heading_path": [
+        "Typed Decision Plane \u2014 one-pass typed decisions over the local stack",
+        "Tasks"
+      ],
+      "line_range": [
+        439,
+        448
+      ],
+      "snippet": "  Connect proposals to the TD-29 shadow seam; operation differences never change the original executed tool.\n  Preserve host-owned prepared-action authority, eligible menu, freshness and read-set revalidation. TD-13 must test\n  joint/siblin",
+      "score": 0.9336,
+      "content_hash": "ceb699dd36ffe509"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-20.md",
+      "heading_path": [
+        "Progress - 2026-07-20",
+        "Architect-model-selection bench \u2014 GPU-only arms (A1/A3/A4), operator-gated",
+        "E1 first slice: eval tower trace feedback extracted"
+      ],
+      "line_range": [
+        2494,
+        2508
+      ],
+      "snippet": "### E1 first slice: eval tower trace feedback extracted\n\nPushed orchestrator `0d6f0a41` as a low-risk E1/ARCH-1 first slice. The pure PromptForge trace IR and\ncontrastive trace-bank helpers moved from `scripts/autopilot/eval_tower.py` into\n",
+      "score": 0.9331,
+      "content_hash": "a55fe96aec7706e4"
+    },
+    {
+      "file": "/workspace/handoffs/active/research-evaluation-index.md",
+      "heading_path": [
+        "Research & Evaluation \u2014 Active Backlog"
+      ],
+      "line_range": [
+        25,
+        28
+      ],
+      "snippet": "| EVL-13 | eval tower loop robustness audit 2026 07 20 | [eval-tower-loop-robustness-audit-2026-07-20.md](eval-tower-loop-robustness-audit-2026-07-20.md) | H2.v9 \u2014 remeasure the contention matrix under frozen v9 after E8 quality collection ",
+      "score": 0.9328,
+      "content_hash": "df5d8917b0beeff7"
+    }
+  ],
+  "wall_s": 21.80693695996888
+}

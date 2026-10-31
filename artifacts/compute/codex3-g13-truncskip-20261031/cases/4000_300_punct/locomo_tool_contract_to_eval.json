@@ -1,0 +1,196 @@
+{
+  "arm": "4000_300_punct",
+  "id": "locomo_tool_contract_to_eval",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/tool-use-eval-contract.md",
+    "/workspace/handoffs/active/eval-tower-verification.md",
+    "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/tool-use-eval-contract.md",
+    "/workspace/handoffs/active/eval-tower-verification.md",
+    "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/eval-tower-verification.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md",
+      "/workspace/handoffs/active/tool-use-eval-contract.md"
+    ],
+    "first_evidence_rank": 4,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/completed/fable5-findings-04-northstar-portfolio-indices.md",
+      "/workspace/research/deep-dives/2026-07-24-autopilot-scoring-tooluse-audit.md",
+      "/workspace/wiki/benchmark-methodology.md",
+      "/workspace/handoffs/active/eval-tower-verification.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/research/deep-dives/2026-06-12-agents-last-exam.md",
+      "/workspace/wiki/benchmark-methodology.md",
+      "/workspace/handoffs/active/eval-tower-verification.md",
+      "/workspace/progress/2026-07/2026-07-20.md",
+      "/workspace/progress/2026-07/2026-07-20.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.3333333333333333,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-04-northstar-portfolio-indices.md",
+      "heading_path": [
+        "Fable 5 findings 04 \u2014 North Star critique, backlog-relevance map, index reorganization (deliverables \u00a78.2\u20138.3, \u00a78.5)",
+        "2. Backlog-relevance map (per recommended architectures; full inventory in agent report)"
+      ],
+      "line_range": [
+        21,
+        43
+      ],
+      "snippet": "## 2. Backlog-relevance map (per recommended architectures; full inventory in agent report)\n\n**Load-bearing (the recommended architectures make these MORE important):**\n- `tool-use-eval-contract.md` \u2014 prototype of the eval-provenance discip",
+      "score": 0.9386,
+      "content_hash": "7c57441c2b2309d9"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-07-24-autopilot-scoring-tooluse-audit.md",
+      "heading_path": [
+        "Autopilot scoring & tool-use audit (orchestrator, read-only)",
+        "Q3 \u2014 tool-use wiring map",
+        "(c) Running a coding/tool-use eval through the orchestrator \u2014 mostly already built"
+      ],
+      "line_range": [
+        125,
+        130
+      ],
+      "snippet": "### (c) Running a coding/tool-use eval through the orchestrator \u2014 mostly already built\n\n- **Existing tool-use eval**: the eval tower appends tool-use sentinels to T0 when `AUTOPILOT_TOOL_SENTINELS=1` (`scripts/autopilot/eval_tower.py:2255-2",
+      "score": 0.9358,
+      "content_hash": "60d39f2b3dd600f6"
+    },
+    {
+      "file": "/workspace/wiki/benchmark-methodology.md",
+      "heading_path": [
+        "Benchmark Methodology",
+        "2026-06-15 Update \u2014 Measurement Contract Tightening"
+      ],
+      "line_range": [
+        1031,
+        1035
+      ],
+      "snippet": "## 2026-06-15 Update \u2014 Measurement Contract Tightening\n\n- **Tool-use trials must prove they actually exercised tools before the result becomes optimization signal.** The live contract now separates \"model had tools available\" from \"model ac",
+      "score": 0.9353,
+      "content_hash": "b59b5a235b08f91f"
+    },
+    {
+      "file": "/workspace/handoffs/active/eval-tower-verification.md",
+      "heading_path": [
+        "Eval Tower Verification Framework",
+        "Research Intake Update \u2014 2026-08-21 (intake-1217, Claw-Eval)"
+      ],
+      "line_range": [
+        869,
+        881
+      ],
+      "snippet": "## Research Intake Update \u2014 2026-08-21 (intake-1217, Claw-Eval)\n\n- [x] **ETV-T1** \u2014 Claw-Eval (intake-1217, arXiv:2604.06132v3) reports that **trajectory-opaque\n      grading misses 44% of safety violations and 13% of robustness failures** ",
+      "score": 0.9344,
+      "content_hash": "0d54f22a1e357c94"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "PORTFOLIO REVIEW (2026-06-12, 5 agents, 108 rows): classified verdicts",
+        "NOW"
+      ],
+      "line_range": [
+        1165,
+        1173
+      ],
+      "snippet": "## NOW\n- **retrain-routing-models** [blocked] out: Operator BGE re-embed (repair_episodic_embeddings.py --repair) \u2192 extract_training_data.py \u2192 train_routing_classifier.py \u2192 GAT retrain \u2192 SkillBank re-distill \u2192 flag verification. lollms data",
+      "score": 0.9343,
+      "content_hash": "22cbeb6744d6f0c8"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-06-12-agents-last-exam.md",
+      "heading_path": [
+        "Agents' Last Exam (ALE) \u2014 Deep-Dive Refinement",
+        "Cross-refs"
+      ],
+      "line_range": [
+        83,
+        89
+      ],
+      "snippet": "## Cross-refs\n\n- **intake-104 (OneMillion-Bench)**, **intake-412 (DeepPlanning)**, **intake-001 / intake-096 (SkillsBench)** \u2014 adjacent agentic/skill-eval entries; SkillsBench's deterministic-verifier methodology is *already adopted* (`comp",
+      "score": 0.9334,
+      "content_hash": "d759f06a79261ab4"
+    },
+    {
+      "file": "/workspace/wiki/benchmark-methodology.md",
+      "heading_path": [
+        "Benchmark Methodology",
+        "Source References"
+      ],
+      "line_range": [
+        1175,
+        1184
+      ],
+      "snippet": "- [intake-759 AITER](/workspace/research/intake_index.yaml) -- AMD ROCm kernel library as an honest vendor performance-ceiling reference; gfx90a/MI210 absent from its support matrix, no llama.cpp binding (part of the 2026-07-02 ROCm/MI210 i",
+      "score": 0.9331,
+      "content_hash": "9af9f56b6f0bb287"
+    },
+    {
+      "file": "/workspace/handoffs/active/eval-tower-verification.md",
+      "heading_path": [
+        "Eval Tower Verification Framework",
+        "Research Intake Update \u2014 2026-08-21 (intake-1217, Claw-Eval)",
+        "ETV-T1 assessment \u2014 trajectory-aware grading against OUR harness (2026-08-21)"
+      ],
+      "line_range": [
+        882,
+        918
+      ],
+      "snippet": "### ETV-T1 assessment \u2014 trajectory-aware grading against OUR harness (2026-08-21)\n\nGrounded in the eval-tower code, not in the paper. Every claim below names its source. `intake-1217#record`.\n\n**(1) What our scoring observes today: the fina",
+      "score": 0.9322,
+      "content_hash": "ceebf21ca7964a1b"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-20.md",
+      "heading_path": [
+        "Progress - 2026-07-20",
+        "Architect-model-selection bench \u2014 GPU-only arms (A1/A3/A4), operator-gated",
+        "E1 first slice: eval tower trace feedback extracted"
+      ],
+      "line_range": [
+        2494,
+        2516
+      ],
+      "snippet": "### E1 first slice: eval tower trace feedback extracted\n\nPushed orchestrator `0d6f0a41` as a low-risk E1/ARCH-1 first slice. The pure PromptForge trace IR and\ncontrastive trace-bank helpers moved from `scripts/autopilot/eval_tower.py` into\n",
+      "score": 0.9322,
+      "content_hash": "eb5ec4458144602a"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-20.md",
+      "heading_path": [
+        "Progress - 2026-07-20",
+        "Architect-model-selection bench \u2014 GPU-only arms (A1/A3/A4), operator-gated",
+        "C5 eval-tower decision partition hygiene landed"
+      ],
+      "line_range": [
+        2385,
+        2400
+      ],
+      "snippet": "### C5 eval-tower decision partition hygiene landed\n\nPushed orchestrator `9204d6b7` for C5. EvalTower now excludes W6 audit-shadow and tool-sentinel\npartitions from decision aggregates while preserving the full per-question ledger and full-",
+      "score": 0.9319,
+      "content_hash": "3acce1118b735933"
+    }
+  ],
+  "wall_s": 14.20152763207443
+}

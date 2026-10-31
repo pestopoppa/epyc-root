@@ -1,0 +1,198 @@
+{
+  "arm": "4000_300_plain",
+  "id": "hotpot_meta_harness_halo",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/meta-harness-optimization.md",
+    "/workspace/handoffs/active/halo-trace-loop-spike.md",
+    "/workspace/research/deep-dives/hcc-cognitive-accumulation-autopilot.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/meta-harness-optimization.md",
+    "/workspace/handoffs/active/halo-trace-loop-spike.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/meta-harness-optimization.md",
+    "/workspace/handoffs/active/halo-trace-loop-spike.md",
+    "/workspace/research/deep-dives/hcc-cognitive-accumulation-autopilot.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/halo-trace-loop-spike.md",
+      "/workspace/handoffs/active/meta-harness-optimization.md",
+      "/workspace/research/deep-dives/hcc-cognitive-accumulation-autopilot.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md",
+      "/workspace/handoffs/completed/halo-trace-loop-spike.md",
+      "/workspace/handoffs/active/agent-collab-rnd-harness.md",
+      "/workspace/wiki/autonomous-research.md",
+      "/workspace/handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md",
+      "/workspace/handoffs/completed/meta-harness-optimization.md",
+      "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md",
+      "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md",
+      "/workspace/progress/2026-04/2026-04-30.md",
+      "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md",
+      "heading_path": [
+        "Checkpoint / restore",
+        "Research Intake Update \u2014 2026-04-30",
+        "New Related Research"
+      ],
+      "line_range": [
+        1071,
+        1095
+      ],
+      "snippet": "### New Related Research\n\n- **[intake-517] \"HALO \u2014 Hierarchical Agent Loop Optimizer\"** (`github.com/context-labs/halo`, MIT, by inference.net / Context Labs) and **[intake-518] halo-engine PyPI** (pip-installable wrapper, MIT, v0.1.2 relea",
+      "score": 0.9301,
+      "content_hash": "4c3f661150164d3f"
+    },
+    {
+      "file": "/workspace/handoffs/completed/halo-trace-loop-spike.md",
+      "heading_path": [
+        "Verify OPENAI_BASE_URL swap to local llama-server",
+        "Cross-references"
+      ],
+      "line_range": [
+        150,
+        155
+      ],
+      "snippet": "## Cross-references\n\n- Deep-dive: `/workspace/research/deep-dives/halo-rlm-trace-loop-integration.md`\n- Intake entries: intake-516, intake-517, intake-518, intake-153 (RLM foundational, already_integrated)\n- Active handoffs: meta-harness-op",
+      "score": 0.9299,
+      "content_hash": "41d98a77822bdfe5"
+    },
+    {
+      "file": "/workspace/handoffs/active/agent-collab-rnd-harness.md",
+      "heading_path": [
+        "Agent-Collaboration Harness for Kernel/Orchestration R&D",
+        "Research Context"
+      ],
+      "line_range": [
+        12,
+        24
+      ],
+      "snippet": "## Research Context\n\n| Intake ID | Title | Relevance | Verdict |\n|-----------|-------|-----------|---------|\n| intake-798 | The Gemma Challenge and the Case for Agent Collabs | high | adopt_patterns |\n\nRelated existing work (do NOT duplicat",
+      "score": 0.9294,
+      "content_hash": "40f3a95546f1f77c"
+    },
+    {
+      "file": "/workspace/wiki/autonomous-research.md",
+      "heading_path": [
+        "Autonomous Research",
+        "Key Findings",
+        "New (2026-05-27, concurrent eval semantics and campaign-audit discipline)"
+      ],
+      "line_range": [
+        355,
+        357
+      ],
+      "snippet": "- **HLE metrics are now implemented but still observe-only.** The HLE-4 transport fields (`harness_metrics`, `oracle_adequacy`, `metric_schema_version`) landed first, then `scripts/autopilot/hle_metrics.py` added rule-based HLE-1 axes and H",
+      "score": 0.9279,
+      "content_hash": "d024e28a87b0462d"
+    },
+    {
+      "file": "/workspace/handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md",
+      "heading_path": [
+        "Meta-Harness: Automated Harness Optimization",
+        "Research Intake Update \u2014 2026-04-30",
+        "New Related Research"
+      ],
+      "line_range": [
+        394,
+        414
+      ],
+      "snippet": "- **[intake-516] \"HALO-Gemini-3-Flash-AppWorld dataset\"** + **[intake-517] context-labs/HALO** + **[intake-518] halo-engine PyPI** (HALO project trio \u2014 same intake batch)\n  - Relevance to Meta-Harness: **HIGH**. HALO directly implements the",
+      "score": 0.9269,
+      "content_hash": "4be1e4550380a739"
+    },
+    {
+      "file": "/workspace/handoffs/completed/meta-harness-optimization.md",
+      "heading_path": [
+        "Meta-Harness: Automated Harness Optimization",
+        "Research Intake Update \u2014 2026-07-11 (batch 2)",
+        "New Related Research"
+      ],
+      "line_range": [
+        131,
+        142
+      ],
+      "snippet": "### New Related Research\n- **[intake-809] \"AutoMem: Automated Learning of Memory as a Cognitive Skill\"** (arxiv:2607.01224; Stanford / Serena Yeung-Levy)\n  - Relevance: frames memory management as **two independently optimizable axes** \u2014 (1",
+      "score": 0.9269,
+      "content_hash": "dd3ed71cb3544105"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md",
+      "heading_path": [
+        "RAO + RLM Cluster Deep-Dive \u2014 2026-05-19",
+        "EPYC Integration Path",
+        "Connection to existing handoffs"
+      ],
+      "line_range": [
+        137,
+        148
+      ],
+      "snippet": "### Connection to existing handoffs\n\n| Handoff | What this cluster changes | Specific edit |\n|---|---|---|\n| `handoffs/completed/meta-harness-optimization.md` | Already updated (line 419) with RAO. Add ReDel evaluation as Tier 3 substrate o",
+      "score": 0.9268,
+      "content_hash": "3c737e957adf0f25"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md",
+      "heading_path": [
+        "RAO + RLM Cluster Deep-Dive \u2014 2026-05-19"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# RAO + RLM Cluster Deep-Dive \u2014 2026-05-19\n\n**Author**: research-intake follow-up (Phase 6, deep-dive cluster #1 of 8)\n**Scope**: 7 intakes (intake-536, 541, 537, 547, 548, 549, 550) + canonical RLM (intake-153) context.\n**Status**: deep-di",
+      "score": 0.9265,
+      "content_hash": "7c5a3d2d6e13145e"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-30.md",
+      "heading_path": [
+        "2026-04-30",
+        "Research intake \u2014 9 URLs (KAME \u00d7 5, HALO \u00d7 3, Granite-97m-r2) + 3 deep-dives + finalization",
+        "New ready-to-claim handoffs (2)"
+      ],
+      "line_range": [
+        295,
+        301
+      ],
+      "snippet": "### New ready-to-claim handoffs (2)\n\n| Path | Status | Scope |\n|------|--------|-------|\n| `handoffs/active/halo-trace-loop-spike.md` | READY-TO-CLAIM | 1-day spike + 4-criterion gate + conditional Day 2 manual lift. Lifts patterns into `un",
+      "score": 0.9261,
+      "content_hash": "488a2ac5a44a472c"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md",
+      "heading_path": [
+        "Point kani at our llama-server",
+        "References",
+        "EPYC handoffs (cross-referenced)"
+      ],
+      "line_range": [
+        283,
+        293
+      ],
+      "snippet": "### EPYC handoffs (cross-referenced)\n- `/workspace/handoffs/completed/meta-harness-optimization.md` (lines 419\u2013438 \u2014 existing RAO subsection).\n- `/workspace/handoffs/active/halo-trace-loop-spike.md` (HALO-2 converter touchpoint).\n- `/worksp",
+      "score": 0.9258,
+      "content_hash": "6d3c66b89e7d38a5"
+    }
+  ],
+  "wall_s": 16.661079129204154
+}

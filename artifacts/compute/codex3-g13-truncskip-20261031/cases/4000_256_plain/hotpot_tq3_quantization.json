@@ -1,0 +1,197 @@
+{
+  "arm": "4000_256_plain",
+  "id": "hotpot_tq3_quantization",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/tq3-quantization-evaluation.md",
+    "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+    "/workspace/handoffs/active/inference-acceleration-index.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+    "/workspace/handoffs/active/inference-acceleration-index.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/tq3-quantization-evaluation.md",
+    "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+    "/workspace/handoffs/active/inference-acceleration-index.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/tq3-quantization-evaluation.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+      "/workspace/handoffs/active/inference-acceleration-index.md"
+    ],
+    "first_evidence_rank": 10,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-07/2026-07-17.md",
+      "/workspace/progress/2026-04/2026-04-21.md",
+      "/workspace/progress/2026-04/2026-04-01.md",
+      "/workspace/handoffs/active/angelslim-techniques-evaluation.md",
+      "/workspace/progress/2026-07/2026-07-19.md",
+      "/workspace/handoffs/active/iqk-iquant-enablement.md",
+      "/workspace/wiki/hardware-optimization.md",
+      "/workspace/wiki/quantization.md",
+      "/workspace/handoffs/active/master-handoff-index.md",
+      "/workspace/handoffs/active/tq3-quantization-evaluation.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-07/2026-07-17.md",
+      "heading_path": [
+        "Progress - 2026-07-17",
+        "Bonsai Q1_0 corrected prompting gate",
+        "Code/docs"
+      ],
+      "line_range": [
+        421,
+        429
+      ],
+      "snippet": "### Code/docs\n\n| Repo | File | Change |\n|---|---|---|\n| `epyc-inference-research` | `scripts/benchmark/bonsai_q1_quality_gate_runner.py` | Added execute mode, clean command templates, generated-text extraction, per-arm result records, and s",
+      "score": 0.923,
+      "content_hash": "46a995a46c145508"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-21.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-21",
+        "Session 1 \u2014 Handoff Hygiene Audit Pass",
+        "Changes"
+      ],
+      "line_range": [
+        19,
+        40
+      ],
+      "snippet": "### Changes\n\n**Refreshed (6 handoffs)** with \"Status as of 2026-04-21\" blocks:\n- `log-linear-gated-deltanet-readiness.md` \u2014 monitoring confirmed, no upstream pretrained release\n- `multiscreen-attention-evaluation.md` \u2014 monitoring confirmed,",
+      "score": 0.9213,
+      "content_hash": "8a0aa7114280a3c3"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-01.md",
+      "heading_path": [
+        "2026-04-01 \u2014 AR-3 First Live Run: Debug & Fix Session",
+        "Research Intake Session (9 entries, 4 deep-dives)",
+        "Artifacts Modified"
+      ],
+      "line_range": [
+        96,
+        108
+      ],
+      "snippet": "### Artifacts Modified\n\n- `research/intake_index.yaml` \u2014 +9 entries, 3 revised post deep-dive\n- `references/cross-reference-map.md` \u2014 +1 category, 7 refreshed\n- `handoffs/active/autopilot-continuous-optimization.md` \u2014 +5 concrete changes fr",
+      "score": 0.9209,
+      "content_hash": "cdfdb885fc34de5a"
+    },
+    {
+      "file": "/workspace/handoffs/active/angelslim-techniques-evaluation.md",
+      "heading_path": [
+        "AngelSlim Techniques Evaluation \u2014 Sub-2-Bit Quantization + Reasoning Speculative-Exit"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# AngelSlim Techniques Evaluation \u2014 Sub-2-Bit Quantization + Reasoning Speculative-Exit\n\n**Status**: stub\n**Created**: 2026-05-21 (via research intake)\n**Categories**: quantization, hardware_optimization, speculative_decoding, context_manag",
+      "score": 0.9184,
+      "content_hash": "f263af4c14371055"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-19.md",
+      "heading_path": [
+        "Progress - 2026-07-19",
+        "Stale Model-Probe Instruction Cleanup"
+      ],
+      "line_range": [
+        1385,
+        1405
+      ],
+      "snippet": "## Stale Model-Probe Instruction Cleanup\n\nFollowed the scoreboard audit by rewriting stale future-work language that still invited broad\nspeed-only reruns. The parked/reopen-only wording now covers Bonsai Q1_0/8B, Ternary Q2_g64/Q2_0,\nNemot",
+      "score": 0.9179,
+      "content_hash": "efe723998c65dbdd"
+    },
+    {
+      "file": "/workspace/handoffs/active/iqk-iquant-enablement.md",
+      "heading_path": [
+        "iqk IQ-quant Enablement \u2014 shipped in v8, residual research active",
+        "Adjacent: the KT/trellis family (folded in from tq3-quantization-evaluation.md)"
+      ],
+      "line_range": [
+        140,
+        158
+      ],
+      "snippet": "## Adjacent: the KT/trellis family (folded in from tq3-quantization-evaluation.md)\n\n**Format boundary (2026-09-25):** IQ*_KT and EXL3 are distinct tensor formats, codebooks, loaders, and\nkernel paths. T2/T3 below govern IQ*_KT only. Project",
+      "score": 0.9166,
+      "content_hash": "175bb0c59e6a8530"
+    },
+    {
+      "file": "/workspace/wiki/hardware-optimization.md",
+      "heading_path": [
+        "Hardware Optimization",
+        "Related Categories"
+      ],
+      "line_range": [
+        963,
+        971
+      ],
+      "snippet": "## Related Categories\n\n- [Benchmark Methodology](benchmark-methodology.md) -- all benchmark results depend on hardware configuration\n- [Speculative Decoding](speculative-decoding.md) -- speculation effectiveness varies dramatically by NUMA ",
+      "score": 0.9166,
+      "content_hash": "6a47be63057a5208"
+    },
+    {
+      "file": "/workspace/wiki/quantization.md",
+      "heading_path": [
+        "Quantization",
+        "Key Findings",
+        "Exotic Quantization (Evaluated and Rejected/Deferred)"
+      ],
+      "line_range": [
+        149,
+        162
+      ],
+      "snippet": "### Exotic Quantization (Evaluated and Rejected/Deferred)\n\n- **TQ3_1S is on monitor-only -- do NOT merge**: 3.5-bit Walsh-Hadamard transform weight quantization. Downgraded from \"evaluate\" to \"monitor\" due to: immaturity (3 commits, 1 contr",
+      "score": 0.9165,
+      "content_hash": "0ad9b0dbbefc23b9"
+    },
+    {
+      "file": "/workspace/handoffs/active/master-handoff-index.md",
+      "heading_path": [
+        "EPYC Handoff \u2014 Master Index",
+        "Domain indices"
+      ],
+      "line_range": [
+        17,
+        30
+      ],
+      "snippet": "## Domain indices\n\n| Domain | Index | Scope |\n|--------|-------|-------|\n| Inference research | [inference-research-index.md](inference-research-index.md) | Kernels, quantization, serving performance, models (CPU **and** GPU) |\n| Routing / ",
+      "score": 0.916,
+      "content_hash": "d903ddfccf60225e"
+    },
+    {
+      "file": "/workspace/handoffs/active/tq3-quantization-evaluation.md",
+      "heading_path": [
+        "TQ3 / TurboQuant Quantization \u2014 Monitor List",
+        "Research Intake Update \u2014 2026-07-14",
+        "New outstanding tasks"
+      ],
+      "line_range": [
+        173,
+        176
+      ],
+      "snippet": "### New outstanding tasks\n- [ ] Decide (operator): is lossless exponent-coding worth a CPU/AVX-512 spike **only** as (a) staging/download savings for **full-precision FP16/BF16 source checkpoints retained for re-quantization** (NOT already-",
+      "score": 0.916,
+      "content_hash": "4a36e64949bbb6c5"
+    }
+  ],
+  "wall_s": 15.613402788992971
+}

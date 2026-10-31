@@ -1,0 +1,186 @@
+{
+  "arm": "1100_256_plain",
+  "id": "hotpot_rao_redel_cluster",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/rao-redel-substrate-spike.md",
+    "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/rao-redel-substrate-spike.md",
+    "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md"
+  ],
+  "metrics": {
+    "evidence_count": 2,
+    "found_count": 2,
+    "found_files": [
+      "/workspace/handoffs/active/rao-redel-substrate-spike.md",
+      "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md"
+    ],
+    "missing_files": [],
+    "first_evidence_rank": 1,
+    "all_evidence_rank": 2,
+    "ranked_files": [
+      "/workspace/handoffs/active/rao-redel-substrate-spike.md",
+      "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md",
+      "/workspace/wiki/agent-architecture.md",
+      "/workspace/wiki/agent-architecture.md",
+      "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md",
+      "/workspace/progress/2026-05/2026-05-19.md",
+      "/workspace/progress/2026-05/2026-05-20.md",
+      "/workspace/handoffs/active/rao-redel-substrate-spike.md",
+      "/workspace/handoffs/active/rao-redel-substrate-spike.md",
+      "/workspace/progress/2026-06/master-index-pre-rewrite-archive-2026-06-12.md"
+    ],
+    "recall@3": 1.0,
+    "perfect@3": true,
+    "recall@5": 1.0,
+    "perfect@5": true,
+    "recall@10": 1.0,
+    "perfect@10": true
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/active/rao-redel-substrate-spike.md",
+      "heading_path": [
+        "RAO + ReDel Substrate Spike"
+      ],
+      "line_range": [
+        1,
+        11
+      ],
+      "snippet": "# RAO + ReDel Substrate Spike\n\n**Status**: Step 1 PASS + Step 2 harness prepared; Step 2 execution awaits clean inference window\n\n> **2026-07-14 audit note \u2014 FUND-OR-CLOSE**: schedule the ~10-60min naturally-delegating A/B in the next infer",
+      "score": 0.9468,
+      "content_hash": "6759cd77c9168b46"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md",
+      "heading_path": [
+        "Point kani at our llama-server",
+        "Revised EPYC Priority"
+      ],
+      "line_range": [
+        244,
+        249
+      ],
+      "snippet": "- **intake-550 (ReDel)**: original `worth_investigating`. **Revised: `adopt_substrate, spike_now`** \u2014 this is the highest-leverage actionable item. License + activity + code size + backend compat all check out. The spike proposal above is t",
+      "score": 0.939,
+      "content_hash": "a752530bef047e04"
+    },
+    {
+      "file": "/workspace/wiki/agent-architecture.md",
+      "heading_path": [
+        "Agent Architecture",
+        "RAO + RLM substrate cluster (2026-05-19)"
+      ],
+      "line_range": [
+        1171,
+        1172
+      ],
+      "snippet": "**Sources**: [intake-536](https://arxiv.org/abs/2605.06639) RAO \u00b7 [intake-547](https://arxiv.org/abs/2603.02615) Wang RLM reproduction \u00b7 [intake-548](https://arxiv.org/abs/2605.02801) Orchestration-trace survey \u00b7 [intake-549](https://arxiv.",
+      "score": 0.9382,
+      "content_hash": "cf76aa912d490268"
+    },
+    {
+      "file": "/workspace/wiki/agent-architecture.md",
+      "heading_path": [
+        "Agent Architecture",
+        "RAO + RLM substrate cluster (2026-05-19)"
+      ],
+      "line_range": [
+        1163,
+        1165
+      ],
+      "snippet": "**ReDel** (intake-550, arxiv:2408.02248, EMNLP 2024 Demos) is the **working open-source harness substrate** RAO presumes. MIT + Commons Clause licensed (research use OK, resale blocked). 98.9 KB Python core, Python \u22653.10, last push 2026-05-",
+      "score": 0.9367,
+      "content_hash": "f0551311e133e88f"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md",
+      "heading_path": [
+        "RAO + RLM Cluster Deep-Dive \u2014 2026-05-19",
+        "EPYC Integration Path",
+        "Connection to existing handoffs"
+      ],
+      "line_range": [
+        139,
+        143
+      ],
+      "snippet": "| Handoff | What this cluster changes | Specific edit |\n|---|---|---|\n| `handoffs/completed/meta-harness-optimization.md` | Already updated (line 419) with RAO. Add ReDel evaluation as Tier 3 substrate option + 5-sub-decision taxonomy as th",
+      "score": 0.936,
+      "content_hash": "694dfcb36b113be8"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-19.md",
+      "heading_path": [
+        "Session 3 (afternoon) \u2014 RAO+ReDel substrate spike: Steps 1+3-prework executed"
+      ],
+      "line_range": [
+        186,
+        187
+      ],
+      "snippet": "# Session 3 (afternoon) \u2014 RAO+ReDel substrate spike: Steps 1+3-prework executed\n",
+      "score": 0.9335,
+      "content_hash": "e06b7d34fb37678f"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-20.md",
+      "heading_path": [
+        "2026-05-20 \u2014 fast-rlm review, intake-569 RoPE bounds, autopilot delegation expansion + digest",
+        "Phase 1 \u2014 Fast-RLM review + structured-I/O port",
+        "Audit findings"
+      ],
+      "line_range": [
+        20,
+        25
+      ],
+      "snippet": "### Audit findings\n\n- **30 total commits** in the upstream repo; only **5 since our 2026-03-03 intake** (TUI fix, license, JSON I/O \u00d7 2).\n- Genuine net-new pattern: structured I/O. `examples/structured_io.py`, `fast_rlm/_runner.py:23-180`, ",
+      "score": 0.9324,
+      "content_hash": "0c1bf0ac525e521e"
+    },
+    {
+      "file": "/workspace/handoffs/active/rao-redel-substrate-spike.md",
+      "heading_path": [
+        "4. Inspect summary",
+        "References"
+      ],
+      "line_range": [
+        399,
+        408
+      ],
+      "snippet": "## References\n\n- Deep-dive: `/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md`\n- ReDel repo: `https://github.com/zhudotexe/redel`\n- RAO paper: `https://arxiv.org/abs/2605.06639`\n- Wang RLM reproduction: `https://arxiv.org/abs/26",
+      "score": 0.9322,
+      "content_hash": "5b173d02f784ffa1"
+    },
+    {
+      "file": "/workspace/handoffs/active/rao-redel-substrate-spike.md",
+      "heading_path": [
+        "RAO + ReDel Substrate Spike",
+        "Key Findings from Deep-Dive"
+      ],
+      "line_range": [
+        35,
+        36
+      ],
+      "snippet": "- **ReDel substrate**: MIT + Commons Clause license (research use OK; resale blocked), 98.9 KB Python core, Python 3.10+, built on `kani`, **swappable to local llama-server via `OPENAI_BASE_URL` env var** \u2014 drops onto our stack with zero ll",
+      "score": 0.9307,
+      "content_hash": "684bf5ece7510ee6"
+    },
+    {
+      "file": "/workspace/progress/2026-06/master-index-pre-rewrite-archive-2026-06-12.md",
+      "heading_path": [
+        "EPYC Handoff \u2014 Master Index",
+        "Priority Queue"
+      ],
+      "line_range": [
+        102,
+        102
+      ],
+      "snippet": "| 42 | ~~HIGH~~ \u2192 **Step 1 + Step 3 pre-work DONE 2026-05-19/20**; substrate verdict AMBIGUOUS-leaning-positive, paused pending naturally-delegating workload retest | **RAO + ReDel substrate spike** (intake-536/541/547/548/549/550, 2026-05-",
+      "score": 0.9307,
+      "content_hash": "805c20b38f9bf44c"
+    }
+  ],
+  "wall_s": 26.253477970836684
+}

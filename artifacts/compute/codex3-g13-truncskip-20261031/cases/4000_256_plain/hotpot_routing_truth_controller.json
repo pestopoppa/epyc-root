@@ -1,0 +1,190 @@
+{
+  "arm": "4000_256_plain",
+  "id": "hotpot_routing_truth_controller",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/routing-truth-restoration.md",
+    "/workspace/handoffs/active/learned-routing-controller.md",
+    "/workspace/handoffs/active/fable5-findings-02-routing-decision-architecture.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/fable5-findings-02-routing-decision-architecture.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/routing-truth-restoration.md",
+    "/workspace/handoffs/active/learned-routing-controller.md",
+    "/workspace/handoffs/active/fable5-findings-02-routing-decision-architecture.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/routing-truth-restoration.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/fable5-findings-02-routing-decision-architecture.md",
+      "/workspace/handoffs/active/learned-routing-controller.md"
+    ],
+    "first_evidence_rank": 8,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/wiki/routing-intelligence.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/completed/routing-truth-restoration.md",
+      "/workspace/handoffs/active/routing-truth-restoration.md",
+      "/workspace/handoffs/completed/running-state-attestation.md",
+      "/workspace/research/deep-dives/2026-06-20-avb-offline-reward-stack.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue \u2014 routing truth W8 DAR-1/counter checkpoint"
+      ],
+      "line_range": [
+        367,
+        370
+      ],
+      "snippet": "## Fable 5 execution queue \u2014 routing truth W8 DAR-1/counter checkpoint\n\nCompleted `routing-truth-restoration.md` W8 and closed master-index N3. The measured verdict keeps the routing-expansion cluster frozen.\n",
+      "score": 0.9357,
+      "content_hash": "aa31d1425bc82a4d"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue \u2014 routing truth W7 shadow telemetry checkpoint"
+      ],
+      "line_range": [
+        337,
+        340
+      ],
+      "snippet": "## Fable 5 execution queue \u2014 routing truth W7 shadow telemetry checkpoint\n\nCompleted `routing-truth-restoration.md` W7 by keeping the shadow signals and routing them into the canonical progress JSONL evidence path instead of leaving them sp",
+      "score": 0.9349,
+      "content_hash": "a74bf410238095ea"
+    },
+    {
+      "file": "/workspace/wiki/routing-intelligence.md",
+      "heading_path": [
+        "Routing Intelligence",
+        "Updates \u2014 2026-04-28",
+        "New Findings (2026-06-13 \u2014 Routing Truth, Descriptors, And X-MAS)"
+      ],
+      "line_range": [
+        380,
+        387
+      ],
+      "snippet": "### New Findings (2026-06-13 \u2014 Routing Truth, Descriptors, And X-MAS)\n\n- **The immediate routing defect was running-state truth, not a missing decision theory.** Fable 5 found production using test feature defaults and runtime flag mutation",
+      "score": 0.9349,
+      "content_hash": "39d59c61c09fdcb6"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue \u2014 routing truth W6 zero-caller deletion checkpoint"
+      ],
+      "line_range": [
+        308,
+        311
+      ],
+      "snippet": "## Fable 5 execution queue \u2014 routing truth W6 zero-caller deletion checkpoint\n\nCompleted the immediate `routing-truth-restoration.md` W6 dead-code deletion batch in `epyc-orchestrator`.\n",
+      "score": 0.9344,
+      "content_hash": "579e2c2c29a00fc4"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue \u2014 routing truth W1-W4 checkpoint"
+      ],
+      "line_range": [
+        246,
+        249
+      ],
+      "snippet": "## Fable 5 execution queue \u2014 routing truth W1-W4 checkpoint\n\nContinued the autonomous Fable 5 execution queue with `routing-truth-restoration.md` W1-W4. The objective was to make live production feature intent explicit, make runtime flag ch",
+      "score": 0.9343,
+      "content_hash": "f9ebc0d49ebcc522"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue \u2014 routing truth W5 q_scorer checkpoint"
+      ],
+      "line_range": [
+        280,
+        283
+      ],
+      "snippet": "## Fable 5 execution queue \u2014 routing truth W5 q_scorer checkpoint\n\nCompleted `routing-truth-restoration.md` W5 after W1-W4 flag substrate landed. The stale hardcoded `ScoringConfig.baseline_tps_by_role` table is no longer the default source",
+      "score": 0.9335,
+      "content_hash": "6045436a289c7492"
+    },
+    {
+      "file": "/workspace/handoffs/completed/routing-truth-restoration.md",
+      "heading_path": [
+        "Routing Truth Restoration: Prod Flags, Attestation, Dead Code"
+      ],
+      "line_range": [
+        1,
+        11
+      ],
+      "snippet": "# Routing Truth Restoration: Prod Flags, Attestation, Dead Code\n\n> **COMPLETED \u2014 archived 2026-08-16 at operator-invoked wrap-up.** No remaining tasks; its index row's own next action was \"move to completed/\". Live work is dispatched from t",
+      "score": 0.9317,
+      "content_hash": "6c3e7992b23f54b5"
+    },
+    {
+      "file": "/workspace/handoffs/active/routing-truth-restoration.md",
+      "heading_path": [
+        "Routing Truth Restoration: Prod Flags, Attestation, Dead Code"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# Routing Truth Restoration: Prod Flags, Attestation, Dead Code\n\n**Status**: CLOSED 2026-07-14 \u2014 W1-W8 landed and live-attested/deployed; routing expansion remains frozen by the W8/DAR-1 gate; the overdue `dispatch_swarm_fanout` watch is re",
+      "score": 0.9314,
+      "content_hash": "3eabf2ef3a9ce366"
+    },
+    {
+      "file": "/workspace/handoffs/completed/running-state-attestation.md",
+      "heading_path": [
+        "ATTESTATION \u2014 Generated Running-State Report"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# ATTESTATION \u2014 Generated Running-State Report\n\n**Status**: COMPLETE \u2014 W1-W4 branch-ready; awaiting merge/deploy to live orchestrator clone\n**Created**: 2026-06-12\n**Priority**: HIGH \u2014 independent of other fable5 tracks; highest trust-per-e",
+      "score": 0.9261,
+      "content_hash": "7626b54c8494d521"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-06-20-avb-offline-reward-stack.md",
+      "heading_path": [
+        "Deep Dive \u2014 AVB Offline Reward Stack (tiny CPU answer-quality oracle for routing)",
+        "8. Frozen-handoff guardrails"
+      ],
+      "line_range": [
+        118,
+        128
+      ],
+      "snippet": "## 8. Frozen-handoff guardrails\n\nTwo sibling handoffs are **expansion-FROZEN** per fable5-findings-02 (2026-06-12; the DAR-1 replay showed 0.00% identifiable regret, so expansion is gated on a future \u22655% regret signal):\n\n- `decision-aware-r",
+      "score": 0.9245,
+      "content_hash": "05d1d806795e6d8d"
+    }
+  ],
+  "wall_s": 15.001695591956377
+}

@@ -1,0 +1,191 @@
+{
+  "arm": "4000_300_punct",
+  "id": "hotpot_multifile_coding_capability",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/multi-file-coding-completion-capability.md",
+    "/workspace/handoffs/active/frontier-f1-real-task-corpus.md",
+    "/workspace/handoffs/active/model-capability-descriptors.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/frontier-f1-real-task-corpus.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/multi-file-coding-completion-capability.md",
+    "/workspace/handoffs/active/frontier-f1-real-task-corpus.md",
+    "/workspace/handoffs/active/model-capability-descriptors.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/multi-file-coding-completion-capability.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/frontier-f1-real-task-corpus.md",
+      "/workspace/handoffs/active/model-capability-descriptors.md"
+    ],
+    "first_evidence_rank": 2,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/active/routing-and-optimization-index.md",
+      "/workspace/handoffs/active/multi-file-coding-completion-capability.md",
+      "/workspace/wiki/agent-architecture.md",
+      "/workspace/wiki/agent-architecture.md",
+      "/workspace/progress/2026-05/2026-05-27.md",
+      "/workspace/progress/2026-06/master-index-pre-rewrite-archive-2026-06-12.md",
+      "/workspace/handoffs/completed/frontier-f1-real-task-corpus.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/active/bep-dcp-falsification-harness.md",
+      "/workspace/wiki/speculative-decoding.md"
+    ],
+    "recall@3": 0.3333333333333333,
+    "perfect@3": false,
+    "recall@5": 0.3333333333333333,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/active/routing-and-optimization-index.md",
+      "heading_path": [
+        "Routing, Autopilot & Stack \u2014 Active Backlog"
+      ],
+      "line_range": [
+        29,
+        45
+      ],
+      "snippet": "| RTG-17 | model capability descriptors | [model-capability-descriptors.md](model-capability-descriptors.md) | W5 \u2014 GATED tail: unified cascade (Phase 3) (2\u20133 weeks IF ever opened): one calibrated bilinear P(success \\| task_features, model_",
+      "score": 0.9354,
+      "content_hash": "d6dbb5a48883d62c"
+    },
+    {
+      "file": "/workspace/handoffs/active/multi-file-coding-completion-capability.md",
+      "heading_path": [],
+      "line_range": [
+        1,
+        12
+      ],
+      "snippet": "---\ntitle: Multi-file coding completion \u2014 diagnosed agentic read\u2192edit\u2192finish protocol gap (coder_escalation = Qwen3.6-35B-A3B)\nstatus: REMEDIATION BUILT 2026-05-27 \u2014 diagnosed as an agentic protocol/tool-loop problem, NOT model coding capab",
+      "score": 0.9347,
+      "content_hash": "3ee0bad178b35a55"
+    },
+    {
+      "file": "/workspace/wiki/agent-architecture.md",
+      "heading_path": [
+        "Agent Architecture",
+        "Key Findings",
+        "New Findings (2026-05-27 - edit-transaction protocol fix)"
+      ],
+      "line_range": [
+        702,
+        709
+      ],
+      "snippet": "### New Findings (2026-05-27 - edit-transaction protocol fix)\n\n- **The multi-file coding failure was an agentic protocol failure, not a model capability failure.** The deployed `coder_escalation` role (`Qwen3.6-35B-A3B Q8`) solved the exact",
+      "score": 0.934,
+      "content_hash": "fd701002423537ec"
+    },
+    {
+      "file": "/workspace/wiki/agent-architecture.md",
+      "heading_path": [
+        "Agent Architecture",
+        "Compiled Update \u2014 2026-07-29: the harness is a first-class, re-targetable layer \u2014 and a merged fix is not a running fix",
+        "Model choice is not the lever for a protocol gap"
+      ],
+      "line_range": [
+        1493,
+        1502
+      ],
+      "snippet": "### Model choice is not the lever for a protocol gap\n\nThe multi-file coding shortfall remains diagnosed as a **protocol/tooling gap,\nnot a capability gap**, and the 2026-07-29 intake explicitly declines to reopen\nthe model-swap question on ",
+      "score": 0.9336,
+      "content_hash": "e7b0daa370e1a3fe"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-27.md",
+      "heading_path": [
+        "2026-05-27 \u2014 manual session log (continued from 2026-05-26 late session)",
+        "Multi-file coding edit-transaction audit + wrap-up (2026-05-27, Codex session)"
+      ],
+      "line_range": [
+        805,
+        829
+      ],
+      "snippet": "## Multi-file coding edit-transaction audit + wrap-up (2026-05-27, Codex session)\n\n**Scope:** audited the completed `force_mode=\"edit\"` remediation for the BEP multi-file coding completion failure, then ran the manual wrap-up routine. No ap",
+      "score": 0.9331,
+      "content_hash": "3886bb6d7ce67000"
+    },
+    {
+      "file": "/workspace/progress/2026-06/master-index-pre-rewrite-archive-2026-06-12.md",
+      "heading_path": [
+        "EPYC Handoff \u2014 Master Index",
+        "Standalone Handoffs"
+      ],
+      "line_range": [
+        144,
+        152
+      ],
+      "snippet": "| [multi-file-coding-completion-capability.md](multi-file-coding-completion-capability.md) | Agentic coding completion (`coder_escalation`) | **REMEDIATION BUILT 2026-05-27 \u2014 protocol/tooling fix shipped (flag-gated, default-OFF).** Diagnos",
+      "score": 0.932,
+      "content_hash": "e57e53bcbaac42c4"
+    },
+    {
+      "file": "/workspace/handoffs/completed/frontier-f1-real-task-corpus.md",
+      "heading_path": [
+        "Frontier F1 \u2014 Define the Demand Side: a Real-Task Corpus as the Eval Distribution",
+        "Research Intake Update \u2014 2026-07-08: DGM Dynamic Task Generation (rec-002)"
+      ],
+      "line_range": [
+        67,
+        87
+      ],
+      "snippet": "## Research Intake Update \u2014 2026-07-08: DGM Dynamic Task Generation (rec-002)\n\n**Source**: DGM (intake-772, arXiv:2505.22954), Hyperagents (**NOT IN INDEX** \u2014 intake-787 is MCE, a different paper), ADAS (**NOT IN INDEX** \u2014 intake-791 is Swa",
+      "score": 0.9294,
+      "content_hash": "b11fb176c9ff7aa1"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 A2 edit-transaction rollout contract"
+      ],
+      "line_range": [
+        1206,
+        1226
+      ],
+      "snippet": "## Fable 5 A2 edit-transaction rollout contract\n\nPrepared the zero-inference rollout contract for the multi-file edit-transaction capability.\n\nChanges:\n- Added an A2 rollout contract to `handoffs/active/multi-file-coding-completion-capabili",
+      "score": 0.9288,
+      "content_hash": "b0a2085df994ee33"
+    },
+    {
+      "file": "/workspace/handoffs/active/bep-dcp-falsification-harness.md",
+      "heading_path": [
+        "BEP-2 / DCP-6 Falsification Harness",
+        "Key Files"
+      ],
+      "line_range": [
+        49,
+        60
+      ],
+      "snippet": "## Key Files\n\n- `/mnt/raid0/llm/epyc-orchestrator/src/edit_transaction.py`\n- `/mnt/raid0/llm/epyc-orchestrator/src/api/routes/chat.py`\n- `/mnt/raid0/llm/epyc-orchestrator/src/repl_environment/task_root.py`\n- `/mnt/raid0/llm/epyc-orchestrato",
+      "score": 0.9287,
+      "content_hash": "28490e4c10696bb1"
+    },
+    {
+      "file": "/workspace/wiki/speculative-decoding.md",
+      "heading_path": [
+        "Speculative Decoding",
+        "Compiled Update \u2014 2026-07-29: verifying a draft/MTP head is a weight-map question, never a config question",
+        "Source References"
+      ],
+      "line_range": [
+        929,
+        934
+      ],
+      "snippet": "### Source References\n\n- [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) \u2014 the `config.json`-is-unsound rule; KAT-Coder tokenizer hash and removed MTP head; GGUF header gate (tensor count, not",
+      "score": 0.9282,
+      "content_hash": "c0868282a5133aba"
+    }
+  ],
+  "wall_s": 13.738568196073174
+}

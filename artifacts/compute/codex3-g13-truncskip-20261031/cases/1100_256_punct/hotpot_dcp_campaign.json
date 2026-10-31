@@ -1,0 +1,195 @@
+{
+  "arm": "1100_256_punct",
+  "id": "hotpot_dcp_campaign",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/bep-dcp-falsification-harness.md",
+    "/workspace/handoffs/active/delegation-context-preassembly.md",
+    "/workspace/handoffs/active/bulk-inference-campaign.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/bep-dcp-falsification-harness.md",
+    "/workspace/handoffs/active/delegation-context-preassembly.md",
+    "/workspace/handoffs/active/bulk-inference-campaign.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 3,
+    "found_files": [
+      "/workspace/handoffs/active/bep-dcp-falsification-harness.md",
+      "/workspace/handoffs/active/bulk-inference-campaign.md",
+      "/workspace/handoffs/active/delegation-context-preassembly.md"
+    ],
+    "missing_files": [],
+    "first_evidence_rank": 2,
+    "all_evidence_rank": 10,
+    "ranked_files": [
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/handoffs/active/bulk-inference-campaign.md",
+      "/workspace/handoffs/active/bep-dcp-falsification-harness.md",
+      "/workspace/wiki/context-management.md",
+      "/workspace/handoffs/completed/bep-dcp-falsification-harness-completed-through-2026-05-28.md",
+      "/workspace/handoffs/active/bulk-inference-campaign.md",
+      "/workspace/wiki/context-management.md",
+      "/workspace/progress/2026-05/2026-05-26.md",
+      "/workspace/handoffs/completed/bep-dcp-falsification-harness-completed-through-2026-05-28.md",
+      "/workspace/handoffs/active/delegation-context-preassembly.md"
+    ],
+    "recall@3": 0.6666666666666666,
+    "perfect@3": false,
+    "recall@5": 0.6666666666666666,
+    "perfect@5": false,
+    "recall@10": 1.0,
+    "perfect@10": true
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "PORTFOLIO REVIEW (2026-06-12, 5 agents, 108 rows): classified verdicts",
+        "GATED"
+      ],
+      "line_range": [
+        1227,
+        1228
+      ],
+      "snippet": "- **sarathi-serve-cpu-evaluation** [gated] out: Nothing until the workload-shift gate fires; Phase 0 audit done. | gate: Workload shift to multi-tenant API / prefill-heavy serving \u2014 NOTE: fable5's batched/eval-regime push (CPU14/E1/E2, eval",
+      "score": 0.925,
+      "content_hash": "d59f3459d065e5ca"
+    },
+    {
+      "file": "/workspace/handoffs/active/bulk-inference-campaign.md",
+      "heading_path": [
+        "Bulk Inference Campaign \u2014 active backlog (Packages G\u2013K)",
+        "Package J: Within-Role Placement + Audit-Batch Inference Gates (2026-05-26)",
+        "Parallel-dispatch integrity preflight (abort-on-fail)"
+      ],
+      "line_range": [
+        422,
+        422
+      ],
+      "snippet": "| J7 | DCP-6 delegation context pre-assembly eval | [delegation-context-preassembly.md](delegation-context-preassembly.md) DCP-6 | DCP-4 advisory attach is wired/default-off (`features().dcp_pre_assembly`) and validated by `tests/unit/test_",
+      "score": 0.9238,
+      "content_hash": "e41cacd3c771bfce"
+    },
+    {
+      "file": "/workspace/handoffs/active/bep-dcp-falsification-harness.md",
+      "heading_path": [
+        "BEP-2 / DCP-6 Falsification Harness",
+        "Reporting Instructions"
+      ],
+      "line_range": [
+        61,
+        63
+      ],
+      "snippet": "## Reporting Instructions\n\nFor DCP-6, update this handoff, [delegation-context-preassembly.md](delegation-context-preassembly.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), and the progress log with the replay/inference comm",
+      "score": 0.9232,
+      "content_hash": "eee11c6d579c28e1"
+    },
+    {
+      "file": "/workspace/wiki/context-management.md",
+      "heading_path": [
+        "Context Management",
+        "Key Findings",
+        "New Finding (2026-05-27)"
+      ],
+      "line_range": [
+        56,
+        59
+      ],
+      "snippet": "### New Finding (2026-05-27)\n\n- **Delegation context pre-assembly is now an advisory seed bundle, not a hard firewall.** DCP-4 wires budget-bounded context assembly into the live specialist delegation path behind default-off `features().dcp",
+      "score": 0.9226,
+      "content_hash": "821dec49a5e749d7"
+    },
+    {
+      "file": "/workspace/handoffs/completed/bep-dcp-falsification-harness-completed-through-2026-05-28.md",
+      "heading_path": [
+        "BEP-2 / DCP-6 Falsification-Harness Construction",
+        "Rework-gate execution (2026-05-27, cont.) \u2014 leak fix + canary DONE; OFF arm STILL blocked",
+        "\u2705 RESOLVED \u2014 BEP-2 remediated by a first-class edit transaction (2026-05-27, Opus session)"
+      ],
+      "line_range": [
+        813,
+        817
+      ],
+      "snippet": "**Impact on this harness's open gates:**\n- **BEP-2 read-loop:** the multi-file *completion* capability now exists via `force_mode=\"edit\"`. The REPL/BEP loop itself is **not repaired \u2014 it is bypassed** (the edit path is opt-in, default-OFF; ",
+      "score": 0.922,
+      "content_hash": "0fe4b9d4ab31d037"
+    },
+    {
+      "file": "/workspace/handoffs/active/bulk-inference-campaign.md",
+      "heading_path": [
+        "Bulk Inference Campaign \u2014 active backlog (Packages G\u2013K)",
+        "Package J: Within-Role Placement + Audit-Batch Inference Gates (2026-05-26)",
+        "Per-gate conditional workflows + mitigation policies (intake-607 gates J7\u2013J11 \u2014 READ BEFORE RUNNING)"
+      ],
+      "line_range": [
+        515,
+        517
+      ],
+      "snippet": "**Pre-run wiring status** (none is in production until wired AND its gate passes; all flags default-OFF):\n- **J10 / URE-1**: shadow logger **WIRED** (`ORCHESTRATOR_URE_UNCERTAINTY_SHADOW_LOG`) on main (merged 2026-05-26) \u2014 runnable now.\n- *",
+      "score": 0.9202,
+      "content_hash": "63c3877a1ed662b6"
+    },
+    {
+      "file": "/workspace/wiki/context-management.md",
+      "heading_path": [
+        "Context Management",
+        "Key Findings",
+        "New (2026-06-22, DCP seed-bundle first live A/B regressed latency \u2192 hold)"
+      ],
+      "line_range": [
+        46,
+        46
+      ],
+      "snippet": "- **Delegation-context pre-assembly (DCP) reached its first live A/B and recorded `hold`: it cut tokens but worsened latency and quality was unscored \u2014 it is NOT yet enabled.** The budget-bounded context pre-assembler (`src/context_assembly",
+      "score": 0.9199,
+      "content_hash": "9c8057a589b1b5f1"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-26.md",
+      "heading_path": [
+        "2026-05-26 \u2014 manual session log",
+        "Session 15 \u2014 wire within-role inference gates into bulk-inference Package J + priority-zero sequencing",
+        "Changes (epyc-root only)"
+      ],
+      "line_range": [
+        11,
+        19
+      ],
+      "snippet": "### Changes (epyc-root only)\n\n| Files | What |\n|---|---|\n| `handoffs/active/bulk-inference-campaign.md` | New `Package J: Within-Role Placement + Audit-Batch Inference Gates` (9 tasks J1-J9). J1=WP-2 gate, J2=WP-3 verification, J3=WP-4 veri",
+      "score": 0.9174,
+      "content_hash": "5d4646c32122526f"
+    },
+    {
+      "file": "/workspace/handoffs/completed/bep-dcp-falsification-harness-completed-through-2026-05-28.md",
+      "heading_path": [
+        "BEP-2 / DCP-6 Falsification-Harness Construction",
+        "Reporting"
+      ],
+      "line_range": [
+        478,
+        494
+      ],
+      "snippet": "## Reporting\n\nAfter each phase:\n\n- append a short result section here;\n- update `progress/2026-05/2026-05-26.md` or the current day progress log;\n- commit per repo with hash;\n- update Package J manifest row status;\n- record whether data is ",
+      "score": 0.9165,
+      "content_hash": "e8d63f3e530e6685"
+    },
+    {
+      "file": "/workspace/handoffs/active/delegation-context-preassembly.md",
+      "heading_path": [
+        "Delegation Context Pre-Assembly (Budget-Bounded)",
+        "Proposed tasks (implementation-grade after audit)"
+      ],
+      "line_range": [
+        49,
+        49
+      ],
+      "snippet": "- [ ] **DCP-6 \u2014 Eval.** Measure on a delegation-heavy workload: prefill tokens, end-to-end latency, top-up count, bundle-build latency, downstream answer quality, hallucinated-file references, and context-contamination failures vs the react",
+      "score": 0.9157,
+      "content_hash": "c6a1a7b0c2e7df1f"
+    }
+  ],
+  "wall_s": 22.700696403859183
+}

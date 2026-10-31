@@ -1,0 +1,192 @@
+{
+  "arm": "canonical_stored",
+  "id": "hotpot_dcp_campaign",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/bep-dcp-falsification-harness.md",
+    "/workspace/handoffs/active/delegation-context-preassembly.md",
+    "/workspace/handoffs/active/bulk-inference-campaign.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/bep-dcp-falsification-harness.md",
+    "/workspace/handoffs/active/delegation-context-preassembly.md",
+    "/workspace/handoffs/active/bulk-inference-campaign.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 3,
+    "found_files": [
+      "/workspace/handoffs/active/bep-dcp-falsification-harness.md",
+      "/workspace/handoffs/active/bulk-inference-campaign.md",
+      "/workspace/handoffs/active/delegation-context-preassembly.md"
+    ],
+    "missing_files": [],
+    "first_evidence_rank": 1,
+    "all_evidence_rank": 9,
+    "ranked_files": [
+      "/workspace/handoffs/active/bep-dcp-falsification-harness.md",
+      "/workspace/wiki/context-management.md",
+      "/workspace/wiki/context-management.md",
+      "/workspace/handoffs/active/delegation-context-preassembly.md",
+      "/workspace/handoffs/active/delegation-context-preassembly.md",
+      "/workspace/progress/2026-05/2026-05-26.md",
+      "/workspace/handoffs/active/delegation-context-preassembly.md",
+      "/workspace/handoffs/completed/bep-dcp-falsification-harness-completed-through-2026-05-28.md",
+      "/workspace/handoffs/active/bulk-inference-campaign.md",
+      "/workspace/handoffs/active/bep-dcp-falsification-harness.md"
+    ],
+    "recall@3": 0.3333333333333333,
+    "perfect@3": false,
+    "recall@5": 0.6666666666666666,
+    "perfect@5": false,
+    "recall@10": 1.0,
+    "perfect@10": true
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/active/bep-dcp-falsification-harness.md",
+      "heading_path": [
+        "BEP-2 / DCP-6 Falsification Harness",
+        "Reporting Instructions"
+      ],
+      "line_range": [
+        61,
+        63
+      ],
+      "snippet": "## Reporting Instructions\n\nFor DCP-6, update this handoff, [delegation-context-preassembly.md](delegation-context-preassembly.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), and the progress log with the replay/inference comm",
+      "score": 0.924,
+      "content_hash": "eee11c6d579c28e1"
+    },
+    {
+      "file": "/workspace/wiki/context-management.md",
+      "heading_path": [
+        "Context Management",
+        "Key Findings",
+        "New Finding (2026-05-27)"
+      ],
+      "line_range": [
+        56,
+        59
+      ],
+      "snippet": "### New Finding (2026-05-27)\n\n- **Delegation context pre-assembly is now an advisory seed bundle, not a hard firewall.** DCP-4 wires budget-bounded context assembly into the live specialist delegation path behind default-off `features().dcp",
+      "score": 0.9228,
+      "content_hash": "821dec49a5e749d7"
+    },
+    {
+      "file": "/workspace/wiki/context-management.md",
+      "heading_path": [
+        "Context Management",
+        "Key Findings",
+        "New (2026-06-22, DCP seed-bundle first live A/B regressed latency \u2192 hold)"
+      ],
+      "line_range": [
+        44,
+        47
+      ],
+      "snippet": "### New (2026-06-22, DCP seed-bundle first live A/B regressed latency \u2192 hold)\n\n- **Delegation-context pre-assembly (DCP) reached its first live A/B and recorded `hold`: it cut tokens but worsened latency and quality was unscored \u2014 it is NOT",
+      "score": 0.922,
+      "content_hash": "58e7ee7876cd7591"
+    },
+    {
+      "file": "/workspace/handoffs/active/delegation-context-preassembly.md",
+      "heading_path": [
+        "Delegation Context Pre-Assembly (Budget-Bounded)"
+      ],
+      "line_range": [
+        1,
+        12
+      ],
+      "snippet": "# Delegation Context Pre-Assembly (Budget-Bounded)\n\n**Scratch**: `/mnt/raid0/llm/tmp/dcp9a-custody-20261006-02`, `/mnt/raid0/llm/tmp/codex-ni06-main-20261006/dcp9a-approved-source`; originals retained private.\n\n**Status**: implementation-sc",
+      "score": 0.922,
+      "content_hash": "3a5cdba520c4713c"
+    },
+    {
+      "file": "/workspace/handoffs/active/delegation-context-preassembly.md",
+      "heading_path": [
+        "Delegation Context Pre-Assembly (Budget-Bounded)",
+        "Proposed tasks (implementation-grade after audit)"
+      ],
+      "line_range": [
+        48,
+        51
+      ],
+      "snippet": "- [x] **DCP-5 \u2014 Non-prescriptive discovery prompt.** Landed in `epyc-orchestrator` `b7ba6265`: `architect_investigate` now frames supplied context as an evidence bundle, asks delegation briefs to identify open questions, file relationships,",
+      "score": 0.92,
+      "content_hash": "1551ea9c36b20767"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-26.md",
+      "heading_path": [
+        "2026-05-26 \u2014 manual session log",
+        "Session 15 \u2014 wire within-role inference gates into bulk-inference Package J + priority-zero sequencing",
+        "Changes (epyc-root only)"
+      ],
+      "line_range": [
+        11,
+        19
+      ],
+      "snippet": "### Changes (epyc-root only)\n\n| Files | What |\n|---|---|\n| `handoffs/active/bulk-inference-campaign.md` | New `Package J: Within-Role Placement + Audit-Batch Inference Gates` (9 tasks J1-J9). J1=WP-2 gate, J2=WP-3 verification, J3=WP-4 veri",
+      "score": 0.9176,
+      "content_hash": "5d4646c32122526f"
+    },
+    {
+      "file": "/workspace/handoffs/active/delegation-context-preassembly.md",
+      "heading_path": [
+        "Delegation Context Pre-Assembly (Budget-Bounded)",
+        "Post-result conditional workflow + mitigation (DCP-6 / bulk-inference J7)"
+      ],
+      "line_range": [
+        100,
+        111
+      ],
+      "snippet": "## Post-result conditional workflow + mitigation (DCP-6 / bulk-inference J7)\n\nPre-run wiring: **DCP-1 + DCP-2 discovery + DCP-3 ast-codemap DONE + tested** on main (merged 2026-05-26) (`src/context_discovery.py`: `discover_candidates` / `bu",
+      "score": 0.9173,
+      "content_hash": "7c23b5cf5f19660f"
+    },
+    {
+      "file": "/workspace/handoffs/completed/bep-dcp-falsification-harness-completed-through-2026-05-28.md",
+      "heading_path": [
+        "BEP-2 / DCP-6 Falsification-Harness Construction",
+        "Reporting"
+      ],
+      "line_range": [
+        478,
+        494
+      ],
+      "snippet": "## Reporting\n\nAfter each phase:\n\n- append a short result section here;\n- update `progress/2026-05/2026-05-26.md` or the current day progress log;\n- commit per repo with hash;\n- update Package J manifest row status;\n- record whether data is ",
+      "score": 0.9168,
+      "content_hash": "e8d63f3e530e6685"
+    },
+    {
+      "file": "/workspace/handoffs/active/bulk-inference-campaign.md",
+      "heading_path": [
+        "Bulk Inference Campaign \u2014 active backlog (Packages G\u2013K)",
+        "Current State (2026-06-12) \u2014 Three-Queue Structure",
+        "Queue 1 \u2014 offline-now (\u22480 llama-hours; run today alongside the live autopilot)"
+      ],
+      "line_range": [
+        54,
+        60
+      ],
+      "snippet": "### Queue 1 \u2014 offline-now (\u22480 llama-hours; run today alongside the live autopilot)\n- \u2705 **J7 DCP-6 offline replay + DCP-6a repair CLOSED/PREPARED; first live A/B does not support enablement** \u2014 launch-code provenance is satisfied and orchest",
+      "score": 0.9157,
+      "content_hash": "e9a1c3042b671778"
+    },
+    {
+      "file": "/workspace/handoffs/active/bep-dcp-falsification-harness.md",
+      "heading_path": [
+        "BEP-2 / DCP-6 Falsification Harness",
+        "Dependency Forks"
+      ],
+      "line_range": [
+        24,
+        35
+      ],
+      "snippet": "## Dependency Forks\n\n| Outcome | Next action |\n|---|---|\n| DCP-6a code is landed but the launch marker predates `2e2e0d3` | Reload at a clean boundary; do not mutate loaded-code provenance or inference measurements mid-run. |\n| Launch marke",
+      "score": 0.915,
+      "content_hash": "1f2b83bf4a17746f"
+    }
+  ],
+  "wall_s": 14.659747455036268
+}

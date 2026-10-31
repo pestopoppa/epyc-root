@@ -1,0 +1,192 @@
+{
+  "arm": "1100_256_punct",
+  "id": "hotpot_gpu_drafter_mi200",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/gpu-drafter-mi200-investigation.md",
+    "/workspace/handoffs/active/gpu-acceleration-path.md",
+    "/workspace/handoffs/active/fable5-findings-03-serving-and-gpu.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/gpu-drafter-mi200-investigation.md",
+    "/workspace/handoffs/active/fable5-findings-03-serving-and-gpu.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/gpu-drafter-mi200-investigation.md",
+    "/workspace/handoffs/active/gpu-acceleration-path.md",
+    "/workspace/handoffs/active/fable5-findings-03-serving-and-gpu.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/gpu-acceleration-path.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/fable5-findings-03-serving-and-gpu.md",
+      "/workspace/handoffs/active/gpu-drafter-mi200-investigation.md"
+    ],
+    "first_evidence_rank": 5,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/wiki/inference-serving.md",
+      "/workspace/wiki/hardware-optimization.md",
+      "/workspace/wiki/hardware-optimization.md",
+      "/workspace/handoffs/completed/fable5-architecture-review.md",
+      "/workspace/handoffs/active/gpu-acceleration-path.md",
+      "/workspace/handoffs/active/design-backlog-triage-2026-07-23.md",
+      "/workspace/progress/2026-07/2026-07-03-qwen36-27b-q8-mtp-acquisition.md",
+      "/workspace/handoffs/active/gpu-cot-scaffold-sidecar.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/active/gpu-drafter-control-redesign.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.3333333333333333,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/wiki/inference-serving.md",
+      "heading_path": [
+        "Inference Serving",
+        "Source References"
+      ],
+      "line_range": [
+        557,
+        558
+      ],
+      "snippet": "- [GPU-Drafter on MI200 investigation](../handoffs/active/gpu-drafter-mi200-investigation.md) -- the 2026-07-02 MI210 advancement (HIP build verified on gfx90a, GPU-side gemma4-31B + NEXTN MTP at 43.25 t/s/1.44x/59.7% accept, clean qwen35 G",
+      "score": 0.9364,
+      "content_hash": "241add2781129dee"
+    },
+    {
+      "file": "/workspace/wiki/hardware-optimization.md",
+      "heading_path": [
+        "Hardware Optimization",
+        "2026-06-13 Update \u2014 What Is Actually Exhausted"
+      ],
+      "line_range": [
+        929,
+        931
+      ],
+      "snippet": "The MI210 hypothesis also changes emphasis. Dense frontdoor residency remains plausible, but GPU-as-eval-engine may compound more quickly: faster promotion evals increase statistical power per day, which directly addresses the evidence-plan",
+      "score": 0.9316,
+      "content_hash": "324bd8e87059b484"
+    },
+    {
+      "file": "/workspace/wiki/hardware-optimization.md",
+      "heading_path": [
+        "Hardware Optimization",
+        "Key Findings",
+        "New (2026-06-25, iqk-port complete + v6 consolidation + draft-head precision)"
+      ],
+      "line_range": [
+        875,
+        877
+      ],
+      "snippet": "- **GPU drafter work is a frontdoor-acceleration path, not a replacement for CPU topology optimization.** The GPU acceleration sources keep MI210 drafter experiments separate from CPU serving claims: CPU NUMA/matrix gates still govern produ",
+      "score": 0.9283,
+      "content_hash": "8de6818e21bfac38"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-architecture-review.md",
+      "heading_path": [
+        "Fable 5 Architectural Review \u2014 entry handoff (a prompt, not a task list)",
+        "5. The hardware trajectory and the MI210 hypothesis (running, not settled)"
+      ],
+      "line_range": [
+        225,
+        235
+      ],
+      "snippet": "A practical constraint we own: we have **full control of the `llama.cpp` fork**, and we plan to\nbuild **custom LLM-tuned ROCm kernels to overcome the ROCm\u2194CUDA capability gap** (much GPU-inference\ntooling is CUDA-first). Relevant backlog:\n-",
+      "score": 0.9282,
+      "content_hash": "f9d0ed9cddf1da85"
+    },
+    {
+      "file": "/workspace/handoffs/active/gpu-acceleration-path.md",
+      "heading_path": [
+        "GPU Acceleration Path \u2014 CPU+GPU Hybrid Inference"
+      ],
+      "line_range": [
+        3,
+        9
+      ],
+      "snippet": "**Status**: researched (literature survey complete 2026-04-14, RX 7900 XTX + hybrid MoE path prioritized)\n**Created**: 2026-04-10 (via research intake deep-dive)\n**Updated**: 2026-04-21 (no GPU acquired; vLLM DDTree+Dflash plan still curren",
+      "score": 0.9268,
+      "content_hash": "4ce006dc725b2da4"
+    },
+    {
+      "file": "/workspace/handoffs/active/design-backlog-triage-2026-07-23.md",
+      "heading_path": [
+        "Design-Backlog Triage (2026-07-23)",
+        "SECTION 1 \u2014 Strategic design concepts (operator decides)"
+      ],
+      "line_range": [
+        51,
+        52
+      ],
+      "snippet": "| B3 | Frontdoor GPU residency (Gate R) | fable5-w2-findings-02 \u00a73/\u00a75; gpu-acceleration-path | Qwen3.6-35B Q8 resident on MI210 \u2014 accelerates the hottest interactive path AND the eval-engine bottleneck role, returns CPU bandwidth | Gate R b",
+      "score": 0.9267,
+      "content_hash": "3fde4cab9f2404d7"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-03-qwen36-27b-q8-mtp-acquisition.md",
+      "heading_path": [
+        "2026-07-03 \u2014 Acquired Qwen3.6-27B Q8 MTP variant (+ Fable5 window-2 / MI210 inventory readout)",
+        "Follow-on (same session): DFlash head acquisition + MI210 Fable5 injection"
+      ],
+      "line_range": [
+        75,
+        84
+      ],
+      "snippet": "- **DFlash inference path is NOT ported** \u2014 exists only in the stale v2-era worktree\n  `/mnt/raid0/llm/llama.cpp-dflash` (`feature/dflash-speculation`, C++ forward pass verified <0.01 vs HF,\n  CUDA-only reference). Operator's decision: **th",
+      "score": 0.9247,
+      "content_hash": "0d777d5f76ebd86b"
+    },
+    {
+      "file": "/workspace/handoffs/active/gpu-cot-scaffold-sidecar.md",
+      "heading_path": [
+        "GPU CoT-Scaffold Sidecar \u2014 Preliminary Pure-GPU Research Lane",
+        "Dependencies / cross-cutting"
+      ],
+      "line_range": [
+        311,
+        316
+      ],
+      "snippet": "- **`gpu-drafter-mi200-investigation.md`** \u2014 this lane is the **text-level alternative** to the spec-dec drafter farm; it deliberately sidesteps the N5 vocab/M-RoPE/GDN blocker class. If both land, the sidecar (quality) and the drafter (lat",
+      "score": 0.9245,
+      "content_hash": "5f16ff439acec0e8"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 one-shot architectural-review handoff authored"
+      ],
+      "line_range": [
+        74,
+        77
+      ],
+      "snippet": "- **Feed = gitnexus-first** (covers epyc-orchestrator 48K-sym + epyc-inference-research 30K-sym at ~20-30% the token cost of raw reads; **NOT epyc-llama**), raw reads only for algorithm internals / prompt text / config. Effort `xhigh`/`max`",
+      "score": 0.9242,
+      "content_hash": "e4bf8202e11bafb6"
+    },
+    {
+      "file": "/workspace/handoffs/active/gpu-drafter-control-redesign.md",
+      "heading_path": [
+        "GPU-Drafter Control Redesign"
+      ],
+      "line_range": [
+        1,
+        7
+      ],
+      "snippet": "# GPU-Drafter Control Redesign\n\n**Status**: NEW / SCOPING (opened 2026-07-18 from the v7 lever audit). Design + \u03b1-measurement\nonly \u2014 **no serving bench without operator approval** (`feedback_no_concurrent_inference`).\n**Owner handoff**: thi",
+      "score": 0.9236,
+      "content_hash": "273478334b4eddb2"
+    }
+  ],
+  "wall_s": 22.06318264384754
+}

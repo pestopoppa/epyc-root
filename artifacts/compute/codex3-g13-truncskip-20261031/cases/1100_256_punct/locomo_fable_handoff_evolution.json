@@ -1,0 +1,187 @@
+{
+  "arm": "1100_256_punct",
+  "id": "locomo_fable_handoff_evolution",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/fable5-architecture-review.md",
+    "/workspace/handoffs/active/fable5-findings-00-executive-summary.md",
+    "/workspace/handoffs/active/fable5-proposed-master-index-rewrite.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/fable5-architecture-review.md",
+    "/workspace/handoffs/active/fable5-findings-00-executive-summary.md",
+    "/workspace/handoffs/active/fable5-proposed-master-index-rewrite.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/fable5-architecture-review.md",
+    "/workspace/handoffs/active/fable5-findings-00-executive-summary.md",
+    "/workspace/handoffs/active/fable5-proposed-master-index-rewrite.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/fable5-architecture-review.md",
+      "/workspace/handoffs/active/fable5-findings-00-executive-summary.md",
+      "/workspace/handoffs/active/fable5-proposed-master-index-rewrite.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/progress/2026-07/2026-07-03-fable5-window2.md",
+      "/workspace/handoffs/completed/fable5-window2-findings-00-executive-summary.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/completed/fable5-architecture-review.md",
+      "/workspace/handoffs/completed/fable5-findings-04-impl-plan.md",
+      "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "/workspace/handoffs/completed/fable5-findings-00-executive-summary.md",
+      "/workspace/handoffs/completed/fable5-architecture-review.md",
+      "/workspace/handoffs/completed/handoff-backlog-hygiene-audit.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 one-shot architectural-review handoff authored"
+      ],
+      "line_range": [
+        67,
+        71
+      ],
+      "snippet": "## Fable 5 one-shot architectural-review handoff authored\n\nDesigned and authored the entry handoff for a metered, one-shot Claude Fable 5 (`claude-fable-5`) strategic-architecture consult. New file: `handoffs/active/fable5-architecture-revi",
+      "score": 0.9432,
+      "content_hash": "e8b74d1b6fced9f7"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-03-fable5-window2.md",
+      "heading_path": [
+        "2026-07-03 \u2014 Fable 5 architecture review, window 2 (one-shot consult)"
+      ],
+      "line_range": [
+        1,
+        7
+      ],
+      "snippet": "# 2026-07-03 \u2014 Fable 5 architecture review, window 2 (one-shot consult)\n\n**Brief**: `handoffs/active/fable5-architecture-review-2.md`. **Output**: 5 findings artifacts `handoffs/active/fable5-window2-findings-{00..04}-*.md`. No live index o",
+      "score": 0.943,
+      "content_hash": "4e6931d8b34d3502"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-window2-findings-00-executive-summary.md",
+      "heading_path": [
+        "Fable 5 architectural review \u2014 window 2 \u2014 executive summary"
+      ],
+      "line_range": [
+        1,
+        5
+      ],
+      "snippet": "# Fable 5 architectural review \u2014 window 2 \u2014 executive summary\n\n> **Completed findings ledger (2026-08-13).** This document has no remaining tasks. Live work is dispatched from the [Research & Evaluation index](../active/research-evaluation-",
+      "score": 0.943,
+      "content_hash": "eeaf0bc65d5207a0"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 one-shot architectural review \u2014 EXECUTED (F5)"
+      ],
+      "line_range": [
+        83,
+        87
+      ],
+      "snippet": "## Fable 5 one-shot architectural review \u2014 EXECUTED (F5)\n\nRan the consult per `handoffs/active/fable5-architecture-review.md`. Preflight audit first (brief sound; 6 amendments at `fable5-preflight-amendments.md`: stale epyc-root index re-an",
+      "score": 0.9392,
+      "content_hash": "a34db2033624edef"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-architecture-review.md",
+      "heading_path": [
+        "Fable 5 Architectural Review \u2014 entry handoff (a prompt, not a task list)"
+      ],
+      "line_range": [
+        1,
+        12
+      ],
+      "snippet": "# Fable 5 Architectural Review \u2014 entry handoff (a prompt, not a task list)\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.\n\n**Status**: READY (pendi",
+      "score": 0.9389,
+      "content_hash": "fd6c17d5657e14b8"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-04-impl-plan.md",
+      "heading_path": [
+        "Fable 5 findings 04 \u2014 IMPLEMENTATION PLAN: invariant interfaces, capability registry, index migration"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# Fable 5 findings 04 \u2014 IMPLEMENTATION PLAN: invariant interfaces, capability registry, index migration\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indic",
+      "score": 0.9367,
+      "content_hash": "3328c7828e925bfe"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "heading_path": [
+        "PROPOSAL v2 - master-handoff-index.md rewritten (full-portfolio review, 2026-06-12)"
+      ],
+      "line_range": [
+        1,
+        12
+      ],
+      "snippet": "# PROPOSAL v2 - master-handoff-index.md rewritten (full-portfolio review, 2026-06-12)\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.\n\n> **Historica",
+      "score": 0.9366,
+      "content_hash": "45c48f9fbba9b1a3"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-00-executive-summary.md",
+      "heading_path": [
+        "Fable 5 architectural review \u2014 executive summary"
+      ],
+      "line_range": [
+        1,
+        5
+      ],
+      "snippet": "# Fable 5 architectural review \u2014 executive summary\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.",
+      "score": 0.9365,
+      "content_hash": "15dfb37c093bd0ef"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-architecture-review.md",
+      "heading_path": [
+        "Fable 5 Architectural Review \u2014 entry handoff (a prompt, not a task list)",
+        "8. Output contract (what to leave us)"
+      ],
+      "line_range": [
+        272,
+        288
+      ],
+      "snippet": "## 8. Output contract (what to leave us)\n\nWrite your output to `handoffs/active/fable5-findings-*.md` (one file per facet, or a coherent\nset). Everything here is **architectural insight we will multiply into implementation workflows \u2014\nnot f",
+      "score": 0.9364,
+      "content_hash": "45b133c0aac1798c"
+    },
+    {
+      "file": "/workspace/handoffs/completed/handoff-backlog-hygiene-audit.md",
+      "heading_path": [
+        "Handoff backlog hygiene audit",
+        "Closure note (2026-06-12, Fable 5 portfolio pass)"
+      ],
+      "line_range": [
+        21,
+        29
+      ],
+      "snippet": "**Where residuals now live**: the prune queue is the fable5 master-index rewrite \u00a7D hygiene batch (`fable5-proposed-master-index-rewrite.md`, applied to `master-handoff-index.md`); future freshness enforcement is the new index's weekly fres",
+      "score": 0.9363,
+      "content_hash": "4ea66745544bbb99"
+    }
+  ],
+  "wall_s": 22.52502906904556
+}

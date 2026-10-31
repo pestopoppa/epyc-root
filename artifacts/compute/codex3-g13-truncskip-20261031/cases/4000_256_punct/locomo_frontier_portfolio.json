@@ -1,0 +1,193 @@
+{
+  "arm": "4000_256_punct",
+  "id": "locomo_frontier_portfolio",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/fable5-findings-07-strategic-frontiers.md",
+    "/workspace/handoffs/active/frontier-f1-real-task-corpus.md",
+    "/workspace/handoffs/active/frontier-f3-data-flywheel.md",
+    "/workspace/handoffs/active/frontier-f7-economic-ledger.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/fable5-findings-07-strategic-frontiers.md",
+    "/workspace/handoffs/active/frontier-f1-real-task-corpus.md",
+    "/workspace/handoffs/active/frontier-f7-economic-ledger.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/fable5-findings-07-strategic-frontiers.md",
+    "/workspace/handoffs/active/frontier-f1-real-task-corpus.md",
+    "/workspace/handoffs/active/frontier-f3-data-flywheel.md",
+    "/workspace/handoffs/active/frontier-f7-economic-ledger.md"
+  ],
+  "metrics": {
+    "evidence_count": 4,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/frontier-f3-data-flywheel.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/fable5-findings-07-strategic-frontiers.md",
+      "/workspace/handoffs/active/frontier-f1-real-task-corpus.md",
+      "/workspace/handoffs/active/frontier-f7-economic-ledger.md"
+    ],
+    "first_evidence_rank": 3,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/wiki/agent-architecture.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/active/frontier-f3-data-flywheel.md",
+      "/workspace/handoffs/completed/frontier-f7-economic-ledger.md",
+      "/workspace/handoffs/completed/fable5-window2-findings-00-executive-summary.md",
+      "/workspace/progress/2026-06/2026-06-13.md",
+      "/workspace/handoffs/completed/fable5-findings-04-impl-plan.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/completed/fable5-findings-07-strategic-frontiers.md",
+      "/workspace/handoffs/completed/frontier-f1-real-task-corpus.md"
+    ],
+    "recall@3": 0.25,
+    "perfect@3": false,
+    "recall@5": 0.25,
+    "perfect@5": false,
+    "recall@10": 0.25,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/wiki/agent-architecture.md",
+      "heading_path": [
+        "Agent Architecture",
+        "2026-06-13 Update \u2014 Fable 5 Strategic Spine"
+      ],
+      "line_range": [
+        921,
+        932
+      ],
+      "snippet": "## 2026-06-13 Update \u2014 Fable 5 Strategic Spine\n\nFable 5 reframes the North Star as a lab architecture, not just a serving/router architecture. The highest-ROI frontier is F1 -> F2 -> F3:\n\n- **F1 real-task corpus**: define the demand side fr",
+      "score": 0.9593,
+      "content_hash": "f29a606932c041b2"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 one-shot architectural review \u2014 EXECUTED (F5)",
+        "Fable 5 review \u2014 execution + wrap-up (final pass)"
+      ],
+      "line_range": [
+        128,
+        135
+      ],
+      "snippet": "### Fable 5 review \u2014 execution + wrap-up (final pass)\n**Strategic frontiers**: `fable5-findings-07-strategic-frontiers.md` written then expanded to implementation-grade (operator request): F1 real-task corpus / F2 self-running lab (the 10\u00d7)",
+      "score": 0.959,
+      "content_hash": "3f6423210c288a4f"
+    },
+    {
+      "file": "/workspace/handoffs/active/frontier-f3-data-flywheel.md",
+      "heading_path": [
+        "Frontier F3 \u2014 The Data Flywheel: Train on What the Lab Already Generates"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# Frontier F3 \u2014 The Data Flywheel: Train on What the Lab Already Generates\n\n**Status**: W1 capture hygiene and W2 dataset builders are on the current orchestrator branch; reviewed intake-label recording, reviewed-label joins, stdlib CPU tri",
+      "score": 0.9501,
+      "content_hash": "56ad5363c46d5f16"
+    },
+    {
+      "file": "/workspace/handoffs/completed/frontier-f7-economic-ledger.md",
+      "heading_path": [
+        "Frontier F7 \u2014 The Economic Ledger"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# Frontier F7 \u2014 The Economic Ledger\n\n**Status**: COMPLETE \u2014 W1 ledger, W2 digest observation, and W3 first monthly review are complete. Continuing monthly review cadence is operational follow-up, not an active Fable5 frontier handoff.\n**Cre",
+      "score": 0.9467,
+      "content_hash": "09c91259989dba13"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-window2-findings-00-executive-summary.md",
+      "heading_path": [
+        "Fable 5 architectural review \u2014 window 2 \u2014 executive summary"
+      ],
+      "line_range": [
+        1,
+        10
+      ],
+      "snippet": "# Fable 5 architectural review \u2014 window 2 \u2014 executive summary\n\n> **Completed findings ledger (2026-08-13).** This document has no remaining tasks. Live work is dispatched from the [Research & Evaluation index](../active/research-evaluation-",
+      "score": 0.9435,
+      "content_hash": "8f4175395b71cc90"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-13.md",
+      "heading_path": [
+        "2026-06-13",
+        "N6 task-rate/goodput policy decision"
+      ],
+      "line_range": [
+        706,
+        730
+      ],
+      "snippet": "## N6 task-rate/goodput policy decision\n\nClosed the zero-inference N6 policy review without changing live dominance.\n\nInputs reviewed:\n\n- Fable findings-05 objective redesign.\n- `epyc-orchestrator/orchestration/reports/task_rate_goodput_rep",
+      "score": 0.9427,
+      "content_hash": "19e7f234444da96d"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-04-impl-plan.md",
+      "heading_path": [
+        "Fable 5 findings 04 \u2014 IMPLEMENTATION PLAN: invariant interfaces, capability registry, index migration"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# Fable 5 findings 04 \u2014 IMPLEMENTATION PLAN: invariant interfaces, capability registry, index migration\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indic",
+      "score": 0.9421,
+      "content_hash": "3328c7828e925bfe"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "F3 data-flywheel dataset inventory refresh"
+      ],
+      "line_range": [
+        1494,
+        1514
+      ],
+      "snippet": "## F3 data-flywheel dataset inventory refresh\n\nExtended the existing F3 capture branch with the explicit dataset inventory deliverable.\n\nCode/docs:\n- Worktree: `/mnt/raid0/llm/tmp/data-flywheel-worktree`\n- Branch: `feat/data-flywheel-captur",
+      "score": 0.9418,
+      "content_hash": "5bbd4cc722ce12a4"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-07-strategic-frontiers.md",
+      "heading_path": [
+        "Fable 5 findings 07 \u2014 Strategic frontiers beyond the backlog (implementation-grade)",
+        "F1. Define the demand side \u2014 a real-task corpus as the eval distribution"
+      ],
+      "line_range": [
+        11,
+        26
+      ],
+      "snippet": "## F1. Define the demand side \u2014 a real-task corpus as the eval distribution\n\n**Handoff**: [frontier-f1-real-task-corpus.md](frontier-f1-real-task-corpus.md) (created 2026-06-12 \u2014 claim waypoints there)\n\n**Why**: everything in the project is",
+      "score": 0.9413,
+      "content_hash": "205babacf4bcaa64"
+    },
+    {
+      "file": "/workspace/handoffs/completed/frontier-f1-real-task-corpus.md",
+      "heading_path": [
+        "Frontier F1 \u2014 Define the Demand Side: a Real-Task Corpus as the Eval Distribution"
+      ],
+      "line_range": [
+        1,
+        21
+      ],
+      "snippet": "# Frontier F1 \u2014 Define the Demand Side: a Real-Task Corpus as the Eval Distribution\n\n> **ARCHIVED 2026-09-08 \u2014 COMPLETE.** Moved from `handoffs/active/` at the operator-invoked wrap-up of\n> 2026-09-08. **10/10 checkboxes closed, 0 open**, c",
+      "score": 0.9408,
+      "content_hash": "1b2acfa8ed174d6c"
+    }
+  ],
+  "wall_s": 13.002660559955984
+}

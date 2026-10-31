@@ -1,0 +1,192 @@
+{
+  "arm": "4000_256_punct",
+  "id": "hotpot_memento_reasoning",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/memento-block-reasoning-compression.md",
+    "/workspace/research/deep-dives/memento-iterative-reasoning-cluster.md",
+    "/workspace/handoffs/active/reasoning-compression.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/memento-block-reasoning-compression.md",
+    "/workspace/research/deep-dives/memento-iterative-reasoning-cluster.md",
+    "/workspace/handoffs/active/reasoning-compression.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 2,
+    "found_files": [
+      "/workspace/handoffs/active/memento-block-reasoning-compression.md",
+      "/workspace/handoffs/active/reasoning-compression.md"
+    ],
+    "missing_files": [
+      "/workspace/research/deep-dives/memento-iterative-reasoning-cluster.md"
+    ],
+    "first_evidence_rank": 1,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/active/reasoning-compression.md",
+      "/workspace/handoffs/active/memento-block-reasoning-compression.md",
+      "/workspace/handoffs/active/memento-block-reasoning-compression.md",
+      "/workspace/handoffs/active/design-backlog-triage-2026-07-23.md",
+      "/workspace/handoffs/completed/triattention-kv-selection-deployment-completed-through-2026-05-28.md",
+      "/workspace/handoffs/completed/kv-cache-quantization.md",
+      "/workspace/handoffs/active/memento-block-reasoning-compression.md",
+      "/workspace/research/deep-dives/2026-05-19-latent-cot-cluster.md",
+      "/workspace/wiki/kv-cache.md",
+      "/workspace/handoffs/active/attention-matching-kv-compaction.md"
+    ],
+    "recall@3": 0.6666666666666666,
+    "perfect@3": false,
+    "recall@5": 0.6666666666666666,
+    "perfect@5": false,
+    "recall@10": 0.6666666666666666,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/active/reasoning-compression.md",
+      "heading_path": [
+        "Reasoning Compression for Inference Cost Reduction",
+        "Research Intake Update \u2014 2026-04-08",
+        "New Related Research \u2014 Memento Cluster (Block-Level Reasoning Compression)"
+      ],
+      "line_range": [
+        316,
+        340
+      ],
+      "snippet": "### New Related Research \u2014 Memento Cluster (Block-Level Reasoning Compression)\n\nA cluster of 4 closely related papers/repos on training models to self-compress their reasoning chains by segmenting into blocks and generating dense summaries ",
+      "score": 0.9318,
+      "content_hash": "996ef1cc263ea3fc"
+    },
+    {
+      "file": "/workspace/handoffs/active/memento-block-reasoning-compression.md",
+      "heading_path": [
+        "Then run the smallest real Stage-1 format-learning job that fits the current host/GPU budget.",
+        "Objective"
+      ],
+      "line_range": [
+        43,
+        46
+      ],
+      "snippet": "## Objective\n\nInvestigate Memento-style block reasoning compression for EPYC stack \u2014 training models to segment reasoning into blocks, compress each block into a dense summary (memento), and mask original block KV states while retaining mem",
+      "score": 0.9302,
+      "content_hash": "fb49b75a5b872f74"
+    },
+    {
+      "file": "/workspace/handoffs/active/memento-block-reasoning-compression.md",
+      "heading_path": [
+        "Memento: Block-Level Reasoning Compression with KV Cache Masking"
+      ],
+      "line_range": [
+        1,
+        10
+      ],
+      "snippet": "# Memento: Block-Level Reasoning Compression with KV Cache Masking\n\n**Scratch**: `/mnt/raid0/llm/tmp/memento-block-reasoning-compression/` \u00b7 worktrees: `/mnt/raid0/llm/worktrees/memento-block-reasoning-compression-*`\n\n**Status**: REFRESHED ",
+      "score": 0.928,
+      "content_hash": "af61677b374f3b8f"
+    },
+    {
+      "file": "/workspace/handoffs/active/design-backlog-triage-2026-07-23.md",
+      "heading_path": [
+        "Design-Backlog Triage (2026-07-23)",
+        "SECTION 1 \u2014 Strategic design concepts (operator decides)"
+      ],
+      "line_range": [
+        125,
+        134
+      ],
+      "snippet": "| C30 | Memento block reasoning compression | memento-block S2/S3 | Evict reasoning-block KV via seq_rm, retain per-block memento summaries; composes with Hadamard+q4_0 and short-m@k for 2-3\u00d7 KV cut (S1 feasibility 5/5) | S2 LoRA validation",
+      "score": 0.9279,
+      "content_hash": "becb1f43efebce4f"
+    },
+    {
+      "file": "/workspace/handoffs/completed/triattention-kv-selection-deployment-completed-through-2026-05-28.md",
+      "heading_path": [
+        "KV Cache Selection/Eviction (TriAttention / Expected Attention)",
+        "Composability: Triple-Stack KV Compression (intake-289, 2026-04-09)"
+      ],
+      "line_range": [
+        155,
+        168
+      ],
+      "snippet": "## Composability: Triple-Stack KV Compression (intake-289, 2026-04-09)\n\nMemento (intake-289) introduces a third orthogonal KV compression dimension \u2014 block masking removes entire reasoning blocks, retaining only summary KV states. Combined ",
+      "score": 0.9276,
+      "content_hash": "a55eec3d53521802"
+    },
+    {
+      "file": "/workspace/handoffs/completed/kv-cache-quantization.md",
+      "heading_path": [
+        "KV Cache Quantization (TurboQuant / PolarQuant / QJL)",
+        "Research Intake Update \u2014 2026-04-09",
+        "Memento Block Masking \u2014 Orthogonal Composability (intake-289)"
+      ],
+      "line_range": [
+        1527,
+        1538
+      ],
+      "snippet": "### Memento Block Masking \u2014 Orthogonal Composability (intake-289)\n\nMemento (Microsoft, intake-289) trains models to segment reasoning into blocks, compress each into a summary, and mask original block KV states. Peak KV reduction: 2-3x on Q",
+      "score": 0.9272,
+      "content_hash": "fe30e026309fcd30"
+    },
+    {
+      "file": "/workspace/handoffs/active/memento-block-reasoning-compression.md",
+      "heading_path": [
+        "Then run the smallest real Stage-1 format-learning job that fits the current host/GPU budget.",
+        "Key Findings (Deep Dive 2026-04-09)",
+        "Dual Information Stream (Memento's unique contribution)"
+      ],
+      "line_range": [
+        59,
+        65
+      ],
+      "snippet": "### Dual Information Stream (Memento's unique contribution)\n- KV cache states computed while a block is visible carry **implicit information** beyond the summary text\n- Recomputing KVs without block context: 66.1% \u2192 50.8% AIME24 (-15.3pp)\n-",
+      "score": 0.9263,
+      "content_hash": "05f8cfa060e3a00e"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-05-19-latent-cot-cluster.md",
+      "heading_path": [
+        "Latent / Abstract CoT Cluster \u2014 2026-05-19"
+      ],
+      "line_range": [
+        1,
+        7
+      ],
+      "snippet": "# Latent / Abstract CoT Cluster \u2014 2026-05-19\n\n**Cluster scope**: 5 intakes (545, 559, 560, 561, 562) that compress chain-of-thought into a non-verbal channel.\n**Cross-cluster anchors**: reasoning-compression.md, per-request-reasoning-budget",
+      "score": 0.9261,
+      "content_hash": "2840f2f5b9612276"
+    },
+    {
+      "file": "/workspace/wiki/kv-cache.md",
+      "heading_path": [
+        "KV Cache Optimization",
+        "Key Findings",
+        "Block Masking (Active -- Feasibility Confirmed)"
+      ],
+      "line_range": [
+        109,
+        124
+      ],
+      "snippet": "### Block Masking (Active -- Feasibility Confirmed)\n\n- **Memento's dual information stream is the most important theoretical finding**: KV cache states computed while a reasoning block is visible carry implicit information beyond what the s",
+      "score": 0.9259,
+      "content_hash": "2e1c189a4cb0c22e"
+    },
+    {
+      "file": "/workspace/handoffs/active/attention-matching-kv-compaction.md",
+      "heading_path": [
+        "Attention Matching KV Compaction",
+        "Compression Stacking Analysis"
+      ],
+      "line_range": [
+        175,
+        196
+      ],
+      "snippet": "## Compression Stacking Analysis\n\nAM compaction is orthogonal to our other KV compression layers:\n\n| Stack | Compression | KV for 256K Qwen2.5-Coder-32B | Notes |\n|---|---|---|---|\n| Baseline (f16) | 1x | 64 GB | Current without optimizatio",
+      "score": 0.9246,
+      "content_hash": "a31fc7ddb7cf3c6f"
+    }
+  ],
+  "wall_s": 12.686644029105082
+}

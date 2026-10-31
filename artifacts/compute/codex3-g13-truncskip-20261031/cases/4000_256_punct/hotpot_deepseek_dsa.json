@@ -1,0 +1,190 @@
+{
+  "arm": "4000_256_punct",
+  "id": "hotpot_deepseek_dsa",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/deepseek-v4-flash-cpu-port.md",
+    "/workspace/handoffs/active/llama-cpp-dsa-contribution.md",
+    "/workspace/research/deep-dives/deepseek-v32-dsa-llamacpp-pr21149.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/deepseek-v4-flash-cpu-port.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/deepseek-v4-flash-cpu-port.md",
+    "/workspace/handoffs/active/llama-cpp-dsa-contribution.md",
+    "/workspace/research/deep-dives/deepseek-v32-dsa-llamacpp-pr21149.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 2,
+    "found_files": [
+      "/workspace/handoffs/active/llama-cpp-dsa-contribution.md",
+      "/workspace/research/deep-dives/deepseek-v32-dsa-llamacpp-pr21149.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/deepseek-v4-flash-cpu-port.md"
+    ],
+    "first_evidence_rank": 3,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/completed/deepseek-v4-flash-cpu-port.md",
+      "/workspace/handoffs/active/multiscreen-attention-evaluation.md",
+      "/workspace/handoffs/active/llama-cpp-dsa-contribution.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/research/deep-dives/deepseek-v32-dsa-llamacpp-pr21149.md",
+      "/mnt/raid0/llm/epyc-inference-research/docs/reference/kernel/glm-mtp-sparse-attention-implementation-map-20260718.md",
+      "/workspace/handoffs/active/llama-cpp-dsa-contribution.md",
+      "/workspace/handoffs/completed/deepseek-v4-flash-0731-dspark.md",
+      "/workspace/progress/2026-07/2026-07-16.md",
+      "/workspace/handoffs/completed/deepseek-v4-flash-cpu-port.md"
+    ],
+    "recall@3": 0.3333333333333333,
+    "perfect@3": false,
+    "recall@5": 0.6666666666666666,
+    "perfect@5": false,
+    "recall@10": 0.6666666666666666,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/deepseek-v4-flash-cpu-port.md",
+      "heading_path": [
+        "Then run gates:",
+        "Cross-references"
+      ],
+      "line_range": [
+        437,
+        447
+      ],
+      "snippet": "## Cross-references\n\n- **Primary intake**: intake-637 (antirez/deepseek-v4-gguf)\n- **Sibling handoff**: `llama-cpp-dsa-contribution.md` \u2014 V4 is tracked as adjacent upstream arch work (different arch, parallel effort)\n- **MTP integration tem",
+      "score": 0.937,
+      "content_hash": "015e782f9a4adb68"
+    },
+    {
+      "file": "/workspace/handoffs/active/multiscreen-attention-evaluation.md",
+      "heading_path": [
+        "Multiscreen Attention \u2014 Evaluation for EPYC Inference",
+        "Literature Survey: Sub-Quadratic Attention for CPU Inference (2025-2026)",
+        "5. Priority Ranking for EPYC CPU Inference (REVISED 2026-04-29 PM)"
+      ],
+      "line_range": [
+        145,
+        156
+      ],
+      "snippet": "### 5. Priority Ranking for EPYC CPU Inference (REVISED 2026-04-29 PM)\n\n1. **DSA (DeepSeek V3.2 + GLM-5.1)** \u2014 **TOP PRIORITY (active)**. PR #21149 by fairydreaming is an active draft with CPU/CUDA/Vulkan backends working. Tracked in [`llam",
+      "score": 0.9361,
+      "content_hash": "fe377c02e07184fa"
+    },
+    {
+      "file": "/workspace/handoffs/active/llama-cpp-dsa-contribution.md",
+      "heading_path": [
+        "llama.cpp DSA Contribution \u2014 DSA LANDED upstream (#23346); remaining CPU-perf sub-tracks (D2/D3)"
+      ],
+      "line_range": [
+        1,
+        20
+      ],
+      "snippet": "# llama.cpp DSA Contribution \u2014 DSA LANDED upstream (#23346); remaining CPU-perf sub-tracks (D2/D3)\n\n**Status**: RE-AUDITED 2026-07-17 \u2014 **generic DSA support LANDED via upstream #23346** for DeepSeek32, NOT the tracked draft #21149 -> the \"",
+      "score": 0.9354,
+      "content_hash": "57dcc4e1066dd5b2"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "CPU Kernel/Fork Program \u2014 Current State and Remaining Option Space",
+        "3. Sparsity track"
+      ],
+      "line_range": [
+        934,
+        940
+      ],
+      "snippet": "## 3. Sparsity track\n\n- **DSA / Lightning Indexer** (`llama-cpp-dsa-contribution.md`): PR #21149 (fairydreaming, DeepSeek V3.2+DSA) draft with CPU backend working; adds `GGML_OP_LIGHTNING_INDEXER` + `GGML_OP_HADAMARD` + `llama_kv_cache_dsa`",
+      "score": 0.9332,
+      "content_hash": "7e2fee796f78d886"
+    },
+    {
+      "file": "/workspace/research/deep-dives/deepseek-v32-dsa-llamacpp-pr21149.md",
+      "heading_path": [
+        "DeepSeek-V3.2 + DSA \u2014 Deep Dive"
+      ],
+      "line_range": [
+        1,
+        6
+      ],
+      "snippet": "# DeepSeek-V3.2 + DSA \u2014 Deep Dive\n\n**Source intake**: intake-506 (arxiv:2512.02556)\n**Date**: 2026-04-29\n**Status**: FACT-CHECKED against llama.cpp upstream as of 2026-04-29\n",
+      "score": 0.9332,
+      "content_hash": "f150060e570a6b32"
+    },
+    {
+      "file": "/mnt/raid0/llm/epyc-inference-research/docs/reference/kernel/glm-mtp-sparse-attention-implementation-map-20260718.md",
+      "heading_path": [
+        "GLM Native MTP and Sparse Final-Attention Implementation Map",
+        "Files Read"
+      ],
+      "line_range": [
+        21,
+        32
+      ],
+      "snippet": "## Files Read\n\n- Active handoffs: `glm52-reviewer-capability-gates.md`,\n  `tree-draft-forward-port-plan.md`, `gemma-challenge-kernel-techniques-v7.md`,\n  and `cpu-prefill-compute-large-models.md`.\n- Experimental kernel: `src/models/glm-dsa.",
+      "score": 0.9323,
+      "content_hash": "c3ef24d3074fbbdb"
+    },
+    {
+      "file": "/workspace/handoffs/active/llama-cpp-dsa-contribution.md",
+      "heading_path": [
+        "llama.cpp DSA Contribution \u2014 DSA LANDED upstream (#23346); remaining CPU-perf sub-tracks (D2/D3)",
+        "Adjacent Upstream Arch Work \u2014 deepseek4 (DeepSeek-V4-Flash)"
+      ],
+      "line_range": [
+        204,
+        213
+      ],
+      "snippet": "## Adjacent Upstream Arch Work \u2014 deepseek4 (DeepSeek-V4-Flash)\n\nTracked as a sibling effort, NOT folded into this handoff. V4 is a fundamentally new arch (CSA + HCA + indexer + compressor + manifold-constrained Hyper-Connections), not a DSA",
+      "score": 0.9315,
+      "content_hash": "906b814b1f9091af"
+    },
+    {
+      "file": "/workspace/handoffs/completed/deepseek-v4-flash-0731-dspark.md",
+      "heading_path": [
+        "DeepSeek-V4-Flash 0731 \u2014 Q8 Serving + DSpark Speculative Decoding",
+        "Cross-references"
+      ],
+      "line_range": [
+        204,
+        211
+      ],
+      "snippet": "## Cross-references\n\n- [`deepseek-v4-flash-cpu-port.md`](deepseek-v4-flash-cpu-port.md) \u2014 predecessor, CLOSED 2026-08-09\n- [`moe-spec-cpu-spec-dec-integration.md`](../active/moe-spec-cpu-spec-dec-integration.md) \u2014 MoE spec-dec integration s",
+      "score": 0.9307,
+      "content_hash": "8c790fad3c72f3e1"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-16.md",
+      "heading_path": [
+        "2026-07-16 \u2014 quiet-window replay checkpoint",
+        "GLM-5.2/DSA handoff \u2014 V3.2 deprioritized (2026-07-16, increment 4)"
+      ],
+      "line_range": [
+        437,
+        440
+      ],
+      "snippet": "## GLM-5.2/DSA handoff \u2014 V3.2 deprioritized (2026-07-16, increment 4)\n\nPer operator steer: DeepSeek-V3.2 is no longer an eval target \u2014 GLM-5.2 covers the DSA large-MoE niche, and the \"2-for-1 justifies building DSA ourselves\" rationale is m",
+      "score": 0.9297,
+      "content_hash": "cd3cc89876297c59"
+    },
+    {
+      "file": "/workspace/handoffs/completed/deepseek-v4-flash-cpu-port.md",
+      "heading_path": [
+        "DeepSeek-V4-Flash CPU Port \u2014 Experimental Branch"
+      ],
+      "line_range": [
+        1,
+        11
+      ],
+      "snippet": "# DeepSeek-V4-Flash CPU Port \u2014 Experimental Branch\n\n**Status**: **CLOSED \u2014 SUPERSEDED BY UPSTREAM 2026-08-09; SUCCESSOR LOCAL TESTING CLOSED 2026-08-26.** The port objective is achieved: `deepseek4` is in the production tree via **upstream ",
+      "score": 0.9293,
+      "content_hash": "90762bbb7ee73d50"
+    }
+  ],
+  "wall_s": 12.504570895107463
+}

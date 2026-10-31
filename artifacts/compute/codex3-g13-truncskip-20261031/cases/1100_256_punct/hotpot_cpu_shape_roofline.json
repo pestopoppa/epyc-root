@@ -1,0 +1,192 @@
+{
+  "arm": "1100_256_punct",
+  "id": "hotpot_cpu_shape_roofline",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/cpu-shape-specialized-gemv-decode.md",
+    "/workspace/handoffs/active/cpu-kernel-env-flags-inventory.md",
+    "/workspace/research/deep-dives/cpu-optimization-phase0-baseline.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/cpu-kernel-env-flags-inventory.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/cpu-shape-specialized-gemv-decode.md",
+    "/workspace/handoffs/active/cpu-kernel-env-flags-inventory.md",
+    "/workspace/research/deep-dives/cpu-optimization-phase0-baseline.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/cpu-shape-specialized-gemv-decode.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/cpu-kernel-env-flags-inventory.md",
+      "/workspace/research/deep-dives/cpu-optimization-phase0-baseline.md"
+    ],
+    "first_evidence_rank": 2,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/completed/cpu-kernel-env-flags-inventory.md",
+      "/workspace/handoffs/active/cpu-shape-specialized-gemv-decode.md",
+      "/workspace/progress/2026-04/2026-04-23-cpu-optimization-kickoff.md",
+      "/workspace/wiki/hardware-optimization.md",
+      "/workspace/handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline-completed-through-2026-08-13.md",
+      "/workspace/handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md",
+      "/workspace/handoffs/completed/nps-reboot-runbook.md",
+      "/workspace/handoffs/active/cpu-prefill-compute-large-models.md",
+      "/workspace/progress/2026-07/2026-07-03-fable5-window2-intake-roofline.md",
+      "/workspace/handoffs/active/moe-spec-cpu-spec-dec-integration.md"
+    ],
+    "recall@3": 0.3333333333333333,
+    "perfect@3": false,
+    "recall@5": 0.3333333333333333,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/cpu-kernel-env-flags-inventory.md",
+      "heading_path": [
+        "CPU Kernel Env-Flag Inventory \u2014 2026-04-26 (updated 2026-06-14)"
+      ],
+      "line_range": [
+        1,
+        11
+      ],
+      "snippet": "# CPU Kernel Env-Flag Inventory \u2014 2026-04-26 (updated 2026-06-14)\n\n> **COMPLETED REFERENCE 2026-08-11.** The inventory now records each flag's effect on trace\n> interpretation. Current execution work lives in\n> [`cpu-shape-specialized-gemv-",
+      "score": 0.933,
+      "content_hash": "ab96386ff74e460a"
+    },
+    {
+      "file": "/workspace/handoffs/active/cpu-shape-specialized-gemv-decode.md",
+      "heading_path": [
+        "CPU Shape-Specialized GEMV Microkernel for Zen 5 Decode"
+      ],
+      "line_range": [
+        1,
+        4
+      ],
+      "snippet": "# CPU Shape-Specialized GEMV Microkernel for Zen 5 Decode",
+      "score": 0.9301,
+      "content_hash": "4c454f3a580ce5e3"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-23-cpu-optimization-kickoff.md",
+      "heading_path": [
+        "2026-04-23 \u2014 CPU optimization coordinated pickup kickoff",
+        "Summary"
+      ],
+      "line_range": [
+        3,
+        8
+      ],
+      "snippet": "## Summary\n\nPicked up the CPU shape-specialized GEMV handoff, expanded scope to the full CPU-inference backlog per user direction. Completed Steps 0\u20133 (partial) of the 8-step coordinated pickup plan. Landed three material findings that resh",
+      "score": 0.9299,
+      "content_hash": "966bd86880ce3ea4"
+    },
+    {
+      "file": "/workspace/wiki/hardware-optimization.md",
+      "heading_path": [
+        "Hardware Optimization",
+        "2026-04-26 additions",
+        "Sources (2026-04-26)"
+      ],
+      "line_range": [
+        1449,
+        1458
+      ],
+      "snippet": "### Sources (2026-04-26)\n\n- `progress/2026-04/2026-04-26.md` \u2014 full Phase A-G + P1-P4 narrative\n- `handoffs/completed/cpu-kernel-env-flags-inventory.md` \u2014 20 env knobs classified, including trace-interpretation effects\n- `handoffs/active/cp",
+      "score": 0.9281,
+      "content_hash": "8aac23087801a36c"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline-completed-through-2026-08-13.md",
+      "heading_path": [
+        "Window-2 findings 05 \u2014 Intake/deep-dive sweep + kernel roofline gap (2026-07-03, operator-directed)",
+        "3. CPU roofline (production-consolidated-v6 + iqk)"
+      ],
+      "line_range": [
+        57,
+        60
+      ],
+      "snippet": "**Highest-ROI CPU avenue**: **frontdoor Q8_0 barrier-count reduction via operator/graph fusion** (fuse expert gate+up, fuse the attn QKV cluster) \u2014 owner `cpu-shape-specialized-gemv-decode.md` (its Session-15 barrier profile is the landing ",
+      "score": 0.9274,
+      "content_hash": "3a65ff9168d9d430"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md",
+      "heading_path": [
+        "Window-2 findings 05 \u2014 Intake/deep-dive sweep + kernel roofline gap (2026-07-03, operator-directed)",
+        "3. CPU roofline (production-consolidated-v6 + iqk)"
+      ],
+      "line_range": [
+        54,
+        57
+      ],
+      "snippet": "**Highest-ROI CPU avenue**: **frontdoor Q8_0 barrier-count reduction via operator/graph fusion** (fuse expert gate+up, fuse the attn QKV cluster) \u2014 owner `cpu-shape-specialized-gemv-decode.md` (its Session-15 barrier profile is the landing ",
+      "score": 0.9274,
+      "content_hash": "3a65ff9168d9d430"
+    },
+    {
+      "file": "/workspace/handoffs/completed/nps-reboot-runbook.md",
+      "heading_path": [
+        "System state snapshot",
+        "References"
+      ],
+      "line_range": [
+        336,
+        339
+      ],
+      "snippet": "- Handoffs: `cpu-inference-optimization-index.md`, `intra-process-tensor-parallel-decode.md`, `single-instance-system-tuning.md`, `cpu-shape-specialized-gemv-decode.md`, `cpu-kernel-env-flags-inventory.md`, `../completed/cpu-hierarchical-ba",
+      "score": 0.9265,
+      "content_hash": "ddb6ca846c728007"
+    },
+    {
+      "file": "/workspace/handoffs/active/cpu-prefill-compute-large-models.md",
+      "heading_path": [
+        "CPU Prefill-Compute for Large Models",
+        "Thesis"
+      ],
+      "line_range": [
+        21,
+        35
+      ],
+      "snippet": "## Thesis\n\nThe CPU **decode** roofline is exhausted (Qwen3.6-27B Q8 decode @96t = 0.17 IPC, **96.6% of\ncycles memory-stalled** \u2014 DRAM-bandwidth-bound, not ALU-bound; see\n[cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-deco",
+      "score": 0.9257,
+      "content_hash": "cef09aa8471e32df"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-03-fable5-window2-intake-roofline.md",
+      "heading_path": [
+        "2026-07-03 \u2014 Fable 5 window-2 follow-up: intake sweep, roofline, and applied reprioritization",
+        "Headline findings"
+      ],
+      "line_range": [
+        10,
+        10
+      ],
+      "snippet": "- **CPU roofline**: frontdoor Q8_0 13.8% / worker Q4_K 21\u201322% of 460 GB/s STREAM (observations). But STREAM\u2260GEMV: realistic MoE-GEMV ceiling ~25\u201330%, so the worker is ~74\u201378% of *its* ceiling (little single-stream headroom) while the frontd",
+      "score": 0.9252,
+      "content_hash": "71affe74d18b54c8"
+    },
+    {
+      "file": "/workspace/handoffs/active/moe-spec-cpu-spec-dec-integration.md",
+      "heading_path": [
+        "MoE-Spec \u2014 CPU Speculative-Decoding Verification with Budgeted Expert Selection",
+        "Phase 1 \u2014 RESULTS (DONE 2026-04-28)",
+        "Phase 2 deliverables (queued)"
+      ],
+      "line_range": [
+        95,
+        101
+      ],
+      "snippet": "Re-flagged 2026-04-27 after peer-review pass #2 noted that \"all software paths exhausted\" framing in upstream indices was incompatible with this stub's existence. Created 2026-04-27 evening as Phase 4 of closure-inflation remediation plan; ",
+      "score": 0.9245,
+      "content_hash": "9c87e9393f260544"
+    }
+  ],
+  "wall_s": 22.437702707014978
+}

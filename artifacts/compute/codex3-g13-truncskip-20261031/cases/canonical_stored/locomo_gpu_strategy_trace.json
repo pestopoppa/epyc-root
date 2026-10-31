@@ -1,0 +1,198 @@
+{
+  "arm": "canonical_stored",
+  "id": "locomo_gpu_strategy_trace",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/fable5-findings-03-serving-and-gpu.md",
+    "/workspace/handoffs/active/gpu-acceleration-path.md",
+    "/workspace/handoffs/active/gpu-drafter-mi200-investigation.md",
+    "/workspace/handoffs/active/rocm-verify-profile-backend.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/fable5-findings-03-serving-and-gpu.md",
+    "/workspace/handoffs/active/gpu-drafter-mi200-investigation.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/fable5-findings-03-serving-and-gpu.md",
+    "/workspace/handoffs/active/gpu-acceleration-path.md",
+    "/workspace/handoffs/active/gpu-drafter-mi200-investigation.md",
+    "/workspace/handoffs/active/rocm-verify-profile-backend.md"
+  ],
+  "metrics": {
+    "evidence_count": 4,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/fable5-findings-03-serving-and-gpu.md",
+      "/workspace/handoffs/active/gpu-acceleration-path.md",
+      "/workspace/handoffs/active/gpu-drafter-mi200-investigation.md",
+      "/workspace/handoffs/active/rocm-verify-profile-backend.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/wiki/inference-serving.md",
+      "/workspace/handoffs/active/fable5-window2-findings-03-portfolio-and-master-queue.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "/workspace/wiki/hardware-optimization.md",
+      "/workspace/handoffs/active/gpu-cot-scaffold-sidecar.md",
+      "/workspace/research/deep-dives/2026-07-02-rocm-mi210-vllm-gfx90a.md",
+      "/workspace/wiki/inference-serving.md",
+      "/workspace/progress/2026-06/2026-06-03.md",
+      "/workspace/wiki/hardware-optimization.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/wiki/inference-serving.md",
+      "heading_path": [
+        "Inference Serving",
+        "Source References"
+      ],
+      "line_range": [
+        557,
+        566
+      ],
+      "snippet": "- [GPU-Drafter on MI200 investigation](../handoffs/active/gpu-drafter-mi200-investigation.md) -- the 2026-07-02 MI210 advancement (HIP build verified on gfx90a, GPU-side gemma4-31B + NEXTN MTP at 43.25 t/s/1.44x/59.7% accept, clean qwen35 G",
+      "score": 0.956,
+      "content_hash": "398c305b8c0b8672"
+    },
+    {
+      "file": "/workspace/handoffs/active/fable5-window2-findings-03-portfolio-and-master-queue.md",
+      "heading_path": [
+        "Window-2 findings 03 \u2014 Portfolio audit, resurrection sweep, and proposed master-queue rewrite (\u00a73 + \u00a78.4)",
+        "2. Resurrection sweep (\u00a73) \u2014 MI210 (T1) and evidence-plane-live (T2) triggers",
+        "Revive (criterion verbatim-matched; honest caveats noted)"
+      ],
+      "line_range": [
+        19,
+        33
+      ],
+      "snippet": "### Revive (criterion verbatim-matched; honest caveats noted)\n\n| Item | Reopen criterion (source) | Trigger | Caveat |\n|---|---|---|---|\n| Qwen3.5-hybrid spec-dec via DFlash/DDTree on GPU | \"Activation trigger unchanged: acquisition of trai",
+      "score": 0.9499,
+      "content_hash": "a7f77b377718a823"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "PORTFOLIO REVIEW (2026-06-12, 5 agents, 108 rows): classified verdicts",
+        "HW-GATED"
+      ],
+      "line_range": [
+        1260,
+        1264
+      ],
+      "snippet": "## HW-GATED\n- **rocm-verify-profile-backend** [gated] out: Pre-hardware prep (pin GEAK/Apex/AgentKernelArena commits, license check, draft ROCm env recipe); execution gated on card. | gate: MI210 racked + ROCm/torch-ROCm stood up (~July 202",
+      "score": 0.9493,
+      "content_hash": "29a65182e152a50c"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "heading_path": [
+        "EPYC Handoff \u2014 Master Index",
+        "F. HW-GATED \u2014 MI210 (~July 2026; **all gated per operator instruction**)"
+      ],
+      "line_range": [
+        77,
+        79
+      ],
+      "snippet": "## F. HW-GATED \u2014 MI210 (~July 2026; **all gated per operator instruction**)\ngpu-drafter-mi200 (G1 \u03b1 moved to N5 \u2014 CPU-testable; all GPU stages gated) \u00b7 gpu-acceleration-path (internal order per findings-03: residency \u2192 eval-engine \u2192 embedde",
+      "score": 0.9486,
+      "content_hash": "0a1cf61f5f92e4bb"
+    },
+    {
+      "file": "/workspace/wiki/hardware-optimization.md",
+      "heading_path": [
+        "Hardware Optimization",
+        "Key Findings",
+        "New (2026-06-25, iqk-port complete + v6 consolidation + draft-head precision)"
+      ],
+      "line_range": [
+        874,
+        877
+      ],
+      "snippet": "- **MI210 GPU work should start with verify/profile harness discipline, not kernel generation alone (2026-06-05).** The active ROCm kernel-authoring cluster frames the first useful deliverable as a local MI210 verify/profile/benchmark backe",
+      "score": 0.948,
+      "content_hash": "408e2f0a525459a6"
+    },
+    {
+      "file": "/workspace/handoffs/active/gpu-cot-scaffold-sidecar.md",
+      "heading_path": [
+        "GPU CoT-Scaffold Sidecar \u2014 Preliminary Pure-GPU Research Lane",
+        "Dependencies / cross-cutting"
+      ],
+      "line_range": [
+        309,
+        316
+      ],
+      "snippet": "## Dependencies / cross-cutting\n\n- **`gpu-drafter-mi200-investigation.md`** \u2014 this lane is the **text-level alternative** to the spec-dec drafter farm; it deliberately sidesteps the N5 vocab/M-RoPE/GDN blocker class. If both land, the sidec",
+      "score": 0.9452,
+      "content_hash": "c29f2a5d81d75495"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-07-02-rocm-mi210-vllm-gfx90a.md",
+      "heading_path": [
+        "ROCm on MI210 (gfx90a): vLLM-from-source build path and the gfx90a support matrix"
+      ],
+      "line_range": [
+        1,
+        11
+      ],
+      "snippet": "# ROCm on MI210 (gfx90a): vLLM-from-source build path and the gfx90a support matrix\n\n**Date:** 2026-07-02\n**Companion progress log:** [`progress/2026-07/2026-07-02-mi210.md`](../../progress/2026-07/2026-07-02-mi210.md)\n**Companion handoffs:",
+      "score": 0.9449,
+      "content_hash": "e446e6b2631a81fc"
+    },
+    {
+      "file": "/workspace/wiki/inference-serving.md",
+      "heading_path": [
+        "Inference Serving",
+        "Key Findings",
+        "New Findings (2026-07-16) \u2014 refreshed v7 readiness checkpoint and server-launch guard"
+      ],
+      "line_range": [
+        402,
+        410
+      ],
+      "snippet": "### New Findings (2026-07-16) \u2014 refreshed v7 readiness checkpoint and server-launch guard\n\n- **Refreshed experimental v7 `53f6e30a1` is the current serving-side checkpoint, and its N5 semantic dry preflight blocks only on a live `llama-serv",
+      "score": 0.944,
+      "content_hash": "15c7b00bc5d77df5"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-03.md",
+      "heading_path": [
+        "2026-06-03 \u2014 manual session log",
+        "Research intake \u2014 CUDA Agent + LLM-kernel-generation cluster (AMD/MI210 lens)",
+        "Handoffs"
+      ],
+      "line_range": [
+        304,
+        308
+      ],
+      "snippet": "### Handoffs\n- Created **`agentic-rocm-kernel-authoring.md`** (umbrella controller; lead path = train-free EvoEngineer/CudaForge driven by an existing coder model, decline RL training + closed checkpoints).\n- Created **`rocm-verify-profile-",
+      "score": 0.9431,
+      "content_hash": "ed0381f586444460"
+    },
+    {
+      "file": "/workspace/wiki/hardware-optimization.md",
+      "heading_path": [
+        "Hardware Optimization",
+        "Source References"
+      ],
+      "line_range": [
+        990,
+        1000
+      ],
+      "snippet": "- [Deep Dive 2026-07-02 \u2014 ROCm on MI210 (gfx90a): vLLM-from-source build path](../research/deep-dives/2026-07-02-rocm-mi210-vllm-gfx90a.md) -- the gfx90a support matrix (Triton/FA-2/vLLM-core cover gfx90a; AITER/MORI/DeepEP `gfx942;gfx950` ",
+      "score": 0.9429,
+      "content_hash": "85d22a9852a2ae1a"
+    }
+  ],
+  "wall_s": 14.971033444162458
+}

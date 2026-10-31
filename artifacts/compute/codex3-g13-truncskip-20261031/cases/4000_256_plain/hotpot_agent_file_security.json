@@ -1,0 +1,192 @@
+{
+  "arm": "4000_256_plain",
+  "id": "hotpot_agent_file_security",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/agent-file-prose-compression.md",
+    "/workspace/handoffs/active/security-review-skill.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/security-review-skill.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/agent-file-prose-compression.md",
+    "/workspace/handoffs/active/security-review-skill.md"
+  ],
+  "metrics": {
+    "evidence_count": 2,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/agent-file-prose-compression.md",
+      "/workspace/handoffs/active/security-review-skill.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-04/2026-04-30.md",
+      "/workspace/wiki/agent-architecture.md",
+      "/workspace/handoffs/completed/agent-file-prose-compression-completed-through-2026-07-30.md",
+      "/workspace/handoffs/completed/agent-file-prose-compression-completed-through-2026-07-30.md",
+      "/workspace/wiki/tool-implementation.md",
+      "/workspace/progress/2026-07/2026-07-03.md",
+      "/workspace/wiki/benchmark-methodology.md",
+      "/workspace/progress/2026-05/2026-05-06.md",
+      "/workspace/wiki/agent-architecture.md",
+      "/workspace/wiki/agent-architecture.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-04/2026-04-30.md",
+      "heading_path": [
+        "2026-04-30",
+        "Research intake \u2014 3 URLs + reassessment + new handoff",
+        "NEW handoff: `agent-file-prose-compression.md`"
+      ],
+      "line_range": [
+        211,
+        227
+      ],
+      "snippet": "### NEW handoff: `agent-file-prose-compression.md`\n\nLifted the user's follow-up question (*could `/caveman` compress agent-file prose so agents contextualize them more efficiently?*) into a HIGH-priority standalone handoff. Key framing shif",
+      "score": 0.9457,
+      "content_hash": "cffd392aa96cac06"
+    },
+    {
+      "file": "/workspace/wiki/agent-architecture.md",
+      "heading_path": [
+        "Agent Architecture",
+        "`/caveman` prose-style rider \u2014 orthogonal compression mechanism class (2026-04-30)",
+        "Agent-file prose compression \u2014 different beast, three structural advantages"
+      ],
+      "line_range": [
+        1076,
+        1087
+      ],
+      "snippet": "### Agent-file prose compression \u2014 different beast, three structural advantages\n\nThe `agent-file-prose-compression.md` handoff (NEW 2026-04-30, HIGH priority) addresses a different deployment target than runtime `/caveman`:\n\n1. **Static, bu",
+      "score": 0.9439,
+      "content_hash": "117fc46e39601e23"
+    },
+    {
+      "file": "/workspace/handoffs/completed/agent-file-prose-compression-completed-through-2026-07-30.md",
+      "heading_path": [
+        "Per-Model Agent-File Prose Compression",
+        "Cross-References"
+      ],
+      "line_range": [
+        205,
+        217
+      ],
+      "snippet": "## Cross-References\n\n- **Skill (sibling)**: `.claude/skills/agent-file-architecture/SKILL.md` \u2014 thin-map architecture (structural compression upstream of this).\n- **Skill (target)**: `.claude/skills/agent-file-compress/SKILL.md` \u2014 this hand",
+      "score": 0.9437,
+      "content_hash": "7d82e3fbe31839ab"
+    },
+    {
+      "file": "/workspace/handoffs/completed/agent-file-prose-compression-completed-through-2026-07-30.md",
+      "heading_path": [
+        "Per-Model Agent-File Prose Compression",
+        "Notes"
+      ],
+      "line_range": [
+        229,
+        233
+      ],
+      "snippet": "## Notes\n\n- The custom rider explicitly disables `/caveman`'s persistence clause and replaces the auto-clarity exception with explicit block-level preserve rules. The two skills are siblings, not derivatives \u2014 the compression mechanism clas",
+      "score": 0.9384,
+      "content_hash": "d9731dffda88b0ed"
+    },
+    {
+      "file": "/workspace/wiki/tool-implementation.md",
+      "heading_path": [
+        "Tool Implementation",
+        "2026-06-15 Update \u2014 Tool Surfaces Became More Explicit"
+      ],
+      "line_range": [
+        158,
+        163
+      ],
+      "snippet": "## 2026-06-15 Update \u2014 Tool Surfaces Became More Explicit\n\n- **Security review is now a dedicated tool surface, not just an implied code-review habit.** The new skill scaffold runs STRIDE, OWASP, and supply-chain checks, but only records fi",
+      "score": 0.9366,
+      "content_hash": "bcfe290b4cee9ca3"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-03.md",
+      "heading_path": [
+        "2026-07-03",
+        "Agent-file compression handoff sync"
+      ],
+      "line_range": [
+        317,
+        322
+      ],
+      "snippet": "## Agent-file compression handoff sync\n\n- Audited the stale high-priority agent-file prose compression handoff and found the Phase 3 runner/results already existed: `tests/compliance/agent_file/live_runner.py`, `data/compliance/2026-05-07-p",
+      "score": 0.9364,
+      "content_hash": "0716ec5db4b22e52"
+    },
+    {
+      "file": "/workspace/wiki/benchmark-methodology.md",
+      "heading_path": [
+        "Benchmark Methodology",
+        "Per-model compression-tolerance curve as model-onboarding deployment gate (2026-04-30)",
+        "Sources"
+      ],
+      "line_range": [
+        1213,
+        1218
+      ],
+      "snippet": "### Sources\n\n- [intake-509](https://github.com/mattpocock/skills) Skills For Real Engineers \u2014 `/caveman` source\n- intake-450 \u2014 veniceai/skills (sibling SKILL.md authoring rubric)\n- intake-301 \u2014 AXI/TOON encoding (orthogonal layer)\n- [`hando",
+      "score": 0.9364,
+      "content_hash": "ca570fd59b821e9e"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-06.md",
+      "heading_path": [
+        "2026-05-06 (covers 2026-05-05 bench work)",
+        "6 standalone non-inference handoffs \u2014 Wave A/B/C executed",
+        "Per-handoff outcome"
+      ],
+      "line_range": [
+        260,
+        270
+      ],
+      "snippet": "### Per-handoff outcome\n\n| Handoff | Wave | Shipped | Inference-gated remainder |\n|---|---|---|---|\n| `agent-file-prose-compression.md` | A1 + C2 | `/agent-file-compress` skill + 3 ENGINEERING_STANDARDS pilots (mild/medium/aggressive); comp",
+      "score": 0.9345,
+      "content_hash": "b8b4efddcdab1c07"
+    },
+    {
+      "file": "/workspace/wiki/agent-architecture.md",
+      "heading_path": [
+        "Agent Architecture",
+        "`/caveman` prose-style rider \u2014 orthogonal compression mechanism class (2026-04-30)"
+      ],
+      "line_range": [
+        1056,
+        1065
+      ],
+      "snippet": "## `/caveman` prose-style rider \u2014 orthogonal compression mechanism class (2026-04-30)\n\n**TL;DR**: Pocock's `/caveman` (intake-509, MIT) is a **prompt-side prose-envelope rider** \u2014 different mechanism class from any compressor in the EPYC st",
+      "score": 0.934,
+      "content_hash": "24287356e0aa4a0f"
+    },
+    {
+      "file": "/workspace/wiki/agent-architecture.md",
+      "heading_path": [
+        "Agent Architecture",
+        "2026-06-15 Update \u2014 Edit Transactions Beat Tool Choreography"
+      ],
+      "line_range": [
+        794,
+        799
+      ],
+      "snippet": "## 2026-06-15 Update \u2014 Edit Transactions Beat Tool Choreography\n\n- **One-shot edit transactions are now the practical fix for multi-file coding.** The BEP-2 follow-up showed that the deployed coder role solved the scratch tasks directly whe",
+      "score": 0.9339,
+      "content_hash": "c351cf9bc7dbbd9f"
+    }
+  ],
+  "wall_s": 15.342685359995812
+}

@@ -1,0 +1,188 @@
+{
+  "arm": "1100_256_punct",
+  "id": "hotpot_kbrag_fable_queue",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/internal-kb-rag.md",
+    "/workspace/handoffs/active/fable5-findings-appendix-evidence-reports.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/fable5-findings-appendix-evidence-reports.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/internal-kb-rag.md",
+    "/workspace/handoffs/active/fable5-findings-appendix-evidence-reports.md"
+  ],
+  "metrics": {
+    "evidence_count": 2,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/handoffs/active/internal-kb-rag.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/progress/2026-07/2026-07-18.md",
+      "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "/workspace/progress/2026-06/2026-06-19.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue - K-RAG diagnostic sweep"
+      ],
+      "line_range": [
+        546,
+        549
+      ],
+      "snippet": "## Fable 5 execution queue - K-RAG diagnostic sweep\n\nRan a small KB-RAG diagnostic with `/mnt/raid0/llm/pace-env` because the orchestrator `.venv` currently lacks `onnxruntime`.\n",
+      "score": 0.9317,
+      "content_hash": "ae230f03b2d5a622"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-18.md",
+      "heading_path": [
+        "Progress - 2026-07-18",
+        "v7 Lane-B Zero-Inference Execution Checkpoint"
+      ],
+      "line_range": [
+        217,
+        224
+      ],
+      "snippet": "## v7 Lane-B Zero-Inference Execution Checkpoint\n\nExecuted the first zero-inference slice of the Fable 5 v7 lever queue while AutoPilot stayed\nstopped and production v6 stayed untouched.\n\nResults:",
+      "score": 0.9254,
+      "content_hash": "8e1c547ba9cbe505"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "heading_path": [
+        "EPYC Handoff \u2014 Master Index",
+        "A. NOW \u2014 live damage, zero-inference quick wins, or this-week leverage"
+      ],
+      "line_range": [
+        37,
+        41
+      ],
+      "snippet": "| N7 | **Zero-inference campaign cleanup**: K-RAG formal K7 prep/sweep + DCP-6a content-depth/freshness repair before J7 inference | either | J7 offline replay closed 2026-06-12 but found one-line slices + missing content hashes; K-RAG diag",
+      "score": 0.9253,
+      "content_hash": "b60f8a0f7c55cf56"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "heading_path": [
+        "PROPOSAL v2 - master-handoff-index.md rewritten (full-portfolio review, 2026-06-12)"
+      ],
+      "line_range": [
+        1,
+        12
+      ],
+      "snippet": "# PROPOSAL v2 - master-handoff-index.md rewritten (full-portfolio review, 2026-06-12)\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.\n\n> **Historica",
+      "score": 0.9225,
+      "content_hash": "45c48f9fbba9b1a3"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue - J13 BT-hint verdict",
+        "Coordination updates"
+      ],
+      "line_range": [
+        514,
+        522
+      ],
+      "snippet": "### Coordination updates\n\n- `bulk-inference-campaign.md`: Queue 1 no longer lists J13 as open; Package J records the negative/non-certifying result.\n- `master-handoff-index.md` and `fable5-proposed-master-index-rewrite.md`: N7 now lists onl",
+      "score": 0.9223,
+      "content_hash": "89835fa2cacdd92f"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue - J7 DCP-6 offline replay"
+      ],
+      "line_range": [
+        523,
+        526
+      ],
+      "snippet": "## Fable 5 execution queue - J7 DCP-6 offline replay\n\nRan the zero-inference DCP-6 scratch/task-root replay against historical BEP tasks while AutoPilot continued owning the live orchestrator clone.\n",
+      "score": 0.9219,
+      "content_hash": "cb4066569ded3605"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "heading_path": [
+        "EPYC Handoff \u2014 Master Index",
+        "C. The bulk-inference campaign, restructured (replaces its flat Current-State table)"
+      ],
+      "line_range": [
+        53,
+        55
+      ],
+      "snippet": "## C. The bulk-inference campaign, restructured (replaces its flat Current-State table)\n**Queue 1 \u2014 offline-now** (\u22480 llama-hours): K-RAG formal K7 prep/sweep + DCP-6a repair/replay rerun + G12 tier calibration + campaign-doc hygiene; J7 of",
+      "score": 0.9217,
+      "content_hash": "6f33dc29e12471e6"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-19.md",
+      "heading_path": [
+        "2026-06-19 Progress",
+        "N7 evidence-pack cleanup"
+      ],
+      "line_range": [
+        118,
+        125
+      ],
+      "snippet": "## N7 evidence-pack cleanup\n\nCleaned up the DCP-6a side of the N7 zero-inference lane. The K-RAG K7 certification path is already\nclosed in the active queue, so the only remaining gate before J7 inference is now a clean\nreload/attestation b",
+      "score": 0.921,
+      "content_hash": "cbc05242377081c0"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue - J9 HLE-4 harness-metrics verdict"
+      ],
+      "line_range": [
+        474,
+        477
+      ],
+      "snippet": "## Fable 5 execution queue - J9 HLE-4 harness-metrics verdict\n\nClosed the zero-inference J9 analysis against the immutable journal snapshot `/mnt/raid0/llm/tmp/autopilot_journal_snapshot_1781290411.jsonl`.\n",
+      "score": 0.9208,
+      "content_hash": "e0800a285e69a2b1"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "PORTFOLIO REVIEW (2026-06-12, 5 agents, 108 rows): classified verdicts",
+        "GATED"
+      ],
+      "line_range": [
+        1243,
+        1244
+      ],
+      "snippet": "- **sliders-local-validation** [gated] out: Phase 0 falsification (call-site catalog \u2192 Coder-30B substitution \u2192 FinQ5 run \u2192 GO/not_viable_local verdict) \u2014 only after KB-RAG K7 or explicit operator ask | gate: KB-RAG K7 shipped OR operator e",
+      "score": 0.9195,
+      "content_hash": "35ca8333f9754736"
+    }
+  ],
+  "wall_s": 35.76829858496785
+}

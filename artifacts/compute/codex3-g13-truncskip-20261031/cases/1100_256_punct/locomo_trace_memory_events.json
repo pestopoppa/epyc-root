@@ -1,0 +1,190 @@
+{
+  "arm": "1100_256_punct",
+  "id": "locomo_trace_memory_events",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/unified-trace-memory-service.md",
+    "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md",
+    "/workspace/handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/unified-trace-memory-service.md",
+    "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md",
+    "/workspace/handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md",
+      "/workspace/handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md",
+      "/workspace/handoffs/active/unified-trace-memory-service.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/completed/reviewer-trace-materialization.md",
+      "/workspace/wiki/safety.md",
+      "/workspace/handoffs/completed/reviewer-trace-materialization.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/handoffs/active/routing-and-optimization-index.md",
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/progress/2026-09/2026-09-16-sub-closure-audit.md",
+      "/workspace/wiki/autonomous-research.md",
+      "/workspace/handoffs/completed/reviewer-trace-materialization.md",
+      "/workspace/progress/2026-06/2026-06-13.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/reviewer-trace-materialization.md",
+      "heading_path": [
+        "Reviewer Control Plane \u2014 Trace Materialization & Durable Execution (H1)",
+        "TM-6 \u2014 Trace store \u2194 evidence-plane relationship (documented 2026-07-17)"
+      ],
+      "line_range": [
+        70,
+        71
+      ],
+      "snippet": "3. The evidence-plane event-sourcing/narrative pipeline (`evidence-plane-event-sourcing-and-narrative.md`) stays authoritative for trial/verdict events; the trace store may INDEX those sources but never re-emits or transforms them into new ",
+      "score": 0.9472,
+      "content_hash": "e10537131b0e907e"
+    },
+    {
+      "file": "/workspace/wiki/safety.md",
+      "heading_path": [
+        "Safety",
+        "Key Findings",
+        "New (2026-06-22, privacy-hygiene pre-commit secret scanning \u2014 COMPLETED)"
+      ],
+      "line_range": [
+        25,
+        26
+      ],
+      "snippet": "- **Safety work composes with the evidence plane.** Injection hardening prevents adversarial narrative contamination; the evidence plane prevents accidental narrative contamination from re-entering planner memory. Both are provenance proble",
+      "score": 0.942,
+      "content_hash": "abd62a5bd0d245f9"
+    },
+    {
+      "file": "/workspace/handoffs/completed/reviewer-trace-materialization.md",
+      "heading_path": [
+        "Reviewer Control Plane \u2014 Trace Materialization & Durable Execution (H1)",
+        "Prioritized Task List"
+      ],
+      "line_range": [
+        26,
+        28
+      ],
+      "snippet": "- [x] **TM-4 \u2014 Live push interface** \u2705 2026-07-17 (`src/trace/emit.py`: write-through with `emit://` synthetic-source namespace \u2014 chosen over re-ingest, rationale in module docstring; TracingProcessor 6-method shape, zero deps): add in-proc",
+      "score": 0.9417,
+      "content_hash": "d19e3f968229946d"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "groupA NOTABLE",
+        "Load-bearing findings"
+      ],
+      "line_range": [
+        1306,
+        1309
+      ],
+      "snippet": "**7. Schema-collision risk between fable5 evidence-plane and unified-trace.** `unified-trace-memory-service.md` declares itself owner of the shared harness/trace event schema (HLE/BSV/URE/EXM families, merged `15350fe`). fable5-findings-01/",
+      "score": 0.9407,
+      "content_hash": "1d6442c087120bd4"
+    },
+    {
+      "file": "/workspace/handoffs/active/routing-and-optimization-index.md",
+      "heading_path": [
+        "Routing, Autopilot & Stack \u2014 Active Backlog"
+      ],
+      "line_range": [
+        25,
+        28
+      ],
+      "snippet": "| RTG-13 | evidence plane event sourcing and narrative | [evidence-plane-event-sourcing-and-narrative.md](evidence-plane-event-sourcing-and-narrative.md) | W3 \u2014 rotation snapshots (impl 3.2, ~1 day): journal segments per 1000 trials chained",
+      "score": 0.9404,
+      "content_hash": "975168f9f548bb47"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "W3 journal snapshot builder documented",
+        "Root docs updated"
+      ],
+      "line_range": [
+        1486,
+        1495
+      ],
+      "snippet": "### Root docs updated\n\n- `handoffs/active/evidence-plane-event-sourcing-and-narrative.md`: W3 now\n  records `5035987`, dry-run/append semantics, and the verified live snapshot\n  event while keeping replay/archive/baseline/planner authority ",
+      "score": 0.9404,
+      "content_hash": "75cf5fa31d8ae9a1"
+    },
+    {
+      "file": "/workspace/progress/2026-09/2026-09-16-sub-closure-audit.md",
+      "heading_path": [
+        "2026-09-16 \u2014 closure-inflation audit of checked handoff boxes (sub-closure-audit)",
+        "Full table (265 unresolved references after automated passes, triaged)"
+      ],
+      "line_range": [
+        172,
+        174
+      ],
+      "snippet": "| evidence-plane-event-sourcing-and-narrative.md:100 | **W5 \u2014 STM as generated view** (impl 4.1, ~1\u20132 days, needs W1): `short | `orchestration/autopilot_short_term_memory.md` (path) | a (retired intentionally, 2cb89f82 / STM cutover) | 4288",
+      "score": 0.9404,
+      "content_hash": "cdd615e4565439f0"
+    },
+    {
+      "file": "/workspace/wiki/autonomous-research.md",
+      "heading_path": [
+        "Autonomous Research",
+        "Key Findings",
+        "New (2026-06-22, A9 offline-reward-oracle negative cluster + evidence-plane authority still gated)"
+      ],
+      "line_range": [
+        307,
+        307
+      ],
+      "snippet": "vidence-plane-event-sourcing-and-narrative.md](../handoffs/active/evidence-plane-event-sourcing-and-narrative.md).",
+      "score": 0.9402,
+      "content_hash": "b26476af7d3de5c1"
+    },
+    {
+      "file": "/workspace/handoffs/completed/reviewer-trace-materialization.md",
+      "heading_path": [
+        "Reviewer Control Plane \u2014 Trace Materialization & Durable Execution (H1)"
+      ],
+      "line_range": [
+        4,
+        12
+      ],
+      "snippet": "# Reviewer Control Plane \u2014 Trace Materialization & Durable Execution (H1)\n\n**Status**: active \u2014 M1 \"observable\" milestone owner; no reviewer metric is computable until this lands\n**Created**: 2026-07-16 (Architect\u2192Reviewer control-plane ser",
+      "score": 0.9401,
+      "content_hash": "21c1b44c74445808"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-13.md",
+      "heading_path": [
+        "2026-06-13",
+        "Supersession events folded into journal reconstruction"
+      ],
+      "line_range": [
+        2249,
+        2263
+      ],
+      "snippet": "  src/autopilot_core/journal_reconstruction.py\n  tests/unit/test_journal_supersession_events.py` clean.\n- Root docs updated in this pass:\n  `handoffs/active/evidence-plane-event-sourcing-and-narrative.md`,\n  `handoffs/active/autopilot-conti",
+      "score": 0.9399,
+      "content_hash": "1ab7df4bfd4978b3"
+    }
+  ],
+  "wall_s": 21.795441755093634
+}

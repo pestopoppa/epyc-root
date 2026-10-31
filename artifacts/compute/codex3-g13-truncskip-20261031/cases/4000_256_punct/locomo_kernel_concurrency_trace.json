@@ -1,0 +1,193 @@
+{
+  "arm": "4000_256_punct",
+  "id": "locomo_kernel_concurrency_trace",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/fable5-findings-06-kernel-and-concurrency.md",
+    "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+    "/workspace/handoffs/active/inference-acceleration-index.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/fable5-findings-06-kernel-and-concurrency.md",
+    "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+    "/workspace/handoffs/active/inference-acceleration-index.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/fable5-findings-06-kernel-and-concurrency.md",
+    "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+    "/workspace/handoffs/active/inference-acceleration-index.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+      "/workspace/handoffs/active/fable5-findings-06-kernel-and-concurrency.md",
+      "/workspace/handoffs/active/inference-acceleration-index.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/completed/fable5-findings-06-kernel-and-concurrency.md",
+      "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "/workspace/handoffs/active/tidar-one-pass-variant-b.md",
+      "/workspace/progress/2026-04/2026-04-27.md",
+      "/workspace/wiki/inference-serving.md",
+      "/workspace/handoffs/active/moe-spec-cpu-spec-dec-integration.md",
+      "/workspace/handoffs/completed/autopilot-handoff-hint-distillation.md",
+      "/workspace/handoffs/active/autokernel-research-loop.md",
+      "/workspace/handoffs/completed/cpu-uncore-fabric-attribution.md",
+      "/workspace/wiki/hardware-optimization.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-06-kernel-and-concurrency.md",
+      "heading_path": [
+        "Fable 5 findings 06 \u2014 The kernel program & concurrent serving: what is exhausted, what was avoided"
+      ],
+      "line_range": [
+        1,
+        9
+      ],
+      "snippet": "# Fable 5 findings 06 \u2014 The kernel program & concurrent serving: what is exhausted, what was avoided\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.",
+      "score": 0.9387,
+      "content_hash": "3ff268d075922adc"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "heading_path": [
+        "EPYC Handoff \u2014 Master Index",
+        "Domain indices"
+      ],
+      "line_range": [
+        20,
+        27
+      ],
+      "snippet": "## Domain indices\n| Routing/autopilot/stack | routing-and-optimization-index.md | | Acceleration | inference-acceleration-index.md |\n|---|---|---|---|---|\n| CPU throughput | cpu-inference-optimization-index.md | | Research/eval | research-e",
+      "score": 0.9366,
+      "content_hash": "39b36db70944f84c"
+    },
+    {
+      "file": "/workspace/handoffs/active/tidar-one-pass-variant-b.md",
+      "heading_path": [
+        "TiDAR-Pattern One-Pass Draft+Verify (Variant B)"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# TiDAR-Pattern One-Pass Draft+Verify (Variant B)\n\n**Status**: SPEC'D, not started (from the Fable 5 architecture review)\n**Created**: 2026-06-12\n**Priority**: GATED \u2014 on a Q4_K_M-quantizable TiDAR-class checkpoint existing (quality risk un",
+      "score": 0.9336,
+      "content_hash": "fee533516b1b4be8"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-27.md",
+      "heading_path": [
+        "2026-04-27",
+        "2026-04-27 night \u2014 closure-inflation peer-review passes #2/#3/#4 + MoE-Spec Phase 0",
+        "Pass #3 (5 cleanup findings)"
+      ],
+      "line_range": [
+        610,
+        619
+      ],
+      "snippet": "### Pass #3 (5 cleanup findings)\n\n- Prioritized list CPU5-8 + CPU13-19 wording out of sync with landscape table\n- inference-acceleration-index \"Wave 0 next step\" stale\n- master-handoff-index 27f framed Phase 2.6 dense cross-arch as future t",
+      "score": 0.9335,
+      "content_hash": "8e7d4ab838f15505"
+    },
+    {
+      "file": "/workspace/wiki/inference-serving.md",
+      "heading_path": [
+        "Inference Serving",
+        "2026-06-13 Update \u2014 Serving Gaps After Fable 5"
+      ],
+      "line_range": [
+        465,
+        473
+      ],
+      "snippet": "## 2026-06-13 Update \u2014 Serving Gaps After Fable 5\n\nFable 5 confirmed the batch=1 CPU decode closure at the kernel level but found a serving-level evidence gap. The system has mature multi-instance concurrency: NUMA quartering, placement sta",
+      "score": 0.9314,
+      "content_hash": "ce8daa0182dae495"
+    },
+    {
+      "file": "/workspace/handoffs/active/moe-spec-cpu-spec-dec-integration.md",
+      "heading_path": [
+        "MoE-Spec \u2014 CPU Speculative-Decoding Verification with Budgeted Expert Selection",
+        "Phase 1 \u2014 RESULTS (DONE 2026-04-28)",
+        "Phase 2 deliverables (queued)"
+      ],
+      "line_range": [
+        95,
+        104
+      ],
+      "snippet": "Re-flagged 2026-04-27 after peer-review pass #2 noted that \"all software paths exhausted\" framing in upstream indices was incompatible with this stub's existence. Created 2026-04-27 evening as Phase 4 of closure-inflation remediation plan; ",
+      "score": 0.9306,
+      "content_hash": "302728542589f6f9"
+    },
+    {
+      "file": "/workspace/handoffs/completed/autopilot-handoff-hint-distillation.md",
+      "heading_path": [
+        "AutoPilot Planner-Hint Distillation from Orchestrator Handoffs",
+        "Curated row inventory (the YAML content)",
+        "Tranche B \u2014 negative guardrails (`entry_type=convention`)"
+      ],
+      "line_range": [
+        169,
+        189
+      ],
+      "snippet": "*Completed/archived negatives:*\n| slug | species | guardrail | source |\n|---|---|---|---|\n| batch1-decode-exhausted | ALL | batch=1 decode is exhausted (compute-idle AND per-thread-BW-saturated); no FLOPS lever exists. | fable5-findings-06-",
+      "score": 0.9305,
+      "content_hash": "bd7e1f3222f20047"
+    },
+    {
+      "file": "/workspace/handoffs/active/autokernel-research-loop.md",
+      "heading_path": [
+        "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop"
+      ],
+      "line_range": [
+        1,
+        20
+      ],
+      "snippet": "# AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop\n\n**Status:** Active handoff. The live AutoKernel campaign is DS41 CPU decode (INF-77). The GLM campaign was stopped by the operator on 2026-09-18 and its subject was deleted on 2026",
+      "score": 0.9293,
+      "content_hash": "c5abf10fc02182d2"
+    },
+    {
+      "file": "/workspace/handoffs/completed/cpu-uncore-fabric-attribution.md",
+      "heading_path": [
+        "CPU24 \u2014 Uncore/Fabric Counter Attribution For >150B Regressions"
+      ],
+      "line_range": [
+        1,
+        11
+      ],
+      "snippet": "# CPU24 \u2014 Uncore/Fabric Counter Attribution For >150B Regressions\n\n> Archived to `handoffs/completed/` on 2026-05-27 after the attribution closure landed.\n\n**Status**: CLOSED 2026-04-28 (Phase 2.3 of remediation, peer-review HIGH finding #4",
+      "score": 0.9285,
+      "content_hash": "de076da98260f9f6"
+    },
+    {
+      "file": "/workspace/wiki/hardware-optimization.md",
+      "heading_path": [
+        "Hardware Optimization",
+        "Key Findings",
+        "2026-07-04 \u2014 MI210 Qwen3.6-27B GPU speed campaign (kernel / quant / regime frontier) \u2014 \u26a0\ufe0f COMPILE-FLAGGED FOR HUMAN REVIEW"
+      ],
+      "line_range": [
+        814,
+        818
+      ],
+      "snippet": "### 2026-07-04 \u2014 MI210 Qwen3.6-27B GPU speed campaign (kernel / quant / regime frontier) \u2014 \u26a0\ufe0f COMPILE-FLAGGED FOR HUMAN REVIEW\n\n> **Review flag (project-wiki writer-evidence policy):** this subsection was model-compiled from the MI210 campa",
+      "score": 0.9282,
+      "content_hash": "5b95942de2c0d156"
+    }
+  ],
+  "wall_s": 12.61500685219653
+}

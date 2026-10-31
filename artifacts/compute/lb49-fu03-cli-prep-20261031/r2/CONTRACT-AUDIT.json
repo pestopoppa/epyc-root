@@ -1,0 +1,13 @@
+{
+  "structural_assembly": "PASS",
+  "engine_parser_and_predicate": "PASS",
+  "native_normal_checker": "PASS",
+  "negative_refusals": {
+    "missing": 1,
+    "partial": 1,
+    "arm_count": 1,
+    "argv": 1,
+    "model_sha": 1,
+    "log_bytes": 1
+  }
+}

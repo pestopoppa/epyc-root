@@ -1,0 +1,191 @@
+{
+  "arm": "4000_256_punct",
+  "id": "hotpot_capability_descriptors_routing",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/model-capability-descriptors.md",
+    "/workspace/handoffs/active/capability-registry-and-promotion.md",
+    "/workspace/handoffs/active/routing-and-optimization-index.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/model-capability-descriptors.md",
+    "/workspace/handoffs/active/capability-registry-and-promotion.md",
+    "/workspace/handoffs/active/routing-and-optimization-index.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/capability-registry-and-promotion.md",
+      "/workspace/handoffs/active/model-capability-descriptors.md",
+      "/workspace/handoffs/active/routing-and-optimization-index.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/handoffs/completed/fable5-findings-02-routing-decision-architecture.md",
+      "/workspace/progress/2026-06/2026-06-15.md",
+      "/workspace/handoffs/completed/fable5-findings-04-northstar-portfolio-indices.md",
+      "/workspace/research/deep-dives/deepplanning-agent-benchmark.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/handoffs/active/model-stack-update-pipeline-audit.md",
+      "/workspace/handoffs/active/stack-change-governance-pipeline.md",
+      "/workspace/handoffs/completed/fable5-architecture-review.md",
+      "/workspace/wiki/cost-aware-routing.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "Stack-prior launcher consumer documented",
+        "Root docs updated"
+      ],
+      "line_range": [
+        842,
+        854
+      ],
+      "snippet": "### Root docs updated\n\n- `handoffs/active/model-capability-descriptors.md`: W3 first-consumer\n  migration is now complete through `7121f38`; W4 swap-CI remains open.\n- `handoffs/active/standardized-stack-update-pipeline-finalization.md` and",
+      "score": 0.9359,
+      "content_hash": "92d8b25f8cf88a07"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-02-routing-decision-architecture.md",
+      "heading_path": [
+        "Fable 5 findings 02 \u2014 Routing/serving decision architecture (facet 3)",
+        "3. The recommended decision architecture"
+      ],
+      "line_range": [
+        30,
+        38
+      ],
+      "snippet": "## 3. The recommended decision architecture\n\n**Name**: a single **capability-conditioned cascade** \u2014 one calibrated `P(success | task-features, model-descriptor)` + explicit `cost(model, placement-state)` + preference vector \u03c9, executed as ",
+      "score": 0.9334,
+      "content_hash": "52960a9728ae230a"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-15.md",
+      "heading_path": [
+        "2026-06-15",
+        "W4 swap-CI documentation tail (2026-06-15T19:14Z)"
+      ],
+      "line_range": [
+        2404,
+        2411
+      ],
+      "snippet": "## W4 swap-CI documentation tail (2026-06-15T19:14Z)\n\n- `handoffs/active/model-capability-descriptors.md` now records the current\n  no-inference W4 state more precisely: the promotion-gate fixture suite\n  already exercises the swapped front",
+      "score": 0.9329,
+      "content_hash": "fdcba11928e0263a"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-04-northstar-portfolio-indices.md",
+      "heading_path": [
+        "Fable 5 findings 04 \u2014 North Star critique, backlog-relevance map, index reorganization (deliverables \u00a78.2\u20138.3, \u00a78.5)",
+        "1. The North Star, critiqued clause by clause"
+      ],
+      "line_range": [
+        9,
+        20
+      ],
+      "snippet": "## 1. The North Star, critiqued clause by clause\n\n> *\"orchestration infrastructure agnostic to the specific models, cures itself organically, optimally learns to use every tool available \u2014 implemented and backlogged \u2014 to maximize inference ",
+      "score": 0.93,
+      "content_hash": "fdd8dc39ff8470a6"
+    },
+    {
+      "file": "/workspace/research/deep-dives/deepplanning-agent-benchmark.md",
+      "heading_path": [
+        "DeepPlanning: Benchmarking Long-Horizon Agentic Planning with Verifiable Constraints \u2014 Deep Dive",
+        "9. EPYC Applicability \u2014 Concrete Integration Points",
+        "9f. Learned Routing Controller Training Data"
+      ],
+      "line_range": [
+        441,
+        452
+      ],
+      "snippet": "### 9f. Learned Routing Controller Training Data\n\n**Finding**: The 26-model leaderboard with per-dimension scores constitutes a rich dataset of model capabilities across task types. The domain-specialization finding (Gemini-3-Flash: 5.9% tr",
+      "score": 0.9292,
+      "content_hash": "30c994cd93fdb17c"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "Handoff/Index Portfolio Audit \u2014 vs the North Star",
+        "5. STRATEGIC GAPS"
+      ],
+      "line_range": [
+        861,
+        869
+      ],
+      "snippet": "## 5. STRATEGIC GAPS\n\n1. **No model-capability descriptor schema** (model-agnosticism clause). Registries are launch configs; routing intelligence is learned per-stack and **dies on stack change** \u2014 the 2026-05-25 memory reset simultaneousl",
+      "score": 0.9291,
+      "content_hash": "b19c882436a450dd"
+    },
+    {
+      "file": "/workspace/handoffs/active/model-stack-update-pipeline-audit.md",
+      "heading_path": [
+        "Model Stack Update Pipeline Audit",
+        "Reporting Instructions"
+      ],
+      "line_range": [
+        615,
+        621
+      ],
+      "snippet": "## Reporting Instructions\n\n- Update this handoff when an audited failure mode is closed, reclassified, or assigned an explicit exception.\n- Update `stack-change-governance-pipeline.md` only for waypoint progress and validation results.\n- Ke",
+      "score": 0.9264,
+      "content_hash": "2e698722886a51cc"
+    },
+    {
+      "file": "/workspace/handoffs/active/stack-change-governance-pipeline.md",
+      "heading_path": [
+        "Stack Change Governance Pipeline",
+        "Cross-Cutting Concerns"
+      ],
+      "line_range": [
+        257,
+        276
+      ],
+      "snippet": "## Cross-Cutting Concerns\n\n- **Model descriptors**: this handoff is the governance shell around\n  `model-capability-descriptors.md` W3/W4. Descriptor compilation stays the\n  model-agnostic interface; this handoff ensures downstream consumer",
+      "score": 0.9253,
+      "content_hash": "e7eeaf049df1c529"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-architecture-review.md",
+      "heading_path": [
+        "Fable 5 Architectural Review \u2014 entry handoff (a prompt, not a task list)",
+        "8.5 Negative-space audit"
+      ],
+      "line_range": [
+        293,
+        306
+      ],
+      "snippet": "## 8.5 Negative-space audit\n\nIn addition to proposing architectures, explicitly tell us:\n- What should we **delete, merge, freeze, or stop optimizing** \u2014 subsystems, handoffs, or\n  assumptions that consume attention without moving the North",
+      "score": 0.9251,
+      "content_hash": "e4f12e8ffd12e627"
+    },
+    {
+      "file": "/workspace/wiki/cost-aware-routing.md",
+      "heading_path": [
+        "Cost-Aware Routing",
+        "2026-06-15 Update \u2014 Decision-Aware Routing Stayed Frozen"
+      ],
+      "line_range": [
+        224,
+        229
+      ],
+      "snippet": "## 2026-06-15 Update \u2014 Decision-Aware Routing Stayed Frozen\n\n- **DAR-1 replay remains the gate for any expansion beyond the current local cost-aware policy.** The Q-scorer still has the predict-then-optimize pathology, so learned routing is",
+      "score": 0.9251,
+      "content_hash": "c2e30ecbf081d223"
+    }
+  ],
+  "wall_s": 13.165997564094141
+}

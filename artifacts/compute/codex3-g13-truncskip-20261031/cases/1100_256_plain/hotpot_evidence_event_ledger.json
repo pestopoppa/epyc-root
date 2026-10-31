@@ -1,0 +1,188 @@
+{
+  "arm": "1100_256_plain",
+  "id": "hotpot_evidence_event_ledger",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md",
+    "/workspace/handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md",
+    "/workspace/handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md"
+  ],
+  "metrics": {
+    "evidence_count": 2,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md",
+      "/workspace/handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/research/deep-dives/vidya-belief-substrate-audit.md",
+      "/workspace/handoffs/completed/reviewer-trace-materialization.md",
+      "/workspace/wiki/agent-architecture.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/completed/autopilot-continuous-optimization-history-through-2026-06-20.md",
+      "/workspace/wiki/autonomous-research.md",
+      "/workspace/handoffs/completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/wiki/benchmark-methodology.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/research/deep-dives/vidya-belief-substrate-audit.md",
+      "heading_path": [
+        "Vidya Belief-Substrate Audit \u2014 Consolidated Deep Dive",
+        "3. In-project reconciliation (verified 2026-08-09)"
+      ],
+      "line_range": [
+        116,
+        127
+      ],
+      "snippet": "- **`evidence-plane-ledger-and-sequential-verdicts.md`** \u2014 13/14 checkboxes done (only W8b\n  evidence accrual open; master-index N2, restart-bundle owner, operator lane): per-question\n  append-only ledger, typed `seq` blocks, capped-Kelly e",
+      "score": 0.9476,
+      "content_hash": "07b9d3cfbbd4f5a3"
+    },
+    {
+      "file": "/workspace/handoffs/completed/reviewer-trace-materialization.md",
+      "heading_path": [
+        "Reviewer Control Plane \u2014 Trace Materialization & Durable Execution (H1)",
+        "TM-6 \u2014 Trace store \u2194 evidence-plane relationship (documented 2026-07-17)"
+      ],
+      "line_range": [
+        70,
+        71
+      ],
+      "snippet": "3. The evidence-plane event-sourcing/narrative pipeline (`evidence-plane-event-sourcing-and-narrative.md`) stays authoritative for trial/verdict events; the trace store may INDEX those sources but never re-emits or transforms them into new ",
+      "score": 0.9431,
+      "content_hash": "e10537131b0e907e"
+    },
+    {
+      "file": "/workspace/wiki/agent-architecture.md",
+      "heading_path": [
+        "Agent Architecture",
+        "Key Findings",
+        "New Findings (2026-07-02 \u2014 fixed-model harness evolution + Fable 5 window-2 architecture co-leads)"
+      ],
+      "line_range": [
+        662,
+        664
+      ],
+      "snippet": "- **The self-optimizer integrity architecture shifted from mechanism-building to a guarantee question: the evidence plane went live-authority on 2026-07-02.** The event-sourced per-question ledger plus sequential e-process verdicts now run ",
+      "score": 0.9431,
+      "content_hash": "c219593e4ed3996e"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 one-shot architectural review \u2014 EXECUTED (F5)",
+        "Fable 5 review \u2014 execution + wrap-up (final pass)"
+      ],
+      "line_range": [
+        131,
+        135
+      ],
+      "snippet": "**17 new owning handoffs created** (all SPEC'D, \u226470 lines, claim-grammar compliant, spec-pointer style): frontier-f1..f7; evidence-plane-{instrument-repair, ledger-and-sequential-verdicts, event-sourcing-and-narrative}; objective-task-rate-",
+      "score": 0.9424,
+      "content_hash": "16f44ef4bb5fea49"
+    },
+    {
+      "file": "/workspace/handoffs/completed/autopilot-continuous-optimization-history-through-2026-06-20.md",
+      "heading_path": [
+        "AutoPilot continuous optimization history through 2026-06-20",
+        "Current Resume Pointer"
+      ],
+      "line_range": [
+        35,
+        43
+      ],
+      "snippet": "## Current Resume Pointer\n\nResume from `../active/autopilot-continuous-optimization.md`, then coordinate\nwith:\n\n- `../active/evidence-plane-ledger-and-sequential-verdicts.md`;\n- `../active/evidence-plane-event-sourcing-and-narrative.md`;\n- ",
+      "score": 0.9421,
+      "content_hash": "094e78c2e2bd4a66"
+    },
+    {
+      "file": "/workspace/wiki/autonomous-research.md",
+      "heading_path": [
+        "Autonomous Research",
+        "2026-06-19 Update \u2014 Evidence Plane Authority Remains Sample-Gated"
+      ],
+      "line_range": [
+        442,
+        443
+      ],
+      "snippet": "ity evidence/cutover, and auditing any residual strategy-view bypass surfaces. Sources: [evidence-plane-event-sourcing-and-narrative.md](../handoffs/active/evidence-plane-event-sourcing-and-narrative.md), [evidence-plane-ledger-and-sequenti",
+      "score": 0.9419,
+      "content_hash": "f480e6e0159b3308"
+    },
+    {
+      "file": "/workspace/handoffs/completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md",
+      "heading_path": [
+        "AutoPilot: Continuous Recursive Optimization"
+      ],
+      "line_range": [
+        181,
+        185
+      ],
+      "snippet": "> **Fable 5 review (2026-06-12)**: the review's architecture recommendations now have owning handoffs: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) (LIVE t775 baseline-ratchet hotfix + dead-question repair), [e",
+      "score": 0.9409,
+      "content_hash": "ef121474af5df13c"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 one-shot architectural review \u2014 EXECUTED (F5)"
+      ],
+      "line_range": [
+        87,
+        96
+      ],
+      "snippet": "**Output** (all in `handoffs/active/`):\n- `fable5-findings-00-executive-summary.md` \u2014 verdicts on all 6 brief hypotheses + \"what you're missing\" + 5-action shortlist\n- `fable5-findings-01-measurement-and-integrity.md` \u2014 facets 1+2: evidence",
+      "score": 0.9403,
+      "content_hash": "a1fc5119e8b27648"
+    },
+    {
+      "file": "/workspace/wiki/benchmark-methodology.md",
+      "heading_path": [
+        "Benchmark Methodology",
+        "Key Findings",
+        "New (2026-07-02, sequential-verdict authority cutover + evolve-the-harness + eval-parity + GPU roofline discipline)"
+      ],
+      "line_range": [
+        954,
+        954
+      ],
+      "snippet": "tive/evidence-plane-ledger-and-sequential-verdicts.md).",
+      "score": 0.94,
+      "content_hash": "0215b8b014cb2ddd"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "groupA NOTABLE",
+        "Load-bearing findings"
+      ],
+      "line_range": [
+        1306,
+        1309
+      ],
+      "snippet": "**7. Schema-collision risk between fable5 evidence-plane and unified-trace.** `unified-trace-memory-service.md` declares itself owner of the shared harness/trace event schema (HLE/BSV/URE/EXM families, merged `15350fe`). fable5-findings-01/",
+      "score": 0.9386,
+      "content_hash": "1d6442c087120bd4"
+    }
+  ],
+  "wall_s": 25.967663829913363
+}

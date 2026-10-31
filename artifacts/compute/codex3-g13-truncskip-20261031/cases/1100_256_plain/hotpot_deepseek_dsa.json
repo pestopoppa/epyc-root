@@ -1,0 +1,194 @@
+{
+  "arm": "1100_256_plain",
+  "id": "hotpot_deepseek_dsa",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/deepseek-v4-flash-cpu-port.md",
+    "/workspace/handoffs/active/llama-cpp-dsa-contribution.md",
+    "/workspace/research/deep-dives/deepseek-v32-dsa-llamacpp-pr21149.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/deepseek-v4-flash-cpu-port.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/deepseek-v4-flash-cpu-port.md",
+    "/workspace/handoffs/active/llama-cpp-dsa-contribution.md",
+    "/workspace/research/deep-dives/deepseek-v32-dsa-llamacpp-pr21149.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/research/deep-dives/deepseek-v32-dsa-llamacpp-pr21149.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/deepseek-v4-flash-cpu-port.md",
+      "/workspace/handoffs/active/llama-cpp-dsa-contribution.md"
+    ],
+    "first_evidence_rank": 3,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/active/multiscreen-attention-evaluation.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/research/deep-dives/deepseek-v32-dsa-llamacpp-pr21149.md",
+      "/workspace/wiki/moe-optimization.md",
+      "/mnt/raid0/llm/epyc-inference-research/docs/reference/kernel/glm-mtp-sparse-attention-implementation-map-20260718.md",
+      "/workspace/handoffs/active/design-backlog-triage-2026-07-23.md",
+      "/workspace/handoffs/completed/deepseek-v4-flash-cpu-port.md",
+      "/workspace/handoffs/completed/deepseek-v4-flash-0731-dspark.md",
+      "/workspace/wiki/kv-cache.md",
+      "/workspace/wiki/hardware-optimization.md"
+    ],
+    "recall@3": 0.3333333333333333,
+    "perfect@3": false,
+    "recall@5": 0.3333333333333333,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/active/multiscreen-attention-evaluation.md",
+      "heading_path": [
+        "Multiscreen Attention \u2014 Evaluation for EPYC Inference",
+        "Literature Survey: Sub-Quadratic Attention for CPU Inference (2025-2026)",
+        "5. Priority Ranking for EPYC CPU Inference (REVISED 2026-04-29 PM)"
+      ],
+      "line_range": [
+        147,
+        149
+      ],
+      "snippet": "1. **DSA (DeepSeek V3.2 + GLM-5.1)** \u2014 **TOP PRIORITY (active)**. PR #21149 by fairydreaming is an active draft with CPU/CUDA/Vulkan backends working. Tracked in [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md) with three co",
+      "score": 0.9385,
+      "content_hash": "c3ab29723423a488"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "CPU Kernel/Fork Program \u2014 Current State and Remaining Option Space",
+        "3. Sparsity track"
+      ],
+      "line_range": [
+        936,
+        936
+      ],
+      "snippet": "- **DSA / Lightning Indexer** (`llama-cpp-dsa-contribution.md`): PR #21149 (fairydreaming, DeepSeek V3.2+DSA) draft with CPU backend working; adds `GGML_OP_LIGHTNING_INDEXER` + `GGML_OP_HADAMARD` + `llama_kv_cache_dsa`. Three sub-tracks, **",
+      "score": 0.9335,
+      "content_hash": "e2b756bba8aeceed"
+    },
+    {
+      "file": "/workspace/research/deep-dives/deepseek-v32-dsa-llamacpp-pr21149.md",
+      "heading_path": [
+        "DeepSeek-V3.2 + DSA \u2014 Deep Dive"
+      ],
+      "line_range": [
+        1,
+        6
+      ],
+      "snippet": "# DeepSeek-V3.2 + DSA \u2014 Deep Dive\n\n**Source intake**: intake-506 (arxiv:2512.02556)\n**Date**: 2026-04-29\n**Status**: FACT-CHECKED against llama.cpp upstream as of 2026-04-29\n",
+      "score": 0.9335,
+      "content_hash": "f150060e570a6b32"
+    },
+    {
+      "file": "/workspace/wiki/moe-optimization.md",
+      "heading_path": [
+        "MoE Optimization",
+        "Key Findings",
+        "Frontier GLM-MoE-DSA and Kimi-K2 Targets \u2014 DSA-gated, asymmetric storage (2026-06-20)"
+      ],
+      "line_range": [
+        168,
+        170
+      ],
+      "snippet": "- **The DSA cache/runtime gap, not storage, was the binding blocker for the entire GLM-5.x family.** That gap is now closed on current source: experimental-v7 `3dee86a5a` routes `LLM_ARCH_GLM_DSA` through `llama_kv_cache_dsa` and the DeepSe",
+      "score": 0.9329,
+      "content_hash": "2de144f51b76f01e"
+    },
+    {
+      "file": "/mnt/raid0/llm/epyc-inference-research/docs/reference/kernel/glm-mtp-sparse-attention-implementation-map-20260718.md",
+      "heading_path": [
+        "GLM Native MTP and Sparse Final-Attention Implementation Map",
+        "Files Read"
+      ],
+      "line_range": [
+        21,
+        32
+      ],
+      "snippet": "## Files Read\n\n- Active handoffs: `glm52-reviewer-capability-gates.md`,\n  `tree-draft-forward-port-plan.md`, `gemma-challenge-kernel-techniques-v7.md`,\n  and `cpu-prefill-compute-large-models.md`.\n- Experimental kernel: `src/models/glm-dsa.",
+      "score": 0.9327,
+      "content_hash": "c3ef24d3074fbbdb"
+    },
+    {
+      "file": "/workspace/handoffs/active/design-backlog-triage-2026-07-23.md",
+      "heading_path": [
+        "Design-Backlog Triage (2026-07-23)",
+        "SECTION 1 \u2014 Strategic design concepts (operator decides)"
+      ],
+      "line_range": [
+        114,
+        114
+      ],
+      "snippet": "| C19 **CLOSED 2026-08-09; successor closed 2026-08-26** | ~~DeepSeek-V4-Flash CPU port (Strategy A)~~ \u2014 the row's own alternative trigger fired: upstream PR #24162 merged `deepseek4`, shipping in `production-consolidated-v8`. Strategy A pa",
+      "score": 0.9325,
+      "content_hash": "a6640a46d397ec59"
+    },
+    {
+      "file": "/workspace/handoffs/completed/deepseek-v4-flash-cpu-port.md",
+      "heading_path": [
+        "Then run gates:",
+        "Cross-references"
+      ],
+      "line_range": [
+        439,
+        445
+      ],
+      "snippet": "- **Primary intake**: intake-637 (antirez/deepseek-v4-gguf)\n- **Sibling handoff**: `llama-cpp-dsa-contribution.md` \u2014 V4 is tracked as adjacent upstream arch work (different arch, parallel effort)\n- **MTP integration template**: `moe-spec-cp",
+      "score": 0.9315,
+      "content_hash": "4ded34187c2155ba"
+    },
+    {
+      "file": "/workspace/handoffs/completed/deepseek-v4-flash-0731-dspark.md",
+      "heading_path": [
+        "DeepSeek-V4-Flash 0731 \u2014 Q8 Serving + DSpark Speculative Decoding",
+        "Cross-references"
+      ],
+      "line_range": [
+        204,
+        211
+      ],
+      "snippet": "## Cross-references\n\n- [`deepseek-v4-flash-cpu-port.md`](deepseek-v4-flash-cpu-port.md) \u2014 predecessor, CLOSED 2026-08-09\n- [`moe-spec-cpu-spec-dec-integration.md`](../active/moe-spec-cpu-spec-dec-integration.md) \u2014 MoE spec-dec integration s",
+      "score": 0.9311,
+      "content_hash": "8c790fad3c72f3e1"
+    },
+    {
+      "file": "/workspace/wiki/kv-cache.md",
+      "heading_path": [
+        "KV Cache Optimization",
+        "Updates \u2014 2026-04-29 (PM)"
+      ],
+      "line_range": [
+        167,
+        169
+      ],
+      "snippet": "- **DeepSeek Sparse Attention (DSA, intake-506)** \u2014 DeepSeek-V3.2, arxiv:2512.02556. Two-stage: **Lightning Indexer** (FP8 head-weighted scorer with block-64 quantized key cache) \u2192 top-k=2048 token selection \u2192 MLA forward pass on selected s",
+      "score": 0.9311,
+      "content_hash": "784abf49ed3f116c"
+    },
+    {
+      "file": "/workspace/wiki/hardware-optimization.md",
+      "heading_path": [
+        "Hardware Optimization",
+        "Key Findings",
+        "New (2026-06-25, iqk-port complete + v6 consolidation + draft-head precision)"
+      ],
+      "line_range": [
+        918,
+        918
+      ],
+      "snippet": "- **One DSA forward-pass implementation is a multi-model-for-1 hardware unlock**. DeepSeek-V3.2 (671B-class MoE), GLM-5.1-555B-A14B, and now GLM-5.2 (754B GLM-MoE-DSA, MIT, 1M context \u2014 intake-699) all share the identical DSA indexer + KV-c",
+      "score": 0.9309,
+      "content_hash": "060ebba206c367f7"
+    }
+  ],
+  "wall_s": 26.393967061070725
+}

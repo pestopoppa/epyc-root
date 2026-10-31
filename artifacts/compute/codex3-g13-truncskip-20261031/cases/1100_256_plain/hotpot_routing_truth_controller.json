@@ -1,0 +1,190 @@
+{
+  "arm": "1100_256_plain",
+  "id": "hotpot_routing_truth_controller",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/routing-truth-restoration.md",
+    "/workspace/handoffs/active/learned-routing-controller.md",
+    "/workspace/handoffs/active/fable5-findings-02-routing-decision-architecture.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/fable5-findings-02-routing-decision-architecture.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/routing-truth-restoration.md",
+    "/workspace/handoffs/active/learned-routing-controller.md",
+    "/workspace/handoffs/active/fable5-findings-02-routing-decision-architecture.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/routing-truth-restoration.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/fable5-findings-02-routing-decision-architecture.md",
+      "/workspace/handoffs/active/learned-routing-controller.md"
+    ],
+    "first_evidence_rank": 7,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/wiki/routing-intelligence.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/active/routing-truth-restoration.md",
+      "/workspace/wiki/inference-serving.md",
+      "/workspace/handoffs/active/tri-role-coordinator-architecture.md",
+      "/workspace/handoffs/active/model-capability-descriptors.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/wiki/routing-intelligence.md",
+      "heading_path": [
+        "Routing Intelligence",
+        "Updates \u2014 2026-04-28",
+        "New Findings (2026-06-13 \u2014 Routing Truth, Descriptors, And X-MAS)"
+      ],
+      "line_range": [
+        382,
+        383
+      ],
+      "snippet": "- **The immediate routing defect was running-state truth, not a missing decision theory.** Fable 5 found production using test feature defaults and runtime flag mutation reaching only one of six uvicorn workers. The repair handoff landed ex",
+      "score": 0.9371,
+      "content_hash": "660ff95b17f74606"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue \u2014 routing truth W8 DAR-1/counter checkpoint"
+      ],
+      "line_range": [
+        367,
+        370
+      ],
+      "snippet": "## Fable 5 execution queue \u2014 routing truth W8 DAR-1/counter checkpoint\n\nCompleted `routing-truth-restoration.md` W8 and closed master-index N3. The measured verdict keeps the routing-expansion cluster frozen.\n",
+      "score": 0.9357,
+      "content_hash": "aa31d1425bc82a4d"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue \u2014 routing truth W7 shadow telemetry checkpoint"
+      ],
+      "line_range": [
+        337,
+        340
+      ],
+      "snippet": "## Fable 5 execution queue \u2014 routing truth W7 shadow telemetry checkpoint\n\nCompleted `routing-truth-restoration.md` W7 by keeping the shadow signals and routing them into the canonical progress JSONL evidence path instead of leaving them sp",
+      "score": 0.9349,
+      "content_hash": "a74bf410238095ea"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue \u2014 routing truth W6 zero-caller deletion checkpoint"
+      ],
+      "line_range": [
+        308,
+        311
+      ],
+      "snippet": "## Fable 5 execution queue \u2014 routing truth W6 zero-caller deletion checkpoint\n\nCompleted the immediate `routing-truth-restoration.md` W6 dead-code deletion batch in `epyc-orchestrator`.\n",
+      "score": 0.9344,
+      "content_hash": "579e2c2c29a00fc4"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue \u2014 routing truth W1-W4 checkpoint"
+      ],
+      "line_range": [
+        246,
+        249
+      ],
+      "snippet": "## Fable 5 execution queue \u2014 routing truth W1-W4 checkpoint\n\nContinued the autonomous Fable 5 execution queue with `routing-truth-restoration.md` W1-W4. The objective was to make live production feature intent explicit, make runtime flag ch",
+      "score": 0.9343,
+      "content_hash": "f9ebc0d49ebcc522"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue \u2014 routing truth W5 q_scorer checkpoint"
+      ],
+      "line_range": [
+        280,
+        283
+      ],
+      "snippet": "## Fable 5 execution queue \u2014 routing truth W5 q_scorer checkpoint\n\nCompleted `routing-truth-restoration.md` W5 after W1-W4 flag substrate landed. The stale hardcoded `ScoringConfig.baseline_tps_by_role` table is no longer the default source",
+      "score": 0.9335,
+      "content_hash": "6045436a289c7492"
+    },
+    {
+      "file": "/workspace/handoffs/active/routing-truth-restoration.md",
+      "heading_path": [
+        "Routing Truth Restoration: Prod Flags, Attestation, Dead Code"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# Routing Truth Restoration: Prod Flags, Attestation, Dead Code\n\n**Status**: CLOSED 2026-07-14 \u2014 W1-W8 landed and live-attested/deployed; routing expansion remains frozen by the W8/DAR-1 gate; the overdue `dispatch_swarm_fanout` watch is re",
+      "score": 0.9314,
+      "content_hash": "3eabf2ef3a9ce366"
+    },
+    {
+      "file": "/workspace/wiki/inference-serving.md",
+      "heading_path": [
+        "Inference Serving",
+        "2026-06-13 Update \u2014 Serving Gaps After Fable 5"
+      ],
+      "line_range": [
+        471,
+        473
+      ],
+      "snippet": "Frontdoor speculative decoding is another unharvested config path. It is not a general GPU-drafter endorsement; it is the first cheap measurement that unlocks or kills several downstream hypotheses, including MoE-Spec reuse on frontdoor ver",
+      "score": 0.9302,
+      "content_hash": "70c2b57f461dc672"
+    },
+    {
+      "file": "/workspace/handoffs/active/tri-role-coordinator-architecture.md",
+      "heading_path": [
+        "Tri-Role Coordinator Architecture (Thinker / Worker / Verifier)"
+      ],
+      "line_range": [
+        11,
+        14
+      ],
+      "snippet": "> **Fable 5 review (2026-06-12, refreshed 2026-06-20)**: the shadow-telemetry keep-or-kill decision was resolved by [routing-truth-restoration.md](../completed/routing-truth-restoration.md) W7: keep the signal and persist it in progress JSO",
+      "score": 0.9301,
+      "content_hash": "9ec43e343bb2c07d"
+    },
+    {
+      "file": "/workspace/handoffs/active/model-capability-descriptors.md",
+      "heading_path": [
+        "Model-Capability Descriptors: The Model-Agnosticism Interface"
+      ],
+      "line_range": [
+        6,
+        9
+      ],
+      "snippet": "**Priority**: MED \u2014 compiler can start today (no blockers); the Phase-3 cascade tail is GATED and predicted to stay so\n**Spec**: [fable5-findings-02-impl-plan.md](../completed/fable5-findings-02-impl-plan.md) Phase 2 (+ Phase 3 for the gate",
+      "score": 0.9274,
+      "content_hash": "82f43686cbee853c"
+    }
+  ],
+  "wall_s": 26.798710409086198
+}

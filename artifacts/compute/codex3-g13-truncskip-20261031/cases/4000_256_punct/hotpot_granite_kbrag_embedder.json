@@ -1,0 +1,197 @@
+{
+  "arm": "4000_256_punct",
+  "id": "hotpot_granite_kbrag_embedder",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/granite-97m-r2-bench-plan.md",
+    "/workspace/handoffs/active/internal-kb-rag.md",
+    "/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/granite-97m-r2-bench-plan.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/granite-97m-r2-bench-plan.md",
+    "/workspace/handoffs/active/internal-kb-rag.md",
+    "/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 2,
+    "found_files": [
+      "/workspace/handoffs/active/internal-kb-rag.md",
+      "/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/granite-97m-r2-bench-plan.md"
+    ],
+    "first_evidence_rank": 3,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/completed/granite-97m-r2-bench-plan-completed-through-2026-08-23.md",
+      "/workspace/research/deep-dives/2026-06-12-obliq-bench-retrieval-eval.md",
+      "/workspace/handoffs/active/internal-kb-rag.md",
+      "/workspace/wiki/search-retrieval.md",
+      "/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md",
+      "/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md",
+      "/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md",
+      "/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md",
+      "/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md",
+      "/workspace/handoffs/active/searxng-search-backend.md"
+    ],
+    "recall@3": 0.3333333333333333,
+    "perfect@3": false,
+    "recall@5": 0.6666666666666666,
+    "perfect@5": false,
+    "recall@10": 0.6666666666666666,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/granite-97m-r2-bench-plan-completed-through-2026-08-23.md",
+      "heading_path": [
+        "Granite-97M-r2 Multilingual Embedder Bench Plan"
+      ],
+      "line_range": [
+        1,
+        10
+      ],
+      "snippet": "# Granite-97M-r2 Multilingual Embedder Bench Plan\n\n**Status**: Phase A-fast fallback corpus + dry-run harness landed and re-verified 2026-06-20; HF model artifacts and conversion env staged; warm/default-off orchestrator embedder recipes la",
+      "score": 0.9332,
+      "content_hash": "eec6f60a39a5593d"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-06-12-obliq-bench-retrieval-eval.md",
+      "heading_path": [
+        "OBLIQ-Bench \u2014 Deep-Dive: Oblique-Query Retrieval Eval (intake-689)",
+        "Cross-refs"
+      ],
+      "line_range": [
+        109,
+        117
+      ],
+      "snippet": "## Cross-refs\n\n- `handoffs/active/colbert-reranker-web-research.md` \u2014 Phase-A/B reranker bench; intake-689 note refined here. Eval-corpus prereq (100 code snippets + 30 NL queries; comparators granite-97m-r2 / e5-base / BGE-M3 / BGE-large).",
+      "score": 0.9319,
+      "content_hash": "5e3566ffd6b14588"
+    },
+    {
+      "file": "/workspace/handoffs/active/internal-kb-rag.md",
+      "heading_path": [
+        "Internal Knowledge-Base RAG",
+        "Research Intake Update \u2014 2026-04-30",
+        "New Related Research"
+      ],
+      "line_range": [
+        151,
+        176
+      ],
+      "snippet": "### New Related Research\n\n- **[intake-519] \"Granite-Embedding-97M-Multilingual-R2\"** (HF `ibm-granite/granite-embedding-97m-multilingual-r2`, Apache 2.0, IBM, released 2026-04-29)\n  - Relevance to KB RAG: **MEDIUM**. Candidate dense embedde",
+      "score": 0.9297,
+      "content_hash": "4deaa5e45d10de0c"
+    },
+    {
+      "file": "/workspace/wiki/search-retrieval.md",
+      "heading_path": [
+        "Search & Retrieval",
+        "Granite-Embedding-97M-Multilingual-R2 \u2014 IBM dense retriever, ModernBERT-based (2026-04-30)"
+      ],
+      "line_range": [
+        230,
+        233
+      ],
+      "snippet": "## Granite-Embedding-97M-Multilingual-R2 \u2014 IBM dense retriever, ModernBERT-based (2026-04-30)\n\n**TL;DR**: IBM's `granite-embedding-97m-multilingual-r2` (Apache 2.0, 97M params, ModernBERT backbone, 32K context, claimed MTEB-ML-Retrieval 59.",
+      "score": 0.9285,
+      "content_hash": "3dc910a948016031"
+    },
+    {
+      "file": "/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md",
+      "heading_path": [
+        "Deep Dive: Granite-Embedding-97M-Multilingual-R2 Evaluation",
+        "Executive Summary"
+      ],
+      "line_range": [
+        11,
+        18
+      ],
+      "snippet": "## Executive Summary\n\nGranite-Embedding-97M-Multilingual-R2 is a **dense, single-vector, ModernBERT-base 97M-param** embedding model from IBM Research, **released six days into the past relative to this deep-dive (2026-04-29)**. It targets ",
+      "score": 0.9263,
+      "content_hash": "47626e6e299e7cf7"
+    },
+    {
+      "file": "/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md",
+      "heading_path": [
+        "After A1-A2, all three models running on ports 8090-large, 8096-granite, 8097-e5-base, 8098-bge-m3",
+        "8. Sequencing & Cross-Refs",
+        "8.1 Where this slots into existing work"
+      ],
+      "line_range": [
+        305,
+        314
+      ],
+      "snippet": "### 8.1 Where this slots into existing work\n\n| Track | Current state | Granite-97m-r2 role |\n|-------|---------------|---------------------|\n| `internal-kb-rag.md` K-track | stub, K1 not started | **Direct candidate as KB-RAG dense embedder",
+      "score": 0.9239,
+      "content_hash": "6d5d7a289e355d86"
+    },
+    {
+      "file": "/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md",
+      "heading_path": [
+        "After A1-A2, all three models running on ports 8090-large, 8096-granite, 8097-e5-base, 8098-bge-m3",
+        "6. Code-Search Use Case Angle",
+        "6.2 Is granite-97m-r2 better than GitNexus + ColBERT for code?"
+      ],
+      "line_range": [
+        276,
+        283
+      ],
+      "snippet": "### 6.2 Is granite-97m-r2 better than GitNexus + ColBERT for code?\n\n- **GitNexus** does symbol-level static analysis \u2014 call graphs, impact analysis, refactor safety. **Different problem**: code structure, not natural-language \u2192 code retriev",
+      "score": 0.9224,
+      "content_hash": "24b1dd98491a9069"
+    },
+    {
+      "file": "/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md",
+      "heading_path": [
+        "After A1-A2, all three models running on ports 8090-large, 8096-granite, 8097-e5-base, 8098-bge-m3",
+        "6. Code-Search Use Case Angle",
+        "6.3 Recommendation"
+      ],
+      "line_range": [
+        284,
+        287
+      ],
+      "snippet": "### 6.3 Recommendation\n\n**Worth a separate bench, deferred until KB-RAG bench lands.** Code retrieval has its own eval corpus problem (need NL queries paired with code answers), and the GitNexus ecosystem already covers structural code sear",
+      "score": 0.9203,
+      "content_hash": "a7bdcb9fc5450057"
+    },
+    {
+      "file": "/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md",
+      "heading_path": [
+        "Deploy as embedding server (same pattern as the 6\u00d7 BGE-large pool)",
+        "3. EPYC Retrieval Infrastructure State (as of 2026-04-30)",
+        "3.4 What about MindDR? (from `minddr-deep-research-mode.md`)"
+      ],
+      "line_range": [
+        134,
+        137
+      ],
+      "snippet": "### 3.4 What about MindDR? (from `minddr-deep-research-mode.md`)\n\nThe DeepSearchFanOutNode (MD-4) and ReportSynthesisNode (MD-5) are prompt-level pipelines. They currently consume web_search output directly. **No dedicated retrieval embedde",
+      "score": 0.92,
+      "content_hash": "cb342dbaa6622ede"
+    },
+    {
+      "file": "/workspace/handoffs/active/searxng-search-backend.md",
+      "heading_path": [
+        "Machine-readable (CI / dashboards)",
+        "Research Intake Update \u2014 2026-04-30",
+        "New Related Research"
+      ],
+      "line_range": [
+        306,
+        323
+      ],
+      "snippet": "### New Related Research\n\n- **[intake-519] \"Granite-Embedding-97M-Multilingual-R2\"** (HF `ibm-granite/granite-embedding-97m-multilingual-r2`, Apache 2.0, IBM, released 2026-04-29)\n  - Relevance to SearXNG backend: **MEDIUM**, primarily as t",
+      "score": 0.9193,
+      "content_hash": "e00f5974e4347897"
+    }
+  ],
+  "wall_s": 12.800447755027562
+}

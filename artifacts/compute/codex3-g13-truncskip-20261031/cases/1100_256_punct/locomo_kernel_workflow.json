@@ -1,0 +1,196 @@
+{
+  "arm": "1100_256_punct",
+  "id": "locomo_kernel_workflow",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+    "/workspace/handoffs/active/cpu-shape-specialized-gemv-decode.md",
+    "/workspace/handoffs/active/large-moe-expert-parallelism.md",
+    "/workspace/handoffs/active/intra-process-tensor-parallel-decode.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+    "/workspace/handoffs/active/intra-process-tensor-parallel-decode.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+    "/workspace/handoffs/active/cpu-shape-specialized-gemv-decode.md",
+    "/workspace/handoffs/active/large-moe-expert-parallelism.md",
+    "/workspace/handoffs/active/intra-process-tensor-parallel-decode.md"
+  ],
+  "metrics": {
+    "evidence_count": 4,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/cpu-shape-specialized-gemv-decode.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+      "/workspace/handoffs/active/intra-process-tensor-parallel-decode.md",
+      "/workspace/handoffs/active/large-moe-expert-parallelism.md"
+    ],
+    "first_evidence_rank": 8,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/completed/nps-reboot-runbook.md",
+      "/workspace/handoffs/completed/numa-mirror-integration.md",
+      "/workspace/handoffs/completed/cpu-kernel-env-flags-inventory.md",
+      "/workspace/handoffs/completed/cpu-kernel-env-flags-inventory.md",
+      "/workspace/progress/2026-04/2026-04-26.md",
+      "/workspace/wiki/hardware-optimization.md",
+      "/workspace/handoffs/completed/single-instance-system-tuning.md",
+      "/workspace/handoffs/active/cpu-shape-specialized-gemv-decode.md",
+      "/workspace/progress/2026-04/2026-04-23-cpu-optimization-kickoff.md",
+      "/workspace/progress/2026-04/2026-04-23.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.25,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/nps-reboot-runbook.md",
+      "heading_path": [
+        "System state snapshot",
+        "References"
+      ],
+      "line_range": [
+        336,
+        339
+      ],
+      "snippet": "- Handoffs: `cpu-inference-optimization-index.md`, `intra-process-tensor-parallel-decode.md`, `single-instance-system-tuning.md`, `cpu-shape-specialized-gemv-decode.md`, `cpu-kernel-env-flags-inventory.md`, `../completed/cpu-hierarchical-ba",
+      "score": 0.9558,
+      "content_hash": "ddb6ca846c728007"
+    },
+    {
+      "file": "/workspace/handoffs/completed/numa-mirror-integration.md",
+      "heading_path": [
+        "NUMA_MIRROR Fork Integration \u2014 vproxy-tools/llama.cpp port"
+      ],
+      "line_range": [
+        13,
+        17
+      ],
+      "snippet": "- [`large-moe-expert-parallelism.md`](../active/large-moe-expert-parallelism.md) \u2014 CPU15 EP per-node anon mmap (would have partially overlapped for MoE; mirror's failure leaves CPU15 in place)\n- [`cpu-shape-specialized-gemv-decode.md`](../a",
+      "score": 0.9533,
+      "content_hash": "1701aa301544aaaa"
+    },
+    {
+      "file": "/workspace/handoffs/completed/cpu-kernel-env-flags-inventory.md",
+      "heading_path": [
+        "Live sketch as of 2026-06-14. Source of truth: stack_env.py.",
+        "Cross-references"
+      ],
+      "line_range": [
+        543,
+        551
+      ],
+      "snippet": "## Cross-references\n\n- Plan: `~/.claude/plans/glistening-toasting-snail.md`\n- Companion: `handoffs/completed/cpu-optimization-thesis-pause-2026-04-26.md` (archived 2026-06-12)\n- Phase B+C results: `progress/2026-04/2026-04-26.md` (commit `1",
+      "score": 0.9519,
+      "content_hash": "3478fd7b8069510b"
+    },
+    {
+      "file": "/workspace/handoffs/completed/cpu-kernel-env-flags-inventory.md",
+      "heading_path": [
+        "CPU Kernel Env-Flag Inventory \u2014 2026-04-26 (updated 2026-06-14)"
+      ],
+      "line_range": [
+        1,
+        11
+      ],
+      "snippet": "# CPU Kernel Env-Flag Inventory \u2014 2026-04-26 (updated 2026-06-14)\n\n> **COMPLETED REFERENCE 2026-08-11.** The inventory now records each flag's effect on trace\n> interpretation. Current execution work lives in\n> [`cpu-shape-specialized-gemv-",
+      "score": 0.9514,
+      "content_hash": "ab96386ff74e460a"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-26.md",
+      "heading_path": [
+        "Protocol (apply to each model below):",
+        "Late-day session \u2014 Research intake batch + CPU16-CPU19 backlog additions (2026-04-26 ~16:00)",
+        "Changes made"
+      ],
+      "line_range": [
+        513,
+        518
+      ],
+      "snippet": "| `handoffs/active/cpu-shape-specialized-gemv-decode.md` | Added \"Phase 4 candidate (CPU18)\" subsection \u2014 MegaBlocks blocked-CSR-COO + transpose-indices port for CPU MoE expert dispatch. |\n| `handoffs/active/large-moe-expert-parallelism.md`",
+      "score": 0.9493,
+      "content_hash": "09400b0ae0c617cc"
+    },
+    {
+      "file": "/workspace/wiki/hardware-optimization.md",
+      "heading_path": [
+        "Hardware Optimization",
+        "2026-04-23 Additions",
+        "CPU throughput levers \u2014 post-TIDE deprecation landscape"
+      ],
+      "line_range": [
+        1018,
+        1021
+      ],
+      "snippet": "- **Weight-reduction strategies (mature/in-production)**: NUMA 4-way, MoE expert pruning (REAP), AM KV compaction, KV quantization, ngram-simple spec. These are the workhorses.\n- **Operator fusion (ruled out empirically)**: Hadamard + unfus",
+      "score": 0.948,
+      "content_hash": "1bc217e0a22e3c13"
+    },
+    {
+      "file": "/workspace/handoffs/completed/single-instance-system-tuning.md",
+      "heading_path": [
+        "Single-Instance System-Level Throughput Tuning",
+        "Closure note (2026-06-12, Fable 5 portfolio pass)"
+      ],
+      "line_range": [
+        9,
+        18
+      ],
+      "snippet": "**Where residuals now live** (all trigger-gated, none claimable today):\n- **NPS/L3aaN decision matrix** \u2014 only if CPU1/CPU15/large-MoE work needs a topology decision; produce a narrow matrix with CPU20 artifacts (owners: `cpu-shape-speciali",
+      "score": 0.9477,
+      "content_hash": "d93e1bdff18bc793"
+    },
+    {
+      "file": "/workspace/handoffs/active/cpu-shape-specialized-gemv-decode.md",
+      "heading_path": [
+        "CPU Shape-Specialized GEMV Microkernel for Zen 5 Decode"
+      ],
+      "line_range": [
+        47,
+        53
+      ],
+      "snippet": "- [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) \u2014 orthogonal throughput lever (KV-side)\n- [`gpu-acceleration-path.md`](gpu-acceleration-path.md) \u2014 where TensileLite shape-specialization discussion originated\n-",
+      "score": 0.9465,
+      "content_hash": "db90bce76636d4fb"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-23-cpu-optimization-kickoff.md",
+      "heading_path": [
+        "2026-04-23 \u2014 CPU optimization coordinated pickup kickoff",
+        "Steps completed",
+        "Step 0 \u2014 handoff corrections + index registration \u2705"
+      ],
+      "line_range": [
+        11,
+        17
+      ],
+      "snippet": "### Step 0 \u2014 handoff corrections + index registration \u2705\n\n- GEMV handoff (`cpu-shape-specialized-gemv-decode.md`): 8 drift fixes applied \u2014 2026-04-23 audit block, tinyBLAS-in-fork resolution (Open Q 1 closed), KleidiAI template note, `../com",
+      "score": 0.9465,
+      "content_hash": "a351b7ef106bf531"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-23.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-23",
+        "Session \u2014 Research intake (3 URLs), perf-gap analysis, new CPU-ukernel handoff"
+      ],
+      "line_range": [
+        3,
+        6
+      ],
+      "snippet": "## Session \u2014 Research intake (3 URLs), perf-gap analysis, new CPU-ukernel handoff\n\nThree `/research-intake` invocations landed intakes 447\u2013449; each received a full deep-dive. Side investigation on Qwen3.6-27B decode throughput exposed a mo",
+      "score": 0.9461,
+      "content_hash": "abdbe6476557df55"
+    }
+  ],
+  "wall_s": 22.19236886082217
+}

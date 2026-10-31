@@ -1,0 +1,186 @@
+{
+  "arm": "4000_256_punct",
+  "id": "locomo_non_inference_backlog_evolution",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/non-inference-backlog.md",
+    "/workspace/handoffs/active/master-handoff-index.md",
+    "/workspace/progress/2026-06/2026-06-13.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/non-inference-backlog.md",
+    "/workspace/handoffs/active/master-handoff-index.md",
+    "/workspace/progress/2026-06/2026-06-13.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/master-handoff-index.md",
+      "/workspace/handoffs/active/non-inference-backlog.md",
+      "/workspace/progress/2026-06/2026-06-13.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-04/2026-04-12.md",
+      "/workspace/progress/2026-08/2026-08-23-unattributed.md",
+      "/workspace/handoffs/completed/non-inference-backlog-completed-through-2026-04-12.md",
+      "/workspace/progress/2026-04/2026-04-17.md",
+      "/workspace/handoffs/completed/non-inference-backlog.md",
+      "/workspace/progress/2026-04/2026-04-17.md",
+      "/workspace/progress/2026-04/2026-04-21.md",
+      "/workspace/handoffs/completed/non-inference-backlog-ni05-2026-10-06.md",
+      "/workspace/progress/2026-06/2026-06-28.md",
+      "/workspace/progress/2026-08/2026-08-25-mainA.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-04/2026-04-12.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-12",
+        "Session 2 \u2014 Research Intake Mega-Batch (38 entries, 26 deep-dives, 25 handoff tasks)",
+        "Audit Fix (Session 2 continued)"
+      ],
+      "line_range": [
+        114,
+        123
+      ],
+      "snippet": "### Audit Fix (Session 2 continued)\n\nCross-reference audit found 17 gaps: tasks present in source handoffs but missing from coordination indices. Fixed:\n- **routing-and-optimization-index.md**: Added P10/P10b/P10c/P11 task blocks (AP-18\u201327,",
+      "score": 0.9238,
+      "content_hash": "b34a1eb5c3b4083a"
+    },
+    {
+      "file": "/workspace/progress/2026-08/2026-08-23-unattributed.md",
+      "heading_path": [
+        "2026-08-23 \u2014 opencode ad-hoc session (tier-1 non-inference backlog + RTG-35 re-measure + wrap-up)"
+      ],
+      "line_range": [
+        1,
+        6
+      ],
+      "snippet": "# 2026-08-23 \u2014 opencode ad-hoc session (tier-1 non-inference backlog + RTG-35 re-measure + wrap-up)\n\n**Agent**: opencode (ad-hoc, no lane; log shard `logs/agent_audit-unattributed.log`, session\n`ses_20260823_091653_3747852`). Detailed entri",
+      "score": 0.9225,
+      "content_hash": "9fa9ce88507ffd46"
+    },
+    {
+      "file": "/workspace/handoffs/completed/non-inference-backlog-completed-through-2026-04-12.md",
+      "heading_path": [
+        "Non-Inference Backlog \u2014 Tasks Actionable Without Compute"
+      ],
+      "line_range": [
+        1,
+        16
+      ],
+      "snippet": "# Non-Inference Backlog \u2014 Tasks Actionable Without Compute\n\n> **Historical ledger only; current work lives in [`../active/non-inference-backlog.md`](../active/non-inference-backlog.md).** Renamed from the bare `non-inference-backlog.md` on ",
+      "score": 0.9222,
+      "content_hash": "e210d49729c79244"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-17.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-17",
+        "Session 5 \u2014 Research Intake + Deep-Dive Cycle + Cross-Cutting Handoff Audit",
+        "Results"
+      ],
+      "line_range": [
+        538,
+        547
+      ],
+      "snippet": "### Results\n\n- **Intake index**: 404 \u2192 407 entries, `validate_intake.py` passes\n- **Deep-dives**: +8 new files at ~250-500 lines each, with specific verdict deltas and benchmark protocols\n- **Handoff freshness** (per `scripts/validate/check",
+      "score": 0.921,
+      "content_hash": "d2929360c1553b7e"
+    },
+    {
+      "file": "/workspace/handoffs/completed/non-inference-backlog.md",
+      "heading_path": [
+        "Non-Inference Backlog \u2014 Tasks Actionable Without Compute"
+      ],
+      "line_range": [
+        1,
+        14
+      ],
+      "snippet": "# Non-Inference Backlog \u2014 Tasks Actionable Without Compute\n\n**Status**: completed\n**Created**: 2026-04-11 (consolidated from audit of near-complete and active handoffs)\n**Updated**: 2026-04-12 (tasks 7-18 completed; AP-14/AP-16 confirmed al",
+      "score": 0.9209,
+      "content_hash": "bd58030ead2e0f6a"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-17.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-17",
+        "Session 6 \u2014 Non-Inference Backlog (NIB2) Batch 0+1"
+      ],
+      "line_range": [
+        590,
+        591
+      ],
+      "snippet": "## Session 6 \u2014 Non-Inference Backlog (NIB2) Batch 0+1\n",
+      "score": 0.9207,
+      "content_hash": "9dcd58e0d9ae716e"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-21.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-21",
+        "Session 2 \u2014 NIB2 implementation pass (7 tasks)"
+      ],
+      "line_range": [
+        55,
+        70
+      ],
+      "snippet": "## Session 2 \u2014 NIB2 implementation pass (7 tasks)\n\nPlan: `/home/node/.claude/plans/3-stale-candidates-indexed-taco.md`. User approved recommended order, auto-mode execution.\n\n| Task | Outcome | Artifacts |\n|------|---------|-----------|\n| *",
+      "score": 0.9207,
+      "content_hash": "8a9cae5767d584e8"
+    },
+    {
+      "file": "/workspace/handoffs/completed/non-inference-backlog-ni05-2026-10-06.md",
+      "heading_path": [
+        "NI05 bounded non-inference queue \u2014 completed 2026-10-06"
+      ],
+      "line_range": [
+        1,
+        10
+      ],
+      "snippet": "# NI05 bounded non-inference queue \u2014 completed 2026-10-06\n\n**Status**: COMPLETE \u2014 79/79 bounded deliverables were accepted, documented, and published after the evidence boundary required by each task. This is a session queue ledger, not clo",
+      "score": 0.9206,
+      "content_hash": "d4955af8d0ce20e2"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-28.md",
+      "heading_path": [
+        "Orchestrator repo-readiness L4 closeout"
+      ],
+      "line_range": [
+        864,
+        897
+      ],
+      "snippet": "## Orchestrator repo-readiness L4 closeout\n\nClosed the remaining no-inference orchestrator L4 readiness blockers while\nAutoPilot continued the active v6 NumericSwarm/W4-W6 evidence window.\n\nAdded:\n\n- `scripts/docs/generate_docs_index.py` an",
+      "score": 0.92,
+      "content_hash": "4000b43538f21aaa"
+    },
+    {
+      "file": "/workspace/progress/2026-08/2026-08-25-mainA.md",
+      "heading_path": [
+        "mainA \u2014 2026-08-25 session wrap-up",
+        "Session summary"
+      ],
+      "line_range": [
+        3,
+        14
+      ],
+      "snippet": "## Session summary\n\nPicked up four non-inference-gated backlog tasks and fanned them out to four parallel\nsubagents (all results integrated and validated by this thread):\n\n| ID | Task | Outcome | Evidence |\n|----|------|---------|----------",
+      "score": 0.92,
+      "content_hash": "145098271dd7639c"
+    }
+  ],
+  "wall_s": 13.231803321978077
+}

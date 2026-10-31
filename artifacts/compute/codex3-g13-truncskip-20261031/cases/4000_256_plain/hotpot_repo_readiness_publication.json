@@ -1,0 +1,189 @@
+{
+  "arm": "4000_256_plain",
+  "id": "hotpot_repo_readiness_publication",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/repo-readiness-scorer.md",
+    "/workspace/handoffs/active/frontier-f6-upstream-publication.md",
+    "/workspace/handoffs/active/privacy-hygiene-precommit-hooks.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/privacy-hygiene-precommit-hooks.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/repo-readiness-scorer.md",
+    "/workspace/handoffs/active/frontier-f6-upstream-publication.md",
+    "/workspace/handoffs/active/privacy-hygiene-precommit-hooks.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/frontier-f6-upstream-publication.md",
+      "/workspace/handoffs/active/privacy-hygiene-precommit-hooks.md",
+      "/workspace/handoffs/active/repo-readiness-scorer.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-09/2026-09-17-sub-op-decisions.md",
+      "/workspace/research/deep-dives/chiefautism-privacy-parser-span-extraction.md",
+      "/workspace/progress/2026-06/2026-06-27.md",
+      "/workspace/progress/2026-08/2026-08-25-mainA-evl38.md",
+      "/workspace/progress/2026-06/repo-readiness-remediation-2026-06-28.md",
+      "/workspace/progress/2026-06/2026-06-28.md",
+      "/workspace/progress/2026-05/2026-05-24.md",
+      "/workspace/progress/2026-06/repo-readiness-remediation-2026-06-20.md",
+      "/workspace/progress/2026-07/2026-07-03.md",
+      "/workspace/progress/2026-06/2026-06-27.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-09/2026-09-17-sub-op-decisions.md",
+      "heading_path": [
+        "2026-09-17 \u2014 sub-op-decisions (three operator rulings applied; zero inference)",
+        "D2 \u2014 security-review CI gate \u2192 Option A (dropped; handoff completed)"
+      ],
+      "line_range": [
+        45,
+        63
+      ],
+      "snippet": "## D2 \u2014 security-review CI gate \u2192 Option A (dropped; handoff completed)\n\n- **Handoff.**\n  - The last box is struck through and ticked as DROPPED, and the Status line is updated.\n  - The Open Questions section is marked as design notes with ",
+      "score": 0.92,
+      "content_hash": "205264941a87aab6"
+    },
+    {
+      "file": "/workspace/research/deep-dives/chiefautism-privacy-parser-span-extraction.md",
+      "heading_path": [
+        "Deep Dive: Privacy Parser \u2014 Hybrid Wrapper over OpenAI Privacy Filter",
+        "Refined Assessment"
+      ],
+      "line_range": [
+        92,
+        103
+      ],
+      "snippet": "## Refined Assessment\n\nOriginal intake verdict: **`adopt_patterns`** (learn from the regex-backstop and span-merge design but don't deploy).\n\n**Refined verdict: `adopt_patterns` for the orchestrator hot path (unchanged), narrow `adopt_compo",
+      "score": 0.9195,
+      "content_hash": "4eccd7359bcae911"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-27.md",
+      "heading_path": [
+        "Progress \u2014 2026-06-27",
+        "Research repo readiness automation"
+      ],
+      "line_range": [
+        2075,
+        2100
+      ],
+      "snippet": "## Research repo readiness automation\n\n**Trigger**: the passive readiness remediation queue still had\n`epyc-inference-research` blocked at the Standardized L3 gate on style/test/dev\nenvironment/security automation.\n\nWork:\n- Landed research ",
+      "score": 0.9181,
+      "content_hash": "ec47002f45110cac"
+    },
+    {
+      "file": "/workspace/progress/2026-08/2026-08-25-mainA-evl38.md",
+      "heading_path": [
+        "mainA \u2014 2026-08-25: EVL-38 root L5.self_optimizing_loop gap",
+        "Validation"
+      ],
+      "line_range": [
+        47,
+        68
+      ],
+      "snippet": "## Validation\n\n- `gitnexus impact build_criteria --direction upstream --repo /workspace`:\n  **LOW** risk, impactedCount=3 (score_repositories \u2192 main \u2192 file), all within\n  the scorer file. NOTE: index is stale (indexed `a787806` vs current\n ",
+      "score": 0.917,
+      "content_hash": "a07f4f17767e9617"
+    },
+    {
+      "file": "/workspace/progress/2026-06/repo-readiness-remediation-2026-06-28.md",
+      "heading_path": [
+        "EPYC Repo Readiness Remediation Queue"
+      ],
+      "line_range": [
+        12,
+        36
+      ],
+      "snippet": "| Priority | Repo | Criterion | Level | Pillar | Blocking next gate | Acceptance |\n|---|---|---|---:|---|---|---|\n| P0 | epyc-llama | `L4.incremental_validation` | 4 | Style & Validation | yes | `L4.incremental_validation` passes for `epyc-",
+      "score": 0.9168,
+      "content_hash": "3a9ec5009930f8d2"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-28.md",
+      "heading_path": [
+        "Orchestrator repo-readiness L3 setup gate"
+      ],
+      "line_range": [
+        520,
+        534
+      ],
+      "snippet": "## Orchestrator repo-readiness L3 setup gate\n\nAdvanced `epyc-orchestrator` from Documented (L2) to Standardized (L3) by\nlanding commit `c1cac72e`, which adds a top-level `scripts/setup.sh` wrapper\nover the existing bootstrap script and alig",
+      "score": 0.9156,
+      "content_hash": "ff12a2bab0104b05"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-24.md",
+      "heading_path": [
+        "2026-05-24 \u2014 manual session log",
+        "Session 1 \u2014 dashboard topology panel: in-flight tasks now track live slots",
+        "Pre-edit gate (per repo policy)"
+      ],
+      "line_range": [
+        59,
+        64
+      ],
+      "snippet": "### Pre-edit gate (per repo policy)\n\n- `gitnexus status`: up-to-date. `gitnexus impact --direction upstream` on both\n  `scan_orchestrator_tasks` and `topology_activity`: **LOW** risk, hits confined\n  to the dashboard route layer (no cross-r",
+      "score": 0.9151,
+      "content_hash": "26b474c236b517b8"
+    },
+    {
+      "file": "/workspace/progress/2026-06/repo-readiness-remediation-2026-06-20.md",
+      "heading_path": [
+        "EPYC Repo Readiness Remediation Queue"
+      ],
+      "line_range": [
+        1,
+        35
+      ],
+      "snippet": "# EPYC Repo Readiness Remediation Queue\n\nGenerated: `2026-06-20T11:21:45.948728+00:00`\nQueue version: `1`\nTotal open items: `49`\n\nThis queue is advisory input for planning and dashboards. It is not an\nAutoPilot authority gate; every item st",
+      "score": 0.9151,
+      "content_hash": "194b9e3a96c3fd9c"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-03.md",
+      "heading_path": [
+        "2026-07-03",
+        "Repo-readiness pickup enrichment"
+      ],
+      "line_range": [
+        10,
+        15
+      ],
+      "snippet": "## Repo-readiness pickup enrichment\n\n- Enriched `scripts/validate/repo_readiness_scorer.py` so the advisory remediation queue and passive AutoPilot pickup now carry each repo's current maturity label plus next-gate level/label, and the Mark",
+      "score": 0.915,
+      "content_hash": "75ac0176868febc8"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-27.md",
+      "heading_path": [
+        "Progress \u2014 2026-06-27",
+        "Repo-readiness scorer portability"
+      ],
+      "line_range": [
+        817,
+        834
+      ],
+      "snippet": "## Repo-readiness scorer portability\n\n**Trigger**: a parallel Spark sidecar took the disjoint, offline-safe repo-readiness scorer lane while the main thread handled capability-registry W2.\n\nWork:\n- Root `19e1ac84` makes default repo discove",
+      "score": 0.915,
+      "content_hash": "64e87e734bcc12d8"
+    }
+  ],
+  "wall_s": 14.994638337986544
+}

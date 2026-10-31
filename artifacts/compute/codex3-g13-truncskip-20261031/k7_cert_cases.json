@@ -1,0 +1,774 @@
+{
+  "version": 1,
+  "name": "K7 certification multi-hop retrieval cases",
+  "methodology": "Flywheel-inspired HotpotQA/LoCoMo template over this project's markdown corpus. This is the decision pool: 50 HotpotQA-style multi-hop questions plus 20 LoCoMo-style multi-session trace questions.",
+  "noise_floor_note": "Treat deltas under 2 percentage points as noise. The case pool is curated for evidence-file recall, not answer judging.",
+  "certification_pool": true,
+  "target_counts": {
+    "hotpotqa_template": 50,
+    "locomo_template": 20
+  },
+  "cases": [
+    {
+      "id": "hotpot_kbrag_fable_queue",
+      "protocol": "hotpotqa_template",
+      "query": "Which documents connect the K-RAG K7 validation sweep to the Fable 5 zero-inference execution queue?",
+      "evidence_files": [
+        "/workspace/handoffs/active/internal-kb-rag.md",
+        "/workspace/handoffs/active/fable5-findings-appendix-evidence-reports.md"
+      ],
+      "tags": ["k-rag", "fable5", "campaign"]
+    },
+    {
+      "id": "hotpot_dcp_campaign",
+      "protocol": "hotpotqa_template",
+      "query": "Where are DCP-6 offline replay, delegation context preassembly, and the campaign sequencing gate tracked?",
+      "evidence_files": [
+        "/workspace/handoffs/active/bep-dcp-falsification-harness.md",
+        "/workspace/handoffs/active/delegation-context-preassembly.md",
+        "/workspace/handoffs/active/bulk-inference-campaign.md"
+      ],
+      "tags": ["dcp", "delegation", "campaign"]
+    },
+    {
+      "id": "hotpot_ledger_sequential_verdicts",
+      "protocol": "hotpotqa_template",
+      "query": "Which documents define the per-question ledger repair and sequential verdict specification from the Fable findings?",
+      "evidence_files": [
+        "/workspace/handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md",
+        "/workspace/handoffs/active/fable5-findings-01c-sequential-verdict-spec.md",
+        "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md"
+      ],
+      "tags": ["instrument-repair", "ledger", "fable5"]
+    },
+    {
+      "id": "hotpot_batched_decode_gpu",
+      "protocol": "hotpotqa_template",
+      "query": "Which handoffs connect batched decode measurement, E1/E2, and Fable 5's serving or GPU placement findings?",
+      "evidence_files": [
+        "/workspace/handoffs/active/batched-decode-measurement.md",
+        "/workspace/handoffs/active/fable5-findings-03-serving-and-gpu.md"
+      ],
+      "tags": ["batched-decode", "gpu", "serving"]
+    },
+    {
+      "id": "hotpot_routing_retrain_block",
+      "protocol": "hotpotqa_template",
+      "query": "Where is the BGE re-embed blocker for routing retraining connected to the routing optimization queue?",
+      "evidence_files": [
+        "/workspace/handoffs/active/retrain-routing-models.md",
+        "/workspace/handoffs/active/routing-and-optimization-index.md"
+      ],
+      "tags": ["routing", "embeddings", "retrain"]
+    },
+    {
+      "id": "hotpot_colbert_shared_encoder",
+      "protocol": "hotpotqa_template",
+      "query": "Which two handoffs explain the shared ColBERT encoder relationship between internal KB-RAG and the web research reranker?",
+      "evidence_files": [
+        "/workspace/handoffs/active/internal-kb-rag.md",
+        "/workspace/handoffs/active/colbert-reranker-web-research.md"
+      ],
+      "tags": ["colbert", "reranker", "kb-rag"]
+    },
+    {
+      "id": "hotpot_chat_template_thinking",
+      "protocol": "hotpotqa_template",
+      "query": "Where are J12 chat_template_kwargs wiring and enable_thinking or reasoning-compression ablations discussed?",
+      "evidence_files": [
+        "/workspace/handoffs/active/bulk-inference-campaign.md",
+        "/workspace/handoffs/active/reasoning-compression.md"
+      ],
+      "tags": ["chat-template", "thinking", "campaign"]
+    },
+    {
+      "id": "hotpot_minddr_md9",
+      "protocol": "hotpotqa_template",
+      "query": "Which documents define the MD-9 deep research sentinel A/B and its campaign row?",
+      "evidence_files": [
+        "/workspace/handoffs/active/minddr-deep-research-mode.md",
+        "/workspace/handoffs/active/bulk-inference-campaign.md"
+      ],
+      "tags": ["minddr", "deep-research", "campaign"]
+    },
+    {
+      "id": "hotpot_shape_placement",
+      "protocol": "hotpotqa_template",
+      "query": "Where are shape-keyed contention gating and within-role placement migration connected as rollout or probe work?",
+      "evidence_files": [
+        "/workspace/handoffs/active/shape-keyed-contention-gating.md",
+        "/workspace/handoffs/active/within-role-placement-state-machine.md"
+      ],
+      "tags": ["contention", "placement", "routing"]
+    },
+    {
+      "id": "hotpot_granite_kbrag_embedder",
+      "protocol": "hotpotqa_template",
+      "query": "Which docs connect the Granite 97M embedding bench to KB-RAG embedder choice and dense retrieval decisions?",
+      "evidence_files": [
+        "/workspace/handoffs/active/granite-97m-r2-bench-plan.md",
+        "/workspace/handoffs/active/internal-kb-rag.md",
+        "/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md"
+      ],
+      "tags": ["granite", "embedding", "kb-rag"]
+    },
+    {
+      "id": "hotpot_streaming_kv",
+      "protocol": "hotpotqa_template",
+      "query": "Where are StreamingLLM sink/window KV eviction and the broader KV-cache research context tracked?",
+      "evidence_files": [
+        "/workspace/handoffs/active/streaming-llm-baseline.md",
+        "/workspace/wiki/kv-cache.md"
+      ],
+      "tags": ["kv-cache", "streaming-llm"]
+    },
+    {
+      "id": "hotpot_sliders_rag_alternative",
+      "protocol": "hotpotqa_template",
+      "query": "Which documents frame SLIDERS as a structured database alternative to KB-RAG or RAG over long documents?",
+      "evidence_files": [
+        "/workspace/handoffs/active/sliders-local-validation.md",
+        "/workspace/handoffs/active/internal-kb-rag.md",
+        "/workspace/wiki/rag-alternatives.md"
+      ],
+      "tags": ["sliders", "rag-alternatives", "kb-rag"]
+    },
+    {
+      "id": "hotpot_instrument_repair_measurement",
+      "protocol": "hotpotqa_template",
+      "query": "Which files connect instrument repair, measurement integrity, and the proposed measurement doctrine?",
+      "evidence_files": [
+        "/workspace/handoffs/active/evidence-plane-instrument-repair.md",
+        "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md",
+        "/workspace/handoffs/active/fable5-proposed-MEASUREMENT.md"
+      ],
+      "tags": ["measurement", "instrument-repair", "fable5"]
+    },
+    {
+      "id": "hotpot_routing_truth_controller",
+      "protocol": "hotpotqa_template",
+      "query": "Where is routing truth restoration connected to the learned routing controller and Fable 5's routing critique?",
+      "evidence_files": [
+        "/workspace/handoffs/active/routing-truth-restoration.md",
+        "/workspace/handoffs/active/learned-routing-controller.md",
+        "/workspace/handoffs/active/fable5-findings-02-routing-decision-architecture.md"
+      ],
+      "tags": ["routing", "controller", "fable5"]
+    },
+    {
+      "id": "hotpot_objective_goodput",
+      "protocol": "hotpotqa_template",
+      "query": "Which documents connect AutoPilot objective design, task-rate goodput, and Fable 5's objective critique?",
+      "evidence_files": [
+        "/workspace/handoffs/active/objective-task-rate-goodput.md",
+        "/workspace/handoffs/active/autopilot-continuous-optimization.md",
+        "/workspace/handoffs/active/fable5-findings-05-objective-design.md"
+      ],
+      "tags": ["autopilot", "goodput", "objective"]
+    },
+    {
+      "id": "hotpot_data_flywheel_frontier",
+      "protocol": "hotpotqa_template",
+      "query": "Which frontier documents connect real-task corpus creation, the data flywheel, and strategic frontier findings?",
+      "evidence_files": [
+        "/workspace/handoffs/active/frontier-f1-real-task-corpus.md",
+        "/workspace/handoffs/active/frontier-f3-data-flywheel.md",
+        "/workspace/handoffs/active/fable5-findings-07-strategic-frontiers.md"
+      ],
+      "tags": ["frontier", "data-flywheel", "corpus"]
+    },
+    {
+      "id": "hotpot_capability_registry_promotion",
+      "protocol": "hotpotqa_template",
+      "query": "Where are model capability descriptors connected to registry promotion and capability governance?",
+      "evidence_files": [
+        "/workspace/handoffs/active/model-capability-descriptors.md",
+        "/workspace/handoffs/active/capability-registry-and-promotion.md"
+      ],
+      "tags": ["capability", "registry", "promotion"]
+    },
+    {
+      "id": "hotpot_batched_edit_dcp",
+      "protocol": "hotpotqa_template",
+      "query": "Which handoffs tie batched edit application to delegation-context preassembly and DCP falsification?",
+      "evidence_files": [
+        "/workspace/handoffs/active/batched-edit-parallel-apply.md",
+        "/workspace/handoffs/active/delegation-context-preassembly.md",
+        "/workspace/handoffs/active/bep-dcp-falsification-harness.md"
+      ],
+      "tags": ["batched-edit", "delegation", "dcp"]
+    },
+    {
+      "id": "hotpot_privacy_security_hooks",
+      "protocol": "hotpotqa_template",
+      "query": "Which documents connect privacy hygiene pre-commit work with the security review skill and event-sourcing evidence plane?",
+      "evidence_files": [
+        "/workspace/handoffs/active/privacy-hygiene-precommit-hooks.md",
+        "/workspace/handoffs/active/security-review-skill.md",
+        "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md"
+      ],
+      "tags": ["privacy", "security", "evidence-plane"]
+    },
+    {
+      "id": "hotpot_tool_output_contract",
+      "protocol": "hotpotqa_template",
+      "query": "Where are tool-output compression and the tool-use eval contract jointly tracked?",
+      "evidence_files": [
+        "/workspace/handoffs/active/tool-output-compression.md",
+        "/workspace/handoffs/active/tool-use-eval-contract.md"
+      ],
+      "tags": ["tool-use", "compression", "eval"]
+    },
+    {
+      "id": "hotpot_repl_colgrep_search",
+      "protocol": "hotpotqa_template",
+      "query": "Which docs connect REPL turn efficiency, ColBERT reranking, and the search/retrieval wiki?",
+      "evidence_files": [
+        "/workspace/handoffs/active/repl-turn-efficiency.md",
+        "/workspace/handoffs/active/colbert-reranker-web-research.md",
+        "/workspace/wiki/search-retrieval.md"
+      ],
+      "tags": ["repl", "colbert", "search"]
+    },
+    {
+      "id": "hotpot_deepseek_dsa",
+      "protocol": "hotpotqa_template",
+      "query": "Where are DeepSeek V4/DSA CPU port work and the llama.cpp DSA contribution context documented?",
+      "evidence_files": [
+        "/workspace/handoffs/active/deepseek-v4-flash-cpu-port.md",
+        "/workspace/handoffs/active/llama-cpp-dsa-contribution.md",
+        "/workspace/research/deep-dives/deepseek-v32-dsa-llamacpp-pr21149.md"
+      ],
+      "tags": ["deepseek", "dsa", "llama.cpp"]
+    },
+    {
+      "id": "hotpot_gpu_drafter_mi200",
+      "protocol": "hotpotqa_template",
+      "query": "Which files connect the MI200 GPU drafter hypothesis to the broader GPU acceleration path and Fable serving findings?",
+      "evidence_files": [
+        "/workspace/handoffs/active/gpu-drafter-mi200-investigation.md",
+        "/workspace/handoffs/active/gpu-acceleration-path.md",
+        "/workspace/handoffs/active/fable5-findings-03-serving-and-gpu.md"
+      ],
+      "tags": ["gpu", "mi200", "serving"]
+    },
+    {
+      "id": "hotpot_rocm_kernel_authoring",
+      "protocol": "hotpotqa_template",
+      "query": "Where are ROCm profile verification and agentic ROCm kernel-authoring connected?",
+      "evidence_files": [
+        "/workspace/handoffs/active/rocm-verify-profile-backend.md",
+        "/workspace/handoffs/active/agentic-rocm-kernel-authoring.md",
+        "/workspace/research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md"
+      ],
+      "tags": ["rocm", "kernel", "agentic"]
+    },
+    {
+      "id": "hotpot_cpu_shape_roofline",
+      "protocol": "hotpotqa_template",
+      "query": "Which CPU docs connect shape-specialized GEMV, kernel flag inventory, and CPU roofline findings?",
+      "evidence_files": [
+        "/workspace/handoffs/active/cpu-shape-specialized-gemv-decode.md",
+        "/workspace/handoffs/active/cpu-kernel-env-flags-inventory.md",
+        "/workspace/research/deep-dives/cpu-optimization-phase0-baseline.md"
+      ],
+      "tags": ["cpu", "kernel", "roofline"]
+    },
+    {
+      "id": "hotpot_large_moe_parallelism",
+      "protocol": "hotpotqa_template",
+      "query": "Where are large-MoE expert parallelism, intra-process tensor parallel decode, and prefill/decode disaggregation tracked?",
+      "evidence_files": [
+        "/workspace/handoffs/active/large-moe-expert-parallelism.md",
+        "/workspace/handoffs/active/intra-process-tensor-parallel-decode.md",
+        "/workspace/handoffs/active/numa-prefill-decode-disaggregation.md"
+      ],
+      "tags": ["moe", "tensor-parallel", "numa"]
+    },
+    {
+      "id": "hotpot_dynamic_stack_placement",
+      "protocol": "hotpotqa_template",
+      "query": "Which documents tie dynamic stack concurrency to launcher NUMA mode gating and within-role placement migration?",
+      "evidence_files": [
+        "/workspace/handoffs/active/dynamic-stack-concurrency.md",
+        "/workspace/handoffs/active/launcher-numa-mode-gating.md",
+        "/workspace/handoffs/active/within-role-placement-state-machine.md"
+      ],
+      "tags": ["dynamic-stack", "numa", "placement"]
+    },
+    {
+      "id": "hotpot_evidence_event_ledger",
+      "protocol": "hotpotqa_template",
+      "query": "Which evidence-plane documents define event sourcing, narrative reconstruction, ledgers, and sequential verdicts?",
+      "evidence_files": [
+        "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md",
+        "/workspace/handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md"
+      ],
+      "tags": ["evidence-plane", "event-sourcing", "ledger"]
+    },
+    {
+      "id": "hotpot_rao_redel_cluster",
+      "protocol": "hotpotqa_template",
+      "query": "Where is the RAO plus ReDel substrate spike connected to the RAO/RLM research cluster?",
+      "evidence_files": [
+        "/workspace/handoffs/active/rao-redel-substrate-spike.md",
+        "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md"
+      ],
+      "tags": ["rao", "redel", "research-cluster"]
+    },
+    {
+      "id": "hotpot_delta_mem_m3",
+      "protocol": "hotpotqa_template",
+      "query": "Which docs connect delta-Mem reproduction, M.3 KV-extension topology, and memory-augmented methods?",
+      "evidence_files": [
+        "/workspace/handoffs/active/delta-mem-reproduction.md",
+        "/workspace/research/deep-dives/2026-05-19-frozen-memory-cluster.md",
+        "/workspace/wiki/memory-augmented.md"
+      ],
+      "tags": ["delta-mem", "memory", "kv-extension"]
+    },
+    {
+      "id": "hotpot_engram_longcat",
+      "protocol": "hotpotqa_template",
+      "query": "Where is Engram conditional memory connected to LongCat and the memory-augmented wiki?",
+      "evidence_files": [
+        "/workspace/handoffs/active/engram-conditional-memory.md",
+        "/workspace/research/deep-dives/longcat-flash-lite-engram-cpu-poc.md",
+        "/workspace/wiki/memory-augmented.md"
+      ],
+      "tags": ["engram", "longcat", "memory"]
+    },
+    {
+      "id": "hotpot_memento_reasoning",
+      "protocol": "hotpotqa_template",
+      "query": "Which docs connect Memento block reasoning compression to the broader reasoning-compression track?",
+      "evidence_files": [
+        "/workspace/handoffs/active/memento-block-reasoning-compression.md",
+        "/workspace/research/deep-dives/memento-iterative-reasoning-cluster.md",
+        "/workspace/handoffs/active/reasoning-compression.md"
+      ],
+      "tags": ["memento", "reasoning", "compression"]
+    },
+    {
+      "id": "hotpot_summary_token_attention",
+      "protocol": "hotpotqa_template",
+      "query": "Where are summary-token attention readiness, multiscreen attention, and context folding connected?",
+      "evidence_files": [
+        "/workspace/handoffs/active/summary-token-attention-readiness.md",
+        "/workspace/handoffs/active/multiscreen-attention-evaluation.md",
+        "/workspace/handoffs/active/context-folding-progressive.md"
+      ],
+      "tags": ["attention", "summary-token", "context"]
+    },
+    {
+      "id": "hotpot_yarn_streaming_context",
+      "protocol": "hotpotqa_template",
+      "query": "Which documents connect YaRN context extension, RoPE long-context bounds, and StreamingLLM?",
+      "evidence_files": [
+        "/workspace/handoffs/active/yarn-context-extension-research.md",
+        "/workspace/research/deep-dives/2026-05-20-rope-long-context-bounds.md",
+        "/workspace/handoffs/active/streaming-llm-baseline.md"
+      ],
+      "tags": ["yarn", "rope", "streaming-llm"]
+    },
+    {
+      "id": "hotpot_triattention_attention_matching",
+      "protocol": "hotpotqa_template",
+      "query": "Where are TriAttention, attention matching, and the inference acceleration index tied together?",
+      "evidence_files": [
+        "/workspace/handoffs/active/triattention-kv-selection.md",
+        "/workspace/handoffs/active/attention-matching-kv-compaction.md",
+        "/workspace/handoffs/active/inference-acceleration-index.md"
+      ],
+      "tags": ["kv-cache", "triattention", "attention-matching"]
+    },
+    {
+      "id": "hotpot_multimodal_ocr",
+      "protocol": "hotpotqa_template",
+      "query": "Which docs connect multimodal pipeline work, OpenDataLoader integration, and ERNIE image evaluation?",
+      "evidence_files": [
+        "/workspace/handoffs/active/multimodal-pipeline.md",
+        "/workspace/handoffs/active/opendataloader-pipeline-integration.md",
+        "/workspace/handoffs/active/ernie-image-turbo-evaluation.md"
+      ],
+      "tags": ["multimodal", "ocr", "document"]
+    },
+    {
+      "id": "hotpot_hermes_outer_shell",
+      "protocol": "hotpotqa_template",
+      "query": "Where are Hermes agent indexing and outer-shell integration tracked?",
+      "evidence_files": [
+        "/workspace/handoffs/active/hermes-agent-index.md",
+        "/workspace/handoffs/active/hermes-outer-shell.md"
+      ],
+      "tags": ["hermes", "outer-shell"]
+    },
+    {
+      "id": "hotpot_proof_pipeline_goedel",
+      "protocol": "hotpotqa_template",
+      "query": "Which documents connect the proof pipeline, MathSmith/HC eval, and Goedel-Code-Prover analysis?",
+      "evidence_files": [
+        "/workspace/handoffs/active/pipeline-integration-index.md",
+        "/workspace/handoffs/active/mathsmith-hc-formalizer-eval.md",
+        "/workspace/research/deep-dives/goedel-code-prover-analysis.md"
+      ],
+      "tags": ["proof", "goedel", "mathsmith"]
+    },
+    {
+      "id": "hotpot_leanstral_planning",
+      "protocol": "hotpotqa_template",
+      "query": "Where is Leanstral planning connected to the proof pipeline and formalizer evaluation?",
+      "evidence_files": [
+        "/workspace/handoffs/active/pipeline-integration-index.md",
+        "/workspace/research/deep-dives/leanstral-architecture-analysis.md",
+        "/workspace/handoffs/active/mathsmith-hc-formalizer-eval.md"
+      ],
+      "tags": ["leanstral", "proof", "planner"]
+    },
+    {
+      "id": "hotpot_searx_search_rerank",
+      "protocol": "hotpotqa_template",
+      "query": "Which docs connect SearxNG search backend, ColBERT reranking, and search/retrieval governance?",
+      "evidence_files": [
+        "/workspace/handoffs/active/searxng-search-backend.md",
+        "/workspace/handoffs/active/colbert-reranker-web-research.md",
+        "/workspace/wiki/search-retrieval.md"
+      ],
+      "tags": ["search", "searxng", "rerank"]
+    },
+    {
+      "id": "hotpot_repo_readiness_publication",
+      "protocol": "hotpotqa_template",
+      "query": "Where are repo readiness scoring, upstream publication, and privacy hygiene tied together?",
+      "evidence_files": [
+        "/workspace/handoffs/active/repo-readiness-scorer.md",
+        "/workspace/handoffs/active/frontier-f6-upstream-publication.md",
+        "/workspace/handoffs/active/privacy-hygiene-precommit-hooks.md"
+      ],
+      "tags": ["repo-readiness", "publication", "privacy"]
+    },
+    {
+      "id": "hotpot_agent_file_security",
+      "protocol": "hotpotqa_template",
+      "query": "Which handoffs connect agent-file prose compression with the new security-review skill?",
+      "evidence_files": [
+        "/workspace/handoffs/active/agent-file-prose-compression.md",
+        "/workspace/handoffs/active/security-review-skill.md"
+      ],
+      "tags": ["agent-files", "security", "skills"]
+    },
+    {
+      "id": "hotpot_capability_descriptors_routing",
+      "protocol": "hotpotqa_template",
+      "query": "Where are model-capability descriptors connected to capability promotion and routing optimization?",
+      "evidence_files": [
+        "/workspace/handoffs/active/model-capability-descriptors.md",
+        "/workspace/handoffs/active/capability-registry-and-promotion.md",
+        "/workspace/handoffs/active/routing-and-optimization-index.md"
+      ],
+      "tags": ["capability", "routing", "registry"]
+    },
+    {
+      "id": "hotpot_minddr_agent_world",
+      "protocol": "hotpotqa_template",
+      "query": "Which docs connect MindDR deep research mode to Agent-World environment synthesis?",
+      "evidence_files": [
+        "/workspace/handoffs/active/minddr-deep-research-mode.md",
+        "/workspace/handoffs/active/agent-world-env-synthesis.md",
+        "/workspace/research/deep-dives/agent-world-environment-synthesis.md"
+      ],
+      "tags": ["minddr", "agent-world", "environment"]
+    },
+    {
+      "id": "hotpot_meta_harness_halo",
+      "protocol": "hotpotqa_template",
+      "query": "Where are meta-harness optimization, HALO trace-loop, and cognitive accumulation ideas connected?",
+      "evidence_files": [
+        "/workspace/handoffs/active/meta-harness-optimization.md",
+        "/workspace/handoffs/active/halo-trace-loop-spike.md",
+        "/workspace/research/deep-dives/hcc-cognitive-accumulation-autopilot.md"
+      ],
+      "tags": ["meta-harness", "halo", "autopilot"]
+    },
+    {
+      "id": "hotpot_xmas_router_dataset",
+      "protocol": "hotpotqa_template",
+      "query": "Which docs connect X-MAS text routing, the routing index, and the Lollms smart-router dataset follow-up?",
+      "evidence_files": [
+        "/workspace/handoffs/active/x-mas-text-routing.md",
+        "/workspace/handoffs/active/routing-and-optimization-index.md",
+        "/workspace/research/deep-dives/2026-06-12-lollms-smart-router-dataset.md"
+      ],
+      "tags": ["x-mas", "routing", "dataset"]
+    },
+    {
+      "id": "hotpot_bulk_campaign_master_index",
+      "protocol": "hotpotqa_template",
+      "query": "Where are bulk inference campaign sequencing and the proposed Fable master-index rewrite connected?",
+      "evidence_files": [
+        "/workspace/handoffs/active/bulk-inference-campaign.md",
+        "/workspace/handoffs/active/master-handoff-index.md",
+        "/workspace/handoffs/active/fable5-proposed-master-index-rewrite.md"
+      ],
+      "tags": ["campaign", "master-index", "fable5"]
+    },
+    {
+      "id": "hotpot_multifile_coding_capability",
+      "protocol": "hotpotqa_template",
+      "query": "Which docs connect multi-file coding capability to the real-task corpus and model capability descriptors?",
+      "evidence_files": [
+        "/workspace/handoffs/active/multi-file-coding-completion-capability.md",
+        "/workspace/handoffs/active/frontier-f1-real-task-corpus.md",
+        "/workspace/handoffs/active/model-capability-descriptors.md"
+      ],
+      "tags": ["coding", "capability", "real-task"]
+    },
+    {
+      "id": "hotpot_opendataloader_liteparse",
+      "protocol": "hotpotqa_template",
+      "query": "Where are OpenDataLoader integration, LiteParse document parsing, and multimodal pipeline choices connected?",
+      "evidence_files": [
+        "/workspace/handoffs/active/opendataloader-pipeline-integration.md",
+        "/workspace/research/deep-dives/liteparse-document-parser-deep-dive.md",
+        "/workspace/handoffs/active/multimodal-pipeline.md"
+      ],
+      "tags": ["document", "parser", "multimodal"]
+    },
+    {
+      "id": "hotpot_tq3_quantization",
+      "protocol": "hotpotqa_template",
+      "query": "Which docs connect TQ3 quantization evaluation to CPU and inference acceleration indices?",
+      "evidence_files": [
+        "/workspace/handoffs/active/tq3-quantization-evaluation.md",
+        "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+        "/workspace/handoffs/active/inference-acceleration-index.md"
+      ],
+      "tags": ["quantization", "cpu", "inference"]
+    },
+    {
+      "id": "locomo_fable_handoff_evolution",
+      "protocol": "locomo_template",
+      "query": "Follow the Fable 5 handoff from architecture-review prompt to executive findings to master-index rewrite.",
+      "evidence_files": [
+        "/workspace/handoffs/active/fable5-architecture-review.md",
+        "/workspace/handoffs/active/fable5-findings-00-executive-summary.md",
+        "/workspace/handoffs/active/fable5-proposed-master-index-rewrite.md"
+      ],
+      "tags": ["fable5", "handoff", "portfolio"]
+    },
+    {
+      "id": "locomo_measurement_integrity_chain",
+      "protocol": "locomo_template",
+      "query": "Trace the measurement integrity chain from Fable 5 findings into the proposed measurement document and evidence-plane repair handoff.",
+      "evidence_files": [
+        "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md",
+        "/workspace/handoffs/active/fable5-proposed-MEASUREMENT.md",
+        "/workspace/handoffs/active/evidence-plane-instrument-repair.md"
+      ],
+      "tags": ["measurement", "evidence-plane", "fable5"]
+    },
+    {
+      "id": "locomo_objective_design_trace",
+      "protocol": "locomo_template",
+      "query": "Trace the objective-design critique through the Fable findings and the AutoPilot continuous optimization handoff.",
+      "evidence_files": [
+        "/workspace/handoffs/active/fable5-findings-05-objective-design.md",
+        "/workspace/handoffs/active/autopilot-continuous-optimization.md"
+      ],
+      "tags": ["objective-design", "autopilot", "fable5"]
+    },
+    {
+      "id": "locomo_kernel_concurrency_trace",
+      "protocol": "locomo_template",
+      "query": "Follow kernel and concurrency priorities from Fable findings into CPU kernel and inference acceleration indices.",
+      "evidence_files": [
+        "/workspace/handoffs/active/fable5-findings-06-kernel-and-concurrency.md",
+        "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+        "/workspace/handoffs/active/inference-acceleration-index.md"
+      ],
+      "tags": ["kernel", "concurrency", "inference"]
+    },
+    {
+      "id": "locomo_trace_memory_events",
+      "protocol": "locomo_template",
+      "query": "Which documents connect unified trace memory, event sourcing, and evidence-plane narrative reconstruction?",
+      "evidence_files": [
+        "/workspace/handoffs/active/unified-trace-memory-service.md",
+        "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md",
+        "/workspace/handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md"
+      ],
+      "tags": ["trace", "event-sourcing", "evidence-plane"]
+    },
+    {
+      "id": "locomo_tool_contract_to_eval",
+      "protocol": "locomo_template",
+      "query": "Trace how the tool-use eval contract feeds broader eval tower verification and measurement repair.",
+      "evidence_files": [
+        "/workspace/handoffs/active/tool-use-eval-contract.md",
+        "/workspace/handoffs/active/eval-tower-verification.md",
+        "/workspace/handoffs/active/fable5-findings-01-measurement-and-integrity.md"
+      ],
+      "tags": ["tool-use", "eval", "measurement"]
+    },
+    {
+      "id": "locomo_search_retrieval_stack",
+      "protocol": "locomo_template",
+      "query": "Follow the search and retrieval stack from wiki overview to KB-RAG and external web reranking.",
+      "evidence_files": [
+        "/workspace/wiki/search-retrieval.md",
+        "/workspace/handoffs/active/internal-kb-rag.md",
+        "/workspace/handoffs/active/colbert-reranker-web-research.md"
+      ],
+      "tags": ["search", "retrieval", "reranker"]
+    },
+    {
+      "id": "locomo_memory_augmented_stack",
+      "protocol": "locomo_template",
+      "query": "Which documents connect memory-augmented methods, engram conditional memory, and unified trace memory?",
+      "evidence_files": [
+        "/workspace/wiki/memory-augmented.md",
+        "/workspace/handoffs/active/engram-conditional-memory.md",
+        "/workspace/handoffs/active/unified-trace-memory-service.md"
+      ],
+      "tags": ["memory", "engram", "trace"]
+    },
+    {
+      "id": "locomo_fable_impl_sequence",
+      "protocol": "locomo_template",
+      "query": "Trace the Fable 5 implementation sequence from measurement repair through routing architecture into portfolio index cleanup.",
+      "evidence_files": [
+        "/workspace/handoffs/active/fable5-findings-01-impl-plan.md",
+        "/workspace/handoffs/active/fable5-findings-02-impl-plan.md",
+        "/workspace/handoffs/active/fable5-findings-04-impl-plan.md",
+        "/workspace/handoffs/active/fable5-proposed-master-index-rewrite.md"
+      ],
+      "tags": ["fable5", "implementation", "indices"]
+    },
+    {
+      "id": "locomo_autopilot_degradation_response",
+      "protocol": "locomo_template",
+      "query": "Follow the AutoPilot degradation response from objective design into evidence-plane integrity and task-rate goodput.",
+      "evidence_files": [
+        "/workspace/handoffs/active/autopilot-continuous-optimization.md",
+        "/workspace/handoffs/active/evidence-plane-instrument-repair.md",
+        "/workspace/handoffs/active/objective-task-rate-goodput.md"
+      ],
+      "tags": ["autopilot", "degradation", "goodput"]
+    },
+    {
+      "id": "locomo_kbrag_evolution",
+      "protocol": "locomo_template",
+      "query": "Trace KB-RAG from the active handoff through the June 12 and June 13 progress updates.",
+      "evidence_files": [
+        "/workspace/handoffs/active/internal-kb-rag.md",
+        "/workspace/progress/2026-06/2026-06-12.md",
+        "/workspace/progress/2026-06/2026-06-13.md"
+      ],
+      "tags": ["k-rag", "progress", "validation"]
+    },
+    {
+      "id": "locomo_non_inference_backlog_evolution",
+      "protocol": "locomo_template",
+      "query": "Trace the non-inference backlog through the master index and June 13 closeout work.",
+      "evidence_files": [
+        "/workspace/handoffs/active/non-inference-backlog.md",
+        "/workspace/handoffs/active/master-handoff-index.md",
+        "/workspace/progress/2026-06/2026-06-13.md"
+      ],
+      "tags": ["non-inference", "backlog", "progress"]
+    },
+    {
+      "id": "locomo_xmas_routing_path",
+      "protocol": "locomo_template",
+      "query": "Trace the X-MAS routing path from handoff through routing index and June 13 scaffold progress.",
+      "evidence_files": [
+        "/workspace/handoffs/active/x-mas-text-routing.md",
+        "/workspace/handoffs/active/routing-and-optimization-index.md",
+        "/workspace/progress/2026-06/2026-06-13.md"
+      ],
+      "tags": ["x-mas", "routing", "progress"]
+    },
+    {
+      "id": "locomo_goedel_pipeline_path",
+      "protocol": "locomo_template",
+      "query": "Trace the Goedel proof-pipeline path from research analysis through artifact generation and activation gates.",
+      "evidence_files": [
+        "/workspace/research/deep-dives/goedel-code-prover-analysis.md",
+        "/workspace/handoffs/active/pipeline-integration-index.md",
+        "/workspace/progress/2026-06/2026-06-13.md"
+      ],
+      "tags": ["goedel", "proof", "progress"]
+    },
+    {
+      "id": "locomo_streamingllm_path",
+      "protocol": "locomo_template",
+      "query": "Trace StreamingLLM from baseline handoff through inference index update and June 13 scaffold progress.",
+      "evidence_files": [
+        "/workspace/handoffs/active/streaming-llm-baseline.md",
+        "/workspace/handoffs/active/inference-acceleration-index.md",
+        "/workspace/progress/2026-06/2026-06-13.md"
+      ],
+      "tags": ["streaming-llm", "kv-cache", "progress"]
+    },
+    {
+      "id": "locomo_gpu_strategy_trace",
+      "protocol": "locomo_template",
+      "query": "Follow the GPU strategy trace from Fable serving findings through GPU acceleration, MI200 drafter, and ROCm verification work.",
+      "evidence_files": [
+        "/workspace/handoffs/active/fable5-findings-03-serving-and-gpu.md",
+        "/workspace/handoffs/active/gpu-acceleration-path.md",
+        "/workspace/handoffs/active/gpu-drafter-mi200-investigation.md",
+        "/workspace/handoffs/active/rocm-verify-profile-backend.md"
+      ],
+      "tags": ["gpu", "rocm", "mi200"]
+    },
+    {
+      "id": "locomo_evidence_plane_family",
+      "protocol": "locomo_template",
+      "query": "Trace the evidence-plane family across measurement, instrument repair, ledger repair, and event-sourced narrative reconstruction.",
+      "evidence_files": [
+        "/workspace/handoffs/active/fable5-proposed-MEASUREMENT.md",
+        "/workspace/handoffs/active/evidence-plane-instrument-repair.md",
+        "/workspace/handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md",
+        "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md"
+      ],
+      "tags": ["evidence-plane", "measurement", "ledger"]
+    },
+    {
+      "id": "locomo_frontier_portfolio",
+      "protocol": "locomo_template",
+      "query": "Follow the strategic frontier portfolio from Fable findings into real-task corpus, data flywheel, and economic ledger work.",
+      "evidence_files": [
+        "/workspace/handoffs/active/fable5-findings-07-strategic-frontiers.md",
+        "/workspace/handoffs/active/frontier-f1-real-task-corpus.md",
+        "/workspace/handoffs/active/frontier-f3-data-flywheel.md",
+        "/workspace/handoffs/active/frontier-f7-economic-ledger.md"
+      ],
+      "tags": ["frontier", "portfolio", "flywheel"]
+    },
+    {
+      "id": "locomo_routing_repair_family",
+      "protocol": "locomo_template",
+      "query": "Trace the routing repair family through truth restoration, learned controller, retraining, and X-MAS specialization.",
+      "evidence_files": [
+        "/workspace/handoffs/active/routing-truth-restoration.md",
+        "/workspace/handoffs/active/learned-routing-controller.md",
+        "/workspace/handoffs/active/retrain-routing-models.md",
+        "/workspace/handoffs/active/x-mas-text-routing.md"
+      ],
+      "tags": ["routing", "controller", "x-mas"]
+    },
+    {
+      "id": "locomo_kernel_workflow",
+      "protocol": "locomo_template",
+      "query": "Follow kernel workflow priorities across CPU optimization, shape-specialized GEMV, large-MoE expert parallelism, and tensor-parallel decode.",
+      "evidence_files": [
+        "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+        "/workspace/handoffs/active/cpu-shape-specialized-gemv-decode.md",
+        "/workspace/handoffs/active/large-moe-expert-parallelism.md",
+        "/workspace/handoffs/active/intra-process-tensor-parallel-decode.md"
+      ],
+      "tags": ["cpu", "kernel", "parallelism"]
+    }
+  ]
+}

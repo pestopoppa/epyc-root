@@ -1,0 +1,7 @@
+rc=0 time=2026-10-31T02:51:21Z reason=complete
+job_id=codex-ni-kbrag-g13-truncskip-r2-20261030
+owner=codex-ni
+step=job-run
+estimated_wall_s=21600
+started=2026-10-30T23:28:36Z
+regions=0-23

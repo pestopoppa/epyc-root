@@ -1,0 +1,193 @@
+{
+  "arm": "canonical_stored",
+  "id": "hotpot_objective_goodput",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/objective-task-rate-goodput.md",
+    "/workspace/handoffs/active/autopilot-continuous-optimization.md",
+    "/workspace/handoffs/active/fable5-findings-05-objective-design.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/fable5-findings-05-objective-design.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/objective-task-rate-goodput.md",
+    "/workspace/handoffs/active/autopilot-continuous-optimization.md",
+    "/workspace/handoffs/active/fable5-findings-05-objective-design.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/objective-task-rate-goodput.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/autopilot-continuous-optimization.md",
+      "/workspace/handoffs/active/fable5-findings-05-objective-design.md"
+    ],
+    "first_evidence_rank": 6,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/wiki/cost-aware-routing.md",
+      "/workspace/handoffs/completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md",
+      "/workspace/progress/2026-06/2026-06-19.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/active/objective-task-rate-goodput.md",
+      "/workspace/handoffs/active/objective-task-rate-goodput.md",
+      "/workspace/wiki/autonomous-research.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/completed/fable5-findings-05-objective-design.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/wiki/cost-aware-routing.md",
+      "heading_path": [
+        "Cost-Aware Routing",
+        "2026-06-13 Update \u2014 Task Rate, Goodput, And Bloat"
+      ],
+      "line_range": [
+        130,
+        137
+      ],
+      "snippet": "## 2026-06-13 Update \u2014 Task Rate, Goodput, And Bloat\n\nFable 5 identified a cost blind spot in the live AutoPilot objective: `quality`, generated-token throughput, tier-cost proxy, and reliability can all fail to distinguish a terse correct ",
+      "score": 0.9444,
+      "content_hash": "1e6cf7e3f28ce5a1"
+    },
+    {
+      "file": "/workspace/handoffs/completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md",
+      "heading_path": [
+        "AutoPilot: Continuous Recursive Optimization"
+      ],
+      "line_range": [
+        181,
+        196
+      ],
+      "snippet": "> **Fable 5 review (2026-06-12)**: the review's architecture recommendations now have owning handoffs: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) (LIVE t775 baseline-ratchet hotfix + dead-question repair), [e",
+      "score": 0.9378,
+      "content_hash": "7a1cc6f1a69c848e"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-19.md",
+      "heading_path": [
+        "2026-06-19 Progress",
+        "N6 task-rate/goodput replay refresh"
+      ],
+      "line_range": [
+        318,
+        325
+      ],
+      "snippet": "## N6 task-rate/goodput replay refresh\n\nAdvanced the inference-free N6 objective-design lane while the AutoPilot W4/W6 shadow run continued. Current code already has the task-rate objective/replay substrate (`src/autopilot_core/tier_specs.p",
+      "score": 0.9377,
+      "content_hash": "0f264d789a5bd904"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue \u2014 W4 instrument/VL repair + goodput doc-truth checkpoint",
+        "Next work"
+      ],
+      "line_range": [
+        209,
+        216
+      ],
+      "snippet": "### Next work\n\n1. Restart AutoPilot from `epyc-orchestrator` HEAD `9bc4c3a` or later after this checkpoint.\n2. Continue inference-free Queue 1: N2 ledger/sequential verdicts design implementation, W5 core_v2 prep, N7 offline analyses (super",
+      "score": 0.9374,
+      "content_hash": "5b1b9f7b8f8f3ae6"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue \u2014 evidence-plane hotfix batch + task-rate replay checkpoint",
+        "Next work"
+      ],
+      "line_range": [
+        165,
+        172
+      ],
+      "snippet": "### Next work\n\n1. Checkpoint/commit this batch with explicit pathspecs because the orchestrator worktree contains unrelated dirty files from prior Fable/autopilot work.\n2. Pick up `routing-truth-restoration.md` W1-W4 next: declared producti",
+      "score": 0.9373,
+      "content_hash": "2d69346c8b907496"
+    },
+    {
+      "file": "/workspace/handoffs/active/objective-task-rate-goodput.md",
+      "heading_path": [
+        "Objective: task_rate Axis + Goodput Frontier Rebuild",
+        "Checkpoints"
+      ],
+      "line_range": [
+        318,
+        334
+      ],
+      "snippet": "## Checkpoints\n\n- 2026-06-12 W2 replay result: 656 journal rows parsed, 0 malformed skipped; legacy canonical T1 frontier = 5 points, task-rate replay frontier = 8 points, admitted entries = 247 in both views. Dropped legacy point: trial 77",
+      "score": 0.9348,
+      "content_hash": "7e5eb69c8757ad6e"
+    },
+    {
+      "file": "/workspace/handoffs/active/objective-task-rate-goodput.md",
+      "heading_path": [
+        "Objective: task_rate Axis + Goodput Frontier Rebuild"
+      ],
+      "line_range": [
+        1,
+        13
+      ],
+      "snippet": "# Objective: task_rate Axis + Goodput Frontier Rebuild\n\n**Status**: W3 FLIPPED AND LIVE \u2705 2026-08-04 \u2014 live dominance is `task_rate_4d_v1`\n`(quality, seq_task_rate_qph, -cost, reliability)` (`afdd5d74`); legacy `median_request_tps` is now\nt",
+      "score": 0.9337,
+      "content_hash": "1f71ecb816835eec"
+    },
+    {
+      "file": "/workspace/wiki/autonomous-research.md",
+      "heading_path": [
+        "Autonomous Research",
+        "Compiled Update \u2014 2026-08-05: least-commitment selection starts as a shadow diagnostic",
+        "Source References"
+      ],
+      "line_range": [
+        901,
+        909
+      ],
+      "snippet": "### Source References\n\n- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md)\n- [AutoPilot continuous optimization](../handoffs/active/autopilot-continuous-optimization.md)\n- [AgentWorld environment synthesis](../hando",
+      "score": 0.9325,
+      "content_hash": "84b5b03386d722b9"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue \u2014 W4 instrument/VL repair + goodput doc-truth checkpoint",
+        "Updated root docs"
+      ],
+      "line_range": [
+        202,
+        208
+      ],
+      "snippet": "### Updated root docs\n\n- `handoffs/active/evidence-plane-instrument-repair.md`: W4 checked off; status now W1-W4 repaired, W5 core_v2 next.\n- `handoffs/active/objective-task-rate-goodput.md`: W4 doc-truth checked off; W3 remains gated by re",
+      "score": 0.9325,
+      "content_hash": "e4528eb7857c4f16"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-05-objective-design.md",
+      "heading_path": [
+        "Fable 5 findings 05 \u2014 Objective design: quality \u00d7 tokens/sec is the wrong product; measure goodput"
+      ],
+      "line_range": [
+        1,
+        6
+      ],
+      "snippet": "# Fable 5 findings 05 \u2014 Objective design: quality \u00d7 tokens/sec is the wrong product; measure goodput\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.",
+      "score": 0.9323,
+      "content_hash": "a0026d7024578282"
+    }
+  ],
+  "wall_s": 14.85870130197145
+}

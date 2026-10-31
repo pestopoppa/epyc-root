@@ -1,0 +1,186 @@
+{
+  "arm": "4000_256_plain",
+  "id": "hotpot_shape_placement",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/shape-keyed-contention-gating.md",
+    "/workspace/handoffs/active/within-role-placement-state-machine.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/shape-keyed-contention-gating.md",
+    "/workspace/handoffs/active/within-role-placement-state-machine.md"
+  ],
+  "metrics": {
+    "evidence_count": 2,
+    "found_count": 2,
+    "found_files": [
+      "/workspace/handoffs/active/shape-keyed-contention-gating.md",
+      "/workspace/handoffs/active/within-role-placement-state-machine.md"
+    ],
+    "missing_files": [],
+    "first_evidence_rank": 4,
+    "all_evidence_rank": 6,
+    "ranked_files": [
+      "/workspace/handoffs/active/design-backlog-triage-2026-07-23.md",
+      "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "/workspace/handoffs/active/bulk-inference-campaign.md",
+      "/workspace/handoffs/active/shape-keyed-contention-gating.md",
+      "/workspace/wiki/routing-intelligence.md",
+      "/workspace/handoffs/active/within-role-placement-state-machine.md",
+      "/workspace/progress/2026-05/2026-05-30.md",
+      "/workspace/progress/2026-06/2026-06-27.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/progress/2026-05/2026-05-31.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.5,
+    "perfect@5": false,
+    "recall@10": 1.0,
+    "perfect@10": true
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/active/design-backlog-triage-2026-07-23.md",
+      "heading_path": [
+        "Design-Backlog Triage (2026-07-23)",
+        "SECTION 1 \u2014 Strategic design concepts (operator decides)"
+      ],
+      "line_range": [
+        64,
+        72
+      ],
+      "snippet": "| B16 | WP-9 distinct-halves lineup | within-role-placement WP-9; wp9-wp10 prep | Move ingest half to NODE1 so frontdoor+ingest halves are core-disjoint and concurrent; turnkey runbook + recert cascade prepared | Post-event probe: both halv",
+      "score": 0.947,
+      "content_hash": "05df0c2d75efb836"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "heading_path": [
+        "EPYC Handoff \u2014 Master Index",
+        "B. ACTIVE \u2014 claimable now (HIGH \u2192 LOW)"
+      ],
+      "line_range": [
+        42,
+        52
+      ],
+      "snippet": "## B. ACTIVE \u2014 claimable now (HIGH \u2192 LOW)\n| # | Item | Gate/note |\n|---|---|---|\n| A1 | **shape-keyed-contention rollout** \u2014 analyze Step-1 observation JSONL (free), then the quiesce-window flag bracket | bracket owns the reload (see \u00a7C) |\n",
+      "score": 0.9442,
+      "content_hash": "2320f53c4445a699"
+    },
+    {
+      "file": "/workspace/handoffs/active/bulk-inference-campaign.md",
+      "heading_path": [
+        "Bulk Inference Campaign \u2014 active backlog (Packages G\u2013K)",
+        "Cross-Role Contention + Placement (shape-keyed-contention-gating) \u2014 TRACKING [added 2026-05-30]"
+      ],
+      "line_range": [
+        620,
+        631
+      ],
+      "snippet": "## Cross-Role Contention + Placement (shape-keyed-contention-gating) \u2014 TRACKING [added 2026-05-30]\n\nSibling to **Package J** (within-role placement). Where Package J makes *one role* fan out across disjoint quarters, this work (`handoffs/ac",
+      "score": 0.942,
+      "content_hash": "d1218c8ea1600ab8"
+    },
+    {
+      "file": "/workspace/handoffs/active/shape-keyed-contention-gating.md",
+      "heading_path": [
+        "Shape-Keyed Contention Gating + Cross-Role Disjoint Placement"
+      ],
+      "line_range": [
+        1,
+        16
+      ],
+      "snippet": "# Shape-Keyed Contention Gating + Cross-Role Disjoint Placement\n\n**Status:** ACTIVE \u2014 A/A-1 code-complete; **Step 1 (cross-role disjoint placement / GLOBAL region mutex) ARMED LIVE 2026-05-31 PM** (API reloaded, `ORCHESTRATOR_CROSS_ROLE_DIS",
+      "score": 0.939,
+      "content_hash": "9ab8bde12bae7f5c"
+    },
+    {
+      "file": "/workspace/wiki/routing-intelligence.md",
+      "heading_path": [
+        "Routing Intelligence",
+        "Key Findings",
+        "New Findings (2026-05-30 \u2014 shape-keyed contention B checkpoint)"
+      ],
+      "line_range": [
+        277,
+        282
+      ],
+      "snippet": "### New Findings (2026-05-30 \u2014 shape-keyed contention B checkpoint)\n\n- **A/A-1 is now code-complete behind default-off flags.** Cross-role placement now computes cross-role region unions and prefers smallest disjoint candidates; A-1 adds a ",
+      "score": 0.9371,
+      "content_hash": "8029514ce5fb5ce4"
+    },
+    {
+      "file": "/workspace/handoffs/active/within-role-placement-state-machine.md",
+      "heading_path": [
+        "Executive summary"
+      ],
+      "line_range": [
+        27,
+        32
+      ],
+      "snippet": "## Executive summary\n\nThe `ConcurrencyAwareBackend` dispatcher and `ContentionGate` admit and place requests by lock availability + NUMA disjointness, but they do not model the within-role full\u2194quarter cpuset overlap relation. Full and over",
+      "score": 0.9368,
+      "content_hash": "49f39deb288cb829"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-30.md",
+      "heading_path": [
+        "2026-05-30 \u2014 manual session log",
+        "Session 2 (2026-05-30, cont.): shape-keyed contention gating \u2014 B core, B wiring, C prep",
+        "Manual wrap-up: shape-keyed contention checkpoint"
+      ],
+      "line_range": [
+        290,
+        312
+      ],
+      "snippet": "### Manual wrap-up: shape-keyed contention checkpoint\n\nRan the manual wrap-up routine for the shape-keyed contention / GitNexus work.\n\nDocumentation updated:\n- `handoffs/active/shape-keyed-contention-gating.md` first screen now reflects the",
+      "score": 0.9357,
+      "content_hash": "a531616a27567ef5"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-27.md",
+      "heading_path": [
+        "Progress \u2014 2026-06-27",
+        "A1 cross-role placement smoke helper"
+      ],
+      "line_range": [
+        666,
+        687
+      ],
+      "snippet": "## A1 cross-role placement smoke helper\n\n**Trigger**: A1/shape-keyed contention Step-2 was blocked on a clean-window live smoke, but the existing placement probe only exercised one role at a time. A sidecar confirmed this was harness prep, ",
+      "score": 0.9355,
+      "content_hash": "cbf3128f3cad3fb2"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "PORTFOLIO REVIEW (2026-06-12, 5 agents, 108 rows): classified verdicts",
+        "ACTIVE-HIGH"
+      ],
+      "line_range": [
+        1174,
+        1180
+      ],
+      "snippet": "## ACTIVE-HIGH\n- **multi-file-coding-completion-capability** [live-active] out: Production rollout decision (when/how routine coding edits auto-route to force_mode='edit'); smart target selection; optional functional-verifier-in-the-loop (s",
+      "score": 0.9349,
+      "content_hash": "7a63974ac2f5e1a6"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-31.md",
+      "heading_path": [
+        "2026-05-31 \u2014 manual session log",
+        "Cross-role region mutex default staged"
+      ],
+      "line_range": [
+        90,
+        108
+      ],
+      "snippet": "## Cross-role region mutex default staged\n\nStaged Step 1 of the shape-keyed contention rollout in `/mnt/raid0/llm/epyc-orchestrator` without reloading the live API because a 185-trial autopilot run was active and a mid-run contention-physic",
+      "score": 0.9349,
+      "content_hash": "a068b120156bfd9a"
+    }
+  ],
+  "wall_s": 14.887669329997152
+}

@@ -1,0 +1,194 @@
+{
+  "arm": "4000_256_plain",
+  "id": "hotpot_hermes_outer_shell",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/hermes-agent-index.md",
+    "/workspace/handoffs/active/hermes-outer-shell.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/hermes-agent-index.md",
+    "/workspace/handoffs/active/hermes-outer-shell.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/hermes-agent-index.md",
+    "/workspace/handoffs/active/hermes-outer-shell.md"
+  ],
+  "metrics": {
+    "evidence_count": 2,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/hermes-agent-index.md",
+      "/workspace/handoffs/active/hermes-outer-shell.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/wiki/agent-architecture.md",
+      "/workspace/progress/2026-07/2026-07-16.md",
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/research/deep-dives/hermes-agent-v2026-4-23-release.md",
+      "/workspace/wiki/agent-architecture.md",
+      "/workspace/research/deep-dives/veniceai-skills-cross-runtime-authoring.md",
+      "/workspace/progress/2026-03/2026-03-15.md",
+      "/workspace/progress/2026-03/2026-03-20.md",
+      "/workspace/research/deep-dives/hermes-agent-v2026-4-23-release.md",
+      "/workspace/research/deep-dives/vercel-open-agents-durable-workflow.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/wiki/agent-architecture.md",
+      "heading_path": [
+        "Agent Architecture",
+        "Hermes/OpenGauss outer shell (2026-05-06)"
+      ],
+      "line_range": [
+        1139,
+        1144
+      ],
+      "snippet": "## Hermes/OpenGauss outer shell (2026-05-06)\n\nCoordinating handoff [hermes-outer-shell.md](../handoffs/active/hermes-outer-shell.md) tracks integration of Hermes (Nous Research agent frontend, upstream at /mnt/raid0/llm/hermes-agent) with O",
+      "score": 0.9248,
+      "content_hash": "9d3db826844a84e0"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-16.md",
+      "heading_path": [
+        "2026-07-16 \u2014 quiet-window replay checkpoint",
+        "Wrap-up checkpoint \u2014 2026-07-16",
+        "What changed"
+      ],
+      "line_range": [
+        889,
+        898
+      ],
+      "snippet": "### What changed\n\n| Repo | File | Update |\n|------|------|--------|\n| `epyc-root` | `handoffs/active/harness-selection-and-integration.md` | New active strategy/index handoff for the open harness-selection decision. |\n| `epyc-root` | `hando",
+      "score": 0.9157,
+      "content_hash": "570abcd67733d242"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "Hermes skill drift guard and overview completed",
+        "Docs"
+      ],
+      "line_range": [
+        4191,
+        4197
+      ],
+      "snippet": "### Docs\n\n- Marked Hermes outer-shell B and C complete in\n  `handoffs/active/hermes-outer-shell.md`.\n- Refreshed `handoffs/active/user-facing-harness-index.md` so the parent index now\n  records skill authoring rubric, drift guard, and overr",
+      "score": 0.9155,
+      "content_hash": "ad1708a77a6adba5"
+    },
+    {
+      "file": "/workspace/research/deep-dives/hermes-agent-v2026-4-23-release.md",
+      "heading_path": [
+        "Deep Dive: hermes-agent v2026.4.23 (v0.11.0)",
+        "Sources"
+      ],
+      "line_range": [
+        183,
+        192
+      ],
+      "snippet": "## Sources\n\n- Primary release: https://github.com/NousResearch/hermes-agent/releases/tag/v2026.4.23\n- Repo: https://github.com/NousResearch/hermes-agent (upstream, we track `main`)\n- Compare (404 at fetch time): https://github.com/NousResea",
+      "score": 0.9154,
+      "content_hash": "0bdb9f29ad55a251"
+    },
+    {
+      "file": "/workspace/wiki/agent-architecture.md",
+      "heading_path": [
+        "Agent Architecture",
+        "Summary",
+        "New Findings (2026-07-16 \u2014 open-source harness selection became a first-class architecture gate)"
+      ],
+      "line_range": [
+        568,
+        573
+      ],
+      "snippet": "### New Findings (2026-07-16 \u2014 open-source harness selection became a first-class architecture gate)\n\n- **The user-facing harness is now treated as a selectable open-source integration point, not a hardcoded frontend.** The new parent index",
+      "score": 0.9126,
+      "content_hash": "48e6d1f27b95d1b6"
+    },
+    {
+      "file": "/workspace/research/deep-dives/veniceai-skills-cross-runtime-authoring.md",
+      "heading_path": [
+        "Deep Dive: Venice.ai Skills \u2014 Cross-Runtime SKILL.md Authoring + OpenAPI Drift Detection",
+        "Cross-EPYC Applicability"
+      ],
+      "line_range": [
+        52,
+        61
+      ],
+      "snippet": "## Cross-EPYC Applicability\n\n- **user-facing-harness-index (intake-117)** \u2014 parent index. Phase 2 P2 block includes the three written skills as \u2705 done. This deep-dive gives that block a next step: a rubric + overview skill + drift detector.",
+      "score": 0.9115,
+      "content_hash": "4a8649095bea1ae2"
+    },
+    {
+      "file": "/workspace/progress/2026-03/2026-03-15.md",
+      "heading_path": [
+        "Progress \u2014 2026-03-15",
+        "Hermes Agent Integration Exploration"
+      ],
+      "line_range": [
+        166,
+        181
+      ],
+      "snippet": "## Hermes Agent Integration Exploration\n\nCreated `handoffs/active/hermes-agent-integration.md` after deep analysis of Nous Research's Hermes Agent (intake-117).\n\n**Key findings**:\n- Memory system simpler than advertised (2 bounded flat file",
+      "score": 0.9114,
+      "content_hash": "31c10ab568b2b62c"
+    },
+    {
+      "file": "/workspace/progress/2026-03/2026-03-20.md",
+      "heading_path": [
+        "2026-03-20 Progress",
+        "Research Intake: FormalQualBench + OpenGauss Deep Dive (Session 2026-03-20b)",
+        "Handoff Restructuring"
+      ],
+      "line_range": [
+        106,
+        115
+      ],
+      "snippet": "### Handoff Restructuring\n\nSplit `hermes-agent-integration.md` (single muddled handoff covering two architecturally opposite paths) into 3 focused handoffs:\n\n| New File | Purpose |\n|----------|---------|\n| `user-facing-harness-index.md` | H",
+      "score": 0.9106,
+      "content_hash": "eaf215f25ad713de"
+    },
+    {
+      "file": "/workspace/research/deep-dives/hermes-agent-v2026-4-23-release.md",
+      "heading_path": [
+        "Deep Dive: hermes-agent v2026.4.23 (v0.11.0)",
+        "Concrete Next Actions"
+      ],
+      "line_range": [
+        167,
+        182
+      ],
+      "snippet": "## Concrete Next Actions\n\nOrdered by ROI \u00d7 certainty:\n\n1. **[DO FIRST \u2014 today or tomorrow] Bump pinned Hermes to v2026.4.23 + smoke-test.** `cd /mnt/raid0/llm/hermes-agent && git pull --ff-only`. Re-run `/workspace/scripts/hermes/setup_herm",
+      "score": 0.9099,
+      "content_hash": "6ce018b8c5a1afbc"
+    },
+    {
+      "file": "/workspace/research/deep-dives/vercel-open-agents-durable-workflow.md",
+      "heading_path": [
+        "Deep Dive \u2014 vercel-labs/open-agents + Vercel Workflow SDK + Sandbox",
+        "3. Control-Plane / Execution-Plane Contract",
+        "Is this directly analogous to hermes-outer-shell?"
+      ],
+      "line_range": [
+        157,
+        174
+      ],
+      "snippet": "### Is this directly analogous to hermes-outer-shell?\n\nPartially. Hermes runs a conversation-level loop (memory, skills, multi-platform gateway) and delegates real work to the orchestrator via `/v1/chat/completions`. The analogy maps:\n\n| op",
+      "score": 0.9094,
+      "content_hash": "43323af184a099d0"
+    }
+  ],
+  "wall_s": 14.649881852092221
+}

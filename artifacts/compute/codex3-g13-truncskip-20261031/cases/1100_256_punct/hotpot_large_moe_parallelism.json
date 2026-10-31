@@ -1,0 +1,195 @@
+{
+  "arm": "1100_256_punct",
+  "id": "hotpot_large_moe_parallelism",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/large-moe-expert-parallelism.md",
+    "/workspace/handoffs/active/intra-process-tensor-parallel-decode.md",
+    "/workspace/handoffs/active/numa-prefill-decode-disaggregation.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/intra-process-tensor-parallel-decode.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/large-moe-expert-parallelism.md",
+    "/workspace/handoffs/active/intra-process-tensor-parallel-decode.md",
+    "/workspace/handoffs/active/numa-prefill-decode-disaggregation.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/large-moe-expert-parallelism.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/intra-process-tensor-parallel-decode.md",
+      "/workspace/handoffs/active/numa-prefill-decode-disaggregation.md"
+    ],
+    "first_evidence_rank": 7,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/completed/nps-reboot-runbook.md",
+      "/workspace/wiki/knowledge-management.md",
+      "/workspace/progress/2026-04/2026-04-26.md",
+      "/workspace/wiki/moe-optimization.md",
+      "/workspace/handoffs/completed/numa-mirror-integration.md",
+      "/workspace/handoffs/completed/large-moe-expert-parallelism-completed-through-2026-05-28.md",
+      "/workspace/handoffs/active/large-moe-expert-parallelism.md",
+      "/workspace/progress/2026-05/2026-05-28.md",
+      "/workspace/progress/2026-04/2026-04-25.md",
+      "/workspace/wiki/moe-optimization.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/nps-reboot-runbook.md",
+      "heading_path": [
+        "System state snapshot",
+        "References"
+      ],
+      "line_range": [
+        336,
+        339
+      ],
+      "snippet": "- Handoffs: `cpu-inference-optimization-index.md`, `intra-process-tensor-parallel-decode.md`, `single-instance-system-tuning.md`, `cpu-shape-specialized-gemv-decode.md`, `cpu-kernel-env-flags-inventory.md`, `../completed/cpu-hierarchical-ba",
+      "score": 0.9289,
+      "content_hash": "ddb6ca846c728007"
+    },
+    {
+      "file": "/workspace/wiki/knowledge-management.md",
+      "heading_path": [
+        "Knowledge Management",
+        "Active/completed twin compaction (2026-05-28)"
+      ],
+      "line_range": [
+        239,
+        241
+      ],
+      "snippet": "The first compaction pass created or refreshed 11 completed ledgers: Lightning Attention, integration-test coverage, REPL turn efficiency, TriAttention/KV selection, context folding, intra-process tensor parallel decode, meta-harness optimi",
+      "score": 0.9278,
+      "content_hash": "404f8901df60503d"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-26.md",
+      "heading_path": [
+        "Protocol (apply to each model below):",
+        "Late-day session \u2014 Research intake batch + CPU16-CPU19 backlog additions (2026-04-26 ~16:00)",
+        "Changes made"
+      ],
+      "line_range": [
+        513,
+        518
+      ],
+      "snippet": "| `handoffs/active/cpu-shape-specialized-gemv-decode.md` | Added \"Phase 4 candidate (CPU18)\" subsection \u2014 MegaBlocks blocked-CSR-COO + transpose-indices port for CPU MoE expert dispatch. |\n| `handoffs/active/large-moe-expert-parallelism.md`",
+      "score": 0.927,
+      "content_hash": "09400b0ae0c617cc"
+    },
+    {
+      "file": "/workspace/wiki/moe-optimization.md",
+      "heading_path": [
+        "MoE Optimization",
+        "Updates \u2014 2026-04-28",
+        "Per-CCD / per-process expert sharding variants (Phase 1+)"
+      ],
+      "line_range": [
+        282,
+        290
+      ],
+      "snippet": "### Per-CCD / per-process expert sharding variants (Phase 1+)\n\nPer [`large-moe-expert-parallelism.md`](../handoffs/active/large-moe-expert-parallelism.md). Two variants tracked under the EP umbrella:\n\n- **Variant 1 \u2014 intra-process per-CCD**",
+      "score": 0.9266,
+      "content_hash": "5f17eb92ccfd2041"
+    },
+    {
+      "file": "/workspace/handoffs/completed/numa-mirror-integration.md",
+      "heading_path": [
+        "NUMA_MIRROR Fork Integration \u2014 vproxy-tools/llama.cpp port"
+      ],
+      "line_range": [
+        13,
+        17
+      ],
+      "snippet": "- [`large-moe-expert-parallelism.md`](../active/large-moe-expert-parallelism.md) \u2014 CPU15 EP per-node anon mmap (would have partially overlapped for MoE; mirror's failure leaves CPU15 in place)\n- [`cpu-shape-specialized-gemv-decode.md`](../a",
+      "score": 0.9258,
+      "content_hash": "1701aa301544aaaa"
+    },
+    {
+      "file": "/workspace/handoffs/completed/large-moe-expert-parallelism-completed-through-2026-05-28.md",
+      "heading_path": [
+        "CPU15 \u2014 Large-MoE as Primary Target + Expert Parallelism",
+        "Objective"
+      ],
+      "line_range": [
+        87,
+        95
+      ],
+      "snippet": "## Objective\n\nTwo linked tracks:\n\n**Track A (strategic).** Reframe the primary single-stream CPU inference target from small dense / small hybrid MoE (30B-A3B class) to **large sparse MoE** (\u2265100B total, \u226510B activated, \u226564 experts). The hy",
+      "score": 0.9257,
+      "content_hash": "316bfa4fdcd5493f"
+    },
+    {
+      "file": "/workspace/handoffs/active/large-moe-expert-parallelism.md",
+      "heading_path": [
+        "CPU15 \u2014 Large-MoE Expert Parallelism Disposition",
+        "Completed Scope"
+      ],
+      "line_range": [
+        96,
+        101
+      ],
+      "snippet": "| Scope | Outcome | Evidence |\n|-------|---------|----------|\n| Phase 0 large-MoE baseline | REAP-246B and MiniMax measured; D1 failed the \"large MoE alone solves it\" threshold. | [completed ledger](../completed/large-moe-expert-parallelism",
+      "score": 0.9248,
+      "content_hash": "bedb12cea916ad57"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-28.md",
+      "heading_path": [
+        "2026-05-28 \u2014 manual session log",
+        "Handoff compaction split pilot \u2014 active/completed twins",
+        "Work completed"
+      ],
+      "line_range": [
+        521,
+        538
+      ],
+      "snippet": "### Work completed\n\nCreated completed ledgers plus lean active twins for 11 oversized or ambiguity-prone handoffs:\n\n- `lightning-attention-port.md`\n- `integration-test-coverage.md`\n- `repl-turn-efficiency.md`\n- `triattention-kv-selection.md",
+      "score": 0.9243,
+      "content_hash": "c7e03d7624902fb5"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-25.md",
+      "heading_path": [
+        "2026-04-25",
+        "CPU15 Phase 1 + Phase 2 + Phase 3.0 \u2014 intra-process EP exhausted; inter-process IPC validated"
+      ],
+      "line_range": [
+        3,
+        6
+      ],
+      "snippet": "## CPU15 Phase 1 + Phase 2 + Phase 3.0 \u2014 intra-process EP exhausted; inter-process IPC validated\n\nContinuation of 2026-04-24's Session 15 + 16 on the `cpu-optimization/q8-8x8-avx512bw` branch and CPU15 (large-MoE expert parallelism) work. T",
+      "score": 0.9242,
+      "content_hash": "b9d85eb0711d7ed8"
+    },
+    {
+      "file": "/workspace/wiki/moe-optimization.md",
+      "heading_path": [
+        "MoE Optimization",
+        "Key Findings",
+        "Inter-process Expert Parallelism (CPU15 Phase 3, 2026-04-25)"
+      ],
+      "line_range": [
+        176,
+        180
+      ],
+      "snippet": "### Inter-process Expert Parallelism (CPU15 Phase 3, 2026-04-25)\n\nAfter REAP made REAP-246B production-viable in absolute terms, the open question shifted to whether *single-stream* throughput on large MoE could exceed the 6.16 t/s Phase 0 ",
+      "score": 0.9235,
+      "content_hash": "e615165b6b168231"
+    }
+  ],
+  "wall_s": 22.157074036076665
+}

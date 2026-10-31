@@ -1,0 +1,197 @@
+{
+  "arm": "4000_300_punct",
+  "id": "hotpot_repl_colgrep_search",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/repl-turn-efficiency.md",
+    "/workspace/handoffs/active/colbert-reranker-web-research.md",
+    "/workspace/wiki/search-retrieval.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/repl-turn-efficiency.md",
+    "/workspace/handoffs/active/colbert-reranker-web-research.md",
+    "/workspace/wiki/search-retrieval.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 2,
+    "found_files": [
+      "/workspace/handoffs/active/colbert-reranker-web-research.md",
+      "/workspace/wiki/search-retrieval.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/repl-turn-efficiency.md"
+    ],
+    "first_evidence_rank": 3,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/research/deep-dives/2026-06-12-obliq-bench-retrieval-eval.md",
+      "/workspace/wiki/rag-alternatives.md",
+      "/workspace/handoffs/active/colbert-reranker-web-research.md",
+      "/workspace/progress/2026-04/2026-04-14.md",
+      "/workspace/progress/2026-04/2026-04-17.md",
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/wiki/search-retrieval.md",
+      "/workspace/handoffs/active/internal-kb-rag.md",
+      "/workspace/research/deep-dives/lighton-denseon-lateon-retrieval-upgrade.md",
+      "/workspace/progress/2026-04/2026-04-14.md"
+    ],
+    "recall@3": 0.3333333333333333,
+    "perfect@3": false,
+    "recall@5": 0.3333333333333333,
+    "perfect@5": false,
+    "recall@10": 0.6666666666666666,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/research/deep-dives/2026-06-12-obliq-bench-retrieval-eval.md",
+      "heading_path": [
+        "OBLIQ-Bench \u2014 Deep-Dive: Oblique-Query Retrieval Eval (intake-689)",
+        "Fit to EPYC",
+        "Dataset-reuse vs methodology-reuse"
+      ],
+      "line_range": [
+        59,
+        68
+      ],
+      "snippet": "### Dataset-reuse vs methodology-reuse\n\n**Dataset-reuse: NO (domain mismatch).** Our two retrieval surfaces are:\n- (a) **web_research ColBERT reranking** \u2014 reranks ~10 *web search snippets* (`colbert-reranker-web-research.md`).\n- (b) **inte",
+      "score": 0.9352,
+      "content_hash": "07a63be17a99b3e0"
+    },
+    {
+      "file": "/workspace/wiki/rag-alternatives.md",
+      "heading_path": [
+        "RAG Alternatives",
+        "Related Categories"
+      ],
+      "line_range": [
+        94,
+        99
+      ],
+      "snippet": "## Related Categories\n\n- [Knowledge Management](knowledge-management.md) \u2014 KB-RAG and wiki compilation as the primary architectures\n- [Search & Retrieval](search-retrieval.md) \u2014 ColBERT-based retrieval (the dominant path EPYC uses)\n- [Conte",
+      "score": 0.9347,
+      "content_hash": "3f208ed52433d933"
+    },
+    {
+      "file": "/workspace/handoffs/active/colbert-reranker-web-research.md",
+      "heading_path": [
+        "ColBERT Reranker for web_research Pipeline",
+        "Research Intake Update \u2014 2026-04-17",
+        "New Related Research"
+      ],
+      "line_range": [
+        381,
+        392
+      ],
+      "snippet": "### New Related Research\n- **[intake-405] \"Witchcraft: Rust XTR-Warp Semantic Search Engine\"** (github:dropbox/witchcraft)\n  - Relevance: Alternative retrieval architecture in the same multi-vector space. XTR (token retrieval) vs ColBERT (l",
+      "score": 0.9345,
+      "content_hash": "e07c0f862be69bf4"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-14.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-14",
+        "Session 10 \u2014 Wiki Compilation Skill Integration + Incremental Compile",
+        "Changes"
+      ],
+      "line_range": [
+        421,
+        431
+      ],
+      "snippet": "### Changes\n\n| Repo | File | Change |\n|------|------|--------|\n| epyc-root | `.claude/commands/wrap-up.md` | Added Step 5 (Wiki Compilation) between Repository Documentation and Agent Log. Runs `compile_sources.py`, skips if `total_new == 0",
+      "score": 0.9343,
+      "content_hash": "e411217cf8b67762"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-17.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-17",
+        "Session 5 \u2014 Research Intake: Dropbox Witchcraft (XTR-Warp Rust Semantic Search)",
+        "Results"
+      ],
+      "line_range": [
+        430,
+        436
+      ],
+      "snippet": "### Results\n\n- **Intake index**: 407 entries, `validate_intake.py` passes\n- **Key finding**: Witchcraft validates the ColBERT reranking decision \u2014 XTR trades accuracy for speed (33% vs 55% NDCG@10), which is the wrong tradeoff for our 10-sn",
+      "score": 0.9333,
+      "content_hash": "da1f5c9516eaa6c5"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "ColGREP version/index hygiene closed",
+        "Root docs"
+      ],
+      "line_range": [
+        4141,
+        4149
+      ],
+      "snippet": "### Root docs\n\n- Marked ColGREP version/index hygiene complete in\n  `handoffs/active/repl-turn-efficiency.md`; only S4 Omega A/B remains active\n  for that handoff.\n- Updated `research-evaluation-index.md`, `master-handoff-index.md`, and\n  `",
+      "score": 0.9331,
+      "content_hash": "a8cadcce2c2fc026"
+    },
+    {
+      "file": "/workspace/wiki/search-retrieval.md",
+      "heading_path": [
+        "Search & Retrieval",
+        "Summary"
+      ],
+      "line_range": [
+        8,
+        18
+      ],
+      "snippet": "## Summary\n\nThe EPYC stack uses ColBERT-based multi-vector retrieval for both codebase search and document search, with a separate BGE-large single-vector system for routing memory (MemRL episodic store). The retrieval architecture has been",
+      "score": 0.9326,
+      "content_hash": "7aad574699e45dee"
+    },
+    {
+      "file": "/workspace/handoffs/active/internal-kb-rag.md",
+      "heading_path": [
+        "Internal Knowledge-Base RAG",
+        "Objective"
+      ],
+      "line_range": [
+        13,
+        16
+      ],
+      "snippet": "## Objective\n\nStand up a ColBERT-based RAG over our own markdown knowledge base so every Explore-agent invocation can retrieve relevant prior context instead of grep/find blind across 53+ active handoffs and 24 wiki articles. Same plumbing ",
+      "score": 0.9322,
+      "content_hash": "dcdf77d03f1cfccf"
+    },
+    {
+      "file": "/workspace/research/deep-dives/lighton-denseon-lateon-retrieval-upgrade.md",
+      "heading_path": [
+        "LightOn DenseOn + LateOn: Retrieval Upgrade Deep Dive",
+        "8. Cross-References",
+        "8.3 Wiki"
+      ],
+      "line_range": [
+        366,
+        370
+      ],
+      "snippet": "### 8.3 Wiki\n\n- [`wiki/search-retrieval.md`](/workspace/wiki/search-retrieval.md) \u2014 update after E1/E2/E3 decision: add LateOn/DenseOn rows to the ColBERT family table, update the \"GTE-ModernColBERT-v1 is deployed\" actionable, add decontami",
+      "score": 0.9322,
+      "content_hash": "6b291e2f0fb9f899"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-14.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-14",
+        "Session 9 \u2014 ColBERT Reranker Handoff Finalization + S1/S2 Implementation",
+        "Handoff Document Updates"
+      ],
+      "line_range": [
+        380,
+        387
+      ],
+      "snippet": "### Handoff Document Updates\n\n| File | Change |\n|------|--------|\n| `handoffs/active/colbert-reranker-web-research.md` | Full rewrite: status\u2192ready for implementation, architecture resolved, model selected, work items sequenced, S1/S2 marke",
+      "score": 0.9319,
+      "content_hash": "2cca5ea45ee64534"
+    }
+  ],
+  "wall_s": 13.532291756942868
+}

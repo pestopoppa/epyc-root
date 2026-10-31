@@ -1,0 +1,191 @@
+{
+  "arm": "1100_256_punct",
+  "id": "hotpot_repo_readiness_publication",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/repo-readiness-scorer.md",
+    "/workspace/handoffs/active/frontier-f6-upstream-publication.md",
+    "/workspace/handoffs/active/privacy-hygiene-precommit-hooks.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/privacy-hygiene-precommit-hooks.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/repo-readiness-scorer.md",
+    "/workspace/handoffs/active/frontier-f6-upstream-publication.md",
+    "/workspace/handoffs/active/privacy-hygiene-precommit-hooks.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/repo-readiness-scorer.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/frontier-f6-upstream-publication.md",
+      "/workspace/handoffs/active/privacy-hygiene-precommit-hooks.md"
+    ],
+    "first_evidence_rank": 5,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/wiki/benchmark-methodology.md",
+      "/workspace/progress/2026-06/master-index-pre-rewrite-archive-2026-06-12.md",
+      "/workspace/progress/2026-09/2026-09-17-sub-op-decisions.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/handoffs/active/repo-readiness-scorer.md",
+      "/workspace/progress/2026-06/2026-06-21.md",
+      "/workspace/progress/2026-08/2026-08-25-mainA-evl38.md",
+      "/workspace/progress/2026-06/2026-06-27.md",
+      "/workspace/progress/2026-06/repo-readiness-remediation-2026-06-28.md",
+      "/workspace/progress/2026-07/repo-readiness-remediation-2026-07-03.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.3333333333333333,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/wiki/benchmark-methodology.md",
+      "heading_path": [
+        "Benchmark Methodology",
+        "Math-Verify Integration for Math Benchmarks",
+        "New Findings (2026-06-13 \u2014 Evidence Plane And Claim Discipline)"
+      ],
+      "line_range": [
+        1108,
+        1109
+      ],
+      "snippet": "- **Publication-grade benchmark claims now require protocol, reps, date, and attestation.** The public-methodology draft uses the CPU frontdoor example where an apparent +17% improvement collapses to +1.6% under canonical controls, with the",
+      "score": 0.9221,
+      "content_hash": "c76bc2e1f5a777e7"
+    },
+    {
+      "file": "/workspace/progress/2026-06/master-index-pre-rewrite-archive-2026-06-12.md",
+      "heading_path": [
+        "EPYC Handoff \u2014 Master Index",
+        "Standalone Handoffs"
+      ],
+      "line_range": [
+        164,
+        166
+      ],
+      "snippet": "| [root-archetype-linter-templates-upstream.md](root-archetype-linter-templates-upstream.md) | Cross-repo upstreaming | REFRESHED 2026-05-28 \u2014 epyc-root side done; 3 cleanup tasks remain in `/mnt/raid0/llm/root-archetype`. Local clone exist",
+      "score": 0.9213,
+      "content_hash": "4d5402380da6cff0"
+    },
+    {
+      "file": "/workspace/progress/2026-09/2026-09-17-sub-op-decisions.md",
+      "heading_path": [
+        "2026-09-17 \u2014 sub-op-decisions (three operator rulings applied; zero inference)",
+        "D2 \u2014 security-review CI gate \u2192 Option A (dropped; handoff completed)"
+      ],
+      "line_range": [
+        47,
+        63
+      ],
+      "snippet": "- **Handoff.**\n  - The last box is struck through and ticked as DROPPED, and the Status line is updated.\n  - The Open Questions section is marked as design notes with no tracked work, and its CI bullet is\n    struck through.\n  - The handoff",
+      "score": 0.9202,
+      "content_hash": "41edb243a086525c"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "Handoff/Index Portfolio Audit \u2014 vs the North Star",
+        "5. STRATEGIC GAPS"
+      ],
+      "line_range": [
+        867,
+        867
+      ],
+      "snippet": "5. **Index attention spent off-North-Star.** Items consuming active-index slots with weak linkage to quality/speed/agnosticism/self-healing: `readme-refresh` (DONE, row remains `master:156`), `root-archetype-linter-templates-upstream`, `pri",
+      "score": 0.9186,
+      "content_hash": "4502c7ba2de3767b"
+    },
+    {
+      "file": "/workspace/handoffs/active/repo-readiness-scorer.md",
+      "heading_path": [
+        "Repo-Readiness Scorer (Agent-Readiness Model)",
+        "Current Artifacts"
+      ],
+      "line_range": [
+        87,
+        94
+      ],
+      "snippet": "- Root `19e1ac84` removes hardcoded canonical repo roots from the default scorer map.\n- Default repo discovery now derives root from the script location, supports `/workspace/repos/<name>` fallbacks, keeps `/mnt/raid0/llm/...` as canonical ",
+      "score": 0.9179,
+      "content_hash": "b3f0206ff2c8678f"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-21.md",
+      "heading_path": [
+        "2026-06-21 Progress",
+        "N11 factual-risk stack-prior helper migration"
+      ],
+      "line_range": [
+        3744,
+        3753
+      ],
+      "snippet": "Parallel sidecar work used `gpt-5.4-mini` after `gpt-5.3-codex-spark` hit its\nusage limit. It made a root-only, low-risk handoff hygiene update in\n`handoffs/active/repo-readiness-scorer.md`, refreshing the Current Artifacts\nlinks from the J",
+      "score": 0.9176,
+      "content_hash": "b35790efa8bc04f9"
+    },
+    {
+      "file": "/workspace/progress/2026-08/2026-08-25-mainA-evl38.md",
+      "heading_path": [
+        "mainA \u2014 2026-08-25: EVL-38 root L5.self_optimizing_loop gap",
+        "Validation"
+      ],
+      "line_range": [
+        49,
+        64
+      ],
+      "snippet": "- `gitnexus impact build_criteria --direction upstream --repo /workspace`:\n  **LOW** risk, impactedCount=3 (score_repositories \u2192 main \u2192 file), all within\n  the scorer file. NOTE: index is stale (indexed `a787806` vs current\n  `69eee69`) \u2014 r",
+      "score": 0.9173,
+      "content_hash": "8210435b75b43595"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-27.md",
+      "heading_path": [
+        "Progress \u2014 2026-06-27",
+        "Research repo readiness automation"
+      ],
+      "line_range": [
+        2075,
+        2096
+      ],
+      "snippet": "## Research repo readiness automation\n\n**Trigger**: the passive readiness remediation queue still had\n`epyc-inference-research` blocked at the Standardized L3 gate on style/test/dev\nenvironment/security automation.\n\nWork:\n- Landed research ",
+      "score": 0.9169,
+      "content_hash": "4c880c10e3cde9c4"
+    },
+    {
+      "file": "/workspace/progress/2026-06/repo-readiness-remediation-2026-06-28.md",
+      "heading_path": [
+        "EPYC Repo Readiness Remediation Queue"
+      ],
+      "line_range": [
+        12,
+        19
+      ],
+      "snippet": "| Priority | Repo | Criterion | Level | Pillar | Blocking next gate | Acceptance |\n|---|---|---|---:|---|---|---|\n| P0 | epyc-llama | `L4.incremental_validation` | 4 | Style & Validation | yes | `L4.incremental_validation` passes for `epyc-",
+      "score": 0.9156,
+      "content_hash": "eaae5048690c1779"
+    },
+    {
+      "file": "/workspace/progress/2026-07/repo-readiness-remediation-2026-07-03.md",
+      "heading_path": [
+        "EPYC Repo Readiness Remediation Queue"
+      ],
+      "line_range": [
+        12,
+        19
+      ],
+      "snippet": "| Priority | Repo | Criterion | Level | Pillar | Blocking next gate | Acceptance |\n|---|---|---|---:|---|---|---|\n| P0 | epyc-llama | `L4.incremental_validation` | 4 | Style & Validation | yes | `L4.incremental_validation` passes for `epyc-",
+      "score": 0.9156,
+      "content_hash": "99b3bcb3033224ab"
+    }
+  ],
+  "wall_s": 22.267079134006053
+}

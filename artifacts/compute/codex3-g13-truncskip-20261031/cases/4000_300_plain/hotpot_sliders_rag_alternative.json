@@ -1,0 +1,191 @@
+{
+  "arm": "4000_300_plain",
+  "id": "hotpot_sliders_rag_alternative",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/sliders-local-validation.md",
+    "/workspace/handoffs/active/internal-kb-rag.md",
+    "/workspace/wiki/rag-alternatives.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/sliders-local-validation.md",
+    "/workspace/handoffs/active/internal-kb-rag.md",
+    "/workspace/wiki/rag-alternatives.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 3,
+    "found_files": [
+      "/workspace/handoffs/active/internal-kb-rag.md",
+      "/workspace/handoffs/active/sliders-local-validation.md",
+      "/workspace/wiki/rag-alternatives.md"
+    ],
+    "missing_files": [],
+    "first_evidence_rank": 2,
+    "all_evidence_rank": 6,
+    "ranked_files": [
+      "/workspace/wiki/knowledge-management.md",
+      "/workspace/wiki/rag-alternatives.md",
+      "/workspace/handoffs/active/internal-kb-rag.md",
+      "/workspace/progress/2026-04/2026-04-28.md",
+      "/workspace/wiki/knowledge-management.md",
+      "/workspace/handoffs/active/sliders-local-validation.md",
+      "/workspace/handoffs/active/colbert-reranker-web-research.md",
+      "/workspace/handoffs/active/sliders-local-validation.md",
+      "/workspace/wiki/rag-alternatives.md",
+      "/workspace/wiki/rag-alternatives.md"
+    ],
+    "recall@3": 0.6666666666666666,
+    "perfect@3": false,
+    "recall@5": 0.6666666666666666,
+    "perfect@5": false,
+    "recall@10": 1.0,
+    "perfect@10": true
+  },
+  "results": [
+    {
+      "file": "/workspace/wiki/knowledge-management.md",
+      "heading_path": [
+        "Knowledge Management",
+        "Summary"
+      ],
+      "line_range": [
+        38,
+        46
+      ],
+      "snippet": "## Summary\n\nKnowledge management in EPYC encompasses two complementary architectures: **internal KB-RAG** (ColBERT-based retrieval over the project's markdown knowledge bases) and **structured-DB alternatives** (SQL-based extraction-and-rea",
+      "score": 0.9539,
+      "content_hash": "3f379f77a82aab0f"
+    },
+    {
+      "file": "/workspace/wiki/rag-alternatives.md",
+      "heading_path": [
+        "RAG Alternatives",
+        "Summary"
+      ],
+      "line_range": [
+        8,
+        17
+      ],
+      "snippet": "## Summary\n\nEmbedding-based retrieval (ColBERT/late-interaction or dense bi-encoder) is the dominant architecture for knowledge-base QA at EPYC's scale (\u226410K markdown documents per the wiki/handoffs/research corpora). This page documents **",
+      "score": 0.9515,
+      "content_hash": "0fc06bc3328e2add"
+    },
+    {
+      "file": "/workspace/handoffs/active/internal-kb-rag.md",
+      "heading_path": [
+        "Internal Knowledge-Base RAG",
+        "Research Intake Update \u2014 2026-04-28",
+        "New Related Research"
+      ],
+      "line_range": [
+        132,
+        142
+      ],
+      "snippet": "### New Related Research\n\n- **[intake-494] \"Contexts are Never Long Enough: Structured Reasoning for Scalable Question Answering over Long Document Sets\"** (arxiv:2604.22294, Stanford OVAL/Genie group, Joshi/Shethia/Dao/Lam)\n  - **Framing**",
+      "score": 0.9509,
+      "content_hash": "6d47c0b4a92671ad"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-28.md",
+      "heading_path": [
+        "2026-04-28 evening session 3 \u2014 Wiki compile: 34-source backlog cleared",
+        "Changes \u2014 files modified or created"
+      ],
+      "line_range": [
+        668,
+        691
+      ],
+      "snippet": "### Changes \u2014 files modified or created\n\n**NEW pages** (2):\n- `wiki/knowledge-management.md` \u2014 KB-RAG ColBERT architecture (K1\u2013K8 work items), Flywheel HotpotQA + LoCoMo eval methodology adopted for K7, wiki compilation governance via `proj",
+      "score": 0.9472,
+      "content_hash": "7cab32c816551677"
+    },
+    {
+      "file": "/workspace/wiki/knowledge-management.md",
+      "heading_path": [
+        "Knowledge Management",
+        "Related Categories"
+      ],
+      "line_range": [
+        310,
+        315
+      ],
+      "snippet": "## Related Categories\n\n- [Search & Retrieval](search-retrieval.md) \u2014 ColBERT encoder, model selection, decontamination protocol, S3/S4 ONNX pipeline shared with KB-RAG K1\n- [RAG Alternatives](rag-alternatives.md) \u2014 SLIDERS structured-DB+SQL",
+      "score": 0.946,
+      "content_hash": "131294da8d8b95b2"
+    },
+    {
+      "file": "/workspace/handoffs/active/sliders-local-validation.md",
+      "heading_path": [
+        "Handoff: SLIDERS Local-LLM Validation",
+        "2026-05-28 Audit Reset \u2014 Executor Start Here"
+      ],
+      "line_range": [
+        18,
+        31
+      ],
+      "snippet": "## 2026-05-28 Audit Reset \u2014 Executor Start Here\n\nThis remains a bounded falsification gate, not a speculative integration project.\n\n| Condition | Action |\n|---|---|\n| KB-RAG K7 has not shipped | Do not prioritize SLIDERS unless the operator",
+      "score": 0.9457,
+      "content_hash": "ca4dc170df1191b2"
+    },
+    {
+      "file": "/workspace/handoffs/active/colbert-reranker-web-research.md",
+      "heading_path": [
+        "ColBERT Reranker for web_research Pipeline",
+        "Research Intake Update \u2014 2026-04-28",
+        "New Related Research"
+      ],
+      "line_range": [
+        614,
+        617
+      ],
+      "snippet": "### New Related Research\n\n- **[intake-494] \"Contexts are Never Long Enough: Structured Reasoning for Scalable Question Answering over Long Document Sets\"** (arxiv:2604.22294, Stanford OVAL/Genie) \u2014 **out of scope for this handoff**. SLIDERS",
+      "score": 0.9448,
+      "content_hash": "f71c57ceb17e2561"
+    },
+    {
+      "file": "/workspace/handoffs/active/sliders-local-validation.md",
+      "heading_path": [
+        "Handoff: SLIDERS Local-LLM Validation",
+        "Objective"
+      ],
+      "line_range": [
+        40,
+        43
+      ],
+      "snippet": "## Objective\n\nDetermine whether SLIDERS \u2014 a structured-DB+SQL alternative to retrieval-based RAG that replaces text-concatenation reasoning with persistent relational state \u2014 can run on EPYC's local Coder-30B-class models. The released SLID",
+      "score": 0.9445,
+      "content_hash": "3dd8f48f63d01d43"
+    },
+    {
+      "file": "/workspace/wiki/rag-alternatives.md",
+      "heading_path": [
+        "RAG Alternatives",
+        "Closure-Inflation Discipline Note"
+      ],
+      "line_range": [
+        79,
+        87
+      ],
+      "snippet": "## Closure-Inflation Discipline Note\n\nPer `feedback_closure_inflation.md` memory: SLIDERS-as-released failing the Phase 0 gate on Coder-30B at FinQ5 scale would be a **specific** closure (\"SLIDERS as released, on Coder-30B, at FinQ5 scale, ",
+      "score": 0.9433,
+      "content_hash": "cbd8493408092778"
+    },
+    {
+      "file": "/workspace/wiki/rag-alternatives.md",
+      "heading_path": [
+        "RAG Alternatives",
+        "Related Categories"
+      ],
+      "line_range": [
+        94,
+        99
+      ],
+      "snippet": "## Related Categories\n\n- [Knowledge Management](knowledge-management.md) \u2014 KB-RAG and wiki compilation as the primary architectures\n- [Search & Retrieval](search-retrieval.md) \u2014 ColBERT-based retrieval (the dominant path EPYC uses)\n- [Conte",
+      "score": 0.9426,
+      "content_hash": "3f208ed52433d933"
+    }
+  ],
+  "wall_s": 16.42156431195326
+}

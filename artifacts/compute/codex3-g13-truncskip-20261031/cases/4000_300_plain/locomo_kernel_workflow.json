@@ -1,0 +1,196 @@
+{
+  "arm": "4000_300_plain",
+  "id": "locomo_kernel_workflow",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+    "/workspace/handoffs/active/cpu-shape-specialized-gemv-decode.md",
+    "/workspace/handoffs/active/large-moe-expert-parallelism.md",
+    "/workspace/handoffs/active/intra-process-tensor-parallel-decode.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+    "/workspace/handoffs/active/intra-process-tensor-parallel-decode.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+    "/workspace/handoffs/active/cpu-shape-specialized-gemv-decode.md",
+    "/workspace/handoffs/active/large-moe-expert-parallelism.md",
+    "/workspace/handoffs/active/intra-process-tensor-parallel-decode.md"
+  ],
+  "metrics": {
+    "evidence_count": 4,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+      "/workspace/handoffs/active/cpu-shape-specialized-gemv-decode.md",
+      "/workspace/handoffs/active/intra-process-tensor-parallel-decode.md",
+      "/workspace/handoffs/active/large-moe-expert-parallelism.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/active/moe-spec-cpu-spec-dec-integration.md",
+      "/workspace/handoffs/completed/cpu-kernel-env-flags-inventory.md",
+      "/workspace/handoffs/completed/intra-process-tensor-parallel-decode-completed-through-2026-05-28.md",
+      "/workspace/handoffs/completed/cpu-kernel-env-flags-inventory.md",
+      "/workspace/handoffs/completed/single-instance-system-tuning.md",
+      "/workspace/progress/2026-04/2026-04-23-cpu-optimization-kickoff.md",
+      "/workspace/wiki/hardware-optimization.md",
+      "/workspace/progress/2026-04/2026-04-23.md",
+      "/workspace/handoffs/completed/cpu4-deferred-avenues-design-note.md",
+      "/workspace/handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline-completed-through-2026-08-13.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/active/moe-spec-cpu-spec-dec-integration.md",
+      "heading_path": [
+        "MoE-Spec \u2014 CPU Speculative-Decoding Verification with Budgeted Expert Selection",
+        "Phase 1 \u2014 RESULTS (DONE 2026-04-28)",
+        "Phase 2 deliverables (queued)"
+      ],
+      "line_range": [
+        95,
+        104
+      ],
+      "snippet": "Re-flagged 2026-04-27 after peer-review pass #2 noted that \"all software paths exhausted\" framing in upstream indices was incompatible with this stub's existence. Created 2026-04-27 evening as Phase 4 of closure-inflation remediation plan; ",
+      "score": 0.9576,
+      "content_hash": "302728542589f6f9"
+    },
+    {
+      "file": "/workspace/handoffs/completed/cpu-kernel-env-flags-inventory.md",
+      "heading_path": [
+        "CPU Kernel Env-Flag Inventory \u2014 2026-04-26 (updated 2026-06-14)"
+      ],
+      "line_range": [
+        1,
+        11
+      ],
+      "snippet": "# CPU Kernel Env-Flag Inventory \u2014 2026-04-26 (updated 2026-06-14)\n\n> **COMPLETED REFERENCE 2026-08-11.** The inventory now records each flag's effect on trace\n> interpretation. Current execution work lives in\n> [`cpu-shape-specialized-gemv-",
+      "score": 0.9529,
+      "content_hash": "ab96386ff74e460a"
+    },
+    {
+      "file": "/workspace/handoffs/completed/intra-process-tensor-parallel-decode-completed-through-2026-05-28.md",
+      "heading_path": [
+        "Intra-Process Tensor-Parallel Decode Across CCDs (Single-Instance Saturation)"
+      ],
+      "line_range": [
+        41,
+        55
+      ],
+      "snippet": "# Intra-Process Tensor-Parallel Decode Across CCDs (Single-Instance Saturation)\n\n**Status**: refreshed 2026-05-28 \u2014 reference + revalidation-gated only; do not start new CPU1 work without a workload/topology trigger\n**Created**: 2026-04-23 ",
+      "score": 0.9526,
+      "content_hash": "6460749e64d1466a"
+    },
+    {
+      "file": "/workspace/handoffs/completed/cpu-kernel-env-flags-inventory.md",
+      "heading_path": [
+        "Live sketch as of 2026-06-14. Source of truth: stack_env.py.",
+        "Cross-references"
+      ],
+      "line_range": [
+        543,
+        551
+      ],
+      "snippet": "## Cross-references\n\n- Plan: `~/.claude/plans/glistening-toasting-snail.md`\n- Companion: `handoffs/completed/cpu-optimization-thesis-pause-2026-04-26.md` (archived 2026-06-12)\n- Phase B+C results: `progress/2026-04/2026-04-26.md` (commit `1",
+      "score": 0.952,
+      "content_hash": "3478fd7b8069510b"
+    },
+    {
+      "file": "/workspace/handoffs/completed/single-instance-system-tuning.md",
+      "heading_path": [
+        "Single-Instance System-Level Throughput Tuning",
+        "Closure note (2026-06-12, Fable 5 portfolio pass)"
+      ],
+      "line_range": [
+        3,
+        29
+      ],
+      "snippet": "## Closure note (2026-06-12, Fable 5 portfolio pass)\n\n**Final outcome**: Batch=1 single-instance system-level levers are closed \u2014 properly, with evidence. The zero-reboot knob sweep (THP\u2192always, `numa_balancing=0`, 1GB hugepage probes) prod",
+      "score": 0.9495,
+      "content_hash": "719bb2ce60a3fc1c"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-23-cpu-optimization-kickoff.md",
+      "heading_path": [
+        "2026-04-23 \u2014 CPU optimization coordinated pickup kickoff",
+        "Steps completed",
+        "Step 0 \u2014 handoff corrections + index registration \u2705"
+      ],
+      "line_range": [
+        11,
+        17
+      ],
+      "snippet": "### Step 0 \u2014 handoff corrections + index registration \u2705\n\n- GEMV handoff (`cpu-shape-specialized-gemv-decode.md`): 8 drift fixes applied \u2014 2026-04-23 audit block, tinyBLAS-in-fork resolution (Open Q 1 closed), KleidiAI template note, `../com",
+      "score": 0.9475,
+      "content_hash": "a351b7ef106bf531"
+    },
+    {
+      "file": "/workspace/wiki/hardware-optimization.md",
+      "heading_path": [
+        "Hardware Optimization",
+        "2026-04-23 late-session measurement update (supersedes projections above)",
+        "Session artifacts landed"
+      ],
+      "line_range": [
+        1167,
+        1176
+      ],
+      "snippet": "### Session artifacts landed\n\n- `research/deep-dives/cpu-optimization-phase0-baseline.md` \u2014 full Phase 0 baseline + thread sweep + per-function perf profile + GGUF metadata for Qwen3.6-27B + revised CPU1/CPU2/CPU4 gate decisions.\n- `researc",
+      "score": 0.9474,
+      "content_hash": "af7f432d6214ce1a"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-23.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-23",
+        "Session \u2014 Research intake (3 URLs), perf-gap analysis, new CPU-ukernel handoff"
+      ],
+      "line_range": [
+        3,
+        6
+      ],
+      "snippet": "## Session \u2014 Research intake (3 URLs), perf-gap analysis, new CPU-ukernel handoff\n\nThree `/research-intake` invocations landed intakes 447\u2013449; each received a full deep-dive. Side investigation on Qwen3.6-27B decode throughput exposed a mo",
+      "score": 0.947,
+      "content_hash": "abdbe6476557df55"
+    },
+    {
+      "file": "/workspace/handoffs/completed/cpu4-deferred-avenues-design-note.md",
+      "heading_path": [
+        "CPU4 Deferred Avenues \u2014 Design Pick (2026-04-30)",
+        "NOT recommended (and why)"
+      ],
+      "line_range": [
+        93,
+        99
+      ],
+      "snippet": "## NOT recommended (and why)\n\n- **#3 token-to-expert rebalance**: highest complexity (per-token re-routing logic), highest implementation risk (touches `ids` tensor build path), and capped at 15% sync ceiling per CPU24 attribution. Better a",
+      "score": 0.9469,
+      "content_hash": "59454137b87b3dac"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline-completed-through-2026-08-13.md",
+      "heading_path": [
+        "Window-2 findings 05 \u2014 Intake/deep-dive sweep + kernel roofline gap (2026-07-03, operator-directed)",
+        "6. Ranked cross-substrate kernel actions (the ROI answer)"
+      ],
+      "line_range": [
+        85,
+        92
+      ],
+      "snippet": "## 6. Ranked cross-substrate kernel actions (the ROI answer)\n1. **MI210 \u2014 serve quantized BATCHED (`-np 8\u201332`)** instead of authoring a kernel. Effort XS (config). Proof: measurement #1. Owner: partial (batched-decode harness in `batched-de",
+      "score": 0.9466,
+      "content_hash": "547c50cbe1081725"
+    }
+  ],
+  "wall_s": 16.347562303068116
+}

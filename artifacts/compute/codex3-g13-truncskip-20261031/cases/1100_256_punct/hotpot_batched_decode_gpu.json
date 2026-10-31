@@ -1,0 +1,188 @@
+{
+  "arm": "1100_256_punct",
+  "id": "hotpot_batched_decode_gpu",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/batched-decode-measurement.md",
+    "/workspace/handoffs/active/fable5-findings-03-serving-and-gpu.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/fable5-findings-03-serving-and-gpu.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/batched-decode-measurement.md",
+    "/workspace/handoffs/active/fable5-findings-03-serving-and-gpu.md"
+  ],
+  "metrics": {
+    "evidence_count": 2,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/batched-decode-measurement.md",
+      "/workspace/handoffs/active/fable5-findings-03-serving-and-gpu.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/wiki/inference-serving.md",
+      "/workspace/handoffs/completed/cpu-decode-flops-roofline-audit.md",
+      "/workspace/wiki/inference-serving.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/handoffs/active/sarathi-serve-cpu-evaluation.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/wiki/hardware-optimization.md",
+      "/workspace/handoffs/completed/single-instance-system-tuning.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/wiki/inference-serving.md",
+      "heading_path": [
+        "Inference Serving",
+        "2026-06-13 Update \u2014 Serving Gaps After Fable 5"
+      ],
+      "line_range": [
+        465,
+        471
+      ],
+      "snippet": "## 2026-06-13 Update \u2014 Serving Gaps After Fable 5\n\nFable 5 confirmed the batch=1 CPU decode closure at the kernel level but found a serving-level evidence gap. The system has mature multi-instance concurrency: NUMA quartering, placement sta",
+      "score": 0.9455,
+      "content_hash": "4eeedee9f3376f96"
+    },
+    {
+      "file": "/workspace/handoffs/completed/cpu-decode-flops-roofline-audit.md",
+      "heading_path": [
+        "CPU Decode FLOPS Roofline Audit",
+        "Closure note (2026-06-12, Fable 5 portfolio pass)"
+      ],
+      "line_range": [
+        3,
+        9
+      ],
+      "snippet": "## Closure note (2026-06-12, Fable 5 portfolio pass)\n\n**Final outcome**: The roofline question this handoff existed to answer is answered \u2014 the FLOPS-vs-BW results are canonicalized in `fable5-findings-06` (the batched-decode/kernel finding",
+      "score": 0.9433,
+      "content_hash": "9467a7e30fd46ca6"
+    },
+    {
+      "file": "/workspace/wiki/inference-serving.md",
+      "heading_path": [
+        "Inference Serving",
+        "Compiled Update \u2014 2026-07-20",
+        "Source References (2026-07-20)"
+      ],
+      "line_range": [
+        384,
+        390
+      ],
+      "snippet": "### Source References (2026-07-20)\n\n- [within-role-placement-state-machine.md](../handoffs/active/within-role-placement-state-machine.md) \u2014 live placement SM, per-role policy ratification, no-mid-decode-preemption constraint.\n- [batched-dec",
+      "score": 0.9394,
+      "content_hash": "36a7334c393b91cf"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "PORTFOLIO REVIEW (2026-06-12, 5 agents, 108 rows): classified verdicts",
+        "GATED"
+      ],
+      "line_range": [
+        1227,
+        1228
+      ],
+      "snippet": "- **sarathi-serve-cpu-evaluation** [gated] out: Nothing until the workload-shift gate fires; Phase 0 audit done. | gate: Workload shift to multi-tenant API / prefill-heavy serving \u2014 NOTE: fable5's batched/eval-regime push (CPU14/E1/E2, eval",
+      "score": 0.9387,
+      "content_hash": "d59f3459d065e5ca"
+    },
+    {
+      "file": "/workspace/handoffs/active/sarathi-serve-cpu-evaluation.md",
+      "heading_path": [
+        "Sarathi-Serve / Chunked-Prefill Evaluation on EPYC NUMA"
+      ],
+      "line_range": [
+        12,
+        15
+      ],
+      "snippet": "> **\ud83d\udd14 Reopen-trigger MATERIALIZED \u2014 2026-07-18 stale-open audit.** The named reopen trigger (fable5: multi-tenant / eval-batch serving via [`batched-decode-measurement.md`](batched-decode-measurement.md) E1/E2) has **landed** \u2014 E1/E2 decisi",
+      "score": 0.9377,
+      "content_hash": "968cd106b14b17f7"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "PORTFOLIO REVIEW (2026-06-12, 5 agents, 108 rows): classified verdicts",
+        "GATED"
+      ],
+      "line_range": [
+        1237,
+        1237
+      ],
+      "snippet": "- **cpu-shape-specialized-gemv-decode** [gated] out: E3: write 8x8 GEMM SIMD body IF E1 (CPU14 -np sweep) shows unsaturated intermediate-batch decode; CPU18 MegaBlocks + CPU17 chunked-prefill conditionally follow; CPU26 Lightning-Indexer pr",
+      "score": 0.9367,
+      "content_hash": "72e403173cb2a63b"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "groupB NOTABLE"
+      ],
+      "line_range": [
+        1315,
+        1319
+      ],
+      "snippet": "Fable-5 reprioritization signals for the rewritten queue: findings-04 line 40 removes agent-file-prose-compression's HIGH slot (\"ergonomics, not North Star\") -> ACTIVE-LOW. findings-04 line 28 confirms within-role-placement is healthy/uncha",
+      "score": 0.9362,
+      "content_hash": "aada89e9f359d395"
+    },
+    {
+      "file": "/workspace/wiki/hardware-optimization.md",
+      "heading_path": [
+        "Hardware Optimization",
+        "Compiled Update \u2014 2026-07-29 (GPU topology ground truth; E5 still scout-only)",
+        "Source References (2026-07-29)"
+      ],
+      "line_range": [
+        669,
+        679
+      ],
+      "snippet": "### Source References (2026-07-29)\n\n- [gpu-serving-tie-in-program.md](../handoffs/active/gpu-serving-tie-in-program.md) \u2014 MI210\n  node-1 ground truth, lineage-not-locality placement authority, P2-5j sweep sequencing,\n  FG-4b decision-grade ",
+      "score": 0.9342,
+      "content_hash": "59fd320a4f1e4eb0"
+    },
+    {
+      "file": "/workspace/handoffs/completed/single-instance-system-tuning.md",
+      "heading_path": [
+        "Single-Instance System-Level Throughput Tuning",
+        "Closure note (2026-06-12, Fable 5 portfolio pass)"
+      ],
+      "line_range": [
+        9,
+        18
+      ],
+      "snippet": "**Where residuals now live** (all trigger-gated, none claimable today):\n- **NPS/L3aaN decision matrix** \u2014 only if CPU1/CPU15/large-MoE work needs a topology decision; produce a narrow matrix with CPU20 artifacts (owners: `cpu-shape-speciali",
+      "score": 0.9337,
+      "content_hash": "d93e1bdff18bc793"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "groupA NOTABLE",
+        "Load-bearing findings"
+      ],
+      "line_range": [
+        1298,
+        1302
+      ],
+      "snippet": "**3. retrain-routing-models is the cheapest production-correctness win.** Live state: routing-classifier flag ON, weights MISSING, fast-path dead since 2026-05-25. The unblock is a single operator command sequence (`repair_episodic_embeddin",
+      "score": 0.9333,
+      "content_hash": "e1b47bc00d324119"
+    }
+  ],
+  "wall_s": 22.362540466012433
+}

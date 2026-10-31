@@ -1033,6 +1033,8 @@ dim 96. This is a **projection, not a measurement.** Two conditions on any adopt
       **0.5690** plain-`maxsim` recall@10 baseline by **>2 pp**, the declared noise floor. Directly
       remediates **H1**.
 
+  - *(2026-10-31, G13 full native diagnostic.)* R2 rc0 collected 70 frozen truth cases for six re-embedded arms plus a separate canonical stored index (490 case records). Recall@10 higher better: newly re-embedded 4000/256/plain 0.367857; 4000/256/punctuation 0.375000 (+0.007143), 4000/300/plain 0.340476 (−0.027381), 4000/300/punctuation 0.327381 (−0.040476), 1100/256/plain 0.364286 (−0.003571), 1100/256/punctuation 0.353571 (−0.014286), each delta against the new matched plain baseline. No arm exceeds the strict +0.02 descriptive trigger. Canonical stored index scored separately 0.367857. The historical 0.5690 gate used a different 577-file/18,010-chunk corpus and is unassessable here; no original quality/adoption gate closes. All 490 truth/ranked-file metrics, 1,522 snapshot hashes and 1,520 unchanged chunk multisets against pinned catalog independently checked; two full current snapshots changed. Indexed-text equivalence is not historical whole-file identity. Eight native worker receipts aggregate 105,950 new encodes, 23,845 existence skips, 0 cache loads; stale/missing truths and original denominators remain. [Evidence and audit](../../artifacts/compute/codex3-g13-truncskip-20261031/SHA256SUMS). [belief: cc]
+
 ### Blocked-on (B)
 
 - [ ] **B6 — switch the KB encoder to answerai-colbert-small-v1.** **Blocked on G11** and on the open

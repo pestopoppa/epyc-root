@@ -1,0 +1,194 @@
+{
+  "arm": "4000_256_punct",
+  "id": "hotpot_searx_search_rerank",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/searxng-search-backend.md",
+    "/workspace/handoffs/active/colbert-reranker-web-research.md",
+    "/workspace/wiki/search-retrieval.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/searxng-search-backend.md",
+    "/workspace/handoffs/active/colbert-reranker-web-research.md",
+    "/workspace/wiki/search-retrieval.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 3,
+    "found_files": [
+      "/workspace/handoffs/active/colbert-reranker-web-research.md",
+      "/workspace/handoffs/active/searxng-search-backend.md",
+      "/workspace/wiki/search-retrieval.md"
+    ],
+    "missing_files": [],
+    "first_evidence_rank": 3,
+    "all_evidence_rank": 5,
+    "ranked_files": [
+      "/workspace/progress/2026-04/2026-04-17.md",
+      "/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md",
+      "/workspace/handoffs/active/searxng-search-backend.md",
+      "/workspace/handoffs/active/colbert-reranker-web-research.md",
+      "/workspace/wiki/search-retrieval.md",
+      "/workspace/handoffs/active/colbert-reranker-web-research.md",
+      "/workspace/progress/2026-04/2026-04-14.md",
+      "/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md",
+      "/workspace/handoffs/active/searxng-search-backend.md",
+      "/workspace/handoffs/active/searxng-search-backend.md"
+    ],
+    "recall@3": 0.3333333333333333,
+    "perfect@3": false,
+    "recall@5": 1.0,
+    "perfect@5": true,
+    "recall@10": 1.0,
+    "perfect@10": true
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-04/2026-04-17.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-17",
+        "Session 5 \u2014 Research Intake: Dropbox Witchcraft (XTR-Warp Rust Semantic Search)",
+        "Results"
+      ],
+      "line_range": [
+        430,
+        436
+      ],
+      "snippet": "### Results\n\n- **Intake index**: 407 entries, `validate_intake.py` passes\n- **Key finding**: Witchcraft validates the ColBERT reranking decision \u2014 XTR trades accuracy for speed (33% vs 55% NDCG@10), which is the wrong tradeoff for our 10-sn",
+      "score": 0.9358,
+      "content_hash": "da1f5c9516eaa6c5"
+    },
+    {
+      "file": "/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md",
+      "heading_path": [
+        "After A1-A2, all three models running on ports 8090-large, 8096-granite, 8097-e5-base, 8098-bge-m3",
+        "9. Cross-References"
+      ],
+      "line_range": [
+        323,
+        334
+      ],
+      "snippet": "## 9. Cross-References\n\n- `/workspace/handoffs/active/colbert-reranker-web-research.md` \u2014 ColBERT reranker (S5 / S3b LateOn / S3c Reason-mxbai). Granite slots in as dense first stage upstream of these rerankers.\n- `/workspace/handoffs/activ",
+      "score": 0.9342,
+      "content_hash": "d43e56dd1c579ec0"
+    },
+    {
+      "file": "/workspace/handoffs/active/searxng-search-backend.md",
+      "heading_path": [
+        "Machine-readable (CI / dashboards)",
+        "Dependencies"
+      ],
+      "line_range": [
+        270,
+        275
+      ],
+      "snippet": "## Dependencies\n\n- **Blocks**: CA-6 blocked on intake-524 Camofox; SX-5/6 remain AR-3 gated; CA-7 live service smoke or integration into synthesis remains optional/future if needed\n- **Composes with**: `colbert-reranker-web-research.md` S5 ",
+      "score": 0.9318,
+      "content_hash": "00df254c36b7b8d3"
+    },
+    {
+      "file": "/workspace/handoffs/active/colbert-reranker-web-research.md",
+      "heading_path": [
+        "ColBERT Reranker for web_research Pipeline",
+        "Work Items"
+      ],
+      "line_range": [
+        265,
+        273
+      ],
+      "snippet": "- [ ] **S5: Implement reranker** \u2014 HOLD as of 2026-06-12 gate analysis. Add reranking to `research.py`, gated behind `web_research_rerank` flag, only if a fresh analyzer run has >=50 synthesized pages and >20% irrelevant-page rate. When fla",
+      "score": 0.9316,
+      "content_hash": "accdfbfb1b7cae53"
+    },
+    {
+      "file": "/workspace/wiki/search-retrieval.md",
+      "heading_path": [
+        "Search & Retrieval",
+        "Crawl4AI and Open-Source-Only Policy"
+      ],
+      "line_range": [
+        95,
+        106
+      ],
+      "snippet": "## Crawl4AI and Open-Source-Only Policy\n\nResearch intake evaluated two page-scraping tools complementary to SearXNG (which handles search aggregation, not deep page content extraction): Firecrawl (intake-364/365, 108K+ stars) and Crawl4AI (",
+      "score": 0.9316,
+      "content_hash": "117c0bc794d9dc33"
+    },
+    {
+      "file": "/workspace/handoffs/active/colbert-reranker-web-research.md",
+      "heading_path": [
+        "ColBERT Reranker for web_research Pipeline",
+        "Research Intake Update \u2014 2026-04-30",
+        "New Related Research"
+      ],
+      "line_range": [
+        620,
+        648
+      ],
+      "snippet": "### New Related Research\n\n- **[intake-519] \"Granite-Embedding-97M-Multilingual-R2\"** (HF `ibm-granite/granite-embedding-97m-multilingual-r2`, Apache 2.0, IBM, released 2026-04-29)\n  - Relevance to web-research pipeline: **MEDIUM**. Candidat",
+      "score": 0.9313,
+      "content_hash": "a6ba37d84452d7e8"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-14.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-14",
+        "Session 10 \u2014 SearXNG Research Intake + Deep-Dive + Handoff Integration",
+        "Key Design Decisions"
+      ],
+      "line_range": [
+        1239,
+        1244
+      ],
+      "snippet": "### Key Design Decisions\n\n1. **Standalone handoff** \u2014 SearXNG kept separate from ColBERT reranker (different files: `search.py` vs `research.py`, different prerequisites: none vs AR-3 data gate)\n2. **P12 in routing-and-optimization-index** ",
+      "score": 0.9311,
+      "content_hash": "82f091de249ea8db"
+    },
+    {
+      "file": "/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md",
+      "heading_path": [
+        "After A1-A2, all three models running on ports 8090-large, 8096-granite, 8097-e5-base, 8098-bge-m3",
+        "8. Sequencing & Cross-Refs",
+        "8.1 Where this slots into existing work"
+      ],
+      "line_range": [
+        305,
+        314
+      ],
+      "snippet": "### 8.1 Where this slots into existing work\n\n| Track | Current state | Granite-97m-r2 role |\n|-------|---------------|---------------------|\n| `internal-kb-rag.md` K-track | stub, K1 not started | **Direct candidate as KB-RAG dense embedder",
+      "score": 0.9299,
+      "content_hash": "6d5d7a289e355d86"
+    },
+    {
+      "file": "/workspace/handoffs/active/searxng-search-backend.md",
+      "heading_path": [
+        "Machine-readable (CI / dashboards)",
+        "Research Intake Update \u2014 2026-04-30",
+        "New Related Research"
+      ],
+      "line_range": [
+        306,
+        323
+      ],
+      "snippet": "### New Related Research\n\n- **[intake-519] \"Granite-Embedding-97M-Multilingual-R2\"** (HF `ibm-granite/granite-embedding-97m-multilingual-r2`, Apache 2.0, IBM, released 2026-04-29)\n  - Relevance to SearXNG backend: **MEDIUM**, primarily as t",
+      "score": 0.9298,
+      "content_hash": "e00f5974e4347897"
+    },
+    {
+      "file": "/workspace/handoffs/active/searxng-search-backend.md",
+      "heading_path": [
+        "Web Research Pipeline \u2014 SearXNG + Crawl4AI",
+        "Proposed Architecture"
+      ],
+      "line_range": [
+        43,
+        52
+      ],
+      "snippet": "## Proposed Architecture\n\n```\nSearXNG Docker container (host port 8888, container port 8080, ~183MB)\n  GET /search?q=...&format=json&engines=duckduckgo,brave,wikipedia,qwant\n  \u2192 JSON: {results: [{url, title, content, engines[], positions[],",
+      "score": 0.9296,
+      "content_hash": "4f2924c152abd894"
+    }
+  ],
+  "wall_s": 12.591107733082026
+}

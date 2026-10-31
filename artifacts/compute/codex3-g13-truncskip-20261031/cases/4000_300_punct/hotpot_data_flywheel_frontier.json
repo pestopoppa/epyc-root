@@ -1,0 +1,194 @@
+{
+  "arm": "4000_300_punct",
+  "id": "hotpot_data_flywheel_frontier",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/frontier-f1-real-task-corpus.md",
+    "/workspace/handoffs/active/frontier-f3-data-flywheel.md",
+    "/workspace/handoffs/active/fable5-findings-07-strategic-frontiers.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/frontier-f1-real-task-corpus.md",
+    "/workspace/handoffs/active/fable5-findings-07-strategic-frontiers.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/frontier-f1-real-task-corpus.md",
+    "/workspace/handoffs/active/frontier-f3-data-flywheel.md",
+    "/workspace/handoffs/active/fable5-findings-07-strategic-frontiers.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/frontier-f3-data-flywheel.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/fable5-findings-07-strategic-frontiers.md",
+      "/workspace/handoffs/active/frontier-f1-real-task-corpus.md"
+    ],
+    "first_evidence_rank": 3,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/wiki/agent-architecture.md",
+      "/workspace/handoffs/active/frontier-f3-data-flywheel.md",
+      "/workspace/handoffs/completed/fable5-findings-07-strategic-frontiers.md",
+      "/workspace/handoffs/completed/fable5-findings-07-strategic-frontiers.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/research/f1-dgm-scoping-2026-07.md",
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/progress/2026-06/2026-06-21.md"
+    ],
+    "recall@3": 0.3333333333333333,
+    "perfect@3": false,
+    "recall@5": 0.3333333333333333,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 one-shot architectural review \u2014 EXECUTED (F5)",
+        "Fable 5 review \u2014 execution + wrap-up (final pass)"
+      ],
+      "line_range": [
+        128,
+        135
+      ],
+      "snippet": "### Fable 5 review \u2014 execution + wrap-up (final pass)\n**Strategic frontiers**: `fable5-findings-07-strategic-frontiers.md` written then expanded to implementation-grade (operator request): F1 real-task corpus / F2 self-running lab (the 10\u00d7)",
+      "score": 0.9445,
+      "content_hash": "3f6423210c288a4f"
+    },
+    {
+      "file": "/workspace/wiki/agent-architecture.md",
+      "heading_path": [
+        "Agent Architecture",
+        "2026-06-13 Update \u2014 Fable 5 Strategic Spine"
+      ],
+      "line_range": [
+        921,
+        932
+      ],
+      "snippet": "## 2026-06-13 Update \u2014 Fable 5 Strategic Spine\n\nFable 5 reframes the North Star as a lab architecture, not just a serving/router architecture. The highest-ROI frontier is F1 -> F2 -> F3:\n\n- **F1 real-task corpus**: define the demand side fr",
+      "score": 0.9433,
+      "content_hash": "f29a606932c041b2"
+    },
+    {
+      "file": "/workspace/handoffs/active/frontier-f3-data-flywheel.md",
+      "heading_path": [
+        "Frontier F3 \u2014 The Data Flywheel: Train on What the Lab Already Generates"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# Frontier F3 \u2014 The Data Flywheel: Train on What the Lab Already Generates\n\n**Status**: W1 capture hygiene and W2 dataset builders are on the current orchestrator branch; reviewed intake-label recording, reviewed-label joins, stdlib CPU tri",
+      "score": 0.9395,
+      "content_hash": "56ad5363c46d5f16"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-07-strategic-frontiers.md",
+      "heading_path": [
+        "Fable 5 findings 07 \u2014 Strategic frontiers beyond the backlog (implementation-grade)",
+        "F1. Define the demand side \u2014 a real-task corpus as the eval distribution"
+      ],
+      "line_range": [
+        11,
+        26
+      ],
+      "snippet": "## F1. Define the demand side \u2014 a real-task corpus as the eval distribution\n\n**Handoff**: [frontier-f1-real-task-corpus.md](frontier-f1-real-task-corpus.md) (created 2026-06-12 \u2014 claim waypoints there)\n\n**Why**: everything in the project is",
+      "score": 0.938,
+      "content_hash": "205babacf4bcaa64"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-07-strategic-frontiers.md",
+      "heading_path": [
+        "Fable 5 findings 07 \u2014 Strategic frontiers beyond the backlog (implementation-grade)",
+        "F3. The data flywheel \u2014 the project generates training data continuously and uses none of it"
+      ],
+      "line_range": [
+        43,
+        55
+      ],
+      "snippet": "## F3. The data flywheel \u2014 the project generates training data continuously and uses none of it\n\n**Handoff**: [frontier-f3-data-flywheel.md](frontier-f3-data-flywheel.md) (created 2026-06-12 \u2014 claim waypoints there)\n\n**Why**: open-source + ",
+      "score": 0.9355,
+      "content_hash": "99337ef86f01067b"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "F3 data-flywheel dataset inventory refresh"
+      ],
+      "line_range": [
+        1494,
+        1514
+      ],
+      "snippet": "## F3 data-flywheel dataset inventory refresh\n\nExtended the existing F3 capture branch with the explicit dataset inventory deliverable.\n\nCode/docs:\n- Worktree: `/mnt/raid0/llm/tmp/data-flywheel-worktree`\n- Branch: `feat/data-flywheel-captur",
+      "score": 0.9349,
+      "content_hash": "5bbd4cc722ce12a4"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "F1 real-task harvester and verdict metadata documented",
+        "F1 impact"
+      ],
+      "line_range": [
+        623,
+        630
+      ],
+      "snippet": "### F1 impact\n\n- Frontier F1 W2 now has the mainline harvester, passive task-record payloads,\n  and operator verdict metadata needed for passive real-task corpus collection.\n- W2 is still not accepted: the gate remains a 2-week soak with >=",
+      "score": 0.9342,
+      "content_hash": "e576cdf5a07d29cf"
+    },
+    {
+      "file": "/workspace/research/f1-dgm-scoping-2026-07.md",
+      "heading_path": [
+        "F1-DGM Scoping \u2014 DGM Synthetic Task-Generation for W4+ Corpus Expansion"
+      ],
+      "line_range": [
+        1,
+        10
+      ],
+      "snippet": "# F1-DGM Scoping \u2014 DGM Synthetic Task-Generation for W4+ Corpus Expansion\n\n**Type**: Design / scoping document (zero-cost design input \u2014 NO inference, NO code, NO commits in this pass)\n**Owner handoff**: [`handoffs/active/frontier-f1-real-t",
+      "score": 0.9341,
+      "content_hash": "8c2e2e0e89395669"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "F1 real-task harvester and verdict metadata documented",
+        "Root docs updated"
+      ],
+      "line_range": [
+        631,
+        643
+      ],
+      "snippet": "### Root docs updated\n\n- `handoffs/active/frontier-f1-real-task-corpus.md`: status, W2 waypoint, and\n  checkpoints now cite `de07475`, verdict hash refs, harvester precedence, and\n  the remaining soak/record-count gate.\n- `handoffs/active/m",
+      "score": 0.9335,
+      "content_hash": "0df0a600899ce42f"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-21.md",
+      "heading_path": [
+        "2026-06-21 Progress",
+        "Frontier F1 W2b source-weight gate"
+      ],
+      "line_range": [
+        3140,
+        3217
+      ],
+      "snippet": "## Frontier F1 W2b source-weight gate\n\nLanded `epyc-orchestrator` `40a87f3d` (`Gate real-task corpus source\nweighting`) to close the open F1 W2b source-weight/representativeness gap.\n\nThe mixed corpus summary now:\n\n- fixes repeated source-f",
+      "score": 0.9335,
+      "content_hash": "f165f05429b1202b"
+    }
+  ],
+  "wall_s": 14.07085137302056
+}

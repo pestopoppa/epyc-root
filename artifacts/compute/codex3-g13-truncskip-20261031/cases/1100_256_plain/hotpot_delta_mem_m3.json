@@ -1,0 +1,189 @@
+{
+  "arm": "1100_256_plain",
+  "id": "hotpot_delta_mem_m3",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/delta-mem-reproduction.md",
+    "/workspace/research/deep-dives/2026-05-19-frozen-memory-cluster.md",
+    "/workspace/wiki/memory-augmented.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/delta-mem-reproduction.md",
+    "/workspace/research/deep-dives/2026-05-19-frozen-memory-cluster.md",
+    "/workspace/wiki/memory-augmented.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 3,
+    "found_files": [
+      "/workspace/handoffs/active/delta-mem-reproduction.md",
+      "/workspace/research/deep-dives/2026-05-19-frozen-memory-cluster.md",
+      "/workspace/wiki/memory-augmented.md"
+    ],
+    "missing_files": [],
+    "first_evidence_rank": 1,
+    "all_evidence_rank": 3,
+    "ranked_files": [
+      "/workspace/handoffs/active/delta-mem-reproduction.md",
+      "/workspace/research/deep-dives/2026-05-19-frozen-memory-cluster.md",
+      "/workspace/wiki/memory-augmented.md",
+      "/workspace/handoffs/active/design-backlog-triage-2026-07-23.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/handoffs/active/delta-mem-reproduction.md",
+      "/workspace/handoffs/active/delta-mem-reproduction.md",
+      "/workspace/handoffs/active/delta-mem-reproduction.md",
+      "/workspace/handoffs/active/delta-mem-reproduction.md",
+      "/workspace/research/deep-dives/2026-05-19-frozen-memory-cluster.md"
+    ],
+    "recall@3": 1.0,
+    "perfect@3": true,
+    "recall@5": 1.0,
+    "perfect@5": true,
+    "recall@10": 1.0,
+    "perfect@10": true
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/active/delta-mem-reproduction.md",
+      "heading_path": [
+        "\u03b4-mem Reproduction + Frozen-Memory Topology Spike",
+        "Objective"
+      ],
+      "line_range": [
+        11,
+        16
+      ],
+      "snippet": "## Objective\n\nReproduce the \u03b4-mem (intake-539, `github.com/declare-lab/delta-Mem`, CC-BY-4.0) 1.31\u00d7 MemoryAgentBench / 1.20\u00d7 LoCoMo claim on our hardware using the released Qwen3-4B-Instruct-2507 adapter checkpoint. If reproduction validate",
+      "score": 0.9486,
+      "content_hash": "dae05b773e76642c"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-05-19-frozen-memory-cluster.md",
+      "heading_path": [
+        "Frozen-Backbone Persistent Memory Cluster \u2014 2026-05-19",
+        "Spike Proposal"
+      ],
+      "line_range": [
+        86,
+        92
+      ],
+      "snippet": "## Spike Proposal\n\n1. **(cheapest \u2014 ~3 days) Reference-impl reproduction.** Clone `declare-lab/delta-Mem`, run the released Qwen3-4B-Instruct-2507 adapter through MemoryAgentBench + LoCoMo on a GPU rental (or our CPU stack if HF transformer",
+      "score": 0.9443,
+      "content_hash": "e4ba0c777bbadff7"
+    },
+    {
+      "file": "/workspace/wiki/memory-augmented.md",
+      "heading_path": [
+        "Memory-Augmented Systems",
+        "Frozen-backbone persistent memory cluster (2026-05-19)"
+      ],
+      "line_range": [
+        276,
+        280
+      ],
+      "snippet": "**Easiest llama.cpp integration path**: **M.3 KV Extension** (4.2M params) needs zero custom GGML ops \u2014 just prepend learned K/V vectors to the cache at decode start. Estimated **~3 engineer-weeks** for a first prototype against gemma4 work",
+      "score": 0.937,
+      "content_hash": "f6f2eb5f368e8bdc"
+    },
+    {
+      "file": "/workspace/handoffs/active/design-backlog-triage-2026-07-23.md",
+      "heading_path": [
+        "Design-Backlog Triage (2026-07-23)",
+        "SECTION 1 \u2014 Strategic design concepts (operator decides)"
+      ],
+      "line_range": [
+        122,
+        123
+      ],
+      "snippet": "| C27 | ES gradient-free fine-tune path | fable5-w2-05 ES sliver; LRC ES cluster | Forward-pass-only ES (ESSA/EGGROLL) for a small verifier/drafter LoRA-SVD \u2014 the only training family needing no autograd, sidestepping the gfx90a gate | Buil",
+      "score": 0.9368,
+      "content_hash": "78d491664383bebb"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "PORTFOLIO REVIEW (2026-06-12, 5 agents, 108 rows): classified verdicts",
+        "GATED"
+      ],
+      "line_range": [
+        1238,
+        1238
+      ],
+      "snippet": "- **delta-mem-reproduction** [stale-needs-refresh] out: Phase 2 M.3 KV-Extension prototype on gemma4 (3 weeks, needs operator go-decision); Gate 2/3 magnitude reproduction GPU-realistic only; LME-V2 noted as aspirational eval target | gate:",
+      "score": 0.9366,
+      "content_hash": "4b0e5e8d5893656b"
+    },
+    {
+      "file": "/workspace/handoffs/active/delta-mem-reproduction.md",
+      "heading_path": [
+        "(per repo README \u2014 verify checkpoint path before running)",
+        "Progress checklist"
+      ],
+      "line_range": [
+        211,
+        218
+      ],
+      "snippet": "## Progress checklist\n\n- [x] Phase 1 Gate 1 (adapter loads) + Gate 4 (CPU tractable, 5% overhead) PASS \u2705\n- [x] Gate 3 LoCoMo N=5 smoke (1.65x, directional); magnitude inconclusive \u2705\n- [ ] Gate 2 MemoryAgentBench accuracy reproduction - GPU-",
+      "score": 0.9365,
+      "content_hash": "14f5afcf132fd4c8"
+    },
+    {
+      "file": "/workspace/handoffs/active/delta-mem-reproduction.md",
+      "heading_path": [
+        "(per repo README \u2014 verify checkpoint path before running)",
+        "Phase 2 \u2014 M.3 KV-Extension prototype on gemma4 worker_general (3 weeks)"
+      ],
+      "line_range": [
+        56,
+        67
+      ],
+      "snippet": "### Phase 2 \u2014 M.3 KV-Extension prototype on gemma4 worker_general (3 weeks)\n\n**Goal**: ship M.3 KV-Extension (intake-568's 4.2M-param topology, **no custom GGML ops needed**) as a sidecar memory module for gemma4-26B-A4B Q4_K_M MTP, wired i",
+      "score": 0.9354,
+      "content_hash": "bd8de164ba836280"
+    },
+    {
+      "file": "/workspace/handoffs/active/delta-mem-reproduction.md",
+      "heading_path": [
+        "\u03b4-mem Reproduction + Frozen-Memory Topology Spike"
+      ],
+      "line_range": [
+        1,
+        10
+      ],
+      "snippet": "# \u03b4-mem Reproduction + Frozen-Memory Topology Spike\n\n**Status**: Phase 1 setup/mechanical gates PASS; accuracy reproduction/gpu-scale gates remain open\n**Created**: 2026-05-19 (post-cluster-deep-dive)\n**Categories**: memory_augmented, conte",
+      "score": 0.9352,
+      "content_hash": "b0950b8a8d330d0c"
+    },
+    {
+      "file": "/workspace/handoffs/active/delta-mem-reproduction.md",
+      "heading_path": [
+        "(per repo README \u2014 verify checkpoint path before running)",
+        "Research Intake Update \u2014 2026-05-27",
+        "New Related Research"
+      ],
+      "line_range": [
+        188,
+        194
+      ],
+      "snippet": "### New Related Research\n- **[intake-612] \"LongMemEval-V2: Evaluating Long-Term Agent Memory Toward Experienced Colleagues\"** (arxiv:2605.12493)\n  - Relevance: updated eval target for the B1 / memory prototypes this handoff builds; reframes",
+      "score": 0.9351,
+      "content_hash": "c2d5c7f13ac5d6bc"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-05-19-frozen-memory-cluster.md",
+      "heading_path": [
+        "Frozen-Backbone Persistent Memory Cluster \u2014 2026-05-19",
+        "Executive Summary"
+      ],
+      "line_range": [
+        9,
+        12
+      ],
+      "snippet": "## Executive Summary\n\n\u03b4-mem provides a single, opinionated *online* memory mechanism: a compact state matrix updated by the delta rule, read out as low-rank corrections to the frozen backbone's attention \u2014 reported +10% avg, +31% MemoryAgen",
+      "score": 0.9344,
+      "content_hash": "5743700327702184"
+    }
+  ],
+  "wall_s": 26.045542541891336
+}

@@ -1,0 +1,187 @@
+{
+  "arm": "4000_256_punct",
+  "id": "hotpot_rao_redel_cluster",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/rao-redel-substrate-spike.md",
+    "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/rao-redel-substrate-spike.md",
+    "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md"
+  ],
+  "metrics": {
+    "evidence_count": 2,
+    "found_count": 2,
+    "found_files": [
+      "/workspace/handoffs/active/rao-redel-substrate-spike.md",
+      "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md"
+    ],
+    "missing_files": [],
+    "first_evidence_rank": 1,
+    "all_evidence_rank": 2,
+    "ranked_files": [
+      "/workspace/handoffs/active/rao-redel-substrate-spike.md",
+      "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md",
+      "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md",
+      "/workspace/handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md",
+      "/workspace/handoffs/active/rao-redel-substrate-spike.md",
+      "/workspace/progress/2026-05/2026-05-19.md",
+      "/workspace/progress/2026-05/2026-05-20.md",
+      "/workspace/handoffs/active/rao-redel-substrate-spike.md",
+      "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md",
+      "/workspace/handoffs/completed/repl-final-schema-validation.md"
+    ],
+    "recall@3": 1.0,
+    "perfect@3": true,
+    "recall@5": 1.0,
+    "perfect@5": true,
+    "recall@10": 1.0,
+    "perfect@10": true
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/active/rao-redel-substrate-spike.md",
+      "heading_path": [
+        "RAO + ReDel Substrate Spike"
+      ],
+      "line_range": [
+        1,
+        11
+      ],
+      "snippet": "# RAO + ReDel Substrate Spike\n\n**Status**: Step 1 PASS + Step 2 harness prepared; Step 2 execution awaits clean inference window\n\n> **2026-07-14 audit note \u2014 FUND-OR-CLOSE**: schedule the ~10-60min naturally-delegating A/B in the next infer",
+      "score": 0.9464,
+      "content_hash": "6759cd77c9168b46"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md",
+      "heading_path": [
+        "RAO + RLM Cluster Deep-Dive \u2014 2026-05-19",
+        "EPYC Integration Path",
+        "Connection to existing handoffs"
+      ],
+      "line_range": [
+        137,
+        148
+      ],
+      "snippet": "### Connection to existing handoffs\n\n| Handoff | What this cluster changes | Specific edit |\n|---|---|---|\n| `handoffs/completed/meta-harness-optimization.md` | Already updated (line 419) with RAO. Add ReDel evaluation as Tier 3 substrate o",
+      "score": 0.939,
+      "content_hash": "3c737e957adf0f25"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md",
+      "heading_path": [
+        "RAO + RLM Cluster Deep-Dive \u2014 2026-05-19",
+        "Executive Summary"
+      ],
+      "line_range": [
+        9,
+        14
+      ],
+      "snippet": "## Executive Summary\n\nAfter going one level deeper than the intake notes, the picture sharpens in three ways. First, the **RLM-side already has more empirical depth than the RAO-side** thanks to the Wang reproduction (intake-547), which dir",
+      "score": 0.932,
+      "content_hash": "c6873e8f4e604092"
+    },
+    {
+      "file": "/workspace/handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md",
+      "heading_path": [
+        "Meta-Harness: Automated Harness Optimization",
+        "Research Intake Update \u2014 2026-05-19",
+        "Recursive Agent Optimization (RAO) \u2014 RL training paradigm for recursive agents"
+      ],
+      "line_range": [
+        445,
+        447
+      ],
+      "snippet": "  - **Concrete next step**: when Meta-Harness Tier 3 design solidifies, draft a spike that combines (a) ReDel as harness substrate, (b) RAO's three training tricks as the policy training recipe, (c) `max_depth=1` cap per RLM-reproduction ca",
+      "score": 0.9319,
+      "content_hash": "3b4579ae329252a7"
+    },
+    {
+      "file": "/workspace/handoffs/active/rao-redel-substrate-spike.md",
+      "heading_path": [
+        "4. Inspect summary",
+        "References"
+      ],
+      "line_range": [
+        399,
+        408
+      ],
+      "snippet": "## References\n\n- Deep-dive: `/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md`\n- ReDel repo: `https://github.com/zhudotexe/redel`\n- RAO paper: `https://arxiv.org/abs/2605.06639`\n- Wang RLM reproduction: `https://arxiv.org/abs/26",
+      "score": 0.9317,
+      "content_hash": "5b173d02f784ffa1"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-19.md",
+      "heading_path": [
+        "Session 3 (afternoon) \u2014 RAO+ReDel substrate spike: Steps 1+3-prework executed"
+      ],
+      "line_range": [
+        186,
+        187
+      ],
+      "snippet": "# Session 3 (afternoon) \u2014 RAO+ReDel substrate spike: Steps 1+3-prework executed\n",
+      "score": 0.9316,
+      "content_hash": "e06b7d34fb37678f"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-20.md",
+      "heading_path": [
+        "2026-05-20 \u2014 fast-rlm review, intake-569 RoPE bounds, autopilot delegation expansion + digest",
+        "Phase 1 \u2014 Fast-RLM review + structured-I/O port",
+        "Audit findings"
+      ],
+      "line_range": [
+        20,
+        25
+      ],
+      "snippet": "### Audit findings\n\n- **30 total commits** in the upstream repo; only **5 since our 2026-03-03 intake** (TUI fix, license, JSON I/O \u00d7 2).\n- Genuine net-new pattern: structured I/O. `examples/structured_io.py`, `fast_rlm/_runner.py:23-180`, ",
+      "score": 0.9315,
+      "content_hash": "0c1bf0ac525e521e"
+    },
+    {
+      "file": "/workspace/handoffs/active/rao-redel-substrate-spike.md",
+      "heading_path": [
+        "RAO + ReDel Substrate Spike",
+        "Key Findings from Deep-Dive"
+      ],
+      "line_range": [
+        33,
+        39
+      ],
+      "snippet": "## Key Findings from Deep-Dive\n\n- **ReDel substrate**: MIT + Commons Clause license (research use OK; resale blocked), 98.9 KB Python core, Python 3.10+, built on `kani`, **swappable to local llama-server via `OPENAI_BASE_URL` env var** \u2014 d",
+      "score": 0.9308,
+      "content_hash": "e35769df9dfd8ef8"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md",
+      "heading_path": [
+        "RAO + RLM Cluster Deep-Dive \u2014 2026-05-19",
+        "The RLM-RAO Stack as a Whole"
+      ],
+      "line_range": [
+        26,
+        63
+      ],
+      "snippet": "## The RLM-RAO Stack as a Whole\n\nThe cluster fragments into three architectural layers and three roles within each layer. The 5-sub-decision taxonomy of intake-548 is the glue that makes them comparable.\n\n```\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500",
+      "score": 0.9289,
+      "content_hash": "a310675e6793bc63"
+    },
+    {
+      "file": "/workspace/handoffs/completed/repl-final-schema-validation.md",
+      "heading_path": [
+        "REPL FINAL() Schema Validation",
+        "Out of scope (deferred, unchanged)"
+      ],
+      "line_range": [
+        38,
+        43
+      ],
+      "snippet": "## Out of scope (deferred, unchanged)\n\n- Sub-agent (child) output schemas (fast-rlm `llm_query(context, child_schema)`).\n- Dict-input flat-schema probe (fast-rlm's other 2026-05-20 addition).\n- ReDel substrate intersect (see `rao-redel-subs",
+      "score": 0.928,
+      "content_hash": "1b055b74c724cfb7"
+    }
+  ],
+  "wall_s": 13.08362474385649
+}

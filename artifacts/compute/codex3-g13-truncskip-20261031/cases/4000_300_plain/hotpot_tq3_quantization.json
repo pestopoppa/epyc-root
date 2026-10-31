@@ -1,0 +1,196 @@
+{
+  "arm": "4000_300_plain",
+  "id": "hotpot_tq3_quantization",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/tq3-quantization-evaluation.md",
+    "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+    "/workspace/handoffs/active/inference-acceleration-index.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+    "/workspace/handoffs/active/inference-acceleration-index.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/tq3-quantization-evaluation.md",
+    "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+    "/workspace/handoffs/active/inference-acceleration-index.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/tq3-quantization-evaluation.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+      "/workspace/handoffs/active/inference-acceleration-index.md"
+    ],
+    "first_evidence_rank": 8,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-07/2026-07-17.md",
+      "/workspace/progress/2026-04/2026-04-21.md",
+      "/workspace/progress/2026-04/2026-04-01.md",
+      "/workspace/handoffs/active/angelslim-techniques-evaluation.md",
+      "/workspace/progress/2026-07/2026-07-19.md",
+      "/workspace/wiki/hardware-optimization.md",
+      "/workspace/progress/2026-07/2026-07-19.md",
+      "/workspace/handoffs/active/tq3-quantization-evaluation.md",
+      "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "/workspace/progress/2026-07/2026-07-02-research-intake.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-07/2026-07-17.md",
+      "heading_path": [
+        "Progress - 2026-07-17",
+        "Bonsai Q1_0 corrected prompting gate",
+        "Code/docs"
+      ],
+      "line_range": [
+        421,
+        429
+      ],
+      "snippet": "### Code/docs\n\n| Repo | File | Change |\n|---|---|---|\n| `epyc-inference-research` | `scripts/benchmark/bonsai_q1_quality_gate_runner.py` | Added execute mode, clean command templates, generated-text extraction, per-arm result records, and s",
+      "score": 0.9241,
+      "content_hash": "46a995a46c145508"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-21.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-21",
+        "Session 1 \u2014 Handoff Hygiene Audit Pass",
+        "Changes"
+      ],
+      "line_range": [
+        19,
+        40
+      ],
+      "snippet": "### Changes\n\n**Refreshed (6 handoffs)** with \"Status as of 2026-04-21\" blocks:\n- `log-linear-gated-deltanet-readiness.md` \u2014 monitoring confirmed, no upstream pretrained release\n- `multiscreen-attention-evaluation.md` \u2014 monitoring confirmed,",
+      "score": 0.9216,
+      "content_hash": "8a0aa7114280a3c3"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-01.md",
+      "heading_path": [
+        "2026-04-01 \u2014 AR-3 First Live Run: Debug & Fix Session",
+        "Research Intake Session (9 entries, 4 deep-dives)",
+        "Artifacts Modified"
+      ],
+      "line_range": [
+        96,
+        108
+      ],
+      "snippet": "### Artifacts Modified\n\n- `research/intake_index.yaml` \u2014 +9 entries, 3 revised post deep-dive\n- `references/cross-reference-map.md` \u2014 +1 category, 7 refreshed\n- `handoffs/active/autopilot-continuous-optimization.md` \u2014 +5 concrete changes fr",
+      "score": 0.9207,
+      "content_hash": "cdfdb885fc34de5a"
+    },
+    {
+      "file": "/workspace/handoffs/active/angelslim-techniques-evaluation.md",
+      "heading_path": [
+        "AngelSlim Techniques Evaluation \u2014 Sub-2-Bit Quantization + Reasoning Speculative-Exit"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# AngelSlim Techniques Evaluation \u2014 Sub-2-Bit Quantization + Reasoning Speculative-Exit\n\n**Status**: stub\n**Created**: 2026-05-21 (via research intake)\n**Categories**: quantization, hardware_optimization, speculative_decoding, context_manag",
+      "score": 0.9189,
+      "content_hash": "f263af4c14371055"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-19.md",
+      "heading_path": [
+        "Progress - 2026-07-19",
+        "Stale Model-Probe Instruction Cleanup"
+      ],
+      "line_range": [
+        1385,
+        1405
+      ],
+      "snippet": "## Stale Model-Probe Instruction Cleanup\n\nFollowed the scoreboard audit by rewriting stale future-work language that still invited broad\nspeed-only reruns. The parked/reopen-only wording now covers Bonsai Q1_0/8B, Ternary Q2_g64/Q2_0,\nNemot",
+      "score": 0.917,
+      "content_hash": "efe723998c65dbdd"
+    },
+    {
+      "file": "/workspace/wiki/hardware-optimization.md",
+      "heading_path": [
+        "Hardware Optimization",
+        "Related Categories"
+      ],
+      "line_range": [
+        963,
+        971
+      ],
+      "snippet": "## Related Categories\n\n- [Benchmark Methodology](benchmark-methodology.md) -- all benchmark results depend on hardware configuration\n- [Speculative Decoding](speculative-decoding.md) -- speculation effectiveness varies dramatically by NUMA ",
+      "score": 0.9163,
+      "content_hash": "6a47be63057a5208"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-19.md",
+      "heading_path": [
+        "Progress - 2026-07-19",
+        "Parallel model-admission churn: Qwen3-4B, Qwen3Next, Nemotron-Nano"
+      ],
+      "line_range": [
+        724,
+        735
+      ],
+      "snippet": "  completed with exit code `0` on CPU-only experimental build `9882c2c69`, using\n  eight threads: `pp2048 101.60`, `pp8192 92.73`, `pp32768 73.998`, and\n  `tg512 10.24 t/s`. Live post-run checks showed no inference processes and no\n  KFD PI",
+      "score": 0.9163,
+      "content_hash": "485fa808973344ee"
+    },
+    {
+      "file": "/workspace/handoffs/active/tq3-quantization-evaluation.md",
+      "heading_path": [
+        "TQ3 / TurboQuant Quantization \u2014 Monitor List",
+        "Research Intake Update \u2014 2026-07-14",
+        "New outstanding tasks"
+      ],
+      "line_range": [
+        173,
+        176
+      ],
+      "snippet": "### New outstanding tasks\n- [ ] Decide (operator): is lossless exponent-coding worth a CPU/AVX-512 spike **only** as (a) staging/download savings for **full-precision FP16/BF16 source checkpoints retained for re-quantization** (NOT already-",
+      "score": 0.916,
+      "content_hash": "4a36e64949bbb6c5"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "heading_path": [
+        "EPYC Handoff \u2014 Master Index",
+        "Domain indices"
+      ],
+      "line_range": [
+        20,
+        27
+      ],
+      "snippet": "## Domain indices\n| Routing/autopilot/stack | routing-and-optimization-index.md | | Acceleration | inference-acceleration-index.md |\n|---|---|---|---|---|\n| CPU throughput | cpu-inference-optimization-index.md | | Research/eval | research-e",
+      "score": 0.9159,
+      "content_hash": "39b36db70944f84c"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-02-research-intake.md",
+      "heading_path": [
+        "Progress \u2014 2026-07-02 \u2014 Research Intake (intake-751..772)",
+        "Handoffs updated (Phase 4a)"
+      ],
+      "line_range": [
+        38,
+        41
+      ],
+      "snippet": "## Handoffs updated (Phase 4a)\n\n`gpu-acceleration-path.md` (ROCm cluster + support matrix), `meta-harness-optimization.md` (753), `engram-conditional-memory.md` (758 + MATH500 contradiction), `tq3-quantization-evaluation.md` (756 NVFP4 bar)",
+      "score": 0.9154,
+      "content_hash": "0bcf65c8018e0ddc"
+    }
+  ],
+  "wall_s": 16.019153408007696
+}

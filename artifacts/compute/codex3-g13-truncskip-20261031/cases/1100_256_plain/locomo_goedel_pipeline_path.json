@@ -1,0 +1,192 @@
+{
+  "arm": "1100_256_plain",
+  "id": "locomo_goedel_pipeline_path",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/research/deep-dives/goedel-code-prover-analysis.md",
+    "/workspace/handoffs/active/pipeline-integration-index.md",
+    "/workspace/progress/2026-06/2026-06-13.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/research/deep-dives/goedel-code-prover-analysis.md",
+    "/workspace/handoffs/active/pipeline-integration-index.md",
+    "/workspace/progress/2026-06/2026-06-13.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/progress/2026-06/2026-06-13.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/pipeline-integration-index.md",
+      "/workspace/research/deep-dives/goedel-code-prover-analysis.md"
+    ],
+    "first_evidence_rank": 1,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-06/2026-06-13.md",
+      "/workspace/handoffs/active/mathsmith-hc-formalizer-eval.md",
+      "/workspace/progress/2026-06/2026-06-13.md",
+      "/workspace/wiki/formal-verification.md",
+      "/workspace/handoffs/completed/lean-proving-pipeline.md",
+      "/workspace/wiki/formal-verification.md",
+      "/workspace/wiki/formal-verification.md",
+      "/workspace/handoffs/completed/lean-proving-pipeline.md",
+      "/workspace/handoffs/completed/lean-proving-pipeline.md",
+      "/workspace/progress/2026-09/2026-09-09-autokernel-unified-20260908.md"
+    ],
+    "recall@3": 0.3333333333333333,
+    "perfect@3": false,
+    "recall@5": 0.3333333333333333,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-06/2026-06-13.md",
+      "heading_path": [
+        "2026-06-13",
+        "NIB2-15 Goedel artifact generation"
+      ],
+      "line_range": [
+        909,
+        922
+      ],
+      "snippet": "## NIB2-15 Goedel artifact generation\n\nCompleted the inference-free Goedel-Code-Prover-8B artifact pipeline while AutoPilot remained paused.\n\nArtifacts:\n\n- HF snapshot: `/mnt/raid0/llm/models/Goedel-Code-Prover-8B-HF`\n- f16 GGUF: `/mnt/raid",
+      "score": 0.9351,
+      "content_hash": "f6912a7a62aed6ca"
+    },
+    {
+      "file": "/workspace/handoffs/active/mathsmith-hc-formalizer-eval.md",
+      "heading_path": [
+        "MathSmith HC Formalizer Evaluation & A/B Testing",
+        "Research Intake Update \u2014 2026-03-28",
+        "New Related Research"
+      ],
+      "line_range": [
+        151,
+        157
+      ],
+      "snippet": "### New Related Research\n- **[intake-233] \"Goedel-Code-Prover: Hierarchical Proof Search for Open State-of-the-Art Code Verification\"** (arxiv:2603.19329)\n  - Relevance: Uses same Qwen3-8B base + GRPO training pipeline for Lean 4 proof gene",
+      "score": 0.9346,
+      "content_hash": "74a0f94076e8d3fa"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-13.md",
+      "heading_path": [
+        "2026-06-13",
+        "NIB2-15 Goedel artifact generation"
+      ],
+      "line_range": [
+        922,
+        927
+      ],
+      "snippet": "- Downloaded `Goedel-LM/Goedel-Code-Prover-8B` revision `858f3b5e04bf24aca3a1a113ea1889a4de9ed4ef`.\n- Converted via `convert_hf_to_gguf.py --outtype f16`; the converter required adding `sentencepiece` to the existing `delta-Mem` Python env ",
+      "score": 0.9319,
+      "content_hash": "ed6d6fb39cb945cf"
+    },
+    {
+      "file": "/workspace/wiki/formal-verification.md",
+      "heading_path": [
+        "Formal Verification",
+        "Actionable for EPYC"
+      ],
+      "line_range": [
+        36,
+        41
+      ],
+      "snippet": "- **S1 (P0): Convert Goedel-CP-8B to GGUF**: Download safetensors, convert with `convert_hf_to_gguf.py`, quantize to Q4_K_M and Q8_0. Validate with simple Lean proof generation test. Trivial -- vanilla Qwen3-8B.\n- **S2 (P1): Profile Leanstr",
+      "score": 0.9306,
+      "content_hash": "195feb852a418148"
+    },
+    {
+      "file": "/workspace/handoffs/completed/lean-proving-pipeline.md",
+      "heading_path": [
+        "Lean 4 Proving Pipeline \u2014 Leanstral + Goedel-Code-Prover",
+        "Work Items",
+        "S4: End-to-End Pipeline Test [Priority: P2, depends on S1]"
+      ],
+      "line_range": [
+        98,
+        104
+      ],
+      "snippet": "### S4: End-to-End Pipeline Test [Priority: P2, depends on S1]\n- Set up Goedel-CP decomposition pipeline against local llama-server (2-4 slots)\n- Run on FormalQualBench subset (start with 5 of the 23 theorems)\n- Measure: prove success rate,",
+      "score": 0.9304,
+      "content_hash": "daf8c5ef2582a0bf"
+    },
+    {
+      "file": "/workspace/wiki/formal-verification.md",
+      "heading_path": [
+        "Formal Verification",
+        "Summary"
+      ],
+      "line_range": [
+        8,
+        12
+      ],
+      "snippet": "## Summary\n\nFormal verification research for the EPYC stack centers on deploying a two-tier Lean 4 proving pipeline using local models. Two complementary systems have been evaluated: Goedel-Code-Prover-8B (function-level code verification, ",
+      "score": 0.93,
+      "content_hash": "d94f91ab004c98e0"
+    },
+    {
+      "file": "/workspace/wiki/formal-verification.md",
+      "heading_path": [
+        "Formal Verification",
+        "Source References"
+      ],
+      "line_range": [
+        141,
+        146
+      ],
+      "snippet": "- [Goedel-Code-Prover analysis](/workspace/research/deep-dives/goedel-code-prover-analysis.md) -- Architecture, training pipeline, decomposition scoring, deployment estimates\n- [Leanstral architecture analysis](/workspace/research/deep-dive",
+      "score": 0.9297,
+      "content_hash": "1fc5d944c893fbe3"
+    },
+    {
+      "file": "/workspace/handoffs/completed/lean-proving-pipeline.md",
+      "heading_path": [
+        "Lean 4 Proving Pipeline \u2014 Leanstral + Goedel-Code-Prover"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# Lean 4 Proving Pipeline \u2014 Leanstral + Goedel-Code-Prover\n\n**Status**: MERGED 2026-04-21 into `pipeline-integration-index.md` \u00a7 P2. Goedel-CP-8B GGUF conversion tracked as NIB2-15 in `non-inference-backlog.md`. Architecture content preserv",
+      "score": 0.9296,
+      "content_hash": "299c5ca2e4e0e59f"
+    },
+    {
+      "file": "/workspace/handoffs/completed/lean-proving-pipeline.md",
+      "heading_path": [
+        "Lean 4 Proving Pipeline \u2014 Leanstral + Goedel-Code-Prover",
+        "Objective"
+      ],
+      "line_range": [
+        9,
+        16
+      ],
+      "snippet": "## Objective\n\nDeploy a two-tier Lean 4 proving pipeline on EPYC hardware using local models:\n- **Tier 1 (Planner)**: Leanstral (119B MoE, 6.5B active) \u2014 repo-scale proof strategy, context selection, proof decomposition at architectural leve",
+      "score": 0.9294,
+      "content_hash": "bd4b1c2b8458c8da"
+    },
+    {
+      "file": "/workspace/progress/2026-09/2026-09-09-autokernel-unified-20260908.md",
+      "heading_path": [
+        "Unified AutoKernel implementation \u2014 2026-09-09",
+        "In progress and boundaries",
+        "Retention safety accepted; worker/planner consumer review continues"
+      ],
+      "line_range": [
+        668,
+        678
+      ],
+      "snippet": "- Research source **3c273f7b**, main merge **5b1cf412**, publishes the six-file retention/legacy cleanup\n  slice. Main ran **174 tests and 13 subtests** across retention, pipeline, anchor, gates and six\n  independent graph probes. Ruff pass",
+      "score": 0.9278,
+      "content_hash": "ae7420f11f120f21"
+    }
+  ],
+  "wall_s": 25.85005927691236
+}

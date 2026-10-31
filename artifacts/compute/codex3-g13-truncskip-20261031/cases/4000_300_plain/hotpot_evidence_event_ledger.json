@@ -1,0 +1,188 @@
+{
+  "arm": "4000_300_plain",
+  "id": "hotpot_evidence_event_ledger",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md",
+    "/workspace/handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md",
+    "/workspace/handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md"
+  ],
+  "metrics": {
+    "evidence_count": 2,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/evidence-plane-event-sourcing-and-narrative.md",
+      "/workspace/handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/research/deep-dives/vidya-belief-substrate-audit.md",
+      "/workspace/handoffs/completed/reviewer-trace-materialization.md",
+      "/workspace/handoffs/completed/autopilot-continuous-optimization-history-through-2026-06-20.md",
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/wiki/agent-architecture.md",
+      "/workspace/handoffs/completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/wiki/autonomous-research.md",
+      "/workspace/wiki/autonomous-research.md",
+      "/workspace/wiki/autonomous-research.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/research/deep-dives/vidya-belief-substrate-audit.md",
+      "heading_path": [
+        "Vidya Belief-Substrate Audit \u2014 Consolidated Deep Dive",
+        "3. In-project reconciliation (verified 2026-08-09)"
+      ],
+      "line_range": [
+        111,
+        149
+      ],
+      "snippet": "## 3. In-project reconciliation (verified 2026-08-09)\n\nThe internal verification agent checked all ten \"Current state\" claims. Result: the draft's\narchitecture is *already partially landed* in EPYC, per-domain:\n\n- **`evidence-plane-ledger-a",
+      "score": 0.9444,
+      "content_hash": "8499e337b2082621"
+    },
+    {
+      "file": "/workspace/handoffs/completed/reviewer-trace-materialization.md",
+      "heading_path": [
+        "Reviewer Control Plane \u2014 Trace Materialization & Durable Execution (H1)",
+        "TM-6 \u2014 Trace store \u2194 evidence-plane relationship (documented 2026-07-17)"
+      ],
+      "line_range": [
+        65,
+        71
+      ],
+      "snippet": "## TM-6 \u2014 Trace store \u2194 evidence-plane relationship (documented 2026-07-17)\n\n**Contract**: the trace store (`data/trace/events.sqlite`) is a **queryable index + decision ledger**, not a second event-sourcing pipeline. Three row classes, one",
+      "score": 0.9428,
+      "content_hash": "e3a69285f9d95701"
+    },
+    {
+      "file": "/workspace/handoffs/completed/autopilot-continuous-optimization-history-through-2026-06-20.md",
+      "heading_path": [
+        "AutoPilot continuous optimization history through 2026-06-20",
+        "Current Resume Pointer"
+      ],
+      "line_range": [
+        35,
+        43
+      ],
+      "snippet": "## Current Resume Pointer\n\nResume from `../active/autopilot-continuous-optimization.md`, then coordinate\nwith:\n\n- `../active/evidence-plane-ledger-and-sequential-verdicts.md`;\n- `../active/evidence-plane-event-sourcing-and-narrative.md`;\n- ",
+      "score": 0.9424,
+      "content_hash": "094e78c2e2bd4a66"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "Supersession fold coverage extended to dashboard, analytics, preflight, and scrub defaults",
+        "Root docs updated"
+      ],
+      "line_range": [
+        2133,
+        2153
+      ],
+      "snippet": "### Root docs updated\n\n- `handoffs/active/evidence-plane-event-sourcing-and-narrative.md`: W2 now\n  records append-only scrub as the default workflow, dashboard/offline/preflight\n  read coverage, and narrows remaining rewrite work to retiri",
+      "score": 0.9418,
+      "content_hash": "21d02329f65f668e"
+    },
+    {
+      "file": "/workspace/wiki/agent-architecture.md",
+      "heading_path": [
+        "Agent Architecture",
+        "Key Findings",
+        "New Findings (2026-07-02 \u2014 fixed-model harness evolution + Fable 5 window-2 architecture co-leads)"
+      ],
+      "line_range": [
+        662,
+        668
+      ],
+      "snippet": "- **The self-optimizer integrity architecture shifted from mechanism-building to a guarantee question: the evidence plane went live-authority on 2026-07-02.** The event-sourced per-question ledger plus sequential e-process verdicts now run ",
+      "score": 0.9408,
+      "content_hash": "d1b121c5cc3538e5"
+    },
+    {
+      "file": "/workspace/handoffs/completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md",
+      "heading_path": [
+        "AutoPilot: Continuous Recursive Optimization"
+      ],
+      "line_range": [
+        181,
+        196
+      ],
+      "snippet": "> **Fable 5 review (2026-06-12)**: the review's architecture recommendations now have owning handoffs: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) (LIVE t775 baseline-ratchet hotfix + dead-question repair), [e",
+      "score": 0.9406,
+      "content_hash": "7a1cc6f1a69c848e"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 one-shot architectural review \u2014 EXECUTED (F5)"
+      ],
+      "line_range": [
+        83,
+        104
+      ],
+      "snippet": "## Fable 5 one-shot architectural review \u2014 EXECUTED (F5)\n\nRan the consult per `handoffs/active/fable5-architecture-review.md`. Preflight audit first (brief sound; 6 amendments at `fable5-preflight-amendments.md`: stale epyc-root index re-an",
+      "score": 0.9403,
+      "content_hash": "6537fb62706efc5e"
+    },
+    {
+      "file": "/workspace/wiki/autonomous-research.md",
+      "heading_path": [
+        "Autonomous Research",
+        "2026-06-19 Update \u2014 Evidence Plane Authority Remains Sample-Gated"
+      ],
+      "line_range": [
+        441,
+        447
+      ],
+      "snippet": "- **Archive reconstruction, supersession, baseline narrative, and strategy quarantine now live on source-derived paths.** The evidence-plane handoff has concrete journal-derived archive reconstruction, append-only supersession events with t",
+      "score": 0.9399,
+      "content_hash": "dac9e62ad31197ce"
+    },
+    {
+      "file": "/workspace/wiki/autonomous-research.md",
+      "heading_path": [
+        "Autonomous Research",
+        "Source References"
+      ],
+      "line_range": [
+        550,
+        556
+      ],
+      "snippet": "- [evidence-plane-ledger-and-sequential-verdicts.md](../handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md) -- per-question ledger + e-process sequential verdicts + W7 game layer; contributed the 2026-07-04/05 checkpoints (Fab",
+      "score": 0.9382,
+      "content_hash": "471b05ddc4d50296"
+    },
+    {
+      "file": "/workspace/wiki/autonomous-research.md",
+      "heading_path": [
+        "Autonomous Research",
+        "Key Findings",
+        "New (2026-06-13, Evidence Plane And Lab Automation)"
+      ],
+      "line_range": [
+        422,
+        429
+      ],
+      "snippet": "### New (2026-06-13, Evidence Plane And Lab Automation)\n\n- **The binding constraint for AutoPilot is decision-grade evidence, not planner cleverness.** The Fable 5 review reframed the recurring contamination incidents as a metrology problem",
+      "score": 0.9376,
+      "content_hash": "01428eb8547e1d6c"
+    }
+  ],
+  "wall_s": 16.175592692103237
+}

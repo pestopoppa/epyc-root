@@ -1,0 +1,191 @@
+{
+  "arm": "4000_256_plain",
+  "id": "hotpot_chat_template_thinking",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/bulk-inference-campaign.md",
+    "/workspace/handoffs/active/reasoning-compression.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/bulk-inference-campaign.md",
+    "/workspace/handoffs/active/reasoning-compression.md"
+  ],
+  "metrics": {
+    "evidence_count": 2,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/bulk-inference-campaign.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/reasoning-compression.md"
+    ],
+    "first_evidence_rank": 4,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/progress/2026-10/2026-10-22-qwen-thinking-source-fix.md",
+      "/workspace/progress/2026-08/2026-08-21-research-intake.md",
+      "/workspace/handoffs/active/bulk-inference-campaign.md",
+      "/workspace/wiki/chat-templates.md",
+      "/workspace/progress/2026-05/2026-05-26.md",
+      "/workspace/wiki/chat-templates.md",
+      "/workspace/progress/2026-10/2026-10-22-hsprof1-reader-fix2.md",
+      "/workspace/handoffs/active/multi-file-coding-completion-capability.md",
+      "/workspace/progress/2026-04/2026-04-07.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.5,
+    "perfect@5": false,
+    "recall@10": 0.5,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue \u2014 stack reload hygiene, AutoPilot restart, J12 closure",
+        "Queue-1 closure"
+      ],
+      "line_range": [
+        230,
+        234
+      ],
+      "snippet": "### Queue-1 closure\n\n- **J12 wiring half is closed**: registry-driven `chat_template_kwargs` is present, production `LlamaServerBackend` forwards it on `/v1/chat/completions`, and chat-completions role selection uses one shared source of tr",
+      "score": 0.9334,
+      "content_hash": "8835a334cebf4964"
+    },
+    {
+      "file": "/workspace/progress/2026-10/2026-10-22-qwen-thinking-source-fix.md",
+      "heading_path": [
+        "2026-10-22 Qwen3.x thinking-off at the source (coordinator 3c4ca599)"
+      ],
+      "line_range": [
+        1,
+        10
+      ],
+      "snippet": "# 2026-10-22 Qwen3.x thinking-off at the source (coordinator 3c4ca599)\n\nCause: Qwen3.6 defaults to thinking-ON; under a token cap reasoning consumed the budget and content was empty (cme7, hsprof1, kpf64 voided).\n\nFrozen v10 source semantic",
+      "score": 0.933,
+      "content_hash": "f64080adeae1562d"
+    },
+    {
+      "file": "/workspace/progress/2026-08/2026-08-21-research-intake.md",
+      "heading_path": [
+        "2026-08-21 \u2014 Research intake: Qwen chat templates (intake-1212 \u2026 intake-1217)",
+        "Answer to the operator's hypothesis"
+      ],
+      "line_range": [
+        62,
+        71
+      ],
+      "snippet": "## Answer to the operator's hypothesis\n\nInstallation genuinely *is* out-of-the-box \u2014 one `--chat-template-file` flag or one\n`gguf-new-metadata` rewrite, no requantization, no registry change, no kernel touch. That half\nholds. The correction",
+      "score": 0.9313,
+      "content_hash": "663780d80a54aebb"
+    },
+    {
+      "file": "/workspace/handoffs/active/bulk-inference-campaign.md",
+      "heading_path": [
+        "Bulk Inference Campaign \u2014 active backlog (Packages G\u2013K)",
+        "Package J: Within-Role Placement + Audit-Batch Inference Gates (2026-05-26)",
+        "Other agents' inference-gated work \u2014 add here"
+      ],
+      "line_range": [
+        501,
+        510
+      ],
+      "snippet": "**Sequencing of the appended items (intake-607 residual gates + 2026-05-27 P17/DAR-6 additions):**\n- **J16 (RI-ITG-1)** is an **active routing change** (enforce-mode demotion), so it **cannot co-run with the passive J6 24h soak** (would con",
+      "score": 0.9305,
+      "content_hash": "2f3452cc6ddf27f3"
+    },
+    {
+      "file": "/workspace/wiki/chat-templates.md",
+      "heading_path": [
+        "Chat Templates \u2014 Per-Model Turn Markers and Routing Endpoints",
+        "Per-family templates currently in production",
+        "Qwen (3.x, 2.5, 3-Next, distillations)"
+      ],
+      "line_range": [
+        41,
+        60
+      ],
+      "snippet": "### Qwen (3.x, 2.5, 3-Next, distillations)\n\n```\n<|im_start|>user\n{prompt}<|im_end|>\n<|im_start|>assistant\n\n```\n\n**Detection key**: name contains `qwen` (case-insensitive). DeepSeek-R1-\nDistill-Qwen variants also detect as qwen.\n\n**Special k",
+      "score": 0.9303,
+      "content_hash": "fa1a7f944762d890"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-26.md",
+      "heading_path": [
+        "2026-05-26 \u2014 manual session log",
+        "Session 20 \u2014 Bulk inference campaign: preflight + J4a enumeration (claude, ~09:27Z)",
+        "State + next"
+      ],
+      "line_range": [
+        319,
+        324
+      ],
+      "snippet": "### State + next\n- Cross-role matrix: **CLOSED** (J4a+J4b). Remaining: **J4c** (fail-closed\u2192allow-only policy wiring; now actionable, non-inference).\n- worker_general fully restored + healthy. API still on `PLACEMENT_STATE_MACHINE=1` (PID 1",
+      "score": 0.9301,
+      "content_hash": "143575d39e6a5f34"
+    },
+    {
+      "file": "/workspace/wiki/chat-templates.md",
+      "heading_path": [
+        "Chat Templates \u2014 Per-Model Turn Markers and Routing Endpoints",
+        "Cross-references"
+      ],
+      "line_range": [
+        268,
+        279
+      ],
+      "snippet": "## Cross-references\n\n- `feedback_qwen3x_enable_thinking_false` (memory) \u2014 Qwen reasoning loop\n  prevention via `chat_template_kwargs.enable_thinking=False`\n- `feedback_verify_current_stack_before_claiming_role_replacement`\n  (memory) \u2014 veri",
+      "score": 0.93,
+      "content_hash": "71528145440d168b"
+    },
+    {
+      "file": "/workspace/progress/2026-10/2026-10-22-hsprof1-reader-fix2.md",
+      "heading_path": [
+        "2026-10-22 HS-PROF-1 reader fix 2 (coordinator 3c4ca599)",
+        "Root causes"
+      ],
+      "line_range": [
+        5,
+        8
+      ],
+      "snippet": "## Root causes\n1. **Empty derivation.** `derive` posted to `/v1/chat/completions` without `chat_template_kwargs.enable_thinking=false`. The Qwen3.6-35B-A3B reader spent the whole `max_tokens=1024` in reasoning: `reader-server.log` shows `n_",
+      "score": 0.9297,
+      "content_hash": "466820857026ee97"
+    },
+    {
+      "file": "/workspace/handoffs/active/multi-file-coding-completion-capability.md",
+      "heading_path": [
+        "Multi-file coding completion \u2014 diagnosed agentic read\u2192edit\u2192finish protocol gap",
+        "Thinking/runtime confounds ruled out"
+      ],
+      "line_range": [
+        110,
+        124
+      ],
+      "snippet": "## Thinking/runtime confounds ruled out\n\nQwen3.6 degenerates into empty/`<think>`-loop output unless `enable_thinking=false` is applied. The\norchestrator code **already supports this** for `coder_escalation`: it defaults the role onto the\nc",
+      "score": 0.9295,
+      "content_hash": "dc987b7c9bcc7825"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-07.md",
+      "heading_path": [
+        "2026-04-07 \u2014 Research Intake 275-277 with Deep-Dives",
+        "Session 4: Package B Inference Execution + TrimR Investigation",
+        "TrimR Root Cause \u2014 Production Binary Predates Thinking Support"
+      ],
+      "line_range": [
+        334,
+        342
+      ],
+      "snippet": "### TrimR Root Cause \u2014 Production Binary Predates Thinking Support\n\nInvestigation chain:\n1. Added `--jinja` to `orchestrator_stack.py` \u2192 models still don't think\n2. Tested `--reasoning-budget -1` + `--chat-template-kwargs` \u2192 still `thinking",
+      "score": 0.9291,
+      "content_hash": "aeca303d73965ffc"
+    }
+  ],
+  "wall_s": 15.482257564086467
+}

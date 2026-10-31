@@ -1,0 +1,191 @@
+{
+  "arm": "4000_300_punct",
+  "id": "locomo_xmas_routing_path",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/x-mas-text-routing.md",
+    "/workspace/handoffs/active/routing-and-optimization-index.md",
+    "/workspace/progress/2026-06/2026-06-13.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/x-mas-text-routing.md",
+    "/workspace/handoffs/active/routing-and-optimization-index.md",
+    "/workspace/progress/2026-06/2026-06-13.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/x-mas-text-routing.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/routing-and-optimization-index.md",
+      "/workspace/progress/2026-06/2026-06-13.md"
+    ],
+    "first_evidence_rank": 9,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/progress/2026-06/2026-06-19.md",
+      "/workspace/progress/2026-07/2026-07-05.md",
+      "/workspace/progress/2026-06/2026-06-19.md",
+      "/workspace/handoffs/active/prompt-construction-determinism.md",
+      "/workspace/wiki/routing-intelligence.md",
+      "/workspace/wiki/routing-intelligence.md",
+      "/workspace/progress/2026-07/2026-07-03.md",
+      "/workspace/handoffs/active/x-mas-text-routing.md",
+      "/workspace/progress/2026-06/2026-06-19.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "X-MAS default-off telemetry documented",
+        "Root docs updated"
+      ],
+      "line_range": [
+        742,
+        753
+      ],
+      "snippet": "### Root docs updated\n\n- `handoffs/active/x-mas-text-routing.md`: status, spike-plan progress, and\n  remaining gates now distinguish default-off shadow telemetry from future\n  enforcing override.\n- `handoffs/active/non-inference-backlog.md`",
+      "score": 0.9304,
+      "content_hash": "29c0d267e1755aa2"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-19.md",
+      "heading_path": [
+        "2026-06-19 Progress",
+        "Full wrap-up handoff/wiki compaction"
+      ],
+      "line_range": [
+        1305,
+        1338
+      ],
+      "snippet": "## Full wrap-up handoff/wiki compaction\n\nRan the operator-requested full wrap-up routine focused on pruning active\nhandoffs and indices after the long 2026-06-19 push. No application code was\nchanged. The large completed-work narration in a",
+      "score": 0.9259,
+      "content_hash": "524b44375bf2af0d"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-05.md",
+      "heading_path": [
+        "Progress - 2026-07-05",
+        "Wiki full-backlog compile (2026-07-05, project-wiki skill)"
+      ],
+      "line_range": [
+        1260,
+        1283
+      ],
+      "snippet": "## Wiki full-backlog compile (2026-07-05, project-wiki skill)\n\nExecuted the deferred \"47-source cross-session backlog\" compile flagged in the\nhardware-optimization.md header: 49 changed sources since the 2026-07-04\ncompile (35 active handof",
+      "score": 0.9249,
+      "content_hash": "73280554af4eaf23"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-19.md",
+      "heading_path": [
+        "2026-06-19 Progress",
+        "Final wrap-up acceleration-index compaction"
+      ],
+      "line_range": [
+        2279,
+        2313
+      ],
+      "snippet": "## Final wrap-up acceleration-index compaction\n\nRan the operator-requested full wrap-up routine across active handoffs, domain\nindices, README freshness, and wiki source state. The central evidence-plane,\nmodel-stack, X-MAS, routing, Hermes",
+      "score": 0.9242,
+      "content_hash": "ba084071dac06228"
+    },
+    {
+      "file": "/workspace/handoffs/active/prompt-construction-determinism.md",
+      "heading_path": [
+        "Prompt-Construction & Sampling Determinism",
+        "Reporting"
+      ],
+      "line_range": [
+        99,
+        102
+      ],
+      "snippet": "## Reporting\n\nOn closing a task: check the box here, update master row **N14** + the routing-index subsystem row, append to `progress/2026-06/`. On full closure (D1\u2013D4 done): extract findings to wiki, move this handoff to `completed/`, dele",
+      "score": 0.9222,
+      "content_hash": "4c4b85814e437a4b"
+    },
+    {
+      "file": "/workspace/wiki/routing-intelligence.md",
+      "heading_path": [
+        "Routing Intelligence",
+        "Routing Intelligence active split (2026-05-28)"
+      ],
+      "line_range": [
+        523,
+        528
+      ],
+      "snippet": "## Routing Intelligence active split (2026-05-28)\n\nThe routing-intelligence handoff is now an active/completed twin. Completed RI-1 through RI-8 classifier, factual-risk, and routing scaffolding evidence lives in `handoffs/completed/routing",
+      "score": 0.9215,
+      "content_hash": "8495a7cab5394b47"
+    },
+    {
+      "file": "/workspace/wiki/routing-intelligence.md",
+      "heading_path": [
+        "Routing Intelligence",
+        "Updates \u2014 2026-04-28",
+        "New Findings (2026-06-13 \u2014 Routing Truth, Descriptors, And X-MAS)"
+      ],
+      "line_range": [
+        380,
+        387
+      ],
+      "snippet": "### New Findings (2026-06-13 \u2014 Routing Truth, Descriptors, And X-MAS)\n\n- **The immediate routing defect was running-state truth, not a missing decision theory.** Fable 5 found production using test feature defaults and runtime flag mutation",
+      "score": 0.9207,
+      "content_hash": "39d59c61c09fdcb6"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-03.md",
+      "heading_path": [
+        "2026-07-03",
+        "X-MAS repaired-policy A/B promotion candidate"
+      ],
+      "line_range": [
+        403,
+        410
+      ],
+      "snippet": "## X-MAS repaired-policy A/B promotion candidate\n\n- Used the AutoPilot-stopped quiet window after the W8 checkpoint to run the repaired constrained-policy X-MAS held-out A/B: `benchmarks/results/runs/xmas_live_ab/20260703T213541Z-constraine",
+      "score": 0.9202,
+      "content_hash": "5b0b52582cde0c39"
+    },
+    {
+      "file": "/workspace/handoffs/active/x-mas-text-routing.md",
+      "heading_path": [
+        "X-MAS Heterogeneous Text-MAS Routing Spike"
+      ],
+      "line_range": [
+        1,
+        12
+      ],
+      "snippet": "# X-MAS Heterogeneous Text-MAS Routing Spike\n\n**Status**: classifier/table scaffold, guarded enforce path, true function-axis 5x5 sweep, enforce-eligible `orchestration/xmas_winner_table.yaml`, live A/B harness, machine-readable held-out ve",
+      "score": 0.9201,
+      "content_hash": "cedd97ceb2e4215e"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-19.md",
+      "heading_path": [
+        "2026-06-19 Progress",
+        "Final manual wrap-up routine"
+      ],
+      "line_range": [
+        1531,
+        1582
+      ],
+      "snippet": "## Final manual wrap-up routine\n\nRan the full manual wrap-up routine after the X-MAS diagnostics checkpoint so\nhandoffs, indices, and wiki pages reflect durable repo state rather than\nconversation memory. This pass was documentation-only an",
+      "score": 0.9192,
+      "content_hash": "3e27210421576638"
+    }
+  ],
+  "wall_s": 13.430669785942882
+}

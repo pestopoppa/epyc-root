@@ -1,0 +1,190 @@
+{
+  "arm": "4000_300_punct",
+  "id": "hotpot_minddr_md9",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/minddr-deep-research-mode.md",
+    "/workspace/handoffs/active/bulk-inference-campaign.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/minddr-deep-research-mode.md",
+    "/workspace/handoffs/active/bulk-inference-campaign.md"
+  ],
+  "metrics": {
+    "evidence_count": 2,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/minddr-deep-research-mode.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/bulk-inference-campaign.md"
+    ],
+    "first_evidence_rank": 2,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-05/2026-05-28.md",
+      "/workspace/handoffs/active/minddr-deep-research-mode.md",
+      "/workspace/handoffs/active/minddr-deep-research-mode.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/progress/2026-04/2026-04-22.md",
+      "/workspace/wiki/agent-architecture.md",
+      "/workspace/handoffs/active/minddr-deep-research-mode.md",
+      "/workspace/progress/2026-04/2026-04-11.md",
+      "/workspace/handoffs/active/minddr-deep-research-mode.md",
+      "/workspace/progress/2026-04/2026-04-22.md"
+    ],
+    "recall@3": 0.5,
+    "perfect@3": false,
+    "recall@5": 0.5,
+    "perfect@5": false,
+    "recall@10": 0.5,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-05/2026-05-28.md",
+      "heading_path": [
+        "2026-05-28 \u2014 manual session log",
+        "Handoff Structure Audit \u2014 Research/Architecture Batch"
+      ],
+      "line_range": [
+        309,
+        325
+      ],
+      "snippet": "## Handoff Structure Audit \u2014 Research/Architecture Batch\n\nRefined six more aging handoffs where old implementation history or stub labels obscured the live gate:\n\n- `lightning-attention-port.md`: added validation-only executor reset; v1 por",
+      "score": 0.9215,
+      "content_hash": "282d41e6e9286dc1"
+    },
+    {
+      "file": "/workspace/handoffs/active/minddr-deep-research-mode.md",
+      "heading_path": [
+        "MindDR Deep Research Mode",
+        "2026-05-28 Audit Reset \u2014 Executor Start Here"
+      ],
+      "line_range": [
+        15,
+        31
+      ],
+      "snippet": "## 2026-05-28 Audit Reset \u2014 Executor Start Here\n\nPhase 1 is no longer a stub. The flag, classifier, prompts, pydantic_graph subpackage, rubric fields, and sentinel suite are already in place. The remaining question is whether the pipeline b",
+      "score": 0.9212,
+      "content_hash": "0af5c30c4ec377e7"
+    },
+    {
+      "file": "/workspace/handoffs/active/minddr-deep-research-mode.md",
+      "heading_path": [
+        "MindDR Deep Research Mode",
+        "Progress checklist"
+      ],
+      "line_range": [
+        179,
+        187
+      ],
+      "snippet": "## Progress checklist\n\n- [x] MD-1..MD-8 Phase 1 scaffold (flag, classifier, prompts, pydantic_graph, rubric, sentinel suite - DONE 2026-04-22) \u2705\n- [ ] MD-9 A/B test sentinel suite with deep_research_mode 0/1 (>=+5pp gate, INFERENCE-GATED)\n-",
+      "score": 0.9205,
+      "content_hash": "bcec17ba0bb5dfbb"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "PORTFOLIO REVIEW (2026-06-12, 5 agents, 108 rows): classified verdicts",
+        "ACTIVE-MED"
+      ],
+      "line_range": [
+        1190,
+        1198
+      ],
+      "snippet": "- **bep-dcp-falsification-harness** [live-active] out: DCP-6 offline replay (inference-free, first step); DCP-6 inference gate after replay + operator host-quiet window; J8 batch-edit A/B optional provenance only | gate: DCP-6 inference: of",
+      "score": 0.9168,
+      "content_hash": "4f469ae18373c542"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-22.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-22",
+        "Session 5 \u2014 Phase D.0 re-audit",
+        "Next"
+      ],
+      "line_range": [
+        186,
+        189
+      ],
+      "snippet": "### Next\n\n- NIB2-45 Phase 1 (MindDR deep_research_mode) \u2014 Week 1 focus: feature flag + classifier extension + 3 agent prompts. Week 2: pydantic_graph nodes (PlanningNode / DeepSearchFanOutNode / ReportSynthesisNode) on top of the existing g",
+      "score": 0.9164,
+      "content_hash": "f8efc60e3b7f817b"
+    },
+    {
+      "file": "/workspace/wiki/agent-architecture.md",
+      "heading_path": [
+        "Agent Architecture",
+        "Key Findings",
+        "New Findings (2026-07-05 \u2014 consult v1 wired default-off, BEP verifier gate, DCP J7 hold, MindDR parked at its A/B gate)"
+      ],
+      "line_range": [
+        630,
+        636
+      ],
+      "snippet": "- **MindDR `deep_research_mode` is the page's one fully-built-but-never-measured pipeline: Phase-1 scaffold complete since 2026-04-22, parked at the inference-gated MD-9 A/B ever since.** The three-agent role-specialization pattern (Plannin",
+      "score": 0.9155,
+      "content_hash": "0168322db4a0445b"
+    },
+    {
+      "file": "/workspace/handoffs/active/minddr-deep-research-mode.md",
+      "heading_path": [
+        "MindDR Deep Research Mode"
+      ],
+      "line_range": [
+        1,
+        14
+      ],
+      "snippet": "# MindDR Deep Research Mode\n\n**Status**: REFRESHED 2026-07-29 \u2014 Phase 1 scaffold landed; MD-9 A/B is the live gate; Phase 2 hardware is present but its training-runtime preflight is blocked; Phase 3 conditional\n**Created**: 2026-04-22 (spli",
+      "score": 0.9151,
+      "content_hash": "2cd82d4b2dc4c17d"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-11.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-11",
+        "Session 3 \u2014 Non-Inference Backlog: 3 Tasks Completed",
+        "Deferred Work"
+      ],
+      "line_range": [
+        197,
+        207
+      ],
+      "snippet": "### Deferred Work\n\n- **REPL S4 benchmark**: A/B turn count comparison needs inference (seeding harness run)\n- **Hermes Phase 2 validation**: E2E tests for `x_disable_repl` + `x_max_escalation` \u2014 needs running orchestrator. LG Phase 3 comple",
+      "score": 0.9149,
+      "content_hash": "bbf4b154114f8c72"
+    },
+    {
+      "file": "/workspace/handoffs/active/minddr-deep-research-mode.md",
+      "heading_path": [
+        "MindDR Deep Research Mode",
+        "Research Intake Update \u2014 2026-07-21 (Search-time contamination \u2014 the \"reliable anchors\" need demoting)"
+      ],
+      "line_range": [
+        197,
+        208
+      ],
+      "snippet": "## Research Intake Update \u2014 2026-07-21 (Search-time contamination \u2014 the \"reliable anchors\" need demoting)\n\n- **[intake-877] \"Search-Time Contamination in Deep Research Agents\"** (arxiv:2606.05241; Tongyi Lab/Alibaba + NTU)\n  - Relevance: de",
+      "score": 0.9145,
+      "content_hash": "a51b9ea52616a50f"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-22.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-22",
+        "Session 6 \u2014 NIB2-45 Phase 1 complete (Weeks 1-3)",
+        "Week 3 (MD-7 / MD-8) \u2713"
+      ],
+      "line_range": [
+        211,
+        216
+      ],
+      "snippet": "### Week 3 (MD-7 / MD-8) \u2713\n- `orchestration/deep_research_sentinel.yaml` \u2014 20 research-like sentinel queries (7 BrowseComp + 7 WideSearch + 6 mixed) with structural `expected_contains` hints for rubric-based scoring. Every sentinel passes `",
+      "score": 0.9143,
+      "content_hash": "3d3d76acfb877a0e"
+    }
+  ],
+  "wall_s": 13.414210555143654
+}

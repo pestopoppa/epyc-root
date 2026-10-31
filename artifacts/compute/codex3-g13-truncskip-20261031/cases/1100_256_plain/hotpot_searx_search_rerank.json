@@ -1,0 +1,193 @@
+{
+  "arm": "1100_256_plain",
+  "id": "hotpot_searx_search_rerank",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/searxng-search-backend.md",
+    "/workspace/handoffs/active/colbert-reranker-web-research.md",
+    "/workspace/wiki/search-retrieval.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/searxng-search-backend.md",
+    "/workspace/handoffs/active/colbert-reranker-web-research.md",
+    "/workspace/wiki/search-retrieval.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 3,
+    "found_files": [
+      "/workspace/handoffs/active/colbert-reranker-web-research.md",
+      "/workspace/handoffs/active/searxng-search-backend.md",
+      "/workspace/wiki/search-retrieval.md"
+    ],
+    "missing_files": [],
+    "first_evidence_rank": 1,
+    "all_evidence_rank": 7,
+    "ranked_files": [
+      "/workspace/wiki/search-retrieval.md",
+      "/workspace/progress/2026-04/2026-04-17.md",
+      "/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md",
+      "/workspace/wiki/search-retrieval.md",
+      "/workspace/progress/2026-06/master-index-pre-rewrite-archive-2026-06-12.md",
+      "/workspace/handoffs/active/colbert-reranker-web-research.md",
+      "/workspace/handoffs/active/searxng-search-backend.md",
+      "/workspace/wiki/search-retrieval.md",
+      "/workspace/handoffs/active/searxng-search-backend.md",
+      "/workspace/progress/2026-04/2026-04-14.md"
+    ],
+    "recall@3": 0.3333333333333333,
+    "perfect@3": false,
+    "recall@5": 0.3333333333333333,
+    "perfect@5": false,
+    "recall@10": 1.0,
+    "perfect@10": true
+  },
+  "results": [
+    {
+      "file": "/workspace/wiki/search-retrieval.md",
+      "heading_path": [
+        "Search & Retrieval",
+        "Key Findings",
+        "Existing"
+      ],
+      "line_range": [
+        61,
+        62
+      ],
+      "snippet": "- mcp-searxng (intake-361, 635 stars, MIT) provides MCP bridge for SearXNG with `searxng_web_search` + `web_url_read` tools. Alternative integration path for Claude Code sessions [searxng-search-backend.md]\n- **XTR (token retrieval) vs ColB",
+      "score": 0.9393,
+      "content_hash": "01b2eb380ccf1b94"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-17.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-17",
+        "Session 5 \u2014 Research Intake: Dropbox Witchcraft (XTR-Warp Rust Semantic Search)",
+        "Results"
+      ],
+      "line_range": [
+        430,
+        436
+      ],
+      "snippet": "### Results\n\n- **Intake index**: 407 entries, `validate_intake.py` passes\n- **Key finding**: Witchcraft validates the ColBERT reranking decision \u2014 XTR trades accuracy for speed (33% vs 55% NDCG@10), which is the wrong tradeoff for our 10-sn",
+      "score": 0.9358,
+      "content_hash": "da1f5c9516eaa6c5"
+    },
+    {
+      "file": "/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md",
+      "heading_path": [
+        "After A1-A2, all three models running on ports 8090-large, 8096-granite, 8097-e5-base, 8098-bge-m3",
+        "9. Cross-References"
+      ],
+      "line_range": [
+        325,
+        332
+      ],
+      "snippet": "- `/workspace/handoffs/active/colbert-reranker-web-research.md` \u2014 ColBERT reranker (S5 / S3b LateOn / S3c Reason-mxbai). Granite slots in as dense first stage upstream of these rerankers.\n- `/workspace/handoffs/active/internal-kb-rag.md` \u2014 ",
+      "score": 0.935,
+      "content_hash": "b7b8f8471e352d70"
+    },
+    {
+      "file": "/workspace/wiki/search-retrieval.md",
+      "heading_path": [
+        "Search & Retrieval",
+        "Source References"
+      ],
+      "line_range": [
+        131,
+        137
+      ],
+      "snippet": "- [intake-326](https://github.com/MemPalace/mempalace) MemPalace -- 96.6% LongMemEval recall local memory system\n- [Progress 2026-04-14 Session 9](/workspace/progress/2026-04/2026-04-14.md) -- ColBERT reranker S1/S2 implementation, PyLate e",
+      "score": 0.934,
+      "content_hash": "5a217e54035cc16a"
+    },
+    {
+      "file": "/workspace/progress/2026-06/master-index-pre-rewrite-archive-2026-06-12.md",
+      "heading_path": [
+        "EPYC Handoff \u2014 Master Index",
+        "Cross-Index Dependencies"
+      ],
+      "line_range": [
+        193,
+        198
+      ],
+      "snippet": "| Research (Ouro P7) | Routing (autopilot AP-27) | Ouro-2.6B-Thinking as sentinel verifier feeds autopilot T0 RLVR formalization |\n| Routing (autopilot P10 GEPA) | Routing (meta-harness MH-4) | Same technique, two perspectives: autopilot ow",
+      "score": 0.9328,
+      "content_hash": "65cf7e011b8ea269"
+    },
+    {
+      "file": "/workspace/handoffs/active/colbert-reranker-web-research.md",
+      "heading_path": [
+        "ColBERT Reranker for web_research Pipeline",
+        "Work Items"
+      ],
+      "line_range": [
+        265,
+        271
+      ],
+      "snippet": "- [ ] **S5: Implement reranker** \u2014 HOLD as of 2026-06-12 gate analysis. Add reranking to `research.py`, gated behind `web_research_rerank` flag, only if a fresh analyzer run has >=50 synthesized pages and >20% irrelevant-page rate. When fla",
+      "score": 0.9321,
+      "content_hash": "1b32647a4f87229c"
+    },
+    {
+      "file": "/workspace/handoffs/active/searxng-search-backend.md",
+      "heading_path": [
+        "Machine-readable (CI / dashboards)",
+        "Dependencies"
+      ],
+      "line_range": [
+        270,
+        275
+      ],
+      "snippet": "## Dependencies\n\n- **Blocks**: CA-6 blocked on intake-524 Camofox; SX-5/6 remain AR-3 gated; CA-7 live service smoke or integration into synthesis remains optional/future if needed\n- **Composes with**: `colbert-reranker-web-research.md` S5 ",
+      "score": 0.932,
+      "content_hash": "00df254c36b7b8d3"
+    },
+    {
+      "file": "/workspace/wiki/search-retrieval.md",
+      "heading_path": [
+        "Search & Retrieval",
+        "Crawl4AI and Open-Source-Only Policy"
+      ],
+      "line_range": [
+        95,
+        101
+      ],
+      "snippet": "## Crawl4AI and Open-Source-Only Policy\n\nResearch intake evaluated two page-scraping tools complementary to SearXNG (which handles search aggregation, not deep page content extraction): Firecrawl (intake-364/365, 108K+ stars) and Crawl4AI (",
+      "score": 0.9316,
+      "content_hash": "875712b96c772c1f"
+    },
+    {
+      "file": "/workspace/handoffs/active/searxng-search-backend.md",
+      "heading_path": [
+        "Machine-readable (CI / dashboards)",
+        "Research Intake Update \u2014 2026-04-14",
+        "New Related Research"
+      ],
+      "line_range": [
+        289,
+        294
+      ],
+      "snippet": "  - Relevance: Fully self-hosted Firecrawl alternative (51K+ stars, Apache-2.0). Local LLM integration via Ollama. No API keys required.\n  - Key technique: Async Playwright-based crawler; BM25 content filtering; LLM extraction with local mo",
+      "score": 0.9316,
+      "content_hash": "de326874900b58aa"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-14.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-14",
+        "Session 10 \u2014 SearXNG Research Intake + Deep-Dive + Handoff Integration",
+        "Key Design Decisions"
+      ],
+      "line_range": [
+        1239,
+        1244
+      ],
+      "snippet": "### Key Design Decisions\n\n1. **Standalone handoff** \u2014 SearXNG kept separate from ColBERT reranker (different files: `search.py` vs `research.py`, different prerequisites: none vs AR-3 data gate)\n2. **P12 in routing-and-optimization-index** ",
+      "score": 0.9313,
+      "content_hash": "82f091de249ea8db"
+    }
+  ],
+  "wall_s": 26.130710128927603
+}

@@ -1,0 +1,194 @@
+{
+  "arm": "1100_256_plain",
+  "id": "locomo_frontier_portfolio",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/fable5-findings-07-strategic-frontiers.md",
+    "/workspace/handoffs/active/frontier-f1-real-task-corpus.md",
+    "/workspace/handoffs/active/frontier-f3-data-flywheel.md",
+    "/workspace/handoffs/active/frontier-f7-economic-ledger.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/fable5-findings-07-strategic-frontiers.md",
+    "/workspace/handoffs/active/frontier-f1-real-task-corpus.md",
+    "/workspace/handoffs/active/frontier-f7-economic-ledger.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/fable5-findings-07-strategic-frontiers.md",
+    "/workspace/handoffs/active/frontier-f1-real-task-corpus.md",
+    "/workspace/handoffs/active/frontier-f3-data-flywheel.md",
+    "/workspace/handoffs/active/frontier-f7-economic-ledger.md"
+  ],
+  "metrics": {
+    "evidence_count": 4,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/frontier-f3-data-flywheel.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/fable5-findings-07-strategic-frontiers.md",
+      "/workspace/handoffs/active/frontier-f1-real-task-corpus.md",
+      "/workspace/handoffs/active/frontier-f7-economic-ledger.md"
+    ],
+    "first_evidence_rank": 7,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/wiki/agent-architecture.md",
+      "/workspace/wiki/autonomous-research.md",
+      "/workspace/handoffs/active/research-evaluation-index.md",
+      "/workspace/handoffs/completed/frontier-f7-economic-ledger.md",
+      "/workspace/handoffs/active/unified-trace-memory-service.md",
+      "/workspace/handoffs/active/frontier-f3-data-flywheel.md",
+      "/workspace/progress/2026-06/2026-06-13.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/completed/frontier-f1-real-task-corpus.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.25,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 one-shot architectural review \u2014 EXECUTED (F5)",
+        "Fable 5 review \u2014 execution + wrap-up (final pass)"
+      ],
+      "line_range": [
+        128,
+        129
+      ],
+      "snippet": "### Fable 5 review \u2014 execution + wrap-up (final pass)\n**Strategic frontiers**: `fable5-findings-07-strategic-frontiers.md` written then expanded to implementation-grade (operator request): F1 real-task corpus / F2 self-running lab (the 10\u00d7)",
+      "score": 0.9646,
+      "content_hash": "b2fd37b02e117a10"
+    },
+    {
+      "file": "/workspace/wiki/agent-architecture.md",
+      "heading_path": [
+        "Agent Architecture",
+        "2026-06-13 Update \u2014 Fable 5 Strategic Spine"
+      ],
+      "line_range": [
+        921,
+        929
+      ],
+      "snippet": "## 2026-06-13 Update \u2014 Fable 5 Strategic Spine\n\nFable 5 reframes the North Star as a lab architecture, not just a serving/router architecture. The highest-ROI frontier is F1 -> F2 -> F3:\n\n- **F1 real-task corpus**: define the demand side fr",
+      "score": 0.9606,
+      "content_hash": "67a8cd7c966630cb"
+    },
+    {
+      "file": "/workspace/wiki/autonomous-research.md",
+      "heading_path": [
+        "Autonomous Research",
+        "Key Findings",
+        "New (2026-06-13, Evidence Plane And Lab Automation)"
+      ],
+      "line_range": [
+        428,
+        429
+      ],
+      "snippet": "- **The strategic spine is real-task capture, self-running lab jobs, and a data flywheel.** Fable 5's F1-F3 frontier says the project should define its own demand distribution from recurring work, run local agents through reviewed lab-maint",
+      "score": 0.9568,
+      "content_hash": "d8829caf2feae518"
+    },
+    {
+      "file": "/workspace/handoffs/active/research-evaluation-index.md",
+      "heading_path": [
+        "Research & Evaluation \u2014 Active Backlog"
+      ],
+      "line_range": [
+        33,
+        36
+      ],
+      "snippet": "| EVL-21 | fable5 window2 findings 03 portfolio and mas | [fable5-window2-findings-03-portfolio-and-master-queue.md](fable5-window2-findings-03-portfolio-and-master-queue.md) | G1 \u00b7 Ratify P-GPU-1 (operator; measurement trust boundary \u2014 hum",
+      "score": 0.9533,
+      "content_hash": "778aeded1b57eb83"
+    },
+    {
+      "file": "/workspace/handoffs/completed/frontier-f7-economic-ledger.md",
+      "heading_path": [
+        "Frontier F7 \u2014 The Economic Ledger"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# Frontier F7 \u2014 The Economic Ledger\n\n**Status**: COMPLETE \u2014 W1 ledger, W2 digest observation, and W3 first monthly review are complete. Continuing monthly review cadence is operational follow-up, not an active Fable5 frontier handoff.\n**Cre",
+      "score": 0.9472,
+      "content_hash": "09c91259989dba13"
+    },
+    {
+      "file": "/workspace/handoffs/active/unified-trace-memory-service.md",
+      "heading_path": [
+        "Unified Trace / Memory Service"
+      ],
+      "line_range": [
+        6,
+        13
+      ],
+      "snippet": "**Created**: 2026-04-25 (from local-RAG architecture review of friend's stack \u2014 \"Trace / Memory Service\" box)\n**Categories**: agent_architecture, knowledge_management, autonomous_research\n**Priority**: MEDIUM\n**Effort**: ~1\u20132 inference-free",
+      "score": 0.9467,
+      "content_hash": "b23256a5a88af413"
+    },
+    {
+      "file": "/workspace/handoffs/active/frontier-f3-data-flywheel.md",
+      "heading_path": [
+        "Frontier F3 \u2014 The Data Flywheel: Train on What the Lab Already Generates"
+      ],
+      "line_range": [
+        7,
+        8
+      ],
+      "snippet": "**Related**: [frontier-f2-self-running-lab.md](frontier-f2-self-running-lab.md) (W3 tuples are this frontier's gold data); [fable5-findings-01c-sequential-verdict-spec.md](../completed/fable5-findings-01c-sequential-verdict-spec.md) (outcom",
+      "score": 0.9446,
+      "content_hash": "831313338e71baf4"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-13.md",
+      "heading_path": [
+        "2026-06-13",
+        "N6 task-rate/goodput policy decision"
+      ],
+      "line_range": [
+        706,
+        726
+      ],
+      "snippet": "## N6 task-rate/goodput policy decision\n\nClosed the zero-inference N6 policy review without changing live dominance.\n\nInputs reviewed:\n\n- Fable findings-05 objective redesign.\n- `epyc-orchestrator/orchestration/reports/task_rate_goodput_rep",
+      "score": 0.9432,
+      "content_hash": "583cbed182c083d4"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "F3 data-flywheel dataset inventory refresh"
+      ],
+      "line_range": [
+        1494,
+        1510
+      ],
+      "snippet": "## F3 data-flywheel dataset inventory refresh\n\nExtended the existing F3 capture branch with the explicit dataset inventory deliverable.\n\nCode/docs:\n- Worktree: `/mnt/raid0/llm/tmp/data-flywheel-worktree`\n- Branch: `feat/data-flywheel-captur",
+      "score": 0.943,
+      "content_hash": "e2d4213329f58902"
+    },
+    {
+      "file": "/workspace/handoffs/completed/frontier-f1-real-task-corpus.md",
+      "heading_path": [
+        "Frontier F1 \u2014 Define the Demand Side: a Real-Task Corpus as the Eval Distribution"
+      ],
+      "line_range": [
+        1,
+        12
+      ],
+      "snippet": "# Frontier F1 \u2014 Define the Demand Side: a Real-Task Corpus as the Eval Distribution\n\n> **ARCHIVED 2026-09-08 \u2014 COMPLETE.** Moved from `handoffs/active/` at the operator-invoked wrap-up of\n> 2026-09-08. **10/10 checkboxes closed, 0 open**, c",
+      "score": 0.9427,
+      "content_hash": "903edaa4a9d02023"
+    }
+  ],
+  "wall_s": 29.26104298606515
+}

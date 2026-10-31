@@ -1,0 +1,191 @@
+{
+  "arm": "4000_256_punct",
+  "id": "locomo_fable_impl_sequence",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/fable5-findings-01-impl-plan.md",
+    "/workspace/handoffs/active/fable5-findings-02-impl-plan.md",
+    "/workspace/handoffs/active/fable5-findings-04-impl-plan.md",
+    "/workspace/handoffs/active/fable5-proposed-master-index-rewrite.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/fable5-findings-01-impl-plan.md",
+    "/workspace/handoffs/active/fable5-findings-02-impl-plan.md",
+    "/workspace/handoffs/active/fable5-findings-04-impl-plan.md",
+    "/workspace/handoffs/active/fable5-proposed-master-index-rewrite.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/fable5-findings-01-impl-plan.md",
+    "/workspace/handoffs/active/fable5-findings-02-impl-plan.md",
+    "/workspace/handoffs/active/fable5-findings-04-impl-plan.md",
+    "/workspace/handoffs/active/fable5-proposed-master-index-rewrite.md"
+  ],
+  "metrics": {
+    "evidence_count": 4,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/fable5-findings-01-impl-plan.md",
+      "/workspace/handoffs/active/fable5-findings-02-impl-plan.md",
+      "/workspace/handoffs/active/fable5-findings-04-impl-plan.md",
+      "/workspace/handoffs/active/fable5-proposed-master-index-rewrite.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/completed/fable5-findings-00-executive-summary.md",
+      "/workspace/handoffs/completed/fable5-findings-02-impl-plan.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/completed/fable5-findings-04-impl-plan.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/completed/fable5-findings-04-northstar-portfolio-indices.md",
+      "/workspace/handoffs/active/model-stack-change-standardization-audit.md",
+      "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "/workspace/handoffs/completed/fable5-findings-01-impl-plan.md",
+      "/workspace/handoffs/completed/fable5-findings-02-routing-decision-architecture.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-00-executive-summary.md",
+      "heading_path": [
+        "Fable 5 architectural review \u2014 executive summary"
+      ],
+      "line_range": [
+        1,
+        11
+      ],
+      "snippet": "# Fable 5 architectural review \u2014 executive summary\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.\n\n**Date**: 2026-06-12. **Session**: one-shot cons",
+      "score": 0.9256,
+      "content_hash": "6386af5a47801afe"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-02-impl-plan.md",
+      "heading_path": [
+        "Fable 5 findings 02 \u2014 IMPLEMENTATION PLAN: routing decision architecture"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# Fable 5 findings 02 \u2014 IMPLEMENTATION PLAN: routing decision architecture\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.\n\n**Date**: 2026-06-12 (re",
+      "score": 0.925,
+      "content_hash": "13a47620ddf2a452"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 one-shot architectural review \u2014 EXECUTED (F5)"
+      ],
+      "line_range": [
+        83,
+        104
+      ],
+      "snippet": "## Fable 5 one-shot architectural review \u2014 EXECUTED (F5)\n\nRan the consult per `handoffs/active/fable5-architecture-review.md`. Preflight audit first (brief sound; 6 amendments at `fable5-preflight-amendments.md`: stale epyc-root index re-an",
+      "score": 0.9247,
+      "content_hash": "6537fb62706efc5e"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-04-impl-plan.md",
+      "heading_path": [
+        "Fable 5 findings 04 \u2014 IMPLEMENTATION PLAN: invariant interfaces, capability registry, index migration"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# Fable 5 findings 04 \u2014 IMPLEMENTATION PLAN: invariant interfaces, capability registry, index migration\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indic",
+      "score": 0.9236,
+      "content_hash": "3328c7828e925bfe"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 execution queue \u2014 routing truth W8 DAR-1/counter checkpoint"
+      ],
+      "line_range": [
+        367,
+        370
+      ],
+      "snippet": "## Fable 5 execution queue \u2014 routing truth W8 DAR-1/counter checkpoint\n\nCompleted `routing-truth-restoration.md` W8 and closed master-index N3. The measured verdict keeps the routing-expansion cluster frozen.\n",
+      "score": 0.9229,
+      "content_hash": "aa31d1425bc82a4d"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-04-northstar-portfolio-indices.md",
+      "heading_path": [
+        "Fable 5 findings 04 \u2014 North Star critique, backlog-relevance map, index reorganization (deliverables \u00a78.2\u20138.3, \u00a78.5)",
+        "2. Backlog-relevance map (per recommended architectures; full inventory in agent report)"
+      ],
+      "line_range": [
+        21,
+        43
+      ],
+      "snippet": "## 2. Backlog-relevance map (per recommended architectures; full inventory in agent report)\n\n**Load-bearing (the recommended architectures make these MORE important):**\n- `tool-use-eval-contract.md` \u2014 prototype of the eval-provenance discip",
+      "score": 0.9212,
+      "content_hash": "7c57441c2b2309d9"
+    },
+    {
+      "file": "/workspace/handoffs/active/model-stack-change-standardization-audit.md",
+      "heading_path": [
+        "Model Stack Change Standardization Audit"
+      ],
+      "line_range": [
+        1,
+        10
+      ],
+      "snippet": "# Model Stack Change Standardization Audit\n\n**Status**: READY FOR MAIN IMPLEMENTATION\n**Created**: 2026-06-13\n**Priority**: HIGH - stale model constants can silently bias routing, scoring, launch, planner prompts, and benchmark interpretati",
+      "score": 0.9202,
+      "content_hash": "e4ae8dcf43eb5df7"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "heading_path": [
+        "EPYC Handoff \u2014 Master Index",
+        "Domain indices"
+      ],
+      "line_range": [
+        20,
+        27
+      ],
+      "snippet": "## Domain indices\n| Routing/autopilot/stack | routing-and-optimization-index.md | | Acceleration | inference-acceleration-index.md |\n|---|---|---|---|---|\n| CPU throughput | cpu-inference-optimization-index.md | | Research/eval | research-e",
+      "score": 0.9199,
+      "content_hash": "39b36db70944f84c"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-01-impl-plan.md",
+      "heading_path": [
+        "Fable 5 findings 01 \u2014 IMPLEMENTATION PLAN: the evidence plane"
+      ],
+      "line_range": [
+        1,
+        11
+      ],
+      "snippet": "# Fable 5 findings 01 \u2014 IMPLEMENTATION PLAN: the evidence plane\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.\n\n**Date**: 2026-06-12 (refinement pa",
+      "score": 0.9194,
+      "content_hash": "3fb6fa186d024a80"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-02-routing-decision-architecture.md",
+      "heading_path": [
+        "Fable 5 findings 02 \u2014 Routing/serving decision architecture (facet 3)"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# Fable 5 findings 02 \u2014 Routing/serving decision architecture (facet 3)\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.\n\n**Date**: 2026-06-12. **Sco",
+      "score": 0.9185,
+      "content_hash": "2a6acba7516e7634"
+    }
+  ],
+  "wall_s": 12.619667557999492
+}

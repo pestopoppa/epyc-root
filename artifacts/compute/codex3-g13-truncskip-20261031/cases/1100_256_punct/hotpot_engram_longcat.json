@@ -1,0 +1,192 @@
+{
+  "arm": "1100_256_punct",
+  "id": "hotpot_engram_longcat",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/engram-conditional-memory.md",
+    "/workspace/research/deep-dives/longcat-flash-lite-engram-cpu-poc.md",
+    "/workspace/wiki/memory-augmented.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/engram-conditional-memory.md",
+    "/workspace/research/deep-dives/longcat-flash-lite-engram-cpu-poc.md",
+    "/workspace/wiki/memory-augmented.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 2,
+    "found_files": [
+      "/workspace/handoffs/active/engram-conditional-memory.md",
+      "/workspace/research/deep-dives/longcat-flash-lite-engram-cpu-poc.md"
+    ],
+    "missing_files": [
+      "/workspace/wiki/memory-augmented.md"
+    ],
+    "first_evidence_rank": 4,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/progress/2026-05/2026-05-24.md",
+      "/workspace/wiki/moe-optimization.md",
+      "/workspace/wiki/moe-optimization.md",
+      "/workspace/research/deep-dives/longcat-flash-lite-engram-cpu-poc.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/progress/2026-05/2026-05-24.md",
+      "/workspace/handoffs/active/engram-conditional-memory.md",
+      "/workspace/handoffs/active/engram-conditional-memory.md",
+      "/workspace/progress/2026-05/2026-05-24.md",
+      "/workspace/wiki/moe-optimization.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.3333333333333333,
+    "perfect@5": false,
+    "recall@10": 0.6666666666666666,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-05/2026-05-24.md",
+      "heading_path": [
+        "2026-05-24 \u2014 manual session log",
+        "Session 7 \u2014 DeepSeek Engram research intake + dual-track handoff",
+        "Files changed (epyc-root)"
+      ],
+      "line_range": [
+        722,
+        731
+      ],
+      "snippet": "### Files changed (epyc-root)\n\n| File | Status |\n|---|---|\n| `research/intake_index.yaml` | + intake-599 (Engram paper) + intake-600 (CXL pooling), then synthesized `notes:` block on intake-599 with deep-dive findings; 604 entries validated",
+      "score": 0.9373,
+      "content_hash": "3d922f4a11e07e9b"
+    },
+    {
+      "file": "/workspace/wiki/moe-optimization.md",
+      "heading_path": [
+        "MoE Optimization",
+        "Key Findings",
+        "2026-07-02 Refresh \u2014 hybrid-MoE offload, embedding-vs-experts, V4-Flash port result, CPU-MTP wall"
+      ],
+      "line_range": [
+        85,
+        87
+      ],
+      "snippet": "- **The n-gram-augmented MoE family runs on CPU at production rates, but is dominated by our incumbent on this stack.** LongCat-Flash-Lite Q4_K_M measured 37.08 t/s decode (above the 15 t/s abandon threshold, below the 60 t/s escalate thres",
+      "score": 0.9298,
+      "content_hash": "4609372ee0b4f6d8"
+    },
+    {
+      "file": "/workspace/wiki/moe-optimization.md",
+      "heading_path": [
+        "MoE Optimization",
+        "Source References"
+      ],
+      "line_range": [
+        342,
+        344
+      ],
+      "snippet": "- [Engram Conditional Memory Handoff](../handoffs/active/engram-conditional-memory.md) -- LongCat-Flash-Lite n-gram-augmented MoE (68.5B/2.9-4.5B-active, ~31.4B n-gram tables) CPU probe closed negative (37 t/s, 53.8% sentinel, dominated by ",
+      "score": 0.9285,
+      "content_hash": "a208616584bcb862"
+    },
+    {
+      "file": "/workspace/research/deep-dives/longcat-flash-lite-engram-cpu-poc.md",
+      "heading_path": [
+        "LongCat-Flash-Lite Engram-Family CPU POC"
+      ],
+      "line_range": [
+        1,
+        7
+      ],
+      "snippet": "# LongCat-Flash-Lite Engram-Family CPU POC\n\n**Date**: 2026-05-25\n**Status**: Negative Track A result, reporting closed 2026-06-12\n**Linked handoff**: `handoffs/active/engram-conditional-memory.md`\n**Full artifacts**: `/mnt/raid0/llm/epyc-in",
+      "score": 0.9283,
+      "content_hash": "80a15dde72fd5493"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Engram Track A stale queue cleanup"
+      ],
+      "line_range": [
+        1274,
+        1281
+      ],
+      "snippet": "Follow-up closeout:\n- Found the full LongCat negative-result report already tracked in `epyc-inference-research`.\n- Found `intake-504` already updated with the 2026-05-25 contradictory measurement.\n- Added the missing root-governance deep-d",
+      "score": 0.9273,
+      "content_hash": "6bbe062b1c1f11c3"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-24.md",
+      "heading_path": [
+        "2026-05-24 \u2014 manual session log",
+        "Session 7 \u2014 DeepSeek Engram research intake + dual-track handoff",
+        "Operational state at session end"
+      ],
+      "line_range": [
+        738,
+        747
+      ],
+      "snippet": "### Operational state at session end\n\n- \u2705 Two intake entries (599, 600) persisted with deep-dive notes and validated\n- \u2705 One new active handoff (`engram-conditional-memory.md`) with dual-track plan + sequencing diagram + falsification gates",
+      "score": 0.9272,
+      "content_hash": "cb4446713cee138d"
+    },
+    {
+      "file": "/workspace/handoffs/active/engram-conditional-memory.md",
+      "heading_path": [
+        "Engram \u2014 Conditional Memory via Scalable Lookup",
+        "Research Context"
+      ],
+      "line_range": [
+        74,
+        83
+      ],
+      "snippet": "## Research Context\n\n| Intake ID | Title | Relevance | Verdict |\n|-----------|-------|-----------|---------|\n| intake-599 | Conditional Memory via Scalable Lookup (DeepSeek+PKU, arxiv:2601.07372) | high | new_opportunity |\n| intake-600 | Po",
+      "score": 0.9262,
+      "content_hash": "bd2273a2e52ecf55"
+    },
+    {
+      "file": "/workspace/handoffs/active/engram-conditional-memory.md",
+      "heading_path": [
+        "Engram \u2014 Conditional Memory via Scalable Lookup"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# Engram \u2014 Conditional Memory via Scalable Lookup\n\n**Status**: active (Track A closed negative; Track B proxy open)\n**Created**: 2026-05-24 (via research intake)\n**Updated**: 2026-06-12 (stale Track A queue reconciled with decision log)\n**C",
+      "score": 0.9247,
+      "content_hash": "632d5f5f3dfb97fb"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-24.md",
+      "heading_path": [
+        "2026-05-24 \u2014 manual session log",
+        "Session 7 \u2014 DeepSeek Engram research intake + dual-track handoff",
+        "Trigger"
+      ],
+      "line_range": [
+        685,
+        688
+      ],
+      "snippet": "### Trigger\n\nUser flagged the LongCat-Flash-Lite probe and the frozen-backbone Engram retrofit as \"totally up our alley\" after seeing the first-pass intake of DeepSeek's \"Conditional Memory via Scalable Lookup\" paper (arxiv:2601.07372) and ",
+      "score": 0.9238,
+      "content_hash": "7a45597e25da64e4"
+    },
+    {
+      "file": "/workspace/wiki/moe-optimization.md",
+      "heading_path": [
+        "MoE Optimization",
+        "Related Categories"
+      ],
+      "line_range": [
+        328,
+        330
+      ],
+      "snippet": "- [Memory-Augmented Models](memory-augmented.md) -- n-gram-embedding-augmented MoE (LongCat-Flash-Lite / Engram) treats a deterministic lookup table as a sparsity axis orthogonal to routed experts; embedding-scaling can beat expert-scaling ",
+      "score": 0.9234,
+      "content_hash": "11c21f09495d6c3b"
+    }
+  ],
+  "wall_s": 22.82259879517369
+}

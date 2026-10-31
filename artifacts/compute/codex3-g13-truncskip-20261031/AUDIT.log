@@ -1,0 +1,4 @@
+490 case metrics, truth IDs, source manifest, and all 1522 source snapshot hashes pass
+chunk equivalence Counter({True: 1520, 'changed': 2}) changed ['/workspace/handoffs/active/master-handoff-index.md', '/workspace/progress/2026-09/2026-09-16-sub-akfix.md']
+recall@10 {'1100_256_plain': 0.36428571428571427, '1100_256_punct': 0.3535714285714286, '4000_256_plain': 0.3678571428571429, '4000_256_punct': 0.375, '4000_300_plain': 0.34047619047619043, '4000_300_punct': 0.32738095238095233, 'canonical_stored': 0.3678571428571429} matched deltas {'1100_256_plain': -0.003571429, '1100_256_punct': -0.014285714, '4000_256_plain': 0.0, '4000_256_punct': 0.007142857, '4000_300_plain': -0.027380952, '4000_300_punct': -0.04047619}
+8 worker records aggregate validated {'native_new_encodes': 105950, 'cache_skips': 23845, 'cache_loads': 0}

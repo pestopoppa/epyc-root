@@ -1,0 +1,191 @@
+{
+  "arm": "1100_256_plain",
+  "id": "hotpot_tool_output_contract",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/tool-output-compression.md",
+    "/workspace/handoffs/active/tool-use-eval-contract.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/tool-output-compression.md",
+    "/workspace/handoffs/active/tool-use-eval-contract.md"
+  ],
+  "metrics": {
+    "evidence_count": 2,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/tool-output-compression.md",
+      "/workspace/handoffs/active/tool-use-eval-contract.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/active/backlog-roi-audit-2026-07-14.md",
+      "/workspace/wiki/context-management.md",
+      "/workspace/wiki/tool-implementation.md",
+      "/workspace/wiki/tool-implementation.md",
+      "/workspace/handoffs/active/design-backlog-triage-2026-07-23.md",
+      "/workspace/handoffs/active/typed-decision-plane.md",
+      "/workspace/wiki/tool-implementation.md",
+      "/workspace/research/deep-dives/2026-06-12-rlm-structured-output-contracts.md",
+      "/workspace/handoffs/active/backlog-roi-audit-2026-07-14.md",
+      "/workspace/progress/2026-09/2026-09-14-research-intake.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/active/backlog-roi-audit-2026-07-14.md",
+      "heading_path": [
+        "Backlog ROI Audit \u2014 2026-07-14",
+        "D. Index fixes applied (7 files)"
+      ],
+      "line_range": [
+        66,
+        67
+      ],
+      "snippet": "- **pipeline-integration-index.md**: completed P0 vision row retired + checklist flipped; malformed completed PDF-probe row removed; DS-E1 gated row re-triaged (gate fired, decision recorded); K11 FTS5 + AutoWiki-writer + retrieval-weight-p",
+      "score": 0.9259,
+      "content_hash": "9e08f07e5bf7dc7a"
+    },
+    {
+      "file": "/workspace/wiki/context-management.md",
+      "heading_path": [
+        "Context Management",
+        "Summary",
+        "New Findings (2026-07-16 \u2014 harness-local compaction became a load-bearing context-management caveat)"
+      ],
+      "line_range": [
+        40,
+        41
+      ],
+      "snippet": "- **Tool-output compression remains the right layer, but only at the Orch boundary.** The compression module still shrinks tool outputs before they hit context, and the MCP wrapper path now exists, but a harness that also compacts or fan-ou",
+      "score": 0.9259,
+      "content_hash": "664ec9898fb8d2b5"
+    },
+    {
+      "file": "/workspace/wiki/tool-implementation.md",
+      "heading_path": [
+        "Tool Implementation",
+        "Key Findings",
+        "New (2026-07-05, Fable week-run harness repairs)"
+      ],
+      "line_range": [
+        38,
+        40
+      ],
+      "snippet": "-use-eval-contract.md](../handoffs/active/tool-use-eval-contract.md).\n- **Tool use is now a real prompt-shape contract, not a text-only aspiration.** The live tool-sentinel lane still depends on the REPL path, but the prompt now requires ex",
+      "score": 0.9256,
+      "content_hash": "0822431c1e4eb701"
+    },
+    {
+      "file": "/workspace/wiki/tool-implementation.md",
+      "heading_path": [
+        "Tool Implementation",
+        "Summary",
+        "New Findings (2026-07-16 \u2014 harness cooperation is now part of the tool-surface contract)"
+      ],
+      "line_range": [
+        22,
+        26
+      ],
+      "snippet": "### New Findings (2026-07-16 \u2014 harness cooperation is now part of the tool-surface contract)\n\n- **Tool-output compression still lives at the orchestrator boundary, but its end-to-end value now depends on the harness not competing with its o",
+      "score": 0.9237,
+      "content_hash": "49c5ed1e49d04352"
+    },
+    {
+      "file": "/workspace/handoffs/active/design-backlog-triage-2026-07-23.md",
+      "heading_path": [
+        "Design-Backlog Triage (2026-07-23)",
+        "SECTION 1 \u2014 Strategic design concepts (operator decides)"
+      ],
+      "line_range": [
+        155,
+        156
+      ],
+      "snippet": "| C60 | Tool-output-compression program | tool-output-compression P4e + intakes | P4e per-command rollout, per-role/adaptive levels, and observation-drop/masking BEFORE LLM summarization (masking carried ~9pp of ContextRot's 13.2pp lift) | ",
+      "score": 0.9225,
+      "content_hash": "7ab4ac884ec8bac2"
+    },
+    {
+      "file": "/workspace/handoffs/active/typed-decision-plane.md",
+      "heading_path": [
+        "Typed Decision Plane \u2014 one-pass typed decisions over the local stack",
+        "Tasks"
+      ],
+      "line_range": [
+        439,
+        448
+      ],
+      "snippet": "  Connect proposals to the TD-29 shadow seam; operation differences never change the original executed tool.\n  Preserve host-owned prepared-action authority, eligible menu, freshness and read-set revalidation. TD-13 must test\n  joint/siblin",
+      "score": 0.9221,
+      "content_hash": "ceb699dd36ffe509"
+    },
+    {
+      "file": "/workspace/wiki/tool-implementation.md",
+      "heading_path": [
+        "Tool Implementation",
+        "Key Findings",
+        "New (2026-07-06, tool-use smoke follow-up)"
+      ],
+      "line_range": [
+        64,
+        67
+      ],
+      "snippet": "### New (2026-07-06, tool-use smoke follow-up)\n\n- **Tool-use activation is env-ready, but the current local REPL behavior still fails on executable tool turns.** A five-way parallel Gate-3 smoke on PID `981677` confirmed the orchestrator AP",
+      "score": 0.9216,
+      "content_hash": "12bbc466a75d612d"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-06-12-rlm-structured-output-contracts.md",
+      "heading_path": [
+        "RLM Structured-Output Contracts \u2014 schema-validated subagent returns as a correctness lever",
+        "What we already have vs the gap",
+        "Already implemented (parent `FINAL` half) \u2014 `final_schema_validation`, landed 2026-05-20"
+      ],
+      "line_range": [
+        56,
+        57
+      ],
+      "snippet": "Also note the **separate, orthogonal** `structured_tool_output` flag (`src/features.py:120`; `ToolOutput` envelope in `src/registry/tool_registry.py:173-220`) that the tool-use-eval-contract handoff wires. That envelope wraps **intermediate",
+      "score": 0.9212,
+      "content_hash": "75bc6c42bbb7c6f5"
+    },
+    {
+      "file": "/workspace/handoffs/active/backlog-roi-audit-2026-07-14.md",
+      "heading_path": [
+        "Backlog ROI Audit \u2014 2026-07-14",
+        "C. Reprioritizations applied (headline moves)"
+      ],
+      "line_range": [
+        56,
+        59
+      ],
+      "snippet": "**Elevated**: gfx90a training-viability smoke \u2192 standalone MI210 probe (single shared unblock for F3 fine-tunes, drafter training intake-624/737-738, EV-9 judge, MFMA reopen) \u00b7 tool-use-eval-contract \"journal nonzero tool calls\" (upstream o",
+      "score": 0.9211,
+      "content_hash": "36186a0401e8b3be"
+    },
+    {
+      "file": "/workspace/progress/2026-09/2026-09-14-research-intake.md",
+      "heading_path": [
+        "2026-09-14 \u2014 Research intake: ripwire / pd-bridge / 2609.09153 / 2609.05364 / SoL-Pi / GPT-OSS-20B harness search",
+        "Handoffs updated (25 new tasks, 6 ticked on merge, 19 open)"
+      ],
+      "line_range": [
+        18,
+        26
+      ],
+      "snippet": "## Handoffs updated (25 new tasks, 6 ticked on merge, 19 open)\n- delegation-context-preassembly.md \u2014 DCP-10/10a\u2705/10b/10c/11/12/13, DCP-2 correction, DCP-7 priors, stale P22\u2192RTG-10 pointer\n- tool-output-compression.md \u2014 TOC-SP-1\u2705, TOC-SP-2, ",
+      "score": 0.9211,
+      "content_hash": "49576a2a1d370eca"
+    }
+  ],
+  "wall_s": 26.07339191902429
+}

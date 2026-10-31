@@ -1,0 +1,186 @@
+{
+  "arm": "1100_256_plain",
+  "id": "hotpot_capability_registry_promotion",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/model-capability-descriptors.md",
+    "/workspace/handoffs/active/capability-registry-and-promotion.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/model-capability-descriptors.md",
+    "/workspace/handoffs/active/capability-registry-and-promotion.md"
+  ],
+  "metrics": {
+    "evidence_count": 2,
+    "found_count": 2,
+    "found_files": [
+      "/workspace/handoffs/active/capability-registry-and-promotion.md",
+      "/workspace/handoffs/active/model-capability-descriptors.md"
+    ],
+    "missing_files": [],
+    "first_evidence_rank": 3,
+    "all_evidence_rank": 6,
+    "ranked_files": [
+      "/workspace/progress/2026-06/2026-06-14.md",
+      "/workspace/handoffs/active/multi-file-coding-completion-capability.md",
+      "/workspace/handoffs/active/capability-registry-and-promotion.md",
+      "/workspace/wiki/inference-serving.md",
+      "/workspace/handoffs/completed/fable5-findings-04-impl-plan.md",
+      "/workspace/handoffs/active/model-capability-descriptors.md",
+      "/workspace/handoffs/completed/fable5-findings-02-routing-decision-architecture.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/active/routing-and-optimization-index.md",
+      "/workspace/progress/2026-06/2026-06-12.md"
+    ],
+    "recall@3": 0.5,
+    "perfect@3": false,
+    "recall@5": 0.5,
+    "perfect@5": false,
+    "recall@10": 1.0,
+    "perfect@10": true
+  },
+  "results": [
+    {
+      "file": "/workspace/progress/2026-06/2026-06-14.md",
+      "heading_path": [
+        "2026-06-14",
+        "Stack-prior launcher consumer documented",
+        "Root docs updated"
+      ],
+      "line_range": [
+        842,
+        854
+      ],
+      "snippet": "### Root docs updated\n\n- `handoffs/active/model-capability-descriptors.md`: W3 first-consumer\n  migration is now complete through `7121f38`; W4 swap-CI remains open.\n- `handoffs/active/standardized-stack-update-pipeline-finalization.md` and",
+      "score": 0.9279,
+      "content_hash": "92d8b25f8cf88a07"
+    },
+    {
+      "file": "/workspace/handoffs/active/multi-file-coding-completion-capability.md",
+      "heading_path": [
+        "Multi-file coding completion \u2014 diagnosed agentic read\u2192edit\u2192finish protocol gap",
+        "A2 rollout contract (prepared 2026-06-12)"
+      ],
+      "line_range": [
+        221,
+        234
+      ],
+      "snippet": "**Promotion route:** register `edit_transaction_auto_routing` as a first-cohort capability row under\n`capability-registry-and-promotion.md` once W1 exists. Keep `actionable_by=operator` until descriptor,\napplicator, validated range, kill co",
+      "score": 0.9271,
+      "content_hash": "f3107591bf1a0533"
+    },
+    {
+      "file": "/workspace/handoffs/active/capability-registry-and-promotion.md",
+      "heading_path": [
+        "Capability Registry, Safe Role-Restart Applicator & Promotion Workflow"
+      ],
+      "line_range": [
+        1,
+        3
+      ],
+      "snippet": "# Capability Registry, Safe Role-Restart Applicator & Promotion Workflow",
+      "score": 0.9268,
+      "content_hash": "fb30ba463cdb6b2e"
+    },
+    {
+      "file": "/workspace/wiki/inference-serving.md",
+      "heading_path": [
+        "Inference Serving",
+        "Source References"
+      ],
+      "line_range": [
+        562,
+        563
+      ],
+      "snippet": "- [Capability Registry & Promotion](../handoffs/active/capability-registry-and-promotion.md) -- W0 workload-class tagging closed (live `ChatRequest.workload_class`), W2 generated Action-Availability + A-by table adopted, W3 safe role-restar",
+      "score": 0.9266,
+      "content_hash": "149f102e6b5a2392"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-04-impl-plan.md",
+      "heading_path": [
+        "Fable 5 findings 04 \u2014 IMPLEMENTATION PLAN: invariant interfaces, capability registry, index migration",
+        "C. Capability registry + promotion mechanics (interface: backlog \u2192 autopilot-actionable is a state transition, not a rewrite)"
+      ],
+      "line_range": [
+        29,
+        31
+      ],
+      "snippet": "## C. Capability registry + promotion mechanics (interface: backlog \u2192 autopilot-actionable is a state transition, not a rewrite)",
+      "score": 0.926,
+      "content_hash": "bcdc64bf46e4048a"
+    },
+    {
+      "file": "/workspace/handoffs/active/model-capability-descriptors.md",
+      "heading_path": [
+        "Model-Capability Descriptors: The Model-Agnosticism Interface"
+      ],
+      "line_range": [
+        1,
+        3
+      ],
+      "snippet": "# Model-Capability Descriptors: The Model-Agnosticism Interface",
+      "score": 0.9258,
+      "content_hash": "fbe248807c2cf36a"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-02-routing-decision-architecture.md",
+      "heading_path": [
+        "Fable 5 findings 02 \u2014 Routing/serving decision architecture (facet 3)",
+        "3. The recommended decision architecture"
+      ],
+      "line_range": [
+        34,
+        35
+      ],
+      "snippet": "What makes it *model-agnostic* (the North Star clause routing currently violates):\n- **Model-capability descriptors** as the router's input, not role names. Today routing intelligence is keyed to the deployed stack and *dies on stack change",
+      "score": 0.9256,
+      "content_hash": "bfe6a4b08be3aaa2"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 one-shot architectural review \u2014 EXECUTED (F5)",
+        "Fable 5 review \u2014 execution + wrap-up (final pass)"
+      ],
+      "line_range": [
+        131,
+        135
+      ],
+      "snippet": "**17 new owning handoffs created** (all SPEC'D, \u226470 lines, claim-grammar compliant, spec-pointer style): frontier-f1..f7; evidence-plane-{instrument-repair, ledger-and-sequential-verdicts, event-sourcing-and-narrative}; objective-task-rate-",
+      "score": 0.9253,
+      "content_hash": "16f44ef4bb5fea49"
+    },
+    {
+      "file": "/workspace/handoffs/active/routing-and-optimization-index.md",
+      "heading_path": [
+        "Routing, Autopilot & Stack \u2014 Active Backlog"
+      ],
+      "line_range": [
+        17,
+        20
+      ],
+      "snippet": "| RTG-05 | bep dcp falsification harness | [bep-dcp-falsification-harness.md](bep-dcp-falsification-harness.md) | DCP-6 deploy attestation + inference gate: launch-code provenance is satisfied (server_launch_git_sha=eeb8cce, ancestor of 2e2",
+      "score": 0.9251,
+      "content_hash": "62d4c2dbcd8bfc4f"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 model-capability descriptors W2 enrichment",
+        "Code"
+      ],
+      "line_range": [
+        989,
+        994
+      ],
+      "snippet": "### Code\n\n- Worktree: `/mnt/raid0/llm/tmp/model-descriptor-worktree`\n- Branch: `feat/model-capability-descriptors`\n- Commit: `32b8c65` (`Enrich model descriptors from registry evidence`)\n",
+      "score": 0.9239,
+      "content_hash": "bef8f356b50b9d19"
+    }
+  ],
+  "wall_s": 26.098045707913116
+}

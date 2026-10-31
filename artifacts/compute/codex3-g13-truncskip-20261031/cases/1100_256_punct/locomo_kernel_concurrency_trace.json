@@ -1,0 +1,190 @@
+{
+  "arm": "1100_256_punct",
+  "id": "locomo_kernel_concurrency_trace",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/fable5-findings-06-kernel-and-concurrency.md",
+    "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+    "/workspace/handoffs/active/inference-acceleration-index.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/fable5-findings-06-kernel-and-concurrency.md",
+    "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+    "/workspace/handoffs/active/inference-acceleration-index.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/fable5-findings-06-kernel-and-concurrency.md",
+    "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+    "/workspace/handoffs/active/inference-acceleration-index.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/cpu-inference-optimization-index.md",
+      "/workspace/handoffs/active/fable5-findings-06-kernel-and-concurrency.md",
+      "/workspace/handoffs/active/inference-acceleration-index.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/active/batched-decode-measurement.md",
+      "/workspace/handoffs/completed/fable5-findings-06-kernel-and-concurrency.md",
+      "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/active/tidar-one-pass-variant-b.md",
+      "/workspace/progress/2026-04/2026-04-27.md",
+      "/workspace/wiki/inference-serving.md",
+      "/workspace/handoffs/completed/cpu-optimization-thesis-pause-2026-04-26.md",
+      "/workspace/handoffs/active/cpu-shape-specialized-gemv-decode.md",
+      "/workspace/handoffs/active/cpu-fused-decoder-blocks.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/active/batched-decode-measurement.md",
+      "heading_path": [
+        "Batched-Decode Measurement (E1/E2) + Conditional 8x8 GEMM SIMD (E3) + NUMA\u00d7batch (E5)"
+      ],
+      "line_range": [
+        131,
+        133
+      ],
+      "snippet": "**Spec**: [fable5-findings-06-kernel-and-concurrency.md](../completed/fable5-findings-06-kernel-and-concurrency.md) \u00a72 (E1/E2/E3) + [MEASUREMENT.md](../../MEASUREMENT.md) P-BENCH-3 \u2014 read both before claiming any waypoint\n**Related**: [bulk",
+      "score": 0.9402,
+      "content_hash": "86ff5f3348080fa7"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-06-kernel-and-concurrency.md",
+      "heading_path": [
+        "Fable 5 findings 06 \u2014 The kernel program & concurrent serving: what is exhausted, what was avoided"
+      ],
+      "line_range": [
+        1,
+        9
+      ],
+      "snippet": "# Fable 5 findings 06 \u2014 The kernel program & concurrent serving: what is exhausted, what was avoided\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.",
+      "score": 0.9387,
+      "content_hash": "3ff268d075922adc"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "heading_path": [
+        "EPYC Handoff \u2014 Master Index",
+        "Domain indices"
+      ],
+      "line_range": [
+        20,
+        27
+      ],
+      "snippet": "## Domain indices\n| Routing/autopilot/stack | routing-and-optimization-index.md | | Acceleration | inference-acceleration-index.md |\n|---|---|---|---|---|\n| CPU throughput | cpu-inference-optimization-index.md | | Research/eval | research-e",
+      "score": 0.9366,
+      "content_hash": "39b36db70944f84c"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 one-shot architectural review \u2014 EXECUTED (F5)",
+        "Fable 5 review \u2014 refinement pass (operator-requested, same session)"
+      ],
+      "line_range": [
+        109,
+        109
+      ],
+      "snippet": "- `fable5-findings-06-kernel-and-concurrency.md` \u2014 **operator's kernel + concurrency questions.** Batch=1 GEMV decode: closed CORRECTLY (roofline: 0.03-0.35% FLOPS + per-token BW-saturated, 93% cross-check). Five live angles: Variant B TiDA",
+      "score": 0.9338,
+      "content_hash": "55389dbfda58fd8f"
+    },
+    {
+      "file": "/workspace/handoffs/active/tidar-one-pass-variant-b.md",
+      "heading_path": [
+        "TiDAR-Pattern One-Pass Draft+Verify (Variant B)"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# TiDAR-Pattern One-Pass Draft+Verify (Variant B)\n\n**Status**: SPEC'D, not started (from the Fable 5 architecture review)\n**Created**: 2026-06-12\n**Priority**: GATED \u2014 on a Q4_K_M-quantizable TiDAR-class checkpoint existing (quality risk un",
+      "score": 0.9336,
+      "content_hash": "fee533516b1b4be8"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-27.md",
+      "heading_path": [
+        "2026-04-27",
+        "2026-04-27 night \u2014 closure-inflation peer-review passes #2/#3/#4 + MoE-Spec Phase 0",
+        "Pass #3 (5 cleanup findings)"
+      ],
+      "line_range": [
+        610,
+        619
+      ],
+      "snippet": "### Pass #3 (5 cleanup findings)\n\n- Prioritized list CPU5-8 + CPU13-19 wording out of sync with landscape table\n- inference-acceleration-index \"Wave 0 next step\" stale\n- master-handoff-index 27f framed Phase 2.6 dense cross-arch as future t",
+      "score": 0.9335,
+      "content_hash": "8e7d4ab838f15505"
+    },
+    {
+      "file": "/workspace/wiki/inference-serving.md",
+      "heading_path": [
+        "Inference Serving",
+        "2026-06-13 Update \u2014 Serving Gaps After Fable 5"
+      ],
+      "line_range": [
+        465,
+        471
+      ],
+      "snippet": "## 2026-06-13 Update \u2014 Serving Gaps After Fable 5\n\nFable 5 confirmed the batch=1 CPU decode closure at the kernel level but found a serving-level evidence gap. The system has mature multi-instance concurrency: NUMA quartering, placement sta",
+      "score": 0.9334,
+      "content_hash": "4eeedee9f3376f96"
+    },
+    {
+      "file": "/workspace/handoffs/completed/cpu-optimization-thesis-pause-2026-04-26.md",
+      "heading_path": [
+        "CPU Optimization Pause & Reorganization \u2014 2026-04-26",
+        "Closure note (2026-06-12, Fable 5 portfolio pass)"
+      ],
+      "line_range": [
+        9,
+        18
+      ],
+      "snippet": "**Where residuals now live**: the current benchmark protocol is `cpu-benchmark-rigor-and-revalidation.md` \u2192 `/workspace/MEASUREMENT.md` (per the fable5 MERGE verdict); the current CPU landscape is `cpu-inference-optimization-index.md`; flag",
+      "score": 0.9333,
+      "content_hash": "4c2019bfa23963b4"
+    },
+    {
+      "file": "/workspace/handoffs/active/cpu-shape-specialized-gemv-decode.md",
+      "heading_path": [
+        "CPU Shape-Specialized GEMV Microkernel for Zen 5 Decode"
+      ],
+      "line_range": [
+        41,
+        46
+      ],
+      "snippet": "**Priority**: ~~MEDIUM~~ DEPRIORITIZED for the *SIMD ukernel*; **but the barrier/op-count sub-lever is RE-ELEVATED** by fable5-window2-findings-05 (2026-07-03): the roofline sweep confirms this handoff's own diagnosis (frontdoor Q8_0 decode",
+      "score": 0.9326,
+      "content_hash": "bfe3f35846f82fdd"
+    },
+    {
+      "file": "/workspace/handoffs/active/cpu-fused-decoder-blocks.md",
+      "heading_path": [
+        "CPU Fused Decoder Blocks (batch-1 decode megakernel)"
+      ],
+      "line_range": [
+        5,
+        10
+      ],
+      "snippet": "**Priority**: ~~HIGH \u2014 the last identified path to 20-60 t/s batch-1 CPU decode~~ **STALE 2026-09-08 (INF-70 audit)** \u2014 the \"last identified path to 20-60 t/s\" framing predates A-GATE. Re-ranking this handoff's priority is an operator/ownin",
+      "score": 0.9321,
+      "content_hash": "010d1383c43fddf9"
+    }
+  ],
+  "wall_s": 21.905240366933867
+}

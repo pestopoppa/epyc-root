@@ -1,0 +1,194 @@
+{
+  "arm": "canonical_stored",
+  "id": "locomo_routing_repair_family",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/routing-truth-restoration.md",
+    "/workspace/handoffs/active/learned-routing-controller.md",
+    "/workspace/handoffs/active/retrain-routing-models.md",
+    "/workspace/handoffs/active/x-mas-text-routing.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/routing-truth-restoration.md",
+    "/workspace/handoffs/active/learned-routing-controller.md",
+    "/workspace/handoffs/active/retrain-routing-models.md",
+    "/workspace/handoffs/active/x-mas-text-routing.md"
+  ],
+  "metrics": {
+    "evidence_count": 4,
+    "found_count": 3,
+    "found_files": [
+      "/workspace/handoffs/active/learned-routing-controller.md",
+      "/workspace/handoffs/active/routing-truth-restoration.md",
+      "/workspace/handoffs/active/x-mas-text-routing.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/retrain-routing-models.md"
+    ],
+    "first_evidence_rank": 3,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/wiki/routing-intelligence.md",
+      "/workspace/handoffs/active/tri-role-coordinator-architecture.md",
+      "/workspace/handoffs/active/x-mas-text-routing.md",
+      "/workspace/wiki/routing-intelligence.md",
+      "/workspace/handoffs/active/learned-routing-controller.md",
+      "/workspace/handoffs/active/x-mas-text-routing.md",
+      "/workspace/research/deep-dives/diversity-collapse-posttraining.md",
+      "/workspace/handoffs/active/routing-truth-restoration.md",
+      "/workspace/handoffs/active/stale-open-audit-2026-07-18.md",
+      "/workspace/handoffs/active/x-mas-text-routing.md"
+    ],
+    "recall@3": 0.25,
+    "perfect@3": false,
+    "recall@5": 0.5,
+    "perfect@5": false,
+    "recall@10": 0.75,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/wiki/routing-intelligence.md",
+      "heading_path": [
+        "Routing Intelligence",
+        "Updates \u2014 2026-04-28",
+        "New Findings (2026-06-13 \u2014 Routing Truth, Descriptors, And X-MAS)"
+      ],
+      "line_range": [
+        380,
+        387
+      ],
+      "snippet": "### New Findings (2026-06-13 \u2014 Routing Truth, Descriptors, And X-MAS)\n\n- **The immediate routing defect was running-state truth, not a missing decision theory.** Fable 5 found production using test feature defaults and runtime flag mutation",
+      "score": 0.9474,
+      "content_hash": "39d59c61c09fdcb6"
+    },
+    {
+      "file": "/workspace/handoffs/active/tri-role-coordinator-architecture.md",
+      "heading_path": [
+        "Tri-Role Coordinator Architecture (Thinker / Worker / Verifier)",
+        "Relationship to Existing Systems"
+      ],
+      "line_range": [
+        121,
+        130
+      ],
+      "snippet": "## Relationship to Existing Systems\n\n| System | Relationship | Impact |\n|---|---|---|\n| `learned-routing-controller.md` | Supplies the model-selection axis; this handoff adds the role axis | Routing classifier output dim grows from `N_model",
+      "score": 0.94,
+      "content_hash": "ce945ad0aca8ddab"
+    },
+    {
+      "file": "/workspace/handoffs/active/x-mas-text-routing.md",
+      "heading_path": [
+        "X-MAS Heterogeneous Text-MAS Routing Spike",
+        "References"
+      ],
+      "line_range": [
+        70,
+        75
+      ],
+      "snippet": "## References\n\n- Deep-dive: `/workspace/research/deep-dives/2026-05-19-latent-mas-cluster.md`\n- X-MAS paper: `https://arxiv.org/abs/2505.16997`\n- X-MAS repo: `https://github.com/MASWorks/X-MAS` (no license \u2014 methodology only)\n- Related hand",
+      "score": 0.9378,
+      "content_hash": "2a3a2915af1a7e0b"
+    },
+    {
+      "file": "/workspace/wiki/routing-intelligence.md",
+      "heading_path": [
+        "Routing Intelligence",
+        "Key Findings",
+        "New (2026-06-22, learned-router verifier staging + episodic-embedding repair gate)"
+      ],
+      "line_range": [
+        197,
+        202
+      ],
+      "snippet": "### New (2026-06-22, learned-router verifier staging + episodic-embedding repair gate)\n\n- **The learned-routing MLP is staged but NOT in production, and a counterfactual probe is the reason for caution.** The BGE+MLP classifier was retraine",
+      "score": 0.9374,
+      "content_hash": "c8c8a39013f249ec"
+    },
+    {
+      "file": "/workspace/handoffs/active/learned-routing-controller.md",
+      "heading_path": [
+        "Learned Routing Controller: MLP Distillation from Episodic Memory"
+      ],
+      "line_range": [
+        1,
+        15
+      ],
+      "snippet": "# Learned Routing Controller: MLP Distillation from Episodic Memory\n\n**Scratch**: `/mnt/raid0/llm/tmp/learned-routing-controller/` \u00b7 worktrees: `/mnt/raid0/llm/worktrees/learned-routing-controller-*`\n\n**Created**: 2026-04-15\n**Status**: REF",
+      "score": 0.9374,
+      "content_hash": "04ec548eeb260504"
+    },
+    {
+      "file": "/workspace/handoffs/active/x-mas-text-routing.md",
+      "heading_path": [
+        "X-MAS Heterogeneous Text-MAS Routing Spike",
+        "Current Evidence"
+      ],
+      "line_range": [
+        31,
+        46
+      ],
+      "snippet": "- `epyc-orchestrator` `f517902d` repairs the same-cheap-role failure mode by preserving try-cheap-first when X-MAS enforces the configured cheap role and adds row-level `xmas_meta` capture. `epyc-orchestrator` `b108f865` versions the repair",
+      "score": 0.9361,
+      "content_hash": "ba9664a910f7144a"
+    },
+    {
+      "file": "/workspace/research/deep-dives/diversity-collapse-posttraining.md",
+      "heading_path": [
+        "Deep Dive: Where Does Output Diversity Collapse in Post-Training?",
+        "4. Why This Matters to EPYC",
+        "4.5 Routing and decision-aware training"
+      ],
+      "line_range": [
+        130,
+        133
+      ],
+      "snippet": "### 4.5 Routing and decision-aware training\n\nDownstream components (learned-routing-controller.md, decision-aware-routing.md) train on generator traces. If traces are mode-collapsed, the routing model's training distribution has narrower ta",
+      "score": 0.9356,
+      "content_hash": "13dec3cea95dbd30"
+    },
+    {
+      "file": "/workspace/handoffs/active/routing-truth-restoration.md",
+      "heading_path": [
+        "Routing Truth Restoration: Prod Flags, Attestation, Dead Code"
+      ],
+      "line_range": [
+        1,
+        8
+      ],
+      "snippet": "# Routing Truth Restoration: Prod Flags, Attestation, Dead Code\n\n**Status**: CLOSED 2026-07-14 \u2014 W1-W8 landed and live-attested/deployed; routing expansion remains frozen by the W8/DAR-1 gate; the overdue `dispatch_swarm_fanout` watch is re",
+      "score": 0.9355,
+      "content_hash": "3eabf2ef3a9ce366"
+    },
+    {
+      "file": "/workspace/handoffs/active/stale-open-audit-2026-07-18.md",
+      "heading_path": [
+        "Stale-Open Backlog Audit \u2014 2026-07-18",
+        "Per-handoff verdicts",
+        "Batch B \u2014 routing / eval / RAG"
+      ],
+      "line_range": [
+        45,
+        56
+      ],
+      "snippet": "### Batch B \u2014 routing / eval / RAG\n\n| Handoff | Open | Live | Verdict | Recommendation |\n|---|---:|---:|---|---|\n| [decision-aware-routing](decision-aware-routing.md) | 26 | 3 | PARKED | re-anchor \u2014 core FROZEN/closed in routing-truth-resto",
+      "score": 0.9355,
+      "content_hash": "e0f128fe83633d11"
+    },
+    {
+      "file": "/workspace/handoffs/active/x-mas-text-routing.md",
+      "heading_path": [
+        "X-MAS Heterogeneous Text-MAS Routing Spike"
+      ],
+      "line_range": [
+        1,
+        12
+      ],
+      "snippet": "# X-MAS Heterogeneous Text-MAS Routing Spike\n\n**Status**: classifier/table scaffold, guarded enforce path, true function-axis 5x5 sweep, enforce-eligible `orchestration/xmas_winner_table.yaml`, live A/B harness, machine-readable held-out ve",
+      "score": 0.9355,
+      "content_hash": "cedd97ceb2e4215e"
+    }
+  ],
+  "wall_s": 14.894550058059394
+}

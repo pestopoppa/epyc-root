@@ -1,0 +1,189 @@
+{
+  "arm": "4000_300_punct",
+  "id": "locomo_fable_handoff_evolution",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/fable5-architecture-review.md",
+    "/workspace/handoffs/active/fable5-findings-00-executive-summary.md",
+    "/workspace/handoffs/active/fable5-proposed-master-index-rewrite.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/fable5-architecture-review.md",
+    "/workspace/handoffs/active/fable5-findings-00-executive-summary.md",
+    "/workspace/handoffs/active/fable5-proposed-master-index-rewrite.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/fable5-architecture-review.md",
+    "/workspace/handoffs/active/fable5-findings-00-executive-summary.md",
+    "/workspace/handoffs/active/fable5-proposed-master-index-rewrite.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/fable5-architecture-review.md",
+      "/workspace/handoffs/active/fable5-findings-00-executive-summary.md",
+      "/workspace/handoffs/active/fable5-proposed-master-index-rewrite.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/completed/fable5-findings-00-executive-summary.md",
+      "/workspace/handoffs/completed/fable5-window2-findings-00-executive-summary.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/progress/2026-07/2026-07-03-fable5-window2.md",
+      "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "/workspace/handoffs/completed/fable5-architecture-review.md",
+      "/workspace/progress/2026-06/2026-06-12.md",
+      "/workspace/handoffs/completed/fable5-architecture-review.md",
+      "/workspace/handoffs/completed/handoff-backlog-hygiene-audit.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-00-executive-summary.md",
+      "heading_path": [
+        "Fable 5 architectural review \u2014 executive summary"
+      ],
+      "line_range": [
+        1,
+        11
+      ],
+      "snippet": "# Fable 5 architectural review \u2014 executive summary\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.\n\n**Date**: 2026-06-12. **Session**: one-shot cons",
+      "score": 0.9477,
+      "content_hash": "6386af5a47801afe"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-window2-findings-00-executive-summary.md",
+      "heading_path": [
+        "Fable 5 architectural review \u2014 window 2 \u2014 executive summary"
+      ],
+      "line_range": [
+        1,
+        10
+      ],
+      "snippet": "# Fable 5 architectural review \u2014 window 2 \u2014 executive summary\n\n> **Completed findings ledger (2026-08-13).** This document has no remaining tasks. Live work is dispatched from the [Research & Evaluation index](../active/research-evaluation-",
+      "score": 0.9467,
+      "content_hash": "8f4175395b71cc90"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 one-shot architectural-review handoff authored"
+      ],
+      "line_range": [
+        67,
+        82
+      ],
+      "snippet": "## Fable 5 one-shot architectural-review handoff authored\n\nDesigned and authored the entry handoff for a metered, one-shot Claude Fable 5 (`claude-fable-5`) strategic-architecture consult. New file: `handoffs/active/fable5-architecture-revi",
+      "score": 0.9437,
+      "content_hash": "deb96d6929059c3f"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 one-shot architectural review \u2014 EXECUTED (F5)"
+      ],
+      "line_range": [
+        83,
+        104
+      ],
+      "snippet": "## Fable 5 one-shot architectural review \u2014 EXECUTED (F5)\n\nRan the consult per `handoffs/active/fable5-architecture-review.md`. Preflight audit first (brief sound; 6 amendments at `fable5-preflight-amendments.md`: stale epyc-root index re-an",
+      "score": 0.9432,
+      "content_hash": "6537fb62706efc5e"
+    },
+    {
+      "file": "/workspace/progress/2026-07/2026-07-03-fable5-window2.md",
+      "heading_path": [
+        "2026-07-03 \u2014 Fable 5 architecture review, window 2 (one-shot consult)"
+      ],
+      "line_range": [
+        1,
+        13
+      ],
+      "snippet": "# 2026-07-03 \u2014 Fable 5 architecture review, window 2 (one-shot consult)\n\n**Brief**: `handoffs/active/fable5-architecture-review-2.md`. **Output**: 5 findings artifacts `handoffs/active/fable5-window2-findings-{00..04}-*.md`. No live index o",
+      "score": 0.9412,
+      "content_hash": "aa7c498844c2cf7d"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-proposed-master-index-rewrite.md",
+      "heading_path": [
+        "PROPOSAL v2 - master-handoff-index.md rewritten (full-portfolio review, 2026-06-12)"
+      ],
+      "line_range": [
+        1,
+        15
+      ],
+      "snippet": "# PROPOSAL v2 - master-handoff-index.md rewritten (full-portfolio review, 2026-06-12)\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.\n\n> **Historica",
+      "score": 0.9399,
+      "content_hash": "4411a255d55dea6a"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-architecture-review.md",
+      "heading_path": [
+        "Fable 5 Architectural Review \u2014 entry handoff (a prompt, not a task list)",
+        "8. Output contract (what to leave us)"
+      ],
+      "line_range": [
+        272,
+        292
+      ],
+      "snippet": "## 8. Output contract (what to leave us)\n\nWrite your output to `handoffs/active/fable5-findings-*.md` (one file per facet, or a coherent\nset). Everything here is **architectural insight we will multiply into implementation workflows \u2014\nnot f",
+      "score": 0.9397,
+      "content_hash": "8f9c8cbc32a3d685"
+    },
+    {
+      "file": "/workspace/progress/2026-06/2026-06-12.md",
+      "heading_path": [
+        "2026-06-12",
+        "Fable 5 one-shot architectural review \u2014 EXECUTED (F5)",
+        "Fable 5 review \u2014 execution + wrap-up (final pass)"
+      ],
+      "line_range": [
+        128,
+        135
+      ],
+      "snippet": "### Fable 5 review \u2014 execution + wrap-up (final pass)\n**Strategic frontiers**: `fable5-findings-07-strategic-frontiers.md` written then expanded to implementation-grade (operator request): F1 real-task corpus / F2 self-running lab (the 10\u00d7)",
+      "score": 0.9388,
+      "content_hash": "3f6423210c288a4f"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-architecture-review.md",
+      "heading_path": [
+        "Fable 5 Architectural Review \u2014 entry handoff (a prompt, not a task list)"
+      ],
+      "line_range": [
+        1,
+        12
+      ],
+      "snippet": "# Fable 5 Architectural Review \u2014 entry handoff (a prompt, not a task list)\n\n> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.\n\n**Status**: READY (pendi",
+      "score": 0.9387,
+      "content_hash": "fd6c17d5657e14b8"
+    },
+    {
+      "file": "/workspace/handoffs/completed/handoff-backlog-hygiene-audit.md",
+      "heading_path": [
+        "Handoff backlog hygiene audit",
+        "Closure note (2026-06-12, Fable 5 portfolio pass)"
+      ],
+      "line_range": [
+        15,
+        34
+      ],
+      "snippet": "## Closure note (2026-06-12, Fable 5 portfolio pass)\n\n**Final outcome**: Mission executed and superseded. The seven passes recorded below (2026-05-27 \u2192 2026-05-28) brought the tree from 56 aging / 0 stale to 0 aging / 0 stale, archived 9 ha",
+      "score": 0.9371,
+      "content_hash": "99c35687e1f1ac7b"
+    }
+  ],
+  "wall_s": 13.286976960022002
+}

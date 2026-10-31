@@ -1,0 +1,194 @@
+{
+  "arm": "4000_256_punct",
+  "id": "hotpot_cpu_shape_roofline",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/cpu-shape-specialized-gemv-decode.md",
+    "/workspace/handoffs/active/cpu-kernel-env-flags-inventory.md",
+    "/workspace/research/deep-dives/cpu-optimization-phase0-baseline.md"
+  ],
+  "evidence_missing_catalog": [
+    "/workspace/handoffs/active/cpu-kernel-env-flags-inventory.md"
+  ],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/cpu-shape-specialized-gemv-decode.md",
+    "/workspace/handoffs/active/cpu-kernel-env-flags-inventory.md",
+    "/workspace/research/deep-dives/cpu-optimization-phase0-baseline.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 1,
+    "found_files": [
+      "/workspace/handoffs/active/cpu-shape-specialized-gemv-decode.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/cpu-kernel-env-flags-inventory.md",
+      "/workspace/research/deep-dives/cpu-optimization-phase0-baseline.md"
+    ],
+    "first_evidence_rank": 4,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/completed/cpu-kernel-env-flags-inventory.md",
+      "/workspace/progress/2026-04/2026-04-23-cpu-optimization-kickoff.md",
+      "/workspace/wiki/hardware-optimization.md",
+      "/workspace/handoffs/active/cpu-shape-specialized-gemv-decode.md",
+      "/workspace/handoffs/active/cpu-prefill-compute-large-models.md",
+      "/workspace/handoffs/active/moe-spec-cpu-spec-dec-integration.md",
+      "/workspace/handoffs/completed/handoff-backlog-hygiene-audit.md",
+      "/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc0_experimental_20260719.md",
+      "/workspace/progress/2026-04/2026-04-23.md",
+      "/workspace/handoffs/active/stale-open-audit-2026-07-18.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.3333333333333333,
+    "perfect@5": false,
+    "recall@10": 0.3333333333333333,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/cpu-kernel-env-flags-inventory.md",
+      "heading_path": [
+        "CPU Kernel Env-Flag Inventory \u2014 2026-04-26 (updated 2026-06-14)"
+      ],
+      "line_range": [
+        1,
+        11
+      ],
+      "snippet": "# CPU Kernel Env-Flag Inventory \u2014 2026-04-26 (updated 2026-06-14)\n\n> **COMPLETED REFERENCE 2026-08-11.** The inventory now records each flag's effect on trace\n> interpretation. Current execution work lives in\n> [`cpu-shape-specialized-gemv-",
+      "score": 0.933,
+      "content_hash": "ab96386ff74e460a"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-23-cpu-optimization-kickoff.md",
+      "heading_path": [
+        "2026-04-23 \u2014 CPU optimization coordinated pickup kickoff",
+        "Summary"
+      ],
+      "line_range": [
+        3,
+        8
+      ],
+      "snippet": "## Summary\n\nPicked up the CPU shape-specialized GEMV handoff, expanded scope to the full CPU-inference backlog per user direction. Completed Steps 0\u20133 (partial) of the 8-step coordinated pickup plan. Landed three material findings that resh",
+      "score": 0.9299,
+      "content_hash": "966bd86880ce3ea4"
+    },
+    {
+      "file": "/workspace/wiki/hardware-optimization.md",
+      "heading_path": [
+        "Hardware Optimization",
+        "2026-04-26 additions",
+        "Sources (2026-04-26)"
+      ],
+      "line_range": [
+        1449,
+        1458
+      ],
+      "snippet": "### Sources (2026-04-26)\n\n- `progress/2026-04/2026-04-26.md` \u2014 full Phase A-G + P1-P4 narrative\n- `handoffs/completed/cpu-kernel-env-flags-inventory.md` \u2014 20 env knobs classified, including trace-interpretation effects\n- `handoffs/active/cp",
+      "score": 0.9281,
+      "content_hash": "8aac23087801a36c"
+    },
+    {
+      "file": "/workspace/handoffs/active/cpu-shape-specialized-gemv-decode.md",
+      "heading_path": [
+        "CPU Shape-Specialized GEMV Microkernel for Zen 5 Decode"
+      ],
+      "line_range": [
+        1,
+        39
+      ],
+      "snippet": "# CPU Shape-Specialized GEMV Microkernel for Zen 5 Decode\n\n\n> **\u26a0 BRANCH RESCUE 2026-09-08 \u2014 the branches this handoff tells you to fork from were nearly lost.**\n> `/mnt/raid0/llm/tmp/ak-loop-tree`, the `origin` remote of the CPU fusion tre",
+      "score": 0.9272,
+      "content_hash": "a98f486d51ce9a6a"
+    },
+    {
+      "file": "/workspace/handoffs/active/cpu-prefill-compute-large-models.md",
+      "heading_path": [
+        "CPU Prefill-Compute for Large Models",
+        "Thesis"
+      ],
+      "line_range": [
+        21,
+        35
+      ],
+      "snippet": "## Thesis\n\nThe CPU **decode** roofline is exhausted (Qwen3.6-27B Q8 decode @96t = 0.17 IPC, **96.6% of\ncycles memory-stalled** \u2014 DRAM-bandwidth-bound, not ALU-bound; see\n[cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-deco",
+      "score": 0.9257,
+      "content_hash": "cef09aa8471e32df"
+    },
+    {
+      "file": "/workspace/handoffs/active/moe-spec-cpu-spec-dec-integration.md",
+      "heading_path": [
+        "MoE-Spec \u2014 CPU Speculative-Decoding Verification with Budgeted Expert Selection",
+        "Phase 1 \u2014 RESULTS (DONE 2026-04-28)",
+        "Phase 2 deliverables (queued)"
+      ],
+      "line_range": [
+        95,
+        104
+      ],
+      "snippet": "Re-flagged 2026-04-27 after peer-review pass #2 noted that \"all software paths exhausted\" framing in upstream indices was incompatible with this stub's existence. Created 2026-04-27 evening as Phase 4 of closure-inflation remediation plan; ",
+      "score": 0.9256,
+      "content_hash": "302728542589f6f9"
+    },
+    {
+      "file": "/workspace/handoffs/completed/handoff-backlog-hygiene-audit.md",
+      "heading_path": [
+        "Handoff backlog hygiene audit",
+        "Second pass executed 2026-05-27 (evening)",
+        "EXCLUDED FROM ARCHIVE (4) \u2014 initial recommendations overturned 2026-05-27"
+      ],
+      "line_range": [
+        86,
+        96
+      ],
+      "snippet": "### EXCLUDED FROM ARCHIVE (4) \u2014 initial recommendations overturned 2026-05-27\n\n| Handoff | Audit verdict | Why rejected |\n|---|---|---|\n| `cpu-optimization-thesis-pause-2026-04-26.md` | ARCHIVE | Load-bearing reference in `cpu-benchmark-rig",
+      "score": 0.9255,
+      "content_hash": "c963cdb5233c8453"
+    },
+    {
+      "file": "/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc0_experimental_20260719.md",
+      "heading_path": [
+        "PC-0 CPU Prefill-Compute Experimental Profile - 2026-07-19",
+        "Interpretation"
+      ],
+      "line_range": [
+        64,
+        75
+      ],
+      "snippet": "## Interpretation\n\nThe prefill shape is materially different from the decode roofline. IPC is far\nhealthier (`1.47` here versus the decode reference `0.17`), vector work is\nsubstantial, and the profile is dominated by OpenMP/barrier overhea",
+      "score": 0.9236,
+      "content_hash": "c8c745b1b7a5a608"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-23.md",
+      "heading_path": [
+        "Progress \u2014 2026-04-23",
+        "Session \u2014 Research intake (3 URLs), perf-gap analysis, new CPU-ukernel handoff"
+      ],
+      "line_range": [
+        3,
+        6
+      ],
+      "snippet": "## Session \u2014 Research intake (3 URLs), perf-gap analysis, new CPU-ukernel handoff\n\nThree `/research-intake` invocations landed intakes 447\u2013449; each received a full deep-dive. Side investigation on Qwen3.6-27B decode throughput exposed a mo",
+      "score": 0.9236,
+      "content_hash": "abdbe6476557df55"
+    },
+    {
+      "file": "/workspace/handoffs/active/stale-open-audit-2026-07-18.md",
+      "heading_path": [
+        "Stale-Open Backlog Audit \u2014 2026-07-18",
+        "Per-handoff verdicts",
+        "Batch A \u2014 kernel / GPU"
+      ],
+      "line_range": [
+        32,
+        44
+      ],
+      "snippet": "### Batch A \u2014 kernel / GPU\n\n| Handoff | Open | Live | Verdict | Recommendation |\n|---|---:|---:|---|---|\n| [cpu-shape-specialized-gemv-decode](cpu-shape-specialized-gemv-decode.md) | 38 | 2 | MIXED | re-anchor \u2014 kernel LANDED 2026-04-24, SI",
+      "score": 0.9233,
+      "content_hash": "1cd4b6f97c2c67aa"
+    }
+  ],
+  "wall_s": 12.430267727933824
+}

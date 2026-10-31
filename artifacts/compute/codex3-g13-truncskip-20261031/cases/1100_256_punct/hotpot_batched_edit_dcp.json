@@ -1,0 +1,192 @@
+{
+  "arm": "1100_256_punct",
+  "id": "hotpot_batched_edit_dcp",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/batched-edit-parallel-apply.md",
+    "/workspace/handoffs/active/delegation-context-preassembly.md",
+    "/workspace/handoffs/active/bep-dcp-falsification-harness.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/batched-edit-parallel-apply.md",
+    "/workspace/handoffs/active/delegation-context-preassembly.md",
+    "/workspace/handoffs/active/bep-dcp-falsification-harness.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 0,
+    "found_files": [],
+    "missing_files": [
+      "/workspace/handoffs/active/batched-edit-parallel-apply.md",
+      "/workspace/handoffs/active/bep-dcp-falsification-harness.md",
+      "/workspace/handoffs/active/delegation-context-preassembly.md"
+    ],
+    "first_evidence_rank": null,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/completed/bep-dcp-falsification-harness-completed-through-2026-05-28.md",
+      "/workspace/wiki/agent-architecture.md",
+      "/workspace/handoffs/completed/bep-dcp-falsification-harness-completed-through-2026-05-28.md",
+      "/workspace/progress/2026-05/2026-05-26.md",
+      "/workspace/progress/2026-06/master-index-pre-rewrite-archive-2026-06-12.md",
+      "/workspace/wiki/agent-architecture.md",
+      "/workspace/progress/2026-05/2026-05-25.md",
+      "/workspace/wiki/agent-architecture.md",
+      "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "/workspace/progress/2026-05/2026-05-27.md"
+    ],
+    "recall@3": 0.0,
+    "perfect@3": false,
+    "recall@5": 0.0,
+    "perfect@5": false,
+    "recall@10": 0.0,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/completed/bep-dcp-falsification-harness-completed-through-2026-05-28.md",
+      "heading_path": [
+        "BEP-2 / DCP-6 Falsification-Harness Construction"
+      ],
+      "line_range": [
+        7,
+        17
+      ],
+      "snippet": "# BEP-2 / DCP-6 Falsification-Harness Construction\n\nstatus: BEP-2 REMEDIATED 2026-05-27 (harness built+run; multi-file read-loop diagnosed as agentic protocol/tooling NOT capability, then bypassed by a shipped flag-gated `force_mode=\"edit\"`",
+      "score": 0.9377,
+      "content_hash": "74303e1b5e60b3a9"
+    },
+    {
+      "file": "/workspace/wiki/agent-architecture.md",
+      "heading_path": [
+        "Agent Architecture",
+        "Source References"
+      ],
+      "line_range": [
+        917,
+        918
+      ],
+      "snippet": "- [batched-edit-parallel-apply.md](../handoffs/active/batched-edit-parallel-apply.md) \u2014 think-then-act batch editing + parallel apply fan-out (intake-605); 2026-06-28\u219207-05 hardening arc: verified-only promotion, DCP `omitted_context_paths`",
+      "score": 0.9373,
+      "content_hash": "3811e35cf59186ef"
+    },
+    {
+      "file": "/workspace/handoffs/completed/bep-dcp-falsification-harness-completed-through-2026-05-28.md",
+      "heading_path": [
+        "BEP-2 / DCP-6 Falsification-Harness Construction",
+        "Builder Prompt"
+      ],
+      "line_range": [
+        495,
+        511
+      ],
+      "snippet": "## Builder Prompt\n\nUse this when starting the implementation agent:\n\n```text\nYou are implementing the reviewed BEP-2 / DCP-6 falsification harness. Read /workspace/AGENTS.md first and obey GitNexus requirements. Then read:\n\n- /workspace/han",
+      "score": 0.9372,
+      "content_hash": "f2dda85d5d4aed3c"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-26.md",
+      "heading_path": [
+        "2026-05-26 \u2014 manual session log",
+        "Session 22 \u2014 BEP/DCP falsification-harness review incorporated and tightened",
+        "Files updated"
+      ],
+      "line_range": [
+        574,
+        583
+      ],
+      "snippet": "### Files updated\n\n| File | Change |\n|---|---|\n| `handoffs/active/bep-dcp-falsification-harness.md` | Rewritten from DRAFT/open-questions into **REVIEWED / READY TO BUILD**. Added Executive Decision, hard invariants, mandatory Phase 0 surfa",
+      "score": 0.9369,
+      "content_hash": "410becca51f9f8c9"
+    },
+    {
+      "file": "/workspace/progress/2026-06/master-index-pre-rewrite-archive-2026-06-12.md",
+      "heading_path": [
+        "EPYC Handoff \u2014 Master Index",
+        "Priority Queue"
+      ],
+      "line_range": [
+        117,
+        117
+      ],
+      "snippet": "| 51 | MED (implementation-scoped draft) | **Repo Prompt feature-mining: context pre-assembly + batched/parallel editing** (intake-605 deep dive 2026-05-25; audit-refined same day). Reframed from \"closed-source, not deployable\" to competito",
+      "score": 0.9347,
+      "content_hash": "0f5bf0a9f15006a6"
+    },
+    {
+      "file": "/workspace/wiki/agent-architecture.md",
+      "heading_path": [
+        "Agent Architecture",
+        "Key Findings",
+        "New Findings (2026-05-31 \u2014 A2A semantics adopted internally, transport deferred)"
+      ],
+      "line_range": [
+        699,
+        702
+      ],
+      "snippet": "`, with the exact attach point gated on a P2-0 discovery subtask (candidates: `force_mode=\"edit\"`, batched-edit pipeline, REPL final-answer hook, `worker_coder`, `coder_escalation`). [internal-interaction-lifecycle.md P2] `planning`\n\n**Sour",
+      "score": 0.9321,
+      "content_hash": "8edc310b72b402a2"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-25.md",
+      "heading_path": [
+        "3. Optional: clean backup files",
+        "Session 12 \u2014 Research intake (5 URLs) + Repo Prompt / Code-as-Agent-Harness deep dive \u2192 handoff integration",
+        "Part 3 \u2014 Handoff + index integration (user-approved)"
+      ],
+      "line_range": [
+        350,
+        360
+      ],
+      "snippet": "| Handoff | Change | Tasks |\n|---|---|---|\n| `delegation-context-preassembly.md` | NEW (P22) | DCP-1..6 \u2014 budget-bounded context pre-assembly for delegation |\n| `batched-edit-parallel-apply.md` | NEW (P23) | BEP-1..5 \u2014 think-then-act batch ",
+      "score": 0.9318,
+      "content_hash": "651d457954b0c005"
+    },
+    {
+      "file": "/workspace/wiki/agent-architecture.md",
+      "heading_path": [
+        "Agent Architecture",
+        "Key Findings",
+        "New Findings (2026-05-27 - edit-transaction protocol fix)"
+      ],
+      "line_range": [
+        708,
+        709
+      ],
+      "snippet": "- **BEP-2's practical remediation is no longer the Repo Prompt-style batch-vs-interleaved A/B.** The edit transaction is a third path that bypasses both the legacy REPL loop and the older batch-edit proposal, so Package J now treats J8 as a",
+      "score": 0.9291,
+      "content_hash": "c9e32e1e9e539896"
+    },
+    {
+      "file": "/workspace/handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "heading_path": [
+        "PORTFOLIO REVIEW (2026-06-12, 5 agents, 108 rows): classified verdicts",
+        "GATED"
+      ],
+      "line_range": [
+        1227,
+        1228
+      ],
+      "snippet": "- **sarathi-serve-cpu-evaluation** [gated] out: Nothing until the workload-shift gate fires; Phase 0 audit done. | gate: Workload shift to multi-tenant API / prefill-heavy serving \u2014 NOTE: fable5's batched/eval-regime push (CPU14/E1/E2, eval",
+      "score": 0.9272,
+      "content_hash": "d59f3459d065e5ca"
+    },
+    {
+      "file": "/workspace/progress/2026-05/2026-05-27.md",
+      "heading_path": [
+        "2026-05-27 \u2014 manual session log (continued from 2026-05-26 late session)",
+        "Package J non-inference follow-up: HLE metrics + DCP/J8 reconciliation (2026-05-27, Codex session)"
+      ],
+      "line_range": [
+        984,
+        989
+      ],
+      "snippet": "Documentation reconciled in `bulk-inference-campaign.md`, `batched-edit-parallel-apply.md`, `delegation-context-preassembly.md`, `routing-and-optimization-index.md`, `meta-harness-optimization.md`, `autopilot-continuous-optimization.md`, an",
+      "score": 0.9266,
+      "content_hash": "036291420fa2eb2f"
+    }
+  ],
+  "wall_s": 22.76330253086053
+}

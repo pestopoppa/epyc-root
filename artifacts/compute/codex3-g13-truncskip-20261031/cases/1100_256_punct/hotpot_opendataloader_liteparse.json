@@ -1,0 +1,190 @@
+{
+  "arm": "1100_256_punct",
+  "id": "hotpot_opendataloader_liteparse",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/handoffs/active/opendataloader-pipeline-integration.md",
+    "/workspace/research/deep-dives/liteparse-document-parser-deep-dive.md",
+    "/workspace/handoffs/active/multimodal-pipeline.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/handoffs/active/opendataloader-pipeline-integration.md",
+    "/workspace/research/deep-dives/liteparse-document-parser-deep-dive.md",
+    "/workspace/handoffs/active/multimodal-pipeline.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 2,
+    "found_files": [
+      "/workspace/handoffs/active/opendataloader-pipeline-integration.md",
+      "/workspace/research/deep-dives/liteparse-document-parser-deep-dive.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/multimodal-pipeline.md"
+    ],
+    "first_evidence_rank": 1,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/handoffs/active/opendataloader-pipeline-integration.md",
+      "/workspace/handoffs/completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md",
+      "/workspace/wiki/document-processing.md",
+      "/workspace/research/deep-dives/liteparse-document-parser-deep-dive.md",
+      "/workspace/wiki/document-processing.md",
+      "/workspace/wiki/document-processing.md",
+      "/workspace/handoffs/active/opendataloader-pipeline-integration.md",
+      "/workspace/progress/2026-08/2026-08-13-mainB.md",
+      "/workspace/progress/2026-03/2026-03-18.md",
+      "/workspace/research/deep-dives/liteparse-document-parser-deep-dive.md"
+    ],
+    "recall@3": 0.3333333333333333,
+    "perfect@3": false,
+    "recall@5": 0.6666666666666666,
+    "perfect@5": false,
+    "recall@10": 0.6666666666666666,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/handoffs/active/opendataloader-pipeline-integration.md",
+      "heading_path": [
+        "OpenDataLoader PDF \u2014 Pipeline Integration"
+      ],
+      "line_range": [
+        1,
+        7
+      ],
+      "snippet": "# OpenDataLoader PDF \u2014 Pipeline Integration\n\n**Status**: Active. The default ODL extractor and structured-context substrate are landed; parser-quality, routing, intrinsic-metric, LiteParse, and model-backed comparison gates remain open.\n**C",
+      "score": 0.9489,
+      "content_hash": "e1d81b584f9ab6a3"
+    },
+    {
+      "file": "/workspace/handoffs/completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md",
+      "heading_path": [
+        "OpenDataLoader PDF \u2014 Completed Scope Through 2026-08-13",
+        "Durable references"
+      ],
+      "line_range": [
+        57,
+        63
+      ],
+      "snippet": "## Durable references\n\n- [Current active handoff](../active/opendataloader-pipeline-integration.md)\n- [Document Parser Table Bench](../active/document-parser-table-bench.md)\n- [OpenDataLoader deep dive](../../research/deep-dives/opendataloa",
+      "score": 0.933,
+      "content_hash": "08282d1581904427"
+    },
+    {
+      "file": "/workspace/wiki/document-processing.md",
+      "heading_path": [
+        "Document Processing",
+        "Summary"
+      ],
+      "line_range": [
+        40,
+        44
+      ],
+      "snippet": "## Summary\n\nDocument processing in the EPYC orchestrator currently uses a binary routing pipeline by default: born-digital PDFs go through `pdftotext -layout` (fast, ~100ms/page, no structure) while scanned/image PDFs route to LightOnOCR-2-",
+      "score": 0.9312,
+      "content_hash": "2684f6cf219876e6"
+    },
+    {
+      "file": "/workspace/research/deep-dives/liteparse-document-parser-deep-dive.md",
+      "heading_path": [
+        "LiteParse \u2014 Document Parser Deep Dive"
+      ],
+      "line_range": [
+        1,
+        7
+      ],
+      "snippet": "# LiteParse \u2014 Document Parser Deep Dive\n\n**Date**: 2026-05-29\n**Intakes**: intake-646 (LlamaIndex v2 blog), intake-647 (github.com/run-llama/liteparse)\n**Trigger**: post-intake deep dive to validate/revise the `adopt_component` call.\n**Verd",
+      "score": 0.9293,
+      "content_hash": "c6cd0817f35e1911"
+    },
+    {
+      "file": "/workspace/wiki/document-processing.md",
+      "heading_path": [
+        "Document Processing",
+        "LiteParse \u2014 JVM-free born-digital fast-path candidate (2026-05-29)"
+      ],
+      "line_range": [
+        135,
+        138
+      ],
+      "snippet": "- **Gated next action**: bench LiteParse-local vs ODL-local vs pdftotext on the born-digital corpus (text fidelity, JVM-free cold-start + RSS, multi-column reading order) under the opendataloader-pipeline-integration handoff (P1b). Verdict:",
+      "score": 0.9274,
+      "content_hash": "7a58765954725c8b"
+    },
+    {
+      "file": "/workspace/wiki/document-processing.md",
+      "heading_path": [
+        "Document Processing",
+        "LiteParse \u2014 JVM-free born-digital fast-path candidate (2026-05-29)"
+      ],
+      "line_range": [
+        127,
+        131
+      ],
+      "snippet": "## LiteParse \u2014 JVM-free born-digital fast-path candidate (2026-05-29)\n\nLiteParse (run-llama/LlamaIndex, Apache-2.0, intake-646 blog / intake-647 repo) is a pure-Rust document parser that occupies a **different design point** from OpenDataLo",
+      "score": 0.9269,
+      "content_hash": "dc51af0aa6bc4682"
+    },
+    {
+      "file": "/workspace/handoffs/active/opendataloader-pipeline-integration.md",
+      "heading_path": [
+        "OpenDataLoader PDF \u2014 Pipeline Integration",
+        "Objective"
+      ],
+      "line_range": [
+        17,
+        20
+      ],
+      "snippet": "## Objective\n\nUse OpenDataLoader PDF as the structured document path, preserve a cheap born-digital fast path, and route scanned or structurally difficult pages to model-backed parsing. Any parser choice must report reading order, table fid",
+      "score": 0.9266,
+      "content_hash": "782f7990049c557e"
+    },
+    {
+      "file": "/workspace/progress/2026-08/2026-08-13-mainB.md",
+      "heading_path": [
+        "2026-08-13 \u2014 mainB",
+        "Session: ODL-013 completion + A14 gate verification (bus drain)",
+        "ODL-013 \u2014 LiteParse-local vs OpenDataLoader-local vs pdftotext: COMPLETE"
+      ],
+      "line_range": [
+        10,
+        27
+      ],
+      "snippet": "### ODL-013 \u2014 LiteParse-local vs OpenDataLoader-local vs pdftotext: COMPLETE\n\nThe bench my earlier session started was **already complete and sound**: all three engines\nparsed all **200 PDFs** of the `opendataloader-bench` corpus with **0 f",
+      "score": 0.9263,
+      "content_hash": "c7e193cb17ab4883"
+    },
+    {
+      "file": "/workspace/progress/2026-03/2026-03-18.md",
+      "heading_path": [
+        "2026-03-18 Progress",
+        "Research Intake: OpenDataLoader PDF (intake-161)",
+        "Artifacts Created"
+      ],
+      "line_range": [
+        108,
+        114
+      ],
+      "snippet": "### Artifacts Created\n- Deep dive: `research/deep-dives/opendataloader-pdf-pipeline-integration.md`\n- Handoff: `handoffs/active/opendataloader-pipeline-integration.md`\n- Taxonomy: Added `document_processing` category\n- Updated: `handoffs/ac",
+      "score": 0.9259,
+      "content_hash": "09ac09910b3c8496"
+    },
+    {
+      "file": "/workspace/research/deep-dives/liteparse-document-parser-deep-dive.md",
+      "heading_path": [
+        "LiteParse \u2014 Document Parser Deep Dive",
+        "Positioning vs OpenDataLoader (intake-161)"
+      ],
+      "line_range": [
+        40,
+        47
+      ],
+      "snippet": "## Positioning vs OpenDataLoader (intake-161)\n\nComplementary, not interchangeable:\n- **LiteParse** = JVM-free ~13 MB wheel, layout-as-positioned-text, bboxes + page PNGs, no semantic structure, no markdown tables/headings. Best as the **bor",
+      "score": 0.9256,
+      "content_hash": "36da38bbf7125bd0"
+    }
+  ],
+  "wall_s": 22.39584382297471
+}

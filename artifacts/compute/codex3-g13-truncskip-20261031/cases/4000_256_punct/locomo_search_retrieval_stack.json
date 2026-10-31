@@ -1,0 +1,194 @@
+{
+  "arm": "4000_256_punct",
+  "id": "locomo_search_retrieval_stack",
+  "source_manifest_sha256": "b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f",
+  "evidence_files": [
+    "/workspace/wiki/search-retrieval.md",
+    "/workspace/handoffs/active/internal-kb-rag.md",
+    "/workspace/handoffs/active/colbert-reranker-web-research.md"
+  ],
+  "evidence_missing_catalog": [],
+  "evidence_currently_missing": [
+    "/workspace/wiki/search-retrieval.md",
+    "/workspace/handoffs/active/internal-kb-rag.md",
+    "/workspace/handoffs/active/colbert-reranker-web-research.md"
+  ],
+  "metrics": {
+    "evidence_count": 3,
+    "found_count": 2,
+    "found_files": [
+      "/workspace/handoffs/active/internal-kb-rag.md",
+      "/workspace/wiki/search-retrieval.md"
+    ],
+    "missing_files": [
+      "/workspace/handoffs/active/colbert-reranker-web-research.md"
+    ],
+    "first_evidence_rank": 1,
+    "all_evidence_rank": null,
+    "ranked_files": [
+      "/workspace/wiki/search-retrieval.md",
+      "/workspace/wiki/search-retrieval.md",
+      "/workspace/wiki/SCHEMA.md",
+      "/workspace/research/deep-dives/2026-06-12-obliq-bench-retrieval-eval.md",
+      "/workspace/wiki/rag-alternatives.md",
+      "/workspace/progress/2026-04/2026-04-25.md",
+      "/workspace/wiki/knowledge-management.md",
+      "/workspace/wiki/rag-alternatives.md",
+      "/workspace/research/deep-dives/qwen-agent-framework-deep-dive.md",
+      "/workspace/handoffs/active/internal-kb-rag.md"
+    ],
+    "recall@3": 0.3333333333333333,
+    "perfect@3": false,
+    "recall@5": 0.3333333333333333,
+    "perfect@5": false,
+    "recall@10": 0.6666666666666666,
+    "perfect@10": false
+  },
+  "results": [
+    {
+      "file": "/workspace/wiki/search-retrieval.md",
+      "heading_path": [
+        "Search & Retrieval",
+        "Internal KB-RAG over markdown corpus (2026-05-06)"
+      ],
+      "line_range": [
+        298,
+        314
+      ],
+      "snippet": "## Internal KB-RAG over markdown corpus (2026-05-06)\n\nStandalone ColBERT-backed retrieval over the project's compiled markdown KB so Explore-agent calls can semantic-search instead of grep-blind across 53+ active handoffs + 24 wiki articles",
+      "score": 0.9441,
+      "content_hash": "0e994be82fd0dd02"
+    },
+    {
+      "file": "/workspace/wiki/search-retrieval.md",
+      "heading_path": [
+        "Search & Retrieval",
+        "Updates \u2014 2026-04-28",
+        "Internal KB-RAG architecture extension (2026-04-28)"
+      ],
+      "line_range": [
+        150,
+        158
+      ],
+      "snippet": "### Internal KB-RAG architecture extension (2026-04-28)\n\nPer [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md):\n\n- ColBERT-based RAG over the project's own wiki + handoffs + research + progress logs. Same multi-vector late-inter",
+      "score": 0.942,
+      "content_hash": "ff1159e6161af72b"
+    },
+    {
+      "file": "/workspace/wiki/SCHEMA.md",
+      "heading_path": [
+        "Wiki Schema \u2014 Living Taxonomy",
+        "Categories",
+        "Knowledge & Retrieval"
+      ],
+      "line_range": [
+        69,
+        77
+      ],
+      "snippet": "### Knowledge & Retrieval\n\n| Key | Label | Description | Related Chapters |\n|-----|-------|-------------|------------------|\n| `knowledge_management` | Knowledge Management | LLM-compiled knowledge bases, persistent wikis, research intake, ",
+      "score": 0.9408,
+      "content_hash": "0323d950c62af08f"
+    },
+    {
+      "file": "/workspace/research/deep-dives/2026-06-12-obliq-bench-retrieval-eval.md",
+      "heading_path": [
+        "OBLIQ-Bench \u2014 Deep-Dive: Oblique-Query Retrieval Eval (intake-689)",
+        "Fit to EPYC",
+        "Dataset-reuse vs methodology-reuse"
+      ],
+      "line_range": [
+        59,
+        68
+      ],
+      "snippet": "### Dataset-reuse vs methodology-reuse\n\n**Dataset-reuse: NO (domain mismatch).** Our two retrieval surfaces are:\n- (a) **web_research ColBERT reranking** \u2014 reranks ~10 *web search snippets* (`colbert-reranker-web-research.md`).\n- (b) **inte",
+      "score": 0.9408,
+      "content_hash": "07a63be17a99b3e0"
+    },
+    {
+      "file": "/workspace/wiki/rag-alternatives.md",
+      "heading_path": [
+        "RAG Alternatives",
+        "Related Categories"
+      ],
+      "line_range": [
+        94,
+        99
+      ],
+      "snippet": "## Related Categories\n\n- [Knowledge Management](knowledge-management.md) \u2014 KB-RAG and wiki compilation as the primary architectures\n- [Search & Retrieval](search-retrieval.md) \u2014 ColBERT-based retrieval (the dominant path EPYC uses)\n- [Conte",
+      "score": 0.9395,
+      "content_hash": "3f208ed52433d933"
+    },
+    {
+      "file": "/workspace/progress/2026-04/2026-04-25.md",
+      "heading_path": [
+        "2026-04-25",
+        "Local-RAG architecture review \u2192 two new handoff stubs + Hermes multi-client extension"
+      ],
+      "line_range": [
+        647,
+        650
+      ],
+      "snippet": "## Local-RAG architecture review \u2192 two new handoff stubs + Hermes multi-client extension\n\nShort architectural-review session triggered by an overview screenshot of a friend's local RAG / AI Knowledge Stack (single RTX 3070 8 GB). The diagra",
+      "score": 0.9395,
+      "content_hash": "872f8385c547847a"
+    },
+    {
+      "file": "/workspace/wiki/knowledge-management.md",
+      "heading_path": [
+        "Knowledge Management",
+        "Internal KB-RAG Architecture (K1\u2013K8 work items)"
+      ],
+      "line_range": [
+        166,
+        174
+      ],
+      "snippet": "## Internal KB-RAG Architecture (K1\u2013K8 work items)\n\nPer [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md), the planned KB-RAG indexes the wiki + active handoffs + completed handoffs + research/deep-dives + progress logs + (cross",
+      "score": 0.9394,
+      "content_hash": "efcde145cb6d9e2a"
+    },
+    {
+      "file": "/workspace/wiki/rag-alternatives.md",
+      "heading_path": [
+        "RAG Alternatives",
+        "Compilation vs Retrieval: Wikis as Alternative"
+      ],
+      "line_range": [
+        52,
+        57
+      ],
+      "snippet": "## Compilation vs Retrieval: Wikis as Alternative\n\nA pattern adjacent to RAG-vs-SQL that EPYC actively uses: **persistent LLM-compiled wikis** (this knowledge base, plus the `wiki/INDEX.md` index, plus the per-category articles like `kv-cac",
+      "score": 0.9392,
+      "content_hash": "a747beb98b300676"
+    },
+    {
+      "file": "/workspace/research/deep-dives/qwen-agent-framework-deep-dive.md",
+      "heading_path": [
+        "Qwen-Agent (QwenLM/Qwen-Agent) \u2014 Deep Dive",
+        "9. Comparison with EPYC Orchestrator",
+        "Patterns from Qwen-Agent that could improve our stack:"
+      ],
+      "line_range": [
+        345,
+        356
+      ],
+      "snippet": "### Patterns from Qwen-Agent that could improve our stack:\n\n1. **MCP integration model** \u2014 Qwen-Agent's singleton `MCPManager` with dynamic `BaseTool` subclass generation is a clean pattern. Our orchestrator could adopt MCP support using a ",
+      "score": 0.9371,
+      "content_hash": "ba006df7990bcde4"
+    },
+    {
+      "file": "/workspace/handoffs/active/internal-kb-rag.md",
+      "heading_path": [
+        "Internal Knowledge-Base RAG",
+        "Objective"
+      ],
+      "line_range": [
+        13,
+        16
+      ],
+      "snippet": "## Objective\n\nStand up a ColBERT-based RAG over our own markdown knowledge base so every Explore-agent invocation can retrieve relevant prior context instead of grep/find blind across 53+ active handoffs and 24 wiki articles. Same plumbing ",
+      "score": 0.937,
+      "content_hash": "dcdf77d03f1cfccf"
+    }
+  ],
+  "wall_s": 12.841813523089513
+}
