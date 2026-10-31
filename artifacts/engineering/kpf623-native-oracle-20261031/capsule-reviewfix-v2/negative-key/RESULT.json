@@ -1,0 +1,40 @@
+{
+  "id": "codex-ni-kpf623-native-oracle-r1-20261031",
+  "mode": "smoke",
+  "source_manifest_sha256": "ae548712b40ba77d53c19e5d138eb782cc4e4af2b284085ef824f30ef1087f0e",
+  "oracle_binary_sha256": "ab325f5e7594b3d60cad0acfee7779cddac8d5bdf7653b59bc5236cc27df1a64",
+  "oracle_source_sha256": "7ea4becc72ffd5874ed8d575998827412c0fedfcddb2d456d2c645e3fc2f3109",
+  "external_manifest_sha256": "5c8df54fbf97efd8894aaf59db82f59378a93f8272886b75743c2d90d639ce6b",
+  "negative_control_key": true,
+  "negative_control_query": false,
+  "ran_at": "2026-10-31T04:53:21.202147+00:00",
+  "rc": 1,
+  "partial": false,
+  "work_started": true,
+  "cleanup_verified": true,
+  "native_cases": 1,
+  "cases": [
+    {
+      "layout": "contiguous",
+      "pid": 3951411,
+      "birth": 154487442,
+      "native_rc": 1,
+      "native_compute_observed": false,
+      "log": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-ready-20261031/smoke-runs/20261031T045321Z-3951393-smoke/contiguous.log",
+      "sha256": "aac76458f714a4d4035803f1cc21506810801fc217554d99201ff72ed8e4fa5c",
+      "comparison_count": 1024,
+      "phase_count": 0,
+      "passed": false
+    }
+  ],
+  "wall_s": 0.011048746993765235,
+  "sampled_peak_RSS": 294912,
+  "allowed_cpus": [
+    128,
+    129
+  ],
+  "reason": "native-oracle-refused",
+  "probability_absolute_tolerance": 1e-06,
+  "dot_residual": "ungraded",
+  "scope": "generated tiny model engineering diagnostic only; no selector/G3/quality/performance acceptance"
+}

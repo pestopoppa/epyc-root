@@ -1,0 +1,52 @@
+{
+  "id": "codex-ni-kpf623-native-oracle-r1-20261031",
+  "mode": "smoke",
+  "source_manifest_sha256": "ae548712b40ba77d53c19e5d138eb782cc4e4af2b284085ef824f30ef1087f0e",
+  "oracle_binary_sha256": "ab325f5e7594b3d60cad0acfee7779cddac8d5bdf7653b59bc5236cc27df1a64",
+  "oracle_source_sha256": "7ea4becc72ffd5874ed8d575998827412c0fedfcddb2d456d2c645e3fc2f3109",
+  "external_manifest_sha256": "5c8df54fbf97efd8894aaf59db82f59378a93f8272886b75743c2d90d639ce6b",
+  "negative_control_key": false,
+  "negative_control_query": false,
+  "ran_at": "2026-10-31T04:53:15.616845+00:00",
+  "rc": 0,
+  "partial": false,
+  "work_started": true,
+  "cleanup_verified": true,
+  "native_cases": 2,
+  "cases": [
+    {
+      "layout": "contiguous",
+      "pid": 3950442,
+      "birth": 154486882,
+      "native_rc": 0,
+      "native_compute_observed": true,
+      "log": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-ready-20261031/smoke-runs/20261031T045315Z-3950438-smoke/contiguous.log",
+      "sha256": "4200cc82f014a75d8cc26f1cac9693d1a94b33d80e7f84b5b72dacbc22f729ec",
+      "comparison_count": 2560,
+      "phase_count": 2,
+      "passed": true
+    },
+    {
+      "layout": "permuted",
+      "pid": 3950443,
+      "birth": 154486883,
+      "native_rc": 0,
+      "native_compute_observed": true,
+      "log": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-ready-20261031/smoke-runs/20261031T045315Z-3950438-smoke/permuted.log",
+      "sha256": "1c1523151ade2b79fa9fe4d2f5b2c8d9b13c40571f55a1817603c788c418e140",
+      "comparison_count": 2560,
+      "phase_count": 2,
+      "passed": true
+    }
+  ],
+  "wall_s": 0.022032133070752025,
+  "sampled_peak_RSS": 299008,
+  "allowed_cpus": [
+    128,
+    129
+  ],
+  "reason": null,
+  "probability_absolute_tolerance": 1e-06,
+  "dot_residual": "ungraded",
+  "scope": "generated tiny model engineering diagnostic only; no selector/G3/quality/performance acceptance"
+}
