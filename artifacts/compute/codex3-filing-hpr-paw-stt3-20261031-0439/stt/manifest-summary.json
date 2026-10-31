@@ -1,0 +1,33 @@
+{
+  "manifest_sha256": "a1dc8fb416d50702136cf2debd3e9d21b3c5e7a21f20a3990bc77a82bfb8d8aa",
+  "records": 3070,
+  "status_counts": {
+    "ok": 3069,
+    "void_no_vad_boundary": 1
+  },
+  "chunks": 3098,
+  "contiguous_and_bound_errors": 0,
+  "void": [
+    {
+      "channels": 1,
+      "chunks": [],
+      "id": "it_it:10896702735150958436.wav",
+      "n_samples": 508800,
+      "original_pcm_sha256": "0c20bf10d665f1025631ece798ebf8b699ce29b4f3f1edf075da9419accf13a5",
+      "original_wav_path": "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/corpus-candidate/attempt-1793396442611072810/it_it/10896702735150958436.wav",
+      "original_wav_sha256": "519283847b46e10b190f55d27b2eef9c93193973fbd42f273086668a9c29cfbe",
+      "pcm_encoding": "s16le",
+      "sample_rate": 16000,
+      "status": "void_no_vad_boundary"
+    }
+  ],
+  "plan_sha256": "dfb4a06bd3eb7c8b11ec43dff1b34eff9aabdeccf31a49ec3527190ba44cdf77",
+  "vad": {
+    "binary_sha256": "ee509ce5347c4333e19fd28ab5fa9eb3bd97f35fc23292509461de4e88e22d9d",
+    "defaults": "transcribe VAD v6.2 default durations",
+    "materializer_sha256": "b166946334b7c769cc4a4417f082441a84ba66b527549fd6f77fd89ced83ff0c",
+    "model_sha256": "2aa269b785eeb53a82983a20501ddf7c1d9c48e33ab63a41391ac6c9f7fb6987",
+    "policy_sha256": "64efda82d1aed15a49d26f60b8b7e854d2e8444127f653bb22510508025a82f4",
+    "threshold": 0.5
+  }
+}

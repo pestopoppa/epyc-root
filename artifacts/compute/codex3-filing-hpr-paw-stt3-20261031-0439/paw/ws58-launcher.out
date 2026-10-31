@@ -1,0 +1,5 @@
+2026-10-31T04:19:48Z [codex3-paw-superlative-control-20261030] launcher up pid=3590959 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex3-paw-superlative-control-20261030/STOP minwin=1200s ports=none
+2026-10-31T04:21:18Z [codex3-paw-superlative-control-20261030] START regions=24-47 cpus=24-47 threads=24 gpu=0 end=2026-10-31T05:20Z
+setsid: failed to execute /workspace/repos/epyc-orchestrator/scripts/region-lock: No such file or directory
+2026-10-31T04:21:18Z [codex3-paw-superlative-control-20261030] WARN: 3599764 is not a group leader
+2026-10-31T04:21:18Z [codex3-paw-superlative-control-20261030] ended rc=127 reason=job-rc-127:exited (grant deleted)

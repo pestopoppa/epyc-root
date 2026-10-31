@@ -1,0 +1,14 @@
+{
+  "scope": "new prospective six-cell64k run",
+  "first_request_ok": true,
+  "requests_completed": 35,
+  "requests_attempted": 36,
+  "inference_requests": 36,
+  "rc": 1,
+  "partial": false,
+  "contract_activated": true,
+  "policy_verdict": null,
+  "first_request_started": 1793383782.8076992,
+  "last_request_finished": 1793418692.7991898,
+  "real_request_span_s": 34909.99149060249
+}

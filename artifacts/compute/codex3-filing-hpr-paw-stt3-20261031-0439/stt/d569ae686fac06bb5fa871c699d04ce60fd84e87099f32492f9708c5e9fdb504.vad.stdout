@@ -1,0 +1,12 @@
+audio: /mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/corpus-candidate/attempt-1793396442611072810/it_it/10896702735150958436.wav
+  samples:    508800
+  duration:   31.800 s
+  sample rate 16000 Hz mono float32
+model: /mnt/raid0/llm/models/silero-vad-cs22-v0-20261029/ggml-silero-v6.2.0.bin -> ok
+  backend:    CPU
+run: ok
+speech segments: 1
+  segment: 0 start=18976 end=485856 t0=1.186 t1=30.366
+  frames:     994 (512 samples each)
+  speech:     29.18 s of 31.80 s (threshold 0.50)
+  realtime:   1437x (22.1 ms for 31.8 s; encode 9.0 ms, decode 13.1 ms)

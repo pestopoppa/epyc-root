@@ -1,0 +1,126 @@
+{
+  "booking_class": "block-correctness",
+  "capture_controls": {
+    "path": "/mnt/raid0/llm/tmp/codex3-paw-superlative-control-20261030/model-free-controls.log",
+    "sha256": "c97a152508046456ac210f403804c1b67e801c2f4eec38de90177b693f25fe6f"
+  },
+  "checkpoint_semantics": "Each selected case exposed once before paired inference; completed case records retained and never redrawn. Exposed-unknown cases skipped; remaining unexposed cases continue, then a terminal INCOMPLETE disposition record is written with no claim projection. Complete result requires all eight paired observations.",
+  "class": "diagnostic",
+  "decision_rule": "All eight paired case observations are required for complete descriptive result. Report per-category and per-arm correct, incorrect, UNSURE, invalid, missing; no adoption or superiority threshold.",
+  "declaration": {
+    "path": "/mnt/micron/codex3-paw-superlative-control-20261030/PREDECLARATION.json",
+    "sha256": "8c0c89a8931af3a0f37862cb784720bb4e2a7ff20ca0de28e5d5fbd28668c17e"
+  },
+  "docker_image_id": "sha256:ea165e543ea5fa04ab7364570e2b3bdb326402baff066edd563eefd77d8b94f2",
+  "enrollment": "fixed eight synthetic cases; matrix reviewed and accepted before any selected-case inference; no redraw",
+  "est_micron_output_GiB": 1,
+  "est_output_GiB": 1,
+  "est_raid_output_GiB": 1,
+  "feasibility": "8 cases x 2 native arm calls x 30.787s = 493s, using prior Qwen3-0.6B 2048-token/64-output neutral calibration as a conservative per-arm point estimate; 2x83.768s source checks = 168s; 300s overhead + 2x90s grant drain = 180s; total 1141s, within 3600s. Final same-launcher noncohort pair was 4.492s; point estimates do not bound longer prompt or contention. One process handles a paired case; case checkpoints support resumption, and previously exposed-unknown cases remain immutable.",
+  "filesystem_reservation": "151 GiB minimum and 150 GiB running floor on each of Micron and RAID",
+  "gib": 1,
+  "id": "codex3-paw-superlative-control-20261030",
+  "inner_source_manifest": {
+    "path": "/mnt/micron/codex3-paw-superlative-control-20261030/SOURCES.sha256",
+    "sha256": "346e24744d07ad6dce3ae7a8e6d73e6c1b7df70cee6b49cae54cc44f1cacfcaa"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-paw-superlative-control-20261030/host-entry.sh",
+    "sha256": "bcda62e2a19ed8c082d1ffc562547a67984710bce6668696cdefa4aaa8cf2ca1"
+  },
+  "keep": [
+    "*.json",
+    "*.jsonl",
+    "*.md",
+    "*.py",
+    "*.sh",
+    "*.sha256",
+    "*.log",
+    "*.out",
+    "engine/**",
+    "results/**",
+    "smoke-results/**",
+    "epoch/**",
+    "smoke-epoch/**",
+    "smoke-epoch-first-retained/**",
+    ".venv",
+    "/mnt/raid0/llm/models/PAW-programs/codex3-paw3-real-1793287836045100019/programs/84519af8a90f908e100b/bundle.paw",
+    "/mnt/raid0/llm/models/PAW-programs/codex3-paw3-real-1793287836045100019/programs/56a6d77b30746ac3cf82/bundle.paw",
+    "/mnt/raid0/llm/tmp/codex3-paw-superlative-control-20261030/launch.sh",
+    "/mnt/raid0/llm/tmp/codex3-paw-superlative-control-20261030/host-entry.sh",
+    "/mnt/raid0/llm/tmp/codex3-paw-superlative-control-20261030/BRIDGE-SOURCES.sha256",
+    "/mnt/raid0/llm/tmp/codex3-paw-superlative-control-20261030/INNER-SOURCES.sha256",
+    "/mnt/raid0/llm/tmp/codex3-paw-superlative-control-20261030/ws58-smoke-final.out",
+    "/mnt/raid0/llm/tmp/codex3-paw-superlative-control-20261030/ws58-smoke-first.out"
+  ],
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-paw-superlative-control-20261030/launch.sh",
+    "sha256": "b5821429d31a581138ef36e4e30576be2f6382341b9f0e19eed1afd5b9edd19c"
+  },
+  "launcher_log": "/mnt/raid0/llm/tmp/codex3-paw-superlative-control-20261030/ws58-launcher.out",
+  "log_consumer": "/mnt/micron/codex3-paw-superlative-control-20261030/job.py",
+  "min_effect": "n/a: descriptive diagnostic",
+  "min_window_s": 1200,
+  "native_job": {
+    "path": "/mnt/micron/codex3-paw-superlative-control-20261030/job.py",
+    "sha256": "b53c99747292dfb9799ab8acae91dbead83ac61bcddc30800601923767683d7d"
+  },
+  "native_launcher": {
+    "path": "/mnt/micron/codex3-paw-superlative-control-20261030/launch.sh",
+    "sha256": "98ba414e5af9de2ea0ea41c1abc34e9a87fa87882bbf613c963272263f6ecfe9"
+  },
+  "native_output_GiB": 1,
+  "native_output_budget_GiB": 1,
+  "native_output_device": "Micron",
+  "native_output_root": "/mnt/micron/codex3-paw-superlative-control-20261030",
+  "owner": "codex3",
+  "priority_rank": 85,
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/micron/codex3-paw-superlative-control-20261030/DONE",
+  "review_matrix": {
+    "path": "/mnt/micron/codex3-paw-superlative-control-20261030/REVIEW-MATRIX.json",
+    "sha256": "112588c04ce2341fe2d702291dd324590647d404703b615840b328b8f0b504ab"
+  },
+  "runtime_dependencies": [
+    "/mnt/raid0/llm/tmp/codex3-paw-standard-r2-20261030/scripts",
+    "/mnt/raid0/llm/tmp/codex3-paw3-q0-20261029/.venv",
+    "/mnt/raid0/llm/tmp/inf76-paw-runtime-20261029"
+  ],
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-paw-superlative-control-20261030",
+  "smoke": {
+    "control_result": "/mnt/micron/codex3-paw-superlative-control-20261030/smoke-results/job-1793385822080271027/control-result.json",
+    "control_result_sha256": "11cdb112778e4dbbd0cdf912a604d38a11b0be245e64aea482e0455a2bc3bb15",
+    "exit_ok": true,
+    "first_request_ok": true,
+    "launcher_sha256": "b5821429d31a581138ef36e4e30576be2f6382341b9f0e19eed1afd5b9edd19c",
+    "log": "/mnt/raid0/llm/tmp/codex3-paw-superlative-control-20261030/ws58-smoke-final.out",
+    "log_sha256": "29e0f22b20250905efe19c264755b25511aee7d6a12584ed925e81db94365921",
+    "peak_sampled_tree_rss_bytes": 2006925312,
+    "ran_at": "2026-10-30T18:43:46.645921+00:00",
+    "ran_at_basis": "native smoke log final write mtime",
+    "regions": "R11 CPUs 124,125 under prep mutex 28-29",
+    "result": "/mnt/micron/codex3-paw-superlative-control-20261030/smoke-results/job-1793385822080271027/job-result.json",
+    "result_sha256": "17466454bd896948a662f17e98ce831dde197f5edce3d736860a3cee267cdc8a",
+    "result_writer_ok": true,
+    "scope": "both native arms completed on distinct synthetic smoke case 999, rc75 partial, all 8 selected cases unexposed, children drained",
+    "source_manifest_sha256": "3c44f8b0d0b13b98e25c079749a10e683a50ecda3815754c1c049c605eb3dd4d",
+    "wall_s": 88.35050954390317
+  },
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/codex3-paw-superlative-control-20261030/BRIDGE-SOURCES.sha256",
+    "sha256": "3c44f8b0d0b13b98e25c079749a10e683a50ecda3815754c1c049c605eb3dd4d"
+  },
+  "source_programs": {
+    "binary": {
+      "path": "/mnt/raid0/llm/models/PAW-programs/codex3-paw3-real-1793287836045100019/programs/84519af8a90f908e100b/bundle.paw",
+      "sha256": "a08d33517d1fc61fa60da9d512ced52d91c7f0f4ce88f1da7e6d9094fc00f21c"
+    },
+    "semantic": {
+      "path": "/mnt/raid0/llm/models/PAW-programs/codex3-paw3-real-1793287836045100019/programs/56a6d77b30746ac3cf82/bundle.paw",
+      "sha256": "1e0fde4a7edecfc92135b1e684a2dced9aada76c1c6eeebd4277265b37c04865"
+    }
+  },
+  "status": "READY_PROPOSAL_FOR_OWNER_REVIEW",
+  "terminal_incomplete_path": "/mnt/micron/codex3-paw-superlative-control-20261030/TERMINAL-INCOMPLETE.json",
+  "window_s": 3600
+}

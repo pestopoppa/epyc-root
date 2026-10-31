@@ -1,0 +1,39 @@
+{
+  "partial": true,
+  "cleanup_verified": true,
+  "failure": "FILLER_DEADLINE_EXCEEDED",
+  "root_pid": 1945034,
+  "native_rc": -9,
+  "captured": {
+    "1945034": {
+      "birth": 150622043,
+      "current": null
+    },
+    "1949805": {
+      "birth": 150624356,
+      "current": null
+    },
+    "3376111": {
+      "birth": 151172253,
+      "current": null
+    },
+    "1193317": {
+      "birth": 151747654,
+      "current": null
+    },
+    "2530609": {
+      "birth": 152319232,
+      "current": null
+    },
+    "299614": {
+      "birth": 152964856,
+      "current": null
+    },
+    "2466387": {
+      "birth": 153586268,
+      "current": null
+    }
+  },
+  "sampled_peak_kib": 41872624,
+  "rc": 75
+}
