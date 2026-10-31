@@ -1,0 +1,10 @@
+2026-10-31TUTC read-only audit commands
+- git fetch origin main in private lane; initial HEAD == origin/main == 12ffc57a5b3e38d7a63d0a3e666e435c99fa97cb
+- rg -n "C4-01|current strip guidance|strip guidance|completed-manifest" handoffs docs scripts artifacts
+- git log --all -- artifacts/ni08/inf64-source-reachability-review-20261007/exact-reference-disposition.json => f219064ba
+- sha256sum of exact-reference-disposition.json => e370c70cd7a75f279c39aacd21b7bb71e0ac358db27ea65886f3562e1096b518
+- sha256sum of MAIN-completed-manifest-review.json => 3bee3b1d3b28d64f6d97f364552373f648b62a75e80dbd5fc4b46e9718e98a46
+- Parsed manifest: schema epyc.inf64.exact-reference-disposition/v1; pins ROOT 1b2c0c0aa959e162d492ba367ce15b36074033eb, Research f770a52514f3193db44268d61da86f1235122a20; 19 rows, all disposition retain.
+- Inspected handoffs/active/autokernel-restart-and-strip.md: lines 78-95 list all 19 and record 19 retained / 0 obsolete / 0 deletions; lines 282-289 repeat current-source correction and manifest completion.
+- Inspected research/refactor-audit-2026-10/BUG-REPORT-autopilot-autokernel.md C4-01: historical proposal to remove three evaluator modules and keep Apex/compiler on strip list.
+- MAIN review applied the original C4-01 checkbox text plus evidence citation; private lane source hunk is owner-authored and preserved.
