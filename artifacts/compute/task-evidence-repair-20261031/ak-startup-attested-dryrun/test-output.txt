@@ -1,0 +1,4 @@
+Original retained test output: integrated-tests.log
+Original complete file SHA-256: f5b1e3d132ba5dedac5949e0a722536a68be7d68b912c6a8f269f42344e1eb92
+..................                                                       [100%]
+18 passed, 109 deselected in 8.15s
