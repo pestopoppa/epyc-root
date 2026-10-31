@@ -3,10 +3,8 @@
 Spec: docs/design/vidya-pilot-spec.md §5.5 (retraction), §10 (obligations), and the exactness
 contract in §0 / §14.
 
-**Impact analysis is hypothetical retraction.** It runs the same mechanism as a real retraction and
-throws the result away: zero the tokens a proposed change would invalidate, refold, diff. There is
-no second code path to keep in sync, which is deliberate -- an impact report computed differently
-from the retraction it predicts is a report that can be wrong in exactly the case that matters.
+**Impact analysis is hypothetical retraction.** A private view asks the canonical fold engine
+what a withdrawal would change; it grants no actor authority and emits no ledger frames.
 
 **The exactness contract is enforced here, not just documented.** Every impact report carries a
 coverage class per item, and `unaffected` is only ever claimed for items whose dependencies are
@@ -25,7 +23,7 @@ from typing import Iterable, Sequence
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from fold import Belief, FoldResult, fold  # noqa: E402
+from fold import Belief, FoldResult, _fold_engine, fold  # noqa: E402
 from lattice import Grade, T_LEVELS  # noqa: E402
 
 __all__ = [
@@ -148,35 +146,36 @@ class ImpactReport:
         }
 
 
+def _hypothetical_refold(frames: Sequence[dict], frame_ids: Iterable[str], *, as_of: str) -> FoldResult:
+    """Pure counterfactual through the fold engine; never an authorization or a frame."""
+    targets = list(frame_ids)
+    if any(not isinstance(fid, str) or not fid for fid in targets):
+        raise ValueError("hypothetical targets must be nonempty frame IDs")
+    found: dict[str, dict] = {}
+    target_set = set(targets)
+    for frame in frames:
+        fid = frame.get("frame_id")
+        if isinstance(fid, str) and fid in target_set:
+            if fid in found and found[fid] != frame:
+                raise ValueError(f"ambiguous hypothetical target: {fid}")
+            found[fid] = frame
+    missing = target_set - found.keys()
+    if missing:
+        raise KeyError(f"unknown hypothetical targets: {sorted(missing)}")
+    return _fold_engine(frames, as_of=as_of, max_iterations=None,
+                        hypothetical_retractions=frozenset(target_set))
+
+
 def impact_of_retracting(
     frames: Sequence[dict],
     frame_ids: Iterable[str],
     *,
     as_of: str,
 ) -> ImpactReport:
-    """What changes if these frames were retracted? Computes, diffs, and discards.
-
-    Implemented as a real fold over a frame set with a synthetic retraction appended -- the same
-    path a committed retraction takes -- rather than as a separate traversal.
-    """
+    """Compute a read-only what-if through the same engine as authorized retractions."""
     targets = list(frame_ids)
     before = fold(frames, as_of=as_of)
-
-    hypothetical = list(frames) + [
-        {
-            "frame_type": "epyc.vidya/frame/retraction/v1",
-            "assertion": {"retracts": fid},
-            "provenance": {"method": "impact.hypothetical", "about": fid},
-            "pubinfo": {
-                "actor": "vidya.impact",
-                "authority_scope": "hypothetical",
-                "created_at": as_of,
-            },
-            "frame_id": f"hypothetical-retraction-of-{fid}",
-        }
-        for fid in targets
-    ]
-    after = fold(hypothetical, as_of=as_of)
+    after = _hypothetical_refold(frames, targets, as_of=as_of)
 
     affected: list[ImpactItem] = []
     verified_unaffected: list[str] = []

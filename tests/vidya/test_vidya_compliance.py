@@ -52,7 +52,7 @@ def _retract(target, claim):
         frame_type="epyc.vidya/frame/retraction/v1",
         assertion={"retracts": target["frame_id"], "claim_id": claim},
         provenance={"method": "compliance", "about": target["frame_id"]},
-        actor="operator", authority_scope="research-verification", created_at=NOW)
+        actor="compliance", authority_scope="research-verification", created_at=NOW)
 
 
 class TestGovernanceInvariants:

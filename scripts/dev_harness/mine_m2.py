@@ -62,6 +62,10 @@ def run(a: argparse.Namespace) -> dict:
     root = Path(a.private_root)
     agentrun_dir = Path(a.agentrun) if a.agentrun else root / "agentrun" / run_id
     out = dh_privacy.private_dir(Path(a.out) if a.out else root / "mining" / run_id)
+    custody = None
+    if getattr(a, "belief_declarations", None):
+        import belief_run_custody as custody
+        start = custody.begin(out, "m2", run_id, a.belief_declarations, __file__, [out / "aggregate.json", out / "run.json"])
     registry = load_registry(Path(a.registry)) if a.registry else load_registry()
 
     audit = GuardAudit()
@@ -111,7 +115,8 @@ def run(a: argparse.Namespace) -> dict:
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "source": f"dev-harness mining M2 over projection run {run_id}",
         "spec": "scripts/dev_harness/mining_m2_aggregate.schema.json",
-        "rules": [f"DHM-2 class {c}" for c in CLASSES] + its.meta_rules(),
+        "rules": (["DHM-4 sheet_items is the number of sampled label-sheet items"] if custody else [])
+                 + [f"DHM-2 class {c}" for c in CLASSES] + its.meta_rules(),
         "notes": ("Would-fire = today's predicate over historical calls. Outcomes from the paired tool result. "
                   "DHM-4 labels come from the operator only. DHM-7.2 reports a cluster only with >=3 sessions "
                   "and >=2 days; the embedding is "
@@ -140,6 +145,8 @@ def run(a: argparse.Namespace) -> dict:
         "peak_rss_mb": round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024, 1),
     }
     dh_privacy.private_write(out / "run.json", json.dumps(summary, indent=1, sort_keys=True) + "\n")
+    if custody:
+        custody.finish(out, "m2", start, __file__, [out / "aggregate.json", out / "run.json"])
     return summary
 
 
@@ -149,6 +156,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--agentrun", help="agentrun/<run> dir (default: sibling of the projection root)")
     p.add_argument("--out", help="output dir (default <private-root>/mining/<run>)")
     p.add_argument("--run-id")
+    p.add_argument("--belief-declarations", help="prospective declarations captured before mining")
     p.add_argument("--private-root", default=str(dh_privacy.PRIVATE_ROOT))
     p.add_argument("--registry", help="lesson registry JSON (default scripts/dev_harness/lesson_registry.json)")
     p.add_argument("--limit-units", type=int, default=None)

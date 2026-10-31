@@ -189,4 +189,167 @@ def frames_for_path(path: str | Path, *, as_of: str) -> list[dict]:
     return frames
 
 
-__all__ = ["ADAPTER_ID", "AUTHORITY", "SOURCE_KIND", "native_rows", "project", "units", "frames_for_path"]
+__all__ = ["ADAPTER_ID", "AUTHORITY", "SOURCE_KIND", "native_rows", "project", "units",
+           "frames_for_path", "prepare_duplicate_repair", "apply_duplicate_repair"]
+
+
+def prepare_duplicate_repair(
+    path, ledger_frames, *, native_sha256, old_ids, retained_ids, created_at
+):
+    """Build only adapter-owned retractions for two exact projections of one native record.
+
+    Caller must separately pin and review the ledger prefix and use the leased apply function.
+    This projects no new measurement; all assertions of the two original triples are checked.
+    """
+    from frames import make_frame
+    from fold import FT_RETRACT
+
+    raw = _read(Path(path))
+    if hashlib.sha256(raw).hexdigest() != native_sha256:
+        raise ProjectionError("native digest mismatch")
+    if (
+        len(old_ids) != 3
+        or len(retained_ids) != 3
+        or len(set(old_ids + retained_ids)) != 6
+    ):
+        raise ProjectionError("exactly two disjoint three-frame IDs required")
+    indexed = {}
+    for i, frame in enumerate(ledger_frames):
+        fid = frame.get("frame_id")
+        if fid in old_ids + retained_ids:
+            if fid in indexed:
+                raise ProjectionError("duplicate frame ID")
+            indexed[fid] = (i, frame)
+    if set(indexed) != set(old_ids + retained_ids):
+        raise ProjectionError("missing target or retained frame")
+    groups = [[indexed[fid] for fid in ids] for ids in (old_ids, retained_ids)]
+    if (
+        [x[0] for x in groups[0]] != list(range(groups[0][0][0], groups[0][0][0] + 3))
+        or [x[0] for x in groups[1]]
+        != list(range(groups[1][0][0], groups[1][0][0] + 3))
+        or groups[0][-1][0] >= groups[1][0][0]
+    ):
+        raise ProjectionError(
+            "triples must be ordered contiguous and old before retained"
+        )
+    for group in groups:
+        originals = [f for _, f in group]
+        stamps = {f.get("pubinfo", {}).get("created_at") for f in originals}
+        if len(stamps) != 1 or None in stamps:
+            raise ProjectionError("inconsistent timestamp")
+        expected = frames_for_path(path, as_of=next(iter(stamps)))
+        if originals != expected:
+            raise ProjectionError("native reconstruction differs from ledger triple")
+    if _read(Path(path)) != raw:
+        raise ProjectionError("native bytes changed during projection")
+    for f in ledger_frames:
+        if (
+            f.get("frame_type") == FT_RETRACT
+            and f.get("assertion", {}).get("retracts") in old_ids
+        ):
+            raise ProjectionError("target already retracted")
+    reason = "Duplicate calendar-overrun projection; retain the later identical native record."
+    return [
+        make_frame(
+            frame_type=FT_RETRACT,
+            assertion={"retracts": old, "reason": reason},
+            provenance={
+                "method": ADAPTER_ID + "/duplicate-repair",
+                "native_sha256": native_sha256,
+                "retained_frame_id": keep,
+            },
+            actor=ADAPTER_ID,
+            authority_scope=AUTHORITY,
+            created_at=created_at,
+        )
+        for old, keep in zip(old_ids, retained_ids)
+    ]
+
+
+def apply_duplicate_repair(
+    path,
+    ledger_path,
+    *,
+    base_bytes,
+    base_sha256,
+    native_sha256,
+    old_ids,
+    retained_ids,
+    reviewed_frames,
+    created_at,
+):
+    """Apply an exact reviewed producer batch under an exclusive inode lease.
+
+    A retry accepts only the exact original prefix plus a prefix of this exact batch. No
+    intervening or torn write is repaired; an exception leaves committed bytes intact.
+    """
+    import json
+    from ledger import LedgerRecord
+    from ledger_write_lease import OwnedWriteLease, LeasedLedger
+
+    if hashlib.sha256(base_bytes).hexdigest() != base_sha256 or not base_bytes.endswith(
+        b"\n"
+    ):
+        raise ProjectionError("reviewed base digest or newline mismatch")
+    try:
+        base_records = [
+            LedgerRecord.from_obj(json.loads(line)) for line in base_bytes.splitlines()
+        ]
+    except (ValueError, KeyError) as exc:
+        raise ProjectionError("invalid reviewed base") from exc
+    base_frames = [r.frame for r in base_records]
+    expected = prepare_duplicate_repair(
+        path,
+        base_frames,
+        native_sha256=native_sha256,
+        old_ids=old_ids,
+        retained_ids=retained_ids,
+        created_at=created_at,
+    )
+    if expected != reviewed_frames:
+        raise ProjectionError("reviewed frames differ from adapter output")
+    with OwnedWriteLease(ledger_path) as lease:
+        ledger = LeasedLedger(lease)
+        current_bytes = lease.read_bytes()
+        if not current_bytes.startswith(base_bytes) or not current_bytes.endswith(
+            b"\n"
+        ):
+            raise ProjectionError("ledger frontier diverged or torn")
+        if ledger.verify():
+            raise ProjectionError("ledger chain invalid")
+        current = ledger.read_all()
+        done = len(current) - len(base_records)
+        if (
+            done < 0
+            or done > len(expected)
+            or [r.frame for r in current] != base_frames + expected[:done]
+        ):
+            raise ProjectionError("ledger is not the exact reviewed batch prefix")
+        if done == 0:
+            stamp = _ts(created_at, "created_at", "repair")
+            age = (datetime.datetime.now(datetime.timezone.utc) - stamp).total_seconds()
+            if not 0 <= age <= 300:
+                raise ProjectionError("initial application timestamp must be fresh UTC")
+        if hashlib.sha256(_read(Path(path))).hexdigest() != native_sha256:
+            raise ProjectionError("native bytes changed before apply")
+        for f in expected[done:]:
+            if hashlib.sha256(_read(Path(path))).hexdigest() != native_sha256:
+                raise ProjectionError("native bytes changed during apply")
+            if lease.read_bytes() != current_bytes:
+                raise ProjectionError("ledger changed during apply")
+            lease.append(ledger, f)
+            current_bytes = lease.read_bytes()
+            if (
+                ledger.verify()
+                or [r.frame for r in ledger.read_all()]
+                != base_frames + expected[: done + 1]
+            ):
+                raise ProjectionError(
+                    "append verification failed; preserve partial ledger"
+                )
+            done += 1
+        return {
+            "appended_or_present": done,
+            "frame_ids": [f["frame_id"] for f in expected],
+            "ledger_sha256": hashlib.sha256(current_bytes).hexdigest(),
+        }

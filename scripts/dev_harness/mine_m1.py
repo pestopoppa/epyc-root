@@ -894,6 +894,7 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--projection", required=True, help="projection run dir (sessions.jsonl + events/)")
     p.add_argument("--private-root", default=str(dh_privacy.PRIVATE_ROOT))
+    p.add_argument("--belief-declarations", help="prospective declarations captured before mining")
     p.add_argument("--run-id", help="mining run id (default: the projection dir name)")
     p.add_argument("--tasks", default="dhm1,dhm5,oab,ufh",
                    help="comma list of dhm1,dhm5,oab,ufh,history (dhm1/dhm5 share one events pass)")
@@ -923,6 +924,12 @@ def main(argv: list[str] | None = None) -> int:
     prov = provenance(proj, run_id)
     timings = {}
     written = []
+    custody = None
+    if a.belief_declarations:
+        import belief_run_custody as custody
+        run_dir = out.parent
+        targets = [aggdir / (name + ".aggregate.json") for name in ("dhm1", "dhm5", "dhm1_history", "oab_lb1", "ufh14_lb8")] + [out / "run.json"]
+        start = custody.begin(run_dir, "m1", run_id, a.belief_declarations, __file__, targets)
     if tasks & {"dhm1", "dhm5"}:
         t = time.time()
         res = mine_projection(proj, out, {"CLAUDE.md": Path(a.claude_md), "AGENTS.md": Path(a.agents_md),
@@ -957,6 +964,8 @@ def main(argv: list[str] | None = None) -> int:
     except ImportError:
         pass
     dh_privacy.private_write(out / "run.json", json.dumps(manifest, indent=2, sort_keys=True) + "\n")
+    if custody:
+        custody.finish(run_dir, "m1", start, __file__, [*written, out / "run.json"])
     print(json.dumps(manifest, indent=2, sort_keys=True))
     return 0
 
