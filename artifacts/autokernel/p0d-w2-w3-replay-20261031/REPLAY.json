@@ -1,0 +1,160 @@
+{
+  "W2": {
+    "kernel": {
+      "binary_sha256": "bfab92dffa31ad24f65ca53ec082ef8f1751b54d56efdc0f106bef797a72ee2e",
+      "commit": "c72ec82f5417bb2937310326120f149b665e8400"
+    },
+    "model": {
+      "path": "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf",
+      "sha256": "7bd52989f39ddca3dde36edb902fef72c5fde81e9211ca0f5ceca0119bd16d9c"
+    },
+    "native_record": "evidence/w2/out/inf75-w2-current-cpu-census-r3-20261029-88fa1714c1c81d32.json",
+    "native_sha256": "2d1348d607991453d038d4307fb63544c6123fe06e67f160965638ac44634eab",
+    "projector": {
+      "canonical_path": "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/mmproj-Qwen3-VL-30B-A3B-Instruct-F16.gguf",
+      "full_hash_checked_at_entry": true,
+      "sha256": "a31d2c298f28735f6d27847851b8e3662ceb29cd6a1e66aa13d54b17f45aefca",
+      "size": 1083499584
+    },
+    "shapes": [
+      {
+        "api_batches": [
+          1,
+          1024,
+          1159,
+          2048
+        ],
+        "decode_ids": [
+          3,
+          21
+        ],
+        "foreign_inside_request": 479,
+        "graphs": 25,
+        "nodes": 81950,
+        "phase": "prefill",
+        "request_ok": true,
+        "shape": {
+          "n_seq": 1,
+          "n_tokens": 512,
+          "phase": "prefill"
+        }
+      },
+      {
+        "api_batches": [
+          1,
+          7,
+          1024
+        ],
+        "decode_ids": [
+          3,
+          20
+        ],
+        "foreign_inside_request": 144,
+        "graphs": 19,
+        "nodes": 62282,
+        "phase": "decode",
+        "request_ok": true,
+        "shape": {
+          "n_seq": 1,
+          "n_tokens": 1,
+          "phase": "decode"
+        }
+      }
+    ],
+    "workload_id": "inf75-w2-current-cpu-census-r3-20261029"
+  },
+  "W2_requests_completed_resolution": {
+    "actual_successful_native_http_windows": 2,
+    "producer_path": "evidence/w2/work.py",
+    "source": "evidence/w2/work.py",
+    "verdict": "same full-census wrapper-field anomaly; does not mean zero HTTP requests",
+    "writer_cause": "work.py full-census branch only promotes summary OBSERVED into current_W2_CPU_observed and sets first_request_ok=(rc==0), result_writer_ok=true; it never advances smoke-only requests_completed initialized to 0; smoke branch increments after each completed request"
+  },
+  "W3": {
+    "kernel": {
+      "binary_sha256": "bfab92dffa31ad24f65ca53ec082ef8f1751b54d56efdc0f106bef797a72ee2e",
+      "commit": "c72ec82f5417bb2937310326120f149b665e8400"
+    },
+    "model": {
+      "path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131"
+    },
+    "native_record": "evidence/w3/out/inf75-w3-canonical-halfa-r2-20261029-b65edc5165c0e66d.json",
+    "native_sha256": "b060676693a6b907f810f7e8313508af5fb87f6c04f4fcbc4c923734f7d80ef0",
+    "projector": null,
+    "shapes": [
+      {
+        "api_batches": [
+          4,
+          2044,
+          2048
+        ],
+        "decode_ids": [
+          4,
+          9
+        ],
+        "foreign_inside_request": 133,
+        "graphs": 6,
+        "nodes": 12036,
+        "phase": "prefill",
+        "request_ok": true,
+        "shape": {
+          "n_seq": 1,
+          "n_tokens": 2048,
+          "phase": "prefill"
+        }
+      },
+      {
+        "api_batches": [
+          1,
+          4,
+          15
+        ],
+        "decode_ids": [
+          4,
+          37
+        ],
+        "foreign_inside_request": 6,
+        "graphs": 34,
+        "nodes": 68204,
+        "phase": "decode",
+        "request_ok": true,
+        "shape": {
+          "n_seq": 1,
+          "n_tokens": 1,
+          "phase": "decode"
+        }
+      },
+      {
+        "api_batches": [
+          1,
+          4,
+          5,
+          15
+        ],
+        "decode_ids": [
+          4,
+          25
+        ],
+        "foreign_inside_request": 3,
+        "graphs": 22,
+        "nodes": 21080,
+        "phase": "verify",
+        "request_ok": true,
+        "shape": {
+          "n_seq": 1,
+          "n_tokens": 4,
+          "phase": "verify"
+        }
+      }
+    ],
+    "workload_id": "inf75-w3-canonical-halfa-r2-20261029"
+  },
+  "W3_requests_completed_resolution": {
+    "actual_successful_native_http_windows": 3,
+    "producer_path": "evidence/w3/work.py",
+    "source": "evidence/w3/work.py",
+    "verdict": "wrapper-field anomaly; does not mean zero HTTP requests",
+    "writer_cause": "work.py full-census branch only promotes summary OBSERVED into canonical_W3_observed and sets first_request_ok=(rc==0), result_writer_ok=true; it never advances smoke-only requests_completed initialized to 0; smoke branch increments after each completed request"
+  }
+}

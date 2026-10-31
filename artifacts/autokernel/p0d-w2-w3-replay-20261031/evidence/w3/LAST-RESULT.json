@@ -1,0 +1,52 @@
+{
+  "path": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/run-20261029T014132Z-449078",
+  "rc": 0,
+  "partial": false,
+  "first_request_ok": true,
+  "result_writer_ok": true,
+  "requests_completed": 0,
+  "canonical_W3_observed": true,
+  "scope": "fresh canonical half-A W3 structural census; not fullP0d",
+  "native_summary": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/run-20261029T014132Z-449078/native-full/out/1793238113085460931/SUMMARY.json",
+  "cleanup_verified": true,
+  "wall_s": 150.28517866134644,
+  "watch": {
+    "partial": false,
+    "cleanup_verified": true,
+    "failure": null,
+    "root_pid": 449086,
+    "native_rc": 0,
+    "captured": {
+      "449086": {
+        "birth": 136056550,
+        "current": null
+      },
+      "453882": {
+        "birth": 136062906,
+        "current": null
+      },
+      "453881": {
+        "birth": 136062906,
+        "current": null
+      },
+      "460422": {
+        "birth": 136067337,
+        "current": null
+      },
+      "460421": {
+        "birth": 136067336,
+        "current": null
+      },
+      "463979": {
+        "birth": 136070556,
+        "current": null
+      },
+      "463978": {
+        "birth": 136070556,
+        "current": null
+      }
+    },
+    "sampled_peak_kib": 41781340,
+    "rc": 0
+  }
+}

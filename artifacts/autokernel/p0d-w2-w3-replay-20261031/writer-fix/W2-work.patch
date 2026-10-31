@@ -1,0 +1,50 @@
+--- a/work.py
++++ b/work.py
+@@ -84,6 +84,38 @@
+             write(root/'samples.json',samples);state['native_trace_sha256']=sha(trace_path)
+     finally:state['server_cleanup']=stop_owned(proc)
+ 
++def full_census_request_fields(summary_path):
++    """Project request status from native windows; preserve result-writer success."""
++    error = None
++    windows = []
++    try:
++        summary = json.loads(Path(summary_path).read_text())
++        record = json.loads(Path(summary['native_record']).read_text())
++        per_shape = record.get('graph', {}).get('per_shape')
++        if not isinstance(per_shape, list):
++            error = 'native graph.per_shape missing or malformed'
++        else:
++            for shape in per_shape:
++                if not isinstance(shape, dict) or not isinstance(shape.get('request_windows'), list):
++                    error = 'per-shape request_windows missing or malformed'
++                    break
++                windows.extend(shape['request_windows'])
++            if error is None and not windows:
++                error = 'no native request windows captured'
++            if error is None and any(not isinstance(w, dict) or type(w.get('success')) is not bool for w in windows):
++                error = 'native request window success flag missing or malformed'
++    except (OSError, ValueError, KeyError, TypeError) as exc:
++        error = f'native request evidence unavailable: {exc}'
++    if error is not None:
++        request_count = None
++        first_request_ok = None
++    else:
++        request_count = sum(window['success'] is True for window in windows)
++        first_request_ok = windows[0]['success']
++    return {'requests_completed': request_count, 'first_request_ok': first_request_ok,
++            'request_count_evidence_error': error, 'result_writer_ok': True}
++
++
+ def main():
+     mode=sys.argv[1:]
+     if mode not in ([],['--smoke']):return 64
+@@ -96,7 +128,7 @@
+         if mode:smoke(root,state);rc=0
+         else:
+             import full_main
+-            rc=full_main.main();latest=sorted((root/'native-full').glob('out/*/SUMMARY.json'))[-1];summary=json.loads(latest.read_text());state.update(current_W2_CPU_observed=summary['state']=='OBSERVED',native_summary=str(latest),first_request_ok=rc==0,result_writer_ok=True)
++            rc=full_main.main();latest=sorted((root/'native-full').glob('out/*/SUMMARY.json'))[-1];summary=json.loads(latest.read_text());state.update(current_W2_CPU_observed=summary['state']=='OBSERVED',native_summary=str(latest),**full_census_request_fields(latest))
+     except BaseException as error:
+         state['error']=str(error);state['error_type']=type(error).__name__; (root/'error.traceback.txt').write_text(traceback.format_exc())
+     finally:

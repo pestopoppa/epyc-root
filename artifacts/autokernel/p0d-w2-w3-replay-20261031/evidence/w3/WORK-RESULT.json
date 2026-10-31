@@ -1,0 +1,10 @@
+{
+  "rc": 0,
+  "partial": false,
+  "first_request_ok": true,
+  "result_writer_ok": true,
+  "requests_completed": 0,
+  "canonical_W3_observed": true,
+  "scope": "fresh canonical half-A W3 structural census; not fullP0d",
+  "native_summary": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/run-20261029T014132Z-449078/native-full/out/1793238113085460931/SUMMARY.json"
+}

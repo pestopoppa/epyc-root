@@ -1,0 +1,10 @@
+{
+  "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf": {
+    "size": 18556687200,
+    "sha256": "7bd52989f39ddca3dde36edb902fef72c5fde81e9211ca0f5ceca0119bd16d9c"
+  },
+  "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/mmproj-Qwen3-VL-30B-A3B-Instruct-F16.gguf": {
+    "size": 1083499584,
+    "sha256": "a31d2c298f28735f6d27847851b8e3662ceb29cd6a1e66aa13d54b17f45aefca"
+  }
+}

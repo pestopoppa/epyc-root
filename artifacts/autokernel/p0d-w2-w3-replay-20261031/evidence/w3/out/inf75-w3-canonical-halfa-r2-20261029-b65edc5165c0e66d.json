@@ -1,0 +1,2752 @@
+{
+  "graph": {
+    "per_shape": [
+      {
+        "argv": [
+          "numactl",
+          "--interleave=0,1",
+          "--",
+          "taskset",
+          "-c",
+          "0-47,96-143",
+          "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu/bin/llama-server",
+          "-m",
+          "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "25024",
+          "-np",
+          "1",
+          "-c",
+          "262144",
+          "-t",
+          "48",
+          "-ub",
+          "2048",
+          "--flash-attn",
+          "on",
+          "--jinja",
+          "-ctk",
+          "q8_0",
+          "-ctv",
+          "q8_0",
+          "--mlock",
+          "--no-mmap",
+          "--cache-ram",
+          "32768",
+          "--ctx-checkpoints",
+          "32",
+          "--chat-template-file",
+          "/mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja",
+          "--spec-type",
+          "draft-mtp",
+          "--spec-draft-n-max",
+          "4",
+          "--reasoning",
+          "off",
+          "--slot-save-path",
+          "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/run-20261029T014132Z-449078/native-full/runtime-slots",
+          "--device",
+          "none",
+          "--device-draft",
+          "none",
+          "--no-kv-unified",
+          "--log-verbosity",
+          "4"
+        ],
+        "device_seen": false,
+        "error": "",
+        "foreign_interval_counts": [
+          133
+        ],
+        "foreign_load": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/run-20261029T014132Z-449078/native-full/out/1793238113085460931/inf75-w3-canonical-halfa-r2-20261029-prefill.foreign-load.jsonl",
+        "foreign_load_sha256": "1902008a726e2a306c5e7c33529d07f1917d9cebb217b65d4ebdc762c49e6b35",
+        "graphs": [
+          {
+            "api_batch": {
+              "ctx": "0x5ec831434ec0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 2048,
+              "tokens_per_seq": {
+                "0": 2048
+              }
+            },
+            "ctx": "0x5ec831434ec0",
+            "declared_nodes": 3927,
+            "decode_id": 4,
+            "dense_matmul_ne11": [
+              0,
+              2048,
+              4096,
+              16384,
+              32768,
+              131072
+            ],
+            "model": "0x5ec836cd5550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5ec83165f870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 2048,
+              "tokens_per_seq": {
+                "0": 2048
+              }
+            },
+            "ctx": "0x5ec83165f870",
+            "declared_nodes": 85,
+            "decode_id": 5,
+            "dense_matmul_ne11": [
+              0,
+              2048
+            ],
+            "model": "0x5ec836cd5550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5ec831434ec0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 2044,
+              "tokens_per_seq": {
+                "0": 2044
+              }
+            },
+            "ctx": "0x5ec831434ec0",
+            "declared_nodes": 3927,
+            "decode_id": 6,
+            "dense_matmul_ne11": [
+              0,
+              2044,
+              4088,
+              16352,
+              32704,
+              130816
+            ],
+            "model": "0x5ec836cd5550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5ec83165f870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 2044,
+              "tokens_per_seq": {
+                "0": 2044
+              }
+            },
+            "ctx": "0x5ec83165f870",
+            "declared_nodes": 85,
+            "decode_id": 7,
+            "dense_matmul_ne11": [
+              0,
+              2044
+            ],
+            "model": "0x5ec836cd5550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5ec831434ec0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 4,
+              "tokens_per_seq": {
+                "0": 4
+              }
+            },
+            "ctx": "0x5ec831434ec0",
+            "declared_nodes": 3927,
+            "decode_id": 8,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64,
+              256
+            ],
+            "model": "0x5ec836cd5550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5ec83165f870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 4,
+              "tokens_per_seq": {
+                "0": 4
+              }
+            },
+            "ctx": "0x5ec83165f870",
+            "declared_nodes": 85,
+            "decode_id": 9,
+            "dense_matmul_ne11": [
+              0,
+              4
+            ],
+            "model": "0x5ec836cd5550"
+          }
+        ],
+        "instrument": "server",
+        "matmul_src1_shapes": [
+          [
+            64,
+            32,
+            1,
+            1
+          ],
+          [
+            64,
+            256,
+            1,
+            1
+          ],
+          [
+            64,
+            16352,
+            1,
+            1
+          ],
+          [
+            64,
+            16384,
+            1,
+            1
+          ],
+          [
+            64,
+            130816,
+            1,
+            1
+          ],
+          [
+            64,
+            131072,
+            1,
+            1
+          ],
+          [
+            256,
+            8,
+            1,
+            1
+          ],
+          [
+            256,
+            64,
+            1,
+            1
+          ],
+          [
+            256,
+            4088,
+            1,
+            1
+          ],
+          [
+            256,
+            4096,
+            1,
+            1
+          ],
+          [
+            256,
+            32704,
+            1,
+            1
+          ],
+          [
+            256,
+            32768,
+            1,
+            1
+          ],
+          [
+            512,
+            4,
+            1,
+            1
+          ],
+          [
+            512,
+            8,
+            4,
+            1
+          ],
+          [
+            512,
+            8,
+            2044,
+            1
+          ],
+          [
+            512,
+            8,
+            2048,
+            1
+          ],
+          [
+            512,
+            2044,
+            1,
+            1
+          ],
+          [
+            512,
+            2048,
+            1,
+            1
+          ],
+          [
+            2048,
+            0,
+            1,
+            1
+          ],
+          [
+            2048,
+            1,
+            1,
+            1
+          ],
+          [
+            2048,
+            1,
+            4,
+            1
+          ],
+          [
+            2048,
+            1,
+            2044,
+            1
+          ],
+          [
+            2048,
+            1,
+            2048,
+            1
+          ],
+          [
+            2048,
+            4,
+            1,
+            1
+          ],
+          [
+            2048,
+            2044,
+            1,
+            1
+          ],
+          [
+            2048,
+            2048,
+            1,
+            1
+          ],
+          [
+            4096,
+            4,
+            1,
+            1
+          ],
+          [
+            4096,
+            2044,
+            1,
+            1
+          ],
+          [
+            4096,
+            2048,
+            1,
+            1
+          ]
+        ],
+        "native_shape_evidence": {
+          "configured_n_seq_max": [
+            1
+          ],
+          "configured_ubatch": [
+            2048
+          ],
+          "guards": {
+            "configured_parallelism": true,
+            "configured_ubatch": true,
+            "frozen_token_width": true,
+            "native_instrument_mapping": true,
+            "native_prompt_width": true,
+            "native_tensor_width_and_api_sequences": true,
+            "prompt_counters_present": true,
+            "request_count": true,
+            "slot_occupancy_observed": true,
+            "terminal_responses": true
+          },
+          "native_prompt_tokens_by_slot": {
+            "0": 4096
+          },
+          "native_single_tensor_width_and_api_sequences": true,
+          "native_verified_draft_widths": {},
+          "observed": true,
+          "occupied_slot_sets": [
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [
+              0
+            ],
+            []
+          ],
+          "requested_prefill_tokens": 2048,
+          "sequence_scope": "observed concurrent server slots; tensor-level n_seq unproven",
+          "split_prefill": {
+            "observed_split_prefill": true,
+            "scope": "descriptive only; does not prove one requested-width tensor",
+            "witnesses": [
+              {
+                "batches": [
+                  {
+                    "decode_id": 6,
+                    "tensor_width_matches": true,
+                    "tokens": 2044
+                  },
+                  {
+                    "decode_id": 8,
+                    "tensor_width_matches": true,
+                    "tokens": 4
+                  }
+                ],
+                "ctx": "0x5ec831434ec0",
+                "model": "0x5ec836cd5550",
+                "requested_tokens": 2048
+              },
+              {
+                "batches": [
+                  {
+                    "decode_id": 7,
+                    "tensor_width_matches": true,
+                    "tokens": 2044
+                  },
+                  {
+                    "decode_id": 9,
+                    "tensor_width_matches": true,
+                    "tokens": 4
+                  }
+                ],
+                "ctx": "0x5ec83165f870",
+                "model": "0x5ec836cd5550",
+                "requested_tokens": 2048
+              }
+            ]
+          }
+        },
+        "nodes_total": 12036,
+        "op_backend": {
+          "ADD": {
+            "CPU": 1320
+          },
+          "ARGSORT": {
+            "CPU": 123
+          },
+          "CONCAT": {
+            "CPU": 93
+          },
+          "CONT": {
+            "CPU": 33
+          },
+          "CPY": {
+            "CPU": 720
+          },
+          "FLASH_ATTN_EXT": {
+            "CPU": 33
+          },
+          "GATED_DELTA_NET": {
+            "CPU": 90
+          },
+          "GET_ROWS": {
+            "CPU": 375
+          },
+          "GLU": {
+            "CPU": 246
+          },
+          "L2_NORM": {
+            "CPU": 180
+          },
+          "MOE_TOPK_NORM": {
+            "CPU": 123
+          },
+          "MUL": {
+            "CPU": 873
+          },
+          "MUL_MAT": {
+            "CPU": 1326
+          },
+          "MUL_MAT_ID": {
+            "CPU": 369
+          },
+          "PAD": {
+            "CPU": 3
+          },
+          "PERMUTE": {
+            "CPU": 99
+          },
+          "RESHAPE": {
+            "CPU": 1458
+          },
+          "RMS_NORM": {
+            "CPU": 414
+          },
+          "ROPE": {
+            "CPU": 66
+          },
+          "SCALE": {
+            "CPU": 180
+          },
+          "SET_ROWS": {
+            "CPU": 66
+          },
+          "SSM_CONV": {
+            "CPU": 90
+          },
+          "TOP_K": {
+            "CPU": 3
+          },
+          "TRANSPOSE": {
+            "CPU": 90
+          },
+          "UNARY": {
+            "CPU": 516
+          },
+          "VIEW": {
+            "CPU": 3147
+          }
+        },
+        "op_type": {
+          "ADD:0:0:0": 1320,
+          "ARGSORT:26:0:missing": 123,
+          "CONCAT:0:0:0": 93,
+          "CONT:0:0:missing": 33,
+          "CPY:0:0:0": 720,
+          "FLASH_ATTN_EXT:0:0:1": 3,
+          "FLASH_ATTN_EXT:0:0:8": 30,
+          "GATED_DELTA_NET:0:0:0": 90,
+          "GET_ROWS:0:0:26": 369,
+          "GET_ROWS:0:8:26": 6,
+          "GLU:0:0:0": 246,
+          "L2_NORM:0:0:missing": 180,
+          "MOE_TOPK_NORM:0:0:26": 123,
+          "MUL:0:0:0": 873,
+          "MUL_MAT:0:0:0": 360,
+          "MUL_MAT:0:30:0": 6,
+          "MUL_MAT:0:8:0": 960,
+          "MUL_MAT_ID:0:8:0": 369,
+          "PAD:0:0:missing": 3,
+          "PERMUTE:0:0:missing": 33,
+          "PERMUTE:1:1:missing": 6,
+          "PERMUTE:8:8:missing": 60,
+          "RESHAPE:0:0:missing": 1458,
+          "RMS_NORM:0:0:missing": 414,
+          "ROPE:0:0:26": 66,
+          "SCALE:0:0:missing": 180,
+          "SET_ROWS:1:0:27": 6,
+          "SET_ROWS:8:0:27": 60,
+          "SSM_CONV:0:0:0": 90,
+          "TOP_K:26:0:missing": 3,
+          "TRANSPOSE:0:0:missing": 90,
+          "UNARY:0:0:missing": 516,
+          "VIEW:0:0:missing": 2952,
+          "VIEW:1:1:missing": 6,
+          "VIEW:26:26:missing": 129,
+          "VIEW:8:8:missing": 60
+        },
+        "phase_log_byte_offset": 1443093,
+        "rc": 0,
+        "request_log": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/run-20261029T014132Z-449078/native-full/out/1793238113085460931/inf75-w3-canonical-halfa-r2-20261029-prefill.requests.json",
+        "request_log_sha256": "18427a4155bf14883c4c6a6f6c12adb8c4b4d730a4ddca28f8713aa36594a209",
+        "request_windows": [
+          {
+            "end_mono_ns": 1360648757047870,
+            "end_utc_ns": 1793238175523553418,
+            "start_mono_ns": 1360636237124798,
+            "start_utc_ns": 1793238163003629976,
+            "success": true
+          }
+        ],
+        "scope": "native compute cgraph host tensor metadata; no tensor-data reads",
+        "shape": {
+          "n_seq": 1,
+          "n_tokens": 2048,
+          "phase": "prefill"
+        },
+        "state": "OBSERVED"
+      },
+      {
+        "argv": [
+          "numactl",
+          "--interleave=0,1",
+          "--",
+          "taskset",
+          "-c",
+          "0-47,96-143",
+          "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu/bin/llama-server",
+          "-m",
+          "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "25024",
+          "-np",
+          "1",
+          "-c",
+          "262144",
+          "-t",
+          "48",
+          "-ub",
+          "2048",
+          "--flash-attn",
+          "on",
+          "--jinja",
+          "-ctk",
+          "q8_0",
+          "-ctv",
+          "q8_0",
+          "--mlock",
+          "--no-mmap",
+          "--cache-ram",
+          "32768",
+          "--ctx-checkpoints",
+          "32",
+          "--chat-template-file",
+          "/mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja",
+          "--spec-type",
+          "draft-mtp",
+          "--spec-draft-n-max",
+          "4",
+          "--reasoning",
+          "off",
+          "--slot-save-path",
+          "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/run-20261029T014132Z-449078/native-full/runtime-slots",
+          "--device",
+          "none",
+          "--device-draft",
+          "none",
+          "--no-kv-unified",
+          "--log-verbosity",
+          "4"
+        ],
+        "device_seen": false,
+        "error": "",
+        "foreign_interval_counts": [
+          6
+        ],
+        "foreign_load": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/run-20261029T014132Z-449078/native-full/out/1793238113085460931/inf75-w3-canonical-halfa-r2-20261029-decode.foreign-load.jsonl",
+        "foreign_load_sha256": "89b4026cb9d31073401ec2e04077c4a694e51f78b2cfbf291e0da1f45daff457",
+        "graphs": [
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8c73ec0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 15,
+              "tokens_per_seq": {
+                "0": 15
+              }
+            },
+            "ctx": "0x5fbfb8c73ec0",
+            "declared_nodes": 3927,
+            "decode_id": 4,
+            "dense_matmul_ne11": [
+              0,
+              15,
+              30,
+              120,
+              240,
+              960
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8e9e870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 15,
+              "tokens_per_seq": {
+                "0": 15
+              }
+            },
+            "ctx": "0x5fbfb8e9e870",
+            "declared_nodes": 85,
+            "decode_id": 5,
+            "dense_matmul_ne11": [
+              0,
+              15
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8c73ec0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 4,
+              "tokens_per_seq": {
+                "0": 4
+              }
+            },
+            "ctx": "0x5fbfb8c73ec0",
+            "declared_nodes": 3927,
+            "decode_id": 6,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64,
+              256
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8e9e870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 4,
+              "tokens_per_seq": {
+                "0": 4
+              }
+            },
+            "ctx": "0x5fbfb8e9e870",
+            "declared_nodes": 85,
+            "decode_id": 7,
+            "dense_matmul_ne11": [
+              0,
+              4
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8c73ec0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8c73ec0",
+            "declared_nodes": 3927,
+            "decode_id": 8,
+            "dense_matmul_ne11": [
+              1,
+              2,
+              8,
+              16,
+              64
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8e9e870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8e9e870",
+            "declared_nodes": 85,
+            "decode_id": 9,
+            "dense_matmul_ne11": [
+              0,
+              1
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8c73ec0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8c73ec0",
+            "declared_nodes": 3927,
+            "decode_id": 10,
+            "dense_matmul_ne11": [
+              1,
+              2,
+              8,
+              16,
+              64
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8e9e870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8e9e870",
+            "declared_nodes": 85,
+            "decode_id": 11,
+            "dense_matmul_ne11": [
+              0,
+              1
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8c73ec0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8c73ec0",
+            "declared_nodes": 3927,
+            "decode_id": 12,
+            "dense_matmul_ne11": [
+              1,
+              2,
+              8,
+              16,
+              64
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8e9e870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8e9e870",
+            "declared_nodes": 85,
+            "decode_id": 13,
+            "dense_matmul_ne11": [
+              0,
+              1
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8c73ec0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8c73ec0",
+            "declared_nodes": 3927,
+            "decode_id": 14,
+            "dense_matmul_ne11": [
+              1,
+              2,
+              8,
+              16,
+              64
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8e9e870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8e9e870",
+            "declared_nodes": 85,
+            "decode_id": 15,
+            "dense_matmul_ne11": [
+              0,
+              1
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8c73ec0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8c73ec0",
+            "declared_nodes": 3927,
+            "decode_id": 16,
+            "dense_matmul_ne11": [
+              1,
+              2,
+              8,
+              16,
+              64
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8e9e870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8e9e870",
+            "declared_nodes": 85,
+            "decode_id": 17,
+            "dense_matmul_ne11": [
+              0,
+              1
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8c73ec0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8c73ec0",
+            "declared_nodes": 3927,
+            "decode_id": 18,
+            "dense_matmul_ne11": [
+              1,
+              2,
+              8,
+              16,
+              64
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8e9e870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8e9e870",
+            "declared_nodes": 85,
+            "decode_id": 19,
+            "dense_matmul_ne11": [
+              0,
+              1
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8c73ec0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8c73ec0",
+            "declared_nodes": 3927,
+            "decode_id": 20,
+            "dense_matmul_ne11": [
+              1,
+              2,
+              8,
+              16,
+              64
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8e9e870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8e9e870",
+            "declared_nodes": 85,
+            "decode_id": 21,
+            "dense_matmul_ne11": [
+              0,
+              1
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8c73ec0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8c73ec0",
+            "declared_nodes": 3927,
+            "decode_id": 22,
+            "dense_matmul_ne11": [
+              1,
+              2,
+              8,
+              16,
+              64
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8e9e870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8e9e870",
+            "declared_nodes": 85,
+            "decode_id": 23,
+            "dense_matmul_ne11": [
+              0,
+              1
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8c73ec0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8c73ec0",
+            "declared_nodes": 3927,
+            "decode_id": 24,
+            "dense_matmul_ne11": [
+              1,
+              2,
+              8,
+              16,
+              64
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8e9e870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8e9e870",
+            "declared_nodes": 85,
+            "decode_id": 25,
+            "dense_matmul_ne11": [
+              0,
+              1
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8c73ec0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8c73ec0",
+            "declared_nodes": 3927,
+            "decode_id": 26,
+            "dense_matmul_ne11": [
+              1,
+              2,
+              8,
+              16,
+              64
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8e9e870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8e9e870",
+            "declared_nodes": 85,
+            "decode_id": 27,
+            "dense_matmul_ne11": [
+              0,
+              1
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8c73ec0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8c73ec0",
+            "declared_nodes": 3927,
+            "decode_id": 28,
+            "dense_matmul_ne11": [
+              1,
+              2,
+              8,
+              16,
+              64
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8e9e870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8e9e870",
+            "declared_nodes": 85,
+            "decode_id": 29,
+            "dense_matmul_ne11": [
+              0,
+              1
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8c73ec0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8c73ec0",
+            "declared_nodes": 3927,
+            "decode_id": 30,
+            "dense_matmul_ne11": [
+              1,
+              2,
+              8,
+              16,
+              64
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8e9e870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8e9e870",
+            "declared_nodes": 85,
+            "decode_id": 31,
+            "dense_matmul_ne11": [
+              0,
+              1
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8c73ec0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8c73ec0",
+            "declared_nodes": 3927,
+            "decode_id": 32,
+            "dense_matmul_ne11": [
+              1,
+              2,
+              8,
+              16,
+              64
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8e9e870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8e9e870",
+            "declared_nodes": 85,
+            "decode_id": 33,
+            "dense_matmul_ne11": [
+              0,
+              1
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8c73ec0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8c73ec0",
+            "declared_nodes": 3927,
+            "decode_id": 34,
+            "dense_matmul_ne11": [
+              1,
+              2,
+              8,
+              16,
+              64
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8e9e870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8e9e870",
+            "declared_nodes": 85,
+            "decode_id": 35,
+            "dense_matmul_ne11": [
+              0,
+              1
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8c73ec0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8c73ec0",
+            "declared_nodes": 3927,
+            "decode_id": 36,
+            "dense_matmul_ne11": [
+              1,
+              2,
+              8,
+              16,
+              64
+            ],
+            "model": "0x5fbfbe514550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x5fbfb8e9e870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x5fbfb8e9e870",
+            "declared_nodes": 85,
+            "decode_id": 37,
+            "dense_matmul_ne11": [
+              0,
+              1
+            ],
+            "model": "0x5fbfbe514550"
+          }
+        ],
+        "instrument": "server",
+        "matmul_src1_shapes": [
+          [
+            64,
+            8,
+            1,
+            1
+          ],
+          [
+            64,
+            32,
+            1,
+            1
+          ],
+          [
+            64,
+            64,
+            1,
+            1
+          ],
+          [
+            64,
+            120,
+            1,
+            1
+          ],
+          [
+            64,
+            256,
+            1,
+            1
+          ],
+          [
+            64,
+            960,
+            1,
+            1
+          ],
+          [
+            256,
+            2,
+            1,
+            1
+          ],
+          [
+            256,
+            8,
+            1,
+            1
+          ],
+          [
+            256,
+            16,
+            1,
+            1
+          ],
+          [
+            256,
+            30,
+            1,
+            1
+          ],
+          [
+            256,
+            64,
+            1,
+            1
+          ],
+          [
+            256,
+            240,
+            1,
+            1
+          ],
+          [
+            512,
+            1,
+            1,
+            1
+          ],
+          [
+            512,
+            4,
+            1,
+            1
+          ],
+          [
+            512,
+            8,
+            1,
+            1
+          ],
+          [
+            512,
+            8,
+            4,
+            1
+          ],
+          [
+            512,
+            8,
+            15,
+            1
+          ],
+          [
+            512,
+            15,
+            1,
+            1
+          ],
+          [
+            2048,
+            0,
+            1,
+            1
+          ],
+          [
+            2048,
+            1,
+            1,
+            1
+          ],
+          [
+            2048,
+            1,
+            4,
+            1
+          ],
+          [
+            2048,
+            1,
+            15,
+            1
+          ],
+          [
+            2048,
+            4,
+            1,
+            1
+          ],
+          [
+            2048,
+            15,
+            1,
+            1
+          ],
+          [
+            4096,
+            1,
+            1,
+            1
+          ],
+          [
+            4096,
+            4,
+            1,
+            1
+          ],
+          [
+            4096,
+            15,
+            1,
+            1
+          ]
+        ],
+        "native_shape_evidence": {
+          "configured_n_seq_max": [
+            1
+          ],
+          "configured_ubatch": [
+            2048
+          ],
+          "guards": {
+            "configured_parallelism": true,
+            "native_instrument_mapping": true,
+            "native_tensor_width_and_api_sequences": true,
+            "plain_decode_request": true,
+            "plain_decode_response": true,
+            "prompt_counters_present": true,
+            "request_count": true,
+            "slot_occupancy_observed": true,
+            "terminal_responses": true
+          },
+          "native_prompt_tokens_by_slot": {
+            "0": 19
+          },
+          "native_single_tensor_width_and_api_sequences": true,
+          "native_verified_draft_widths": {},
+          "observed": true,
+          "occupied_slot_sets": [
+            [
+              0
+            ],
+            [
+              0
+            ],
+            [
+              0
+            ],
+            [
+              0
+            ],
+            [
+              0
+            ],
+            [
+              0
+            ],
+            [
+              0
+            ],
+            []
+          ],
+          "sequence_scope": "observed concurrent server slots; tensor-level n_seq unproven"
+        },
+        "nodes_total": 68204,
+        "op_backend": {
+          "ADD": {
+            "CPU": 7480
+          },
+          "ARGSORT": {
+            "CPU": 697
+          },
+          "CONCAT": {
+            "CPU": 527
+          },
+          "CONT": {
+            "CPU": 187
+          },
+          "CPY": {
+            "CPU": 4080
+          },
+          "FLASH_ATTN_EXT": {
+            "CPU": 187
+          },
+          "GATED_DELTA_NET": {
+            "CPU": 510
+          },
+          "GET_ROWS": {
+            "CPU": 2125
+          },
+          "GLU": {
+            "CPU": 1394
+          },
+          "L2_NORM": {
+            "CPU": 1020
+          },
+          "MOE_TOPK_NORM": {
+            "CPU": 697
+          },
+          "MUL": {
+            "CPU": 4947
+          },
+          "MUL_MAT": {
+            "CPU": 7514
+          },
+          "MUL_MAT_ID": {
+            "CPU": 2091
+          },
+          "PAD": {
+            "CPU": 17
+          },
+          "PERMUTE": {
+            "CPU": 561
+          },
+          "RESHAPE": {
+            "CPU": 8262
+          },
+          "RMS_NORM": {
+            "CPU": 2346
+          },
+          "ROPE": {
+            "CPU": 374
+          },
+          "SCALE": {
+            "CPU": 1020
+          },
+          "SET_ROWS": {
+            "CPU": 374
+          },
+          "SSM_CONV": {
+            "CPU": 510
+          },
+          "TOP_K": {
+            "CPU": 17
+          },
+          "TRANSPOSE": {
+            "CPU": 510
+          },
+          "UNARY": {
+            "CPU": 2924
+          },
+          "VIEW": {
+            "CPU": 17833
+          }
+        },
+        "op_type": {
+          "ADD:0:0:0": 7480,
+          "ARGSORT:26:0:missing": 697,
+          "CONCAT:0:0:0": 527,
+          "CONT:0:0:missing": 187,
+          "CPY:0:0:0": 4080,
+          "FLASH_ATTN_EXT:0:0:1": 17,
+          "FLASH_ATTN_EXT:0:0:8": 170,
+          "GATED_DELTA_NET:0:0:0": 510,
+          "GET_ROWS:0:0:26": 2091,
+          "GET_ROWS:0:8:26": 34,
+          "GLU:0:0:0": 1394,
+          "L2_NORM:0:0:missing": 1020,
+          "MOE_TOPK_NORM:0:0:26": 697,
+          "MUL:0:0:0": 4947,
+          "MUL_MAT:0:0:0": 2040,
+          "MUL_MAT:0:30:0": 34,
+          "MUL_MAT:0:8:0": 5440,
+          "MUL_MAT_ID:0:8:0": 2091,
+          "PAD:0:0:missing": 17,
+          "PERMUTE:0:0:missing": 187,
+          "PERMUTE:1:1:missing": 34,
+          "PERMUTE:8:8:missing": 340,
+          "RESHAPE:0:0:missing": 8262,
+          "RMS_NORM:0:0:missing": 2346,
+          "ROPE:0:0:26": 374,
+          "SCALE:0:0:missing": 1020,
+          "SET_ROWS:1:0:27": 34,
+          "SET_ROWS:8:0:27": 340,
+          "SSM_CONV:0:0:0": 510,
+          "TOP_K:26:0:missing": 17,
+          "TRANSPOSE:0:0:missing": 510,
+          "UNARY:0:0:missing": 2924,
+          "VIEW:0:0:missing": 16728,
+          "VIEW:1:1:missing": 34,
+          "VIEW:26:26:missing": 731,
+          "VIEW:8:8:missing": 340
+        },
+        "phase_log_byte_offset": 1443093,
+        "rc": 0,
+        "request_log": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/run-20261029T014132Z-449078/native-full/out/1793238113085460931/inf75-w3-canonical-halfa-r2-20261029-decode.requests.json",
+        "request_log_sha256": "a2c6707ba44d86d2cfd47098404b188b9ddf0f114a39f783147d75d93f609f17",
+        "request_windows": [
+          {
+            "end_mono_ns": 1360681297300989,
+            "end_utc_ns": 1793238208063805037,
+            "start_mono_ns": 1360680600919705,
+            "start_utc_ns": 1793238207367424843,
+            "success": true
+          }
+        ],
+        "scope": "native compute cgraph host tensor metadata; no tensor-data reads",
+        "shape": {
+          "n_seq": 1,
+          "n_tokens": 1,
+          "phase": "decode"
+        },
+        "state": "OBSERVED"
+      },
+      {
+        "argv": [
+          "numactl",
+          "--interleave=0,1",
+          "--",
+          "taskset",
+          "-c",
+          "0-47,96-143",
+          "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu/bin/llama-server",
+          "-m",
+          "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "25024",
+          "-np",
+          "1",
+          "-c",
+          "262144",
+          "-t",
+          "48",
+          "-ub",
+          "2048",
+          "--flash-attn",
+          "on",
+          "--jinja",
+          "-ctk",
+          "q8_0",
+          "-ctv",
+          "q8_0",
+          "--mlock",
+          "--no-mmap",
+          "--cache-ram",
+          "32768",
+          "--ctx-checkpoints",
+          "32",
+          "--chat-template-file",
+          "/mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja",
+          "--spec-type",
+          "draft-mtp",
+          "--spec-draft-n-max",
+          "4",
+          "--reasoning",
+          "off",
+          "--slot-save-path",
+          "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/run-20261029T014132Z-449078/native-full/runtime-slots",
+          "--device",
+          "none",
+          "--device-draft",
+          "none",
+          "--no-kv-unified",
+          "--log-verbosity",
+          "4"
+        ],
+        "device_seen": false,
+        "error": "",
+        "foreign_interval_counts": [
+          3
+        ],
+        "foreign_load": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/run-20261029T014132Z-449078/native-full/out/1793238113085460931/inf75-w3-canonical-halfa-r2-20261029-verify.foreign-load.jsonl",
+        "foreign_load_sha256": "86658170e07fef835e672daefec82da3a4a830481f4de0c21248dde4be337163",
+        "graphs": [
+          {
+            "api_batch": {
+              "ctx": "0x636e4c23fec0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 15,
+              "tokens_per_seq": {
+                "0": 15
+              }
+            },
+            "ctx": "0x636e4c23fec0",
+            "declared_nodes": 3927,
+            "decode_id": 4,
+            "dense_matmul_ne11": [
+              0,
+              15,
+              30,
+              120,
+              240,
+              960
+            ],
+            "model": "0x636e51ae0550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x636e4c46a870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 15,
+              "tokens_per_seq": {
+                "0": 15
+              }
+            },
+            "ctx": "0x636e4c46a870",
+            "declared_nodes": 85,
+            "decode_id": 5,
+            "dense_matmul_ne11": [
+              0,
+              15
+            ],
+            "model": "0x636e51ae0550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x636e4c23fec0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 4,
+              "tokens_per_seq": {
+                "0": 4
+              }
+            },
+            "ctx": "0x636e4c23fec0",
+            "declared_nodes": 3927,
+            "decode_id": 6,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64,
+              256
+            ],
+            "model": "0x636e51ae0550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x636e4c46a870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 4,
+              "tokens_per_seq": {
+                "0": 4
+              }
+            },
+            "ctx": "0x636e4c46a870",
+            "declared_nodes": 85,
+            "decode_id": 7,
+            "dense_matmul_ne11": [
+              0,
+              4
+            ],
+            "model": "0x636e51ae0550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x636e4c46a870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x636e4c46a870",
+            "declared_nodes": 85,
+            "decode_id": 8,
+            "dense_matmul_ne11": [
+              1
+            ],
+            "model": "0x636e51ae0550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x636e4c46a870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x636e4c46a870",
+            "declared_nodes": 85,
+            "decode_id": 9,
+            "dense_matmul_ne11": [
+              1
+            ],
+            "model": "0x636e51ae0550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x636e4c46a870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x636e4c46a870",
+            "declared_nodes": 85,
+            "decode_id": 10,
+            "dense_matmul_ne11": [
+              1
+            ],
+            "model": "0x636e51ae0550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x636e4c46a870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x636e4c46a870",
+            "declared_nodes": 85,
+            "decode_id": 11,
+            "dense_matmul_ne11": [
+              1
+            ],
+            "model": "0x636e51ae0550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x636e4c23fec0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 5,
+              "tokens_per_seq": {
+                "0": 5
+              }
+            },
+            "ctx": "0x636e4c23fec0",
+            "declared_nodes": 3927,
+            "decode_id": 12,
+            "dense_matmul_ne11": [
+              5,
+              10,
+              40,
+              80,
+              320
+            ],
+            "model": "0x636e51ae0550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x636e4c46a870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 5,
+              "tokens_per_seq": {
+                "0": 5
+              }
+            },
+            "ctx": "0x636e4c46a870",
+            "declared_nodes": 85,
+            "decode_id": 13,
+            "dense_matmul_ne11": [
+              0,
+              5
+            ],
+            "model": "0x636e51ae0550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x636e4c46a870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x636e4c46a870",
+            "declared_nodes": 85,
+            "decode_id": 14,
+            "dense_matmul_ne11": [
+              1
+            ],
+            "model": "0x636e51ae0550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x636e4c46a870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x636e4c46a870",
+            "declared_nodes": 85,
+            "decode_id": 15,
+            "dense_matmul_ne11": [
+              1
+            ],
+            "model": "0x636e51ae0550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x636e4c46a870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x636e4c46a870",
+            "declared_nodes": 85,
+            "decode_id": 16,
+            "dense_matmul_ne11": [
+              1
+            ],
+            "model": "0x636e51ae0550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x636e4c46a870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x636e4c46a870",
+            "declared_nodes": 85,
+            "decode_id": 17,
+            "dense_matmul_ne11": [
+              1
+            ],
+            "model": "0x636e51ae0550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x636e4c23fec0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 5,
+              "tokens_per_seq": {
+                "0": 5
+              }
+            },
+            "ctx": "0x636e4c23fec0",
+            "declared_nodes": 3927,
+            "decode_id": 18,
+            "dense_matmul_ne11": [
+              5,
+              10,
+              40,
+              80,
+              320
+            ],
+            "model": "0x636e51ae0550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x636e4c46a870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 5,
+              "tokens_per_seq": {
+                "0": 5
+              }
+            },
+            "ctx": "0x636e4c46a870",
+            "declared_nodes": 85,
+            "decode_id": 19,
+            "dense_matmul_ne11": [
+              0,
+              5
+            ],
+            "model": "0x636e51ae0550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x636e4c46a870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x636e4c46a870",
+            "declared_nodes": 85,
+            "decode_id": 20,
+            "dense_matmul_ne11": [
+              1
+            ],
+            "model": "0x636e51ae0550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x636e4c46a870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x636e4c46a870",
+            "declared_nodes": 85,
+            "decode_id": 21,
+            "dense_matmul_ne11": [
+              1
+            ],
+            "model": "0x636e51ae0550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x636e4c46a870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x636e4c46a870",
+            "declared_nodes": 85,
+            "decode_id": 22,
+            "dense_matmul_ne11": [
+              1
+            ],
+            "model": "0x636e51ae0550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x636e4c46a870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x636e4c46a870",
+            "declared_nodes": 85,
+            "decode_id": 23,
+            "dense_matmul_ne11": [
+              1
+            ],
+            "model": "0x636e51ae0550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x636e4c23fec0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 5,
+              "tokens_per_seq": {
+                "0": 5
+              }
+            },
+            "ctx": "0x636e4c23fec0",
+            "declared_nodes": 3927,
+            "decode_id": 24,
+            "dense_matmul_ne11": [
+              5,
+              10,
+              40,
+              80,
+              320
+            ],
+            "model": "0x636e51ae0550"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x636e4c46a870",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 5,
+              "tokens_per_seq": {
+                "0": 5
+              }
+            },
+            "ctx": "0x636e4c46a870",
+            "declared_nodes": 85,
+            "decode_id": 25,
+            "dense_matmul_ne11": [
+              0,
+              5
+            ],
+            "model": "0x636e51ae0550"
+          }
+        ],
+        "instrument": "server",
+        "matmul_src1_shapes": [
+          [
+            64,
+            32,
+            1,
+            1
+          ],
+          [
+            64,
+            40,
+            1,
+            1
+          ],
+          [
+            64,
+            120,
+            1,
+            1
+          ],
+          [
+            64,
+            256,
+            1,
+            1
+          ],
+          [
+            64,
+            320,
+            1,
+            1
+          ],
+          [
+            64,
+            960,
+            1,
+            1
+          ],
+          [
+            256,
+            8,
+            1,
+            1
+          ],
+          [
+            256,
+            10,
+            1,
+            1
+          ],
+          [
+            256,
+            30,
+            1,
+            1
+          ],
+          [
+            256,
+            64,
+            1,
+            1
+          ],
+          [
+            256,
+            80,
+            1,
+            1
+          ],
+          [
+            256,
+            240,
+            1,
+            1
+          ],
+          [
+            512,
+            1,
+            1,
+            1
+          ],
+          [
+            512,
+            4,
+            1,
+            1
+          ],
+          [
+            512,
+            5,
+            1,
+            1
+          ],
+          [
+            512,
+            8,
+            1,
+            1
+          ],
+          [
+            512,
+            8,
+            4,
+            1
+          ],
+          [
+            512,
+            8,
+            5,
+            1
+          ],
+          [
+            512,
+            8,
+            15,
+            1
+          ],
+          [
+            512,
+            15,
+            1,
+            1
+          ],
+          [
+            2048,
+            0,
+            1,
+            1
+          ],
+          [
+            2048,
+            1,
+            1,
+            1
+          ],
+          [
+            2048,
+            1,
+            4,
+            1
+          ],
+          [
+            2048,
+            1,
+            5,
+            1
+          ],
+          [
+            2048,
+            1,
+            15,
+            1
+          ],
+          [
+            2048,
+            4,
+            1,
+            1
+          ],
+          [
+            2048,
+            5,
+            1,
+            1
+          ],
+          [
+            2048,
+            15,
+            1,
+            1
+          ],
+          [
+            4096,
+            1,
+            1,
+            1
+          ],
+          [
+            4096,
+            4,
+            1,
+            1
+          ],
+          [
+            4096,
+            5,
+            1,
+            1
+          ],
+          [
+            4096,
+            15,
+            1,
+            1
+          ]
+        ],
+        "native_shape_evidence": {
+          "configured_n_seq_max": [
+            1
+          ],
+          "configured_ubatch": [
+            2048
+          ],
+          "guards": {
+            "configured_parallelism": true,
+            "native_draft_counters": true,
+            "native_instrument_mapping": true,
+            "native_tensor_width_and_api_sequences": true,
+            "native_verify_width": true,
+            "prompt_counters_present": true,
+            "request_count": true,
+            "request_verify_budget": true,
+            "slot_occupancy_observed": true,
+            "terminal_responses": true
+          },
+          "native_prompt_tokens_by_slot": {
+            "0": 19
+          },
+          "native_single_tensor_width_and_api_sequences": true,
+          "native_verified_draft_widths": {
+            "0": [
+              4
+            ]
+          },
+          "observed": true,
+          "occupied_slot_sets": [
+            [
+              0
+            ],
+            [
+              0
+            ],
+            [
+              0
+            ],
+            []
+          ],
+          "sequence_scope": "observed concurrent server slots; tensor-level n_seq unproven"
+        },
+        "nodes_total": 21080,
+        "op_backend": {
+          "ADD": {
+            "CPU": 2320
+          },
+          "ARGSORT": {
+            "CPU": 217
+          },
+          "CONCAT": {
+            "CPU": 167
+          },
+          "CONT": {
+            "CPU": 67
+          },
+          "CPY": {
+            "CPU": 1200
+          },
+          "FLASH_ATTN_EXT": {
+            "CPU": 67
+          },
+          "GATED_DELTA_NET": {
+            "CPU": 150
+          },
+          "GET_ROWS": {
+            "CPU": 661
+          },
+          "GLU": {
+            "CPU": 434
+          },
+          "L2_NORM": {
+            "CPU": 300
+          },
+          "MOE_TOPK_NORM": {
+            "CPU": 217
+          },
+          "MUL": {
+            "CPU": 1575
+          },
+          "MUL_MAT": {
+            "CPU": 2342
+          },
+          "MUL_MAT_ID": {
+            "CPU": 651
+          },
+          "PAD": {
+            "CPU": 17
+          },
+          "PERMUTE": {
+            "CPU": 201
+          },
+          "RESHAPE": {
+            "CPU": 2502
+          },
+          "RMS_NORM": {
+            "CPU": 774
+          },
+          "ROPE": {
+            "CPU": 134
+          },
+          "SCALE": {
+            "CPU": 300
+          },
+          "SET_ROWS": {
+            "CPU": 134
+          },
+          "SSM_CONV": {
+            "CPU": 150
+          },
+          "TOP_K": {
+            "CPU": 17
+          },
+          "TRANSPOSE": {
+            "CPU": 150
+          },
+          "UNARY": {
+            "CPU": 884
+          },
+          "VIEW": {
+            "CPU": 5449
+          }
+        },
+        "op_type": {
+          "ADD:0:0:0": 2320,
+          "ARGSORT:26:0:missing": 217,
+          "CONCAT:0:0:0": 167,
+          "CONT:0:0:missing": 67,
+          "CPY:0:0:0": 1200,
+          "FLASH_ATTN_EXT:0:0:1": 17,
+          "FLASH_ATTN_EXT:0:0:8": 50,
+          "GATED_DELTA_NET:0:0:0": 150,
+          "GET_ROWS:0:0:26": 639,
+          "GET_ROWS:0:8:26": 22,
+          "GLU:0:0:0": 434,
+          "L2_NORM:0:0:missing": 300,
+          "MOE_TOPK_NORM:0:0:26": 217,
+          "MUL:0:0:0": 1575,
+          "MUL_MAT:0:0:0": 600,
+          "MUL_MAT:0:30:0": 34,
+          "MUL_MAT:0:8:0": 1708,
+          "MUL_MAT_ID:0:8:0": 651,
+          "PAD:0:0:missing": 17,
+          "PERMUTE:0:0:missing": 67,
+          "PERMUTE:1:1:missing": 34,
+          "PERMUTE:8:8:missing": 100,
+          "RESHAPE:0:0:missing": 2502,
+          "RMS_NORM:0:0:missing": 774,
+          "ROPE:0:0:26": 134,
+          "SCALE:0:0:missing": 300,
+          "SET_ROWS:1:0:27": 34,
+          "SET_ROWS:8:0:27": 100,
+          "SSM_CONV:0:0:0": 150,
+          "TOP_K:26:0:missing": 17,
+          "TRANSPOSE:0:0:missing": 150,
+          "UNARY:0:0:missing": 884,
+          "VIEW:0:0:missing": 5088,
+          "VIEW:1:1:missing": 34,
+          "VIEW:26:26:missing": 227,
+          "VIEW:8:8:missing": 100
+        },
+        "phase_log_byte_offset": 1443093,
+        "rc": 0,
+        "request_log": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/run-20261029T014132Z-449078/native-full/out/1793238113085460931/inf75-w3-canonical-halfa-r2-20261029-verify.requests.json",
+        "request_log_sha256": "fa310d60b431d89ed4e1d60f13a294a9576d6f862d9d2f6827b8caf327be05af",
+        "request_windows": [
+          {
+            "end_mono_ns": 1360713073445183,
+            "end_utc_ns": 1793238239839949161,
+            "start_mono_ns": 1360712651005391,
+            "start_utc_ns": 1793238239417510269,
+            "success": true
+          }
+        ],
+        "scope": "native compute cgraph host tensor metadata; no tensor-data reads",
+        "shape": {
+          "n_seq": 1,
+          "n_tokens": 4,
+          "phase": "verify"
+        },
+        "state": "OBSERVED"
+      }
+    ],
+    "shape_envelope": [
+      {
+        "n_seq": 1,
+        "n_tokens": 2048,
+        "phase": "prefill"
+      },
+      {
+        "n_seq": 1,
+        "n_tokens": 1,
+        "phase": "decode"
+      },
+      {
+        "n_seq": 1,
+        "n_tokens": 4,
+        "phase": "verify"
+      }
+    ]
+  },
+  "identity": {
+    "backend": "cpu",
+    "claim_cpus": "0-47,96-143",
+    "env": {
+      "GGML_IQK": "1",
+      "GGML_SCHED_DEBUG": "2",
+      "KMP_BLOCKTIME": "10",
+      "LANG": "C.UTF-8",
+      "LD_LIBRARY_PATH": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu/bin:/usr/lib/llvm-20/lib",
+      "LD_PRELOAD": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-census-prep/source-turn-2/libcensus-native.so",
+      "LLAMA_TRACE": "1",
+      "OMP_DYNAMIC": "false",
+      "OMP_NUM_THREADS": "48",
+      "OMP_PLACES": "cores",
+      "OMP_PROC_BIND": "spread",
+      "OMP_WAIT_POLICY": "active",
+      "PATH": "/usr/bin:/bin"
+    },
+    "kernel": {
+      "binary_sha256": "bfab92dffa31ad24f65ca53ec082ef8f1751b54d56efdc0f106bef797a72ee2e",
+      "commit": "c72ec82f5417bb2937310326120f149b665e8400"
+    },
+    "model": {
+      "path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131"
+    },
+    "recipe": {
+      "argv": [
+        "numactl",
+        "--interleave=0,1",
+        "--",
+        "taskset",
+        "-c",
+        "0-47,96-143",
+        "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu/bin/llama-server",
+        "-m",
+        "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "25024",
+        "-np",
+        "1",
+        "-c",
+        "262144",
+        "-t",
+        "48",
+        "-ub",
+        "2048",
+        "--flash-attn",
+        "on",
+        "--jinja",
+        "-ctk",
+        "q8_0",
+        "-ctv",
+        "q8_0",
+        "--mlock",
+        "--no-mmap",
+        "--cache-ram",
+        "32768",
+        "--ctx-checkpoints",
+        "32",
+        "--chat-template-file",
+        "/mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja",
+        "--spec-type",
+        "draft-mtp",
+        "--spec-draft-n-max",
+        "4",
+        "--reasoning",
+        "off",
+        "--slot-save-path",
+        "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/run-20261029T014132Z-449078/native-full/runtime-slots",
+        "--device",
+        "none",
+        "--device-draft",
+        "none",
+        "--no-kv-unified",
+        "--log-verbosity",
+        "4"
+      ],
+      "binary": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu/bin/llama-server",
+      "build_dir": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu",
+      "capture_inputs": {
+        "affinity_scope": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/affinity_scope.py",
+        "binary": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu/bin/llama-server",
+        "binding": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/recipe-provenance.json",
+        "build_complete": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/jobs/cpu/BUILD_COMPLETE",
+        "build_job": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/jobs/cpu/job.sh",
+        "build_log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/jobs/cpu/BUILD.log",
+        "build_receipt_binding": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-census-prep/w3-halfb-r1/BUILD-RECEIPT-PATH",
+        "build_sources": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/jobs/cpu/source-files.sha256",
+        "capture_module": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/producer/autokernel/loop/census_capture.py",
+        "chat_template": "/mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja",
+        "driver": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/full_main.py",
+        "elf_manifest": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/jobs/cpu/ELF.sha256",
+        "eviction_receipt": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/run-20261029T014132Z-449078/native-full/out-pre-eviction.json",
+        "eviction_source": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-census-prep/orchestrator-native-export/scripts/server/stack_numa_evict.py",
+        "foreign_load": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/foreign_load.py",
+        "instrument_library": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-census-prep/source-turn-2/libcensus-native.so",
+        "instrument_receipt": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-census-prep/source-turn-2/instrument-identity.sha256",
+        "instrument_source": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-census-prep/native_trace.c",
+        "model": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+        "native_export": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-census-prep/native-production-enrollment.json",
+        "owner_start": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/run-20261029T014132Z-449078/native-full/entry-facts.json",
+        "producer": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/producer/autokernel/loop/census.py",
+        "recipe": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/recipes.json",
+        "residency": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/producer/autokernel/loop/residency.py",
+        "server_evidence": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/server_evidence_full.py",
+        "server_probe": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/server_probe_full.py",
+        "source_manifest": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/SOURCES.sha256",
+        "workload_contract": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/producer/autokernel/controller/workload_contract.py"
+      },
+      "diagnostic_deltas": {
+        "kernel": "private champion C5 with native graph tracer, no timing claim",
+        "kv_mode": "explicit split equivalent",
+        "log_verbosity": 4,
+        "port": [
+          8080,
+          25024
+        ],
+        "prefill": "actual4096-token prompt to observe native2048 block, as accepted v6; no API-token-count equivalence assertion",
+        "slot_save_path": "private scratch",
+        "startup_eviction": "40GiB target on OWNED NUMA0,1 only; original all-node helper not invoked"
+      },
+      "env": {
+        "GGML_IQK": "1",
+        "GGML_SCHED_DEBUG": "2",
+        "KMP_BLOCKTIME": "10",
+        "LANG": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu/bin:/usr/lib/llvm-20/lib",
+        "LD_PRELOAD": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-census-prep/source-turn-2/libcensus-native.so",
+        "LLAMA_TRACE": "1",
+        "OMP_DYNAMIC": "false",
+        "OMP_NUM_THREADS": "48",
+        "OMP_PLACES": "cores",
+        "OMP_PROC_BIND": "spread",
+        "OMP_WAIT_POLICY": "active",
+        "PATH": "/usr/bin:/bin"
+      },
+      "expected_ops": [
+        "MUL_MAT",
+        "MUL_MAT_ID"
+      ],
+      "foreign_load": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/foreign_load.py",
+      "id": "inf75-w3-canonical-halfa-r2-20261029",
+      "instrument_library": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-census-prep/source-turn-2/libcensus-native.so",
+      "kernel_commit": "c72ec82f5417bb2937310326120f149b665e8400",
+      "model": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "physical_cpus": "0-47",
+      "port": 25024,
+      "request_files": {
+        "decode": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/requests-decode.json",
+        "prefill": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/requests-prefill.json",
+        "verify": "/mnt/raid0/llm/tmp/codex-w3-canonical-halfa-r2-20261029/requests-verify.json"
+      },
+      "scope": "registered W3 half-A t48 np1 MTP4; instrumented structural census, no rate claim",
+      "source_export_sha256": "fc2e0f9c22e3efec2ff6f18ffb2d12875b77c9834576c52c215678e8c1ec59fe",
+      "source_target": "frontdoor@8080",
+      "timeout_s": 300
+    },
+    "scope": "registered W3 half-A t48 np1 MTP4; instrumented structural census, no rate claim",
+    "startup_receipt": {
+      "after_free_mb": {
+        "0": 75538,
+        "1": 54643,
+        "2": 30988,
+        "3": 49604
+      },
+      "allocations": [],
+      "attempt_details": [],
+      "before_free_mb": {
+        "0": 75538,
+        "1": 54643,
+        "2": 30988,
+        "3": 49604
+      },
+      "log": [],
+      "recorded_ns": 1793238113089897292,
+      "scope": "owned NUMA0,1 ONLY; explicit startup delta from global pre-eviction",
+      "short_nodes": [],
+      "touch_implementation": "four-worker native libc memset all bytes",
+      "touch_timeout_s": 120
+    },
+    "workload_id": "inf75-w3-canonical-halfa-r2-20261029",
+    "workload_signature": "registered W3 half-A t48 np1 MTP4; instrumented structural census, no rate claim"
+  },
+  "schema": "epyc.autokernel.workload_census.v1",
+  "validity": {
+    "freshness_key": "b65edc5165c0e66d9644d548e79aee0accb685c7b911a2b8a9dbdb910a9b863c",
+    "observed": true,
+    "state": "OBSERVED",
+    "vacuous_guards": {
+      "all_nodes_gt_min": true,
+      "n_shapes_matches_envelope": true
+    }
+  },
+  "weights": {
+    "architecture": "qwen35moe",
+    "dominant_quant": "Q8_0",
+    "n_embd": 2048,
+    "path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+    "schema": "epyc.autokernel.gpu_workload_contract.v1",
+    "superblock_compatible": true,
+    "tensor_types": {
+      "BF16": 2,
+      "F32": 308,
+      "Q8_0": 443
+    }
+  }
+}

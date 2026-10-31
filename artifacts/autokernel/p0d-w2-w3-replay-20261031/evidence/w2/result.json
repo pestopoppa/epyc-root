@@ -1,0 +1,48 @@
+{
+  "rc": 0,
+  "partial": false,
+  "first_request_ok": true,
+  "result_writer_ok": true,
+  "requests_completed": 0,
+  "current_W2_CPU_observed": true,
+  "historical_GPU_W2_closed": false,
+  "scope": "fresh current exported W2 CPU prefill512/decode1+image component; oldGPUW2 and fullP0d open",
+  "models_full_hash_verified": [
+    "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf",
+    "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/mmproj-Qwen3-VL-30B-A3B-Instruct-F16.gguf"
+  ],
+  "native_summary": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/run-20261029T020133Z-566638/native-full/out/1793239303713576738/SUMMARY.json",
+  "cleanup_verified": true,
+  "wall_s": 101.9064712524414,
+  "watch": {
+    "partial": false,
+    "cleanup_verified": true,
+    "failure": null,
+    "root_pid": 566647,
+    "native_rc": 0,
+    "captured": {
+      "566647": {
+        "birth": 136176648,
+        "current": null
+      },
+      "568256": {
+        "birth": 136179710,
+        "current": null
+      },
+      "568257": {
+        "birth": 136179710,
+        "current": null
+      },
+      "571644": {
+        "birth": 136185225,
+        "current": null
+      },
+      "571643": {
+        "birth": 136185225,
+        "current": null
+      }
+    },
+    "sampled_peak_kib": 23328364,
+    "rc": 0
+  }
+}

@@ -1,0 +1,2296 @@
+{
+  "graph": {
+    "per_shape": [
+      {
+        "argv": [
+          "numactl",
+          "--interleave=0,1",
+          "--",
+          "taskset",
+          "-c",
+          "0-47,96-143",
+          "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu/bin/llama-server",
+          "-m",
+          "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf",
+          "--mmproj",
+          "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/mmproj-Qwen3-VL-30B-A3B-Instruct-F16.gguf",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "25025",
+          "-np",
+          "1",
+          "-c",
+          "65536",
+          "-t",
+          "48",
+          "--flash-attn",
+          "on",
+          "-ctk",
+          "q8_0",
+          "-ctv",
+          "q8_0",
+          "--device",
+          "none",
+          "--image-min-tokens",
+          "1024",
+          "--cache-ram",
+          "0",
+          "--no-mmproj-offload",
+          "--no-kv-unified",
+          "--log-verbosity",
+          "4",
+          "--slot-save-path",
+          "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/run-20261029T020133Z-566638/native-full/runtime-slots"
+        ],
+        "device_seen": false,
+        "error": "",
+        "foreign_interval_counts": [
+          479
+        ],
+        "foreign_load": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/run-20261029T020133Z-566638/native-full/out/1793239303713576738/inf75-w2-current-cpu-census-r3-20261029-prefill.foreign-load.jsonl",
+        "foreign_load_sha256": "0ae18a41b4ff832611971c651626fde34e1fccd9aa40fa015237b31f8169991a",
+        "graphs": [
+          {
+            "api_batch": {
+              "ctx": "0x6425445395d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x6425445395d0",
+            "declared_nodes": 3278,
+            "decode_id": 3,
+            "dense_matmul_ne11": [
+              0,
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 3,
+            "model": "0x642543b918a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x6425445395d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1024,
+              "tokens_per_seq": {
+                "0": 1024
+              }
+            },
+            "ctx": "0x6425445395d0",
+            "declared_nodes": 3278,
+            "decode_id": 4,
+            "dense_matmul_ne11": [
+              0,
+              512,
+              2048,
+              4096,
+              16384,
+              32768
+            ],
+            "gid": 5,
+            "model": "0x642543b918a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x6425445395d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1024,
+              "tokens_per_seq": {
+                "0": 1024
+              }
+            },
+            "ctx": "0x6425445395d0",
+            "declared_nodes": 3278,
+            "decode_id": 4,
+            "dense_matmul_ne11": [
+              0,
+              512,
+              2048,
+              4096,
+              16384,
+              32768
+            ],
+            "gid": 6,
+            "model": "0x642543b918a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x6425445395d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 2048,
+              "tokens_per_seq": {
+                "0": 2048
+              }
+            },
+            "ctx": "0x6425445395d0",
+            "declared_nodes": 3278,
+            "decode_id": 5,
+            "dense_matmul_ne11": [
+              0,
+              512,
+              2048,
+              4096,
+              16384,
+              32768
+            ],
+            "gid": 7,
+            "model": "0x642543b918a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x6425445395d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 2048,
+              "tokens_per_seq": {
+                "0": 2048
+              }
+            },
+            "ctx": "0x6425445395d0",
+            "declared_nodes": 3278,
+            "decode_id": 5,
+            "dense_matmul_ne11": [
+              0,
+              512,
+              2048,
+              4096,
+              16384,
+              32768
+            ],
+            "gid": 8,
+            "model": "0x642543b918a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x6425445395d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 2048,
+              "tokens_per_seq": {
+                "0": 2048
+              }
+            },
+            "ctx": "0x6425445395d0",
+            "declared_nodes": 3278,
+            "decode_id": 5,
+            "dense_matmul_ne11": [
+              0,
+              512,
+              2048,
+              4096,
+              16384,
+              32768
+            ],
+            "gid": 9,
+            "model": "0x642543b918a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x6425445395d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 2048,
+              "tokens_per_seq": {
+                "0": 2048
+              }
+            },
+            "ctx": "0x6425445395d0",
+            "declared_nodes": 3278,
+            "decode_id": 5,
+            "dense_matmul_ne11": [
+              0,
+              512,
+              2048,
+              4096,
+              16384,
+              32768
+            ],
+            "gid": 10,
+            "model": "0x642543b918a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x6425445395d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1159,
+              "tokens_per_seq": {
+                "0": 1159
+              }
+            },
+            "ctx": "0x6425445395d0",
+            "declared_nodes": 3278,
+            "decode_id": 6,
+            "dense_matmul_ne11": [
+              0,
+              512,
+              2048,
+              4096,
+              16384,
+              32768
+            ],
+            "gid": 11,
+            "model": "0x642543b918a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x6425445395d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1159,
+              "tokens_per_seq": {
+                "0": 1159
+              }
+            },
+            "ctx": "0x6425445395d0",
+            "declared_nodes": 3278,
+            "decode_id": 6,
+            "dense_matmul_ne11": [
+              0,
+              512,
+              2048,
+              4096,
+              16384,
+              32768
+            ],
+            "gid": 12,
+            "model": "0x642543b918a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x6425445395d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1159,
+              "tokens_per_seq": {
+                "0": 1159
+              }
+            },
+            "ctx": "0x6425445395d0",
+            "declared_nodes": 3278,
+            "decode_id": 6,
+            "dense_matmul_ne11": [
+              1,
+              135,
+              540,
+              1080,
+              4320,
+              8640
+            ],
+            "gid": 13,
+            "model": "0x642543b918a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x6425445395d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x6425445395d0",
+            "declared_nodes": 3278,
+            "decode_id": 7,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 14,
+            "model": "0x642543b918a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x6425445395d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x6425445395d0",
+            "declared_nodes": 3278,
+            "decode_id": 8,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 15,
+            "model": "0x642543b918a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x6425445395d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x6425445395d0",
+            "declared_nodes": 3278,
+            "decode_id": 9,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 16,
+            "model": "0x642543b918a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x6425445395d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x6425445395d0",
+            "declared_nodes": 3278,
+            "decode_id": 10,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 17,
+            "model": "0x642543b918a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x6425445395d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x6425445395d0",
+            "declared_nodes": 3278,
+            "decode_id": 11,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 18,
+            "model": "0x642543b918a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x6425445395d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x6425445395d0",
+            "declared_nodes": 3278,
+            "decode_id": 12,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 19,
+            "model": "0x642543b918a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x6425445395d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x6425445395d0",
+            "declared_nodes": 3278,
+            "decode_id": 13,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 20,
+            "model": "0x642543b918a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x6425445395d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x6425445395d0",
+            "declared_nodes": 3278,
+            "decode_id": 14,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 21,
+            "model": "0x642543b918a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x6425445395d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x6425445395d0",
+            "declared_nodes": 3278,
+            "decode_id": 15,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 22,
+            "model": "0x642543b918a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x6425445395d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x6425445395d0",
+            "declared_nodes": 3278,
+            "decode_id": 16,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 23,
+            "model": "0x642543b918a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x6425445395d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x6425445395d0",
+            "declared_nodes": 3278,
+            "decode_id": 17,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 24,
+            "model": "0x642543b918a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x6425445395d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x6425445395d0",
+            "declared_nodes": 3278,
+            "decode_id": 18,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 25,
+            "model": "0x642543b918a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x6425445395d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x6425445395d0",
+            "declared_nodes": 3278,
+            "decode_id": 19,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 26,
+            "model": "0x642543b918a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x6425445395d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x6425445395d0",
+            "declared_nodes": 3278,
+            "decode_id": 20,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 27,
+            "model": "0x642543b918a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x6425445395d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x6425445395d0",
+            "declared_nodes": 3278,
+            "decode_id": 21,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 28,
+            "model": "0x642543b918a0"
+          }
+        ],
+        "instrument": "server",
+        "matmul_src1_shapes": [
+          [
+            64,
+            8,
+            1,
+            1
+          ],
+          [
+            64,
+            64,
+            1,
+            1
+          ],
+          [
+            64,
+            1080,
+            1,
+            1
+          ],
+          [
+            64,
+            4096,
+            1,
+            1
+          ],
+          [
+            64,
+            8640,
+            1,
+            1
+          ],
+          [
+            64,
+            32768,
+            1,
+            1
+          ],
+          [
+            128,
+            4,
+            1,
+            1
+          ],
+          [
+            128,
+            32,
+            1,
+            1
+          ],
+          [
+            128,
+            540,
+            1,
+            1
+          ],
+          [
+            128,
+            2048,
+            1,
+            1
+          ],
+          [
+            128,
+            4320,
+            1,
+            1
+          ],
+          [
+            128,
+            16384,
+            1,
+            1
+          ],
+          [
+            768,
+            8,
+            0,
+            1
+          ],
+          [
+            768,
+            8,
+            1,
+            1
+          ],
+          [
+            768,
+            8,
+            135,
+            1
+          ],
+          [
+            768,
+            8,
+            512,
+            1
+          ],
+          [
+            2048,
+            0,
+            1,
+            1
+          ],
+          [
+            2048,
+            1,
+            0,
+            1
+          ],
+          [
+            2048,
+            1,
+            1,
+            1
+          ],
+          [
+            2048,
+            1,
+            135,
+            1
+          ],
+          [
+            2048,
+            1,
+            512,
+            1
+          ],
+          [
+            2048,
+            135,
+            1,
+            1
+          ],
+          [
+            2048,
+            512,
+            1,
+            1
+          ],
+          [
+            4096,
+            1,
+            1,
+            1
+          ],
+          [
+            4096,
+            135,
+            1,
+            1
+          ],
+          [
+            4096,
+            512,
+            1,
+            1
+          ]
+        ],
+        "native_shape_evidence": {
+          "configured_n_seq_max": [
+            1
+          ],
+          "configured_ubatch": [
+            512
+          ],
+          "guards": {
+            "configured_parallelism": true,
+            "configured_ubatch": true,
+            "frozen_multimodal_body": true,
+            "image_encoder_attribution": true,
+            "native_instrument_mapping": true,
+            "native_prompt_width": true,
+            "native_tensor_width_and_api_sequences": true,
+            "prompt_counters_present": true,
+            "request_count": true,
+            "slot_occupancy_observed": true,
+            "terminal_responses": true
+          },
+          "image_encoder": {
+            "encodes": [
+              {
+                "encode_id": 1,
+                "graphs": [
+                  4
+                ],
+                "llm_model_pointer": "0x642543b918a0",
+                "mmctx": "0x642543a94b90",
+                "native_chunk_id": "1531855450858698784",
+                "native_tokens": 1024
+              }
+            ],
+            "nodes_total": 853,
+            "observed": true,
+            "op_backend": {
+              "ADD": {
+                "CPU": 231
+              },
+              "CONCAT": {
+                "CPU": 3
+              },
+              "CONT": {
+                "CPU": 7
+              },
+              "CPY": {
+                "CPU": 54
+              },
+              "FLASH_ATTN_EXT": {
+                "CPU": 27
+              },
+              "IM2COL": {
+                "CPU": 2
+              },
+              "MUL": {
+                "CPU": 58
+              },
+              "MUL_MAT": {
+                "CPU": 118
+              },
+              "NORM": {
+                "CPU": 58
+              },
+              "PERMUTE": {
+                "CPU": 88
+              },
+              "RESHAPE": {
+                "CPU": 40
+              },
+              "ROPE": {
+                "CPU": 54
+              },
+              "UNARY": {
+                "CPU": 31
+              },
+              "UPSCALE": {
+                "CPU": 1
+              },
+              "VIEW": {
+                "CPU": 81
+              }
+            },
+            "scope": "native image encode calls and same-call compute-graph host metadata inside actual successful HTTP windows; no kernel-function/timing/quality claim"
+          },
+          "native_microbatch_witnesses": [
+            {
+              "api_batch_tokens": 1024,
+              "ctx": "0x6425445395d0",
+              "decode_id": 4,
+              "gid": 5,
+              "graph_window": {
+                "end_mono_ns": 1361809375413160,
+                "end_utc_ns": 1793239336141916788,
+                "start_mono_ns": 1361808459449145,
+                "start_utc_ns": 1793239335225952513
+              },
+              "model": "0x642543b918a0",
+              "native_tensor_width": 512,
+              "tokens_per_seq": {
+                "0": 1024
+              }
+            },
+            {
+              "api_batch_tokens": 1024,
+              "ctx": "0x6425445395d0",
+              "decode_id": 4,
+              "gid": 6,
+              "graph_window": {
+                "end_mono_ns": 1361810944370197,
+                "end_utc_ns": 1793239337710873845,
+                "start_mono_ns": 1361809378940733,
+                "start_utc_ns": 1793239336145444171
+              },
+              "model": "0x642543b918a0",
+              "native_tensor_width": 512,
+              "tokens_per_seq": {
+                "0": 1024
+              }
+            },
+            {
+              "api_batch_tokens": 2048,
+              "ctx": "0x6425445395d0",
+              "decode_id": 5,
+              "gid": 7,
+              "graph_window": {
+                "end_mono_ns": 1361813440526326,
+                "end_utc_ns": 1793239340207029964,
+                "start_mono_ns": 1361810949452071,
+                "start_utc_ns": 1793239337715955469
+              },
+              "model": "0x642543b918a0",
+              "native_tensor_width": 512,
+              "tokens_per_seq": {
+                "0": 2048
+              }
+            },
+            {
+              "api_batch_tokens": 2048,
+              "ctx": "0x6425445395d0",
+              "decode_id": 5,
+              "gid": 8,
+              "graph_window": {
+                "end_mono_ns": 1361816708043594,
+                "end_utc_ns": 1793239343474547232,
+                "start_mono_ns": 1361813443086573,
+                "start_utc_ns": 1793239340209589981
+              },
+              "model": "0x642543b918a0",
+              "native_tensor_width": 512,
+              "tokens_per_seq": {
+                "0": 2048
+              }
+            },
+            {
+              "api_batch_tokens": 2048,
+              "ctx": "0x6425445395d0",
+              "decode_id": 5,
+              "gid": 9,
+              "graph_window": {
+                "end_mono_ns": 1361820698209542,
+                "end_utc_ns": 1793239347464713180,
+                "start_mono_ns": 1361816710590121,
+                "start_utc_ns": 1793239343477093529
+              },
+              "model": "0x642543b918a0",
+              "native_tensor_width": 512,
+              "tokens_per_seq": {
+                "0": 2048
+              }
+            },
+            {
+              "api_batch_tokens": 2048,
+              "ctx": "0x6425445395d0",
+              "decode_id": 5,
+              "gid": 10,
+              "graph_window": {
+                "end_mono_ns": 1361825554281102,
+                "end_utc_ns": 1793239352320784730,
+                "start_mono_ns": 1361820700767869,
+                "start_utc_ns": 1793239347467271297
+              },
+              "model": "0x642543b918a0",
+              "native_tensor_width": 512,
+              "tokens_per_seq": {
+                "0": 2048
+              }
+            },
+            {
+              "api_batch_tokens": 1159,
+              "ctx": "0x6425445395d0",
+              "decode_id": 6,
+              "gid": 11,
+              "graph_window": {
+                "end_mono_ns": 1361831272822516,
+                "end_utc_ns": 1793239358039326144,
+                "start_mono_ns": 1361825558420220,
+                "start_utc_ns": 1793239352324923628
+              },
+              "model": "0x642543b918a0",
+              "native_tensor_width": 512,
+              "tokens_per_seq": {
+                "0": 1159
+              }
+            },
+            {
+              "api_batch_tokens": 1159,
+              "ctx": "0x6425445395d0",
+              "decode_id": 6,
+              "gid": 12,
+              "graph_window": {
+                "end_mono_ns": 1361837676044078,
+                "end_utc_ns": 1793239364442547716,
+                "start_mono_ns": 1361831275534144,
+                "start_utc_ns": 1793239358042037572
+              },
+              "model": "0x642543b918a0",
+              "native_tensor_width": 512,
+              "tokens_per_seq": {
+                "0": 1159
+              }
+            }
+          ],
+          "native_prompt_tokens_by_slot": {
+            "0": 4232
+          },
+          "native_shape_scope": "exact512 native compute microbatch inside a successful single-sequence API call; API batch width may be larger",
+          "native_single_tensor_width_and_api_sequences": true,
+          "native_verified_draft_widths": {},
+          "observed": true,
+          "occupied_slot_sets": [
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [
+              0
+            ],
+            [
+              0
+            ],
+            [
+              0
+            ],
+            [
+              0
+            ],
+            [
+              0
+            ],
+            [
+              0
+            ],
+            [
+              0
+            ],
+            [
+              0
+            ]
+          ],
+          "requested_prefill_tokens": 512,
+          "sequence_scope": "observed concurrent server slots; tensor-level n_seq unproven",
+          "split_prefill": {
+            "observed_split_prefill": false,
+            "scope": "descriptive only; does not prove one requested-width tensor",
+            "witnesses": []
+          }
+        },
+        "native_trace": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/run-20261029T020133Z-566638/native-full/out/1793239303713576738/inf75-w2-current-cpu-census-r3-20261029-prefill.native-trace.log",
+        "native_trace_byte_offset": 1085696,
+        "native_trace_sha256": "32318acb8f5690acba2bab4a2e66fa6ceaa7439328e3926b2d4dc45f3930f58a",
+        "nodes_total": 81950,
+        "op_backend": {
+          "ADD": {
+            "CPU": 10875
+          },
+          "ARGSORT": {
+            "CPU": 1200
+          },
+          "FLASH_ATTN_EXT": {
+            "CPU": 1200
+          },
+          "GET_ROWS": {
+            "CPU": 75
+          },
+          "GLU": {
+            "CPU": 1200
+          },
+          "MOE_TOPK_NORM": {
+            "CPU": 1200
+          },
+          "MUL": {
+            "CPU": 6025
+          },
+          "MUL_MAT": {
+            "CPU": 10825
+          },
+          "MUL_MAT_ID": {
+            "CPU": 3600
+          },
+          "PAD": {
+            "CPU": 25
+          },
+          "PERMUTE": {
+            "CPU": 3600
+          },
+          "RESHAPE": {
+            "CPU": 15600
+          },
+          "RMS_NORM": {
+            "CPU": 4825
+          },
+          "ROPE": {
+            "CPU": 2400
+          },
+          "SET_ROWS": {
+            "CPU": 2400
+          },
+          "VIEW": {
+            "CPU": 16900
+          }
+        },
+        "op_type": {
+          "ADD:0:0:0": 10875,
+          "ARGSORT:26:0:missing": 1200,
+          "FLASH_ATTN_EXT:0:0:8": 1200,
+          "GET_ROWS:0:0:26": 50,
+          "GET_ROWS:0:12:26": 25,
+          "GLU:0:0:0": 1200,
+          "MOE_TOPK_NORM:0:0:26": 1200,
+          "MUL:0:0:0": 6025,
+          "MUL_MAT:0:0:0": 6000,
+          "MUL_MAT:0:12:0": 4200,
+          "MUL_MAT:0:14:0": 625,
+          "MUL_MAT_ID:0:12:0": 3000,
+          "MUL_MAT_ID:0:14:0": 600,
+          "PAD:0:0:missing": 25,
+          "PERMUTE:0:0:missing": 1200,
+          "PERMUTE:8:8:missing": 2400,
+          "RESHAPE:0:0:missing": 15600,
+          "RMS_NORM:0:0:missing": 4825,
+          "ROPE:0:0:26": 2400,
+          "SET_ROWS:8:0:27": 2400,
+          "VIEW:0:0:missing": 13300,
+          "VIEW:26:26:missing": 1200,
+          "VIEW:8:8:missing": 2400
+        },
+        "phase_log_byte_offset": 101739,
+        "rc": 0,
+        "request_log": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/run-20261029T020133Z-566638/native-full/out/1793239303713576738/inf75-w2-current-cpu-census-r3-20261029-prefill.requests.json",
+        "request_log_sha256": "24f466c4360f56e400216a432a6ecea08f7f75950fa184bc7814548a49b3c73a",
+        "request_windows": [
+          {
+            "end_mono_ns": 1361840303732691,
+            "end_utc_ns": 1793239367070238069,
+            "start_mono_ns": 1361799239960410,
+            "start_utc_ns": 1793239326006465918,
+            "success": true
+          }
+        ],
+        "scope": "native compute cgraph host tensor metadata; no tensor-data reads",
+        "shape": {
+          "n_seq": 1,
+          "n_tokens": 512,
+          "phase": "prefill"
+        },
+        "state": "OBSERVED"
+      },
+      {
+        "argv": [
+          "numactl",
+          "--interleave=0,1",
+          "--",
+          "taskset",
+          "-c",
+          "0-47,96-143",
+          "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu/bin/llama-server",
+          "-m",
+          "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf",
+          "--mmproj",
+          "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/mmproj-Qwen3-VL-30B-A3B-Instruct-F16.gguf",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "25025",
+          "-np",
+          "1",
+          "-c",
+          "65536",
+          "-t",
+          "48",
+          "--flash-attn",
+          "on",
+          "-ctk",
+          "q8_0",
+          "-ctv",
+          "q8_0",
+          "--device",
+          "none",
+          "--image-min-tokens",
+          "1024",
+          "--cache-ram",
+          "0",
+          "--no-mmproj-offload",
+          "--no-kv-unified",
+          "--log-verbosity",
+          "4",
+          "--slot-save-path",
+          "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/run-20261029T020133Z-566638/native-full/runtime-slots"
+        ],
+        "device_seen": false,
+        "error": "",
+        "foreign_interval_counts": [
+          144
+        ],
+        "foreign_load": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/run-20261029T020133Z-566638/native-full/out/1793239303713576738/inf75-w2-current-cpu-census-r3-20261029-decode.foreign-load.jsonl",
+        "foreign_load_sha256": "e9be97dac10e9f5bc6a69734fa2e14615ebe2c86ab5cde7c575dd28d86c388a3",
+        "graphs": [
+          {
+            "api_batch": {
+              "ctx": "0x564bae6aa5d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x564bae6aa5d0",
+            "declared_nodes": 3278,
+            "decode_id": 3,
+            "dense_matmul_ne11": [
+              0,
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 3,
+            "model": "0x564badd028a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x564bae6aa5d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1024,
+              "tokens_per_seq": {
+                "0": 1024
+              }
+            },
+            "ctx": "0x564bae6aa5d0",
+            "declared_nodes": 3278,
+            "decode_id": 4,
+            "dense_matmul_ne11": [
+              0,
+              512,
+              2048,
+              4096,
+              16384,
+              32768
+            ],
+            "gid": 5,
+            "model": "0x564badd028a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x564bae6aa5d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1024,
+              "tokens_per_seq": {
+                "0": 1024
+              }
+            },
+            "ctx": "0x564bae6aa5d0",
+            "declared_nodes": 3278,
+            "decode_id": 4,
+            "dense_matmul_ne11": [
+              0,
+              512,
+              2048,
+              4096,
+              16384,
+              32768
+            ],
+            "gid": 6,
+            "model": "0x564badd028a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x564bae6aa5d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 7,
+              "tokens_per_seq": {
+                "0": 7
+              }
+            },
+            "ctx": "0x564bae6aa5d0",
+            "declared_nodes": 3278,
+            "decode_id": 5,
+            "dense_matmul_ne11": [
+              1,
+              7,
+              28,
+              56,
+              224,
+              448
+            ],
+            "gid": 7,
+            "model": "0x564badd028a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x564bae6aa5d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x564bae6aa5d0",
+            "declared_nodes": 3278,
+            "decode_id": 6,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 8,
+            "model": "0x564badd028a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x564bae6aa5d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x564bae6aa5d0",
+            "declared_nodes": 3278,
+            "decode_id": 7,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 9,
+            "model": "0x564badd028a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x564bae6aa5d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x564bae6aa5d0",
+            "declared_nodes": 3278,
+            "decode_id": 8,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 10,
+            "model": "0x564badd028a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x564bae6aa5d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x564bae6aa5d0",
+            "declared_nodes": 3278,
+            "decode_id": 9,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 11,
+            "model": "0x564badd028a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x564bae6aa5d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x564bae6aa5d0",
+            "declared_nodes": 3278,
+            "decode_id": 10,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 12,
+            "model": "0x564badd028a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x564bae6aa5d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x564bae6aa5d0",
+            "declared_nodes": 3278,
+            "decode_id": 11,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 13,
+            "model": "0x564badd028a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x564bae6aa5d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x564bae6aa5d0",
+            "declared_nodes": 3278,
+            "decode_id": 12,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 14,
+            "model": "0x564badd028a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x564bae6aa5d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x564bae6aa5d0",
+            "declared_nodes": 3278,
+            "decode_id": 13,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 15,
+            "model": "0x564badd028a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x564bae6aa5d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x564bae6aa5d0",
+            "declared_nodes": 3278,
+            "decode_id": 14,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 16,
+            "model": "0x564badd028a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x564bae6aa5d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x564bae6aa5d0",
+            "declared_nodes": 3278,
+            "decode_id": 15,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 17,
+            "model": "0x564badd028a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x564bae6aa5d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x564bae6aa5d0",
+            "declared_nodes": 3278,
+            "decode_id": 16,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 18,
+            "model": "0x564badd028a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x564bae6aa5d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x564bae6aa5d0",
+            "declared_nodes": 3278,
+            "decode_id": 17,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 19,
+            "model": "0x564badd028a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x564bae6aa5d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x564bae6aa5d0",
+            "declared_nodes": 3278,
+            "decode_id": 18,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 20,
+            "model": "0x564badd028a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x564bae6aa5d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x564bae6aa5d0",
+            "declared_nodes": 3278,
+            "decode_id": 19,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 21,
+            "model": "0x564badd028a0"
+          },
+          {
+            "api_batch": {
+              "ctx": "0x564bae6aa5d0",
+              "scope": "api_batch, coupled to native tensor metadata by decode_id",
+              "tokens": 1,
+              "tokens_per_seq": {
+                "0": 1
+              }
+            },
+            "ctx": "0x564bae6aa5d0",
+            "declared_nodes": 3278,
+            "decode_id": 20,
+            "dense_matmul_ne11": [
+              1,
+              4,
+              8,
+              32,
+              64
+            ],
+            "gid": 22,
+            "model": "0x564badd028a0"
+          }
+        ],
+        "instrument": "server",
+        "matmul_src1_shapes": [
+          [
+            64,
+            8,
+            1,
+            1
+          ],
+          [
+            64,
+            56,
+            1,
+            1
+          ],
+          [
+            64,
+            64,
+            1,
+            1
+          ],
+          [
+            64,
+            448,
+            1,
+            1
+          ],
+          [
+            64,
+            4096,
+            1,
+            1
+          ],
+          [
+            64,
+            32768,
+            1,
+            1
+          ],
+          [
+            128,
+            4,
+            1,
+            1
+          ],
+          [
+            128,
+            28,
+            1,
+            1
+          ],
+          [
+            128,
+            32,
+            1,
+            1
+          ],
+          [
+            128,
+            224,
+            1,
+            1
+          ],
+          [
+            128,
+            2048,
+            1,
+            1
+          ],
+          [
+            128,
+            16384,
+            1,
+            1
+          ],
+          [
+            768,
+            8,
+            0,
+            1
+          ],
+          [
+            768,
+            8,
+            1,
+            1
+          ],
+          [
+            768,
+            8,
+            7,
+            1
+          ],
+          [
+            768,
+            8,
+            512,
+            1
+          ],
+          [
+            2048,
+            0,
+            1,
+            1
+          ],
+          [
+            2048,
+            1,
+            0,
+            1
+          ],
+          [
+            2048,
+            1,
+            1,
+            1
+          ],
+          [
+            2048,
+            1,
+            7,
+            1
+          ],
+          [
+            2048,
+            1,
+            512,
+            1
+          ],
+          [
+            2048,
+            7,
+            1,
+            1
+          ],
+          [
+            2048,
+            512,
+            1,
+            1
+          ],
+          [
+            4096,
+            1,
+            1,
+            1
+          ],
+          [
+            4096,
+            7,
+            1,
+            1
+          ],
+          [
+            4096,
+            512,
+            1,
+            1
+          ]
+        ],
+        "native_shape_evidence": {
+          "configured_n_seq_max": [
+            1
+          ],
+          "configured_ubatch": [
+            512
+          ],
+          "guards": {
+            "configured_parallelism": true,
+            "image_encoder_attribution": true,
+            "native_instrument_mapping": true,
+            "native_tensor_width_and_api_sequences": true,
+            "plain_decode_request": true,
+            "plain_decode_response": true,
+            "prompt_counters_present": true,
+            "request_count": true,
+            "slot_occupancy_observed": true,
+            "terminal_responses": true
+          },
+          "image_encoder": {
+            "encodes": [
+              {
+                "encode_id": 1,
+                "graphs": [
+                  4
+                ],
+                "llm_model_pointer": "0x564badd028a0",
+                "mmctx": "0x564badc05b90",
+                "native_chunk_id": "1531855450858698784",
+                "native_tokens": 1024
+              }
+            ],
+            "nodes_total": 853,
+            "observed": true,
+            "op_backend": {
+              "ADD": {
+                "CPU": 231
+              },
+              "CONCAT": {
+                "CPU": 3
+              },
+              "CONT": {
+                "CPU": 7
+              },
+              "CPY": {
+                "CPU": 54
+              },
+              "FLASH_ATTN_EXT": {
+                "CPU": 27
+              },
+              "IM2COL": {
+                "CPU": 2
+              },
+              "MUL": {
+                "CPU": 58
+              },
+              "MUL_MAT": {
+                "CPU": 118
+              },
+              "NORM": {
+                "CPU": 58
+              },
+              "PERMUTE": {
+                "CPU": 88
+              },
+              "RESHAPE": {
+                "CPU": 40
+              },
+              "ROPE": {
+                "CPU": 54
+              },
+              "UNARY": {
+                "CPU": 31
+              },
+              "UPSCALE": {
+                "CPU": 1
+              },
+              "VIEW": {
+                "CPU": 81
+              }
+            },
+            "scope": "native image encode calls and same-call compute-graph host metadata inside actual successful HTTP windows; no kernel-function/timing/quality claim"
+          },
+          "native_prompt_tokens_by_slot": {
+            "0": 1032
+          },
+          "native_single_tensor_width_and_api_sequences": true,
+          "native_verified_draft_widths": {},
+          "observed": true,
+          "occupied_slot_sets": [
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [
+              0
+            ],
+            [
+              0
+            ],
+            [
+              0
+            ],
+            [
+              0
+            ],
+            [
+              0
+            ],
+            [
+              0
+            ],
+            []
+          ],
+          "sequence_scope": "observed concurrent server slots; tensor-level n_seq unproven"
+        },
+        "native_trace": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/run-20261029T020133Z-566638/native-full/out/1793239303713576738/inf75-w2-current-cpu-census-r3-20261029-decode.native-trace.log",
+        "native_trace_byte_offset": 1085696,
+        "native_trace_sha256": "54612b4dff1cd8804c383f6e3661b3ffca81caaeb36679162499c8c2a15dad50",
+        "nodes_total": 62282,
+        "op_backend": {
+          "ADD": {
+            "CPU": 8265
+          },
+          "ARGSORT": {
+            "CPU": 912
+          },
+          "FLASH_ATTN_EXT": {
+            "CPU": 912
+          },
+          "GET_ROWS": {
+            "CPU": 57
+          },
+          "GLU": {
+            "CPU": 912
+          },
+          "MOE_TOPK_NORM": {
+            "CPU": 912
+          },
+          "MUL": {
+            "CPU": 4579
+          },
+          "MUL_MAT": {
+            "CPU": 8227
+          },
+          "MUL_MAT_ID": {
+            "CPU": 2736
+          },
+          "PAD": {
+            "CPU": 19
+          },
+          "PERMUTE": {
+            "CPU": 2736
+          },
+          "RESHAPE": {
+            "CPU": 11856
+          },
+          "RMS_NORM": {
+            "CPU": 3667
+          },
+          "ROPE": {
+            "CPU": 1824
+          },
+          "SET_ROWS": {
+            "CPU": 1824
+          },
+          "VIEW": {
+            "CPU": 12844
+          }
+        },
+        "op_type": {
+          "ADD:0:0:0": 8265,
+          "ARGSORT:26:0:missing": 912,
+          "FLASH_ATTN_EXT:0:0:8": 912,
+          "GET_ROWS:0:0:26": 38,
+          "GET_ROWS:0:12:26": 19,
+          "GLU:0:0:0": 912,
+          "MOE_TOPK_NORM:0:0:26": 912,
+          "MUL:0:0:0": 4579,
+          "MUL_MAT:0:0:0": 4560,
+          "MUL_MAT:0:12:0": 3192,
+          "MUL_MAT:0:14:0": 475,
+          "MUL_MAT_ID:0:12:0": 2280,
+          "MUL_MAT_ID:0:14:0": 456,
+          "PAD:0:0:missing": 19,
+          "PERMUTE:0:0:missing": 912,
+          "PERMUTE:8:8:missing": 1824,
+          "RESHAPE:0:0:missing": 11856,
+          "RMS_NORM:0:0:missing": 3667,
+          "ROPE:0:0:26": 1824,
+          "SET_ROWS:8:0:27": 1824,
+          "VIEW:0:0:missing": 10108,
+          "VIEW:26:26:missing": 912,
+          "VIEW:8:8:missing": 1824
+        },
+        "phase_log_byte_offset": 101738,
+        "rc": 0,
+        "request_log": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/run-20261029T020133Z-566638/native-full/out/1793239303713576738/inf75-w2-current-cpu-census-r3-20261029-decode.requests.json",
+        "request_log_sha256": "1a97aa934db7fc07b0a31bbd7360f9d0be04d5213d647a811887d0ef0873485d",
+        "request_windows": [
+          {
+            "end_mono_ns": 1361866756895388,
+            "end_utc_ns": 1793239393523399476,
+            "start_mono_ns": 1361854361455927,
+            "start_utc_ns": 1793239381127961055,
+            "success": true
+          }
+        ],
+        "scope": "native compute cgraph host tensor metadata; no tensor-data reads",
+        "shape": {
+          "n_seq": 1,
+          "n_tokens": 1,
+          "phase": "decode"
+        },
+        "state": "OBSERVED"
+      }
+    ],
+    "shape_envelope": [
+      {
+        "n_seq": 1,
+        "n_tokens": 512,
+        "phase": "prefill"
+      },
+      {
+        "n_seq": 1,
+        "n_tokens": 1,
+        "phase": "decode"
+      }
+    ]
+  },
+  "identity": {
+    "backend": "cpu",
+    "claim_cpus": "0-47,96-143",
+    "env": {
+      "GGML_IQK": "1",
+      "GGML_SCHED_DEBUG": "2",
+      "KMP_BLOCKTIME": "10",
+      "LANG": "C.UTF-8",
+      "LD_LIBRARY_PATH": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu/bin:/usr/lib/llvm-20/lib",
+      "LD_PRELOAD": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/instrument/libcensus-native.so",
+      "LLAMA_MEDIA_MARKER": "<__media__>",
+      "OMP_DYNAMIC": "false",
+      "OMP_NUM_THREADS": "48",
+      "OMP_PLACES": "cores",
+      "OMP_PROC_BIND": "spread",
+      "OMP_WAIT_POLICY": "active",
+      "PATH": "/usr/bin:/bin"
+    },
+    "kernel": {
+      "binary_sha256": "bfab92dffa31ad24f65ca53ec082ef8f1751b54d56efdc0f106bef797a72ee2e",
+      "commit": "c72ec82f5417bb2937310326120f149b665e8400"
+    },
+    "model": {
+      "path": "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf",
+      "sha256": "7bd52989f39ddca3dde36edb902fef72c5fde81e9211ca0f5ceca0119bd16d9c"
+    },
+    "projector": {
+      "canonical_path": "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/mmproj-Qwen3-VL-30B-A3B-Instruct-F16.gguf",
+      "full_hash_checked_at_entry": true,
+      "sha256": "a31d2c298f28735f6d27847851b8e3662ceb29cd6a1e66aa13d54b17f45aefca",
+      "size": 1083499584
+    },
+    "recipe": {
+      "argv": [
+        "numactl",
+        "--interleave=0,1",
+        "--",
+        "taskset",
+        "-c",
+        "0-47,96-143",
+        "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu/bin/llama-server",
+        "-m",
+        "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf",
+        "--mmproj",
+        "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/mmproj-Qwen3-VL-30B-A3B-Instruct-F16.gguf",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "25025",
+        "-np",
+        "1",
+        "-c",
+        "65536",
+        "-t",
+        "48",
+        "--flash-attn",
+        "on",
+        "-ctk",
+        "q8_0",
+        "-ctv",
+        "q8_0",
+        "--device",
+        "none",
+        "--image-min-tokens",
+        "1024",
+        "--cache-ram",
+        "0",
+        "--no-mmproj-offload",
+        "--no-kv-unified",
+        "--log-verbosity",
+        "4",
+        "--slot-save-path",
+        "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/run-20261029T020133Z-566638/native-full/runtime-slots"
+      ],
+      "binary": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu/bin/llama-server",
+      "build_dir": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu",
+      "capture_inputs": {
+        "affinity_scope": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/affinity_scope.py",
+        "binary": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu/bin/llama-server",
+        "binding": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/recipe-provenance.json",
+        "build_complete": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/jobs/cpu/BUILD_COMPLETE",
+        "build_job": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/jobs/cpu/job.sh",
+        "build_log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/jobs/cpu/BUILD.log",
+        "build_receipt_binding": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-census-prep/w3-halfb-r1/BUILD-RECEIPT-PATH",
+        "build_sources": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/jobs/cpu/source-files.sha256",
+        "capture_module": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/producer/autokernel/loop/census_capture.py",
+        "driver": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/full_main.py",
+        "elf_manifest": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/jobs/cpu/ELF.sha256",
+        "entry_pins": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/source-pins.json",
+        "eviction_receipt": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/run-20261029T020133Z-566638/native-full/out-pre-eviction.json",
+        "eviction_source": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-census-prep/orchestrator-native-export/scripts/server/stack_numa_evict.py",
+        "foreign_load": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/foreign_load.py",
+        "instrument_header_provenance": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/instrument/BUILD-PROVENANCE.json",
+        "instrument_library": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/instrument/libcensus-native.so",
+        "instrument_receipt": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/instrument/identity.sha256",
+        "instrument_source": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/instrument/native_trace_mm.c",
+        "model": "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf",
+        "native_export": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-census-prep/native-production-enrollment.json",
+        "owner_start": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/run-20261029T020133Z-566638/native-full/entry-facts.json",
+        "producer": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/producer/autokernel/loop/census.py",
+        "projector_ref": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/projector-ref.json",
+        "recipe": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/recipes.json",
+        "residency": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/producer/autokernel/loop/residency.py",
+        "server_evidence": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/server_evidence_full.py",
+        "server_probe": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/server_probe_full.py",
+        "source_manifest": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/SOURCES.sha256",
+        "workload_contract": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/producer/autokernel/controller/workload_contract.py"
+      },
+      "diagnostic_deltas": {
+        "hardware_scope": "export/current server_mode CPU device:none; older W2 handoff GPU table remains unresolved",
+        "instrument": "same sealed C5 CPU binary with private additive mtmd-context native tracer",
+        "kv_mode": "explicit split",
+        "log_verbosity": 4,
+        "media_marker": "reproducible <__media__> via existing compiled LLAMA_MEDIA_MARKER; actual props must match before request; consumed before model tokenization",
+        "port": [
+          8086,
+          25025
+        ],
+        "prefill": "registered C5 default n_ubatch512, not W3 ubatch2048",
+        "projector_offload": "explicit off; CPU-only sealed build",
+        "slot_save_path": "private",
+        "speculation": "none; no verify shape is requested",
+        "startup_eviction": "ownedNUMA0/1 only"
+      },
+      "env": {
+        "GGML_IQK": "1",
+        "GGML_SCHED_DEBUG": "2",
+        "KMP_BLOCKTIME": "10",
+        "LANG": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu/bin:/usr/lib/llvm-20/lib",
+        "LD_PRELOAD": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/instrument/libcensus-native.so",
+        "LLAMA_MEDIA_MARKER": "<__media__>",
+        "OMP_DYNAMIC": "false",
+        "OMP_NUM_THREADS": "48",
+        "OMP_PLACES": "cores",
+        "OMP_PROC_BIND": "spread",
+        "OMP_WAIT_POLICY": "active",
+        "PATH": "/usr/bin:/bin"
+      },
+      "expected_ops": [
+        "MUL_MAT",
+        "MUL_MAT_ID"
+      ],
+      "foreign_load": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/foreign_load.py",
+      "id": "inf75-w2-current-cpu-census-r3-20261029",
+      "instrument_library": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/instrument/libcensus-native.so",
+      "kernel_commit": "c72ec82f5417bb2937310326120f149b665e8400",
+      "model": "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf",
+      "physical_cpus": "0-47",
+      "port": 25025,
+      "projector": "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/mmproj-Qwen3-VL-30B-A3B-Instruct-F16.gguf",
+      "request_files": {
+        "decode": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/requests-decode.json",
+        "prefill": "/mnt/raid0/llm/tmp/codex-w2-current-cpu-census-r3-20261029/requests-prefill.json"
+      },
+      "scope": "current exported W2 worker_vision CPU0-47,96-143 t48 np1, image-min1024, no speculation; structural prefill512/decode1 plus actual image-encoder binding; not historical GPU-W2 closure",
+      "source_export_sha256": "fc2e0f9c22e3efec2ff6f18ffb2d12875b77c9834576c52c215678e8c1ec59fe",
+      "source_target": "worker_vision@8086",
+      "timeout_s": 420
+    },
+    "scope": "current exported W2 worker_vision CPU0-47,96-143 t48 np1, image-min1024, no speculation; structural prefill512/decode1 plus actual image-encoder binding; not historical GPU-W2 closure",
+    "startup_receipt": {
+      "after_free_mb": {
+        "0": 74748,
+        "1": 54298,
+        "2": 1480,
+        "3": 3801
+      },
+      "allocations": [],
+      "attempt_details": [],
+      "before_free_mb": {
+        "0": 74748,
+        "1": 54298,
+        "2": 1480,
+        "3": 3801
+      },
+      "log": [],
+      "recorded_ns": 1793239303717714725,
+      "scope": "owned NUMA0,1 ONLY; explicit startup delta from global pre-eviction",
+      "short_nodes": [],
+      "touch_implementation": "four-worker native libc memset all bytes",
+      "touch_timeout_s": 120
+    },
+    "workload_id": "inf75-w2-current-cpu-census-r3-20261029",
+    "workload_signature": "current exported W2 worker_vision CPU0-47,96-143 t48 np1, image-min1024, no speculation; structural prefill512/decode1 plus actual image-encoder binding; not historical GPU-W2 closure"
+  },
+  "schema": "epyc.autokernel.workload_census.v1",
+  "validity": {
+    "freshness_key": "88fa1714c1c81d3248087b821e1be5af10a7c75fee94474e753e0d6e9d5bafc0",
+    "observed": true,
+    "state": "OBSERVED",
+    "vacuous_guards": {
+      "all_nodes_gt_min": true,
+      "n_shapes_matches_envelope": true
+    }
+  },
+  "weights": {
+    "architecture": "qwen3vlmoe",
+    "dominant_quant": "Q4_K",
+    "n_embd": 2048,
+    "path": "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf",
+    "schema": "epyc.autokernel.gpu_workload_contract.v1",
+    "superblock_compatible": true,
+    "tensor_types": {
+      "F32": 241,
+      "Q4_K": 289,
+      "Q6_K": 49
+    }
+  }
+}
