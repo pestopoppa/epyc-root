@@ -1,0 +1,10 @@
+{
+  "status": "FAILED",
+  "partial": false,
+  "error": "<HTTPError 400: 'Bad Request'>",
+  "sample_n": 1,
+  "real_work_started": true,
+  "cleanup_verified": true,
+  "results": [],
+  "wall_s": 4.293822731124237
+}

@@ -1,0 +1,324 @@
+{
+  "schema": "c6.runtime.transport.v1",
+  "source_sha": "729599d69871181d67af715a4c2f9162d5153a2e",
+  "action": "gpu-ops",
+  "allocation": {
+    "id": "refactor-c6-gpu-property-diagnostic-729599d69-20261031",
+    "regions": "mi210_0,184-191",
+    "cpus": [
+      184,
+      185,
+      186,
+      187,
+      188,
+      189,
+      190,
+      191
+    ],
+    "deadline": 1793447790.0,
+    "memory_gib": 32,
+    "calendar_row": {
+      "gib": 32.0,
+      "class": "block-correctness"
+    }
+  },
+  "store_pair": {
+    "source_sha": "729599d69871181d67af715a4c2f9162d5153a2e",
+    "source_tree": "51b0a4fda906ffd3d029fd21bf41204675f08167",
+    "paired_build_custody": true,
+    "runtime_qualified": false
+  },
+  "argv": [
+    "/usr/bin/python3",
+    "-B",
+    "/mnt/raid0/llm/tmp/refactor-c6-gpu-property-diag-20261031/worker.py",
+    "--action",
+    "gpu-ops",
+    "--cpu-store",
+    "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6",
+    "--gpu-store",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6",
+    "--out",
+    "/mnt/raid0/llm/tmp/refactor-c6-gpu-property-diag-20261031/runs/20261031T075837Z-3073572/native"
+  ],
+  "status": "NATIVE_COMPLETE",
+  "gate_pass": null,
+  "qualification_only": false,
+  "process": {
+    "argv": [
+      "/usr/bin/python3",
+      "-B",
+      "/mnt/raid0/llm/tmp/refactor-c6-gpu-property-diag-20261031/worker.py",
+      "--action",
+      "gpu-ops",
+      "--cpu-store",
+      "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6",
+      "--gpu-store",
+      "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6",
+      "--out",
+      "/mnt/raid0/llm/tmp/refactor-c6-gpu-property-diag-20261031/runs/20261031T075837Z-3073572/native"
+    ],
+    "rc": 0,
+    "reason": null,
+    "elapsed_s": 620.5402427350637,
+    "sampled_peak_tree_rss_bytes": 7466328064,
+    "samples": 6137,
+    "children_drained": true,
+    "compiler_witness": [],
+    "interrupted_compilers": [],
+    "owned_pid_births": [
+      {
+        "pid": 3073679,
+        "birth": 155599136
+      },
+      {
+        "pid": 3073680,
+        "birth": 155599139
+      },
+      {
+        "pid": 3073722,
+        "birth": 155599159
+      },
+      {
+        "pid": 3073778,
+        "birth": 155599170
+      },
+      {
+        "pid": 3073845,
+        "birth": 155599180
+      },
+      {
+        "pid": 3073930,
+        "birth": 155599190
+      },
+      {
+        "pid": 3073943,
+        "birth": 155599210
+      },
+      {
+        "pid": 3073983,
+        "birth": 155599220
+      },
+      {
+        "pid": 3074019,
+        "birth": 155599230
+      },
+      {
+        "pid": 3074061,
+        "birth": 155599240
+      },
+      {
+        "pid": 769108,
+        "birth": 155604421
+      },
+      {
+        "pid": 2135248,
+        "birth": 155608628
+      },
+      {
+        "pid": 2445360,
+        "birth": 155629408
+      },
+      {
+        "pid": 119504,
+        "birth": 155633785
+      },
+      {
+        "pid": 1451575,
+        "birth": 155637474
+      },
+      {
+        "pid": 1709451,
+        "birth": 155659036
+      }
+    ],
+    "owned_process_argvs": [
+      {
+        "pid": 3073679,
+        "birth": 155599136,
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "/mnt/raid0/llm/tmp/refactor-c6-gpu-property-diag-20261031/worker.py",
+          "--action",
+          "gpu-ops",
+          "--cpu-store",
+          "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6",
+          "--gpu-store",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6",
+          "--out",
+          "/mnt/raid0/llm/tmp/refactor-c6-gpu-property-diag-20261031/runs/20261031T075837Z-3073572/native"
+        ]
+      },
+      {
+        "pid": 3073680,
+        "birth": 155599139,
+        "argv": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/llama-server",
+          "--version"
+        ]
+      },
+      {
+        "pid": 3073722,
+        "birth": 155599159,
+        "argv": []
+      },
+      {
+        "pid": 3073778,
+        "birth": 155599170,
+        "argv": []
+      },
+      {
+        "pid": 3073845,
+        "birth": 155599180,
+        "argv": []
+      },
+      {
+        "pid": 3073930,
+        "birth": 155599190,
+        "argv": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/llama-server",
+          "--version"
+        ]
+      },
+      {
+        "pid": 3073943,
+        "birth": 155599210,
+        "argv": []
+      },
+      {
+        "pid": 3073983,
+        "birth": 155599220,
+        "argv": []
+      },
+      {
+        "pid": 3074019,
+        "birth": 155599230,
+        "argv": []
+      },
+      {
+        "pid": 3074061,
+        "birth": 155599240,
+        "argv": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/test-backend-ops",
+          "test",
+          "-b",
+          "ROCm0",
+          "-o",
+          "MUL_MAT",
+          "-j",
+          "1",
+          "--suite-seed",
+          "71",
+          "--autokernel-properties"
+        ]
+      },
+      {
+        "pid": 769108,
+        "birth": 155604421,
+        "argv": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/test-backend-ops",
+          "test",
+          "-b",
+          "ROCm0",
+          "-o",
+          "MUL_MAT_ID",
+          "-j",
+          "1",
+          "--suite-seed",
+          "71",
+          "--autokernel-properties"
+        ]
+      },
+      {
+        "pid": 2135248,
+        "birth": 155608628,
+        "argv": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/test-backend-ops",
+          "test",
+          "-b",
+          "ROCm0",
+          "-o",
+          "FLASH_ATTN_EXT",
+          "-j",
+          "1",
+          "--suite-seed",
+          "71",
+          "--autokernel-properties"
+        ]
+      },
+      {
+        "pid": 2445360,
+        "birth": 155629408,
+        "argv": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/test-backend-ops",
+          "test",
+          "-b",
+          "ROCm0",
+          "-o",
+          "MUL_MAT",
+          "-j",
+          "1",
+          "--suite-seed",
+          "71",
+          "--autokernel-properties"
+        ]
+      },
+      {
+        "pid": 119504,
+        "birth": 155633785,
+        "argv": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/test-backend-ops",
+          "test",
+          "-b",
+          "ROCm0",
+          "-o",
+          "MUL_MAT_ID",
+          "-j",
+          "1",
+          "--suite-seed",
+          "71",
+          "--autokernel-properties"
+        ]
+      },
+      {
+        "pid": 1451575,
+        "birth": 155637474,
+        "argv": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/test-backend-ops",
+          "test",
+          "-b",
+          "ROCm0",
+          "-o",
+          "FLASH_ATTN_EXT",
+          "-j",
+          "1",
+          "--suite-seed",
+          "71",
+          "--autokernel-properties"
+        ]
+      },
+      {
+        "pid": 1709451,
+        "birth": 155659036,
+        "argv": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/test-backend-ops",
+          "test",
+          "-b",
+          "ROCm0",
+          "-o",
+          "FLASH_ATTN_EXT",
+          "-p",
+          "g10=",
+          "-j",
+          "1",
+          "--suite-seed",
+          "71",
+          "--autokernel-properties"
+        ]
+      }
+    ]
+  },
+  "active_native_at_cutoff": null,
+  "partial": false
+}
