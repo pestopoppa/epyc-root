@@ -1,0 +1,79 @@
+diff --git a/src/api/routes/chat_pipeline/routing_decision.py b/src/api/routes/chat_pipeline/routing_decision.py
+index 7a48d89d..b959a7c1 100644
+--- a/src/api/routes/chat_pipeline/routing_decision.py
++++ b/src/api/routes/chat_pipeline/routing_decision.py
+@@ -617,6 +617,18 @@ def routing_meta(
+         elif getattr(request, "image_base64", None):
+             meta["has_image"] = True
+             meta["image_source"] = "base64"
++        else:
++            # The multi-file vision path also accepts documents and archives.
++            # Record only its first direct image input, using the same bounded
++            # path-only metadata and dashboard guard as image_path requests.
++            for file_path in getattr(request, "files", None) or ():
++                if Path(file_path).suffix.lower() in {
++                    ".jpg", ".jpeg", ".png", ".webp", ".bmp", ".tiff"
++                }:
++                    meta["image_path"] = file_path[:MAX_IMAGE_PATH_LEN]
++                    meta["has_image"] = True
++                    meta["image_source"] = "path"
++                    break
+     except Exception:
+         pass
+     # Request-lifecycle join fields for the in-process live telemetry reducer.
+diff --git a/tests/unit/test_pipeline_routing.py b/tests/unit/test_pipeline_routing.py
+index 2898644c..a8da48f4 100644
+--- a/tests/unit/test_pipeline_routing.py
++++ b/tests/unit/test_pipeline_routing.py
+@@ -1720,3 +1720,51 @@ def test_routing_meta_bounds_image_path_length(monkeypatch):
+ 
+     meta = _vision_meta(monkeypatch, ChatRequest(prompt="p", image_path="/mnt/raid0/" + "x" * 4096))
+     assert len(meta["image_path"]) == MAX_IMAGE_PATH_LEN
++
++
++def test_files_image_reaches_progress_telemetry(monkeypatch, tmp_path):
++    """The actual routing logger gets the image path, not its contents."""
++    from src.api.routes.dashboard_tasks import _image_reference_for_task
++
++    image = tmp_path / "figure.PNG"
++    image.write_bytes(b"\x89PNG\r\n\x1a\nPRIVATE_IMAGE_BYTES")
++    document = tmp_path / "report.pdf"
++    document.write_bytes(b"%PDF private document")
++    request = ChatRequest(prompt="read this", files=[str(document), str(image)])
++    state = MagicMock()
++    state.hybrid_router = None
++    state.failure_graph = None
++    monkeypatch.setattr(
++        "src.features.features", lambda: SimpleNamespace(ure_uncertainty_shadow_log=False)
++    )
++    with patch("src.api.routes.chat_pipeline.routing._classify_and_route") as classify, patch(
++        "src.api.routes.chat_pipeline.routing._heuristic_role_priors", return_value={}
++    ):
++        classify.return_value = (str(Role.FRONTDOOR), "rules")
++        _route_request(request, state)
++
++    meta = state.progress_logger.log_task_started.call_args.kwargs["routing_meta"]
++    assert _image_reference_for_task([{"event_type": "routing_decision", "data": meta}]) == {
++        "has_image": True, "source": "path", "path": str(image),
++    }
++    assert str(document) not in json.dumps(meta, default=str)
++    assert "PRIVATE_IMAGE_BYTES" not in json.dumps(meta, default=str)
++
++
++def test_files_telemetry_ignores_documents_and_respects_existing_image_precedence(monkeypatch):
++    meta = _vision_meta(monkeypatch, ChatRequest(prompt="p", files=["/uploads/report.pdf"]))
++    assert "has_image" not in meta
++    assert "image_path" not in meta
++    meta = _vision_meta(monkeypatch, ChatRequest(
++        prompt="p", image_base64="PRIVATE_IMAGE_BYTES", files=["/uploads/figure.png"]
++    ))
++    assert meta["image_source"] == "base64"
++    assert "image_path" not in meta
++    assert "PRIVATE_IMAGE_BYTES" not in json.dumps(meta)
++
++
++def test_files_image_reference_is_bounded(monkeypatch):
++    from src.api.routes.chat_pipeline.routing_decision import MAX_IMAGE_PATH_LEN
++
++    meta = _vision_meta(monkeypatch, ChatRequest(prompt="p", files=["/" + "x" * 600 + ".png"]))
++    assert len(meta["image_path"]) == MAX_IMAGE_PATH_LEN

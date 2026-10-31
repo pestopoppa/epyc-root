@@ -699,7 +699,7 @@ Global constraints:
 ### P4 — receipts, dashboard, belief wiring
 
 - [ ] **AKX-P4a — dashboard card per keep.** Show the workload × {INERT(T0/T1)/TOUCHED/UNKNOWN} matrix, row verdicts and the refusal remedy. Register it under the hub plane rule with a health probe and a freshness envelope (`dashboard/README.md`).
-- [ ] **AKX-P4b — champion standing is a workload vector.** It is never one number (R23-26), and each cell names its workload and recipe.
+- [x] **AKX-P4b — champion standing is a workload vector.** It is never one number (R23-26), and each cell names its workload and recipe. ✅ 2026-10-31 — ROOT `b3082210b31e767578defc34577a2ae21961e121`; RESEARCH `61af96a9308f347ae03d573cbd349cfb6c0b2851`. The native producers capture per-arm invocation identity before execution, and the loop presents separate workload cells with source and freshness; historical missing recipes remain UNKNOWN. Legacy scalar compatibility fields are explicitly scoped to a reference cell. [tests and baseline comparison](../../artifacts/compute/codex3-akx-p4b-20261031/NEWTEST.log); [standalone research tests](../../artifacts/compute/codex3-akx-p4b-20261031/STANDALONE-RESEARCH.log). [belief: cc]
 - [ ] **AKX-P5 — admit the DeepSeek-V4.1 kernel levers as champion levers** (operator directive
   2026-09-23: custom kernel work for the V4.1 port is an AutoKernel champion deliverable, not an
   inline patch). First lever: the Engram row gather (INF-77 DS41-B7) — a generic I8 gather over
