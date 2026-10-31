@@ -1,0 +1,289 @@
+"""Disabled HIL15 S0 35B native continuation under an owner-held q0 grant.
+
+Native results use source-bound hashes; incomplete slots remain unknown.
+The collection receipt records custody and inventory for operational no-redraw
+resume only. It grants no native grade or new evidentiary tier.
+"""
+import hashlib,json,os,runpy,stat,subprocess,sys,time
+from pathlib import Path
+H=Path('/mnt/micron/refactor-hil15-s0-v12-slot2-20261031');P=Path('/mnt/raid0/llm/tmp/pip03-matched-successor-20261029');sys.path[:0]=[str(H),'/mnt/raid0/llm/tmp/hil15-s0-safe-prep-20261029','/mnt/raid0/llm/tmp/hil15-s0-safe-prep-20261029/source-copy',str(P)]
+import official_guard_v10_r8 as guard,hil15_multi_service as service
+from s0_grant_contract_v1 import WindowMarginReached
+from verify_replay import verify
+from s0_retained_r6_epoch import verify_retained
+from verify_prior_epoch import verify_prior
+from multi_real_replay_v6 import listener
+MODEL=Path('/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf');MODEL_SHA='c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131'
+PY='/mnt/raid0/llm/tmp/refactor-01a16fc3/hil15-runtime-fix/private-runtime-v1/bin/python3.11';ENGINE='/mnt/raid0/llm/worktrees/hil15a-fix-20261022';SITE='/mnt/raid0/llm/tmp/refactor-01a16fc3/hil15-runtime-fix/private-runtime-v1/site-packages';ROOT='/mnt/raid0/llm/tmp/refactor-01a16fc3/enrollment-publish-20261028/tree';BIN='/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server';LIB=str(Path(BIN).parent);FENCE='/mnt/raid0/llm/tmp/rtg23-w5-pidfd-v4-20261029/no_delete_fence.py';PORT=19178
+
+def files(root,slot):
+ rows={}
+ for parent,dirs,names in os.walk(slot,followlinks=False):
+  for n in dirs+names:
+   if (Path(parent)/n).is_symlink():raise RuntimeError('slot symlink')
+  for n in names:
+   p=Path(parent)/n;h=hashlib.sha256()
+   with p.open('rb') as f:
+    for chunk in iter(lambda:f.read(1024*1024),b''):h.update(chunk)
+   rows[str(p.relative_to(root))]=h.hexdigest()
+ return rows
+
+ORIGINAL_SOURCE='5e70fd0711a26d816181ec19bb6e0ae0ede51354c808c7dfce846be5d689f57c'
+ORIGINAL_ROOT=Path('/mnt/micron/refactor-hil15-s0-v10-20261030/s0-r9-official-results')
+V11_ROOT=Path('/mnt/micron/refactor-hil15-s0-v11-20261030/s0-r11-official-results')
+V11_SOURCE='cbbf7f39a49e3cdfb285e2daeddead851e7d5de0433320da5232c6d4472681eb'
+UNKNOWN_READSET_SHA='66812d7730cce40beebbdd2344b9e102a3643e0acd02f0edf43de50e259a0330'
+UNKNOWN_READSET=Path('/mnt/raid0/llm/tmp/hil15-s0-v12-slot2-20261031/S0-15-1-UNKNOWN-READSET.json')
+def source_for_slot(n,i,current):
+ return ORIGINAL_SOURCE if (n,i) in {(12,2),(13,0),(13,1),(13,2)} else current
+
+def prior(root,unit,i,source):
+ slot=unit/('slot-'+str(i));listing=unit/('slot-'+str(i)+'.sha256')
+ if not slot.exists() and not listing.exists():return False
+ if slot.is_symlink() or not slot.is_dir() or listing.is_symlink() or not listing.is_file():raise RuntimeError('ambiguous slot; no redraw')
+ lines=listing.read_text().splitlines()
+ if not lines or lines[0]!='# source_sha256='+source_for_slot(int(unit.name[-2:]),i,source):raise RuntimeError('source binding changed')
+ expected={}
+ for line in lines[1:]:
+  digest,sep,path=line.partition('  ')
+  if not sep or len(digest)!=64 or path in expected or not path.startswith(unit.name+'/slot-'+str(i)+'/'):raise RuntimeError('invalid slot hashes')
+  expected[path]=digest
+ if expected!=files(root,slot):raise RuntimeError('native slot bytes changed')
+ verify(slot,unit.name[-2:],i,Path('/mnt/raid0/llm/tmp/hil15-s0-safe-prep-20261029/source-copy/tasks.json'),Path('/HIL15-DISCOVERY-SOURCE'),expected_model=str(MODEL))
+ return True
+
+def check_v11_incomplete_slot():
+ manifest=V11_ROOT.parent/'SOURCE.sha256'
+ if manifest.is_symlink() or hashlib.sha256(manifest.read_bytes()).hexdigest()!=V11_SOURCE:raise RuntimeError('v11 source manifest identity')
+ for number,slotno in [(14,0),(14,1),(14,2),(15,0)]:
+  unit=V11_ROOT/f'unit-{number:02d}'
+  if not prior(V11_ROOT,unit,slotno,V11_SOURCE):raise RuntimeError('v11 completed native slot missing or changed')
+ validate_existing_unit(V11_ROOT/'unit-14','14')
+ unit=V11_ROOT/'unit-15';slot=unit/'slot-1';listing=unit/'slot-1.sha256'
+ if slot.is_symlink() or not slot.is_dir() or listing.exists() or listing.is_symlink():raise RuntimeError('v11 unit15/slot1 is no longer the captured incomplete unknown')
+ if (unit/'slot-2').exists() or (unit/'slot-2.sha256').exists():raise RuntimeError('v11 unit15/slot2 is not unexposed')
+ if UNKNOWN_READSET.is_symlink() or not UNKNOWN_READSET.is_file() or hashlib.sha256(UNKNOWN_READSET.read_bytes()).hexdigest()!=UNKNOWN_READSET_SHA:raise RuntimeError('unknown-slot readset receipt missing or changed')
+ receipt=json.loads(UNKNOWN_READSET.read_text())
+ signed=receipt.pop('readset_sha256',None)
+ actual=hashlib.sha256(json.dumps(receipt,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+ if receipt.get('schema')!='hil15-s0-incomplete-slot-readset/v1' or signed!=actual:raise RuntimeError('unknown-slot readset receipt seal')
+ if receipt.get('source_manifest_sha256')!=V11_SOURCE or receipt.get('native_result_root')!=str(V11_ROOT) or receipt.get('slot')!='unit15/slot1' or receipt.get('slot_hash_manifest_present') is not False:raise RuntimeError('unknown-slot readset scope')
+ def identity(path):
+  st=path.stat(follow_symlinks=False)
+  return [st.st_dev,st.st_ino,st.st_mode,st.st_size,st.st_mtime_ns,st.st_ctime_ns]
+ if identity(slot)!=receipt.get('slot_dir_identity'):raise RuntimeError('unknown slot directory identity changed')
+ dirs=[];files=[]
+ for parent,names,filenames in os.walk(slot,followlinks=False):
+  p=Path(parent)
+  for name in names:
+   q=p/name
+   if q.is_symlink():raise RuntimeError('unknown slot directory symlink')
+   st=identity(q)
+   if not q.is_dir() or stat.S_ISLNK(st[2]):raise RuntimeError('unknown slot directory type')
+   dirs.append({'path':str(q.relative_to(V11_ROOT)),'identity':st})
+  for name in filenames:
+   q=p/name
+   if q.is_symlink():raise RuntimeError('unknown slot file symlink')
+   st=identity(q)
+   if not stat.S_ISREG(st[2]):raise RuntimeError('unknown slot file type')
+   h=hashlib.sha256()
+   with q.open('rb') as f:
+    for chunk in iter(lambda:f.read(1024*1024),b''):h.update(chunk)
+   if identity(q)!=st:raise RuntimeError('unknown slot file changed during check')
+   files.append({'path':str(q.relative_to(V11_ROOT)),'bytes':st[3],'sha256':h.hexdigest(),'identity':st})
+ dirs.sort(key=lambda x:x['path']);files.sort(key=lambda x:x['path'])
+ if dirs!=receipt.get('directories') or files!=receipt.get('files'):raise RuntimeError('unknown slot readset changed')
+ for item in dirs:
+  if identity(V11_ROOT/item['path'])!=item['identity']:raise RuntimeError('unknown slot directory changed during check')
+ for item in files:
+  if identity(V11_ROOT/item['path'])!=item['identity']:raise RuntimeError('unknown slot file changed during check')
+ if identity(slot)!=receipt.get('slot_dir_identity'):raise RuntimeError('unknown slot directory changed during check')
+ return {'slot':'unit15/slot1','status':'preserved_unknown_incomplete','directory_count':len(dirs),'file_count':len(files),'readset_sha256':signed}
+
+def validate_existing_unit(unit,n):
+ for i in range(3):
+  link=unit/('driver-'+str(i));target='slot-'+str(i)+'/driver-'+str(i)
+  if not link.is_symlink() or os.readlink(link)!=target:raise RuntimeError('unit assessment link missing or changed')
+ unit_validate(unit,n)
+
+def classify_v12_slot2():
+ unit=H/'s0-v12-official-results'/'unit-15';slot=unit/'slot-2';listing=unit/'slot-2.sha256'
+ slot_present=slot.exists() or slot.is_symlink();list_present=listing.exists() or listing.is_symlink()
+ if not slot_present and not list_present:return {'known':40,'unknown':4,'unexposed':1,'slot15_2':'unexposed'}
+ if list_present:
+  if listing.is_symlink() or not listing.is_file():raise RuntimeError('slot15/2 terminal manifest is unsafe')
+  if not prior(H/'s0-v12-official-results',unit,2,os.environ['HIL15_MANIFEST_SHA']):raise RuntimeError('slot15/2 terminal manifest failed strict verification')
+  return {'known':41,'unknown':4,'unexposed':0,'slot15_2':'terminal'}
+ if slot.is_symlink() or not slot.is_dir():raise RuntimeError('slot15/2 exposure path is unsafe')
+ return {'known':40,'unknown':5,'unexposed':0,'slot15_2':'exposed_nonterminal'}
+
+def tree_inventory(root):
+ dirs=[];items=[]
+ for parent,names,filenames in os.walk(root,followlinks=False):
+  p=Path(parent)
+  for name in names:
+   q=p/name
+   if q.is_symlink():raise RuntimeError('partial slot directory symlink')
+   st=q.stat(follow_symlinks=False)
+   if not stat.S_ISDIR(st.st_mode):raise RuntimeError('partial slot non-directory')
+   dirs.append({'path':str(q.relative_to(root)),'identity':[st.st_dev,st.st_ino,st.st_mode,st.st_size,st.st_mtime_ns,st.st_ctime_ns]})
+  for name in filenames:
+   q=p/name
+   if q.is_symlink():raise RuntimeError('partial slot file symlink')
+   st=q.stat(follow_symlinks=False)
+   if not stat.S_ISREG(st.st_mode):raise RuntimeError('partial slot non-file')
+   h=hashlib.sha256()
+   with q.open('rb') as f:
+    for chunk in iter(lambda:f.read(1024*1024),b''):h.update(chunk)
+   after=q.stat(follow_symlinks=False)
+   if (st.st_dev,st.st_ino,st.st_size,st.st_mtime_ns,st.st_ctime_ns)!=(after.st_dev,after.st_ino,after.st_size,after.st_mtime_ns,after.st_ctime_ns):raise RuntimeError('partial slot file changed during inventory')
+   items.append({'path':str(q.relative_to(root)),'bytes':st.st_size,'sha256':h.hexdigest(),'identity':[st.st_dev,st.st_ino,st.st_mode,st.st_size,st.st_mtime_ns,st.st_ctime_ns]})
+ dirs.sort(key=lambda x:x['path']);items.sort(key=lambda x:x['path'])
+ return {'root_identity':list((lambda z:(z.st_dev,z.st_ino,z.st_mode,z.st_size,z.st_mtime_ns,z.st_ctime_ns))(root.stat(follow_symlinks=False))),'directories':dirs,'files':items}
+
+def seal_collection_exhausted(root,source,readset,result,run):
+ slot=root/'unit-15'/'slot-2'
+ state=classify_v12_slot2()
+ if state['slot15_2']!='exposed_nonterminal':raise RuntimeError('only a nonterminal exposed slot may receive partial collection seal')
+ record={'schema':'hil15-s0-v12-partial-collection/v1','source_manifest_sha256':source,'v11_source_manifest_sha256':V11_SOURCE,'preserved_unknown_readset_sha256':readset['readset_sha256'],'original_denominator':45,'collection_state':state,'native_grade':None,'full_complete':False,'result_rc':result['rc'],'service_result':result,'descendants_drained':True,'run_directory':run.name,'slot15_2_inventory':tree_inventory(slot)}
+ record['record_sha256']=hashlib.sha256(json.dumps(record,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+ path=root/'COLLECTION-EXHAUSTED.json'
+ with path.open('x') as f:json.dump(record,f,sort_keys=True);f.write('\n');f.flush();os.fsync(f.fileno())
+ return record
+
+def validate_collection_exhausted(root,source,readset):
+ path=root/'COLLECTION-EXHAUSTED.json'
+ if not path.exists() and not path.is_symlink():return None
+ if path.is_symlink() or not path.is_file():raise RuntimeError('unsafe partial collection receipt')
+ record=json.loads(path.read_text());signed=record.pop('record_sha256',None)
+ actual=hashlib.sha256(json.dumps(record,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+ if signed!=actual:raise RuntimeError('partial collection receipt seal')
+ expected={'schema':'hil15-s0-v12-partial-collection/v1','source_manifest_sha256':source,'v11_source_manifest_sha256':V11_SOURCE,'preserved_unknown_readset_sha256':readset['readset_sha256'],'original_denominator':45,'collection_state':{'known':40,'unknown':5,'unexposed':0,'slot15_2':'exposed_nonterminal'},'native_grade':None,'full_complete':False,'descendants_drained':True}
+ if any(record.get(k)!=v for k,v in expected.items()) or type(record.get('result_rc')) is not int or record['result_rc'] not in (0,75):raise RuntimeError('partial collection receipt scope')
+ witness=record.get('service_result')
+ if not isinstance(witness,dict) or type(witness.get('rc')) is not int or witness['rc']!=record['result_rc'] or witness.get('descendants_drained') is not True:raise RuntimeError('partial collection custody witness')
+ name=record.get('run_directory')
+ if not isinstance(name,str) or not name.startswith('slice-') or Path(name).name!=name:raise RuntimeError('partial collection run identity')
+ run=root/name
+ if run.is_symlink() or not run.is_dir():raise RuntimeError('partial collection run missing')
+ if classify_v12_slot2()!=expected['collection_state']:raise RuntimeError('partial collection state changed')
+ if record.get('slot15_2_inventory')!=tree_inventory(root/'unit-15'/'slot-2'):raise RuntimeError('exposed unknown slot changed after drain')
+ return record
+
+def collection_result(state):
+ return {'collection_exhausted':True,'full_complete':False,'native_grade':None,'collection_state':state,'known':state['known'],'unknown':state['unknown'],'unexposed':state['unexposed'],'original_denominator':45}
+
+def unit_validate(unit,n):
+ for i in range(3):
+  link=unit/('driver-'+str(i));target='slot-'+str(i)+'/driver-'+str(i)
+  if link.is_symlink():
+   if os.readlink(link)!=target:raise RuntimeError('unit assessment link changed')
+  elif link.exists():raise RuntimeError('unit assessment link occupied')
+  else:link.symlink_to(target,target_is_directory=True)
+ args=sys.argv;sys.argv=[str(Path('/mnt/raid0/llm/tmp/hil15-s0-v12-slot2-20261031/unit_diagnostic_v11.py')),'validate',str(unit),n]
+ try:runpy.run_path(sys.argv[0],run_name='__main__')
+ finally:sys.argv=args
+
+def source_check(boundary):
+ manifest=Path(os.environ['HIL15_SOURCE_MANIFEST']);anchor=os.environ['HIL15_MANIFEST_SHA']
+ if manifest.is_symlink() or hashlib.sha256(manifest.read_bytes()).hexdigest()!=anchor:raise RuntimeError('source manifest identity')
+ states={}
+ for line in manifest.read_text().splitlines():
+  expected,path=line.split('  ',1);p=Path(path)
+  if p.is_symlink() or path in states:raise RuntimeError('unsafe source')
+  before=p.stat();h=hashlib.sha256()
+  with p.open('rb') as f:
+   for chunk in iter(lambda:f.read(1024*1024),b''):h.update(chunk)
+  after=p.stat();identity=(before.st_dev,before.st_ino,before.st_size,before.st_mtime_ns,before.st_ctime_ns)
+  if h.hexdigest()!=expected or identity!=(after.st_dev,after.st_ino,after.st_size,after.st_mtime_ns,after.st_ctime_ns):raise RuntimeError('source changed')
+  states[path]=identity;boundary()
+ return states
+
+def checkout_check():
+ env=os.environ.copy();env['GIT_OPTIONAL_LOCKS']='0'
+ def git(repo,*args):
+  prefix=['/usr/bin/git','--git-dir=/mnt/raid0/llm/epyc-root/.git/worktrees/tree1','--work-tree='+ROOT] if repo==ROOT else ['/usr/bin/git','-C',repo]
+  return subprocess.run([*prefix,*args],check=True,capture_output=True,text=True,env=env).stdout.strip()
+ if git(ENGINE,'rev-parse','HEAD')!='51bcc77b5ea3e0a662525753f0d3ad7c21de72d2' or git(ENGINE,'status','--porcelain','--untracked-files=all'):raise RuntimeError('engine checkout changed')
+ git(ROOT,'merge-base','--is-ancestor','746a9f92331cee4f6d194d595496004c674335a4','origin/main')
+ git(ROOT,'diff','--quiet','746a9f92331cee4f6d194d595496004c674335a4','--','scripts/vidya')
+ if git(ROOT,'status','--porcelain','--untracked-files=all'):raise RuntimeError('enrollment checkout changed')
+ from runtime_binding import verify_expected
+ verify_expected()
+
+def main():
+ if not (H/'ENABLE_OFFICIAL_AFTER_SMOKES').is_file():raise RuntimeError('official disabled pending same-entry real smokes and owner custody')
+ root=H/'s0-v12-official-results'
+ if root.is_symlink():raise RuntimeError('output root symlink')
+ root.mkdir(mode=0o700,exist_ok=True);deadline=float(os.environ['FILLER_DEADLINE']);source=os.environ['HIL15_MANIFEST_SHA']
+ states={}
+ def boundary():
+  guard.check(root,'official',deadline)
+  for path,expected in states.items():
+   st=Path(path).stat()
+   if (st.st_dev,st.st_ino,st.st_size,st.st_mtime_ns,st.st_ctime_ns)!=expected:raise RuntimeError('source changed during run')
+ boundary();states.update(source_check(boundary));boundary();checkout_check();boundary();prior_units=verify_prior();verify_retained()
+ for n,i in [(12,2),(13,0),(13,1),(13,2)]:
+  if not prior(ORIGINAL_ROOT,ORIGINAL_ROOT/f'unit-{n:02d}',i,ORIGINAL_SOURCE):raise RuntimeError('original captured replay missing')
+ validate_existing_unit(ORIGINAL_ROOT/'unit-13','13')
+ if sorted(prior_units)!=[f'{i:02d}' for i in range(1,10)]:raise RuntimeError('original completed cohort changed')
+ preserved_unknown=check_v11_incomplete_slot();boundary()
+ receipt=validate_collection_exhausted(root,source,preserved_unknown)
+ state=classify_v12_slot2()
+ if receipt is not None or state['slot15_2']=='terminal':
+  print(json.dumps(collection_result(state)),flush=True);return 0
+ if state['slot15_2']=='exposed_nonterminal':raise RuntimeError('exposed slot without captured custody seal; never redraw')
+ boundary();h=hashlib.sha256()
+ with MODEL.open('rb') as f:
+  for chunk in iter(lambda:f.read(128*1024**2),b''):h.update(chunk);boundary()
+ if h.hexdigest()!=MODEL_SHA:raise RuntimeError('35B model identity')
+ if deadline-time.time()<1200:raise WindowMarginReached('insufficient initial model-load and replay window')
+ run=root/('slice-'+str(time.time_ns()));run.mkdir(mode=0o700)
+ env={'PATH':'/usr/bin:/bin','HOME':str(run),'LANG':'C.UTF-8','LC_ALL':'C.UTF-8','TZ':'UTC','OMP_NUM_THREADS':'1','OPENBLAS_NUM_THREADS':'1','MKL_NUM_THREADS':'1','NUMEXPR_NUM_THREADS':'1','LD_LIBRARY_PATH':LIB,'PYTHONHOME':'/mnt/raid0/llm/tmp/refactor-01a16fc3/hil15-runtime-fix/private-runtime-v1','PYTHONHASHSEED':'0','PYTHONDONTWRITEBYTECODE':'1','PYTHONNOUSERSITE':'1','WINDOW_CONFIRMED':'1','GIT_OPTIONAL_LOCKS':'0','HIL15_DRIVER_ENTRY':'1','HIL15_OUTPUT_ROOT':str(root),'TMPDIR':str(run)}
+ server=['/usr/bin/python3','-B','-I',FENCE,str(root),'/usr/bin/numactl','--interleave=all','/usr/bin/nice','-n','19',BIN,'-m',str(MODEL),'-t','24','-np','1','-c','16384','--reasoning','off','--jinja','--host','127.0.0.1','--port',str(PORT),'--no-webui','-ngl','0']
+ complete=[False];stopped=[False]
+ def next_cycle(pid,identity):
+  for n in ['15']:
+   unit=root/('unit-'+n)
+   if unit.is_symlink():raise RuntimeError('unit symlink')
+   unit.mkdir(mode=0o700,exist_ok=True)
+   for i in [2]:
+    check_v11_incomplete_slot()
+    state=classify_v12_slot2()
+    if state['slot15_2']=='terminal':continue
+    if state['slot15_2']!='unexposed':raise RuntimeError('slot15/2 already exposed; never redraw')
+    if deadline-time.time()<990:stopped[0]=True;return None
+    checkout_check();boundary()
+    slot=unit/('slot-'+str(i));slot.mkdir(mode=0o700)
+    scratch=slot/'scratch';scratch.mkdir();task=slot/('tasks-'+str(i)+'.json')
+    args=sys.argv;sys.argv=[str(Path('/mnt/raid0/llm/tmp/hil15-s0-safe-prep-20261029/source-copy/unit.py')),'prepare',str(Path('/mnt/raid0/llm/tmp/hil15-s0-safe-prep-20261029/source-copy/tasks.json')),n,str(i),str(task),str(scratch)]
+    try:runpy.run_path(sys.argv[0],run_name='__main__')
+    finally:sys.argv=args
+    argv=['/usr/bin/python3','-B','-I',str(Path('/mnt/raid0/llm/tmp/hil15-s0-safe-prep-20261029/deny_pidfd_signal.py')),PY,'-B','-S',str(Path('/mnt/raid0/llm/tmp/hil15-s0-safe-prep-20261029/driver_bridge_nocapture_v3.py')),'--repeats','1','--min-task-keys','1','--min-dep-task-keys','1','--max-wall-s','400','--out-dir',str(slot/('driver-'+str(i))),'--server-url','http://127.0.0.1:'+str(PORT),'--server-pid',str(pid),'--tasks',str(task),'--served-model',str(MODEL),'--epyc-root',ROOT]
+    log=(slot/'driver.log').open('x')
+    def finish(slot=slot,unit=unit,n=n,i=i):
+     if any(slot.rglob('*.beliefs*')):raise RuntimeError('diagnostic belief sidecar present')
+     boundary();verify(slot,n,i,Path('/mnt/raid0/llm/tmp/hil15-s0-safe-prep-20261029/source-copy/tasks.json'),Path('/HIL15-DISCOVERY-SOURCE'),expected_model=str(MODEL));rows=files(root,slot)
+     out=unit/('slot-'+str(i)+'.sha256')
+     with out.open('x') as f:f.write('# source_sha256='+source+'\n'+''.join(rows[k]+'  '+k+'\n' for k in sorted(rows)));f.flush();os.fsync(f.fileno())
+    return argv,log,finish
+   pass # unit15/slot2 is the only eligible slot in this successor
+  complete[0]=prior(root,root/'unit-15',2,source)
+  if complete[0]:return None
+  return None
+ # Only the service's returned witness can establish custody drain. Escaped
+ # exceptions remain failures; never synthesize descendants_drained on their behalf.
+ with (run/'server.log').open('x') as log:
+  result=service.run(server,ready=lambda pid,ident:listener(pid,ident,PORT,'/health'),boundary=boundary,next_cycle=next_cycle,deadline=deadline,server_log=log,env=env)
+ if not isinstance(result,dict) or result.get('descendants_drained') is not True:raise RuntimeError('custody not drained')
+ if check_v11_incomplete_slot()!=preserved_unknown:raise RuntimeError('preserved unknown receipt changed after drain')
+ if result['rc']==0 and complete[0]:print(json.dumps({'collection_exhausted':True,'full_complete':False,'known':41,'unknown':4,'unexposed':0,'original_denominator':45,'unknown_identity':[[10,2],[11,1],[12,1],[15,1]],'new_terminal_slot':[15,2],'native_grade':None}),flush=True);return 0
+ state=classify_v12_slot2()
+ if type(result.get('rc')) is int and result['rc'] in (0,75) and state['slot15_2']=='exposed_nonterminal':
+  receipt=seal_collection_exhausted(root,source,preserved_unknown,result,run)
+  if result['rc']==0:
+   print(json.dumps(collection_result(receipt['collection_state'])),flush=True);return 0
+ data={'partial':True,'reason':'window margin reached' if stopped[0] else result['reason'],'completed_scope':'source-bound native slot files only','unknown_exposures':'unit10slot2,unit11slot1,unit12slot1,unit15slot1 retained unknown; only original unexposed15/2 scheduled; an exposed slot15/2 without a valid terminal hash remains unknown and is never redrawn','collection_state':state,'original_denominator':45,'full_complete':False,'native_grade':None,'sampled_peak_rss_bytes':guard.peak,'samples':guard.samples,'rss_scope':'whole-owned-process-tree','peak_detail':guard.resources.peak_detail,'output_cap_bytes':guard.CAP}
+ with (run/'partial.json').open('x') as f:json.dump(data,f);f.write('\n');f.flush();os.fsync(f.fileno())
+ return 75
+if __name__=='__main__':raise SystemExit('DRAFT: owner lifecycle and real smokes required')

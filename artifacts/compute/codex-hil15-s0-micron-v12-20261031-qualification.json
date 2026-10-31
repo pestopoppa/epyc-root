@@ -1,0 +1,100 @@
+{
+  "actual_main_controls": {
+    "log": {
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/s0-v11-wrap-draft-20261030/v12-packet-r2/ACTUAL-MAIN-CONTROLS.log",
+      "sha256": "a05245a16edd7dfd4dc3546edd65b1b3031e825f0c300d0d09cd7881432f013a"
+    },
+    "result": "10 PASS; actual main,classifier,prior,seal/strict-validation with injected external IO adapters",
+    "test_source": {
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/s0-v11-wrap-draft-20261030/test_s0_r2_actual_main.py",
+      "sha256": "46ad8640ff4f4641df30b345ccde42aea5c30f899fb6eb294bbe6c90bcb682cb"
+    }
+  },
+  "archived_evidence": {
+    "actual-main-controls-source.txt": {
+      "original": "/mnt/raid0/llm/tmp/refactor-01a16fc3/s0-v11-wrap-draft-20261030/test_s0_r2_actual_main.py",
+      "path": "artifacts/compute/codex-hil15-s0-micron-v12-20261031-qualification/actual-main-controls-source.txt",
+      "sha256": "46ad8640ff4f4641df30b345ccde42aea5c30f899fb6eb294bbe6c90bcb682cb"
+    },
+    "admission-gates.log": {
+      "original": "/mnt/raid0/llm/tmp/hil15-s0-v12-slot2-20261031/READY-GATES.log",
+      "path": "artifacts/compute/codex-hil15-s0-micron-v12-20261031-qualification/admission-gates.log",
+      "sha256": "91b1df262a85a91ffeb869ca525dc3d62fc6a2979e562f981007db01ff9defe5"
+    },
+    "native-smokes.json": {
+      "original": "/mnt/raid0/llm/tmp/hil15-s0-v12-slot2-20261031/SMOKE-EVIDENCE.json",
+      "path": "artifacts/compute/codex-hil15-s0-micron-v12-20261031-qualification/native-smokes.json",
+      "sha256": "573b2224755fbb8217d0b369d3205bf44cc1df6a72eb19c6005e39841da1137c"
+    },
+    "official-main-source.txt": {
+      "original": "/mnt/raid0/llm/tmp/refactor-01a16fc3/s0-v11-wrap-draft-20261030/v12-packet-r2/source/official_s0_v14_r8.py",
+      "path": "artifacts/compute/codex-hil15-s0-micron-v12-20261031-qualification/official-main-source.txt",
+      "sha256": "de01e8fdaf2aa21544040f50a666c7499d688e94966dcdbf99e0df020d0554fe"
+    },
+    "owner-actual-main-controls.log": {
+      "original": "/mnt/raid0/llm/tmp/refactor-01a16fc3/s0-v11-wrap-draft-20261030/v12-packet-r2/OWNER-ACTUAL-MAIN-CONTROLS.log",
+      "path": "artifacts/compute/codex-hil15-s0-micron-v12-20261031-qualification/owner-actual-main-controls.log",
+      "sha256": "abe3410fab970b634c764905244b263f859551b1fc17c97142106b52845a2316"
+    },
+    "preflight.log": {
+      "original": "/mnt/raid0/llm/tmp/hil15-s0-v12-slot2-20261031/preflight.log",
+      "path": "artifacts/compute/codex-hil15-s0-micron-v12-20261031-qualification/preflight.log",
+      "sha256": "cb54da1a8197944c8b5c4cf2b94ea1146454183d2c47ac9a0af4e708ce5eb0e0"
+    },
+    "published-manifest.json": {
+      "original": "/mnt/raid0/llm/tmp/hil15-s0-v12-slot2-20261031/codex-hil15-s0-micron-v12-20261031.json",
+      "path": "artifacts/compute/codex-hil15-s0-micron-v12-20261031-qualification/published-manifest.json",
+      "sha256": "b494765decc1150135a504e8569dbae0ba1be07d6b64633394d84714f36f4a1b"
+    }
+  },
+  "at": "2026-10-31T04:33:41.166203+00:00",
+  "canonical_ready_path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-hil15-s0-micron-v12-20261031.json",
+  "full_complete": false,
+  "known": 40,
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s0-v12-slot2-20261031/launch.sh",
+    "sha256": "d14e685e78989b7c109b1c43ea8b24bab14f8df6c5083745752426ed1b5088f7"
+  },
+  "native_grade": null,
+  "native_smokes": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s0-v12-slot2-20261031/SMOKE-EVIDENCE.json",
+    "sha256": "573b2224755fbb8217d0b369d3205bf44cc1df6a72eb19c6005e39841da1137c"
+  },
+  "new_evidentiary_tier": false,
+  "only_new_eligible_slot": [
+    15,
+    2
+  ],
+  "original_denominator": 45,
+  "preflight": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s0-v12-slot2-20261031/preflight.log",
+    "sha256": "cb54da1a8197944c8b5c4cf2b94ea1146454183d2c47ac9a0af4e708ce5eb0e0"
+  },
+  "publication_scope": "READY preparation/publication only; keeper owns arming; original full35B scientific campaign remains open",
+  "read_only_prearm_keeper_and_validator": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s0-v12-slot2-20261031/READY-GATES.log",
+    "sha256": "91b1df262a85a91ffeb869ca525dc3d62fc6a2979e562f981007db01ff9defe5"
+  },
+  "ready": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s0-v12-slot2-20261031/codex-hil15-s0-micron-v12-20261031.json",
+    "sha256": "b494765decc1150135a504e8569dbae0ba1be07d6b64633394d84714f36f4a1b"
+  },
+  "ready_id": "codex-hil15-s0-micron-v12-20261031",
+  "row": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s0-v12-slot2-20261031/codex-hil15-s0-micron-v12-20261031.row.md",
+    "sha256": "fd59fe7134aa7641badc9415a702c14e0e92e95d9df0d321a7c1604cd922d9d9"
+  },
+  "schema": "hil15-s0-qualification-publication/v1",
+  "source_manifest": {
+    "path": "/mnt/micron/refactor-hil15-s0-v12-slot2-20261031/SOURCE.sha256",
+    "sha256": "0f29d73acfd4ac5761f3b5c026c05a9816fdcb2bb0aca8cbb2d6cb66fd6cceca"
+  },
+  "unexposed": 1,
+  "unknown": 4,
+  "unknown_readset": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s0-v12-slot2-20261031/S0-15-1-UNKNOWN-READSET.json",
+    "sha256": "66812d7730cce40beebbdd2344b9e102a3643e0acd02f0edf43de50e259a0330",
+    "status": "immutable exposed incomplete unknown; never redrawn",
+    "v11_slot": "unit15/slot1"
+  }
+}

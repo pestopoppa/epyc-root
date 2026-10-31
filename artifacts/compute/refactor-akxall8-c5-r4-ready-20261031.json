@@ -35,6 +35,15 @@
   "declaration_evidence_kind": "declared_config only, not a live :8074 argv comparison",
   "original_target": "Q38FN t48/ub512 with GGML_FA_SPLIT_KV=0 and GGML_FUSED_DECODE_OFF=1 retained separately",
   "packet": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r4",
+  "post_publication_admission": {
+    "archived": "artifacts/compute/refactor-akxall8-c5-r4-ready-20261031/prearm-refused.json",
+    "native_qualification_unchanged": true,
+    "reason": "PRE-ARM REFUSED refactor-akxall8-c5-cpu-build-r4-20261031: conditional=False blockers=['build: awaiting keeper integration and full C5 link '] missing=[]",
+    "sha256": "72c289a3cb863362a9c183fc4ef295fb671f35a545a9614a80b3748f7848c9f2",
+    "state": "REFUSED_BEFORE_ARM",
+    "successor_id": "refactor-akxall8-c5-cpu-build-r5-20261031",
+    "successor_preparation": "R5 published after corrected exact prearm and new real controls; keeper owns actual arming"
+  },
   "prepared_at": "2026-10-31T04:11:00.653639+00:00",
   "r3_failure": {
     "cause": "root-owned 755 r3/state prevented effective UID1000 launcher.lock open",

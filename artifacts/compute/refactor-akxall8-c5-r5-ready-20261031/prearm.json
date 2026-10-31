@@ -1,0 +1,19 @@
+{
+  "actual_prearm_predicate": "PASS zero blockers and missing",
+  "actual_ready_scan": "ok rank8 any-cpu-quarter 2400 32",
+  "checked_at": "2026-10-31T04:25:07.919525+00:00",
+  "full_build_complete": false,
+  "gpu_execution": false,
+  "id": "refactor-akxall8-c5-cpu-build-r5-20261031",
+  "manifest_sha256": "bb6fce83464abe8458bde9a4e3f81345585e9ae12717fc9321bdeb8d3e7345d3",
+  "prior_r4_prearm_refusal_preserved": true,
+  "row_sha256": "e3e597a8cef13df9881dcaba87db1f410165cf8f01fe3d4bf386cd147c6d0bf4",
+  "row_validator": "OK 1 row 0 refusals 1 BACKLOG-format warning; keeper arms READY",
+  "schema": "akxall8.c5_r5_private_prearm.v1",
+  "smoke_receipt_sha256": "ceae1f6a458a2fb0aa8bf64ea71ab8f3b3c7a696245334effbff32751bf5938b",
+  "source_clean": true,
+  "source_head": "c72ec82f5417bb2937310326120f149b665e8400",
+  "source_manifest_sha256": "ffafa258b6921ac2468147919df6c540c6d2f3413a03364055fd155b44b26030",
+  "source_sha256sums_sha256": "2314cc506a1b1302684651d07dac519ce5b92ecae9da95417a5e621f7692c29e",
+  "stop_absent": true
+}

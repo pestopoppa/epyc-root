@@ -1,0 +1,31 @@
+{
+  "actual_noarg_wrapper": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/launch.sh",
+  "launcher_sha256": "95dc67d2ea5b9ed26ff0110aed7e70284c65d21b36e57703eb217e906ccd39d7",
+  "original_keeper_stdout_banner": true,
+  "same_pid_exec_to_real_filler": true,
+  "actual_filler_argv": "/bin/bash /mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/engine/filler_run13.sh --id codex-hil15-s2-r13-pid-20261031 --class cpu --claim-cpus 24-47 --role build --min-window 1800 --cmd /bin/bash /mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/launch.sh --job --stop /mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/STOP --port 19433 --complete-cmd taskset -c 24-47 /bin/bash /mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/launch.sh --check-complete --workdir /mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031 ",
+  "wrapper_pid": 3757174,
+  "private_flags": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/fixture-noarg-r13",
+  "owned_pids": [
+    3757174,
+    3757177,
+    3757181,
+    3757183,
+    3757179,
+    3757184,
+    3757185,
+    3757211,
+    3757212,
+    3757213,
+    3757220,
+    3757238,
+    3757239,
+    3757246,
+    3757248,
+    3757257
+  ],
+  "no_captured_live_identity_after_cleanup": true,
+  "original_stdout": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/NOARG-ORIGINAL-STDOUT.log",
+  "no_grant_created": true,
+  "scope": "actual no-arg PID/outer-worker handshake only; no native unit exposure or shared state mutation"
+}

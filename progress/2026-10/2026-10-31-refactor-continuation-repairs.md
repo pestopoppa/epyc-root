@@ -1,0 +1,5 @@
+# 2026-10-31 — continuation and build launcher repairs
+
+R4 C5 build preparation passed native controls but actual scheduler pre-arm refused its mistaken full-link prerequisite. Preserved the refusal and absent poller, then published R5 with corrected row metadata, exact pre-arm checks and fresh normal/cutoff proof. Full build and serving measurements remain open.
+
+S0 v12 reconciles the original partial cohort (40 known, four unknown, one unexposed) and schedules only15/2. Ten actual-main controls and final real reduced-model normal/cutoff passed. Captured cutoff remains rc75; a verified later rearm may exhaust collection40/5 without redrawing or granting a native grade. S2 r13 fixes the hidden PID banner, proves same-PID engine exec, revalidates18/2/25, and passes real normal/cutoff. Both original scientific campaigns remain open. Three READY packets published: R5, S0v12, S2r13. Evidence is archived under artifacts/compute; no extra worktree or weight copy. [no-belief: source/launcher preparation and controls only]
