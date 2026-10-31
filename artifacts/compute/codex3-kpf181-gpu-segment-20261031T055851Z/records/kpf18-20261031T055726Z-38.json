@@ -1,0 +1,896 @@
+{
+ "schema": "epyc.kpf.run.v1",
+ "kpf_task": "KPF-18.1",
+ "kpf18_item": 181,
+ "run_id": "kpf18-20261031T055726Z-38",
+ "arm": "A_tailonly_forkoff",
+ "binary": "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server",
+ "binary_realpath": "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server",
+ "binary_sha256": "2be7a16ed6d3712d82a36c668417b4dcec8d9cadd13a682e069cb4d57b9d0635",
+ "build_from_launch_log": null,
+ "argv": [
+  "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server",
+  "-m",
+  "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+  "--host",
+  "127.0.0.1",
+  "-np",
+  "4",
+  "-c",
+  "393216",
+  "-t",
+  "8",
+  "-b",
+  "512",
+  "-ub",
+  "512",
+  "--flash-attn",
+  "on",
+  "--jinja",
+  "-ctk",
+  "q8_0",
+  "-ctv",
+  "q8_0",
+  "--kv-unified",
+  "--no-mmap",
+  "-ngl",
+  "all",
+  "--cache-ram",
+  "65536",
+  "--chat-template-file",
+  "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+  "-md",
+  "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+  "-ngld",
+  "99",
+  "--spec-type",
+  "draft-dflash",
+  "--spec-draft-n-max",
+  "7",
+  "--device",
+  "ROCm0",
+  "--slot-save-path",
+  "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/full/slot-save/kpf181-off-dflash2-20261031T052122Z",
+  "--device-draft",
+  "ROCm0",
+  "--no-cache-idle-slots",
+  "--port",
+  "19639",
+  "--metrics",
+  "--slot-fork-min-tokens",
+  "0"
+ ],
+ "launch_prefix": [
+  "taskset",
+  "-c",
+  "184-191"
+ ],
+ "argv_readback": {
+  "proc_cmdline_matches_argv": true,
+  "exe_matches_binary": true
+ },
+ "argv_source": {
+  "argv_file": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/full-argv.txt",
+  "argv_file_sha256": "26a6c265ad67249a486bfd68525368c00114346aba065b9b3757c9f87b3cc09c",
+  "argv_file_header": [
+   "# KPF-18 gate argv (production :8083 argv minus binary/--port, plus the -b 512 -ub 512 + --no-cache-idle-slots",
+   "# package named in kv-prefix-fork-and-paged-attention.md). The runner adds --port, --metrics,",
+   "# --slot-fork-min-tokens and its own --slot-save-path; item 4 adds the prefill-budget args.",
+   "# source: /mnt/raid0/llm/epyc-orchestrator/logs/server_launches/8083.json (schema epyc.stack.server_launch.v1, launched_at 2026-10-07T02:52:27.109Z,",
+   "#   pid 1539774, launcher /mnt/raid0/llm/epyc-orchestrator/scripts/server/orchestrator_stack.py reload server_8083, stack_commit 300cf5817edccc4f82089f0faa477828496068b6,",
+   "#   argv_sha256 4ea2aa0d041d981d3fce181e909d2e2d4bbdb182ad8326f3445d3b92599e11b4 (recomputed match: True))",
+   "# launch prefix in that record: numactl --membind=3 -- taskset -c 184-191",
+   "# production binary in that record: /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server (NOT used here; the runner takes --fork-bin/--champion-bin)",
+   "# changes vs the record: removed --port 8083; -ub 2048 -> -b 512 -ub 512; added --no-cache-idle-slots"
+  ],
+  "shape_drift": [],
+  "shape_drift_allowed": true
+ },
+ "env": {
+  "dropped_ambient": [],
+  "set": {
+   "HIP_PATH": "/opt/rocm",
+   "ROCM_PATH": "/opt/rocm",
+   "OMP_PROC_BIND": "spread",
+   "OMP_PLACES": "cores",
+   "OMP_WAIT_POLICY": "active",
+   "OMP_DYNAMIC": "false",
+   "GGML_IQK": "1",
+   "LD_LIBRARY_PATH": "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib"
+  }
+ },
+ "kv_mode_from_launch_log": "kv_unified = 'true'",
+ "slot_fork_from_launch_log": null,
+ "n_slots_n_ctx_slot_from_launch_log": [
+  4,
+  262144
+ ],
+ "prompt_set": "/mnt/raid0/llm/tmp/overnight-20261020/kpf18-run/prompt_set.jsonl",
+ "prompt_set_sha256": "dc37cdf1c407956d83d7b7354f4e48964306228793fc9095add945a17f2994de",
+ "dflash2": true,
+ "spec_type_from_argv": "draft-dflash",
+ "draft_model_from_argv": "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+ "speculative_requested": true,
+ "equivalence": {
+  "control_floor": {
+   "top1_agree": 0,
+   "n": 0,
+   "logit_maxabs": 0.0,
+   "kld": 0.0,
+   "greedy_prefix_len_min": 0,
+   "first_token_top1_agree": 0,
+   "max_abs_logit": null,
+   "max_kld": null,
+   "identical_greedy_prefix_min": 0,
+   "measured": false
+  },
+  "vs_fresh": {
+   "top1_agree": 0,
+   "n": 0,
+   "logit_maxabs": 0.0,
+   "kld": 0.0,
+   "greedy_prefix_len_min": 0,
+   "first_token_top1_agree": 0,
+   "max_abs_logit": null,
+   "max_kld": null,
+   "identical_greedy_prefix_min": 0,
+   "measured": false
+  },
+  "bit_exact_ckpt": {
+   "identical": 0,
+   "n": 0,
+   "tokens_identical": 0,
+   "measured": false
+  },
+  "source_invariance": {
+   "identical": 0,
+   "n": 0,
+   "tokens_identical": 0,
+   "measured": false
+  },
+  "off_equals_champion": {
+   "identical": 0,
+   "n": 0,
+   "tokens_identical": 0,
+   "measured": false
+  }
+ },
+ "equivalence_basis": "First-token top-k probabilities from /completion `n_probs` (completion_probabilities, post_sampling_probs false = softmax over the full vocabulary before sampling). The server cannot return full logits, so `logit_maxabs` is max |p_a - p_b| over the UNION of the two top-k sets (an id absent from one side counts as 0 there: an upper bound) and `kld` is KL(a||b) over the top-k union plus one tail bucket, absent ids imputed from that side's tail mass capped at its k-th prob (a coarse-grained KL: a lower bound on the full-vocab KL when the imputation is exact). Greedy-prefix length compares returned token ids over n_predict tokens (ignore_eos). `identical` = all token ids AND every per-position top-k entry equal.",
+ "n_probs": 20,
+ "n_predict": 256,
+ "ttft_ms": [],
+ "prompt_tokens_processed": 39024,
+ "cache_n": 0,
+ "n_fork_tokens": 0,
+ "unique_cells_peak": null,
+ "unique_cells_method": null,
+ "decode_tok_s": {
+  "per_slot": [
+   1000000.0,
+   1000000.0,
+   1000000.0,
+   1000000.0
+  ],
+  "aggregate": 1000000.0,
+  "aggregate_method": "sum predicted_n / sum predicted_ms over this run's requests (token-weighted mean decode rate; requests are sequential, not a concurrent aggregate)"
+ },
+ "window_id": "kpf18-20261031T052122Z-item181",
+ "gpu_window_id": "codex3-kpf181-27b-gpu-r3-20261031",
+ "start_utc": "2026-10-31T05:57:26Z",
+ "end_utc": "2026-10-31T05:58:48Z",
+ "host": "Beelzebub",
+ "checks": {
+  "n_fork_tokens_timings_equal_slot": {
+   "ok": 1,
+   "n": 1,
+   "failed": []
+  }
+ },
+ "server_log": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/full/logs/kpf181-off-dflash2-20261031T052122Z.server.log",
+ "server_log_counts": {
+  "failed_to_find_memory_slot": 0,
+  "fork_lines": 0,
+  "fork_lines_busy": 0,
+  "fork_kinds": [],
+  "prefill_budget_iters": 200,
+  "prefill_budget_mixed_iters": 0,
+  "n_batch_observed": 512
+ },
+ "residency": {
+  "linkage": {
+   "rc": 0,
+   "pass": true,
+   "report": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/full/logs/kpf181-off-dflash2-20261031T052122Z.linkage.txt",
+   "s": 0.01,
+   "cmd": "LD_LIBRARY_PATH=/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib bash /mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin"
+  },
+  "hip_mapped": [
+   "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-hip.so.0.16.0"
+  ],
+  "ggml_all_from_bin_dir": true,
+  "smi_tool": "rocm-smi",
+  "vram": {
+   "samples": 129,
+   "own_vram_nonzero_samples": 124,
+   "own_vram_peak_gib": 48.518,
+   "card_used_peak_gib": 48.534,
+   "kfd_process_count_max": 1,
+   "first_sample_utc": "2026-10-31T05:56:22Z",
+   "last_sample_utc": "2026-10-31T05:58:48Z",
+   "abort": null,
+   "samples_file": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/full/vram/kpf181-off-dflash2-20261031T052122Z.jsonl"
+  },
+  "process_start_utc": "2026-10-31T05:56:24Z",
+  "process_stop_utc": "2026-10-31T05:58:46Z",
+  "stop": {
+   "pid": 2378141,
+   "sent": [
+    "TERM"
+   ],
+   "at": "2026-10-31T05:58:46Z",
+   "returncode": 0,
+   "verified_dead": true
+  }
+ },
+ "rows": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/full/rows/kpf18-20261031T055726Z-38.jsonl",
+ "rows_sha256": "369bfb4b1fa87f94dc44f3e92a00a9ca2f7bba33dcf6cabc5b77d624a2c6ac16",
+ "kpf_ext": {
+  "ext_version": 1,
+  "checkpoint_set": [
+   {
+    "role": "source",
+    "positions": []
+   },
+   {
+    "role": "sibling",
+    "positions": []
+   },
+   {
+    "role": "sibling",
+    "positions": []
+   },
+   {
+    "role": "sibling",
+    "positions": []
+   }
+  ],
+  "hit_components": [
+   {
+    "role": "source",
+    "tgt_kv_hit": 0,
+    "min": 0,
+    "n_fork_tokens": null
+   },
+   {
+    "role": "sibling",
+    "tgt_kv_hit": 8000,
+    "min": 8000,
+    "n_fork_tokens": null
+   },
+   {
+    "role": "sibling",
+    "tgt_kv_hit": 8000,
+    "min": 8000,
+    "n_fork_tokens": null
+   },
+   {
+    "role": "sibling",
+    "tgt_kv_hit": 8000,
+    "min": 8000,
+    "n_fork_tokens": null
+   }
+  ],
+  "hit_length_min": 0,
+  "hit_tokens": 0,
+  "tokens_lost_to_missing_checkpoint": null,
+  "drafter_drop_kind": null,
+  "request_lane": [
+   "completion_raw"
+  ],
+  "cache_skip_control": {
+   "requests_cache_prompt_false": 0,
+   "cache_n_zero": 0
+  },
+  "pinned_count": {
+   "max": 0,
+   "samples": 4
+  }
+ },
+ "instrument_class": "serving",
+ "category": "CANDIDATE",
+ "grading_note": "n=1 per cell, no codified protocol cited: an OBSERVATION; projects under VB-KVU-PF and grades Judged/Located through claim_tuple.grade(). Counts, not a pass word.",
+ "kpf18_arm": "A_tailonly_forkoff",
+ "kpf_config": "dflash2",
+ "fork_min_tokens": 0,
+ "fork_mode": "checkpoint",
+ "predeclared_rule": "A_ckpt: slot 0 prefills trunk(T)+private tail with checkpoint_at=[T]; each sibling = trunk + its own suffix (distinct first tokens) on slot 1, one at a time, fork on. SATISFIED iff every sibling n_fork_tokens == T. A_tailonly: same without checkpoint_at; RECORDED only (expected near 0: the source's near-end checkpoints lie past the shared prefix): counts of n_fork_tokens == 0 and the max. Fork-off arms (min tokens 0): SATISFIED iff every sibling n_fork_tokens == 0.",
+ "predeclared_rules_sha256": "049d663e7a57cbd70b56bb5bd1e8d1551aedcca3275dc728c8e57af90889b8c9",
+ "cells": [
+  {
+   "arm": "A_tailonly_forkoff",
+   "cell": "g0.src",
+   "role": "source",
+   "slot": 0,
+   "n_task": 8512,
+   "lcp_client": 0,
+   "n_fork_tokens": null,
+   "n_fork_tokens_slot": null,
+   "fork_src_kind": null,
+   "fork_src_slot": null,
+   "cache_n": 0,
+   "prompt_n": 8512,
+   "predicted_p": 0,
+   "predicted_kind": "none",
+   "predicted_src": null,
+   "predicted_tie": false,
+   "n_candidates": 0,
+   "expected": null,
+   "checkpoint_set_before": [],
+   "pinned_before": [],
+   "error": null,
+   "ckpt_sets_by_slot": {
+    "1": [],
+    "2": [],
+    "3": []
+   },
+   "checkpoint_at": null,
+   "cache_prompt": true,
+   "fork_requested": false,
+   "dflash_requested": true,
+   "n_predict": 0,
+   "group": 0,
+   "active_slot_evidence": {
+    "source": "active_slots",
+    "path": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/full/active_slots/kpf18-20261031T055726Z-38-4fff48b9f0023553dbe7.jsonl",
+    "final_task_id": null,
+    "final_slot_id": null,
+    "matched_active_samples": 0,
+    "matched_values": [],
+    "matched_slot": null,
+    "n_fork_tokens": null,
+    "status": "unknown",
+    "sampler_drained": true,
+    "sample_errors": 0,
+    "sha256": "a1eb286940a2b7180e123f6ee92432204d33e6e66a6fe0b2813f305a8e4ecf7d"
+   },
+   "post_completion_slot": {
+    "id": 0,
+    "n_ctx": 262144,
+    "speculative": true,
+    "is_processing": false,
+    "id_task": 160,
+    "n_prompt_tokens": 8512,
+    "n_prompt_tokens_processed": 8512,
+    "n_prompt_tokens_cache": 0,
+    "params": {
+     "seed": 42,
+     "temperature": 0.0,
+     "dynatemp_range": 0.0,
+     "dynatemp_exponent": 1.0,
+     "top_k": 20,
+     "top_p": 0.949999988079071,
+     "min_p": 0.05000000074505806,
+     "top_n_sigma": -1.0,
+     "xtc_probability": 0.0,
+     "xtc_threshold": 0.10000000149011612,
+     "typical_p": 1.0,
+     "repeat_last_n": 64,
+     "repeat_penalty": 1.0,
+     "presence_penalty": 0.0,
+     "frequency_penalty": 0.0,
+     "dry_multiplier": 0.0,
+     "dry_base": 1.75,
+     "dry_allowed_length": 2,
+     "dry_penalty_last_n": 262144,
+     "mirostat": 0,
+     "mirostat_tau": 5.0,
+     "mirostat_eta": 0.10000000149011612,
+     "max_tokens": 0,
+     "n_predict": 0,
+     "n_keep": 0,
+     "n_discard": 0,
+     "kv_streaming_sink": 0,
+     "kv_streaming_window": 0,
+     "ignore_eos": true,
+     "stream": false,
+     "n_probs": 0,
+     "min_keep": 0,
+     "chat_format": "Content-only",
+     "reasoning_format": "deepseek",
+     "reasoning_in_content": false,
+     "generation_prompt": "",
+     "samplers": [
+      "penalties",
+      "dry",
+      "top_n_sigma",
+      "top_k",
+      "typ_p",
+      "top_p",
+      "min_p",
+      "xtc",
+      "temperature"
+     ],
+     "speculative.types": "none,draft-dflash",
+     "speculative.n_max": 7,
+     "timings_per_token": false,
+     "post_sampling_probs": false,
+     "backend_sampling": false,
+     "lora": []
+    },
+    "next_token": [
+     {
+      "has_next_token": false,
+      "has_new_line": false,
+      "n_remain": -1,
+      "n_decoded": 1
+     }
+    ]
+   },
+   "post_completion_slot_error": null,
+   "components": {
+    "tgt_kv_hit": 0,
+    "recurrent_ckpt_pos": null,
+    "drafter_kv_hit": null,
+    "source": {
+     "tgt_kv_hit": "client"
+    },
+    "drafter_exposed": false
+   },
+   "tokens_lost_to_missing_checkpoint": null
+  },
+  {
+   "arm": "A_tailonly_forkoff",
+   "cell": "g0.s0",
+   "role": "sibling",
+   "slot": 1,
+   "n_task": 8512,
+   "lcp_client": 8000,
+   "n_fork_tokens": null,
+   "n_fork_tokens_slot": null,
+   "fork_src_kind": null,
+   "fork_src_slot": null,
+   "cache_n": 0,
+   "prompt_n": 8512,
+   "predicted_p": 0,
+   "predicted_kind": "none",
+   "predicted_src": null,
+   "predicted_tie": false,
+   "n_candidates": 0,
+   "expected": 0,
+   "checkpoint_set_before": [],
+   "pinned_before": [],
+   "error": null,
+   "ckpt_sets_by_slot": {
+    "0": [],
+    "2": [],
+    "3": []
+   },
+   "checkpoint_at": null,
+   "cache_prompt": true,
+   "fork_requested": true,
+   "dflash_requested": true,
+   "n_predict": 1,
+   "group": 0,
+   "suffix": 0,
+   "active_slot_evidence": {
+    "source": "active_slots",
+    "path": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/full/active_slots/kpf18-20261031T055726Z-38-64cc2f4aa988e62b2652.jsonl",
+    "final_task_id": null,
+    "final_slot_id": null,
+    "matched_active_samples": 0,
+    "matched_values": [],
+    "matched_slot": null,
+    "n_fork_tokens": null,
+    "status": "unknown",
+    "sampler_drained": true,
+    "sample_errors": 0,
+    "sha256": "a4edb4137744618cd487a97d3eca62eb4b85e46c277151fe7557b8b1a46f6149"
+   },
+   "post_completion_slot": {
+    "id": 1,
+    "n_ctx": 262144,
+    "speculative": true,
+    "is_processing": false,
+    "id_task": 192,
+    "n_prompt_tokens": 8512,
+    "n_prompt_tokens_processed": 8512,
+    "n_prompt_tokens_cache": 0,
+    "params": {
+     "seed": 42,
+     "temperature": 0.0,
+     "dynatemp_range": 0.0,
+     "dynatemp_exponent": 1.0,
+     "top_k": 20,
+     "top_p": 0.949999988079071,
+     "min_p": 0.05000000074505806,
+     "top_n_sigma": -1.0,
+     "xtc_probability": 0.0,
+     "xtc_threshold": 0.10000000149011612,
+     "typical_p": 1.0,
+     "repeat_last_n": 64,
+     "repeat_penalty": 1.0,
+     "presence_penalty": 0.0,
+     "frequency_penalty": 0.0,
+     "dry_multiplier": 0.0,
+     "dry_base": 1.75,
+     "dry_allowed_length": 2,
+     "dry_penalty_last_n": 262144,
+     "mirostat": 0,
+     "mirostat_tau": 5.0,
+     "mirostat_eta": 0.10000000149011612,
+     "max_tokens": 1,
+     "n_predict": 1,
+     "n_keep": 0,
+     "n_discard": 0,
+     "kv_streaming_sink": 0,
+     "kv_streaming_window": 0,
+     "ignore_eos": true,
+     "stream": false,
+     "n_probs": 0,
+     "min_keep": 0,
+     "chat_format": "Content-only",
+     "reasoning_format": "deepseek",
+     "reasoning_in_content": false,
+     "generation_prompt": "",
+     "samplers": [
+      "penalties",
+      "dry",
+      "top_n_sigma",
+      "top_k",
+      "typ_p",
+      "top_p",
+      "min_p",
+      "xtc",
+      "temperature"
+     ],
+     "speculative.types": "none,draft-dflash",
+     "speculative.n_max": 7,
+     "timings_per_token": false,
+     "post_sampling_probs": false,
+     "backend_sampling": false,
+     "lora": []
+    },
+    "next_token": [
+     {
+      "has_next_token": false,
+      "has_new_line": false,
+      "n_remain": 0,
+      "n_decoded": 1
+     }
+    ]
+   },
+   "post_completion_slot_error": null,
+   "components": {
+    "tgt_kv_hit": 8000,
+    "recurrent_ckpt_pos": null,
+    "drafter_kv_hit": null,
+    "source": {
+     "tgt_kv_hit": "client"
+    },
+    "drafter_exposed": false
+   },
+   "tokens_lost_to_missing_checkpoint": null
+  },
+  {
+   "arm": "A_tailonly_forkoff",
+   "cell": "g0.s1",
+   "role": "sibling",
+   "slot": 1,
+   "n_task": 10000,
+   "lcp_client": 8000,
+   "n_fork_tokens": null,
+   "n_fork_tokens_slot": null,
+   "fork_src_kind": null,
+   "fork_src_slot": null,
+   "cache_n": 0,
+   "prompt_n": 10000,
+   "predicted_p": 0,
+   "predicted_kind": "none",
+   "predicted_src": null,
+   "predicted_tie": false,
+   "n_candidates": 0,
+   "expected": 0,
+   "checkpoint_set_before": [],
+   "pinned_before": [],
+   "error": null,
+   "ckpt_sets_by_slot": {
+    "0": [],
+    "2": [],
+    "3": []
+   },
+   "checkpoint_at": null,
+   "cache_prompt": true,
+   "fork_requested": true,
+   "dflash_requested": true,
+   "n_predict": 1,
+   "group": 0,
+   "suffix": 1,
+   "active_slot_evidence": {
+    "source": "active_slots",
+    "path": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/full/active_slots/kpf18-20261031T055726Z-38-91a659f02e32b5a5e7fc.jsonl",
+    "final_task_id": null,
+    "final_slot_id": null,
+    "matched_active_samples": 0,
+    "matched_values": [],
+    "matched_slot": null,
+    "n_fork_tokens": null,
+    "status": "unknown",
+    "sampler_drained": true,
+    "sample_errors": 0,
+    "sha256": "c0c3d75db4471d101abed1e03cb6455e957f209ed8e5c2bc52ebecbf198bf5c4"
+   },
+   "post_completion_slot": {
+    "id": 1,
+    "n_ctx": 262144,
+    "speculative": true,
+    "is_processing": false,
+    "id_task": 223,
+    "n_prompt_tokens": 10000,
+    "n_prompt_tokens_processed": 10000,
+    "n_prompt_tokens_cache": 0,
+    "params": {
+     "seed": 42,
+     "temperature": 0.0,
+     "dynatemp_range": 0.0,
+     "dynatemp_exponent": 1.0,
+     "top_k": 20,
+     "top_p": 0.949999988079071,
+     "min_p": 0.05000000074505806,
+     "top_n_sigma": -1.0,
+     "xtc_probability": 0.0,
+     "xtc_threshold": 0.10000000149011612,
+     "typical_p": 1.0,
+     "repeat_last_n": 64,
+     "repeat_penalty": 1.0,
+     "presence_penalty": 0.0,
+     "frequency_penalty": 0.0,
+     "dry_multiplier": 0.0,
+     "dry_base": 1.75,
+     "dry_allowed_length": 2,
+     "dry_penalty_last_n": 262144,
+     "mirostat": 0,
+     "mirostat_tau": 5.0,
+     "mirostat_eta": 0.10000000149011612,
+     "max_tokens": 1,
+     "n_predict": 1,
+     "n_keep": 0,
+     "n_discard": 0,
+     "kv_streaming_sink": 0,
+     "kv_streaming_window": 0,
+     "ignore_eos": true,
+     "stream": false,
+     "n_probs": 0,
+     "min_keep": 0,
+     "chat_format": "Content-only",
+     "reasoning_format": "deepseek",
+     "reasoning_in_content": false,
+     "generation_prompt": "",
+     "samplers": [
+      "penalties",
+      "dry",
+      "top_n_sigma",
+      "top_k",
+      "typ_p",
+      "top_p",
+      "min_p",
+      "xtc",
+      "temperature"
+     ],
+     "speculative.types": "none,draft-dflash",
+     "speculative.n_max": 7,
+     "timings_per_token": false,
+     "post_sampling_probs": false,
+     "backend_sampling": false,
+     "lora": []
+    },
+    "next_token": [
+     {
+      "has_next_token": false,
+      "has_new_line": false,
+      "n_remain": 0,
+      "n_decoded": 1
+     }
+    ]
+   },
+   "post_completion_slot_error": null,
+   "components": {
+    "tgt_kv_hit": 8000,
+    "recurrent_ckpt_pos": null,
+    "drafter_kv_hit": null,
+    "source": {
+     "tgt_kv_hit": "client"
+    },
+    "drafter_exposed": false
+   },
+   "tokens_lost_to_missing_checkpoint": null
+  },
+  {
+   "arm": "A_tailonly_forkoff",
+   "cell": "g0.s2",
+   "role": "sibling",
+   "slot": 1,
+   "n_task": 12000,
+   "lcp_client": 8000,
+   "n_fork_tokens": null,
+   "n_fork_tokens_slot": null,
+   "fork_src_kind": null,
+   "fork_src_slot": null,
+   "cache_n": 0,
+   "prompt_n": 12000,
+   "predicted_p": 0,
+   "predicted_kind": "none",
+   "predicted_src": null,
+   "predicted_tie": false,
+   "n_candidates": 0,
+   "expected": 0,
+   "checkpoint_set_before": [],
+   "pinned_before": [],
+   "error": null,
+   "ckpt_sets_by_slot": {
+    "0": [],
+    "2": [],
+    "3": []
+   },
+   "checkpoint_at": null,
+   "cache_prompt": true,
+   "fork_requested": true,
+   "dflash_requested": true,
+   "n_predict": 1,
+   "group": 0,
+   "suffix": 2,
+   "active_slot_evidence": {
+    "source": "active_slots",
+    "path": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/full/active_slots/kpf18-20261031T055726Z-38-3a565e7d45ba9227c15e.jsonl",
+    "final_task_id": null,
+    "final_slot_id": null,
+    "matched_active_samples": 0,
+    "matched_values": [],
+    "matched_slot": null,
+    "n_fork_tokens": null,
+    "status": "unknown",
+    "sampler_drained": true,
+    "sample_errors": 0,
+    "sha256": "5ca844d27ca63f0bc61e2554fe6f6f99a42c153c6f7f84b6d0f6235581d1f474"
+   },
+   "post_completion_slot": {
+    "id": 1,
+    "n_ctx": 262144,
+    "speculative": true,
+    "is_processing": false,
+    "id_task": 261,
+    "n_prompt_tokens": 12000,
+    "n_prompt_tokens_processed": 12000,
+    "n_prompt_tokens_cache": 0,
+    "params": {
+     "seed": 42,
+     "temperature": 0.0,
+     "dynatemp_range": 0.0,
+     "dynatemp_exponent": 1.0,
+     "top_k": 20,
+     "top_p": 0.949999988079071,
+     "min_p": 0.05000000074505806,
+     "top_n_sigma": -1.0,
+     "xtc_probability": 0.0,
+     "xtc_threshold": 0.10000000149011612,
+     "typical_p": 1.0,
+     "repeat_last_n": 64,
+     "repeat_penalty": 1.0,
+     "presence_penalty": 0.0,
+     "frequency_penalty": 0.0,
+     "dry_multiplier": 0.0,
+     "dry_base": 1.75,
+     "dry_allowed_length": 2,
+     "dry_penalty_last_n": 262144,
+     "mirostat": 0,
+     "mirostat_tau": 5.0,
+     "mirostat_eta": 0.10000000149011612,
+     "max_tokens": 1,
+     "n_predict": 1,
+     "n_keep": 0,
+     "n_discard": 0,
+     "kv_streaming_sink": 0,
+     "kv_streaming_window": 0,
+     "ignore_eos": true,
+     "stream": false,
+     "n_probs": 0,
+     "min_keep": 0,
+     "chat_format": "Content-only",
+     "reasoning_format": "deepseek",
+     "reasoning_in_content": false,
+     "generation_prompt": "",
+     "samplers": [
+      "penalties",
+      "dry",
+      "top_n_sigma",
+      "top_k",
+      "typ_p",
+      "top_p",
+      "min_p",
+      "xtc",
+      "temperature"
+     ],
+     "speculative.types": "none,draft-dflash",
+     "speculative.n_max": 7,
+     "timings_per_token": false,
+     "post_sampling_probs": false,
+     "backend_sampling": false,
+     "lora": []
+    },
+    "next_token": [
+     {
+      "has_next_token": false,
+      "has_new_line": false,
+      "n_remain": 0,
+      "n_decoded": 1
+     }
+    ]
+   },
+   "post_completion_slot_error": null,
+   "components": {
+    "tgt_kv_hit": 8000,
+    "recurrent_ckpt_pos": null,
+    "drafter_kv_hit": null,
+    "source": {
+     "tgt_kv_hit": "client"
+    },
+    "drafter_exposed": false
+   },
+   "tokens_lost_to_missing_checkpoint": null
+  }
+ ],
+ "controls": {
+  "manifest": "prompt_set_sha256 + binary_sha256 + argv (read back from /proc and the launch log) are in this record; per-sibling raw cells (n_fork_tokens from timings and from /slots, prediction, checkpoint sets, active task-matched samples, separate post-completion state and errors) are under `cells`",
+  "baseline": "the fork-off arm (--slot-fork-min-tokens 0) of the same command on the same binary, and champion tip e33229348 (item 6 / KPF-18.0b)",
+  "held_out": "lengths or prompts used to SET a rule are never used to judge it (arm D holdout cell; arm C/D positions come from the server's own checkpoint offsets, not from fitted numbers)",
+  "counted": "every sibling is a cell, including errors, aborts and abstentions",
+  "reported_as": "counts under rule_result; no pass word",
+  "config": "dflash2",
+  "kpf_task": "KPF-18.1"
+ },
+ "arm_key": "A",
+ "with_checkpoint_at": false,
+ "expect": "zero",
+ "counters_start": {
+  "slot_forks_total": null,
+  "slot_fork_tokens_total": null
+ },
+ "counters_end": {
+  "slot_forks_total": null,
+  "slot_fork_tokens_total": null
+ },
+ "counters_delta": {
+  "slot_forks_total": null,
+  "slot_fork_tokens_total": null
+ },
+ "armed": {
+  "n_requests": 4,
+  "n_requests_with_fork": 0,
+  "sum_n_fork_tokens": 0,
+  "checkpoint_sets_nonempty": 0
+ },
+ "rule_result": {
+  "n": 3,
+  "n_error": 3,
+  "n_equal_expected": 0,
+  "n_not_equal_expected": 0,
+  "observed": [
+   null,
+   null,
+   null
+  ],
+  "expected": [
+   0,
+   0,
+   0
+  ],
+  "predeclared_rule_satisfied": false,
+  "n_siblings": 3,
+  "n_fork_min": null,
+  "n_fork_max": null,
+  "n_fork_zero": 0,
+  "n_fork_positive": 0,
+  "n_error_cells": 3
+ },
+ "partial": true,
+ "record_sha256": "0d71943f8ed5a154459f9766a02af460fe7199ada93b1b7ec4d1c7dfdabe6b1d"
+}

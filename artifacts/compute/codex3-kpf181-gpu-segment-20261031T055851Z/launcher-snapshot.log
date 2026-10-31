@@ -1,0 +1,201 @@
+2026-10-31T05:18:21Z [codex3-kpf181-27b-gpu-r3-20261031] launcher up pid=147939 class=gpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/STOP minwin=1800s ports=19639
+2026-10-31T05:21:22Z [codex3-kpf181-27b-gpu-r3-20261031] START regions=mi210_0,184-191 cpus=184-191 threads=8 gpu=1 end=2026-10-31T06:00Z
+[region-lock] acquiring gpu-quiet exclusive as role='bench' (timeout_s=2318.0) …
+[region-lock] held gpu-quiet exclusive + regions [] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/codex3-kpf-item4-control-20261030/engine/filler_run13.sh --inner --id codex3-kpf181-27b-gpu-r3-20261031 --class gpu --cmd exec taskset -c "$FILLER_CPUS" /bin/bash /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/launch.sh --job --min-window 1800 --stop /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/STOP --port 19639 --workdir /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3 --gpu-threads 184-191
+2026-10-31T05:21:22Z mi210_0 flock held
+====================================================================================================
+KPF-18 gate plan (EXECUTE)  host Beelzebub  2026-10-31T05:21:22Z
+  out /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/full | port 19639 | fork-min 1024 | n_predict 256 | n_probs 20 | window-id kpf18-20261031T052122Z | gpu-window-id codex3-kpf181-27b-gpu-r3-20261031
+  launch prefix: taskset -c 184-191
+  gate argv (/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/full-argv.txt): -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 393216 -t 8 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --kv-unified --no-mmap -ngl all --cache-ram 65536 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja -md /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf -ngld 99 --spec-type draft-dflash --spec-draft-n-max 7 --device ROCm0 --slot-save-path /mnt/raid0/llm/cache/kv_slots/architect_critic --device-draft ROCm0 --no-cache-idle-slots
+  - --fork-bin /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server (bin dir /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin; LD_LIBRARY_PATH /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib)
+  - card /sys/class/drm/card2/device: VRAM used 0.01 GiB of 63.98; KFD processes holding VRAM now: 0
+  - VRAM sampler: KFD sysfs per-pid at 1 Hz + rocm-smi (rocm-smi --showmeminfo vram --json) every 5 s
+  - GPU window file: {"file": "/mnt/raid0/llm/tmp/gpu-window/mi210.json", "exists": true, "holder": "production", "parked_ports": [], "parked_roles": [], "expected_end": null, "preempt_requested_at": null}
+  - device claim mi210_0 (advisory read): state locked_without_payload, holder -
+  - 181 C lengths 7168..7648 stride 32 (ub 512) on group 0
+  - 181 drafter configurations: ['dflash2', 'nodraft']; fork-off baseline launch added for arms A/B
+  - prompt set /mnt/raid0/llm/tmp/overnight-20261020/kpf18-run/prompt_set.jsonl sha256 dc37cdf1c407956d83d7b7354f4e48964306228793fc9095add945a17f2994de: 32 pairs
+  rate model: prefill ms/tok = (1.15 + 0.0235 x occupied_k) x 1.1; decode DFlash2 37.0-0.09/k tok/s, no-draft 30.8-0.15/k; 4-stream agg x1.3; load 90s, stop 45s
+----------------------------------------------------------------------------------------------------
+ITEM 181: 46 steps, est 53m35s
+      1m35s  [kpf181-on-dflash2-20261031T052122Z] linkage + launch + healthy + read-back: taskset -c 184-191 /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 393216 -t 8 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --kv-unified --no-mmap -ngl all --cache-ram 65536 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja -md /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf -ngld 99 --spec-type draft-dflash --spec-draft-n-max 7 --device ROCm0 --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/full/slot-save/kpf181-on-dflash2-20261031T052122Z --device-draft ROCm0 --no-cache-idle-slots --port 19639 --metrics --slot-fork-min-tokens 1024
+      0m21s  181 A [checkpoint_at=[T]] groups [0]: source slot 0 trunk+tail, 3 siblings on slot 1, fork on (rule A)
+      0m21s  181 A [tail only, no checkpoint_at] groups [0]: source slot 0 trunk+tail, 3 siblings on slot 1, fork on (rule A)
+      3m00s  181 B g0: identical resend (no ckpt / ckpt [-1]) and child==trunk (junction source / trunk source), cold A+B controls (rule B)
+      1m08s  181 C g0 drafter on length=7168 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m08s  181 C g0 drafter on length=7200 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m08s  181 C g0 drafter on length=7232 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m08s  181 C g0 drafter on length=7264 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m08s  181 C g0 drafter on length=7296 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m08s  181 C g0 drafter on length=7328 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m08s  181 C g0 drafter on length=7360 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m08s  181 C g0 drafter on length=7392 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m08s  181 C g0 drafter on length=7424 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m08s  181 C g0 drafter on length=7456 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m08s  181 C g0 drafter on length=7488 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m08s  181 C g0 drafter on length=7520 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m08s  181 C g0 drafter on length=7552 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m08s  181 C g0 drafter on length=7584 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m08s  181 C g0 drafter on length=7616 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m08s  181 C g0 drafter on length=7648 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m13s  181 C g0 drafter off length=7168 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m13s  181 C g0 drafter off length=7200 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m13s  181 C g0 drafter off length=7232 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m13s  181 C g0 drafter off length=7264 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m13s  181 C g0 drafter off length=7296 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m13s  181 C g0 drafter off length=7328 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m13s  181 C g0 drafter off length=7360 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m13s  181 C g0 drafter off length=7392 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m13s  181 C g0 drafter off length=7424 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m13s  181 C g0 drafter off length=7456 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m13s  181 C g0 drafter off length=7488 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m13s  181 C g0 drafter off length=7520 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m13s  181 C g0 drafter off length=7552 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m13s  181 C g0 drafter off length=7584 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m13s  181 C g0 drafter off length=7616 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m13s  181 C g0 drafter off length=7648 (full sweep, ub 512): source+child+2 cold (partial C)
+      1m04s  181 D [dflash2] g0: source T=8000+long tail, 9 cells c-1/c/c+1 over {junction, N-4-ub, N-4} + 1 held-out length (rule D)
+      0m45s  [kpf181-on-dflash2-20261031T052122Z] SIGTERM own pid, verify dead, then finalize its records
+      1m35s  [kpf181-off-dflash2-20261031T052122Z] linkage + launch + healthy + read-back: taskset -c 184-191 /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 393216 -t 8 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --kv-unified --no-mmap -ngl all --cache-ram 65536 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja -md /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf -ngld 99 --spec-type draft-dflash --spec-draft-n-max 7 --device ROCm0 --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/full/slot-save/kpf181-off-dflash2-20261031T052122Z --device-draft ROCm0 --no-cache-idle-slots --port 19639 --metrics --slot-fork-min-tokens 0
+      0m21s  181 A fork-OFF baseline [ckpt]: every sibling must report n_fork_tokens 0
+      0m21s  181 A fork-OFF baseline [tail only]: every sibling must report n_fork_tokens 0
+      2m17s  181 B fork-OFF baseline g0: the four cases, every child n_fork_tokens 0
+      0m45s  [kpf181-off-dflash2-20261031T052122Z] SIGTERM own pid, verify dead, then finalize its records
+      1m35s  [kpf181-on-nodraft-20261031T052122Z] linkage + launch + healthy + read-back: taskset -c 184-191 /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 393216 -t 8 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --kv-unified --no-mmap -ngl all --cache-ram 65536 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --device ROCm0 --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/full/slot-save/kpf181-on-nodraft-20261031T052122Z --no-cache-idle-slots --port 19639 --metrics --slot-fork-min-tokens 1024
+      1m04s  181 D [nodraft] g0: same nine cells + held-out length on a nodraft launch (rule D)
+      0m45s  [kpf181-on-nodraft-20261031T052122Z] SIGTERM own pid, verify dead, then finalize its records
+====================================================================================================
+TOTAL estimate: 53m35s (54 min) for items [181]; budget --budget-min 240
+PREFLIGHT: inputs PASS (live-only checks run at execute: linkage, read-back, residency, claim)
+[kpf18 05:21:22Z] item 181: [kpf181-on-dflash2-20261031T052122Z] linkage + launch + healthy + read-back: taskset -c 184-191 /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 393216 -t 8 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --kv-unified --no-mmap -ngl all --cache-ram 65536 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja -md /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf -ngld 99 --spec-type draft-dflash --spec-draft-n-max 7 --device ROCm0 --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/full/slot-save/kpf181-on-dflash2-20261031T052122Z --device-draft ROCm0 --no-cache-idle-slots --port 19639 --metrics --slot-fork-min-tokens 1024 (est 1m35s)
+[kpf18] launch kpf181-on-dflash2-20261031T052122Z: taskset -c 184-191 /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 393216 -t 8 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --kv-unified --no-mmap -ngl all --cache-ram 65536 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja -md /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf -ngld 99 --spec-type draft-dflash --spec-draft-n-max 7 --device ROCm0 --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/full/slot-save/kpf181-on-dflash2-20261031T052122Z --device-draft ROCm0 --no-cache-idle-slots --port 19639 --metrics --slot-fork-min-tokens 1024
+[kpf18]   done in 0m11s
+[kpf18 05:21:33Z] item 181: 181 A [checkpoint_at=[T]] groups [0]: source slot 0 trunk+tail, 3 siblings on slot 1, fork on (rule A) (est 0m21s)
+[kpf18]   done in 0m22s
+[kpf18 05:21:54Z] item 181: 181 A [tail only, no checkpoint_at] groups [0]: source slot 0 trunk+tail, 3 siblings on slot 1, fork on (rule A) (est 0m21s)
+[kpf18]   done in 0m22s
+[kpf18 05:22:16Z] item 181: 181 B g0: identical resend (no ckpt / ckpt [-1]) and child==trunk (junction source / trunk source), cold A+B controls (rule B) (est 3m00s)
+[kpf18]   done in 2m32s
+[kpf18 05:24:47Z] item 181: 181 C g0 drafter on length=7168 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m08s)
+[kpf18]   done in 0m51s
+[kpf18 05:25:38Z] item 181: 181 C g0 drafter on length=7200 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m08s)
+[kpf18]   done in 0m51s
+[kpf18 05:26:29Z] item 181: 181 C g0 drafter on length=7232 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m08s)
+[kpf18]   done in 0m52s
+[kpf18 05:27:21Z] item 181: 181 C g0 drafter on length=7264 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m08s)
+[kpf18]   done in 0m52s
+[kpf18 05:28:13Z] item 181: 181 C g0 drafter on length=7296 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m08s)
+[kpf18]   done in 0m58s
+[kpf18 05:29:11Z] item 181: 181 C g0 drafter on length=7328 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m08s)
+[kpf18]   done in 0m57s
+[kpf18 05:30:07Z] item 181: 181 C g0 drafter on length=7360 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m08s)
+[kpf18]   done in 0m54s
+[kpf18 05:31:02Z] item 181: 181 C g0 drafter on length=7392 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m08s)
+[kpf18]   done in 0m54s
+[kpf18 05:31:56Z] item 181: 181 C g0 drafter on length=7424 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m08s)
+[kpf18]   done in 0m55s
+[kpf18 05:32:51Z] item 181: 181 C g0 drafter on length=7456 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m08s)
+[kpf18]   done in 0m53s
+[kpf18 05:33:43Z] item 181: 181 C g0 drafter on length=7488 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m08s)
+[kpf18]   done in 0m46s
+[kpf18 05:34:29Z] item 181: 181 C g0 drafter on length=7520 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m08s)
+[kpf18]   done in 0m47s
+[kpf18 05:35:16Z] item 181: 181 C g0 drafter on length=7552 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m08s)
+[kpf18]   done in 0m55s
+[kpf18 05:36:11Z] item 181: 181 C g0 drafter on length=7584 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m08s)
+[kpf18]   done in 0m49s
+[kpf18 05:37:00Z] item 181: 181 C g0 drafter on length=7616 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m08s)
+[kpf18]   done in 0m49s
+[kpf18 05:37:49Z] item 181: 181 C g0 drafter on length=7648 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m08s)
+[kpf18]   done in 0m57s
+[kpf18 05:38:46Z] item 181: 181 C g0 drafter off length=7168 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m13s)
+[kpf18]   done in 0m59s
+[kpf18 05:39:45Z] item 181: 181 C g0 drafter off length=7200 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m13s)
+[kpf18]   done in 0m59s
+[kpf18 05:40:44Z] item 181: 181 C g0 drafter off length=7232 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m13s)
+[kpf18]   done in 0m59s
+[kpf18 05:41:43Z] item 181: 181 C g0 drafter off length=7264 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m13s)
+[kpf18]   done in 0m59s
+[kpf18 05:42:43Z] item 181: 181 C g0 drafter off length=7296 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m13s)
+[kpf18]   done in 0m59s
+[kpf18 05:43:42Z] item 181: 181 C g0 drafter off length=7328 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m13s)
+[kpf18]   done in 0m59s
+[kpf18 05:44:41Z] item 181: 181 C g0 drafter off length=7360 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m13s)
+[kpf18]   done in 1m00s
+[kpf18 05:45:41Z] item 181: 181 C g0 drafter off length=7392 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m13s)
+[kpf18]   done in 1m00s
+[kpf18 05:46:41Z] item 181: 181 C g0 drafter off length=7424 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m13s)
+[kpf18]   done in 1m00s
+[kpf18 05:47:41Z] item 181: 181 C g0 drafter off length=7456 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m13s)
+[kpf18]   done in 1m00s
+[kpf18 05:48:41Z] item 181: 181 C g0 drafter off length=7488 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m13s)
+[kpf18]   done in 1m00s
+[kpf18 05:49:41Z] item 181: 181 C g0 drafter off length=7520 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m13s)
+[kpf18]   done in 1m00s
+[kpf18 05:50:41Z] item 181: 181 C g0 drafter off length=7552 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m13s)
+[kpf18]   done in 1m00s
+[kpf18 05:51:41Z] item 181: 181 C g0 drafter off length=7584 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m13s)
+[kpf18]   done in 1m01s
+[kpf18 05:52:42Z] item 181: 181 C g0 drafter off length=7616 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m13s)
+[kpf18]   done in 1m01s
+[kpf18 05:53:43Z] item 181: 181 C g0 drafter off length=7648 (full sweep, ub 512): source+child+2 cold (partial C) (est 1m13s)
+[kpf18]   done in 1m01s
+[kpf18 05:54:43Z] item 181: 181 D [dflash2] g0: source T=8000+long tail, 9 cells c-1/c/c+1 over {junction, N-4-ub, N-4} + 1 held-out length (rule D) (est 1m04s)
+[kpf18]   done in 1m36s
+[kpf18 05:56:20Z] item 181: [kpf181-on-dflash2-20261031T052122Z] SIGTERM own pid, verify dead, then finalize its records (est 0m45s)
+[kpf18] stopped kpf181-on-dflash2-20261031T052122Z pid 2044440: {'pid': 2044440, 'sent': ['TERM'], 'at': '2026-10-31T05:56:20Z', 'returncode': 0, 'verified_dead': True}
+[kpf18] record kpf18-20261031T052133Z-1 item 181 arm A_ckpt: {"control_floor": [0, 0], "vs_fresh": [0, 0], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T052154Z-2 item 181 arm A_tailonly: {"control_floor": [0, 0], "vs_fresh": [0, 0], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T052216Z-3 item 181 arm B_identical_resend_and_child_eq_trunk: {"control_floor": [2, 2], "vs_fresh": [4, 4], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T052447Z-4 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T052538Z-5 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T052629Z-6 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T052721Z-7 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T052813Z-8 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T052911Z-9 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T053007Z-10 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T053102Z-11 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T053156Z-12 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T053251Z-13 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T053343Z-14 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T053429Z-15 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T053516Z-16 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T053611Z-17 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T053700Z-18 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T053749Z-19 item 181 arm C_length_sweep_drafter_on: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T053846Z-20 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T053945Z-21 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T054044Z-22 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T054143Z-23 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T054243Z-24 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T054342Z-25 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T054441Z-26 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T054541Z-27 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T054641Z-28 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T054741Z-29 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T054841Z-30 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T054941Z-31 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T055041Z-32 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T055141Z-33 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T055242Z-34 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T055343Z-35 item 181 arm C_length_sweep_drafter_off: {"control_floor": [1, 1], "vs_fresh": [1, 1], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T055443Z-36 item 181 arm D_hit_count_prediction_dflash2: {"control_floor": [0, 0], "vs_fresh": [0, 0], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0], "holdout_vs_cold": [1, 1]}
+[kpf18]   done in 0m03s
+[kpf18 05:56:22Z] item 181: [kpf181-off-dflash2-20261031T052122Z] linkage + launch + healthy + read-back: taskset -c 184-191 /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 393216 -t 8 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --kv-unified --no-mmap -ngl all --cache-ram 65536 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja -md /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf -ngld 99 --spec-type draft-dflash --spec-draft-n-max 7 --device ROCm0 --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/full/slot-save/kpf181-off-dflash2-20261031T052122Z --device-draft ROCm0 --no-cache-idle-slots --port 19639 --metrics --slot-fork-min-tokens 0 (est 1m35s)
+[kpf18] launch kpf181-off-dflash2-20261031T052122Z: taskset -c 184-191 /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 393216 -t 8 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --kv-unified --no-mmap -ngl all --cache-ram 65536 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja -md /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf -ngld 99 --spec-type draft-dflash --spec-draft-n-max 7 --device ROCm0 --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/full/slot-save/kpf181-off-dflash2-20261031T052122Z --device-draft ROCm0 --no-cache-idle-slots --port 19639 --metrics --slot-fork-min-tokens 0
+[kpf18]   done in 0m11s
+[kpf18 05:56:33Z] item 181: 181 A fork-OFF baseline [ckpt]: every sibling must report n_fork_tokens 0 (est 0m21s)
+[kpf18]   done in 0m53s
+[kpf18 05:57:26Z] item 181: 181 A fork-OFF baseline [tail only]: every sibling must report n_fork_tokens 0 (est 0m21s)
+[kpf18]   done in 0m53s
+[kpf18 05:58:18Z] item 181: 181 B fork-OFF baseline g0: the four cases, every child n_fork_tokens 0 (est 2m17s)
+[kpf18] ABORT: STOP or deadline: draining
+[kpf18] stopped kpf181-off-dflash2-20261031T052122Z pid 2378141: {'pid': 2378141, 'sent': ['TERM'], 'at': '2026-10-31T05:58:46Z', 'returncode': 0, 'verified_dead': True}
+[kpf18] record kpf18-20261031T055633Z-37 item 181 arm A_ckpt_forkoff: {"control_floor": [0, 0], "vs_fresh": [0, 0], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T055726Z-38 item 181 arm A_tailonly_forkoff: {"control_floor": [0, 0], "vs_fresh": [0, 0], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T055818Z-39 item 181 arm B_identical_resend_and_child_eq_trunk_forkoff: {"control_floor": [0, 0], "vs_fresh": [0, 0], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] exit rc=75 (0 ok, 2 refused, 3 abort, 4 error, 75 partial or claim held)
+job rc=75
+2026-10-31T05:58:51Z [codex3-kpf181-27b-gpu-r3-20261031] ended rc=75 reason=job-rc-75:exited (grant deleted)
+2026-10-31T05:58:58Z [codex3-kpf181-27b-gpu-r3-20261031] launcher up pid=2388630 class=gpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/STOP minwin=1800s ports=19639
