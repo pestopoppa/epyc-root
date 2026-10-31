@@ -1,0 +1,9 @@
+{
+  "error": "AssertionError()",
+  "full_gak_pass": null,
+  "partial": false,
+  "reason": "unexpected_failure",
+  "recorded_at": 1793424028.5353022,
+  "schema": "c6.gpu_gak_full_component_result.v1",
+  "status": "REFUSED"
+}

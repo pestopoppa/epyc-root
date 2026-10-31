@@ -1,0 +1,11 @@
+2026-10-31T05:12:10Z [refactor-c6-gpu-gak-full-729599d69-20261031] launcher up pid=89667 class=gpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/refactor-c6-gpu-gak-full-prep-20261031/STOP-gpu minwin=1080s ports=none
+2026-10-31T05:19:40Z [refactor-c6-gpu-gak-full-729599d69-20261031] legacy T1 skipped (LOOP-CONTRACT)
+2026-10-31T05:19:40Z [refactor-c6-gpu-gak-full-729599d69-20261031] START regions=mi210_0,184-191 cpus=184-191 threads=8 gpu=1 end=2026-10-31T06:00Z
+[region-lock] acquiring gpu-quiet exclusive as role='build' (timeout_s=2420.0) …
+[region-lock] held gpu-quiet exclusive + regions [] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/refactor-c6-gpu-gak-full-prep-20261031/engine/filler_run13.sh --inner --id refactor-c6-gpu-gak-full-729599d69-20261031 --class gpu --cmd taskset -c "$FILLER_CPUS" /usr/bin/python3 -B '/mnt/raid0/llm/tmp/refactor-c6-gpu-gak-full-prep-20261031/full_gpu_job.py' --min-window 1080 --stop /mnt/raid0/llm/tmp/refactor-c6-gpu-gak-full-prep-20261031/STOP-gpu --port  --workdir /mnt/raid0/llm/tmp/refactor-c6-gpu-gak-full-prep-20261031 --gpu-threads 184-191
+2026-10-31T05:19:40Z mi210_0 flock held
+DRYRUN_RESOURCES {"affinity": [184, 185, 186, 187, 188, 189, 190, 191], "cgroup": "0::/", "cgroup_memory_max": "max", "process_limit_gib": 32.0, "reserved_ram_gib": 32.0, "rlimits": {"AS": [-1, -1], "DATA": [-1, -1], "NOFILE": [524288, 524288], "RSS": [-1, -1]}}
+RESOURCE_PASS id=refactor-c6-gpu-gak-full-729599d69-20261031 scope=normal-grant
+GPU_FULL_REFUSED: AssertionError()
+job rc=2
+2026-10-31T05:20:28Z [refactor-c6-gpu-gak-full-729599d69-20261031] ended rc=2 reason=job-rc-2:exited (grant deleted)

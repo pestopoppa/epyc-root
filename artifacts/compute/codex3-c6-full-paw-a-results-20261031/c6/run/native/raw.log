@@ -1,0 +1,12 @@
+{"argv": ["/usr/bin/python3", "-B", "/mnt/raid0/llm/tmp/refactor-c6-gpu-gak-full-prep-20261031/worker.py", "--action", "gpu-ops", "--cpu-store", "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6", "--gpu-store", "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6", "--out", "/mnt/raid0/llm/tmp/refactor-c6-gpu-gak-full-prep-20261031/runs/20261031T051940Z-158757/native"], "cwd": "/mnt/raid0/llm/tmp/refactor-c6-gpu-gak-full-prep-20261031/runs/20261031T051940Z-158757/native", "started": 1793423980.96859}
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/refactor-c6-gpu-gak-full-prep-20261031/worker.py", line 208, in <module>
+    if __name__=='__main__':sys.exit(main())
+                                     ~~~~^^
+  File "/mnt/raid0/llm/tmp/refactor-c6-gpu-gak-full-prep-20261031/worker.py", line 130, in main
+    execute(label+'-'+op,[str(image/'bin/test-backend-ops'),'test','-b','ROCm0' if gpu else 'CPU','-o',op,'-j','1','--suite-seed','71','--autokernel-properties'],image,env,gpu,accept_native_failure=a.action=='kp1')
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/raid0/llm/tmp/refactor-c6-gpu-gak-full-prep-20261031/worker.py", line 75, in execute
+    if rc and not accept_native_failure:raise RuntimeError(f'native phase {name} rc={rc}')
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: native phase C5-MUL_MAT rc=1

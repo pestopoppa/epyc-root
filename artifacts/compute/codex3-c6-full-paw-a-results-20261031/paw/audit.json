@@ -1,0 +1,571 @@
+{
+  "predeclaration_sha256": "25dcf705fd8b8054b591eea20947b7d702bb2044a9757381ec01d428574ce302",
+  "tasks": {
+    "0": {
+      "complete": 8,
+      "exact": 8
+    },
+    "1": {
+      "complete": 8,
+      "exact": 8
+    },
+    "2": {
+      "complete": 8,
+      "exact": 8
+    },
+    "3": {
+      "complete": 8,
+      "exact": 4
+    },
+    "7": {
+      "complete": 8,
+      "exact": 7
+    },
+    "8": {
+      "complete": 8,
+      "exact": 8
+    },
+    "9": {
+      "complete": 8,
+      "exact": 7
+    },
+    "10": {
+      "complete": 8,
+      "exact": 7
+    }
+  },
+  "total_exact": 57,
+  "complete": 64,
+  "program_hashes": {
+    "0": "d4197696c41d50f457fae7f923581c25d709d50106d946794fd52a1f97f5dd9f",
+    "1": "dc1dbc3ddaad64e7b3a2a94fa4bf75383dde86d847b4f7cdb66681b8a2a60f85",
+    "10": "7da3548c6e60b685d462a15b12ebce559f640a003f510beb1fe7fc45c13ced05",
+    "2": "e357e6b7ad9b42b685a4afa5eea6b1e3b1754c18861359a0ebdec68e98eec387",
+    "3": "4cc1f8cfc8a83bacb4deb065681039a0890d2f8963a4fe9ea85324b0fce4698b",
+    "7": "637ba6be9c2cc1b1a36ad743f6a011a55f52a84e1d0a3c3d32e931bdc3fa8dc6",
+    "8": "e425df2e0cb6ec1ff35ba27aa75927d33aac19ef1dbd34da1f1894fcb2cccd64",
+    "9": "f15ac72ed9a038cb9c4461fa4e6c388acee7bc531e983f7d2eafbe43308facb5"
+  },
+  "source_manifest_sha256": "9f34054366c11d68c5d3bf2838a3f026f5ade17b52bc7fa924a6f3c76fae8491",
+  "compile_count": 1,
+  "compile_statuses": {
+    "compiling": 1
+  },
+  "truncation": {
+    "unknown: SDK does not expose finish reason": 64
+  },
+  "rows": [
+    {
+      "task": 3,
+      "source_row": 20950,
+      "case_sha256": "89c82f5bffb285289563f17ab140fc646b38239dee985095c3fc41a8458bff1a",
+      "complete_sha256": "bdecb2ef90f19e92cd665ab8919e68859c916a42f9f1fc10218c81677f9edfd1",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 2,
+      "source_row": 26360,
+      "case_sha256": "634a82f89cf06e8c622537c558d6b1c524da001105bf4ebe6f9a187e8b930ce1",
+      "complete_sha256": "943f661fb862a6591c2d30f2171b90918ff6b064c8a20db281fc97ae9576ff86",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 3,
+      "source_row": 20947,
+      "case_sha256": "018d4d7e127ef49e7ac3ffd6beb8830386f40e348d9e178f76aae1e2ff295c07",
+      "complete_sha256": "b8e3956a06850f87146dc8fcb010523278dd6a830ed7e4ce1c34d27729a2b493",
+      "match": false,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 7,
+      "source_row": 36619,
+      "case_sha256": "d8962fd6f22ddcf93128c8898c10d1af126cdd037101bb9da88862ad60cf52b6",
+      "complete_sha256": "cd1530ea569a2383ff0e1fabf601064b712ddb5cf0737a42c104dafd9151a160",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 9,
+      "source_row": 21127,
+      "case_sha256": "d06db8987d727947762d8743ea7929e892e3f60d80bb0b1a34e89f9534b9765f",
+      "complete_sha256": "e8bf661f67509c17db456ad12ba011404d031372d264b95737c74237e57d9c02",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 10,
+      "source_row": 37253,
+      "case_sha256": "eef4866425d1196d815cc83030fe282d28c23475b8235b0bcf64a9059a0e633d",
+      "complete_sha256": "cf77c6e29ea37f7f9eb7dcfd1d009c4ee1a0b11d64d4fd14710b3e9bed21adef",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 9,
+      "source_row": 21128,
+      "case_sha256": "58cb32c48e50f759be84a994e09842643c359edb0ca0db1af8f54aaf374e709d",
+      "complete_sha256": "f4864d34d75dcb61229ec37ae41daeb65827ad1b4372c4afe7d462b135e9c5d5",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 8,
+      "source_row": 17025,
+      "case_sha256": "48c6ab0a2388d47c8edc1aeec2970e7f0c092dfe5251231ecaef7bc268b62284",
+      "complete_sha256": "ea348c1ec209ecbe9581aac0582df7d1158672eeb7c10f7246dc988c92f940b8",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 0,
+      "source_row": 21777,
+      "case_sha256": "34cb6eefb0cf09da3ef0e4a662fb11ce8610ba338da2f060e506c10e8d8da1db",
+      "complete_sha256": "5f0cf584ee371911ebd746c9812472bea874ecbc4dea809b3e4792e165f49259",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 10,
+      "source_row": 37248,
+      "case_sha256": "ef541a1b4453c781cfd113d49b80c85f22936ebd85a8cef06afbc13bbb6f366e",
+      "complete_sha256": "5acebb619fdc9b6d3efe0fa103c064f31a82a0cc366b2008af6e7c086476b9a2",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 3,
+      "source_row": 20949,
+      "case_sha256": "217dd6744f65725214457805cf18cac7a10a720de23158ae05c7f29314c84332",
+      "complete_sha256": "d1fcf7afc9787a39a002960ef50338c1a102f5858270fafb2cdd1e0f3a77717b",
+      "match": false,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 9,
+      "source_row": 21126,
+      "case_sha256": "8a54432a3f2c23ff154afc5fccac65535d621322363d069b880a87833b1894fe",
+      "complete_sha256": "744ad6055b87f8bb4b49e30863a642e23dd78d7940e79b4d0e9682ac51e1d1be",
+      "match": false,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 3,
+      "source_row": 20945,
+      "case_sha256": "ef75244f0d818772fd6171e3b6492c018389a2168d699d182ede2d62d6aaea07",
+      "complete_sha256": "cf3d8071b50f938414743a3ca640e0cca39f6ddeb60ac220677917d05f7bdcc2",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 2,
+      "source_row": 26362,
+      "case_sha256": "bf0c4cdcc41865b7415383d5ea74846323c42e0c214f352ba26153fb502d5e70",
+      "complete_sha256": "8b3d2a74a8578ff196c4fba40a0214a9ee59d8173af481a2fb1b160b2e003243",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 8,
+      "source_row": 17021,
+      "case_sha256": "ae24051f8b407eb621e4ccf1e9f21afba0ca3d27a03b5456f1e3584516d57448",
+      "complete_sha256": "44c1e348a28c6777261c581d61fb8583f73c65cf92b9a337ad2aa44e2c39abe7",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 0,
+      "source_row": 21779,
+      "case_sha256": "5b174ca1a5f66f0bb0e97d7ef6333cd60bb3ee1a85afe3c7dca9fd146a404a14",
+      "complete_sha256": "f698a30bc059c6ed502ad6a78bef3e165c72767b9c50329ab66569df72481105",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 8,
+      "source_row": 17019,
+      "case_sha256": "c0dd26540877a16e38e102cf57c30e670b8296c2cc16d832ac585898dd78fb7a",
+      "complete_sha256": "c7c97d11719a0d27037a86d8c0495e9d3eaf90f7b8d84ee7eda84bb618858151",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 7,
+      "source_row": 36623,
+      "case_sha256": "7a99804eda56d59d555147b96672913126d549a6f91012d0cc67c68e77344633",
+      "complete_sha256": "4d6affa4f95104528920fbafc94f173bcd385edad5eac94723011e7b91bb3869",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 0,
+      "source_row": 21778,
+      "case_sha256": "9df9f775001d31c33ba9edaa0235280663a029d67186f84ee62d12ced1d9f9c9",
+      "complete_sha256": "9adad4b2b7f4337c701e09718a0a62e2c09f30dbc148bc0876d57db4625cc93d",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 10,
+      "source_row": 37251,
+      "case_sha256": "b4de2e3246e083c6bb647bb0a18390bb94bbbae10088c96fbdf1c8966e7deb71",
+      "complete_sha256": "7fd9da340a7f0f23b839cf4b8ce3ee2978d794e40f4420b0c357e3f8dbf7d048",
+      "match": false,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 10,
+      "source_row": 37252,
+      "case_sha256": "fbf9abbdf6a1455b2ec6550a5c9d736568521a5739608d93fe3281ab0eb70916",
+      "complete_sha256": "9576ac124feb5ffbc4e5383ddbe1727ad1c51dcf18ec6fd38f538a2e44ad4ad1",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 0,
+      "source_row": 21774,
+      "case_sha256": "ca84e458cb5954d5b46c3c3a195075a455167fa0dac64680d7f3c19e66ffdd09",
+      "complete_sha256": "e07c9cd5cb71e65a8ac68099058b3aaebeee773f6ddaa1d8fadc8582c3c82d45",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 9,
+      "source_row": 21125,
+      "case_sha256": "49a3cd8e67b0660be73a8e93710756d89a78b7b599052e6a0b9bb2aefb0f9528",
+      "complete_sha256": "d62f0342e3e9859038cbc44fcbe93e06cf0018050a8c1068da8d899a864f40bd",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 1,
+      "source_row": 6780,
+      "case_sha256": "58fdf137b3afc5993facdf3b25e4933d62bcb098b95d685404edd5bf5a070c9b",
+      "complete_sha256": "d0750e87e669de65c62ff6e9036b7d1891202804b82d3354ed95078db9971080",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 2,
+      "source_row": 26366,
+      "case_sha256": "1efa94a87b959d29d4c54d48cf6677f8b77708fc043e376e248948f8a45295f9",
+      "complete_sha256": "03bb03990a4e062e9d45183c4ed612198ffb42c20c514d97eb02bab833805928",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 9,
+      "source_row": 21122,
+      "case_sha256": "9b5c98062033170aa65c1415a9b11b6aeeb76d398870e41b0d4d69933b9d5593",
+      "complete_sha256": "9b397510c70132b3c2acebbeb2b874fd925fe98e9f263f955325e57864b3f9a0",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 2,
+      "source_row": 26365,
+      "case_sha256": "9139086fef482b66ef65ee6efd476f0f88735b4323b12149c3b01bf84ef8439c",
+      "complete_sha256": "816c84496b99b99927ec25aad76418a1935bf48bde47aaaf43abda553e4f7b49",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 7,
+      "source_row": 36618,
+      "case_sha256": "55d6c939d585f9a043a794cd1e746bb1cd0af4d68725ab8c5158ca62afbdba23",
+      "complete_sha256": "b19b4603ceb039568895759b1a6642301be8ba0e1170ee7c7b33cde0b8544512",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 2,
+      "source_row": 26363,
+      "case_sha256": "41c5c131fae0e44369c21da7471922233da8213f20c25784ddbc9fa9af4eaf17",
+      "complete_sha256": "a7b47fca9cd178849e359b179f21a75e6d0784d1ed370d6c042c181405801267",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 3,
+      "source_row": 20951,
+      "case_sha256": "69841911823dedf7727ced775ca0e1541693bbdffac96fd1c9abf8de40bef09f",
+      "complete_sha256": "232c74d8ce2ec5f62d124a00e117aa94d9c44c5b830f4a7b2b421e6a9a4860cb",
+      "match": false,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 0,
+      "source_row": 21772,
+      "case_sha256": "bdc56704cc531568bf4905fcb35f19afe76a1f2e9508dc872113d47e95171732",
+      "complete_sha256": "e676eb3e0fa0f97e6c4bf286774aba1e028cffb03ac337c5bfc1c6e01a32865c",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 0,
+      "source_row": 21773,
+      "case_sha256": "8f5dc6e57e1a64c01646d09162fc3b057a453108dddc840623c30a76323a6897",
+      "complete_sha256": "60cf8529fef29f137d4537dc86e815abecf5a1d754f3b3081c370753b64d596d",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 3,
+      "source_row": 20952,
+      "case_sha256": "64041dbe86d30e3378788d2456186dde39a9ac415c7bd2aca588f1db13a48b1f",
+      "complete_sha256": "63666b04947828235d19ec3ab661be8133f06e895248a72ee7b9ab99eba5d710",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 1,
+      "source_row": 6781,
+      "case_sha256": "cdcb0d12cdf0cb5078aada1200c75eda9344fd0697771e5cb253e372e14b2a1f",
+      "complete_sha256": "708adbd0326e3c3dd1a14da92d317f11d90e4dd849c5e40689561121b1824690",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 7,
+      "source_row": 36617,
+      "case_sha256": "1e2f7013d48f9035cf821a9ca6c9e1f9a546c0ccfd48bda2d1caf04ff6e43078",
+      "complete_sha256": "c5a8ec1250fa8daf7a451ded9f5e86cd25d85529b6ebe23be1fa24490cffe757",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 8,
+      "source_row": 17023,
+      "case_sha256": "19614aa40507cbb1816e31dad4ff2def6ec844fb5b4537ebe1f3a5de38e6babc",
+      "complete_sha256": "0c36d3ac7f6545076b34f5e03006d23752f09afdd47f34ef28d8d2be28e556b4",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 10,
+      "source_row": 37250,
+      "case_sha256": "52f79e37c9fa0118587138d0107a24933101feaf7bceb7067e1e0ca2422821e2",
+      "complete_sha256": "dc6a12dcc83a422d53464107ce1381b44f63d27d2a85497ec9b47ff1552395d8",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 1,
+      "source_row": 6785,
+      "case_sha256": "8642d44802e6004e504b5a5eda2bbd1370b392b107e72b45c9378f47c4f1e92b",
+      "complete_sha256": "201a777bd10573b0559d19896e997cfd1bb9210eb22fc588515eb7356a574624",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 10,
+      "source_row": 37249,
+      "case_sha256": "7ecc8c95e009348eec0e99c3dc188a44af0222f74dee4d7da54b114e56d5ff06",
+      "complete_sha256": "690f017ffe796d7f837daf7926ecfde97423cf6311c4c07a63ece6cbeabcec68",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 10,
+      "source_row": 37247,
+      "case_sha256": "0b7a272fd5da047b8910a7abeff358574c98f680335beb0f959fd07b12d5bc86",
+      "complete_sha256": "b3b284aa877214917f3d3b069f92119464913980f63d4f10b351e466e3a08175",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 10,
+      "source_row": 37254,
+      "case_sha256": "b19e8e7046f9aa47ef30f6a88c7cd77da39adaa73f7a16168bb25ed9b3d1d15e",
+      "complete_sha256": "3cbd706e43d0300056337733710ec01f120c283f5690081e3629108ceba26887",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 0,
+      "source_row": 21776,
+      "case_sha256": "8dd9204bea867b3e79723fd97765be143f7f7af73ae24e2ea1a48ffe8a617dea",
+      "complete_sha256": "f6add76d62de0f816d2fc392c75fe52bc3d354fa4568382af26d2f359fedf926",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 7,
+      "source_row": 36624,
+      "case_sha256": "112bcbb4dabe087809d65564a6f361d949639bdd9c74038a4ff5a0205a11a56a",
+      "complete_sha256": "9140bda5cd2a70d3faa0ee5e864d4219a0473083115428793754c3199b4acc8f",
+      "match": false,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 1,
+      "source_row": 6782,
+      "case_sha256": "a8cadeadf9b3182414c64eb19892b0df8214ef644b996d0bc0ad78d13df48183",
+      "complete_sha256": "0e83f2f423720a51a80d3a20390caf51090be907a27a50b146931666621a8e49",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 9,
+      "source_row": 21121,
+      "case_sha256": "2117a7cde04cba83845e97d3eca4ff5dd1491872dcf743ea1b23596bd485ba38",
+      "complete_sha256": "3d4896a550b37a2b08445d76540b8f82957eef521dbccb8f558aecc9d3fcf98d",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 2,
+      "source_row": 26364,
+      "case_sha256": "1c255cd6d71ce6bdd260513b86f7971e03b3ced6d08b960ba1860c8445bd47a5",
+      "complete_sha256": "85e150e2bfaf026bc980cac3af64be36ed52a1e62eae7cc3fd9d9af77554ba62",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 2,
+      "source_row": 26361,
+      "case_sha256": "ea50cfda0ead4ba8807a1e34095122ed8d6146d1cf86c0f4446366e698a60133",
+      "complete_sha256": "4c865b790c3edf3a8d41509a8f0f77d7194d5c94f79091a165949457198505f9",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 9,
+      "source_row": 21123,
+      "case_sha256": "ce54df421f65c1b6ea9d0831e4b4494795ab8c1ae12dfac17b81c4257ca6abfd",
+      "complete_sha256": "71cbbe049bf46a34e58e5bfd2ee2258af64ada22d98de6e60529b26ef628f952",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 1,
+      "source_row": 6786,
+      "case_sha256": "ac2c7834e47451899f2e84c115712e9c2aa5939a94a3d4ae3422881997186a45",
+      "complete_sha256": "6faa598c9ffef974aac2d4a902900330334320f1e4c4f1022886197124dcbb79",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 8,
+      "source_row": 17022,
+      "case_sha256": "aecbc1fc36126d2bb4d0b6ad7a851699ad4d41934e512c23b0279f065872a03a",
+      "complete_sha256": "0c96f5b806b5313a52beda018cef2bdc7e8884548dcf4e36a7d2d7c169fdbe15",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 1,
+      "source_row": 6783,
+      "case_sha256": "828c076210961c5508c2f16a4ca995ec53651e07fb0a3a822b7af98f7f16d043",
+      "complete_sha256": "f12e6e9d96f6ddfd3fa9b8d84b0d68b41385e32625608dff0657d611ab089be5",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 8,
+      "source_row": 17020,
+      "case_sha256": "16c7c21cab51658ad6db86dcd6f3b32c9eae6cf7ea265cbc5f370023a6ec62a1",
+      "complete_sha256": "97eaad4d8cf8716aa857fd707afe9c3f51faf4d6c04a544b357fc313fd1a1615",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 3,
+      "source_row": 20946,
+      "case_sha256": "afbb0473659b65605092877340a91c2b97230c921fc80ed3426195c7ae3dfb5b",
+      "complete_sha256": "9c2b527bb4a5c385a70ae344ab52875fbd0fb3ac0977eaa8828ebb0f62fb05bb",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 8,
+      "source_row": 17018,
+      "case_sha256": "87d2569f5c532fd0e8d088d2feabce5716ce6213e5cdde6fae328ada78ed53cd",
+      "complete_sha256": "8f2bc6ec3ad23a7baf7c08ce0195258be10a37af5734f410d4a62f298b7a00d9",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 3,
+      "source_row": 20948,
+      "case_sha256": "e0758894502ca2d8668c4798770e860c5050e26d3d8df0264f64ba18764e3055",
+      "complete_sha256": "b2255afe8c624363329e646443939fbe38d363d9be85e670303242ec7d636763",
+      "match": false,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 1,
+      "source_row": 6784,
+      "case_sha256": "cfd7b285b96aa17a508f4c68e53b6759996ba8ce04369f0e7ffa245bd175963d",
+      "complete_sha256": "c659adf52296bbbe8b00b6fc3fb8b9797da99caf838c71c34702fdefed332877",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 7,
+      "source_row": 36620,
+      "case_sha256": "8ee1e28f5effacf4a6b3a330a2054a2ce6236cdd8b3d033b918aef070565b34e",
+      "complete_sha256": "024cd139438a0a4d5ae250343a24df99782d8bf5cd04c382a7c342dd69dd7bc5",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 0,
+      "source_row": 21775,
+      "case_sha256": "c21d86322b0e04f94cbf86f60c9c7df41924da59b558e4c39e5a02bdc0acca4a",
+      "complete_sha256": "7806f191cc3f421519c07b360fc7d25218c30d7524600ab4aba7f3f8008fe97b",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 7,
+      "source_row": 36621,
+      "case_sha256": "fcc1752a00640c399362af2260aed368d952f3b9b3f16157559b178b504c268a",
+      "complete_sha256": "01d598bf52473fbd91c98446598ec631192607470174e36881a1d26366d62920",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 9,
+      "source_row": 21124,
+      "case_sha256": "9923ddd74cad47412b734ad52c9ec817e4884c52e2e8b4efb5eff36fc08b653c",
+      "complete_sha256": "7ca7089e9f3bd10cf4d55d327fb4fcdedc99ebb9234710649130554d6517af93",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 2,
+      "source_row": 26367,
+      "case_sha256": "92fa33cbcb57f2e6e5199639a1f090c2bd3926cc906eff67a6af63b8f6c81480",
+      "complete_sha256": "24be0179414d62d5ae8747ab4fddec3e77e4be3aa1ede3f31328632a2333af21",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 1,
+      "source_row": 6779,
+      "case_sha256": "de86f92d663d70c683cdcae8529a72cd9aa592b7a07dff996e2b9e02b3e5c785",
+      "complete_sha256": "67369b24533a5894aa0fef8c85b3a69b49079b1460e72c38c8a74f22ecaf9e35",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 8,
+      "source_row": 17024,
+      "case_sha256": "7950cbd33ee0cceb21c2a5c5f83d3afb043ec3bee57b2a509d0b6bb073f44a2a",
+      "complete_sha256": "c281ee5afa69e2649f95a3c339297fa23f5b6489b62709431bdbed817a989ca5",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    },
+    {
+      "task": 7,
+      "source_row": 36622,
+      "case_sha256": "c08d8a143c3a4ea77effcb3cd2a2a34bde521332b66fad9f422c72dc45806cb7",
+      "complete_sha256": "59edd078619accc6e8de8ff51f7a12e990cd2c458be8b37e2c376caf8fce930a",
+      "match": true,
+      "truncation": "unknown: SDK does not expose finish reason"
+    }
+  ]
+}
