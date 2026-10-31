@@ -330,7 +330,7 @@ routing classifier's own training labels, and skill-bank effectiveness.
         ✅ 2026-09-17 — orchestrator `d3f6062c`: the loop still records-and-continues (one run names every bad
         row) and flushes what loaded, then raises `SeedLoadError` (stats + `failures` list); the CLI exits 1 with
         `SEEDING FAILED`. Tests: total outage, partial failure (flush-then-raise), clean run, CLI exit code.
-  - [ ] **EPD-3-R7 — decide the fate of the 200-char objective truncation at the payload level**, i.e. the
+  - [x] **EPD-3-R7 — decide the fate of the 200-char objective truncation at the payload level**, i.e. the ✅ 2026-10-31 — orchestrator implementation `9c388042475d835f88e62355443e7036986b9a34`; `tests/unit/test_seeding_injection_objective_storage.py` and Git capsule `artifacts/audit/epd3-r7-objective-payload-20261031/verification.md`; 68 focused tests pass. Both reward writers store the full objective and use the unchanged canonical 2,000-character embedding-text bound; historical truncated records are not expanded. [no-belief: software source publication and regression verification]
         2026-07-27 audit's defect #2 (12.6% of rows at the cap, 96.9% objective collision) still live on the
         eval-injection path, where changing it changes what is *stored* and not only what is embedded
         (`scripts/benchmark/seeding_injection.py:189,287`) (found 2026-09-14, noninf sweep).
