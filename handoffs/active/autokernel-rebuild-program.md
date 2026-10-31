@@ -642,7 +642,7 @@ failure mode this program exists to end.
         `scripts/kernel_rnd`. CI is green only because it happens to run from the root. Add a
         `conftest.py` with a `sys.path` insertion so the suite is location-independent.
         (epyc-inference-research.)
-  - [ ] P7.3a — **triage the 78 failures / 10 errors in `autokernel/controller` + `autokernel/execution`** (identical from the repo root and from `scripts/kernel_rnd`, research `77b75dae`, measured 2026-09-23). CI cannot be green on these suites; classify stale fixtures vs real defects before the next campaign relies on them.
+  - [x] P7.3a — **triage the 78 failures / 10 errors in `autokernel/controller` + `autokernel/execution`** (identical from the repo root and from `scripts/kernel_rnd`, research `77b75dae`, measured 2026-09-23). CI cannot be green on these suites; classify stale fixtures vs real defects before the next campaign relies on them. ✅ 2026-10-31 [implementation: epyc-inference-research f6630e61058c0ebebaa0467e70cedead8c4081da; evidence: scripts/kernel_rnd/autokernel/evidence/p7_3a-current-suite-triage-20261031.md; tests: scripts/kernel_rnd/autokernel/evidence/p7_3a-20261031/machine-check.txt, scripts/kernel_rnd/autokernel/controller/test_discovery_static_registry.py] [no-belief: test-suite triage and test-only correction; no measurement claim]
   - [x] ~~P7.4 — **THE LOC BUDGET IS NOW BINDING: 3400 of 3400, zero headroom** (was 3218/3400;~~ (closed 2026-10-29 audit: OBSOLETE → R23-63 note (autokernel-rebuild-program.md:2440) lists P7.4 as stale by event; LOOP_LOC_BUDGET now 3450 (check_regrowth_guards.py:66) with an enforced code-line budget separate from total (:68))
         `c39ecc43`'s promotion A/A guard consumed the rest). Verified by running the counter:
         `loop package: 3400 LOC across 15 files (budget 3400)`, `0 guard violation(s)` — **the
@@ -3152,3 +3152,7 @@ R18 CUID forensics source update: Research `14500b87` (main `49e77640`) publishe
 ### Verified-anchor static readback — 2026-10-31
 
 The complete unchanged comparator returned a valid negative: CPU590 exports and gfx90a135objects/6141exports had zero differences; HIP host1332exports had141added/141removed `__hip_cuid_*` names. Correct signed versioned v10 anchors were used; no name filtering or normalization. The differing sets equal the old wrong-anchor sets, but path-dependent compiler-plan IDs did not reproduce retained IDs, so the cause remains unproved. R18-A and its verifiability predicate remain open/false; only the verified-anchor rerun is complete. No new build/GPU run. [Closure reference](../../artifacts/compute/refactor-full-wrapup-20261031.json).
+
+### NI P7.3a triage closure — 2026-10-31
+
+Research `f6630e61058c0ebebaa0467e70cedead8c4081da` classifies every current event: 51 FAILED + 10 SUBFAILED + 10 ERROR = 71 unique test/subtest IDs. Thirty-seven alias-related failure events are corrected by patching the actual imported module objects; focused tests pass 50 cases and 22 subtests. The remaining 34 events are classified with source and fixture/environment evidence in the committed triage roster. The full suite was not rerun after the focused repair, so no green-suite claim follows. The original September 23 counts and task text remain unchanged. [no-belief: deterministic test-suite triage and test-only repair]

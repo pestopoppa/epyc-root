@@ -850,7 +850,7 @@ justify best-of-N anywhere. Whether the instrument is worth using is decided by 
       reasoning token at position 0, and (ii) a generation-oriented chat template, which costs ~50% of
       the signal on one backbone and ~20% on another. Assert the score position before trusting a
       score; fail loudly. [intake-1170]
-- [ ] **EV-15d — `retained_mass` as a first-class per-call field, with a refusal floor.** Assert all K
+- [x] **EV-15d — `retained_mass` as a first-class per-call field, with a refusal floor.** Assert all K <!-- ✅ 2026-10-31 [implementation: epyc-orchestrator 79230233c04b1e24b8736640d70e290825612880; tests: tests/unit/test_score_token_head.py, tests/unit/test_paired_distributional_readout.py; evidence: artifacts/audit/ni-ev15d-retained-mass-20261031/focused-tests.log (70 passed), artifacts/audit/ni-ev15d-retained-mass-20261031/R6-RECEIPT.json] [no-belief: offline scoring contract and deterministic regression controls; no native judgment claim] -->
       score tokens are present in the head; if any is absent treat its probability as 0 **and record
       the retained mass**, refusing the judgment below a stated floor. **Neither the paper nor its
       reference implementation specifies this fallback** — it is our gap to close, and the retained-mass
@@ -1086,3 +1086,7 @@ Source: research intake session intake-ist-slq-20261022, Stage-3 plan `/mnt/raid
 
   *EV-DEGR1 done 2026-10-22 (workspace-58).* epyc-orchestrator `scripts/autopilot/degradation_stats.py` + `tests/unit/test_degradation_stats.py`, commit 0993affc on origin/main. Pooled exact one-sided binomial, Fisher over per-suite exact p, seeded max-drop Monte Carlo (seed 20261022, 20000 sims), any-of-three flag; `degradation_from_vectors` consumes paired_stats QuestionOutcome vectors. Additive: paired_stats.py untouched (no gitnexus impact needed - no existing symbol modified), no new P-PAIRED verdict string; test_paired_stats.py still passes. Tests (9): b=c=0 suite -> p=1.0, empty/tiny-n, single-suite Fisher == pooled, E7c b=61,c=58 -> 0.4273, seed reproducibility, power arithmetic, CLI. Re-implemented from the paper (intake-2484#00, intake-2484#03), not from the CC BY-NC repo (intake-2491#record).
 
+
+### EV-15d retained-mass contract — 2026-10-31
+
+Orchestrator `79230233c04b1e24b8736640d70e290825612880` adds per-call retained-mass capture and a refusal floor to the existing paired distributional consumer. A versioned v2 plan binds the ordered K=9 score-token IDs and explicit floor; each call records missing IDs as zero mass and refuses a below-floor or zero-mass judgment before aggregation. Legacy v1 mathematical vectors preserve their original manifest, request IDs and output shape and carry no native mass warrant. Seventy focused tests, accepted/refused CLI cases, Ruff and diff checks pass; durable validation and admitted R6 resource evidence are committed under `artifacts/audit/ni-ev15d-retained-mass-20261031/`. This closes the software contract only. Native position/template checks, original numeric goldens and live judgment validation remain separate open asks. [no-belief: offline software controls; no native scoring or quality claim]

@@ -499,7 +499,7 @@ First full smoke run of the trial loop. Four defects, three silent.
       explanation and is NOT proven. Logs now append, so a recurrence is diagnosable. **If it
       recurs, capture `logs/llama-server-*.log` BEFORE restarting.**
 
-- [ ] **A THIRD SILENT-SCORING DEFECT, found while porting: the research repo's diverged
+- [x] **A THIRD SILENT-SCORING DEFECT, found while porting: the research repo's diverged <!-- ✅ 2026-08-23 [implementation: epyc-orchestrator 07a20a7cface6614c595f42981e385ae3695ee42 (2026-07-20), epyc-inference-research d876adfef50912cdeaad14b34d416dc9608479d9 (2026-08-23); tests: tests/unit/test_debug_scorer_code_execution.py, scripts/benchmark/tests/test_debug_scorer_b7_delegation.py; audit: epyc-inference-research/scripts/kernel_rnd/autokernel/evidence/p7_3a-current-suite-triage-20261031.md] [no-belief: historical source reconciliation; no new scoring measurement] -->
   `debug_scorer.py` answers an `entry_point` oracle with `assert f() == <expected text>`** — a
   ZERO-ARG assertion that a function taking arguments can never satisfy, so **correct answers scored
   False on every such row**. Ported the real execution plus the orchestrator's refusal; a test pins it.
@@ -965,3 +965,7 @@ its comparator on 2 of 4 tasks there, so no frontier API is required. Cite `inta
 - [Historical ledger, 2026-06-21 through 2026-09-25](../completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md)
 
 2026-10-06 MAIN acceptance: residual programmatic input-echo guard source completed with all23 original compatibility/refusal controls and APP byte-identical publication; [scope](../../artifacts/ni08/rtg02-echo-source-20261006/README.md). Live pool rebuild and alternative-repair measurement remain open.
+
+### Research scorer historical reconciliation — 2026-10-31
+
+The argumentized entry-point implementation landed in orchestrator `07a20a7cface6614c595f42981e385ae3695ee42` on July 20; research replaced its diverged scorer with a fail-closed delegation shim in `d876adfef50912cdeaad14b34d416dc9608479d9` on August 23. The existing checkbox now carries the actual completion date and implementing commits. This is historical queue hygiene and earns no October 31 code completion credit; no historical result was rescored. Audit and test paths are preserved in research `f6630e61058c0ebebaa0467e70cedead8c4081da`. [no-belief: historical software-source reconciliation]
