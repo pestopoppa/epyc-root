@@ -1,0 +1,3 @@
+# CH-20.2 fixture skip — 2026-10-31
+
+The published C4 commit `cdb4d8c77c2300f61c404a3df6d1950934b39c98` explicitly skips deepseek41 and deepseek41-dspark in `tests/test-llama-archs.cpp`, documenting that the generic fixture lacks their bespoke GGUF fields. The C4 CPU full-architecture gate recorded rc0; its retained raw log shows the skip rows. The original task expressly allowed a skip with a recorded reason. This closes only that fixture-abort task; it does not claim real-model coverage or resolve unrelated ctest issues. [Evidence](../../artifacts/compute/codex3-ch202-fixture-skip-20261031/SHA256SUMS). [belief: cc]

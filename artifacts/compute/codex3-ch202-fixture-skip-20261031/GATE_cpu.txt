@@ -1,0 +1,30 @@
+gate cpu 2026-10-24T08:57:51Z new=/mnt/raid0/llm/kernels/builds/cpu-20261024-cdb4d8c77-c4 base=/mnt/raid0/llm/kernels/builds/cpu-20261023-dcc853b55-c3
+== (a) tests
+(a0) test-llama-archs (full) rc=0 OK-lines=0 PASS
+(a1) test-yarn-kshift rc=0 PASS
+(a) test-rope rc=0 PASS
+(a) test-qwen4exp-fused-rope rc=0 PASS
+(a) test-dca rc=0 PASS
+(a) test-backend-ops -b CPU -o ROPE rc=0:   448/448 tests passed
+== (b) fold_gate.py vs cpu-20261023-dcc853b55-c3
+ui-source: git diff dcc853b55 cdb4d8c77 -- tools/ui tools/server is EMPTY
+image-roots base: src=/mnt/raid0/llm/worktrees/c3-fold-dcc853b55 build=/mnt/raid0/llm/kernels/builds/cpu-20261023-dcc853b55-c3 prefix-maps=2 build-info=['10413', 'cdb4d8c', 'cdb4d8c77', 'cdb4d8c77c2300f61c404a3df6d1950934b39c98']
+image-roots new: src=/mnt/raid0/llm/worktrees/c4-fold-20261024 build=/mnt/raid0/llm/kernels/builds/cpu-20261024-cdb4d8c77-c4 prefix-maps=2 build-info=['10417', 'cdb4d8c', 'cdb4d8c77', 'cdb4d8c77c2300f61c404a3df6d1950934b39c98']
+  EXPLAINED   libggml-base.so.0.16.0
+      note .note.gnu.build-id: differs (free)
+      note .rodata: only 2 build-info/path string(s) differ; residual identical
+  (map) libllama-common.so.0.0.10413 -> libllama-common.so.0.0.10417
+  EXPLAINED   libllama-common.so.0.0.10417
+      note .data: layout-derived content shift
+      note .note.gnu.build-id: differs (free)
+      note .rodata: only 2 build-info/path string(s) differ; residual identical
+  (map) libllama.so.0.0.10413 -> libllama.so.0.0.10417
+  (map) libmtmd.so.0.0.10413 -> libmtmd.so.0.0.10417
+(b) byte-identical=12 explained=2 explained-path=0 explained-ui=0 expected=0 unexplained/code-diff/missing=0
+(b) PASS
+== (c) versions
+version: 10417 (cdb4d8c77) built with GNU 15.2.0 for Linux x86_64 
+(c) linkage PASS
+== (d) GGML_CUDA_GRAPH_MEMLOG string
+(d) PASS (no ggml-cuda code in the cpu image)
+GATE cpu PASS
