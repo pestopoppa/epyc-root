@@ -538,6 +538,7 @@ quality tradeoff.
     - The store holds 29,611 chunks, and the prefix-free `index/` store is kept as the rollback.
   - PREFIX-2, whether published BEIR deltas transfer, stays open. It is a separate question.
 
+- [ ] **PREFIX-4 — fix the encoder-contract mismatch PREFIX-3 found, then rerun the same 44-row parity (filed 2026-10-31, ws58 wrap-up derived actionable).** `colbert_encoder.encode(role=ROLE_DOCUMENT)` disagrees with native PyLate 1.4 `ColBERT.encode` before any numerics: Reason 22/22 `OUTPUT_CONTRACT_MISMATCH`, LateOn 22/22 `TOKEN_OR_POSITION_MISMATCH` (e.g. 18x128 vs 17x128 at cap 64; input IDs, masks, retained positions differ). Find the divergence (prefix/marker tokens, special-token handling, skiplist/punctuation masking, length cap), fix it in the orchestrator encoder, and rerun the unchanged 20-snippet harness until cosine is computable. Zero-to-light CPU, no model change. [no-belief: open task]
 - [ ] **PREFIX-2 — confirm whether the published BEIR deltas transfer before banking any model swap.**
   The BEIR figures on this page (GTE 54.67, ColBERT-Zero 55.43, and the LateOn delta) are **published
   vendor scores**, measured with the models used as designed, i.e. **with** the prefixes. Production runs
