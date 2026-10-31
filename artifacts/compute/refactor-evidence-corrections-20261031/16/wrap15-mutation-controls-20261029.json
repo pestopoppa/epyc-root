@@ -1,0 +1,17 @@
+{
+  "scope": "test-double wiring mutations only; no model I/O or source mutation",
+  "mutants": {
+    "full_model_hash": {
+      "caught": true,
+      "reason": "preflight requested full model hashing"
+    },
+    "weight_open": {
+      "caught": true,
+      "reason": "preflight opened a file"
+    },
+    "missing_metadata_check": {
+      "caught": true,
+      "reason": "Expected 'is_file' to be called once. Called 0 times."
+    }
+  }
+}

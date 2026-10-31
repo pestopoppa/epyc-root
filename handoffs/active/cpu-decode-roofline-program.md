@@ -2595,13 +2595,17 @@ They are filed here rather than described in prose so the dashboard can see them
       one skip, Ruff/diff checks clean. Requests is already a core dependency; no install or import
       workaround needed. This validates the module and expansion, not the whole smoke suite.
       [no-belief: tooling-repair]
-- [x] **WRAP-15 — guard `assert_artifact_digests()` against being called from `preflight()`**, because it
+- [x] **WRAP-15 — guard `assert_artifact_digests()` against being called from `preflight()`**, because it <!-- evidence-integrity: Research `7202df8420cffeedb37c0b627800fa7166334df1`; artifact: artifacts/compute/refactor-evidence-corrections-20261031/16/wrap15-tests-20261029.log; hygiene, not quota -->
       reads ~95 GB and is one edit away from being wired into the preflight path
       (`scripts/lib/qwen38_flash_next_recipe.py`) (found 2026-09-14, noninf sweep).
       ✅ 2026-10-29 research `7202df8420cffeedb37c0b627800fa7166334df1`: default-gated test
       executes real preflight with full-hash/weight-read denial, all metadata and existing pin/knob/binary/flag
       checks, and missing/truncated negatives. 96 tests passed, one skipped; three wiring mutations caught.
       Runtime and standalone full-digest API unchanged. [no-belief: tooling-repair]
+
+  <!-- task-evidence-integrity:start WRAP-15 -->
+  - Evidence metadata (hygiene, not new quota): Research `7202df8420cffeedb37c0b627800fa7166334df1`; [original test/artifact](../../artifacts/compute/refactor-evidence-corrections-20261031/16/wrap15-tests-20261029.log). Guard task is source-only: real preflight test denies full hashing and weight opens while preserving metadata checks; original96-pass/one-skip and three caught wiring mutations retained. No tests rerun or historical redating.
+  <!-- task-evidence-integrity:end WRAP-15 -->
 
 *Declined 2026-09-14: preserve-or-push the scratch-only binary behind the campaign headline
 (`/mnt/raid0/llm/tmp/inf70/agents/retest1/bin-r1` + `/mnt/raid0/llm/tmp/inf70/retest1wt`) — not filed because

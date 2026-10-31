@@ -1,0 +1,31 @@
+{
+  "index": 16,
+  "task": "WRAP-15",
+  "root_base": "72b592361654bc365d91f988a8d546f599bd28fb",
+  "disposition": "RETAIN_X",
+  "implementation_commit": "7202df8420cffeedb37c0b627800fa7166334df1",
+  "reason": "Guard task is source-only: real preflight test denies full hashing and weight opens while preserving metadata checks; original96-pass/one-skip and three caught wiring mutations retained.",
+  "evidence": [
+    {
+      "git_path": "artifacts/compute/refactor-evidence-corrections-20261031/16/wrap15-mutation-controls-20261029.json",
+      "sha256": "c4a5dc3523fc9f819ed96bb8cfc08ad27ed618220df3353795c1b990bd8f94c6",
+      "bytes": 439,
+      "source": "/mnt/raid0/llm/tmp/refactor-unsupported-seven-v2-20261031/16/files/artifacts/compute/refactor-evidence-corrections-20261031/16/wrap15-mutation-controls-20261029.json"
+    },
+    {
+      "git_path": "artifacts/compute/refactor-evidence-corrections-20261031/16/wrap15-tests-20261029.log",
+      "sha256": "a90e9bc7a17a2646b930ce64a6db0a96b2684d89d9b987017f96e96f57d4093f",
+      "bytes": 687,
+      "source": "/mnt/raid0/llm/tmp/refactor-unsupported-seven-v2-20261031/16/files/artifacts/compute/refactor-evidence-corrections-20261031/16/wrap15-tests-20261029.log"
+    }
+  ],
+  "task_prose_and_dates_unchanged": true,
+  "tests_rerun": false,
+  "new_code_quota_credit": false,
+  "recovery": {
+    "index": 16,
+    "original_paragraph_sha256": "211571a310966fc1966ea387ffef601d3da641afcf206397914adf64f184457d",
+    "whole_handoff_recovery_byte_identical": true,
+    "original_prose_and_dates_unchanged": true
+  }
+}
