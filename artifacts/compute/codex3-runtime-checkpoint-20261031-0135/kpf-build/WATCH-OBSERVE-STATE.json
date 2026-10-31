@@ -1,0 +1,14 @@
+{
+  "pid": 280490,
+  "birth": 152952929,
+  "uid": 1000,
+  "mount_namespace": "mnt:[4026535339]",
+  "started_at": "2026-10-31T00:37:36.074741+00:00",
+  "workspace_exists": true,
+  "micron_exists": true,
+  "automatic_qualification": false,
+  "role": "observation-only; native failure must be classified at parent boundary",
+  "observed_at": "2026-10-31T01:34:21.845659+00:00",
+  "state": "BUILD-SUCCESS-NEEDS-QUALIFICATION",
+  "detail": "Native build success exists; inspect BUILD-DIGESTS.txt and classify admission/native errors before one reviewed 0.8B qualifier."
+}

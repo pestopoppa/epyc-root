@@ -1,0 +1,177 @@
+[
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/R7-driver-smoke-1.log",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/R7-driver-smoke-1.log",
+    "inode": 194549225
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793409997039183929/ENVELOPE.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793409997039183929/ENVELOPE.json",
+    "inode": 194668479
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793409997039183929/MTP-EVIDENCE.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793409997039183929/MTP-EVIDENCE.json",
+    "inode": 194668488
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793409997039183929/gpu-samples.jsonl",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793409997039183929/gpu-samples.jsonl",
+    "inode": 194668466
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793409997039183929/props.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793409997039183929/props.json",
+    "inode": 194668478
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793409997039183929/RESULT.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793409997039183929/RESULT.json",
+    "inode": 194668487
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793409997039183929/server.pid",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793409997039183929/server.pid",
+    "inode": 194668468
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793409997039183929/server.log",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793409997039183929/server.log",
+    "inode": 194668467
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793409997039183929/round-0/DONE.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793409997039183929/round-0/DONE.json",
+    "inode": 194668482
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793409997039183929/round-0/0000/tale.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793409997039183929/round-0/0000/tale.json",
+    "inode": 194668486
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793409997039183929/round-0/0000/baseline.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793409997039183929/round-0/0000/baseline.json",
+    "inode": 194668484
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793409997039183929/round-0/0000/estimate.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793409997039183929/round-0/0000/estimate.json",
+    "inode": 194668483
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793409997039183929/round-0/0000/static.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793409997039183929/round-0/0000/static.json",
+    "inode": 194668485
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/R7-driver-cutoff-1.log",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/R7-driver-cutoff-1.log",
+    "inode": 194549228
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793410012231464561/ENVELOPE.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793410012231464561/ENVELOPE.json",
+    "inode": 194668497
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793410012231464561/gpu-samples.jsonl",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793410012231464561/gpu-samples.jsonl",
+    "inode": 194668492
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793410012231464561/props.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793410012231464561/props.json",
+    "inode": 194668496
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793410012231464561/RESULT.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793410012231464561/RESULT.json",
+    "inode": 194671608
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793410012231464561/server.pid",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793410012231464561/server.pid",
+    "inode": 194668494
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793410012231464561/server.log",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793410012231464561/server.log",
+    "inode": 194668493
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793410012231464561/round-2/DONE.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793410012231464561/round-2/DONE.json",
+    "inode": 194670028
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793410012231464561/round-0/DONE.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793410012231464561/round-0/DONE.json",
+    "inode": 194668501
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793410012231464561/round-1/DONE.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793410012231464561/round-1/DONE.json",
+    "inode": 194669816
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793410012231464561/round-1/0000/tale.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793410012231464561/round-1/0000/tale.json",
+    "inode": 194670025
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793410012231464561/round-1/0000/baseline.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793410012231464561/round-1/0000/baseline.json",
+    "inode": 194669920
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793410012231464561/round-1/0000/estimate.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793410012231464561/round-1/0000/estimate.json",
+    "inode": 194669853
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793410012231464561/round-1/0000/static.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793410012231464561/round-1/0000/static.json",
+    "inode": 194669927
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793410012231464561/round-0/0000/tale.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793410012231464561/round-0/0000/tale.json",
+    "inode": 194669813
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793410012231464561/round-0/0000/baseline.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793410012231464561/round-0/0000/baseline.json",
+    "inode": 194669468
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793410012231464561/round-0/0000/estimate.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793410012231464561/round-0/0000/estimate.json",
+    "inode": 194668516
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793410012231464561/round-0/0000/static.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793410012231464561/round-0/0000/static.json",
+    "inode": 194669657
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793410012231464561/round-2/0000/tale.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793410012231464561/round-2/0000/tale.json",
+    "inode": 194671607
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793410012231464561/round-2/0000/baseline.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793410012231464561/round-2/0000/baseline.json",
+    "inode": 194671594
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793410012231464561/round-2/0000/estimate.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793410012231464561/round-2/0000/estimate.json",
+    "inode": 194670054
+  },
+  {
+    "original": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793410012231464561/round-2/0000/static.json",
+    "hardlink": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/retained/smoke-1793410012231464561/round-2/0000/static.json",
+    "inode": 194671596
+  }
+]

@@ -1,0 +1,9 @@
+# Proposed owner-applied belief wiring (not applied)
+
+Add a new source-table row near the existing TALE-EP row in scripts/vidya/adapters/README.md:
+
+| PRB-T4-RERUN resumable native collector (codex3-prbt4-r1-20261031; prospective) | measurement | Each newly attempted request writes its exact request/response/finish and a hash-bound contemporaneous server/grant/model/kernel/source envelope. The finalizer refuses an aggregate verdict if any of the 4×400×(estimate+3 arms) cells is missing, policy-limited or unknown; valid length-capped outputs are scored and counted; complete eligible results invoke existing tale_budget_capture.write_belief_measurements before DONE. Uses the existing TALE adapter and its existing observation ladder; no historical tuple reconstruction. Source and finalizer remain scratch-only pending review and no inference is claimed. | `/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/campaign.py` → `tale_budget_capture.py` → `tale_budget.py`; VB-PRB-T4-RESUME-WIRE |
+
+Add task text in handoffs/active/vidya-belief-substrate-program.md:
+
+- [ ] **VB-PRB-T4-RESUME-WIRE — validate the prospective segmented TALE rerun source through the existing TALE adapter and planning-context canary.** Verify each attempted cell's request/response/finish identity and contemporaneous source/model/kernel/process/admission envelope, preserve interrupted/unknown and capped cases, exercise missing/tampered/mixed-warrant and partial-resume controls, and verify the unchanged `tale_budget_capture.py` output projects only eligible completed records via existing `ClaimTuple.grade()`; do not invent a historical measurement warrant or add a grading ladder. The source is wired only after the planning-context canary passes. Producer candidate and fixtures: `/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/`; real run not yet qualified.

@@ -1,0 +1,8 @@
+{
+  "normal": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/R7-NORMAL-PROOF.json",
+  "cutoff": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/R7-CUTOFF-PROOF.json",
+  "launcher_sha256": "5c2bd38147f97a1e775a6536b11b558d0965b238e3fc51db662f5797720f81cb",
+  "source_sha256": "58a4a78b39ce21d93fb79c1c95bc98189ba0c046777488962425fdac4536126c",
+  "at": 1793410037.5470366,
+  "note": "Control-qualified only; no READY or scientific result asserted"
+}

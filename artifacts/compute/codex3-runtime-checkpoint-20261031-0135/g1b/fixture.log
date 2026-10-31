@@ -1,0 +1,3 @@
+{"leader_pid": 1294340, "leader_birth": 153203549, "event": "leader_started"}
+fixture full 520 cells, mode-matched trigger and separate repeat PASS
+{"schema": "hil15-r11-smoke-supervisor/v1", "elapsed_s": 4.271437664050609, "sampled_peak_tree_rss_bytes": 52527104, "samples": 43, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": 8589934592, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 1294340, "leader_birth": 153203549, "child_rc": 0, "children_drained": true, "failure": null}

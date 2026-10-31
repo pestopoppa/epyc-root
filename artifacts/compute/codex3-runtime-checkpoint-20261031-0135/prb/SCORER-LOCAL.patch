@@ -1,0 +1,26 @@
+--- /mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/orch_debug_scorer.ORIGINAL.py	2026-10-31 00:40:07.259408007 +0000
++++ /mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/orch_debug_scorer.py	2026-10-31 00:40:28.785049090 +0000
+@@ -813,6 +813,8 @@
+                     return False
+ 
+                 if result.returncode != 0:
++                    if result.returncode < 0 or "PermissionError" in result.stderr or "Operation not permitted" in result.stderr or "MemoryError" in result.stderr or "Resource temporarily unavailable" in result.stderr:
++                        raise ScoringUnavailableError("sandbox policy or signal limited code execution")
+                     return False
+ 
+                 got = result.stdout.strip()
+@@ -948,11 +950,13 @@
+                 start_new_session=True,
+             )
+             try:
+-                process.communicate(timeout=timeout)
++                _score_stdout, _score_stderr = process.communicate(timeout=timeout)
+             except subprocess.TimeoutExpired:
+                 os.killpg(process.pid, signal.SIGKILL)
+                 process.communicate()
+                 raise ScoringUnavailableError("code_execution exceeded its configured timeout")
++            if process.returncode < 0 or "PermissionError" in _score_stderr or "Operation not permitted" in _score_stderr or "MemoryError" in _score_stderr or "Resource temporarily unavailable" in _score_stderr:
++                raise ScoringUnavailableError("sandbox policy or signal limited code execution")
+             return process.returncode == 0
+     except subprocess.TimeoutExpired:
+         return False

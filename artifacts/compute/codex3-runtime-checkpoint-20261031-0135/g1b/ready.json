@@ -1,0 +1,72 @@
+{
+  "id": "codex3-cs8-g1b-cascade-20261031",
+  "owner": "codex3",
+  "priority_rank": 100,
+  "regions": "any-cpu-quarter",
+  "min_window_s": 900,
+  "window_s": 36000,
+  "gib": 44,
+  "booking_class": "block-correctness",
+  "class": "diagnostic",
+  "decision_rule": "M17 automated trigger for each language and ASR mode: same-run round-trip corpus WER is >2x English and bootstrap 95% intervals do not overlap; native listener not assessed; higher WER is worse. Report second seed separately.",
+  "enrollment": "n/a: diagnostic screen; human listener criterion remains unassessed",
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-cpu-prep-20261031-0110/launch.sh",
+    "sha256": "158fba35d26da5df14b35ce45b193396b87f3e639b8eff06e15f92ce2d008ca9"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-cpu-prep-20261031-0110/worker.py",
+    "sha256": "4c3535388f7ef09396cd32939ffec5f4d339b13e3c0721c5dd06f31fe1e4cf0e"
+  },
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-cpu-prep-20261031-0110/SOURCES.sha256",
+    "sha256": "ee8cb5be891118879c3a7d3e6e18f35d334b0374bfbe7422ab646ea30000415e"
+  },
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-next-cpu-prep-20261031-0110",
+  "keep": [
+    "KEEP",
+    "*.py",
+    "*.sh",
+    "*.json",
+    "*.log",
+    "*.txt",
+    "*.sha256",
+    "engine/*.sh",
+    "engine/*.py",
+    "engine/*.json",
+    "inputs/*/pcm/*.wav",
+    "inputs/*/original/*.wav",
+    "results/cells/*.json",
+    "results/raw/*/*.wav",
+    "results/raw/*/*.txt",
+    "results/raw/*/*.log",
+    "results/*.json",
+    "smoke-result/cells/*.json",
+    "smoke-result/raw/*/*.wav",
+    "smoke-result/raw/*/*.txt",
+    "smoke-result/raw/*/*.log",
+    "smoke-result/*.json",
+    "cutoff-result/cells/*.json",
+    "cutoff-result/raw/*/*.log",
+    "cutoff-result/*.json"
+  ],
+  "log_consumer": "/mnt/raid0/llm/tmp/codex3-next-cpu-prep-20261031-0110/log_consumer.py",
+  "result_path": "/mnt/raid0/llm/tmp/codex3-next-cpu-prep-20261031-0110/results",
+  "est_output_GiB": 3,
+  "feasibility": "280 TTS with two ASR modes plus 240 real clips with two ASR modes = 1040 ASR. Real validation control 189.54 s TTS+forced+auto; forced 54.86 s and auto 109.76 s. (280*189.54+240*(54.86+109.76))/10=9254 s, doubled for variability plus 3600 s I/O/startup=22108 s <36000 s. Resumable at cells; interrupted exposures unknown, no redraw. Sampled peak 3.63 GiB x10 plus >7 GiB headroom = 44 GiB.",
+  "smoke": {
+    "ran_at": "2026-10-31T01:23:03.190989+00:00",
+    "regions": "R11 CPU 126,127",
+    "model": "validation-control: frozen Qwen3-TTS 0.6B Q8_0 + Whisper large-v3-turbo; public validation audio, no test inference",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "wall_s": 189.542,
+    "peak_sampled_tree_rss_bytes": 3897651200,
+    "launcher_sha256": "158fba35d26da5df14b35ce45b193396b87f3e639b8eff06e15f92ce2d008ca9",
+    "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-g1b-cascade-20261031.smoke.log",
+    "log_sha256": "0f56ff82bfbb5c41bf8ce79982e791465658484cbdddf0b51c18b0dbfbfae081"
+  },
+  "hold": "STT5 validation-based settings selection must be frozen before any test inference; use actual existing selection artifact",
+  "completion": "520 cells terminal, unknown exposures never redrawn; separate 40 second-seed results; listener unassessed"
+}

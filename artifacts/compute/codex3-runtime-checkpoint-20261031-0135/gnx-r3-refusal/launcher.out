@@ -1,0 +1,3 @@
+2026-10-31T01:34:43Z [codex-ni-gnx-r2-nativeproof-r3-20261031] launcher up pid=1507062 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/STOP minwin=600s ports=none
+2026-10-31T01:35:28Z [codex-ni-gnx-r2-nativeproof-r3-20261031] REFUSED t1-admission rc=70 DRYRUN_REFUSED: row codex-ni-gnx-r2-nativeproof-r3-20261031: missing normal launch proof fields ('dryrun_pass', 'launcher_path', 'job_path', 'source_manifest') 
+2026-10-31T01:35:28Z [codex-ni-gnx-r2-nativeproof-r3-20261031] ended rc=6 reason=t1-admission:DRYRUN_REFUSED: row codex-ni-gnx-r2-nativeproof-r3-20261031: missing normal launch proof fields ('dryrun_pass', 'launcher_path', 'job_path', 'source_manifest')  (grant deleted)

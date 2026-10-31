@@ -404,6 +404,7 @@ n=500 per arm × 3 arms = 1,500 generations + 500 estimator calls ≈ 2,000 requ
       `architect_general`, plus the `frontdoor` CPU-decode overhead replicate, and apply the fixed
       decision rule. On completion the run produces measurements → file the belief-kernel adapter
       wiring task at the same boundary (source row in `scripts/vidya/adapters/README.md`).
+    - [x] **PRB-T4-PREP-20261031** — Native normal and STOP controls, bounded source and full diagnostic writer fixtures retained in `artifacts/compute/codex3-runtime-checkpoint-20261031-0135/prb/`; cohort remains queued. Valid capped responses are known and scored under original logic; missing usage and interrupted transport are UNKNOWN. ✅ 2026-10-31 [belief: cc]
       - **GPU RUN 2026-09-16 19:10Z – 09-17 02:22Z (sub-gpu-runner; box NOT ticked). Verdict under the fixed rule,
         on 3 of 4 suites: INCONCLUSIVE.** Evidence: research `b4d38ebc`, `data/prb-t4-tale-gpu-20260916/`, with no
         question text.

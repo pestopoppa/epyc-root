@@ -1,0 +1,3 @@
+# CS-45.1 source wiring draft for owner
+
+Native source: 8,200 per-clip/per-configuration result JSON plus hashed raw ONNX outputs under `cs45/results`, pinned 820-clip manifest, QA report, Python environment and model catalog; derived per-tail `scores/results.json`, item records and `adaptive.json`. Add a source-table entry and write-side task to the belief-substrate program before accepting actual findings. Project native records and their complete denominator, selection/confirmation split, synthetic pink-noise condition, undefined INT-FPR, no-human-advance and failure/unknown status into ClaimTuple; use the existing shared grade and a planning-context canary. No measurement has occurred on the recut corpus at preparation time. The owner applies repository changes.

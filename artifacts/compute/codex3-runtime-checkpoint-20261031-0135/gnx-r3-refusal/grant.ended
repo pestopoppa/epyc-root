@@ -1,0 +1,1 @@
+rc=6 time=2026-10-31T01:35:28Z reason=t1-admission:DRYRUN_REFUSED: row codex-ni-gnx-r2-nativeproof-r3-20261031: missing normal launch proof fields ('dryrun_pass', 'launcher_path', 'job_path', 'source_manifest') 

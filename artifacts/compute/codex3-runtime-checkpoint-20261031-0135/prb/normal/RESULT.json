@@ -1,0 +1,16 @@
+{
+  "mode": "smoke",
+  "started": 1793409997.0088146,
+  "ended": 1793410009.8628008,
+  "wall_s": 12.853986664908007,
+  "rc": 0,
+  "partial": false,
+  "gpu_samples": 28,
+  "completed_rounds": 1,
+  "server_pid": 1417158,
+  "server_dead": true,
+  "client_pid": 1417733,
+  "client_dead": true,
+  "cleanup_errors": [],
+  "cutoff_triggered": false
+}

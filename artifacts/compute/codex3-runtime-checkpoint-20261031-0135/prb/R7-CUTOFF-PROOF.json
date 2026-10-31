@@ -1,0 +1,35 @@
+{
+  "mode": "cutoff",
+  "attempt": 1,
+  "rc": 75,
+  "start": 1793410009.9277124,
+  "end": 1793410037.5285835,
+  "log": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/R7-driver-cutoff-1.log",
+  "new_outputs": [
+    "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793410012231464561"
+  ],
+  "launcher_sha256": "5c2bd38147f97a1e775a6536b11b558d0965b238e3fc51db662f5797720f81cb",
+  "source_sha256": "58a4a78b39ce21d93fb79c1c95bc98189ba0c046777488962425fdac4536126c",
+  "result": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793410012231464561/RESULT.json",
+  "native": {
+    "mode": "cutoff",
+    "started": 1793410012.202196,
+    "ended": 1793410037.5097606,
+    "wall_s": 25.307564073009416,
+    "rc": 75,
+    "partial": true,
+    "gpu_samples": 74,
+    "completed_rounds": 2,
+    "server_pid": 1420295,
+    "server_dead": true,
+    "client_pid": 1421080,
+    "client_dead": true,
+    "cleanup_errors": [],
+    "cutoff_triggered": true
+  },
+  "consumer_rc": 0,
+  "consumer_out": "{\"control\": \"cutoff\", \"server_pid\": 1420295, \"gpu_samples\": 74, \"mtp_log_evidence\": false, \"server_log\": \"/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793410012231464561/server.log\", \"envelope\": \"/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793410012231464561/ENVELOPE.json\", \"control_round\": \"/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/smoke-1793410012231464561/round-0\"}\n",
+  "consumer_err": "",
+  "ended": 1793410037.5097606,
+  "wall_s": 25.307564073009416
+}

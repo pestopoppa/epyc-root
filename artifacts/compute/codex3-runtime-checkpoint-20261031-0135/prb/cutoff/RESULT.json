@@ -1,0 +1,16 @@
+{
+  "mode": "cutoff",
+  "started": 1793410012.202196,
+  "ended": 1793410037.5097606,
+  "wall_s": 25.307564073009416,
+  "rc": 75,
+  "partial": true,
+  "gpu_samples": 74,
+  "completed_rounds": 2,
+  "server_pid": 1420295,
+  "server_dead": true,
+  "client_pid": 1421080,
+  "client_dead": true,
+  "cleanup_errors": [],
+  "cutoff_triggered": true
+}
