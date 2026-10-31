@@ -1,0 +1,15 @@
+{
+  "task": "REPL-EMB-2.13",
+  "implementation_commit": "23560c8ecc80e316a3edd2d5925de085604c6297",
+  "implementation_date": "2026-10-24",
+  "verification_head": "5c1dfea76467cc82edc57192667677dcb1308af3",
+  "original_qualification": "35-test subset; not full flag-on suite",
+  "raw_log": {
+    "git_path": "artifacts/compute/refactor-evidence-corrections-20261031/repl-emb-2.13/original-35-subset.log",
+    "source": "/mnt/raid0/llm/tmp/codex-ni-repl-emb213-audit-20261031/test-focused.log",
+    "sha256": "713caf3f257464e4f8d99f6677f4d796b83d89b9de269e12317457b64245533f"
+  },
+  "task_prose_and_dates_unchanged": true,
+  "tests_rerun": false,
+  "quota_credit": false
+}
