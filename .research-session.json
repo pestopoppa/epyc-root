@@ -1,7 +1,7 @@
 {
   "session_id": "intake-ws58-20261031",
   "started_at": "2026-10-31T21:30:00Z",
-  "last_checkpoint": "2026-11-01T02:00:00Z",
+  "last_checkpoint": "2026-11-01T06:00:00Z",
   "stage": 3,
   "phase": "stage3-plan-drafted",
   "lane": "/mnt/raid0/llm/worktrees/intake-ws58-20261031",
@@ -67299,6 +67299,56 @@
         ]
       },
       "outputs": "/mnt/raid0/llm/tmp/dive-ws58-20261031/out/w4_*.yaml"
+    },
+    "w5": {
+      "groups": {
+        "fold": [
+          "CH-32",
+          "CH-33",
+          "CH-34",
+          "CH-35",
+          "CH-36",
+          "CH-37"
+        ],
+        "ft": [
+          "DF2-FT-1",
+          "DF2-FT-2"
+        ],
+        "gpu": [
+          "GPU-LOOP-1",
+          "GPU-LOOP-2",
+          "GPU-LOOP-3",
+          "GPU-PLT-1",
+          "GPU-PLT-2"
+        ],
+        "meta": [
+          "ID-RI-ANCHOR-GATE",
+          "ID-RI-LANE-HEAD",
+          "ID-RI-STAGE-GUARD",
+          "ID-RI-DECLINE-VOCAB",
+          "AK-WIN-CNT-1",
+          "AK-PROF-ATTR-1"
+        ],
+        "verif": [
+          "RVP-RACE-1",
+          "RVP-RACE-2",
+          "RVP-EQV-1",
+          "C5-ISA-2"
+        ]
+      },
+      "purpose": "operator plan-revision points 1-8 (2026-11-01); re-dive of intake-2563; GPU re-check",
+      "outputs": "/mnt/raid0/llm/tmp/dive-ws58-20261031/out/w5_*.yaml",
+      "models": {
+        "opus": [
+          "ft",
+          "verif"
+        ],
+        "sonnet": [
+          "fold",
+          "gpu",
+          "meta"
+        ]
+      }
     }
   },
   "dive_ledger": [
@@ -69081,9 +69131,11 @@
   "dive_artifact_audit": "clean: all dive artifacts under /mnt/raid0/llm/tmp/dive-ws58-20261031/ (raw, dive/<group>, out, scripts, briefs); one stray SPEC curl write in /workspace moved by the agent within a minute; one empty /tmp/x from a second-reader agent removed by main.",
   "stage3_plan_draft": {
     "path": "research/intake-stage3-plan-2026-10-31-ws58.md",
-    "sha256": "e34ea081ee3d955ad16a32c60895b51db9de1e3cdc655655bbf986923f6379dc",
-    "status": "PROPOSED, awaiting operator approval (relay via ws58); no handoff or index edit applied",
+    "sha256": "043e502133cae214175ea3f2a395f575e6ca13b9f3ee058525ed020264ab5012",
+    "status": "PROPOSED revision 2 (operator points 1-8, 2026-11-01), awaiting approval; no handoff or index edit applied",
     "builder": "/mnt/raid0/llm/tmp/dive-ws58-20261031/scripts/gen_plan.py",
-    "validator": "validate_intake.sh --plan-file/--session-file exit 0 (2026-11-01)"
+    "validator": "validate_intake.sh --plan-file/--session-file exit 0 (2026-11-01)",
+    "revision": 2,
+    "previous_sha256": "e34ea081ee3d955ad16a32c60895b51db9de1e3cdc655655bbf986923f6379dc"
   }
 }

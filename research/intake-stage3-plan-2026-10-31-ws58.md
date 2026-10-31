@@ -7,9 +7,21 @@ Session: `intake-ws58-20261031`. Lane worktree `/mnt/raid0/llm/worktrees/intake-
 ## Scope and process
 
 - 23 operator URLs plus 9 Stage-1 expansions (intake-2545..2576); every medium-or-higher source dived in wave 1 (29 entries).
-- Stage-2b waves 2-4 ingested and dived 26 surfaced sources (intake-2577..2602). Four of six permitted waves were used; the remaining surfaced items were declined with reasons recorded on the bearing entries.
+- Stage-2b waves 2-4 ingested and dived 26 surfaced sources (intake-2577..2602). Waves 1-4 ran before the first plan; wave 5 (five helpers, 2026-11-01) answered the operator's revision points and re-dived intake-2563. Five of six permitted waves are used; the remaining surfaced items were declined with reasons recorded on the entries they came from.
 - Verification: 57 dive-verified, 2 dive-overturned (intake-2553: d1-Omni does have a llama.cpp path; intake-2594: the Q8_0 collapse was a Metal bug, not quantization). Every anchor was re-found mechanically and checked by an independent second reader; 7 objections were resolved by dropping or narrowing anchors.
 - Stage-1 defect caught: Stage-1 fetchers attached 7 cross-reference arXiv ids that were not in the fetched sources; all were removed before persisting.
+
+## Revision 2 (2026-11-01): answers to the operator's eight points
+
+1. **Soft-MTP / drafter fine-tuning: actionable now (P2, DF2-FT-1).** On a frozen trunk, Soft-MTP is forward KL toward the target. The first target is the served 27B DFlash2 drafter (1.9B parameters). It accepts 0.29-0.39 on production agentic traffic against 0.62-0.73 on the benchmark. Capture is 61,440 bytes per token, 50-75 GB, and at most 3 MI210-hours. Training is about 36 GB at bf16, at most 4 MI210-hours per arm. The pilot needs about 13 MI210-hours plus 4-6 desk days, and reuses NeMo Automodel train_dflash2 and the existing GGUF converter. Its arms are the incumbent, a convert-only round trip, a hard-label fine-tune and a KL fine-tune (two seeds), replayed twice on held-out traffic. It promotes at +0.05 acceptance and +8% decode speed with no benchmark loss. The scale-up is trigger prose gated on that result. The frontdoor 35B-A3B head and the Flash-Next head (+2-5% estimated, 1-2 weeks of porting) follow, named by DF2-FT-1. MTP-2 and MTP-4 are folded in.
+2. **Upstream fold (P9, CH-32..CH-37, champion program).** Only #28123 is already in champion C5. CH-32 runs a merge-tree census at no compute cost. CH-33 folds the non-causal ubatch fix, a safety fix for embedding and decision models served at np>1. CH-34 folds the looped archs (Nanbeige merged upstream, Ouro open). CH-35 folds the audio/LFM3/realtime group, gated on CS-8.STT8 and CS-8.RT1. CH-36 folds systemone and H2O-Lightning, gated on the TD-23.D1 gates. CH-37 holds the recurrent-state/np>1 fixes, gated on DF2-12.1. The Metal-only fix is declined. The main conflict surface is server-context.cpp, where the champion is already +593 lines.
+3. **Looped models on the GPU (P10).** The earlier pass did ignore the GPU. Sequential loops still cost about 1/L aggregate on the MI210, because batching removes only the weight term. Small MHA models like Ouro-1.4B are KV-bound beyond about 123 tokens of context. Parallel loops (PLT) are the form that fits the GPU. Filed: GPU-LOOP-1 (build and roofline grid), GPU-LOOP-2 (Ouro 1/2/4 loops as a high-concurrency reliability worker against Qwen3-4B, Qwen3-1.7B majority-of-4 and the incumbent), GPU-LOOP-3 (per-request loop count as an effort switch, promoted if a router keeps 97% of 4-loop accuracy at 0.6x cost), GPU-PLT-1 (LoopCoder-v2 quality screen) and GPU-PLT-2 (our own PLT port, 1.0-1.5k lines).
+4. **Triggers turned into tasks.** PLT is ported by us (GPU-PLT-2). The gfx90a race executor is built now (RVP-RACE-2). ThinkingCap is an A/B for a thinking-on effort mode (AMS-TCAP-1). The ISA-level lowering probe is C5-ISA-2. The failure-to-rule loop runs on existing records (AK-FAILRULE-1). Every remaining trigger is gated either on one of our own probes (DF2-LAT, DF2-12.1, CF-AKV-0, RI-25, CS-8.STT8, TD-23) or on a named external release (Dessa weights, a served-vocabulary NCM generator, looped-MoE weights).
+5. **Octopus-SI-OS (P12, re-dived as intake-2563).** Four mechanisms fix failure modes the intake has already recorded. ID-RI-ANCHOR-GATE adds script-written anchor marks and a cross-entry quote check, against fabricated citations. ID-RI-LANE-HEAD pins the lane revision and flags a stale epoch, against stale clones. ID-RI-STAGE-GUARD makes the stage write grant script-formed, against stage violations. ID-RI-DECLINE-VOCAB closes the list of decline codes, against dropped actionables. Four other Octopus mechanisms are declined as already covered.
+6. **Resin vs Annex K.** Resin is weaker on every statistical axis. It has no A/A noise floor and no MDE, no e-process keep rule, no order-randomized interleave, no anchor gate, and no clock, governor or driver capture. Its only rule is to repeat a measurement when the gain is close to run-to-run variation. It is stronger in four places: a dirty-tree source digest, graph and overlap counters measured inside the timed window, a proof that JIT compilation finished before timing, and union-not-sum trace attribution. Those become AK-WIN-CNT-1 and AK-PROF-ATTR-1 (P3). The earlier AGENT-9 decline is reversed.
+7. **Volta on gfx90a.** Port the race and deadlock checking now (RVP-RACE-2). Only the PTX front end is NVIDIA-specific; the event graph is ISA-neutral. The check runs at the AMDGCN code-object level, not LLVM IR. In the v10 code object, MMVQ, MMQ and both FA paths use s_barrier, and 15 of 31 AK GPU keeps touch synchronization. Cost: 8-11 kLoC new plus about 12 kLoC reused, 6-9 engineer-weeks. Milestone 1 covers MMVQ and FA-vec and must catch the seeded mutants. Equivalence checking is declined for the quantized kernels on coverage, because about 75% of AK GPU rows are bit-level code. A probe decides it for FA, GDN and float GEMV (RVP-EQV-1). RVP-RACE-1 is amended: a mutant counts as a miss if it passes even 1 of 20 runs.
+8. **Qwenputer on a small GPU model.** Re-priced, it still loses: chip tokens run serially at 0.5-1 s per call, and accuracy only ties a tool call. It stays declined with this GPU reason (D1). The GDN exactness oracle (AKX-ALL-31.GDN) remains the transferable piece.
+General. **GPU re-check of every CPU-bandwidth verdict.** LOOP-1/4/5, W2LOOP-1/2/3, MEM-3, LOOP-6 and the Volta decline were re-priced for the MI210. Five became tasks, and three stay declined with GPU-specific or external-event reasons.
 
 ## Top findings
 
@@ -18,15 +30,15 @@ Session: `intake-ws58-20261031`. Lane worktree `/mnt/raid0/llm/worktrees/intake-
 3. **AK gate blind spots confirmed in code.** No race detector, no edge-value inputs, NMSE-only oracle. The AI-compiler papers show that formal verification costs speed and covers few hot kernels, so cheap planted-control checks and enumeration are the practical path. (P3)
 4. **Upstream llama.cpp now serves end-to-end audio models.** LFM3-Audio/Omni and Voxtral Realtime run through `mtmd_audio_stream` and `/v1/realtime`, about 1,650 builds past v10. Only vendor numbers exist, so a scratch build and STT arms on our pinned clips decide. (P4)
 5. **d1 decision models have a llama.cpp path** through `/v1/systemone`. They fit TD-23's missing local backend, but probabilities move with batch cut and build, so parity and batch-invariance gates come first. (P5)
-6. **Soft-MTP on a frozen trunk is direct forward KL.** The decision it changes is capture-time: add the target final-hidden tap before any drafter feature dump. ThinkingCap Flash-Next adds nothing while `architect_general` runs with thinking off, and its MTP head was never the Axis-E blocker. (P2, M6, K1)
+6. **Drafter fine-tuning is actionable.** Soft-MTP on a frozen trunk is forward KL. The served 27B DFlash2 drafter accepts 0.29-0.39 on production traffic against 0.62-0.73 on the benchmark, and a KL fine-tune pilot fits the MI210 at about 13 GPU-hours. ThinkingCap becomes an A/B for a thinking-on effort mode, because thinking is off today only on account of degenerate loops. (P2, P8)
 
 ## Work packets
 
 | Packet | Action | Owner |
 |---|---|---|
 | P1 | Temp-0 cross-slot token identity on the np>1 speculative roles, recurrent-state hash conformance, acceptance-collapse canary, multi-prefill promotion arm | handoffs/active/dflash2-block-drafter-experimental-build.md |
-| P2 | DFlash2 lattice-headroom and point-mass probes; drafter-training data contract | handoffs/active/dflash2-block-drafter-experimental-build.md |
-| P3 | AK correctness gate: edge-value families, worst-error bound, quant-decode enumeration, GDN oracle, race sensitivity, ISA archive, counter-grounded planning | handoffs/active/autokernel-all-devices-all-dimensions.md |
+| P2 | DFlash2 lattice-headroom and point-mass probes; KL fine-tune pilot of the served 27B drafter on its own traffic (MI210) | handoffs/active/dflash2-block-drafter-experimental-build.md |
+| P3 | AK correctness and planner gates: edge-value families, worst-error bound, quant-decode enumeration, GDN oracle, counter-grounded planning, in-window counters, failure-to-rule loop | handoffs/active/autokernel-all-devices-all-dimensions.md |
 | P4 | Scratch upstream audio build; LFM3-Audio and Voxtral STT arms; /v1/realtime latency and turn contract | handoffs/active/conversation-stack.md |
 | P5 | d1-2B as TD-23 local decision backend behind parity and batch-invariance gates; GGUF pin in the calibration receipt | handoffs/active/typed-decision-plane.md |
 | P6 | Zero-inference agent-loop screens: fold replay, advertised tool surface, old tool-result context share | handoffs/active/routing-intelligence.md |
@@ -36,21 +48,24 @@ Session: `intake-ws58-20261031`. Lane worktree `/mnt/raid0/llm/worktrees/intake-
 | K3 | KV editing and agent-loop design notes (history-keyed reuse, C2C mapping, single-loop caveat) | handoffs/active/kv-prefix-fork-and-paged-attention.md |
 | K4 | Speech and decision-backend notes (Parakeet/transcribe.cpp already owned; realtime turn contract; d1 API subset) | handoffs/active/conversation-stack.md |
 | K5 | Kernel-authoring notes (prompt-leak guard; agent-harness token cost) | handoffs/active/agentic-rocm-kernel-authoring.md |
-| M1 | Speculative-decoding triggers (trained selector port, Domino head, frozen-trunk objective probe, MTP head realign, snapshot patch, thinking-repetition guard, NCM drafter) | handoffs/active/dflash2-block-drafter-experimental-build.md |
-| M2 | Looped-model triggers (PLT port or timing; Ouro probe) | handoffs/active/cpu-decode-roofline-program.md |
+| M1 | Speculative-decoding triggers gated on our own probes (trained selector port, Domino head, drafter scale-up after the pilot, thinking-repetition guard) and on an external NCM release | handoffs/active/dflash2-block-drafter-experimental-build.md |
 | M3 | KV drop and cross-model cache triggers (gated on the context-share screen; fusers for served pairs) | handoffs/active/kv-prefix-fork-and-paged-attention.md |
 | M4 | Speech and decision-model triggers (LFM3 as bake-off challenger, realtime adapter, Dessa, spoken-state decider, generic readout, hybrid prefix fix) | handoffs/active/conversation-stack.md |
-| M5 | Kernel-verification triggers (gfx90a race executor, ISA-level AI lowering, failure-to-rule loop) | handoffs/active/rocm-verify-profile-backend.md |
-| M6 | ThinkingCap Flash-Next A/B trigger (only if thinking is enabled for a Flash-Next role) | handoffs/active/architect-model-selection-bench.md |
+| P8 | ThinkingCap Flash-Next as a thinking-on effort mode for architect_general (A/B, decision rule) | handoffs/active/architect-model-selection-bench.md |
+| P9 | Fold upstream llama.cpp features into the champion: merge census, non-causal ubatch fix, looped archs, audio/realtime, systemone, recurrent-state fixes | handoffs/active/autokernel-champion-aggregate.md |
+| P10 | Looped models on the MI210: build and roofline grid, reliability-worker probe, per-request loop count, LoopCoder-v2 screen and PLT port | handoffs/active/gpu-acceleration-path.md |
+| P11 | GPU kernel verification on gfx90a: race-sensitivity controls, AMDGCN race/deadlock executor, equivalence probe, ISA archive and ISA-level lowering | handoffs/active/rocm-verify-profile-backend.md |
+| P12 | Research-intake skill hardening from the Octopus ledger/grant design: script-written anchors, lane-revision pins, stage write grants, closed decline codes | handoffs/active/intake-derived-work-2026-07-25.md |
 
-Ordering and concurrency: P1-P7 are independent and can run in parallel. Within P1, the rollback test inside DF2-12.1 runs first; G2-CONC.MP applies at the next promotion. Within P2, DF2-LAT and DF2-PM share one experimental build. P4 and P5 each use their own scratch upstream build. P6 and P7 are zero-inference. Seven packets survive compression because each has a different owner, consumer and gate; merging them would only bundle unrelated work.
+Ordering and concurrency: P1-P7 are independent and can run in parallel. Within P1, the rollback test inside DF2-12.1 runs first; G2-CONC.MP applies at the next promotion. Within P2, DF2-LAT and DF2-PM share one experimental build. P4 and P5 each use their own scratch upstream build. P6 and P7 are zero-inference. Twelve immediate packets survive because each has a different owner, consumer and gate; merging them would bundle unrelated work. P9 folds depend on the consumer measurements in P4, P5 and P10 and on DF2-12.1, as each fold task states; P11 milestone 1 uses the RVP-RACE-1 mutants.
 
-Minimum-rigor controls. Empirical items (DF2-12.1, DF2-LAT, DF2-PM, RVP-RACE-1, RVP-CTR-1, CS-8.STT8, CS-8.RT1, TD-23.D1, RI-25, CF-AKV-0) each name in their task text a frozen input manifest, the incumbent baseline, per-item raw outputs, a holdout or repeat (dev/holdout prompts, a second seed, or interleaved pairs), the full denominator, and a predeclared decision rule. Deterministic items (KPF-RS-1, SPEC-CANARY.1, G2-CONC.MP, AKX-ALL-31.EDGE/b/c, C5-ISA-1, DF2-DRAFTER-CAPABILITY.OBJ, TD-18.1, UFH14-TOOLS-1, VB-CERT-1) have no holdout. Each instead names a planted mutation or forged case that must fail, plus a conformance check against the incumbent.
+Minimum-rigor controls. Empirical items (DF2-12.1, DF2-LAT, DF2-PM, DF2-FT-1, RVP-RACE-1, RVP-EQV-1, RVP-CTR-1, C5-ISA-2, CS-8.STT8, CS-8.RT1, TD-23.D1, AMS-TCAP-1, GPU-LOOP-1/2/3, GPU-PLT-1, RI-25, CF-AKV-0, AK-FAILRULE-1) each name in their task text a frozen input manifest, the incumbent baseline, per-item raw outputs, a holdout or repeat (dev/holdout prompts, a second seed, or interleaved pairs), the full denominator, and a predeclared decision rule. Deterministic items (KPF-RS-1, SPEC-CANARY.1, G2-CONC.MP, AKX-ALL-31.EDGE/b/c, C5-ISA-1, DF2-DRAFTER-CAPABILITY.OBJ, TD-18.1, UFH14-TOOLS-1, VB-CERT-1) have no holdout. Each instead names a planted mutation or forged case that must fail, plus a conformance check against the incumbent.
 
 ## Operator decisions
 
-- **D1 (MEM-3, decline to confirm).** Decline an in-weights calculator (Qwenputer-style compiled layers) for serving. It costs about 1.6-2x weight bytes per token on our bandwidth-bound CPU, and the Python-tool arm matches it. The source stays as knowledge. Recommendation: confirm the decline.
-- **D2 (P4 build footprint).** P4 and P5 each need a scratch upstream llama.cpp build on llama.cpp-experimental, isolated with its own LD_LIBRARY_PATH. These are measurement instruments, not a port onto v10. Recommendation: approve as instruments. Any adoption goes through the normal four-step version-past-production path.
+- **D1 (MEM-3, decline to confirm, re-priced for the GPU).** Do not serve a Qwenputer-style in-weights calculator. On a small model on the MI210, its chip tokens still run serially: 0.5-1 s per call, and a median 242 s per long division on an L4. Text tokens cost twice the weight bytes, and accuracy only ties a tool call. Recommendation: confirm the decline. The source stays as knowledge.
+- **D2 (scratch upstream builds).** P4 and P5 use scratch upstream llama.cpp builds on llama.cpp-experimental as measurement instruments. Each has its own LD_LIBRARY_PATH and a linkage proof. P9 folds what proves out into the champion; production changes only through the version-past-production path. Recommendation: approve.
+- **D3 (budget).** RVP-RACE-2 is 6-9 engineer-weeks, staged by milestone. DF2-FT-1 is about 13 MI210-hours plus 4-6 desk days. AMS-TCAP-1 is a 95.5 GB download. Recommendation: approve. Each first milestone has its own stop rule.
 
 ## Complete recommendation mapping
 
@@ -69,34 +84,34 @@ Minimum-rigor controls. Empirical items (DF2-12.1, DF2-LAT, DF2-PM, RVP-RACE-1, 
 | AGENT-6 | intake-2559, intake-2576 Stage-2 dive w1 ledger | Design note (no compute): map C2C onto llama.cpp. Feasible path = out-of-process fuser. Receiver and Sharer each prefill the same prompt; read per-layer K/V from each via llama_state_seq_get_data (include/llama.h:881) or /slots/{id}?action=save ... | K3 |
 | AGENT-7 | intake-2559 Stage-2 dive w1 ledger | Role-pair candidate list, ranked: (1) architect_critic / coder_escalation (Qwen3.8-27B Q8_0, dense KV-densest per model_registry.yaml:541) as SHARER -> worker_general/worker_summarize (Qwen3.6-35B-A3B MoE, receiver; must check whether its layers are all full ... | M3 |
 | AGENT-8 | intake-2576 Stage-2 dive w1 ledger | Read the thu-nics AKV repo (cache engineering for agents, follow-up to C2C, Apache-2.0, pushed 2026-10-21) before sizing any pair-training, since it may cover agent KV reuse without a per-pair trained fuser. | K3 |
-| AGENT-9 | intake-2562 Stage-2 dive w1 ledger | Copy the measurement-discipline text, not code, into the AK actor context: (a) record cache/graph/placement state and compare on the same allocation, (b) locate the limiting interval from a trace BEFORE kernel edits, (c) report the spread and do not call ... | decline: the Resin measurement-discipline text is weaker than the Annex K protocol the loop already follows. |
-| KERN-1 | intake-2570, intake-2555 Stage-2 dive w1 ledger | Race-sensitivity mutation control for the GPU correctness gate. In a llama.cpp-experimental worktree, build 3 seeded-race HIP mutants, each deleting one __syncthreads/barrier: MMQ tile load, MMVQ partial-sum reduction, FA tile softmax. Run the existing AK ... | P3 / RVP-RACE-1 |
-| KERN-10 | intake-2570 Stage-2 dive w1 ledger | Wire a CPU race detector for routes touching threading. Build a TSAN test-backend-ops (CPU), using LLVM libomp with Archer annotations because production uses OpenMP; GGML_OPENMP=OFF would test a different threading path. Run it on the v10 anchor first. | P3 / RVP-RACE-1 |
-| KERN-11 | intake-2570, intake-2557 Stage-2 dive w1 ledger | Do not adopt upstream Volta or the Blackwell fork directly. Both are PTX/NVIDIA-only, and this host has no NVIDIA GPU. Reuse only the race model (KERN-2) and the scaffold code. | decline: upstream Volta and its Blackwell fork are PTX-only and the host has no NVIDIA GPU; the race model transfers through the race trigger instead. |
-| KERN-2 | intake-2557, intake-2570 Stage-2 dive w1 ledger | Build a race-only symbolic executor for gfx90a AMDGCN: parse hipcc --save-temps asm, concrete thread/workgroup indices and launch params, per-byte LDS reader/writer sets between s_barrier, lgkmcnt/vmcnt waits as completion points, exec-mask lanes, wave64. ... | M5 |
+| AGENT-9 | intake-2562 Stage-2 dive w1 ledger | Copy the measurement-discipline text, not code, into the AK actor context: (a) record cache/graph/placement state and compare on the same allocation, (b) locate the limiting interval from a trace BEFORE kernel edits, (c) report the spread and do not call ... | P3 / AK-WIN-CNT-1 / AK-PROF-ATTR-1 |
+| KERN-1 | intake-2570, intake-2555 Stage-2 dive w1 ledger | Race-sensitivity mutation control for the GPU correctness gate. In a llama.cpp-experimental worktree, build 3 seeded-race HIP mutants, each deleting one __syncthreads/barrier: MMQ tile load, MMVQ partial-sum reduction, FA tile softmax. Run the existing AK ... | P11 / RVP-RACE-1 |
+| KERN-10 | intake-2570 Stage-2 dive w1 ledger | Wire a CPU race detector for routes touching threading. Build a TSAN test-backend-ops (CPU), using LLVM libomp with Archer annotations because production uses OpenMP; GGML_OPENMP=OFF would test a different threading path. Run it on the v10 anchor first. | P11 / RVP-RACE-1 |
+| KERN-11 | intake-2570, intake-2557 Stage-2 dive w1 ledger | Do not adopt upstream Volta or the Blackwell fork directly. Both are PTX/NVIDIA-only, and this host has no NVIDIA GPU. Reuse only the race model (KERN-2) and the scaffold code. | P11 / RVP-RACE-2 |
+| KERN-2 | intake-2557, intake-2570 Stage-2 dive w1 ledger | Build a race-only symbolic executor for gfx90a AMDGCN: parse hipcc --save-temps asm, concrete thread/workgroup indices and launch params, per-byte LDS reader/writer sets between s_barrier, lgkmcnt/vmcnt waits as completion points, exec-mask lanes, wave64. ... | P11 / RVP-RACE-2 |
 | KERN-3 | intake-2555 Stage-2 dive w1 ledger | Add structured edge-value input families to the AK op suite beside the AK_SENS scale transforms. Families: f16-range near-max (overflow), subnormal-scale (underflow), cancellation pairs within reduction rows, softmax rows that are all-equal or contain -inf, ... | P3 / AKX-ALL-31.EDGE |
 | KERN-4 | intake-2555, intake-2570 Stage-2 dive w1 ledger | Exhaustive bit-level decode check per served quant type (Q4_K, Q6_K, IQ2_*, IQ3_*, IQ4_XS, MXFP4). Enumerate the full per-element code space (quant codes x sub-block scale/min codes) at d/dmin in {0, subnormal, 1, f16 max}. Compare the candidate CPU (AVX-512) ... | P3 / AKX-ALL-31.QDEC |
 | KERN-5 | intake-2556 Stage-2 dive w1 ledger | Add a per-element worst-error bound next to NMSE on the GPU served-shape case set. Calibrate the anchor's max-abs error per (op, type, shape) over 5 seeds and gate on k x anchor, the way the CPU_REPACK oracle already does. | P3 / AKX-ALL-31.EDGE |
 | KERN-6 | intake-2555, intake-2556 Stage-2 dive w1 ledger | Counter-grounded planner signals. For the top-1 hotspot kernel of each GPU screen, capture a fixed, declared counter subset via rocprofv2 (from the proven 465-counter taxonomy). Attach it to the hotspots rows. Adopt TAIC's rule that each hypothesis cites a ... | P3 / RVP-CTR-1 |
-| KERN-7 | intake-2555, intake-2556 Stage-2 dive w1 ledger | Archive the hipcc AMDGCN ISA (--save-temps .s, or llvm-objdump of the code object) of the touched kernels into every AK GPU candidate record, next to the source diff and the hotspots table. | P3 / C5-ISA-1 |
-| KERN-8 | intake-2555, intake-2556 Stage-2 dive w1 ledger | GCN-Gym probe of AI lowering on gfx90a. Build a standalone harness that assembles LLM-patched AMDGCN for one compute-bound kernel (MMQ Q4_K prefill tile or FA at long context) with clang -target amdgcn-amd-amdhsa -mcpu=gfx90a, loads it via hipModuleLoad and ... | M5 |
+| KERN-7 | intake-2555, intake-2556 Stage-2 dive w1 ledger | Archive the hipcc AMDGCN ISA (--save-temps .s, or llvm-objdump of the code object) of the touched kernels into every AK GPU candidate record, next to the source diff and the hotspots table. | P11 / C5-ISA-1 |
+| KERN-8 | intake-2555, intake-2556 Stage-2 dive w1 ledger | GCN-Gym probe of AI lowering on gfx90a. Build a standalone harness that assembles LLM-patched AMDGCN for one compute-bound kernel (MMQ Q4_K prefill tile or FA at long context) with clang -target amdgcn-amd-amdhsa -mcpu=gfx90a, loads it via hipModuleLoad and ... | P11 / C5-ISA-2 |
 | KERN-9 | intake-2556 Stage-2 dive w1 ledger | Keep the AK-PL-1 prompt-leak guard. If diagnostic failure feedback (failing indices/values) is ever adopted from TAIC, generate it on a feedback seed disjoint from the acceptance seed population. | K5 |
-| LOOP-1 | intake-2547, intake-2571 Stage-2 dive w1 ledger | Add a knowledge note to the INF-70 roofline program: weight-reuse architectures. Sequential looping multiplies weight bytes per token by L, and with 32 MiB L3 per CCX (384 MiB total) a block above ~32 MiB per CCX cannot be cache-reused (e.g. a 7B 14-layer PLT ... | K2 |
-| LOOP-2 | intake-2571, intake-2547 Stage-2 dive w1 ledger | Ingest and dive LoopCoder-v2 (arXiv 2606.18023): released 7B PLT 2-loop coder (Apache-2.0, HF Multilingual-Multimodal-NLP/LoopCoder-V2, 14 layers, hidden 5120, 8 KV heads) is the first PLT checkpoint we can actually run; card claims SWE-bench Verified 43.0 -> ... | K2 |
-| LOOP-3 | intake-2547 Stage-2 dive w1 ledger | Correct the stale gate: Ouro now has a community llama.cpp port (BrandeisPatrick/loop-transformer, ouro arch, 324 added lines, PR ggml-org/llama.cpp#29823, GGUFs for Ouro 1.4B/2.6B +Thinking) built on upstream looped-model machinery merged for Nanbeige4.2 (PR ... | K2 |
-| LOOP-4 | intake-2547, intake-2551 Stage-2 dive w1 ledger | Bounded CPU probe on a llama.cpp-experimental branch with the Ouro port: Ouro-1.4B Q4_K_M (854 MB per card), llama-bench tg at num_loops 1/2/4 via --override-kv, reporting achieved GB/s counting bytes once per loop against the C0 153 GB/s ceiling. This ... | M2 |
-| LOOP-5 | intake-2551 Stage-2 dive w1 ledger | Record in reasoning-compression.md only: looped MoE R=5 at 0.3B-1.3B reaches reasoning parity with 0.6B-2.9B at 1.8x training-compute-defined inference compute while trailing Overall 46.9 vs 50.2; no latency/bytes measured; no checkpoint released in the text. | K2 |
+| LOOP-1 | intake-2547, intake-2571 Stage-2 dive w1 ledger | Add a knowledge note to the INF-70 roofline program: weight-reuse architectures. Sequential looping multiplies weight bytes per token by L, and with 32 MiB L3 per CCX (384 MiB total) a block above ~32 MiB per CCX cannot be cache-reused (e.g. a 7B 14-layer PLT ... | P10 / GPU-LOOP-1 |
+| LOOP-2 | intake-2571, intake-2547 Stage-2 dive w1 ledger | Ingest and dive LoopCoder-v2 (arXiv 2606.18023): released 7B PLT 2-loop coder (Apache-2.0, HF Multilingual-Multimodal-NLP/LoopCoder-V2, 14 layers, hidden 5120, 8 KV heads) is the first PLT checkpoint we can actually run; card claims SWE-bench Verified 43.0 -> ... | P10 / GPU-PLT-1 |
+| LOOP-3 | intake-2547 Stage-2 dive w1 ledger | Correct the stale gate: Ouro now has a community llama.cpp port (BrandeisPatrick/loop-transformer, ouro arch, 324 added lines, PR ggml-org/llama.cpp#29823, GGUFs for Ouro 1.4B/2.6B +Thinking) built on upstream looped-model machinery merged for Nanbeige4.2 (PR ... | P9 / CH-34 |
+| LOOP-4 | intake-2547, intake-2551 Stage-2 dive w1 ledger | Bounded CPU probe on a llama.cpp-experimental branch with the Ouro port: Ouro-1.4B Q4_K_M (854 MB per card), llama-bench tg at num_loops 1/2/4 via --override-kv, reporting achieved GB/s counting bytes once per loop against the C0 153 GB/s ceiling. This ... | P10 / GPU-LOOP-1 / GPU-LOOP-2 |
+| LOOP-5 | intake-2551 Stage-2 dive w1 ledger | Record in reasoning-compression.md only: looped MoE R=5 at 0.3B-1.3B reaches reasoning parity with 0.6B-2.9B at 1.8x training-compute-defined inference compute while trailing Overall 46.9 vs 50.2; no latency/bytes measured; no checkpoint released in the text. | decline: no looped-MoE checkpoint or code is released, and on the GPU looping a MoE multiplies expert byte reads rather than hiding them. |
 | LOOP-6 | intake-2546, intake-2568 Stage-2 dive w1 ledger | Monitor NCM as a drafter source: trigger = a released NCM-style generator with a general-text tokenizer sharing a served model vocabulary, or any measured acceptance rate against an AR target. Do not build now: released checkpoints are per-dataset ~100M-725M ... | M1 |
 | MEM-1 | intake-2550, intake-2574 Stage-2 dive w1 ledger | Add a deterministic one-hot RAM oracle case to the GATED_DELTA_NET tests of an EXPERIMENTAL champion-derived llama.cpp branch (tests/test-backend-ops.cpp test_gated_delta_net family, or a sibling test-gdn-ram): alpha=1 (g=0), beta=1, one-hot k and q, ... | P3 / AKX-ALL-31.GDN |
 | MEM-2 | intake-2574 Stage-2 dive w1 ledger | Add a state-level conformance check to the hybrid checkpoint/fork path: after a restore (common_prompt_checkpoint load_tgt, or KPF fork from a checkpoint) serialise the recurrent half of source and destination with llama_state_seq_get_data_ext(PARTIAL_ONLY) ... | P1 / KPF-RS-1 |
-| MEM-3 | intake-2550, intake-2574 Stage-2 dive w1 ledger | Do not pursue an in-weights calculator (compiled RISC-V/CHIP-8 layers) for the serving stack. Flag for operator review per the research-intake rule rather than closing silently. | decline: an in-weights calculator costs about 1.6 to 2 times the weight bytes per token on a bandwidth-bound host and the tool arm already matches it; operator confirmation requested. |
+| MEM-3 | intake-2550, intake-2574 Stage-2 dive w1 ledger | Do not pursue an in-weights calculator (compiled RISC-V/CHIP-8 layers) for the serving stack. Flag for operator review per the research-intake rule rather than closing silently. | decline: re-priced on the GPU, the in-weights calculator still loses: chip tokens are serial (0.5-1 s per call, median 242 s per long division on an L4), text tokens cost twice the weight bytes, and accuracy only ties a tool call; operator confirmation requested. |
 | MEM-4 | intake-2558 Stage-2 dive w1 ledger | Write scripts/vidya/cert_check.py: a standalone verifier for the gate's epyc.vidya/certificate/v1, sharing NO imports with fold.py, gate.py or lattice.py. It reads the ledger JSONL and the ratified policy file directly, re-derives pro/con grade dominance and ... | P7 / VB-CERT-1 |
 | MEM-5 | intake-2558 Stage-2 dive w1 ledger | No certificate/checker layer for scripts/handoffs/index_state.py or registry consistency checks. | decline: the handoff index check already re-derives and compares on every run, so a certificate layer adds nothing. |
 | MEM-6 | intake-2558 Stage-2 dive w1 ledger | When writing MEM-4, make the checker read and compare certificate.frontier and as_of explicitly and record in the certificate's proves-field that a certificate binds to a frontier, not to the truth of the world. | P7 / VB-CERT-1 |
-| MTP-1 | intake-2548, intake-2549 Stage-2 dive w1 ledger | Amend the DF2-DRAFTER-CAPABILITY trainer and data contract (the INF-62 record contract inherited from the cancelled DF2-QWOPUS) so the default objective is forward-KL self-distillation to the target's own teacher-forced NTP distribution rather than hard ... | P2 / DF2-DRAFTER-CAPABILITY.OBJ |
-| MTP-2 | intake-2548, intake-2549 Stage-2 dive w1 ledger | Bounded frozen-trunk probe on the Soft-MTP repo (MI210, ROCm torch, <=4 GPU-h, no llama.cpp). Take the released 167M (or 332M) NTP checkpoint, set freeze_backbone=true, and train fresh K=3 DeepSeek-style heads under two arms with identical data order, seed, ... | M1 |
+| MTP-1 | intake-2548, intake-2549 Stage-2 dive w1 ledger | Amend the DF2-DRAFTER-CAPABILITY trainer and data contract (the INF-62 record contract inherited from the cancelled DF2-QWOPUS) so the default objective is forward-KL self-distillation to the target's own teacher-forced NTP distribution rather than hard ... | P2 / DF2-FT-1 |
+| MTP-2 | intake-2548, intake-2549 Stage-2 dive w1 ledger | Bounded frozen-trunk probe on the Soft-MTP repo (MI210, ROCm torch, <=4 GPU-h, no llama.cpp). Take the released 167M (or 332M) NTP checkpoint, set freeze_backbone=true, and train fresh K=3 DeepSeek-style heads under two arms with identical data order, seed, ... | P2 / DF2-FT-1 |
 | MTP-3 | intake-2548 Stage-2 dive w1 ledger | No change to Axis E. Restoring the Qwen3.8-Flash-Next MTP head loads the published unsloth shared-Q8_0 head (no training), so the MTP-objective choice does not touch it. | K1 |
-| MTP-4 | intake-2548 Stage-2 dive w1 ledger | Record a trigger on the speculative-decoding refresh. If a served fine-tune ships with a stock (base-co-trained) MTP head, as already observed for ThinkingCap and Qwopus, the remedy is head-only re-alignment on the frozen fine-tuned trunk against its own NTP ... | M1 |
+| MTP-4 | intake-2548 Stage-2 dive w1 ledger | Record a trigger on the speculative-decoding refresh. If a served fine-tune ships with a stock (base-co-trained) MTP head, as already observed for ThinkingCap and Qwopus, the remedy is head-only re-alignment on the frozen fine-tuned trunk against its own NTP ... | P2 / DF2-FT-1 |
 | MTP-5 | intake-2548 Stage-2 dive w1 ledger | Decline adopting Soft-MTP as a pretraining objective. | decline: Soft-MTP as a pretraining objective needs trunk training, which this stack does not do. |
 | SPEC-1 | intake-2561, intake-2560 Stage-2 dive w1 ledger | DF2-LAT zero-training lattice-headroom probe. (i) Experimental build from the current champion tip, env-gated and off by default: append the 16 unary draft logits to each packed DFlash2 lattice row (src/models/dflash.cpp build_post_sampling; row is K+K*K=272 ... | P2 / DF2-LAT |
 | SPEC-2 | intake-2561 Stage-2 dive w1 ledger | DF2-PM point-mass proposal screen at production temperature. Behind an env knob in the experimental build, the DFlash2 temp>0 branch takes the argmax selector walk instead of sampling softmax(scores/T), and emits dist {id, prob 1.0} per slot. The existing ... | P2 / DF2-PM |
@@ -111,24 +126,24 @@ Minimum-rigor controls. Empirical items (DF2-12.1, DF2-LAT, DF2-PM, RVP-RACE-1, 
 | SPEC2-5 | intake-1724 Stage-2 dive w2 ledger | Answer only (no entry): the z-lab card text does not say how the DFlash2 selector (top-16, rank-256 transition score) was trained, and reports no tau gain over DFlash 1 for Qwen3.8-27B. The inco.ai blog (sha256-12 99dc56f49911) gives the selector score ... | K1 |
 | SPEECH-1 | intake-2552, intake-2554, intake-2575 Stage-2 dive w1 ledger | Bounded probe LFM3-1: build an experimental llama.cpp tree (fresh v10 + upstream b11960 audio path: PRs 31252, 30629, 30636, 31257, 31269, 31287, 31386) on CPU only first; run LFM3-Audio-2B Q8_0 ASR over the 40 pinned FLEURS clips (en/it/de/fr x10) and ... | P4 / CS-8.STT8 |
 | SPEECH-2 | intake-2552, intake-2554, intake-2575 Stage-2 dive w1 ledger | Add LFM3-Audio-2B/Omni-2B as a third challenger in the CS-8 G1/G3/G4 interlocutor bake-off: G1 en/it TTS intelligibility via llama-tts (note voice chat is English-only per card, so Italian only for TTS/ASR), G3 tool-call slot quality from speech, G4 ... | M4 |
-| SPEECH-3 | intake-2575 Stage-2 dive w1 ledger | Estimate and record forward-port cost: experimental branch from current production-consolidated-v10, merge/cherry-pick the 7 LFM3 audio PRs plus their upstream prerequisites (b10303..b11960 is 1657 builds; PR 31257 alone +2721/-160 over 31 files, 30629 +998, ... | P4 / CS-8.STT8 |
+| SPEECH-3 | intake-2575 Stage-2 dive w1 ledger | Estimate and record forward-port cost: experimental branch from current production-consolidated-v10, merge/cherry-pick the 7 LFM3 audio PRs plus their upstream prerequisites (b10303..b11960 is 1657 builds; PR 31257 alone +2721/-160 over 31 files, 30629 +998, ... | P9 / CH-32 |
 | SPEECH-4 | intake-2575 Stage-2 dive w1 ledger | Reuse the upstream /v1/realtime (OpenAI-compatible) and Voxtral-Realtime support as a CS-20 backend interface option: write a realtime client adapter in the voice controller that speaks /v1/realtime beside the whisper :9000 / qwentts :9002 cascade. | M4 |
 | SPEECH-5 | intake-2573 Stage-2 dive w1 ledger | No new STT action. Hex confirms the transcribe.cpp Parakeet Unified streaming path (Vulkan GPU only). Parakeet streaming vs whisper.cpp is already a measured-pending candidate: CS-8.STT0 40/40 CPU==GPU identity done, transcribe.cpp CPU 40-clip run 37/40 ... | K4 |
 | SPEECH-6 | intake-2573 Stage-2 dive w1 ledger | Add Parakeet Unified English (streaming, lookahead variants) as a named arm check in CS-8.STT5 if not already present, noting hex pins fork rev 7045d1c0 (transcribe.cpp 0.4.1) while our build pins db678a03; record both pins. | K4 |
 | SPEECH-7 | intake-2564 Stage-2 dive w1 ledger | Monitor Dessa for paper, weights or API; trigger = any released checkpoint or paper with benchmark numbers, then fold into the M8 full-duplex reference slot check (language gate D2 likely fails if English-only). | M4 |
-| TCAP-1 | intake-2567, intake-2572 Stage-2 dive w1 ledger | Bounded A/B: base UD-IQ4_XS (current :8074 file) vs bottlecapai ThinkingCap IQ4_XS GGUF, llama-server, same recipe qwen38-flash-next-cpu-mtp, enable_thinking=true on /v1/chat/completions, frozen 40-60 prompt set (arch/plan-critique + reasoning, AIME-style, ... | M6 |
+| TCAP-1 | intake-2567, intake-2572 Stage-2 dive w1 ledger | Bounded A/B: base UD-IQ4_XS (current :8074 file) vs bottlecapai ThinkingCap IQ4_XS GGUF, llama-server, same recipe qwen38-flash-next-cpu-mtp, enable_thinking=true on /v1/chat/completions, frozen 40-60 prompt set (arch/plan-critique + reasoning, AIME-style, ... | P8 / AMS-TCAP-1 |
 | TCAP-2 | intake-2572 Stage-2 dive w1 ledger | Record that INF-70 Axis-E "MTP needs FP8 re-download" is obsolete: head already on disk (mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf, 2.79 GB, 2026-09-02); no ThinkingCap download is needed for MTP | K1 |
-| TCAP-3 | intake-2572 Stage-2 dive w1 ledger | If A/B runs, add arm B2 = ThinkingCap trunk + our unsloth shared-Q8_0 draft file vs embedded head, measure alpha for both | M6 |
+| TCAP-3 | intake-2572 Stage-2 dive w1 ledger | If A/B runs, add arm B2 = ThinkingCap trunk + our unsloth shared-Q8_0 draft file vs embedded head, measure alpha for both | P8 / AMS-TCAP-1 |
 | TCAP-4 | intake-2567 Stage-2 dive w1 ledger | Do not pursue the vendor PRO tier or method discovery | decline: the vendor PRO tier is closed and no method is disclosed. |
-| W2KERN-1 | intake-2588 Stage-2 dive w2 ledger | Add an instruction-executed gate to the AMD kernel-authoring path: when a candidate claims a mechanism (MFMA use, LDS staging, buffer/global load width), require a rocprof instruction-mix counter or ISA-disassembly execution check on the real workload before ... | P3 / C5-ISA-1 |
+| W2KERN-1 | intake-2588 Stage-2 dive w2 ledger | Add an instruction-executed gate to the AMD kernel-authoring path: when a candidate claims a mechanism (MFMA use, LDS staging, buffer/global load width), require a rocprof instruction-mix counter or ISA-disassembly execution check on the real workload before ... | P11 / C5-ISA-1 |
 | W2KERN-2 | intake-2588 Stage-2 dive w2 ledger | Compare AK candidate generation as plain multi-turn refinement vs agent-harness mode on token cost per accepted keep (PTXBench: agent harness cost 3.3-5.1x tokens and was worse on attention). Use existing AK run logs only; no new compute. | K5 |
 | W2KERN-3 | intake-2589, intake-2588 Stage-2 dive w2 ledger | Close the verified AK gate gaps (no race detector, race_detector_id=None; no edge-value inputs; NMSE-only oracle) with a CAKE-style pre-GPU static filter tier: run the cheapest hazard/legality checks (LDS barrier ordering, wave64/exec-mask hazards from the ... | P3 / AKX-ALL-31.EDGE |
-| W2KERN-4 | intake-2589 Stage-2 dive w2 ledger | Failure-to-rule loop for AK: after each rejected batch, classify the failure reason and, when a class recurs (>=3), have an agent propose a permanent static check or oracle input, merged only under corpus tests of all prior keeps (CAKE Sec 3.2). | M5 |
+| W2KERN-4 | intake-2589 Stage-2 dive w2 ledger | Failure-to-rule loop for AK: after each rejected batch, classify the failure reason and, when a class recurs (>=3), have an agent propose a permanent static check or oracle input, merged only under corpus tests of all prior keeps (CAKE Sec 3.2). | P3 / AK-FAILRULE-1 |
 | W2KERN-5 | intake-2590 Stage-2 dive w2 ledger | Bounded probe: tool-result KV drop+shift on a pure full-attention role in llama-server, using existing llama_memory_seq_rm + seq_add (as in the streaming-llm / context-shift path), on a recorded orchestrator agent trace. Measure (a) tokens re-prefilled per ... | M3 |
 | W2KERN-6 | intake-2590 Stage-2 dive w2 ledger | Record the history-dependence correctness rule for any future KV-editing serving feature: a slot/prefix index keyed only by token prefix (src/inference/prefix_index.py) must also key on the drop/shift operation history, or mark the slot unmatchable after an ... | K3 |
 | W2KERN-7 | intake-2590 Stage-2 dive w2 ledger | Decline porting AKV server (SGLang, Rust build, softmax-attention only) as a serving path; keep as design reference only. Hybrid/linear-attention models (our main Qwen line) are unsupported by the authors and by llama.cpp seq ops. | decline: the AKV server is SGLang and softmax-only; it stays a design reference. |
-| W2LOOP-1 | intake-2585, intake-2586 Stage-2 dive w2 ledger | On an experimental llama.cpp branch freshly cut from production v10, cherry #25994 plus #29823 (about 590 added lines) and measure Ouro-1.4B Q8_0/Q4_K_M at --override-kv ouro.num_loops=int:1/2/4 on EPYC CPU (one quarter and full socket): tok/s, achieved GB/s ... | M2 |
-| W2LOOP-2 | intake-2584 Stage-2 dive w2 ledger | Monitor triggers: (a) llama.cpp or vLLM PR adding iquestpltcoder / PLT, (b) an independent replication of LoopCoder-v2 R=2 SWE-bench Verified, (c) a timing number for PLT decode. Any one fires ingest-and-dive on it. | M2 |
+| W2LOOP-1 | intake-2585, intake-2586 Stage-2 dive w2 ledger | On an experimental llama.cpp branch freshly cut from production v10, cherry #25994 plus #29823 (about 590 added lines) and measure Ouro-1.4B Q8_0/Q4_K_M at --override-kv ouro.num_loops=int:1/2/4 on EPYC CPU (one quarter and full socket): tok/s, achieved GB/s ... | P10 / GPU-LOOP-1 |
+| W2LOOP-2 | intake-2584 Stage-2 dive w2 ledger | Monitor triggers: (a) llama.cpp or vLLM PR adding iquestpltcoder / PLT, (b) an independent replication of LoopCoder-v2 R=2 SWE-bench Verified, (c) a timing number for PLT decode. Any one fires ingest-and-dive on it. | P10 / GPU-PLT-2 |
 | W2LOOP-3 | intake-2587 Stage-2 dive w2 ledger | Knowledge-only: record that our GDN graph hard-caps beta at 1 (src/models/qwen3next.cpp:417 ggml_sigmoid) matching the Qwen3.5 control that failed to generalise hidden tracking; no probe. | K2 |
 | W2LOOP-4 | intake-2585, intake-2586 Stage-2 dive w2 ledger | Correct the stale note in gpu-acceleration-path.md ~line 248 (intake-332 "Not llama.cpp compatible") to say nanbeige looped arch merged 2026-07-27 and Ouro is PR #29823 open; owning session applies. | K2 |
 | W2SP-1 | intake-2579, intake-2575 Stage-2 dive w2 ledger | Build upstream master (or tag b11960+) as a SCRATCH llama-server on llama.cpp-experimental from fresh production; run examples/realtime_client.py with LFM3-Audio-2B Q8_0 and Q4_0 on the EPYC CPU and MI210 and record first-output-after-end-of-input, with a ... | P4 / CS-8.RT1 |
@@ -147,7 +162,7 @@ Minimum-rigor controls. Empirical items (DF2-12.1, DF2-LAT, DF2-PM, RVP-RACE-1, 
 | W3DEC-8 | intake-2596, intake-2590 Stage-2 dive w3 ledger | Conditional on W3DEC-7: a bounded semantics probe on an attention-only role model on llama.cpp-experimental: compare (a) seq_rm of old tool-response cells + seq_add repositioning (the drop+repos analogue) vs (b) re-prefill of the text with those responses ... | M3 |
 | W3SPEC-1 | intake-2591 Stage-2 dive w3 ledger | Bounded probe (own scratch server, GPU correctness window, no region-lock needed per CORRECTNESS rule): on the production 27B shape (Q8_0, DFlash2 n-max 7, np 4, kv-unified, q8 KV, ROCm0) and on the frontdoor shape (Qwen3.6-35B-A3B-MTP Q8_0, draft-mtp n 4, np ... | P1 / DF2-12.1 |
 | W3SPEC-2 | intake-2591 Stage-2 dive w3 ledger | Fold the DF2-12 row and W3SPEC-1 into one run; add the frontdoor :8070 MTP np4 shape (not covered by DF2-12, which names only Qwen3.8-27B DFlash2) and the cross-content canary. | P1 / DF2-12.1 |
-| W3SPEC-3 | intake-2591 Stage-2 dive w3 ledger | If W3SPEC-1 shows divergence: reproduce on the experimental branch and try the PR #29454 approach (copy pre-ubatch state into unwritten snapshot slots every ubatch) as the candidate fix; it was never merged, so it must be carried as our own patch on a ... | M1 |
+| W3SPEC-3 | intake-2591 Stage-2 dive w3 ledger | If W3SPEC-1 shows divergence: reproduce on the experimental branch and try the PR #29454 approach (copy pre-ubatch state into unwritten snapshot slots every ubatch) as the candidate fix; it was never merged, so it must be carried as our own patch on a ... | P9 / CH-37 |
 | W3SPEC-4 | intake-2592 Stage-2 dive w3 ledger | No action on our CPU/HIP stack; note in the speculative handoff that the n_vocab-sentinel failure is Vulkan-specific and fails loudly at src/llama-batch.cpp:52 (token validation), which our tree retains. | K1 |
 | W3SPEC-x | intake-297 Stage-2 dive w3 ledger | DF2-DRAFTER-CAPABILITY input: z-lab/dflash @ 07ebd93db9f4 (2026-08-18, remote HEAD identical today) contains NO training code. 659-line dflash/model.py has only inference: CandidateSelector (selector_top_k=16 candidates per position via topk of the draft ... | K1 |
 | W4UP-1 | intake-2597, intake-2598 Stage-2 dive w4 ledger | Temp-0 np>1 token-identity probe on :8070 (MTP np4) and :8083 (DFlash2 np4): per slot compare against an np=1 cold run of the same prompt AND the same np4 server with speculation off; include (i) mixed spec/non-spec interleaving, (ii) slot reuse: slot k ... | P1 / DF2-12.1 |
@@ -155,11 +170,45 @@ Minimum-rigor controls. Empirical items (DF2-12.1, DF2-LAT, DF2-PM, RVP-RACE-1, 
 | W4UP-3 | intake-2602, intake-2601, intake-2599, intake-2600 Stage-2 dive w4 ledger | d1 decision-model screen build must include a4cb4c61fd (#29818 systemone API) and 7e3eeee048 (#30361) if H2O-Lightning-4B is screened; cbe28bb3 (#30408) only for non-causal/embedding-mode decision models at np>1; 7e8324f5 (#30100) is Metal-only and NOT needed ... | P5 / TD-23.D1 |
 | W4UP-4 | intake-2601 Stage-2 dive w4 ledger | Add a GENERIC-readout arm to TD-23 (any lineup chat model, thinking off, U+22B2 label readout) as a comparator to dedicated decision backends after the systemone base is in the screen build. | M4 |
 | W4UP-5 | intake-2602 Stage-2 dive w4 ledger | Offer/track the group-parent checkpoint fix for hybrid decision models; evaluate by prompt-token count (1254 vs 827 shape) on our model before adopting. | M4 |
+| W5FOLD-1 | intake-2599 Stage-2 wave-5 plan-revision analysis | Fold #30408 non-causal ubatch fix as a cheap champion safety fix after a defect-reproducing control | P9 / CH-33 |
+| W5FOLD-2 | intake-2600 Stage-2 wave-5 plan-revision analysis | Decline #30100 (Metal MUL_MAT+ADD fusion) for the champion | decline: the fix touches only the Metal backend; no CPU or HIP code path in our stack changes. |
+| W5FOLD-3 | intake-2601 Stage-2 wave-5 plan-revision analysis | Track draft PR #29832 as the possible replacement base for the systemone fold when it merges | P9 / CH-36 |
+| W5FOLD-4 | intake-2575, intake-2579, intake-2580 Stage-2 wave-5 plan-revision analysis | Real conflict and ggml-delta census before any audio-group cherry-pick | P9 / CH-32 |
+| W5FT-1 | intake-2548, intake-2549, intake-297 Stage-2 wave-5 plan-revision analysis | Candidate (a), the 27B DFlash2 drafter (1.9B, GGUF-verified). Capture: 5 taps + final hidden = 61,440 B/token, only for completions plus their 2,048-token window (the drafter attends a 2,048 sliding window). ~0.8-1.2M tokens = 50-75 GB. Capture runs on the ... | P2 / DF2-FT-1 |
+| W5FT-2 | intake-2548, intake-2578 Stage-2 wave-5 plan-revision analysis | Candidate (c), the frontdoor Qwen3.6-35B-A3B MTP head (blk.40: 0.845B params, of which ~0.80B are 256x experts; hidden 2048; served from the same Q8_0 file at draft_max 4). Capture the trunk pre-head hidden at every position (4,096 B/token). It is both the ... | P2 / DF2-FT-1 |
+| W5FT-3 | intake-2548, intake-2578 Stage-2 wave-5 plan-revision analysis | Candidate (b), the Qwen3.8-Flash-Next MTP head (shared-Q8_0 file: 32 tensors, 2.607B params, of which 2.517B are 512x experts; attention with a QSA indexer, top_k 2048; 4-stream hyper-connections). Capture: the hc stream state at 10,240 x bf16 = 20,480 ... | P2 / DF2-FT-1 |
+| W5FT-4 | intake-2548, intake-2549 Stage-2 wave-5 plan-revision analysis | Settle KL versus hard labels on the real served drafter (arms H and K plus a second seed in DF2-FT-1), not on the Soft-MTP 167M toy. The toy result would not transfer: different module (non-causal block drafter with a selector), different vocabulary (50,304 ... | P2 / DF2-FT-1 |
+| W5FT-5 | intake-2548 Stage-2 wave-5 plan-revision analysis | Fold MTP-4 (realign a served finetune's stock head) into a standing onboarding rule. Any served drafter or MTP head not co-trained on the exact served trunk and quant gets frozen-trunk KL re-alignment on its own traffic. That covers fine-tunes (the ... | P2 / DF2-FT-1 |
+| W5FT-6 | intake-2578 Stage-2 wave-5 plan-revision analysis | Scope SPEC2-4 (Nemotron Sec 3.4 recipe). Hidden-state sampling over earlier draft steps applies to recursive MTP heads (frontdoor, Flash-Next), not to DFlash2, which drafts its whole block in one non-causal pass from the anchor. T=2 versus T=1 is a free extra ... | P2 / DF2-FT-1 |
+| W5GPU-1 | intake-2547, intake-2571, intake-2551 Stage-2 wave-5 plan-revision analysis | Restate LOOP-1 with GPU arithmetic: loops multiply weight bytes, KV reads and FLOPs equally, so aggregate is about 1/L at every batch; batching removes only the weight term; MHA KV (768 KiB/token at 4 loops) makes Ouro-1.4B KV-bound beyond about 123 tokens of ... | P10 / GPU-LOOP-1 |
+| W5GPU-2 | intake-2585, intake-2586 Stage-2 wave-5 plan-revision analysis | Per-request num_loops (setter, graph-param/can_reuse, k-class batch split, prefix-cache rule k2<=k, k_max cache sizing) with a router-oracle decision rule. | P10 / GPU-LOOP-3 |
+| W5GPU-3 | intake-2585, intake-2547 Stage-2 wave-5 plan-revision analysis | Looped small model as reliability-boosted GPU batch worker vs equal-cost dense and majority-of-4 controls, with the incumbent worker scored for the first time on the worker battery. | P10 / GPU-LOOP-2 |
+| W5GPU-4 | intake-2584, intake-2571 Stage-2 wave-5 plan-revision analysis | Replace the LoopCoder-v2 monitor with a transformers-custom-code quality screen on the MI210 (HE+, LCB, BCB, coder suite) against Qwen3.8-27B and the CPU frontdoor. | P10 / GPU-PLT-1 |
+| W5GPU-5 | intake-2584, intake-2571 Stage-2 wave-5 plan-revision analysis | Port PLT (CLP rows, shared loop-1 KV, 64-token gated window) as a new arch on llama.cpp-experimental with HF-parity and decode-step-ratio acceptance. | P10 / GPU-PLT-2 |
+| W5GPU-6 | intake-2551 Stage-2 wave-5 plan-revision analysis | LOOP-5 re-check on the GPU: at batch above E/top_k every expert is touched each pass, so a looped MoE at R=5 reads about R x its total expert bytes (1.3B total x 5 = 6.5 GB vs 2.9B x 1 = 2.9 GB for a quality of 46.9 vs 50.2 Overall); GPU does not reverse the ... | decline: no looped-MoE checkpoint or code is released; reopen on a weights release. |
+| W5GPU-7 | intake-2550, intake-2574 Stage-2 wave-5 plan-revision analysis | MEM-3 re-priced on the MI210 instead of the CPU: text tokens cost 18.7 GB / (1433 GB/s x 0.715 fp16 attainment) = 18 ms vs 9 ms for the 9.3 GB base (L4 check: 18.7/0.30 = 62 ms vs the 68 ms the author reports); chip tokens are serial and autoregressive, ... | decline: same GPU re-pricing as the calculator row; serial chip tokens dominate on any device. |
+| W5GPU-8 | intake-2546, intake-2568 Stage-2 wave-5 plan-revision analysis | LOOP-6 re-check: the monitor was never CPU-bandwidth based; the constraints are a per-dataset VQ tokenizer at about 100M-725M parameters with no served-vocabulary checkpoint, finest level (the first token) generated last, and no acceptance number against an ... | decline: no NCM checkpoint shares a served vocabulary and no acceptance number exists; reopen on such a release. |
+| W5GPU-9 | intake-2587 Stage-2 wave-5 plan-revision analysis | W2LOOP-3 re-check: GDN beta cap is a monitorability finding with no GPU lever; unchanged. | decline: a single-task, few-seed result with no performance lever on either device. |
+| W5META-1 | intake-2563 Stage-2 wave-5 plan-revision analysis | Anchor mark written only by a script, plus cross-paste check, for fabricated citations | P12 / ID-RI-ANCHOR-GATE |
+| W5META-10 | intake-2562 Stage-2 wave-5 plan-revision analysis | Summed vs active-union vs critical-path attribution and no cross-run subtraction | P3 / AK-PROF-ATTR-1 |
+| W5META-11 | intake-2562 Stage-2 wave-5 plan-revision analysis | Resin vs Annex K / AK loop (Resin cite = docs/benchmarks.md, optimize-resin-performance SKILL.md; ours = measurement/protocols/kernel-research.md, bench-cpu.md, gpu-cross-device.md) / noise floor: Resin none (qualitative 'show the spread') vs ours A/A p95 phi ... | P3 / AK-WIN-CNT-1 / AK-PROF-ATTR-1 |
+| W5META-2 | intake-2563 Stage-2 wave-5 plan-revision analysis | Pin lane revision per citation and emit stale_epoch for changed files, for stale clones | P12 / ID-RI-LANE-HEAD |
+| W5META-3 | intake-2563 Stage-2 wave-5 plan-revision analysis | Script-formed stage write grant checked by main, replacing self-reported audit lines | P12 / ID-RI-STAGE-GUARD |
+| W5META-4 | intake-2563 Stage-2 wave-5 plan-revision analysis | Closed decline-reason vocabulary so no actionable is closed by a free-text reason | P12 / ID-RI-DECLINE-VOCAB |
+| W5META-5 | intake-2563 Stage-2 wave-5 plan-revision analysis | Typed capability interfaces for dive subagents | decline: the dive return schema plus the per-claim second reader already give typed, checked outputs. |
+| W5META-6 | intake-2563 Stage-2 wave-5 plan-revision analysis | Durable append-only run records | decline: session resume already exists in the skill and the plan checkpoint carries the durable record. |
+| W5META-7 | intake-2563 Stage-2 wave-5 plan-revision analysis | Policy-gated self-modification of the skill | decline: Octopus gates on path coverage only and itself says on-contract behaviour is not proven, so it adds nothing to plan review. |
+| W5META-8 | intake-2563 Stage-2 wave-5 plan-revision analysis | Unverified ids | decline: the intake id resolver and the vidya citation gate already catch dangling ids. |
+| W5META-9 | intake-2562 Stage-2 wave-5 plan-revision analysis | In-window path/compile counters missing from Annex K record grammar | P3 / AK-WIN-CNT-1 |
+| W5VERIF-1 | intake-2570, intake-2557 Stage-2 wave-5 plan-revision analysis | Record the race/deadlock/equivalence coverage matrix per hot gfx90a kernel family (v10 code-object counts and source anchors in this file header) in rocm-verify-profile-backend.md beside RVP-RACE-2, so later scoping cites measured coverage, not the paper ... | P11 / RVP-RACE-2 |
+| W5VERIF-2 | intake-2570 Stage-2 wave-5 plan-revision analysis | Equivalence-port decision: decline for bit-level quant kernels on coverage (1116/1497 AK GPU experiment rows); a seeded sub-tolerance mutant probe decides the FA/GDN/mmvf subclass. | P11 / RVP-EQV-1 |
+| W5VERIF-3 | intake-2570 Stage-2 wave-5 plan-revision analysis | Fix the RVP-RACE-1 decision rule (>=1 of 20 passes is a miss, not all 20), add waves-per-WG and ISA s_barrier-delta controls, add the LDS-DMA site, and make its mutants RVP-RACE-2 fixtures rather than its trigger. | P11 / RVP-RACE-1 |
+| W5VERIF-4 | intake-2570, intake-2557 Stage-2 wave-5 plan-revision analysis | Level choice for the gfx90a checker is AMDGCN ISA from the built code object, not LLVM IR or HIP source: IR lacks waitcnts and the inline-asm semantics the AMD hot paths rely on, and cannot see ISA-edited (C5-ISA-2) candidates. | P11 / RVP-RACE-2 |
 | PRE-2545 | intake-2545 Stage-1 preliminary actionable | Identify the STT model/runtime from the linked GitHub repo (expansion seed) before scoring for the speech lane. | K4 |
 | PRE-2546 | intake-2546 Stage-1 preliminary actionable | Read the paper (expansion seed arXiv 2610.14162) and judge whether coarse-to-fine parallel generation has a drafter or non-AR serving role for EPYC. | M1 |
-| PRE-2547 | intake-2547 Stage-1 preliminary actionable | Dive: decide whether looped/parallel-loop decoding changes bytes-per-token on bandwidth-bound CPU decode, and whether any served or candidate model is looped. | K2 |
-| PRE-2548 | intake-2548 Stage-1 preliminary actionable | Dive: verify Table 2 and decide whether Soft-MTP is the objective to use if we train or restore MTP heads (Flash-Next Axis E, drafter training). | P2 / DF2-DRAFTER-CAPABILITY.OBJ |
-| PRE-2549 | intake-2549 Stage-1 preliminary actionable | Dive with intake-2548: check the loss implementation and whether it composes with head-only training on a frozen trunk. | P2 / DF2-DRAFTER-CAPABILITY.OBJ |
+| PRE-2547 | intake-2547 Stage-1 preliminary actionable | Dive: decide whether looped/parallel-loop decoding changes bytes-per-token on bandwidth-bound CPU decode, and whether any served or candidate model is looped. | P10 / GPU-LOOP-1 |
+| PRE-2548 | intake-2548 Stage-1 preliminary actionable | Dive: verify Table 2 and decide whether Soft-MTP is the objective to use if we train or restore MTP heads (Flash-Next Axis E, drafter training). | P2 / DF2-FT-1 |
+| PRE-2549 | intake-2549 Stage-1 preliminary actionable | Dive with intake-2548: check the loss implementation and whether it composes with head-only training on a frozen trunk. | P2 / DF2-FT-1 |
 | PRE-2550 | intake-2550 Stage-1 preliminary actionable | Dive: separate the transferable mechanism (exact GDN-state addressing) from the demo; decide if it informs GDN-hybrid serving or memory work. | P3 / AKX-ALL-31.GDN |
 | PRE-2551 | intake-2551 Stage-1 preliminary actionable | Dive: check whether looped MoE trades weight bytes for compute in a way that suits bandwidth-bound EPYC decode. | K2 |
 | PRE-2552 | intake-2552 Stage-1 preliminary actionable | Dive: establish the actual llama.cpp audio path and whether it can replace or augment the whisper.cpp + qwentts.cpp cascade on EPYC/MI210. | P4 / CS-8.STT8 |
@@ -167,25 +216,25 @@ Minimum-rigor controls. Empirical items (DF2-12.1, DF2-LAT, DF2-PM, RVP-RACE-1, 
 | PRE-2554 | intake-2554 Stage-1 preliminary actionable | Dive: verify the llama.cpp realtime speech-server path and which ggml generation it needs relative to the frozen kernel set. | M4 |
 | PRE-2555 | intake-2555 Stage-1 preliminary actionable | Dive: extract the loop design and the verified-vs-numeric gap; map onto the AK candidate gate and gfx90a/x86 targets. | P3 / AKX-ALL-31.EDGE |
 | PRE-2556 | intake-2556 Stage-1 preliminary actionable | Dive with intake-2555: read the loop and trace layout for AK reuse. | P3 / RVP-CTR-1 |
-| PRE-2557 | intake-2557 Stage-1 preliminary actionable | Dive: decide what an equivalence/race checker would add to the AK correctness gate on gfx90a and x86. | P3 / RVP-RACE-1 |
+| PRE-2557 | intake-2557 Stage-1 preliminary actionable | Dive: decide what an equivalence/race checker would add to the AK correctness gate on gfx90a and x86. | P11 / RVP-RACE-1 |
 | PRE-2558 | intake-2558 Stage-1 preliminary actionable | Dive: test whether the certificate-plus-independent-checker pattern fits belief-kernel derivations or registry/handoff consistency checks. | P7 / VB-CERT-1 |
 | PRE-2559 | intake-2559 Stage-1 preliminary actionable | Dive: decide whether cache-level handoff between our role models is feasible in llama.cpp and what it would save over text handoff. | M3 |
 | PRE-2560 | intake-2560 Stage-1 preliminary actionable | Dive with intake-2561: read the corrector implementation to size a llama.cpp port onto the DFlash2 drafter path. | P2 / DF2-LAT |
 | PRE-2561 | intake-2561 Stage-1 preliminary actionable | Dive: measure-first design — top-K coverage of the verifier token on our DFlash2 drafter logits decides whether a corrector is worth porting. | P2 / DF2-LAT |
-| PRE-2562 | intake-2562 Stage-1 preliminary actionable | Dive: read the architecture docs and the optimize-performance skill; extract what transfers to AK loops or llama.cpp serving. | K3 |
-| PRE-2563 | intake-2563 Stage-1 preliminary actionable | None beyond architectural context; no measured result. | decline: a research-preview agent OS with no measurements and no touchpoint in the serving stack. |
+| PRE-2562 | intake-2562 Stage-1 preliminary actionable | Dive: read the architecture docs and the optimize-performance skill; extract what transfers to AK loops or llama.cpp serving. | P3 / AK-WIN-CNT-1 |
+| PRE-2563 | intake-2563 Stage-1 preliminary actionable | None beyond architectural context; no measured result. | P12 / ID-RI-ANCHOR-GATE |
 | PRE-2564 | intake-2564 Stage-1 preliminary actionable | Dive (light): confirm availability and what is technically claimed; compare with full-duplex designs in the conversation-stack lane. | M4 |
 | PRE-2565 | intake-2565 Stage-1 preliminary actionable | Dive: map the folding criteria onto the orchestrator REPL/agent loop (roles as subagents vs skills) and its tool count. | P6 / RI-25 |
 | PRE-2566 | intake-2566 Stage-1 preliminary actionable | None: KB retrieval is ColBERT MaxSim; synthetic-only evidence. | decline: synthetic single-machine retrieval evidence, and KB retrieval uses ColBERT MaxSim, not cosine stores. |
-| PRE-2567 | intake-2567 Stage-1 preliminary actionable | Dive: verify the table, check the HF card (quant/MTP head) and decide a same-recipe token-count and accuracy probe on our harness. | M6 |
+| PRE-2567 | intake-2567 Stage-1 preliminary actionable | Dive: verify the table, check the HF card (quant/MTP head) and decide a same-recipe token-count and accuracy probe on our harness. | P8 / AMS-TCAP-1 |
 | PRE-2568 | intake-2568 Stage-1 preliminary actionable | Dive with intake-2546. | M1 |
 | PRE-2569 | intake-2569 Stage-1 preliminary actionable | Dive with intake-2561: sequential corrector baseline that DCOCO claims to beat under concurrency. | P2 / DF2-LAT |
-| PRE-2570 | intake-2570 Stage-1 preliminary actionable | Dive: decide what a sound equivalence gate would need on gfx90a/x86 and which AK candidate classes it could cover. | P3 / RVP-RACE-1 |
-| PRE-2571 | intake-2571 Stage-1 preliminary actionable | Dive with intake-2547. | K2 |
-| PRE-2572 | intake-2572 Stage-1 preliminary actionable | Dive: verify config (qwen4_exp, MTP layers), whether the GGUFs carry nextn tensors, and fit against the INF-70 Axis-E MTP restoration need. | M6 |
+| PRE-2570 | intake-2570 Stage-1 preliminary actionable | Dive: decide what a sound equivalence gate would need on gfx90a/x86 and which AK candidate classes it could cover. | P11 / RVP-RACE-1 |
+| PRE-2571 | intake-2571 Stage-1 preliminary actionable | Dive with intake-2547. | P10 / GPU-LOOP-1 |
+| PRE-2572 | intake-2572 Stage-1 preliminary actionable | Dive: verify config (qwen4_exp, MTP layers), whether the GGUFs carry nextn tensors, and fit against the INF-70 Axis-E MTP restoration need. | P8 / AMS-TCAP-1 |
 | PRE-2573 | intake-2573 Stage-1 preliminary actionable | Dive: decide whether transcribe.cpp Parakeet streaming is a candidate STT against frozen whisper.cpp; check what the index already holds on transcribe.cpp. | K4 |
 | PRE-2574 | intake-2574 Stage-1 preliminary actionable | Dive with intake-2550. | P3 / AKX-ALL-31.GDN |
-| PRE-2575 | intake-2575 Stage-1 preliminary actionable | Dive: locate the llama.cpp code for the audio/realtime path and estimate the port onto llama.cpp-experimental; check ggml generation vs the speech kernel set. | P4 / CS-8.STT8 |
+| PRE-2575 | intake-2575 Stage-1 preliminary actionable | Dive: locate the llama.cpp code for the audio/realtime path and estimate the port onto llama.cpp-experimental; check ggml generation vs the speech kernel set. | P9 / CH-35 |
 | PRE-2576 | intake-2576 Stage-1 preliminary actionable | Dive with intake-2559. | M3 |
 
 ## Handoff edits (Stage 4, after approval)
@@ -198,8 +247,8 @@ Each owner gets one appended section with the heading below. Checkbox lines are 
 ### Research intake 2026-10-31 — ws58 batch (intake-2545..2602)
 
 - [ ] **C5-ISA-1 — Archive the AMDGCN ISA of every AK GPU candidate and check the claimed instructions executed (intake-2555#record, intake-2588#record).** Store the hipcc --save-temps .s (or llvm-objdump of the code object) of each touched kernel in the candidate record next to its source diff. When a candidate claims a mechanism (MFMA, LDS staging, buffer loads), confirm in the ISA, and with a rocprof instruction counter where one exists, that the instruction executes on the measured path; a candidate whose claimed instruction is absent is refused.
+- [ ] **C5-ISA-2 — GCN-Gym: LLM-edited AMDGCN for a compute-bound gfx90a kernel whose limiter is register allocation (intake-2555#record, intake-2556#record).** Not trigger-gated, because the HIP-source levers on the target are measured out: AK-MMQ-H10 (J-cap) NEGATIVE, the ak-27b-gpu-verify stream-k MMQ hypotheses were all refused or retired, and the ROCm 6.2 AGPR copy tax and MMQ spills are compiler-side (INF03-REGAUDIT-1: Q8_0 J=64 at 256 VGPR with 37 spills; MMA-FA DKQ>=192 at 512 VGPR with hundreds of reloads per iteration). Build a standalone harness (1-2 weeks). Extract the gfx90a .s of one kernel from an experimental v10-tip build via gfx90a_isa_audit.py; let the agent edit it with unified-diff patch tools; reassemble with clang -target amdgcn-amd-amdhsa -mcpu=gfx90a; load with hipModuleLoad; replay the served-shape launches (the RVP-RACE-2 capture shim); diff-test against the hipcc kernel with the AK oracle (host-double for Q8_0); require gfx90a_isa_audit.py diff to exit 0, and the RVP-RACE-2 verdict once M2 lands. Target 1: MMQ Q8_0 J=64 prefill tile. Target 2: MMA-FA DKQ>=192. Run 3 runs per target at a fixed declared token budget on a frozen shape manifest; time on the GPU window with ABBA (>=2 pairs) against the hipcc incumbent, keeping per-run raw candidate .s, oracle outputs and timings. Decision rule: if >=1 of 3 runs on a target reaches >=1.05x kernel time at the served prefill shape, passes the oracle, and its ABBA intervals do not overlap the incumbent, open an experimental-tree code-object override path for that kernel as an ISA-rung AK arm; otherwise record the null with traces and stop the ISA rung for that kernel class.
 - *Intake knowledge note, K5, row KERN-9 (intake-2556#record):* Keep the AK-PL-1 prompt-leak guard. If diagnostic failure feedback (failing indices/values) is ever adopted from TAIC, generate it on a feedback seed disjoint from the acceptance seed population.
-- *Intake trigger record (no checkbox until it fires), M5, row KERN-8 (intake-2555#record, intake-2556#record):* GCN-Gym probe of AI lowering on gfx90a. Build a standalone harness that assembles LLM-patched AMDGCN for one compute-bound kernel (MMQ Q4_K prefill tile or FA at long context) with clang -target amdgcn-amd-amdhsa -mcpu=gfx90a, loads it via hipModuleLoad and ...
 ```
 
 ### `handoffs/active/agentic-serving-harness-fixes.md` — append at the end of the file
@@ -215,7 +264,7 @@ Each owner gets one appended section with the heading below. Checkbox lines are 
 ```markdown
 ### Research intake 2026-10-31 — ws58 batch (intake-2545..2602)
 
-- *Intake trigger record (no checkbox until it fires), M6, row TCAP-1 (intake-2567#record, intake-2572#record):* Bounded A/B: base UD-IQ4_XS (current :8074 file) vs bottlecapai ThinkingCap IQ4_XS GGUF, llama-server, same recipe qwen38-flash-next-cpu-mtp, enable_thinking=true on /v1/chat/completions, frozen 40-60 prompt set (arch/plan-critique + reasoning, AIME-style, ...
+- [ ] **AMS-TCAP-1 — A/B a thinking-on effort mode for architect_general with ThinkingCap-Qwen3.8-Flash-Next (intake-2567#record, intake-2572#record, intake-2577#record).** Thinking is off for every Flash-Next role today because the base model fell into degenerate think loops (this handoff, prep finding 4; registry reasoning_policy_observation: reasoning auto gave 0/4 final answers). A finetune that shortens thinking is therefore a candidate higher-effort mode, not a curiosity. Download the bottlecapai ThinkingCap IQ4_XS GGUF (95.5 GB; one download at a time, disk checked first) and run three arms on llama-server with the qwen38-flash-next-cpu-mtp recipe: A base UD-IQ4_XS thinking off (production), B base thinking on, C ThinkingCap thinking on, plus C2 = ThinkingCap trunk with our shared-Q8_0 MTP head versus its embedded head. Frozen 40-60 prompt set (architect planning and critique, AIME-style reasoning, about 15 tau2-style agentic turns), at least 4 seeds, paired by prompt; record accuracy, thinking and answer tokens, the degenerate-loop and truncation rate, MTP alpha, and llama-bench pp/tg in one alternating window. Decision rule: propose a thinking-on effort mode (an operator-signed stack change) only if arm C beats arm A on the reasoning family with a paired 95% lower bound above 0, has degenerate or truncated thinking on at most 1% of requests, uses at most 60% of arm B's median thinking tokens, and keeps alpha within 0.03 of base; otherwise record the null and keep thinking off.
 ```
 
 ### `handoffs/active/autokernel-all-devices-all-dimensions.md` — append at the end of the file
@@ -226,6 +275,19 @@ Each owner gets one appended section with the heading below. Checkbox lines are 
 - [ ] **AKX-ALL-31.EDGE — Edge-value input families and a per-element worst-error bound beside NMSE (intake-2555#record, intake-2588#record, intake-2589#record).** Extend the AKX-ALL-31 gate chain, on both legs, with structured input families beyond uniform [-1,1] and the four scale transforms: near-max values that overflow f16 accumulation, subnormal-scale values, catastrophic-cancellation rows, and per-tile constant blocks. Add a per-element maximum absolute error next to the aggregate NMSE on the served-shape case set, calibrated per (op, type, shape) from the v10 anchor over 5 seeds, so a fault confined to one tile or row cannot hide in the aggregate. Each family gets a seeded-defect twin (a mutant that corrupts one tile, or one row) that must go red. Reuse the AKX-ALL-29.5 guard bands; no new framework.
 - [ ] **AKX-ALL-31.QDEC — Exhaustive code-space decode check per served quant type (intake-2555#record).** For Q4_K, Q6_K, Q8_0, IQ2_*, IQ3_*, IQ4_XS and MXFP4, enumerate every per-element code together with every scale and min value that occurs in the served GGUFs, decode through the CPU and HIP dequant paths, and compare bit-for-bit with a scalar reference. First report how much of the code space the current random suite reaches; bit-level dequant is exactly the class an equivalence checker cannot prove, so enumeration is the sound substitute.
 - [ ] **AKX-ALL-31.GDN — Deterministic one-hot GATED_DELTA_NET state oracle (intake-2574#record, intake-2550#record).** Add a test-backend-ops case on an experimental champion-derived branch that drives the delta rule with gate held at 1, beta at 1 and one-hot keys, so each step overwrites exactly one state row and a one-hot query must read back that row; compare against the closed-form result. Cover CPU f32, gfx90a f32 and BF16 state, and K > 1 snapshot slots. The current cases only compare backends on random data, which cannot detect a shared indexing error.
+```
+
+### `handoffs/active/autokernel-champion-aggregate.md` — append at the end of the file
+
+```markdown
+### Research intake 2026-10-31 — ws58 batch (intake-2545..2602)
+
+- [ ] **CH-32 — Upstream-delta fold census: dry-run merge of upstream tip into the champion C5 (c72ec82f5) to replace the PR line counts with real conflict and ggml-generation numbers (intake-2575#record, intake-2579#record, intake-2593#record, intake-2585#record, intake-2599#record).** Immediately, no compute: git fetch the upstream remote into the llama.cpp object store (no checkout, no branch move, production tree and champion ref untouched), then for each fold group (A cbe28bb3 non-causal ubatch; B b77d646751 Nanbeige4.2 plus Ouro #29823 head; C a4cb4c61fd + 7e3eeee048 systemone/H2O; D 30629, 30636, 31252, 31257, 31269, 31287, 31386, 31283 audio/LFM3/realtime) run git merge-tree --write-tree against c72ec82f5 and record per group files changed, conflicted hunks per file (expect tools/server/server-context.cpp, src/llama-context.cpp, src/llama-model.cpp), whether the group needs ggml ops or a ggml bump beyond v10 lineage (diff ggml/ include list), and the minimal prerequisite commit chain (b10303..b11960 is 1657 builds). Output table lands in docs/reference/kernel-manifests/llama-v11-manifest.md as pending-fold rows with a presence gate each (ancestry check), per README rule 4. Controls: frozen base sha, per-group raw merge-tree output kept, full group list, predeclared rule: a group with more than 3 conflicted files in server/ or any conflict in ggml-cpu, iqk or speculative code is cut by hand on a fresh experimental branch from C5 rather than cherry-picked in bulk.
+- [ ] **CH-33 — Fold the non-causal multi-sequence ubatch fix (upstream #30408, cbe28bb3cb, +7/-7 over src/llama-batch.h, llama-context.cpp, llama-kv-cache.cpp, llama-kv-cache-iswa.cpp, llama-memory.h) into the champion as a safety fix (intake-2599#record, intake-2595#record).** Value: any bidirectional/embedding or decision model served at np>1 can currently have a request split across ubatches so answers change with the co-batched companions; the EmbeddingGemma 2 fold (REPL-EMB-2.6) and any d1 decision model are the consumers. Immediately (cheap, safety): fresh branch experimental/champion-c7-nonc-ubatch from the CURRENT champion tip, cherry-pick cbe28bb3cb, build CPU+HIP store images, gates: (a) non-causal batch-invariance, EmbeddingGemma 2 BF16 embeddings for one request alone vs co-batched at np 3 with shorter, longer and identical companions, unfixed C5 as the control (must reproduce the defect or the task records that no champion consumer is affected), fixed build must agree within 1e-3 cosine-distance of solo; (b) causal decode untouched: Q38FN and 27B DFlash2 greedy identity vs C5 on the fold_gate.py slice; (c) fold_gate.py expects libllama.so only. Rule: fold if (b) identical and (a) fixed or defect absent; manifest row V11 pending-to-in with ancestry presence gate.
+- [ ] **CH-34 — Looped-model support fold group: Nanbeige4.2 (#25994 merged, b77d646751, +265/-1, 10 files incl. new src/models/nanbeige.cpp) plus Ouro (#29823, open, ~324 added lines, head sha to be pinned from the CH-32 fetch) (intake-2586#record, intake-2585#record, intake-2547#record).** Value: unblocks the looped-probe lane (GPU-LOOP-1: tg at ouro.num_loops 1/2/4, GB/s per effective token on EPYC; HIP run on MI210) without a hand port; files are disjoint from AK kernels, iqk and DFlash2 so expected cost is low. Immediately cut branch experimental/champion-plus-looped-arch from the current champion tip (fresh-tip rule), cherry-pick both, build CPU plus HIP store images, gates: test-llama-archs and the new-arch smoke load, no-regression greedy identity on Q38FN and one dense model vs champion, linkage proof. Fold decision is gated on the GPU-LOOP-1 probe: fold into the champion if Ouro-1.4B or Nanbeige4.2 runs coherent and the probe is not rejected on the predeclared tok/s-per-quality rule; otherwise keep the branch as the probe instrument and record the exclusion reason in the manifest. Open PR is not a block: the branch carries our own cherry-pick and is rebased when the PR merges.
+- [ ] **CH-35 — Speech/omni fold group: mtmd_audio_stream + Voxtral realtime (#30629, 2851b3bcbf, +998/-20, 27 files in tools/mtmd), realtime transcription API (#30636, 1242be66f6, +512/-14, 9 files, server-context.cpp +316), LFM3 arch (#31252), LFM3 audio+omni (#31257, +2721/-160, 31 files), /v1/realtime conversation (#31269, +1423) with tool calls (#31287), codec quant (#31386), video (#31283) (intake-2575#record, intake-2579#record, intake-2580#record, intake-2552#record).** Value: serves LFM3-Audio/Omni and Voxtral Realtime end to end from the champion server for CS-8 STT/interlocutor arms and CS-20/CS-22 realtime; the speech kernels (whisper.cpp, qwentts.cpp) are separate trees and unaffected. Cost: the biggest group; conflicts concentrated in tools/server/server-context.cpp (champion already +593 vs v10) and src/llama-model.cpp; mtmd is new surface the champion has not touched; ggml delta from CH-32. Stage 1 immediately: build the scratch upstream audio build of CS-8.STT8 (instrument, not the fold). Stage 2 gated on CS-8.STT8 (paired bootstrap WER not above +1.0 pp vs whisper in en and it) or CS-8.RT1 (realtime first-output latency beats the cascade on the 20 frozen utterances): then cut experimental/champion-plus-lfm3-audio from the current champion tip, apply the PR chain in merge order, resolve server-context.cpp by hand, rebuild CPU+HIP, gates: Q38FN/27B greedy identity vs champion (server changes must not move text decode), CS-8.STT8 WER reproduced on the folded binary within bootstrap CI of the scratch build, np>1 safety rerun of DF2-12.1. If STT8 and RT1 both fail the rule the group is recorded EXCLUDED with numbers.
+- [ ] **CH-36 — Decision-endpoint fold group: /v1/systemone (#29818, a4cb4c61fd, +2139/-15, 35 files, new server-decision.cpp 681 lines, server-context.cpp +210) and H2O-Lightning-4B (#30361, 7e3eeee048, +478/-15), depends on CH-33 and the LFM3 arch commits of CH-35 (intake-2593#record, intake-2582#record, intake-2602#record, intake-2601#record).** Value: gives TD-23 the missing local compact decision backend (d1-2B/3B, H2O-Lightning). Not for production fold until measured: the scratch build used by TD-23.D1 is the instrument. Gate for the fold: TD-23.D1 parity gate (BF16 vs Q8_0 on CPU and HIP, no argmax flip, probability difference not above 2.2e-2) and batch-invariance gate (np 1 vs np 3, 1e-3) both pass and d1-2B Q8_0 beats the constrained incumbent on the sealed row-pinned workload. If it passes: cut experimental/champion-plus-systemone from the current tip, resolve server-context.cpp by hand, add the np1 pin (hybrid-prefix re-read, issue 31475) to the launch recipe, gates as CH-35 plus TD-23.D1 rerun on the folded binary. Draft PR #29832 (model-agnostic systemone) merging upstream is the external event that would replace a4cb4c61fd as the base; until then the merged #29818 is used. #30100 is Metal-only and declined with that reason.
+- [ ] **CH-37 — Recurrent-state / np>1 slot-contamination fix fold, gated on DF2-12.1 (intake-2597#record, intake-2598#record, intake-2591#record).** Already in the champion: #28123 rollback port 0771238438 (ancestor of C5 and C6 verified read-only). Open exposure: issues 26695 (seq_rm true without recurrent-state restore) and 28019 (multi-seq split replay corrupts rs when rollback enabled) plus the CH-31-DEF1 batched-decode divergence. Immediately: confirm by reading src/llama-memory-recurrent.cpp on C5 whether the 26695 and 28019 fix commits (find them with git log --grep on the fetched upstream) are ancestors; record the answer in the manifest. If DF2-12.1 (temp-0 cross-slot token identity at np 4 on :8083 and :8070 shapes) shows any divergence, this task becomes the fix: cherry-pick the upstream fixes onto a fresh branch from the champion tip, rerun DF2-12.1 as the gate (zero divergent tokens over the frozen set versus np 1) plus Q38FN greedy identity. If DF2-12.1 is clean, the manifest row records the ancestry check and the task closes.
 ```
 
 ### `handoffs/active/autokernel-orchestrator-actor-backend.md` — append at the end of the file
@@ -241,7 +303,16 @@ Each owner gets one appended section with the heading below. Checkbox lines are 
 ```markdown
 ### Research intake 2026-10-31 — ws58 batch (intake-2545..2602)
 
-- *Intake trigger record (no checkbox until it fires), M5, row W2KERN-4 (intake-2589#record):* Failure-to-rule loop for AK: after each rejected batch, classify the failure reason and, when a class recurs (>=3), have an agent propose a permanent static check or oracle input, merged only under corpus tests of all prior keeps (CAKE Sec 3.2).
+- [ ] **AK-FAILRULE-1 — Turn recurring AK rejection reasons into pre-GPU rules from existing records (intake-2589#record, intake-2588#record).** Zero inference: classify every rejected candidate in the existing CPU and GPU campaign stores by failure reason (compile, correctness gate and which gate, timing loss, noise, harness error). For each reason class with at least 3 occurrences, draft a cheap static or pre-GPU check (CAKE-style hazard filter) and replay it over the historical candidates. Adopt a rule only if it would have rejected at least one historical failure before GPU time and no historical keep.
+```
+
+### `handoffs/active/autokernel-research-loop.md` — append at the end of the file
+
+```markdown
+### Research intake 2026-10-31 — ws58 batch (intake-2545..2602)
+
+- [ ] **AK-WIN-CNT-1 — Record in-window path counters beside every T1/T2 timing record (intake-2562#record).** Annex K's record grammar (`measurement/protocols/kernel-research.md` "Record grammar") has no field proving the timed window ran the intended path; T0 checks a dispatch trace but T1/T2 do not re-prove it. Resin keeps `graph_counts` and `overlap_counts` that exclude warmup and checks no JIT compile after warmup for unseen shapes. Do: capture hipGraph replay count vs eager launches and code-object load/JIT events inside the timed window on MI210 (use an in-process counter in a llama.cpp-experimental branch if none exists; the port is the build cost), write them as a non-gating diagnostic sidecar next to the raw samples, and draft the Annex K grammar amendment (human-amendment-only) making a path mismatch a VOID window. Controls: frozen anchor and one candidate, degraded-negative with graphs disabled (counter must show zero replays), A/A, per-window raw counters kept. Decision rule: sidecar ships if the degraded-negative is flagged and A/A is not; amendment text goes to the operator package.
+- [ ] **AK-PROF-ATTR-1 — Add GPU-active-union and a cross-run-subtraction lint to the profile report (intake-2562#record).** `scripts/kernel_rnd/autokernel/profile_report.py` / `profile_context.py` report `kernel_wall_share` and overlap tables but no GPU-active union versus summed kernel time. Resin's skill states overlapping kernel work is not additive and "Engine minus GPU timing is unattributed time ... do not subtract different profiler and benchmark runs" (optimize-resin-performance SKILL.md). Do: emit summed duration, active-union and critical-path per trace, and reject a derived "unattributed" figure built from two runs. Controls: a synthetic overlapping-kernel trace (sum greater than union), the hash-bound rocprofv2 trace already replayed in this handoff (~L444), a two-run subtraction negative. Decision rule: union less than sum on the synthetic case, existing wall-share values unchanged on the replayed trace, negative rejected.
 ```
 
 ### `handoffs/active/context-folding-progressive.md` — append at the end of the file
@@ -277,13 +348,7 @@ Each owner gets one appended section with the heading below. Checkbox lines are 
 
 - [ ] **G2-CONC.MP — Add a simultaneous multi-prefill arm to the G2-CONC promotion gate (intake-2577#record).** For every speculative recipe on the promotion candidate binary: c in {2, 3, 5} equal-length prompts that differ only by a salt, issued at the same instant, temp 0, speculation on and off, each output compared token for token with a solo np-1 run. The vLLM defect on the same model family corrupted state only when two or more prompts prefilled in one scheduler step, which a staggered concurrency test never exercises.
 - *Intake knowledge note, K1, row TCAP-2 (intake-2572#record):* Record that INF-70 Axis-E "MTP needs FP8 re-download" is obsolete: head already on disk (mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf, 2.79 GB, 2026-09-02); no ThinkingCap download is needed for MTP
-- *Intake knowledge note, K2, row LOOP-1 (intake-2547#record, intake-2571#record):* Add a knowledge note to the INF-70 roofline program: weight-reuse architectures. Sequential looping multiplies weight bytes per token by L, and with 32 MiB L3 per CCX (384 MiB total) a block above ~32 MiB per CCX cannot be cache-reused (e.g. a 7B 14-layer PLT ...
-- *Intake knowledge note, K2, row LOOP-2 (intake-2547#record, intake-2571#record):* Ingest and dive LoopCoder-v2 (arXiv 2606.18023): released 7B PLT 2-loop coder (Apache-2.0, HF Multilingual-Multimodal-NLP/LoopCoder-V2, 14 layers, hidden 5120, 8 KV heads) is the first PLT checkpoint we can actually run; card claims SWE-bench Verified 43.0 -> ...
-- *Intake knowledge note, K2, row LOOP-5 (intake-2551#record):* Record in reasoning-compression.md only: looped MoE R=5 at 0.3B-1.3B reaches reasoning parity with 0.6B-2.9B at 1.8x training-compute-defined inference compute while trailing Overall 46.9 vs 50.2; no latency/bytes measured; no checkpoint released in the text.
 - *Intake knowledge note, K2, row W2LOOP-3 (intake-2587#record):* Knowledge-only: record that our GDN graph hard-caps beta at 1 (src/models/qwen3next.cpp:417 ggml_sigmoid) matching the Qwen3.5 control that failed to generalise hidden tracking; no probe.
-- *Intake trigger record (no checkbox until it fires), M2, row LOOP-4 (intake-2547#record, intake-2551#record):* Bounded CPU probe on a llama.cpp-experimental branch with the Ouro port: Ouro-1.4B Q4_K_M (854 MB per card), llama-bench tg at num_loops 1/2/4 via --override-kv, reporting achieved GB/s counting bytes once per loop against the C0 153 GB/s ceiling. This ...
-- *Intake trigger record (no checkbox until it fires), M2, row W2LOOP-1 (intake-2585#record, intake-2586#record):* On an experimental llama.cpp branch freshly cut from production v10, cherry #25994 plus #29823 (about 590 added lines) and measure Ouro-1.4B Q8_0/Q4_K_M at --override-kv ouro.num_loops=int:1/2/4 on EPYC CPU (one quarter and full socket): tok/s, achieved GB/s ...
-- *Intake trigger record (no checkbox until it fires), M2, row W2LOOP-2 (intake-2584#record):* Monitor triggers: (a) llama.cpp or vLLM PR adding iquestpltcoder / PLT, (b) an independent replication of LoopCoder-v2 R=2 SWE-bench Verified, (c) a timing number for PLT decode. Any one fires ingest-and-dive on it.
 ```
 
 ### `handoffs/active/dflash2-block-drafter-experimental-build.md` — append at the end of the file
@@ -294,7 +359,7 @@ Each owner gets one appended section with the heading below. Checkbox lines are 
 - [ ] **DF2-12.1 — Run the DF2-12 np>1 parity check on every production speculative role served at np>1, as one temp-0 cross-slot token-identity run (intake-2591#record, intake-2577#record, intake-2597#record).** Two shapes, each on its own scratch server in a GPU correctness window: the :8083 Qwen3.8-27B DFlash2 Q8_0 recipe (n-max 7, np 4) and the :8070 frontdoor Qwen3.6-35B-A3B draft-MTP recipe (n-max 4, np 4), which DF2-12 does not cover. Send c = 2, 3 and 5 equal-length salted prompts issued together so they prefill in one scheduler step, and compare every output token with the same prompt served alone at np 1. Add a slot-reuse arm (conversation A, then an unrelated conversation B in the same slot, compared with a cold B), which is the untested condition in llama.cpp #28019 (intake-2598#record). Controls: speculation off at np 4; an np-4 server carrying a single request; a low-entropy prompt pair; a repeat run for the numeric floor; a planted string that must never appear in another slot. Before the run, prove the binary is fresh and pass tests/test-recurrent-state-rollback including its dirty-context check; a failure there voids the run. Log per round draft_n, accepted count and rollback length versus batch length, and classify each first divergence as near-tie (small top-2 margin) or degenerative. Freeze the prompt manifest by sha256, keep per-request raw outputs and acceptance counters, and count every request in the denominator. Decision rule: a degenerative divergence that the speculation-off np-4 control does not show is a cross-slot defect, so file it against the champion, keep the role at its current shape and open the snapshot-slot patch trigger; zero such divergence across all arms closes the question for these two recipes. This run does not close G2-CONC, which belongs to the promotion candidate binary.
 - [ ] **DF2-LAT — Zero-training lattice-headroom probe for the DFlash2 selector (intake-2561#record, intake-2560#record, intake-2569#record).** DFlash2 already ships a learned top-16 candidate lattice with a rank-256 transition score and a prefix-first walk (src/models/dflash.cpp:735-824, common/speculative.cpp:1658-1700 @ ffc1bac82), so the open question is how much headroom any re-selector has above it. On an experimental build, env-gated and off by default, dump per draft step the 16 candidate ids, unary logits, pair scores and chosen ids. In one MI210 correctness window (27B Q8_0 + DFlash2 Q8_0, n-max 7, np 1, temp 0, 1024-token cap) run the 12 DF2-4 olympiadbench prompts as dev and at least 36 disjoint agentic replay turns as holdout. Offline, exact at temp 0: arm A unary argmax, arm B the live walk (must reproduce the server accepted counts on every request or the probe is void), arm C the oracle that takes the verifier token whenever it is in the top 16, 8 or 4, and per-slot top-k coverage. Decision rule on the holdout with H = (tau_C16 - tau_B) / tau_B: H >= 0.25 on dev and holdout with a bootstrap 95% lower bound >= 0.15 opens a trained-selector port; H < 0.10 closes it; otherwise monitor.
 - [ ] **DF2-PM — Point-mass draft proposals at production temperature (intake-2561#record).** Behind an env knob on the experimental build, make the DFlash2 temp>0 branch propose the argmax selector walk with a point-mass distribution instead of sampling softmax(scores/T); the verifier then accepts with p_target(draft) and resamples from the residual (common/sampling.cpp:740-766), which is lossless. A/B against the stock sampled walk on the DF2-4 protocol (12 prompts, temp 0.6, top-p 0.95, top-k 20) at np 1 and np 4, at least 5 interleaved pairs; primary metric weighted acceptance, secondary tok/s; the SPEC-PIT.1 distribution gate must pass. Adopt into the next champion fold only if weighted acceptance improves by at least 3% in at least 4 of 5 pairs at both np values, tok/s does not regress and SPEC-PIT.1 passes; otherwise record the per-pair numbers and close.
-- [ ] **DF2-DRAFTER-CAPABILITY.OBJ — Fix the drafter-training data contract before any capture (intake-2548#record, intake-2578#record, intake-297#record).** Amend the capture contract inherited from INF-62 ("hard next-token labels") so every feature dump also taps the target's final post-norm hidden state (5120 x bf16 = 10,240 bytes per token, +20% over the current taps), which yields the exact teacher distribution through the frozen output head. Make forward KL toward the target distribution the default objective with hard labels as the fallback arm (with a frozen trunk, Soft-MTP's gradient equals direct forward KL), and record the Nemotron 3 Ultra frozen-backbone recipe (temperature 2, hidden states sampled from earlier draft steps) as an option. Note that z-lab/dflash @ 07ebd93 ships no training code, so any drafter or selector training is research, not a port.
+- [ ] **DF2-FT-1 — KL re-alignment pilot of the served 27B DFlash2 drafter on its own agentic traffic, target frozen (intake-2548#04, intake-2549#record, intake-2578#record, intake-297#record, intake-1848#record).** Why: at the production :8083 shape the drafter accepts 0.29-0.39 on real temp-1 agentic traffic (agentic-serving-harness-fixes.md:60,74,79). On the canonical benchmark shape it accepts 0.62-0.73. The two shapes differ in several factors, so this pilot is the deciding probe, not a presumed fix. Drafter facts (GGUF header): Qwen3.8-27B-DFlash2-Q8_0, size_label 1.9B, 81 tensors, 5 non-causal blocks with sliding window 2048, fc 25600->5120, selector codebooks 2 x 256 x 248320. It is headless and borrows the target's frozen token_embd and output (5120 x 248320 each). Steps: (0) Corpus = the DS41-C95 wire contexts under /mnt/raid0/llm/tmp/ds41-c95/results (36 wire-body captures; DF2-14 counted 320 turns / 630k generated tokens). Hold out every C4 run untouched. For each held-in request, regenerate 2 completions at the production sampler on the :8083 argv (X0_ARGV_8083.txt), capped at 2048 tokens, <=3 MI210-h; this also removes the need to reconstruct reasoning text from the wire bodies. (1) Write a feature-dump tool on a llama.cpp-experimental branch cut from the current champion tip. Per token it writes the 5 taps at target_layers [6,20,34,48,62] plus the target final post-norm hidden: 5 x 10,240 + 10,240 = 61,440 B/token, the DF2-DRAFTER-CAPABILITY.OBJ contract. It writes only each completion and its 2,048-token window prefix. Expect ~0.8-1.2M tokens = 50-75 GB in <=2 rolling shards. Capture held-out C4 the same way for the offline proxy. Prefill runs at the measured production-shape 410-574 t/s, <=3 MI210-h. (2) Train in a NEW ROCm venv; do not modify the two verified venvs. Use NeMo Automodel train_dflash2 @1667095 with the sdpa attention backend and an offline-feature dataset in place of the online target. Warm-start from z-lab/Qwen3.8-27B-DFlash2 bf16. The whole drafter is trainable: bf16 weights + fp32 master + AdamW ~16 B/param = ~31 GB, plus frozen embed/output 5.1 GB; that fits 64 GB because target features are precomputed. Arm H = Automodel hard block CE on the sampled tokens. Arm K = forward KL at T=1 to the teacher, computed from the final-hidden tap through the frozen output_norm + W with Automodel KDLoss (as in jetspec_core.py), chunked; its selector term is KL over the top-16 candidates, renormalized. Both arms share data order, seed, steps and LR; add a second seed for K; <=4 MI210-h total. (3) Convert with convert_hf_to_gguf.py (DFlash2DraftModel, --target-model-dir /mnt/raid0/llm/models/turboderp/Qwen3.8-27B-exl3-4.00bpw for config and tokenizer), then quantize to Q8_0. Six controls: (i) frozen manifest: sha256 of the target, served drafter and z-lab bf16; champion binary identity; held-out request list; sampler; seeds. (ii) Baselines: the served drafter, plus a round-trip arm (z-lab bf16 through our converter and quantizer, untrained) that must be tensor-equal after dequant or within the A/A band on DF2-4. (iii) Per-request raw draft_n, draft_n_accepted, predicted_n and timings in JSONL, plus the offline teacher-forced expected-accept-length proxy per held-out block. (iv) Holdout: all C4 runs, replayed twice ABAB on a fresh server per arm at the production argv, plus the DF2-4 12-prompt benchmark per arm. (v) Full denominator: every held-out request, failures counted. (vi) Predeclared rule. PROMOTE (open DF2-FT-2) if the best arm beats the incumbent on held-out weighted acceptance (sum accepted / sum drafted) by >=0.05 absolute on both reps (about +10% tokens per verify step at n_max 7), AND on held-out decode tok/s by >=8%, AND DF2-4 acceptance is >= incumbent - 0.02, AND the coherence gate is clean with the DF2-6 greedy pass count not below the incumbent. KL becomes the default drafter objective if K - H >= 0.02 on both reps and the seed-2 replicate has the same sign; |K - H| < 0.01 means cost-neutral (pick hard labels, which need no final-hidden tap). A gain of +0.02..+0.05 earns one more shard of <=1M fresh resamples, a retrain, and one more application of the rule. Below +0.02, KILL and record. Final step, on any verdict: amend DF2-DRAFTER-CAPABILITY with the objective verdict and an onboarding rule. The rule makes frozen-trunk re-alignment on the model's own served traffic the default for any served drafter or MTP head not co-trained on that exact trunk and quant. It names the next instances: the frontdoor 35B-A3B MTP head, then the Flash-Next head. Budget: ~13 MI210-h (~0.55 card-day) in GPU windows booked through the backlog-scheduling calendar, with :8083 drained per preempt-by-drain, plus 4-6 desk days (dump tool, trainer adaptation, venv; CPU-only smoke first).
 - *Intake knowledge note, K1, row SPEC-4 (intake-2560#record, intake-2561#record, intake-2569#record):* Prepare a text update (owning session applies) to the LiLiCorr monitor paragraph: name DCOCO (intake-2561#record) and Domino (intake-2569#record) as the same correction family; record that DFlash2 already ships a learned K=16 rank-256 selector lattice with a ...
 - *Intake knowledge note, K1, row SPEC-6 (intake-2561#record, intake-2569#record):* CPU: no separate action. The 27B DFlash2 path is served on the MI210 only, and CPU speculative work for Flash-Next is MTP (Axis E). If SPEC-3 is ever built, its graph ops are backend-agnostic and must pass CPU no-regression in the four-step workflow.
 - *Intake knowledge note, K1, row SPEC2-4 (intake-2578#record):* Add to DF2-DRAFTER-CAPABILITY the Nemotron Sec 3.4 head/drafter fine-tune recipe as an option: freeze target, sample hidden states from earlier draft steps, forward-KL T=2 to target logits on target on-policy rollouts at temp 1 (reference scale: 12K steps, bs ...
@@ -303,9 +368,8 @@ Each owner gets one appended section with the heading below. Checkbox lines are 
 - *Intake knowledge note, K1, row MTP-3 (intake-2548#record):* No change to Axis E. Restoring the Qwen3.8-Flash-Next MTP head loads the published unsloth shared-Q8_0 head (no training), so the MTP-objective choice does not touch it.
 - *Intake trigger record (no checkbox until it fires), M1, row SPEC-3 (intake-2560#record, intake-2561#record):* Port the DCOCO head to llama.cpp as a replacement DFlash2 selector, and train it on the frozen DFlash2 backbone. Gated on SPEC-1 PROMOTE. Port: converter keys/tensors for cand_proj, ctx_h_proj, cand_ctx_proj + LN, pair_proj and the 386->256->1 MLP (~100 LOC ...
 - *Intake trigger record (no checkbox until it fires), M1, row SPEC-5 (intake-2569#record):* Domino-style GRU + full-vocab low-rank correction head on the DFlash2 drafter: no work now. It needs full drafter co-training with the curriculum, and its sequential head adds a 256x248320 logit-residual projection per position on the critical path. Revisit ...
-- *Intake trigger record (no checkbox until it fires), M1, row MTP-2 (intake-2548#record, intake-2549#record):* Bounded frozen-trunk probe on the Soft-MTP repo (MI210, ROCm torch, <=4 GPU-h, no llama.cpp). Take the released 167M (or 332M) NTP checkpoint, set freeze_backbone=true, and train fresh K=3 DeepSeek-style heads under two arms with identical data order, seed, ...
-- *Intake trigger record (no checkbox until it fires), M1, row W3SPEC-3 (intake-2591#record):* If W3SPEC-1 shows divergence: reproduce on the experimental branch and try the PR #29454 approach (copy pre-ubatch state into unwritten snapshot slots every ubatch) as the candidate fix; it was never merged, so it must be carried as our own patch on a ...
 - *Intake trigger record (no checkbox until it fires), M1, row LOOP-6 (intake-2546#record, intake-2568#record):* Monitor NCM as a drafter source: trigger = a released NCM-style generator with a general-text tokenizer sharing a served model vocabulary, or any measured acceptance rate against an AR target. Do not build now: released checkpoints are per-dataset ~100M-725M ...
+- *Intake trigger record (no checkbox until it fires), M1, follow-on DF2-FT-2 gated on DF2-FT-1 promoting:* Scale the winning DF2-FT-1 objective to 3-5M on-policy tokens: fresh completions at the production sampler on role-matched architect_critic / coder_escalation / ingest_long_context contexts, generated at np8 on the :8083 argv (~5-10 MI210-h). Capture in rolling ~60 GB shards and train <=8 MI210-h. Keep the DF2-FT-1 holdout (C4) and a new held-out role set untouched. Run the serving keep gate: SL-2 verify steps/s plus aggregate tok/s at np 1/4/8, fresh server per arm, ABAB with >=5 pairs, the coherence gate, the DF2-6 greedy pass count not below the incumbent, and DF2-4 acceptance >= incumbent - 0.02. Keep only if held-out acceptance is >= incumbent + 0.05 and np4 aggregate tok/s clears the calibrated floor. On a keep, emit the stack-change package that repoints the registry drafters.dflash2.draft_model, keeping the incumbent file as the rollback anchor, for one operator signature.
 ```
 
 ### `handoffs/active/gpu-acceleration-path.md` — append at the end of the file
@@ -313,8 +377,30 @@ Each owner gets one appended section with the heading below. Checkbox lines are 
 ```markdown
 ### Research intake 2026-10-31 — ws58 batch (intake-2545..2602)
 
-- *Intake knowledge note, K2, row LOOP-3 (intake-2547#record):* Correct the stale gate: Ouro now has a community llama.cpp port (BrandeisPatrick/loop-transformer, ouro arch, 324 added lines, PR ggml-org/llama.cpp#29823, GGUFs for Ouro 1.4B/2.6B +Thinking) built on upstream looped-model machinery merged for Nanbeige4.2 (PR ...
+- [ ] **GPU-LOOP-1 — Looped-architecture build on llama.cpp-experimental (Nanbeige #25994 + Ouro #29823) and its MI210 + CPU roofline curves (intake-2585#record, intake-2586#record, intake-2547#record, intake-2571#record).** Cut a fresh llama.cpp-experimental branch from the production v10 tip (ffc1bac82), cherry #25994 (merged b77d646, 265 lines) then #29823 (open, head e79d8cab5, 324 lines) with no other change; build HIP gfx90a and CPU; convert ByteDance Ouro-1.4B and 2.6B (+Thinking) to GGUF Q8_0 and Q4_K_M and record sha256. Gate 1 (correctness, may share the card with :8083): tests/test-llama-archs passes for ouro and nanbeige on CPU and HIP, and top-1 logit parity vs the transformers reference on the PR 829-position fixture at loops 1/2/4 is reproduced on gfx90a (use -ngl 999: -ngl counts logical layers, 192 for 2.6B, and -ngl 99 spilled to 1.6 tok/s in the PR thread). Gate 2 (timing, in a GPU window, host threads on 184-191 under the q3 claim): llama-batched-bench tg at loops {1,2,4} x np {1,2,4,8,16,32} x ctx {512,1024,2048} x KV {f16,q8_0} for Ouro-1.4B Q8_0, with Qwen3-1.7B-Q8_0 and Qwen3-4B-Thinking-2507-Q8_0 (both on disk) as same-build dense comparators; per cell report aggregate tok/s, achieved GB/s under the byte model bytes/step = W_body*L + W_head + B*C*kv_per_slot*L against the 1433 GB/s measured roof, and the ratio to the ideal step time. Same build, CPU leg (replaces W2LOOP-1): loops 1/2/4 on one quarter and the full socket, GB/s vs the C0 153 GB/s ceiling. Predictions fixed before the run (arithmetic, Ouro-1.4B: W_body 1.41 GB Q8, head 0.11 GB, 24 layers, 16 MHA KV heads x 128 = 8 KiB per layer slot): aggregate falls as 1/L at every np (a 55 MB layer cannot sit in the 8 MB L2, so no reuse across loops); at C=1024, f16 KV, L=4 the np-to-infinity ceiling is 1433e9/(1024*786432) = 1,780 tok/s and np=16 gives 16/13.0 ms = 1,230 tok/s ideal vs 3,420 for Qwen3-4B Q8 (4.28 GB, 144 KiB/token); the KV share exceeds the weight share beyond np=7; compute time is under 1/5 of byte time at every np that fits (VRAM headroom beside the 43 GiB :8083 is about 19 GiB, so np about 23 at C=1k f16), so the B*=64 knee is not reached for C above about 123 tokens. Six controls: frozen GGUF sha256 and prompts; comparators on the same build; per-cell raw JSON kept; 3 repeats ABA-alternated with the noise floor stated with its unit; full grid denominator (no cell dropped, VRAM-skipped cells listed); the rule below. Decision rule: PASS if parity holds and every measured aggregate lies within 0.5-1.1x of the byte-model prediction; a cell below 0.5x opens a HIP-kernel root-cause row (stale-binary check first: strings the lib, compare mtime to the commit) and is not a verdict on looping; this task issues no quality verdict. Writes the GPU arithmetic table into cpu-decode-roofline-program.md as the GPU half of the weight-reuse note (LOOP-1).
+- [ ] **GPU-LOOP-3 — Loop count as a per-request serve-time effort switch in llama.cpp-experimental (intake-2585#record, intake-2586#record, intake-2547#record).** Today num_loops is a load-time GGUF key (PR #29823: --override-kv ouro.num_loops=int:N; PR #25994 expands hparams arrays to n_layer_phys*n_loops once in load_arch_hparams). Change set: (1) llama_context gains llama_set_n_loops(ctx,k), 1<=k<=file n_loops, carried in llm_graph_params and compared in can_reuse() so a changed k rebuilds the graph while graph_reserve still sizes the worst case; the builder loop bound becomes n_layer_phys*k and the LM-head tap is the shared final norm of loop k (the exit_at_step readout the HF code already has); about 150-250 lines. (2) server: parse n_loops or an effort alias (low/medium/high mapped by a GGUF key such as ouro.effort_loops) into slot params; update_slots splits the ubatch into one llama_decode per k-class (each class re-reads the weights, a cost that is small once np exceeds the weight/KV crossover of about 7 streams at C=1k); about 100-150 lines. (3) KV semantics, each point tested: a logical layer slot (loop j, layer i) holds KV only for sequences that ran loop j, so a prefix cached at k loops is valid for any request with k2<=k and invalid for k2>k (the deeper slots and the hidden states to recompute them are not stored), which makes the prompt-cache and ctx-checkpoint key carry n_loops_cached; a mid-request upgrade needs a re-prefill, a downgrade does not; cells are shared across layers, so a low-k request saves bandwidth and FLOPs but not VRAM unless the cache is sized with a k_max option (KV is 192 KiB per loop per token for Ouro-1.4B f16, 768 KiB at 4). (4) Validity gate: only checkpoints trained with per-loop supervision may expose the switch: Ouro yes (PR GSM8K F16 26.0/67.0/80.5 at 1/2/4), Nanbeige4.2 no (forced 1 loop is degenerate, 0.0 GSM8K), LoopCoder-v2 no (each R is a separately trained model, R=3 27.6 vs R=1 43.0 SWE-bench Verified). Acceptance tests: logits at per-request k on a file with n_loops=4 are bit-identical on CPU and within 1e-3 abs on HIP to a file loaded with num_loops=k, for k=1..4 on the 829-position fixture (this also verifies the claim that loop-j activations do not depend on the total loop count); four concurrent requests with k=1,2,3,4 reproduce their solo outputs; prefix-cache hit for k2<=k and miss for k2>k; throughput at np=16 with half k=1 and half k=4 within 0.8-1.2x of the byte-model prediction. Router oracle on the GPU-LOOP-2 per-item results: oracle minimum loops per item vs a no-oracle router (answer agreement between loops 2 and 4 on a calibration half, or the exit-gate probability); decision rule on the held-out half: PROMOTE the switch to a lane option if the router keeps at least 97% of the L=4 accuracy at mean loops at most 2.4 (cost at most 0.6x of L=4); else keep static L and record the oracle bound. Per-token adaptive exit is not offered: the PR does not convert the early_exit_gate and a batch graph saves nothing from it without row compaction.
+- [ ] **GPU-PLT-2 — Parallel-Loop-Transformer architecture (iquestpltcoder) on llama.cpp-experimental: port, parity, and MI210 decode curves (intake-2584#record, intake-2571#record).** Not blocked by the absence of upstream code; estimate 1.0-1.5 kLOC, 3-5 agent-days, 3-4x the 265/324-line Nanbeige/Ouro ports because those only unroll layers and carry no CLP, shared-KV or sliding window: converter for IQuestPLTCoderForCausalLM (about 150: 14 layers, hidden 5120, 40 heads / 8 KV, FFN 27648, R, window 64, per-head gate tensors; read the HF modeling file at sha b87cf3a first); arch/hparams/tensors (about 250); graph (about 400): a decode step builds R rows per sequence, row r input = token embedding + h^(r-1) of the previous position (per-sequence state of (R-1) x n_embd, held in the recurrent-memory path so checkpoint and spec-decode rollback come with it), row 1 attends the normal full KV, rows >=2 attend the shared loop-1 K/V through the existing cross-layer KV-reuse hparams plus a private 64-entry window cache (extra logical layers in the iSWA cache) and mix with the head-wise sigmoid gate; prefill runs R shifted sweeps over the prompt; cache/state plumbing and tests (about 400-700). Acceptance: top-1 logits match the HF reference on >=1000 positions and greedy continuations match on 20 prompts, on CPU and HIP; measured decode step ratio PLT-2 vs the same weights run as a one-loop graph is <=1.15 at np<=16 (prediction 1.02-1.05, since 2 rows per stream stay under the Q8 knee of 64 rows through 32 streams) and a sequential two-loop graph on the same weights is >=1.8 (the ByteDance paper reports 4.9 vs 4.8 vs 9.4 ms at bs 4 and 8.6 vs 8.1 vs 16.1 ms at bs 32 in its own stack); KV measured at about 56 KiB/token + window; spec-decode (MTP/DFlash2) rollback test using the state snapshot. Quality and serving verdicts are GPU-PLT-1 and the SWE-40 legs, not this task; this task delivers the engine.
 - *Intake knowledge note, K2, row W2LOOP-4 (intake-2585#record, intake-2586#record):* Correct the stale note in gpu-acceleration-path.md ~line 248 (intake-332 "Not llama.cpp compatible") to say nanbeige looped arch merged 2026-07-27 and Ouro is PR #29823 open; owning session applies.
+```
+
+### `handoffs/active/gpu-serving-tie-in-program.md` — append at the end of the file
+
+```markdown
+### Research intake 2026-10-31 — ws58 batch (intake-2545..2602)
+
+- [ ] **GPU-LOOP-2 — Looped small model as a reliability-boosted batch worker on the MI210: quality vs loops vs aggregate throughput against equal-cost dense and K-sample controls (intake-2585#record, intake-2547#record, intake-2551#record).** Question: at high concurrency (elastic-duty D1 batch-shedding class, np 16), does Ouro-1.4B (and 2.6B-Thinking as second tier) at 1/2/4 loops buy more correct worker answers per HBM byte than a non-looped model? Arms, served-cost arithmetic at np=16, C=1k, f16 KV (ideal step times, to be measured in GPU-LOOP-1): A1 Ouro-1.4B L=4 (5.76 GB weights/step + 12.9 GB KV, 13.0 ms, 1,230 tok/s); A2 L=2 (about 2,300); A3 L=1 (about 7,100 on the same weights); A4 Ouro-2.6B-Thinking L=4 (48 layers, about 11.3 GB weights/step, 1.5 MiB/token KV); C1 Qwen3-4B-Thinking-2507 Q8 (4.28 GB, 144 KiB/token, 3,420 tok/s, the equal-quality-class dense control); C2 Qwen3-1.7B Q8 majority-of-4 (about the same bytes per final answer as A1, 1,545 answer-equivalent tok/s: the K-sample route that the idle MFMA headroom makes free); C3 Qwen3-1.7B Q8 single sample (equal resident bytes); C0 the incumbent worker, Qwen3.6-35B-A3B on CPU :8070 (registry roles.worker_general.performance.quality_pct is null: it has never been scored on the worker battery, so it is measured here on the same frozen items). Frozen inputs: GSM8K-style math (n>=200, same problem list as the PR so the 26.0/67.0/80.5 published curve is a replication check) plus worker-battery items for explore, summarize, transform and strict tool-call JSON (n>=150 per suite), item list and scorer hashed before any generation; Ouro context stays under its trained 1024-token block (Ouro RECIPES: block_size 1024), longer prompts are a separate reported stratum. Per arm: pass@1 over 3 seeds, seed-to-seed agreement, JSON-validity rate, aggregate tok/s at np 16, wall-seconds per correct answer and correct answers per HBM GB moved; per-item raw outputs kept; correctness legs may share the card with :8083, throughput legs run in a GPU window with the host threads under the q3 claim. Controls: frozen inputs, incumbent baseline (C0 and C1), per-item raw outputs, 3-seed repeat with the A/B order alternated, full denominator including parse failures, predeclared rule. Decision rule: an Ouro arm earns a shadow-lane tenancy row (D3 shadow-only, no production traffic) only if (i) its paired accuracy vs C1 is within 2 points (McNemar not worse) and its seconds per correct answer at np=16 is at most 1.5x C1, or (ii) it beats C1 by at least 5 points at paired p<0.05 at no more than 2.5x C1 cost; the arithmetic predicts A1 costs 2.8x C1 per token, so (i) needs a real quality edge. Otherwise record NO-GO with the table and keep Ouro only as the vehicle for GPU-LOOP-3. Depends on the GPU-LOOP-1 build (our own task, not an external event).
+- [ ] **GPU-PLT-1 — LoopCoder-v2 (7.6B PLT coder, Apache-2.0) quality screen on the MI210 through transformers custom code, before and independent of the GGUF port (intake-2584#record, intake-2571#record).** Load Multilingual-Multimodal-NLP/LoopCoder-V2 at the pinned HF sha b87cf3a (BF16, 7,615,749,680 params, 15.2 GB, fits the about 19 GiB headroom beside :8083 without a KV problem) in an isolated venv with the transformers version its configuration_iquestpltcoder.py needs (Ouro needed 4.57.x, the research venv has 5.15.0: do not assume); confirm torch.version.hip and bf16 on gfx90a first; read config.json to see whether the loop count is a config field (the paper trains R=1..4 as separate models, so a forced R=1 on the released weights is not the paper R=1). Frozen inputs: HumanEval+ (164), LiveCodeBench subset released after the model cutoff (n>=200), BigCodeBench-hard subset, plus the frozen coder-suite items used for coder_escalation (cruxeval and the others E-7 scored: math 85.0, mmlu_pro 27.5, gpqa_diamond 47.5, cruxeval 22.5 at terse template 1443ea9ab4bb). Arms: LoopCoder-v2 as released; incumbent coder_escalation Qwen3.8-27B Q8 on :8083 (same harness, thinking off and medium); frontdoor Qwen3.6-35B-A3B on CPU; size control Qwen3-4B-Instruct-2507 (on disk). Controls: frozen items and scorer hashes, incumbent baselines, per-item raw outputs, 2 seeds, full denominator, rule below. Replication check against the paper own table: R=2 reports HE+ 84.1, LCB 35.4, BCB 46.1 and SWE-bench Verified 64.4 (harness unnamed, single seed, vendor-authored); accept the replication if HE+ >= 80 and the LCB subset score is within 5 points of the paper 35.4 after harness adjustment stated. Decision rule: open the serving legs of GPU-PLT-2 (agentic SWE-40 on the same scaffold that scored Qwen3.8-27B 21/40 = 52.5%, shadow lane only) if pooled pass@1 over HE+ and LCB is non-inferior to Qwen3.8-27B within 8 points (paired bootstrap lower bound) or the replication check passes; otherwise record NO-GO with the table (the port of GPU-PLT-2 still completes as parity work). Arithmetic that motivates it: at np=16, C=8k, Q8 (about 8.1 GB incl. head, KV 56 KiB/token f16 because later loops share loop-1 KV and keep only a 64-token window) a PLT-2 step is about 15.2 GB / 1433 GB/s = 10.6 ms bandwidth vs 2.5 ms compute at 32 rows, i.e. 1,510 tok/s ideal aggregate (about 600 derated by the 27B np8 ratio 157/400), vs 94 tok/s live at 4 concurrent on the 27B.
+```
+
+### `handoffs/active/intake-derived-work-2026-07-25.md` — append at the end of the file
+
+```markdown
+### Research intake 2026-10-31 — ws58 batch (intake-2545..2602)
+
+- [ ] **ID-RI-ANCHOR-GATE — Make quote re-find a gate the author cannot satisfy by assertion (fabricated citations) (intake-2563#record, intake-1377#record).** Today `.claude/skills/research-intake/scripts/validate_intake.py` (~L436-441) only checks `claim_anchors` is non-empty and `verified_by` is self-written, so a fabricated or cross-pasted quote (the 2026-07-25 CORE ablation, also pasted into intake-895) passes. Borrow Octopus's rule that a mark is recorded only by the runtime after a verifier passes the artifact and nothing else can emit it (`docs/contracts/VERIFIERS.md`, "Nothing emits marks"). Change SKILL.md Stage-2 "Writes permitted" (claim_anchors bullet) and the Stage-2 Verification Gate: add `validate_intake.py --check-anchors` that (a) re-finds every anchor `quote` in the retained source via `scripts/vidya/machine_anchor.py:verify_source_anchor` / `raw_anchor_store.py` (dive wrapper must write the source into `EPYC_VIDYA_RAW_ANCHOR_ROOT`, today opt-in and unused by dives), (b) recomputes `quote_sha256`, (c) writes an `anchor_mark: {verifier, source_raw_sha256, found}` that only the script writes, and (d) flags any `quote_sha256` appearing under two different entries (cross-paste, needs no retained source). New dive-verified entries without an anchor_mark fail; legacy entries stay grandfathered. Controls: four frozen fixtures (verbatim quote, fabricated quote, whitespace-altered quote, same quote under two entries) plus the old validator output; per-fixture expected verdict recorded. Decision rule: ship only if all four fixtures give the predeclared verdict and a replay over the current index flags zero verbatim anchors. Passing proves containment, not entailment; the per-claim second reader stays.
+- [ ] **ID-RI-LANE-HEAD — Pin the repo revision every in-house citation was read at and refuse stale ones mechanically (stale clones) (intake-2563#record).** SKILL.md L391-405 forbids the shared clone in prose only (2026-09-14 dives read /workspace @d372c953). Octopus pins descriptor hashes in every formed grant and refuses a movement against a changed checkpoint with a typed `stale_epoch` (`docs/contracts/LEDGER_INDEX.md`). Change: (1) Stage-2 dive brief template requires `lane_head` (full SHA of the lane worktree) in the returned YAML, and a `dive_preflight.py` run by main before dispatch asserts the named root is the lane worktree and its HEAD is not behind origin/main; (2) in-house `claim_anchors` locators `path:Lx-Ly @ sha7` get validated by `validate_intake.py --check-lane-anchors`: `git show sha7:path` must contain the quote, and `git diff --name-only sha7..origin/main -- path` non-empty emits typed `stale_epoch` that blocks Stage-3 plan citation of that anchor until re-read. Controls: replay the 2026-09-14 incident (anchor at d372c953 for a file since changed), a moved path, an unchanged path. Decision rule: stale_epoch fires on the first two and not the third; zero false positives over the current in-house anchors.
+- [ ] **ID-RI-STAGE-GUARD — Compute the stage write grant by script and check the diff outside the agent (stage-gate violations) (intake-2563#record).** The skill's "May write" table (SKILL.md L50-58) and the Stage 1/2 gate "`git status handoffs/` clean" are prose run by the same agent that might violate them (2026-07-25: handoffs edited after an operator "you can edit"), and the dive `artifact_audit: clean` line is self-reported. Octopus forms the effective grant by a deterministic script at every arrival (ceiling intersect chain intersect bindings), enforces it outside the model and records a typed refusal row (`docs/architecture.md`, "How policy is formed"). Change: add `scripts/stage_grant.py form --stage N` (allowed paths: S1 index+.research-session.json; S2 index; S3 plan file; S4 the paths named by the approved plan, bound to `stage3_filing.plan_sha256` already checked at validate_intake.py ~L1084) and `check`, run by main at each stage boundary on `git status --porcelain` plus a tree hash taken at stage entry; violations append a typed row to the session JSON (`stage_write_outside_grant`, `plan_hash_stale`). Controls: replay the 2026-07-25 handoff-edit-in-Stage-2 case, a Stage-4 write outside the plan, and a clean stage. Decision rule: both violations refused, clean stage passes, no change to legacy validate_intake output.
+- [ ] **ID-RI-DECLINE-VOCAB — Replace free-text decline reasons with a closed vocabulary (dropped actionables, operator Act-Do-Not-Defer rule) (intake-2563#record).** `validate_intake.py` ~L1132 accepts any `decline: <text>`, so "vendor-only", "upstream has not done it" or "not applicable" can close a row (the rules SKILL.md L40-48 forbid). Octopus refusals are typed rows from a closed set, "never a silent drop" (`docs/contracts/LEDGER_INDEX.md`). Change: a decline/closed-with-basis terminal must start with a code from {duplicate:<exact id>, superseded:<successor id>, measured-loss:<evidence ref>, math-constraint:<one-line proof>, external-event:<named event>, operator-ruled:<ruling ref>}; the validator rejects other prefixes and the forbidden phrases, and `external-event` requires a name that is not "upstream". Controls: freeze the current plan's decline rows as a fixture (expected: each maps to a code or is flagged for re-open), plus three negative fixtures (vendor-only, upstream-absent, not-applicable). Decision rule: negatives rejected, all legacy plans still pass under the unchanged legacy mode.
 ```
 
 ### `handoffs/active/kv-prefix-fork-and-paged-attention.md` — append at the end of the file
@@ -340,7 +426,6 @@ Each owner gets one appended section with the heading below. Checkbox lines are 
 ### Research intake 2026-10-31 — ws58 batch (intake-2545..2602)
 
 - *Intake knowledge note, K1, row W3SPEC-4 (intake-2592#record):* No action on our CPU/HIP stack; note in the speculative handoff that the n_vocab-sentinel failure is Vulkan-specific and fails loudly at src/llama-batch.cpp:52 (token validation), which our tree retains.
-- *Intake trigger record (no checkbox until it fires), M6, row TCAP-3 (intake-2572#record):* If A/B runs, add arm B2 = ThinkingCap trunk + our unsloth shared-Q8_0 draft file vs embedded head, measure alpha for both
 ```
 
 ### `handoffs/active/rocm-verify-profile-backend.md` — append at the end of the file
@@ -348,9 +433,10 @@ Each owner gets one appended section with the heading below. Checkbox lines are 
 ```markdown
 ### Research intake 2026-10-31 — ws58 batch (intake-2545..2602)
 
-- [ ] **RVP-RACE-1 — Measure whether the correctness gate can see a race at all (intake-2557#record, intake-2570#record).** GPU: in a llama.cpp-experimental worktree build three seeded-race HIP mutants, each deleting one barrier in MMQ, MMVQ and the FA kernel, and run the served-shape suite 20 times each. CPU: build test-backend-ops with ThreadSanitizer, using LLVM libomp with Archer annotations, and run the threaded ops. Decision rule: if any GPU mutant passes the gate in all 20 runs, open the gfx90a race-only symbolic-executor trigger; if all are caught, record the gate as race-sensitive at these sites. The v10 anchor must produce zero TSAN reports beyond a documented suppression list.
 - [ ] **RVP-CTR-1 — Counter-grounded planner signals for the GPU AK lane (intake-2556#record).** For the top hotspot kernel of each GPU screen, capture a fixed declared counter subset with rocprofv2 (occupancy, LDS bank conflicts, VALU/MFMA busy, memory unit stall, achieved bandwidth) and pass it to the planner with the rule that every proposed idea must cite a counter that is present, and a missing counter may not be treated as zero. Compare 2 planner rounds with and without counters on the same target and budget.
-- *Intake trigger record (no checkbox until it fires), M5, row KERN-2 (intake-2557#record, intake-2570#record):* Build a race-only symbolic executor for gfx90a AMDGCN: parse hipcc --save-temps asm, concrete thread/workgroup indices and launch params, per-byte LDS reader/writer sets between s_barrier, lgkmcnt/vmcnt waits as completion points, exec-mask lanes, wave64. ...
+- [ ] **RVP-RACE-1 — Measure whether the correctness gate can see a race at all (intake-2557#record, intake-2570#record).** GPU: in a llama.cpp-experimental worktree from the v10 tip build seeded-race HIP mutants, each deleting one barrier: MMQ tile load (mmq.cuh barrier sites), MMVQ cross-warp tmp_shared reduction (mmvq.cu nwarps 4 and 8 routes), MMVQ LDS-DMA double buffer (mmvq.cu:1063-1065, run with GGML_CUDA_Q8_PREFETCH=1), FA-mma tile softmax; prove each mutant structurally (s_barrier count of that kernel in the disassembled gfx90a code object drops vs the unmutated build) and record waves-per-workgroup at each served shape (a single-wave site is excluded as not a race). Run the AK served-shape test-backend-ops case set 20x per mutant and 20x on the unmutated build (frozen case manifest, per-run raw verdicts and NMSE kept). CPU: build test-backend-ops with ThreadSanitizer using LLVM libomp with Archer annotations and run the threaded ops on the v10 anchor. Decision rule: a GPU mutant that passes the gate in >=1 of 20 runs is a measured race miss; the unmutated build must pass 20/20; the mutant set becomes the fixture set of RVP-RACE-2 either way. The v10 anchor must produce zero TSAN reports beyond a documented suppression list.
+- [ ] **RVP-RACE-2 — gfx90a AMDGCN race/deadlock executor as the GPU race_detector_id (intake-2570#record, intake-2557#record).** Not trigger-gated: 236 of 627 unique AK GPU mechanisms and 15 of 31 keeps touch sync, and v10 already ships hand-ordered LDS-DMA (mmvq.cu:1038-1093). Build in Rust on the MIT ptx_verifier @a39292a, reusing volta_graph and volta_graph_check (barrier_epoch, memory_conflict) unchanged, and extending volta_amd_analysis from gfx950/8 opcodes to gfx90a. Input is the disassembled code object of the built candidate (split with research scripts/kernel_rnd/gfx90a_isa_audit.py, the same artifact as C5-ISA-1). Launch grid, workgroup size and kernarg come from a small HIP launch-capture shim on a correctness-only served-shape run. Model: a concrete integer/address lattice with float/MFMA results opaque; exec mask; wave64 with per-wave program order (one event per wave-instruction, with the byte footprint of active lanes, plus an intra-instruction lane write-write check); ds_* complete at lgkmcnt; buffer_load...lds as AsyncIssue/AsyncComplete, completed conservatively at vmcnt(0); s_barrier as barrier generations; any branch or address that depends on an opaque value yields UNKNOWN (fail-closed, never ACCEPT). Index inputs (MoE ids, FA mask) are fed concretely. M1 (3-4 eng-weeks, the MMVQ + FA-vec opcode set, 228 distinct on v10): check WG0, the last WG and all boundary/tail WGs per served shape. M1 is accepted when it gives 0 findings on v10 MMVQ (both nwarps routes, plus q8pf with GGML_CUDA_Q8_PREFETCH=1) and on FA-vec at the AK served shapes, flags 100% of the RVP-RACE-1 MMVQ/FA mutants plus 2 ISA-only mutants that source mutation cannot make (delete the q8pf s_waitcnt vmcnt(0); move the first LDS read of a tile above its s_barrier; reassembled with clang -target amdgcn-amd-amdhsa -mcpu=gfx90a), and finishes in <=10 min per kernel instance on one core. Any production finding is triaged to a true race or a model bug before acceptance. M2 (+2-3 weeks): MMQ, FA-mma, FA-tile, quantize, argsort/topk (316-opcode union, MFMA/AGPR opaque); cross-WG global write-set overlap on sampled WGs (MMQ tmp_fixup disjointness); deadlock via barrier epochs; a gfx90a wait-state hazard lint for inline-asm regions (quantize.cu:100-117 DPP s_nop) cross-checked against an LLVM-compiled reference. The FA-vec atomic completion protocol is declared out of scope (UNKNOWN). M3: register as race_detector_id in execution/t0_provider.py for GPU routes whose diff or ISA touches barrier/__shared__/ds_/s_waitcnt/LDS-DMA/inline asm, after M1+M2 acceptance. Budget 8-11 kLoC new plus about 12 kLoC reused, 6-9 engineer-weeks, Codex-delegable; zero GPU time beyond the capture runs.
+- [ ] **RVP-EQV-1 — Decide the equivalence-checker port by measured miss rate, quant kernels declined on coverage (intake-2570#record, intake-2557#record).** Decision part 1, decline: no Volta-class equivalence for MMVQ, MMQ, quantize_q8_1 or dequant. They are bit-level (nibble unpack, rounding), which Volta does not cover (floats are reals, conversions are the identity), and they make up about 75% of AK GPU experiment rows (1116 of 1497). KERN-4 enumeration owns decode exactness. Decision part 2, a deciding probe for the real-valued subclass (FA-mma/FA-tile at parallel_blocks=1, GDN recurrence, mmvf float GEMV). In a llama.cpp-experimental worktree from the v10 tip, build 8 seeded sub-tolerance algebraic mutants: FA online-softmax rescale skipped only when the running max changes after the first KV tile; FA KV loop dropping the last KV column; FA-tile dropping one tail tile at a non-multiple context; GDN exp(g) decay dropped at a chunk boundary; GDN beta dropped for one head; mmvf dropping the final partial k-block at ne00 % tile != 0; and two controls with an O(1) error. Prove each mutant structurally (ISA diff of that kernel). Run the AK served-shape gate plus the AKX-ALL-31 edge families and the KERN-5 worst-element bound, 5 seeds each, on a frozen case manifest, keeping per-mutant per-seed raw verdicts and NMSE; the unmutated v10 build must pass 5/5 seeds. Decision rule: if any non-control mutant survives every gate on >=1 seed, open the equivalence milestone for that subclass on the RVP-RACE-2 interpreter (symbolic float values, v_exp_f32 as 2^x, cvt as identity, the 2 MFMA lane layouts in use, DPP/swizzle value moves, FA and GDN reference specs; estimate 4-6 kLoC, 4-6 engineer-weeks; advisory, never a speed-blocking gate, because intake-2555 Table 2 shows proof-restricted FA at 0.78x vs 1.37x). If all are caught, record the catch table and close the equivalence port with that table as the reason. Correctness-only, so no quiet host is needed.
 ```
 
 ### `handoffs/active/routing-intelligence.md` — append at the end of the file
@@ -367,7 +453,6 @@ Each owner gets one appended section with the heading below. Checkbox lines are 
 ### Research intake 2026-10-31 — ws58 batch (intake-2545..2602)
 
 - [ ] **SPEC-CANARY.1 — Per-request acceptance-collapse canary for every speculative serving role (intake-2577#record).** In the orchestrator's llama-server telemetry, flag any request with at least 64 drafted tokens and zero accepted, and any request whose last 256 generated tokens repeat one n-gram block, recording role, port, slot, n_parallel, draft settings and request id. Ship it as a passive counter with a dashboard health field; it changes no serving behaviour. Test it with a replayed log containing a planted zero-acceptance run and a planted repetition tail.
-- *Intake trigger record (no checkbox until it fires), M1, row MTP-4 (intake-2548#record):* Record a trigger on the speculative-decoding refresh. If a served fine-tune ships with a stock (base-co-trained) MTP head, as already observed for ThinkingCap and Qwopus, the remedy is head-only re-alignment on the frozen fine-tuned trunk against its own NTP ...
 - *Intake trigger record (no checkbox until it fires), M1, row SPEC2-3 (intake-2577#record):* Note thinking-mode default sampling repetition risk: issue says model card recommends presence_penalty 0-2 and attributes loops to degenerate state amplified by temp 1.0 / top_k 20 / top_p 0.95; check the Flash-Next architect_general request sampler against ...
 ```
 
@@ -434,40 +519,48 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
       "handoffs_created": [],
       "disposition_evidence": [
         "LOOP-6 -> M1",
-        "PRE-2546 -> M1"
+        "PRE-2546 -> M1",
+        "W5GPU-8 -> decline: no NCM checkpoint shares a served vocabulary and no acceptance number exists; reopen on such a releas"
       ]
     },
     {
       "id": "intake-2547",
-      "integration_disposition": "knowledge_only",
+      "integration_disposition": "integrated",
       "handoffs_updated": [
-        "cpu-decode-roofline-program.md",
-        "gpu-acceleration-path.md"
+        "autokernel-champion-aggregate.md",
+        "gpu-acceleration-path.md",
+        "gpu-serving-tie-in-program.md"
       ],
       "handoffs_created": [],
       "disposition_evidence": [
-        "LOOP-1 -> K2",
-        "LOOP-2 -> K2",
-        "LOOP-3 -> K2",
-        "LOOP-4 -> M2",
-        "PRE-2547 -> K2"
+        "LOOP-1 -> P10 / GPU-LOOP-1",
+        "LOOP-2 -> P10 / GPU-PLT-1",
+        "LOOP-3 -> P9 / CH-34",
+        "LOOP-4 -> P10 / GPU-LOOP-1 / GPU-LOOP-2",
+        "PRE-2547 -> P10 / GPU-LOOP-1",
+        "W5GPU-1 -> P10 / GPU-LOOP-1",
+        "W5GPU-3 -> P10 / GPU-LOOP-2"
       ]
     },
     {
       "id": "intake-2548",
       "integration_disposition": "integrated",
       "handoffs_updated": [
-        "dflash2-block-drafter-experimental-build.md",
-        "speculative-decoding-mtp-refresh.md"
+        "dflash2-block-drafter-experimental-build.md"
       ],
       "handoffs_created": [],
       "disposition_evidence": [
-        "MTP-1 -> P2 / DF2-DRAFTER-CAPABILITY.OBJ",
-        "MTP-2 -> M1",
+        "MTP-1 -> P2 / DF2-FT-1",
+        "MTP-2 -> P2 / DF2-FT-1",
         "MTP-3 -> K1",
-        "MTP-4 -> M1",
+        "MTP-4 -> P2 / DF2-FT-1",
         "MTP-5 -> decline: Soft-MTP as a pretraining objective needs trunk training, which this stack does not do.",
-        "PRE-2548 -> P2 / DF2-DRAFTER-CAPABILITY.OBJ"
+        "PRE-2548 -> P2 / DF2-FT-1",
+        "W5FT-1 -> P2 / DF2-FT-1",
+        "W5FT-2 -> P2 / DF2-FT-1",
+        "W5FT-3 -> P2 / DF2-FT-1",
+        "W5FT-4 -> P2 / DF2-FT-1",
+        "W5FT-5 -> P2 / DF2-FT-1"
       ]
     },
     {
@@ -478,9 +571,11 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
       ],
       "handoffs_created": [],
       "disposition_evidence": [
-        "MTP-1 -> P2 / DF2-DRAFTER-CAPABILITY.OBJ",
-        "MTP-2 -> M1",
-        "PRE-2549 -> P2 / DF2-DRAFTER-CAPABILITY.OBJ"
+        "MTP-1 -> P2 / DF2-FT-1",
+        "MTP-2 -> P2 / DF2-FT-1",
+        "PRE-2549 -> P2 / DF2-FT-1",
+        "W5FT-1 -> P2 / DF2-FT-1",
+        "W5FT-4 -> P2 / DF2-FT-1"
       ]
     },
     {
@@ -492,21 +587,25 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
       "handoffs_created": [],
       "disposition_evidence": [
         "MEM-1 -> P3 / AKX-ALL-31.GDN",
-        "MEM-3 -> decline: an in-weights calculator costs about 1.6 to 2 times the weight bytes per token on a bandwidth-bound h",
-        "PRE-2550 -> P3 / AKX-ALL-31.GDN"
+        "MEM-3 -> decline: re-priced on the GPU, the in-weights calculator still loses: chip tokens are serial (0.5-1 s per call",
+        "PRE-2550 -> P3 / AKX-ALL-31.GDN",
+        "W5GPU-7 -> decline: same GPU re-pricing as the calculator row; serial chip tokens dominate on any device."
       ]
     },
     {
       "id": "intake-2551",
-      "integration_disposition": "knowledge_only",
+      "integration_disposition": "integrated",
       "handoffs_updated": [
-        "cpu-decode-roofline-program.md"
+        "cpu-decode-roofline-program.md",
+        "gpu-acceleration-path.md"
       ],
       "handoffs_created": [],
       "disposition_evidence": [
-        "LOOP-4 -> M2",
-        "LOOP-5 -> K2",
-        "PRE-2551 -> K2"
+        "LOOP-4 -> P10 / GPU-LOOP-1 / GPU-LOOP-2",
+        "LOOP-5 -> decline: no looped-MoE checkpoint or code is released, and on the GPU looping a MoE multiplies expert byte rea",
+        "PRE-2551 -> K2",
+        "W5GPU-1 -> P10 / GPU-LOOP-1",
+        "W5GPU-6 -> decline: no looped-MoE checkpoint or code is released; reopen on a weights release."
       ]
     },
     {
@@ -560,12 +659,12 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
       ],
       "handoffs_created": [],
       "disposition_evidence": [
-        "KERN-1 -> P3 / RVP-RACE-1",
+        "KERN-1 -> P11 / RVP-RACE-1",
         "KERN-3 -> P3 / AKX-ALL-31.EDGE",
         "KERN-4 -> P3 / AKX-ALL-31.QDEC",
         "KERN-6 -> P3 / RVP-CTR-1",
-        "KERN-7 -> P3 / C5-ISA-1",
-        "KERN-8 -> M5",
+        "KERN-7 -> P11 / C5-ISA-1",
+        "KERN-8 -> P11 / C5-ISA-2",
         "PRE-2555 -> P3 / AKX-ALL-31.EDGE"
       ]
     },
@@ -581,8 +680,8 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
       "disposition_evidence": [
         "KERN-5 -> P3 / AKX-ALL-31.EDGE",
         "KERN-6 -> P3 / RVP-CTR-1",
-        "KERN-7 -> P3 / C5-ISA-1",
-        "KERN-8 -> M5",
+        "KERN-7 -> P11 / C5-ISA-1",
+        "KERN-8 -> P11 / C5-ISA-2",
         "KERN-9 -> K5",
         "PRE-2556 -> P3 / RVP-CTR-1"
       ]
@@ -595,9 +694,11 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
       ],
       "handoffs_created": [],
       "disposition_evidence": [
-        "KERN-2 -> M5",
-        "KERN-11 -> decline: upstream Volta and its Blackwell fork are PTX-only and the host has no NVIDIA GPU; the race model tra",
-        "PRE-2557 -> P3 / RVP-RACE-1"
+        "KERN-2 -> P11 / RVP-RACE-2",
+        "KERN-11 -> P11 / RVP-RACE-2",
+        "PRE-2557 -> P11 / RVP-RACE-1",
+        "W5VERIF-1 -> P11 / RVP-RACE-2",
+        "W5VERIF-4 -> P11 / RVP-RACE-2"
       ]
     },
     {
@@ -660,25 +761,39 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     },
     {
       "id": "intake-2562",
-      "integration_disposition": "knowledge_only",
+      "integration_disposition": "integrated",
       "handoffs_updated": [
+        "autokernel-research-loop.md",
         "kv-prefix-fork-and-paged-attention.md"
       ],
       "handoffs_created": [],
       "disposition_evidence": [
-        "AGENT-9 -> decline: the Resin measurement-discipline text is weaker than the Annex K protocol the loop already follows.",
+        "AGENT-9 -> P3 / AK-WIN-CNT-1 / AK-PROF-ATTR-1",
         "AGENT-10 -> K3",
         "AGENT-11 -> decline: the Resin engine/runner split has no CPU or ROCm runner and production serving is llama.cpp.",
-        "PRE-2562 -> K3"
+        "PRE-2562 -> P3 / AK-WIN-CNT-1",
+        "W5META-9 -> P3 / AK-WIN-CNT-1",
+        "W5META-10 -> P3 / AK-PROF-ATTR-1",
+        "W5META-11 -> P3 / AK-WIN-CNT-1 / AK-PROF-ATTR-1"
       ]
     },
     {
       "id": "intake-2563",
-      "integration_disposition": "declined",
-      "handoffs_updated": [],
+      "integration_disposition": "integrated",
+      "handoffs_updated": [
+        "intake-derived-work-2026-07-25.md"
+      ],
       "handoffs_created": [],
       "disposition_evidence": [
-        "PRE-2563 -> decline: a research-preview agent OS with no measurements and no touchpoint in the serving stack."
+        "PRE-2563 -> P12 / ID-RI-ANCHOR-GATE",
+        "W5META-1 -> P12 / ID-RI-ANCHOR-GATE",
+        "W5META-2 -> P12 / ID-RI-LANE-HEAD",
+        "W5META-3 -> P12 / ID-RI-STAGE-GUARD",
+        "W5META-4 -> P12 / ID-RI-DECLINE-VOCAB",
+        "W5META-5 -> decline: the dive return schema plus the per-claim second reader already give typed, checked outputs.",
+        "W5META-6 -> decline: session resume already exists in the skill and the plan checkpoint carries the durable record.",
+        "W5META-7 -> decline: Octopus gates on path coverage only and itself says on-contract behaviour is not proven, so it adds n",
+        "W5META-8 -> decline: the intake id resolver and the vidya citation gate already catch dangling ids."
       ]
     },
     {
@@ -722,15 +837,15 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     },
     {
       "id": "intake-2567",
-      "integration_disposition": "monitor",
+      "integration_disposition": "integrated",
       "handoffs_updated": [
         "architect-model-selection-bench.md"
       ],
       "handoffs_created": [],
       "disposition_evidence": [
-        "TCAP-1 -> M6",
+        "TCAP-1 -> P8 / AMS-TCAP-1",
         "TCAP-4 -> decline: the vendor PRO tier is closed and no method is disclosed.",
-        "PRE-2567 -> M6"
+        "PRE-2567 -> P8 / AMS-TCAP-1"
       ]
     },
     {
@@ -742,7 +857,8 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
       "handoffs_created": [],
       "disposition_evidence": [
         "LOOP-6 -> M1",
-        "PRE-2568 -> M1"
+        "PRE-2568 -> M1",
+        "W5GPU-8 -> decline: no NCM checkpoint shares a served vocabulary and no acceptance number exists; reopen on such a releas"
       ]
     },
     {
@@ -768,41 +884,48 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
       ],
       "handoffs_created": [],
       "disposition_evidence": [
-        "KERN-1 -> P3 / RVP-RACE-1",
-        "KERN-2 -> M5",
+        "KERN-1 -> P11 / RVP-RACE-1",
+        "KERN-2 -> P11 / RVP-RACE-2",
         "KERN-4 -> P3 / AKX-ALL-31.QDEC",
-        "KERN-10 -> P3 / RVP-RACE-1",
-        "KERN-11 -> decline: upstream Volta and its Blackwell fork are PTX-only and the host has no NVIDIA GPU; the race model tra",
-        "PRE-2570 -> P3 / RVP-RACE-1"
+        "KERN-10 -> P11 / RVP-RACE-1",
+        "KERN-11 -> P11 / RVP-RACE-2",
+        "PRE-2570 -> P11 / RVP-RACE-1",
+        "W5VERIF-1 -> P11 / RVP-RACE-2",
+        "W5VERIF-2 -> P11 / RVP-EQV-1",
+        "W5VERIF-3 -> P11 / RVP-RACE-1",
+        "W5VERIF-4 -> P11 / RVP-RACE-2"
       ]
     },
     {
       "id": "intake-2571",
-      "integration_disposition": "knowledge_only",
+      "integration_disposition": "integrated",
       "handoffs_updated": [
-        "cpu-decode-roofline-program.md"
+        "gpu-acceleration-path.md",
+        "gpu-serving-tie-in-program.md"
       ],
       "handoffs_created": [],
       "disposition_evidence": [
-        "LOOP-1 -> K2",
-        "LOOP-2 -> K2",
-        "PRE-2571 -> K2"
+        "LOOP-1 -> P10 / GPU-LOOP-1",
+        "LOOP-2 -> P10 / GPU-PLT-1",
+        "PRE-2571 -> P10 / GPU-LOOP-1",
+        "W5GPU-1 -> P10 / GPU-LOOP-1",
+        "W5GPU-4 -> P10 / GPU-PLT-1",
+        "W5GPU-5 -> P10 / GPU-PLT-2"
       ]
     },
     {
       "id": "intake-2572",
-      "integration_disposition": "knowledge_only",
+      "integration_disposition": "integrated",
       "handoffs_updated": [
         "architect-model-selection-bench.md",
-        "cpu-decode-roofline-program.md",
-        "qwen-mtp-llamacpp-port.md"
+        "cpu-decode-roofline-program.md"
       ],
       "handoffs_created": [],
       "disposition_evidence": [
-        "TCAP-1 -> M6",
+        "TCAP-1 -> P8 / AMS-TCAP-1",
         "TCAP-2 -> K1",
-        "TCAP-3 -> M6",
-        "PRE-2572 -> M6"
+        "TCAP-3 -> P8 / AMS-TCAP-1",
+        "PRE-2572 -> P8 / AMS-TCAP-1"
       ]
     },
     {
@@ -829,24 +952,27 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
       "disposition_evidence": [
         "MEM-1 -> P3 / AKX-ALL-31.GDN",
         "MEM-2 -> P1 / KPF-RS-1",
-        "MEM-3 -> decline: an in-weights calculator costs about 1.6 to 2 times the weight bytes per token on a bandwidth-bound h",
-        "PRE-2574 -> P3 / AKX-ALL-31.GDN"
+        "MEM-3 -> decline: re-priced on the GPU, the in-weights calculator still loses: chip tokens are serial (0.5-1 s per call",
+        "PRE-2574 -> P3 / AKX-ALL-31.GDN",
+        "W5GPU-7 -> decline: same GPU re-pricing as the calculator row; serial chip tokens dominate on any device."
       ]
     },
     {
       "id": "intake-2575",
       "integration_disposition": "integrated",
       "handoffs_updated": [
+        "autokernel-champion-aggregate.md",
         "conversation-stack.md"
       ],
       "handoffs_created": [],
       "disposition_evidence": [
         "SPEECH-1 -> P4 / CS-8.STT8",
         "SPEECH-2 -> M4",
-        "SPEECH-3 -> P4 / CS-8.STT8",
+        "SPEECH-3 -> P9 / CH-32",
         "SPEECH-4 -> M4",
         "W2SP-1 -> P4 / CS-8.RT1",
-        "PRE-2575 -> P4 / CS-8.STT8"
+        "PRE-2575 -> P9 / CH-35",
+        "W5FOLD-4 -> P9 / CH-32"
       ]
     },
     {
@@ -879,36 +1005,43 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     },
     {
       "id": "intake-2578",
-      "integration_disposition": "knowledge_only",
+      "integration_disposition": "integrated",
       "handoffs_updated": [
         "dflash2-block-drafter-experimental-build.md"
       ],
       "handoffs_created": [],
       "disposition_evidence": [
-        "SPEC2-4 -> K1"
+        "SPEC2-4 -> K1",
+        "W5FT-2 -> P2 / DF2-FT-1",
+        "W5FT-3 -> P2 / DF2-FT-1",
+        "W5FT-6 -> P2 / DF2-FT-1"
       ]
     },
     {
       "id": "intake-2579",
       "integration_disposition": "integrated",
       "handoffs_updated": [
+        "autokernel-champion-aggregate.md",
         "conversation-stack.md"
       ],
       "handoffs_created": [],
       "disposition_evidence": [
         "W2SP-1 -> P4 / CS-8.RT1",
-        "W2SP-2 -> K4"
+        "W2SP-2 -> K4",
+        "W5FOLD-4 -> P9 / CH-32"
       ]
     },
     {
       "id": "intake-2580",
       "integration_disposition": "integrated",
       "handoffs_updated": [
+        "autokernel-champion-aggregate.md",
         "conversation-stack.md"
       ],
       "handoffs_created": [],
       "disposition_evidence": [
-        "W2SP-6 -> P4 / CS-8.STT8"
+        "W2SP-6 -> P4 / CS-8.STT8",
+        "W5FOLD-4 -> P9 / CH-32"
       ]
     },
     {
@@ -952,39 +1085,44 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     },
     {
       "id": "intake-2584",
-      "integration_disposition": "monitor",
+      "integration_disposition": "integrated",
       "handoffs_updated": [
-        "cpu-decode-roofline-program.md"
+        "gpu-acceleration-path.md",
+        "gpu-serving-tie-in-program.md"
       ],
       "handoffs_created": [],
       "disposition_evidence": [
-        "W2LOOP-2 -> M2"
+        "W2LOOP-2 -> P10 / GPU-PLT-2",
+        "W5GPU-4 -> P10 / GPU-PLT-1",
+        "W5GPU-5 -> P10 / GPU-PLT-2"
       ]
     },
     {
       "id": "intake-2585",
-      "integration_disposition": "knowledge_only",
+      "integration_disposition": "integrated",
       "handoffs_updated": [
-        "cpu-decode-roofline-program.md",
-        "gpu-acceleration-path.md"
+        "gpu-acceleration-path.md",
+        "gpu-serving-tie-in-program.md"
       ],
       "handoffs_created": [],
       "disposition_evidence": [
-        "W2LOOP-1 -> M2",
-        "W2LOOP-4 -> K2"
+        "W2LOOP-1 -> P10 / GPU-LOOP-1",
+        "W2LOOP-4 -> K2",
+        "W5GPU-2 -> P10 / GPU-LOOP-3",
+        "W5GPU-3 -> P10 / GPU-LOOP-2"
       ]
     },
     {
       "id": "intake-2586",
-      "integration_disposition": "knowledge_only",
+      "integration_disposition": "integrated",
       "handoffs_updated": [
-        "cpu-decode-roofline-program.md",
         "gpu-acceleration-path.md"
       ],
       "handoffs_created": [],
       "disposition_evidence": [
-        "W2LOOP-1 -> M2",
-        "W2LOOP-4 -> K2"
+        "W2LOOP-1 -> P10 / GPU-LOOP-1",
+        "W2LOOP-4 -> K2",
+        "W5GPU-2 -> P10 / GPU-LOOP-3"
       ]
     },
     {
@@ -995,7 +1133,8 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
       ],
       "handoffs_created": [],
       "disposition_evidence": [
-        "W2LOOP-3 -> K2"
+        "W2LOOP-3 -> K2",
+        "W5GPU-9 -> decline: a single-task, few-seed result with no performance lever on either device."
       ]
     },
     {
@@ -1008,7 +1147,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
       ],
       "handoffs_created": [],
       "disposition_evidence": [
-        "W2KERN-1 -> P3 / C5-ISA-1",
+        "W2KERN-1 -> P11 / C5-ISA-1",
         "W2KERN-2 -> K5",
         "W2KERN-3 -> P3 / AKX-ALL-31.EDGE"
       ]
@@ -1023,7 +1162,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
       "handoffs_created": [],
       "disposition_evidence": [
         "W2KERN-3 -> P3 / AKX-ALL-31.EDGE",
-        "W2KERN-4 -> M5"
+        "W2KERN-4 -> P3 / AK-FAILRULE-1"
       ]
     },
     {
@@ -1047,13 +1186,14 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
       "id": "intake-2591",
       "integration_disposition": "integrated",
       "handoffs_updated": [
+        "autokernel-champion-aggregate.md",
         "dflash2-block-drafter-experimental-build.md"
       ],
       "handoffs_created": [],
       "disposition_evidence": [
         "W3SPEC-1 -> P1 / DF2-12.1",
         "W3SPEC-2 -> P1 / DF2-12.1",
-        "W3SPEC-3 -> M1"
+        "W3SPEC-3 -> P9 / CH-37"
       ]
     },
     {
@@ -1146,11 +1286,13 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
       "id": "intake-2599",
       "integration_disposition": "integrated",
       "handoffs_updated": [
+        "autokernel-champion-aggregate.md",
         "typed-decision-plane.md"
       ],
       "handoffs_created": [],
       "disposition_evidence": [
-        "W4UP-3 -> P5 / TD-23.D1"
+        "W4UP-3 -> P5 / TD-23.D1",
+        "W5FOLD-1 -> P9 / CH-33"
       ]
     },
     {
@@ -1161,19 +1303,22 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
       ],
       "handoffs_created": [],
       "disposition_evidence": [
-        "W4UP-3 -> P5 / TD-23.D1"
+        "W4UP-3 -> P5 / TD-23.D1",
+        "W5FOLD-2 -> decline: the fix touches only the Metal backend; no CPU or HIP code path in our stack changes."
       ]
     },
     {
       "id": "intake-2601",
       "integration_disposition": "integrated",
       "handoffs_updated": [
+        "autokernel-champion-aggregate.md",
         "typed-decision-plane.md"
       ],
       "handoffs_created": [],
       "disposition_evidence": [
         "W4UP-3 -> P5 / TD-23.D1",
-        "W4UP-4 -> M4"
+        "W4UP-4 -> M4",
+        "W5FOLD-3 -> P9 / CH-36"
       ]
     },
     {
@@ -1203,17 +1348,17 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "P2": {
       "project_objective": "Raise DFlash2 acceptance on the production 27B MI210 path and set the drafter-training data contract before any capture.",
       "implementation_ref": "llama.cpp production tree @ ffc1bac82 (v10) src/models/dflash.cpp:735-824 (rank-256 selector), common/speculative.cpp:1658-1700 (walk), common/sampling.cpp:740-766 (point-mass verify); handoffs/active/dflash2-block-drafter-experimental-build.md:196 DF2-DRAFTER-CAPABILITY and INF-62 hard-label contract",
-      "gap": "No oracle-headroom or per-slot coverage number exists for the incumbent selector; the temp>0 branch samples proposals although point-mass proposals are lossless; the capture contract omits the teacher distribution.",
-      "operational_change": "Offline lattice-headroom probe from one dump, an env-gated point-mass A/B, and an amended capture contract.",
+      "gap": "No oracle-headroom or per-slot coverage number exists for the incumbent selector; the temp>0 branch samples proposals although point-mass proposals are lossless; the capture contract omits the teacher distribution. The served drafter accepts 0.29-0.39 on production agentic temp-1 traffic against 0.62-0.73 on the benchmark shape, and no one has fine-tuned it on our traffic.",
+      "operational_change": "Offline lattice-headroom probe, an env-gated point-mass A/B, and a KL-versus-hard-label fine-tune pilot of the served drafter on captured production traffic (DF2-FT-1).",
       "benefit_direction": "Possible higher acceptance at no training cost; greedy output and the lattice ABI unchanged; distribution exactness gated by SPEC-PIT.1.",
       "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
-      "execution_conditions": "Experimental build, off by default; one MI210 correctness window for the dump; A/B in a GPU window; contract edit is text only.",
+      "execution_conditions": "Experimental build, off by default; MI210 windows for the dump, capture (about 3 GPU-h) and training (about 4 GPU-h per arm); A/B replays in GPU windows; stack change only through an operator-signed package.",
       "closure_basis": "Immediate; a trained-selector port waits for the headroom rule (M1)."
     },
     "P3": {
       "project_objective": "AK keeps must be correct on the served shapes; the gate must catch faults that an aggregate NMSE over uniform inputs misses.",
       "implementation_ref": "epyc-inference-research autokernel evaluator/correctness.py:2377 (T0 gates), loop/gates.py:2990-3026, execution/t0_provider.py:305,3662 (race_detector_id=None); handoffs/active/autokernel-all-devices-all-dimensions.md AKX-ALL-31",
-      "gap": "No race detector, no edge-value inputs, aggregate-only NMSE, no exhaustive dequant check, no GDN exactness oracle, no ISA record, planner sees no hardware counters.",
+      "gap": "No edge-value inputs, aggregate-only NMSE, no exhaustive dequant check, no GDN exactness oracle, planner sees no counters, no in-window graph/overlap counters, no rejection-reason rules.",
       "operational_change": "Add the families, bounds and checks to the existing gate chain and candidate record, each with a planted control.",
       "benefit_direction": "Fewer false keeps and better-grounded candidates; the champion incumbent and historical keeps must still pass.",
       "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
@@ -1318,17 +1463,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
       "benefit_direction": "Work starts only when its deciding condition holds.",
       "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
       "execution_conditions": "Materialize a task only when the named trigger fires in a reviewed session.",
-      "closure_basis": "Triggers: DF2-LAT promote rule opens a trained-selector port; low top-16 coverage with low headroom opens a Domino-style head; a drafter capture start opens the frozen-trunk objective probe; native-MTP acceptance 0.05 below base on a served finetune opens head re-alignment; a DF2-12.1 degenerative divergence opens the snapshot-slot patch; the collapse canary tripping on repetition opens a thinking-mode guard; an NCM-style generator sharing a served vocabulary opens a drafter test."
-    },
-    "M2": {
-      "project_objective": "Consider looped models only when one can win on a bandwidth-bound host.",
-      "implementation_ref": "handoffs/active/cpu-decode-roofline-program.md INF-70; upstream llama.cpp PR 25994 merged, PR 29823 open",
-      "gap": "The useful step depends on a result or release that does not exist yet.",
-      "operational_change": "Owned trigger prose only; no checkbox or index next action.",
-      "benefit_direction": "Work starts only when its deciding condition holds.",
-      "owner": "handoffs/active/cpu-decode-roofline-program.md",
-      "execution_conditions": "Materialize a task only when the named trigger fires in a reviewed session.",
-      "closure_basis": "Triggers: a llama.cpp or vLLM PLT port, an independent LoopCoder-v2 replication, or a published PLT decode timing opens the Ouro/PLT CPU probe."
+      "closure_basis": "Triggers: DF2-LAT promote rule opens a trained-selector port; low top-16 coverage with low headroom opens a Domino-style head; DF2-FT-1 promotion opens the scale-up and stack-change package; the collapse canary tripping on repetition opens a thinking-mode guard. External event: a released NCM-style generator sharing a served vocabulary, with an acceptance number, opens a drafter test."
     },
     "M3": {
       "project_objective": "Edit or share KV only where context share justifies it.",
@@ -1350,25 +1485,55 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
       "execution_conditions": "Materialize a task only when the named trigger fires in a reviewed session.",
       "closure_basis": "Triggers: CS-8.STT8 advance rule admits LFM3 to the bake-off gates; a running realtime backend opens a CS-20 adapter; a Dessa paper or weights opens a reference slot; human-recorded strata open the spoken-state decider test; TD-23 completion opens a generic-readout arm; an upstream hybrid-prefix fix opens a decision np>1 retest."
     },
-    "M5": {
-      "project_objective": "Build verification tooling only where the gate is blind.",
-      "implementation_ref": "handoffs/active/rocm-verify-profile-backend.md RVP-RACE-1; handoffs/active/agentic-rocm-kernel-authoring.md C5-ISA-1",
-      "gap": "The useful step depends on a result or release that does not exist yet.",
-      "operational_change": "Owned trigger prose only; no checkbox or index next action.",
-      "benefit_direction": "Work starts only when its deciding condition holds.",
-      "owner": "handoffs/active/rocm-verify-profile-backend.md",
-      "execution_conditions": "Materialize a task only when the named trigger fires in a reviewed session.",
-      "closure_basis": "Triggers: a GPU race mutant passing all 20 runs opens a gfx90a race-only symbolic executor; an ISA archive plus a compute-bound target opens an ISA-level lowering probe; a recurring rejection class (3 or more) opens a failure-to-rule loop."
-    },
-    "M6": {
-      "project_objective": "Value of a thinking-length finetune of the CPU flagship.",
-      "implementation_ref": "epyc-orchestrator main (read 2026-10-31) orchestration/model_registry.yaml architect_general enable_thinking false; handoffs/active/architect-model-selection-bench.md:203-204",
-      "gap": "The useful step depends on a result or release that does not exist yet.",
-      "operational_change": "Owned trigger prose only; no checkbox or index next action.",
-      "benefit_direction": "Work starts only when its deciding condition holds.",
+    "P8": {
+      "project_objective": "Decide whether a thinking-on mode can raise architect_general quality on the CPU flagship.",
+      "implementation_ref": "epyc-orchestrator main (read 2026-10-31) orchestration/model_registry.yaml architect_general enable_thinking false; handoffs/active/architect-model-selection-bench.md:203-204 (degenerate think loops, reasoning auto 0/4)",
+      "gap": "Thinking is off because the base model loops; a shorter-thinking finetune of the same base has never been measured here.",
+      "operational_change": "Three-arm A/B (base thinking off, base thinking on, ThinkingCap thinking on) with a shared-head arm.",
+      "benefit_direction": "A higher-effort mode only if it beats thinking-off with bounded loops and tokens; production stays thinking-off otherwise.",
       "owner": "handoffs/active/architect-model-selection-bench.md",
-      "execution_conditions": "Materialize a task only when the named trigger fires in a reviewed session.",
-      "closure_basis": "Trigger: the operator enables thinking on a Flash-Next role, or the architect bench reopens a thinking arm; then run the ThinkingCap IQ4_XS A/B with a shared-head arm."
+      "execution_conditions": "95.5 GB download (one at a time), CPU window for the A/B; any mode change is an operator-signed stack change.",
+      "closure_basis": "Immediate."
+    },
+    "P9": {
+      "project_objective": "Keep the champion current with upstream features our consumers need, by version-past-production.",
+      "implementation_ref": "champion ak/champion/llama-cpp-ffc1bac82eec at C5 c72ec82f5; upstream PRs 30629, 30636, 29818, 30361, 25994, 30408 not ancestors; 31252/31257/31269/31287/31386/31283/29823 not fetched; tools/server/server-context.cpp +593 lines in the champion",
+      "gap": "Only #28123 of the surfaced fixes is in the champion; speech, decision, looped and np>1 consumers need code it lacks.",
+      "operational_change": "Merge-tree census first, then fold groups gated on their consumer measurements; the non-causal ubatch fix and the np>1 fixes ride as safety.",
+      "benefit_direction": "Consumers gain their features without a production patch; champion gates must pass on every fold.",
+      "owner": "handoffs/active/autokernel-champion-aggregate.md",
+      "execution_conditions": "Experimental branches from the current champion tip; store images; promotion only through the kernel-promotion runbook.",
+      "closure_basis": "Immediate."
+    },
+    "P10": {
+      "project_objective": "Test whether looped models earn a place on the MI210, where compute is spare at concurrency.",
+      "implementation_ref": "MI210 ridge 120.1 FLOP/B (handoffs/completed/mi210-mfma-compute-bound-paths.md); about 19 GiB free beside the :8083 server; upstream Nanbeige merged, Ouro PR open, PLT unported",
+      "gap": "No looped model has been built or measured on our GPU; loop count is per-file upstream; the CPU-only verdicts never priced the GPU.",
+      "operational_change": "Build plus roofline grid, a reliability-worker probe at high concurrency, a per-request loop switch, and a LoopCoder-v2 quality screen with a PLT port.",
+      "benefit_direction": "A cheaper reliability boost or effort switch if loops pay at concurrency; sequential loops are expected near 1/L aggregate, PLT is the GPU-fit form.",
+      "owner": "handoffs/active/gpu-acceleration-path.md",
+      "execution_conditions": "Experimental branch; MI210 windows sized to the 19 GiB headroom; no production change.",
+      "closure_basis": "Immediate."
+    },
+    "P11": {
+      "project_objective": "Make the GPU correctness gate able to see synchronization faults in AK candidates.",
+      "implementation_ref": "v10 gfx90a code object: s_barrier in MMVQ 161/279, MMQ 147/672, FA-mma 138/302, FA-vec 41/49 kernels; AK GPU work: 236/627 mechanisms and 15/31 keeps touch sync; ptx_verifier AMD scaffold records no events (analysis.rs:49-50)",
+      "gap": "No race detector on the GPU path; the AMD scaffold passes trivially; equivalence coverage of quantized kernels is unknown.",
+      "operational_change": "Seeded-race controls with a corrected rule, a staged AMDGCN race/deadlock executor (MMVQ plus FA-vec first), an equivalence probe for float kernels, ISA archives and an ISA-level lowering probe.",
+      "benefit_direction": "Synchronization bugs caught before a keep; no runtime cost to serving.",
+      "owner": "handoffs/active/rocm-verify-profile-backend.md",
+      "execution_conditions": "Research-repo tooling plus GPU correctness windows; 6-9 engineer-weeks for the executor, staged by milestone.",
+      "closure_basis": "Immediate."
+    },
+    "P12": {
+      "project_objective": "Stop the recorded intake failure modes (fabricated citations, stale clones, stage violations, dropped actionables) by construction.",
+      "implementation_ref": ".claude/skills/research-intake/scripts/validate_intake.py (anchors checked for presence only; any decline text accepted); vidya verify_source_anchor",
+      "gap": "Checks are self-reported or presence-only.",
+      "operational_change": "Script-written anchor marks with a cross-entry check, lane-revision pins, script-formed stage write grants, and a closed decline-code list.",
+      "benefit_direction": "Fewer silent intake defects; existing entries stay valid (grandfathered).",
+      "owner": "handoffs/active/intake-derived-work-2026-07-25.md",
+      "execution_conditions": "Deterministic tooling; no compute; skill text changes through the owning handoff.",
+      "closure_basis": "Immediate."
     }
   },
   "opportunity_scan": [
@@ -1432,22 +1597,22 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
       "application": "Edge families, worst-error bound, enumeration, race sensitivity, ISA record, counters",
       "disposition": "actionable",
       "ledger_ids": [
-        "KERN-1",
-        "KERN-10",
+        "AGENT-9",
         "KERN-3",
         "KERN-4",
         "KERN-5",
         "KERN-6",
-        "KERN-7",
         "MEM-1",
         "PRE-2550",
         "PRE-2555",
         "PRE-2556",
-        "PRE-2557",
-        "PRE-2570",
+        "PRE-2562",
         "PRE-2574",
-        "W2KERN-1",
-        "W2KERN-3"
+        "W2KERN-3",
+        "W2KERN-4",
+        "W5META-10",
+        "W5META-11",
+        "W5META-9"
       ],
       "basis": "Gate gaps confirmed in code."
     },
@@ -1477,9 +1642,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
       "disposition": "actionable",
       "ledger_ids": [
         "PRE-2552",
-        "PRE-2575",
         "SPEECH-1",
-        "SPEECH-3",
         "W2SP-1",
         "W2SP-6"
       ],
@@ -1563,16 +1726,9 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
         "AGENT-6",
         "AGENT-8",
         "KERN-9",
-        "LOOP-1",
-        "LOOP-2",
-        "LOOP-3",
-        "LOOP-5",
         "MTP-3",
         "PRE-2545",
-        "PRE-2547",
         "PRE-2551",
-        "PRE-2562",
-        "PRE-2571",
         "PRE-2573",
         "SPEC-4",
         "SPEC-6",
@@ -1607,19 +1763,12 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
         "AGENT-3",
         "AGENT-5",
         "AGENT-7",
-        "KERN-2",
-        "KERN-8",
-        "LOOP-4",
         "LOOP-6",
-        "MTP-2",
-        "MTP-4",
         "PRE-2546",
         "PRE-2554",
         "PRE-2559",
         "PRE-2564",
-        "PRE-2567",
         "PRE-2568",
-        "PRE-2572",
         "PRE-2576",
         "SPEC-3",
         "SPEC-5",
@@ -1627,15 +1776,9 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
         "SPEECH-2",
         "SPEECH-4",
         "SPEECH-7",
-        "TCAP-1",
-        "TCAP-3",
-        "W2KERN-4",
         "W2KERN-5",
-        "W2LOOP-1",
-        "W2LOOP-2",
         "W2SP-5",
         "W3DEC-8",
-        "W3SPEC-3",
         "W4UP-4",
         "W4UP-5"
       ],
@@ -1651,20 +1794,356 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
       "disposition": "declined",
       "ledger_ids": [
         "AGENT-11",
-        "AGENT-9",
-        "KERN-11",
+        "LOOP-5",
         "MEM-3",
         "MEM-5",
         "MTP-5",
-        "PRE-2563",
         "PRE-2566",
         "TCAP-4",
-        "W2KERN-7"
+        "W2KERN-7",
+        "W5FOLD-2",
+        "W5GPU-6",
+        "W5GPU-7",
+        "W5GPU-8",
+        "W5GPU-9",
+        "W5META-5",
+        "W5META-6",
+        "W5META-7",
+        "W5META-8"
       ],
       "basis": "Explicit grounded declines."
+    },
+    {
+      "scan_id": "S14",
+      "source_ref": "intake-2548 claims; intake-2578 claims; wave-5 drafter costing",
+      "implementation_ref": "handoffs/active/dflash2-block-drafter-experimental-build.md DF2-4, agentic-serving-harness-fixes.md:60-79 acceptance on production traffic",
+      "mechanism": "Forward-KL fine-tuning of a draft model on a frozen trunk",
+      "consumer": "Served 27B DFlash2 drafter on :8083",
+      "application": "KL versus hard-label fine-tune pilot on captured traffic",
+      "disposition": "actionable",
+      "ledger_ids": [
+        "MTP-1",
+        "MTP-2",
+        "MTP-4",
+        "PRE-2548",
+        "PRE-2549",
+        "W5FT-1",
+        "W5FT-2",
+        "W5FT-3",
+        "W5FT-4",
+        "W5FT-5",
+        "W5FT-6"
+      ],
+      "basis": "Measured traffic gap; trainer and converter exist."
+    },
+    {
+      "scan_id": "S15",
+      "source_ref": "intake-2567 claims; intake-2572 claims",
+      "implementation_ref": "handoffs/active/architect-model-selection-bench.md:203-204",
+      "mechanism": "Shorter-thinking finetune of the CPU flagship",
+      "consumer": "architect_general effort mode",
+      "application": "Thinking-on A/B with loop-rate gate",
+      "disposition": "actionable",
+      "ledger_ids": [
+        "PRE-2567",
+        "PRE-2572",
+        "TCAP-1",
+        "TCAP-3"
+      ],
+      "basis": "Thinking is off for a measurable reason the finetune targets."
+    },
+    {
+      "scan_id": "S16",
+      "source_ref": "intake-2575..2602 PR and issue records",
+      "implementation_ref": "champion C5 c72ec82f5",
+      "mechanism": "Upstream features absent from the champion",
+      "consumer": "Champion fold program",
+      "application": "Census then gated folds",
+      "disposition": "actionable",
+      "ledger_ids": [
+        "LOOP-3",
+        "PRE-2575",
+        "SPEECH-3",
+        "W3SPEC-3",
+        "W5FOLD-1",
+        "W5FOLD-3",
+        "W5FOLD-4"
+      ],
+      "basis": "Ancestry checked read-only."
+    },
+    {
+      "scan_id": "S17",
+      "source_ref": "intake-2547, 2571, 2584, 2585, 2586",
+      "implementation_ref": "MI210 ridge and headroom",
+      "mechanism": "Weight reuse across loops; parallel loops",
+      "consumer": "GPU worker and effort routing",
+      "application": "Build, probes and port",
+      "disposition": "actionable",
+      "ledger_ids": [
+        "LOOP-1",
+        "LOOP-2",
+        "LOOP-4",
+        "PRE-2547",
+        "PRE-2571",
+        "W2LOOP-1",
+        "W2LOOP-2",
+        "W5GPU-1",
+        "W5GPU-2",
+        "W5GPU-3",
+        "W5GPU-4",
+        "W5GPU-5"
+      ],
+      "basis": "GPU roofline computed; no GPU measurement exists."
+    },
+    {
+      "scan_id": "S18",
+      "source_ref": "intake-2557, 2570 claims; v10 code object census",
+      "implementation_ref": "research AK gate; RVP",
+      "mechanism": "Race/deadlock and equivalence checking over GPU ISA",
+      "consumer": "AK GPU correctness gate",
+      "application": "Executor and probes",
+      "disposition": "actionable",
+      "ledger_ids": [
+        "KERN-1",
+        "KERN-10",
+        "KERN-11",
+        "KERN-2",
+        "KERN-7",
+        "KERN-8",
+        "PRE-2557",
+        "PRE-2570",
+        "W2KERN-1",
+        "W5VERIF-1",
+        "W5VERIF-2",
+        "W5VERIF-3",
+        "W5VERIF-4"
+      ],
+      "basis": "Sync-touching keeps exist; no detector."
+    },
+    {
+      "scan_id": "S19",
+      "source_ref": "intake-2563 re-dive claims",
+      "implementation_ref": "validate_intake.py",
+      "mechanism": "Ledger rows for grants and refusals; per-arrival policy",
+      "consumer": "research-intake skill",
+      "application": "Four hardening tasks",
+      "disposition": "actionable",
+      "ledger_ids": [
+        "PRE-2563",
+        "W5META-1",
+        "W5META-2",
+        "W5META-3",
+        "W5META-4"
+      ],
+      "basis": "Failure modes recorded in the skill."
     }
   ],
-  "actionable_additions": [],
+  "actionable_additions": [
+    {
+      "ledger_id": "W5FOLD-1",
+      "source": "intake-2599 Stage-2 wave-5 plan-revision analysis",
+      "action": "Fold #30408 non-causal ubatch fix as a cheap champion safety fix after a defect-reproducing control",
+      "terminal_mapping": "P9 / CH-33"
+    },
+    {
+      "ledger_id": "W5FOLD-2",
+      "source": "intake-2600 Stage-2 wave-5 plan-revision analysis",
+      "action": "Decline #30100 (Metal MUL_MAT+ADD fusion) for the champion",
+      "terminal_mapping": "decline: the fix touches only the Metal backend; no CPU or HIP code path in our stack changes."
+    },
+    {
+      "ledger_id": "W5FOLD-3",
+      "source": "intake-2601 Stage-2 wave-5 plan-revision analysis",
+      "action": "Track draft PR #29832 as the possible replacement base for the systemone fold when it merges",
+      "terminal_mapping": "P9 / CH-36"
+    },
+    {
+      "ledger_id": "W5FOLD-4",
+      "source": "intake-2575, intake-2579, intake-2580 Stage-2 wave-5 plan-revision analysis",
+      "action": "Real conflict and ggml-delta census before any audio-group cherry-pick",
+      "terminal_mapping": "P9 / CH-32"
+    },
+    {
+      "ledger_id": "W5FT-1",
+      "source": "intake-2548, intake-2549, intake-297 Stage-2 wave-5 plan-revision analysis",
+      "action": "Candidate (a), the 27B DFlash2 drafter (1.9B, GGUF-verified). Capture: 5 taps + final hidden = 61,440 B/token, only for completions plus their 2,048-token window (the drafter attends a 2,048 sliding window). ~0.8-1.2M tokens = 50-75 GB. Capture runs on the ...",
+      "terminal_mapping": "P2 / DF2-FT-1"
+    },
+    {
+      "ledger_id": "W5FT-2",
+      "source": "intake-2548, intake-2578 Stage-2 wave-5 plan-revision analysis",
+      "action": "Candidate (c), the frontdoor Qwen3.6-35B-A3B MTP head (blk.40: 0.845B params, of which ~0.80B are 256x experts; hidden 2048; served from the same Q8_0 file at draft_max 4). Capture the trunk pre-head hidden at every position (4,096 B/token). It is both the ...",
+      "terminal_mapping": "P2 / DF2-FT-1"
+    },
+    {
+      "ledger_id": "W5FT-3",
+      "source": "intake-2548, intake-2578 Stage-2 wave-5 plan-revision analysis",
+      "action": "Candidate (b), the Qwen3.8-Flash-Next MTP head (shared-Q8_0 file: 32 tensors, 2.607B params, of which 2.517B are 512x experts; attention with a QSA indexer, top_k 2048; 4-stream hyper-connections). Capture: the hc stream state at 10,240 x bf16 = 20,480 ...",
+      "terminal_mapping": "P2 / DF2-FT-1"
+    },
+    {
+      "ledger_id": "W5FT-4",
+      "source": "intake-2548, intake-2549 Stage-2 wave-5 plan-revision analysis",
+      "action": "Settle KL versus hard labels on the real served drafter (arms H and K plus a second seed in DF2-FT-1), not on the Soft-MTP 167M toy. The toy result would not transfer: different module (non-causal block drafter with a selector), different vocabulary (50,304 ...",
+      "terminal_mapping": "P2 / DF2-FT-1"
+    },
+    {
+      "ledger_id": "W5FT-5",
+      "source": "intake-2548 Stage-2 wave-5 plan-revision analysis",
+      "action": "Fold MTP-4 (realign a served finetune's stock head) into a standing onboarding rule. Any served drafter or MTP head not co-trained on the exact served trunk and quant gets frozen-trunk KL re-alignment on its own traffic. That covers fine-tunes (the ...",
+      "terminal_mapping": "P2 / DF2-FT-1"
+    },
+    {
+      "ledger_id": "W5FT-6",
+      "source": "intake-2578 Stage-2 wave-5 plan-revision analysis",
+      "action": "Scope SPEC2-4 (Nemotron Sec 3.4 recipe). Hidden-state sampling over earlier draft steps applies to recursive MTP heads (frontdoor, Flash-Next), not to DFlash2, which drafts its whole block in one non-causal pass from the anchor. T=2 versus T=1 is a free extra ...",
+      "terminal_mapping": "P2 / DF2-FT-1"
+    },
+    {
+      "ledger_id": "W5GPU-1",
+      "source": "intake-2547, intake-2571, intake-2551 Stage-2 wave-5 plan-revision analysis",
+      "action": "Restate LOOP-1 with GPU arithmetic: loops multiply weight bytes, KV reads and FLOPs equally, so aggregate is about 1/L at every batch; batching removes only the weight term; MHA KV (768 KiB/token at 4 loops) makes Ouro-1.4B KV-bound beyond about 123 tokens of ...",
+      "terminal_mapping": "P10 / GPU-LOOP-1"
+    },
+    {
+      "ledger_id": "W5GPU-2",
+      "source": "intake-2585, intake-2586 Stage-2 wave-5 plan-revision analysis",
+      "action": "Per-request num_loops (setter, graph-param/can_reuse, k-class batch split, prefix-cache rule k2<=k, k_max cache sizing) with a router-oracle decision rule.",
+      "terminal_mapping": "P10 / GPU-LOOP-3"
+    },
+    {
+      "ledger_id": "W5GPU-3",
+      "source": "intake-2585, intake-2547 Stage-2 wave-5 plan-revision analysis",
+      "action": "Looped small model as reliability-boosted GPU batch worker vs equal-cost dense and majority-of-4 controls, with the incumbent worker scored for the first time on the worker battery.",
+      "terminal_mapping": "P10 / GPU-LOOP-2"
+    },
+    {
+      "ledger_id": "W5GPU-4",
+      "source": "intake-2584, intake-2571 Stage-2 wave-5 plan-revision analysis",
+      "action": "Replace the LoopCoder-v2 monitor with a transformers-custom-code quality screen on the MI210 (HE+, LCB, BCB, coder suite) against Qwen3.8-27B and the CPU frontdoor.",
+      "terminal_mapping": "P10 / GPU-PLT-1"
+    },
+    {
+      "ledger_id": "W5GPU-5",
+      "source": "intake-2584, intake-2571 Stage-2 wave-5 plan-revision analysis",
+      "action": "Port PLT (CLP rows, shared loop-1 KV, 64-token gated window) as a new arch on llama.cpp-experimental with HF-parity and decode-step-ratio acceptance.",
+      "terminal_mapping": "P10 / GPU-PLT-2"
+    },
+    {
+      "ledger_id": "W5GPU-6",
+      "source": "intake-2551 Stage-2 wave-5 plan-revision analysis",
+      "action": "LOOP-5 re-check on the GPU: at batch above E/top_k every expert is touched each pass, so a looped MoE at R=5 reads about R x its total expert bytes (1.3B total x 5 = 6.5 GB vs 2.9B x 1 = 2.9 GB for a quality of 46.9 vs 50.2 Overall); GPU does not reverse the ...",
+      "terminal_mapping": "decline: no looped-MoE checkpoint or code is released; reopen on a weights release."
+    },
+    {
+      "ledger_id": "W5GPU-7",
+      "source": "intake-2550, intake-2574 Stage-2 wave-5 plan-revision analysis",
+      "action": "MEM-3 re-priced on the MI210 instead of the CPU: text tokens cost 18.7 GB / (1433 GB/s x 0.715 fp16 attainment) = 18 ms vs 9 ms for the 9.3 GB base (L4 check: 18.7/0.30 = 62 ms vs the 68 ms the author reports); chip tokens are serial and autoregressive, ...",
+      "terminal_mapping": "decline: same GPU re-pricing as the calculator row; serial chip tokens dominate on any device."
+    },
+    {
+      "ledger_id": "W5GPU-8",
+      "source": "intake-2546, intake-2568 Stage-2 wave-5 plan-revision analysis",
+      "action": "LOOP-6 re-check: the monitor was never CPU-bandwidth based; the constraints are a per-dataset VQ tokenizer at about 100M-725M parameters with no served-vocabulary checkpoint, finest level (the first token) generated last, and no acceptance number against an ...",
+      "terminal_mapping": "decline: no NCM checkpoint shares a served vocabulary and no acceptance number exists; reopen on such a release."
+    },
+    {
+      "ledger_id": "W5GPU-9",
+      "source": "intake-2587 Stage-2 wave-5 plan-revision analysis",
+      "action": "W2LOOP-3 re-check: GDN beta cap is a monitorability finding with no GPU lever; unchanged.",
+      "terminal_mapping": "decline: a single-task, few-seed result with no performance lever on either device."
+    },
+    {
+      "ledger_id": "W5META-1",
+      "source": "intake-2563 Stage-2 wave-5 plan-revision analysis",
+      "action": "Anchor mark written only by a script, plus cross-paste check, for fabricated citations",
+      "terminal_mapping": "P12 / ID-RI-ANCHOR-GATE"
+    },
+    {
+      "ledger_id": "W5META-10",
+      "source": "intake-2562 Stage-2 wave-5 plan-revision analysis",
+      "action": "Summed vs active-union vs critical-path attribution and no cross-run subtraction",
+      "terminal_mapping": "P3 / AK-PROF-ATTR-1"
+    },
+    {
+      "ledger_id": "W5META-11",
+      "source": "intake-2562 Stage-2 wave-5 plan-revision analysis",
+      "action": "Resin vs Annex K / AK loop (Resin cite = docs/benchmarks.md, optimize-resin-performance SKILL.md; ours = measurement/protocols/kernel-research.md, bench-cpu.md, gpu-cross-device.md) / noise floor: Resin none (qualitative 'show the spread') vs ours A/A p95 phi ...",
+      "terminal_mapping": "P3 / AK-WIN-CNT-1 / AK-PROF-ATTR-1"
+    },
+    {
+      "ledger_id": "W5META-2",
+      "source": "intake-2563 Stage-2 wave-5 plan-revision analysis",
+      "action": "Pin lane revision per citation and emit stale_epoch for changed files, for stale clones",
+      "terminal_mapping": "P12 / ID-RI-LANE-HEAD"
+    },
+    {
+      "ledger_id": "W5META-3",
+      "source": "intake-2563 Stage-2 wave-5 plan-revision analysis",
+      "action": "Script-formed stage write grant checked by main, replacing self-reported audit lines",
+      "terminal_mapping": "P12 / ID-RI-STAGE-GUARD"
+    },
+    {
+      "ledger_id": "W5META-4",
+      "source": "intake-2563 Stage-2 wave-5 plan-revision analysis",
+      "action": "Closed decline-reason vocabulary so no actionable is closed by a free-text reason",
+      "terminal_mapping": "P12 / ID-RI-DECLINE-VOCAB"
+    },
+    {
+      "ledger_id": "W5META-5",
+      "source": "intake-2563 Stage-2 wave-5 plan-revision analysis",
+      "action": "Typed capability interfaces for dive subagents",
+      "terminal_mapping": "decline: the dive return schema plus the per-claim second reader already give typed, checked outputs."
+    },
+    {
+      "ledger_id": "W5META-6",
+      "source": "intake-2563 Stage-2 wave-5 plan-revision analysis",
+      "action": "Durable append-only run records",
+      "terminal_mapping": "decline: session resume already exists in the skill and the plan checkpoint carries the durable record."
+    },
+    {
+      "ledger_id": "W5META-7",
+      "source": "intake-2563 Stage-2 wave-5 plan-revision analysis",
+      "action": "Policy-gated self-modification of the skill",
+      "terminal_mapping": "decline: Octopus gates on path coverage only and itself says on-contract behaviour is not proven, so it adds nothing to plan review."
+    },
+    {
+      "ledger_id": "W5META-8",
+      "source": "intake-2563 Stage-2 wave-5 plan-revision analysis",
+      "action": "Unverified ids",
+      "terminal_mapping": "decline: the intake id resolver and the vidya citation gate already catch dangling ids."
+    },
+    {
+      "ledger_id": "W5META-9",
+      "source": "intake-2562 Stage-2 wave-5 plan-revision analysis",
+      "action": "In-window path/compile counters missing from Annex K record grammar",
+      "terminal_mapping": "P3 / AK-WIN-CNT-1"
+    },
+    {
+      "ledger_id": "W5VERIF-1",
+      "source": "intake-2570, intake-2557 Stage-2 wave-5 plan-revision analysis",
+      "action": "Record the race/deadlock/equivalence coverage matrix per hot gfx90a kernel family (v10 code-object counts and source anchors in this file header) in rocm-verify-profile-backend.md beside RVP-RACE-2, so later scoping cites measured coverage, not the paper ...",
+      "terminal_mapping": "P11 / RVP-RACE-2"
+    },
+    {
+      "ledger_id": "W5VERIF-2",
+      "source": "intake-2570 Stage-2 wave-5 plan-revision analysis",
+      "action": "Equivalence-port decision: decline for bit-level quant kernels on coverage (1116/1497 AK GPU experiment rows); a seeded sub-tolerance mutant probe decides the FA/GDN/mmvf subclass.",
+      "terminal_mapping": "P11 / RVP-EQV-1"
+    },
+    {
+      "ledger_id": "W5VERIF-3",
+      "source": "intake-2570 Stage-2 wave-5 plan-revision analysis",
+      "action": "Fix the RVP-RACE-1 decision rule (>=1 of 20 passes is a miss, not all 20), add waves-per-WG and ISA s_barrier-delta controls, add the LDS-DMA site, and make its mutants RVP-RACE-2 fixtures rather than its trigger.",
+      "terminal_mapping": "P11 / RVP-RACE-1"
+    },
+    {
+      "ledger_id": "W5VERIF-4",
+      "source": "intake-2570, intake-2557 Stage-2 wave-5 plan-revision analysis",
+      "action": "Level choice for the gfx90a checker is AMDGCN ISA from the built code object, not LLVM IR or HIP source: IR lacks waitcnts and the inline-asm semantics the AMD hot paths rely on, and cannot see ISA-edited (C5-ISA-2) candidates.",
+      "terminal_mapping": "P11 / RVP-RACE-2"
+    }
+  ],
   "steering_reconciliation": [
     {
       "seq": 1,
@@ -1683,13 +2162,22 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
       "disposition": "context-only",
       "plan_ref": null,
       "reason": "Applied as the scoring and grounding lens: every packet names the current implementation it changes (registry, llama.cpp tree, AK gate, voice cascade, REPL routing) and a deciding probe."
+    },
+    {
+      "seq": 3,
+      "stage": 3,
+      "ts": "2026-11-01T04:00:00Z",
+      "verbatim": "The operator has NOT approved the plan yet. Revise it. [...] 1. Soft-MTP: \"isn't this a training/fine-tuning of the draft model though?\" [...] 2. \"We should consider which features from upstream llama.cpp we should fold into our champion.\" [...] 3. Looped transformers: \"what about the GPU? Did the research intake completely ignore it?\" [...] 4. The triggers [...] \"all seem relevant beyond just knowledge. Really the planner couldn't think of any actionables?\" [...] 5. Octopus-SI-OS: could it improve the quality of our research-intake skill? [...] 6. Resin: say exactly what about its measurement discipline is weaker [...] 7. Volta/ptx_verifier: \"NVIDIA-only is not a sufficient reason to discard unless there's also a reason we wouldn't benefit much from porting it to our hardware.\" [...] 8. Qwenputer: [...] On a SMALL model served on the GPU [...] does an in-weights calculator become worthwhile? [...] General: the intake under-weighted the GPU.",
+      "disposition": "planned",
+      "plan_ref": "P9",
+      "reason": "Revision 2 answers all eight points: P2 drafter fine-tune pilot, P9 upstream fold, P10 looped models on the MI210, P8/P11/P3 triggers turned into tasks, P12 Octopus-derived skill hardening, Resin comparison in P3, GPU re-pricing of every CPU-bandwidth verdict."
     }
   ],
   "outcome_reviews": {
     "W3SPEC-1": {
       "required_outcome": "Bounded probe (own scratch server, GPU correctness window, no region-lock needed per CORRECTNESS rule): on the production 27B shape (Q8_0, DFlash2 n-max 7, np 4, kv-unified, q8 KV, ROCm0) and on the frontdoor shape (Qwen3.6-35B-A3B-MTP Q8_0, draft-mtp n 4, np ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; DF2-12.1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; DF2-12.1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
@@ -1702,7 +2190,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "W3SPEC-2": {
       "required_outcome": "Fold the DF2-12 row and W3SPEC-1 into one run; add the frontdoor :8070 MTP np4 shape (not covered by DF2-12, which names only Qwen3.8-27B DFlash2) and the cross-content canary.",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; DF2-12.1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; DF2-12.1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
@@ -1715,7 +2203,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "W4UP-1": {
       "required_outcome": "Temp-0 np>1 token-identity probe on :8070 (MTP np4) and :8083 (DFlash2 np4): per slot compare against an np=1 cold run of the same prompt AND the same np4 server with speculation off; include (i) mixed spec/non-spec interleaving, (ii) slot reuse: slot k ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; DF2-12.1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; DF2-12.1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
@@ -1728,7 +2216,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "W4UP-2": {
       "required_outcome": "Run tests/test-recurrent-state-rollback (CPU, correctness only, no quiet host needed) on our qwen4exp-capable experimental binary with the frontdoor GGUF; require dirty-ctx and multi-seq split replay both pass. Prove binary freshness vs commit 0771238438 ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; DF2-12.1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; DF2-12.1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
@@ -1741,7 +2229,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "MEM-2": {
       "required_outcome": "Add a state-level conformance check to the hybrid checkpoint/fork path: after a restore (common_prompt_checkpoint load_tgt, or KPF fork from a checkpoint) serialise the recurrent half of source and destination with llama_state_seq_get_data_ext(PARTIAL_ONLY) ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; KPF-RS-1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; KPF-RS-1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
@@ -1754,7 +2242,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "SPEC2-1": {
       "required_outcome": "Add a per-request MTP health canary to the Flash-Next serving gate: flag any request with >=64 drafted tokens and zero accepted, or a repeated n-gram window in the generated tail (reuse coherence_gate tiers 0-2), and log per-request accepted/drafted from ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; SPEC-CANARY.1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; SPEC-CANARY.1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/speculative-decoding-mtp-refresh.md",
@@ -1767,7 +2255,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "SPEC2-2": {
       "required_outcome": "Extend G2-CONC with a simultaneous-multi-prefill probe: c in {2,3,5} identical-length prompts differing by a salt, issued at the same instant, temp 0, ignore-eos 128 tokens, MTP on vs MTP off, compare every request token-for-token to its solo -np 1 output; ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; G2-CONC.MP carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; G2-CONC.MP carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/cpu-decode-roofline-program.md",
@@ -1780,7 +2268,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "SPEC-1": {
       "required_outcome": "DF2-LAT zero-training lattice-headroom probe. (i) Experimental build from the current champion tip, env-gated and off by default: append the 16 unary draft logits to each packed DFlash2 lattice row (src/models/dflash.cpp build_post_sampling; row is K+K*K=272 ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; DF2-LAT carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; DF2-LAT carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
@@ -1793,7 +2281,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "SPEC-2": {
       "required_outcome": "DF2-PM point-mass proposal screen at production temperature. Behind an env knob in the experimental build, the DFlash2 temp>0 branch takes the argmax selector walk instead of sampling softmax(scores/T), and emits dist {id, prob 1.0} per slot. The existing ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; DF2-PM carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; DF2-PM carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
@@ -1806,20 +2294,20 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "MTP-1": {
       "required_outcome": "Amend the DF2-DRAFTER-CAPABILITY trainer and data contract (the INF-62 record contract inherited from the cancelled DF2-QWOPUS) so the default objective is forward-KL self-distillation to the target's own teacher-forced NTP distribution rather than hard ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; DF2-DRAFTER-CAPABILITY.OBJ carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; DF2-FT-1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
-          "task_id": "DF2-DRAFTER-CAPABILITY.OBJ",
-          "task_text": "- [ ] **DF2-DRAFTER-CAPABILITY.OBJ — Fix the drafter-training data contract before any capture (intake-2548#record, intake-2578#record, intake-297#record).** Amend the capture contract inherited from INF-62 (\"hard next-token labels\") so every feature dump also taps the target's final post-norm hidden state (5120 x bf16 = 10,240 bytes per token, +20% over the current taps), which yields the exact teacher distribution through the frozen output head. Make forward KL toward the target distribution the default objective with hard labels as the fallback arm (with a frozen trunk, Soft-MTP's gradient equals direct forward KL), and record the Nemotron 3 Ultra frozen-backbone recipe (temperature 2, hidden states sampled from earlier draft steps) as an option. Note that z-lab/dflash @ 07ebd93 ships no training code, so any drafter or selector training is research, not a port.",
-          "acceptance": "Contract text amended in the handoff with the tap, default objective, fallback arm and recipe option; the capture script refuses to start without the final-hidden tap."
+          "task_id": "DF2-FT-1",
+          "task_text": "- [ ] **DF2-FT-1 — KL re-alignment pilot of the served 27B DFlash2 drafter on its own agentic traffic, target frozen (intake-2548#04, intake-2549#record, intake-2578#record, intake-297#record, intake-1848#record).** Why: at the production :8083 shape the drafter accepts 0.29-0.39 on real temp-1 agentic traffic (agentic-serving-harness-fixes.md:60,74,79). On the canonical benchmark shape it accepts 0.62-0.73. The two shapes differ in several factors, so this pilot is the deciding probe, not a presumed fix. Drafter facts (GGUF header): Qwen3.8-27B-DFlash2-Q8_0, size_label 1.9B, 81 tensors, 5 non-causal blocks with sliding window 2048, fc 25600->5120, selector codebooks 2 x 256 x 248320. It is headless and borrows the target's frozen token_embd and output (5120 x 248320 each). Steps: (0) Corpus = the DS41-C95 wire contexts under /mnt/raid0/llm/tmp/ds41-c95/results (36 wire-body captures; DF2-14 counted 320 turns / 630k generated tokens). Hold out every C4 run untouched. For each held-in request, regenerate 2 completions at the production sampler on the :8083 argv (X0_ARGV_8083.txt), capped at 2048 tokens, <=3 MI210-h; this also removes the need to reconstruct reasoning text from the wire bodies. (1) Write a feature-dump tool on a llama.cpp-experimental branch cut from the current champion tip. Per token it writes the 5 taps at target_layers [6,20,34,48,62] plus the target final post-norm hidden: 5 x 10,240 + 10,240 = 61,440 B/token, the DF2-DRAFTER-CAPABILITY.OBJ contract. It writes only each completion and its 2,048-token window prefix. Expect ~0.8-1.2M tokens = 50-75 GB in <=2 rolling shards. Capture held-out C4 the same way for the offline proxy. Prefill runs at the measured production-shape 410-574 t/s, <=3 MI210-h. (2) Train in a NEW ROCm venv; do not modify the two verified venvs. Use NeMo Automodel train_dflash2 @1667095 with the sdpa attention backend and an offline-feature dataset in place of the online target. Warm-start from z-lab/Qwen3.8-27B-DFlash2 bf16. The whole drafter is trainable: bf16 weights + fp32 master + AdamW ~16 B/param = ~31 GB, plus frozen embed/output 5.1 GB; that fits 64 GB because target features are precomputed. Arm H = Automodel hard block CE on the sampled tokens. Arm K = forward KL at T=1 to the teacher, computed from the final-hidden tap through the frozen output_norm + W with Automodel KDLoss (as in jetspec_core.py), chunked; its selector term is KL over the top-16 candidates, renormalized. Both arms share data order, seed, steps and LR; add a second seed for K; <=4 MI210-h total. (3) Convert with convert_hf_to_gguf.py (DFlash2DraftModel, --target-model-dir /mnt/raid0/llm/models/turboderp/Qwen3.8-27B-exl3-4.00bpw for config and tokenizer), then quantize to Q8_0. Six controls: (i) frozen manifest: sha256 of the target, served drafter and z-lab bf16; champion binary identity; held-out request list; sampler; seeds. (ii) Baselines: the served drafter, plus a round-trip arm (z-lab bf16 through our converter and quantizer, untrained) that must be tensor-equal after dequant or within the A/A band on DF2-4. (iii) Per-request raw draft_n, draft_n_accepted, predicted_n and timings in JSONL, plus the offline teacher-forced expected-accept-length proxy per held-out block. (iv) Holdout: all C4 runs, replayed twice ABAB on a fresh server per arm at the production argv, plus the DF2-4 12-prompt benchmark per arm. (v) Full denominator: every held-out request, failures counted. (vi) Predeclared rule. PROMOTE (open DF2-FT-2) if the best arm beats the incumbent on held-out weighted acceptance (sum accepted / sum drafted) by >=0.05 absolute on both reps (about +10% tokens per verify step at n_max 7), AND on held-out decode tok/s by >=8%, AND DF2-4 acceptance is >= incumbent - 0.02, AND the coherence gate is clean with the DF2-6 greedy pass count not below the incumbent. KL becomes the default drafter objective if K - H >= 0.02 on both reps and the seed-2 replicate has the same sign; |K - H| < 0.01 means cost-neutral (pick hard labels, which need no final-hidden tap). A gain of +0.02..+0.05 earns one more shard of <=1M fresh resamples, a retrain, and one more application of the rule. Below +0.02, KILL and record. Final step, on any verdict: amend DF2-DRAFTER-CAPABILITY with the objective verdict and an onboarding rule. The rule makes frozen-trunk re-alignment on the model's own served traffic the default for any served drafter or MTP head not co-trained on that exact trunk and quant. It names the next instances: the frontdoor 35B-A3B MTP head, then the Flash-Next head. Budget: ~13 MI210-h (~0.55 card-day) in GPU windows booked through the backlog-scheduling calendar, with :8083 drained per preempt-by-drain, plus 4-6 desk days (dump tool, trainer adaptation, venv; CPU-only smoke first).",
+          "acceptance": "Committed report with the frozen manifest; the per-request JSONL for incumbent, round-trip, H, K and K-seed2 on all held-out C4 requests x 2 reps; DF2-4 results per arm; the converted candidate GGUF sha256s; the decision line (PROMOTE / one-more-shard / KILL plus the KL-vs-hard verdict) stated against the predeclared thresholds; and the DF2-DRAFTER-CAPABILITY amendment (objective verdict, onboarding rule, ordered next instances) applied by the owning session."
         }
       ]
     },
     "KERN-3": {
       "required_outcome": "Add structured edge-value input families to the AK op suite beside the AK_SENS scale transforms. Families: f16-range near-max (overflow), subnormal-scale (underflow), cancellation pairs within reduction rows, softmax rows that are all-equal or contain -inf, ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; AKX-ALL-31.EDGE carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; AKX-ALL-31.EDGE carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
@@ -1832,7 +2320,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "KERN-5": {
       "required_outcome": "Add a per-element worst-error bound next to NMSE on the GPU served-shape case set. Calibrate the anchor's max-abs error per (op, type, shape) over 5 seeds and gate on k x anchor, the way the CPU_REPACK oracle already does.",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; AKX-ALL-31.EDGE carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; AKX-ALL-31.EDGE carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
@@ -1845,7 +2333,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "W2KERN-3": {
       "required_outcome": "Close the verified AK gate gaps (no race detector, race_detector_id=None; no edge-value inputs; NMSE-only oracle) with a CAKE-style pre-GPU static filter tier: run the cheapest hazard/legality checks (LDS barrier ordering, wave64/exec-mask hazards from the ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; AKX-ALL-31.EDGE carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; AKX-ALL-31.EDGE carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
@@ -1858,7 +2346,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "KERN-4": {
       "required_outcome": "Exhaustive bit-level decode check per served quant type (Q4_K, Q6_K, IQ2_*, IQ3_*, IQ4_XS, MXFP4). Enumerate the full per-element code space (quant codes x sub-block scale/min codes) at d/dmin in {0, subnormal, 1, f16 max}. Compare the candidate CPU (AVX-512) ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; AKX-ALL-31.QDEC carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; AKX-ALL-31.QDEC carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
@@ -1871,7 +2359,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "MEM-1": {
       "required_outcome": "Add a deterministic one-hot RAM oracle case to the GATED_DELTA_NET tests of an EXPERIMENTAL champion-derived llama.cpp branch (tests/test-backend-ops.cpp test_gated_delta_net family, or a sibling test-gdn-ram): alpha=1 (g=0), beta=1, one-hot k and q, ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; AKX-ALL-31.GDN carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; AKX-ALL-31.GDN carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
@@ -1884,33 +2372,33 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "KERN-1": {
       "required_outcome": "Race-sensitivity mutation control for the GPU correctness gate. In a llama.cpp-experimental worktree, build 3 seeded-race HIP mutants, each deleting one __syncthreads/barrier: MMQ tile load, MMVQ partial-sum reduction, FA tile softmax. Run the existing AK ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; RVP-RACE-1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; RVP-RACE-1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/rocm-verify-profile-backend.md",
           "task_id": "RVP-RACE-1",
-          "task_text": "- [ ] **RVP-RACE-1 — Measure whether the correctness gate can see a race at all (intake-2557#record, intake-2570#record).** GPU: in a llama.cpp-experimental worktree build three seeded-race HIP mutants, each deleting one barrier in MMQ, MMVQ and the FA kernel, and run the served-shape suite 20 times each. CPU: build test-backend-ops with ThreadSanitizer, using LLVM libomp with Archer annotations, and run the threaded ops. Decision rule: if any GPU mutant passes the gate in all 20 runs, open the gfx90a race-only symbolic-executor trigger; if all are caught, record the gate as race-sensitive at these sites. The v10 anchor must produce zero TSAN reports beyond a documented suppression list.",
-          "acceptance": "Per-mutant pass/fail counts over 20 runs, the TSAN report on the anchor, and the stated verdict."
+          "task_text": "- [ ] **RVP-RACE-1 — Measure whether the correctness gate can see a race at all (intake-2557#record, intake-2570#record).** GPU: in a llama.cpp-experimental worktree from the v10 tip build seeded-race HIP mutants, each deleting one barrier: MMQ tile load (mmq.cuh barrier sites), MMVQ cross-warp tmp_shared reduction (mmvq.cu nwarps 4 and 8 routes), MMVQ LDS-DMA double buffer (mmvq.cu:1063-1065, run with GGML_CUDA_Q8_PREFETCH=1), FA-mma tile softmax; prove each mutant structurally (s_barrier count of that kernel in the disassembled gfx90a code object drops vs the unmutated build) and record waves-per-workgroup at each served shape (a single-wave site is excluded as not a race). Run the AK served-shape test-backend-ops case set 20x per mutant and 20x on the unmutated build (frozen case manifest, per-run raw verdicts and NMSE kept). CPU: build test-backend-ops with ThreadSanitizer using LLVM libomp with Archer annotations and run the threaded ops on the v10 anchor. Decision rule: a GPU mutant that passes the gate in >=1 of 20 runs is a measured race miss; the unmutated build must pass 20/20; the mutant set becomes the fixture set of RVP-RACE-2 either way. The v10 anchor must produce zero TSAN reports beyond a documented suppression list.",
+          "acceptance": "Per-mutant table (site, s_barrier delta, waves/WG, pass count out of 20, max NMSE) plus the 20/20 control, committed with raw verdicts; TSAN anchor report with suppression list; fixtures handed to RVP-RACE-2."
         }
       ]
     },
     "KERN-10": {
       "required_outcome": "Wire a CPU race detector for routes touching threading. Build a TSAN test-backend-ops (CPU), using LLVM libomp with Archer annotations because production uses OpenMP; GGML_OPENMP=OFF would test a different threading path. Run it on the v10 anchor first.",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; RVP-RACE-1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; RVP-RACE-1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/rocm-verify-profile-backend.md",
           "task_id": "RVP-RACE-1",
-          "task_text": "- [ ] **RVP-RACE-1 — Measure whether the correctness gate can see a race at all (intake-2557#record, intake-2570#record).** GPU: in a llama.cpp-experimental worktree build three seeded-race HIP mutants, each deleting one barrier in MMQ, MMVQ and the FA kernel, and run the served-shape suite 20 times each. CPU: build test-backend-ops with ThreadSanitizer, using LLVM libomp with Archer annotations, and run the threaded ops. Decision rule: if any GPU mutant passes the gate in all 20 runs, open the gfx90a race-only symbolic-executor trigger; if all are caught, record the gate as race-sensitive at these sites. The v10 anchor must produce zero TSAN reports beyond a documented suppression list.",
-          "acceptance": "Per-mutant pass/fail counts over 20 runs, the TSAN report on the anchor, and the stated verdict."
+          "task_text": "- [ ] **RVP-RACE-1 — Measure whether the correctness gate can see a race at all (intake-2557#record, intake-2570#record).** GPU: in a llama.cpp-experimental worktree from the v10 tip build seeded-race HIP mutants, each deleting one barrier: MMQ tile load (mmq.cuh barrier sites), MMVQ cross-warp tmp_shared reduction (mmvq.cu nwarps 4 and 8 routes), MMVQ LDS-DMA double buffer (mmvq.cu:1063-1065, run with GGML_CUDA_Q8_PREFETCH=1), FA-mma tile softmax; prove each mutant structurally (s_barrier count of that kernel in the disassembled gfx90a code object drops vs the unmutated build) and record waves-per-workgroup at each served shape (a single-wave site is excluded as not a race). Run the AK served-shape test-backend-ops case set 20x per mutant and 20x on the unmutated build (frozen case manifest, per-run raw verdicts and NMSE kept). CPU: build test-backend-ops with ThreadSanitizer using LLVM libomp with Archer annotations and run the threaded ops on the v10 anchor. Decision rule: a GPU mutant that passes the gate in >=1 of 20 runs is a measured race miss; the unmutated build must pass 20/20; the mutant set becomes the fixture set of RVP-RACE-2 either way. The v10 anchor must produce zero TSAN reports beyond a documented suppression list.",
+          "acceptance": "Per-mutant table (site, s_barrier delta, waves/WG, pass count out of 20, max NMSE) plus the 20/20 control, committed with raw verdicts; TSAN anchor report with suppression list; fixtures handed to RVP-RACE-2."
         }
       ]
     },
     "KERN-6": {
       "required_outcome": "Counter-grounded planner signals. For the top-1 hotspot kernel of each GPU screen, capture a fixed, declared counter subset via rocprofv2 (from the proven 465-counter taxonomy). Attach it to the hotspots rows. Adopt TAIC's rule that each hypothesis cites a ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; RVP-CTR-1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; RVP-CTR-1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/rocm-verify-profile-backend.md",
@@ -1923,7 +2411,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "KERN-7": {
       "required_outcome": "Archive the hipcc AMDGCN ISA (--save-temps .s, or llvm-objdump of the code object) of the touched kernels into every AK GPU candidate record, next to the source diff and the hotspots table.",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; C5-ISA-1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; C5-ISA-1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/agentic-rocm-kernel-authoring.md",
@@ -1936,7 +2424,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "W2KERN-1": {
       "required_outcome": "Add an instruction-executed gate to the AMD kernel-authoring path: when a candidate claims a mechanism (MFMA use, LDS staging, buffer/global load width), require a rocprof instruction-mix counter or ISA-disassembly execution check on the real workload before ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; C5-ISA-1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; C5-ISA-1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/agentic-rocm-kernel-authoring.md",
@@ -1949,7 +2437,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "SPEECH-1": {
       "required_outcome": "Bounded probe LFM3-1: build an experimental llama.cpp tree (fresh v10 + upstream b11960 audio path: PRs 31252, 30629, 30636, 31257, 31269, 31287, 31386) on CPU only first; run LFM3-Audio-2B Q8_0 ASR over the 40 pinned FLEURS clips (en/it/de/fr x10) and ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; CS-8.STT8 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; CS-8.STT8 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/conversation-stack.md",
@@ -1962,20 +2450,20 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "SPEECH-3": {
       "required_outcome": "Estimate and record forward-port cost: experimental branch from current production-consolidated-v10, merge/cherry-pick the 7 LFM3 audio PRs plus their upstream prerequisites (b10303..b11960 is 1657 builds; PR 31257 alone +2721/-160 over 31 files, 30629 +998, ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; CS-8.STT8 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; CH-32 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
-          "owner": "handoffs/active/conversation-stack.md",
-          "task_id": "CS-8.STT8",
-          "task_text": "- [ ] **CS-8.STT8 — Scratch upstream audio build and end-to-end speech-model STT arms (intake-2552#record, intake-2575#record, intake-2579#record, intake-2580#record).** On a llama.cpp-experimental branch, build current upstream (b11960 or later, which carries the LFM3 architecture, mtmd_audio_stream and the /v1/realtime server) for CPU and gfx90a in an isolated prefix with its own LD_LIBRARY_PATH, proven with verify_ggml_linkage.sh. Record the forward-port distance from v10 (PRs 31252, 31257, 30629, 30636, 31269, 31287, 31386) and the build effort. Then add two arms to the CS-8.STT5 screen on the pinned FLEURS en/it clips with the CS-8.STT1 scorer: LFM3-Audio-2B (ASR mode) and Voxtral-Mini-4B-Realtime via mtmd-cli streaming, baselines frozen whisper large-v3-turbo and parakeet-cli. Rule: an arm advances to the CS-8 bake-off gates only if its paired 95% bootstrap WER difference versus whisper is not above +1.0 pp in both en and it; vendor tables are not evidence.",
-          "acceptance": "Scratch build proven by the linkage check on both devices; both arms scored on the same pinned clips with per-clip outputs retained; advance or reject per arm under the rule."
+          "owner": "handoffs/active/autokernel-champion-aggregate.md",
+          "task_id": "CH-32",
+          "task_text": "- [ ] **CH-32 — Upstream-delta fold census: dry-run merge of upstream tip into the champion C5 (c72ec82f5) to replace the PR line counts with real conflict and ggml-generation numbers (intake-2575#record, intake-2579#record, intake-2593#record, intake-2585#record, intake-2599#record).** Immediately, no compute: git fetch the upstream remote into the llama.cpp object store (no checkout, no branch move, production tree and champion ref untouched), then for each fold group (A cbe28bb3 non-causal ubatch; B b77d646751 Nanbeige4.2 plus Ouro #29823 head; C a4cb4c61fd + 7e3eeee048 systemone/H2O; D 30629, 30636, 31252, 31257, 31269, 31287, 31386, 31283 audio/LFM3/realtime) run git merge-tree --write-tree against c72ec82f5 and record per group files changed, conflicted hunks per file (expect tools/server/server-context.cpp, src/llama-context.cpp, src/llama-model.cpp), whether the group needs ggml ops or a ggml bump beyond v10 lineage (diff ggml/ include list), and the minimal prerequisite commit chain (b10303..b11960 is 1657 builds). Output table lands in docs/reference/kernel-manifests/llama-v11-manifest.md as pending-fold rows with a presence gate each (ancestry check), per README rule 4. Controls: frozen base sha, per-group raw merge-tree output kept, full group list, predeclared rule: a group with more than 3 conflicted files in server/ or any conflict in ggml-cpu, iqk or speculative code is cut by hand on a fresh experimental branch from C5 rather than cherry-picked in bulk.",
+          "acceptance": "Table of 4 groups with conflicted-file counts, ggml delta yes/no and prerequisite chain committed as llama-v11-manifest.md pending-fold rows; raw merge-tree outputs under the scratch dir."
         }
       ]
     },
     "W2SP-6": {
       "required_outcome": "Add a Voxtral-Mini-4B-Realtime GGUF through mtmd-cli run_audio_stream arm to the CS-8.STT5 screen (ranks and rejects only) on a scratch upstream build; record encoder and decoder times separately as the CLI already prints them.",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; CS-8.STT8 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; CS-8.STT8 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/conversation-stack.md",
@@ -1988,7 +2476,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "W2SP-1": {
       "required_outcome": "Build upstream master (or tag b11960+) as a SCRATCH llama-server on llama.cpp-experimental from fresh production; run examples/realtime_client.py with LFM3-Audio-2B Q8_0 and Q4_0 on the EPYC CPU and MI210 and record first-output-after-end-of-input, with a ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; CS-8.RT1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; CS-8.RT1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/conversation-stack.md",
@@ -2001,7 +2489,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "AGENT-12": {
       "required_outcome": "Screen d1-Omni-2B-GGUF (Q8_0, 1.85 GB) and d1-2B-GGUF as local typed-decision backends on a separate, scratch-built upstream llama-server (b11960+ in its own build dir; production tree untouched). Probe: replay a frozen set of already-routed orchestrator ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; TD-23.D1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; TD-23.D1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/typed-decision-plane.md",
@@ -2014,7 +2502,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "AGENT-14": {
       "required_outcome": "Read LFM Open License v1.0 and the Open d1 blog before any use beyond a screen (licence is not Apache/MIT; sourcing policy is open-source only).",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; TD-23.D1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; TD-23.D1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/typed-decision-plane.md",
@@ -2027,7 +2515,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "W2SP-3": {
       "required_outcome": "TD-23 screen: d1-2B-GGUF Q8_0 via /v1/systemone (scratch upstream build, CPU quarter or MI210 window) versus the constrained incumbent readout, on a frozen, row-pinned labelled routing set (the TD-11 / CJ-15 sealed workload; labels from the routing-replay ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; TD-23.D1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; TD-23.D1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/typed-decision-plane.md",
@@ -2040,7 +2528,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "W3DEC-1": {
       "required_outcome": "Add a precision-and-backend parity gate to the TD-23 decision-backend screen BEFORE any quality or calibration number is read: for the chosen decision GGUF (d1-2B Q8_0 first), serve the BF16 file on CPU as reference, then Q8_0 on CPU, Q8_0 on HIP (MI210), and ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; TD-23.D1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; TD-23.D1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/typed-decision-plane.md",
@@ -2053,7 +2541,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "W3DEC-2": {
       "required_outcome": "Add a batch-/schedule-invariance gate to the same screen: serve with -np 3, -b = -ub = 2048 (state must fit one ubatch), send request A alone (x5), then A concurrently with a shorter, a longer and an identical companion (x5 each, with a blocker request to ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; TD-23.D1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; TD-23.D1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/typed-decision-plane.md",
@@ -2066,7 +2554,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "W3DEC-3": {
       "required_outcome": "Plan the build route for any /v1/systemone work: the frozen v10 tree has neither the endpoint (PR 29818 merge a4cb4c61 is not an ancestor of ffc1bac82; no systemone string; no *decision* file in tools/server) nor LFM3 (needs >= b11960). Cheapest honest route ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; TD-23.D1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; TD-23.D1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/typed-decision-plane.md",
@@ -2079,7 +2567,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "W4UP-3": {
       "required_outcome": "d1 decision-model screen build must include a4cb4c61fd (#29818 systemone API) and 7e3eeee048 (#30361) if H2O-Lightning-4B is screened; cbe28bb3 (#30408) only for non-causal/embedding-mode decision models at np>1; 7e8324f5 (#30100) is Metal-only and NOT needed ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; TD-23.D1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; TD-23.D1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/typed-decision-plane.md",
@@ -2092,7 +2580,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "W3DEC-4": {
       "required_outcome": "Record in the TD-18 calibration receipt the model pin that determines the probabilities: GGUF sha256, every decision.temperature.* metadata key/value (read with gguf-dump), llama.cpp build SHA, -b/-ub/-np, and the question kind plus option count (some ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; TD-18.1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; TD-18.1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/typed-decision-plane.md",
@@ -2105,7 +2593,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "AGENT-1": {
       "required_outcome": "Run the fold article procedure as a zero-inference REPLAY over existing delegation records: for each delegate() role (worker_math, worker_general, worker_summarize, worker_vision, coder_escalation) compute from _delegations artifacts / delegation reports the ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; RI-25 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; RI-25 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/routing-intelligence.md",
@@ -2118,7 +2606,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "AGENT-2": {
       "required_outcome": "Count and cap the model-visible tool surface: REPL exposes ~55 globals (peek, grep, delegate, escalate, run_shell, registry_*, benchmark_*, ...) in environment.py _build_globals while tool_registry.yaml holds 55 further tools (TOOL/CALL/list_tools = already ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; UFH14-TOOLS-1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; UFH14-TOOLS-1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/agentic-serving-harness-fixes.md",
@@ -2131,7 +2619,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "W3DEC-7": {
       "required_outcome": "Zero-inference size screen before any AKV-style work: from existing orchestrator serving records and autopilot/REPL traces, compute for long agent loops the share of resident context tokens that are tool responses older than the latest 12 (the paper's drop ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; CF-AKV-0 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; CF-AKV-0 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/context-folding-progressive.md",
@@ -2144,7 +2632,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "MEM-4": {
       "required_outcome": "Write scripts/vidya/cert_check.py: a standalone verifier for the gate's epyc.vidya/certificate/v1, sharing NO imports with fold.py, gate.py or lattice.py. It reads the ledger JSONL and the ratified policy file directly, re-derives pro/con grade dominance and ...",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; VB-CERT-1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; VB-CERT-1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/vidya-belief-substrate-program.md",
@@ -2157,7 +2645,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "MEM-6": {
       "required_outcome": "When writing MEM-4, make the checker read and compare certificate.frontier and as_of explicitly and record in the certificate's proves-field that a certificate binds to a frontier, not to the truth of the world.",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; VB-CERT-1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; VB-CERT-1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/vidya-belief-substrate-program.md",
@@ -2217,26 +2705,47 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     },
     "LOOP-1": {
       "required_outcome": "Add a knowledge note to the INF-70 roofline program: weight-reuse architectures. Sequential looping multiplies weight bytes per token by L, and with 32 MiB L3 per CCX (384 MiB total) a block above ~32 MiB per CCX cannot be cache-reused (e.g. a 7B 14-layer PLT ...",
-      "review_status": "closed-with-basis",
-      "review_basis": "Retained: sequential loops multiply weight bytes per token; parallel-loop decode does not; our GDN graph caps beta at 1; the gpu-acceleration-path compatibility note is stale.",
-      "task_refs": []
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; GPU-LOOP-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/gpu-acceleration-path.md",
+          "task_id": "GPU-LOOP-1",
+          "task_text": "- [ ] **GPU-LOOP-1 — Looped-architecture build on llama.cpp-experimental (Nanbeige #25994 + Ouro #29823) and its MI210 + CPU roofline curves (intake-2585#record, intake-2586#record, intake-2547#record, intake-2571#record).** Cut a fresh llama.cpp-experimental branch from the production v10 tip (ffc1bac82), cherry #25994 (merged b77d646, 265 lines) then #29823 (open, head e79d8cab5, 324 lines) with no other change; build HIP gfx90a and CPU; convert ByteDance Ouro-1.4B and 2.6B (+Thinking) to GGUF Q8_0 and Q4_K_M and record sha256. Gate 1 (correctness, may share the card with :8083): tests/test-llama-archs passes for ouro and nanbeige on CPU and HIP, and top-1 logit parity vs the transformers reference on the PR 829-position fixture at loops 1/2/4 is reproduced on gfx90a (use -ngl 999: -ngl counts logical layers, 192 for 2.6B, and -ngl 99 spilled to 1.6 tok/s in the PR thread). Gate 2 (timing, in a GPU window, host threads on 184-191 under the q3 claim): llama-batched-bench tg at loops {1,2,4} x np {1,2,4,8,16,32} x ctx {512,1024,2048} x KV {f16,q8_0} for Ouro-1.4B Q8_0, with Qwen3-1.7B-Q8_0 and Qwen3-4B-Thinking-2507-Q8_0 (both on disk) as same-build dense comparators; per cell report aggregate tok/s, achieved GB/s under the byte model bytes/step = W_body*L + W_head + B*C*kv_per_slot*L against the 1433 GB/s measured roof, and the ratio to the ideal step time. Same build, CPU leg (replaces W2LOOP-1): loops 1/2/4 on one quarter and the full socket, GB/s vs the C0 153 GB/s ceiling. Predictions fixed before the run (arithmetic, Ouro-1.4B: W_body 1.41 GB Q8, head 0.11 GB, 24 layers, 16 MHA KV heads x 128 = 8 KiB per layer slot): aggregate falls as 1/L at every np (a 55 MB layer cannot sit in the 8 MB L2, so no reuse across loops); at C=1024, f16 KV, L=4 the np-to-infinity ceiling is 1433e9/(1024*786432) = 1,780 tok/s and np=16 gives 16/13.0 ms = 1,230 tok/s ideal vs 3,420 for Qwen3-4B Q8 (4.28 GB, 144 KiB/token); the KV share exceeds the weight share beyond np=7; compute time is under 1/5 of byte time at every np that fits (VRAM headroom beside the 43 GiB :8083 is about 19 GiB, so np about 23 at C=1k f16), so the B*=64 knee is not reached for C above about 123 tokens. Six controls: frozen GGUF sha256 and prompts; comparators on the same build; per-cell raw JSON kept; 3 repeats ABA-alternated with the noise floor stated with its unit; full grid denominator (no cell dropped, VRAM-skipped cells listed); the rule below. Decision rule: PASS if parity holds and every measured aggregate lies within 0.5-1.1x of the byte-model prediction; a cell below 0.5x opens a HIP-kernel root-cause row (stale-binary check first: strings the lib, compare mtime to the commit) and is not a verdict on looping; this task issues no quality verdict. Writes the GPU arithmetic table into cpu-decode-roofline-program.md as the GPU half of the weight-reuse note (LOOP-1).",
+          "acceptance": "Experimental branch + HIP/CPU build exist; parity receipt on gfx90a and CPU; the np x loops x ctx x KV grid with predictions and ratios is committed with raw JSON; the CPU leg and the GPU arithmetic table are filed; the 0.5-1.1x rule is applied to every cell."
+        }
+      ]
     },
     "LOOP-2": {
       "required_outcome": "Ingest and dive LoopCoder-v2 (arXiv 2606.18023): released 7B PLT 2-loop coder (Apache-2.0, HF Multilingual-Multimodal-NLP/LoopCoder-V2, 14 layers, hidden 5120, 8 KV heads) is the first PLT checkpoint we can actually run; card claims SWE-bench Verified 43.0 -> ...",
-      "review_status": "closed-with-basis",
-      "review_basis": "Retained: sequential loops multiply weight bytes per token; parallel-loop decode does not; our GDN graph caps beta at 1; the gpu-acceleration-path compatibility note is stale.",
-      "task_refs": []
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; GPU-PLT-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+          "task_id": "GPU-PLT-1",
+          "task_text": "- [ ] **GPU-PLT-1 — LoopCoder-v2 (7.6B PLT coder, Apache-2.0) quality screen on the MI210 through transformers custom code, before and independent of the GGUF port (intake-2584#record, intake-2571#record).** Load Multilingual-Multimodal-NLP/LoopCoder-V2 at the pinned HF sha b87cf3a (BF16, 7,615,749,680 params, 15.2 GB, fits the about 19 GiB headroom beside :8083 without a KV problem) in an isolated venv with the transformers version its configuration_iquestpltcoder.py needs (Ouro needed 4.57.x, the research venv has 5.15.0: do not assume); confirm torch.version.hip and bf16 on gfx90a first; read config.json to see whether the loop count is a config field (the paper trains R=1..4 as separate models, so a forced R=1 on the released weights is not the paper R=1). Frozen inputs: HumanEval+ (164), LiveCodeBench subset released after the model cutoff (n>=200), BigCodeBench-hard subset, plus the frozen coder-suite items used for coder_escalation (cruxeval and the others E-7 scored: math 85.0, mmlu_pro 27.5, gpqa_diamond 47.5, cruxeval 22.5 at terse template 1443ea9ab4bb). Arms: LoopCoder-v2 as released; incumbent coder_escalation Qwen3.8-27B Q8 on :8083 (same harness, thinking off and medium); frontdoor Qwen3.6-35B-A3B on CPU; size control Qwen3-4B-Instruct-2507 (on disk). Controls: frozen items and scorer hashes, incumbent baselines, per-item raw outputs, 2 seeds, full denominator, rule below. Replication check against the paper own table: R=2 reports HE+ 84.1, LCB 35.4, BCB 46.1 and SWE-bench Verified 64.4 (harness unnamed, single seed, vendor-authored); accept the replication if HE+ >= 80 and the LCB subset score is within 5 points of the paper 35.4 after harness adjustment stated. Decision rule: open the serving legs of GPU-PLT-2 (agentic SWE-40 on the same scaffold that scored Qwen3.8-27B 21/40 = 52.5%, shadow lane only) if pooled pass@1 over HE+ and LCB is non-inferior to Qwen3.8-27B within 8 points (paired bootstrap lower bound) or the replication check passes; otherwise record NO-GO with the table (the port of GPU-PLT-2 still completes as parity work). Arithmetic that motivates it: at np=16, C=8k, Q8 (about 8.1 GB incl. head, KV 56 KiB/token f16 because later loops share loop-1 KV and keep only a 64-token window) a PLT-2 step is about 15.2 GB / 1433 GB/s = 10.6 ms bandwidth vs 2.5 ms compute at 32 rows, i.e. 1,510 tok/s ideal aggregate (about 600 derated by the 27B np8 ratio 157/400), vs 94 tok/s live at 4 concurrent on the 27B.",
+          "acceptance": "Per-benchmark table with per-item outputs for all arms; replication verdict vs the paper numbers stated with harness differences; the non-inferiority rule applied and the GPU-PLT-2 serving legs opened or closed."
+        }
+      ]
     },
     "LOOP-3": {
       "required_outcome": "Correct the stale gate: Ouro now has a community llama.cpp port (BrandeisPatrick/loop-transformer, ouro arch, 324 added lines, PR ggml-org/llama.cpp#29823, GGUFs for Ouro 1.4B/2.6B +Thinking) built on upstream looped-model machinery merged for Nanbeige4.2 (PR ...",
-      "review_status": "closed-with-basis",
-      "review_basis": "Retained: sequential loops multiply weight bytes per token; parallel-loop decode does not; our GDN graph caps beta at 1; the gpu-acceleration-path compatibility note is stale.",
-      "task_refs": []
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; CH-34 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/autokernel-champion-aggregate.md",
+          "task_id": "CH-34",
+          "task_text": "- [ ] **CH-34 — Looped-model support fold group: Nanbeige4.2 (#25994 merged, b77d646751, +265/-1, 10 files incl. new src/models/nanbeige.cpp) plus Ouro (#29823, open, ~324 added lines, head sha to be pinned from the CH-32 fetch) (intake-2586#record, intake-2585#record, intake-2547#record).** Value: unblocks the looped-probe lane (GPU-LOOP-1: tg at ouro.num_loops 1/2/4, GB/s per effective token on EPYC; HIP run on MI210) without a hand port; files are disjoint from AK kernels, iqk and DFlash2 so expected cost is low. Immediately cut branch experimental/champion-plus-looped-arch from the current champion tip (fresh-tip rule), cherry-pick both, build CPU plus HIP store images, gates: test-llama-archs and the new-arch smoke load, no-regression greedy identity on Q38FN and one dense model vs champion, linkage proof. Fold decision is gated on the GPU-LOOP-1 probe: fold into the champion if Ouro-1.4B or Nanbeige4.2 runs coherent and the probe is not rejected on the predeclared tok/s-per-quality rule; otherwise keep the branch as the probe instrument and record the exclusion reason in the manifest. Open PR is not a block: the branch carries our own cherry-pick and is rebased when the PR merges.",
+          "acceptance": "Branch built and smoke-passed within one working session; manifest row IN or EXCLUDED-with-reason after W2LOOP-1 result."
+        }
+      ]
     },
     "LOOP-5": {
       "required_outcome": "Record in reasoning-compression.md only: looped MoE R=5 at 0.3B-1.3B reaches reasoning parity with 0.6B-2.9B at 1.8x training-compute-defined inference compute while trailing Overall 46.9 vs 50.2; no latency/bytes measured; no checkpoint released in the text.",
       "review_status": "closed-with-basis",
-      "review_basis": "Retained: sequential loops multiply weight bytes per token; parallel-loop decode does not; our GDN graph caps beta at 1; the gpu-acceleration-path compatibility note is stale.",
+      "review_basis": "no looped-MoE checkpoint or code is released, and on the GPU looping a MoE multiplies expert byte reads rather than hiding them.",
       "task_refs": []
     },
     "W2LOOP-3": {
@@ -2332,62 +2841,110 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "SPEC-3": {
       "required_outcome": "Port the DCOCO head to llama.cpp as a replacement DFlash2 selector, and train it on the frozen DFlash2 backbone. Gated on SPEC-1 PROMOTE. Port: converter keys/tensors for cand_proj, ctx_h_proj, cand_ctx_proj + LN, pair_proj and the 386->256->1 MLP (~100 LOC ...",
       "review_status": "closed-with-basis",
-      "review_basis": "Triggers: DF2-LAT promote rule opens a trained-selector port; low top-16 coverage with low headroom opens a Domino-style head; a drafter capture start opens the frozen-trunk objective probe; native-MTP acceptance 0.05 below base on a served finetune opens head re-alignment; a DF2-12.1 degenerative divergence opens the snapshot-slot patch; the collapse canary tripping on repetition opens a thinking-mode guard; an NCM-style generator sharing a served vocabulary opens a drafter test.",
+      "review_basis": "Triggers: DF2-LAT promote rule opens a trained-selector port; low top-16 coverage with low headroom opens a Domino-style head; DF2-FT-1 promotion opens the scale-up and stack-change package; the collapse canary tripping on repetition opens a thinking-mode guard. External event: a released NCM-style generator sharing a served vocabulary, with an acceptance number, opens a drafter test.",
       "task_refs": []
     },
     "SPEC-5": {
       "required_outcome": "Domino-style GRU + full-vocab low-rank correction head on the DFlash2 drafter: no work now. It needs full drafter co-training with the curriculum, and its sequential head adds a 256x248320 logit-residual projection per position on the critical path. Revisit ...",
       "review_status": "closed-with-basis",
-      "review_basis": "Triggers: DF2-LAT promote rule opens a trained-selector port; low top-16 coverage with low headroom opens a Domino-style head; a drafter capture start opens the frozen-trunk objective probe; native-MTP acceptance 0.05 below base on a served finetune opens head re-alignment; a DF2-12.1 degenerative divergence opens the snapshot-slot patch; the collapse canary tripping on repetition opens a thinking-mode guard; an NCM-style generator sharing a served vocabulary opens a drafter test.",
+      "review_basis": "Triggers: DF2-LAT promote rule opens a trained-selector port; low top-16 coverage with low headroom opens a Domino-style head; DF2-FT-1 promotion opens the scale-up and stack-change package; the collapse canary tripping on repetition opens a thinking-mode guard. External event: a released NCM-style generator sharing a served vocabulary, with an acceptance number, opens a drafter test.",
       "task_refs": []
     },
     "MTP-2": {
       "required_outcome": "Bounded frozen-trunk probe on the Soft-MTP repo (MI210, ROCm torch, <=4 GPU-h, no llama.cpp). Take the released 167M (or 332M) NTP checkpoint, set freeze_backbone=true, and train fresh K=3 DeepSeek-style heads under two arms with identical data order, seed, ...",
-      "review_status": "closed-with-basis",
-      "review_basis": "Triggers: DF2-LAT promote rule opens a trained-selector port; low top-16 coverage with low headroom opens a Domino-style head; a drafter capture start opens the frozen-trunk objective probe; native-MTP acceptance 0.05 below base on a served finetune opens head re-alignment; a DF2-12.1 degenerative divergence opens the snapshot-slot patch; the collapse canary tripping on repetition opens a thinking-mode guard; an NCM-style generator sharing a served vocabulary opens a drafter test.",
-      "task_refs": []
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; DF2-FT-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+          "task_id": "DF2-FT-1",
+          "task_text": "- [ ] **DF2-FT-1 — KL re-alignment pilot of the served 27B DFlash2 drafter on its own agentic traffic, target frozen (intake-2548#04, intake-2549#record, intake-2578#record, intake-297#record, intake-1848#record).** Why: at the production :8083 shape the drafter accepts 0.29-0.39 on real temp-1 agentic traffic (agentic-serving-harness-fixes.md:60,74,79). On the canonical benchmark shape it accepts 0.62-0.73. The two shapes differ in several factors, so this pilot is the deciding probe, not a presumed fix. Drafter facts (GGUF header): Qwen3.8-27B-DFlash2-Q8_0, size_label 1.9B, 81 tensors, 5 non-causal blocks with sliding window 2048, fc 25600->5120, selector codebooks 2 x 256 x 248320. It is headless and borrows the target's frozen token_embd and output (5120 x 248320 each). Steps: (0) Corpus = the DS41-C95 wire contexts under /mnt/raid0/llm/tmp/ds41-c95/results (36 wire-body captures; DF2-14 counted 320 turns / 630k generated tokens). Hold out every C4 run untouched. For each held-in request, regenerate 2 completions at the production sampler on the :8083 argv (X0_ARGV_8083.txt), capped at 2048 tokens, <=3 MI210-h; this also removes the need to reconstruct reasoning text from the wire bodies. (1) Write a feature-dump tool on a llama.cpp-experimental branch cut from the current champion tip. Per token it writes the 5 taps at target_layers [6,20,34,48,62] plus the target final post-norm hidden: 5 x 10,240 + 10,240 = 61,440 B/token, the DF2-DRAFTER-CAPABILITY.OBJ contract. It writes only each completion and its 2,048-token window prefix. Expect ~0.8-1.2M tokens = 50-75 GB in <=2 rolling shards. Capture held-out C4 the same way for the offline proxy. Prefill runs at the measured production-shape 410-574 t/s, <=3 MI210-h. (2) Train in a NEW ROCm venv; do not modify the two verified venvs. Use NeMo Automodel train_dflash2 @1667095 with the sdpa attention backend and an offline-feature dataset in place of the online target. Warm-start from z-lab/Qwen3.8-27B-DFlash2 bf16. The whole drafter is trainable: bf16 weights + fp32 master + AdamW ~16 B/param = ~31 GB, plus frozen embed/output 5.1 GB; that fits 64 GB because target features are precomputed. Arm H = Automodel hard block CE on the sampled tokens. Arm K = forward KL at T=1 to the teacher, computed from the final-hidden tap through the frozen output_norm + W with Automodel KDLoss (as in jetspec_core.py), chunked; its selector term is KL over the top-16 candidates, renormalized. Both arms share data order, seed, steps and LR; add a second seed for K; <=4 MI210-h total. (3) Convert with convert_hf_to_gguf.py (DFlash2DraftModel, --target-model-dir /mnt/raid0/llm/models/turboderp/Qwen3.8-27B-exl3-4.00bpw for config and tokenizer), then quantize to Q8_0. Six controls: (i) frozen manifest: sha256 of the target, served drafter and z-lab bf16; champion binary identity; held-out request list; sampler; seeds. (ii) Baselines: the served drafter, plus a round-trip arm (z-lab bf16 through our converter and quantizer, untrained) that must be tensor-equal after dequant or within the A/A band on DF2-4. (iii) Per-request raw draft_n, draft_n_accepted, predicted_n and timings in JSONL, plus the offline teacher-forced expected-accept-length proxy per held-out block. (iv) Holdout: all C4 runs, replayed twice ABAB on a fresh server per arm at the production argv, plus the DF2-4 12-prompt benchmark per arm. (v) Full denominator: every held-out request, failures counted. (vi) Predeclared rule. PROMOTE (open DF2-FT-2) if the best arm beats the incumbent on held-out weighted acceptance (sum accepted / sum drafted) by >=0.05 absolute on both reps (about +10% tokens per verify step at n_max 7), AND on held-out decode tok/s by >=8%, AND DF2-4 acceptance is >= incumbent - 0.02, AND the coherence gate is clean with the DF2-6 greedy pass count not below the incumbent. KL becomes the default drafter objective if K - H >= 0.02 on both reps and the seed-2 replicate has the same sign; |K - H| < 0.01 means cost-neutral (pick hard labels, which need no final-hidden tap). A gain of +0.02..+0.05 earns one more shard of <=1M fresh resamples, a retrain, and one more application of the rule. Below +0.02, KILL and record. Final step, on any verdict: amend DF2-DRAFTER-CAPABILITY with the objective verdict and an onboarding rule. The rule makes frozen-trunk re-alignment on the model's own served traffic the default for any served drafter or MTP head not co-trained on that exact trunk and quant. It names the next instances: the frontdoor 35B-A3B MTP head, then the Flash-Next head. Budget: ~13 MI210-h (~0.55 card-day) in GPU windows booked through the backlog-scheduling calendar, with :8083 drained per preempt-by-drain, plus 4-6 desk days (dump tool, trainer adaptation, venv; CPU-only smoke first).",
+          "acceptance": "Committed report with the frozen manifest; the per-request JSONL for incumbent, round-trip, H, K and K-seed2 on all held-out C4 requests x 2 reps; DF2-4 results per arm; the converted candidate GGUF sha256s; the decision line (PROMOTE / one-more-shard / KILL plus the KL-vs-hard verdict) stated against the predeclared thresholds; and the DF2-DRAFTER-CAPABILITY amendment (objective verdict, onboarding rule, ordered next instances) applied by the owning session."
+        }
+      ]
     },
     "MTP-4": {
       "required_outcome": "Record a trigger on the speculative-decoding refresh. If a served fine-tune ships with a stock (base-co-trained) MTP head, as already observed for ThinkingCap and Qwopus, the remedy is head-only re-alignment on the frozen fine-tuned trunk against its own NTP ...",
-      "review_status": "closed-with-basis",
-      "review_basis": "Triggers: DF2-LAT promote rule opens a trained-selector port; low top-16 coverage with low headroom opens a Domino-style head; a drafter capture start opens the frozen-trunk objective probe; native-MTP acceptance 0.05 below base on a served finetune opens head re-alignment; a DF2-12.1 degenerative divergence opens the snapshot-slot patch; the collapse canary tripping on repetition opens a thinking-mode guard; an NCM-style generator sharing a served vocabulary opens a drafter test.",
-      "task_refs": []
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; DF2-FT-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+          "task_id": "DF2-FT-1",
+          "task_text": "- [ ] **DF2-FT-1 — KL re-alignment pilot of the served 27B DFlash2 drafter on its own agentic traffic, target frozen (intake-2548#04, intake-2549#record, intake-2578#record, intake-297#record, intake-1848#record).** Why: at the production :8083 shape the drafter accepts 0.29-0.39 on real temp-1 agentic traffic (agentic-serving-harness-fixes.md:60,74,79). On the canonical benchmark shape it accepts 0.62-0.73. The two shapes differ in several factors, so this pilot is the deciding probe, not a presumed fix. Drafter facts (GGUF header): Qwen3.8-27B-DFlash2-Q8_0, size_label 1.9B, 81 tensors, 5 non-causal blocks with sliding window 2048, fc 25600->5120, selector codebooks 2 x 256 x 248320. It is headless and borrows the target's frozen token_embd and output (5120 x 248320 each). Steps: (0) Corpus = the DS41-C95 wire contexts under /mnt/raid0/llm/tmp/ds41-c95/results (36 wire-body captures; DF2-14 counted 320 turns / 630k generated tokens). Hold out every C4 run untouched. For each held-in request, regenerate 2 completions at the production sampler on the :8083 argv (X0_ARGV_8083.txt), capped at 2048 tokens, <=3 MI210-h; this also removes the need to reconstruct reasoning text from the wire bodies. (1) Write a feature-dump tool on a llama.cpp-experimental branch cut from the current champion tip. Per token it writes the 5 taps at target_layers [6,20,34,48,62] plus the target final post-norm hidden: 5 x 10,240 + 10,240 = 61,440 B/token, the DF2-DRAFTER-CAPABILITY.OBJ contract. It writes only each completion and its 2,048-token window prefix. Expect ~0.8-1.2M tokens = 50-75 GB in <=2 rolling shards. Capture held-out C4 the same way for the offline proxy. Prefill runs at the measured production-shape 410-574 t/s, <=3 MI210-h. (2) Train in a NEW ROCm venv; do not modify the two verified venvs. Use NeMo Automodel train_dflash2 @1667095 with the sdpa attention backend and an offline-feature dataset in place of the online target. Warm-start from z-lab/Qwen3.8-27B-DFlash2 bf16. The whole drafter is trainable: bf16 weights + fp32 master + AdamW ~16 B/param = ~31 GB, plus frozen embed/output 5.1 GB; that fits 64 GB because target features are precomputed. Arm H = Automodel hard block CE on the sampled tokens. Arm K = forward KL at T=1 to the teacher, computed from the final-hidden tap through the frozen output_norm + W with Automodel KDLoss (as in jetspec_core.py), chunked; its selector term is KL over the top-16 candidates, renormalized. Both arms share data order, seed, steps and LR; add a second seed for K; <=4 MI210-h total. (3) Convert with convert_hf_to_gguf.py (DFlash2DraftModel, --target-model-dir /mnt/raid0/llm/models/turboderp/Qwen3.8-27B-exl3-4.00bpw for config and tokenizer), then quantize to Q8_0. Six controls: (i) frozen manifest: sha256 of the target, served drafter and z-lab bf16; champion binary identity; held-out request list; sampler; seeds. (ii) Baselines: the served drafter, plus a round-trip arm (z-lab bf16 through our converter and quantizer, untrained) that must be tensor-equal after dequant or within the A/A band on DF2-4. (iii) Per-request raw draft_n, draft_n_accepted, predicted_n and timings in JSONL, plus the offline teacher-forced expected-accept-length proxy per held-out block. (iv) Holdout: all C4 runs, replayed twice ABAB on a fresh server per arm at the production argv, plus the DF2-4 12-prompt benchmark per arm. (v) Full denominator: every held-out request, failures counted. (vi) Predeclared rule. PROMOTE (open DF2-FT-2) if the best arm beats the incumbent on held-out weighted acceptance (sum accepted / sum drafted) by >=0.05 absolute on both reps (about +10% tokens per verify step at n_max 7), AND on held-out decode tok/s by >=8%, AND DF2-4 acceptance is >= incumbent - 0.02, AND the coherence gate is clean with the DF2-6 greedy pass count not below the incumbent. KL becomes the default drafter objective if K - H >= 0.02 on both reps and the seed-2 replicate has the same sign; |K - H| < 0.01 means cost-neutral (pick hard labels, which need no final-hidden tap). A gain of +0.02..+0.05 earns one more shard of <=1M fresh resamples, a retrain, and one more application of the rule. Below +0.02, KILL and record. Final step, on any verdict: amend DF2-DRAFTER-CAPABILITY with the objective verdict and an onboarding rule. The rule makes frozen-trunk re-alignment on the model's own served traffic the default for any served drafter or MTP head not co-trained on that exact trunk and quant. It names the next instances: the frontdoor 35B-A3B MTP head, then the Flash-Next head. Budget: ~13 MI210-h (~0.55 card-day) in GPU windows booked through the backlog-scheduling calendar, with :8083 drained per preempt-by-drain, plus 4-6 desk days (dump tool, trainer adaptation, venv; CPU-only smoke first).",
+          "acceptance": "Committed report with the frozen manifest; the per-request JSONL for incumbent, round-trip, H, K and K-seed2 on all held-out C4 requests x 2 reps; DF2-4 results per arm; the converted candidate GGUF sha256s; the decision line (PROMOTE / one-more-shard / KILL plus the KL-vs-hard verdict) stated against the predeclared thresholds; and the DF2-DRAFTER-CAPABILITY amendment (objective verdict, onboarding rule, ordered next instances) applied by the owning session."
+        }
+      ]
     },
     "W3SPEC-3": {
       "required_outcome": "If W3SPEC-1 shows divergence: reproduce on the experimental branch and try the PR #29454 approach (copy pre-ubatch state into unwritten snapshot slots every ubatch) as the candidate fix; it was never merged, so it must be carried as our own patch on a ...",
-      "review_status": "closed-with-basis",
-      "review_basis": "Triggers: DF2-LAT promote rule opens a trained-selector port; low top-16 coverage with low headroom opens a Domino-style head; a drafter capture start opens the frozen-trunk objective probe; native-MTP acceptance 0.05 below base on a served finetune opens head re-alignment; a DF2-12.1 degenerative divergence opens the snapshot-slot patch; the collapse canary tripping on repetition opens a thinking-mode guard; an NCM-style generator sharing a served vocabulary opens a drafter test.",
-      "task_refs": []
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; CH-37 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/autokernel-champion-aggregate.md",
+          "task_id": "CH-37",
+          "task_text": "- [ ] **CH-37 — Recurrent-state / np>1 slot-contamination fix fold, gated on DF2-12.1 (intake-2597#record, intake-2598#record, intake-2591#record).** Already in the champion: #28123 rollback port 0771238438 (ancestor of C5 and C6 verified read-only). Open exposure: issues 26695 (seq_rm true without recurrent-state restore) and 28019 (multi-seq split replay corrupts rs when rollback enabled) plus the CH-31-DEF1 batched-decode divergence. Immediately: confirm by reading src/llama-memory-recurrent.cpp on C5 whether the 26695 and 28019 fix commits (find them with git log --grep on the fetched upstream) are ancestors; record the answer in the manifest. If DF2-12.1 (temp-0 cross-slot token identity at np 4 on :8083 and :8070 shapes) shows any divergence, this task becomes the fix: cherry-pick the upstream fixes onto a fresh branch from the champion tip, rerun DF2-12.1 as the gate (zero divergent tokens over the frozen set versus np 1) plus Q38FN greedy identity. If DF2-12.1 is clean, the manifest row records the ancestry check and the task closes.",
+          "acceptance": "Ancestry answer committed; either DF2-12.1 clean or a fix branch with zero-divergence rerun."
+        }
+      ]
     },
     "SPEC2-3": {
       "required_outcome": "Note thinking-mode default sampling repetition risk: issue says model card recommends presence_penalty 0-2 and attributes loops to degenerate state amplified by temp 1.0 / top_k 20 / top_p 0.95; check the Flash-Next architect_general request sampler against ...",
       "review_status": "closed-with-basis",
-      "review_basis": "Triggers: DF2-LAT promote rule opens a trained-selector port; low top-16 coverage with low headroom opens a Domino-style head; a drafter capture start opens the frozen-trunk objective probe; native-MTP acceptance 0.05 below base on a served finetune opens head re-alignment; a DF2-12.1 degenerative divergence opens the snapshot-slot patch; the collapse canary tripping on repetition opens a thinking-mode guard; an NCM-style generator sharing a served vocabulary opens a drafter test.",
+      "review_basis": "Triggers: DF2-LAT promote rule opens a trained-selector port; low top-16 coverage with low headroom opens a Domino-style head; DF2-FT-1 promotion opens the scale-up and stack-change package; the collapse canary tripping on repetition opens a thinking-mode guard. External event: a released NCM-style generator sharing a served vocabulary, with an acceptance number, opens a drafter test.",
       "task_refs": []
     },
     "LOOP-6": {
       "required_outcome": "Monitor NCM as a drafter source: trigger = a released NCM-style generator with a general-text tokenizer sharing a served model vocabulary, or any measured acceptance rate against an AR target. Do not build now: released checkpoints are per-dataset ~100M-725M ...",
       "review_status": "closed-with-basis",
-      "review_basis": "Triggers: DF2-LAT promote rule opens a trained-selector port; low top-16 coverage with low headroom opens a Domino-style head; a drafter capture start opens the frozen-trunk objective probe; native-MTP acceptance 0.05 below base on a served finetune opens head re-alignment; a DF2-12.1 degenerative divergence opens the snapshot-slot patch; the collapse canary tripping on repetition opens a thinking-mode guard; an NCM-style generator sharing a served vocabulary opens a drafter test.",
+      "review_basis": "Triggers: DF2-LAT promote rule opens a trained-selector port; low top-16 coverage with low headroom opens a Domino-style head; DF2-FT-1 promotion opens the scale-up and stack-change package; the collapse canary tripping on repetition opens a thinking-mode guard. External event: a released NCM-style generator sharing a served vocabulary, with an acceptance number, opens a drafter test.",
       "task_refs": []
     },
     "LOOP-4": {
       "required_outcome": "Bounded CPU probe on a llama.cpp-experimental branch with the Ouro port: Ouro-1.4B Q4_K_M (854 MB per card), llama-bench tg at num_loops 1/2/4 via --override-kv, reporting achieved GB/s counting bytes once per loop against the C0 153 GB/s ceiling. This ...",
-      "review_status": "closed-with-basis",
-      "review_basis": "Triggers: a llama.cpp or vLLM PLT port, an independent LoopCoder-v2 replication, or a published PLT decode timing opens the Ouro/PLT CPU probe.",
-      "task_refs": []
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; GPU-LOOP-1, GPU-LOOP-2 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/gpu-acceleration-path.md",
+          "task_id": "GPU-LOOP-1",
+          "task_text": "- [ ] **GPU-LOOP-1 — Looped-architecture build on llama.cpp-experimental (Nanbeige #25994 + Ouro #29823) and its MI210 + CPU roofline curves (intake-2585#record, intake-2586#record, intake-2547#record, intake-2571#record).** Cut a fresh llama.cpp-experimental branch from the production v10 tip (ffc1bac82), cherry #25994 (merged b77d646, 265 lines) then #29823 (open, head e79d8cab5, 324 lines) with no other change; build HIP gfx90a and CPU; convert ByteDance Ouro-1.4B and 2.6B (+Thinking) to GGUF Q8_0 and Q4_K_M and record sha256. Gate 1 (correctness, may share the card with :8083): tests/test-llama-archs passes for ouro and nanbeige on CPU and HIP, and top-1 logit parity vs the transformers reference on the PR 829-position fixture at loops 1/2/4 is reproduced on gfx90a (use -ngl 999: -ngl counts logical layers, 192 for 2.6B, and -ngl 99 spilled to 1.6 tok/s in the PR thread). Gate 2 (timing, in a GPU window, host threads on 184-191 under the q3 claim): llama-batched-bench tg at loops {1,2,4} x np {1,2,4,8,16,32} x ctx {512,1024,2048} x KV {f16,q8_0} for Ouro-1.4B Q8_0, with Qwen3-1.7B-Q8_0 and Qwen3-4B-Thinking-2507-Q8_0 (both on disk) as same-build dense comparators; per cell report aggregate tok/s, achieved GB/s under the byte model bytes/step = W_body*L + W_head + B*C*kv_per_slot*L against the 1433 GB/s measured roof, and the ratio to the ideal step time. Same build, CPU leg (replaces W2LOOP-1): loops 1/2/4 on one quarter and the full socket, GB/s vs the C0 153 GB/s ceiling. Predictions fixed before the run (arithmetic, Ouro-1.4B: W_body 1.41 GB Q8, head 0.11 GB, 24 layers, 16 MHA KV heads x 128 = 8 KiB per layer slot): aggregate falls as 1/L at every np (a 55 MB layer cannot sit in the 8 MB L2, so no reuse across loops); at C=1024, f16 KV, L=4 the np-to-infinity ceiling is 1433e9/(1024*786432) = 1,780 tok/s and np=16 gives 16/13.0 ms = 1,230 tok/s ideal vs 3,420 for Qwen3-4B Q8 (4.28 GB, 144 KiB/token); the KV share exceeds the weight share beyond np=7; compute time is under 1/5 of byte time at every np that fits (VRAM headroom beside the 43 GiB :8083 is about 19 GiB, so np about 23 at C=1k f16), so the B*=64 knee is not reached for C above about 123 tokens. Six controls: frozen GGUF sha256 and prompts; comparators on the same build; per-cell raw JSON kept; 3 repeats ABA-alternated with the noise floor stated with its unit; full grid denominator (no cell dropped, VRAM-skipped cells listed); the rule below. Decision rule: PASS if parity holds and every measured aggregate lies within 0.5-1.1x of the byte-model prediction; a cell below 0.5x opens a HIP-kernel root-cause row (stale-binary check first: strings the lib, compare mtime to the commit) and is not a verdict on looping; this task issues no quality verdict. Writes the GPU arithmetic table into cpu-decode-roofline-program.md as the GPU half of the weight-reuse note (LOOP-1).",
+          "acceptance": "Experimental branch + HIP/CPU build exist; parity receipt on gfx90a and CPU; the np x loops x ctx x KV grid with predictions and ratios is committed with raw JSON; the CPU leg and the GPU arithmetic table are filed; the 0.5-1.1x rule is applied to every cell."
+        },
+        {
+          "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+          "task_id": "GPU-LOOP-2",
+          "task_text": "- [ ] **GPU-LOOP-2 — Looped small model as a reliability-boosted batch worker on the MI210: quality vs loops vs aggregate throughput against equal-cost dense and K-sample controls (intake-2585#record, intake-2547#record, intake-2551#record).** Question: at high concurrency (elastic-duty D1 batch-shedding class, np 16), does Ouro-1.4B (and 2.6B-Thinking as second tier) at 1/2/4 loops buy more correct worker answers per HBM byte than a non-looped model? Arms, served-cost arithmetic at np=16, C=1k, f16 KV (ideal step times, to be measured in GPU-LOOP-1): A1 Ouro-1.4B L=4 (5.76 GB weights/step + 12.9 GB KV, 13.0 ms, 1,230 tok/s); A2 L=2 (about 2,300); A3 L=1 (about 7,100 on the same weights); A4 Ouro-2.6B-Thinking L=4 (48 layers, about 11.3 GB weights/step, 1.5 MiB/token KV); C1 Qwen3-4B-Thinking-2507 Q8 (4.28 GB, 144 KiB/token, 3,420 tok/s, the equal-quality-class dense control); C2 Qwen3-1.7B Q8 majority-of-4 (about the same bytes per final answer as A1, 1,545 answer-equivalent tok/s: the K-sample route that the idle MFMA headroom makes free); C3 Qwen3-1.7B Q8 single sample (equal resident bytes); C0 the incumbent worker, Qwen3.6-35B-A3B on CPU :8070 (registry roles.worker_general.performance.quality_pct is null: it has never been scored on the worker battery, so it is measured here on the same frozen items). Frozen inputs: GSM8K-style math (n>=200, same problem list as the PR so the 26.0/67.0/80.5 published curve is a replication check) plus worker-battery items for explore, summarize, transform and strict tool-call JSON (n>=150 per suite), item list and scorer hashed before any generation; Ouro context stays under its trained 1024-token block (Ouro RECIPES: block_size 1024), longer prompts are a separate reported stratum. Per arm: pass@1 over 3 seeds, seed-to-seed agreement, JSON-validity rate, aggregate tok/s at np 16, wall-seconds per correct answer and correct answers per HBM GB moved; per-item raw outputs kept; correctness legs may share the card with :8083, throughput legs run in a GPU window with the host threads under the q3 claim. Controls: frozen inputs, incumbent baseline (C0 and C1), per-item raw outputs, 3-seed repeat with the A/B order alternated, full denominator including parse failures, predeclared rule. Decision rule: an Ouro arm earns a shadow-lane tenancy row (D3 shadow-only, no production traffic) only if (i) its paired accuracy vs C1 is within 2 points (McNemar not worse) and its seconds per correct answer at np=16 is at most 1.5x C1, or (ii) it beats C1 by at least 5 points at paired p<0.05 at no more than 2.5x C1 cost; the arithmetic predicts A1 costs 2.8x C1 per token, so (i) needs a real quality edge. Otherwise record NO-GO with the table and keep Ouro only as the vehicle for GPU-LOOP-3. Depends on the GPU-LOOP-1 build (our own task, not an external event).",
+          "acceptance": "Frozen item list + scorer hashes; per-arm table of accuracy, seed agreement, tok/s, seconds per correct answer and correct answers per GB; C0 worker-battery score recorded; the (i)/(ii) rule applied with paired statistics; GO tenancy row or NO-GO line committed."
+        }
+      ]
     },
     "W2LOOP-1": {
       "required_outcome": "On an experimental llama.cpp branch freshly cut from production v10, cherry #25994 plus #29823 (about 590 added lines) and measure Ouro-1.4B Q8_0/Q4_K_M at --override-kv ouro.num_loops=int:1/2/4 on EPYC CPU (one quarter and full socket): tok/s, achieved GB/s ...",
-      "review_status": "closed-with-basis",
-      "review_basis": "Triggers: a llama.cpp or vLLM PLT port, an independent LoopCoder-v2 replication, or a published PLT decode timing opens the Ouro/PLT CPU probe.",
-      "task_refs": []
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; GPU-LOOP-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/gpu-acceleration-path.md",
+          "task_id": "GPU-LOOP-1",
+          "task_text": "- [ ] **GPU-LOOP-1 — Looped-architecture build on llama.cpp-experimental (Nanbeige #25994 + Ouro #29823) and its MI210 + CPU roofline curves (intake-2585#record, intake-2586#record, intake-2547#record, intake-2571#record).** Cut a fresh llama.cpp-experimental branch from the production v10 tip (ffc1bac82), cherry #25994 (merged b77d646, 265 lines) then #29823 (open, head e79d8cab5, 324 lines) with no other change; build HIP gfx90a and CPU; convert ByteDance Ouro-1.4B and 2.6B (+Thinking) to GGUF Q8_0 and Q4_K_M and record sha256. Gate 1 (correctness, may share the card with :8083): tests/test-llama-archs passes for ouro and nanbeige on CPU and HIP, and top-1 logit parity vs the transformers reference on the PR 829-position fixture at loops 1/2/4 is reproduced on gfx90a (use -ngl 999: -ngl counts logical layers, 192 for 2.6B, and -ngl 99 spilled to 1.6 tok/s in the PR thread). Gate 2 (timing, in a GPU window, host threads on 184-191 under the q3 claim): llama-batched-bench tg at loops {1,2,4} x np {1,2,4,8,16,32} x ctx {512,1024,2048} x KV {f16,q8_0} for Ouro-1.4B Q8_0, with Qwen3-1.7B-Q8_0 and Qwen3-4B-Thinking-2507-Q8_0 (both on disk) as same-build dense comparators; per cell report aggregate tok/s, achieved GB/s under the byte model bytes/step = W_body*L + W_head + B*C*kv_per_slot*L against the 1433 GB/s measured roof, and the ratio to the ideal step time. Same build, CPU leg (replaces W2LOOP-1): loops 1/2/4 on one quarter and the full socket, GB/s vs the C0 153 GB/s ceiling. Predictions fixed before the run (arithmetic, Ouro-1.4B: W_body 1.41 GB Q8, head 0.11 GB, 24 layers, 16 MHA KV heads x 128 = 8 KiB per layer slot): aggregate falls as 1/L at every np (a 55 MB layer cannot sit in the 8 MB L2, so no reuse across loops); at C=1024, f16 KV, L=4 the np-to-infinity ceiling is 1433e9/(1024*786432) = 1,780 tok/s and np=16 gives 16/13.0 ms = 1,230 tok/s ideal vs 3,420 for Qwen3-4B Q8 (4.28 GB, 144 KiB/token); the KV share exceeds the weight share beyond np=7; compute time is under 1/5 of byte time at every np that fits (VRAM headroom beside the 43 GiB :8083 is about 19 GiB, so np about 23 at C=1k f16), so the B*=64 knee is not reached for C above about 123 tokens. Six controls: frozen GGUF sha256 and prompts; comparators on the same build; per-cell raw JSON kept; 3 repeats ABA-alternated with the noise floor stated with its unit; full grid denominator (no cell dropped, VRAM-skipped cells listed); the rule below. Decision rule: PASS if parity holds and every measured aggregate lies within 0.5-1.1x of the byte-model prediction; a cell below 0.5x opens a HIP-kernel root-cause row (stale-binary check first: strings the lib, compare mtime to the commit) and is not a verdict on looping; this task issues no quality verdict. Writes the GPU arithmetic table into cpu-decode-roofline-program.md as the GPU half of the weight-reuse note (LOOP-1).",
+          "acceptance": "Experimental branch + HIP/CPU build exist; parity receipt on gfx90a and CPU; the np x loops x ctx x KV grid with predictions and ratios is committed with raw JSON; the CPU leg and the GPU arithmetic table are filed; the 0.5-1.1x rule is applied to every cell."
+        }
+      ]
     },
     "W2LOOP-2": {
       "required_outcome": "Monitor triggers: (a) llama.cpp or vLLM PR adding iquestpltcoder / PLT, (b) an independent replication of LoopCoder-v2 R=2 SWE-bench Verified, (c) a timing number for PLT decode. Any one fires ingest-and-dive on it.",
-      "review_status": "closed-with-basis",
-      "review_basis": "Triggers: a llama.cpp or vLLM PLT port, an independent LoopCoder-v2 replication, or a published PLT decode timing opens the Ouro/PLT CPU probe.",
-      "task_refs": []
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; GPU-PLT-2 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/gpu-acceleration-path.md",
+          "task_id": "GPU-PLT-2",
+          "task_text": "- [ ] **GPU-PLT-2 — Parallel-Loop-Transformer architecture (iquestpltcoder) on llama.cpp-experimental: port, parity, and MI210 decode curves (intake-2584#record, intake-2571#record).** Not blocked by the absence of upstream code; estimate 1.0-1.5 kLOC, 3-5 agent-days, 3-4x the 265/324-line Nanbeige/Ouro ports because those only unroll layers and carry no CLP, shared-KV or sliding window: converter for IQuestPLTCoderForCausalLM (about 150: 14 layers, hidden 5120, 40 heads / 8 KV, FFN 27648, R, window 64, per-head gate tensors; read the HF modeling file at sha b87cf3a first); arch/hparams/tensors (about 250); graph (about 400): a decode step builds R rows per sequence, row r input = token embedding + h^(r-1) of the previous position (per-sequence state of (R-1) x n_embd, held in the recurrent-memory path so checkpoint and spec-decode rollback come with it), row 1 attends the normal full KV, rows >=2 attend the shared loop-1 K/V through the existing cross-layer KV-reuse hparams plus a private 64-entry window cache (extra logical layers in the iSWA cache) and mix with the head-wise sigmoid gate; prefill runs R shifted sweeps over the prompt; cache/state plumbing and tests (about 400-700). Acceptance: top-1 logits match the HF reference on >=1000 positions and greedy continuations match on 20 prompts, on CPU and HIP; measured decode step ratio PLT-2 vs the same weights run as a one-loop graph is <=1.15 at np<=16 (prediction 1.02-1.05, since 2 rows per stream stay under the Q8 knee of 64 rows through 32 streams) and a sequential two-loop graph on the same weights is >=1.8 (the ByteDance paper reports 4.9 vs 4.8 vs 9.4 ms at bs 4 and 8.6 vs 8.1 vs 16.1 ms at bs 32 in its own stack); KV measured at about 56 KiB/token + window; spec-decode (MTP/DFlash2) rollback test using the state snapshot. Quality and serving verdicts are GPU-PLT-1 and the SWE-40 legs, not this task; this task delivers the engine.",
+          "acceptance": "Branch with the arch + converter; parity receipt on CPU and HIP; decode-step ratio and KV measurements committed against the stated predictions; rollback test passes."
+        }
+      ]
     },
     "W3DEC-8": {
       "required_outcome": "Conditional on W3DEC-7: a bounded semantics probe on an attention-only role model on llama.cpp-experimental: compare (a) seq_rm of old tool-response cells + seq_add repositioning (the drop+repos analogue) vs (b) re-prefill of the text with those responses ...",
@@ -2463,33 +3020,68 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     },
     "KERN-2": {
       "required_outcome": "Build a race-only symbolic executor for gfx90a AMDGCN: parse hipcc --save-temps asm, concrete thread/workgroup indices and launch params, per-byte LDS reader/writer sets between s_barrier, lgkmcnt/vmcnt waits as completion points, exec-mask lanes, wave64. ...",
-      "review_status": "closed-with-basis",
-      "review_basis": "Triggers: a GPU race mutant passing all 20 runs opens a gfx90a race-only symbolic executor; an ISA archive plus a compute-bound target opens an ISA-level lowering probe; a recurring rejection class (3 or more) opens a failure-to-rule loop.",
-      "task_refs": []
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; RVP-RACE-2 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/rocm-verify-profile-backend.md",
+          "task_id": "RVP-RACE-2",
+          "task_text": "- [ ] **RVP-RACE-2 — gfx90a AMDGCN race/deadlock executor as the GPU race_detector_id (intake-2570#record, intake-2557#record).** Not trigger-gated: 236 of 627 unique AK GPU mechanisms and 15 of 31 keeps touch sync, and v10 already ships hand-ordered LDS-DMA (mmvq.cu:1038-1093). Build in Rust on the MIT ptx_verifier @a39292a, reusing volta_graph and volta_graph_check (barrier_epoch, memory_conflict) unchanged, and extending volta_amd_analysis from gfx950/8 opcodes to gfx90a. Input is the disassembled code object of the built candidate (split with research scripts/kernel_rnd/gfx90a_isa_audit.py, the same artifact as C5-ISA-1). Launch grid, workgroup size and kernarg come from a small HIP launch-capture shim on a correctness-only served-shape run. Model: a concrete integer/address lattice with float/MFMA results opaque; exec mask; wave64 with per-wave program order (one event per wave-instruction, with the byte footprint of active lanes, plus an intra-instruction lane write-write check); ds_* complete at lgkmcnt; buffer_load...lds as AsyncIssue/AsyncComplete, completed conservatively at vmcnt(0); s_barrier as barrier generations; any branch or address that depends on an opaque value yields UNKNOWN (fail-closed, never ACCEPT). Index inputs (MoE ids, FA mask) are fed concretely. M1 (3-4 eng-weeks, the MMVQ + FA-vec opcode set, 228 distinct on v10): check WG0, the last WG and all boundary/tail WGs per served shape. M1 is accepted when it gives 0 findings on v10 MMVQ (both nwarps routes, plus q8pf with GGML_CUDA_Q8_PREFETCH=1) and on FA-vec at the AK served shapes, flags 100% of the RVP-RACE-1 MMVQ/FA mutants plus 2 ISA-only mutants that source mutation cannot make (delete the q8pf s_waitcnt vmcnt(0); move the first LDS read of a tile above its s_barrier; reassembled with clang -target amdgcn-amd-amdhsa -mcpu=gfx90a), and finishes in <=10 min per kernel instance on one core. Any production finding is triaged to a true race or a model bug before acceptance. M2 (+2-3 weeks): MMQ, FA-mma, FA-tile, quantize, argsort/topk (316-opcode union, MFMA/AGPR opaque); cross-WG global write-set overlap on sampled WGs (MMQ tmp_fixup disjointness); deadlock via barrier epochs; a gfx90a wait-state hazard lint for inline-asm regions (quantize.cu:100-117 DPP s_nop) cross-checked against an LLVM-compiled reference. The FA-vec atomic completion protocol is declared out of scope (UNKNOWN). M3: register as race_detector_id in execution/t0_provider.py for GPU routes whose diff or ISA touches barrier/__shared__/ds_/s_waitcnt/LDS-DMA/inline asm, after M1+M2 acceptance. Budget 8-11 kLoC new plus about 12 kLoC reused, 6-9 engineer-weeks, Codex-delegable; zero GPU time beyond the capture runs.",
+          "acceptance": "M1 receipt: per-kernel verdicts (ACCEPT/RACE/UNKNOWN) on v10 MMVQ+FA-vec at the frozen served-shape manifest with 0 RACE; a mutant table showing every RVP-RACE-1 MMVQ/FA mutant and both ISA-only mutants flagged; runtime per instance. M3 done when t0_provider emits a non-null race_detector_id for a sync-touching GPU candidate."
+        }
+      ]
     },
     "KERN-8": {
       "required_outcome": "GCN-Gym probe of AI lowering on gfx90a. Build a standalone harness that assembles LLM-patched AMDGCN for one compute-bound kernel (MMQ Q4_K prefill tile or FA at long context) with clang -target amdgcn-amd-amdhsa -mcpu=gfx90a, loads it via hipModuleLoad and ...",
-      "review_status": "closed-with-basis",
-      "review_basis": "Triggers: a GPU race mutant passing all 20 runs opens a gfx90a race-only symbolic executor; an ISA archive plus a compute-bound target opens an ISA-level lowering probe; a recurring rejection class (3 or more) opens a failure-to-rule loop.",
-      "task_refs": []
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; C5-ISA-2 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/agentic-rocm-kernel-authoring.md",
+          "task_id": "C5-ISA-2",
+          "task_text": "- [ ] **C5-ISA-2 — GCN-Gym: LLM-edited AMDGCN for a compute-bound gfx90a kernel whose limiter is register allocation (intake-2555#record, intake-2556#record).** Not trigger-gated, because the HIP-source levers on the target are measured out: AK-MMQ-H10 (J-cap) NEGATIVE, the ak-27b-gpu-verify stream-k MMQ hypotheses were all refused or retired, and the ROCm 6.2 AGPR copy tax and MMQ spills are compiler-side (INF03-REGAUDIT-1: Q8_0 J=64 at 256 VGPR with 37 spills; MMA-FA DKQ>=192 at 512 VGPR with hundreds of reloads per iteration). Build a standalone harness (1-2 weeks). Extract the gfx90a .s of one kernel from an experimental v10-tip build via gfx90a_isa_audit.py; let the agent edit it with unified-diff patch tools; reassemble with clang -target amdgcn-amd-amdhsa -mcpu=gfx90a; load with hipModuleLoad; replay the served-shape launches (the RVP-RACE-2 capture shim); diff-test against the hipcc kernel with the AK oracle (host-double for Q8_0); require gfx90a_isa_audit.py diff to exit 0, and the RVP-RACE-2 verdict once M2 lands. Target 1: MMQ Q8_0 J=64 prefill tile. Target 2: MMA-FA DKQ>=192. Run 3 runs per target at a fixed declared token budget on a frozen shape manifest; time on the GPU window with ABBA (>=2 pairs) against the hipcc incumbent, keeping per-run raw candidate .s, oracle outputs and timings. Decision rule: if >=1 of 3 runs on a target reaches >=1.05x kernel time at the served prefill shape, passes the oracle, and its ABBA intervals do not overlap the incumbent, open an experimental-tree code-object override path for that kernel as an ISA-rung AK arm; otherwise record the null with traces and stop the ISA rung for that kernel class.",
+          "acceptance": "Harness committed in the research repo; for each target, 3 run records (patched .s hash, oracle verdict, audit diff exit, ABBA timings) and the predeclared decision recorded."
+        }
+      ]
     },
     "W2KERN-4": {
       "required_outcome": "Failure-to-rule loop for AK: after each rejected batch, classify the failure reason and, when a class recurs (>=3), have an agent propose a permanent static check or oracle input, merged only under corpus tests of all prior keeps (CAKE Sec 3.2).",
-      "review_status": "closed-with-basis",
-      "review_basis": "Triggers: a GPU race mutant passing all 20 runs opens a gfx90a race-only symbolic executor; an ISA archive plus a compute-bound target opens an ISA-level lowering probe; a recurring rejection class (3 or more) opens a failure-to-rule loop.",
-      "task_refs": []
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; AK-FAILRULE-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/autokernel-rebuild-program.md",
+          "task_id": "AK-FAILRULE-1",
+          "task_text": "- [ ] **AK-FAILRULE-1 — Turn recurring AK rejection reasons into pre-GPU rules from existing records (intake-2589#record, intake-2588#record).** Zero inference: classify every rejected candidate in the existing CPU and GPU campaign stores by failure reason (compile, correctness gate and which gate, timing loss, noise, harness error). For each reason class with at least 3 occurrences, draft a cheap static or pre-GPU check (CAKE-style hazard filter) and replay it over the historical candidates. Adopt a rule only if it would have rejected at least one historical failure before GPU time and no historical keep.",
+          "acceptance": "Reason table with counts over the full store manifest; each drafted rule replayed with its would-have-rejected and false-reject counts; adopted rules wired before GPU dispatch."
+        }
+      ]
     },
     "TCAP-1": {
       "required_outcome": "Bounded A/B: base UD-IQ4_XS (current :8074 file) vs bottlecapai ThinkingCap IQ4_XS GGUF, llama-server, same recipe qwen38-flash-next-cpu-mtp, enable_thinking=true on /v1/chat/completions, frozen 40-60 prompt set (arch/plan-critique + reasoning, AIME-style, ...",
-      "review_status": "closed-with-basis",
-      "review_basis": "Trigger: the operator enables thinking on a Flash-Next role, or the architect bench reopens a thinking arm; then run the ThinkingCap IQ4_XS A/B with a shared-head arm.",
-      "task_refs": []
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; AMS-TCAP-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/architect-model-selection-bench.md",
+          "task_id": "AMS-TCAP-1",
+          "task_text": "- [ ] **AMS-TCAP-1 — A/B a thinking-on effort mode for architect_general with ThinkingCap-Qwen3.8-Flash-Next (intake-2567#record, intake-2572#record, intake-2577#record).** Thinking is off for every Flash-Next role today because the base model fell into degenerate think loops (this handoff, prep finding 4; registry reasoning_policy_observation: reasoning auto gave 0/4 final answers). A finetune that shortens thinking is therefore a candidate higher-effort mode, not a curiosity. Download the bottlecapai ThinkingCap IQ4_XS GGUF (95.5 GB; one download at a time, disk checked first) and run three arms on llama-server with the qwen38-flash-next-cpu-mtp recipe: A base UD-IQ4_XS thinking off (production), B base thinking on, C ThinkingCap thinking on, plus C2 = ThinkingCap trunk with our shared-Q8_0 MTP head versus its embedded head. Frozen 40-60 prompt set (architect planning and critique, AIME-style reasoning, about 15 tau2-style agentic turns), at least 4 seeds, paired by prompt; record accuracy, thinking and answer tokens, the degenerate-loop and truncation rate, MTP alpha, and llama-bench pp/tg in one alternating window. Decision rule: propose a thinking-on effort mode (an operator-signed stack change) only if arm C beats arm A on the reasoning family with a paired 95% lower bound above 0, has degenerate or truncated thinking on at most 1% of requests, uses at most 60% of arm B's median thinking tokens, and keeps alpha within 0.03 of base; otherwise record the null and keep thinking off.",
+          "acceptance": "All arms run with per-request outputs, token counts, loop/truncation labels and alpha retained; the decision rule applied and the verdict recorded; disk and download logged."
+        }
+      ]
     },
     "TCAP-3": {
       "required_outcome": "If A/B runs, add arm B2 = ThinkingCap trunk + our unsloth shared-Q8_0 draft file vs embedded head, measure alpha for both",
-      "review_status": "closed-with-basis",
-      "review_basis": "Trigger: the operator enables thinking on a Flash-Next role, or the architect bench reopens a thinking arm; then run the ThinkingCap IQ4_XS A/B with a shared-head arm.",
-      "task_refs": []
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; AMS-TCAP-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/architect-model-selection-bench.md",
+          "task_id": "AMS-TCAP-1",
+          "task_text": "- [ ] **AMS-TCAP-1 — A/B a thinking-on effort mode for architect_general with ThinkingCap-Qwen3.8-Flash-Next (intake-2567#record, intake-2572#record, intake-2577#record).** Thinking is off for every Flash-Next role today because the base model fell into degenerate think loops (this handoff, prep finding 4; registry reasoning_policy_observation: reasoning auto gave 0/4 final answers). A finetune that shortens thinking is therefore a candidate higher-effort mode, not a curiosity. Download the bottlecapai ThinkingCap IQ4_XS GGUF (95.5 GB; one download at a time, disk checked first) and run three arms on llama-server with the qwen38-flash-next-cpu-mtp recipe: A base UD-IQ4_XS thinking off (production), B base thinking on, C ThinkingCap thinking on, plus C2 = ThinkingCap trunk with our shared-Q8_0 MTP head versus its embedded head. Frozen 40-60 prompt set (architect planning and critique, AIME-style reasoning, about 15 tau2-style agentic turns), at least 4 seeds, paired by prompt; record accuracy, thinking and answer tokens, the degenerate-loop and truncation rate, MTP alpha, and llama-bench pp/tg in one alternating window. Decision rule: propose a thinking-on effort mode (an operator-signed stack change) only if arm C beats arm A on the reasoning family with a paired 95% lower bound above 0, has degenerate or truncated thinking on at most 1% of requests, uses at most 60% of arm B's median thinking tokens, and keeps alpha within 0.03 of base; otherwise record the null and keep thinking off.",
+          "acceptance": "All arms run with per-request outputs, token counts, loop/truncation labels and alpha retained; the decision rule applied and the verdict recorded; disk and download logged."
+        }
+      ]
     },
     "PRE-2545": {
       "required_outcome": "Identify the STT model/runtime from the linked GitHub repo (expansion seed) before scoring for the speech lane.",
@@ -2500,45 +3092,52 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "PRE-2546": {
       "required_outcome": "Read the paper (expansion seed arXiv 2610.14162) and judge whether coarse-to-fine parallel generation has a drafter or non-AR serving role for EPYC.",
       "review_status": "closed-with-basis",
-      "review_basis": "Triggers: DF2-LAT promote rule opens a trained-selector port; low top-16 coverage with low headroom opens a Domino-style head; a drafter capture start opens the frozen-trunk objective probe; native-MTP acceptance 0.05 below base on a served finetune opens head re-alignment; a DF2-12.1 degenerative divergence opens the snapshot-slot patch; the collapse canary tripping on repetition opens a thinking-mode guard; an NCM-style generator sharing a served vocabulary opens a drafter test.",
+      "review_basis": "Triggers: DF2-LAT promote rule opens a trained-selector port; low top-16 coverage with low headroom opens a Domino-style head; DF2-FT-1 promotion opens the scale-up and stack-change package; the collapse canary tripping on repetition opens a thinking-mode guard. External event: a released NCM-style generator sharing a served vocabulary, with an acceptance number, opens a drafter test.",
       "task_refs": []
     },
     "PRE-2547": {
       "required_outcome": "Dive: decide whether looped/parallel-loop decoding changes bytes-per-token on bandwidth-bound CPU decode, and whether any served or candidate model is looped.",
-      "review_status": "closed-with-basis",
-      "review_basis": "Retained: sequential loops multiply weight bytes per token; parallel-loop decode does not; our GDN graph caps beta at 1; the gpu-acceleration-path compatibility note is stale.",
-      "task_refs": []
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; GPU-LOOP-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/gpu-acceleration-path.md",
+          "task_id": "GPU-LOOP-1",
+          "task_text": "- [ ] **GPU-LOOP-1 — Looped-architecture build on llama.cpp-experimental (Nanbeige #25994 + Ouro #29823) and its MI210 + CPU roofline curves (intake-2585#record, intake-2586#record, intake-2547#record, intake-2571#record).** Cut a fresh llama.cpp-experimental branch from the production v10 tip (ffc1bac82), cherry #25994 (merged b77d646, 265 lines) then #29823 (open, head e79d8cab5, 324 lines) with no other change; build HIP gfx90a and CPU; convert ByteDance Ouro-1.4B and 2.6B (+Thinking) to GGUF Q8_0 and Q4_K_M and record sha256. Gate 1 (correctness, may share the card with :8083): tests/test-llama-archs passes for ouro and nanbeige on CPU and HIP, and top-1 logit parity vs the transformers reference on the PR 829-position fixture at loops 1/2/4 is reproduced on gfx90a (use -ngl 999: -ngl counts logical layers, 192 for 2.6B, and -ngl 99 spilled to 1.6 tok/s in the PR thread). Gate 2 (timing, in a GPU window, host threads on 184-191 under the q3 claim): llama-batched-bench tg at loops {1,2,4} x np {1,2,4,8,16,32} x ctx {512,1024,2048} x KV {f16,q8_0} for Ouro-1.4B Q8_0, with Qwen3-1.7B-Q8_0 and Qwen3-4B-Thinking-2507-Q8_0 (both on disk) as same-build dense comparators; per cell report aggregate tok/s, achieved GB/s under the byte model bytes/step = W_body*L + W_head + B*C*kv_per_slot*L against the 1433 GB/s measured roof, and the ratio to the ideal step time. Same build, CPU leg (replaces W2LOOP-1): loops 1/2/4 on one quarter and the full socket, GB/s vs the C0 153 GB/s ceiling. Predictions fixed before the run (arithmetic, Ouro-1.4B: W_body 1.41 GB Q8, head 0.11 GB, 24 layers, 16 MHA KV heads x 128 = 8 KiB per layer slot): aggregate falls as 1/L at every np (a 55 MB layer cannot sit in the 8 MB L2, so no reuse across loops); at C=1024, f16 KV, L=4 the np-to-infinity ceiling is 1433e9/(1024*786432) = 1,780 tok/s and np=16 gives 16/13.0 ms = 1,230 tok/s ideal vs 3,420 for Qwen3-4B Q8 (4.28 GB, 144 KiB/token); the KV share exceeds the weight share beyond np=7; compute time is under 1/5 of byte time at every np that fits (VRAM headroom beside the 43 GiB :8083 is about 19 GiB, so np about 23 at C=1k f16), so the B*=64 knee is not reached for C above about 123 tokens. Six controls: frozen GGUF sha256 and prompts; comparators on the same build; per-cell raw JSON kept; 3 repeats ABA-alternated with the noise floor stated with its unit; full grid denominator (no cell dropped, VRAM-skipped cells listed); the rule below. Decision rule: PASS if parity holds and every measured aggregate lies within 0.5-1.1x of the byte-model prediction; a cell below 0.5x opens a HIP-kernel root-cause row (stale-binary check first: strings the lib, compare mtime to the commit) and is not a verdict on looping; this task issues no quality verdict. Writes the GPU arithmetic table into cpu-decode-roofline-program.md as the GPU half of the weight-reuse note (LOOP-1).",
+          "acceptance": "Experimental branch + HIP/CPU build exist; parity receipt on gfx90a and CPU; the np x loops x ctx x KV grid with predictions and ratios is committed with raw JSON; the CPU leg and the GPU arithmetic table are filed; the 0.5-1.1x rule is applied to every cell."
+        }
+      ]
     },
     "PRE-2548": {
       "required_outcome": "Dive: verify Table 2 and decide whether Soft-MTP is the objective to use if we train or restore MTP heads (Flash-Next Axis E, drafter training).",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; DF2-DRAFTER-CAPABILITY.OBJ carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; DF2-FT-1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
-          "task_id": "DF2-DRAFTER-CAPABILITY.OBJ",
-          "task_text": "- [ ] **DF2-DRAFTER-CAPABILITY.OBJ — Fix the drafter-training data contract before any capture (intake-2548#record, intake-2578#record, intake-297#record).** Amend the capture contract inherited from INF-62 (\"hard next-token labels\") so every feature dump also taps the target's final post-norm hidden state (5120 x bf16 = 10,240 bytes per token, +20% over the current taps), which yields the exact teacher distribution through the frozen output head. Make forward KL toward the target distribution the default objective with hard labels as the fallback arm (with a frozen trunk, Soft-MTP's gradient equals direct forward KL), and record the Nemotron 3 Ultra frozen-backbone recipe (temperature 2, hidden states sampled from earlier draft steps) as an option. Note that z-lab/dflash @ 07ebd93 ships no training code, so any drafter or selector training is research, not a port.",
-          "acceptance": "Contract text amended in the handoff with the tap, default objective, fallback arm and recipe option; the capture script refuses to start without the final-hidden tap."
+          "task_id": "DF2-FT-1",
+          "task_text": "- [ ] **DF2-FT-1 — KL re-alignment pilot of the served 27B DFlash2 drafter on its own agentic traffic, target frozen (intake-2548#04, intake-2549#record, intake-2578#record, intake-297#record, intake-1848#record).** Why: at the production :8083 shape the drafter accepts 0.29-0.39 on real temp-1 agentic traffic (agentic-serving-harness-fixes.md:60,74,79). On the canonical benchmark shape it accepts 0.62-0.73. The two shapes differ in several factors, so this pilot is the deciding probe, not a presumed fix. Drafter facts (GGUF header): Qwen3.8-27B-DFlash2-Q8_0, size_label 1.9B, 81 tensors, 5 non-causal blocks with sliding window 2048, fc 25600->5120, selector codebooks 2 x 256 x 248320. It is headless and borrows the target's frozen token_embd and output (5120 x 248320 each). Steps: (0) Corpus = the DS41-C95 wire contexts under /mnt/raid0/llm/tmp/ds41-c95/results (36 wire-body captures; DF2-14 counted 320 turns / 630k generated tokens). Hold out every C4 run untouched. For each held-in request, regenerate 2 completions at the production sampler on the :8083 argv (X0_ARGV_8083.txt), capped at 2048 tokens, <=3 MI210-h; this also removes the need to reconstruct reasoning text from the wire bodies. (1) Write a feature-dump tool on a llama.cpp-experimental branch cut from the current champion tip. Per token it writes the 5 taps at target_layers [6,20,34,48,62] plus the target final post-norm hidden: 5 x 10,240 + 10,240 = 61,440 B/token, the DF2-DRAFTER-CAPABILITY.OBJ contract. It writes only each completion and its 2,048-token window prefix. Expect ~0.8-1.2M tokens = 50-75 GB in <=2 rolling shards. Capture held-out C4 the same way for the offline proxy. Prefill runs at the measured production-shape 410-574 t/s, <=3 MI210-h. (2) Train in a NEW ROCm venv; do not modify the two verified venvs. Use NeMo Automodel train_dflash2 @1667095 with the sdpa attention backend and an offline-feature dataset in place of the online target. Warm-start from z-lab/Qwen3.8-27B-DFlash2 bf16. The whole drafter is trainable: bf16 weights + fp32 master + AdamW ~16 B/param = ~31 GB, plus frozen embed/output 5.1 GB; that fits 64 GB because target features are precomputed. Arm H = Automodel hard block CE on the sampled tokens. Arm K = forward KL at T=1 to the teacher, computed from the final-hidden tap through the frozen output_norm + W with Automodel KDLoss (as in jetspec_core.py), chunked; its selector term is KL over the top-16 candidates, renormalized. Both arms share data order, seed, steps and LR; add a second seed for K; <=4 MI210-h total. (3) Convert with convert_hf_to_gguf.py (DFlash2DraftModel, --target-model-dir /mnt/raid0/llm/models/turboderp/Qwen3.8-27B-exl3-4.00bpw for config and tokenizer), then quantize to Q8_0. Six controls: (i) frozen manifest: sha256 of the target, served drafter and z-lab bf16; champion binary identity; held-out request list; sampler; seeds. (ii) Baselines: the served drafter, plus a round-trip arm (z-lab bf16 through our converter and quantizer, untrained) that must be tensor-equal after dequant or within the A/A band on DF2-4. (iii) Per-request raw draft_n, draft_n_accepted, predicted_n and timings in JSONL, plus the offline teacher-forced expected-accept-length proxy per held-out block. (iv) Holdout: all C4 runs, replayed twice ABAB on a fresh server per arm at the production argv, plus the DF2-4 12-prompt benchmark per arm. (v) Full denominator: every held-out request, failures counted. (vi) Predeclared rule. PROMOTE (open DF2-FT-2) if the best arm beats the incumbent on held-out weighted acceptance (sum accepted / sum drafted) by >=0.05 absolute on both reps (about +10% tokens per verify step at n_max 7), AND on held-out decode tok/s by >=8%, AND DF2-4 acceptance is >= incumbent - 0.02, AND the coherence gate is clean with the DF2-6 greedy pass count not below the incumbent. KL becomes the default drafter objective if K - H >= 0.02 on both reps and the seed-2 replicate has the same sign; |K - H| < 0.01 means cost-neutral (pick hard labels, which need no final-hidden tap). A gain of +0.02..+0.05 earns one more shard of <=1M fresh resamples, a retrain, and one more application of the rule. Below +0.02, KILL and record. Final step, on any verdict: amend DF2-DRAFTER-CAPABILITY with the objective verdict and an onboarding rule. The rule makes frozen-trunk re-alignment on the model's own served traffic the default for any served drafter or MTP head not co-trained on that exact trunk and quant. It names the next instances: the frontdoor 35B-A3B MTP head, then the Flash-Next head. Budget: ~13 MI210-h (~0.55 card-day) in GPU windows booked through the backlog-scheduling calendar, with :8083 drained per preempt-by-drain, plus 4-6 desk days (dump tool, trainer adaptation, venv; CPU-only smoke first).",
+          "acceptance": "Committed report with the frozen manifest; the per-request JSONL for incumbent, round-trip, H, K and K-seed2 on all held-out C4 requests x 2 reps; DF2-4 results per arm; the converted candidate GGUF sha256s; the decision line (PROMOTE / one-more-shard / KILL plus the KL-vs-hard verdict) stated against the predeclared thresholds; and the DF2-DRAFTER-CAPABILITY amendment (objective verdict, onboarding rule, ordered next instances) applied by the owning session."
         }
       ]
     },
     "PRE-2549": {
       "required_outcome": "Dive with intake-2548: check the loss implementation and whether it composes with head-only training on a frozen trunk.",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; DF2-DRAFTER-CAPABILITY.OBJ carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; DF2-FT-1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
-          "task_id": "DF2-DRAFTER-CAPABILITY.OBJ",
-          "task_text": "- [ ] **DF2-DRAFTER-CAPABILITY.OBJ — Fix the drafter-training data contract before any capture (intake-2548#record, intake-2578#record, intake-297#record).** Amend the capture contract inherited from INF-62 (\"hard next-token labels\") so every feature dump also taps the target's final post-norm hidden state (5120 x bf16 = 10,240 bytes per token, +20% over the current taps), which yields the exact teacher distribution through the frozen output head. Make forward KL toward the target distribution the default objective with hard labels as the fallback arm (with a frozen trunk, Soft-MTP's gradient equals direct forward KL), and record the Nemotron 3 Ultra frozen-backbone recipe (temperature 2, hidden states sampled from earlier draft steps) as an option. Note that z-lab/dflash @ 07ebd93 ships no training code, so any drafter or selector training is research, not a port.",
-          "acceptance": "Contract text amended in the handoff with the tap, default objective, fallback arm and recipe option; the capture script refuses to start without the final-hidden tap."
+          "task_id": "DF2-FT-1",
+          "task_text": "- [ ] **DF2-FT-1 — KL re-alignment pilot of the served 27B DFlash2 drafter on its own agentic traffic, target frozen (intake-2548#04, intake-2549#record, intake-2578#record, intake-297#record, intake-1848#record).** Why: at the production :8083 shape the drafter accepts 0.29-0.39 on real temp-1 agentic traffic (agentic-serving-harness-fixes.md:60,74,79). On the canonical benchmark shape it accepts 0.62-0.73. The two shapes differ in several factors, so this pilot is the deciding probe, not a presumed fix. Drafter facts (GGUF header): Qwen3.8-27B-DFlash2-Q8_0, size_label 1.9B, 81 tensors, 5 non-causal blocks with sliding window 2048, fc 25600->5120, selector codebooks 2 x 256 x 248320. It is headless and borrows the target's frozen token_embd and output (5120 x 248320 each). Steps: (0) Corpus = the DS41-C95 wire contexts under /mnt/raid0/llm/tmp/ds41-c95/results (36 wire-body captures; DF2-14 counted 320 turns / 630k generated tokens). Hold out every C4 run untouched. For each held-in request, regenerate 2 completions at the production sampler on the :8083 argv (X0_ARGV_8083.txt), capped at 2048 tokens, <=3 MI210-h; this also removes the need to reconstruct reasoning text from the wire bodies. (1) Write a feature-dump tool on a llama.cpp-experimental branch cut from the current champion tip. Per token it writes the 5 taps at target_layers [6,20,34,48,62] plus the target final post-norm hidden: 5 x 10,240 + 10,240 = 61,440 B/token, the DF2-DRAFTER-CAPABILITY.OBJ contract. It writes only each completion and its 2,048-token window prefix. Expect ~0.8-1.2M tokens = 50-75 GB in <=2 rolling shards. Capture held-out C4 the same way for the offline proxy. Prefill runs at the measured production-shape 410-574 t/s, <=3 MI210-h. (2) Train in a NEW ROCm venv; do not modify the two verified venvs. Use NeMo Automodel train_dflash2 @1667095 with the sdpa attention backend and an offline-feature dataset in place of the online target. Warm-start from z-lab/Qwen3.8-27B-DFlash2 bf16. The whole drafter is trainable: bf16 weights + fp32 master + AdamW ~16 B/param = ~31 GB, plus frozen embed/output 5.1 GB; that fits 64 GB because target features are precomputed. Arm H = Automodel hard block CE on the sampled tokens. Arm K = forward KL at T=1 to the teacher, computed from the final-hidden tap through the frozen output_norm + W with Automodel KDLoss (as in jetspec_core.py), chunked; its selector term is KL over the top-16 candidates, renormalized. Both arms share data order, seed, steps and LR; add a second seed for K; <=4 MI210-h total. (3) Convert with convert_hf_to_gguf.py (DFlash2DraftModel, --target-model-dir /mnt/raid0/llm/models/turboderp/Qwen3.8-27B-exl3-4.00bpw for config and tokenizer), then quantize to Q8_0. Six controls: (i) frozen manifest: sha256 of the target, served drafter and z-lab bf16; champion binary identity; held-out request list; sampler; seeds. (ii) Baselines: the served drafter, plus a round-trip arm (z-lab bf16 through our converter and quantizer, untrained) that must be tensor-equal after dequant or within the A/A band on DF2-4. (iii) Per-request raw draft_n, draft_n_accepted, predicted_n and timings in JSONL, plus the offline teacher-forced expected-accept-length proxy per held-out block. (iv) Holdout: all C4 runs, replayed twice ABAB on a fresh server per arm at the production argv, plus the DF2-4 12-prompt benchmark per arm. (v) Full denominator: every held-out request, failures counted. (vi) Predeclared rule. PROMOTE (open DF2-FT-2) if the best arm beats the incumbent on held-out weighted acceptance (sum accepted / sum drafted) by >=0.05 absolute on both reps (about +10% tokens per verify step at n_max 7), AND on held-out decode tok/s by >=8%, AND DF2-4 acceptance is >= incumbent - 0.02, AND the coherence gate is clean with the DF2-6 greedy pass count not below the incumbent. KL becomes the default drafter objective if K - H >= 0.02 on both reps and the seed-2 replicate has the same sign; |K - H| < 0.01 means cost-neutral (pick hard labels, which need no final-hidden tap). A gain of +0.02..+0.05 earns one more shard of <=1M fresh resamples, a retrain, and one more application of the rule. Below +0.02, KILL and record. Final step, on any verdict: amend DF2-DRAFTER-CAPABILITY with the objective verdict and an onboarding rule. The rule makes frozen-trunk re-alignment on the model's own served traffic the default for any served drafter or MTP head not co-trained on that exact trunk and quant. It names the next instances: the frontdoor 35B-A3B MTP head, then the Flash-Next head. Budget: ~13 MI210-h (~0.55 card-day) in GPU windows booked through the backlog-scheduling calendar, with :8083 drained per preempt-by-drain, plus 4-6 desk days (dump tool, trainer adaptation, venv; CPU-only smoke first).",
+          "acceptance": "Committed report with the frozen manifest; the per-request JSONL for incumbent, round-trip, H, K and K-seed2 on all held-out C4 requests x 2 reps; DF2-4 results per arm; the converted candidate GGUF sha256s; the decision line (PROMOTE / one-more-shard / KILL plus the KL-vs-hard verdict) stated against the predeclared thresholds; and the DF2-DRAFTER-CAPABILITY amendment (objective verdict, onboarding rule, ordered next instances) applied by the owning session."
         }
       ]
     },
     "PRE-2550": {
       "required_outcome": "Dive: separate the transferable mechanism (exact GDN-state addressing) from the demo; decide if it informs GDN-hybrid serving or memory work.",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; AKX-ALL-31.GDN carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; AKX-ALL-31.GDN carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
@@ -2557,7 +3156,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "PRE-2552": {
       "required_outcome": "Dive: establish the actual llama.cpp audio path and whether it can replace or augment the whisper.cpp + qwentts.cpp cascade on EPYC/MI210.",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; CS-8.STT8 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; CS-8.STT8 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/conversation-stack.md",
@@ -2570,7 +3169,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "PRE-2553": {
       "required_outcome": "Dive: compare with the d1/Jev decision-model lineage already indexed and decide whether an audio/vision decision front end serves orchestrator routing or the speech turn-taking loop.",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; TD-23.D1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; TD-23.D1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/typed-decision-plane.md",
@@ -2589,7 +3188,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "PRE-2555": {
       "required_outcome": "Dive: extract the loop design and the verified-vs-numeric gap; map onto the AK candidate gate and gfx90a/x86 targets.",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; AKX-ALL-31.EDGE carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; AKX-ALL-31.EDGE carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
@@ -2602,7 +3201,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "PRE-2556": {
       "required_outcome": "Dive with intake-2555: read the loop and trace layout for AK reuse.",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; RVP-CTR-1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; RVP-CTR-1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/rocm-verify-profile-backend.md",
@@ -2615,20 +3214,20 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "PRE-2557": {
       "required_outcome": "Dive: decide what an equivalence/race checker would add to the AK correctness gate on gfx90a and x86.",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; RVP-RACE-1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; RVP-RACE-1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/rocm-verify-profile-backend.md",
           "task_id": "RVP-RACE-1",
-          "task_text": "- [ ] **RVP-RACE-1 — Measure whether the correctness gate can see a race at all (intake-2557#record, intake-2570#record).** GPU: in a llama.cpp-experimental worktree build three seeded-race HIP mutants, each deleting one barrier in MMQ, MMVQ and the FA kernel, and run the served-shape suite 20 times each. CPU: build test-backend-ops with ThreadSanitizer, using LLVM libomp with Archer annotations, and run the threaded ops. Decision rule: if any GPU mutant passes the gate in all 20 runs, open the gfx90a race-only symbolic-executor trigger; if all are caught, record the gate as race-sensitive at these sites. The v10 anchor must produce zero TSAN reports beyond a documented suppression list.",
-          "acceptance": "Per-mutant pass/fail counts over 20 runs, the TSAN report on the anchor, and the stated verdict."
+          "task_text": "- [ ] **RVP-RACE-1 — Measure whether the correctness gate can see a race at all (intake-2557#record, intake-2570#record).** GPU: in a llama.cpp-experimental worktree from the v10 tip build seeded-race HIP mutants, each deleting one barrier: MMQ tile load (mmq.cuh barrier sites), MMVQ cross-warp tmp_shared reduction (mmvq.cu nwarps 4 and 8 routes), MMVQ LDS-DMA double buffer (mmvq.cu:1063-1065, run with GGML_CUDA_Q8_PREFETCH=1), FA-mma tile softmax; prove each mutant structurally (s_barrier count of that kernel in the disassembled gfx90a code object drops vs the unmutated build) and record waves-per-workgroup at each served shape (a single-wave site is excluded as not a race). Run the AK served-shape test-backend-ops case set 20x per mutant and 20x on the unmutated build (frozen case manifest, per-run raw verdicts and NMSE kept). CPU: build test-backend-ops with ThreadSanitizer using LLVM libomp with Archer annotations and run the threaded ops on the v10 anchor. Decision rule: a GPU mutant that passes the gate in >=1 of 20 runs is a measured race miss; the unmutated build must pass 20/20; the mutant set becomes the fixture set of RVP-RACE-2 either way. The v10 anchor must produce zero TSAN reports beyond a documented suppression list.",
+          "acceptance": "Per-mutant table (site, s_barrier delta, waves/WG, pass count out of 20, max NMSE) plus the 20/20 control, committed with raw verdicts; TSAN anchor report with suppression list; fixtures handed to RVP-RACE-2."
         }
       ]
     },
     "PRE-2558": {
       "required_outcome": "Dive: test whether the certificate-plus-independent-checker pattern fits belief-kernel derivations or registry/handoff consistency checks.",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; VB-CERT-1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; VB-CERT-1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/vidya-belief-substrate-program.md",
@@ -2647,7 +3246,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "PRE-2560": {
       "required_outcome": "Dive with intake-2561: read the corrector implementation to size a llama.cpp port onto the DFlash2 drafter path.",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; DF2-LAT carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; DF2-LAT carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
@@ -2660,7 +3259,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "PRE-2561": {
       "required_outcome": "Dive: measure-first design — top-K coverage of the verifier token on our DFlash2 drafter logits decides whether a corrector is worth porting.",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; DF2-LAT carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; DF2-LAT carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
@@ -2672,9 +3271,16 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     },
     "PRE-2562": {
       "required_outcome": "Dive: read the architecture docs and the optimize-performance skill; extract what transfers to AK loops or llama.cpp serving.",
-      "review_status": "closed-with-basis",
-      "review_basis": "Retained: KV editing makes the reuse key history-dependent; C2C maps onto out-of-process state get/set; the single-loop thesis is untested on our CPU stack.",
-      "task_refs": []
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; AK-WIN-CNT-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/autokernel-research-loop.md",
+          "task_id": "AK-WIN-CNT-1",
+          "task_text": "- [ ] **AK-WIN-CNT-1 — Record in-window path counters beside every T1/T2 timing record (intake-2562#record).** Annex K's record grammar (`measurement/protocols/kernel-research.md` \"Record grammar\") has no field proving the timed window ran the intended path; T0 checks a dispatch trace but T1/T2 do not re-prove it. Resin keeps `graph_counts` and `overlap_counts` that exclude warmup and checks no JIT compile after warmup for unseen shapes. Do: capture hipGraph replay count vs eager launches and code-object load/JIT events inside the timed window on MI210 (use an in-process counter in a llama.cpp-experimental branch if none exists; the port is the build cost), write them as a non-gating diagnostic sidecar next to the raw samples, and draft the Annex K grammar amendment (human-amendment-only) making a path mismatch a VOID window. Controls: frozen anchor and one candidate, degraded-negative with graphs disabled (counter must show zero replays), A/A, per-window raw counters kept. Decision rule: sidecar ships if the degraded-negative is flagged and A/A is not; amendment text goes to the operator package.",
+          "acceptance": "Sidecar present on a GPU T1 window with the two control outcomes recorded; amendment draft filed for ratification."
+        }
+      ]
     },
     "PRE-2564": {
       "required_outcome": "Dive (light): confirm availability and what is technically claimed; compare with full-duplex designs in the conversation-stack lane.",
@@ -2685,7 +3291,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "PRE-2565": {
       "required_outcome": "Dive: map the folding criteria onto the orchestrator REPL/agent loop (roles as subagents vs skills) and its tool count.",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; RI-25 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; RI-25 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/routing-intelligence.md",
@@ -2697,20 +3303,27 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     },
     "PRE-2567": {
       "required_outcome": "Dive: verify the table, check the HF card (quant/MTP head) and decide a same-recipe token-count and accuracy probe on our harness.",
-      "review_status": "closed-with-basis",
-      "review_basis": "Trigger: the operator enables thinking on a Flash-Next role, or the architect bench reopens a thinking arm; then run the ThinkingCap IQ4_XS A/B with a shared-head arm.",
-      "task_refs": []
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; AMS-TCAP-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/architect-model-selection-bench.md",
+          "task_id": "AMS-TCAP-1",
+          "task_text": "- [ ] **AMS-TCAP-1 — A/B a thinking-on effort mode for architect_general with ThinkingCap-Qwen3.8-Flash-Next (intake-2567#record, intake-2572#record, intake-2577#record).** Thinking is off for every Flash-Next role today because the base model fell into degenerate think loops (this handoff, prep finding 4; registry reasoning_policy_observation: reasoning auto gave 0/4 final answers). A finetune that shortens thinking is therefore a candidate higher-effort mode, not a curiosity. Download the bottlecapai ThinkingCap IQ4_XS GGUF (95.5 GB; one download at a time, disk checked first) and run three arms on llama-server with the qwen38-flash-next-cpu-mtp recipe: A base UD-IQ4_XS thinking off (production), B base thinking on, C ThinkingCap thinking on, plus C2 = ThinkingCap trunk with our shared-Q8_0 MTP head versus its embedded head. Frozen 40-60 prompt set (architect planning and critique, AIME-style reasoning, about 15 tau2-style agentic turns), at least 4 seeds, paired by prompt; record accuracy, thinking and answer tokens, the degenerate-loop and truncation rate, MTP alpha, and llama-bench pp/tg in one alternating window. Decision rule: propose a thinking-on effort mode (an operator-signed stack change) only if arm C beats arm A on the reasoning family with a paired 95% lower bound above 0, has degenerate or truncated thinking on at most 1% of requests, uses at most 60% of arm B's median thinking tokens, and keeps alpha within 0.03 of base; otherwise record the null and keep thinking off.",
+          "acceptance": "All arms run with per-request outputs, token counts, loop/truncation labels and alpha retained; the decision rule applied and the verdict recorded; disk and download logged."
+        }
+      ]
     },
     "PRE-2568": {
       "required_outcome": "Dive with intake-2546.",
       "review_status": "closed-with-basis",
-      "review_basis": "Triggers: DF2-LAT promote rule opens a trained-selector port; low top-16 coverage with low headroom opens a Domino-style head; a drafter capture start opens the frozen-trunk objective probe; native-MTP acceptance 0.05 below base on a served finetune opens head re-alignment; a DF2-12.1 degenerative divergence opens the snapshot-slot patch; the collapse canary tripping on repetition opens a thinking-mode guard; an NCM-style generator sharing a served vocabulary opens a drafter test.",
+      "review_basis": "Triggers: DF2-LAT promote rule opens a trained-selector port; low top-16 coverage with low headroom opens a Domino-style head; DF2-FT-1 promotion opens the scale-up and stack-change package; the collapse canary tripping on repetition opens a thinking-mode guard. External event: a released NCM-style generator sharing a served vocabulary, with an acceptance number, opens a drafter test.",
       "task_refs": []
     },
     "PRE-2569": {
       "required_outcome": "Dive with intake-2561: sequential corrector baseline that DCOCO claims to beat under concurrency.",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; DF2-LAT carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; DF2-LAT carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
@@ -2723,27 +3336,41 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "PRE-2570": {
       "required_outcome": "Dive: decide what a sound equivalence gate would need on gfx90a/x86 and which AK candidate classes it could cover.",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; RVP-RACE-1 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; RVP-RACE-1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/rocm-verify-profile-backend.md",
           "task_id": "RVP-RACE-1",
-          "task_text": "- [ ] **RVP-RACE-1 — Measure whether the correctness gate can see a race at all (intake-2557#record, intake-2570#record).** GPU: in a llama.cpp-experimental worktree build three seeded-race HIP mutants, each deleting one barrier in MMQ, MMVQ and the FA kernel, and run the served-shape suite 20 times each. CPU: build test-backend-ops with ThreadSanitizer, using LLVM libomp with Archer annotations, and run the threaded ops. Decision rule: if any GPU mutant passes the gate in all 20 runs, open the gfx90a race-only symbolic-executor trigger; if all are caught, record the gate as race-sensitive at these sites. The v10 anchor must produce zero TSAN reports beyond a documented suppression list.",
-          "acceptance": "Per-mutant pass/fail counts over 20 runs, the TSAN report on the anchor, and the stated verdict."
+          "task_text": "- [ ] **RVP-RACE-1 — Measure whether the correctness gate can see a race at all (intake-2557#record, intake-2570#record).** GPU: in a llama.cpp-experimental worktree from the v10 tip build seeded-race HIP mutants, each deleting one barrier: MMQ tile load (mmq.cuh barrier sites), MMVQ cross-warp tmp_shared reduction (mmvq.cu nwarps 4 and 8 routes), MMVQ LDS-DMA double buffer (mmvq.cu:1063-1065, run with GGML_CUDA_Q8_PREFETCH=1), FA-mma tile softmax; prove each mutant structurally (s_barrier count of that kernel in the disassembled gfx90a code object drops vs the unmutated build) and record waves-per-workgroup at each served shape (a single-wave site is excluded as not a race). Run the AK served-shape test-backend-ops case set 20x per mutant and 20x on the unmutated build (frozen case manifest, per-run raw verdicts and NMSE kept). CPU: build test-backend-ops with ThreadSanitizer using LLVM libomp with Archer annotations and run the threaded ops on the v10 anchor. Decision rule: a GPU mutant that passes the gate in >=1 of 20 runs is a measured race miss; the unmutated build must pass 20/20; the mutant set becomes the fixture set of RVP-RACE-2 either way. The v10 anchor must produce zero TSAN reports beyond a documented suppression list.",
+          "acceptance": "Per-mutant table (site, s_barrier delta, waves/WG, pass count out of 20, max NMSE) plus the 20/20 control, committed with raw verdicts; TSAN anchor report with suppression list; fixtures handed to RVP-RACE-2."
         }
       ]
     },
     "PRE-2571": {
       "required_outcome": "Dive with intake-2547.",
-      "review_status": "closed-with-basis",
-      "review_basis": "Retained: sequential loops multiply weight bytes per token; parallel-loop decode does not; our GDN graph caps beta at 1; the gpu-acceleration-path compatibility note is stale.",
-      "task_refs": []
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; GPU-LOOP-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/gpu-acceleration-path.md",
+          "task_id": "GPU-LOOP-1",
+          "task_text": "- [ ] **GPU-LOOP-1 — Looped-architecture build on llama.cpp-experimental (Nanbeige #25994 + Ouro #29823) and its MI210 + CPU roofline curves (intake-2585#record, intake-2586#record, intake-2547#record, intake-2571#record).** Cut a fresh llama.cpp-experimental branch from the production v10 tip (ffc1bac82), cherry #25994 (merged b77d646, 265 lines) then #29823 (open, head e79d8cab5, 324 lines) with no other change; build HIP gfx90a and CPU; convert ByteDance Ouro-1.4B and 2.6B (+Thinking) to GGUF Q8_0 and Q4_K_M and record sha256. Gate 1 (correctness, may share the card with :8083): tests/test-llama-archs passes for ouro and nanbeige on CPU and HIP, and top-1 logit parity vs the transformers reference on the PR 829-position fixture at loops 1/2/4 is reproduced on gfx90a (use -ngl 999: -ngl counts logical layers, 192 for 2.6B, and -ngl 99 spilled to 1.6 tok/s in the PR thread). Gate 2 (timing, in a GPU window, host threads on 184-191 under the q3 claim): llama-batched-bench tg at loops {1,2,4} x np {1,2,4,8,16,32} x ctx {512,1024,2048} x KV {f16,q8_0} for Ouro-1.4B Q8_0, with Qwen3-1.7B-Q8_0 and Qwen3-4B-Thinking-2507-Q8_0 (both on disk) as same-build dense comparators; per cell report aggregate tok/s, achieved GB/s under the byte model bytes/step = W_body*L + W_head + B*C*kv_per_slot*L against the 1433 GB/s measured roof, and the ratio to the ideal step time. Same build, CPU leg (replaces W2LOOP-1): loops 1/2/4 on one quarter and the full socket, GB/s vs the C0 153 GB/s ceiling. Predictions fixed before the run (arithmetic, Ouro-1.4B: W_body 1.41 GB Q8, head 0.11 GB, 24 layers, 16 MHA KV heads x 128 = 8 KiB per layer slot): aggregate falls as 1/L at every np (a 55 MB layer cannot sit in the 8 MB L2, so no reuse across loops); at C=1024, f16 KV, L=4 the np-to-infinity ceiling is 1433e9/(1024*786432) = 1,780 tok/s and np=16 gives 16/13.0 ms = 1,230 tok/s ideal vs 3,420 for Qwen3-4B Q8 (4.28 GB, 144 KiB/token); the KV share exceeds the weight share beyond np=7; compute time is under 1/5 of byte time at every np that fits (VRAM headroom beside the 43 GiB :8083 is about 19 GiB, so np about 23 at C=1k f16), so the B*=64 knee is not reached for C above about 123 tokens. Six controls: frozen GGUF sha256 and prompts; comparators on the same build; per-cell raw JSON kept; 3 repeats ABA-alternated with the noise floor stated with its unit; full grid denominator (no cell dropped, VRAM-skipped cells listed); the rule below. Decision rule: PASS if parity holds and every measured aggregate lies within 0.5-1.1x of the byte-model prediction; a cell below 0.5x opens a HIP-kernel root-cause row (stale-binary check first: strings the lib, compare mtime to the commit) and is not a verdict on looping; this task issues no quality verdict. Writes the GPU arithmetic table into cpu-decode-roofline-program.md as the GPU half of the weight-reuse note (LOOP-1).",
+          "acceptance": "Experimental branch + HIP/CPU build exist; parity receipt on gfx90a and CPU; the np x loops x ctx x KV grid with predictions and ratios is committed with raw JSON; the CPU leg and the GPU arithmetic table are filed; the 0.5-1.1x rule is applied to every cell."
+        }
+      ]
     },
     "PRE-2572": {
       "required_outcome": "Dive: verify config (qwen4_exp, MTP layers), whether the GGUFs carry nextn tensors, and fit against the INF-70 Axis-E MTP restoration need.",
-      "review_status": "closed-with-basis",
-      "review_basis": "Trigger: the operator enables thinking on a Flash-Next role, or the architect bench reopens a thinking arm; then run the ThinkingCap IQ4_XS A/B with a shared-head arm.",
-      "task_refs": []
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; AMS-TCAP-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/architect-model-selection-bench.md",
+          "task_id": "AMS-TCAP-1",
+          "task_text": "- [ ] **AMS-TCAP-1 — A/B a thinking-on effort mode for architect_general with ThinkingCap-Qwen3.8-Flash-Next (intake-2567#record, intake-2572#record, intake-2577#record).** Thinking is off for every Flash-Next role today because the base model fell into degenerate think loops (this handoff, prep finding 4; registry reasoning_policy_observation: reasoning auto gave 0/4 final answers). A finetune that shortens thinking is therefore a candidate higher-effort mode, not a curiosity. Download the bottlecapai ThinkingCap IQ4_XS GGUF (95.5 GB; one download at a time, disk checked first) and run three arms on llama-server with the qwen38-flash-next-cpu-mtp recipe: A base UD-IQ4_XS thinking off (production), B base thinking on, C ThinkingCap thinking on, plus C2 = ThinkingCap trunk with our shared-Q8_0 MTP head versus its embedded head. Frozen 40-60 prompt set (architect planning and critique, AIME-style reasoning, about 15 tau2-style agentic turns), at least 4 seeds, paired by prompt; record accuracy, thinking and answer tokens, the degenerate-loop and truncation rate, MTP alpha, and llama-bench pp/tg in one alternating window. Decision rule: propose a thinking-on effort mode (an operator-signed stack change) only if arm C beats arm A on the reasoning family with a paired 95% lower bound above 0, has degenerate or truncated thinking on at most 1% of requests, uses at most 60% of arm B's median thinking tokens, and keeps alpha within 0.03 of base; otherwise record the null and keep thinking off.",
+          "acceptance": "All arms run with per-request outputs, token counts, loop/truncation labels and alpha retained; the decision rule applied and the verdict recorded; disk and download logged."
+        }
+      ]
     },
     "PRE-2573": {
       "required_outcome": "Dive: decide whether transcribe.cpp Parakeet streaming is a candidate STT against frozen whisper.cpp; check what the index already holds on transcribe.cpp.",
@@ -2754,7 +3381,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "PRE-2574": {
       "required_outcome": "Dive with intake-2550.",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; AKX-ALL-31.GDN carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; AKX-ALL-31.GDN carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
           "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
@@ -2767,13 +3394,13 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "PRE-2575": {
       "required_outcome": "Dive: locate the llama.cpp code for the audio/realtime path and estimate the port onto llama.cpp-experimental; check ggml generation vs the speech kernel set.",
       "review_status": "preserved",
-      "review_basis": "Main read the dive passage and the current consumer; CS-8.STT8 carries the required behavior with its controls and decision rule.",
+      "review_basis": "Main read the dive passage and the current consumer; CH-35 carry the required behavior with controls and a decision rule.",
       "task_refs": [
         {
-          "owner": "handoffs/active/conversation-stack.md",
-          "task_id": "CS-8.STT8",
-          "task_text": "- [ ] **CS-8.STT8 — Scratch upstream audio build and end-to-end speech-model STT arms (intake-2552#record, intake-2575#record, intake-2579#record, intake-2580#record).** On a llama.cpp-experimental branch, build current upstream (b11960 or later, which carries the LFM3 architecture, mtmd_audio_stream and the /v1/realtime server) for CPU and gfx90a in an isolated prefix with its own LD_LIBRARY_PATH, proven with verify_ggml_linkage.sh. Record the forward-port distance from v10 (PRs 31252, 31257, 30629, 30636, 31269, 31287, 31386) and the build effort. Then add two arms to the CS-8.STT5 screen on the pinned FLEURS en/it clips with the CS-8.STT1 scorer: LFM3-Audio-2B (ASR mode) and Voxtral-Mini-4B-Realtime via mtmd-cli streaming, baselines frozen whisper large-v3-turbo and parakeet-cli. Rule: an arm advances to the CS-8 bake-off gates only if its paired 95% bootstrap WER difference versus whisper is not above +1.0 pp in both en and it; vendor tables are not evidence.",
-          "acceptance": "Scratch build proven by the linkage check on both devices; both arms scored on the same pinned clips with per-clip outputs retained; advance or reject per arm under the rule."
+          "owner": "handoffs/active/autokernel-champion-aggregate.md",
+          "task_id": "CH-35",
+          "task_text": "- [ ] **CH-35 — Speech/omni fold group: mtmd_audio_stream + Voxtral realtime (#30629, 2851b3bcbf, +998/-20, 27 files in tools/mtmd), realtime transcription API (#30636, 1242be66f6, +512/-14, 9 files, server-context.cpp +316), LFM3 arch (#31252), LFM3 audio+omni (#31257, +2721/-160, 31 files), /v1/realtime conversation (#31269, +1423) with tool calls (#31287), codec quant (#31386), video (#31283) (intake-2575#record, intake-2579#record, intake-2580#record, intake-2552#record).** Value: serves LFM3-Audio/Omni and Voxtral Realtime end to end from the champion server for CS-8 STT/interlocutor arms and CS-20/CS-22 realtime; the speech kernels (whisper.cpp, qwentts.cpp) are separate trees and unaffected. Cost: the biggest group; conflicts concentrated in tools/server/server-context.cpp (champion already +593 vs v10) and src/llama-model.cpp; mtmd is new surface the champion has not touched; ggml delta from CH-32. Stage 1 immediately: build the scratch upstream audio build of CS-8.STT8 (instrument, not the fold). Stage 2 gated on CS-8.STT8 (paired bootstrap WER not above +1.0 pp vs whisper in en and it) or CS-8.RT1 (realtime first-output latency beats the cascade on the 20 frozen utterances): then cut experimental/champion-plus-lfm3-audio from the current champion tip, apply the PR chain in merge order, resolve server-context.cpp by hand, rebuild CPU+HIP, gates: Q38FN/27B greedy identity vs champion (server changes must not move text decode), CS-8.STT8 WER reproduced on the folded binary within bootstrap CI of the scratch build, np>1 safety rerun of DF2-12.1. If STT8 and RT1 both fail the rule the group is recorded EXCLUDED with numbers.",
+          "acceptance": "Scratch build exists with verify_ggml_linkage proof (stage 1); fold branch or EXCLUDED row with STT8/RT1 numbers (stage 2)."
         }
       ]
     },
@@ -2785,9 +3412,22 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     },
     "AGENT-9": {
       "required_outcome": "Copy the measurement-discipline text, not code, into the AK actor context: (a) record cache/graph/placement state and compare on the same allocation, (b) locate the limiting interval from a trace BEFORE kernel edits, (c) report the spread and do not call ...",
-      "review_status": "closed-with-basis",
-      "review_basis": "the Resin measurement-discipline text is weaker than the Annex K protocol the loop already follows.",
-      "task_refs": []
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; AK-WIN-CNT-1, AK-PROF-ATTR-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/autokernel-research-loop.md",
+          "task_id": "AK-WIN-CNT-1",
+          "task_text": "- [ ] **AK-WIN-CNT-1 — Record in-window path counters beside every T1/T2 timing record (intake-2562#record).** Annex K's record grammar (`measurement/protocols/kernel-research.md` \"Record grammar\") has no field proving the timed window ran the intended path; T0 checks a dispatch trace but T1/T2 do not re-prove it. Resin keeps `graph_counts` and `overlap_counts` that exclude warmup and checks no JIT compile after warmup for unseen shapes. Do: capture hipGraph replay count vs eager launches and code-object load/JIT events inside the timed window on MI210 (use an in-process counter in a llama.cpp-experimental branch if none exists; the port is the build cost), write them as a non-gating diagnostic sidecar next to the raw samples, and draft the Annex K grammar amendment (human-amendment-only) making a path mismatch a VOID window. Controls: frozen anchor and one candidate, degraded-negative with graphs disabled (counter must show zero replays), A/A, per-window raw counters kept. Decision rule: sidecar ships if the degraded-negative is flagged and A/A is not; amendment text goes to the operator package.",
+          "acceptance": "Sidecar present on a GPU T1 window with the two control outcomes recorded; amendment draft filed for ratification."
+        },
+        {
+          "owner": "handoffs/active/autokernel-research-loop.md",
+          "task_id": "AK-PROF-ATTR-1",
+          "task_text": "- [ ] **AK-PROF-ATTR-1 — Add GPU-active-union and a cross-run-subtraction lint to the profile report (intake-2562#record).** `scripts/kernel_rnd/autokernel/profile_report.py` / `profile_context.py` report `kernel_wall_share` and overlap tables but no GPU-active union versus summed kernel time. Resin's skill states overlapping kernel work is not additive and \"Engine minus GPU timing is unattributed time ... do not subtract different profiler and benchmark runs\" (optimize-resin-performance SKILL.md). Do: emit summed duration, active-union and critical-path per trace, and reject a derived \"unattributed\" figure built from two runs. Controls: a synthetic overlapping-kernel trace (sum greater than union), the hash-bound rocprofv2 trace already replayed in this handoff (~L444), a two-run subtraction negative. Decision rule: union less than sum on the synthetic case, existing wall-share values unchanged on the replayed trace, negative rejected.",
+          "acceptance": "Report fields and lint land with the three fixtures green; existing profile tests unchanged."
+        }
+      ]
     },
     "AGENT-11": {
       "required_outcome": "Decline engine/runner split as an adoption target: there is no CPU or ROCm runner, and production serving is llama.cpp (frozen v10). Treat the split as vocabulary only.",
@@ -2798,7 +3438,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     "MEM-3": {
       "required_outcome": "Do not pursue an in-weights calculator (compiled RISC-V/CHIP-8 layers) for the serving stack. Flag for operator review per the research-intake rule rather than closing silently.",
       "review_status": "closed-with-basis",
-      "review_basis": "an in-weights calculator costs about 1.6 to 2 times the weight bytes per token on a bandwidth-bound host and the tool arm already matches it; operator confirmation requested.",
+      "review_basis": "re-priced on the GPU, the in-weights calculator still loses: chip tokens are serial (0.5-1 s per call, median 242 s per long division on an L4), text tokens cost twice the weight bytes, and accuracy only ties a tool call; operator confirmation requested.",
       "task_refs": []
     },
     "MEM-5": {
@@ -2815,9 +3455,16 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     },
     "KERN-11": {
       "required_outcome": "Do not adopt upstream Volta or the Blackwell fork directly. Both are PTX/NVIDIA-only, and this host has no NVIDIA GPU. Reuse only the race model (KERN-2) and the scaffold code.",
-      "review_status": "closed-with-basis",
-      "review_basis": "upstream Volta and its Blackwell fork are PTX-only and the host has no NVIDIA GPU; the race model transfers through the race trigger instead.",
-      "task_refs": []
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; RVP-RACE-2 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/rocm-verify-profile-backend.md",
+          "task_id": "RVP-RACE-2",
+          "task_text": "- [ ] **RVP-RACE-2 — gfx90a AMDGCN race/deadlock executor as the GPU race_detector_id (intake-2570#record, intake-2557#record).** Not trigger-gated: 236 of 627 unique AK GPU mechanisms and 15 of 31 keeps touch sync, and v10 already ships hand-ordered LDS-DMA (mmvq.cu:1038-1093). Build in Rust on the MIT ptx_verifier @a39292a, reusing volta_graph and volta_graph_check (barrier_epoch, memory_conflict) unchanged, and extending volta_amd_analysis from gfx950/8 opcodes to gfx90a. Input is the disassembled code object of the built candidate (split with research scripts/kernel_rnd/gfx90a_isa_audit.py, the same artifact as C5-ISA-1). Launch grid, workgroup size and kernarg come from a small HIP launch-capture shim on a correctness-only served-shape run. Model: a concrete integer/address lattice with float/MFMA results opaque; exec mask; wave64 with per-wave program order (one event per wave-instruction, with the byte footprint of active lanes, plus an intra-instruction lane write-write check); ds_* complete at lgkmcnt; buffer_load...lds as AsyncIssue/AsyncComplete, completed conservatively at vmcnt(0); s_barrier as barrier generations; any branch or address that depends on an opaque value yields UNKNOWN (fail-closed, never ACCEPT). Index inputs (MoE ids, FA mask) are fed concretely. M1 (3-4 eng-weeks, the MMVQ + FA-vec opcode set, 228 distinct on v10): check WG0, the last WG and all boundary/tail WGs per served shape. M1 is accepted when it gives 0 findings on v10 MMVQ (both nwarps routes, plus q8pf with GGML_CUDA_Q8_PREFETCH=1) and on FA-vec at the AK served shapes, flags 100% of the RVP-RACE-1 MMVQ/FA mutants plus 2 ISA-only mutants that source mutation cannot make (delete the q8pf s_waitcnt vmcnt(0); move the first LDS read of a tile above its s_barrier; reassembled with clang -target amdgcn-amd-amdhsa -mcpu=gfx90a), and finishes in <=10 min per kernel instance on one core. Any production finding is triaged to a true race or a model bug before acceptance. M2 (+2-3 weeks): MMQ, FA-mma, FA-tile, quantize, argsort/topk (316-opcode union, MFMA/AGPR opaque); cross-WG global write-set overlap on sampled WGs (MMQ tmp_fixup disjointness); deadlock via barrier epochs; a gfx90a wait-state hazard lint for inline-asm regions (quantize.cu:100-117 DPP s_nop) cross-checked against an LLVM-compiled reference. The FA-vec atomic completion protocol is declared out of scope (UNKNOWN). M3: register as race_detector_id in execution/t0_provider.py for GPU routes whose diff or ISA touches barrier/__shared__/ds_/s_waitcnt/LDS-DMA/inline asm, after M1+M2 acceptance. Budget 8-11 kLoC new plus about 12 kLoC reused, 6-9 engineer-weeks, Codex-delegable; zero GPU time beyond the capture runs.",
+          "acceptance": "M1 receipt: per-kernel verdicts (ACCEPT/RACE/UNKNOWN) on v10 MMVQ+FA-vec at the frozen served-shape manifest with 0 RACE; a mutant table showing every RVP-RACE-1 MMVQ/FA mutant and both ISA-only mutants flagged; runtime per instance. M3 done when t0_provider emits a non-null race_detector_id for a sync-touching GPU candidate."
+        }
+      ]
     },
     "TCAP-4": {
       "required_outcome": "Do not pursue the vendor PRO tier or method discovery",
@@ -2833,15 +3480,407 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     },
     "PRE-2563": {
       "required_outcome": "None beyond architectural context; no measured result.",
-      "review_status": "closed-with-basis",
-      "review_basis": "a research-preview agent OS with no measurements and no touchpoint in the serving stack.",
-      "task_refs": []
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; ID-RI-ANCHOR-GATE carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/intake-derived-work-2026-07-25.md",
+          "task_id": "ID-RI-ANCHOR-GATE",
+          "task_text": "- [ ] **ID-RI-ANCHOR-GATE — Make quote re-find a gate the author cannot satisfy by assertion (fabricated citations) (intake-2563#record, intake-1377#record).** Today `.claude/skills/research-intake/scripts/validate_intake.py` (~L436-441) only checks `claim_anchors` is non-empty and `verified_by` is self-written, so a fabricated or cross-pasted quote (the 2026-07-25 CORE ablation, also pasted into intake-895) passes. Borrow Octopus's rule that a mark is recorded only by the runtime after a verifier passes the artifact and nothing else can emit it (`docs/contracts/VERIFIERS.md`, \"Nothing emits marks\"). Change SKILL.md Stage-2 \"Writes permitted\" (claim_anchors bullet) and the Stage-2 Verification Gate: add `validate_intake.py --check-anchors` that (a) re-finds every anchor `quote` in the retained source via `scripts/vidya/machine_anchor.py:verify_source_anchor` / `raw_anchor_store.py` (dive wrapper must write the source into `EPYC_VIDYA_RAW_ANCHOR_ROOT`, today opt-in and unused by dives), (b) recomputes `quote_sha256`, (c) writes an `anchor_mark: {verifier, source_raw_sha256, found}` that only the script writes, and (d) flags any `quote_sha256` appearing under two different entries (cross-paste, needs no retained source). New dive-verified entries without an anchor_mark fail; legacy entries stay grandfathered. Controls: four frozen fixtures (verbatim quote, fabricated quote, whitespace-altered quote, same quote under two entries) plus the old validator output; per-fixture expected verdict recorded. Decision rule: ship only if all four fixtures give the predeclared verdict and a replay over the current index flags zero verbatim anchors. Passing proves containment, not entailment; the per-claim second reader stays.",
+          "acceptance": "Fixture suite in scripts/tests passes (4 verdicts as predeclared); `--check-anchors` run over the current index reports the count of unmarked legacy entries without failing them; SKILL.md Stage-2 gate text updated."
+        }
+      ]
     },
     "PRE-2566": {
       "required_outcome": "None: KB retrieval is ColBERT MaxSim; synthetic-only evidence.",
       "review_status": "closed-with-basis",
       "review_basis": "synthetic single-machine retrieval evidence, and KB retrieval uses ColBERT MaxSim, not cosine stores.",
       "task_refs": []
+    },
+    "W5FT-1": {
+      "required_outcome": "Candidate (a), the 27B DFlash2 drafter (1.9B, GGUF-verified). Capture: 5 taps + final hidden = 61,440 B/token, only for completions plus their 2,048-token window (the drafter attends a 2,048 sliding window). ~0.8-1.2M tokens = 50-75 GB. Capture runs on the ...",
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; DF2-FT-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+          "task_id": "DF2-FT-1",
+          "task_text": "- [ ] **DF2-FT-1 — KL re-alignment pilot of the served 27B DFlash2 drafter on its own agentic traffic, target frozen (intake-2548#04, intake-2549#record, intake-2578#record, intake-297#record, intake-1848#record).** Why: at the production :8083 shape the drafter accepts 0.29-0.39 on real temp-1 agentic traffic (agentic-serving-harness-fixes.md:60,74,79). On the canonical benchmark shape it accepts 0.62-0.73. The two shapes differ in several factors, so this pilot is the deciding probe, not a presumed fix. Drafter facts (GGUF header): Qwen3.8-27B-DFlash2-Q8_0, size_label 1.9B, 81 tensors, 5 non-causal blocks with sliding window 2048, fc 25600->5120, selector codebooks 2 x 256 x 248320. It is headless and borrows the target's frozen token_embd and output (5120 x 248320 each). Steps: (0) Corpus = the DS41-C95 wire contexts under /mnt/raid0/llm/tmp/ds41-c95/results (36 wire-body captures; DF2-14 counted 320 turns / 630k generated tokens). Hold out every C4 run untouched. For each held-in request, regenerate 2 completions at the production sampler on the :8083 argv (X0_ARGV_8083.txt), capped at 2048 tokens, <=3 MI210-h; this also removes the need to reconstruct reasoning text from the wire bodies. (1) Write a feature-dump tool on a llama.cpp-experimental branch cut from the current champion tip. Per token it writes the 5 taps at target_layers [6,20,34,48,62] plus the target final post-norm hidden: 5 x 10,240 + 10,240 = 61,440 B/token, the DF2-DRAFTER-CAPABILITY.OBJ contract. It writes only each completion and its 2,048-token window prefix. Expect ~0.8-1.2M tokens = 50-75 GB in <=2 rolling shards. Capture held-out C4 the same way for the offline proxy. Prefill runs at the measured production-shape 410-574 t/s, <=3 MI210-h. (2) Train in a NEW ROCm venv; do not modify the two verified venvs. Use NeMo Automodel train_dflash2 @1667095 with the sdpa attention backend and an offline-feature dataset in place of the online target. Warm-start from z-lab/Qwen3.8-27B-DFlash2 bf16. The whole drafter is trainable: bf16 weights + fp32 master + AdamW ~16 B/param = ~31 GB, plus frozen embed/output 5.1 GB; that fits 64 GB because target features are precomputed. Arm H = Automodel hard block CE on the sampled tokens. Arm K = forward KL at T=1 to the teacher, computed from the final-hidden tap through the frozen output_norm + W with Automodel KDLoss (as in jetspec_core.py), chunked; its selector term is KL over the top-16 candidates, renormalized. Both arms share data order, seed, steps and LR; add a second seed for K; <=4 MI210-h total. (3) Convert with convert_hf_to_gguf.py (DFlash2DraftModel, --target-model-dir /mnt/raid0/llm/models/turboderp/Qwen3.8-27B-exl3-4.00bpw for config and tokenizer), then quantize to Q8_0. Six controls: (i) frozen manifest: sha256 of the target, served drafter and z-lab bf16; champion binary identity; held-out request list; sampler; seeds. (ii) Baselines: the served drafter, plus a round-trip arm (z-lab bf16 through our converter and quantizer, untrained) that must be tensor-equal after dequant or within the A/A band on DF2-4. (iii) Per-request raw draft_n, draft_n_accepted, predicted_n and timings in JSONL, plus the offline teacher-forced expected-accept-length proxy per held-out block. (iv) Holdout: all C4 runs, replayed twice ABAB on a fresh server per arm at the production argv, plus the DF2-4 12-prompt benchmark per arm. (v) Full denominator: every held-out request, failures counted. (vi) Predeclared rule. PROMOTE (open DF2-FT-2) if the best arm beats the incumbent on held-out weighted acceptance (sum accepted / sum drafted) by >=0.05 absolute on both reps (about +10% tokens per verify step at n_max 7), AND on held-out decode tok/s by >=8%, AND DF2-4 acceptance is >= incumbent - 0.02, AND the coherence gate is clean with the DF2-6 greedy pass count not below the incumbent. KL becomes the default drafter objective if K - H >= 0.02 on both reps and the seed-2 replicate has the same sign; |K - H| < 0.01 means cost-neutral (pick hard labels, which need no final-hidden tap). A gain of +0.02..+0.05 earns one more shard of <=1M fresh resamples, a retrain, and one more application of the rule. Below +0.02, KILL and record. Final step, on any verdict: amend DF2-DRAFTER-CAPABILITY with the objective verdict and an onboarding rule. The rule makes frozen-trunk re-alignment on the model's own served traffic the default for any served drafter or MTP head not co-trained on that exact trunk and quant. It names the next instances: the frontdoor 35B-A3B MTP head, then the Flash-Next head. Budget: ~13 MI210-h (~0.55 card-day) in GPU windows booked through the backlog-scheduling calendar, with :8083 drained per preempt-by-drain, plus 4-6 desk days (dump tool, trainer adaptation, venv; CPU-only smoke first).",
+          "acceptance": "Committed report with the frozen manifest; the per-request JSONL for incumbent, round-trip, H, K and K-seed2 on all held-out C4 requests x 2 reps; DF2-4 results per arm; the converted candidate GGUF sha256s; the decision line (PROMOTE / one-more-shard / KILL plus the KL-vs-hard verdict) stated against the predeclared thresholds; and the DF2-DRAFTER-CAPABILITY amendment (objective verdict, onboarding rule, ordered next instances) applied by the owning session."
+        }
+      ]
+    },
+    "W5FT-2": {
+      "required_outcome": "Candidate (c), the frontdoor Qwen3.6-35B-A3B MTP head (blk.40: 0.845B params, of which ~0.80B are 256x experts; hidden 2048; served from the same Q8_0 file at draft_max 4). Capture the trunk pre-head hidden at every position (4,096 B/token). It is both the ...",
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; DF2-FT-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+          "task_id": "DF2-FT-1",
+          "task_text": "- [ ] **DF2-FT-1 — KL re-alignment pilot of the served 27B DFlash2 drafter on its own agentic traffic, target frozen (intake-2548#04, intake-2549#record, intake-2578#record, intake-297#record, intake-1848#record).** Why: at the production :8083 shape the drafter accepts 0.29-0.39 on real temp-1 agentic traffic (agentic-serving-harness-fixes.md:60,74,79). On the canonical benchmark shape it accepts 0.62-0.73. The two shapes differ in several factors, so this pilot is the deciding probe, not a presumed fix. Drafter facts (GGUF header): Qwen3.8-27B-DFlash2-Q8_0, size_label 1.9B, 81 tensors, 5 non-causal blocks with sliding window 2048, fc 25600->5120, selector codebooks 2 x 256 x 248320. It is headless and borrows the target's frozen token_embd and output (5120 x 248320 each). Steps: (0) Corpus = the DS41-C95 wire contexts under /mnt/raid0/llm/tmp/ds41-c95/results (36 wire-body captures; DF2-14 counted 320 turns / 630k generated tokens). Hold out every C4 run untouched. For each held-in request, regenerate 2 completions at the production sampler on the :8083 argv (X0_ARGV_8083.txt), capped at 2048 tokens, <=3 MI210-h; this also removes the need to reconstruct reasoning text from the wire bodies. (1) Write a feature-dump tool on a llama.cpp-experimental branch cut from the current champion tip. Per token it writes the 5 taps at target_layers [6,20,34,48,62] plus the target final post-norm hidden: 5 x 10,240 + 10,240 = 61,440 B/token, the DF2-DRAFTER-CAPABILITY.OBJ contract. It writes only each completion and its 2,048-token window prefix. Expect ~0.8-1.2M tokens = 50-75 GB in <=2 rolling shards. Capture held-out C4 the same way for the offline proxy. Prefill runs at the measured production-shape 410-574 t/s, <=3 MI210-h. (2) Train in a NEW ROCm venv; do not modify the two verified venvs. Use NeMo Automodel train_dflash2 @1667095 with the sdpa attention backend and an offline-feature dataset in place of the online target. Warm-start from z-lab/Qwen3.8-27B-DFlash2 bf16. The whole drafter is trainable: bf16 weights + fp32 master + AdamW ~16 B/param = ~31 GB, plus frozen embed/output 5.1 GB; that fits 64 GB because target features are precomputed. Arm H = Automodel hard block CE on the sampled tokens. Arm K = forward KL at T=1 to the teacher, computed from the final-hidden tap through the frozen output_norm + W with Automodel KDLoss (as in jetspec_core.py), chunked; its selector term is KL over the top-16 candidates, renormalized. Both arms share data order, seed, steps and LR; add a second seed for K; <=4 MI210-h total. (3) Convert with convert_hf_to_gguf.py (DFlash2DraftModel, --target-model-dir /mnt/raid0/llm/models/turboderp/Qwen3.8-27B-exl3-4.00bpw for config and tokenizer), then quantize to Q8_0. Six controls: (i) frozen manifest: sha256 of the target, served drafter and z-lab bf16; champion binary identity; held-out request list; sampler; seeds. (ii) Baselines: the served drafter, plus a round-trip arm (z-lab bf16 through our converter and quantizer, untrained) that must be tensor-equal after dequant or within the A/A band on DF2-4. (iii) Per-request raw draft_n, draft_n_accepted, predicted_n and timings in JSONL, plus the offline teacher-forced expected-accept-length proxy per held-out block. (iv) Holdout: all C4 runs, replayed twice ABAB on a fresh server per arm at the production argv, plus the DF2-4 12-prompt benchmark per arm. (v) Full denominator: every held-out request, failures counted. (vi) Predeclared rule. PROMOTE (open DF2-FT-2) if the best arm beats the incumbent on held-out weighted acceptance (sum accepted / sum drafted) by >=0.05 absolute on both reps (about +10% tokens per verify step at n_max 7), AND on held-out decode tok/s by >=8%, AND DF2-4 acceptance is >= incumbent - 0.02, AND the coherence gate is clean with the DF2-6 greedy pass count not below the incumbent. KL becomes the default drafter objective if K - H >= 0.02 on both reps and the seed-2 replicate has the same sign; |K - H| < 0.01 means cost-neutral (pick hard labels, which need no final-hidden tap). A gain of +0.02..+0.05 earns one more shard of <=1M fresh resamples, a retrain, and one more application of the rule. Below +0.02, KILL and record. Final step, on any verdict: amend DF2-DRAFTER-CAPABILITY with the objective verdict and an onboarding rule. The rule makes frozen-trunk re-alignment on the model's own served traffic the default for any served drafter or MTP head not co-trained on that exact trunk and quant. It names the next instances: the frontdoor 35B-A3B MTP head, then the Flash-Next head. Budget: ~13 MI210-h (~0.55 card-day) in GPU windows booked through the backlog-scheduling calendar, with :8083 drained per preempt-by-drain, plus 4-6 desk days (dump tool, trainer adaptation, venv; CPU-only smoke first).",
+          "acceptance": "Committed report with the frozen manifest; the per-request JSONL for incumbent, round-trip, H, K and K-seed2 on all held-out C4 requests x 2 reps; DF2-4 results per arm; the converted candidate GGUF sha256s; the decision line (PROMOTE / one-more-shard / KILL plus the KL-vs-hard verdict) stated against the predeclared thresholds; and the DF2-DRAFTER-CAPABILITY amendment (objective verdict, onboarding rule, ordered next instances) applied by the owning session."
+        }
+      ]
+    },
+    "W5FT-3": {
+      "required_outcome": "Candidate (b), the Qwen3.8-Flash-Next MTP head (shared-Q8_0 file: 32 tensors, 2.607B params, of which 2.517B are 512x experts; attention with a QSA indexer, top_k 2048; 4-stream hyper-connections). Capture: the hc stream state at 10,240 x bf16 = 20,480 ...",
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; DF2-FT-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+          "task_id": "DF2-FT-1",
+          "task_text": "- [ ] **DF2-FT-1 — KL re-alignment pilot of the served 27B DFlash2 drafter on its own agentic traffic, target frozen (intake-2548#04, intake-2549#record, intake-2578#record, intake-297#record, intake-1848#record).** Why: at the production :8083 shape the drafter accepts 0.29-0.39 on real temp-1 agentic traffic (agentic-serving-harness-fixes.md:60,74,79). On the canonical benchmark shape it accepts 0.62-0.73. The two shapes differ in several factors, so this pilot is the deciding probe, not a presumed fix. Drafter facts (GGUF header): Qwen3.8-27B-DFlash2-Q8_0, size_label 1.9B, 81 tensors, 5 non-causal blocks with sliding window 2048, fc 25600->5120, selector codebooks 2 x 256 x 248320. It is headless and borrows the target's frozen token_embd and output (5120 x 248320 each). Steps: (0) Corpus = the DS41-C95 wire contexts under /mnt/raid0/llm/tmp/ds41-c95/results (36 wire-body captures; DF2-14 counted 320 turns / 630k generated tokens). Hold out every C4 run untouched. For each held-in request, regenerate 2 completions at the production sampler on the :8083 argv (X0_ARGV_8083.txt), capped at 2048 tokens, <=3 MI210-h; this also removes the need to reconstruct reasoning text from the wire bodies. (1) Write a feature-dump tool on a llama.cpp-experimental branch cut from the current champion tip. Per token it writes the 5 taps at target_layers [6,20,34,48,62] plus the target final post-norm hidden: 5 x 10,240 + 10,240 = 61,440 B/token, the DF2-DRAFTER-CAPABILITY.OBJ contract. It writes only each completion and its 2,048-token window prefix. Expect ~0.8-1.2M tokens = 50-75 GB in <=2 rolling shards. Capture held-out C4 the same way for the offline proxy. Prefill runs at the measured production-shape 410-574 t/s, <=3 MI210-h. (2) Train in a NEW ROCm venv; do not modify the two verified venvs. Use NeMo Automodel train_dflash2 @1667095 with the sdpa attention backend and an offline-feature dataset in place of the online target. Warm-start from z-lab/Qwen3.8-27B-DFlash2 bf16. The whole drafter is trainable: bf16 weights + fp32 master + AdamW ~16 B/param = ~31 GB, plus frozen embed/output 5.1 GB; that fits 64 GB because target features are precomputed. Arm H = Automodel hard block CE on the sampled tokens. Arm K = forward KL at T=1 to the teacher, computed from the final-hidden tap through the frozen output_norm + W with Automodel KDLoss (as in jetspec_core.py), chunked; its selector term is KL over the top-16 candidates, renormalized. Both arms share data order, seed, steps and LR; add a second seed for K; <=4 MI210-h total. (3) Convert with convert_hf_to_gguf.py (DFlash2DraftModel, --target-model-dir /mnt/raid0/llm/models/turboderp/Qwen3.8-27B-exl3-4.00bpw for config and tokenizer), then quantize to Q8_0. Six controls: (i) frozen manifest: sha256 of the target, served drafter and z-lab bf16; champion binary identity; held-out request list; sampler; seeds. (ii) Baselines: the served drafter, plus a round-trip arm (z-lab bf16 through our converter and quantizer, untrained) that must be tensor-equal after dequant or within the A/A band on DF2-4. (iii) Per-request raw draft_n, draft_n_accepted, predicted_n and timings in JSONL, plus the offline teacher-forced expected-accept-length proxy per held-out block. (iv) Holdout: all C4 runs, replayed twice ABAB on a fresh server per arm at the production argv, plus the DF2-4 12-prompt benchmark per arm. (v) Full denominator: every held-out request, failures counted. (vi) Predeclared rule. PROMOTE (open DF2-FT-2) if the best arm beats the incumbent on held-out weighted acceptance (sum accepted / sum drafted) by >=0.05 absolute on both reps (about +10% tokens per verify step at n_max 7), AND on held-out decode tok/s by >=8%, AND DF2-4 acceptance is >= incumbent - 0.02, AND the coherence gate is clean with the DF2-6 greedy pass count not below the incumbent. KL becomes the default drafter objective if K - H >= 0.02 on both reps and the seed-2 replicate has the same sign; |K - H| < 0.01 means cost-neutral (pick hard labels, which need no final-hidden tap). A gain of +0.02..+0.05 earns one more shard of <=1M fresh resamples, a retrain, and one more application of the rule. Below +0.02, KILL and record. Final step, on any verdict: amend DF2-DRAFTER-CAPABILITY with the objective verdict and an onboarding rule. The rule makes frozen-trunk re-alignment on the model's own served traffic the default for any served drafter or MTP head not co-trained on that exact trunk and quant. It names the next instances: the frontdoor 35B-A3B MTP head, then the Flash-Next head. Budget: ~13 MI210-h (~0.55 card-day) in GPU windows booked through the backlog-scheduling calendar, with :8083 drained per preempt-by-drain, plus 4-6 desk days (dump tool, trainer adaptation, venv; CPU-only smoke first).",
+          "acceptance": "Committed report with the frozen manifest; the per-request JSONL for incumbent, round-trip, H, K and K-seed2 on all held-out C4 requests x 2 reps; DF2-4 results per arm; the converted candidate GGUF sha256s; the decision line (PROMOTE / one-more-shard / KILL plus the KL-vs-hard verdict) stated against the predeclared thresholds; and the DF2-DRAFTER-CAPABILITY amendment (objective verdict, onboarding rule, ordered next instances) applied by the owning session."
+        }
+      ]
+    },
+    "W5FT-4": {
+      "required_outcome": "Settle KL versus hard labels on the real served drafter (arms H and K plus a second seed in DF2-FT-1), not on the Soft-MTP 167M toy. The toy result would not transfer: different module (non-causal block drafter with a selector), different vocabulary (50,304 ...",
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; DF2-FT-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+          "task_id": "DF2-FT-1",
+          "task_text": "- [ ] **DF2-FT-1 — KL re-alignment pilot of the served 27B DFlash2 drafter on its own agentic traffic, target frozen (intake-2548#04, intake-2549#record, intake-2578#record, intake-297#record, intake-1848#record).** Why: at the production :8083 shape the drafter accepts 0.29-0.39 on real temp-1 agentic traffic (agentic-serving-harness-fixes.md:60,74,79). On the canonical benchmark shape it accepts 0.62-0.73. The two shapes differ in several factors, so this pilot is the deciding probe, not a presumed fix. Drafter facts (GGUF header): Qwen3.8-27B-DFlash2-Q8_0, size_label 1.9B, 81 tensors, 5 non-causal blocks with sliding window 2048, fc 25600->5120, selector codebooks 2 x 256 x 248320. It is headless and borrows the target's frozen token_embd and output (5120 x 248320 each). Steps: (0) Corpus = the DS41-C95 wire contexts under /mnt/raid0/llm/tmp/ds41-c95/results (36 wire-body captures; DF2-14 counted 320 turns / 630k generated tokens). Hold out every C4 run untouched. For each held-in request, regenerate 2 completions at the production sampler on the :8083 argv (X0_ARGV_8083.txt), capped at 2048 tokens, <=3 MI210-h; this also removes the need to reconstruct reasoning text from the wire bodies. (1) Write a feature-dump tool on a llama.cpp-experimental branch cut from the current champion tip. Per token it writes the 5 taps at target_layers [6,20,34,48,62] plus the target final post-norm hidden: 5 x 10,240 + 10,240 = 61,440 B/token, the DF2-DRAFTER-CAPABILITY.OBJ contract. It writes only each completion and its 2,048-token window prefix. Expect ~0.8-1.2M tokens = 50-75 GB in <=2 rolling shards. Capture held-out C4 the same way for the offline proxy. Prefill runs at the measured production-shape 410-574 t/s, <=3 MI210-h. (2) Train in a NEW ROCm venv; do not modify the two verified venvs. Use NeMo Automodel train_dflash2 @1667095 with the sdpa attention backend and an offline-feature dataset in place of the online target. Warm-start from z-lab/Qwen3.8-27B-DFlash2 bf16. The whole drafter is trainable: bf16 weights + fp32 master + AdamW ~16 B/param = ~31 GB, plus frozen embed/output 5.1 GB; that fits 64 GB because target features are precomputed. Arm H = Automodel hard block CE on the sampled tokens. Arm K = forward KL at T=1 to the teacher, computed from the final-hidden tap through the frozen output_norm + W with Automodel KDLoss (as in jetspec_core.py), chunked; its selector term is KL over the top-16 candidates, renormalized. Both arms share data order, seed, steps and LR; add a second seed for K; <=4 MI210-h total. (3) Convert with convert_hf_to_gguf.py (DFlash2DraftModel, --target-model-dir /mnt/raid0/llm/models/turboderp/Qwen3.8-27B-exl3-4.00bpw for config and tokenizer), then quantize to Q8_0. Six controls: (i) frozen manifest: sha256 of the target, served drafter and z-lab bf16; champion binary identity; held-out request list; sampler; seeds. (ii) Baselines: the served drafter, plus a round-trip arm (z-lab bf16 through our converter and quantizer, untrained) that must be tensor-equal after dequant or within the A/A band on DF2-4. (iii) Per-request raw draft_n, draft_n_accepted, predicted_n and timings in JSONL, plus the offline teacher-forced expected-accept-length proxy per held-out block. (iv) Holdout: all C4 runs, replayed twice ABAB on a fresh server per arm at the production argv, plus the DF2-4 12-prompt benchmark per arm. (v) Full denominator: every held-out request, failures counted. (vi) Predeclared rule. PROMOTE (open DF2-FT-2) if the best arm beats the incumbent on held-out weighted acceptance (sum accepted / sum drafted) by >=0.05 absolute on both reps (about +10% tokens per verify step at n_max 7), AND on held-out decode tok/s by >=8%, AND DF2-4 acceptance is >= incumbent - 0.02, AND the coherence gate is clean with the DF2-6 greedy pass count not below the incumbent. KL becomes the default drafter objective if K - H >= 0.02 on both reps and the seed-2 replicate has the same sign; |K - H| < 0.01 means cost-neutral (pick hard labels, which need no final-hidden tap). A gain of +0.02..+0.05 earns one more shard of <=1M fresh resamples, a retrain, and one more application of the rule. Below +0.02, KILL and record. Final step, on any verdict: amend DF2-DRAFTER-CAPABILITY with the objective verdict and an onboarding rule. The rule makes frozen-trunk re-alignment on the model's own served traffic the default for any served drafter or MTP head not co-trained on that exact trunk and quant. It names the next instances: the frontdoor 35B-A3B MTP head, then the Flash-Next head. Budget: ~13 MI210-h (~0.55 card-day) in GPU windows booked through the backlog-scheduling calendar, with :8083 drained per preempt-by-drain, plus 4-6 desk days (dump tool, trainer adaptation, venv; CPU-only smoke first).",
+          "acceptance": "Committed report with the frozen manifest; the per-request JSONL for incumbent, round-trip, H, K and K-seed2 on all held-out C4 requests x 2 reps; DF2-4 results per arm; the converted candidate GGUF sha256s; the decision line (PROMOTE / one-more-shard / KILL plus the KL-vs-hard verdict) stated against the predeclared thresholds; and the DF2-DRAFTER-CAPABILITY amendment (objective verdict, onboarding rule, ordered next instances) applied by the owning session."
+        }
+      ]
+    },
+    "W5FT-5": {
+      "required_outcome": "Fold MTP-4 (realign a served finetune's stock head) into a standing onboarding rule. Any served drafter or MTP head not co-trained on the exact served trunk and quant gets frozen-trunk KL re-alignment on its own traffic. That covers fine-tunes (the ...",
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; DF2-FT-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+          "task_id": "DF2-FT-1",
+          "task_text": "- [ ] **DF2-FT-1 — KL re-alignment pilot of the served 27B DFlash2 drafter on its own agentic traffic, target frozen (intake-2548#04, intake-2549#record, intake-2578#record, intake-297#record, intake-1848#record).** Why: at the production :8083 shape the drafter accepts 0.29-0.39 on real temp-1 agentic traffic (agentic-serving-harness-fixes.md:60,74,79). On the canonical benchmark shape it accepts 0.62-0.73. The two shapes differ in several factors, so this pilot is the deciding probe, not a presumed fix. Drafter facts (GGUF header): Qwen3.8-27B-DFlash2-Q8_0, size_label 1.9B, 81 tensors, 5 non-causal blocks with sliding window 2048, fc 25600->5120, selector codebooks 2 x 256 x 248320. It is headless and borrows the target's frozen token_embd and output (5120 x 248320 each). Steps: (0) Corpus = the DS41-C95 wire contexts under /mnt/raid0/llm/tmp/ds41-c95/results (36 wire-body captures; DF2-14 counted 320 turns / 630k generated tokens). Hold out every C4 run untouched. For each held-in request, regenerate 2 completions at the production sampler on the :8083 argv (X0_ARGV_8083.txt), capped at 2048 tokens, <=3 MI210-h; this also removes the need to reconstruct reasoning text from the wire bodies. (1) Write a feature-dump tool on a llama.cpp-experimental branch cut from the current champion tip. Per token it writes the 5 taps at target_layers [6,20,34,48,62] plus the target final post-norm hidden: 5 x 10,240 + 10,240 = 61,440 B/token, the DF2-DRAFTER-CAPABILITY.OBJ contract. It writes only each completion and its 2,048-token window prefix. Expect ~0.8-1.2M tokens = 50-75 GB in <=2 rolling shards. Capture held-out C4 the same way for the offline proxy. Prefill runs at the measured production-shape 410-574 t/s, <=3 MI210-h. (2) Train in a NEW ROCm venv; do not modify the two verified venvs. Use NeMo Automodel train_dflash2 @1667095 with the sdpa attention backend and an offline-feature dataset in place of the online target. Warm-start from z-lab/Qwen3.8-27B-DFlash2 bf16. The whole drafter is trainable: bf16 weights + fp32 master + AdamW ~16 B/param = ~31 GB, plus frozen embed/output 5.1 GB; that fits 64 GB because target features are precomputed. Arm H = Automodel hard block CE on the sampled tokens. Arm K = forward KL at T=1 to the teacher, computed from the final-hidden tap through the frozen output_norm + W with Automodel KDLoss (as in jetspec_core.py), chunked; its selector term is KL over the top-16 candidates, renormalized. Both arms share data order, seed, steps and LR; add a second seed for K; <=4 MI210-h total. (3) Convert with convert_hf_to_gguf.py (DFlash2DraftModel, --target-model-dir /mnt/raid0/llm/models/turboderp/Qwen3.8-27B-exl3-4.00bpw for config and tokenizer), then quantize to Q8_0. Six controls: (i) frozen manifest: sha256 of the target, served drafter and z-lab bf16; champion binary identity; held-out request list; sampler; seeds. (ii) Baselines: the served drafter, plus a round-trip arm (z-lab bf16 through our converter and quantizer, untrained) that must be tensor-equal after dequant or within the A/A band on DF2-4. (iii) Per-request raw draft_n, draft_n_accepted, predicted_n and timings in JSONL, plus the offline teacher-forced expected-accept-length proxy per held-out block. (iv) Holdout: all C4 runs, replayed twice ABAB on a fresh server per arm at the production argv, plus the DF2-4 12-prompt benchmark per arm. (v) Full denominator: every held-out request, failures counted. (vi) Predeclared rule. PROMOTE (open DF2-FT-2) if the best arm beats the incumbent on held-out weighted acceptance (sum accepted / sum drafted) by >=0.05 absolute on both reps (about +10% tokens per verify step at n_max 7), AND on held-out decode tok/s by >=8%, AND DF2-4 acceptance is >= incumbent - 0.02, AND the coherence gate is clean with the DF2-6 greedy pass count not below the incumbent. KL becomes the default drafter objective if K - H >= 0.02 on both reps and the seed-2 replicate has the same sign; |K - H| < 0.01 means cost-neutral (pick hard labels, which need no final-hidden tap). A gain of +0.02..+0.05 earns one more shard of <=1M fresh resamples, a retrain, and one more application of the rule. Below +0.02, KILL and record. Final step, on any verdict: amend DF2-DRAFTER-CAPABILITY with the objective verdict and an onboarding rule. The rule makes frozen-trunk re-alignment on the model's own served traffic the default for any served drafter or MTP head not co-trained on that exact trunk and quant. It names the next instances: the frontdoor 35B-A3B MTP head, then the Flash-Next head. Budget: ~13 MI210-h (~0.55 card-day) in GPU windows booked through the backlog-scheduling calendar, with :8083 drained per preempt-by-drain, plus 4-6 desk days (dump tool, trainer adaptation, venv; CPU-only smoke first).",
+          "acceptance": "Committed report with the frozen manifest; the per-request JSONL for incumbent, round-trip, H, K and K-seed2 on all held-out C4 requests x 2 reps; DF2-4 results per arm; the converted candidate GGUF sha256s; the decision line (PROMOTE / one-more-shard / KILL plus the KL-vs-hard verdict) stated against the predeclared thresholds; and the DF2-DRAFTER-CAPABILITY amendment (objective verdict, onboarding rule, ordered next instances) applied by the owning session."
+        }
+      ]
+    },
+    "W5FT-6": {
+      "required_outcome": "Scope SPEC2-4 (Nemotron Sec 3.4 recipe). Hidden-state sampling over earlier draft steps applies to recursive MTP heads (frontdoor, Flash-Next), not to DFlash2, which drafts its whole block in one non-causal pass from the anchor. T=2 versus T=1 is a free extra ...",
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; DF2-FT-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+          "task_id": "DF2-FT-1",
+          "task_text": "- [ ] **DF2-FT-1 — KL re-alignment pilot of the served 27B DFlash2 drafter on its own agentic traffic, target frozen (intake-2548#04, intake-2549#record, intake-2578#record, intake-297#record, intake-1848#record).** Why: at the production :8083 shape the drafter accepts 0.29-0.39 on real temp-1 agentic traffic (agentic-serving-harness-fixes.md:60,74,79). On the canonical benchmark shape it accepts 0.62-0.73. The two shapes differ in several factors, so this pilot is the deciding probe, not a presumed fix. Drafter facts (GGUF header): Qwen3.8-27B-DFlash2-Q8_0, size_label 1.9B, 81 tensors, 5 non-causal blocks with sliding window 2048, fc 25600->5120, selector codebooks 2 x 256 x 248320. It is headless and borrows the target's frozen token_embd and output (5120 x 248320 each). Steps: (0) Corpus = the DS41-C95 wire contexts under /mnt/raid0/llm/tmp/ds41-c95/results (36 wire-body captures; DF2-14 counted 320 turns / 630k generated tokens). Hold out every C4 run untouched. For each held-in request, regenerate 2 completions at the production sampler on the :8083 argv (X0_ARGV_8083.txt), capped at 2048 tokens, <=3 MI210-h; this also removes the need to reconstruct reasoning text from the wire bodies. (1) Write a feature-dump tool on a llama.cpp-experimental branch cut from the current champion tip. Per token it writes the 5 taps at target_layers [6,20,34,48,62] plus the target final post-norm hidden: 5 x 10,240 + 10,240 = 61,440 B/token, the DF2-DRAFTER-CAPABILITY.OBJ contract. It writes only each completion and its 2,048-token window prefix. Expect ~0.8-1.2M tokens = 50-75 GB in <=2 rolling shards. Capture held-out C4 the same way for the offline proxy. Prefill runs at the measured production-shape 410-574 t/s, <=3 MI210-h. (2) Train in a NEW ROCm venv; do not modify the two verified venvs. Use NeMo Automodel train_dflash2 @1667095 with the sdpa attention backend and an offline-feature dataset in place of the online target. Warm-start from z-lab/Qwen3.8-27B-DFlash2 bf16. The whole drafter is trainable: bf16 weights + fp32 master + AdamW ~16 B/param = ~31 GB, plus frozen embed/output 5.1 GB; that fits 64 GB because target features are precomputed. Arm H = Automodel hard block CE on the sampled tokens. Arm K = forward KL at T=1 to the teacher, computed from the final-hidden tap through the frozen output_norm + W with Automodel KDLoss (as in jetspec_core.py), chunked; its selector term is KL over the top-16 candidates, renormalized. Both arms share data order, seed, steps and LR; add a second seed for K; <=4 MI210-h total. (3) Convert with convert_hf_to_gguf.py (DFlash2DraftModel, --target-model-dir /mnt/raid0/llm/models/turboderp/Qwen3.8-27B-exl3-4.00bpw for config and tokenizer), then quantize to Q8_0. Six controls: (i) frozen manifest: sha256 of the target, served drafter and z-lab bf16; champion binary identity; held-out request list; sampler; seeds. (ii) Baselines: the served drafter, plus a round-trip arm (z-lab bf16 through our converter and quantizer, untrained) that must be tensor-equal after dequant or within the A/A band on DF2-4. (iii) Per-request raw draft_n, draft_n_accepted, predicted_n and timings in JSONL, plus the offline teacher-forced expected-accept-length proxy per held-out block. (iv) Holdout: all C4 runs, replayed twice ABAB on a fresh server per arm at the production argv, plus the DF2-4 12-prompt benchmark per arm. (v) Full denominator: every held-out request, failures counted. (vi) Predeclared rule. PROMOTE (open DF2-FT-2) if the best arm beats the incumbent on held-out weighted acceptance (sum accepted / sum drafted) by >=0.05 absolute on both reps (about +10% tokens per verify step at n_max 7), AND on held-out decode tok/s by >=8%, AND DF2-4 acceptance is >= incumbent - 0.02, AND the coherence gate is clean with the DF2-6 greedy pass count not below the incumbent. KL becomes the default drafter objective if K - H >= 0.02 on both reps and the seed-2 replicate has the same sign; |K - H| < 0.01 means cost-neutral (pick hard labels, which need no final-hidden tap). A gain of +0.02..+0.05 earns one more shard of <=1M fresh resamples, a retrain, and one more application of the rule. Below +0.02, KILL and record. Final step, on any verdict: amend DF2-DRAFTER-CAPABILITY with the objective verdict and an onboarding rule. The rule makes frozen-trunk re-alignment on the model's own served traffic the default for any served drafter or MTP head not co-trained on that exact trunk and quant. It names the next instances: the frontdoor 35B-A3B MTP head, then the Flash-Next head. Budget: ~13 MI210-h (~0.55 card-day) in GPU windows booked through the backlog-scheduling calendar, with :8083 drained per preempt-by-drain, plus 4-6 desk days (dump tool, trainer adaptation, venv; CPU-only smoke first).",
+          "acceptance": "Committed report with the frozen manifest; the per-request JSONL for incumbent, round-trip, H, K and K-seed2 on all held-out C4 requests x 2 reps; DF2-4 results per arm; the converted candidate GGUF sha256s; the decision line (PROMOTE / one-more-shard / KILL plus the KL-vs-hard verdict) stated against the predeclared thresholds; and the DF2-DRAFTER-CAPABILITY amendment (objective verdict, onboarding rule, ordered next instances) applied by the owning session."
+        }
+      ]
+    },
+    "W5FOLD-1": {
+      "required_outcome": "Fold #30408 non-causal ubatch fix as a cheap champion safety fix after a defect-reproducing control",
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; CH-33 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/autokernel-champion-aggregate.md",
+          "task_id": "CH-33",
+          "task_text": "- [ ] **CH-33 — Fold the non-causal multi-sequence ubatch fix (upstream #30408, cbe28bb3cb, +7/-7 over src/llama-batch.h, llama-context.cpp, llama-kv-cache.cpp, llama-kv-cache-iswa.cpp, llama-memory.h) into the champion as a safety fix (intake-2599#record, intake-2595#record).** Value: any bidirectional/embedding or decision model served at np>1 can currently have a request split across ubatches so answers change with the co-batched companions; the EmbeddingGemma 2 fold (REPL-EMB-2.6) and any d1 decision model are the consumers. Immediately (cheap, safety): fresh branch experimental/champion-c7-nonc-ubatch from the CURRENT champion tip, cherry-pick cbe28bb3cb, build CPU+HIP store images, gates: (a) non-causal batch-invariance, EmbeddingGemma 2 BF16 embeddings for one request alone vs co-batched at np 3 with shorter, longer and identical companions, unfixed C5 as the control (must reproduce the defect or the task records that no champion consumer is affected), fixed build must agree within 1e-3 cosine-distance of solo; (b) causal decode untouched: Q38FN and 27B DFlash2 greedy identity vs C5 on the fold_gate.py slice; (c) fold_gate.py expects libllama.so only. Rule: fold if (b) identical and (a) fixed or defect absent; manifest row V11 pending-to-in with ancestry presence gate.",
+          "acceptance": "Branch, gate records and manifest row committed; guarded CAS only through the champion owner routine; fold_gate.py shows only libllama.so changed."
+        }
+      ]
+    },
+    "W5FOLD-3": {
+      "required_outcome": "Track draft PR #29832 as the possible replacement base for the systemone fold when it merges",
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; CH-36 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/autokernel-champion-aggregate.md",
+          "task_id": "CH-36",
+          "task_text": "- [ ] **CH-36 — Decision-endpoint fold group: /v1/systemone (#29818, a4cb4c61fd, +2139/-15, 35 files, new server-decision.cpp 681 lines, server-context.cpp +210) and H2O-Lightning-4B (#30361, 7e3eeee048, +478/-15), depends on CH-33 and the LFM3 arch commits of CH-35 (intake-2593#record, intake-2582#record, intake-2602#record, intake-2601#record).** Value: gives TD-23 the missing local compact decision backend (d1-2B/3B, H2O-Lightning). Not for production fold until measured: the scratch build used by TD-23.D1 is the instrument. Gate for the fold: TD-23.D1 parity gate (BF16 vs Q8_0 on CPU and HIP, no argmax flip, probability difference not above 2.2e-2) and batch-invariance gate (np 1 vs np 3, 1e-3) both pass and d1-2B Q8_0 beats the constrained incumbent on the sealed row-pinned workload. If it passes: cut experimental/champion-plus-systemone from the current tip, resolve server-context.cpp by hand, add the np1 pin (hybrid-prefix re-read, issue 31475) to the launch recipe, gates as CH-35 plus TD-23.D1 rerun on the folded binary. Draft PR #29832 (model-agnostic systemone) merging upstream is the external event that would replace a4cb4c61fd as the base; until then the merged #29818 is used. #30100 is Metal-only and declined with that reason.",
+          "acceptance": "TD-23.D1 gate results referenced; fold branch with gates or EXCLUDED row with numbers."
+        }
+      ]
+    },
+    "W5FOLD-4": {
+      "required_outcome": "Real conflict and ggml-delta census before any audio-group cherry-pick",
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; CH-32 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/autokernel-champion-aggregate.md",
+          "task_id": "CH-32",
+          "task_text": "- [ ] **CH-32 — Upstream-delta fold census: dry-run merge of upstream tip into the champion C5 (c72ec82f5) to replace the PR line counts with real conflict and ggml-generation numbers (intake-2575#record, intake-2579#record, intake-2593#record, intake-2585#record, intake-2599#record).** Immediately, no compute: git fetch the upstream remote into the llama.cpp object store (no checkout, no branch move, production tree and champion ref untouched), then for each fold group (A cbe28bb3 non-causal ubatch; B b77d646751 Nanbeige4.2 plus Ouro #29823 head; C a4cb4c61fd + 7e3eeee048 systemone/H2O; D 30629, 30636, 31252, 31257, 31269, 31287, 31386, 31283 audio/LFM3/realtime) run git merge-tree --write-tree against c72ec82f5 and record per group files changed, conflicted hunks per file (expect tools/server/server-context.cpp, src/llama-context.cpp, src/llama-model.cpp), whether the group needs ggml ops or a ggml bump beyond v10 lineage (diff ggml/ include list), and the minimal prerequisite commit chain (b10303..b11960 is 1657 builds). Output table lands in docs/reference/kernel-manifests/llama-v11-manifest.md as pending-fold rows with a presence gate each (ancestry check), per README rule 4. Controls: frozen base sha, per-group raw merge-tree output kept, full group list, predeclared rule: a group with more than 3 conflicted files in server/ or any conflict in ggml-cpu, iqk or speculative code is cut by hand on a fresh experimental branch from C5 rather than cherry-picked in bulk.",
+          "acceptance": "Table of 4 groups with conflicted-file counts, ggml delta yes/no and prerequisite chain committed as llama-v11-manifest.md pending-fold rows; raw merge-tree outputs under the scratch dir."
+        }
+      ]
+    },
+    "W5FOLD-2": {
+      "required_outcome": "Decline #30100 (Metal MUL_MAT+ADD fusion) for the champion",
+      "review_status": "closed-with-basis",
+      "review_basis": "the fix touches only the Metal backend; no CPU or HIP code path in our stack changes.",
+      "task_refs": []
+    },
+    "W5GPU-1": {
+      "required_outcome": "Restate LOOP-1 with GPU arithmetic: loops multiply weight bytes, KV reads and FLOPs equally, so aggregate is about 1/L at every batch; batching removes only the weight term; MHA KV (768 KiB/token at 4 loops) makes Ouro-1.4B KV-bound beyond about 123 tokens of ...",
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; GPU-LOOP-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/gpu-acceleration-path.md",
+          "task_id": "GPU-LOOP-1",
+          "task_text": "- [ ] **GPU-LOOP-1 — Looped-architecture build on llama.cpp-experimental (Nanbeige #25994 + Ouro #29823) and its MI210 + CPU roofline curves (intake-2585#record, intake-2586#record, intake-2547#record, intake-2571#record).** Cut a fresh llama.cpp-experimental branch from the production v10 tip (ffc1bac82), cherry #25994 (merged b77d646, 265 lines) then #29823 (open, head e79d8cab5, 324 lines) with no other change; build HIP gfx90a and CPU; convert ByteDance Ouro-1.4B and 2.6B (+Thinking) to GGUF Q8_0 and Q4_K_M and record sha256. Gate 1 (correctness, may share the card with :8083): tests/test-llama-archs passes for ouro and nanbeige on CPU and HIP, and top-1 logit parity vs the transformers reference on the PR 829-position fixture at loops 1/2/4 is reproduced on gfx90a (use -ngl 999: -ngl counts logical layers, 192 for 2.6B, and -ngl 99 spilled to 1.6 tok/s in the PR thread). Gate 2 (timing, in a GPU window, host threads on 184-191 under the q3 claim): llama-batched-bench tg at loops {1,2,4} x np {1,2,4,8,16,32} x ctx {512,1024,2048} x KV {f16,q8_0} for Ouro-1.4B Q8_0, with Qwen3-1.7B-Q8_0 and Qwen3-4B-Thinking-2507-Q8_0 (both on disk) as same-build dense comparators; per cell report aggregate tok/s, achieved GB/s under the byte model bytes/step = W_body*L + W_head + B*C*kv_per_slot*L against the 1433 GB/s measured roof, and the ratio to the ideal step time. Same build, CPU leg (replaces W2LOOP-1): loops 1/2/4 on one quarter and the full socket, GB/s vs the C0 153 GB/s ceiling. Predictions fixed before the run (arithmetic, Ouro-1.4B: W_body 1.41 GB Q8, head 0.11 GB, 24 layers, 16 MHA KV heads x 128 = 8 KiB per layer slot): aggregate falls as 1/L at every np (a 55 MB layer cannot sit in the 8 MB L2, so no reuse across loops); at C=1024, f16 KV, L=4 the np-to-infinity ceiling is 1433e9/(1024*786432) = 1,780 tok/s and np=16 gives 16/13.0 ms = 1,230 tok/s ideal vs 3,420 for Qwen3-4B Q8 (4.28 GB, 144 KiB/token); the KV share exceeds the weight share beyond np=7; compute time is under 1/5 of byte time at every np that fits (VRAM headroom beside the 43 GiB :8083 is about 19 GiB, so np about 23 at C=1k f16), so the B*=64 knee is not reached for C above about 123 tokens. Six controls: frozen GGUF sha256 and prompts; comparators on the same build; per-cell raw JSON kept; 3 repeats ABA-alternated with the noise floor stated with its unit; full grid denominator (no cell dropped, VRAM-skipped cells listed); the rule below. Decision rule: PASS if parity holds and every measured aggregate lies within 0.5-1.1x of the byte-model prediction; a cell below 0.5x opens a HIP-kernel root-cause row (stale-binary check first: strings the lib, compare mtime to the commit) and is not a verdict on looping; this task issues no quality verdict. Writes the GPU arithmetic table into cpu-decode-roofline-program.md as the GPU half of the weight-reuse note (LOOP-1).",
+          "acceptance": "Experimental branch + HIP/CPU build exist; parity receipt on gfx90a and CPU; the np x loops x ctx x KV grid with predictions and ratios is committed with raw JSON; the CPU leg and the GPU arithmetic table are filed; the 0.5-1.1x rule is applied to every cell."
+        }
+      ]
+    },
+    "W5GPU-2": {
+      "required_outcome": "Per-request num_loops (setter, graph-param/can_reuse, k-class batch split, prefix-cache rule k2<=k, k_max cache sizing) with a router-oracle decision rule.",
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; GPU-LOOP-3 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/gpu-acceleration-path.md",
+          "task_id": "GPU-LOOP-3",
+          "task_text": "- [ ] **GPU-LOOP-3 — Loop count as a per-request serve-time effort switch in llama.cpp-experimental (intake-2585#record, intake-2586#record, intake-2547#record).** Today num_loops is a load-time GGUF key (PR #29823: --override-kv ouro.num_loops=int:N; PR #25994 expands hparams arrays to n_layer_phys*n_loops once in load_arch_hparams). Change set: (1) llama_context gains llama_set_n_loops(ctx,k), 1<=k<=file n_loops, carried in llm_graph_params and compared in can_reuse() so a changed k rebuilds the graph while graph_reserve still sizes the worst case; the builder loop bound becomes n_layer_phys*k and the LM-head tap is the shared final norm of loop k (the exit_at_step readout the HF code already has); about 150-250 lines. (2) server: parse n_loops or an effort alias (low/medium/high mapped by a GGUF key such as ouro.effort_loops) into slot params; update_slots splits the ubatch into one llama_decode per k-class (each class re-reads the weights, a cost that is small once np exceeds the weight/KV crossover of about 7 streams at C=1k); about 100-150 lines. (3) KV semantics, each point tested: a logical layer slot (loop j, layer i) holds KV only for sequences that ran loop j, so a prefix cached at k loops is valid for any request with k2<=k and invalid for k2>k (the deeper slots and the hidden states to recompute them are not stored), which makes the prompt-cache and ctx-checkpoint key carry n_loops_cached; a mid-request upgrade needs a re-prefill, a downgrade does not; cells are shared across layers, so a low-k request saves bandwidth and FLOPs but not VRAM unless the cache is sized with a k_max option (KV is 192 KiB per loop per token for Ouro-1.4B f16, 768 KiB at 4). (4) Validity gate: only checkpoints trained with per-loop supervision may expose the switch: Ouro yes (PR GSM8K F16 26.0/67.0/80.5 at 1/2/4), Nanbeige4.2 no (forced 1 loop is degenerate, 0.0 GSM8K), LoopCoder-v2 no (each R is a separately trained model, R=3 27.6 vs R=1 43.0 SWE-bench Verified). Acceptance tests: logits at per-request k on a file with n_loops=4 are bit-identical on CPU and within 1e-3 abs on HIP to a file loaded with num_loops=k, for k=1..4 on the 829-position fixture (this also verifies the claim that loop-j activations do not depend on the total loop count); four concurrent requests with k=1,2,3,4 reproduce their solo outputs; prefix-cache hit for k2<=k and miss for k2>k; throughput at np=16 with half k=1 and half k=4 within 0.8-1.2x of the byte-model prediction. Router oracle on the GPU-LOOP-2 per-item results: oracle minimum loops per item vs a no-oracle router (answer agreement between loops 2 and 4 on a calibration half, or the exit-gate probability); decision rule on the held-out half: PROMOTE the switch to a lane option if the router keeps at least 97% of the L=4 accuracy at mean loops at most 2.4 (cost at most 0.6x of L=4); else keep static L and record the oracle bound. Per-token adaptive exit is not offered: the PR does not convert the early_exit_gate and a batch graph saves nothing from it without row compaction.",
+          "acceptance": "Patch on the experimental branch with the four acceptance tests green; oracle-vs-router table on held-out items; PROMOTE or keep-static decision recorded with the 0.6x / 97% rule."
+        }
+      ]
+    },
+    "W5GPU-3": {
+      "required_outcome": "Looped small model as reliability-boosted GPU batch worker vs equal-cost dense and majority-of-4 controls, with the incumbent worker scored for the first time on the worker battery.",
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; GPU-LOOP-2 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+          "task_id": "GPU-LOOP-2",
+          "task_text": "- [ ] **GPU-LOOP-2 — Looped small model as a reliability-boosted batch worker on the MI210: quality vs loops vs aggregate throughput against equal-cost dense and K-sample controls (intake-2585#record, intake-2547#record, intake-2551#record).** Question: at high concurrency (elastic-duty D1 batch-shedding class, np 16), does Ouro-1.4B (and 2.6B-Thinking as second tier) at 1/2/4 loops buy more correct worker answers per HBM byte than a non-looped model? Arms, served-cost arithmetic at np=16, C=1k, f16 KV (ideal step times, to be measured in GPU-LOOP-1): A1 Ouro-1.4B L=4 (5.76 GB weights/step + 12.9 GB KV, 13.0 ms, 1,230 tok/s); A2 L=2 (about 2,300); A3 L=1 (about 7,100 on the same weights); A4 Ouro-2.6B-Thinking L=4 (48 layers, about 11.3 GB weights/step, 1.5 MiB/token KV); C1 Qwen3-4B-Thinking-2507 Q8 (4.28 GB, 144 KiB/token, 3,420 tok/s, the equal-quality-class dense control); C2 Qwen3-1.7B Q8 majority-of-4 (about the same bytes per final answer as A1, 1,545 answer-equivalent tok/s: the K-sample route that the idle MFMA headroom makes free); C3 Qwen3-1.7B Q8 single sample (equal resident bytes); C0 the incumbent worker, Qwen3.6-35B-A3B on CPU :8070 (registry roles.worker_general.performance.quality_pct is null: it has never been scored on the worker battery, so it is measured here on the same frozen items). Frozen inputs: GSM8K-style math (n>=200, same problem list as the PR so the 26.0/67.0/80.5 published curve is a replication check) plus worker-battery items for explore, summarize, transform and strict tool-call JSON (n>=150 per suite), item list and scorer hashed before any generation; Ouro context stays under its trained 1024-token block (Ouro RECIPES: block_size 1024), longer prompts are a separate reported stratum. Per arm: pass@1 over 3 seeds, seed-to-seed agreement, JSON-validity rate, aggregate tok/s at np 16, wall-seconds per correct answer and correct answers per HBM GB moved; per-item raw outputs kept; correctness legs may share the card with :8083, throughput legs run in a GPU window with the host threads under the q3 claim. Controls: frozen inputs, incumbent baseline (C0 and C1), per-item raw outputs, 3-seed repeat with the A/B order alternated, full denominator including parse failures, predeclared rule. Decision rule: an Ouro arm earns a shadow-lane tenancy row (D3 shadow-only, no production traffic) only if (i) its paired accuracy vs C1 is within 2 points (McNemar not worse) and its seconds per correct answer at np=16 is at most 1.5x C1, or (ii) it beats C1 by at least 5 points at paired p<0.05 at no more than 2.5x C1 cost; the arithmetic predicts A1 costs 2.8x C1 per token, so (i) needs a real quality edge. Otherwise record NO-GO with the table and keep Ouro only as the vehicle for GPU-LOOP-3. Depends on the GPU-LOOP-1 build (our own task, not an external event).",
+          "acceptance": "Frozen item list + scorer hashes; per-arm table of accuracy, seed agreement, tok/s, seconds per correct answer and correct answers per GB; C0 worker-battery score recorded; the (i)/(ii) rule applied with paired statistics; GO tenancy row or NO-GO line committed."
+        }
+      ]
+    },
+    "W5GPU-4": {
+      "required_outcome": "Replace the LoopCoder-v2 monitor with a transformers-custom-code quality screen on the MI210 (HE+, LCB, BCB, coder suite) against Qwen3.8-27B and the CPU frontdoor.",
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; GPU-PLT-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+          "task_id": "GPU-PLT-1",
+          "task_text": "- [ ] **GPU-PLT-1 — LoopCoder-v2 (7.6B PLT coder, Apache-2.0) quality screen on the MI210 through transformers custom code, before and independent of the GGUF port (intake-2584#record, intake-2571#record).** Load Multilingual-Multimodal-NLP/LoopCoder-V2 at the pinned HF sha b87cf3a (BF16, 7,615,749,680 params, 15.2 GB, fits the about 19 GiB headroom beside :8083 without a KV problem) in an isolated venv with the transformers version its configuration_iquestpltcoder.py needs (Ouro needed 4.57.x, the research venv has 5.15.0: do not assume); confirm torch.version.hip and bf16 on gfx90a first; read config.json to see whether the loop count is a config field (the paper trains R=1..4 as separate models, so a forced R=1 on the released weights is not the paper R=1). Frozen inputs: HumanEval+ (164), LiveCodeBench subset released after the model cutoff (n>=200), BigCodeBench-hard subset, plus the frozen coder-suite items used for coder_escalation (cruxeval and the others E-7 scored: math 85.0, mmlu_pro 27.5, gpqa_diamond 47.5, cruxeval 22.5 at terse template 1443ea9ab4bb). Arms: LoopCoder-v2 as released; incumbent coder_escalation Qwen3.8-27B Q8 on :8083 (same harness, thinking off and medium); frontdoor Qwen3.6-35B-A3B on CPU; size control Qwen3-4B-Instruct-2507 (on disk). Controls: frozen items and scorer hashes, incumbent baselines, per-item raw outputs, 2 seeds, full denominator, rule below. Replication check against the paper own table: R=2 reports HE+ 84.1, LCB 35.4, BCB 46.1 and SWE-bench Verified 64.4 (harness unnamed, single seed, vendor-authored); accept the replication if HE+ >= 80 and the LCB subset score is within 5 points of the paper 35.4 after harness adjustment stated. Decision rule: open the serving legs of GPU-PLT-2 (agentic SWE-40 on the same scaffold that scored Qwen3.8-27B 21/40 = 52.5%, shadow lane only) if pooled pass@1 over HE+ and LCB is non-inferior to Qwen3.8-27B within 8 points (paired bootstrap lower bound) or the replication check passes; otherwise record NO-GO with the table (the port of GPU-PLT-2 still completes as parity work). Arithmetic that motivates it: at np=16, C=8k, Q8 (about 8.1 GB incl. head, KV 56 KiB/token f16 because later loops share loop-1 KV and keep only a 64-token window) a PLT-2 step is about 15.2 GB / 1433 GB/s = 10.6 ms bandwidth vs 2.5 ms compute at 32 rows, i.e. 1,510 tok/s ideal aggregate (about 600 derated by the 27B np8 ratio 157/400), vs 94 tok/s live at 4 concurrent on the 27B.",
+          "acceptance": "Per-benchmark table with per-item outputs for all arms; replication verdict vs the paper numbers stated with harness differences; the non-inferiority rule applied and the GPU-PLT-2 serving legs opened or closed."
+        }
+      ]
+    },
+    "W5GPU-5": {
+      "required_outcome": "Port PLT (CLP rows, shared loop-1 KV, 64-token gated window) as a new arch on llama.cpp-experimental with HF-parity and decode-step-ratio acceptance.",
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; GPU-PLT-2 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/gpu-acceleration-path.md",
+          "task_id": "GPU-PLT-2",
+          "task_text": "- [ ] **GPU-PLT-2 — Parallel-Loop-Transformer architecture (iquestpltcoder) on llama.cpp-experimental: port, parity, and MI210 decode curves (intake-2584#record, intake-2571#record).** Not blocked by the absence of upstream code; estimate 1.0-1.5 kLOC, 3-5 agent-days, 3-4x the 265/324-line Nanbeige/Ouro ports because those only unroll layers and carry no CLP, shared-KV or sliding window: converter for IQuestPLTCoderForCausalLM (about 150: 14 layers, hidden 5120, 40 heads / 8 KV, FFN 27648, R, window 64, per-head gate tensors; read the HF modeling file at sha b87cf3a first); arch/hparams/tensors (about 250); graph (about 400): a decode step builds R rows per sequence, row r input = token embedding + h^(r-1) of the previous position (per-sequence state of (R-1) x n_embd, held in the recurrent-memory path so checkpoint and spec-decode rollback come with it), row 1 attends the normal full KV, rows >=2 attend the shared loop-1 K/V through the existing cross-layer KV-reuse hparams plus a private 64-entry window cache (extra logical layers in the iSWA cache) and mix with the head-wise sigmoid gate; prefill runs R shifted sweeps over the prompt; cache/state plumbing and tests (about 400-700). Acceptance: top-1 logits match the HF reference on >=1000 positions and greedy continuations match on 20 prompts, on CPU and HIP; measured decode step ratio PLT-2 vs the same weights run as a one-loop graph is <=1.15 at np<=16 (prediction 1.02-1.05, since 2 rows per stream stay under the Q8 knee of 64 rows through 32 streams) and a sequential two-loop graph on the same weights is >=1.8 (the ByteDance paper reports 4.9 vs 4.8 vs 9.4 ms at bs 4 and 8.6 vs 8.1 vs 16.1 ms at bs 32 in its own stack); KV measured at about 56 KiB/token + window; spec-decode (MTP/DFlash2) rollback test using the state snapshot. Quality and serving verdicts are GPU-PLT-1 and the SWE-40 legs, not this task; this task delivers the engine.",
+          "acceptance": "Branch with the arch + converter; parity receipt on CPU and HIP; decode-step ratio and KV measurements committed against the stated predictions; rollback test passes."
+        }
+      ]
+    },
+    "W5GPU-6": {
+      "required_outcome": "LOOP-5 re-check on the GPU: at batch above E/top_k every expert is touched each pass, so a looped MoE at R=5 reads about R x its total expert bytes (1.3B total x 5 = 6.5 GB vs 2.9B x 1 = 2.9 GB for a quality of 46.9 vs 50.2 Overall); GPU does not reverse the ...",
+      "review_status": "closed-with-basis",
+      "review_basis": "no looped-MoE checkpoint or code is released; reopen on a weights release.",
+      "task_refs": []
+    },
+    "W5GPU-7": {
+      "required_outcome": "MEM-3 re-priced on the MI210 instead of the CPU: text tokens cost 18.7 GB / (1433 GB/s x 0.715 fp16 attainment) = 18 ms vs 9 ms for the 9.3 GB base (L4 check: 18.7/0.30 = 62 ms vs the 68 ms the author reports); chip tokens are serial and autoregressive, ...",
+      "review_status": "closed-with-basis",
+      "review_basis": "same GPU re-pricing as the calculator row; serial chip tokens dominate on any device.",
+      "task_refs": []
+    },
+    "W5GPU-8": {
+      "required_outcome": "LOOP-6 re-check: the monitor was never CPU-bandwidth based; the constraints are a per-dataset VQ tokenizer at about 100M-725M parameters with no served-vocabulary checkpoint, finest level (the first token) generated last, and no acceptance number against an ...",
+      "review_status": "closed-with-basis",
+      "review_basis": "no NCM checkpoint shares a served vocabulary and no acceptance number exists; reopen on such a release.",
+      "task_refs": []
+    },
+    "W5GPU-9": {
+      "required_outcome": "W2LOOP-3 re-check: GDN beta cap is a monitorability finding with no GPU lever; unchanged.",
+      "review_status": "closed-with-basis",
+      "review_basis": "a single-task, few-seed result with no performance lever on either device.",
+      "task_refs": []
+    },
+    "W5VERIF-1": {
+      "required_outcome": "Record the race/deadlock/equivalence coverage matrix per hot gfx90a kernel family (v10 code-object counts and source anchors in this file header) in rocm-verify-profile-backend.md beside RVP-RACE-2, so later scoping cites measured coverage, not the paper ...",
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; RVP-RACE-2 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/rocm-verify-profile-backend.md",
+          "task_id": "RVP-RACE-2",
+          "task_text": "- [ ] **RVP-RACE-2 — gfx90a AMDGCN race/deadlock executor as the GPU race_detector_id (intake-2570#record, intake-2557#record).** Not trigger-gated: 236 of 627 unique AK GPU mechanisms and 15 of 31 keeps touch sync, and v10 already ships hand-ordered LDS-DMA (mmvq.cu:1038-1093). Build in Rust on the MIT ptx_verifier @a39292a, reusing volta_graph and volta_graph_check (barrier_epoch, memory_conflict) unchanged, and extending volta_amd_analysis from gfx950/8 opcodes to gfx90a. Input is the disassembled code object of the built candidate (split with research scripts/kernel_rnd/gfx90a_isa_audit.py, the same artifact as C5-ISA-1). Launch grid, workgroup size and kernarg come from a small HIP launch-capture shim on a correctness-only served-shape run. Model: a concrete integer/address lattice with float/MFMA results opaque; exec mask; wave64 with per-wave program order (one event per wave-instruction, with the byte footprint of active lanes, plus an intra-instruction lane write-write check); ds_* complete at lgkmcnt; buffer_load...lds as AsyncIssue/AsyncComplete, completed conservatively at vmcnt(0); s_barrier as barrier generations; any branch or address that depends on an opaque value yields UNKNOWN (fail-closed, never ACCEPT). Index inputs (MoE ids, FA mask) are fed concretely. M1 (3-4 eng-weeks, the MMVQ + FA-vec opcode set, 228 distinct on v10): check WG0, the last WG and all boundary/tail WGs per served shape. M1 is accepted when it gives 0 findings on v10 MMVQ (both nwarps routes, plus q8pf with GGML_CUDA_Q8_PREFETCH=1) and on FA-vec at the AK served shapes, flags 100% of the RVP-RACE-1 MMVQ/FA mutants plus 2 ISA-only mutants that source mutation cannot make (delete the q8pf s_waitcnt vmcnt(0); move the first LDS read of a tile above its s_barrier; reassembled with clang -target amdgcn-amd-amdhsa -mcpu=gfx90a), and finishes in <=10 min per kernel instance on one core. Any production finding is triaged to a true race or a model bug before acceptance. M2 (+2-3 weeks): MMQ, FA-mma, FA-tile, quantize, argsort/topk (316-opcode union, MFMA/AGPR opaque); cross-WG global write-set overlap on sampled WGs (MMQ tmp_fixup disjointness); deadlock via barrier epochs; a gfx90a wait-state hazard lint for inline-asm regions (quantize.cu:100-117 DPP s_nop) cross-checked against an LLVM-compiled reference. The FA-vec atomic completion protocol is declared out of scope (UNKNOWN). M3: register as race_detector_id in execution/t0_provider.py for GPU routes whose diff or ISA touches barrier/__shared__/ds_/s_waitcnt/LDS-DMA/inline asm, after M1+M2 acceptance. Budget 8-11 kLoC new plus about 12 kLoC reused, 6-9 engineer-weeks, Codex-delegable; zero GPU time beyond the capture runs.",
+          "acceptance": "M1 receipt: per-kernel verdicts (ACCEPT/RACE/UNKNOWN) on v10 MMVQ+FA-vec at the frozen served-shape manifest with 0 RACE; a mutant table showing every RVP-RACE-1 MMVQ/FA mutant and both ISA-only mutants flagged; runtime per instance. M3 done when t0_provider emits a non-null race_detector_id for a sync-touching GPU candidate."
+        }
+      ]
+    },
+    "W5VERIF-2": {
+      "required_outcome": "Equivalence-port decision: decline for bit-level quant kernels on coverage (1116/1497 AK GPU experiment rows); a seeded sub-tolerance mutant probe decides the FA/GDN/mmvf subclass.",
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; RVP-EQV-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/rocm-verify-profile-backend.md",
+          "task_id": "RVP-EQV-1",
+          "task_text": "- [ ] **RVP-EQV-1 — Decide the equivalence-checker port by measured miss rate, quant kernels declined on coverage (intake-2570#record, intake-2557#record).** Decision part 1, decline: no Volta-class equivalence for MMVQ, MMQ, quantize_q8_1 or dequant. They are bit-level (nibble unpack, rounding), which Volta does not cover (floats are reals, conversions are the identity), and they make up about 75% of AK GPU experiment rows (1116 of 1497). KERN-4 enumeration owns decode exactness. Decision part 2, a deciding probe for the real-valued subclass (FA-mma/FA-tile at parallel_blocks=1, GDN recurrence, mmvf float GEMV). In a llama.cpp-experimental worktree from the v10 tip, build 8 seeded sub-tolerance algebraic mutants: FA online-softmax rescale skipped only when the running max changes after the first KV tile; FA KV loop dropping the last KV column; FA-tile dropping one tail tile at a non-multiple context; GDN exp(g) decay dropped at a chunk boundary; GDN beta dropped for one head; mmvf dropping the final partial k-block at ne00 % tile != 0; and two controls with an O(1) error. Prove each mutant structurally (ISA diff of that kernel). Run the AK served-shape gate plus the AKX-ALL-31 edge families and the KERN-5 worst-element bound, 5 seeds each, on a frozen case manifest, keeping per-mutant per-seed raw verdicts and NMSE; the unmutated v10 build must pass 5/5 seeds. Decision rule: if any non-control mutant survives every gate on >=1 seed, open the equivalence milestone for that subclass on the RVP-RACE-2 interpreter (symbolic float values, v_exp_f32 as 2^x, cvt as identity, the 2 MFMA lane layouts in use, DPP/swizzle value moves, FA and GDN reference specs; estimate 4-6 kLoC, 4-6 engineer-weeks; advisory, never a speed-blocking gate, because intake-2555 Table 2 shows proof-restricted FA at 0.78x vs 1.37x). If all are caught, record the catch table and close the equivalence port with that table as the reason. Correctness-only, so no quiet host is needed.",
+          "acceptance": "Catch table (mutant x gate x seed, with NMSE) committed with the 5/5 control; one of two outcomes recorded: an equivalence milestone opened with its named subclass, or the port closed with the table as its reason; the quant-kernel decline recorded with the 1116/1497 coverage count."
+        }
+      ]
+    },
+    "W5VERIF-3": {
+      "required_outcome": "Fix the RVP-RACE-1 decision rule (>=1 of 20 passes is a miss, not all 20), add waves-per-WG and ISA s_barrier-delta controls, add the LDS-DMA site, and make its mutants RVP-RACE-2 fixtures rather than its trigger.",
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; RVP-RACE-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/rocm-verify-profile-backend.md",
+          "task_id": "RVP-RACE-1",
+          "task_text": "- [ ] **RVP-RACE-1 — Measure whether the correctness gate can see a race at all (intake-2557#record, intake-2570#record).** GPU: in a llama.cpp-experimental worktree from the v10 tip build seeded-race HIP mutants, each deleting one barrier: MMQ tile load (mmq.cuh barrier sites), MMVQ cross-warp tmp_shared reduction (mmvq.cu nwarps 4 and 8 routes), MMVQ LDS-DMA double buffer (mmvq.cu:1063-1065, run with GGML_CUDA_Q8_PREFETCH=1), FA-mma tile softmax; prove each mutant structurally (s_barrier count of that kernel in the disassembled gfx90a code object drops vs the unmutated build) and record waves-per-workgroup at each served shape (a single-wave site is excluded as not a race). Run the AK served-shape test-backend-ops case set 20x per mutant and 20x on the unmutated build (frozen case manifest, per-run raw verdicts and NMSE kept). CPU: build test-backend-ops with ThreadSanitizer using LLVM libomp with Archer annotations and run the threaded ops on the v10 anchor. Decision rule: a GPU mutant that passes the gate in >=1 of 20 runs is a measured race miss; the unmutated build must pass 20/20; the mutant set becomes the fixture set of RVP-RACE-2 either way. The v10 anchor must produce zero TSAN reports beyond a documented suppression list.",
+          "acceptance": "Per-mutant table (site, s_barrier delta, waves/WG, pass count out of 20, max NMSE) plus the 20/20 control, committed with raw verdicts; TSAN anchor report with suppression list; fixtures handed to RVP-RACE-2."
+        }
+      ]
+    },
+    "W5VERIF-4": {
+      "required_outcome": "Level choice for the gfx90a checker is AMDGCN ISA from the built code object, not LLVM IR or HIP source: IR lacks waitcnts and the inline-asm semantics the AMD hot paths rely on, and cannot see ISA-edited (C5-ISA-2) candidates.",
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; RVP-RACE-2 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/rocm-verify-profile-backend.md",
+          "task_id": "RVP-RACE-2",
+          "task_text": "- [ ] **RVP-RACE-2 — gfx90a AMDGCN race/deadlock executor as the GPU race_detector_id (intake-2570#record, intake-2557#record).** Not trigger-gated: 236 of 627 unique AK GPU mechanisms and 15 of 31 keeps touch sync, and v10 already ships hand-ordered LDS-DMA (mmvq.cu:1038-1093). Build in Rust on the MIT ptx_verifier @a39292a, reusing volta_graph and volta_graph_check (barrier_epoch, memory_conflict) unchanged, and extending volta_amd_analysis from gfx950/8 opcodes to gfx90a. Input is the disassembled code object of the built candidate (split with research scripts/kernel_rnd/gfx90a_isa_audit.py, the same artifact as C5-ISA-1). Launch grid, workgroup size and kernarg come from a small HIP launch-capture shim on a correctness-only served-shape run. Model: a concrete integer/address lattice with float/MFMA results opaque; exec mask; wave64 with per-wave program order (one event per wave-instruction, with the byte footprint of active lanes, plus an intra-instruction lane write-write check); ds_* complete at lgkmcnt; buffer_load...lds as AsyncIssue/AsyncComplete, completed conservatively at vmcnt(0); s_barrier as barrier generations; any branch or address that depends on an opaque value yields UNKNOWN (fail-closed, never ACCEPT). Index inputs (MoE ids, FA mask) are fed concretely. M1 (3-4 eng-weeks, the MMVQ + FA-vec opcode set, 228 distinct on v10): check WG0, the last WG and all boundary/tail WGs per served shape. M1 is accepted when it gives 0 findings on v10 MMVQ (both nwarps routes, plus q8pf with GGML_CUDA_Q8_PREFETCH=1) and on FA-vec at the AK served shapes, flags 100% of the RVP-RACE-1 MMVQ/FA mutants plus 2 ISA-only mutants that source mutation cannot make (delete the q8pf s_waitcnt vmcnt(0); move the first LDS read of a tile above its s_barrier; reassembled with clang -target amdgcn-amd-amdhsa -mcpu=gfx90a), and finishes in <=10 min per kernel instance on one core. Any production finding is triaged to a true race or a model bug before acceptance. M2 (+2-3 weeks): MMQ, FA-mma, FA-tile, quantize, argsort/topk (316-opcode union, MFMA/AGPR opaque); cross-WG global write-set overlap on sampled WGs (MMQ tmp_fixup disjointness); deadlock via barrier epochs; a gfx90a wait-state hazard lint for inline-asm regions (quantize.cu:100-117 DPP s_nop) cross-checked against an LLVM-compiled reference. The FA-vec atomic completion protocol is declared out of scope (UNKNOWN). M3: register as race_detector_id in execution/t0_provider.py for GPU routes whose diff or ISA touches barrier/__shared__/ds_/s_waitcnt/LDS-DMA/inline asm, after M1+M2 acceptance. Budget 8-11 kLoC new plus about 12 kLoC reused, 6-9 engineer-weeks, Codex-delegable; zero GPU time beyond the capture runs.",
+          "acceptance": "M1 receipt: per-kernel verdicts (ACCEPT/RACE/UNKNOWN) on v10 MMVQ+FA-vec at the frozen served-shape manifest with 0 RACE; a mutant table showing every RVP-RACE-1 MMVQ/FA mutant and both ISA-only mutants flagged; runtime per instance. M3 done when t0_provider emits a non-null race_detector_id for a sync-touching GPU candidate."
+        }
+      ]
+    },
+    "W5META-1": {
+      "required_outcome": "Anchor mark written only by a script, plus cross-paste check, for fabricated citations",
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; ID-RI-ANCHOR-GATE carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/intake-derived-work-2026-07-25.md",
+          "task_id": "ID-RI-ANCHOR-GATE",
+          "task_text": "- [ ] **ID-RI-ANCHOR-GATE — Make quote re-find a gate the author cannot satisfy by assertion (fabricated citations) (intake-2563#record, intake-1377#record).** Today `.claude/skills/research-intake/scripts/validate_intake.py` (~L436-441) only checks `claim_anchors` is non-empty and `verified_by` is self-written, so a fabricated or cross-pasted quote (the 2026-07-25 CORE ablation, also pasted into intake-895) passes. Borrow Octopus's rule that a mark is recorded only by the runtime after a verifier passes the artifact and nothing else can emit it (`docs/contracts/VERIFIERS.md`, \"Nothing emits marks\"). Change SKILL.md Stage-2 \"Writes permitted\" (claim_anchors bullet) and the Stage-2 Verification Gate: add `validate_intake.py --check-anchors` that (a) re-finds every anchor `quote` in the retained source via `scripts/vidya/machine_anchor.py:verify_source_anchor` / `raw_anchor_store.py` (dive wrapper must write the source into `EPYC_VIDYA_RAW_ANCHOR_ROOT`, today opt-in and unused by dives), (b) recomputes `quote_sha256`, (c) writes an `anchor_mark: {verifier, source_raw_sha256, found}` that only the script writes, and (d) flags any `quote_sha256` appearing under two different entries (cross-paste, needs no retained source). New dive-verified entries without an anchor_mark fail; legacy entries stay grandfathered. Controls: four frozen fixtures (verbatim quote, fabricated quote, whitespace-altered quote, same quote under two entries) plus the old validator output; per-fixture expected verdict recorded. Decision rule: ship only if all four fixtures give the predeclared verdict and a replay over the current index flags zero verbatim anchors. Passing proves containment, not entailment; the per-claim second reader stays.",
+          "acceptance": "Fixture suite in scripts/tests passes (4 verdicts as predeclared); `--check-anchors` run over the current index reports the count of unmarked legacy entries without failing them; SKILL.md Stage-2 gate text updated."
+        }
+      ]
+    },
+    "W5META-2": {
+      "required_outcome": "Pin lane revision per citation and emit stale_epoch for changed files, for stale clones",
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; ID-RI-LANE-HEAD carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/intake-derived-work-2026-07-25.md",
+          "task_id": "ID-RI-LANE-HEAD",
+          "task_text": "- [ ] **ID-RI-LANE-HEAD — Pin the repo revision every in-house citation was read at and refuse stale ones mechanically (stale clones) (intake-2563#record).** SKILL.md L391-405 forbids the shared clone in prose only (2026-09-14 dives read /workspace @d372c953). Octopus pins descriptor hashes in every formed grant and refuses a movement against a changed checkpoint with a typed `stale_epoch` (`docs/contracts/LEDGER_INDEX.md`). Change: (1) Stage-2 dive brief template requires `lane_head` (full SHA of the lane worktree) in the returned YAML, and a `dive_preflight.py` run by main before dispatch asserts the named root is the lane worktree and its HEAD is not behind origin/main; (2) in-house `claim_anchors` locators `path:Lx-Ly @ sha7` get validated by `validate_intake.py --check-lane-anchors`: `git show sha7:path` must contain the quote, and `git diff --name-only sha7..origin/main -- path` non-empty emits typed `stale_epoch` that blocks Stage-3 plan citation of that anchor until re-read. Controls: replay the 2026-09-14 incident (anchor at d372c953 for a file since changed), a moved path, an unchanged path. Decision rule: stale_epoch fires on the first two and not the third; zero false positives over the current in-house anchors.",
+          "acceptance": "dive_preflight.py and --check-lane-anchors exist with the three replay fixtures passing; SKILL.md brief section references them."
+        }
+      ]
+    },
+    "W5META-3": {
+      "required_outcome": "Script-formed stage write grant checked by main, replacing self-reported audit lines",
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; ID-RI-STAGE-GUARD carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/intake-derived-work-2026-07-25.md",
+          "task_id": "ID-RI-STAGE-GUARD",
+          "task_text": "- [ ] **ID-RI-STAGE-GUARD — Compute the stage write grant by script and check the diff outside the agent (stage-gate violations) (intake-2563#record).** The skill's \"May write\" table (SKILL.md L50-58) and the Stage 1/2 gate \"`git status handoffs/` clean\" are prose run by the same agent that might violate them (2026-07-25: handoffs edited after an operator \"you can edit\"), and the dive `artifact_audit: clean` line is self-reported. Octopus forms the effective grant by a deterministic script at every arrival (ceiling intersect chain intersect bindings), enforces it outside the model and records a typed refusal row (`docs/architecture.md`, \"How policy is formed\"). Change: add `scripts/stage_grant.py form --stage N` (allowed paths: S1 index+.research-session.json; S2 index; S3 plan file; S4 the paths named by the approved plan, bound to `stage3_filing.plan_sha256` already checked at validate_intake.py ~L1084) and `check`, run by main at each stage boundary on `git status --porcelain` plus a tree hash taken at stage entry; violations append a typed row to the session JSON (`stage_write_outside_grant`, `plan_hash_stale`). Controls: replay the 2026-07-25 handoff-edit-in-Stage-2 case, a Stage-4 write outside the plan, and a clean stage. Decision rule: both violations refused, clean stage passes, no change to legacy validate_intake output.",
+          "acceptance": "stage_grant.py with 3 fixture tests green; SKILL.md Verification Gates cite it instead of the manual git-status line."
+        }
+      ]
+    },
+    "W5META-4": {
+      "required_outcome": "Closed decline-reason vocabulary so no actionable is closed by a free-text reason",
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; ID-RI-DECLINE-VOCAB carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/intake-derived-work-2026-07-25.md",
+          "task_id": "ID-RI-DECLINE-VOCAB",
+          "task_text": "- [ ] **ID-RI-DECLINE-VOCAB — Replace free-text decline reasons with a closed vocabulary (dropped actionables, operator Act-Do-Not-Defer rule) (intake-2563#record).** `validate_intake.py` ~L1132 accepts any `decline: <text>`, so \"vendor-only\", \"upstream has not done it\" or \"not applicable\" can close a row (the rules SKILL.md L40-48 forbid). Octopus refusals are typed rows from a closed set, \"never a silent drop\" (`docs/contracts/LEDGER_INDEX.md`). Change: a decline/closed-with-basis terminal must start with a code from {duplicate:<exact id>, superseded:<successor id>, measured-loss:<evidence ref>, math-constraint:<one-line proof>, external-event:<named event>, operator-ruled:<ruling ref>}; the validator rejects other prefixes and the forbidden phrases, and `external-event` requires a name that is not \"upstream\". Controls: freeze the current plan's decline rows as a fixture (expected: each maps to a code or is flagged for re-open), plus three negative fixtures (vendor-only, upstream-absent, not-applicable). Decision rule: negatives rejected, all legacy plans still pass under the unchanged legacy mode.",
+          "acceptance": "Validator rejects the three negative fixtures; opt-in flag keeps legacy plans valid; SKILL.md decline rules reference the code list."
+        }
+      ]
+    },
+    "W5META-5": {
+      "required_outcome": "Typed capability interfaces for dive subagents",
+      "review_status": "closed-with-basis",
+      "review_basis": "the dive return schema plus the per-claim second reader already give typed, checked outputs.",
+      "task_refs": []
+    },
+    "W5META-6": {
+      "required_outcome": "Durable append-only run records",
+      "review_status": "closed-with-basis",
+      "review_basis": "session resume already exists in the skill and the plan checkpoint carries the durable record.",
+      "task_refs": []
+    },
+    "W5META-7": {
+      "required_outcome": "Policy-gated self-modification of the skill",
+      "review_status": "closed-with-basis",
+      "review_basis": "Octopus gates on path coverage only and itself says on-contract behaviour is not proven, so it adds nothing to plan review.",
+      "task_refs": []
+    },
+    "W5META-8": {
+      "required_outcome": "Unverified ids",
+      "review_status": "closed-with-basis",
+      "review_basis": "the intake id resolver and the vidya citation gate already catch dangling ids.",
+      "task_refs": []
+    },
+    "W5META-9": {
+      "required_outcome": "In-window path/compile counters missing from Annex K record grammar",
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; AK-WIN-CNT-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/autokernel-research-loop.md",
+          "task_id": "AK-WIN-CNT-1",
+          "task_text": "- [ ] **AK-WIN-CNT-1 — Record in-window path counters beside every T1/T2 timing record (intake-2562#record).** Annex K's record grammar (`measurement/protocols/kernel-research.md` \"Record grammar\") has no field proving the timed window ran the intended path; T0 checks a dispatch trace but T1/T2 do not re-prove it. Resin keeps `graph_counts` and `overlap_counts` that exclude warmup and checks no JIT compile after warmup for unseen shapes. Do: capture hipGraph replay count vs eager launches and code-object load/JIT events inside the timed window on MI210 (use an in-process counter in a llama.cpp-experimental branch if none exists; the port is the build cost), write them as a non-gating diagnostic sidecar next to the raw samples, and draft the Annex K grammar amendment (human-amendment-only) making a path mismatch a VOID window. Controls: frozen anchor and one candidate, degraded-negative with graphs disabled (counter must show zero replays), A/A, per-window raw counters kept. Decision rule: sidecar ships if the degraded-negative is flagged and A/A is not; amendment text goes to the operator package.",
+          "acceptance": "Sidecar present on a GPU T1 window with the two control outcomes recorded; amendment draft filed for ratification."
+        }
+      ]
+    },
+    "W5META-10": {
+      "required_outcome": "Summed vs active-union vs critical-path attribution and no cross-run subtraction",
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; AK-PROF-ATTR-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/autokernel-research-loop.md",
+          "task_id": "AK-PROF-ATTR-1",
+          "task_text": "- [ ] **AK-PROF-ATTR-1 — Add GPU-active-union and a cross-run-subtraction lint to the profile report (intake-2562#record).** `scripts/kernel_rnd/autokernel/profile_report.py` / `profile_context.py` report `kernel_wall_share` and overlap tables but no GPU-active union versus summed kernel time. Resin's skill states overlapping kernel work is not additive and \"Engine minus GPU timing is unattributed time ... do not subtract different profiler and benchmark runs\" (optimize-resin-performance SKILL.md). Do: emit summed duration, active-union and critical-path per trace, and reject a derived \"unattributed\" figure built from two runs. Controls: a synthetic overlapping-kernel trace (sum greater than union), the hash-bound rocprofv2 trace already replayed in this handoff (~L444), a two-run subtraction negative. Decision rule: union less than sum on the synthetic case, existing wall-share values unchanged on the replayed trace, negative rejected.",
+          "acceptance": "Report fields and lint land with the three fixtures green; existing profile tests unchanged."
+        }
+      ]
+    },
+    "W5META-11": {
+      "required_outcome": "Resin vs Annex K / AK loop (Resin cite = docs/benchmarks.md, optimize-resin-performance SKILL.md; ours = measurement/protocols/kernel-research.md, bench-cpu.md, gpu-cross-device.md) / noise floor: Resin none (qualitative 'show the spread') vs ours A/A p95 phi ...",
+      "review_status": "preserved",
+      "review_basis": "Main read the dive passage and the current consumer; AK-WIN-CNT-1, AK-PROF-ATTR-1 carry the required behavior with controls and a decision rule.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/autokernel-research-loop.md",
+          "task_id": "AK-WIN-CNT-1",
+          "task_text": "- [ ] **AK-WIN-CNT-1 — Record in-window path counters beside every T1/T2 timing record (intake-2562#record).** Annex K's record grammar (`measurement/protocols/kernel-research.md` \"Record grammar\") has no field proving the timed window ran the intended path; T0 checks a dispatch trace but T1/T2 do not re-prove it. Resin keeps `graph_counts` and `overlap_counts` that exclude warmup and checks no JIT compile after warmup for unseen shapes. Do: capture hipGraph replay count vs eager launches and code-object load/JIT events inside the timed window on MI210 (use an in-process counter in a llama.cpp-experimental branch if none exists; the port is the build cost), write them as a non-gating diagnostic sidecar next to the raw samples, and draft the Annex K grammar amendment (human-amendment-only) making a path mismatch a VOID window. Controls: frozen anchor and one candidate, degraded-negative with graphs disabled (counter must show zero replays), A/A, per-window raw counters kept. Decision rule: sidecar ships if the degraded-negative is flagged and A/A is not; amendment text goes to the operator package.",
+          "acceptance": "Sidecar present on a GPU T1 window with the two control outcomes recorded; amendment draft filed for ratification."
+        },
+        {
+          "owner": "handoffs/active/autokernel-research-loop.md",
+          "task_id": "AK-PROF-ATTR-1",
+          "task_text": "- [ ] **AK-PROF-ATTR-1 — Add GPU-active-union and a cross-run-subtraction lint to the profile report (intake-2562#record).** `scripts/kernel_rnd/autokernel/profile_report.py` / `profile_context.py` report `kernel_wall_share` and overlap tables but no GPU-active union versus summed kernel time. Resin's skill states overlapping kernel work is not additive and \"Engine minus GPU timing is unattributed time ... do not subtract different profiler and benchmark runs\" (optimize-resin-performance SKILL.md). Do: emit summed duration, active-union and critical-path per trace, and reject a derived \"unattributed\" figure built from two runs. Controls: a synthetic overlapping-kernel trace (sum greater than union), the hash-bound rocprofv2 trace already replayed in this handoff (~L444), a two-run subtraction negative. Decision rule: union less than sum on the synthetic case, existing wall-share values unchanged on the replayed trace, negative rejected.",
+          "acceptance": "Report fields and lint land with the three fixtures green; existing profile tests unchanged."
+        }
+      ]
     }
   },
   "proposed_tasks": [
@@ -2870,10 +3909,6 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
       "task_text": "- [ ] **DF2-PM — Point-mass draft proposals at production temperature (intake-2561#record).** Behind an env knob on the experimental build, make the DFlash2 temp>0 branch propose the argmax selector walk with a point-mass distribution instead of sampling softmax(scores/T); the verifier then accepts with p_target(draft) and resamples from the residual (common/sampling.cpp:740-766), which is lossless. A/B against the stock sampled walk on the DF2-4 protocol (12 prompts, temp 0.6, top-p 0.95, top-k 20) at np 1 and np 4, at least 5 interleaved pairs; primary metric weighted acceptance, secondary tok/s; the SPEC-PIT.1 distribution gate must pass. Adopt into the next champion fold only if weighted acceptance improves by at least 3% in at least 4 of 5 pairs at both np values, tok/s does not regress and SPEC-PIT.1 passes; otherwise record the per-pair numbers and close."
     },
     {
-      "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
-      "task_text": "- [ ] **DF2-DRAFTER-CAPABILITY.OBJ — Fix the drafter-training data contract before any capture (intake-2548#record, intake-2578#record, intake-297#record).** Amend the capture contract inherited from INF-62 (\"hard next-token labels\") so every feature dump also taps the target's final post-norm hidden state (5120 x bf16 = 10,240 bytes per token, +20% over the current taps), which yields the exact teacher distribution through the frozen output head. Make forward KL toward the target distribution the default objective with hard labels as the fallback arm (with a frozen trunk, Soft-MTP's gradient equals direct forward KL), and record the Nemotron 3 Ultra frozen-backbone recipe (temperature 2, hidden states sampled from earlier draft steps) as an option. Note that z-lab/dflash @ 07ebd93 ships no training code, so any drafter or selector training is research, not a port."
-    },
-    {
       "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
       "task_text": "- [ ] **AKX-ALL-31.EDGE — Edge-value input families and a per-element worst-error bound beside NMSE (intake-2555#record, intake-2588#record, intake-2589#record).** Extend the AKX-ALL-31 gate chain, on both legs, with structured input families beyond uniform [-1,1] and the four scale transforms: near-max values that overflow f16 accumulation, subnormal-scale values, catastrophic-cancellation rows, and per-tile constant blocks. Add a per-element maximum absolute error next to the aggregate NMSE on the served-shape case set, calibrated per (op, type, shape) from the v10 anchor over 5 seeds, so a fault confined to one tile or row cannot hide in the aggregate. Each family gets a seeded-defect twin (a mutant that corrupts one tile, or one row) that must go red. Reuse the AKX-ALL-29.5 guard bands; no new framework."
     },
@@ -2884,10 +3919,6 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     {
       "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
       "task_text": "- [ ] **AKX-ALL-31.GDN — Deterministic one-hot GATED_DELTA_NET state oracle (intake-2574#record, intake-2550#record).** Add a test-backend-ops case on an experimental champion-derived branch that drives the delta rule with gate held at 1, beta at 1 and one-hot keys, so each step overwrites exactly one state row and a one-hot query must read back that row; compare against the closed-form result. Cover CPU f32, gfx90a f32 and BF16 state, and K > 1 snapshot slots. The current cases only compare backends on random data, which cannot detect a shared indexing error."
-    },
-    {
-      "owner": "handoffs/active/rocm-verify-profile-backend.md",
-      "task_text": "- [ ] **RVP-RACE-1 — Measure whether the correctness gate can see a race at all (intake-2557#record, intake-2570#record).** GPU: in a llama.cpp-experimental worktree build three seeded-race HIP mutants, each deleting one barrier in MMQ, MMVQ and the FA kernel, and run the served-shape suite 20 times each. CPU: build test-backend-ops with ThreadSanitizer, using LLVM libomp with Archer annotations, and run the threaded ops. Decision rule: if any GPU mutant passes the gate in all 20 runs, open the gfx90a race-only symbolic-executor trigger; if all are caught, record the gate as race-sensitive at these sites. The v10 anchor must produce zero TSAN reports beyond a documented suppression list."
     },
     {
       "owner": "handoffs/active/rocm-verify-profile-backend.md",
@@ -2928,6 +3959,102 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     {
       "owner": "handoffs/active/vidya-belief-substrate-program.md",
       "task_text": "- [ ] **VB-CERT-1 — Independent checker for the gate certificate (intake-2558#record).** Write scripts/vidya/cert_check.py, a standalone verifier of epyc.vidya/certificate/v1 that shares no imports with fold.py, gate.py or lattice code, re-derives the verdict from the certificate's stated inputs, and compares certificate.frontier and as_of explicitly. Today certificate_hash is a self-hash and input_attestations holds labels rather than the digests the spec section 11.2 requires (scripts/vidya/gate.py:130-166). Add forged-certificate tests (altered verdict, swapped frontier, stale as_of, label-only attestation) that must be rejected."
+    },
+    {
+      "owner": "handoffs/active/architect-model-selection-bench.md",
+      "task_text": "- [ ] **AMS-TCAP-1 — A/B a thinking-on effort mode for architect_general with ThinkingCap-Qwen3.8-Flash-Next (intake-2567#record, intake-2572#record, intake-2577#record).** Thinking is off for every Flash-Next role today because the base model fell into degenerate think loops (this handoff, prep finding 4; registry reasoning_policy_observation: reasoning auto gave 0/4 final answers). A finetune that shortens thinking is therefore a candidate higher-effort mode, not a curiosity. Download the bottlecapai ThinkingCap IQ4_XS GGUF (95.5 GB; one download at a time, disk checked first) and run three arms on llama-server with the qwen38-flash-next-cpu-mtp recipe: A base UD-IQ4_XS thinking off (production), B base thinking on, C ThinkingCap thinking on, plus C2 = ThinkingCap trunk with our shared-Q8_0 MTP head versus its embedded head. Frozen 40-60 prompt set (architect planning and critique, AIME-style reasoning, about 15 tau2-style agentic turns), at least 4 seeds, paired by prompt; record accuracy, thinking and answer tokens, the degenerate-loop and truncation rate, MTP alpha, and llama-bench pp/tg in one alternating window. Decision rule: propose a thinking-on effort mode (an operator-signed stack change) only if arm C beats arm A on the reasoning family with a paired 95% lower bound above 0, has degenerate or truncated thinking on at most 1% of requests, uses at most 60% of arm B's median thinking tokens, and keeps alpha within 0.03 of base; otherwise record the null and keep thinking off."
+    },
+    {
+      "owner": "handoffs/active/autokernel-rebuild-program.md",
+      "task_text": "- [ ] **AK-FAILRULE-1 — Turn recurring AK rejection reasons into pre-GPU rules from existing records (intake-2589#record, intake-2588#record).** Zero inference: classify every rejected candidate in the existing CPU and GPU campaign stores by failure reason (compile, correctness gate and which gate, timing loss, noise, harness error). For each reason class with at least 3 occurrences, draft a cheap static or pre-GPU check (CAKE-style hazard filter) and replay it over the historical candidates. Adopt a rule only if it would have rejected at least one historical failure before GPU time and no historical keep."
+    },
+    {
+      "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "task_text": "- [ ] **DF2-FT-1 — KL re-alignment pilot of the served 27B DFlash2 drafter on its own agentic traffic, target frozen (intake-2548#04, intake-2549#record, intake-2578#record, intake-297#record, intake-1848#record).** Why: at the production :8083 shape the drafter accepts 0.29-0.39 on real temp-1 agentic traffic (agentic-serving-harness-fixes.md:60,74,79). On the canonical benchmark shape it accepts 0.62-0.73. The two shapes differ in several factors, so this pilot is the deciding probe, not a presumed fix. Drafter facts (GGUF header): Qwen3.8-27B-DFlash2-Q8_0, size_label 1.9B, 81 tensors, 5 non-causal blocks with sliding window 2048, fc 25600->5120, selector codebooks 2 x 256 x 248320. It is headless and borrows the target's frozen token_embd and output (5120 x 248320 each). Steps: (0) Corpus = the DS41-C95 wire contexts under /mnt/raid0/llm/tmp/ds41-c95/results (36 wire-body captures; DF2-14 counted 320 turns / 630k generated tokens). Hold out every C4 run untouched. For each held-in request, regenerate 2 completions at the production sampler on the :8083 argv (X0_ARGV_8083.txt), capped at 2048 tokens, <=3 MI210-h; this also removes the need to reconstruct reasoning text from the wire bodies. (1) Write a feature-dump tool on a llama.cpp-experimental branch cut from the current champion tip. Per token it writes the 5 taps at target_layers [6,20,34,48,62] plus the target final post-norm hidden: 5 x 10,240 + 10,240 = 61,440 B/token, the DF2-DRAFTER-CAPABILITY.OBJ contract. It writes only each completion and its 2,048-token window prefix. Expect ~0.8-1.2M tokens = 50-75 GB in <=2 rolling shards. Capture held-out C4 the same way for the offline proxy. Prefill runs at the measured production-shape 410-574 t/s, <=3 MI210-h. (2) Train in a NEW ROCm venv; do not modify the two verified venvs. Use NeMo Automodel train_dflash2 @1667095 with the sdpa attention backend and an offline-feature dataset in place of the online target. Warm-start from z-lab/Qwen3.8-27B-DFlash2 bf16. The whole drafter is trainable: bf16 weights + fp32 master + AdamW ~16 B/param = ~31 GB, plus frozen embed/output 5.1 GB; that fits 64 GB because target features are precomputed. Arm H = Automodel hard block CE on the sampled tokens. Arm K = forward KL at T=1 to the teacher, computed from the final-hidden tap through the frozen output_norm + W with Automodel KDLoss (as in jetspec_core.py), chunked; its selector term is KL over the top-16 candidates, renormalized. Both arms share data order, seed, steps and LR; add a second seed for K; <=4 MI210-h total. (3) Convert with convert_hf_to_gguf.py (DFlash2DraftModel, --target-model-dir /mnt/raid0/llm/models/turboderp/Qwen3.8-27B-exl3-4.00bpw for config and tokenizer), then quantize to Q8_0. Six controls: (i) frozen manifest: sha256 of the target, served drafter and z-lab bf16; champion binary identity; held-out request list; sampler; seeds. (ii) Baselines: the served drafter, plus a round-trip arm (z-lab bf16 through our converter and quantizer, untrained) that must be tensor-equal after dequant or within the A/A band on DF2-4. (iii) Per-request raw draft_n, draft_n_accepted, predicted_n and timings in JSONL, plus the offline teacher-forced expected-accept-length proxy per held-out block. (iv) Holdout: all C4 runs, replayed twice ABAB on a fresh server per arm at the production argv, plus the DF2-4 12-prompt benchmark per arm. (v) Full denominator: every held-out request, failures counted. (vi) Predeclared rule. PROMOTE (open DF2-FT-2) if the best arm beats the incumbent on held-out weighted acceptance (sum accepted / sum drafted) by >=0.05 absolute on both reps (about +10% tokens per verify step at n_max 7), AND on held-out decode tok/s by >=8%, AND DF2-4 acceptance is >= incumbent - 0.02, AND the coherence gate is clean with the DF2-6 greedy pass count not below the incumbent. KL becomes the default drafter objective if K - H >= 0.02 on both reps and the seed-2 replicate has the same sign; |K - H| < 0.01 means cost-neutral (pick hard labels, which need no final-hidden tap). A gain of +0.02..+0.05 earns one more shard of <=1M fresh resamples, a retrain, and one more application of the rule. Below +0.02, KILL and record. Final step, on any verdict: amend DF2-DRAFTER-CAPABILITY with the objective verdict and an onboarding rule. The rule makes frozen-trunk re-alignment on the model's own served traffic the default for any served drafter or MTP head not co-trained on that exact trunk and quant. It names the next instances: the frontdoor 35B-A3B MTP head, then the Flash-Next head. Budget: ~13 MI210-h (~0.55 card-day) in GPU windows booked through the backlog-scheduling calendar, with :8083 drained per preempt-by-drain, plus 4-6 desk days (dump tool, trainer adaptation, venv; CPU-only smoke first)."
+    },
+    {
+      "owner": "handoffs/active/autokernel-champion-aggregate.md",
+      "task_text": "- [ ] **CH-32 — Upstream-delta fold census: dry-run merge of upstream tip into the champion C5 (c72ec82f5) to replace the PR line counts with real conflict and ggml-generation numbers (intake-2575#record, intake-2579#record, intake-2593#record, intake-2585#record, intake-2599#record).** Immediately, no compute: git fetch the upstream remote into the llama.cpp object store (no checkout, no branch move, production tree and champion ref untouched), then for each fold group (A cbe28bb3 non-causal ubatch; B b77d646751 Nanbeige4.2 plus Ouro #29823 head; C a4cb4c61fd + 7e3eeee048 systemone/H2O; D 30629, 30636, 31252, 31257, 31269, 31287, 31386, 31283 audio/LFM3/realtime) run git merge-tree --write-tree against c72ec82f5 and record per group files changed, conflicted hunks per file (expect tools/server/server-context.cpp, src/llama-context.cpp, src/llama-model.cpp), whether the group needs ggml ops or a ggml bump beyond v10 lineage (diff ggml/ include list), and the minimal prerequisite commit chain (b10303..b11960 is 1657 builds). Output table lands in docs/reference/kernel-manifests/llama-v11-manifest.md as pending-fold rows with a presence gate each (ancestry check), per README rule 4. Controls: frozen base sha, per-group raw merge-tree output kept, full group list, predeclared rule: a group with more than 3 conflicted files in server/ or any conflict in ggml-cpu, iqk or speculative code is cut by hand on a fresh experimental branch from C5 rather than cherry-picked in bulk."
+    },
+    {
+      "owner": "handoffs/active/autokernel-champion-aggregate.md",
+      "task_text": "- [ ] **CH-33 — Fold the non-causal multi-sequence ubatch fix (upstream #30408, cbe28bb3cb, +7/-7 over src/llama-batch.h, llama-context.cpp, llama-kv-cache.cpp, llama-kv-cache-iswa.cpp, llama-memory.h) into the champion as a safety fix (intake-2599#record, intake-2595#record).** Value: any bidirectional/embedding or decision model served at np>1 can currently have a request split across ubatches so answers change with the co-batched companions; the EmbeddingGemma 2 fold (REPL-EMB-2.6) and any d1 decision model are the consumers. Immediately (cheap, safety): fresh branch experimental/champion-c7-nonc-ubatch from the CURRENT champion tip, cherry-pick cbe28bb3cb, build CPU+HIP store images, gates: (a) non-causal batch-invariance, EmbeddingGemma 2 BF16 embeddings for one request alone vs co-batched at np 3 with shorter, longer and identical companions, unfixed C5 as the control (must reproduce the defect or the task records that no champion consumer is affected), fixed build must agree within 1e-3 cosine-distance of solo; (b) causal decode untouched: Q38FN and 27B DFlash2 greedy identity vs C5 on the fold_gate.py slice; (c) fold_gate.py expects libllama.so only. Rule: fold if (b) identical and (a) fixed or defect absent; manifest row V11 pending-to-in with ancestry presence gate."
+    },
+    {
+      "owner": "handoffs/active/autokernel-champion-aggregate.md",
+      "task_text": "- [ ] **CH-34 — Looped-model support fold group: Nanbeige4.2 (#25994 merged, b77d646751, +265/-1, 10 files incl. new src/models/nanbeige.cpp) plus Ouro (#29823, open, ~324 added lines, head sha to be pinned from the CH-32 fetch) (intake-2586#record, intake-2585#record, intake-2547#record).** Value: unblocks the looped-probe lane (GPU-LOOP-1: tg at ouro.num_loops 1/2/4, GB/s per effective token on EPYC; HIP run on MI210) without a hand port; files are disjoint from AK kernels, iqk and DFlash2 so expected cost is low. Immediately cut branch experimental/champion-plus-looped-arch from the current champion tip (fresh-tip rule), cherry-pick both, build CPU plus HIP store images, gates: test-llama-archs and the new-arch smoke load, no-regression greedy identity on Q38FN and one dense model vs champion, linkage proof. Fold decision is gated on the GPU-LOOP-1 probe: fold into the champion if Ouro-1.4B or Nanbeige4.2 runs coherent and the probe is not rejected on the predeclared tok/s-per-quality rule; otherwise keep the branch as the probe instrument and record the exclusion reason in the manifest. Open PR is not a block: the branch carries our own cherry-pick and is rebased when the PR merges."
+    },
+    {
+      "owner": "handoffs/active/autokernel-champion-aggregate.md",
+      "task_text": "- [ ] **CH-35 — Speech/omni fold group: mtmd_audio_stream + Voxtral realtime (#30629, 2851b3bcbf, +998/-20, 27 files in tools/mtmd), realtime transcription API (#30636, 1242be66f6, +512/-14, 9 files, server-context.cpp +316), LFM3 arch (#31252), LFM3 audio+omni (#31257, +2721/-160, 31 files), /v1/realtime conversation (#31269, +1423) with tool calls (#31287), codec quant (#31386), video (#31283) (intake-2575#record, intake-2579#record, intake-2580#record, intake-2552#record).** Value: serves LFM3-Audio/Omni and Voxtral Realtime end to end from the champion server for CS-8 STT/interlocutor arms and CS-20/CS-22 realtime; the speech kernels (whisper.cpp, qwentts.cpp) are separate trees and unaffected. Cost: the biggest group; conflicts concentrated in tools/server/server-context.cpp (champion already +593 vs v10) and src/llama-model.cpp; mtmd is new surface the champion has not touched; ggml delta from CH-32. Stage 1 immediately: build the scratch upstream audio build of CS-8.STT8 (instrument, not the fold). Stage 2 gated on CS-8.STT8 (paired bootstrap WER not above +1.0 pp vs whisper in en and it) or CS-8.RT1 (realtime first-output latency beats the cascade on the 20 frozen utterances): then cut experimental/champion-plus-lfm3-audio from the current champion tip, apply the PR chain in merge order, resolve server-context.cpp by hand, rebuild CPU+HIP, gates: Q38FN/27B greedy identity vs champion (server changes must not move text decode), CS-8.STT8 WER reproduced on the folded binary within bootstrap CI of the scratch build, np>1 safety rerun of DF2-12.1. If STT8 and RT1 both fail the rule the group is recorded EXCLUDED with numbers."
+    },
+    {
+      "owner": "handoffs/active/autokernel-champion-aggregate.md",
+      "task_text": "- [ ] **CH-36 — Decision-endpoint fold group: /v1/systemone (#29818, a4cb4c61fd, +2139/-15, 35 files, new server-decision.cpp 681 lines, server-context.cpp +210) and H2O-Lightning-4B (#30361, 7e3eeee048, +478/-15), depends on CH-33 and the LFM3 arch commits of CH-35 (intake-2593#record, intake-2582#record, intake-2602#record, intake-2601#record).** Value: gives TD-23 the missing local compact decision backend (d1-2B/3B, H2O-Lightning). Not for production fold until measured: the scratch build used by TD-23.D1 is the instrument. Gate for the fold: TD-23.D1 parity gate (BF16 vs Q8_0 on CPU and HIP, no argmax flip, probability difference not above 2.2e-2) and batch-invariance gate (np 1 vs np 3, 1e-3) both pass and d1-2B Q8_0 beats the constrained incumbent on the sealed row-pinned workload. If it passes: cut experimental/champion-plus-systemone from the current tip, resolve server-context.cpp by hand, add the np1 pin (hybrid-prefix re-read, issue 31475) to the launch recipe, gates as CH-35 plus TD-23.D1 rerun on the folded binary. Draft PR #29832 (model-agnostic systemone) merging upstream is the external event that would replace a4cb4c61fd as the base; until then the merged #29818 is used. #30100 is Metal-only and declined with that reason."
+    },
+    {
+      "owner": "handoffs/active/autokernel-champion-aggregate.md",
+      "task_text": "- [ ] **CH-37 — Recurrent-state / np>1 slot-contamination fix fold, gated on DF2-12.1 (intake-2597#record, intake-2598#record, intake-2591#record).** Already in the champion: #28123 rollback port 0771238438 (ancestor of C5 and C6 verified read-only). Open exposure: issues 26695 (seq_rm true without recurrent-state restore) and 28019 (multi-seq split replay corrupts rs when rollback enabled) plus the CH-31-DEF1 batched-decode divergence. Immediately: confirm by reading src/llama-memory-recurrent.cpp on C5 whether the 26695 and 28019 fix commits (find them with git log --grep on the fetched upstream) are ancestors; record the answer in the manifest. If DF2-12.1 (temp-0 cross-slot token identity at np 4 on :8083 and :8070 shapes) shows any divergence, this task becomes the fix: cherry-pick the upstream fixes onto a fresh branch from the champion tip, rerun DF2-12.1 as the gate (zero divergent tokens over the frozen set versus np 1) plus Q38FN greedy identity. If DF2-12.1 is clean, the manifest row records the ancestry check and the task closes."
+    },
+    {
+      "owner": "handoffs/active/gpu-acceleration-path.md",
+      "task_text": "- [ ] **GPU-LOOP-1 — Looped-architecture build on llama.cpp-experimental (Nanbeige #25994 + Ouro #29823) and its MI210 + CPU roofline curves (intake-2585#record, intake-2586#record, intake-2547#record, intake-2571#record).** Cut a fresh llama.cpp-experimental branch from the production v10 tip (ffc1bac82), cherry #25994 (merged b77d646, 265 lines) then #29823 (open, head e79d8cab5, 324 lines) with no other change; build HIP gfx90a and CPU; convert ByteDance Ouro-1.4B and 2.6B (+Thinking) to GGUF Q8_0 and Q4_K_M and record sha256. Gate 1 (correctness, may share the card with :8083): tests/test-llama-archs passes for ouro and nanbeige on CPU and HIP, and top-1 logit parity vs the transformers reference on the PR 829-position fixture at loops 1/2/4 is reproduced on gfx90a (use -ngl 999: -ngl counts logical layers, 192 for 2.6B, and -ngl 99 spilled to 1.6 tok/s in the PR thread). Gate 2 (timing, in a GPU window, host threads on 184-191 under the q3 claim): llama-batched-bench tg at loops {1,2,4} x np {1,2,4,8,16,32} x ctx {512,1024,2048} x KV {f16,q8_0} for Ouro-1.4B Q8_0, with Qwen3-1.7B-Q8_0 and Qwen3-4B-Thinking-2507-Q8_0 (both on disk) as same-build dense comparators; per cell report aggregate tok/s, achieved GB/s under the byte model bytes/step = W_body*L + W_head + B*C*kv_per_slot*L against the 1433 GB/s measured roof, and the ratio to the ideal step time. Same build, CPU leg (replaces W2LOOP-1): loops 1/2/4 on one quarter and the full socket, GB/s vs the C0 153 GB/s ceiling. Predictions fixed before the run (arithmetic, Ouro-1.4B: W_body 1.41 GB Q8, head 0.11 GB, 24 layers, 16 MHA KV heads x 128 = 8 KiB per layer slot): aggregate falls as 1/L at every np (a 55 MB layer cannot sit in the 8 MB L2, so no reuse across loops); at C=1024, f16 KV, L=4 the np-to-infinity ceiling is 1433e9/(1024*786432) = 1,780 tok/s and np=16 gives 16/13.0 ms = 1,230 tok/s ideal vs 3,420 for Qwen3-4B Q8 (4.28 GB, 144 KiB/token); the KV share exceeds the weight share beyond np=7; compute time is under 1/5 of byte time at every np that fits (VRAM headroom beside the 43 GiB :8083 is about 19 GiB, so np about 23 at C=1k f16), so the B*=64 knee is not reached for C above about 123 tokens. Six controls: frozen GGUF sha256 and prompts; comparators on the same build; per-cell raw JSON kept; 3 repeats ABA-alternated with the noise floor stated with its unit; full grid denominator (no cell dropped, VRAM-skipped cells listed); the rule below. Decision rule: PASS if parity holds and every measured aggregate lies within 0.5-1.1x of the byte-model prediction; a cell below 0.5x opens a HIP-kernel root-cause row (stale-binary check first: strings the lib, compare mtime to the commit) and is not a verdict on looping; this task issues no quality verdict. Writes the GPU arithmetic table into cpu-decode-roofline-program.md as the GPU half of the weight-reuse note (LOOP-1)."
+    },
+    {
+      "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+      "task_text": "- [ ] **GPU-LOOP-2 — Looped small model as a reliability-boosted batch worker on the MI210: quality vs loops vs aggregate throughput against equal-cost dense and K-sample controls (intake-2585#record, intake-2547#record, intake-2551#record).** Question: at high concurrency (elastic-duty D1 batch-shedding class, np 16), does Ouro-1.4B (and 2.6B-Thinking as second tier) at 1/2/4 loops buy more correct worker answers per HBM byte than a non-looped model? Arms, served-cost arithmetic at np=16, C=1k, f16 KV (ideal step times, to be measured in GPU-LOOP-1): A1 Ouro-1.4B L=4 (5.76 GB weights/step + 12.9 GB KV, 13.0 ms, 1,230 tok/s); A2 L=2 (about 2,300); A3 L=1 (about 7,100 on the same weights); A4 Ouro-2.6B-Thinking L=4 (48 layers, about 11.3 GB weights/step, 1.5 MiB/token KV); C1 Qwen3-4B-Thinking-2507 Q8 (4.28 GB, 144 KiB/token, 3,420 tok/s, the equal-quality-class dense control); C2 Qwen3-1.7B Q8 majority-of-4 (about the same bytes per final answer as A1, 1,545 answer-equivalent tok/s: the K-sample route that the idle MFMA headroom makes free); C3 Qwen3-1.7B Q8 single sample (equal resident bytes); C0 the incumbent worker, Qwen3.6-35B-A3B on CPU :8070 (registry roles.worker_general.performance.quality_pct is null: it has never been scored on the worker battery, so it is measured here on the same frozen items). Frozen inputs: GSM8K-style math (n>=200, same problem list as the PR so the 26.0/67.0/80.5 published curve is a replication check) plus worker-battery items for explore, summarize, transform and strict tool-call JSON (n>=150 per suite), item list and scorer hashed before any generation; Ouro context stays under its trained 1024-token block (Ouro RECIPES: block_size 1024), longer prompts are a separate reported stratum. Per arm: pass@1 over 3 seeds, seed-to-seed agreement, JSON-validity rate, aggregate tok/s at np 16, wall-seconds per correct answer and correct answers per HBM GB moved; per-item raw outputs kept; correctness legs may share the card with :8083, throughput legs run in a GPU window with the host threads under the q3 claim. Controls: frozen inputs, incumbent baseline (C0 and C1), per-item raw outputs, 3-seed repeat with the A/B order alternated, full denominator including parse failures, predeclared rule. Decision rule: an Ouro arm earns a shadow-lane tenancy row (D3 shadow-only, no production traffic) only if (i) its paired accuracy vs C1 is within 2 points (McNemar not worse) and its seconds per correct answer at np=16 is at most 1.5x C1, or (ii) it beats C1 by at least 5 points at paired p<0.05 at no more than 2.5x C1 cost; the arithmetic predicts A1 costs 2.8x C1 per token, so (i) needs a real quality edge. Otherwise record NO-GO with the table and keep Ouro only as the vehicle for GPU-LOOP-3. Depends on the GPU-LOOP-1 build (our own task, not an external event)."
+    },
+    {
+      "owner": "handoffs/active/gpu-acceleration-path.md",
+      "task_text": "- [ ] **GPU-LOOP-3 — Loop count as a per-request serve-time effort switch in llama.cpp-experimental (intake-2585#record, intake-2586#record, intake-2547#record).** Today num_loops is a load-time GGUF key (PR #29823: --override-kv ouro.num_loops=int:N; PR #25994 expands hparams arrays to n_layer_phys*n_loops once in load_arch_hparams). Change set: (1) llama_context gains llama_set_n_loops(ctx,k), 1<=k<=file n_loops, carried in llm_graph_params and compared in can_reuse() so a changed k rebuilds the graph while graph_reserve still sizes the worst case; the builder loop bound becomes n_layer_phys*k and the LM-head tap is the shared final norm of loop k (the exit_at_step readout the HF code already has); about 150-250 lines. (2) server: parse n_loops or an effort alias (low/medium/high mapped by a GGUF key such as ouro.effort_loops) into slot params; update_slots splits the ubatch into one llama_decode per k-class (each class re-reads the weights, a cost that is small once np exceeds the weight/KV crossover of about 7 streams at C=1k); about 100-150 lines. (3) KV semantics, each point tested: a logical layer slot (loop j, layer i) holds KV only for sequences that ran loop j, so a prefix cached at k loops is valid for any request with k2<=k and invalid for k2>k (the deeper slots and the hidden states to recompute them are not stored), which makes the prompt-cache and ctx-checkpoint key carry n_loops_cached; a mid-request upgrade needs a re-prefill, a downgrade does not; cells are shared across layers, so a low-k request saves bandwidth and FLOPs but not VRAM unless the cache is sized with a k_max option (KV is 192 KiB per loop per token for Ouro-1.4B f16, 768 KiB at 4). (4) Validity gate: only checkpoints trained with per-loop supervision may expose the switch: Ouro yes (PR GSM8K F16 26.0/67.0/80.5 at 1/2/4), Nanbeige4.2 no (forced 1 loop is degenerate, 0.0 GSM8K), LoopCoder-v2 no (each R is a separately trained model, R=3 27.6 vs R=1 43.0 SWE-bench Verified). Acceptance tests: logits at per-request k on a file with n_loops=4 are bit-identical on CPU and within 1e-3 abs on HIP to a file loaded with num_loops=k, for k=1..4 on the 829-position fixture (this also verifies the claim that loop-j activations do not depend on the total loop count); four concurrent requests with k=1,2,3,4 reproduce their solo outputs; prefix-cache hit for k2<=k and miss for k2>k; throughput at np=16 with half k=1 and half k=4 within 0.8-1.2x of the byte-model prediction. Router oracle on the GPU-LOOP-2 per-item results: oracle minimum loops per item vs a no-oracle router (answer agreement between loops 2 and 4 on a calibration half, or the exit-gate probability); decision rule on the held-out half: PROMOTE the switch to a lane option if the router keeps at least 97% of the L=4 accuracy at mean loops at most 2.4 (cost at most 0.6x of L=4); else keep static L and record the oracle bound. Per-token adaptive exit is not offered: the PR does not convert the early_exit_gate and a batch graph saves nothing from it without row compaction."
+    },
+    {
+      "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+      "task_text": "- [ ] **GPU-PLT-1 — LoopCoder-v2 (7.6B PLT coder, Apache-2.0) quality screen on the MI210 through transformers custom code, before and independent of the GGUF port (intake-2584#record, intake-2571#record).** Load Multilingual-Multimodal-NLP/LoopCoder-V2 at the pinned HF sha b87cf3a (BF16, 7,615,749,680 params, 15.2 GB, fits the about 19 GiB headroom beside :8083 without a KV problem) in an isolated venv with the transformers version its configuration_iquestpltcoder.py needs (Ouro needed 4.57.x, the research venv has 5.15.0: do not assume); confirm torch.version.hip and bf16 on gfx90a first; read config.json to see whether the loop count is a config field (the paper trains R=1..4 as separate models, so a forced R=1 on the released weights is not the paper R=1). Frozen inputs: HumanEval+ (164), LiveCodeBench subset released after the model cutoff (n>=200), BigCodeBench-hard subset, plus the frozen coder-suite items used for coder_escalation (cruxeval and the others E-7 scored: math 85.0, mmlu_pro 27.5, gpqa_diamond 47.5, cruxeval 22.5 at terse template 1443ea9ab4bb). Arms: LoopCoder-v2 as released; incumbent coder_escalation Qwen3.8-27B Q8 on :8083 (same harness, thinking off and medium); frontdoor Qwen3.6-35B-A3B on CPU; size control Qwen3-4B-Instruct-2507 (on disk). Controls: frozen items and scorer hashes, incumbent baselines, per-item raw outputs, 2 seeds, full denominator, rule below. Replication check against the paper own table: R=2 reports HE+ 84.1, LCB 35.4, BCB 46.1 and SWE-bench Verified 64.4 (harness unnamed, single seed, vendor-authored); accept the replication if HE+ >= 80 and the LCB subset score is within 5 points of the paper 35.4 after harness adjustment stated. Decision rule: open the serving legs of GPU-PLT-2 (agentic SWE-40 on the same scaffold that scored Qwen3.8-27B 21/40 = 52.5%, shadow lane only) if pooled pass@1 over HE+ and LCB is non-inferior to Qwen3.8-27B within 8 points (paired bootstrap lower bound) or the replication check passes; otherwise record NO-GO with the table (the port of GPU-PLT-2 still completes as parity work). Arithmetic that motivates it: at np=16, C=8k, Q8 (about 8.1 GB incl. head, KV 56 KiB/token f16 because later loops share loop-1 KV and keep only a 64-token window) a PLT-2 step is about 15.2 GB / 1433 GB/s = 10.6 ms bandwidth vs 2.5 ms compute at 32 rows, i.e. 1,510 tok/s ideal aggregate (about 600 derated by the 27B np8 ratio 157/400), vs 94 tok/s live at 4 concurrent on the 27B."
+    },
+    {
+      "owner": "handoffs/active/gpu-acceleration-path.md",
+      "task_text": "- [ ] **GPU-PLT-2 — Parallel-Loop-Transformer architecture (iquestpltcoder) on llama.cpp-experimental: port, parity, and MI210 decode curves (intake-2584#record, intake-2571#record).** Not blocked by the absence of upstream code; estimate 1.0-1.5 kLOC, 3-5 agent-days, 3-4x the 265/324-line Nanbeige/Ouro ports because those only unroll layers and carry no CLP, shared-KV or sliding window: converter for IQuestPLTCoderForCausalLM (about 150: 14 layers, hidden 5120, 40 heads / 8 KV, FFN 27648, R, window 64, per-head gate tensors; read the HF modeling file at sha b87cf3a first); arch/hparams/tensors (about 250); graph (about 400): a decode step builds R rows per sequence, row r input = token embedding + h^(r-1) of the previous position (per-sequence state of (R-1) x n_embd, held in the recurrent-memory path so checkpoint and spec-decode rollback come with it), row 1 attends the normal full KV, rows >=2 attend the shared loop-1 K/V through the existing cross-layer KV-reuse hparams plus a private 64-entry window cache (extra logical layers in the iSWA cache) and mix with the head-wise sigmoid gate; prefill runs R shifted sweeps over the prompt; cache/state plumbing and tests (about 400-700). Acceptance: top-1 logits match the HF reference on >=1000 positions and greedy continuations match on 20 prompts, on CPU and HIP; measured decode step ratio PLT-2 vs the same weights run as a one-loop graph is <=1.15 at np<=16 (prediction 1.02-1.05, since 2 rows per stream stay under the Q8 knee of 64 rows through 32 streams) and a sequential two-loop graph on the same weights is >=1.8 (the ByteDance paper reports 4.9 vs 4.8 vs 9.4 ms at bs 4 and 8.6 vs 8.1 vs 16.1 ms at bs 32 in its own stack); KV measured at about 56 KiB/token + window; spec-decode (MTP/DFlash2) rollback test using the state snapshot. Quality and serving verdicts are GPU-PLT-1 and the SWE-40 legs, not this task; this task delivers the engine."
+    },
+    {
+      "owner": "handoffs/active/rocm-verify-profile-backend.md",
+      "task_text": "- [ ] **RVP-RACE-1 — Measure whether the correctness gate can see a race at all (intake-2557#record, intake-2570#record).** GPU: in a llama.cpp-experimental worktree from the v10 tip build seeded-race HIP mutants, each deleting one barrier: MMQ tile load (mmq.cuh barrier sites), MMVQ cross-warp tmp_shared reduction (mmvq.cu nwarps 4 and 8 routes), MMVQ LDS-DMA double buffer (mmvq.cu:1063-1065, run with GGML_CUDA_Q8_PREFETCH=1), FA-mma tile softmax; prove each mutant structurally (s_barrier count of that kernel in the disassembled gfx90a code object drops vs the unmutated build) and record waves-per-workgroup at each served shape (a single-wave site is excluded as not a race). Run the AK served-shape test-backend-ops case set 20x per mutant and 20x on the unmutated build (frozen case manifest, per-run raw verdicts and NMSE kept). CPU: build test-backend-ops with ThreadSanitizer using LLVM libomp with Archer annotations and run the threaded ops on the v10 anchor. Decision rule: a GPU mutant that passes the gate in >=1 of 20 runs is a measured race miss; the unmutated build must pass 20/20; the mutant set becomes the fixture set of RVP-RACE-2 either way. The v10 anchor must produce zero TSAN reports beyond a documented suppression list."
+    },
+    {
+      "owner": "handoffs/active/rocm-verify-profile-backend.md",
+      "task_text": "- [ ] **RVP-RACE-2 — gfx90a AMDGCN race/deadlock executor as the GPU race_detector_id (intake-2570#record, intake-2557#record).** Not trigger-gated: 236 of 627 unique AK GPU mechanisms and 15 of 31 keeps touch sync, and v10 already ships hand-ordered LDS-DMA (mmvq.cu:1038-1093). Build in Rust on the MIT ptx_verifier @a39292a, reusing volta_graph and volta_graph_check (barrier_epoch, memory_conflict) unchanged, and extending volta_amd_analysis from gfx950/8 opcodes to gfx90a. Input is the disassembled code object of the built candidate (split with research scripts/kernel_rnd/gfx90a_isa_audit.py, the same artifact as C5-ISA-1). Launch grid, workgroup size and kernarg come from a small HIP launch-capture shim on a correctness-only served-shape run. Model: a concrete integer/address lattice with float/MFMA results opaque; exec mask; wave64 with per-wave program order (one event per wave-instruction, with the byte footprint of active lanes, plus an intra-instruction lane write-write check); ds_* complete at lgkmcnt; buffer_load...lds as AsyncIssue/AsyncComplete, completed conservatively at vmcnt(0); s_barrier as barrier generations; any branch or address that depends on an opaque value yields UNKNOWN (fail-closed, never ACCEPT). Index inputs (MoE ids, FA mask) are fed concretely. M1 (3-4 eng-weeks, the MMVQ + FA-vec opcode set, 228 distinct on v10): check WG0, the last WG and all boundary/tail WGs per served shape. M1 is accepted when it gives 0 findings on v10 MMVQ (both nwarps routes, plus q8pf with GGML_CUDA_Q8_PREFETCH=1) and on FA-vec at the AK served shapes, flags 100% of the RVP-RACE-1 MMVQ/FA mutants plus 2 ISA-only mutants that source mutation cannot make (delete the q8pf s_waitcnt vmcnt(0); move the first LDS read of a tile above its s_barrier; reassembled with clang -target amdgcn-amd-amdhsa -mcpu=gfx90a), and finishes in <=10 min per kernel instance on one core. Any production finding is triaged to a true race or a model bug before acceptance. M2 (+2-3 weeks): MMQ, FA-mma, FA-tile, quantize, argsort/topk (316-opcode union, MFMA/AGPR opaque); cross-WG global write-set overlap on sampled WGs (MMQ tmp_fixup disjointness); deadlock via barrier epochs; a gfx90a wait-state hazard lint for inline-asm regions (quantize.cu:100-117 DPP s_nop) cross-checked against an LLVM-compiled reference. The FA-vec atomic completion protocol is declared out of scope (UNKNOWN). M3: register as race_detector_id in execution/t0_provider.py for GPU routes whose diff or ISA touches barrier/__shared__/ds_/s_waitcnt/LDS-DMA/inline asm, after M1+M2 acceptance. Budget 8-11 kLoC new plus about 12 kLoC reused, 6-9 engineer-weeks, Codex-delegable; zero GPU time beyond the capture runs."
+    },
+    {
+      "owner": "handoffs/active/rocm-verify-profile-backend.md",
+      "task_text": "- [ ] **RVP-EQV-1 — Decide the equivalence-checker port by measured miss rate, quant kernels declined on coverage (intake-2570#record, intake-2557#record).** Decision part 1, decline: no Volta-class equivalence for MMVQ, MMQ, quantize_q8_1 or dequant. They are bit-level (nibble unpack, rounding), which Volta does not cover (floats are reals, conversions are the identity), and they make up about 75% of AK GPU experiment rows (1116 of 1497). KERN-4 enumeration owns decode exactness. Decision part 2, a deciding probe for the real-valued subclass (FA-mma/FA-tile at parallel_blocks=1, GDN recurrence, mmvf float GEMV). In a llama.cpp-experimental worktree from the v10 tip, build 8 seeded sub-tolerance algebraic mutants: FA online-softmax rescale skipped only when the running max changes after the first KV tile; FA KV loop dropping the last KV column; FA-tile dropping one tail tile at a non-multiple context; GDN exp(g) decay dropped at a chunk boundary; GDN beta dropped for one head; mmvf dropping the final partial k-block at ne00 % tile != 0; and two controls with an O(1) error. Prove each mutant structurally (ISA diff of that kernel). Run the AK served-shape gate plus the AKX-ALL-31 edge families and the KERN-5 worst-element bound, 5 seeds each, on a frozen case manifest, keeping per-mutant per-seed raw verdicts and NMSE; the unmutated v10 build must pass 5/5 seeds. Decision rule: if any non-control mutant survives every gate on >=1 seed, open the equivalence milestone for that subclass on the RVP-RACE-2 interpreter (symbolic float values, v_exp_f32 as 2^x, cvt as identity, the 2 MFMA lane layouts in use, DPP/swizzle value moves, FA and GDN reference specs; estimate 4-6 kLoC, 4-6 engineer-weeks; advisory, never a speed-blocking gate, because intake-2555 Table 2 shows proof-restricted FA at 0.78x vs 1.37x). If all are caught, record the catch table and close the equivalence port with that table as the reason. Correctness-only, so no quiet host is needed."
+    },
+    {
+      "owner": "handoffs/active/agentic-rocm-kernel-authoring.md",
+      "task_text": "- [ ] **C5-ISA-2 — GCN-Gym: LLM-edited AMDGCN for a compute-bound gfx90a kernel whose limiter is register allocation (intake-2555#record, intake-2556#record).** Not trigger-gated, because the HIP-source levers on the target are measured out: AK-MMQ-H10 (J-cap) NEGATIVE, the ak-27b-gpu-verify stream-k MMQ hypotheses were all refused or retired, and the ROCm 6.2 AGPR copy tax and MMQ spills are compiler-side (INF03-REGAUDIT-1: Q8_0 J=64 at 256 VGPR with 37 spills; MMA-FA DKQ>=192 at 512 VGPR with hundreds of reloads per iteration). Build a standalone harness (1-2 weeks). Extract the gfx90a .s of one kernel from an experimental v10-tip build via gfx90a_isa_audit.py; let the agent edit it with unified-diff patch tools; reassemble with clang -target amdgcn-amd-amdhsa -mcpu=gfx90a; load with hipModuleLoad; replay the served-shape launches (the RVP-RACE-2 capture shim); diff-test against the hipcc kernel with the AK oracle (host-double for Q8_0); require gfx90a_isa_audit.py diff to exit 0, and the RVP-RACE-2 verdict once M2 lands. Target 1: MMQ Q8_0 J=64 prefill tile. Target 2: MMA-FA DKQ>=192. Run 3 runs per target at a fixed declared token budget on a frozen shape manifest; time on the GPU window with ABBA (>=2 pairs) against the hipcc incumbent, keeping per-run raw candidate .s, oracle outputs and timings. Decision rule: if >=1 of 3 runs on a target reaches >=1.05x kernel time at the served prefill shape, passes the oracle, and its ABBA intervals do not overlap the incumbent, open an experimental-tree code-object override path for that kernel as an ISA-rung AK arm; otherwise record the null with traces and stop the ISA rung for that kernel class."
+    },
+    {
+      "owner": "handoffs/active/intake-derived-work-2026-07-25.md",
+      "task_text": "- [ ] **ID-RI-ANCHOR-GATE — Make quote re-find a gate the author cannot satisfy by assertion (fabricated citations) (intake-2563#record, intake-1377#record).** Today `.claude/skills/research-intake/scripts/validate_intake.py` (~L436-441) only checks `claim_anchors` is non-empty and `verified_by` is self-written, so a fabricated or cross-pasted quote (the 2026-07-25 CORE ablation, also pasted into intake-895) passes. Borrow Octopus's rule that a mark is recorded only by the runtime after a verifier passes the artifact and nothing else can emit it (`docs/contracts/VERIFIERS.md`, \"Nothing emits marks\"). Change SKILL.md Stage-2 \"Writes permitted\" (claim_anchors bullet) and the Stage-2 Verification Gate: add `validate_intake.py --check-anchors` that (a) re-finds every anchor `quote` in the retained source via `scripts/vidya/machine_anchor.py:verify_source_anchor` / `raw_anchor_store.py` (dive wrapper must write the source into `EPYC_VIDYA_RAW_ANCHOR_ROOT`, today opt-in and unused by dives), (b) recomputes `quote_sha256`, (c) writes an `anchor_mark: {verifier, source_raw_sha256, found}` that only the script writes, and (d) flags any `quote_sha256` appearing under two different entries (cross-paste, needs no retained source). New dive-verified entries without an anchor_mark fail; legacy entries stay grandfathered. Controls: four frozen fixtures (verbatim quote, fabricated quote, whitespace-altered quote, same quote under two entries) plus the old validator output; per-fixture expected verdict recorded. Decision rule: ship only if all four fixtures give the predeclared verdict and a replay over the current index flags zero verbatim anchors. Passing proves containment, not entailment; the per-claim second reader stays."
+    },
+    {
+      "owner": "handoffs/active/intake-derived-work-2026-07-25.md",
+      "task_text": "- [ ] **ID-RI-LANE-HEAD — Pin the repo revision every in-house citation was read at and refuse stale ones mechanically (stale clones) (intake-2563#record).** SKILL.md L391-405 forbids the shared clone in prose only (2026-09-14 dives read /workspace @d372c953). Octopus pins descriptor hashes in every formed grant and refuses a movement against a changed checkpoint with a typed `stale_epoch` (`docs/contracts/LEDGER_INDEX.md`). Change: (1) Stage-2 dive brief template requires `lane_head` (full SHA of the lane worktree) in the returned YAML, and a `dive_preflight.py` run by main before dispatch asserts the named root is the lane worktree and its HEAD is not behind origin/main; (2) in-house `claim_anchors` locators `path:Lx-Ly @ sha7` get validated by `validate_intake.py --check-lane-anchors`: `git show sha7:path` must contain the quote, and `git diff --name-only sha7..origin/main -- path` non-empty emits typed `stale_epoch` that blocks Stage-3 plan citation of that anchor until re-read. Controls: replay the 2026-09-14 incident (anchor at d372c953 for a file since changed), a moved path, an unchanged path. Decision rule: stale_epoch fires on the first two and not the third; zero false positives over the current in-house anchors."
+    },
+    {
+      "owner": "handoffs/active/intake-derived-work-2026-07-25.md",
+      "task_text": "- [ ] **ID-RI-STAGE-GUARD — Compute the stage write grant by script and check the diff outside the agent (stage-gate violations) (intake-2563#record).** The skill's \"May write\" table (SKILL.md L50-58) and the Stage 1/2 gate \"`git status handoffs/` clean\" are prose run by the same agent that might violate them (2026-07-25: handoffs edited after an operator \"you can edit\"), and the dive `artifact_audit: clean` line is self-reported. Octopus forms the effective grant by a deterministic script at every arrival (ceiling intersect chain intersect bindings), enforces it outside the model and records a typed refusal row (`docs/architecture.md`, \"How policy is formed\"). Change: add `scripts/stage_grant.py form --stage N` (allowed paths: S1 index+.research-session.json; S2 index; S3 plan file; S4 the paths named by the approved plan, bound to `stage3_filing.plan_sha256` already checked at validate_intake.py ~L1084) and `check`, run by main at each stage boundary on `git status --porcelain` plus a tree hash taken at stage entry; violations append a typed row to the session JSON (`stage_write_outside_grant`, `plan_hash_stale`). Controls: replay the 2026-07-25 handoff-edit-in-Stage-2 case, a Stage-4 write outside the plan, and a clean stage. Decision rule: both violations refused, clean stage passes, no change to legacy validate_intake output."
+    },
+    {
+      "owner": "handoffs/active/intake-derived-work-2026-07-25.md",
+      "task_text": "- [ ] **ID-RI-DECLINE-VOCAB — Replace free-text decline reasons with a closed vocabulary (dropped actionables, operator Act-Do-Not-Defer rule) (intake-2563#record).** `validate_intake.py` ~L1132 accepts any `decline: <text>`, so \"vendor-only\", \"upstream has not done it\" or \"not applicable\" can close a row (the rules SKILL.md L40-48 forbid). Octopus refusals are typed rows from a closed set, \"never a silent drop\" (`docs/contracts/LEDGER_INDEX.md`). Change: a decline/closed-with-basis terminal must start with a code from {duplicate:<exact id>, superseded:<successor id>, measured-loss:<evidence ref>, math-constraint:<one-line proof>, external-event:<named event>, operator-ruled:<ruling ref>}; the validator rejects other prefixes and the forbidden phrases, and `external-event` requires a name that is not \"upstream\". Controls: freeze the current plan's decline rows as a fixture (expected: each maps to a code or is flagged for re-open), plus three negative fixtures (vendor-only, upstream-absent, not-applicable). Decision rule: negatives rejected, all legacy plans still pass under the unchanged legacy mode."
+    },
+    {
+      "owner": "handoffs/active/autokernel-research-loop.md",
+      "task_text": "- [ ] **AK-WIN-CNT-1 — Record in-window path counters beside every T1/T2 timing record (intake-2562#record).** Annex K's record grammar (`measurement/protocols/kernel-research.md` \"Record grammar\") has no field proving the timed window ran the intended path; T0 checks a dispatch trace but T1/T2 do not re-prove it. Resin keeps `graph_counts` and `overlap_counts` that exclude warmup and checks no JIT compile after warmup for unseen shapes. Do: capture hipGraph replay count vs eager launches and code-object load/JIT events inside the timed window on MI210 (use an in-process counter in a llama.cpp-experimental branch if none exists; the port is the build cost), write them as a non-gating diagnostic sidecar next to the raw samples, and draft the Annex K grammar amendment (human-amendment-only) making a path mismatch a VOID window. Controls: frozen anchor and one candidate, degraded-negative with graphs disabled (counter must show zero replays), A/A, per-window raw counters kept. Decision rule: sidecar ships if the degraded-negative is flagged and A/A is not; amendment text goes to the operator package."
+    },
+    {
+      "owner": "handoffs/active/autokernel-research-loop.md",
+      "task_text": "- [ ] **AK-PROF-ATTR-1 — Add GPU-active-union and a cross-run-subtraction lint to the profile report (intake-2562#record).** `scripts/kernel_rnd/autokernel/profile_report.py` / `profile_context.py` report `kernel_wall_share` and overlap tables but no GPU-active union versus summed kernel time. Resin's skill states overlapping kernel work is not additive and \"Engine minus GPU timing is unattributed time ... do not subtract different profiler and benchmark runs\" (optimize-resin-performance SKILL.md). Do: emit summed duration, active-union and critical-path per trace, and reject a derived \"unattributed\" figure built from two runs. Controls: a synthetic overlapping-kernel trace (sum greater than union), the hash-bound rocprofv2 trace already replayed in this handoff (~L444), a two-run subtraction negative. Decision rule: union less than sum on the synthetic case, existing wall-share values unchanged on the replayed trace, negative rejected."
     }
   ]
 }
