@@ -1,0 +1,11 @@
+{
+  "native_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/pareval/run/server-755049.drain.json",
+  "native_sha256": "666364fb4f0330f4096f06f576d7c0bd7a18b4612d9d237ffbdc467297463f27",
+  "record": {
+    "birth": "157157446",
+    "drained": true,
+    "pid": 755049,
+    "rc": 0,
+    "server_log_sha256": "f370bf6d2e0b6adcd318ef9b2ca08b4db2e8fbef8588f15d97dfed2e4db6251e"
+  }
+}

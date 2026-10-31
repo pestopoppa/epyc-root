@@ -1,0 +1,98 @@
+{
+  "filing_due": [
+    {
+      "class": "diagnostic",
+      "decision_rule": "Capture all 120 pinned ParEval serial/OpenMP prompts with 20 independently seeded samples each, preserving all 2400 original attempts and native response/finish/unknowns. Generation only: native correctness, local sequential baseline, 1-96-thread timing, pass@k, efficiency@k and SC45 measured records remain for the later separate quiet-host contained evaluation.",
+      "end_line": "rc=75 time=2026-10-31T12:16:21Z reason=job-rc-75:exited",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pareval120-k20-gen-20261031.ended",
+      "id": "codex3-pareval120-k20-gen-20261031",
+      "owner": "codex3",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/pareval/run/TERMINAL.json",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/pareval",
+      "seen_at": "2026-10-31T12:16:39Z"
+    },
+    {
+      "class": "diagnostic",
+      "decision_rule": "Report Q8 minus F32 canonical P-STT-1 WER and paired eligible denominator per context and stratum; validate original context menu and one uninterrupted 8h stream with no wedge. Original F32 token parity and realtime subtests remain necessary.",
+      "end_line": "rc=0 time=2026-10-31T16:14:25Z reason=complete",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-cs22-a1-native-long-v2-cpu-20261030.ended",
+      "id": "codex3-cs22-a1-native-long-v2-cpu-20261030",
+      "owner": "codex3",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-long-v2-20261030/results",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-cs22-a1-long-v2-20261030",
+      "seen_at": "2026-10-31T16:15:05Z"
+    },
+    {
+      "class": "diagnostic",
+      "decision_rule": "Partial diagnostic; higher completed matching-pair coverage is better. Preserve original 120-pair denominator and four predecessor A0 unknown; allow only 26 s2 candidates. A1 requires successful matching A0. No redraw and no full-cohort McNemar verdict.",
+      "end_line": "rc=75 time=2026-10-31T16:26:10Z reason=job-rc-75:exited",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/yarn-oolong-s2-host256-eligible26-v32-20261031.ended",
+      "id": "yarn-oolong-s2-host256-eligible26-v32-20261031",
+      "owner": "codex-refactor-01a16fc3",
+      "result_path": "/mnt/micron/refactor-yarn-s2-v32-20261031/cohort/results",
+      "scratch_root": "/mnt/raid0/llm/tmp/yarn-oolong-s2-host-v32-20261031",
+      "seen_at": "2026-10-31T16:26:40Z"
+    }
+  ],
+  "manifests": [
+    {
+      "class": "diagnostic",
+      "completion": "178 real cases valid required for COMPLETE; TERMINAL-INCOMPLETE for failure or unknown, cutoff rc75; completion does not imply scientific pass; full A1/T1 stay gated.",
+      "decision_rule": "Report Q8 minus F32 canonical P-STT-1 WER and paired eligible denominator per context and stratum; validate original context menu and one uninterrupted 8h stream with no wedge. Original F32 token parity and realtime subtests remain necessary.",
+      "enrollment": "n/a: diagnostic",
+      "id": "codex3-cs22-a1-native-long-v2-cpu-20261030",
+      "job": {
+        "path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-long-v2-20261030/job.py",
+        "sha256": "505d3120516a7e5074a32b258689bd68aa9e17e1f20b00227fd5df4a21ce217e"
+      },
+      "launcher": {
+        "path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-long-v2-20261030/launch.sh",
+        "sha256": "ea76cb0b71852e4ba36918440e7fe7bac072544113956adbe895ee4ea43982cc"
+      },
+      "result_path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-long-v2-20261030/results",
+      "source_manifest": {
+        "path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-long-v2-20261030/SOURCE-SHA256SUMS",
+        "sha256": "bbab6cfe3b2a4a955d41a51d7a611c8dad18542b888b7800a8cc31b5df53e053"
+      }
+    },
+    {
+      "class": "diagnostic",
+      "decision_rule": "Partial diagnostic; higher completed matching-pair coverage is better. Preserve original 120-pair denominator and four predecessor A0 unknown; allow only 26 s2 candidates. A1 requires successful matching A0. No redraw and no full-cohort McNemar verdict.",
+      "enrollment": "n/a: partial diagnostic",
+      "id": "yarn-oolong-s2-host256-eligible26-v32-20261031",
+      "job": {
+        "path": "/mnt/raid0/llm/tmp/yarn-oolong-s2-host-v32-20261031/launch.sh",
+        "sha256": "1743d5e9a6e5c8118f7cf792b0e28bc71f15f50710db87c9f0066f566f8ecc1e"
+      },
+      "launcher": {
+        "path": "/mnt/raid0/llm/tmp/yarn-oolong-s2-host-v32-20261031/common-entry.sh",
+        "sha256": "117bf0768656d5e4fc7e51841774ea0cd7c0cfb4b98643e706ba153fb4496eb3"
+      },
+      "result_path": "/mnt/micron/refactor-yarn-s2-v32-20261031/cohort/results",
+      "source_manifest": {
+        "path": "/mnt/raid0/llm/tmp/yarn-oolong-s2-host-v32-20261031/HOST-MANIFEST.json",
+        "sha256": "39e8fe0e88fcaf824b2e469d12fcb5b533f75607031b821506d1f3ccd1e99626"
+      }
+    },
+    {
+      "class": "diagnostic",
+      "completion": "Same final HOST launcher, upstream byte-identical prompt templates and postprocess, real request and native writer; R13 --complete-cmd, RUS3 inside env-i, STOP75 during native processing/drained. Source family SC45 already registered; this prerequisite writes no pass@k or speed record. Full generation and later evaluation remain unrun.",
+      "decision_rule": "Capture all 120 pinned ParEval serial/OpenMP prompts with 20 independently seeded samples each, preserving all 2400 original attempts and native response/finish/unknowns. Generation only: native correctness, local sequential baseline, 1-96-thread timing, pass@k, efficiency@k and SC45 measured records remain for the later separate quiet-host contained evaluation.",
+      "enrollment": "0e2ee6b2b29462c295d67aa19de3405763291d46",
+      "id": "codex3-pareval120-k20-gen-20261031",
+      "job": {
+        "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/pareval/worker.py",
+        "sha256": "a5caffd3ad7d6ff14694e2b824dc3346124a38d962ac34368e8cd0c36d8027ac"
+      },
+      "launcher": {
+        "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/pareval/launch.sh",
+        "sha256": "29d5953375ba6c13459e8b91490d9d69ea0a1c54b4d73d0c56b87569e06bdc47"
+      },
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/pareval/run/TERMINAL.json",
+      "source_manifest": {
+        "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/pareval/SOURCE-SHA256SUMS",
+        "sha256": "4dfbbb8728adcd71576604ec679f8a9e6207c6e62e1cf92a42becfae67e9b473"
+      }
+    }
+  ]
+}

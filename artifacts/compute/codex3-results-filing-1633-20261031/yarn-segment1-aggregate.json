@@ -1,0 +1,97 @@
+{
+  "active_continuation": "New .start for617060024 at16:30:08 belongs to continuation START16:27:38, excluded from ended-segment accounting.",
+  "admitted_candidate_pairs": 26,
+  "class": "capability",
+  "native_digests": {
+    "SCOPE-s2-conservative.json": "eb43526277c253648e100327992c0aab2162a3abc87078a97adf438bf27591aa",
+    "cohort/exposures/21290e4478935feac1083d907b7634e3176bd989c14163871a60ddcb31530c81.native.json": "0eabbc195ad6600274a7ba1d9fbfffcb4b341139cc60598970c004676edb7e20",
+    "cohort/exposures/21290e4478935feac1083d907b7634e3176bd989c14163871a60ddcb31530c81.response": "52604648c48d566e5384a245e3f027ac0d60f810993888637160eeefaf4a2a89",
+    "cohort/exposures/21290e4478935feac1083d907b7634e3176bd989c14163871a60ddcb31530c81.start": "158f3f630632cb1ed5adb804d0ef02aaef9b7b7e51e38ae273f4c4f19e95101b",
+    "cohort/plan/items.jsonl": "86bf2ca3fd33768588bb7eb265e0ae2b403e292e0fae0254c5e9cd1c5a5fa2fe",
+    "cohort/plan/plan.json": "e5b323a3b778a0bd8e755dc3a6e7926d4393c5a7481cf77f3f2d36012888557f",
+    "cohort/results/A0.jsonl": "db73b97ec7a4c218b744d7f6489d15484c810da5b2a6470a4e219334542de711",
+    "cohort/window-000/server.argv": "5b2a296901e74730ddd270bf0d8f5b6486b5e03b724b4eeb80ad11d2479bfa00",
+    "cohort/window-000/server.log": "c9fd1072b4f73bdd7ffe970bc027c296c2cd97010096791ee80140b00368a536",
+    "cohort/window-000/worker.log": "bff207542899008fe9e8a91e376988ab871de8f302b65d5afbcd33002f963074"
+  },
+  "native_root": "/mnt/micron/refactor-yarn-s2-v32-20261031",
+  "original_campaign_pairs": 120,
+  "predecessor_unknown": [
+    {
+      "arm": "A0",
+      "item_id": "oolong_synth@131072#617060021",
+      "reason": "native 103311-token ambiguity across three retained predecessor windows"
+    },
+    {
+      "arm": "A0",
+      "item_id": "oolong_synth@131072#617060022",
+      "reason": "native 103311-token ambiguity across three retained predecessor windows"
+    },
+    {
+      "arm": "A0",
+      "item_id": "oolong_synth@131072#617060031",
+      "reason": "native 103311-token ambiguity across three retained predecessor windows"
+    },
+    {
+      "arm": "A0",
+      "item_id": "oolong_synth@131072#617060033",
+      "reason": "native 103311-token ambiguity across three retained predecessor windows"
+    }
+  ],
+  "rc": 75,
+  "rows": [
+    {
+      "answered": false,
+      "arm": "A0",
+      "finish_reason": "length",
+      "item_id": "oolong_synth@131072#617060023",
+      "no_answer": true,
+      "plan_sha256": "022ba34ca80ac0d8fa734d7fdf3d9b5e484f4ad2265fba81f31021d87619ff04",
+      "prompt_sha256": "47c2d5f37a46a7c6ed608233f695b6060b8664076ba035e0d9a6cf28003d58c1",
+      "real_n": 103338,
+      "score": 0.0,
+      "status": "ok",
+      "t_end": 1793463967.845307,
+      "t_start": 1793434878.8590949,
+      "timings": {
+        "cache_n": 0,
+        "predicted_ms": 796136.687,
+        "predicted_n": 1024,
+        "predicted_per_second": 1.2862112960258543,
+        "predicted_per_token_ms": 777.4772333984375,
+        "prompt_ms": 28292743.123,
+        "prompt_n": 103338,
+        "prompt_per_second": 3.652456022053002,
+        "prompt_per_token_ms": 273.7883752636978
+      },
+      "usage": {
+        "completion_tokens": 1024,
+        "prompt_tokens": 103338,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 104362
+      },
+      "wall_s": 29088.986
+    }
+  ],
+  "rule": "higher paired coverage is better; A1 only after matching successful A0; no redraw or full-cohort McNemar verdict; zero score does not disqualify successful A0 transport",
+  "s2_nominal_pairs": 30,
+  "segment_ended": "2026-10-31T16:26:10Z",
+  "terminal_accounting": {
+    "completed_A0": 1,
+    "completed_A1": 0,
+    "completed_pairs": 0,
+    "predecessor_unknown_A0": 4,
+    "unexposed_A0": 25,
+    "unexposed_A1": 30
+  },
+  "verdict": "PARTIAL; 0 completed pairs; no acceptance",
+  "worker_summary": {
+    "n_err": 0,
+    "n_ok": 1,
+    "n_skipped_deadline": 25,
+    "remaining": 25,
+    "stop_reason": "deadline"
+  }
+}

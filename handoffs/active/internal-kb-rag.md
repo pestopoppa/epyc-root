@@ -909,8 +909,8 @@ dim 96. This is a **projection, not a measurement.** Two conditions on any adopt
 
 ### New work items
 
-- [ ] **H1 (Z to quantify; remedy is G13) — doc-side truncation is tracked by no work item, and it is
-      the largest retrieval defect on this page.** `markdown_chunker.py:25` sets
+- [x] **H1 (Z to quantify; remedy is G13) — doc-side truncation is tracked by no work item, and it is the largest retrieval defect on this page.** Evidence: Research `f695d241f23b474204c7add056ecd59bc75fadc8` (Research main `4ca00be28956675d1796a44ecff2c624cc6aa2d5`); Git artifacts `repos/epyc-inference-research/artifacts/kb-rag-h1-20261031/{REPORT.md,SHA256SUMS,census.py,test_census.py}`. ✅ 2026-10-31 [belief: cc]
+      `markdown_chunker.py:25` sets
       `DEFAULT_MAX_CHARS = 4000` (and `config/kb_rag_config.yaml:31` `max_chunk_chars: 4000`) while
       `kb_rag.py:67` sets `_DOC_MAX_TOKENS = 256`, roughly a 1,024-character budget — so a full-size
       chunk has ~75 % of its content silently dropped at embed time. **Measured first-party against
@@ -924,6 +924,7 @@ dim 96. This is a **projection, not a measurement.** Two conditions on any adopt
       never *by how much* — any character-coverage figure must be re-derived by tokenizing with
       truncation disabled. Quantifying is zero-compute; the remedy arms need a full corpus re-embed
       and are **G13**.
+  - *(2026-10-31, enrolled qd-v1 model-free census.)* On the frozen current catalog of 35,280 rows / 1,774 paths, 16,243 rows (46.040%) exceed 256 model-input tokens and 16,283 (46.154%) are at or above the cap; nearest-rank p50/p95/max are 229/1,111/1,929. Capped model-input tokens retain 6,347,102 / 12,378,893 (51.274%); tokenizer-offset-covered document codepoints retain 21,058,629 / 41,200,048 (51.113%). This is the declared `[D] ` + raw-text qd-v1 recipe replay, not the original historical vector-tokenizer identity or current qd-v2 behavior; retrieval quality and adoption are unmeasured, and G13 remains open. Two native controls and the independent 35,280-row join/hash plus aggregate-allowlist audit passed; raw text was not published. The capture's enrollment note honestly records the ROOT registry commit as pending at capture time.
   - **2026-10-30 preparation checkpoint (G13; full sweep not run):** READY packet
     `/mnt/raid0/llm/tmp/codex-ni-kbrag-g13-truncskip-20261030`, current ID
     `codex-ni-kbrag-g13-truncskip-r2-20261030`, rank 60, any CPU quarter, 21,600 s, 16 GiB,

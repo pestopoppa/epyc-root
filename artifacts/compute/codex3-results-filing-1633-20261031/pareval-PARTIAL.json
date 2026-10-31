@@ -1,0 +1,8 @@
+{
+  "native_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/pareval/run/PARTIAL.json",
+  "native_sha256": "eb11fe069294c464e5b37aab3054dd8ec532c61f7a560e631fc643135ca36bc3",
+  "record": {
+    "partial": true,
+    "reason": "before next sample or insufficient full request/cleanup reserve"
+  }
+}

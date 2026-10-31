@@ -1,0 +1,10 @@
+{
+  "captured_at": "2026-10-31T16:34:27.963481+00:00",
+  "paths": {
+    "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/pareval/PLAN.json": "3e2f1c7bd3307212f7e0516deb773258afff8ae6d6ae506ead9508eed7a441bd",
+    "/mnt/raid0/llm/tmp/compute-flags/filing-due.jsonl": "9ba8472090d9efee68f393fb80e2577867f1d2c2765a2e0d651b50923df74dbb",
+    "/mnt/raid0/llm/tmp/compute-flags/ready/armed/codex3-cs22-a1-native-long-v2-cpu-20261030.json": "8fac9f4d77c97e3bf44c7cf4b80b4243cdd5fefd7c2a7bcfbce7a3e0e2421567",
+    "/mnt/raid0/llm/tmp/compute-flags/ready/armed/codex3-pareval120-k20-gen-20261031.json": "1b401975ce8f58a7b9674bd411a43cc0ce003b648e91f71e6647b6a35864c9d6",
+    "/mnt/raid0/llm/tmp/compute-flags/ready/armed/yarn-oolong-s2-host256-eligible26-v32-20261031.json": "50019301bb95946ac81d33609dddd3ab5f2430faefce218afb2f2374d80532a4"
+  }
+}

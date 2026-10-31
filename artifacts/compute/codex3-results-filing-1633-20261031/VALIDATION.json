@@ -1,0 +1,17 @@
+{
+  "bounded_fixture_git_apply_check": 0,
+  "json_parse": "PASS",
+  "pareval_terminal_count": {
+    "results": 103,
+    "ok": 5,
+    "UNKNOWN": 98,
+    "unexposed": 2297,
+    "original": 2400
+  },
+  "yarn_terminal_armcell_reconciliation": "1completedA0+4unknownA0+25unexposedA0+30unexposedA1=60",
+  "inference_run_by_filer": false,
+  "tests_run_by_filer": "aggregate parsing and temporal/count reconciliation only",
+  "handoff_box_flips": 0,
+  "index_row_edits": 0,
+  "normal_hooks_and_index_readme_checks": "publication owner executes before push"
+}

@@ -482,6 +482,7 @@ Not measured:
   First, have the metrics exporter derive per-section pull counts and bytes from the export's tool parts. Then
   make it a first-class orchestrator feature: exact pulls logged per call, and a byte cap per call. Acceptance:
   OAB-9's report carries per-section pull bytes; OAB-7's orchestrator design names the cap.
+  - 2026-10-31 source partial: Research 6a3981e4bd23379d57f791379f64ad07f7d334a2 publishes the prospective metrics writer extension; Git proof artifacts/autokernel_oab12_20261031/ records 34 passing controls. The exact published tree has an integrity-true private-Git native PII receipt; host-native PII capture was unavailable. Original acceptance remains open because the four OAB-9 exports are absent from recorded paths/current DB; no historical bytes are reconstructed.
   **Progress 2026-09-25.** OAB-9 ran without this. The A/B driver derived per-section read COUNTS from the tool
   parts (`bundle.access`: every file-only section read once, `INDEX.md` never re-read), plus total
   `tool_output_chars`, but no per-section bytes. The seat exporter (`actor_call_metrics.v1`) carries only

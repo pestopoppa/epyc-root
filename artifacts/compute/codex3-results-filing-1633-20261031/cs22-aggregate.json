@@ -1,0 +1,559 @@
+{
+  "canonical_scores": {
+    "0:confirmation": {
+      "arms": {
+        "F32": {
+          "confirmation_reuse_n": 1,
+          "n": 12,
+          "taxonomy": {
+            "decode_error": 0,
+            "empty": 0,
+            "numeral_uncovered": 0,
+            "ok": 12,
+            "repetition_loop": 0,
+            "unknown_marker": 0
+          },
+          "wer": 0.0
+        },
+        "Q8": {
+          "confirmation_reuse_n": 2,
+          "n": 12,
+          "taxonomy": {
+            "decode_error": 0,
+            "empty": 0,
+            "numeral_uncovered": 0,
+            "ok": 12,
+            "repetition_loop": 0,
+            "unknown_marker": 0
+          },
+          "wer": 0.0
+        }
+      },
+      "expected_pairs": 12,
+      "paired": {
+        "result": {
+          "arm_a": "nemotron35-F32-right0",
+          "arm_b": "nemotron35-Q8-right0",
+          "confidence": 0.95,
+          "interval_pp": [
+            0.0,
+            0.0
+          ],
+          "method": "utterance_paired_percentile_bootstrap",
+          "n_differing_utterances": 0,
+          "n_paired": 12,
+          "n_unpaired_excluded": 0,
+          "point_delta_pp": 0.0,
+          "resamples": 200,
+          "seed": 42
+        },
+        "status": "CHECKED"
+      },
+      "q8_minus_f32_units": "percentage points; positive is worse",
+      "repetition_envelope": "COULD_NOT_CHECK: no derived anchor"
+    },
+    "0:selection": {
+      "arms": {
+        "F32": {
+          "confirmation_reuse_n": 0,
+          "n": 8,
+          "taxonomy": {
+            "decode_error": 0,
+            "empty": 0,
+            "numeral_uncovered": 0,
+            "ok": 8,
+            "repetition_loop": 0,
+            "unknown_marker": 0
+          },
+          "wer": 0.0
+        },
+        "Q8": {
+          "confirmation_reuse_n": 0,
+          "n": 8,
+          "taxonomy": {
+            "decode_error": 0,
+            "empty": 0,
+            "numeral_uncovered": 0,
+            "ok": 8,
+            "repetition_loop": 0,
+            "unknown_marker": 0
+          },
+          "wer": 0.0
+        }
+      },
+      "expected_pairs": 8,
+      "paired": {
+        "result": {
+          "arm_a": "nemotron35-F32-right0",
+          "arm_b": "nemotron35-Q8-right0",
+          "confidence": 0.95,
+          "interval_pp": [
+            0.0,
+            0.0
+          ],
+          "method": "utterance_paired_percentile_bootstrap",
+          "n_differing_utterances": 0,
+          "n_paired": 8,
+          "n_unpaired_excluded": 0,
+          "point_delta_pp": 0.0,
+          "resamples": 200,
+          "seed": 42
+        },
+        "status": "CHECKED"
+      },
+      "q8_minus_f32_units": "percentage points; positive is worse",
+      "repetition_envelope": "COULD_NOT_CHECK: no derived anchor"
+    },
+    "13:confirmation": {
+      "arms": {
+        "F32": {
+          "confirmation_reuse_n": 7,
+          "n": 12,
+          "taxonomy": {
+            "decode_error": 0,
+            "empty": 0,
+            "numeral_uncovered": 0,
+            "ok": 12,
+            "repetition_loop": 0,
+            "unknown_marker": 0
+          },
+          "wer": 0.0
+        },
+        "Q8": {
+          "confirmation_reuse_n": 8,
+          "n": 12,
+          "taxonomy": {
+            "decode_error": 0,
+            "empty": 0,
+            "numeral_uncovered": 0,
+            "ok": 12,
+            "repetition_loop": 0,
+            "unknown_marker": 0
+          },
+          "wer": 0.0
+        }
+      },
+      "expected_pairs": 12,
+      "paired": {
+        "result": {
+          "arm_a": "nemotron35-F32-right13",
+          "arm_b": "nemotron35-Q8-right13",
+          "confidence": 0.95,
+          "interval_pp": [
+            0.0,
+            0.0
+          ],
+          "method": "utterance_paired_percentile_bootstrap",
+          "n_differing_utterances": 0,
+          "n_paired": 12,
+          "n_unpaired_excluded": 0,
+          "point_delta_pp": 0.0,
+          "resamples": 200,
+          "seed": 42
+        },
+        "status": "CHECKED"
+      },
+      "q8_minus_f32_units": "percentage points; positive is worse",
+      "repetition_envelope": "COULD_NOT_CHECK: no derived anchor"
+    },
+    "13:selection": {
+      "arms": {
+        "F32": {
+          "confirmation_reuse_n": 0,
+          "n": 8,
+          "taxonomy": {
+            "decode_error": 0,
+            "empty": 0,
+            "numeral_uncovered": 0,
+            "ok": 8,
+            "repetition_loop": 0,
+            "unknown_marker": 0
+          },
+          "wer": 0.0
+        },
+        "Q8": {
+          "confirmation_reuse_n": 0,
+          "n": 8,
+          "taxonomy": {
+            "decode_error": 0,
+            "empty": 0,
+            "numeral_uncovered": 0,
+            "ok": 8,
+            "repetition_loop": 0,
+            "unknown_marker": 0
+          },
+          "wer": 0.0
+        }
+      },
+      "expected_pairs": 8,
+      "paired": {
+        "result": {
+          "arm_a": "nemotron35-F32-right13",
+          "arm_b": "nemotron35-Q8-right13",
+          "confidence": 0.95,
+          "interval_pp": [
+            0.0,
+            0.0
+          ],
+          "method": "utterance_paired_percentile_bootstrap",
+          "n_differing_utterances": 0,
+          "n_paired": 8,
+          "n_unpaired_excluded": 0,
+          "point_delta_pp": 0.0,
+          "resamples": 200,
+          "seed": 42
+        },
+        "status": "CHECKED"
+      },
+      "q8_minus_f32_units": "percentage points; positive is worse",
+      "repetition_envelope": "COULD_NOT_CHECK: no derived anchor"
+    },
+    "3:confirmation": {
+      "arms": {
+        "F32": {
+          "confirmation_reuse_n": 3,
+          "n": 12,
+          "taxonomy": {
+            "decode_error": 0,
+            "empty": 0,
+            "numeral_uncovered": 0,
+            "ok": 12,
+            "repetition_loop": 0,
+            "unknown_marker": 0
+          },
+          "wer": 0.0
+        },
+        "Q8": {
+          "confirmation_reuse_n": 4,
+          "n": 12,
+          "taxonomy": {
+            "decode_error": 0,
+            "empty": 0,
+            "numeral_uncovered": 0,
+            "ok": 12,
+            "repetition_loop": 0,
+            "unknown_marker": 0
+          },
+          "wer": 0.0
+        }
+      },
+      "expected_pairs": 12,
+      "paired": {
+        "result": {
+          "arm_a": "nemotron35-F32-right3",
+          "arm_b": "nemotron35-Q8-right3",
+          "confidence": 0.95,
+          "interval_pp": [
+            0.0,
+            0.0
+          ],
+          "method": "utterance_paired_percentile_bootstrap",
+          "n_differing_utterances": 0,
+          "n_paired": 12,
+          "n_unpaired_excluded": 0,
+          "point_delta_pp": 0.0,
+          "resamples": 200,
+          "seed": 42
+        },
+        "status": "CHECKED"
+      },
+      "q8_minus_f32_units": "percentage points; positive is worse",
+      "repetition_envelope": "COULD_NOT_CHECK: no derived anchor"
+    },
+    "3:selection": {
+      "arms": {
+        "F32": {
+          "confirmation_reuse_n": 0,
+          "n": 8,
+          "taxonomy": {
+            "decode_error": 0,
+            "empty": 0,
+            "numeral_uncovered": 0,
+            "ok": 8,
+            "repetition_loop": 0,
+            "unknown_marker": 0
+          },
+          "wer": 0.0
+        },
+        "Q8": {
+          "confirmation_reuse_n": 0,
+          "n": 8,
+          "taxonomy": {
+            "decode_error": 0,
+            "empty": 0,
+            "numeral_uncovered": 0,
+            "ok": 8,
+            "repetition_loop": 0,
+            "unknown_marker": 0
+          },
+          "wer": 0.0
+        }
+      },
+      "expected_pairs": 8,
+      "paired": {
+        "result": {
+          "arm_a": "nemotron35-F32-right3",
+          "arm_b": "nemotron35-Q8-right3",
+          "confidence": 0.95,
+          "interval_pp": [
+            0.0,
+            0.0
+          ],
+          "method": "utterance_paired_percentile_bootstrap",
+          "n_differing_utterances": 0,
+          "n_paired": 8,
+          "n_unpaired_excluded": 0,
+          "point_delta_pp": 0.0,
+          "resamples": 200,
+          "seed": 42
+        },
+        "status": "CHECKED"
+      },
+      "q8_minus_f32_units": "percentage points; positive is worse",
+      "repetition_envelope": "COULD_NOT_CHECK: no derived anchor"
+    },
+    "6:confirmation": {
+      "arms": {
+        "F32": {
+          "confirmation_reuse_n": 5,
+          "n": 12,
+          "taxonomy": {
+            "decode_error": 0,
+            "empty": 0,
+            "numeral_uncovered": 0,
+            "ok": 12,
+            "repetition_loop": 0,
+            "unknown_marker": 0
+          },
+          "wer": 0.0
+        },
+        "Q8": {
+          "confirmation_reuse_n": 6,
+          "n": 12,
+          "taxonomy": {
+            "decode_error": 0,
+            "empty": 0,
+            "numeral_uncovered": 0,
+            "ok": 12,
+            "repetition_loop": 0,
+            "unknown_marker": 0
+          },
+          "wer": 0.0
+        }
+      },
+      "expected_pairs": 12,
+      "paired": {
+        "result": {
+          "arm_a": "nemotron35-F32-right6",
+          "arm_b": "nemotron35-Q8-right6",
+          "confidence": 0.95,
+          "interval_pp": [
+            0.0,
+            0.0
+          ],
+          "method": "utterance_paired_percentile_bootstrap",
+          "n_differing_utterances": 0,
+          "n_paired": 12,
+          "n_unpaired_excluded": 0,
+          "point_delta_pp": 0.0,
+          "resamples": 200,
+          "seed": 42
+        },
+        "status": "CHECKED"
+      },
+      "q8_minus_f32_units": "percentage points; positive is worse",
+      "repetition_envelope": "COULD_NOT_CHECK: no derived anchor"
+    },
+    "6:selection": {
+      "arms": {
+        "F32": {
+          "confirmation_reuse_n": 0,
+          "n": 8,
+          "taxonomy": {
+            "decode_error": 0,
+            "empty": 0,
+            "numeral_uncovered": 0,
+            "ok": 8,
+            "repetition_loop": 0,
+            "unknown_marker": 0
+          },
+          "wer": 0.0
+        },
+        "Q8": {
+          "confirmation_reuse_n": 0,
+          "n": 8,
+          "taxonomy": {
+            "decode_error": 0,
+            "empty": 0,
+            "numeral_uncovered": 0,
+            "ok": 8,
+            "repetition_loop": 0,
+            "unknown_marker": 0
+          },
+          "wer": 0.0
+        }
+      },
+      "expected_pairs": 8,
+      "paired": {
+        "result": {
+          "arm_a": "nemotron35-F32-right6",
+          "arm_b": "nemotron35-Q8-right6",
+          "confidence": 0.95,
+          "interval_pp": [
+            0.0,
+            0.0
+          ],
+          "method": "utterance_paired_percentile_bootstrap",
+          "n_differing_utterances": 0,
+          "n_paired": 8,
+          "n_unpaired_excluded": 0,
+          "point_delta_pp": 0.0,
+          "resamples": 200,
+          "seed": 42
+        },
+        "status": "CHECKED"
+      },
+      "q8_minus_f32_units": "percentage points; positive is worse",
+      "repetition_envelope": "COULD_NOT_CHECK: no derived anchor"
+    }
+  },
+  "completed_count": 178,
+  "context_checks": [
+    {
+      "actual_status": 0,
+      "expected": "accept",
+      "matches_handoff": true,
+      "origin": "native",
+      "right": 0
+    },
+    {
+      "actual_status": 1,
+      "expected": "accept",
+      "matches_handoff": false,
+      "origin": "native",
+      "right": 1
+    },
+    {
+      "actual_status": 0,
+      "expected": "accept",
+      "matches_handoff": true,
+      "origin": "native",
+      "right": 3
+    },
+    {
+      "actual_status": 0,
+      "expected": "accept",
+      "matches_handoff": true,
+      "origin": "native",
+      "right": 6
+    },
+    {
+      "actual_status": 0,
+      "expected": "accept",
+      "matches_handoff": true,
+      "origin": "native",
+      "right": 13
+    },
+    {
+      "actual_status": 1,
+      "expected": "refuse",
+      "matches_handoff": true,
+      "origin": "launcher",
+      "right": -2
+    },
+    {
+      "actual_status": 1,
+      "expected": "refuse",
+      "matches_handoff": true,
+      "origin": "launcher",
+      "right": -1
+    },
+    {
+      "actual_status": 1,
+      "expected": "refuse",
+      "matches_handoff": true,
+      "origin": "launcher",
+      "right": 2
+    },
+    {
+      "actual_status": 1,
+      "expected": "refuse",
+      "matches_handoff": true,
+      "origin": "launcher",
+      "right": 4
+    },
+    {
+      "actual_status": 1,
+      "expected": "refuse",
+      "matches_handoff": true,
+      "origin": "launcher",
+      "right": 5
+    },
+    {
+      "actual_status": 1,
+      "expected": "refuse",
+      "matches_handoff": true,
+      "origin": "launcher",
+      "right": 7
+    },
+    {
+      "actual_status": 1,
+      "expected": "refuse",
+      "matches_handoff": true,
+      "origin": "launcher",
+      "right": 8
+    },
+    {
+      "actual_status": 1,
+      "expected": "refuse",
+      "matches_handoff": true,
+      "origin": "launcher",
+      "right": 9
+    },
+    {
+      "actual_status": 1,
+      "expected": "refuse",
+      "matches_handoff": true,
+      "origin": "launcher",
+      "right": 10
+    },
+    {
+      "actual_status": 1,
+      "expected": "refuse",
+      "matches_handoff": true,
+      "origin": "launcher",
+      "right": 11
+    },
+    {
+      "actual_status": 1,
+      "expected": "refuse",
+      "matches_handoff": true,
+      "origin": "launcher",
+      "right": 12
+    },
+    {
+      "actual_status": 1,
+      "expected": "refuse",
+      "matches_handoff": true,
+      "origin": "launcher",
+      "right": 14
+    }
+  ],
+  "failed_count": 0,
+  "full_A1_pass": false,
+  "native_path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-long-v2-20261030/results/COMPLETE.json",
+  "native_sha256": "63bd9c68b28d092f85ea4f02bcfe73d3e48610b99279d600741eafe3289674bb",
+  "partial": false,
+  "realtime": [
+    {
+      "actual_wall_s": 28805.347124542,
+      "continuous_silence_span_pass": true,
+      "latency_s": null,
+      "max_feed_lag_s": null,
+      "name": "soak28800",
+      "pass_within_1s": null
+    }
+  ],
+  "scope": "correctness A1 subtest only; F32 cache parity is separate; missing/failed legs are not pass",
+  "unknown_count": 0
+}

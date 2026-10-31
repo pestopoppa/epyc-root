@@ -1,0 +1,13 @@
+{
+  "base_origin_main": "7d6221d0db89760c495e22f539c0ca5350702906",
+  "owner_patch_sha256": "11b724491b5fc246e8b8b18f35ceb2d611d0e20133830401739f13aa8ce3bfd6",
+  "paths": [
+    "handoffs/active/conversation-stack.md",
+    "handoffs/active/yarn-context-extension-research.md",
+    "handoffs/active/rocm-verify-profile-backend.md",
+    "handoffs/active/vidya-belief-substrate-program.md",
+    "progress/2026-10/2026-10-31-codex3-results-filing-1633.md"
+  ],
+  "handoff_box_flips": 0,
+  "index_row_edits": 0
+}

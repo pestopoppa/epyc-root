@@ -1,0 +1,15 @@
+{
+  "captured_at": "2026-10-31T16:36:43.318521+00:00",
+  "source_repo": "/workspace",
+  "base_origin_main": "7d6221d0db89760c495e22f539c0ca5350702906",
+  "base_commit_exists": true,
+  "base_metadata": [
+    "7d6221d0db89760c495e22f539c0ca5350702906",
+    "2026-10-31T16:32:46Z",
+    "Add LOOP-25 disk forecast proposal proof"
+  ],
+  "source_reads_only": true,
+  "repository_changes_by_preparer": false,
+  "published_evidence_commit": null,
+  "publication_owner": "MAIN checkpoint; receipt must reference subsequently verified pushed SHA"
+}
