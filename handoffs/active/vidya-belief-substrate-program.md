@@ -1142,6 +1142,8 @@ between plan and apply, so this wave takes the next free block, SC65–SC68.*
     manufacture a scientific policy, combine measurement grades into a new ladder, or reconstruct
     a missing decided proposition on read. Source quality and permitted scientific use stay separate.
 
+    - 2026-11-01 scope extension for existing AutoKernel native comparison evidence: include Research 2f047a7b1a1a47f30d97e27ddd4c4153d11f911f stale-surface rebaseline intent, completed comparison and explicit failure/aborted records. Preserve original surface/harness/COR/tip and journal-snapshot joins plus source/model/image/recipe/request/window bindings from the existing native harness before any claim-bearing use. The code controls do not supply physical measurements. Strict projection and planning-context verification remain open under this existing task; reuse the existing AutoKernel measurement carrier and claim_tuple.grade(), with no retrofit, new grading rule or live-wiring claim. [belief: cc]
+
 ## SC76–SC81 — research-intake wave 2026-09-15 (noninf-20260914)
 
 - [x] **SC76 (S3-VID-02) — claim_anchors are re-verified, not self-consistent.** The only hasher runs at
@@ -1490,6 +1492,8 @@ are left to that still-running agent.
       observation.
   - Remaining trigger: an AutoPilot restart on orchestrator main (already due for AP-53/AP-55/W3), then the
     first closed window.
+
+    - 2026-11-01 scope extension for the existing AutoPilot journal source: before the first claim-bearing post-hook trial, preserve the new original `seq.rate_era_witness` and `seq.quality_era_witness` metadata from APP b336f50b7efb77644a492c707d4ffc503d69d744 / 59934bfa18913d5379984d9d61fb23129b42ea97 with the actual producer/source and raw-input bindings. The native gate readers are source-tested; informational carry through the existing autopilot-journal support frame and the planning-context canary still need verification. Missing/legacy witnesses remain unknown; never infer them from timestamps, change the quality ClaimTuple/shared grade, reconstruct historical rows or create a new ladder. [belief: cc]
 
 ## VB-KBRAG-QLEN — KB-RAG live query-length telemetry (filed 2026-09-16, sub-tooling)
 

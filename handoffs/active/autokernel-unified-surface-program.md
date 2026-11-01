@@ -1417,7 +1417,7 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
 - [ ] **Investigate the source of between-launch variance on the champion** (page-cache/NUMA placement, THP
       state, HIP graph capture, allocator) — ~12% spread on an identical config, pristine control stable (R23-57)
 - [ ] Per-surface fire decision; dashboard accumulator card per surface (product-of-solos labelled ESTIMATE)
-- [ ] **Re-baseline on cor advance**: `stale_baseline` set on every non-promoting surface at PROMOTE, cleared only by
+- [x] ✅ 2026-11-01 — Research `2f047a7b1a1a47f30d97e27ddd4c4153d11f911f`; [354-test committed-source suite](https://github.com/pestopoppa/epyc-inference-research/blob/f7061c0cecfc279cf1a1436227ef00285fd2c306/artifacts/engineering/aku-stale-baseline-20261101/README.md). [belief: cc] **Re-baseline on cor advance**: `stale_baseline` set on every non-promoting surface at PROMOTE, cleared only by
       a tip-vs-new-cor measurement on that surface's own harness; test that a quote while flagged is refused
 - [ ] **S3-AKU-07 — promotion evidence from held-out launches.** The promotion record's compounded gain, and
       any headline, is computed ONLY from fresh launches disjoint from every A/B pair that decided a keep,
@@ -1429,6 +1429,8 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
       serving surface or any re-baselined surface, and report the count on the promotion record.
       intake-1378#record. Consumed by INF-75 AKX-P3b.
 - [ ] First CPU serving gate produces an `epyc.autokernel.serving_ab.v1` record
+
+  - 2026-11-01 codex3 acceptance: Staleness is derived from the existing shared-COR authority and checked by already-loaded readers, status/quotes and decision entry points. The explicit own-surface rebaseline runs the existing native CPU/GPU harness after resource admission, binds intent before measurement, retains native failure/aborted raw records, then checks COR, tip and the original surface-journal snapshot under the existing authority lock before saving a current measurement. Only a complete typed native comparison clears the stale state. Late initialization and seed cannot erase existing state or bypass recovery; incompatible recovery flags refuse. The final frozen eight-file suite passed 354 with original source hashes and drained processes. No actual COR promotion, model execution, deployment, threshold/grade change or planning-canary claim. [belief: cc]
 
 ### P3 — RUNTIME_CONFIG arm (U3)  · exit: a config keep committed to a codified recipe and re-measurable from a fresh checkout
 - [ ] Hypothesis kind enum; author path that edits a recipe file, no build
