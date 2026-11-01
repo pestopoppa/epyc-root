@@ -639,7 +639,7 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
           purges, KVU-16b), so concurrent decode is the production-relevant case. Filed as KVU-19b.
         - KVU-19a's done-when holds (tests pass, neighbour tax reduced for single-sequence decode/verify, fold record
           handed to workspace-89, whose P3 v2 on this build is queued), so KVU-19a is ticked.
-    - [ ] **KVU-19a-2 — report or investigate the latent D=512/576 tile-kernel nondeterminism upstream.** (filed
+    - [ ] **KVU-19a-2 — report or investigate the latent D=512/576 tile-kernel nondeterminism upstream.** [too-big: experimental kernel repro and hardware validation belong to handoff owner] (filed
       2026-10-03, workspace-ec, from the KVU-19a build) A no-op branch inside the KV loop of the D=512/576 GQA tile
       FA kernel made its output run-to-run nondeterministic on gfx90a (~1e-4 nmse), even with the skip disabled.
       That is pre-existing upstream code, codegen-sensitive, and it affects Gemma-4 D=512 layers on HIP. KVU-19a
