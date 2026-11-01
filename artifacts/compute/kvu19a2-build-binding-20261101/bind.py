@@ -9,7 +9,9 @@ from pathlib import Path
 
 
 def file_hash(path):
-    flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC
+    # A non-regular entry can otherwise block at open (notably a FIFO).
+    # fstat after opening remains authoritative even if the path changes.
+    flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK
     fd = os.open(path, flags)
     try:
         before = os.fstat(fd)
@@ -33,7 +35,10 @@ def source_manifest(root):
     if root.is_symlink() or not root.is_dir():
         raise ValueError('source root must be a real directory')
     result = {}
-    for directory, dirs, files in os.walk(root, followlinks=False):
+    def fail_walk(error):
+        raise error
+
+    for directory, dirs, files in os.walk(root, followlinks=False, onerror=fail_walk):
         base = Path(directory)
         for name in dirs + files:
             p = base / name

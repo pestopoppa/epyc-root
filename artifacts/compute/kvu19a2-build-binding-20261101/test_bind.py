@@ -1,7 +1,9 @@
 import importlib.util
+import os
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 p = Path(__file__).with_name('bind.py')
 spec = importlib.util.spec_from_file_location('bind', p)
@@ -44,6 +46,30 @@ class BindingTest(unittest.TestCase):
             before = bind.source_manifest(root)
             item.chmod(0o755)
             self.assertNotEqual(before, bind.source_manifest(root))
+
+    def test_unreadable_subdirectory_refuses_manifest(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            hidden = root / 'hidden'
+            hidden.mkdir()
+            (hidden / 'unit.c').write_text('int x;')
+            real_scandir = os.scandir
+
+            def refuse_hidden(path):
+                if Path(path) == hidden:
+                    raise PermissionError('simulated unreadable directory')
+                return real_scandir(path)
+
+            with patch.object(bind.os, 'scandir', side_effect=refuse_hidden):
+                with self.assertRaises(PermissionError):
+                    bind.source_manifest(root)
+
+    def test_fifo_refused_without_a_writer(self):
+        with tempfile.TemporaryDirectory() as d:
+            fifo = Path(d) / 'source.fifo'
+            os.mkfifo(fifo)
+            with self.assertRaisesRegex(ValueError, 'not a regular file'):
+                bind.source_manifest(Path(d))
 
 
 if __name__ == '__main__':
