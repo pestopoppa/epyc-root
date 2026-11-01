@@ -136,8 +136,10 @@ def _production_kernel_summary(attestation_path: Path,
             "path": str(production_repo),
             "branch": observed_branch,
             "head": observed_head,
-            "matches_attestation": (observed_branch == expected_branch
-                                    and observed_head == expected_head),
+            "matches_attestation": (
+                observed_branch == expected_branch and observed_head == expected_head
+                if observed_branch and observed_head and expected_branch and expected_head
+                else None),
             "error": checkout_error,
             **working_tree,
         },

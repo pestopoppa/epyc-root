@@ -11,7 +11,7 @@ from unittest import mock
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from dashboard import panels, server
+from dashboard import panels, server, kernel_contract as legacy
 
 
 def _iso(dt: datetime) -> str:
@@ -216,29 +216,29 @@ class KernelFreshnessTests(unittest.TestCase):
         # export-recency classifier would read fresh; the fix must read stale.
         data = {"generated_at": _iso(_NOW),
                 "runs": [{"ts": _iso(_NOW - timedelta(days=30))}]}
-        fr = server._kernel_contract_freshness(data)
+        fr = legacy._kernel_contract_freshness(data)
         self.assertEqual(fr["staleness_class"], "stale")
         self.assertEqual(fr["source"], "runs[].ts")
 
     def test_fresh_run_ts_is_fresh_even_if_generated_at_old(self):
         data = {"generated_at": _iso(_NOW - timedelta(days=30)),
                 "runs": [{"ts": _iso(_NOW - timedelta(hours=1))}]}
-        self.assertEqual(server._kernel_contract_freshness(data)["staleness_class"], "fresh")
+        self.assertEqual(legacy._kernel_contract_freshness(data)["staleness_class"], "fresh")
 
     def test_max_of_multiple_run_ts(self):
         data = {"runs": [{"ts": _iso(_NOW - timedelta(days=30))},
                          {"ts": _iso(_NOW - timedelta(days=1))}]}
-        fr = server._kernel_contract_freshness(data)
+        fr = legacy._kernel_contract_freshness(data)
         self.assertEqual(fr["staleness_class"], "fresh")  # 1d < 3d warn
 
     def test_falls_back_to_generated_at_without_runs(self):
         data = {"generated_at": _iso(_NOW - timedelta(days=30)), "runs": []}
-        fr = server._kernel_contract_freshness(data)
+        fr = legacy._kernel_contract_freshness(data)
         self.assertEqual(fr["staleness_class"], "stale")
         self.assertEqual(fr["source"], "generated_at")
 
     def test_missing_when_no_timestamps(self):
-        fr = server._kernel_contract_freshness({"runs": []})
+        fr = legacy._kernel_contract_freshness({"runs": []})
         self.assertEqual(fr["staleness_class"], "missing")
 
 
@@ -357,16 +357,12 @@ class HealthPayloadTests(unittest.TestCase):
             kn.write_text(json.dumps({"generated_at": _iso(_NOW),
                                       "runs": [{"ts": _iso(_NOW)}]}))
             orig_oc = server.AUTOPILOT_OUTCOME_JSON
-            orig_kn = server.KERNEL_DASHBOARD_JSON
+            orig_kn = legacy.KERNEL_DASHBOARD_JSON
             orig_tl = server.TIMELINE_PATH
-            orig_deployments = server.AUTOKERNEL_DEPLOYMENTS_ROOT
-            orig_supervisors = server.AUTOKERNEL_SUPERVISORS_ROOT
             try:
                 server.AUTOPILOT_OUTCOME_JSON = oc
-                server.KERNEL_DASHBOARD_JSON = kn
+                legacy.KERNEL_DASHBOARD_JSON = kn
                 server.TIMELINE_PATH = Path(d) / "missing_timeline.json"
-                server.AUTOKERNEL_DEPLOYMENTS_ROOT = Path(d) / "deployments"
-                server.AUTOKERNEL_SUPERVISORS_ROOT = Path(d) / "supervisors"
                 # This fixture exercises the outcome fold.  The unified-loop
                 # panel reads a separate, host-global store; letting that real
                 # snapshot into this temp-root test makes an unrelated stale
@@ -378,10 +374,8 @@ class HealthPayloadTests(unittest.TestCase):
                     return server.health_payload()
             finally:
                 server.AUTOPILOT_OUTCOME_JSON = orig_oc
-                server.KERNEL_DASHBOARD_JSON = orig_kn
+                legacy.KERNEL_DASHBOARD_JSON = orig_kn
                 server.TIMELINE_PATH = orig_tl
-                server.AUTOKERNEL_DEPLOYMENTS_ROOT = orig_deployments
-                server.AUTOKERNEL_SUPERVISORS_ROOT = orig_supervisors
 
     def test_an_undeclared_ten_day_outcome_silence_degrades_health(self):
         h = self._health_with({"generated_at": _iso(_NOW - timedelta(days=10)),

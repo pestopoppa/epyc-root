@@ -2167,5 +2167,25 @@ def main() -> None:
         httpd.server_close()
 
 
+
+# Declared reflection seams used by the panel registry and route audits.
+DASHBOARD_REGISTRY_SCHEMA = "epyc.dashboard.registry.v1"
+
+OPERATOR_GATE_BUNDLE_STATES = (
+    loop_status.OPGATE_RELEVANT, loop_status.OPGATE_SUPERSEDED,
+    loop_status.OPGATE_UNVERIFIABLE, "absent", "malformed")
+
+_TIMELINE_WARN_S = panels.source("timeline").warn_s
+
+_TIMELINE_STALE_S = panels.source("timeline").stale_s
+
+_OUTCOME_WARN_S = panels.source("outcome").warn_s
+
+_OUTCOME_STALE_S = panels.source("outcome").stale_s
+
+PROBE_ROUTES = {
+    "/health": transport_probe_payload,
+}
+
 if __name__ == "__main__":
     main()

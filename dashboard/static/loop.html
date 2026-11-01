@@ -343,14 +343,7 @@
 <script defer src="/nav.js"></script>
 
 <main>
-  <section>
-    <h2>Discovery funnel and lane observations</h2>
-    <div id="discovery-progression"><div class="empty">Waiting for the independent discovery projection.</div></div>
-  </section>
   <div id="banner"></div>
-  <div id="operator-attention" class="operator-attention unknown" role="status" aria-live="polite">
-    R24-8 alarm state UNKNOWN — awaiting a loop status report.
-  </div>
 
   <!-- The page opens with THE headline (operator note, 2026-08-31: no scope
        lecture above it — the /kernel-retirement pointer lives in one line in
@@ -376,6 +369,10 @@
       &middot; <a href="https://github.com/pestopoppa/epyc-root/blob/main/docs/design/inf70-close-out-20260908/CHAMPION-FINAL.md">validation and close-out</a>
     </p>
   </section>
+
+  <div id="operator-attention" class="operator-attention unknown" role="status" aria-live="polite">
+    R24-8 alarm state UNKNOWN — awaiting a loop status report.
+  </div>
 
   <div class="trajectory-support">
     <section id="sec-capabilities"><h2>Champion Capabilities
@@ -495,6 +492,10 @@
   <section id="sec-ident">
     <h2>Identity &amp; gate</h2>
     <div class="pad"><dl class="kv" id="ident"></dl></div>
+  </section>
+  <section>
+    <h2>Discovery funnel and lane observations</h2>
+    <div id="discovery-progression"><div class="empty">Waiting for the independent discovery projection.</div></div>
   </section>
 </main>
 

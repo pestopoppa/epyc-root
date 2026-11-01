@@ -78,7 +78,7 @@ REPO = Path(__file__).resolve().parents[1]
 PAGE = REPO / "dashboard/static/loop.html"
 HARNESS = Path(__file__).resolve().parent / "js" / "render_harness.js"
 
-REAL_BUNDLE = Path("/mnt/raid0/llm/autokernel/surface/operator_gate_bundle.json")
+REAL_BUNDLE = REPO / "tests/fixtures/autokernel_producers/operator_gate_bundle.json"
 
 sys.path.insert(0, str(REPO))
 from dashboard import loop_status, server
@@ -100,7 +100,7 @@ FIVE_STATES = {"relevant", "superseded", "unverifiable", "absent", "malformed"}
 
 def _real(path: Path) -> bytes:
     if not path.is_file():
-        pytest.skip(f"no emitted record at {path}; refusing to invent one")
+        raise AssertionError(f"missing recorded original producer bundle: {path}")
     return path.read_bytes()
 
 

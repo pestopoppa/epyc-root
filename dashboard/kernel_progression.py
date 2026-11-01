@@ -51,7 +51,11 @@ def _validate(body: object) -> dict:
                 or type(row.get("effect_fraction")) not in {int, float}
                 or not math.isfinite(row["effect_fraction"])
                 or type(row.get("champion")) is not bool
-                or type(row.get("promotable")) is not bool):
+                or type(row.get("promotable")) is not bool
+                or not isinstance(row.get("workload"), str)
+                or not isinstance(row.get("evidence"), list)
+                or any(not isinstance(item, dict) or not isinstance(item.get("path"), str)
+                       for item in row["evidence"])):
             raise ValueError("malformed candidate observation")
     if any(not isinstance(row, dict) or row.get("lane") not in {"CPU", "GPU"}
            for row in unexplored):

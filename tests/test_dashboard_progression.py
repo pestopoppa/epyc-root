@@ -144,6 +144,9 @@ def test_producer_text_is_escaped_in_every_card(tmp_path):
     lambda d: d['candidates'][0].update(effect_fraction=True),
     lambda d: d['candidates'][0].update(stage='invented'),
     lambda d: d['candidates'][0].update(metric_direction='lower_better'),
+    lambda d: d['candidates'][0].update(evidence='not a list'),
+    lambda d: d['candidates'][0].update(evidence=[None]),
+    lambda d: d['candidates'][0].update(workload={}),
     lambda d: d.update(candidates={}),
 ])
 def test_malformed_authority_and_data_are_refused(tmp_path, mutate):

@@ -223,7 +223,7 @@ def test_a_repointed_stable_link_is_loud(monkeypatch, tmp_path: Path) -> None:
     """The failure a digest check cannot see: right binary, wrong path to it."""
     bogus = dict(KI.PRODUCTION_STABLE_LINKS)
     bogus["stt"] = ("/mnt/raid0/llm/whisper.cpp/build/bin", "whisper-server")
-    monkeypatch.setattr(KI, "PRODUCTION_STABLE_LINK_ROOT", tmp_path)  # links absent
+    monkeypatch.setattr(KI, "PRODUCTION_STABLE_LINK_ROOT", tmp_path / "absent-links")  # links absent
     links = KI._stable_link_projection()
     assert all(l["present"] is False for l in links)
     assert all("absent or dangling" in (l["error"] or "") for l in links)
@@ -246,7 +246,7 @@ def test_every_binary_resolves_its_ggml_inside_its_own_tree() -> None:
 def test_foreign_tree_ggml_is_reported_as_foreign(tmp_path: Path) -> None:
     """Mutation: verify against the WRONG tree root and the same libs become foreign."""
     evidence = KI._linkage_evidence(
-        Path(KI.production_link_targets()["stt"][0]) / "whisper-server", tmp_path)
+        Path(KI.production_link_targets()["stt"][0]) / "whisper-server", tmp_path / "wrong-tree")
     assert evidence["ggml_libs"]
     assert evidence["verified"] is False
     assert evidence["foreign"], "libraries outside the expected tree must be listed"
@@ -294,6 +294,14 @@ def test_unattested_llama_ggml_generation_is_unverified() -> None:
     assert llama["ggml_generation"]["observed"] == "0.16.0"
     assert llama["ggml_generation"]["matches"] is None
     assert any("ggml generation unverified" in alarm for alarm in result["alarms"])
+
+
+def test_missing_expected_and_observed_identity_cannot_match(tmp_path):
+    incomplete = tmp_path / "incomplete-freeze.json"
+    incomplete.write_text("{}")
+    report = KI._production_kernel_summary(incomplete, tmp_path / "absent-tree")
+    assert report["checkout"]["matches_attestation"] is None
+    assert report["checkout"]["error"]
 
 
 @pytest.fixture(autouse=True)
@@ -346,7 +354,7 @@ def _frozen_set_fixture(tmp_path, monkeypatch):
     ratification.write_text(json.dumps(manifest))
     speech = json.loads((REPO / "artifacts/operator/ratify_speech_kernel_freeze_20260731.json").read_text())
     for key, slot in (("whisper_cpp", "stt"), ("qwentts_cpp", "tts")):
-        speech["kernels"][key].update(members[slot])
+        speech["kernels"][key].update({**members[slot], "commit": members[slot]["head"]})
     speech_path = tmp_path / "speech-freeze.json"
     speech_path.write_text(json.dumps(speech))
     monkeypatch.setattr(sys.modules[__name__], "SPEECH", speech_path)
