@@ -2788,7 +2788,7 @@ Residuals the repair did NOT close. All four were observed in the same window; n
   this lands, a Claude pane holding pending input still needs a human at the keyboard, which is the
   condition C51–C54 were opened to remove. Calibrate on an expendable Claude pane and pin it with a
   fixture case; this seat must not send keys to a live main.
-- [ ] **DP-3** (MED): **`bus_supervisor.sh`'s stale-source check is mitigated by a config constant, not
+- [x] **DP-3** (MED): ✅ 2026-11-01 — DECLINED/SUPERSEDED (hygiene, zero new code-quota credit); implementing ROOT `bc6dc77f79dea8eee61d07a6c637036b48f04e5c`; test: `scripts/coordination/tests/test_supervisor_stale_source.sh`. [belief: cc] **`bus_supervisor.sh`'s stale-source check is mitigated by a config constant, not
   fixed.** `STALE_SRC_SKEW_S=5` (`scripts/coordination/bus_supervisor.sh:362`) exists because
   `ps -p <pid> -o etimes=` reports WHOLE seconds, so a computed `started` can land up to a second
   before the real start and a source written in the same second as a legitimate restart reads as newer
@@ -2798,6 +2798,7 @@ Residuals the repair did NOT close. All four were observed in the same window; n
   The real fix removes the tolerance rather than tuning it — take the start time at sub-second
   resolution (`/proc/<pid>/stat` field 22 against `/proc/uptime`, monotonic and already trusted
   elsewhere on this plane) and compare exactly. File owned by a parallel session; not edited here.
+  - Superseded by H-4: the implementing commit removed the timestamp/skew predicate and compares the daemon's startup-captured committed coordination tree with current HEAD. Its commit message documents operator authorization; no independent operator transcript was located in this review. Uncommitted edits/touches are intentionally ignored, so the original timestamp semantics above are not claimed implemented. The native stale-source test passed 13/13 on 2026-11-01, including absent/recycled PID unknown, committed-tree mismatch and the guard against reintroducing mtime knobs. The original parallel-session ownership sentence predates this replacement and is historical. [belief: cc]
 - [ ] **DP-4** (HIGH): **shared child clones are reachable from inside every lane worktree, so worktree
   isolation does not prevent cross-agent index contamination.** `repos/<name>` is a symlink OUT of any
   lane worktree to the single shared clone at `/mnt/raid0/llm/<name>`, so a main sitting in its own
