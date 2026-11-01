@@ -1,0 +1,49 @@
+{
+  "implements_sha": "07cbe0026e9f0bedef8dc9bc25d04df740e86454",
+  "tested_base": "11ce96ea577ea134525a9b5aec7addf18fac3538",
+  "fresh_parent": "11ce96ea577ea134525a9b5aec7addf18fac3538",
+  "implementation": {
+    "commit": "07cbe0026e9f0bedef8dc9bc25d04df740e86454",
+    "parent": "11ce96ea577ea134525a9b5aec7addf18fac3538",
+    "tree": "19e825950ec1a0c784b002d681a6d6b15be91f9f",
+    "native_pii_receipt_sha256": "e252a4176f9d97dcb6bade26f6b9bb1bd947b1d7c6bb87c73be2276905816904",
+    "native_pii_record_seal": "dbb3dba1d61918a0b9e0d8a329716db06eadf077e6d127edf18b601a42604cb7",
+    "native_pii_counts": {
+      "blocked": 0,
+      "excluded": 0,
+      "scanned": 3,
+      "selected": 3
+    },
+    "native_pii_checks": {
+      "frozen_index_unchanged": true,
+      "head_unchanged": true,
+      "live_index_unchanged": true,
+      "logs_complete": true,
+      "policy_unchanged": true,
+      "proofs_valid": true
+    },
+    "native_pii_value": true,
+    "supported_index": true,
+    "hook_log_sha256": "7e382457ed3ce5e95bf61ec59b7b41ed08de2045f9569e0e9fba8a885a8cace1"
+  },
+  "source_sha256": {
+    "scripts/vidya/adapters/typed_decisions_measurement.py": "2a18fbb5fcee0595e713d15aa6a9cd7434aaed345d6fee1a8201f7769e508aaa",
+    "scripts/vidya/td18_backend_pin_canary.py": "e03321142736e2b8217e2b86c0a19ed1345b17c7aac32635cc9e48ed262abd4d",
+    "tests/vidya/test_td18_backend_pin.py": "32aab97a3f828856b677176dc3f7bc30c21dfcf4aa779ceff8275e5b0dd2dafd"
+  },
+  "controls": {
+    "passed": 53,
+    "junit_sha256": "f942ec379bb479357f4e70581693ce6cc946bc4719fd29aeb624c51b737eebea",
+    "log_sha256": "ee8e988b8777c7682498959d99ebf70a2645e1d1142ab4fa403186b76ce70587"
+  },
+  "canary": {
+    "synthetic": true,
+    "result_sha256": "2e69d4f2a9679ad4010ac48827a9782beca8ba37d3921cfb2ae3c59e0c6123ce",
+    "receipt_sha256": "5d24240d327f38a7ec9926cb087dee6b87b506d7b1c2bac373b83b310c383e1c",
+    "log_sha256": "2117bca62dc84deeea7eebefcc42f77321b8d4a6132d0807e3da64a3706d438a"
+  },
+  "scope": "synthetic APP producer/registry/planning controls only; no model inference, quality, SystemOne calibration, live-device or new grading claim",
+  "custody_limit": "full pin is in original receipt and projected tuple; existing source frame stores model/build, argv flags, temperature digest, transport and receipt locator/digest; planning does not enforce config equality",
+  "synthetic_receipt_custody": "Original synthetic receipt remains at canary-r6/native-receipt.json in scratch; content hash recorded above. It is reproducible via the committed canary. Raw fixture excluded from Git after normal PII hook rejected two filesystem timestamp numbers; no hook bypass.",
+  "proof_hook_refusal_log_sha256": "6372d4c84f0a9ddcee50d8076bd2d444578f7339cee79b1dd5dcdf54382a944f"
+}

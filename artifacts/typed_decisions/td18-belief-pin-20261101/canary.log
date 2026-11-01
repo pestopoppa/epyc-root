@@ -1,0 +1,30 @@
+{
+  "synthetic": true,
+  "app_commit": "a68318e39581e7f4a0730da264657eab726b4d4e",
+  "receipt_sha256": "5d24240d327f38a7ec9926cb087dee6b87b506d7b1c2bac373b83b310c383e1c",
+  "projected": 2,
+  "matched_claims": 2,
+  "unrelated_claims": 0,
+  "same_name_wrong_digest_claims": 0,
+  "server_stopped_before_projection": true,
+  "pin_storage": "ClaimTuple.extra and producer receipt; source frame carries model/build, requested flags, temperature digest, transport and receipt locator/digest",
+  "grading": "shared ClaimTuple.grade",
+  "report": {
+    "source": "typed-decisions-measurement",
+    "adapter": "adapters/typed_decisions_measurement.py",
+    "adapter_id": "vidya.adapters.typed_decisions_measurement/v1",
+    "paths": [
+      "/mnt/raid0/llm/tmp/codex3-td18-belief-20261101/canary-r6/native-receipt.json"
+    ],
+    "units_matched": 1,
+    "units_projected": 1,
+    "declined": [],
+    "refused": [],
+    "missing": [],
+    "rows_projected": 2,
+    "frames_emitted": 6,
+    "dry_run": false
+  }
+}
+
+{"schema": "bounded-r11-native-profile-supervisor/v1", "elapsed_s": 0.6103038222063333, "sampled_peak_tree_rss_bytes": 115146752, "samples": 7, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 561524, "leader_birth": 162165963, "child_rc": 0, "children_drained": true, "failure": null}

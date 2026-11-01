@@ -1,0 +1,5 @@
+checked 1 test file(s); 0 blocking, 0 advisory
+[main 07cbe00] Carry GGUF backend custody into typed calibration beliefs
+ 3 files changed, 516 insertions(+), 2 deletions(-)
+ create mode 100644 scripts/vidya/td18_backend_pin_canary.py
+ create mode 100644 tests/vidya/test_td18_backend_pin.py

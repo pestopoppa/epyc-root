@@ -1,0 +1,9 @@
+{
+  "reason": "resource supervisor refused process-parent change during sampling",
+  "supervisor_drained_children": true,
+  "supervisor_child_rc": -15,
+  "implementation_commit": "07cbe0026e9f0bedef8dc9bc25d04df740e86454",
+  "proof_commit_before_interruption": false,
+  "push_before_interruption": false,
+  "canonical_lease_released_after_interruption": true
+}

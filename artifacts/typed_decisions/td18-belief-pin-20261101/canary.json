@@ -1,0 +1,28 @@
+{
+  "synthetic": true,
+  "app_commit": "a68318e39581e7f4a0730da264657eab726b4d4e",
+  "receipt_sha256": "5d24240d327f38a7ec9926cb087dee6b87b506d7b1c2bac373b83b310c383e1c",
+  "projected": 2,
+  "matched_claims": 2,
+  "unrelated_claims": 0,
+  "same_name_wrong_digest_claims": 0,
+  "server_stopped_before_projection": true,
+  "pin_storage": "ClaimTuple.extra and producer receipt; source frame carries model/build, requested flags, temperature digest, transport and receipt locator/digest",
+  "grading": "shared ClaimTuple.grade",
+  "report": {
+    "source": "typed-decisions-measurement",
+    "adapter": "adapters/typed_decisions_measurement.py",
+    "adapter_id": "vidya.adapters.typed_decisions_measurement/v1",
+    "paths": [
+      "/mnt/raid0/llm/tmp/codex3-td18-belief-20261101/canary-r6/native-receipt.json"
+    ],
+    "units_matched": 1,
+    "units_projected": 1,
+    "declined": [],
+    "refused": [],
+    "missing": [],
+    "rows_projected": 2,
+    "frames_emitted": 6,
+    "dry_run": false
+  }
+}
