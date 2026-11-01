@@ -1,0 +1,21 @@
+{
+ "schema": "kvu16i.c5.prospective-plan.v1",
+ "id": "handoff-kvu-16i-c5-replay-20261101",
+ "intent": "candidate diagnostic only; no production registry update",
+ "candidate_source": "c72ec82f5417bb2937310326120f149b665e8400",
+ "candidate_binary_sha256": "802a3e0c7bcfcb23c661dd879ec6b12d76048a4525ac8a2aa3b336f561bfa6f4",
+ "candidate_hip_sha256": "a09bf23e5c60932e3328e9449a2f972f0e5d63e86e275efddfd4663350ff4391",
+ "candidate_build_receipt_sha256": "f05bf39c0ed6f7eaa7efbff6f6125370e21665d1abcf4fd69ff8f284a869397e",
+ "full_model_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+ "draft_model_sha256": "7f1c9a31a6ed40044c69f6508b50fd63b87abd8e1fb7fe4290303df549153751",
+ "chat_template_sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551",
+ "launch_shape": "np4 context393216 ub2048 flash-attn unified-kv q8 K and V; draft-dflash nmax7; GPU ROCm0; cache-ram65536",
+ "warmup": "two newly predeclared 100000/10000 character C2+C4 bodies, not historical warmup",
+ "t7a": "48 exact historically reconstructed request body hashes in original order; controlled scratch attribution",
+ "event_model": "native no-draft predicted_n>=3 arms H1; first following native prompt_n>128 counts a modeled event, not direct graph pin observation",
+ "decision": ">=5 H1 modeled events and complete native evidence: phase growth <=0.3 GiB HOLDS, >0.3 GiB FAILS; otherwise UNKNOWN; report separately sampled whole-run peak minus sampled load peak",
+ "exposure": "exclusive durable target marker before first T7A request; no redraw on interruption",
+ "qualification": "separate short native DFlash control, first rowflow result unit only after sampler and server cleanup",
+ "belief": "native receipt written prospectively at run boundary; adapter projection and planner canary remain open; no new grading rule",
+ "device_binding": "fail-closed AMD MI210 PCI 0000:43:00.0 vendor 1002 device 740f unique c6cb1cf088bd97ec; discover DRM card and KFD GPU id, require KFD render node on same PCI, reject non-target GPU residency and revalidate every sample"
+}

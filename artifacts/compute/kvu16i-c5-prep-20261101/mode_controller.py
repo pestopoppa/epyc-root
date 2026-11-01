@@ -9,8 +9,8 @@ import hashlib
 import json
 import time
 
-CONTROL = {'messages':[{'role':'user','content':'Reply with the single word ready.'}],
-           'max_tokens':8,'temperature':0.0,'cache_prompt':False,
+CONTROL = {'messages':[{'role':'user','content':'Count from 1 to 20, separated by commas.'}],
+           'max_tokens':32,'temperature':0.0,'cache_prompt':False,'ignore_eos':True,
            'chat_template_kwargs':{'enable_thinking':False}}
 
 
@@ -33,6 +33,10 @@ def execute(raw, port, stop, abort, deadline, event_path, *, transport, run_full
             raise RuntimeError('qualification control failed')
         if type(row.get('predicted_n')) is not int or row['predicted_n'] <= 0:
             raise RuntimeError('qualification control did not report positive native predicted tokens')
+        if type(row.get('draft_n')) is not int or row['draft_n'] <= 0:
+            raise RuntimeError('qualification control did not report positive native draft count')
+        if type(row.get('draft_n_accepted')) is not int or not 0 <= row['draft_n_accepted'] <= row['draft_n']:
+            raise RuntimeError('qualification control accepted count missing or invalid')
         # Do not publish the rowflow unit here: keeper stops on first unit.
         # The owning runtime writes it only after sampler and server drain.
         return {'mode':selected,'control':row}

@@ -1,0 +1,13 @@
+a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348  /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
+7f1c9a31a6ed40044c69f6508b50fd63b87abd8e1fb7fe4290303df549153751  /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf
+1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551  /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja
+802a3e0c7bcfcb23c661dd879ec6b12d76048a4525ac8a2aa3b336f561bfa6f4  /mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildhip/bin/llama-server
+a09bf23e5c60932e3328e9449a2f972f0e5d63e86e275efddfd4663350ff4391  /mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildhip/bin/libggml-hip.so.0.16.0
+aa5e43f2d2374155c911da16cefa50dd52ebb47b1692294b0995969bab7ff754  /mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/jobs/hip-q0-v2/ELF.sha256
+f05bf39c0ed6f7eaa7efbff6f6125370e21665d1abcf4fd69ff8f284a869397e  /mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/jobs/hip-q0-v2/BUILD_COMPLETE
+ea154096eb110850ab5be5e4f574e995e5dbf17540dcbb9461b8cc38c0855783  /mnt/raid0/llm/tmp/inf70/agents/e3-alpha/prompts.json
+a0d173a619e4953a3aacd61fe1cf741fa3816a10ccff9aaad7b30d50f81afefa  /workspace/artifacts/kvu16h-vram-20261004/results/fuc-20261004T110509Z/armC_fix/requests.jsonl
+581599a025264f1ef162b0c1e01136142be4f57d0d0c6500df301e036dec5845  /mnt/raid0/llm/tmp/ds41-c95/contexts/C2/prompt.inline.txt
+8ee1975dfd09493161fccf3f9b9d64c8c6f43c0095f3b8d2f541c0bc09e6a4b8  /mnt/raid0/llm/tmp/ds41-c95/contexts/C4/prompt.inline.txt
+57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33  /mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh
+257a64709a409a6cdab48d9b3d1a605b7165f3be5afbf1954e9efd51cf539bbb  /mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh

@@ -201,7 +201,7 @@
     },
     "autokernel-champion-aggregate.md": {
       "blocked": 1,
-      "closed": 78,
+      "closed": 79,
       "guarded": 0,
       "last_advanced": "2026-11-01",
       "open": 36,
@@ -213,7 +213,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 115
+      "total": 116
     },
     "autokernel-concurrent-target-coordination.md": {
       "blocked": 0,
@@ -1433,7 +1433,7 @@
     },
     "kv-unified-stack-rollout.md": {
       "blocked": 0,
-      "closed": 78,
+      "closed": 80,
       "guarded": 0,
       "last_advanced": "2026-11-01",
       "open": 52,
@@ -1445,7 +1445,7 @@
       },
       "row_id": "RTG-57",
       "state": "active",
-      "total": 130
+      "total": 132
     },
     "laguna-s21-cpu-port.md": {
       "blocked": 0,
@@ -2889,7 +2889,7 @@
     },
     "yarn-context-extension-research.md": {
       "blocked": 0,
-      "closed": 54,
+      "closed": 55,
       "guarded": 0,
       "last_advanced": "2026-11-01",
       "open": 36,
@@ -2901,7 +2901,7 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 90
+      "total": 91
     }
   },
   "row_id_collisions": {},

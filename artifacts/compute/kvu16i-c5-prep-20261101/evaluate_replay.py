@@ -7,6 +7,7 @@ reads a model, or turns partial observations into measurement warrants.
 from __future__ import annotations
 import math
 from h1_event_model import classify
+import device_identity
 
 GIB = 1024 ** 3
 
@@ -37,6 +38,15 @@ def evaluate(expected, requests, samples, evidence):
         return unknown('fewer than five H1 modeled transitions')
     if not samples:
         return unknown('no residency samples')
+    binding=evidence.get('device_binding')
+    if (not isinstance(binding,dict) or binding.get('bdf') != device_identity.BDF
+        or binding.get('unique_id') != device_identity.UNIQUE or binding.get('vendor') != device_identity.VENDOR
+        or binding.get('device') != device_identity.DEVICE or type(binding.get('gpu_id')) is not int
+        or binding['gpu_id'] <= 0):
+        return unknown('validated MI210 device binding missing')
+    if any(s.get('gpu_id') != binding['gpu_id'] or s.get('gpu_unique_id') != binding['unique_id']
+           or s.get('gpu_bdf') != binding['bdf'] for s in samples):
+        return unknown('sample identity does not match captured MI210 binding')
     last = -math.inf
     for s in samples:
         t, v = s.get('t'), s.get('own_vram_b')
@@ -71,6 +81,11 @@ def evaluate(expected, requests, samples, evidence):
         return unknown('positive own HIP residency lost after initialization')
     if max(s['t'] for s in load) >= min(s['t'] for s in t7a):
         return unknown('load and T7A windows overlap or are reversed')
+    observed = [s for s in samples if load[first_positive]['t'] <= s['t'] <= after[0]['t']]
+    if any(b['t']-a['t'] > 2 for a, b in zip(observed, observed[1:])):
+        return unknown('GPU sampling gap exceeds two seconds during observed interval')
+    if any(s.get('hip_resident') is not True or s['own_vram_b'] <= 0 for s in observed):
+        return unknown('positive own HIP residency lost during observed interval')
     load_peak = max(s['own_vram_b'] for s in load)
     all_peak = max(s['own_vram_b'] for s in samples)
     phase_growth = (max(s['own_vram_b'] for s in t7a + [baseline, after[0]]) - baseline['own_vram_b']) / GIB
