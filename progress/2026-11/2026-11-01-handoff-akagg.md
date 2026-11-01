@@ -65,3 +65,5 @@
 
 - CH-32 D4 SSM-conv: source evidence confirms C5 GPU kernel lacks width 7 while upstream parent carries #30873; D4 uses SSM-conv but actual width and routing remain unverified. Retained reproducible evidence and V11-119 conditional gate; no runtime verdict.
 - Published CH-31 paired route diagnostic `akagg-ch31-rowexact-pair-c5-20261101`: C5 small-model `GGML_ROWEXACT_N=0` vs 4, separate processes, solo controls and four matched rotations. Static parser fixtures and checksum/syntax checks pass; no native run or causality/Q38FN claim. Keeper owns qualification.
+
+- V6R-4c production-presence subcheck: fast-loader commits `25132e042` and `90c12df42` are both absent from v10 ancestry and present in C5 ancestry. Neither load-thread flag appears in v10 common source or manifest-bound production CPU libcommon (SHA-256 `dfd31d4bb51818e5507b9eeaa7766452cab914f02bdbd1e0f18b4c3e9294de09`); image provenance records `ffc1bac82`. No claim about alternatives or runtime effects. Operator-parked loader fix and acceptance remain open. Keeper owns qualification of the two CPU rows; C3 lock repair would require a protected gate change.
