@@ -2248,6 +2248,9 @@ def cmd_drain(args: argparse.Namespace) -> int:
     # what a dead relay looks like from inside an agent — an all-clear that is really
     # a silence. This is the check that would have caught the 243h outage on its
     # first task boundary.
+    if not args.peek:
+        from scripts.coordination.checkpoint_reconcile import reconcile
+        reconcile(bus_root, args.agent, REPO_ROOT)
     _print_daemon_health(bus_root)
     # AUD-3: the three boundary readings. On EVERY drain, empty or not — the
     # empty drain is exactly when a boundary check is most needed and least run.

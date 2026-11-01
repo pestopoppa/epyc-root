@@ -1,0 +1,7 @@
+# WS-1 checkpoint reconciliation evidence
+
+`cmd_drain` checks worker checkpoint journals for the coordinator at ordinary (non-peek) boundaries. The source is the existing `worker_checkpoint.v1` journal in the checkout’s common Git directory, at `receipt_ready` or `published`. The notification identifies the worker, stable checkpoint, deterministic source message ID and relative journal location; it does not embed worker-authored task text. A coordinator outbox disposition handles the source ID even if no bus row exists. Inbox relay aliases resolve to that same source ID when present.
+
+The scanner bounds individual artifacts to 256 KiB, inbox/outbox inputs to 8 MiB, candidate traversal to 1,024 entries, and emitted notices to 4 KiB per drain. A journal older than seven days, from the future, malformed, changing, symlinked, foreign, or too large is unknown and generates no handled claim. Exceeding the output budget leaves later candidates unreceipted for another boundary. The coordinator-owned receipt records only a notice flushed to stderr; a crash before that durable receipt may repeat a notice. It cannot suppress relay delivery or change its order.
+
+`native-test.log` is the isolated actual-worker and drain fixture plus existing drain regressions. It uses a private roster, local temporary Git remote, no live bus delivery, CPUs 30–31, OMP 1, and the sampled-RSS/deadline supervisor. The fixture schema was read from this checkout’s Git HEAD because the host lane is sparse. No production model or inference ran.
