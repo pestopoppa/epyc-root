@@ -64,6 +64,18 @@ MAX_QUAL_FAILS = 3
 _STEM_SUFFIX = re.compile(r"(?:[-_](?:\d{8}(?:T\d{4,6}Z?)?|v\d+|r\d+|rearm|retry\d*|try\d+))+$", re.I)
 
 
+_RUN_FAIL = re.compile(r"qual-run-rc=|qualification failed rc|qual:row \S+ expected|QUAL-FAILURE", re.I)
+_NOT_A_RUN = re.compile(r"schema|receipt|nonce|wait|disk|breaker|^held\b", re.I)
+
+
+def is_qual_run_failure(event: str, detail: str) -> bool:
+    """Rule 2 counts only qualifier RUNS that failed on the real config. Pre-run re-check skips (legacy schema,
+    receipt absent, nonce, wait-conflict, WAIT-DISK, breaker, held) are not attempts."""
+    if event == "QUAL-FAILURE":
+        return not _NOT_A_RUN.search(detail)
+    return bool(_RUN_FAIL.search(detail)) and not _NOT_A_RUN.search(detail)
+
+
 def id_stem(rid: str) -> str:
     """Lineage by shared ID stem: strip trailing date / -vN / -rN / -rearm / -retryN suffixes."""
     s = _STEM_SUFFIX.sub("", rid or "")
@@ -100,10 +112,10 @@ def fold_keeper_log(path: str, tail: int = 6000) -> dict:
     lines = all_lines[-tail:]
     # rule 2 counts failures over the WHOLE log, not just the state window
     for l in all_lines[:-tail] if len(all_lines) > tail else []:
-        if "QUAL-FAILURE" in l or "qual-failed" in l:
-            mm = re.match(r"^(\S+) (?:QUAL-FAILURE|READY-SKIP) .*?(?:/|^|\s)([A-Za-z0-9_.-]+?)\.json:\s*(.*)$", l.strip())
-            if mm:
-                st["fails"].setdefault(mm.group(2), []).append((mm.group(1), mm.group(3)[:300]))
+        if "qual" in l and ("QUAL-FAILURE" in l or "READY-SKIP" in l):
+            mm = re.match(r"^(\S+) (QUAL-FAILURE|READY-SKIP) (?:qual-failed \S*?/)?([A-Za-z0-9_.-]+?)(?:\.json)?:\s*(.*)$", l.strip())
+            if mm and is_qual_run_failure(mm.group(2), mm.group(4)):
+                st["fails"].setdefault(mm.group(3), []).append((mm.group(1), mm.group(4)[:300]))
     rx = re.compile(r"^(\S+) (READY-SKIP|READY-QUAL|READY-ARM|READY-RESULT|READY-WAIT|READY-RELOCATE|"
                     r"READY-WAIT-DISK|READY-WAIT-QUAL-RESOURCE|IDLE-ALARM|QUAL-FAILURE) (.*)$")
     for l in lines:
@@ -124,11 +136,12 @@ def fold_keeper_log(path: str, tail: int = 6000) -> dict:
         detail = rest.split(":", 1)[1].strip() if ":" in rest else rest
         if ev == "READY-SKIP":
             st["skip"][rid] = detail.split(" (left in place", 1)[0][:200]
-            if "qual-failed" in rest:
+            if is_qual_run_failure(ev, detail.split(" (left in place", 1)[0]):
                 st["fails"].setdefault(rid, []).append((ts, detail[:300]))
         elif ev == "QUAL-FAILURE":
             st["skip"][rid] = ("qualification failed: " + detail)[:200]
-            st["fails"].setdefault(rid, []).append((ts, detail[:300]))
+            if is_qual_run_failure(ev, detail):
+                st["fails"].setdefault(rid, []).append((ts, detail[:300]))
         elif ev == "READY-QUAL":
             st["skip"].pop(rid, None)
             st["qual"].add(rid)

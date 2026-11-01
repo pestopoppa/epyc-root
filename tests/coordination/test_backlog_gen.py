@@ -193,3 +193,22 @@ def test_failures_counted_beyond_state_window(tmp_path):
                    + "2026-11-01T00:00:01Z IDLE-ALARM free: q1\n" * 10)
     st = bg.fold_keeper_log(str(log), tail=5)
     assert st["fails"]["old-v1"][0][1] == "early refusal"
+
+
+def test_schema_rechecks_are_not_qualification_runs(tmp_path):
+    """Negative case from the live parakeet false positive: every-2-min legacy-schema re-checks never ran the qualifier."""
+    lines = []
+    for i, rid in enumerate(["codex3-cs8-stt5-validation-parakeet-20261030", "codex3-cs8-stt5-validation-parakeet-r2-20261030",
+                             "codex3-cs8-stt5-validation-parakeet-r3-20261030"]):
+        for k in range(5):
+            lines.append(f"2026-11-01T11:{10+i}:{k:02d}Z READY-SKIP qual-failed /f/ready/{rid}.json: qual:manifest schema != epyc.ready.v2")
+    lines.append("2026-11-01T12:00:00Z READY-SKIP qual-failed /f/ready/x-r1.json: held")
+    lines.append("2026-11-01T12:00:01Z READY-SKIP qual-failed /f/ready/x-r1.json: qual:qualification nonce already issued for id")
+    log = tmp_path / "k.log"
+    log.write_text("\n".join(lines) + "\n")
+    for tail in (6000, 3):
+        assert bg.fold_keeper_log(str(log), tail=tail)["fails"] == {}
+    log.write_text("2026-11-01T12:00:00Z READY-SKIP qual-failed /f/ready/y-r1.json: qual-run-rc=2; see log\n"
+                   "2026-11-01T12:01:00Z READY-SKIP y-r2: hold=keeper qualification failed rc70: launcher replaced\n"
+                   "2026-11-01T12:02:00Z READY-SKIP qual-failed /f/ready/y-r3.json: qual:row y-r3: expected exactly one record\n")
+    assert sorted(bg.fold_keeper_log(str(log), tail=1)["fails"]) == ["y-r1", "y-r2", "y-r3"]
