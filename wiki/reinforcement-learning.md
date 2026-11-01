@@ -21,6 +21,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
 - **Visual continual learning via RFT** (intake-1098#record) RFT beats SFT but still forgets; measures per-rollout token-level KL drift, and equal-reward rollouts differ in drift. Reframed as a corroborator rather than an opposing tiebreaker; drift instrument is CPU-only and training-free.
 - **RFT mitigates forgetting in continual post-training** (intake-1099#01) 7-task sequence on Qwen2.5-VL-7B: GRPO AvgAcc 60.0% vs MTL upper bound 62.9% vs sequential SFT 54.0%; MMLU-Pro base 47.5 falls to 30.6 under SFT but GRPO holds 48.3. Corrected the framing of the contamination critique in a related entry.
 - **RL heals OOD forgetting in SFT** (intake-1100#01) Title overstated: recovery is partial (85.1% at 7B, 36.3% at 3B), never exceeds the pre-damage early SFT peak, and goes via a different representational route. Knowledge only for us.
+- **RiVER: RL without ground-truth solutions** (intake-1632#00) Ranks executable solvers on the same hidden instances without gold solutions: invalid maps to -1, the unique best to 1 and valid non-winners into [-0.5, 0.5] (intake-1632#00). Reports ALE rating 845 to 987 (Qwen) and 805 to 962 (GLM); the 8.9 and 9.4 gains are corrected to absolute rank-percentage points (intake-1632#01). Raw score matrices, code and total training budget are missing, limiting causal conclusions; relevant to rewarding kernels by ranking rather than gold.
 
 ## Summary
 
