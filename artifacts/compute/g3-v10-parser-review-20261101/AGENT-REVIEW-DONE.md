@@ -1,0 +1,7 @@
+# G3 parser review — 2026-11-01
+
+Compared parser fields, types, selector enum values and marker names against `trace.patch` (SHA-256 `b8d742099f8f79f00c0a6647408df82d4cebb560ce5d3fc623e4046e0e18b76f`). Parser now refuses a final unterminated trace marker, refuses kernel NONE (which takes the fatal abort path), explicitly lists verification epochs with no dispatch, and reports counts of unscoped and nonverify dispatches. Thirteen synthetic offline tests pass, including truncated final record, NONE, empty verify and reordered dispatch-index cases. New parser SHA-256 `a8e62f980bd2d10f0b3c4ca6c210f551b72fa4fb528c714f375af75a3cd35790`; test SHA-256 `2f10754a949e88df223bb961232eb6501ac155c83ab2d8e7e9e7d585918c246c`.
+
+Trace patch assigns the atomic dispatch index before the fprintf lock; concurrent dispatcher threads can print legitimate records out of index order. The parser deliberately refuses that log rather than reorder across begin/end boundaries, so a valid concurrent run can fail closed. Future instrumentation should serialize index assignment and logging together and prove event ordering/epoch containment under load; do not sort records to hide the issue. The patched parser still cannot establish correlation, actual load identity or GPU residency and always emits `STRUCTURAL_ONLY`.
+
+No inference, build, qualification, grant, publication or production edit occurred. v10 GitNexus impact remains UNKNOWN, and the trace candidate and live-correlation controls remain unvalidated.
