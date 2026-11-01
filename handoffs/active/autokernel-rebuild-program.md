@@ -937,6 +937,7 @@ on measurement, D3 approved and shipped.** Detail in each entry.
       scope busy is *over*-stated even while the excluded oracle/warmup/profile time makes the
       total *under*-stated. `held` uses `time.time()` and `busy` uses `time.monotonic()`: two
       clocks in one ratio.
+  - 2026-11-01 source preparation: Research `26d89b6ea20f21675d9cc4bc07a8db11ec42199e` instruments monotonic gate verdicts, publishes active pooled-tail time and retains claim-scoped ROCm cumulative GFX counter observations with native raw samples, phase markers, library digest/BDF and refusal reasons. Guarded synthetic tests exercise claim acquisition and release, oracle/benchmark warmup paths, reset/clock/identity/error cases and missing trace. A single read-only ROCm capability query established API availability only. Full-claim busy/idle remain UNKNOWN; the observed-window GFX activity-weighted estimate is not binary device busy or per-process attribution. Source carrier/reader and real planning canary are OPEN under `VB-AK-R18-GFX-OBSERVATION`; qualifying physical validation has not been run. R18-E stays OPEN.
 - [x] **R18-F — the loop code budget is freed, not bumped.** ✅ 2026-08-31 (research `33715a7e` →
       `f2c05dc1` → `95eeb0ae`). The guards now bound **code** and compute the prose share instead
       of remembering it wrong (`check_regrowth_guards.py`: `LOOP_CODE_BUDGET = 2100` enforced;
