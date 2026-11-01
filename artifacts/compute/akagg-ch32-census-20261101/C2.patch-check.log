@@ -1,0 +1,16 @@
+Applied patch to 'common/common.cpp' with conflicts.
+Applied patch to 'common/common.h' with conflicts.
+Applied patch to 'conversion/__init__.py' with conflicts.
+Falling back to direct application...
+Applied patch to 'gguf-py/gguf/constants.py' with conflicts.
+Applied patch to 'gguf-py/gguf/gguf_writer.py' with conflicts.
+Applied patch to 'src/llama-arch.cpp' with conflicts.
+Applied patch to 'src/llama-arch.h' with conflicts.
+Applied patch to 'src/llama-ext.h' with conflicts.
+Applied patch to 'src/llama-model.cpp' cleanly.
+Applied patch to 'src/llama-model.h' cleanly.
+Applied patch to 'tools/server/README.md' with conflicts.
+Applied patch to 'tools/server/server-common.cpp' with conflicts.
+Applied patch to 'tools/server/server-context.cpp' with conflicts.
+error: tools/server/server-decision.cpp: does not exist in index
+error: tools/server/server-decision.h: does not exist in index

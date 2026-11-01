@@ -1,0 +1,223 @@
+c8fd905a5e0e3133735c2f192d5bee6508073be1
+100644 7bc770ab4f8a3f90e7afb5409fd079ac1c882de8 1	common/arg.cpp
+100644 e6374fce83cb4e36d0041078708fdb050b96df1c 2	common/arg.cpp
+100644 3bc9574d8175b47b3d478e4893e2bf43ba54ec57 3	common/arg.cpp
+100644 8f13217ab442a34b85bcf5dd44300d88275f15fd 1	common/common.cpp
+100644 8ddd023777e67d9d77bf421609a816d8ebc7b2d3 2	common/common.cpp
+100644 82dd780fd8b3fc8a7389f61f05e6e26c444b47f2 3	common/common.cpp
+100644 bffc1767a7d1f370d0c7af27d0c4f5ba939e4577 1	common/common.h
+100644 15ac6b4e9b61cfd8d4d240e1ac8ac432f197345c 2	common/common.h
+100644 2792521836ae1578352c8a6c950556f25606eb18 3	common/common.h
+100644 9820461c9ee417525b1de79f78590012a0099ec7 2	conversion/laguna.py
+100644 a90f355ca9b14974bcf09bcbbdba1777eb675f7b 3	conversion/laguna.py
+100644 efa5420a698294675588d9fc3ca7eae5eddd770f 1	ggml/include/ggml-rpc.h
+100644 599ccb96b65115bb0c79dc3f42db0df42945d3da 2	ggml/include/ggml-rpc.h
+100644 16ca33947a2e1770c34ea9cdf24a5290562ce39a 3	ggml/include/ggml-rpc.h
+100644 92ba65222a6ca9ae088121b0dd65e697d64a15c9 1	ggml/include/ggml.h
+100644 3a2e483b9c94ddfb0ca5257b449daf3f0177b8c5 2	ggml/include/ggml.h
+100644 35f0c44ec42117a3a96b20ebe05cca3012a083e9 3	ggml/include/ggml.h
+100644 0b8d9fac6505e9a43fec2483c135361270c88445 1	ggml/src/ggml-cpu/ggml-cpu.c
+100644 e4a92df42303da6ad62be58133fa9e6e2f721c20 2	ggml/src/ggml-cpu/ggml-cpu.c
+100644 491316f7491252248d6f74a60440d3efa7aa6177 3	ggml/src/ggml-cpu/ggml-cpu.c
+100644 e956c25d3edafa70a6a1f7cc8385a87a8e95e3b5 1	ggml/src/ggml-cpu/ops.h
+100644 51d78e3678a8835a37b86204ded3f661da291a87 2	ggml/src/ggml-cpu/ops.h
+100644 4c1642a67603534a1a43f52ac61c9cd2cddb1d96 3	ggml/src/ggml-cpu/ops.h
+100644 3e07a9f7e04faa763d6850cd17faff3cbbc8fd33 1	ggml/src/ggml-cuda/fattn-tile.cuh
+100644 b6565f77d7cb782f4354a40f5fd2bfeab15c130f 2	ggml/src/ggml-cuda/fattn-tile.cuh
+100644 d1164b8526d3236f617631acc1bfe9a395eb5c77 3	ggml/src/ggml-cuda/fattn-tile.cuh
+100644 6850716fc0dc7be99a03c911e95380f5612919ab 1	ggml/src/ggml-cuda/fattn-wmma-f16.cu
+100644 501007ba251bee022ff220982165f246b415199b 2	ggml/src/ggml-cuda/fattn-wmma-f16.cu
+100644 00ffacf2992104e94af25e6b4091b5c55fc94dff 1	ggml/src/ggml-cuda/fattn.cu
+100644 c4ab16ce5c85af00b400fe7fbe025295ebef9ab5 2	ggml/src/ggml-cuda/fattn.cu
+100644 ab7a3b297c07c43dc2902de425b292167e1f8d11 3	ggml/src/ggml-cuda/fattn.cu
+100644 af7fe105b673e04b602c83116131ba378ff6a62d 1	ggml/src/ggml-cuda/quantize.cu
+100644 e2ca3991535cba26de9534ed282f58617cf36a22 2	ggml/src/ggml-cuda/quantize.cu
+100644 2bd9b6262390686b5dfa405a9f37c56681f31720 3	ggml/src/ggml-cuda/quantize.cu
+100644 086b6ab084001f8f4d8555aa1687ccb0aa8f6191 1	ggml/src/ggml.c
+100644 7f34a9c63611ab6565d27f4b666f2328e01643f0 2	ggml/src/ggml.c
+100644 a7d1fe7d94be4bee3df47f0d710fbfdb62087d1f 3	ggml/src/ggml.c
+100644 a311ac2023579376ed571a614dcac9d259692e56 1	include/llama.h
+100644 335d9dcd630bf88a7f3ffd11032f102d6e11e247 2	include/llama.h
+100644 3c6d22be8999226bcdf23dbff280337e23d8d01b 3	include/llama.h
+100644 b74d53af4a325633ae034518e6f8b29fea9a661c 1	src/llama-arch.h
+100644 d828e3fe47a0fa97b90b542219fe933d6e9c5ef6 2	src/llama-arch.h
+100644 1c9aebb0bbdc0c06409b9e33bb320fe087e5b6dc 3	src/llama-arch.h
+100644 3a469bc90bd90fbdf3d924afa696d4b61fcd1d00 1	src/llama-context.cpp
+100644 a9461f7123956db0706f77e51e7f1eed6315ea46 2	src/llama-context.cpp
+100644 9b399d6096b16a2af33f784c303dce6bb5d65fa0 3	src/llama-context.cpp
+100644 7cb6cc18dac37b8240298956cf7ece61c503cf30 1	src/llama-kv-cache-dsv4.cpp
+100644 3fa3c8d609cd43cac701e22a34e850166cb536fd 2	src/llama-kv-cache-dsv4.cpp
+100644 069da45f4ea34b66727b06449d35efc4b0c4443f 3	src/llama-kv-cache-dsv4.cpp
+100644 e70583e64152ec6c57feeaf5f6e23fe58796ac89 1	src/llama-kv-cache.cpp
+100644 626d6540fa3130018f471124b18faf07c834254e 2	src/llama-kv-cache.cpp
+100644 44cb1668dacf74d899a1658a9a51ba825a281510 3	src/llama-kv-cache.cpp
+100644 eaf3f35d2d8e86722d130be89430298b991babfc 1	src/llama-model.cpp
+100644 8beed8c7896815811a802979c4fa9840456c7187 2	src/llama-model.cpp
+100644 be0a0df55d625205835d28b60eb1f895e9de2d1e 3	src/llama-model.cpp
+100644 45b054cedf1d1e6accc7cf8aafcbae374614e64f 1	src/llama-model.h
+100644 e7d9d434256127950f1ce31dc687a930aade4d11 2	src/llama-model.h
+100644 36d0480e5eb706b50b8a88fe5de2cce72a859c2a 3	src/llama-model.h
+100644 b66759b277608f6f3d204994b2113242a774102a 1	src/llama-quant.cpp
+100644 720c90769fd74723f88f41749d0ce12ae155a98a 2	src/llama-quant.cpp
+100644 7c0bac07d09614ddc0d941599e8a5864af3c5ace 3	src/llama-quant.cpp
+100644 0de6048f2820f78fe8486ffff6ee930074517eeb 1	src/llama.cpp
+100644 6529a2aed74988d3a261506a80f004d69a4e76aa 2	src/llama.cpp
+100644 d22e4c81a9e3f5625f12f2c07dcd3034287e63e7 3	src/llama.cpp
+100644 579608b3e69633e8a8bb003edcc41d43d7f4747f 1	src/models/deepseek4.cpp
+100644 2a3d75db230085e440d5a8c351172deb3c1d97b4 2	src/models/deepseek4.cpp
+100644 2d41dace0b28f1d6fa3a6b31be99ef14da69bcfd 3	src/models/deepseek4.cpp
+100644 32fe6def6f3c0bd4d2b436a44ae07a5023a638fc 1	src/models/glm-dsa.cpp
+100644 cff17d258b3a9535b5a6a8a714b86dfd7536d99f 2	src/models/glm-dsa.cpp
+100644 df190e1f634b93ab97789bb6741fbd1b2035301b 3	src/models/glm-dsa.cpp
+100644 f5783ad2d55315cb83ccc97ffc5bdacb3cb25eab 2	src/models/laguna.cpp
+100644 fb55ec12f93458a794a4b89e43954e5d6f7f1253 3	src/models/laguna.cpp
+100644 beab9f6bc7df422c2e35f79d03ef223f02a40035 1	src/models/models.h
+100644 95cc291a2fd2f1f57b6e7e0db51b0a986c47db3f 2	src/models/models.h
+100644 92ebfafa1e29bd14f0a4d970ca34e946267a338a 3	src/models/models.h
+100644 855295c152faa78fa4acdec54013940c41627be9 1	tests/CMakeLists.txt
+100644 cc34baffcff23372afcaf669359e1e1395d65825 2	tests/CMakeLists.txt
+100644 7a93b19a0765b19ed82b5cc70e6b3733d3283334 3	tests/CMakeLists.txt
+100644 fae0e8eb93ddcd3fe56b7dc27cb17fb520c881bf 1	tests/test-backend-ops.cpp
+100644 40fbc5d7a4863f3a0bf000a553f698a07e96a749 2	tests/test-backend-ops.cpp
+100644 e7cd6d0cb66887e2688486bd7eaa23aac96f025e 3	tests/test-backend-ops.cpp
+100644 2cdf35739820690066cc4504eff3339889100c5c 1	tests/test-llama-archs.cpp
+100644 b78c1637aad85419d9313bbfd4285c8249b2dc2b 2	tests/test-llama-archs.cpp
+100644 d02e65c9ead01ef49b1a0a894484c859f765a486 3	tests/test-llama-archs.cpp
+100644 be19316db8a71b3f12f20bc641b4c861bc9e4eae 1	tests/test-recurrent-state-rollback.cpp
+100644 5d1f0140b623cb9a44476f8e15a0279e9e3a9887 2	tests/test-recurrent-state-rollback.cpp
+100644 8e2eace6a195a2904d923109035b722d97b6c3a8 3	tests/test-recurrent-state-rollback.cpp
+100644 f93ae914ce27231e00360f7fe39e5d39b81dfd51 1	tools/cli/README.md
+100644 d5856df573a5334816aa3aaf1add2fb5da22489f 2	tools/cli/README.md
+100644 972ea04dc7d711c4e780910be3fb4cdcd8634539 3	tools/cli/README.md
+100644 d90f81748662ccc148452892859a0259d0aa523e 1	tools/completion/README.md
+100644 3b5acf750f5e20e4ae261d81371c371d9f838711 2	tools/completion/README.md
+100644 bce71d68d94995db7b5213754e3e4154b09ebbf3 3	tools/completion/README.md
+100644 0756893881ff04ac7e45b61e1d8b12eccf299d45 1	tools/llama-bench/llama-bench.cpp
+100644 be09245a0e2c30ebbc1b57f033e302a3ff8414fc 2	tools/llama-bench/llama-bench.cpp
+100644 dc1c7caf4a1c3698cbe7af4b03965c5b71adfe52 3	tools/llama-bench/llama-bench.cpp
+100644 365a944659a95a243dcba9c72f2775ee7229455d 1	tools/server/README.md
+100644 099bd67d6fe2508acb1abaf780c6ce86dd710648 2	tools/server/README.md
+100644 25aacf9f516f98a819e09f340136615514f1f81a 3	tools/server/README.md
+100644 5d5c873ac4cceed3acab39ce01639a0bb5844c5e 1	tools/server/tests/utils.py
+100644 6c874c73465b14091d09b695d71d337a5ccc1b39 2	tools/server/tests/utils.py
+100644 ae56bc70a15aa90b5dfe2810c7cc93b9f810e9bc 3	tools/server/tests/utils.py
+
+Auto-merging common/arg.cpp
+CONFLICT (content): Merge conflict in common/arg.cpp
+Auto-merging common/chat-auto-parser.h
+Auto-merging common/chat.cpp
+Auto-merging common/chat.h
+Auto-merging common/common.cpp
+CONFLICT (content): Merge conflict in common/common.cpp
+Auto-merging common/common.h
+CONFLICT (content): Merge conflict in common/common.h
+Auto-merging common/download.cpp
+Auto-merging common/sampling.cpp
+Auto-merging common/speculative.cpp
+Auto-merging conversion/__init__.py
+Auto-merging conversion/base.py
+Auto-merging conversion/laguna.py
+CONFLICT (add/add): Merge conflict in conversion/laguna.py
+Auto-merging ggml/CMakeLists.txt
+Auto-merging ggml/include/ggml-cpu.h
+Auto-merging ggml/include/ggml-rpc.h
+CONFLICT (content): Merge conflict in ggml/include/ggml-rpc.h
+Auto-merging ggml/include/ggml.h
+CONFLICT (content): Merge conflict in ggml/include/ggml.h
+Auto-merging ggml/src/ggml-backend-meta.cpp
+Auto-merging ggml/src/ggml-cpu/CMakeLists.txt
+Auto-merging ggml/src/ggml-cpu/ggml-cpu.c
+CONFLICT (content): Merge conflict in ggml/src/ggml-cpu/ggml-cpu.c
+Auto-merging ggml/src/ggml-cpu/ggml-cpu.cpp
+Auto-merging ggml/src/ggml-cpu/llamafile/sgemm.cpp
+Auto-merging ggml/src/ggml-cpu/ops.cpp
+Auto-merging ggml/src/ggml-cpu/ops.h
+CONFLICT (content): Merge conflict in ggml/src/ggml-cpu/ops.h
+Auto-merging ggml/src/ggml-cuda/common.cuh
+Auto-merging ggml/src/ggml-cuda/fattn-tile.cuh
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/fattn-tile.cuh
+CONFLICT (modify/delete): ggml/src/ggml-cuda/fattn-wmma-f16.cu deleted in b77d646751 and modified in c72ec82f5.  Version c72ec82f5 of ggml/src/ggml-cuda/fattn-wmma-f16.cu left in tree.
+Auto-merging ggml/src/ggml-cuda/fattn.cu
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/fattn.cu
+Auto-merging ggml/src/ggml-cuda/ggml-cuda.cu
+Auto-merging ggml/src/ggml-cuda/quantize.cu
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/quantize.cu
+Auto-merging ggml/src/ggml-cuda/vendors/hip.h
+Auto-merging ggml/src/ggml-hip/CMakeLists.txt
+Auto-merging ggml/src/ggml-metal/ggml-metal-device.m
+Auto-merging ggml/src/ggml-vulkan/ggml-vulkan.cpp
+Auto-merging ggml/src/ggml-webgpu/ggml-webgpu.cpp
+Auto-merging ggml/src/ggml.c
+CONFLICT (content): Merge conflict in ggml/src/ggml.c
+Auto-merging gguf-py/gguf/constants.py
+Auto-merging gguf-py/gguf/gguf_writer.py
+Auto-merging gguf-py/gguf/tensor_mapping.py
+Auto-merging include/llama.h
+CONFLICT (content): Merge conflict in include/llama.h
+Auto-merging src/llama-arch.cpp
+Auto-merging src/llama-arch.h
+CONFLICT (content): Merge conflict in src/llama-arch.h
+Auto-merging src/llama-context.cpp
+CONFLICT (content): Merge conflict in src/llama-context.cpp
+Auto-merging src/llama-cparams.h
+Auto-merging src/llama-graph.cpp
+Auto-merging src/llama-graph.h
+Auto-merging src/llama-hparams.cpp
+Auto-merging src/llama-hparams.h
+Auto-merging src/llama-kv-cache-dsv4.cpp
+CONFLICT (content): Merge conflict in src/llama-kv-cache-dsv4.cpp
+Auto-merging src/llama-kv-cache.cpp
+CONFLICT (content): Merge conflict in src/llama-kv-cache.cpp
+Auto-merging src/llama-kv-cache.h
+Auto-merging src/llama-memory-recurrent.cpp
+Auto-merging src/llama-model-loader.cpp
+Auto-merging src/llama-model-loader.h
+Auto-merging src/llama-model-saver.cpp
+Auto-merging src/llama-model.cpp
+CONFLICT (content): Merge conflict in src/llama-model.cpp
+Auto-merging src/llama-model.h
+CONFLICT (content): Merge conflict in src/llama-model.h
+Auto-merging src/llama-quant.cpp
+CONFLICT (content): Merge conflict in src/llama-quant.cpp
+Auto-merging src/llama-vocab.cpp
+Auto-merging src/llama.cpp
+CONFLICT (content): Merge conflict in src/llama.cpp
+Auto-merging src/models/deepseek4.cpp
+CONFLICT (content): Merge conflict in src/models/deepseek4.cpp
+Auto-merging src/models/dflash.cpp
+Auto-merging src/models/glm-dsa.cpp
+CONFLICT (content): Merge conflict in src/models/glm-dsa.cpp
+Auto-merging src/models/laguna.cpp
+CONFLICT (add/add): Merge conflict in src/models/laguna.cpp
+Auto-merging src/models/models.h
+CONFLICT (content): Merge conflict in src/models/models.h
+Auto-merging tests/CMakeLists.txt
+CONFLICT (content): Merge conflict in tests/CMakeLists.txt
+Auto-merging tests/test-backend-ops.cpp
+CONFLICT (content): Merge conflict in tests/test-backend-ops.cpp
+Auto-merging tests/test-llama-archs.cpp
+CONFLICT (content): Merge conflict in tests/test-llama-archs.cpp
+Auto-merging tests/test-recurrent-state-rollback.cpp
+CONFLICT (content): Merge conflict in tests/test-recurrent-state-rollback.cpp
+Auto-merging tools/cli/README.md
+CONFLICT (content): Merge conflict in tools/cli/README.md
+Auto-merging tools/completion/README.md
+CONFLICT (content): Merge conflict in tools/completion/README.md
+Auto-merging tools/llama-bench/llama-bench.cpp
+CONFLICT (content): Merge conflict in tools/llama-bench/llama-bench.cpp
+Auto-merging tools/mtmd/CMakeLists.txt
+Auto-merging tools/mtmd/clip-impl.h
+Auto-merging tools/mtmd/clip-model.h
+Auto-merging tools/mtmd/clip.cpp
+Auto-merging tools/mtmd/models/models.h
+Auto-merging tools/mtmd/mtmd.cpp
+Auto-merging tools/server/README.md
+CONFLICT (content): Merge conflict in tools/server/README.md
+Auto-merging tools/server/server-common.cpp
+Auto-merging tools/server/server-common.h
+Auto-merging tools/server/server-context.cpp
+Auto-merging tools/server/server-schema.cpp
+Auto-merging tools/server/server-task.cpp
+Auto-merging tools/server/server.cpp
+Auto-merging tools/server/tests/utils.py
+CONFLICT (content): Merge conflict in tools/server/tests/utils.py

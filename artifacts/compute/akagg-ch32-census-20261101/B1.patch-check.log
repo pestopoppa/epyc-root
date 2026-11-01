@@ -1,0 +1,10 @@
+Applied patch to 'conversion/__init__.py' cleanly.
+Falling back to direct application...
+Applied patch to 'gguf-py/gguf/constants.py' cleanly.
+Applied patch to 'gguf-py/gguf/gguf_writer.py' cleanly.
+Applied patch to 'src/llama-arch.cpp' cleanly.
+Applied patch to 'src/llama-arch.h' with conflicts.
+Applied patch to 'src/llama-context.cpp' with conflicts.
+Applied patch to 'src/llama-model.cpp' cleanly.
+Applied patch to 'src/models/models.h' cleanly.
+Falling back to direct application...

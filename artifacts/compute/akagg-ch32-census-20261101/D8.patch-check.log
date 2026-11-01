@@ -1,0 +1,11 @@
+error: conversion/lfm3.py: does not exist in index
+Applied patch to 'tools/mtmd/clip.cpp' cleanly.
+error: tools/mtmd/models/lfm3vl.cpp: does not exist in index
+Applied patch to 'tools/mtmd/mtmd-helper.cpp' with conflicts.
+Applied patch to 'tools/mtmd/mtmd-helper.h' with conflicts.
+Applied patch to 'tools/mtmd/mtmd-image.cpp' with conflicts.
+Applied patch to 'tools/mtmd/mtmd-image.h' with conflicts.
+Applied patch to 'tools/mtmd/mtmd.cpp' with conflicts.
+Applied patch to 'tools/mtmd/mtmd.h' with conflicts.
+Applied patch to 'tools/server/README.md' cleanly.
+error: tools/server/server-decision.cpp: does not exist in index

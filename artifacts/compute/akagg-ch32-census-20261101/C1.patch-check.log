@@ -1,0 +1,35 @@
+Applied patch to 'common/common.cpp' cleanly.
+Applied patch to 'common/common.h' cleanly.
+Applied patch to 'conversion/__init__.py' cleanly.
+Applied patch to 'conversion/base.py' with conflicts.
+Applied patch to 'conversion/bert.py' cleanly.
+Falling back to direct application...
+Applied patch to 'conversion/qwen.py' with conflicts.
+Applied patch to 'conversion/qwen3vl.py' with conflicts.
+Applied patch to 'convert_hf_to_gguf_update.py' with conflicts.
+Applied patch to 'docs/development/HOWTO-add-model.md' cleanly.
+Applied patch to 'gguf-py/gguf/constants.py' cleanly.
+Applied patch to 'gguf-py/gguf/gguf_writer.py' with conflicts.
+Applied patch to 'gguf-py/gguf/tensor_mapping.py' cleanly.
+Applied patch to 'src/llama-arch.cpp' cleanly.
+Applied patch to 'src/llama-arch.h' cleanly.
+Applied patch to 'src/llama-hparams.h' with conflicts.
+Applied patch to 'src/llama-model.h' cleanly.
+Applied patch to 'src/llama-vocab.cpp' cleanly.
+Applied patch to 'src/llama-vocab.h' with conflicts.
+Applied patch to 'src/models/models.h' cleanly.
+Applied patch to 'src/models/modern-bert.cpp' with conflicts.
+Applied patch to 'src/models/qwen35.cpp' cleanly.
+Applied patch to 'tools/server/CMakeLists.txt' cleanly.
+Applied patch to 'tools/server/README.md' with conflicts.
+Applied patch to 'tools/server/server-common.cpp' cleanly.
+Applied patch to 'tools/server/server-common.h' cleanly.
+Applied patch to 'tools/server/server-context.cpp' with conflicts.
+Applied patch to 'tools/server/server-context.h' cleanly.
+Falling back to direct application...
+Falling back to direct application...
+Applied patch to 'tools/server/server-task.cpp' cleanly.
+Applied patch to 'tools/server/server-task.h' cleanly.
+Applied patch to 'tools/server/server.cpp' cleanly.
+Falling back to direct application...
+Applied patch to 'tools/server/tests/utils.py' cleanly.
