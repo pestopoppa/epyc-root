@@ -94,9 +94,16 @@ def fold_keeper_log(path: str, tail: int = 6000) -> dict:
     """State fold of the keeper log: last refusal per id, ids the keeper qualified/armed/queued."""
     st = {"skip": {}, "qual": set(), "armed": set(), "queued": set(), "refused": {}, "idle": [], "fails": {}}
     try:
-        lines = open(path, errors="replace").readlines()[-tail:]
+        all_lines = open(path, errors="replace").readlines()
     except OSError:
         return st
+    lines = all_lines[-tail:]
+    # rule 2 counts failures over the WHOLE log, not just the state window
+    for l in all_lines[:-tail] if len(all_lines) > tail else []:
+        if "QUAL-FAILURE" in l or "qual-failed" in l:
+            mm = re.match(r"^(\S+) (?:QUAL-FAILURE|READY-SKIP) .*?(?:/|^|\s)([A-Za-z0-9_.-]+?)\.json:\s*(.*)$", l.strip())
+            if mm:
+                st["fails"].setdefault(mm.group(2), []).append((mm.group(1), mm.group(3)[:300]))
     rx = re.compile(r"^(\S+) (READY-SKIP|READY-QUAL|READY-ARM|READY-RESULT|READY-WAIT|READY-RELOCATE|"
                     r"READY-WAIT-DISK|READY-WAIT-QUAL-RESOURCE|IDLE-ALARM|QUAL-FAILURE) (.*)$")
     for l in lines:

@@ -185,3 +185,11 @@ def test_park_at_three_and_escalation_file(tmp_path):
     (F / "ready" / "c3-renamed.json").write_text(json.dumps(d))
     data = bg.build(str(F), str(pri), str(F / "ws58-calendar-keeper.log"))
     assert not data["parked"]
+
+
+def test_failures_counted_beyond_state_window(tmp_path):
+    log = tmp_path / "k.log"
+    log.write_text("2026-11-01T00:00:00Z QUAL-FAILURE qual-failed /x/ready/old-v1.json: early refusal\n"
+                   + "2026-11-01T00:00:01Z IDLE-ALARM free: q1\n" * 10)
+    st = bg.fold_keeper_log(str(log), tail=5)
+    assert st["fails"]["old-v1"][0][1] == "early refusal"
