@@ -32,7 +32,9 @@ status.write(Path(sr.option(argv, "--store")), state="complete", epoch="fixture"
     assert child_source != fixture.CHILD
     (work / "child.py").write_text(child_source)
     monkeypatch.setenv(loop_status.STORE_ROOT_ENV, str(router))
-    assert sr.main(argv) == 0
+    # Use the same router-body seam as the producer's own injected-child tests.
+    # This verifies original children/continuations and rendering, not the CLI supervisor.
+    assert sr._main(argv) == 0
     # Never parse the large result/native captures to render a completed batch.
     original_reader = loop_status._serial_bytes
     def bounded(path, **kwargs):
@@ -60,11 +62,11 @@ function chooseGpu(d){render(d);document.getElementById("serial-retained-target"
     for name, target in (("chooseCpu", "cpu"), ("chooseGpu", "gpu")):
         view = _run(page, wire, tmp_path, [name])
         assert view["threw"] == []
-        assert "1 / 1" in view["by_id"]["tiles"]
+        assert "1 / 1" in view["by_id"]["ident"]
         assert "synthetic-" + target in view["by_id"]["recent"]
         assert "Retained target result" in view["text_by_id"]["hdr-step"]
         assert "not current activity" in view["by_id"]["serial"]
-        assert view["by_id"]["champ"] and view["by_id"]["know"]
+        assert view["by_id"]["trajectory"] and view["by_id"]["know"]
         assert view["text_by_id"]["hdr-state"] == "complete"
 
     # A later unrelated report cannot stand in for the retained original batch.
@@ -82,8 +84,8 @@ function chooseGpu(d){render(d);document.getElementById("serial-retained-target"
     assert absent["detail"] is None and "absent" in absent["error"]
     view = _run(page, absent_wire, tmp_path, ["chooseCpu"])
     assert view["threw"] == [] and "Retained detail unavailable" in view["by_id"]["serial"]
-    assert "1 / 1" not in view["by_id"]["tiles"]
-    assert view["by_id"]["champ"] and view["by_id"]["know"]
+    assert "1 / 1" not in view["by_id"]["ident"]
+    assert view["by_id"]["trajectory"] and view["by_id"]["know"]
     cpu_status.write_text(original)
 
     state_path = router / "serial-state.json"

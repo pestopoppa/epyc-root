@@ -1,5 +1,6 @@
 """The retired kernel API is not a dashboard data dependency."""
 from __future__ import annotations
+from dashboard import kernel_contract as legacy, kernel_identity as identity
 
 from contextlib import contextmanager
 import http.client
@@ -66,11 +67,9 @@ def test_retired_producers_do_not_enter_registry_or_global_health():
     assert "kernel" not in panels.PANELS
     assert "kernel_live" not in panels.PANELS
 
-    with (mock.patch.object(server, "_read_kernel_contract",
+    with (mock.patch.object(legacy, "_read_kernel_contract",
                             side_effect=AssertionError("retired contract read")) as terminal,
-          mock.patch.object(server, "_discovery_live_read",
-                            side_effect=AssertionError("retired discovery read")) as live,
-          mock.patch.object(server, "_read_kernel_progression",
+          mock.patch.object(legacy, "_read_kernel_progression",
                             side_effect=AssertionError("retired progression read")) as progression):
         envelopes = server.panel_envelopes()
         assert set(envelopes) == set(panels.PANELS)
@@ -82,7 +81,8 @@ def test_retired_producers_do_not_enter_registry_or_global_health():
     assert all(entry.get("panel") not in {"kernel", "kernel_live"}
                for entry in health["attention"])
     terminal.assert_not_called()
-    live.assert_not_called()
+    assert not hasattr(server, "_discovery_live_read")
+    assert not hasattr(server, "legacy_discovery_live_data")
     progression.assert_not_called()
 
 

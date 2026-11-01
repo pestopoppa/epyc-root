@@ -1,0 +1,2758 @@
+{
+  "authority": "presentation_projection_only",
+  "candidates": [
+    {
+      "candidate": "GGML_IQK",
+      "champion": false,
+      "confidence": "calibrated paired (15 blocks)",
+      "current_gate": "held-out matched regime",
+      "effect_fraction": 0.28860648431192276,
+      "evidence": [
+        {
+          "campaign_id": "ak-iqk-screen-20260813-s7",
+          "file_sha256": "4350648c7913254468bf9b907ad912a4c71a4d11690e21891d2ed1f34f6bee15",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-iqk-screen-20260813-s7/result.json",
+          "receipt_sha256": null
+        },
+        {
+          "campaign_id": "ak-iqk-v9-20260813-r43",
+          "file_sha256": "da3eefae747194cda0c3027badb75fc3e63e4a88ccbdf7ca89fa734a3d6614fd",
+          "path": "/mnt/raid0/llm/autokernel/r43-i-execute.json",
+          "receipt_sha256": null
+        }
+      ],
+      "evidence_tier": "strict",
+      "key": "cpu:GGML_IQK:prefill pp512",
+      "lane": "CPU",
+      "metric": "prefill_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Run the required distinct-regime held-out pair.",
+      "observed_at": "2026-08-13T16:38:40+00:00",
+      "promotable": false,
+      "stage": "strict_keep",
+      "transition": "0 \u2192 1",
+      "workload": "prefill pp512"
+    },
+    {
+      "candidate": "GGML_IQK",
+      "champion": false,
+      "confidence": "directional / unquantified noise (3 candidate calls)",
+      "current_gate": "strict matched confirmation",
+      "effect_fraction": 0.07939338627835799,
+      "evidence": [
+        {
+          "campaign_id": "ak-iqk-decode-screen-20260813-s1",
+          "file_sha256": "d7dbdf24e20747382f38e2a7c184e9fa9f5e4995fd6f58d9defdf4dc9e686beb",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-iqk-decode-screen-20260813-s1/result.json",
+          "receipt_sha256": null
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "cpu:GGML_IQK:decode tg128",
+      "lane": "CPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Run a calibrated paired confirmation; keep promotion authority false.",
+      "observed_at": "2026-08-13T16:30:31+00:00",
+      "promotable": false,
+      "stage": "candidate",
+      "transition": "0 \u2192 1",
+      "workload": "decode tg128"
+    },
+    {
+      "candidate": "ubatch_size",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 5+5 vector; 53.46 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": 0.468685285364829,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-ubatch-up-screen-20260813-s3",
+          "file_sha256": "61cba627e61e05300f66ed9fdbf2960f65d1ecb4c8e80b31d40989d794668ebd",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-ubatch-up-screen-20260813-s3/result.json",
+          "receipt_sha256": "94664b562faf236afa71f396d1373f078354d9fddc80717c74b907ada74f08a7"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:ubatch_size:512->1024:prefill pp512",
+      "lane": "GPU",
+      "metric": "prefill_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.5345558930525355,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T18:09:27Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "512 \u2192 1024",
+      "workload": "MI210 prefill pp512"
+    },
+    {
+      "candidate": "GGML_HIP_GRAPHS",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; high-dispersion 9+9 vector; 14.82 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": 0.3545542397641614,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-hip-graphs-off-screen-20260813-s5",
+          "file_sha256": "05d3425c0513a62553268de01db20c8624a0312b182551101cf749a06eac5503",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-hip-graphs-off-screen-20260813-s5/result.json",
+          "receipt_sha256": "9f7dc612fcca70d10ff6ab638925f38dbfc13672d1f1348ac9436690f9fdf9a8"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:GGML_HIP_GRAPHS:ON->OFF:prefill pp512",
+      "lane": "GPU",
+      "metric": "prefill_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.1482136764366681,
+        "sign_conflict": false
+      },
+      "observed_at": "2026-08-13T19:21:54Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "ON \u2192 OFF",
+      "workload": "MI210 prefill pp512"
+    },
+    {
+      "candidate": "GGML_HIP_MMQ_MFMA",
+      "champion": false,
+      "confidence": "directional / unquantified noise (3+3 calls; HIP resident)",
+      "current_gate": "correctness + strict matched confirmation",
+      "effect_fraction": 0.2659649876144406,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-mmq-mfma-screen-20260813-s2",
+          "file_sha256": "9508396b5793568b9a458f1bc9374d6cf3855ca0872ab613768099e2654c0887",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-mmq-mfma-screen-20260813-s2/result.json",
+          "receipt_sha256": "a4d2e058acf32d82020072d04c3e873d6c3aff952656e75a364b5835023be973"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:GGML_HIP_MMQ_MFMA:ON->OFF:prefill pp512",
+      "lane": "GPU",
+      "metric": "prefill_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Confirm correctness, then run promotion-grade paired evidence.",
+      "noise": {
+        "cpu_overlap_policy": null,
+        "effect_spread_fraction": 0.006014059713097486,
+        "sign_conflict": false
+      },
+      "observed_at": "2026-08-13T16:37:46Z",
+      "promotable": false,
+      "stage": "candidate",
+      "transition": "ON \u2192 OFF",
+      "workload": "MI210 prefill pp512"
+    },
+    {
+      "candidate": "ubatch_size",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 3+3 vector; 19.10 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": 0.09596634938537406,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-ubatch-screen-20260813-s1",
+          "file_sha256": "f8c6025583168a9b3d0dee955c7c3e8d3822aaa6648d14ff5e1221994c6ad188",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-ubatch-screen-20260813-s1/result.json",
+          "receipt_sha256": "eea58695f5282ad9bf310f017404d3b1eb757433a9c1025c4ad794495e142a84"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:ubatch_size:512->256:prefill pp512",
+      "lane": "GPU",
+      "metric": "prefill_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.1910333837314117,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T18:00:28Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "512 \u2192 256",
+      "workload": "MI210 prefill pp512"
+    },
+    {
+      "candidate": "mmap",
+      "champion": false,
+      "confidence": "directional / unquantified noise (3+3 calls; HIP resident)",
+      "current_gate": "correctness + strict matched confirmation",
+      "effect_fraction": 0.07283140463603155,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-mmap-screen-20260813-s1",
+          "file_sha256": "56d5c854bdd75b1433221bcd10f631759072aeadd5d62210423d73de42394c0c",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-mmap-screen-20260813-s1/result.json",
+          "receipt_sha256": "d6c0f38642621d3195f06747022c350a263b58f2f5667b3a524e0a3f927e4648"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:mmap:ON->OFF:prefill pp512",
+      "lane": "GPU",
+      "metric": "prefill_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Confirm correctness, then run promotion-grade paired evidence.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.0827561457489752,
+        "sign_conflict": false
+      },
+      "observed_at": "2026-08-13T18:00:48Z",
+      "promotable": false,
+      "stage": "candidate",
+      "transition": "ON \u2192 OFF",
+      "workload": "MI210 prefill pp512"
+    },
+    {
+      "candidate": "flash_attention",
+      "champion": false,
+      "confidence": "directional / unquantified noise (3+3 calls; HIP resident)",
+      "current_gate": "correctness + strict matched confirmation",
+      "effect_fraction": 0.04879110132919527,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-flash-attn-screen-20260813-s1",
+          "file_sha256": "0caa563c2b9f35e3edc66c6550b6175dcf456c8e5d302f2a1cdcadb91c16cdfa",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-flash-attn-screen-20260813-s1/result.json",
+          "receipt_sha256": "89f7123049336d9f49f2592faeb3376b5f028d2e8145813ba4ebabaa2f1a285b"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:flash_attention:OFF->ON:prefill pp512",
+      "lane": "GPU",
+      "metric": "prefill_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Confirm correctness, then run promotion-grade paired evidence.",
+      "noise": {
+        "cpu_overlap_policy": null,
+        "effect_spread_fraction": 0.007115786514055443,
+        "sign_conflict": false
+      },
+      "observed_at": "2026-08-13T16:45:59Z",
+      "promotable": false,
+      "stage": "candidate",
+      "transition": "OFF \u2192 ON",
+      "workload": "MI210 prefill pp512"
+    },
+    {
+      "candidate": "flash_attention",
+      "champion": false,
+      "confidence": "directional / unquantified noise (9+9 calls; HIP resident)",
+      "current_gate": "correctness + strict matched confirmation",
+      "effect_fraction": 0.029648280608146747,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-graphs-on-flash-attn-on-decode-tg128-screen-20260813-s2",
+          "file_sha256": "1ff1c497df2b094d7e69c5a09c760bc04dd6a2ba455b8ec4cd68c9fa886c5938",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-on-flash-attn-on-decode-tg128-screen-20260813-s2/result.json",
+          "receipt_sha256": "1306017920837f83e2eb09f1ddcfaae2901d308f9f40d44eda77afcfe48176f6"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:flash_attention:OFF->ON:decode tg128",
+      "lane": "GPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Confirm correctness, then run promotion-grade paired evidence.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.028034567200718955,
+        "sign_conflict": false
+      },
+      "observed_at": "2026-08-13T19:48:57Z",
+      "promotable": false,
+      "stage": "candidate",
+      "transition": "OFF \u2192 ON",
+      "workload": "MI210 decode tg128"
+    },
+    {
+      "candidate": "source_patch",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 7.87 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": 0.019919553297954255,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-q4k-onewave-tg128-screen-20260813-s2",
+          "file_sha256": "4a785daa4b4feff98f1c47dd42610cfbf383cc708306233363ae5e61ec5425dc",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-q4k-onewave-tg128-screen-20260813-s2/result.json",
+          "receipt_sha256": "bb4603704ef9eceaf5db858edabdf90e05ce39c88ca3b15aebd8930d08b4f198"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:source_patch:0db32c06e3e5->dcd2935b26f3:decode tg128",
+      "lane": "GPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.0787428094927396,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T21:12:28Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "0db32c06e3e5 \u2192 dcd2935b26f3",
+      "workload": "MI210 decode tg128"
+    },
+    {
+      "candidate": "gpu_helper_threads",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 4.05 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": 0.017216551163065023,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-graphs-on-helper-threads-12-decode-tg128-screen-20260813-s1",
+          "file_sha256": "b6820b54d892209d5fbb1b27ee8cf035761bd0f4d6e4f64bb32d6996074adf8d",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-on-helper-threads-12-decode-tg128-screen-20260813-s1/result.json",
+          "receipt_sha256": "08a09339e7665ddf230d1fd7272c66d8ac54a8c028e1e2534654cb222e45904a"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:gpu_helper_threads:8->12:decode tg128",
+      "lane": "GPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.04049803571435373,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T19:51:48Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "8 \u2192 12",
+      "workload": "MI210 decode tg128"
+    },
+    {
+      "candidate": "gpu_helper_threads",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 3+3 vector; 11.51 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": 0.01678706290032213,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-helper-threads-16-screen-20260813-s1",
+          "file_sha256": "0b77687c215d135cd915767ae7a7ead1233af84ecd135ca805479abaed17f624",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-helper-threads-16-screen-20260813-s1/result.json",
+          "receipt_sha256": "99d0adb89cac97b9e03037c770b5be9df483913809a84cfdc9308ba0b97c9c0b"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:gpu_helper_threads:8->16:prefill pp512",
+      "lane": "GPU",
+      "metric": "prefill_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.11507778514420626,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T18:03:33Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "8 \u2192 16",
+      "workload": "MI210 prefill pp512"
+    },
+    {
+      "candidate": "ubatch_size",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 3.99 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": 0.01626656696881831,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-graphs-on-ubatch-down-decode-tg128-screen-20260813-s1",
+          "file_sha256": "711835f59f8c53cf5861a365e17b10fb94464a68c5737ccd921cd90193f8c016",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-on-ubatch-down-decode-tg128-screen-20260813-s1/result.json",
+          "receipt_sha256": "c0a731b29751ac0badc4fa5d90ef284c93c60c2da08bcc602beca5d7e1c8262f"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:ubatch_size:512->256:decode tg128",
+      "lane": "GPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.03991675618112381,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T19:54:39Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "512 \u2192 256",
+      "workload": "MI210 decode tg128"
+    },
+    {
+      "candidate": "source_patch",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 7.05 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": 0.014670578756915098,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-rope64-tg128-screen-20260813-s2",
+          "file_sha256": "416cb0d2b7c6cebb79f2fcc5a01baff139b318272cd9c9ed6c857ee1438ead4e",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-rope64-tg128-screen-20260813-s2/result.json",
+          "receipt_sha256": "6b8a62747ec28212219a615748349351368c86ac710d873e2644cbefecd8c606"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:source_patch:0db32c06e3e5->874cb02208b5:decode tg128",
+      "lane": "GPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.07049907016540849,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T21:03:13Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "0db32c06e3e5 \u2192 874cb02208b5",
+      "workload": "MI210 decode tg128"
+    },
+    {
+      "candidate": "batch_size",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 4.41 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": 0.01445320984136037,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-graphs-on-batch-down-decode-tg128-screen-20260813-s2",
+          "file_sha256": "ae8ee4733d2155defbf3aa3902f7c54f07eab1f917c743a4098099945bbbe6e8",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-on-batch-down-decode-tg128-screen-20260813-s2/result.json",
+          "receipt_sha256": "ba92a94c5f3908f9a53a66ac9949c0a743dfc308917d1cc73969d58c7c811acd"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:batch_size:512->256:decode tg128",
+      "lane": "GPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.04409884118395531,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T19:51:14Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "512 \u2192 256",
+      "workload": "MI210 decode tg128"
+    },
+    {
+      "candidate": "op_offload",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 3.01 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": 0.013908313526041978,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-graphs-on-op-offload-off-decode-tg128-screen-20260813-s1",
+          "file_sha256": "5fe6fbe4775274262277d77f1aa705832db8724e1ccd58c428e68571cce7c601",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-on-op-offload-off-decode-tg128-screen-20260813-s1/result.json",
+          "receipt_sha256": "64f95030850b18afa23d241433f99487679300c7fe8788be07c8edc0e4efa055"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:op_offload:ON->OFF:decode tg128",
+      "lane": "GPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.030115800120125796,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T19:54:05Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "ON \u2192 OFF",
+      "workload": "MI210 decode tg128"
+    },
+    {
+      "candidate": "batch_size",
+      "champion": false,
+      "confidence": "directional / unquantified noise (9+9 calls; HIP resident)",
+      "current_gate": "correctness + strict matched confirmation",
+      "effect_fraction": 0.013335938850921627,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-graphs-on-batch-up-decode-tg128-screen-20260813-s1",
+          "file_sha256": "c42d7110521e63d8c61c6d99ce7d00771c6fb9f06b358fccd3a086d713278c99",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-on-batch-up-decode-tg128-screen-20260813-s1/result.json",
+          "receipt_sha256": "219039712f8ae15725d8422a7245943ccfb436fb532639ffcee23d6688e850f1"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:batch_size:512->1024:decode tg128",
+      "lane": "GPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Confirm correctness, then run promotion-grade paired evidence.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.02859180567939274,
+        "sign_conflict": false
+      },
+      "observed_at": "2026-08-13T19:52:22Z",
+      "promotable": false,
+      "stage": "candidate",
+      "transition": "512 \u2192 1024",
+      "workload": "MI210 decode tg128"
+    },
+    {
+      "candidate": "op_offload",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 3+3 vector; 54.63 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": 0.013302425412221675,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-op-offload-screen-20260813-s1",
+          "file_sha256": "e5d222c9a8be18753a570e206cbd9892fdf45f2b77ce452c24db5972171a4fac",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-op-offload-screen-20260813-s1/result.json",
+          "receipt_sha256": "d78997121d25b19f6c1aa0b750c2ab025fe7bd40a544409b551a7e004eba2391"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:op_offload:ON->OFF:prefill pp512",
+      "lane": "GPU",
+      "metric": "prefill_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.5463211828904689,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T18:03:01Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "ON \u2192 OFF",
+      "workload": "MI210 prefill pp512"
+    },
+    {
+      "candidate": "GGML_HIP_ROCWMMA_FATTN",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 4.88 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": 0.012971271141879279,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-rocwmma-fattn-on-decode-tg128-screen-20260813-s2",
+          "file_sha256": "8c5ee9fbcdf9a8deae42442d29323cd50c830cff5507152ebdcecc9febfb0dd7",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-rocwmma-fattn-on-decode-tg128-screen-20260813-s2/result.json",
+          "receipt_sha256": "cb2b70d788602862b0f3dee21a700ca0a96499f7fad46997859bf5eecb028231"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:GGML_HIP_ROCWMMA_FATTN:OFF->ON:decode tg128",
+      "lane": "GPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.048770490800646396,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T19:41:56Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "OFF \u2192 ON",
+      "workload": "MI210 decode tg128"
+    },
+    {
+      "candidate": "ubatch_size",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 6.73 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": 0.006375053436007026,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-graphs-off-ubatch-up-decode-tg128-screen-20260813-s1",
+          "file_sha256": "d32d5d01819393d9b36ec55d8f4c278bd15033c0748ba76922abdfbdcd92b061",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-off-ubatch-up-decode-tg128-screen-20260813-s1/result.json",
+          "receipt_sha256": "a953abfc84a0c757abc7dc660ca2a76efbfa3384564571274f9decf6789ee726"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:ubatch_size:512->1024:decode tg128",
+      "lane": "GPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.06730482715635977,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T19:29:59Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "512 \u2192 1024",
+      "workload": "MI210 decode tg128"
+    },
+    {
+      "candidate": "batch_size",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 3+3 vector; 52.54 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": 0.005937919574430481,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-batch-up-screen-20260813-s1",
+          "file_sha256": "630f82b71e51dbfb50a82b2912982b1d6998ea84eb05dfbb3b52a621b4da50cd",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-batch-up-screen-20260813-s1/result.json",
+          "receipt_sha256": "e7df3cf375028012b8441622c1be151c26c154ec41d10439f456fce3abc9223d"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:batch_size:512->1024:prefill pp512",
+      "lane": "GPU",
+      "metric": "prefill_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.5253933816507947,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T18:05:36Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "512 \u2192 1024",
+      "workload": "MI210 prefill pp512"
+    },
+    {
+      "candidate": "source_patch",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 4.29 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": 0.003313242012254847,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-rope64-q4k-onewave-tg128-screen-20260813-s2",
+          "file_sha256": "ebb36ece4157441d55972ec15baf8d4f46dbcbf6530300740c587cecb043e417",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-rope64-q4k-onewave-tg128-screen-20260813-s2/result.json",
+          "receipt_sha256": "2be8f068622b5754127e51f31ea7c02b7d63e65ffdd70cc5e896218e022605be"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:source_patch:0db32c06e3e5->d7e77599a507:decode tg128",
+      "lane": "GPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.042903019787533504,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T21:17:11Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "0db32c06e3e5 \u2192 d7e77599a507",
+      "workload": "MI210 decode tg128"
+    },
+    {
+      "candidate": "gpu_helper_threads",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 15.06 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": 0.0026504157026748516,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-graphs-off-helper-threads-24-decode-tg128-screen-20260813-s1",
+          "file_sha256": "5e0f106bcf2502cae0ba0a274213c3d658bdb2ea5662aa20d7d0e3aa6e004654",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-off-helper-threads-24-decode-tg128-screen-20260813-s1/result.json",
+          "receipt_sha256": "8792a8236237fe579b6f8db2cdaf97edc705103f2816fe0f4222576c6d0bae54"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:gpu_helper_threads:8->24:decode tg128",
+      "lane": "GPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.15062762388352752,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T19:29:21Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "8 \u2192 24",
+      "workload": "MI210 decode tg128"
+    },
+    {
+      "candidate": "mmap",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 4.09 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": 0.0021815348600911534,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-graphs-on-mmap-off-decode-tg128-screen-20260813-s1",
+          "file_sha256": "a16b2c9b6afecd579cf7aa8da4bc254515a13c7fa2558dac26cc38299a1b8a6a",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-on-mmap-off-decode-tg128-screen-20260813-s1/result.json",
+          "receipt_sha256": "3e4f3f3ed7fce0456b56f6be9ef9962b6bcc80ca0264c414a9b247b7103985e8"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:mmap:ON->OFF:decode tg128",
+      "lane": "GPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.04091754351828479,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T19:53:30Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "ON \u2192 OFF",
+      "workload": "MI210 decode tg128"
+    },
+    {
+      "candidate": "GGML_HIP_MMQ_MFMA",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 3.43 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": 0.00011027883200507693,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-mmq-mfma-off-decode-tg128-screen-20260813-s3",
+          "file_sha256": "f9cab49a191ecc58f0b16b1fd8fa814b3c723acacead4f189d8c0f2377d0836f",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-mmq-mfma-off-decode-tg128-screen-20260813-s3/result.json",
+          "receipt_sha256": "ae04f2153d3905fd9c7761f0c65a057f3868e5a22e5b4c2c14f8a59b6499b273"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:GGML_HIP_MMQ_MFMA:ON->OFF:decode tg128",
+      "lane": "GPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.034323395275533526,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T19:46:23Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "ON \u2192 OFF",
+      "workload": "MI210 decode tg128"
+    },
+    {
+      "candidate": "source_patch",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 5.19 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": -0.0006306608777196349,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-q8-block128-tg128-screen-20260813-s2",
+          "file_sha256": "63071fb35ae9cd4a0e2546273b3142be13d09b59951865ff991755d688f20e9a",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-q8-block128-tg128-screen-20260813-s2/result.json",
+          "receipt_sha256": "98cf18974a66be24fa7c7ac511444bae9288a1459bbf683c5139f2c0147be1bf"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:source_patch:0db32c06e3e5->684c16e8698b:decode tg128",
+      "lane": "GPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.051887361411929865,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T20:57:39Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "0db32c06e3e5 \u2192 684c16e8698b",
+      "workload": "MI210 decode tg128"
+    },
+    {
+      "candidate": "gpu_poll",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 4.61 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": -0.0007474756595768397,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-graphs-on-poll-zero-decode-tg128-screen-20260813-s1",
+          "file_sha256": "13251e173e0c35c0cd3ddb29181036203788df40b0ecbabb05de0bc977314a5f",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-on-poll-zero-decode-tg128-screen-20260813-s1/result.json",
+          "receipt_sha256": "1a14c8a107977450f108f837dd96d46b91c970516a1e52958a4039d39bd993ea"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:gpu_poll:50->0:decode tg128",
+      "lane": "GPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.04612316997738264,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T19:52:56Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "50 \u2192 0",
+      "workload": "MI210 decode tg128"
+    },
+    {
+      "candidate": "gpu_helper_threads",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 14.22 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": -0.0021793704173314345,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-graphs-on-helper-threads-4-decode-tg128-screen-20260813-s2",
+          "file_sha256": "cf81235d60cfacae49cc41f7d89ad5438b37cc80b8cb5f159246799a9dd16e08",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-on-helper-threads-4-decode-tg128-screen-20260813-s2/result.json",
+          "receipt_sha256": "c7156d9047b12ab95448aa978cdf46278291d03be46b388d0bf8fae1a76521b1"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:gpu_helper_threads:8->4:decode tg128",
+      "lane": "GPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.14221769090039232,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T19:50:40Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "8 \u2192 4",
+      "workload": "MI210 decode tg128"
+    },
+    {
+      "candidate": "source_patch",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 5.89 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": -0.004794482542046476,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-q6k-onewave-tg128-20260813-s1",
+          "file_sha256": "d82249550753d03647ac1271050435a4bde1443575ebae3d79472b29b097e42b",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-q6k-onewave-tg128-20260813-s1/result.json",
+          "receipt_sha256": "4fb8ccaab30fdf3128962fa00598a39d3ce87afd3f8e0f6977ed8c5f9e8b13ae"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:source_patch:0db32c06e3e5->de1f1b844865:decode tg128",
+      "lane": "GPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.05894783796183742,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T21:47:12Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "0db32c06e3e5 \u2192 de1f1b844865",
+      "workload": "MI210 decode tg128"
+    },
+    {
+      "candidate": "gpu_helper_threads",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 3.49 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": -0.008343927513405541,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-graphs-off-helper-threads-16-decode-tg128-screen-20260813-s1",
+          "file_sha256": "f61c0ed7c719f98062aaecff9b2d83092a861e028b313b345804bd5f4db5ace8",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-off-helper-threads-16-decode-tg128-screen-20260813-s1/result.json",
+          "receipt_sha256": "094d3ffe1d5959b26542e375c593594e4fd87d6c53d6524c44d1594c04d0e1f5"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:gpu_helper_threads:8->16:decode tg128",
+      "lane": "GPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.03493216329575689,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T19:27:14Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "8 \u2192 16",
+      "workload": "MI210 decode tg128"
+    },
+    {
+      "candidate": "gpu_poll",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 5+5 vector; 70.25 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": -0.008638954728971176,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-poll-zero-screen-20260813-s2",
+          "file_sha256": "510950b608ebdb1a17da83e7c3ed6cdf8cedddbebc31a50110a91b83d4c56e9b",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-poll-zero-screen-20260813-s2/result.json",
+          "receipt_sha256": "448a7dcfe889750160e989f983dead98e536592c93800af2e24dc6ae2a0757f3"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:gpu_poll:50->0:prefill pp512",
+      "lane": "GPU",
+      "metric": "prefill_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.7025294803612079,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T18:09:44Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "50 \u2192 0",
+      "workload": "MI210 prefill pp512"
+    },
+    {
+      "candidate": "source_patch",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 11.39 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": -0.009203596532403486,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-q8-vec4-tg128-screen-20260813-s1",
+          "file_sha256": "12b429f0172e0a12c7b49ae97e7370cbfcc48225db3fc8a6660baba92bd6a23c",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-q8-vec4-tg128-screen-20260813-s1/result.json",
+          "receipt_sha256": "a36d806424a6b526db242960c6e49d2c63e86abceb4944624155d679a76a18ef"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:source_patch:0db32c06e3e5->c882db4f682e:decode tg128",
+      "lane": "GPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.11394993339477888,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T20:51:15Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "0db32c06e3e5 \u2192 c882db4f682e",
+      "workload": "MI210 decode tg128"
+    },
+    {
+      "candidate": "source_patch",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 6.99 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": -0.009805124133831446,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-rms128-tg128-screen-20260813-s1",
+          "file_sha256": "58ebb54f4d5cc444e551458fa330d8cb00bf0ae67eb78befa6df3203533aeaa4",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-rms128-tg128-screen-20260813-s1/result.json",
+          "receipt_sha256": "d26e6712b7d3c7e312de20ee4eb74b9ad602b9abb111ac2cd6a5decce5680330"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:source_patch:0db32c06e3e5->9741046c580e:decode tg128",
+      "lane": "GPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.06991495877515125,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T21:07:27Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "0db32c06e3e5 \u2192 9741046c580e",
+      "workload": "MI210 decode tg128"
+    },
+    {
+      "candidate": "source_patch",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 3.76 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": -0.009830455418071184,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-fattn-d64-singlecol-tg128-screen-20260813-s3",
+          "file_sha256": "bacc66f6898c589e48a0ad66ded150f9c2a8b663506624c4286bf7826dc53c76",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-fattn-d64-singlecol-tg128-screen-20260813-s3/result.json",
+          "receipt_sha256": "b344786aadcae8d7a38674934eeb7f53dc635bbb7fa536d50e9bb50ffd789eb5"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:source_patch:0db32c06e3e5->a80f96cb2a88:decode tg128",
+      "lane": "GPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.03759866815234623,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T20:25:39Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "0db32c06e3e5 \u2192 a80f96cb2a88",
+      "workload": "MI210 decode tg128"
+    },
+    {
+      "candidate": "source_patch",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 17.49 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": -0.018068395524266558,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-fattn-vec-d64-gqa7-tg128-20260813-s2",
+          "file_sha256": "de28e0493db482645ef154d1265d2a5a9b80b7cfe0981c67373191e297ea409e",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-fattn-vec-d64-gqa7-tg128-20260813-s2/result.json",
+          "receipt_sha256": "e4d240c90ace096171adbf21c82dd872d01febc80718071e6bfcab771e4e9dea"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:source_patch:0db32c06e3e5->20847108c632:decode tg128",
+      "lane": "GPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.17485865631325748,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T21:36:34Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "0db32c06e3e5 \u2192 20847108c632",
+      "workload": "MI210 decode tg128"
+    },
+    {
+      "candidate": "gpu_helper_threads",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 5+5 vector; 34.93 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": -0.08114958659151802,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-helper-threads-12-screen-20260813-s2",
+          "file_sha256": "565dba831a0fde51bfb992a2e285f68916e5f5b906dd3a9fa37ebd61657f4bc1",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-helper-threads-12-screen-20260813-s2/result.json",
+          "receipt_sha256": "6f2bd7401cadfe05f1e286e6f1f45abba80c6d85d93e7d731dd92fe20da78625"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:gpu_helper_threads:8->12:prefill pp512",
+      "lane": "GPU",
+      "metric": "prefill_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.34926429445576007,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T18:36:19Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "8 \u2192 12",
+      "workload": "MI210 prefill pp512"
+    },
+    {
+      "candidate": "source_patch",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; high-dispersion 9+9 vector; 11.18 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": -0.10535676737234471,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-q5-nwarps4-tg128-screen-20260813-s2",
+          "file_sha256": "5a1a17f913500658cb2a05a1e5515178fcc15cbcf5edcce9cc681d5b8de21a5f",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-q5-nwarps4-tg128-screen-20260813-s2/result.json",
+          "receipt_sha256": "c2d697a9e278cdaf76ccb45aee48c10fbf4c2960b41ad3f64fc44339d3c036c0"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:source_patch:0db32c06e3e5->bdf9cb31edb0:decode tg128",
+      "lane": "GPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.1117672592174726,
+        "sign_conflict": false
+      },
+      "observed_at": "2026-08-13T20:40:14Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "0db32c06e3e5 \u2192 bdf9cb31edb0",
+      "workload": "MI210 decode tg128"
+    },
+    {
+      "candidate": "GGML_HIP_GRAPHS",
+      "champion": false,
+      "confidence": "directional / unquantified noise (9+9 calls; HIP resident)",
+      "current_gate": "screened out by sign-consistent discovery result",
+      "effect_fraction": -0.11994296328440618,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-hip-graphs-off-decode-tg128-screen-20260813-s1",
+          "file_sha256": "bb9b4650aaa5f35cc365555ee30e87852581e7e5139f2eee3a08f110b0e7ac4d",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-hip-graphs-off-decode-tg128-screen-20260813-s1/result.json",
+          "receipt_sha256": "30d49f498797996aeb5c8102e737da46e01248b269663df1d02062a6452337ab"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:GGML_HIP_GRAPHS:ON->OFF:decode tg128",
+      "lane": "GPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retain as an abandoned strategy; revisit only with a new rationale.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.0445634825707386,
+        "sign_conflict": false
+      },
+      "observed_at": "2026-08-13T19:26:13Z",
+      "promotable": false,
+      "stage": "screened_out",
+      "transition": "ON \u2192 OFF",
+      "workload": "MI210 decode tg128"
+    },
+    {
+      "candidate": "gpu_helper_threads",
+      "champion": false,
+      "confidence": "directional / unquantified noise (3+3 calls; HIP resident)",
+      "current_gate": "screened out by sign-consistent discovery result",
+      "effect_fraction": -0.1529667018058367,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-helper-threads-24-screen-20260813-s1",
+          "file_sha256": "aa275b47404ba423be2c6faab913e4472c47f8b49622f3df2c8a342bc9eaec44",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-helper-threads-24-screen-20260813-s1/result.json",
+          "receipt_sha256": "6ddce5e02959c4da66d35f35348d4399e4cb945a2f93441e35a4c8abe9f4b988"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:gpu_helper_threads:8->24:prefill pp512",
+      "lane": "GPU",
+      "metric": "prefill_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retain as an abandoned strategy; revisit only with a new rationale.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.06127388726589077,
+        "sign_conflict": false
+      },
+      "observed_at": "2026-08-13T18:06:32Z",
+      "promotable": false,
+      "stage": "screened_out",
+      "transition": "8 \u2192 24",
+      "workload": "MI210 prefill pp512"
+    },
+    {
+      "candidate": "gpu_helper_threads",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; high-dispersion 3+3 vector; 12.45 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": -0.19369503736002933,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-helper-threads-screen-20260813-s1",
+          "file_sha256": "635e6c22fdd221edae290fdbee09c0c3e2386dffce96389d6fe5565f4d1d9666",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-helper-threads-screen-20260813-s1/result.json",
+          "receipt_sha256": "2fd3d9113557829b83866a9aaaf2f76796134e9ca1cf75bc537e981fecd2121e"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:gpu_helper_threads:8->4:prefill pp512",
+      "lane": "GPU",
+      "metric": "prefill_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.12449704582437418,
+        "sign_conflict": false
+      },
+      "observed_at": "2026-08-13T18:00:09Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "8 \u2192 4",
+      "workload": "MI210 prefill pp512"
+    },
+    {
+      "candidate": "GGML_HIP_ROCWMMA_FATTN",
+      "champion": false,
+      "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 3+3 vector; 39.55 pp spread",
+      "current_gate": "clean/windowed discovery retest",
+      "effect_fraction": -0.21654238599547976,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-rocwmma-fattn-screen-20260813-s2",
+          "file_sha256": "d69a930d4f45250360188a3be91c74c51844f7527a1974ad3039ab90cb416d92",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-rocwmma-fattn-screen-20260813-s2/result.json",
+          "receipt_sha256": "451acc5a650d5b01e40381eb43e1ed5e459663f14eff80c7ecfb5d1a623a37c9"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:GGML_HIP_ROCWMMA_FATTN:OFF->ON:prefill pp512",
+      "lane": "GPU",
+      "metric": "prefill_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.39546924553011514,
+        "sign_conflict": true
+      },
+      "observed_at": "2026-08-13T17:53:49Z",
+      "promotable": false,
+      "stage": "inconclusive",
+      "transition": "OFF \u2192 ON",
+      "workload": "MI210 prefill pp512"
+    },
+    {
+      "candidate": "batch_size",
+      "champion": false,
+      "confidence": "directional / unquantified noise (5+5 calls; HIP resident)",
+      "current_gate": "screened out by sign-consistent discovery result",
+      "effect_fraction": -0.27043813791207766,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-graphs-off-batch-down-screen-20260813-s1",
+          "file_sha256": "7728568a7424bc53e9f75ab728a327ab5d6f5bb3babb7bc6885bcb661b9556a1",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-off-batch-down-screen-20260813-s1/result.json",
+          "receipt_sha256": "4b9ff979ab6a9813f6029d91fafe6d3642bfd6b765dfa77242ced1e192572b8e"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:batch_size:512->256:prefill pp512",
+      "lane": "GPU",
+      "metric": "prefill_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retain as an abandoned strategy; revisit only with a new rationale.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.049759123534716176,
+        "sign_conflict": false
+      },
+      "observed_at": "2026-08-13T18:38:38Z",
+      "promotable": false,
+      "stage": "screened_out",
+      "transition": "512 \u2192 256",
+      "workload": "MI210 prefill pp512"
+    },
+    {
+      "candidate": "kv_offload",
+      "champion": false,
+      "confidence": "directional / unquantified noise (9+9 calls; HIP resident)",
+      "current_gate": "screened out by sign-consistent discovery result",
+      "effect_fraction": -0.37047168858725577,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-graphs-off-kv-offload-off-decode-tg128-screen-20260813-s1",
+          "file_sha256": "7f513f55f9de3aa583fde55c7420f132acb0d6095519148bef4a190f84a1179e",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-off-kv-offload-off-decode-tg128-screen-20260813-s1/result.json",
+          "receipt_sha256": "cbd5ea345bb617ec91ce345916fc40afb87c320316e5027f546b6b9dc6ef651e"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:kv_offload:ON->OFF:decode tg128",
+      "lane": "GPU",
+      "metric": "decode_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retain as an abandoned strategy; revisit only with a new rationale.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.06140814276196366,
+        "sign_conflict": false
+      },
+      "observed_at": "2026-08-13T19:32:38Z",
+      "promotable": false,
+      "stage": "screened_out",
+      "transition": "ON \u2192 OFF",
+      "workload": "MI210 decode tg128"
+    },
+    {
+      "candidate": "kv_offload",
+      "champion": false,
+      "confidence": "directional / unquantified noise (3+3 calls; HIP resident)",
+      "current_gate": "screened out by sign-consistent discovery result",
+      "effect_fraction": -0.4909282847387409,
+      "evidence": [
+        {
+          "campaign_id": "ak-gpu-kv-offload-screen-20260813-s1",
+          "file_sha256": "0f050d9d491185ce0244b9adcd810b3d07668d99c5a09b961345daa068178105",
+          "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-kv-offload-screen-20260813-s1/result.json",
+          "receipt_sha256": "4ac1f477ae88e98d1ae779063f818f6edc304b376b51ae74f4dadeea95e8b8d0"
+        }
+      ],
+      "evidence_tier": "screening",
+      "key": "gpu:kv_offload:ON->OFF:prefill pp512",
+      "lane": "GPU",
+      "metric": "prefill_tokens_per_s",
+      "metric_direction": "higher_better",
+      "next_action": "Retain as an abandoned strategy; revisit only with a new rationale.",
+      "noise": {
+        "cpu_overlap_policy": "allowed_discovery_noise",
+        "effect_spread_fraction": 0.03145666607697778,
+        "sign_conflict": false
+      },
+      "observed_at": "2026-08-13T18:04:09Z",
+      "promotable": false,
+      "stage": "screened_out",
+      "transition": "ON \u2192 OFF",
+      "workload": "MI210 prefill pp512"
+    }
+  ],
+  "funnel": {
+    "candidate": 38,
+    "champion": 0,
+    "promotable": 0,
+    "strict_keep": 1
+  },
+  "generated_at": "2026-08-27T20:34:32.789063+00:00",
+  "observed_through": "2026-08-13T21:47:12Z",
+  "promotion_claim": false,
+  "schema": "epyc.autokernel.progression.v1",
+  "strategy": {
+    "abandoned": [
+      {
+        "candidate": "ubatch_size",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 5+5 vector; 53.46 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": 0.468685285364829,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-ubatch-up-screen-20260813-s3",
+            "file_sha256": "61cba627e61e05300f66ed9fdbf2960f65d1ecb4c8e80b31d40989d794668ebd",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-ubatch-up-screen-20260813-s3/result.json",
+            "receipt_sha256": "94664b562faf236afa71f396d1373f078354d9fddc80717c74b907ada74f08a7"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:ubatch_size:512->1024:prefill pp512",
+        "lane": "GPU",
+        "metric": "prefill_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.5345558930525355,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T18:09:27Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "512 \u2192 1024",
+        "workload": "MI210 prefill pp512"
+      },
+      {
+        "candidate": "GGML_HIP_GRAPHS",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; high-dispersion 9+9 vector; 14.82 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": 0.3545542397641614,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-hip-graphs-off-screen-20260813-s5",
+            "file_sha256": "05d3425c0513a62553268de01db20c8624a0312b182551101cf749a06eac5503",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-hip-graphs-off-screen-20260813-s5/result.json",
+            "receipt_sha256": "9f7dc612fcca70d10ff6ab638925f38dbfc13672d1f1348ac9436690f9fdf9a8"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:GGML_HIP_GRAPHS:ON->OFF:prefill pp512",
+        "lane": "GPU",
+        "metric": "prefill_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.1482136764366681,
+          "sign_conflict": false
+        },
+        "observed_at": "2026-08-13T19:21:54Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "ON \u2192 OFF",
+        "workload": "MI210 prefill pp512"
+      },
+      {
+        "candidate": "ubatch_size",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 3+3 vector; 19.10 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": 0.09596634938537406,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-ubatch-screen-20260813-s1",
+            "file_sha256": "f8c6025583168a9b3d0dee955c7c3e8d3822aaa6648d14ff5e1221994c6ad188",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-ubatch-screen-20260813-s1/result.json",
+            "receipt_sha256": "eea58695f5282ad9bf310f017404d3b1eb757433a9c1025c4ad794495e142a84"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:ubatch_size:512->256:prefill pp512",
+        "lane": "GPU",
+        "metric": "prefill_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.1910333837314117,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T18:00:28Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "512 \u2192 256",
+        "workload": "MI210 prefill pp512"
+      },
+      {
+        "candidate": "source_patch",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 7.87 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": 0.019919553297954255,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-q4k-onewave-tg128-screen-20260813-s2",
+            "file_sha256": "4a785daa4b4feff98f1c47dd42610cfbf383cc708306233363ae5e61ec5425dc",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-q4k-onewave-tg128-screen-20260813-s2/result.json",
+            "receipt_sha256": "bb4603704ef9eceaf5db858edabdf90e05ce39c88ca3b15aebd8930d08b4f198"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:source_patch:0db32c06e3e5->dcd2935b26f3:decode tg128",
+        "lane": "GPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.0787428094927396,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T21:12:28Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "0db32c06e3e5 \u2192 dcd2935b26f3",
+        "workload": "MI210 decode tg128"
+      },
+      {
+        "candidate": "gpu_helper_threads",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 4.05 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": 0.017216551163065023,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-graphs-on-helper-threads-12-decode-tg128-screen-20260813-s1",
+            "file_sha256": "b6820b54d892209d5fbb1b27ee8cf035761bd0f4d6e4f64bb32d6996074adf8d",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-on-helper-threads-12-decode-tg128-screen-20260813-s1/result.json",
+            "receipt_sha256": "08a09339e7665ddf230d1fd7272c66d8ac54a8c028e1e2534654cb222e45904a"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:gpu_helper_threads:8->12:decode tg128",
+        "lane": "GPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.04049803571435373,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T19:51:48Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "8 \u2192 12",
+        "workload": "MI210 decode tg128"
+      },
+      {
+        "candidate": "gpu_helper_threads",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 3+3 vector; 11.51 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": 0.01678706290032213,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-helper-threads-16-screen-20260813-s1",
+            "file_sha256": "0b77687c215d135cd915767ae7a7ead1233af84ecd135ca805479abaed17f624",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-helper-threads-16-screen-20260813-s1/result.json",
+            "receipt_sha256": "99d0adb89cac97b9e03037c770b5be9df483913809a84cfdc9308ba0b97c9c0b"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:gpu_helper_threads:8->16:prefill pp512",
+        "lane": "GPU",
+        "metric": "prefill_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.11507778514420626,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T18:03:33Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "8 \u2192 16",
+        "workload": "MI210 prefill pp512"
+      },
+      {
+        "candidate": "ubatch_size",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 3.99 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": 0.01626656696881831,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-graphs-on-ubatch-down-decode-tg128-screen-20260813-s1",
+            "file_sha256": "711835f59f8c53cf5861a365e17b10fb94464a68c5737ccd921cd90193f8c016",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-on-ubatch-down-decode-tg128-screen-20260813-s1/result.json",
+            "receipt_sha256": "c0a731b29751ac0badc4fa5d90ef284c93c60c2da08bcc602beca5d7e1c8262f"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:ubatch_size:512->256:decode tg128",
+        "lane": "GPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.03991675618112381,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T19:54:39Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "512 \u2192 256",
+        "workload": "MI210 decode tg128"
+      },
+      {
+        "candidate": "source_patch",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 7.05 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": 0.014670578756915098,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-rope64-tg128-screen-20260813-s2",
+            "file_sha256": "416cb0d2b7c6cebb79f2fcc5a01baff139b318272cd9c9ed6c857ee1438ead4e",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-rope64-tg128-screen-20260813-s2/result.json",
+            "receipt_sha256": "6b8a62747ec28212219a615748349351368c86ac710d873e2644cbefecd8c606"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:source_patch:0db32c06e3e5->874cb02208b5:decode tg128",
+        "lane": "GPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.07049907016540849,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T21:03:13Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "0db32c06e3e5 \u2192 874cb02208b5",
+        "workload": "MI210 decode tg128"
+      },
+      {
+        "candidate": "batch_size",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 4.41 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": 0.01445320984136037,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-graphs-on-batch-down-decode-tg128-screen-20260813-s2",
+            "file_sha256": "ae8ee4733d2155defbf3aa3902f7c54f07eab1f917c743a4098099945bbbe6e8",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-on-batch-down-decode-tg128-screen-20260813-s2/result.json",
+            "receipt_sha256": "ba92a94c5f3908f9a53a66ac9949c0a743dfc308917d1cc73969d58c7c811acd"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:batch_size:512->256:decode tg128",
+        "lane": "GPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.04409884118395531,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T19:51:14Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "512 \u2192 256",
+        "workload": "MI210 decode tg128"
+      },
+      {
+        "candidate": "op_offload",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 3.01 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": 0.013908313526041978,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-graphs-on-op-offload-off-decode-tg128-screen-20260813-s1",
+            "file_sha256": "5fe6fbe4775274262277d77f1aa705832db8724e1ccd58c428e68571cce7c601",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-on-op-offload-off-decode-tg128-screen-20260813-s1/result.json",
+            "receipt_sha256": "64f95030850b18afa23d241433f99487679300c7fe8788be07c8edc0e4efa055"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:op_offload:ON->OFF:decode tg128",
+        "lane": "GPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.030115800120125796,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T19:54:05Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "ON \u2192 OFF",
+        "workload": "MI210 decode tg128"
+      },
+      {
+        "candidate": "op_offload",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 3+3 vector; 54.63 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": 0.013302425412221675,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-op-offload-screen-20260813-s1",
+            "file_sha256": "e5d222c9a8be18753a570e206cbd9892fdf45f2b77ce452c24db5972171a4fac",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-op-offload-screen-20260813-s1/result.json",
+            "receipt_sha256": "d78997121d25b19f6c1aa0b750c2ab025fe7bd40a544409b551a7e004eba2391"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:op_offload:ON->OFF:prefill pp512",
+        "lane": "GPU",
+        "metric": "prefill_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.5463211828904689,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T18:03:01Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "ON \u2192 OFF",
+        "workload": "MI210 prefill pp512"
+      },
+      {
+        "candidate": "GGML_HIP_ROCWMMA_FATTN",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 4.88 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": 0.012971271141879279,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-rocwmma-fattn-on-decode-tg128-screen-20260813-s2",
+            "file_sha256": "8c5ee9fbcdf9a8deae42442d29323cd50c830cff5507152ebdcecc9febfb0dd7",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-rocwmma-fattn-on-decode-tg128-screen-20260813-s2/result.json",
+            "receipt_sha256": "cb2b70d788602862b0f3dee21a700ca0a96499f7fad46997859bf5eecb028231"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:GGML_HIP_ROCWMMA_FATTN:OFF->ON:decode tg128",
+        "lane": "GPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.048770490800646396,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T19:41:56Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "OFF \u2192 ON",
+        "workload": "MI210 decode tg128"
+      },
+      {
+        "candidate": "ubatch_size",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 6.73 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": 0.006375053436007026,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-graphs-off-ubatch-up-decode-tg128-screen-20260813-s1",
+            "file_sha256": "d32d5d01819393d9b36ec55d8f4c278bd15033c0748ba76922abdfbdcd92b061",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-off-ubatch-up-decode-tg128-screen-20260813-s1/result.json",
+            "receipt_sha256": "a953abfc84a0c757abc7dc660ca2a76efbfa3384564571274f9decf6789ee726"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:ubatch_size:512->1024:decode tg128",
+        "lane": "GPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.06730482715635977,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T19:29:59Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "512 \u2192 1024",
+        "workload": "MI210 decode tg128"
+      },
+      {
+        "candidate": "batch_size",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 3+3 vector; 52.54 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": 0.005937919574430481,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-batch-up-screen-20260813-s1",
+            "file_sha256": "630f82b71e51dbfb50a82b2912982b1d6998ea84eb05dfbb3b52a621b4da50cd",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-batch-up-screen-20260813-s1/result.json",
+            "receipt_sha256": "e7df3cf375028012b8441622c1be151c26c154ec41d10439f456fce3abc9223d"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:batch_size:512->1024:prefill pp512",
+        "lane": "GPU",
+        "metric": "prefill_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.5253933816507947,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T18:05:36Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "512 \u2192 1024",
+        "workload": "MI210 prefill pp512"
+      },
+      {
+        "candidate": "source_patch",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 4.29 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": 0.003313242012254847,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-rope64-q4k-onewave-tg128-screen-20260813-s2",
+            "file_sha256": "ebb36ece4157441d55972ec15baf8d4f46dbcbf6530300740c587cecb043e417",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-rope64-q4k-onewave-tg128-screen-20260813-s2/result.json",
+            "receipt_sha256": "2be8f068622b5754127e51f31ea7c02b7d63e65ffdd70cc5e896218e022605be"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:source_patch:0db32c06e3e5->d7e77599a507:decode tg128",
+        "lane": "GPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.042903019787533504,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T21:17:11Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "0db32c06e3e5 \u2192 d7e77599a507",
+        "workload": "MI210 decode tg128"
+      },
+      {
+        "candidate": "gpu_helper_threads",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 15.06 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": 0.0026504157026748516,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-graphs-off-helper-threads-24-decode-tg128-screen-20260813-s1",
+            "file_sha256": "5e0f106bcf2502cae0ba0a274213c3d658bdb2ea5662aa20d7d0e3aa6e004654",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-off-helper-threads-24-decode-tg128-screen-20260813-s1/result.json",
+            "receipt_sha256": "8792a8236237fe579b6f8db2cdaf97edc705103f2816fe0f4222576c6d0bae54"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:gpu_helper_threads:8->24:decode tg128",
+        "lane": "GPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.15062762388352752,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T19:29:21Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "8 \u2192 24",
+        "workload": "MI210 decode tg128"
+      },
+      {
+        "candidate": "mmap",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 4.09 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": 0.0021815348600911534,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-graphs-on-mmap-off-decode-tg128-screen-20260813-s1",
+            "file_sha256": "a16b2c9b6afecd579cf7aa8da4bc254515a13c7fa2558dac26cc38299a1b8a6a",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-on-mmap-off-decode-tg128-screen-20260813-s1/result.json",
+            "receipt_sha256": "3e4f3f3ed7fce0456b56f6be9ef9962b6bcc80ca0264c414a9b247b7103985e8"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:mmap:ON->OFF:decode tg128",
+        "lane": "GPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.04091754351828479,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T19:53:30Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "ON \u2192 OFF",
+        "workload": "MI210 decode tg128"
+      },
+      {
+        "candidate": "GGML_HIP_MMQ_MFMA",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 3.43 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": 0.00011027883200507693,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-mmq-mfma-off-decode-tg128-screen-20260813-s3",
+            "file_sha256": "f9cab49a191ecc58f0b16b1fd8fa814b3c723acacead4f189d8c0f2377d0836f",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-mmq-mfma-off-decode-tg128-screen-20260813-s3/result.json",
+            "receipt_sha256": "ae04f2153d3905fd9c7761f0c65a057f3868e5a22e5b4c2c14f8a59b6499b273"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:GGML_HIP_MMQ_MFMA:ON->OFF:decode tg128",
+        "lane": "GPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.034323395275533526,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T19:46:23Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "ON \u2192 OFF",
+        "workload": "MI210 decode tg128"
+      },
+      {
+        "candidate": "source_patch",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 5.19 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": -0.0006306608777196349,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-q8-block128-tg128-screen-20260813-s2",
+            "file_sha256": "63071fb35ae9cd4a0e2546273b3142be13d09b59951865ff991755d688f20e9a",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-q8-block128-tg128-screen-20260813-s2/result.json",
+            "receipt_sha256": "98cf18974a66be24fa7c7ac511444bae9288a1459bbf683c5139f2c0147be1bf"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:source_patch:0db32c06e3e5->684c16e8698b:decode tg128",
+        "lane": "GPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.051887361411929865,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T20:57:39Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "0db32c06e3e5 \u2192 684c16e8698b",
+        "workload": "MI210 decode tg128"
+      },
+      {
+        "candidate": "gpu_poll",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 4.61 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": -0.0007474756595768397,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-graphs-on-poll-zero-decode-tg128-screen-20260813-s1",
+            "file_sha256": "13251e173e0c35c0cd3ddb29181036203788df40b0ecbabb05de0bc977314a5f",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-on-poll-zero-decode-tg128-screen-20260813-s1/result.json",
+            "receipt_sha256": "1a14c8a107977450f108f837dd96d46b91c970516a1e52958a4039d39bd993ea"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:gpu_poll:50->0:decode tg128",
+        "lane": "GPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.04612316997738264,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T19:52:56Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "50 \u2192 0",
+        "workload": "MI210 decode tg128"
+      },
+      {
+        "candidate": "gpu_helper_threads",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 14.22 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": -0.0021793704173314345,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-graphs-on-helper-threads-4-decode-tg128-screen-20260813-s2",
+            "file_sha256": "cf81235d60cfacae49cc41f7d89ad5438b37cc80b8cb5f159246799a9dd16e08",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-on-helper-threads-4-decode-tg128-screen-20260813-s2/result.json",
+            "receipt_sha256": "c7156d9047b12ab95448aa978cdf46278291d03be46b388d0bf8fae1a76521b1"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:gpu_helper_threads:8->4:decode tg128",
+        "lane": "GPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.14221769090039232,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T19:50:40Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "8 \u2192 4",
+        "workload": "MI210 decode tg128"
+      },
+      {
+        "candidate": "source_patch",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 5.89 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": -0.004794482542046476,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-q6k-onewave-tg128-20260813-s1",
+            "file_sha256": "d82249550753d03647ac1271050435a4bde1443575ebae3d79472b29b097e42b",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-q6k-onewave-tg128-20260813-s1/result.json",
+            "receipt_sha256": "4fb8ccaab30fdf3128962fa00598a39d3ce87afd3f8e0f6977ed8c5f9e8b13ae"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:source_patch:0db32c06e3e5->de1f1b844865:decode tg128",
+        "lane": "GPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.05894783796183742,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T21:47:12Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "0db32c06e3e5 \u2192 de1f1b844865",
+        "workload": "MI210 decode tg128"
+      },
+      {
+        "candidate": "gpu_helper_threads",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 3.49 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": -0.008343927513405541,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-graphs-off-helper-threads-16-decode-tg128-screen-20260813-s1",
+            "file_sha256": "f61c0ed7c719f98062aaecff9b2d83092a861e028b313b345804bd5f4db5ace8",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-off-helper-threads-16-decode-tg128-screen-20260813-s1/result.json",
+            "receipt_sha256": "094d3ffe1d5959b26542e375c593594e4fd87d6c53d6524c44d1594c04d0e1f5"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:gpu_helper_threads:8->16:decode tg128",
+        "lane": "GPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.03493216329575689,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T19:27:14Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "8 \u2192 16",
+        "workload": "MI210 decode tg128"
+      },
+      {
+        "candidate": "gpu_poll",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 5+5 vector; 70.25 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": -0.008638954728971176,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-poll-zero-screen-20260813-s2",
+            "file_sha256": "510950b608ebdb1a17da83e7c3ed6cdf8cedddbebc31a50110a91b83d4c56e9b",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-poll-zero-screen-20260813-s2/result.json",
+            "receipt_sha256": "448a7dcfe889750160e989f983dead98e536592c93800af2e24dc6ae2a0757f3"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:gpu_poll:50->0:prefill pp512",
+        "lane": "GPU",
+        "metric": "prefill_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.7025294803612079,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T18:09:44Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "50 \u2192 0",
+        "workload": "MI210 prefill pp512"
+      },
+      {
+        "candidate": "source_patch",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 11.39 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": -0.009203596532403486,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-q8-vec4-tg128-screen-20260813-s1",
+            "file_sha256": "12b429f0172e0a12c7b49ae97e7370cbfcc48225db3fc8a6660baba92bd6a23c",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-q8-vec4-tg128-screen-20260813-s1/result.json",
+            "receipt_sha256": "a36d806424a6b526db242960c6e49d2c63e86abceb4944624155d679a76a18ef"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:source_patch:0db32c06e3e5->c882db4f682e:decode tg128",
+        "lane": "GPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.11394993339477888,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T20:51:15Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "0db32c06e3e5 \u2192 c882db4f682e",
+        "workload": "MI210 decode tg128"
+      },
+      {
+        "candidate": "source_patch",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 6.99 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": -0.009805124133831446,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-rms128-tg128-screen-20260813-s1",
+            "file_sha256": "58ebb54f4d5cc444e551458fa330d8cb00bf0ae67eb78befa6df3203533aeaa4",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-rms128-tg128-screen-20260813-s1/result.json",
+            "receipt_sha256": "d26e6712b7d3c7e312de20ee4eb74b9ad602b9abb111ac2cd6a5decce5680330"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:source_patch:0db32c06e3e5->9741046c580e:decode tg128",
+        "lane": "GPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.06991495877515125,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T21:07:27Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "0db32c06e3e5 \u2192 9741046c580e",
+        "workload": "MI210 decode tg128"
+      },
+      {
+        "candidate": "source_patch",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 3.76 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": -0.009830455418071184,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-fattn-d64-singlecol-tg128-screen-20260813-s3",
+            "file_sha256": "bacc66f6898c589e48a0ad66ded150f9c2a8b663506624c4286bf7826dc53c76",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-fattn-d64-singlecol-tg128-screen-20260813-s3/result.json",
+            "receipt_sha256": "b344786aadcae8d7a38674934eeb7f53dc635bbb7fa536d50e9bb50ffd789eb5"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:source_patch:0db32c06e3e5->a80f96cb2a88:decode tg128",
+        "lane": "GPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.03759866815234623,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T20:25:39Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "0db32c06e3e5 \u2192 a80f96cb2a88",
+        "workload": "MI210 decode tg128"
+      },
+      {
+        "candidate": "source_patch",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 9+9 vector; 17.49 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": -0.018068395524266558,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-fattn-vec-d64-gqa7-tg128-20260813-s2",
+            "file_sha256": "de28e0493db482645ef154d1265d2a5a9b80b7cfe0981c67373191e297ea409e",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-fattn-vec-d64-gqa7-tg128-20260813-s2/result.json",
+            "receipt_sha256": "e4d240c90ace096171adbf21c82dd872d01febc80718071e6bfcab771e4e9dea"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:source_patch:0db32c06e3e5->20847108c632:decode tg128",
+        "lane": "GPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.17485865631325748,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T21:36:34Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "0db32c06e3e5 \u2192 20847108c632",
+        "workload": "MI210 decode tg128"
+      },
+      {
+        "candidate": "gpu_helper_threads",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 5+5 vector; 34.93 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": -0.08114958659151802,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-helper-threads-12-screen-20260813-s2",
+            "file_sha256": "565dba831a0fde51bfb992a2e285f68916e5f5b906dd3a9fa37ebd61657f4bc1",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-helper-threads-12-screen-20260813-s2/result.json",
+            "receipt_sha256": "6f2bd7401cadfe05f1e286e6f1f45abba80c6d85d93e7d731dd92fe20da78625"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:gpu_helper_threads:8->12:prefill pp512",
+        "lane": "GPU",
+        "metric": "prefill_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.34926429445576007,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T18:36:19Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "8 \u2192 12",
+        "workload": "MI210 prefill pp512"
+      },
+      {
+        "candidate": "source_patch",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; high-dispersion 9+9 vector; 11.18 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": -0.10535676737234471,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-q5-nwarps4-tg128-screen-20260813-s2",
+            "file_sha256": "5a1a17f913500658cb2a05a1e5515178fcc15cbcf5edcce9cc681d5b8de21a5f",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-q5-nwarps4-tg128-screen-20260813-s2/result.json",
+            "receipt_sha256": "c2d697a9e278cdaf76ccb45aee48c10fbf4c2960b41ad3f64fc44339d3c036c0"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:source_patch:0db32c06e3e5->bdf9cb31edb0:decode tg128",
+        "lane": "GPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.1117672592174726,
+          "sign_conflict": false
+        },
+        "observed_at": "2026-08-13T20:40:14Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "0db32c06e3e5 \u2192 bdf9cb31edb0",
+        "workload": "MI210 decode tg128"
+      },
+      {
+        "candidate": "GGML_HIP_GRAPHS",
+        "champion": false,
+        "confidence": "directional / unquantified noise (9+9 calls; HIP resident)",
+        "current_gate": "screened out by sign-consistent discovery result",
+        "effect_fraction": -0.11994296328440618,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-hip-graphs-off-decode-tg128-screen-20260813-s1",
+            "file_sha256": "bb9b4650aaa5f35cc365555ee30e87852581e7e5139f2eee3a08f110b0e7ac4d",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-hip-graphs-off-decode-tg128-screen-20260813-s1/result.json",
+            "receipt_sha256": "30d49f498797996aeb5c8102e737da46e01248b269663df1d02062a6452337ab"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:GGML_HIP_GRAPHS:ON->OFF:decode tg128",
+        "lane": "GPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retain as an abandoned strategy; revisit only with a new rationale.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.0445634825707386,
+          "sign_conflict": false
+        },
+        "observed_at": "2026-08-13T19:26:13Z",
+        "promotable": false,
+        "stage": "screened_out",
+        "transition": "ON \u2192 OFF",
+        "workload": "MI210 decode tg128"
+      },
+      {
+        "candidate": "gpu_helper_threads",
+        "champion": false,
+        "confidence": "directional / unquantified noise (3+3 calls; HIP resident)",
+        "current_gate": "screened out by sign-consistent discovery result",
+        "effect_fraction": -0.1529667018058367,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-helper-threads-24-screen-20260813-s1",
+            "file_sha256": "aa275b47404ba423be2c6faab913e4472c47f8b49622f3df2c8a342bc9eaec44",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-helper-threads-24-screen-20260813-s1/result.json",
+            "receipt_sha256": "6ddce5e02959c4da66d35f35348d4399e4cb945a2f93441e35a4c8abe9f4b988"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:gpu_helper_threads:8->24:prefill pp512",
+        "lane": "GPU",
+        "metric": "prefill_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retain as an abandoned strategy; revisit only with a new rationale.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.06127388726589077,
+          "sign_conflict": false
+        },
+        "observed_at": "2026-08-13T18:06:32Z",
+        "promotable": false,
+        "stage": "screened_out",
+        "transition": "8 \u2192 24",
+        "workload": "MI210 prefill pp512"
+      },
+      {
+        "candidate": "gpu_helper_threads",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; high-dispersion 3+3 vector; 12.45 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": -0.19369503736002933,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-helper-threads-screen-20260813-s1",
+            "file_sha256": "635e6c22fdd221edae290fdbee09c0c3e2386dffce96389d6fe5565f4d1d9666",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-helper-threads-screen-20260813-s1/result.json",
+            "receipt_sha256": "2fd3d9113557829b83866a9aaaf2f76796134e9ca1cf75bc537e981fecd2121e"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:gpu_helper_threads:8->4:prefill pp512",
+        "lane": "GPU",
+        "metric": "prefill_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.12449704582437418,
+          "sign_conflict": false
+        },
+        "observed_at": "2026-08-13T18:00:09Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "8 \u2192 4",
+        "workload": "MI210 prefill pp512"
+      },
+      {
+        "candidate": "GGML_HIP_ROCWMMA_FATTN",
+        "champion": false,
+        "confidence": "inconclusive: CPU-overlap discovery noise; sign-conflicted 3+3 vector; 39.55 pp spread",
+        "current_gate": "clean/windowed discovery retest",
+        "effect_fraction": -0.21654238599547976,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-rocwmma-fattn-screen-20260813-s2",
+            "file_sha256": "d69a930d4f45250360188a3be91c74c51844f7527a1974ad3039ab90cb416d92",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-rocwmma-fattn-screen-20260813-s2/result.json",
+            "receipt_sha256": "451acc5a650d5b01e40381eb43e1ed5e459663f14eff80c7ecfb5d1a623a37c9"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:GGML_HIP_ROCWMMA_FATTN:OFF->ON:prefill pp512",
+        "lane": "GPU",
+        "metric": "prefill_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retest under shared model-call windows; do not interpret the median as a negative conclusion.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.39546924553011514,
+          "sign_conflict": true
+        },
+        "observed_at": "2026-08-13T17:53:49Z",
+        "promotable": false,
+        "stage": "inconclusive",
+        "transition": "OFF \u2192 ON",
+        "workload": "MI210 prefill pp512"
+      },
+      {
+        "candidate": "batch_size",
+        "champion": false,
+        "confidence": "directional / unquantified noise (5+5 calls; HIP resident)",
+        "current_gate": "screened out by sign-consistent discovery result",
+        "effect_fraction": -0.27043813791207766,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-graphs-off-batch-down-screen-20260813-s1",
+            "file_sha256": "7728568a7424bc53e9f75ab728a327ab5d6f5bb3babb7bc6885bcb661b9556a1",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-off-batch-down-screen-20260813-s1/result.json",
+            "receipt_sha256": "4b9ff979ab6a9813f6029d91fafe6d3642bfd6b765dfa77242ced1e192572b8e"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:batch_size:512->256:prefill pp512",
+        "lane": "GPU",
+        "metric": "prefill_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retain as an abandoned strategy; revisit only with a new rationale.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.049759123534716176,
+          "sign_conflict": false
+        },
+        "observed_at": "2026-08-13T18:38:38Z",
+        "promotable": false,
+        "stage": "screened_out",
+        "transition": "512 \u2192 256",
+        "workload": "MI210 prefill pp512"
+      },
+      {
+        "candidate": "kv_offload",
+        "champion": false,
+        "confidence": "directional / unquantified noise (9+9 calls; HIP resident)",
+        "current_gate": "screened out by sign-consistent discovery result",
+        "effect_fraction": -0.37047168858725577,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-graphs-off-kv-offload-off-decode-tg128-screen-20260813-s1",
+            "file_sha256": "7f513f55f9de3aa583fde55c7420f132acb0d6095519148bef4a190f84a1179e",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-off-kv-offload-off-decode-tg128-screen-20260813-s1/result.json",
+            "receipt_sha256": "cbd5ea345bb617ec91ce345916fc40afb87c320316e5027f546b6b9dc6ef651e"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:kv_offload:ON->OFF:decode tg128",
+        "lane": "GPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retain as an abandoned strategy; revisit only with a new rationale.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.06140814276196366,
+          "sign_conflict": false
+        },
+        "observed_at": "2026-08-13T19:32:38Z",
+        "promotable": false,
+        "stage": "screened_out",
+        "transition": "ON \u2192 OFF",
+        "workload": "MI210 decode tg128"
+      },
+      {
+        "candidate": "kv_offload",
+        "champion": false,
+        "confidence": "directional / unquantified noise (3+3 calls; HIP resident)",
+        "current_gate": "screened out by sign-consistent discovery result",
+        "effect_fraction": -0.4909282847387409,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-kv-offload-screen-20260813-s1",
+            "file_sha256": "0f050d9d491185ce0244b9adcd810b3d07668d99c5a09b961345daa068178105",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-kv-offload-screen-20260813-s1/result.json",
+            "receipt_sha256": "4ac1f477ae88e98d1ae779063f818f6edc304b376b51ae74f4dadeea95e8b8d0"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:kv_offload:ON->OFF:prefill pp512",
+        "lane": "GPU",
+        "metric": "prefill_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Retain as an abandoned strategy; revisit only with a new rationale.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.03145666607697778,
+          "sign_conflict": false
+        },
+        "observed_at": "2026-08-13T18:04:09Z",
+        "promotable": false,
+        "stage": "screened_out",
+        "transition": "ON \u2192 OFF",
+        "workload": "MI210 prefill pp512"
+      }
+    ],
+    "accepted": [
+      {
+        "candidate": "GGML_IQK",
+        "champion": false,
+        "confidence": "calibrated paired (15 blocks)",
+        "current_gate": "held-out matched regime",
+        "effect_fraction": 0.28860648431192276,
+        "evidence": [
+          {
+            "campaign_id": "ak-iqk-screen-20260813-s7",
+            "file_sha256": "4350648c7913254468bf9b907ad912a4c71a4d11690e21891d2ed1f34f6bee15",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-iqk-screen-20260813-s7/result.json",
+            "receipt_sha256": null
+          },
+          {
+            "campaign_id": "ak-iqk-v9-20260813-r43",
+            "file_sha256": "da3eefae747194cda0c3027badb75fc3e63e4a88ccbdf7ca89fa734a3d6614fd",
+            "path": "/mnt/raid0/llm/autokernel/r43-i-execute.json",
+            "receipt_sha256": null
+          }
+        ],
+        "evidence_tier": "strict",
+        "key": "cpu:GGML_IQK:prefill pp512",
+        "lane": "CPU",
+        "metric": "prefill_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Run the required distinct-regime held-out pair.",
+        "observed_at": "2026-08-13T16:38:40+00:00",
+        "promotable": false,
+        "stage": "strict_keep",
+        "transition": "0 \u2192 1",
+        "workload": "prefill pp512"
+      }
+    ],
+    "pursued": [
+      {
+        "candidate": "GGML_IQK",
+        "champion": false,
+        "confidence": "directional / unquantified noise (3 candidate calls)",
+        "current_gate": "strict matched confirmation",
+        "effect_fraction": 0.07939338627835799,
+        "evidence": [
+          {
+            "campaign_id": "ak-iqk-decode-screen-20260813-s1",
+            "file_sha256": "d7dbdf24e20747382f38e2a7c184e9fa9f5e4995fd6f58d9defdf4dc9e686beb",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-iqk-decode-screen-20260813-s1/result.json",
+            "receipt_sha256": null
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "cpu:GGML_IQK:decode tg128",
+        "lane": "CPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Run a calibrated paired confirmation; keep promotion authority false.",
+        "observed_at": "2026-08-13T16:30:31+00:00",
+        "promotable": false,
+        "stage": "candidate",
+        "transition": "0 \u2192 1",
+        "workload": "decode tg128"
+      },
+      {
+        "candidate": "GGML_HIP_MMQ_MFMA",
+        "champion": false,
+        "confidence": "directional / unquantified noise (3+3 calls; HIP resident)",
+        "current_gate": "correctness + strict matched confirmation",
+        "effect_fraction": 0.2659649876144406,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-mmq-mfma-screen-20260813-s2",
+            "file_sha256": "9508396b5793568b9a458f1bc9374d6cf3855ca0872ab613768099e2654c0887",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-mmq-mfma-screen-20260813-s2/result.json",
+            "receipt_sha256": "a4d2e058acf32d82020072d04c3e873d6c3aff952656e75a364b5835023be973"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:GGML_HIP_MMQ_MFMA:ON->OFF:prefill pp512",
+        "lane": "GPU",
+        "metric": "prefill_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Confirm correctness, then run promotion-grade paired evidence.",
+        "noise": {
+          "cpu_overlap_policy": null,
+          "effect_spread_fraction": 0.006014059713097486,
+          "sign_conflict": false
+        },
+        "observed_at": "2026-08-13T16:37:46Z",
+        "promotable": false,
+        "stage": "candidate",
+        "transition": "ON \u2192 OFF",
+        "workload": "MI210 prefill pp512"
+      },
+      {
+        "candidate": "mmap",
+        "champion": false,
+        "confidence": "directional / unquantified noise (3+3 calls; HIP resident)",
+        "current_gate": "correctness + strict matched confirmation",
+        "effect_fraction": 0.07283140463603155,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-mmap-screen-20260813-s1",
+            "file_sha256": "56d5c854bdd75b1433221bcd10f631759072aeadd5d62210423d73de42394c0c",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-mmap-screen-20260813-s1/result.json",
+            "receipt_sha256": "d6c0f38642621d3195f06747022c350a263b58f2f5667b3a524e0a3f927e4648"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:mmap:ON->OFF:prefill pp512",
+        "lane": "GPU",
+        "metric": "prefill_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Confirm correctness, then run promotion-grade paired evidence.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.0827561457489752,
+          "sign_conflict": false
+        },
+        "observed_at": "2026-08-13T18:00:48Z",
+        "promotable": false,
+        "stage": "candidate",
+        "transition": "ON \u2192 OFF",
+        "workload": "MI210 prefill pp512"
+      },
+      {
+        "candidate": "flash_attention",
+        "champion": false,
+        "confidence": "directional / unquantified noise (3+3 calls; HIP resident)",
+        "current_gate": "correctness + strict matched confirmation",
+        "effect_fraction": 0.04879110132919527,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-flash-attn-screen-20260813-s1",
+            "file_sha256": "0caa563c2b9f35e3edc66c6550b6175dcf456c8e5d302f2a1cdcadb91c16cdfa",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-flash-attn-screen-20260813-s1/result.json",
+            "receipt_sha256": "89f7123049336d9f49f2592faeb3376b5f028d2e8145813ba4ebabaa2f1a285b"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:flash_attention:OFF->ON:prefill pp512",
+        "lane": "GPU",
+        "metric": "prefill_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Confirm correctness, then run promotion-grade paired evidence.",
+        "noise": {
+          "cpu_overlap_policy": null,
+          "effect_spread_fraction": 0.007115786514055443,
+          "sign_conflict": false
+        },
+        "observed_at": "2026-08-13T16:45:59Z",
+        "promotable": false,
+        "stage": "candidate",
+        "transition": "OFF \u2192 ON",
+        "workload": "MI210 prefill pp512"
+      },
+      {
+        "candidate": "flash_attention",
+        "champion": false,
+        "confidence": "directional / unquantified noise (9+9 calls; HIP resident)",
+        "current_gate": "correctness + strict matched confirmation",
+        "effect_fraction": 0.029648280608146747,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-graphs-on-flash-attn-on-decode-tg128-screen-20260813-s2",
+            "file_sha256": "1ff1c497df2b094d7e69c5a09c760bc04dd6a2ba455b8ec4cd68c9fa886c5938",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-on-flash-attn-on-decode-tg128-screen-20260813-s2/result.json",
+            "receipt_sha256": "1306017920837f83e2eb09f1ddcfaae2901d308f9f40d44eda77afcfe48176f6"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:flash_attention:OFF->ON:decode tg128",
+        "lane": "GPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Confirm correctness, then run promotion-grade paired evidence.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.028034567200718955,
+          "sign_conflict": false
+        },
+        "observed_at": "2026-08-13T19:48:57Z",
+        "promotable": false,
+        "stage": "candidate",
+        "transition": "OFF \u2192 ON",
+        "workload": "MI210 decode tg128"
+      },
+      {
+        "candidate": "batch_size",
+        "champion": false,
+        "confidence": "directional / unquantified noise (9+9 calls; HIP resident)",
+        "current_gate": "correctness + strict matched confirmation",
+        "effect_fraction": 0.013335938850921627,
+        "evidence": [
+          {
+            "campaign_id": "ak-gpu-graphs-on-batch-up-decode-tg128-screen-20260813-s1",
+            "file_sha256": "c42d7110521e63d8c61c6d99ce7d00771c6fb9f06b358fccd3a086d713278c99",
+            "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-graphs-on-batch-up-decode-tg128-screen-20260813-s1/result.json",
+            "receipt_sha256": "219039712f8ae15725d8422a7245943ccfb436fb532639ffcee23d6688e850f1"
+          }
+        ],
+        "evidence_tier": "screening",
+        "key": "gpu:batch_size:512->1024:decode tg128",
+        "lane": "GPU",
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "next_action": "Confirm correctness, then run promotion-grade paired evidence.",
+        "noise": {
+          "cpu_overlap_policy": "allowed_discovery_noise",
+          "effect_spread_fraction": 0.02859180567939274,
+          "sign_conflict": false
+        },
+        "observed_at": "2026-08-13T19:52:22Z",
+        "promotable": false,
+        "stage": "candidate",
+        "transition": "512 \u2192 1024",
+        "workload": "MI210 decode tg128"
+      }
+    ]
+  },
+  "unexplored": [
+    {
+      "evidence": {
+        "campaign_id": "ak-gpu-split-row-screen-20260813-s1",
+        "file_sha256": "46031442617486a6da30a9a8acf200471c62f6295936551459c3e7bee9686e77",
+        "path": "/mnt/raid0/llm/autokernel/screens/ak-gpu-split-row-screen-20260813-s1.preflight.json",
+        "receipt_sha256": null
+      },
+      "hypothesis": "split_mode",
+      "lane": "GPU",
+      "next_action": "Execute the sealed 3+3 nonpromotable screen.",
+      "state": "preflight_ready",
+      "workload": "MI210 prefill pp512"
+    }
+  ]
+}

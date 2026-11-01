@@ -40,10 +40,11 @@ def test_actual_terminal_writer_reader_and_page(tmp_path, monkeypatch, producer,
     assert ("FINAL REPORT" if state == "complete" else "FAILED REPORT") in badge
     assert "old" in badge and "STALE" not in badge
     assert "stale" not in rendered["class_by_id"]["fresh"]
-    assert "5 / 5" in rendered["by_id"]["tiles"]
-    assert "7.800%" in rendered["by_id"]["tiles"]
-    assert "measured dispersion of the ANCHOR on serving:fixture" in rendered["by_id"]["tiles"]
-    assert "ANCHOR's mean" not in rendered["by_id"]["tiles"]
+    assert "5 / 5" in rendered["by_id"]["ident"]
+    assert "7.800%" in rendered["by_id"]["ident"]
+    assert "noise floor</dt><dd>7.800%" in rendered["by_id"]["ident"]
+    assert "serving:fixture" in rendered["by_id"]["ident"]
+    assert "ANCHOR's mean" not in rendered["by_id"]["ident"]
     assert "final report" in rendered["by_id"]["banner"].lower() or state == "failed"
     assert path.read_bytes() == original
 

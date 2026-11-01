@@ -259,7 +259,9 @@ class TestTheRegistryCarriesOneKernelRnDRow(unittest.TestCase):
 
     def test_the_registry_and_the_served_pages_are_still_total_in_both_directions(self):
         rows = _rows()
-        hub_paths = {r["path"] for r in rows.values() if r["port"] == 8100}
+        # The actual HTTP handler normalizes a trailing slash before dispatch.
+        hub_paths = {r["path"].rstrip("/") or "/"
+                     for r in rows.values() if r["port"] == 8100}
         self.assertEqual(hub_paths, set(S.HTML_ROUTES),
                          "a registry row with no page is a nav link to a 404; a "
                          "page with no row is a surface nobody learns exists")
