@@ -1601,3 +1601,10 @@ Sources: [internal-kb-rag](../handoffs/active/internal-kb-rag.md) · [repl-embed
 - The separate PREFIX-4 follow-up has 44 cosine-computable rows: Reason 19 PASS / 3 NUMERIC_FAIL and LateOn 22 PASS at 1e-2. This follow-up is not an adoption verdict. Preserve both runs as nonterminal evidence and do not convert PREFIX-3’s unknown cosine into a negative or positive result.
 
 Sources: [ColBERT reranker web research](../handoffs/active/colbert-reranker-web-research.md) · [tick-science audit](../docs/reports/tick-science-audit-20261031.md) · [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md)
+
+
+## Compiled Update — 2026-11-01 (source-delta review)
+
+**Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
+
+- PREFIX-3 was reopened: Reason 22/22 output-contract mismatch and LateOn 22/22 token/position mismatch, cosine unknown. No parity or adoption is established despite follow-up work. [Source](../handoffs/active/colbert-reranker-web-research.md)

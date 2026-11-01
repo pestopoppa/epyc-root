@@ -3004,3 +3004,22 @@ Sources: [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-prog
 - Two preparation terminals are negative qualification evidence only: RUS-3-TRUNC's smoke failed rc1 before native events and lacked `latest-collection.json`; the F2 smoke timed out without an eligible GPU/q3 window. They produced no cohort or decode-stall result.
 
 Sources: [serving-harness fixes](../handoffs/active/agentic-serving-harness-fixes.md) · [KV unified-stack rollout](../handoffs/active/kv-unified-stack-rollout.md) · [REPL turn-efficiency handoff](../handoffs/active/repl-turn-efficiency.md) · [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md)
+
+## Compiled Update — 2026-11-01 (incremental source review)
+
+**Confidence: scoped to cited records and source controls.**
+
+- Stack launch validation now checks the resolved active template before capacity or launch effects; the older nine-error template inventory is historical. Same-ticket lease telemetry is a source-control result, not a reload. ([stack cutover](../handoffs/active/numa-topology-cutover-resume-20260730.md); [KVU](../handoffs/active/kv-unified-stack-rollout.md); [model integrity](../handoffs/active/model-artifact-integrity.md))
+- Queued qualification, keeper succession, midnight admission and exact row-text identity remain separate operational contracts; partial or failed launches do not become measurements. ([fleet backlog](../handoffs/active/non-inference-backlog.md); [loop fleet](../handoffs/active/loop-owned-fleet-implementation.md); [speculative harness](../handoffs/active/speculative-decoding-mtp-refresh.md))
+
+
+## Compiled Update — 2026-11-01 (source-delta review)
+
+**Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
+
+- The 27B post-compaction paired treatment timed out without exact restoration, so no paired cache/prompt measurements or keep verdict exists. Refusal records and parked-role escalation have source fixes with tests; live adoption is not implied. [Source](../handoffs/active/agentic-serving-harness-fixes.md)
+- A deterministic lock-fairness negative control passed 24 tests and deliberately fails the three FIFO-off assertions; source verification does not imply default-on deployment. Other additions repair historical evidence metadata. [Source](../handoffs/active/autokernel-unified-surface-program.md)
+- Opt-in machine frame drops only an equal duplicated alias; 143 API and 15 page controls passed. Fixture bytes reduced 47,524 to 24,580 and 91,652 to 46,835; no live bandwidth, producer-work or deployment outcome is claimed (APP ec6f8176; ROOT 8318ce32). [Source](../handoffs/active/dashboard-architecture-restructure.md)
+- Registry master ubatch default is corrected to 2048; both script executors do read it, contrary to the original premise. Lean compilation preserves 23 active roles; the separate shared full-registry target was still 8192 at observation, with no deployment claim. [Source](../handoffs/active/dynamic-stack-concurrency.md)
+- The production llama-server log-retention hole remains open: prior append change was in an uncalled legacy script and did not diagnose production. A later wrapper default-path fix is separate and cannot establish the cause of the historical gap. [Source](../handoffs/active/evidence-plane-instrument-repair.md)
+- GPU-ZOS atomic R6 captured 48 fresh responses with rc0 but decision is INCONCLUSIVE: the predeclared six-pass analysis equations are incomplete; prior S and NF are four-pass values. No SHIP. GPU-ZOS-2.2 is reopened because original kernel-store/independent-byte/GPU-test rule was not met. [Source](../handoffs/active/gpu-serving-tie-in-program.md)

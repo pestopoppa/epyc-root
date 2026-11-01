@@ -1056,7 +1056,7 @@ hold) — only the SECONDARY slot is re-scored._
   "operates exclusively on NVIDIA hardware"). Pair with its L1 AST blacklist scan. **Acceptance: mutation-test
   it** — a kernel that secretly calls the reference must be FLAGGED *and* the flag must be COUNTED by the
   reporter, per the eight-ways-a-check-passes-for-the-wrong-reason rule.
-- [ ] **RVP-C6-15 — Add a LIBRARY-SUBSTITUTION exploit case to the C6 hostile suite.** Detect a candidate
+- [x] ✅ 2026-11-01 — Research implementation `66085471f2af4020da9954606e5736cfb516725e`; test `scripts/kernel_rnd/c6_mutants/test_static.py` (16/16) and artifact `epyc-inference-research/artifacts/engineering/c6-library-substitution-20261031/verification.json`, proof `752196772d7005776a390700d1ff8c73afa546ff`; [no-belief: software source implementation and finite regression controls; no measurement] **RVP-C6-15 — Add a LIBRARY-SUBSTITUTION exploit case to the C6 hostile suite.** Detect a candidate
   satisfying the speedup reward by dispatching to rocBLAS/hipBLASLt/torch instead of executing generated
   code — an AST/dispatch-trace check, not a timing check. Live published precedent, not a hypothetical:
   `intake-1236#record` ships `CALL_LIBRARY` and `SOTA_TRITON_API` action tags in its released RL environment,

@@ -1436,3 +1436,11 @@ Sources: [episodic-memory-integrity](../handoffs/active/episodic-memory-integrit
 - **DeltaMem R13 is a partial native attempt.** The first repaired GPU run stopped at its deadline with 16/500 base source rows (eventqa 11/16, 0.6875 recall, F1 0.813) and no DeltaMem rows, so there is no Gate 2 comparison. ([delta-mem-reproduction](../handoffs/active/delta-mem-reproduction.md))
 
 Sources: [repl-session-memory-maturity](../handoffs/active/repl-session-memory-maturity.md) · [delta-mem-reproduction](../handoffs/active/delta-mem-reproduction.md) · [episodic-memory-integrity](../handoffs/active/episodic-memory-integrity.md) · [2026-10-30 progress](../progress/2026-10/2026-10-30.md)
+
+
+## Compiled Update — 2026-11-01 (source-delta review)
+
+**Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
+
+- A renewed 75-second GPU native smoke exercised one retrieval question and writer with cleanup; it is launcher qualification only, not the full INF-12 quality outcome. [Source](../handoffs/active/delta-mem-reproduction.md)
+- Explicit probe tags suppress immediate and replay episodic scoring; one literal matching row had 8,641 updates but historical request provenance is unknown. External rewards are outside this filter. Recall is seed/import/explicit-write scoped, not automatic live exploration learning; M-20 efficacy remains open. [Source](../handoffs/active/episodic-memory-integrity.md)

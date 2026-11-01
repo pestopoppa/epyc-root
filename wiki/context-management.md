@@ -1163,3 +1163,10 @@ Sources: [tool-output-compression](../handoffs/active/tool-output-compression.md
 - **`CompactionQualityMonitor` now survives checkpointing.** Orchestrator `30aa952e` serializes it through the LangGraph state projection and the existing `AsyncSqliteSaver` writer, restoring into a fresh TaskState (153 tests). Feature flags remain off; no live telemetry or measured effect. ([source](../handoffs/active/context-folding-progressive.md))
 
 Sources: [tool-output-compression](../handoffs/active/tool-output-compression.md) · [context-folding-progressive](../handoffs/active/context-folding-progressive.md) · [2026-10-31 progress](../progress/2026-10/2026-10-31.md)
+
+
+## Compiled Update — 2026-11-01 (source-delta review)
+
+**Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
+
+- The new CF-AKV-0 is a proposed zero-inference trace screen; the KV-drop probe is conditional on the specified 40% resident-old-tool-results and 20% above-48k thresholds. No outcome is reported. [Source](../handoffs/active/context-folding-progressive.md)

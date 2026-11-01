@@ -1420,3 +1420,17 @@ Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-
 **Confidence: verified** for source/test facts; one-run results are descriptive, not gates.
 
 - KV-6 canonicalization timing is descriptive: plain 0.0076 to 31.05 ms across 256 to 1M chars (shared host, non-gate). ([progress](../progress/2026-10/2026-10-31-kv6-canonicalization.md))
+
+## Compiled Update — 2026-11-01 (incremental source review)
+
+**Confidence: scoped to cited native records and source controls.**
+
+- KPF-18 code review found shared-prefix physical layout and extent-dependent attention partitioning consistent with the fork discrepancy, while missing cell/dispatch observations prevent causal attribution. Prospective recurrent-state tests and history-aware reuse are proposals, not measured fixes. ([KPF](../handoffs/active/kv-prefix-fork-and-paged-attention.md))
+- KVU admission telemetry now records same-ticket long-prefill ownership and observed lease-verdict wait in source controls, not a total queue-wait or live-serving distribution. A 384 MiB mask entry is distinct from the 48.565 GiB capped runtime peak. ([KVU](../handoffs/active/kv-unified-stack-rollout.md); [prefill gates](../handoffs/active/shape-keyed-contention-gating.md); [inference changes](../handoffs/active/stack-change-governance-pipeline.md))
+
+
+## Compiled Update — 2026-11-01 (source-delta review)
+
+**Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
+
+- Historical 2026-10-29 shared-host synthetic canonicalization timing, 4,014 calls: plain medians at 256/10k/100k/1m characters were 0.0076/0.2786/2.8303/31.0525 ms. They are wall times, not production latency or throughput; archival is not new code quota. [Source](../handoffs/active/attention-matching-kv-compaction.md)

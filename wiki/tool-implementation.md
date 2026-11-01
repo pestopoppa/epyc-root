@@ -1906,3 +1906,12 @@ Sources: [typed-decision-plane](../handoffs/active/typed-decision-plane.md) · [
 **Confidence: verified** for source/test facts; one-run results are descriptive, not gates.
 
 - TOC-MP-1 pointer custody repaired (47 tests); TOC-MP-2i default-off A/B arms (108 tests). Design finding: the REPL turn prompt carries no history and the 'full log' pointer targets a journal truncated to 200 chars. ([design](../docs/design/toc-mp-ab-design-20261031.md))
+
+## Compiled Update — 2026-11-01 (codex3 wrap-up)
+
+**Confidence: verified for published source and finite controls; no live performance or deployment conclusion.**
+
+- External seeding rewards prospectively carry bounded native provenance from role result through serialization into CREATE/UPDATE progress events (APP `7e67e78`). Absent or conflicting inputs remain unknown, aggregate components do not supply aggregate facts, and reward arithmetic is unchanged. The 122 model-free controls establish source qualification, not historical repair or live measurement. ([autopilot handoff](../handoffs/active/autopilot-continuous-optimization.md); [source table](../scripts/vidya/adapters/README.md))
+- C6 library-substitution source controls identify known vendor-library calls through finite static aliases. Dynamic dispatch and ambiguous definitions remain UNKNOWN; 16 controls are finite source tests, not GPU performance or admission-completeness evidence. ([C6 handoff](../handoffs/active/rocm-verify-profile-backend.md); [published proof](https://github.com/pestopoppa/epyc-inference-research/blob/752196772d7005776a390700d1ff8c73afa546ff/artifacts/engineering/c6-library-substitution-20261031/verification.json))
+
+Sources: [autopilot handoff](../handoffs/active/autopilot-continuous-optimization.md) · [C6 handoff](../handoffs/active/rocm-verify-profile-backend.md) · [codex3 progress](../progress/2026-11/2026-11-01-codex3.md) · [belief source table](../scripts/vidya/adapters/README.md)

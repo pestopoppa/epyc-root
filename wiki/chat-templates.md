@@ -714,3 +714,9 @@ Sources: [qwen-chat-template-evaluation handoff](../handoffs/active/qwen-chat-te
 - **The typed-vs-tool prompt diverges right after the user turn marker.** In the TD-29 pair, rendered prompts shared 17 bytes / 3 tokens, diverging immediately after `<|im_start|>user\n` (`Fill in` vs `Answer`); reported and tokenized lengths matched. One pair, no cohort cache verdict. ([source](../handoffs/active/typed-decision-plane.md))
 
 Sources: [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md) · [typed-decision-plane](../handoffs/active/typed-decision-plane.md)
+
+## Compiled Update — 2026-11-01 (incremental source review)
+
+**Confidence: scoped to cited records and source controls.**
+
+- The CT-12.4 reconstructed seven golden cases are persisted with lineage; seven replayed, while a mutated template failed all seven. These fixture controls are not a new live-template comparison. ([chat-template evaluation](../handoffs/active/qwen-chat-template-evaluation.md); [Qwen MTP](../handoffs/active/qwen-mtp-llamacpp-port.md); [stack governance](../handoffs/active/stack-change-governance-pipeline.md))

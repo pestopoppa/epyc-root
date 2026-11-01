@@ -4396,3 +4396,21 @@ Sources: [autopilot-continuous-optimization](../handoffs/active/autopilot-contin
 **Confidence: verified** for source/test facts; one-run results are descriptive, not gates.
 
 - AK-PM-12 execution-gated write hook (108 tests, UNKNOWN on missing verification), R24-8 alarms (R24-8 stays OPEN), and AKX-AUTO-5 boundary grace of 8400 s landed. ([akpm12](../progress/2026-10/2026-10-31-akpm12-hyg2b.md), [alarms](../progress/2026-10/2026-10-31-r24-8-alarms.md))
+
+## Compiled Update — 2026-11-01 (incremental source review)
+
+**Confidence: scoped to cited records and source controls.**
+
+- Cited source repairs and historical-evidence reconciliation preserve the implementation date; closure hygiene is not new implementation quota. The retained GLA/RT-6.2 and REPL subsets do not establish broader runtime or model acceptance. ([refactoring](../handoffs/active/refactoring-multirepo-2026-10.md); [MoE](../handoffs/active/moe-routing-tap-and-locality-measurement.md); [retrieval](../handoffs/active/repl-embedding-retrieval.md))
+- Research-intake design and trigger rows describe future proposed experiments, including KV history and typed decision backend conformance; they are not evidence that those experiments ran. ([KV prefix](../handoffs/active/kv-prefix-fork-and-paged-attention.md); [typed decisions](../handoffs/active/typed-decision-plane.md); [tool-use contract](../handoffs/active/tool-use-eval-contract.md))
+
+
+## Compiled Update — 2026-11-01 (source-delta review)
+
+**Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
+
+- Prospective actor metrics writer has 34 controls, but four historic exports are absent and the original acceptance remains open. One private export reports 29,003 reasoning tokens estimated from characters across six steps, not native token usage; decoded count overlaps reasoning. [Source](../handoffs/active/autokernel-orchestrator-actor-backend.md)
+- Current controller/execution triage classified 71 unique test/subtest IDs; focused alias repairs passed, but the entire suite was not rerun. R18 compiler-identity forensics explains 141 pairs via matching double hashes and relocation; full symbol identity and production-recipe verification remain false. [Source](../handoffs/active/autokernel-rebuild-program.md)
+- AK-PM-12 reopened: initial schema and tests did not wire an operational producer. A subsequent labeled-control producer exists, but arbitrary ceiling and uncaptured producer bytes do not establish operational admission; workload-specific ceiling remains missing and submissions UNKNOWN. [Source](../handoffs/active/autokernel-research-loop.md)
+- AP-66 finite-table replay at 100 calls reported mean rule-infeasible rates .782/.754/.754 for FAIL/raw/bounded and .191 for qLogNEHVI; at 50 calls FAIL/raw/bounded all .828, so no 50-call improvement. Ten seeds, 20-row matched starts, native table hits and joint-row repair constrain interpretation; live optimizer gain is unproven. [Source](../handoffs/active/autopilot-continuous-optimization.md)
+- Refutation capture now carries observed k_rate for new records and reconstruction, preserving legacy fallback where counts are absent; 36 controls, policy thresholds unchanged (orchestrator bd2f7105). [Source](../handoffs/active/autopilot-sequential-allocation.md)

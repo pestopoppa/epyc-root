@@ -5482,3 +5482,19 @@ Sources: [rao-redel-substrate-spike](../handoffs/active/rao-redel-substrate-spik
 - These controls keep the checklist state aligned with what the owning task's acceptance rule actually requires; they do not themselves qualify an agent loop.
 
 Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) · [serving-harness fixes](../handoffs/active/agentic-serving-harness-fixes.md) · [REPL turn-efficiency handoff](../handoffs/active/repl-turn-efficiency.md) · [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md)
+
+## Compiled Update — 2026-11-01 (incremental source review)
+
+**Confidence: scoped to cited native records and source controls.**
+
+- PromptForge source now isolates mutation work and screens added evaluation-identity reads and force-role removal; static limits remain and live activation is not shown. TOC source implements default-off A/B history and trajectory fields; no A/B result follows. ([mutation contract](../handoffs/active/promptforge-mutation-safety-contract.md); [tool compression](../handoffs/active/tool-output-compression.md); [REPL replay](../handoffs/active/repl-turn-efficiency.md))
+- The session-bus source binds spawn notices to a specific usable generation; missing/conflicting legacy evidence stays unknown. A successful local control is not a live delivery claim. ([session bus](../handoffs/active/session-bus-thin-dispatcher.md); [loop fleet](../handoffs/active/loop-owned-fleet-implementation.md); [fleet backlog](../handoffs/active/non-inference-backlog.md))
+
+
+## Compiled Update — 2026-11-01 (source-delta review)
+
+**Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
+
+- Planner/critic read-only allowlist is default-off; six focused controls passed. Host failure behavior was simulated and no live enablement or general security claim follows; root 9414032c. [Source](../handoffs/active/agent-collab-rnd-harness.md)
+- Delegation accounting instrumentation is filed; FM-8/9 and large-read/advisor/local-worker changes are conditional proposed work, with no measured trigger outcome asserted here. [Source](../handoffs/active/fleet-fanout-measurement.md)
+- HIL15b v2 source and frozen-receipt fixtures are published; qualification uses a noncohort control. The 20-task x 3 replay live cohort, empirical difficulty band and parent acceptance remain open; no adaptive redraw or efficacy is claimed. [Source](../handoffs/active/harness-improvement-loop.md)

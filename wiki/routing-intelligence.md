@@ -1520,3 +1520,17 @@ Sources: [2026-10-29 delivered routing and scoring](../progress/2026-10/2026-10-
 **Confidence: verified** for source/test facts; one-run results are descriptive, not gates.
 
 - EV-15b readout spec (nine tokens 1-9, T=1.0, stable softmax; spec only), EV-15d retained-mass guard (70 tests), MHS-12 eval-identity screen (163 controls). ([spec](../docs/design/ev15b-readout-spec-20261031.md))
+
+## Compiled Update — 2026-11-01 (incremental source review)
+
+**Confidence: scoped to cited records and source controls.**
+
+- Source-scoped improvements include full objective storage, default-off cutoff retry and strict value-only tool argument shadow selection. They do not establish live quality or adoption. ([learned routing](../handoffs/active/learned-routing-controller.md); [multi-file coding](../handoffs/active/multi-file-coding-completion-capability.md); [typed decisions](../handoffs/active/typed-decision-plane.md))
+- MoE calibration-lag reproduction and the proposed delegation fold replay retain their bounded surrogate and prospective scopes. An empty Pareto archive reflected the current-era boundary and absence of current-era rows, not proof of optimizer behavior. ([MoE](../handoffs/active/moe-routing-tap-and-locality-measurement.md); [routing](../handoffs/active/routing-intelligence.md); [task rate](../handoffs/active/objective-task-rate-goodput.md))
+
+
+## Compiled Update — 2026-11-01 (source-delta review)
+
+**Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
+
+- The existing bilinear feature vector has six model fields plus known masks; eight source controls passed. Fallback specifications are degraded defaults, not measurements; fixed-reward retraining and DAR-4 adoption remain open. [Source](../handoffs/active/decision-aware-routing.md)

@@ -318,3 +318,9 @@ Sources: [yarn-context-extension-research](../handoffs/active/yarn-context-exten
 - The unsupported S0-V34 lock-loss-reproducer completion claim is reopened after the audit found no source SHA, artifact, test, or receipt. This is a task-state correction only; no reproduction evidence was produced.
 
 Sources: [YaRN context-extension handoff](../handoffs/active/yarn-context-extension-research.md) · [tick-science audit](../docs/reports/tick-science-audit-20261031.md) · [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md) · [workspace-58 progress](../progress/2026-10/2026-10-31-workspace-58.md)
+
+## Compiled Update — 2026-11-01 (incremental source review)
+
+**Confidence: scoped to cited native records and source controls.**
+
+- The 141 fresh paired YaRN power comparison and the separate original-120 subset met the declared discordant-count target and were NOT-FAIL under their fixed one-sided exact rules, without equivalence or adoption claims. Interrupted CPU shards and failed plan-path attempts remain separate and cannot be redrawn. ([YaRN](../handoffs/active/yarn-context-extension-research.md); [workspace progress](../progress/2026-10/2026-10-31-workspace-58.md); [belief program](../handoffs/active/vidya-belief-substrate-program.md))

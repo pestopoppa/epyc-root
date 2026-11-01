@@ -7318,3 +7318,32 @@ Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) ·
 - `codex3-cs8-stt5-validation-nemo-en-20261031` ran all 1,580 chunks, but the scorer aborted at R6 on the `decode_error` taxonomy. The scorer aborted on the `decode_error` taxonomy at R6 before writing the canonical score file; R13 remains unscored. This is collection/scorer status only, with no comparable per-arm score or head-to-head verdict. ([source](../progress/2026-11/2026-11-01-workspace-58.md))
 
 Sources: [workspace-58 progress](../progress/2026-11/2026-11-01-workspace-58.md) · [conversation stack handoff](../handoffs/active/conversation-stack.md)
+
+## Compiled Update — 2026-11-01 (codex3 wrap-up)
+
+**Confidence: verified for the filed native records; selection and partial records are not release gates.**
+
+- LEX2's 100-clip, 15-cell dev lexical screen selected NeMo local alpha 1 (folded F 0.701754 versus 0.574803 at alpha zero), with term-masked lexical reference disagreement 0.297696 versus 0.333026. These are dev lexical reference-agreement results, not P-STT-1 WER or a release decision. The grid predates prospective belief capture, and the 755-row heldout plan is not READY. ([speech handoff](../handoffs/active/conversation-stack.md); [compact evidence](../artifacts/compute/codex3-lex2-dev-selection-20261101/README.md))
+- R35 Paddle pool0 original grant ended rc75. Within 46 selected pages in four visited groups, latest pre-cut summaries report 36 complete, nine missing and one pre-exposure budget refusal; retained/replayed records make net-new unknown. The other 113 selected pages are outside these summaries; no TEDS or full-pool verdict. ([PIP handoff](../handoffs/active/document-parser-table-bench.md); [event evidence](../artifacts/compute/codex3-pip-r35-original-20261101/README.md))
+- Nemotron STT validation rescored 394 clips in each of four settings. R6 had one empty output, a categorical correctness FAIL counted as a full deletion in all 394 utterances; WER 9.886/9.243/8.819/8.358 is selection-only while normalization and repetition effects remain unresolved. ([STT evidence](../artifacts/compute/codex3-stt5-nemo-en-rescore-20261101/README.md); [codex3 progress](../progress/2026-11/2026-11-01-codex3.md))
+
+Sources: [speech handoff](../handoffs/active/conversation-stack.md) · [PIP handoff](../handoffs/active/document-parser-table-bench.md) · [STT evidence](../artifacts/compute/codex3-stt5-nemo-en-rescore-20261101/README.md) · [codex3 progress](../progress/2026-11/2026-11-01-codex3.md)
+
+The EVL historical dependency freeze was recovered with 3,253 non-GGUF hashes verified; its successor remains unqualified pending the canonical engine. PIP R32 pool1's five exhausted groups have 61 complete, 13 unknown and one geometry error, alongside seven other completed groups; no quality conclusion follows. ([row-repair progress](../progress/2026-11/2026-11-01-codex3-row-repairs.md); [custody evidence](../artifacts/compute/codex3-row-repairs-20261101/README.md); [codex3 progress](../progress/2026-11/2026-11-01-codex3.md))
+
+## Compiled Update — 2026-11-01 (incremental source review)
+
+**Confidence: scoped to cited records and source controls.**
+
+- Original PRB-T4 startup failure, EVL R11 missing-source failure, and ParEval partial captures carry no scientific verdict. Their unknown or exposed attempts remain distinct from later qualified work. ([PRB](../handoffs/active/per-request-reasoning-budget.md); [EVL](../handoffs/active/rao-redel-substrate-spike.md); [ParEval](../handoffs/active/rocm-verify-profile-backend.md))
+- Qwen-VL dry-run and short smokes validate bounded preparation only; no MMMU score follows. The interrupted INF-50 task is reopened despite passing subcontrols because the required complete command was omitted. ([multimodal](../handoffs/active/multimodal-pipeline.md); [INF-50](../handoffs/active/speculative-decoding-mtp-refresh.md); [workspace progress](../progress/2026-10/2026-10-31-workspace-58.md))
+
+
+## Compiled Update — 2026-11-01 (source-delta review)
+
+**Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
+
+- Audit of 324 non-merge commits and 52 merges found 264 added ticks, including five false-result and three unsupported classifications; 79 born-ticked lines distort completion counts. It found no vanished open task among 25 deletions, but an identity rewrite. The structural gate is a proposal, not an implemented control. [Source](../docs/reports/tick-science-audit-20261031.md)
+- The operator declined the Qwen3.6-35B IQ3_XXS worker benchmark; it was not run. ThinkingCap is an untested proposed architect comparison. [Source](../handoffs/active/architect-model-selection-bench.md)
+- Historical eval-audit checkbox reconciles SCORE-07 and associated tests with prior evidence; it is source/test reconciliation rather than a new model measurement. [Source](../handoffs/active/eval-tower-architecture-audit-2026-07-20.md)
+- Offline evaluation controls capture retained mass with a refusal floor, require both presentation orders, and preserve unknown denominators for economics; paired consumer and text-rating instruments have deterministic tests. Native judgment, model tokenizer verification and scientific comparison remain open. [Source](../handoffs/active/eval-tower-verification.md)

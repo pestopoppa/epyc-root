@@ -1103,3 +1103,10 @@ Sources: [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-e
 **Confidence: verified** for source/test facts; one-run results are descriptive, not gates.
 
 - CS-22 long-v2: capture 178/178, zero Q8-F32 WER deltas at four contexts; the A1 parent stays open. The Qwen3.6-35B UD-IQ3_XXS candidate was withdrawn by the operator. ([progress](../progress/2026-10/2026-10-31-codex3-results-filing-1633.md))
+
+
+## Compiled Update — 2026-11-01 (source-delta review)
+
+**Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
+
+- EXL3 evidence inventory adds no rows, frames or grade; original smoke remains FAIL and prior PPL stays QUALITY_NOT_WORSE only within its original scope. [Source](../handoffs/active/exl3-cpu-mi210-implementation.md)

@@ -2945,3 +2945,10 @@ Sources: [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decod
 - The task remains tied to a predeclared acceptance contract. Do not infer completion from a partial population or from source preparation alone.
 
 Sources: [speculative decoding/MTP refresh](../handoffs/active/speculative-decoding-mtp-refresh.md) · [DFlash2 block-drafter build](../handoffs/active/dflash2-block-drafter-experimental-build.md) · [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md) · [tick-science audit](../docs/reports/tick-science-audit-20261031.md)
+
+
+## Compiled Update — 2026-11-01 (source-delta review)
+
+**Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
+
+- The operator prioritized proposed DF2-12.1 cross-slot token identity on the two production speculative shapes. Drafter retraining, lattice probes and point-mass proposals are planned experiments, not demonstrated improvements. [Source](../handoffs/active/dflash2-block-drafter-experimental-build.md)

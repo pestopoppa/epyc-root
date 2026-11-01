@@ -485,3 +485,10 @@ Sources: [document-parser-table-bench handoff](../handoffs/active/document-parse
 - **Unlimited-OCR is prepared, unrun.** The 36 page/profile requests carry no CER/TEDS yet. ([Unlimited-OCR READY](../artifacts/compute/codex3-unlimited-ocr-ready-20261031/SHA256SUMS))
 
 Sources: [document-parser-table-bench](../handoffs/active/document-parser-table-bench.md) · [PIP shard scores](../progress/2026-10/2026-10-30-codex3-pip-shard-scores.md) · [R29 continuation](../progress/2026-10/2026-10-31-pip-r29-continuation.md) · [head recovery](../progress/2026-10/2026-10-31-pip-head-recovery-cs53.md) · [R29 collection audit](../artifacts/compute/codex3-pip-r29-c6-gpu-r2-20261031/SHA256SUMS)
+
+
+## Compiled Update — 2026-11-01 (source-delta review)
+
+**Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
+
+- Paddle R32 ended partial; five exhausted groups record 61 complete pages, 13 unknown and one geometry error, with seven other completed groups; R35 ended rc75 with 36 complete, 9 missing and one pre-exposure refusal among 46 visited-page summaries. Retained/replayed entries prevent a net-new count; cause unresolved and no quality verdict. [Source](../handoffs/active/document-parser-table-bench.md)

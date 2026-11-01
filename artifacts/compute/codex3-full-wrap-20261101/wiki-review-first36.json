@@ -1,0 +1,906 @@
+{
+  "schema": "wiki-review-coverage-v1",
+  "cut": "wiki-final-delta.json; validate hashes before apply",
+  "entries": [
+    {
+      "path": "docs/reports/tick-science-audit-20261031.md",
+      "baseline_hash": null,
+      "baseline_revision": null,
+      "current_hash": "9809c7fb583ba717892f8537242c27148dd8e6dbddce6434e2429a7d19dc1f77",
+      "inventory_hash": "9809c7fb583ba717892f8537242c27148dd8e6dbddce6434e2429a7d19dc1f77",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 45,
+      "taxonomy": "benchmark_methodology",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "Audit of 324 non-merge commits and 52 merges found 264 added ticks, including five false-result and three unsupported classifications; 79 born-ticked lines distort completion counts. It found no vanished open task among 25 deletions, but an identity rewrite. The structural gate is a proposal, not an implemented control.",
+      "citations": [
+        {
+          "path": "docs/reports/tick-science-audit-20261031.md",
+          "line": 6,
+          "anchor": "Ticks: 264"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "new source",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 01.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/agent-collab-rnd-harness.md",
+      "baseline_hash": "e163453635e7be986d0fa55e9e28fb85f4582ac30a0148fa40af2044d2c19885",
+      "baseline_revision": "31d8700d4eecafcd23b51dcb3ada1da0b6b6baca",
+      "current_hash": "4d716a73b1f4a2f00fe89f46e49ae95d74f7a8402460bb060f642ce633a17534",
+      "inventory_hash": "4d716a73b1f4a2f00fe89f46e49ae95d74f7a8402460bb060f642ce633a17534",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 12,
+      "taxonomy": "agent_architecture",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "Planner/critic read-only allowlist is default-off; six focused controls passed. Host failure behavior was simulated and no live enablement or general security claim follows; root 9414032c.",
+      "citations": [
+        {
+          "path": "handoffs/active/agent-collab-rnd-harness.md",
+          "line": 47,
+          "anchor": "Default-off opt-in prototype"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 31d8700d4eecafcd23b51dcb3ada1da0b6b6baca:handoffs/active/agent-collab-rnd-harness.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 02.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/agentic-rocm-kernel-authoring.md",
+      "baseline_hash": "7c15d8d08d7feb5413c6de96f1afa58bd83aa4876897d6a03c68ca0bf51c56e1",
+      "baseline_revision": "4c710f666b5e8290348234bc2fa10bac5e63b81d",
+      "current_hash": "4d7d4f641bec5dc8bf4bb901dc64eba0d4711729f9c89a6bb3d3f321c61d504a",
+      "inventory_hash": "4d7d4f641bec5dc8bf4bb901dc64eba0d4711729f9c89a6bb3d3f321c61d504a",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 18,
+      "taxonomy": "hardware_optimization",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "Research 39b63b06 adds an opt-in counter-evidence decision gate and 19 synthetic controls; no end-to-end profiler capture, live activation or completed C5-7 is established. ISA capture and assembly-edit work are proposed.",
+      "citations": [
+        {
+          "path": "handoffs/active/agentic-rocm-kernel-authoring.md",
+          "line": 1249,
+          "anchor": "C5-7 conditional source seam"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 4c710f666b5e8290348234bc2fa10bac5e63b81d:handoffs/active/agentic-rocm-kernel-authoring.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 03.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/agentic-serving-harness-fixes.md",
+      "baseline_hash": "c9b31c6ac29d76ebc8f2436dbb09245717f247c6d555143619302d4a0ac90c72",
+      "baseline_revision": "2a50a877de2d07f9452f7878dd56ddb84495a07b",
+      "current_hash": "c647dd39f4aa8b20a0bc2f9d8ae5ef97974e92f0541f64c2fc656501c64dd9f0",
+      "inventory_hash": "c647dd39f4aa8b20a0bc2f9d8ae5ef97974e92f0541f64c2fc656501c64dd9f0",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 92,
+      "taxonomy": "inference_serving",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "The 27B post-compaction paired treatment timed out without exact restoration, so no paired cache/prompt measurements or keep verdict exists. Refusal records and parked-role escalation have source fixes with tests; live adoption is not implied.",
+      "citations": [
+        {
+          "path": "handoffs/active/agentic-serving-harness-fixes.md",
+          "line": 140,
+          "anchor": "FAILED-RUN. Mechanism"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 2a50a877de2d07f9452f7878dd56ddb84495a07b:handoffs/active/agentic-serving-harness-fixes.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 04.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/architect-model-selection-bench.md",
+      "baseline_hash": "dbbe2a0fb4a542cf59fe4343e13b4a96d87508e05aa672383d7014bd77d1a061",
+      "baseline_revision": "13f48eca6d3f34f50ca4e0d72ecdafbd4eef4ccf",
+      "current_hash": "47e04cfcb250bfd1b30458ccaaa44dc1a430a1f8b3cb7896dceec6822eee1713",
+      "inventory_hash": "47e04cfcb250bfd1b30458ccaaa44dc1a430a1f8b3cb7896dceec6822eee1713",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 21,
+      "taxonomy": "benchmark_methodology",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "The operator declined the Qwen3.6-35B IQ3_XXS worker benchmark; it was not run. ThinkingCap is an untested proposed architect comparison.",
+      "citations": [
+        {
+          "path": "handoffs/active/architect-model-selection-bench.md",
+          "line": 641,
+          "anchor": "declined: operator 2026-10-31"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 13f48eca6d3f34f50ca4e0d72ecdafbd4eef4ccf:handoffs/active/architect-model-selection-bench.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 05.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/attention-matching-kv-compaction.md",
+      "baseline_hash": "f4317d0531f6885e6eaaa222d1c31723dd43a120f9f60ec6ec14f0039fcf9ccf",
+      "baseline_revision": "f0ab7230b47168ce33c868d4b8eb80a0e7951fb0",
+      "current_hash": "c59e11f0047d75755b81cb782e69b64cd2095ceaa97240075687b492c1e8e783",
+      "inventory_hash": "c59e11f0047d75755b81cb782e69b64cd2095ceaa97240075687b492c1e8e783",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 27,
+      "taxonomy": "kv_cache",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "Historical 2026-10-29 shared-host synthetic canonicalization timing, 4,014 calls: plain medians at 256/10k/100k/1m characters were 0.0076/0.2786/2.8303/31.0525 ms. They are wall times, not production latency or throughput; archival is not new code quota.",
+      "citations": [
+        {
+          "path": "handoffs/active/attention-matching-kv-compaction.md",
+          "line": 346,
+          "anchor": "2026-10-31 archival note"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show f0ab7230b47168ce33c868d4b8eb80a0e7951fb0:handoffs/active/attention-matching-kv-compaction.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 06.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+      "baseline_hash": "79489dcd50419415eb9c0aeec32e1bd40fec7c946dc52038394821f23f441d27",
+      "baseline_revision": "2a50a877de2d07f9452f7878dd56ddb84495a07b",
+      "current_hash": "461bc44538e007ea8eb5385076e9c27cd7ce10593fd4979a56cac1972fdf1961",
+      "inventory_hash": "461bc44538e007ea8eb5385076e9c27cd7ce10593fd4979a56cac1972fdf1961",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 68,
+      "taxonomy": "hardware_optimization",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "A manual GPU window park only writes a window file; executor open plus schedule and grant stops servers. The startup exact-flag evidence repair documents an older implementation; new edge-value and quant decoding gates remain proposals.",
+      "citations": [
+        {
+          "path": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+          "line": 370,
+          "anchor": "Manual `gpu_window park`"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 2a50a877de2d07f9452f7878dd56ddb84495a07b:handoffs/active/autokernel-all-devices-all-dimensions.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 07.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/autokernel-champion-aggregate.md",
+      "baseline_hash": "b8fcfa622cfc00486b731ea8ae5c314b71e4fabfe7243807266ddd72a27734bc",
+      "baseline_revision": "2a50a877de2d07f9452f7878dd56ddb84495a07b",
+      "current_hash": "d554502ae3875ac3eb8bbc94adf90beea9244b2c3714c4580c4473113ad90b68",
+      "inventory_hash": "d554502ae3875ac3eb8bbc94adf90beea9244b2c3714c4580c4473113ad90b68",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 85,
+      "taxonomy": "hardware_optimization",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "C6 IQK-FA remainder failed three times at the 8 GiB sampled-RSS guard (8.99/8.84/9.00 GB); zero of 28 missing cells were evaluated. Separate GPU identity run refused changed pair order despite native PASS; no promotion or identity gate conclusion follows.",
+      "citations": [
+        {
+          "path": "handoffs/active/autokernel-champion-aggregate.md",
+          "line": 1114,
+          "anchor": "FAILED-RUN `refactor-c6-iqkfa"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 2a50a877de2d07f9452f7878dd56ddb84495a07b:handoffs/active/autokernel-champion-aggregate.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 08.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/autokernel-cross-workload-keep-gate.md",
+      "baseline_hash": "16107a60b7fd1846f8f0b5ea51e412c55aa95fa8de8f4c12fc88d0cb44c91061",
+      "baseline_revision": "f7e78ebaf387eb39b9ab8f584dda7dc86b548e27",
+      "current_hash": "f7ee75af6ddf707bb532dfa17a913b396b5e6ee5a07a6cc7aab5d490c20fdeec",
+      "inventory_hash": "f7ee75af6ddf707bb532dfa17a913b396b5e6ee5a07a6cc7aab5d490c20fdeec",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 11,
+      "taxonomy": "hardware_optimization",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "Champion status is recorded as a workload vector with invocation identity and per-cell source/freshness; historical missing recipes stay UNKNOWN, and scalar compatibility is limited to a reference cell (root b3082210; research 61af96a9).",
+      "citations": [
+        {
+          "path": "handoffs/active/autokernel-cross-workload-keep-gate.md",
+          "line": 702,
+          "anchor": "AKX-P4b"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show f7e78ebaf387eb39b9ab8f584dda7dc86b548e27:handoffs/active/autokernel-cross-workload-keep-gate.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 09.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/autokernel-orchestrator-actor-backend.md",
+      "baseline_hash": "5ab880d481a1a83602a349957117d46a07d86263d12d2aa0a9d05095c5ff9c44",
+      "baseline_revision": "2a652c5b81b74e815c6723e7e53fdabd07ab3062",
+      "current_hash": "e28d9f8985081c18d7541e1f47f115bca6b1b7e1d638aed4df94ca20f47e32a9",
+      "inventory_hash": "e28d9f8985081c18d7541e1f47f115bca6b1b7e1d638aed4df94ca20f47e32a9",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 45,
+      "taxonomy": "autonomous_research",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "Prospective actor metrics writer has 34 controls, but four historic exports are absent and the original acceptance remains open. One private export reports 29,003 reasoning tokens estimated from characters across six steps, not native token usage; decoded count overlaps reasoning.",
+      "citations": [
+        {
+          "path": "handoffs/active/autokernel-orchestrator-actor-backend.md",
+          "line": 485,
+          "anchor": "2026-10-31 source partial: Research 6a398"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 2a652c5b81b74e815c6723e7e53fdabd07ab3062:handoffs/active/autokernel-orchestrator-actor-backend.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 10.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/autokernel-rebuild-program.md",
+      "baseline_hash": "259fb824d6e57b4fbab5440f10a497e1df4f5c79fb5cf53b206b9568251b214f",
+      "baseline_revision": "2a50a877de2d07f9452f7878dd56ddb84495a07b",
+      "current_hash": "e75321cd236edf36985ad5972bc667bd539bc9799bc5f04b6e2875cdf2b2675d",
+      "inventory_hash": "e75321cd236edf36985ad5972bc667bd539bc9799bc5f04b6e2875cdf2b2675d",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 167,
+      "taxonomy": "autonomous_research",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "Current controller/execution triage classified 71 unique test/subtest IDs; focused alias repairs passed, but the entire suite was not rerun. R18 compiler-identity forensics explains 141 pairs via matching double hashes and relocation; full symbol identity and production-recipe verification remain false.",
+      "citations": [
+        {
+          "path": "handoffs/active/autokernel-rebuild-program.md",
+          "line": 3156,
+          "anchor": "NI P7.3a triage closure"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 2a50a877de2d07f9452f7878dd56ddb84495a07b:handoffs/active/autokernel-rebuild-program.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 11.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/autokernel-research-loop.md",
+      "baseline_hash": "0ff26cfda53260af84e65af823279af6dcf3b52c4a787b82ded2f8bd11c58358",
+      "baseline_revision": "00c0e894eff989f309e6aa418c653b6fda9d08c6",
+      "current_hash": "1506069983c954c4de5f24036014fc63131f57d7e6f1ff642381821e55cacd9a",
+      "inventory_hash": "1506069983c954c4de5f24036014fc63131f57d7e6f1ff642381821e55cacd9a",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 42,
+      "taxonomy": "autonomous_research",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "AK-PM-12 reopened: initial schema and tests did not wire an operational producer. A subsequent labeled-control producer exists, but arbitrary ceiling and uncaptured producer bytes do not establish operational admission; workload-specific ceiling remains missing and submissions UNKNOWN.",
+      "citations": [
+        {
+          "path": "handoffs/active/autokernel-research-loop.md",
+          "line": 5458,
+          "anchor": "REOPENED 2026-10-31 by operator audit"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 00c0e894eff989f309e6aa418c653b6fda9d08c6:handoffs/active/autokernel-research-loop.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 12.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/autokernel-unified-surface-program.md",
+      "baseline_hash": "e4accc3700234e9cc08dece6aef1799c9ee83c43b3e6b816842b8137a9ca6f15",
+      "baseline_revision": "31f645a17c5a64c822de0bdb56f00d500af0ec12",
+      "current_hash": "8a5274a0577bcd2fa3083593d4ef522958622707c5bbceec95ed69586f562199",
+      "inventory_hash": "8a5274a0577bcd2fa3083593d4ef522958622707c5bbceec95ed69586f562199",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 44,
+      "taxonomy": "inference_serving",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "A deterministic lock-fairness negative control passed 24 tests and deliberately fails the three FIFO-off assertions; source verification does not imply default-on deployment. Other additions repair historical evidence metadata.",
+      "citations": [
+        {
+          "path": "handoffs/active/autokernel-unified-surface-program.md",
+          "line": 4188,
+          "anchor": "Deterministic FIFO-off control"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 31f645a17c5a64c822de0bdb56f00d500af0ec12:handoffs/active/autokernel-unified-surface-program.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 13.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/autopilot-continuous-optimization.md",
+      "baseline_hash": "3be7abf4e4804706796d644eff78f60864e462f6d00d0827c1a5ec1702e37e40",
+      "baseline_revision": "4795952655266ba33226eb4c8b2b689674c7fdae",
+      "current_hash": "5be18f92458daa99e91917a6f29f77216e0ac87c13031c1fb4daeda1077b92e7",
+      "inventory_hash": "5be18f92458daa99e91917a6f29f77216e0ac87c13031c1fb4daeda1077b92e7",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 223,
+      "taxonomy": "autonomous_research",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "AP-66 finite-table replay at 100 calls reported mean rule-infeasible rates .782/.754/.754 for FAIL/raw/bounded and .191 for qLogNEHVI; at 50 calls FAIL/raw/bounded all .828, so no 50-call improvement. Ten seeds, 20-row matched starts, native table hits and joint-row repair constrain interpretation; live optimizer gain is unproven.",
+      "citations": [
+        {
+          "path": "handoffs/active/autopilot-continuous-optimization.md",
+          "line": 812,
+          "anchor": "Offline acceptance at the predeclared 100-call endpoint"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 4795952655266ba33226eb4c8b2b689674c7fdae:handoffs/active/autopilot-continuous-optimization.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 14.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/autopilot-sequential-allocation.md",
+      "baseline_hash": "f037653914970f82e807bf22c463b0206df55076148ac8237059f359087ce8c3",
+      "baseline_revision": "5f4df6a065571db3c254d512b8da7ccbe8288e22",
+      "current_hash": "6bd854e6c55cfb277139a7d9ffaa421fb0cde1145a4c974530ab5bef05000684",
+      "inventory_hash": "6bd854e6c55cfb277139a7d9ffaa421fb0cde1145a4c974530ab5bef05000684",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 12,
+      "taxonomy": "autonomous_research",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "Refutation capture now carries observed k_rate for new records and reconstruction, preserving legacy fallback where counts are absent; 36 controls, policy thresholds unchanged (orchestrator bd2f7105).",
+      "citations": [
+        {
+          "path": "handoffs/active/autopilot-sequential-allocation.md",
+          "line": 276,
+          "anchor": "SEQ-B4"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 5f4df6a065571db3c254d512b8da7ccbe8288e22:handoffs/active/autopilot-sequential-allocation.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 15.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/colbert-reranker-web-research.md",
+      "baseline_hash": "a92c5f065a49faa663b52f12cb7f5dca250e9bc67c9da78adf3afc734cb8f702",
+      "baseline_revision": "cc9b3113b95e6fe7d6b18434c08632b66f94238b",
+      "current_hash": "9c0f84c8044516439d70115a58943b6423e98d3930962c933432682450cde9f6",
+      "inventory_hash": "9c0f84c8044516439d70115a58943b6423e98d3930962c933432682450cde9f6",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 21,
+      "taxonomy": "search_retrieval",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "PREFIX-3 was reopened: Reason 22/22 output-contract mismatch and LateOn 22/22 token/position mismatch, cosine unknown. No parity or adoption is established despite follow-up work.",
+      "citations": [
+        {
+          "path": "handoffs/active/colbert-reranker-web-research.md",
+          "line": 542,
+          "anchor": "2026-11-01 tick correction"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show cc9b3113b95e6fe7d6b18434c08632b66f94238b:handoffs/active/colbert-reranker-web-research.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 16.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/context-folding-progressive.md",
+      "baseline_hash": "4e20c775bcef32dcae73e787516ff56b414b9ac5072c0a11fbb782d63d53da9a",
+      "baseline_revision": "4288356f0",
+      "current_hash": "09e15478f3a44e201b98578a05060baa260e472470c621048f8b69811c0118ac",
+      "inventory_hash": "09e15478f3a44e201b98578a05060baa260e472470c621048f8b69811c0118ac",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 13,
+      "taxonomy": "context_management",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "The new CF-AKV-0 is a proposed zero-inference trace screen; the KV-drop probe is conditional on the specified 40% resident-old-tool-results and 20% above-48k thresholds. No outcome is reported.",
+      "citations": [
+        {
+          "path": "handoffs/active/context-folding-progressive.md",
+          "line": 243,
+          "anchor": "CF-AKV-0"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 4288356f0:handoffs/active/context-folding-progressive.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 17.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/conversation-stack.md",
+      "baseline_hash": "75186a54424b318a218a82664b3c490d1477f05f06ac4e9073a7b0eded15b07d",
+      "baseline_revision": "2a50a877de2d07f9452f7878dd56ddb84495a07b",
+      "current_hash": "92ea2b3b8002c959a315bdceb70ffe07a5bbf6bbc156b3667e24c4a7c9dcc906",
+      "inventory_hash": "92ea2b3b8002c959a315bdceb70ffe07a5bbf6bbc156b3667e24c4a7c9dcc906",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 83,
+      "taxonomy": "multimodal",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "LEX2 dev selection: 100 clips by 15 cells, 1,500 native successes; local alpha 1 casefolded keyword F=.701754 vs alpha-zero .574803. This is lexical reference agreement, not WER; 35 selected rows carry P-STT-1 flags. The 755-row heldout plan is not READY and no heldout inference, score or quality decision exists. Earlier CS-22 A1 had 178 completed cases and zero Q8-F32 WER delta on tested repeated contexts, but rejected required context 1 and failed original acceptance; the 28,805 s silence soak is not real-traffic latency.",
+      "citations": [
+        {
+          "path": "handoffs/active/conversation-stack.md",
+          "line": 910,
+          "anchor": "CS-8.LEX2 dev lexical selection"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 2a50a877de2d07f9452f7878dd56ddb84495a07b:handoffs/active/conversation-stack.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 18.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/cpu-decode-roofline-program.md",
+      "baseline_hash": "b262265ea68d1efdd268fc0ccdaa47ff14cfc26eb130ada431abd404e2e74e25",
+      "baseline_revision": "2a50a877de2d07f9452f7878dd56ddb84495a07b",
+      "current_hash": "d65ed42edc65ce90396183068d3369ea379d85f1b2cbec2b38592d188fb0c063",
+      "inventory_hash": "d65ed42edc65ce90396183068d3369ea379d85f1b2cbec2b38592d188fb0c063",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 88,
+      "taxonomy": "hardware_optimization",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "CPU-decode audit withdraws the 23.16 t/s / 1.876x claim-grade and +0.7% clean-window labels due to contention interpretation; historical rates remain observations with no replacement performance grade. GPU-lock nonviolation does not prove no SMT contention.",
+      "citations": [
+        {
+          "path": "handoffs/active/cpu-decode-roofline-program.md",
+          "line": 2511,
+          "anchor": "Dated correction: the linked audit"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 2a50a877de2d07f9452f7878dd56ddb84495a07b:handoffs/active/cpu-decode-roofline-program.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 19.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/dashboard-architecture-restructure.md",
+      "baseline_hash": "0c6b40a3ebe4dfaec904973ee9e94457fd6fcd506c289e468c2eaf96a468d3e5",
+      "baseline_revision": "5c832f07174bef0e11665d536d01aac76ed892a0",
+      "current_hash": "3d8c6766650d4a7996d88d32d12fe1b2b13ae6d9596ee0384ec738364f7e1e2d",
+      "inventory_hash": "3d8c6766650d4a7996d88d32d12fe1b2b13ae6d9596ee0384ec738364f7e1e2d",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 26,
+      "taxonomy": "inference_serving",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "Opt-in machine frame drops only an equal duplicated alias; 143 API and 15 page controls passed. Fixture bytes reduced 47,524 to 24,580 and 91,652 to 46,835; no live bandwidth, producer-work or deployment outcome is claimed (APP ec6f8176; ROOT 8318ce32).",
+      "citations": [
+        {
+          "path": "handoffs/active/dashboard-architecture-restructure.md",
+          "line": 344,
+          "anchor": "Fixture-only frame bytes"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 5c832f07174bef0e11665d536d01aac76ed892a0:handoffs/active/dashboard-architecture-restructure.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 20.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/decision-aware-routing.md",
+      "baseline_hash": "d0f5f2c27d6e7f844af7c604bbea3bb0707220ba0240b8fcb42c1b8e95601dcd",
+      "baseline_revision": "4c710f666b5e8290348234bc2fa10bac5e63b81d",
+      "current_hash": "d314182c782104b629aa85523b113351422149d8e650e7f76c4a434c02b83de8",
+      "inventory_hash": "d314182c782104b629aa85523b113351422149d8e650e7f76c4a434c02b83de8",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 20,
+      "taxonomy": "routing_intelligence",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "The existing bilinear feature vector has six model fields plus known masks; eight source controls passed. Fallback specifications are degraded defaults, not measurements; fixed-reward retraining and DAR-4 adoption remain open.",
+      "citations": [
+        {
+          "path": "handoffs/active/decision-aware-routing.md",
+          "line": 97,
+          "anchor": "The existing model feature vector"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 4c710f666b5e8290348234bc2fa10bac5e63b81d:handoffs/active/decision-aware-routing.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 21.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/delta-mem-reproduction.md",
+      "baseline_hash": "ac5efc42d63981710250ee92af7cafb9110f1c62a836716f4439b10bbe1478fd",
+      "baseline_revision": "d973adca55211b48718f90378da3086b7a3f9a4d",
+      "current_hash": "690d539502f87f41319f733b8b1243b54a5ab839b5587a442193ca59cf0cb303",
+      "inventory_hash": "690d539502f87f41319f733b8b1243b54a5ab839b5587a442193ca59cf0cb303",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 11,
+      "taxonomy": "memory_augmented",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "A renewed 75-second GPU native smoke exercised one retrieval question and writer with cleanup; it is launcher qualification only, not the full INF-12 quality outcome.",
+      "citations": [
+        {
+          "path": "handoffs/active/delta-mem-reproduction.md",
+          "line": 251,
+          "anchor": "INF-12 R13 native smoke renewed"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show d973adca55211b48718f90378da3086b7a3f9a4d:handoffs/active/delta-mem-reproduction.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 22.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "baseline_hash": "5659babd6689ff595c56975d3cde3a76999f8ff71b9787d68b1dc4afbbdf9a5c",
+      "baseline_revision": "4288356f0",
+      "current_hash": "0e0f447d701428fd5ffd5b449f3d0d7f8e88fe3db0c5529433843159a1476053",
+      "inventory_hash": "0e0f447d701428fd5ffd5b449f3d0d7f8e88fe3db0c5529433843159a1476053",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 27,
+      "taxonomy": "speculative_decoding",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "The operator prioritized proposed DF2-12.1 cross-slot token identity on the two production speculative shapes. Drafter retraining, lattice probes and point-mass proposals are planned experiments, not demonstrated improvements.",
+      "citations": [
+        {
+          "path": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+          "line": 802,
+          "anchor": "First priority (operator 2026-10-31)"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 4288356f0:handoffs/active/dflash2-block-drafter-experimental-build.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 23.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/document-parser-table-bench.md",
+      "baseline_hash": "cf097ed794ecf06fd7f9dc1c23f25e030fd86024c7064837898f041647e243d8",
+      "baseline_revision": "4288356f0",
+      "current_hash": "f2faafaa5617d44f4f6c97f386c75a74aa1eca862a6dfd5ca32ab49f5bb0c2af",
+      "inventory_hash": "f2faafaa5617d44f4f6c97f386c75a74aa1eca862a6dfd5ca32ab49f5bb0c2af",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 16,
+      "taxonomy": "document_processing",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "Paddle R32 ended partial (7 completed attempts, 82 cooperative partials); R35 ended rc75 with 36 complete, 9 missing and one pre-exposure refusal among 46 visited-page summaries. Retained/replayed entries prevent a net-new count; cause unresolved and no quality verdict.",
+      "citations": [
+        {
+          "path": "handoffs/active/document-parser-table-bench.md",
+          "line": 607,
+          "anchor": "PARTIAL \u2014 R35"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 4288356f0:handoffs/active/document-parser-table-bench.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 24.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/dynamic-stack-concurrency.md",
+      "baseline_hash": "3301fe882395a33202d57dd0c01a73681ce83d1b08c61366488ad5bbf54cf78d",
+      "baseline_revision": "0b299b13a65d0be59806c17a71282f8a4ca36b39",
+      "current_hash": "9786cfd57a33afc3b567aa7f8a33e258b624c7fedcd8e7ba4dcfe96069a2e332",
+      "inventory_hash": "9786cfd57a33afc3b567aa7f8a33e258b624c7fedcd8e7ba4dcfe96069a2e332",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 12,
+      "taxonomy": "inference_serving",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "Registry master ubatch default is corrected to 2048; both script executors do read it, contrary to the original premise. Lean compilation preserves 23 active roles; the separate shared full-registry target was still 8192 at observation, with no deployment claim.",
+      "citations": [
+        {
+          "path": "handoffs/active/dynamic-stack-concurrency.md",
+          "line": 161,
+          "anchor": "The original no-reader premise is historical"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 0b299b13a65d0be59806c17a71282f8a4ca36b39:handoffs/active/dynamic-stack-concurrency.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 25.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/episodic-memory-integrity.md",
+      "baseline_hash": "3234a454567498271eb0aa4678e969522026d55052e3c7d0dc874f083ad3841e",
+      "baseline_revision": "26d0bc3ea887a4c7bb0e2330e76376705b494844",
+      "current_hash": "3216747b17e8e02a311b52a09f65c01428bc12373276d7651b62e6d8906657e7",
+      "inventory_hash": "3216747b17e8e02a311b52a09f65c01428bc12373276d7651b62e6d8906657e7",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 37,
+      "taxonomy": "memory_augmented",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "Explicit probe tags suppress immediate and replay episodic scoring; one literal matching row had 8,641 updates but historical request provenance is unknown. External rewards are outside this filter. Recall is seed/import/explicit-write scoped, not automatic live exploration learning; M-20 efficacy remains open.",
+      "citations": [
+        {
+          "path": "handoffs/active/episodic-memory-integrity.md",
+          "line": 602,
+          "anchor": "Explicit smoke/probe/health tags"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 26d0bc3ea887a4c7bb0e2330e76376705b494844:handoffs/active/episodic-memory-integrity.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 26.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/ernie-image-turbo-evaluation.md",
+      "baseline_hash": "ff04d7658b7cd1665294e5b09475756b880474b85640fa596062f3720e856af5",
+      "baseline_revision": "4288356f0",
+      "current_hash": "3c350d39a29f9edc5687c085afc2fcfdcb24e52e6c796e67f5c2455a3ae28264",
+      "inventory_hash": "3c350d39a29f9edc5687c085afc2fcfdcb24e52e6c796e67f5c2455a3ae28264",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 7,
+      "taxonomy": "multimodal",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "Ernie typography diagnostic captured 40/40 images from 20 English/Chinese prompts at two resolutions; official score, enhancer, filter and human review remain unknown, so no quality verdict.",
+      "citations": [
+        {
+          "path": "handoffs/active/ernie-image-turbo-evaluation.md",
+          "line": 230,
+          "anchor": "typography capture COMPLETE"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 4288356f0:handoffs/active/ernie-image-turbo-evaluation.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 27.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/eval-tower-architecture-audit-2026-07-20.md",
+      "baseline_hash": "b1530af710f5204d2cf978accbc2ce9039dc4f0a555db1da50b0f372c18afe2c",
+      "baseline_revision": "09d3c70b5ffeeeed37cde2c4233d965700b1106d",
+      "current_hash": "b0573cc21c501059e7ffc4ac5b76d19203c89bc608306eb879babd30ae097bff",
+      "inventory_hash": "b0573cc21c501059e7ffc4ac5b76d19203c89bc608306eb879babd30ae097bff",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 11,
+      "taxonomy": "benchmark_methodology",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "Historical eval-audit checkbox reconciles SCORE-07 and associated tests with prior evidence; it is source/test reconciliation rather than a new model measurement.",
+      "citations": [
+        {
+          "path": "handoffs/active/eval-tower-architecture-audit-2026-07-20.md",
+          "line": 354,
+          "anchor": "2026-10-31 reconciliation"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 09d3c70b5ffeeeed37cde2c4233d965700b1106d:handoffs/active/eval-tower-architecture-audit-2026-07-20.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 28.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/eval-tower-verification.md",
+      "baseline_hash": "34bf2c2ce7951f8ad4c9be6b739dd248a24e6ca49f967ff249ea20bc71fa4d80",
+      "baseline_revision": "a3cafede143b5de4c953c709bda32919f2ca1767",
+      "current_hash": "774bdbfc9b43423c5467331ba81846962604de52d59310b35836897eb88bac0e",
+      "inventory_hash": "774bdbfc9b43423c5467331ba81846962604de52d59310b35836897eb88bac0e",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 89,
+      "taxonomy": "benchmark_methodology",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "Offline evaluation controls capture retained mass with a refusal floor, require both presentation orders, and preserve unknown denominators for economics; paired consumer and text-rating instruments have deterministic tests. Native judgment, model tokenizer verification and scientific comparison remain open.",
+      "citations": [
+        {
+          "path": "handoffs/active/eval-tower-verification.md",
+          "line": 1090,
+          "anchor": "EV-15d retained-mass contract"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show a3cafede143b5de4c953c709bda32919f2ca1767:handoffs/active/eval-tower-verification.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 29.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/evidence-plane-instrument-repair.md",
+      "baseline_hash": "6b603cf0a417a282b75247d23dc485a28b2c27022ff06e3e05e7dc120f9c4d44",
+      "baseline_revision": "f38130194e86bd99b63af1855709cde057fd154a",
+      "current_hash": "5207ddc005f4a101b66139ba645aea283e525ec22459452f092d19a58d8da36a",
+      "inventory_hash": "5207ddc005f4a101b66139ba645aea283e525ec22459452f092d19a58d8da36a",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 22,
+      "taxonomy": "inference_serving",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "The production llama-server log-retention hole remains open: prior append change was in an uncalled legacy script and did not diagnose production. A later wrapper default-path fix is separate and cannot establish the cause of the historical gap.",
+      "citations": [
+        {
+          "path": "handoffs/active/evidence-plane-instrument-repair.md",
+          "line": 148,
+          "anchor": "Reopened 2026-10-31 after the operator audit"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show f38130194e86bd99b63af1855709cde057fd154a:handoffs/active/evidence-plane-instrument-repair.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 30.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/exl3-cpu-mi210-implementation.md",
+      "baseline_hash": "1013ec4326f103f1e841c85c18b2d230016c235a9ac62b1bad94f9701bec9887",
+      "baseline_revision": "ad6f70e1f4ff910767ce0e296f05d40be691c67d",
+      "current_hash": "633ddb33ca435eb69f32dfaa0ae4ad0195521af78091587e0fdd836dfd7f4b5d",
+      "inventory_hash": "633ddb33ca435eb69f32dfaa0ae4ad0195521af78091587e0fdd836dfd7f4b5d",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 10,
+      "taxonomy": "quantization",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "EXL3 evidence inventory adds no rows, frames or grade; original smoke remains FAIL and prior PPL stays QUALITY_NOT_WORSE only within its original scope.",
+      "citations": [
+        {
+          "path": "handoffs/active/exl3-cpu-mi210-implementation.md",
+          "line": 140,
+          "anchor": "2026-10-31 bounded progress"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show ad6f70e1f4ff910767ce0e296f05d40be691c67d:handoffs/active/exl3-cpu-mi210-implementation.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 31.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/fleet-fanout-measurement.md",
+      "baseline_hash": "e0cb9d022126660aa5fb67bc17fbbd111dae97cf8468c06ac549ab03d3ded61b",
+      "baseline_revision": "2c42a057569f17203e79a1d2d7499f3a7147a354",
+      "current_hash": "44c15718482d088693c19dde7941b33922f4ca6dd618589dc24adc127a5fbb0c",
+      "inventory_hash": "44c15718482d088693c19dde7941b33922f4ca6dd618589dc24adc127a5fbb0c",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 21,
+      "taxonomy": "agent_architecture",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "Delegation accounting instrumentation is filed; FM-8/9 and large-read/advisor/local-worker changes are conditional proposed work, with no measured trigger outcome asserted here.",
+      "citations": [
+        {
+          "path": "handoffs/active/fleet-fanout-measurement.md",
+          "line": 168,
+          "anchor": "FM-7 \u2014 Delegation accounting"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 2c42a057569f17203e79a1d2d7499f3a7147a354:handoffs/active/fleet-fanout-measurement.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 32.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/gpu-acceleration-path.md",
+      "baseline_hash": "694b299e8afb8eb7b1a862d7c511c0c313426d5367b832a8b8dacc6bdcf385bc",
+      "baseline_revision": "4288356f0",
+      "current_hash": "ad4d0b388cc41859810f5caaded0f657182e14f1ac50843d402185fd955a34cd",
+      "inventory_hash": "ad4d0b388cc41859810f5caaded0f657182e14f1ac50843d402185fd955a34cd",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 15,
+      "taxonomy": "hardware_optimization",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "Looped-model and PLT builds, parity and throughput curves are proposed experimental-tree work; upstream compatibility notes are not local performance results.",
+      "citations": [
+        {
+          "path": "handoffs/active/gpu-acceleration-path.md",
+          "line": 626,
+          "anchor": "GPU-LOOP-1"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 4288356f0:handoffs/active/gpu-acceleration-path.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 33.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/gpu-serving-tie-in-program.md",
+      "baseline_hash": "d66ace856b32b31e439ab189786ffa97bd2325b088085f8de8de0b58fb45cc1d",
+      "baseline_revision": "ae500683177e8c0d0c94bec8a37bdadf5bc50821",
+      "current_hash": "529c5d39c0ba9b4fc559f5ec6d589e934fcc8f605eb437ec0a1bff1c612ecf83",
+      "inventory_hash": "529c5d39c0ba9b4fc559f5ec6d589e934fcc8f605eb437ec0a1bff1c612ecf83",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 66,
+      "taxonomy": "inference_serving",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "GPU-ZOS atomic R6 captured 48 fresh responses with rc0 but decision is INCONCLUSIVE: the predeclared six-pass analysis equations are incomplete; prior S and NF are four-pass values. No SHIP. GPU-ZOS-2.2 is reopened because original kernel-store/independent-byte/GPU-test rule was not met.",
+      "citations": [
+        {
+          "path": "handoffs/active/gpu-serving-tie-in-program.md",
+          "line": 554,
+          "anchor": "GPU-ZOS-2.3 atomic extension R6"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show ae500683177e8c0d0c94bec8a37bdadf5bc50821:handoffs/active/gpu-serving-tie-in-program.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 34.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/harness-improvement-loop.md",
+      "baseline_hash": "d3f6285929faf71d3dbb4608eb1e7cba7c15cabfb79c7024ef0a934bccd3c03c",
+      "baseline_revision": "2a50a877de2d07f9452f7878dd56ddb84495a07b",
+      "current_hash": "3ad49fd1663775829395ba78241ac2138f6bebbf73dcf04e95ced930f78f9af1",
+      "inventory_hash": "3ad49fd1663775829395ba78241ac2138f6bebbf73dcf04e95ced930f78f9af1",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 27,
+      "taxonomy": "agent_architecture",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "HIL15b v2 source and frozen-receipt fixtures are published; qualification uses a noncohort control. The 20-task x 3 replay live cohort, empirical difficulty band and parent acceptance remain open; no adaptive redraw or efficacy is claimed.",
+      "citations": [
+        {
+          "path": "handoffs/active/harness-improvement-loop.md",
+          "line": 632,
+          "anchor": "HIL15b v2 source publication"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 2a50a877de2d07f9452f7878dd56ddb84495a07b:handoffs/active/harness-improvement-loop.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 35.diff"
+      }
+    },
+    {
+      "path": "handoffs/active/intake-derived-work-2026-07-25.md",
+      "baseline_hash": "bebf3d3392969e3550a42e0a81e2c7088e4cfed0bf82375de6fff0e07f49b551",
+      "baseline_revision": "4c710f666b5e8290348234bc2fa10bac5e63b81d",
+      "current_hash": "3fa9165bf3c76b760250ccf810fbebc9603e038d0d0c4189540ce44f67dbda29",
+      "inventory_hash": "3fa9165bf3c76b760250ccf810fbebc9603e038d0d0c4189540ce44f67dbda29",
+      "inventory_matches": true,
+      "baseline_verified": true,
+      "diff_lines": 43,
+      "taxonomy": "knowledge_management",
+      "outcome": "changed finding or explicitly labeled proposed work",
+      "finding": "ID-19 Python session/messages envelope projection matched 14 normalized records from three eligible sessions; two others retained upstream missing-user refusal. It omits token/cost/outcome warrant and is not the full normalizer. Four new research-intake guard tasks are proposals; ID-11 evidence is prior-work hygiene.",
+      "citations": [
+        {
+          "path": "handoffs/active/intake-derived-work-2026-07-25.md",
+          "line": 204,
+          "anchor": "Actual private differential"
+        }
+      ],
+      "verified_readset": {
+        "baseline": "git show 4c710f666b5e8290348234bc2fa10bac5e63b81d:handoffs/active/intake-derived-work-2026-07-25.md",
+        "current": "working file SHA-256 verified against inventory",
+        "comparison": "full unified diff 36.diff"
+      }
+    }
+  ]
+}

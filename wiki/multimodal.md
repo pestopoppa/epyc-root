@@ -1550,3 +1550,11 @@ Sources: [ernie-image-turbo-evaluation](../handoffs/active/ernie-image-turbo-eva
 - Keep the exact-cohort baseline (36/60) separate from the historical 159/250 (63.6%) result. The S-18 measurement and VB-SERVING-DF2 projection/canary remain open; the projection schema is unwired and the planning-context canary is required.
 
 Sources: [S-18 READY capsule](../artifacts/compute/codex-ni-s18-qwenvl-cpu-r1-20261031/README.md); [2026-10-31 NI progress](../progress/2026-10/2026-10-31-codex-ni-01a16d6b.md); [multimodal pipeline handoff](../handoffs/active/multimodal-pipeline.md); [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md).
+
+
+## Compiled Update — 2026-11-01 (source-delta review)
+
+**Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
+
+- LEX2 dev selection: 100 clips by 15 cells, 1,500 native successes; local alpha 1 casefolded keyword F=.701754 vs alpha-zero .574803. This is lexical reference agreement, not WER; 35 selected rows carry P-STT-1 flags. The 755-row heldout plan is not READY and no heldout inference, score or quality decision exists. Earlier CS-22 A1 had 178 completed cases and zero Q8-F32 WER delta on tested repeated contexts, but rejected required context 1 and failed original acceptance; the 28,805 s silence soak is not real-traffic latency. [Source](../handoffs/active/conversation-stack.md)
+- Ernie typography diagnostic captured 40/40 images from 20 English/Chinese prompts at two resolutions; official score, enhancer, filter and human review remain unknown, so no quality verdict. [Source](../handoffs/active/ernie-image-turbo-evaluation.md)

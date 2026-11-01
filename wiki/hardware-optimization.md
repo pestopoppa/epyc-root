@@ -6758,3 +6758,22 @@ Sources: [G16 accepted capsule](../artifacts/compute/codex-ni-g16-greedy-aligned
 - The focused unit controls and compilation passed on the implementation commit. This replays supplied profiler receipts; it does not establish end-to-end PMC capture, a broader native caller, live activation, or completion of C5-7.
 
 Sources: [agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) · [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) · [counter-gate progress record](../progress/2026-10/2026-10-31-c5-7-counter-gate.md)
+
+## Compiled Update — 2026-11-01 (incremental source review)
+
+**Confidence: scoped to cited native records and source controls.**
+
+- G16 greedy native comparisons matched first IDs but failed full UTF-8 byte equality at 2K, 8K, 16K and 24K; this does not resolve the separate NMSE branch or establish causality/promotion. ([G16](../handoffs/active/log-linear-gated-deltanet-readiness.md))
+- C6 static checks cover finite known library aliases; dynamic dispatch remains unknown. Prior GLA and FP16 source audits and preservation checkpoints are source evidence, not new model parity or performance. ([C6](../handoffs/active/rocm-verify-profile-backend.md); [GLA](../handoffs/active/lightning-attention-port.md); [multiscreen](../handoffs/active/multiscreen-attention-evaluation.md))
+
+
+## Compiled Update — 2026-11-01 (source-delta review)
+
+**Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
+
+- Research 39b63b06 adds an opt-in counter-evidence decision gate and 19 synthetic controls; no end-to-end profiler capture, live activation or completed C5-7 is established. ISA capture and assembly-edit work are proposed. [Source](../handoffs/active/agentic-rocm-kernel-authoring.md)
+- A manual GPU window park only writes a window file; executor open plus schedule and grant stops servers. The startup exact-flag evidence repair documents an older implementation; new edge-value and quant decoding gates remain proposals. [Source](../handoffs/active/autokernel-all-devices-all-dimensions.md)
+- C6 IQK-FA remainder failed three times at the 8 GiB sampled-RSS guard (8.99/8.84/9.00 GB); zero of 28 missing cells were evaluated. Separate GPU identity run refused changed pair order despite native PASS; no promotion or identity gate conclusion follows. [Source](../handoffs/active/autokernel-champion-aggregate.md)
+- Champion status is recorded as a workload vector with invocation identity and per-cell source/freshness; historical missing recipes stay UNKNOWN, and scalar compatibility is limited to a reference cell (root b3082210; research 61af96a9). [Source](../handoffs/active/autokernel-cross-workload-keep-gate.md)
+- CPU-decode audit withdraws the 23.16 t/s / 1.876x claim-grade and +0.7% clean-window labels due to contention interpretation; historical rates remain observations with no replacement performance grade. GPU-lock nonviolation does not prove no SMT contention. [Source](../handoffs/active/cpu-decode-roofline-program.md)
+- Looped-model and PLT builds, parity and throughput curves are proposed experimental-tree work; upstream compatibility notes are not local performance results. [Source](../handoffs/active/gpu-acceleration-path.md)

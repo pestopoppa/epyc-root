@@ -1,0 +1,48 @@
+{
+  "aa_call_flagged_unknown_n": 19,
+  "arms": [
+    "selected Nemo",
+    "alpha-zero Nemo baseline",
+    "frozen Whisper no prompt",
+    "frozen Whisper selected-scope prompt"
+  ],
+  "assets": {
+    "aa_comparison_view": {
+      "path": "/mnt/raid0/llm/tmp/codex3-lex2-score-20261101/frozen-scorer/AA-COMPARISON-VIEW-PROPOSAL.json",
+      "sha256": "61f9e74173ee5ae9ec25a59c31c55e1a28ddf51fe78f030db032f400e1e6064c"
+    },
+    "contextual_test_manifest": {
+      "path": "/mnt/raid0/llm/data/contextual-earnings22-59d7f947/test-native/MANIFEST-V2.json",
+      "sha256": "bf5a32fb1a74d6cac4950f8973abc2583c08ad4e71a1169399aa8eb443188fd7"
+    },
+    "fleurs_test_source": {
+      "path": "/mnt/raid0/llm/data/stt-cs8-public-20261030/stt5-baseline-test-manifest.json",
+      "sha256": "242be009933eaf7e6b2e70e56b0f55f76a3d22b815eb4ce7fcf95a1467b72362"
+    }
+  },
+  "created_before_test": true,
+  "decision_rule": "CS-8.LEX2: paired test keyword F gain 95% interval above zero, lexicon-free insertions <= 1/hour, term-masked WER rise <= frozen dev noise floor; undefined evidence cannot pass",
+  "dev_plan_sha256": "b211abecccf46db175e92514d93ed6016842de2712db6ff896dc1b7fb912edd3",
+  "excluded_dev_call_n": 17,
+  "fleurs": "all pinned test en/it/de/fr; selected context and alpha-zero baseline, per-source list semantics predeclared in final launcher",
+  "heldout_contextual_n": 755,
+  "metric_label": "LEX1 lexical reference agreement, not P-STT-1 v1 WER or speech-release claim",
+  "nonlist_noise_floor": 0.0,
+  "original_contextual_n": 772,
+  "raw_terminal_sha256": "de38c1b4a87aab8bb095034e8e963e5dd47b5b3be02ee0bc453b208dd084cc15",
+  "ready": false,
+  "remaining": "materialize exact selected and baseline command matrix, write-side capture, final launcher and same-launcher real/STOP proof before any READY",
+  "schema": "cs8.lex2.heldout-plan.v1",
+  "scorer_predeclared_sha256": "69ad5443850b8b85f1c3514758839f9c9b2119153636572db38cf39d93489b5d",
+  "scorer_semantics_sha256": "69ad5443850b8b85f1c3514758839f9c9b2119153636572db38cf39d93489b5d",
+  "selection": {
+    "alpha": 1,
+    "engine": "nemo",
+    "folded_keyword_f": 0.7017543859649122,
+    "scope": "local"
+  },
+  "selection_sha256": "08c52ce9ba1d30dc3d3c6f0c56fbefb6ec1f13c8c1e31d8a041576502eb1c1a7",
+  "test_inference_started": false,
+  "test_scoring_started": false,
+  "unknown_policy": "all original attempts retained, no redraw, unknown/discordant overlap never counted as clean"
+}

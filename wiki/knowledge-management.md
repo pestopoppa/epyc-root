@@ -4261,3 +4261,17 @@ Sources: [non-inference-backlog](../handoffs/active/non-inference-backlog.md) ·
 - Durable conclusions belong in committed reports/progress as observations with their path and commit; a scratch receipt alone does not establish a measurement tuple. This wrap also preserves the two reopened nonterminal claims and the unaccepted RVP research WIP without adding measurement warrants.
 
 Sources: [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md) · [tick-science audit](../docs/reports/tick-science-audit-20261031.md) · [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) · [workspace-58 failed-run progress](../progress/2026-10/2026-10-31-workspace-58.md)
+
+## Compiled Update — 2026-11-01 (incremental source review)
+
+**Confidence: scoped to cited native records and source controls.**
+
+- A frozen qd-v1 census of 35,280 rows found 46.040% over the 256-token cap and 51.274% model-input-token retention; this is recipe replay, not proof of the historical tokenizer, qd-v2, retrieval quality or G13 adoption. ([RAG](../handoffs/active/internal-kb-rag.md))
+- Prospective source enrollment preserves native identity, unknowns and original write-side warrant; synthetic adapters or canaries do not prove live wiring, and previously unrecorded warrant is not invented. Existing grades remain shared. ([belief program](../handoffs/active/vidya-belief-substrate-program.md); [REPL retrieval](../handoffs/active/repl-embedding-retrieval.md); [tool compression](../handoffs/active/tool-output-compression.md))
+
+
+## Compiled Update — 2026-11-01 (source-delta review)
+
+**Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
+
+- ID-19 Python session/messages envelope projection matched 14 normalized records from three eligible sessions; two others retained upstream missing-user refusal. It omits token/cost/outcome warrant and is not the full normalizer. Four new research-intake guard tasks are proposals; ID-11 evidence is prior-work hygiene. [Source](../handoffs/active/intake-derived-work-2026-07-25.md)

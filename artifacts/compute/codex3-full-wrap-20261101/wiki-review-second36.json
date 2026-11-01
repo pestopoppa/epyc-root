@@ -1,0 +1,326 @@
+[
+  {
+    "i": 0,
+    "path": "handoffs/active/internal-kb-rag.md",
+    "baseline_ref": "32b96d7fe6baaf35797eca2c2bb23cf0dac8d548",
+    "state": "matched",
+    "current_sha256": "426bd101c5eba6d64dd24b3544d11a0e0b13a42a9765c4f22a3c1133d35d01e4",
+    "disposition": "reviewed delta: qd-v1 census; retrieval and adoption remain unmeasured",
+    "baseline_content_sha256": "da116d58a190eab4470418bcfa5dd8e968deb5f8e0e0d6ab82e5f40acb10f7ef"
+  },
+  {
+    "i": 1,
+    "path": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
+    "baseline_ref": "3559b5a7efb0c9dce331a88fc796b4fbcc283098",
+    "state": "matched",
+    "current_sha256": "4a0e1d497ae8a2429c053c70b048b273ecf4cd848f722b2404ed7863d790be3d",
+    "disposition": "reviewed delta: fork code review plus prospective state/reuse proposals",
+    "baseline_content_sha256": "7d3bb8a82048963be17481ada9d6d8714bddeaba5d9fab9d1f4c272dba1bdacd"
+  },
+  {
+    "i": 2,
+    "path": "handoffs/active/kv-unified-stack-rollout.md",
+    "baseline_ref": "0b299b13a65d0be59806c17a71282f8a4ca36b39",
+    "state": "matched",
+    "current_sha256": "62211bb8db50ddbdb70339f6339021f5dcd7919b4f6f9fb955bac4497e3ef047",
+    "disposition": "reviewed delta: lease telemetry, registry hygiene and original unknown exposure",
+    "baseline_content_sha256": "90d3163b0a868392d3b8a815ed087e5759301ee81f20c3228a019f35146be6a3"
+  },
+  {
+    "i": 3,
+    "path": "handoffs/active/learned-routing-controller.md",
+    "baseline_ref": "a2d6aa5b40f596daecc254a9f1084d49c02110e4",
+    "state": "matched",
+    "current_sha256": "6bcd9d0f83e04501888bbb8606d9572e9257969681407ece3e64d4b7ea35dbdc",
+    "disposition": "reviewed delta: reward objective payload source repair",
+    "baseline_content_sha256": "fece0c3edbb3be1ac6ffcd558ee57ea57ba312f956eacd661cbc65f1931522ef"
+  },
+  {
+    "i": 4,
+    "path": "handoffs/active/lightning-attention-port.md",
+    "baseline_ref": "89eef2a91a322cad93b4b5759f84ae3228265f68",
+    "state": "matched",
+    "current_sha256": "135a5b88b9cdc5aa54c2b18051ac782a9f3d661067cdd80dccff71ecdd79a57a",
+    "disposition": "reviewed delta: historical source evidence only",
+    "baseline_content_sha256": "a2ddc84afaa1639241c518b826d34cd364cf67c85b40e8f382a5d8d270ef7409"
+  },
+  {
+    "i": 5,
+    "path": "handoffs/active/log-linear-gated-deltanet-readiness.md",
+    "baseline_ref": "2d2c86542c2cfbf39ca5a5a8f19dfe17265dc255",
+    "state": "matched",
+    "current_sha256": "3bab32a4e77c2c1cb823b74098de292fd05a9725588c7f15d98fb4fdc5d3d675",
+    "disposition": "reviewed delta: G16 exact-byte FAIL, NMSE branch open",
+    "baseline_content_sha256": "b9510698e072ea50dc83d2c3e7755decaa4717674fc8f16fe8fef488307f992b"
+  },
+  {
+    "i": 6,
+    "path": "handoffs/active/loop-owned-fleet-implementation.md",
+    "baseline_ref": "94e7d72a8448c3b77189b77dbb5cdd5d4ccfadbc",
+    "state": "matched",
+    "current_sha256": "c3c377ec45029f31f6304c37e62de822014b73f6ba11004b33a75cd1bcc36203",
+    "disposition": "reviewed delta: probe and dispatch source controls",
+    "baseline_content_sha256": "42823e948235ab53067a627689f66347ac7a1863148ca35615433572e692c50e"
+  },
+  {
+    "i": 7,
+    "path": "handoffs/active/model-artifact-integrity.md",
+    "baseline_ref": "2220f8a1b6f5449f29fb6d9e80217ed81972417a",
+    "state": "matched",
+    "current_sha256": "dcc63562f58720bccd6bef38aed030a8ed59663f79706a7e8b3ab14e97f62b14",
+    "disposition": "reviewed delta: byte-faithful artifact renderer controls",
+    "baseline_content_sha256": "58f964f4f875da5175c0259e3cd32c091a25ed41b14df0e122c0fcdcf2cb1cb6"
+  },
+  {
+    "i": 8,
+    "path": "handoffs/active/moe-routing-tap-and-locality-measurement.md",
+    "baseline_ref": "ad6f70e1f4ff910767ce0e296f05d40be691c67d",
+    "state": "matched",
+    "current_sha256": "0ab5e2fa230f4b07331f2c9146977189d3f26f377fb94263fdc2df9c5aa14bfb",
+    "disposition": "reviewed delta: MoE fidelity source/evidence and prospective lag",
+    "baseline_content_sha256": "f311778d1d47a8caabe6cb22f14c76f20be79ae1aefc7d17d3dcc1481129c98a"
+  },
+  {
+    "i": 9,
+    "path": "handoffs/active/multi-file-coding-completion-capability.md",
+    "baseline_ref": "290148d77d6fe16f81432c78f3e8e2d9a54a317e",
+    "state": "matched",
+    "current_sha256": "79811dbdd9a7e6bc74d3bc85bcbb7679c066d161c1a7d0c55e9884839fd94409",
+    "disposition": "reviewed delta: default-off retry source controls",
+    "baseline_content_sha256": "d575b7c92fce2a9bc0221b62bd06aa613f0bcff542d272d958a5583a77455eab"
+  },
+  {
+    "i": 10,
+    "path": "handoffs/active/multimodal-pipeline.md",
+    "baseline_ref": "4c710f666b5e8290348234bc2fa10bac5e63b81d",
+    "state": "matched",
+    "current_sha256": "fdaafb6d20900381ef7a4bbcb38d72134891e077067bf06b6f0c5221de4e61f6",
+    "disposition": "reviewed delta: multimodal dry-run control and diagnostic preparation",
+    "baseline_content_sha256": "1fcf16f4d24367640245a1c1a34924d61a4b3dee91cf68f9e54f436425586646"
+  },
+  {
+    "i": 11,
+    "path": "handoffs/active/multiscreen-attention-evaluation.md",
+    "baseline_ref": "ad6f70e1f4ff910767ce0e296f05d40be691c67d",
+    "state": "matched",
+    "current_sha256": "f74a712851bd34ed6e1b6d0acfbd958fab78089c51d1b393d10694a6ef1d4e4d",
+    "disposition": "reviewed delta: historical document custody",
+    "baseline_content_sha256": "8a0face7995f1891a2cd4db8ab9254c5557ea5bf97a4a1fe5650d6366257f7df"
+  },
+  {
+    "i": 12,
+    "path": "handoffs/active/non-inference-backlog.md",
+    "baseline_ref": "2ce0cf3bf381361037f71449500b9047efd1ff6b",
+    "state": "matched",
+    "current_sha256": "a9b143d65ff308e6c8075d3955a961115ab049ee2d919157a94bd03f92272f81",
+    "disposition": "reviewed delta: scheduler/keeper repairs and open operational work",
+    "baseline_content_sha256": "0dbb3501cdf69dfcb9a342496795f327bd036cab90d5fbaf44fad07e895024e1"
+  },
+  {
+    "i": 13,
+    "path": "handoffs/active/numa-topology-cutover-resume-20260730.md",
+    "baseline_ref": "775e4dbd56069407d98b264621ca7600219b2ae3",
+    "state": "matched",
+    "current_sha256": "b534aa3e341df004a5713437213df0f8389060db8bf02f29df4b47c9c81de7d4",
+    "disposition": "reviewed delta: stack template validation and historical source evidence",
+    "baseline_content_sha256": "d7cd45370dafb2766c8bdb8c58245d8046d98c6b5ec5ac882aaf97b73cdeee50"
+  },
+  {
+    "i": 14,
+    "path": "handoffs/active/objective-task-rate-goodput.md",
+    "baseline_ref": "0ee571d73d63c9a6728cd3f2f6b191a990334e4a",
+    "state": "matched",
+    "current_sha256": "a4b545f915f7ef3113cd834d141c80c4b2bd28a0076a5df3ef3dc94e18fdf958",
+    "disposition": "reviewed delta: empty archive era-authority reconciliation",
+    "baseline_content_sha256": "e0f404d52fb2f5a469f832200a42a4369bf4cef777c9c45114d96e031491fba4"
+  },
+  {
+    "i": 15,
+    "path": "handoffs/active/per-request-reasoning-budget.md",
+    "baseline_ref": "749c244db3e34e980db044c1142d985a73c83b96",
+    "state": "matched",
+    "current_sha256": "013728721166e60e52e3510078fee8735666cabd52f0fbad900df5d0a5232b81",
+    "disposition": "reviewed delta: PRB failed-run and repair task",
+    "baseline_content_sha256": "e3e4a5678888fa2bd77e7d1da51cf5c177857668b34b9bb96784cafe3eac3735"
+  },
+  {
+    "i": 16,
+    "path": "handoffs/active/promptforge-mutation-safety-contract.md",
+    "baseline_ref": "4c710f666b5e8290348234bc2fa10bac5e63b81d",
+    "state": "matched",
+    "current_sha256": "8e3c3f32603a8651aff3ba50ff07bebe0a1cba93956e3405050e5acfb09daf83",
+    "disposition": "reviewed delta: mutation isolation and eval identity guards",
+    "baseline_content_sha256": "045efee4cd586a299a255bac4b6ebb5cffb60b544a56ee42a3b7f09291826a92"
+  },
+  {
+    "i": 17,
+    "path": "handoffs/active/qwen-chat-template-evaluation.md",
+    "baseline_ref": "4c710f666b5e8290348234bc2fa10bac5e63b81d",
+    "state": "matched",
+    "current_sha256": "f5853175fc007953aa541c5612f3bc5bc0449f5338f0b3123c74cfded652fadd",
+    "disposition": "reviewed delta: chat-template goldens fixture",
+    "baseline_content_sha256": "20290ddb59516ebdddcb0a1f4a2968863141788a1b04724bbf070cd0846b9bb1"
+  },
+  {
+    "i": 18,
+    "path": "handoffs/active/qwen-mtp-llamacpp-port.md",
+    "baseline_ref": "4288356f0",
+    "state": "matched",
+    "current_sha256": "e7a3589fc11b73f1f1329a52db4d74ed6616de1dd7f85bdcf573f7bd55f7fd89",
+    "disposition": "reviewed delta: upstream Vulkan note and prospective intake",
+    "baseline_content_sha256": "a1c788133f94805bbcbb0bcb7b3f60cc2f4b361ea094f23fcd78e5add0de8a05"
+  },
+  {
+    "i": 19,
+    "path": "handoffs/active/rao-redel-substrate-spike.md",
+    "baseline_ref": "4288356f0",
+    "state": "matched",
+    "current_sha256": "27b382ed93865dd6eec3a879be82de2ba5a04d9e1e7cded4300f9f4c8f5bce43",
+    "disposition": "reviewed delta: original-event failure and redacted committed path",
+    "baseline_content_sha256": "9eaba9d4134bd06da952791f933d700e5c7f79788e85203d09b23f89d602b4d9"
+  },
+  {
+    "i": 20,
+    "path": "handoffs/active/refactoring-multirepo-2026-10.md",
+    "baseline_ref": "b0dafd1b62d8511cf40baf19cedb848ab1e782a6",
+    "state": "matched",
+    "current_sha256": "569f43bd554a3bfe71657984569356a312a7fc6c20d18a87ef31e7b02d4cf1f5",
+    "disposition": "reviewed delta: refactor CI/source evidence and quota correction",
+    "baseline_content_sha256": "caf9e10f42f51230fccb9ab0a0fa3c082447677a0fab67ba1c3fee7f8c6cfb27"
+  },
+  {
+    "i": 21,
+    "path": "handoffs/active/repl-embedding-retrieval.md",
+    "baseline_ref": "2a50a877de2d07f9452f7878dd56ddb84495a07b",
+    "state": "matched",
+    "current_sha256": "e3e71ab99fb85ffe679abaf7ecead05f81a0643b980df924c4d2675f29901619",
+    "disposition": "reviewed delta: prospective spill and historical embedding evidence",
+    "baseline_content_sha256": "b5edb96dbb7f74e49a9f3a05a1482be8d10971303e990f6b71007262b8f31042"
+  },
+  {
+    "i": 22,
+    "path": "handoffs/active/repl-turn-efficiency.md",
+    "baseline_ref": "29c522243b5e717d359e49cb7fb6e9a643d5925a",
+    "state": "matched",
+    "current_sha256": "f3c284cdca1dc3bd1488694bdefa3cb3a2d3f97b5b027d6ae8a5bc2faedf2a7a",
+    "disposition": "reviewed delta: prompt replay harness source only",
+    "baseline_content_sha256": "0eb7e3de97134094e0dc1fc056edaa85b5cc570982c0b43c7bc8015705de4034"
+  },
+  {
+    "i": 23,
+    "path": "handoffs/active/rocm-verify-profile-backend.md",
+    "baseline_ref": "ec1043b31a8460bd0dcc38a4cdee529b512d647c",
+    "state": "matched",
+    "current_sha256": "7fe4bf1a7d3754da8a2be35641f6df92460d5f4bcaf32cd3c4ffaebc7a386805",
+    "disposition": "reviewed delta: C6 source controls, partial ParEval and prospective race work",
+    "baseline_content_sha256": "52e6e3d6daa8c4a605802286560402cf5f3265dd565f6f174bd32f765ad4dbe1"
+  },
+  {
+    "i": 24,
+    "path": "handoffs/active/routing-intelligence.md",
+    "baseline_ref": "4288356f0",
+    "state": "matched",
+    "current_sha256": "649c50a84cf6e866336229aceaa89c31134f05007f07236f4361e7d9fdee455d",
+    "disposition": "reviewed delta: future delegation replay proposal",
+    "baseline_content_sha256": "101e866d23534659e4523464362e27e43cdd9bc5749dac2a09abc46e83619e61"
+  },
+  {
+    "i": 25,
+    "path": "handoffs/active/session-bus-thin-dispatcher.md",
+    "baseline_ref": "4c710f666b5e8290348234bc2fa10bac5e63b81d",
+    "state": "matched",
+    "current_sha256": "7516bfac6c96cf5ed4545b157ccd78fbeabcd44dd6fe58da3086ec2a97fbd2b1",
+    "disposition": "reviewed delta: session bus generation identity and receipt source controls",
+    "baseline_content_sha256": "afcbe3bc41ee834ba8b10e014c87aa93e8344f3b9271db3792291dd590992969"
+  },
+  {
+    "i": 26,
+    "path": "handoffs/active/shape-keyed-contention-gating.md",
+    "baseline_ref": "0d2e1d0645a053b2b512cd0527e9395ecb596526",
+    "state": "matched",
+    "current_sha256": "94e79401cefcdeeb81c21f5f43d79207c6ecc0d204d6adb3f7cfe43577885149",
+    "disposition": "reviewed delta: shape-label source reconciliation",
+    "baseline_content_sha256": "ebbe4e7972c189dbb966f847a387a1c316fdea4cc2c6914b7d3830de612e3fb1"
+  },
+  {
+    "i": 27,
+    "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
+    "baseline_ref": "4288356f0",
+    "state": "matched",
+    "current_sha256": "25917b0147cd1932f3d9567428aaf1f7d510fdbf5821d3bb9650ed5a4afee610",
+    "disposition": "reviewed delta: reopened incomplete gate and future canary proposal",
+    "baseline_content_sha256": "c8be07d33bc6efae594a7547f215a0ee907f7f1e4a5a496fb04aadda4e107f64"
+  },
+  {
+    "i": 28,
+    "path": "handoffs/active/stack-change-governance-pipeline.md",
+    "baseline_ref": "26d0bc3ea887a4c7bb0e2330e76376705b494844",
+    "state": "matched",
+    "current_sha256": "649ae8d979b3f032c57ac63b2f3ac59c82e64bcae4d494a1ed3258e664a6e445",
+    "disposition": "reviewed delta: stack-test isolation partial; full unit acceptance open",
+    "baseline_content_sha256": "d5183955a7d95f2f30d4d414faa23a2e57e81ec2c2dd759658f2ca031a5bdbae"
+  },
+  {
+    "i": 29,
+    "path": "handoffs/active/tool-output-compression.md",
+    "baseline_ref": "9af387b80affc5843a41ed08c3bc1eeaf79d06b8",
+    "state": "matched",
+    "current_sha256": "b2db5a86630c359e2e0c3f0fd31f99bfc11e8d413d2d7bcb81cac4590f33f51b",
+    "disposition": "reviewed delta: TOC source and A/B design, no scientific trial",
+    "baseline_content_sha256": "344a5806b2e8eb5e3d1d8a3a28e624940c80c9202794baf1285d7b79a989bd06"
+  },
+  {
+    "i": 30,
+    "path": "handoffs/active/tool-use-eval-contract.md",
+    "baseline_ref": "4288356f0",
+    "state": "matched",
+    "current_sha256": "b1549e739944c1edeb7d1ff0118b8e8659f4f6e19914eb232d21ece7e6658059",
+    "disposition": "reviewed delta: future fold-eval trigger",
+    "baseline_content_sha256": "7443a90d09420b370f2c3f2e22c63c60ec95d466b55a25e25a675b1da1e5544b"
+  },
+  {
+    "i": 31,
+    "path": "handoffs/active/typed-decision-plane.md",
+    "baseline_ref": "c9e76ace06121a0bfa7c4bb33401f496baead4c2",
+    "state": "matched",
+    "current_sha256": "280ec1c62d45e5b69ae9de8825ec83cb349dd6d457060357acef867a99547b6c",
+    "disposition": "reviewed delta: typed-decision shadow source and prospective model work",
+    "baseline_content_sha256": "a4b47e5eb4f03c466bf4e4b097ecdbeeee2f429ec0a0a372b81cba5b71e175b7"
+  },
+  {
+    "i": 32,
+    "path": "handoffs/active/vidya-belief-substrate-program.md",
+    "baseline_ref": "2a50a877de2d07f9452f7878dd56ddb84495a07b",
+    "state": "matched",
+    "current_sha256": "63f6b03a319b9b9446b10a53c063a81ba086eda40806172d33769755c563eef8",
+    "disposition": "reviewed delta: source-warrant enrollments and partials stay open",
+    "baseline_content_sha256": "854a2014e0164db2aa7c7fcef5ac8d1d582fcdc068894cc92b0f0cb1b9909743"
+  },
+  {
+    "i": 33,
+    "path": "handoffs/active/yarn-context-extension-research.md",
+    "baseline_ref": "2a50a877de2d07f9452f7878dd56ddb84495a07b",
+    "state": "matched",
+    "current_sha256": "f2a7c987d95be50d8280f56f36c956e807713b07ace7de1410deca63ae69618b",
+    "disposition": "reviewed delta: YaRN fixed paired results and failed/partial attempts",
+    "baseline_content_sha256": "97666967124ee9171e43c0b862b436dd85e493f248a6fba1c277d5b8189e6f2e"
+  },
+  {
+    "i": 34,
+    "path": "progress/2026-10/2026-10-31-workspace-58.md",
+    "baseline_ref": "4288356f0",
+    "state": "matched",
+    "current_sha256": "7bb8a0e2541af4883188c2decf7ce6a781fb7b13ab5514dc4b31402f2be1f6aa",
+    "disposition": "reviewed delta: workspace filings, later R32 correction retained elsewhere",
+    "baseline_content_sha256": "824048ceb7cca4047f3e8b1eea5b8e637287b2023c598f30624b419e61e98654"
+  },
+  {
+    "i": 35,
+    "path": "progress/2026-11/2026-11-01-workspace-58.md",
+    "baseline_ref": "new",
+    "state": "matched",
+    "current_sha256": "c8ff11cbeb249173db6dd7c1b89c87e3e28dd04cb513b04fd3e10cd650e7a23e",
+    "disposition": "reviewed delta: STT rescore supersedes partial scorer result",
+    "baseline_content_sha256": null
+  }
+]
