@@ -21,3 +21,7 @@
 
 - CH-32: retained patch-path prerequisites, pairwise upstream ancestry and ggml API token scan. C1 precedes C2 and D8 for missing paths, D3 precedes D4/D7/D8, and D5 precedes D6; D8 is an upstream ancestor of D7. Two further missing paths originate at `a2878d30` and `071327508`. These are direct patch-context facts, not a minimal build chain or ggml compatibility proof.
 - CH-37 ancestry/source review: C5 contains local #28123 port `0771238438`; upstream snapshot-bound #31368 `ab3768cdc` is not ancestral. C5 checks `n_rs_seq` but the upstream change bounds rollback by last-ubatch snapshots. Manifest V11-112 records the pending presence and tests; no C5 failure or full fix is inferred.
+
+- CH-32 grouped feature-patch trials used independent temporary C5 indexes, stopping at the first unmerged patch. A clean; B1/C1/D1 each conflict in 2/10/8 files; later patches unattempted. Retained raw logs and JSON under `artifacts/compute/akagg-ch32-census-20261101/`. No minimum-chain or buildability claim.
+- CH-30b inventory: retained 25 f8 graph/shim source files and hash-bound lines; some are leak workarounds, others are experimental comparison conditions or graphs-on requirements. The YaRN guard still serves v10. No launcher edits; task remains open.
+- CH-26b static integrity review: current input hashes match, but the existing launcher does not seal the job/input manifest hash. Prepared an unsubmitted r2 sealed draft under `/mnt/raid0/llm/tmp/akagg-ch26b-r2-20261101/`; no live row was modified. Review a race-free transition before publishing a successor.

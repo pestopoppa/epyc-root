@@ -1,0 +1,118 @@
+{
+  "A": {
+    "base": "c72ec82f5417bb2937310326120f149b665e8400",
+    "planned_order": [
+      "A"
+    ],
+    "attempts": [
+      {
+        "name": "A",
+        "commit": "cbe28bb3cb0758f0c566a9a3561766821aeb0748",
+        "apply_rc": 0,
+        "unmerged_files": [],
+        "status": "applied_clean",
+        "log": "group-A-A.log"
+      }
+    ],
+    "not_attempted": [],
+    "note": "Feature patch sequence against independent temporary C5 index, stops at first conflict; not a full-ancestry merge or proof of minimum prerequisites/buildability."
+  },
+  "B": {
+    "base": "c72ec82f5417bb2937310326120f149b665e8400",
+    "planned_order": [
+      "B1",
+      "B2"
+    ],
+    "attempts": [
+      {
+        "name": "B1",
+        "commit": "b77d646751d01c0962bc203b6809e9d94f7d50b7",
+        "apply_rc": 1,
+        "unmerged_files": [
+          "src/llama-arch.h",
+          "src/llama-context.cpp"
+        ],
+        "status": "conflict",
+        "log": "group-B-B1.log"
+      }
+    ],
+    "not_attempted": [
+      "B2"
+    ],
+    "note": "Feature patch sequence against independent temporary C5 index, stops at first conflict; not a full-ancestry merge or proof of minimum prerequisites/buildability."
+  },
+  "C": {
+    "base": "c72ec82f5417bb2937310326120f149b665e8400",
+    "planned_order": [
+      "C1",
+      "C2"
+    ],
+    "attempts": [
+      {
+        "name": "C1",
+        "commit": "a4cb4c61fd9d9c2066c7c1747821d3d65b8943bd",
+        "apply_rc": 1,
+        "unmerged_files": [
+          "conversion/base.py",
+          "conversion/qwen.py",
+          "conversion/qwen3vl.py",
+          "convert_hf_to_gguf_update.py",
+          "gguf-py/gguf/gguf_writer.py",
+          "src/llama-hparams.h",
+          "src/llama-vocab.h",
+          "src/models/modern-bert.cpp",
+          "tools/server/README.md",
+          "tools/server/server-context.cpp"
+        ],
+        "status": "conflict",
+        "log": "group-C-C1.log"
+      }
+    ],
+    "not_attempted": [
+      "C2"
+    ],
+    "note": "Feature patch sequence against independent temporary C5 index, stops at first conflict; not a full-ancestry merge or proof of minimum prerequisites/buildability."
+  },
+  "D": {
+    "base": "c72ec82f5417bb2937310326120f149b665e8400",
+    "planned_order": [
+      "D1",
+      "D2",
+      "D3",
+      "D4",
+      "D5",
+      "D6",
+      "D8",
+      "D7"
+    ],
+    "attempts": [
+      {
+        "name": "D1",
+        "commit": "2851b3bcbf8d993a2243ae751c0a7dfa8e944a40",
+        "apply_rc": 1,
+        "unmerged_files": [
+          "gguf-py/gguf/constants.py",
+          "gguf-py/gguf/tensor_mapping.py",
+          "src/llama-arch.h",
+          "src/llama-ext.h",
+          "src/llama-model.cpp",
+          "tools/mtmd/clip.cpp",
+          "tools/mtmd/clip.h",
+          "tools/mtmd/mtmd.h"
+        ],
+        "status": "conflict",
+        "log": "group-D-D1.log"
+      }
+    ],
+    "not_attempted": [
+      "D2",
+      "D3",
+      "D4",
+      "D5",
+      "D6",
+      "D8",
+      "D7"
+    ],
+    "note": "Feature patch sequence against independent temporary C5 index, stops at first conflict; not a full-ancestry merge or proof of minimum prerequisites/buildability."
+  }
+}

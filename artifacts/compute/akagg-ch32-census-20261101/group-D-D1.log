@@ -1,0 +1,63 @@
+commit 2851b3bcbf8d993a2243ae751c0a7dfa8e944a40
+returncode 1
+Applied patch to 'conversion/__init__.py' cleanly.
+Applied patch to 'conversion/mistral3.py' cleanly.
+Applied patch to 'conversion/ultravox.py' cleanly.
+Applied patch to 'gguf-py/gguf/constants.py' with conflicts.
+Applied patch to 'gguf-py/gguf/gguf_writer.py' cleanly.
+Applied patch to 'gguf-py/gguf/tensor_mapping.py' with conflicts.
+Applied patch to 'src/llama-arch.cpp' cleanly.
+Applied patch to 'src/llama-arch.h' with conflicts.
+Applied patch to 'src/llama-ext.h' with conflicts.
+Applied patch to 'src/llama-graph.cpp' cleanly.
+Applied patch to 'src/llama-graph.h' cleanly.
+Applied patch to 'src/llama-hparams.h' cleanly.
+Applied patch to 'src/llama-model.cpp' with conflicts.
+Applied patch to 'src/llama-model.h' cleanly.
+Applied patch to 'src/models/mistral3.cpp' cleanly.
+Applied patch to 'src/models/models.h' cleanly.
+Applied patch to 'tools/mtmd/CMakeLists.txt' cleanly.
+Applied patch to 'tools/mtmd/clip-impl.h' cleanly.
+Applied patch to 'tools/mtmd/clip.cpp' with conflicts.
+Applied patch to 'tools/mtmd/clip.h' with conflicts.
+Applied patch to 'tools/mtmd/models/models.h' cleanly.
+Falling back to direct application...
+Applied patch to 'tools/mtmd/mtmd-audio.cpp' cleanly.
+Applied patch to 'tools/mtmd/mtmd-audio.h' cleanly.
+Applied patch to 'tools/mtmd/mtmd-cli.cpp' cleanly.
+Applied patch to 'tools/mtmd/mtmd.cpp' cleanly.
+Applied patch to 'tools/mtmd/mtmd.h' with conflicts.
+U gguf-py/gguf/constants.py
+U gguf-py/gguf/tensor_mapping.py
+U src/llama-arch.h
+U src/llama-ext.h
+U src/llama-model.cpp
+U tools/mtmd/clip.cpp
+U tools/mtmd/clip.h
+U tools/mtmd/mtmd.h
+
+UNMERGED INDEX
+100644 a3a9c478b6e5fae522e7d0ef69cd98e7e76311b4 1	gguf-py/gguf/constants.py
+100644 8920068801f78d086804093d003df520bf71b39a 2	gguf-py/gguf/constants.py
+100644 92a69bd57369f817cb41a26135f1bac6b48fb910 3	gguf-py/gguf/constants.py
+100644 01796e97879acf662473b4fd7f9e36cc0c95a6b0 1	gguf-py/gguf/tensor_mapping.py
+100644 b15cd0f3fb5d8484b1f3de76a4d4a9933b0655ee 2	gguf-py/gguf/tensor_mapping.py
+100644 ab6abf9cb704d2e98c7e48077665ec4ad580b003 3	gguf-py/gguf/tensor_mapping.py
+100644 4b607fec71002fca62cb313ebf7c4d0e03492fa2 1	src/llama-arch.h
+100644 d828e3fe47a0fa97b90b542219fe933d6e9c5ef6 2	src/llama-arch.h
+100644 0c842d312db1ef60930003da885a1ab2dd3dfde6 3	src/llama-arch.h
+100644 b8c5e8033e89bdf138c6e83047c862761bdadae6 1	src/llama-ext.h
+100644 3dda3cf55c5bdfbc66b3455ef329d577b4afa0c2 2	src/llama-ext.h
+100644 8b3932bd7507876802c61176d412524e0df257d6 3	src/llama-ext.h
+100644 2660bf38a2f076717592088d471f3775dade4965 1	src/llama-model.cpp
+100644 8beed8c7896815811a802979c4fa9840456c7187 2	src/llama-model.cpp
+100644 5d48d702c5b86537d32d6fa761832d9fdebd97d4 3	src/llama-model.cpp
+100644 336c266b576215a1e93ffbbf38b455ddaaaf7d98 1	tools/mtmd/clip.cpp
+100644 385dc303a3e8ecf9451f641a3620867a055607d6 2	tools/mtmd/clip.cpp
+100644 793b8cd1a6319798b4e24a054ca8a52becabd9c7 3	tools/mtmd/clip.cpp
+100644 9e12702cebfbc9fdc4815d8a594ae60e77c0a239 1	tools/mtmd/clip.h
+100644 967093a812d68fd3bb2325769d71b13cf443760c 2	tools/mtmd/clip.h
+100644 19db4760825db9a8a97509b44817623e1ebf30d2 3	tools/mtmd/clip.h
+100644 bcd76a9d716a90dec03b937eaba5def9a63dca1e 1	tools/mtmd/mtmd.h
+100644 3b8c1200b5665345823d25c5311dd4206c8ae3cc 2	tools/mtmd/mtmd.h
+100644 df24c56568f7e6474e0981223455f94fd3e3dcfc 3	tools/mtmd/mtmd.h

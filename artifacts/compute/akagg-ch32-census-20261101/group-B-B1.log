@@ -1,0 +1,22 @@
+commit b77d646751d01c0962bc203b6809e9d94f7d50b7
+returncode 1
+Applied patch to 'conversion/__init__.py' cleanly.
+Falling back to direct application...
+Applied patch to 'gguf-py/gguf/constants.py' cleanly.
+Applied patch to 'gguf-py/gguf/gguf_writer.py' cleanly.
+Applied patch to 'src/llama-arch.cpp' cleanly.
+Applied patch to 'src/llama-arch.h' with conflicts.
+Applied patch to 'src/llama-context.cpp' with conflicts.
+Applied patch to 'src/llama-model.cpp' cleanly.
+Applied patch to 'src/models/models.h' cleanly.
+Falling back to direct application...
+U src/llama-arch.h
+U src/llama-context.cpp
+
+UNMERGED INDEX
+100644 2e3916a0beee7202ac2801e69950a4bd1cc68cd0 1	src/llama-arch.h
+100644 d828e3fe47a0fa97b90b542219fe933d6e9c5ef6 2	src/llama-arch.h
+100644 1c9aebb0bbdc0c06409b9e33bb320fe087e5b6dc 3	src/llama-arch.h
+100644 012894e13f68b703043cac3fe12e74635cba5c8a 1	src/llama-context.cpp
+100644 a9461f7123956db0706f77e51e7f1eed6315ea46 2	src/llama-context.cpp
+100644 9b399d6096b16a2af33f784c303dce6bb5d65fa0 3	src/llama-context.cpp

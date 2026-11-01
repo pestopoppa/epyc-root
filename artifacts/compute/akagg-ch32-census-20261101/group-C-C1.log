@@ -1,0 +1,79 @@
+commit a4cb4c61fd9d9c2066c7c1747821d3d65b8943bd
+returncode 1
+Applied patch to 'common/common.cpp' cleanly.
+Applied patch to 'common/common.h' cleanly.
+Applied patch to 'conversion/__init__.py' cleanly.
+Applied patch to 'conversion/base.py' with conflicts.
+Applied patch to 'conversion/bert.py' cleanly.
+Falling back to direct application...
+Applied patch to 'conversion/qwen.py' with conflicts.
+Applied patch to 'conversion/qwen3vl.py' with conflicts.
+Applied patch to 'convert_hf_to_gguf_update.py' with conflicts.
+Applied patch to 'docs/development/HOWTO-add-model.md' cleanly.
+Applied patch to 'gguf-py/gguf/constants.py' cleanly.
+Applied patch to 'gguf-py/gguf/gguf_writer.py' with conflicts.
+Applied patch to 'gguf-py/gguf/tensor_mapping.py' cleanly.
+Applied patch to 'src/llama-arch.cpp' cleanly.
+Applied patch to 'src/llama-arch.h' cleanly.
+Applied patch to 'src/llama-hparams.h' with conflicts.
+Applied patch to 'src/llama-model.h' cleanly.
+Applied patch to 'src/llama-vocab.cpp' cleanly.
+Applied patch to 'src/llama-vocab.h' with conflicts.
+Applied patch to 'src/models/models.h' cleanly.
+Applied patch to 'src/models/modern-bert.cpp' with conflicts.
+Applied patch to 'src/models/qwen35.cpp' cleanly.
+Applied patch to 'tools/server/CMakeLists.txt' cleanly.
+Applied patch to 'tools/server/README.md' with conflicts.
+Applied patch to 'tools/server/server-common.cpp' cleanly.
+Applied patch to 'tools/server/server-common.h' cleanly.
+Applied patch to 'tools/server/server-context.cpp' with conflicts.
+Applied patch to 'tools/server/server-context.h' cleanly.
+Falling back to direct application...
+Falling back to direct application...
+Applied patch to 'tools/server/server-task.cpp' cleanly.
+Applied patch to 'tools/server/server-task.h' cleanly.
+Applied patch to 'tools/server/server.cpp' cleanly.
+Falling back to direct application...
+Applied patch to 'tools/server/tests/utils.py' cleanly.
+U conversion/base.py
+U conversion/qwen.py
+U conversion/qwen3vl.py
+U convert_hf_to_gguf_update.py
+U gguf-py/gguf/gguf_writer.py
+U src/llama-hparams.h
+U src/llama-vocab.h
+U src/models/modern-bert.cpp
+U tools/server/README.md
+U tools/server/server-context.cpp
+
+UNMERGED INDEX
+100644 a39a728f5f17368d251fe7e131a6f7433be850e7 1	conversion/base.py
+100644 dbfaf371eca51029a58113d3dc8b4f4278d50c60 2	conversion/base.py
+100644 0f3bd9a7b7555cff98e59aff30e658a45b12cf54 3	conversion/base.py
+100644 4946456e91ed6b5f1b6d7dad93454c639c597183 1	conversion/qwen.py
+100644 a3f7543228f2da22222f98ec932b64e921fc6d47 2	conversion/qwen.py
+100644 0b39187337065e6c5c08a0e15805eaec5aea4a6c 3	conversion/qwen.py
+100644 11ce68515b2c75a8ffc413a81f15e5310aa0afb5 1	conversion/qwen3vl.py
+100644 9f11757697f5ace7ae98cbc383a55fddbef7965d 2	conversion/qwen3vl.py
+100644 638bcbb246febe637b4ceed4453f538e31af17c3 3	conversion/qwen3vl.py
+100755 24b9bc07577786634686847b6e698d5d8e369c53 1	convert_hf_to_gguf_update.py
+100755 e5d3196efe415c0a15c09cc84e4f15197506efb2 2	convert_hf_to_gguf_update.py
+100755 d39d2f6fe9b12703718e2cb83cbae23cbcae0e16 3	convert_hf_to_gguf_update.py
+100644 342f6eb4df1d057b7692b450fc58fe30825e95a0 1	gguf-py/gguf/gguf_writer.py
+100644 6da5514f1a34d247cd566804281067bebbee07a8 2	gguf-py/gguf/gguf_writer.py
+100644 1dee3fe115daea8e43a1b82811bb6a3e9ecace35 3	gguf-py/gguf/gguf_writer.py
+100644 756007e1f71a70b18fbbfd08936586c52376efdc 1	src/llama-hparams.h
+100644 a2cc0e1f54ca2b20ced61b05781ea27cbc3dd5ff 2	src/llama-hparams.h
+100644 6c504c5dd130128d047ab545089226faf39540af 3	src/llama-hparams.h
+100644 3fb061f0ecf1fbf51e5df572c4760b79457d298d 1	src/llama-vocab.h
+100644 b7c28926338b5716bd24f70e4c1e202a4b9ec781 2	src/llama-vocab.h
+100644 033fa6208cf61e88d7cd025d24558e6dbcdd0c51 3	src/llama-vocab.h
+100644 158e3160c598a04796a2bf5287bd54b941e77cda 1	src/models/modern-bert.cpp
+100644 f3e9407e0125cca79bd040d3e88ecb4c58b43168 2	src/models/modern-bert.cpp
+100644 45455acbba4429ef98dfb8cb9abafbe6070be643 3	src/models/modern-bert.cpp
+100644 09fdb87e5dafd45e421ca4cd23f52f6e5b88952c 1	tools/server/README.md
+100644 099bd67d6fe2508acb1abaf780c6ce86dd710648 2	tools/server/README.md
+100644 47953cf11b94da524b6413008102c1adae0db4bb 3	tools/server/README.md
+100644 470fbd9775cfb0c8b657b8027a541ea49290992a 1	tools/server/server-context.cpp
+100644 600c59d10f36fd3b301131b76e5caafacb775d6d 2	tools/server/server-context.cpp
+100644 edb8e2d86d889cf57df79e49edd01415934605c0 3	tools/server/server-context.cpp

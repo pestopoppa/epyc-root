@@ -1,0 +1,595 @@
+{
+  "scope": [
+    "/mnt/raid0/llm/tmp/f8-launchers-20261022",
+    "/mnt/raid0/llm/tmp/f8-launchers-20261023",
+    "/mnt/raid0/llm/tmp/f8-launchers-20261024"
+  ],
+  "files": [
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261022/locals-kpf-lb1-1-27b-completion-turns/job.sh",
+      "sha256": "1bbfd4a43262c6c52790838591b77d1e1378b8c6a8f3f34b3010228d323e9bbd",
+      "matches": [
+        {
+          "line": 38,
+          "text": "# ~+290 MiB per request (new graph shapes); GGML_CUDA_DISABLE_GRAPHS=1 stops it. Worst case here is 4 capture attempts x 24"
+        },
+        {
+          "line": 43,
+          "text": "GRAPHS_ENV=GGML_CUDA_DISABLE_GRAPHS=1"
+        },
+        {
+          "line": 215,
+          "text": "\"hip_graphs\": \"DISABLED (GGML_CUDA_DISABLE_GRAPHS=1 in the server env, both servers; GPU-LEAK-1 mitigation 2026-10-23; any timing is graphs-disabled)\","
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261023/gpu-leak-1/gpu_leak1.sh",
+      "sha256": "ad6de0dacbbbdc07c15d14c230409fe8d501e949a284abb318526cc74b48fece",
+      "matches": [
+        {
+          "line": 3,
+          "text": "# llama-server; GGML_CUDA_DISABLE_GRAPHS=1 -> no growth). Sourced by job.sh AFTER common.sh (needs jb_log, jb_kill_pid)."
+        },
+        {
+          "line": 6,
+          "text": "#   gl1_use_shim                      put gpu-leak-1/shim first on PATH: a driver that launches `numactl ... llama-server`"
+        },
+        {
+          "line": 8,
+          "text": "#   gl1_knob_check <bin-dir>          rc 1 unless GGML_CUDA_DISABLE_GRAPHS is compiled into <bin-dir>/libggml-hip.so"
+        },
+        {
+          "line": 13,
+          "text": "#                                     GGML_CUDA_DISABLE_GRAPHS=1 in /proc/<pid>/environ (logged), and its own-pid KFD VRAM"
+        },
+        {
+          "line": 19,
+          "text": "GL1_ENV=GGML_CUDA_DISABLE_GRAPHS=1"
+        },
+        {
+          "line": 21,
+          "text": "gl1_use_shim() { export PATH=\"$GL1_DIR/shim:$PATH\"; jb_log \"GPU-LEAK-1: PATH shim $GL1_DIR/shim (numactl -> $GL1_ENV) first on PATH: $(command -v numactl)\"; }"
+        },
+        {
+          "line": 25,
+          "text": "if [ -e \"$lib\" ] && grep -qaF GGML_CUDA_DISABLE_GRAPHS \"$lib\"; then jb_log \"GPU-LEAK-1: GGML_CUDA_DISABLE_GRAPHS compiled into $lib\"; return 0; fi"
+        },
+        {
+          "line": 26,
+          "text": "jb_log \"BLOCKER GPU-LEAK-1: GGML_CUDA_DISABLE_GRAPHS not found in $lib\"; return 1"
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf17-4-19-1a-27b-dflash2/job.sh",
+      "sha256": "328c779a41138a4caa1aeac40fba16619dc068fd27d0eaa9dc6097af000bd094",
+      "matches": [
+        {
+          "line": 23,
+          "text": "# GGML_CUDA_DISABLE_GRAPHS=1. The pinned driver strips ambient GGML_* and has no launch-prefix option, so the variable"
+        },
+        {
+          "line": 24,
+          "text": "# rides in a PATH shim for `numactl` (gpu-leak-1/shim; exec keeps the pid). gl1_guard checks the server's"
+        },
+        {
+          "line": 117,
+          "text": "\"hip_graphs\": \"DISABLED (GGML_CUDA_DISABLE_GRAPHS=1 via the gpu-leak-1 numactl PATH shim; GPU-LEAK-1 mitigation 2026-10-23; any timing is graphs-disabled)\","
+        },
+        {
+          "line": 118,
+          "text": "\"server_pids_graphs_disabled\": sum(\"env has GGML_CUDA_DISABLE_GRAPHS=1\" in l for l in lines),"
+        },
+        {
+          "line": 119,
+          "text": "\"server_pids_graphs_ON\": sum(\"LACKS GGML_CUDA_DISABLE_GRAPHS\" in l for l in lines),"
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261023/m4-srpf-pbhol/pb_hol_1.py",
+      "sha256": "8d3b7f23111f66d95fe0ef4ed2274d7a32d403bb8a72295afd6b7bde5b998923",
+      "matches": [
+        {
+          "line": 258,
+          "text": "graphs = \"OFF\" if \"GGML_CUDA_DISABLE_GRAPHS\" in env else \"ON\""
+        },
+        {
+          "line": 260,
+          "text": "\"GGML_CUDA_DISABLE_GRAPHS\": env.get(\"GGML_CUDA_DISABLE_GRAPHS\"),"
+        },
+        {
+          "line": 264,
+          "text": "raise K.Abort(f\"HIP graphs OFF in server environ ({gp['GGML_CUDA_DISABLE_GRAPHS']}): the production condition is graphs ON\")"
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261023/m4-srpf-pbhol/job.sh",
+      "sha256": "56ae679b9357232bcde9b5129e6b9b142acbec27cecccf3ec4b62d8f72b76f40",
+      "matches": [
+        {
+          "line": 32,
+          "text": "unset GGML_CUDA_DISABLE_GRAPHS            # graphs ON (the production condition): the variable must not exist in this job's env"
+        },
+        {
+          "line": 80,
+          "text": "gv=$(printf '%s\\n' \"$env_out\" | grep '^GGML_CUDA_DISABLE_GRAPHS' || true); hv=$(printf '%s\\n' \"$env_out\" | grep '^HSA_OVERRIDE_CPU_AFFINITY_DEBUG=' || true)"
+        },
+        {
+          "line": 82,
+          "text": "printf '{\"pid\":%s,\"exe\":\"%s\",\"graphs\":\"%s\",\"GGML_CUDA_DISABLE_GRAPHS_in_environ\":\"%s\",\"HSA\":\"%s\",\"source\":\"/proc/<pid>/environ\",\"time\":\"%s\"}\\n' \"$p\" \"$exe\" \"$graphs\" \"$gv\" \"$hv\" \"$(jb_ts)\" >> \"$proof\""
+        },
+        {
+          "line": 101,
+          "text": "jb_log \"DRY: watcher proves graphs ON/OFF from /proc/<server pid>/environ and trips at ${VRAM_LIMIT_MIB} MiB own-pid VRAM; ambient GGML_CUDA_DISABLE_GRAPHS here: ${GGML_CUDA_DISABLE_GRAPHS:-<unset>}\""
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261023/pb-qcost-1-confirm/pb_qcost_1_q.py",
+      "sha256": "89a35f2de62c43e86eb4b58bcce4ad8470219fa99461d99596802a2d89f180cb",
+      "matches": [
+        {
+          "line": 453,
+          "text": "gv = [x for x in env if x.startswith(\"GGML_CUDA_DISABLE_GRAPHS\")]"
+        },
+        {
+          "line": 462,
+          "text": "proof = {\"ub\": ub, \"server_pid\": pid, \"graphs\": \"OFF\" if gv else \"ON\", \"GGML_CUDA_DISABLE_GRAPHS_in_environ\": gv or None,"
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261023/pb-qcost-1-confirm/job.sh",
+      "sha256": "e66cfd26fcc105fb5bc033c4185f5f3982abe533a03d2f43d1cc463c56275ac3",
+      "matches": [
+        {
+          "line": 19,
+          "text": "unset GGML_CUDA_DISABLE_GRAPHS           # graphs ON: must not exist anywhere in this job's env (the driver also drops GGML_* ambient)"
+        },
+        {
+          "line": 62,
+          "text": "jb_log \"DRY: server env carries NO GGML_CUDA_DISABLE_GRAPHS (ambient here: ${GGML_CUDA_DISABLE_GRAPHS:-<unset>}); HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0 rides in the launch prefix; driver records graphs ON/OFF from /proc/<pid>/environ per phase\""
+        },
+        {
+          "line": 101,
+          "text": "\"hip_graphs\": \"ON (no GGML_CUDA_DISABLE_GRAPHS; per-phase proof in run/graphs_proof_ub*.json)\"}"
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf18-s1-remainder/job.sh",
+      "sha256": "7d5ba988fa14513b1aadc7c6415aaa570bf9f283195aff2ed7bdaf770be4cbdb",
+      "matches": [
+        {
+          "line": 60,
+          "text": "# length, on ONE load at ~49 GiB resident -> OOM). GGML_CUDA_DISABLE_GRAPHS=1 stops the growth and does not change numerics."
+        },
+        {
+          "line": 66,
+          "text": "LAUNCH_PREFIX=\"env GGML_CUDA_DISABLE_GRAPHS=1 numactl --membind=3 -- taskset -c 184-191\""
+        },
+        {
+          "line": 109,
+          "text": "\"hip_graphs\": \"DISABLED (GGML_CUDA_DISABLE_GRAPHS=1 via the gate launch prefix; GPU-LEAK-1 mitigation 2026-10-23; step 7 rates and every ms value are graphs-disabled)\"}"
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf131b-specon/job.sh",
+      "sha256": "b3dd8758e55fbb77e2ddd446160f8ecb0a2be03a7c461c9ec84a188723763810",
+      "matches": [
+        {
+          "line": 11,
+          "text": "# Unchanged: image gpu-20261020-a1f0c8cf9, --rules v4, GPU-LEAK-1 shim (graphs DISABLED + HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0),"
+        },
+        {
+          "line": 30,
+          "text": "# GPU-LEAK-1: graphs OFF via the numactl PATH shim (also sets HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0, the GPS-PIN-1 knob), so"
+        },
+        {
+          "line": 162,
+          "text": "\"hip_graphs\": \"DISABLED (GGML_CUDA_DISABLE_GRAPHS=1 via the gpu-leak-1 numactl PATH shim, as the KPF-13.1 v3 run \""
+        },
+        {
+          "line": 164,
+          "text": "\"server_pids_graphs_disabled\": sum(\"env has GGML_CUDA_DISABLE_GRAPHS=1\" in l for l in lines),"
+        },
+        {
+          "line": 165,
+          "text": "\"server_pids_graphs_ON\": sum(\"LACKS GGML_CUDA_DISABLE_GRAPHS\" in l for l in lines),"
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf18-s1-step7-graphs-on/job.sh",
+      "sha256": "c3199ef41d55b1809094c8694dab70b39981e44bd4cc7d7eb07333b3810bdcab",
+      "matches": [
+        {
+          "line": 7,
+          "text": "#   GGML_CUDA_DISABLE_GRAPHS (proved from /proc/<server pid>/environ); HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0 in the launch prefix."
+        },
+        {
+          "line": 27,
+          "text": "unset GGML_CUDA_DISABLE_GRAPHS           # graphs ON: the variable must not exist anywhere in this job's env"
+        },
+        {
+          "line": 53,
+          "text": "# No GGML_CUDA_DISABLE_GRAPHS. HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0 (GPS-PIN-1) rides in the launch prefix (the gate rebuilds the server env)."
+        },
+        {
+          "line": 77,
+          "text": "gv=$(printf '%s\\n' \"$env_out\" | grep '^GGML_CUDA_DISABLE_GRAPHS' || true); hv=$(printf '%s\\n' \"$env_out\" | grep '^HSA_OVERRIDE_CPU_AFFINITY_DEBUG=' || true)"
+        },
+        {
+          "line": 82,
+          "text": "json.dump({\"server_pid\": int(pid), \"graphs\": graphs, \"GGML_CUDA_DISABLE_GRAPHS_in_environ\": gv or None,"
+        },
+        {
+          "line": 86,
+          "text": "jb_log \"PROOF server pid $p: graphs $graphs ($( [ -n \"$gv\" ] && echo \"environ has $gv\" || echo 'GGML_CUDA_DISABLE_GRAPHS absent from environ')); ${hv:-HSA knob absent}\""
+        },
+        {
+          "line": 106,
+          "text": "jb_log \"DRY: server env will carry NO GGML_CUDA_DISABLE_GRAPHS; ambient value here: ${GGML_CUDA_DISABLE_GRAPHS:-<unset>}; launch prefix: $LAUNCH_PREFIX\""
+        },
+        {
+          "line": 144,
+          "text": "\"hip_graphs\": \"ON (no GGML_CUDA_DISABLE_GRAPHS; proof in out/graphs_proof.json)\"}"
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf-gpu-followups/job.sh",
+      "sha256": "531665f5706826c38eb00219fb69c7b7a8ae51af1616016630c9f37cee5409fe",
+      "matches": [
+        {
+          "line": 24,
+          "text": "# GPU-LEAK-1: graphs OFF via the numactl PATH shim (also sets HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0, the GPS-PIN-1 knob), so"
+        },
+        {
+          "line": 174,
+          "text": "\"hip_graphs\": \"DISABLED (GGML_CUDA_DISABLE_GRAPHS=1 via the gpu-leak-1 numactl PATH shim, as the KPF-13.1 v3 and \""
+        },
+        {
+          "line": 176,
+          "text": "\"server_pids_graphs_disabled\": sum(\"env has GGML_CUDA_DISABLE_GRAPHS=1\" in l for l in lines),"
+        },
+        {
+          "line": 177,
+          "text": "\"server_pids_graphs_ON\": sum(\"LACKS GGML_CUDA_DISABLE_GRAPHS\" in l for l in lines),"
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf13-1-reduced/job.sh",
+      "sha256": "15dafaf310bcfcbc6e4a8f2fac392fb03391c7cbfb3797fea48a5a0281c9089d",
+      "matches": [
+        {
+          "line": 20,
+          "text": "# GGML_CUDA_DISABLE_GRAPHS=1. The pinned driver strips ambient GGML_* and has no launch-prefix option, so the variable"
+        },
+        {
+          "line": 21,
+          "text": "# rides in a PATH shim for `numactl` (gpu-leak-1/shim; exec keeps the pid). gl1_guard checks the server's"
+        },
+        {
+          "line": 108,
+          "text": "\"hip_graphs\": \"DISABLED (GGML_CUDA_DISABLE_GRAPHS=1 via the gpu-leak-1 numactl PATH shim; GPU-LEAK-1 mitigation 2026-10-23; any timing is graphs-disabled)\","
+        },
+        {
+          "line": 109,
+          "text": "\"server_pids_graphs_disabled\": sum(\"env has GGML_CUDA_DISABLE_GRAPHS=1\" in l for l in lines),"
+        },
+        {
+          "line": 110,
+          "text": "\"server_pids_graphs_ON\": sum(\"LACKS GGML_CUDA_DISABLE_GRAPHS\" in l for l in lines),"
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261024/kpf18-s1-r4/job.sh",
+      "sha256": "3f52e46f521a6c4f68b41439667e505032cb5c1c91b43ab05596108162879ee2",
+      "matches": [
+        {
+          "line": 52,
+          "text": "unset GGML_CUDA_DISABLE_GRAPHS                 # graphs ON: the variable must not exist anywhere in this job's env"
+        },
+        {
+          "line": 127,
+          "text": "gv=$(printf '%s\\n' \"$env_out\" | grep '^GGML_CUDA_DISABLE_GRAPHS' || true)"
+        },
+        {
+          "line": 130,
+          "text": "\"$PY\" -I -c 'import json,sys; f,pid,g,gv,hv,cmd,ts,win=sys.argv[1:9]; open(f,\"a\").write(json.dumps({\"server_pid\":int(pid),\"graphs\":g,\"GGML_CUDA_DISABLE_GRAPHS_in_environ\":gv or None,\"HSA_OVERRIDE_CPU_AFFINITY_DEBUG_in_environ\":hv or None,\"cmdline\":cmd.strip(),\"source\":\"/proc/<pid>/environ\",\"time\":ts,\"window_id\":win})+\"\\n\")' \\"
+        },
+        {
+          "line": 132,
+          "text": "jb_log \"PROOF server pid $p: graphs $graphs (${gv:-GGML_CUDA_DISABLE_GRAPHS absent from environ}); ${hv:-HSA knob ABSENT}\""
+        },
+        {
+          "line": 202,
+          "text": "jb_log \"DRY: server env will carry NO GGML_CUDA_DISABLE_GRAPHS (ambient here: ${GGML_CUDA_DISABLE_GRAPHS:-<unset>}); launch prefix: $LAUNCH_PREFIX\""
+        },
+        {
+          "line": 264,
+          "text": "\"hip_graphs\": \"ON (no GGML_CUDA_DISABLE_GRAPHS; proof per server pid in out/watch/<window>/graphs_proof.jsonl)\"}"
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261024/m4-srpf-pbhol-2a/pb_hol_1.py",
+      "sha256": "8d3b7f23111f66d95fe0ef4ed2274d7a32d403bb8a72295afd6b7bde5b998923",
+      "matches": [
+        {
+          "line": 258,
+          "text": "graphs = \"OFF\" if \"GGML_CUDA_DISABLE_GRAPHS\" in env else \"ON\""
+        },
+        {
+          "line": 260,
+          "text": "\"GGML_CUDA_DISABLE_GRAPHS\": env.get(\"GGML_CUDA_DISABLE_GRAPHS\"),"
+        },
+        {
+          "line": 264,
+          "text": "raise K.Abort(f\"HIP graphs OFF in server environ ({gp['GGML_CUDA_DISABLE_GRAPHS']}): the production condition is graphs ON\")"
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261024/m4-srpf-pbhol-2a/job.sh",
+      "sha256": "716d41face7fa6a9a59d54d8b261e2a03d2f22b517fa81f155e376979baa6a79",
+      "matches": [
+        {
+          "line": 41,
+          "text": "unset GGML_CUDA_DISABLE_GRAPHS            # graphs ON (the production condition): the variable must not exist in this job's env"
+        },
+        {
+          "line": 93,
+          "text": "gv=$(printf '%s\\n' \"$env_out\" | grep '^GGML_CUDA_DISABLE_GRAPHS' || true); hv=$(printf '%s\\n' \"$env_out\" | grep '^HSA_OVERRIDE_CPU_AFFINITY_DEBUG=' || true)"
+        },
+        {
+          "line": 95,
+          "text": "printf '{\"pid\":%s,\"exe\":\"%s\",\"graphs\":\"%s\",\"GGML_CUDA_DISABLE_GRAPHS_in_environ\":\"%s\",\"HSA\":\"%s\",\"source\":\"/proc/<pid>/environ\",\"time\":\"%s\"}\\n' \"$p\" \"$exe\" \"$graphs\" \"$gv\" \"$hv\" \"$(jb_ts)\" >> \"$proof\""
+        },
+        {
+          "line": 114,
+          "text": "jb_log \"DRY: watcher proves graphs ON/OFF from /proc/<server pid>/environ and trips at ${VRAM_LIMIT_MIB} MiB own-pid VRAM; ambient GGML_CUDA_DISABLE_GRAPHS here: ${GGML_CUDA_DISABLE_GRAPHS:-<unset>}\""
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261024/kpf17-4c-bisect/job.sh",
+      "sha256": "0449321304d8a7a84050317cd162a717311807937bebb5d1a59065ede8d3b957",
+      "matches": [
+        {
+          "line": 21,
+          "text": "# gl1_use_shim (PATH shim: numactl -> GGML_CUDA_DISABLE_GRAPHS=1 + HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0, exec keeps the pid),"
+        },
+        {
+          "line": 75,
+          "text": "if env_has \"$p\" GGML_CUDA_DISABLE_GRAPHS=1; then jb_log \"guard: own server pid $p (port $port) env has GGML_CUDA_DISABLE_GRAPHS=1 (graphs disabled)\""
+        },
+        {
+          "line": 76,
+          "text": "else jb_log \"guard: WARN own server pid $p env LACKS GGML_CUDA_DISABLE_GRAPHS=1 (graphs ON: the driver read-back refuses this server)\"; fi"
+        },
+        {
+          "line": 183,
+          "text": "recs.append({\"record\": f, \"hip_graphs\": ar.get(\"hip_graphs\"), \"env_GGML_CUDA_DISABLE_GRAPHS\": ar.get(\"env_GGML_CUDA_DISABLE_GRAPHS\"),"
+        },
+        {
+          "line": 191,
+          "text": "\"hip_graphs\": \"DISABLED (GGML_CUDA_DISABLE_GRAPHS=1 via the gpu-leak-1 numactl PATH shim, as every 17.4 / 17.4b \""
+        },
+        {
+          "line": 193,
+          "text": "\"server_pids_graphs_disabled\": sum(\"env has GGML_CUDA_DISABLE_GRAPHS=1\" in l for l in lines),"
+        },
+        {
+          "line": 194,
+          "text": "\"server_pids_graphs_ON\": sum(\"LACKS GGML_CUDA_DISABLE_GRAPHS\" in l for l in lines),"
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261024/kpf17-4c-bisect/launch.sh",
+      "sha256": "7e6c921337e10d8b588cef1a0c72232f0e082984c939605b0ba85aedf82d983f",
+      "matches": [
+        {
+          "line": 4,
+          "text": "# the 17.4b argv file and the gpu-leak-1 graphs-disabled shim. Rules: PREDECLARATION.md (sha in PREDECLARATION.sha256)."
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261024/pb-qcost-1-confirm-r/pb_qcost_1_q.py",
+      "sha256": "89a35f2de62c43e86eb4b58bcce4ad8470219fa99461d99596802a2d89f180cb",
+      "matches": [
+        {
+          "line": 453,
+          "text": "gv = [x for x in env if x.startswith(\"GGML_CUDA_DISABLE_GRAPHS\")]"
+        },
+        {
+          "line": 462,
+          "text": "proof = {\"ub\": ub, \"server_pid\": pid, \"graphs\": \"OFF\" if gv else \"ON\", \"GGML_CUDA_DISABLE_GRAPHS_in_environ\": gv or None,"
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261024/pb-qcost-1-confirm-r/job.sh",
+      "sha256": "6f94b75bf6695a4fcd1837a9df3db3f4895c6a0a8c5ac3c4902613734aabc7f8",
+      "matches": [
+        {
+          "line": 21,
+          "text": "unset GGML_CUDA_DISABLE_GRAPHS           # graphs ON: must not exist anywhere in this job's env (the driver also drops GGML_* ambient)"
+        },
+        {
+          "line": 66,
+          "text": "jb_log \"DRY: server env carries NO GGML_CUDA_DISABLE_GRAPHS (ambient here: ${GGML_CUDA_DISABLE_GRAPHS:-<unset>}); HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0 rides in the launch prefix; driver records graphs ON/OFF from /proc/<pid>/environ per phase\""
+        },
+        {
+          "line": 105,
+          "text": "\"hip_graphs\": \"ON (no GGML_CUDA_DISABLE_GRAPHS; per-phase proof in run/graphs_proof_ub*.json)\"}"
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261024/kpf18-item3-g3-v3/test_item3v3.py",
+      "sha256": "c52e56caca29a4775dd441b1095f4d26c1d8da90b0c3dfd2c37aaa7b5774fb1d",
+      "matches": [
+        {
+          "line": 157,
+          "text": "assert DRV.expected_env_ok(\"graphs_off\", {\"GGML_CUDA_DISABLE_GRAPHS\": \"1\", \"HSA_OVERRIDE_CPU_AFFINITY_DEBUG\": \"0\"})[0]"
+        },
+        {
+          "line": 161,
+          "text": "assert not DRV.expected_env_ok(\"graphs_on\", {\"GGML_CUDA_DISABLE_GRAPHS\": \"1\", \"HSA_OVERRIDE_CPU_AFFINITY_DEBUG\": \"0\"})[0]"
+        },
+        {
+          "line": 178,
+          "text": "'echo \"PID=$$\"; echo \"G=${GGML_CUDA_DISABLE_GRAPHS:-}\"; echo \"H=${HSA_OVERRIDE_CPU_AFFINITY_DEBUG:-}\"'],"
+        },
+        {
+          "line": 184,
+          "text": "out2 = subprocess.run([\"numactl\", \"--localalloc\", \"--\", \"/bin/sh\", \"-c\", 'echo \"G=${GGML_CUDA_DISABLE_GRAPHS:-}\"'],"
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261024/kpf18-item3-g3-v3/item3v3.py",
+      "sha256": "f3b50112fd58efa0101cd6b7f0678d4dcc73a7103cbcb52312401bbfbccee5c4",
+      "matches": [
+        {
+          "line": 6,
+          "text": "graphs_on     replicate of v2 (A): HIP graphs ON (no GGML_CUDA_DISABLE_GRAPHS in the server environ)"
+        },
+        {
+          "line": 7,
+          "text": "graphs_off    the gpu-leak-1 numactl PATH shim puts GGML_CUDA_DISABLE_GRAPHS=1 into the server env (exec keeps the pid)"
+        },
+        {
+          "line": 28,
+          "text": "SHIM_DIR_DEFAULT = \"/mnt/raid0/llm/tmp/f8-launchers-20261023/gpu-leak-1/shim\""
+        },
+        {
+          "line": 49,
+          "text": "g = env.get(\"GGML_CUDA_DISABLE_GRAPHS\")"
+        },
+        {
+          "line": 54,
+          "text": "return (g == \"1\"), f\"GGML_CUDA_DISABLE_GRAPHS={g!r} (want '1')\""
+        },
+        {
+          "line": 55,
+          "text": "return (g is None), f\"GGML_CUDA_DISABLE_GRAPHS={g!r} (want absent: graphs ON)\""
+        },
+        {
+          "line": 92,
+          "text": "\"\"\"gate.Server whose env carries the condition. graphs_off: the gpu-leak-1 shim first on the server's PATH"
+        },
+        {
+          "line": 93,
+          "text": "(subprocess resolves `numactl` through the env it is given; the shim exports GGML_CUDA_DISABLE_GRAPHS=1 and"
+        },
+        {
+          "line": 102,
+          "text": "if \"GGML_CUDA_DISABLE_GRAPHS\" in env:   # the gate drops ambient GGML_*; belt and braces"
+        },
+        {
+          "line": 103,
+          "text": "del env[\"GGML_CUDA_DISABLE_GRAPHS\"]"
+        },
+        {
+          "line": 108,
+          "text": "note[\"graphs_off_via\"] = f\"{shim}/numactl (exports GGML_CUDA_DISABLE_GRAPHS=1, exec /usr/bin/numactl)\""
+        },
+        {
+          "line": 202,
+          "text": "\"GGML_CUDA_DISABLE_GRAPHS\": env.get(\"GGML_CUDA_DISABLE_GRAPHS\"),"
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261024/kpf18-item3-g3-v3/launch.sh",
+      "sha256": "7f0c987c55f95f7e7798c03ee81ae9234e6c9930a557543e27b8228c831d4ffd",
+      "matches": [
+        {
+          "line": 4,
+          "text": "# arm (A) only, 3 per condition: graphs ON / graphs OFF (gpu-leak-1 shim) / child drafter request-off. Rules:"
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261024/m4-2b-champion-control/pb_hol_1.py",
+      "sha256": "9452fdfd365adff7257e278c30e292bfe606ce41e16a3ed6492de77835da0e26",
+      "matches": [
+        {
+          "line": 267,
+          "text": "graphs = \"OFF\" if \"GGML_CUDA_DISABLE_GRAPHS\" in env else \"ON\""
+        },
+        {
+          "line": 269,
+          "text": "\"GGML_CUDA_DISABLE_GRAPHS\": env.get(\"GGML_CUDA_DISABLE_GRAPHS\"),"
+        },
+        {
+          "line": 273,
+          "text": "raise K.Abort(f\"HIP graphs OFF in server environ ({gp['GGML_CUDA_DISABLE_GRAPHS']}): the production condition is graphs ON\")"
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261024/m4-2b-champion-control/job.sh",
+      "sha256": "5325e6a3c57d804c7b1d56819f0d55c1c516aff4d36932897628361774058d72",
+      "matches": [
+        {
+          "line": 57,
+          "text": "unset GGML_CUDA_DISABLE_GRAPHS            # graphs ON (the production condition, as M4.2 / M4.2a): must not exist in this job's env"
+        },
+        {
+          "line": 130,
+          "text": "gv=$(printf '%s\\n' \"$env_out\" | grep '^GGML_CUDA_DISABLE_GRAPHS' || true); hv=$(printf '%s\\n' \"$env_out\" | grep '^HSA_OVERRIDE_CPU_AFFINITY_DEBUG=' || true)"
+        },
+        {
+          "line": 132,
+          "text": "printf '{\"pid\":%s,\"exe\":\"%s\",\"graphs\":\"%s\",\"GGML_CUDA_DISABLE_GRAPHS_in_environ\":\"%s\",\"HSA\":\"%s\",\"source\":\"/proc/<pid>/environ\",\"time\":\"%s\"}\\n' \"$p\" \"$exe\" \"$graphs\" \"$gv\" \"$hv\" \"$(jb_ts)\" >> \"$pf\""
+        },
+        {
+          "line": 173,
+          "text": "jb_log \"DRY: ambient GGML_CUDA_DISABLE_GRAPHS here: ${GGML_CUDA_DISABLE_GRAPHS:-<unset>} (graphs ON is the production condition)\""
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261024/kpf18-s1-r3/job.sh",
+      "sha256": "cefbcb45dce5473925c70b2a109f370ba506044b96270aab0995786527000409",
+      "matches": [
+        {
+          "line": 42,
+          "text": "unset GGML_CUDA_DISABLE_GRAPHS           # graphs ON: the variable must not exist anywhere in this job's env"
+        },
+        {
+          "line": 101,
+          "text": "gv=$(printf '%s\\n' \"$env_out\" | grep '^GGML_CUDA_DISABLE_GRAPHS' || true)"
+        },
+        {
+          "line": 107,
+          "text": "open(f, \"a\").write(json.dumps({\"server_pid\": int(pid), \"graphs\": graphs, \"GGML_CUDA_DISABLE_GRAPHS_in_environ\": gv or None,"
+        },
+        {
+          "line": 111,
+          "text": "jb_log \"PROOF server pid $p: graphs $graphs ($( [ -n \"$gv\" ] && echo \"environ has $gv\" || echo 'GGML_CUDA_DISABLE_GRAPHS absent from environ')); ${hv:-HSA knob ABSENT}\""
+        },
+        {
+          "line": 163,
+          "text": "jb_log \"DRY: server env will carry NO GGML_CUDA_DISABLE_GRAPHS (ambient here: ${GGML_CUDA_DISABLE_GRAPHS:-<unset>}); launch prefix: $LAUNCH_PREFIX\""
+        },
+        {
+          "line": 210,
+          "text": "\"hip_graphs\": \"ON (no GGML_CUDA_DISABLE_GRAPHS; proof per server pid in out/graphs_proof.jsonl)\"}"
+        }
+      ]
+    }
+  ]
+}
