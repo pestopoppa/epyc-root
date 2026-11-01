@@ -1,0 +1,127 @@
+{
+  "scope": "MODEL_FREE_R6_ONLY",
+  "family": "32-33",
+  "actual_cpus": [
+    128,
+    129
+  ],
+  "root_lane": null,
+  "root_status": [],
+  "implementation_commit": "55b64bb1c37b4848cf87a505b2d5d5b80af85be2",
+  "merge_commit": "55b64bb1c37b4848cf87a505b2d5d5b80af85be2",
+  "start_utc": "2026-11-01T05:09:37.161926+00:00",
+  "end_utc": "2026-11-01T05:09:38.491590+00:00",
+  "own_pid": 593890,
+  "own_start_ticks": "163225039",
+  "runner_pid": 593878,
+  "runner_start_ticks": "163225031",
+  "boot_id": "3be2fb1a-7293-4c34-b733-c85d772b9474",
+  "live_grants": [
+    {
+      "id": "codex-ni-inf12-gate2-triton36-r13-20261030",
+      "class": "block-correctness",
+      "regions": "mi210_0,184-191",
+      "start": "2026-11-01T04:51Z",
+      "end": "2026-11-01T05:21Z"
+    },
+    {
+      "id": "codex3-cs8-stt5-validation-baseline-r2-20261030",
+      "class": "block-correctness",
+      "regions": "48-71",
+      "start": "2026-11-01T02:11Z",
+      "end": "2026-11-01T06:00Z"
+    },
+    {
+      "id": "codex3-pareval120-k20-gen-20261031",
+      "class": "block-correctness",
+      "regions": "0-23",
+      "start": "2026-11-01T03:47Z",
+      "end": "2026-11-01T06:00Z"
+    }
+  ],
+  "staged_closure": {
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/__init__.py": "73f8b9b664219aa9b0fb293de08afa243f46f17bc958b976ca8ed1b8fa551d7c",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/adapter.py": "10712575f4064c47978b6c0a7ab757e705efe86a68ea595e7b8f6097729645ff",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/backends.py": "5113f080f1a66beb7d1fdc4f9e0bc8b589688e6268d3b9d216d86ec6b7c33356",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/bootstrap.py": "3f1219d76f630208a83b0c0fe3c4736c33c840abf34807aad5e1dbb4c4ca6e1d",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/comparison.py": "ec3dffed4db148a6350bbc49079397e95982e4d15ffb3f93752f7653ce29001d",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/intrinsic.py": "def817acced104d5fac35b335d1c0e304fbc6dc1f0beadb948795afcaa2912d9",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/manifest_stubs.py": "80f07fdfd9ed4bb5f77aacb140776d670b431b7b16c47a58f62eb3cf8b037723",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/paddleocr_vl.py": "0a068e6afbde3b2efb993848a152140f0aaabd978017d83aa4f8114205d6d48c",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/pip02_compare.py": "37e9d673ba46ac16c5f8169db97290933b3c63fb48ef133b825d5db3a9ba995e",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/pip02_lineage.py": "766eee7148f5cafdf3833f3d329521218fd416ffca53016e396d6dbb710ba7c0",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/pip02_native_score.py": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/pip02_pin.py": "b7a951f1dccb3dd7e428eb17d2bfa691d8fa558ed898d7d271a75ef7da1b0af2",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/pip02_records.py": "2d364d7a7ef1d47b21fb8f3352ff4ffe98e93c682da3996f6e1270c8193c81cd",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/pip02_score_capture.py": "de42a589f70ce7c0e709a3b1d3df00128b1b2ed0f8c1dd1fd3083b5ecc5fcce6",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/run_configs.py": "d5d74d1e471a041a9f72501d1ac9f01d1231fca9784f5c9af2326ae41f11c888",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/run_three_way_bench.py": "e7886374762defacb243a1d82f5efbca5e35b41eca7b7f20a32e4c7a6f71e1db",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/schemas.py": "65af47e62d46d553940490f768be101afb62f54e99a6081d7af7aa68ef2022d4",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/tests/test_intrinsic.py": "9a6599c2298d100ac5c615e0185ca190f114c8d66189b7c4a0f09c6996b7414e",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/tests/test_odl_bench.py": "91619dd417c1d069c102dc96df444c6710bda9a0009ca09d71ef922d76594d8b",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/tests/test_run_three_way_bench.py": "0d42908736980d57d16d4facaf60438217f8671bebd053dbbe47fe45416277f2",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/unlimited_ocr.py": "a215d4e63a38fbd956b29722f4b841d047c05fe9c0eb3d7719c07154bfa9c2e5",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/vidya_provenance.py": "89be9c8f9e2090e189f18f814a54637b63452d8ebc8fc7dc59bb5b4a6fbfe66f",
+    "/mnt/raid0/llm/omnidocbench/demo_data/omnidocbench_demo/OmniDocBench_demo.json": "a0686ff3e2ce76b4e60c308bc28700683d3c62a0fd47149355e8b197db238dc6",
+    "/mnt/raid0/llm/tmp/codex-ni-20261024-scheduling/odl-chunk-quality-r6/run_odl_bench_suite_without_pdf.py": "1e5fbdff9aa4767d47183b01a7bbc1cb52c6a0019af31d936af06e92ecb19ad9"
+  },
+  "returncode": 0,
+  "failure": null,
+  "elapsed_s": 1.3468864588066936,
+  "sampled_peak_tree_rss_bytes": 47640576,
+  "kernel_childset_empty": true,
+  "captured": [
+    {
+      "pid": 593890,
+      "birth": 163225039,
+      "ppid": 593878,
+      "uid": 1000
+    },
+    {
+      "pid": 593891,
+      "birth": 163225039,
+      "ppid": 593890,
+      "uid": 1000
+    },
+    {
+      "pid": 593895,
+      "birth": 163225062,
+      "ppid": 593890,
+      "uid": 1000
+    }
+  ],
+  "native_or_GPU_execution": false,
+  "source_closure": {
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/__init__.py": "73f8b9b664219aa9b0fb293de08afa243f46f17bc958b976ca8ed1b8fa551d7c",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/adapter.py": "10712575f4064c47978b6c0a7ab757e705efe86a68ea595e7b8f6097729645ff",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/backends.py": "5113f080f1a66beb7d1fdc4f9e0bc8b589688e6268d3b9d216d86ec6b7c33356",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/bootstrap.py": "3f1219d76f630208a83b0c0fe3c4736c33c840abf34807aad5e1dbb4c4ca6e1d",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/comparison.py": "ec3dffed4db148a6350bbc49079397e95982e4d15ffb3f93752f7653ce29001d",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/intrinsic.py": "def817acced104d5fac35b335d1c0e304fbc6dc1f0beadb948795afcaa2912d9",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/manifest_stubs.py": "80f07fdfd9ed4bb5f77aacb140776d670b431b7b16c47a58f62eb3cf8b037723",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/paddleocr_vl.py": "0a068e6afbde3b2efb993848a152140f0aaabd978017d83aa4f8114205d6d48c",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/pip02_compare.py": "37e9d673ba46ac16c5f8169db97290933b3c63fb48ef133b825d5db3a9ba995e",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/pip02_lineage.py": "766eee7148f5cafdf3833f3d329521218fd416ffca53016e396d6dbb710ba7c0",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/pip02_native_score.py": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/pip02_pin.py": "b7a951f1dccb3dd7e428eb17d2bfa691d8fa558ed898d7d271a75ef7da1b0af2",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/pip02_records.py": "2d364d7a7ef1d47b21fb8f3352ff4ffe98e93c682da3996f6e1270c8193c81cd",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/pip02_score_capture.py": "de42a589f70ce7c0e709a3b1d3df00128b1b2ed0f8c1dd1fd3083b5ecc5fcce6",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/run_configs.py": "d5d74d1e471a041a9f72501d1ac9f01d1231fca9784f5c9af2326ae41f11c888",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/run_three_way_bench.py": "e7886374762defacb243a1d82f5efbca5e35b41eca7b7f20a32e4c7a6f71e1db",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/schemas.py": "65af47e62d46d553940490f768be101afb62f54e99a6081d7af7aa68ef2022d4",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/tests/test_intrinsic.py": "9a6599c2298d100ac5c615e0185ca190f114c8d66189b7c4a0f09c6996b7414e",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/tests/test_odl_bench.py": "91619dd417c1d069c102dc96df444c6710bda9a0009ca09d71ef922d76594d8b",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/tests/test_run_three_way_bench.py": "0d42908736980d57d16d4facaf60438217f8671bebd053dbbe47fe45416277f2",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/unlimited_ocr.py": "a215d4e63a38fbd956b29722f4b841d047c05fe9c0eb3d7719c07154bfa9c2e5",
+    "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/benchmark/odl_bench/vidya_provenance.py": "89be9c8f9e2090e189f18f814a54637b63452d8ebc8fc7dc59bb5b4a6fbfe66f",
+    "/mnt/raid0/llm/omnidocbench/demo_data/omnidocbench_demo/OmniDocBench_demo.json": "a0686ff3e2ce76b4e60c308bc28700683d3c62a0fd47149355e8b197db238dc6",
+    "/mnt/raid0/llm/tmp/codex-ni-20261024-scheduling/odl-chunk-quality-r6/run_odl_bench_suite_without_pdf.py": "1e5fbdff9aa4767d47183b01a7bbc1cb52c6a0019af31d936af06e92ecb19ad9"
+  },
+  "adapted_script_sha256": "99a6ac760a9e1966e92f4dba6a0e50d97b216923858128a664035f71cbc2255e",
+  "output_log_sha256": "3de0a342c1610789c00897d4509792830e44004ac016f65e23ce86f031065362",
+  "rss_sampler": {
+    "interval_s": 0.1,
+    "limit_bytes": 8589934592,
+    "source": "/proc/<pid>/statm"
+  }
+}

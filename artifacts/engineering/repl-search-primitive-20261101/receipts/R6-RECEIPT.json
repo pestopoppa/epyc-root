@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/unit/test_scout_search.py",
+    "tests/unit/test_ufh12_context_search.py"
+  ],
+  "cwd": "/mnt/raid0/llm/worktrees/mains/codex-ni-orchestrator",
+  "cpus": [
+    130,
+    131
+  ],
+  "started_mono": 1631425.984111609,
+  "elapsed_s": 4.815171658061445,
+  "returncode": 0,
+  "failure": null,
+  "sampled_peak_tree_rss_bytes": 162820096,
+  "captured": {
+    "261146": "163142598"
+  }
+}

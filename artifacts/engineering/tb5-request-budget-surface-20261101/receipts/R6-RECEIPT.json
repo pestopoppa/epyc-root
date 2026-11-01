@@ -1,0 +1,172 @@
+{
+  "scope": "MODEL_FREE_R6_ONLY",
+  "family": "34-35",
+  "actual_cpus": [
+    130,
+    131
+  ],
+  "root_lane": null,
+  "root_status": null,
+  "implementation_commit": "2b9e710de2d5e183c790523c72dbbeca117e8a16",
+  "merge_commit": null,
+  "start_utc": "2026-11-01T05:09:12.376491+00:00",
+  "end_utc": "2026-11-01T05:09:24.768659+00:00",
+  "own_pid": 589354,
+  "own_start_ticks": "163222561",
+  "runner_pid": 589339,
+  "runner_start_ticks": "163222554",
+  "boot_id": "3be2fb1a-7293-4c34-b733-c85d772b9474",
+  "live_grants": [
+    {
+      "id": "codex-ni-inf12-gate2-triton36-r13-20261030",
+      "class": "block-correctness",
+      "regions": "mi210_0,184-191",
+      "start": "2026-11-01T04:51Z",
+      "end": "2026-11-01T05:21Z"
+    },
+    {
+      "id": "codex3-cs8-stt5-validation-baseline-r2-20261030",
+      "class": "block-correctness",
+      "regions": "48-71",
+      "start": "2026-11-01T02:11Z",
+      "end": "2026-11-01T06:00Z"
+    },
+    {
+      "id": "codex3-pareval120-k20-gen-20261031",
+      "class": "block-correctness",
+      "regions": "0-23",
+      "start": "2026-11-01T03:47Z",
+      "end": "2026-11-01T06:00Z"
+    }
+  ],
+  "scoped_inputs_before": {
+    "head": "2b9e710de2d5e183c790523c72dbbeca117e8a16",
+    "files": {
+      "src/api/routes/chat.py": "75ecd32dc983151048f351e79d50be66d35c16bd4f5612831df3f3247b6be79a",
+      "src/api/routes/chat_pipeline/direct_stage.py": "f8a2301993b3ea1f40f43aaa64217401d8a55dc22ce89a84235b754db0404625",
+      "src/api/routes/chat_pipeline/repl_executor.py": "8cfd5d33238c87e7f3a0468925b7d18c1276ea08f6d83cd96d2c2ab27e0731d5",
+      "src/api/routes/chat_pipeline/routing.py": "374d7b7cfc79e31d757b51adb6cd710242a2fb0b003e46fab16644ae3a92d7a6",
+      "src/api/routes/chat_pipeline/stream_adapter.py": "84853ecaf0229529f56807a98f7bb3dc346a70a12901878f92a4590312836837",
+      "src/api/routes/chat_utils.py": "15bb0d458997c21ef3623cc99ed25eb987ad38f7be4d184d673cf59a41260ddb",
+      "src/backends/repl_thinking_budget.py": "feeac7480e8001d6e6617c97f63beae92f6705ffac1fe20b4bbdd1650d5594f5",
+      "src/config/__init__.py": "05cd49b5ff3533b3c56e725028604370bd2bb07b8d1ab0335fc173f2b1476aca",
+      "src/config/models.py": "bce9d601e16f546c47eab36f7a89e703e34f1fe12fb5299a067e41232f09d8e2",
+      "src/features.py": "1669ca6ca18ac7b792727e8e6432e37a8f7d486523d33c00004c5196f86c9dbf",
+      "src/llm_primitives/inference.py": "a9e22b19adf3aac05e4f15700fb99bb0592b572adb2ef143556efa64cee7bc4d",
+      "tests/unit/test_repl_thinking_budget.py": "6235f147752a63a7492364de5cce90343397fc295403b8a2af17aefaac2efa70"
+    },
+    "committed_paths": [
+      "src/api/routes/chat.py",
+      "src/api/routes/chat_pipeline/direct_stage.py",
+      "src/api/routes/chat_pipeline/repl_executor.py",
+      "src/api/routes/chat_pipeline/routing.py",
+      "src/api/routes/chat_pipeline/stream_adapter.py",
+      "src/api/routes/chat_utils.py",
+      "src/backends/repl_thinking_budget.py",
+      "src/config/__init__.py",
+      "src/config/models.py",
+      "src/features.py",
+      "src/llm_primitives/inference.py",
+      "tests/unit/test_repl_thinking_budget.py"
+    ],
+    "foreign_dirty_inventory": {}
+  },
+  "scoped_inputs_after": {
+    "head": "2b9e710de2d5e183c790523c72dbbeca117e8a16",
+    "files": {
+      "src/api/routes/chat.py": "75ecd32dc983151048f351e79d50be66d35c16bd4f5612831df3f3247b6be79a",
+      "src/api/routes/chat_pipeline/direct_stage.py": "f8a2301993b3ea1f40f43aaa64217401d8a55dc22ce89a84235b754db0404625",
+      "src/api/routes/chat_pipeline/repl_executor.py": "8cfd5d33238c87e7f3a0468925b7d18c1276ea08f6d83cd96d2c2ab27e0731d5",
+      "src/api/routes/chat_pipeline/routing.py": "374d7b7cfc79e31d757b51adb6cd710242a2fb0b003e46fab16644ae3a92d7a6",
+      "src/api/routes/chat_pipeline/stream_adapter.py": "84853ecaf0229529f56807a98f7bb3dc346a70a12901878f92a4590312836837",
+      "src/api/routes/chat_utils.py": "15bb0d458997c21ef3623cc99ed25eb987ad38f7be4d184d673cf59a41260ddb",
+      "src/backends/repl_thinking_budget.py": "feeac7480e8001d6e6617c97f63beae92f6705ffac1fe20b4bbdd1650d5594f5",
+      "src/config/__init__.py": "05cd49b5ff3533b3c56e725028604370bd2bb07b8d1ab0335fc173f2b1476aca",
+      "src/config/models.py": "bce9d601e16f546c47eab36f7a89e703e34f1fe12fb5299a067e41232f09d8e2",
+      "src/features.py": "1669ca6ca18ac7b792727e8e6432e37a8f7d486523d33c00004c5196f86c9dbf",
+      "src/llm_primitives/inference.py": "a9e22b19adf3aac05e4f15700fb99bb0592b572adb2ef143556efa64cee7bc4d",
+      "tests/unit/test_repl_thinking_budget.py": "6235f147752a63a7492364de5cce90343397fc295403b8a2af17aefaac2efa70"
+    },
+    "committed_paths": [
+      "src/api/routes/chat.py",
+      "src/api/routes/chat_pipeline/direct_stage.py",
+      "src/api/routes/chat_pipeline/repl_executor.py",
+      "src/api/routes/chat_pipeline/routing.py",
+      "src/api/routes/chat_pipeline/stream_adapter.py",
+      "src/api/routes/chat_utils.py",
+      "src/backends/repl_thinking_budget.py",
+      "src/config/__init__.py",
+      "src/config/models.py",
+      "src/features.py",
+      "src/llm_primitives/inference.py",
+      "tests/unit/test_repl_thinking_budget.py"
+    ],
+    "foreign_dirty_inventory": {}
+  },
+  "returncode": 0,
+  "failure": null,
+  "elapsed_s": 12.422699238872156,
+  "sampled_peak_tree_rss_bytes": 237670400,
+  "kernel_childset_empty": true,
+  "captured": [
+    {
+      "pid": 589354,
+      "birth": 163222561,
+      "ppid": 589339,
+      "uid": 1000
+    },
+    {
+      "pid": 589355,
+      "birth": 163222561,
+      "ppid": 589354,
+      "uid": 1000
+    },
+    {
+      "pid": 589358,
+      "birth": 163222563,
+      "ppid": 589355,
+      "uid": 1000
+    }
+  ],
+  "native_or_GPU_execution": false,
+  "source_closure": {
+    "head": "2b9e710de2d5e183c790523c72dbbeca117e8a16",
+    "files": {
+      "src/api/routes/chat.py": "75ecd32dc983151048f351e79d50be66d35c16bd4f5612831df3f3247b6be79a",
+      "src/api/routes/chat_pipeline/direct_stage.py": "f8a2301993b3ea1f40f43aaa64217401d8a55dc22ce89a84235b754db0404625",
+      "src/api/routes/chat_pipeline/repl_executor.py": "8cfd5d33238c87e7f3a0468925b7d18c1276ea08f6d83cd96d2c2ab27e0731d5",
+      "src/api/routes/chat_pipeline/routing.py": "374d7b7cfc79e31d757b51adb6cd710242a2fb0b003e46fab16644ae3a92d7a6",
+      "src/api/routes/chat_pipeline/stream_adapter.py": "84853ecaf0229529f56807a98f7bb3dc346a70a12901878f92a4590312836837",
+      "src/api/routes/chat_utils.py": "15bb0d458997c21ef3623cc99ed25eb987ad38f7be4d184d673cf59a41260ddb",
+      "src/backends/repl_thinking_budget.py": "feeac7480e8001d6e6617c97f63beae92f6705ffac1fe20b4bbdd1650d5594f5",
+      "src/config/__init__.py": "05cd49b5ff3533b3c56e725028604370bd2bb07b8d1ab0335fc173f2b1476aca",
+      "src/config/models.py": "bce9d601e16f546c47eab36f7a89e703e34f1fe12fb5299a067e41232f09d8e2",
+      "src/features.py": "1669ca6ca18ac7b792727e8e6432e37a8f7d486523d33c00004c5196f86c9dbf",
+      "src/llm_primitives/inference.py": "a9e22b19adf3aac05e4f15700fb99bb0592b572adb2ef143556efa64cee7bc4d",
+      "tests/unit/test_repl_thinking_budget.py": "6235f147752a63a7492364de5cce90343397fc295403b8a2af17aefaac2efa70"
+    },
+    "committed_paths": [
+      "src/api/routes/chat.py",
+      "src/api/routes/chat_pipeline/direct_stage.py",
+      "src/api/routes/chat_pipeline/repl_executor.py",
+      "src/api/routes/chat_pipeline/routing.py",
+      "src/api/routes/chat_pipeline/stream_adapter.py",
+      "src/api/routes/chat_utils.py",
+      "src/backends/repl_thinking_budget.py",
+      "src/config/__init__.py",
+      "src/config/models.py",
+      "src/features.py",
+      "src/llm_primitives/inference.py",
+      "tests/unit/test_repl_thinking_budget.py"
+    ],
+    "foreign_dirty_inventory": {}
+  },
+  "adapted_from": "CJ7A-R6-ACCEPTED-RECEIPT.json / run_cj7a_r6_from_root.py",
+  "adapted_script_sha256": "7654a229f5d3bb29aba3c5f4a61971a95c609335ee6583f9efe31cc769509950",
+  "output_log_sha256": "30d4ac3c56456ef4964f53def76030877ea236773858560cbc2712fe9fd55068",
+  "rss_sampler": {
+    "interval_s": 0.1,
+    "limit_bytes": 8589934592,
+    "source": "/proc/<pid>/statm"
+  }
+}

@@ -348,8 +348,14 @@ server's compute. Per-slot context is 256 tokens (`-c 512 -np 4`), a known defec
 
 ### Phase 5 — SEARCH for OAB-8 scouts
 
-- [ ] **REPL-EMB-5.1 — deliver a SEARCH command primitive** for OAB-8 scouts. INF-78 is owned by another
-  session: deliver the primitive and its tests; that session wires it.
+- [x] **REPL-EMB-5.1 — deliver a SEARCH command primitive** for OAB-8 scouts. INF-78 is owned by another
+  session: deliver the primitive and its tests; that session wires it. ✅ 2026-11-01 — Orchestrator source
+  `303a3b2d136c20eeabf6349302f0f64705dda582`, published on main at
+  `eb77f45cfb52791c031bf38dce13c66cc03f18af`; 48 focused plus existing retrieval tests pass. The reusable
+  parser/facade delegates to an existing `ContextSearchIndex` or `ContextBundle`, preserves pointer and mode
+  provenance, and has no index-build or backend side effect. INF-78 owns parser/runner wiring and source scope.
+  Evidence: [delivery artifact](../../artifacts/engineering/repl-search-primitive-20261101/README.md).
+  [no-belief: source contract and deterministic controls only; no scout adoption or retrieval-quality claim]
 
 ## Context — orchestrator-vs-baseline evaluation (operator direction 2026-09-26)
 

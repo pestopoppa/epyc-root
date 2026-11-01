@@ -1,0 +1,79 @@
+test_boundary_aligned_chunks_keep_blocks_intact (__main__.TestBlockIntegrity.test_boundary_aligned_chunks_keep_blocks_intact) ... ok
+test_chunk_cutting_a_block_lowers_score (__main__.TestBlockIntegrity.test_chunk_cutting_a_block_lowers_score) ... ok
+test_empty_chunks_is_none (__main__.TestBlockIntegrity.test_empty_chunks_is_none) ... ok
+test_single_chunk_is_intact (__main__.TestBlockIntegrity.test_single_chunk_is_intact) ... ok
+test_blank_lines_separate_paragraphs (__main__.TestBoundaryDetection.test_blank_lines_separate_paragraphs) ... ok
+test_headings_and_paragraph_breaks (__main__.TestBoundaryDetection.test_headings_and_paragraph_breaks) ... ok
+test_single_chunk_returns_none (__main__.TestContextualCoherence.test_single_chunk_returns_none) ... ok
+test_two_chunks_produce_score (__main__.TestContextualCoherence.test_two_chunks_produce_score) ... ok
+test_deterministic_and_bounded (__main__.TestDefaultChunker.test_deterministic_and_bounded) ... ok
+test_empty_text (__main__.TestDefaultChunker.test_empty_text) ... ok
+test_every_chunk_is_an_exact_substring_of_source (__main__.TestDefaultChunker.test_every_chunk_is_an_exact_substring_of_source) ... ok
+test_find_chunks_on_chunker_output_never_raises (__main__.TestDefaultChunker.test_find_chunks_on_chunker_output_never_raises) ... ok
+test_merges_small_chunks (__main__.TestDefaultChunker.test_merges_small_chunks) ... ok
+test_split_keep_separator_preserves_contiguity (__main__.TestDefaultChunker.test_split_keep_separator_preserves_contiguity) ... ok
+test_missing_chunk_raises (__main__.TestFindChunksStartAndEnd.test_missing_chunk_raises) ... ok
+test_ordered_chunks_located (__main__.TestFindChunksStartAndEnd.test_ordered_chunks_located) ... ok
+test_embedding_length_mismatch_raises (__main__.TestIntraChunkCohesion.test_embedding_length_mismatch_raises) ... ok
+test_similar_sentences_score_above_dissimilar (__main__.TestIntraChunkCohesion.test_similar_sentences_score_above_dissimilar) ... ok
+test_single_sentence_chunks_return_none (__main__.TestIntraChunkCohesion.test_single_sentence_chunks_return_none) ... ok
+test_empty_chunking_has_no_observed_block_denominator (__main__.TestScoreChunksRows.test_empty_chunking_has_no_observed_block_denominator) ... ok
+test_icc_dcc_none_without_embedder_and_reason_preserved (__main__.TestScoreChunksRows.test_icc_dcc_none_without_embedder_and_reason_preserved) ... ok
+test_icc_dcc_values_with_embedder (__main__.TestScoreChunksRows.test_icc_dcc_values_with_embedder) ... ok
+test_rows_have_intrinsic_family_and_exclude_fmre (__main__.TestScoreChunksRows.test_rows_have_intrinsic_family_and_exclude_fmre) ... ok
+test_adapter_entry_point_matches_module (__main__.TestScorePredictionDir.test_adapter_entry_point_matches_module) ... ok
+test_empty_dir_returns_none_rows (__main__.TestScorePredictionDir.test_empty_dir_returns_none_rows) ... ok
+test_pathological_doc_is_skipped_not_crash (__main__.TestScorePredictionDir.test_pathological_doc_is_skipped_not_crash) ... ok
+test_prediction_mutation_during_scoring_is_rejected (__main__.TestScorePredictionDir.test_prediction_mutation_during_scoring_is_rejected) ... ok
+test_prediction_set_hash_changes_when_input_changes (__main__.TestScorePredictionDir.test_prediction_set_hash_changes_when_input_changes) ... ok
+test_scores_every_md_and_aggregates (__main__.TestScorePredictionDir.test_scores_every_md_and_aggregates) ... ok
+test_all_in_bounds (__main__.TestSizeCompliance.test_all_in_bounds) ... ok
+test_empty_chunks_is_none (__main__.TestSizeCompliance.test_empty_chunks_is_none) ... ok
+test_out_of_span_counted (__main__.TestSizeCompliance.test_out_of_span_counted) ... ok
+test_whitespace_approximation_is_deterministic (__main__.TestTokenCounting.test_whitespace_approximation_is_deterministic) ... ok
+
+----------------------------------------------------------------------
+Ran 33 tests in 0.013s
+
+OK
+test_availability_report_shape (test_odl_bench.TestAvailabilityAndCommand.test_availability_report_shape) ... PyMuPDF not available - figure extraction disabled
+ok
+test_save_name_convention (test_odl_bench.TestAvailabilityAndCommand.test_save_name_convention) ... ok
+test_score_command_uses_bench_interpreter (test_odl_bench.TestAvailabilityAndCommand.test_score_command_uses_bench_interpreter) ... ok
+test_demo_gt_is_loadable (test_odl_bench.TestConfigEmission.test_demo_gt_is_loadable) ... ok
+test_emit_config_loadable_and_targets_our_dirs (test_odl_bench.TestConfigEmission.test_emit_config_loadable_and_targets_our_dirs) ... ok
+test_default_row_set_includes_lightweight_intrinsic_without_external_scoring (test_odl_bench.TestDeterministicRowSet.test_default_row_set_includes_lightweight_intrinsic_without_external_scoring) ... ok
+test_generate_predictions_writes_one_md_per_mapped_page (test_odl_bench.TestFakeBackendPredictions.test_generate_predictions_writes_one_md_per_mapped_page) ... ok
+test_unmapped_pages_are_skipped_deterministically (test_odl_bench.TestFakeBackendPredictions.test_unmapped_pages_are_skipped_deterministically) ... ok
+test_parse_maps_known_nesting (test_odl_bench.TestMetricResultParsing.test_parse_maps_known_nesting) ... ok
+test_parse_missing_keys_yields_none (test_odl_bench.TestMetricResultParsing.test_parse_missing_keys_yields_none) ... ok
+test_model_gated_generation_rejects_unknown_engine (test_odl_bench.TestModelGatedProducerGuards.test_model_gated_generation_rejects_unknown_engine)
+Registry dispatch: every known engine is accepted, unknowns are refused. ... ok
+test_model_gated_generation_requires_explicit_inference_flag (test_odl_bench.TestModelGatedProducerGuards.test_model_gated_generation_requires_explicit_inference_flag) ... ok
+test_paddle_producer_normalizes_pipe_table_rows_before_writing (test_odl_bench.TestModelGatedProducerGuards.test_paddle_producer_normalizes_pipe_table_rows_before_writing) ... ok
+test_paddle_producer_records_page_errors_and_continues (test_odl_bench.TestModelGatedProducerGuards.test_paddle_producer_records_page_errors_and_continues) ... ok
+test_paddle_prompt_profiles_include_html_table_lane (test_odl_bench.TestModelGatedProducerGuards.test_paddle_prompt_profiles_include_html_table_lane) ... ok
+test_paddle_selected_binary_symlink_uses_target_build_library_directory (test_odl_bench.TestModelGatedProducerGuards.test_paddle_selected_binary_symlink_uses_target_build_library_directory) ... ok
+test_paddle_server_argv_uses_experimental_binary_and_projector (test_odl_bench.TestModelGatedProducerGuards.test_paddle_server_argv_uses_experimental_binary_and_projector) ... ok
+test_paddle_server_library_path_follows_selected_experimental_build (test_odl_bench.TestModelGatedProducerGuards.test_paddle_server_library_path_follows_selected_experimental_build) ... ok
+test_unlimited_ocr_end_to_end_via_adapter (test_odl_bench.TestModelGatedProducerGuards.test_unlimited_ocr_end_to_end_via_adapter)
+Fake-proc walk of the unlimited_ocr lane through the adapter entry point. ... ok
+test_unlimited_ocr_holds_and_releases_the_inference_call_window (test_odl_bench.TestModelGatedProducerGuards.test_unlimited_ocr_holds_and_releases_the_inference_call_window)
+R11 (2026-08-13): the model-resident interval must hold the shared ... ok
+test_unlimited_ocr_registered_as_model_gated (test_odl_bench.TestModelGatedProducerGuards.test_unlimited_ocr_registered_as_model_gated)
+unlimited_ocr is a registered model-gated engine: both entry points ... ok
+test_manifest_is_json_serialisable (test_odl_bench.TestModelGatedStubs.test_manifest_is_json_serialisable) ... ok
+test_stubs_complete_and_excluded_from_deterministic (test_odl_bench.TestModelGatedStubs.test_stubs_complete_and_excluded_from_deterministic) ... ok
+test_contract_matches_demo_end2end_fixtures (test_odl_bench.TestNamingContract.test_contract_matches_demo_end2end_fixtures)
+Generated prediction names must match the demo's real prediction files. ... ok
+test_gt_image_paths_resolve_demo_images (test_odl_bench.TestNamingContract.test_gt_image_paths_resolve_demo_images) ... ok
+test_prediction_filename_strips_ext_and_adds_md (test_odl_bench.TestNamingContract.test_prediction_filename_strips_ext_and_adds_md) ... ok
+test_normalizes_aligned_pipe_rows_to_html_table (test_odl_bench.TestPaddleTablePostProcessing.test_normalizes_aligned_pipe_rows_to_html_table) ... ok
+test_preserves_single_pipe_line_and_key_value_prose (test_odl_bench.TestPaddleTablePostProcessing.test_preserves_single_pipe_line_and_key_value_prose) ... ok
+test_output_tree_rejects_special_files (test_odl_bench.TestVidyaProvenanceWriter.test_output_tree_rejects_special_files) ... ok
+
+----------------------------------------------------------------------
+Ran 29 tests in 0.890s
+
+OK
+Excluded TestRealPdftotextBackend: full file run is required to avoid PDF parser launch.

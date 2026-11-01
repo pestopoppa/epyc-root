@@ -141,11 +141,11 @@ nobody is moving.
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
 | inference-research | 59 | 1042 | 58 | 2026-07-29 |
-| pipeline-integration | 5 | 69 | 1 | 2026-08-25 |
+| pipeline-integration | 5 | 68 | 1 | 2026-08-25 |
 | research-evaluation | 41 | 683 | 15 | 2026-07-29 |
 | reviewer-control-plane | 6 | 26 | 12 | 2026-07-29 |
-| routing-and-optimization | 53 | 655 | 17 | 2026-07-29 |
-| user-facing-harness | 14 | 126 | 17 | 2026-08-12 |
+| routing-and-optimization | 53 | 654 | 17 | 2026-07-29 |
+| user-facing-harness | 14 | 125 | 17 | 2026-08-12 |
 <!-- END GENERATED index_state -->
 
 ## Reporting

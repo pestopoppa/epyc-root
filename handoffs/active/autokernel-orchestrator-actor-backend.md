@@ -206,6 +206,16 @@ dominates the wall (~58k tokens at ~30 tok/s); every arm compacted once because 
   turn. Governance note: they bypass the `LLMPrimitives` gates (contention, region lock, inference tap) → OAB-16.
   Acceptance still waits on OAB-4's live `orch` arm.
 
+**SEARCH primitive handoff (REPL-EMB-5.1, 2026-11-01).** Orchestrator main
+`eb77f45cfb52791c031bf38dce13c66cc03f18af` publishes `src/scout_search.py` and its tests. The reusable API is
+`parse_search_command(line)` plus `ScoutSearch(existing_provider, embedder=..., allowed_sections=...).execute(query,
+section=..., k=8)`. Pass an already constructed `ContextSearchIndex` or `ContextBundle`; this facade creates no index.
+The lexical-only index path returns the existing `mode="lexical"` and BM25 pointer records. The result holds opaque
+section/offset pointers, preserves `via` and mode, validates the optional section allowlist, and never dereferences a
+pointer. To wire it, the INF-78 owner adds SEARCH handling to the scout command loop and supplies the request's
+already-authorized retrieval provider/section scope. The primitive itself does not change OAB-8 parser/runtime
+behavior or establish retrieval quality. Controls and the R6 receipt: [REPL-EMB-5.1 artifact](../../artifacts/engineering/repl-search-primitive-20261101/README.md). [no-belief: source contract only]
+
 ### Research intake 2026-10-22 — Locals + Beacon (intake-2386..2460)
 
 - [x] **OAB-LB1 — Read-only census of Codex AK-lane threads: turn failures by error class and wall time by executable from the thread history tables (indexed columns only, nice'd) (intake-2389).** ✅ 2026-10-22

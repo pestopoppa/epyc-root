@@ -1,0 +1,4 @@
+955ae9d8d56099aded50be4da8a3007a39fe6c2a20d2ea122f824cf2cdb56abf  README.md
+d5af045069db60b9532e9b760c0964153ac0b8c6265c1eb345656149cf5e1f1e  logs/focused-and-regression-tests.log
+c73e15e3a369d531b8fb0542af529c055af64c7bc50c5ecdab227581fe58a2c9  receipts/R6-RECEIPT.json
+adc9803634691900981db64fa5c55a6b43004df1c6349cffba344c40e3d69e7e  receipts/run_tests_r6.py
