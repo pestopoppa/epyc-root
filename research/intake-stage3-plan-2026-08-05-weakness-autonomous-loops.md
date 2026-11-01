@@ -42,7 +42,7 @@ Append a new section at the current end of `handoffs/active/autopilot-continuous
 ```markdown
 ## 2026-08-05 — Research intake: least-commitment diagnostics and compression safety
 
-_Via `/research-intake` Stage-4 (intake-991 through intake-1002). The submitted weakness result is not
+_Via `/research-intake` Stage-4 (intake-991#record through intake-1002). The submitted weakness result is not
 adopted as a selector: its original proof and empirical comparison are not decision-grade, and the later
 results remain conditional on a declared representation and demand law. The tasks below adopt only the
 verified diagnostic and validation patterns._
@@ -172,7 +172,7 @@ Cross-reference corrections in the same targeted edit:
 - intake-998: add `agent-world-env-synthesis.md`.
 - intake-1003: add `reviewer-model-ablations.md`; do not route implementation to the Meta-Harness pointer.
 - intake-1004: add `reviewer-typed-artifacts.md`; do not route implementation to the Meta-Harness pointer.
-- intake-991: remove `handoffs/completed/meta-harness-optimization.md` from the proposed-owner interpretation while preserving
+- intake-991#record: remove `handoffs/completed/meta-harness-optimization.md` from the proposed-owner interpretation while preserving
   the historical intake prose in `dive_corrections`.
 
 ## Explicit declines and non-actions

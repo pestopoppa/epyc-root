@@ -1,7 +1,7 @@
 # Stage-3 Plan — Worker Candidate, Durable Agent State, Security, and Verifiable Memory
 
 **Date:** 2026-08-07
-**Intakes:** 1005–1023, with corrective update to intake-346
+**Intakes:** 1005–1023, with corrective update to intake-346#record
 **Status:** APPROVED AND IMPLEMENTED — Stage 4 completed 2026-08-07
 **Stage-2 close-out:** closed; all five operator-selected Stage-2b sources are dive-verified
 **Write boundary:** this plan authorizes no handoff, code, benchmark, model-stack, index, or production change until approved
@@ -155,7 +155,7 @@ Append to `handoffs/active/unified-trace-memory-service.md`, explicitly under th
 memory layer rather than `src/trace/`:
 
 ```markdown
-## 2026-08-07 — verifiable memory operations, default-inert shadow path (intake-1008/1015/1017/1018/1022/1023)
+## 2026-08-07 — verifiable memory operations, default-inert shadow path (intake-1008#record/1015/1017/1018/1022/1023)
 
 - [ ] **UTM-V1 — Complete the append-only memory-operation envelope and state-transition engine.** Add
   typed `ADD|UPDATE|DELETE|RETRIEVE|FILTER|SELECT_EPISODE|SUMMARIZE|NOOP` proposals over the existing

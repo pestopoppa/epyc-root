@@ -1,0 +1,82 @@
+# ws58 2026-10-31 dive record: w1_tcap
+
+Markdown rendering of `w1_tcap.yaml` (the original is kept beside it) so the wiki scanner sees this dive. Intake IDs are as the dive recorded them; read them as `#record` references. Digit runs of 12+ digits are written grouped.
+
+```yaml
+entries:
+- id: intake-2567
+  verification: dive-verified
+  read_depth: FULL
+  source_revision: 'blog bottlecapai.com/post/thinkingcap-qwen3-8-flash-next/ (dated Oct 22 2026), html 103016 B -> text, retrieved 2026-10-31'
+  source_text_path: scratch:dive-ws58-20261031/dive/tcap/blog.txt
+  key_claims:
+  - 'Finetune of Qwen3.8-Flash-Next that shortens thinking traces; stated objective is "change nothing else". NO method is stated anywhere in the blog or HF card (no data, loss, RL/SFT, or hyperparameters). The only descriptor is "shorter-thinking post-training".'
+  - 'Six-benchmark VENDOR-run eval, base measured by vendor in the same harness: mean thinking tokens 11007 -> 6394 (-38.5% as mean of six per-benchmark reductions; the ratio of the two means is -41.9%), median 6406 -> 3042 (-39.3%), macro accuracy 89.79 -> 88.76 (-1.03pp), mean answer tokens 322 -> 283, truncation 0.05% -> 0.00%. Seeds: AIME26 32, HMMT 16, AA-LCR/RWQA/tau2 8, LCB 4. 95% t-intervals across seeds.'
+  - 'Eval ran on vLLM 0.31.0 without speculative decoding, 4x H200 TP4, BF16 (about 360 GB), thinking ON at reasoning_effort=xhigh, temp 1.0 / top_p 0.95 / top_k 20 / min_p 0. Gen cap 253,952 (131,072 AA-LCR; 65,536 per turn tau2). Scoring: exact match; LCB by tests; tau2 and AA-LCR Gemini-judged.'
+  - '(appended) The 51% headline is RealWorldQA where base thinking is only 1,102 tokens; the reasoning-heavy rows are -40.9..-44.5%; agentic tau2 is only -22.5% and AA-LCR -28.0%. Benchmark-level accuracy deltas are mostly inside run-to-run noise (vendor says 5 of 6), but RealWorldQA (-0.95pp, +-0.50/+-0.43) is resolved and AA-LCR is the largest (-1.88pp). All six accuracy deltas are negative.'
+  reported_results:
+  - 'Blog results table: aime26 97.92+-0.85 -> 97.19+-1.15 (-0.73pp), thinking mean 16694->9281 (-44.4%), median 9494->4371 (-54.0%), 32 seeds'
+  - 'hmmt_nov25 99.17+-1.03 -> 97.71+-1.55 (-1.46pp), 15975->8874 (-44.5%), median 9584->4866 (-49.2%), 16 seeds'
+  - 'livecodebench 91.86+-2.71 -> 90.86+-1.05 (-1.00pp), 28653->16945 (-40.9%), median 16565->6860 (-58.6%), trunc 0.3->0.0%, 4 seeds (HF card prints +-2.72 for base LCB; blog +-2.71)'
+  - 'realworldqa 85.62+-0.50 -> 84.67+-0.43 (-0.95pp), 1102->540 (-51.0%), median 161->115 (-28.3%), 8 seeds'
+  - 'aa_lcr 80.62+-1.54 -> 78.75+-2.60 (-1.88pp), 1510->1088 (-28.0%), median 934->706, 8 seeds'
+  - 'tau2 83.57+-1.33 -> 83.39+-1.86 (-0.17pp), 2111->1637 (-22.5%), median 1698->1333, 1176->1054 answer tokens, 8 seeds; thinking is summed over ~15 turns per episode'
+  - 'Average row: 89.79 -> 88.76, 11007 -> 6394 (-38.5%), median 6406 -> 3042 (-39.3%), answer 322 -> 283 (-7.6%), trunc 0.05 -> 0.00%'
+  claim_verdicts:
+  - {claim_index: 0, verdict: PARTIAL, evidence: 'finetune confirmed (HF base_model_relation: finetune); the "leaves other behaviour unchanged" is a stated objective, not a demonstrated result, and no method is disclosed'}
+  - {claim_index: 1, verdict: CONFIRMED, evidence: 'table matches HF card on all shared cells; only vendor evidence found, no independent replication'}
+  - {claim_index: 2, verdict: CONFIRMED, evidence: 'Evaluation methodology section; datacenter 4xH200 BF16, not our quant or runtime'}
+  claim_anchors:
+  - {claim_index: 2, locator: 'blog Evaluation methodology', quote: 'Harness — our internal evaluation suite, running both models on vLLM 0.31.0 without speculative decoding.'}
+  - {claim_index: 2, locator: 'blog Evaluation methodology', quote: 'thinking on at reasoning_effort=xhigh, the chat template''s own default; temperature 1.0, top_p 0.95, top_k 20, min_p 0.0'}
+  - {claim_index: 1, locator: 'blog Results', quote: 'Truncation — responses whose thinking never closes, which score zero — goes from 0.05% to'}
+  - {claim_index: 0, locator: 'blog The training objective', quote: 'The goal is to spend fewer tokens getting to the answer, and change nothing else'}
+  - {claim_index: 3, locator: 'blog Results', quote: 'Up to 51.0% reduction in thinking tokens, on average 38.5% measured across six benchmarks, for 1.03pp of accuracy'}
+  claim_corrections:
+  - {claim_index: 1, effect: narrowed, note: 'the -38.5% is an equal-weight mean of per-benchmark reductions; token-weighted it is -41.9%, dominated by LCB/AIME/HMMT. Agentic and long-context reductions are only -22.5%/-28.0% and every accuracy delta is negative.'}
+  - {claim_index: 2, effect: narrowed, note: 'evaluated thinking ON at xhigh with 250k generation cap; our architect_general runs enable_thinking=false, so this evidence does not describe our served configuration.'}
+  depends_on: []
+  dive_corrections: 'Stage 1 had empty reported_results and no numbers; dive fills the full table. Stage 1 implied a method; none is disclosed. Added the weighting caveat and the xhigh/BF16/vLLM context. No stage-1 claim falsified.'
+  reader_should_conclude: 'Cite the table as vendor-run, single-source, BF16/vLLM/xhigh. Do NOT carry a "no quality loss" claim (all six deltas negative, RWQA resolved) nor a method. Do NOT carry the 51% headline as typical (base was 1.1k tokens there). Not evidence about our UD-IQ4_XS/llama.cpp stack.'
+  not_read: 'LICENSE; vendor video; chart images (accuracy-vs-budget curve is only described in prose).'
+- id: intake-2572
+  verification: dive-verified
+  read_depth: FULL
+  source_revision: 'HF bottlecapai/ThinkingCap-Qwen3.8-Flash-Next README.md + config.json; bottlecapai/ThinkingCap-Qwen3.8-Flash-Next-GGUF README.md + api tree/main (file list, sizes); retrieved 2026-10-31; weights NOT downloaded'
+  source_text_path: scratch:dive-ws58-20261031/dive/tcap/ThinkingCap-Qwen3.8-Flash-Next.README.md
+  key_claims:
+  - 'Finetune of Qwen/Qwen3.8-Flash-Next (HF base_model_relation: finetune; model_type qwen4_exp, 48 layers, 512 experts x10, mtp_num_hidden_layers=1); card states "The checkpoint keeps the base model''s MTP head." Whether the head weights are untouched or trained is NOT stated.'
+  - 'Card MTP numbers (vLLM 0.31.0, 4xH200, 3 draft tokens, probabilistic drafting): mean accepted 2.77 tokens/step for the finetune vs 2.72 base, over AIME 2026 and RealWorldQA only. vLLM issue #55357 (MTP acceptance drops to zero with in-thinking repetition on this architecture) is stated still open; vendor says it did not reproduce. Issue page not fetched (restatement only).'
+  - 'Sibling GGUF repo (stated base_model_relation quantized): BF16 359.2 GB, Q8_0 191.0, Q6_K 171.9, Q4_K_M 113.2, IQ4_XS 95.5 GB, each 8 shards, plus mmproj f16 0.91 GB; verified against the API tree (sizes match). Low-bit files use unsloth imatrix + per-tensor overrides. Card says the GGUFs carry the MTP head ("--spec-type draft-mtp"); GGUF check on llama.cpp 5f5acfe: MTP accepted 3.75 (math) / 2.72 (image) tokens/step at n_max 3, one H200 and CPU, 2 prompts.'
+  - '(appended) Qwen Community License 1.0 carried over; vendor also offers an unreleased "PRO" tier claiming -60% thinking. Vendor also publishes FP8 (~186 GB) and NVFP4 (~132 GB) vLLM repos.'
+  reported_results:
+  - 'HF card MTP acceptance 2.77 (ThinkingCap) vs 2.72 (base), vLLM 0.31.0, 3 draft tokens, probabilistic'
+  - 'GGUF card: 3.75 tokens/step on one math request, 2.72 on one image request (n=2 prompts, no base comparison)'
+  - 'GGUF tree (API): total repo 931.8 GB; IQ4_XS shards 2.60+28.8+11.52+12.72+11.92+11.95+12.34+3.69 GB'
+  claim_verdicts:
+  - {claim_index: 0, verdict: CONFIRMED, evidence: 'README front matter and Speculative decoding section'}
+  - {claim_index: 1, verdict: CONFIRMED, evidence: 'README Speculative decoding; averages over two benchmarks, no interval, no per-seed; base 2.72 vs 2.77 is within plausible noise'}
+  - {claim_index: 2, verdict: PARTIAL, evidence: 'file list confirmed; MTP tensors present in GGUF is vendor-asserted only. Header range read not done (shards are 3-100 GB and tensor listing of the MTP layer sits in a per-shard header I did not fetch): UNKNOWN by me.'}
+  claim_anchors:
+  - {claim_index: 0, locator: 'HF README Speculative decoding', quote: 'The checkpoint keeps the base model''s MTP head.'}
+  - {claim_index: 1, locator: 'HF README Speculative decoding', quote: 'vLLM 0.31.0 on four H200s accepted on average'}
+  - {claim_index: 1, locator: 'HF README Speculative decoding', quote: 'is still open; it did not reproduce in our test.'}
+  - {claim_index: 0, locator: 'HF README intro', quote: 'ThinkingCap brings our shorter-thinking post-training to'}
+  claim_corrections:
+  - {claim_index: 1, effect: narrowed, note: 'Acceptance is a mean-tokens-per-step figure on AIME+RWQA under vLLM probabilistic drafting; our served metric is alpha 0.8209 / draft_max 4 / p_min 0.5 under llama.cpp, not comparable.'}
+  - {claim_index: 2, effect: narrowed, note: 'the GGUF MTP head is embedded in the main GGUF; ours is a separate draft file (mtp-...shared-Q8_0.gguf), so recipe changes if adopted.'}
+  depends_on:
+  - {entry: intake-2567, claim_index: 1, why: 'the thinking-reduction numbers motivating any use of this checkpoint'}
+  dive_corrections: 'Stage 1 said GGUF list is BF16 to IQ4_XS: confirmed, with exact sizes. New: our stack already has the Flash-Next MTP head from unsloth (no FP8 re-download needed), so the Axis-E motivation in the stage-1 recommended action is already met; ThinkingCap offers no new MTP capability, only an MTP-compatible finetuned trunk.'
+  reader_should_conclude: 'Cite: finetune keeps the MTP head (vendor statement), acceptance 2.77 vs 2.72 vLLM, GGUF IQ4_XS 95.5 GB exists. Do NOT cite it as solving INF-70 Axis E (already solved) nor as validated on llama.cpp (2 prompts). Whether the finetuned trunk keeps alpha with the base shared-Q8_0 head, or needs its embedded head, is untested.'
+  not_read: 'vLLM issue #55357 itself; FP8/NVFP4 repos; GGUF binary headers (tensor names unknown).'
+ledger:
+- {row: TCAP-1, entries: [intake-2567, intake-2572], action: 'Bounded A/B: base UD-IQ4_XS (current :8074 file) vs bottlecapai ThinkingCap IQ4_XS GGUF, llama-server, same recipe qwen38-flash-next-cpu-mtp, enable_thinking=true on /v1/chat/completions, frozen 40-60 prompt set (arch/plan-critique + reasoning, AIME-style, plus 15 tau2/agentic-style), >=4 seeds. Metrics: thinking tokens/answer (mean+median), accuracy, truncation, MTP alpha, llama-bench pp/tg unchanged.', grounding: 'registry architect_general chat_template_kwargs enable_thinking false (orchestration/model_registry.yaml:2043-2045 region; tests/unit/test_registry_chat_template_kwargs.py:27); recipe at registry:2403; stack summary docs/generated/current_stack_summary.md:19 (52.7 t/s); architect-model-selection-bench.md:203-204 ("enable_thinking=false is mandatory ... degenerate <think> loops otherwise")', owner: 'handoffs/active/architect-model-selection-bench.md', posture: 'cheap-screen-now', benefit: 'fewer decode tokens per thought at CPU decode of ~25-52 t/s (38% cut of ~6-11k tokens saves minutes per hard prompt) if thinking is ever enabled for Flash-Next; accuracy and alpha must hold', decision_rule: 'PROMOTE-to-bench-extension iff (thinking tokens mean AND median reduction >=25% on >=3 of 4 families) AND (accuracy delta CI lower bound >= -3pp absolute, paired by prompt) AND (truncation not higher) AND (alpha with the matching head within 0.03 of base 0.8209) AND (llama-bench tg/pp within +-1.5% of base). Anything else: STOP, record null. Cut by a chosen rule if thinking is not enabled by operator: stays knowledge-only.', reason: 'Prior intake-892 caveat applies: while the role runs thinking OFF the finetune has no benefit to measure'}
+- {row: TCAP-2, entries: [intake-2572], action: 'Record that INF-70 Axis-E "MTP needs FP8 re-download" is obsolete: head already on disk (mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf, 2.79 GB, 2026-09-02); no ThinkingCap download is needed for MTP', grounding: 'cpu-decode-roofline-program.md:86-88 ("its FP8 re-acquisition is no longer needed for MTP"); registry:2394', owner: 'handoffs/active/cpu-decode-roofline-program.md', posture: 'knowledge-only', benefit: 'prevents a wasted 186 GB FP8 download', decision_rule: 'n/a', reason: 'already closed by operator 2026-10-29 (architect bench FP8 lane deprecated)'}
+- {row: TCAP-3, entries: [intake-2572], action: 'If A/B runs, add arm B2 = ThinkingCap trunk + our unsloth shared-Q8_0 draft file vs embedded head, measure alpha for both', grounding: 'registry:2394 draft_model separate file vs GGUF card embedded head', owner: 'handoffs/active/qwen-mtp-llamacpp-port.md', posture: 'cheap-screen-now', benefit: 'tells whether the finetune keeps draft acceptance with our existing head; alpha drop >0.03 would offset gain', decision_rule: 'alpha(B2) >= 0.79 else use embedded head or reject', reason: 'MTP head compatibility with the shifted trunk is the one untested coupling'}
+- {row: TCAP-4, entries: [intake-2567], action: 'Do not pursue the vendor PRO tier or method discovery', grounding: 'blog TL;DR', owner: 'NEW:none', posture: 'decline', benefit: 'n/a', decision_rule: 'n/a', reason: 'closed, unpublished, no method'}
+dive_surfaced_sources:
+- {source: 'https://github.com/vllm-project/vllm/issues/55357', settles: 'whether MTP acceptance collapse in repetitive thinking is real and architecture-specific (matters because our MTP is enabled on qwen4exp)', bears_on: intake-2572, recommend: 'ingest-and-dive'}
+- {source: 'https://huggingface.co/bottlecapai/ThinkingCap-Qwen3.8-Flash-Next-GGUF', settles: 'the GGUF card/file list read here; already covered by intake-2572', bears_on: intake-2572, recommend: 'decline: already read in this dive'}
+artifact_audit: clean
+```

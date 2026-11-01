@@ -272,13 +272,13 @@ All 23 are closed and recorded in the named bearing entries. Stage 4 will copy t
 | Bearing | Declined as a separate intake/task |
 |---|---|
 | `intake-1528` | FxTwitter v2 duplicate thread endpoint |
-| `intake-1531` | `IST-DASLab/marlin#7`, the original unresolved H100 issue |
+| `intake-1531#record` | `IST-DASLab/marlin#7`, the original unresolved H100 issue |
 | `intake-1532` | `malaiwah/glm52-exl3-vast`, an NVIDIA deployment already covered by checkpoint evidence |
 | `intake-1533` | ExLlamaV3 issues `#326` and `#254`: ambiguous Threadripper report and unimplemented predictive expert caching |
 | `intake-1537` | rocWMMA API guide and `ROCm/rocWMMA`, duplicates already represented by `intake-303` |
 | `intake-1542` | `MiaAI-Lab/GLM-5.3-Flash-EXL3-2x-DGX-Sparks` and `vcruz305/GLM-5.3-Flash-EXL3-K2-DGX-Spark-recipe` |
 | `intake-1556` | ExLlamaV3 issues `#368` and `#372`: Windows hugepage and superseded packaging issues |
-| `intake-1534` | Luke458 gfx12 assembly patch and `CarouselAether/rocm_exl3#4` RDC issue |
+| `intake-1534#record` | Luke458 gfx12 assembly patch and `CarouselAether/rocm_exl3#4` RDC issue |
 | `intake-1535` | `ROCm/legacy-rocm-build#6273`, a generic symptom report without EXL3 causality |
 | `intake-1540` | ExLlamaV3 PR `#331`, historical pinned-arena baseline context |
 | `intake-1544` | `Zeuss5/cuda-exl3#5`, NVIDIA MLA-prefill recalibration |
@@ -297,7 +297,7 @@ No new `dive_corrections` are planned; Stage 2 already recorded every correction
   - `handoffs_created: [exl3-cpu-mi210-implementation.md]`
   - `integration_disposition: integrated`
   - `disposition_evidence: ["Routed into the active INF-80 CPU/gfx90a implementation program by the operator-approved 2026-09-25 Stage-3 plan."]`
-- Entries supporting the prospective measurement contract (`intake-1528`, `intake-1530`, `intake-1531`, `intake-1541`, `intake-1543`–`intake-1547`, `intake-1550`–`intake-1552`, `intake-1554`, `intake-1556`–`intake-1562`) also get:
+- Entries supporting the prospective measurement contract (`intake-1528`, `intake-1530`, `intake-1531#record`, `intake-1541`, `intake-1543`–`intake-1547`, `intake-1550`–`intake-1552`, `intake-1554`, `intake-1556`–`intake-1562`) also get:
   - `handoffs_updated: [vidya-belief-substrate-program.md]`
 - `intake-1555` gets the common `integrated` fields above with this specific evidence replacing the common sentence:
   - `disposition_evidence: ["The unavailable observation source is routed into INF-80 EXL3-9 as a fail-closed provenance guard; no quality task may depend on its unseen contents."]`

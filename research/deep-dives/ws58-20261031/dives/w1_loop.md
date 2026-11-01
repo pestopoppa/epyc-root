@@ -1,0 +1,170 @@
+# ws58 2026-10-31 dive record: w1_loop
+
+Markdown rendering of `w1_loop.yaml` (the original is kept beside it) so the wiki scanner sees this dive. Intake IDs are as the dive recorded them; read them as `#record` references. Digit runs of 12+ digits are written grouped.
+
+```yaml
+entries:
+- id: intake-2547
+  verification: dive-verified
+  read_depth: PARTIAL
+  source_revision: 'arXiv:2610.40325v1 HTML (latest; abs page lists v1 only) sha256-12 9121a6abc5b0 of converted text, retrieved 2026-10-31'
+  source_text_path: scratch:dive-ws58-20261031/dive/loop/m_2610.40325.txt
+  key_claims:
+  - Looping the full transformer is strongest at a fixed parameter budget; looping a middle block is better under a training-FLOP budget (dense decoder-only, up to 1B params, up to 155B tokens, trained from scratch).
+  - Loop gains saturate, reverse or become unstable; small loop-specific low-rank adapters help more at more loops.
+  - A modified Parallel Loop Transformer (current-token embedding preserved, separately normalized from the previous-token hidden state before combining) recovers ordinary-looping quality while letting loop stages run concurrently across positions.
+  - 'The paper reports NO wall-clock decode latency or throughput for any variant (explicit: "we do not measure wall-clock decoding latency or throughput"); all efficiency evidence is training-FLOPs/token/BPB accounting. Stage-1 note CONFIRMED.'
+  - 'Scope limit (new): dense only, <=1B params; no MoE, no larger models, no post-trained models evaluated (Appendix J). It lists PLT+speculative decoding as unexplored future work.'
+  reported_results:
+  - 'Models 70M-1B, up to 155B tokens, loop factors up to the sweeps in App. E (1B sweeps limited by cost); Fig. 1: looping reaches a given DCLM BPB with fewer tokens (TPP 10-160) and fewer training FLOPs (Vanilla at TPP=160 vs two-loop at TPP=80); modified PLT variants give the largest data-efficiency gain. Numeric deltas live in figures/appendix tables (not extracted in text).'
+  - 'Inference claim is qualitative only: PLT lets loop inputs be processed as a batch, raising arithmetic intensity (one weight load serves several loop inputs).'
+  claim_verdicts:
+  - {claim_index: 0, verdict: CONFIRMED, evidence: abstract states both halves verbatim}
+  - {claim_index: 1, verdict: CONFIRMED, evidence: abstract}
+  - {claim_index: 2, verdict: CONFIRMED, evidence: abstract; LoopCoder-v2 cited as reporting an optimum at two loops}
+  - {claim_index: 3, verdict: CONFIRMED, evidence: App. H.4 text}
+  - {claim_index: 4, verdict: CONFIRMED, evidence: App. J and Conclusion}
+  claim_anchors:
+  - {claim_index: 0, locator: 'v1 Abstract', quote: 'looping the full transformer generally gives the strongest quality at a fixed'}
+  - {claim_index: 1, locator: 'v1 Abstract', quote: 'We address this by adding small loop-specific low-rank adapters that'}
+  - {claim_index: 2, locator: 'v1 Abstract', quote: 'We find that preserving the current-token embedding'}
+  - {claim_index: 3, locator: 'v1 App. H.4 (training-FLOPs accounting)', quote: 'we do not measure wall-clock decoding latency or throughput.'}
+  - {claim_index: 4, locator: 'v1 App. J Limitations', quote: 'evaluate larger models, mixture-of-experts architectures, or post-trained'}
+  claim_corrections:
+  - {claim_index: 3, effect: unaffected, note: 'Stage-1 absence-of-latency note is correct and is stated by the authors themselves.'}
+  depends_on: []
+  dive_corrections: 'Confirms the stage-1 filing. Adds the scope limits (dense, <=1B, no MoE) that bound any transfer to our MoE/large served models, and the authors own statement that PLT+speculative decoding is untested. reported_results was empty at stage 1; the paper is a likelihood/BPB study, with no serving numbers.'
+  reader_should_conclude: 'Cite for design guidance (full-loop vs middle-block, PLT needs normalized current-token re-injection) and for the explicit absence of latency data. Do NOT cite as evidence of any decode speedup, and do not extrapolate beyond 1B dense.'
+  not_read: 'Appendices E-I per-dataset tables/figure data (numeric values are in figures; only prose read); reference list.'
+- id: intake-2571
+  verification: dive-verified
+  read_depth: PARTIAL
+  source_revision: 'arXiv:2510.24824v1 HTML sha256-12 22126ba84e28 of converted text, retrieved 2026-10-31'
+  source_text_path: scratch:dive-ws58-20261031/dive/loop/m_2510.24824.txt
+  key_claims:
+  - Cross-loop parallelism computes different loops for different tokens in one forward pass (displaced micro-batch), making decode latency near non-looped.
+  - The first-loop KV cache is shared across later loops; gated sliding-window attention (window 64) restores the accuracy lost by sharing.
+  - 'Abstract claims looped accuracy at "almost no extra latency or memory". Measured (ByteDance Seed, in-house 680M/13B MoE, 150B tokens; FP8 attention + W4A8 linears; prefill 5000; 256-token decode; ONE GPU, batch 4-64): vanilla 4.8 ms, naive 2-loop 9.4 ms (+96%), PLT-2 4.9 ms (+2%); avg accuracy 34.7 -> 39.7; PLT-3 40.8 at 4.9 ms.'
+  - 'Same-accuracy test: 1.7B/40B PLT-2 (2/3 the layers) matches 2.5B/60B Seed-MoE (62.6, +0.5) at ~30% lower latency and ~2/3 KV cache. In-house model, confidential recipe.'
+  - 'Latency is a GPU memory-bound argument (FP8/W4A8, vLLM, batch>=4; open-source reproduction on H800, OLMo/OLMoE-based, 1B-active scale). No CPU measurement; the authors do not report weight-bytes per step.'
+  reported_results:
+  - 'Table 2 text (Obs. 1-3): vanilla avg 34.7 / 4.8 ms / KV 280M; loop-2 39.7 / 9.4 ms / 560M; +CLP 39.6 / 5.9 ms / 560M; +KV share 36.2 / 4.8 ms / 280M; +G-SWA (PLT-2) 39.7 / 4.9 ms / 284M; PLT-3 40.8 / 4.9 ms / 287M. bs=4.'
+  - 'Table 3 text: bs=32 loop-2 16.1 ms vs PLT-2 8.6 ms (-47%), vanilla 8.1; bs=64 21.4 vs 11.3 ms, vanilla 10.9.'
+  - 'Sec 3.2: PLT-2 1.7B/40B avg 62.6 vs 2.5B/60B, ~30% lower latency, batch 4-64.'
+  claim_verdicts:
+  - {claim_index: 0, verdict: CONFIRMED, evidence: Sec 2.2.1 and abstract}
+  - {claim_index: 1, verdict: CONFIRMED, evidence: Obs. 2}
+  - {claim_index: 2, verdict: CONFIRMED, evidence: Obs. 1-3 text}
+  - {claim_index: 3, verdict: CONFIRMED, evidence: Sec 3.2 Results}
+  - {claim_index: 4, verdict: CONFIRMED, evidence: Sec 3.1 efficiency recipe and App. A}
+  claim_anchors:
+  - {claim_index: 0, locator: 'v1 Abstract', quote: 'computing different loops for different tokens at the same time, all within a single pass'}
+  - {claim_index: 1, locator: 'v1 Obs. 2', quote: 'KV-cache sharing solves the memory blow-up; G-SWA recovers accuracy at negligible cost.'}
+  - {claim_index: 2, locator: 'v1 Obs. 3', quote: 'matches the accuracy of the naive loop transformer (39.7) but keeps efficiency close to the vanilla model'}
+  - {claim_index: 3, locator: 'v1 Sec 3.2 Results', quote: 'The 1.7B/40B MoE model with PLT and two loops delivers about 30\% lower latency than the vanilla 2.5B/60B MoE model.'}
+  - {claim_index: 4, locator: 'v1 Sec 3.1 Inference efficiency recipe', quote: 'averaged over five independent runs that each decode 256 tokens on one single GPU.'}
+  claim_corrections:
+  - {claim_index: 2, effect: narrowed, note: 'Stage-1 reported_results was empty and "little extra latency" unqualified; the +2% holds only on GPU at bs 4-64 with FP8/W4A8 for a 680M-active MoE.'}
+  depends_on: []
+  dive_corrections: 'Stage-1 authors list (B. Wu, M. Chen, X. Luo, S. Yan) is a partial list; first author is Bohong Wu, ByteDance Seed. Adds the actual latency/accuracy numbers (stage-1 had none), the hardware (single GPU; H800 for open-source runs), and the key mechanism for our purposes: PLT cuts the SEQUENTIAL weight pass count from L to 1 by batching displaced loop positions.'
+  reader_should_conclude: 'Cite as the only primary wall-clock decode evidence in this group, and only for GPU memory-bound serving of MoE with KV-sharing. Do NOT cite as a CPU result; the paper has no EPYC/llama.cpp evidence and the in-house models are not released.'
+  not_read: 'Appendix A.3 ablations and Table 5/6 numeric cells; related-work body beyond skim.'
+- id: intake-2551
+  verification: dive-verified
+  read_depth: PARTIAL
+  source_revision: 'arXiv:2609.40316v1 HTML sha256-12 d5d0e3668de7 of converted text, retrieved 2026-10-31'
+  source_text_path: scratch:dive-ws58-20261031/dive/loop/m_2609.40316.txt
+  key_claims:
+  - A bounded, sparsity-conditional scaling law jointly models recurrence, expert sparsity, model size and data; recovers dense and MoE laws as special cases.
+  - 'Sparsity gives active-parameter efficiency on overall performance and recurrence gives total-parameter efficiency mainly on reasoning (Fig. 7); recurrence gains saturate within the observed range.'
+  - 'Test-time recurrence is a quality dial with per-token compute growing in R: A0.3B-1.3B LoopMoE R=1..5 gives relative inference compute 0.4x..1.8x and Overall 36.6 -> 46.9 (+10.3), but at R=5 it still trails the non-looped A0.6B-2.9B MoE overall (50.2) and only matches it on BBH/GSM8K.'
+  - 'All evidence is training-loss/benchmark accuracy on H100 training; no decode latency, throughput or bytes-per-token is reported. Compute is counted as training tokens x unrolled parameters.'
+  reported_results:
+  - 'Table 2: 0.6B-2.9B MoE (R=1, 1.0x) BBH 29.8, GSM8K 42.9, Overall 50.2. 0.3B-1.3B LoopMoE R=1 (0.4x) 18.6/10.5/36.6; R=2 (0.8x) 26.7/30.0/43.0; R=3 (1.1x) 30.1/41.0/46.0; R=4 (1.5x) 31.5/41.5/46.7; R=5 (1.8x) 31.8/41.2/46.9.'
+  - 'Matched training compute ~1.5e22 FLOPs; ~3T tokens (LoopMoE) vs ~6T (baseline); per-loop supervision used so one checkpoint can run at several R.'
+  claim_verdicts:
+  - {claim_index: 0, verdict: CONFIRMED, evidence: abstract}
+  - {claim_index: 1, verdict: CONFIRMED, evidence: Sec 4.3 summary sentence}
+  - {claim_index: 2, verdict: PARTIAL, evidence: dial confirmed (+10.3 points); stage-1 omitted that the looped model trails overall at matched training compute}
+  - {claim_index: 3, verdict: CONFIRMED, evidence: no latency measurement anywhere in text}
+  claim_anchors:
+  - {claim_index: 0, locator: 'v1 Abstract', quote: 'the first scaling law to jointly model recurrence and sparsity alongside model size and data'}
+  - {claim_index: 1, locator: 'v1 Sec 4.3', quote: 'sparsity and recurrence provide complementary routes to parameter-effi'}
+  - {claim_index: 2, locator: 'v1 Sec 4.3', quote: 'boosts Overall performance by a substantial +10.3 points'}
+  - {claim_index: 2, locator: 'v1 Sec 4.3', quote: 'while trailing on Overall performance.'}
+  claim_corrections:
+  - {claim_index: 2, effect: narrowed, note: 'Stage-1 "quality dial" is true but the headline parity is reasoning-only, at 1.8x inference compute vs the baseline.'}
+  depends_on: []
+  dive_corrections: 'Confirms the filing; supplies the numbers stage-1 omitted. Reframes the stage-1 hypothesis: the paper says nothing about decode bandwidth. My arithmetic (not in paper): with independent per-pass routing, a LoopMoE at R=5 can touch up to R x the active-expert bytes of one pass, so bytes per token rise while total stored bytes fall (1.3B vs 2.9B); whether this wins on EPYC depends on route overlap across passes, which the paper does not measure.'
+  reader_should_conclude: 'Cite for the scaling-law form and the sparsity-x-recurrence interaction. Do NOT cite for any deployment-efficiency or bandwidth claim; there is none. No checkpoint or code release found in text.'
+  not_read: 'Appendices B-D numeric fitting tables; bootstrap results.'
+- id: intake-2546
+  verification: dive-verified
+  read_depth: FULL
+  source_revision: 'hazyresearch.stanford.edu/blog/2026-10-12-ncm HTML sha256-12 a551de131a57 of converted text, retrieved 2026-10-31; code github.com/HazyResearch/ncm @ c702742'
+  source_text_path: scratch:dive-ws58-20261031/dive/loop/blog.txt
+  key_claims:
+  - Text is tokenized into a hierarchy of discrete codes and generated one level at a time, all codes of a level in parallel.
+  - 'Blog claims 21x (LM1B), 10x (OpenWebText) and up to 31x (XSum) wall-clock speedup over the STRONGEST DIFFUSION LM baseline on a single H100 SXM 80GB at comparable quality; the baselines are diffusion LMs, not autoregressive models. No AR wall-clock comparison is made.'
+  - Quality reported with BLEU/ROUGE and MBR scaling in addition to generative perplexity; Sudoku vs AR baselines.
+  - '~4.9x (LM1B) and ~4x (OWT) fewer training tokens than strong diffusion baselines (tokenizer + generator counted).'
+  reported_results:
+  - 'Blog: 11x fewer NFE vs DUO on LM1B, 21x faster; OWT 10x faster; up to 31x faster on XSum (H100 SXM 80GB).'
+  claim_verdicts:
+  - {claim_index: 0, verdict: CONFIRMED, evidence: blog TL;DR/method}
+  - {claim_index: 1, verdict: PARTIAL, evidence: speedups are real as stated but vs diffusion LMs only; stage-1 wording said "over diffusion LM baselines" so it was right, but "large wall-clock speedups" must not be read as vs AR}
+  - {claim_index: 2, verdict: CONFIRMED, evidence: blog evaluation section}
+  - {claim_index: 3, verdict: CONFIRMED, evidence: blog training-efficiency paragraph}
+  claim_anchors:
+  - {claim_index: 1, locator: 'blog Efficiency section', quote: 'We therefore benchmark wall-clock generation time on a single NVIDIA H100 SXM 80GB GPU.'}
+  - {claim_index: 3, locator: 'blog training-tokens paragraph', quote: 'it uses approximately 4.9× and 4× fewer tokens than strong diffusion baselines'}
+  claim_corrections:
+  - {claim_index: 1, effect: narrowed, note: 'Baseline is diffusion LMs; GPU (H100) batch-16 wall-clock; no AR or CPU timing.'}
+  depends_on: [{entry: intake-2568, claim_index: 1, why: 'Blog speedups restate the paper numbers; if the paper timing setup changes, these change.'}]
+  dive_corrections: 'Blog is a restatement of intake-2568 with the same numbers; no independent corroboration. Confirms filing; adds hardware and baseline class.'
+  reader_should_conclude: 'Cite the paper (intake-2568) not the blog for numbers. Never cite NCM as faster than autoregressive decoding.'
+  not_read: 'Blog interactive figures (images).'
+- id: intake-2568
+  verification: dive-verified
+  read_depth: FULL
+  source_revision: 'arXiv:2610.14162v1 HTML sha256-12 734f5b3628c7 of converted text, retrieved 2026-10-31; code/weights github.com/HazyResearch/ncm @ c70274273f489abc73832b2b98584a8483b6b203 (MIT)'
+  source_text_path: scratch:dive-ws58-20261031/dive/loop/m_2610.14162.txt
+  key_claims:
+  - A multiscale residual VQ-VAE encodes text into a hierarchy of codes; a transformer generates each level in parallel.
+  - 'Abstract compares against diffusion LMs at matched ~100M scale on LM1B, OpenWebText, XSum and Sudoku; AR appears only as small baselines (Sudoku AR 25M, 128 NFE; AR rows from Hu et al. in the WMT14/XSum table). No AR wall-clock timing and no AR model at LLM scale.'
+  - 'Timing: 1,024 sequences, batch 16, one H100 SXM 80GB. LM1B 21x faster than DUO at better Gen. PPL (11x fewer NFE); OWT 10x; XSum 31x vs AURORA-LM (16x fewer NFE). Sudoku: NCM 99.5/96.5/86.1 (easy/med/hard) with 12 NFE vs AR 25M 13.9/5.1/0.6.'
+  - 'Scale: generators ~100M, scaling study to 725M (LM1B only); dataset-specific tokenizer (VQ-VAE trained per dataset; LM1B text vocab bert-base-uncased); authors list larger scale and end-to-end tokenizer training as future work.'
+  - 'Self-referential: the paper itself notes that diffusion drafters like DFlash accelerate AR models through speculative decoding; NCM does not evaluate that use.'
+  reported_results:
+  - 'Sec 4.6 / Fig. 1: 21x / 10x / 31x wall-clock; Sec 4.6 LM1B 13.36B training positions vs 66B (4.9x fewer).'
+  - 'Table 3 Sudoku: NCM 25M, NFE 12: 99.5 / 96.5 / 86.1; MDLM 29M 128 NFE 92.0/77.1/30.2; DUO 96.3/84.7/58.4; FMLM+ 16 NFE 97.7/92.8/81.3; AR 25M greedy 14.6/5.1/1.0.'
+  claim_verdicts:
+  - {claim_index: 0, verdict: CONFIRMED, evidence: abstract}
+  - {claim_index: 1, verdict: PARTIAL, evidence: stage-1 contradicting note (no AR comparison) is mostly right but AR baselines do exist for Sudoku and in Table 2; none at scale or for timing}
+  - {claim_index: 2, verdict: CONFIRMED, evidence: Sec 4.6 and Table 3}
+  - {claim_index: 3, verdict: CONFIRMED, evidence: Limitations and scaling study}
+  - {claim_index: 4, verdict: CONFIRMED, evidence: Introduction}
+  claim_anchors:
+  - {claim_index: 0, locator: 'v1 Abstract', quote: 'a multiscale residual VQ-VAE encodes text into a hierarchy of discrete codes, and a transformer generates one level at a time, predicting all codes within a level in parallel.'}
+  - {claim_index: 1, locator: 'v1 Sec 4.6', quote: 'We benchmark end-to-end wall-clock time for generating'}
+  - {claim_index: 2, locator: 'v1 Abstract', quote: 'On OpenWebText, NCM is competitive with the strongest DLM while running 10\times faster; on XSum, it matches the strongest DLM’s ROUGE-L while being 31\times faster.'}
+  - {claim_index: 3, locator: 'v1 Limitations', quote: 'parameters, and our scaling study extends to 725 M parameters on LM1B.'}
+  - {claim_index: 4, locator: 'v1 Sec 1', quote: 'diffusion drafters like DFlash'}
+  claim_corrections:
+  - {claim_index: 1, effect: narrowed, note: 'Comparison is to diffusion LMs, ~100M, GPU; AR baselines exist only on Sudoku/WMT/XSum tables at small size.'}
+  depends_on: []
+  dive_corrections: 'Confirms filing; reported_results was empty. Releases checkpoints (HF collection hazyresearch/ncm: tokenizer + generator per dataset: LM1B small/medium/large, OWT, XSum, WMT14, TinyStories, Sudoku). These are task-specific research models, not general LMs.'
+  reader_should_conclude: 'Cite for coarse-to-fine non-AR generation vs diffusion LMs at ~100M. Do not cite as evidence that it can draft for a 7B-35B AR model: no acceptance-rate measurement, no shared vocabulary with any served model, and the finest level (which contains the first token) is generated last.'
+  not_read: 'Appendices F-I sample outputs and ablation tables beyond skim.'
+ledger:
+- {row: LOOP-1, entries: [intake-2547, intake-2571], action: 'Add a knowledge note to the INF-70 roofline program: weight-reuse architectures. Sequential looping multiplies weight bytes per token by L, and with 32 MiB L3 per CCX (384 MiB total) a block above ~32 MiB per CCX cannot be cache-reused (e.g. a 7B 14-layer PLT coder has ~0.28 GB per layer at Q4 by my arithmetic). PLT reads weights once per step by batching displaced loop positions, so on bandwidth-bound decode it behaves like a 2-row verify batch (FLOPs x2, weight bytes x1).', grounding: 'handoffs/active/cpu-decode-roofline-program.md:146-150 (153 GB/s recipe, 4.16 GB/153 = 27 ms) and :2885-2891 (L3 residency finding: byte ledger wrong only for re-read data that fits 384 MiB; per-CCX 32 MiB at :3569)', owner: 'handoffs/active/cpu-decode-roofline-program.md', posture: knowledge-only, benefit: 'prevents mis-pricing looped models by FLOPs; must keep: any CPU claim stays unmeasured until a probe', decision_rule: 'n/a', reason: 'Neither paper has CPU or bytes-per-step data; arithmetic only.'}
+- {row: LOOP-2, entries: [intake-2571, intake-2547], action: 'Ingest and dive LoopCoder-v2 (arXiv 2606.18023): released 7B PLT 2-loop coder (Apache-2.0, HF Multilingual-Multimodal-NLP/LoopCoder-V2, 14 layers, hidden 5120, 8 KV heads) is the first PLT checkpoint we can actually run; card claims SWE-bench Verified 43.0 -> 64.4 for 2 loops vs 1 loop. Then do a no-compute code-read scoping of what a llama.cpp-experimental PLT graph needs (shifted state across tokens, shared first-loop KV, 64-token G-SWA, interaction with MTP/spec-dec rollback).', grounding: 'handoffs/active/reasoning-compression.md:652 (looped lineage gated on "no llama.cpp/GGUF path") and :715 (Loopie artifact watch); research/intake_index.yaml:112502 lists 2606.18023 as surfaced-not-selected on 2026-08-21', owner: 'handoffs/active/reasoning-compression.md', posture: cheap-screen-now, benefit: 'a coder-class model whose second loop costs ~1x weight bytes; must stay correct: the 64.4 is a model-card/paper claim, unreplicated', decision_rule: 'Promote to a port plan only if the dive confirms the SWE-bench delta in the paper tables AND the PLT graph needs <~1 kLOC in llama.cpp-experimental (Nanbeige/Ouro precedents: 324 lines). Else monitor.', reason: 'Released checkpoint plus precedent ports remove the old no-checkpoint gate.'}
+- {row: LOOP-3, entries: [intake-2547], action: 'Correct the stale gate: Ouro now has a community llama.cpp port (BrandeisPatrick/loop-transformer, ouro arch, 324 added lines, PR ggml-org/llama.cpp#29823, GGUFs for Ouro 1.4B/2.6B +Thinking) built on upstream looped-model machinery merged for Nanbeige4.2 (PR #25994, merged 2026-07-27). Our frozen v10 tree contains neither (grep nanbeige/num_loops: none). Update gpu-acceleration-path.md:248 ("Not llama.cpp compatible") and reasoning-compression.md:652 wording.', grounding: 'handoffs/active/gpu-acceleration-path.md:248; handoffs/active/reasoning-compression.md:652; /mnt/raid0/llm/llama.cpp/src (no num_loops)', owner: 'handoffs/active/reasoning-compression.md', posture: knowledge-only, benefit: 'removes a false blocker for any looped-model decision', decision_rule: 'n/a', reason: 'Third-party README claims (port parity: GSM8K 1/2/4 loops 26.0/67.0/80.5 F16) are unverified by us; record as claim.'}
+- {row: LOOP-4, entries: [intake-2547, intake-2551], action: 'Bounded CPU probe on a llama.cpp-experimental branch with the Ouro port: Ouro-1.4B Q4_K_M (854 MB per card), llama-bench tg at num_loops 1/2/4 via --override-kv, reporting achieved GB/s counting bytes once per loop against the C0 153 GB/s ceiling. This measures the L3 reuse question directly: whole-stack loop of 854 MB exceeds the 384 MiB L3, so I predict ~ceiling-bound slowdown proportional to loops.', grounding: 'handoffs/active/cpu-decode-roofline-program.md:149 (C0 152.6/165.6 GB/s), :2885-2891 (GDN state 234 GB/s cache-resident precedent)', owner: 'handoffs/active/cpu-decode-roofline-program.md', posture: monitor, benefit: 'first measured CPU weight-reuse datapoint; must stay correct: build is a third-party patch, review needed', decision_rule: 'If achieved GB/s per loop-bytes > 1.3 x C0 at loops>=2, L3 reuse is real for full-stack loops and the layer-loop (Loopie) hypothesis in reasoning-compression.md:656 is worth testing; if ~<=C0, close the L3 hypothesis for blocks >32 MiB per CCX.', reason: 'Needs compute window and experimental build; not a dive-time action. Valid to sequence after LOOP-2 ingest.'}
+- {row: LOOP-5, entries: [intake-2551], action: 'Record in reasoning-compression.md only: looped MoE R=5 at 0.3B-1.3B reaches reasoning parity with 0.6B-2.9B at 1.8x training-compute-defined inference compute while trailing Overall 46.9 vs 50.2; no latency/bytes measured; no checkpoint released in the text.', grounding: 'handoffs/active/reasoning-compression.md:652-656 (looped-MoE lineage rows)', owner: 'handoffs/active/reasoning-compression.md', posture: knowledge-only, benefit: 'calibrates looped-MoE row', decision_rule: 'n/a', reason: 'No served or candidate model is looped; model_registry.yaml has no looped or recurrent-depth entry (grep).'}
+- {row: LOOP-6, entries: [intake-2546, intake-2568], action: 'Monitor NCM as a drafter source: trigger = a released NCM-style generator with a general-text tokenizer sharing a served model vocabulary, or any measured acceptance rate against an AR target. Do not build now: released checkpoints are per-dataset ~100M-725M models with a bert-base-uncased-class vocabulary; coarse-to-fine generates the finest level (including the first token the verifier checks) last, a structural mismatch with prefix acceptance (my reasoning, not measured); speedups are vs diffusion on an H100.', grounding: 'handoffs/active/dflash2-block-drafter-experimental-build.md:331 (decide on measured evidence vs in-file MTP), handoffs/active/speculative-decoding-mtp-refresh.md:226 (draft head small BW slice) and :74 (spec-type launch-only)', owner: 'handoffs/active/dflash2-block-drafter-experimental-build.md', posture: monitor, benefit: 'drafter alternative class beyond DFlash; must stay correct: measure alpha before investment', decision_rule: 'Open a probe only if alpha-per-position on a served-vocab NCM-style drafter is reported or reproducible without training; otherwise keep monitor.', reason: 'Real constraints are vocabulary/training scale, not software; flagged for operator review rather than dismissed.'}
+dive_surfaced_sources:
+- {source: 'arXiv 2606.18023 (title-checked on abs page: LoopCoder-v2: Only Loop Once for Efficient Test-Time Computation Scaling); HF Multilingual-Multimodal-NLP/LoopCoder-V2 (apache-2.0, 7B PLT, vLLM fork only)', settles: 'Whether a released PLT checkpoint delivers the claimed gains and what a GGUF port requires', bears_on: intake-2571, recommend: 'ingest-and-dive'}
+- {source: 'github.com/BrandeisPatrick/loop-transformer + ggml-org/llama.cpp PR #29823 (Ouro port) and PR #25994 (Nanbeige4.2 looped arch, merged 2026-07-27); HF Nanbeige/Nanbeige4.2-3B (arXiv 2607.22083)', settles: 'Whether llama.cpp supports looped models and a runnable looped baseline for LOOP-4', bears_on: intake-2547, recommend: 'ingest-and-dive'}
+artifact_audit: clean
+```
