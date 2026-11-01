@@ -5,7 +5,7 @@ ONE resumable agent session per piloted handoff. The handoff file is the durable
 Zero-token: this script never calls a model itself, it only starts/resumes the engines' headless CLIs.
 
 Registry: compute-flags/handoff-sessions.json (schema epyc.handoff-sessions.v1)
-    {"schema": ..., "max_live": 5, "paused_until": null,
+    {"schema": ..., "max_live": 5, "paused_until": null, "default_engine": "codex", "auto_start": true,
      "sessions": {"<slug>": {"handoff": "handoffs/active/<file>.md", "engine": "codex|claude|opencode",
                              "session_id": "...", "status": "live|suspended|done", "waits_on": [row ids],
                              "last_resume": "<iso>", "last_wrapup": "<path or commit>", "brief": "briefs/HANDOFF-<slug>.md",
@@ -18,6 +18,15 @@ wraps up at EVERY task boundary and prints `WRAPPED <sha>`; the dispatcher parse
 origin/main (`UNWRAPPED <slug>: refusing resume`, event re-queued); `transfer <slug> --engine X` moves a handoff to
 a FRESH session of another engine from FILES ONLY (brief + handoff + latest progress + BACKLOG), recording
 `transferred_from`. The brief is self-sufficient for a cold agent of any engine.
+
+AUTO-START (2026-11-01, ws58; the operator found all compute idle while BACKLOG-codex-gen listed dozens of handoffs
+"needing a handoff session" that nobody started): every dispatch pass, while live sessions (alive pid) < max_live, the
+dispatcher STARTS a fresh session for the highest-ranked handoff without one. The ranking is backlog_gen's
+`needs_session` (lane-weighted, transitive inference rows the handoff's open tasks unblock, then backlog-priority rank
+of the handoff's index row - never alphabetical). Engine = registry `default_engine` (codex). A session whose handoff
+has no open `- [ ]` task left (or whose file left handoffs/active/) becomes `done` and frees its slot. A suspended
+session waiting on a running row has no live pid and does not count as live. Every start is logged `AUTO-START`.
+Registry knobs: `auto_start` (default true), `default_engine`, `max_live`.
 
 Subcommands:
     brief <slug>            write compute-flags/briefs/HANDOFF-<slug>.md (the session's goal file)
@@ -48,7 +57,7 @@ import time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import backlog_gen as bg  # noqa: E402
 
-VERSION = "hs-dispatcher-v2"
+VERSION = "hs-dispatcher-v3"
 FLAGS = bg.FLAGS_DEFAULT
 ROOT = "/workspace"
 USAGE_RX = re.compile(r"usage limit|rate[ _-]?limit|quota exceeded|too many requests|\b429\b|hit your limit", re.I)
@@ -317,14 +326,124 @@ def session_id_from(out_path, engine):
     return m.group(1) if m else None
 
 
+# ---------------------------------------------------------------- auto-start
+def open_tasks(handoff: str, repo=None) -> int:
+    """Open `- [ ]` boxes in the handoff file; 0 when the file is gone from handoffs/active/ (moved to completed/)."""
+    hp = os.path.join(repo or ROOT, handoff)
+    try:
+        return len(re.findall(r"^\s*- \[ \]", open(hp, errors="replace").read(), re.M))
+    except OSError:
+        return 0
+
+
+def slug_for(handoff: str, sessions: dict) -> str:
+    """Stable short slug from the handoff file name; unique against the registry."""
+    base = re.sub(r"\.md$", "", os.path.basename(handoff))
+    base = re.sub(r"-(?:program|rollout|research|implementation|integration|refresh|20\d{6})$", "", base)
+    slug = re.sub(r"[^a-z0-9]+", "-", base.lower()).strip("-")[:40].strip("-") or "handoff"
+    if slug in sessions and sessions[slug].get("handoff") != handoff:
+        n = 2
+        while f"{slug}-{n}" in sessions:
+            n += 1
+        slug = f"{slug}-{n}"
+    return slug
+
+
+def handoff_slug(sessions: dict, handoff: str):
+    for slug, e in sessions.items():
+        if isinstance(e, dict) and str(e.get("handoff", "")).split("handoffs/", 1)[-1] == handoff.split("handoffs/", 1)[-1]:
+            return slug
+    return None
+
+
+def candidates(flags, reg, repo=None, priority=None, keeper_log=None):
+    """Handoffs needing a session, best first (backlog_gen's needs_session ranking), filtered to files that exist in the
+    repo with open tasks and no live/suspended session."""
+    repo = repo or ROOT
+    data = bg.build(flags, priority_for(repo, priority), keeper_log or os.path.join(flags, "ws58-calendar-keeper.log"),
+                    sessions_path=reg_path(flags))
+    out = []
+    S = reg.get("sessions") or {}
+    for h in data.get("needs_session") or []:
+        hf = h["handoff"]
+        slug = handoff_slug(S, hf)
+        if slug and S[slug].get("status") != "done":
+            continue
+        if open_tasks(hf, repo) <= 0:
+            continue
+        out.append(dict(h, slug=slug))
+    return out, data
+
+
+def priority_for(repo, priority=None):
+    """backlog-priority.json (and its sibling .index-state.json) of the repo the dispatcher serves."""
+    return priority or os.path.join(repo or ROOT, "handoffs", "active", "backlog-priority.json")
+
+
+def new_entry(reg, handoff, row_id=None):
+    return {"handoff": handoff, "engine": reg.get("default_engine", "codex"), "session_id": None, "status": "suspended",
+            "waits_on": [], "last_resume": None, "last_wrapup": None, "brief": None, "row_ids": [], "row_patterns": [],
+            "handoff_rows": [row_id] if row_id else [], "pid": None, "auto_started": now_iso()}
+
+
+def write_backlog_for(flags, slug, data=None, priority=None, keeper_log=None, repo=None):
+    """Write BACKLOG-handoff-<slug>.md at once so the brief's pointer resolves before backlog_gen's next 10-min pass."""
+    try:
+        data = data or bg.build(flags, priority_for(repo, priority),
+                                keeper_log or os.path.join(flags, "ws58-calendar-keeper.log"), sessions_path=reg_path(flags))
+        if f"handoff-{slug}" in data["workers"]:
+            bg.write_atomic(os.path.join(flags, f"BACKLOG-handoff-{slug}.md"), bg.render(f"handoff-{slug}", data))
+    except Exception as ex:  # the generator's own pass will write it; never block a start on this
+        log(flags, f"BACKLOG-WRITE-FAILED {slug}: {ex!r}")
+
+
+def auto_start(flags, reg, live, cap, runner=None, repo=None, priority=None, keeper_log=None):
+    """Start sessions for the best handoffs that need one until live == cap. Returns the new live count."""
+    if live >= cap or not reg.get("auto_start", True):
+        return live
+    S = reg.setdefault("sessions", {})
+    try:
+        cands, _ = candidates(flags, reg, repo, priority, keeper_log)
+    except Exception as ex:
+        log(flags, f"AUTO-START-SKIPPED candidates failed: {ex!r}")
+        return live
+    started = []
+    for h in cands:
+        if live >= cap:
+            break
+        slug = h.get("slug") or slug_for(h["handoff"], S)
+        e = S.get(slug) or new_entry(reg, h["handoff"], h.get("row_id"))
+        if e.get("status") == "done":  # the handoff grew open tasks again: fresh session, same slug
+            e.update(new_entry(reg, h["handoff"], h.get("row_id")), restarted_from_done=e.get("session_id"))
+        S[slug] = e
+        bd = os.path.join(flags, "briefs")
+        os.makedirs(bd, exist_ok=True)
+        e["brief"] = os.path.join(bd, f"HANDOFF-{slug}.md")
+        bg.write_atomic(e["brief"], brief_text(slug, e, flags))
+        e["auto_start"] = {"score": h["score"], "rows": h["rows"][:8], "priority": h.get("row_id"), "rank": h.get("priority_rank"), "at": now_iso()}
+        _go(flags, slug, e, brief_text(slug, e, flags) + "\n" + idle_prompt(slug, e, flags), runner, None, fresh=True)
+        if not alive(e.get("pid")) and e.get("status") != "live":
+            continue  # REFUSED-CWD already logged
+        live += 1
+        started.append(slug)
+        log(flags, f"AUTO-START {slug} handoff={h['handoff']} engine={e['engine']} pid={e.get('pid')} score={h['score']} "
+                   f"rows={','.join(h['rows'][:6]) or '-'} priority={h.get('row_id') or '-'} rank={h.get('priority_rank')} live={live}/{cap}")
+    if started:
+        save(reg_path(flags), reg)  # the registry must name the new sessions before their backlogs are rendered
+        for slug in started:
+            write_backlog_for(flags, slug, None, priority, keeper_log, repo)
+    return live
+
+
 # ---------------------------------------------------------------- dispatcher
 def end_events(flags):
     for p in glob.glob(os.path.join(flags, "grants", "*.ended")) + glob.glob(os.path.join(flags, "grants", "*.complete")):
         yield os.path.basename(p).rsplit(".", 1)[0], p
 
 
-def dispatch_once(flags, runner=None, now=None, seed=False):
+def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=None, keeper_log=None):
     now = now or time.time()
+    repo = repo or ROOT
     reg = load(reg_path(flags), {"sessions": {}})
     st = load(state_path(flags), {"seen": [], "queue": []})
     seen = set(st.get("seen") or [])
@@ -385,8 +504,13 @@ def dispatch_once(flags, runner=None, now=None, seed=False):
             b = ""
         e["waits_on"] = re.findall(r"^- \[(?:qualified-armed|running)\] \S+ rank=\S+ \*\*([^*]+)\*\*", b, re.M)
         e["_advanceable"] = bool(ADV_RX.search(b)) or "## Non-inference" in b and "\n- [" in b.split("## Non-inference", 1)[1]
+    # 3b. a session whose handoff has no open task left (or left handoffs/active/) is done: it frees its slot
+    for slug, e in S.items():
+        if e.get("status") not in ("done", "live") and not alive(e.get("pid")) and e.get("handoff") and open_tasks(e["handoff"], repo) == 0:
+            e["status"], e["done_at"] = "done", now_iso()
+            log(flags, f"DONE {slug}: no open tasks left in {e['handoff']}; slot freed")
     paused = _parse(reg.get("paused_until") or "") > now
-    live = sum(1 for e in S.values() if alive(e.get("pid")))
+    live = sum(1 for e in S.values() if alive(e.get("pid")))  # suspended sessions (waiting on a running row) have no pid
     cap = int(reg.get("max_live", 5))
     if not paused:
         for slug, e in S.items():  # wrap-up not landed: resume at once, no cooldown
@@ -427,6 +551,9 @@ def dispatch_once(flags, runner=None, now=None, seed=False):
             _go(flags, slug, e, (brief_text(slug, e, flags) + "\n" if fresh else "") + idle_prompt(slug, e, flags),
                 runner, None, fresh)
             live += 1
+        # 5. AUTO-START: fill the remaining slots with the best handoffs that have no session yet
+        live = auto_start(flags, reg, live, cap, runner, repo, priority, keeper_log)
+        S = reg["sessions"]
     for e in S.values():
         e.pop("_advanceable", None)
     st["seen"] = sorted(seen)
@@ -498,6 +625,8 @@ def main(argv=None):
     ap.add_argument("--seed", action="store_true", help="mark existing end files seen without resuming")
     ap.add_argument("--engine", choices=list(ENGINES), help="transfer: the engine of the new fresh session")
     ap.add_argument("--force", action="store_true", help="transfer: even while the previous session is live")
+    ap.add_argument("--priority", default=None, help="backlog-priority.json for the auto-start ranking (default: backlog_gen's)")
+    ap.add_argument("--keeper-log", default=None)
     a = ap.parse_args(argv)
     reg = load(reg_path(a.flags), {"sessions": {}})
     if a.cmd == "status":
@@ -528,7 +657,7 @@ def main(argv=None):
         return 0
     while True:
         try:
-            dispatch_once(a.flags, seed=a.seed)
+            dispatch_once(a.flags, seed=a.seed, priority=a.priority, keeper_log=a.keeper_log)
         except Exception as ex:  # never die in the loop
             log(a.flags, f"ERROR {ex!r}")
         if not a.loop:
