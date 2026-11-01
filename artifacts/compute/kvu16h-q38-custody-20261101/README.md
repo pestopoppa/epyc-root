@@ -1,0 +1,7 @@
+# Q38 process custody draft
+
+This offline-only primitive explores captured child cleanup on readiness failure, identity checks and pidfd-targeted signals. Five tests use fake processes and fake pidfds; no process or signal was launched. It is not integrated with the Q38 coordinator, has no server recipe, transport, output writer or rowflow entry, and must not be scheduled.
+
+Critical open edge: `pidfd_open` can fail after spawn, leaving cleanup unverified. A production adapter must solve and test that edge, handle descendant process groups without affecting others, and provide durable cleanup receipts and STOP behavior. This draft intentionally refuses to claim cleanup when pidfd capture fails. Review pidfd lifetime, concurrent reaping and identity behavior before any integration or live execution.
+
+The draft now reserves an fd before spawn, releases it on `EMFILE`, and retries pidfd capture; it also retries a bounded number of `EINTR` failures. Eight fake-only tests pass, including cleanup after successful descriptor recovery and an explicit unverified failure for unsupported pidfds. This narrows but does not close the open edge: unrecoverable pidfd errors still leave the child without an identity-safe signal path. The implementation intentionally does not fall back to PID-only signaling, which can race concurrent reaping and PID reuse. A stronger pre-spawn supervisor/custody design is needed. It still handles only the captured child, not descendants, and must not be integrated as complete cleanup.
