@@ -60,6 +60,8 @@ import sys
 import time
 
 SCHEMA = "epyc.row.v3"
+ADMISSION_CLASSES = {"correctness", "diagnostic", "block-correctness",
+                     "block-timing-pairable", "block-timing-quiet", "filler"}
 _LLM = "/mnt/raid0/llm/"  # the scratch root is spelled in two pieces: the repo hook refuses any script that names it next to a delete
 FLAGS = os.environ.get("ROWFLOW_FLAGS", _LLM + "tmp/compute-flags")
 RL = os.environ.get("ROWFLOW_RL", "/mnt/raid0/llm/epyc-orchestrator/scripts/region-lock")
@@ -397,6 +399,9 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     need(str(spec.get("kind", "compute")).lower() not in FETCH_KINDS,
          "prepare inputs before publishing: fetching/copying data is session preparation, not a compute row")
     need(spec["lane"] in ("cpu", "gpu"), "lane must be cpu or gpu")
+    if spec.get("admission_class") is not None:
+        need(isinstance(spec["admission_class"], str) and spec["admission_class"] in ADMISSION_CLASSES,
+             "admission_class must be one of " + ", ".join(sorted(ADMISSION_CLASSES)))
     launcher = os.path.abspath(str(spec["launcher"]))
     need(os.path.isfile(launcher), f"launcher {launcher} missing")
     for term in (".ended", ".complete"):
@@ -467,6 +472,8 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
         "dryrun_timeout_s": int(spec.get("dryrun_timeout_s") or (1500 if lane == "gpu" else 900)),
         "published_at": now_iso(), "published_from": source or "spec",
     }
+    if spec.get("admission_class") is not None:
+        row["admission_class"] = spec["admission_class"]
     if snap:
         row["snapshot"] = snap
     elif isinstance(spec.get("snapshot"), dict):  # a republish from ready/<id>.json (publish_row.py --repair) keeps its snapshot record
@@ -514,6 +521,9 @@ def spec_from_legacy(manifest, flags=FLAGS, rewrite_engine=True):
             "estimate_s": int(m.get("window_s") or 3600), "handoff_task": m.get("row") or m.get("handoff") or "FILLERS:" + str(m.get("id")),
             "priority_rank": m.get("priority_rank", 100), "ram_gib": m.get("gib"), "scratch_root": m.get("scratch_root"),
             "min_window_s": o["min_window"]}
+    legacy_class = m.get("admission_class") or m.get("class")
+    if legacy_class is not None:
+        spec["admission_class"] = legacy_class
     kp = m.get("keep")
     if isinstance(kp, str):
         kp = [x.strip() for x in kp.split(",") if x.strip()]
@@ -896,6 +906,18 @@ def write_escalation(flags, rid, allrows):
         f.write("\n".join(L))
 
 
+def dryrun_grant_text(rid, admission_class, regions, holds, start, end):
+    """Serialize the allocator's synthetic grant with backward-compatible fields plus rowflow identity/class."""
+    if admission_class is not None:
+        need(isinstance(admission_class, str) and admission_class in ADMISSION_CLASSES,
+             f"invalid admission_class {admission_class!r}")
+    fields = [f"regions={regions}", f"start={start:%Y-%m-%dT%H:%MZ}", f"end={end:%Y-%m-%dT%H:%MZ}",
+              f"holds={','.join(sorted(holds))}", "schema=epyc.rowflow.dryrun-grant.v1", f"id={rid}", "kind=rowflow-dryrun"]
+    if admission_class is not None:
+        fields.append(f"admission_class={admission_class}")
+    return " ".join(fields) + "\n"
+
+
 def dryrun_run(flags, rid, regions, one_quarter=False):
     """The dry run on the regions the allocator assigned. Returns (verdict, message). verdict in PASS | FAIL | WAIT."""
     allrows = rows(flags)
@@ -933,7 +955,7 @@ def dryrun_run(flags, rid, regions, one_quarter=False):
                FILLER_POLL="5", FILLER_OWNER=str(d["owner"]), FILLER_EST_WALL_S=str(d["estimate_s"]),
                FILLER_DRYRUN_ONE_QUARTER="1" if one_quarter else "0")
     with open(grant, "w") as f:
-        f.write(f"regions={regions} start={start:%Y-%m-%dT%H:%MZ} end={end:%Y-%m-%dT%H:%MZ} holds={','.join(sorted(holds))}\n")
+        f.write(dryrun_grant_text(rid, d.get("admission_class"), regions, holds, start, end))
     out = open(os.path.join(dd, "launcher.out"), "a")
     out.write(f"\n==== dry run {now_iso()} regions={regions} launcher_sha={lsha} units_before={units0}\n"); out.flush()
     p = subprocess.Popen(["bash", lp], cwd=flags, env=env, stdout=out, stderr=subprocess.STDOUT, start_new_session=True)

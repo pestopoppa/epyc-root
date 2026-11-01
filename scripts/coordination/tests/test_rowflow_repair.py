@@ -62,7 +62,7 @@ class RepairTests(unittest.TestCase):
         rid = "t-repair-20261101"
         d = fx.job(rid)  # writes out/results.jsonl, exits 0 after 10 units
         marker = os.path.join(d, "out", "run.complete")
-        rf.publish(fx.spec(rid, d, result_path=marker, dryrun_timeout_s=60), fx.flags)  # pre-lint row, as legacy rows were
+        rf.publish(fx.spec(rid, d, result_path=marker, dryrun_timeout_s=60, admission_class="diagnostic", dryrun_whole_host=True), fx.flags)  # pre-lint row, as legacy rows were
         v, msg = rf.dryrun_run(fx.flags, rid, "0-23")
         self.assertEqual(v, "FAIL", msg)
         self.assertIn("before writing a unit to " + marker, msg)
@@ -73,6 +73,8 @@ class RepairTests(unittest.TestCase):
         row = rf.rows(fx.flags)[rid]
         self.assertEqual(row["result_path"], os.path.join(d, "out", "results.jsonl"))
         self.assertEqual(row["result_format"], "jsonl")
+        self.assertEqual(row["admission_class"], "diagnostic")
+        self.assertIs(row["dryrun_whole_host"], True)
         self.assertEqual(row["launcher"]["sha256"], rf.sha256(os.path.join(d, "launch.sh")))
         self.assertTrue(row["published_from"].startswith("repair:"))
         self.assertNotEqual(rf.row_sha(fx.flags, rid), old_sha)

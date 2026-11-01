@@ -1,0 +1,10 @@
+{
+  "packet_id": "codex-ni-s18-qwenvl-cpu-r2-20261101",
+  "preparation": "fresh source/data packet for a rowflow successor; source-only copy and path rebasing",
+  "source_root": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031",
+  "target_root": "/mnt/raid0/llm/tmp/codex-ni-s18-qwenvl-cpu-r2-20261101",
+  "source_preservation_sha256_file": "source_custody/original-source-preservation.sha256",
+  "cohort_image_paths": "rewritten as packet-relative dataset/images paths; image bytes and per-image hashes preserved",
+  "dryrun_and_full_outputs": "disjoint attempts/dryrun-<launcher-sha>/ and attempts/production/",
+  "execution": "none; no inference, dry-run, grant, or publication performed while preparing this packet"
+}
