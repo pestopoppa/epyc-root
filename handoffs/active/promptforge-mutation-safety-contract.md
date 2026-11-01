@@ -198,9 +198,9 @@ so this is a **new active stub, not a reopen**.
       Resolved the prior formatting dirt on
       `origin/main` (`ruff format --check` fails on a pristine clone), so future diffs stay readable
       (`scripts/autopilot/species/prompt_forge.py`) (found 2026-09-14, noninf sweep).
-- [ ] **MHS-11 — replace the operator guide's `prompt_forge.py` line-number citations with symbol names**,
+- [x] ✅ 2026-11-01 **MHS-11 — replace the operator guide's `prompt_forge.py` line-number citations with symbol names**,
       since `line 575` / `line 594` / `line 509` are already stale by hundreds of lines
-      (`docs/guides/meta-harness-operator-guide.md`) (found 2026-09-14, noninf sweep).
+      (`docs/guides/meta-harness-operator-guide.md`) (found 2026-09-14, noninf sweep). APP implementation `25d4bc71351437b45d400c36e986b502d94c3c5c`; artifact `artifacts/engineering/mhs11-promptforge-guide-20261101/VALIDATION.txt`; [no-belief: documentation-only]
 - [x] **MHS-12 — eval-identity screen for code_mutation.** Refuse (MutationEffect.UNSAFE with reason) any mutation whose ADDED code reads workload_class, scoring_method, batch_id, request-metadata suite/tier keys or the literal "eval_batch", or removes/overrides force_role handling, in any allowlisted file. Grandfather existing references the way MHS-2 grandfathers imports. Fixtures: a chat.py mutation branching on workload_class == "eval_batch" is refused; a no-op chat.py mutation passes. Partly answers Open Question 2 (key on eval-identity fields, not only suite/task names). intake-1387#record. ✅ 2026-10-31 — APP implements `f579bcf92f2b11904176f662f6f6d06ed96947fe`; test `tests/unit/test_prompt_forge_eval_identity.py`; Git proof `artifacts/audit/mhs12-eval-identity-20261031/verification.md`. [no-belief: source implementation and native regression controls]
       ✅ 2026-10-31 — Implemented in epyc-orchestrator `f579bcf92f2b11904176f662f6f6d06ed96947fe`
       (`src/autopilot_core/mutation_guards.py`, `scripts/autopilot/species/prompt_forge.py`). Static AST
