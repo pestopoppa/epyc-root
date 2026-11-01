@@ -1,0 +1,40 @@
+{
+  "schema": "epyc.row.v3",
+  "id": "ufh14-a3a-single-warm-r2-20261028",
+  "owner": "codex-gpu-work",
+  "lane": "gpu",
+  "decision_rule": "A complete native result unit is emitted only after both cold and one-warm request groups have native timing bindings, raw request wires and cleanup proof for dead server and proxy; it binds these actual outputs and hashes. Descriptive diagnostic only; no speed verdict.",
+  "estimate_s": 9000,
+  "gib": 48,
+  "ram_gib": 48,
+  "priority_rank": 1.0,
+  "handoff_task": "FILLERS:ufh14-a3a-single-warm-r2-20261028",
+  "launcher": "/mnt/raid0/llm/tmp/codex-ufh14-r2-republish-20261101/launcher.v15.sh",
+  "scratch_root": "/mnt/raid0/llm/tmp/codex-ufh14-r2-republish-20261101",
+  "workdir": "/mnt/raid0/llm/tmp/codex-ufh14-r2-republish-20261101",
+  "regions": "mi210_0,72-95,184-191",
+  "min_window_s": 7200,
+  "window_s": 11100,
+  "dryrun_timeout_s": 1500,
+  "ports": [
+    18445
+  ],
+  "result_path": "/mnt/raid0/llm/tmp/codex-ufh14-r2-republish-20261101/attempts/run.*/ROWFLOW-UNIT.json",
+  "result_format": "json",
+  "stop_file": "/mnt/raid0/llm/tmp/codex-ufh14-r2-republish-20261101/STOP",
+  "keep": [
+    "SOURCE-REVIEW.sha256",
+    "*.py",
+    "*.sh",
+    "inputs/*.json",
+    "attempts/**/*.json",
+    "attempts/**/*.jsonl",
+    "attempts/**/*.jsonl.gz",
+    "attempts/**/*.txt",
+    "attempts/**/*.tsv",
+    "attempts/**/*.f32",
+    "attempts/**/*.npy",
+    "RUN_COMPLETE.json",
+    "STOP"
+  ]
+}
