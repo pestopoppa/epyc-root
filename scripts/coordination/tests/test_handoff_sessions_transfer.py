@@ -161,8 +161,12 @@ class WrappedParsingTests(_Fixture):
             reg, _ = self.dispatch()
         e = reg["sessions"][self.slug]
         self.assertEqual(e["last_wrapup"], "83c110265331")
-        self.assertEqual(e["status"], "suspended")
-        self.assertIsNone(e["pid"])
+        # 21:15Z pause rule: the backlog still has a blocked row -> resumed at once with "continue: next task"
+        self.assertEqual(e["status"], "live")
+        self.assertEqual(len(self.calls), 1)
+        self.assertIn("continue: next task", self.calls[0]["prompt"])
+        self.assertIn("INFERENCE FIRST", self.calls[0]["prompt"])
+        self.assertIn("OPEN yarn: 1 advanceable row(s)", self.log_text())
         ld.assert_any_call("83c110265331")
 
     def test_legacy_wrapup_form_still_parsed(self):
