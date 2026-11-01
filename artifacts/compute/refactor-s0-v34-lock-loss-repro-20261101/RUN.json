@@ -1,0 +1,11 @@
+{
+  "schema": "refactor.s0_v34_lock_loss_reproducer_run.v1",
+  "date_utc": "2026-11-01",
+  "region": "q3",
+  "claim": "real canonical region-lock CLI build claim, CPUs 72-95",
+  "scope": "private lock-file churn reproducer only; no model, server, benchmark, or GPU execution",
+  "launcher_rc": 0,
+  "launcher_log": "run-20261101T0915Z/launcher.log",
+  "result": "run-20261101T0915Z/RESULT.json",
+  "verification": "python3 test_result.py"
+}

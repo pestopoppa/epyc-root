@@ -1,0 +1,88 @@
+{
+  "scope": "ACTUAL_UNCHANGED_V33_PREDICATE_PRIVATE_FLOCK_CHURN",
+  "physical_claim": false,
+  "grant": null,
+  "owner": {
+    "pid": 4153893,
+    "uid": 1000,
+    "birth": 164514014,
+    "parent": 4153879,
+    "argv": [
+      "/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python3",
+      "-m",
+      "src.runtime.region_lock_cli",
+      "run",
+      "--cpu-list",
+      "72-95",
+      "--role",
+      "build",
+      "--timeout-s",
+      "120",
+      "--tag",
+      "refactor-s0-v34-lock-loss-repro-20261101",
+      "--",
+      "/usr/bin/python3",
+      "-B",
+      "/mnt/raid0/llm/worktrees/mains/codex-refactor-01a16fc3/artifacts/compute/refactor-s0-v34-lock-loss-repro-20261101/old_global_probe.py",
+      "/mnt/raid0/llm/worktrees/mains/codex-refactor-01a16fc3/artifacts/compute/refactor-s0-v34-lock-loss-repro-20261101/private-locks-q3f",
+      "/mnt/raid0/llm/worktrees/mains/codex-refactor-01a16fc3/artifacts/compute/refactor-s0-v34-lock-loss-repro-20261101/run-20261101T0915Z"
+    ]
+  },
+  "start_fd_rows": {
+    "GLOBAL": {
+      "path": "/mnt/raid0/llm/worktrees/mains/codex-refactor-01a16fc3/artifacts/compute/refactor-s0-v34-lock-loss-repro-20261101/private-locks-q3f/cpu_region.GLOBAL.q3.lock",
+      "fd": 3,
+      "device": 2431,
+      "inode": 114466122,
+      "kernel_row": "lock: 1: FLOCK ADVISORY WRITE 4153893 09:7f:114466122 0 EOF"
+    },
+    "build": {
+      "path": "/mnt/raid0/llm/worktrees/mains/codex-refactor-01a16fc3/artifacts/compute/refactor-s0-v34-lock-loss-repro-20261101/private-locks-q3f/cpu_region.build.q3.lock",
+      "fd": 4,
+      "device": 2431,
+      "inode": 114466123,
+      "kernel_row": "lock: 1: FLOCK ADVISORY WRITE 4153893 09:7f:114466123 0 EOF"
+    }
+  },
+  "iterations": 30,
+  "failures_with_still_held_real_fd_rows": [
+    {
+      "iteration": 30,
+      "old_refusal": "lock lost",
+      "actual_owner_fd_locks_after_refusal": {
+        "GLOBAL": {
+          "path": "/mnt/raid0/llm/worktrees/mains/codex-refactor-01a16fc3/artifacts/compute/refactor-s0-v34-lock-loss-repro-20261101/private-locks-q3f/cpu_region.GLOBAL.q3.lock",
+          "fd": 3,
+          "device": 2431,
+          "inode": 114466122,
+          "kernel_row": "lock: 1: FLOCK ADVISORY WRITE 4153893 09:7f:114466122 0 EOF"
+        },
+        "build": {
+          "path": "/mnt/raid0/llm/worktrees/mains/codex-refactor-01a16fc3/artifacts/compute/refactor-s0-v34-lock-loss-repro-20261101/private-locks-q3f/cpu_region.build.q3.lock",
+          "fd": 4,
+          "device": 2431,
+          "inode": 114466123,
+          "kernel_row": "lock: 1: FLOCK ADVISORY WRITE 4153893 09:7f:114466123 0 EOF"
+        }
+      }
+    }
+  ],
+  "churn_rc": 0,
+  "churn_drained": true,
+  "target_owner_held_after": {
+    "GLOBAL": {
+      "path": "/mnt/raid0/llm/worktrees/mains/codex-refactor-01a16fc3/artifacts/compute/refactor-s0-v34-lock-loss-repro-20261101/private-locks-q3f/cpu_region.GLOBAL.q3.lock",
+      "fd": 3,
+      "device": 2431,
+      "inode": 114466122,
+      "kernel_row": "lock: 1: FLOCK ADVISORY WRITE 4153893 09:7f:114466122 0 EOF"
+    },
+    "build": {
+      "path": "/mnt/raid0/llm/worktrees/mains/codex-refactor-01a16fc3/artifacts/compute/refactor-s0-v34-lock-loss-repro-20261101/private-locks-q3f/cpu_region.build.q3.lock",
+      "fd": 4,
+      "device": 2431,
+      "inode": 114466123,
+      "kernel_row": "lock: 1: FLOCK ADVISORY WRITE 4153893 09:7f:114466123 0 EOF"
+    }
+  }
+}

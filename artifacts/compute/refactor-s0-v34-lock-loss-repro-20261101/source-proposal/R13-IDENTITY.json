@@ -1,0 +1,11 @@
+{
+  "schema": "private.canonical.region_lock_identity.v1",
+  "python_argv": "/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python3",
+  "python_exe_sha256": "ff9b2ac4362b81c68622ffb1730f7138eb269177d9846399c521a44c5daffb0e",
+  "cwd": "/mnt/raid0/llm/epyc-orchestrator",
+  "module": "src.runtime.region_lock_cli",
+  "shim_path": "/mnt/raid0/llm/epyc-orchestrator/scripts/region-lock",
+  "shim_sha256": "8fc626c83abde029a1eccb81b0803315972d589c7eb3fa839f6ae8dadd51ed34",
+  "module_path": "/mnt/raid0/llm/epyc-orchestrator/src/runtime/region_lock_cli.py",
+  "module_sha256": "58c2ea675db751f7403222ebbb3d6e52a4ce151ade86035e00fddda411b69940"
+}

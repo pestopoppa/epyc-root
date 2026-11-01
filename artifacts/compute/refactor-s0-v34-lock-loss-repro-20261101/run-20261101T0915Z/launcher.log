@@ -1,0 +1,3 @@
+[region-lock] acquiring regions ['q3'] as role='build' (timeout_s=120.0) …
+[region-lock] held ['q3'] after 0.0s wait; running: /usr/bin/python3 -B /mnt/raid0/llm/worktrees/mains/codex-refactor-01a16fc3/artifacts/compute/refactor-s0-v34-lock-loss-repro-20261101/old_global_probe.py /mnt/raid0/llm/worktrees/mains/codex-refactor-01a16fc3/artifacts/compute/refactor-s0-v34-lock-loss-repro-20261101/private-locks-q3f /mnt/raid0/llm/worktrees/mains/codex-refactor-01a16fc3/artifacts/compute/refactor-s0-v34-lock-loss-repro-20261101/run-20261101T0915Z
+{"iterations": 30, "failures": 1, "old_messages": ["lock lost"]}
