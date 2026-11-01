@@ -332,13 +332,17 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
             continue
         seen_ids.add(rid)
         blocker = str(e.get("blocker") or "")
-        state = "needs-launcher" if re.search(r"missing launcher", blocker, re.I) else "blocked"
+        if os.path.exists(F + f"grants/{rid}.ended") or os.path.exists(F + f"filing-done/{rid}.FILED"):
+            state = "done"
+        else:
+            state = "needs-launcher" if re.search(r"missing launcher", blocker, re.I) else "blocked"
         per[w]["rows"].append({
             "id": rid, "lane": "cpu", "rank": e.get("rank") or 999, "state": state, "row": e.get("row"),
             "reasons": [blocker[:200]] if blocker else [],
             "tasks": tasks_for(rid, e.get("row"), [blocker[:200]] if state == "blocked" else [], w)
-            if state != "needs-launcher" else ["write the launcher (real entry, taskset -c \"$FILLER_CPUS\", rc75 at cutoff), then file the epyc.ready.v2 manifest"]
-                                           + tasks_for(rid, e.get("row"), [], w, placeholder=False),
+            if state == "blocked" else (["write the launcher (real entry, taskset -c \"$FILLER_CPUS\", rc75 at cutoff), then file the epyc.ready.v2 manifest"]
+                                           + tasks_for(rid, e.get("row"), [], w, placeholder=False))
+            if state == "needs-launcher" else [],
         })
 
     # rule 2: lineage, failure counting, parking
