@@ -1,0 +1,11 @@
+{
+  "packet_root": "/mnt/raid0/llm/tmp/codex-ufh14-r2-sentinel-successor-20261101",
+  "row_id": "ufh14-a3a-single-warm-r2-20261028",
+  "source_ready_manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/ufh14-a3a-single-warm-r2-20261028.json",
+  "engine_path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "engine_sha256": "af46a9fc763086760335f4ac5b0d3df4b8d106db977c0fb2a7f6e30d7e7f4945",
+  "engine_sha256_source": "published ready manifest engine.sha256 (2026-11-01T22:30:53Z); independently re-hashed current engine bytes during isolated packet preparation",
+  "completion_rule": "production completion validates the current packet RUN_COMPLETE pointer, requiring a contained current run.* ROWFLOW-UNIT with expected row id, both complete legs, native timing bindings, cleanup proof, and matching source hashes",
+  "dryrun_rule": "complete command consults only FILLER_DRYRUN_DIR/complete in dry-run mode; production marker publication is disabled in dry-run",
+  "scheduler_rule": "preserve published q3 scope mi210_0,72-95,184-191 and launcher GPU exclusive claim; do not widen"
+}
