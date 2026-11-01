@@ -553,7 +553,7 @@
     },
     "conversation-stack.md": {
       "blocked": 41,
-      "closed": 54,
+      "closed": 55,
       "guarded": 0,
       "last_advanced": "2026-11-01",
       "open": 32,
@@ -565,7 +565,7 @@
       },
       "row_id": "INF-79",
       "state": "active",
-      "total": 127
+      "total": 128
     },
     "coordinator-role-failure-modes-and-refactor.md": {
       "blocked": 0,
