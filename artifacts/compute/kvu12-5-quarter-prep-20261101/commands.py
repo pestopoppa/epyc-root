@@ -12,6 +12,8 @@ def command(mode,arm,output,ledger=None):
     if mode=='control':
         if arm!='control':raise ValueError('control requires independent short control')
         return common+['--kv-modes','split','--nps','1','--lens','8k','--pmodes','independent','--waves','1','--npredict','16']
+    if mode=='target' and arm=='anchor':
+        return common+['--kv-modes','none','--anchor','--only','t8anchor','--waves','3','--npredict','256']
     if mode!='target' or arm not in ('unified','split'):raise ValueError('unknown mode or arm')
     if not ledger or not Path(ledger).is_absolute():raise ValueError('absolute pair ledger required')
     cmd=common+['--kv-modes',arm,'--nps','8','--lens','64k','--pmodes','depth','--waves','4','--npredict','256','--aba-key','np8L64k','--aba-ledger',str(ledger)]

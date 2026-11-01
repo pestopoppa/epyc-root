@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import threading
 import time
+import device_identity
 
 GIB = 1024 ** 3
 HARD = int(62.5 * GIB)
@@ -23,26 +24,36 @@ def start_ticks(procdir):
 
 
 def read_sample(pid, birth, hip_library, proc_root=Path('/proc'), kfd_root=Path('/sys/class/kfd/kfd/proc'),
-                card=Path('/sys/class/drm/card2/device/mem_info_vram_used'), allow_uninitialized=False):
+                card=None, allow_uninitialized=False, device=None):
     proc = proc_root / str(pid)
     before = start_ticks(proc)
     if before != birth:
         raise RuntimeError('captured server birth identity changed')
     maps = (proc / 'maps').read_text()
     hip = any(line.split()[-1] == hip_library for line in maps.splitlines() if line.split() and line.split()[-1].startswith('/'))
+    if device is None:
+        raise RuntimeError('validated MI210 DRM/KFD binding is required')
+    device_identity.revalidate(device)
     gpu = kfd_root / str(pid)
     files = list(gpu.glob('vram_*'))
-    if not files and not allow_uninitialized:
-        raise RuntimeError('own process has no KFD VRAM entries')
-    # Before GPU initialization only, absence is recorded as zero, never as residency.
-    own = sum(int(f.read_text().strip()) for f in files)
-    card_used = int(card.read_text().strip())
+    target = gpu / f"vram_{device['gpu_id']}"
+    # Only the bound KFD gpu_id can be charged as own residency. An allocation
+    # on any other GPU refuses even before our target reaches positive VRAM.
+    for f in files:
+        if f.name != target.name and int(f.read_text().strip()) > 0:
+            raise RuntimeError('captured process has residency on an unbound GPU')
+    if not target.is_file() and not allow_uninitialized:
+        raise RuntimeError('own process has no target KFD VRAM entry')
+    own = int(target.read_text().strip()) if target.is_file() else 0
+    card_used = int(Path(device['card_vram_path']).read_text().strip())
+    device_identity.revalidate(device)
     if start_ticks(proc) != birth:
         raise RuntimeError('captured server identity changed while sampling')
     if own < 0 or card_used < 0:
         raise RuntimeError('invalid VRAM value')
     return {'t': time.monotonic(), 'pid': pid, 'birth_ticks': birth, 'own_vram_b': own,
-            'card_used_b': card_used, 'hip_resident': hip}
+            'card_used_b': card_used, 'hip_resident': hip, 'gpu_id':device['gpu_id'],
+            'gpu_unique_id':device['unique_id'], 'gpu_bdf':device['bdf']}
 
 
 def ceiling(sample):
@@ -54,10 +65,11 @@ def ceiling(sample):
 
 
 class Sampler:
-    def __init__(self, pid, birth, hip_library, sink, interval=0.5, reader=read_sample, startup=False, phase=None):
+    def __init__(self, pid, birth, hip_library, sink, interval=0.5, reader=read_sample, startup=False, phase=None, device=None):
         self.pid, self.birth, self.hip_library = pid, birth, hip_library
         self.sink, self.interval, self.reader = Path(sink), interval, reader
         self.startup = startup
+        self.device = device
         self.phase = phase or (lambda: 'unknown')
         self.residency_seen = False
         self.abort, self.stop_event = threading.Event(), threading.Event()
@@ -69,10 +81,10 @@ class Sampler:
         try:
             with self.sink.open('x', encoding='utf-8') as out:
                 while not self.stop_event.is_set():
-                    if self.startup and not self.residency_seen:
-                        record = self.reader(self.pid, self.birth, self.hip_library, allow_uninitialized=True)
-                    else:
-                        record = self.reader(self.pid, self.birth, self.hip_library)
+                    kwargs = {}
+                    if self.device is not None: kwargs['device'] = self.device
+                    if self.startup and not self.residency_seen: kwargs['allow_uninitialized'] = True
+                    record = self.reader(self.pid, self.birth, self.hip_library, **kwargs)
                     if record.get('hip_resident') is True and record.get('own_vram_b', 0) > 0:
                         self.residency_seen = True
                     record['phase'] = self.phase()

@@ -3939,7 +3939,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-01T22:00:07Z",
+  "generated_at": "2026-11-01T22:04:36Z",
   "nodes": [
     {
       "age_days": 94,
@@ -6310,7 +6310,7 @@
       "blocked_by": [
         "RTG-57"
       ],
-      "closed": 54,
+      "closed": 55,
       "domain": "inference-research",
       "handoff": "yarn-context-extension-research.md",
       "id": "INF-59",
@@ -6484,7 +6484,7 @@
         "INF-62",
         "INF-64"
       ],
-      "closed": 78,
+      "closed": 79,
       "domain": "inference-research",
       "handoff": "autokernel-champion-aggregate.md",
       "id": "INF-65",
@@ -8116,8 +8116,8 @@
       "handoff": "session-bus-thin-dispatcher.md",
       "id": "RTG-34",
       "last_advanced": "2026-11-01",
-      "next_action": "AIR-6 \u2014 deploy exact guarded source and require ordinary-work refusal; then DSH-2 run-end ack-by-receipt",
-      "open": 42,
+      "next_action": "AIR-6 \u2014 deploy exact guarded source and require ordinary-work refusal; then resume live canaries",
+      "open": 37,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
@@ -8690,7 +8690,7 @@
         "RTG-19",
         "RTG-36"
       ],
-      "closed": 78,
+      "closed": 80,
       "domain": "routing-and-optimization",
       "handoff": "kv-unified-stack-rollout.md",
       "id": "RTG-57",
@@ -8839,6 +8839,28 @@
       "readiness": "ready",
       "state": "active",
       "track": "multi-repo refactoring"
+    },
+    {
+      "age_days": 0,
+      "blocked": 0,
+      "blocked_by": [],
+      "closed": 5,
+      "domain": "routing-and-optimization",
+      "handoff": "churn-pipeline.md",
+      "id": "RTG-62",
+      "last_advanced": "2026-11-01",
+      "next_action": "CAF-1 \u2014 no-poll resume (deletion-first line first); then CAF-6 run-end dedupe",
+      "open": 0,
+      "priority": 0.0,
+      "priority_basis": {
+        "campaign": 0,
+        "source": "heuristic",
+        "unblocks": 0
+      },
+      "priority_rank": 173,
+      "readiness": "no_open",
+      "state": "active",
+      "track": "churn pipeline"
     },
     {
       "age_days": 3,
@@ -9263,7 +9285,7 @@
     "priority": "0.0 lowest .. 1.0 highest, mid-rank percentile; priority_rank 1 = highest",
     "sources": {
       "file": 172,
-      "heuristic": 5,
+      "heuristic": 6,
       "override": 1
     },
     "tiers": {
@@ -9279,7 +9301,7 @@
   },
   "readiness_counts": {
     "blocked": 41,
-    "no_open": 5,
+    "no_open": 6,
     "ready": 132
   },
   "readiness_values": {

@@ -1,5 +1,6 @@
 import unittest
 import evaluate_replay as E
+import device_identity as I
 
 class TestEvaluate(unittest.TestCase):
     def setUp(self):
@@ -8,17 +9,20 @@ class TestEvaluate(unittest.TestCase):
         self.samples = [{'t':1,'phase':'load','own_vram_b':10*E.GIB,'hip_resident':True}, {'t':2,'phase':'load','own_vram_b':11*E.GIB,'hip_resident':True}, {'t':2.8,'phase':'warm','own_vram_b':12*E.GIB,'hip_resident':True}, {'t':3,'phase':'t7a','own_vram_b':12*E.GIB,'hip_resident':True}, {'t':3.5,'phase':'t7a','own_vram_b':12*E.GIB,'hip_resident':True}, {'t':4,'phase':'t7a','own_vram_b':12*E.GIB,'hip_resident':True}]
         self.evidence = dict.fromkeys(('capture_complete','load_complete','t7a_complete','cleanup_verified','source_bound'), True)
         self.evidence.update(load_start_t=1, load_end_t=2, t7a_start_t=2.9, t7a_end_t=3.9)
+        binding={'bdf':I.BDF,'unique_id':I.UNIQUE,'vendor':I.VENDOR,'device':I.DEVICE,'gpu_id':987}
+        self.evidence['device_binding']=binding
+        for s in self.samples:s.update(gpu_id=987,gpu_unique_id=I.UNIQUE,gpu_bdf=I.BDF)
     def run_eval(self): return E.evaluate(self.expected,self.requests,self.samples,self.evidence)
     def test_holds_and_term(self):
         v=self.run_eval(); self.assertEqual(v['verdict'],'HOLDS'); self.assertEqual(v['runtime_term_gib'],1)
     def test_fail_above_threshold(self):
         self.samples[-1]['own_vram_b'] += E.GIB; self.assertEqual(self.run_eval()['verdict'],'FAILS')
     def test_pre_initialization_zero_is_not_a_failed_load(self):
-        self.samples.insert(0, {'t':0.5,'phase':'load','own_vram_b':0,'hip_resident':False})
+        self.samples.insert(0, {'t':0.5,'phase':'load','own_vram_b':0,'hip_resident':False,'gpu_id':987,'gpu_unique_id':I.UNIQUE,'gpu_bdf':I.BDF})
         self.evidence['load_start_t']=0.4
         self.assertEqual(self.run_eval()['verdict'],'HOLDS')
     def test_residency_loss_after_initialization_is_unknown(self):
-        self.samples.insert(2, {'t':1.5,'phase':'load','own_vram_b':0,'hip_resident':False})
+        self.samples.insert(2, {'t':1.5,'phase':'load','own_vram_b':0,'hip_resident':False,'gpu_id':987,'gpu_unique_id':I.UNIQUE,'gpu_bdf':I.BDF})
         self.assertEqual(self.run_eval()['verdict'],'UNKNOWN')
     def test_missing_or_false_evidence_unknown(self):
         self.evidence['cleanup_verified']=False; self.assertEqual(self.run_eval()['verdict'],'UNKNOWN')
@@ -33,6 +37,22 @@ class TestEvaluate(unittest.TestCase):
     def test_nonfinite_clock_and_missing_hip_unknown(self):
         self.samples[-1]['t']=float('nan'); self.assertEqual(self.run_eval()['verdict'],'UNKNOWN')
         self.samples[-1]['t']=4; self.samples[-1]['hip_resident']=False; self.assertEqual(self.run_eval()['verdict'],'UNKNOWN')
+    def test_missing_interior_residency_unknown(self):
+        self.samples[2]['hip_resident']=False
+        self.assertEqual(self.run_eval()['verdict'],'UNKNOWN')
+    def test_large_sampling_gap_unknown(self):
+        self.samples[1]['t']=3.1
+        self.samples[2]['t']=3.2
+        self.samples[3]['t']=3.3
+        self.samples[4]['t']=3.5
+        self.samples[5]['t']=4.0
+        self.evidence['load_end_t']=3.15; self.evidence['t7a_start_t']=3.25
+        self.assertEqual(self.run_eval()['verdict'],'UNKNOWN')
+    def test_wrong_device_sample_or_binding_unknown(self):
+        self.samples[0]['gpu_id']=999
+        self.assertEqual(self.run_eval()['verdict'],'UNKNOWN')
+        self.samples[0]['gpu_id']=987;self.evidence['device_binding']['bdf']='0000:11:00.0'
+        self.assertEqual(self.run_eval()['verdict'],'UNKNOWN')
     def test_missing_phase_bracket_unknown(self):
         self.evidence['t7a_end_t']=8; self.assertEqual(self.run_eval()['verdict'],'UNKNOWN')
     def test_phase_marker_missing_unknown(self):
