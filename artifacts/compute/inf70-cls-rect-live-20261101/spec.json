@@ -1,0 +1,18 @@
+{
+  "id": "inf70-cls-rect-live-20261101",
+  "owner": "handoff-cpu-decode-roofline",
+  "launcher": "/mnt/raid0/llm/tmp/inf70-cls-rect-live-20261101/launcher.sh",
+  "lane": "cpu",
+  "regions": "0-95",
+  "result_path": "/mnt/raid0/llm/tmp/inf70-cls-rect-live-20261101/results/CLS-RECT-1a.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "First live response row must record token_source=response, non-empty real token_ids, and classifier=inf70-classify.v1.1. Dry-run stop after the first persisted row is safe; full completion contains 24 rows. No inference-quality or throughput claim follows from this source-validation arm.",
+  "estimate_s": 3600,
+  "min_window_s": 1800,
+  "dryrun_timeout_s": 1800,
+  "ram_gib": 100,
+  "priority_rank": 20,
+  "scratch_root": "/mnt/raid0/llm/tmp/inf70-cls-rect-live-20261101",
+  "handoff_task": "cpu-decode-roofline-program.md:4995 CLS-RECT-1a — first live token_source=response validation",
+  "keep": ["**/*.json", "**/*.jsonl", "**/*.md", "**/*.txt", "**/*.log", "**/*.py", "**/*.sh"]
+}
