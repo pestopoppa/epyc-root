@@ -1,0 +1,39 @@
+{
+  "candidate": "/mnt/raid0/llm/tmp/compute-flags/ready/refused/nemo-prof-reseg-admission-fix-r4-20261101.json",
+  "conflict": {
+    "rc": 0,
+    "stderr": "",
+    "stdout": "ok\tno declared live/eligible conflict"
+  },
+  "limitation": "normal fingerprint verification requires actual keeper environment; no grant or live flag was written",
+  "live_grants": [
+    {
+      "armed": true,
+      "ended": false,
+      "grant_line": "regions=0-23 start=2026-11-01T09:58Z end=2026-11-01T13:58Z",
+      "id": "codex3-pareval120-k20-gen-20261031"
+    },
+    {
+      "armed": true,
+      "ended": false,
+      "grant_line": "regions=24-47 start=2026-11-01T10:11Z end=2026-11-01T22:11Z",
+      "id": "yarn-oolong-s2-host256-eligible26-v32-20261031"
+    },
+    {
+      "armed": true,
+      "ended": false,
+      "grant_line": "regions=48-71 start=2026-11-01T06:08Z end=2026-11-01T18:08Z",
+      "id": "yarn-oolong-s3-host256-eligible27-v30-20261031"
+    }
+  ],
+  "receipt_digest": "763c8490ba7461ef3b59db7b1fac7997e5b19eb0e8272f6a8864fa3c7b897497",
+  "schema": "epyc.ni-d1-legacy-conflict-readonly-repro.v1",
+  "selected_regions": "72-95",
+  "signed_snapshot": "/mnt/raid0/llm/tmp/refactor-nemo-reseg-20261031/successor-r4-20261101/r14/epyc.ready.v2.candidate.json",
+  "snapshot_digest": "763c8490ba7461ef3b59db7b1fac7997e5b19eb0e8272f6a8864fa3c7b897497",
+  "structural_verify_no_fingerprint": {
+    "rc": 0,
+    "stderr": "",
+    "stdout": "{\"ok\": true, \"id\": \"nemo-prof-reseg-admission-fix-r4-20261101\"}"
+  }
+}
