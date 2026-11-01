@@ -1,0 +1,7 @@
+# KVU-19a-2 offline reducer draft
+
+`reduce.py` is a prospective result reducer, not a row, launcher, source binder, residency monitor, or evidence verifier. Given a trusted native manifest and retained files under a supplied root, it enforces the proposed per-case ABBAABBAAB order, five observations per arm, exact input bytes, stable reported identities, completion/custody flags, output lengths and full byte comparisons. It reports nonfinite counts separately. Five matching outputs mean only no difference observed at n=5; cross-binary differences alone never establish nondeterminism. Missing evidence yields an incomplete case.
+
+The producer still must independently capture and authenticate actual input/output bytes, executable and mapped library digests, source/build identity, nonfinite counts, GPU residency, process lifetime and cleanup. Reducer booleans and identity strings are assertions from that producer, not independently verified facts; do not use this reducer to ratify a run until the capture and trust contracts are reviewed. Qualification control, real launcher, capture, output reservation, belief wiring and scheduled builds are not implemented. No computation on a model or GPU, no build and no row publication occurred.
+
+Offline synthetic checks: `python3 -B artifacts/compute/kvu19a2-gpu-reducer-20261101/test_reduce.py` (five tests). Tests cover within-arm change, cross-arm difference, input mismatch, missing residency, changed identity, path escape and missing repetitions; they are not GPU evidence.

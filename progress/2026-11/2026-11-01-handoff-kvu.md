@@ -111,3 +111,9 @@ Reviewed the identified mixed-server paths in P3 v2 and X0 and preserved their [
 ## KVU-19a-2 prospective reproduction protocol
 
 Reviewed and preserved the [bounded reproduction packet](../../artifacts/compute/kvu19a2-repro-plan-20261101/README.md), updating it to acknowledge the subsequently recovered companion source. Its spec parses, shell syntax passes and its deliberately refusing launcher exits 78. The packet is not publishable: source-bound builds, actual producer, distinct qualification control, residency custody and belief wiring remain open. Five identical outputs would establish only no difference observed for that sample. Dispatched build-packet review, real producer preparation and DF2 inventory verification; their events require owner review. No build, qualification or compute ran. GitNexus remains unindexed; no application symbol was edited.
+
+## KVU reducer and duplicate runner event
+
+Consumed the redelivered P3 v2/X0 guard event: its artifact was already reviewed and committed in `bb9fc72ff016`. Reviewed the [prospective GPU result reducer](../../artifacts/compute/kvu19a2-gpu-reducer-20261101/README.md); five synthetic tests pass. Its input files and identity/custody flags are producer assertions, not independently attested evidence, and the native producer, builds, qualification and belief wiring remain open. No compute ran. Dispatched source-custody race repair and Q38 runtime work with completion events registered.
+
+The anomalously large upstream `handoff_sessions.py` change noted at the preceding boundary was repaired upstream by `f35d40f1c`; independent read-only audit found the current source has 1,247 lines and parses. Running-process freshness was not checked. GitNexus remains unindexed; no application symbol was edited here.
