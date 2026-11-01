@@ -1,0 +1,112 @@
+{
+  "booking_class": "block-timing-quiet",
+  "claimed_cpus": "184-191",
+  "class": "diagnostic",
+  "decision_rule": "Compute independent settled A/A p95 absolute median ratio floors for each shape; report preheated and post-build drift, speed_tg higher is better. No candidate verdict.",
+  "engine": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/filler_run14.sh",
+    "sha256": "6fe168333738d15e5988d5af42e2b4c348194d722bac11c32368183ae89cd3ef"
+  },
+  "enrollment": "n/a: diagnostic",
+  "est_output_GiB": 0.5,
+  "exclusive_class": null,
+  "gib": 8,
+  "hold": null,
+  "id": "codex3-r22-2-batched-floor-v2-20261101",
+  "items": 1,
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-r22-batched-v2-review/job.sh",
+    "sha256": "db399b6d6112cd52093a5676a2207e16456ed2df78b8e328d6b5983df16ca20c"
+  },
+  "job_floor_gib": 150,
+  "keep": [
+    "*.py",
+    "*.sh",
+    "*.json",
+    "*.sha256",
+    "*.md",
+    "full/**/*.json",
+    "full/**/*.stdout",
+    "full/**/*.stderr",
+    "full/**/*.log"
+  ],
+  "kv_cache_mode": "split",
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-r22-batched-v2-review/launch.sh",
+    "sha256": "4846bbf2946105702d82b7d2023bbbf8f69ccaba580bd155fec8c7b96cee5a7c"
+  },
+  "llm": {
+    "backend": "native-batched-bench",
+    "batched": {
+      "batch": 512,
+      "binary": {
+        "path": "/mnt/raid0/llm/kernels/production/gpu/llama-batched-bench",
+        "sha256": "3a13b19ff0a21ae1b117516058e9347e0c6b6f54ae9ca801b67368b1c074bbac"
+      },
+      "context": 2048,
+      "gen_tokens": 128,
+      "hip_library": {
+        "path": "/mnt/raid0/llm/kernels/production/gpu/libggml-hip.so.0.16.0",
+        "sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079"
+      },
+      "model": {
+        "path": "/mnt/raid0/llm/models/bartowski/DeepSeek-R1-Distill-Qwen-1.5B-GGUF/DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M.gguf",
+        "sha256": "1741e5b2d062b07acf048bf0d2c514dadf2a48f94e2b4aa0cfe069af3838ee2f"
+      },
+      "prompt_tokens": 128,
+      "slots": 8,
+      "source_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+      "ubatch": 512
+    }
+  },
+  "log_consumer": "/mnt/raid0/llm/tmp/codex3-r22-batched-v2-review/complete.py",
+  "min_window_s": 14400,
+  "n_ctx_required": 2048,
+  "n_parallel_required": 8,
+  "owner": "codex3",
+  "per_slot_n_ctx_required": 256,
+  "ports": [
+    26289
+  ],
+  "priority_rank": 84,
+  "production": true,
+  "production_recipe": {
+    "path": "/mnt/raid0/llm/tmp/codex3-r22-batched-v2-review/recipe.json",
+    "sha256": "d28e1b39b4954498389ef5674f95bdc27831d9f148ba611a68372a4a06e0c2c8"
+  },
+  "prompt_tokens_required": 128,
+  "qual_fixture": {
+    "items": 2,
+    "path": "/mnt/raid0/llm/tmp/codex3-r22-batched-v2-review/fixture.json",
+    "sha256": "45a6b5279e0fb6acfd33a736561f75611d418861355ca9125e9872d262ea0219"
+  },
+  "qualification": {
+    "receipt": "/mnt/raid0/llm/tmp/codex3-r22-batched-v2-review/qualification/QUAL-codex3-r22-2-batched-floor-v2-20261101.json"
+  },
+  "qualification_row": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-r22-2-batched-floor-v2-20261101.row.md",
+    "sha256": "c6a65117019ce647b74a15fe56914af9b74286848c3b9c0b54aff271bb0517a2"
+  },
+  "qualifier_version": "epyc.qual-v2-row",
+  "rate_basis": {
+    "production_threads": 8,
+    "scope": "r22-unknown-calibration",
+    "work_unit": "four-shape calibration"
+  },
+  "regions": "mi210_0,184-191",
+  "request_manifest_sha256": "ea8de01c604c4d048ef3e67125678b9b7f2a2e65f01acb3a8f241ad2f3e58672",
+  "requires_tools": [
+    "bash",
+    "python3",
+    "taskset",
+    "numactl",
+    "cmake"
+  ],
+  "result_path": "/mnt/raid0/llm/tmp/codex3-r22-batched-v2-review/full/RESULT.json",
+  "schema": "epyc.ready.v2",
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-r22-batched-v2-review",
+  "shared_state": [],
+  "source_manifest": "/mnt/raid0/llm/tmp/codex3-r22-batched-v2-review/SOURCES.sha256",
+  "window_s": 21600,
+  "workload_kind": "llm"
+}

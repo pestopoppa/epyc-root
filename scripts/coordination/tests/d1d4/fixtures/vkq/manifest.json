@@ -1,0 +1,88 @@
+{
+  "booking_class": "block-timing-pairable",
+  "calibration_only": true,
+  "calibration_target_id": "codex3-cpu-fa-vkq3-mtp-20261031",
+  "claimed_cpus": "0-95",
+  "class": "diagnostic",
+  "decision_rule": "n/a (native calibration diagnostic; no science or production decision)",
+  "engine": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/filler_run14.sh",
+    "sha256": "6fe168333738d15e5988d5af42e2b4c348194d722bac11c32368183ae89cd3ef"
+  },
+  "enrollment": "n/a: diagnostic",
+  "est_output_GiB": 1,
+  "exclusive_class": null,
+  "gib": 256,
+  "hold": "awaiting reviewed scoped bootstrap source deployment",
+  "id": "codex3-cpu-fa-vkq3-calibrate-v1-20261101",
+  "items": 1,
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-v2-vkq-bootstrap-20261101/calibrate_96.py",
+    "sha256": "c9be83d652805ac3b9bd0d6f665f9c28c68fac6e6d1f38be35fbeb1f42bec0aa"
+  },
+  "job_floor_gib": 150,
+  "keep": [
+    "*.py",
+    "*.sh",
+    "*.json",
+    "*.sha256",
+    "calibration-run/*.json",
+    "calibration-run/*.log",
+    "qualification/*.json"
+  ],
+  "kv_cache_mode": "split",
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-v2-vkq-bootstrap-20261101/launch.sh",
+    "sha256": "a20019ddcf6135e062752fe374482dba9a8cff03f158f7d40126896b0553df69"
+  },
+  "log_consumer": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/vkq3/log_consumer.py",
+  "min_window_s": 9000,
+  "n_ctx_required": 131072,
+  "n_parallel_required": 1,
+  "owner": "codex3",
+  "per_slot_n_ctx_required": 131072,
+  "ports": [],
+  "priority_rank": 30,
+  "production": true,
+  "production_recipe": {
+    "path": "/mnt/raid0/llm/tmp/codex3-v2-vkq-bootstrap-20261101/production-recipe.proposed.json",
+    "sha256": "90d0d0e8e4f6037314e4dd33fe26962e6e5a8f2aba6b1215ac974a19d550fe07"
+  },
+  "prompt_tokens_required": 70014,
+  "qual_fixture": {
+    "items": 2,
+    "path": "/mnt/raid0/llm/tmp/codex3-v2-vkq-bootstrap-20261101/qualification-fixture.json",
+    "sha256": "6fc18984606ebf15481af87e1921c62a5fcc4d441e19f1b6a94f7b6386fb1a6e"
+  },
+  "qual_timeout_s": 600,
+  "qualification": {
+    "receipt": "/mnt/raid0/llm/tmp/codex3-v2-vkq-bootstrap-20261101/qualification/QUAL-codex3-cpu-fa-vkq3-calibrate-v1-20261101.json"
+  },
+  "qualification_row": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cpu-fa-vkq3-calibrate-v1-20261101.row.md",
+    "sha256": "1ccdf0db57616fb1c910e90aa8b22648940ab1cca7072dd784cd935ed509f155"
+  },
+  "qualifier_version": "epyc.qual-v2-row",
+  "rate_basis": {
+    "production_threads": 96,
+    "scope": "vkq3-calibration-bootstrap-v1"
+  },
+  "raw_globs": [
+    "calibration-run/*.response.json",
+    "calibration-run/*.server.log"
+  ],
+  "regions": "0-95",
+  "request_manifest_sha256": "6fc18984606ebf15481af87e1921c62a5fcc4d441e19f1b6a94f7b6386fb1a6e",
+  "requires_tools": [
+    "python3",
+    "numactl"
+  ],
+  "result_path": "/mnt/raid0/llm/tmp/codex3-v2-vkq-bootstrap-20261101/calibration-run/calibration-evidence.json",
+  "schema": "epyc.ready.v2",
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-v2-vkq-bootstrap-20261101",
+  "shared_state": [],
+  "source_manifest": "/mnt/raid0/llm/tmp/codex3-v2-vkq-bootstrap-20261101/SOURCES.sha256",
+  "tokens_per_item": 70142,
+  "window_s": 14400,
+  "workload_kind": "llm"
+}

@@ -1,0 +1,58 @@
+{
+  "belief_suite": {
+    "environment": "full pinned producer exports; private mount hides absent-on-CI host-only fixture; CI-like /tmp; strict read-only history shim",
+    "log_sha256": "5302e0522396335deafa552e799287815a53a43657900275b4239b3ae9b34ffd",
+    "passed": 3674,
+    "seconds": 394.77,
+    "skipped": 405,
+    "subtests_passed": 24
+  },
+  "dashboard": {
+    "passed": 535,
+    "subtests_passed": 181
+  },
+  "deployment_review": {
+    "activation": "not performed",
+    "guard_baseline_sha256": "2e40f0cf5e93e91c1a55f2d3a22e0e08a209555cdb06c90181764f7546978908",
+    "keeper_baseline_sha256": "a8fc18c67f08fed08c1f74e629083d55cbcd1b9560b21d3029e0e9e0f7b4e5a7",
+    "patch_sha256": "9b32413086bf52910d3db10b716645fbbdc6ba584976adee82c013ad50b974c3",
+    "test": "isolated scratch apply; v2 matches source, v1 and selector unchanged, shell syntax passes",
+    "test_sha256": "29d37daf5d056e88752db998e9feae8cb427da2053f21cc66f38a9b0cbf6bb9e",
+    "tested_source_commit": "50491b51c967229c1a6bfbac80dc0497a48bce6c"
+  },
+  "handoff_index": "pass in reconstructed full-history environment",
+  "latest_backlog_coordination_tests": {
+    "base": "a3db1d77515c0bae374928a01c72c61dd6486590",
+    "evidence": "tool transcript; no test log captured",
+    "passed": 8
+  },
+  "limitations": [
+    "Reconstructed local CI environment; not a GitHub run.",
+    "No live keeper, guard, grant or qualification change.",
+    "Actual target qualification remains required."
+  ],
+  "logs_sha256": {
+    "belief-ci.log": "5302e0522396335deafa552e799287815a53a43657900275b4239b3ae9b34ffd",
+    "dashboard-full-pinned-ci.log": "f8a1a61931ad2c04cc254751eb7b9bea26c60f6af9f375ae17218a34e7947eac",
+    "index-origin-fullhistory.log": "377699a533c6a40bed4e8d59d94366483d439d7e2e39dc71e28bca6d1fa73142",
+    "ratification-history-check.log": "33d280b6152fe9b20e36c284ea969b8dda8bd234209bbcdbaaaf3080c8e26536",
+    "ratification-shim-tests.log": "717a8757e03b32932220df488839fff2fc24f354f0115f63f4a9c5d685f566b7"
+  },
+  "pinned_producers": {
+    "orchestrator_analysis": "cfcf3768716de888a971bf66489397f5b91241df",
+    "orchestrator_s4": "5775730ccd2bb69805f5843ab1b001b002930fbd",
+    "research_belief": "bed81e59f5a4d9f9cdb246b4b1eebe1d3e400762",
+    "research_dashboard": "94b1dd64c163d915eb1347b118f57e44e981bf78"
+  },
+  "ratification": {
+    "checker": "pass",
+    "checker_scope": "shared ROOT HEAD bc7; no ratification paths changed by candidate",
+    "passed": 41
+  },
+  "root_source_tested": "dcbe634d6c08aa46d1dd2346683e9c597d488241",
+  "scope": "versioned qualifier source candidate, no live deployment",
+  "targeted_qualifier_tests": {
+    "includes_real_nested_process_test": true,
+    "passed": 33
+  }
+}

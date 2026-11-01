@@ -1,0 +1,3206 @@
+--- a/ws58-calendar-keeper-v8.sh
++++ b/ws58-calendar-keeper-v8.sh
+@@ -18,9 +18,7 @@
+ RL=/mnt/raid0/llm/epyc-orchestrator/scripts/region-lock
+ STOP_AT=$(date -u -d '2036-01-01T00:00:00Z' +%s)  # v7d: no expiry; the calendar must never lapse (10-31 06:00Z outage)
+ DRY=0; REAPONLY=""; REAP_LEGACY=${REAP_LEGACY:-0}
+-QUAL_BIN=${WS58_QUAL_BIN:-/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1}
+-QUAL_GATE=$QUAL_BIN/keeper_qual_gate.py
+-QUALIFIER=$QUAL_BIN/qualify_launcher.py
++QUAL_GATE=/mnt/raid0/llm/tmp/compute-flags/bin/qual-router-v1.py
+ case "${1:-}" in
+   --dry-run) DRY=1;;
+   --reap-dry-run) DRY=1; REAPONLY=reap;;          # read-only: ONLY step 6 against the live tree, prints one line per decision
+@@ -271,7 +269,7 @@
+     if not isinstance(m, dict): bad('not an object'); continue
+     if m.get('hold') is not None: bad('hold=%s' % m.get('hold')); continue
+     if m.get('schema') != 'epyc.ready.v2': bad('qualification schema missing (hard gate)'); continue
+-    gate = os.environ.get('WS58_QUAL_GATE', '/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/keeper_qual_gate.py')
++    gate = os.environ.get('WS58_QUAL_GATE', '/mnt/raid0/llm/tmp/compute-flags/bin/qual-v2/keeper_qual_gate.py')
+     ck = __import__('subprocess').run([sys.executable, '-I', gate, 'check', '--manifest', p, '--flags', '/mnt/raid0/llm/tmp/compute-flags'], capture_output=True, text=True, timeout=60)
+     if ck.returncode:
+         why = ck.stdout.strip().split('\t', 1)[-1] if ck.stdout.strip() else ck.stderr.strip()
+@@ -361,6 +359,14 @@
+   # qualification. Already-qualified READY rows are armed before this scan.
+   while IFS= read -r mf; do
+     [ -f "$mf" ] || continue
++    local row_boot row_state row_reason bootstrap_args=()
++    [ "$DRY" = 1 ] && bootstrap_args+=(--dry)
++    row_boot=$(WS58_OWNER_BOUNDARY=1 python3 -I "$QUAL_GATE" bootstrap-row --manifest "$mf" --flags "$F" "${bootstrap_args[@]}" 2>&1) || :
++    IFS=$'\t' read -r row_state row_reason <<< "$row_boot"
++    case "$row_state" in
++      ok|would-register) ;;
++      *) log "READY-SKIP row-bootstrap $mf: $row_boot"; continue;;
++    esac
+     probe=$(python3 -I "$QUAL_GATE" qualify-pending --manifest "$mf" --flags "$F" --region-lock "$RL" --dry 2>&1) || :
+     IFS=$'\t' read -r st reason <<< "$probe"
+     case "$st" in
+@@ -449,6 +455,7 @@
+         *) log "READY-SKIP $rid: $gate_out";; esac; continue; }
+     gate_out=$(python3 -I "$QUAL_GATE" conflict --manifest "${R}$rid.json" --flags "$F" 2>&1) || {
+       log "READY-WAIT $rid: $gate_out"; continue; }
++    QUALIFIER=$(python3 -I "$QUAL_GATE" select --manifest "${R}$rid.json" 2>&1) || { log "READY-SKIP $rid: qualifier selection failed: $QUALIFIER"; continue; }
+     export WS58_MANIFEST_PATH="${R}$rid.json" WS58_QUALIFIER_PATH="$QUALIFIER"
+     lg="${R}$rid.launcher.out"
+     log "READY-ARM $rid (rank $r): setsid bash $launch >> $lg; ws58_arm.py ${R}$rid.row.md $lg $win $gib $regs $q $rid"
+--- a/grant_ok.sh
++++ b/grant_ok.sh
+@@ -65,18 +65,20 @@
+ # This is the common grant-time boundary for both quarter and GPU writers.
+ # READY enrollment may precede the actual grant by hours; the keeper scan alone
+ # cannot stop a stale receipt or low disk from burning that later slot.
+-QUAL_BIN=${WS58_QUAL_BIN:-$F/bin/qual-v1}
++QUAL_GATE=$F/bin/qual-router-v1.py
+ MANIFEST=$F/ready/armed/$ID.json
+ [ -f "$MANIFEST" ] || MANIFEST=$F/ready/$ID.json
+ [ -f "$MANIFEST" ] || { echo "refuse: mandatory qualification manifest absent for $ID"; exit 18; }
+-gate=$(/usr/bin/python3 -I "$QUAL_BIN/keeper_qual_gate.py" check --manifest "$MANIFEST" --flags "$F" 2>&1); grc=$?
++gate=$(/usr/bin/python3 -I "$QUAL_GATE" check --manifest "$MANIFEST" --flags "$F" 2>&1); grc=$?
+ if [ "$grc" -ne 0 ]; then
+   case "$gate" in
+     wait-disk*) echo "not ready: READY-WAIT-DISK $ID: ${gate#*$'\t'}"; exit 12;;
+     *) echo "refuse: HARD qualification $ID: ${gate#*$'\t'}"; exit 18;;
+   esac
+ fi
+-gate=$(/usr/bin/python3 -I "$QUAL_BIN/keeper_qual_gate.py" conflict --manifest "$MANIFEST" --flags "$F" 2>&1); grc=$?
++gate=$(/usr/bin/python3 -I "$QUAL_GATE" conflict --manifest "$MANIFEST" --flags "$F" 2>&1); grc=$?
+ [ "$grc" -eq 0 ] || { echo "not ready: READY-WAIT-CONFLICT $ID: ${gate#*$'\t'}"; exit 12; }
+ r=$($RAM_ADMIT "$NEED" $MODE) || { echo "$r"; exit 11; }
++gate=$(/usr/bin/python3 -I "$QUAL_GATE" canonical-row --manifest "$MANIFEST" --flags "$F" 2>&1); grc=$?
++[ "$grc" -eq 0 ] || { echo "refuse: HARD canonical row $ID: $gate"; exit 18; }
+ if [ $NEW = 1 ]; then echo "admit: validator OK; $r; class=$cls $l"; else echo "admit: validator OK; $r"; fi
+--- /dev/null
++++ b/bin/qual-router-v1.py
+@@ -0,0 +1,54 @@
++#!/usr/bin/env python3
++"""Keeper-owned, fixed-version routing; never grants or issues qualification."""
++import json
++import os
++from pathlib import Path
++import sys
++
++BASE=Path('/mnt/raid0/llm/tmp/compute-flags/bin')
++V1=BASE/'qual-v1'
++V2=BASE/'qual-v2-row'
++
++def version(manifest):
++    p=Path(manifest)
++    if p.is_symlink() or not p.is_file(): raise ValueError('manifest missing or symlink')
++    m=json.loads(p.read_text())
++    if not isinstance(m,dict): raise ValueError('manifest not an object')
++    if 'qualifier_version' not in m: return V1
++    if m['qualifier_version']!='epyc.qual-v2-row': raise ValueError('unknown qualifier version')
++    llm=m.get('llm',{})
++    if not isinstance(llm,dict): raise ValueError('malformed llm selector')
++    backend=llm.get('backend','server')
++    if backend not in ('server','native-batched-bench'): raise ValueError('unknown qualifier backend')
++    return V2
++
++def main(argv):
++    if not argv: raise ValueError('command required')
++    command=argv[0];rest=argv[1:]
++    if command=='reconcile-failures':
++        if '--manifest' in rest: raise ValueError('unexpected manifest')
++        target=V2/'keeper_qual_gate.py'
++    else:
++        if command not in ('check','conflict','qualify-pending','select','canonical-row','bootstrap-row'): raise ValueError('unknown command')
++        if rest.count('--manifest')!=1: raise ValueError('exactly one --manifest required')
++        i=rest.index('--manifest')
++        if i+1>=len(rest):raise ValueError('manifest path missing')
++        selected=version(rest[i+1])
++        if command=='select':
++            if len(rest)!=2: raise ValueError('unexpected selector arguments')
++            print(selected/'qualify_launcher.py');return 0
++        if command=='bootstrap-row' and selected==V1:
++            # V1 has no draft bootstrap; its own qualify-pending validates the
++            # existing canonical row before issuing anything. Do not write it.
++            print('ok\tlegacy v1: defer canonical checks to v1 qualifier');return 0
++        if command=='canonical-row' and selected==V1:
++            command='check'  # v1 verify already requires its canonical row
++        # The shared v2 conflict check verifies each booked peer with its own
++        # version; otherwise a v1/v2 cross-version reservation can disappear.
++        target=(V2 if command in ('conflict','bootstrap-row') else selected)/'keeper_qual_gate.py'
++    os.execv('/usr/bin/python3',['/usr/bin/python3','-I',str(target),command,*rest])
++    raise AssertionError('unreachable')
++if __name__=='__main__':
++    try: raise SystemExit(main(sys.argv[1:]))
++    except (OSError,ValueError,TypeError,json.JSONDecodeError) as e:
++        print('bad\tqualifier route: '+str(e));raise SystemExit(2)
+--- /dev/null
++++ b/bin/qual-v2-row/batched_event.py
+@@ -0,0 +1,74 @@
++#!/usr/bin/env python3
++"""Qualification branch for the normal job entry; native binary, not a simulator."""
++import hashlib, json, os, pathlib, signal, subprocess, time, uuid
++from batched_qual import expected_argv, first_ok, live_ok, native_row_ok, sha
++
++
++def put(path, obj):
++    path = pathlib.Path(path); tmp = path.with_name('.' + path.name + uuid.uuid4().hex)
++    with tmp.open('x') as f:
++        json.dump(obj, f, sort_keys=True); f.write('\n'); f.flush(); os.fsync(f.fileno())
++    os.link(tmp, path); tmp.unlink()
++
++
++def main():
++    m = json.loads(pathlib.Path(os.environ['WS58_MANIFEST_PATH']).read_text())
++    b = m['llm']['batched']; phase = os.environ['FILLER_QUAL_PHASE']
++    if phase not in ('normal','cutoff'): raise RuntimeError('bad phase')
++    output = pathlib.Path(os.environ['FILLER_RESULTS_DIR']) / ('batched-' + phase + '-' + uuid.uuid4().hex)
++    output.mkdir(parents=True)
++    for key in ('binary','model','hip_library'):
++        if sha(b[key]['path']) != b[key]['sha256']: raise RuntimeError('pin mismatch: ' + key)
++    log = output / 'native.jsonl'; err = output / 'native.stderr'; proc = None
++    env = dict(os.environ, LD_LIBRARY_PATH=str(pathlib.Path(b['binary']['path']).parent) + ':/opt/rocm/lib', OMP_NUM_THREADS='1')
++    with log.open('xb') as stdout, err.open('xb') as stderr:
++        proc = subprocess.Popen(expected_argv(b), stdout=stdout, stderr=stderr, env=env)
++        try:
++            birth = int(pathlib.Path(f'/proc/{proc.pid}/stat').read_text().rsplit(') ',1)[1].split()[19])
++            deadline = min(float(os.environ['FILLER_DEADLINE']), time.time()+240)
++            line = b''
++            while time.time() < deadline and proc.poll() is None:
++                with log.open('rb') as f: line = f.readline()
++                if line.endswith(b'\n'):
++                    try: row=json.loads(line)
++                    except ValueError: time.sleep(.05); continue
++                    first={'ok':True,'scope':'TARGET_NATIVE_BATCHED_BENCH',
++                           'manifest_sha256':m['request_manifest_sha256'], 'production_recipe_sha256':m['production_recipe']['sha256'],
++                           'work_unit':m['rate_basis'].get('work_unit'), 'measured_tok_s':row['speed_tg'], 'argv':expected_argv(b),
++                           'binary_sha256':b['binary']['sha256'],'model_sha256':b['model']['sha256'],
++                           'source_commit':b['source_commit'],'native_pid':proc.pid,'native_birth_ticks':birth,
++                           'native_pgid':os.getpgid(proc.pid),'native_uid':os.getuid(),
++                           'observed_cpus':sorted(os.sched_getaffinity(proc.pid)),
++                           'native_jsonl':str(log),'native_line_sha256':hashlib.sha256(line).hexdigest(),'native_row':row}
++                    if not first_ok(m,first) or not native_row_ok(first,output) or not live_ok(m,first):
++                        raise RuntimeError('first row/live native validation failed')
++                    break
++                time.sleep(.05)
++            else: raise RuntimeError('no flushed native row while child live')
++            proof={'id':m['id'],'phase':phase,'nonce':os.environ['WS58_QUAL_NONCE'],'first_request':first,
++                   'observed_cpus':sorted(os.sched_getaffinity(0)),'disk':{'job_floor_gib':150}}
++            if phase == 'cutoff':
++                put(os.environ['WS58_QUAL_CUTOFF_EVENT'],{'id':m['id'],'nonce':proof['nonce'],'phase':phase,
++                    'native_first_event':True,'native_pid':proc.pid,'native_birth_ticks':birth,'first_request':first})
++                stop=pathlib.Path(os.environ['FILLER_STOPFILE'])
++                while not stop.exists() and time.time()<deadline and proc.poll() is None: time.sleep(.02)
++                if not stop.exists() or proc.poll() is not None: raise RuntimeError('STOP did not reach live native child')
++                proc.terminate()
++                try: proc.wait(timeout=5)
++                except subprocess.TimeoutExpired: proc.kill(); proc.wait(timeout=5)
++                proof.update(partial=True,stop_observed=True,deadline_reached=False,unknown_disposition='UNKNOWN')
++                put(os.environ['WS58_QUAL_PROOF'],proof)
++                return 75
++            if proc.wait(timeout=max(1,deadline-time.time())) != 0: raise RuntimeError('native exit nonzero')
++            rows=[json.loads(x) for x in log.read_text().splitlines() if x.startswith('{')]
++            if len(rows)!=2 or any(not first_ok(m, dict(first, native_row=r)) for r in rows):
++                raise RuntimeError('native second cell missing')
++            result=output/'RESULT.json';put(result,{'complete':True,'native_jsonl':str(log),'rows':rows})
++            proof['result_writer']={'ok':True,'result_path':str(result),'sha256':sha(result)}
++            put(os.environ['WS58_QUAL_PROOF'],proof);return 0
++        finally:
++            if proc is not None and proc.poll() is None:
++                proc.terminate()
++                try:proc.wait(timeout=5)
++                except subprocess.TimeoutExpired:proc.kill();proc.wait(timeout=5)
++if __name__=='__main__': raise SystemExit(main())
+--- /dev/null
++++ b/bin/qual-v2-row/batched_qual.py
+@@ -0,0 +1,79 @@
++"""Validation of a live llama-batched-bench JSONL event. Review candidate only."""
++import hashlib
++import json
++import math
++import os
++from pathlib import Path
++
++
++def sha(path):
++    h = hashlib.sha256()
++    with open(path, 'rb') as f:
++        for block in iter(lambda: f.read(1048576), b''):
++            h.update(block)
++    return h.hexdigest()
++
++
++def expected_argv(b):
++    return [b['binary']['path'], '-m', b['model']['path'], '-ngl', '99', '-fa', 'off',
++            '-ctk', 'f16', '-ctv', 'f16', '-c', str(b['context']), '-b', str(b['batch']), '-ub', str(b['ubatch']),
++            '-t', '2', '-tb', '2', '-npp', str(b['prompt_tokens']), '-ntg', str(b['gen_tokens']),
++            '-npl', str(b['slots']) + ',' + str(b['slots']), '--output-format', 'jsonl']
++
++
++def native_row_ok(first, result_dir):
++    try:
++        p = Path(first['native_jsonl'])
++        if p.is_symlink() or not p.resolve().is_relative_to(Path(result_dir).resolve()):
++            return False
++        with p.open('rb') as f:
++            line = f.readline()
++        return line.endswith(b'\n') and json.loads(line) == first['native_row'] and hashlib.sha256(line).hexdigest() == first['native_line_sha256']
++    except (OSError, KeyError, ValueError, TypeError):
++        return False
++
++
++def first_ok(m, first):
++    try:
++        b = m['llm']['batched']; row = first['native_row']
++        exact = {'n_kv_max': b['context'], 'n_batch': b['batch'], 'n_ubatch': b['ubatch'],
++                 'flash_attn': 0, 'is_pp_shared': 0, 'n_gpu_layers': 99, 'n_threads': 2,
++                 'n_threads_batch': 2, 'pp': b['prompt_tokens'], 'tg': b['gen_tokens'],
++                 'pl': b['slots'], 'n_kv': b['slots'] * (b['prompt_tokens'] + b['gen_tokens'])}
++        return (first['ok'] is True and first['scope'] == 'TARGET_NATIVE_BATCHED_BENCH' and
++                first['manifest_sha256'] == m['request_manifest_sha256'] and
++                first['production_recipe_sha256'] == m['production_recipe']['sha256'] and
++                (m['rate_basis']['scope'] not in ('calibrated-work-unit','r22-unknown-calibration') or first['work_unit'] == m['rate_basis']['work_unit']) and
++                first['argv'] == expected_argv(b) and first['binary_sha256'] == b['binary']['sha256'] and
++                first['model_sha256'] == b['model']['sha256'] and
++                first['source_commit'] == b['source_commit'] and
++                all(row.get(k) == v for k, v in exact.items()) and
++                type(row.get('speed_tg')) in (int, float) and math.isfinite(row['speed_tg']) and row['speed_tg'] > 0 and
++                m['n_ctx_required'] == b['context'] and m['per_slot_n_ctx_required'] == b['context'] // b['slots'] and
++                m['n_parallel_required'] == b['slots'] and m['prompt_tokens_required'] == b['prompt_tokens'] and
++                m['kv_cache_mode'] == 'split' and b['context'] >= b['slots'] * (b['prompt_tokens'] + b['gen_tokens']) and
++                type(first['native_pid']) is int and first['native_pid'] > 1 and
++                type(first['native_birth_ticks']) is int and first['native_birth_ticks'] > 0)
++    except (KeyError, TypeError, ValueError, ZeroDivisionError):
++        return False
++
++
++def live_ok(m, first):
++    try:
++        b = m['llm']['batched']; pid = first['native_pid']; proc = Path('/proc') / str(pid)
++        stat = (proc / 'stat').read_text().rsplit(') ', 1)[1].split()
++        argv = [x.decode() for x in (proc / 'cmdline').read_bytes().split(b'\0') if x]
++        maps = (proc / 'maps').read_text()
++        kfd = Path('/sys/class/kfd/kfd/proc') / str(pid)
++        vram = sum(int(x.read_text()) for x in kfd.glob('vram_*')) if kfd.is_dir() else 0
++        return (stat[0] not in ('Z', 'X', 'x') and int(stat[19]) == first['native_birth_ticks'] and
++                os.getpgid(pid) == first['native_pgid'] == os.getpgrp() and
++                proc.stat().st_uid == first['native_uid'] == os.getuid() and
++                (proc / 'exe').resolve() == Path(b['binary']['path']).resolve() and
++                sha(proc / 'exe') == b['binary']['sha256'] and sha(b['model']['path']) == b['model']['sha256'] and
++                argv == first['argv'] == expected_argv(b) and
++                (proc / 'fd' / '1').resolve() == Path(first['native_jsonl']).resolve() and
++                sorted(os.sched_getaffinity(pid)) == first['observed_cpus'] and len(first['observed_cpus']) == 2 and
++                str(Path(b['hip_library']['path']).resolve()) in maps and sha(b['hip_library']['path']) == b['hip_library']['sha256'] and vram > 0)
++    except (OSError, KeyError, ValueError, TypeError, IndexError):
++        return False
+--- /dev/null
++++ b/bin/qual-v2-row/dryrun_check.py
+@@ -0,0 +1,600 @@
++#!/usr/bin/env python3
++"""Fail-closed filler admission and same-entry preflight boundary.
++
++The job must call ``boundary`` immediately before its first real side effect
++and exit when FILLER_PREFLIGHT=1. A receipt proves that this pinned job reached
++that call; source review still establishes that the call precedes the effect.
++"""
++from __future__ import annotations
++
++import argparse
++import ctypes
++import hashlib
++import json
++import math
++import os
++from pathlib import Path
++import re
++import resource
++import secrets
++import signal
++import subprocess
++import sys
++import time
++from datetime import datetime, timezone, timedelta
++
++GIB = 1024 ** 3
++GRANT_RE = re.compile(r"^regions=([^ ]+) start=(\d{4}-\d\d-\d\dT\d\d:\d\dZ) end=(\d{4}-\d\d-\d\dT\d\d:\d\dZ)\n?$")
++NOTE_RE = re.compile(r"(?:^|;\s*)([A-Za-z_][A-Za-z_0-9]*)=([^;]+)")
++
++
++class Refused(Exception):
++    pass
++
++
++def refuse(message: str) -> None:
++    raise Refused(message)
++
++
++def sha(path: Path) -> str:
++    return hashlib.sha256(path.read_bytes()).hexdigest()
++
++
++def cpus(value: str) -> set[int]:
++    result: set[int] = set()
++    for part in value.split(","):
++        if re.fullmatch(r"\d+", part):
++            result.add(int(part))
++        elif re.fullmatch(r"\d+-\d+", part):
++            first, last = map(int, part.split("-"))
++            if first > last:
++                refuse("reversed CPU range")
++            result.update(range(first, last + 1))
++        else:
++            refuse("malformed claimed_cpus")
++    if not result or max(result) > 191:
++        refuse("claimed_cpus empty or out of host range")
++    return result
++
++
++def grant_cpus(regions: str) -> set[int]:
++    result: set[int] = set()
++    for token in regions.replace(";", ",").split(","):
++        if token == "mi210_0":
++            continue
++        if re.fullmatch(r"q[0-3]", token):
++            first = int(token[1]) * 24
++            result.update(range(first, first + 24))
++            result.update(range(first + 96, first + 120))
++        else:
++            result.update(cpus(token))
++    return result
++
++
++def seconds(value: str) -> int:
++    match = re.fullmatch(r"\s*(\d+(?:\.\d+)?)\s*(s|sec|seconds|m|min|minutes|h|hr|hours)?\s*", value)
++    if not match:
++        refuse(f"unparseable min window: {value}")
++    number = float(match.group(1))
++    unit = match.group(2) or "s"
++    factor = 3600 if unit.startswith("h") else 60 if unit.startswith("m") else 1
++    result = number * factor
++    if result != int(result):
++        refuse(f"nonintegral min window: {value}")
++    return int(result)
++
++
++def row_record(path: Path, row_id: str) -> dict[str, object]:
++    matches = []
++    for line in path.read_text().splitlines():
++        if not line.startswith("|"):
++            continue
++        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
++        if cells and cells[0] == row_id:
++            matches.append(cells)
++    if len(matches) != 1 or len(matches[0]) != 18:
++        refuse(f"row {row_id}: expected exactly one 18-cell record")
++    row = matches[0]
++    notes = dict(NOTE_RE.findall(row[17]))
++    required = ("requested_window_s", "est_output_GiB", "scratch_root", "claimed_cpus")
++    if any(not notes.get(key) for key in required):
++        refuse(f"row {row_id}: missing notes keys {required}")
++    try:
++        requested = int(notes["requested_window_s"])
++        estimate = float(notes["est_output_GiB"])
++        ram = float(row[5].removesuffix("GiB").strip())
++        process_limit = float(notes.get("process_limit_GiB", ram))
++    except ValueError:
++        refuse(f"row {row_id}: nonnumeric window, output, RAM or process limit")
++    if requested <= 0 or requested % 60 or estimate < 0 or ram <= 0:
++        refuse(f"row {row_id}: invalid window, output or RAM")
++    if not all(map(math.isfinite, (estimate, ram, process_limit))):
++        refuse(f"row {row_id}: nonfinite output, RAM or process limit")
++    if process_limit <= 0 or process_limit > ram:
++        refuse(f"row {row_id}: process_limit_GiB must be positive and <= reserved RAM {ram:g}")
++    scratch = Path(notes["scratch_root"].strip())
++    if not scratch.is_absolute() or not scratch.resolve().is_relative_to(Path("/mnt/raid0/llm").resolve()):
++        refuse(f"row {row_id}: scratch_root must be under raid0")
++    declared_cpus = notes["claimed_cpus"].strip()
++    # v14 relocatable rows bind their actual CPU scope to the writer grant.
++    # Fixed lists retain the legacy exact check. The empty marker is resolved
++    # by admission()/resources() below, never interpreted as "no CPU proof".
++    declared_set = set() if declared_cpus == "dynamic" else cpus(declared_cpus)
++    return {"requested": requested, "estimate": estimate, "ram": ram,
++            "process_limit": process_limit,
++            "cpus": declared_set, "scratch": scratch,
++            "notes": notes, "cells": row}
++
++
++def parse_grant(path: Path) -> tuple[str, datetime, datetime]:
++    match = GRANT_RE.fullmatch(path.read_text())
++    if not match:
++        refuse("grant is not the writer's exact minute-precision line")
++    regions, start, end = match.groups()
++    return (regions, datetime.strptime(start, "%Y-%m-%dT%H:%MZ").replace(tzinfo=timezone.utc),
++            datetime.strptime(end, "%Y-%m-%dT%H:%MZ").replace(tzinfo=timezone.utc))
++
++
++def floor_gib(policy: Path) -> float:
++    data = json.loads(policy.read_text())
++    until = datetime.strptime(data["interim_until_utc"], "%Y-%m-%dT%H:%MZ").replace(tzinfo=timezone.utc)
++    return float(data["interim_floor_gib"] if datetime.now(timezone.utc) < until else data["normal_floor_gib"])
++
++
++def checked_manifest(path: Path) -> str:
++    if not path.is_file() or path.is_symlink():
++        refuse(f"source manifest missing or symlink: {path}")
++    for line in path.read_text().splitlines():
++        if not line.strip():
++            continue
++        match = re.fullmatch(r"([0-9a-f]{64})  (/mnt/raid0/llm/[^\n]+)", line)
++        if not match:
++            refuse(f"invalid source manifest line: {line[:80]}")
++        expected, name = match.groups()
++        if sha(Path(name)) != expected:
++            refuse(f"source dependency changed: {name}")
++    return sha(path)
++
++
++def semantic_record(row: dict[str, object]) -> dict[str, object]:
++    return {"requested_window_s": row["requested"], "est_output_GiB": row["estimate"],
++            "ram_gib": row["ram"], "process_limit_GiB": row["process_limit"],
++            "scratch_root": str(row["scratch"]),
++            "claimed_cpus": sorted(row["cpus"])}
++
++
++def verify_pass(row: dict[str, object], row_id: str, engine: Path) -> None:
++    notes = row["notes"]
++    needed = ("dryrun_pass", "launcher_path", "job_path", "source_manifest")
++    if any(not notes.get(key) for key in needed):
++        refuse(f"row {row_id}: missing normal launch proof fields {needed}")
++    pass_path = Path(notes["dryrun_pass"])
++    if (not pass_path.is_file() or pass_path.is_symlink() or
++            not pass_path.resolve().is_relative_to(row["scratch"].resolve())):
++        refuse("dryrun_pass missing, symlink or outside scratch_root")
++    proof = json.loads(pass_path.read_text())
++    paths = {key: Path(notes[key]).resolve() for key in ("launcher_path", "job_path", "source_manifest")}
++    if (proof.get("kind") != "epyc.dryrun.pass.v1" or proof.get("id") != row_id or
++            proof.get("row") != semantic_record(row) or
++            proof.get("launcher_path") != str(paths["launcher_path"]) or
++            proof.get("job_path") != str(paths["job_path"]) or
++            proof.get("engine_path") != str(engine.resolve()) or
++            proof.get("launcher_sha256") != sha(paths["launcher_path"]) or
++            proof.get("job_sha256") != sha(paths["job_path"]) or
++            proof.get("engine_sha256") != sha(engine) or
++            proof.get("checker_sha256") != sha(Path(__file__)) or
++            proof.get("policy_sha256") != sha(Path(__file__).with_name("dryrun_disk_policy.json")) or
++            proof.get("source_manifest_sha256") != checked_manifest(paths["source_manifest"])):
++        refuse("dryrun_pass stale or mismatched to current row/source/engine")
++    if proof.get("boundary_receipt_sha256") != sha(pass_path.with_name("boundary.json")):
++        refuse("dryrun_pass boundary receipt changed")
++    ended = pass_path.parent / "grants" / f"{row_id}.ended"
++    if not ended.is_file() or proof.get("ended_sha256") != sha(ended) or not ended.read_text().startswith("rc=0 "):
++        refuse("dryrun_pass successful ended record changed or missing")
++    boundary_record = json.loads(pass_path.with_name("boundary.json").read_text())
++    if (proof.get("nonce") != boundary_record.get("nonce") or
++            proof.get("effect") != boundary_record.get("effect") or
++            boundary_record.get("reserved_ram_gib") != row["ram"] or
++            boundary_record.get("process_limit_gib") != row["process_limit"]):
++        refuse("dryrun_pass nonce/effect differs from boundary")
++    pf = proof.get("pf_cpus")
++    if not isinstance(pf, list) or not all(isinstance(x, int) for x in pf):
++        refuse("dryrun_pass PF CPU scope missing")
++    if not set(pf).issubset(grant_cpus(str(proof.get("pf_regions", "")))):
++        refuse("dryrun_pass PF CPUs not covered by synthetic grant shape")
++    if proof.get("scope") == "full-row-affinity":
++        if pf != sorted(row["cpus"]):
++            refuse("dryrun_pass full-row CPU scope mismatch")
++    elif proof.get("scope") == "two-core-PF; normal-affinity-unproved":
++        if len(pf) != 2 or pf == sorted(row["cpus"]):
++            refuse("dryrun_pass scoped PF mapping invalid")
++    else:
++        refuse("dryrun_pass scope missing")
++
++
++def admission(args: argparse.Namespace) -> dict[str, object]:
++    row = row_record(Path(args.row_file), args.id)
++    regions, start, end = parse_grant(Path(args.grant))
++    window = int((end - start).total_seconds())
++    if window != row["requested"]:
++        refuse(f"booked window {window}s != requested {row['requested']}s")
++    if args.min_window_s < 0 or args.min_window_s + 300 > window:
++        refuse(f"min_window {args.min_window_s}s + 300s exceeds booked {window}s")
++    if end <= datetime.now(timezone.utc):
++        refuse("grant expired")
++    if args.min_window_s != seconds(row["cells"][10]):
++        refuse("launcher min-window differs from row")
++    expected_cpus = cpus(args.pf_cpus) if getattr(args, "scoped_pf", False) else (row["cpus"] or grant_cpus(regions))
++    # filler_run12 invokes admit again inside the actual entry. Its admit argv
++    # has no scoped-PF switch, so use only the checker's nonce-bound isolated
++    # grant context to carry the two-core scope into that second admission.
++    if getattr(args, "require_proof", False) and os.environ.get("FILLER_PREFLIGHT") == "1":
++        nonce = os.environ.get("DRYRUN_NONCE", "")
++        grants = Path(os.environ.get("FILLER_GRANTS_DIR", ""))
++        pf = os.environ.get("DRYRUN_REQUIRED_CPUS", "")
++        if len(nonce) < 32 or grants.name != "grants" or grants.parent.name != nonce or not pf:
++            refuse("preflight inner admission lacks isolated nonce-bound CPU scope")
++        expected_cpus = cpus(pf)
++        if len(expected_cpus) != 2 or len({cpu % 96 for cpu in expected_cpus}) != 2:
++            refuse("preflight inner admission requires two distinct physical cores")
++    if not expected_cpus.issubset(grant_cpus(regions)):
++        refuse("grant CPUs do not cover declared run/PF CPUs")
++    disk_root = row["scratch"]
++    if not disk_root.exists():
++        refuse(f"scratch_root absent: {disk_root}")
++    free = os.statvfs(disk_root).f_bavail * os.statvfs(disk_root).f_frsize / GIB
++    floor = floor_gib(Path(args.policy))
++    if free - row["estimate"] < floor:
++        refuse(f"disk free-after-output {free-row['estimate']:.2f} GiB < floor {floor:g} GiB")
++    if getattr(args, "require_proof", False):
++        if os.environ.get("FILLER_PREFLIGHT") == "1":
++            nonce = os.environ.get("DRYRUN_NONCE", "")
++            grants = Path(os.environ.get("FILLER_GRANTS_DIR", ""))
++            if len(nonce) < 32 or grants.name != "grants" or grants.parent.name != nonce:
++                refuse("preflight mode lacks isolated nonce-bound grants directory")
++        else:
++            verify_pass(row, args.id, Path(args.engine))
++    return {"row": row, "regions": regions, "window": window, "free_gib": free, "floor_gib": floor}
++
++
++def limits_record(ram_gib: float, process_limit_gib: float,
++                  required_cpus: set[int], allowed_cpus: set[int]) -> dict[str, object]:
++    limits = {}
++    for name in ("AS", "DATA", "RSS", "NOFILE"):
++        limits[name] = list(resource.getrlimit(getattr(resource, "RLIMIT_" + name)))
++    affinity = set(os.sched_getaffinity(0))
++    cgroup = Path("/proc/self/cgroup").read_text().strip()
++    memory_max = Path("/sys/fs/cgroup/memory.max")
++    cgroup_limit = memory_max.read_text().strip() if memory_max.exists() else "unavailable"
++    print("DRYRUN_RESOURCES " + json.dumps({"rlimits": limits, "affinity": sorted(affinity),
++          "cgroup": cgroup, "cgroup_memory_max": cgroup_limit,
++          "reserved_ram_gib": ram_gib, "process_limit_gib": process_limit_gib}, sort_keys=True), flush=True)
++    need = int(process_limit_gib * GIB)
++    for name in ("AS", "DATA"):
++        soft, hard = limits[name]
++        if any(value != resource.RLIM_INFINITY and value < need for value in (soft, hard)):
++            refuse(f"RLIMIT_{name} below declared process limit {process_limit_gib:g} GiB")
++    if cgroup_limit.isdecimal() and int(cgroup_limit) < int(ram_gib * GIB):
++        refuse(f"cgroup memory.max below reserved RAM {ram_gib:g} GiB")
++    if not required_cpus.issubset(affinity):
++        refuse(f"affinity missing declared CPUs {sorted(required_cpus-affinity)}")
++    if not affinity.issubset(allowed_cpus):
++        refuse(f"affinity escapes grant/approved PF CPUs {sorted(affinity-allowed_cpus)}")
++    return {"rlimits": limits, "affinity": sorted(affinity), "cgroup": cgroup,
++            "cgroup_memory_max": cgroup_limit, "reserved_ram_gib": ram_gib,
++            "process_limit_gib": process_limit_gib}
++
++
++def boundary(args: argparse.Namespace) -> None:
++    if os.environ.get("FILLER_PREFLIGHT") != "1":
++        refuse("boundary only valid in FILLER_PREFLIGHT=1")
++    nonce = os.environ.get("DRYRUN_NONCE", "")
++    receipt = Path(os.environ.get("DRYRUN_RECEIPT", ""))
++    job = Path(args.job).resolve()
++    if len(nonce) < 32 or not receipt.is_absolute() or not job.is_file():
++        refuse("missing path-bound preflight context")
++    actual = sha(job)
++    if actual != os.environ.get("DRYRUN_JOB_SHA256"):
++        refuse("job source hash changed before boundary")
++    ram = float(os.environ["DRYRUN_RAM_GIB"])
++    process_limit = float(os.environ.get("DRYRUN_PROCESS_LIMIT_GIB", ram))
++    if not all(map(math.isfinite, (ram, process_limit))) or process_limit <= 0 or process_limit > ram:
++        refuse("invalid preflight RAM reservation/process limit")
++    required = cpus(os.environ["DRYRUN_REQUIRED_CPUS"])
++    allowed = cpus(os.environ["DRYRUN_ALLOWED_CPUS"])
++    record = limits_record(ram, process_limit, required, allowed)
++    record.update({"nonce": nonce, "effect": args.effect, "job": str(job),
++                   "job_sha256": actual, "launcher_sha256": os.environ.get("DRYRUN_LAUNCHER_SHA256"),
++                   "pid": os.getpid(), "time": datetime.now(timezone.utc).isoformat()})
++    tmp = receipt.with_name(receipt.name + ".tmp." + str(os.getpid()))
++    tmp.write_text(json.dumps(record, sort_keys=True) + "\n")
++    os.replace(tmp, receipt)
++    print(f"DRYRUN_BOUNDARY effect={args.effect} job_sha256={actual} stop-before-effect", flush=True)
++
++
++def resources(args: argparse.Namespace) -> None:
++    row = row_record(Path(args.row_file), args.id)
++    allowed = cpus(args.allowed_cpus)
++    required = cpus(os.environ["DRYRUN_REQUIRED_CPUS"]) if args.scoped_pf else (row["cpus"] or allowed)
++    limits_record(row["ram"], row["process_limit"], required, allowed)
++    print(f"RESOURCE_PASS id={args.id} scope={'two-core-PF' if args.scoped_pf else 'normal-grant'}", flush=True)
++
++
++def own_children() -> list[int]:
++    path = Path(f"/proc/self/task/{os.getpid()}/children")
++    return [int(x) for x in path.read_text().split()]
++
++
++def live_owned_children() -> list[int]:
++    live = []
++    for pid in own_children():
++        ident = identity(pid)
++        if ident is None:
++            continue
++        if ident[4] == "Z":
++            try:
++                os.waitpid(pid, os.WNOHANG)
++            except ChildProcessError:
++                pass
++        else:
++            live.append(pid)
++    return live
++
++
++def identity(pid: int) -> tuple[int, int, int, int, str] | None:
++    try:
++        stat = Path(f"/proc/{pid}/stat").read_text().rsplit(") ", 1)[1].split()
++        uid = Path(f"/proc/{pid}/status").stat().st_uid
++        return uid, int(stat[2]), int(stat[3]), int(stat[19]), stat[0]
++    except FileNotFoundError:
++        return None
++
++
++def reap_or_kill_descendants(leader: int, birth: int) -> None:
++    """Subreaper drain; every target is an actual direct child with captured birth."""
++    for phase in (signal.SIGTERM, signal.SIGKILL):
++        for _ in range(30):
++            children = own_children()
++            if not children:
++                return
++            for pid in children:
++                ident = identity(pid)
++                if ident is None:
++                    continue
++                uid, _, _, started, state = ident
++                if state == "Z":
++                    # An adopted zombie is already inert. Reap it before comparing
++                    # birth ordering: the original parent's birth can precede the
++                    # captured launcher and is irrelevant once the process is dead.
++                    try:
++                        os.waitpid(pid, os.WNOHANG)
++                    except ChildProcessError:
++                        pass
++                    continue
++                if uid != os.getuid() or started < birth:
++                    refuse(f"owned child identity mismatch pid={pid} uid={uid} start={started} launcher_birth={birth} state={state}")
++                try:
++                    os.kill(pid, phase)
++                except ProcessLookupError:
++                    pass
++                try:
++                    os.waitpid(pid, os.WNOHANG)
++                except ChildProcessError:
++                    pass
++            time.sleep(.1)
++    if own_children():
++        refuse(f"owned descendants persist after TERM/KILL: {own_children()}")
++
++
++def drain_entry(proc: subprocess.Popen[bytes], birth: int | None) -> bool:
++    """TERM/KILL only the captured entry group, then reap subreaper children.
++
++    Returns whether any descendant was still present after the launcher exited.
++    """
++    pid = proc.pid
++    if proc.poll() is None:
++        current = identity(pid)
++        if birth is not None and current and current[0] == os.getuid() and current[1:4] == (pid, pid, birth):
++            os.killpg(pid, signal.SIGTERM)
++        else:
++            proc.terminate()  # Popen owns this exact unreaped direct child.
++        try:
++            proc.wait(timeout=3)
++        except subprocess.TimeoutExpired:
++            current = identity(pid)
++            if birth is not None and current and current[0] == os.getuid() and current[1:4] == (pid, pid, birth):
++                os.killpg(pid, signal.SIGKILL)
++            else:
++                proc.kill()
++            proc.wait(timeout=3)
++    else:
++        proc.wait()  # reap the direct child if poll observed it first
++    # A normal engine can leave an adopted zombie, or a helper exiting in the
++    # same tick. Reap inert zombies and allow a short natural exit grace.
++    descendants = False
++    for _ in range(20):
++        live = live_owned_children()
++        if not live:
++            break
++        time.sleep(.1)
++    else:
++        descendants = True
++    reap_or_kill_descendants(pid, birth or 0)
++    if Path(f"/proc/{pid}").exists() or own_children():
++        refuse(f"entry pid={pid} or owned descendants remain after drain")
++    return descendants
++
++
++def run(args: argparse.Namespace) -> None:
++    row = row_record(Path(args.row_file), args.id)
++    launcher = Path(args.launcher).resolve()
++    job = Path(args.job).resolve()
++    engine = Path(args.engine).resolve()
++    manifest = Path(args.source_manifest).resolve()
++    if (row["notes"].get("launcher_path") != str(launcher) or
++            row["notes"].get("job_path") != str(job) or
++            row["notes"].get("source_manifest") != str(manifest)):
++        refuse("preflight argv source paths differ from row notes")
++    manifest_sha = checked_manifest(manifest)
++    entry = json.loads(args.entry_json)
++    if not isinstance(entry, list) or not entry or not all(isinstance(x, str) for x in entry):
++        refuse("entry-json must be a nonempty argv list")
++    if str(launcher) not in entry:
++        refuse("entry argv does not name exact launcher")
++    if not launcher.is_file() or not job.is_file():
++        refuse("launcher or job source missing")
++    pf_cpus = cpus(args.required_cpus)
++    if pf_cpus != row["cpus"] and not args.scoped_pf:
++        refuse("PF CPUs differ from row claimed_cpus without --scoped-pf")
++    if args.scoped_pf and (len(pf_cpus) != 2 or
++                           len({cpu % 96 for cpu in pf_cpus}) != 2 or
++                           pf_cpus == row["cpus"]):
++        refuse("--scoped-pf requires exactly two physical CPUs distinct from normal row")
++    if not pf_cpus.issubset(grant_cpus(args.regions)):
++        refuse("synthetic grant regions do not cover PF CPUs")
++    nonce = secrets.token_hex(24)
++    box = row["scratch"] / "dryrun" / nonce
++    box.mkdir(parents=True, exist_ok=False)
++    grants = box / "grants"; grants.mkdir()
++    state = box / "state"; state.mkdir()
++    start = datetime.now(timezone.utc).replace(second=0, microsecond=0)
++    end = start + timedelta(seconds=row["requested"])
++    grant = grants / (args.id + ".grant")
++    grant.write_text(f"regions={args.regions} start={start:%Y-%m-%dT%H:%MZ} end={end:%Y-%m-%dT%H:%MZ}\n")
++    # Re-admit the synthetic writer line; no special parser for preflight.
++    check = argparse.Namespace(row_file=args.row_file, id=args.id, grant=str(grant),
++                               min_window_s=args.min_window_s, policy=args.policy,
++                               require_proof=False, scoped_pf=args.scoped_pf, pf_cpus=args.required_cpus)
++    admission(check)
++    env = os.environ.copy()
++    env.update({"FILLER_PREFLIGHT": "1", "DRYRUN_NONCE": nonce,
++                "DRYRUN_RECEIPT": str(box / "boundary.json"),
++                "DRYRUN_JOB_SHA256": sha(job), "DRYRUN_LAUNCHER_SHA256": sha(launcher),
++                "DRYRUN_RAM_GIB": str(row["ram"]),
++                "DRYRUN_PROCESS_LIMIT_GIB": str(row["process_limit"]),
++                "DRYRUN_REQUIRED_CPUS": args.required_cpus,
++                "DRYRUN_ALLOWED_CPUS": args.allowed_cpus or args.required_cpus,
++                "FILLER_GRANTS_DIR": str(grants), "FILLER_FLAGS_DIR": str(box),
++                "FILLER_STATE_DIR": str(state), "FILLERS_MD": args.row_file,
++                "FILLER_POLL": "1"})
++    if args.region_lock_shim:
++        env["FILLER_RL"] = args.region_lock_shim
++    print("DRYRUN_ENTRY " + json.dumps({"argv": entry, "launcher_sha256": sha(launcher),
++          "job_sha256": sha(job), "grant": grant.read_text().strip(),
++          "NODE_OPTIONS": env.get("NODE_OPTIONS", ""), "box": str(box)}, sort_keys=True), flush=True)
++    if ctypes.CDLL(None).prctl(36, 1, 0, 0, 0) != 0:
++        refuse("cannot enable child subreaper")
++    def interrupted(signum: int, _frame: object) -> None:
++        refuse(f"checker signal {signum}; draining captured entry")
++    old_handlers = {sig: signal.signal(sig, interrupted) for sig in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP)}
++    proc = None
++    birth = None
++    rc = None
++    residual = False
++    try:
++        with (box / "entry.log").open("w") as log:
++            proc = subprocess.Popen(entry, env=env, cwd=args.cwd, stdout=log, stderr=subprocess.STDOUT,
++                                    start_new_session=True, close_fds=True)
++            pid = proc.pid
++            initial = identity(pid)
++            if initial is None or initial[0] != os.getuid() or initial[1] != pid or initial[2] != pid:
++                refuse(f"captured entry pid={pid} identity missing or not session/group leader")
++            birth = initial[3]
++            try:
++                rc = proc.wait(timeout=args.timeout_s)
++            except subprocess.TimeoutExpired:
++                refuse(f"entry timeout pid={pid} birth={birth}")
++    finally:
++        for sig in old_handlers:
++            signal.signal(sig, signal.SIG_IGN)
++        try:
++            if proc is not None:
++                residual = drain_entry(proc, birth)
++        finally:
++            for sig, old in old_handlers.items():
++                signal.signal(sig, old)
++    if residual:
++        refuse(f"entry pid={pid} exited with live descendants; drained; see {box/'entry.log'}")
++    ended = grants / (args.id + ".ended")
++    receipt = box / "boundary.json"
++    if rc != 0 or not ended.exists() or "rc=0" not in ended.read_text().splitlines()[0]:
++        refuse(f"entry rc={rc}, ended={ended.read_text().strip() if ended.exists() else 'absent'}; see {box/'entry.log'}")
++    if not receipt.exists():
++        refuse(f"no job boundary receipt; see {box/'entry.log'}")
++    result = json.loads(receipt.read_text())
++    if (result.get("nonce") != nonce or result.get("job_sha256") != sha(job) or
++            result.get("launcher_sha256") != sha(launcher) or result.get("effect") != args.effect or
++            result.get("reserved_ram_gib") != row["ram"] or
++            result.get("process_limit_gib") != row["process_limit"]):
++        refuse("boundary receipt does not bind exact nonce, sources and effect")
++    proof = {"kind": "epyc.dryrun.pass.v1", "id": args.id, "nonce": nonce,
++             "effect": args.effect, "row": semantic_record(row),
++             "launcher_path": str(launcher), "job_path": str(job), "engine_path": str(engine),
++             "launcher_sha256": sha(launcher), "job_sha256": sha(job),
++             "engine_sha256": sha(engine), "checker_sha256": sha(Path(__file__)),
++             "policy_sha256": sha(Path(args.policy)),
++             "source_manifest_sha256": manifest_sha,
++             "pf_cpus": sorted(pf_cpus), "pf_regions": args.regions,
++             "scope": "two-core-PF; normal-affinity-unproved" if args.scoped_pf else "full-row-affinity",
++             "boundary_receipt_sha256": sha(receipt), "ended_sha256": sha(ended)}
++    (box / "pass.json").write_text(json.dumps(proof, sort_keys=True, indent=2) + "\n")
++    print(f"DRYRUN_PASS entry_rc=0 boundary={args.effect} pid={pid} birth={birth} reaped=yes box={box}")
++
++
++def main() -> int:
++    parser = argparse.ArgumentParser()
++    sub = parser.add_subparsers(dest="command", required=True)
++    admit = sub.add_parser("admit")
++    for option in (admit,):
++        option.add_argument("--id", required=True)
++        option.add_argument("--row-file", required=True)
++        option.add_argument("--grant", required=True)
++        option.add_argument("--min-window-s", type=int, required=True)
++        option.add_argument("--policy", default=str(Path(__file__).with_name("dryrun_disk_policy.json")))
++        option.add_argument("--require-proof", action="store_true")
++        option.add_argument("--engine")
++    b = sub.add_parser("boundary")
++    b.add_argument("--effect", required=True)
++    b.add_argument("--job", required=True)
++    res = sub.add_parser("resources")
++    res.add_argument("--id", required=True)
++    res.add_argument("--row-file", required=True)
++    res.add_argument("--allowed-cpus", required=True)
++    res.add_argument("--scoped-pf", action="store_true")
++    r = sub.add_parser("run")
++    r.add_argument("--id", required=True)
++    r.add_argument("--row-file", required=True)
++    r.add_argument("--min-window-s", type=int, required=True)
++    r.add_argument("--policy", default=str(Path(__file__).with_name("dryrun_disk_policy.json")))
++    r.add_argument("--launcher", required=True)
++    r.add_argument("--job", required=True)
++    r.add_argument("--engine", required=True)
++    r.add_argument("--source-manifest", required=True)
++    r.add_argument("--scoped-pf", action="store_true")
++    r.add_argument("--entry-json", required=True)
++    r.add_argument("--effect", required=True)
++    r.add_argument("--regions", required=True)
++    r.add_argument("--required-cpus", required=True)
++    r.add_argument("--allowed-cpus")
++    r.add_argument("--cwd", required=True)
++    r.add_argument("--region-lock-shim")
++    r.add_argument("--timeout-s", type=int, default=60)
++    args = parser.parse_args()
++    try:
++        if args.command == "admit":
++            result = admission(args)
++            print(f"ADMIT_PASS window={result['window']} free_gib={result['free_gib']:.2f} floor_gib={result['floor_gib']:g}")
++        elif args.command == "boundary":
++            boundary(args)
++        elif args.command == "resources":
++            resources(args)
++        else:
++            run(args)
++        return 0
++    except (Refused, KeyError, OSError, json.JSONDecodeError, ValueError) as exc:
++        print(f"DRYRUN_REFUSED: {exc}", file=sys.stderr, flush=True)
++        return 70
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+--- /dev/null
++++ b/bin/qual-v2-row/dryrun_disk_policy.json
+@@ -0,0 +1,6 @@
++{
++  "source": "OWNER-REPLY.json 2026-10-27T08:03Z disk-floor correction",
++  "interim_floor_gib": 50,
++  "interim_until_utc": "2026-10-28T08:10Z",
++  "normal_floor_gib": 150
++}
+--- /dev/null
++++ b/bin/qual-v2-row/filler_lib.sh
+@@ -0,0 +1,17 @@
++#!/bin/bash
++# Sourced by filler jobs. fl_wait_own_port PORT PID [maxsecs=1200]: success only if /health answers AND
++# the LISTEN socket on PORT is owned by PID (a foreign server once answered a health probe on this host).
++fl_wait_own_port() {
++  local port=$1 pid=$2 max=${3:-1200} t=0
++  while [ $t -lt "$max" ]; do
++    kill -0 "$pid" 2>/dev/null || { echo "server pid $pid died"; return 6; }
++    if curl -sf "http://127.0.0.1:$port/health" >/dev/null && ss -ltnp "sport = :$port" | grep "pid=$pid," >/dev/null; then
++      echo "health ok, port $port owned by our pid $pid"; return 0; fi
++    [ -n "${FILLER_END:-}" ] && [ "$(date -u +%s)" -ge "$FILLER_END" ] && break
++    sleep 5; t=$((t+5))
++  done
++  echo "health/own-pid proof failed port=$port pid=$pid"; return 7
++}
++fl_register_pid() { echo "$1" >> "${FILLER_PIDFILE:?}"; }
++fl_time_left() { echo $(( ${FILLER_DEADLINE:?} - $(date -u +%s) )); }
++fl_should_stop() { [ -e "${FILLER_STOPFILE:?}" ] || [ "$(date -u +%s)" -ge "${FILLER_DEADLINE:?}" ]; }
+--- /dev/null
++++ b/bin/qual-v2-row/keeper_qual_gate.py
+@@ -0,0 +1,548 @@
++#!/usr/bin/env python3
++"""Fail closed READY gate for ws58 keeper v8; no grant writes here."""
++from __future__ import annotations
++import argparse
++import datetime as dt
++import hashlib
++import time
++import fcntl
++import glob
++import json
++import os
++from pathlib import Path
++import re
++import subprocess
++import sys
++import importlib.util
++import stat
++
++sys.path.insert(0, str(Path(__file__).resolve().parent))
++import qualify_launcher as q
++import version_router
++from dryrun_check import Refused as DryrunRefused
++
++ROOT = Path('/mnt/raid0/llm/tmp/compute-flags')
++
++def bootstrap_row(manifest: Path, flags: Path, dry: bool = False) -> tuple[str,str]:
++    """Keeper single-writer registration before qualification's row_binding."""
++    from dryrun_check import row_record, Refused as RowRefused
++    m = q.load_manifest(manifest)
++    if m['production'] is not True: return refusal('bootstrap needs production manifest')
++    source = flags/'ready'/(m['id']+'.row.md')
++    if not source.is_file() or source.is_symlink(): return refusal('ready row absent')
++    raw = source.read_text()
++    lines = [line for line in raw.splitlines() if line.startswith('|')]
++    if len(lines) != 1: return refusal('ready row must have exactly one record')
++    line = lines[0]
++    cells = [v.strip() for v in line.strip().strip('|').split('|')]
++    if len(cells) != 18 or cells[0] != m['id'] or cells[1] != m['owner']:
++        return refusal('ready row identity/owner/shape mismatch')
++    if cells[2] != m['launcher']['path'] or cells[3] != m['regions']:
++        return refusal('ready row launcher/regions mismatch')
++    # Parse the candidate using the actual installed validator before any
++    # live write. row_binding's four equality checks are repeated here.
++    tmp = flags/'ready'/(m['id']+'.row.md')
++    row = row_record(tmp,m['id'])
++    from dryrun_check import seconds
++    if (row['requested'] != m['window_s'] or row['estimate'] != m['est_output_GiB'] or
++        row['ram'] != m['gib'] or seconds(cells[10]) != m['min_window_s'] or
++        str(row['scratch']) != m['scratch_root'] or
++        row['notes']['claimed_cpus'].strip() != str(m.get('claimed_cpus',''))):
++        return refusal('ready row window/RAM/output/scratch/CPUs mismatch')
++    notes=row['notes']
++    for key,want in (('source_manifest',m['source_manifest']),
++                     ('launcher_path',m['launcher']['path']),('job_path',m['job']['path']),
++                     ('launcher_sha256',m['launcher']['sha256'])):
++        if key in notes and notes[key].strip()!=want:
++            return refusal('ready row '+key+' mismatch')
++    bound=q.bound_files(m)
++    if 'source_manifest_sha256' in notes and notes['source_manifest_sha256'].strip()!=bound['source_manifest_sha256']:
++        return refusal('ready row source_manifest_sha256 mismatch')
++    q.local_namespace(m)
++    if 'qualification_row' in m:
++        q.row_binding(m,flags)
++        return ('ok','validated pinned draft; canonical row deferred to arm')
++    # Legacy v1 qualification still requires its canonical registry row.
++    # Never synthesize or replace the shared registry during qualification.
++    ledger = flags/'FILLERS.md'
++    try: prior=row_record(ledger,m['id'])
++    except (OSError, ValueError, RowRefused): return refusal('canonical row absent or malformed')
++    if prior['cells'] != cells:return refusal('existing row collides with ready row')
++    q.row_binding(m,flags)
++    return ('ok','canonical row already registered')
++
++class UnknownLegacy(Exception): pass
++
++def _cpu_gpu(regions: str) -> tuple[set[int], bool]:
++    """Normalize CPU SMT siblings to physical cores; refuse unknown tokens."""
++    cpus: set[int] = set(); gpu = False
++    for token in regions.replace(';', ',').split(','):
++        if token == 'mi210_0': gpu = True
++        elif re.fullmatch(r'q[0-3]', token):
++            lo = int(token[1])*24; cpus.update(range(lo, lo+24))
++        elif re.fullmatch(r'\d+(?:-\d+)?', token):
++            a, _, b = token.partition('-'); lo = int(a); hi = int(b or a)
++            if lo > hi or hi > 191: raise UnknownLegacy('bad region')
++            cpus.update(c % 96 for c in range(lo, hi+1))
++        else: raise UnknownLegacy('unknown region '+token)
++    if not cpus and not gpu: raise UnknownLegacy('empty region')
++    return cpus, gpu
++
++def _candidate_region(m: dict, flags: Path) -> str:
++    region = m['regions']
++    if region.startswith(('any-cpu-quarter', 'any-of')):
++        # The keeper resolves the quarter before conflict(), and exports it
++        # to the launcher. Never guess from the manifest's flexible request.
++        region = os.environ.get('WS58_REGIONS', '')
++        state, granted = grant_status(flags/'grants'/(m['id']+'.grant'))
++        if state == 'active': region = granted
++        if not region: raise UnknownLegacy('candidate region not bound')
++    return region
++
++def _birth(pid: int) -> int:
++    s = (Path('/proc')/str(pid)/'stat').read_text()
++    fields = s[s.rfind(')')+1:].split()
++    if len(fields) < 20 or fields[0] in ('Z','X','x'):
++        raise UnknownLegacy('process exited')
++    return int(fields[19])
++
++def _owned_launcher(rid: str, flags: Path) -> tuple[int, int]:
++    # The FILLERS PID is only a hint. The live engine argv proves this row.
++    sys.path.insert(0, str(flags))
++    import grant_ok_launcher as gate
++    rows = [line for line in (flags/'FILLERS.md').read_text().splitlines()
++            if line.startswith('| '+rid+' |')]
++    if len(rows) != 1: raise UnknownLegacy('launcher row absent/ambiguous')
++    cells = [c.strip() for c in rows[0].strip().strip('|').split('|')]
++    match = re.search(r'\bpid=(\d+)\b', cells[2])
++    if not match: raise UnknownLegacy('launcher PID absent')
++    pid = int(match.group(1)); before = _birth(pid)
++    o, engine_pid, _ = gate.find_launcher('/proc', pid, rid)
++    if not o or not engine_pid: raise UnknownLegacy('launcher identity absent')
++    engine_birth = _birth(engine_pid)
++    if _birth(pid) != before: raise UnknownLegacy('launcher PID reused')
++    return engine_pid, engine_birth
++
++def _owned_tree(engine: int) -> dict[int,int]:
++    """Enumerate every task's child list; unreadable ancestry is unknown."""
++    owned = {}; frontier = [engine]
++    while frontier:
++        pid = frontier.pop()
++        if pid in owned:continue
++        owned[pid] = _birth(pid)
++        task_dir = Path('/proc')/str(pid)/'task'
++        try:
++            tids = list(task_dir.iterdir())
++            if not tids:raise UnknownLegacy('task list empty')
++            for task in tids:
++                children = (task/'children').read_text().split()
++                frontier.extend(int(child) for child in children)
++        except (OSError,ValueError) as exc:
++            raise UnknownLegacy('process ancestry incomplete') from exc
++    return owned
++
++def _actual_listeners(rid: str, flags: Path) -> set[int]:
++    engine, birth = _owned_launcher(rid, flags)
++    births = _owned_tree(engine)
++    owned = set(births)
++    inodes = set()
++    for pid in owned:
++        fd_dir = Path('/proc')/str(pid)/'fd'
++        try:
++            for fd in fd_dir.iterdir():
++                try: target = os.readlink(fd)
++                except FileNotFoundError:
++                    # This process's own directory iterator exposes its fd,
++                    # which closes before readlink. Other PID churn is unknown.
++                    if pid == os.getpid(): continue
++                    raise
++                match = re.fullmatch(r'socket:\[(\d+)\]', target)
++                if match: inodes.add(match.group(1))
++        except OSError as exc: raise UnknownLegacy('fd scan incomplete') from exc
++    ports = set(); netns = {}
++    for pid in owned:
++        try: ns = os.readlink(Path('/proc')/str(pid)/'ns/net')
++        except OSError as exc: raise UnknownLegacy('network namespace unknown') from exc
++        netns.setdefault(ns,pid)
++    for pid in netns.values():
++        for name in ('tcp','tcp6'):
++            path = Path('/proc')/str(pid)/'net'/name
++            try: lines = path.read_text().splitlines()[1:]
++            except OSError as exc: raise UnknownLegacy('socket table unavailable') from exc
++            for line in lines:
++                fields = line.split()
++                if len(fields) < 10: raise UnknownLegacy('socket table malformed')
++                if fields[3] == '0A' and fields[9] in inodes:
++                    ports.add(int(fields[1].rsplit(':',1)[1],16))
++    # A newly forked descendant or reused PID during capture makes absence
++    # of its socket inode unprovable. The next keeper tick can retry.
++    if _owned_tree(engine) != births: raise UnknownLegacy('process tree changed during scan')
++    if _birth(engine) != birth or any(_birth(pid) != b for pid,b in births.items()):
++        raise UnknownLegacy('process tree changed during scan')
++    return ports
++
++def _sidecar(rid: str, grant: Path, flags: Path, pid: int, birth: int) -> dict:
++    path = flags/'ws58-keeper-state'/'legacy-declarations-v2'/(rid+'.json')
++    st = path.lstat()
++    if not stat.S_ISREG(st.st_mode) or st.st_uid != os.getuid() or st.st_mode & 0o022:
++        raise UnknownLegacy('sidecar unsafe permissions')
++    obj = json.loads(path.read_text())
++    if (obj.get('schema') != 'epyc.legacy-declaration.v2' or obj.get('id') != rid or
++        obj.get('grant_sha256') != q.sha(grant) or obj.get('launcher_pid') != pid or
++        obj.get('launcher_birth_ticks') != birth or
++        not isinstance(obj.get('ports'), list) or
++        any(type(v) is not int or not 1 <= v <= 65535 for v in obj['ports']) or
++        not isinstance(obj.get('shared_state'), list) or
++        any(not isinstance(v,str) or not v for v in obj['shared_state']) or
++        ('exclusive_class' not in obj or
++         obj['exclusive_class'] is not None and not isinstance(obj['exclusive_class'],str))):
++        raise UnknownLegacy('sidecar stale/unbound')
++    return obj
++
++def _legacy_conflict(m: dict, other: dict, rid: str, flags: Path, grant: Path,
++                     region: str) -> tuple[str,str] | None:
++    grant_digest = q.sha(grant)
++    mine = _cpu_gpu(_candidate_region(m, flags)); theirs = _cpu_gpu(region)
++    if mine[0] & theirs[0] or mine[1] and theirs[1]:
++        return ('wait-conflict', 'region-overlap:'+rid)
++    need_side = bool(m['shared_state'] and 'shared_state' not in other or
++                     m['exclusive_class'] and 'exclusive_class' not in other)
++    need_port = bool(m['ports'])
++    engine = birth = None
++    actual = set()
++    if need_port or need_side:
++        engine, birth = _owned_launcher(rid, flags)
++    if need_port:
++        try: actual = _actual_listeners(rid, flags)
++        except UnknownLegacy: actual = None
++    declared = other
++    side = {}
++    if actual is None or need_side:
++        try: side = _sidecar(rid, grant, flags, engine, birth)
++        except (OSError, ValueError, KeyError, json.JSONDecodeError, UnknownLegacy): pass
++        declared = {**side, **other}  # explicit manifest fields remain authoritative
++    if actual is None and not side: raise UnknownLegacy('process socket ownership incomplete; ws58 sidecar required')
++    if actual is not None and set(m['ports']) & actual:
++        return ('wait-conflict', 'actual-port-overlap:'+rid)
++    if actual is None and 'ports' not in side:
++        raise UnknownLegacy('ports unproven')
++    declared_ports = declared.get('ports', [])
++    if not isinstance(declared_ports,list):raise UnknownLegacy('ports malformed')
++    if set(m['ports']) & (set(declared_ports) | set(side.get('ports', []))):
++        return ('wait-conflict','port-overlap:'+rid)
++    if m['shared_state'] and 'shared_state' not in declared:
++        raise UnknownLegacy('shared state undeclared')
++    if m['exclusive_class'] and 'exclusive_class' not in declared:
++        raise UnknownLegacy('exclusive class undeclared')
++    legacy_shared = other.get('shared_state',[])
++    if m['shared_state'] and ('shared_state' in other and
++        (not isinstance(legacy_shared,list) or any(not isinstance(v,str) or not v for v in legacy_shared))):
++        raise UnknownLegacy('shared state malformed')
++    for value in (other.get('exclusive_class'),side.get('exclusive_class')):
++        if value is not None and not isinstance(value,str):
++            raise UnknownLegacy('exclusive class malformed')
++    shared = set(legacy_shared) | set(side.get('shared_state',[]))
++    if m['shared_state'] and set(m['shared_state']) & shared:
++        return ('wait-conflict','shared-state:'+rid)
++    classes = {v for v in (other.get('exclusive_class'),side.get('exclusive_class')) if v}
++    if len(classes)>1:raise UnknownLegacy('contradictory exclusive class')
++    if m['exclusive_class'] and m['exclusive_class'] in classes:
++        return ('wait-conflict','exclusive-class:'+rid)
++    if q.sha(grant) != grant_digest or engine is not None and _birth(engine) != birth:
++        raise UnknownLegacy('grant or launcher changed during proof')
++    return None
++
++def refusal(message: str) -> tuple[str, str]: return ('bad', message)
++
++def grant_status(path: Path, horizon_s: int = 0) -> tuple[str, str]:
++    """Classify a writer grant by its actual window, not file presence."""
++    if not path.exists(): return ('absent','')
++    try:
++        line=path.read_text().splitlines()[0]
++        match=re.fullmatch(r'regions=([^ ]+) start=(\d{4}-\d\d-\d\dT\d\d:\d\dZ) end=(\d{4}-\d\d-\d\dT\d\d:\d\dZ)',line)
++        if not match:return ('malformed','')
++        regions,start,end=match.groups()
++        start=dt.datetime.strptime(start,'%Y-%m-%dT%H:%MZ').replace(tzinfo=dt.timezone.utc).timestamp()
++        end=dt.datetime.strptime(end,'%Y-%m-%dT%H:%MZ').replace(tzinfo=dt.timezone.utc).timestamp()
++        if start>=end:return ('malformed',regions)
++        now=time.time()
++        if end<=now:return ('expired',regions)
++        if start>now+horizon_s:return ('future',regions)
++        return ('active' if start<=now else 'booked',regions)
++    except (OSError,ValueError,IndexError):return ('malformed','')
++
++def classify(manifest: Path, flags: Path, *, fingerprint: bool = True) -> tuple[str, str]:
++    try:
++        m = q.load_manifest(manifest)
++        if m['production'] is not True: return refusal('fixture is not production')
++        if m.get('hold') is not None: return refusal('hold=' + str(m['hold']))
++        breaker=read_json(flags/'ws58-keeper-state/qual-failure-breakers.json') or {}
++        if breaker.get('owners',{}).get(m['owner'],{}).get('active'):
++            return refusal('worker-breaker active for '+m['owner'])
++        if (flags / 'grants' / (m['id']+'.ended')).exists(): return refusal('ended id cannot be reused')
++        if (flags / 'grants' / (m['id']+'.complete')).exists(): return refusal('already complete')
++        grant_state,_=grant_status(flags/'grants'/(m['id']+'.grant'))
++        if grant_state!='absent': return refusal('grant file '+grant_state+'; id cannot be reused')
++        if q.disk_wait(manifest): return ('wait-disk', 'free - output - 2 GiB below 150 GiB')
++        q.verify(manifest, flags, fingerprint)
++        return ('ok', 'keeper-issued qualification valid')
++    except (q.Refused, OSError, ValueError, KeyError, json.JSONDecodeError, subprocess.TimeoutExpired) as exc:
++        return refusal('qual:' + str(exc))
++
++def booked_candidate(rid: str, flags: Path) -> bool:
++    sys.path.insert(0,str(flags))
++    try: import grant_ok_launcher as gate
++    except ImportError:return False
++    paths=[flags/'ws58-gpu.queue',*flags.glob('ws58-quarters-*.queue')]
++    for path in paths:
++        try: lines=path.read_text().splitlines()
++        except OSError:continue
++        for line in lines:
++            fields=line.split('|')
++            if len(fields)<2 or fields[0]!=rid:continue
++            try:
++                pid=int(fields[1])
++                if gate.alive('/proc',pid) and gate.find_launcher('/proc',pid,rid)[0]:return True
++            except (ValueError,OSError,AttributeError,gate.Refuse):continue
++    return False
++
++def conflict(manifest: Path, flags: Path) -> tuple[str, str]:
++    """Only actual live holders or valid booked reservations can conflict."""
++    m = q.load_manifest(manifest)
++    horizon=int(m.get('qual_timeout_s',300))+90
++    my_ports=set(m['ports']);my_shared=set(m['shared_state']);my_excl=m['exclusive_class']
++    armed={p.stem:p for p in (flags/'ready'/'armed').glob('*.json')}
++    for grant in (flags/'grants').glob('*.grant'):
++        if grant.stem==m['id']:continue
++        if (flags/'grants'/(grant.stem+'.ended')).exists() or (flags/'grants'/(grant.stem+'.complete')).exists():continue
++        state,_=grant_status(grant,horizon_s=horizon)
++        if state in ('expired','future'):continue
++        if state=='malformed':return ('wait-conflict','malformed active grant '+grant.stem)
++        if grant.stem not in armed:return ('wait-conflict','unknown active grant '+grant.stem)
++    for rid,p in sorted(armed.items()):
++        if rid==m['id']:continue
++        if (flags/'grants'/(rid+'.ended')).exists() or (flags/'grants'/(rid+'.complete')).exists():continue
++        grant = flags/'grants'/(rid+'.grant')
++        state,region=grant_status(grant,horizon_s=horizon)
++        live=state=='active'
++        if state=='malformed':return ('wait-conflict','malformed active grant '+rid)
++        eligible_booked=False
++        if not live:
++            if state!='booked' and not booked_candidate(rid,flags):continue
++            eligible_booked=True
++        other=read_json(p)
++        if not other:return ('wait-conflict','active/valid booked manifest unparseable '+rid)
++        if eligible_booked:
++            if other.get('schema')!='epyc.ready.v2':continue
++            try:version_router.verify(p,flags,q)
++            except (q.Refused,OSError,ValueError,KeyError,subprocess.TimeoutExpired):continue
++        if live and other.get('schema') != 'epyc.ready.v2':
++            try:
++                result = _legacy_conflict(m, other, rid, flags, grant, region)
++            except (OSError, ValueError, KeyError, TypeError, UnknownLegacy) as exc:
++                return ('wait-conflict', 'legacy proof unknown:'+rid+':'+str(exc))
++            if result:return result
++            continue
++        if not all(k in other for k in ('ports','exclusive_class','shared_state')):
++            return ('wait-conflict','active/eligible declaration unknown:'+rid)
++        if my_ports & set(other['ports']):return ('wait-conflict','port-overlap:'+rid)
++        if my_excl and other['exclusive_class']==my_excl:return ('wait-conflict','exclusive-class:'+my_excl)
++        if my_shared & set(other['shared_state']):return ('wait-conflict','shared-state:'+rid)
++    return ('ok','no declared live/eligible conflict')
++
++def parse_status(text: str) -> set[str]:
++    free = set()
++    for line in text.splitlines():
++        bits = line.split()
++        if len(bits) > 1 and bits[1] == 'free': free.add(bits[0])
++    return free
++
++def qual_pair(m: dict, flags: Path, rl: Path) -> str | None:
++    # R11 uses two SMT threads under a family mutex. A correctness quarter
++    # may be held; no CPU quarter region-lock claim is taken for qualification.
++    gpu = 'mi210_0' in str(m.get('regions', ''))
++    if any(flags.glob('HOLD_*')): return None
++    if m.get('rate_basis',{}).get('scope')==q.VKQ_BOOTSTRAP_SCOPE:
++        if not q.vkq_bootstrap_allowed(m): return None
++        status=subprocess.run([str(rl),'status'],text=True,capture_output=True,timeout=15)
++        if status.returncode or not {'q0','q1','q2','q3'}.issubset(parse_status(status.stdout)):return None
++        if subprocess.run([str(flags/'ram_admit.sh'),'256'],capture_output=True,text=True,timeout=15).returncode:return None
++        for grant in (flags/'grants').glob('*.grant'):
++            if (flags/'grants'/(grant.stem+'.ended')).exists() or (flags/'grants'/(grant.stem+'.complete')).exists():continue
++            state,_=grant_status(grant,horizon_s=int(m.get('qual_timeout_s',300))+90)
++            if state not in ('expired','future'):return None
++    if gpu:
++        status = subprocess.run([str(rl), 'status'], text=True, capture_output=True, timeout=15)
++        if status.returncode or 'gpu-quiet' not in parse_status(status.stdout): return None
++    from dryrun_check import grant_cpus
++    rows = {}
++    for line in (flags/'FILLERS.md').read_text().splitlines():
++        cells = [v.strip() for v in line.strip().strip('|').split('|')]
++        if len(cells) == 18: rows[cells[0]] = cells[8]
++    live = []
++    for path in (flags / 'grants').glob('*.grant'):
++        try:
++            if (flags/'grants'/(path.stem+'.ended')).exists() or (flags/'grants'/(path.stem+'.complete')).exists():
++                continue
++            state,reg=grant_status(path,horizon_s=int(m.get('qual_timeout_s',300))+90)
++            if state in ('expired','future'):continue
++            if state=='malformed':return None
++            if gpu and 'mi210_0' in reg: return None
++            kind = rows.get(path.stem)
++            if not kind: return None
++            live.append((kind, grant_cpus(reg)))
++        except (OSError, ValueError, AttributeError, q.Refused): return None
++        except Exception: return None  # unknown native grant parser failure waits
++    for base in (26,32,36,50,56,74,80):
++        pair = {base+96, base+97}
++        physical = {base,base+1}
++        if any(pair & given or ('timing' in kind and (physical & {x%96 for x in given} or
++                    set(range(96)) <= {x%96 for x in given})) for kind,given in live):continue
++        return f'{base+96}-{base+97}'
++    return None
++
++def run_under_claim(args, flags: Path, env: dict, output):
++    # An outer timeout would SIGKILL region-lock itself and drop its lock
++    # before a nested-session native child is drained. Region acquisition is
++    # bounded by --timeout-s; the qualifier bounds and drains its launcher.
++    # If the qualifier becomes uninterruptible the claim stays held.
++    return subprocess.run(args,cwd=str(flags),env=env,stdout=output,stderr=subprocess.STDOUT)
++
++def qualify_pending(manifest: Path, flags: Path, rl: Path, timeout: int, dry: bool = False) -> tuple[str, str]:
++    try:
++        m = q.load_manifest(manifest)
++        if m['production'] is not True: return refusal('fixture cannot qualify production')
++        if m.get('hold') not in (None, 'breaker'): return refusal('held')
++        if (flags / 'grants' / (m['id']+'.ended')).exists(): return refusal('ended id cannot be reused')
++        if q.disk_wait(manifest): return ('wait-disk', 'free - output - 2 GiB below floor')
++        try:
++            q.verify(manifest, flags, True)
++            return ('qualified', 'already valid')
++        except (q.Refused, OSError, ValueError, KeyError, json.JSONDecodeError): pass
++        if Path(m['qualification']['receipt']).exists():
++            return refusal('stale qualification receipt; republish under a new id')
++        timeout=int(m.get('qual_timeout_s',timeout))
++        if timeout not in (300,600):return refusal('qual_timeout_s must be 300 or 600')
++        pair = qual_pair(m, flags, rl)
++        if not pair: return ('wait-resource', 'no admitted R11 SMT pair/GPU resource')
++        if dry: return ('would-qualify', pair)
++        base=int(pair.split('-')[0])-96
++        lock_path=flags/'prep-locks'/f'{base}-{base+1}.lock'
++        lock_path.parent.mkdir(parents=True,exist_ok=True)
++        with lock_path.open('a+') as lock:
++            try: fcntl.flock(lock, fcntl.LOCK_EX|fcntl.LOCK_NB)
++            except BlockingIOError: return ('wait-resource','R11 family mutex busy')
++            if qual_pair(m,flags,rl)!=pair: return ('wait-resource','R11 grant/GPU status changed')
++            gpu='mi210_0' in str(m['regions'])
++            child=['taskset','-c',pair,'/usr/bin/env',
++                   'WS58_QUAL_GPU_HELD=' + ('1' if gpu else '0'),
++                   sys.executable,'-I',str(Path(q.__file__)),'claim-run','--manifest',str(manifest),
++                   '--flags',str(flags),'--timeout',str(timeout)]
++            # GPU first requests must run inside an actual exclusive quiet
++            # claim. CPU qualification holds only the R11 pair mutex.
++            if m['rate_basis']['scope']==q.VKQ_BOOTSTRAP_SCOPE:
++                args=[str(rl),'run','--cpu-list','0-95','--role','bench','--timeout-s',str(timeout+45),'--tag','qual-'+m['id'],'--']+child
++            else:
++                args=([str(rl),'run','--gpu-quiet','exclusive','--role','build',
++                       '--timeout-s',str(timeout+45),'--tag','qual-'+m['id'],'--']+child) if gpu else child
++            env=dict(os.environ,WS58_QUAL_CPUS=pair,OMP_NUM_THREADS='1',OPENBLAS_NUM_THREADS='1',MKL_NUM_THREADS='1')
++            out=flags/'ready'/(m['id']+'.qual.out')
++            with out.open('a') as f:
++                cp=run_under_claim(args,flags,env,f)
++        if cp.returncode == 75 and not (flags/'qual-nonces'/'by-id'/(m['id']+'.json')).exists():
++            return ('wait-resource', 'region-lock acquisition failed before nonce issuance')
++        if cp.returncode: return refusal(f'qual-run-rc={cp.returncode}; see {out}')
++        q.verify(manifest, flags, True)
++        return ('qualified', str(m['qualification']['receipt']))
++    except (q.Refused, OSError, ValueError, KeyError, json.JSONDecodeError, subprocess.TimeoutExpired) as exc:
++        return refusal('qual:' + str(exc))
++
++def reconcile_failures(flags: Path, dry: bool = False) -> list[str]:
++    """Three new failed grant attempts in 24h trip only that owner's breaker."""
++    rows = {}
++    for line in (flags/'FILLERS.md').read_text().splitlines():
++        cells = [v.strip() for v in line.strip().strip('|').split('|')]
++        if len(cells) == 18: rows[cells[0]] = cells[1]
++    state_path = flags/'ws58-keeper-state/qual-failure-breakers.json'
++    try: state = json.loads(state_path.read_text())
++    except (OSError,ValueError): state = {'owners':{},'alerted':{}}
++    now = time.time(); failures = {}; actions = []
++    for ended in sorted((flags/'grants').glob('*.ended')):
++        try:
++            first = ended.read_text().splitlines()[0]
++            rc = int(first.split(' ',1)[0].removeprefix('rc='))
++            stamp = ended.stat().st_mtime
++        except (OSError,ValueError,IndexError): continue
++        if rc in (0,75) or now-stamp > 86400 or stamp > now+60: continue
++        owner = rows.get(ended.stem)
++        if not owner: continue
++        failures.setdefault(owner,[]).append((ended.stem,stamp,rc))
++        key=ended.stem+':'+str(stamp)+':'+str(rc)
++        if key not in state['alerted']:
++            actions.append('run-failed '+owner+' '+ended.stem+' rc='+str(rc))
++            if not dry:
++                alert={'kind':'run-failed','id':ended.stem,'owner':owner,'rc':rc,
++                       'at':dt.datetime.now(dt.timezone.utc).isoformat()}
++                with (flags/'ws58-keeper-alerts.jsonl').open('a') as f:f.write(json.dumps(alert,sort_keys=True)+'\n')
++                state['alerted'][key]=now
++    for owner in set(failures) | set(state['owners']):
++        attempts=failures.get(owner,[])
++        rec=state['owners'].get(owner,{'active':False,'reset_at':0})
++        new=[x for x in attempts if x[1]>rec.get('reset_at',0)]
++        if len(new)>=3 and not rec.get('active'):
++            rec={'active':True,'tripped_at':now,'reset_at':rec.get('reset_at',0),
++                 'failed_ids':[x[0] for x in new]}
++            state['owners'][owner]=rec;actions.append('worker-breaker '+owner)
++            if not dry:
++                with (flags/'ws58-keeper-alerts.jsonl').open('a') as f:
++                    f.write(json.dumps({'kind':'worker-breaker','owner':owner,'failed_ids':rec['failed_ids'],
++                        'at':dt.datetime.now(dt.timezone.utc).isoformat()},sort_keys=True)+'\n')
++        if rec.get('active'):
++            # Fresh keeper-issued qualification after the breaker releases the
++            # owner. A free-form smoke or old receipt cannot release it.
++            for path in (flags/'ready').glob('*.json'):
++                m=read_json(path)
++                if not m or m.get('schema')!='epyc.ready.v2' or m.get('owner')!=owner: continue
++                try: proof=version_router.verify(path,flags,q)
++                except (q.Refused,OSError,ValueError,KeyError,subprocess.TimeoutExpired): continue
++                age=dt.datetime.fromisoformat(proof['ran_at'].replace('Z','+00:00')).timestamp()
++                if age>rec['tripped_at']:
++                    rec.update(active=False,reset_at=now,released_by=m['id'])
++                    actions.append('worker-breaker-released '+owner+' by '+m['id']);break
++        state['owners'][owner]=rec
++    state['alerted']={k:v for k,v in state['alerted'].items() if now-v<172800}
++    if not dry:q.atomic_json(state_path,state)
++    return actions
++
++def read_json(path: Path) -> dict | None:
++    try:
++        value=json.loads(path.read_text())
++        return value if isinstance(value,dict) else None
++    except (OSError,ValueError):return None
++
++def main() -> int:
++    p = argparse.ArgumentParser()
++    p.add_argument('command', choices=('check', 'conflict', 'qualify-pending', 'reconcile-failures','bootstrap-row','canonical-row'))
++    p.add_argument('--manifest', type=Path)
++    p.add_argument('--flags', type=Path, default=ROOT)
++    p.add_argument('--region-lock', type=Path, default=Path('/mnt/raid0/llm/epyc-orchestrator/scripts/region-lock'))
++    p.add_argument('--timeout', type=int, default=300)
++    p.add_argument('--dry', action='store_true')
++    a = p.parse_args()
++    if a.command == 'reconcile-failures':
++        print('\n'.join(reconcile_failures(a.flags,a.dry))); return 0
++    if not a.manifest: raise SystemExit('REFUSED: --manifest required')
++    if a.command == 'canonical-row':
++        try: q.row_binding(q.load_manifest(a.manifest),a.flags,require_canonical=True);state,reason='ok','canonical row present'
++        except (q.Refused,OSError,ValueError,KeyError) as e:state,reason=refusal(str(e))
++    elif a.command == 'check': state, reason = classify(a.manifest, a.flags)
++    elif a.command == 'conflict': state, reason = conflict(a.manifest, a.flags)
++    elif a.command == 'bootstrap-row':
++        try: state, reason = bootstrap_row(a.manifest, a.flags, a.dry)
++        except (q.Refused,DryrunRefused,OSError,ValueError,KeyError,json.JSONDecodeError) as exc:
++            state,reason=refusal('bootstrap:'+str(exc))
++    else: state, reason = qualify_pending(a.manifest, a.flags, a.region_lock, a.timeout, a.dry)
++    print(state + '\t' + reason.replace('\n', ' ')[:240])
++    return 0 if state in ('ok', 'qualified', 'would-qualify', 'would-register') else 2
++
++if __name__ == '__main__': raise SystemExit(main())
+--- /dev/null
++++ b/bin/qual-v2-row/qualify_launcher.py
+@@ -0,0 +1,1091 @@
++#!/usr/bin/env python3
++"""Keeper-owned, one-use pre-grant qualification for the canonical filler engine.
++
++The manifest fixes qualification.receipt before the nonce is issued. Workers may
++prepare fixtures, but only the keeper's nonce store can make a receipt valid.
++No test fixture is a production qualification: production=True requires the
++real first request proof from the normal job entry in the actual namespace.
++"""
++from __future__ import annotations
++
++import argparse
++import ctypes
++import datetime as dt
++import hashlib
++import json
++import math
++import os
++from pathlib import Path
++import re
++import secrets
++import shutil
++import signal
++import subprocess
++import sys
++import tempfile
++import time
++
++# -I intentionally drops the script directory. This directory is the pinned,
++# keeper-installed bundle containing dryrun_check.py, not a worker PYTHONPATH.
++sys.path.insert(0, str(Path(__file__).resolve().parent))
++
++KIND = 'epyc.qual.pass.v1'
++FIXTURE_KIND = 'epyc.qual.fixture.v1'
++CALIBRATION_KIND = 'epyc.qual.vkq-calibration.v1'
++VKQ_BOOTSTRAP_SCOPE = 'vkq3-calibration-bootstrap-v1'
++ROOT = Path('/mnt/raid0/llm/tmp/compute-flags')
++POLICY = Path(__file__).with_name('dryrun_disk_policy.json')
++ALLOWLIST = ROOT / 'engine-allowlist.json'
++GIB = 1024 ** 3
++INTERRUPTED = False
++def request_interrupt(signum, frame):
++    global INTERRUPTED
++    INTERRUPTED = True
++VOLATILE = {'keeper_log', 'hold'}
++
++class Refused(Exception):
++    pass
++
++def need(ok: object, why: str) -> None:
++    if not ok: raise Refused(why)
++
++def sha(path: Path) -> str:
++    need(path.is_file() and not path.is_symlink(), f'missing or symlink: {path}')
++    h = hashlib.sha256()
++    with path.open('rb') as f:
++        for chunk in iter(lambda: f.read(1024 * 1024), b''): h.update(chunk)
++    return h.hexdigest()
++
++def jbytes(value: object) -> bytes:
++    return json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode()
++
++def digest(value: object) -> str:
++    return hashlib.sha256(jbytes(value)).hexdigest()
++
++def manifest_digest(m: dict) -> str:
++    return digest({k: v for k, v in m.items() if k not in VOLATILE})
++
++def vkq_bootstrap_allowed(m: dict) -> bool:
++    """One exact reviewed diagnostic; never grants an unbounded generic rate bypass."""
++    base='/mnt/raid0/llm/tmp/codex3-v2-vkq-bootstrap-20261101'
++    try:
++        return (m.get('production') is True and m.get('workload_kind')=='llm' and
++            m.get('id')=='codex3-cpu-fa-vkq3-calibrate-v1-20261101' and m.get('owner')=='codex3' and
++            m.get('calibration_only') is True and m.get('calibration_target_id')=='codex3-cpu-fa-vkq3-mtp-20261031' and
++            m.get('regions')=='0-95' and m.get('claimed_cpus')=='0-95' and m.get('gib')==256 and
++            m.get('ports')==[] and m.get('shared_state')==[] and m.get('exclusive_class') is None and
++            m.get('requires_tools')==['python3','numactl'] and m.get('class')=='diagnostic' and
++            m.get('booking_class')=='block-timing-pairable' and
++            m.get('scratch_root')==base and m.get('window_s')==14400 and m.get('min_window_s')==9000 and
++            m.get('items')==1 and m.get('tokens_per_item')==70142 and m.get('qual_timeout_s')==600 and
++            m.get('n_ctx_required')==131072 and m.get('per_slot_n_ctx_required')==131072 and
++            m.get('n_parallel_required')==1 and m.get('prompt_tokens_required')==70014 and m.get('kv_cache_mode')=='split' and
++            m.get('job_floor_gib')==150 and m.get('est_output_GiB')==1 and
++            m.get('result_path')==base+'/calibration-run/calibration-evidence.json' and
++            m.get('rate_basis')=={'scope':VKQ_BOOTSTRAP_SCOPE,'production_threads':96} and
++            m['launcher']=={'path':base+'/launch.sh','sha256':'a20019ddcf6135e062752fe374482dba9a8cff03f158f7d40126896b0553df69'} and
++            m['job']=={'path':base+'/calibrate_96.py','sha256':'c9be83d652805ac3b9bd0d6f665f9c28c68fac6e6d1f38be35fbeb1f42bec0aa'} and
++            m['qual_fixture']=={'path':base+'/qualification-fixture.json','sha256':'6fc18984606ebf15481af87e1921c62a5fcc4d441e19f1b6a94f7b6386fb1a6e','items':2} and
++            m.get('request_manifest_sha256')=='6fc18984606ebf15481af87e1921c62a5fcc4d441e19f1b6a94f7b6386fb1a6e' and
++            m['production_recipe']=={'path':base+'/production-recipe.proposed.json','sha256':'90d0d0e8e4f6037314e4dd33fe26962e6e5a8f2aba6b1215ac974a19d550fe07'} and
++            m.get('source_manifest')==base+'/SOURCES.sha256' and
++            sha(Path(base+'/SOURCES.sha256'))=='ea92f6cecd0934519f6044f004a151203964049121b1e1345fd018a5d9416a06')
++    except (KeyError,TypeError,OSError,Refused):return False
++
++def load_manifest(path: Path) -> dict:
++    need(path.is_file() and not path.is_symlink(), 'manifest missing or symlink')
++    m = json.loads(path.read_text())
++    need(isinstance(m, dict) and m.get('schema') == 'epyc.ready.v2', 'manifest schema != epyc.ready.v2')
++    need(m.get('qualifier_version') == 'epyc.qual-v2-row', 'v2 qualifier version discriminator missing')
++    need(re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]+', str(m.get('id', ''))), 'bad id')
++    need(isinstance(m.get('owner'), str) and m['owner'] and isinstance(m.get('regions'), str) and m['regions'],
++         'owner/regions missing')
++    need(type(m.get('gib')) in (int,float) and math.isfinite(m['gib']) and m['gib'] > 0, 'gib malformed')
++    scratch = Path(str(m.get('scratch_root','')))
++    need(scratch.is_absolute() and str(scratch).startswith('/mnt/raid0/llm/tmp/') and
++         scratch.name not in ('compute-flags','disk-audit-20261028'), 'scratch_root invalid')
++    for key in ('launcher', 'engine', 'job', 'qual_fixture'):
++        v = m.get(key)
++        need(isinstance(v, dict) and isinstance(v.get('path'), str) and re.fullmatch('[0-9a-f]{64}', str(v.get('sha256'))), f'{key} path/sha missing')
++        need(Path(v['path']).is_absolute(), f'{key} path not absolute')
++    need(type(m['qual_fixture'].get('items')) is int and m['qual_fixture']['items'] >= 2,
++         'qual_fixture needs normal and cutoff items')
++    kind=m.get('workload_kind')
++    need(kind in ('llm','speech','command') or (m.get('production') is False and kind is None),
++         'unsupported workload_kind; expected llm, speech, or command')
++    if kind is None:kind='llm'  # isolated pre-production fixture compatibility
++    if m.get('production') is True:
++        recipe=m.get('production_recipe')
++        need(isinstance(recipe,dict) and isinstance(recipe.get('path'),str) and Path(recipe['path']).is_absolute() and
++             re.fullmatch('[0-9a-f]{64}',str(recipe.get('sha256',''))), 'production_recipe pin missing')
++    for key in ('source_manifest', 'requires_tools', 'ports', 'shared_state'):
++        need(key in m, f'{key} absent')
++    need(re.fullmatch('[0-9a-f]{64}', str(m.get('request_manifest_sha256',''))),
++         'request_manifest_sha256 missing')
++    need(isinstance(m['requires_tools'], list) and all(isinstance(x, str) and x for x in m['requires_tools']), 'requires_tools malformed')
++    need(isinstance(m['ports'], list) and all(type(x) is int and 1 <= x <= 65535 for x in m['ports']), 'ports malformed')
++    need(len(set(m['ports'])) == len(m['ports']), 'duplicate port')
++    need(isinstance(m['shared_state'], list) and all(isinstance(x, str) and x for x in m['shared_state']), 'shared_state malformed')
++    need(m.get('exclusive_class') is None or isinstance(m['exclusive_class'], str), 'exclusive_class malformed')
++    for key in ('window_s', 'min_window_s', 'items'):
++        need(type(m.get(key)) is int and m[key] > 0, f'{key} must be positive integer')
++    need(m['window_s'] % 60 == 0 and m['min_window_s'] % 60 == 0 and m['window_s'] >= m['min_window_s'] + 300, 'window/minimum malformed')
++    if kind=='llm':
++        llm=m.get('llm',{})
++        need(isinstance(llm,dict) and llm.get('backend','server') in ('server','native-batched-bench'), 'unknown LLM backend')
++        if llm.get('backend')=='native-batched-bench':
++            b=llm.get('batched')
++            need(isinstance(b,dict) and m.get('production') is True and m.get('rate_basis',{}).get('scope') in ('calibrated-work-unit','qualification-same-recipe','r22-unknown-calibration'), 'batched declaration invalid')
++            for key in ('binary','model','hip_library'):
++                pin=b.get(key,{})
++                need(isinstance(pin,dict) and isinstance(pin.get('path'),str) and Path(pin['path']).is_absolute() and re.fullmatch('[0-9a-f]{64}',str(pin.get('sha256',''))), 'batched pin invalid')
++            need(re.fullmatch('[0-9a-f]{40}',str(b.get('source_commit',''))) and all(type(b.get(k)) is int and b[k]>0 for k in ('context','batch','ubatch','prompt_tokens','gen_tokens','slots')), 'batched source or shape invalid')
++        llm_keys=['n_ctx_required','per_slot_n_ctx_required','n_parallel_required','prompt_tokens_required']
++        if m.get('rate_basis',{}).get('scope') not in ('calibrated-work-unit','r22-unknown-calibration'):llm_keys.append('tokens_per_item')
++        for key in llm_keys:
++            need(type(m.get(key)) is int and m[key]>0, f'{key} must be positive integer for llm')
++        mode=m.get('kv_cache_mode')
++        need(mode in ('split','unified'), 'LLM kv_cache_mode must be split or unified')
++        need(m['n_ctx_required'] >= (m['per_slot_n_ctx_required'] * m['n_parallel_required'] if mode=='split' else m['per_slot_n_ctx_required']) and
++             m['prompt_tokens_required'] <= m['per_slot_n_ctx_required'], 'context/parallel/prompt declaration inconsistent')
++    elif kind=='speech':
++        need(not any(k in m for k in ('kv_cache_mode','tokens_per_item','n_ctx_required','per_slot_n_ctx_required','n_parallel_required','prompt_tokens_required')),
++             'speech must not invent LLM token/context fields')
++        s=m.get('speech')
++        need(isinstance(s,dict),'speech declaration missing')
++        for name in ('fixture_audio','source_catalog','source_binary'):
++            item=s.get(name)
++            need(isinstance(item,dict) and isinstance(item.get('path'),str) and Path(item['path']).is_absolute() and
++                 re.fullmatch('[0-9a-f]{64}',str(item.get('sha256',''))),f'speech {name} pin missing')
++        need(re.fullmatch('[0-9a-f]{64}',str(s.get('pcm_sha256',''))),'speech PCM SHA missing')
++        for name in ('fixture_audio_seconds','planned_audio_seconds'):
++            need(type(s.get(name)) in (int,float) and math.isfinite(s[name]) and s[name]>0,f'speech {name} invalid')
++        for name in ('sample_rate_hz','batch_size','threads'):
++            need(type(s.get(name)) is int and s[name]>0,f'speech {name} invalid')
++        need(isinstance(s.get('decode_mode'),str) and s['decode_mode'] and
++             (s.get('right_context')=='UNKNOWN' or type(s.get('right_context')) is int and s['right_context']>=0),
++             'speech decode_mode/right_context missing; explicit UNKNOWN allowed')
++    else:
++        need(not any(k in m for k in ('kv_cache_mode','tokens_per_item','n_ctx_required','per_slot_n_ctx_required','n_parallel_required','prompt_tokens_required','speech')),
++             'command must not invent LLM or speech fields')
++        c=m.get('command')
++        need(isinstance(c,dict) and isinstance(c.get('work_unit'),str) and c['work_unit'] and
++             type(c.get('planned_work_units')) in (int,float) and math.isfinite(c['planned_work_units']) and c['planned_work_units']>0,
++             'command work_unit/planned_work_units missing')
++    need(m.get('qual_timeout_s',300) in (300,600), 'qual_timeout_s must be 300 or 600')
++    for key in ('est_output_GiB', 'job_floor_gib'):
++        v = m.get(key)
++        need(type(v) in (int, float) and math.isfinite(v) and v >= 0, f'{key} malformed')
++    need(m['job_floor_gib'] == 150, 'job floor differs from canonical 150 GiB')
++    basis = m.get('rate_basis')
++    allowed={'llm':('qualification-same-recipe','calibrated-production','calibrated-work-unit','r22-unknown-calibration',VKQ_BOOTSTRAP_SCOPE),
++             'speech':('speech-calibrated-production',),
++             'command':('command-same-recipe','command-calibrated-production')}
++    need(isinstance(basis, dict) and basis.get('scope') in allowed[kind] and
++         type(basis.get('production_threads')) is int and basis['production_threads'] > 0, 'rate_basis missing')
++    if basis['scope']==VKQ_BOOTSTRAP_SCOPE:
++        need(vkq_bootstrap_allowed(m),'VKQ calibration bootstrap binding invalid')
++    elif basis['scope']=='r22-unknown-calibration':
++        need(r22_unknown_calibration_ok(m), 'R22 unknown-calibration scope/pins mismatch')
++    elif basis['scope'] in ('qualification-same-recipe','command-same-recipe'):
++        need(basis['production_threads'] == 2, 'two-SMT qualification rate cannot forecast a different production thread count')
++    else:
++        field=('wall_s_per_unit' if basis['scope']=='calibrated-work-unit' else
++               {'llm':'rate_tok_s','speech':'rtf','command':'work_units_per_s'}[kind])
++        need(type(basis.get(field)) in (int,float) and math.isfinite(basis[field]) and basis[field] > 0,
++             f'calibrated production {field} missing')
++        evidence = basis.get('evidence')
++        need(isinstance(evidence,dict) and isinstance(evidence.get('path'),str) and
++             re.fullmatch('[0-9a-f]{64}', str(evidence.get('sha256'))), 'calibration evidence pin missing')
++        if basis['scope']=='calibrated-work-unit':
++            need(isinstance(basis.get('work_unit'),str) and basis['work_unit'], 'calibrated LLM work_unit missing')
++    if kind=='speech':
++        need(basis.get('batch_size')==m['speech']['batch_size'] and basis.get('decode_mode')==m['speech']['decode_mode'] and
++             basis['production_threads']==m['speech']['threads'], 'speech calibration role/batch/threads mismatch')
++    need(isinstance(m.get('qualification'), dict) and isinstance(m['qualification'].get('receipt'), str), 'predeclared qualification.receipt missing')
++    receipt = Path(m['qualification']['receipt'])
++    need(receipt.is_absolute() and receipt.parent == scratch / 'qualification' and
++         receipt.name == 'QUAL-'+m['id']+'.json', 'qualification.receipt path must be predeclared QUAL-id.json')
++    need(type(m.get('production')) is bool, 'production boolean missing')
++    return m
++
++def r22_unknown_calibration_ok(m: dict) -> bool:
++    """Exact diagnostic-only unit. UNKNOWN means no completion estimate."""
++    try:
++        b=m['llm']['batched']
++        return (m['id']=='codex3-r22-2-batched-floor-v2-20261101' and m['owner']=='codex3' and
++                m['production'] is True and m['class']=='diagnostic' and
++                m['regions']=='mi210_0,184-191' and m['window_s']==21600 and m['min_window_s']==14400 and
++                m['gib']==8 and m['est_output_GiB']==0.5 and m['job_floor_gib']==150 and m['items']==1 and
++                m['rate_basis']=={'scope':'r22-unknown-calibration','production_threads':8,'work_unit':'four-shape calibration'} and
++                m['production_recipe']['sha256']=='d28e1b39b4954498389ef5674f95bdc27831d9f148ba611a68372a4a06e0c2c8' and
++                m['source_manifest']=='/mnt/raid0/llm/tmp/codex3-r22-batched-v2-review/SOURCES.sha256' and
++                m['scratch_root']=='/mnt/raid0/llm/tmp/codex3-r22-batched-v2-review' and m.get('claimed_cpus')=='184-191' and
++                m['launcher']['path']=='/mnt/raid0/llm/tmp/codex3-r22-batched-v2-review/launch.sh' and
++                m['job']['path']=='/mnt/raid0/llm/tmp/codex3-r22-batched-v2-review/job.sh' and
++                m['engine']['path']=='/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/filler_run14.sh' and
++                m['engine']['sha256']=='6fe168333738d15e5988d5af42e2b4c348194d722bac11c32368183ae89cd3ef' and
++                m['launcher']['sha256']=='4846bbf2946105702d82b7d2023bbbf8f69ccaba580bd155fec8c7b96cee5a7c' and
++                m['job']['sha256']=='db399b6d6112cd52093a5676a2207e16456ed2df78b8e328d6b5983df16ca20c' and
++                m['llm']['backend']=='native-batched-bench' and
++                b['binary']['sha256']=='3a13b19ff0a21ae1b117516058e9347e0c6b6f54ae9ca801b67368b1c074bbac' and
++                b['hip_library']['sha256']=='f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079' and
++                b['model']['sha256']=='1741e5b2d062b07acf048bf0d2c514dadf2a48f94e2b4aa0cfe069af3838ee2f' and
++                b['source_commit']=='ffc1bac82eeca6f9099e1ccd9ba49703c460a115' and
++                (b['context'],b['batch'],b['ubatch'],b['prompt_tokens'],b['gen_tokens'],b['slots'])==(2048,512,512,128,128,8))
++    except (KeyError,TypeError):return False
++
++def batched_calibration_ok(m: dict, observed: dict) -> bool:
++    try:
++        b=m['llm']['batched']
++        return (observed.get('kind') == 'epyc.r22.batched-calibration.v1' and
++                observed.get('binary_sha256') == b['binary']['sha256'] and
++                observed.get('model_sha256') == b['model']['sha256'] and
++                observed.get('hip_sha256') == b['hip_library']['sha256'] and
++                observed.get('native_source_commit') == b['source_commit'] and
++                observed.get('shapes') == [1,2,4,8] and observed.get('benchmark_invocations') == 544 and
++                observed.get('clean_uncached_hip_builds') == 4 and observed.get('settle_seconds') == 1200 and
++                observed.get('production_threads') == 8 and observed.get('completed_without_resume') is True)
++    except (KeyError, TypeError, AttributeError):
++        return False
++
++def bound_files(m: dict) -> dict:
++    out = {}
++    kind=m.get('workload_kind','llm')
++    if m.get('llm',{}).get('backend')=='native-batched-bench':
++        b=m['llm']['batched']
++        for key in ('binary','model','hip_library'):
++            need(sha(Path(b[key]['path']))==b[key]['sha256'], 'batched '+key+' changed')
++    if 'qualification_row' in m:
++        item=m['qualification_row']; path=Path(item['path'])
++        need(sha(path)==item['sha256'], 'qualification row changed')
++        out['qualification_row_sha256']=item['sha256']
++    if m['production']:
++        recipe=m['production_recipe']
++        need(sha(Path(recipe['path']))==recipe['sha256'],'production recipe changed')
++        out['production_recipe_sha256']=recipe['sha256']
++    for key in ('launcher', 'engine', 'job', 'qual_fixture'):
++        p = Path(m[key]['path'])
++        actual = sha(p)
++        need(actual == m[key]['sha256'], f'{key} sha mismatch')
++        out[key] = {'path': str(p), 'sha256': actual}
++    source = Path(m['source_manifest'])
++    need(source.is_absolute(), 'source_manifest path not absolute')
++    from dryrun_check import checked_manifest, Refused as DryrunRefused
++    try: out['source_manifest_sha256'] = checked_manifest(source)
++    except DryrunRefused as exc: raise Refused(str(exc)) from exc
++    if m['rate_basis']['scope']=='r22-unknown-calibration':
++        need(out['source_manifest_sha256']=='68b92a41bd4d1b86845b6b2ae421eb63fa84511e38c064d6a337ea06ab51449a', 'R22 source manifest changed')
++    out['policy_sha256'] = sha(POLICY)
++    if kind=='speech':
++        for key in ('fixture_audio','source_catalog','source_binary'):
++            item=m['speech'][key]
++            need(sha(Path(item['path']))==item['sha256'],f'speech {key} changed')
++        out['speech_inputs_sha256']={key:m['speech'][key]['sha256'] for key in ('fixture_audio','source_catalog','source_binary')}
++    if m['rate_basis']['scope'] in ('calibrated-production','calibrated-work-unit','speech-calibrated-production','command-calibrated-production'):
++        evidence = m['rate_basis']['evidence']
++        need(sha(Path(evidence['path'])) == evidence['sha256'], 'calibration evidence changed')
++        observed = json.loads(Path(evidence['path']).read_text())
++        field=('wall_s_per_unit' if m['rate_basis']['scope']=='calibrated-work-unit' else
++               {'llm':'rate_tok_s','speech':'rtf','command':'work_units_per_s'}[kind])
++        obs=('observed_wall_s_per_unit' if m['rate_basis']['scope']=='calibrated-work-unit' else
++             {'llm':'measured_tok_s','speech':'observed_rtf','command':'observed_work_units_per_s'}[kind])
++        need(observed.get(obs) == m['rate_basis'][field] and
++             observed.get('production_threads') == m['rate_basis']['production_threads'] and
++             observed.get('production_recipe_sha256')==m['production_recipe']['sha256'],
++             'calibration evidence does not support declared rate/threads')
++        if m.get('llm', {}).get('backend') == 'native-batched-bench':
++            need(batched_calibration_ok(m, observed), 'batched calibration evidence does not match full production unit')
++        if kind=='speech':
++            need(observed.get('batch_size')==m['speech']['batch_size'] and
++                 observed.get('decode_mode')==m['speech']['decode_mode'] and
++                 observed.get('source_catalog_sha256')==m['speech']['source_catalog']['sha256'],
++                 'speech calibration batch/decode/source mismatch')
++        if kind=='command':
++            need(observed.get('work_unit')==m['command']['work_unit'], 'command calibration unit mismatch')
++        if m['rate_basis']['scope']=='calibrated-work-unit':
++            need(observed.get('work_unit')==m['rate_basis']['work_unit'],'LLM calibration work unit mismatch')
++        out['rate_evidence_sha256'] = evidence['sha256']
++    out['helper_sha256'] = {name: sha(Path(__file__).with_name(name)) for name in
++                            ('qualify_launcher.py', 'keeper_qual_gate.py', 'dryrun_check.py', 'filler_lib.sh', 'ready_manifest.schema.json', 'batched_qual.py', 'version_router.py')}
++    allow = json.loads(ALLOWLIST.read_text())
++    need(allow.get('kind') == 'epyc.engine-allowlist.v1' and
++         allow.get('engine') == out['engine'], 'engine path/sha not canonical allowlist entry')
++    return out
++
++def row_binding(m: dict, flags: Path, *, require_canonical: bool = False) -> None:
++    from dryrun_check import row_record, Refused as DryrunRefused, cpus
++    declared=m.get('qualification_row')
++    if declared is None:
++        try: row = row_record(flags/'FILLERS.md', m['id'])
++        except DryrunRefused as exc: raise Refused(str(exc)) from exc
++    else:
++        need(isinstance(declared,dict), 'qualification row declaration malformed')
++        path=Path(declared.get('path',''))
++        need(path==flags/'ready'/(m['id']+'.row.md') and sha(path)==declared.get('sha256'), 'draft row path/hash mismatch')
++        need(len([line for line in path.read_text().splitlines() if line.startswith('|')])==1, 'draft must contain exactly one row')
++        try: row=row_record(path,m['id'])
++        except DryrunRefused as exc: raise Refused(str(exc)) from exc
++        lines=[]
++        for line in (flags/'FILLERS.md').read_text().splitlines():
++            if line.lstrip().startswith('|'):
++                cells=[c.strip() for c in line.strip().strip('|').split('|')]
++                if cells and cells[0]==m['id']:lines.append(cells)
++        need(len(lines)<=1, 'duplicate canonical registry row')
++        if not lines:
++            need(not require_canonical, 'canonical registry row absent')
++        else:
++            canonical=lines[0]; draft=row['cells']
++            need(len(canonical)==18, 'canonical row malformed')
++            # ws58_arm adds only its captured PID, changes BACKLOG -> ARMED,
++            # ready -> y, and resolves relocatable quarter to one valid bin.
++            if canonical==draft and not require_canonical:
++                canonical=None
++            if canonical is not None:
++                _armed_row_matches(m,canonical,draft,cpus,DryrunRefused)
++    notes = row['notes']
++    need(str(m.get('claimed_cpus','')) == notes['claimed_cpus'].strip(), 'manifest/row claimed_cpus differ')
++    need(row['requested'] == m['window_s'] and row['estimate'] == m['est_output_GiB'] and
++         str(row['scratch']) == m['scratch_root'], 'manifest/row window/output/scratch differ')
++
++def _armed_row_matches(m,canonical,draft,cpus,DryrunRefused):
++            match=re.fullmatch(re.escape(draft[2])+r'\s+pid=(\d+)',canonical[2])
++            need(match is not None, 'canonical launcher/PID differs from draft')
++            need(canonical[7]=='ARMED' and canonical[12]=='y', 'canonical status/ready differs')
++            if draft[3].startswith(('any-cpu-quarter','any-of')):
++                allowed={'q0','q1','q2','q3'} if draft[3]=='any-cpu-quarter' else set(draft[3].removeprefix('any-of').strip().split(','))
++                try: actual=cpus(canonical[3])
++                except DryrunRefused as exc:raise Refused(str(exc)) from exc
++                bins={f'q{i}' for i in range(4) if actual==set(range(i*24,(i+1)*24))}
++                need(bool(bins & allowed), 'canonical relocated region invalid')
++            else: need(canonical[3]==draft[3], 'canonical region differs')
++            need(all(canonical[i]==draft[i] for i in range(18) if i not in (2,3,7,12)), 'canonical registry row conflicts with draft')
++def local_namespace(m: dict) -> dict:
++    tools = {}
++    for name in m['requires_tools']:
++        path = name if name.startswith('/') else shutil.which(name)
++        need(path and Path(path).exists(), f'tool missing: {name}')
++        tools[name] = str(Path(path).resolve())
++    interpreter = Path(m.get('qual_interpreter') or sys.executable).resolve()
++    need(interpreter.is_file(), f'interpreter missing: {interpreter}')
++    env = {k: os.environ.get(k, '') for k in ('PATH', 'HOME', 'LD_LIBRARY_PATH', 'VIRTUAL_ENV')}
++    return {'root_inode': os.stat('/').st_ino, 'kernel': os.uname().release,
++            'cwd': os.getcwd(), 'cwd_exists': Path.cwd().is_dir(),
++            'interpreter': {'path': str(interpreter.resolve()), 'sha256': sha(interpreter),
++                            'version': subprocess.check_output([str(interpreter), '--version'], stderr=subprocess.STDOUT, text=True).strip()},
++            'tools': tools, 'env_fingerprint_sha256': digest(env)}
++
++def launcher_namespace(manifest: Path, m: dict, env: dict, timeout: int = 30) -> dict:
++    e = dict(env, WS58_FINGERPRINT_ONLY='1')
++    need(ctypes.CDLL(None).prctl(36, 1, 0, 0, 0) == 0, 'subreaper setup failed')
++    p = subprocess.Popen(['setsid', 'bash', m['launcher']['path']], cwd=str(ROOT), env=e,
++                         text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
++    try: birth=group_birth(p.pid)
++    except Exception:
++        drain_owned_children()
++        raise
++    deadline=time.monotonic()+timeout
++    while True:
++        if INTERRUPTED or time.monotonic() >= deadline:
++            drain_owned_group(p.pid,birth)
++            p.communicate(timeout=8)
++            raise Refused('fingerprint launcher interrupted/timed out and was drained')
++        try:
++            output, _ = p.communicate(timeout=min(.2,max(0.001,deadline-time.monotonic())))
++            break
++        except subprocess.TimeoutExpired:
++            continue
++    drain_owned_group(p.pid,birth)
++    need(not INTERRUPTED,'fingerprint interrupted after drain')
++    need(p.returncode == 0, f'fingerprint launcher rc={p.returncode}: {output[-240:]}')
++    lines = [s.removeprefix('EPYC_NAMESPACE_JSON=') for s in output.splitlines() if s.startswith('EPYC_NAMESPACE_JSON=')]
++    need(len(lines) == 1, 'fingerprint marker missing/duplicated')
++    obj = json.loads(lines[0])
++    need(obj.get('cwd_exists') is True, 'cwd absent in exec namespace')
++    return obj
++
++def group_birth(pid: int) -> int:
++    for _ in range(30):
++        try:
++            stat=Path(f'/proc/{pid}/stat').read_text().rsplit(') ',1)[1].split()
++            if int(stat[2]) == pid: return int(stat[19])
++        except (OSError,ValueError,IndexError): pass
++        time.sleep(.01)
++    raise Refused('captured launcher never became its own setsid group')
++
++def group_members(pgid: int, birth: int, proc_root:Path=Path('/proc')) -> list[int]:
++    leader=proc_root/str(pgid)/'stat'
++    if leader.exists():
++        try:now_birth=int(leader.read_text().rsplit(') ',1)[1].split()[19])
++        except (OSError,ValueError,IndexError):raise Refused('captured group leader identity unreadable')
++        need(now_birth==birth,'captured launcher group leader PID was reused')
++    members=[]
++    for proc in proc_root.iterdir():
++        if not proc.name.isdecimal():continue
++        try:
++            stat=proc.joinpath('stat').read_text().rsplit(') ',1)[1].split()
++            if int(stat[2]) != pgid or stat[0] in ('Z','X','x'):continue
++            need(proc.stat().st_uid == os.getuid() and int(stat[19]) >= birth,
++                 'captured process group identity changed')
++            members.append(int(proc.name))
++        except (FileNotFoundError,ProcessLookupError,PermissionError,ValueError,IndexError):continue
++    return members
++
++def stop_group(pid: int, birth: int | None = None) -> None:
++    for sig in (signal.SIGTERM, signal.SIGKILL):
++        if birth is not None and not group_members(pid,birth):return
++        try: os.killpg(pid, sig)
++        except ProcessLookupError: return
++        for _ in range(20):
++            time.sleep(.1)
++            if birth is not None:
++                if not group_members(pid,birth):return
++            else:
++                try: os.killpg(pid, 0)
++                except ProcessLookupError:return
++    if birth is not None:need(not group_members(pid,birth),'captured launcher group survived TERM/KILL')
++
++def pidfile_entry_state(pid:int,birth:int,proc_root:Path=Path('/proc')) -> str:
++    """Never signal a PID that no longer has its captured birth identity."""
++    entry=proc_root/str(pid)
++    try:
++        stat=entry.joinpath('stat').read_text().rsplit(') ',1)[1].split()
++        actual=int(stat[19]);uid=entry.stat().st_uid
++    except (FileNotFoundError,ProcessLookupError):return 'gone'
++    except (OSError,ValueError,IndexError):raise Refused(f'PID {pid} identity unreadable')
++    need(uid==os.getuid(),'registered PID owner changed')
++    return 'live' if actual==birth and stat[0] not in ('Z','X','x') else 'gone' if actual==birth else 'reused'
++
++def pidfile_drain(path:Path,ports:str) -> None:
++    if not path.exists():return
++    targets=[]
++    for line in path.read_text().splitlines():
++        if not line.strip():continue
++        match=re.fullmatch(r'(\d+) (\d+)',line.strip())
++        need(match,'PIDFILE requires pid birth_ticks pairs')
++        pid,birth=map(int,match.groups())
++        need(pid>1 and birth>0,'PIDFILE identity invalid')
++        state=pidfile_entry_state(pid,birth)
++        need(state!='reused',f'registered PID {pid} was reused; not signalling')
++        if state=='live':
++            if ports:
++                argv=(Path('/proc')/str(pid)/'cmdline').read_bytes().replace(b'\0',b' ').decode(errors='replace')
++                need(any(f'--port {port}' in argv for port in ports.split(',')),
++                     f'registered PID {pid} no longer has declared port')
++            targets.append((pid,birth))
++    for sig in (signal.SIGTERM,signal.SIGKILL):
++        for pid,birth in targets:
++            state=pidfile_entry_state(pid,birth)
++            need(state!='reused',f'PID {pid} reused during drain; not signalling')
++            if state=='live':
++                try:os.kill(pid,sig)
++                except ProcessLookupError:pass
++        for _ in range(20):
++            if all(pidfile_entry_state(pid,birth)=='gone' for pid,birth in targets):return
++            time.sleep(.1)
++    need(all(pidfile_entry_state(pid,birth)=='gone' for pid,birth in targets),
++         'registered native child survived TERM/KILL')
++
++def drain_children() -> None:
++    child_file = Path(f'/proc/self/task/{os.getpid()}/children')
++    for sig in (signal.SIGTERM, signal.SIGKILL):
++        for _ in range(4):
++            children = [int(x) for x in child_file.read_text().split()]
++            if not children: return
++            for child in children:
++                try: os.kill(child, sig)
++                except ProcessLookupError: pass
++            time.sleep(.25)
++            for child in children:
++                try: os.waitpid(child, os.WNOHANG)
++                except ChildProcessError: pass
++    need(not child_file.read_text().strip(), 'qualification left live/adopted children')
++
++def drain_owned_children() -> None:
++    # Subreaper children are always ours. A vanished/reparented nested session
++    # is adopted here; while any remains uninterruptible retain the claim.
++    while True:
++        try:
++            drain_children()
++            return
++        except (Refused, OSError):
++            time.sleep(1)
++
++def drain_owned_group(pid: int, birth: int) -> None:
++    # The caller is a subreaper. Keep the enclosing region-lock process alive
++    # until all descendants are dead/reaped, including nested sessions.
++    failure = None
++    try:
++        stop_group(pid, birth)
++    except (Refused, OSError) as exc:
++        failure = exc
++    drain_owned_children()
++    if failure is not None:
++        raise Refused('captured launcher group could not be drained safely') from failure
++
++def wait_qualification(p, birth: int, timeout: int) -> int:
++    deadline=time.monotonic()+timeout
++    while True:
++        if INTERRUPTED or time.monotonic() >= deadline:
++            drain_owned_group(p.pid,birth)
++            try: p.wait(timeout=8)
++            except subprocess.TimeoutExpired: raise Refused('captured launcher not reaped after drain')
++            raise Refused('qualification interrupted/timed out; captured process group drained')
++        try:
++            rc=p.wait(timeout=min(.2,max(0.001,deadline-time.monotonic())))
++            break
++        except subprocess.TimeoutExpired:
++            continue
++    drain_owned_group(p.pid,birth)
++    need(not INTERRUPTED,'qualification interrupted after drain')
++    return rc
++
++def store_path(flags: Path, nonce: str) -> Path:
++    need(re.fullmatch(r'[0-9a-f]{64}', nonce), 'invalid nonce')
++    return flags / 'qual-nonces' / (nonce + '.json')
++
++def atomic_json(path: Path, value: dict) -> None:
++    path.parent.mkdir(parents=True, exist_ok=True)
++    fd, tmp = tempfile.mkstemp(prefix='.tmp-', dir=path.parent)
++    try:
++        with os.fdopen(fd, 'w') as f:
++            json.dump(value, f, sort_keys=True, indent=2); f.write('\n'); f.flush(); os.fsync(f.fileno())
++        os.replace(tmp, path)
++    finally:
++        if os.path.exists(tmp): os.unlink(tmp)
++
++def issue(manifest: Path, flags: Path) -> str:
++    m = load_manifest(manifest); bound_files(m); row_binding(m, flags)
++    if m['production']:
++        # The production issuer must be a live v8 keeper descendant, not a
++        # worker invoking this public CLI. Fixture tests remain isolated.
++        try: keeper_pid = int((flags / 'ws58-calendar-keeper.pid').read_text().strip())
++        except (OSError, ValueError): raise Refused('keeper PID certificate absent')
++        pid = os.getppid(); ancestry = set()
++        for _ in range(6):
++            if pid <= 1: break
++            ancestry.add(pid)
++            stat = Path(f'/proc/{pid}/stat').read_text().rsplit(') ', 1)[1].split()
++            pid = int(stat[1])
++        need(keeper_pid in ancestry, 'nonce issue is not a keeper descendant')
++        cmd = (Path(f'/proc/{keeper_pid}/cmdline').read_bytes().replace(b'\0', b' ')).decode(errors='replace')
++        need('ws58-calendar-keeper-v8.sh' in cmd, 'issuer is not v8 keeper')
++        for old in (flags/'qual-nonces').glob('*.json'):
++            try:record=json.loads(old.read_text())
++            except (OSError,ValueError):raise Refused('nonce store unreadable; refuse issuance')
++            if record.get('id')==m['id']:
++                raise Refused('qualification nonce already issued for id; use fresh id after failure')
++    nonce = secrets.token_hex(32)
++    p = store_path(flags, nonce)
++    p.parent.mkdir(parents=True, exist_ok=True)
++    marker=flags/'qual-nonces'/'by-id'/(m['id']+'.json')
++    marker.parent.mkdir(parents=True,exist_ok=True)
++    need(not marker.is_symlink(),'nonce ID marker symlink')
++    try:marker_fd=os.open(marker,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
++    except FileExistsError:raise Refused('qualification nonce already issued for id; use fresh id after failure')
++    with os.fdopen(marker_fd,'w') as f:
++        json.dump({'id':m['id'],'nonce':nonce,'manifest_sha256':manifest_digest(m)},f,sort_keys=True)
++    state = {'kind': 'epyc.qual.nonce.v1', 'id': m['id'], 'manifest_sha256': manifest_digest(m),
++             'receipt': m['qualification']['receipt'], 'state': 'issued', 'issued_at': time.time()}
++    fd = os.open(p, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
++    with os.fdopen(fd, 'w') as f: json.dump(state, f, sort_keys=True)
++    return nonce
++
++def read_state(manifest: Path, flags: Path, nonce: str, required: str) -> tuple[dict, dict]:
++    m = load_manifest(manifest)
++    if m['production']:
++        marker=flags/'qual-nonces'/'by-id'/(m['id']+'.json')
++        need(marker.is_file() and not marker.is_symlink(),'keeper nonce ID marker absent')
++        claim=json.loads(marker.read_text())
++        need(claim.get('id')==m['id'] and claim.get('nonce')==nonce and
++             claim.get('manifest_sha256')==manifest_digest(m), 'keeper nonce ID marker mismatch')
++    p = store_path(flags, nonce)
++    need(p.is_file() and not p.is_symlink(), 'nonce not keeper-issued')
++    state = json.loads(p.read_text())
++    need(state.get('kind') == 'epyc.qual.nonce.v1' and state.get('id') == m['id'] and
++         state.get('manifest_sha256') == manifest_digest(m) and
++         state.get('receipt') == m['qualification']['receipt'] and state.get('state') == required,
++         'nonce state/replay/mismatch')
++    return m, state
++
++def choose_cpus(m: dict) -> str:
++    # Only a free physical pair may be passed by the keeper; this helper validates
++    # its shape. The keeper's R11/R6 admission is the resource authority.
++    pair = os.environ.get('WS58_QUAL_CPUS', '')
++    from dryrun_check import cpus, Refused as DryrunRefused
++    try: c = sorted(cpus(pair))
++    except DryrunRefused as exc: raise Refused(str(exc)) from exc
++    need(len(c) == 2 and all(0 <= x < 192 for x in c) and len({x % 96 for x in c}) == 2,
++         'qualification needs two distinct admitted physical cores')
++    claimed = str(m.get('claimed_cpus', ''))
++    if str(m.get('regions', '')).startswith(('any-cpu-quarter', 'any-of')):
++        need(claimed in ('', 'dynamic', 'any-cpu-quarter'), 'relocatable row has fixed claimed_cpus')
++    return pair
++
++def feasible_rate(m: dict, first: dict) -> float | None:
++    if m['rate_basis']['scope']==VKQ_BOOTSTRAP_SCOPE:
++        need(vkq_bootstrap_allowed(m),'VKQ calibration bootstrap binding invalid')
++        return None  # genuinely unmeasured; no fabricated numeric rate
++    kind=m.get('workload_kind','llm');scope=m['rate_basis']['scope']
++    if scope=='r22-unknown-calibration':
++        need(r22_unknown_calibration_ok(m), 'R22 unknown-calibration scope changed')
++        return None
++    if kind=='llm':value=(first.get('measured_tok_s') if scope=='qualification-same-recipe' else
++                          m['rate_basis']['wall_s_per_unit'] if scope=='calibrated-work-unit' else m['rate_basis']['rate_tok_s'])
++    elif kind=='speech':value=m['rate_basis']['rtf']
++    else:value=first.get('measured_work_units_per_s') if scope=='command-same-recipe' else m['rate_basis']['work_units_per_s']
++    need(type(value) in (int,float) and math.isfinite(value) and value > 0, 'production feasibility rate missing')
++    return float(value)
++
++def feasible_window(m: dict, rate: float | None) -> bool:
++    if m['rate_basis']['scope']==VKQ_BOOTSTRAP_SCOPE:
++        return rate is None and vkq_bootstrap_allowed(m)
++    kind=m.get('workload_kind','llm')
++    if m['rate_basis']['scope']=='r22-unknown-calibration': return rate is None and r22_unknown_calibration_ok(m)
++    if kind=='llm':needed=m['items']*rate if m['rate_basis']['scope']=='calibrated-work-unit' else m['items']*m['tokens_per_item']/rate
++    elif kind=='speech':needed=m['speech']['planned_audio_seconds']*rate  # RTF = wall_s/audio_s
++    else:needed=m['command']['planned_work_units']/rate
++    return needed<=m['window_s']
++
++def feasibility_record(m:dict,rate:float | None)->dict:
++    if m['rate_basis']['scope']==VKQ_BOOTSTRAP_SCOPE:
++        need(rate is None and vkq_bootstrap_allowed(m),'VKQ calibration bootstrap binding invalid')
++        return {'rate_scope':VKQ_BOOTSTRAP_SCOPE,'forecast':'UNKNOWN','calibration_only':True,'budget_s':m['window_s']}
++    kind=m.get('workload_kind','llm')
++    obj={'rate_scope':m['rate_basis']['scope'],'production_threads':m['rate_basis']['production_threads']}
++    if m['rate_basis']['scope']=='r22-unknown-calibration':return {**obj,'feasibility':'UNKNOWN','work_unit':m['rate_basis']['work_unit']}
++    if kind=='llm':
++        if m['rate_basis']['scope']=='calibrated-work-unit':obj.update(wall_s_per_unit=rate,work_unit=m['rate_basis']['work_unit'])
++        else:obj['rate_tok_s']=rate
++    elif kind=='speech':obj.update(rtf=rate,unit='wall_s/audio_s',batch_size=m['speech']['batch_size'],decode_mode=m['speech']['decode_mode'])
++    else:obj.update(work_units_per_s=rate,work_unit=m['command']['work_unit'])
++    return obj
++
++def vkq_cpu_claim_ancestor(row_id: str) -> dict:
++    """Observe the keeper's actual whole-host CPU claim for this calibration."""
++    pid=os.getppid()
++    for _ in range(8):
++        if pid<=1:break
++        proc=Path(f'/proc/{pid}')
++        args=proc.joinpath('cmdline').read_bytes().replace(b'\0',b' ').decode(errors='replace')
++        stat=proc.joinpath('stat').read_text().rsplit(') ',1)[1].split()
++        if ('src.runtime.region_lock_cli' in args and '--cpu-list 0-95' in args and
++            '--role bench' in args and '--tag qual-'+row_id in args):
++            return {'pid':pid,'birth_ticks':int(stat[19]),'argv_sha256':hashlib.sha256(args.encode()).hexdigest()}
++        pid=int(stat[1])
++    raise Refused('VKQ bootstrap whole-host CPU region-lock ancestor/tag absent')
++
++def gpu_claim_ancestor(row_id: str) -> dict:
++    """Observe the native region-lock parent holding this exact qual tag."""
++    pid = os.getppid()
++    for _ in range(8):
++        if pid <= 1: break
++        proc = Path(f'/proc/{pid}')
++        args = proc.joinpath('cmdline').read_bytes().replace(b'\0', b' ').decode(errors='replace')
++        stat = proc.joinpath('stat').read_text().rsplit(') ', 1)[1].split()
++        if ('src.runtime.region_lock_cli' in args and '--gpu-quiet exclusive' in args and
++                '--tag qual-'+row_id in args):
++            return {'pid':pid,'birth_ticks':int(stat[19]),'argv_sha256':hashlib.sha256(args.encode()).hexdigest()}
++        pid = int(stat[1])
++    raise Refused('exclusive GPU region-lock ancestor/tag absent')
++
++def first_request_ok(m: dict, first: dict) -> bool:
++    if not isinstance(first, dict) or first.get('ok') is not True: return False
++    if m['production'] and first.get('production_recipe_sha256')!=m['production_recipe']['sha256']:return False
++    kind=m.get('workload_kind','llm')
++    if (kind=='llm' and m.get('rate_basis',{}).get('scope')=='calibrated-work-unit' and
++        first.get('work_unit')!=m['rate_basis']['work_unit']):return False
++    if kind=='speech':
++        s=m['speech']
++        return (first.get('scope')=='TARGET_NATIVE_SPEECH' and
++                first.get('manifest_sha256')==m['request_manifest_sha256'] and
++                first.get('input_sha256')==s['fixture_audio']['sha256'] and
++                first.get('pcm_sha256')==s['pcm_sha256'] and
++                first.get('source_binary_sha256')==s['source_binary']['sha256'] and
++                type(first.get('audio_duration_s')) in (int,float) and first['audio_duration_s']==s['fixture_audio_seconds'] and
++                first.get('sample_rate')==s['sample_rate_hz'] and
++                first.get('decode_mode')==s['decode_mode'] and first.get('right_context')==s['right_context'] and
++                first.get('batch')==s['batch_size'] and first.get('threads')==2 and
++                type(first.get('wall_s')) in (int,float) and first['wall_s']>0)
++    if kind=='command':
++        c=m['command']
++        return (first.get('scope')=='COMMAND_NATIVE' and
++                first.get('manifest_sha256')==m['request_manifest_sha256'] and
++                first.get('work_unit')==c['work_unit'] and
++                type(first.get('work_completed')) in (int,float) and first['work_completed']>0 and
++                type(first.get('wall_s')) in (int,float) and first['wall_s']>0 and
++                type(first.get('measured_work_units_per_s')) in (int,float) and
++                first['measured_work_units_per_s']==first['work_completed']/first['wall_s'])
++    if m.get('llm', {}).get('backend') == 'native-batched-bench':
++        from batched_qual import first_ok
++        return first_ok(m, first)
++    total = first.get('n_ctx_total')
++    per_slot = first.get('n_ctx_per_slot')
++    parallel = first.get('total_slots')
++    if not m['production']:
++        total = total if type(total) is int else first.get('n_ctx')
++        per_slot = per_slot if type(per_slot) is int else first.get('n_ctx')
++        parallel = parallel if type(parallel) is int else first.get('n_parallel', 1)
++    return ((not m['production'] or (first.get('scope')=='TARGET_SCRATCH_SERVER' and
++            first.get('manifest_sha256') == m['request_manifest_sha256'])) and
++            (not m['production'] or first.get('kv_cache_mode')==m['kv_cache_mode']) and
++            type(total) is int and total >= m['n_ctx_required'] and
++            type(per_slot) is int and per_slot >= m['per_slot_n_ctx_required'] and
++            type(parallel) is int and parallel >= m['n_parallel_required'] and
++            type(first.get('prompt_tokens')) is int and first['prompt_tokens'] == m['prompt_tokens_required'])
++
++def make_grant(path: Path, m: dict, pair: str) -> None:
++    now = dt.datetime.now(dt.timezone.utc).replace(second=0, microsecond=0) - dt.timedelta(minutes=1)
++    end = now + dt.timedelta(seconds=m['window_s'])
++    need(end > dt.datetime.now(dt.timezone.utc) + dt.timedelta(seconds=m['min_window_s'] + 60), 'qualification synthetic window too short')
++    path.write_text(f"regions={pair} start={now:%Y-%m-%dT%H:%MZ} end={end:%Y-%m-%dT%H:%MZ}\n")
++
++def claim_issue_run(manifest: Path, flags: Path, timeout: int) -> dict:
++    # Entered only after region-lock has acquired its exclusive resource.
++    # Independently recheck custody and placement before consuming the ID.
++    m=load_manifest(manifest)
++    need(timeout in (300,600) and timeout==int(m.get('qual_timeout_s',timeout)), 'qualification timeout mismatch')
++    need(m['production'] is True, 'fixture cannot consume production claim')
++    choose_cpus(m)
++    gpu='mi210_0' in str(m['regions'])
++    need(os.environ.get('WS58_QUAL_GPU_HELD') == ('1' if gpu else '0'), 'region-lock qualification claim marker absent')
++    if gpu:gpu_claim_ancestor(m['id'])
++    if m['rate_basis']['scope']==VKQ_BOOTSTRAP_SCOPE:
++        vkq_cpu_claim_ancestor(m['id'])
++        ram=subprocess.run([str(flags/'ram_admit.sh'),'256'],capture_output=True,text=True,timeout=15)
++        need(ram.returncode==0,'VKQ bootstrap RAM admission failed under host claim')
++    need(not INTERRUPTED,'qualification interrupted before nonce')
++    nonce=issue(manifest,flags)
++    need(not INTERRUPTED,'qualification interrupted after nonce issuance')
++    return run(manifest,flags,nonce,timeout)
++
++def run(manifest: Path, flags: Path, nonce: str, timeout: int) -> dict:
++    m, state = read_state(manifest, flags, nonce, 'issued')
++    files = bound_files(m)
++    row_binding(m, flags)
++    pair = choose_cpus(m)
++    gpu_qual = 'mi210_0' in str(m.get('regions', ''))
++    need(os.environ.get('WS58_QUAL_GPU_HELD') == ('1' if gpu_qual else '0'), 'region-lock qualification claim marker absent')
++    gpu_claim = gpu_claim_ancestor(m['id']) if gpu_qual else None
++    cpu_claim = vkq_cpu_claim_ancestor(m['id']) if m['rate_basis']['scope']==VKQ_BOOTSTRAP_SCOPE else None
++    if cpu_claim is not None:
++        ram=subprocess.run([str(flags/'ram_admit.sh'),'256'],capture_output=True,text=True,timeout=15)
++        need(ram.returncode==0,'VKQ bootstrap RAM admission failed under host claim')
++    receipt = Path(m['qualification']['receipt'])
++    need(not receipt.exists(), 'receipt already exists; nonce replay')
++    qdir = flags / 'qual' / nonce
++    need(not qdir.exists(), 'qualification directory already exists')
++    (qdir / 'grants').mkdir(parents=True)
++    (qdir / 'results').mkdir()
++    (qdir / 'state').mkdir()
++    make_grant(qdir / 'grants' / (m['id'] + '.grant'), m, pair)
++    env = dict(os.environ, WS58_QUAL='1', WS58_QUAL_NONCE=nonce,
++               WS58_QUAL_CPUS=pair, WS58_QUAL_RESULTS=str(qdir / 'results'),
++               WS58_QUAL_FIXTURE=m['qual_fixture']['path'], WS58_QUAL_PROOF=str(qdir / 'proof.json'),
++               WS58_MANIFEST_PATH=str(manifest), WS58_QUALIFIER_PATH=str(Path(__file__)),
++               FILLER_GRANTS_DIR=str(qdir / 'grants'), FILLER_STATE_DIR=str(qdir / 'state'), WS58_REGIONS=pair,
++               WS58_QUAL_GPU_HELD='1' if gpu_qual else '0',
++               WS58_QUAL_PRODUCTION='1' if m['production'] else '0',
++               WS58_QUAL_WINDOW_S=str(m['window_s']),
++               WS58_PRODUCTION_RECIPE_SHA256=m['production_recipe']['sha256'] if m['production'] else '')
++    if 'qualification_row' in m: env['FILLERS_MD']=m['qualification_row']['path']
++    # The launcher must forward these through any env -i/chroot. A dropped var
++    # causes refusal, never an unqualified real grant.
++    namespace = launcher_namespace(manifest, m, env)
++    # Adopt orphaned job children so a successful launcher cannot hide a live
++    # server. Only descendants of this qualifier process are ever signalled.
++    need(ctypes.CDLL(None).prctl(36, 1, 0, 0, 0) == 0, 'subreaper setup failed')
++    with (qdir / 'launcher.out').open('w') as out:
++        p = subprocess.Popen(['setsid', 'bash', m['launcher']['path']], cwd=str(ROOT), env=env,
++                             stdout=out, stderr=subprocess.STDOUT)
++        try: birth = group_birth(p.pid)
++        except Exception:
++            drain_owned_children()
++            raise
++        rc = wait_qualification(p,birth,timeout)
++    need(rc == 0, f'qualification launcher rc={rc}; see {qdir / "launcher.out"}')
++    if gpu_qual:
++        need(gpu_claim_ancestor(m['id']) == gpu_claim, 'exclusive GPU claim lost during qualification')
++    if cpu_claim is not None:
++        need(vkq_cpu_claim_ancestor(m['id'])==cpu_claim, 'VKQ bootstrap whole-host CPU claim lost')
++    partial = qdir / 'receipt-partial.json'
++    need(partial.is_file() and not partial.is_symlink(), 'engine partial receipt missing')
++    proof = json.loads(partial.read_text())
++    need(proof.get('kind') == 'epyc.qual.engine.v1' and proof.get('nonce') == nonce and proof.get('id') == m['id'], 'engine partial identity mismatch')
++    need(proof.get('admission', {}).get('rc') == 0, 'admission did not pass')
++    need(proof.get('completion', {}).get('complete_cmd_present') is True and proof.get('completion', {}).get('is_complete_rc') == 0, 'fixture completion predicate did not pass')
++    need(proof.get('rc75', {}).get('exit_code') == 75 and proof.get('rc75', {}).get('partial_flag') is True, 'forced deadline did not exit 75/partial')
++    first = proof.get('first_request', {})
++    need(first_request_ok(m, first), 'native first request/compute does not match declared workload')
++    rate = feasible_rate(m, first)
++    need(feasible_window(m,rate), 'fixture rate makes declared work infeasible in window')
++    writer = proof.get('result_writer', {})
++    result = Path(str(writer.get('result_path', '')))
++    need(writer.get('ok') is True and result.is_file() and result.resolve().is_relative_to((qdir / 'results').resolve()) and writer.get('sha256') == sha(result), 'fixture result writer proof invalid')
++    need(proof.get('children_drained') is True, 'qualification children not drained')
++    policy_floor = json.loads(POLICY.read_text())['normal_floor_gib']
++    need(proof.get('disk', {}).get('job_floor_gib') == policy_floor == m['job_floor_gib'], 'disk floor mismatch')
++    need(not INTERRUPTED, 'qualification interrupted before receipt')
++    data = {'kind': CALIBRATION_KIND if m['rate_basis']['scope']==VKQ_BOOTSTRAP_SCOPE else (KIND if m['production'] else FIXTURE_KIND), 'id': m['id'], 'nonce': nonce,
++            'ran_at': dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
++            'ran_by': 'ws58-calendar-keeper', 'manifest_sha256': manifest_digest(m),
++            'launcher_path': files['launcher']['path'], 'launcher_sha256': files['launcher']['sha256'],
++            'engine_path': files['engine']['path'], 'engine_sha256': files['engine']['sha256'],
++            'job_path': files['job']['path'], 'job_sha256': files['job']['sha256'],
++            'fixture_path': files['qual_fixture']['path'], 'fixture_sha256': files['qual_fixture']['sha256'],
++            'source_manifest_sha256': files['source_manifest_sha256'], 'policy_sha256': files['policy_sha256'],
++            'qualification_row_sha256': files.get('qualification_row_sha256'), 'helper_sha256': files['helper_sha256'], 'speech_inputs_sha256':files.get('speech_inputs_sha256'),
++            'production_recipe_sha256':files.get('production_recipe_sha256'),
++            'rate_evidence_sha256': files.get('rate_evidence_sha256'),
++            'feasibility': feasibility_record(m,rate),
++            'evidence_sha256': {'proof-normal.json': sha(qdir / 'proof-normal.json'),
++                                'proof-cutoff.json': sha(qdir / 'proof-cutoff.json'),
++                                'receipt-partial.json': sha(partial),
++                                **({'cutoff-event.json':sha(qdir/'cutoff-event.json'),
++                                    'cutoff-observed.json':sha(qdir/'cutoff-observed.json')} if m['production'] else {})},
++            'exec_namespace': namespace, **{k: proof[k] for k in ('admission', 'first_request', 'result_writer', 'completion', 'rc75', 'disk', 'children_drained')},
++            'cutoff_observation':proof.get('cutoff_observation'),
++            'resource_claim': {'cpus': pair, 'gpu_quiet_exclusive': gpu_qual, 'region_lock_tag': 'qual-'+m['id'],
++                               'gpu_claim_ancestor': gpu_claim, **({'cpu_quiet_exclusive':True,'cpu_claim_ancestor':cpu_claim} if cpu_claim is not None else {})},
++            'launcher_group': {'pgid':p.pid,'birth_ticks':birth,'drained':True},
++            'ports': m['ports'], 'exclusive_class': m['exclusive_class'], 'shared_state': m['shared_state']}
++    data['receipt_sha256_excluding_self'] = digest(data)
++    receipt.parent.mkdir(parents=True, exist_ok=True)
++    fd = os.open(receipt, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
++    with os.fdopen(fd, 'w') as f: json.dump(data, f, sort_keys=True, indent=2); f.write('\n')
++    state['state'] = 'passed'; state['receipt_sha256'] = sha(receipt); state['passed_at'] = time.time()
++    atomic_json(store_path(flags, nonce), state)
++    return data
++
++def verify(manifest: Path, flags: Path, fingerprint_now: bool = True) -> dict:
++    m = load_manifest(manifest)
++    need(m['production'] is True, 'fixture receipts cannot qualify production grants')
++    receipt = Path(m['qualification']['receipt'])
++    need(receipt.is_file() and not receipt.is_symlink(), 'qualification receipt absent')
++    p = json.loads(receipt.read_text())
++    need(p.get('kind') == (CALIBRATION_KIND if m['rate_basis']['scope']==VKQ_BOOTSTRAP_SCOPE else KIND) and p.get('id') == m['id'] and p.get('manifest_sha256') == manifest_digest(m), 'receipt manifest/id mismatch')
++    need(p.get('receipt_sha256_excluding_self') == digest({k:v for k,v in p.items() if k != 'receipt_sha256_excluding_self'}), 'receipt edited')
++    nonce = str(p.get('nonce', ''))
++    _, state = read_state(manifest, flags, nonce, 'passed')
++    need(state.get('receipt_sha256') == sha(receipt), 'receipt nonce-store sha mismatch')
++    age = dt.datetime.now(dt.timezone.utc) - dt.datetime.fromisoformat(p['ran_at'].replace('Z', '+00:00'))
++    need(dt.timedelta() <= age <= dt.timedelta(hours=24), 'receipt older than 24 h')
++    files = bound_files(m)
++    row_binding(m, flags)
++    for key in ('launcher', 'engine', 'job'):
++        need(p.get(key+'_path') == files[key]['path'] and p.get(key+'_sha256') == files[key]['sha256'], key+' changed')
++    need(p.get('fixture_path') == files['qual_fixture']['path'] and p.get('fixture_sha256') == files['qual_fixture']['sha256'], 'fixture changed')
++    need(p.get('source_manifest_sha256') == files['source_manifest_sha256'] and p.get('policy_sha256') == files['policy_sha256'] and
++         p.get('qualification_row_sha256') == files.get('qualification_row_sha256') and p.get('helper_sha256') == files['helper_sha256'] and p.get('rate_evidence_sha256') == files.get('rate_evidence_sha256') and
++         p.get('speech_inputs_sha256')==files.get('speech_inputs_sha256') and
++         p.get('production_recipe_sha256')==files.get('production_recipe_sha256'),
++         'source/policy/helper/calibration changed')
++    evidence = p.get('evidence_sha256', {})
++    qdir = flags / 'qual' / nonce
++    proof_names=('proof-normal.json','proof-cutoff.json','receipt-partial.json','cutoff-event.json','cutoff-observed.json')
++    need(all(evidence.get(name) == sha(qdir / name) for name in proof_names),
++         'qualification evidence changed')
++    result = Path(str(p.get('result_writer', {}).get('result_path', '')))
++    need(result.resolve().is_relative_to((qdir/'results').resolve()) and
++         p['result_writer'].get('sha256') == sha(result), 'qualification result changed')
++    need(p.get('admission', {}).get('rc') == 0 and p.get('completion', {}).get('is_complete_rc') == 0 and p.get('completion', {}).get('complete_cmd_present') is True, 'admission/completion proof absent')
++    need(p.get('resource_claim', {}).get('gpu_quiet_exclusive') is ('mi210_0' in str(m.get('regions', ''))) and
++         p.get('resource_claim', {}).get('region_lock_tag') == 'qual-'+m['id'], 'qualification claim mismatch')
++    if 'mi210_0' in str(m.get('regions', '')):
++        need(type(p['resource_claim'].get('gpu_claim_ancestor')) is dict and
++             type(p['resource_claim']['gpu_claim_ancestor'].get('birth_ticks')) is int,
++             'GPU claim ancestry evidence absent')
++    if m['rate_basis']['scope']==VKQ_BOOTSTRAP_SCOPE:
++        need(p.get('resource_claim',{}).get('cpu_quiet_exclusive') is True and
++             type(p['resource_claim'].get('cpu_claim_ancestor',{}).get('birth_ticks')) is int,
++             'VKQ bootstrap whole-host CPU claim evidence absent')
++    need(p.get('rc75', {}).get('exit_code') == 75 and p.get('rc75', {}).get('partial_flag') is True, 'deadline proof absent')
++    need(first_request_ok(m, p.get('first_request', {})), 'first request/context/parallel/prompt proof absent')
++    need(p.get('cutoff_observation',{}).get('native_child_drained') is True and
++         p['cutoff_observation'].get('native_first_event') is True,
++         'active native cutoff child/drain proof absent')
++    need(p.get('disk', {}).get('job_floor_gib') == p.get('disk', {}).get('policy_floor_gib') == m['job_floor_gib'], 'disk policy mismatch')
++    need(p.get('children_drained') is True, 'children not drained')
++    group=p.get('launcher_group',{})
++    need(type(group.get('pgid')) is int and type(group.get('birth_ticks')) is int and
++         group.get('drained') is True, 'captured launcher group drain proof absent')
++    rate = feasible_rate(m, p['first_request'])
++    need(p.get('feasibility') == feasibility_record(m,rate) and feasible_window(m,rate), 'feasibility failed')
++    if fingerprint_now:
++        env = dict(os.environ, WS58_MANIFEST_PATH=str(manifest), WS58_QUALIFIER_PATH=str(Path(__file__)))
++        need(launcher_namespace(manifest, m, env) == p['exec_namespace'], 'exec namespace changed')
++    return p
++
++def disk_wait(manifest: Path, free_gib: float | None = None) -> bool:
++    m = load_manifest(manifest)
++    free = free_gib if free_gib is not None else os.statvfs(m['scratch_root']).f_bavail * os.statvfs(m['scratch_root']).f_frsize / GIB
++    return free - m['est_output_GiB'] - 2 < m['job_floor_gib']
++
++def disk_breach(manifest: Path) -> bool:
++    m = load_manifest(manifest)
++    fs = os.statvfs(m['scratch_root'])
++    return fs.f_bavail * fs.f_frsize / GIB < m['job_floor_gib']
++
++def placement_local(pair: str, engine_class: str, no_fold: int, claim: str) -> dict:
++    """Mapping-only dry placement, without acquiring a quarter lock."""
++    from dryrun_check import cpus, Refused as DryrunRefused
++    try:
++        actual = cpus(pair)
++        wanted = cpus(claim) if claim else actual
++    except DryrunRefused as exc: raise Refused(str(exc)) from exc
++    need(len(actual) == 2 and len({x % 96 for x in actual}) == 2, 'synthetic placement needs two distinct cores')
++    need(engine_class in ('cpu','gpu','cpu+gpu'), 'bad engine class')
++    need(no_fold in (0,1), 'bad no-fold mode')
++    if no_fold and engine_class == 'cpu' and all(x >= 96 for x in actual):
++        raise Refused('SMT-only CPU list maps to no region under --no-fold-siblings')
++    if claim and not (engine_class == 'gpu' and no_fold):
++        need(wanted.issubset(actual), 'engine claim-cpus exceeds synthetic admitted pair')
++    return {'cpus':sorted(actual),'physical_cores':sorted({x % 96 for x in actual}),
++            'quarters':sorted({'q'+str((x % 96)//24) for x in actual})}
++
++def engine_partial(manifest: Path, flags: Path, nonce: str) -> dict:
++    """Assemble producer evidence after the normal and cutoff job entry paths."""
++    m = load_manifest(manifest)
++    qdir = flags / 'qual' / nonce
++    need(os.environ.get('WS58_QUAL_NONCE') == nonce and os.environ.get('WS58_QUAL') == '1', 'engine partial outside qualification')
++    normal = json.loads((qdir / 'proof-normal.json').read_text())
++    cutoff = json.loads((qdir / 'proof-cutoff.json').read_text())
++    need(normal.get('id') == cutoff.get('id') == m['id'], 'producer proof row id mismatch')
++    need(normal.get('phase') == 'normal' and cutoff.get('phase') == 'cutoff', 'producer proof phase mismatch')
++    need(normal.get('nonce') == cutoff.get('nonce') == nonce, 'producer proof nonce mismatch')
++    need(cutoff.get('partial') is True, 'cutoff producer did not mark partial')
++    cutoff_observation=None
++    if m['production']:
++        need(cutoff.get('stop_observed') is True or cutoff.get('deadline_reached') is True,
++             'cutoff did not observe active STOP or deadline')
++        need(cutoff.get('unknown_disposition')=='UNKNOWN', 'cutoff partial disposition must be UNKNOWN')
++        observed=json.loads((qdir/'cutoff-observed.json').read_text())
++        event=json.loads((qdir/'cutoff-event.json').read_text())
++        need(observed.get('event_sha256')==sha(qdir/'cutoff-event.json') and
++             observed.get('native_pid')==event.get('native_pid') and
++             observed.get('native_birth_ticks')==event.get('native_birth_ticks') and
++             observed.get('native_first_event') is True,
++             'active cutoff event/child observation absent')
++        pid=observed['native_pid']
++        try: live_birth=int(Path(f'/proc/{pid}/stat').read_text().rsplit(') ',1)[1].split()[19])
++        except (OSError,ValueError,IndexError):live_birth=None
++        need(live_birth!=observed['native_birth_ticks'],'native cutoff child still alive')
++        need(first_request_ok(m,cutoff.get('first_request',{})) and
++             cutoff['first_request']==event.get('first_request'),
++             'cutoff did not run native first request/compute before stop')
++        cutoff_observation={**observed,'native_child_drained':True}
++    first = normal.get('first_request', {})
++    if m.get('llm',{}).get('backend')=='native-batched-bench':
++        from batched_qual import native_row_ok
++        need(native_row_ok(first,qdir/'results') and native_row_ok(cutoff['first_request'],qdir/'results'), 'native batched JSONL row absent or changed')
++    writer = normal.get('result_writer', {})
++    need(first.get('ok') is True and writer.get('ok') is True, 'normal producer first request/result missing')
++    result = Path(str(writer.get('result_path', '')))
++    need(result.is_file() and result.resolve().is_relative_to((qdir / 'results').resolve()) and writer.get('sha256') == sha(result), 'producer result hash/path invalid')
++    need(normal.get('disk', {}).get('job_floor_gib') == m['job_floor_gib'], 'producer disk floor mismatch')
++    need(normal.get('observed_cpus') == cutoff.get('observed_cpus'), 'normal/cutoff CPU changed')
++    from dryrun_check import cpus
++    observed = set(normal.get('observed_cpus', []))
++    try: claimed = cpus(os.environ.get('WS58_QUAL_CPUS', ''))
++    except Exception as exc: raise Refused('synthetic CPU list malformed') from exc
++    need(observed and observed.issubset(claimed), 'producer affinity not synthetic grant CPUs')
++    obj = {'kind': 'epyc.qual.engine.v1', 'id': m['id'], 'nonce': nonce,
++           'admission': {'rc': 0, 'grant_regions': os.environ.get('WS58_QUAL_CPUS'), 'observed_cpus': sorted(observed)},
++           'first_request': first, 'result_writer': writer,
++           'completion': {'complete_cmd_present': True, 'is_complete_rc': 0},
++           'rc75': {'exit_code': 75, 'partial_flag': True,
++                    'cutoff_mode':'active-stop' if m['production'] else 'fixture-immediate-deadline'},
++           'disk': {'job_floor_gib': m['job_floor_gib'], 'policy_floor_gib': json.loads(POLICY.read_text())['normal_floor_gib'],
++                    'est_output_gib': m['est_output_GiB']}, 'children_drained': True,
++           'cutoff_observation':cutoff_observation}
++    atomic_json(qdir / 'receipt-partial.json', obj)
++    return obj
++
++def trigger_cutoff(manifest:Path,flags:Path,nonce:str,stopfile:Path,timeout_s:int,job_pid:int)->dict:
++    """Issue STOP only after an actual native event from a live owned child."""
++    m=load_manifest(manifest);need(m['production'],'active cutoff belongs to production qualification only')
++    qdir=flags/'qual'/nonce
++    need(stopfile.resolve().is_relative_to(qdir.resolve()) and not stopfile.exists(), 'cutoff STOP path invalid')
++    event_path=qdir/'cutoff-event.json';deadline=time.monotonic()+timeout_s
++    while time.monotonic()<deadline:
++        try:job_stat=Path(f'/proc/{job_pid}/stat').read_text().rsplit(') ',1)[1].split()
++        except OSError:raise Refused('cutoff job exited before native first-event marker')
++        need(job_stat[0] not in ('Z','X','x'),'cutoff job ended before native first-event marker')
++        if event_path.is_file():
++            event=json.loads(event_path.read_text())
++            need(event.get('id')==m['id'] and event.get('nonce')==nonce and
++                 event.get('phase')=='cutoff' and event.get('native_first_event') is True and
++                 first_request_ok(m,event.get('first_request',{})), 'cutoff marker has no native first event')
++            if m.get('llm',{}).get('backend')=='native-batched-bench':
++                from batched_qual import live_ok, native_row_ok
++                need(native_row_ok(event['first_request'],qdir/'results') and live_ok(m,event['first_request']), 'batched live proof failed')
++                need(event.get('native_pid')==event['first_request']['native_pid'] and event.get('native_birth_ticks')==event['first_request']['native_birth_ticks'], 'batched child identity mismatch')
++            pid=event.get('native_pid');birth=event.get('native_birth_ticks')
++            need(type(pid) is int and pid>1 and type(birth) is int and birth>0,'cutoff native child identity absent')
++            stat=Path(f'/proc/{pid}/stat').read_text().rsplit(') ',1)[1].split()
++            need(int(stat[19])==birth and os.getpgid(pid)==os.getpgrp() and
++                 Path(f'/proc/{pid}').stat().st_uid==os.getuid(),
++                 'cutoff native child not live in captured launcher group')
++            observed={'native_pid':pid,'native_birth_ticks':birth,'native_first_event':True,
++                      'event_sha256':sha(event_path),'observed_at':time.time()}
++            atomic_json(qdir/'cutoff-observed.json',observed)
++            fd=os.open(stopfile,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
++            with os.fdopen(fd,'w') as f:f.write('qualification active cutoff\n')
++            return observed
++        time.sleep(.05)
++    raise Refused('cutoff native first-event marker timed out before STOP')
++
++def main() -> int:
++    global ROOT, ALLOWLIST
++    ap = argparse.ArgumentParser()
++    ap.add_argument('command', choices=('issue', 'run', 'claim-run', 'verify', 'fingerprint', 'namespace-local', 'disk-wait', 'disk-breach', 'placement-local', 'engine-partial','trigger-cutoff','group-drain','pidfile-drain'))
++    ap.add_argument('--manifest', required=True, type=Path)
++    ap.add_argument('--flags', type=Path, default=ROOT)
++    ap.add_argument('--nonce')
++    ap.add_argument('--timeout', type=int, default=300)
++    ap.add_argument('--no-fingerprint-now', action='store_true')
++    ap.add_argument('--free-gib', type=float)
++    ap.add_argument('--qual-cpus', default='')
++    ap.add_argument('--engine-class', default='')
++    ap.add_argument('--no-fold', type=int, default=0)
++    ap.add_argument('--claim-cpus', default='')
++    ap.add_argument('--stop-file',type=Path)
++    ap.add_argument('--job-pid',type=int)
++    ap.add_argument('--pgid',type=int)
++    ap.add_argument('--birth',type=int)
++    ap.add_argument('--pidfile',type=Path)
++    ap.add_argument('--ports',default='')
++    args = ap.parse_args()
++    ROOT=args.flags
++    ALLOWLIST=args.flags/'engine-allowlist.json'
++    if args.command in ('run','claim-run','verify','fingerprint'):
++        for sig in (signal.SIGTERM,signal.SIGINT,signal.SIGHUP): signal.signal(sig,request_interrupt)
++    try:
++        if args.command=='group-drain':
++            need(args.pgid and args.birth,'pgid and birth required');stop_group(args.pgid,args.birth);return 0
++        if args.command=='pidfile-drain':
++            need(args.pidfile,'pidfile required');pidfile_drain(args.pidfile,args.ports);return 0
++        if args.command == 'namespace-local':
++            print('EPYC_NAMESPACE_JSON=' + json.dumps(local_namespace(load_manifest(args.manifest)), sort_keys=True)); return 0
++        if args.command == 'issue': print(issue(args.manifest, args.flags)); return 0
++        if args.command == 'engine-partial':
++            need(args.nonce, 'nonce required'); print(json.dumps(engine_partial(args.manifest, args.flags, args.nonce), sort_keys=True)); return 0
++        if args.command == 'trigger-cutoff':
++            need(args.nonce and args.stop_file and args.job_pid,'nonce, stop-file, and job-pid required')
++            print(json.dumps(trigger_cutoff(args.manifest,args.flags,args.nonce,args.stop_file,args.timeout,args.job_pid),sort_keys=True));return 0
++        if args.command == 'claim-run':
++            print(json.dumps(claim_issue_run(args.manifest, args.flags, args.timeout), sort_keys=True)); return 0
++        if args.command == 'run':
++            need(args.nonce, 'nonce required'); print(json.dumps(run(args.manifest, args.flags, args.nonce, args.timeout), sort_keys=True)); return 0
++        if args.command == 'verify': print(json.dumps({'ok': True, 'id': verify(args.manifest, args.flags, not args.no_fingerprint_now)['id']})); return 0
++        if args.command == 'fingerprint':
++            m = load_manifest(args.manifest)
++            print(json.dumps(launcher_namespace(args.manifest, m, dict(os.environ, WS58_MANIFEST_PATH=str(args.manifest), WS58_QUALIFIER_PATH=str(Path(__file__)))), sort_keys=True)); return 0
++        if args.command == 'disk-wait': print('READY-WAIT-DISK' if disk_wait(args.manifest, args.free_gib) else 'DISK-READY'); return 1 if disk_wait(args.manifest, args.free_gib) else 0
++        if args.command == 'disk-breach': print('DISK-FLOOR-BREACHED' if disk_breach(args.manifest) else 'DISK-OK'); return 1 if disk_breach(args.manifest) else 0
++        if args.command == 'placement-local': print(json.dumps(placement_local(args.qual_cpus,args.engine_class,args.no_fold,args.claim_cpus))); return 0
++    except (Refused, OSError, ValueError, KeyError, json.JSONDecodeError, subprocess.TimeoutExpired) as e:
++        print('REFUSED: ' + str(e), file=sys.stderr); return 2
++    return 2
++
++if __name__ == '__main__': raise SystemExit(main())
+--- /dev/null
++++ b/bin/qual-v2-row/ready_manifest.schema.json
+@@ -0,0 +1,609 @@
++{
++  "$defs": {
++    "pinnedFile": {
++      "additionalProperties": true,
++      "properties": {
++        "path": {
++          "pattern": "^/",
++          "type": "string"
++        },
++        "sha256": {
++          "pattern": "^[0-9a-f]{64}$",
++          "type": "string"
++        }
++      },
++      "required": [
++        "path",
++        "sha256"
++      ],
++      "type": "object"
++    }
++  },
++  "$id": "epyc.ready.v2",
++  "$schema": "https://json-schema.org/draft/2020-12/schema",
++  "additionalProperties": true,
++  "allOf": [
++    {
++      "if": {
++        "properties": {
++          "workload_kind": {
++            "const": "llm"
++          }
++        }
++      },
++      "then": {
++        "allOf": [
++          {
++            "else": {
++              "required": [
++                "tokens_per_item"
++              ]
++            },
++            "if": {
++              "properties": {
++                "rate_basis": {
++                  "properties": {
++                    "scope": {
++                      "enum": [
++                        "calibrated-work-unit",
++                        "r22-unknown-calibration"
++                      ]
++                    }
++                  }
++                }
++              }
++            },
++            "then": {
++              "not": {
++                "required": [
++                  "tokens_per_item"
++                ]
++              }
++            }
++          }
++        ],
++        "required": [
++          "n_ctx_required",
++          "per_slot_n_ctx_required",
++          "n_parallel_required",
++          "prompt_tokens_required",
++          "kv_cache_mode"
++        ]
++      }
++    },
++    {
++      "if": {
++        "properties": {
++          "workload_kind": {
++            "const": "speech"
++          }
++        }
++      },
++      "then": {
++        "not": {
++          "anyOf": [
++            {
++              "required": [
++                "n_ctx_required"
++              ]
++            },
++            {
++              "required": [
++                "per_slot_n_ctx_required"
++              ]
++            },
++            {
++              "required": [
++                "n_parallel_required"
++              ]
++            },
++            {
++              "required": [
++                "prompt_tokens_required"
++              ]
++            },
++            {
++              "required": [
++                "tokens_per_item"
++              ]
++            },
++            {
++              "required": [
++                "kv_cache_mode"
++              ]
++            }
++          ]
++        },
++        "required": [
++          "speech"
++        ]
++      }
++    },
++    {
++      "if": {
++        "properties": {
++          "workload_kind": {
++            "const": "command"
++          }
++        }
++      },
++      "then": {
++        "not": {
++          "anyOf": [
++            {
++              "required": [
++                "n_ctx_required"
++              ]
++            },
++            {
++              "required": [
++                "per_slot_n_ctx_required"
++              ]
++            },
++            {
++              "required": [
++                "n_parallel_required"
++              ]
++            },
++            {
++              "required": [
++                "prompt_tokens_required"
++              ]
++            },
++            {
++              "required": [
++                "tokens_per_item"
++              ]
++            },
++            {
++              "required": [
++                "speech"
++              ]
++            },
++            {
++              "required": [
++                "kv_cache_mode"
++              ]
++            }
++          ]
++        },
++        "required": [
++          "command"
++        ]
++      }
++    }
++  ],
++  "properties": {
++    "command": {
++      "properties": {
++        "planned_work_units": {
++          "exclusiveMinimum": 0,
++          "type": "number"
++        },
++        "work_unit": {
++          "minLength": 1,
++          "type": "string"
++        }
++      },
++      "required": [
++        "work_unit",
++        "planned_work_units"
++      ],
++      "type": "object"
++    },
++    "engine": {
++      "$ref": "#/$defs/pinnedFile"
++    },
++    "est_output_GiB": {
++      "minimum": 0,
++      "type": "number"
++    },
++    "exclusive_class": {
++      "type": [
++        "string",
++        "null"
++      ]
++    },
++    "gib": {
++      "exclusiveMinimum": 0,
++      "type": "number"
++    },
++    "id": {
++      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]+$",
++      "type": "string"
++    },
++    "items": {
++      "minimum": 1,
++      "type": "integer"
++    },
++    "job": {
++      "$ref": "#/$defs/pinnedFile"
++    },
++    "job_floor_gib": {
++      "const": 150
++    },
++    "kv_cache_mode": {
++      "enum": [
++        "split",
++        "unified"
++      ]
++    },
++    "launcher": {
++      "$ref": "#/$defs/pinnedFile"
++    },
++    "llm": {
++      "allOf": [
++        {
++          "if": {
++            "properties": {
++              "backend": {
++                "const": "native-batched-bench"
++              }
++            },
++            "required": [
++              "backend"
++            ]
++          },
++          "then": {
++            "required": [
++              "batched"
++            ]
++          }
++        }
++      ],
++      "properties": {
++        "backend": {
++          "enum": [
++            "server",
++            "native-batched-bench"
++          ]
++        },
++        "batched": {
++          "properties": {
++            "batch": {
++              "minimum": 1,
++              "type": "integer"
++            },
++            "binary": {
++              "$ref": "#/$defs/pinnedFile"
++            },
++            "context": {
++              "minimum": 1,
++              "type": "integer"
++            },
++            "gen_tokens": {
++              "minimum": 1,
++              "type": "integer"
++            },
++            "hip_library": {
++              "$ref": "#/$defs/pinnedFile"
++            },
++            "model": {
++              "$ref": "#/$defs/pinnedFile"
++            },
++            "prompt_tokens": {
++              "minimum": 1,
++              "type": "integer"
++            },
++            "slots": {
++              "minimum": 1,
++              "type": "integer"
++            },
++            "source_commit": {
++              "pattern": "^[0-9a-f]{40}$",
++              "type": "string"
++            },
++            "ubatch": {
++              "minimum": 1,
++              "type": "integer"
++            }
++          },
++          "required": [
++            "binary",
++            "model",
++            "hip_library",
++            "source_commit",
++            "context",
++            "batch",
++            "ubatch",
++            "prompt_tokens",
++            "gen_tokens",
++            "slots"
++          ],
++          "type": "object"
++        }
++      },
++      "type": "object"
++    },
++    "min_window_s": {
++      "minimum": 60,
++      "type": "integer"
++    },
++    "n_ctx_required": {
++      "minimum": 1,
++      "type": "integer"
++    },
++    "n_parallel_required": {
++      "minimum": 1,
++      "type": "integer"
++    },
++    "owner": {
++      "minLength": 1,
++      "type": "string"
++    },
++    "per_slot_n_ctx_required": {
++      "minimum": 1,
++      "type": "integer"
++    },
++    "ports": {
++      "items": {
++        "maximum": 65535,
++        "minimum": 1,
++        "type": "integer"
++      },
++      "type": "array",
++      "uniqueItems": true
++    },
++    "production": {
++      "const": true
++    },
++    "production_recipe": {
++      "$ref": "#/$defs/pinnedFile"
++    },
++    "prompt_tokens_required": {
++      "minimum": 1,
++      "type": "integer"
++    },
++    "qual_fixture": {
++      "allOf": [
++        {
++          "$ref": "#/$defs/pinnedFile"
++        },
++        {
++          "properties": {
++            "items": {
++              "minimum": 2,
++              "type": "integer"
++            }
++          },
++          "required": [
++            "items"
++          ],
++          "type": "object"
++        }
++      ]
++    },
++    "qual_interpreter": {
++      "type": "string"
++    },
++    "qualification": {
++      "additionalProperties": false,
++      "properties": {
++        "receipt": {
++          "pattern": "^/mnt/raid0/llm/tmp/.+/qualification/QUAL-.+\\.json$",
++          "type": "string"
++        }
++      },
++      "required": [
++        "receipt"
++      ],
++      "type": "object"
++    },
++    "qualification_row": {
++      "$ref": "#/$defs/pinnedFile"
++    },
++    "rate_basis": {
++      "additionalProperties": true,
++      "properties": {
++        "batch_size": {
++          "minimum": 1,
++          "type": "integer"
++        },
++        "decode_mode": {
++          "minLength": 1,
++          "type": "string"
++        },
++        "evidence": {
++          "$ref": "#/$defs/pinnedFile"
++        },
++        "production_threads": {
++          "minimum": 1,
++          "type": "integer"
++        },
++        "rate_tok_s": {
++          "exclusiveMinimum": 0,
++          "type": "number"
++        },
++        "rtf": {
++          "exclusiveMinimum": 0,
++          "type": "number"
++        },
++        "scope": {
++          "enum": [
++            "qualification-same-recipe",
++            "calibrated-production",
++            "speech-calibrated-production",
++            "command-same-recipe",
++            "command-calibrated-production",
++            "calibrated-work-unit",
++            "r22-unknown-calibration",
++            "vkq3-calibration-bootstrap-v1"
++          ]
++        },
++        "wall_s_per_unit": {
++          "exclusiveMinimum": 0,
++          "type": "number"
++        },
++        "work_unit": {
++          "minLength": 1,
++          "type": "string"
++        },
++        "work_units_per_s": {
++          "exclusiveMinimum": 0,
++          "type": "number"
++        }
++      },
++      "required": [
++        "scope",
++        "production_threads"
++      ],
++      "type": "object"
++    },
++    "regions": {
++      "minLength": 1,
++      "type": "string"
++    },
++    "request_manifest_sha256": {
++      "pattern": "^[0-9a-f]{64}$",
++      "type": "string"
++    },
++    "requires_tools": {
++      "items": {
++        "minLength": 1,
++        "type": "string"
++      },
++      "type": "array",
++      "uniqueItems": true
++    },
++    "schema": {
++      "const": "epyc.ready.v2"
++    },
++    "scratch_root": {
++      "pattern": "^/mnt/raid0/llm/tmp/",
++      "type": "string"
++    },
++    "shared_state": {
++      "items": {
++        "minLength": 1,
++        "type": "string"
++      },
++      "type": "array",
++      "uniqueItems": true
++    },
++    "source_manifest": {
++      "pattern": "^/mnt/raid0/llm/",
++      "type": "string"
++    },
++    "speech": {
++      "properties": {
++        "batch_size": {
++          "minimum": 1,
++          "type": "integer"
++        },
++        "decode_mode": {
++          "minLength": 1,
++          "type": "string"
++        },
++        "fixture_audio": {
++          "$ref": "#/$defs/pinnedFile"
++        },
++        "fixture_audio_seconds": {
++          "exclusiveMinimum": 0,
++          "type": "number"
++        },
++        "pcm_sha256": {
++          "pattern": "^[0-9a-f]{64}$",
++          "type": "string"
++        },
++        "planned_audio_seconds": {
++          "exclusiveMinimum": 0,
++          "type": "number"
++        },
++        "right_context": {
++          "oneOf": [
++            {
++              "const": "UNKNOWN"
++            },
++            {
++              "minimum": 0,
++              "type": "integer"
++            }
++          ]
++        },
++        "sample_rate_hz": {
++          "minimum": 1,
++          "type": "integer"
++        },
++        "source_binary": {
++          "$ref": "#/$defs/pinnedFile"
++        },
++        "source_catalog": {
++          "$ref": "#/$defs/pinnedFile"
++        },
++        "threads": {
++          "minimum": 1,
++          "type": "integer"
++        }
++      },
++      "required": [
++        "fixture_audio",
++        "source_catalog",
++        "pcm_sha256",
++        "fixture_audio_seconds",
++        "planned_audio_seconds",
++        "sample_rate_hz",
++        "decode_mode",
++        "right_context",
++        "batch_size",
++        "threads",
++        "source_binary"
++      ],
++      "type": "object"
++    },
++    "tokens_per_item": {
++      "minimum": 1,
++      "type": "integer"
++    },
++    "window_s": {
++      "minimum": 360,
++      "type": "integer"
++    },
++    "workload_kind": {
++      "enum": [
++        "llm",
++        "speech",
++        "command"
++      ]
++    },
++    "calibration_only": {
++      "type": "boolean"
++    },
++    "calibration_target_id": {
++      "type": "string"
++    },
++    "qualifier_version": {
++      "const": "epyc.qual-v2-row"
++    }
++  },
++  "required": [
++    "schema",
++    "production",
++    "id",
++    "owner",
++    "regions",
++    "window_s",
++    "min_window_s",
++    "gib",
++    "scratch_root",
++    "launcher",
++    "engine",
++    "job",
++    "source_manifest",
++    "qual_fixture",
++    "requires_tools",
++    "ports",
++    "exclusive_class",
++    "shared_state",
++    "items",
++    "est_output_GiB",
++    "job_floor_gib",
++    "qualification",
++    "rate_basis",
++    "request_manifest_sha256",
++    "workload_kind",
++    "production_recipe",
++    "qualifier_version"
++  ],
++  "title": "Keeper qualified READY manifest",
++  "type": "object"
++}
+--- /dev/null
++++ b/bin/qual-v2-row/version_router.py
+@@ -0,0 +1,27 @@
++"""Verify peers with their issuer version, retaining the full native checks."""
++import json
++from pathlib import Path
++import subprocess
++
++V1=Path('/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/qualify_launcher.py')
++
++def verify(manifest, flags, current):
++    # Unknown kinds fail closed. Never select from receipt-supplied paths.
++    p=Path(manifest)
++    if p.is_symlink() or not p.is_file(): raise current.Refused('manifest missing or symlink')
++    original=p.read_bytes();m=json.loads(original)
++    if 'qualifier_version' in m:
++        if m['qualifier_version']!='epyc.qual-v2-row': raise current.Refused('unknown qualifier version')
++        llm=m.get('llm',{})
++        if not isinstance(llm,dict):raise current.Refused('malformed llm selector')
++        if llm.get('backend','server') not in ('server','native-batched-bench'):raise current.Refused('unknown qualifier backend')
++        return current.verify(p,flags,True)
++    receipt=Path(m['qualification']['receipt'])
++    if receipt.is_symlink() or not receipt.is_file():raise current.Refused('receipt missing')
++    before=receipt.read_bytes()
++    cp=subprocess.run(['/usr/bin/python3','-I',str(V1),'verify','--manifest',str(p),'--flags',str(flags)],capture_output=True,text=True,timeout=60)
++    if cp.returncode or p.read_bytes()!=original or receipt.read_bytes()!=before:
++        raise current.Refused('v1 peer verification failed or changed')
++    proof=json.loads(before)
++    if not isinstance(proof,dict):raise current.Refused('v1 peer proof malformed')
++    return proof

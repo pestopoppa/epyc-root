@@ -1,0 +1,81 @@
+repo root: /mnt/raid0/llm/tmp/codex3-vkq-r22-combined-20261101/ci-origin-archive
+trust-boundary globs (derived from human_only_paths.yaml): ['MEASUREMENT.md', 'agents/shared/MEASUREMENT_POLICY.md', 'CLAUDE.md', 'agents/AGENT_INSTRUCTIONS.md', 'agents/shared/*.md', 'measurement/protocols/*.md', 'scripts/validate/ratification_receipt_exemptions.json', 'coordination/session-bus/human_only_paths.yaml', 'coordination/session-bus/human_only_paths.sha256']
+  [           EXEMPT] artifacts/operator/autokernel-policy-draft/apply_annex_s.sh  -> MEASUREMENT.md, measurement/protocols/*.md  (via text)  [historical: applied in 88148c42]
+  [             PASS] artifacts/operator/autokernel-policy-draft/apply_ratification.sh  -> CLAUDE.md, MEASUREMENT.md, agents/shared/*.md, agents/shared/MEASUREMENT_POLICY.md, coordination/session-bus/human_only_paths.sha256, coordination/session-bus/human_only_paths.yaml, measurement/protocols/*.md  (via text)
+  [             PASS] artifacts/operator/measurement-v2-draft/apply_v2.sh  -> MEASUREMENT.md, agents/shared/*.md, agents/shared/MEASUREMENT_POLICY.md, coordination/session-bus/human_only_paths.sha256, coordination/session-bus/human_only_paths.yaml, measurement/protocols/*.md  (via text)
+  [           EXEMPT] artifacts/operator/ratify-loop-owned-fleet-20260816.sh  -> CLAUDE.md, agents/shared/*.md  (via text)  [historical: applied in b6fdc986]
+  [           EXEMPT] artifacts/operator/ratify_20260812.sh  -> CLAUDE.md, agents/AGENT_INSTRUCTIONS.md, agents/shared/*.md, agents/shared/MEASUREMENT_POLICY.md, coordination/session-bus/human_only_paths.sha256, coordination/session-bus/human_only_paths.yaml, measurement/protocols/*.md  (via text)  [historical: applied in 5fad27d5]
+  [           EXEMPT] artifacts/operator/ratify_annexg_v9_currency_20260811.sh  -> measurement/protocols/*.md  (via text)  [historical: applied in cd58ba75]
+  [           EXEMPT] artifacts/operator/ratify_annexk_narrowing_xref_20260803.sh  -> measurement/protocols/*.md  (via text)  [historical: applied in 2a7bf42e]
+  [             PASS] artifacts/operator/ratify_autokernel_discovery_first_20260813.sh  -> measurement/protocols/*.md  (via text)
+  [             PASS] artifacts/operator/ratify_dflash_lineup_gate.sh  -> MEASUREMENT.md  (via text)
+  [           EXEMPT] artifacts/operator/ratify_inference_gate_amendment_20260727.sh  -> MEASUREMENT.md, agents/shared/*.md  (via text)  [historical: applied in bc2feb10]
+  [             PASS] artifacts/operator/ratify_lr11_lr13_close_rules_20261007.sh  -> agents/shared/*.md, coordination/session-bus/human_only_paths.yaml  (via patch+text)
+  [             PASS] artifacts/operator/ratify_measurement_amendment_20260731.sh  -> MEASUREMENT.md, agents/shared/*.md, agents/shared/MEASUREMENT_POLICY.md, measurement/protocols/*.md  (via text)
+  [           EXEMPT] artifacts/operator/ratify_measurement_dp2_dp6_20260803.sh  -> MEASUREMENT.md, measurement/protocols/*.md  (via text)  [historical: applied in e109271e]
+  [           EXEMPT] artifacts/operator/ratify_mi210_substrate_constants_20260803.sh  -> MEASUREMENT.md  (via text)  [historical: applied in 0e41c9e7]
+  [           EXEMPT] artifacts/operator/ratify_p_bench_placement_1.sh  -> MEASUREMENT.md, measurement/protocols/*.md  (via text)  [superseded: superseded by artifacts/operator/ratify_p_bench_placement_1_v2.sh]
+  [           EXEMPT] artifacts/operator/ratify_p_bench_placement_1_v2.sh  -> MEASUREMENT.md, measurement/protocols/*.md  (via text)  [historical: applied in 07b7dcab]
+  [             PASS] artifacts/operator/ratify_p_kld_divergence_protocol_20260915.sh  -> MEASUREMENT.md, measurement/protocols/*.md  (via text)
+  [           EXEMPT] artifacts/operator/ratify_pbench4_fg4b_affinity_witness_20260729.sh  -> MEASUREMENT.md  (via text)  [historical: applied in e6b84496]
+  [           EXEMPT] artifacts/operator/ratify_pbench4_fg4b_server_native_20260728.sh  -> MEASUREMENT.md  (via text)  [historical: applied in 4b023edf]
+  [           EXEMPT] artifacts/operator/ratify_pgpu1_duty_cycle_20260814.sh  -> measurement/protocols/*.md  (via text)  [historical: applied in c700318e]
+  [           EXEMPT] artifacts/operator/ratify_speech_kernel_freeze_20260731.sh  -> CLAUDE.md, MEASUREMENT.md, measurement/protocols/*.md  (via text)  [historical: applied in eae9651e]
+  [           EXEMPT] artifacts/operator/repair_measurement_torn_bullet_20260731.sh  -> MEASUREMENT.md  (via text)  [historical: applied in 13383c49]
+  [           EXEMPT] artifacts/operator/staged/apply_p1_doctrine.sh  -> CLAUDE.md, agents/AGENT_INSTRUCTIONS.md, agents/shared/*.md, agents/shared/MEASUREMENT_POLICY.md  (via text)  [historical: applied in a07584b6]
+  [           EXEMPT] artifacts/operator/waive_q8_cpu_prefill_v8_20260725.sh  -> MEASUREMENT.md  (via text)  [not-a-boundary-write: reviewed: mentions, does not write]
+  [           EXEMPT] artifacts/compute/codex3-ready-checkpoint-20261031-0105/kvu-t96/claim_tuple.py  -> MEASUREMENT.md, agents/shared/MEASUREMENT_POLICY.md  (via text)  [not-a-boundary-write: reviewed: mentions, does not write]
+  [           EXEMPT] artifacts/compute/codex3-runtime-checkpoint-20261031-0135/prb/tale_budget_capture.py  -> measurement/protocols/*.md  (via text)  [not-a-boundary-write: reviewed: mentions, does not write]
+  [           EXEMPT] artifacts/engineering/inf75-w5s-census-prep-20261027/builder/stack_numa.py  -> MEASUREMENT.md, measurement/protocols/*.md  (via text)  [not-a-boundary-write: reviewed: mentions, does not write]
+  [           EXEMPT] artifacts/engineering/inf75-w5s-census-prep-20261027/runtime/vidya/claim_tuple.py  -> MEASUREMENT.md, agents/shared/MEASUREMENT_POLICY.md  (via text)  [not-a-boundary-write: reviewed: mentions, does not write]
+  [           EXEMPT] artifacts/operator/rtg57-f32-prep/t48/claim_tuple.py  -> MEASUREMENT.md, agents/shared/MEASUREMENT_POLICY.md  (via text)  [not-a-boundary-write: reviewed: mentions, does not write]
+  [           EXEMPT] artifacts/operator/rtg57-f32-prep/t96/claim_tuple.py  -> MEASUREMENT.md, agents/shared/MEASUREMENT_POLICY.md  (via text)  [not-a-boundary-write: reviewed: mentions, does not write]
+  [           EXEMPT] scripts/operator/ratify_20260827_session.sh  -> agents/shared/*.md  (via text)  [historical: applied in a8359d68]
+  [           EXEMPT] scripts/operator/ratify_actor_seat_wire_test_20260926.sh  -> MEASUREMENT.md, agents/shared/*.md  (via patch+text)  [historical: applied in b3e1bb00]
+  [             PASS] scripts/operator/ratify_ak_ds41_lessons_20261004.sh  -> agents/shared/*.md  (via declared+patch+text)
+  [             PASS] scripts/operator/ratify_ak_lanes_20261004.sh  -> agents/shared/*.md  (via patch+text)
+  [           EXEMPT] scripts/operator/ratify_ak_search_1_a3_20260828.sh  -> measurement/protocols/*.md  (via text)  [historical: applied in 4e42e8db]
+  [             PASS] scripts/operator/ratify_ak_search_1_a4_runtime_recipe_20260927.sh  -> MEASUREMENT.md, measurement/protocols/*.md  (via patch+text)
+  [           EXEMPT] scripts/operator/ratify_eq1_answer_parse_exclusion_20260924.sh  -> agents/shared/*.md  (via text)  [not-a-boundary-write: reviewed: mentions, does not write]
+  [             PASS] scripts/operator/ratify_harness_state_never_touch_20261004.sh  -> agents/shared/*.md  (via patch+text)
+  [             PASS] scripts/operator/ratify_host_memory_rules_20261021.sh  -> agents/shared/*.md  (via declared+patch+text)
+  [             PASS] scripts/operator/ratify_html_artifacts_agent_wiring_20260823.sh  -> CLAUDE.md, agents/shared/*.md  (via text)
+  [           EXEMPT] scripts/operator/ratify_measurement_annex_d_20260823.sh  -> MEASUREMENT.md, measurement/protocols/*.md  (via text)  [historical: applied in e1b256fd]
+  [           EXEMPT] scripts/operator/ratify_measurement_bench_vs_serving_20260908.sh  -> MEASUREMENT.md, agents/shared/*.md, agents/shared/MEASUREMENT_POLICY.md  (via patch+text)  [historical: applied in b05c4433]
+  [             PASS] scripts/operator/ratify_non_roster_session_policy.sh  -> CLAUDE.md  (via text)
+  [           EXEMPT] scripts/operator/ratify_op32_uniform_iq4xs_20260901.sh  -> agents/shared/*.md, agents/shared/MEASUREMENT_POLICY.md  (via patch+text)  [historical: applied in c2bc13a6]
+  [             PASS] scripts/operator/ratify_op60_measurement_epoch_20260926.sh  -> MEASUREMENT.md, measurement/protocols/*.md  (via patch+text)
+  [             PASS] scripts/operator/ratify_op63_region_lock_scope_20260926.sh  -> agents/shared/*.md  (via patch+text)
+  [           EXEMPT] scripts/operator/ratify_operating_constraints_destructive_ops_20260828.sh  -> agents/shared/*.md  (via text)  [historical: applied in f7432560]
+  [             PASS] scripts/operator/ratify_p_serve_sel_1_20260926.sh  -> MEASUREMENT.md, measurement/protocols/*.md  (via patch+text)
+  [             PASS] scripts/operator/ratify_pcal_specdec_contamination_20260916.sh  -> MEASUREMENT.md, measurement/protocols/*.md  (via patch+text)
+  [           EXEMPT] scripts/operator/ratify_prove2me_doctrine_20260907.sh  -> agents/shared/*.md, agents/shared/MEASUREMENT_POLICY.md  (via patch+text)  [historical: applied in fb755192]
+  [           EXEMPT] scripts/operator/ratify_rtg09_duration_reward_20260924.sh  -> agents/shared/*.md  (via text)  [not-a-boundary-write: reviewed: mentions, does not write]
+  [             PASS] scripts/operator/ratify_scratch_lifecycle_20261004.sh  -> agents/shared/*.md  (via patch+text)
+  [           EXEMPT] scripts/operator/ratify_trust_boundary_and_etr1_20260923.sh  -> MEASUREMENT.md  (via patch+text)  [historical: applied in c6657ab0]
+  [             PASS] scripts/operator/ratify_trust_boundary_receipts_fix_20260926.sh  -> coordination/session-bus/human_only_paths.sha256, coordination/session-bus/human_only_paths.yaml, scripts/validate/ratification_receipt_exemptions.json  (via patch+text)
+  [           EXEMPT] scripts/operator/ratify_v10_final_freeze_20260922.sh  -> CLAUDE.md  (via text)  [historical: applied in 5a977761]
+  [             PASS] scripts/operator/ratify_ws58_lessons_20261027.sh  -> MEASUREMENT.md, agents/shared/*.md  (via declared+text)
+  [             PASS] scripts/operator/ratify_ws58_retention_lessons_20261025.sh  -> CLAUDE.md, MEASUREMENT.md, agents/shared/*.md  (via declared+patch+text)
+  [             PASS] scripts/operator/run_p_serve_sel_1_ratify_20260926.sh  -> MEASUREMENT.md, measurement/protocols/*.md  (via text)  [delegates to scripts/operator/ratify_p_serve_sel_1_20260926.sh]
+  [             PASS] scripts/operator/run_pcal_ratify_20260916.sh  -> MEASUREMENT.md, measurement/protocols/*.md  (via text)  [delegates to scripts/operator/ratify_pcal_specdec_contamination_20260916.sh]
+  receipt RATIFIED   ak-ds41-lessons-20261004 (AK-DS41-LESSONS-20261004)
+  receipt RATIFIED   RATIFY-AK-LANES-20261004 (OPERATING-CONSTRAINTS-AK-LANES)
+  receipt RATIFIED   RATIFY-AK-SEARCH-1-A4-RUNTIME-RECIPE-20260927 (P-AK-SEARCH-1)
+  receipt RATIFIED   RATIFY-CKPT-PROMPT-LEAK-20260916 (P-QUAL-T1)
+  receipt None       RATIFY-CTXCKPT-HYBRID-20261024 (None)
+  receipt RATIFIED   RATIFY-HARNESS-STATE-NEVER-TOUCH-20261004 (OPERATING-CONSTRAINTS-HARNESS-STATE-NEVER-TOUCH)
+  receipt RATIFIED   RATIFY-OP60-MEASUREMENT-EPOCH-20260926 (P-AK-SEARCH-1)
+  receipt RATIFIED   RATIFY-OP63-REGION-LOCK-SCOPE-20260926 (OPERATING-CONSTRAINTS-REGION-LOCK-SCOPE)
+  receipt RATIFIED   RATIFY-P-SERVE-SEL-1-20260926 (P-SERVE-SEL-1)
+  receipt RATIFIED   RATIFY-P-CAL-SPECDEC-20260916 (P-CAL)
+  receipt RATIFIED   RATIFY-SCRATCH-LIFECYCLE-20261004 (OPERATING-CONSTRAINTS-SCRATCH-LIFECYCLE)
+  receipt RATIFIED   RATIFY-TRUST-BOUNDARY-RECEIPTS-FIX-20260926 (TRUST-BOUNDARY-RECEIPT-EXEMPTIONS)
+  receipt RATIFIED   RATIFY-V10-EPISODIC-REPIN-20260917 (P-QUAL-T1)
+  receipt RATIFIED   RATIFY-WS58-LESSONS-20261027 (OPERATING-CONSTRAINTS-UNANSWERED-AND-POST-MEASUREMENT)
+  receipt RATIFIED   RATIFY-WS58-RETENTION-LESSONS-20261025 (MEASUREMENT-S5-EVIDENCE-RETENTION-AND-DESTRUCTIVE-OPS)
+  receipt RATIFIED   autokernel-discovery-first-20260813 (P-AK-SEARCH-1)
+  receipt REFUSED    autokernel-discovery-first-20260813 (P-AK-SEARCH-1)  [preserved refusal: superseded by a later RATIFIED receipt]
+
+59 boundary-amending script(s): 24 receipted, 35 exempt, 0 failing.
+OK
