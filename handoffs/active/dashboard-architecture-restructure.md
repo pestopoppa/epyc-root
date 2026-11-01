@@ -356,7 +356,7 @@ Machine harness 25→48→59→81 checks, 0 fail (independently rerun); 4 quiet 
 - [ ] `:8000/dashboard` becomes a redirect to `:8100/autopilot`; `dashboard.html` (7,649 lines)
       deleted wholesale. **All `/dashboard/api/*` + `/dashboard/events/*` data routes stay** —
       :8000 becomes data-plane-only.
-- [ ] Registry entry for the legacy page removed; `dashboard/README.md` ownership boundary
+- [ ] Registry entry for the legacy page removed; `dashboard/README.md` ownership boundary [too-big: operator parity confirmation and legacy redirect precede registry removal]
       rewritten to the plane rule (with Phase 3's codification).
 - [ ] Orchestrator `dashboard_panels.py` survives as the DATA-plane registry (it guards
       endpoints/producers, not page rendering) — nothing drops out of the fold.
