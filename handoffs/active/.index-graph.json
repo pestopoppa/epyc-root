@@ -3939,7 +3939,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-01T22:55:33Z",
+  "generated_at": "2026-11-01T23:23:07Z",
   "nodes": [
     {
       "age_days": 94,
@@ -4755,13 +4755,13 @@
       "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 26,
+      "closed": 27,
       "domain": "research-evaluation",
       "handoff": "repl-turn-efficiency.md",
       "id": "EVL-37",
       "last_advanced": "2026-10-31",
       "next_action": "Obtain S4-T1 live seeding proof at its inference-owner boundary; ingest the first granted real Omega capture via VB-S4-OMEGA-FIRST-AB",
-      "open": 18,
+      "open": 17,
       "priority": 0.8497,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): RUS-3 \u2014 Repeated-sample run to measure within-question trace-length agreement (needs an in",
