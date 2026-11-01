@@ -1,0 +1,16 @@
+2026-11-01 native cooperative guard control output (exit 0):
+PASS malformed/inconsistent result markers -> UNKNOWN
+PASS SQLite real read-only URI; reject disguised/duplicate write modes
+PASS executable spoof and shell refused
+PASS trusted Python child rewrapped
+PASS live ledger/telemetry writes and socket refused
+
+Guarded AutoKernel actual replay result (exit 1):
+CANARY_RESULT: {"loop":"A","status":"FAIL","known_line":true,"guard_refusal":false,"canonical_ledger_unchanged":true,"telemetry_unchanged":true}
+
+Guarded AutoPilot replay result (exit 2):
+CANARY_RESULT: {"loop":"B","status":"UNKNOWN","reason":"hash-only embedder cannot reproduce semantic ranking","observed_1472_keep_with_numbers":false,"observed_frontier_count":0,"assembly_errors":[],"belief_ready":true,"baseline_unchanged":true,"canonical_ledger_unchanged":true,"telemetry_unchanged":true}
+
+Control output is from guard_controls.py; result records are privacy-scoped
+summaries of the actual outputs. See RESULTS-2026-11-01.md for source pins,
+baseline digest, original workload omissions, and the limits of the replay.
