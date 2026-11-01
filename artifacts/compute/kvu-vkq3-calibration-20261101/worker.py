@@ -17,11 +17,11 @@ def atom(p,o):
  finally:os.unlink(n)
 def emit(event):mode_guard.emit(D/'events.jsonl',event)
 def main():
- mode=os.environ['VKQ3_MODE'];assert mode in ('qualification','full');out=D/('qualification' if mode=='qualification' else 'run');out.mkdir(exist_ok=True);plan=json.loads((D/'PLAN.json').read_text());deadline=int(os.environ['FILLER_DEADLINE'])-30;fid=os.getenv('FILLER_ID');gp=pathlib.Path('/mnt/raid0/llm/tmp/compute-flags/grants')/(fid+'.grant') if fid else None;grant=gp.read_bytes() if gp and gp.is_file() else None
+ mode=os.environ['VKQ3_MODE'];assert mode in ('qualification','full');out=D/('qualification' if mode=='qualification' else 'run');out.mkdir(mode=0o700,exist_ok=True);os.chmod(out,0o700);plan=json.loads((D/'PLAN.json').read_text());deadline=int(os.environ['FILLER_DEADLINE'])-30;fid=os.getenv('FILLER_ID');gp=pathlib.Path('/mnt/raid0/llm/tmp/compute-flags/grants')/(fid+'.grant') if fid else None;grant=gp.read_bytes() if gp and gp.is_file() else None
  if not grant or os.environ.get('FILLER_CPUS')!='0-95':raise RuntimeError('genuine whole-host grant missing')
  mode_guard.mode_check(mode,os.environ.get('FILLER_DRYRUN'))
  if mode_guard.target_allowed(mode) and mode_guard.exposure_seen(out):
-  atom(out/'TERMINAL.json',{'state':'incomplete_prior_exposure_no_redraw','partial':False,'verdict':None});return 0
+  print('refusing prior target exposure; no redraw',file=sys.stderr);return 75
  stopped=False
  def handle(*_):
   nonlocal stopped;stopped=True
@@ -32,10 +32,12 @@ def main():
  if mode_guard.target_allowed(mode):
   c=plan['context'];session=json.loads((B/'private-sessions'/(c['session']+'.json')).read_text());prompt=next(p for i,p,_ in adapter.iter_prompts(session['turns'],None,slot_holds_output=False) if i==c['turn'])
   if sha(D/'CONTEXT-METADATA.json')!=plan['context_metadata_sha256'] or hashlib.sha256(prompt.encode()).hexdigest()!=c['sha256']:raise RuntimeError('context envelope changed')
+  if stopping():partial('stop or grant lost before tokenizer');return 75
   tkenv={'PATH':'/usr/bin:/bin','LD_LIBRARY_PATH':str(K),'OMP_NUM_THREADS':'1','HIP_VISIBLE_DEVICES':'-1','ROCR_VISIBLE_DEVICES':'-1'}
   tk=subprocess.run([str(K/'llama-tokenize'),'-m',MODEL,'--stdin','--ids','--no-escape'],input=prompt.encode(),capture_output=True,env=tkenv,timeout=120,check=True)
   actual_count=len(json.loads(tk.stdout)); del tk
   if actual_count<=65536:raise RuntimeError('architect tokenizer count mismatch')
+  atom(out/'tokenization.json',{'count':actual_count,'tokenizer_binary_sha256':sha(K/'llama-tokenize'),'model_catalog_sha256':sha(D/'FULL-MODELS.sha256'),'model_shard0_sha256':'5ce89370720f8bf90890f439361282104c1aa1482d4013bb9a50923e758e71a4','prompt_sha256':c['sha256'],'flags':['--stdin','--ids','--no-escape'],'plan_sha256':sha(D/'PLAN.json')})
  else:prompt='Explain one way to make a network retry safe.'
  outputs={}
  for arm in (plan['arms'] if mode=='full' else plan['arms'][:1]):
@@ -46,7 +48,7 @@ def main():
   if mode in ('full','qualification'):cmd=['numactl','--interleave=all',*cmd,'--no-mmap','--spec-draft-model',DRAFT,'--spec-draft-type-k','f16','--spec-draft-type-v','f16']
   env={'PATH':'/usr/bin:/bin','LD_LIBRARY_PATH':str(K),'OMP_NUM_THREADS':'1','HIP_VISIBLE_DEVICES':'-1','ROCR_VISIBLE_DEVICES':'-1'}
   if arm['GGML_FA_VKQ_F16']:env['GGML_FA_VKQ_F16']=arm['GGML_FA_VKQ_F16']
-  log=(out/(name+'.server.log')).open('xb');p=subprocess.Popen(cmd,stdout=log,stderr=subprocess.STDOUT,env=env,start_new_session=True);birth=pathlib.Path('/proc',str(p.pid),'stat').read_text().rsplit(') ',1)[1].split()[19]
+  log=os.fdopen(os.open(out/(name+'.server.log'),os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600),'wb');p=subprocess.Popen(cmd,stdout=log,stderr=subprocess.STDOUT,env=env);birth=pathlib.Path('/proc',str(p.pid),'stat').read_text().rsplit(') ',1)[1].split()[19]
   atom(out/(name+'.server.json'),{'arm':name,'mode':mode,'argv':cmd,'pid':p.pid,'birth':birth,'grant_sha256':hashlib.sha256(grant).hexdigest() if grant else None,'grant_text':grant.decode() if grant else None,'env_knob':arm['GGML_FA_VKQ_F16'],'source_sha256':sha(D/'SOURCE-SHA256SUMS'),'plan_sha256':sha(D/'PLAN.json'),'context_sha256':hashlib.sha256(prompt.encode()).hexdigest(),'binary_sha256':sha(K/'llama-server'),'runtime_catalog_sha256':sha(D/'RUNTIME-INPUTS.sha256'),'full_model_catalog_sha256':sha(D/'FULL-MODELS.sha256') if mode=='full' else None,'draft_head_sha256':'5ff54097406a905cf3a724c709124ceb0e3e10235ee862298969e91c96fa96e6' if mode=='full' else None,'cpu_affinity':sorted(os.sched_getaffinity(0)),'started_epoch':time.time()})
   try:
    url=f'http://127.0.0.1:{port}';ready=False;limit=time.monotonic()+1800
@@ -74,9 +76,9 @@ def main():
    timings=body.get('timings') or {};draft=timings.get('draft_n');accepted=timings.get('draft_n_accepted');tokens=body.get('tokens');result={'arm':name,'http_status':state['http_status'],'native_response':body,'response_sha256':hashlib.sha256(state['raw'].encode()).hexdigest(),'draft_n':draft,'draft_n_accepted':accepted,'acceptance':accepted/draft if isinstance(draft,int) and isinstance(accepted,int) and draft>0 and 0<=accepted<=draft else None,'tokens':tokens if isinstance(tokens,list) else None,'grant_sha256':hashlib.sha256(grant).hexdigest() if grant else None,'finished_epoch':time.time()};atom(out/(name+'.response.json'),result);outputs[name]=result
   finally:
    if p.poll() is None:
-    os.killpg(p.pid,signal.SIGTERM)
+    p.send_signal(signal.SIGTERM)
     try:p.wait(10)
-    except subprocess.TimeoutExpired:os.killpg(p.pid,signal.SIGKILL);p.wait()
+    except subprocess.TimeoutExpired:p.kill();p.wait()
    log.close();atom(out/(name+'.drain.json'),{'pid':p.pid,'birth':birth,'returncode':p.returncode,'drained':p.poll() is not None,'server_log_sha256':sha(out/(name+'.server.log'))})
  if mode=='qualification':
   a=outputs.get('hybrid')
@@ -87,5 +89,5 @@ def main():
  if a and b and a['acceptance'] is not None and b['acceptance'] is not None and a['tokens'] is not None and b['tokens'] is not None:
   aa=a['tokens'];bb=b['tokens'];div=next((i for i,(x,y) in enumerate(zip(aa,bb)) if x!=y),None)
   if div is None and len(aa)!=len(bb):div=min(len(aa),len(bb))
- state='complete_raw' if len(outputs)==2 else 'incomplete_raw';atom(out/'TERMINAL.json',{'partial':False,'state':state,'first_divergence_index':div,'divergence_known':bool(a and b and a['acceptance'] is not None and b['acceptance'] is not None and a['tokens'] is not None and b['tokens'] is not None),'hybrid_acceptance':a['acceptance'] if a else None,'legacy_acceptance':b['acceptance'] if b else None,'verdict':None,'control_no_mtp':False});emit({'kind':'target_terminal','state':state,'terminal_path':str(out/'TERMINAL.json')});return 0
+ state='complete_raw' if len(outputs)==2 else 'incomplete_raw';atom(out/'TERMINAL.json',{'partial':state!='complete_raw','state':state,'first_divergence_index':div,'divergence_known':bool(a and b and a['acceptance'] is not None and b['acceptance'] is not None and a['tokens'] is not None and b['tokens'] is not None),'hybrid_acceptance':a['acceptance'] if a else None,'legacy_acceptance':b['acceptance'] if b else None,'verdict':None,'control_no_mtp':False});emit({'kind':'target_terminal','state':state,'terminal_path':str(out/'TERMINAL.json')});return 0 if state=='complete_raw' else 1
 if __name__=='__main__':sys.exit(main())

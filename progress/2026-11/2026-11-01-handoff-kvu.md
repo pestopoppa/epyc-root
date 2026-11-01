@@ -29,3 +29,11 @@ The direct scratch `slot_run.py` now also refuses `p3` orders before outputs or 
 An [independent VKQ3 calibration draft](../../artifacts/compute/kvu-vkq3-calibration-20261101/DRAFT.md) now has a mode-aware worker, launcher, source catalogs and three passing offline helper tests. It is explicitly not runnable or published: verify actual mode propagation through the engine, event and cleanup lifecycle, candidate exposure across producers and write-side enrollment before publication. The original exposure must never be redrawn. Copy-safe draft code is committed for review; engine and private prompt remain in scratch.
 
 For KVU-16i, a newly declared warm-up protocol and candidate packet draft are committed alongside the 48-body identity checker. Both warm-up body hashes were reproduced offline. The missing historical warm-up remains unknown, and the complete keeper launcher and measurement capture are still unbuilt.
+
+## Calibration and candidate producer review
+
+The VKQ3 independent calibration review corrected draft process-group custody, native-tokenizer receipt before exposure, JSON-aware completion, private outputs and mode checks. Ten offline tests pass on the durable review snapshot; the mode-path test explicitly tests the bound scratch launcher. Actual sudo/chroot/engine propagation, abrupt cleanup, target-model control and broader candidate exposure audit are unverified; no row published. The existing VB-CPU-FA-VKQ family source table and task now describe the independent instance and preserve projection/canary as open.
+
+KVU-16i candidate preparation added a draft evidence reducer, PID-birth-aware GPU sampler and request transport. Sixteen offline fixture tests pass. A complete keeper-compatible producer, observed trigger witnesses, STOP/drain verification and write-side capture remain open; no inference was launched. Moved our earlier KVU-16h safety guard notes beneath their correct parent task and clarified the wrapper chronology.
+
+The required handoff index check initially found the generated master rollup stale. Regenerated `.index-state.json`, `.index-graph.json` and the master rollup, then `index_state.py --check` exited 0 (existing scratch-field advisories remain). The review snapshots are not ready rows, and no qualification was performed.

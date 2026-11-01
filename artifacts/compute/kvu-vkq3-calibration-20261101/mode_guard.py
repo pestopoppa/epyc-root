@@ -3,7 +3,7 @@ import json, os
 from pathlib import Path
 
 def mode_check(mode, dryrun):
-    if mode not in ('qualification', 'full') or (dryrun == '1') != (mode == 'qualification'):
+    if mode not in ('qualification', 'full') or dryrun not in ('0', '1') or (dryrun == '1') != (mode == 'qualification'):
         raise RuntimeError('qualification mode mismatch')
     return mode
 
