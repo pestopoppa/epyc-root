@@ -1,0 +1,20 @@
+{
+  "C5": "c72ec82f5417bb2937310326120f149b665e8400",
+  "D4": "19ff817fb25e9a1b838b1d7f9f4325f7bf9779c4",
+  "D4_parent": "eb7818c0b85c08ccb39ec2299548b85147c47495",
+  "upstream_change": "958d9c0b61d0025ca8e2fff32d66a1576173fde9",
+  "upstream_change_ancestor_C5": false,
+  "upstream_change_ancestor_D4_parent": true,
+  "D4_uses": [
+    "19ff817fb25e9a1b838b1d7f9f4325f7bf9779c4:tools/mtmd/models/lfm3a.cpp:65:    cur = ggml_conv_2d_direct(ctx0, model.pre_encode_conv_X_w[3], cur, 1, 1, 0, 0, 1, 1);",
+    "19ff817fb25e9a1b838b1d7f9f4325f7bf9779c4:tools/mtmd/models/lfm3a.cpp:70:    cur = ggml_conv_2d_direct(ctx0, model.pre_encode_conv_X_w[6], cur, 1, 1, 0, 0, 1, 1);"
+  ],
+  "C5_constructor": "struct ggml_tensor * ggml_conv_2d_direct(\n        struct ggml_context * ctx,\n        struct ggml_tensor  * a,   // convolution kernel [KW, KH, IC, OC]\n        struct ggml_tensor  * b,   // input data [W, H, C, N]\n        int                   s0,  // stride dimension 0\n        int                   s1,  // stride dimension 1\n        int                   p0,  // padding dimension 0\n        int                   p1,  // padding dimension 1\n        int                   d0,  // dilation dimension 0\n        int                   d1) {// dilation dimension 1\n\n    GGML_ASSERT(a->ne[2] == b->ne[2]);\n    //GGML_ASSERT(a->type == b->type);\n\n    int64_t ne[4];\n    ne[0] = ggml_calc_conv_output_size(b->ne[0], a->ne[0], s0, p0, d0);\n    ne[1] = ggml_calc_conv_output_size(b->ne[1], a->ne[1], s1, p1, d1);\n    ne[2] = a->ne[3];\n    ne[3] = b->ne[3];\n\n    struct ggml_tensor * result = ggml_new_tensor(ctx, b->type, 4, ne);\n\n    ggml_set_op_params_i32(result, 0, s0);\n    ggml_set_op_params_i32(result, 1, s1);\n    ggml_set_op_params_i32(result, 2, p0);\n    ggml_set_op_params_i32(result, 3, p1);\n    ggml_set_op_params_i32(result, 4, d0);\n    ggml_set_op_params_i32(result, 5, d1);\n\n    result->op = GGML_OP_CONV_2D;\n    result->src[0] = a;\n    result->src[1] = b;\n\n    return result;\n}",
+  "supports_op_return": {
+    "C5": "return true;",
+    "D4_parent": "return (ggml_is_contiguous(op->src[0]) && ggml_is_contiguous(op->src[1]));"
+  },
+  "upstream_change_stat": "958d9c0b61 Test support for alternative conv layout (#25617)\n ggml/src/ggml-cpu/ggml-cpu.cpp       |  2 ++\n ggml/src/ggml-cuda/conv2d.cu         |  1 +\n ggml/src/ggml-cuda/ggml-cuda.cu      |  2 +-\n ggml/src/ggml-vulkan/ggml-vulkan.cpp |  7 +++++++\n tests/test-backend-ops.cpp           | 19 +++++++++++++++----\n 5 files changed, 26 insertions(+), 5 deletions(-)\n",
+  "upstream_cuda_patch": "diff --git a/ggml/src/ggml-cuda/ggml-cuda.cu b/ggml/src/ggml-cuda/ggml-cuda.cu\nindex 3e2c622951..561ab7ac59 100644\n--- a/ggml/src/ggml-cuda/ggml-cuda.cu\n+++ b/ggml/src/ggml-cuda/ggml-cuda.cu\n@@ -5105,7 +5105,7 @@ static bool ggml_backend_cuda_device_supports_op(ggml_backend_dev_t dev, const g\n         case GGML_OP_IM2COL:\n         case GGML_OP_IM2COL_3D:\n         case GGML_OP_CONV_2D:\n-            return true;\n+            return (ggml_is_contiguous(op->src[0]) && ggml_is_contiguous(op->src[1]));\n         case GGML_OP_CONV_2D_DW:\n             return op->src[0]->type == GGML_TYPE_F32;\n         case GGML_OP_CONV_TRANSPOSE_2D:\n",
+  "scope": "GPU supports-op source eligibility only. No runtime tensor strides, device residency, fallback or model correctness evidence."
+}
