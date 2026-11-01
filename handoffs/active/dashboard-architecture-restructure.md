@@ -347,7 +347,7 @@ Machine harness 25→48→59→81 checks, 0 fail (independently rerun); 4 quiet 
       `artifacts/audit/machine-frame-transport-20261031/README.md`. [no-belief: source implementation and native regression controls]
 - [ ] **/slots fan-out answered 0/19 during buildout** — machine-state truth issue (RTG-03
       territory), surfaced loudly by the new page rather than rendered as zeros; confirm against
-      RTG-03's manifest/realized work before treating as a page-side bug.
+      RTG-03's manifest/realized work before treating as a page-side bug. [too-big: requires RTG-03 owner to reconcile historical manifest and realized machine state]
 
 ### Phase 1b — deprecation (operator-triggered, after new-page parity is confirmed)
 
