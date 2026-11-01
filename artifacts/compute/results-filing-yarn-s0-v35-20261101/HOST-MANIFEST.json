@@ -1,0 +1,20 @@
+{
+  "schema": "yarn-s0-v35-host-closure/v1",
+  "native_root": "/mnt/micron/refactor-yarn-s0-v35-window-20261031",
+  "native_manifest_sha256": "3014e1f6451d35079f31a6324265d07d2c8073b5bf97f307c365ac4c62e4e320",
+  "native_launch_sha256": "ab6305eae6b87b939f721c7fc4f6c5d9d8979bebefe361291440f69bf40d1cb1",
+  "files": {
+    "launch.sh": "e65fb5a2d3051add583d543326008787e62d4fe01abb0c5229c4b6cec3c61573",
+    "outer_log.py": "01b31c11606b83c2a37975d876acedf86571b0c820ea58638c61eaa4f16feb44",
+    "pidfd_custody_v2.py": "775fc851871f17724417e355e34e7c0dab14fa2f2d2a66e562d473f169cf1291",
+    "pidfd_subreaper_v3.py": "7714cc37ad0738812910ec4d60227cc2b7d4f3927dc97ab8d59ba2e74d0be44f",
+    "pf1_graceful.py": "97bf1284279c68ff5d6ec864b2f34b3e4ab5ec0636e80ff681e3f30cace1295d",
+    "engine/dryrun_check.py": "06361c9061e5e8326fbe55aedd2fcf198e346b1cae4610fc7a4647616dc70daf",
+    "engine/dryrun_disk_policy.json": "a271e93a7a9ac54386352d254e5ad2ab57a5f39fc40daad99106afa919bfa157",
+    "engine/filler_run13.sh": "b2bd7c6d7c3111f591af71385e1129de00cd8ebf27a862a19c95fc1ff48bdf48",
+    "engine/filler_lib.sh": "241e522f4a7d7208e7485834c90d77676434a9bc88fd253575e034ad2934237c"
+  },
+  "predecessor_inventory": "/mnt/raid0/llm/tmp/refactor-01a16fc3/yarn-s0-v35-window-20261031/V33-CURRENT-INVENTORY.json",
+  "predecessor_inventory_sha256": "9b9d5b944191acdbc98c735b500605dae42877dbff165a889a17dbb41ab12892",
+  "scope": "samefull27B/128K/1024token/native source/quiet quarter; no weights copied, no GPUcompute; smoke0.6B4000prefix segregated"
+}

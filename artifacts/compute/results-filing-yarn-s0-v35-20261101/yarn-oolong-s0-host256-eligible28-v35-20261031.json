@@ -1,0 +1,391 @@
+{
+  "class": "diagnostic",
+  "decision_rule": "Partial diagnostic: higher completed matching native-pair coverage is better. Preserve original120campaign/30s0pair denominator and original A0-first order. Retain1completedA0(score0/length),2immutableunknownA0 and57unexposed armcells. Only original28eligible pairs can proceed; A1 requires matching completed native A0 regardless of quality score. No full-cohort McNemar verdict or quality-based selection/redraw.",
+  "enrollment": "n/a: partial diagnostic",
+  "est_output_GiB": 0.25,
+  "full_disk_admission_GiB": 151.125,
+  "gib": 180,
+  "hold": null,
+  "id": "yarn-oolong-s0-host256-eligible28-v35-20261031",
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/yarn-s0-v35-window-20261031/launch.sh",
+    "sha256": "e65fb5a2d3051add583d543326008787e62d4fe01abb0c5229c4b6cec3c61573"
+  },
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/yarn-s0-v35-window-20261031/launch.sh",
+    "sha256": "e65fb5a2d3051add583d543326008787e62d4fe01abb0c5229c4b6cec3c61573"
+  },
+  "limitations": [
+    "No historicalfullmodelbyteidentityclaim; currentedgewitnessonly",
+    "4retainedpathsincludeonev2alias;3distinctnativewindows",
+    "Allpriorretainednativewindowsassumedrepresented; cannotdisprovehidden/unretainedexposure",
+    "Native108058countdoesnotdistinguish2candidateIDs; neitherredrawn",
+    "No fullcohortresultorqualitydecision",
+    "Host entry uses an owned byte-pinned Python3.13.7 closure; original private runtime and host namespace remain unchanged.",
+    "Small-model shortened-prefix smokes do not qualify full27B feasibility or full120-pair completion.",
+    "Smokes are segregated by smoke mode, small-model path/hash, 4000-character payload, and separate smoke roots outside cohort; never merge them as official campaign exposures."
+  ],
+  "min_window_s": 42000,
+  "output_budget": {
+    "kind": "sampled continuation cap, not hard filesystem quota or completion guarantee",
+    "per_shard_GiB": 0.25,
+    "all_four_GiB": 1,
+    "floor_GiB": 150,
+    "safety_GiB": 0.125,
+    "strict_logs_per_stream_KiB": 256,
+    "strict_result_file_MiB": 32,
+    "strict_native_response_MiB": 1,
+    "cap_behavior": "ResourcePause rc75 partial after owned descendants drain; exposed incomplete requests remain unknown; no result truncation",
+    "outer_log": "own capture strict4MiB persistent; forwarded stdout <=256KiB per launcher; overflow marker pauses actual job, never kills pregrant poller",
+    "scope": "all original120pairs retained; eligible110 across four shards unchanged; A1 requires successful matching A0",
+    "metadata_sampled_cap_bytes": 8388608
+  },
+  "owner": "codex-refactor-01a16fc3",
+  "port": 19434,
+  "priority_rank": 30,
+  "regions": "any-of q0,q1,q2",
+  "result_path": "/mnt/micron/refactor-yarn-s0-v35-window-20261031/cohort/results",
+  "scratch_root": "/mnt/raid0/llm/tmp/refactor-01a16fc3/yarn-s0-v35-window-20261031",
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/yarn-s0-v35-window-20261031/HOST-MANIFEST.json",
+    "sha256": "280cd7b2c947e8ea2f23706243f6be66fc1914312b1c35522eea537fc0424fe4"
+  },
+  "window_s": 43200,
+  "min_effect": "n/a (partial diagnostic; original120 denominator retained)",
+  "feasibility": {
+    "scope": "originalfull27B128K one-item attempt per arm window; no promise28pairs fitonewindow",
+    "minimum_window_s": 42000,
+    "window_s": 43200,
+    "provisional_item_budget_s": 40000,
+    "actual_prior_completed_A0": {
+      "prompt_tokens": 108050,
+      "prefill_s": 30448.625008,
+      "decode_tokens": 1024,
+      "decode_s": 899.663256,
+      "sum_s": 31348.288264,
+      "scope": "single originalq0 nativeitem; not fullcohort bound"
+    },
+    "native_prompt_tokens_max": 109936,
+    "cutoff": "typedSTOP/deadline/resourcepause75 afterownchildren drain, includingbeforeexposure; unchangedgrant/source/affinity failuresrefuse",
+    "small_model_scope": "R11only doesnotbound27B throughput"
+  },
+  "keep": [
+    "KEEP",
+    "*.py",
+    "*.sh",
+    "*.md",
+    "*.json",
+    "*.log",
+    "engine/*.py",
+    "engine/*.sh",
+    "engine/*.json",
+    "source-proposal/*.py",
+    "source-proposal/*.sh",
+    "source-proposal/*.json",
+    "retained-cohort/results/*.jsonl",
+    "retained-cohort/exposures/*",
+    "CONTROL-ONLY-reader-*/*.json",
+    "CONTROL-ONLY-reader-*/*.jsonl",
+    "scheduler-state/*.lock",
+    "scheduler-state/*.json",
+    "scheduler-state/*.pid"
+  ],
+  "log_consumer": "/mnt/raid0/llm/tmp/refactor-01a16fc3/yarn-s0-v35-window-20261031/read_logs.py",
+  "launcher_log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/yarn-s0-v35-window-20261031/ws58-launcher.out",
+  "status": "READY",
+  "preferred_regions": "any-of q0,q1,q2",
+  "cwd": "/mnt/raid0/llm/tmp/refactor-01a16fc3/yarn-s0-v35-window-20261031",
+  "log_consumer_sha256": "eecce66ee1c706f77428b7f557964e8279de672d5efcdf881b7493ad3d81a9d7",
+  "predecessor": "yarn-oolong-s0-budget256-eligible28-q3-v26-20261030",
+  "placement_reason": "Relocatable CPU row; keeper chooses the first free quarter among q0/q1/q2, avoiding the MI210 sibling quarter.",
+  "repair": {
+    "old_id": "yarn-oolong-s0-budget256-eligible28-q3-v26-20261030",
+    "old_epoch_zero_exposure": "pending final official cohort audit; absence of waiter is not evidence",
+    "scope": "task-private split storage/runtime closure only; original120/eligible28/no-redraw/A1matchingA0 unchanged",
+    "old_waiter_retirement": "not executed by successor staging"
+  },
+  "predecessor_output_budget_evidence": {
+    "path": "/mnt/raid0/llm/tmp/yarn-judged-cell-repair-v4-20261029/YARN-s0-BUDGET.json",
+    "sha256": "a634856213dae89e4a4034f494080e76ebf4df49271179a5f9cb4b68731f34ae"
+  },
+  "predecessor_validation_controls": [
+    "/mnt/raid0/llm/tmp/yarn-judged-cell-repair-v4-20261029/YARN-s0-ARM-CONTROLS.json",
+    "/mnt/raid0/llm/tmp/yarn-judged-cell-repair-v4-20261029/YARN-BUDGET-CONTROLS.json",
+    "/mnt/raid0/llm/tmp/yarn-judged-cell-repair-v4-20261029/YARN-s0-FINAL-REINVENTORY.json"
+  ],
+  "validation_controls": [
+    "/mnt/raid0/llm/tmp/yarn-oolong-s0-split-storage-v27-20261030/PRELAUNCH-IMPORT-CONTROLS.json",
+    "/mnt/raid0/llm/tmp/yarn-oolong-s0-split-storage-v27-20261030/FINAL-T1-STORAGE-PREFLIGHT.json",
+    "/mnt/raid0/llm/tmp/yarn-oolong-s0-split-storage-v27-20261030/SMOKE-NORMAL-CONTROL.json",
+    "/mnt/raid0/llm/tmp/yarn-oolong-s0-split-storage-v27-20261030/SMOKE-CUTOFF-CONTROL.json",
+    "/mnt/raid0/llm/tmp/yarn-oolong-s0-split-storage-v27-20261030/CPU-RELOCATION-T1-CONTROLS.json",
+    "/mnt/raid0/llm/tmp/yarn-oolong-s0-split-storage-v27-20261030/T1-ROW-CONTROLS.json",
+    "/mnt/raid0/llm/tmp/yarn-oolong-s0-split-storage-v27-20261030/OFFICIAL-EXPOSURE-AUDIT.json",
+    "/mnt/raid0/llm/tmp/yarn-oolong-s0-split-storage-v27-20261030/CURRENT-EXPOSURE-AUDIT.json",
+    "/mnt/raid0/llm/tmp/yarn-oolong-s0-split-storage-v27-20261030/RAID-METADATA-CAP-EVIDENCE.json"
+  ],
+  "smoke": {
+    "ran_at": "2026-10-31T09:28:23.671464+00:00",
+    "regions": "96,97",
+    "model": "/mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "wall_s": 120.60966252000071,
+    "normal_exit_code": 0,
+    "cutoff_exit_code": 75,
+    "log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/yarn-s0-v35-window-20261031/QUALIFICATION.json",
+    "launcher_sha256": "e65fb5a2d3051add583d543326008787e62d4fe01abb0c5229c4b6cec3c61573",
+    "source_manifest_sha256": "280cd7b2c947e8ea2f23706243f6be66fc1914312b1c35522eea537fc0424fe4",
+    "scope": "CONTROL_ONLY0.6B4000prefix actualsamefrontdoor/nativewriter/strictreader/activecutoff; no full27B cohort timing or efficacy result"
+  },
+  "external_output": {
+    "metadata_root": "/mnt/raid0/llm/tmp/yarn-oolong-s0-split-storage-v27-20261030",
+    "metadata_sampled_cap_bytes": 8388608,
+    "native_root": "/mnt/micron/refactor-yarn-s0-v27-20261030",
+    "native_sampled_cap_bytes": 268435456,
+    "native_aggregate_reserve_bytes": 1073741824,
+    "raid_floor_bytes": 161061273600,
+    "micron_floor_bytes": 161061273600,
+    "safety_bytes": 134217728,
+    "runtime_closure": "/mnt/micron/yarn-python313-host-closure-20261030",
+    "retention": "retain all native source/cohort/smoke evidence on Micron and the immutable owned runtime closure; outside RAID reaper; original data unchanged",
+    "metadata_cap_evidence": "/mnt/raid0/llm/tmp/yarn-oolong-s0-split-storage-v27-20261030/RAID-METADATA-CAP-EVIDENCE.json",
+    "metadata_cap_evidence_sha256": "de0558488b51e2a233a13b692072648cd218bf05342d5a5d156a9530c231c9cb"
+  },
+  "unqualified_fixes": [],
+  "smoke_cpu_affinity": "96,97 (R11 q0 SMT sibling pair; exact live grant check at entry)",
+  "validation_evidence": [
+    {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s0-split-storage-v27-20261030/PRELAUNCH-IMPORT-CONTROLS.json",
+      "sha256": "a6307f390bc3bf1c0fccfdd98eafb985cff7645e667774c2adc00f0908785154"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s0-split-storage-v27-20261030/FINAL-T1-STORAGE-PREFLIGHT.json",
+      "sha256": "2ed2d72b7d9acdaf62822f464bb09ab326edcbdf674ddedfaf5e805c54f4798c"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s0-split-storage-v27-20261030/SMOKE-NORMAL-CONTROL.json",
+      "sha256": "e31087d5c6320de5001332f6949a199e2fd252f934701dea44bb319015bee7a7"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s0-split-storage-v27-20261030/SMOKE-CUTOFF-CONTROL.json",
+      "sha256": "22dd3c2fab1e8fda1193a0e3bc13d1df820a4aafaea2ac0256f8d748b0c2df3b"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s0-split-storage-v27-20261030/CPU-RELOCATION-T1-CONTROLS.json",
+      "sha256": "407c7961e06cb8fcb96859061fd03d84c382804894d6a157dbb0e0eb27614060"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s0-split-storage-v27-20261030/T1-ROW-CONTROLS.json",
+      "sha256": "e8138b914dced7e797732557d4035f540624e68dd3474914e278dfd484ec06f7"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s0-split-storage-v27-20261030/OFFICIAL-EXPOSURE-AUDIT.json",
+      "sha256": "2284ca3d934c21637e0775951a1789915c892a8d4c83b4f95c22946f46f8c361"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s0-split-storage-v27-20261030/CURRENT-EXPOSURE-AUDIT.json",
+      "sha256": "aab83461aa586d3b845dc35b71a37d0b8241eef4b9620de1736a978e042dd845"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s0-split-storage-v27-20261030/RAID-METADATA-CAP-EVIDENCE.json",
+      "sha256": "de0558488b51e2a233a13b692072648cd218bf05342d5a5d156a9530c231c9cb"
+    }
+  ],
+  "campaign_model": {
+    "path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+    "identity_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+    "recipe": "Qwen3.8-27B, c=262144, -t 24, -ngl 0"
+  },
+  "scope": {
+    "original_denominator": 120,
+    "eligible_A0": 28,
+    "A1_candidates_without_matching_A0": 0,
+    "unknown_excluded_A0": [
+      "oolong_synth@131072#617060046",
+      "oolong_synth@131072#617060054"
+    ],
+    "redraw": false,
+    "full_cohort_verdict": false
+  },
+  "keeper_log": [
+    {
+      "ts": "2026-10-30T12:53:48Z",
+      "state": "armed",
+      "reason": "QUEUED yarn-oolong-s0-split256-eligible28-anyofq012-v27-20261030 3552004 | OK: 1 row(s) checked, 0 refusal(s), 0 warning(s) | admit: validator OK; admit: MemAvailable 1025 GiB, need 180 GiB; class=block-correctness launcher=filler_run13"
+    }
+  ],
+  "native_grade": null,
+  "full_complete": false,
+  "native_keep": {
+    "root": "/mnt/micron/refactor-yarn-s0-v35-window-20261031",
+    "keep": [
+      "*.py",
+      "*.sh",
+      "*.json",
+      "cohort/results/*.jsonl",
+      "cohort/exposures/*.start",
+      "cohort/exposures/*.response",
+      "cohort/exposures/*.native.json",
+      "cohort/window-*/*.log",
+      "cohort/window-*/*.argv",
+      "smoke-*/*.json",
+      "smoke-*/*.out",
+      "smoke-*/results/*.jsonl",
+      "smoke-*/exposures/*.start",
+      "smoke-*/exposures/*.response",
+      "smoke-*/exposures/*.native.json",
+      "smoke-*/window-*/*.log",
+      "smoke-*/window-*/*.argv",
+      "cohort/lock-witness-*.json"
+    ],
+    "weights_copied": false
+  },
+  "qualification": "/mnt/raid0/llm/tmp/refactor-01a16fc3/yarn-s0-v35-window-20261031/QUALIFICATION.json",
+  "actual_noarg_entry": "/mnt/raid0/llm/tmp/refactor-01a16fc3/yarn-s0-v35-window-20261031/NOARG-ENTRY-CONTROL.json",
+  "retained_readset_controls": "/mnt/raid0/llm/tmp/refactor-01a16fc3/yarn-s0-v33-20261031/RETAINED-READSET-CONTROLS.json",
+  "accounting": {
+    "originalcampaign_pairs": 120,
+    "originalshard_pairs": 30,
+    "planned_arm_cells": 60,
+    "retained_before_after": {
+      "ok": 1,
+      "error": 0,
+      "unknown": 2,
+      "unexposed": 57
+    },
+    "eligible_A0": 27,
+    "eligible_A1": 1,
+    "prior_unknown_A0": [
+      "oolong_synth@131072#617060046",
+      "oolong_synth@131072#617060054"
+    ],
+    "retained_completed_A0": "oolong_synth@131072#617060047",
+    "retained_native_file_policy": "oldresultprefix andcompletecapturebytes pinned beforeeverynewexposure andafterdrain; alloriginalv27bytesunchanged"
+  },
+  "cpu_relocation_reason": "Preserve predecessor any-ofq0q1q2 geometry toavoidGPU-siblingquarter; actualCPUlist comesfromWS58_REGIONS/FILLER_CPUS. No fixedquarter hardcoding.",
+  "module_lock_controls": "/mnt/raid0/llm/tmp/refactor-01a16fc3/yarn-s0-v35-window-20261031/MODULE-LOCK-CONTROLS.json",
+  "launcher_log_path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/yarn-s0-v35-window-20261031/ws58-launcher.out",
+  "source_manifest_sha256": "280cd7b2c947e8ea2f23706243f6be66fc1914312b1c35522eea537fc0424fe4",
+  "qualification_window_s": 120,
+  "previous_failed_id": "yarn-oolong-s0-host256-eligible28-v34-20261031",
+  "cutoff_proof": {
+    "root": "/mnt/micron/refactor-yarn-s0-v35-window-20261031/smoke-cutoff-kVlSbtck",
+    "smoke_result_sha256": "d2fbb2f99fa2b42f08bb0ca02149094ac97631076f3e429e403519b442bd6e37",
+    "actual_exit_code": 75,
+    "elapsed_s": 120.60966252000071,
+    "sampled_peak_tree_rss_bytes": 1480724480,
+    "result_writer_and_strict_reader": true,
+    "control_reader_scope": "CONTROL_ONLY prefix-plan, unknown policy isolated from official full cohort; no scientific grade",
+    "native_completed": 3,
+    "native_incomplete": 1,
+    "control_scope_sha256": "704b79977e827188ea8147508cc9551e846054cc9b911b9306b31668369f9e2f",
+    "control_plan_sha256": "3b7394e3693b9ee5f365419876149824caa036d6d495b29beb6ff74fade02cd8",
+    "native_proof": [
+      {
+        "item_id": "oolong_synth@131072#617060046",
+        "prompt_sha256": "3dec53f2fdadc9af7f396c903393c6432c9252bd634d928794b62e6d1f00e7a4",
+        "server_pid_absent": 2615657,
+        "server_argv": [
+          "/mnt/raid0/llm/kernels/production/cpu/llama-server",
+          "-m",
+          "/mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "34047",
+          "-np",
+          "1",
+          "-t",
+          "2",
+          "-c",
+          "4096",
+          "-b",
+          "512",
+          "-ub",
+          "512",
+          "-ngl",
+          "0",
+          "--no-mmap",
+          "--cache-ram",
+          "0",
+          "--jinja"
+        ],
+        "finish_reason": "stop"
+      },
+      {
+        "item_id": "oolong_synth@131072#617060047",
+        "prompt_sha256": "3dec53f2fdadc9af7f396c903393c6432c9252bd634d928794b62e6d1f00e7a4",
+        "server_pid_absent": 2615657,
+        "server_argv": [
+          "/mnt/raid0/llm/kernels/production/cpu/llama-server",
+          "-m",
+          "/mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "34047",
+          "-np",
+          "1",
+          "-t",
+          "2",
+          "-c",
+          "4096",
+          "-b",
+          "512",
+          "-ub",
+          "512",
+          "-ngl",
+          "0",
+          "--no-mmap",
+          "--cache-ram",
+          "0",
+          "--jinja"
+        ],
+        "finish_reason": "stop"
+      },
+      {
+        "item_id": "oolong_synth@131072#617060048",
+        "prompt_sha256": "3dec53f2fdadc9af7f396c903393c6432c9252bd634d928794b62e6d1f00e7a4",
+        "server_pid_absent": 2615657,
+        "server_argv": [
+          "/mnt/raid0/llm/kernels/production/cpu/llama-server",
+          "-m",
+          "/mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "34047",
+          "-np",
+          "1",
+          "-t",
+          "2",
+          "-c",
+          "4096",
+          "-b",
+          "512",
+          "-ub",
+          "512",
+          "-ngl",
+          "0",
+          "--no-mmap",
+          "--cache-ram",
+          "0",
+          "--jinja"
+        ],
+        "finish_reason": "stop"
+      }
+    ],
+    "stdout_log": "/mnt/micron/refactor-yarn-s0-v35-window-20261031/smoke-cutoff-kVlSbtck/ws58-launcher.out",
+    "stdout_log_sha256": "c59c5211bfafd0c40797b495db0f6d4584e504762b7bfbb94c72c7400335323c",
+    "unknown_control_markers": [
+      "b0ae117061b16d05879a9607185a64c821e67e72457f2b9fd81bf9bea3deac66.start"
+    ],
+    "active_sample_lead_s": 4.921694038901478,
+    "owned_descendants_drained": true
+  },
+  "module_transport_scope": "real canonical module and owner-FD component under private lock root; no qualification claim of real calendar grant",
+  "keep_file": "/mnt/raid0/llm/tmp/refactor-01a16fc3/yarn-s0-v35-window-20261031/KEEP",
+  "keep_file_sha256": "2804480a33bb6ba3557f08576e540d371cd4cdaa5dbb639c070728aa9c1103a1"
+}

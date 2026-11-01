@@ -1,0 +1,11 @@
+{
+  "id": "yarn-oolong-s0-host256-eligible28-v35-20261031",
+  "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/yarn-oolong-s0-host256-eligible28-v35-20261031.ended",
+  "end_line": "rc=70 time=2026-11-01T09:58:18Z reason=job-rc-70:exited",
+  "seen_at": "2026-11-01T09:58:46Z",
+  "result_path": "/mnt/micron/refactor-yarn-s0-v35-window-20261031/cohort/results",
+  "scratch_root": "/mnt/raid0/llm/tmp/refactor-01a16fc3/yarn-s0-v35-window-20261031",
+  "decision_rule": "Partial diagnostic: higher completed matching native-pair coverage is better. Preserve original120campaign/30s0pair denominator and original A0-first order. Retain1completedA0(score0/length),2immutableunknownA0 and57unexposed armcells. Only original28eligible pairs can proceed; A1 requires matching completed native A0 regardless of quality score. No full-cohort McNemar verdict or quality-based selection/redraw.",
+  "class": "diagnostic",
+  "owner": "codex-refactor-01a16fc3"
+}

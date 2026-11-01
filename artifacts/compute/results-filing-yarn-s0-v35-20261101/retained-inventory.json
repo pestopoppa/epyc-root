@@ -1,0 +1,34 @@
+{
+  "original_native_root": "/mnt/micron/refactor-yarn-s0-v27-20261030",
+  "original_manifest_sha256": "c22d4eefa41067a557f351fc7c99de099adc781a256e85b3ce8f1de873f99420",
+  "original_counts": {
+    "ok": 1,
+    "unknown": 2,
+    "unexposed": 57,
+    "error": 0
+  },
+  "denominator": 120,
+  "shard_pairs": 30,
+  "files": {
+    "results/A0.jsonl": {
+      "sha256": "337588e9072550e22aee26368e0862aaacfcaa14e247bab26f331d6fd71e3292",
+      "bytes": 6003,
+      "append_only_prefix": true
+    },
+    "exposures/85d22d2e6d4f3e795cd978e30b440b2b315487cec68a589443b53c9db693752a.response": {
+      "sha256": "1d9a1f338c1bec5d739efd37e61c910f513f3c3b5bd472d51f7eef654c060a60",
+      "bytes": 123,
+      "append_only_prefix": false
+    },
+    "exposures/85d22d2e6d4f3e795cd978e30b440b2b315487cec68a589443b53c9db693752a.start": {
+      "sha256": "8bf69c39d71e93fd029212de4481055b5bff8513ce404dabcb923ee63aa00e3f",
+      "bytes": 285,
+      "append_only_prefix": false
+    },
+    "exposures/85d22d2e6d4f3e795cd978e30b440b2b315487cec68a589443b53c9db693752a.native.json": {
+      "sha256": "12d436ff85c7777bc652a083afb9cd6d6921e0c31cb1bebf6341886c9d68e8c0",
+      "bytes": 4481,
+      "append_only_prefix": false
+    }
+  }
+}
