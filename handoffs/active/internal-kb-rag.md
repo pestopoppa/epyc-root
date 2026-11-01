@@ -1047,7 +1047,7 @@ dim 96. This is a **projection, not a measurement.** Two conditions on any adopt
       is enough to *load* such a graph but not enough to fail loudly on a mis-declared one. Do not
       attempt the swap before G11 returns a number, and note this is a **decision**, not a task: it
       trades 1.32 pp of BEIR against −24.3 % footprint on a corpus whose own noise floor is 2 pp.
-- [ ] **B7 — raise `query_maxlen` above the checkpoint default and measure.** **G12 did not meet its >2 pp opening rule; remains blocked on that signal.**
+- [ ] **B7 — raise `query_maxlen` above the checkpoint default and measure.** [too-big: G12 did not meet opening rule; owner must observe qualifying signal] **G12 did not meet its >2 pp opening rule; remains blocked on that signal.**
       Pointless without a verbose-query arm: our current pool never reaches even 33 tokens, so raising
       the cap today would measure padding rather than retrieval. Record the architectural disanalogy
       that most limits the reproduction paper's transfer to us — GTE-ModernColBERT-v1 is

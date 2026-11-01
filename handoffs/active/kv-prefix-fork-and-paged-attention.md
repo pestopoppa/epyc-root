@@ -747,6 +747,7 @@ KPF-22..24 and KPF-26 need P1 live.
   - [ ] KPF-27e: when P1's INTERFACE.md lands, map its fields (content epoch, `id_slot`/`id_task` on OAI
     timings, checkpoint positions, `/props` fork capability, unique cells) into `reconcile`/`lookup`, and send
     `checkpoint_at` from the trunk-first path (KPF-21).
+    - 2026-11-01 source audit: orchestrator `6d631212d181565d69236ee7d04d5928487e4382` on origin/main sends `checkpoint_at` in the gated trunk-first path; current prefix-index source maps the listed fields. This supersedes the 2026-10-04 source-status note below. Live server behavior and shadow metrics remain KPF-27d owner work; no live run is claimed. [no-belief: source audit only]
     - 2026-10-04: the mapping half is on main (`084921bb`: `/slots` `content_epoch` binding, `prefix_hash` with a
       server-identical `fnv1a64_tokens`, checkpoint-mode fork from a busy slot; `46c2d833`: `/props.slot_fork` gates
       FORK=auto). Each field is used when present and falls back to v10 inference when absent. Still open: sending
