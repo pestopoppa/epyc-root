@@ -331,6 +331,7 @@ Dispatchable now. None requires a reboot; none runs a benchmark or starts `llama
       decision-grade number while the P-BENCH-3 path fails closed. Either add the gate or make the
       attestation mandatory in the emitted artifact. Route to the measurement-protocol owner — the
       trust boundary is human-amendment-only, so propose, do not amend.
+  - **Source checkpoint (2026-11-01):** Research `f311e004e2eaaf23bd87d2ab4a7530396c77830f`, proof `d41be316c941097f0e54a3ec4147ef67d07afe36`, captures the existing partial host observation after region-claim admission and embeds it in the benchmark log. Synthetic fixture tests only; cache drop, re-warm and THP are not attested. Missing uptime stays unknown; the existing warning uses > one week while Annex B says >= one week. No grade or protocol amendment; measurement-protocol-owner review of this proposed attestation remains required and S-11 stays open. Scratch: `/mnt/raid0/llm/tmp/codex3-s11-health-20261101`.
 - [ ] **S-12 — File OP-16 as a pre-validated token block in `tokens/token-queue.md`.** It currently
       exists only as a master-index row, so the one signature the whole Category-A list waits on is
       absent from the queue the operator reads. Include the earlyoom `--ignore` line (A8) and the OP-9
