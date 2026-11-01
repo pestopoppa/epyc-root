@@ -70,6 +70,9 @@ wiki until a sweep found the gap. Therefore:
 - Stage-4 close-out check: run `compile_sources.py` (read-only) and confirm every dive `.md` of this run
   appears in `total_new` or is already in `wiki/source_manifest.json`. List any that are missing in the
   Stage-4 report and fix them before closing.
+- Stage 4 also runs `python3 scripts/research/intake_dive_digests.py --ids <first>-<last>` for its run and
+  commits the digest under `research/deep-dives/intake-digests/`: the index fields a dive writes
+  (`claim_anchors`, `dive_corrections`, ...) are invisible to the scanner until rendered there.
 
 **The load-bearing rule.** Operator comments, critiques and suggestions made during stages 1–3 are
 **context, not authorization**. They are appended to the steering ledger and folded into the Stage-3
