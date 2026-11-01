@@ -21,6 +21,8 @@ Canonical protocol (read it once per session): `docs/guides/agent-workflows/comp
 > manifests, nonces/receipts, the owner-wide worker breaker, the registry-row check, `validate_fillers.py` in `grant_ok`
 > (v4). Where this file still says "FILLERS row" below, read "v3 row" for new rows; FILLERS.md stays as the legacy
 > registry of rows armed before 2026-11-01. Flow: `docs/guides/agent-workflows/backlog-churn-flow.md`.
+>
+> **2026-11-01 evening: one allocator.** The two grant writers, `grant_ok*.sh`, `ram_admit.sh` and the legacy `grant_ok_launcher.py` copy are deleted from git. `rowflow.py allocate`, run by keeper v11 every 120 s tick, is the only writer of grants and dry runs, working from one snapshot per tick. Its self-healing invariants log `SNAPSHOT`, `GRANT`, `DRYRUN-START`, `IDLE-WHY`, `HEAL`, `CONFLICT`, `UNDERUSED` and `ALERT`; see `docs/guides/agent-workflows/backlog-churn-flow.md` → *The allocator*.
 Live state lives outside the repo: queue `/mnt/raid0/llm/tmp/compute-flags/FILLERS.md`, grants
 `compute-flags/grants/`, calendar `/mnt/raid0/llm/tmp/compute-calendar-<date>.md` (append-only
 REVISION lines). **The calendar's input is the prioritized backlog
