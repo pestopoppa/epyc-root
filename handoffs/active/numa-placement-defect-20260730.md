@@ -897,7 +897,7 @@ primary artefact.
       Growing it changes the measurement instrument and breaks comparability with every banked
       E1/W0/Stage-B cell, so it is an operator ruling — and it should be recorded as an **era
       boundary**, not an edit, exactly as the 2026-08-11 rider argues for objective changes.
-- [ ] **T5 — Arm the locality gate for mmap roles.** `affinity_preflight.py:195` currently sets
+- [ ] **T5 — Arm the locality gate for mmap roles.** [too-big: interleave threshold and shared mmap attribution need handoff resolution] `affinity_preflight.py:195` currently sets
       `required = no_mmap and len(expected_nodes) == 1`, so under mmap it observes and reports
       but never fails. It should fail a single-node instance whose `local_fraction` is below
       threshold regardless of mmap.

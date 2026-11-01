@@ -773,7 +773,7 @@ correctly on the region lock so nothing was poisoned, but full_last executed twi
 
 - [ ] Before re-arming any chained job, enumerate waiters by their **script name**
   (`pgrep -f cpu_chain.sh`), not by the tag of the job they will eventually launch.
-- [ ] Bench harnesses should append or write to a run-stamped file, never truncate
+- [ ] Bench harnesses should append or write to a run-stamped file, never truncate [too-big: current shared-result producers need cross-harness inventory by owner]
   a shared results path at startup.
 
 ---
@@ -1086,7 +1086,7 @@ directly for gradient-based placement decisions.
   A separable model forces aggregate monotone-increasing in np, so it would predict
   a speed-up exactly where we measure a regression — and the router would then
   batch precisely where it should not.
-- [ ] Suggested starting shape, 3-4 params per role x shape:
+- [ ] Suggested starting shape, 3-4 params per role x shape: [too-big: per-role fit and validation are handoff-owned measurement work]
   `per_stream(np, d) = A / ((1 + d/d0) * (1 + (np-1)/k(d)))` with `k` itself
   depth-dependent (concurrency tolerance shrinks as context grows). `aggregate =
   np * per_stream`, which is then free to turn over. Validate the fit reproduces the
