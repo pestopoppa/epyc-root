@@ -145,6 +145,7 @@ shipped MTP (1.5×) is a floor, not the ceiling.
       after any prefill-heavy arm (external: cc64 read −15–20% after a 128k sweep; spec gain can collapse
       with context for some quants). Also gives a C8 sustained cell to confront the external
       "DFlash2 −19% at sustained C8 on Qwen3.8-27B" one-liner (contradicts our DF2-5 +47.8% at 8 in-flight).
+  - [x] **SL-4 source and integration audit.** ✅ 2026-11-01 — research `aa2143357d`: matched serving already freezes a randomized pair order, while the default legacy instrument remains anchor-first; `longctx.derive_launch` refuses non-CPU or np>1. The loop currently binds one serving launch/request set and its floor. A complete SL-4 needs a separate GPU np8 ~32k-token frozen workload, capacity validation, its own frame-bound A/A floor, keep-dimension integration, and tests; do not reuse the CPU slot-restore surface or an unrelated floor. No serving change or measurement was made. [belief: cc]
 - [x] **SL-5 — A/A control on the DF2-6 losslessness/coherence gate**: run the 12-prompt suite twice on
       the identical build and report the A/A pass distribution before reading 7/12 vs 5/12 (external
       identical-checkpoint control: 95.24 vs 90.69).

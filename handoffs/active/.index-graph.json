@@ -3939,7 +3939,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-01T16:56:22Z",
+  "generated_at": "2026-11-01T16:59:40Z",
   "nodes": [
     {
       "age_days": 94,
@@ -6401,7 +6401,7 @@
         "INF-06",
         "INF-50"
       ],
-      "closed": 28,
+      "closed": 29,
       "domain": "inference-research",
       "handoff": "dflash2-block-drafter-experimental-build.md",
       "id": "INF-62",
