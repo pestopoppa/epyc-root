@@ -107,3 +107,7 @@ The dispatcher redelivered the candidate-source event already integrated in comm
 ## P3 v2 and X0 runner inventory
 
 Reviewed the identified mixed-server paths in P3 v2 and X0 and preserved their [guard drafts](../../artifacts/compute/kvu16h-v2-x0-guards-20261101/README.md). Four AST-based tests pass; independent review verified patch round trips and corrected the outer option to `--with-probe`. Drafts are not installed, do not cover all clients and do not implement separate lifecycles. No compute ran. The DF2 runner inventory, P3 v2/X0 lifecycle implementation and Q38 final review have registered completion events. GitNexus is unindexed; this boundary changes no application symbol.
+
+## KVU-19a-2 prospective reproduction protocol
+
+Reviewed and preserved the [bounded reproduction packet](../../artifacts/compute/kvu19a2-repro-plan-20261101/README.md), updating it to acknowledge the subsequently recovered companion source. Its spec parses, shell syntax passes and its deliberately refusing launcher exits 78. The packet is not publishable: source-bound builds, actual producer, distinct qualification control, residency custody and belief wiring remain open. Five identical outputs would establish only no difference observed for that sample. Dispatched build-packet review, real producer preparation and DF2 inventory verification; their events require owner review. No build, qualification or compute ran. GitNexus remains unindexed; no application symbol was edited.

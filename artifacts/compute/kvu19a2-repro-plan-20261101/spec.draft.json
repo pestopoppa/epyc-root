@@ -1,0 +1,16 @@
+{
+  "draft_only": true,
+  "publishable": false,
+  "id": "UNRESOLVED-after-build-identities",
+  "owner": "handoff-kvu",
+  "launcher": "UNRESOLVED-reviewed-rowflow-launcher",
+  "lane": "gpu",
+  "kind": "compute",
+  "result_path": "UNRESOLVED-native-per-item-result",
+  "result_format": "UNRESOLVED",
+  "decision_rule": "Each complete case: compare five byte outputs within each source-bound binary; any pair differs = observed nondeterminism; five equal = no difference observed at n=5. Missing identity, input equality, residency, outputs or cleanup = incomplete. Cross-binary differences alone do not prove nondeterminism.",
+  "estimate_s": null,
+  "handoff_task": "handoffs/active/kv-unified-stack-rollout.md:KVU-19a-2",
+  "priority_rank": null,
+  "unresolved": ["compatible full source trees", "scheduled isolated builds and verified library hashes", "frozen input producer", "keeper launcher and qualification control", "GPU resource claims and output reservation", "timing estimate", "belief write-side enrollment"]
+}
