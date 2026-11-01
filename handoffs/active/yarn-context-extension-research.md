@@ -494,7 +494,7 @@ YaRN 128K MI210 R1's original 05:26:22Z grant ended rc1 at `live grant/GPU/disk 
 
 ### Refactor S0 continuation repair checkpoint — 2026-10-31
 
-- [ ] **S0-V34-LOCK-LOSS-REPRODUCER:** reopened by the 2026-10-31 tick audit: the prior completion claim has no implementing SHA, committed artifact, test, or receipt. Completion remains unverified; retain the earlier report as historical context only. See [tick-science audit](../../docs/reports/tick-science-audit-20261031.md) §2.
+- [x] ✅ 2026-11-01 [belief: cc] **S0-V34-LOCK-LOSS-REPRODUCER:** reopened by the 2026-10-31 tick audit: the prior completion claim has no implementing SHA, committed artifact, test, or receipt. Completion remains unverified; retain the earlier report as historical context only. See [tick-science audit](../../docs/reports/tick-science-audit-20261031.md) §2. Evidence: commit `54705b87836ae00124d11570d3fad3bd4a2c4627`; `artifacts/compute/refactor-s0-v34-lock-loss-repro-20261101/` (`pytest`: 1 passed; result reproduces `lock lost` with both owner FDs held).
 - [ ] **S0-V34-FINAL-QUALIFICATION:** complete fresh native normal and active STOP/drain through the final repaired source before publishing a continuation. Source is prepared; final smoke refused at standing admission before exposure. Preserve original1known/2unknown/57unexposed inventory,120campaign denominator and A0-first eligibility. No unqualified READY or redraw. Evidence in `/mnt/raid0/llm/tmp/refactor-01a16fc3/yarn-s0-v34-lock-witness-20261031/`; worker inventory SHA31516b49ce8877c1e3913800347ecbfc7705786849e08eccb8a1f56693506c9a.
 
 ### Retained launcher qualification checkpoints — 2026-10-31

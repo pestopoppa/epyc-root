@@ -39,3 +39,14 @@
 - Rechecked CPU prep ranks: rank 15 M4 recut build had completed successfully on 2026-10-27, but its launcher/job and source manifest are now retired/stale; do not reuse its ID or call it READY. Rank 16 LB49 graph packet is a static-only proposal, not LOOP49-qualified; normal/cutoff smokes remain unrun pending a keeper-pinned canonical engine. Audits: `/mnt/raid0/llm/tmp/refactor-01a16fc3/loop49-lb49-port-static-20261101/LOOP49-AUDIT.md`.
 - NEMO PROF reseg rc70 root cause is a deterministic 200 GiB resource-gate expectation vs the row/caller's 8 GiB envelope. A fresh successor packet is being prepared with the 8/8 GiB cap intact; no scheduler, grant, build, trace or inference has run in this checkpoint.
 - Root GitNexus status is stale (indexed 2026-10-24). The wrapper refused refresh without a canonical filler grant; no source edit was made against the stale graph. Scoreboard at 02:56Z showed code 0/5 and CPU READY 0/1.
+
+### NEMO-PROF-RESEG partial analysis — 2026-11-01
+
+- Reworked the retained-trace analyzer to use the measured L/P and B/M request windows from `run.json` monotonic timing marks. The marks and rocprof timestamps share the same clock. The analyzer sums all complete GPU dispatches in each request window, divides by the server-reported generated-token count, and independently checks that count and wall time against the server's final `eval time` row.
+- L: 160 generated tokens, 332,946 in-window dispatches, 33.0175 ms GPU busy per token and 56.98 ms server wall per token. B: 96 tokens, 179,633 dispatches, 22.2745 ms GPU busy per token and 33.92 ms server wall per token. These are request-window averages per generated token; no individual per-token GPU interval or cause for the host/device wall gap is claimed.
+- `python3 resegment.py`, `python3 -m py_compile resegment.py`, and retained raw `SHA256SUMS` validation passed. Artifact commit `3c3c9b759`; evidence at `docs/reference/autokernel/nemo-gpu-prof-reseg-20261031/`.
+
+### S0-V34-LOCK-LOSS-REPRODUCER — 2026-11-01
+
+- Reproduced the legacy v33 `/proc/locks` false refusal under a real q3 region-lock build claim: `RuntimeError: lock lost` occurred at iteration 30 while owner FD rows still showed exclusive GLOBAL and build locks. No model/server/GPU work ran.
+- Durable scripts, source identities, launcher log, result, and checksum custody are in `artifacts/compute/refactor-s0-v34-lock-loss-repro-20261101/`. `python3 test_result.py` passes. Handoff tick will cite the implementation/evidence commit.
