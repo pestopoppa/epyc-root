@@ -59,3 +59,5 @@
 
 - V6R-1 registry inquiry complete: 16 current role-model entries resolved to six readable GGUF headers, none marked diff-transformer; registry SHA matches fetched orchestrator main. Evaluation and other model sources remain open; no decline. Retained receipt.
 - CH-17: retained non-applied design/test proposal for per-role drafter reselection; current selected-pair load check is not a comparison of all candidates. No gate/topology edit or freeze decision.
+
+- Dispatcher backlog snapshot 22:00Z reports `akagg-ch31-rowexact-c5-20261101` qualified and armed; suspend at the keeper boundary. `akagg-ch26b-1017-c2-20261101` is listed as needing qualification. Neither snapshot is a scientific result; file a verdict only after the dispatcher reports the ended row and the full result is read.
