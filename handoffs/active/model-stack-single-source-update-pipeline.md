@@ -281,7 +281,7 @@ Closed and moved to the [completed sibling](../completed/model-stack-single-sour
   is in the log of every GPU role from the moment it starts. A capacity model that cannot be checked
   against the kernel's own numbers is a model nobody can falsify. **Blocker: none.**
 
-- [ ] **SSU-F11 — the registry's `recipe:` block is DECORATIVE: nothing reads it, and the served
+- [x] ✅ 2026-11-01 — APP `2c4350972645856fc20c356d0d4659da20edd57f`, Research `5e3cf5355bc701f6c055ce83836fcdabfca8cfcd`; [test/artifact](https://github.com/pestopoppa/epyc-orchestrator/blob/2c4350972645856fc20c356d0d4659da20edd57f/artifacts/ssuf11-20261101/README.md). [no-belief: source launch/attestation conformance only] **SSU-F11 — the registry's `recipe:` block is DECORATIVE: nothing reads it, and the served
   process runs a hardcoded parallel configuration.** Root-caused 2026-09-23 while chasing SSU-F7's
   two missing env knobs on `:8074`. The knobs are only the visible edge.
 
@@ -332,6 +332,8 @@ Closed and moved to the [completed sibling](../completed/model-stack-single-sour
   lane was not merged either; when this task makes `recipe:` load-bearing, it must derive 96, not 48. Evidence:
   `artifacts/operator/stack-change-dar-lat-3h-20260926/RESULT.md`.
   **Blocker: none.**
+
+  - 2026-11-01 implementation: recipe environment values now reach launch environment construction and survive ambient-GGML sanitization, before the documented role override layer. Undefined shapes, declared-thread mismatch and actual-instance shape disagreement refuse. The explicit `--recipe-process ROLE=PID` checker compares declared effective environment and thread count with stable process starttime/UID and repeated argv/environment reads. 83 launcher controls plus 31 derivation-checker controls pass; a no-process native canary compiles the corrected Research master and calls the real default command builder: architect_general, port 8074, T96, split-KV 0 and no THP shim. The original model/port mapping survives the historical role rename. No live process was checked or restarted, no model ran, and no performance or deployment claim follows. Research native hooks pass with optional PII capture unavailable; the ordinary exact-diff PII scan passed, and no native PII finding receipt is claimed. The exceptional sparse worktree was removed through the gate. Future live-finding custody is tracked as VB-SSU-F11-PROCESS-WRITE.
 
 - [x] **SSU-F13 — 10 more unit tests still encode the pre-cutover topology.** ✅ 2026-10-05 Fail on clean origin/main
   (2026-09-24, after `8d7633d0`): `tests/unit/test_default_template_topology_parity.py` (9 — e.g.

@@ -1,0 +1,8 @@
+........................................................................ [ 97%]
+..                                                                       [100%]
+74 passed in 0.67s
+.                                                                        [100%]
+1 passed, 6 deselected in 2.18s
+.                                                                        [100%]
+1 passed, 73 deselected in 2.80s
+Ruff diagnostics in changed lines: 0; unchanged-line baseline diagnostics excluded: 108
