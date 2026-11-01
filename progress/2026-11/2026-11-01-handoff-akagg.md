@@ -33,3 +33,7 @@
 
 - CH-18.a upstream inquiry complete: #29707 `4e201388c319fc9f747fbe6a666793e2dc2a6d8e` uses one steady-clock response deadline and propagates router disconnect; C5 still uses resettable wait_for. Verified upstream ancestry and C5 non-ancestry. Added V11-113 PEND with timeout and direct/router disconnect regression gates; no runtime verdict.
 - CH-32 ggml enum scan: `GGML_OP_MUL_MAT` ordinal 31 in C5 vs 29 in all 13 feature-parent headers; D1 adds a use. Reproducible evidence under `artifacts/compute/akagg-ch32-enum-preflight-20261101/`; keep binary/library generations matched. No source bump or runtime failure inferred.
+
+- CH-32: retained reproducible first-patch conflict hunks (B1 2, C1 14, D1 16) and source contexts. This is not a minimal prerequisite or buildability result.
+- CH-18.d: verified #28957, #29231, #30629 and server follow-up #30636 upstream; #29231 and v10/C5 local guard have identical stable patch IDs. Added V11-114/115 presence and runtime gates; HIP and Voxtral checks remain unrun.
+- Published `akagg-ch31-rowexact-c5-20261101`: C5 manifest-pinned rowexact, Qwen3.5-0.8B model, non-vacuous one-sequence/two-token control and four four-sequence rotations. Separate dryrun/full, per-case native completion records and stop checks. Static parser fixtures, input checks, shell/Python syntax pass. Result is diagnostic only, cannot establish Q38FN causality. No compute launched.

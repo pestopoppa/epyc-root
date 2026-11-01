@@ -1,0 +1,42 @@
+{
+ "decision_rule": "Diagnostic only: complete only after solo 1-sequence two-token identical-node and logit control and four 4-sequence permutations finish on pinned C5 image and Qwen3.5-0.8B Q8_0. Require nonzero compared nodes in each row; report raw graph-node first bitwise difference, compared/shape-skip/unmatched counts and logits/argmax differences; no inference about original Q38FN behavior, causal operation, keep or promotion. Keeper dryrun is separate and excluded.",
+ "dryrun_timeout_s": 600,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "257a64709a409a6cdab48d9b3d1a605b7165f3be5afbf1954e9efd51cf539bbb"
+ },
+ "estimate_s": 900,
+ "gib": 16,
+ "handoff_task": "handoffs/active/autokernel-champion-aggregate.md:CH-31-DEF1",
+ "id": "akagg-ch31-rowexact-c5-20261101",
+ "keep": [
+  "**/*.json",
+  "**/*.jsonl",
+  "**/*.md",
+  "**/*.txt",
+  "**/*.csv",
+  "**/*.tsv",
+  "**/*.sh",
+  "**/*.py",
+  "units.jsonl"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/akagg-ch31-rowexact-20261101/launcher.sh",
+  "sha256": "b44fc8d61637b4d1ef7fd6679d6d4869b5938d40c9c52d86f22092cc50c89e52"
+ },
+ "min_window_s": 600,
+ "owner": "handoff-akagg",
+ "ports": [],
+ "priority_rank": 25.0,
+ "published_at": "2026-11-01T21:43:41Z",
+ "published_from": "/mnt/raid0/llm/tmp/akagg-ch31-rowexact-20261101/spec.json",
+ "regions": "0-23",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/akagg-ch31-rowexact-20261101/units.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/akagg-ch31-rowexact-20261101",
+ "stop_file": "/mnt/raid0/llm/tmp/akagg-ch31-rowexact-20261101/STOP",
+ "window_s": 1380,
+ "workdir": "/mnt/raid0/llm/tmp/akagg-ch31-rowexact-20261101"
+}
