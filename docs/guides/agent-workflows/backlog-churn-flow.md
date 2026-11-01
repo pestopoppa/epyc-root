@@ -23,6 +23,10 @@ extra artifact was a place for a row to get stuck and token-wasting busywork for
  "decision_rule": "<how the result is judged>", "estimate_s": 3600, "handoff_task": "handoffs/active/<h>.md:<ROW-ID>",
  "priority_rank": 10}
 ```
+**Fetch/prepare inputs yourself before `publish_row`** (operator, 2026-11-01): a row whose launcher only downloads or
+copies inputs (`kind: fetch|prepare|inputs`) is refused — "prepare inputs before publishing: fetching/copying data is
+session preparation, not a compute row". `kind` defaults to `compute`.
+
 Optional: `regions` (default `mi210_0,184-191` / `any-cpu-quarter`), `ram_gib` (48), `scratch_root`, `keep`,
 `dryrun_timeout_s` (900 cpu / 1500 gpu), `lineage`, `lineage_reset`, `supersedes`.
 

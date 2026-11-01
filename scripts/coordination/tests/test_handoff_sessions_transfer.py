@@ -168,13 +168,25 @@ class WrappedParsingTests(_Fixture):
             reg, _ = self.dispatch()
         e = reg["sessions"][self.slug]
         self.assertEqual(e["last_wrapup"], "83c110265331")
-        # 21:15Z pause rule: the backlog still has a blocked row -> resumed at once with "continue: next task"
+        # CAF-1 no-op guard: this turn committed nothing and published no row -> NOT resumed until an event arrives
+        self.assertEqual(e["status"], "suspended")
+        self.assertTrue(e["await_event"])
+        self.assertIn("NOOP yarn: turn changed nothing", self.log_text())
+        self.assertEqual(self.calls, [])
+        self.assertIn("OPEN yarn: 1 advanceable row(s)", self.log_text())
+        ld.assert_any_call("83c110265331")
+        # a row published during the turn is an effect -> 21:15Z pause rule: resumed at once with "continue: next task"
+        e.update({"pid": 99999999, "last_output": out, "status": "live", "last_resume": hs.now_iso()})
+        hs.save(hs.reg_path(self.flags), reg)
+        _w(os.path.join(self.flags, "ready", "yarn-9.json"), json.dumps({"schema": "epyc.row.v3", "id": "yarn-9", "owner": "yarn", "lane": "cpu"}))
+        with patch.object(hs, "landed", return_value=True):
+            reg, _ = self.dispatch()
+        e = reg["sessions"][self.slug]
         self.assertEqual(e["status"], "live")
         self.assertEqual(len(self.calls), 1)
         self.assertIn("continue: next task", self.calls[0]["prompt"])
         self.assertIn("INFERENCE FIRST", self.calls[0]["prompt"])
-        self.assertIn("OPEN yarn: 1 advanceable row(s)", self.log_text())
-        ld.assert_any_call("83c110265331")
+        self.assertIn("NEVER wait in this turn", self.calls[0]["prompt"])
 
     def test_legacy_wrapup_form_still_parsed(self):
         self.assertEqual(hs.WRAPPED_RX.findall("WRAPUP: abcdef0 then WRAPPED 1234567"), ["abcdef0", "1234567"])

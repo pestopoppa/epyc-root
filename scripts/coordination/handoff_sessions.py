@@ -77,9 +77,15 @@ ENGINES = ("codex", "claude", "opencode")
 FANOUT_LINE = ("Working mode: FAN OUT - your own thread only reviews, integrates and handles task boundaries; execution goes to "
                "3-5 concurrent subagents on the cheapest capable model/effort (exceptions: agents/shared/OPERATING_CONSTRAINTS.md "
                "-> *When NOT to fan out*). This applies on every engine; do not rely on AGENTS.md/CLAUDE.md being loaded.")
+NO_POLL_LINE = ("NEVER wait in this turn: no sleep, no polling of grants/dry-run/queue files, no wait_agent/status loops - publish or "
+                "delegate, wrap up, end the turn; the dispatcher resumes you on the event (grant end, dry-run result, or a file you "
+                "registered under handoff-sessions/<slug>/awaiting/).")
+
+
 def lane_line(slug):
     return (f"Work ONLY in your lane worktree {lane_dir(slug)} (branch {lane_branch(slug)}; origin/main was merged in before "
-            f"this resume) and NEVER commit in {ROOT}; wrap up by pushing the lane to main with serialized_push.py --repo {lane_dir(slug)}.")
+            f"this resume) and NEVER commit in {ROOT}; wrap up by pushing the lane to main with serialized_push.py --repo {lane_dir(slug)}. "
+            + NO_POLL_LINE)
 
 
 WRAPPED_RX = re.compile(r"(?:WRAPPED|WRAPUP:)\s+([0-9a-f]{7,40})\b")
@@ -104,6 +110,7 @@ MAX_REQUEUE = 3                       # run-end event redelivered at most 3 time
 TRANSIENT_RX = re.compile(r"\b(408|50[0-9]|502|503|504)\b|connection reset|ECONNRESET|ETIMEDOUT|timed? ?out|stream disconnected|"
                           r"server_error|overloaded|temporarily unavailable", re.I)
 TRANSIENT_BACKOFF_S = (120, 240, 480)  # "go on" retries after 2/4/8 min
+DRYRUN_EVENT_MAX_AGE_S = 30 * 60      # dry-run results older than this are not events (restart safety)
 FILING_SLOTS = 1                       # DSH-4: one slot above max_live reserved for run-end filing resumes
 GO_ON_PROMPT = ("[{v}] go on. Your previous turn ended with a transient error (rc={rc}: {err}) and no wrap-up; this is retry "
                 "{n}/3. Continue exactly where you were and finish with `WRAPPED <sha>` (and report.json).")
@@ -184,7 +191,9 @@ Non-inference tasks come only after that, or while your rows wait. Your BACKLOG 
 runs under "Own inference tasks to publish as rows" and your handoff's rank among all handoffs.
 
 1. Write a spec JSON (id, owner, launcher, lane cpu|gpu, result_path, result_format, decision_rule, estimate_s,
-   handoff_task, priority_rank) and publish it: `python3 scripts/coordination/rowflow/publish_row.py <spec.json>`.
+   handoff_task, priority_rank, kind=compute) and publish it: `python3 scripts/coordination/rowflow/publish_row.py <spec.json>`.
+   **Fetch/prepare inputs yourself before publish_row**: a row whose launcher only downloads or copies data is refused
+   (`kind: fetch|prepare` or a launcher that just fetches) - that work is session preparation, not a compute row.
 2. The keeper dry-runs/qualifies the row and grants it (`grants/<id>`); you NEVER arm, grant, qualify or run compute.
 3. `grants/<id>.ended|.complete` appears -> the dispatcher resumes you with rc, end line, result_path, decision_rule.
 4. YOU file the verdict: read `result_path`, apply `decision_rule`, tick the handoff with evidence (rc, result path,
@@ -194,7 +203,7 @@ runs under "Own inference tasks to publish as rows" and your handoff's rank amon
    [fix task in {flags}/dryrun/<id>/FAIL-*.json], parked, grantable, armed, running, done).
 5. Decide the next step (follow-up row, park, done) and publish the next row (step 1). Rule 1 starved lane first;
    rule 2: 3 failed qualifications of a lineage -> parked, stop retrying; rule 3: you fix cross-session code blocking
-   your row (reviewed commit, name the owner); rule 4: non-blocking code while waiting.
+   your row (reviewed commit, name the owner); rule 4: non-inference work is its own later turn, never an in-turn wait.
 
 ## Wrap-up contract — at EVERY task boundary, before you end any turn
 - Progress entry in `progress/YYYY-MM/YYYY-MM-DD-handoff-{slug}.md`; handoff ticks with evidence; pathspec-limited
@@ -216,7 +225,13 @@ runs under "Own inference tasks to publish as rows" and your handoff's rank amon
   manifest. Never pkill/pgrep by name; kill only PIDs you captured.
 - Git: work ONLY in your lane worktree; never commit in {ROOT}; never `git add -A`/`git add .`; pathspec-limited commits
   only; push only through serialized_push.py (lane -> main). Never `git worktree prune`, never `git gc`.
-- Suspend once your row is accepted (armed) by the keeper; do not poll.
+- **NEVER wait in a turn** (CAF-1, operator 2026-11-01): no `sleep`, no polling of grants/dry-run/queue files, no
+  `wait_agent`/`list_agents`/status loops, no watching a sub-agent. Publish or delegate, wrap up, END THE TURN. The
+  dispatcher resumes you on the event: your row's `grants/<id>.ended|.complete`, its `dryrun/<id>/PASS.json|FAIL-n.json`,
+  or any file you register in `{flags}/handoff-sessions/{slug}/awaiting/<name>.json` as {{"path": "<file that will
+  appear>", "note": "<what it means>"}} (a sub-agent's output file, a build artifact). A turn that polls is a defect.
+- A turn that commits nothing, publishes no row and files nothing is a no-op: the dispatcher will not resume you again
+  until a new event arrives, so do real work or end with `IDLE: <reason>`.
 
 ## Transfer rule
 Ownership of this handoff may move to another engine (codex/claude/opencode) at ANY boundary via
@@ -497,6 +512,24 @@ def turn_report(flags, slug, e):
         return r if isinstance(r, dict) else None
     except (OSError, ValueError):
         return None
+
+
+def turn_effect(flags, slug, e, rep=None) -> str:
+    """What the turn changed: a lane commit, a published row, a filing receipt, or report.json rows_published. '' = no-op."""
+    lane = e.get("cwd") or lane_dir(slug)
+    since = _parse(e.get("last_resume") or "") - 1
+    out = []
+    r = _git(lane, "rev-parse", "HEAD") if os.path.isdir(lane) else None
+    if r is not None and r.returncode == 0 and e.get("head_at_resume") and r.stdout.strip() != e["head_at_resume"]:
+        out.append(f"commit {r.stdout.strip()[:12]}")
+    for pat in ("ready/*.json", "filing-done/*.FILED", "handoff-sessions/" + slug + "/awaiting/*.json"):
+        new = [p for p in glob.glob(os.path.join(flags, pat)) if os.path.getmtime(p) >= since]
+        if new:
+            out.append(f"{len(new)} {pat.split('/')[0]}")
+            break
+    if rep and rep.get("rows_published"):
+        out.append(f"rows_published {len(rep['rows_published'])}")
+    return "; ".join(out)
 
 
 def filed(flags, rid) -> bool:
@@ -781,8 +814,41 @@ def work_state(flags, slug, e, repo=None) -> tuple[str, str]:
 
 # ---------------------------------------------------------------- dispatcher
 def end_events(flags):
+    """(rid, path, kind): grant ends and dry-run results (CAF-1: the dispatcher, not the session, watches these files)."""
     for p in glob.glob(os.path.join(flags, "grants", "*.ended")) + glob.glob(os.path.join(flags, "grants", "*.complete")):
-        yield os.path.basename(p).rsplit(".", 1)[0], p
+        yield os.path.basename(p).rsplit(".", 1)[0], p, "run-end"
+    cutoff = time.time() - DRYRUN_EVENT_MAX_AGE_S
+    for p in glob.glob(os.path.join(flags, "dryrun", "*", "PASS.json")) + glob.glob(os.path.join(flags, "dryrun", "*", "FAIL-*.json")):
+        try:
+            if os.path.getmtime(p) < cutoff:
+                continue  # historic result: the backlog already carries it as the row's fix task; no resume storm on (re)start
+        except OSError:
+            continue
+        yield os.path.basename(os.path.dirname(p)), p, "dryrun"
+
+
+def awaiting_events(flags, slug):
+    """Files the session registered under handoff-sessions/<slug>/awaiting/<name>.json ({"path": ..., "note": ...}) that now
+    exist. The registration is consumed (renamed .fired) when the event is queued."""
+    for p in glob.glob(os.path.join(flags, "handoff-sessions", slug, "awaiting", "*.json")):
+        d = bg.load_json(p) or {}
+        if d.get("path") and os.path.exists(str(d["path"])):
+            yield d, p
+
+
+def dryrun_prompt(slug, e, flags, rid, path):
+    d = bg.load_json(path) or {}
+    verdict = "PASS" if os.path.basename(path) == "PASS.json" else "FAIL"
+    return f"""[{VERSION}] Dry-run {verdict} for your row `{rid}` ({path}). {FANOUT_LINE} {lane_line(slug)}
+Record: {json.dumps(d)[:900]}
+{"The row is grantable; publish your NEXT row now (inference first), then wrap up." if verdict == "PASS" else
+ "Fix task: " + str(d.get("fix_task") or d.get("reason"))[:400] + " -> fix the launcher/spec in your lane, re-publish (publish_row.py), then wrap up."}
+Print `WRAPPED <sha>` as your LAST line.""".replace("\n\n", "\n")
+
+
+def awaiting_prompt(slug, e, flags, d):
+    return f"""[{VERSION}] The file you were waiting for exists: {d.get('path')} ({d.get('note') or 'no note'}). {FANOUT_LINE} {lane_line(slug)}
+Consume it, continue your task, wrap up; print `WRAPPED <sha>` as your LAST line."""
 
 
 def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=None, keeper_log=None):
@@ -823,6 +889,13 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             elif m:
                 e["last_wrapup"] = m[-1]
             e["last_report"] = {k: rep.get(k) for k in ("state", "wrapped_sha", "question", "rows_published")} if rep else None
+            effect = turn_effect(flags, slug, e, rep)
+            if not effect:  # no commit, no row, no filing: pure spend (codex-gen did 3 such turns in a minute, 2026-11-01)
+                e["noop_turns"], e["await_event"] = int(e.get("noop_turns", 0)) + 1, True
+                log(flags, f"NOOP {slug}: turn changed nothing (no commit, no row published, no filing); not resumed until a new event")
+            else:
+                e["noop_turns"], e["await_event"], e["noop_reason"] = 0, False, None
+                e["last_effect"] = effect
             if "FRESH-SESSION-REQUESTED" in tailtxt:
                 e["fresh_next"] = True
             mi = IDLE_RX.findall(tailtxt)
@@ -857,8 +930,8 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 e["status"], e["push_retries"], e["transient_retries"] = "suspended", 0, 0
             log(flags, f"TURN-END {slug} session={e.get('session_id')} rc={e.get('last_rc')} wrapup={e.get('last_wrapup')}")
     # 2. new run ends owned by a pilot
-    for rid, p in end_events(flags):
-        key = os.path.basename(p)
+    for rid, p, kind in end_events(flags):
+        key = os.path.basename(p) if kind == "run-end" else f"dryrun/{rid}/{os.path.basename(p)}"
         if key in seen:
             continue
         seen.add(key)
@@ -866,8 +939,18 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             continue
         slug = bg.pilot_of(pilots, rid, None, manifest_for(flags, rid)[1].get("handoff"))
         if slug and slug in S:
-            st.setdefault("queue", []).append({"slug": slug, "rid": rid, "end": p})
-            log(flags, f"RUN-END {rid} -> {slug}")
+            if kind == "run-end" and any(ev["slug"] == slug and ev["rid"] == rid for ev in st.get("queue") or []):
+                log(flags, f"DEDUPE {rid} -> {slug}: a run-end for this row is already queued; dropped {key}")  # CAF-6
+                continue
+            st.setdefault("queue", []).append({"slug": slug, "rid": rid, "end": p, "kind": kind})
+            S[slug]["await_event"], S[slug]["noop_reason"] = False, None
+            log(flags, f"{'RUN-END' if kind == 'run-end' else 'DRYRUN-RESULT'} {rid} -> {slug}")
+    for slug, e in S.items():  # CAF-1: files a session registered as awaited
+        for d, reg_file in awaiting_events(flags, slug):
+            os.replace(reg_file, reg_file + ".fired")
+            st.setdefault("queue", []).append({"slug": slug, "rid": os.path.basename(reg_file)[:-5], "end": reg_file + ".fired", "kind": "awaiting", "data": d})
+            e["await_event"], e["noop_reason"] = False, None
+            log(flags, f"AWAITED {d.get('path')} -> {slug}")
     # 3. waits_on from the generated handoff backlog
     for slug, e in S.items():
         try:
@@ -895,6 +978,8 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                            f"(last turn: {e.get('last_output')})")
             if e.get("work_state") != ws or e.get("work_reason") != why:
                 log(flags, f"{'PAUSE' if ws == 'pause' else 'OPEN'} {slug}: {why}")
+            if e.get("await_event") and not e.get("noop_reason"):
+                e["noop_reason"] = why  # the backlog as it was when the no-op turn ended; a changed backlog is an event
         e["work_state"], e["work_reason"] = ws, why
     paused = _parse(reg.get("paused_until") or "") > now
     live = sum(1 for e in S.values() if alive(e.get("pid")))  # suspended sessions (waiting on a running row) have no pid
@@ -926,7 +1011,13 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 rest.append(ev)
                 log(flags, f"UNWRAPPED {ev['slug']}: refusing resume; last_wrapup={e.get('last_wrapup')}")
                 continue
-            _go(flags, ev["slug"], e, end_prompt(ev["slug"], e, flags, ev["rid"], ev["end"]), runner, ev)
+            if ev.get("kind") == "dryrun":
+                pr = dryrun_prompt(ev["slug"], e, flags, ev["rid"], ev["end"])
+            elif ev.get("kind") == "awaiting":
+                pr = awaiting_prompt(ev["slug"], e, flags, ev.get("data") or {})
+            else:
+                pr = end_prompt(ev["slug"], e, flags, ev["rid"], ev["end"])
+            _go(flags, ev["slug"], e, pr, runner, ev if ev.get("kind") in (None, "run-end") else None)
             launched.add(ev["slug"])
             live += 1
         st["queue"] = rest
@@ -937,6 +1028,8 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 continue
             if e.get("yield"):
                 continue  # outranked: no new work; its slot goes to a higher-ranked handoff
+            if e.get("await_event") and e.get("work_reason") == e.get("noop_reason"):
+                continue  # last turn was a no-op and nothing changed since: wait for an event, not another re-check
             if e.get("idle_reported") and now - _parse(e.get("last_end") or "") < IDLE_REPORT_COOLDOWN_S:
                 continue  # the session itself said IDLE: <reason>; re-asked after the cooldown
             if not wrapped(e, lcache):
@@ -1010,6 +1103,8 @@ def _go(flags, slug, e, prompt, runner, ev, fresh=False):
     if e.get("cwd") != lane:
         log(flags, f"LANE {slug}: cwd {e.get('cwd') or ROOT} -> {lane} ({sync})")
     e["cwd"], e["lane_sync"] = lane, sync
+    r = _git(lane, "rev-parse", "HEAD")
+    e["head_at_resume"] = r.stdout.strip() if r.returncode == 0 else None
     if sync == "merge-conflict":
         prompt = (f"[{VERSION}] FIRST: `git -C {lane} merge origin/main` conflicts; resolve it in your lane, commit, then continue.\n") + prompt
     try:

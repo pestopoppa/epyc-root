@@ -40,7 +40,7 @@
 | RTG-30 | routing intelligence | [routing-intelligence.md](routing-intelligence.md) | RI-18c: verify review_gate/review_verdict null on a COMPLETED live /chat in a DS41 open window; RI-19 use_memrl off; RI-24 | UFH-14 |
 | RTG-32 | scaffold autopilot cost lever deployment | [scaffold-autopilot-cost-lever-deployment.md](scaffold-autopilot-cost-lever-deployment.md) | T0.1 — Verify AutoPilot is down (no autopilot.py, no journal activity) and get operator go-ahead for the capability-registry row | — |
 | RTG-33 | searxng search backend | [searxng-search-backend.md](searxng-search-backend.md) | SX-5/SX-6 wait on AR-3; meanwhile relabel intake-365 (Firecrawl) superseded by intake-372, matching intake-364 | — |
-| RTG-34 | session bus thin dispatcher | [session-bus-thin-dispatcher.md](session-bus-thin-dispatcher.md) | AIR-6 — deploy exact guarded source and require ordinary-work refusal; then DSH-2 run-end ack-by-receipt | — |
+| RTG-34 | session bus thin dispatcher | [session-bus-thin-dispatcher.md](session-bus-thin-dispatcher.md) | AIR-6 — deploy exact guarded source and require ordinary-work refusal; then resume live canaries | — |
 | RTG-35 | shape keyed contention gating | [shape-keyed-contention-gating.md](shape-keyed-contention-gating.md) | REGION-SIBLING-1: merge fix/region-lock-smt-siblings-ec 4ae008a8 after operator approval (OP-77); then the q* nomenclature review | — |
 | RTG-36 | stack change governance pipeline | [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md) | OP-72 sign STACKCHG-HYGIENE, then SCG-PRIORS-WARM-b + DRAFT-SEL-2b; SCG-FASTPATH; SCG-TEST-ORDER | — |
 | RTG-38 | standardized stack update pipeline finalizat | [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md) | W4 swap-CI — prove representative stack changes move generated descriptors, priors and gate execution together | — |
@@ -63,6 +63,7 @@
 | RTG-58 | kv prefix fork and paged attention | [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) | KPF-64.3: F/FB on q0, EB on q2+q3 from 10-26 03:30Z, then the contrasts; read Codex do_slot_fork code read vs KPF-17.4c | RTG-57, RTG-27, INF-65 |
 | RTG-59 | model artifact integrity | [model-artifact-integrity.md](model-artifact-integrity.md) | SEC-ART-POST-f: recompile lean registry + stack_priors at next stack-change, then SEC-ART-2; POST-b.1 v2 template roll-out; POST-d | — |
 | RTG-61 | multi-repo refactoring | [refactoring-multirepo-2026-10.md](refactoring-multirepo-2026-10.md) | Repair CI report compatibility and runtime isolation, then rerun baseline | — |
+| RTG-62 | churn pipeline | [churn-pipeline.md](churn-pipeline.md) | CAF-1 — no-poll resume (deletion-first line first); then CAF-6 run-end dedupe | — |
 
 ## Cross-domain
 

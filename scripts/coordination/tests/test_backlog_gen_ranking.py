@@ -200,3 +200,45 @@ class NeedsSessionAndRunningStateTests(unittest.TestCase):
         self.assertIn("**Inference first.**", text)
         self.assertIn("Handoff rank: #1 of", text)
         self.assertIn("L2 [gpu] run llama-bench", text)
+
+
+class OneOwnerPerRowTests(unittest.TestCase):
+    """2026-11-01 live bug: a blocked row in BACKLOG-codex-gen while its fix task sat in BACKLOG-handoff-<slug>."""
+
+    def setUp(self):
+        self.d = tempfile.mkdtemp(prefix="bg-own-")
+        self.flags = os.path.join(self.d, "flags")
+        os.makedirs(os.path.join(self.flags, "ready")); os.makedirs(os.path.join(self.flags, "grants"))
+        bg._rf = None
+        ha = os.path.join(self.d, "handoffs", "active"); os.makedirs(ha)
+        self.pri = os.path.join(ha, "backlog-priority.json")
+        json.dump({"rows": {}, "inference_prep": [{"rank": 2, "filler": "prep-row", "row": "INF-5", "lane": "cpu", "blocker": "harness fix"}]}, open(self.pri, "w"))
+        json.dump({"handoffs": {"mid.md": {"row_id": "INF-5"}}, "rows": {"INF-5": {"handoff": "mid.md"}}}, open(os.path.join(ha, ".index-state.json"), "w"))
+        for rid in ("r-task-owned", "r-orphan", "r-direct"):
+            json.dump({"schema": "epyc.row.v3", "id": rid, "owner": "o", "lane": "cpu", "regions": "any-cpu-quarter", "priority_rank": 3,
+                       "handoff_task": "handoffs/active/mid.md:INF-5" if rid == "r-direct" else f"FILLERS:{rid}", "blocked_by": ["dry run failed"]},
+                      open(os.path.join(self.flags, "ready", rid + ".json"), "w"))
+        open(os.path.join(self.flags, "WORK-codex-gen-code.md"), "w").write("- [M] handoffs/active/mid.md:10 — fix the lock re-entry [unblocks: r-task-owned]\n")
+        self.sessions = os.path.join(self.d, "hs.json")
+        json.dump({"sessions": {"mid": {"handoff": "handoffs/active/mid.md", "status": "live"}}}, open(self.sessions, "w"))
+
+    def tearDown(self):
+        shutil.rmtree(self.d, ignore_errors=True)
+
+    def test_row_and_fix_task_in_exactly_one_backlog(self):
+        data = bg.build(self.flags, self.pri, "nolog", sessions_path=self.sessions)
+        where = {}
+        for w, d in data["workers"].items():
+            for r in d["rows"]:
+                where.setdefault(r["id"], []).append(w)
+        self.assertTrue(all(len(v) == 1 for v in where.values()), where)
+        self.assertEqual(where["r-task-owned"], ["handoff-mid"], "follows its unblocking task into the session")
+        self.assertEqual(where["r-direct"], ["handoff-mid"])
+        self.assertEqual(where["prep-row"], ["handoff-mid"], "inference_prep row INF-5 -> mid.md -> session")
+        self.assertEqual(where["r-orphan"], ["codex-gen"])
+        rendered = {w: bg.render(w, data) for w in data["workers"]}
+        for rid in where:
+            self.assertEqual(sum(1 for t in rendered.values() if f"**{rid}**" in t), 1, rid)
+        self.assertIn("**r-orphan** (row r-orphan) — yours (no handoff session)", rendered["codex-gen"])
+        self.assertIn("fix the lock re-entry", rendered["handoff-mid"])
+        self.assertNotIn("fix the lock re-entry", rendered["codex-gen"])

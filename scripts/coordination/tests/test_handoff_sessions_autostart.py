@@ -468,3 +468,42 @@ class DSHTests(AutoStartFixture):
         self.assertIn("LAST TURN REPORT (report.json, DSH-1)", self.calls[-1]["prompt"])
         self.assertIn("which lane?", self.calls[-1]["prompt"])
         self.assertIn("report.json", hs.brief_text("alpha", reg["sessions"]["alpha"], self.flags))
+
+
+class CAF1Tests(DSHTests):
+    def test_brief_forbids_polling_and_dryrun_result_resumes(self):
+        e = self.session()
+        b = hs.brief_text("alpha", e, self.flags)
+        self.assertIn("NEVER wait in a turn", b)
+        self.assertNotIn("do not poll.", b)
+        self.assertIn("awaiting/<name>.json", b)
+        self.assertIn("NEVER wait in this turn", hs.idle_prompt("alpha", e, self.flags))
+        # a dry-run FAIL for an owned row resumes the session with the fix task (the session never polled for it)
+        _w(os.path.join(self.flags, "dryrun", "row-a", "FAIL-1.json"), json.dumps({"reason": "no unit", "fix_task": "fix the result_path"}))
+        reg, st = self.dispatch()
+        self.assertIn("DRYRUN-RESULT row-a -> alpha", self.log_text())
+        self.assertEqual(len(self.calls), 1)
+        self.assertIn("Dry-run FAIL for your row `row-a`", self.calls[0]["prompt"])
+        self.assertIn("fix the result_path", self.calls[0]["prompt"])
+        # an awaited file: registered by the session, fires when it exists
+        e = self.session(await_event=True)  # last turn was a no-op: only an event may resume it
+        e["noop_reason"] = hs.work_state(self.flags, "alpha", e, self.repo)[1]
+        hs.save(hs.reg_path(self.flags), self.reg)
+        self.calls.clear()
+        target = os.path.join(self.flags, "subagent-out.json")
+        _w(hs.report_path(self.flags, "alpha").replace("report.json", "awaiting/sub1.json"), json.dumps({"path": target, "note": "sub-agent output"}))
+        reg, st = self.dispatch()
+        self.assertEqual(self.calls, [], "not before the file exists")
+        _w(target, "{}")
+        reg, st = self.dispatch()
+        self.assertIn("AWAITED " + target, self.log_text())
+        self.assertIn("The file you were waiting for exists", self.calls[-1]["prompt"])
+        # CAF-6: duplicate run-end (.ended then .complete for the same row) is queued once
+        e = self.session()
+        self.calls.clear()
+        _w(os.path.join(self.flags, "grants", "row-b.ended"), "rc=0\n")
+        _w(os.path.join(self.flags, "grants", "row-b.complete"), "rc=0\n")
+        reg, st = self.dispatch()
+        self.assertIn("DEDUPE row-b -> alpha", self.log_text())
+        self.assertEqual(sum(1 for c in self.calls if "row `row-b`" in c["prompt"]), 1)
+        self.assertEqual([ev for ev in st["queue"] if ev["rid"] == "row-b"], [])
