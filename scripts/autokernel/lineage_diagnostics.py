@@ -25,7 +25,7 @@ LABELS = frozenset({
 })
 SCHEMA = "epyc.autokernel.lineage_diagnostic.v1"
 _SHA = re.compile(r"[0-9a-f]{64}\Z")
-_NUMBER = re.compile(r"\b\d+(?:\.\d+)?(?:[eE][+-]?\d+)?\b")
+_NUMBER = re.compile(r"[0-9]+\.?[0-9]*(?:[eE][+-]?[0-9]+)?")
 
 
 def _source(row: dict, root: Path) -> str:
@@ -139,12 +139,17 @@ def load_programs(root: Path) -> tuple[list[dict], str]:
 
 
 def _normal(line: str, *, collapse_numbers: bool = False) -> str:
-    line = re.sub(r"//.*$|/\*.*?\*/", "", line).strip()
+    line = re.sub(r"//.*$", "", line)
+    line = re.sub(r"/\*.*?\*/", "", line).strip()
     return _NUMBER.sub("#", line) if collapse_numbers else line
 
 
 def _meaningful(line: str) -> bool:
-    return len(line) >= 5 and line not in {"else {", "return;"} and not line.startswith("#include")
+    # Upstream includes nontrivial 3–4 character lines in the denominator.
+    if len(line) <= 2 or line in {"{", "}", "};", "});", "else {", "else{", "return;"} or line.startswith("#include"):
+        return False
+    no_numbers = _NUMBER.sub("", line)
+    return bool(re.sub(r"[=+\-*/()<>,;:\s{}.|&!~^%?\[\]]", "", no_numbers))
 
 
 def _diff(parent: str, child: str) -> tuple[list[str], list[str]]:
@@ -165,7 +170,7 @@ def analyze(rows: list[dict], *, direction: str) -> dict:
     by_id = {r["id"]: r for r in rows}
     if len(by_id) != len(rows):
         raise ValueError("duplicate program id")
-    ordered = sorted(rows, key=lambda r: (r["iteration_found"], r["id"]))
+    ordered = sorted(rows, key=lambda r: r["iteration_found"])
     for row in ordered:
         metric_direction = (row.get("metrics") or {}).get("direction")
         if metric_direction is not None and metric_direction != direction:
@@ -190,17 +195,22 @@ def analyze(rows: list[dict], *, direction: str) -> dict:
         removed, added = _diff(parent["solution"], row["solution"])
         # A removal in this edit cannot cycle into an addition in the same edit.
         edge_cycles = []
+        counted_lines = set()
         for line in added:
-            prior = removed_history.get(line)
-            nearest = next((event for event in reversed(prior or [])
-                            if event[0] < row["iteration_found"]), None)
+            if len(line) < 5 or line in counted_lines:
+                continue
+            prior = [event for event in removed_history.get(line, [])
+                     if event[0] < row["iteration_found"]]
+            nearest = max(prior, key=lambda event: event[0], default=None)
             if nearest is not None:
                 iteration, removed_by = nearest
                 edge_cycles.append({"line_sha256": hashlib.sha256(line.encode()).hexdigest(),
                                     "removed_iteration": iteration, "removed_by": removed_by,
                                     "added_iteration": row["iteration_found"], "added_by": row["id"]})
+                counted_lines.add(line)
         for line in removed:
-            removed_history[line].append((row["iteration_found"], row["id"]))
+            if len(line) >= 5:
+                removed_history[line].append((row["iteration_found"], row["id"]))
         total_added += len(added)
         recycled_added += len(edge_cycles)
         cycles.extend(edge_cycles)

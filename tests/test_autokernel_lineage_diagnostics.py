@@ -107,3 +107,29 @@ def test_historical_unbound_export_refused(tmp_path):
     (tmp_path / "programs.jsonl").write_text(json.dumps(row) + "\n")
     with pytest.raises(ValueError, match="historical unbound"):
         lineage.load_programs(tmp_path)
+
+
+def test_pinned_evoreplay_diff_denominator_and_numeric_only():
+    # Golden values from EvoReplay detect_cycling.py @ 1773db16: short
+    # nontrivial lines count in total_added, numeric-only lines do not.
+    removed, added = lineage._diff("base();", "base();\nfoo\n123;\nnew_line();")
+    assert removed == []
+    assert added == ["foo", "new_line();"]
+
+
+def test_pinned_evoreplay_cross_branch_unique_readdition_and_iteration():
+    # A deletion on one branch may cycle into another, but each distinct
+    # (line, added program) counts once and same-iteration removals do not.
+    rows = [
+        _row("a", 0, None, "alpha();\nbase();", None),
+        _row("root2", 0, None, "base();", None),
+        _row("b", 1, "a", "base();", None),
+        _row("same", 1, "root2", "base();\nalpha();", None),
+        _row("c", 2, "a", "base();\nalpha();\nalpha();\nalpha();\nfoo\n123;", None),
+    ]
+    result = lineage.analyze(rows, direction="higher_better")
+    assert result["cycling"]["added_lines"] == 5
+    assert result["cycling"]["recycled_added_lines"] == 1
+    assert result["cycling"]["rate"] == 0.2
+    assert result["edits"][1]["recycled_added_lines"] == 0
+    assert result["edits"][2]["recycled_added_lines"] == 1
