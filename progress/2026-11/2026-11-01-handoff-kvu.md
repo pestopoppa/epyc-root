@@ -169,3 +169,7 @@ Triage correction: the agent subsequently inspected original VKQ3 `FAIL-2.json`,
 ## VKQ3 custody and clone3 source review
 
 Consumed both events. Filed the bounded original VKQ3 FAIL-2 facts in the handoff: its retained tail does not establish second exposure; the earlier FAIL-1 exposure and no-redraw rule remain binding. No new runnable row was identified and no qualification outcome is inferred for the distinct successor. Preserved the independently reviewed [uncompiled clone3 source draft](../../artifacts/compute/kvu16h-q38-clone3-supervisor-20261101/README.md); three source-text tests pass, but ABI, process identity, exclusive reaping, cgroup custody and cleanup remain unverified. No build or process ran. Registered concrete KVU-12.6 and V11-FA-8 preparation and another clone source review. GitNexus is unindexed; no application symbol was edited.
+
+## KVU-12.6 length support
+
+Consumed both events. The retained KVU-12.6 driver hashes to `43e4fcad361693cddbed8f616bb0f02895e0f4fd7ab2dc01233cca74459ecdf0` and lacks 48k/96k length keys. Preserved the [minimal patch draft](../../artifacts/compute/kvu12-6-prep-20261101/README.md); it is not installed or a runnable row. Actual resident cells and resume depths require native measurement and a predeclared matching rule. Clone3 security review found no new definite source defect but inherited pre-exec signal behavior remains unverified; no compile or process ran. Registered independent patch review, producer preparation and signal-contract work. GitNexus is unindexed; no application symbol was edited.

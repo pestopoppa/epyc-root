@@ -1,0 +1,11 @@
+--- a/kvu_cpu_matrix.py
++++ b/kvu_cpu_matrix.py
+@@ -48,7 +48,7 @@
+ DEPTH_SUFFIX_RESERVE_TOK = 384  # header + <=256-token suffix + ratio slack (W2 measured suffix turns of 261-310 tokens incl. header)
+ TEMPLATE_OVERHEAD_TOK = 64      # BOS / template / tokenizer-boundary slack (the cells use raw prompts, so this is conservative)
+ GUARD_HEADROOM_TOK = 32         # HARD refusal: planned request tokens + n_predict must be <= slot - this
+-LS = {"8k": 8192, "32k": 32768, "64k": 65536, "128k": 131072, "t8short": 1024}   # t8short: 8 clients vs np4, anchor for stack_topology.yaml:140-150 (T=8 full 124.56 tok/s)
++LS = {"8k": 8192, "32k": 32768, "48k": 49152, "64k": 65536, "96k": 98304, "128k": 131072, "t8short": 1024}   # t8short: 8 clients vs np4, anchor for stack_topology.yaml:140-150 (T=8 full 124.56 tok/s)
+ FORK_BIN_DEFAULT = "/mnt/raid0/llm/llama.cpp-experimental/build-cpu/bin/llama-server"   # placeholder; pass --fork-binary
+ BANK_NAMES = ["8k", "32k", "64k", "128k"]
+ BANK_DOCS = 8
