@@ -8,3 +8,21 @@
 - LOOP-50 replay initially exposed a false positive: its failure-state words were in the task specification, not the completion evidence. Fixed evidence-clause parsing in `8dd30dc08` and added `tests/test_belief_capture_check.py`; all three controls, collectability, committed-range replay and the full pre-commit wrapper regression passed.
 
 - Reopened `S0-V34-LOCK-LOSS-REPRODUCER` after the tick audit found no SHA, Git artifact, test or receipt for the old completion assertion. The audit is linked from the owning handoff; the historical prose is explicitly non-evidentiary.
+
+### A4A C4/27B budget repair — 2026-11-01
+
+- Reviewed retained pair evidence and prepared successor `refactor-a4a-c4-27b-pair-r2-20261101`. Its proposed full-pair envelope is **7,500 s**: two provisional 3,600 s actor-call caps, 180 s cutoff/teardown margin, and 120 s orchestration/reader slack. Comparable treatment decode observations were 25.72 and 27.58 tok/s; 25.72 tok/s × 3,600 s = 92,592 tokens only under continuous decode, not an output or completion estimate. Remaining task/tool work is unknown. The corrected manifest uses `native-diagnostic`: two model-free fixture items with the exact completion-predicate command SHA-256 pinned; its qualification projection uses two CPUs and no GPU-quiet lock, disjoint from production CPUs. This profile makes no model/throughput claim; earlier model-free 40 tok/s fields have been removed. Production still requires the exact MI210 GPU region (`mi210_0,184-191`) and exclusive GPU quiet. Actual keeper qualification remains **NOT_RUN** because CPU locks were unavailable, no qualification receipt exists, and the candidate remains unqualified / **NOT_READY**; static checks and candidate dry-run also remain **NOT_RUN** (q3 occupied; q0–q2 occupied). [Packet](</mnt/raid0/llm/tmp/refactor-a4a-c4-27b-pair-successor-20261101/READY-CANDIDATE.md>).
+
+### CS8.STT7 resume packet — 2026-11-01
+
+- Prepared revised raw-prediction producer resume packet for 1,842 VoxPopuli items × four arms. Empty hypotheses against nonempty references are recorded as item WER=1.0; nonempty hypotheses remain unscored by this producer. Retained records cover 3,450/7,368 predictions; resume starts at index 862 and preserves intact records without redrawing corpus/audio. Retained-rate RTF forecast is 3,809 s; the proposed 9,000 s window budgets 2× forecast plus 1,200 s startup/validation/stop-drain reserve, rounded up, and is not a completion guarantee. Offline admission passed (`ADMIT_PASS`, no production grant, grant polling, or inference), while keeper-side LOOP49 native-diagnostic qualification is still required; full launcher/job dry-run is **NOT_RUN**. Producer remains **NOT_READY**; full collection, STT3 acceptance, WER/scoring and fitting screen remain outstanding. [Packet](</mnt/raid0/llm/tmp/refactor-cs8-stt7-predictions-20261031/READY-SUCCESSOR.json>).
+
+### LOOP-49 source completion — 2026-11-01
+
+- Completed source implementation in `66074ef20dbd2528c0c9f96d7f1876db3296cf36`. Post-commit offline fixture validation passed: **79 tests, 14 subtests**; evidence `docs/reports/loop49-validation-20261101.md`. This verifies component regressions; full keeper dry-run acceptance remains outside that test run. [no-belief: tooling-repair]
+- Refreshed review candidate `/mnt/raid0/llm/tmp/loop49-keeper-v7f-candidate/v7f-r3/`; `SHA256SUMS` SHA-256 `b474feafa361f206c17edcc7f3ab134303aca22fbf4f383a71cd84c5243f75a8`. v7f remains **unpinned / live-disabled pending owner pin**. No keeper, production grant, arming, or inference action was performed.
+- Corrected the historical count separately from the preserved task text: committed audit `docs/reports/failed-run-audit-20261031.md` records **135/405** FAILED-RUN receipts, not 136/405.
+
+### README freshness checker repair — 2026-11-01
+
+- Fixed false missing-README warnings when the checker runs from a nested lane: `.claude/skills/project-wiki/scripts/check_readme_freshness.py` now prefers valid umbrella repository entries, then discovers Git repository roots from the nearest ancestor outward. Six region-locked regression tests in `.claude/skills/project-wiki/scripts/tests/test_check_readme_freshness.py` passed; the README freshness check is now clean. [no-belief: tooling-repair]

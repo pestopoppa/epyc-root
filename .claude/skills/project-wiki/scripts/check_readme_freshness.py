@@ -13,8 +13,8 @@ verbatim in the wrap-up output and decides whether to act.
 
 The umbrella checkout defaults to this script's repository; --root selects
 another umbrella checkout. Its own README and epyc-orchestrator and
-epyc-inference-research under repos/ are checked. A sibling clone is used when
-the umbrella has no repos/<name> entry. No host-specific fallback is used.
+epyc-inference-research under repos/ are checked. Valid repos/<name> entries take precedence; otherwise sibling clones are
+searched from the nearest ancestor outward. No host-specific fallback is used.
 
 External clones (llama.cpp fork, hermes-agent upstream, etc.) are NOT
 checked — their READMEs are upstream artifacts.
@@ -36,13 +36,28 @@ CHILD_REPOS = ("epyc-orchestrator", "epyc-inference-research")
 REQUIRED_LINKS = ("wiki/", "research/")
 
 
+def is_git_repo(path: Path) -> bool:
+    """Recognize repository roots (including worktrees), not arbitrary subdirs."""
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(path), "rev-parse", "--show-toplevel"],
+            capture_output=True, text=True, timeout=5,
+        )
+        return (result.returncode == 0 and bool(result.stdout.strip())
+                and Path(result.stdout.strip()).resolve() == path.resolve())
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+
+
 def owned_repos(root: Path) -> list[Path]:
-    """Prefer umbrella entries, including broken symlinks, over sibling clones."""
+    """Prefer valid umbrella entries, then the nearest ancestor's sibling clone."""
     root = root.expanduser().resolve()
     repos = [root]
     for name in CHILD_REPOS:
         entry = root / "repos" / name
-        repos.append(entry if entry.exists() or entry.is_symlink() else root.parent / name)
+        candidates = (entry, *(ancestor / name for ancestor in root.parents))
+        # Keep the umbrella path for a useful missing-README warning if discovery fails.
+        repos.append(next((path for path in candidates if is_git_repo(path)), entry))
     return repos
 
 
