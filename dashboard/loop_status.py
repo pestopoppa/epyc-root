@@ -52,6 +52,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -3054,6 +3055,182 @@ def payload(root: Optional[Path] = None, *, now: Optional[float] = None) -> dict
     return snapshot(root, now=now)[0]
 
 
+def keep_screen_snapshot(body: Optional[Mapping[str, Any]], *, now: Optional[float] = None) -> dict:
+    """Read the producer's AKX projection without grading or inventing workloads.
+
+    Keep membership comes from the existing accumulator. Workload membership and
+    screen classes are accepted only from the versioned producer projection; an
+    absent, stale, malformed, or unrecognized item remains UNKNOWN.
+    """
+    now = time.time() if now is None else float(now)
+    accumulator = body.get("accumulator") if isinstance(body, Mapping) else None
+    actual_keeps = accumulator.get("keeps") if isinstance(accumulator, Mapping) else None
+    actual_keeps = list(actual_keeps) if isinstance(actual_keeps, (list, tuple)) else []
+    actual_keeps = list(dict.fromkeys(item for item in actual_keeps
+                                      if isinstance(item, str) and item))
+
+    def unknown_panel(state: str, detail: str, workloads=(), source=None):
+        rows = [{"workload_id": workload["workload_id"],
+                 "classification": "UNKNOWN", "tier": None,
+                 "unknown_reason": detail, "verdict": "UNKNOWN",
+                 "refusal_remedy": None} for workload in workloads]
+        keeps = [{"keep_id": keep_id,
+                  "source_path": None, "record_sha256": None,
+                  "freshness": {"state": state, "detail": detail},
+                  "rows": [dict(row) for row in rows]}
+                 for keep_id in actual_keeps]
+        return {"state": state, "detail": detail, "generated_at": None,
+                "age_s": None, "stale_after_s": None, "source": source,
+                "workloads": list(workloads), "keeps": keeps}
+
+    absent_detail = ("the loop status has no AKX keep-screen projection; retained keep IDs remain visible, "
+                     "workload membership is unknown")
+    if not isinstance(body, Mapping) or body.get("keep_screen") is None:
+        result = unknown_panel(STATE_ABSENT, absent_detail)
+        for keep in result["keeps"]:
+            keep["freshness"]["state"] = STATE_ABSENT
+        return result
+
+    report = body["keep_screen"]
+    malformed = "the AKX keep-screen projection is malformed; all screen cells are UNKNOWN"
+    if (not isinstance(report, Mapping)
+            or report.get("schema") != "epyc.autokernel.keep_screen_status.v1"
+            or report.get("state") not in {STATE_FRESH, "missing_manifest"}
+            or not isinstance(report.get("source"), Mapping)
+            or not isinstance(report.get("workloads"), list)
+            or not isinstance(report.get("keeps"), list)
+            or not isinstance(report.get("freshness"), Mapping)):
+        return unknown_panel(STATE_MALFORMED, malformed)
+    envelope_freshness = report["freshness"].get("state")
+    expected_freshness = STATE_FRESH if report["state"] == STATE_FRESH else STATE_ABSENT
+    if envelope_freshness != expected_freshness:
+        return unknown_panel(STATE_MALFORMED, malformed)
+
+    produced_at = report.get("generated_at")
+    try:
+        stamp = datetime.fromisoformat(str(produced_at).replace("Z", "+00:00"))
+        if stamp.tzinfo is None:
+            raise ValueError("timestamp lacks a timezone")
+        age = now - stamp.timestamp()
+        if age < -panels.FUTURE_SKEW_TOLERANCE_S:
+            return unknown_panel(STATE_MALFORMED,
+                "the AKX status timestamp is too far in the future; freshness is UNKNOWN")
+        age = max(0.0, age)
+        stale_after = report["freshness"].get("stale_after_s")
+        if (not isinstance(stale_after, (int, float)) or isinstance(stale_after, bool)
+                or not math.isfinite(float(stale_after)) or stale_after < MIN_STALE_AFTER_S):
+            raise ValueError("invalid staleness bound")
+    except (TypeError, ValueError, OverflowError):
+        return unknown_panel(STATE_MALFORMED,
+            "the AKX keep-screen timestamp or freshness bound is malformed")
+
+    state = STATE_STALE if age > stale_after else report["state"]
+    source = report["source"]
+    allowed_source = {key: source.get(key) for key in
+                      ("kind", "campaign_id", "manifest_path", "manifest_sha256", "detail")}
+    workloads = []
+    workload_ids = set()
+    for item in report["workloads"]:
+        if (not isinstance(item, Mapping) or not isinstance(item.get("workload_id"), str)
+                or not item["workload_id"] or item["workload_id"] in workload_ids
+                or not isinstance(item.get("workload_signature"), str)
+                or not re.fullmatch(r"[0-9a-f]{64}", item["workload_signature"])):
+            return unknown_panel(STATE_MALFORMED, malformed, source=allowed_source)
+        workload_ids.add(item["workload_id"])
+        workloads.append({"workload_id": item["workload_id"],
+                          "workload_signature": item["workload_signature"]})
+
+    by_keep = {}
+    for item in report["keeps"]:
+        if (not isinstance(item, Mapping) or not isinstance(item.get("keep_id"), str)
+                or not item["keep_id"] or item["keep_id"] in by_keep
+                or not isinstance(item.get("rows"), list)
+                or not isinstance(item.get("freshness"), Mapping)):
+            return unknown_panel(STATE_MALFORMED, malformed, workloads, allowed_source)
+        freshness = item["freshness"]
+        if freshness.get("state") not in {STATE_FRESH, STATE_STALE, STATE_MALFORMED, STATE_ABSENT}:
+            return unknown_panel(STATE_MALFORMED, malformed, workloads, allowed_source)
+        by_keep[item["keep_id"]] = item
+
+    keeps = []
+    for keep_id in actual_keeps:
+        source_keep = by_keep.get(keep_id)
+        keep_freshness = (dict(source_keep["freshness"]) if source_keep else
+            {"state": STATE_ABSENT, "detail": "no screen record is published for this retained keep"})
+        keep_current = (state == STATE_FRESH and source_keep is not None
+                        and keep_freshness.get("state") == STATE_FRESH)
+        cells = {}
+        nested_bad = False
+        if source_keep is not None:
+            for row in source_keep["rows"]:
+                if (not isinstance(row, Mapping) or not isinstance(row.get("workload_id"), str)
+                        or row["workload_id"] not in workload_ids
+                        or row["workload_id"] in cells):
+                    nested_bad = True
+                    break
+                cells[row["workload_id"]] = row
+        if nested_bad:
+            return unknown_panel(STATE_MALFORMED, malformed, workloads, allowed_source)
+        rows = []
+        for workload in workloads:
+            workload_id = workload["workload_id"]
+            cell = cells.get(workload_id)
+            classification = cell.get("classification") if cell else None
+            tier = cell.get("tier") if cell else None
+            raw_reason = cell.get("unknown_reason") if cell else None
+            reason = raw_reason if isinstance(raw_reason, str) and raw_reason else None
+            if classification not in {"INERT", "TOUCHED", "UNKNOWN"}:
+                classification = "UNKNOWN"
+                reason = reason or "producer class was missing or unrecognized"
+            elif classification == "INERT" and tier not in {"T0", "T1"}:
+                classification, tier = "UNKNOWN", None
+                reason = "INERT row is missing a valid T0/T1 tier"
+            elif classification != "INERT" and tier is not None:
+                classification, tier = "UNKNOWN", None
+                reason = "non-INERT row carried an unsupported tier"
+            else:
+                tier = tier if classification == "INERT" else None
+            if classification == "UNKNOWN" and reason is None:
+                reason = "no screen row was recorded for this workload" if cell is None else (
+                    "producer did not record an UNKNOWN reason")
+            verdict = cell.get("verdict") if cell else "UNKNOWN"
+            if verdict not in {"REGRESSION", "NOT_SHOWN_NON_INFERIOR"}:
+                verdict = "UNKNOWN"
+            remedy = cell.get("refusal_remedy") if cell else None
+            if remedy is not None and (not isinstance(remedy, Mapping)
+                    or type(remedy.get("suggested_form")) is not int
+                    or remedy.get("suggested_form") not in {1, 2, 3}
+                    or not isinstance(remedy.get("discriminator_hint"), str)
+                    or not remedy.get("discriminator_hint")):
+                remedy = None
+            if classification == "UNKNOWN":
+                verdict, remedy = "UNKNOWN", None
+            if not keep_current:
+                classification, tier, verdict, remedy = "UNKNOWN", None, "UNKNOWN", None
+                reason = keep_freshness.get("detail") or "screen evidence is not fresh"
+            rows.append({"workload_id": workload_id, "classification": classification,
+                "tier": tier if tier in {"T0", "T1"} else None,
+                "unknown_reason": reason if classification == "UNKNOWN" else None,
+                "verdict": verdict,
+                "refusal_remedy": dict(remedy) if isinstance(remedy, Mapping) else None})
+        keeps.append({"keep_id": keep_id,
+            "source_path": source_keep.get("source_path") if source_keep else None,
+            "record_sha256": source_keep.get("record_sha256") if source_keep else None,
+            "freshness": keep_freshness, "rows": rows})
+
+    if state != STATE_FRESH:
+        for keep in keeps:
+            for row in keep["rows"]:
+                row.update(classification="UNKNOWN", tier=None, verdict="UNKNOWN",
+                           refusal_remedy=None)
+    detail = (source.get("detail") if state == "missing_manifest"
+              else "current AKX screen projection" if state == STATE_FRESH
+              else "AKX screen projection is stale or malformed; cells are UNKNOWN")
+    return {"state": state, "detail": detail, "generated_at": produced_at,
+            "age_s": round(age, 1), "stale_after_s": stale_after,
+            "source": allowed_source, "workloads": workloads, "keeps": keeps}
+
+
 def _serial_bytes(path: Path, *, limit=2 * 1024 * 1024) -> bytes:
     fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC)
     with os.fdopen(fd, "rb") as stream:
@@ -3443,6 +3620,7 @@ def snapshot(root: Optional[Path] = None, *, now: Optional[float] = None
         "notice": notice(report, fresh),
         "display_step": display_step(report, fresh),
         "loop": dict(body) if body is not None else None,
+        "keep_screen": keep_screen_snapshot(body, now=now),
         "derived": summarize(body) if body is not None else None,
         "runtime_preparation": _runtime_preparation(body, now=now),
         # A THIRD producer, and it dates neither of the other two. It is read

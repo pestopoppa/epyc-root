@@ -1,0 +1,8 @@
+b9558e88f1529b02bd31b6c4f609c1fe1c5b0b547fb4047c564388119eed9934  /mnt/raid0/llm/tmp/codex-ni-s-code-20261101/research/scripts/kernel_rnd/autokernel/loop/run.py
+6af031e01c8d5318f03310ef7069ea6fc6a4249a49968e99e03a6a0b876d6150  /mnt/raid0/llm/tmp/codex-ni-s-code-20261101/research/scripts/kernel_rnd/autokernel/loop/status.py
+fbdee15b9334189d18f45e1b29ca1d603170f40d100d32824b6b63b66c2273d4  /mnt/raid0/llm/tmp/codex-ni-s-code-20261101/research/scripts/kernel_rnd/autokernel/loop/test_status.py
+c352ce905a7f673466ada1b2b8bc3563585a1cd4205c9d3b3512b3959fe856e5  /mnt/raid0/llm/tmp/codex-ni-s-code-20261101/research/scripts/kernel_rnd/autokernel/loop/keep_screen.py
+5a0989c64dcb9f545841e6e815e2108ea4019ac11ddb2d20fbec486a4d6e6cb7  /mnt/raid0/llm/tmp/codex-ni-s-code-20261101/research/scripts/kernel_rnd/autokernel/loop/test_keep_screen.py
+bf4fc1837e1c7bca7342805632eb3e042e7a11cb38143d0bbc679839915ca661  /mnt/raid0/llm/tmp/codex-ni-s-code-20261101/root/dashboard/loop_status.py
+2fea1090fcdcb51ecbc7e1002227aabee9f63d5940c91732654b6ac44a534a39  /mnt/raid0/llm/tmp/codex-ni-s-code-20261101/root/dashboard/static/loop.html
+010f9c25d25e05712c6e1ca58c2f818ecfa532e6a0e7aba94cb2819f8fa190f8  /mnt/raid0/llm/tmp/codex-ni-s-code-20261101/root/tests/test_dashboard_akx_keep_screen.py

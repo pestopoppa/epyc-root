@@ -1,0 +1,111 @@
+{
+  "scope": "MODEL_FREE_R6_ONLY",
+  "family": "34-35",
+  "actual_cpus": [
+    130,
+    131
+  ],
+  "root_lane": "/mnt/raid0/llm/tmp/codex-ni-ap-legacy-status-wrap-20261030",
+  "root_status": [
+    " M dashboard/loop_status.py",
+    " M dashboard/static/loop.html",
+    " M handoffs/active/vidya-belief-substrate-program.md",
+    " M scripts/vidya/adapters/README.md",
+    "?? scanner-migration/",
+    "?? tests/test_dashboard_akx_keep_screen.py"
+  ],
+  "implementation_commit": "12c5b907a11b1d60da426c1c8632758657f4dfae",
+  "merge_commit": "54577ffa9c41f6460c8e7f827221871263bd8baa",
+  "start_utc": "2026-11-01T03:22:14.712781+00:00",
+  "end_utc": "2026-11-01T03:22:18.893936+00:00",
+  "own_pid": 2329670,
+  "own_start_ticks": "162580794",
+  "runner_pid": 2329543,
+  "runner_start_ticks": "162580783",
+  "boot_id": "3be2fb1a-7293-4c34-b733-c85d772b9474",
+  "live_grants": [
+    {
+      "id": "codex-ni-inf12-gate2-triton36-r13-20261030",
+      "class": "block-correctness",
+      "regions": "mi210_0,184-191",
+      "start": "2026-11-01T03:20Z",
+      "end": "2026-11-01T03:50Z"
+    },
+    {
+      "id": "codex3-cs8-stt5-validation-baseline-r2-20261030",
+      "class": "block-correctness",
+      "regions": "48-71",
+      "start": "2026-11-01T02:11Z",
+      "end": "2026-11-01T06:00Z"
+    },
+    {
+      "id": "codex3-pareval120-k20-gen-20261031",
+      "class": "block-correctness",
+      "regions": "0-23",
+      "start": "2026-10-31T23:56Z",
+      "end": "2026-11-01T03:56Z"
+    }
+  ],
+  "staged_closure": [
+    " M scripts/kernel_rnd/autokernel/loop/actors.py",
+    " M scripts/kernel_rnd/autokernel/loop/hotspots.py",
+    " M scripts/kernel_rnd/autokernel/loop/run.py",
+    " M scripts/kernel_rnd/autokernel/loop/test_actors.py",
+    " M scripts/kernel_rnd/autokernel/prior_art.py",
+    "?? scripts/kernel_rnd/autokernel/loop/test_hotspots.py"
+  ],
+  "returncode": 0,
+  "failure": null,
+  "elapsed_s": 4.2836272090207785,
+  "sampled_peak_tree_rss_bytes": 91746304,
+  "kernel_childset_empty": true,
+  "captured": [
+    {
+      "pid": 2329670,
+      "birth": 162580794,
+      "ppid": 2329543,
+      "uid": 1000
+    },
+    {
+      "pid": 2329672,
+      "birth": 162580794,
+      "ppid": 2329670,
+      "uid": 1000
+    },
+    {
+      "pid": 2331895,
+      "birth": 162581070,
+      "ppid": 2329672,
+      "uid": 1000
+    },
+    {
+      "pid": 2333342,
+      "birth": 162581172,
+      "ppid": 2329670,
+      "uid": 1000
+    },
+    {
+      "pid": 2333475,
+      "birth": 162581189,
+      "ppid": 2329670,
+      "uid": 1000
+    }
+  ],
+  "native_or_GPU_execution": false,
+  "source_closure": [
+    " M scripts/kernel_rnd/autokernel/loop/actors.py",
+    " M scripts/kernel_rnd/autokernel/loop/hotspots.py",
+    " M scripts/kernel_rnd/autokernel/loop/run.py",
+    " M scripts/kernel_rnd/autokernel/loop/test_actors.py",
+    " M scripts/kernel_rnd/autokernel/prior_art.py",
+    "?? scripts/kernel_rnd/autokernel/loop/test_hotspots.py"
+  ],
+  "adapted_script_sha256": "9cea461e8074243bd9d14737dd02add2b627ec5589e0984270a8df0c5e3f9471",
+  "output_log_sha256": "81d0287e5c0053c5977f6ac04393907dff3d64a5512ca4b1d87fc94174eefcf8",
+  "rss_sampler": {
+    "interval_s": 0.1,
+    "limit_bytes": 8589934592,
+    "source": "/proc/<pid>/statm"
+  },
+  "upstream_parent": "a23bd9c652030c251bd970ceb18bb3e827180eaa"
+}

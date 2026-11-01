@@ -1,0 +1,5 @@
+.................................................                      [100%]
+49 passed, 2 subtests passed in 3.61s
+......                                                                   [100%]
+6 passed in 0.07s
+{"keep_id": "contract-keep", "remedy": {"discriminator_hint": "fixture backend / shape", "suggested_form": 1}, "rendered_markers": ["INERT T0/T1", "TOUCHED", "UNKNOWN", "REGRESSION", "bound remedy"], "result": "PASS", "verdict": "REGRESSION", "workloads": {"w-t0": ["INERT", "T0"], "w-t1": ["INERT", "T1"], "w-touch": ["TOUCHED", null], "w-unknown": ["UNKNOWN", null]}}

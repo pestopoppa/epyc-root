@@ -1,0 +1,32 @@
+source-manifest verification:
+/mnt/raid0/llm/tmp/codex-ni-s-code-20261101/research/scripts/kernel_rnd/autokernel/loop/run.py: OK
+/mnt/raid0/llm/tmp/codex-ni-s-code-20261101/research/scripts/kernel_rnd/autokernel/loop/status.py: OK
+/mnt/raid0/llm/tmp/codex-ni-s-code-20261101/research/scripts/kernel_rnd/autokernel/loop/test_status.py: OK
+/mnt/raid0/llm/tmp/codex-ni-s-code-20261101/research/scripts/kernel_rnd/autokernel/loop/keep_screen.py: OK
+/mnt/raid0/llm/tmp/codex-ni-s-code-20261101/research/scripts/kernel_rnd/autokernel/loop/test_keep_screen.py: OK
+/mnt/raid0/llm/tmp/codex-ni-s-code-20261101/root/dashboard/loop_status.py: OK
+/mnt/raid0/llm/tmp/codex-ni-s-code-20261101/root/dashboard/static/loop.html: OK
+/mnt/raid0/llm/tmp/codex-ni-s-code-20261101/root/tests/test_dashboard_akx_keep_screen.py: OK
+
+clone refs/status:
+77ea78a51bee427cd5fe0b0c5cff5026e9829e6d
+92b5dee62f86808732a05138765a6fe28d98c90c
+ M dashboard/loop_status.py
+ M dashboard/static/loop.html
+?? tests/test_dashboard_akx_keep_screen.py
+ M scripts/kernel_rnd/autokernel/loop/run.py
+ M scripts/kernel_rnd/autokernel/loop/status.py
+ M scripts/kernel_rnd/autokernel/loop/test_status.py
+?? scripts/kernel_rnd/autokernel/loop/keep_screen.py
+?? scripts/kernel_rnd/autokernel/loop/test_keep_screen.py
+
+tracked worktree gate classification:
+/mnt/raid0/llm/tmp/codex-ni-s-code-20261101/root	UNVERIFIABLE	not a registered linked worktree
+/mnt/raid0/llm/tmp/codex-ni-s-code-20261101/research	UNVERIFIABLE	not a registered linked worktree
+
+live pid cwd/cmd/maps reference scan (scanner excludes its own process chain):
+[]
+
+size bytes before move:
+950702420	/mnt/raid0/llm/tmp/codex-ni-s-code-20261101/root
+2867490537	/mnt/raid0/llm/tmp/codex-ni-s-code-20261101/research

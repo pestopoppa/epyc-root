@@ -313,6 +313,19 @@
   .og-pts th{color:var(--muted);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.04em}
   .og-pts td{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
   .og-pts td.d.pos{color:var(--good)} .og-pts td.d.neg{color:var(--bad)}
+  .akx-note{padding:10px 16px;color:var(--muted);font-size:12px;border-bottom:1px solid var(--border)}
+  .akx-status{padding:10px 16px;font-size:12px;border-bottom:1px solid var(--border)}
+  .akx-status.stale,.akx-status.malformed{color:var(--amber);background:#241d16}
+  .akx-status.absent,.akx-status.missing_manifest{color:var(--muted);background:#191d24}
+  .akx-keep{border-bottom:1px solid var(--border)} .akx-keep:last-child{border-bottom:0}
+  .akx-keep>summary{padding:9px 16px;cursor:pointer;font:12px ui-monospace,monospace}
+  .akx-table{width:100%;border-collapse:collapse;font-size:12px}
+  .akx-table th,.akx-table td{padding:6px 10px;text-align:left;vertical-align:top;border-top:1px solid var(--border)}
+  .akx-table th{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.04em}
+  .akx-table td{overflow-wrap:anywhere}
+  .akx-class{font-weight:700;white-space:nowrap}.akx-class.touched{color:var(--amber)}
+  .akx-class.unknown{color:var(--muted)}.akx-class.inert{color:var(--accent)}
+  .akx-evidence{padding:6px 10px 10px;color:var(--muted);font-size:11px;overflow-wrap:anywhere}
 </style>
 </head>
 <body>
@@ -372,6 +385,13 @@
       <div id="accumulator"></div>
     </section>
   </div>
+
+  <section id="sec-akx-keep-screen">
+    <h2>Cross-workload keep screen
+      <span class="count">per retained keep · structural class · independent freshness</span>
+    </h2>
+    <div id="akx-keep-screen"></div>
+  </section>
 
   <section id="sec-serial" hidden>
     <h2>Serial target routing <span class="count">routing is not measurement progress</span></h2>
@@ -1817,6 +1837,36 @@ function renderAccumulator(d){
     `</div>`;
 }
 
+function renderKeepScreen(d){
+  const host=document.getElementById("akx-keep-screen"),p=d.keep_screen;
+  if(!p){host.innerHTML='<div class="akx-status malformed"><strong>UNKNOWN</strong> — no keep-screen panel was served.</div>';return;}
+  const state=String(p.state||"malformed"),source=p.source||{},workloads=Array.isArray(p.workloads)?p.workloads:[],keeps=Array.isArray(p.keeps)?p.keeps:[];
+  const freshness=state==="fresh"?`fresh · ${age(p.age_s)} ago`:
+    state==="stale"?`STALE · ${age(p.age_s)} ago`:state.toUpperCase();
+  let html=`<div class="akx-status ${esc(state)}"><strong>${esc(freshness)}</strong> — ${esc(p.detail||"screen state unavailable")}</div>`;
+  if(source.manifest_path||source.manifest_sha256){html+=`<div class="akx-evidence">resolved campaign: <code>${esc(source.manifest_path||"path unknown")}</code> · manifest SHA-256 <code>${esc(source.manifest_sha256||"unknown")}</code></div>`;}
+  if(state==="missing_manifest"||!workloads.length){
+    html+=`<div class="akx-note">The resolved workload set is unknown, so no workload rows are fabricated. Current retained keep IDs come from the loop accumulator.</div>`;
+  }
+  if(!keeps.length){html+=`<div class="akx-note">No retained keep IDs were reported by the accumulator.</div>`;}
+  for(const keep of keeps){
+    const rows=Array.isArray(keep.rows)?keep.rows:[];
+    const body=rows.length?`<div style="overflow-x:auto"><table class="akx-table"><thead><tr><th>Workload</th><th>Screen</th><th>Row verdict</th><th>Refusal remedy</th></tr></thead><tbody>`+
+      rows.map(row=>{
+        const klass=String(row.classification||"UNKNOWN"),tier=(klass==="INERT"&&["T0","T1"].includes(row.tier))?` (${esc(row.tier)})`:"";
+        const remedy=row.refusal_remedy;
+        const remedyText=remedy?`form ${esc(remedy.suggested_form??"unknown")} · ${esc(remedy.discriminator_hint||"hint not recorded")}`:
+          (row.verdict==="UNKNOWN"?"No refusal record; remedy not recorded":"No refusal remedy recorded");
+        return `<tr><td><code>${esc(row.workload_id||"unknown workload")}</code></td><td><span class="akx-class ${esc(klass.toLowerCase())}">${esc(klass)}${tier}</span>`+
+          `${row.unknown_reason?`<div class="muted">${esc(row.unknown_reason)}</div>`:""}</td><td>${esc(row.verdict||"UNKNOWN")}</td><td>${remedyText}</td></tr>`;
+      }).join("")+`</tbody></table></div>`:
+      `<div class="akx-note">No per-workload rows are available. Workload membership and classification remain UNKNOWN.</div>`;
+    html+=`<details class="akx-keep"><summary>${esc(keep.keep_id||"keep ID unknown")} · ${esc(String(keep.freshness?.state||"unknown").toUpperCase())}</summary>${body}`+
+      `<div class="akx-evidence">screen record: <code>${esc(keep.source_path||"not published")}</code> · record SHA-256 <code>${esc(keep.record_sha256||"unknown")}</code> · ${esc(keep.freshness?.detail||"freshness unknown")}</div></details>`;
+  }
+  host.innerHTML=html;
+}
+
 let trajectoryModelSelection=null, trajectorySurfaceSelection=null;
 let trajectoryRenderSignature=null, trajectoryOpenKeep=null;
 function renderImprovementTrajectory(d){
@@ -2859,6 +2909,7 @@ function render(d){
   // The accumulator (R23-44) rides the loop-status body; rendered unconditionally
   // and drawing its own graceful empty when the run carries no serving tier.
   renderAccumulator(detail);
+  renderKeepScreen(d);
   // Third and fourth producers, rendered unconditionally for the same reason.
   // None of the four dates any of the others.
   renderOperatorGate(d);
@@ -2879,6 +2930,8 @@ function renderFetchFailure(err){
     '<div class="warn">UNKNOWN — hub unreachable; champion capabilities cannot be refreshed.</div>';
   document.getElementById("accumulator").innerHTML =
     '<div class="warn">UNKNOWN — hub unreachable; retained keeps and gate status cannot be refreshed.</div>';
+  document.getElementById("akx-keep-screen").innerHTML =
+    '<div class="akx-status malformed"><strong>UNKNOWN</strong> — hub unreachable; per-keep screens cannot be refreshed.</div>';
   document.getElementById("serial-controls").innerHTML="";
   document.getElementById("runtime-preparation").innerHTML =
     '<div class="warn">UNKNOWN — hub unreachable; runtime progress cannot be refreshed.</div>';

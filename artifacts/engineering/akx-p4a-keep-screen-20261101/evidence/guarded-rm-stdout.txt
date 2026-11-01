@@ -1,0 +1,2 @@
+trashed: /mnt/raid0/llm/tmp/codex-ni-s-code-20261101/root -> /mnt/raid0/llm/.trash/20261101-025942-root (950702420 bytes)
+trashed: /mnt/raid0/llm/tmp/codex-ni-s-code-20261101/research -> /mnt/raid0/llm/.trash/20261101-025942-research (2867490537 bytes)
