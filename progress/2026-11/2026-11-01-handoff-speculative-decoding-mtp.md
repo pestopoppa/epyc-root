@@ -26,3 +26,7 @@ Consumed the G3 parser completion report and independently ran 13 synthetic fixt
 ## 22:27Z — Prepare SW-2 per-step proof and remaining MTP work
 
 The listed INF-50 window predecessor is superseded by the completed margin recovery; the listed stderr task is already closed. SW-2 still lacks per-step lower-cap proof, so delegated an isolated successor packet with explicit per-step evidence and registered its completion event. SR-6 is already published for keeper qualification. Also delegated CAFE-4 source review and a narrow NG5 registry/claim-discipline review, with separate completion events. Existing SR-7 and G3 ordering work remain delegated. No inference, keeper qualification or production edit was performed in this boundary.
+
+## 22:29Z — Document NG5 corpus and repetition evidence
+
+Consumed the NG5 review and added handoff reporting/replication guidance plus corpus/fraction availability notes beside the identified NG1, NG2, NG4, T3, T3c, T5 and COPYSPEC observations. The original 6–17% remains scoped to the original screened prompts; missing information is described as not recorded in this handoff, not as irrecoverable. The INF-50 index row has no ngram numeric claim. Preserved the source review and a source-only registry caveat proposal under artifacts/compute/ng5-review-20261101/. The shared research registry has unrelated dirty changes and was not edited; the separate master and generated-lean updates and exhaustive numeric-claim inventory remain before NG5 can close. No measurement warrant, new protocol or deployment conclusion was created.
