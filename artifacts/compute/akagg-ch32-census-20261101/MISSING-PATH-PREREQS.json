@@ -1,0 +1,132 @@
+{
+  "A": {
+    "commit": "cbe28bb3cb0758f0c566a9a3561766821aeb0748",
+    "missing_path_creation_evidence": []
+  },
+  "B1": {
+    "commit": "b77d646751d01c0962bc203b6809e9d94f7d50b7",
+    "missing_path_creation_evidence": []
+  },
+  "B2": {
+    "commit": "e79d8cab590ae0a040e1562d09e46b0bfab8cc2d",
+    "missing_path_creation_evidence": []
+  },
+  "C1": {
+    "commit": "a4cb4c61fd9d9c2066c7c1747821d3d65b8943bd",
+    "missing_path_creation_evidence": []
+  },
+  "C2": {
+    "commit": "7e3eeee0480902c90cbdff172f407dc063cf0770",
+    "missing_path_creation_evidence": [
+      {
+        "path": "tools/server/server-decision.cpp",
+        "latest_first_parent_add_before_target": "a4cb4c61fd9d9c2066c7c1747821d3d65b8943bd llama, server: add /v1/systemone API (models: laya, julia-1, lev, openjev, kev) (#29818)",
+        "exists_at_c5": false,
+        "creator_is_requested_group_tip": "C1"
+      },
+      {
+        "path": "tools/server/server-decision.h",
+        "latest_first_parent_add_before_target": "a4cb4c61fd9d9c2066c7c1747821d3d65b8943bd llama, server: add /v1/systemone API (models: laya, julia-1, lev, openjev, kev) (#29818)",
+        "exists_at_c5": false,
+        "creator_is_requested_group_tip": "C1"
+      }
+    ]
+  },
+  "D1": {
+    "commit": "2851b3bcbf8d993a2243ae751c0a7dfa8e944a40",
+    "missing_path_creation_evidence": []
+  },
+  "D2": {
+    "commit": "1242be66f65d5d8a3d996ba56d6de106ced98cf6",
+    "missing_path_creation_evidence": []
+  },
+  "D3": {
+    "commit": "19cce6919992fdffd92e0ac152caaf1e2b8f254e",
+    "missing_path_creation_evidence": [
+      {
+        "path": "tests/fusion/MTL.csv",
+        "latest_first_parent_add_before_target": "a2878d30df0130dde503a7d9ba30d3d21bd71b9f metal : single-source fusion table + fusion debug rework (#28164)",
+        "exists_at_c5": false,
+        "creator_is_requested_group_tip": null
+      }
+    ]
+  },
+  "D4": {
+    "commit": "19ff817fb25e9a1b838b1d7f9f4325f7bf9779c4",
+    "missing_path_creation_evidence": [
+      {
+        "path": "conversion/lfm3.py",
+        "latest_first_parent_add_before_target": "19cce6919992fdffd92e0ac152caaf1e2b8f254e model : add LiquidAI/LFM3-1.7B and LiquidAI/LFM3-VL-2B (#31252)",
+        "exists_at_c5": false,
+        "creator_is_requested_group_tip": "D3"
+      },
+      {
+        "path": "tools/mtmd/mtmd-helper-gen.cpp",
+        "latest_first_parent_add_before_target": "07132750825a4f2d27a547cd9cdde1c6f6001885 mtmd: support Qwen3-TTS (note: breaking change to llama-tts binary) (#26254)",
+        "exists_at_c5": false,
+        "creator_is_requested_group_tip": null
+      }
+    ]
+  },
+  "D5": {
+    "commit": "8ca4060b7e30e76baaa5670ee1ec1b760b7f8552",
+    "missing_path_creation_evidence": []
+  },
+  "D6": {
+    "commit": "d1eb0debaddc9f9246ee884653ee3a7764f60b77",
+    "missing_path_creation_evidence": [
+      {
+        "path": "examples/realtime_client.py",
+        "latest_first_parent_add_before_target": "8ca4060b7e30e76baaa5670ee1ec1b760b7f8552 server : add realtime conversation and transcription on /v1/realtime (#31269)",
+        "exists_at_c5": false,
+        "creator_is_requested_group_tip": "D5"
+      },
+      {
+        "path": "tools/server/server-realtime.cpp",
+        "latest_first_parent_add_before_target": "8ca4060b7e30e76baaa5670ee1ec1b760b7f8552 server : add realtime conversation and transcription on /v1/realtime (#31269)",
+        "exists_at_c5": false,
+        "creator_is_requested_group_tip": "D5"
+      },
+      {
+        "path": "tools/server/server-realtime.h",
+        "latest_first_parent_add_before_target": "8ca4060b7e30e76baaa5670ee1ec1b760b7f8552 server : add realtime conversation and transcription on /v1/realtime (#31269)",
+        "exists_at_c5": false,
+        "creator_is_requested_group_tip": "D5"
+      }
+    ]
+  },
+  "D7": {
+    "commit": "889f2ec96deacbc2d8a9a67dbe181eaa43a2fb3b",
+    "missing_path_creation_evidence": [
+      {
+        "path": "conversion/lfm3.py",
+        "latest_first_parent_add_before_target": "19cce6919992fdffd92e0ac152caaf1e2b8f254e model : add LiquidAI/LFM3-1.7B and LiquidAI/LFM3-VL-2B (#31252)",
+        "exists_at_c5": false,
+        "creator_is_requested_group_tip": "D3"
+      }
+    ]
+  },
+  "D8": {
+    "commit": "d4f1b18b3a1522eec48decbe9ff7dc66eb60a9f4",
+    "missing_path_creation_evidence": [
+      {
+        "path": "conversion/lfm3.py",
+        "latest_first_parent_add_before_target": "19cce6919992fdffd92e0ac152caaf1e2b8f254e model : add LiquidAI/LFM3-1.7B and LiquidAI/LFM3-VL-2B (#31252)",
+        "exists_at_c5": false,
+        "creator_is_requested_group_tip": "D3"
+      },
+      {
+        "path": "tools/mtmd/models/lfm3vl.cpp",
+        "latest_first_parent_add_before_target": "19cce6919992fdffd92e0ac152caaf1e2b8f254e model : add LiquidAI/LFM3-1.7B and LiquidAI/LFM3-VL-2B (#31252)",
+        "exists_at_c5": false,
+        "creator_is_requested_group_tip": "D3"
+      },
+      {
+        "path": "tools/server/server-decision.cpp",
+        "latest_first_parent_add_before_target": "a4cb4c61fd9d9c2066c7c1747821d3d65b8943bd llama, server: add /v1/systemone API (models: laya, julia-1, lev, openjev, kev) (#29818)",
+        "exists_at_c5": false,
+        "creator_is_requested_group_tip": "C1"
+      }
+    ]
+  }
+}

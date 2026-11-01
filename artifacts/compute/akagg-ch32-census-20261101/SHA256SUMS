@@ -37,5 +37,8 @@ ed4a1484675343a2ac756097ecd9be35f6a103f33e73335d6a177c956723deeb  artifacts/comp
 dae0cee14e3353a3305e28b0064400e8938be092625f8db510ca0c41a4c60d7e  artifacts/compute/akagg-ch32-census-20261101/D8.ggml-include-diff.txt
 c49190e8eef9195bf7366ca00ef731488b752d344714d0851c6141abb27c0246  artifacts/compute/akagg-ch32-census-20261101/D8.merge-tree
 1064efdd07b3ee15a23f60edc0a6ef08d37c68c2043fc6d7e944cd440ed81745  artifacts/compute/akagg-ch32-census-20261101/D8.patch-check.log
+6f90d5f52893a3bf640a1759836dbec492e3afb854dfbd8c05970c0ab7820abd  artifacts/compute/akagg-ch32-census-20261101/GGML-API-TOKEN-SCAN.json
 b3a2dafe3ce19af61c50646b36d836d161f8f00b61de0e80ab181d7360056e78  artifacts/compute/akagg-ch32-census-20261101/GGML-COUNTS.json
+e7b53a9a9998d63ed60a3d83d33e449304249bae7a91998688ca848f8bde9486  artifacts/compute/akagg-ch32-census-20261101/MISSING-PATH-PREREQS.json
 f20ea79bac88407383cb90c08a668c00b4a4d385fe8984654f33f760d5ec67ee  artifacts/compute/akagg-ch32-census-20261101/SUMMARY.json
+aecf6d8b8358978b494b1bd7926dc439bff4d0eea47e7204c8f209cf5b5d7191  artifacts/compute/akagg-ch32-census-20261101/UPSTREAM-ANCESTRY-EDGES.json
