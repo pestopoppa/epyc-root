@@ -219,6 +219,30 @@ def _sandbox_env(row: dict, tmp: Path, hb: Path, extra: dict | None = None) -> d
     return env
 
 
+def _proc_scan_blind_bash_env(tmp: Path) -> Path:
+    """Keep the real guard primitives but make the independent scan unavailable.
+
+    BASH_ENV loads before the supervisor; the original og_channel implementation
+    is retained under a private name and only its proc_scan input is changed.
+    This exercises the real caller's present-plus-unavailable decision without a
+    production test knob or a replacement supervisor.
+    """
+    shim = tmp / "proc_scan_unavailable.bash"
+    shim.write_text(
+        f'source "{GUARD}"\n'
+        "eval \"$(declare -f og_channel | sed '1s/^og_channel /og_channel_original /')\"\n"
+        "og_channel() {\n"
+        "  if [[ \"${1:-}\" == proc_scan ]]; then\n"
+        "    printf -v scan_state '%s' unavailable\n"
+        "    og_channel_original proc_scan unavailable 'test injection: scan channel unavailable'\n"
+        "  else\n"
+        "    og_channel_original \"$@\"\n"
+        "  fi\n"
+        "}\n"
+    )
+    return shim
+
+
 def battery(script: Path, row: dict, tmp: Path) -> list[str]:
     """Run the four contract cases. Returns a list of failure descriptions.
 
@@ -403,6 +427,34 @@ def test_adopted_observer_suppresses_action_while_blind_but_acts_when_absent(row
         payload = json.loads(alerts[0].read_text())
         assert payload["state"] == "unobservable"
         assert payload["detail"].strip(), "alarm written with no reason"
+
+        # --- PARTIAL BLINDNESS: heartbeat PID confirms a real, stale stand-in,
+        #         but the proc corroborator is unavailable. Because a fresh or
+        #         stale `present` verdict can lead to different corrective paths,
+        #         the supervisor must suppress BOTH signal and launch.
+        live_pid = standin.proc.pid
+        _write_heartbeat(hb, live_pid)
+        stale = time.time() - 1000
+        os.utime(hb, (stale, stale))
+        marker.unlink(missing_ok=True)
+        for alert in (tmp_path / "alerts").glob("*.json"):
+            alert.unlink()
+        blind_env = {**os.environ, **env,
+                     "BASH_ENV": str(_proc_scan_blind_bash_env(tmp_path))}
+        subprocess.run(["/bin/bash", str(REPO / row["script"]), *probe["argv"]],
+                       capture_output=True, text=True, env=blind_env,
+                       timeout=180)
+        assert not marker.exists(), (
+            f"{row['id']} launched its target during PARTIAL BLINDNESS"
+        )
+        assert standin.proc.poll() is None, (
+            f"{row['id']} signalled the heartbeat PID while its proc channel was blind"
+        )
+        alerts = list((tmp_path / "alerts").glob("*.json"))
+        assert alerts, f"{row['id']} went partially blind SILENTLY"
+        payload = json.loads(alerts[0].read_text())
+        assert payload["state"] == "unobservable"
+        assert payload["detail"].strip(), "partial-blindness alarm has no reason"
 
         # --- COMPLIANT PATH: genuinely absent. It MUST still act.
         standin.stop()
