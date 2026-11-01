@@ -1,0 +1,96 @@
+{
+  "total_count": 1,
+  "jobs": [
+    {
+      "name": "observer-contract",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-01T06:09:08Z",
+      "completed_at": "2026-11-01T06:11:42Z",
+      "runner_name": "GitHub Actions 1000004337",
+      "runner_group_name": "GitHub Actions",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-01T06:09:09Z",
+          "completed_at": "2026-11-01T06:09:10Z"
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-01T06:09:10Z",
+          "completed_at": "2026-11-01T06:09:24Z"
+        },
+        {
+          "name": "Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-01T06:09:24Z",
+          "completed_at": "2026-11-01T06:09:31Z"
+        },
+        {
+          "name": "Set inert kernel path for source-only observer fixtures",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-01T06:09:31Z",
+          "completed_at": "2026-11-01T06:09:31Z"
+        },
+        {
+          "name": "Prepare isolated test environment and source identity",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-01T06:09:31Z",
+          "completed_at": "2026-11-01T06:09:33Z"
+        },
+        {
+          "name": "Run exact OBS-1 observer and supervisor suites",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-01T06:09:33Z",
+          "completed_at": "2026-11-01T06:11:38Z"
+        },
+        {
+          "name": "Upload complete test record",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-01T06:11:38Z",
+          "completed_at": "2026-11-01T06:11:39Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-11-01T06:11:39Z",
+          "completed_at": "2026-11-01T06:11:39Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-11-01T06:11:39Z",
+          "completed_at": "2026-11-01T06:11:40Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-11-01T06:11:40Z",
+          "completed_at": "2026-11-01T06:11:40Z"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+Collecting pytest==9.0.3
+  Downloading pytest-9.0.3-py3-none-any.whl.metadata (7.6 kB)
+Collecting iniconfig==2.3.0
+  Downloading iniconfig-2.3.0-py3-none-any.whl.metadata (2.5 kB)
+Collecting packaging==26.0
+  Downloading packaging-26.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting pluggy==1.6.0
+  Downloading pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)
+Collecting Pygments==2.20.0
+  Downloading pygments-2.20.0-py3-none-any.whl.metadata (2.5 kB)
+Collecting PyYAML==6.0.3
+  Downloading pyyaml-6.0.3-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+Downloading pytest-9.0.3-py3-none-any.whl (375 kB)
+Downloading pluggy-1.6.0-py3-none-any.whl (20 kB)
+Downloading iniconfig-2.3.0-py3-none-any.whl (7.5 kB)
+Downloading packaging-26.0-py3-none-any.whl (74 kB)
+Downloading pygments-2.20.0-py3-none-any.whl (1.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 68.0 MB/s  0:00:00
+Downloading pyyaml-6.0.3-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (801 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 801.6/801.6 kB 83.3 MB/s  0:00:00
+Installing collected packages: PyYAML, Pygments, pluggy, packaging, iniconfig, pytest
+
+Successfully installed PyYAML-6.0.3 Pygments-2.20.0 iniconfig-2.3.0 packaging-26.0 pluggy-1.6.0 pytest-9.0.3

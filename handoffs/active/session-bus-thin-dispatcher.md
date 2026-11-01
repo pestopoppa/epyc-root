@@ -2,6 +2,7 @@
 
 **Status**: DESIGN-RATIFIED (operator, 2026-07-27, plan-mode Q&A ×2) — build-ready; M1 skeleton is verbatim below. **Nomenclature revised 2026-07-27** (operator) — see §Nomenclature.
 **Created**: 2026-07-27
+**Scratch**: `/mnt/raid0/llm/tmp/codex-ni-ap-legacy-status-wrap-20261030/` — existing reusable ROOT lane; retain the lane and foreign work.
 **Priority**: HIGH — removes the operator-paste-buffer relay bottleneck measured all week
 **Effort**: M1–M2 ~half day · M3–M4 ~1–2 days (incl. the 48h M4 soak) · M5 optional, flag-gated
 **Categories**: coordination, governance, automation
@@ -2845,7 +2846,7 @@ remembered — `tests/test_observer_contract.py` reads
 [`scripts/coordination/observer_registry.json`](../../scripts/coordination/observer_registry.json)
 and goes RED if this line is checked off or deleted without the migration landing.
 
-- [ ] **OBS-1** (MED): **`scripts/coordination/bus_supervisor.sh` adopts the observation contract.**
+- [x] **OBS-1** (MED): **`scripts/coordination/bus_supervisor.sh` adopts the observation contract.** ✅ 2026-11-01 [belief: cc] [implementation: 7f08d858b2f137411ce31c579b103456abe57554; backfill fix: 1d26cde2a6032f6aec14760867d891d93397e72c] [evidence: artifacts/ci/obs1-supervisor-contract-20261101/README.md; hosted run 41279642985]
   Source [`scripts/coordination/observer_guard.sh`](../../scripts/coordination/observer_guard.sh),
   fold identity three-valued (`present`/`absent`/`unobservable`) over ≥2 independent channels, and
   expose the uniform `observe` subcommand (`state=…`, exit 0/1/3). That entrypoint is what enrolls

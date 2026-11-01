@@ -1,0 +1,8 @@
+base before candidate: 713e843127babf2eaafa23e5d0e47991a17f79c0
+bus supervisor adoption implementation: 7f08d858b2f137411ce31c579b103456abe57554
+backfill partial-blindness fix: 1d26cde2a6032f6aec14760867d891d93397e72c
+accepted final candidate (also hosted-tested): 70d01ac9982a6c95a5645eb8cff10174b0d24a35
+promotion merge commit: 45436d63766e2c11e3c8547f170e5ddbb8a2de57
+hosted workflow: .github/workflows/obs1-supervisor-contract.yml
+hosted run: https://github.com/pestopoppa/epyc-root/actions/runs/41279642985
+candidate-source.patch.b64 decoded SHA-256: bd0d7845132860047223823363e1e6ac0366adf4f4701239a4641482dcdb2883
