@@ -1,0 +1,6 @@
+Operator review record: command and stdout copied from the tool response; not an independently sealed native log.
+
+Command: python3 scripts/system/worktree_gate.py remove /mnt/raid0/llm/tmp/codex3-seq-rate-era-20261101/merge-worktree
+Exit: 0
+Stdout:
+REMOVED /mnt/raid0/llm/tmp/codex3-seq-rate-era-20261101/merge-worktree (branch (detached) kept; clean, landed in origin/main, idle 0.01 d)
