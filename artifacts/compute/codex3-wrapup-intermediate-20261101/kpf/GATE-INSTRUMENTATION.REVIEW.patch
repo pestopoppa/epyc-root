@@ -1,0 +1,46 @@
+--- a/kpf18_gate_receipted.py
++++ b/kpf18_gate_qual.py
+@@ -856,7 +856,7 @@
+         gate_stat = Path(f"/proc/{os.getpid()}/stat").read_text().rsplit(") ", 1)[1].split()
+         guarded = [sys.executable, "-B", guard, str(os.getpid()), gate_stat[19], str(ctx.out / "server-receipts"), "--"] + self.full_cmd()
+         self.proc = subprocess.Popen(guarded, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=self.env,
+-                                     start_new_session=True)
++                                     start_new_session=os.environ.get('WS58_QUAL') != '1')
+         ctx.own_children.append(self)
+         if self.sampler:
+             self.sampler.own_pid = self.proc.pid
+@@ -1702,9 +1702,32 @@
+                 erase_all(ctx)
+                 for i in (0, 1):  # i=1 re-uses slot 0's own cache through its checkpoints: both binaries must agree
+                     P = cat(grp["trunk"], grp["suffixes"][i])
+-                    from active_slot_capture import capture as capture_active_slots
++                    from active_capture_qual import capture as capture_active_slots
+                     sample_path = ctx.out / "active_slots" / f"{R.run_id}-g{g}-s{i}.jsonl"
+-                    response, active = capture_active_slots(ctx.client, body_for(P, n, 0, fork=None, n_probs=a.n_probs), 0, sample_path)
++                    qualify = os.environ.get('WS58_QUAL') == '1'
++                    callback = None
++                    if qualify and i == 1 and os.environ.get('FILLER_QUAL_PHASE') == 'cutoff':
++                        from native_event_bridge import birth_cpu,make_cutoff_callback
++                        first=state.get('qual_first')
++                        if first is None:raise Abort('native first request absent')
++                        birth,_=birth_cpu(srv.proc.pid)
++                        callback=make_cutoff_callback(state['qual_manifest'],first,srv.proc,birth,0,
++                            os.environ['WS58_QUAL_NONCE'],os.environ['WS58_QUAL_CUTOFF_EVENT'],
++                            os.environ['FILLER_STOPFILE'],float(os.environ['FILLER_DEADLINE']))
++                    try:
++                        response, active = capture_active_slots(ctx.client, body_for(P, n, 0, fork=None, n_probs=a.n_probs), 0, sample_path, on_sample=callback)
++                    except Exception:
++                        if qualify and Path(os.environ['FILLER_STOPFILE']).exists():
++                            ctx.preempted=True
++                            raise Abort('qualified active STOP: captured server drained')
++                        raise
++                    if qualify and i == 0:
++                        from native_event_bridge import load_canonical,observe_first,write_exclusive
++                        manifest,validate=load_canonical(os.environ['WS58_MANIFEST_PATH'],os.environ['WS58_QUALIFIER_PATH'])
++                        first=observe_first(manifest,response,srv.log.read_text(errors='replace'),validate)
++                        state.update(qual_first=first,qual_manifest=manifest)
++                        first_path=Path(os.environ['FILLER_RESULTS_DIR'])/('first-'+os.environ['FILLER_QUAL_PHASE']+'.json')
++                        if not first_path.exists():write_exclusive(first_path,first)
+                     active["sha256"] = sha256_file(sample_path) if active["sampler_drained"] else None
+                     try:
+                         post = next((x for x in ctx.client.slots() if x.get("id") == 0), None)

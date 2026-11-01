@@ -1,0 +1,38 @@
+{
+  "backend_environment_policy": "Remove inherited GGML_* and LD_* for child processes; explicitly set CPU-only controls and intended library path; TTS explicitly sets its pinned preload and GGML_BACKEND=CPU.",
+  "binary": {
+    "path": "/mnt/raid0/llm/whisper.cpp/build/bin/whisper-cli",
+    "sha256": "093cdb5736b50eb8567b0367f24bf0bcaf947f5ddca9f140f43e47531d31330c"
+  },
+  "candidate_worker": {
+    "path": "/mnt/raid0/llm/tmp/codex3-g1b-decoder-review-20261101/worker.py",
+    "sha256": "98b08132922f53fcf40b1464322bf4a61a119c934e8c8eb9b1e5ce86c328f6c0"
+  },
+  "cohort": {
+    "changed": false,
+    "path": "/mnt/raid0/llm/tmp/codex3-next-cpu-prep-20261031-0110/cohort.json",
+    "sha256": "40095b890c3eaa39bf14988ecd3fde59f7e3436fd59db91ae512e89a48c8c710"
+  },
+  "limitations": [
+    "Not an existing frozen selected-setting or input-binding artifact; source, dataset and code pins require final complete review.",
+    "No test exposure, target inference, measurement or keeper qualification performed.",
+    "Existing Nemo v3 rescore is selection-only for another model; original scorer binding remains UNKNOWN.",
+    "G1B explicit hold must remain until a complete qualifying input and singleton-selection binding exists."
+  ],
+  "model": {
+    "path": "/mnt/raid0/llm/models/whisper-ggml/ggml-large-v3-turbo.bin",
+    "sha256": "1fc70f774d38eb169993ac391eea357ef47c88757ef72ee5943879b7e8e2bc69"
+  },
+  "original_worker": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-cpu-prep-20261031-0110/worker.py",
+    "sha256": "4c3535388f7ef09396cd32939ffec5f4d339b13e3c0721c5dd06f31fe1e4cf0e"
+  },
+  "rule": {
+    "path": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/PLAN.md",
+    "section": "Settings and decoding",
+    "selection": "singleton greedy temperature=0, beam=1, best-of=1, no temperature fallback, no prompt, VAD off, no flash attention; forced and auto retained",
+    "sha256": "61722f4fa38bd4e50c1fc33a94e82f1ed3af414cbaaa1feb27dc12ababc71533"
+  },
+  "scope": "CS-8.G1B Whisper singleton only; no Nemotron selection or scientific verdict",
+  "status": "REVIEW_ONLY_NOT_FROZEN_NOT_AUTHORIZATION"
+}

@@ -23,7 +23,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
 
 ## Compiled Update — 2026-10-27 19:06Z: extension-arm verdict remains underpowered
 
-**Confidence: verified for the predeclared native-zone sample; no equivalence claim.** The final YaRN extension-arm comparison contains 74 native-window pairs (`b=2`, `c=1`, one-sided exact McNemar `p=0.5`, mean paired A1−A0 score difference `−0.022`). The result is `NOT-FAIL-underpowered`, not a pass of equivalence or safety. Beyond-native A1-only rows are descriptive; Oolong-synth at 400K has 54 observations and mean score 0.093. HELMET KILT `nq`/`hotpotqa` cells were absent, so they provide no result. The 120-pair Oolong GPU packet and HELMET restoration are prospective preparation only; the historical 1f/1g power tasks remain open and runs must not be pooled across the prior plans.
+**Confidence: verified for the predeclared native-zone sample; no equivalence claim.** The final YaRN extension-arm comparison contains 74 native-window pairs (`b=2`, `c=1`, one-sided exact McNemar `p=0.5`, mean paired A1−A0 score difference `−0.022`). The result is `NOT-FAIL-underpowered`, not a pass of equivalence or safety. Beyond-native A1-only rows are descriptive; Oolong-synth at 400K has 54 observations and mean score 0.093. HELMET KILT `nq`/`hotpotqa` cells were absent, so they provide no result. At that checkpoint the 120-pair Oolong GPU packet and HELMET restoration were prospective. The later fresh GPU comparison recorded 141 pairs (b=7, c=11, p=0.881) and its original 120-pair subset (b=5, c=10, p=0.941), both NOT-FAIL rather than equivalence; the historical 1f/1g power tasks remain open and runs must not be pooled across prior plans. ([later readout](../progress/2026-11/2026-11-01-handoff-yarn.md))
 
 Sources: [YaRN context-extension handoff](../handoffs/active/yarn-context-extension-research.md), [2026-10-27 workspace-58 evidence](../progress/2026-10/2026-10-27-workspace-58.md), [accepted-scope record](../progress/2026-10/2026-10-27-full-wrap-1850.md).
 
@@ -369,3 +369,8 @@ Sources: [YaRN context-extension handoff](../handoffs/active/yarn-context-extens
 - intake-2275#record (lambda-RLM reference repo): Adopt-patterns applies to the design only, not the code or its k* formula. Linked to repl-turn-efficiency.md.
 - intake-2309#record (Controllable Examination for Long-Context LMs (LongBioBench)): The arXiv id was resolved in the dive (2506.02921, LongBioBench), correcting the earlier 'unverified' note. Verdict adopt_component, integrated; linked to yarn-context-extension-research.
 - intake-2319#record (100-LongBench): Rankings on traditional average scores nearly match base-ability rankings, while LongScore reorders them (Qwen2.5-14B/7B rank first on average but near last on LongScore). Adopt-patterns, integrated; linked to yarn-context-extension-research.
+
+
+## YaRN S3 partial accounting — 2026-11-01
+
+The S3/v30 window ended at its deadline with one additional completed A0 and no A1. Its cumulative accounting was two completed A0, three UNKNOWN A0, 25 unexposed A0 and 30 unexposed A1, with zero matched pairs among the 27 non-UNKNOWN original pairs. The original 120-pair campaign denominator remains unchanged; this partial produces no full-cohort verdict. ([YaRN handoff](../handoffs/active/yarn-context-extension-research.md); [filing evidence](../artifacts/compute/yarn-s3-v30-20261101/summary.json); [handoff progress](../progress/2026-11/2026-11-01-handoff-yarn.md))

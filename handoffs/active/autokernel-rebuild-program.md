@@ -1,6 +1,6 @@
 # AutoKernel — teardown and rebuild program
 
-**Scratch**: `/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/`
+**Scratch**: `/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/` · codex3 review: `/mnt/raid0/llm/tmp/codex3-r22-independent-adversarial-20261101`, `/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101`
 **P6 scratch (NI, 2026-11-01)**: `/mnt/raid0/llm/tmp/codex-ni-p6-surfaces-20261101/`; reused lane `/mnt/raid0/llm/tmp/codex-ni-ap-legacy-status-wrap-20261030/` (no new checkout).
 **Owner:** operator-directed audit + rebuild session, 2026-08-28.
 **Code lanes:** `lane/ak-rebuild-20260828` (epyc-root, this file) and a matching lane in
@@ -1193,6 +1193,8 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       (R21-L8); `llama-batched-bench` expresses parallel decode natively and is closer to the
       serving shape. Needs its own floor calibration (`--calibrate-surface` method) before any
       verdict may cite it; zero compute until then.
+  - [ ] **R22-2-CUSTODY-QUAL — finish the guarded native calibration.** Review and integrate the source-bound custody-fence repair in `artifacts/compute/codex3-r22-custody-fence-review-20261101/`, rerun the complete project CI on final bytes, establish managed predecessor exclusion and drain, activate versioned keeper routing at its single-writer boundary, then obtain real normal/cutoff keeper qualification. The 71 qualifier controls pass; no GPU floor or qualification is claimed. The older full-CI candidate had belief/index/dashboard green and one existing main ratification-check failure; it does not validate the revised guard. Preserve every started or incomplete shape as UNKNOWN and do not redraw.
+  - [ ] **R22-2-CI-RATIFICATION — resolve the existing main-branch receipt-check failure before source publication.** The full local run on base `216abe3679857941bb90bfdd8ef15355b65004d3` failed the trust-boundary scanner on the pinned `artifacts/engineering/pbqcost-deadline-contract-20261101/candidate-source/kpf18_gate.py`: its docstring names a boundary path and its caller-selected output is writable. Determine the correct treatment while preserving detection of real boundary writes and the byte-pinned source evidence; do not weaken the checker, edit protected documents, or invent a receipt. Re-run the exact workflow on the final revised patch.
 - [x] **R21-1 — refresh the champion headline at STARTUP, not only per-advance.** ✅ 2026-10-30 <!-- evidence-integrity: Research `bebe42b9a56d9cf6c951fc75a227c8666a194080`; artifact: artifacts/compute/task-evidence-repair-20261031/r21-1/EVIDENCE.json; hygiene, not quota -->
       Research main `bebe42b9a56d9cf6c951fc75a227c8666a194080` accepted the two-file closure
       (`scripts/kernel_rnd/autokernel/loop/run.py` + `test_startup_headline.py`; accepted patch

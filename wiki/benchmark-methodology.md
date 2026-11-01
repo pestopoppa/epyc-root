@@ -7461,7 +7461,7 @@ Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) ·
 
 **Confidence: verified** for collection coverage and scorer status; the partial WER values are not a final cross-arm verdict.
 
-- `codex3-cs8-stt5-validation-nemo-en-20261031` ran all 1,580 chunks, but the scorer aborted at R6 on the `decode_error` taxonomy. The scorer aborted on the `decode_error` taxonomy at R6 before writing the canonical score file; R13 remains unscored. This is collection/scorer status only, with no comparable per-arm score or head-to-head verdict. ([source](../progress/2026-11/2026-11-01-workspace-58.md))
+- `codex3-cs8-stt5-validation-nemo-en-20261031` ran all 1,580 chunks, but the scorer aborted at R6 on the `decode_error` taxonomy. The scorer aborted on the `decode_error` taxonomy at R6 before writing the canonical score file; at that point R13 was unscored. A later selection-only offline rescore reported all four settings, including R13, while retaining the R6 decode failure; it did not produce a head-to-head advancement verdict. ([later result](../artifacts/compute/codex3-stt5-v3-complete-20261101/SUMMARY.json)) ([source](../progress/2026-11/2026-11-01-workspace-58.md))
 
 Sources: [workspace-58 progress](../progress/2026-11/2026-11-01-workspace-58.md) · [conversation stack handoff](../handoffs/active/conversation-stack.md)
 

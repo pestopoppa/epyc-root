@@ -504,3 +504,8 @@ Sources: [document-parser-table-bench](../handoffs/active/document-parser-table-
 **Confidence: verified source records; most items are software/model-free controls or failed-run filings, not measurement verdicts. Proposed work is labelled as such.**
 
 - ODL-011: intrinsic chunk-quality scores (text edit distance, table TEDS, reading-order edit distance, speed) now sit beside `odl_bench` rows (Research `1421b578`, 62 model-free tests). Ekimetrics rows are informational diagnostics, not a quality verdict; the task stays open. [ODL](../handoffs/active/opendataloader-pipeline-integration.md)
+
+
+## Phase C exposure custody — 2026-11-01
+
+For the approved 755-page English comparison, a retained-evidence inventory classified 690 pages as protected UNKNOWN and 65 as having no observed start. The latter are candidates for review, not automatically eligible for another exposure. The legacy shard lock does not itself prove that child processes have drained, so the approved full-cohort TEDS comparison remains open pending custody, rate and qualification evidence. ([Phase C handoff](../handoffs/active/document-parser-table-bench.md); [custody review](../artifacts/compute/codex3-pip-custody-review-20261101/ACTIONABILITY.md); [inventory tests](../artifacts/compute/codex3-pip-custody-review-20261101/TEST.log))

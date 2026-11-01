@@ -1,0 +1,42 @@
+--- a/worker.py
++++ b/worker.py
+@@ -32,6 +32,20 @@
+    os.killpg(p.pid,signal.SIGKILL); p.wait(); return -9
+   finally: CHILDREN.discard(p)
+   return p.returncode
++def whisper_argv(cpu, lang, output_base, wav):
++ # Frozen STT5 Whisper singleton: greedy, no temperature fallback, no FA.
++ if lang not in ('auto','en','it','de','fr'):
++  raise ValueError('unsupported language mode')
++ return ['taskset','-c',str(cpu),g.WHBIN+'/whisper-cli','-m',g.WH_MODEL,'-t','1','-ng',
++         '-l',lang,'-nt','-otxt','-of',output_base,'-f',str(wav),
++         '--temperature','0','--beam-size','1','--best-of','1','--no-fallback','--no-flash-attn']
++
++def runtime_env(environ):
++ # Do not permit inherited alternate backend paths or ggml configuration.
++ env={k:v for k,v in environ.items() if not k.startswith(('LD_','GGML_'))}
++ env.update(HIP_VISIBLE_DEVICES='-1',ROCR_VISIBLE_DEVICES='-1',OMP_NUM_THREADS='1')
++ return env
++
+ def worker(cell,cpu,out):
+  cid=cell['id']; result=out/'cells'/f'{cid}.json'; pending=out/'cells'/f'{cid}.exposure.json'
+  if result.exists(): return
+@@ -39,8 +53,7 @@
+  if pending.exists(): return
+  atomic(pending,{'id':cid,'state':'started','at':time.time()})
+  root=out/'raw'/cid; root.mkdir(parents=True,exist_ok=True)
+- env={k:v for k,v in os.environ.items() if k not in ('LD_LIBRARY_PATH','LD_PRELOAD')}
+- env.update(HIP_VISIBLE_DEVICES='-1',ROCR_VISIBLE_DEVICES='-1',OMP_NUM_THREADS='1')
++ env=runtime_env(os.environ)
+  src=cell['pcm']; assert sha(src)==cell['pcm_sha256']; reference=cell['text']; lang=cell['lang']; item={'id':cid,'lang':lang,'arm':cell['arm'],'seed':cell.get('seed'),'source_pcm_sha256':cell['pcm_sha256'],'ref':reference,'modes':{}}
+  wav=src
+  if cell['arm']=='tts_rt':
+@@ -58,7 +71,7 @@
+   hyp=''; rc=None
+   if wav:
+    base=str(root/('asr-'+mode)); e=env.copy(); e['LD_LIBRARY_PATH']=g.WHBIN+':/opt/rocm/lib'
+-   rc=run(['taskset','-c',str(cpu),g.WHBIN+'/whisper-cli','-m',g.WH_MODEL,'-t','1','-ng','-l',lflag,'-nt','-otxt','-of',base,'-f',str(wav)],e,root/('asr-'+mode+'.log'))
++   rc=run(whisper_argv(cpu,lflag,base,wav),e,root/('asr-'+mode+'.log'))
+    if STOP: return
+    try:
+     if rc==0: hyp=pathlib.Path(base+'.txt').read_text(encoding='utf8').strip()

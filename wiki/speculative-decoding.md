@@ -3107,3 +3107,8 @@ Sources: [speculative decoding/MTP refresh](../handoffs/active/speculative-decod
 
 - intake-2394#record (Guided plus speculative decoding): added the target-side rollback rule, draft-side masking via the EAGLE3 d2t map and CPU-callback capture design; draft-side grammar adds +0.12..+0.22 accepted tokens per iteration. Verdict worth_investigating.
 - intake-2422#record (llguidance fast-forward PR 17062): the speculator is a forced-extension step with no verification or rollback; the whole batch drops to EXTEND mode if any request has ff tokens. Verdict worth_investigating; linked to autokernel-research-loop.md.
+
+
+## DF2 retained-artifact recovery — 2026-11-01
+
+The R3 recovery verified retained C5 artifacts and a CPU architecture test, but it is recovery evidence rather than a GPU parity image. The separate byte-parser diagnostic has completed; DF2-12.1 still needs corrected same-source CPU/GPU image proofs and qualification. No GPU parity or decode-cost conclusion follows from R3. ([DF2 handoff](../handoffs/active/dflash2-block-drafter-experimental-build.md); [DF2 progress](../progress/2026-11/2026-11-01-handoff-df2.md); [daily progress](../progress/2026-11/2026-11-01.md))

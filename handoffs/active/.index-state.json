@@ -1,16 +1,16 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 58,
+      "blocked": 59,
       "handoffs": 59,
       "oldest_advance": "2026-07-29",
-      "open": 1039
+      "open": 1041
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
       "handoffs": 5,
       "oldest_advance": "2026-09-24",
-      "open": 68
+      "open": 69
     },
     "research-evaluation-index.md": {
       "blocked": 15,
@@ -28,7 +28,7 @@
       "blocked": 17,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 653
+      "open": 654
     },
     "user-facing-harness-index.md": {
       "blocked": 17,
@@ -268,7 +268,7 @@
       "closed": 162,
       "guarded": 0,
       "last_advanced": "2026-11-01",
-      "open": 42,
+      "open": 44,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -277,7 +277,7 @@
       },
       "row_id": "INF-66",
       "state": "active",
-      "total": 205
+      "total": 207
     },
     "autokernel-research-loop.md": {
       "blocked": 1,
@@ -552,7 +552,7 @@
       "total": 33
     },
     "conversation-stack.md": {
-      "blocked": 41,
+      "blocked": 42,
       "closed": 55,
       "guarded": 0,
       "last_advanced": "2026-11-01",
@@ -565,7 +565,7 @@
       },
       "row_id": "INF-79",
       "state": "active",
-      "total": 128
+      "total": 129
     },
     "coordinator-role-failure-modes-and-refactor.md": {
       "blocked": 0,
@@ -780,7 +780,7 @@
       "closed": 9,
       "guarded": 1,
       "last_advanced": "2026-10-31",
-      "open": 17,
+      "open": 18,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -789,7 +789,7 @@
       },
       "row_id": "PIP-02",
       "state": "active",
-      "total": 27
+      "total": 28
     },
     "dynamic-stack-concurrency.md": {
       "blocked": 0,
@@ -1404,7 +1404,7 @@
       "closed": 94,
       "guarded": 0,
       "last_advanced": "2026-11-01",
-      "open": 59,
+      "open": 60,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1413,7 +1413,7 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 154
+      "total": 155
     },
     "kv-unified-stack-rollout.md": {
       "blocked": 0,

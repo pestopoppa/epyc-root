@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+"""Actual comparator hooks: observed first response and native active-STOP event.
+
+No nonce, grant or receipt is issued here. Caller must be keeper-qualified and
+must prove predecessor/rate admission separately before invoking these hooks.
+"""
+import hashlib,json,os,pathlib,re,signal,time
+
+class Refused(Exception):pass
+
+def birth_cpu(pid):
+ try:
+  fields=pathlib.Path('/proc',str(pid),'stat').read_text().rsplit(') ',1)[1].split()
+  if fields[0] in ('Z','X','x'):raise Refused('server exited')
+  return int(fields[19]),int(fields[11])+int(fields[12])
+ except (OSError,ValueError,IndexError) as e:raise Refused('server identity unavailable') from e
+
+def observe_first(manifest, response, log_text, validate):
+ # Total context must be logged by the native runtime; configured argv is not
+ # an observation. An absent or ambiguous value refuses qualification.
+ totals=re.findall(r'(?m)^.*llama_context:\s*n_ctx\s*=\s*(\d+)\s*$',log_text)
+ geometry=re.findall(r"n_slots\s*=\s*(\d+),\s*n_ctx_slot\s*=\s*(\d+),\s*kv_unified\s*=\s*'?(true|false)'?",log_text)
+ if len(totals)!=1 or len(geometry)!=1:raise Refused('native total/slot geometry unavailable or ambiguous')
+ nslots,nslot,mode=geometry[0]; count=(response.get('timings') or {}).get('prompt_n');tokens=response.get('tokens')
+ if (type(count) is not int or count!=manifest['prompt_tokens_required'] or not isinstance(tokens,list) or not tokens or any(type(x) is not int or x<0 for x in tokens)):
+  raise Refused('native prompt/response observation invalid')
+ first={'ok':True,'scope':'TARGET_SCRATCH_SERVER','production_recipe_sha256':manifest['production_recipe']['sha256'],
+        'manifest_sha256':manifest['request_manifest_sha256'],'n_ctx_total':int(totals[0]),'n_ctx_per_slot':int(nslot),
+        'total_slots':int(nslots),'kv_cache_mode':'unified' if mode=='true' else 'split','prompt_tokens':count}
+ if not validate(manifest,first):raise Refused('canonical native first-request check failed')
+ return first
+
+def write_exclusive(path,obj):
+ p=pathlib.Path(path);data=(json.dumps(obj,sort_keys=True)+'\n').encode();fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+ with os.fdopen(fd,'wb') as f:f.write(data);f.flush();os.fsync(f.fileno())
+
+def active_event(manifest,first,server,expected_birth,slot,observed,nonce,*,sample=birth_cpu,sleep=time.sleep):
+ if not isinstance(observed,list):raise Refused('native slot response malformed')
+ matching=[x for x in observed if isinstance(x,dict) and x.get('id')==slot and x.get('is_processing') is True and type(x.get('id_task')) is int and x['id_task']>=0]
+ if len(matching)!=1:raise Refused('no unique active native slot')
+ pid=server.pid
+ try:
+  if server.poll() is not None or pathlib.Path('/proc',str(pid)).stat().st_uid!=os.getuid() or os.getpgid(pid)!=os.getpgrp():raise Refused('server ownership/group mismatch')
+ except OSError as e:raise Refused('server unavailable') from e
+ birth,before=sample(pid)
+ if birth!=expected_birth:raise Refused('server PID reused')
+ sleep(.05);birth,after=sample(pid)
+ if birth!=expected_birth or after<=before or server.poll() is not None:raise Refused('server not actively computing')
+ return {'id':manifest['id'],'nonce':nonce,'phase':'cutoff','native_first_event':True,'native_pid':pid,'native_birth_ticks':birth,'first_request':first}
+
+def stop_owned(server,stopfile,deadline,*,sleep=time.sleep):
+ """Wait for actual STOP/deadline then drain this captured child, never a group."""
+ while server.poll() is None and not pathlib.Path(stopfile).exists() and time.time()<deadline:sleep(.05)
+ stopped=pathlib.Path(stopfile).exists();expired=time.time()>=deadline
+ if not stopped and not expired:raise Refused('child exited before STOP')
+ if server.poll() is None:
+  server.terminate()
+  try:server.wait(timeout=8)
+  except __import__('subprocess').TimeoutExpired:server.kill();server.wait(timeout=8)
+ if server.poll() is None:raise Refused('captured server survived drain')
+ return {'stop_observed':stopped,'deadline_reached':expired,'partial':True,'unknown_disposition':'UNKNOWN'}
+
+def load_canonical(manifest_path, qualifier_path):
+ """Use only the installed qualifier selected by the manifest version."""
+ import importlib.util,sys
+ path=pathlib.Path(qualifier_path);m=json.loads(pathlib.Path(manifest_path).read_text())
+ base=pathlib.Path('/mnt/raid0/llm/tmp/compute-flags/bin')
+ version=m.get('qualifier_version')
+ expected=base/('qual-v1' if version is None else 'qual-v2-row')/'qualify_launcher.py'
+ if version not in (None,'epyc.qual-v2-row') or path!=expected or path.is_symlink() or not path.is_file():raise Refused('untrusted qualifier path/version')
+ spec=importlib.util.spec_from_file_location('_kpf181_canonical_qualifier',path)
+ if spec is None or spec.loader is None:raise Refused('canonical qualifier unavailable')
+ mod=importlib.util.module_from_spec(spec);sys.path.insert(0,str(path.parent))
+ try:spec.loader.exec_module(mod)
+ finally:sys.path.pop(0)
+ return m,mod.first_request_ok
+
+def make_cutoff_callback(manifest,first,server,birth,slot,nonce,event_path,stopfile,deadline):
+ emitted=False
+ def callback(observed):
+  nonlocal emitted
+  if emitted:return
+  try:event=active_event(manifest,first,server,birth,slot,observed,nonce)
+  except Refused:return
+  write_exclusive(event_path,event);emitted=True
+  # The only signal target is the Popen child we created and identified.
+  stop_owned(server,stopfile,deadline)
+ return callback

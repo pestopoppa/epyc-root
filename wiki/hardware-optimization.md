@@ -6944,3 +6944,8 @@ Sources: [GPU serving tie-in program](../handoffs/active/gpu-serving-tie-in-prog
 Additional launcher preparation: CH27's C5 calibration and KPF18 R11's X1 replay successors were published for keeper qualification at 14:17Z. Local source/entry/drain controls and exact-row validation establish preparation only; neither is a qualified, armed or completed inference result. [Preparation records](../artifacts/coordination/ni-ready-preparation-20261101/README.md) · [NI progress](../progress/2026-11/2026-11-01-codex-ni.md).
 
 The R11 successor was subsequently withdrawn before qualification because the exact bridge-framing gate had already passed in R7. Its preparation and withdrawal records are preserved; it earns no new task or science credit. [Withdrawal](../artifacts/coordination/ni-ready-preparation-20261101/kpf18-r11/WITHDRAWAL.json) · [original R7 filing](../handoffs/active/kv-prefix-fork-and-paged-attention.md).
+
+
+## NeMo graph-motif diagnostic reproduction — 2026-11-01
+
+A retained-trace analyzer reproduced the earlier motif diagnostic within 0.2%: 94 B graphs accounted for 20.5266 ms busy, while 158 L graphs accounted for 32.9083 ms busy. This is a correctness-only reproduction, not a performance decision: token-edge alignment remains UNKNOWN and the boundary criterion stays open. ([champion handoff](../handoffs/active/autokernel-champion-aggregate.md); [workspace progress](../progress/2026-11/2026-11-01-workspace-58.md); [prior provenance](../docs/reference/autokernel/nemo-gpu-prof-reseg-20261031/PROVENANCE.json))

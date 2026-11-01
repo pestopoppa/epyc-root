@@ -1,0 +1,60 @@
+{
+  "at_utc": "2026-11-01T15:32:57.457252+00:00",
+  "cohort_sha256": "40095b890c3eaa39bf14988ecd3fde59f7e3436fd59db91ae512e89a48c8c710",
+  "controls_and_original_output": {
+    "control.json": {
+      "cells": 1,
+      "cohort_id_overlap": 0,
+      "cohort_pcm_overlap": 0,
+      "exists": true
+    },
+    "cutoff-result": {
+      "cell_json": 1,
+      "cohort_id_overlap": 0,
+      "exists": true,
+      "exposure_records": 1
+    },
+    "results": {
+      "exists": false
+    },
+    "smoke-result": {
+      "cell_json": 2,
+      "cohort_id_overlap": 0,
+      "exists": true,
+      "exposure_records": 1
+    },
+    "stop-result": {
+      "cell_json": 1,
+      "cohort_id_overlap": 0,
+      "exists": true,
+      "exposure_records": 1
+    }
+  },
+  "exact_argv_matches": [],
+  "grant_matches": [],
+  "held_manifest_hold": "STT5 validation-based settings selection must be frozen before any test inference; use actual existing selection artifact",
+  "historical_items_sha256": "4e628dd987bc79c9e983412cf2ca7d7cfd35b8110a432f62ceb90f991fafbaf0",
+  "historical_missing_terminal": [
+    {
+      "arm": "tts_rt",
+      "id": "en-1839"
+    }
+  ],
+  "historical_prompts_sha256": "037f5cd196537ac851cf2199beafc218af24b9025723ba4cfdd076d3be71ddf6",
+  "historical_terminal_counts": {
+    "en/stt": 60,
+    "en/tts_rt": 59,
+    "it/stt": 60,
+    "it/tts_rt": 60
+  },
+  "missing_tts_log_reaches_2048_frames": true,
+  "missing_tts_log_sha256": "202e7243cebc47ae64e610c57ffb8226148f25134c26b823039a09c4d53f78c5",
+  "prior_source_overlap": {
+    "en": 60,
+    "it": 60
+  },
+  "proc_read_errors": 0,
+  "queue_matches": [],
+  "scope_limit": "Point-in-time read-only snapshot; G1B explicitly planned same-run en/it repeats. These checks are not an atomic writer exclusion, not proof of global non-exposure, and do not authorize redraw.",
+  "successor_output_exists": false
+}

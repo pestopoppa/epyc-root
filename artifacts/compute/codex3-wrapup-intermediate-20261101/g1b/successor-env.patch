@@ -1,0 +1,11 @@
+--- a/worker.py
++++ b/worker.py
+@@ -70,7 +70,7 @@
+  with os.fdopen(fd,'w') as f:
+   json.dump({'id':cid,'state':'started','at':time.time(),'binding':cell_binding(cid)},f,sort_keys=True);f.flush();os.fsync(f.fileno())
+  root=out/'raw'/cid; root.mkdir(parents=True,exist_ok=True)
+- env={k:v for k,v in os.environ.items() if k not in ('LD_LIBRARY_PATH','LD_PRELOAD')}
++ env={k:v for k,v in os.environ.items() if not k.startswith(('LD_','GGML_'))}
+  env.update(HIP_VISIBLE_DEVICES='-1',ROCR_VISIBLE_DEVICES='-1',OMP_NUM_THREADS='1')
+  src=cell['pcm']; assert sha(src)==cell['pcm_sha256']; reference=cell['text']; lang=cell['lang']; item={'binding':cell_binding(cid),'id':cid,'lang':lang,'arm':cell['arm'],'seed':cell.get('seed'),'source_pcm_sha256':cell['pcm_sha256'],'ref':reference,'modes':{}}
+  wav=src

@@ -1,0 +1,78 @@
+import json,os,pathlib,subprocess,sys,tempfile,threading,time,unittest
+from unittest.mock import patch
+import native_event_bridge as b
+import qualification_entry as q
+M={'id':'codex3-kpf181-27b-gpu-r4-v14-20261101','prompt_tokens_required':544,'production_recipe':{'sha256':'a'*64},'request_manifest_sha256':'b'*64}
+class NativeBridge(unittest.TestCase):
+ def test_native_first_never_infers_total_from_requested_argv(self):
+  response={'timings':{'prompt_n':544},'tokens':[1]};slot="srv n_slots = 4, n_ctx_slot = 262144, kv_unified = 'true'"
+  with self.assertRaises(b.Refused):b.observe_first(M,response,slot,lambda *_:True)
+  log='llama_context: n_ctx = 393216\n'+slot
+  first=b.observe_first(M,response,log,lambda _,f:f['n_ctx_total']==393216 and f['n_ctx_per_slot']==262144)
+  self.assertEqual(first['kv_cache_mode'],'unified')
+  with self.assertRaises(b.Refused):b.observe_first(M,{'timings':{'prompt_n':543},'tokens':[1]},log,lambda *_:True)
+  with self.assertRaises(b.Refused):b.observe_first(M,response,log,lambda *_:False)
+  with self.assertRaises(b.Refused):b.observe_first(M,response,log+'\n'+log,lambda *_:True)
+ def test_custody_is_unbound_and_missing_rate_refuses(self):
+  with self.assertRaisesRegex(b.Refused,'custody'):q.require_admission({},None)
+  class Custody:
+   def verify(self,_):pass
+  with patch.object(q,'CUSTODY_PROVIDER',Custody()):
+   with self.assertRaisesRegex(b.Refused,'rate'):q.require_admission({'rate_basis':{}},None)
+ def test_command_uses_real_item6_target_geometry(self):
+  for phase in ('normal','cutoff'):
+   c=q.make_command(M,phase,pathlib.Path('/tmp/review-control'),'122-123')
+   self.assertIn('kpf18_gate_qual.REVIEW.py',' '.join(c));self.assertEqual(c[c.index('--argv-file')+1],str(q.OLD/'full-argv.txt'))
+   self.assertEqual(c[c.index('--item6-groups')+1],'0');self.assertIn('--public-control',c)
+   self.assertEqual('--control-single-arm' in c,phase=='cutoff')
+  with self.assertRaises(b.Refused):q.make_command(M,'normal',pathlib.Path('/tmp/x'),'1;echo')
+ def test_inflight_child_stop_event_and_owned_drain(self):
+  with tempfile.TemporaryDirectory() as d:
+   root=pathlib.Path(d);stop=root/'stop';event=root/'event.json'
+   child=subprocess.Popen([sys.executable,'-B','-c','x=0\nwhile True:x+=1'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+   try:
+    birth,_=b.birth_cpu(child.pid);time.sleep(.15)
+    sample=[{'id':0,'id_task':1,'is_processing':True}];first={'ok':True}
+    cb=b.make_cutoff_callback(M,first,child,birth,0,'synthetic-test-only',event,stop,time.time()+10)
+    t=threading.Thread(target=cb,args=(sample,));t.start();end=time.monotonic()+5
+    while not event.exists() and time.monotonic()<end:time.sleep(.02)
+    self.assertTrue(event.exists());x=json.loads(event.read_text());self.assertEqual(x['native_pid'],child.pid);self.assertEqual(x['native_birth_ticks'],birth)
+    stop.touch();t.join(10);self.assertFalse(t.is_alive());self.assertIsNotNone(child.poll())
+   finally:
+    if child.poll() is None:child.kill();child.wait(timeout=5)
+ def test_real_qualifier_stop_protocol_with_synthetic_owned_child(self):
+  import importlib.util
+  path='/mnt/raid0/llm/tmp/compute-flags/bin/qual-v2-row/qualify_launcher.py';spec=importlib.util.spec_from_file_location('qualifier_stop_test',path);native=importlib.util.module_from_spec(spec);spec.loader.exec_module(native)
+  with tempfile.TemporaryDirectory() as d:
+   flags=pathlib.Path(d);nonce='synthetic-test-only';qdir=flags/'qual'/nonce;qdir.mkdir(parents=True);stop=qdir/'STOP';event=qdir/'cutoff-event.json'
+   child=subprocess.Popen([sys.executable,'-B','-c','x=0\nwhile True:x+=1'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+   try:
+    birth,_=b.birth_cpu(child.pid);time.sleep(.15);first={'ok':True};cb=b.make_cutoff_callback(M,first,child,birth,0,nonce,event,stop,time.time()+10)
+    errors=[]
+    def qualify():
+     try:
+      with patch.object(native,'load_manifest',return_value={'production':True,'id':M['id']}),patch.object(native,'first_request_ok',return_value=True):native.trigger_cutoff(pathlib.Path('/unused'),flags,nonce,stop,5,os.getpid())
+     except BaseException as exc:errors.append(exc)
+    t=threading.Thread(target=qualify);t.start();cb([{'id':0,'id_task':7,'is_processing':True}]);t.join(6)
+    self.assertFalse(t.is_alive());self.assertEqual(errors,[]);self.assertTrue(stop.exists());self.assertIsNotNone(child.poll())
+    self.assertEqual(json.loads((qdir/'cutoff-observed.json').read_text())['native_pid'],child.pid)
+   finally:
+    if child.poll() is None:child.kill();child.wait(timeout=5)
+ def test_active_sample_refuses_wrong_identity_without_signalling(self):
+  fake=type('P',(),{'pid':os.getpid(),'poll':lambda self:None})()
+  with self.assertRaises(b.Refused):b.active_event(M,{},fake,1,0,[], 'synthetic-test-only')
+if __name__=='__main__':unittest.main()
+
+class ActiveCapture(unittest.TestCase):
+ def test_real_capture_delivers_native_sample_without_model(self):
+  import active_capture_qual
+  seen=[]
+  class Client:
+   def slots(self):return [{'id':0,'id_task':7,'is_processing':True,'fork':{'n_fork_tokens':10}}]
+   def complete(self,_):
+    end=time.monotonic()+1
+    while not seen and time.monotonic()<end:time.sleep(.01)
+    return {'timings':{'id_task':7,'id_slot':0},'tokens':[1]}
+  with tempfile.TemporaryDirectory() as d:
+   response,obs=active_capture_qual.capture(Client(),{},0,pathlib.Path(d)/'samples.jsonl',interval=.01,on_sample=lambda x:seen.append(x))
+   self.assertTrue(seen);self.assertEqual(obs['status'],'observed');self.assertEqual(obs['matched_values'],[10]);self.assertEqual(response['tokens'],[1])
