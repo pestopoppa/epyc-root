@@ -45,11 +45,39 @@ def state(path, namespace=False):
     return m,result
 
 
+def before_grant(path, row_id=None):
+    """Fail closed at the production grant boundary, including launcher drift."""
+    m, status = state(path, namespace=True)
+    if row_id is not None and m['id'] != row_id:
+        raise Refused('grant-manifest-row-mismatch')
+    # D1: an old queued row cannot inherit a prior attempt's receipt. A retry
+    # needs a fresh manifest/id and a fresh keeper-sealed qualification.
+    for key in ('legacy', 'carry_over', 'rearm_rc75', 'rearm'):
+        if m.get(key):
+            raise Refused('legacy-rearm-or-carry-over:' + key)
+    if status != 'READY-QUALIFIED':
+        raise Refused(status)
+    return m
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('command',choices=('scan','before-arm','pending'))
-    p.add_argument('--manifest'); p.add_argument('--dry',action='store_true')
+    p.add_argument('command',choices=('scan','before-arm','before-grant','recover-dead','pending'))
+    p.add_argument('--manifest'); p.add_argument('--row-id'); p.add_argument('--dry',action='store_true')
+    p.add_argument('--identity'); p.add_argument('--ended')
     args=p.parse_args()
+    if args.command == 'recover-dead':
+        if not args.identity or not args.ended:
+            print('RECOVERY-REFUSED identity-and-ended-required')
+            return 2
+        try:
+            from failed_run_rollup import record_launcher_dead
+            record_launcher_dead(args.identity, args.ended)
+            print('RECOVERED-DEAD-LAUNCHER')
+            return 0
+        except Exception as exc:
+            print('RECOVERY-REFUSED ' + str(exc))
+            return 2
     flags=Path(os.environ['WS58_FLAGS_DIR']); ready=Path(os.environ.get('WS58_READY_DIR',str(flags/'ready')))
     if args.command=='before-arm':
         try:
@@ -57,6 +85,14 @@ def main():
             if status!='READY-QUALIFIED': print(status); return 2
             return 0
         except Exception as exc: print('READY-SKIP qual:'+str(exc)); return 2
+    if args.command=='before-grant':
+        try:
+            m = before_grant(Path(args.manifest), args.row_id)
+            print('GRANT-QUALIFIED ' + m['id'])
+            return 0
+        except Exception as exc:
+            print('GRANT-REFUSED qual:' + str(exc))
+            return 2
     for path in sorted(ready.glob('*.json')):
         rid=path.stem
         try:
