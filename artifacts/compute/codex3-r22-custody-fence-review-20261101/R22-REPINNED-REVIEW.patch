@@ -1,0 +1,317 @@
+--- a/.github/workflows/qualifier-v2.yml
++++ b/.github/workflows/qualifier-v2.yml
+@@ -34,6 +34,8 @@
+       - name: Test version routing, claims and real child cleanup
+         run: >-
+           python3 -B -m unittest -q
++          scripts.coordination.tests.d1d4.test_r22_registry_fence
++          scripts.coordination.tests.d1d4.test_r22_direct_issue
+           scripts.coordination.tests.d1d4.test_r22_custody_retention
+           scripts.coordination.tests.d1d4.test_real_runner
+           scripts.coordination.tests.d1d4.test_completion_custody
+--- a/artifacts/compute/codex3-versioned-qualifier-20261101/deployment.patch
++++ b/artifacts/compute/codex3-versioned-qualifier-20261101/deployment.patch
+@@ -1473,7 +1473,7 @@
+ +if __name__ == '__main__': raise SystemExit(main())
+ --- /dev/null
+ +++ b/bin/qual-v2-row/qualify_launcher.py
+-@@ -0,0 +1,1155 @@
++@@ -0,0 +1,1161 @@
+ +#!/usr/bin/env python3
+ +"""Keeper-owned, one-use pre-grant qualification for the canonical filler engine.
+ +
+@@ -1698,7 +1698,7 @@
+ +
+ +def r22_unknown_calibration_ok(m: dict) -> bool:
+ +    """Exact diagnostic-only unit. UNKNOWN means no completion estimate."""
+-+    if m.get('id')=='codex3-r22-2-batched-floor-custody-v3-20261101':return manifest_digest(m)=='9852240cdeac764636fd5d9b173676b71e1d917e80c069e980a04eb3614f01d5'
+++    if m.get('id')=='codex3-r22-2-batched-floor-custody-v3-20261101':return manifest_digest(m)=='f3b0a50b05b38ce9d526b92e44b107bd2efbc993a6ca6cb219e077ac8e059977'
+ +    try:
+ +        b=m['llm']['batched']
+ +        return (m['id']=='codex3-r22-2-batched-floor-v2-20261101' and m['owner']=='codex3' and
+@@ -1767,7 +1767,7 @@
+ +    if m['rate_basis']['scope']=='unified-unknown-calibration':
+ +        need(out['source_manifest_sha256']=='b319ec9c663c64c2f135e5c6daecbb42b65d52efdec4ceeb6a7f6fb7a447d3e6', 'Unified source manifest changed')
+ +    if m['rate_basis']['scope']=='r22-unknown-calibration':
+-+        expected='051125e4509a71f6918865028d548001c6a1610527d5afb03135c4674cb9ae65' if m['id']=='codex3-r22-2-batched-floor-custody-v3-20261101' else '68b92a41bd4d1b86845b6b2ae421eb63fa84511e38c064d6a337ea06ab51449a'
+++        expected='a88a8978cce79abac5d38c55f8b03c34a719121e7569e832c7b00b79b0cf64b8' if m['id']=='codex3-r22-2-batched-floor-custody-v3-20261101' else '68b92a41bd4d1b86845b6b2ae421eb63fa84511e38c064d6a337ea06ab51449a'
+ +        need(out['source_manifest_sha256']==expected, 'R22 source manifest changed')
+ +    out['policy_sha256'] = sha(POLICY)
+ +    if kind=='speech':
+@@ -2047,8 +2047,14 @@
+ +    finally:
+ +        if os.path.exists(tmp): os.unlink(tmp)
+ +
+-+def issue(manifest: Path, flags: Path) -> str:
+-+    m = load_manifest(manifest); bound_files(m); row_binding(m, flags)
+++def issue(manifest: Path, flags: Path, *, r22_claimed: bool = False) -> str:
+++    m = load_manifest(manifest)
+++    if m.get('id') == R22_CUSTODY_ID:
+++        need(r22_claimed, 'R22 direct issue is not permitted; use claim-run')
+++        r22_keeper_issuer_authority(flags)
+++        gpu_claim_ancestor(m['id'])
+++        r22_custody_guard(m, flags, 'check')
+++    bound_files(m); row_binding(m, flags)
+ +    if m['production']:
+ +        # The production issuer must be a live v8 keeper descendant, not a
+ +        # worker invoking this public CLI. Fixture tests remain isolated.
+@@ -2294,7 +2300,7 @@
+ +        r22_keeper_issuer_authority(flags)
+ +        r22_custody_guard(m,flags,'initialize')
+ +    need(not INTERRUPTED,'qualification interrupted before nonce')
+-+    nonce=issue(manifest,flags)
+++    nonce=issue(manifest,flags,r22_claimed=True) if m['id']==R22_CUSTODY_ID else issue(manifest,flags)
+ +    need(not INTERRUPTED,'qualification interrupted after nonce issuance')
+ +    return run(manifest,flags,nonce,timeout)
+ +
+--- a/scripts/coordination/qual_v2/qualify_launcher.py
++++ b/scripts/coordination/qual_v2/qualify_launcher.py
+@@ -222,7 +222,7 @@
+ 
+ def r22_unknown_calibration_ok(m: dict) -> bool:
+     """Exact diagnostic-only unit. UNKNOWN means no completion estimate."""
+-    if m.get('id')=='codex3-r22-2-batched-floor-custody-v3-20261101':return manifest_digest(m)=='9852240cdeac764636fd5d9b173676b71e1d917e80c069e980a04eb3614f01d5'
++    if m.get('id')=='codex3-r22-2-batched-floor-custody-v3-20261101':return manifest_digest(m)=='f3b0a50b05b38ce9d526b92e44b107bd2efbc993a6ca6cb219e077ac8e059977'
+     try:
+         b=m['llm']['batched']
+         return (m['id']=='codex3-r22-2-batched-floor-v2-20261101' and m['owner']=='codex3' and
+@@ -291,7 +291,7 @@
+     if m['rate_basis']['scope']=='unified-unknown-calibration':
+         need(out['source_manifest_sha256']=='b319ec9c663c64c2f135e5c6daecbb42b65d52efdec4ceeb6a7f6fb7a447d3e6', 'Unified source manifest changed')
+     if m['rate_basis']['scope']=='r22-unknown-calibration':
+-        expected='051125e4509a71f6918865028d548001c6a1610527d5afb03135c4674cb9ae65' if m['id']=='codex3-r22-2-batched-floor-custody-v3-20261101' else '68b92a41bd4d1b86845b6b2ae421eb63fa84511e38c064d6a337ea06ab51449a'
++        expected='a88a8978cce79abac5d38c55f8b03c34a719121e7569e832c7b00b79b0cf64b8' if m['id']=='codex3-r22-2-batched-floor-custody-v3-20261101' else '68b92a41bd4d1b86845b6b2ae421eb63fa84511e38c064d6a337ea06ab51449a'
+         need(out['source_manifest_sha256']==expected, 'R22 source manifest changed')
+     out['policy_sha256'] = sha(POLICY)
+     if kind=='speech':
+@@ -571,8 +571,14 @@
+     finally:
+         if os.path.exists(tmp): os.unlink(tmp)
+ 
+-def issue(manifest: Path, flags: Path) -> str:
+-    m = load_manifest(manifest); bound_files(m); row_binding(m, flags)
++def issue(manifest: Path, flags: Path, *, r22_claimed: bool = False) -> str:
++    m = load_manifest(manifest)
++    if m.get('id') == R22_CUSTODY_ID:
++        need(r22_claimed, 'R22 direct issue is not permitted; use claim-run')
++        r22_keeper_issuer_authority(flags)
++        gpu_claim_ancestor(m['id'])
++        r22_custody_guard(m, flags, 'check')
++    bound_files(m); row_binding(m, flags)
+     if m['production']:
+         # The production issuer must be a live v8 keeper descendant, not a
+         # worker invoking this public CLI. Fixture tests remain isolated.
+@@ -818,7 +824,7 @@
+         r22_keeper_issuer_authority(flags)
+         r22_custody_guard(m,flags,'initialize')
+     need(not INTERRUPTED,'qualification interrupted before nonce')
+-    nonce=issue(manifest,flags)
++    nonce=issue(manifest,flags,r22_claimed=True) if m['id']==R22_CUSTODY_ID else issue(manifest,flags)
+     need(not INTERRUPTED,'qualification interrupted after nonce issuance')
+     return run(manifest,flags,nonce,timeout)
+ 
+--- a/scripts/coordination/tests/d1d4/fixtures/r22-custody/custody_guard.py
++++ b/scripts/coordination/tests/d1d4/fixtures/r22-custody/custody_guard.py
+@@ -129,6 +129,17 @@
+  if finish!={'shape':shape,'checkpoint':str(p),'start_sha256':digest(start),'evidence':evidence}:raise Refused('shape completion evidence changed')
+  return True
+ 
++def check_retired_registry_row(registry, row_id):
++ """Mirror keeper table cell normalization; refuse ambiguous or active rows."""
++ if registry.is_symlink() or not registry.is_file():raise Refused('registry unreadable')
++ matches=[]
++ for line in registry.read_text().splitlines():
++  if not line.startswith('|'):continue
++  cells=[cell.strip() for cell in line.strip().strip('|').split('|')]
++  if cells and cells[0]==row_id:matches.append(cells)
++ if len(matches)>1:raise Refused('duplicate predecessor registry rows')
++ if matches and (len(matches[0])!=18 or matches[0][7] not in ('COMPLETE','DONE','RETIRED','WITHDRAWN')):raise Refused('predecessor registry row active or malformed')
++
+ def check_retirement(flags,archive,manifest_sha,row_sha,old_root,commands=None):
+  """Read-only proof under the keeper's single-writer retirement boundary."""
+  flags=pathlib.Path(flags);archive=pathlib.Path(archive);ready=flags/'ready';old=OLD_ID
+@@ -141,12 +152,7 @@
+  for p in flags.glob('ws58-*.queue'):
+   if p.is_symlink() or not p.is_file():raise Refused('queue unreadable')
+   if any(line.split('|',1)[0].strip()==old for line in p.read_text().splitlines()):raise Refused('predecessor queued')
+- registry=flags/'FILLERS.md'
+- if registry.is_symlink() or not registry.is_file():raise Refused('registry unreadable')
+- for line in registry.read_text().splitlines():
+-  if line.startswith('| '+old+' |'):
+-   cells=[s.strip() for s in line.strip().strip('|').split('|')]
+-   if len(cells)!=18 or cells[7] not in ('COMPLETE','DONE','RETIRED','WITHDRAWN'):raise Refused('predecessor registry row active')
++ check_retired_registry_row(flags/'FILLERS.md',old)
+  if commands is None:
+   commands=[]
+   for p in pathlib.Path('/proc').iterdir():
+@@ -164,13 +170,17 @@
+ OLD_ROOT=pathlib.Path('/mnt/raid0/llm/tmp/codex3-gpu-floor-r222-20261031/successor')
+ PREVIOUS_V2_ID='codex3-r22-2-batched-floor-v2-20261101'
+ PREVIOUS_V2_ROOT=pathlib.Path('/mnt/raid0/llm/tmp/codex3-r22-batched-v2-review')
+-NEW_ROOT=pathlib.Path('/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated')
+-PINS={str(NEW_ROOT/'complete.py'):'6cc47fe4b57529827502e30de5379d7a7d40ff734066ee61b7608d612676b084',str(NEW_ROOT/'parse_native.py'):'0466be90d35908f03ff774a26a318008b189b08c356fa9a58941cb81299b1de0',str(OLD_ROOT/'runner.py'):'e66c8b78a30e98b4fc1ccae18c4713c9702897a81524c15816a0e459a3ed52da',str(OLD_ROOT/'SOURCES.sha256'):'d6bae94d9ca2ae1a07b7f8be20d9a891efa580693c37934857bef28c257459e9',str(NEW_ROOT/'runner.py'):'f2808e288ba1b8b0e1f0cdc80832a42eb5a292e3ba20857881466fc8816a8a97',str(NEW_ROOT/'launch.sh'):'8b12e92fe4bfbe82b66570b89d63759c9dd63f2c31f5ab22837052a49834558a',str(NEW_ROOT/'job.sh'):'da23c449f8a1d4f065851132506b259325d21e39e0b068177c289ca51d2655e3',str(NEW_ROOT/'recipe.json'):'d28e1b39b4954498389ef5674f95bdc27831d9f148ba611a68372a4a06e0c2c8'}
++NEW_ROOT=pathlib.Path('/mnt/raid0/llm/tmp/codex3-r22-independent-adversarial-20261101/repinned/integrated')
++PRIOR_V3_ROOT=pathlib.Path('/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated')
++PINS={str(NEW_ROOT/'complete.py'):'6cc47fe4b57529827502e30de5379d7a7d40ff734066ee61b7608d612676b084',str(NEW_ROOT/'parse_native.py'):'0466be90d35908f03ff774a26a318008b189b08c356fa9a58941cb81299b1de0',str(OLD_ROOT/'runner.py'):'e66c8b78a30e98b4fc1ccae18c4713c9702897a81524c15816a0e459a3ed52da',str(OLD_ROOT/'SOURCES.sha256'):'d6bae94d9ca2ae1a07b7f8be20d9a891efa580693c37934857bef28c257459e9',str(NEW_ROOT/'runner.py'):'f2808e288ba1b8b0e1f0cdc80832a42eb5a292e3ba20857881466fc8816a8a97',str(NEW_ROOT/'launch.sh'):'8603cdb753d367265e3afdd61438eedeb6aa0fea0556de044e8e72de5d9e2e61',str(NEW_ROOT/'job.sh'):'9bfd12f1aa3f87fb5deb6970372b8566fc0750aaab7b70c4a2ff0f4b53085a06',str(NEW_ROOT/'recipe.json'):'d28e1b39b4954498389ef5674f95bdc27831d9f148ba611a68372a4a06e0c2c8'}
+ OLD_MANIFEST_SHA='e39e2f03e9f59cd777dbe22ac955ec981223b73878e8ee01b4646ceb56e2c24e'
+ OLD_ROW_SHA='7927d951e50a29a671a6aad2e2c7fe9ad8109d2758de96a7632c5d3b24e68dfb'
+ 
+ def no_previous_v2(flags,commands=None):
+  flags=pathlib.Path(flags)
++ # The previous v3 staging root is a separate possible exposure ledger.
++ for p in (PRIOR_V3_ROOT/'full',PRIOR_V3_ROOT/'custody',PRIOR_V3_ROOT/'qualification'):
++  if p.exists() or p.is_symlink():raise Refused('prior v3 staged custody requires review')
+  for p in (PREVIOUS_V2_ROOT/'full',PREVIOUS_V2_ROOT/'qualification',flags/'ready'/(PREVIOUS_V2_ID+'.json'),flags/'ready/armed'/(PREVIOUS_V2_ID+'.json'),flags/'grants'/(PREVIOUS_V2_ID+'.grant'),flags/'qual-nonces/by-id'/(PREVIOUS_V2_ID+'.json')):
+   if p.exists() or p.is_symlink():raise Refused('previous v2 ledger or execution remains')
+  for p in (flags/'qual-nonces').glob('*.json'):
+@@ -180,12 +190,7 @@
+  for p in flags.glob('ws58-*.queue'):
+   if p.is_symlink() or not p.is_file():raise Refused('queue unreadable')
+   if any(line.split('|',1)[0].strip()==PREVIOUS_V2_ID for line in p.read_text().splitlines()):raise Refused('previous v2 queued')
+- registry=flags/'FILLERS.md'
+- if registry.is_symlink() or not registry.is_file():raise Refused('registry unreadable')
+- for line in registry.read_text().splitlines():
+-  if line.startswith('| '+PREVIOUS_V2_ID+' |'):
+-   cells=[x.strip() for x in line.strip().strip('|').split('|')]
+-   if len(cells)!=18 or cells[7] not in ('COMPLETE','DONE','RETIRED','WITHDRAWN'):raise Refused('previous v2 registry row active')
++ check_retired_registry_row(flags/'FILLERS.md',PREVIOUS_V2_ID)
+  if commands is None:
+   commands=[]
+   for p in pathlib.Path('/proc').iterdir():
+--- a/scripts/coordination/tests/d1d4/fixtures/r22-custody/candidate.NOT-READY.json
++++ b/scripts/coordination/tests/d1d4/fixtures/r22-custody/candidate.NOT-READY.json
+@@ -15,8 +15,8 @@
+   "id": "codex3-r22-2-batched-floor-custody-v3-20261101",
+   "items": 1,
+   "job": {
+-    "path": "/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/job.sh",
+-    "sha256": "da23c449f8a1d4f065851132506b259325d21e39e0b068177c289ca51d2655e3"
++    "path": "/mnt/raid0/llm/tmp/codex3-r22-independent-adversarial-20261101/repinned/integrated/job.sh",
++    "sha256": "9bfd12f1aa3f87fb5deb6970372b8566fc0750aaab7b70c4a2ff0f4b53085a06"
+   },
+   "job_floor_gib": 150,
+   "keep": [
+@@ -39,8 +39,8 @@
+   ],
+   "kv_cache_mode": "split",
+   "launcher": {
+-    "path": "/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/launch.sh",
+-    "sha256": "8b12e92fe4bfbe82b66570b89d63759c9dd63f2c31f5ab22837052a49834558a"
++    "path": "/mnt/raid0/llm/tmp/codex3-r22-independent-adversarial-20261101/repinned/integrated/launch.sh",
++    "sha256": "8603cdb753d367265e3afdd61438eedeb6aa0fea0556de044e8e72de5d9e2e61"
+   },
+   "llm": {
+     "backend": "native-batched-bench",
+@@ -66,7 +66,7 @@
+       "ubatch": 512
+     }
+   },
+-  "log_consumer": "/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/complete.py",
++  "log_consumer": "/mnt/raid0/llm/tmp/codex3-r22-independent-adversarial-20261101/repinned/integrated/complete.py",
+   "min_window_s": 14400,
+   "n_ctx_required": 2048,
+   "n_parallel_required": 8,
+@@ -78,21 +78,21 @@
+   "priority_rank": 84,
+   "production": true,
+   "production_recipe": {
+-    "path": "/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/recipe.json",
++    "path": "/mnt/raid0/llm/tmp/codex3-r22-independent-adversarial-20261101/repinned/integrated/recipe.json",
+     "sha256": "d28e1b39b4954498389ef5674f95bdc27831d9f148ba611a68372a4a06e0c2c8"
+   },
+   "prompt_tokens_required": 128,
+   "qual_fixture": {
+     "items": 2,
+-    "path": "/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/fixture.json",
++    "path": "/mnt/raid0/llm/tmp/codex3-r22-independent-adversarial-20261101/repinned/integrated/fixture.json",
+     "sha256": "45a6b5279e0fb6acfd33a736561f75611d418861355ca9125e9872d262ea0219"
+   },
+   "qualification": {
+-    "receipt": "/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/qualification/QUAL-codex3-r22-2-batched-floor-custody-v3-20261101.json"
++    "receipt": "/mnt/raid0/llm/tmp/codex3-r22-independent-adversarial-20261101/repinned/integrated/qualification/QUAL-codex3-r22-2-batched-floor-custody-v3-20261101.json"
+   },
+   "qualification_row": {
+     "path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-r22-2-batched-floor-custody-v3-20261101.row.md",
+-    "sha256": "97e7b570d8684cedc37260b709f2d32965b11312e8ff9619a3368207f6664a4c"
++    "sha256": "7ecba322893429e5ab6f373705073775b815ec6a063c36efd4eb24c5cda51448"
+   },
+   "qualifier_version": "epyc.qual-v2-row",
+   "rate_basis": {
+@@ -109,11 +109,11 @@
+     "numactl",
+     "cmake"
+   ],
+-  "result_path": "/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/full/RESULT.json",
++  "result_path": "/mnt/raid0/llm/tmp/codex3-r22-independent-adversarial-20261101/repinned/integrated/full/RESULT.json",
+   "schema": "epyc.ready.v2",
+-  "scratch_root": "/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated",
++  "scratch_root": "/mnt/raid0/llm/tmp/codex3-r22-independent-adversarial-20261101/repinned/integrated",
+   "shared_state": [],
+-  "source_manifest": "/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/SOURCES.sha256",
++  "source_manifest": "/mnt/raid0/llm/tmp/codex3-r22-independent-adversarial-20261101/repinned/integrated/SOURCES.sha256",
+   "window_s": 21600,
+   "workload_kind": "llm"
+ }
+--- a/scripts/coordination/tests/d1d4/fixtures/r22-custody/candidate.row.md
++++ b/scripts/coordination/tests/d1d4/fixtures/r22-custody/candidate.row.md
+@@ -1 +1 @@
+-| codex3-r22-2-batched-floor-custody-v3-20261101 | codex3 | /mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/launch.sh | mi210_0,184-191 | 14400 s | 8 | /mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/STOP | BACKLOG | block-timing-quiet | 21600 s | 14400 s | n | n | /mnt/raid0/llm/epyc-inference-research/artifacts/autokernel-aa-noise-floor/aa-noise-floor.json | Four-shape A/A baseline floor calibration; no candidate verdict | n/a (floor diagnostic) | gpu | requested_window_s=21600; est_output_GiB=0.5; scratch_root=/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated; launcher_path=/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/launch.sh; job_path=/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/job.sh; source_manifest=/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/SOURCES.sha256; launcher_log=/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/launcher.out; predeclaration=/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/recipe.json; claimed_cpus=184-191; process_limit_GiB=8; keep_globs=*.py,*.sh,*.json,*.sha256,*.md,*.log,full/**/*.json,full/**/*.stdout,full/**/*.stderr,full/**/*.log,custody/**/*.json,qualification/**/*.json,bench_source/*.py,bundle/*.py,bundle/*.json,bundle/*.sh; initial full-unit wall time unknown |
++| codex3-r22-2-batched-floor-custody-v3-20261101 | codex3 | /mnt/raid0/llm/tmp/codex3-r22-independent-adversarial-20261101/repinned/integrated/launch.sh | mi210_0,184-191 | 14400 s | 8 | /mnt/raid0/llm/tmp/codex3-r22-independent-adversarial-20261101/repinned/integrated/STOP | BACKLOG | block-timing-quiet | 21600 s | 14400 s | n | n | /mnt/raid0/llm/epyc-inference-research/artifacts/autokernel-aa-noise-floor/aa-noise-floor.json | Four-shape A/A baseline floor calibration; no candidate verdict | n/a (floor diagnostic) | gpu | requested_window_s=21600; est_output_GiB=0.5; scratch_root=/mnt/raid0/llm/tmp/codex3-r22-independent-adversarial-20261101/repinned/integrated; launcher_path=/mnt/raid0/llm/tmp/codex3-r22-independent-adversarial-20261101/repinned/integrated/launch.sh; job_path=/mnt/raid0/llm/tmp/codex3-r22-independent-adversarial-20261101/repinned/integrated/job.sh; source_manifest=/mnt/raid0/llm/tmp/codex3-r22-independent-adversarial-20261101/repinned/integrated/SOURCES.sha256; launcher_log=/mnt/raid0/llm/tmp/codex3-r22-independent-adversarial-20261101/repinned/integrated/launcher.out; predeclaration=/mnt/raid0/llm/tmp/codex3-r22-independent-adversarial-20261101/repinned/integrated/recipe.json; claimed_cpus=184-191; process_limit_GiB=8; keep_globs=*.py,*.sh,*.json,*.sha256,*.md,*.log,full/**/*.json,full/**/*.stdout,full/**/*.stderr,full/**/*.log,custody/**/*.json,qualification/**/*.json,bench_source/*.py,bundle/*.py,bundle/*.json,bundle/*.sh; initial full-unit wall time unknown |
+--- /dev/null
++++ b/scripts/coordination/tests/d1d4/test_r22_registry_fence.py
+@@ -0,0 +1,30 @@
++import pathlib,tempfile,unittest
++import sys
++sys.path.insert(0,str(pathlib.Path(__file__).resolve().parent/'fixtures/r22-custody'))
++import custody_guard as g
++class Tests(unittest.TestCase):
++ def test_exact_legacy_whitespace_and_duplicates(self):
++  with tempfile.TemporaryDirectory() as d:
++   p=pathlib.Path(d)/'FILLERS.md'
++   for ident in (g.OLD_ID,g.PREVIOUS_V2_ID):
++    def row(state,space='  '):return '|'+space+' | '.join([ident]+['-']*6+[state]+['-']*10)+' |\n'
++    for state in ('RUNNING','BACKLOG','ARMED'):
++     p.write_text(row(state))
++     with self.assertRaises(g.Refused):g.check_retired_registry_row(p,ident)
++    p.write_text(row('WITHDRAWN'));g.check_retired_registry_row(p,ident)
++    p.write_text(row('WITHDRAWN')+row('WITHDRAWN'))
++    with self.assertRaises(g.Refused):g.check_retired_registry_row(p,ident)
++    p.write_text('| '+ident+' | bad |\n')
++    with self.assertRaises(g.Refused):g.check_retired_registry_row(p,ident)
++    p.write_text('| unrelated |\n');g.check_retired_registry_row(p,ident)
++ def test_prior_v3_staged_artifacts_fail_closed(self):
++  from unittest.mock import patch
++  with tempfile.TemporaryDirectory() as d:
++   root=pathlib.Path(d)
++   with patch.object(g,'PRIOR_V3_ROOT',root/'prior'):
++    (root/'prior').mkdir()
++    for name in ('full','custody','qualification'):
++     x=root/'prior'/name;x.mkdir()
++     with self.assertRaisesRegex(g.Refused,'prior v3'):g.no_previous_v2(root,commands=[])
++     x.rmdir()
++if __name__=='__main__':unittest.main()
+--- /dev/null
++++ b/scripts/coordination/tests/d1d4/test_r22_direct_issue.py
+@@ -0,0 +1,22 @@
++import importlib.util,pathlib,sys,tempfile,unittest
++from unittest.mock import patch
++D=pathlib.Path(__file__).resolve().parent.parents[1]/'qual_v2';sys.path.insert(0,str(D));spec=importlib.util.spec_from_file_location('fixedq',D/'qualify_launcher.py');q=importlib.util.module_from_spec(spec);spec.loader.exec_module(q)
++class Controls(unittest.TestCase):
++ def test_direct_issue_refuses_before_token(self):
++  with tempfile.TemporaryDirectory() as t,patch.object(q,'load_manifest',return_value={'id':q.R22_CUSTODY_ID,'production':True}),patch.object(q.secrets,'token_hex') as token,patch.object(q,'r22_custody_guard') as custody:
++   with self.assertRaisesRegex(q.Refused,'direct issue'):q.issue(pathlib.Path('/fixture'),pathlib.Path(t))
++   custody.assert_not_called();token.assert_not_called()
++ def test_claimed_path_rechecks_custody_and_claim_before_token(self):
++  with tempfile.TemporaryDirectory() as t,patch.object(q,'load_manifest',return_value={'id':q.R22_CUSTODY_ID,'production':True}),patch.object(q,'r22_keeper_issuer_authority') as auth,patch.object(q,'gpu_claim_ancestor') as claim,patch.object(q,'r22_custody_guard',side_effect=q.Refused('custody unavailable')),patch.object(q.secrets,'token_hex') as token:
++   with self.assertRaisesRegex(q.Refused,'custody unavailable'):q.issue(pathlib.Path('/fixture'),pathlib.Path(t),r22_claimed=True)
++   auth.assert_called_once();claim.assert_called_once();token.assert_not_called()
++ def test_claim_run_initializes_before_scoped_issue(self):
++  events=[];m={'id':q.R22_CUSTODY_ID,'production':True,'regions':'mi210_0','qual_timeout_s':600,'rate_basis':{'scope':'r22-unknown-calibration'}}
++  with tempfile.TemporaryDirectory() as t,patch.object(q,'load_manifest',return_value=m),patch.object(q,'choose_cpus'),patch.dict(q.os.environ,{'WS58_QUAL_GPU_HELD':'1'}),patch.object(q,'gpu_claim_ancestor',side_effect=lambda *_:events.append('claim')),patch.object(q,'r22_keeper_issuer_authority',side_effect=lambda *_:events.append('authority')),patch.object(q,'r22_custody_guard',side_effect=lambda *args:events.append(args[2])),patch.object(q,'issue',side_effect=lambda *args,**kw:events.append(('issue',kw)) or 'fake-test-only'),patch.object(q,'run',return_value={'fake':True}):
++   self.assertEqual(q.claim_issue_run(pathlib.Path('/fixture'),pathlib.Path(t),600),{'fake':True})
++  self.assertEqual(events,['claim','authority','initialize',('issue',{'r22_claimed':True})])
++ def test_other_scopes_do_not_hit_r22_guards(self):
++  with tempfile.TemporaryDirectory() as t,patch.object(q,'load_manifest',return_value={'id':'other','production':False}),patch.object(q,'bound_files',side_effect=ValueError('original route')),patch.object(q,'r22_custody_guard') as custody:
++   with self.assertRaisesRegex(ValueError,'original route'):q.issue(pathlib.Path('/fixture'),pathlib.Path(t))
++   custody.assert_not_called()
++if __name__=='__main__':unittest.main()

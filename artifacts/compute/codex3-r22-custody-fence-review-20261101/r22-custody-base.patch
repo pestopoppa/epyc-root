@@ -1,0 +1,1724 @@
+--- a/.github/workflows/qualifier-v2.yml
++++ b/.github/workflows/qualifier-v2.yml
+@@ -8,6 +8,7 @@
+       - 'scripts/coordination/qual_v2/**'
+       - 'scripts/coordination/filler_run14.sh'
+       - 'scripts/coordination/tests/d1d4/**'
++      - 'artifacts/compute/codex3-versioned-qualifier-20261101/deployment.patch'
+       - '.github/workflows/qualifier-v2.yml'
+   pull_request:
+     paths:
+@@ -15,6 +16,7 @@
+       - 'scripts/coordination/qual_v2/**'
+       - 'scripts/coordination/filler_run14.sh'
+       - 'scripts/coordination/tests/d1d4/**'
++      - 'artifacts/compute/codex3-versioned-qualifier-20261101/deployment.patch'
+       - '.github/workflows/qualifier-v2.yml'
+   workflow_dispatch:
+ 
+@@ -32,6 +34,10 @@
+       - name: Test version routing, claims and real child cleanup
+         run: >-
+           python3 -B -m unittest -q
++          scripts.coordination.tests.d1d4.test_r22_custody_retention
++          scripts.coordination.tests.d1d4.test_real_runner
++          scripts.coordination.tests.d1d4.test_completion_custody
++          scripts.coordination.tests.d1d4.test_qualifier_custody
+           scripts.coordination.tests.d1d4.test_vkq_v2_source
+           scripts.coordination.tests.d1d4.test_r22_v2_source
+           scripts.coordination.tests.d1d4.test_version_routing
+--- a/artifacts/compute/codex3-versioned-qualifier-20261101/deployment.patch
++++ b/artifacts/compute/codex3-versioned-qualifier-20261101/deployment.patch
+@@ -919,7 +919,7 @@
+ +fl_should_stop() { [ -e "${FILLER_STOPFILE:?}" ] || [ "$(date -u +%s)" -ge "${FILLER_DEADLINE:?}" ]; }
+ --- /dev/null
+ +++ b/bin/qual-v2-row/keeper_qual_gate.py
+-@@ -0,0 +1,548 @@
++@@ -0,0 +1,551 @@
+ +#!/usr/bin/env python3
+ +"""Fail closed READY gate for ws58 keeper v8; no grant writes here."""
+ +from __future__ import annotations
+@@ -1343,6 +1343,9 @@
+ +        except (q.Refused, OSError, ValueError, KeyError, json.JSONDecodeError): pass
+ +        if Path(m['qualification']['receipt']).exists():
+ +            return refusal('stale qualification receipt; republish under a new id')
+++        if m['id']==q.R22_CUSTODY_ID:
+++            try:q.r22_custody_guard(m,flags,'precheck')
+++            except q.Refused as exc:return ('wait-resource',str(exc))
+ +        timeout=int(m.get('qual_timeout_s',timeout))
+ +        if timeout not in (300,600):return refusal('qual_timeout_s must be 300 or 600')
+ +        pair = qual_pair(m, flags, rl)
+@@ -1470,7 +1473,7 @@
+ +if __name__ == '__main__': raise SystemExit(main())
+ --- /dev/null
+ +++ b/bin/qual-v2-row/qualify_launcher.py
+-@@ -0,0 +1,1116 @@
++@@ -0,0 +1,1155 @@
+ +#!/usr/bin/env python3
+ +"""Keeper-owned, one-use pre-grant qualification for the canonical filler engine.
+ +
+@@ -1485,6 +1488,7 @@
+ +import ctypes
+ +import datetime as dt
+ +import hashlib
+++import importlib.util
+ +import json
+ +import math
+ +import os
+@@ -1694,6 +1698,7 @@
+ +
+ +def r22_unknown_calibration_ok(m: dict) -> bool:
+ +    """Exact diagnostic-only unit. UNKNOWN means no completion estimate."""
+++    if m.get('id')=='codex3-r22-2-batched-floor-custody-v3-20261101':return manifest_digest(m)=='9852240cdeac764636fd5d9b173676b71e1d917e80c069e980a04eb3614f01d5'
+ +    try:
+ +        b=m['llm']['batched']
+ +        return (m['id']=='codex3-r22-2-batched-floor-v2-20261101' and m['owner']=='codex3' and
+@@ -1762,7 +1767,8 @@
+ +    if m['rate_basis']['scope']=='unified-unknown-calibration':
+ +        need(out['source_manifest_sha256']=='b319ec9c663c64c2f135e5c6daecbb42b65d52efdec4ceeb6a7f6fb7a447d3e6', 'Unified source manifest changed')
+ +    if m['rate_basis']['scope']=='r22-unknown-calibration':
+-+        need(out['source_manifest_sha256']=='68b92a41bd4d1b86845b6b2ae421eb63fa84511e38c064d6a337ea06ab51449a', 'R22 source manifest changed')
+++        expected='051125e4509a71f6918865028d548001c6a1610527d5afb03135c4674cb9ae65' if m['id']=='codex3-r22-2-batched-floor-custody-v3-20261101' else '68b92a41bd4d1b86845b6b2ae421eb63fa84511e38c064d6a337ea06ab51449a'
+++        need(out['source_manifest_sha256']==expected, 'R22 source manifest changed')
+ +    out['policy_sha256'] = sha(POLICY)
+ +    if kind=='speech':
+ +        for key in ('fixture_audio','source_catalog','source_binary'):
+@@ -2238,6 +2244,38 @@
+ +    need(end > dt.datetime.now(dt.timezone.utc) + dt.timedelta(seconds=m['min_window_s'] + 60), 'qualification synthetic window too short')
+ +    path.write_text(f"regions={pair} start={now:%Y-%m-%dT%H:%MZ} end={end:%Y-%m-%dT%H:%MZ}\n")
+ +
+++R22_CUSTODY_ID='codex3-r22-2-batched-floor-custody-v3-20261101'
+++def r22_keeper_issuer_authority(flags: Path) -> None:
+++    try: keeper_pid=int((flags/'ws58-calendar-keeper.pid').read_text().strip())
+++    except (OSError,ValueError) as exc:raise Refused('keeper PID certificate absent') from exc
+++    pid=os.getppid();ancestry=set()
+++    for _ in range(6):
+++        if pid<=1:break
+++        ancestry.add(pid)
+++        stat=Path(f'/proc/{pid}/stat').read_text().rsplit(') ',1)[1].split()
+++        pid=int(stat[1])
+++    need(keeper_pid in ancestry,'custody initializer is not a keeper descendant')
+++    cmd=Path(f'/proc/{keeper_pid}/cmdline').read_bytes().replace(b'\0',b' ').decode(errors='replace')
+++    need('ws58-calendar-keeper-v8.sh' in cmd,'custody initializer is not v8 keeper')
+++
+++def r22_custody_guard(m: dict, flags: Path, phase: str) -> None:
+++    need(m.get('id')==R22_CUSTODY_ID and r22_unknown_calibration_ok(m), 'R22 custody scope mismatch')
+++    bound_files(m)
+++    path=Path(m['scratch_root'])/'custody_guard.py'
+++    spec=importlib.util.spec_from_file_location('_r22_custody_guard',path)
+++    need(spec is not None and spec.loader is not None, 'R22 custody guard unavailable')
+++    mod=importlib.util.module_from_spec(spec)
+++    sys.path.insert(0,str(path.parent))
+++    try:
+++        spec.loader.exec_module(mod)
+++        ledger=Path(m['scratch_root'])/'custody';archive=flags/'ready/withdrawn'
+++        if phase=='precheck':mod.precheck_reviewed(ledger,flags,archive)
+++        elif phase=='initialize':mod.initialize_reviewed(ledger,flags,archive)
+++        elif phase=='check':mod.check_reviewed_entry(ledger,flags,archive)
+++        else:raise ValueError('invalid custody phase')
+++    except (OSError,ValueError,RuntimeError,KeyError) as exc:raise Refused('R22 custody: '+str(exc)) from exc
+++    finally:sys.path.pop(0)
+++
+ +def claim_issue_run(manifest: Path, flags: Path, timeout: int) -> dict:
+ +    # Entered only after region-lock has acquired its exclusive resource.
+ +    # Independently recheck custody and placement before consuming the ID.
+@@ -2252,6 +2290,9 @@
+ +        vkq_cpu_claim_ancestor(m['id'])
+ +        ram=subprocess.run([str(flags/'ram_admit.sh'),'256'],capture_output=True,text=True,timeout=15)
+ +        need(ram.returncode==0,'VKQ bootstrap RAM admission failed under host claim')
+++    if m['id']==R22_CUSTODY_ID:
+++        r22_keeper_issuer_authority(flags)
+++        r22_custody_guard(m,flags,'initialize')
+ +    need(not INTERRUPTED,'qualification interrupted before nonce')
+ +    nonce=issue(manifest,flags)
+ +    need(not INTERRUPTED,'qualification interrupted after nonce issuance')
+@@ -2357,6 +2398,7 @@
+ +
+ +def verify(manifest: Path, flags: Path, fingerprint_now: bool = True) -> dict:
+ +    m = load_manifest(manifest)
+++    if m['id']==R22_CUSTODY_ID:r22_custody_guard(m,flags,'check')
+ +    need(m['production'] is True, 'fixture receipts cannot qualify production grants')
+ +    receipt = Path(m['qualification']['receipt'])
+ +    need(receipt.is_file() and not receipt.is_symlink(), 'qualification receipt absent')
+--- a/scripts/coordination/qual_v2/keeper_qual_gate.py
++++ b/scripts/coordination/qual_v2/keeper_qual_gate.py
+@@ -421,6 +421,9 @@
+         except (q.Refused, OSError, ValueError, KeyError, json.JSONDecodeError): pass
+         if Path(m['qualification']['receipt']).exists():
+             return refusal('stale qualification receipt; republish under a new id')
++        if m['id']==q.R22_CUSTODY_ID:
++            try:q.r22_custody_guard(m,flags,'precheck')
++            except q.Refused as exc:return ('wait-resource',str(exc))
+         timeout=int(m.get('qual_timeout_s',timeout))
+         if timeout not in (300,600):return refusal('qual_timeout_s must be 300 or 600')
+         pair = qual_pair(m, flags, rl)
+--- a/scripts/coordination/qual_v2/qualify_launcher.py
++++ b/scripts/coordination/qual_v2/qualify_launcher.py
+@@ -12,6 +12,7 @@
+ import ctypes
+ import datetime as dt
+ import hashlib
++import importlib.util
+ import json
+ import math
+ import os
+@@ -221,6 +222,7 @@
+ 
+ def r22_unknown_calibration_ok(m: dict) -> bool:
+     """Exact diagnostic-only unit. UNKNOWN means no completion estimate."""
++    if m.get('id')=='codex3-r22-2-batched-floor-custody-v3-20261101':return manifest_digest(m)=='9852240cdeac764636fd5d9b173676b71e1d917e80c069e980a04eb3614f01d5'
+     try:
+         b=m['llm']['batched']
+         return (m['id']=='codex3-r22-2-batched-floor-v2-20261101' and m['owner']=='codex3' and
+@@ -289,7 +291,8 @@
+     if m['rate_basis']['scope']=='unified-unknown-calibration':
+         need(out['source_manifest_sha256']=='b319ec9c663c64c2f135e5c6daecbb42b65d52efdec4ceeb6a7f6fb7a447d3e6', 'Unified source manifest changed')
+     if m['rate_basis']['scope']=='r22-unknown-calibration':
+-        need(out['source_manifest_sha256']=='68b92a41bd4d1b86845b6b2ae421eb63fa84511e38c064d6a337ea06ab51449a', 'R22 source manifest changed')
++        expected='051125e4509a71f6918865028d548001c6a1610527d5afb03135c4674cb9ae65' if m['id']=='codex3-r22-2-batched-floor-custody-v3-20261101' else '68b92a41bd4d1b86845b6b2ae421eb63fa84511e38c064d6a337ea06ab51449a'
++        need(out['source_manifest_sha256']==expected, 'R22 source manifest changed')
+     out['policy_sha256'] = sha(POLICY)
+     if kind=='speech':
+         for key in ('fixture_audio','source_catalog','source_binary'):
+@@ -765,6 +768,38 @@
+     need(end > dt.datetime.now(dt.timezone.utc) + dt.timedelta(seconds=m['min_window_s'] + 60), 'qualification synthetic window too short')
+     path.write_text(f"regions={pair} start={now:%Y-%m-%dT%H:%MZ} end={end:%Y-%m-%dT%H:%MZ}\n")
+ 
++R22_CUSTODY_ID='codex3-r22-2-batched-floor-custody-v3-20261101'
++def r22_keeper_issuer_authority(flags: Path) -> None:
++    try: keeper_pid=int((flags/'ws58-calendar-keeper.pid').read_text().strip())
++    except (OSError,ValueError) as exc:raise Refused('keeper PID certificate absent') from exc
++    pid=os.getppid();ancestry=set()
++    for _ in range(6):
++        if pid<=1:break
++        ancestry.add(pid)
++        stat=Path(f'/proc/{pid}/stat').read_text().rsplit(') ',1)[1].split()
++        pid=int(stat[1])
++    need(keeper_pid in ancestry,'custody initializer is not a keeper descendant')
++    cmd=Path(f'/proc/{keeper_pid}/cmdline').read_bytes().replace(b'\0',b' ').decode(errors='replace')
++    need('ws58-calendar-keeper-v8.sh' in cmd,'custody initializer is not v8 keeper')
++
++def r22_custody_guard(m: dict, flags: Path, phase: str) -> None:
++    need(m.get('id')==R22_CUSTODY_ID and r22_unknown_calibration_ok(m), 'R22 custody scope mismatch')
++    bound_files(m)
++    path=Path(m['scratch_root'])/'custody_guard.py'
++    spec=importlib.util.spec_from_file_location('_r22_custody_guard',path)
++    need(spec is not None and spec.loader is not None, 'R22 custody guard unavailable')
++    mod=importlib.util.module_from_spec(spec)
++    sys.path.insert(0,str(path.parent))
++    try:
++        spec.loader.exec_module(mod)
++        ledger=Path(m['scratch_root'])/'custody';archive=flags/'ready/withdrawn'
++        if phase=='precheck':mod.precheck_reviewed(ledger,flags,archive)
++        elif phase=='initialize':mod.initialize_reviewed(ledger,flags,archive)
++        elif phase=='check':mod.check_reviewed_entry(ledger,flags,archive)
++        else:raise ValueError('invalid custody phase')
++    except (OSError,ValueError,RuntimeError,KeyError) as exc:raise Refused('R22 custody: '+str(exc)) from exc
++    finally:sys.path.pop(0)
++
+ def claim_issue_run(manifest: Path, flags: Path, timeout: int) -> dict:
+     # Entered only after region-lock has acquired its exclusive resource.
+     # Independently recheck custody and placement before consuming the ID.
+@@ -779,6 +814,9 @@
+         vkq_cpu_claim_ancestor(m['id'])
+         ram=subprocess.run([str(flags/'ram_admit.sh'),'256'],capture_output=True,text=True,timeout=15)
+         need(ram.returncode==0,'VKQ bootstrap RAM admission failed under host claim')
++    if m['id']==R22_CUSTODY_ID:
++        r22_keeper_issuer_authority(flags)
++        r22_custody_guard(m,flags,'initialize')
+     need(not INTERRUPTED,'qualification interrupted before nonce')
+     nonce=issue(manifest,flags)
+     need(not INTERRUPTED,'qualification interrupted after nonce issuance')
+@@ -884,6 +922,7 @@
+ 
+ def verify(manifest: Path, flags: Path, fingerprint_now: bool = True) -> dict:
+     m = load_manifest(manifest)
++    if m['id']==R22_CUSTODY_ID:r22_custody_guard(m,flags,'check')
+     need(m['production'] is True, 'fixture receipts cannot qualify production grants')
+     receipt = Path(m['qualification']['receipt'])
+     need(receipt.is_file() and not receipt.is_symlink(), 'qualification receipt absent')
+--- /dev/null
++++ b/scripts/coordination/tests/d1d4/fixtures/r22-custody/bench_source/residency.py
+@@ -0,0 +1,612 @@
++#!/usr/bin/env python3
++"""Prove the run actually happened on the GPU.
++
++"I invoked the HIP build" is not evidence of a HIP run, and `ldd` cannot supply it:
++llama.cpp **dlopens** `libggml-hip.so`, so the executable shows zero HIP linkage
++either way, while `/etc/environment` puts the CPU build early in `LD_LIBRARY_PATH`.
++Three ggml generations live on this host and a binary that inherits another tree's
++ggml runs silently wrong.
++
++So residency is sampled DURING the run. A sample taken afterwards proves nothing --
++llama-bench frees its allocation on the way out, which is exactly why a post-hoc
++reading of 0% VRAM is the NORMAL result and not evidence of a CPU run.
++"""
++from __future__ import annotations
++
++from pathlib import Path
++import json
++import math
++import os
++import re
++import statistics
++import threading
++import time
++
++VRAM_SYSFS = Path("/sys/class/drm/card2/device/mem_info_vram_used")
++KFD_PROC = Path("/sys/class/kfd/kfd/proc")
++#: The ACHIEVED core clock, in Hz. Not `pp_dpm_sclk`.
++#:
++#: The first version of this read `pp_dpm_sclk` and took the starred DPM level. Under
++#: `power_dpm_force_performance_level = high` that file stars BOTH levels:
++#:
++#:     0: 1700Mhz *
++#:     1: 1700Mhz *
++#:
++#: so the reader returned 1700 unconditionally, `min == max` by construction, and
++#: `clock_stable` was True on every run forever -- a check that cannot fail is not a
++#: check. It also could not see a droop BELOW the cap, and `pp_features` shows
++#: `APCC_DFLL` enabled (the DFLL droops on current spikes) plus DS_SOCCLK / DS_FCLK /
++#: DS_LCLK still dynamic under `high`. hwmon reports what the clock actually did.
++SCLK_HWMON = sorted(Path("/sys/class/drm/card2/device/hwmon").glob("hwmon*/freq1_input"))
++#: A model resident on the device moves VRAM well past this. Below it, "resident" is
++#: not proven -- which is a refusal, not a warning.
++RESIDENT_FLOOR_BYTES = 1 << 30
++
++
++def vram_bytes() -> int:
++    try:
++        return int(VRAM_SYSFS.read_text().strip())
++    except (OSError, ValueError):
++        return -1
++
++
++def sclk_mhz() -> int:
++    """The achieved core clock in MHz; 0 if unreadable.
++
++    Reads hwmon rather than the DPM table, so a droop below the pinned cap is visible.
++    """
++    for path in SCLK_HWMON:
++        try:
++            return int(path.read_text().strip()) // 1_000_000
++        except (OSError, ValueError):
++            continue
++    return 0
++
++
++def kfd_processes() -> int:
++    try:
++        return len(list(KFD_PROC.iterdir()))
++    except OSError:
++        return -1
++
++
++def kfd_pid_vram(pid: int) -> int | None:
++    """Device memory held by ONE process (KFD per-process `vram_*`); None if unread.
++
++    0 means the KFD tree was readable and the PID is not registered (or holds no
++    VRAM). A global VRAM reading cannot separate a launch's own allocation from a
++    co-resident server's; this can (G6 per-launch HIP proof).
++    """
++    try:
++        if not KFD_PROC.is_dir():
++            return None
++        root = KFD_PROC / str(int(pid))
++        if not root.is_dir():
++            return 0
++        return sum(int(path.read_text().strip()) for path in root.glob("vram_*"))
++    except (OSError, ValueError):
++        return None
++
++
++def pid_peak_rss(pid: int, proc_root: Path = Path("/proc")) -> int | None:
++    """`VmHWM` (peak resident set, bytes) of one live process; None if unreadable."""
++    try:
++        for line in (proc_root / str(int(pid)) / "status").read_text().splitlines():
++            if line.startswith("VmHWM:"):
++                return int(line.split()[1]) * 1024
++    except (OSError, ValueError, IndexError):
++        return None
++    return None
++
++
++
++class Sampler:
++    """Peak VRAM and KFD process count over one process lifetime."""
++
++    def __init__(self, interval: float = 0.25) -> None:
++        self.interval = interval
++        self._stop = threading.Event()
++        self._thread: threading.Thread | None = None
++        self.peak_vram = 0
++        self.peak_kfd = 0
++        self.min_sclk = 0
++        self.max_sclk = 0
++        self.samples = 0
++        #: Every SUCCESSFUL VRAM read, in order. Kept because a peak alone cannot
++        #: distinguish "the device held the model throughout" from "one spike"; and
++        #: because its LENGTH is the only thing that separates a window that read zero
++        #: from a window whose sysfs node could not be read at all. `vram_bytes()`
++        #: returns -1 on a failed read and -1 never enters this list, so
++        #: `len(vram_readings) == 0` with `samples > 0` means UNSAMPLEABLE, not idle.
++        self.vram_readings: list[int] = []
++        #: Opt-in (`watch_pid`): the launched server's own KFD VRAM and peak RSS.
++        self._watched_pid: int | None = None
++        self.own_pid_peak_vram = 0
++        self.own_pid_kfd_reads = 0
++        self.own_pid_peak_rss = 0
++        self.own_pid_rss_reads = 0
++
++    def watch_pid(self, pid: int) -> None:
++        """Also sample this PID's own device memory and peak RSS. Additive: the proof
++        gains `own_pid_*` keys only once a PID is watched."""
++        self._watched_pid = int(pid)
++
++    def _watch_once(self) -> None:
++        pid = self._watched_pid
++        if pid is None:
++            return
++        own = kfd_pid_vram(pid)
++        if own is not None:
++            self.own_pid_kfd_reads += 1
++            self.own_pid_peak_vram = max(self.own_pid_peak_vram, own)
++        rss = pid_peak_rss(pid)
++        if rss is not None:
++            self.own_pid_rss_reads += 1
++            self.own_pid_peak_rss = max(self.own_pid_peak_rss, rss)
++
++    def _loop(self) -> None:
++        while not self._stop.is_set():
++            vram = vram_bytes()
++            if vram >= 0:
++                self.vram_readings.append(vram)
++                self.peak_vram = max(self.peak_vram, vram)
++            self.peak_kfd = max(self.peak_kfd, kfd_processes())
++            self._watch_once()
++            clock = sclk_mhz()
++            if clock:
++                self.max_sclk = max(self.max_sclk, clock)
++                self.min_sclk = clock if not self.min_sclk else min(self.min_sclk, clock)
++            self.samples += 1
++            self._stop.wait(self.interval)
++
++    def __enter__(self) -> "Sampler":
++        self._thread = threading.Thread(target=self._loop, daemon=True)
++        self._thread.start()
++        return self
++
++    def __exit__(self, *_exc: object) -> None:
++        self._stop.set()
++        if self._thread is not None:
++            self._thread.join(timeout=5)
++
++    @property
++    def proof(self) -> dict:
++        # Snapshot: the sampling thread may still be appending, and `statistics.median`
++        # sorts a copy either way.
++        readings = list(self.vram_readings)
++        watched = {} if self._watched_pid is None else {
++            "own_pid": self._watched_pid,
++            "own_pid_peak_vram_bytes": self.own_pid_peak_vram,
++            "own_pid_kfd_reads": self.own_pid_kfd_reads,
++            "own_pid_peak_rss_bytes": self.own_pid_peak_rss,
++            "own_pid_rss_reads": self.own_pid_rss_reads}
++        return {**watched,
++            "peak_vram_bytes": self.peak_vram,
++            # The peak answers "did it ever get there"; the median answers "did it STAY
++            # there". A window whose peak clears the floor on one sample out of forty is
++            # not the same evidence as one that held the model for the whole run.
++            "median_vram_bytes": int(statistics.median(readings)) if readings else 0,
++            # Successful reads, NOT loop iterations. Zero here with a non-zero `samples`
++            # is an unreadable instrument, which is a different fact from a zero reading.
++            "vram_reads": len(readings),
++            "peak_kfd_processes": self.peak_kfd,
++            "sclk_min_mhz": self.min_sclk,
++            "sclk_max_mhz": self.max_sclk,
++            # A measurement taken across a clock change is not a measurement of the
++            # kernel; it is partly a measurement of the governor.
++            "clock_stable": bool(self.min_sclk) and self.min_sclk == self.max_sclk,
++            "samples": self.samples,
++            "resident": self.peak_vram >= RESIDENT_FLOOR_BYTES,
++        }
++
++
++class CpuLifecycleSampler:
++    """Bounded factual procfs observations, NOT a placement/contention warrant.
++
++    Allowed NUMA nodes are permissions, not actual page placement. Each task is
++    identified by TID/start ticks; the process must retain its attached identity.
++    Phase-boundary-crossing reads, missing reads and exhausted budgets stay visible.
++    No campaign, container, lock or scientific identity is manufactured here.
++    """
++
++    def __init__(self, *, proc_root: Path = Path("/proc"), interval: float = 1.0,
++                 max_samples: int = 8192, max_tasks: int = 512,
++                 max_bytes: int = 32 << 20, max_sample_s: float = 0.1,
++                 max_processes: int = 2048):
++        for value, limit in ((max_samples, 8192), (max_tasks, 512),
++                             (max_bytes, 32 << 20), (max_processes, 2048)):
++            if type(value) is not int or not 1 <= value <= limit:
++                raise ValueError("CPU observation count/byte budget is out of bounds")
++        if not all(math.isfinite(value) and 0 < value <= 60
++                   for value in (interval, max_sample_s)):
++            raise ValueError("CPU observation timing budget is out of bounds")
++        self.proc_root, self.interval = proc_root, interval
++        self.max_samples, self.max_tasks = max_samples, max_tasks
++        self.max_bytes, self.max_sample_s = max_bytes, max_sample_s
++        self.max_processes = max_processes
++        # Only the preceding bounded census, not another accumulated history.
++        self._previous_processes = {}
++        self._previous_census_at = None
++        self._lock = threading.Lock()
++        self._stop = threading.Event()
++        self._wake = threading.Event()
++        self._thread = None
++        self._target = None
++        self._phase = "setup"
++        self._generation = 0
++        self._samples = []
++        self._markers = []
++        self._errors = []
++        self._bytes = 0
++        self._last_sample = None
++        self._finished = False
++        self._truncated = False
++        self._boot_id = None
++
++    @staticmethod
++    def _text(path: Path) -> str:
++        fd = os.open(path, os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW)
++        try:
++            raw = os.read(fd, 16385)
++            if len(raw) > 16384:
++                raise ValueError("proc read byte bound exceeded")
++            return raw.decode("ascii")
++        finally:
++            os.close(fd)
++
++    def _identity(self, root: Path, pid: int) -> int:
++        text = self._text(root / "stat")
++        prefix, separator, tail = text.rpartition(") ")
++        if not separator or prefix.split(" (", 1)[0] != str(pid):
++            raise ValueError("proc stat PID differs")
++        start_ticks = int(tail.split()[19])
++        if start_ticks < 0:
++            raise ValueError("negative process start ticks")
++        return start_ticks
++
++    def _task(self, root: Path, pid: int) -> dict:
++        before = self._identity(root, pid)
++        fields = {}
++        for line in self._text(root / "status").splitlines():
++            key, _, value = line.partition(":")
++            if key in {"Cpus_allowed_list", "Mems_allowed_list"}:
++                value = value.strip()
++                if key in fields or not re.fullmatch(r"[0-9]+(?:-[0-9]+)?(?:,[0-9]+(?:-[0-9]+)?)*", value):
++                    raise ValueError("malformed or duplicate allowed-list field")
++                previous = -1
++                for part in value.split(","):
++                    bounds = [int(number) for number in part.split("-")]
++                    if bounds[0] <= previous or bounds[-1] < bounds[0]:
++                        raise ValueError("unordered allowed-list field")
++                    previous = bounds[-1]
++                fields[key] = value
++        if len(fields) != 2:
++            raise ValueError("missing CPU/NUMA allowed-list fields")
++        if self._identity(root, pid) != before:
++            raise ValueError("PID/TID identity changed during read")
++        return {"id": pid, "start_ticks": before, **fields}
++
++    def _task_ids(self, root: Path) -> list[int]:
++        ids = []
++        with os.scandir(root / "task") as entries:
++            for entry in entries:
++                if not entry.name.isdecimal():
++                    raise ValueError("unexpected task directory entry")
++                ids.append(int(entry.name))
++                if len(ids) > self.max_tasks:
++                    raise ValueError("task count bound exceeded")
++        return sorted(ids)
++
++    def _host(self) -> dict:
++        """Original counters, not a host-health verdict or a quiet-host threshold."""
++        from .lifecycle_observation import _key_values, _psi
++        row = {"cpu_ticks": None, "memory_kib": None, "swap_pages": None,
++               "memory_psi": None, "errors": []}
++        readers = {
++            "memory_kib": lambda: _key_values(self._text(self.proc_root / "meminfo"),
++                ("MemAvailable", "SwapFree", "SwapTotal"), "meminfo"),
++            "swap_pages": lambda: _key_values(self._text(self.proc_root / "vmstat"),
++                ("pswpin", "pswpout"), "vmstat"),
++            "memory_psi": lambda: _psi(self._text(self.proc_root / "pressure/memory")),
++        }
++        try:
++            # Only the aggregate first line is required; /proc/stat's per-CPU tail
++            # may exceed the read bound on this host and is not part of this fact.
++            fd = os.open(self.proc_root / "stat", os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW)
++            try:
++                raw = os.read(fd, 16384)
++            finally:
++                os.close(fd)
++            if b"\n" not in raw:
++                raise ValueError("aggregate CPU stat line is incomplete")
++            fields = raw.split(b"\n", 1)[0].decode("ascii").split()
++            values = [int(value) for value in fields[1:]]
++            if fields[0] != "cpu" or len(values) != 10 or min(values) < 0:
++                raise ValueError("aggregate CPU stat fields differ")
++            row["cpu_ticks"] = dict(zip(("user", "nice", "system", "idle", "iowait",
++                "irq", "softirq", "steal", "guest", "guest_nice"), values))
++        except Exception as exc:
++            row["errors"].append(f"cpu_ticks: {type(exc).__name__}: {exc}"[:256])
++        for key, read in readers.items():
++            try:
++                value = read()
++                if key == "memory_psi" and any(
++                        not math.isfinite(number) or number < 0
++                        for counters in value.values() for number in counters.values()):
++                    raise ValueError("PSI contains negative/nonfinite counters")
++                row[key] = value
++            except Exception as exc:
++                row["errors"].append(f"{key}: {type(exc).__name__}: {exc}"[:256])
++        return row
++
++    def _non_target_activity(self, target, deadline: float) -> dict:
++        """Bounded identity-stable CPU deltas. Names are facts, never a classifier.
++
++        A non-target process may be our parent, an ordinary build, an idle server,
++        or somebody else's work. Neither CPU ticks nor an executable name establishes
++        competing model inference, held-region overlap, or permission to signal it.
++        """
++        from .lifecycle_observation import parse_proc_stat
++        started = time.monotonic()
++        row = {"started_monotonic_s": started, "ended_monotonic_s": None,
++               "previous_started_monotonic_s": self._previous_census_at,
++               "entries_seen": 0, "processes_read": 0, "incomplete": False,
++               "errors": [], "active_intervals": [], "classification": "unproven"}
++        current = {}
++        def error(exc):
++            row["incomplete"] = True
++            if len(row["errors"]) < 8:
++                row["errors"].append(str(exc)[:256])
++        try:
++            with os.scandir(self.proc_root) as entries:
++                for entry in entries:
++                    row["entries_seen"] += 1
++                    if row["entries_seen"] > self.max_processes + 256:
++                        raise ValueError("proc directory entry bound exceeded")
++                    if time.monotonic() > deadline or self._stop.is_set():
++                        raise ValueError("process census time bound exceeded or observer closing")
++                    if not entry.name.isdecimal():
++                        continue
++                    pid = int(entry.name)
++                    if target is not None and pid == target["pid"]:
++                        continue
++                    if row["processes_read"] >= self.max_processes:
++                        raise ValueError("process census count bound exceeded")
++                    row["processes_read"] += 1
++                    try:
++                        root = self.proc_root / entry.name
++                        before = parse_proc_stat(self._text(root / "stat"), pid)
++                        allowed = self._task(root, pid)
++                        after = parse_proc_stat(self._text(root / "stat"), pid)
++                        if (before["start_ticks"] != after["start_ticks"]
++                                or allowed["start_ticks"] != after["start_ticks"]
++                                or after["cpu_ticks"] < before["cpu_ticks"]):
++                            raise ValueError(f"PID {pid}: identity/counter changed during read")
++                        observed = {**after, "Cpus_allowed_list": allowed["Cpus_allowed_list"]}
++                        current[pid] = observed
++                        previous = self._previous_processes.get(pid)
++                        if previous is not None:
++                            if previous["start_ticks"] != after["start_ticks"]:
++                                error(f"PID {pid}: reused between samples")
++                            elif after["cpu_ticks"] < previous["cpu_ticks"]:
++                                error(f"PID {pid}: counter regressed between samples")
++                            elif after["cpu_ticks"] > previous["cpu_ticks"]:
++                                row["active_intervals"].append({"before": previous,
++                                    "after": observed,
++                                    "cpu_tick_delta": after["cpu_ticks"] - previous["cpu_ticks"]})
++                    except Exception as exc:
++                        error(f"PID {pid}: {type(exc).__name__}: {exc}")
++        except Exception as exc:
++            error(exc)
++        row["ended_monotonic_s"] = time.monotonic()
++        if row["ended_monotonic_s"] > deadline:
++            error("process census exceeded sample deadline")
++        self._previous_processes = current
++        self._previous_census_at = started
++        return row
++
++    def note_hook_failure(self, method: str, exc: Exception) -> None:
++        with self._lock:
++            if len(self._errors) < 16:
++                self._errors.append(f"{method}: {type(exc).__name__}: {exc}"[:256])
++
++    def phase(self, phase: str) -> None:
++        with self._lock:
++            self._phase = phase
++            self._generation += 1
++            if len(self._markers) < 32:
++                self._markers.append({"phase": phase, "monotonic_s": time.monotonic(),
++                                      "wall_s": time.time()})
++            else:
++                self._truncated = True
++        self._wake.set()
++
++    def checkpoint(self, marker: str) -> None:
++        self.phase(marker)
++
++    def start(self, phase: str = "setup") -> None:
++        self.phase(phase)
++        try:
++            self._boot_id = self._text(self.proc_root / "sys/kernel/random/boot_id").strip()
++        except Exception as exc:
++            self.note_hook_failure("boot_id", exc)
++        self._thread = threading.Thread(target=self._loop, name="cpu-lifecycle-observer", daemon=True)
++        self._thread.start()
++
++    def attach_target(self, pid: int) -> None:
++        # Bind immediately after the owning Popen, never to a later reused PID.
++        start_ticks = self._identity(self.proc_root / str(pid), pid)
++        with self._lock:
++            if self._target is not None:
++                raise ValueError("CPU observer target already attached")
++            self._target = {"pid": pid, "start_ticks": start_ticks}
++        self._wake.set()
++
++    def _sample(self) -> None:
++        started = time.monotonic()
++        with self._lock:
++            if self._stop.is_set():
++                return
++            if len(self._samples) >= self.max_samples:
++                self._truncated = True
++                self._stop.set()
++                return
++            target = None if self._target is None else dict(self._target)
++            phase, generation = self._phase, self._generation
++        row = {"started_monotonic_s": started, "wall_s": time.time(), "phase": phase,
++               "process": None, "tasks": [], "error": None, "identity_mismatch": None,
++               "host": self._host(), "non_target_activity": None}
++        try:
++            if target is None:
++                raise ValueError("target not attached yet; host facts retained")
++            root = self.proc_root / str(target["pid"])
++            observed_start = self._identity(root, target["pid"])
++            if observed_start != target["start_ticks"]:
++                row["identity_mismatch"] = {"expected_start_ticks": target["start_ticks"],
++                                            "observed_start_ticks": observed_start}
++                raise ValueError("attached process identity changed")
++            row["process"] = self._task(root, target["pid"])
++            ids = self._task_ids(root)
++            if not ids:
++                raise ValueError("empty task census")
++            for tid in ids:
++                if self._stop.is_set():
++                    raise ValueError("observer closed during sample")
++                if time.monotonic() - started > self.max_sample_s:
++                    raise ValueError("sample duration bound exceeded")
++                row["tasks"].append(self._task(root / "task" / str(tid), tid))
++            if self._task_ids(root) != ids:
++                raise ValueError("task census changed during read")
++            observed_start = self._identity(root, target["pid"])
++            if observed_start != target["start_ticks"]:
++                row["identity_mismatch"] = {"expected_start_ticks": target["start_ticks"],
++                                            "observed_start_ticks": observed_start}
++                raise ValueError("attached process identity changed during sample")
++            if time.monotonic() - started > self.max_sample_s:
++                raise ValueError("sample duration bound exceeded")
++            if self._stop.is_set():
++                raise ValueError("observer closed during sample")
++        except Exception as exc:
++            row["error"] = f"{type(exc).__name__}: {exc}"[:256]
++        row["non_target_activity"] = self._non_target_activity(target, started + self.max_sample_s)
++        ended = time.monotonic()
++        with self._lock:
++            row.update(ended_monotonic_s=ended, phase_at_end=self._phase,
++                       crosses_phase_boundary=generation != self._generation,
++                       gap_before_s=None if self._last_sample is None else started - self._last_sample)
++            size = len(json.dumps(row, separators=(",", ":")).encode("utf-8"))
++            if self._bytes + size > self.max_bytes:
++                self._truncated = True
++                self._stop.set()
++                return
++            self._samples.append(row)
++            self._bytes += size
++            self._last_sample = started
++
++    def _loop(self) -> None:
++        try:
++            while not self._stop.is_set():
++                self._wake.clear()
++                self._sample()
++                self._wake.wait(self.interval)
++        except Exception as exc:
++            self.note_hook_failure("sample", exc)
++
++    def finish(self) -> None:
++        if self._finished:
++            return
++        self._finished = True
++        self.phase("closed")
++        self._stop.set()
++        self._wake.set()
++        if self._thread is not None:
++            self._thread.join(timeout=1)
++
++    @property
++    def observation(self) -> dict:
++        with self._lock:
++            alive = self._thread is not None and self._thread.is_alive()
++            status = "unavailable"
++            if any(row["process"] is not None or row["tasks"] for row in self._samples):
++                status = "observed" if any(row["error"] is None for row in self._samples) else "partial"
++            # A detached snapshot: no background mutation of already archived rows.
++            return json.loads(json.dumps({
++                "schema": "epyc.autokernel.cpu_lifecycle_facts.v1",
++                "status": status,
++                "scope": "process_and_task_allowed_lists_not_numa_page_placement",
++                "clock_domain": "serving_process_monotonic", "boot_id": self._boot_id,
++                "target": self._target, "markers": self._markers, "samples": self._samples,
++                "errors": self._errors, "truncated": self._truncated,
++                "shutdown_resolved": not alive, "interval_s": self.interval,
++                "bounds": {"samples": self.max_samples, "tasks_per_sample": self.max_tasks,
++                           "processes_per_sample": self.max_processes,
++                           "sample_bytes": self.max_bytes, "read_bytes": 16384,
++                           "sample_duration_s": self.max_sample_s},
++                "cpu_placement": "unproven", "contention": "unproven",
++                "host_noise_policy": "ordinary_load_and_PSI_are_diagnostic_not_blockers",
++                "foreign_inference_classification": "not_available"}))
++
++
++def cpu_lifecycle_invalidity(facts: dict, cpu_list: str | None) -> list[dict]:
++    """Only observed contradictions; missing facts do not become a clean warrant.
++
++    Setup/exec may precede taskset, and teardown may legitimately lose the process.
++    No pressure, load, process name, missing read or inferred inference is a veto.
++    """
++    allowed = set()
++    if cpu_list is not None:
++        for part in cpu_list.split(","):
++            numbers = [int(value) for value in part.split("-")]
++            allowed.update(range(numbers[0], numbers[-1] + 1))
++    failures = []
++    previous_outside = {}
++    for index, row in enumerate(facts.get("samples", ())):
++        if row.get("phase") not in {"health", "warmup", "measurement", "measurement_end"}:
++            continue
++        if row.get("crosses_phase_boundary"):
++            previous_outside = {}
++            continue
++        if row.get("identity_mismatch") is not None:
++            failures.append({"condition": "original_target_identity_changed", "sample_index": index,
++                             **row["identity_mismatch"]})
++        if row.get("error") is not None or not allowed:
++            previous_outside = {}
++            continue
++        outside = {}
++        for task in [row.get("process"), *row.get("tasks", ())]:
++            if task is None:
++                continue
++            for part in task["Cpus_allowed_list"].split(","):
++                numbers = [int(value) for value in part.split("-")]
++                if any(cpu not in allowed for cpu in range(numbers[0], numbers[-1] + 1)):
++                    key = (task["id"], task["start_ticks"])
++                    outside[key] = task
++                    break
++        # The process and its leader task are the same identity, not two samples.
++        for key, task in outside.items():
++            previous = previous_outside.get(key)
++            if previous is not None and previous[1] <= row["started_monotonic_s"]:
++                failures.append({"condition": "task_affinity_outside_original_recipe",
++                    "first_sample_index": previous[0], "sample_index": index,
++                    "observations": 2, "task": task, "expected_cpu_list": cpu_list})
++        previous_outside = {key: (index, row["ended_monotonic_s"]) for key in outside}
++    return failures
++
++
++def loader_env(binary: Path) -> dict[str, str]:
++    """`LD_LIBRARY_PATH` that pins this build's own ggml.
++
++    The binary's own directory FIRST. Inheriting the host default puts another
++    tree's ggml ahead of it -- the three-generations hazard -- and the resulting run
++    is wrong in a way no exit code reports.
++    """
++    import os
++    env = dict(os.environ)
++    env["LD_LIBRARY_PATH"] = f"{binary.parent}:/opt/rocm/lib"
++    env.pop("HSA_OVERRIDE_GFX_VERSION", None)
++    return env
++
++
++__all__ = ["KFD_PROC", "RESIDENT_FLOOR_BYTES", "Sampler", "VRAM_SYSFS",
++           "kfd_pid_vram", "kfd_processes", "loader_env", "pid_peak_rss", "sclk_mhz",
++           "vram_bytes"]
+--- /dev/null
++++ b/scripts/coordination/tests/d1d4/fixtures/r22-custody/candidate.NOT-READY.json
+@@ -0,0 +1,119 @@
++{
++  "booking_class": "block-timing-quiet",
++  "claimed_cpus": "184-191",
++  "class": "diagnostic",
++  "decision_rule": "Compute independent settled A/A p95 absolute median ratio floors for each shape; report preheated and post-build drift, speed_tg higher is better. No candidate verdict.",
++  "engine": {
++    "path": "/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/filler_run14.sh",
++    "sha256": "6fe168333738d15e5988d5af42e2b4c348194d722bac11c32368183ae89cd3ef"
++  },
++  "enrollment": "n/a: diagnostic",
++  "est_output_GiB": 0.5,
++  "exclusive_class": null,
++  "gib": 8,
++  "hold": "custody review and predecessor retirement",
++  "id": "codex3-r22-2-batched-floor-custody-v3-20261101",
++  "items": 1,
++  "job": {
++    "path": "/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/job.sh",
++    "sha256": "da23c449f8a1d4f065851132506b259325d21e39e0b068177c289ca51d2655e3"
++  },
++  "job_floor_gib": 150,
++  "keep": [
++    "*.py",
++    "*.sh",
++    "*.json",
++    "*.sha256",
++    "*.md",
++    "*.log",
++    "full/**/*.json",
++    "full/**/*.stdout",
++    "full/**/*.stderr",
++    "full/**/*.log",
++    "custody/**/*.json",
++    "qualification/**/*.json",
++    "bench_source/*.py",
++    "bundle/*.py",
++    "bundle/*.json",
++    "bundle/*.sh"
++  ],
++  "kv_cache_mode": "split",
++  "launcher": {
++    "path": "/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/launch.sh",
++    "sha256": "8b12e92fe4bfbe82b66570b89d63759c9dd63f2c31f5ab22837052a49834558a"
++  },
++  "llm": {
++    "backend": "native-batched-bench",
++    "batched": {
++      "batch": 512,
++      "binary": {
++        "path": "/mnt/raid0/llm/kernels/production/gpu/llama-batched-bench",
++        "sha256": "3a13b19ff0a21ae1b117516058e9347e0c6b6f54ae9ca801b67368b1c074bbac"
++      },
++      "context": 2048,
++      "gen_tokens": 128,
++      "hip_library": {
++        "path": "/mnt/raid0/llm/kernels/production/gpu/libggml-hip.so.0.16.0",
++        "sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079"
++      },
++      "model": {
++        "path": "/mnt/raid0/llm/models/bartowski/DeepSeek-R1-Distill-Qwen-1.5B-GGUF/DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M.gguf",
++        "sha256": "1741e5b2d062b07acf048bf0d2c514dadf2a48f94e2b4aa0cfe069af3838ee2f"
++      },
++      "prompt_tokens": 128,
++      "slots": 8,
++      "source_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
++      "ubatch": 512
++    }
++  },
++  "log_consumer": "/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/complete.py",
++  "min_window_s": 14400,
++  "n_ctx_required": 2048,
++  "n_parallel_required": 8,
++  "owner": "codex3",
++  "per_slot_n_ctx_required": 256,
++  "ports": [
++    26289
++  ],
++  "priority_rank": 84,
++  "production": true,
++  "production_recipe": {
++    "path": "/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/recipe.json",
++    "sha256": "d28e1b39b4954498389ef5674f95bdc27831d9f148ba611a68372a4a06e0c2c8"
++  },
++  "prompt_tokens_required": 128,
++  "qual_fixture": {
++    "items": 2,
++    "path": "/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/fixture.json",
++    "sha256": "45a6b5279e0fb6acfd33a736561f75611d418861355ca9125e9872d262ea0219"
++  },
++  "qualification": {
++    "receipt": "/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/qualification/QUAL-codex3-r22-2-batched-floor-custody-v3-20261101.json"
++  },
++  "qualification_row": {
++    "path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-r22-2-batched-floor-custody-v3-20261101.row.md",
++    "sha256": "97e7b570d8684cedc37260b709f2d32965b11312e8ff9619a3368207f6664a4c"
++  },
++  "qualifier_version": "epyc.qual-v2-row",
++  "rate_basis": {
++    "production_threads": 8,
++    "scope": "r22-unknown-calibration",
++    "work_unit": "four-shape calibration"
++  },
++  "regions": "mi210_0,184-191",
++  "request_manifest_sha256": "ea8de01c604c4d048ef3e67125678b9b7f2a2e65f01acb3a8f241ad2f3e58672",
++  "requires_tools": [
++    "bash",
++    "python3",
++    "taskset",
++    "numactl",
++    "cmake"
++  ],
++  "result_path": "/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/full/RESULT.json",
++  "schema": "epyc.ready.v2",
++  "scratch_root": "/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated",
++  "shared_state": [],
++  "source_manifest": "/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/SOURCES.sha256",
++  "window_s": 21600,
++  "workload_kind": "llm"
++}
+--- /dev/null
++++ b/scripts/coordination/tests/d1d4/fixtures/r22-custody/candidate.row.md
+@@ -0,0 +1 @@
++| codex3-r22-2-batched-floor-custody-v3-20261101 | codex3 | /mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/launch.sh | mi210_0,184-191 | 14400 s | 8 | /mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/STOP | BACKLOG | block-timing-quiet | 21600 s | 14400 s | n | n | /mnt/raid0/llm/epyc-inference-research/artifacts/autokernel-aa-noise-floor/aa-noise-floor.json | Four-shape A/A baseline floor calibration; no candidate verdict | n/a (floor diagnostic) | gpu | requested_window_s=21600; est_output_GiB=0.5; scratch_root=/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated; launcher_path=/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/launch.sh; job_path=/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/job.sh; source_manifest=/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/SOURCES.sha256; launcher_log=/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/launcher.out; predeclaration=/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated/recipe.json; claimed_cpus=184-191; process_limit_GiB=8; keep_globs=*.py,*.sh,*.json,*.sha256,*.md,*.log,full/**/*.json,full/**/*.stdout,full/**/*.stderr,full/**/*.log,custody/**/*.json,qualification/**/*.json,bench_source/*.py,bundle/*.py,bundle/*.json,bundle/*.sh; initial full-unit wall time unknown |
+--- /dev/null
++++ b/scripts/coordination/tests/d1d4/fixtures/r22-custody/complete.py
+@@ -0,0 +1,37 @@
++#!/usr/bin/env python3
++"""Fail-closed completion test for fixture and four-shape calibration."""
++import hashlib, json, os, pathlib, sys
++import custody_guard as custody
++
++def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
++def within(p, root): return p.is_file() and not p.is_symlink() and p.resolve().is_relative_to(root.resolve())
++def main():
++ root=pathlib.Path(sys.argv[1]); qual=os.environ.get('WS58_QUAL')=='1'
++ if qual:
++  results=list(root.glob('batched-normal-*/RESULT.json'))
++  if len(results)!=1:return 1
++  x=json.loads(results[0].read_text()); rows=x['rows']
++  return 0 if x.get('complete') is True and len(rows)==2 and all((r['pp'],r['tg'],r['pl'],r['n_threads'])==(128,128,8,2) for r in rows) else 1
++ if root.is_symlink() or root.resolve()!=(custody.NEW_ROOT/'full').resolve():return 1
++ marker=root/'RESULT.json'
++ if not within(marker,root):return 1
++ outer=json.loads(marker.read_text()); result=pathlib.Path(outer['result'])
++ if outer.get('complete') is not True or not within(result,root) or sha(result)!=outer['sha256']:return 1
++ final=json.loads(result.read_text()); receipts=final['shape_receipts']
++ if final.get('complete') is not True or final.get('smoke') is not False or len(receipts)!=4:return 1
++ shapes=set()
++ for r in receipts:
++  p=pathlib.Path(r['path'])
++  if not within(p,root) or sha(p)!=r['sha256']:return 1
++  cp=json.loads(p.read_text());shapes.add(cp['shape'])
++  try:custody.completed_shape(custody.NEW_ROOT/'custody',cp['shape'],p,custody.PINS,custody.OLD_ROOT/'full',root)
++  except (OSError,ValueError,KeyError,TypeError,custody.Refused):return 1
++  for name in ('settled','preheated','postbuild'):
++   summary=cp['summaries'][name]; path=pathlib.Path(summary['path'])
++   if not within(path,root) or sha(path)!=summary['sha256']:return 1
++   data=json.loads(path.read_text())
++   if data['shape']!=cp['shape'] or data['condition']!=name or len(data['a'])!=20 or len(data['b'])!=20:return 1
++ return 0 if shapes=={1,2,4,8} else 1
++if __name__=='__main__':
++ try: sys.exit(main())
++ except (OSError,ValueError,KeyError,TypeError,IndexError):sys.exit(1)
+--- /dev/null
++++ b/scripts/coordination/tests/d1d4/fixtures/r22-custody/custody_guard.py
+@@ -0,0 +1,253 @@
++#!/usr/bin/env python3
++"""Review-only R22 custody primitive. No grants, inference, processes, or publication.
++
++Requires managed predecessor retirement and kernel resource exclusion externally.
++The new runner must call claim_before_native before *any* shape work, and must
++call finish_shape only after its existing complete checkpoint validation.
++"""
++import hashlib,json,math,os,pathlib
++from parse_native import parse as parse_native
++OLD_ID='codex3-r22-2-batched-floor-r2-20261031';NEW_ID='codex3-r22-2-batched-floor-custody-v3-20261101'
++class Refused(RuntimeError):pass
++
++def digest(path):
++ h=hashlib.sha256()
++ with pathlib.Path(path).open('rb') as f:
++  for chunk in iter(lambda:f.read(1048576),b''):h.update(chunk)
++ return h.hexdigest()
++
++def fsync_dir(p):
++ fd=os.open(p,os.O_RDONLY|os.O_DIRECTORY)
++ try:os.fsync(fd)
++ finally:os.close(fd)
++
++def exclusive(path,data):
++ raw=(json.dumps(data,sort_keys=True,separators=(',',':'))+'\n').encode();flags=os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW
++ try:fd=os.open(path,flags,0o600)
++ except FileExistsError:raise Refused('exclusive custody record already exists')
++ try:
++  with os.fdopen(fd,'wb',closefd=False) as f:f.write(raw);f.flush();os.fsync(f.fileno())
++ finally:os.close(fd)
++ fsync_dir(path.parent)
++
++def load(path):
++ if path.is_symlink() or not path.is_file():raise Refused('custody record missing or unsafe')
++ try:return json.loads(path.read_bytes())
++ except (ValueError,OSError) as exc:raise Refused('corrupt custody record') from exc
++
++def verify_pins(pins):
++ if not isinstance(pins,dict) or not pins:raise Refused('source pins absent')
++ for path,want in pins.items():
++  p=pathlib.Path(path)
++  if p.is_symlink() or not p.is_file() or not isinstance(want,str) or digest(p)!=want:raise Refused('source pin changed: '+path)
++
++def initialize(ledger,old_full,new_full,pins,retirement):
++ """Exclusively establish first observation before any native execution.
++ retirement is preverified by caller under keeper single-writer boundary; this
++ primitive never invents a withdrawal, grants access or guarantees quiescence.
++ """
++ verify_pins(pins)
++ if retirement is not True:raise Refused('managed predecessor retirement unproven')
++ for root in (pathlib.Path(old_full),pathlib.Path(new_full)):
++  if root.exists() or root.is_symlink():raise Refused('preexisting native ledger requires review: '+str(root))
++ ledger=pathlib.Path(ledger)
++ if ledger.is_symlink() or not ledger.is_dir():raise Refused('custody ledger missing or unsafe')
++ pin_sha=hashlib.sha256(json.dumps(pins,sort_keys=True,separators=(',',':')).encode()).hexdigest()
++ exclusive(ledger/'lineage.json',{'schema':'r22.lineage-custody.v1','old_id':OLD_ID,'new_id':NEW_ID,'pins_sha256':pin_sha,'old_full':str(old_full),'new_full':str(new_full)})
++
++def bound(ledger,pins,old_full,new_full):
++ verify_pins(pins);ledger=pathlib.Path(ledger);value=load(ledger/'lineage.json');pin_sha=hashlib.sha256(json.dumps(pins,sort_keys=True,separators=(',',':')).encode()).hexdigest();expected={'schema':'r22.lineage-custody.v1','old_id':OLD_ID,'new_id':NEW_ID,'pins_sha256':pin_sha,'old_full':str(old_full),'new_full':str(new_full)}
++ if value!=expected:raise Refused('lineage binding changed')
++ old=pathlib.Path(old_full)
++ if old.exists() or old.is_symlink():raise Refused('predecessor ledger appeared')
++ return ledger
++
++def claim_before_native(ledger,shape,pins,old_full,new_full):
++ if type(shape) is not int or shape not in (1,2,4,8):raise Refused('invalid shape')
++ ledger=bound(ledger,pins,old_full,new_full);exclusive(ledger/f'p{shape}.started.json',{'shape':shape,'state':'started','lineage_sha256':digest(ledger/'lineage.json')})
++
++def shape_evidence(checkpoint,shape,new_full,source_sha,launcher_sha):
++ """Bind every native record/log and observed successful postbuild step."""
++ p=pathlib.Path(checkpoint);root=pathlib.Path(new_full)
++ if p.is_symlink() or not p.is_file() or not p.resolve().is_relative_to(root.resolve()) or p.name!=f'p{shape}.json':raise Refused('checkpoint unsafe')
++ cp=load(p)
++ if cp.get('shape')!=shape or cp.get('source_manifest_sha256')!=source_sha or cp.get('launcher_sha256')!=launcher_sha:raise Refused('checkpoint source mismatch')
++ evidence={str(p):digest(p)};out=None;summary_by_cond={}
++ def add(f):
++  f=pathlib.Path(f)
++  if f.is_symlink() or not f.is_file() or not f.resolve().is_relative_to(root.resolve()):raise Refused('native evidence missing or unsafe: '+str(f))
++  evidence[str(f)]=digest(f);return f
++ for cond in ('settled','preheated','postbuild'):
++  item=cp.get('summaries',{}).get(cond,{})
++  if not isinstance(item,dict) or not isinstance(item.get('path'),str):raise Refused('summary declaration invalid')
++  f=add(item['path'])
++  if evidence[str(f)]!=item.get('sha256') or f.name!=f'p{shape}-{cond}-SUMMARY.json':raise Refused('summary hash or path mismatch')
++  if out is None:out=f.parent
++  if f.parent!=out:raise Refused('shape split across attempts')
++  data=load(f)
++  if data.get('shape')!=shape or data.get('condition')!=cond or any(not isinstance(data.get(a),list) or len(data[a])!=20 for a in ('a','b')):raise Refused('summary incomplete')
++  summary_by_cond[cond]=data
++ start=add(out/'START.json');start_data=load(start)
++ if start_data.get('smoke') is not False or start_data.get('source_manifest_sha256')!=source_sha or start_data.get('launcher_sha256')!=launcher_sha:raise Refused('attempt start binding invalid')
++ binary='/mnt/raid0/llm/kernels/production/gpu/llama-batched-bench';model='/mnt/raid0/llm/models/bartowski/DeepSeek-R1-Distill-Qwen-1.5B-GGUF/DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M.gguf'
++ for cond,warm in (('settled',1),('preheated',6),('postbuild',1)):
++  for i in range(-warm,20):
++   for arm in ('a','b'):
++    stem=f'p{shape}-{cond}-{i+1:03d}-{arm}';record=add(out/(stem+'.json'));stdout=add(out/(stem+'.stdout'));stderr=add(out/(stem+'.stderr'));item=load(record);argv=item.get('argv');row=item.get('row',{});proof=item.get('proof',{})
++    if not isinstance(argv,list) or len(argv)<3 or argv[:2]!=['taskset','-c']:raise Refused('native argv malformed')
++    cpus=argv[2];acceptable={'184-191',','.join(map(str,range(184,192)))}
++    expected=['taskset','-c',cpus,'numactl','--interleave=all',binary,'-m',model,'-ngl','99','-fa','off','-t','8','-tb','8','-ctk','f16','-ctv','f16','-c','2048','-b','512','-ub','512','-npp','128','-ntg','128','-npl',str(shape),'--output-format','jsonl']
++    if cpus not in acceptable or argv!=expected or item.get('arm')!=arm or item.get('warmup') is not (i<0):raise Refused('native request identity mismatch')
++    if (row.get('pp'),row.get('tg'),row.get('pl'),row.get('n_threads'),row.get('n_threads_batch'))!=(128,128,shape,8,8):raise Refused('native row mismatch')
++    speed=row.get('speed_tg')
++    if type(speed) not in (float,int) or not math.isfinite(speed) or speed<=0:raise Refused('native rate malformed')
++    if i>=0 and summary_by_cond[cond][arm][i]!=speed:raise Refused('summary values differ from native records')
++    if proof.get('resident') is not True or proof.get('own_pid')!=item.get('pid') or proof.get('own_pid_peak_vram_bytes',0)<=0 or proof.get('own_pid_kfd_reads',0)<1:raise Refused('native residency missing')
++    if item.get('stdout_sha256')!=evidence[str(stdout)] or item.get('stderr_sha256')!=evidence[str(stderr)]:raise Refused('native log digest mismatch')
++    try:parsed=parse_native(stdout.read_text(),stderr.read_text(),parallel=shape,prompt=128,generation=128,flash_attn=0)
++    except (ValueError,OSError,UnicodeError) as exc:raise Refused('native raw record invalid') from exc
++    if parsed!=row:raise Refused('native parsed row differs from stored row')
++    kernel=pathlib.Path(binary).parent
++    required={str((kernel/n).resolve()) for n in ('libllama-batched-bench-impl.so','libllama-common.so.0','libllama.so.0','libggml.so.0','libggml-base.so.0','libggml-cpu.so.0','libggml-hip.so.0')}
++    mapped=item.get('mapped_store')
++    if not isinstance(mapped,list) or any(not isinstance(x,str) for x in mapped) or not required.issubset(set(mapped)):raise Refused('native mapped-store closure missing')
++ build=NEW_ROOT/'postbuild-output';src='/mnt/raid0/llm/tmp/codex3-r22-2-batched-floor-20261031/postbuild-source'
++ cmds=[['cmake','-S',src,'-B',str(build),'-DCMAKE_BUILD_TYPE=Release','-DGGML_HIP=ON','-DAMDGPU_TARGETS=gfx90a','-DGGML_HIP_ROCWMMA_FATTN=ON','-DGGML_NATIVE=ON'],['cmake','--build',str(build),'--clean-first','--parallel','4','--target','llama-bench']]
++ for j,cmd in enumerate(cmds):
++  log=add(out/f'p{shape}-build{j}.log');receipt=add(out/f'p{shape}-build{j}.SUCCESS.json');r=load(receipt)
++  if r!={'shape':shape,'step':j,'argv':cmd,'returncode':0,'log_sha256':evidence[str(log)],'source_manifest_sha256':source_sha}:raise Refused('build success evidence mismatch')
++ return evidence
++
++def finish_shape(ledger,shape,checkpoint,pins,old_full,new_full):
++ ledger=bound(ledger,pins,old_full,new_full);start=load(ledger/f'p{shape}.started.json')
++ if start!={'shape':shape,'state':'started','lineage_sha256':digest(ledger/'lineage.json')}:raise Refused('shape start binding changed')
++ p=pathlib.Path(checkpoint);source_sha=digest(pathlib.Path(new_full).parent/'SOURCES.sha256');launcher_sha=digest(pathlib.Path(new_full).parent/'launch.sh');evidence=shape_evidence(p,shape,new_full,source_sha,launcher_sha)
++ exclusive(ledger/f'p{shape}.complete.json',{'shape':shape,'checkpoint':str(p),'start_sha256':digest(ledger/f'p{shape}.started.json'),'evidence':evidence})
++
++def completed_shape(ledger,shape,checkpoint,pins,old_full,new_full):
++ ledger=bound(ledger,pins,old_full,new_full);p=pathlib.Path(checkpoint);start=ledger/f'p{shape}.started.json';finish=load(ledger/f'p{shape}.complete.json');source_sha=digest(pathlib.Path(new_full).parent/'SOURCES.sha256');launcher_sha=digest(pathlib.Path(new_full).parent/'launch.sh');evidence=shape_evidence(p,shape,new_full,source_sha,launcher_sha)
++ if finish!={'shape':shape,'checkpoint':str(p),'start_sha256':digest(start),'evidence':evidence}:raise Refused('shape completion evidence changed')
++ return True
++
++def check_retirement(flags,archive,manifest_sha,row_sha,old_root,commands=None):
++ """Read-only proof under the keeper's single-writer retirement boundary."""
++ flags=pathlib.Path(flags);archive=pathlib.Path(archive);ready=flags/'ready';old=OLD_ID
++ marker=ready/(old+'.withdrawn');doc=load(marker)
++ if not isinstance(doc,dict) or doc.get('id')!=old or doc.get('owner')!='codex3' or doc.get('manifest_sha256')!=manifest_sha or doc.get('row_sha256')!=row_sha or not isinstance(doc.get('reason'),str) or not doc['reason'].strip():raise Refused('withdrawal marker invalid')
++ for p,want in ((archive/(old+'.json'),manifest_sha),(archive/(old+'.row.md'),row_sha)):
++  if p.is_symlink() or not p.is_file() or digest(p)!=want:raise Refused('archive evidence changed')
++ for p in (ready/(old+'.json'),ready/'armed'/(old+'.json'),flags/'grants'/(old+'.grant')):
++  if p.exists() or p.is_symlink():raise Refused('predecessor ready, armed or granted')
++ for p in flags.glob('ws58-*.queue'):
++  if p.is_symlink() or not p.is_file():raise Refused('queue unreadable')
++  if any(line.split('|',1)[0].strip()==old for line in p.read_text().splitlines()):raise Refused('predecessor queued')
++ registry=flags/'FILLERS.md'
++ if registry.is_symlink() or not registry.is_file():raise Refused('registry unreadable')
++ for line in registry.read_text().splitlines():
++  if line.startswith('| '+old+' |'):
++   cells=[s.strip() for s in line.strip().strip('|').split('|')]
++   if len(cells)!=18 or cells[7] not in ('COMPLETE','DONE','RETIRED','WITHDRAWN'):raise Refused('predecessor registry row active')
++ if commands is None:
++  commands=[]
++  for p in pathlib.Path('/proc').iterdir():
++   if not p.name.isdigit():continue
++   try:parts=(p/'cmdline').read_bytes().split(b'\0')
++   except FileNotFoundError:continue
++   except OSError as e:raise Refused('process inventory incomplete') from e
++   commands.append((p.name,[os.fsdecode(x) for x in parts if x]))
++ for pid,args in commands:
++  if any(a in (str(pathlib.Path(old_root)/'launch.sh'),str(pathlib.Path(old_root)/'runner.py')) for a in args):raise Refused('predecessor process live: '+pid)
++  if any(a=='--id' and i+1<len(args) and args[i+1]==old for i,a in enumerate(args)):raise Refused('predecessor engine live: '+pid)
++ return True
++
++# Exact review-packet bytes; changing either runner requires a fresh reviewed pin.
++OLD_ROOT=pathlib.Path('/mnt/raid0/llm/tmp/codex3-gpu-floor-r222-20261031/successor')
++PREVIOUS_V2_ID='codex3-r22-2-batched-floor-v2-20261101'
++PREVIOUS_V2_ROOT=pathlib.Path('/mnt/raid0/llm/tmp/codex3-r22-batched-v2-review')
++NEW_ROOT=pathlib.Path('/mnt/raid0/llm/tmp/codex3-r22-custody-audit-20261101/integrated')
++PINS={str(NEW_ROOT/'complete.py'):'6cc47fe4b57529827502e30de5379d7a7d40ff734066ee61b7608d612676b084',str(NEW_ROOT/'parse_native.py'):'0466be90d35908f03ff774a26a318008b189b08c356fa9a58941cb81299b1de0',str(OLD_ROOT/'runner.py'):'e66c8b78a30e98b4fc1ccae18c4713c9702897a81524c15816a0e459a3ed52da',str(OLD_ROOT/'SOURCES.sha256'):'d6bae94d9ca2ae1a07b7f8be20d9a891efa580693c37934857bef28c257459e9',str(NEW_ROOT/'runner.py'):'f2808e288ba1b8b0e1f0cdc80832a42eb5a292e3ba20857881466fc8816a8a97',str(NEW_ROOT/'launch.sh'):'8b12e92fe4bfbe82b66570b89d63759c9dd63f2c31f5ab22837052a49834558a',str(NEW_ROOT/'job.sh'):'da23c449f8a1d4f065851132506b259325d21e39e0b068177c289ca51d2655e3',str(NEW_ROOT/'recipe.json'):'d28e1b39b4954498389ef5674f95bdc27831d9f148ba611a68372a4a06e0c2c8'}
++OLD_MANIFEST_SHA='e39e2f03e9f59cd777dbe22ac955ec981223b73878e8ee01b4646ceb56e2c24e'
++OLD_ROW_SHA='7927d951e50a29a671a6aad2e2c7fe9ad8109d2758de96a7632c5d3b24e68dfb'
++
++def no_previous_v2(flags,commands=None):
++ flags=pathlib.Path(flags)
++ for p in (PREVIOUS_V2_ROOT/'full',PREVIOUS_V2_ROOT/'qualification',flags/'ready'/(PREVIOUS_V2_ID+'.json'),flags/'ready/armed'/(PREVIOUS_V2_ID+'.json'),flags/'grants'/(PREVIOUS_V2_ID+'.grant'),flags/'qual-nonces/by-id'/(PREVIOUS_V2_ID+'.json')):
++  if p.exists() or p.is_symlink():raise Refused('previous v2 ledger or execution remains')
++ for p in (flags/'qual-nonces').glob('*.json'):
++  try:state=json.loads(p.read_text())
++  except (OSError,ValueError) as exc:raise Refused('prior nonce state unreadable') from exc
++  if state.get('id')==PREVIOUS_V2_ID:raise Refused('previous v2 qualification attempted')
++ for p in flags.glob('ws58-*.queue'):
++  if p.is_symlink() or not p.is_file():raise Refused('queue unreadable')
++  if any(line.split('|',1)[0].strip()==PREVIOUS_V2_ID for line in p.read_text().splitlines()):raise Refused('previous v2 queued')
++ registry=flags/'FILLERS.md'
++ if registry.is_symlink() or not registry.is_file():raise Refused('registry unreadable')
++ for line in registry.read_text().splitlines():
++  if line.startswith('| '+PREVIOUS_V2_ID+' |'):
++   cells=[x.strip() for x in line.strip().strip('|').split('|')]
++   if len(cells)!=18 or cells[7] not in ('COMPLETE','DONE','RETIRED','WITHDRAWN'):raise Refused('previous v2 registry row active')
++ if commands is None:
++  commands=[]
++  for p in pathlib.Path('/proc').iterdir():
++   if not p.name.isdigit():continue
++   try:parts=(p/'cmdline').read_bytes().split(b'\0')
++   except FileNotFoundError:continue
++   except OSError as exc:raise Refused('process inventory incomplete') from exc
++   commands.append((p.name,[os.fsdecode(x) for x in parts if x]))
++ for pid,args in commands:
++  if any(a in (str(PREVIOUS_V2_ROOT/'launch.sh'),str(PREVIOUS_V2_ROOT/'job.sh'),str(PREVIOUS_V2_ROOT/'runner.py')) for a in args):raise Refused('previous v2 live: '+pid)
++  if any(a=='--id' and i+1<len(args) and args[i+1]==PREVIOUS_V2_ID for i,a in enumerate(args)):raise Refused('previous v2 engine live: '+pid)
++ return True
++
++def precheck_reviewed(ledger,flags,archive):
++ no_previous_v2(flags)
++ check_retirement(flags,archive,OLD_MANIFEST_SHA,OLD_ROW_SHA,OLD_ROOT)
++ verify_pins(PINS);flags=pathlib.Path(flags);ledger=pathlib.Path(ledger)
++ for p in (OLD_ROOT/'full',NEW_ROOT/'full',flags/'qual-nonces/by-id'/(NEW_ID+'.json'),NEW_ROOT/'qualification'/('QUAL-'+NEW_ID+'.json')):
++  if p.exists() or p.is_symlink():raise Refused('prior native work or qualification exists: '+str(p))
++ for p in (flags/'qual-nonces').glob('*.json'):
++  if p.is_symlink():raise Refused('nonce store symlink')
++  try:record=json.loads(p.read_text())
++  except (OSError,ValueError) as exc:raise Refused('nonce store unreadable') from exc
++  if not isinstance(record,dict) or record.get('id')==NEW_ID:raise Refused('nonce state exists or malformed')
++ qual=flags/'qual'
++ if qual.is_symlink():raise Refused('qualification store symlink')
++ if qual.exists():
++  if not qual.is_dir():raise Refused('qualification store unsafe')
++  for qdir in qual.iterdir():
++   if qdir.is_symlink():raise Refused('qualification directory symlink')
++   if not qdir.is_dir():continue
++   artifact=qdir/'grants'/(NEW_ID+'.grant')
++   if artifact.exists() or artifact.is_symlink():raise Refused('orphan qualification evidence exists')
++ if ledger.exists() or ledger.is_symlink():
++  if ledger.is_symlink() or not ledger.is_dir():raise Refused('custody ledger unsafe')
++  entries={p.name for p in ledger.iterdir()}
++  if not entries.issubset({'lineage.json'}):raise Refused('custody has prior shape or unknown records')
++  if entries:bound(ledger,PINS,OLD_ROOT/'full',NEW_ROOT/'full')
++ return True
++
++def initialize_reviewed(ledger,flags,archive):
++ precheck_reviewed(ledger,flags,archive);ledger=pathlib.Path(ledger)
++ if not ledger.exists():
++  try:ledger.mkdir(mode=0o700)
++  except FileExistsError:raise Refused('custody initialization raced')
++ entries={p.name for p in ledger.iterdir()}
++ if not entries.issubset({'lineage.json'}):raise Refused('custody initialization raced with other records')
++ if entries:return bound(ledger,PINS,OLD_ROOT/'full',NEW_ROOT/'full')
++ initialize(ledger,OLD_ROOT/'full',NEW_ROOT/'full',PINS,True)
++
++def claim_reviewed_shape(ledger,flags,archive,shape):
++ no_previous_v2(flags)
++ check_retirement(flags,archive,OLD_MANIFEST_SHA,OLD_ROW_SHA,OLD_ROOT)
++ claim_before_native(ledger,shape,PINS,OLD_ROOT/'full',NEW_ROOT/'full')
++
++def check_reviewed_entry(ledger,flags,archive):
++ no_previous_v2(flags)
++ check_retirement(flags,archive,OLD_MANIFEST_SHA,OLD_ROW_SHA,OLD_ROOT)
++ return bound(ledger,PINS,OLD_ROOT/'full',NEW_ROOT/'full')
++
++if __name__=='__main__':
++ import sys
++ flags=pathlib.Path(os.environ.get('FILLER_FLAGS_DIR','/mnt/raid0/llm/tmp/compute-flags'))
++ if len(sys.argv)!=2 or sys.argv[1]!='check-entry':raise SystemExit('unsupported custody command')
++ check_reviewed_entry(NEW_ROOT/'custody',flags,flags/'ready/withdrawn')
+--- /dev/null
++++ b/scripts/coordination/tests/d1d4/fixtures/r22-custody/parse_native.py
+@@ -0,0 +1,26 @@
++#!/usr/bin/env python3
++"""Strict JSONL extraction for the proposed batched-bench calibration."""
++import json
++import math
++
++
++def parse(stdout, stderr, *, parallel, prompt, generation, flash_attn):
++    rows = []
++    for line in (stdout + '\n' + stderr).splitlines():
++        try:
++            item = json.loads(line.strip())
++        except (ValueError, TypeError):
++            continue
++        if isinstance(item, dict) and (item.get('pl'), item.get('pp'), item.get('tg')) == (parallel, prompt, generation):
++            rows.append(item)
++    if len(rows) != 1:
++        raise ValueError('expected exactly one matching native JSON row')
++    row = rows[0]
++    expected = {'n_gpu_layers': 99, 'flash_attn': flash_attn, 'n_threads': 8, 'n_threads_batch': 8, 'n_kv_max': 2048, 'n_batch': 512, 'n_ubatch': 512, 'is_pp_shared': 0, 'n_kv': parallel * (prompt + generation)}
++    if any(row.get(key) != value for key, value in expected.items()):
++        raise ValueError('unexpected native execution geometry')
++    for key in ('speed_tg', 't_tg'):
++        v = row.get(key)
++        if isinstance(v, bool) or not isinstance(v, (float, int)) or not math.isfinite(v) or v <= 0:
++            raise ValueError('invalid ' + key)
++    return row
+--- /dev/null
++++ b/scripts/coordination/tests/d1d4/fixtures/r22-custody/runner.py
+@@ -0,0 +1,211 @@
++#!/usr/bin/env python3
++"""Grant-bound batched-bench A/A calibration; control follows the same worker path."""
++import argparse, ctypes, datetime, hashlib, json, os, pathlib, random, signal, statistics, subprocess, sys, time, uuid
++D=pathlib.Path(__file__).resolve().parent
++sys.path.insert(0,str(D/'bench_source')); import residency
++from parse_native import parse
++import custody_guard as custody
++MODEL=pathlib.Path('/mnt/raid0/llm/models/bartowski/DeepSeek-R1-Distill-Qwen-1.5B-GGUF/DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M.gguf')
++BIN=pathlib.Path('/mnt/raid0/llm/kernels/production/gpu/llama-batched-bench')
++HIP=pathlib.Path('/mnt/raid0/llm/kernels/production/gpu/libggml-hip.so.0.16.0')
++ID='codex3-r22-2-batched-floor-custody-v3-20261101'; GRANT=pathlib.Path(os.environ.get('FILLER_GRANTS_DIR','/mnt/raid0/llm/tmp/compute-flags/grants'))/(ID+'.grant')
++def sha(p):
++ h=hashlib.sha256()
++ with open(p,'rb') as f:
++  for b in iter(lambda:f.read(1048576),b''): h.update(b)
++ return h.hexdigest()
++def emit(p,obj):
++ tmp=p.with_name('.'+p.name+'.'+uuid.uuid4().hex+'.tmp')
++ try:
++  with open(tmp,'x') as f:json.dump(obj,f,indent=2,sort_keys=True);f.write('\n');f.flush();os.fsync(f.fileno())
++  os.link(tmp,p)
++ finally:
++  try:tmp.unlink()
++  except FileNotFoundError:pass
++ fd=os.open(p.parent,os.O_RDONLY|os.O_DIRECTORY)
++ try:os.fsync(fd)
++ finally:os.close(fd)
++def floor(a,b):
++ if len(a)!=20 or len(b)!=20: raise ValueError('expected twenty pairs')
++ out={}
++ for k in (1,3,5,9,20):
++  rng=random.Random(20260829); effects=[]
++  for _ in range(20000):
++   ix=[rng.randrange(len(a)) for _ in range(k)]
++   effects.append(abs(statistics.median(b[i] for i in ix)/statistics.median(a[i] for i in ix)-1)*100)
++  effects.sort();out[str(k)]=round(effects[int(.95*(20000-1))],3)
++ return out
++def drift(v):
++ n=len(v)//2
++ return 100*(statistics.median(v[n:])-statistics.median(v[:n]))/statistics.median(v)
++def trend(v):
++ n=len(v);order=sorted(range(n),key=lambda i:v[i]);r=[0.0]*n;start=0
++ while start<n:
++  end=start+1
++  while end<n and v[order[end]]==v[order[start]]:end+=1
++  average=(start+end-1)/2
++  for pos in range(start,end):r[order[pos]]=average
++  start=end
++ mean=(n-1)/2;num=sum((r[i]-mean)*(i-mean) for i in range(n));den=sum((r[i]-mean)**2 for i in range(n))*sum((i-mean)**2 for i in range(n))
++ if den<=0:return None,'constant series: rank variance is zero'
++ return num/(den**.5),None
++def analysis(v):
++ rho,reason=trend(v);rng=random.Random(20260829); pool=list(v);null=[]
++ for _ in range(20000):rng.shuffle(pool);null.append(abs(drift(pool)))
++ null.sort();actual=abs(drift(v))
++ return {'drift_pct':drift(v),'trend_rho':rho,'trend_reason':reason,'rank_method':'average ranks for ties; D8 ordinal ranks adapted','permutation_p':round(sum(x>=actual for x in null)/len(null),4),'null_p95_drift_pct':round(null[int(.95*(len(null)-1))],3),'cv_pct':round(100*statistics.pstdev(v)/statistics.mean(v),3)}
++def validate_checkpoint(checkpoint,shape,source_sha,launcher_sha,full_root):
++ saved=json.loads(checkpoint.read_bytes())
++ if saved['shape']!=shape or saved['source_manifest_sha256']!=source_sha or saved['launcher_sha256']!=launcher_sha:raise RuntimeError('checkpoint source or shape mismatch')
++ for cond in ('settled','preheated','postbuild'):
++  p=pathlib.Path(saved['summaries'][cond]['path'])
++  if not p.resolve().is_relative_to(full_root.resolve()) or sha(p)!=saved['summaries'][cond]['sha256']:raise RuntimeError('checkpoint summary mismatch')
++  r=json.loads(p.read_bytes())
++  if r['shape']!=shape or r['condition']!=cond or len(r['a'])!=20 or len(r['b'])!=20:raise RuntimeError('checkpoint summary invalid')
++ return saved
++def resident_record(vram,busy,kfd,sclk,mono_ns):
++ if vram is None or vram<=0:return None
++ return {'mono_ns':mono_ns,'vram':vram,'busy':busy,'kfd':kfd if kfd>=0 else None,'sclk':sclk if sclk>0 else None}
++class Partial(Exception):pass
++def subreaper():
++ libc=ctypes.CDLL(None,use_errno=True)
++ if libc.prctl(36,1,0,0,0):raise OSError(ctypes.get_errno(),'subreaper')
++def drain(p):
++ try:os.killpg(p.pid,signal.SIGTERM)
++ except ProcessLookupError:pass
++ try:p.wait(timeout=5)
++ except subprocess.TimeoutExpired:
++  try:os.killpg(p.pid,signal.SIGKILL)
++  except ProcessLookupError:pass
++  p.wait()
++ end=time.monotonic()+15;force=time.monotonic()+5
++ while True:
++  while True:
++   try:pid,_=os.waitpid(-1,os.WNOHANG)
++   except ChildProcessError:break
++   if pid==0:break
++  try:os.killpg(p.pid,0)
++  except ProcessLookupError:return
++  if time.monotonic()>=end:raise RuntimeError('owned process group did not drain')
++  if time.monotonic()>=force:
++   try:os.killpg(p.pid,signal.SIGKILL)
++   except ProcessLookupError:continue
++  time.sleep(.05)
++def main():
++ started_mono=time.monotonic()
++ subreaper()
++ ap=argparse.ArgumentParser();ap.add_argument('--smoke',action='store_true');ap.add_argument('--qual',action='store_true');ap.add_argument('--tag',required=True);x=ap.parse_args()
++ if not x.tag.isalnum(): raise ValueError('bad tag')
++ cpus=os.environ['FILLER_CPUS'];stop=pathlib.Path(os.environ['FILLER_STOPFILE']); deadline=time.time()+260 if x.smoke else float(os.environ['FILLER_DEADLINE'])
++ if not x.smoke and (os.environ.get('FILLER_ID')!=ID or not GRANT.is_file()): raise RuntimeError('real identity and native grant required')
++ grant=b'' if x.smoke else GRANT.read_bytes(); interrupted=[False]
++ def sig(*_):interrupted[0]=True
++ signal.signal(signal.SIGTERM,sig);signal.signal(signal.SIGINT,sig)
++ def check(margin=10):
++  if interrupted[0] or stop.exists() or time.time()+margin>=deadline or (not x.smoke and (not GRANT.exists() or GRANT.read_bytes()!=grant)):raise Partial('STOP, grant loss or deadline')
++ if sha(HIP)!='f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079':raise RuntimeError('versioned HIP drift')
++ out=(pathlib.Path(os.environ['FILLER_RESULTS_DIR']) / (x.tag+'-'+uuid.uuid4().hex)) if x.qual else D/('smoke' if x.smoke else 'full')/(x.tag+'-'+uuid.uuid4().hex);out.mkdir(parents=True)
++ emit(out/'START.json',{'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'smoke':x.smoke,'grant_sha256':sha(GRANT) if grant else None,'model_sha256':sha(MODEL),'source_manifest_sha256':sha(D/'SOURCES.sha256'),'launcher_sha256':sha(D/'launch.sh'),'historical_model_identity':'unknown','plan':'smoke control only' if x.smoke else 'four shapes; settled/preheated/post-build; 20 alternating independent process pairs per condition'})
++ source_sha=sha(D/'SOURCES.sha256');launcher_sha=sha(D/'launch.sh');claimed_shapes=set();checkpoint_dir=D/'full'/'checkpoints';checkpoint_dir.mkdir(parents=True,exist_ok=True) if not (x.smoke or x.qual) else None;shape_receipts=[]
++ env={'PATH':'/opt/rocm/bin:/usr/bin:/bin','HOME':'/home/daniele','LANG':'C','LC_ALL':'C','LD_LIBRARY_PATH':str(BIN.parent)+':/opt/rocm/lib','OMP_NUM_THREADS':'1','CCACHE_DISABLE':'1'}
++ def one(shape,cond,i,arm,pp,tg):
++  check(30)
++  if not (x.smoke or x.qual) and shape not in claimed_shapes:
++   flags=pathlib.Path(os.environ.get('FILLER_FLAGS_DIR','/mnt/raid0/llm/tmp/compute-flags'))
++   custody.claim_reviewed_shape(D/'custody',flags,flags/'ready/withdrawn',shape)
++   claimed_shapes.add(shape)
++   check(30)
++  stem=f'p{shape}-{cond}-{i+1:03d}-{arm}'; argv=['taskset','-c',cpus,'numactl','--interleave=all',str(BIN),'-m',str(MODEL),'-ngl','99','-fa','off','-t','8','-tb','8','-ctk','f16','-ctv','f16','-c','2048','-b','512','-ub','512','-npp',str(pp),'-ntg',str(tg),'-npl',str(shape),'--output-format','jsonl']; maps=set();active=[]
++  with (out/(stem+'.stdout')).open('x') as so,(out/(stem+'.stderr')).open('x') as se,residency.Sampler(interval=.1) as sam:
++   p=subprocess.Popen(argv,stdout=so,stderr=se,env=env,start_new_session=True);birth=None
++   try:
++    sam.watch_pid(p.pid);birth=int(pathlib.Path(f'/proc/{p.pid}/stat').read_text().rsplit(') ',1)[1].split()[19]);emit(out/(stem+'.ACTIVE.json'),{'pid':p.pid,'birth':birth})
++    while p.poll() is None:
++     try:maps.update(line.split()[-1] for line in pathlib.Path(f'/proc/{p.pid}/maps').read_text().splitlines() if str(BIN.parent.resolve())+'/' in line)
++     except OSError:pass
++     v=residency.kfd_pid_vram(p.pid)
++     if v is not None and v>0:
++      try:busy=int(pathlib.Path('/sys/class/drm/card2/device/gpu_busy_percent').read_text())
++      except (OSError,ValueError):busy=None
++      record=resident_record(v,busy,residency.kfd_processes(),residency.sclk_mhz(),time.monotonic_ns())
++      active.append(record)
++     check();time.sleep(.1)
++    rc=p.wait()
++   except BaseException:
++    drain(p)
++    emit(out/(stem+'.PARTIAL.json'),{'pid':p.pid,'birth':birth,'drained':True});raise
++  proof=sam.proof
++  required={str((BIN.parent/n).resolve()) for n in ('libllama-batched-bench-impl.so','libllama-common.so.0','libllama.so.0','libggml.so.0','libggml-base.so.0','libggml-cpu.so.0','libggml-hip.so.0')}
++  if rc or not required.issubset(maps) or not proof.get('resident') or proof.get('own_pid_peak_vram_bytes',0)<=0 or proof.get('own_pid_kfd_reads',0)<1:raise RuntimeError('native rc, mapped closure, or owned GPU proof failed')
++  raw=(out/(stem+'.stdout')).read_text();err=(out/(stem+'.stderr')).read_text();row=parse(raw,err,parallel=shape,prompt=pp,generation=tg,flash_attn=0)
++  emit(out/(stem+'.json'),{'pid':p.pid,'birth':birth,'argv':argv,'warmup':i<0,'arm':arm,'row':row,'proof':proof,'mapped_store':sorted(maps),'active_clock_samples':active,'clock_scope':'all observed own-resident samples, including foreign KFD activity and unreadable values; not exact native timing interval','stdout_sha256':sha(out/(stem+'.stdout')),'stderr_sha256':sha(out/(stem+'.stderr'))})
++  return float(row['speed_tg'])
++ # This event identifies a batched-bench, never a scratch server. The installed
++ # qualifier currently has no native LLM batched-bench first-event scope; its
++ # TARGET_SCRATCH_SERVER contract cannot truthfully accept this producer.
++ if x.qual:
++  phase=os.environ['FILLER_QUAL_PHASE']; nonce=os.environ['WS58_QUAL_NONCE']
++  start=time.monotonic(); speed=one(8,'qualification',0,'a',128,128); wall=time.monotonic()-start
++  first={'ok':True,'scope':'TARGET_NATIVE_BATCHED_BENCH','manifest_sha256':os.environ['R22_REQUEST_SHA256'],
++         'production_recipe_sha256':os.environ['WS58_PRODUCTION_RECIPE_SHA256'],
++         'parallel':8,'prompt_tokens':128,'generation_tokens':128,'measured_tok_s':speed,'wall_s':wall}
++  result=out/'RESULT.json';emit(result,{'complete':True,'first_request':first,'native_record':str(out/'p8-qualification-001-a.json')})
++  proof={'id':ID,'phase':phase,'nonce':nonce,'first_request':first,'observed_cpus':sorted(os.sched_getaffinity(0)),
++         'disk':{'job_floor_gib':150},'result_writer':{'ok':True,'result_path':str(result),'sha256':sha(result)}}
++  if phase=='normal': emit(pathlib.Path(os.environ['WS58_QUAL_PROOF']),proof);return 0
++  pid=os.getpid();birth=int(pathlib.Path(f'/proc/{pid}/stat').read_text().rsplit(') ',1)[1].split()[19])
++  emit(pathlib.Path(os.environ['WS58_QUAL_CUTOFF_EVENT']),{'id':ID,'nonce':nonce,'phase':phase,'native_first_event':True,'native_pid':pid,'native_birth_ticks':birth,'first_request':first})
++  while not stop.exists() and time.time()<deadline and not interrupted[0]:time.sleep(.05)
++  proof.update(partial=True,stop_observed=stop.exists(),deadline_reached=time.time()>=deadline,unknown_disposition='UNKNOWN')
++  emit(pathlib.Path(os.environ['WS58_QUAL_PROOF']),proof);return 75
++ try:
++  for shape in ([2] if x.smoke else [1,2,4,8]):
++   checkpoint=checkpoint_dir/f'p{shape}.json'
++   if not x.smoke and checkpoint.exists():
++    validate_checkpoint(checkpoint,shape,source_sha,launcher_sha,D/'full')
++    custody.completed_shape(D/'custody',shape,checkpoint,custody.PINS,custody.OLD_ROOT/'full',D/'full')
++    shape_receipts.append({'path':str(checkpoint),'sha256':sha(checkpoint),'resumed':True});continue
++   for cond,warm in ([('settled',1)] if x.smoke else [('settled',1),('preheated',6),('postbuild',1)]):
++    if cond=='settled' and not x.smoke:
++     end=time.monotonic()+300
++     while time.monotonic()<end:check();time.sleep(max(0,min(1,end-time.monotonic())))
++    if cond=='postbuild':
++     check(60)
++     subprocess.run(['sha256sum','--strict','--quiet','-c',str(D/'POSTBUILD-SOURCE.sha256')],check=True)
++     build=D/'postbuild-output';build.mkdir(exist_ok=True)
++     cmds=[['cmake','-S','/mnt/raid0/llm/tmp/codex3-r22-2-batched-floor-20261031/postbuild-source','-B',str(build),'-DCMAKE_BUILD_TYPE=Release','-DGGML_HIP=ON','-DAMDGPU_TARGETS=gfx90a','-DGGML_HIP_ROCWMMA_FATTN=ON','-DGGML_NATIVE=ON'],['cmake','--build',str(build),'--clean-first','--parallel','4','--target','llama-bench']]
++     for j,cmd in enumerate(cmds):
++      check(60)
++      with (out/f'p{shape}-build{j}.log').open('x') as log:
++       p=subprocess.Popen(['taskset','-c',cpus,*cmd],stdout=log,stderr=subprocess.STDOUT,env=env,start_new_session=True)
++       try:
++        while p.poll() is None:check(20);time.sleep(.5)
++        if p.wait()!=0:raise RuntimeError('post-build load failed')
++       finally:
++        if p.poll() is None:drain(p)
++        else:
++         try:os.killpg(p.pid,0)
++         except ProcessLookupError:pass
++         else:
++          drain(p);raise RuntimeError('post-build subprocesses survived leader exit')
++      check()
++      emit(out/f'p{shape}-build{j}.SUCCESS.json',{'shape':shape,'step':j,'argv':cmd,'returncode':0,'log_sha256':sha(out/f'p{shape}-build{j}.log'),'source_manifest_sha256':source_sha})
++    a=[];b=[];n=1 if x.smoke else 20
++    for i in range(-warm,n):
++     av=one(shape,cond,i,'a',32 if x.smoke else 128,32 if x.smoke else 128);bv=one(shape,cond,i,'b',32 if x.smoke else 128,32 if x.smoke else 128)
++     if i>=0:a.append(av);b.append(bv)
++    emit(out/f'p{shape}-{cond}-SUMMARY.json',{'shape':shape,'condition':cond,'a':a,'b':b,'status':'provisional until all shape conditions complete','floor_pct':floor(a,b) if cond=='settled' and not x.smoke else None,'drift_analysis':{'a':analysis(a),'b':analysis(b)} if not x.smoke else None,'postbuild_adaptation':'real clean HIP build, four jobs within allocated CPUs rather than historical j64' if cond=='postbuild' else None})
++   if not x.smoke:
++    check()
++    summaries={cond:{'path':str(out/f'p{shape}-{cond}-SUMMARY.json'),'sha256':sha(out/f'p{shape}-{cond}-SUMMARY.json')} for cond in ('settled','preheated','postbuild')}
++    emit(checkpoint,{'shape':shape,'source_manifest_sha256':source_sha,'launcher_sha256':launcher_sha,'summaries':summaries,'utc':datetime.datetime.now(datetime.timezone.utc).isoformat()})
++    validate_checkpoint(checkpoint,shape,source_sha,launcher_sha,D/'full')
++    custody.finish_shape(D/'custody',shape,checkpoint,custody.PINS,custody.OLD_ROOT/'full',D/'full')
++    shape_receipts.append({'path':str(checkpoint),'sha256':sha(checkpoint),'resumed':False})
++  check()
++  emit(out/'RESULT.json',{'complete':True,'smoke':x.smoke,'attempt':str(out),'shape_receipts':shape_receipts,'elapsed_s':time.monotonic()-started_mono,'production_recipe_sha256':sha(D/'recipe.json'),'source_manifest_sha256':source_sha,'grant_sha256':sha(GRANT) if grant else None,'scope':'control only' if x.smoke else 'independent A/A floors; no candidate verdict'})
++  if not x.smoke:emit(D/'full'/'RESULT.json',{'complete':True,'result':str(out/'RESULT.json'),'sha256':sha(out/'RESULT.json')})
++  return 0
++ except Partial as e:
++  emit(out/'PARTIAL.json',{'partial':True,'complete':False,'reason':str(e),'at':datetime.datetime.now(datetime.timezone.utc).isoformat()});return 75
++if __name__=='__main__':raise SystemExit(main())
+--- /dev/null
++++ b/scripts/coordination/tests/d1d4/test_completion_custody.py
+@@ -0,0 +1,25 @@
++"""Completion predicate may not bypass custody evidence; owned fixtures only."""
++import hashlib,importlib.util,json,pathlib,sys,tempfile,unittest
++from unittest.mock import patch
++D=pathlib.Path(__file__).resolve().parent/'fixtures/r22-custody';sys.path.insert(0,str(D));spec=importlib.util.spec_from_file_location('completion_under_test',D/'complete.py');c=importlib.util.module_from_spec(spec);spec.loader.exec_module(c)
++def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
++class Controls(unittest.TestCase):
++ def test_full_completion_requires_all_four_custody_checks(self):
++  with tempfile.TemporaryDirectory() as d:
++   base=pathlib.Path(d);root=base/'full';root.mkdir();receipts=[]
++   for shape in (1,2,4,8):
++    summaries={}
++    for cond in ('settled','preheated','postbuild'):
++     p=root/f'p{shape}-{cond}.json';p.write_text(json.dumps({'shape':shape,'condition':cond,'a':[1]*20,'b':[1]*20}));summaries[cond]={'path':str(p),'sha256':sha(p)}
++    cp=root/f'p{shape}.json';cp.write_text(json.dumps({'shape':shape,'summaries':summaries}));receipts.append({'path':str(cp),'sha256':sha(cp)})
++   result=root/'final.json';result.write_text(json.dumps({'complete':True,'smoke':False,'shape_receipts':receipts}));(root/'RESULT.json').write_text(json.dumps({'complete':True,'result':str(result),'sha256':sha(result)}))
++   with patch.object(c.custody,'NEW_ROOT',base),patch.object(sys,'argv',['complete.py',str(root)]),patch.dict('os.environ',{'WS58_QUAL':'0'}),patch.object(c.custody,'completed_shape',return_value=True) as checked:
++    self.assertEqual(c.main(),0);self.assertEqual(checked.call_count,4)
++   with patch.object(c.custody,'NEW_ROOT',base),patch.object(sys,'argv',['complete.py',str(root)]),patch.dict('os.environ',{'WS58_QUAL':'0'}),patch.object(c.custody,'completed_shape',side_effect=c.custody.Refused('missing')):
++    self.assertEqual(c.main(),1)
++ def test_qualification_completion_does_not_use_production_custody(self):
++  with tempfile.TemporaryDirectory() as d:
++   root=pathlib.Path(d);out=root/'batched-normal-owned';out.mkdir();(out/'RESULT.json').write_text(json.dumps({'complete':True,'rows':[{'pp':128,'tg':128,'pl':8,'n_threads':2}]*2}))
++   with patch.object(sys,'argv',['complete.py',str(root)]),patch.dict('os.environ',{'WS58_QUAL':'1'}),patch.object(c.custody,'completed_shape') as checked:
++    self.assertEqual(c.main(),0);checked.assert_not_called()
++if __name__=='__main__':unittest.main()
+--- /dev/null
++++ b/scripts/coordination/tests/d1d4/test_qualifier_custody.py
+@@ -0,0 +1,30 @@
++"""Model-free controls for exact-scope pre-nonce and grant custody."""
++import copy,importlib.util,json,os,pathlib,sys,tempfile,unittest
++from unittest.mock import patch
++D=pathlib.Path(__file__).resolve().parent;V=D.parents[1]/'qual_v2';sys.path.insert(0,str(V));spec=importlib.util.spec_from_file_location('qualify_launcher',V/'qualify_launcher.py');q=importlib.util.module_from_spec(spec);sys.modules['qualify_launcher']=q;spec.loader.exec_module(q);gs=importlib.util.spec_from_file_location('q_custody_gate',V/'keeper_qual_gate.py');gate=importlib.util.module_from_spec(gs);gs.loader.exec_module(gate)
++class Controls(unittest.TestCase):
++ def setUp(self):self.p=D/'fixtures/r22-custody/candidate.NOT-READY.json';self.m=q.load_manifest(self.p)
++ def test_exact_scope_and_old_r22_scope_remain(self):
++  self.assertTrue(q.r22_unknown_calibration_ok(self.m));self.assertIsNone(q.feasible_rate(self.m,{}));self.assertTrue(q.feasible_window(self.m,None));original=q.load_manifest(D/'fixtures/r22/manifest.json');self.assertTrue(q.r22_unknown_calibration_ok(original))
++  for key,val in [('id','other'),('window_s',43200),('gib',16),('class','decision')]:
++   m=copy.deepcopy(self.m);m[key]=val;self.assertFalse(q.r22_unknown_calibration_ok(m))
++ def test_custody_refusal_precedes_nonce_under_gpu_claim(self):
++  with patch.object(q,'load_manifest',return_value=self.m),patch.object(q,'choose_cpus'),patch.dict(os.environ,{'WS58_QUAL_GPU_HELD':'1'}),patch.object(q,'gpu_claim_ancestor'),patch.object(q,'r22_keeper_issuer_authority'),patch.object(q,'r22_custody_guard',side_effect=q.Refused('predecessor active')),patch.object(q,'issue') as issue:
++   with self.assertRaisesRegex(q.Refused,'predecessor active'):q.claim_issue_run(self.p,pathlib.Path('/not-live'),600)
++   issue.assert_not_called()
++ def test_nonkeeper_cannot_create_lineage_or_issue(self):
++  with tempfile.TemporaryDirectory() as d,patch.object(q,'load_manifest',return_value=self.m),patch.object(q,'choose_cpus'),patch.dict(os.environ,{'WS58_QUAL_GPU_HELD':'1'}),patch.object(q,'gpu_claim_ancestor'),patch.object(q,'r22_custody_guard') as custody,patch.object(q,'issue') as issue:
++   with self.assertRaisesRegex(q.Refused,'keeper PID certificate absent'):q.claim_issue_run(self.p,pathlib.Path(d),600)
++   custody.assert_not_called();issue.assert_not_called()
++ def test_grant_verification_rechecks_custody(self):
++  with patch.object(q,'load_manifest',return_value=self.m),patch.object(q,'r22_custody_guard',side_effect=q.Refused('reentry')) as guard:
++   with self.assertRaisesRegex(q.Refused,'reentry'):q.verify(self.p,pathlib.Path('/not-live'),False)
++   self.assertEqual(guard.call_args.args[2],'check')
++ def test_dry_precheck_refuses_prior_ledger_without_nonce(self):
++  m=copy.deepcopy(self.m);m['hold']=None
++  with tempfile.TemporaryDirectory() as d:
++   f=pathlib.Path(d);(f/'ready').mkdir();(f/'grants').mkdir();(f/'FILLERS.md').write_text('')
++   with patch.object(gate.q,'load_manifest',return_value=m),patch.object(gate.q,'disk_wait',return_value=False),patch.object(gate.q,'verify',side_effect=q.Refused('no receipt')),patch.object(gate.q,'r22_custody_guard',side_effect=q.Refused('R22 custody: fixture')),patch.object(gate.q,'issue') as issue:
++    status,reason=gate.qualify_pending(self.p,f,f/'rl',600,True)
++   self.assertEqual(status,'wait-resource');self.assertIn('custody',reason);issue.assert_not_called();self.assertFalse((f/'qual-nonces').exists())
++if __name__=='__main__':unittest.main()
+--- /dev/null
++++ b/scripts/coordination/tests/d1d4/test_r22_custody_retention.py
+@@ -0,0 +1,13 @@
++"""Retention metadata must preserve the source-bound completion evidence."""
++import glob,json,pathlib,re,tempfile,unittest
++HERE=pathlib.Path(__file__).resolve().parent/'fixtures/r22-custody'
++class Retention(unittest.TestCase):
++ def test_row_and_manifest_keep_custody_receipts_and_raw_evidence(self):
++  m=json.loads((HERE/'candidate.NOT-READY.json').read_text());row=(HERE/'candidate.row.md').read_text();match=re.search(r'(?:^|;)\s*keep_globs=([^;|]+)',row);self.assertIsNotNone(match);self.assertEqual(match.group(1).strip().split(','),m['keep']);self.assertIn('predeclaration='+m['production_recipe']['path'],row)
++  with tempfile.TemporaryDirectory() as d:
++   root=pathlib.Path(d);names=['custody/lineage.json','custody/p1.started.json','custody/p1.complete.json','qualification/QUAL-test.json','full/attempt/p1-build1.log','full/attempt/p1-settled-001-a.json','full/attempt/p1-settled-001-a.stdout','full/attempt/p1-settled-001-a.stderr','bench_source/residency.py','bundle/batched_event.py']
++   for n in names:
++    p=root/n;p.parent.mkdir(parents=True,exist_ok=True);p.write_text('fixture')
++   kept={pathlib.Path(x).relative_to(root).as_posix() for pat in m['keep'] for x in glob.glob(str(root/pat),recursive=True) if pathlib.Path(x).is_file()}
++   self.assertTrue(set(names)<=kept,set(names)-kept)
++if __name__=='__main__':unittest.main()
+--- /dev/null
++++ b/scripts/coordination/tests/d1d4/test_real_runner.py
+@@ -0,0 +1,125 @@
++"""Real runner control flow against owned fake ledgers; never launches native work."""
++import hashlib,importlib.util,json,os,pathlib,sys,tempfile,time,types,unittest
++from unittest.mock import patch
++D=pathlib.Path(__file__).resolve().parent/'fixtures/r22-custody';sys.path.insert(0,str(D));spec=importlib.util.spec_from_file_location('custody_r22_runner',D/'runner.py');r=importlib.util.module_from_spec(spec);spec.loader.exec_module(r);gspec=importlib.util.spec_from_file_location('integrated_custody_guard',D/'custody_guard.py');g=importlib.util.module_from_spec(gspec);gspec.loader.exec_module(g);r.custody=g
++class StopBeforeNative(RuntimeError):pass
++class RunnerControls(unittest.TestCase):
++ def setUp(self):
++  self.t=tempfile.TemporaryDirectory();self.root=pathlib.Path(self.t.name);self.new=self.root/'new';self.new.mkdir();(self.new/'custody').mkdir();self.old=self.root/'old/full';self.flags=self.root/'flags';self.flags.mkdir();self.grant=self.root/'grant';self.grant.write_text('grant');(self.new/'SOURCES.sha256').write_text('source catalog');(self.new/'launch.sh').write_text('launcher');self.pin=self.root/'pin';self.pin.write_text('source');self.pins={str(self.pin):g.digest(self.pin)};g.initialize(self.new/'custody',self.old,self.new/'full',self.pins,True);self.stop=self.root/'STOP'
++  self.env={'FILLER_ID':r.ID,'FILLER_CPUS':'0-1','FILLER_STOPFILE':str(self.stop),'FILLER_DEADLINE':str(time.time()+10000),'FILLER_FLAGS_DIR':str(self.flags)}
++ def tearDown(self):self.t.cleanup()
++ def patches(self):
++  actual_sha=r.sha
++  def sha(path):
++   if pathlib.Path(path)==r.HIP:return 'f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079'
++   if pathlib.Path(path)==r.MODEL:return 'a'*64
++   return actual_sha(path)
++  n=[0]
++  def mono():n[0]+=400;return n[0]
++  fake=types.SimpleNamespace(monotonic=mono,time=time.time,sleep=lambda _:None)
++  return [patch.object(r,'D',self.new),patch.object(r,'GRANT',self.grant),patch.object(r,'sha',side_effect=sha),patch.object(r,'subreaper'),patch.object(r,'time',fake),patch.object(r.signal,'signal'),patch.object(sys,'argv',['runner.py','--tag','trial']),patch.dict(os.environ,self.env,clear=True),patch.object(r.subprocess,'Popen',side_effect=AssertionError('native must not start'))]
++ def run_patched(self,extra=()):
++  from contextlib import ExitStack
++  with ExitStack() as stack:
++   for p in self.patches()+list(extra):stack.enter_context(p)
++   return r.main()
++ def test_qualification_initialization_retry_only_before_nonce_and_shape(self):
++  flags=self.flags;archive=flags/'ready/withdrawn';archive.mkdir(parents=True);ledger=self.root/'fresh-custody';oldroot=self.root/'fresh-old';newroot=self.root/'fresh-new';newroot.mkdir()
++  with patch.object(g,'OLD_ROOT',oldroot),patch.object(g,'NEW_ROOT',newroot),patch.object(g,'PINS',self.pins),patch.object(g,'no_previous_v2'),patch.object(g,'check_retirement',return_value=True):
++   g.initialize_reviewed(ledger,flags,archive);before=(ledger/'lineage.json').read_bytes();g.initialize_reviewed(ledger,flags,archive);self.assertEqual((ledger/'lineage.json').read_bytes(),before)
++   (ledger/'p1.started.json').write_text('{}')
++   with self.assertRaises(g.Refused):g.initialize_reviewed(ledger,flags,archive)
++   (ledger/'p1.started.json').unlink();nonce=flags/'qual-nonces/by-id'/(g.NEW_ID+'.json');nonce.parent.mkdir(parents=True);nonce.write_text('{}')
++   with self.assertRaises(g.Refused):g.initialize_reviewed(ledger,flags,archive)
++   nonce.unlink();(flags/'qual-nonces/state.json').write_text(json.dumps({'id':g.NEW_ID}))
++   with self.assertRaises(g.Refused):g.initialize_reviewed(ledger,flags,archive)
++   (flags/'qual-nonces/state.json').unlink();orphan=flags/'qual/orphan/grants'/(g.NEW_ID+'.grant');orphan.parent.mkdir(parents=True);orphan.write_text('fixture')
++   with self.assertRaises(g.Refused):g.initialize_reviewed(ledger,flags,archive)
++ def test_empty_interrupted_custody_directory_can_initialize(self):
++  ledger=self.root/'empty-custody';ledger.mkdir();oldroot=self.root/'fresh-old';newroot=self.root/'fresh-new';newroot.mkdir()
++  with patch.object(g,'OLD_ROOT',oldroot),patch.object(g,'NEW_ROOT',newroot),patch.object(g,'PINS',self.pins),patch.object(g,'no_previous_v2'),patch.object(g,'check_retirement',return_value=True):
++   g.initialize_reviewed(ledger,self.flags,self.flags/'ready/withdrawn');self.assertTrue((ledger/'lineage.json').is_file())
++ def test_integrated_predecessor_archive_and_reentry_checks(self):
++  ready=self.flags/'ready';(ready/'armed').mkdir(parents=True);(self.flags/'grants').mkdir();(self.flags/'FILLERS.md').write_text('');archive=ready/'withdrawn';archive.mkdir();manifest=archive/(g.OLD_ID+'.json');row=archive/(g.OLD_ID+'.row.md');manifest.write_text('manifest');row.write_text('row');mh=g.digest(manifest);rh=g.digest(row);marker=ready/(g.OLD_ID+'.withdrawn');doc={'id':g.OLD_ID,'owner':'codex3','reason':'superseded','manifest_sha256':mh,'row_sha256':rh};marker.write_text(json.dumps(doc));args=(self.flags,archive,mh,rh,self.root/'oldroot')
++  self.assertTrue(g.check_retirement(*args,commands=[]));doc['row_sha256']='0'*64;marker.write_text(json.dumps(doc))
++  with self.assertRaises(g.Refused):g.check_retirement(*args,commands=[])
++  doc['row_sha256']=rh;marker.write_text(json.dumps(doc));(self.flags/'ws58-gpu.queue').write_text(g.OLD_ID+'|77\n')
++  with self.assertRaises(g.Refused):g.check_retirement(*args,commands=[])
++  (self.flags/'ws58-gpu.queue').unlink();prev=self.root/'previous-v2';prev.mkdir()
++  with patch.object(g,'PREVIOUS_V2_ROOT',prev):
++   self.assertTrue(g.no_previous_v2(self.flags,commands=[]));(prev/'full').mkdir()
++   with self.assertRaises(g.Refused):g.no_previous_v2(self.flags,commands=[])
++ def test_stop_before_first_call_retries_safely_but_after_claim_refuses(self):
++  self.stop.touch();self.assertEqual(self.run_patched(),75);marker=self.new/'custody/p1.started.json';self.assertFalse(marker.exists());self.stop.unlink()
++  def claim(_ledger,_flags,_archive,shape):g.claim_before_native(self.new/'custody',shape,self.pins,self.old,self.new/'full');self.stop.touch()
++  self.assertEqual(self.run_patched([patch.object(g,'claim_reviewed_shape',side_effect=claim)]),75);self.assertTrue(marker.is_file());self.stop.unlink()
++  def claim_again(_ledger,_flags,_archive,shape):g.claim_before_native(self.new/'custody',shape,self.pins,self.old,self.new/'full')
++  with self.assertRaises(g.Refused):self.run_patched([patch.object(g,'claim_reviewed_shape',side_effect=claim_again)])
++ def test_summary_only_checkpoint_without_custody_refuses_retry(self):
++  g.claim_before_native(self.new/'custody',1,self.pins,self.old,self.new/'full');full=self.new/'full';cpdir=full/'checkpoints';cpdir.mkdir(parents=True);summaries={}
++  for cond in ('settled','preheated','postbuild'):
++   p=full/(cond+'.json');p.write_text(json.dumps({'shape':1,'condition':cond,'a':[1]*20,'b':[1]*20}));summaries[cond]={'path':str(p),'sha256':g.digest(p)}
++  cp=cpdir/'p1.json';cp.write_text(json.dumps({'shape':1,'source_manifest_sha256':g.digest(self.new/'SOURCES.sha256'),'launcher_sha256':g.digest(self.new/'launch.sh'),'summaries':summaries}))
++  real_done=g.completed_shape
++  def done(ledger,shape,checkpoint,_pins,_old,_new):return real_done(ledger,shape,checkpoint,self.pins,self.old,self.new/'full')
++  with self.assertRaises(g.Refused):self.run_patched([patch.object(g,'completed_shape',side_effect=done),patch.object(g,'claim_reviewed_shape',side_effect=AssertionError('redraw'))])
++  self.assertFalse((self.new/'custody/p1.complete.json').exists())
++ def test_actual_runner_reuses_complete_bound_shape_and_detects_loss(self):
++  g.claim_before_native(self.new/'custody',1,self.pins,self.old,self.new/'full');out=self.new/'full/attempt';out.mkdir(parents=True);cpdir=self.new/'full/checkpoints';cpdir.mkdir();source=g.digest(self.new/'SOURCES.sha256');launcher=g.digest(self.new/'launch.sh');(out/'START.json').write_text(json.dumps({'smoke':False,'source_manifest_sha256':source,'launcher_sha256':launcher}));summaries={}
++  binary='/mnt/raid0/llm/kernels/production/gpu/llama-batched-bench';model='/mnt/raid0/llm/models/bartowski/DeepSeek-R1-Distill-Qwen-1.5B-GGUF/DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M.gguf'
++  argv=['taskset','-c','184-191','numactl','--interleave=all',binary,'-m',model,'-ngl','99','-fa','off','-t','8','-tb','8','-ctk','f16','-ctv','f16','-c','2048','-b','512','-ub','512','-npp','128','-ntg','128','-npl','1','--output-format','jsonl']
++  for cond,warm in (('settled',1),('preheated',6),('postbuild',1)):
++   for i in range(-warm,20):
++    for arm in ('a','b'):
++     stem=f'p1-{cond}-{i+1:03d}-{arm}';so=out/(stem+'.stdout');se=out/(stem+'.stderr');row={'pp':128,'tg':128,'pl':1,'n_threads':8,'n_threads_batch':8,'speed_tg':1.0,'t_tg':1.0,'n_gpu_layers':99,'flash_attn':0,'n_kv_max':2048,'n_batch':512,'n_ubatch':512,'is_pp_shared':0,'n_kv':256};so.write_text(json.dumps(row));se.write_text('');names=('libllama-batched-bench-impl.so','libllama-common.so.0','libllama.so.0','libggml.so.0','libggml-base.so.0','libggml-cpu.so.0','libggml-hip.so.0');mapped=[str((r.BIN.parent/n).resolve()) for n in names];rec={'argv':argv,'arm':arm,'warmup':i<0,'pid':99,'proof':{'resident':True,'own_pid':99,'own_pid_peak_vram_bytes':1,'own_pid_kfd_reads':1},'row':row,'mapped_store':mapped,'stdout_sha256':g.digest(so),'stderr_sha256':g.digest(se)};(out/(stem+'.json')).write_text(json.dumps(rec))
++   summary=out/('p1-'+cond+'-SUMMARY.json');summary.write_text(json.dumps({'shape':1,'condition':cond,'a':[1.0]*20,'b':[1.0]*20}));summaries[cond]={'path':str(summary),'sha256':g.digest(summary)}
++  src='/mnt/raid0/llm/tmp/codex3-r22-2-batched-floor-20261031/postbuild-source';build=self.new/'postbuild-output';cmds=[['cmake','-S',src,'-B',str(build),'-DCMAKE_BUILD_TYPE=Release','-DGGML_HIP=ON','-DAMDGPU_TARGETS=gfx90a','-DGGML_HIP_ROCWMMA_FATTN=ON','-DGGML_NATIVE=ON'],['cmake','--build',str(build),'--clean-first','--parallel','4','--target','llama-bench']]
++  for j,cmd in enumerate(cmds):
++   log=out/f'p1-build{j}.log';log.write_text('completed');(out/f'p1-build{j}.SUCCESS.json').write_text(json.dumps({'shape':1,'step':j,'argv':cmd,'returncode':0,'log_sha256':g.digest(log),'source_manifest_sha256':source}))
++  cp=cpdir/'p1.json';cp.write_text(json.dumps({'shape':1,'source_manifest_sha256':source,'launcher_sha256':launcher,'summaries':summaries}))
++  with patch.object(g,'NEW_ROOT',self.new):
++   g.finish_shape(self.new/'custody',1,cp,self.pins,self.old,self.new/'full');finish=json.loads((self.new/'custody/p1.complete.json').read_text());self.assertEqual(len(finish['evidence']),417)
++   real_done=g.completed_shape
++   def done(ledger,shape,checkpoint,_pins,_old,_new):return real_done(ledger,shape,checkpoint,self.pins,self.old,self.new/'full')
++   with self.assertRaises(StopBeforeNative):self.run_patched([patch.object(g,'completed_shape',side_effect=done),patch.object(g,'claim_reviewed_shape',side_effect=StopBeforeNative('next shape'))])
++   target=out/'p1-settled-001-a.stdout';recpath=out/'p1-settled-001-a.json';original_stdout=target.read_text();original_record=recpath.read_text();changed=json.loads(original_stdout);changed['speed_tg']=2.0;target.write_text(json.dumps(changed));record=json.loads(original_record);record['stdout_sha256']=g.digest(target);recpath.write_text(json.dumps(record))
++   with self.assertRaises(g.Refused):g.shape_evidence(cp,1,self.new/'full',source,launcher)
++   target.write_text(original_stdout);record=json.loads(original_record);record['mapped_store']=[];recpath.write_text(json.dumps(record))
++   with self.assertRaises(g.Refused):g.shape_evidence(cp,1,self.new/'full',source,launcher)
++   recpath.write_text(original_record);target.unlink()
++   with self.assertRaises(g.Refused):g.completed_shape(self.new/'custody',1,cp,self.pins,self.old,self.new/'full')
++ def test_actual_qualification_normal_and_cutoff_never_claim_shape(self):
++  names=('libllama-batched-bench-impl.so','libllama-common.so.0','libllama.so.0','libggml.so.0','libggml-base.so.0','libggml-cpu.so.0','libggml-hip.so.0')
++  maps='\n'.join('mapped '+str((r.BIN.parent/n).resolve()) for n in names)
++  original_read=pathlib.Path.read_text;original_emit=r.emit
++  def read(path,*a,**kw):
++   if str(path)==f'/proc/{os.getpid()}/maps':return maps
++   return original_read(path,*a,**kw)
++  class FakeProcess:
++   def __init__(self,*args,**kwargs):self.pid=os.getpid();self.n=0
++   def poll(self):self.n+=1;return None if self.n==1 else 0
++   def wait(self,*args,**kwargs):return 0
++  class Sampler:
++   def __init__(self,*a,**k):self.proof={'resident':True,'own_pid_peak_vram_bytes':1,'own_pid_kfd_reads':1}
++   def __enter__(self):return self
++   def __exit__(self,*_):pass
++   def watch_pid(self,_):pass
++  for phase in ('normal','cutoff'):
++   with self.subTest(phase=phase):
++    self.stop.unlink(missing_ok=True);results=self.root/('results-'+phase);results.mkdir();proof=self.root/('proof-'+phase);event=self.root/('event-'+phase)
++    env=dict(self.env,FILLER_RESULTS_DIR=str(results),FILLER_QUAL_PHASE=phase,WS58_QUAL_NONCE='test-only',R22_REQUEST_SHA256='a'*64,WS58_PRODUCTION_RECIPE_SHA256='b'*64,WS58_QUAL_PROOF=str(proof),WS58_QUAL_CUTOFF_EVENT=str(event))
++    def emit(path,obj):
++     original_emit(path,obj)
++     if pathlib.Path(path)==event:self.stop.touch()
++    from contextlib import ExitStack
++    with ExitStack() as stack:
++     for p in self.patches():stack.enter_context(p)
++     stack.enter_context(patch.dict(os.environ,env,clear=True));stack.enter_context(patch.object(sys,'argv',['runner.py','--qual','--tag','test']))
++     stack.enter_context(patch.object(r.subprocess,'Popen',side_effect=FakeProcess));stack.enter_context(patch.object(r.residency,'Sampler',Sampler));stack.enter_context(patch.object(r.residency,'kfd_pid_vram',return_value=None));stack.enter_context(patch.object(r,'parse',return_value={'speed_tg':1.0}));stack.enter_context(patch.object(pathlib.Path,'read_text',read));stack.enter_context(patch.object(r,'emit',side_effect=emit));claim=stack.enter_context(patch.object(g,'claim_reviewed_shape',side_effect=AssertionError('qualification claimed production')))
++     self.assertEqual(r.main(),0 if phase=='normal' else 75);claim.assert_not_called()
++    self.assertTrue(proof.is_file());self.assertFalse(any((self.new/'custody').glob('p*.started.json')))
++ def test_invalid_checkpoint_cannot_recover(self):
++  g.claim_before_native(self.new/'custody',1,self.pins,self.old,self.new/'full');cpdir=self.new/'full/checkpoints';cpdir.mkdir(parents=True);(cpdir/'p1.json').write_text(json.dumps({'shape':1,'source_manifest_sha256':'wrong','launcher_sha256':'wrong'}))
++  with self.assertRaises(RuntimeError):self.run_patched()
++  self.assertFalse((self.new/'custody/p1.complete.json').exists())
++if __name__=='__main__':unittest.main()

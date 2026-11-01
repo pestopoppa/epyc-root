@@ -1,0 +1,4 @@
+exact_scope True manifest f3b0a50b05b38ce9d526b92e44b107bd2efbc993a6ca6cb219e077ac8e059977
+bound_files with row SHA redirected only a88a8978cce79abac5d38c55f8b03c34a719121e7569e832c7b00b79b0cf64b8
+row_binding against owned relocated copy OK
+actual_predecessor_precheck OK
