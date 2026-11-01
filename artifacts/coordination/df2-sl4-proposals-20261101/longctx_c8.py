@@ -7,7 +7,7 @@ compatibility, GPU capacity, or a calibration floor.  Callers must independently
 from __future__ import annotations
 
 import hashlib
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Mapping, Sequence
 
 from .. import schemas
 from . import planned_serving as ps
@@ -38,7 +38,13 @@ def _encode(texts: Sequence[str], encode: Callable[[str], Sequence[int]]) -> lis
         raise WorkloadRefused("exactly eight text prompts are required")
     if any(not isinstance(text, str) or not text.strip() for text in texts):
         raise WorkloadRefused("prompt texts must be nonempty")
-    tokens = [list(encode(text)) for text in texts]
+    tokens = []
+    for index, text in enumerate(texts, 1):
+        try:
+            ids = list(encode(text))
+        except (TypeError, ValueError) as exc:
+            raise WorkloadRefused(f"tokenizer failed to encode prompt {index}") from exc
+        tokens.append(ids)
     if any(not MIN_TOKENS <= len(ids) <= MAX_TOKENS for ids in tokens):
         raise WorkloadRefused("each prompt must contain 31k–33k tokens")
     if any(any(type(token) is not int or not 0 <= token < 2**31 for token in ids) for ids in tokens):
@@ -49,15 +55,30 @@ def _encode(texts: Sequence[str], encode: Callable[[str], Sequence[int]]) -> lis
 
 
 def _capacity(template: serving.Recipe, tokens: list[list[int]]) -> None:
-    if template.device.lower() in {"none", "cpu"} or template.ngl <= 0 or template.np != SLOTS:
+    if (not isinstance(template.device, str) or template.device.lower() in {"none", "cpu"}
+            or type(template.ngl) is not int or template.ngl <= 0
+            or type(template.np) is not int or template.np != SLOTS):
         raise WorkloadRefused("the long-context cell requires a GPU recipe with np=8")
     if type(template.n_predict) is not int or template.n_predict <= 0:
         raise WorkloadRefused("n_predict must be positive")
     # Conservative for both unified and split KV: all slots must have room for
     # the longest prompt, even if slot contexts are equal partitions of -c.
-    draft = template.spec_decode.get("draft_n_max", 0)
-    if type(draft) is not int or draft < 0:
-        raise WorkloadRefused("draft_n_max must be a non-negative integer")
+    spec = template.spec_decode
+    if not isinstance(spec, Mapping):
+        raise WorkloadRefused("spec_decode must be a mapping")
+    spec_type = spec.get("type", "none")
+    if not isinstance(spec_type, str) or not spec_type:
+        raise WorkloadRefused("spec_decode.type must be nonempty text")
+    draft = spec.get("draft_n_max")
+    if spec_type == "none":
+        if draft is not None:
+            raise WorkloadRefused("speculation type none cannot declare draft_n_max")
+        draft = 0
+    elif draft is None:
+        raise WorkloadRefused(
+            "speculative recipes must declare draft_n_max so context capacity is bounded")
+    elif type(draft) is not int or draft <= 0:
+        raise WorkloadRefused("speculative draft_n_max must be a positive integer")
     needed = SLOTS * (max(map(len, tokens)) + template.n_predict + draft + 1)
     if type(template.ctx) is not int or template.ctx < needed:
         raise WorkloadRefused(f"context capacity {template.ctx} is below {needed}")

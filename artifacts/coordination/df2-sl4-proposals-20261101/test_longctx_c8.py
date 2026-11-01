@@ -1,8 +1,10 @@
 import copy
 from dataclasses import replace
+import hashlib
 
 import pytest
 
+from .. import schemas
 from . import longctx_c8 as cell
 from . import serving
 
@@ -28,9 +30,18 @@ def test_roundtrip_binds_frozen_bytes_and_source():
     assert len(loaded.prompts) == 8
     assert all(len(p.prompt) == 32768 and not p.cache_prompt for p in loaded.prompts)
     tampered = copy.deepcopy(manifest)
-    tampered["prompts"][0]["request"]["prompt"][0] = 100
+    request = tampered["prompts"][0]["request"]
+    request["prompt"][0] = 100
+    tampered["prompts"][0]["request_digest"] = hashlib.sha256(
+        cell.ps._canonical(request)).hexdigest()
+    body = {key: value for key, value in tampered.items() if key != "digest"}
+    tampered["digest"] = schemas.content_hash(body)
     with pytest.raises(cell.WorkloadRefused):
         cell.validate_manifest(recipe, tampered, proof, texts, _encode, "a" * 64)
+    changed_texts = list(texts)
+    changed_texts[0] += " "
+    with pytest.raises(cell.WorkloadRefused):
+        cell.validate_manifest(recipe, manifest, proof, changed_texts, _encode, "a" * 64)
     with pytest.raises(cell.WorkloadRefused):
         cell.validate_manifest(recipe, manifest, proof, texts, _encode, "b" * 64)
     with pytest.raises(cell.WorkloadRefused):
@@ -39,11 +50,17 @@ def test_roundtrip_binds_frozen_bytes_and_source():
 
 def test_refuses_wrong_shape_and_capacity():
     recipe, texts = _recipe(), _texts()
-    for invalid in (replace(recipe, np=4), replace(recipe, device="none"),
+    for invalid in (replace(recipe, np=4), replace(recipe, np=8.0),
+                    replace(recipe, ngl=99.0), replace(recipe, device="none"),
                     replace(recipe, ctx=8*(32768+256+1)-1)):
         with pytest.raises(cell.WorkloadRefused):
             cell.build_manifest(invalid, texts, _encode, "a" * 64, "test")
+    with pytest.raises(cell.WorkloadRefused, match="declare draft_n_max"):
+        cell.build_manifest(replace(recipe, spec_decode={"type": "draft-mtp"}),
+                            texts, _encode, "a" * 64, "test")
     with pytest.raises(cell.WorkloadRefused):
         cell.build_manifest(recipe, texts, lambda _: [0]*32768, "a"*64, "test")
     with pytest.raises(cell.WorkloadRefused):
         cell.build_manifest(recipe, texts, lambda _: [0]*30000, "a"*64, "test")
+    with pytest.raises(cell.WorkloadRefused, match="tokenizer failed"):
+        cell.build_manifest(recipe, texts, lambda _: None, "a"*64, "test")

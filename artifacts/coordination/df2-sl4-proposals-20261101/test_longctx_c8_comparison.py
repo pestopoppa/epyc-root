@@ -50,6 +50,9 @@ def test_compare_uses_matched_instrument_and_exact_floor(tmp_path, monkeypatch):
     assert invoke.call_args.kwargs["instrument"] == serving.MATCHED_INSTRUMENT
     assert invoke.call_args.kwargs["floor_record"] is row
     assert invoke.call_args.kwargs["frozen_requests"] == (("p", b"body"),)
+    # This cell sends the complete frozen prompt through ordinary serving; the
+    # restored-slot SurfaceLaunch protocol is a different measurement surface.
+    assert "longctx" not in invoke.call_args.kwargs
     check.assert_called_once()
 
 
@@ -91,3 +94,19 @@ def test_calibration_is_request_bound_and_writes_matched_floor(tmp_path, monkeyp
     assert calibrate.call_args.kwargs["frozen_requests"] == (("p", b"body"),)
     assert write.call_args.kwargs["unit"] == serving.CALIBRATION_UNIT
     validate.assert_called_once()
+
+
+def test_calibration_refuses_when_same_floor_is_being_calibrated(tmp_path, monkeypatch):
+    anchor = _anchor()
+    _validated(monkeypatch, anchor)
+    target = tmp_path / "serving-floor.json"
+    monkeypatch.setattr(serving, "floor_path", lambda *a, **kw: target)
+    calibrate = Mock()
+    monkeypatch.setattr(serving, "calibrate_floor", calibrate)
+
+    with c8._exclusive_floor_lock(target.with_name(target.name + ".lock")):
+        with pytest.raises(serving.ServingFloorMismatch, match="already in progress"):
+            c8.calibrate(tmp_path, anchor, {}, {}, [], None, "b" * 64, pairs=5)
+
+    calibrate.assert_not_called()
+    assert not target.exists()
