@@ -50,3 +50,8 @@
 
 - Reproduced the legacy v33 `/proc/locks` false refusal under a real q3 region-lock build claim: `RuntimeError: lock lost` occurred at iteration 30 while owner FD rows still showed exclusive GLOBAL and build locks. No model/server/GPU work ran.
 - Durable scripts, source identities, launcher log, result, and checksum custody are in `artifacts/compute/refactor-s0-v34-lock-loss-repro-20261101/`. `python3 test_result.py` passes. Handoff tick will cite the implementation/evidence commit.
+
+
+## Code-scoreboard hygiene closure — 2026-11-01
+
+Applied the owner-authorized hygiene closure to the already-landed daemon ownership test fixture repair. Evidence is implementation commit `4b379a46f9f23aa3ee11d9acfbc0eafbbb301fa4` and `tests/unit/test_daemon_owned_state_ownership.py`; the task line carries `[closure: hygiene]` so the live scoreboard excludes it from today’s increment. This records prior work and adds no new quota tick. The closure is on the refactor lane branch pending promotion; merge simulation against current `origin/main` reports conflicts in active handoffs and LOOP-49 root files, so no automatic merge was attempted. [no-belief: test fixture repair, not a measurement claim]

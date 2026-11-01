@@ -355,7 +355,7 @@ First full smoke run of the trial loop. Four defects, three silent.
   Both inline script blocks parsed with Node; helper checks cover escalated, active and
   unknown labels. [no-belief: display-only correction; no measurement claim]
 
-- [ ] **Flaky under load, flagged to its owner:** `test_daemon_owned_state_ownership.py` (landed today)
+- [x] **Flaky under load, flagged to its owner:** `test_daemon_owned_state_ownership.py` (landed today) ✅ 2026-10-31 — 4b379a46f9f23aa3ee11d9acfbc0eafbbb301fa4; `tests/unit/test_daemon_owned_state_ownership.py` [closure: hygiene] [no-belief: test fixture repair, not a measurement claim]
   fails intermittently under full-suite `-n 16` while passing 19/19 in isolation and under `-n 8` on
   both trees. Ruled out as test method by the finder before reporting, not assumed.
 
