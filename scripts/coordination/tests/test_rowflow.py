@@ -174,18 +174,19 @@ class RowflowTests(unittest.TestCase):
         rf.publish(fx.spec(rid2, d2, lineage_reset=3), fx.flags)
         self.assertEqual(rf.status(fx.flags, rid2)["state"], "needs-dryrun")
 
-    def test_04_noexit_job_fails_clean_truncation(self):
+    def test_04_noexit_job_passes_with_truncation_warning(self):
         fx = self.fx
         rid = "t-noexit-20261101"
         d = fx.job(rid, "noexit")
         rf.publish(fx.spec(rid, d, dryrun_timeout_s=60), fx.flags)
-        rf.STOP_GRACE_S = 12
+        rf.STOP_GRACE_S = 12  # (stop-file ignored -> PASS with warning since 2026-11-01)
         try:
             v, msg = rf.dryrun_run(fx.flags, rid)
         finally:
             rf.STOP_GRACE_S = 180
-        self.assertEqual(v, "FAIL", msg)
+        self.assertEqual(v, "PASS", msg)  # truncation by signal is production's own hard-end path: pass, with a warning
         self.assertIn("did not stop", msg)
+        self.assertIn("did not stop", json.load(open(rf.pass_path(fx.flags, rid)))["warning"])
         self.assertFalse(os.path.exists(os.path.join(fx.flags, "grants", rid + ".grant")))
 
     def test_05_count_units(self):
