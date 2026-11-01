@@ -1,0 +1,53 @@
+commit 4e201388c319fc9f747fbe6a666793e2dc2a6d8e
+Author:     Me42019 <jeremyh88.jh@gmail.com>
+AuthorDate: Tue Oct 20 10:43:45 2026 -0500
+Commit:     GitHub <noreply@github.com>
+CommitDate: Tue Oct 20 17:43:45 2026 +0200
+
+    server: Router wasn't propagating the client disconnects fully to the child, the response wait could cause a delayed cancellation (#29707)
+    
+    * Router wasn't propagating the client disconnects fully to the child, the response wait could cause a delayed cancellation
+    
+    * tests: satisfy router disconnect type check
+    
+    * server : remove timing-sensitive router cancellation test
+    
+    Assisted-by: Codex
+
+diff --git a/tools/server/server-models.cpp b/tools/server/server-models.cpp
+index 606eab4f4a..95cbdd77a8 100644
+--- a/tools/server/server-models.cpp
++++ b/tools/server/server-models.cpp
+@@ -2836,9 +2836,10 @@ server_http_proxy::server_http_proxy(
+     cli->set_write_timeout(timeout_read, 0); // reversed for cli (client) vs srv (server)
+     cli->set_read_timeout(timeout_write, 0);
+     this->status = 500; // to be overwritten upon response
+-    this->cleanup_pipes = [pipe]() {
++    this->cleanup_pipes = [pipe, cli]() {
+         pipe->close_read();
+         pipe->close_write();
++        cli->stop();
+     };
+ 
+     // wire up the receive end of the pipe
+diff --git a/tools/server/server-queue.cpp b/tools/server/server-queue.cpp
+index 3352c3cb5d..c4ce90721b 100644
+--- a/tools/server/server-queue.cpp
++++ b/tools/server/server-queue.cpp
+@@ -448,6 +448,7 @@ server_task_result_ptr server_response::recv(const std::unordered_set<int> & id_
+ }
+ 
+ server_task_result_ptr server_response::recv_with_timeout(const std::unordered_set<int> & id_tasks, int timeout) {
++    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(timeout);
+     while (true) {
+         std::unique_lock<std::mutex> lock(mutex_results);
+ 
+@@ -459,7 +460,7 @@ server_task_result_ptr server_response::recv_with_timeout(const std::unordered_s
+             }
+         }
+ 
+-        std::cv_status cr_res = condition_results.wait_for(lock, std::chrono::seconds(timeout));
++        std::cv_status cr_res = condition_results.wait_until(lock, deadline);
+         if (!running) {
+             RES_DBG("%s : queue result stop\n", __func__);
+             std::terminate(); // we cannot return here since the caller is HTTP code

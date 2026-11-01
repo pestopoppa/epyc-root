@@ -30,3 +30,5 @@
 
 - CH-32 ancestry confirmation: B2 contains B1, C2 contains C1, and D7 contains D1–D8, making those retained merge-tree outputs whole-ancestry group merges. Retained a byte-reproducible generator and ggml argument text scan: extracted argument declarations match C5 vs feature-parent headers, but return types, layouts, backend support and semantics remain unproved.
 - CH-18.b static source check: upstream #30580 still enters checkpoint search in the assumed short-context zero-threshold case; #30666 is a separate prefix invalidation change. Retained arithmetic controls and conservative coverage/rollback/fallback test design in `artifacts/compute/akagg-ch18b-20261101/`; no execution or validated fix.
+
+- CH-18.a upstream inquiry complete: #29707 `4e201388c319fc9f747fbe6a666793e2dc2a6d8e` uses one steady-clock response deadline and propagates router disconnect; C5 still uses resettable wait_for. Verified upstream ancestry and C5 non-ancestry. Added V11-113 PEND with timeout and direct/router disconnect regression gates; no runtime verdict.
