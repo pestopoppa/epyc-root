@@ -1,0 +1,30 @@
+{
+  "schema": "cj7a-closeout-manifest.v1",
+  "research_repository": "epyc-inference-research",
+  "published_tip": "3821458c9b70",
+  "research_commits": [
+    "015d70b5a7c674dd7dab3df31426626221ec9300",
+    "921638349e64",
+    "fe12afc23435",
+    "e38760063a0d"
+  ],
+  "source": {
+    "repository_path": "scripts/benchmark/e6_budget_analyze.py",
+    "source_commit": "ba4a037de79e282940dbdc1901646e774e9939ba",
+    "sha256": "844301cb9ac6a7b4344266a8a5025e7abcf47f06da27df54d6a1e675a02ad86a",
+    "license": "MIT; repository LICENSE at pinned source commit"
+  },
+  "formatter": {
+    "version": "ruff 0.16.3",
+    "configuration": "isolated; line-length=100",
+    "executable_sha256": "88abf248be39383e05419e50811467b9c25ef3f3bc1b8a0874962941c0190ffa"
+  },
+  "closeout_artifacts_sha256": {
+    "R6-ACCEPTED-RECEIPT.json": "3453c7d82de4b2427425e3fc4300771a02bf773f38f0f480c98d212851a696db",
+    "R6-output.log": "2abc250eb5a2de7f17ff705c0b019e343d8b070f7eaa98bdf263ac3b738e167b",
+    "adapted-r6-wrapper.py": "517e8663469f1943f429b9b39f188074b903df7b2e7ffc7ffb1b16a4b8e54d81",
+    "native_control_proof.json": "084b9c5b200b65730927dbc0a81b45d822f9395fbb115e0d279bd444a8bc1e4d",
+    "source-provenance.json": "5d82a39e6180b7acd2993047e61d7f62be286d09d95b9a0deec60af2fcc25f44"
+  },
+  "scope": "model-free deterministic controls; no external dataset and no model efficacy claim"
+}

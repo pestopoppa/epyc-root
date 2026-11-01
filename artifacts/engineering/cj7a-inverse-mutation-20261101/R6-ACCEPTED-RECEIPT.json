@@ -1,0 +1,312 @@
+{
+  "scope": "MODEL_FREE_R6_ONLY",
+  "family": "34-35",
+  "actual_cpus": [
+    130,
+    131
+  ],
+  "root_lane": null,
+  "root_status": null,
+  "implementation_commit": "fe12afc23435ab7b29671c78b828eef5e866c419",
+  "merge_commit": null,
+  "start_utc": "2026-11-01T04:15:55.797637+00:00",
+  "end_utc": "2026-11-01T04:15:57.551166+00:00",
+  "own_pid": 3721192,
+  "own_start_ticks": "162902903",
+  "runner_pid": 3721161,
+  "runner_start_ticks": "162902890",
+  "boot_id": "3be2fb1a-7293-4c34-b733-c85d772b9474",
+  "live_grants": [
+    {
+      "id": "codex-ni-inf12-gate2-triton36-r13-20261030",
+      "class": "block-correctness",
+      "regions": "mi210_0,184-191",
+      "start": "2026-11-01T03:50Z",
+      "end": "2026-11-01T04:20Z"
+    },
+    {
+      "id": "codex3-cs8-stt5-validation-baseline-r2-20261030",
+      "class": "block-correctness",
+      "regions": "48-71",
+      "start": "2026-11-01T02:11Z",
+      "end": "2026-11-01T06:00Z"
+    },
+    {
+      "id": "codex3-pareval120-k20-gen-20261031",
+      "class": "block-correctness",
+      "regions": "0-23",
+      "start": "2026-11-01T03:47Z",
+      "end": "2026-11-01T06:00Z"
+    }
+  ],
+  "scoped_inputs_before": {
+    "head": "fe12afc23435ab7b29671c78b828eef5e866c419",
+    "leaf_files_sha256": {
+      "scripts/benchmark/inverse_mutation_v1/README.md": "9899b02e10271d751d1449f6c2782c4a559f3a618e3aa899d12116af0e13eb56",
+      "scripts/benchmark/inverse_mutation_v1/__init__.py": "e759bbf14cef35da7d813d73a2634f536712373e3b90d990b7d5d5656ee75c12",
+      "scripts/benchmark/inverse_mutation_v1/control_proof.py": "1644e3612b1e43c6ccee619a23b2b6e198256b245b0ab5f64383d294f4bab25b",
+      "scripts/benchmark/inverse_mutation_v1/fixtures.py": "ab3ea987a1290ac79b6e13a0dd34bcb927c91dc790e0f82e9a6445c03e61bd94",
+      "scripts/benchmark/inverse_mutation_v1/fixtures/provenance.json": "5d82a39e6180b7acd2993047e61d7f62be286d09d95b9a0deec60af2fcc25f44",
+      "scripts/benchmark/inverse_mutation_v1/fixtures/source_snapshot.py": "844301cb9ac6a7b4344266a8a5025e7abcf47f06da27df54d6a1e675a02ad86a",
+      "scripts/benchmark/inverse_mutation_v1/scorer.py": "cdcdbb4bb1e9561db961075752be6519d3a749c7540bd3d90d9cff8ddc9d5aff",
+      "scripts/benchmark/inverse_mutation_v1/tests/test_inverse_mutation.py": "2a4227a7780732ef2ff9110afbd299256c1795aaf8f3f140e04e9743cdb32bde"
+    },
+    "proof_output_sha256": "904c2ac2a5360f1c47228a9b452d64200fc96a469a22d1f9701e10aef5c61fac",
+    "proof_output_status": null,
+    "gate_verdict_vocab_sha256": "fa0e96a350981f236afb9dc43663432cf8aa7b90fa3bdff4533f0e102fb97060",
+    "formatter": {
+      "path": "/opt/uv-tools/ruff/bin/ruff",
+      "sha256": "88abf248be39383e05419e50811467b9c25ef3f3bc1b8a0874962941c0190ffa",
+      "version": "ruff 0.16.3",
+      "config": "isolated; line-length=100"
+    },
+    "foreign_dirty_inventory": [
+      {
+        "path": "scripts/kernel_rnd/autokernel/journal.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/accumulate.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/actors.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/hotspots.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/new_epoch.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/run.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/seed_bundle.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/serving_gate.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/test_actors.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/test_bundle_surface.py",
+        "status": "??"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/test_hotspots.py",
+        "status": "??"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/prior_art.py",
+        "status": " M"
+      }
+    ]
+  },
+  "scoped_inputs_after": {
+    "head": "fe12afc23435ab7b29671c78b828eef5e866c419",
+    "leaf_files_sha256": {
+      "scripts/benchmark/inverse_mutation_v1/README.md": "9899b02e10271d751d1449f6c2782c4a559f3a618e3aa899d12116af0e13eb56",
+      "scripts/benchmark/inverse_mutation_v1/__init__.py": "e759bbf14cef35da7d813d73a2634f536712373e3b90d990b7d5d5656ee75c12",
+      "scripts/benchmark/inverse_mutation_v1/control_proof.py": "1644e3612b1e43c6ccee619a23b2b6e198256b245b0ab5f64383d294f4bab25b",
+      "scripts/benchmark/inverse_mutation_v1/fixtures.py": "ab3ea987a1290ac79b6e13a0dd34bcb927c91dc790e0f82e9a6445c03e61bd94",
+      "scripts/benchmark/inverse_mutation_v1/fixtures/provenance.json": "5d82a39e6180b7acd2993047e61d7f62be286d09d95b9a0deec60af2fcc25f44",
+      "scripts/benchmark/inverse_mutation_v1/fixtures/source_snapshot.py": "844301cb9ac6a7b4344266a8a5025e7abcf47f06da27df54d6a1e675a02ad86a",
+      "scripts/benchmark/inverse_mutation_v1/scorer.py": "cdcdbb4bb1e9561db961075752be6519d3a749c7540bd3d90d9cff8ddc9d5aff",
+      "scripts/benchmark/inverse_mutation_v1/tests/test_inverse_mutation.py": "2a4227a7780732ef2ff9110afbd299256c1795aaf8f3f140e04e9743cdb32bde"
+    },
+    "proof_output_sha256": "084b9c5b200b65730927dbc0a81b45d822f9395fbb115e0d279bd444a8bc1e4d",
+    "proof_output_status": " M",
+    "gate_verdict_vocab_sha256": "fa0e96a350981f236afb9dc43663432cf8aa7b90fa3bdff4533f0e102fb97060",
+    "formatter": {
+      "path": "/opt/uv-tools/ruff/bin/ruff",
+      "sha256": "88abf248be39383e05419e50811467b9c25ef3f3bc1b8a0874962941c0190ffa",
+      "version": "ruff 0.16.3",
+      "config": "isolated; line-length=100"
+    },
+    "foreign_dirty_inventory": [
+      {
+        "path": "scripts/kernel_rnd/autokernel/journal.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/accumulate.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/actors.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/hotspots.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/new_epoch.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/run.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/seed_bundle.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/serving_gate.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/test_actors.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/test_bundle_surface.py",
+        "status": "??"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/test_hotspots.py",
+        "status": "??"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/prior_art.py",
+        "status": " M"
+      }
+    ]
+  },
+  "returncode": 0,
+  "failure": null,
+  "elapsed_s": 1.8355400399304926,
+  "sampled_peak_tree_rss_bytes": 74522624,
+  "kernel_childset_empty": true,
+  "captured": [
+    {
+      "pid": 3721192,
+      "birth": 162902903,
+      "ppid": 3721161,
+      "uid": 1000
+    },
+    {
+      "pid": 3721193,
+      "birth": 162902903,
+      "ppid": 3721192,
+      "uid": 1000
+    },
+    {
+      "pid": 3721233,
+      "birth": 162902956,
+      "ppid": 3721193,
+      "uid": 1000
+    },
+    {
+      "pid": 3721305,
+      "birth": 162902985,
+      "ppid": 3721193,
+      "uid": 1000
+    },
+    {
+      "pid": 3721399,
+      "birth": 162903006,
+      "ppid": 3721193,
+      "uid": 1000
+    },
+    {
+      "pid": 3721990,
+      "birth": 162903049,
+      "ppid": 3721192,
+      "uid": 1000
+    }
+  ],
+  "native_or_GPU_execution": false,
+  "source_closure": {
+    "head": "fe12afc23435ab7b29671c78b828eef5e866c419",
+    "leaf_files_sha256": {
+      "scripts/benchmark/inverse_mutation_v1/README.md": "9899b02e10271d751d1449f6c2782c4a559f3a618e3aa899d12116af0e13eb56",
+      "scripts/benchmark/inverse_mutation_v1/__init__.py": "e759bbf14cef35da7d813d73a2634f536712373e3b90d990b7d5d5656ee75c12",
+      "scripts/benchmark/inverse_mutation_v1/control_proof.py": "1644e3612b1e43c6ccee619a23b2b6e198256b245b0ab5f64383d294f4bab25b",
+      "scripts/benchmark/inverse_mutation_v1/fixtures.py": "ab3ea987a1290ac79b6e13a0dd34bcb927c91dc790e0f82e9a6445c03e61bd94",
+      "scripts/benchmark/inverse_mutation_v1/fixtures/provenance.json": "5d82a39e6180b7acd2993047e61d7f62be286d09d95b9a0deec60af2fcc25f44",
+      "scripts/benchmark/inverse_mutation_v1/fixtures/source_snapshot.py": "844301cb9ac6a7b4344266a8a5025e7abcf47f06da27df54d6a1e675a02ad86a",
+      "scripts/benchmark/inverse_mutation_v1/scorer.py": "cdcdbb4bb1e9561db961075752be6519d3a749c7540bd3d90d9cff8ddc9d5aff",
+      "scripts/benchmark/inverse_mutation_v1/tests/test_inverse_mutation.py": "2a4227a7780732ef2ff9110afbd299256c1795aaf8f3f140e04e9743cdb32bde"
+    },
+    "proof_output_sha256": "904c2ac2a5360f1c47228a9b452d64200fc96a469a22d1f9701e10aef5c61fac",
+    "proof_output_status": null,
+    "gate_verdict_vocab_sha256": "fa0e96a350981f236afb9dc43663432cf8aa7b90fa3bdff4533f0e102fb97060",
+    "formatter": {
+      "path": "/opt/uv-tools/ruff/bin/ruff",
+      "sha256": "88abf248be39383e05419e50811467b9c25ef3f3bc1b8a0874962941c0190ffa",
+      "version": "ruff 0.16.3",
+      "config": "isolated; line-length=100"
+    },
+    "foreign_dirty_inventory": [
+      {
+        "path": "scripts/kernel_rnd/autokernel/journal.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/accumulate.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/actors.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/hotspots.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/new_epoch.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/run.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/seed_bundle.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/serving_gate.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/test_actors.py",
+        "status": " M"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/test_bundle_surface.py",
+        "status": "??"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/loop/test_hotspots.py",
+        "status": "??"
+      },
+      {
+        "path": "scripts/kernel_rnd/autokernel/prior_art.py",
+        "status": " M"
+      }
+    ]
+  },
+  "base_wrapper_source": "epyc-root origin/main:artifacts/engineering/akx-p4a-keep-screen-20261101/evidence/run_r6_postmerge_wrapper.py",
+  "base_wrapper_sha256": "6f5b391ec009206bcd2f48c82e1cdd9fbd8ed0c5fbd6d7e36c6e707cce2fe67b",
+  "base_wrapper_commit": "d4593785d6425672581daa91b10ae1232097850a",
+  "adapted_script_sha256": "517e8663469f1943f429b9b39f188074b903df7b2e7ffc7ffb1b16a4b8e54d81",
+  "output_log_sha256": "2abc250eb5a2de7f17ff705c0b019e343d8b070f7eaa98bdf263ac3b738e167b",
+  "rss_sampler": {
+    "interval_s": 0.1,
+    "limit_bytes": 8589934592,
+    "source": "/proc/<pid>/statm"
+  }
+}
