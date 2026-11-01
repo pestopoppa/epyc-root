@@ -130,7 +130,7 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   :8086 reports `not_realized` → `degraded`), `cli_orch` status, `stack_commands status`, `autopilot/preflight_audit`,
   the `host_health` rewarm list, `corpus_quality_gate`, `kv_compress` compress-all and autopilot `/slots` polling.
   Needs an API + autopilot reload. Done when `/health` is not `degraded` with :8086 down by design, with tests.
-- [ ] **SCG-TEST-ORDER — fix the order-dependent `test_safety_gate_baseline_eligibility` failure.** (filed 2026-10-03,
+- [ ] **SCG-TEST-ORDER — fix the order-dependent `test_safety_gate_baseline_eligibility` failure.** [too-big: source fixes landed; both-order and full-unit acceptance remain with handoff owner] (filed 2026-10-03,
   workspace-ec) `test_reproduced_promotion_uses_representative_median…` fails or passes depending on test order, on
   origin/main as well as the integration branch. Find the leaked state (module global, env, or monkeypatch order),
   isolate it in a fixture, and prove it with `pytest -p no:randomly` in both orders plus the full `tests/unit` run.

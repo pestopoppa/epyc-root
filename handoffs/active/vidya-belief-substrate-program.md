@@ -2604,7 +2604,7 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
   - Done when a `belief_measurements.jsonl` write-side hook exists in `coherence_gate`'s CLI / `evaluate()` and one
     real gate run ingests.
 - [ ] **VB-SC75-CLS — SC75 sidecars must say which classifier labelled them (patch 05, owner workspace-ec under
-  EVL-47).** Apply `classifier-rectify/05-vidya-inf70-arm-capture.patch` (durable copy
+  EVL-47).** [too-big: source landed; genuine producer sidecar and strict ingest require owner run] Apply `classifier-rectify/05-vidya-inf70-arm-capture.patch` (durable copy
   `artifacts/gpu-block-27b-20261004/analysis/classifier-rectify/`). It adds an informational
   `extra.coherence_classifier` census to `scripts/vidya/adapters/inf70_serving_arm_capture.py`. Rows with no
   `classifier` are named `inf70-classify.v1|synthetic-ids(uniq/top/run vacuous)`. It also adds one test. All 37
@@ -3766,7 +3766,7 @@ Source: research intake session intake-ist-slq-20261022, Stage-3 plan `/mnt/raid
 
 ## Producer write-side wiring, 2026-10-24 (workspace-f8 read-out)
 
-- [ ] **VB-GNX-REINDEX-1 — classify the GitNexus re-index receipt as dependency evidence (filed 2026-10-24, workspace-f8 read-out of `nib2-gnx1-reindex`).**
+- [ ] **VB-GNX-REINDEX-1 — classify the GitNexus re-index receipt as dependency evidence (filed 2026-10-24, workspace-f8 read-out of `nib2-gnx1-reindex`).** [too-big: prepared hook requires owner-scheduled reindex and native receipt acceptance]
   - Record: `/mnt/raid0/llm/tmp/f8-launchers-20261023/nib2-gnx1-reindex/RESULT.json` (state, head sha, analyze rc, backup, restore), plus `out/status.clean.txt` and `out/analyze.out`. Producer: `job.sh` sha256 `8b204799...`.
   - It is a verified finding about tool state (index fresh at a commit), not a measurement. So, as with the NI52 code-intelligence row, it is dependency evidence: no ClaimTuple projection and no `evidence_supports_claim` until a shared dependency warrant rule exists.
   - Remaining: have the next re-index job write a self-hashed receipt (repo, branch, indexed commit, origin/main at read time, node/edge counts, gitnexus version) so that orchestrator impact checks can cite index freshness by sha.
