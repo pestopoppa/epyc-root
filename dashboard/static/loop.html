@@ -2907,8 +2907,14 @@ function renderDiscoveryProgression(d){
   for(const lane of ["CPU","GPU"]){
     const laneRows=rows.filter(row=>row.lane===lane);
     // A lane hero is the latest observation, not a ranking across incomparable workloads.
-    const latest=[...laneRows].sort((a,b)=>String(b.observed_at||"").localeCompare(String(a.observed_at||"")))[0];
-    html+=`<div class="pad" data-discovery-lane="${lane}"><strong>${lane} latest observation</strong>: `;
+    const observedTime=row=>{
+      const value=typeof row.observed_at==="string" && /(?:Z|[+-]\d{2}:\d{2})$/.test(row.observed_at)
+        ? Date.parse(row.observed_at) : NaN;
+      return Number.isFinite(value)?value:-Infinity;
+    };
+    const latest=[...laneRows].sort((a,b)=>observedTime(b)-observedTime(a))[0];
+    const label=latest && !Number.isFinite(observedTime(latest))?"observation (time unknown)":"latest observation";
+    html+=`<div class="pad" data-discovery-lane="${lane}"><strong>${lane} ${label}</strong>: `;
     html+=latest?`${esc(latest.candidate)} · ${esc(latest.workload||"workload unknown")} · `+
       `${esc(latest.stage)} · ${esc((latest.effect_fraction*100).toFixed(2))}% (higher better)`:
       `no observation reported`;

@@ -262,3 +262,21 @@ def test_regular_export_and_link_policy(tmp_path, kind):
     assert view['artifact_present'] is True
     assert view['state'] == ('malformed' if kind == 'symlink' else 'stale')
     assert view['_freshness']['evidence'] == str(path)
+
+
+@pytest.mark.parametrize('timed', [True, False])
+def test_lane_latest_uses_instants_and_never_dates_unknown_rows(tmp_path, timed):
+    body = document()
+    for row in body['candidates']:
+        row['observed_at'] = None
+    cpu = [row for row in body['candidates'] if row['lane'] == 'CPU']
+    assert len(cpu) >= 2
+    cpu[0].update(candidate='earlier-offset', observed_at='2026-01-01T13:00:00+02:00' if timed else None)
+    cpu[1].update(candidate='later-utc', observed_at='2026-01-01T12:30:00Z' if timed else None)
+    html = run_renderer(tmp_path, {'progression': snapshot(tmp_path, body)})
+    hero = re.search(r'data-discovery-lane="CPU">(.*?)</div>', html, re.S).group(1)
+    if timed:
+        assert 'later-utc' in hero and 'earlier-offset' not in hero
+        assert 'latest observation' in hero
+    else:
+        assert 'time unknown' in hero and 'latest observation' not in hero
