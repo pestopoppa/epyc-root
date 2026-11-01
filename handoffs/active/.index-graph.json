@@ -3939,7 +3939,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-01T21:52:29Z",
+  "generated_at": "2026-11-01T21:54:04Z",
   "nodes": [
     {
       "age_days": 94,
@@ -6867,7 +6867,7 @@
       "age_days": 0,
       "blocked": 42,
       "blocked_by": [],
-      "closed": 68,
+      "closed": 69,
       "domain": "inference-research",
       "handoff": "conversation-stack.md",
       "id": "INF-79",
