@@ -604,3 +604,60 @@ class BudgetTests(_DSHBase):
         self.assertEqual(self.calls[-1]["cmd"], ["codex", "exec", "--json", "-"], "the next resume was a FRESH session (rotation)")
         self.assertIn("brief", self.calls[-1]["prompt"].lower())
         self.assertIn("ROTATE alpha: per-call context 180000 > 150000", self.log_text())
+
+
+class InventoryTests(_DSHBase):
+    """Operator 23:30Z: compute must be the ONLY bottleneck; the inventory target is a priority order, never a stop condition."""
+
+    def test_running_rows_never_leave_slots_empty_and_deficit_ranks_first(self):
+        # alpha owns 2 RUNNING rows (grant open, live pid), other handoffs have open blockers -> every slot busy
+        self.reg["max_live"] = 3
+        self.session(status="suspended")
+        self.reg["auto_start"] = True
+        hs.save(hs.reg_path(self.flags), self.reg)
+        for rid in ("run-1", "run-2"):
+            _w(os.path.join(self.flags, "ready", rid + ".json"), json.dumps({"schema": "epyc.row.v3", "id": rid, "owner": "o", "lane": "cpu", "regions": "any-cpu-quarter",
+                                                                             "priority_rank": 1, "handoff_task": "handoffs/active/alpha.md:INF-9"}))
+            _w(os.path.join(self.flags, "grants", rid + ".grant"), "regions=0-23\n")
+            _w(os.path.join(self.flags, "ready", "armed", rid + ".json"), json.dumps({"id": rid, "pid": os.getpid()}))
+        _w(os.path.join(self.flags, "BACKLOG-handoff-alpha.md"), "## Inference rows\n- [running] cpu rank=1 **run-1**\n- [running] cpu rank=1 **run-2**\n\n## Non-inference tasks\n\n- none\n")
+        with patch.object(hs, "alive", lambda pid: pid == os.getpid()):
+            reg, _ = self.dispatch()
+        S = reg["sessions"]
+        started = [k for k, e in S.items() if e.get("auto_started")]
+        self.assertEqual(sorted(started), ["mid", "zed"], "slots filled by auto-start while alpha's rows run")
+        self.assertEqual(S["alpha"]["work_state"], "pause")  # nothing open but its own running rows -> paused, slot given away
+        self.assertIn("PAUSE alpha: waiting on row(s) run-1, run-2", self.log_text())
+        data = bg.build(self.flags, os.path.join(self.repo, "handoffs/active/backlog-priority.json"), "nolog", sessions_path=hs.reg_path(self.flags))
+        inv = data["inventory"]
+        self.assertEqual((inv["cpu"]["ready"], inv["cpu"]["target"], inv["gpu"]["deficit"]), (2, 8, 2))
+        # the gpu lane is in deficit: mid (unblocks a gpu row) ranks first even if a cpu-heavy handoff has a higher plain score
+        self.assertEqual(data["handoff_rank"][0]["handoff"], "handoffs/active/mid.md")
+        self.assertGreater(data["handoff_rank"][0]["deficit_score"], 0)
+        self.assertIn("inventory (ready rows vs target", bg.resume_delta(data, "mid"))
+
+    def test_inventory_starved_alarm_and_dead_push_lock(self):
+        now = 1_800_000_000.0
+        st = {}
+        data = {"inventory": {"gpu": {"ready": 0, "target": 2, "deficit": 2}, "cpu": {"ready": 3, "target": 8, "deficit": 5}},
+                "klog_idle": [(hs._dt.datetime.fromtimestamp(now + 200, hs._dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "gpu-quiet")],
+                "workers": {"codex-gen": {"rows": [{"id": "g1", "lane": "gpu", "state": "blocked", "rank": 3, "reasons": ["dry run failed: no unit"], "tasks": []},
+                                                   {"id": "g2", "lane": "gpu", "state": "needs-launcher", "rank": 9, "reasons": ["missing launcher"], "tasks": []}]}}}
+        hs.inventory_alarm(self.flags, st, data, now)
+        self.assertNotIn("INVENTORY-STARVED", self.log_text(), "not before 2 keeper ticks")
+        hs.inventory_alarm(self.flags, st, data, now + 250)
+        log = self.log_text()
+        self.assertIn("INVENTORY-STARVED gpu: free region, 0 ready rows, 0 publishable candidates for 4 min; nearest-to-ready: g1 [blocked] dry run failed: no unit; g2 [needs-launcher] missing launcher", log)
+        self.assertNotIn("INVENTORY-STARVED cpu", log, "cpu has ready rows")
+        hs.inventory_alarm(self.flags, st, data, now + 300)
+        self.assertEqual(log.count("INVENTORY-STARVED"), self.log_text().count("INVENTORY-STARVED"), "at most once per 30 min")
+        # dead push lock: reported, never released
+        lockdir = os.path.join(self.td.name, "push-locks")
+        _w(os.path.join(lockdir, "push-abc.json"), json.dumps({"agent": "codex-x", "pid": 99999977, "acquired": "2026-11-01T22:00:00Z"}))
+        with patch.object(hs, "PUSH_LOCK_DIR", lockdir):
+            hs.dead_push_lock(self.flags, st, now)
+            hs.dead_push_lock(self.flags, st, now + 60)
+        self.assertEqual(self.log_text().count("PUSH-LOCK-DEAD"), 1)
+        self.assertIn("holder codex-x pid 99999977 is dead", self.log_text())
+        self.assertIn("NOT released automatically", self.log_text())
+        self.assertTrue(os.path.exists(os.path.join(lockdir, "push-abc.json")))

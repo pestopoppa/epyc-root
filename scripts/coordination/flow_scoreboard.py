@@ -99,7 +99,7 @@ def compute(flags: str, priority: str, keeper_log: str, state: dict, now: _dt.da
         state = {"day": day, "seen": {}, "closed": {}}
     data = bg.build(flags, priority, keeper_log, now)
     results, armed_log, idle_lane = fold_log_today(keeper_log, day)
-    rows = {}
+    rows = {"_inventory": data.get("inventory") or {}}
     for w in data["workers"]:
         allrows = data["workers"][w]["rows"]
         # rows whose dry run is RUNNING (cause=keeper): ws58's qualification in flight, not the owner's blocking task
@@ -127,7 +127,7 @@ def compute(flags: str, priority: str, keeper_log: str, state: dict, now: _dt.da
     return rows, state
 
 
-def render(rows: dict, now: _dt.datetime) -> str:
+def render(rows: dict, now: _dt.datetime, inventory: dict | None = None) -> str:
     metric = None
     if tpt is not None:
         try:
@@ -146,11 +146,16 @@ def render(rows: dict, now: _dt.datetime) -> str:
          "not per hour). tokens = the session's Codex rollouts + its lane sub-agents; completed = boxes ticked in landed wrap-ups + "
          "rows published + filings. Every change must make this number drop. Then the flow: unblock -> launcher -> keeper dry run "
          "(PASS) -> armed -> granted; good = rows qualified up, blocking tasks closed up, open fix: tasks and idle-hours down.", "",
+         ("**Inventory (ready rows vs target = 2 x lane capacity; operator 23:30Z: compute must be the ONLY bottleneck; the target "
+          "is a priority order, never a stop condition):** " + ", ".join(f"{ln} **{v['ready']}/{v['target']}**" + (" DEFICIT" if v["deficit"] else "")
+                                                                          for ln, v in (inventory or {}).items()) if inventory else ""), "",
          "| bucket | **tokens / completed task (today)** | rows qualified today (dry-run PASS) | dry-run FAILs today | blocking tasks closed today | blocking tasks open now "
          "| open fix: tasks (FAIL, launcher unchanged) | blocked rows now | parked rows | dry runs running (keeper) "
          "| qualified-armed cpu/gpu/host | idle compute-hours with a blocked row as cause |",
          "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---:|"]
     for w, r in rows.items():
+        if w.startswith("_"):
+            continue
         q = r["qual"]
         L.append(f"| {w} | {tok_task(w)} | {r['armed']} | {r['dryrun_fail']} | {r['closed']} | {r['open_blocking']} | {r['open_fix']} | {r['blocked_rows']} "
                  f"| {r['parked']} | {r['awaiting_keeper']} | {q['cpu']}/{q['gpu']}/{q['host']} | {r['idle_h']} |")
@@ -161,7 +166,7 @@ def render(rows: dict, now: _dt.datetime) -> str:
               + (f" Unattributed (shared-/workspace-era sub-agent) spend: {tpt.fmt_m(un['tokens'])}." if un else "")]
     elif metric and metric.get("error"):
         L += ["", f"tokens-per-task metric unavailable: {metric['error']}"]
-    waiting = [(w, r["awaiting_ids"]) for w, r in rows.items() if r.get("awaiting_ids")]
+    waiting = [(w, r["awaiting_ids"]) for w, r in rows.items() if not w.startswith("_") and r.get("awaiting_ids")]
     if waiting:
         L += ["", "Rows whose dry run is running now (ws58 keeper, not the owner's task): "
               + "; ".join(f"{w}: " + ", ".join(ids) for w, ids in waiting) + "."]
@@ -185,7 +190,7 @@ def main(argv=None):
     now = _dt.datetime.now(_dt.timezone.utc)
     state = bg.load_json(sp) or {}
     rows, state = compute(a.flags, a.priority, klog, state, now)
-    text = render(rows, now)
+    text = render(rows, now, rows.get("_inventory"))
     if a.dry_run:
         print(text)
     else:

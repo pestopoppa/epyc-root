@@ -166,6 +166,16 @@ window is killed when the session pauses (waiting on a row), yields or is done, 
 resume; the turn's output stays in `handoff-sessions/<slug>/<ts>.jsonl` and `handoff-sessions.log` carries the state line
 (`STATE <slug>: paused - waiting on row(s) … ; tmux window h-<slug> killed`).
 
+**Governing objective (operator, 2026-11-01 23:30Z — binding): compute capacity must be the ONLY bottleneck.** Ready rows per
+lane target ≥ 2 × capacity (cpu ≥ 8 quarter-rows, gpu ≥ 2; FLOW-SCOREBOARD headline `inventory vs target`). The target is a
+PRIORITY ORDER — a deficit lane's blockers (stuck rows with fix tasks first, then own unpublished inference tasks) rank first —
+**never a stop condition**: "just because some inference tasks have been submitted and others are running is no reason to stop
+processing blockers". A session whose rows are queued or running is not idle; `max_live` slots are never left empty while any
+handoff has an open non-inference blocker or an unpublished inference task (auto-start fills continuously; codex-gen takes every
+orphaned row fix). Waiting for rows to become available is a pipeline FAILURE: a lane free for >2 keeper ticks with zero
+candidates logs `INVENTORY-STARVED <lane>` with the 3 nearest-to-ready rows and their blockers. A push lock whose holder pid is
+dead is logged `PUSH-LOCK-DEAD` and never auto-released.
+
 **Pause rule (operator, 2026-11-01 21:15Z — binding).** A session may be paused ONLY when everything left in its handoff
 waits on an inference row that is queued or running. After a landed wrap-up the dispatcher reads `BACKLOG-handoff-<slug>.md`:
 any advanceable row (blocked / needs-launcher / needs-qualification), own inference task to publish, or non-inference
