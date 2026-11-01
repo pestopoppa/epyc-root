@@ -359,7 +359,7 @@ prefills only the suffix.
     case in the GPU window on the 27B.
   - Extend KVU-19a's `test_flash_attn_ext_unified` cases and the 64-case exactness harness with **multi-seq
     (shared) cells**, so 19a/19b stay exact over shared trunks.
-- [ ] **KPF-17a: shared-trunk cases for KVU-19a/19b's `test_flash_attn_ext_unified`, applied at the 19a/19b fold.**
+- [ ] **KPF-17a: shared-trunk cases for KVU-19a/19b's `test_flash_attn_ext_unified`, applied at the 19a/19b fold.** [too-big: champion tests are folded but remaining 64-case CPU/ROCm validation belongs to handoff owner]
   KPF-17's fourth bullet cannot land on the P1 branch, because the test lives on the unfolded 19a/19b line. The
   patch is prepared: `/mnt/raid0/llm/tmp/kpf-p1-20261004/kpf17-19a/kpf17-shared-trunk-fa-unified.patch`, which adds
   an `n_shared` trunk owned by every sequence plus 25 cases, and passes `git apply --check` on
