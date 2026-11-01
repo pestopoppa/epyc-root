@@ -56,3 +56,8 @@ Integrated the previously separate entry-binding verifier and six-cell lifecycle
 ## Disabled S2 v15 bundle candidate
 
 Prepared a fresh-ID v15 source draft retaining the original cohort and one-item exposure guard. Independent review found a stop arriving between the loop check and exposure start could begin a request; the candidate checks stop before and after marker creation, preserving a raced marker as unknown. A later check-to-HTTP race remains and requires active-request cancellation/drain. Both launchers unconditionally refuse execution; live custody, source closure, realistic dry-run timing and native qualification are open. Eleven offline tests pass when run from the candidate's tests directory; running discovery from its parent fails because test fixtures use relative paths. No READY or inference occurred. Evidence: `artifacts/compute/yarn-s2-v15-candidate-20261101/README.md`.
+
+
+## E1 v15 output isolation and notification recovery
+
+The disabled E1 draft now derives disjoint dry-run and production output roots and has a single-writer completion notification journal that recovers a missing notification from a matching completed marker, rejects conflicting/duplicate notifications and fails closed on torn lines. Thirty synthetic controls pass, including actual entry path and recovery. This is not validation of scientific markers, writer exclusion or atomic marker durability. The keeper watches a fixed result path, which still must be reconciled with the separate dry-run root; source sealing, live stop/drain, content provenance and native qualification remain open. No inference or READY publication occurred. Evidence `artifacts/compute/yarn-e1-v15-output-recovery-20261101/`.
