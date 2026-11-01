@@ -326,3 +326,97 @@ class AdmitImport(unittest.TestCase):
         """)
         r = subprocess.run([sys.executable, "-I", "-c", code], capture_output=True, text=True, timeout=60)
         self.assertEqual(r.stdout.strip(), "OK", r.stdout + r.stderr)
+
+
+class DrainNeverPreempt(unittest.TestCase):
+    """Operator 2026-11-01: host / quiet-host rows are scheduled by DRAIN, never by preemption and never starved."""
+
+    def _cand(self, rid, options, kind="grant", rank=50, shape="quarter", since=0, window=600, gib=8, lane="cpu"):
+        return {"id": rid, "kind": kind, "lane": lane, "rank": rank, "lane_count": 1, "gib": gib, "bench": False,
+                "options": [frozenset(o) for o in options], "shape": shape, "since": since, "window_s": window}
+
+    def test_host_row_not_starved_by_quarter_stream(self):
+        """A rank-100 host row behind an endless stream of rank-1 quarter rows is placed once it has aged DRAIN_AFTER_S:
+        the drain stops new long rows, backfills only rows that end before T, and places the host row at T."""
+        now = 1_000_000
+        host = self._cand("host-row", [set(rf.QUARTERS)], rank=100, shape="host", since=now - rf.DRAIN_AFTER_S, window=7200)
+        placed_host = False
+        free = {"q1", "q2", "q3"}          # q0 runs a 20-minute quarter row
+        grant_ends = [now + 1200]
+        for tick in range(60):
+            t = now + tick * 120
+            stream = [self._cand(f"q-{tick}-{i}", [{q} for q in rf.QUARTERS], rank=1, window=3600, since=t) for i in range(6)]
+            assigned, idle, pending = rf.plan(free, stream + [host], 1000, now=t, grant_ends=grant_ends)
+            ids = {c["id"] for c, _ in assigned}
+            if "host-row" in ids:
+                placed_host = True
+                break
+            # drain active: nothing placed may end after T
+            self.assertIsNotNone(rf.plan.last_drain)
+            T = rf.plan.last_drain[1]
+            for c, _ in assigned:
+                self.assertLessEqual(t + c["window_s"], T, f"backfill {c['id']} would delay T")
+            # the running quarter row ends at T; simulate: free everything after T
+            if t + 120 >= T:
+                free = set(rf.QUARTERS)
+                grant_ends = []
+        self.assertTrue(placed_host, "host row starved")
+
+    def test_backfill_never_delays_T_and_no_double_booking_during_drain(self):
+        now = 5_000_000
+        quiet = self._cand("quiet", [set(rf.REGIONS)], rank=10, shape="quiet-host", since=now, window=7200)
+        T = now + 1800
+        short = [self._cand(f"s{i}", [{q} for q in rf.QUARTERS], rank=20, window=900, since=now) for i in range(5)]
+        long_ = [self._cand(f"l{i}", [{q} for q in rf.QUARTERS], rank=1, window=3600, since=now) for i in range(5)]
+        free = {"q0", "q1", "q2", rf.GPU}   # q3 runs until T
+        assigned, idle, pending = rf.plan(free, short + long_ + [quiet], 1000, now=now, grant_ends=[T])
+        self.assertEqual(rf.plan.last_drain[0]["id"], "quiet")
+        self.assertAlmostEqual(rf.plan.last_drain[1], T)
+        ids = [c["id"] for c, _ in assigned]
+        self.assertTrue(all(i.startswith("s") for i in ids), ids)          # only backfill that ends before T
+        self.assertEqual(len(ids), 3)                                         # every free quarter backfilled, nothing idles
+        opts = [o for _, o in assigned]
+        for i, a in enumerate(opts):
+            for b in opts[i + 1:]:
+                self.assertFalse(a & b, "double booking during drain")
+        for r, why in idle.items():
+            self.assertIn("draining for quiet-host quiet", why)
+        # at T everything is free: the quiet-host row is placed first and alone
+        assigned, idle, pending = rf.plan(set(rf.REGIONS), short + long_ + [quiet], 1000, now=T, grant_ends=[])
+        self.assertEqual([c["id"] for c, _ in assigned], ["quiet"])
+        self.assertEqual(assigned[0][1], frozenset(rf.REGIONS))
+
+    def test_quiet_window_knob_off_by_default(self):
+        d = tempfile.mkdtemp(prefix="alloc-quiet-")
+        try:
+            self.assertTrue(rf.quiet_ok_now(d))
+            with open(os.path.join(d, "allocator.json"), "w") as f:
+                json.dump({"quiet_windows": ["22:00-06:00"]}, f)
+            import datetime as dt
+            at = dt.datetime(2026, 11, 1, 23, 0, tzinfo=dt.timezone.utc).timestamp()
+            self.assertTrue(rf.quiet_ok_now(d, at))
+            at = dt.datetime(2026, 11, 1, 12, 0, tzinfo=dt.timezone.utc).timestamp()
+            self.assertFalse(rf.quiet_ok_now(d, at))
+            quiet = self._cand("quiet", [set(rf.REGIONS)], shape="quiet-host")
+            assigned, _, _ = rf.plan(set(rf.REGIONS), [quiet], 1000, now=at, quiet_ok=False)
+            self.assertEqual(assigned, [])
+        finally:
+            shutil.rmtree(d, ignore_errors=True)
+
+    def test_shape_of(self):
+        self.assertEqual(rf.shape_of({"regions": "any-cpu-quarter", "gib": 48, "launcher": {"path": "/nonexistent"}}), "quarter")
+        self.assertEqual(rf.shape_of({"regions": "0-95", "gib": 48, "launcher": {"path": "/nonexistent"}}), "host")
+        self.assertEqual(rf.shape_of({"regions": "any-cpu-quarter", "gib": 600, "launcher": {"path": "/nonexistent"}}), "multi-quarter(3)")
+        self.assertEqual(rf.shape_of({"regions": "mi210_0,184-191", "gib": 48, "launcher": {"path": "/nonexistent"}}), "gpu")
+        self.assertEqual(rf.shape_of({"regions": "0-95", "shape": "quiet-host", "launcher": {"path": "/nonexistent"}}), "quiet-host")
+        opts, _ = rf.row_shape({"regions": "0-95", "shape": "quiet-host", "launcher": {"path": "/nonexistent"}})
+        self.assertEqual(opts, [frozenset(rf.REGIONS)])
+        # quiet-host dry run = correctness on one quarter, no gpu-quiet
+        d = {"regions": "0-95", "shape": "quiet-host", "gib": 48, "launcher": {"path": "/nonexistent"}}
+        dopts, one_q = rf.dryrun_shape(d, opts, "/nonexistent-flags")
+        self.assertTrue(one_q)
+        self.assertEqual(sorted(dopts), sorted(frozenset({q}) for q in rf.QUARTERS))
+        # a 600 GiB host row cannot be dry-run on one quarter: real shape
+        big = {"regions": "0-95", "gib": 600, "launcher": {"path": "/nonexistent"}}
+        bopts, _ = rf.row_shape(big)
+        self.assertEqual(rf.dryrun_shape(big, bopts, "/nonexistent-flags"), (bopts, False))

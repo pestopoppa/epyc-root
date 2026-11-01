@@ -92,9 +92,21 @@ spawns the dry runs itself. Invariants it enforces every tick (keeper log lines)
 | `IDLE-VIOLATION <id>` | a fitting grantable row was not placed (allocator bug; should never appear) |
 | `ALERT <condition> repeated 3 ticks` | any HEAL/CONFLICT/UNDERUSED/violation seen 3 ticks running → `ws58-keeper-alerts.jsonl` |
 
+**Row shapes and the drain (operator, 2026-11-01 evening; binding).** Every row has a shape, recorded by `publish` as
+`shape`: `quarter` | `multi-quarter(n)` | `host` | `quiet-host` | `gpu` — the spec's `shape` wins, else derived from the
+launcher's `--claim-cpus`, `ram_gib` (> 256 GiB per quarter widens it), `--gpu-quiet exclusive` (→ quiet-host: every
+quarter plus the GPU idle, timing baselines) and class. Dry runs by shape: quarter → one quarter; multi-quarter/host →
+one quarter only when the launcher is constrainable (installed engine) and the model fits a quarter's RAM, else the real
+shape with the reservation capped to first unit + `dryrun_timeout_s`; quiet-host → correctness only, on one quarter, no
+gpu-quiet claim (the dry run proves plumbing, not timing). Quiet-host and aged (≥ 1 h) host/multi-quarter rows are
+scheduled by **drain, never preempt**: `DRAIN <id> (<shape>) until T` (T = latest end among the running grants), only
+rows that end before T are backfilled (`IDLE-WHY <q>: … draining for quiet-host <id> until T`), at T the whole shape is
+granted first. Knob, off by default: `compute-flags/allocator.json {"quiet_windows": ["22:00-06:00"]}` (UTC).
+
 Proof: `scripts/coordination/tests/test_allocator.py` (property test over random states: no double booking, no idle region
 while a fitting row waits, starved lane first; today's incidents as regression cases) and
-`scripts/coordination/tests/test_grant_ok_launcher_flags.py` (every engine flag parses). `rowflow.py allocate --plan` is the
+`scripts/coordination/tests/test_grant_ok_launcher_flags.py` (every engine flag parses); drain tests: a host row is never starved
+by a stream of quarter rows, backfill never delays T, no double booking during a drain. `rowflow.py allocate --plan` is the
 read-only preview (`ws58-calendar-keeper-v11.sh --dry-run` prints it).
 
 ## Backlogs (`scripts/coordination/backlog_gen.py`, every 10 min)

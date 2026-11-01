@@ -1,0 +1,27 @@
+{
+ "at": "2026-11-01T22:39:13Z",
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/h-df2-11-quants-20261101/launcher.out",
+ "elapsed_s": 5,
+ "ended": null,
+ "engine_sha256": "af46a9fc763086760335f4ac5b0d3df4b8d106db977c0fb2a7f6e30d7e7f4945",
+ "first_unit_at": null,
+ "fix_task": "fix dry-run failure of h-df2-11-quants-20261101: job ended (rc=? (no ended record)) before writing a unit to /mnt/raid0/llm/tmp/h-df2-11-quants-20261101/results/artifacts.jsonl (jsonl) (see compute-flags/dryrun/h-df2-11-quants-20261101/launcher.out; the keeper retries as soon as the launcher file changes)",
+ "id": "h-df2-11-quants-20261101",
+ "launcher_out_tail": [
+  "",
+  "==== dry run 2026-11-01T22:39:08Z regions=0-23 launcher_sha=d65c9f4ecddd4e19b12c81ed4e0ff834d7e899d0b0ab8fb5aa65b25bb7b20de0 units_before=0",
+  "/mnt/raid0/llm/tmp/h-df2-11-quants-20261101/launch-quants.sh: line 8: WS58_REGIONS: keeper CPU region required",
+  "==== ORPHANS [183816, 183821]: processes still naming this row after the dry run ended (a wrapper detached them; the owner stops them by pid)",
+  "==== dry run FAIL: job ended (rc=? (no ended record)) before writing a unit to /mnt/raid0/llm/tmp/h-df2-11-quants-20261101/results/artifacts.jsonl (jsonl) (2026-11-01T22:39:13Z)"
+ ],
+ "launcher_sha256": "d65c9f4ecddd4e19b12c81ed4e0ff834d7e899d0b0ab8fb5aa65b25bb7b20de0",
+ "reason": "job ended (rc=? (no ended record)) before writing a unit to /mnt/raid0/llm/tmp/h-df2-11-quants-20261101/results/artifacts.jsonl (jsonl)",
+ "regions": "0-23",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/h-df2-11-quants-20261101/results/artifacts.jsonl",
+ "row_sha256": "efd2d1bce312051ea685251dfc7e3fbd6e51d2d36f229b514f6e004af3f9aadd",
+ "rowflow_sha256": "71818f7af967b97a879d79f2e2898787e84c35a7fa04449db3a59cfd0f870111",
+ "units": 0,
+ "vram_used_max_bytes": null,
+ "warning": "ORPHANS [183816, 183821]: processes still naming this row after the dry run ended (a wrapper detached them; the owner stops them by pid)"
+}
