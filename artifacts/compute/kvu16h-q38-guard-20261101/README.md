@@ -1,0 +1,5 @@
+# Q38-T7 no-draft safety guard draft
+
+Historical source SHA-256 `229ff2b79ab090c8fac315472d53ce2e5715c6edd07057285f7de775ccea3080`; guarded successor SHA-256 `64188f12ef61c6390afde2631287f162e87b7d6734eb5f51839a410546b289ac`. Phase A/B requests on the original mix request-level no-draft with a drafted server. The successor refuses A/B at CLI entry before dry-run, output, preflight or server requests; direct phase calls refuse immediately. Phase C is outside this guard. This is a safety stop, not the requested dedicated-server implementation; phase B needs separately warmed prefixes for each server. Historical source and deployed scratch copies are untouched.
+
+`python3 -B artifacts/compute/kvu16h-q38-guard-20261101/test_guard.py` passed 2 offline structural and isolated behavior tests, with no inference. The check does not exercise real imported runner dependencies or a live server. Review actual caller/source hash and integrate the replacement into the relevant runner before claiming protection.
