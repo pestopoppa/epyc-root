@@ -125,7 +125,8 @@ class EvalErrorsReaderTests(unittest.TestCase):
             root = Path(tmp)
             trial = root / "trial_1"
             trial.mkdir()
-            nested = b"{" + b'"nested":' + b"[" * 1500 + b"0" + b"]" * 1500 + b"}\n"
+            depth = 10_000
+            nested = b"{" + b'"nested":' + b"[" * depth + b"0" + b"]" * depth + b"}\n"
             (trial / "question_results.jsonl").write_bytes(nested)
             data = eval_errors.read_latest(root)
         self.assertEqual(data["status"], "unreadable")
@@ -258,7 +259,9 @@ class EvalErrorsReaderTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             js_path = Path(tmp) / "page.js"
             payload_path = Path(tmp) / "payload.json"
-            js_path.write_text(script, encoding="utf-8")
+            js_path.write_text(
+                "global.location = {origin: 'http://localhost', href: ''};\n" + script,
+                encoding="utf-8")
             payload_path.write_text(json.dumps(payload), encoding="utf-8")
             result = subprocess.run(
                 [shutil.which("node"), str(harness), str(js_path), str(payload_path),
