@@ -147,3 +147,7 @@ Both review defects were repaired before this boundary: the Q38 adapter now bloc
 ## Companion verification and duplicate repair events
 
 Consumed all three events. Independent companion review verified the Git tree, source object hashes and candidate patch round trip; added and verified `SHA256SUMS` for the durable companion record and patch. It still does not establish the historical binary or build compatibility. ELF traversal and Q38 fail-closed fixes were already integrated in `89b56228aca6`; their limitations remain. Registered events for concrete Q38 supervisor work, build producer continuation and DF2 evidence preservation. No build, live process or compute ran. GitNexus is unindexed; no application symbol was edited.
+
+## DF2 inventory and producer reviews
+
+Consumed all four requested events. Preserved [three dated DF2 sources](../../artifacts/compute/kvu16h-df2-inventory-20261101/README.md); their checksums pass. The inspected no-draft benchmark is a separate process and the client has no request-level speculative override; stop completion, other copies and runtime behavior remain unproven. The build-journal component is not an executable producer, and the clone3 source is uncompiled and lacks cgroup custody, descendant drain, reaping and integration. Both were sent for independent review rather than treated as ready. Source-bound producer continuation also has a registered event. No build, live process or compute ran. GitNexus remains unindexed; no application symbol was edited.
