@@ -32,3 +32,4 @@
 - CH-18.b static source check: upstream #30580 still enters checkpoint search in the assumed short-context zero-threshold case; #30666 is a separate prefix invalidation change. Retained arithmetic controls and conservative coverage/rollback/fallback test design in `artifacts/compute/akagg-ch18b-20261101/`; no execution or validated fix.
 
 - CH-18.a upstream inquiry complete: #29707 `4e201388c319fc9f747fbe6a666793e2dc2a6d8e` uses one steady-clock response deadline and propagates router disconnect; C5 still uses resettable wait_for. Verified upstream ancestry and C5 non-ancestry. Added V11-113 PEND with timeout and direct/router disconnect regression gates; no runtime verdict.
+- CH-32 ggml enum scan: `GGML_OP_MUL_MAT` ordinal 31 in C5 vs 29 in all 13 feature-parent headers; D1 adds a use. Reproducible evidence under `artifacts/compute/akagg-ch32-enum-preflight-20261101/`; keep binary/library generations matched. No source bump or runtime failure inferred.

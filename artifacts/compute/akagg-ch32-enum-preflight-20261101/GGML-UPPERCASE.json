@@ -1,0 +1,115 @@
+{
+  "base": "c72ec82f5417bb2937310326120f149b665e8400",
+  "scope": "Lexical diff scan; comments, strings, deleted context, generated code and declarations are not type checked. Absence is not proof of a needed ggml bump or inability to hand-port; presence is not compatibility.",
+  "groups": {
+    "A": {
+      "commit": "cbe28bb3cb0758f0c566a9a3561766821aeb0748",
+      "introduced_tokens": [],
+      "absent_from_c5_all_tracked_text": [],
+      "example_added_lines": {}
+    },
+    "B1": {
+      "commit": "b77d646751d01c0962bc203b6809e9d94f7d50b7",
+      "introduced_tokens": [
+        "GGML_ASSERT"
+      ],
+      "absent_from_c5_all_tracked_text": [],
+      "example_added_lines": {}
+    },
+    "B2": {
+      "commit": "e79d8cab590ae0a040e1562d09e46b0bfab8cc2d",
+      "introduced_tokens": [
+        "GGML_ASSERT"
+      ],
+      "absent_from_c5_all_tracked_text": [],
+      "example_added_lines": {}
+    },
+    "C1": {
+      "commit": "a4cb4c61fd9d9c2066c7c1747821d3d65b8943bd",
+      "introduced_tokens": [
+        "GGML_ASSERT"
+      ],
+      "absent_from_c5_all_tracked_text": [],
+      "example_added_lines": {}
+    },
+    "C2": {
+      "commit": "7e3eeee0480902c90cbdff172f407dc063cf0770",
+      "introduced_tokens": [],
+      "absent_from_c5_all_tracked_text": [],
+      "example_added_lines": {}
+    },
+    "D1": {
+      "commit": "2851b3bcbf8d993a2243ae751c0a7dfa8e944a40",
+      "introduced_tokens": [
+        "GGML_ASSERT",
+        "GGML_MROPE_SECTIONS",
+        "GGML_OP_MUL_MAT",
+        "GGML_ROPE_TYPE_NORMAL",
+        "GGML_TYPE_F16",
+        "GGML_TYPE_F32",
+        "GGML_TYPE_I32",
+        "GGML_TYPE_I64",
+        "GGML_UNUSED"
+      ],
+      "absent_from_c5_all_tracked_text": [],
+      "example_added_lines": {}
+    },
+    "D2": {
+      "commit": "1242be66f65d5d8a3d996ba56d6de106ced98cf6",
+      "introduced_tokens": [
+        "GGML_ASSERT",
+        "GGML_MROPE_SECTIONS"
+      ],
+      "absent_from_c5_all_tracked_text": [],
+      "example_added_lines": {}
+    },
+    "D3": {
+      "commit": "19cce6919992fdffd92e0ac152caaf1e2b8f254e",
+      "introduced_tokens": [
+        "GGML_ASSERT",
+        "GGML_ROPE_TYPE_VISION",
+        "GGML_TYPE_I32"
+      ],
+      "absent_from_c5_all_tracked_text": [],
+      "example_added_lines": {}
+    },
+    "D4": {
+      "commit": "19ff817fb25e9a1b838b1d7f9f4325f7bf9779c4",
+      "introduced_tokens": [
+        "GGML_ABORT",
+        "GGML_ASSERT",
+        "GGML_ROPE_TYPE_NEOX",
+        "GGML_TYPE_F32",
+        "GGML_TYPE_I32"
+      ],
+      "absent_from_c5_all_tracked_text": [],
+      "example_added_lines": {}
+    },
+    "D5": {
+      "commit": "8ca4060b7e30e76baaa5670ee1ec1b760b7f8552",
+      "introduced_tokens": [],
+      "absent_from_c5_all_tracked_text": [],
+      "example_added_lines": {}
+    },
+    "D6": {
+      "commit": "d1eb0debaddc9f9246ee884653ee3a7764f60b77",
+      "introduced_tokens": [],
+      "absent_from_c5_all_tracked_text": [],
+      "example_added_lines": {}
+    },
+    "D7": {
+      "commit": "889f2ec96deacbc2d8a9a67dbe181eaa43a2fb3b",
+      "introduced_tokens": [],
+      "absent_from_c5_all_tracked_text": [],
+      "example_added_lines": {}
+    },
+    "D8": {
+      "commit": "d4f1b18b3a1522eec48decbe9ff7dc66eb60a9f4",
+      "introduced_tokens": [
+        "GGML_ASSERT"
+      ],
+      "absent_from_c5_all_tracked_text": [],
+      "example_added_lines": {}
+    }
+  }
+}

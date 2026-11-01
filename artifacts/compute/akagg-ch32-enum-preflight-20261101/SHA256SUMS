@@ -1,0 +1,6 @@
+1d31509232ae947487780da760b989c53112cc9a88ac2fba64b773d7dc4ff5af  artifacts/compute/akagg-ch32-enum-preflight-20261101/GGML-ENUM-VALUES.json
+c91aee788b1d0a14c6b9106906f6a9075895777d11806ef088989964db81ddc7  artifacts/compute/akagg-ch32-enum-preflight-20261101/GGML-RETURNS.json
+9b4ece746f087c8111377c6fb27feb29be496ea401271402f72e04ba4c289ece  artifacts/compute/akagg-ch32-enum-preflight-20261101/GGML-UPPERCASE.json
+f9a5587eb67e76941338495aa1efb45aaf6156c69989bfa4fcec45ab3c3a124b  artifacts/compute/akagg-ch32-enum-preflight-20261101/enum_values.py
+633a8bbaf361b0b9a14c258ae92c057f61fbff15d960712a21f1436641a404a1  artifacts/compute/akagg-ch32-enum-preflight-20261101/return_scan.py
+f64756733cebd25ec5b3d6e0bd2b9e1c7cccac3198d24c7d5fa800731c9e03c1  artifacts/compute/akagg-ch32-enum-preflight-20261101/scan.py

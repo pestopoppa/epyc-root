@@ -1,0 +1,202 @@
+{
+  "base": "c72ec82f5417bb2937310326120f149b665e8400",
+  "scope": "Parses literal enum ordinals and four literal macro values in pinned headers. No binary compatibility, backend behavior or source-port verdict follows.",
+  "refs": {
+    "C5": {
+      "commit": "c72ec82f5417bb2937310326120f149b665e8400",
+      "values": {
+        "GGML_TYPE_F32": 0,
+        "GGML_TYPE_F16": 1,
+        "GGML_TYPE_I32": 26,
+        "GGML_TYPE_I64": 27,
+        "GGML_OP_MUL_MAT": 31,
+        "GGML_MROPE_SECTIONS": 4,
+        "GGML_ROPE_TYPE_NORMAL": 0,
+        "GGML_ROPE_TYPE_NEOX": 2,
+        "GGML_ROPE_TYPE_VISION": 24
+      }
+    },
+    "A": {
+      "commit": "358a420ec4ed59b6b0be08b1d1f71dd478b99a99",
+      "values": {
+        "GGML_TYPE_F32": 0,
+        "GGML_TYPE_F16": 1,
+        "GGML_TYPE_I32": 26,
+        "GGML_TYPE_I64": 27,
+        "GGML_OP_MUL_MAT": 29,
+        "GGML_MROPE_SECTIONS": 4,
+        "GGML_ROPE_TYPE_NORMAL": 0,
+        "GGML_ROPE_TYPE_NEOX": 2,
+        "GGML_ROPE_TYPE_VISION": 24
+      }
+    },
+    "B1": {
+      "commit": "0324696b8e5fe340dc94b64714e4c9aab03084a2",
+      "values": {
+        "GGML_TYPE_F32": 0,
+        "GGML_TYPE_F16": 1,
+        "GGML_TYPE_I32": 26,
+        "GGML_TYPE_I64": 27,
+        "GGML_OP_MUL_MAT": 29,
+        "GGML_MROPE_SECTIONS": 4,
+        "GGML_ROPE_TYPE_NORMAL": 0,
+        "GGML_ROPE_TYPE_NEOX": 2,
+        "GGML_ROPE_TYPE_VISION": 24
+      }
+    },
+    "B2": {
+      "commit": "23b0202a189c44a54625aadcb37a946dd1d6278d",
+      "values": {
+        "GGML_TYPE_F32": 0,
+        "GGML_TYPE_F16": 1,
+        "GGML_TYPE_I32": 26,
+        "GGML_TYPE_I64": 27,
+        "GGML_OP_MUL_MAT": 29,
+        "GGML_MROPE_SECTIONS": 4,
+        "GGML_ROPE_TYPE_NORMAL": 0,
+        "GGML_ROPE_TYPE_NEOX": 2,
+        "GGML_ROPE_TYPE_VISION": 24
+      }
+    },
+    "C1": {
+      "commit": "70849ee82c24b882a483b404d11855a7d7fb1b0c",
+      "values": {
+        "GGML_TYPE_F32": 0,
+        "GGML_TYPE_F16": 1,
+        "GGML_TYPE_I32": 26,
+        "GGML_TYPE_I64": 27,
+        "GGML_OP_MUL_MAT": 29,
+        "GGML_MROPE_SECTIONS": 4,
+        "GGML_ROPE_TYPE_NORMAL": 0,
+        "GGML_ROPE_TYPE_NEOX": 2,
+        "GGML_ROPE_TYPE_VISION": 24
+      }
+    },
+    "C2": {
+      "commit": "5ba3b9fd3da34e516450ea58c229949ea4cff3ce",
+      "values": {
+        "GGML_TYPE_F32": 0,
+        "GGML_TYPE_F16": 1,
+        "GGML_TYPE_I32": 26,
+        "GGML_TYPE_I64": 27,
+        "GGML_OP_MUL_MAT": 29,
+        "GGML_MROPE_SECTIONS": 4,
+        "GGML_ROPE_TYPE_NORMAL": 0,
+        "GGML_ROPE_TYPE_NEOX": 2,
+        "GGML_ROPE_TYPE_VISION": 24
+      }
+    },
+    "D1": {
+      "commit": "59d5fad7c111d30a547d690b69235ed9e05c035d",
+      "values": {
+        "GGML_TYPE_F32": 0,
+        "GGML_TYPE_F16": 1,
+        "GGML_TYPE_I32": 26,
+        "GGML_TYPE_I64": 27,
+        "GGML_OP_MUL_MAT": 29,
+        "GGML_MROPE_SECTIONS": 4,
+        "GGML_ROPE_TYPE_NORMAL": 0,
+        "GGML_ROPE_TYPE_NEOX": 2,
+        "GGML_ROPE_TYPE_VISION": 24
+      }
+    },
+    "D2": {
+      "commit": "84e66d03218711dfcaa993e5f64a546abe82df9a",
+      "values": {
+        "GGML_TYPE_F32": 0,
+        "GGML_TYPE_F16": 1,
+        "GGML_TYPE_I32": 26,
+        "GGML_TYPE_I64": 27,
+        "GGML_OP_MUL_MAT": 29,
+        "GGML_MROPE_SECTIONS": 4,
+        "GGML_ROPE_TYPE_NORMAL": 0,
+        "GGML_ROPE_TYPE_NEOX": 2,
+        "GGML_ROPE_TYPE_VISION": 24
+      }
+    },
+    "D3": {
+      "commit": "e86f5fd1e9f584b0fcec71d7da9a92de44e8bcbf",
+      "values": {
+        "GGML_TYPE_F32": 0,
+        "GGML_TYPE_F16": 1,
+        "GGML_TYPE_I32": 26,
+        "GGML_TYPE_I64": 27,
+        "GGML_OP_MUL_MAT": 29,
+        "GGML_MROPE_SECTIONS": 4,
+        "GGML_ROPE_TYPE_NORMAL": 0,
+        "GGML_ROPE_TYPE_NEOX": 2,
+        "GGML_ROPE_TYPE_VISION": 24
+      }
+    },
+    "D4": {
+      "commit": "eb7818c0b85c08ccb39ec2299548b85147c47495",
+      "values": {
+        "GGML_TYPE_F32": 0,
+        "GGML_TYPE_F16": 1,
+        "GGML_TYPE_I32": 26,
+        "GGML_TYPE_I64": 27,
+        "GGML_OP_MUL_MAT": 29,
+        "GGML_MROPE_SECTIONS": 4,
+        "GGML_ROPE_TYPE_NORMAL": 0,
+        "GGML_ROPE_TYPE_NEOX": 2,
+        "GGML_ROPE_TYPE_VISION": 24
+      }
+    },
+    "D5": {
+      "commit": "d05706b4f32a545814856e98ca518292585443b9",
+      "values": {
+        "GGML_TYPE_F32": 0,
+        "GGML_TYPE_F16": 1,
+        "GGML_TYPE_I32": 26,
+        "GGML_TYPE_I64": 27,
+        "GGML_OP_MUL_MAT": 29,
+        "GGML_MROPE_SECTIONS": 4,
+        "GGML_ROPE_TYPE_NORMAL": 0,
+        "GGML_ROPE_TYPE_NEOX": 2,
+        "GGML_ROPE_TYPE_VISION": 24
+      }
+    },
+    "D6": {
+      "commit": "5d7793d6fcce4eb4b11ab5be856dfa4e4c8fde9b",
+      "values": {
+        "GGML_TYPE_F32": 0,
+        "GGML_TYPE_F16": 1,
+        "GGML_TYPE_I32": 26,
+        "GGML_TYPE_I64": 27,
+        "GGML_OP_MUL_MAT": 29,
+        "GGML_MROPE_SECTIONS": 4,
+        "GGML_ROPE_TYPE_NORMAL": 0,
+        "GGML_ROPE_TYPE_NEOX": 2,
+        "GGML_ROPE_TYPE_VISION": 24
+      }
+    },
+    "D7": {
+      "commit": "1ab23c33b7599e9e73fdcd6584985ae02ce8da83",
+      "values": {
+        "GGML_TYPE_F32": 0,
+        "GGML_TYPE_F16": 1,
+        "GGML_TYPE_I32": 26,
+        "GGML_TYPE_I64": 27,
+        "GGML_OP_MUL_MAT": 29,
+        "GGML_MROPE_SECTIONS": 4,
+        "GGML_ROPE_TYPE_NORMAL": 0,
+        "GGML_ROPE_TYPE_NEOX": 2,
+        "GGML_ROPE_TYPE_VISION": 24
+      }
+    },
+    "D8": {
+      "commit": "d1eb0debaddc9f9246ee884653ee3a7764f60b77",
+      "values": {
+        "GGML_TYPE_F32": 0,
+        "GGML_TYPE_F16": 1,
+        "GGML_TYPE_I32": 26,
+        "GGML_TYPE_I64": 27,
+        "GGML_OP_MUL_MAT": 29,
+        "GGML_MROPE_SECTIONS": 4,
+        "GGML_ROPE_TYPE_NORMAL": 0,
+        "GGML_ROPE_TYPE_NEOX": 2,
+        "GGML_ROPE_TYPE_VISION": 24
+      }
+    }
+  }
+}

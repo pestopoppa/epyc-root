@@ -1,0 +1,230 @@
+{
+  "base": "c72ec82f5417bb2937310326120f149b665e8400",
+  "limitations": "Regex source declaration prefixes only; attributes/macros, definitions, calling conventions, binary layouts and behavior are not validated.",
+  "groups": {
+    "A": {
+      "commit": "cbe28bb3cb0758f0c566a9a3561766821aeb0748",
+      "compared": [],
+      "non_function_or_not_extracted": [],
+      "differences": {}
+    },
+    "B1": {
+      "commit": "b77d646751d01c0962bc203b6809e9d94f7d50b7",
+      "compared": [
+        "ggml_add",
+        "ggml_build_forward_expand",
+        "ggml_get_rows",
+        "ggml_rope_ext"
+      ],
+      "non_function_or_not_extracted": [
+        "ggml_tensor"
+      ],
+      "differences": {}
+    },
+    "B2": {
+      "commit": "e79d8cab590ae0a040e1562d09e46b0bfab8cc2d",
+      "compared": [
+        "ggml_add",
+        "ggml_build_forward_expand",
+        "ggml_get_rows",
+        "ggml_rope_ext"
+      ],
+      "non_function_or_not_extracted": [
+        "ggml_tensor"
+      ],
+      "differences": {}
+    },
+    "C1": {
+      "commit": "a4cb4c61fd9d9c2066c7c1747821d3d65b8943bd",
+      "compared": [
+        "ggml_add",
+        "ggml_build_forward_expand",
+        "ggml_concat",
+        "ggml_gelu_erf",
+        "ggml_get_rows",
+        "ggml_view_1d"
+      ],
+      "non_function_or_not_extracted": [
+        "ggml_tensor"
+      ],
+      "differences": {}
+    },
+    "C2": {
+      "commit": "7e3eeee0480902c90cbdff172f407dc063cf0770",
+      "compared": [],
+      "non_function_or_not_extracted": [],
+      "differences": {}
+    },
+    "D1": {
+      "commit": "2851b3bcbf8d993a2243ae751c0a7dfa8e944a40",
+      "compared": [
+        "ggml_add",
+        "ggml_backend_alloc_ctx_tensors",
+        "ggml_backend_buffer_clear",
+        "ggml_backend_buffer_get_size",
+        "ggml_backend_tensor_get",
+        "ggml_backend_tensor_set",
+        "ggml_build_forward_expand",
+        "ggml_concat",
+        "ggml_cont",
+        "ggml_conv_1d",
+        "ggml_div",
+        "ggml_element_size",
+        "ggml_format_name",
+        "ggml_geglu_erf_split",
+        "ggml_gelu_erf",
+        "ggml_graph_get_tensor",
+        "ggml_init",
+        "ggml_mul",
+        "ggml_nbytes",
+        "ggml_nelements",
+        "ggml_new_tensor_1d",
+        "ggml_new_tensor_2d",
+        "ggml_reshape_2d",
+        "ggml_reshape_3d",
+        "ggml_rope_ext",
+        "ggml_row_size",
+        "ggml_set_input",
+        "ggml_set_name",
+        "ggml_set_output",
+        "ggml_set_rows",
+        "ggml_tensor_overhead",
+        "ggml_time_us",
+        "ggml_transpose",
+        "ggml_view_2d"
+      ],
+      "non_function_or_not_extracted": [
+        "ggml_backend_buffer_ptr",
+        "ggml_cgraph",
+        "ggml_context_ptr",
+        "ggml_init_params",
+        "ggml_tensor"
+      ],
+      "differences": {}
+    },
+    "D2": {
+      "commit": "1242be66f65d5d8a3d996ba56d6de106ced98cf6",
+      "compared": [
+        "ggml_time_ms"
+      ],
+      "non_function_or_not_extracted": [],
+      "differences": {}
+    },
+    "D3": {
+      "commit": "19cce6919992fdffd92e0ac152caaf1e2b8f254e",
+      "compared": [
+        "ggml_add",
+        "ggml_build_forward_expand",
+        "ggml_cont",
+        "ggml_cont_3d",
+        "ggml_cont_4d",
+        "ggml_conv_2d",
+        "ggml_conv_2d_dw_direct",
+        "ggml_get_rows",
+        "ggml_mul",
+        "ggml_new_tensor_1d",
+        "ggml_permute",
+        "ggml_reshape_2d",
+        "ggml_reshape_3d",
+        "ggml_reshape_4d",
+        "ggml_rope_ext",
+        "ggml_rope_multi",
+        "ggml_row_size",
+        "ggml_set_input",
+        "ggml_set_name",
+        "ggml_sigmoid",
+        "ggml_transpose",
+        "ggml_view_2d"
+      ],
+      "non_function_or_not_extracted": [
+        "ggml_cgraph",
+        "ggml_tensor"
+      ],
+      "differences": {}
+    },
+    "D4": {
+      "commit": "19ff817fb25e9a1b838b1d7f9f4325f7bf9779c4",
+      "compared": [
+        "ggml_add",
+        "ggml_arange",
+        "ggml_backend_alloc_ctx_tensors",
+        "ggml_backend_buffer_clear",
+        "ggml_backend_tensor_copy",
+        "ggml_backend_tensor_get",
+        "ggml_backend_tensor_memset",
+        "ggml_build_forward_expand",
+        "ggml_cast",
+        "ggml_concat",
+        "ggml_cont",
+        "ggml_conv_2d",
+        "ggml_conv_2d_direct",
+        "ggml_conv_2d_dw_direct",
+        "ggml_format_name",
+        "ggml_get_rows",
+        "ggml_graph_get_tensor",
+        "ggml_graph_node",
+        "ggml_init",
+        "ggml_mul",
+        "ggml_mul_mat",
+        "ggml_nbytes",
+        "ggml_nelements",
+        "ggml_new_tensor_1d",
+        "ggml_new_tensor_2d",
+        "ggml_pad_ext",
+        "ggml_repeat",
+        "ggml_repeat_4d",
+        "ggml_reshape_2d",
+        "ggml_reshape_3d",
+        "ggml_reshape_4d",
+        "ggml_rope_ext",
+        "ggml_row_size",
+        "ggml_scale_bias",
+        "ggml_set_input",
+        "ggml_set_name",
+        "ggml_set_output",
+        "ggml_sigmoid",
+        "ggml_silu_inplace",
+        "ggml_ssm_conv",
+        "ggml_sum_rows",
+        "ggml_tensor_overhead",
+        "ggml_transpose",
+        "ggml_view_2d",
+        "ggml_view_4d"
+      ],
+      "non_function_or_not_extracted": [
+        "ggml_cgraph",
+        "ggml_init_params",
+        "ggml_tensor"
+      ],
+      "differences": {}
+    },
+    "D5": {
+      "commit": "8ca4060b7e30e76baaa5670ee1ec1b760b7f8552",
+      "compared": [],
+      "non_function_or_not_extracted": [],
+      "differences": {}
+    },
+    "D6": {
+      "commit": "d1eb0debaddc9f9246ee884653ee3a7764f60b77",
+      "compared": [],
+      "non_function_or_not_extracted": [],
+      "differences": {}
+    },
+    "D7": {
+      "commit": "889f2ec96deacbc2d8a9a67dbe181eaa43a2fb3b",
+      "compared": [],
+      "non_function_or_not_extracted": [],
+      "differences": {}
+    },
+    "D8": {
+      "commit": "d4f1b18b3a1522eec48decbe9ff7dc66eb60a9f4",
+      "compared": [
+        "ggml_conv_2d"
+      ],
+      "non_function_or_not_extracted": [
+        "ggml_tensor"
+      ],
+      "differences": {}
+    }
+  }
+}
