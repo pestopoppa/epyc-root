@@ -539,6 +539,8 @@ quality tradeoff.
   - PREFIX-2, whether published BEIR deltas transfer, stays open. It is a separate question.
 
 - [x] **PREFIX-4 — fix the encoder-contract mismatch PREFIX-3 found, then rerun the same 44-row parity (filed 2026-10-31, ws58 wrap-up derived actionable).** `colbert_encoder.encode(role=ROLE_DOCUMENT)` disagrees with native PyLate 1.4 `ColBERT.encode` before any numerics: Reason 22/22 `OUTPUT_CONTRACT_MISMATCH`, LateOn 22/22 `TOKEN_OR_POSITION_MISMATCH` (e.g. 18x128 vs 17x128 at cap 64; input IDs, masks, retained positions differ). Find the divergence (prefix/marker tokens, special-token handling, skiplist/punctuation masking, length cap), fix it in the orchestrator encoder, and rerun the unchanged 20-snippet harness until cosine is computable. Zero-to-light CPU, no model change. ✅ 2026-10-31 — APP `7d92b1a8c198c2b3cd86e0920bc7f1c54364454f`; `tests/unit/test_colbert_native_contract.py` and 76 tracked tests pass. Same native 44 rows now all cosine-computable; Reason 19 PASS / 3 NUMERIC_FAIL and LateOn 22 PASS at unchanged 1e-2. This closes contract repair/computability only, with no Reason parity, adoption, deployment or index rebuild. [Validation artifact](../../artifacts/compute/colbert-prefix4-20261031/SUMMARY.json). [belief: cc]
+- **2026-11-01 tick correction (PREFIX-3): reopened; original task text and 2026-10-30 evidence preserved.** The 44-row rerun ended with Reason 22/22 `OUTPUT_CONTRACT_MISMATCH` and LateOn 22/22 `TOKEN_OR_POSITION_MISMATCH`; cosine was not computed. This is unknown/nonterminal completion and does not satisfy the parity task. No parity, model-comparison, or adoption claim is supported; PREFIX-3 remains open. [Audit](../../docs/reports/tick-science-audit-20261031.md).
+
 - [ ] **PREFIX-2 — confirm whether the published BEIR deltas transfer before banking any model swap.**
   The BEIR figures on this page (GTE 54.67, ColBERT-Zero 55.43, and the LateOn delta) are **published
   vendor scores**, measured with the models used as designed, i.e. **with** the prefixes. Production runs
@@ -547,7 +549,7 @@ quality tradeoff.
   arms — but it does mean the absolute gain is unproven here. Resolve PREFIX-1 before treating any BEIR
   delta as a production forecast.
 
-- [x] **PREFIX-3 — re-run the banked ONNX↔PyLate parity through `colbert_encoder.encode(role=ROLE_DOCUMENT)` [belief: cc] — negative/unknown completion: 44 rows; cosine unknown; no parity/adoption claim.
+- [ ] **PREFIX-3 — re-run the banked ONNX↔PyLate parity through `colbert_encoder.encode(role=ROLE_DOCUMENT)` [belief: cc] — negative/unknown completion: 44 rows; cosine unknown; no parity/adoption claim.
   before S3b's 8.24e-03 or S3c's 2.72e-03 is cited again** ✅ 2026-10-30 — unchanged APP `de6c56e3` rerun: Reason 22 `OUTPUT_CONTRACT_MISMATCH`, LateOn 22 `TOKEN_OR_POSITION_MISMATCH`; cosine was not computed. Because `_encode_onnx` fed raw text (no `[D]`,
   hardcoded two-input feed, no `do_lower_case`) while `_encode_pylate` inserted `[D]`, so both figures are
   prefix-free-vs-prefixed rather than like-for-like and mean pooling (`_pooled_vec:462`) plus reference
