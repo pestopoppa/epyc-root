@@ -114,6 +114,7 @@ def _urlopen(request, timeout=1800):
                     "thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty twentyone twentytwo "
                     "twentythree twentyfour"}, "finish_reason": "stop"}],
         "usage": {"completion_tokens": 24, "prompt_tokens": 10},
+        "__verbose": {"tokens": list(range(100, 124)), "stop_type": "eos"},
         "timings": {"predicted_n": 24, "predicted_ms": 1200.0, "predicted_per_second": 20.0,
                     "prompt_n": 10, "prompt_ms": 100.0, "prompt_per_second": 100.0,
                     "draft_n": 0, "draft_n_accepted": 0},
@@ -206,8 +207,8 @@ def test_stubbed_client_native_rows_sidecar_and_ingest_preserve_classifier_pair(
     assert "classifier" not in rows[0] and "token_source" not in rows[0]
     successes = rows[1:]
     assert len(successes) == 23
-    assert all(row["classifier"] == "inf70-classify.v1" for row in successes)
-    assert all(row["token_source"] == "synthetic-ids(uniq/top/run vacuous)" for row in successes)
+    assert all(row["classifier"] == "inf70-classify.v1.1" for row in successes)
+    assert all(row["token_source"] == "response" for row in successes)
     assert receipt["pid"] > 0 and receipt["start_ticks"] and receipt["rss"]
 
     launch_path = arm["runs"] / "S1.launch.json"
@@ -216,7 +217,7 @@ def test_stubbed_client_native_rows_sidecar_and_ingest_preserve_classifier_pair(
     native = reader.native_rows(capture.sidecar_path_for(arm["runs"], arm["label"]))
     assert len(native) == 1
     expected = {"UNREPORTED": {"UNREPORTED": 1},
-                "inf70-classify.v1": {"synthetic-ids(uniq/top/run vacuous)": 23}}
+                "inf70-classify.v1.1": {"response": 23}}
     assert native[0]["row"]["extra"]["coherence_classifier"] == expected
     tup = reader.project(native[0])
     assert tup.extra["coherence_classifier"] == expected

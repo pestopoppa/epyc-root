@@ -316,6 +316,10 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         # Prospective real native custody, 13 refusal controls and CLI reingest:
         # test_lb49_combined_diagnostic.py (external capture; no fabricated measurement fixture).
         "lb49-combined-diagnostic",
+            # CS22 V0 parity: needs the real native verifier receipt, its raw tree and the explicit custody
+            # relocation map (CS22V0_TEST_RECEIPT / CS22V0_RELOCATIONS); negative, tamper, relocation and
+            # CLI-choice controls live in test_cs22v0_parity.py. No fabricated native fixture is admitted.
+            "cs22v0-parity",
         "ufh12-irt-paired",  # Synthetic producer, CLI ingest, tamper and planning: test_ufh12_irt_paired_canary.py.
         # Real original oracle plus synthetic native timing writer -> planner and tamper.
         "rtg57-vkq-oracle", "rtg57-vkq-comparison",
