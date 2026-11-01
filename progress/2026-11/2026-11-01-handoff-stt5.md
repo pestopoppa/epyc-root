@@ -103,3 +103,7 @@ Published `stt5-v3-tc-validation-score-r1-20261101` for keeper qualification, ma
 ### Duplicate v3-TC completion notice
 
 The `.complete` marker repeats the 21:48:43Z v3-TC collection already filed above and in the handoff, with 2,891 successful and five failed chunks. Its filing receipt is present; the separately published scorer was observed awaiting its first keeper dry run. No duplicate collection filing or successor publication was made.
+
+### Crisp HIP repair delegated
+
+The current backlog's remaining qualification rows are already queued, parked, or superseded; the highest actionable unblock is the held Crisp HIP build packet `/mnt/raid0/llm/tmp/h-stt5-crisp-hip-rowflow-draft-20261101/`. Independent review identified missing predecessor-writer exclusion and toolchain/configuration content pins, a generic C++ rather than HIP-specific active compiler check, and missing dry-run install linkage verification. Delegated repair and independent review; registered their completion files in `compute-flags/handoff-sessions/stt5/awaiting/` so the dispatcher can resume on either report. The draft remains held; no build, qualification or new READY row was launched. This is a no-wait boundary, not a claim that the HIP repair is complete.
