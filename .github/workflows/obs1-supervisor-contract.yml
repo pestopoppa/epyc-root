@@ -21,7 +21,6 @@ jobs:
       PYTHONDONTWRITEBYTECODE: '1'
       PYTHONHASHSEED: '0'
       PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
-      OBS1_RESULT_DIR: ${{ runner.temp }}/obs1-supervisor-contract
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -33,6 +32,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          OBS1_RESULT_DIR="$RUNNER_TEMP/obs1-supervisor-contract"
           mkdir -p "$OBS1_RESULT_DIR"
           python -m pip install pytest==9.0.3 iniconfig==2.3.0 packaging==26.0 pluggy==1.6.0 Pygments==2.20.0 2>&1 | tee "$OBS1_RESULT_DIR/dependencies.stdout.txt"
           git rev-parse HEAD > "$OBS1_RESULT_DIR/source-commit.txt"
@@ -49,6 +49,7 @@ jobs:
         run: |
           set -uo pipefail
           set +e
+          OBS1_RESULT_DIR="$RUNNER_TEMP/obs1-supervisor-contract"
           python -m pytest -q \
             --junitxml="$OBS1_RESULT_DIR/junit.xml" \
             tests/test_observer_contract.py \
