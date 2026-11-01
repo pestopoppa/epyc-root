@@ -15,9 +15,9 @@
     "activation": "not performed",
     "guard_baseline_sha256": "2e40f0cf5e93e91c1a55f2d3a22e0e08a209555cdb06c90181764f7546978908",
     "keeper_baseline_sha256": "a8fc18c67f08fed08c1f74e629083d55cbcd1b9560b21d3029e0e9e0f7b4e5a7",
-    "patch_sha256": "9b32413086bf52910d3db10b716645fbbdc6ba584976adee82c013ad50b974c3",
-    "test": "isolated scratch apply; v2 matches source, v1 and selector unchanged, shell syntax passes",
-    "test_sha256": "29d37daf5d056e88752db998e9feae8cb427da2053f21cc66f38a9b0cbf6bb9e",
+    "patch_sha256": "eb67f6af3c05d6c077dbb5ee1eeff121edcfe635e02760b383ceff6f9df80a43",
+    "test": "isolated patch apply; v2 matches source, v1 and selector unchanged, shell syntax and router fallback absent/override pass",
+    "test_sha256": "dcfbf8e5096c0960d9e47cc853b31703bc8a59c7a44d2bf3b921783c4e4b7f07",
     "tested_source_commit": "50491b51c967229c1a6bfbac80dc0497a48bce6c"
   },
   "handoff_index": "pass in reconstructed full-history environment",

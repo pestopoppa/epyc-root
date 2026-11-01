@@ -16,7 +16,7 @@
      if m.get('hold') is not None: bad('hold=%s' % m.get('hold')); continue
      if m.get('schema') != 'epyc.ready.v2': bad('qualification schema missing (hard gate)'); continue
 -    gate = os.environ.get('WS58_QUAL_GATE', '/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/keeper_qual_gate.py')
-+    gate = os.environ.get('WS58_QUAL_GATE', '/mnt/raid0/llm/tmp/compute-flags/bin/qual-v2/keeper_qual_gate.py')
++    gate = os.environ.get('WS58_QUAL_GATE', '/mnt/raid0/llm/tmp/compute-flags/bin/qual-router-v1.py')
      ck = __import__('subprocess').run([sys.executable, '-I', gate, 'check', '--manifest', p, '--flags', '/mnt/raid0/llm/tmp/compute-flags'], capture_output=True, text=True, timeout=60)
      if ck.returncode:
          why = ck.stdout.strip().split('\t', 1)[-1] if ck.stdout.strip() else ck.stderr.strip()
