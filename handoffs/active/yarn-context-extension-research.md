@@ -10,7 +10,7 @@ framing (CPU RAM, TurboQuant) is wrong for a GPU-served model.
 **Priority**: MEDIUM (the operator wants long context; organic :8083 demand is still inside native 262K, p99 prompt
 144,846 tokens)
 **Workstream**: Research
-**Scratch**: `/mnt/raid0/llm/tmp/yarn-e1-20261004/` · `/mnt/raid0/llm/tmp/dca-yarn-kernel-20261004/` · `/mnt/raid0/llm/tmp/rope-ctx-assessment/` · worktrees: `/mnt/raid0/llm/worktrees/yarn-e1-*`
+**Scratch**: `/mnt/raid0/llm/tmp/yarn-e1-proof-handoff-20261101/` · `/mnt/raid0/llm/tmp/yarn-e1-20261004/` · `/mnt/raid0/llm/tmp/dca-yarn-kernel-20261004/` · `/mnt/raid0/llm/tmp/rope-ctx-assessment/` · worktrees: `/mnt/raid0/llm/worktrees/yarn-e1-*`
 
 ## 2026-10-04 rewrite — current scope (start here)
 
@@ -521,6 +521,7 @@ The operational YARN-128K-MI210 checkbox remains open until CPU-v3 shard withdra
 - [x] Audit the leading XDEV retries and CPU continuation state before selecting a successor. ✅ 2026-11-01 The listed CPU r2–r5 failures were superseded by the successful matched r6 and later 64-token CPU/GPU diagnostic documented above; do not rerun those historical IDs. Their native failures are not evidence of three keeper qualification failures. The cross-device offset remains unexplained. [belief: cc]
 - [ ] Reconcile the CPU continuation disposition with the scheduler and verify drain before declaring withdrawal. At 2026-11-01 ~14:23 UTC the quarter queue listed S1/v31 PID 831253, S3/v30 PID 1282320, and S2/v32 PID 3084905, and `ps` showed each corresponding `filler_run13.sh` process present. This snapshot does not establish active inference or future queue state. Preserve unknown exposures and original denominators. Do not signal processes owned by another session or mutate grants. The fresh joint GPU experiment answered the original 120-pair question; it does not itself withdraw these CPU continuations. [no-belief: transient queue/process inventory]
 - [ ] Integrate and re-pin the published split-proof helper into the E1-MEM candidate, then run its source/behavioral controls and qualify using v14. Research `0e4321f24bae29355333fcf2cb712a41ce080e2f` has offline coverage, but `artifacts/compute/ni-inf12-yarn-prep-20261101/src/yarn_needle.py` still uses the old matcher; the alternate packet uses v13. This is preparation, not a native result. [no-belief: source inspection]
+  - [x] Prepare separate split-proof candidate and verify its dependency closure. ✅ 2026-11-01 Seven offline proof controls (including real A1 log with host stubs), eight existing model-free contract tests, compilation and 53 source hashes passed. Manifest now refuses a missing named rendered prompt; N15 negative control passed. Full request-manifest rebinding, canonical v14, booking and keeper qualification remain open; no inference. [Evidence](../../artifacts/compute/yarn-e1-proof-candidate-20261101/README.md). [no-belief: offline preparation only]
 
 ### S0 v35 admission failure — 2026-11-01
 
