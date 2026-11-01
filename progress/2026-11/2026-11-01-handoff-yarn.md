@@ -46,3 +46,8 @@ Prepared a v32-based worker patch and guard for a future S2 v15 continuation. It
 ## E1 v15 offline components
 
 Prepared a standalone request/source/recipe binding verifier requiring independently supplied build-attestation digests, plus a pure six-cell lifecycle loop which stops after one validated cell during dry-run. Twenty synthetic-fixture controls pass. The components are not integrated into the launcher or job and do not establish approved binary-source provenance, active-request stop/drain, real output, booking or keeper qualification; no inference or READY occurred. Reviewable files and explicit limitations: `artifacts/compute/yarn-e1-v15-contract-20261101/README.md`.
+
+
+## Disabled E1 v15 integration draft
+
+Integrated the previously separate entry-binding verifier and six-cell lifecycle into a private, default-disabled E1 v15 source draft with fresh ID and corrected own-root routing. Removed mtime source proof and added stop checks during load/active runner. Twenty-four offline controls passed, including actual entry and subprocess-double stop during load; bash syntax and compilation passed. The draft is not a READY or usable runtime: dependency sealing, dry-run isolation, restart/idempotency, actual process-tree drain, independently established build provenance, work-unit calibration and keeper qualification remain. No inference or publication occurred. See `artifacts/compute/yarn-e1-v15-integration-20261101/README.md` for limitations.
