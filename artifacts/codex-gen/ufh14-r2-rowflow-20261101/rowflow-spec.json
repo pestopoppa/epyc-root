@@ -36,5 +36,6 @@
     "attempts/**/*.npy",
     "RUN_COMPLETE.json",
     "STOP"
-  ]
+  ],
+  "admission_class": "diagnostic"
 }
