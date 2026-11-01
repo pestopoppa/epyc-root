@@ -2,8 +2,17 @@
 
 **Category**: `rag_alternatives`
 **Confidence**: research (pre-deployment, evaluation-gated)
-**Last compiled**: 2026-10-31 (operator wiki sweep, workspace-58): Mainplane 'retrieval over compaction' intake verdict. Earlier: 2026-06-21. Earlier: 2026-06-21
+**Last compiled**: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): Mainplane 'retrieval over compaction' intake verdict. Earlier: 2026-06-21. Earlier: 2026-06-21
 **Sources**: 1 active handoff (sliders-local-validation), 3 intake entries (intake-494, intake-710/711 OKF, intake-698 MRAgent)
+
+## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
+
+Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
+
+- **PageIndex vectorless RAG** (intake-890#record) LLM-built hierarchical document tree with LLM reasoning down the tree instead of embeddings. Dive corrections: the 98.7% FinanceBench figure belongs to the commercial Mafin 2.5 product, and the independent evaluation reports 9 of 16 queries timed out (Qwen3-32B via Ollama). Adopt patterns only.
+- **ArgRAG explainable RAG** (intake-1052#record) QBAF over the claim plus top-k passages with uniform base score 0.5 and Quadratic Energy semantics; two contestation primitives (Contest Base Score, Contest Polarity) trigger deterministic recompute. Relevant as an auditable alternative to opaque RAG answer generation.
+- **Multi-objective HPO for LLM and RAG** (intake-1389#00) Multi-objective BO (qLogEHVI/qLogNEHVI) over seven RAG knobs with a 50-evaluation budget per run. Dispatch premise of results tables was wrong: the comparison is figure-only, and the one table lists per-objective optima.
+- **CDS4RAG** (intake-1391#01) Splits RAG knobs into retriever and generator blocks tuned cyclically; retriever evaluation is ~50% cheaper than generator evaluation. The dispatch framing (AI vs non-AI knobs) was wrong.
 
 ## Summary
 

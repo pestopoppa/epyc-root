@@ -2,8 +2,15 @@
 
 **Category**: `context_extension`
 **Confidence**: inferred
-**Last compiled**: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): YaRN 128K MI210 R10 READY, aggregate-1g interim, CPU/GPU PPL offset unexplained, five harness failures. Earlier: 2026-10-28 (HELMET restoration and fresh Oolong cohort approved, not run). Earlier: 2026-10-27 19:06Z (YaRN extension arms remain NOT-FAIL-underpowered; HELMET restoration is preparation only). Earlier: 2026-10-27 (operator wiki sweep, workspace-58): YaRN extension arms are NOT-FAIL-underpowered, Oolong-synth@400k reads 0.093, and the YaRN K-shift fix passes its test. Earlier: 2026-10-22 (wrap-up sweep 10: native-window answer change is not regression, agent-made judge labels). Earlier: 2026-10-22 (wrap-up sweep 9: the native-window gate reads NOT-FAIL on 2 discordant pairs). Earlier: 2026-10-21 (wrap-up sweep 5: YARN-AGG-1/JUDGE-1 spec, Oolong adapter, K-shift fix queued). Earlier: 2026-10-06 (incremental root-wrap synthesis; prior compilation history: 2026-04-18 (+ 2026-05-20 incremental: intake-569 RoPE bounds + deep-dive))
+**Last compiled**: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): YaRN 128K MI210 R10 READY, aggregate-1g interim, CPU/GPU PPL offset unexplained, five harness failures. Earlier: 2026-10-28 (HELMET restoration and fresh Oolong cohort approved, not run). Earlier: 2026-10-27 19:06Z (YaRN extension arms remain NOT-FAIL-underpowered; HELMET restoration is preparation only). Earlier: 2026-10-27 (operator wiki sweep, workspace-58): YaRN extension arms are NOT-FAIL-underpowered, Oolong-synth@400k reads 0.093, and the YaRN K-shift fix passes its test. Earlier: 2026-10-22 (wrap-up sweep 10: native-window answer change is not regression, agent-made judge labels). Earlier: 2026-10-22 (wrap-up sweep 9: the native-window gate reads NOT-FAIL on 2 discordant pairs). Earlier: 2026-10-21 (wrap-up sweep 5: YARN-AGG-1/JUDGE-1 spec, Oolong adapter, K-shift fix queued). Earlier: 2026-10-06 (incremental root-wrap synthesis; prior compilation history: 2026-04-18 (+ 2026-05-20 incremental: intake-569 RoPE bounds + deep-dive))
 **Sources**: 23 documents (0 dedicated deep-dives, 5 cross-referenced deep-dives, 3 active handoffs, 15 intake entries)
+
+## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
+
+Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
+
+- **Ouro looped LMs** (intake-332#02) LoopLM builds reasoning into pre-training via iterative latent computation; Ouro 1.4B and 2.6B match up to 12B models. Worth investigating: looped depth trades compute for parameters, attractive for bandwidth-bound CPU decode.
+- **Pokee-Isaac 28B** (intake-1012#record) Proprietary 28B model with undisclosed architecture and 10M-token retrieval claims, partly derived from Qwen3.6-27B. Offline mode still sends completions to Pokee infrastructure; architecture and performance transfer are not found, only evaluation patterns usable.
 
 ## Compiled Update — 2026-10-27 19:06Z: extension-arm verdict remains underpowered
 

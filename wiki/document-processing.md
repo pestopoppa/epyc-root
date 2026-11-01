@@ -2,8 +2,14 @@
 
 **Category**: `document_processing`
 **Confidence**: verified
-**Last compiled**: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): PIP-02 descriptive partial-cohort TEDS (Paddle union 359 pages/84 tables; ODL shards), still no 755-page verdict. Earlier: 2026-08-25 (PIP-05: the ODL three-way harness closes the 2026-08-13 durability (the stranded lane record landed: the demo DID run on a quant-compliant artifact, the receipt's `held_s` defect is root-caused and fixed forward, and the write-side wiring row survived an id collision)
+**Last compiled**: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): PIP-02 descriptive partial-cohort TEDS (Paddle union 359 pages/84 tables; ODL shards), still no 755-page verdict. Earlier: 2026-08-25 (PIP-05: the ODL three-way harness closes the 2026-08-13 durability (the stranded lane record landed: the demo DID run on a quant-compliant artifact, the receipt's `held_s` defect is root-caused and fixed forward, and the write-side wiring row survived an id collision)
 gaps — fail-closed extractor accounting, pinned engine versions, per-document latencies; the
+
+## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
+
+Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
+
+- **W-RAC web chunking** (intake-436#01) Decouples extraction from chunk planning using ID-addressable units where the LLM only groups (never generates content), cutting token cost and hallucination risk. Worth investigating for the KB/ingest chunker.
 
 ## Compiled Update — 2026-08-18: the demo ran on the compliant artifact after all — two receipt corrections from the ported lane record
 

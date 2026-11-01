@@ -2,8 +2,16 @@
 
 **Category**: `formal_verification`
 **Confidence**: verified
-**Last compiled**: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-09-25 (System One and evolutionary-agents intake); previous: 2026-09-08 (the SC69-73 audit survivors closed as verifications, not checks — SC61's `attested` binding producer landed and all five defects were fixed under the placement rule that made them findings, `5d7f14be`; plus the RC-12 16-threshold audit naming three selection-on-the-certification-sample VIOLATIONS; earlier: 2026-09-07, the belief kernel's own grading-implementation audit — 5 survivors from a mutation audit, led by a verifier grading Attested on a digest never checked; earlier: RustEvo2 verification gate)
+**Last compiled**: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-09-25 (System One and evolutionary-agents intake); previous: 2026-09-08 (the SC69-73 audit survivors closed as verifications, not checks — SC61's `attested` binding producer landed and all five defects were fixed under the placement rule that made them findings, `5d7f14be`; plus the RC-12 16-threshold audit naming three selection-on-the-certification-sample VIOLATIONS; earlier: 2026-09-07, the belief kernel's own grading-implementation audit — 5 survivors from a mutation audit, led by a verifier grading Attested on a digest never checked; earlier: RustEvo2 verification gate)
 **Sources**: 15 documents
+
+## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
+
+Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
+
+- **OpenGauss Lean orchestrator** (intake-173#01) CLI frontend that spawns managed child agents for Lean 4 /prove, /draft, /autoformalize workflows with session isolation. Worth investigating as a Lean multi-agent workflow reference.
+- **Buzzard on FLT formalization** (intake-1301#02) The formalization is mathematically uninformative but shows what is possible: the artifact takes nearly 20x as long to compile as Mathlib on a 96-core machine, and reviewer time is the bottleneck. Both cited figures re-verified against the GitHub API.
+- **Prove2Me formalizing a textbook** (intake-1302#00) Each import becomes a self-contained problem an agent can close without downloading or compiling the parent; humans audit a small trusted core while the kernel checks the rest. Beta and main posts are byte-identical, with no sibling posts.
 
 ## Summary
 

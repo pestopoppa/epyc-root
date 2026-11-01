@@ -2,8 +2,25 @@
 
 **Category**: `reinforcement_learning`
 **Confidence**: verified
-**Last compiled**: 2026-06-21
+**Last compiled**: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-06-21
 **Sources**: 17 documents
+
+## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
+
+Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
+
+- **Self-Distilled RLVR (RLSD)** (intake-286#01) Pure privileged-teacher self-distillation leaks information and destabilizes training; RLSD uses it only for token-level update magnitudes while RLVR sets direction. Worth investigating.
+- **LLM-as-a-Verifier** (intake-363#record) Verifier reward via logprobs over criteria/verifications/granularity; Terminal-Bench 2 86.4% vs 81.8%, SWE-Bench Verified 77.8% vs 76.1%. Dive (2026-08-19) OVERTURNS the recorded Gemini-dependency blocker: the pinned MIT source builds a client for any OpenAI-compatible server returning logprobs, so a local llama.cpp server qualifies.
+- **TRL AsyncGRPO + OpenEnv** (intake-889#record) Loop-owning (black-box) RL training of an unmodified agent via HarnessRolloutWorker. Dive: decline rather than bridge; llama.cpp has none of the seven vLLM control endpoints it needs, and the multi-harness claim is not supported by the code.
+- **RLPF staged correctness-gated reward** (intake-974#00) Staged reward where every correct program receives at least 0.15 (epsilon 0.05 above the 0.10 wrong-output stage). Correction: all arms are correctness-gated and results are one-seed point estimates, so it does not show gating beats blending.
+- **Dark Room reward collapse** (intake-990#record) Dense prediction rewards collapse GRPO-trained agents, but the mechanism does not reach MemHarness whose reward shape is the paper's own non-collapsing baseline. It can still destabilize MemHarness measurement: the 32-episode binomial noise floor is about 8.8 points.
+- **Memory-R1** (intake-1023#record) RL-trained Memory Manager (ADD/UPDATE/DELETE/NOOP) and an Answer Agent distilling sixty retrieved memories, trained on only 152 LoCoMo QA pairs. Verified as a research pattern; overturned as a reproducible released RL component.
+- **RL's Razor** (intake-1083#record) Forward KL to the base model on the new task predicts forgetting, and weight sparsity is dismissed as a numerical artefact. Narrowed: a pooled correlation of r = 0.516 (n = 18) deflates the recorded R^2 = 0.71 and the caveat must travel with the datum.
+- **RL Forgets (continual policy optimization)** (intake-1084#record) Standard RL retains more than SFT but still shows clear forgetting on the MRCL benchmark; earlier contrary findings trace to benchmark age and methodology. Dive overturned the entry's claim that the distance-from-base reconciler was untested.
+- **Retaining by Doing (on-policy data)** (intake-1097#record) RL forgets less than SFT; reconciling condition is initial-policy modality (SFT can be more robust when uni-modal). Correction to our expectation: the r = 0.52 statistic is real but does not simply kill a related entry's R^2 = 0.71. Knowledge only, no post-training on EPYC.
+- **Visual continual learning via RFT** (intake-1098#record) RFT beats SFT but still forgets; measures per-rollout token-level KL drift, and equal-reward rollouts differ in drift. Reframed as a corroborator rather than an opposing tiebreaker; drift instrument is CPU-only and training-free.
+- **RFT mitigates forgetting in continual post-training** (intake-1099#01) 7-task sequence on Qwen2.5-VL-7B: GRPO AvgAcc 60.0% vs MTL upper bound 62.9% vs sequential SFT 54.0%; MMLU-Pro base 47.5 falls to 30.6 under SFT but GRPO holds 48.3. Corrected the framing of the contamination critique in a related entry.
+- **RL heals OOD forgetting in SFT** (intake-1100#01) Title overstated: recovery is partial (85.1% at 7B, 36.3% at 3B), never exceeds the pre-damage early SFT peak, and goes via a different representational route. Knowledge only for us.
 
 ## Summary
 

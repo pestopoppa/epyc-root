@@ -2,8 +2,14 @@
 
 **Category**: `mechanistic_interpretability`
 **Confidence**: developing
-**Last compiled**: 2026-05-04
+**Last compiled**: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-05-04
 **Sources**: 3 intake entries (521, 522, 523), 2 dedicated deep-dives, 1 coordination handoff
+
+## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
+
+Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
+
+- **SAE feature absorption** (intake-218#01) Sparse autoencoders show feature splitting/absorption where parent features fail to fire, so hierarchical decomposition is not robust. Not applicable to the serving stack.
 
 ## Summary
 

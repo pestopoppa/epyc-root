@@ -2,8 +2,32 @@
 
 **Category**: `training_distillation`
 **Confidence**: verified
-**Last compiled**: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-08-12 (the byte-level weight-delta geometry probe below has now EXECUTED, not merely been proposed: both ground-truth gates pass, GGUF delta-geometry is confirmed trustworthy at Q8, and the lineage statistic named as a risk in the prior text was independently confirmed to need the correction it predicted — see the same section)
+**Last compiled**: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-08-12 (the byte-level weight-delta geometry probe below has now EXECUTED, not merely been proposed: both ground-truth gates pass, GGUF delta-geometry is confirmed trustworthy at Q8, and the lineage statistic named as a risk in the prior text was independently confirmed to need the correction it predicted — see the same section)
 **Sources**: 37 documents
+
+## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
+
+Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
+
+- **MathSmith synthetic hard math** (intake-170#02) RL (GRPO) forges new hard math problems from scratch, rewarding structural validity, reasoning complexity and answer consistency. Already integrated; no new EPYC action.
+- **BackLite FA3 sparse backward** (intake-178#record) Sparse FlashAttention-3 backward-pass layer. Dive: strongest not_applicable; training-only kernel, Hopper-only (H100/H200, CUDA >= 12.8), no CPU or ROCm path.
+- **Simple self-distillation (SSD) for code** (intake-264#02) Sample at temperature then plain SFT lifts Qwen3-30B-Instruct from 42.4% to 55.3% pass@1 on LiveCodeBench v6, gains concentrated on harder problems. Worth investigating for local coder-model tuning.
+- **On-policy distillation survey** (intake-266#04) First survey of OPD with an f-divergence framework and a three-axis taxonomy (feedback signal, teacher access, loss granularity). Worth investigating as a map for distillation work.
+- **MegaTrain** (intake-334#00) Host-memory parameter/optimizer storage with GPUs as transient compute and pipelined double buffering, for 100B+ training on one GPU. Worth investigating only as a host-RAM offload idea; CUDA-stream based.
+- **Math-CoT-20k** (intake-375#record) 20,480 verified long-CoT math samples. Dive correction: the `advantage` column is a uniform constant 1.0, so there is no quality signal; more dismissible than recorded.
+- **OpenR1-Math-220k** (intake-376#01) 220k+ math problems with DeepSeek R1 traces (25 solutions/hour/H100). Dive correction: verdict changed not_applicable to already_integrated, since it supports the live reasoning-compression handoff (75%-solve-under-8k-tokens statistic).
+- **KAT-Coder-V2.5 report** (intake-916#record) Frames agentic coding as a systems problem: AutoBuilder reconstructs repos into sandboxed fail-to-pass environments, with harness randomization. Dive re-derived Table 4 twice and confirmed alignment; adopt_component for the environment-building idea.
+- **Qwopus3.6-27B-Fusion GGUF merge** (intake-924#record) Layer-weighted task-vector merge W = V2 + alpha(L)(Coder - V2) with embeddings, lm_head and MTP modules frozen. Dive redirected rather than rejected: MTP presence differs by quant (checked via GGUF header ranged reads), backwards from useful.
+- **Decoupled DMD** (intake-929#04) DMD gradient splits into CFG-Augmentation and Distribution-Matching terms; CA drives few-step quality and DM stabilizes. Dive confirms the algebra (Eq. 5-6) and corrects one numeric mislabel; adopt patterns for image-model distillation.
+- **KAT-Coder technical report** (intake-932#00) Four-stage curriculum with masking of erroneous tool-call gradients and trie-packed multi-branch trajectories. Superseded; dive answered the entry's central open question opposite to its guess and found an open artifact it missed.
+- **KAT-Coder-V2** (intake-933#record) Specialize-then-Unify with five domain experts, and MCLA to reduce MoE RL log-prob variance; scaffold choice can flip benchmark rankings. Tables re-derived three times and agreed; adopt patterns.
+- **Performance-aligned HPC code LLMs** (intake-984#00) PPO with a KL penalty where the CodeContests reward is stored-reference median runtime divided by generated runtime. Dive preserves the stored-reference hazard (reward depends on stale timings) and withdraws claims about isolated campaigns.
+- **Multi-teacher distillation dataset** (intake-1007#record) Intended 57,937 SFT traces (48,283 Qwen, 5,307 GLM, 4,347 Kimi), but every config resolves to a 953,708-row union of current and stale Parquet. Dive overturned it as a safely consumable leakage-controlled dataset; release-engineering patterns only.
+- **Rationales for direct preference alignment** (intake-1143#00) Adding a rationale log-likelihood term (RDPO) speeds convergence (DPO ~60% win rate at 9,000 steps) and works with ORPO and SimPO; permuted rationales collapse performance. Version drift (v4 current) noted; knowledge only.
+- **Self-generated critiques for reward modeling** (intake-1145#00) Critic-RM improves reward-model accuracy 3.7%-4.7% (reported range 3.7%-7.3%) with self-generated critiques; unfiltered critiques hurt. v1 versus v3 differ by two cosmetic sentences.
+- **Fine-grained human feedback** (intake-1146#00) Dense (sentence-level) rewards give the lowest toxicity and perplexity and better sample efficiency; per-category reward models beat a holistic one. One claim materially narrowed; version diff itself noted as a finding.
+- **Qwen2.5-Coder report** (intake-1155#record) Six sizes (0.5B-32B) continue-pretrained on over 5.5T tokens, data-centric rather than architectural. Referent entry (already integrated), dived at abstract depth; Qwen coder weights run on the llama.cpp stack.
+- **InstructCoder / EditEval** (intake-1158#record) Over 114,000 instruction-input-output instances for code editing; the dive product is an identification: the code EditEval lives inside InstructCoder and is not the identically named text benchmark. Superseded.
 
 ## Summary
 
