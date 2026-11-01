@@ -110,6 +110,8 @@ correction first) is dispatchable now.
       Granted ROOT validation passed 10 tests with no skips; the carrier audit found 199 tuples
       and 0 violations. Adapter output stays at Judged/Located; protocol and model/server identity
       remain unknown. No real A/B, exact output-cost claim, pooled delta or promotion claim was made.
+- [ ] **VB-RTE-STRATEGY-WIRE — wire three-arm strategy prompt ablation at the write boundary.** Bind the native producer's actual grant, execution order, source, slot reset, scoring, request/response bytes and independently protected record digests; project only fields actually captured with the shared ClaimTuple grading ladder, exclude synthetic fixtures, and prove the planning-context canary before calling the source wired. The v2 preparation files and self-consistency verifier alone confer no inference warrant. Contract: `docs/design/repl-prefix-experiment/strategy-belief-integration.md`.
+
 - [ ] **VB-S4-OMEGA-FIRST-AB — ingest the first captured real S4 Omega A/B.** After the outer S4
       experiment's serving owner produces native capture(s) under the required calendar grant, ingest
       those artifacts only; do not launch a duplicate quality experiment or duplicate TD21 parser work.
