@@ -255,3 +255,7 @@ Crisp HIP audit found that the published source path is missing; the relocated s
 ## 23:47Z — Consume scorer, Voxtral and Crisp HIP row repair reports
 
 Consumed SCORE-CODEX, VOX-CODEX and HIP-CODEX. The scorer candidate passes 10 model-free checks and avoids requiring WS58_REGIONS; independent review is registered before publication. The Voxtral candidate uses grant-derived CPUs and has static source/cutover checks, but needs fresh writer/exposure checks and independent review before successor publication. The Crisp HIP audit verifies 7,249 relocated source entries and identifies a missing published source path, stale CMake cache and unproven rowflow STOP; successor implementation is delegated. No row was published or compute run. The prior two lane commits remain queued for serialized push after earlier non-fast-forward rejections.
+
+## 23:48Z — Advance blocked speech rows and preserve Ultra cutover constraints
+
+Dispatched independent scorer and Voxtral candidate reviews and Crisp HIP successor repair; completion events SCORE-REVIEW3, VOX-REVIEW3 and HIP-REPAIR3 are registered. Ultra successor remains held: its r1 exposure history must be reconciled with the fixed 25-case cohort and cutover evidence must cover the r1 row before scheduling; the repair29 scratch packet seal alone does not verify its historical external sources. The serialized push lock remains held by codex-gen; no force-release was attempted. No row published or compute run.
