@@ -507,3 +507,22 @@ class CAF1Tests(DSHTests):
         self.assertIn("DEDUPE row-b -> alpha", self.log_text())
         self.assertEqual(sum(1 for c in self.calls if "row `row-b`" in c["prompt"]), 1)
         self.assertEqual([ev for ev in st["queue"] if ev["rid"] == "row-b"], [])
+
+
+class CAF3Tests(DSHTests):
+    def test_resume_prompt_carries_state_delta_not_reread(self):
+        self.session()
+        _w(os.path.join(self.flags, "ready", "row-a.json"), json.dumps({"schema": "epyc.row.v3", "id": "row-a", "owner": "o", "lane": "gpu",
+                                                                       "regions": "mi210_0", "priority_rank": 2, "handoff_task": "handoffs/active/alpha.md:INF-9",
+                                                                       "blocked_by": ["dry run failed: no unit"]}))
+        reg, _ = self.dispatch()
+        self.assertEqual(len(self.calls), 1)
+        p = self.calls[0]["prompt"]
+        self.assertIn("STATE (CAF-3", p)
+        self.assertIn("row row-a [blocked, gpu, rank 2]: dry run failed: no unit", p)
+        self.assertIn("handoff rank #", p)
+        self.assertNotIn("Re-read", p)
+        self.assertNotIn("re-read the handoff", p)
+        data = bg.build(self.flags, os.path.join(self.repo, "handoffs/active/backlog-priority.json"), "nolog", sessions_path=hs.reg_path(self.flags))
+        self.assertIn("next task:", bg.resume_delta(data, "alpha")) if data["workers"]["handoff-alpha"]["code"] else None
+        self.assertEqual(bg.resume_delta(data, "nope"), "(no backlog bucket for this session yet)")
