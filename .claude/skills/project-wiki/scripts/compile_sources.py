@@ -96,7 +96,7 @@ def load_config() -> dict:
             {"path": "handoffs/active", "type": "handoff-active", "recurse": False},
             {"path": "handoffs/completed", "type": "handoff-completed", "recurse": False},
             {"path": "handoffs/blocked", "type": "handoff-blocked", "recurse": False},
-            {"path": "research/deep-dives", "type": "research", "recurse": False},
+            {"path": "research/deep-dives", "type": "research", "recurse": True},
             {"path": "progress", "type": "progress", "recurse": True},
             {"path": "docs", "type": "docs", "recurse": True},
         ],

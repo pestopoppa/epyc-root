@@ -2,7 +2,7 @@
 
 **Category**: `formal_verification`
 **Confidence**: verified
-**Last compiled**: 2026-09-25 (System One and evolutionary-agents intake); previous: 2026-09-08 (the SC69-73 audit survivors closed as verifications, not checks — SC61's `attested` binding producer landed and all five defects were fixed under the placement rule that made them findings, `5d7f14be`; plus the RC-12 16-threshold audit naming three selection-on-the-certification-sample VIOLATIONS; earlier: 2026-09-07, the belief kernel's own grading-implementation audit — 5 survivors from a mutation audit, led by a verifier grading Attested on a digest never checked; earlier: RustEvo2 verification gate)
+**Last compiled**: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-09-25 (System One and evolutionary-agents intake); previous: 2026-09-08 (the SC69-73 audit survivors closed as verifications, not checks — SC61's `attested` binding producer landed and all five defects were fixed under the placement rule that made them findings, `5d7f14be`; plus the RC-12 16-threshold audit naming three selection-on-the-certification-sample VIOLATIONS; earlier: 2026-09-07, the belief kernel's own grading-implementation audit — 5 survivors from a mutation audit, led by a verifier grading Attested on a digest never checked; earlier: RustEvo2 verification gate)
 **Sources**: 15 documents
 
 ## Summary
@@ -505,3 +505,13 @@ Three conclusions must remain separate. Build success shows that the artifact co
 - [Reviewer typed artifacts](../handoffs/active/reviewer-typed-artifacts.md)
 
 **Confidence:** verified for the repository workflow and prospective evidence contract; external theorem and benchmark claims remain unverified until FAR-1 and FAR-2 produce receipts.
+
+## Compiled Update — 2026-11-01 (10-31 intake deep dives, workspace-58)
+
+**Confidence: dive-verified source readings; paper and vendor numbers are claims, not local measurements, and every derived task is proposed, not run.** Source record: [ws58-20261031 deep dives](../research/deep-dives/ws58-20261031/README.md).
+
+- Decision ([w5_verif](../research/deep-dives/ws58-20261031/dives/w5_verif.yaml); intake-2570#record, intake-2557#record): port race/deadlock checking to gfx90a now, at the AMDGCN ISA level (IR hides inline-asm waits and LDS-DMA ordering); port equivalence only if a cheap probe shows it catches something.
+- Local evidence from the v10 gfx90a code object: kernels with s_barrier are MMVQ 161/279, MMQ 147/672, FA-mma 138/302, FA-vec 41/49, GDN 0/32. In the AK corpus 236 of 627 GPU mechanisms and 15 of 31 keeps touch sync, and no race could be recorded because no detector exists.
+- Reuse base: MIT ptx_verifier `volta_graph`/`volta_graph_check` are ISA-independent; its AMD analysis records no events yet, so its race path proves nothing. Cost 8-11 kLoC new Rust, 6-9 engineer-weeks, first milestone MMVQ plus FA-vec.
+- Proposed RVP-RACE-1: seeded one-barrier-deletion HIP mutants (MMQ, MMVQ, LDS-DMA double buffer, FA-mma softmax), 20 runs each; passing in >=1 of 20 counts as a miss. RVP-RACE-2: the gfx90a race executor as the GPU `race_detector_id`, done when t0_provider emits a non-null id. RVP-EQV-1 declines Volta-class equivalence for bit-level kernels (1116 of 1497 AK GPU rows). Owner rocm-verify-profile-backend.
+- Edge-value input families, per-element worst-error bounds and exhaustive bit-level decode checks per served quant (w1 KERN-3/4/5; [w1_kern](../research/deep-dives/ws58-20261031/dives/w1_kern.yaml)) are the proposed complement for the bit-level kernels equivalence cannot cover.

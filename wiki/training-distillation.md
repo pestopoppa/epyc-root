@@ -2,7 +2,7 @@
 
 **Category**: `training_distillation`
 **Confidence**: verified
-**Last compiled**: 2026-08-12 (the byte-level weight-delta geometry probe below has now EXECUTED, not merely been proposed: both ground-truth gates pass, GGUF delta-geometry is confirmed trustworthy at Q8, and the lineage statistic named as a risk in the prior text was independently confirmed to need the correction it predicted — see the same section)
+**Last compiled**: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-08-12 (the byte-level weight-delta geometry probe below has now EXECUTED, not merely been proposed: both ground-truth gates pass, GGUF delta-geometry is confirmed trustworthy at Q8, and the lineage statistic named as a risk in the prior text was independently confirmed to need the correction it predicted — see the same section)
 **Sources**: 37 documents
 
 ## Summary
@@ -303,3 +303,12 @@ relative to a baseline you can independently locate.
 - **Own-slice transfer is mixed (n=8 each, exploratory):** paraphrase TRANSFER_SUPPORTED (7/7 decided correct, 1/8 unsure); the contradiction slice TRANSFER_NOT_SHOWN (semantic 5/8 vs required 90%), with errors on superlative and differing-comparison-scope cases. Sentiment was not supported. No threshold superiority or general efficacy claim; noise floor not enrolled.
 
 Sources: [paw-compiled-specialists handoff](../handoffs/active/paw-compiled-specialists.md); [paw3 paraphrase reserve progress](../progress/2026-10/2026-10-29-paw3-paraphrase-reserve.md); [paw3 sentiment preparation](../progress/2026-10/2026-10-29-paw3-sentiment-q0-preparation.md); [paw standard capacity checkpoint](../progress/2026-10/2026-10-29-paw-standard-capacity-checkpoint.md)
+
+## Compiled Update — 2026-11-01 (10-31 intake deep dives, workspace-58)
+
+**Confidence: dive-verified source readings; paper and vendor numbers are claims, not local measurements, and every derived task is proposed, not run.** Source record: [ws58-20261031 deep dives](../research/deep-dives/ws58-20261031/README.md).
+
+- Declining Soft-MTP as pretraining (MTP-5) does not decline drafter fine-tuning: on a frozen trunk it equals forward KL (intake-2548#record, intake-2549#record; [w5_ft](../research/deep-dives/ws58-20261031/dives/w5_ft.yaml)). DF2-FT-1/2 and the onboarding rule W5FT-5 are summarised under speculative-decoding; W5FT-2 (frontdoor MTP head) and W5FT-3 (Flash-Next head, 1-2 week torch port) are smaller candidates.
+- Looped transformers ([w1_loop](../research/deep-dives/ws58-20261031/dives/w1_loop.yaml), [w2_loop](../research/deep-dives/ws58-20261031/dives/w2_loop.yaml)): full-stack looping is strongest at fixed parameters (intake-2547#record, no wall-clock); PLT is the only wall-clock evidence (+2% latency for 2 loops, in-house GPU; intake-2571#record); LoopCoder-v2 R=2 lifts SWE-bench Verified 43.0 -> 64.4 but R=3 collapses (intake-2584#record); looped MoE still trails a non-looped larger MoE (intake-2551#record).
+- llama.cpp: Nanbeige looped arch #25994 is merged upstream but absent from v10; the Ouro port #29823 is open, decoding at ~1/R (intake-2586#record, intake-2585#record). Proposed W2LOOP-1/CH-34: build both on an experimental branch and measure Ouro-1.4B at loops 1/2/4 on EPYC, promoting only if loops=4 decode >= 0.35x of loops=1 (predicted ~0.26x).
+- GDN beta cap (intake-2587#record, single-author blog): OLMo-Hybrid (beta up to 2) solves a parity task where Qwen3.5-4B (beta capped at 1) is at chance. Knowledge-only.
