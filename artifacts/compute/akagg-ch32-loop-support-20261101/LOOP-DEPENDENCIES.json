@@ -1,0 +1,225 @@
+{
+  "C5": "c72ec82f5417bb2937310326120f149b665e8400",
+  "B1": "b77d646751d01c0962bc203b6809e9d94f7d50b7",
+  "B2": "e79d8cab590ae0a040e1562d09e46b0bfab8cc2d",
+  "B1_ancestor_B2_parent": true,
+  "scope": "Exact-token presence in listed files and direct patch-added lines only. Shared functionality, not necessarily entire B1, must be supplied for the unchanged Ouro port. This is not a build, runtime or complete minimal-dependency proof.",
+  "checks": [
+    {
+      "kind": "runtime_key",
+      "token": "LLM_KV_NUM_LOOPS",
+      "definition_path": "src/llama-arch.h",
+      "use_path": "src/models/ouro.cpp",
+      "definition": {
+        "C5": {
+          "present": false,
+          "lines": []
+        },
+        "B1_parent": {
+          "present": false,
+          "lines": []
+        },
+        "B1": {
+          "present": true,
+          "lines": [
+            "b77d646751d01c0962bc203b6809e9d94f7d50b7:src/llama-arch.h:230:    LLM_KV_NUM_LOOPS,"
+          ]
+        },
+        "B2_parent": {
+          "present": true,
+          "lines": [
+            "e79d8cab590ae0a040e1562d09e46b0bfab8cc2d^:src/llama-arch.h:259:    LLM_KV_NUM_LOOPS,"
+          ]
+        },
+        "B2": {
+          "present": true,
+          "lines": [
+            "e79d8cab590ae0a040e1562d09e46b0bfab8cc2d:src/llama-arch.h:260:    LLM_KV_NUM_LOOPS,"
+          ]
+        }
+      },
+      "B2_use": {
+        "present": true,
+        "lines": [
+          "e79d8cab590ae0a040e1562d09e46b0bfab8cc2d:src/models/ouro.cpp:27:    ml.get_key(LLM_KV_NUM_LOOPS, n_loops_u, false);"
+        ]
+      },
+      "B1_added_lines": [
+        "+    LLM_KV_NUM_LOOPS,"
+      ],
+      "B2_added_definition_lines": []
+    },
+    {
+      "kind": "conversion_writer",
+      "token": "add_num_loops",
+      "definition_path": "gguf-py/gguf/gguf_writer.py",
+      "use_path": "conversion/ouro.py",
+      "definition": {
+        "C5": {
+          "present": false,
+          "lines": []
+        },
+        "B1_parent": {
+          "present": false,
+          "lines": []
+        },
+        "B1": {
+          "present": true,
+          "lines": [
+            "b77d646751d01c0962bc203b6809e9d94f7d50b7:gguf-py/gguf/gguf_writer.py:911:    def add_num_loops(self, count: int) -> None:"
+          ]
+        },
+        "B2_parent": {
+          "present": true,
+          "lines": [
+            "e79d8cab590ae0a040e1562d09e46b0bfab8cc2d^:gguf-py/gguf/gguf_writer.py:981:    def add_num_loops(self, count: int) -> None:"
+          ]
+        },
+        "B2": {
+          "present": true,
+          "lines": [
+            "e79d8cab590ae0a040e1562d09e46b0bfab8cc2d:gguf-py/gguf/gguf_writer.py:981:    def add_num_loops(self, count: int) -> None:"
+          ]
+        }
+      },
+      "B2_use": {
+        "present": true,
+        "lines": [
+          "e79d8cab590ae0a040e1562d09e46b0bfab8cc2d:conversion/ouro.py:36:        self.gguf_writer.add_num_loops(n_loops)"
+        ]
+      },
+      "B1_added_lines": [
+        "+    def add_num_loops(self, count: int) -> None:"
+      ],
+      "B2_added_definition_lines": []
+    },
+    {
+      "kind": "conversion_writer",
+      "token": "add_skip_loop_final_norm",
+      "definition_path": "gguf-py/gguf/gguf_writer.py",
+      "use_path": "conversion/ouro.py",
+      "definition": {
+        "C5": {
+          "present": false,
+          "lines": []
+        },
+        "B1_parent": {
+          "present": false,
+          "lines": []
+        },
+        "B1": {
+          "present": true,
+          "lines": [
+            "b77d646751d01c0962bc203b6809e9d94f7d50b7:gguf-py/gguf/gguf_writer.py:914:    def add_skip_loop_final_norm(self, value: bool) -> None:"
+          ]
+        },
+        "B2_parent": {
+          "present": true,
+          "lines": [
+            "e79d8cab590ae0a040e1562d09e46b0bfab8cc2d^:gguf-py/gguf/gguf_writer.py:984:    def add_skip_loop_final_norm(self, value: bool) -> None:"
+          ]
+        },
+        "B2": {
+          "present": true,
+          "lines": [
+            "e79d8cab590ae0a040e1562d09e46b0bfab8cc2d:gguf-py/gguf/gguf_writer.py:984:    def add_skip_loop_final_norm(self, value: bool) -> None:"
+          ]
+        }
+      },
+      "B2_use": {
+        "present": true,
+        "lines": [
+          "e79d8cab590ae0a040e1562d09e46b0bfab8cc2d:conversion/ouro.py:41:        self.gguf_writer.add_skip_loop_final_norm(False)"
+        ]
+      },
+      "B1_added_lines": [
+        "+    def add_skip_loop_final_norm(self, value: bool) -> None:"
+      ],
+      "B2_added_definition_lines": []
+    },
+    {
+      "kind": "conversion_key",
+      "token": "NUM_LOOPS",
+      "definition_path": "gguf-py/gguf/constants.py",
+      "use_path": "conversion/ouro.py",
+      "definition": {
+        "C5": {
+          "present": false,
+          "lines": []
+        },
+        "B1_parent": {
+          "present": false,
+          "lines": []
+        },
+        "B1": {
+          "present": true,
+          "lines": [
+            "b77d646751d01c0962bc203b6809e9d94f7d50b7:gguf-py/gguf/constants.py:148:        NUM_LOOPS                         = \"{arch}.num_loops\""
+          ]
+        },
+        "B2_parent": {
+          "present": true,
+          "lines": [
+            "e79d8cab590ae0a040e1562d09e46b0bfab8cc2d^:gguf-py/gguf/constants.py:154:        NUM_LOOPS                         = \"{arch}.num_loops\""
+          ]
+        },
+        "B2": {
+          "present": true,
+          "lines": [
+            "e79d8cab590ae0a040e1562d09e46b0bfab8cc2d:gguf-py/gguf/constants.py:154:        NUM_LOOPS                         = \"{arch}.num_loops\""
+          ]
+        }
+      },
+      "B2_use": {
+        "present": false,
+        "lines": []
+      },
+      "B1_added_lines": [
+        "+        NUM_LOOPS                         = \"{arch}.num_loops\""
+      ],
+      "B2_added_definition_lines": []
+    },
+    {
+      "kind": "conversion_key",
+      "token": "SKIP_LOOP_FINAL_NORM",
+      "definition_path": "gguf-py/gguf/constants.py",
+      "use_path": "conversion/ouro.py",
+      "definition": {
+        "C5": {
+          "present": false,
+          "lines": []
+        },
+        "B1_parent": {
+          "present": false,
+          "lines": []
+        },
+        "B1": {
+          "present": true,
+          "lines": [
+            "b77d646751d01c0962bc203b6809e9d94f7d50b7:gguf-py/gguf/constants.py:149:        SKIP_LOOP_FINAL_NORM              = \"{arch}.skip_loop_final_norm\""
+          ]
+        },
+        "B2_parent": {
+          "present": true,
+          "lines": [
+            "e79d8cab590ae0a040e1562d09e46b0bfab8cc2d^:gguf-py/gguf/constants.py:155:        SKIP_LOOP_FINAL_NORM              = \"{arch}.skip_loop_final_norm\""
+          ]
+        },
+        "B2": {
+          "present": true,
+          "lines": [
+            "e79d8cab590ae0a040e1562d09e46b0bfab8cc2d:gguf-py/gguf/constants.py:155:        SKIP_LOOP_FINAL_NORM              = \"{arch}.skip_loop_final_norm\""
+          ]
+        }
+      },
+      "B2_use": {
+        "present": false,
+        "lines": []
+      },
+      "B1_added_lines": [
+        "+        SKIP_LOOP_FINAL_NORM              = \"{arch}.skip_loop_final_norm\""
+      ],
+      "B2_added_definition_lines": []
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "schema": "epyc.akagg.ch30b-custody.v1",
+  "recorded_utc": "2026-11-01T21:47:50.548375+00:00",
+  "source_commit": "a1f0c8cf9bd7102415a72577474f307b8ba94db9",
+  "source_binding": "PROVENANCE.md (build 10348, experimental KPF P1r)",
+  "manifest": {
+    "path": "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/SHA256SUMS",
+    "sha256": "9a39ccc804b16806d91bf4c3861642b24a035b19c1dcd89afd82f44851eb4369",
+    "verification_cmd": [
+      "sha256sum",
+      "-c",
+      "../SHA256SUMS"
+    ],
+    "cwd": "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin",
+    "rc": 0,
+    "checked_entries": 114,
+    "all_ok": true
+  },
+  "provenance": {
+    "path": "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/PROVENANCE.md",
+    "sha256": "268905df3d728d747ce8bce1c62c1bc4c9c08cef937e508b209b0798fa6ef750"
+  },
+  "ancestry": {
+    "9aba0e3b4": {
+      "rc": 1,
+      "meaning": "not ancestor"
+    },
+    "a9c38f8e0": {
+      "rc": 1,
+      "meaning": "not ancestor"
+    }
+  },
+  "ancestry_command_template": [
+    "git",
+    "-C",
+    "/mnt/raid0/llm/llama.cpp",
+    "merge-base",
+    "--is-ancestor",
+    "<fix>",
+    "a1f0c8cf9bd7102415a72577474f307b8ba94db9"
+  ],
+  "scripts": [
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf13-1-reduced/job.sh",
+      "sha256": "15dafaf310bcfcbc6e4a8f2fac392fb03391c7cbfb3797fea48a5a0281c9089d",
+      "pinned_binary": "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server",
+      "graph_disable_text_present": true
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf18-s1-remainder/job.sh",
+      "sha256": "7d5ba988fa14513b1aadc7c6415aaa570bf9f283195aff2ed7bdaf770be4cbdb",
+      "pinned_binary": "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server",
+      "graph_disable_text_present": true
+    }
+  ],
+  "limitations": [
+    "Tracked image manifest and recorded provenance bind these current bytes to source; no GPU load or runtime leak test performed.",
+    "Non-ancestry does not rule out an independently equivalent fix.",
+    "This finding covers only the two named scripts and image, not the complete inventory."
+  ]
+}

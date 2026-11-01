@@ -42,3 +42,6 @@
 
 - CH-31 row retention repaired: republished own unchanged launcher with raw `*.out` and SHA manifests kept, in addition to defaults, and refreshed the Git snapshot. No qualification or inference launched.
 - CH-20.1 stale in-progress status corrected: recorded compare ended rc143 with FileNotFoundError and only three individual launches, no five-pair result; original 2.862% dd3 floor is historical. Retained raw records, box stays open.
+
+- CH-32 B: Ouro uses loop metadata and GGUF writer methods absent from C5 and introduced in Nanbeige B1; retained reproducible exact-file source evidence. Equivalent hand-port of shared support may suffice; no full minimum-chain/build verdict.
+- CH-30b: verified 114/114 store hashes for the old f8 image `a1f0c8cf9`; neither original nor folded leak fix is ancestral. Its graphs-off workarounds cannot be removed on the strength of the later fold. Retained custody receipt; no launcher changed.
