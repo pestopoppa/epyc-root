@@ -3939,7 +3939,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-01T17:51:40Z",
+  "generated_at": "2026-11-01T18:34:56Z",
   "nodes": [
     {
       "age_days": 94,
@@ -6310,13 +6310,13 @@
       "blocked_by": [
         "RTG-57"
       ],
-      "closed": 44,
+      "closed": 45,
       "domain": "inference-research",
       "handoff": "yarn-context-extension-research.md",
       "id": "INF-59",
       "last_advanced": "2026-11-01",
       "next_action": "Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power",
-      "open": 34,
+      "open": 35,
       "priority": 0.8786,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): YARN-AGG-1 \u2014 Aggregation and recall arms for the YaRN gate: Oolong, HELMET recall and RAG,",
@@ -6867,7 +6867,7 @@
       "age_days": 0,
       "blocked": 42,
       "blocked_by": [],
-      "closed": 56,
+      "closed": 57,
       "domain": "inference-research",
       "handoff": "conversation-stack.md",
       "id": "INF-79",
@@ -7854,13 +7854,13 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 129,
+      "closed": 130,
       "domain": "routing-and-optimization",
       "handoff": "non-inference-backlog.md",
       "id": "RTG-22",
       "last_advanced": "2026-11-01",
       "next_action": "Land LOOP-10..12, disk LOOP-21..25 and LOOP-26/27 (no blocking Qs unattended, filing alarm); review NIB2-98; prove NIB2-102.b",
-      "open": 67,
+      "open": 66,
       "priority": 0.8844,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LOOP-25 \u2014 disk forecast in the depth alarm. Project free space from the ARMED and READY `e",
@@ -8763,13 +8763,13 @@
       "age_days": 8,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 11,
+      "closed": 12,
       "domain": "routing-and-optimization",
       "handoff": "model-artifact-integrity.md",
       "id": "RTG-59",
       "last_advanced": "2026-10-24",
       "next_action": "SEC-ART-POST-f: recompile lean registry + stack_priors at next stack-change, then SEC-ART-2; POST-b.1 v2 template roll-out; POST-d",
-      "open": 6,
+      "open": 5,
       "priority": 0.4624,
       "priority_basis": {
         "basis": "T2 non-inference best open item (N): SEC-ART-POST-f \u2014 Recompile the orchestrator lean registry + stack_priors from the master r",
