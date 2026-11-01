@@ -1,0 +1,22 @@
+{
+  "bundle_id": "epyc.ws58.d1d4.qual-v1",
+  "published_root_source_commit": "4d6db587b3799d4baee8ab4644c4f2e9acac0ef4",
+  "root_foundation_commit": "11ce (published by main; keeper deployment pending)",
+  "installed_bundle": "/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1",
+  "production_engine": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/filler_run14.sh",
+    "sha256": "6fe168333738d15e5988d5af42e2b4c348194d722bac11c32368183ae89cd3ef"
+  },
+  "files": {
+    "filler_run14.sh": "6fe168333738d15e5988d5af42e2b4c348194d722bac11c32368183ae89cd3ef",
+    "dryrun_check.py": "102b6d297d78f2fc60a841d6349f1005e9e78ba4704552bf10bb84cb80bb2f7f",
+    "dryrun_disk_policy.json": "a271e93a7a9ac54386352d254e5ad2ab57a5f39fc40daad99106afa919bfa157",
+    "filler_lib.sh": "241e522f4a7d7208e7485834c90d77676434a9bc88fd253575e034ad2934237c",
+    "qualify_launcher.py": "923029f824c937806cdb7491e69935b71472d479bed357f6b9c735120f26afe8",
+    "keeper_qual_gate.py": "0588749a447dc15e46014aa4ee883ec46d15afcb0ffc26a9c3ece5c4efd6c8ca",
+    "ready_manifest.schema.json": "971bcae547916611c53d53b52cc36b1a6aa54b4bfa211f163bd53bed07586279",
+    "filed_verdict.schema.json": "c7c56db0bfe504fde0baa7b6ae77eac951d783fd9cf6646f927dcd1a53aa7c02"
+  },
+  "fixture_engine_snapshot": "../engine-exact-fixture (byte-identical source snapshot for nonproduction conformance tests only; never selected for production)",
+  "production_engine_override": false
+}

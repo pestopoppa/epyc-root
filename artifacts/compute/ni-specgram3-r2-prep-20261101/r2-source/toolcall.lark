@@ -1,0 +1,81 @@
+%llguidance {}
+
+start: THOUGHT ACTION
+THOUGHT: "# " /[^\n]/+ "\n"
+
+ACTION: TOOL_CALL
+     | FINAL_CALL
+     | CODE_LINE
+
+TOOL_CALL: "TOOL(\"" TOOL_NAME "\"" ARGS ")\n"
+
+TOOL_NAME: "http_get"
+     | "http_post"
+     | "web_search"
+     | "web_research"
+     | "fetch_wikipedia"
+     | "search_arxiv"
+     | "search_papers"
+     | "search_wikipedia"
+     | "get_wikipedia_article"
+     | "search_books"
+     | "json_query"
+     | "csv_to_json"
+     | "json_to_csv"
+     | "sql_query"
+     | "python_eval"
+     | "run_shell"
+     | "git_status"
+     | "lint_python"
+     | "calculate"
+     | "statistics"
+     | "monte_carlo"
+     | "symbolic_solve"
+     | "matrix_solve"
+     | "matrix_eigenvalues"
+     | "matrix_svd"
+     | "solve_ode"
+     | "optimize"
+     | "monte_carlo_native"
+     | "mcmc"
+     | "bayesopt"
+     | "plot_braille"
+     | "plot_function"
+     | "histogram"
+     | "plot_sixel"
+     | "render_math"
+     | "read_file"
+     | "write_file"
+     | "list_directory"
+     | "get_current_date"
+     | "get_current_time"
+     | "embed_text"
+     | "similarity_search"
+     | "classify_text"
+     | "ocr_extract"
+     | "vision_analyze"
+     | "vision_search"
+     | "vision_face_identify"
+     | "task_create"
+     | "task_update"
+     | "task_list"
+     | "budget_override"
+     | "user_profile"
+     | "user_search"
+     | "user_context"
+     | "user_conclude"
+
+ARGS: ("," WS ARG)*
+ARG: /[a-zA-Z_]/+ "=" VALUE
+
+VALUE: QUOTED_STRING
+     | NUMBER
+     | "True"
+     | "False"
+     | "None"
+
+QUOTED_STRING: "\"" /[^\"]/* "\""
+NUMBER: "-"? /[0-9]/+ ("." /[0-9]/+)?
+FINAL_CALL: "FINAL(" VALUE ")\n"
+CODE_LINE: /[^\n]/+ "\n"
+WS: " "*

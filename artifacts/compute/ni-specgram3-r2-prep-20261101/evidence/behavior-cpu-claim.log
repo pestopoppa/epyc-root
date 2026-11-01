@@ -1,0 +1,4 @@
+RESOURCE_PASS id=codex-ni-specgram3-llg101-cpu-r2-20261101 scope=normal-grant
+RESOURCE_PASS id=codex-ni-specgram3-llg101-cpu-r2-20261101 scope=normal-grant
+DRYRUN_BOUNDARY effect=fixture-before-effect job_sha256=f3b9604ae0885e5f1d86c26d99d3d834f17aaf9dd7bd8a5491f9f53d08864171 stop-before-effect
+PASS dynamic actual/relocated CPU grants, malformed metadata, deadline reserve, expired grant, atomic receipt

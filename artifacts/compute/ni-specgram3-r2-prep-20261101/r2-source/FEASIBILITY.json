@@ -1,0 +1,19 @@
+{
+  "scope": "conservative planning only, same one-thread smoke; no assumed quarter speedup or serving-rate claim",
+  "native_timing_steps_including_warmup_estimate": 88064,
+  "native_smoke_steps_including_warmup": 150,
+  "component_wall_s_including_actual_model_logit_computation": 18.890805959701538,
+  "native_component_budget_s": 11090.666240234375,
+  "greedy_max_feedback_tokens": 4096,
+  "measured_smoke_decode_tokens_s_including_mask_loop": 4.449099641211369,
+  "greedy_prefill_and_decode_budget_s": 2264.8260408660003,
+  "replay_budget_s": 600,
+  "header_audit_budget_s": 180,
+  "B5_clone_allowance_s": 600,
+  "drain_allowance_s": 90,
+  "total_planning_s": 14825.492281100376,
+  "window_s": 21600,
+  "fits": true,
+  "formula": "componentSmokeWholeWall*(88064/150) +4096/minMeasuredGreedyTokS +16*maxMeasuredPrefillS*(700/96) +600replay+180header+600B5+90drain; full smoke whole component cost deliberately overcounts loading/prefill per step",
+  "limits": "first original prompt calibration only; other cases may vary; at deadline completed cells checkpoint with partial=true/rc75 after captured-PID drain"
+}

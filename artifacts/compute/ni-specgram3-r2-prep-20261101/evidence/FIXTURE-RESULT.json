@@ -1,0 +1,53 @@
+{
+  "interpretation": "model-free mechanics only; no production qualification, keeper HARD receipt, or science result",
+  "model_free_engine_fixture": {
+    "children_drained": true,
+    "kind": "epyc.qual.fixture.v1",
+    "nonce": "7f895b3dc2500450f73441b9d940520ceda60e4ad60235c47f652f3bc4b029c1",
+    "rc75": {
+      "cutoff_mode": "fixture-immediate-deadline",
+      "exit_code": 75,
+      "partial_flag": true
+    },
+    "receipt": "/mnt/raid0/llm/tmp/codex-ni-specgram3-repair-20261101/cpu-r2-20261101/fixture-run-c6592d87/qualification/QUAL-codex-ni-specgram3-llg101-cpu-r2-20261101-fixture-478890b3.json",
+    "result_writer": {
+      "ok": true,
+      "result_path": "/mnt/raid0/llm/tmp/codex-ni-specgram3-repair-20261101/cpu-r2-20261101/fixture-run-c6592d87/flags/qual/7f895b3dc2500450f73441b9d940520ceda60e4ad60235c47f652f3bc4b029c1/results/QUAL-RESULT.json",
+      "sha256": "c851cb647a826320f1d4c83b57a55ad1c2617bbcb1aab80050a26e7a893ed7fc"
+    }
+  },
+  "nonproduction_active_stop_fixture": {
+    "child_drained": true,
+    "event_sha256": "2b4436ca5e7c45ee2dea16cfbca5189ec7f7a5392753462e436bad546c9ca89a",
+    "first_event_birth_ticks": 162752485,
+    "first_event_pid": 3172203,
+    "hard_qualification": false,
+    "job_rc": 75,
+    "normal_result_preserved": true,
+    "official_nonce_issued": false,
+    "partial_unknown": true
+  },
+  "production_toy_entry_refusal": {
+    "cases": [
+      {
+        "case": "true",
+        "direct_fixture_refused": true,
+        "job_entry_rc": 70,
+        "no_science_work_started": true
+      },
+      {
+        "case": "missing",
+        "direct_fixture_refused": true,
+        "job_entry_rc": 70,
+        "no_science_work_started": true
+      },
+      {
+        "case": "string_false",
+        "direct_fixture_refused": true,
+        "job_entry_rc": 70,
+        "no_science_work_started": true
+      }
+    ],
+    "refusal": "only an explicit JSON boolean production=false enables the toy fixture"
+  }
+}

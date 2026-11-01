@@ -1,0 +1,1 @@
+{"module": "/mnt/raid0/llm/tmp/codex-ni-specgram3-cpu-prep-20261031/wheel/llguidance/__init__.py", "native_module": "/mnt/raid0/llm/tmp/codex-ni-specgram3-cpu-prep-20261031/wheel/llguidance/_lib.abi3.so", "version": "1.0.1", "source": "pinned PyPI wheel; not locally source-built", "corpus_calls": 5450, "smoke_limit": 1}

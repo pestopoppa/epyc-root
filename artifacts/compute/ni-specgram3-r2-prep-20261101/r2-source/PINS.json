@@ -1,0 +1,71 @@
+{
+  "auxiliary_models": {
+    "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf": {
+      "edge_sha256": "a73765af3f7aca5ede5e8e1fe918979b86d3bf8c58b0a2e8dfd35eaa60e42861",
+      "pin_kind": "first+last up to64MiB each +size; metadata audit only",
+      "size": 29047086048
+    },
+    "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf": {
+      "edge_sha256": "2a995be0f6838f2faca88e6d5827d686197f34053e0c5d23d40cc7be9e85c4b0",
+      "pin_kind": "first+last up to64MiB each +size; metadata audit only",
+      "size": 18556687200
+    },
+    "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf": {
+      "edge_sha256": "191bddff0996e872df8ba831659bcb94bc360c6c99f1cb9c0274a5a9201d4685",
+      "pin_kind": "first+last up to64MiB each +size; metadata audit only",
+      "size": 10946624
+    }
+  },
+  "files": {
+    "/mnt/raid0/llm/hf-models/Qwen3-4B-Instruct-2507/tokenizer.json": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a",
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0",
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml.so.0.16.0": "87074c95c8709c491e84b2c8b9c0b8fa911b1cd309fbd5536a4947063a96998e",
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303": "dfd31d4bb51818e5507b9eeaa7766452cab914f02bdbd1e0f18b4c3e9294de09",
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303": "5cdd003d3f441e1efe42e4c06e4434b0195f25ab6317d64aa7e7cf60deaba844",
+    "/mnt/raid0/llm/models/turboderp/Qwen3.8-27B-exl3-4.00bpw/tokenizer.json": "0997f410c57a1f4e53b09e4be8f4a172d90edd9564368fb0847030937229b9f3",
+    "/mnt/raid0/llm/models/turboderp/Qwen3.8-Flash-Next-exl3-3.05bpw/tokenizer.json": "0997f410c57a1f4e53b09e4be8f4a172d90edd9564368fb0847030937229b9f3",
+    "/mnt/raid0/llm/tmp/codex-ni-specgram3-repair-20261101/cpu-r2-20261101/ENGINE.lock.json": "0bc37ab1f9ad75f44f5f0bbbcce9ad5e7d1e244c9240e170435095bdf3355ace",
+    "/mnt/raid0/llm/tmp/codex-ni-specgram3-repair-20261101/cpu-r2-20261101/PREDECLARATION.md": "168fdbb9a28c3667afbd647156fdaea19eca0d751572d938724f5136144b1242",
+    "/mnt/raid0/llm/tmp/codex-ni-specgram3-repair-20261101/cpu-r2-20261101/bench-grammar-sampler.cpp": "31b0df47c8b312d2506e890626d7e4e29c7892399a4782c82cf0d1da776bfa5a",
+    "/mnt/raid0/llm/tmp/codex-ni-specgram3-repair-20261101/cpu-r2-20261101/bench-specgram3": "2947f6da21998eef692c38215bd300fdb319658120e34ebe0b27f87d5db96063",
+    "/mnt/raid0/llm/tmp/codex-ni-specgram3-repair-20261101/cpu-r2-20261101/complete.sh": "16c996a891a80e056cedd1e8c5949ff3e2c6f2626a59f782f0d82d68d6ea2710",
+    "/mnt/raid0/llm/tmp/codex-ni-specgram3-repair-20261101/cpu-r2-20261101/corpus.jsonl": "09bd7374a30ead56a5a0dcd2d6c05246a8b2b165309fae89a4771fd60793f3ab",
+    "/mnt/raid0/llm/tmp/codex-ni-specgram3-repair-20261101/cpu-r2-20261101/job.py": "414f52af0a438cb204f46bdc8f83d274fdbfcc46c29c307085b099bf10790af4",
+    "/mnt/raid0/llm/tmp/codex-ni-specgram3-repair-20261101/cpu-r2-20261101/job_entry.sh": "c00dab735123dfcf1bcc4c8e0eb669c4082c99d36eabbcedba16f271fd99936c",
+    "/mnt/raid0/llm/tmp/codex-ni-specgram3-repair-20261101/cpu-r2-20261101/launch.sh": "fb62fee8f82d384d201accb7a69e7ae63b142b5ba2bea21045d90cf21190c40a",
+    "/mnt/raid0/llm/tmp/codex-ni-specgram3-repair-20261101/cpu-r2-20261101/llguidance-src/parser/llguidance.h": "2578a515ab2e10db9dba912b82c6c3ff13ee48cbf1ce4f7f80eedcb01c28137e",
+    "/mnt/raid0/llm/tmp/codex-ni-specgram3-repair-20261101/cpu-r2-20261101/llguidance.cpp": "bd656c31c2057cff20c464a1e8318a02c6292dc1484a44c840802b6b988262ab",
+    "/mnt/raid0/llm/tmp/codex-ni-specgram3-repair-20261101/cpu-r2-20261101/qual_fixture.py": "bc6b143c743af410020420884590bc4b59fa6f1f5721c93dcf79a92277bb7d15",
+    "/mnt/raid0/llm/tmp/codex-ni-specgram3-repair-20261101/cpu-r2-20261101/read_logs.py": "84e436a4069aafba8a6f29fb9d788e8d0b5991b0843a4b475a1007546141e750",
+    "/mnt/raid0/llm/tmp/codex-ni-specgram3-repair-20261101/cpu-r2-20261101/replay101.py": "82f3160bc096c148f29fca7ee947ae915ca1e6d19132fdb286b22c1ee27d0cad",
+    "/mnt/raid0/llm/tmp/codex-ni-specgram3-repair-20261101/cpu-r2-20261101/row.md": "6e8e0e7b5f6860eb3a13fcf7a3ccad8306d6bc6e535c4e7094f5db03afb41f17",
+    "/mnt/raid0/llm/tmp/codex-ni-specgram3-repair-20261101/cpu-r2-20261101/tokenizer_audit.py": "4436b08c83e0d3c6c9bc067b49a44e21ff360058c1ad8c00bb7138f26f2d85ba",
+    "/mnt/raid0/llm/tmp/codex-ni-specgram3-repair-20261101/cpu-r2-20261101/toolcall.gbnf": "701899fd03159e7405b1741ba443e4b25b859f4671b03a741ac916fe44e9ad68",
+    "/mnt/raid0/llm/tmp/codex-ni-specgram3-repair-20261101/cpu-r2-20261101/toolcall.lark": "a7bd17657a47de83e6a0dcd01ff8bcd6c0d4d3c79d724a7cf928b75c356b199b",
+    "/mnt/raid0/llm/tmp/codex-ni-specgram3-repair-20261101/cpu-r2-20261101/toolcall.schema.json": "51622a31f3ccb6b5f80a3e44a4d43639dd72a6a97140cddf8be08896116d22c3",
+    "/mnt/raid0/llm/tmp/codex-ni-specgram3-repair-20261101/cpu-r2-20261101/wheel/llguidance/_lib.abi3.so": "9ac6b493c5d7e8130308896e71815180411edb3442ea0c12862495ccd3537bc6",
+    "/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/dryrun_check.py": "102b6d297d78f2fc60a841d6349f1005e9e78ba4704552bf10bb84cb80bb2f7f",
+    "/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/dryrun_disk_policy.json": "a271e93a7a9ac54386352d254e5ad2ab57a5f39fc40daad99106afa919bfa157",
+    "/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/filed_verdict.schema.json": "c7c56db0bfe504fde0baa7b6ae77eac951d783fd9cf6646f927dcd1a53aa7c02",
+    "/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/filler_lib.sh": "241e522f4a7d7208e7485834c90d77676434a9bc88fd253575e034ad2934237c",
+    "/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/filler_run14.sh": "6fe168333738d15e5988d5af42e2b4c348194d722bac11c32368183ae89cd3ef",
+    "/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/keeper_qual_gate.py": "0588749a447dc15e46014aa4ee883ec46d15afcb0ffc26a9c3ece5c4efd6c8ca",
+    "/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/qualify_launcher.py": "923029f824c937806cdb7491e69935b71472d479bed357f6b9c735120f26afe8",
+    "/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/ready_manifest.schema.json": "971bcae547916611c53d53b52cc36b1a6aa54b4bfa211f163bd53bed07586279",
+    "/mnt/raid0/llm/tmp/specgram2-offline/v/lib/python3.13/site-packages/tokenizers/tokenizers.abi3.so": "4b1458a379296762a034d3bc89299c0c35b4eefb0577acca922f481b262c65a1",
+    "/usr/lib/x86_64-linux-gnu/libpython3.13.so.1": "1b7613e0039be781d480c4613041c68efcd8be52240e3baf1e09ae21775746a2"
+  },
+  "llguidance_native_artifact": "PyPI1.0.1 wheel SHA945ab9c077d35dc8c6a603ea6a3e4f5ba2deeae80a0b3cbfbedd142881fb4262; native C API; not locally source-built",
+  "model": {
+    "edge_sha256": "07b181eed5d3b8c0317427faea571256f2f6bb3d97265bf6ccc096f5e9dac6a9",
+    "path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+    "pin_kind": "first+last64MiB+size",
+    "size": 37801097504
+  },
+  "original_instrument": "/mnt/raid0/llm/worktrees/spec-gram2-window-20261022/tests/bench-grammar-sampler.cpp",
+  "original_instrument_sha": "5cbb769a0adf5b5a42980793e060783693ab35708df3e12e14abd7585e26e243",
+  "production_parent": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "research_main": "067aaee4646684feb52b644f3f70b0b0a78623b1",
+  "root_main": "b67a019ad8a327cf00836b1967a579188fd6f496"
+}

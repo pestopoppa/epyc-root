@@ -1,0 +1,94 @@
+{
+  "filing_due": [
+    {
+      "class": "diagnostic",
+      "decision_rule": "Continue original 12 pool2 groups; audited no-layout pages may resume only before any region attempt; every unmatched exposed region remains protected; no quality verdict.",
+      "end_line": "rc=1 time=2026-11-01T02:11:15Z reason=job-rc-1:exited",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r30-pool2-20261031.ended",
+      "ended_sha256": "9722ab2fc6698f12d76861539c2b582b70fe3d677ba515b22be51cbbb5e653b5",
+      "id": "codex3-pip02-paddle-relocatable-r30-pool2-20261031",
+      "launcher_sha256": "ffbfa00220e3f4c7f89d3a1b69666937da8118cb2c7b4cbcb61126b6b79928d0",
+      "owner": "codex3",
+      "result_path": "/mnt/micron/codex3-pip-pool2-r30-v2-20261031/DONE-2",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip-pool2-r30-v2-20261031",
+      "seen_at": "2026-11-01T02:12:16Z"
+    },
+    {
+      "class": "diagnostic",
+      "decision_rule": "Re-segment original retained L and B rocprofv3 traces by repeated graph motif; output internal 158 L plain and 94 B decode intervals, plus 28 L speculative round intervals. Compare busy interval union and kernel sum with original server wall timings descriptively. No new threshold, keep, causal speed claim or LiLiCorr target result. NEMO-LILI-2 stays open.",
+      "end_line": "rc=70 time=2026-11-01T02:11:37Z reason=job-rc-70:exited",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/refactor-nemo-prof-reseg-20261031.ended",
+      "ended_sha256": "461d8f5f841eaecf240cb209c9da161cff1c1495ea5193b24bee2e2420632f9d",
+      "id": "refactor-nemo-prof-reseg-20261031",
+      "launcher_sha256": "6a867ec94675f554aa7fcc8460eccede1c5b8af8582267e4448b201dea84472d",
+      "owner": "refactor",
+      "result_path": "/mnt/raid0/llm/tmp/refactor-nemo-reseg-20261031/LATEST-RUN",
+      "scratch_root": "/mnt/raid0/llm/tmp/refactor-nemo-reseg-20261031",
+      "seen_at": "2026-11-01T02:12:16Z"
+    },
+    {
+      "class": "diagnostic",
+      "decision_rule": "Collect only the original never-started 60 pages in pool3 groups 110,122,134,146; preserve all other pages and unknown attempts. Tail marker is subset completion only; no quality or full-pool verdict.",
+      "end_line": "rc=1 time=2026-11-01T02:13:17Z reason=job-rc-1:exited",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r31-pool3-20261031.ended",
+      "ended_sha256": "b0749a2e83b9edcee9e9ad1b65eda63ab27770e9281d808a9c41d2a213a31f9f",
+      "id": "codex3-pip02-paddle-relocatable-r31-pool3-20261031",
+      "launcher_sha256": "680c27030f56f4ac0a620ffe718063bc8b1accb06a8eb43c5af7ca6708cf922b",
+      "owner": "codex3",
+      "result_path": "/mnt/micron/codex3-pip-pool3-tail-r31-20261031/TAIL-DONE-3",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip-pool3-recovery-20261031-0606",
+      "seen_at": "2026-11-01T02:13:18Z"
+    },
+    {
+      "class": "diagnostic",
+      "decision_rule": "n/a (private v9 tiny-model behavioral diagnostic; no current production or throughput conclusion)",
+      "end_line": "rc=0 time=2026-11-01T02:15:05Z reason=complete",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-sw2-v9-clamp-hostfix2-20261031.ended",
+      "ended_sha256": "982718591de577c32f47fe4e9b6d80a289f31b5bb85a85167fe878e3759ea118",
+      "id": "codex3-sw2-v9-clamp-hostfix2-20261031",
+      "launcher_sha256": "41c482efc91b833e9d5260eda62d40ab9b1f4ab7277dfbe4d77f1ceb5a908d94",
+      "owner": "codex3",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2/run/TERMINAL.json",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2",
+      "seen_at": "2026-11-01T02:15:24Z"
+    },
+    {
+      "class": "diagnostic",
+      "decision_rule": "Diagnostic reference only: actual native grammar delta ms/token is lower_better; compare <2ms. The reported share divides by historical24.86ms and is a HISTORICAL BUDGET REFERENCE, not measured current end-to-end step share; original <5% numeric share gate is NOT satisfied by this proxy. Current actual step share is UNMEASURED and requires confirmation. Independent actual-model autoregressive stock/llg greedy must be exact token/byte identical and both EOG-complete for8 original prompts cap256; primary5450-call7cell native1.0.1 replay plus current-lineup header audit retained. Lazy candidate rows are stock controls. Auxiliary historical q36 equality remains unknown and is NOT a new parent acceptance seal. parent_complete=false/adoption=false regardless of any component reference pass.",
+      "end_line": "rc=70 time=2026-11-01T02:17:11Z reason=job-rc-70:exited",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ni-specgram3-llg101-cpu-r1-20261031.ended",
+      "ended_sha256": "b72b1a3cc53a67d72dcb3778c612e090451cd5fe31bf86de33dfd6ec715ef958",
+      "id": "codex-ni-specgram3-llg101-cpu-r1-20261031",
+      "launcher_sha256": "89eb240bafc0c0d6403ecc62c39fba2e09fdb200915d9eac7a0e106574055f5f",
+      "owner": "codex-ni",
+      "result_path": "/mnt/raid0/llm/tmp/codex-ni-specgram3-cpu-prep-20261031/out/RESULT.json",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-specgram3-cpu-prep-20261031",
+      "seen_at": "2026-11-01T02:17:30Z"
+    },
+    {
+      "class": "diagnostic",
+      "decision_rule": "Final after scheduled EOS must be <=1s and >=0 for each realtime case; missing final fails; other A1 subtests remain necessary.",
+      "end_line": "rc=0 time=2026-11-01T02:48:17Z reason=complete",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-cs22-a1-native-timing-v2-cpu-20261030.ended",
+      "ended_sha256": "390e1bf38b5b232853fcd5f5b03d6e8976f45caa78f36f477bf864f2947cd0dd",
+      "id": "codex3-cs22-a1-native-timing-v2-cpu-20261030",
+      "launcher_sha256": "05086cc4405ade99eb0489a05b5ac9b3d76c146b159bed6d4927eaceaee41b38",
+      "owner": "codex3",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-timing-v2-20261030/results-timing",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-cs22-a1-timing-v2-20261030",
+      "seen_at": "2026-11-01T02:48:57Z"
+    }
+  ],
+  "result_hashes": {
+    "000.result.json": "91d3680ade692d855bf05c89543a3fa1cdb057119bc9e8d013995c2de9f6b67b",
+    "001.result.json": "f742cd71a6b1ba1fa72b33b71bfac485bec00d1b31b2d4b3fe2ab3d43b7a1794",
+    "002.result.json": "c4462619886d5b5df4f8ab2a5a0233a45b880fb7698328b965f1b68334291b3b",
+    "003.result.json": "c6553f3bb659c99be186ab75186f60ac3a17297696f444e8f748ba83dab6d1db",
+    "COMPLETE.json": "f1572c50bd4ae9a741d62e4fdbaec46dcd475929fd0236ae3485ea313cf9f583",
+    "sw2/0.response.json": "e6a2b4e934b0bc984163162be48a936e4d038ac6502f21581262d33fd1c9ae80",
+    "sw2/1.response.json": "800d63a538f6ca288f773f142c22ac9eec26f3194fc3a7baceb7e4b48a30ce4f",
+    "sw2/2.response.json": "a72410177a47dcdbf22a96754499a935408c523145fc263edbf47c52870321d6",
+    "sw2/3.response.json": "3d4f71b71f79d2e8bf6aaf247429c58cacea35300efea7ec7915bcbec8915313",
+    "sw2/TERMINAL.json": "fa7b01b06d77ffd632c22ba0510508c6c1aba8b1f67a611ca665a1cb6f29fa6f"
+  }
+}

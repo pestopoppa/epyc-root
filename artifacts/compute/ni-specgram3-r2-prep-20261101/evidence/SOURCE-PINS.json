@@ -1,0 +1,25 @@
+{
+  "canonical_source_commit": "4d6db587b3799d4baee8ab4644c4f2e9acac0ef4",
+  "engine_files": {
+    "dryrun_check.py": "102b6d297d78f2fc60a841d6349f1005e9e78ba4704552bf10bb84cb80bb2f7f",
+    "dryrun_disk_policy.json": "a271e93a7a9ac54386352d254e5ad2ab57a5f39fc40daad99106afa919bfa157",
+    "filed_verdict.schema.json": "c7c56db0bfe504fde0baa7b6ae77eac951d783fd9cf6646f927dcd1a53aa7c02",
+    "filler_lib.sh": "241e522f4a7d7208e7485834c90d77676434a9bc88fd253575e034ad2934237c",
+    "filler_run14.sh": "6fe168333738d15e5988d5af42e2b4c348194d722bac11c32368183ae89cd3ef",
+    "keeper_qual_gate.py": "0588749a447dc15e46014aa4ee883ec46d15afcb0ffc26a9c3ece5c4efd6c8ca",
+    "qualify_launcher.py": "923029f824c937806cdb7491e69935b71472d479bed357f6b9c735120f26afe8",
+    "ready_manifest.schema.json": "971bcae547916611c53d53b52cc36b1a6aa54b4bfa211f163bd53bed07586279"
+  },
+  "expected_installed_bundle": "/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1",
+  "explicit_false_guard": "job_entry and direct fixture reject production=true, missing, and string false; only JSON boolean false enters toy path",
+  "model_sha_edge_bytes": "not re-read in qualification; PINS.json retains original model and auxiliary pins",
+  "native_resource_boundary": "model size 37,801,097,504 bytes; existing captured cutoff peak about 37 GiB; no R11 <=8 GiB model smoke",
+  "production_qualification": "PENDING; job_entry rejects production manifests until real same-job path exists",
+  "r1_filed_artifact_commit": "4d6db587b3799d4baee8ab4644c4f2e9acac0ef4",
+  "r1_preserved": true,
+  "r2_id": "codex-ni-specgram3-llg101-cpu-r2-20261101",
+  "root_foundation_commit": "11ce",
+  "row_cpu_claim": "regions=any-cpu-quarter; claimed_cpus=dynamic",
+  "runtime_manifest_sha256": "fd25fb52fcb8b892085aedc3024db4cab7388f0f3bfc80df8518b81216b08c44",
+  "runtime_sources_manifest_sha256": "2869d4b4fac7fec8a8ba65cbaa391d5d399db5a0f20362ef8f8e20fda774b2f3"
+}

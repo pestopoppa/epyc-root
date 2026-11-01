@@ -1,0 +1,507 @@
+{
+  "$defs": {
+    "pinnedFile": {
+      "additionalProperties": true,
+      "properties": {
+        "path": {
+          "pattern": "^/",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "epyc.ready.v2",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "workload_kind": {
+            "const": "llm"
+          }
+        }
+      },
+      "then": {
+        "allOf": [
+          {
+            "else": {
+              "required": [
+                "tokens_per_item"
+              ]
+            },
+            "if": {
+              "properties": {
+                "rate_basis": {
+                  "properties": {
+                    "scope": {
+                      "const": "calibrated-work-unit"
+                    }
+                  }
+                }
+              }
+            },
+            "then": {
+              "not": {
+                "required": [
+                  "tokens_per_item"
+                ]
+              }
+            }
+          }
+        ],
+        "required": [
+          "n_ctx_required",
+          "per_slot_n_ctx_required",
+          "n_parallel_required",
+          "prompt_tokens_required",
+          "kv_cache_mode"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "workload_kind": {
+            "const": "speech"
+          }
+        }
+      },
+      "then": {
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "n_ctx_required"
+              ]
+            },
+            {
+              "required": [
+                "per_slot_n_ctx_required"
+              ]
+            },
+            {
+              "required": [
+                "n_parallel_required"
+              ]
+            },
+            {
+              "required": [
+                "prompt_tokens_required"
+              ]
+            },
+            {
+              "required": [
+                "tokens_per_item"
+              ]
+            },
+            {
+              "required": [
+                "kv_cache_mode"
+              ]
+            }
+          ]
+        },
+        "required": [
+          "speech"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "workload_kind": {
+            "const": "command"
+          }
+        }
+      },
+      "then": {
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "n_ctx_required"
+              ]
+            },
+            {
+              "required": [
+                "per_slot_n_ctx_required"
+              ]
+            },
+            {
+              "required": [
+                "n_parallel_required"
+              ]
+            },
+            {
+              "required": [
+                "prompt_tokens_required"
+              ]
+            },
+            {
+              "required": [
+                "tokens_per_item"
+              ]
+            },
+            {
+              "required": [
+                "speech"
+              ]
+            },
+            {
+              "required": [
+                "kv_cache_mode"
+              ]
+            }
+          ]
+        },
+        "required": [
+          "command"
+        ]
+      }
+    }
+  ],
+  "properties": {
+    "command": {
+      "properties": {
+        "planned_work_units": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "work_unit": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "work_unit",
+        "planned_work_units"
+      ],
+      "type": "object"
+    },
+    "engine": {
+      "$ref": "#/$defs/pinnedFile"
+    },
+    "est_output_GiB": {
+      "minimum": 0,
+      "type": "number"
+    },
+    "exclusive_class": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "gib": {
+      "exclusiveMinimum": 0,
+      "type": "number"
+    },
+    "id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]+$",
+      "type": "string"
+    },
+    "items": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "job": {
+      "$ref": "#/$defs/pinnedFile"
+    },
+    "job_floor_gib": {
+      "const": 150
+    },
+    "kv_cache_mode": {
+      "enum": [
+        "split",
+        "unified"
+      ]
+    },
+    "launcher": {
+      "$ref": "#/$defs/pinnedFile"
+    },
+    "min_window_s": {
+      "minimum": 60,
+      "type": "integer"
+    },
+    "n_ctx_required": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "n_parallel_required": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "owner": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "per_slot_n_ctx_required": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "ports": {
+      "items": {
+        "maximum": 65535,
+        "minimum": 1,
+        "type": "integer"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "production": {
+      "const": true
+    },
+    "production_recipe": {
+      "$ref": "#/$defs/pinnedFile"
+    },
+    "prompt_tokens_required": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "qual_fixture": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/pinnedFile"
+        },
+        {
+          "properties": {
+            "items": {
+              "minimum": 2,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "items"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "qual_interpreter": {
+      "type": "string"
+    },
+    "qualification": {
+      "additionalProperties": false,
+      "properties": {
+        "receipt": {
+          "pattern": "^/mnt/raid0/llm/tmp/.+/qualification/QUAL-.+\\.json$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "receipt"
+      ],
+      "type": "object"
+    },
+    "rate_basis": {
+      "additionalProperties": true,
+      "properties": {
+        "batch_size": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "decode_mode": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "evidence": {
+          "$ref": "#/$defs/pinnedFile"
+        },
+        "production_threads": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "rate_tok_s": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "rtf": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "scope": {
+          "enum": [
+            "qualification-same-recipe",
+            "calibrated-production",
+            "speech-calibrated-production",
+            "command-same-recipe",
+            "command-calibrated-production",
+            "calibrated-work-unit"
+          ]
+        },
+        "wall_s_per_unit": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "work_unit": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "work_units_per_s": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "scope",
+        "production_threads"
+      ],
+      "type": "object"
+    },
+    "regions": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "request_manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "requires_tools": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "schema": {
+      "const": "epyc.ready.v2"
+    },
+    "scratch_root": {
+      "pattern": "^/mnt/raid0/llm/tmp/",
+      "type": "string"
+    },
+    "shared_state": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "source_manifest": {
+      "pattern": "^/mnt/raid0/llm/",
+      "type": "string"
+    },
+    "speech": {
+      "properties": {
+        "batch_size": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "decode_mode": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "fixture_audio": {
+          "$ref": "#/$defs/pinnedFile"
+        },
+        "fixture_audio_seconds": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "pcm_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "planned_audio_seconds": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "right_context": {
+          "oneOf": [
+            {
+              "const": "UNKNOWN"
+            },
+            {
+              "minimum": 0,
+              "type": "integer"
+            }
+          ]
+        },
+        "sample_rate_hz": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "source_binary": {
+          "$ref": "#/$defs/pinnedFile"
+        },
+        "source_catalog": {
+          "$ref": "#/$defs/pinnedFile"
+        },
+        "threads": {
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "fixture_audio",
+        "source_catalog",
+        "pcm_sha256",
+        "fixture_audio_seconds",
+        "planned_audio_seconds",
+        "sample_rate_hz",
+        "decode_mode",
+        "right_context",
+        "batch_size",
+        "threads",
+        "source_binary"
+      ],
+      "type": "object"
+    },
+    "tokens_per_item": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "window_s": {
+      "minimum": 360,
+      "type": "integer"
+    },
+    "workload_kind": {
+      "enum": [
+        "llm",
+        "speech",
+        "command"
+      ]
+    }
+  },
+  "required": [
+    "schema",
+    "production",
+    "id",
+    "owner",
+    "regions",
+    "window_s",
+    "min_window_s",
+    "gib",
+    "scratch_root",
+    "launcher",
+    "engine",
+    "job",
+    "source_manifest",
+    "qual_fixture",
+    "requires_tools",
+    "ports",
+    "exclusive_class",
+    "shared_state",
+    "items",
+    "est_output_GiB",
+    "job_floor_gib",
+    "qualification",
+    "rate_basis",
+    "request_manifest_sha256",
+    "workload_kind",
+    "production_recipe"
+  ],
+  "title": "Keeper qualified READY manifest",
+  "type": "object"
+}

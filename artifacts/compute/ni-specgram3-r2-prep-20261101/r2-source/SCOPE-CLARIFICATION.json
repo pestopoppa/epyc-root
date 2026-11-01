@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-31T08:59:34.150003+00:00",
+  "authority": "MAIN scope review 2026-10-31",
+  "historical_budget_denominator_ms": 24.86,
+  "current_actual_step_share": "UNMEASURED/reference-only",
+  "original_numeric_share_gate_not_satisfied_by_proxy": true,
+  "parent_complete": false,
+  "adoption": false,
+  "actual_grammar_ms_native_bytes_replay_facts": "valid within captured scopes",
+  "auxiliary_q36_unknown_is_parent_seal": false,
+  "clarifies_existing_predeclaration": "Any auxiliary-q36 wording in PREDECLARATION.md is an unavailable historical ancillary crosscheck, not a new original-parent acceptance gate. Historical24.86ms share is budget-reference only, irrespective of component reference-pass output. Original actual-share confirmation remains required."
+}
