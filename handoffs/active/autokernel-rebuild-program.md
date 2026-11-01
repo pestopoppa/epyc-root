@@ -539,8 +539,11 @@ failure mode this program exists to end.
   - **Exit:** after each deletion batch the loop still passes P4's criterion. Not "tests green" —
     *the loop still measures*.
 
-- [ ] **P6 — Reconnect the surfaces.** CI DONE (root `.github/workflows/tests.yml`); the
+- [x] **P6 — Reconnect the surfaces.** ✅ 2026-11-01 — Implements ROOT `56c3218e9c92c65ad1747b3b15ceb5fb7a25c7f6` plus final source `58f03662e8aee1305012c9bee84d5aae3e1a2036`; [evidence](../../artifacts/engineering/p6-surfaces-20261101/README.md). [no-belief: software verification] CI DONE (root `.github/workflows/tests.yml`); the
       surface rewrite is not started.
+
+      **Historical checkpoint, 2026-10-30:** “the surface rewrite is not started” records the
+      status before this implementation; the scope is now completed as noted below.
 
       **Partial credit 2026-08-30, recorded so the rewrite does not redo it.** Four commits on
       `lane/ak-rebuild-20260828` (root): `0a18b132`, `7feec9d4`, `e0ceada9`. The loop-up/loop-down
@@ -587,7 +590,7 @@ failure mode this program exists to end.
         artifact age as non-health signals, and maps the five bundle verdicts into the existing
         three-valued health response. Missing/malformed/poisoned bundle and loop-worse cases are
         covered. `/api/health` and `panels.py` remain unchanged; no service reload/deployment. [belief: cc]
-  - [ ] P6.8 — **coverage genuinely lost.** The funnel and lane-hero render tests went away *with*
+  - [x] P6.8 — **coverage genuinely lost.** ✅ 2026-11-01 — Implements ROOT `56c3218e9c92c65ad1747b3b15ceb5fb7a25c7f6` plus final source `58f03662e8aee1305012c9bee84d5aae3e1a2036`; [evidence](../../artifacts/engineering/p6-surfaces-20261101/README.md). [no-belief: software verification] The funnel and lane-hero render tests went away *with*
         the deleted page rather than being fixed. The reader still exists and nothing renders it;
         restore render coverage against the surviving surface when the funnel is re-hosted.
 
@@ -660,6 +663,17 @@ failure mode this program exists to end.
         = 23.8% prose.** The 34% figure does not reproduce and evidently folded blanks in. Fix the
         comment in the same change — a stale number in the annotation of the constant it justifies
         is how the "just bump it" argument gets made from bad data.
+
+
+**P6 completion note — 2026-11-01.** The surviving loop, operator-gate, funnel, and lane-hero
+contracts are now covered by the current surface and its source tests. The final primary hosted run
+`41295259263` passed 535 tests and 181 subtests (exit 0, no failures, errors, or skips); the final
+broad run retains four unchanged baseline navigation failures and one existing live-host skip. The
+six retired decoder test files map to the exact 12 failures in the original `7011d23` baseline; the
+28 deleted-page cases from the 2026-08-30 P6.4 retirement are not re-credited. See the linked evidence
+for source/AST/caller audits, all six original CI payloads, and exact fixture restoration proof. No
+live service reload/deployment, inference, kernel build, production mutation, or measurement claim.
+[no-belief: software verification]
 
 ---
 

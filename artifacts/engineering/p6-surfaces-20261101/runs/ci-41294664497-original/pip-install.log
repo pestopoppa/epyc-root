@@ -1,0 +1,20 @@
+Collecting iniconfig==2.3.0 (from -r candidate/scripts/ci/vb_tuadv_native_requirements.txt (line 2))
+  Downloading iniconfig-2.3.0-py3-none-any.whl (7.5 kB)
+Collecting packaging==26.0 (from -r candidate/scripts/ci/vb_tuadv_native_requirements.txt (line 4))
+  Downloading packaging-26.0-py3-none-any.whl (74 kB)
+Collecting pluggy==1.6.0 (from -r candidate/scripts/ci/vb_tuadv_native_requirements.txt (line 6))
+  Downloading pluggy-1.6.0-py3-none-any.whl (20 kB)
+Collecting Pygments==2.20.0 (from -r candidate/scripts/ci/vb_tuadv_native_requirements.txt (line 8))
+  Downloading pygments-2.20.0-py3-none-any.whl (1.2 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 5.3 MB/s  0:00:00
+Collecting pytest==9.0.3 (from -r candidate/scripts/ci/vb_tuadv_native_requirements.txt (line 10))
+  Downloading pytest-9.0.3-py3-none-any.whl (375 kB)
+Collecting PyYAML==6.0.3 (from -r candidate/scripts/ci/vb_tuadv_native_requirements.txt (line 12))
+  Downloading pyyaml-6.0.3-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (801 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 801.6/801.6 kB 13.3 MB/s  0:00:00
+Installing collected packages: PyYAML, pytest, Pygments, pluggy, packaging, iniconfig
+
+Successfully installed PyYAML-6.0.3 Pygments-2.20.0 iniconfig-2.3.0 packaging-26.0 pluggy-1.6.0 pytest-9.0.3
+
+[notice] A new release of pip is available: 26.2.1 -> 26.2.2
+[notice] To update, run: /home/runner/work/_temp/p6-venv/bin/python -m pip install --upgrade pip

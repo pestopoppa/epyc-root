@@ -1,0 +1,9 @@
+{
+  "run_id": 41292164204,
+  "artifact_id": 13077910618,
+  "artifact_name": "ni-p6-original-41292164204-1",
+  "api_digest": "sha256:0864629fc956cca2e7e122e80e83662fa2fa2cf2cc71742f51ddfac08119b7ff",
+  "downloaded_zip_sha256": "sha256:0864629fc956cca2e7e122e80e83662fa2fa2cf2cc71742f51ddfac08119b7ff",
+  "bytes": 92344,
+  "matches_original_api_digest": true
+}

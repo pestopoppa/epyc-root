@@ -1,0 +1,64 @@
+{
+  "tests/test_dashboard_autokernel_visibility_acceptance.py": {
+    "retired_names": [
+      "test_active_critic_pending_is_visible_in_hero_and_pipeline",
+      "test_every_cross_strategy_stage_has_a_compact_dom_headline",
+      "test_experimental_runtime_stage_and_headlines_are_visible",
+      "test_failed_campaign_and_newer_unlaunched_bundle_render_separately",
+      "test_live_hero_distinguishes_atomic_telemetry_commit_from_degradation",
+      "test_live_pulse_tail_stays_visible_but_full_stream_and_detail_collapse",
+      "test_live_summary_timeline_and_history_are_visible",
+      "test_measurement_refusal_and_completed_arm_reuse_are_headline_visible",
+      "test_nonpositive_exact_measurement_explains_graphs_on_short_circuit",
+      "test_only_pulse_and_headline_surfaces_are_open_by_default",
+      "test_planner_validation_interruption_is_visible_in_hero_and_pipeline",
+      "test_pre_controller_graph_mismatch_is_visible_without_raw_stderr",
+      "test_provider_retry_checkpoint_is_visible_without_looking_terminal",
+      "test_typed_refusal_and_restart_checkpoint_are_headline_visible",
+      "test_v10_correctness_parser_terminal_is_visible_in_hero_and_pipeline",
+      "test_v19_prior_terminal_is_in_visible_pulse_without_replacing_planner"
+    ],
+    "retired_count": 16,
+    "before": 53,
+    "after": 37
+  },
+  "tests/test_dashboard_static_js.py": {
+    "retired_names": [
+      "test_kernel_current_state_renderer_executes",
+      "test_kernel_progression_headlines_separate_phase_and_lane"
+    ],
+    "retired_count": 2,
+    "before": 6,
+    "after": 4
+  },
+  "tests/test_dashboard_runtime_js.py": {
+    "retired_names": [
+      "test_the_kernel_set_actually_reaches_rendered_output"
+    ],
+    "retired_count": 1,
+    "before": 3,
+    "after": 4
+  },
+  "tests/test_dashboard_which_loop.py": {
+    "retired_names": [
+      "test_a_LIVE_producer_keeps_the_excuse",
+      "test_a_running_loop_is_named_as_running_on_the_kernel_page",
+      "test_a_stopped_loop_is_named_as_stopped_and_not_as_absent",
+      "test_a_stopped_producer_no_longer_has_its_silence_explained_away",
+      "test_an_unknown_freshness_state_is_unknown_not_fine",
+      "test_an_unreachable_loop_route_asserts_nothing_about_the_loop",
+      "test_every_freshness_state_renders_a_DISTINCT_banner",
+      "test_the_banner_is_refreshed_on_a_timer_not_only_at_load",
+      "test_the_banner_markup_is_in_the_page_before_any_fetch",
+      "test_the_card_no_longer_calls_itself_the_AutoKernel_loop",
+      "test_the_chip_comes_from_the_registry_not_a_hardcoded_id",
+      "test_the_live_surface_is_listed_before_the_superseded_one",
+      "test_the_loop_page_does_not_take_a_data_dependency_on_kernel",
+      "test_the_loop_page_points_back_at_the_controller_page",
+      "test_the_nav_says_which_of_the_two_is_live_without_clicking"
+    ],
+    "retired_count": 15,
+    "before": 15,
+    "after": 0
+  }
+}

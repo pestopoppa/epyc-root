@@ -1,0 +1,1915 @@
+.................FFFFF..........FFF...............ss.................... [  8%]
+..........s......ssss...............................................s.s. [ 17%]
+...................................s............................F......F.......... [ 27%]
+...............................................F...............sssssssss [ 36%]
+ssssssssssssssss.F........F.........F......F..FF....FFFFF [ 43%]
+F.FF.FFFFFF.FFFF.FFF.FFF..FFFFF.............................. [ 50%]
+.F.F..............................................................F.........F........................F.....F......... [ 64%]
+............................................................... [ 72%]
+.F.......F.......................................F.........F.....................................................F.................. [ 88%]
+....ssssss.....sssssssssssssssssssssssssssssssssssssss....ssss....s..... [ 96%]
+.................F.F.....                                                [100%]
+=================================== FAILURES ===================================
+______ KernelFreshnessTests.test_falls_back_to_generated_at_without_runs _______
+
+self = <tests.test_dashboard_activity.KernelFreshnessTests testMethod=test_falls_back_to_generated_at_without_runs>
+
+    def test_falls_back_to_generated_at_without_runs(self):
+        data = {"generated_at": _iso(_NOW - timedelta(days=30)), "runs": []}
+>       fr = server._kernel_contract_freshness(data)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'dashboard.server' has no attribute '_kernel_contract_freshness'. Did you mean: '_outcome_contract_freshness'?
+
+tests/test_dashboard_activity.py:236: AttributeError
+___ KernelFreshnessTests.test_fresh_run_ts_is_fresh_even_if_generated_at_old ___
+
+self = <tests.test_dashboard_activity.KernelFreshnessTests testMethod=test_fresh_run_ts_is_fresh_even_if_generated_at_old>
+
+    def test_fresh_run_ts_is_fresh_even_if_generated_at_old(self):
+        data = {"generated_at": _iso(_NOW - timedelta(days=30)),
+                "runs": [{"ts": _iso(_NOW - timedelta(hours=1))}]}
+>       self.assertEqual(server._kernel_contract_freshness(data)["staleness_class"], "fresh")
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'dashboard.server' has no attribute '_kernel_contract_freshness'. Did you mean: '_outcome_contract_freshness'?
+
+tests/test_dashboard_activity.py:226: AttributeError
+_______________ KernelFreshnessTests.test_max_of_multiple_run_ts _______________
+
+self = <tests.test_dashboard_activity.KernelFreshnessTests testMethod=test_max_of_multiple_run_ts>
+
+    def test_max_of_multiple_run_ts(self):
+        data = {"runs": [{"ts": _iso(_NOW - timedelta(days=30))},
+                         {"ts": _iso(_NOW - timedelta(days=1))}]}
+>       fr = server._kernel_contract_freshness(data)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'dashboard.server' has no attribute '_kernel_contract_freshness'. Did you mean: '_outcome_contract_freshness'?
+
+tests/test_dashboard_activity.py:231: AttributeError
+_____________ KernelFreshnessTests.test_missing_when_no_timestamps _____________
+
+self = <tests.test_dashboard_activity.KernelFreshnessTests testMethod=test_missing_when_no_timestamps>
+
+    def test_missing_when_no_timestamps(self):
+>       fr = server._kernel_contract_freshness({"runs": []})
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'dashboard.server' has no attribute '_kernel_contract_freshness'. Did you mean: '_outcome_contract_freshness'?
+
+tests/test_dashboard_activity.py:241: AttributeError
+____________ KernelFreshnessTests.test_uses_run_ts_not_generated_at ____________
+
+self = <tests.test_dashboard_activity.KernelFreshnessTests testMethod=test_uses_run_ts_not_generated_at>
+
+    def test_uses_run_ts_not_generated_at(self):
+        # runs[].ts is OLD but the export ``generated_at`` is NOW: a file-mtime /
+        # export-recency classifier would read fresh; the fix must read stale.
+        data = {"generated_at": _iso(_NOW),
+                "runs": [{"ts": _iso(_NOW - timedelta(days=30))}]}
+>       fr = server._kernel_contract_freshness(data)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'dashboard.server' has no attribute '_kernel_contract_freshness'. Did you mean: '_outcome_contract_freshness'?
+
+tests/test_dashboard_activity.py:219: AttributeError
+______ HealthPayloadTests.test_a_declared_pause_at_the_same_age_stays_ok _______
+
+self = <tests.test_dashboard_activity.HealthPayloadTests testMethod=test_a_declared_pause_at_the_same_age_stays_ok>
+
+    def test_a_declared_pause_at_the_same_age_stays_ok(self):
+        """COMPLIANT-PATH CONTROL: the Phase-0 stop-loss case this class was
+        originally written to protect. A paused loop still exports, and only the
+        loop can tell a pause from a crash — so it declares it."""
+>       h = self._health_with({"generated_at": _iso(_NOW - timedelta(days=10)),
+                               "outcome_progress": {"status": "paused"}})
+
+tests/test_dashboard_activity.py:400: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <tests.test_dashboard_activity.HealthPayloadTests testMethod=test_a_declared_pause_at_the_same_age_stays_ok>
+outcome_doc = {'generated_at': '2026-10-22T09:14:04Z', 'outcome_progress': {'status': 'paused'}}
+
+    def _health_with(self, outcome_doc):
+        with tempfile.TemporaryDirectory() as d:
+            oc = Path(d) / "outcome.json"
+            oc.write_text(json.dumps(outcome_doc))
+            kn = Path(d) / "kernel.json"
+            kn.write_text(json.dumps({"generated_at": _iso(_NOW),
+                                      "runs": [{"ts": _iso(_NOW)}]}))
+            orig_oc = server.AUTOPILOT_OUTCOME_JSON
+>           orig_kn = server.KERNEL_DASHBOARD_JSON
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'dashboard.server' has no attribute 'KERNEL_DASHBOARD_JSON'
+
+tests/test_dashboard_activity.py:360: AttributeError
+_ HealthPayloadTests.test_a_stale_outcome_still_does_not_gate_on_staleness_alone _
+
+self = <tests.test_dashboard_activity.HealthPayloadTests testMethod=test_a_stale_outcome_still_does_not_gate_on_staleness_alone>
+
+    def test_a_stale_outcome_still_does_not_gate_on_staleness_alone(self):
+        """COMPLIANT-PATH CONTROL: ``gates_health=False`` still means what it
+        said. Inside the 6 h silence budget the panel is ``aging`` with no alarm,
+        and the fold stays green."""
+>       h = self._health_with({"generated_at": _iso(_NOW - timedelta(hours=5)),
+                               "outcome_progress": {"status": "ok"}})
+
+tests/test_dashboard_activity.py:410: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <tests.test_dashboard_activity.HealthPayloadTests testMethod=test_a_stale_outcome_still_does_not_gate_on_staleness_alone>
+outcome_doc = {'generated_at': '2026-11-01T04:14:04Z', 'outcome_progress': {'status': 'ok'}}
+
+    def _health_with(self, outcome_doc):
+        with tempfile.TemporaryDirectory() as d:
+            oc = Path(d) / "outcome.json"
+            oc.write_text(json.dumps(outcome_doc))
+            kn = Path(d) / "kernel.json"
+            kn.write_text(json.dumps({"generated_at": _iso(_NOW),
+                                      "runs": [{"ts": _iso(_NOW)}]}))
+            orig_oc = server.AUTOPILOT_OUTCOME_JSON
+>           orig_kn = server.KERNEL_DASHBOARD_JSON
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'dashboard.server' has no attribute 'KERNEL_DASHBOARD_JSON'
+
+tests/test_dashboard_activity.py:360: AttributeError
+_ HealthPayloadTests.test_an_undeclared_ten_day_outcome_silence_degrades_health _
+
+self = <tests.test_dashboard_activity.HealthPayloadTests testMethod=test_an_undeclared_ten_day_outcome_silence_degrades_health>
+
+    def test_an_undeclared_ten_day_outcome_silence_degrades_health(self):
+>       h = self._health_with({"generated_at": _iso(_NOW - timedelta(days=10)),
+                               "outcome_progress": {"status": "ok"}})
+
+tests/test_dashboard_activity.py:387: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <tests.test_dashboard_activity.HealthPayloadTests testMethod=test_an_undeclared_ten_day_outcome_silence_degrades_health>
+outcome_doc = {'generated_at': '2026-10-22T09:14:04Z', 'outcome_progress': {'status': 'ok'}}
+
+    def _health_with(self, outcome_doc):
+        with tempfile.TemporaryDirectory() as d:
+            oc = Path(d) / "outcome.json"
+            oc.write_text(json.dumps(outcome_doc))
+            kn = Path(d) / "kernel.json"
+            kn.write_text(json.dumps({"generated_at": _iso(_NOW),
+                                      "runs": [{"ts": _iso(_NOW)}]}))
+            orig_oc = server.AUTOPILOT_OUTCOME_JSON
+>           orig_kn = server.KERNEL_DASHBOARD_JSON
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'dashboard.server' has no attribute 'KERNEL_DASHBOARD_JSON'
+
+tests/test_dashboard_activity.py:360: AttributeError
+_ ControllerStateContractTests.test_a_recorded_terminal_state_would_be_accepted (deployment='deployment-states') _
+
+self = <tests.test_dashboard_controller_state_contract.ControllerStateContractTests testMethod=test_a_recorded_terminal_state_would_be_accepted>
+
+    def test_a_recorded_terminal_state_would_be_accepted(self):
+        """Simulate completion: drop the transient keys and require exact equality.
+    
+        Scoped to schema v5, because that is the only schema the terminal gate at
+        `server.py` accepts — v7/v8 states go down the v26 live path and are governed
+        by REQUIRED|OPTIONAL instead, which the first test already covers.
+        """
+        states = [(n, v) for n, v in _recorded_states()
+                  if v.get("schema") == "epyc.autokernel.discovery_controller.v5"]
+        self.assertTrue(states, "fixture set must retain the producer's v5 state")
+        for name, state in states:
+            with self.subTest(deployment=name):
+                terminal = {k: v for k, v in state.items() if k not in TRANSIENT}
+                terminal.setdefault("terminal_reason", "simulated")
+                terminal.setdefault("attempted_candidate_identities", {})
+                terminal.setdefault("candidate_semantic_registry_schema", "x")
+                # The gate is required-subset plus known-optional: an unlisted key
+                # rejects the surface, while a required key the campaign never wrote
+                # is a separate (also fatal) failure. Assert the shape the gate uses,
+                # not the exact equality it used to use.
+>               known = (server._DISCOVERY_TERMINAL_STATE_KEYS
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         | server._DISCOVERY_TERMINAL_STATE_OPTIONAL)
+E               AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+
+tests/test_dashboard_controller_state_contract.py:90: AttributeError
+_ ControllerStateContractTests.test_a_recorded_terminal_state_would_be_accepted (deployment='deployment-states') _
+
+self = <tests.test_dashboard_controller_state_contract.ControllerStateContractTests testMethod=test_a_recorded_terminal_state_would_be_accepted>
+
+    def test_a_recorded_terminal_state_would_be_accepted(self):
+        """Simulate completion: drop the transient keys and require exact equality.
+    
+        Scoped to schema v5, because that is the only schema the terminal gate at
+        `server.py` accepts — v7/v8 states go down the v26 live path and are governed
+        by REQUIRED|OPTIONAL instead, which the first test already covers.
+        """
+        states = [(n, v) for n, v in _recorded_states()
+                  if v.get("schema") == "epyc.autokernel.discovery_controller.v5"]
+        self.assertTrue(states, "fixture set must retain the producer's v5 state")
+        for name, state in states:
+            with self.subTest(deployment=name):
+                terminal = {k: v for k, v in state.items() if k not in TRANSIENT}
+                terminal.setdefault("terminal_reason", "simulated")
+                terminal.setdefault("attempted_candidate_identities", {})
+                terminal.setdefault("candidate_semantic_registry_schema", "x")
+                # The gate is required-subset plus known-optional: an unlisted key
+                # rejects the surface, while a required key the campaign never wrote
+                # is a separate (also fatal) failure. Assert the shape the gate uses,
+                # not the exact equality it used to use.
+>               known = (server._DISCOVERY_TERMINAL_STATE_KEYS
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         | server._DISCOVERY_TERMINAL_STATE_OPTIONAL)
+E               AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+
+tests/test_dashboard_controller_state_contract.py:90: AttributeError
+_ ControllerStateContractTests.test_a_recorded_terminal_state_would_be_accepted (deployment='deployment-states') _
+
+self = <tests.test_dashboard_controller_state_contract.ControllerStateContractTests testMethod=test_a_recorded_terminal_state_would_be_accepted>
+
+    def test_a_recorded_terminal_state_would_be_accepted(self):
+        """Simulate completion: drop the transient keys and require exact equality.
+    
+        Scoped to schema v5, because that is the only schema the terminal gate at
+        `server.py` accepts — v7/v8 states go down the v26 live path and are governed
+        by REQUIRED|OPTIONAL instead, which the first test already covers.
+        """
+        states = [(n, v) for n, v in _recorded_states()
+                  if v.get("schema") == "epyc.autokernel.discovery_controller.v5"]
+        self.assertTrue(states, "fixture set must retain the producer's v5 state")
+        for name, state in states:
+            with self.subTest(deployment=name):
+                terminal = {k: v for k, v in state.items() if k not in TRANSIENT}
+                terminal.setdefault("terminal_reason", "simulated")
+                terminal.setdefault("attempted_candidate_identities", {})
+                terminal.setdefault("candidate_semantic_registry_schema", "x")
+                # The gate is required-subset plus known-optional: an unlisted key
+                # rejects the surface, while a required key the campaign never wrote
+                # is a separate (also fatal) failure. Assert the shape the gate uses,
+                # not the exact equality it used to use.
+>               known = (server._DISCOVERY_TERMINAL_STATE_KEYS
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         | server._DISCOVERY_TERMINAL_STATE_OPTIONAL)
+E               AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+
+tests/test_dashboard_controller_state_contract.py:90: AttributeError
+_ ControllerStateContractTests.test_a_recorded_terminal_state_would_be_accepted (deployment='deployment-states') _
+
+self = <tests.test_dashboard_controller_state_contract.ControllerStateContractTests testMethod=test_a_recorded_terminal_state_would_be_accepted>
+
+    def test_a_recorded_terminal_state_would_be_accepted(self):
+        """Simulate completion: drop the transient keys and require exact equality.
+    
+        Scoped to schema v5, because that is the only schema the terminal gate at
+        `server.py` accepts — v7/v8 states go down the v26 live path and are governed
+        by REQUIRED|OPTIONAL instead, which the first test already covers.
+        """
+        states = [(n, v) for n, v in _recorded_states()
+                  if v.get("schema") == "epyc.autokernel.discovery_controller.v5"]
+        self.assertTrue(states, "fixture set must retain the producer's v5 state")
+        for name, state in states:
+            with self.subTest(deployment=name):
+                terminal = {k: v for k, v in state.items() if k not in TRANSIENT}
+                terminal.setdefault("terminal_reason", "simulated")
+                terminal.setdefault("attempted_candidate_identities", {})
+                terminal.setdefault("candidate_semantic_registry_schema", "x")
+                # The gate is required-subset plus known-optional: an unlisted key
+                # rejects the surface, while a required key the campaign never wrote
+                # is a separate (also fatal) failure. Assert the shape the gate uses,
+                # not the exact equality it used to use.
+>               known = (server._DISCOVERY_TERMINAL_STATE_KEYS
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         | server._DISCOVERY_TERMINAL_STATE_OPTIONAL)
+E               AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+
+tests/test_dashboard_controller_state_contract.py:90: AttributeError
+_ ControllerStateContractTests.test_a_recorded_terminal_state_would_be_accepted (deployment='deployment-states') _
+
+self = <tests.test_dashboard_controller_state_contract.ControllerStateContractTests testMethod=test_a_recorded_terminal_state_would_be_accepted>
+
+    def test_a_recorded_terminal_state_would_be_accepted(self):
+        """Simulate completion: drop the transient keys and require exact equality.
+    
+        Scoped to schema v5, because that is the only schema the terminal gate at
+        `server.py` accepts — v7/v8 states go down the v26 live path and are governed
+        by REQUIRED|OPTIONAL instead, which the first test already covers.
+        """
+        states = [(n, v) for n, v in _recorded_states()
+                  if v.get("schema") == "epyc.autokernel.discovery_controller.v5"]
+        self.assertTrue(states, "fixture set must retain the producer's v5 state")
+        for name, state in states:
+            with self.subTest(deployment=name):
+                terminal = {k: v for k, v in state.items() if k not in TRANSIENT}
+                terminal.setdefault("terminal_reason", "simulated")
+                terminal.setdefault("attempted_candidate_identities", {})
+                terminal.setdefault("candidate_semantic_registry_schema", "x")
+                # The gate is required-subset plus known-optional: an unlisted key
+                # rejects the surface, while a required key the campaign never wrote
+                # is a separate (also fatal) failure. Assert the shape the gate uses,
+                # not the exact equality it used to use.
+>               known = (server._DISCOVERY_TERMINAL_STATE_KEYS
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         | server._DISCOVERY_TERMINAL_STATE_OPTIONAL)
+E               AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+
+tests/test_dashboard_controller_state_contract.py:90: AttributeError
+_ ControllerStateContractTests.test_a_recorded_terminal_state_would_be_accepted (deployment='deployment-states') _
+
+self = <tests.test_dashboard_controller_state_contract.ControllerStateContractTests testMethod=test_a_recorded_terminal_state_would_be_accepted>
+
+    def test_a_recorded_terminal_state_would_be_accepted(self):
+        """Simulate completion: drop the transient keys and require exact equality.
+    
+        Scoped to schema v5, because that is the only schema the terminal gate at
+        `server.py` accepts — v7/v8 states go down the v26 live path and are governed
+        by REQUIRED|OPTIONAL instead, which the first test already covers.
+        """
+        states = [(n, v) for n, v in _recorded_states()
+                  if v.get("schema") == "epyc.autokernel.discovery_controller.v5"]
+        self.assertTrue(states, "fixture set must retain the producer's v5 state")
+        for name, state in states:
+            with self.subTest(deployment=name):
+                terminal = {k: v for k, v in state.items() if k not in TRANSIENT}
+                terminal.setdefault("terminal_reason", "simulated")
+                terminal.setdefault("attempted_candidate_identities", {})
+                terminal.setdefault("candidate_semantic_registry_schema", "x")
+                # The gate is required-subset plus known-optional: an unlisted key
+                # rejects the surface, while a required key the campaign never wrote
+                # is a separate (also fatal) failure. Assert the shape the gate uses,
+                # not the exact equality it used to use.
+>               known = (server._DISCOVERY_TERMINAL_STATE_KEYS
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         | server._DISCOVERY_TERMINAL_STATE_OPTIONAL)
+E               AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+
+tests/test_dashboard_controller_state_contract.py:90: AttributeError
+_ ControllerStateContractTests.test_a_recorded_terminal_state_would_be_accepted (deployment='deployment-states') _
+
+self = <tests.test_dashboard_controller_state_contract.ControllerStateContractTests testMethod=test_a_recorded_terminal_state_would_be_accepted>
+
+    def test_a_recorded_terminal_state_would_be_accepted(self):
+        """Simulate completion: drop the transient keys and require exact equality.
+    
+        Scoped to schema v5, because that is the only schema the terminal gate at
+        `server.py` accepts — v7/v8 states go down the v26 live path and are governed
+        by REQUIRED|OPTIONAL instead, which the first test already covers.
+        """
+        states = [(n, v) for n, v in _recorded_states()
+                  if v.get("schema") == "epyc.autokernel.discovery_controller.v5"]
+        self.assertTrue(states, "fixture set must retain the producer's v5 state")
+        for name, state in states:
+            with self.subTest(deployment=name):
+                terminal = {k: v for k, v in state.items() if k not in TRANSIENT}
+                terminal.setdefault("terminal_reason", "simulated")
+                terminal.setdefault("attempted_candidate_identities", {})
+                terminal.setdefault("candidate_semantic_registry_schema", "x")
+                # The gate is required-subset plus known-optional: an unlisted key
+                # rejects the surface, while a required key the campaign never wrote
+                # is a separate (also fatal) failure. Assert the shape the gate uses,
+                # not the exact equality it used to use.
+>               known = (server._DISCOVERY_TERMINAL_STATE_KEYS
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         | server._DISCOVERY_TERMINAL_STATE_OPTIONAL)
+E               AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+
+tests/test_dashboard_controller_state_contract.py:90: AttributeError
+_ ControllerStateContractTests.test_a_recorded_terminal_state_would_be_accepted (deployment='deployment-states') _
+
+self = <tests.test_dashboard_controller_state_contract.ControllerStateContractTests testMethod=test_a_recorded_terminal_state_would_be_accepted>
+
+    def test_a_recorded_terminal_state_would_be_accepted(self):
+        """Simulate completion: drop the transient keys and require exact equality.
+    
+        Scoped to schema v5, because that is the only schema the terminal gate at
+        `server.py` accepts — v7/v8 states go down the v26 live path and are governed
+        by REQUIRED|OPTIONAL instead, which the first test already covers.
+        """
+        states = [(n, v) for n, v in _recorded_states()
+                  if v.get("schema") == "epyc.autokernel.discovery_controller.v5"]
+        self.assertTrue(states, "fixture set must retain the producer's v5 state")
+        for name, state in states:
+            with self.subTest(deployment=name):
+                terminal = {k: v for k, v in state.items() if k not in TRANSIENT}
+                terminal.setdefault("terminal_reason", "simulated")
+                terminal.setdefault("attempted_candidate_identities", {})
+                terminal.setdefault("candidate_semantic_registry_schema", "x")
+                # The gate is required-subset plus known-optional: an unlisted key
+                # rejects the surface, while a required key the campaign never wrote
+                # is a separate (also fatal) failure. Assert the shape the gate uses,
+                # not the exact equality it used to use.
+>               known = (server._DISCOVERY_TERMINAL_STATE_KEYS
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         | server._DISCOVERY_TERMINAL_STATE_OPTIONAL)
+E               AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+
+tests/test_dashboard_controller_state_contract.py:90: AttributeError
+_ ControllerStateContractTests.test_a_recorded_terminal_state_would_be_accepted (deployment='deployment-states') _
+
+self = <tests.test_dashboard_controller_state_contract.ControllerStateContractTests testMethod=test_a_recorded_terminal_state_would_be_accepted>
+
+    def test_a_recorded_terminal_state_would_be_accepted(self):
+        """Simulate completion: drop the transient keys and require exact equality.
+    
+        Scoped to schema v5, because that is the only schema the terminal gate at
+        `server.py` accepts — v7/v8 states go down the v26 live path and are governed
+        by REQUIRED|OPTIONAL instead, which the first test already covers.
+        """
+        states = [(n, v) for n, v in _recorded_states()
+                  if v.get("schema") == "epyc.autokernel.discovery_controller.v5"]
+        self.assertTrue(states, "fixture set must retain the producer's v5 state")
+        for name, state in states:
+            with self.subTest(deployment=name):
+                terminal = {k: v for k, v in state.items() if k not in TRANSIENT}
+                terminal.setdefault("terminal_reason", "simulated")
+                terminal.setdefault("attempted_candidate_identities", {})
+                terminal.setdefault("candidate_semantic_registry_schema", "x")
+                # The gate is required-subset plus known-optional: an unlisted key
+                # rejects the surface, while a required key the campaign never wrote
+                # is a separate (also fatal) failure. Assert the shape the gate uses,
+                # not the exact equality it used to use.
+>               known = (server._DISCOVERY_TERMINAL_STATE_KEYS
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         | server._DISCOVERY_TERMINAL_STATE_OPTIONAL)
+E               AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+
+tests/test_dashboard_controller_state_contract.py:90: AttributeError
+_ ControllerStateContractTests.test_a_recorded_terminal_state_would_be_accepted (deployment='deployment-states') _
+
+self = <tests.test_dashboard_controller_state_contract.ControllerStateContractTests testMethod=test_a_recorded_terminal_state_would_be_accepted>
+
+    def test_a_recorded_terminal_state_would_be_accepted(self):
+        """Simulate completion: drop the transient keys and require exact equality.
+    
+        Scoped to schema v5, because that is the only schema the terminal gate at
+        `server.py` accepts — v7/v8 states go down the v26 live path and are governed
+        by REQUIRED|OPTIONAL instead, which the first test already covers.
+        """
+        states = [(n, v) for n, v in _recorded_states()
+                  if v.get("schema") == "epyc.autokernel.discovery_controller.v5"]
+        self.assertTrue(states, "fixture set must retain the producer's v5 state")
+        for name, state in states:
+            with self.subTest(deployment=name):
+                terminal = {k: v for k, v in state.items() if k not in TRANSIENT}
+                terminal.setdefault("terminal_reason", "simulated")
+                terminal.setdefault("attempted_candidate_identities", {})
+                terminal.setdefault("candidate_semantic_registry_schema", "x")
+                # The gate is required-subset plus known-optional: an unlisted key
+                # rejects the surface, while a required key the campaign never wrote
+                # is a separate (also fatal) failure. Assert the shape the gate uses,
+                # not the exact equality it used to use.
+>               known = (server._DISCOVERY_TERMINAL_STATE_KEYS
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         | server._DISCOVERY_TERMINAL_STATE_OPTIONAL)
+E               AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+
+tests/test_dashboard_controller_state_contract.py:90: AttributeError
+_ ControllerStateContractTests.test_a_recorded_terminal_state_would_be_accepted (deployment='deployment-states') _
+
+self = <tests.test_dashboard_controller_state_contract.ControllerStateContractTests testMethod=test_a_recorded_terminal_state_would_be_accepted>
+
+    def test_a_recorded_terminal_state_would_be_accepted(self):
+        """Simulate completion: drop the transient keys and require exact equality.
+    
+        Scoped to schema v5, because that is the only schema the terminal gate at
+        `server.py` accepts — v7/v8 states go down the v26 live path and are governed
+        by REQUIRED|OPTIONAL instead, which the first test already covers.
+        """
+        states = [(n, v) for n, v in _recorded_states()
+                  if v.get("schema") == "epyc.autokernel.discovery_controller.v5"]
+        self.assertTrue(states, "fixture set must retain the producer's v5 state")
+        for name, state in states:
+            with self.subTest(deployment=name):
+                terminal = {k: v for k, v in state.items() if k not in TRANSIENT}
+                terminal.setdefault("terminal_reason", "simulated")
+                terminal.setdefault("attempted_candidate_identities", {})
+                terminal.setdefault("candidate_semantic_registry_schema", "x")
+                # The gate is required-subset plus known-optional: an unlisted key
+                # rejects the surface, while a required key the campaign never wrote
+                # is a separate (also fatal) failure. Assert the shape the gate uses,
+                # not the exact equality it used to use.
+>               known = (server._DISCOVERY_TERMINAL_STATE_KEYS
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         | server._DISCOVERY_TERMINAL_STATE_OPTIONAL)
+E               AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+
+tests/test_dashboard_controller_state_contract.py:90: AttributeError
+_ ControllerStateContractTests.test_a_recorded_terminal_state_would_be_accepted (deployment='deployment-states') _
+
+self = <tests.test_dashboard_controller_state_contract.ControllerStateContractTests testMethod=test_a_recorded_terminal_state_would_be_accepted>
+
+    def test_a_recorded_terminal_state_would_be_accepted(self):
+        """Simulate completion: drop the transient keys and require exact equality.
+    
+        Scoped to schema v5, because that is the only schema the terminal gate at
+        `server.py` accepts — v7/v8 states go down the v26 live path and are governed
+        by REQUIRED|OPTIONAL instead, which the first test already covers.
+        """
+        states = [(n, v) for n, v in _recorded_states()
+                  if v.get("schema") == "epyc.autokernel.discovery_controller.v5"]
+        self.assertTrue(states, "fixture set must retain the producer's v5 state")
+        for name, state in states:
+            with self.subTest(deployment=name):
+                terminal = {k: v for k, v in state.items() if k not in TRANSIENT}
+                terminal.setdefault("terminal_reason", "simulated")
+                terminal.setdefault("attempted_candidate_identities", {})
+                terminal.setdefault("candidate_semantic_registry_schema", "x")
+                # The gate is required-subset plus known-optional: an unlisted key
+                # rejects the surface, while a required key the campaign never wrote
+                # is a separate (also fatal) failure. Assert the shape the gate uses,
+                # not the exact equality it used to use.
+>               known = (server._DISCOVERY_TERMINAL_STATE_KEYS
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         | server._DISCOVERY_TERMINAL_STATE_OPTIONAL)
+E               AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+
+tests/test_dashboard_controller_state_contract.py:90: AttributeError
+_ ControllerStateContractTests.test_a_recorded_terminal_state_would_be_accepted (deployment='deployment-states') _
+
+self = <tests.test_dashboard_controller_state_contract.ControllerStateContractTests testMethod=test_a_recorded_terminal_state_would_be_accepted>
+
+    def test_a_recorded_terminal_state_would_be_accepted(self):
+        """Simulate completion: drop the transient keys and require exact equality.
+    
+        Scoped to schema v5, because that is the only schema the terminal gate at
+        `server.py` accepts — v7/v8 states go down the v26 live path and are governed
+        by REQUIRED|OPTIONAL instead, which the first test already covers.
+        """
+        states = [(n, v) for n, v in _recorded_states()
+                  if v.get("schema") == "epyc.autokernel.discovery_controller.v5"]
+        self.assertTrue(states, "fixture set must retain the producer's v5 state")
+        for name, state in states:
+            with self.subTest(deployment=name):
+                terminal = {k: v for k, v in state.items() if k not in TRANSIENT}
+                terminal.setdefault("terminal_reason", "simulated")
+                terminal.setdefault("attempted_candidate_identities", {})
+                terminal.setdefault("candidate_semantic_registry_schema", "x")
+                # The gate is required-subset plus known-optional: an unlisted key
+                # rejects the surface, while a required key the campaign never wrote
+                # is a separate (also fatal) failure. Assert the shape the gate uses,
+                # not the exact equality it used to use.
+>               known = (server._DISCOVERY_TERMINAL_STATE_KEYS
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         | server._DISCOVERY_TERMINAL_STATE_OPTIONAL)
+E               AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+
+tests/test_dashboard_controller_state_contract.py:90: AttributeError
+_ ControllerStateContractTests.test_a_recorded_terminal_state_would_be_accepted (deployment='deployment-states') _
+
+self = <tests.test_dashboard_controller_state_contract.ControllerStateContractTests testMethod=test_a_recorded_terminal_state_would_be_accepted>
+
+    def test_a_recorded_terminal_state_would_be_accepted(self):
+        """Simulate completion: drop the transient keys and require exact equality.
+    
+        Scoped to schema v5, because that is the only schema the terminal gate at
+        `server.py` accepts — v7/v8 states go down the v26 live path and are governed
+        by REQUIRED|OPTIONAL instead, which the first test already covers.
+        """
+        states = [(n, v) for n, v in _recorded_states()
+                  if v.get("schema") == "epyc.autokernel.discovery_controller.v5"]
+        self.assertTrue(states, "fixture set must retain the producer's v5 state")
+        for name, state in states:
+            with self.subTest(deployment=name):
+                terminal = {k: v for k, v in state.items() if k not in TRANSIENT}
+                terminal.setdefault("terminal_reason", "simulated")
+                terminal.setdefault("attempted_candidate_identities", {})
+                terminal.setdefault("candidate_semantic_registry_schema", "x")
+                # The gate is required-subset plus known-optional: an unlisted key
+                # rejects the surface, while a required key the campaign never wrote
+                # is a separate (also fatal) failure. Assert the shape the gate uses,
+                # not the exact equality it used to use.
+>               known = (server._DISCOVERY_TERMINAL_STATE_KEYS
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         | server._DISCOVERY_TERMINAL_STATE_OPTIONAL)
+E               AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+
+tests/test_dashboard_controller_state_contract.py:90: AttributeError
+_ ControllerStateContractTests.test_a_recorded_terminal_state_would_be_accepted (deployment='deployment-states') _
+
+self = <tests.test_dashboard_controller_state_contract.ControllerStateContractTests testMethod=test_a_recorded_terminal_state_would_be_accepted>
+
+    def test_a_recorded_terminal_state_would_be_accepted(self):
+        """Simulate completion: drop the transient keys and require exact equality.
+    
+        Scoped to schema v5, because that is the only schema the terminal gate at
+        `server.py` accepts — v7/v8 states go down the v26 live path and are governed
+        by REQUIRED|OPTIONAL instead, which the first test already covers.
+        """
+        states = [(n, v) for n, v in _recorded_states()
+                  if v.get("schema") == "epyc.autokernel.discovery_controller.v5"]
+        self.assertTrue(states, "fixture set must retain the producer's v5 state")
+        for name, state in states:
+            with self.subTest(deployment=name):
+                terminal = {k: v for k, v in state.items() if k not in TRANSIENT}
+                terminal.setdefault("terminal_reason", "simulated")
+                terminal.setdefault("attempted_candidate_identities", {})
+                terminal.setdefault("candidate_semantic_registry_schema", "x")
+                # The gate is required-subset plus known-optional: an unlisted key
+                # rejects the surface, while a required key the campaign never wrote
+                # is a separate (also fatal) failure. Assert the shape the gate uses,
+                # not the exact equality it used to use.
+>               known = (server._DISCOVERY_TERMINAL_STATE_KEYS
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         | server._DISCOVERY_TERMINAL_STATE_OPTIONAL)
+E               AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+
+tests/test_dashboard_controller_state_contract.py:90: AttributeError
+_ ControllerStateContractTests.test_every_recorded_state_key_is_known_to_the_dashboard _
+
+self = <tests.test_dashboard_controller_state_contract.ControllerStateContractTests testMethod=test_every_recorded_state_key_is_known_to_the_dashboard>
+
+    def test_every_recorded_state_key_is_known_to_the_dashboard(self):
+        states = _recorded_states()
+        self.assertTrue(states, "producer-recorded controller-state fixtures are required")
+>       known = (server._DISCOVERY_TERMINAL_STATE_KEYS
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                 | server._DISCOVERY_V26_STATE_REQUIRED
+                 | server._DISCOVERY_V26_STATE_OPTIONAL)
+E       AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+
+tests/test_dashboard_controller_state_contract.py:56: AttributeError
+__________ test_panel_envelope_is_registered_with_the_declared_budget __________
+
+    def test_panel_envelope_is_registered_with_the_declared_budget():
+        src = panels.PANELS["gpu_window"]
+        assert src.route == "/api/gpu_window" and src.payload_func == "gpu_window_payload"
+        assert src.stale_s == 300.0 and src.watched
+        assert "nothing will auto-restore the MI210 window" in src.absence_means
+        assert server.API_ROUTES["/api/gpu_window"] is server.gpu_window_payload
+>       assert not any(panels.registry_gaps(server).values()), panels.registry_gaps(server)
+E       AssertionError: {'health_route_mismatch': [], 'panels_missing_route': [], 'registered_without_function': [], 'route_mismatch': ["transport_probe: declares route '/health', which the hub does not serve"], ...}
+E       assert not True
+E        +  where True = any(dict_values([[], [], [], [], ["transport_probe: declares route '/health', which the hub does not serve"], [], []]))
+E        +    where dict_values([[], [], [], [], ["transport_probe: declares route '/health', which the hub does not serve"], [], []]) = <built-in method values of dict object at 0x7fd33f400980>()
+E        +      where <built-in method values of dict object at 0x7fd33f400980> = {'health_route_mismatch': [], 'panels_missing_route': [], 'registered_without_function': [], 'route_mismatch': ["transport_probe: declares route '/health', which the hub does not serve"], ...}.values
+E        +        where {'health_route_mismatch': [], 'panels_missing_route': [], 'registered_without_function': [], 'route_mismatch': ["transport_probe: declares route '/health', which the hub does not serve"], ...} = <function registry_gaps at 0x7fd33fdb7100>(server)
+E        +          where <function registry_gaps at 0x7fd33fdb7100> = panels.registry_gaps
+
+tests/test_dashboard_gpu_window_page.py:62: AssertionError
+________ test_trajectory_is_first_surface_and_absorbs_redundant_panels _________
+
+    def test_trajectory_is_first_surface_and_absorbs_redundant_panels() -> None:
+        page = PAGE.read_text()
+        main = page.split("<main>", 1)[1]
+        assert '<section id="sec-champion"' not in main
+        assert '<section id="sec-tiles"' not in main
+        assert main.index('id="sec-trajectory"') < main.index('id="sec-capabilities"')
+        assert main.index('id="sec-capabilities"') < main.index('id="sec-accumulator"')
+        assert main.index('id="sec-accumulator"') < main.index('id="sec-serial"')
+        trajectory = main[main.index('id="sec-trajectory"'):main.index('</section>')]
+>       assert 'id="trajectory"' in trajectory
+E       assert 'id="trajectory"' in ''
+
+tests/test_dashboard_improvement_trajectory.py:462: AssertionError
+_ TestTheRetiredPageIsUnreachable.test_no_enumerable_route_returns_the_retired_pages_markup _
+
+self = <tests.test_dashboard_kernel_rnd_merge.TestTheRetiredPageIsUnreachable testMethod=test_no_enumerable_route_returns_the_retired_pages_markup>
+
+    def test_no_enumerable_route_returns_the_retired_pages_markup(self):
+        """The sweep the operator asked for: not a route table read back to
+        itself, but every route this hub can serve, fetched and searched."""
+        routes = (sorted(S.HTML_ROUTES) + sorted(S.REDIRECT_ROUTES)
+                  + sorted(S.API_ROUTES) + sorted(S.PANEL_HEALTH_ROUTES)
+>                 + sorted(S.PROBE_ROUTES) + sorted(S.ASSET_ROUTES))
+                           ^^^^^^^^^^^^^^
+E       AttributeError: module 'dashboard.server' has no attribute 'PROBE_ROUTES'
+
+tests/test_dashboard_kernel_rnd_merge.py:199: AttributeError
+_ TestTheRegistryCarriesOneKernelRnDRow.test_the_registry_and_the_served_pages_are_still_total_in_both_directions _
+
+self = <tests.test_dashboard_kernel_rnd_merge.TestTheRegistryCarriesOneKernelRnDRow testMethod=test_the_registry_and_the_served_pages_are_still_total_in_both_directions>
+
+    def test_the_registry_and_the_served_pages_are_still_total_in_both_directions(self):
+        rows = _rows()
+        hub_paths = {r["path"] for r in rows.values() if r["port"] == 8100}
+>       self.assertEqual(hub_paths, set(S.HTML_ROUTES),
+                         "a registry row with no page is a nav link to a 404; a "
+                         "page with no row is a surface nobody learns exists")
+E       AssertionError: Items in the first set but not the second:
+E       '/amd-ai-lab/'
+E       Items in the second set but not the first:
+E       '/amd-ai-lab' : a registry row with no page is a nav link to a 404; a page with no row is a surface nobody learns exists
+
+tests/test_dashboard_kernel_rnd_merge.py:263: AssertionError
+_ TestTheOneLiveProducerMoved.test_the_loop_payload_carries_the_operator_gated_bundle _
+
+self = <tests.test_dashboard_kernel_rnd_merge.TestTheOneLiveProducerMoved testMethod=test_the_loop_payload_carries_the_operator_gated_bundle>
+
+    def test_the_loop_payload_carries_the_operator_gated_bundle(self):
+        payload = S.loop_payload()
+        self.assertIn("operator_gates", payload,
+                      "the one live producer on the retired page did not move; it "
+                      "was dropped")
+        gates = payload["operator_gates"]
+        self.assertIn("freshness", gates)
+        self.assertIn(gates["freshness"]["state"],
+>                     set(S.OPERATOR_GATE_BUNDLE_STATES))
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'dashboard.server' has no attribute 'OPERATOR_GATE_BUNDLE_STATES'. Did you mean: 'OPERATOR_GATE_BUNDLE_SCHEMA'?
+
+tests/test_dashboard_kernel_rnd_merge.py:356: AttributeError
+_ TestThePageOpensWithTheHeadline.test_the_top_explainer_is_gone_and_the_headline_is_first _
+
+self = <tests.test_dashboard_kernel_rnd_merge.TestThePageOpensWithTheHeadline testMethod=test_the_top_explainer_is_gone_and_the_headline_is_first>
+
+    def test_the_top_explainer_is_gone_and_the_headline_is_first(self):
+        html = LOOP_PAGE.read_text(encoding="utf-8")
+        # RENDERED text only: strip comments AND the script/style bodies, or
+        # this grep matches the code's own explanations (the key-too-wide
+        # fault this suite keeps relearning).
+        visible = _strip_html_comments(html)
+        visible = re.sub(r"<(script|style)[^>]*>.*?</\1>", " ", visible,
+                         flags=re.S)
+        self.assertNotIn("sec-scope", html,
+                         "the top-of-page scope explainer is still in the markup")
+        self.assertNotIn("three producers", visible,
+                         "the producer-taxonomy lecture is still rendered")
+        main = html.split("<main>", 1)[1]
+        first_section = re.search(r'<section[^>]*id="([A-Za-z0-9_-]+)"', main)
+        self.assertIsNotNone(first_section)
+        self.assertEqual(first_section.group(1), "sec-trajectory",
+                         "the page no longer opens with the unified champion trajectory")
+        # Nothing VISIBLE sits between the (empty-by-default) freshness banner
+        # and the headline section.
+        between = main.split('id="banner"', 1)[1].split("<section", 1)[0]
+>       self.assertEqual(_strip_html_comments(between).replace("></div>", "")
+                         .strip(), "",
+                         "visible content sits above the headline")
+E       AssertionError: '<div id="operator-attention" class="opera[126 chars]div>' != ''
+E       - <div id="operator-attention" class="operator-attention unknown" role="status" aria-live="polite">
+E       -     R24-8 alarm state UNKNOWN — awaiting a loop status report.
+E       -   </div>
+E        : visible content sits above the headline
+
+tests/test_dashboard_kernel_rnd_merge.py:626: AssertionError
+_____ Fixture.test_the_fixture_actually_holds_rows_of_more_than_one_status _____
+
+self = <tests.test_dashboard_knowledge_card.Fixture testMethod=test_the_fixture_actually_holds_rows_of_more_than_one_status>
+
+    def test_the_fixture_actually_holds_rows_of_more_than_one_status(self):
+>       rows = build_fixture(self.db)
+               ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_dashboard_knowledge_card.py:207: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:100: in build_fixture
+    columns, copied = copy_rows()
+                      ^^^^^^^^^^^
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+___________ Fixture.test_the_fixture_carries_the_real_stores_schema ____________
+
+self = <tests.test_dashboard_knowledge_card.Fixture testMethod=test_the_fixture_carries_the_real_stores_schema>
+
+    def test_the_fixture_carries_the_real_stores_schema(self):
+        """NON-VACUITY: the fixture's schema is byte-identical to the real
+        store's, so a reader that agrees with the fixture agrees with the
+        producer — the opposite of the invented-spelling defect."""
+>       build_fixture(self.db)
+
+tests/test_dashboard_knowledge_card.py:197: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:100: in build_fixture
+    columns, copied = copy_rows()
+                      ^^^^^^^^^^^
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+______ Reader.test_recent_kept_names_the_newest_keeps_with_their_effects _______
+
+self = <tests.test_dashboard_knowledge_card.Reader testMethod=test_recent_kept_names_the_newest_keeps_with_their_effects>
+
+    def test_recent_kept_names_the_newest_keeps_with_their_effects(self):
+>       rows = build_fixture(self.db)
+               ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_dashboard_knowledge_card.py:264: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:100: in build_fixture
+    columns, copied = copy_rows()
+                      ^^^^^^^^^^^
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+_ Reader.test_stale_is_dated_knowledge_not_an_accusation_and_keeps_its_counts __
+
+self = <tests.test_dashboard_knowledge_card.Reader testMethod=test_stale_is_dated_knowledge_not_an_accusation_and_keeps_its_counts>
+
+    def test_stale_is_dated_knowledge_not_an_accusation_and_keeps_its_counts(self):
+>       rows = build_fixture(self.db)
+               ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_dashboard_knowledge_card.py:318: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:100: in build_fixture
+    columns, copied = copy_rows()
+                      ^^^^^^^^^^^
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+______ Reader.test_the_block_reaches_api_loop_through_the_injectable_root ______
+
+self = <tests.test_dashboard_knowledge_card.Reader testMethod=test_the_block_reaches_api_loop_through_the_injectable_root>
+
+    def test_the_block_reaches_api_loop_through_the_injectable_root(self):
+>       rows = build_fixture(self.db)
+               ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_dashboard_knowledge_card.py:346: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:100: in build_fixture
+    columns, copied = copy_rows()
+                      ^^^^^^^^^^^
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+_______ Reader.test_the_folds_match_the_rows_copied_from_the_real_store ________
+
+self = <tests.test_dashboard_knowledge_card.Reader testMethod=test_the_folds_match_the_rows_copied_from_the_real_store>
+
+    def test_the_folds_match_the_rows_copied_from_the_real_store(self):
+>       rows = build_fixture(self.db)
+               ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_dashboard_knowledge_card.py:235: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:100: in build_fixture
+    columns, copied = copy_rows()
+                      ^^^^^^^^^^^
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+_________ Reader.test_the_four_states_use_the_pages_shared_vocabulary __________
+
+self = <tests.test_dashboard_knowledge_card.Reader testMethod=test_the_four_states_use_the_pages_shared_vocabulary>
+
+    def test_the_four_states_use_the_pages_shared_vocabulary(self):
+        seen = {}
+        seen["absent"] = self.snap()["freshness"]["state"]
+        self.db.write_bytes(b"garbage")
+        seen["malformed"] = self.snap()["freshness"]["state"]
+        self.db.unlink()
+>       build_fixture(self.db)
+
+tests/test_dashboard_knowledge_card.py:335: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:100: in build_fixture
+    columns, copied = copy_rows()
+                      ^^^^^^^^^^^
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+____ Reader.test_the_groups_enumerate_every_status_and_sum_to_the_attempts _____
+
+self = <tests.test_dashboard_knowledge_card.Reader testMethod=test_the_groups_enumerate_every_status_and_sum_to_the_attempts>
+
+    def test_the_groups_enumerate_every_status_and_sum_to_the_attempts(self):
+        """Nothing hidden: the four primary dispositions plus a no-verdict
+        bucket that NAMES its members must account for every row."""
+>       rows = build_fixture(self.db)
+               ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_dashboard_knowledge_card.py:249: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:100: in build_fixture
+    columns, copied = copy_rows()
+                      ^^^^^^^^^^^
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+________ Reader.test_the_recorded_store_fixture_reads_clean_end_to_end _________
+
+self = <tests.test_dashboard_knowledge_card.Reader testMethod=test_the_recorded_store_fixture_reads_clean_end_to_end>
+
+    def test_the_recorded_store_fixture_reads_clean_end_to_end(self):
+        """End-to-end reader coverage against recorded producer data."""
+>       self.assertTrue(RECORDED_DB.is_file())
+E       AssertionError: False is not true
+
+tests/test_dashboard_knowledge_card.py:354: AssertionError
+____________ Ledger.test_a_locked_read_is_retried_once_then_honest _____________
+
+self = <tests.test_dashboard_knowledge_card.Ledger testMethod=test_a_locked_read_is_retried_once_then_honest>
+
+    def test_a_locked_read_is_retried_once_then_honest(self):
+        """The store is written continuously by a LIVE run; a mid-read lock is
+        scheduling. One retry, then the malformed verdict — never a crash and
+        never a page of zeros."""
+>       rows = build_fixture(self.db)
+               ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_dashboard_knowledge_card.py:615: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:100: in build_fixture
+    columns, copied = copy_rows()
+                      ^^^^^^^^^^^
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+_______ Ledger.test_agenda_groups_lead_with_kept_then_null_then_refused ________
+
+self = <tests.test_dashboard_knowledge_card.Ledger testMethod=test_agenda_groups_lead_with_kept_then_null_then_refused>
+
+    def test_agenda_groups_lead_with_kept_then_null_then_refused(self):
+        """The walk leads with what worked. Executed on the folded order, not
+        the styling."""
+>       rows = build_fixture(self.db)
+               ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_dashboard_knowledge_card.py:546: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:100: in build_fixture
+    columns, copied = copy_rows()
+                      ^^^^^^^^^^^
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+___________ Ledger.test_an_untried_hotspot_is_flagged_with_its_share ___________
+
+self = <tests.test_dashboard_knowledge_card.Ledger testMethod=test_an_untried_hotspot_is_flagged_with_its_share>
+
+    def test_an_untried_hotspot_is_flagged_with_its_share(self):
+        """THE BLIND SPOT: a hotspot no row ever targeted must say so, share
+        intact — that line is the actionable insight this card exists for."""
+>       rows = build_fixture(self.db)
+               ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_dashboard_knowledge_card.py:474: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:100: in build_fixture
+    columns, copied = copy_rows()
+                      ^^^^^^^^^^^
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+______ Ledger.test_best_effect_is_the_maximum_of_the_mechanisms_kept_rows ______
+
+self = <tests.test_dashboard_knowledge_card.Ledger testMethod=test_best_effect_is_the_maximum_of_the_mechanisms_kept_rows>
+
+    def test_best_effect_is_the_maximum_of_the_mechanisms_kept_rows(self):
+        """Forced two kept rows on ONE mechanism with different effects, so a
+        min-for-max flip cannot hide behind single-row mechanisms."""
+>       columns, rows = copy_rows()
+                        ^^^^^^^^^^^
+
+tests/test_dashboard_knowledge_card.py:683: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+__________ Ledger.test_cross_epoch_is_computed_against_the_live_epoch __________
+
+self = <tests.test_dashboard_knowledge_card.Ledger testMethod=test_cross_epoch_is_computed_against_the_live_epoch>
+
+    def test_cross_epoch_is_computed_against_the_live_epoch(self):
+        """A kept effect from another epoch is marked; the same row read under
+        its OWN epoch is not. Executed both ways so the marker cannot be a
+        constant."""
+>       rows = build_fixture(self.db)
+               ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_dashboard_knowledge_card.py:511: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:100: in build_fixture
+    columns, copied = copy_rows()
+                      ^^^^^^^^^^^
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+_______ Ledger.test_every_mechanism_lands_exactly_once_walk_or_remainder _______
+
+self = <tests.test_dashboard_knowledge_card.Ledger testMethod=test_every_mechanism_lands_exactly_once_walk_or_remainder>
+
+    def test_every_mechanism_lands_exactly_once_walk_or_remainder(self):
+        """CONSERVATION, the non-vacuity property of the whole join: every
+        mechanism in the store appears exactly once — under a hotspot, in the
+        remainder, or in the counted no-verdict rest. A join that drops or
+        double-lists a mechanism fabricates or erases an experiment."""
+>       rows = build_fixture(self.db)
+               ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_dashboard_knowledge_card.py:390: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:100: in build_fixture
+    columns, copied = copy_rows()
+                      ^^^^^^^^^^^
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+_________ Ledger.test_group_summaries_recompute_from_their_own_entries _________
+
+self = <tests.test_dashboard_knowledge_card.Ledger testMethod=test_group_summaries_recompute_from_their_own_entries>
+
+    def test_group_summaries_recompute_from_their_own_entries(self):
+        """The 'N mechanisms tried; best +x%' line is a fold; each of its
+        numbers is recomputed here so a transposed or hardcoded one fails."""
+>       build_fixture(self.db)
+
+tests/test_dashboard_knowledge_card.py:658: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:100: in build_fixture
+    columns, copied = copy_rows()
+                      ^^^^^^^^^^^
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+________ Ledger.test_in_flight_mechanisms_ride_on_their_hotspots_entry _________
+
+self = <tests.test_dashboard_knowledge_card.Ledger testMethod=test_in_flight_mechanisms_ride_on_their_hotspots_entry>
+
+    def test_in_flight_mechanisms_ride_on_their_hotspots_entry(self):
+        """The planner's live posture: a mechanism in the status file's recent
+        list that maps to a walked kernel is named on that kernel."""
+>       rows = build_fixture(self.db)
+               ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_dashboard_knowledge_card.py:595: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:100: in build_fixture
+    columns, copied = copy_rows()
+                      ^^^^^^^^^^^
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+_________ Ledger.test_no_status_body_walks_no_agenda_and_drops_nothing _________
+
+self = <tests.test_dashboard_knowledge_card.Ledger testMethod=test_no_status_body_walks_no_agenda_and_drops_nothing>
+
+    def test_no_status_body_walks_no_agenda_and_drops_nothing(self):
+        """An unreadable loop status must not sink the ledger OR invent an
+        agenda: no hotspots, the stated reason, and full conservation into
+        the remainder."""
+>       rows = build_fixture(self.db)
+               ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_dashboard_knowledge_card.py:533: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:100: in build_fixture
+    columns, copied = copy_rows()
+                      ^^^^^^^^^^^
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+______________ Ledger.test_the_inbox_is_joined_and_never_created _______________
+
+self = <tests.test_dashboard_knowledge_card.Ledger testMethod=test_the_inbox_is_joined_and_never_created>
+
+    def test_the_inbox_is_joined_and_never_created(self):
+        """Reading an absent inbox must not conjure it (the sibling rule to
+        the sqlite mode=ro guard); a seed naming a walked kernel is queued on
+        that kernel's agenda entry."""
+>       build_fixture(self.db)
+
+tests/test_dashboard_knowledge_card.py:567: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:100: in build_fixture
+    columns, copied = copy_rows()
+                      ^^^^^^^^^^^
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+_____ Ledger.test_the_mapping_is_true_of_the_rows_not_just_self_consistent _____
+
+self = <tests.test_dashboard_knowledge_card.Ledger testMethod=test_the_mapping_is_true_of_the_rows_not_just_self_consistent>
+
+    def test_the_mapping_is_true_of_the_rows_not_just_self_consistent(self):
+        """Every mechanism the ledger placed under a hotspot must ACTUALLY
+        target it, checked with a test-local normalizer against the copied
+        rows — never by re-running the module's own matcher."""
+>       rows = build_fixture(self.db)
+               ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_dashboard_knowledge_card.py:412: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:100: in build_fixture
+    columns, copied = copy_rows()
+                      ^^^^^^^^^^^
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+________ Ledger.test_variants_of_one_kernel_fold_into_one_agenda_entry _________
+
+self = <tests.test_dashboard_knowledge_card.Ledger testMethod=test_variants_of_one_kernel_fold_into_one_agenda_entry>
+
+    def test_variants_of_one_kernel_fold_into_one_agenda_entry(self):
+        """The sample records two mul_mat_vec_q template variants; a planner
+        sees one kernel. Shares add, variants stay enumerated inside."""
+>       build_fixture(self.db)
+
+tests/test_dashboard_knowledge_card.py:495: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:100: in build_fixture
+    columns, copied = copy_rows()
+                      ^^^^^^^^^^^
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+_____ Rendering.test_a_cross_epoch_keep_renders_the_not_comparable_caveat ______
+
+self = <tests.test_dashboard_knowledge_card.Rendering testMethod=test_a_cross_epoch_keep_renders_the_not_comparable_caveat>
+
+    def test_a_cross_epoch_keep_renders_the_not_comparable_caveat(self):
+        """A kept magnitude from an earlier epoch must carry its caveat on the
+        page, and the SAME store under the keep's own epoch must not."""
+>       rows = build_fixture(self.db)
+               ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_dashboard_knowledge_card.py:846: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:100: in build_fixture
+    columns, copied = copy_rows()
+                      ^^^^^^^^^^^
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+___ Rendering.test_a_real_shaped_store_renders_the_header_line_and_the_walk ____
+
+self = <tests.test_dashboard_knowledge_card.Rendering testMethod=test_a_real_shaped_store_renders_the_header_line_and_the_walk>
+
+    def test_a_real_shaped_store_renders_the_header_line_and_the_walk(self):
+>       rows = build_fixture(self.db)
+               ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_dashboard_knowledge_card.py:746: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:100: in build_fixture
+    columns, copied = copy_rows()
+                      ^^^^^^^^^^^
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+________________ Rendering.test_an_untried_hotspot_renders_loud ________________
+
+self = <tests.test_dashboard_knowledge_card.Rendering testMethod=test_an_untried_hotspot_renders_loud>
+
+    def test_an_untried_hotspot_renders_loud(self):
+>       build_fixture(self.db)
+
+tests/test_dashboard_knowledge_card.py:928: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:100: in build_fixture
+    columns, copied = copy_rows()
+                      ^^^^^^^^^^^
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+_____ Rendering.test_every_copied_mechanism_renders_somewhere_on_the_card ______
+
+self = <tests.test_dashboard_knowledge_card.Rendering testMethod=test_every_copied_mechanism_renders_somewhere_on_the_card>
+
+    def test_every_copied_mechanism_renders_somewhere_on_the_card(self):
+        """Conservation at RENDER level: agenda, remainder or nested details —
+        collapsed is fine, absent is not."""
+>       rows = build_fixture(self.db)
+               ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_dashboard_knowledge_card.py:774: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:100: in build_fixture
+    columns, copied = copy_rows()
+                      ^^^^^^^^^^^
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+_____________ Rendering.test_every_effect_on_the_card_is_anchored ______________
+
+self = <tests.test_dashboard_knowledge_card.Rendering testMethod=test_every_effect_on_the_card_is_anchored>
+
+    def test_every_effect_on_the_card_is_anchored(self):
+>       rows = build_fixture(self.db)
+               ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_dashboard_knowledge_card.py:786: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:100: in build_fixture
+    columns, copied = copy_rows()
+                      ^^^^^^^^^^^
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+________ Rendering.test_stale_renders_dated_with_the_counts_still_shown ________
+
+self = <tests.test_dashboard_knowledge_card.Rendering testMethod=test_stale_renders_dated_with_the_counts_still_shown>
+
+    def test_stale_renders_dated_with_the_counts_still_shown(self):
+>       rows = build_fixture(self.db)
+               ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_dashboard_knowledge_card.py:963: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:100: in build_fixture
+    columns, copied = copy_rows()
+                      ^^^^^^^^^^^
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+_______________ Rendering.test_the_four_renderings_are_distinct ________________
+
+self = <tests.test_dashboard_knowledge_card.Rendering testMethod=test_the_four_renderings_are_distinct>
+
+    def test_the_four_renderings_are_distinct(self):
+        seen = {}
+        seen["absent"] = self._render()["by_id"]["know"]
+        self.db.write_bytes(b"garbage")
+        seen["malformed"] = self._render()["by_id"]["know"]
+        self.db.unlink()
+>       build_fixture(self.db)
+
+tests/test_dashboard_knowledge_card.py:984: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:100: in build_fixture
+    columns, copied = copy_rows()
+                      ^^^^^^^^^^^
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+______ Rendering.test_the_header_counts_are_the_folds_not_a_transposition ______
+
+self = <tests.test_dashboard_knowledge_card.Rendering testMethod=test_the_header_counts_are_the_folds_not_a_transposition>
+
+    def test_the_header_counts_are_the_folds_not_a_transposition(self):
+        """The header line's numbers are pinned against the recomputed folds,
+        with kept forced != measured_null so a transposition cannot alias."""
+>       columns, rows = copy_rows()
+                        ^^^^^^^^^^^
+
+tests/test_dashboard_knowledge_card.py:884: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+______ Rendering.test_the_walk_summary_prints_tried_and_attempts_in_order ______
+
+self = <tests.test_dashboard_knowledge_card.Rendering testMethod=test_the_walk_summary_prints_tried_and_attempts_in_order>
+
+    def test_the_walk_summary_prints_tried_and_attempts_in_order(self):
+        """`3 mechanisms tried (5 attempts)` — with attempts forced greater
+        than mechanisms, so the two numbers cannot be swapped silently."""
+>       columns, rows = copy_rows()
+                        ^^^^^^^^^^^
+
+tests/test_dashboard_knowledge_card.py:907: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+________ Rendering.test_untrusted_statements_render_escaped_everywhere _________
+
+self = <tests.test_dashboard_knowledge_card.Rendering testMethod=test_untrusted_statements_render_escaped_everywhere>
+
+    def test_untrusted_statements_render_escaped_everywhere(self):
+        """Statements and refusal reasons are LLM output. Metacharacters in
+        the fixture prove the escaping — in the row text AND in the title
+        attribute that carries the full statement."""
+>       columns, rows = copy_rows()
+                        ^^^^^^^^^^^
+
+tests/test_dashboard_knowledge_card.py:807: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_dashboard_knowledge_card.py:82: in copy_rows
+    con = _recorded_connection()
+          ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _recorded_connection() -> sqlite3.Connection:
+        if not RECORDED_DB.is_file():
+>           raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+E           AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+
+tests/test_dashboard_knowledge_card.py:67: AssertionError
+_________ Wiring.test_the_panel_registry_is_total_over_the_new_surface _________
+
+self = <tests.test_dashboard_loop_surface.Wiring testMethod=test_the_panel_registry_is_total_over_the_new_surface>
+
+    def test_the_panel_registry_is_total_over_the_new_surface(self):
+        gaps = panels.registry_gaps(S)
+>       self.assertEqual({k: v for k, v in gaps.items() if v}, {},
+                         "the panel registry and the hub's code disagree")
+E       AssertionError: {'route_mismatch': ["transport_probe: decl[48 chars]ve"]} != {}
+E       + {}
+E       - {'route_mismatch': ["transport_probe: declares route '/health', which the hub "
+E       -                     'does not serve']} : the panel registry and the hub's code disagree
+
+tests/test_dashboard_loop_surface.py:533: AssertionError
+___________________ Wiring.test_the_routes_are_in_the_tables ___________________
+
+self = <tests.test_dashboard_loop_surface.Wiring testMethod=test_the_routes_are_in_the_tables>
+
+    def test_the_routes_are_in_the_tables(self):
+        self.assertIs(S.HTML_ROUTES["/loop"], S.LOOP_HTML)
+        self.assertIs(S.API_ROUTES["/api/loop"], S.loop_payload)
+        self.assertIs(S.PANEL_HEALTH_ROUTES["/api/loop/health"], S.loop_data_health)
+        # The data probe may return 503; the supervisor's transport probe must
+        # never be it.
+>       self.assertNotIn("/api/loop/health", S.PROBE_ROUTES)
+                                             ^^^^^^^^^^^^^^
+E       AttributeError: module 'dashboard.server' has no attribute 'PROBE_ROUTES'
+
+tests/test_dashboard_loop_surface.py:553: AttributeError
+_____________ RegistryFileTest.test_the_registry_exists_and_parses _____________
+
+self = <tests.test_dashboard_nav.RegistryFileTest testMethod=test_the_registry_exists_and_parses>
+
+    def test_the_registry_exists_and_parses(self):
+        self.assertTrue(REGISTRY_PATH.is_file(), REGISTRY_PATH)
+        data = _registry()
+        self.assertIsInstance(data, dict)
+>       self.assertEqual(data.get("schema"), server.DASHBOARD_REGISTRY_SCHEMA)
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'dashboard.server' has no attribute 'DASHBOARD_REGISTRY_SCHEMA'. Did you mean: 'DASHBOARD_REGISTRY_JSON'?
+
+tests/test_dashboard_nav.py:76: AttributeError
+_ PageRegistryBidirectionalTest.test_every_hub_page_has_a_registry_entry (route='/amd-ai-lab') _
+
+self = <tests.test_dashboard_nav.PageRegistryBidirectionalTest testMethod=test_every_hub_page_has_a_registry_entry>
+
+    def test_every_hub_page_has_a_registry_entry(self):
+        by_path = {e["path"]: e for e in _entries() if e["port"] == self.HUB_PORT}
+        for route in server.HTML_ROUTES:
+            with self.subTest(route=route):
+>               self.assertIn(
+                    route, by_path,
+                    f"{route} is served by the hub but is in no registry row, so "
+                    "no nav can link to it")
+E               AssertionError: '/amd-ai-lab' not found in {'/machine': {'id': 'machine', 'title': 'Machine', 'port': 8100, 'path': '/machine', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'global hardware + live-inference monitor (data: :8000 API)'}, '/autopilot': {'id': 'autopilot', 'title': 'Autopilot', 'port': 8100, 'path': '/autopilot', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'autopilot loop: phase, log, Pareto/GEPA, optimization (data: :8000 API)'}, '/cockpit': {'id': 'cockpit', 'title': 'Cockpit', 'port': 8100, 'path': '/cockpit', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'AP-50 decision cockpit: what optimizes the orchestrator, per measurement era: current trial + falsifier, incumbent-vs-candidate deltas (n, SE, replication), proposed/executed/valid/kept/promoted/live funnel with rejection reasons, journal+study lever scoreboard, provenance drill-down (data: :8000/dashboard/api/decision_cockpit; data probe :8000/dashboard/api/decision_cockpit/health — /health here is transport-only)'}, '/gpu-window': {'id': 'gpu-window', 'title': 'MI210 window', 'port': 8100, 'path': '/gpu-window', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'G1 MI210 window: holder, grant state, window id, expected end, overdue, lease state, watchdog age, verdict (ok/window_open/alarm) and health reasons. Data plane owned by epyc-orchestrator (:8000/dashboard/api/gpu_window), page owned by epyc-root; data probe :8000/dashboard/api/gpu_window/health — /health here is transport-only'}, '/': {'id': 'handoffs', 'title': 'Handoffs', 'port': 8100, 'path': '/', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'handoff kanban + backlog flow'}, '/loop': {'id': 'autokernel-loop', 'title': 'Kernel R&D', 'chip': 'live', 'port': 8100, 'path': '/loop', 'owner_repo': 'epyc-root', 'health_path': '/api/loop/health', 'blurb': 'THE Kernel R&D surface: explicitly selected unified campaign status and authenticated producer controls, otherwise the legacy AutoKernel loop; an independently dated champion headline versus the frozen production kernel, operator-gated serving evidence and belief records. Durable history is not producer liveness. /api/loop/health follows the selected campaign or legacy loop without allowing other evidence cards to certify it. /kernel redirects here. Unified execution remains gated separately from management controls.'}, '/bus': {'id': 'bus', 'title': 'Bus', 'port': 8100, 'path': '/bus', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'session-bus roster, heartbeats, queue'}, '/benchmarks': {'id': 'benchmarks', 'title': 'Benchmarks', 'port': 8100, 'path': '/benchmarks', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'benchmark artifact inventory (read-only)'}, '/amd-ai-lab/': {'id': 'amd-ai-lab', 'title': 'AMD AI Lab', 'chip': 'draft', 'port': 8100, 'path': '/amd-ai-lab/', 'owner_repo': 'epyc-web', 'health_path': '/health', 'blurb': 'AMD hardware recipes and benchmark results — explicit publication snapshot from epyc-web', 'freshness': {'kind': 'static-snapshot', 'source': 'epyc-web', 'artifact': 'dashboard/static/amd-ai-lab/', 'stale_after_s': 2592000, 'absence_means': 'the published epyc-web snapshot is missing from the hub checkout'}}} : /amd-ai-lab is served by the hub but is in no registry row, so no nav can link to it
+
+tests/test_dashboard_nav.py:133: AssertionError
+_ PageRegistryBidirectionalTest.test_every_hub_registry_entry_is_a_served_page (entry='amd-ai-lab') _
+
+self = <tests.test_dashboard_nav.PageRegistryBidirectionalTest testMethod=test_every_hub_registry_entry_is_a_served_page>
+
+    def test_every_hub_registry_entry_is_a_served_page(self):
+        for entry in _entries():
+            if entry["port"] != self.HUB_PORT:
+                continue
+            with self.subTest(entry=entry["id"]):
+>               self.assertIn(
+                    entry["path"], server.HTML_ROUTES,
+                    f"registry row {entry['id']!r} points at {entry['path']}, "
+                    "which this hub does not serve — a nav link to a 404")
+E               AssertionError: '/amd-ai-lab/' not found in {'/': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/handoffs.html'), '/machine': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/machine.html'), '/autopilot': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/autopilot.html'), '/cockpit': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/cockpit.html'), '/gpu-window': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/gpu-window.html'), '/loop': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/loop.html'), '/bus': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/bus.html'), '/benchmarks': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/benchmarks.html'), '/amd-ai-lab': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/amd-ai-lab/index.html')} : registry row 'amd-ai-lab' points at /amd-ai-lab/, which this hub does not serve — a nav link to a 404
+
+tests/test_dashboard_nav.py:143: AssertionError
+_ SharedNavAdoptionTest.test_every_existing_page_mounts_the_shared_nav (route='/amd-ai-lab') _
+
+self = <tests.test_dashboard_nav.SharedNavAdoptionTest testMethod=test_every_existing_page_mounts_the_shared_nav>
+
+    def test_every_existing_page_mounts_the_shared_nav(self):
+        for route, path in _page_paths().items():
+            with self.subTest(route=route):
+                if not path.is_file():
+                    self.skipTest(f"{path.name} not written yet (RTG-47 Phase 1a "
+                                  "parallel build); it will exist at CI time")
+                text = path.read_text(encoding="utf-8")
+>               self.assertIn('id="epyc-nav"', text,
+                              f"{path.name} has no shared-nav mount point")
+E               AssertionError: 'id="epyc-nav"' not found in '<!doctype html>\n<html lang="en">\n  <head>\n    <meta charset="utf-8" />\n    <meta name="viewport" content="width=device-width, initial-scale=1" />\n    <meta name="theme-color" content="#101116" />\n    <title>AMD AI Lab · Find your inference sweet spot</title>\n    <meta\n      name="description"\n      content="Explore measured AMD inference: model benchmarks, concurrency curves and interactive KV cache matrices."\n    />\n    <link rel="stylesheet" href="styles.css" />\n  </head>\n  <body>\n    <div class="shell">\n      <header>\n        <a class="brand" href="#top"\n          ><span class="mark" aria-hidden="true"\n            ><svg viewBox="0 0 32 32" width="26" height="26" fill="none">\n              <path\n                d="M16 2v28M2 16h28M6 6l20 20M6 26L26 6"\n                stroke="currentColor"\n                stroke-width="3"\n              /></svg\n          ></span>\n          AMD AI LAB<span class="beta">FIELD NOTES</span></a\n        >\n        <nav>\n          <a href="#models">Models</a><a href="#method">How to read</a\n          ><a\n            href="https://github.com/pestopoppa/llama.cpp/releases/tag/production-consolidated-v10"\n            >Get the kernel ↗</a\n          >\n        </nav>\n      </header>\n      <main id="top">\n        <section class="hero">\n          <div class="eyebrow">\n            <span class="dot"></span> EPYC + INSTINCT / FROZEN KERNEL v10\n          </div>\n          <h1>More AI.<br /><em>From your AMD hardware.</em></h1>\n          <p>\n            Optimized kernels. Faster local inference. Explore our best measured\n            configurations—from speculative decoding on Instinct to native MTP\n            on EPYC—and see what it takes to run them yourself.\n          </p>\n          <div class="hero-foot">\n            <a class="primary" href="#models"\n              >Explore the results <span>↘</span></a\n            ><span>EPYC 9655 <b>+</b> Instinct MI210 · 64 GB</span>\n          </div>\n          <div class="hero-art" aria-hidden="true">\n            <div class="orb"></div>\n            <div class="axis">CONCURRENCY × CONTEXT</div>\n            <div class="art-grid">\n              <i style="--v: 0"></i><i style="--v: 0.35"></i\n              ><i style="--v: 0.7"></i><i style="--v: 0.1"></i\n              ><i style="--v: 0.45"></i><i style="--v: 0.8"></i\n              ><i style="--v: 0.2"></i><i style="--v: 0.55"></i\n              ><i style="--v: 0.9"></i><i style="--v: 0.3"></i\n              ><i style="--v: 0.65"></i><i style="--v: 0.05"></i\n              ><i style="--v: 0.4"></i><i style="--v: 0.75"></i\n              ><i style="--v: 0.15"></i><i style="--v: 0.5"></i\n              ><i style="--v: 0.85"></i><i style="--v: 0.25"></i\n              ><i style="--v: 0.6"></i><i style="--v: 0"></i\n              ><i style="--v: 0.35"></i><i style="--v: 0.7"></i\n              ><i style="--v: 0.1"></i><i style="--v: 0.45"></i\n              ><i style="--v: 0.8"></i><i style="--v: 0.2"></i\n              ><i style="--v: 0.55"></i><i style="--v: 0.9"></i\n              ><i style="--v: 0.3"></i><i style="--v: 0.65"></i\n              ><i style="--v: 0.05"></i><i style="--v: 0.4"></i>\n            </div>\n            <span class="art-caption">MEASURE. COMPARE. REPRODUCE.</span>\n          </div>\n        </section>\n        <section id="models">\n          <div class="section-title">\n            <div>\n              <span class="eyebrow">BEST MEASURED CONFIGURATIONS</span>\n              <h2>The hardware. The recipe. The result.</h2>\n            </div>\n            <span class="muted">Post-BIOS measurements · September 2026</span>\n          </div>\n          <div class="toolbar">\n            <div class="filters" aria-label="Hardware filters">\n              <button data-filter="all" class="active" aria-pressed="true">\n                All models</button\n              ><button data-filter="gpu" aria-pressed="false">\n                Instinct MI210</button\n              ><button data-filter="cpu" aria-pressed="false">EPYC CPU</button>\n            </div>\n            <label class="search"\n              ><span aria-hidden="true"\n                ><svg\n                  viewBox="0 0 20 20"\n                  width="16"\n                  height="16"\n                  fill="none"\n                  stroke="currentColor"\n                >\n                  <circle cx="8" cy="8" r="5" />\n                  <path d="m12 12 5 5" /></svg></span\n              ><input\n                type="search"\n                placeholder="Find a model…"\n                aria-label="Find a model"\n            /></label>\n          </div>\n          <div class="catalog" data-catalog-grid>\n            <p role="status">Loading model benchmarks…</p>\n          </div>\n          <p class="catalog-note">\n            Open a model for its measurements, settings, and source evidence.\n            Rates from different recipes are kept separate.\n          </p>\n        </section>\n        <section id="implementation" class="method">\n          <div>\n            <span class="eyebrow">AMD INFERENCE IMPLEMENTATION</span>\n            <h2>Bring this performance<br />to your own stack.</h2>\n          </div>\n          <div>\n            <h3>From hardware to a working recipe</h3>\n            <p>\n              I help teams select models, deploy optimized CPU and ROCm kernels,\n              and tune speculative decoding, memory placement, and concurrency\n              for their workloads.\n            </p>\n          </div>\n          <div>\n            <h3>Measure what your users experience</h3>\n            <p>\n              Implementation support includes reproducible benchmarking and\n              workload-specific validation, so you can choose the right balance\n              of speed, context capacity, and serving cost.\n            </p>\n          </div>\n        </section>\n        <section id="method" class="method">\n          <div>\n            <span class="eyebrow">A QUICK READING GUIDE</span>\n            <h2>The number is only<br />half the story.</h2>\n          </div>\n          <div>\n            <h3>One user or the whole server?</h3>\n            <p>\n              Per-request decode measures an individual response. Wall-clock\n              aggregate measures all completed tokens over elapsed time.\n              Qualification curves separately report the sum of request decode\n              rates. Higher concurrency can raise one while lowering the other.\n            </p>\n          </div>\n          <div>\n            <h3>Same kernel. Different evidence.</h3>\n            <p>\n              The KV studies use the frozen v10 binary, but one sample per cell\n              is exploratory. A measured difference is not a proven speedup.\n              Recipe and sample counts stay beside every chart.\n            </p>\n          </div>\n        </section>\n      </main>\n      <footer>\n        <a class="brand" href="#top"\n          ><span class="mark" aria-hidden="true"\n            ><svg viewBox="0 0 32 32" width="26" height="26" fill="none">\n              <path\n                d="M16 2v28M2 16h28M6 6l20 20M6 26L26 6"\n                stroke="currentColor"\n                stroke-width="3"\n              /></svg\n          ></span>\n          AMD AI LAB</a\n        ><span\n          >Independent benchmarks. Model weights downloaded separately.</span\n        ><a href="data/catalog.json">Download evidence JSON ↗</a>\n      </footer>\n    </div>\n    <dialog aria-labelledby="detail-title">\n      <div class="dialog-top">\n        <span class="eyebrow">MODEL WORKSPACE</span\n        ><button data-close aria-label="Close model details">\n          Close <kbd>Esc</kbd>\n        </button>\n      </div>\n      <div data-detail></div>\n    </dialog>\n    <script src="app.js"></script>\n  </body>\n</html>\n' : index.html has no shared-nav mount point
+
+tests/test_dashboard_nav.py:197: AssertionError
+_ SharedNavAdoptionTest.test_no_page_hand_builds_a_cross_server_nav_link (route='/amd-ai-lab') _
+
+self = <tests.test_dashboard_nav.SharedNavAdoptionTest testMethod=test_no_page_hand_builds_a_cross_server_nav_link>
+
+    def test_no_page_hand_builds_a_cross_server_nav_link(self):
+        """Scoped to ``<nav>`` regions ON PURPOSE. Content links inside a card
+        body are legitimate prose (the handoff board's outcome card points at the
+        orchestrator dashboard in a sentence, and must keep doing so); a
+        hand-built link in the NAV is the drift."""
+        for route, path in _page_paths().items():
+            with self.subTest(route=route):
+                if not path.is_file():
+                    self.skipTest(f"{path.name} not written yet")
+                text = path.read_text(encoding="utf-8")
+                for block in _NAV_BLOCK_RE.findall(text):
+                    self.assertIsNone(
+                        _PORT_8000_RE.search(block),
+                        f"{path.name}: a cross-server URL is hand-built inside "
+                        f"<nav>: {block[:200]!r}")
+>                   self.assertNotIn("<a ", block,
+                                     f"{path.name}: the nav still contains a "
+                                     "hand-authored anchor; links come from "
+                                     "dashboard/registry.json")
+E                   AssertionError: '<a ' unexpectedly found in '<nav>\n          <a href="#models">Models</a><a href="#method">How to read</a\n          ><a\n            href="https://github.com/pestopoppa/llama.cpp/releases/tag/production-consolidated-v10"\n            >Get the kernel ↗</a\n          >\n        </nav>' : index.html: the nav still contains a hand-authored anchor; links come from dashboard/registry.json
+
+tests/test_dashboard_nav.py:229: AssertionError
+_____ NavAssetTest.test_asset_routes_do_not_collide_with_the_other_tables ______
+
+self = <tests.test_dashboard_nav.NavAssetTest testMethod=test_asset_routes_do_not_collide_with_the_other_tables>
+
+    def test_asset_routes_do_not_collide_with_the_other_tables(self):
+        assets = set(server.ASSET_ROUTES)
+        self.assertEqual(assets & set(server.HTML_ROUTES), set())
+        self.assertEqual(assets & set(server.API_ROUTES), set())
+>       self.assertEqual(assets & set(server.PROBE_ROUTES), set())
+                                      ^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'dashboard.server' has no attribute 'PROBE_ROUTES'
+
+tests/test_dashboard_nav.py:273: AttributeError
+_________ RegistryTotalityTest.test_the_real_hub_has_no_registry_gaps __________
+
+self = <tests.test_dashboard_panels.RegistryTotalityTest testMethod=test_the_real_hub_has_no_registry_gaps>
+
+    def test_the_real_hub_has_no_registry_gaps(self):
+        gaps = panels.registry_gaps(server)
+>       self.assertEqual(
+            {k: v for k, v in gaps.items() if v}, {},
+            f"dashboard/panels.py is not total over dashboard/server.py: {gaps}")
+E       AssertionError: {'route_mismatch': ["transport_probe: decl[48 chars]ve"]} != {}
+E       + {}
+E       - {'route_mismatch': ["transport_probe: declares route '/health', which the hub "
+E       -                     'does not serve']} : dashboard/panels.py is not total over dashboard/server.py: {'unregistered_payload_functions': [], 'registered_without_function': [], 'unregistered_routes': [], 'panels_missing_route': [], 'route_mismatch': ["transport_probe: declares route '/health', which the hub does not serve"], 'unregistered_health_routes': [], 'health_route_mismatch': []}
+
+tests/test_dashboard_panels.py:222: AssertionError
+____ RegistryContentTest.test_server_thresholds_are_read_from_the_registry _____
+
+self = <tests.test_dashboard_panels.RegistryContentTest testMethod=test_server_thresholds_are_read_from_the_registry>
+
+    def test_server_thresholds_are_read_from_the_registry(self):
+        self.assertEqual(legacy._KERNEL_SOURCE.warn_s, panels.RETIRED_PANEL_SOURCES["kernel"].warn_s)
+        self.assertEqual(legacy._KERNEL_SOURCE.stale_s, panels.RETIRED_PANEL_SOURCES["kernel"].stale_s)
+>       self.assertEqual(server._TIMELINE_WARN_S, panels.PANELS["timeline"].warn_s)
+                         ^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'dashboard.server' has no attribute '_TIMELINE_WARN_S'
+
+tests/test_dashboard_panels.py:359: AttributeError
+_________ TransportPlaneTest.test_the_probe_route_is_still_enumerated __________
+
+self = <tests.test_dashboard_panels.TransportPlaneTest testMethod=test_the_probe_route_is_still_enumerated>
+
+    def test_the_probe_route_is_still_enumerated(self):
+        """The exemption is DECLARED, not an omission: /health is in the registry
+        and in a route table, so ``registry_gaps`` still sees it."""
+>       self.assertIn("/health", server.PROBE_ROUTES)
+                                 ^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'dashboard.server' has no attribute 'PROBE_ROUTES'
+
+tests/test_dashboard_panels.py:1581: AttributeError
+_ RouteTableTest.test_panel_health_routes_do_not_collide_with_dispatch_tables __
+
+self = <tests.test_dashboard_panels.RouteTableTest testMethod=test_panel_health_routes_do_not_collide_with_dispatch_tables>
+
+    def test_panel_health_routes_do_not_collide_with_dispatch_tables(self):
+        ordinary = (set(server.API_ROUTES) | set(server.API_ROUTES_WITH_STATUS)
+>                   | set(server.PROBE_ROUTES) | set(server.HTML_ROUTES)
+                          ^^^^^^^^^^^^^^^^^^^
+                    | set(server.ASSET_ROUTES))
+E       AttributeError: module 'dashboard.server' has no attribute 'PROBE_ROUTES'
+
+tests/test_dashboard_panels.py:1656: AttributeError
+___________ RegistryEvasionTest.test_the_real_hub_still_has_no_gaps ____________
+
+self = <tests.test_dashboard_panels_redteam.RegistryEvasionTest testMethod=test_the_real_hub_still_has_no_gaps>
+
+    def test_the_real_hub_still_has_no_gaps(self):
+        """COMPLIANT-PATH CONTROL: the widened checks do not indict the real hub."""
+>       self.assertEqual({k: v for k, v in panels.registry_gaps(server).items()
+                          if v}, {})
+E       AssertionError: {'route_mismatch': ["transport_probe: decl[48 chars]ve"]} != {}
+E       + {}
+E       - {'route_mismatch': ["transport_probe: declares route '/health', which the hub "
+E       -                     'does not serve']}
+
+tests/test_dashboard_panels_redteam.py:622: AssertionError
+_ TransportPlaneStillSeparateTest.test_the_probe_is_ok_with_every_producer_dead_or_broken _
+
+self = <tests.test_dashboard_panels_redteam.TransportPlaneStillSeparateTest testMethod=test_the_probe_is_ok_with_every_producer_dead_or_broken>
+
+    def test_the_probe_is_ok_with_every_producer_dead_or_broken(self):
+        with _Artifact("KERNEL_DASHBOARD_JSON", "{truncated"), \
+             _Artifact("AUTOPILOT_OUTCOME_JSON", None), \
+             _Artifact("TIMELINE_PATH", None):
+            body = json.dumps(server.transport_probe_payload())
+            fold_status = server.health_payload()["status"]
+        self.assertRegex(body, r'"status".*ok')
+>       self.assertNotEqual(fold_status, panels.STATUS_OK)   # the fold DID notice
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: 'ok' == 'ok'
+
+tests/test_dashboard_panels_redteam.py:764: AssertionError
+_ ProducerFixtureIntegrityTests.test_every_fixture_matches_its_source_manifest_digest (fixture='experiments-sample.db') _
+
+self = <tests.test_dashboard_r21_4_fixtures.ProducerFixtureIntegrityTests testMethod=test_every_fixture_matches_its_source_manifest_digest>
+
+    def test_every_fixture_matches_its_source_manifest_digest(self):
+        manifest = json.loads((FIXTURE_DIR / "SOURCE-MANIFEST.json").read_text())
+        self.assertTrue(manifest["root_source_commit"])
+        self.assertTrue(manifest["root_source_files"])
+        files = manifest["files"]
+        required = {
+            "operator_gate_bundle.json",
+            "loop-status.json",
+            "experiments-sample.db",
+            "champion-vs-production.published.json",
+        }
+        self.assertTrue(required.issubset(files))
+        for relative, record in files.items():
+            with self.subTest(fixture=relative):
+                path = FIXTURE_DIR / relative
+>               self.assertTrue(path.is_file(), f"missing recorded fixture {relative}")
+E               AssertionError: False is not true : missing recorded fixture experiments-sample.db
+
+tests/test_dashboard_r21_4_fixtures.py:39: AssertionError
+_______ test_explicit_experimental_scope_reaches_reader_and_page[False] ________
+
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_explicit_experimental_sco0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fd340a510f0>
+experimental = False
+
+    @pytest.mark.parametrize("experimental", [False, True])
+    def test_explicit_experimental_scope_reaches_reader_and_page(tmp_path, monkeypatch, experimental):
+        from dashboard import loop_status
+    
+        payload = _payload()
+        body = json.loads((REPO / "tests/fixtures/autokernel_loop_status_sample.json").read_text())
+        if experimental:
+            body["baseline_scope"] = "experimental_candidate_not_champion"
+        else:
+            body.pop("baseline_scope", None)
+        (tmp_path / "loop-status.json").write_text(json.dumps(body))
+        original = loop_status.champion_snapshot
+        forwarded = []
+    
+        def capture(*args, **kwargs):
+            forwarded.append(kwargs["champion_head"])
+            return original(*args, **kwargs)
+    
+        monkeypatch.setattr(loop_status, "champion_snapshot", capture)
+        observed = loop_status.snapshot(tmp_path)[0]
+        assert forwarded == [None if experimental else body["champion_head"]]
+        # Keep the actual canonical panels from the hub. Compare the exact same
+        # selected run with/without its subject label: numbers must not disappear.
+        payload["loop"] = {k: v for k, v in observed["loop"].items() if k != "baseline_scope"}
+        baseline = _run(_page_js(), payload, tmp_path,
+                        ["renderChampion", "renderOperatorGate"])
+        payload["loop"] = observed["loop"]
+        rendered = _run(_page_js(), payload, tmp_path,
+                        ["renderChampion", "renderOperatorGate", "renderIdentity"])
+        assert rendered["threw"] == []
+        ident = rendered["by_id"]["ident"]
+        if experimental:
+            assert "<dt>experimental candidate head</dt>" in ident
+            assert "<dt>champion head</dt>" not in ident
+            assert "not measurements of the selected live experiment" in rendered["text_by_id"]["opgate-scope"]
+        else:
+>           assert "<dt>champion head</dt>" in ident
+E           AssertionError: assert '<dt>champion head</dt>' in '<dt>freshness</dt><dd>absent</dd><dt>run notice</dt><dd>absent</dd><dt>evidence</dt><dd>/tmp/pytest-of-runner/pytest-...><dd>tg128 · 20 pairs</dd><dt>noise floor</dt><dd>1.188%</dd><dt>generated at</dt><dd>2026-08-30T14:19:52.439876Z</dd>'
+
+tests/test_dashboard_runtime_js.py:124: AssertionError
+_____________________ test_a_repointed_stable_link_is_loud _____________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fd33cdbbd20>
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_a_repointed_stable_link_i0')
+
+    def test_a_repointed_stable_link_is_loud(monkeypatch, tmp_path: Path) -> None:
+        """The failure a digest check cannot see: right binary, wrong path to it."""
+        bogus = dict(KI.PRODUCTION_STABLE_LINKS)
+        bogus["stt"] = ("/mnt/raid0/llm/whisper.cpp/build/bin", "whisper-server")
+        monkeypatch.setattr(KI, "PRODUCTION_STABLE_LINK_ROOT", tmp_path)  # links absent
+        links = KI._stable_link_projection()
+>       assert all(l["present"] is False for l in links)
+E       assert False
+E        +  where False = all(<generator object test_a_repointed_stable_link_is_loud.<locals>.<genexpr> at 0x7fd33f491490>)
+
+tests/test_production_kernel_set.py:228: AssertionError
+________________ test_foreign_tree_ggml_is_reported_as_foreign _________________
+
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_foreign_tree_ggml_is_repo0')
+
+    def test_foreign_tree_ggml_is_reported_as_foreign(tmp_path: Path) -> None:
+        """Mutation: verify against the WRONG tree root and the same libs become foreign."""
+        evidence = KI._linkage_evidence(
+            Path(KI.production_link_targets()["stt"][0]) / "whisper-server", tmp_path)
+        assert evidence["ggml_libs"]
+>       assert evidence["verified"] is False
+E       assert True is False
+
+tests/test_production_kernel_set.py:251: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_dashboard_activity.py::KernelFreshnessTests::test_falls_back_to_generated_at_without_runs - AttributeError: module 'dashboard.server' has no attribute '_kernel_contract_freshness'. Did you mean: '_outcome_contract_freshness'?
+FAILED tests/test_dashboard_activity.py::KernelFreshnessTests::test_fresh_run_ts_is_fresh_even_if_generated_at_old - AttributeError: module 'dashboard.server' has no attribute '_kernel_contract_freshness'. Did you mean: '_outcome_contract_freshness'?
+FAILED tests/test_dashboard_activity.py::KernelFreshnessTests::test_max_of_multiple_run_ts - AttributeError: module 'dashboard.server' has no attribute '_kernel_contract_freshness'. Did you mean: '_outcome_contract_freshness'?
+FAILED tests/test_dashboard_activity.py::KernelFreshnessTests::test_missing_when_no_timestamps - AttributeError: module 'dashboard.server' has no attribute '_kernel_contract_freshness'. Did you mean: '_outcome_contract_freshness'?
+FAILED tests/test_dashboard_activity.py::KernelFreshnessTests::test_uses_run_ts_not_generated_at - AttributeError: module 'dashboard.server' has no attribute '_kernel_contract_freshness'. Did you mean: '_outcome_contract_freshness'?
+FAILED tests/test_dashboard_activity.py::HealthPayloadTests::test_a_declared_pause_at_the_same_age_stays_ok - AttributeError: module 'dashboard.server' has no attribute 'KERNEL_DASHBOARD_JSON'
+FAILED tests/test_dashboard_activity.py::HealthPayloadTests::test_a_stale_outcome_still_does_not_gate_on_staleness_alone - AttributeError: module 'dashboard.server' has no attribute 'KERNEL_DASHBOARD_JSON'
+FAILED tests/test_dashboard_activity.py::HealthPayloadTests::test_an_undeclared_ten_day_outcome_silence_degrades_health - AttributeError: module 'dashboard.server' has no attribute 'KERNEL_DASHBOARD_JSON'
+SUBFAILED(deployment='deployment-states') tests/test_dashboard_controller_state_contract.py::ControllerStateContractTests::test_a_recorded_terminal_state_would_be_accepted - AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+SUBFAILED(deployment='deployment-states') tests/test_dashboard_controller_state_contract.py::ControllerStateContractTests::test_a_recorded_terminal_state_would_be_accepted - AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+SUBFAILED(deployment='deployment-states') tests/test_dashboard_controller_state_contract.py::ControllerStateContractTests::test_a_recorded_terminal_state_would_be_accepted - AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+SUBFAILED(deployment='deployment-states') tests/test_dashboard_controller_state_contract.py::ControllerStateContractTests::test_a_recorded_terminal_state_would_be_accepted - AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+SUBFAILED(deployment='deployment-states') tests/test_dashboard_controller_state_contract.py::ControllerStateContractTests::test_a_recorded_terminal_state_would_be_accepted - AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+SUBFAILED(deployment='deployment-states') tests/test_dashboard_controller_state_contract.py::ControllerStateContractTests::test_a_recorded_terminal_state_would_be_accepted - AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+SUBFAILED(deployment='deployment-states') tests/test_dashboard_controller_state_contract.py::ControllerStateContractTests::test_a_recorded_terminal_state_would_be_accepted - AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+SUBFAILED(deployment='deployment-states') tests/test_dashboard_controller_state_contract.py::ControllerStateContractTests::test_a_recorded_terminal_state_would_be_accepted - AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+SUBFAILED(deployment='deployment-states') tests/test_dashboard_controller_state_contract.py::ControllerStateContractTests::test_a_recorded_terminal_state_would_be_accepted - AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+SUBFAILED(deployment='deployment-states') tests/test_dashboard_controller_state_contract.py::ControllerStateContractTests::test_a_recorded_terminal_state_would_be_accepted - AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+SUBFAILED(deployment='deployment-states') tests/test_dashboard_controller_state_contract.py::ControllerStateContractTests::test_a_recorded_terminal_state_would_be_accepted - AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+SUBFAILED(deployment='deployment-states') tests/test_dashboard_controller_state_contract.py::ControllerStateContractTests::test_a_recorded_terminal_state_would_be_accepted - AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+SUBFAILED(deployment='deployment-states') tests/test_dashboard_controller_state_contract.py::ControllerStateContractTests::test_a_recorded_terminal_state_would_be_accepted - AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+SUBFAILED(deployment='deployment-states') tests/test_dashboard_controller_state_contract.py::ControllerStateContractTests::test_a_recorded_terminal_state_would_be_accepted - AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+SUBFAILED(deployment='deployment-states') tests/test_dashboard_controller_state_contract.py::ControllerStateContractTests::test_a_recorded_terminal_state_would_be_accepted - AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+FAILED tests/test_dashboard_controller_state_contract.py::ControllerStateContractTests::test_every_recorded_state_key_is_known_to_the_dashboard - AttributeError: module 'dashboard.server' has no attribute '_DISCOVERY_TERMINAL_STATE_KEYS'
+FAILED tests/test_dashboard_gpu_window_page.py::test_panel_envelope_is_registered_with_the_declared_budget - AssertionError: {'health_route_mismatch': [], 'panels_missing_route': [], 'registered_without_function': [], 'route_mismatch': ["transport_probe: declares route '/health', which the hub does not serve"], ...}
+assert not True
+ +  where True = any(dict_values([[], [], [], [], ["transport_probe: declares route '/health', which the hub does not serve"], [], []]))
+ +    where dict_values([[], [], [], [], ["transport_probe: declares route '/health', which the hub does not serve"], [], []]) = <built-in method values of dict object at 0x7fd33f400980>()
+ +      where <built-in method values of dict object at 0x7fd33f400980> = {'health_route_mismatch': [], 'panels_missing_route': [], 'registered_without_function': [], 'route_mismatch': ["transport_probe: declares route '/health', which the hub does not serve"], ...}.values
+ +        where {'health_route_mismatch': [], 'panels_missing_route': [], 'registered_without_function': [], 'route_mismatch': ["transport_probe: declares route '/health', which the hub does not serve"], ...} = <function registry_gaps at 0x7fd33fdb7100>(server)
+ +          where <function registry_gaps at 0x7fd33fdb7100> = panels.registry_gaps
+FAILED tests/test_dashboard_improvement_trajectory.py::test_trajectory_is_first_surface_and_absorbs_redundant_panels - assert 'id="trajectory"' in ''
+FAILED tests/test_dashboard_kernel_rnd_merge.py::TestTheRetiredPageIsUnreachable::test_no_enumerable_route_returns_the_retired_pages_markup - AttributeError: module 'dashboard.server' has no attribute 'PROBE_ROUTES'
+FAILED tests/test_dashboard_kernel_rnd_merge.py::TestTheRegistryCarriesOneKernelRnDRow::test_the_registry_and_the_served_pages_are_still_total_in_both_directions - AssertionError: Items in the first set but not the second:
+'/amd-ai-lab/'
+Items in the second set but not the first:
+'/amd-ai-lab' : a registry row with no page is a nav link to a 404; a page with no row is a surface nobody learns exists
+FAILED tests/test_dashboard_kernel_rnd_merge.py::TestTheOneLiveProducerMoved::test_the_loop_payload_carries_the_operator_gated_bundle - AttributeError: module 'dashboard.server' has no attribute 'OPERATOR_GATE_BUNDLE_STATES'. Did you mean: 'OPERATOR_GATE_BUNDLE_SCHEMA'?
+FAILED tests/test_dashboard_kernel_rnd_merge.py::TestThePageOpensWithTheHeadline::test_the_top_explainer_is_gone_and_the_headline_is_first - AssertionError: '<div id="operator-attention" class="opera[126 chars]div>' != ''
+- <div id="operator-attention" class="operator-attention unknown" role="status" aria-live="polite">
+-     R24-8 alarm state UNKNOWN — awaiting a loop status report.
+-   </div>
+ : visible content sits above the headline
+FAILED tests/test_dashboard_knowledge_card.py::Fixture::test_the_fixture_actually_holds_rows_of_more_than_one_status - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Fixture::test_the_fixture_carries_the_real_stores_schema - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Reader::test_recent_kept_names_the_newest_keeps_with_their_effects - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Reader::test_stale_is_dated_knowledge_not_an_accusation_and_keeps_its_counts - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Reader::test_the_block_reaches_api_loop_through_the_injectable_root - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Reader::test_the_folds_match_the_rows_copied_from_the_real_store - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Reader::test_the_four_states_use_the_pages_shared_vocabulary - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Reader::test_the_groups_enumerate_every_status_and_sum_to_the_attempts - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Reader::test_the_recorded_store_fixture_reads_clean_end_to_end - AssertionError: False is not true
+FAILED tests/test_dashboard_knowledge_card.py::Ledger::test_a_locked_read_is_retried_once_then_honest - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Ledger::test_agenda_groups_lead_with_kept_then_null_then_refused - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Ledger::test_an_untried_hotspot_is_flagged_with_its_share - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Ledger::test_best_effect_is_the_maximum_of_the_mechanisms_kept_rows - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Ledger::test_cross_epoch_is_computed_against_the_live_epoch - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Ledger::test_every_mechanism_lands_exactly_once_walk_or_remainder - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Ledger::test_group_summaries_recompute_from_their_own_entries - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Ledger::test_in_flight_mechanisms_ride_on_their_hotspots_entry - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Ledger::test_no_status_body_walks_no_agenda_and_drops_nothing - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Ledger::test_the_inbox_is_joined_and_never_created - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Ledger::test_the_mapping_is_true_of_the_rows_not_just_self_consistent - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Ledger::test_variants_of_one_kernel_fold_into_one_agenda_entry - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Rendering::test_a_cross_epoch_keep_renders_the_not_comparable_caveat - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Rendering::test_a_real_shaped_store_renders_the_header_line_and_the_walk - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Rendering::test_an_untried_hotspot_renders_loud - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Rendering::test_every_copied_mechanism_renders_somewhere_on_the_card - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Rendering::test_every_effect_on_the_card_is_anchored - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Rendering::test_stale_renders_dated_with_the_counts_still_shown - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Rendering::test_the_four_renderings_are_distinct - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Rendering::test_the_header_counts_are_the_folds_not_a_transposition - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Rendering::test_the_walk_summary_prints_tried_and_attempts_in_order - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_knowledge_card.py::Rendering::test_untrusted_statements_render_escaped_everywhere - AssertionError: missing producer-recorded database fixture: /home/runner/work/epyc-root/epyc-root/candidate/tests/fixtures/autokernel_producers/experiments-sample.db
+FAILED tests/test_dashboard_loop_surface.py::Wiring::test_the_panel_registry_is_total_over_the_new_surface - AssertionError: {'route_mismatch': ["transport_probe: decl[48 chars]ve"]} != {}
++ {}
+- {'route_mismatch': ["transport_probe: declares route '/health', which the hub "
+-                     'does not serve']} : the panel registry and the hub's code disagree
+FAILED tests/test_dashboard_loop_surface.py::Wiring::test_the_routes_are_in_the_tables - AttributeError: module 'dashboard.server' has no attribute 'PROBE_ROUTES'
+FAILED tests/test_dashboard_nav.py::RegistryFileTest::test_the_registry_exists_and_parses - AttributeError: module 'dashboard.server' has no attribute 'DASHBOARD_REGISTRY_SCHEMA'. Did you mean: 'DASHBOARD_REGISTRY_JSON'?
+SUBFAILED(route='/amd-ai-lab') tests/test_dashboard_nav.py::PageRegistryBidirectionalTest::test_every_hub_page_has_a_registry_entry - AssertionError: '/amd-ai-lab' not found in {'/machine': {'id': 'machine', 'title': 'Machine', 'port': 8100, 'path': '/machine', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'global hardware + live-inference monitor (data: :8000 API)'}, '/autopilot': {'id': 'autopilot', 'title': 'Autopilot', 'port': 8100, 'path': '/autopilot', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'autopilot loop: phase, log, Pareto/GEPA, optimization (data: :8000 API)'}, '/cockpit': {'id': 'cockpit', 'title': 'Cockpit', 'port': 8100, 'path': '/cockpit', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'AP-50 decision cockpit: what optimizes the orchestrator, per measurement era: current trial + falsifier, incumbent-vs-candidate deltas (n, SE, replication), proposed/executed/valid/kept/promoted/live funnel with rejection reasons, journal+study lever scoreboard, provenance drill-down (data: :8000/dashboard/api/decision_cockpit; data probe :8000/dashboard/api/decision_cockpit/health — /health here is transport-only)'}, '/gpu-window': {'id': 'gpu-window', 'title': 'MI210 window', 'port': 8100, 'path': '/gpu-window', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'G1 MI210 window: holder, grant state, window id, expected end, overdue, lease state, watchdog age, verdict (ok/window_open/alarm) and health reasons. Data plane owned by epyc-orchestrator (:8000/dashboard/api/gpu_window), page owned by epyc-root; data probe :8000/dashboard/api/gpu_window/health — /health here is transport-only'}, '/': {'id': 'handoffs', 'title': 'Handoffs', 'port': 8100, 'path': '/', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'handoff kanban + backlog flow'}, '/loop': {'id': 'autokernel-loop', 'title': 'Kernel R&D', 'chip': 'live', 'port': 8100, 'path': '/loop', 'owner_repo': 'epyc-root', 'health_path': '/api/loop/health', 'blurb': 'THE Kernel R&D surface: explicitly selected unified campaign status and authenticated producer controls, otherwise the legacy AutoKernel loop; an independently dated champion headline versus the frozen production kernel, operator-gated serving evidence and belief records. Durable history is not producer liveness. /api/loop/health follows the selected campaign or legacy loop without allowing other evidence cards to certify it. /kernel redirects here. Unified execution remains gated separately from management controls.'}, '/bus': {'id': 'bus', 'title': 'Bus', 'port': 8100, 'path': '/bus', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'session-bus roster, heartbeats, queue'}, '/benchmarks': {'id': 'benchmarks', 'title': 'Benchmarks', 'port': 8100, 'path': '/benchmarks', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'benchmark artifact inventory (read-only)'}, '/amd-ai-lab/': {'id': 'amd-ai-lab', 'title': 'AMD AI Lab', 'chip': 'draft', 'port': 8100, 'path': '/amd-ai-lab/', 'owner_repo': 'epyc-web', 'health_path': '/health', 'blurb': 'AMD hardware recipes and benchmark results — explicit publication snapshot from epyc-web', 'freshness': {'kind': 'static-snapshot', 'source': 'epyc-web', 'artifact': 'dashboard/static/amd-ai-lab/', 'stale_after_s': 2592000, 'absence_means': 'the published epyc-web snapshot is missing from the hub checkout'}}} : /amd-ai-lab is served by the hub but is in no registry row, so no nav can link to it
+SUBFAILED(entry='amd-ai-lab') tests/test_dashboard_nav.py::PageRegistryBidirectionalTest::test_every_hub_registry_entry_is_a_served_page - AssertionError: '/amd-ai-lab/' not found in {'/': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/handoffs.html'), '/machine': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/machine.html'), '/autopilot': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/autopilot.html'), '/cockpit': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/cockpit.html'), '/gpu-window': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/gpu-window.html'), '/loop': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/loop.html'), '/bus': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/bus.html'), '/benchmarks': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/benchmarks.html'), '/amd-ai-lab': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/amd-ai-lab/index.html')} : registry row 'amd-ai-lab' points at /amd-ai-lab/, which this hub does not serve — a nav link to a 404
+SUBFAILED(route='/amd-ai-lab') tests/test_dashboard_nav.py::SharedNavAdoptionTest::test_every_existing_page_mounts_the_shared_nav - AssertionError: 'id="epyc-nav"' not found in '<!doctype html>\n<html lang="en">\n  <head>\n    <meta charset="utf-8" />\n    <meta name="viewport" content="width=device-width, initial-scale=1" />\n    <meta name="theme-color" content="#101116" />\n    <title>AMD AI Lab · Find your inference sweet spot</title>\n    <meta\n      name="description"\n      content="Explore measured AMD inference: model benchmarks, concurrency curves and interactive KV cache matrices."\n    />\n    <link rel="stylesheet" href="styles.css" />\n  </head>\n  <body>\n    <div class="shell">\n      <header>\n        <a class="brand" href="#top"\n          ><span class="mark" aria-hidden="true"\n            ><svg viewBox="0 0 32 32" width="26" height="26" fill="none">\n              <path\n                d="M16 2v28M2 16h28M6 6l20 20M6 26L26 6"\n                stroke="currentColor"\n                stroke-width="3"\n              /></svg\n          ></span>\n          AMD AI LAB<span class="beta">FIELD NOTES</span></a\n        >\n        <nav>\n          <a href="#models">Models</a><a href="#method">How to read</a\n          ><a\n            href="https://github.com/pestopoppa/llama.cpp/releases/tag/production-consolidated-v10"\n            >Get the kernel ↗</a\n          >\n        </nav>\n      </header>\n      <main id="top">\n        <section class="hero">\n          <div class="eyebrow">\n            <span class="dot"></span> EPYC + INSTINCT / FROZEN KERNEL v10\n          </div>\n          <h1>More AI.<br /><em>From your AMD hardware.</em></h1>\n          <p>\n            Optimized kernels. Faster local inference. Explore our best measured\n            configurations—from speculative decoding on Instinct to native MTP\n            on EPYC—and see what it takes to run them yourself.\n          </p>\n          <div class="hero-foot">\n            <a class="primary" href="#models"\n              >Explore the results <span>↘</span></a\n            ><span>EPYC 9655 <b>+</b> Instinct MI210 · 64 GB</span>\n          </div>\n          <div class="hero-art" aria-hidden="true">\n            <div class="orb"></div>\n            <div class="axis">CONCURRENCY × CONTEXT</div>\n            <div class="art-grid">\n              <i style="--v: 0"></i><i style="--v: 0.35"></i\n              ><i style="--v: 0.7"></i><i style="--v: 0.1"></i\n              ><i style="--v: 0.45"></i><i style="--v: 0.8"></i\n              ><i style="--v: 0.2"></i><i style="--v: 0.55"></i\n              ><i style="--v: 0.9"></i><i style="--v: 0.3"></i\n              ><i style="--v: 0.65"></i><i style="--v: 0.05"></i\n              ><i style="--v: 0.4"></i><i style="--v: 0.75"></i\n              ><i style="--v: 0.15"></i><i style="--v: 0.5"></i\n              ><i style="--v: 0.85"></i><i style="--v: 0.25"></i\n              ><i style="--v: 0.6"></i><i style="--v: 0"></i\n              ><i style="--v: 0.35"></i><i style="--v: 0.7"></i\n              ><i style="--v: 0.1"></i><i style="--v: 0.45"></i\n              ><i style="--v: 0.8"></i><i style="--v: 0.2"></i\n              ><i style="--v: 0.55"></i><i style="--v: 0.9"></i\n              ><i style="--v: 0.3"></i><i style="--v: 0.65"></i\n              ><i style="--v: 0.05"></i><i style="--v: 0.4"></i>\n            </div>\n            <span class="art-caption">MEASURE. COMPARE. REPRODUCE.</span>\n          </div>\n        </section>\n        <section id="models">\n          <div class="section-title">\n            <div>\n              <span class="eyebrow">BEST MEASURED CONFIGURATIONS</span>\n              <h2>The hardware. The recipe. The result.</h2>\n            </div>\n            <span class="muted">Post-BIOS measurements · September 2026</span>\n          </div>\n          <div class="toolbar">\n            <div class="filters" aria-label="Hardware filters">\n              <button data-filter="all" class="active" aria-pressed="true">\n                All models</button\n              ><button data-filter="gpu" aria-pressed="false">\n                Instinct MI210</button\n              ><button data-filter="cpu" aria-pressed="false">EPYC CPU</button>\n            </div>\n            <label class="search"\n              ><span aria-hidden="true"\n                ><svg\n                  viewBox="0 0 20 20"\n                  width="16"\n                  height="16"\n                  fill="none"\n                  stroke="currentColor"\n                >\n                  <circle cx="8" cy="8" r="5" />\n                  <path d="m12 12 5 5" /></svg></span\n              ><input\n                type="search"\n                placeholder="Find a model…"\n                aria-label="Find a model"\n            /></label>\n          </div>\n          <div class="catalog" data-catalog-grid>\n            <p role="status">Loading model benchmarks…</p>\n          </div>\n          <p class="catalog-note">\n            Open a model for its measurements, settings, and source evidence.\n            Rates from different recipes are kept separate.\n          </p>\n        </section>\n        <section id="implementation" class="method">\n          <div>\n            <span class="eyebrow">AMD INFERENCE IMPLEMENTATION</span>\n            <h2>Bring this performance<br />to your own stack.</h2>\n          </div>\n          <div>\n            <h3>From hardware to a working recipe</h3>\n            <p>\n              I help teams select models, deploy optimized CPU and ROCm kernels,\n              and tune speculative decoding, memory placement, and concurrency\n              for their workloads.\n            </p>\n          </div>\n          <div>\n            <h3>Measure what your users experience</h3>\n            <p>\n              Implementation support includes reproducible benchmarking and\n              workload-specific validation, so you can choose the right balance\n              of speed, context capacity, and serving cost.\n            </p>\n          </div>\n        </section>\n        <section id="method" class="method">\n          <div>\n            <span class="eyebrow">A QUICK READING GUIDE</span>\n            <h2>The number is only<br />half the story.</h2>\n          </div>\n          <div>\n            <h3>One user or the whole server?</h3>\n            <p>\n              Per-request decode measures an individual response. Wall-clock\n              aggregate measures all completed tokens over elapsed time.\n              Qualification curves separately report the sum of request decode\n              rates. Higher concurrency can raise one while lowering the other.\n            </p>\n          </div>\n          <div>\n            <h3>Same kernel. Different evidence.</h3>\n            <p>\n              The KV studies use the frozen v10 binary, but one sample per cell\n              is exploratory. A measured difference is not a proven speedup.\n              Recipe and sample counts stay beside every chart.\n            </p>\n          </div>\n        </section>\n      </main>\n      <footer>\n        <a class="brand" href="#top"\n          ><span class="mark" aria-hidden="true"\n            ><svg viewBox="0 0 32 32" width="26" height="26" fill="none">\n              <path\n                d="M16 2v28M2 16h28M6 6l20 20M6 26L26 6"\n                stroke="currentColor"\n                stroke-width="3"\n              /></svg\n          ></span>\n          AMD AI LAB</a\n        ><span\n          >Independent benchmarks. Model weights downloaded separately.</span\n        ><a href="data/catalog.json">Download evidence JSON ↗</a>\n      </footer>\n    </div>\n    <dialog aria-labelledby="detail-title">\n      <div class="dialog-top">\n        <span class="eyebrow">MODEL WORKSPACE</span\n        ><button data-close aria-label="Close model details">\n          Close <kbd>Esc</kbd>\n        </button>\n      </div>\n      <div data-detail></div>\n    </dialog>\n    <script src="app.js"></script>\n  </body>\n</html>\n' : index.html has no shared-nav mount point
+SUBFAILED(route='/amd-ai-lab') tests/test_dashboard_nav.py::SharedNavAdoptionTest::test_no_page_hand_builds_a_cross_server_nav_link - AssertionError: '<a ' unexpectedly found in '<nav>\n          <a href="#models">Models</a><a href="#method">How to read</a\n          ><a\n            href="https://github.com/pestopoppa/llama.cpp/releases/tag/production-consolidated-v10"\n            >Get the kernel ↗</a\n          >\n        </nav>' : index.html: the nav still contains a hand-authored anchor; links come from dashboard/registry.json
+FAILED tests/test_dashboard_nav.py::NavAssetTest::test_asset_routes_do_not_collide_with_the_other_tables - AttributeError: module 'dashboard.server' has no attribute 'PROBE_ROUTES'
+FAILED tests/test_dashboard_panels.py::RegistryTotalityTest::test_the_real_hub_has_no_registry_gaps - AssertionError: {'route_mismatch': ["transport_probe: decl[48 chars]ve"]} != {}
++ {}
+- {'route_mismatch': ["transport_probe: declares route '/health', which the hub "
+-                     'does not serve']} : dashboard/panels.py is not total over dashboard/server.py: {'unregistered_payload_functions': [], 'registered_without_function': [], 'unregistered_routes': [], 'panels_missing_route': [], 'route_mismatch': ["transport_probe: declares route '/health', which the hub does not serve"], 'unregistered_health_routes': [], 'health_route_mismatch': []}
+FAILED tests/test_dashboard_panels.py::RegistryContentTest::test_server_thresholds_are_read_from_the_registry - AttributeError: module 'dashboard.server' has no attribute '_TIMELINE_WARN_S'
+FAILED tests/test_dashboard_panels.py::TransportPlaneTest::test_the_probe_route_is_still_enumerated - AttributeError: module 'dashboard.server' has no attribute 'PROBE_ROUTES'
+FAILED tests/test_dashboard_panels.py::RouteTableTest::test_panel_health_routes_do_not_collide_with_dispatch_tables - AttributeError: module 'dashboard.server' has no attribute 'PROBE_ROUTES'
+FAILED tests/test_dashboard_panels_redteam.py::RegistryEvasionTest::test_the_real_hub_still_has_no_gaps - AssertionError: {'route_mismatch': ["transport_probe: decl[48 chars]ve"]} != {}
++ {}
+- {'route_mismatch': ["transport_probe: declares route '/health', which the hub "
+-                     'does not serve']}
+FAILED tests/test_dashboard_panels_redteam.py::TransportPlaneStillSeparateTest::test_the_probe_is_ok_with_every_producer_dead_or_broken - AssertionError: 'ok' == 'ok'
+SUBFAILED(fixture='experiments-sample.db') tests/test_dashboard_r21_4_fixtures.py::ProducerFixtureIntegrityTests::test_every_fixture_matches_its_source_manifest_digest - AssertionError: False is not true : missing recorded fixture experiments-sample.db
+FAILED tests/test_dashboard_runtime_js.py::test_explicit_experimental_scope_reaches_reader_and_page[False] - AssertionError: assert '<dt>champion head</dt>' in '<dt>freshness</dt><dd>absent</dd><dt>run notice</dt><dd>absent</dd><dt>evidence</dt><dd>/tmp/pytest-of-runner/pytest-...><dd>tg128 · 20 pairs</dd><dt>noise floor</dt><dd>1.188%</dd><dt>generated at</dt><dd>2026-08-30T14:19:52.439876Z</dd>'
+FAILED tests/test_production_kernel_set.py::test_a_repointed_stable_link_is_loud - assert False
+ +  where False = all(<generator object test_a_repointed_stable_link_is_loud.<locals>.<genexpr> at 0x7fd33f491490>)
+FAILED tests/test_production_kernel_set.py::test_foreign_tree_ggml_is_reported_as_foreign - assert True is False
+79 failed, 681 passed, 85 skipped, 260 subtests passed in 21.21s

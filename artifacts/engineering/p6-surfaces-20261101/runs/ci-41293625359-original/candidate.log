@@ -1,0 +1,391 @@
+........................................................................ [  8%]
+........................................................................ [ 17%]
+...................................s................................................................................................... [ 33%]
+......................................................................................................................... [ 48%]
+................................................................ [ 55%]
+......................... [ 58%]
+........................................................................................... [ 69%]
+................................................................................................................................. [ 85%]
+.....................................F.................................. [ 94%]
+...F............................................                         [100%]
+=================================== FAILURES ===================================
+_ PageRegistryBidirectionalTest.test_every_hub_page_has_a_registry_entry (route='/amd-ai-lab') _
+
+self = <tests.test_dashboard_nav.PageRegistryBidirectionalTest testMethod=test_every_hub_page_has_a_registry_entry>
+
+    def test_every_hub_page_has_a_registry_entry(self):
+        by_path = {e["path"]: e for e in _entries() if e["port"] == self.HUB_PORT}
+        for route in server.HTML_ROUTES:
+            with self.subTest(route=route):
+>               self.assertIn(
+                    route, by_path,
+                    f"{route} is served by the hub but is in no registry row, so "
+                    "no nav can link to it")
+E               AssertionError: '/amd-ai-lab' not found in {'/machine': {'id': 'machine', 'title': 'Machine', 'port': 8100, 'path': '/machine', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'global hardware + live-inference monitor (data: :8000 API)'}, '/autopilot': {'id': 'autopilot', 'title': 'Autopilot', 'port': 8100, 'path': '/autopilot', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'autopilot loop: phase, log, Pareto/GEPA, optimization (data: :8000 API)'}, '/cockpit': {'id': 'cockpit', 'title': 'Cockpit', 'port': 8100, 'path': '/cockpit', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'AP-50 decision cockpit: what optimizes the orchestrator, per measurement era: current trial + falsifier, incumbent-vs-candidate deltas (n, SE, replication), proposed/executed/valid/kept/promoted/live funnel with rejection reasons, journal+study lever scoreboard, provenance drill-down (data: :8000/dashboard/api/decision_cockpit; data probe :8000/dashboard/api/decision_cockpit/health — /health here is transport-only)'}, '/gpu-window': {'id': 'gpu-window', 'title': 'MI210 window', 'port': 8100, 'path': '/gpu-window', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'G1 MI210 window: holder, grant state, window id, expected end, overdue, lease state, watchdog age, verdict (ok/window_open/alarm) and health reasons. Data plane owned by epyc-orchestrator (:8000/dashboard/api/gpu_window), page owned by epyc-root; data probe :8000/dashboard/api/gpu_window/health — /health here is transport-only'}, '/': {'id': 'handoffs', 'title': 'Handoffs', 'port': 8100, 'path': '/', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'handoff kanban + backlog flow'}, '/loop': {'id': 'autokernel-loop', 'title': 'Kernel R&D', 'chip': 'live', 'port': 8100, 'path': '/loop', 'owner_repo': 'epyc-root', 'health_path': '/api/loop/health', 'blurb': 'THE Kernel R&D surface: explicitly selected unified campaign status and authenticated producer controls, otherwise the legacy AutoKernel loop; an independently dated champion headline versus the frozen production kernel, operator-gated serving evidence and belief records. Durable history is not producer liveness. /api/loop/health follows the selected campaign or legacy loop without allowing other evidence cards to certify it. /kernel redirects here. Unified execution remains gated separately from management controls.'}, '/bus': {'id': 'bus', 'title': 'Bus', 'port': 8100, 'path': '/bus', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'session-bus roster, heartbeats, queue'}, '/benchmarks': {'id': 'benchmarks', 'title': 'Benchmarks', 'port': 8100, 'path': '/benchmarks', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'benchmark artifact inventory (read-only)'}, '/amd-ai-lab/': {'id': 'amd-ai-lab', 'title': 'AMD AI Lab', 'chip': 'draft', 'port': 8100, 'path': '/amd-ai-lab/', 'owner_repo': 'epyc-web', 'health_path': '/health', 'blurb': 'AMD hardware recipes and benchmark results — explicit publication snapshot from epyc-web', 'freshness': {'kind': 'static-snapshot', 'source': 'epyc-web', 'artifact': 'dashboard/static/amd-ai-lab/', 'stale_after_s': 2592000, 'absence_means': 'the published epyc-web snapshot is missing from the hub checkout'}}} : /amd-ai-lab is served by the hub but is in no registry row, so no nav can link to it
+
+tests/test_dashboard_nav.py:133: AssertionError
+_ PageRegistryBidirectionalTest.test_every_hub_registry_entry_is_a_served_page (entry='amd-ai-lab') _
+
+self = <tests.test_dashboard_nav.PageRegistryBidirectionalTest testMethod=test_every_hub_registry_entry_is_a_served_page>
+
+    def test_every_hub_registry_entry_is_a_served_page(self):
+        for entry in _entries():
+            if entry["port"] != self.HUB_PORT:
+                continue
+            with self.subTest(entry=entry["id"]):
+>               self.assertIn(
+                    entry["path"], server.HTML_ROUTES,
+                    f"registry row {entry['id']!r} points at {entry['path']}, "
+                    "which this hub does not serve — a nav link to a 404")
+E               AssertionError: '/amd-ai-lab/' not found in {'/': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/handoffs.html'), '/machine': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/machine.html'), '/autopilot': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/autopilot.html'), '/cockpit': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/cockpit.html'), '/gpu-window': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/gpu-window.html'), '/loop': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/loop.html'), '/bus': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/bus.html'), '/benchmarks': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/benchmarks.html'), '/amd-ai-lab': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/amd-ai-lab/index.html')} : registry row 'amd-ai-lab' points at /amd-ai-lab/, which this hub does not serve — a nav link to a 404
+
+tests/test_dashboard_nav.py:143: AssertionError
+_ SharedNavAdoptionTest.test_every_existing_page_mounts_the_shared_nav (route='/amd-ai-lab') _
+
+self = <tests.test_dashboard_nav.SharedNavAdoptionTest testMethod=test_every_existing_page_mounts_the_shared_nav>
+
+    def test_every_existing_page_mounts_the_shared_nav(self):
+        for route, path in _page_paths().items():
+            with self.subTest(route=route):
+                if not path.is_file():
+                    self.skipTest(f"{path.name} not written yet (RTG-47 Phase 1a "
+                                  "parallel build); it will exist at CI time")
+                text = path.read_text(encoding="utf-8")
+>               self.assertIn('id="epyc-nav"', text,
+                              f"{path.name} has no shared-nav mount point")
+E               AssertionError: 'id="epyc-nav"' not found in '<!doctype html>\n<html lang="en">\n  <head>\n    <meta charset="utf-8" />\n    <meta name="viewport" content="width=device-width, initial-scale=1" />\n    <meta name="theme-color" content="#101116" />\n    <title>AMD AI Lab · Find your inference sweet spot</title>\n    <meta\n      name="description"\n      content="Explore measured AMD inference: model benchmarks, concurrency curves and interactive KV cache matrices."\n    />\n    <link rel="stylesheet" href="styles.css" />\n  </head>\n  <body>\n    <div class="shell">\n      <header>\n        <a class="brand" href="#top"\n          ><span class="mark" aria-hidden="true"\n            ><svg viewBox="0 0 32 32" width="26" height="26" fill="none">\n              <path\n                d="M16 2v28M2 16h28M6 6l20 20M6 26L26 6"\n                stroke="currentColor"\n                stroke-width="3"\n              /></svg\n          ></span>\n          AMD AI LAB<span class="beta">FIELD NOTES</span></a\n        >\n        <nav>\n          <a href="#models">Models</a><a href="#method">How to read</a\n          ><a\n            href="https://github.com/pestopoppa/llama.cpp/releases/tag/production-consolidated-v10"\n            >Get the kernel ↗</a\n          >\n        </nav>\n      </header>\n      <main id="top">\n        <section class="hero">\n          <div class="eyebrow">\n            <span class="dot"></span> EPYC + INSTINCT / FROZEN KERNEL v10\n          </div>\n          <h1>More AI.<br /><em>From your AMD hardware.</em></h1>\n          <p>\n            Optimized kernels. Faster local inference. Explore our best measured\n            configurations—from speculative decoding on Instinct to native MTP\n            on EPYC—and see what it takes to run them yourself.\n          </p>\n          <div class="hero-foot">\n            <a class="primary" href="#models"\n              >Explore the results <span>↘</span></a\n            ><span>EPYC 9655 <b>+</b> Instinct MI210 · 64 GB</span>\n          </div>\n          <div class="hero-art" aria-hidden="true">\n            <div class="orb"></div>\n            <div class="axis">CONCURRENCY × CONTEXT</div>\n            <div class="art-grid">\n              <i style="--v: 0"></i><i style="--v: 0.35"></i\n              ><i style="--v: 0.7"></i><i style="--v: 0.1"></i\n              ><i style="--v: 0.45"></i><i style="--v: 0.8"></i\n              ><i style="--v: 0.2"></i><i style="--v: 0.55"></i\n              ><i style="--v: 0.9"></i><i style="--v: 0.3"></i\n              ><i style="--v: 0.65"></i><i style="--v: 0.05"></i\n              ><i style="--v: 0.4"></i><i style="--v: 0.75"></i\n              ><i style="--v: 0.15"></i><i style="--v: 0.5"></i\n              ><i style="--v: 0.85"></i><i style="--v: 0.25"></i\n              ><i style="--v: 0.6"></i><i style="--v: 0"></i\n              ><i style="--v: 0.35"></i><i style="--v: 0.7"></i\n              ><i style="--v: 0.1"></i><i style="--v: 0.45"></i\n              ><i style="--v: 0.8"></i><i style="--v: 0.2"></i\n              ><i style="--v: 0.55"></i><i style="--v: 0.9"></i\n              ><i style="--v: 0.3"></i><i style="--v: 0.65"></i\n              ><i style="--v: 0.05"></i><i style="--v: 0.4"></i>\n            </div>\n            <span class="art-caption">MEASURE. COMPARE. REPRODUCE.</span>\n          </div>\n        </section>\n        <section id="models">\n          <div class="section-title">\n            <div>\n              <span class="eyebrow">BEST MEASURED CONFIGURATIONS</span>\n              <h2>The hardware. The recipe. The result.</h2>\n            </div>\n            <span class="muted">Post-BIOS measurements · September 2026</span>\n          </div>\n          <div class="toolbar">\n            <div class="filters" aria-label="Hardware filters">\n              <button data-filter="all" class="active" aria-pressed="true">\n                All models</button\n              ><button data-filter="gpu" aria-pressed="false">\n                Instinct MI210</button\n              ><button data-filter="cpu" aria-pressed="false">EPYC CPU</button>\n            </div>\n            <label class="search"\n              ><span aria-hidden="true"\n                ><svg\n                  viewBox="0 0 20 20"\n                  width="16"\n                  height="16"\n                  fill="none"\n                  stroke="currentColor"\n                >\n                  <circle cx="8" cy="8" r="5" />\n                  <path d="m12 12 5 5" /></svg></span\n              ><input\n                type="search"\n                placeholder="Find a model…"\n                aria-label="Find a model"\n            /></label>\n          </div>\n          <div class="catalog" data-catalog-grid>\n            <p role="status">Loading model benchmarks…</p>\n          </div>\n          <p class="catalog-note">\n            Open a model for its measurements, settings, and source evidence.\n            Rates from different recipes are kept separate.\n          </p>\n        </section>\n        <section id="implementation" class="method">\n          <div>\n            <span class="eyebrow">AMD INFERENCE IMPLEMENTATION</span>\n            <h2>Bring this performance<br />to your own stack.</h2>\n          </div>\n          <div>\n            <h3>From hardware to a working recipe</h3>\n            <p>\n              I help teams select models, deploy optimized CPU and ROCm kernels,\n              and tune speculative decoding, memory placement, and concurrency\n              for their workloads.\n            </p>\n          </div>\n          <div>\n            <h3>Measure what your users experience</h3>\n            <p>\n              Implementation support includes reproducible benchmarking and\n              workload-specific validation, so you can choose the right balance\n              of speed, context capacity, and serving cost.\n            </p>\n          </div>\n        </section>\n        <section id="method" class="method">\n          <div>\n            <span class="eyebrow">A QUICK READING GUIDE</span>\n            <h2>The number is only<br />half the story.</h2>\n          </div>\n          <div>\n            <h3>One user or the whole server?</h3>\n            <p>\n              Per-request decode measures an individual response. Wall-clock\n              aggregate measures all completed tokens over elapsed time.\n              Qualification curves separately report the sum of request decode\n              rates. Higher concurrency can raise one while lowering the other.\n            </p>\n          </div>\n          <div>\n            <h3>Same kernel. Different evidence.</h3>\n            <p>\n              The KV studies use the frozen v10 binary, but one sample per cell\n              is exploratory. A measured difference is not a proven speedup.\n              Recipe and sample counts stay beside every chart.\n            </p>\n          </div>\n        </section>\n      </main>\n      <footer>\n        <a class="brand" href="#top"\n          ><span class="mark" aria-hidden="true"\n            ><svg viewBox="0 0 32 32" width="26" height="26" fill="none">\n              <path\n                d="M16 2v28M2 16h28M6 6l20 20M6 26L26 6"\n                stroke="currentColor"\n                stroke-width="3"\n              /></svg\n          ></span>\n          AMD AI LAB</a\n        ><span\n          >Independent benchmarks. Model weights downloaded separately.</span\n        ><a href="data/catalog.json">Download evidence JSON ↗</a>\n      </footer>\n    </div>\n    <dialog aria-labelledby="detail-title">\n      <div class="dialog-top">\n        <span class="eyebrow">MODEL WORKSPACE</span\n        ><button data-close aria-label="Close model details">\n          Close <kbd>Esc</kbd>\n        </button>\n      </div>\n      <div data-detail></div>\n    </dialog>\n    <script src="app.js"></script>\n  </body>\n</html>\n' : index.html has no shared-nav mount point
+
+tests/test_dashboard_nav.py:197: AssertionError
+_ SharedNavAdoptionTest.test_no_page_hand_builds_a_cross_server_nav_link (route='/amd-ai-lab') _
+
+self = <tests.test_dashboard_nav.SharedNavAdoptionTest testMethod=test_no_page_hand_builds_a_cross_server_nav_link>
+
+    def test_no_page_hand_builds_a_cross_server_nav_link(self):
+        """Scoped to ``<nav>`` regions ON PURPOSE. Content links inside a card
+        body are legitimate prose (the handoff board's outcome card points at the
+        orchestrator dashboard in a sentence, and must keep doing so); a
+        hand-built link in the NAV is the drift."""
+        for route, path in _page_paths().items():
+            with self.subTest(route=route):
+                if not path.is_file():
+                    self.skipTest(f"{path.name} not written yet")
+                text = path.read_text(encoding="utf-8")
+                for block in _NAV_BLOCK_RE.findall(text):
+                    self.assertIsNone(
+                        _PORT_8000_RE.search(block),
+                        f"{path.name}: a cross-server URL is hand-built inside "
+                        f"<nav>: {block[:200]!r}")
+>                   self.assertNotIn("<a ", block,
+                                     f"{path.name}: the nav still contains a "
+                                     "hand-authored anchor; links come from "
+                                     "dashboard/registry.json")
+E                   AssertionError: '<a ' unexpectedly found in '<nav>\n          <a href="#models">Models</a><a href="#method">How to read</a\n          ><a\n            href="https://github.com/pestopoppa/llama.cpp/releases/tag/production-consolidated-v10"\n            >Get the kernel ↗</a\n          >\n        </nav>' : index.html: the nav still contains a hand-authored anchor; links come from dashboard/registry.json
+
+tests/test_dashboard_nav.py:229: AssertionError
+___________ test_terminal_original_cpu_gpu_results_remain_selectable ___________
+
+sources = (PosixPath('/tmp/pytest-of-runner/pytest-2/test_terminal_original_cpu_gpu0/canonical'), PosixPath('/tmp/pytest-of-runn..., 'selected_id': 'fixture-cpu', ...}, {'batch_iterations': 3, 'failed_targets': {}, 'next_batch': 0, 'rounds': 2, ...})
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-2/test_terminal_original_cpu_gpu0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7efd64a8f230>
+
+    def test_terminal_original_cpu_gpu_results_remain_selectable(sources, tmp_path, monkeypatch):  # noqa: F811
+>       if _isolated_native_owner("tests/test_dashboard_serial_completed.py::test_terminal_original_cpu_gpu_results_remain_selectable"):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_dashboard_serial_completed.py:12: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+case = 'tests/test_dashboard_serial_completed.py::test_terminal_original_cpu_gpu_results_remain_selectable'
+
+    def _isolated_native_owner(case):
+        """The real watchdog requires a dedicated owner, independent of test order."""
+        import sys
+        import subprocess
+        if os.environ.get("NI_P6_NATIVE_OWNER_CASE") == case:
+            return False
+        env = {**os.environ, "NI_P6_NATIVE_OWNER_CASE": case}
+        command = [sys.executable, "-m", "pytest", "-q", case]
+        retained = os.environ.get("NI_P6_NATIVE_LOG_ROOT")
+        if retained:
+            out = Path(retained) / case.split("::")[-1]
+            out.mkdir(parents=True, exist_ok=True)
+            command += ["--junitxml=" + str(out / "original.junit.xml"),
+                        "--basetemp=" + str(out / "original-fixtures")]
+        result = subprocess.run(command, env=env, capture_output=True, text=True, timeout=120)
+        if retained:
+            (out / "original.log").write_text(result.stdout + result.stderr)
+            (out / "original.exit").write_text(str(result.returncode) + "\n")
+>       assert result.returncode == 0, result.stdout + result.stderr
+E       AssertionError: F                                                                        [100%]
+E         =================================== FAILURES ===================================
+E         ___________ test_terminal_original_cpu_gpu_results_remain_selectable ___________
+E         
+E         sources = (PosixPath('/home/runner/work/epyc-root/epyc-root/evidence/native-broad/test_terminal_original_cpu_gpu_results_remain_..., 'selected_id': 'fixture-cpu', ...}, {'batch_iterations': 3, 'failed_targets': {}, 'next_batch': 0, 'rounds': 2, ...})
+E         tmp_path = PosixPath('/home/runner/work/epyc-root/epyc-root/evidence/native-broad/test_terminal_original_cpu_gpu_results_remain_selectable/original-fixtures/test_terminal_original_cpu_gpu0')
+E         monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f17eba8ad70>
+E         
+E             def test_terminal_original_cpu_gpu_results_remain_selectable(sources, tmp_path, monkeypatch):  # noqa: F811
+E                 if _isolated_native_owner("tests/test_dashboard_serial_completed.py::test_terminal_original_cpu_gpu_results_remain_selectable"):
+E                     return
+E                 fixture = importlib.import_module("autokernel.loop.test_serial_run")
+E                 sr = importlib.import_module("autokernel.loop.serial_run")
+E                 work = tmp_path / "actual-terminal"
+E                 work.mkdir()
+E                 router, argv = fixture._inputs(work, monkeypatch, rounds=1)
+E                 marker = '(out / "loop-continuation.json").write_text(json.dumps(row))'
+E                 child_source = fixture.CHILD.replace(
+E                     'SimpleNamespace(status="measured_null")',
+E                     'SimpleNamespace(status="kept" if cpu else "measured_null")').replace(
+E                     'anchor_commit="a" * 40,', 'anchor_commit=("b" if cpu else "a") * 40,').replace(marker, '''
+E             from scripts.kernel_rnd.autokernel.loop import status
+E             status.write(Path(sr.option(argv, "--store")), state="complete", epoch="fixture",
+E                 campaign_id="ak-loop", anchor_commit=row["current_anchor"]["commit"],
+E                 model=row["model"], surface="serving:fixture-"+target_id, pairs=5,
+E                 noise_floor_pct=7.8, target=identity, champion_head=row["current_anchor"]["commit"],
+E                 batch={"output_dir": str(out), "pid": __import__("os").getpid()},
+E                 iterations_planned=row["iterations_requested"], outcomes=[{
+E                     "status":"kept" if cpu else "measured_null", "mechanism_id":"synthetic-"+target_id,
+E                     "reason":"fixture-only, no measured hardware gain"} for _ in range(count)])
+E             ''' + marker)
+E                 assert child_source != fixture.CHILD
+E                 (work / "child.py").write_text(child_source)
+E                 monkeypatch.setenv(loop_status.STORE_ROOT_ENV, str(router))
+E         >       assert sr.main(argv) == 0
+E         E       AssertionError: assert 1 == 0
+E         E        +  where 1 = <function main at 0x7f17ea92dc60>(['--target-args', '/home/runner/work/epyc-root/epyc-root/evidence/native-broad/test_terminal_original_cpu_gpu_results_...table/original-fixtures/test_terminal_original_cpu_gpu0/actual-terminal/gpu/args.json', '--batch-iterations', '1', ...])
+E         E        +    where <function main at 0x7f17ea92dc60> = <module 'autokernel.loop.serial_run' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/serial_run.py'>.main
+E         
+E         tests/test_dashboard_serial_completed.py:37: AssertionError
+E         =========================== short test summary info ============================
+E         FAILED tests/test_dashboard_serial_completed.py::test_terminal_original_cpu_gpu_results_remain_selectable - AssertionError: assert 1 == 0
+E          +  where 1 = <function main at 0x7f17ea92dc60>(['--target-args', '/home/runner/work/epyc-root/epyc-root/evidence/native-broad/test_terminal_original_cpu_gpu_results_...table/original-fixtures/test_terminal_original_cpu_gpu0/actual-terminal/gpu/args.json', '--batch-iterations', '1', ...])
+E          +    where <function main at 0x7f17ea92dc60> = <module 'autokernel.loop.serial_run' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/serial_run.py'>.main
+E         1 failed in 5.06s
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/runner/work/_temp/p6-venv/bin/python', '-m', 'pytest', '-q', 'tests/test_dashboard_seria...epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/serial_run.py\'>.main\n1 failed in 5.06s\n', stderr='').returncode
+
+tests/test_dashboard_serial_loop.py:299: AssertionError
+_______ test_actual_owned_children_switch_and_preserve_original_history ________
+
+sources = (PosixPath('/tmp/pytest-of-runner/pytest-2/test_actual_owned_children_swi0/canonical'), PosixPath('/tmp/pytest-of-runn..., 'selected_id': 'fixture-cpu', ...}, {'batch_iterations': 3, 'failed_targets': {}, 'next_batch': 0, 'rounds': 2, ...})
+producer = <module 'autokernel.loop.status' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/status.py'>
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-2/test_actual_owned_children_swi0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7efd648ff150>
+
+    def test_actual_owned_children_switch_and_preserve_original_history(sources, producer, tmp_path, monkeypatch):
+>       if _isolated_native_owner("tests/test_dashboard_serial_loop.py::test_actual_owned_children_switch_and_preserve_original_history"):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_dashboard_serial_loop.py:304: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+case = 'tests/test_dashboard_serial_loop.py::test_actual_owned_children_switch_and_preserve_original_history'
+
+    def _isolated_native_owner(case):
+        """The real watchdog requires a dedicated owner, independent of test order."""
+        import sys
+        import subprocess
+        if os.environ.get("NI_P6_NATIVE_OWNER_CASE") == case:
+            return False
+        env = {**os.environ, "NI_P6_NATIVE_OWNER_CASE": case}
+        command = [sys.executable, "-m", "pytest", "-q", case]
+        retained = os.environ.get("NI_P6_NATIVE_LOG_ROOT")
+        if retained:
+            out = Path(retained) / case.split("::")[-1]
+            out.mkdir(parents=True, exist_ok=True)
+            command += ["--junitxml=" + str(out / "original.junit.xml"),
+                        "--basetemp=" + str(out / "original-fixtures")]
+        result = subprocess.run(command, env=env, capture_output=True, text=True, timeout=120)
+        if retained:
+            (out / "original.log").write_text(result.stdout + result.stderr)
+            (out / "original.exit").write_text(str(result.returncode) + "\n")
+>       assert result.returncode == 0, result.stdout + result.stderr
+E       AssertionError: F                                                                        [100%]
+E         =================================== FAILURES ===================================
+E         _______ test_actual_owned_children_switch_and_preserve_original_history ________
+E         
+E         sources = (PosixPath('/home/runner/work/epyc-root/epyc-root/evidence/native-broad/test_actual_owned_children_switch_and_preserve..., 'selected_id': 'fixture-cpu', ...}, {'batch_iterations': 3, 'failed_targets': {}, 'next_batch': 0, 'rounds': 2, ...})
+E         producer = <module 'autokernel.loop.status' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/status.py'>
+E         tmp_path = PosixPath('/home/runner/work/epyc-root/epyc-root/evidence/native-broad/test_actual_owned_children_switch_and_preserve_original_history/original-fixtures/test_actual_owned_children_swi0')
+E         monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f60fc713820>
+E         
+E             def test_actual_owned_children_switch_and_preserve_original_history(sources, producer, tmp_path, monkeypatch):
+E                 if _isolated_native_owner("tests/test_dashboard_serial_loop.py::test_actual_owned_children_switch_and_preserve_original_history"):
+E                     return
+E                 fixture = importlib.import_module("autokernel.loop.test_serial_run")
+E                 sr = importlib.import_module("autokernel.loop.serial_run")
+E                 child_source = fixture.CHILD.replace("count = 0 if stopped[0]", '''
+E             from scripts.kernel_rnd.autokernel.loop import status
+E             status.write(Path(sr.option(argv, "--store")), state="running", epoch="fixture",
+E                 campaign_id="ak-loop", anchor_commit="a"*40, surface="fixture", pairs=5,
+E                 noise_floor_pct=None, target=identity,
+E                 batch={"output_dir": str(out), "pid": __import__("os").getpid()},
+E                 iterations_planned=1, outcomes=[{"status":"measured_null","mechanism_id":"synthetic-only"}])
+E             (out / "published").touch()
+E             until = time.monotonic() + 5
+E             while not (out / "read-by-hub").exists() and time.monotonic() < until:
+E                 time.sleep(.01)
+E             count = 0 if stopped[0]''')
+E                 invocation_root = tmp_path / "actual"
+E                 invocation_root.mkdir()
+E                 router, argv = fixture._inputs(invocation_root, monkeypatch, rounds=1)
+E                 (invocation_root / "child.py").write_text(child_source)
+E                 monkeypatch.setenv(loop_status.STORE_ROOT_ENV, str(router))
+E                 original_write = producer.write
+E                 seen = []
+E                 def observe(*args, **kwargs):
+E                     result = original_write(*args, **kwargs)
+E                     if kwargs["campaign_id"] == "legacy-serial" and kwargs["state"] == "running":
+E                         directory = Path(kwargs["target"]["batch_dir"])
+E                         until = time.monotonic() + 5
+E                         while not (directory / "published").exists() and time.monotonic() < until:
+E                             time.sleep(.01)
+E                         assert (directory / "published").exists()
+E                         wire, observation = loop_status.snapshot()
+E                         identity = kwargs["target"]["process_identity"]
+E                         assert identity["pid"] == kwargs["target"]["pid"]
+E                         assert type(identity["start_ticks"]) is int and identity["boot_id"]
+E                         assert wire["serial"]["active"]["process_identity"] == identity
+E                         assert wire["serial"]["child"]["joined"]
+E                         assert wire["serial"]["child"]["loop"]["batch"]["pid"] == kwargs["target"]["pid"]
+E                         seen.append((wire, observation.watermark))
+E                         (directory / "read-by-hub").touch()
+E                     return result
+E                 monkeypatch.setattr(producer, "write", observe)
+E         >       assert sr.main(argv) == 0
+E         E       AssertionError: assert 1 == 0
+E         E        +  where 1 = <function main at 0x7f60fc0d5ee0>(['--target-args', '/home/runner/work/epyc-root/epyc-root/evidence/native-broad/test_actual_owned_children_switch_and_p...iginal_history/original-fixtures/test_actual_owned_children_swi0/actual/gpu/args.json', '--batch-iterations', '1', ...])
+E         E        +    where <function main at 0x7f60fc0d5ee0> = <module 'autokernel.loop.serial_run' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/serial_run.py'>.main
+E         
+E         tests/test_dashboard_serial_loop.py:346: AssertionError
+E         =========================== short test summary info ============================
+E         FAILED tests/test_dashboard_serial_loop.py::test_actual_owned_children_switch_and_preserve_original_history - AssertionError: assert 1 == 0
+E          +  where 1 = <function main at 0x7f60fc0d5ee0>(['--target-args', '/home/runner/work/epyc-root/epyc-root/evidence/native-broad/test_actual_owned_children_switch_and_p...iginal_history/original-fixtures/test_actual_owned_children_swi0/actual/gpu/args.json', '--batch-iterations', '1', ...])
+E          +    where <function main at 0x7f60fc0d5ee0> = <module 'autokernel.loop.serial_run' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/serial_run.py'>.main
+E         1 failed in 5.07s
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/runner/work/_temp/p6-venv/bin/python', '-m', 'pytest', '-q', 'tests/test_dashboard_seria...epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/serial_run.py\'>.main\n1 failed in 5.07s\n', stderr='').returncode
+
+tests/test_dashboard_serial_loop.py:299: AssertionError
+=========================== short test summary info ============================
+SUBFAILED(route='/amd-ai-lab') tests/test_dashboard_nav.py::PageRegistryBidirectionalTest::test_every_hub_page_has_a_registry_entry - AssertionError: '/amd-ai-lab' not found in {'/machine': {'id': 'machine', 'title': 'Machine', 'port': 8100, 'path': '/machine', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'global hardware + live-inference monitor (data: :8000 API)'}, '/autopilot': {'id': 'autopilot', 'title': 'Autopilot', 'port': 8100, 'path': '/autopilot', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'autopilot loop: phase, log, Pareto/GEPA, optimization (data: :8000 API)'}, '/cockpit': {'id': 'cockpit', 'title': 'Cockpit', 'port': 8100, 'path': '/cockpit', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'AP-50 decision cockpit: what optimizes the orchestrator, per measurement era: current trial + falsifier, incumbent-vs-candidate deltas (n, SE, replication), proposed/executed/valid/kept/promoted/live funnel with rejection reasons, journal+study lever scoreboard, provenance drill-down (data: :8000/dashboard/api/decision_cockpit; data probe :8000/dashboard/api/decision_cockpit/health — /health here is transport-only)'}, '/gpu-window': {'id': 'gpu-window', 'title': 'MI210 window', 'port': 8100, 'path': '/gpu-window', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'G1 MI210 window: holder, grant state, window id, expected end, overdue, lease state, watchdog age, verdict (ok/window_open/alarm) and health reasons. Data plane owned by epyc-orchestrator (:8000/dashboard/api/gpu_window), page owned by epyc-root; data probe :8000/dashboard/api/gpu_window/health — /health here is transport-only'}, '/': {'id': 'handoffs', 'title': 'Handoffs', 'port': 8100, 'path': '/', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'handoff kanban + backlog flow'}, '/loop': {'id': 'autokernel-loop', 'title': 'Kernel R&D', 'chip': 'live', 'port': 8100, 'path': '/loop', 'owner_repo': 'epyc-root', 'health_path': '/api/loop/health', 'blurb': 'THE Kernel R&D surface: explicitly selected unified campaign status and authenticated producer controls, otherwise the legacy AutoKernel loop; an independently dated champion headline versus the frozen production kernel, operator-gated serving evidence and belief records. Durable history is not producer liveness. /api/loop/health follows the selected campaign or legacy loop without allowing other evidence cards to certify it. /kernel redirects here. Unified execution remains gated separately from management controls.'}, '/bus': {'id': 'bus', 'title': 'Bus', 'port': 8100, 'path': '/bus', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'session-bus roster, heartbeats, queue'}, '/benchmarks': {'id': 'benchmarks', 'title': 'Benchmarks', 'port': 8100, 'path': '/benchmarks', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'benchmark artifact inventory (read-only)'}, '/amd-ai-lab/': {'id': 'amd-ai-lab', 'title': 'AMD AI Lab', 'chip': 'draft', 'port': 8100, 'path': '/amd-ai-lab/', 'owner_repo': 'epyc-web', 'health_path': '/health', 'blurb': 'AMD hardware recipes and benchmark results — explicit publication snapshot from epyc-web', 'freshness': {'kind': 'static-snapshot', 'source': 'epyc-web', 'artifact': 'dashboard/static/amd-ai-lab/', 'stale_after_s': 2592000, 'absence_means': 'the published epyc-web snapshot is missing from the hub checkout'}}} : /amd-ai-lab is served by the hub but is in no registry row, so no nav can link to it
+SUBFAILED(entry='amd-ai-lab') tests/test_dashboard_nav.py::PageRegistryBidirectionalTest::test_every_hub_registry_entry_is_a_served_page - AssertionError: '/amd-ai-lab/' not found in {'/': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/handoffs.html'), '/machine': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/machine.html'), '/autopilot': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/autopilot.html'), '/cockpit': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/cockpit.html'), '/gpu-window': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/gpu-window.html'), '/loop': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/loop.html'), '/bus': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/bus.html'), '/benchmarks': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/benchmarks.html'), '/amd-ai-lab': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/amd-ai-lab/index.html')} : registry row 'amd-ai-lab' points at /amd-ai-lab/, which this hub does not serve — a nav link to a 404
+SUBFAILED(route='/amd-ai-lab') tests/test_dashboard_nav.py::SharedNavAdoptionTest::test_every_existing_page_mounts_the_shared_nav - AssertionError: 'id="epyc-nav"' not found in '<!doctype html>\n<html lang="en">\n  <head>\n    <meta charset="utf-8" />\n    <meta name="viewport" content="width=device-width, initial-scale=1" />\n    <meta name="theme-color" content="#101116" />\n    <title>AMD AI Lab · Find your inference sweet spot</title>\n    <meta\n      name="description"\n      content="Explore measured AMD inference: model benchmarks, concurrency curves and interactive KV cache matrices."\n    />\n    <link rel="stylesheet" href="styles.css" />\n  </head>\n  <body>\n    <div class="shell">\n      <header>\n        <a class="brand" href="#top"\n          ><span class="mark" aria-hidden="true"\n            ><svg viewBox="0 0 32 32" width="26" height="26" fill="none">\n              <path\n                d="M16 2v28M2 16h28M6 6l20 20M6 26L26 6"\n                stroke="currentColor"\n                stroke-width="3"\n              /></svg\n          ></span>\n          AMD AI LAB<span class="beta">FIELD NOTES</span></a\n        >\n        <nav>\n          <a href="#models">Models</a><a href="#method">How to read</a\n          ><a\n            href="https://github.com/pestopoppa/llama.cpp/releases/tag/production-consolidated-v10"\n            >Get the kernel ↗</a\n          >\n        </nav>\n      </header>\n      <main id="top">\n        <section class="hero">\n          <div class="eyebrow">\n            <span class="dot"></span> EPYC + INSTINCT / FROZEN KERNEL v10\n          </div>\n          <h1>More AI.<br /><em>From your AMD hardware.</em></h1>\n          <p>\n            Optimized kernels. Faster local inference. Explore our best measured\n            configurations—from speculative decoding on Instinct to native MTP\n            on EPYC—and see what it takes to run them yourself.\n          </p>\n          <div class="hero-foot">\n            <a class="primary" href="#models"\n              >Explore the results <span>↘</span></a\n            ><span>EPYC 9655 <b>+</b> Instinct MI210 · 64 GB</span>\n          </div>\n          <div class="hero-art" aria-hidden="true">\n            <div class="orb"></div>\n            <div class="axis">CONCURRENCY × CONTEXT</div>\n            <div class="art-grid">\n              <i style="--v: 0"></i><i style="--v: 0.35"></i\n              ><i style="--v: 0.7"></i><i style="--v: 0.1"></i\n              ><i style="--v: 0.45"></i><i style="--v: 0.8"></i\n              ><i style="--v: 0.2"></i><i style="--v: 0.55"></i\n              ><i style="--v: 0.9"></i><i style="--v: 0.3"></i\n              ><i style="--v: 0.65"></i><i style="--v: 0.05"></i\n              ><i style="--v: 0.4"></i><i style="--v: 0.75"></i\n              ><i style="--v: 0.15"></i><i style="--v: 0.5"></i\n              ><i style="--v: 0.85"></i><i style="--v: 0.25"></i\n              ><i style="--v: 0.6"></i><i style="--v: 0"></i\n              ><i style="--v: 0.35"></i><i style="--v: 0.7"></i\n              ><i style="--v: 0.1"></i><i style="--v: 0.45"></i\n              ><i style="--v: 0.8"></i><i style="--v: 0.2"></i\n              ><i style="--v: 0.55"></i><i style="--v: 0.9"></i\n              ><i style="--v: 0.3"></i><i style="--v: 0.65"></i\n              ><i style="--v: 0.05"></i><i style="--v: 0.4"></i>\n            </div>\n            <span class="art-caption">MEASURE. COMPARE. REPRODUCE.</span>\n          </div>\n        </section>\n        <section id="models">\n          <div class="section-title">\n            <div>\n              <span class="eyebrow">BEST MEASURED CONFIGURATIONS</span>\n              <h2>The hardware. The recipe. The result.</h2>\n            </div>\n            <span class="muted">Post-BIOS measurements · September 2026</span>\n          </div>\n          <div class="toolbar">\n            <div class="filters" aria-label="Hardware filters">\n              <button data-filter="all" class="active" aria-pressed="true">\n                All models</button\n              ><button data-filter="gpu" aria-pressed="false">\n                Instinct MI210</button\n              ><button data-filter="cpu" aria-pressed="false">EPYC CPU</button>\n            </div>\n            <label class="search"\n              ><span aria-hidden="true"\n                ><svg\n                  viewBox="0 0 20 20"\n                  width="16"\n                  height="16"\n                  fill="none"\n                  stroke="currentColor"\n                >\n                  <circle cx="8" cy="8" r="5" />\n                  <path d="m12 12 5 5" /></svg></span\n              ><input\n                type="search"\n                placeholder="Find a model…"\n                aria-label="Find a model"\n            /></label>\n          </div>\n          <div class="catalog" data-catalog-grid>\n            <p role="status">Loading model benchmarks…</p>\n          </div>\n          <p class="catalog-note">\n            Open a model for its measurements, settings, and source evidence.\n            Rates from different recipes are kept separate.\n          </p>\n        </section>\n        <section id="implementation" class="method">\n          <div>\n            <span class="eyebrow">AMD INFERENCE IMPLEMENTATION</span>\n            <h2>Bring this performance<br />to your own stack.</h2>\n          </div>\n          <div>\n            <h3>From hardware to a working recipe</h3>\n            <p>\n              I help teams select models, deploy optimized CPU and ROCm kernels,\n              and tune speculative decoding, memory placement, and concurrency\n              for their workloads.\n            </p>\n          </div>\n          <div>\n            <h3>Measure what your users experience</h3>\n            <p>\n              Implementation support includes reproducible benchmarking and\n              workload-specific validation, so you can choose the right balance\n              of speed, context capacity, and serving cost.\n            </p>\n          </div>\n        </section>\n        <section id="method" class="method">\n          <div>\n            <span class="eyebrow">A QUICK READING GUIDE</span>\n            <h2>The number is only<br />half the story.</h2>\n          </div>\n          <div>\n            <h3>One user or the whole server?</h3>\n            <p>\n              Per-request decode measures an individual response. Wall-clock\n              aggregate measures all completed tokens over elapsed time.\n              Qualification curves separately report the sum of request decode\n              rates. Higher concurrency can raise one while lowering the other.\n            </p>\n          </div>\n          <div>\n            <h3>Same kernel. Different evidence.</h3>\n            <p>\n              The KV studies use the frozen v10 binary, but one sample per cell\n              is exploratory. A measured difference is not a proven speedup.\n              Recipe and sample counts stay beside every chart.\n            </p>\n          </div>\n        </section>\n      </main>\n      <footer>\n        <a class="brand" href="#top"\n          ><span class="mark" aria-hidden="true"\n            ><svg viewBox="0 0 32 32" width="26" height="26" fill="none">\n              <path\n                d="M16 2v28M2 16h28M6 6l20 20M6 26L26 6"\n                stroke="currentColor"\n                stroke-width="3"\n              /></svg\n          ></span>\n          AMD AI LAB</a\n        ><span\n          >Independent benchmarks. Model weights downloaded separately.</span\n        ><a href="data/catalog.json">Download evidence JSON ↗</a>\n      </footer>\n    </div>\n    <dialog aria-labelledby="detail-title">\n      <div class="dialog-top">\n        <span class="eyebrow">MODEL WORKSPACE</span\n        ><button data-close aria-label="Close model details">\n          Close <kbd>Esc</kbd>\n        </button>\n      </div>\n      <div data-detail></div>\n    </dialog>\n    <script src="app.js"></script>\n  </body>\n</html>\n' : index.html has no shared-nav mount point
+SUBFAILED(route='/amd-ai-lab') tests/test_dashboard_nav.py::SharedNavAdoptionTest::test_no_page_hand_builds_a_cross_server_nav_link - AssertionError: '<a ' unexpectedly found in '<nav>\n          <a href="#models">Models</a><a href="#method">How to read</a\n          ><a\n            href="https://github.com/pestopoppa/llama.cpp/releases/tag/production-consolidated-v10"\n            >Get the kernel ↗</a\n          >\n        </nav>' : index.html: the nav still contains a hand-authored anchor; links come from dashboard/registry.json
+FAILED tests/test_dashboard_serial_completed.py::test_terminal_original_cpu_gpu_results_remain_selectable - AssertionError: F                                                                        [100%]
+  =================================== FAILURES ===================================
+  ___________ test_terminal_original_cpu_gpu_results_remain_selectable ___________
+  
+  sources = (PosixPath('/home/runner/work/epyc-root/epyc-root/evidence/native-broad/test_terminal_original_cpu_gpu_results_remain_..., 'selected_id': 'fixture-cpu', ...}, {'batch_iterations': 3, 'failed_targets': {}, 'next_batch': 0, 'rounds': 2, ...})
+  tmp_path = PosixPath('/home/runner/work/epyc-root/epyc-root/evidence/native-broad/test_terminal_original_cpu_gpu_results_remain_selectable/original-fixtures/test_terminal_original_cpu_gpu0')
+  monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f17eba8ad70>
+  
+      def test_terminal_original_cpu_gpu_results_remain_selectable(sources, tmp_path, monkeypatch):  # noqa: F811
+          if _isolated_native_owner("tests/test_dashboard_serial_completed.py::test_terminal_original_cpu_gpu_results_remain_selectable"):
+              return
+          fixture = importlib.import_module("autokernel.loop.test_serial_run")
+          sr = importlib.import_module("autokernel.loop.serial_run")
+          work = tmp_path / "actual-terminal"
+          work.mkdir()
+          router, argv = fixture._inputs(work, monkeypatch, rounds=1)
+          marker = '(out / "loop-continuation.json").write_text(json.dumps(row))'
+          child_source = fixture.CHILD.replace(
+              'SimpleNamespace(status="measured_null")',
+              'SimpleNamespace(status="kept" if cpu else "measured_null")').replace(
+              'anchor_commit="a" * 40,', 'anchor_commit=("b" if cpu else "a") * 40,').replace(marker, '''
+      from scripts.kernel_rnd.autokernel.loop import status
+      status.write(Path(sr.option(argv, "--store")), state="complete", epoch="fixture",
+          campaign_id="ak-loop", anchor_commit=row["current_anchor"]["commit"],
+          model=row["model"], surface="serving:fixture-"+target_id, pairs=5,
+          noise_floor_pct=7.8, target=identity, champion_head=row["current_anchor"]["commit"],
+          batch={"output_dir": str(out), "pid": __import__("os").getpid()},
+          iterations_planned=row["iterations_requested"], outcomes=[{
+              "status":"kept" if cpu else "measured_null", "mechanism_id":"synthetic-"+target_id,
+              "reason":"fixture-only, no measured hardware gain"} for _ in range(count)])
+      ''' + marker)
+          assert child_source != fixture.CHILD
+          (work / "child.py").write_text(child_source)
+          monkeypatch.setenv(loop_status.STORE_ROOT_ENV, str(router))
+  >       assert sr.main(argv) == 0
+  E       AssertionError: assert 1 == 0
+  E        +  where 1 = <function main at 0x7f17ea92dc60>(['--target-args', '/home/runner/work/epyc-root/epyc-root/evidence/native-broad/test_terminal_original_cpu_gpu_results_...table/original-fixtures/test_terminal_original_cpu_gpu0/actual-terminal/gpu/args.json', '--batch-iterations', '1', ...])
+  E        +    where <function main at 0x7f17ea92dc60> = <module 'autokernel.loop.serial_run' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/serial_run.py'>.main
+  
+  tests/test_dashboard_serial_completed.py:37: AssertionError
+  =========================== short test summary info ============================
+  FAILED tests/test_dashboard_serial_completed.py::test_terminal_original_cpu_gpu_results_remain_selectable - AssertionError: assert 1 == 0
+   +  where 1 = <function main at 0x7f17ea92dc60>(['--target-args', '/home/runner/work/epyc-root/epyc-root/evidence/native-broad/test_terminal_original_cpu_gpu_results_...table/original-fixtures/test_terminal_original_cpu_gpu0/actual-terminal/gpu/args.json', '--batch-iterations', '1', ...])
+   +    where <function main at 0x7f17ea92dc60> = <module 'autokernel.loop.serial_run' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/serial_run.py'>.main
+  1 failed in 5.06s
+  
+assert 1 == 0
+ +  where 1 = CompletedProcess(args=['/home/runner/work/_temp/p6-venv/bin/python', '-m', 'pytest', '-q', 'tests/test_dashboard_seria...epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/serial_run.py\'>.main\n1 failed in 5.06s\n', stderr='').returncode
+FAILED tests/test_dashboard_serial_loop.py::test_actual_owned_children_switch_and_preserve_original_history - AssertionError: F                                                                        [100%]
+  =================================== FAILURES ===================================
+  _______ test_actual_owned_children_switch_and_preserve_original_history ________
+  
+  sources = (PosixPath('/home/runner/work/epyc-root/epyc-root/evidence/native-broad/test_actual_owned_children_switch_and_preserve..., 'selected_id': 'fixture-cpu', ...}, {'batch_iterations': 3, 'failed_targets': {}, 'next_batch': 0, 'rounds': 2, ...})
+  producer = <module 'autokernel.loop.status' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/status.py'>
+  tmp_path = PosixPath('/home/runner/work/epyc-root/epyc-root/evidence/native-broad/test_actual_owned_children_switch_and_preserve_original_history/original-fixtures/test_actual_owned_children_swi0')
+  monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f60fc713820>
+  
+      def test_actual_owned_children_switch_and_preserve_original_history(sources, producer, tmp_path, monkeypatch):
+          if _isolated_native_owner("tests/test_dashboard_serial_loop.py::test_actual_owned_children_switch_and_preserve_original_history"):
+              return
+          fixture = importlib.import_module("autokernel.loop.test_serial_run")
+          sr = importlib.import_module("autokernel.loop.serial_run")
+          child_source = fixture.CHILD.replace("count = 0 if stopped[0]", '''
+      from scripts.kernel_rnd.autokernel.loop import status
+      status.write(Path(sr.option(argv, "--store")), state="running", epoch="fixture",
+          campaign_id="ak-loop", anchor_commit="a"*40, surface="fixture", pairs=5,
+          noise_floor_pct=None, target=identity,
+          batch={"output_dir": str(out), "pid": __import__("os").getpid()},
+          iterations_planned=1, outcomes=[{"status":"measured_null","mechanism_id":"synthetic-only"}])
+      (out / "published").touch()
+      until = time.monotonic() + 5
+      while not (out / "read-by-hub").exists() and time.monotonic() < until:
+          time.sleep(.01)
+      count = 0 if stopped[0]''')
+          invocation_root = tmp_path / "actual"
+          invocation_root.mkdir()
+          router, argv = fixture._inputs(invocation_root, monkeypatch, rounds=1)
+          (invocation_root / "child.py").write_text(child_source)
+          monkeypatch.setenv(loop_status.STORE_ROOT_ENV, str(router))
+          original_write = producer.write
+          seen = []
+          def observe(*args, **kwargs):
+              result = original_write(*args, **kwargs)
+              if kwargs["campaign_id"] == "legacy-serial" and kwargs["state"] == "running":
+                  directory = Path(kwargs["target"]["batch_dir"])
+                  until = time.monotonic() + 5
+                  while not (directory / "published").exists() and time.monotonic() < until:
+                      time.sleep(.01)
+                  assert (directory / "published").exists()
+                  wire, observation = loop_status.snapshot()
+                  identity = kwargs["target"]["process_identity"]
+                  assert identity["pid"] == kwargs["target"]["pid"]
+                  assert type(identity["start_ticks"]) is int and identity["boot_id"]
+                  assert wire["serial"]["active"]["process_identity"] == identity
+                  assert wire["serial"]["child"]["joined"]
+                  assert wire["serial"]["child"]["loop"]["batch"]["pid"] == kwargs["target"]["pid"]
+                  seen.append((wire, observation.watermark))
+                  (directory / "read-by-hub").touch()
+              return result
+          monkeypatch.setattr(producer, "write", observe)
+  >       assert sr.main(argv) == 0
+  E       AssertionError: assert 1 == 0
+  E        +  where 1 = <function main at 0x7f60fc0d5ee0>(['--target-args', '/home/runner/work/epyc-root/epyc-root/evidence/native-broad/test_actual_owned_children_switch_and_p...iginal_history/original-fixtures/test_actual_owned_children_swi0/actual/gpu/args.json', '--batch-iterations', '1', ...])
+  E        +    where <function main at 0x7f60fc0d5ee0> = <module 'autokernel.loop.serial_run' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/serial_run.py'>.main
+  
+  tests/test_dashboard_serial_loop.py:346: AssertionError
+  =========================== short test summary info ============================
+  FAILED tests/test_dashboard_serial_loop.py::test_actual_owned_children_switch_and_preserve_original_history - AssertionError: assert 1 == 0
+   +  where 1 = <function main at 0x7f60fc0d5ee0>(['--target-args', '/home/runner/work/epyc-root/epyc-root/evidence/native-broad/test_actual_owned_children_switch_and_p...iginal_history/original-fixtures/test_actual_owned_children_swi0/actual/gpu/args.json', '--batch-iterations', '1', ...])
+   +    where <function main at 0x7f60fc0d5ee0> = <module 'autokernel.loop.serial_run' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/serial_run.py'>.main
+  1 failed in 5.07s
+  
+assert 1 == 0
+ +  where 1 = CompletedProcess(args=['/home/runner/work/_temp/p6-venv/bin/python', '-m', 'pytest', '-q', 'tests/test_dashboard_seria...epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/serial_run.py\'>.main\n1 failed in 5.07s\n', stderr='').returncode
+6 failed, 826 passed, 1 skipped, 295 subtests passed in 45.34s

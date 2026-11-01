@@ -1,0 +1,313 @@
+......................................................... [ 10%]
+............................................................... [ 22%]
+........................................................ [ 33%]
+...................................................... [ 43%]
+................................................................ [ 55%]
+.................................................................... [ 68%]
+......................................... [ 76%]
+................................................................ [ 88%]
+.....................FF....................................              [100%]
+=================================== FAILURES ===================================
+_______ test_actual_owned_children_switch_and_preserve_original_history ________
+
+sources = (PosixPath('/tmp/pytest-of-runner/pytest-1/test_actual_owned_children_swi0/canonical'), PosixPath('/tmp/pytest-of-runn..., 'selected_id': 'fixture-cpu', ...}, {'batch_iterations': 3, 'failed_targets': {}, 'next_batch': 0, 'rounds': 2, ...})
+producer = <module 'autokernel.loop.status' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/status.py'>
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_actual_owned_children_swi0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fa035947850>
+
+    def test_actual_owned_children_switch_and_preserve_original_history(sources, producer, tmp_path, monkeypatch):
+>       if _isolated_native_owner("tests/test_dashboard_serial_loop.py::test_actual_owned_children_switch_and_preserve_original_history"):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_dashboard_serial_loop.py:304: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+case = 'tests/test_dashboard_serial_loop.py::test_actual_owned_children_switch_and_preserve_original_history'
+
+    def _isolated_native_owner(case):
+        """The real watchdog requires a dedicated owner, independent of test order."""
+        import sys
+        import subprocess
+        if os.environ.get("NI_P6_NATIVE_OWNER_CASE") == case:
+            return False
+        env = {**os.environ, "NI_P6_NATIVE_OWNER_CASE": case}
+        command = [sys.executable, "-m", "pytest", "-q", case]
+        retained = os.environ.get("NI_P6_NATIVE_LOG_ROOT")
+        if retained:
+            out = Path(retained) / case.split("::")[-1]
+            out.mkdir(parents=True, exist_ok=True)
+            command += ["--junitxml=" + str(out / "original.junit.xml"),
+                        "--basetemp=" + str(out / "original-fixtures")]
+        result = subprocess.run(command, env=env, capture_output=True, text=True, timeout=120)
+        if retained:
+            (out / "original.log").write_text(result.stdout + result.stderr)
+            (out / "original.exit").write_text(str(result.returncode) + "\n")
+>       assert result.returncode == 0, result.stdout + result.stderr
+E       AssertionError: F                                                                        [100%]
+E         =================================== FAILURES ===================================
+E         _______ test_actual_owned_children_switch_and_preserve_original_history ________
+E         
+E         sources = (PosixPath('/home/runner/work/epyc-root/epyc-root/evidence/native-primary/test_actual_owned_children_switch_and_preser..., 'selected_id': 'fixture-cpu', ...}, {'batch_iterations': 3, 'failed_targets': {}, 'next_batch': 0, 'rounds': 2, ...})
+E         producer = <module 'autokernel.loop.status' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/status.py'>
+E         tmp_path = PosixPath('/home/runner/work/epyc-root/epyc-root/evidence/native-primary/test_actual_owned_children_switch_and_preserve_original_history/original-fixtures/test_actual_owned_children_swi0')
+E         monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fcb546d3820>
+E         
+E             def test_actual_owned_children_switch_and_preserve_original_history(sources, producer, tmp_path, monkeypatch):
+E                 if _isolated_native_owner("tests/test_dashboard_serial_loop.py::test_actual_owned_children_switch_and_preserve_original_history"):
+E                     return
+E                 fixture = importlib.import_module("autokernel.loop.test_serial_run")
+E                 sr = importlib.import_module("autokernel.loop.serial_run")
+E                 child_source = fixture.CHILD.replace("count = 0 if stopped[0]", '''
+E             from scripts.kernel_rnd.autokernel.loop import status
+E             status.write(Path(sr.option(argv, "--store")), state="running", epoch="fixture",
+E                 campaign_id="ak-loop", anchor_commit="a"*40, surface="fixture", pairs=5,
+E                 noise_floor_pct=None, target=identity,
+E                 batch={"output_dir": str(out), "pid": __import__("os").getpid()},
+E                 iterations_planned=1, outcomes=[{"status":"measured_null","mechanism_id":"synthetic-only"}])
+E             (out / "published").touch()
+E             until = time.monotonic() + 5
+E             while not (out / "read-by-hub").exists() and time.monotonic() < until:
+E                 time.sleep(.01)
+E             count = 0 if stopped[0]''')
+E                 invocation_root = tmp_path / "actual"
+E                 invocation_root.mkdir()
+E                 router, argv = fixture._inputs(invocation_root, monkeypatch, rounds=1)
+E                 (invocation_root / "child.py").write_text(child_source)
+E                 monkeypatch.setenv(loop_status.STORE_ROOT_ENV, str(router))
+E                 original_write = producer.write
+E                 seen = []
+E                 def observe(*args, **kwargs):
+E                     result = original_write(*args, **kwargs)
+E                     if kwargs["campaign_id"] == "legacy-serial" and kwargs["state"] == "running":
+E                         directory = Path(kwargs["target"]["batch_dir"])
+E                         until = time.monotonic() + 5
+E                         while not (directory / "published").exists() and time.monotonic() < until:
+E                             time.sleep(.01)
+E                         assert (directory / "published").exists()
+E                         wire, observation = loop_status.snapshot()
+E                         identity = kwargs["target"]["process_identity"]
+E                         assert identity["pid"] == kwargs["target"]["pid"]
+E                         assert type(identity["start_ticks"]) is int and identity["boot_id"]
+E                         assert wire["serial"]["active"]["process_identity"] == identity
+E                         assert wire["serial"]["child"]["joined"]
+E                         assert wire["serial"]["child"]["loop"]["batch"]["pid"] == kwargs["target"]["pid"]
+E                         seen.append((wire, observation.watermark))
+E                         (directory / "read-by-hub").touch()
+E                     return result
+E                 monkeypatch.setattr(producer, "write", observe)
+E         >       assert sr.main(argv) == 0
+E         E       AssertionError: assert 1 == 0
+E         E        +  where 1 = <function main at 0x7fcb5389ef20>(['--target-args', '/home/runner/work/epyc-root/epyc-root/evidence/native-primary/test_actual_owned_children_switch_and...iginal_history/original-fixtures/test_actual_owned_children_swi0/actual/gpu/args.json', '--batch-iterations', '1', ...])
+E         E        +    where <function main at 0x7fcb5389ef20> = <module 'autokernel.loop.serial_run' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/serial_run.py'>.main
+E         
+E         tests/test_dashboard_serial_loop.py:346: AssertionError
+E         =========================== short test summary info ============================
+E         FAILED tests/test_dashboard_serial_loop.py::test_actual_owned_children_switch_and_preserve_original_history - AssertionError: assert 1 == 0
+E          +  where 1 = <function main at 0x7fcb5389ef20>(['--target-args', '/home/runner/work/epyc-root/epyc-root/evidence/native-primary/test_actual_owned_children_switch_and...iginal_history/original-fixtures/test_actual_owned_children_swi0/actual/gpu/args.json', '--batch-iterations', '1', ...])
+E          +    where <function main at 0x7fcb5389ef20> = <module 'autokernel.loop.serial_run' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/serial_run.py'>.main
+E         1 failed in 5.02s
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/runner/work/_temp/p6-venv/bin/python', '-m', 'pytest', '-q', 'tests/test_dashboard_seria...epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/serial_run.py\'>.main\n1 failed in 5.02s\n', stderr='').returncode
+
+tests/test_dashboard_serial_loop.py:299: AssertionError
+___________ test_terminal_original_cpu_gpu_results_remain_selectable ___________
+
+sources = (PosixPath('/tmp/pytest-of-runner/pytest-1/test_terminal_original_cpu_gpu0/canonical'), PosixPath('/tmp/pytest-of-runn..., 'selected_id': 'fixture-cpu', ...}, {'batch_iterations': 3, 'failed_targets': {}, 'next_batch': 0, 'rounds': 2, ...})
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_terminal_original_cpu_gpu0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fa035947310>
+
+    def test_terminal_original_cpu_gpu_results_remain_selectable(sources, tmp_path, monkeypatch):  # noqa: F811
+>       if _isolated_native_owner("tests/test_dashboard_serial_completed.py::test_terminal_original_cpu_gpu_results_remain_selectable"):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_dashboard_serial_completed.py:12: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+case = 'tests/test_dashboard_serial_completed.py::test_terminal_original_cpu_gpu_results_remain_selectable'
+
+    def _isolated_native_owner(case):
+        """The real watchdog requires a dedicated owner, independent of test order."""
+        import sys
+        import subprocess
+        if os.environ.get("NI_P6_NATIVE_OWNER_CASE") == case:
+            return False
+        env = {**os.environ, "NI_P6_NATIVE_OWNER_CASE": case}
+        command = [sys.executable, "-m", "pytest", "-q", case]
+        retained = os.environ.get("NI_P6_NATIVE_LOG_ROOT")
+        if retained:
+            out = Path(retained) / case.split("::")[-1]
+            out.mkdir(parents=True, exist_ok=True)
+            command += ["--junitxml=" + str(out / "original.junit.xml"),
+                        "--basetemp=" + str(out / "original-fixtures")]
+        result = subprocess.run(command, env=env, capture_output=True, text=True, timeout=120)
+        if retained:
+            (out / "original.log").write_text(result.stdout + result.stderr)
+            (out / "original.exit").write_text(str(result.returncode) + "\n")
+>       assert result.returncode == 0, result.stdout + result.stderr
+E       AssertionError: F                                                                        [100%]
+E         =================================== FAILURES ===================================
+E         ___________ test_terminal_original_cpu_gpu_results_remain_selectable ___________
+E         
+E         sources = (PosixPath('/home/runner/work/epyc-root/epyc-root/evidence/native-primary/test_terminal_original_cpu_gpu_results_remai..., 'selected_id': 'fixture-cpu', ...}, {'batch_iterations': 3, 'failed_targets': {}, 'next_batch': 0, 'rounds': 2, ...})
+E         tmp_path = PosixPath('/home/runner/work/epyc-root/epyc-root/evidence/native-primary/test_terminal_original_cpu_gpu_results_remain_selectable/original-fixtures/test_terminal_original_cpu_gpu0')
+E         monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f6d52abed70>
+E         
+E             def test_terminal_original_cpu_gpu_results_remain_selectable(sources, tmp_path, monkeypatch):  # noqa: F811
+E                 if _isolated_native_owner("tests/test_dashboard_serial_completed.py::test_terminal_original_cpu_gpu_results_remain_selectable"):
+E                     return
+E                 fixture = importlib.import_module("autokernel.loop.test_serial_run")
+E                 sr = importlib.import_module("autokernel.loop.serial_run")
+E                 work = tmp_path / "actual-terminal"
+E                 work.mkdir()
+E                 router, argv = fixture._inputs(work, monkeypatch, rounds=1)
+E                 marker = '(out / "loop-continuation.json").write_text(json.dumps(row))'
+E                 child_source = fixture.CHILD.replace(
+E                     'SimpleNamespace(status="measured_null")',
+E                     'SimpleNamespace(status="kept" if cpu else "measured_null")').replace(
+E                     'anchor_commit="a" * 40,', 'anchor_commit=("b" if cpu else "a") * 40,').replace(marker, '''
+E             from scripts.kernel_rnd.autokernel.loop import status
+E             status.write(Path(sr.option(argv, "--store")), state="complete", epoch="fixture",
+E                 campaign_id="ak-loop", anchor_commit=row["current_anchor"]["commit"],
+E                 model=row["model"], surface="serving:fixture-"+target_id, pairs=5,
+E                 noise_floor_pct=7.8, target=identity, champion_head=row["current_anchor"]["commit"],
+E                 batch={"output_dir": str(out), "pid": __import__("os").getpid()},
+E                 iterations_planned=row["iterations_requested"], outcomes=[{
+E                     "status":"kept" if cpu else "measured_null", "mechanism_id":"synthetic-"+target_id,
+E                     "reason":"fixture-only, no measured hardware gain"} for _ in range(count)])
+E             ''' + marker)
+E                 assert child_source != fixture.CHILD
+E                 (work / "child.py").write_text(child_source)
+E                 monkeypatch.setenv(loop_status.STORE_ROOT_ENV, str(router))
+E         >       assert sr.main(argv) == 0
+E         E       AssertionError: assert 1 == 0
+E         E        +  where 1 = <function main at 0x7f6d5185aca0>(['--target-args', '/home/runner/work/epyc-root/epyc-root/evidence/native-primary/test_terminal_original_cpu_gpu_result...table/original-fixtures/test_terminal_original_cpu_gpu0/actual-terminal/gpu/args.json', '--batch-iterations', '1', ...])
+E         E        +    where <function main at 0x7f6d5185aca0> = <module 'autokernel.loop.serial_run' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/serial_run.py'>.main
+E         
+E         tests/test_dashboard_serial_completed.py:37: AssertionError
+E         =========================== short test summary info ============================
+E         FAILED tests/test_dashboard_serial_completed.py::test_terminal_original_cpu_gpu_results_remain_selectable - AssertionError: assert 1 == 0
+E          +  where 1 = <function main at 0x7f6d5185aca0>(['--target-args', '/home/runner/work/epyc-root/epyc-root/evidence/native-primary/test_terminal_original_cpu_gpu_result...table/original-fixtures/test_terminal_original_cpu_gpu0/actual-terminal/gpu/args.json', '--batch-iterations', '1', ...])
+E          +    where <function main at 0x7f6d5185aca0> = <module 'autokernel.loop.serial_run' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/serial_run.py'>.main
+E         1 failed in 5.05s
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/runner/work/_temp/p6-venv/bin/python', '-m', 'pytest', '-q', 'tests/test_dashboard_seria...epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/serial_run.py\'>.main\n1 failed in 5.05s\n', stderr='').returncode
+
+tests/test_dashboard_serial_loop.py:299: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_dashboard_serial_loop.py::test_actual_owned_children_switch_and_preserve_original_history - AssertionError: F                                                                        [100%]
+  =================================== FAILURES ===================================
+  _______ test_actual_owned_children_switch_and_preserve_original_history ________
+  
+  sources = (PosixPath('/home/runner/work/epyc-root/epyc-root/evidence/native-primary/test_actual_owned_children_switch_and_preser..., 'selected_id': 'fixture-cpu', ...}, {'batch_iterations': 3, 'failed_targets': {}, 'next_batch': 0, 'rounds': 2, ...})
+  producer = <module 'autokernel.loop.status' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/status.py'>
+  tmp_path = PosixPath('/home/runner/work/epyc-root/epyc-root/evidence/native-primary/test_actual_owned_children_switch_and_preserve_original_history/original-fixtures/test_actual_owned_children_swi0')
+  monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fcb546d3820>
+  
+      def test_actual_owned_children_switch_and_preserve_original_history(sources, producer, tmp_path, monkeypatch):
+          if _isolated_native_owner("tests/test_dashboard_serial_loop.py::test_actual_owned_children_switch_and_preserve_original_history"):
+              return
+          fixture = importlib.import_module("autokernel.loop.test_serial_run")
+          sr = importlib.import_module("autokernel.loop.serial_run")
+          child_source = fixture.CHILD.replace("count = 0 if stopped[0]", '''
+      from scripts.kernel_rnd.autokernel.loop import status
+      status.write(Path(sr.option(argv, "--store")), state="running", epoch="fixture",
+          campaign_id="ak-loop", anchor_commit="a"*40, surface="fixture", pairs=5,
+          noise_floor_pct=None, target=identity,
+          batch={"output_dir": str(out), "pid": __import__("os").getpid()},
+          iterations_planned=1, outcomes=[{"status":"measured_null","mechanism_id":"synthetic-only"}])
+      (out / "published").touch()
+      until = time.monotonic() + 5
+      while not (out / "read-by-hub").exists() and time.monotonic() < until:
+          time.sleep(.01)
+      count = 0 if stopped[0]''')
+          invocation_root = tmp_path / "actual"
+          invocation_root.mkdir()
+          router, argv = fixture._inputs(invocation_root, monkeypatch, rounds=1)
+          (invocation_root / "child.py").write_text(child_source)
+          monkeypatch.setenv(loop_status.STORE_ROOT_ENV, str(router))
+          original_write = producer.write
+          seen = []
+          def observe(*args, **kwargs):
+              result = original_write(*args, **kwargs)
+              if kwargs["campaign_id"] == "legacy-serial" and kwargs["state"] == "running":
+                  directory = Path(kwargs["target"]["batch_dir"])
+                  until = time.monotonic() + 5
+                  while not (directory / "published").exists() and time.monotonic() < until:
+                      time.sleep(.01)
+                  assert (directory / "published").exists()
+                  wire, observation = loop_status.snapshot()
+                  identity = kwargs["target"]["process_identity"]
+                  assert identity["pid"] == kwargs["target"]["pid"]
+                  assert type(identity["start_ticks"]) is int and identity["boot_id"]
+                  assert wire["serial"]["active"]["process_identity"] == identity
+                  assert wire["serial"]["child"]["joined"]
+                  assert wire["serial"]["child"]["loop"]["batch"]["pid"] == kwargs["target"]["pid"]
+                  seen.append((wire, observation.watermark))
+                  (directory / "read-by-hub").touch()
+              return result
+          monkeypatch.setattr(producer, "write", observe)
+  >       assert sr.main(argv) == 0
+  E       AssertionError: assert 1 == 0
+  E        +  where 1 = <function main at 0x7fcb5389ef20>(['--target-args', '/home/runner/work/epyc-root/epyc-root/evidence/native-primary/test_actual_owned_children_switch_and...iginal_history/original-fixtures/test_actual_owned_children_swi0/actual/gpu/args.json', '--batch-iterations', '1', ...])
+  E        +    where <function main at 0x7fcb5389ef20> = <module 'autokernel.loop.serial_run' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/serial_run.py'>.main
+  
+  tests/test_dashboard_serial_loop.py:346: AssertionError
+  =========================== short test summary info ============================
+  FAILED tests/test_dashboard_serial_loop.py::test_actual_owned_children_switch_and_preserve_original_history - AssertionError: assert 1 == 0
+   +  where 1 = <function main at 0x7fcb5389ef20>(['--target-args', '/home/runner/work/epyc-root/epyc-root/evidence/native-primary/test_actual_owned_children_switch_and...iginal_history/original-fixtures/test_actual_owned_children_swi0/actual/gpu/args.json', '--batch-iterations', '1', ...])
+   +    where <function main at 0x7fcb5389ef20> = <module 'autokernel.loop.serial_run' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/serial_run.py'>.main
+  1 failed in 5.02s
+  
+assert 1 == 0
+ +  where 1 = CompletedProcess(args=['/home/runner/work/_temp/p6-venv/bin/python', '-m', 'pytest', '-q', 'tests/test_dashboard_seria...epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/serial_run.py\'>.main\n1 failed in 5.02s\n', stderr='').returncode
+FAILED tests/test_dashboard_serial_completed.py::test_terminal_original_cpu_gpu_results_remain_selectable - AssertionError: F                                                                        [100%]
+  =================================== FAILURES ===================================
+  ___________ test_terminal_original_cpu_gpu_results_remain_selectable ___________
+  
+  sources = (PosixPath('/home/runner/work/epyc-root/epyc-root/evidence/native-primary/test_terminal_original_cpu_gpu_results_remai..., 'selected_id': 'fixture-cpu', ...}, {'batch_iterations': 3, 'failed_targets': {}, 'next_batch': 0, 'rounds': 2, ...})
+  tmp_path = PosixPath('/home/runner/work/epyc-root/epyc-root/evidence/native-primary/test_terminal_original_cpu_gpu_results_remain_selectable/original-fixtures/test_terminal_original_cpu_gpu0')
+  monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f6d52abed70>
+  
+      def test_terminal_original_cpu_gpu_results_remain_selectable(sources, tmp_path, monkeypatch):  # noqa: F811
+          if _isolated_native_owner("tests/test_dashboard_serial_completed.py::test_terminal_original_cpu_gpu_results_remain_selectable"):
+              return
+          fixture = importlib.import_module("autokernel.loop.test_serial_run")
+          sr = importlib.import_module("autokernel.loop.serial_run")
+          work = tmp_path / "actual-terminal"
+          work.mkdir()
+          router, argv = fixture._inputs(work, monkeypatch, rounds=1)
+          marker = '(out / "loop-continuation.json").write_text(json.dumps(row))'
+          child_source = fixture.CHILD.replace(
+              'SimpleNamespace(status="measured_null")',
+              'SimpleNamespace(status="kept" if cpu else "measured_null")').replace(
+              'anchor_commit="a" * 40,', 'anchor_commit=("b" if cpu else "a") * 40,').replace(marker, '''
+      from scripts.kernel_rnd.autokernel.loop import status
+      status.write(Path(sr.option(argv, "--store")), state="complete", epoch="fixture",
+          campaign_id="ak-loop", anchor_commit=row["current_anchor"]["commit"],
+          model=row["model"], surface="serving:fixture-"+target_id, pairs=5,
+          noise_floor_pct=7.8, target=identity, champion_head=row["current_anchor"]["commit"],
+          batch={"output_dir": str(out), "pid": __import__("os").getpid()},
+          iterations_planned=row["iterations_requested"], outcomes=[{
+              "status":"kept" if cpu else "measured_null", "mechanism_id":"synthetic-"+target_id,
+              "reason":"fixture-only, no measured hardware gain"} for _ in range(count)])
+      ''' + marker)
+          assert child_source != fixture.CHILD
+          (work / "child.py").write_text(child_source)
+          monkeypatch.setenv(loop_status.STORE_ROOT_ENV, str(router))
+  >       assert sr.main(argv) == 0
+  E       AssertionError: assert 1 == 0
+  E        +  where 1 = <function main at 0x7f6d5185aca0>(['--target-args', '/home/runner/work/epyc-root/epyc-root/evidence/native-primary/test_terminal_original_cpu_gpu_result...table/original-fixtures/test_terminal_original_cpu_gpu0/actual-terminal/gpu/args.json', '--batch-iterations', '1', ...])
+  E        +    where <function main at 0x7f6d5185aca0> = <module 'autokernel.loop.serial_run' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/serial_run.py'>.main
+  
+  tests/test_dashboard_serial_completed.py:37: AssertionError
+  =========================== short test summary info ============================
+  FAILED tests/test_dashboard_serial_completed.py::test_terminal_original_cpu_gpu_results_remain_selectable - AssertionError: assert 1 == 0
+   +  where 1 = <function main at 0x7f6d5185aca0>(['--target-args', '/home/runner/work/epyc-root/epyc-root/evidence/native-primary/test_terminal_original_cpu_gpu_result...table/original-fixtures/test_terminal_original_cpu_gpu0/actual-terminal/gpu/args.json', '--batch-iterations', '1', ...])
+   +    where <function main at 0x7f6d5185aca0> = <module 'autokernel.loop.serial_run' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/serial_run.py'>.main
+  1 failed in 5.05s
+  
+assert 1 == 0
+ +  where 1 = CompletedProcess(args=['/home/runner/work/_temp/p6-venv/bin/python', '-m', 'pytest', '-q', 'tests/test_dashboard_seria...epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/serial_run.py\'>.main\n1 failed in 5.05s\n', stderr='').returncode
+2 failed, 524 passed, 181 subtests passed in 38.11s

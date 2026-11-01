@@ -1,0 +1,951 @@
+........................................................................ [  8%]
+........................................................................ [ 17%]
+...................................s................................................................................................... [ 33%]
+..........................FFFFF..............F........................................................................... [ 48%]
+................................................................ [ 55%]
+......................... [ 58%]
+........................................................................................... [ 69%]
+...........................................................................F..................................................... [ 85%]
+...........................F.........F.....F.F.FFFF......FFFFF.......... [ 94%]
+...F....FFFF....................................                         [100%]
+=================================== FAILURES ===================================
+______ test_a_superseded_bundle_renders_a_loud_verdict_beside_the_number _______
+
+bundle_at = <function bundle_at.<locals>.place at 0x7f2c05134220>
+loop_body = {'_freshness': {'absence_means': "the rebuilt loop has never published a status in this store root. It is not 'quiet' ...on exit (including on failure), so a running loop is never absent here.", 'age_s': 0.0, 'artifact_present': False, ...}
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_a_superseded_bundle_rende0')
+
+    @pytestmark_node
+    def test_a_superseded_bundle_renders_a_loud_verdict_beside_the_number(
+            bundle_at, loop_body, tmp_path):
+        """The regression this exists for: a moved-past number that read as live.
+    
+        Was ``test_a_stale_bundle_renders_a_stale_verdict_beside_the_number``. The
+        guard is IDENTICAL — a number whose claim no longer holds must carry a loud
+        verdict before it and lose its live colour — only the cause changed: the
+        subject moving (here, ancestry broken), not the file aging.
+        """
+        subject = bundle_at.subject
+        payload = dict(loop_body)
+        payload["operator_gates"] = bundle_at(
+            body_edit=subject.aligned(measured=subject.divergent), age_days=0.1)
+        card = _opgate(payload, tmp_path)
+>       assert bundle_at.display_pct in card, "the operator-gated figure did not render at all"
+E       AssertionError: the operator-gated figure did not render at all
+E       assert '46.6%' in '<div class="og-verdict superseded"><b>SUPERSEDED — the subject this evidence measured has moved</b><div style="margin...s for what it measured; it no longer describes the current serving question.; measured 2.4 h ago</div></div></details>'
+E        +  where '46.6%' = <function bundle_at.<locals>.place at 0x7f2c05134220>.display_pct
+
+tests/test_dashboard_kernel_freshness_envelopes.py:552: AssertionError
+___________ test_a_promoted_past_bundle_renders_the_loud_verdict_too ___________
+
+bundle_at = <function bundle_at.<locals>.place at 0x7f2c05136ac0>
+loop_body = {'_freshness': {'absence_means': "the rebuilt loop has never published a status in this store root. It is not 'quiet' ...on exit (including on failure), so a running loop is never absent here.", 'age_s': 0.0, 'artifact_present': False, ...}
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_a_promoted_past_bundle_re0')
+
+    @pytestmark_node
+    def test_a_promoted_past_bundle_renders_the_loud_verdict_too(
+            bundle_at, loop_body, tmp_path):
+        """The OTHER subject fact, executed at the page: production promoted past
+        the bundle's anchor renders the same loud treatment, naming the anchor."""
+        subject = bundle_at.subject
+        edit = subject.aligned()
+        subject.promote()
+        payload = dict(loop_body)
+        payload["operator_gates"] = bundle_at(body_edit=edit, age_days=0)
+        card = _opgate(payload, tmp_path)
+        assert "SUPERSEDED" in card
+        assert "promoted past" in _text(card)
+>       assert "og-num dated" in card and "og-num pos" not in card
+E       assert ('og-num dated' in '<div class="og-verdict superseded"><b>SUPERSEDED — the subject this evidence measured has moved</b><div style="margin...s for what it measured; it no longer describes the current serving question.; measured 0.0 h ago</div></div></details>')
+
+tests/test_dashboard_kernel_freshness_envelopes.py:577: AssertionError
+________ test_an_unverifiable_subject_says_so_and_renders_no_calm_state ________
+
+bundle_at = <function bundle_at.<locals>.place at 0x7f2c05136fc0>
+loop_body = {'_freshness': {'absence_means': "the rebuilt loop has never published a status in this store root. It is not 'quiet' ...on exit (including on failure), so a running loop is never absent here.", 'age_s': 0.0, 'artifact_present': False, ...}
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_an_unverifiable_subject_s0')
+
+    @pytestmark_node
+    def test_an_unverifiable_subject_says_so_and_renders_no_calm_state(
+            bundle_at, loop_body, tmp_path):
+        """Unresolvable trees must not fold into the healthy rendering — and must
+        not fall back to a wall-clock word either."""
+        subject = bundle_at.subject
+        edit = subject.aligned()
+        subject.break_champion()
+        payload = dict(loop_body)
+        payload["operator_gates"] = bundle_at(body_edit=edit, age_days=0)
+        card = _opgate(payload, tmp_path)
+        assert "UNVERIFIABLE" in card
+        assert "cannot be established" in _text(card)
+        assert "STALE" not in card
+>       assert "og-num dated" in card and "og-num pos" not in card, (
+            "an unverifiable figure was painted as a current gain")
+E       AssertionError: an unverifiable figure was painted as a current gain
+E       assert ('og-num dated' in '<div class="og-verdict unverifiable"><b>UNVERIFIABLE — relevance cannot be established right now</b><div style="margi...re falls back to the wall clock: &#39;we cannot say&#39; is its own verdict.; measured 0.0 h ago</div></div></details>')
+
+tests/test_dashboard_kernel_freshness_envelopes.py:594: AssertionError
+___________________ test_a_relevant_OLD_bundle_renders_CALM ____________________
+
+bundle_at = <function bundle_at.<locals>.place at 0x7f2c05137100>
+loop_body = {'_freshness': {'absence_means': "the rebuilt loop has never published a status in this store root. It is not 'quiet' ...on exit (including on failure), so a running loop is never absent here.", 'age_s': 0.0, 'artifact_present': False, ...}
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_a_relevant_OLD_bundle_ren0')
+
+    @pytestmark_node
+    def test_a_relevant_OLD_bundle_renders_CALM(bundle_at, loop_body, tmp_path):
+        """The operator's exact scenario, executed: 3.1 days old, subject unmoved.
+    
+        The old contract alarmed STALE here (3-day wall-clock band). The new card
+        must be calm: no alarm banner, the age informational in the summary line
+        with the single-slot guarantee spelled out, and the number in its live
+        colour — not amber.
+        """
+        payload = dict(loop_body)
+        payload["operator_gates"] = bundle_at(age_days=3.1)
+        out = _render(payload, "render", tmp_path)
+        card = out["by_id"]["opgate"]
+>       assert bundle_at.display_pct in card
+E       assert '46.6%' in '<div class="og-head"><span class="og-sum"><b>Workload vector</b> · operator-gated · no promotion authority · measured...nt exists (the bundle path is a single slot the emitter overwrites in place); measured 3.1 d ago</div></div></details>'
+E        +  where '46.6%' = <function bundle_at.<locals>.place at 0x7f2c05137100>.display_pct
+
+tests/test_dashboard_kernel_freshness_envelopes.py:611: AssertionError
+______________ test_an_EXTREME_age_renders_advice_and_stays_calm _______________
+
+bundle_at = <function bundle_at.<locals>.place at 0x7f2c051374c0>
+loop_body = {'_freshness': {'absence_means': "the rebuilt loop has never published a status in this store root. It is not 'quiet' ...on exit (including on failure), so a running loop is never absent here.", 'age_s': 0.0, 'artifact_present': False, ...}
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_an_EXTREME_age_renders_ad0')
+
+    @pytestmark_node
+    def test_an_EXTREME_age_renders_advice_and_stays_calm(
+            bundle_at, loop_body, tmp_path):
+        payload = dict(loop_body)
+        payload["operator_gates"] = bundle_at(age_days=45)
+        card = _opgate(payload, tmp_path)
+        assert "consider re-measuring" in _text(card)
+        for alarm in ("STALE", "SUPERSEDED", "UNVERIFIABLE"):
+            assert alarm not in card
+>       assert "og-num pos" in card and "og-num dated" not in card, (
+            "the >30d advisory coloured the number amber on its own")
+E       AssertionError: the >30d advisory coloured the number amber on its own
+E       assert ('og-num pos' in '<div class="og-head"><span class="og-sum"><b>Workload vector</b> · operator-gated · no promotion authority · measured...onsider re-measuring; this is advisory only, because age alone never alarms an episodic producer</div></div></details>')
+
+tests/test_dashboard_kernel_freshness_envelopes.py:635: AssertionError
+_ TestTheRegistryCarriesOneKernelRnDRow.test_the_registry_and_the_served_pages_are_still_total_in_both_directions _
+
+self = <tests.test_dashboard_kernel_rnd_merge.TestTheRegistryCarriesOneKernelRnDRow testMethod=test_the_registry_and_the_served_pages_are_still_total_in_both_directions>
+
+    def test_the_registry_and_the_served_pages_are_still_total_in_both_directions(self):
+        rows = _rows()
+        hub_paths = {r["path"] for r in rows.values() if r["port"] == 8100}
+>       self.assertEqual(hub_paths, set(S.HTML_ROUTES),
+                         "a registry row with no page is a nav link to a 404; a "
+                         "page with no row is a surface nobody learns exists")
+E       AssertionError: Items in the first set but not the second:
+E       '/amd-ai-lab/'
+E       Items in the second set but not the first:
+E       '/amd-ai-lab' : a registry row with no page is a nav link to a 404; a page with no row is a surface nobody learns exists
+
+tests/test_dashboard_kernel_rnd_merge.py:263: AssertionError
+_ PageRegistryBidirectionalTest.test_every_hub_page_has_a_registry_entry (route='/amd-ai-lab') _
+
+self = <tests.test_dashboard_nav.PageRegistryBidirectionalTest testMethod=test_every_hub_page_has_a_registry_entry>
+
+    def test_every_hub_page_has_a_registry_entry(self):
+        by_path = {e["path"]: e for e in _entries() if e["port"] == self.HUB_PORT}
+        for route in server.HTML_ROUTES:
+            with self.subTest(route=route):
+>               self.assertIn(
+                    route, by_path,
+                    f"{route} is served by the hub but is in no registry row, so "
+                    "no nav can link to it")
+E               AssertionError: '/amd-ai-lab' not found in {'/machine': {'id': 'machine', 'title': 'Machine', 'port': 8100, 'path': '/machine', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'global hardware + live-inference monitor (data: :8000 API)'}, '/autopilot': {'id': 'autopilot', 'title': 'Autopilot', 'port': 8100, 'path': '/autopilot', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'autopilot loop: phase, log, Pareto/GEPA, optimization (data: :8000 API)'}, '/cockpit': {'id': 'cockpit', 'title': 'Cockpit', 'port': 8100, 'path': '/cockpit', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'AP-50 decision cockpit: what optimizes the orchestrator, per measurement era: current trial + falsifier, incumbent-vs-candidate deltas (n, SE, replication), proposed/executed/valid/kept/promoted/live funnel with rejection reasons, journal+study lever scoreboard, provenance drill-down (data: :8000/dashboard/api/decision_cockpit; data probe :8000/dashboard/api/decision_cockpit/health — /health here is transport-only)'}, '/gpu-window': {'id': 'gpu-window', 'title': 'MI210 window', 'port': 8100, 'path': '/gpu-window', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'G1 MI210 window: holder, grant state, window id, expected end, overdue, lease state, watchdog age, verdict (ok/window_open/alarm) and health reasons. Data plane owned by epyc-orchestrator (:8000/dashboard/api/gpu_window), page owned by epyc-root; data probe :8000/dashboard/api/gpu_window/health — /health here is transport-only'}, '/': {'id': 'handoffs', 'title': 'Handoffs', 'port': 8100, 'path': '/', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'handoff kanban + backlog flow'}, '/loop': {'id': 'autokernel-loop', 'title': 'Kernel R&D', 'chip': 'live', 'port': 8100, 'path': '/loop', 'owner_repo': 'epyc-root', 'health_path': '/api/loop/health', 'blurb': 'THE Kernel R&D surface: explicitly selected unified campaign status and authenticated producer controls, otherwise the legacy AutoKernel loop; an independently dated champion headline versus the frozen production kernel, operator-gated serving evidence and belief records. Durable history is not producer liveness. /api/loop/health follows the selected campaign or legacy loop without allowing other evidence cards to certify it. /kernel redirects here. Unified execution remains gated separately from management controls.'}, '/bus': {'id': 'bus', 'title': 'Bus', 'port': 8100, 'path': '/bus', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'session-bus roster, heartbeats, queue'}, '/benchmarks': {'id': 'benchmarks', 'title': 'Benchmarks', 'port': 8100, 'path': '/benchmarks', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'benchmark artifact inventory (read-only)'}, '/amd-ai-lab/': {'id': 'amd-ai-lab', 'title': 'AMD AI Lab', 'chip': 'draft', 'port': 8100, 'path': '/amd-ai-lab/', 'owner_repo': 'epyc-web', 'health_path': '/health', 'blurb': 'AMD hardware recipes and benchmark results — explicit publication snapshot from epyc-web', 'freshness': {'kind': 'static-snapshot', 'source': 'epyc-web', 'artifact': 'dashboard/static/amd-ai-lab/', 'stale_after_s': 2592000, 'absence_means': 'the published epyc-web snapshot is missing from the hub checkout'}}} : /amd-ai-lab is served by the hub but is in no registry row, so no nav can link to it
+
+tests/test_dashboard_nav.py:133: AssertionError
+_ PageRegistryBidirectionalTest.test_every_hub_registry_entry_is_a_served_page (entry='amd-ai-lab') _
+
+self = <tests.test_dashboard_nav.PageRegistryBidirectionalTest testMethod=test_every_hub_registry_entry_is_a_served_page>
+
+    def test_every_hub_registry_entry_is_a_served_page(self):
+        for entry in _entries():
+            if entry["port"] != self.HUB_PORT:
+                continue
+            with self.subTest(entry=entry["id"]):
+>               self.assertIn(
+                    entry["path"], server.HTML_ROUTES,
+                    f"registry row {entry['id']!r} points at {entry['path']}, "
+                    "which this hub does not serve — a nav link to a 404")
+E               AssertionError: '/amd-ai-lab/' not found in {'/': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/handoffs.html'), '/machine': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/machine.html'), '/autopilot': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/autopilot.html'), '/cockpit': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/cockpit.html'), '/gpu-window': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/gpu-window.html'), '/loop': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/loop.html'), '/bus': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/bus.html'), '/benchmarks': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/benchmarks.html'), '/amd-ai-lab': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/amd-ai-lab/index.html')} : registry row 'amd-ai-lab' points at /amd-ai-lab/, which this hub does not serve — a nav link to a 404
+
+tests/test_dashboard_nav.py:143: AssertionError
+_ SharedNavAdoptionTest.test_every_existing_page_mounts_the_shared_nav (route='/amd-ai-lab') _
+
+self = <tests.test_dashboard_nav.SharedNavAdoptionTest testMethod=test_every_existing_page_mounts_the_shared_nav>
+
+    def test_every_existing_page_mounts_the_shared_nav(self):
+        for route, path in _page_paths().items():
+            with self.subTest(route=route):
+                if not path.is_file():
+                    self.skipTest(f"{path.name} not written yet (RTG-47 Phase 1a "
+                                  "parallel build); it will exist at CI time")
+                text = path.read_text(encoding="utf-8")
+>               self.assertIn('id="epyc-nav"', text,
+                              f"{path.name} has no shared-nav mount point")
+E               AssertionError: 'id="epyc-nav"' not found in '<!doctype html>\n<html lang="en">\n  <head>\n    <meta charset="utf-8" />\n    <meta name="viewport" content="width=device-width, initial-scale=1" />\n    <meta name="theme-color" content="#101116" />\n    <title>AMD AI Lab · Find your inference sweet spot</title>\n    <meta\n      name="description"\n      content="Explore measured AMD inference: model benchmarks, concurrency curves and interactive KV cache matrices."\n    />\n    <link rel="stylesheet" href="styles.css" />\n  </head>\n  <body>\n    <div class="shell">\n      <header>\n        <a class="brand" href="#top"\n          ><span class="mark" aria-hidden="true"\n            ><svg viewBox="0 0 32 32" width="26" height="26" fill="none">\n              <path\n                d="M16 2v28M2 16h28M6 6l20 20M6 26L26 6"\n                stroke="currentColor"\n                stroke-width="3"\n              /></svg\n          ></span>\n          AMD AI LAB<span class="beta">FIELD NOTES</span></a\n        >\n        <nav>\n          <a href="#models">Models</a><a href="#method">How to read</a\n          ><a\n            href="https://github.com/pestopoppa/llama.cpp/releases/tag/production-consolidated-v10"\n            >Get the kernel ↗</a\n          >\n        </nav>\n      </header>\n      <main id="top">\n        <section class="hero">\n          <div class="eyebrow">\n            <span class="dot"></span> EPYC + INSTINCT / FROZEN KERNEL v10\n          </div>\n          <h1>More AI.<br /><em>From your AMD hardware.</em></h1>\n          <p>\n            Optimized kernels. Faster local inference. Explore our best measured\n            configurations—from speculative decoding on Instinct to native MTP\n            on EPYC—and see what it takes to run them yourself.\n          </p>\n          <div class="hero-foot">\n            <a class="primary" href="#models"\n              >Explore the results <span>↘</span></a\n            ><span>EPYC 9655 <b>+</b> Instinct MI210 · 64 GB</span>\n          </div>\n          <div class="hero-art" aria-hidden="true">\n            <div class="orb"></div>\n            <div class="axis">CONCURRENCY × CONTEXT</div>\n            <div class="art-grid">\n              <i style="--v: 0"></i><i style="--v: 0.35"></i\n              ><i style="--v: 0.7"></i><i style="--v: 0.1"></i\n              ><i style="--v: 0.45"></i><i style="--v: 0.8"></i\n              ><i style="--v: 0.2"></i><i style="--v: 0.55"></i\n              ><i style="--v: 0.9"></i><i style="--v: 0.3"></i\n              ><i style="--v: 0.65"></i><i style="--v: 0.05"></i\n              ><i style="--v: 0.4"></i><i style="--v: 0.75"></i\n              ><i style="--v: 0.15"></i><i style="--v: 0.5"></i\n              ><i style="--v: 0.85"></i><i style="--v: 0.25"></i\n              ><i style="--v: 0.6"></i><i style="--v: 0"></i\n              ><i style="--v: 0.35"></i><i style="--v: 0.7"></i\n              ><i style="--v: 0.1"></i><i style="--v: 0.45"></i\n              ><i style="--v: 0.8"></i><i style="--v: 0.2"></i\n              ><i style="--v: 0.55"></i><i style="--v: 0.9"></i\n              ><i style="--v: 0.3"></i><i style="--v: 0.65"></i\n              ><i style="--v: 0.05"></i><i style="--v: 0.4"></i>\n            </div>\n            <span class="art-caption">MEASURE. COMPARE. REPRODUCE.</span>\n          </div>\n        </section>\n        <section id="models">\n          <div class="section-title">\n            <div>\n              <span class="eyebrow">BEST MEASURED CONFIGURATIONS</span>\n              <h2>The hardware. The recipe. The result.</h2>\n            </div>\n            <span class="muted">Post-BIOS measurements · September 2026</span>\n          </div>\n          <div class="toolbar">\n            <div class="filters" aria-label="Hardware filters">\n              <button data-filter="all" class="active" aria-pressed="true">\n                All models</button\n              ><button data-filter="gpu" aria-pressed="false">\n                Instinct MI210</button\n              ><button data-filter="cpu" aria-pressed="false">EPYC CPU</button>\n            </div>\n            <label class="search"\n              ><span aria-hidden="true"\n                ><svg\n                  viewBox="0 0 20 20"\n                  width="16"\n                  height="16"\n                  fill="none"\n                  stroke="currentColor"\n                >\n                  <circle cx="8" cy="8" r="5" />\n                  <path d="m12 12 5 5" /></svg></span\n              ><input\n                type="search"\n                placeholder="Find a model…"\n                aria-label="Find a model"\n            /></label>\n          </div>\n          <div class="catalog" data-catalog-grid>\n            <p role="status">Loading model benchmarks…</p>\n          </div>\n          <p class="catalog-note">\n            Open a model for its measurements, settings, and source evidence.\n            Rates from different recipes are kept separate.\n          </p>\n        </section>\n        <section id="implementation" class="method">\n          <div>\n            <span class="eyebrow">AMD INFERENCE IMPLEMENTATION</span>\n            <h2>Bring this performance<br />to your own stack.</h2>\n          </div>\n          <div>\n            <h3>From hardware to a working recipe</h3>\n            <p>\n              I help teams select models, deploy optimized CPU and ROCm kernels,\n              and tune speculative decoding, memory placement, and concurrency\n              for their workloads.\n            </p>\n          </div>\n          <div>\n            <h3>Measure what your users experience</h3>\n            <p>\n              Implementation support includes reproducible benchmarking and\n              workload-specific validation, so you can choose the right balance\n              of speed, context capacity, and serving cost.\n            </p>\n          </div>\n        </section>\n        <section id="method" class="method">\n          <div>\n            <span class="eyebrow">A QUICK READING GUIDE</span>\n            <h2>The number is only<br />half the story.</h2>\n          </div>\n          <div>\n            <h3>One user or the whole server?</h3>\n            <p>\n              Per-request decode measures an individual response. Wall-clock\n              aggregate measures all completed tokens over elapsed time.\n              Qualification curves separately report the sum of request decode\n              rates. Higher concurrency can raise one while lowering the other.\n            </p>\n          </div>\n          <div>\n            <h3>Same kernel. Different evidence.</h3>\n            <p>\n              The KV studies use the frozen v10 binary, but one sample per cell\n              is exploratory. A measured difference is not a proven speedup.\n              Recipe and sample counts stay beside every chart.\n            </p>\n          </div>\n        </section>\n      </main>\n      <footer>\n        <a class="brand" href="#top"\n          ><span class="mark" aria-hidden="true"\n            ><svg viewBox="0 0 32 32" width="26" height="26" fill="none">\n              <path\n                d="M16 2v28M2 16h28M6 6l20 20M6 26L26 6"\n                stroke="currentColor"\n                stroke-width="3"\n              /></svg\n          ></span>\n          AMD AI LAB</a\n        ><span\n          >Independent benchmarks. Model weights downloaded separately.</span\n        ><a href="data/catalog.json">Download evidence JSON ↗</a>\n      </footer>\n    </div>\n    <dialog aria-labelledby="detail-title">\n      <div class="dialog-top">\n        <span class="eyebrow">MODEL WORKSPACE</span\n        ><button data-close aria-label="Close model details">\n          Close <kbd>Esc</kbd>\n        </button>\n      </div>\n      <div data-detail></div>\n    </dialog>\n    <script src="app.js"></script>\n  </body>\n</html>\n' : index.html has no shared-nav mount point
+
+tests/test_dashboard_nav.py:197: AssertionError
+_ SharedNavAdoptionTest.test_no_page_hand_builds_a_cross_server_nav_link (route='/amd-ai-lab') _
+
+self = <tests.test_dashboard_nav.SharedNavAdoptionTest testMethod=test_no_page_hand_builds_a_cross_server_nav_link>
+
+    def test_no_page_hand_builds_a_cross_server_nav_link(self):
+        """Scoped to ``<nav>`` regions ON PURPOSE. Content links inside a card
+        body are legitimate prose (the handoff board's outcome card points at the
+        orchestrator dashboard in a sentence, and must keep doing so); a
+        hand-built link in the NAV is the drift."""
+        for route, path in _page_paths().items():
+            with self.subTest(route=route):
+                if not path.is_file():
+                    self.skipTest(f"{path.name} not written yet")
+                text = path.read_text(encoding="utf-8")
+                for block in _NAV_BLOCK_RE.findall(text):
+                    self.assertIsNone(
+                        _PORT_8000_RE.search(block),
+                        f"{path.name}: a cross-server URL is hand-built inside "
+                        f"<nav>: {block[:200]!r}")
+>                   self.assertNotIn("<a ", block,
+                                     f"{path.name}: the nav still contains a "
+                                     "hand-authored anchor; links come from "
+                                     "dashboard/registry.json")
+E                   AssertionError: '<a ' unexpectedly found in '<nav>\n          <a href="#models">Models</a><a href="#method">How to read</a\n          ><a\n            href="https://github.com/pestopoppa/llama.cpp/releases/tag/production-consolidated-v10"\n            >Get the kernel ↗</a\n          >\n        </nav>' : index.html: the nav still contains a hand-authored anchor; links come from dashboard/registry.json
+
+tests/test_dashboard_nav.py:229: AssertionError
+_ TransportPlaneStillSeparateTest.test_the_probe_is_ok_with_every_producer_dead_or_broken _
+
+self = <tests.test_dashboard_panels_redteam.TransportPlaneStillSeparateTest testMethod=test_the_probe_is_ok_with_every_producer_dead_or_broken>
+
+    def test_the_probe_is_ok_with_every_producer_dead_or_broken(self):
+        with _Artifact("KERNEL_DASHBOARD_JSON", "{truncated"), \
+             _Artifact("AUTOPILOT_OUTCOME_JSON", None), \
+             _Artifact("TIMELINE_PATH", "{broken"):
+            body = json.dumps(server.transport_probe_payload())
+            fold_status = server.health_payload()["status"]
+        self.assertRegex(body, r'"status".*ok')
+>       self.assertNotEqual(fold_status, panels.STATUS_OK)   # the fold DID notice
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: 'ok' == 'ok'
+
+tests/test_dashboard_panels_redteam.py:764: AssertionError
+___ test_original_progress_age_and_selection_survive_fresh_router_heartbeat ____
+
+sources = (PosixPath('/tmp/pytest-of-runner/pytest-1/test_original_progress_age_and0/canonical'), PosixPath('/tmp/pytest-of-runn..., 'selected_id': 'fixture-cpu', ...}, {'batch_iterations': 3, 'failed_targets': {}, 'next_batch': 0, 'rounds': 2, ...})
+producer = <module 'autokernel.loop.status' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/status.py'>
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_original_progress_age_and0')
+
+    def test_original_progress_age_and_selection_survive_fresh_router_heartbeat(sources, producer, tmp_path):
+        _canonical, _router, child, _active, _routing = sources
+        now = time.time()
+        row = _runtime(now)
+        row["selected_recipe_reference"] = {"locator": "/original/retained-selection",
+                                           "sha256": "a" * 64, "verified": True}
+        _write(producer, child, row)
+        wire = loop_status.snapshot(now=now)[0]
+        view = wire["serial"]["child"]["runtime_preparation"]
+        assert wire["freshness_state"] == wire["serial"]["child"]["freshness_state"] == "fresh"
+        assert view["progress_age_s"] == 3600
+        assert view["body"] == row
+        rendered = _run(_page_js(), wire, tmp_path, ["render"])
+        assert rendered["threw"] == []
+        card = rendered["by_id"]["runtime-preparation"]
+        assert "17 valid launches of 800" in card and "2 retained failed launches" in card
+        assert "threads=96" in card and "GLM depth3" in card
+        assert "1h" in card or "60m" in card
+        assert "<details>" in card and "/original/retained-selection" in card
+>       assert rendered["by_id"]["champ"] and rendered["by_id"]["know"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'champ'
+
+tests/test_dashboard_runtime_progress.py:52: KeyError
+___________ test_terminal_original_cpu_gpu_results_remain_selectable ___________
+
+sources = (PosixPath('/tmp/pytest-of-runner/pytest-1/test_terminal_original_cpu_gpu0/canonical'), PosixPath('/tmp/pytest-of-runn..., 'selected_id': 'fixture-cpu', ...}, {'batch_iterations': 3, 'failed_targets': {}, 'next_batch': 0, 'rounds': 2, ...})
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_terminal_original_cpu_gpu0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2c04aa5cc0>
+
+    def test_terminal_original_cpu_gpu_results_remain_selectable(sources, tmp_path, monkeypatch):  # noqa: F811
+        fixture = importlib.import_module("autokernel.loop.test_serial_run")
+        sr = importlib.import_module("autokernel.loop.serial_run")
+        work = tmp_path / "actual-terminal"
+        work.mkdir()
+        router, argv = fixture._inputs(work, monkeypatch, rounds=1)
+        marker = '(out / "loop-continuation.json").write_text(json.dumps(row))'
+        child_source = fixture.CHILD.replace(
+            'SimpleNamespace(status="measured_null")',
+            'SimpleNamespace(status="kept" if cpu else "measured_null")').replace(
+            'anchor_commit="a" * 40,', 'anchor_commit=("b" if cpu else "a") * 40,').replace(marker, '''
+    from scripts.kernel_rnd.autokernel.loop import status
+    status.write(Path(sr.option(argv, "--store")), state="complete", epoch="fixture",
+        campaign_id="ak-loop", anchor_commit=row["current_anchor"]["commit"],
+        model=row["model"], surface="serving:fixture-"+target_id, pairs=5,
+        noise_floor_pct=7.8, target=identity, champion_head=row["current_anchor"]["commit"],
+        batch={"output_dir": str(out), "pid": __import__("os").getpid()},
+        iterations_planned=row["iterations_requested"], outcomes=[{
+            "status":"kept" if cpu else "measured_null", "mechanism_id":"synthetic-"+target_id,
+            "reason":"fixture-only, no measured hardware gain"} for _ in range(count)])
+    ''' + marker)
+        assert child_source != fixture.CHILD
+        (work / "child.py").write_text(child_source)
+        monkeypatch.setenv(loop_status.STORE_ROOT_ENV, str(router))
+>       assert sr.main(argv) == 0
+               ^^^^^^^^^^^^^
+
+tests/test_dashboard_serial_completed.py:35: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../research/scripts/kernel_rnd/autokernel/loop/serial_run.py:2780: in main
+    return lane_watchdog.supervise(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+module = 'scripts.kernel_rnd.autokernel.loop.serial_run'
+argv = ['--target-args', '/tmp/pytest-of-runner/pytest-1/test_terminal_original_cpu_gpu0/actual-terminal/cpu/args.json', '--t...test-of-runner/pytest-1/test_terminal_original_cpu_gpu0/actual-terminal/gpu/args.json', '--batch-iterations', '1', ...]
+
+    def supervise(module, argv, *, key=None, keys=None, file_options=(), extra_files=(), recovery_checkpoint=None, max_restarts=2):
+        """Run main in a child; normal exit and requested signals are terminal."""
+        if any(name.startswith('AUTOKERNEL_WATCHDOG_') for name in os.environ):
+            raise WatchdogRefused('reserved supervisor environment already set')
+        named_stores = tuple(Path(p).absolute() for p in (keys if keys is not None else [key]))
+        def resolved_stores():
+            return tuple(str(path.resolve()) for path in named_stores)
+        named_binding = resolved_stores()
+        identities = sorted(set(named_binding))
+        if not identities or any(p == str(Path('None').resolve()) for p in identities):
+            raise WatchdogRefused('canonical target stores are required')
+        digests = [hashlib.sha256(p.encode()).hexdigest() for p in identities]
+        root = Path(tempfile.gettempdir()) / f'autokernel-lane-watchdog-{os.getuid()}'
+        root.mkdir(mode=0o700, exist_ok=True)
+        if root.is_symlink() or root.stat().st_uid != os.getuid() or root.stat().st_mode & 0o077:
+            raise WatchdogRefused('unsafe watchdog directory')
+        state_paths = [root / (digest + '.json') for digest in digests]
+        with contextlib.ExitStack() as stack:
+            lock_fds = {}
+            for identity, digest in zip(identities, digests):
+                lock = stack.enter_context((root / (digest + '.lock')).open('a+'))
+                lock_fds[identity] = lock.fileno()
+                try:
+                    fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                except BlockingIOError as exc:
+                    raise WatchdogRefused('lane already supervised') from exc
+                os.set_inheritable(lock.fileno(), True)
+            from .worker_lifecycle import process_identity
+            binding = _binding(argv, Path(__file__).parent, file_options, extra_files)
+            # A previous supervisor may have died while descendants escaped its process
+            # group. Its state is never cleared by guessing from a recycled PID.
+            if any(path.exists() for path in state_paths):
+                raise WatchdogRefused('prior supervisor state unresolved; recovery held')
+            if threading.active_count() != 1:
+>               raise WatchdogRefused('supervision requires a dedicated single-threaded owner')
+E               autokernel.loop.lane_watchdog.WatchdogRefused: supervision requires a dedicated single-threaded owner
+
+../research/scripts/kernel_rnd/autokernel/loop/lane_watchdog.py:241: WatchdogRefused
+___________ test_original_writer_reader_page_keeps_canonical_history ___________
+
+sources = (PosixPath('/tmp/pytest-of-runner/pytest-1/test_original_writer_reader_pa0/canonical'), PosixPath('/tmp/pytest-of-runn..., 'selected_id': 'fixture-cpu', ...}, {'batch_iterations': 3, 'failed_targets': {}, 'next_batch': 0, 'rounds': 2, ...})
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_original_writer_reader_pa0')
+
+    def test_original_writer_reader_page_keeps_canonical_history(sources, tmp_path):
+        canonical, router, child, _active, _routing = sources
+        baseline = loop_status.snapshot(canonical)[0]
+        wire = loop_status.snapshot()[0]
+        assert wire["serial"]["child"]["joined"]
+        assert wire["serial"]["child"]["loop"]["iterations_done"] == 1
+        assert wire["loop"]["iterations_done"] == 0
+        assert wire["canonical_store_root"] == wire["knowledge_store_root"] == str(canonical)
+        assert wire["champion_vs_production"]["evidence"] == baseline["champion_vs_production"]["evidence"]
+        assert wire["champion_vs_production"]["measured"] == baseline["champion_vs_production"]["measured"]
+        assert wire["knowledge"]["attempts"] == baseline["knowledge"]["attempts"] > 0
+        rendered = _run(_page_js(), wire, tmp_path, ["render"])
+        assert rendered["threw"] == []
+>       assert "1 / 3" in rendered["by_id"]["tiles"]
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'tiles'
+
+tests/test_dashboard_serial_loop.py:93: KeyError
+______________ test_serial_router_is_the_selected_health_producer ______________
+
+sources = (PosixPath('/tmp/pytest-of-runner/pytest-1/test_serial_router_is_the_sele0/canonical'), PosixPath('/tmp/pytest-of-runn..., 'selected_id': 'fixture-cpu', ...}, {'batch_iterations': 3, 'failed_targets': {}, 'next_batch': 0, 'rounds': 2, ...})
+
+    def test_serial_router_is_the_selected_health_producer(sources):
+        _canonical, _router, _child, _active, _routing = sources
+        with server._watchdog_lock:
+            server._watchdog_state.clear()
+    
+        code, health = server.loop_data_health()
+    
+>       assert code == 200 and health["status"] == "ok"
+E       assert (503 == 200)
+
+tests/test_dashboard_serial_loop.py:129: AssertionError
+__________ test_older_or_foreign_child_is_not_current[missing_batch] ___________
+
+sources = (PosixPath('/tmp/pytest-of-runner/pytest-1/test_older_or_foreign_child_is0/canonical'), PosixPath('/tmp/pytest-of-runn..., 'selected_id': 'fixture-cpu', ...}, {'batch_iterations': 3, 'failed_targets': {}, 'next_batch': 0, 'rounds': 2, ...})
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_older_or_foreign_child_is0')
+changed = 'missing_batch'
+
+    @pytest.mark.parametrize("changed", ["missing_batch", "pid", "output_dir", "target_id"])
+    def test_older_or_foreign_child_is_not_current(sources, tmp_path, changed):
+        _canonical, _router, child, _active, _routing = sources
+        def change(body):
+            if changed == "missing_batch":
+                body.pop("batch")
+            elif changed == "target_id":
+                body["target"]["selected_id"] = "other"
+            else:
+                body["batch"][changed] = 999999 if changed == "pid" else "/other/batch"
+        _rewrite(child / "loop-status.json", change)
+        wire = loop_status.snapshot()[0]
+        assert not wire["serial"]["child"]["joined"]
+        assert wire["serial"]["child"]["loop"] is None
+        rendered = _run(_page_js(), wire, tmp_path, ["render"])
+        assert rendered["threw"] == []
+        assert "No joined current-child details" in rendered["by_id"]["serial"]
+>       assert "1 / 3" not in rendered["by_id"]["tiles"]
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'tiles'
+
+tests/test_dashboard_serial_loop.py:167: KeyError
+_______________ test_older_or_foreign_child_is_not_current[pid] ________________
+
+sources = (PosixPath('/tmp/pytest-of-runner/pytest-1/test_older_or_foreign_child_is1/canonical'), PosixPath('/tmp/pytest-of-runn..., 'selected_id': 'fixture-cpu', ...}, {'batch_iterations': 3, 'failed_targets': {}, 'next_batch': 0, 'rounds': 2, ...})
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_older_or_foreign_child_is1')
+changed = 'pid'
+
+    @pytest.mark.parametrize("changed", ["missing_batch", "pid", "output_dir", "target_id"])
+    def test_older_or_foreign_child_is_not_current(sources, tmp_path, changed):
+        _canonical, _router, child, _active, _routing = sources
+        def change(body):
+            if changed == "missing_batch":
+                body.pop("batch")
+            elif changed == "target_id":
+                body["target"]["selected_id"] = "other"
+            else:
+                body["batch"][changed] = 999999 if changed == "pid" else "/other/batch"
+        _rewrite(child / "loop-status.json", change)
+        wire = loop_status.snapshot()[0]
+        assert not wire["serial"]["child"]["joined"]
+        assert wire["serial"]["child"]["loop"] is None
+        rendered = _run(_page_js(), wire, tmp_path, ["render"])
+        assert rendered["threw"] == []
+        assert "No joined current-child details" in rendered["by_id"]["serial"]
+>       assert "1 / 3" not in rendered["by_id"]["tiles"]
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'tiles'
+
+tests/test_dashboard_serial_loop.py:167: KeyError
+____________ test_older_or_foreign_child_is_not_current[output_dir] ____________
+
+sources = (PosixPath('/tmp/pytest-of-runner/pytest-1/test_older_or_foreign_child_is2/canonical'), PosixPath('/tmp/pytest-of-runn..., 'selected_id': 'fixture-cpu', ...}, {'batch_iterations': 3, 'failed_targets': {}, 'next_batch': 0, 'rounds': 2, ...})
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_older_or_foreign_child_is2')
+changed = 'output_dir'
+
+    @pytest.mark.parametrize("changed", ["missing_batch", "pid", "output_dir", "target_id"])
+    def test_older_or_foreign_child_is_not_current(sources, tmp_path, changed):
+        _canonical, _router, child, _active, _routing = sources
+        def change(body):
+            if changed == "missing_batch":
+                body.pop("batch")
+            elif changed == "target_id":
+                body["target"]["selected_id"] = "other"
+            else:
+                body["batch"][changed] = 999999 if changed == "pid" else "/other/batch"
+        _rewrite(child / "loop-status.json", change)
+        wire = loop_status.snapshot()[0]
+        assert not wire["serial"]["child"]["joined"]
+        assert wire["serial"]["child"]["loop"] is None
+        rendered = _run(_page_js(), wire, tmp_path, ["render"])
+        assert rendered["threw"] == []
+        assert "No joined current-child details" in rendered["by_id"]["serial"]
+>       assert "1 / 3" not in rendered["by_id"]["tiles"]
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'tiles'
+
+tests/test_dashboard_serial_loop.py:167: KeyError
+____________ test_older_or_foreign_child_is_not_current[target_id] _____________
+
+sources = (PosixPath('/tmp/pytest-of-runner/pytest-1/test_older_or_foreign_child_is3/canonical'), PosixPath('/tmp/pytest-of-runn..., 'selected_id': 'fixture-cpu', ...}, {'batch_iterations': 3, 'failed_targets': {}, 'next_batch': 0, 'rounds': 2, ...})
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_older_or_foreign_child_is3')
+changed = 'target_id'
+
+    @pytest.mark.parametrize("changed", ["missing_batch", "pid", "output_dir", "target_id"])
+    def test_older_or_foreign_child_is_not_current(sources, tmp_path, changed):
+        _canonical, _router, child, _active, _routing = sources
+        def change(body):
+            if changed == "missing_batch":
+                body.pop("batch")
+            elif changed == "target_id":
+                body["target"]["selected_id"] = "other"
+            else:
+                body["batch"][changed] = 999999 if changed == "pid" else "/other/batch"
+        _rewrite(child / "loop-status.json", change)
+        wire = loop_status.snapshot()[0]
+        assert not wire["serial"]["child"]["joined"]
+        assert wire["serial"]["child"]["loop"] is None
+        rendered = _run(_page_js(), wire, tmp_path, ["render"])
+        assert rendered["threw"] == []
+        assert "No joined current-child details" in rendered["by_id"]["serial"]
+>       assert "1 / 3" not in rendered["by_id"]["tiles"]
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'tiles'
+
+tests/test_dashboard_serial_loop.py:167: KeyError
+_ test_terminal_distinctions_do_not_claim_batch_iterations[complete-False-failures0-complete] _
+
+sources = (PosixPath('/tmp/pytest-of-runner/pytest-1/test_terminal_distinctions_do_0/canonical'), PosixPath('/tmp/pytest-of-runn..., 'selected_id': 'fixture-cpu', ...}, {'batch_iterations': 3, 'failed_targets': {}, 'next_batch': 0, 'rounds': 2, ...})
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_terminal_distinctions_do_0')
+phase = 'complete', stop = False, failures = {}, label = 'complete'
+
+    @pytest.mark.parametrize("phase,stop,failures,label", [
+        ("complete", False, {}, "complete"),
+        ("complete", True, {}, "stopped"),
+        ("complete", False, {"0": "failed"}, "complete_with_failures"),
+        ("complete", False, {"0": "failed", "1": "failed"}, "all_failed"),
+        ("failed", False, {"0": "failed", "1": "failed"}, "all_failed"),
+    ])
+    def test_terminal_distinctions_do_not_claim_batch_iterations(sources, tmp_path, phase, stop, failures, label):
+        _canonical, router, _child, _active, _routing = sources
+        def change(body):
+            body["state"] = phase
+            body["target"] = {"stop_requested": stop, "failed_targets": failures}
+            body["routing"].update(stop_requested=stop, failed_targets=failures, next_batch=4)
+        _rewrite(router / "loop-status.json", change)
+        wire = loop_status.snapshot()[0]
+        assert wire["serial"]["state"] == label
+        assert wire["serial"]["child"] is None
+        rendered = _run(_page_js(), wire, tmp_path, ["render"])
+        assert rendered["threw"] == []
+>       assert "1 / 3" not in rendered["by_id"]["tiles"]
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'tiles'
+
+tests/test_dashboard_serial_loop.py:220: KeyError
+_ test_terminal_distinctions_do_not_claim_batch_iterations[complete-True-failures1-stopped] _
+
+sources = (PosixPath('/tmp/pytest-of-runner/pytest-1/test_terminal_distinctions_do_1/canonical'), PosixPath('/tmp/pytest-of-runn..., 'selected_id': 'fixture-cpu', ...}, {'batch_iterations': 3, 'failed_targets': {}, 'next_batch': 0, 'rounds': 2, ...})
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_terminal_distinctions_do_1')
+phase = 'complete', stop = True, failures = {}, label = 'stopped'
+
+    @pytest.mark.parametrize("phase,stop,failures,label", [
+        ("complete", False, {}, "complete"),
+        ("complete", True, {}, "stopped"),
+        ("complete", False, {"0": "failed"}, "complete_with_failures"),
+        ("complete", False, {"0": "failed", "1": "failed"}, "all_failed"),
+        ("failed", False, {"0": "failed", "1": "failed"}, "all_failed"),
+    ])
+    def test_terminal_distinctions_do_not_claim_batch_iterations(sources, tmp_path, phase, stop, failures, label):
+        _canonical, router, _child, _active, _routing = sources
+        def change(body):
+            body["state"] = phase
+            body["target"] = {"stop_requested": stop, "failed_targets": failures}
+            body["routing"].update(stop_requested=stop, failed_targets=failures, next_batch=4)
+        _rewrite(router / "loop-status.json", change)
+        wire = loop_status.snapshot()[0]
+        assert wire["serial"]["state"] == label
+        assert wire["serial"]["child"] is None
+        rendered = _run(_page_js(), wire, tmp_path, ["render"])
+        assert rendered["threw"] == []
+>       assert "1 / 3" not in rendered["by_id"]["tiles"]
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'tiles'
+
+tests/test_dashboard_serial_loop.py:220: KeyError
+_ test_terminal_distinctions_do_not_claim_batch_iterations[complete-False-failures2-complete_with_failures] _
+
+sources = (PosixPath('/tmp/pytest-of-runner/pytest-1/test_terminal_distinctions_do_2/canonical'), PosixPath('/tmp/pytest-of-runn..., 'selected_id': 'fixture-cpu', ...}, {'batch_iterations': 3, 'failed_targets': {}, 'next_batch': 0, 'rounds': 2, ...})
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_terminal_distinctions_do_2')
+phase = 'complete', stop = False, failures = {'0': 'failed'}
+label = 'complete_with_failures'
+
+    @pytest.mark.parametrize("phase,stop,failures,label", [
+        ("complete", False, {}, "complete"),
+        ("complete", True, {}, "stopped"),
+        ("complete", False, {"0": "failed"}, "complete_with_failures"),
+        ("complete", False, {"0": "failed", "1": "failed"}, "all_failed"),
+        ("failed", False, {"0": "failed", "1": "failed"}, "all_failed"),
+    ])
+    def test_terminal_distinctions_do_not_claim_batch_iterations(sources, tmp_path, phase, stop, failures, label):
+        _canonical, router, _child, _active, _routing = sources
+        def change(body):
+            body["state"] = phase
+            body["target"] = {"stop_requested": stop, "failed_targets": failures}
+            body["routing"].update(stop_requested=stop, failed_targets=failures, next_batch=4)
+        _rewrite(router / "loop-status.json", change)
+        wire = loop_status.snapshot()[0]
+        assert wire["serial"]["state"] == label
+        assert wire["serial"]["child"] is None
+        rendered = _run(_page_js(), wire, tmp_path, ["render"])
+        assert rendered["threw"] == []
+>       assert "1 / 3" not in rendered["by_id"]["tiles"]
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'tiles'
+
+tests/test_dashboard_serial_loop.py:220: KeyError
+_ test_terminal_distinctions_do_not_claim_batch_iterations[complete-False-failures3-all_failed] _
+
+sources = (PosixPath('/tmp/pytest-of-runner/pytest-1/test_terminal_distinctions_do_3/canonical'), PosixPath('/tmp/pytest-of-runn..., 'selected_id': 'fixture-cpu', ...}, {'batch_iterations': 3, 'failed_targets': {}, 'next_batch': 0, 'rounds': 2, ...})
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_terminal_distinctions_do_3')
+phase = 'complete', stop = False, failures = {'0': 'failed', '1': 'failed'}
+label = 'all_failed'
+
+    @pytest.mark.parametrize("phase,stop,failures,label", [
+        ("complete", False, {}, "complete"),
+        ("complete", True, {}, "stopped"),
+        ("complete", False, {"0": "failed"}, "complete_with_failures"),
+        ("complete", False, {"0": "failed", "1": "failed"}, "all_failed"),
+        ("failed", False, {"0": "failed", "1": "failed"}, "all_failed"),
+    ])
+    def test_terminal_distinctions_do_not_claim_batch_iterations(sources, tmp_path, phase, stop, failures, label):
+        _canonical, router, _child, _active, _routing = sources
+        def change(body):
+            body["state"] = phase
+            body["target"] = {"stop_requested": stop, "failed_targets": failures}
+            body["routing"].update(stop_requested=stop, failed_targets=failures, next_batch=4)
+        _rewrite(router / "loop-status.json", change)
+        wire = loop_status.snapshot()[0]
+        assert wire["serial"]["state"] == label
+        assert wire["serial"]["child"] is None
+        rendered = _run(_page_js(), wire, tmp_path, ["render"])
+        assert rendered["threw"] == []
+>       assert "1 / 3" not in rendered["by_id"]["tiles"]
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'tiles'
+
+tests/test_dashboard_serial_loop.py:220: KeyError
+_ test_terminal_distinctions_do_not_claim_batch_iterations[failed-False-failures4-all_failed] _
+
+sources = (PosixPath('/tmp/pytest-of-runner/pytest-1/test_terminal_distinctions_do_4/canonical'), PosixPath('/tmp/pytest-of-runn..., 'selected_id': 'fixture-cpu', ...}, {'batch_iterations': 3, 'failed_targets': {}, 'next_batch': 0, 'rounds': 2, ...})
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_terminal_distinctions_do_4')
+phase = 'failed', stop = False, failures = {'0': 'failed', '1': 'failed'}
+label = 'all_failed'
+
+    @pytest.mark.parametrize("phase,stop,failures,label", [
+        ("complete", False, {}, "complete"),
+        ("complete", True, {}, "stopped"),
+        ("complete", False, {"0": "failed"}, "complete_with_failures"),
+        ("complete", False, {"0": "failed", "1": "failed"}, "all_failed"),
+        ("failed", False, {"0": "failed", "1": "failed"}, "all_failed"),
+    ])
+    def test_terminal_distinctions_do_not_claim_batch_iterations(sources, tmp_path, phase, stop, failures, label):
+        _canonical, router, _child, _active, _routing = sources
+        def change(body):
+            body["state"] = phase
+            body["target"] = {"stop_requested": stop, "failed_targets": failures}
+            body["routing"].update(stop_requested=stop, failed_targets=failures, next_batch=4)
+        _rewrite(router / "loop-status.json", change)
+        wire = loop_status.snapshot()[0]
+        assert wire["serial"]["state"] == label
+        assert wire["serial"]["child"] is None
+        rendered = _run(_page_js(), wire, tmp_path, ["render"])
+        assert rendered["threw"] == []
+>       assert "1 / 3" not in rendered["by_id"]["tiles"]
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'tiles'
+
+tests/test_dashboard_serial_loop.py:220: KeyError
+_______ test_actual_owned_children_switch_and_preserve_original_history ________
+
+sources = (PosixPath('/tmp/pytest-of-runner/pytest-1/test_actual_owned_children_swi0/canonical'), PosixPath('/tmp/pytest-of-runn..., 'selected_id': 'fixture-cpu', ...}, {'batch_iterations': 3, 'failed_targets': {}, 'next_batch': 0, 'rounds': 2, ...})
+producer = <module 'autokernel.loop.status' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/status.py'>
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_actual_owned_children_swi0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2bfdcfa900>
+
+    def test_actual_owned_children_switch_and_preserve_original_history(sources, producer, tmp_path, monkeypatch):
+        fixture = importlib.import_module("autokernel.loop.test_serial_run")
+        sr = importlib.import_module("autokernel.loop.serial_run")
+        child_source = fixture.CHILD.replace("count = 0 if stopped[0]", '''
+    from scripts.kernel_rnd.autokernel.loop import status
+    status.write(Path(sr.option(argv, "--store")), state="running", epoch="fixture",
+        campaign_id="ak-loop", anchor_commit="a"*40, surface="fixture", pairs=5,
+        noise_floor_pct=None, target=identity,
+        batch={"output_dir": str(out), "pid": __import__("os").getpid()},
+        iterations_planned=1, outcomes=[{"status":"measured_null","mechanism_id":"synthetic-only"}])
+    (out / "published").touch()
+    until = time.monotonic() + 5
+    while not (out / "read-by-hub").exists() and time.monotonic() < until:
+        time.sleep(.01)
+    count = 0 if stopped[0]''')
+        invocation_root = tmp_path / "actual"
+        invocation_root.mkdir()
+        router, argv = fixture._inputs(invocation_root, monkeypatch, rounds=1)
+        (invocation_root / "child.py").write_text(child_source)
+        monkeypatch.setenv(loop_status.STORE_ROOT_ENV, str(router))
+        original_write = producer.write
+        seen = []
+        def observe(*args, **kwargs):
+            result = original_write(*args, **kwargs)
+            if kwargs["campaign_id"] == "legacy-serial" and kwargs["state"] == "running":
+                directory = Path(kwargs["target"]["batch_dir"])
+                until = time.monotonic() + 5
+                while not (directory / "published").exists() and time.monotonic() < until:
+                    time.sleep(.01)
+                assert (directory / "published").exists()
+                wire, observation = loop_status.snapshot()
+                identity = kwargs["target"]["process_identity"]
+                assert identity["pid"] == kwargs["target"]["pid"]
+                assert type(identity["start_ticks"]) is int and identity["boot_id"]
+                assert wire["serial"]["active"]["process_identity"] == identity
+                assert wire["serial"]["child"]["joined"]
+                assert wire["serial"]["child"]["loop"]["batch"]["pid"] == kwargs["target"]["pid"]
+                seen.append((wire, observation.watermark))
+                (directory / "read-by-hub").touch()
+            return result
+        monkeypatch.setattr(producer, "write", observe)
+>       assert sr.main(argv) == 0
+               ^^^^^^^^^^^^^
+
+tests/test_dashboard_serial_loop.py:316: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../research/scripts/kernel_rnd/autokernel/loop/serial_run.py:2780: in main
+    return lane_watchdog.supervise(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+module = 'scripts.kernel_rnd.autokernel.loop.serial_run'
+argv = ['--target-args', '/tmp/pytest-of-runner/pytest-1/test_actual_owned_children_swi0/actual/cpu/args.json', '--target-args', '/tmp/pytest-of-runner/pytest-1/test_actual_owned_children_swi0/actual/gpu/args.json', '--batch-iterations', '1', ...]
+
+    def supervise(module, argv, *, key=None, keys=None, file_options=(), extra_files=(), recovery_checkpoint=None, max_restarts=2):
+        """Run main in a child; normal exit and requested signals are terminal."""
+        if any(name.startswith('AUTOKERNEL_WATCHDOG_') for name in os.environ):
+            raise WatchdogRefused('reserved supervisor environment already set')
+        named_stores = tuple(Path(p).absolute() for p in (keys if keys is not None else [key]))
+        def resolved_stores():
+            return tuple(str(path.resolve()) for path in named_stores)
+        named_binding = resolved_stores()
+        identities = sorted(set(named_binding))
+        if not identities or any(p == str(Path('None').resolve()) for p in identities):
+            raise WatchdogRefused('canonical target stores are required')
+        digests = [hashlib.sha256(p.encode()).hexdigest() for p in identities]
+        root = Path(tempfile.gettempdir()) / f'autokernel-lane-watchdog-{os.getuid()}'
+        root.mkdir(mode=0o700, exist_ok=True)
+        if root.is_symlink() or root.stat().st_uid != os.getuid() or root.stat().st_mode & 0o077:
+            raise WatchdogRefused('unsafe watchdog directory')
+        state_paths = [root / (digest + '.json') for digest in digests]
+        with contextlib.ExitStack() as stack:
+            lock_fds = {}
+            for identity, digest in zip(identities, digests):
+                lock = stack.enter_context((root / (digest + '.lock')).open('a+'))
+                lock_fds[identity] = lock.fileno()
+                try:
+                    fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                except BlockingIOError as exc:
+                    raise WatchdogRefused('lane already supervised') from exc
+                os.set_inheritable(lock.fileno(), True)
+            from .worker_lifecycle import process_identity
+            binding = _binding(argv, Path(__file__).parent, file_options, extra_files)
+            # A previous supervisor may have died while descendants escaped its process
+            # group. Its state is never cleared by guessing from a recycled PID.
+            if any(path.exists() for path in state_paths):
+                raise WatchdogRefused('prior supervisor state unresolved; recovery held')
+            if threading.active_count() != 1:
+>               raise WatchdogRefused('supervision requires a dedicated single-threaded owner')
+E               autokernel.loop.lane_watchdog.WatchdogRefused: supervision requires a dedicated single-threaded owner
+
+../research/scripts/kernel_rnd/autokernel/loop/lane_watchdog.py:241: WatchdogRefused
+___________ test_actual_terminal_writer_reader_and_page[30-complete] ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_actual_terminal_writer_re0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2bfde58980>
+producer = <module 'autokernel.loop.status' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/status.py'>
+state = 'complete', age = 30
+
+    @pytest.mark.parametrize("state", ["complete", "failed"])
+    @pytest.mark.parametrize("age", [30, 9000])
+    def test_actual_terminal_writer_reader_and_page(tmp_path, monkeypatch, producer, state, age):
+        root = tmp_path / "store"
+        producer.write(root, state=state, epoch="fixture", campaign_id="ak-loop",
+            anchor_commit="a" * 40, surface="serving:fixture", pairs=5, noise_floor_pct=7.8,
+            iterations_planned=5, outcomes=[{"status": "measured_null", "effect_fraction": 0.001}] * 5,
+            step="[lane0] measuring A/B on the device", stale_after_s=180)
+        path = root / "loop-status.json"
+        original = path.read_bytes()
+        # Date the read after the original writer's timestamp, without rewriting it.
+        now = loop_status._stamp_epoch(json.loads(original)["generated_at"]) + age
+        for name in (campaign_status.STORE_ROOT_ENV, campaign_status.CAMPAIGN_ID_ENV,
+                     campaign_status.CONFIG_GENERATION_ENV, campaign_status.CONFIG_DIGEST_ENV):
+            monkeypatch.delenv(name, raising=False)
+        wire, observation = loop_status.snapshot(root, now=now)
+        assert wire["freshness_state"] == ("fresh" if age == 30 else "stale")
+        assert wire["age_s"] == age
+        assert wire["display_step"] == f"Run {state} — final report"
+        assert "no further heartbeat is expected" in wire["detail"]
+        assert wire["loop"]["step"] == "[lane0] measuring A/B on the device"
+        assert observation.producer_idle is (state == "complete")
+        rendered = _run(_page_js(), wire, tmp_path, ["render"])
+        assert not rendered["threw"]
+        assert rendered["text_by_id"]["hdr-step"] == f"Run {state} — final report"
+        badge = rendered["text_by_id"]["freshtxt"]
+        assert ("FINAL REPORT" if state == "complete" else "FAILED REPORT") in badge
+        assert "old" in badge and "STALE" not in badge
+        assert "stale" not in rendered["class_by_id"]["fresh"]
+>       assert "5 / 5" in rendered["by_id"]["tiles"]
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'tiles'
+
+tests/test_dashboard_terminal_loop.py:43: KeyError
+____________ test_actual_terminal_writer_reader_and_page[30-failed] ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_actual_terminal_writer_re1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2bfdcf8130>
+producer = <module 'autokernel.loop.status' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/status.py'>
+state = 'failed', age = 30
+
+    @pytest.mark.parametrize("state", ["complete", "failed"])
+    @pytest.mark.parametrize("age", [30, 9000])
+    def test_actual_terminal_writer_reader_and_page(tmp_path, monkeypatch, producer, state, age):
+        root = tmp_path / "store"
+        producer.write(root, state=state, epoch="fixture", campaign_id="ak-loop",
+            anchor_commit="a" * 40, surface="serving:fixture", pairs=5, noise_floor_pct=7.8,
+            iterations_planned=5, outcomes=[{"status": "measured_null", "effect_fraction": 0.001}] * 5,
+            step="[lane0] measuring A/B on the device", stale_after_s=180)
+        path = root / "loop-status.json"
+        original = path.read_bytes()
+        # Date the read after the original writer's timestamp, without rewriting it.
+        now = loop_status._stamp_epoch(json.loads(original)["generated_at"]) + age
+        for name in (campaign_status.STORE_ROOT_ENV, campaign_status.CAMPAIGN_ID_ENV,
+                     campaign_status.CONFIG_GENERATION_ENV, campaign_status.CONFIG_DIGEST_ENV):
+            monkeypatch.delenv(name, raising=False)
+        wire, observation = loop_status.snapshot(root, now=now)
+        assert wire["freshness_state"] == ("fresh" if age == 30 else "stale")
+        assert wire["age_s"] == age
+        assert wire["display_step"] == f"Run {state} — final report"
+        assert "no further heartbeat is expected" in wire["detail"]
+        assert wire["loop"]["step"] == "[lane0] measuring A/B on the device"
+        assert observation.producer_idle is (state == "complete")
+        rendered = _run(_page_js(), wire, tmp_path, ["render"])
+        assert not rendered["threw"]
+        assert rendered["text_by_id"]["hdr-step"] == f"Run {state} — final report"
+        badge = rendered["text_by_id"]["freshtxt"]
+        assert ("FINAL REPORT" if state == "complete" else "FAILED REPORT") in badge
+        assert "old" in badge and "STALE" not in badge
+        assert "stale" not in rendered["class_by_id"]["fresh"]
+>       assert "5 / 5" in rendered["by_id"]["tiles"]
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'tiles'
+
+tests/test_dashboard_terminal_loop.py:43: KeyError
+__________ test_actual_terminal_writer_reader_and_page[9000-complete] __________
+
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_actual_terminal_writer_re2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2bfdcf9da0>
+producer = <module 'autokernel.loop.status' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/status.py'>
+state = 'complete', age = 9000
+
+    @pytest.mark.parametrize("state", ["complete", "failed"])
+    @pytest.mark.parametrize("age", [30, 9000])
+    def test_actual_terminal_writer_reader_and_page(tmp_path, monkeypatch, producer, state, age):
+        root = tmp_path / "store"
+        producer.write(root, state=state, epoch="fixture", campaign_id="ak-loop",
+            anchor_commit="a" * 40, surface="serving:fixture", pairs=5, noise_floor_pct=7.8,
+            iterations_planned=5, outcomes=[{"status": "measured_null", "effect_fraction": 0.001}] * 5,
+            step="[lane0] measuring A/B on the device", stale_after_s=180)
+        path = root / "loop-status.json"
+        original = path.read_bytes()
+        # Date the read after the original writer's timestamp, without rewriting it.
+        now = loop_status._stamp_epoch(json.loads(original)["generated_at"]) + age
+        for name in (campaign_status.STORE_ROOT_ENV, campaign_status.CAMPAIGN_ID_ENV,
+                     campaign_status.CONFIG_GENERATION_ENV, campaign_status.CONFIG_DIGEST_ENV):
+            monkeypatch.delenv(name, raising=False)
+        wire, observation = loop_status.snapshot(root, now=now)
+        assert wire["freshness_state"] == ("fresh" if age == 30 else "stale")
+        assert wire["age_s"] == age
+        assert wire["display_step"] == f"Run {state} — final report"
+        assert "no further heartbeat is expected" in wire["detail"]
+        assert wire["loop"]["step"] == "[lane0] measuring A/B on the device"
+        assert observation.producer_idle is (state == "complete")
+        rendered = _run(_page_js(), wire, tmp_path, ["render"])
+        assert not rendered["threw"]
+        assert rendered["text_by_id"]["hdr-step"] == f"Run {state} — final report"
+        badge = rendered["text_by_id"]["freshtxt"]
+        assert ("FINAL REPORT" if state == "complete" else "FAILED REPORT") in badge
+        assert "old" in badge and "STALE" not in badge
+        assert "stale" not in rendered["class_by_id"]["fresh"]
+>       assert "5 / 5" in rendered["by_id"]["tiles"]
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'tiles'
+
+tests/test_dashboard_terminal_loop.py:43: KeyError
+___________ test_actual_terminal_writer_reader_and_page[9000-failed] ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-1/test_actual_terminal_writer_re3')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2c042f5550>
+producer = <module 'autokernel.loop.status' from '/home/runner/work/epyc-root/epyc-root/research/scripts/kernel_rnd/autokernel/loop/status.py'>
+state = 'failed', age = 9000
+
+    @pytest.mark.parametrize("state", ["complete", "failed"])
+    @pytest.mark.parametrize("age", [30, 9000])
+    def test_actual_terminal_writer_reader_and_page(tmp_path, monkeypatch, producer, state, age):
+        root = tmp_path / "store"
+        producer.write(root, state=state, epoch="fixture", campaign_id="ak-loop",
+            anchor_commit="a" * 40, surface="serving:fixture", pairs=5, noise_floor_pct=7.8,
+            iterations_planned=5, outcomes=[{"status": "measured_null", "effect_fraction": 0.001}] * 5,
+            step="[lane0] measuring A/B on the device", stale_after_s=180)
+        path = root / "loop-status.json"
+        original = path.read_bytes()
+        # Date the read after the original writer's timestamp, without rewriting it.
+        now = loop_status._stamp_epoch(json.loads(original)["generated_at"]) + age
+        for name in (campaign_status.STORE_ROOT_ENV, campaign_status.CAMPAIGN_ID_ENV,
+                     campaign_status.CONFIG_GENERATION_ENV, campaign_status.CONFIG_DIGEST_ENV):
+            monkeypatch.delenv(name, raising=False)
+        wire, observation = loop_status.snapshot(root, now=now)
+        assert wire["freshness_state"] == ("fresh" if age == 30 else "stale")
+        assert wire["age_s"] == age
+        assert wire["display_step"] == f"Run {state} — final report"
+        assert "no further heartbeat is expected" in wire["detail"]
+        assert wire["loop"]["step"] == "[lane0] measuring A/B on the device"
+        assert observation.producer_idle is (state == "complete")
+        rendered = _run(_page_js(), wire, tmp_path, ["render"])
+        assert not rendered["threw"]
+        assert rendered["text_by_id"]["hdr-step"] == f"Run {state} — final report"
+        badge = rendered["text_by_id"]["freshtxt"]
+        assert ("FINAL REPORT" if state == "complete" else "FAILED REPORT") in badge
+        assert "old" in badge and "STALE" not in badge
+        assert "stale" not in rendered["class_by_id"]["fresh"]
+>       assert "5 / 5" in rendered["by_id"]["tiles"]
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'tiles'
+
+tests/test_dashboard_terminal_loop.py:43: KeyError
+=========================== short test summary info ============================
+FAILED tests/test_dashboard_kernel_freshness_envelopes.py::test_a_superseded_bundle_renders_a_loud_verdict_beside_the_number - AssertionError: the operator-gated figure did not render at all
+assert '46.6%' in '<div class="og-verdict superseded"><b>SUPERSEDED — the subject this evidence measured has moved</b><div style="margin...s for what it measured; it no longer describes the current serving question.; measured 2.4 h ago</div></div></details>'
+ +  where '46.6%' = <function bundle_at.<locals>.place at 0x7f2c05134220>.display_pct
+FAILED tests/test_dashboard_kernel_freshness_envelopes.py::test_a_promoted_past_bundle_renders_the_loud_verdict_too - assert ('og-num dated' in '<div class="og-verdict superseded"><b>SUPERSEDED — the subject this evidence measured has moved</b><div style="margin...s for what it measured; it no longer describes the current serving question.; measured 0.0 h ago</div></div></details>')
+FAILED tests/test_dashboard_kernel_freshness_envelopes.py::test_an_unverifiable_subject_says_so_and_renders_no_calm_state - AssertionError: an unverifiable figure was painted as a current gain
+assert ('og-num dated' in '<div class="og-verdict unverifiable"><b>UNVERIFIABLE — relevance cannot be established right now</b><div style="margi...re falls back to the wall clock: &#39;we cannot say&#39; is its own verdict.; measured 0.0 h ago</div></div></details>')
+FAILED tests/test_dashboard_kernel_freshness_envelopes.py::test_a_relevant_OLD_bundle_renders_CALM - assert '46.6%' in '<div class="og-head"><span class="og-sum"><b>Workload vector</b> · operator-gated · no promotion authority · measured...nt exists (the bundle path is a single slot the emitter overwrites in place); measured 3.1 d ago</div></div></details>'
+ +  where '46.6%' = <function bundle_at.<locals>.place at 0x7f2c05137100>.display_pct
+FAILED tests/test_dashboard_kernel_freshness_envelopes.py::test_an_EXTREME_age_renders_advice_and_stays_calm - AssertionError: the >30d advisory coloured the number amber on its own
+assert ('og-num pos' in '<div class="og-head"><span class="og-sum"><b>Workload vector</b> · operator-gated · no promotion authority · measured...onsider re-measuring; this is advisory only, because age alone never alarms an episodic producer</div></div></details>')
+FAILED tests/test_dashboard_kernel_rnd_merge.py::TestTheRegistryCarriesOneKernelRnDRow::test_the_registry_and_the_served_pages_are_still_total_in_both_directions - AssertionError: Items in the first set but not the second:
+'/amd-ai-lab/'
+Items in the second set but not the first:
+'/amd-ai-lab' : a registry row with no page is a nav link to a 404; a page with no row is a surface nobody learns exists
+SUBFAILED(route='/amd-ai-lab') tests/test_dashboard_nav.py::PageRegistryBidirectionalTest::test_every_hub_page_has_a_registry_entry - AssertionError: '/amd-ai-lab' not found in {'/machine': {'id': 'machine', 'title': 'Machine', 'port': 8100, 'path': '/machine', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'global hardware + live-inference monitor (data: :8000 API)'}, '/autopilot': {'id': 'autopilot', 'title': 'Autopilot', 'port': 8100, 'path': '/autopilot', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'autopilot loop: phase, log, Pareto/GEPA, optimization (data: :8000 API)'}, '/cockpit': {'id': 'cockpit', 'title': 'Cockpit', 'port': 8100, 'path': '/cockpit', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'AP-50 decision cockpit: what optimizes the orchestrator, per measurement era: current trial + falsifier, incumbent-vs-candidate deltas (n, SE, replication), proposed/executed/valid/kept/promoted/live funnel with rejection reasons, journal+study lever scoreboard, provenance drill-down (data: :8000/dashboard/api/decision_cockpit; data probe :8000/dashboard/api/decision_cockpit/health — /health here is transport-only)'}, '/gpu-window': {'id': 'gpu-window', 'title': 'MI210 window', 'port': 8100, 'path': '/gpu-window', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'G1 MI210 window: holder, grant state, window id, expected end, overdue, lease state, watchdog age, verdict (ok/window_open/alarm) and health reasons. Data plane owned by epyc-orchestrator (:8000/dashboard/api/gpu_window), page owned by epyc-root; data probe :8000/dashboard/api/gpu_window/health — /health here is transport-only'}, '/': {'id': 'handoffs', 'title': 'Handoffs', 'port': 8100, 'path': '/', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'handoff kanban + backlog flow'}, '/loop': {'id': 'autokernel-loop', 'title': 'Kernel R&D', 'chip': 'live', 'port': 8100, 'path': '/loop', 'owner_repo': 'epyc-root', 'health_path': '/api/loop/health', 'blurb': 'THE Kernel R&D surface: explicitly selected unified campaign status and authenticated producer controls, otherwise the legacy AutoKernel loop; an independently dated champion headline versus the frozen production kernel, operator-gated serving evidence and belief records. Durable history is not producer liveness. /api/loop/health follows the selected campaign or legacy loop without allowing other evidence cards to certify it. /kernel redirects here. Unified execution remains gated separately from management controls.'}, '/bus': {'id': 'bus', 'title': 'Bus', 'port': 8100, 'path': '/bus', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'session-bus roster, heartbeats, queue'}, '/benchmarks': {'id': 'benchmarks', 'title': 'Benchmarks', 'port': 8100, 'path': '/benchmarks', 'owner_repo': 'epyc-root', 'health_path': '/health', 'blurb': 'benchmark artifact inventory (read-only)'}, '/amd-ai-lab/': {'id': 'amd-ai-lab', 'title': 'AMD AI Lab', 'chip': 'draft', 'port': 8100, 'path': '/amd-ai-lab/', 'owner_repo': 'epyc-web', 'health_path': '/health', 'blurb': 'AMD hardware recipes and benchmark results — explicit publication snapshot from epyc-web', 'freshness': {'kind': 'static-snapshot', 'source': 'epyc-web', 'artifact': 'dashboard/static/amd-ai-lab/', 'stale_after_s': 2592000, 'absence_means': 'the published epyc-web snapshot is missing from the hub checkout'}}} : /amd-ai-lab is served by the hub but is in no registry row, so no nav can link to it
+SUBFAILED(entry='amd-ai-lab') tests/test_dashboard_nav.py::PageRegistryBidirectionalTest::test_every_hub_registry_entry_is_a_served_page - AssertionError: '/amd-ai-lab/' not found in {'/': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/handoffs.html'), '/machine': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/machine.html'), '/autopilot': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/autopilot.html'), '/cockpit': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/cockpit.html'), '/gpu-window': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/gpu-window.html'), '/loop': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/loop.html'), '/bus': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/bus.html'), '/benchmarks': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/benchmarks.html'), '/amd-ai-lab': PosixPath('/home/runner/work/epyc-root/epyc-root/candidate/dashboard/static/amd-ai-lab/index.html')} : registry row 'amd-ai-lab' points at /amd-ai-lab/, which this hub does not serve — a nav link to a 404
+SUBFAILED(route='/amd-ai-lab') tests/test_dashboard_nav.py::SharedNavAdoptionTest::test_every_existing_page_mounts_the_shared_nav - AssertionError: 'id="epyc-nav"' not found in '<!doctype html>\n<html lang="en">\n  <head>\n    <meta charset="utf-8" />\n    <meta name="viewport" content="width=device-width, initial-scale=1" />\n    <meta name="theme-color" content="#101116" />\n    <title>AMD AI Lab · Find your inference sweet spot</title>\n    <meta\n      name="description"\n      content="Explore measured AMD inference: model benchmarks, concurrency curves and interactive KV cache matrices."\n    />\n    <link rel="stylesheet" href="styles.css" />\n  </head>\n  <body>\n    <div class="shell">\n      <header>\n        <a class="brand" href="#top"\n          ><span class="mark" aria-hidden="true"\n            ><svg viewBox="0 0 32 32" width="26" height="26" fill="none">\n              <path\n                d="M16 2v28M2 16h28M6 6l20 20M6 26L26 6"\n                stroke="currentColor"\n                stroke-width="3"\n              /></svg\n          ></span>\n          AMD AI LAB<span class="beta">FIELD NOTES</span></a\n        >\n        <nav>\n          <a href="#models">Models</a><a href="#method">How to read</a\n          ><a\n            href="https://github.com/pestopoppa/llama.cpp/releases/tag/production-consolidated-v10"\n            >Get the kernel ↗</a\n          >\n        </nav>\n      </header>\n      <main id="top">\n        <section class="hero">\n          <div class="eyebrow">\n            <span class="dot"></span> EPYC + INSTINCT / FROZEN KERNEL v10\n          </div>\n          <h1>More AI.<br /><em>From your AMD hardware.</em></h1>\n          <p>\n            Optimized kernels. Faster local inference. Explore our best measured\n            configurations—from speculative decoding on Instinct to native MTP\n            on EPYC—and see what it takes to run them yourself.\n          </p>\n          <div class="hero-foot">\n            <a class="primary" href="#models"\n              >Explore the results <span>↘</span></a\n            ><span>EPYC 9655 <b>+</b> Instinct MI210 · 64 GB</span>\n          </div>\n          <div class="hero-art" aria-hidden="true">\n            <div class="orb"></div>\n            <div class="axis">CONCURRENCY × CONTEXT</div>\n            <div class="art-grid">\n              <i style="--v: 0"></i><i style="--v: 0.35"></i\n              ><i style="--v: 0.7"></i><i style="--v: 0.1"></i\n              ><i style="--v: 0.45"></i><i style="--v: 0.8"></i\n              ><i style="--v: 0.2"></i><i style="--v: 0.55"></i\n              ><i style="--v: 0.9"></i><i style="--v: 0.3"></i\n              ><i style="--v: 0.65"></i><i style="--v: 0.05"></i\n              ><i style="--v: 0.4"></i><i style="--v: 0.75"></i\n              ><i style="--v: 0.15"></i><i style="--v: 0.5"></i\n              ><i style="--v: 0.85"></i><i style="--v: 0.25"></i\n              ><i style="--v: 0.6"></i><i style="--v: 0"></i\n              ><i style="--v: 0.35"></i><i style="--v: 0.7"></i\n              ><i style="--v: 0.1"></i><i style="--v: 0.45"></i\n              ><i style="--v: 0.8"></i><i style="--v: 0.2"></i\n              ><i style="--v: 0.55"></i><i style="--v: 0.9"></i\n              ><i style="--v: 0.3"></i><i style="--v: 0.65"></i\n              ><i style="--v: 0.05"></i><i style="--v: 0.4"></i>\n            </div>\n            <span class="art-caption">MEASURE. COMPARE. REPRODUCE.</span>\n          </div>\n        </section>\n        <section id="models">\n          <div class="section-title">\n            <div>\n              <span class="eyebrow">BEST MEASURED CONFIGURATIONS</span>\n              <h2>The hardware. The recipe. The result.</h2>\n            </div>\n            <span class="muted">Post-BIOS measurements · September 2026</span>\n          </div>\n          <div class="toolbar">\n            <div class="filters" aria-label="Hardware filters">\n              <button data-filter="all" class="active" aria-pressed="true">\n                All models</button\n              ><button data-filter="gpu" aria-pressed="false">\n                Instinct MI210</button\n              ><button data-filter="cpu" aria-pressed="false">EPYC CPU</button>\n            </div>\n            <label class="search"\n              ><span aria-hidden="true"\n                ><svg\n                  viewBox="0 0 20 20"\n                  width="16"\n                  height="16"\n                  fill="none"\n                  stroke="currentColor"\n                >\n                  <circle cx="8" cy="8" r="5" />\n                  <path d="m12 12 5 5" /></svg></span\n              ><input\n                type="search"\n                placeholder="Find a model…"\n                aria-label="Find a model"\n            /></label>\n          </div>\n          <div class="catalog" data-catalog-grid>\n            <p role="status">Loading model benchmarks…</p>\n          </div>\n          <p class="catalog-note">\n            Open a model for its measurements, settings, and source evidence.\n            Rates from different recipes are kept separate.\n          </p>\n        </section>\n        <section id="implementation" class="method">\n          <div>\n            <span class="eyebrow">AMD INFERENCE IMPLEMENTATION</span>\n            <h2>Bring this performance<br />to your own stack.</h2>\n          </div>\n          <div>\n            <h3>From hardware to a working recipe</h3>\n            <p>\n              I help teams select models, deploy optimized CPU and ROCm kernels,\n              and tune speculative decoding, memory placement, and concurrency\n              for their workloads.\n            </p>\n          </div>\n          <div>\n            <h3>Measure what your users experience</h3>\n            <p>\n              Implementation support includes reproducible benchmarking and\n              workload-specific validation, so you can choose the right balance\n              of speed, context capacity, and serving cost.\n            </p>\n          </div>\n        </section>\n        <section id="method" class="method">\n          <div>\n            <span class="eyebrow">A QUICK READING GUIDE</span>\n            <h2>The number is only<br />half the story.</h2>\n          </div>\n          <div>\n            <h3>One user or the whole server?</h3>\n            <p>\n              Per-request decode measures an individual response. Wall-clock\n              aggregate measures all completed tokens over elapsed time.\n              Qualification curves separately report the sum of request decode\n              rates. Higher concurrency can raise one while lowering the other.\n            </p>\n          </div>\n          <div>\n            <h3>Same kernel. Different evidence.</h3>\n            <p>\n              The KV studies use the frozen v10 binary, but one sample per cell\n              is exploratory. A measured difference is not a proven speedup.\n              Recipe and sample counts stay beside every chart.\n            </p>\n          </div>\n        </section>\n      </main>\n      <footer>\n        <a class="brand" href="#top"\n          ><span class="mark" aria-hidden="true"\n            ><svg viewBox="0 0 32 32" width="26" height="26" fill="none">\n              <path\n                d="M16 2v28M2 16h28M6 6l20 20M6 26L26 6"\n                stroke="currentColor"\n                stroke-width="3"\n              /></svg\n          ></span>\n          AMD AI LAB</a\n        ><span\n          >Independent benchmarks. Model weights downloaded separately.</span\n        ><a href="data/catalog.json">Download evidence JSON ↗</a>\n      </footer>\n    </div>\n    <dialog aria-labelledby="detail-title">\n      <div class="dialog-top">\n        <span class="eyebrow">MODEL WORKSPACE</span\n        ><button data-close aria-label="Close model details">\n          Close <kbd>Esc</kbd>\n        </button>\n      </div>\n      <div data-detail></div>\n    </dialog>\n    <script src="app.js"></script>\n  </body>\n</html>\n' : index.html has no shared-nav mount point
+SUBFAILED(route='/amd-ai-lab') tests/test_dashboard_nav.py::SharedNavAdoptionTest::test_no_page_hand_builds_a_cross_server_nav_link - AssertionError: '<a ' unexpectedly found in '<nav>\n          <a href="#models">Models</a><a href="#method">How to read</a\n          ><a\n            href="https://github.com/pestopoppa/llama.cpp/releases/tag/production-consolidated-v10"\n            >Get the kernel ↗</a\n          >\n        </nav>' : index.html: the nav still contains a hand-authored anchor; links come from dashboard/registry.json
+FAILED tests/test_dashboard_panels_redteam.py::TransportPlaneStillSeparateTest::test_the_probe_is_ok_with_every_producer_dead_or_broken - AssertionError: 'ok' == 'ok'
+FAILED tests/test_dashboard_runtime_progress.py::test_original_progress_age_and_selection_survive_fresh_router_heartbeat - KeyError: 'champ'
+FAILED tests/test_dashboard_serial_completed.py::test_terminal_original_cpu_gpu_results_remain_selectable - autokernel.loop.lane_watchdog.WatchdogRefused: supervision requires a dedicated single-threaded owner
+FAILED tests/test_dashboard_serial_loop.py::test_original_writer_reader_page_keeps_canonical_history - KeyError: 'tiles'
+FAILED tests/test_dashboard_serial_loop.py::test_serial_router_is_the_selected_health_producer - assert (503 == 200)
+FAILED tests/test_dashboard_serial_loop.py::test_older_or_foreign_child_is_not_current[missing_batch] - KeyError: 'tiles'
+FAILED tests/test_dashboard_serial_loop.py::test_older_or_foreign_child_is_not_current[pid] - KeyError: 'tiles'
+FAILED tests/test_dashboard_serial_loop.py::test_older_or_foreign_child_is_not_current[output_dir] - KeyError: 'tiles'
+FAILED tests/test_dashboard_serial_loop.py::test_older_or_foreign_child_is_not_current[target_id] - KeyError: 'tiles'
+FAILED tests/test_dashboard_serial_loop.py::test_terminal_distinctions_do_not_claim_batch_iterations[complete-False-failures0-complete] - KeyError: 'tiles'
+FAILED tests/test_dashboard_serial_loop.py::test_terminal_distinctions_do_not_claim_batch_iterations[complete-True-failures1-stopped] - KeyError: 'tiles'
+FAILED tests/test_dashboard_serial_loop.py::test_terminal_distinctions_do_not_claim_batch_iterations[complete-False-failures2-complete_with_failures] - KeyError: 'tiles'
+FAILED tests/test_dashboard_serial_loop.py::test_terminal_distinctions_do_not_claim_batch_iterations[complete-False-failures3-all_failed] - KeyError: 'tiles'
+FAILED tests/test_dashboard_serial_loop.py::test_terminal_distinctions_do_not_claim_batch_iterations[failed-False-failures4-all_failed] - KeyError: 'tiles'
+FAILED tests/test_dashboard_serial_loop.py::test_actual_owned_children_switch_and_preserve_original_history - autokernel.loop.lane_watchdog.WatchdogRefused: supervision requires a dedicated single-threaded owner
+FAILED tests/test_dashboard_terminal_loop.py::test_actual_terminal_writer_reader_and_page[30-complete] - KeyError: 'tiles'
+FAILED tests/test_dashboard_terminal_loop.py::test_actual_terminal_writer_reader_and_page[30-failed] - KeyError: 'tiles'
+FAILED tests/test_dashboard_terminal_loop.py::test_actual_terminal_writer_reader_and_page[9000-complete] - KeyError: 'tiles'
+FAILED tests/test_dashboard_terminal_loop.py::test_actual_terminal_writer_reader_and_page[9000-failed] - KeyError: 'tiles'
+29 failed, 803 passed, 1 skipped, 295 subtests passed in 31.13s

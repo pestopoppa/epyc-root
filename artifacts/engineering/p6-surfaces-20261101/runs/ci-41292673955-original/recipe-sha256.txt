@@ -1,0 +1,2 @@
+dd9a9e3abf22f585479eed68ef6384442e9f181bfee391b4aaddde591f0c63e6  candidate/scripts/ci/vb_tuadv_native_requirements.txt
+a5895c75a47690f30f3e6ac0f9f46d4d98c92f3065e9059bbe0188b4ea8d476b  candidate/.github/workflows/ni-p6-surfaces-native.yml

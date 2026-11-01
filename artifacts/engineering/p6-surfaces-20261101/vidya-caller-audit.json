@@ -1,0 +1,18 @@
+{
+  "searched": "all scripts/vidya/**/*.py",
+  "patterns": [
+    "from dashboard",
+    "import dashboard",
+    "dashboard/server.py",
+    "dashboard.server"
+  ],
+  "matches": [],
+  "native_families": [
+    "autokernel_gpu_screening.py",
+    "autokernel_scaffold_panel.py",
+    "autokernel_rocm_diagnostic.py",
+    "autokernel_profile.py",
+    "autokernel_legacy_serving.py"
+  ],
+  "disposition": "Existing native adapters consume producer records independently. No reader needs repointing; no new source family or grading ladder."
+}

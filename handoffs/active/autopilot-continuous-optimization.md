@@ -845,6 +845,9 @@ its comparator on 2 of 4 tasks there, so no frontier API is required. Cite `inta
       effect without a separately approved protocol. It is also the atypical-observation probe
       (intake-1379#record). intake-1378#record.
 
+      **Source-only partial, 2026-11-01:** Default-off AP-70 rotation-boundary instrumentation and
+      its identity/refusal contracts are published in epyc-orchestrator `a464a03eca67d78b55f40d2a49eae8c09188226e`; [source evidence](https://github.com/pestopoppa/epyc-orchestrator/tree/29fdfc5a7cc229f1dcafee327f193b1623de0d32/artifacts/ap70-source-partial-20261101). Hosted run `41292163512` passed 50 source-contract tests. This remains source-only: no native K-boundary/model run, live AutoPilot or API reload, belief ingestion, or measured quality-drop/generalization conclusion. The observer is opt-in and prompt-incumbent scoped; unavailable, drifting, or unsupported identity is incomplete, and a model path hash does not authenticate model contents. No historical trial is backfilled. AP-70 stays open for prospective native readout and belief-reader/canary work. [no-belief: source implementation only; no new measurement]
+
 - [ ] **AP-71 (S3-AP-09) — PromptForge lineage-depth side-effect audit.** For every kept prompt
       file, reconstruct the keep lineage (git + journal). Tabulate against lineage depth: gated
       quality, prompt token length, count of added lines sharing a verbatim ≥8-token n-gram with any
