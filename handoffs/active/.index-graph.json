@@ -3939,7 +3939,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-01T21:56:49Z",
+  "generated_at": "2026-11-01T22:00:07Z",
   "nodes": [
     {
       "age_days": 94,
@@ -6484,13 +6484,13 @@
         "INF-62",
         "INF-64"
       ],
-      "closed": 77,
+      "closed": 78,
       "domain": "inference-research",
       "handoff": "autokernel-champion-aggregate.md",
       "id": "INF-65",
       "last_advanced": "2026-11-01",
       "next_action": "Qualify C6 serving gates and resolve baseline GPU properties; assemble the CAS review package without updating champion",
-      "open": 37,
+      "open": 36,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -6867,7 +6867,7 @@
       "age_days": 0,
       "blocked": 42,
       "blocked_by": [],
-      "closed": 69,
+      "closed": 71,
       "domain": "inference-research",
       "handoff": "conversation-stack.md",
       "id": "INF-79",

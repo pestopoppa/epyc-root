@@ -4,7 +4,7 @@
       "blocked": 59,
       "handoffs": 59,
       "oldest_advance": "2026-07-29",
-      "open": 1043
+      "open": 1042
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -201,10 +201,10 @@
     },
     "autokernel-champion-aggregate.md": {
       "blocked": 1,
-      "closed": 77,
+      "closed": 78,
       "guarded": 0,
       "last_advanced": "2026-11-01",
-      "open": 37,
+      "open": 36,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -553,7 +553,7 @@
     },
     "conversation-stack.md": {
       "blocked": 42,
-      "closed": 69,
+      "closed": 71,
       "guarded": 0,
       "last_advanced": "2026-11-01",
       "open": 33,
@@ -565,7 +565,7 @@
       },
       "row_id": "INF-79",
       "state": "active",
-      "total": 144
+      "total": 146
     },
     "coordinator-role-failure-modes-and-refactor.md": {
       "blocked": 0,
