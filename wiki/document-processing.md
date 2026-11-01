@@ -2,7 +2,7 @@
 
 **Category**: `document_processing`
 **Confidence**: verified
-**Last compiled**: 2026-10-31 (operator wiki sweep, workspace-58): PIP-02 descriptive partial-cohort TEDS (Paddle union 359 pages/84 tables; ODL shards), still no 755-page verdict. Earlier: 2026-08-25 (PIP-05: the ODL three-way harness closes the 2026-08-13 durability (the stranded lane record landed: the demo DID run on a quant-compliant artifact, the receipt's `held_s` defect is root-caused and fixed forward, and the write-side wiring row survived an id collision)
+**Last compiled**: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): PIP-02 descriptive partial-cohort TEDS (Paddle union 359 pages/84 tables; ODL shards), still no 755-page verdict. Earlier: 2026-08-25 (PIP-05: the ODL three-way harness closes the 2026-08-13 durability (the stranded lane record landed: the demo DID run on a quant-compliant artifact, the receipt's `held_s` defect is root-caused and fixed forward, and the write-side wiring row survived an id collision)
 gaps — fail-closed extractor accounting, pinned engine versions, per-document latencies; the
 
 ## Compiled Update — 2026-08-18: the demo ran on the compliant artifact after all — two receipt corrections from the ported lane record
@@ -492,3 +492,9 @@ Sources: [document-parser-table-bench](../handoffs/active/document-parser-table-
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
 - Paddle R32 ended partial; five exhausted groups record 61 complete pages, 13 unknown and one geometry error, with seven other completed groups; R35 ended rc75 with 36 complete, 9 missing and one pre-exposure refusal among 46 visited-page summaries. Retained/replayed entries prevent a net-new count; cause unresolved and no quality verdict. [Source](../handoffs/active/document-parser-table-bench.md)
+
+## Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)
+
+**Confidence: verified source records; most items are software/model-free controls or failed-run filings, not measurement verdicts. Proposed work is labelled as such.**
+
+- ODL-011: intrinsic chunk-quality scores (text edit distance, table TEDS, reading-order edit distance, speed) now sit beside `odl_bench` rows (Research `1421b578`, 62 model-free tests). Ekimetrics rows are informational diagnostics, not a quality verdict; the task stays open. [ODL](../handoffs/active/opendataloader-pipeline-integration.md)
