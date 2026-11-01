@@ -1,0 +1,11 @@
+2026-11-01T13:47:38Z [codex3-stt5-nemo-rescore-v3-20261101] launcher up pid=2850820 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex3-stt5-nemo-rescore-v3-20261101/STOP minwin=900s ports=none
+2026-11-01T13:48:23Z [codex3-stt5-nemo-rescore-v3-20261101] ADMIT_PASS window=1200 free_gib=190.25 floor_gib=150
+2026-11-01T13:48:23Z [codex3-stt5-nemo-rescore-v3-20261101] START regions=0-23 cpus=0-23 threads=24 gpu=0 end=2026-11-01T14:08Z
+[region-lock] acquiring regions ['q0'] as role='build' (timeout_s=1177.0) …
+[region-lock] held ['q0'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/filler_run14.sh --inner --id codex3-stt5-nemo-rescore-v3-20261101 --class cpu --cmd /bin/bash /mnt/raid0/llm/tmp/codex3-stt5-nemo-rescore-v3-20261101/job.sh --min-window 900 --stop /mnt/raid0/llm/tmp/codex3-stt5-nemo-rescore-v3-20261101/STOP --port  --workdir /mnt/raid0/llm/tmp/codex3-stt5-nemo-rescore-v3-20261101 --gpu-threads 184-191
+DRYRUN_RESOURCES {"affinity": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23], "cgroup": "0::/", "cgroup_memory_max": "unavailable", "process_limit_gib": 1.0, "reserved_ram_gib": 1.0, "rlimits": {"AS": [-1, -1], "DATA": [-1, -1], "NOFILE": [524288, 524288], "RSS": [-1, -1]}}
+RESOURCE_PASS id=codex3-stt5-nemo-rescore-v3-20261101 scope=normal-grant
+validation-score complete 8
+job rc=0
+2026-11-01T13:48:29Z [codex3-stt5-nemo-rescore-v3-20261101] ended rc=0 reason=complete (grant deleted)
+2026-11-01T13:48:29Z [codex3-stt5-nemo-rescore-v3-20261101] ALL DONE: wrote /mnt/raid0/llm/tmp/compute-flags/grants/codex3-stt5-nemo-rescore-v3-20261101.complete, row marked COMPLETE; exiting for good

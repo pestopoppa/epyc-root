@@ -1,0 +1,98 @@
+{
+  "cells": {
+    "r0|auto|stt_norm/v1|en": {
+      "classes": {
+        "numeral_uncovered": 44,
+        "ok": 324,
+        "unknown_marker": 26
+      },
+      "n": 394,
+      "taxonomy": "PASS",
+      "wer_percent": 9.885977680737506
+    },
+    "r0|auto|stt_norm/v2|en": {
+      "classes": {
+        "numeral_uncovered": 44,
+        "ok": 324,
+        "unknown_marker": 26
+      },
+      "n": 394,
+      "taxonomy": "PASS",
+      "wer_percent": 9.81676980948914
+    },
+    "r13|auto|stt_norm/v1|en": {
+      "classes": {
+        "numeral_uncovered": 43,
+        "ok": 325,
+        "unknown_marker": 26
+      },
+      "n": 394,
+      "taxonomy": "PASS",
+      "wer_percent": 8.357593401261523
+    },
+    "r13|auto|stt_norm/v2|en": {
+      "classes": {
+        "numeral_uncovered": 43,
+        "ok": 325,
+        "unknown_marker": 26
+      },
+      "n": 394,
+      "taxonomy": "PASS",
+      "wer_percent": 8.312098046353597
+    },
+    "r1|auto|stt_norm/v1|en": {
+      "classes": {
+        "numeral_uncovered": 43,
+        "ok": 325,
+        "unknown_marker": 26
+      },
+      "n": 394,
+      "taxonomy": "PASS",
+      "wer_percent": 9.243085880640466
+    },
+    "r1|auto|stt_norm/v2|en": {
+      "classes": {
+        "numeral_uncovered": 43,
+        "ok": 325,
+        "unknown_marker": 26
+      },
+      "n": 394,
+      "taxonomy": "PASS",
+      "wer_percent": 9.18577842494843
+    },
+    "r6|auto|stt_norm/v1|en": {
+      "classes": {
+        "decode_error": 1,
+        "numeral_uncovered": 44,
+        "ok": 323,
+        "unknown_marker": 26
+      },
+      "n": 394,
+      "taxonomy": "FAIL",
+      "wer_percent": 8.818534691897137
+    },
+    "r6|auto|stt_norm/v2|en": {
+      "classes": {
+        "decode_error": 1,
+        "numeral_uncovered": 44,
+        "ok": 323,
+        "unknown_marker": 26
+      },
+      "n": 394,
+      "taxonomy": "FAIL",
+      "wer_percent": 8.761072685353719
+    }
+  },
+  "files": {
+    "ended.txt": "6aaf34d29defe7963f1f151054209495b098db396d954c373b5caef690a9066a",
+    "launcher.out": "3193bc7b630db633d978c5227b459ae10f99455b1fbe1fc19d8b10ccd2475218",
+    "validation-score.json": "3f45ae7d6e810678673c9fade22ba14c7eef1afb0d20be7498b40bcda5db061f"
+  },
+  "id": "codex3-stt5-nemo-rescore-v3-20261101",
+  "qualification_receipt_sha256": "74cc6e2ba0604086dc5c903d16d3d49e75fa495f51b9ebfa260e2b85660767d9",
+  "repetition_check": "COULD_NOT_CHECK: no validation-derived envelope supplied",
+  "run_exit": 0,
+  "scorer_catalog_binding": "UNKNOWN",
+  "selection_only": true,
+  "verdict": "COMPLETE selection-only offline rescore; no adoption decision"
+}

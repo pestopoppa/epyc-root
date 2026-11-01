@@ -1,0 +1,180 @@
+{
+  "cells": {
+    "r0|auto|stt_norm/v1|en": {
+      "ci95": [
+        8.615958998242307,
+        11.17446889106348
+      ],
+      "classes": {
+        "numeral_uncovered": 44,
+        "ok": 324,
+        "unknown_marker": 26
+      },
+      "n": 394,
+      "normalizer_route": "COULD_NOT_CHECK",
+      "taxonomy_check": {
+        "outcome": "PASS",
+        "reasons": []
+      },
+      "unk_count": 1,
+      "unk_count_complete": true,
+      "wer_percent": 9.885977680737506
+    },
+    "r0|auto|stt_norm/v2|en": {
+      "ci95": [
+        8.529580739156051,
+        11.109808558107224
+      ],
+      "classes": {
+        "numeral_uncovered": 44,
+        "ok": 324,
+        "unknown_marker": 26
+      },
+      "n": 394,
+      "normalizer_route": "COULD_NOT_CHECK",
+      "taxonomy_check": {
+        "outcome": "PASS",
+        "reasons": []
+      },
+      "unk_count": 1,
+      "unk_count_complete": true,
+      "wer_percent": 9.81676980948914
+    },
+    "r13|auto|stt_norm/v1|en": {
+      "ci95": [
+        7.306094261375207,
+        9.44689693898518
+      ],
+      "classes": {
+        "numeral_uncovered": 43,
+        "ok": 325,
+        "unknown_marker": 26
+      },
+      "n": 394,
+      "normalizer_route": "COULD_NOT_CHECK",
+      "taxonomy_check": {
+        "outcome": "PASS",
+        "reasons": []
+      },
+      "unk_count": 1,
+      "unk_count_complete": true,
+      "wer_percent": 8.357593401261523
+    },
+    "r13|auto|stt_norm/v2|en": {
+      "ci95": [
+        7.257533285155048,
+        9.399119980595975
+      ],
+      "classes": {
+        "numeral_uncovered": 43,
+        "ok": 325,
+        "unknown_marker": 26
+      },
+      "n": 394,
+      "normalizer_route": "COULD_NOT_CHECK",
+      "taxonomy_check": {
+        "outcome": "PASS",
+        "reasons": []
+      },
+      "unk_count": 1,
+      "unk_count_complete": true,
+      "wer_percent": 8.312098046353597
+    },
+    "r1|auto|stt_norm/v1|en": {
+      "ci95": [
+        8.07989795260608,
+        10.45840854580731
+      ],
+      "classes": {
+        "numeral_uncovered": 43,
+        "ok": 325,
+        "unknown_marker": 26
+      },
+      "n": 394,
+      "normalizer_route": "COULD_NOT_CHECK",
+      "taxonomy_check": {
+        "outcome": "PASS",
+        "reasons": []
+      },
+      "unk_count": 1,
+      "unk_count_complete": true,
+      "wer_percent": 9.243085880640466
+    },
+    "r1|auto|stt_norm/v2|en": {
+      "ci95": [
+        8.035571126696214,
+        10.417690890198726
+      ],
+      "classes": {
+        "numeral_uncovered": 43,
+        "ok": 325,
+        "unknown_marker": 26
+      },
+      "n": 394,
+      "normalizer_route": "COULD_NOT_CHECK",
+      "taxonomy_check": {
+        "outcome": "PASS",
+        "reasons": []
+      },
+      "unk_count": 1,
+      "unk_count_complete": true,
+      "wer_percent": 9.18577842494843
+    },
+    "r6|auto|stt_norm/v1|en": {
+      "ci95": [
+        7.734828172260431,
+        9.940323818854692
+      ],
+      "classes": {
+        "decode_error": 1,
+        "numeral_uncovered": 44,
+        "ok": 323,
+        "unknown_marker": 26
+      },
+      "n": 394,
+      "normalizer_route": "COULD_NOT_CHECK",
+      "taxonomy_check": {
+        "outcome": "FAIL",
+        "reasons": [
+          "categorical correctness failures present: {'decode_error': 1}. These are NOT WER contributions; correctness is lexicographically prior to speed and such a candidate receives no speed rank at all, not a penalised one (kernel-research.md:355-360)"
+        ]
+      },
+      "unk_count": 0,
+      "unk_count_complete": true,
+      "wer_percent": 8.818534691897137
+    },
+    "r6|auto|stt_norm/v2|en": {
+      "ci95": [
+        7.662799376023012,
+        9.894228961045497
+      ],
+      "classes": {
+        "decode_error": 1,
+        "numeral_uncovered": 44,
+        "ok": 323,
+        "unknown_marker": 26
+      },
+      "n": 394,
+      "normalizer_route": "COULD_NOT_CHECK",
+      "taxonomy_check": {
+        "outcome": "FAIL",
+        "reasons": [
+          "categorical correctness failures present: {'decode_error': 1}. These are NOT WER contributions; correctness is lexicographically prior to speed and such a candidate receives no speed rank at all, not a penalised one (kernel-research.md:355-360)"
+        ]
+      },
+      "unk_count": 0,
+      "unk_count_complete": true,
+      "wer_percent": 8.761072685353719
+    }
+  },
+  "metric_definition": "campaign-deletion-inclusive-WER",
+  "metric_details": "all validation utterances retained; known failed utterances are full deletions; categorical correctness reported independently",
+  "plan_sha256": "61722f4fa38bd4e50c1fc33a94e82f1ed3af414cbaaa1feb27dc12ababc71533",
+  "repetition_check": "COULD_NOT_CHECK: no validation-derived envelope supplied",
+  "resamples": 4000,
+  "research_plan_commit": "d1c7a8ffb",
+  "schema": "cs8-stt5-validation-score/v1",
+  "seed": 146064415,
+  "selection_only": true,
+  "taxonomy_note": "generic checker reasons describe generic aggregation; campaign plan specifies deletion-inclusive WER separately"
+}
