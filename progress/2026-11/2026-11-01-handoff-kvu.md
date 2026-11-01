@@ -91,3 +91,7 @@ Independent review byte-matched all six capsule files to their original scratch 
 ## Q38-T7 guard review
 
 Reviewed and preserved the [Q38-T7 guard draft](../../artifacts/compute/kvu16h-q38-guard-20261101/README.md). Both offline tests passed; source and guarded hashes matched the review and the independent review confirmed the patch applies. The draft blocks phase A/B at entry and direct phase calls, but is not installed in a scratch runner and does not deliver the dedicated server lifecycles or phase-B warm-up. No inference ran and KVU-16h-runner remains open. Registered dispatcher events for dedicated-lifecycle preparation, remaining runner inventory and candidate tile-source preservation. No application symbol was edited in this worktree; GitNexus remains unindexed.
+
+## KVU-19a-2 candidate source preservation
+
+Reviewed and preserved [the recovered candidate and patch](../../artifacts/compute/kvu19a2-candidate-20261101/README.md). All capsule SHA-256 checks pass; the base tile matches `git show 90c12df42`, and applying the patch to a temporary base reproduces the candidate byte-for-byte. The candidate is not bound to the historical run; companion source and build compatibility remain unproven. No build or GPU test ran. Dispatched a source-bound row draft, an independent capsule review and offline P3 v2/X0 guard preparation; their dispatcher events require owner review. The existing Q38 lifecycle-plan draft also remains unreviewed. GitNexus is not indexed in this lane; this boundary edits no application symbol.
