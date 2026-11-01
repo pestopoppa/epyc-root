@@ -656,6 +656,7 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
       on an experimental branch, then file an upstream llama.cpp issue with the repro. Detail: the fold record's
       *Not done / follow-ups*. Done when an upstream issue link is recorded here, or the repro shows it is not
       reproducible on the unpatched kernel.
+      - *(2026-11-01, offline evidence preservation.)* Retained fold, harness and three output files are in the [evidence capsule](../../artifacts/compute/kvu19a2-evidence-20261101/README.md); all six recorded hashes verify. Three D=512/576 candidate cases differ between retained base and off outputs, but binary, input and environment identity are not bound, so this is not independent proof of run-to-run nondeterminism. Recover the triggering patch and schedule a source- and binary-bound repeated-input reproduction; no GPU run or upstream report was made. Existing upstream #28495 concerns masked skipping and is not established as this issue. [no-belief: historical evidence inventory, no new measurement]
       - *(2026-10-21 triage)* open (no evidence found).
     - [ ] **KVU-19b — per-sequence (per-query-row) block skipping inside a multi-sequence FA tile.** (filed
       2026-10-04, workspace-ec, owner workspace-ec, from KVU-19a-1's batched-bench finding) KVU-19a marks a KV block
