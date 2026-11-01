@@ -1,0 +1,13 @@
+{
+  "id": "codex3-stt5-nemo-rescore-v2-20261101",
+  "classification": "FAILED-RUN",
+  "exit_code": 127,
+  "ended_at_utc": "2026-11-01T13:38:34Z",
+  "cause": "engine could not execute region-lock in host namespace; configured /workspace/repos/epyc-orchestrator/scripts/region-lock is absent",
+  "coverage": "No rescore job started; no scheduled score or WER result produced.",
+  "previous_offline_scores": "Unchanged; this run gives no new score.",
+  "evidence": {
+    "launcher.out": "ac670410a9a65b8c7fe19baa9db76a39c68dae4d06d30248df3511055efc2b3d",
+    "ended.txt": "4c5aaa6bac8f2f8f9795caf4cd87b871dcbc6f3dcf5d688b5faf717254aa7157"
+  }
+}

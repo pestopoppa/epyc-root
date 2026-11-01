@@ -1,0 +1,7 @@
+2026-11-01T13:37:04Z [codex3-stt5-nemo-rescore-v2-20261101] launcher up pid=2727958 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex3-stt5-nemo-rescore-v2-20261101/STOP minwin=900s ports=none
+2026-11-01T13:38:34Z [codex3-stt5-nemo-rescore-v2-20261101] ADMIT_PASS window=1200 free_gib=190.34 floor_gib=150
+2026-11-01T13:38:34Z [codex3-stt5-nemo-rescore-v2-20261101] START regions=72-95 cpus=72-95 threads=24 gpu=0 end=2026-11-01T13:57Z
+setsid: failed to execute /workspace/repos/epyc-orchestrator/scripts/region-lock: No such file or directory
+2026-11-01T13:38:34Z [codex3-stt5-nemo-rescore-v2-20261101] WARN: 2734512 is not a group leader
+2026-11-01T13:38:34Z [codex3-stt5-nemo-rescore-v2-20261101] ended rc=127 reason=job-rc-127:exited (grant deleted)
+2026-11-01T13:38:34Z [codex3-stt5-nemo-rescore-v2-20261101] one window done; exiting (no --repeat)
