@@ -1,0 +1,12 @@
+da6ba249d4ab0b574728106630ec289d685889d53c367d9de41b6c29b1d860b7  ./README.md
+73a7391369696d3fe6e9c72ead4fccb07678a59bfffbf71837f2f3ddba661959  ./artifact-api.json
+75ad9425fc3bb6c80fe0bab8354211ecadcd6794c1d1979b61a9bb0eefd764db  ./job-api.json
+619dfa3e52ff2a22384746c6c2c1b0d90d32c7718c1435f45a5df522a6633314  ./original-ci-artifact/dependencies.stdout.txt
+8edafffd3344434d8500ffa45ee1ce28787afd9a811783d878dc9ffdeb666594  ./original-ci-artifact/junit.xml
+a4cd5e1e8fa1413e50d7d9c0e127bdf7ab3b97b5e1e16fec82e331cc594da5ca  ./original-ci-artifact/pip-freeze.txt
+9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa  ./original-ci-artifact/pytest.exit-code
+d91a290339ec2f171725d49c1f973284594f40a44bd5f015cfd1b0710e878d9f  ./original-ci-artifact/pytest.stdout.txt
+04fae6cd297ef5ed2e09ed3950576dea9f58e7847c3c3c27e4c84b5a06302384  ./original-ci-artifact/source-commit.txt
+b01d33b12b0771ee44089a6717a651c18bc22e3ab0a6fdbbf56e5d5aa4075199  ./original-ci-artifact/source-files.sha256
+fe17ba45bdde232ea5afb4b5f8a665b6552eca97bd342c4eab4341da41ef0f23  ./producer-stage-source.diff.gz
+2d9fbfffcd3567027340a932fa8660fbf77122cc0d9cb99c14d1009e74d60393  ./run-api.json
