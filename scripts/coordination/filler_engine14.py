@@ -35,7 +35,7 @@ def ended(path, rc, reason, partial=False):
         f.write('rc=%d time=%s reason=%s\npartial=%s\n' %
                 (rc, datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'), reason.replace('\n', ' ')[:300], str(partial).lower()))
         f.write('native_complete=%s\n' % str(reason in ('complete', 'completion-predicate-failed-native-retained')).lower())
-        f.write('phase=%s\ngranted=%s\n' % ('qualification' if os.environ.get('WS58_QUAL') == '1' else 'production', str(os.environ.get('WS58_QUAL') != '1' and path.with_suffix('.grant').exists()).lower()))
+        f.write('phase=%s\ngranted=%s\n' % ('qualification' if os.environ.get('WS58_QUAL') == '1' else 'production', str(path.with_suffix('.grant').exists()).lower()))
 
 def signalled(signum, frame):
     if ACTIVE is not None:
@@ -76,6 +76,21 @@ def complete(args, env):
     return subprocess.run(['bash', '-c', args.complete_cmd], cwd=args.workdir, env=env,
                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=30).returncode
 
+def wrapped_job_command(args, cpulist, timeout_s):
+    """Build the same placement/region-lock command used for qualification and production."""
+    import shlex
+    command = ['taskset', '-c', cpulist, 'bash', '-c', args.cmd]
+    if getattr(args, 'class') in ('gpu', 'cpu+gpu'):
+        if getattr(args, 'gpu_quiet', 'none') == 'none':
+            args.gpu_quiet = 'shared'
+    if not args.self_claim:
+        claim = args.claim_cpus or cpulist
+        command = [args.region_lock, 'run', '--cpu-list', claim, '--role', args.role,
+                   '--tag', 'filler-' + args.id, '--timeout-s', str(int(timeout_s)),
+                   *(['--gpu-quiet', args.gpu_quiet] if args.gpu_quiet != 'none' else []),
+                   *(['--no-fold-siblings'] if args.no_fold_siblings else []), '--', *command]
+    return shlex.join(command)
+
 def qualify(args, env, policy):
     root = Path(os.environ['WS58_QUAL_ROOT'])
     m = load(os.environ['WS58_QUAL_MANIFEST'])
@@ -93,6 +108,9 @@ def qualify(args, env, policy):
     planned = subprocess.run([args.region_lock, 'plan', '--cpu-list', regions], cwd=args.workdir,
                              env=env, capture_output=True, text=True, timeout=30)
     require(planned.returncode == 0, 'placement-plan:' + planned.stderr[-180:])
+    cpulist = ','.join(str(c) for c in sorted(allowed))
+    qual_args = argparse.Namespace(**vars(args))
+    qual_args.cmd = wrapped_job_command(args, cpulist, 60)
     os.sched_setaffinity(0, allowed)
     results = Path(env['WS58_QUAL_RESULTS'])
     jobenv = dict(env, FILLER_QUAL_FIXTURE=str(Path(m['qual_fixture']['path'] if isinstance(m['qual_fixture'], dict) else m['qual_fixture']).resolve()),
@@ -100,7 +118,7 @@ def qualify(args, env, policy):
                   FILLER_ID=args.id, FILLER_STOPFILE=args.stop, FILLER_QUAL_PHASE='complete',
                   FILLER_DEADLINE=str(int(time.time()) + 60), FILLER_END=str(int(time.time()) + 60))
     begin = time.monotonic()
-    rc, reason = run_job(args, jobenv, time.time() + 60, root / 'fixture-complete.log', policy)
+    rc, reason = run_job(qual_args, jobenv, time.time() + 60, root / 'fixture-complete.log', policy)
     require(rc == 0, 'fixture-job:' + reason)
     completion_rc = complete(args, jobenv)
     require(completion_rc == 0, 'completion-predicate-failed')
@@ -115,7 +133,8 @@ def qualify(args, env, policy):
     require(isinstance(forced, int) and 1 <= forced <= 20, 'invalid-forced-deadline')
     partial_env = dict(jobenv, FILLER_RESULTS_DIR=str(partial_results), FILLER_QUAL_PHASE='deadline',
                        FILLER_DEADLINE=str(time.time() + forced), FILLER_END=str(time.time() + forced))
-    partial_rc, partial_reason = run_job(args, partial_env, time.time() + forced + 2, root / 'fixture-deadline.log', policy)
+    qual_args.cmd = wrapped_job_command(args, cpulist, forced + 2)
+    partial_rc, partial_reason = run_job(qual_args, partial_env, time.time() + forced + 2, root / 'fixture-deadline.log', policy)
     # The fixture must cooperate, persist partial output, and return 75 itself.
     # A launcher kill alone does not prove resumability.
     require(partial_rc == 75 and partial_reason == 'exited' and (partial_results / 'partial.json').is_file(), 'rc75-partial-missing')
@@ -174,19 +193,10 @@ def production(args, env, policy):
             fcntl.flock(scheduled_lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
     if args.precond_cmd:
         require(subprocess.run(['bash', '-c', args.precond_cmd], cwd=args.workdir, env=childenv).returncode == 0, 'precondition')
-    # Claim wrapper and taskset both exercise the exact job command used in qual.
-    import shlex
-    command = ['taskset', '-c', cpulist, 'bash', '-c', args.cmd]
     if getattr(args, 'class') in ('gpu', 'cpu+gpu'):
         require('mi210_0' in regions, 'gpu-grant-missing')
-        if args.gpu_quiet == 'none': args.gpu_quiet = 'shared'
-    if not args.self_claim:
-        claim = args.claim_cpus or cpulist
-        command = [args.region_lock, 'run', '--cpu-list', claim, '--role', args.role, '--tag', 'filler-' + args.id,
-                   '--timeout-s', str(int(end.timestamp() - time.time())), *(['--gpu-quiet', args.gpu_quiet] if args.gpu_quiet != 'none' else []),
-                   *(['--no-fold-siblings'] if args.no_fold_siblings else []), '--', *command]
     original = args.cmd
-    args.cmd = shlex.join(command)
+    args.cmd = wrapped_job_command(args, cpulist, end.timestamp() - time.time())
     logdir = Path(env.get('FILLER_STATE_DIR', str(flags / 'engine-state'))) / args.id
     logdir.mkdir(parents=True, exist_ok=True)
     try:
