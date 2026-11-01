@@ -10,6 +10,7 @@ name: tests
 # selection is worse than no run at all.
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
