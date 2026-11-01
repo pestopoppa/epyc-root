@@ -1,0 +1,9 @@
+# SW-2 private v9 slot-isolation diagnostic
+
+`sw2-v9-slot-isolation-20261101` ended rc0 at 2026-11-01 21:25:16Z on CPUs 0–23. Four distinct, uncached requests ran on one server session and slot 0. Requested caps 7, 0, default and 12 returned HTTP 200 and echoed 7, 0, 8 and 8; draft totals were 32, absent, 38 and 23. The default request following zero resumed drafting. The full terminal records 4 responses and a null verdict; the JSONL stream also includes separate smoke records, which are not full-run evidence.
+
+The loaded server implementation recorded in `/proc/<pid>/maps` had SHA-256 `264fc9f208f91d6ddd3427837d63c507b14d170a566c2a53992b142b09dcabd6`, matching the archived v9 store's provenance and checksum catalog. At source commit `0db32c06e3e550065b78311a6031ef3dd2c4f27c`, `server-context.cpp:320` resets the draft total, `:3076` adds the draft size, `:523–526` transfers only a positive total, `server-task.h:288` initializes the output count to zero, and `server-task.cpp:261–264` serializes it only if positive. Within this pinned implementation and bounded run, the absent field is therefore interpreted as zero rather than an independently emitted zero.
+
+This proves the observed echo/clamp and zero-then-default slot sequence for this private tiny-model v9 instrument. It does not prove the requested lower cap constrained every individual draft: the response contains a cumulative total, not per-step widths. It does not establish v10 behavior, serving performance or a deployment decision. These are pre-hook observations, not decision-grade measurement tuples.
+
+Full-run archive SHA-256 `c798265a201fe956ef6220f6494db2af7f3c12cf17b237703c14f40a926d8e19`; terminal SHA-256 `fa7b01b06d77ffd632c22ba0510508c6c1aba8b1f67a611ca665a1cb6f29fa6f`; mapped-implementation record SHA-256 `196a4662e5820043034811719cc642af5dcb68aa9f09a1fba891a08971424f32`. The original plan and launcher are preserved alongside the raw archive and end receipt.

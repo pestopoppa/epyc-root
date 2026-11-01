@@ -1,0 +1,8 @@
+{"mode": "smoke", "case": 0, "response_file": "/mnt/raid0/llm/tmp/sw2-v9-slot-isolation-20261101/dryrun/0.response.json", "response_sha256": "76e46dbf4727821a74e3f23de8f74df0bd0f87bd39be2c3257c3588f57082736"}
+{"mode": "smoke", "case": 1, "response_file": "/mnt/raid0/llm/tmp/sw2-v9-slot-isolation-20261101/dryrun/1.response.json", "response_sha256": "4003845d1cd458f0b1fc099241478c06703e2d74d86ef123ac5986533bcf247b"}
+{"mode": "smoke", "case": 2, "response_file": "/mnt/raid0/llm/tmp/sw2-v9-slot-isolation-20261101/dryrun/2.response.json", "response_sha256": "3e7943e53bc80f50102ff08bd32bb4293a9a30bf6ab108b4fa6bc074fdef1f7f"}
+{"mode": "smoke", "case": 3, "response_file": "/mnt/raid0/llm/tmp/sw2-v9-slot-isolation-20261101/dryrun/3.response.json", "response_sha256": "3d3472e4c066625bbca43db439232f07ca0df21fdac581d65be6593956685991"}
+{"mode": "full", "case": 0, "response_file": "/mnt/raid0/llm/tmp/sw2-v9-slot-isolation-20261101/run/0.response.json", "response_sha256": "1f84b1e9c4312647d92552f221075a6b598f9cc83e6207acf435dc9ca90ca699"}
+{"mode": "full", "case": 1, "response_file": "/mnt/raid0/llm/tmp/sw2-v9-slot-isolation-20261101/run/1.response.json", "response_sha256": "833a1d6187856b22d030ffbf2ef4e32259b8d1037610e743449f2c64d92f0f39"}
+{"mode": "full", "case": 2, "response_file": "/mnt/raid0/llm/tmp/sw2-v9-slot-isolation-20261101/run/2.response.json", "response_sha256": "8451deeb399575075d33a315c5b4d731790d440060cb7614e99d4e246b5f5838"}
+{"mode": "full", "case": 3, "response_file": "/mnt/raid0/llm/tmp/sw2-v9-slot-isolation-20261101/run/3.response.json", "response_sha256": "34cbe2657e093470317924f56d8792c2280558d8461b919a260eb47a46839ca6"}

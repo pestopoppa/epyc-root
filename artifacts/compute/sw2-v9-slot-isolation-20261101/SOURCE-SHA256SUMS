@@ -1,0 +1,11 @@
+5bfecf000a4ac309972c29e09be539370a70098baa9a5d604b49fa26cff677a5  worker.py
+cebd6bb0a1d97e354253d3cb1fe29f89399053272e59a37e14e0e0d0f22db013  PLAN.json
+c8ee8991be3eb6d4ed0e16ced319f7cb98d4bfcefcb44937e9d91b790c742bbc  region-lock
+c7b9b31692c7c860c6f4f9cfc434ce2291e158c10879f6b2ffc9a80706528791  REGION-LOCK-INPUTS.sha256
+f169fc8f65912c4995fa1a011fe9a4e596f664575e2c76fcf65d635d51cdd043  REGION-LOCK-PYTHON-ALLOW.txt
+8ebb1355593121a231735d7b58ad076f4539d2c5e3847fa09d2922fa8a980499  /mnt/raid0/llm/kernels/archive/cpu-20260810-0db32c06e/bin/llama-server
+264fc9f208f91d6ddd3427837d63c507b14d170a566c2a53992b142b09dcabd6  /mnt/raid0/llm/kernels/archive/cpu-20260810-0db32c06e/bin/libllama-server-impl.so
+1240dfc1957df9f3550dd6c1d9e64b466fc2f452d8bc34bd4e45e1a1e2ca6055  /mnt/raid0/llm/models/sw2-stories15m-pinned-20261031/target.gguf
+6151b1929d7f5aa3385d9ddef3393e55587c0a55de661562322bc51dfda93a04  /mnt/raid0/llm/models/sw2-stories15m-pinned-20261031/draft.gguf
+4769ffaae2d5fcb04ab023d06370ee0481f03857de88356f565a85792de39d76  runtime-libs/libcrypto.so.3
+e2f779425f91a9bbb2a5817d975b6ddb8f9fec40ad4c060ddae350c4e4986c5d  runtime-libs/libssl.so.3

@@ -1,0 +1,84 @@
+--- a/ggml/src/ggml-cuda/fattn.cu
++++ b/ggml/src/ggml-cuda/fattn.cu
+@@ -3,6 +3,10 @@
+ #include "fattn-mma-f16.cuh"
+ #include "fattn-tile.cuh"
+ 
++#include <atomic>
++#include <cstdio>
++#include <cstdlib>
++
+ template <int DV, int ncols1, int ncols2>
+ static void launch_fattn_vec(
+     ggml_backend_cuda_context & ctx, ggml_tensor * dst, fattn_kernel_t fattn_kernel, const int nwarps, const size_t nbytes_shared,
+@@ -642,7 +646,27 @@
+ 
+ void ggml_cuda_flash_attn_ext(ggml_backend_cuda_context & ctx, ggml_tensor * dst) {
+     ggml_cuda_set_device(ctx.device);
+-    switch (ggml_cuda_get_best_fattn_kernel(ggml_cuda_get_device(), dst)) {
++    const auto g3_kernel = ggml_cuda_get_best_fattn_kernel(ggml_cuda_get_device(), dst);
++    if (std::getenv("G3_TRACE_V1")) {
++        // The bounded overflow sentinel makes omitted dispatches explicit.
++        static std::atomic<unsigned> g3_count{0};
++        const unsigned g3_index = g3_count.fetch_add(1, std::memory_order_relaxed);
++        if (g3_index < 20000) {
++            const ggml_tensor * Q = dst->src[0];
++            const ggml_tensor * K = dst->src[1];
++            const ggml_tensor * V = dst->src[2];
++            std::fprintf(stderr, "G3_TRACE_V1 DISPATCH i=%u device=%d kernel=%d q0=%lld q1=%lld q2=%lld q3=%lld k0=%lld k1=%lld k2=%lld ktype=%s vtype=%s\n",
++                g3_index, ctx.device, (int) g3_kernel,
++                (long long) Q->ne[0], (long long) Q->ne[1], (long long) Q->ne[2], (long long) Q->ne[3],
++                (long long) K->ne[0], (long long) K->ne[1], (long long) K->ne[2],
++                ggml_type_name(K->type), ggml_type_name(V->type));
++            std::fflush(stderr);
++        } else if (g3_index == 20000) {
++            std::fprintf(stderr, "G3_TRACE_V1 OVERFLOW limit=20000\n");
++            std::fflush(stderr);
++        }
++    }
++    switch (g3_kernel) {
+         case BEST_FATTN_KERNEL_NONE:
+             GGML_ABORT("fatal error");
+         case BEST_FATTN_KERNEL_TILE:
+--- a/tools/server/server-context.cpp
++++ b/tools/server/server-context.cpp
+@@ -27,6 +27,8 @@
+ #include <filesystem>
+ #include <utility>
+ #include <fstream>
++#include <cstdio>
++#include <cstdlib>
+ 
+ // INF-70 E2a: exactness modes for greedy speculative verification, read once from LLAMA_SPEC_EXACT.
+ // On a target whose multi-token forward is not row-exact against its single-token forward (qwen4exp:
+@@ -3750,7 +3752,30 @@
+             n_empty_consecutive = 0;
+         }
+ 
++        // G3_TRACE_V1: diagnostic only; np=1 bounds correlation to one server slot.
++        // Synchronization brackets host dispatch and changes timing: no speed claim.
++        const bool g3_trace = std::getenv("G3_TRACE_V1") && params_base.n_parallel == 1;
++        static uint64_t g3_epoch = 0;
++        uint64_t g3_this_epoch = 0;
++        if (g3_trace) {
++            llama_synchronize(ctx_tgt);
++            g3_this_epoch = ++g3_epoch;
++            const server_slot & s = slots[0];
++            const bool all_inside = !s.spec_i_batch.empty() &&
++                s.spec_i_batch.front() >= off && s.spec_i_batch.back() < off + batch_view.n_tokens;
++            const bool verify = s.task && !s.spec_draft.empty() && all_inside &&
++                s.spec_i_batch.size() == s.spec_draft.size() + 1;
++            std::fprintf(stderr, "G3_TRACE_V1 BEGIN epoch=%" PRIu64 " slot=%d task=%d phase=%s draft=%zu rows=%d off=%d\n",
++                g3_this_epoch, s.id, s.task ? s.task->id : -1, verify ? "verify" : "other_or_unknown",
++                s.spec_draft.size(), batch_view.n_tokens, off);
++            std::fflush(stderr);
++        }
+         const int ret = llama_decode(ctx_tgt, batch_view);
++        if (g3_trace) {
++            llama_synchronize(ctx_tgt);
++            std::fprintf(stderr, "G3_TRACE_V1 END epoch=%" PRIu64 " rc=%d\n", g3_this_epoch, ret);
++            std::fflush(stderr);
++        }
+ 
+         metrics.on_decoded(slots);
+ 

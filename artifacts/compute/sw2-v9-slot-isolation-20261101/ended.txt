@@ -1,0 +1,7 @@
+rc=0 time=2026-11-01T21:25:16Z reason=complete
+job_id=sw2-v9-slot-isolation-20261101
+owner=handoff-speculative-decoding-mtp
+step=job-run
+estimated_wall_s=900
+started=2026-11-01T21:25:13Z
+regions=0-23

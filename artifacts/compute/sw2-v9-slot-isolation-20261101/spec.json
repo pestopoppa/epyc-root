@@ -1,0 +1,23 @@
+{
+  "id": "sw2-v9-slot-isolation-20261101",
+  "owner": "handoff-speculative-decoding-mtp",
+  "launcher": "/mnt/raid0/llm/tmp/sw2-v9-slot-isolation-20261101/launch.sh",
+  "lane": "cpu",
+  "result_path": "/mnt/raid0/llm/tmp/sw2-v9-slot-isolation-20261101/observations.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "Four distinct requests on one private v9 server and slot with caps 7,0,default,12 must echo 7,0,8,8; positive draft counts for nonzero controls. Zero requires explicit zero or demonstrably loaded source-bound archived-v9 implementation with verified absent-only-when-zero serialization. Preserve unknowns, interruptions and all raw records; no v10 or throughput claim.",
+  "estimate_s": 900,
+  "handoff_task": "speculative-decoding-mtp-refresh.md SW-2 private v9 clamp and slot reuse",
+  "priority_rank": 10,
+  "scratch_root": "/mnt/raid0/llm/tmp/sw2-v9-slot-isolation-20261101",
+  "keep": [
+    "**/*.json",
+    "**/*.jsonl",
+    "**/*.log",
+    "**/*.py",
+    "**/*.sh",
+    "**/*.txt",
+    "**/*SHA256SUMS",
+    "runtime-libs/**"
+  ]
+}
