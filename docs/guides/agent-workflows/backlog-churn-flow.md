@@ -85,6 +85,14 @@ whose file left `handoffs/active/`) becomes `done` and frees its slot. Registry 
 session whose handoff falls below the top-`max_live` **yields** — it finishes its current task and wraps up, is marked
 `yield` and is not resumed for NEW work (its own rows' run-end events still reach it); never killed mid-task.
 
+**tmux window per session (operator, 2026-11-01).** start/resume/transfer run the engine inside window `h-<slug>` of
+the tmux session `agent` (created with `new-window -d -t agent: -n h-<slug>`, reused with `respawn-pane -k`; addressed by
+NAME `agent:=h-<slug>`, never by index; no `send-keys`, ever; the `codex-gen` and `claude` windows are never touched).
+The JSONL is still tee'd to `handoff-sessions/<slug>/<ts>.jsonl` (the dispatcher reads session id / WRAPPED from it as
+before), the pane shows `handoff_sessions.py pretty`, `<ts>.jsonl.pid|.rc` carry the engine pid and exit status
+(`last_rc` in the registry), the pane stays open after the turn (remain-on-exit) and the window is killed on `done`.
+No tmux session → `TMUX-FALLBACK` (detached engine, as before).
+
 **Inference first (operator, 2026-11-01)** — every brief and every `BACKLOG-handoff-<slug>.md` opens with it: the
 session's first job is to turn the handoff's measurement/inference tasks into published rows (`publish_row.py`), fastest
 blockers first, so every lane always has runnable rows; non-inference tasks come after, or while rows wait. The backlog
