@@ -1,0 +1,6 @@
+id: codex-ni-jetlong-small4x-paired-20261030
+event: 2026-10-31T08:05:29Z
+main_commit: a25d39ead360bfb7ddaddbfbeb5f3a3ceb626a3b
+result: FAILED-RUN class harness; 130000 token request rejected by 32768 slot; J unattempted; recall unknown
+owner_action: repair context configuration and preserve frozen fixture/exposure before successor
+evidence: artifacts/compute/codex3-allowner-native-0805-20261031/SHA256SUMS

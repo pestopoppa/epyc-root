@@ -1,0 +1,1 @@
+2026-10-31T04:19:01.776354+00:00 FAILED-RUN rc127 class=harness; host region-lock absent before inner job; 0/64 case results, accuracy UNKNOWN; owner qualify host-visible lock; main=626c03b306f3c9b7b17ea6269b4adb20cdd23c83

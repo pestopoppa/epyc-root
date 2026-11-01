@@ -1,0 +1,110 @@
+[
+  {
+    "case": "T1",
+    "id": "codex3-paw-compact-a-20261030",
+    "source": "/mnt/raid0/llm/tmp/compute-flags/filing-done/codex3-paw-compact-a-20261030.FILED",
+    "sha256": "87db5b76423cfa1c4e3350d0d3cfe8b46032ad52600dcdf00c10072d9a2986df"
+  },
+  {
+    "case": "T2",
+    "id": "refactor-c6-gpu-build-729599d69-20261030",
+    "source": "/mnt/raid0/llm/tmp/compute-flags/filing-done/refactor-c6-gpu-build-729599d69-20261030.FILED",
+    "sha256": "c64bfeb8093eb3b70f4e81f5b75b74ffc9f654355d62c61b418f9162a6b642bd"
+  },
+  {
+    "case": "T3",
+    "id": "refactor-akxall8-c5-cpu-build-r5-20261031",
+    "source": "/mnt/raid0/llm/tmp/compute-flags/filing-done/refactor-akxall8-c5-cpu-build-r5-20261031.FILED",
+    "sha256": "b56309799cd12ef969980463d28385998cf338d97c4be28e85525339ef22ef5f"
+  },
+  {
+    "case": "T4",
+    "id": "refactor-ufh12-r1-irt-r2-20261031",
+    "source": "/mnt/raid0/llm/tmp/compute-flags/filing-done/refactor-ufh12-r1-irt-r2-20261031.FILED",
+    "sha256": "755af039612e4143d48cbfc099fb0a6221a56305969198120661dba9b3da691b"
+  },
+  {
+    "case": "T5",
+    "id": "codex-hsf5p-restore-r2-20261028",
+    "source": "/mnt/raid0/llm/tmp/compute-flags/filing-done/codex-hsf5p-restore-r2-20261028.FILED",
+    "sha256": "858ecf00a967b1616f862e4eb4e908f0521969bc6526bf4976870e740aec4fd8"
+  },
+  {
+    "case": "T6",
+    "id": "yarn-cpu-fixed120-v3-s0-20261027",
+    "source": "/mnt/raid0/llm/tmp/compute-flags/filing-done/yarn-cpu-fixed120-v3-s0-20261027.FILED",
+    "sha256": "9421f051f1b251e16cfc46e384100bdcb02bbb0b4fb50b315abb6d5c5312fc1a"
+  },
+  {
+    "case": "T7",
+    "id": "refactor-01a16fc3-hil15-private-s0-20261028",
+    "source": "/mnt/raid0/llm/tmp/compute-flags/filing-done/refactor-01a16fc3-hil15-private-s0-20261028.FILED",
+    "sha256": "65e5686894fcc276781813fc1e522eee466f04c648fe99fa55adc385bd246834"
+  },
+  {
+    "case": "T8",
+    "id": "inf75-w5s-current-census-r2-20261029",
+    "source": "/mnt/raid0/llm/tmp/compute-flags/filing-done/inf75-w5s-current-census-r2-20261029.FILED",
+    "sha256": "d0d5424881d3bf13eca722383526c3773d9e359f70ace14d62b23dd0a0cf03cc"
+  },
+  {
+    "case": "T9",
+    "id": "codex-hil15-s0-resume-v1-20261029",
+    "source": "/mnt/raid0/llm/tmp/compute-flags/filing-done/codex-hil15-s0-resume-v1-20261029.FILED",
+    "sha256": "699cc8e42b5c83ab79240514c591e43679d7a41c1bf31e5f3f9db5ecf4e01eee"
+  },
+  {
+    "case": "T10",
+    "id": "yarn-128k-mi210-sol-r10-20261031",
+    "source": "/mnt/raid0/llm/tmp/compute-flags/filing-done/yarn-128k-mi210-sol-r10-20261031.FILED",
+    "sha256": "d1b404441daa0dc0be8bc3de271f9386ef0938dba2a80ff5867d0191b1cdcb89"
+  },
+  {
+    "case": "T11",
+    "id": "dtap-finance-action-reversal-q2-r1",
+    "source": "/mnt/raid0/llm/tmp/compute-flags/filing-done/dtap-finance-action-reversal-q2-r1.FILED",
+    "sha256": "e10984658f293dc581b2cf66b61c25b25e6b9b9d13c3ca632c485aa986d665c9"
+  },
+  {
+    "case": "T12",
+    "id": "codex3-lb49-fu03-cli-r1-20261031",
+    "source": "/mnt/raid0/llm/tmp/compute-flags/filing-done/codex3-lb49-fu03-cli-r1-20261031.FILED",
+    "sha256": "15689d461fe4d648b9908faac20d76845ca0e96c8f07e37d0684e228435050cc"
+  },
+  {
+    "case": "T13",
+    "id": "codex-ni-inf50-writerrace-resume-r3-20261029",
+    "source": "/mnt/raid0/llm/tmp/compute-flags/filing-done/codex-ni-inf50-writerrace-resume-r3-20261029.FILED",
+    "sha256": "98d24dff418ff9d3d2e2dc5157af05c390d2f2ec61597f85f3cba5e154133c8b"
+  },
+  {
+    "case": "T14",
+    "id": "codex-ni-inf12-gate2-triton36-r5-20261028",
+    "source": "/mnt/raid0/llm/tmp/compute-flags/filing-done/codex-ni-inf12-gate2-triton36-r5-20261028.FILED",
+    "sha256": "910c644a230ec0cdb4aa6f9cb0c223526149574747592a2e6158c4d548006cfc"
+  },
+  {
+    "case": "T15",
+    "id": "codex-hil15-s2-r13-pid-20261031",
+    "source": "/mnt/raid0/llm/tmp/compute-flags/filing-done/codex-hil15-s2-r13-pid-20261031.FILED",
+    "sha256": "7784669e0566ae1e487dc6ba168e22f88e40dd4402bfb62680f46cf101f926bd"
+  },
+  {
+    "case": "T16",
+    "id": "codex-ni-jetlong-small4x-paired-20261030",
+    "source": "/mnt/raid0/llm/tmp/compute-flags/filing-done/codex-ni-jetlong-small4x-paired-20261030.FILED",
+    "sha256": "2a07326a5a1576def1ab5908cb1f4bb30d6fa89e704948301c116963e11c623b"
+  },
+  {
+    "case": "T17",
+    "id": "codex-ni-inf50-writerrace-resume-r4-20261029",
+    "source": "/mnt/raid0/llm/tmp/compute-flags/filing-done/codex-ni-inf50-writerrace-resume-r4-20261029.FILED",
+    "sha256": "7a0ec599c50cfbc9aab59016d61729e5537f874f78b69a0b85f38e99959b87a5"
+  },
+  {
+    "case": "T18",
+    "id": "refactor-c6-gpu-27b-identity-729599d69-20261031",
+    "source": "/mnt/raid0/llm/tmp/compute-flags/filing-done/refactor-c6-gpu-27b-identity-729599d69-20261031.FILED",
+    "sha256": "a4cc39fac4e0f64ca29ce64fa1b5d22cf8f466db0dfc987a675f0ccd2ebfe61b"
+  }
+]

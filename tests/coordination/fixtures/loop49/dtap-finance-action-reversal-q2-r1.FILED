@@ -1,0 +1,1 @@
+FAILED-RUN rc=4 reason=refused:own-port-18991-already-listening; class=harness (port collision); ran=0; owner action=refactor: dtap-finance-env-20261028/job.sh started llama-server pid 3528163 on :18991 at 23:45:17Z, 2 s before r1's port check. Two refactor rows share port 18991. Assign unique ports per row and republish r1 under a new id; sha=n/a
