@@ -3939,7 +3939,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-01T18:47:08Z",
+  "generated_at": "2026-11-01T18:53:49Z",
   "nodes": [
     {
       "age_days": 94,
@@ -8111,13 +8111,13 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 169,
+      "closed": 170,
       "domain": "routing-and-optimization",
       "handoff": "session-bus-thin-dispatcher.md",
       "id": "RTG-34",
       "last_advanced": "2026-11-01",
       "next_action": "AIR-6 \u2014 deploy exact guarded source and require ordinary-work refusal; then resume live canaries",
-      "open": 38,
+      "open": 37,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",

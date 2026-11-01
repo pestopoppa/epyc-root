@@ -2771,9 +2771,9 @@ or any C52 contradiction source each turns the suite red).
   blunt alternative, neither given is a refusal. Ctrl-U only, never Ctrl-C, asserted over every branch;
   every discard logged verbatim so a wrongly-discarded instruction is recoverable.
 
-Residuals the repair did NOT close. All four were observed in the same window; none is fixed.
+Residuals observed in the same window; later dispositions are recorded on the individual rows.
 
-- [ ] **DP-1** (HIGH): **the composer needs a `<char>`-then-`Enter` sequence and the adapter does not
+- [x] **DP-1** (HIGH): **the composer needs a `<char>`-then-`Enter` sequence and the adapter does not
   send one.** Observed 2026-08-12 driving live panes: `Enter` alone against a composer holding pending
   text does not submit it — a character must land first to take the composer out of the state it is
   parked in, and only then does `Enter` commit. `cmd_submit` sends `Enter` directly, so `submit`
@@ -2782,6 +2782,10 @@ Residuals the repair did NOT close. All four were observed in the same window; n
   parallel session — deliberately NOT edited from this seat). Pin the sequence with a case in
   `scripts/coordination/tests/composer_tui_fixture.py`, which already has selectable Enter behaviour,
   so the calibration announces itself when it rots rather than failing silently.
+  ✅ 2026-11-01 source reconciliation: the quarantined `cmd_submit` uses the shared wake-then-key helper;
+  DP-5's actual-helper PTY and mutation controls (`8f4410d0a86297111ec761173f36f534391a9513`) pin
+  the submit sequence. The fixture is synthetic, not a fresh live-pane measurement. DP-2's separate
+  live Claude clear calibration remains open. [no-belief: source and deterministic fixture reconciliation]
 - [ ] **DP-2** (HIGH): **`clear` and `submit` do not work on Claude panes.** The C54 verbs were
   calibrated against a disposable Codex session; against the five Claude mains neither verb takes
   effect. Same backend asymmetry C53 names — faint SGR 2 carries opposite senses on the two TUIs — and
