@@ -98,6 +98,9 @@ jobs:
         # commit lands, and now does so on a push as well.
         run: python3 scripts/handoffs/index_state.py --check
 
+      - name: Dashboard contracts, health and actual surviving page renderers
+        run: python -m pytest -q tests/test_dashboard_*.py tests/test_production_kernel_set.py
+
       - name: Trust-boundary ratification receipts
         # Every script that writes a human-only path (MEASUREMENT.md, its annexes,
         # agents/shared/*.md, CLAUDE.md, the boundary list itself) must emit the
@@ -113,11 +116,4 @@ jobs:
         if: always()
         run: |
           echo "NOT run in CI, and why:"
-          echo "  tests/test_dashboard_autokernel_*.py  - read live deployment state"
-          echo "      under /mnt/raid0/llm/autokernel and pin content digests of"
-          echo "      another repository's source modules. 11 of these are RED at"
-          echo "      origin/main as of 2026-08-28; they are slated for rewrite in"
-          echo "      P6 of handoffs/active/autokernel-rebuild-program.md, and"
-          echo "      re-pinning digests on code about to be replaced would only"
-          echo "      re-arm the landmine."
           echo "  anything requiring an MI210, ROCm, or a llama.cpp build tree."

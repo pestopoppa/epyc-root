@@ -1,3 +1,4 @@
+from dashboard import kernel_contract as legacy, kernel_identity as identity
 """AK6 operator surface — ADVERSARIAL regression locks for the consumer half.
 
 Companion to ``tests/test_dashboard_panels.py``. That suite proves the surface
@@ -71,14 +72,15 @@ class _Artifact:
         if self.content is not None:
             path.write_text(self.content if isinstance(self.content, str)
                             else json.dumps(self.content), encoding="utf-8")
-        self._orig = getattr(server, self.attr)
-        setattr(server, self.attr, path)
-        server._watchdog_state.clear()
+        self._owner = legacy if self.attr == "KERNEL_DASHBOARD_JSON" else server
+        self._orig = getattr(self._owner, self.attr)
+        setattr(self._owner, self.attr, path)
+        legacy._watchdog_state.clear()
         return path
 
     def __exit__(self, *exc):
-        setattr(server, self.attr, self._orig)
-        server._watchdog_state.clear()
+        setattr(self._owner, self.attr, self._orig)
+        legacy._watchdog_state.clear()
         self._tmp.cleanup()
         return False
 
@@ -354,7 +356,7 @@ class KernelV2SelfReportTest(unittest.TestCase):
     """
 
     def _doc(self, **kw):
-        doc = {"schema": server.KERNEL_SCHEMA_V2,
+        doc = {"schema": legacy.KERNEL_SCHEMA_V2,
                "produced_at": _iso(_NOW_DT), "generated_at": _iso(_NOW_DT),
                "producer": {"run": {"campaign_id": "ak", "controller_seq": 1}},
                "sections": {n: {"status": "not_reported"} for n in _V2_SECTIONS}}
@@ -363,7 +365,7 @@ class KernelV2SelfReportTest(unittest.TestCase):
 
     def test_no_observed_section_is_absence_however_fresh_produced_at_is(self):
         env = panels.envelope(panels.RETIRED_PANEL_SOURCES["kernel"],
-                              server._kernel_observation(self._doc()), now=_NOW)
+                              legacy._kernel_observation(self._doc()), now=_NOW)
         self.assertTrue(env["artifact_present"])
         self.assertEqual(env["reporting"], panels.REPORTING_ABSENT)
         self.assertEqual(env["content"], panels.CONTENT_UNKNOWN)
@@ -374,7 +376,7 @@ class KernelV2SelfReportTest(unittest.TestCase):
         """The producer claiming ``unreported_sections: []`` while reporting
         nothing must not buy a clean card."""
         env = panels.envelope(panels.RETIRED_PANEL_SOURCES["kernel"],
-                              server._kernel_observation(
+                              legacy._kernel_observation(
                                   self._doc(unreported_sections=[])), now=_NOW)
         self.assertEqual(panels.panel_verdict(env)[0], panels.STATUS_ABSENT)
         self.assertEqual(sorted(env["unreported"]), sorted(_V2_SECTIONS))
@@ -383,14 +385,14 @@ class KernelV2SelfReportTest(unittest.TestCase):
         doc = self._doc()
         doc["sections"]["campaign"] = {"status": "observed", "stopped": False}
         doc["unreported_sections"] = []          # producer's summary LIES
-        obs = server._kernel_observation(doc)
+        obs = legacy._kernel_observation(doc)
         self.assertIn("release_package", obs.unreported)
         self.assertNotIn("campaign", obs.unreported)
 
     def test_a_garbage_sections_map_dates_nothing(self):
         for bad in ("oops", [], {}, None, 7):
             with self.subTest(sections=bad):
-                obs = server._kernel_observation(self._doc(sections=bad))
+                obs = legacy._kernel_observation(self._doc(sections=bad))
                 self.assertIsNone(obs.timestamp)
                 self.assertIsNone(obs.populated)
 
@@ -399,7 +401,7 @@ class KernelV2SelfReportTest(unittest.TestCase):
         doc = self._doc(sections={n: {"status": "observed", "as_of": _iso(_NOW_DT)}
                                   for n in _V2_SECTIONS})
         env = panels.envelope(panels.RETIRED_PANEL_SOURCES["kernel"],
-                              server._kernel_observation(doc), now=_NOW)
+                              legacy._kernel_observation(doc), now=_NOW)
         self.assertEqual(env["reporting"], panels.REPORTING_OBSERVED)
         self.assertEqual(env["staleness_class"], panels.CLASS_FRESH)
         self.assertEqual(env["unreported"], [])
@@ -411,7 +413,7 @@ class KernelV2SelfReportTest(unittest.TestCase):
         doc = self._doc()
         doc["sections"]["campaign"] = {"status": "observed", "stopped": False}
         env = panels.envelope(panels.RETIRED_PANEL_SOURCES["kernel"],
-                              server._kernel_observation(doc), now=_NOW)
+                              legacy._kernel_observation(doc), now=_NOW)
         self.assertEqual(env["reporting"], panels.REPORTING_OBSERVED)
         self.assertEqual(env["staleness_class"], panels.CLASS_FRESH)
         self.assertIn("champion", env["unreported"])
@@ -437,7 +439,7 @@ class UnreadableArtifactTest(unittest.TestCase):
 
     def test_a_corrupt_export_is_present_and_broken(self):
         with _Artifact("KERNEL_DASHBOARD_JSON", "{truncated"):
-            out = server.legacy_kernel_data()
+            out = legacy.legacy_kernel_data()
         fr = out["_freshness"]
         self.assertTrue(fr["artifact_present"])        # something IS there
         self.assertEqual(fr["reporting"], panels.REPORTING_ABSENT)  # nothing datable
@@ -449,13 +451,13 @@ class UnreadableArtifactTest(unittest.TestCase):
         """The degraded shell has no ``schema``, and unlabelled means v1 — so a
         corrupt file was being reported as a readable legacy contract."""
         with _Artifact("KERNEL_DASHBOARD_JSON", "{truncated"):
-            self.assertIsNone(server.legacy_kernel_data()["_contract_version"])
+            self.assertIsNone(legacy.legacy_kernel_data()["_contract_version"])
 
     def test_a_missing_export_still_says_never_exported(self):
         """COMPLIANT-PATH CONTROL: the never-exported diagnosis is preserved for
         the case it actually describes."""
         with _Artifact("KERNEL_DASHBOARD_JSON", None):
-            fr = server.legacy_kernel_data()["_freshness"]
+            fr = legacy.legacy_kernel_data()["_freshness"]
         self.assertFalse(fr["artifact_present"])
         self.assertEqual(fr["watchdog"]["state"], panels.WATCHDOG_NEVER)
         self.assertIn("NOBODY IS REPORTING", fr["watchdog"]["reason"])
@@ -464,12 +466,12 @@ class UnreadableArtifactTest(unittest.TestCase):
         """COMPLIANT-PATH CONTROL."""
         doc = {"runs": [{"ts": _iso(_NOW_DT)}], "generated_at": _iso(_NOW_DT)}
         with _Artifact("KERNEL_DASHBOARD_JSON", doc):
-            out = server.legacy_kernel_data()
+            out = legacy.legacy_kernel_data()
         self.assertEqual(out["_contract_version"], "v1")
         self.assertEqual(out["_freshness"]["reporting"], panels.REPORTING_OBSERVED)
 
     def test_every_file_backed_reader_uses_the_same_rule(self):
-        for attr, payload in (("KERNEL_DASHBOARD_JSON", server.legacy_kernel_data),
+        for attr, payload in (("KERNEL_DASHBOARD_JSON", legacy.legacy_kernel_data),
                               ("TIMELINE_PATH", server.timeline_payload),
                               ("AUTOPILOT_OUTCOME_JSON", server.outcome_payload),
                               ("BENCHMARK_ARTIFACT_INVENTORY",

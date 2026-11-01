@@ -1,0 +1,6 @@
+{
+  "source_path": "/mnt/raid0/llm/autokernel/surface/kernel_progression.json",
+  "source_sha256": "21eeb7d94d7fda0d22bdeaa25eac44f37671b0513d0e481ad60dabca096a9fe5",
+  "captured_at": "2026-11-01",
+  "basis": "Original producer output, historical data only. No current health or performance inference; mutations in tests are synthetic."
+}

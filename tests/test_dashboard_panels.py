@@ -1,3 +1,4 @@
+from dashboard import kernel_contract as legacy, kernel_identity as identity
 """AK6 operator surface — the consumer half.
 
 Covers ``dashboard/panels.py`` (the SSOT panel→producer registry, the per-panel
@@ -26,6 +27,7 @@ import json
 import os
 import re
 import subprocess
+import sys
 import tempfile
 import types
 from dataclasses import replace
@@ -76,7 +78,7 @@ def _v2_doc(*, produced_at, observed=("campaign",), stopped=False, seq=17,
                               "reason": f"{name} owner did not report"}
     unreported = sorted(n for n in _V2_SECTIONS if n not in observed)
     return {
-        "schema": server.KERNEL_SCHEMA_V2,
+        "schema": legacy.KERNEL_SCHEMA_V2,
         "contract_version": 2,
         "campaign_id": "ak-demo",
         "produced_at": produced_at,
@@ -99,11 +101,11 @@ def _hip_decision_receipt() -> dict:
               "max_abs_error": 1.2280521204388606e-6}
              for index in range(24)]
     value = {
-        "schema": server.AUTOKERNEL_HIP_DECISION_SCHEMA,
-        "campaign_id": server.AUTOKERNEL_HIP_DECISION_CAMPAIGN,
+        "schema": legacy.AUTOKERNEL_HIP_DECISION_SCHEMA,
+        "campaign_id": legacy.AUTOKERNEL_HIP_DECISION_CAMPAIGN,
         "status": "complete", "ended_at": "2026-08-12T10:21:39.000627Z",
-        "authority": server.AUTOKERNEL_HIP_DECISION_AUTHORITY,
-        "producer": {"producer_id": server.AUTOKERNEL_HIP_DECISION_PRODUCER,
+        "authority": legacy.AUTOKERNEL_HIP_DECISION_AUTHORITY,
+        "producer": {"producer_id": legacy.AUTOKERNEL_HIP_DECISION_PRODUCER,
                      "sha256": "6" * 64},
         "task": {"task_id": "torch2hip/gpumode/16636_SiLU",
                  "target": {"gpu_model": "MI210", "gfx_arch": "gfx90a"}},
@@ -127,7 +129,7 @@ def _hip_decision_receipt() -> dict:
         "constraints": {"promotion_authority": False,
                         "production_tree_touched": False},
     }
-    value["receipt_sha256"] = server._canonical_receipt_hash(value)
+    value["receipt_sha256"] = legacy._canonical_receipt_hash(value)
     return value
 
 
@@ -143,14 +145,14 @@ class _KernelFile:
         if self.content is not None:
             path.write_text(self.content if isinstance(self.content, str)
                             else json.dumps(self.content), encoding="utf-8")
-        self._orig = server.KERNEL_DASHBOARD_JSON
-        server.KERNEL_DASHBOARD_JSON = path
-        server._watchdog_state.clear()
+        self._orig = legacy.KERNEL_DASHBOARD_JSON
+        legacy.KERNEL_DASHBOARD_JSON = path
+        legacy._watchdog_state.clear()
         return path
 
     def __exit__(self, *exc):
-        server.KERNEL_DASHBOARD_JSON = self._orig
-        server._watchdog_state.clear()
+        legacy.KERNEL_DASHBOARD_JSON = self._orig
+        legacy._watchdog_state.clear()
         self._tmp.cleanup()
         return False
 
@@ -164,12 +166,12 @@ class _ProgressionFile:
         path = Path(self._tmp.name) / "kernel_progression.json"
         if self.content is not None:
             path.write_text(json.dumps(self.content), encoding="utf-8")
-        self._orig = server.KERNEL_PROGRESSION_JSON
-        server.KERNEL_PROGRESSION_JSON = path
+        self._orig = legacy.KERNEL_PROGRESSION_JSON
+        legacy.KERNEL_PROGRESSION_JSON = path
         return path
 
     def __exit__(self, *exc):
-        server.KERNEL_PROGRESSION_JSON = self._orig
+        legacy.KERNEL_PROGRESSION_JSON = self._orig
         self._tmp.cleanup()
         return False
 
@@ -352,8 +354,8 @@ class RegistryContentTest(unittest.TestCase):
         self.assertEqual(src.panel, "x")
 
     def test_server_thresholds_are_read_from_the_registry(self):
-        self.assertEqual(server._KERNEL_WARN_S, panels.RETIRED_PANEL_SOURCES["kernel"].warn_s)
-        self.assertEqual(server._KERNEL_STALE_S, panels.RETIRED_PANEL_SOURCES["kernel"].stale_s)
+        self.assertEqual(legacy._KERNEL_SOURCE.warn_s, panels.RETIRED_PANEL_SOURCES["kernel"].warn_s)
+        self.assertEqual(legacy._KERNEL_SOURCE.stale_s, panels.RETIRED_PANEL_SOURCES["kernel"].stale_s)
         self.assertEqual(server._TIMELINE_WARN_S, panels.PANELS["timeline"].warn_s)
         self.assertEqual(server._OUTCOME_STALE_S, panels.PANELS["outcome"].stale_s)
         self.assertEqual(server._HEARTBEAT_STALE_S, panels.PANELS["bus"].stale_s)
@@ -537,7 +539,7 @@ class KernelContractV2Test(unittest.TestCase):
         doc = _v2_doc(produced_at=_iso(_NOW_DT - timedelta(hours=2)),
                       observed=_V2_SECTIONS)
         with _KernelFile(doc):
-            out = server.legacy_kernel_data()
+            out = legacy.legacy_kernel_data()
         self.assertEqual(out["_contract_version"], "v2")
         fr = out["_freshness"]
         self.assertEqual(fr["source"], "produced_at")
@@ -555,14 +557,14 @@ class KernelContractV2Test(unittest.TestCase):
         doc = _v2_doc(produced_at=_iso(_NOW_DT - timedelta(days=30)),
                       observed=_V2_SECTIONS, exported_at=_iso(_NOW_DT))
         with _KernelFile(doc):
-            fr = server.legacy_kernel_data()["_freshness"]
+            fr = legacy.legacy_kernel_data()["_freshness"]
         self.assertEqual(fr["staleness_class"], "stale")
         self.assertEqual(fr["watchdog"]["state"], panels.WATCHDOG_STOPPED)
 
     def test_a_v2_document_with_no_owner_reporting_does_not_render_clean(self):
         doc = _v2_doc(produced_at=None, observed=())
         with _KernelFile(doc):
-            out = server.legacy_kernel_data()
+            out = legacy.legacy_kernel_data()
         fr = out["_freshness"]
         self.assertTrue(fr["artifact_present"])          # the exporter ran
         self.assertEqual(fr["reporting"], panels.REPORTING_ABSENT)  # nobody reported
@@ -573,7 +575,7 @@ class KernelContractV2Test(unittest.TestCase):
     def test_a_partially_unreported_v2_document_names_the_missing_owners(self):
         doc = _v2_doc(produced_at=_iso(_NOW_DT), observed=("campaign", "champion"))
         with _KernelFile(doc):
-            fr = server.legacy_kernel_data()["_freshness"]
+            fr = legacy.legacy_kernel_data()["_freshness"]
         self.assertEqual(fr["reporting"], panels.REPORTING_OBSERVED)
         self.assertEqual(fr["staleness_class"], "fresh")
         # Fresh AND incomplete: the panel may not read clean.
@@ -584,19 +586,19 @@ class KernelContractV2Test(unittest.TestCase):
         """COMPLIANT-PATH CONTROL for the test above."""
         doc = _v2_doc(produced_at=_iso(_NOW_DT), observed=_V2_SECTIONS)
         with _KernelFile(doc):
-            fr = server.legacy_kernel_data()["_freshness"]
+            fr = legacy.legacy_kernel_data()["_freshness"]
         self.assertEqual(panels.panel_verdict(fr)[0], panels.STATUS_OK)
 
     def test_a_stopped_controller_reads_idle_not_dead(self):
         doc = _v2_doc(produced_at=_iso(_NOW_DT - timedelta(days=30)),
                       observed=_V2_SECTIONS, stopped=True)
         with _KernelFile(doc):
-            fr = server.legacy_kernel_data()["_freshness"]
+            fr = legacy.legacy_kernel_data()["_freshness"]
         self.assertEqual(fr["watchdog"]["state"], panels.WATCHDOG_IDLE)
 
     def test_the_watermark_is_the_controller_sequence(self):
         doc = _v2_doc(produced_at=_iso(_NOW_DT), observed=_V2_SECTIONS, seq=42)
-        obs = server._kernel_observation(doc)
+        obs = legacy._kernel_observation(doc)
         self.assertEqual(obs.watermark, "ak-demo:42")
 
     def test_v1_generated_at_spelling_is_carried_by_v2(self):
@@ -613,24 +615,24 @@ class KernelContractV1Test(unittest.TestCase):
         doc = {"db_present": True, "runs": [{"ts": _iso(_NOW_DT - timedelta(hours=2))}],
                "totals": {"runs": 1}, "generated_at": _iso(_NOW_DT)}
         with _KernelFile(doc):
-            out = server.legacy_kernel_data()
+            out = legacy.legacy_kernel_data()
         self.assertEqual(out["_contract_version"], "v1")
         self.assertEqual(out["_freshness"]["source"], "runs[].ts")
         self.assertEqual(out["_freshness"]["staleness_class"], "fresh")
 
     def test_an_explicit_v1_label_is_read_as_v1(self):
-        doc = {"schema": server.KERNEL_SCHEMA_V1, "runs": [], "totals": {},
+        doc = {"schema": legacy.KERNEL_SCHEMA_V1, "runs": [], "totals": {},
                "generated_at": _iso(_NOW_DT)}
-        self.assertEqual(server.kernel_contract_version(doc), "v1")
+        self.assertEqual(legacy.kernel_contract_version(doc), "v1")
 
     def test_an_unknown_schema_is_refused_not_coerced_to_v1(self):
         """Bite: coercion would read this as a FRESH v1 document. Refusal makes it
         undated, which every consumer renders as absent."""
         doc = {"schema": "epyc.autokernel.kernel_dashboard.v9",
                "runs": [{"ts": _iso(_NOW_DT)}], "generated_at": _iso(_NOW_DT)}
-        self.assertEqual(server.kernel_contract_version(doc), "unknown")
+        self.assertEqual(legacy.kernel_contract_version(doc), "unknown")
         with _KernelFile(doc):
-            fr = server.legacy_kernel_data()["_freshness"]
+            fr = legacy.legacy_kernel_data()["_freshness"]
         self.assertEqual(fr["staleness_class"], "missing")
         self.assertEqual(fr["reporting"], panels.REPORTING_ABSENT)
         self.assertIn("Refusing to guess", fr["detail"])
@@ -639,7 +641,7 @@ class KernelContractV1Test(unittest.TestCase):
 class KernelProgressionTest(unittest.TestCase):
     def _doc(self):
         return {
-            "schema": server.KERNEL_PROGRESSION_SCHEMA,
+            "schema": legacy.KERNEL_PROGRESSION_SCHEMA,
             "observed_through": _iso(_NOW_DT - timedelta(hours=1)),
             "promotion_claim": False,
             "funnel": {"candidate": 1, "strict_keep": 0,
@@ -653,7 +655,7 @@ class KernelProgressionTest(unittest.TestCase):
         terminal = _v2_doc(produced_at=_iso(_NOW_DT), observed=_V2_SECTIONS)
         with _ProgressionFile(self._doc()):
             with _KernelFile(terminal):
-                out = server.legacy_kernel_data()
+                out = legacy.legacy_kernel_data()
         self.assertEqual(out["_progression"]["funnel"]["candidate"], 1)
         self.assertFalse(out["_progression"]["promotion_claim"])
         self.assertEqual(out["sections"], terminal["sections"])
@@ -662,7 +664,7 @@ class KernelProgressionTest(unittest.TestCase):
         observed = tuple(name for name in _V2_SECTIONS if name != "champion")
         with _ProgressionFile(self._doc()):
             with _KernelFile(_v2_doc(produced_at=_iso(_NOW_DT), observed=observed)):
-                code, out = server.kernel_data_health()
+                code, out = legacy.kernel_data_health()
         self.assertEqual(code, 503)
         self.assertEqual(out["status"], panels.STATUS_DEGRADED)
         self.assertTrue(out["progression"]["available"])
@@ -672,7 +674,7 @@ class KernelProgressionTest(unittest.TestCase):
         doc = self._doc()
         doc["promotion_claim"] = True
         with _ProgressionFile(doc):
-            out = server._read_kernel_progression()
+            out = legacy._read_kernel_progression()
         self.assertFalse(out["available"])
         self.assertIn("promotion_claim", out["error"])
 
@@ -685,7 +687,7 @@ class KernelProgressionTest(unittest.TestCase):
                         "gates_health": True},
                        {"panel": "outcome", "verdict": panels.STATUS_ABSENT,
                         "gates_health": False}]}
-        out = server._supplement_kernel_verdict(verdict, {
+        out = legacy._supplement_kernel_verdict(verdict, {
             "available": True, "candidates": [{}], "unexplored": []})
         self.assertEqual(out["status"], panels.STATUS_DEGRADED)
         self.assertEqual(out["status_set_by"]["panel"], "kernel")
@@ -697,7 +699,7 @@ class KernelAbsenceOnTheWireTest(unittest.TestCase):
         """``[]`` means 'the producer reported and there is nothing'; ``null``
         means 'no producer reported'. Conflating them is the scar."""
         with _KernelFile(None):
-            out = server.legacy_kernel_data()
+            out = legacy.legacy_kernel_data()
         for key in ("runs", "pareto", "best_per_model", "totals"):
             self.assertIsNone(out[key], key)
         self.assertIsNone(out["_contract_version"])
@@ -718,7 +720,7 @@ class KernelAbsenceOnTheWireTest(unittest.TestCase):
         coalesces, and the payload must stay serialisable so the route cannot 500.
         """
         with _KernelFile(None):
-            out = server.legacy_kernel_data()
+            out = legacy.legacy_kernel_data()
         self.assertEqual(out.get("runs") or [], [])
         self.assertEqual(out.get("totals") or {}, {})
         json.dumps(out)  # serialisable; the route cannot 500
@@ -730,13 +732,13 @@ class KernelAbsenceOnTheWireTest(unittest.TestCase):
             bundle = repo / "data" / "autokernel_aa_demo"
             bundle.mkdir(parents=True)
             (bundle / "anchor.json").write_text("{}\n", encoding="utf-8")
-            original = server.AUTOKERNEL_RESEARCH_REPO
-            server.AUTOKERNEL_RESEARCH_REPO = repo
+            original = legacy.AUTOKERNEL_RESEARCH_REPO
+            legacy.AUTOKERNEL_RESEARCH_REPO = repo
             try:
                 with _KernelFile(None):
-                    out = server.legacy_kernel_data()
+                    out = legacy.legacy_kernel_data()
             finally:
-                server.AUTOKERNEL_RESEARCH_REPO = original
+                legacy.AUTOKERNEL_RESEARCH_REPO = original
         self.assertEqual(out["_freshness"]["reporting"], panels.REPORTING_ABSENT)
         self.assertEqual(out["_freshness"]["watchdog"]["state"],
                          panels.WATCHDOG_NEVER)
@@ -745,21 +747,16 @@ class KernelAbsenceOnTheWireTest(unittest.TestCase):
 
     def test_corrupt_json_is_absence_not_a_crash(self):
         with _KernelFile("{not json"):
-            out = server.legacy_kernel_data()
+            out = legacy.legacy_kernel_data()
         self.assertIn("error", out)
         self.assertEqual(out["_freshness"]["reporting"], panels.REPORTING_ABSENT)
 
     def test_the_default_path_is_durable_not_scratch(self):
         env = dict(os.environ)
         env.pop("KERNEL_DASHBOARD_JSON", None)
-        old = os.environ.pop("KERNEL_DASHBOARD_JSON", None)
-        try:
-            reloaded = importlib.reload(server)
-            default = str(reloaded.KERNEL_DASHBOARD_JSON)
-        finally:
-            if old is not None:
-                os.environ["KERNEL_DASHBOARD_JSON"] = old
-            importlib.reload(server)
+        default = subprocess.run([sys.executable, "-c",
+            "from dashboard import kernel_contract; print(kernel_contract.KERNEL_DASHBOARD_JSON)"],
+            env=env, check=True, capture_output=True, text=True).stdout.strip()
         self.assertEqual(default,
                          "/mnt/raid0/llm/autokernel/surface/kernel_dashboard.json")
         # The three defects of the old default, asserted individually.
@@ -769,33 +766,23 @@ class KernelAbsenceOnTheWireTest(unittest.TestCase):
 
     def test_the_env_override_still_works(self):
         """COMPLIANT-PATH CONTROL: the durable default did not remove testability."""
-        os.environ["KERNEL_DASHBOARD_JSON"] = "/tmp/does-not-exist/k.json"
-        try:
-            reloaded = importlib.reload(server)
-            self.assertEqual(str(reloaded.KERNEL_DASHBOARD_JSON),
-                             "/tmp/does-not-exist/k.json")
-        finally:
-            os.environ.pop("KERNEL_DASHBOARD_JSON", None)
-            importlib.reload(server)
+        env = {**os.environ, "KERNEL_DASHBOARD_JSON": "/tmp/does-not-exist/k.json"}
+        actual = subprocess.run([sys.executable, "-c",
+            "from dashboard import kernel_contract; print(kernel_contract.KERNEL_DASHBOARD_JSON)"],
+            env=env, check=True, capture_output=True, text=True).stdout.strip()
+        self.assertEqual(actual, "/tmp/does-not-exist/k.json")
 
     def test_the_hub_names_the_producers_schema_strings_exactly(self):
         """The hub is stdlib-only and never imports the producer's package, so the
         schema strings are literals here. They are pinned against the producer's
         own constants when that repo is importable, and asserted as literals when
         it is not — this test never skips."""
-        self.assertEqual(server.KERNEL_SCHEMA_V1,
+        self.assertEqual(legacy.KERNEL_SCHEMA_V1,
                          "epyc.autokernel.kernel_dashboard.v1")
-        self.assertEqual(server.KERNEL_SCHEMA_V2,
+        self.assertEqual(legacy.KERNEL_SCHEMA_V2,
                          "epyc.autokernel.kernel_dashboard.v2")
-        self.assertEqual(server.KERNEL_SECTION_OBSERVED, "observed")
-        producer = Path("/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd")
-        schemas_py = producer / "autokernel" / "schemas.py"
-        if schemas_py.is_file():
-            text = schemas_py.read_text(encoding="utf-8")
-            self.assertIn(f'SCHEMA_KERNEL_DASHBOARD_V2 = "{server.KERNEL_SCHEMA_V2}"',
-                          text)
-            self.assertIn(f'SECTION_OBSERVED = "{server.KERNEL_SECTION_OBSERVED}"',
-                          text)
+        self.assertEqual(legacy.KERNEL_SECTION_OBSERVED, "observed")
+
 
 
 class KernelActivityContextTest(unittest.TestCase):
@@ -809,14 +796,14 @@ class KernelActivityContextTest(unittest.TestCase):
             (bundle / "anchor.started_at").write_text("2026-08-05T00:00:00Z\n",
                                                        encoding="utf-8")
             (bundle / "anchor.json").write_text("{}\n", encoding="utf-8")
-            row = server._autokernel_work_bundles(repo)[0]
+            row = legacy._autokernel_work_bundles(repo)[0]
             self.assertEqual(row["state"], "in_progress")
             self.assertEqual(row["active_markers"], ["anchor"])
             self.assertEqual(row["json_results"], 1)
 
             (bundle / "anchor.ended_at").write_text("2026-08-05T00:01:00Z\n",
                                                      encoding="utf-8")
-            row = server._autokernel_work_bundles(repo)[0]
+            row = legacy._autokernel_work_bundles(repo)[0]
             self.assertEqual(row["state"], "populated")
             self.assertEqual(row["active_markers"], [])
 
@@ -832,7 +819,7 @@ class KernelActivityContextTest(unittest.TestCase):
                        GIT_COMMITTER_NAME="test", GIT_COMMITTER_EMAIL="test@example.invalid")
             subprocess.run(["git", "-C", str(repo), "commit", "-q", "-m",
                             "autokernel: compose campaign"], check=True, env=env)
-            activity = server._autokernel_git_activity(repo)
+            activity = legacy._autokernel_git_activity(repo)
         self.assertEqual(activity["status"], "observed")
         self.assertEqual(activity["head"]["subject"], "autokernel: compose campaign")
         self.assertEqual(len(activity["head"]["short_sha"]), 10)
@@ -844,7 +831,7 @@ class KernelActivityContextTest(unittest.TestCase):
             journal = state / "campaign-a"
             journal.mkdir()
             (journal / "events.jsonl").write_text('{"seq":1}\n', encoding="utf-8")
-            inventory = server._autokernel_journal_inventory(state)
+            inventory = legacy._autokernel_journal_inventory(state)
         self.assertEqual([row["root"] for row in inventory["journals"]],
                          [str(journal)])
         self.assertIn("--journal-root", inventory["discovery_scope"])
@@ -859,7 +846,7 @@ class KernelActivityContextTest(unittest.TestCase):
                 "campaign_id": "g15-r4",
                 "result": {"verdict": "FALSIFIED_PROFILE_TARGET"},
             }) + "\n", encoding="utf-8")
-            inventory = server._autokernel_probe_receipts(state)
+            inventory = legacy._autokernel_probe_receipts(state)
         self.assertEqual(len(inventory["receipts"]), 1)
         row = inventory["receipts"][0]
         self.assertEqual(row["probe"], "g15-r4")
@@ -873,7 +860,7 @@ class KernelActivityContextTest(unittest.TestCase):
             receipt = state / "probes" / "interrupted" / "receipt.json"
             receipt.parent.mkdir(parents=True)
             receipt.write_text("{broken", encoding="utf-8")
-            row = server._autokernel_probe_receipts(state)["receipts"][0]
+            row = legacy._autokernel_probe_receipts(state)["receipts"][0]
         self.assertEqual(row["probe"], "interrupted")
         self.assertEqual(row["parse_state"], "invalid_json")
         self.assertIsNone(row["producer_label"])
@@ -881,14 +868,14 @@ class KernelActivityContextTest(unittest.TestCase):
     def test_hip_r6_projection_is_exact_and_carries_no_champion_authority(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
-            path = (root / "campaigns" / server.AUTOKERNEL_HIP_DECISION_CAMPAIGN /
+            path = (root / "campaigns" / legacy.AUTOKERNEL_HIP_DECISION_CAMPAIGN /
                     "receipt.json")
             path.parent.mkdir(parents=True)
             path.write_text(json.dumps(_hip_decision_receipt()) + "\n",
                             encoding="utf-8")
-            row = server._hip_decision_grade_summary(root)
+            row = legacy._hip_decision_grade_summary(root)
         self.assertTrue(row["available"])
-        self.assertEqual(row["schema"], server.AUTOKERNEL_HIP_DECISION_SCHEMA)
+        self.assertEqual(row["schema"], legacy.AUTOKERNEL_HIP_DECISION_SCHEMA)
         self.assertEqual(row["task_id"], "torch2hip/gpumode/16636_SiLU")
         self.assertEqual((row["correctness_passed"], row["correctness_total"]),
                          (24, 24))
@@ -899,7 +886,7 @@ class KernelActivityContextTest(unittest.TestCase):
         self.assertRegex(row["receipt_self_sha256"], r"^[0-9a-f]{64}$")
         self.assertRegex(row["receipt_file_sha256"], r"^[0-9a-f]{64}$")
         self.assertEqual(row["authority"],
-                         server.AUTOKERNEL_HIP_DECISION_AUTHORITY)
+                         legacy.AUTOKERNEL_HIP_DECISION_AUTHORITY)
         self.assertTrue(row["experimental_llama_integration_required"])
         self.assertFalse(row["release_or_promotion_authority"])
         self.assertFalse(row["champion_claim"])
@@ -913,14 +900,14 @@ class KernelActivityContextTest(unittest.TestCase):
             with self.subTest(phrase=phrase), tempfile.TemporaryDirectory() as td:
                 root = Path(td)
                 path = (root / "campaigns" /
-                        server.AUTOKERNEL_HIP_DECISION_CAMPAIGN / "receipt.json")
+                        legacy.AUTOKERNEL_HIP_DECISION_CAMPAIGN / "receipt.json")
                 path.parent.mkdir(parents=True)
                 value = _hip_decision_receipt()
                 mutate(value)
                 value.pop("receipt_sha256")
-                value["receipt_sha256"] = server._canonical_receipt_hash(value)
+                value["receipt_sha256"] = legacy._canonical_receipt_hash(value)
                 path.write_text(json.dumps(value), encoding="utf-8")
-                row = server._hip_decision_grade_summary(root)
+                row = legacy._hip_decision_grade_summary(root)
             self.assertFalse(row["available"])
             self.assertIn(phrase, row["error"])
 
@@ -973,7 +960,7 @@ class KernelActivityContextTest(unittest.TestCase):
             pilot_probe = root / "probes" / "pilot-r15"
             pilot_probe.mkdir(parents=True)
             pilot = {
-                "schema": server.AUTOKERNEL_DIAGNOSTIC_PILOT_SCHEMA,
+                "schema": legacy.AUTOKERNEL_DIAGNOSTIC_PILOT_SCHEMA,
                 "campaign_id": "pilot-v1", "attempt_id": "pilot-r15",
                 "task_id": "instruction2triton.rocmbench.test_add_kernel",
                 "arm_id": "k_search", "status": "pass",
@@ -1035,7 +1022,7 @@ class KernelActivityContextTest(unittest.TestCase):
                         "verified_empty": True, "removed": True}},
             }
             broker_window["receipt_sha256"] = \
-                server._canonical_receipt_hash(broker_window)
+                legacy._canonical_receipt_hash(broker_window)
             broker_rel = "controller-evaluation-windows/0001-measurement.json"
             broker_path = pilot_probe / "cells" / "cell-1" / broker_rel
             broker_path.parent.mkdir(parents=True)
@@ -1043,7 +1030,7 @@ class KernelActivityContextTest(unittest.TestCase):
             broker_path.write_bytes(broker_raw)
             pilot["checkpoint"]["artifacts"][broker_rel] = \
                 hashlib.sha256(broker_raw).hexdigest()
-            pilot["receipt_sha256"] = server._canonical_receipt_hash(pilot)
+            pilot["receipt_sha256"] = legacy._canonical_receipt_hash(pilot)
             (pilot_probe / "diagnostic-pilot-receipt.json").write_text(
                 json.dumps(pilot), encoding="utf-8")
             (probes / "preflight.json").write_text(json.dumps({
@@ -1154,11 +1141,11 @@ class KernelActivityContextTest(unittest.TestCase):
                          for name in ("restart", "revocation", "tamper")],
             }), encoding="utf-8")
             hip_path = (root / "campaigns" /
-                        server.AUTOKERNEL_HIP_DECISION_CAMPAIGN / "receipt.json")
+                        legacy.AUTOKERNEL_HIP_DECISION_CAMPAIGN / "receipt.json")
             hip_path.parent.mkdir(parents=True)
             hip_path.write_text(json.dumps(_hip_decision_receipt()), encoding="utf-8")
 
-            state = server.autokernel_current_state(
+            state = legacy.autokernel_current_state(
                 probes.parent, attestation, production, root / "controls", root)
 
         self.assertEqual(state["fixed_campaign"]["status"], "refused")
@@ -1225,7 +1212,7 @@ class KernelActivityContextTest(unittest.TestCase):
     def test_current_state_fails_soft_when_evidence_is_absent(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
-            state = server.autokernel_current_state(
+            state = legacy.autokernel_current_state(
                 root / "no-probes", root / "no-attestation.json",
                 root / "no-production-repo", root / "no-controls", root / "no-state")
         self.assertFalse(state["fixed_campaign"]["available"])
@@ -1488,27 +1475,10 @@ class HealthPayloadFoldTest(unittest.TestCase):
 class KernelDataHealthProbeTest(unittest.TestCase):
     """The directory probe reads Kernel-R&D data health, not hub transport."""
 
-    def setUp(self):
-        # These tests exercise the terminal kernel contract. Keep the independent
-        # live-discovery input deterministic instead of inheriting whichever
-        # AutoKernel campaign happens to be active or failed on the host.
-        self._live_patch = mock.patch.object(
-            server, "_discovery_live_read", return_value=(
-                {"active": False, "deployment": "test-terminal-campaign",
-                 "status_message": "COMPLETE — test fixture"},
-                panels.Observation(
-                    artifact_present=True, timestamp=_NOW,
-                    source="test live-discovery fixture", populated=True,
-                    producer_idle=True)))
-        self._live_patch.start()
-
-    def tearDown(self):
-        self._live_patch.stop()
-
     def test_absent_export_is_http_503_with_an_absent_verdict(self):
         with _ProgressionFile(None):
             with _KernelFile(None):
-                status_code, body = server.kernel_data_health()
+                status_code, body = legacy.kernel_data_health()
         self.assertEqual(status_code, 503)
         self.assertEqual(body["status"], panels.STATUS_ABSENT)
         self.assertEqual(body["probe"], "panel-data")
@@ -1522,7 +1492,7 @@ class KernelDataHealthProbeTest(unittest.TestCase):
         doc = _v2_doc(produced_at=_iso(_NOW_DT), observed=("campaign",))
         with _ProgressionFile(None):
             with _KernelFile(doc):
-                status_code, body = server.kernel_data_health()
+                status_code, body = legacy.kernel_data_health()
         self.assertEqual(status_code, 503)
         self.assertEqual(body["status"], panels.STATUS_ABSENT)
         self.assertEqual(body["freshness"]["reporting"],
@@ -1533,7 +1503,7 @@ class KernelDataHealthProbeTest(unittest.TestCase):
     def test_fully_reported_current_contract_is_http_200(self):
         doc = _v2_doc(produced_at=_iso(_NOW_DT), observed=_V2_SECTIONS)
         with _KernelFile(doc):
-            status_code, body = server.kernel_data_health()
+            status_code, body = legacy.kernel_data_health()
         self.assertEqual(status_code, 200)
         self.assertEqual(body["status"], panels.STATUS_OK)
         self.assertIsNone(body["status_set_by"])
@@ -1548,7 +1518,7 @@ class KernelDataHealthProbeTest(unittest.TestCase):
                                 side_effect=AssertionError("global recursion")),
               mock.patch.object(server, "panel_envelopes",
                                 side_effect=AssertionError("all-panel recursion"))):
-            status_code, body = server.kernel_data_health()
+            status_code, body = legacy.kernel_data_health()
         self.assertEqual((status_code, body["status"]), (200, panels.STATUS_OK))
 
     def test_dashboard_registry_selects_the_data_probe_only_for_kernel_rnd(self):
