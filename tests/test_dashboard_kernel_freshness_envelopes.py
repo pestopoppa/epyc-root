@@ -21,9 +21,9 @@ producer behind it was dead or frozen — ``kernel_progression.json`` among them
 (the file was still being rewritten while its ``observed_through`` horizon stood
 16.7 d back and was not advancing). The funnel's render assertions are therefore
 gone from this file: they asserted against markup that no longer exists. The
-reader ``server._read_kernel_progression`` is untouched and still serves
-``/api/kernel``; nothing here covers its rendering any more, because nothing
-renders it. That is a real reduction in coverage and it is recorded rather than
+reader ``server._read_kernel_progression`` remains an offline helper. It no
+longer serves ``/api/kernel``; nothing here covers its rendering any more,
+because nothing renders it. That reduction in coverage is recorded rather than
 quietly absorbed.
 
 GAP A MOVED. The operator-gated bundle was the ONE live producer on that page, so

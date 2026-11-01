@@ -6,9 +6,10 @@ WHY THIS MODULE EXISTS
 ----------------------
 Quoting the AK6 rider in ``handoffs/active/autokernel-research-loop.md``:
 
-    Today's ``/kernel`` page is ABSENCE-TOLERANT OVER A MISSING DIRECTORY — it
-    renders clean when its producer is dead, which is the exact shape of AutoPilot
-    dying at trial 1302 and staying dead ~23 HOURS with every dashboard green.
+    The former ``/kernel`` page was ABSENCE-TOLERANT OVER A MISSING DIRECTORY —
+    it rendered clean when its producer was dead, which is the exact shape of
+    AutoPilot dying at trial 1302 and staying dead ~23 HOURS with every dashboard
+    green. That page and its API have since been retired.
 
 A panel that cannot distinguish "nothing is wrong" from "nobody is reporting" is
 worse than no panel, because it is trusted. Absence tolerance is still REQUIRED —
@@ -258,7 +259,10 @@ def _index(sources: Sequence[PanelSource]) -> Mapping[str, PanelSource]:
 # ``handoff_detail`` (a per-id lookup) and ``health`` (the fold itself) means
 # ``registry_gaps()`` needs no exemption list, and an exemption list is exactly
 # the hand-maintained thing that goes stale.
-PANELS: Mapping[str, PanelSource] = _index((
+# Source catalog includes two retired kernel readers so their offline parser
+# tests can retain the producer contract. `PANELS` below is the served registry;
+# retired sources never take part in route enumeration or global health.
+_PANEL_SOURCE_CATALOG = _index((
     PanelSource(
         panel="board",
         kind=KIND_LIVE,
@@ -403,11 +407,10 @@ PANELS: Mapping[str, PanelSource] = _index((
             "the rebuilt loop has never published a status in this store root. It "
             "is not 'quiet' and it is not 'between iterations': the loop publishes "
             "at start, after every iteration and on exit INCLUDING on failure, so a "
-            "running loop is never absent here. This is a SEPARATE producer from "
-            "the `kernel` panel — the superseded gpu-discovery deployment reading "
-            "STOPPED is a true statement about a different process, and reading it "
-            "as coverage of this loop is exactly the zero-visibility gap this "
-            "surface closes."),
+            "running loop is never absent here. The superseded gpu-discovery "
+            "deployment reading STOPPED is a true statement about a different "
+            "process, and reading it as coverage of this loop is exactly the "
+            "zero-visibility gap this surface closes."),
         # The producer declares its own cadence in `stale_after_s`, and the reader
         # hands that to the envelope as a dynamic silence budget. These are the
         # FALLBACK ladder for a body that omits it — not a second opinion the hub
@@ -630,6 +633,20 @@ PANELS: Mapping[str, PanelSource] = _index((
         gates_health=False,
     ),
 ))
+
+# The old kernel API readers remain importable for offline contract regression
+# tests, but they are no longer part of the hub's served-panel registry. Keeping
+# their source metadata separate makes accidental re-exposure visible: a caller
+# must opt into this retired catalog explicitly, and registry_gaps() never treats
+# either source as a live panel.
+RETIRED_PANEL_NAMES = frozenset({"kernel", "kernel_live"})
+RETIRED_PANEL_SOURCES: Mapping[str, PanelSource] = MappingProxyType({
+    name: _PANEL_SOURCE_CATALOG[name] for name in RETIRED_PANEL_NAMES
+})
+PANELS: Mapping[str, PanelSource] = MappingProxyType({
+    name: source for name, source in _PANEL_SOURCE_CATALOG.items()
+    if name not in RETIRED_PANEL_NAMES
+})
 
 
 # --------------------------------------------------------------------------- #

@@ -1,7 +1,7 @@
 """AK-VIS-1: an `authoring_refused` turn must be visible on the command band.
 
 `refusal.detected` is `refusal_type is not None`, and `refusal_type` comes from a
-status->label map inside `discovery_live_payload`. `authoring_refused` was absent from
+status->label map inside the retained discovery reader. `authoring_refused` was absent from
 that map, so the most common failure in the whole program rendered NOTHING: the
 operator saw an active hypothesis with no indication its diff had been refused.
 
@@ -75,7 +75,7 @@ class AuthoringRefusalVisibilityTests(unittest.TestCase):
                            "derives undeclared symbols ['<file-scope>']"),
             }],
         }))
-        activity = server.discovery_live_payload().get("activity") or {}
+        activity = server.legacy_discovery_live_data().get("activity") or {}
         return activity.get("refusal") or {}
 
     def test_authoring_refused_is_detected(self):

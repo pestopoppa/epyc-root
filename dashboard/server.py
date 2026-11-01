@@ -16,8 +16,8 @@ GET /api/handoff_board       compact cards for all four columns + backlog ratios
 GET /api/handoff_detail?id=  full card + scrubbed markdown body (lazy modal load)
 GET /api/handoff_timeline    the git-derived timeline artifact (+ freshness)
 GET /api/handoff_graph       the index dependency/liveness graph (+ freshness)
-GET /api/kernel              the kernel-R&D dashboard contract (+ freshness)
-GET /api/kernel/health       Kernel-R&D producer/data health only (non-recursive)
+GET /api/loop                the rebuilt AutoKernel loop status (+ freshness)
+GET /api/loop/health         loop and operator-gate data health only (non-recursive)
 GET /machine                 the machine / live-inference page (data plane: :8000 API)
 GET /autopilot               the autopilot-loop page (data plane: :8000 API)
 GET /cockpit                 the AP-50 decision cockpit (data plane: :8000 API)
@@ -630,8 +630,10 @@ _GGML_FAMILY = ("libggml", "libwhisper", "libllama", "libmtmd")
 # contract cannot drift. The old module-level literals are kept as names only.
 _TIMELINE_WARN_S = panels.source("timeline").warn_s
 _TIMELINE_STALE_S = panels.source("timeline").stale_s
-_KERNEL_WARN_S = panels.source("kernel").warn_s
-_KERNEL_STALE_S = panels.source("kernel").stale_s
+_KERNEL_SOURCE = panels.RETIRED_PANEL_SOURCES["kernel"]
+_KERNEL_LIVE_SOURCE = panels.RETIRED_PANEL_SOURCES["kernel_live"]
+_KERNEL_WARN_S = _KERNEL_SOURCE.warn_s
+_KERNEL_STALE_S = _KERNEL_SOURCE.stale_s
 _OUTCOME_WARN_S = panels.source("outcome").warn_s
 _OUTCOME_STALE_S = panels.source("outcome").stale_s
 
@@ -695,9 +697,10 @@ _watchdog_state: dict = {}
 
 
 def _panel_envelope(panel: str, obs: "panels.Observation", *,
-                    now: float | None = None) -> dict:
+                    now: float | None = None,
+                    source_override: "panels.PanelSource | None" = None) -> dict:
     """Classify one panel's observation, updating the watchdog's memory first."""
-    source = panels.source(panel)
+    source = source_override or panels.source(panel)
     with _watchdog_lock:
         panels.observe_watermark(_watchdog_state, panel, obs.watermark, now=now)
         snapshot = {k: dict(v) for k, v in _watchdog_state.items()}
@@ -1073,7 +1076,7 @@ def _kernel_contract_freshness(data: dict, *, artifact_present: bool = True) -> 
     generalised per-panel envelope rather than a private threshold ladder.
     """
     return _panel_envelope("kernel", _kernel_observation(
-        data, artifact_present=artifact_present))
+        data, artifact_present=artifact_present), source_override=_KERNEL_SOURCE)
 
 
 def _supplement_kernel_verdict(verdict: dict, progression: dict) -> dict:
@@ -1124,17 +1127,18 @@ def kernel_data_health() -> tuple[int, dict]:
     present, data = _read_kernel_contract()
     env = _kernel_contract_freshness(data, artifact_present=present)
     live_payload, live_observation = _discovery_live_read()
-    live_env = _panel_envelope("kernel_live", live_observation)
+    live_env = _panel_envelope(
+        "kernel_live", live_observation, source_override=_KERNEL_LIVE_SOURCE)
     progression = _read_kernel_progression()
     verdict = _supplement_kernel_verdict(panels.fold(
         {"kernel": env, "kernel_live": live_env},
-        registry={"kernel": panels.source("kernel"),
-                  "kernel_live": panels.source("kernel_live")}), progression)
+        registry={"kernel": _KERNEL_SOURCE,
+                  "kernel_live": _KERNEL_LIVE_SOURCE}), progression)
     payload = {
         "status": verdict["status"],
         "probe": "panel-data",
         "panel": "kernel",
-        "data_route": panels.source("kernel").route,
+        "data_route": _KERNEL_SOURCE.route,
         "transport_health": "/health",
         "global_health": "/api/health",
         "status_set_by": verdict["status_set_by"],
@@ -1566,7 +1570,7 @@ def _autokernel_journal_inventory(root: Path) -> dict:
     journals = []
     if root.is_dir():
         # The durable root also contains enormous source worktrees and build
-        # trees. Recursive rglob walked all of them on every /api/kernel request
+        # trees. Recursive rglob walked all of them on every legacy contract read
         # (measured >5 s) even though campaign journals occupy three declared
         # layouts. Keep discovery explicit and bounded so the operator surface
         # remains responsive without hiding its scope.
@@ -13814,14 +13818,15 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
     return payload, obs
 
 
-def discovery_live_payload() -> dict:
+def legacy_discovery_live_data() -> dict:
     payload, observation = _discovery_live_read()
-    payload["_freshness"] = _panel_envelope("kernel_live", observation)
+    payload["_freshness"] = _panel_envelope(
+        "kernel_live", observation, source_override=_KERNEL_LIVE_SOURCE)
     return payload
 
 
-def kernel_payload() -> dict:
-    """Read the kernel dashboard contract (v2, or legacy v1), tolerating absence.
+def legacy_kernel_data() -> dict:
+    """Read the retired kernel dashboard contract for offline regression checks.
 
     The hub renders the terminal contract plus presentation-only activity;
     ``autokernel.dashboard`` in epyc-inference-research owns the contract and is
@@ -13831,7 +13836,7 @@ def kernel_payload() -> dict:
     style: ``contract_version`` is a key the PRODUCER owns (it writes the integer
     ``2``, and ``schemas.validate_kernel_dashboard_v2`` requires an integer), and
     this function used to overwrite it in place with the string ``"v2"``. The
-    consequence was that the document served at ``/api/kernel`` no longer
+    consequence was that the document formerly served at ``/api/kernel`` no longer
     validated under its own producer's validator — one field, changed type,
     silently, by the consumer. Derived-by-the-hub facts now live under
     ``_contract_version`` / ``_freshness`` / ``_render``, so what the hub serves
@@ -13846,7 +13851,8 @@ def kernel_payload() -> dict:
                else kernel_contract_version(data))
     data["_contract_version"] = version
     data["_freshness"] = _panel_envelope(
-        "kernel", _kernel_observation(data, artifact_present=present))
+        "kernel", _kernel_observation(data, artifact_present=present),
+        source_override=_KERNEL_SOURCE)
     data["_render"] = _kernel_render(data, version, present, data["_freshness"])
     # Additive discovery/funnel projection.  It cannot alter any strict section,
     # freshness watermark, campaign decision, champion, or promotion authority.
@@ -14568,12 +14574,10 @@ def panel_envelopes() -> dict:
     ``KeyError`` at request time instead of silently dropping out of the fold —
     and ``tests/test_dashboard_panels.py`` catches it before that happens.
     """
-    kernel_present, kernel_data = _read_kernel_contract()
     outcome_present, outcome_data = _read_outcome_contract()
     timeline_present, timeline_data = _read_timeline_contract()
     bench_present, bench_data = _read_benchmark_inventory()
     graph_present, graph_data = _read_graph_contract()
-    _, discovery_live_observation = _discovery_live_read()
     readers = {
         # The REAL board envelope, not ``panels.live()``: the latter hardcodes
         # ``populated=True``, so the fold's board card claimed content regardless
@@ -14587,9 +14591,6 @@ def panel_envelopes() -> dict:
             timeline_data, artifact_present=timeline_present),
         "handoff_graph": lambda: _graph_observation(
             graph_data, artifact_present=graph_present),
-        "kernel": lambda: _kernel_observation(
-            kernel_data, artifact_present=kernel_present),
-        "kernel_live": lambda: discovery_live_observation,
         "outcome": lambda: _outcome_observation(
             outcome_data, artifact_present=outcome_present),
         "benchmark_artifacts": lambda: _benchmark_observation(
@@ -14619,14 +14620,13 @@ def health_payload() -> dict:
 
     Three-valued (``ok`` / ``absent`` / ``degraded``) because "nobody is
     reporting" is neither of the other two, and the pre-AK6 two-valued fold had to
-    call it ``ok``. The rules live in ``panels.fold``; the compatibility aliases
-    below (``board``/``timeline``/``kernel``/``outcome`` at the top level) are the
-    same envelope objects, kept so existing consumers and regression locks are not
-    broken by the generalisation.
+    call it ``ok``. The rules live in ``panels.fold``; the surviving compatibility
+    aliases (``board``/``timeline``/``outcome``) are the same envelope objects as
+    their entries in ``panels``. Retired kernel data is intentionally absent from
+    this fold and its response.
     """
     envs = panel_envelopes()
-    verdict = _supplement_kernel_verdict(
-        panels.fold(envs), _read_kernel_progression())
+    verdict = panels.fold(envs)
     override_env = envs["diagnostic_overrides"]
     if override_env.get("data_health") == "degraded":
         entry = {"panel": "diagnostic_overrides", "verdict": panels.STATUS_DEGRADED,
@@ -14637,10 +14637,9 @@ def health_payload() -> dict:
     return {
         "status": verdict["status"],
         # WHICH panel produced ``status``. ``worst`` is the worst by severity
-        # score and need not be that panel — live right now the fold is ``absent``
-        # because of ``kernel`` while ``worst`` is ``bus``, and a badge that pairs
-        # the colour of one with the sentence of the other names the wrong
-        # offender.
+        # score and need not be that panel. Keep the status setter and the worst
+        # panel separate so a badge never pairs the colour of one with the
+        # sentence of the other.
         "status_set_by": verdict["status_set_by"],
         "worst": verdict["worst"],
         "attention": verdict["attention"],
@@ -14649,22 +14648,19 @@ def health_payload() -> dict:
         # Back-compat aliases — same objects, old names.
         "board": envs["board"],
         "timeline": envs["timeline"],
-        "kernel": envs["kernel"],
         "outcome": envs["outcome"],
         "now": time.time(),
     }
 
 
 # --------------------------------------------------------------------------- #
-# The rebuilt AutoKernel loop — a SMALL, SEPARATE surface
+# The rebuilt AutoKernel loop — the served Kernel-R&D surface
 # --------------------------------------------------------------------------- #
-# Deliberately not wired into the Kernel-R&D surface above. That surface pins 29
-# cross-repo source paths and 47 SHA-256 digests of another repository's modules
-# and is slated for wholesale rewrite; growing it would re-arm that landmine and
-# make one contract's rewrite a second contract's outage. Two producers, two
-# panels, two probes, no shared blast radius. The reader is
-# ``dashboard/loop_status.py``; nothing here caches, so no value can outlive the
-# freshness envelope that is the whole point of the envelope.
+# `/kernel` permanently redirects here. The retired terminal-contract and
+# discovery readers above are not wired into this page or its health fold. This
+# surface reads the loop producer directly and carries operator-gate evidence
+# under its own independent envelope. The reader is ``dashboard/loop_status.py``;
+# nothing here caches, so no value can outlive the freshness envelope.
 
 
 def loop_payload() -> dict:
@@ -15090,8 +15086,6 @@ API_ROUTES = {
     "/api/handoff_board": board_payload,
     "/api/handoff_timeline": timeline_payload,
     "/api/handoff_graph": graph_payload,
-    "/api/kernel": kernel_payload,
-    "/api/kernel/live": discovery_live_payload,
     "/api/loop": loop_payload,
     "/api/bus": bus_payload,
     "/api/diagnostic-overrides": diagnostic_overrides_payload,
@@ -15118,7 +15112,6 @@ API_ROUTES_WITH_STATUS = {
 #: ``panels.registry_gaps`` without creating a duplicate panel in the global fold.
 PANEL_HEALTH_ROUTES = {
     "/api/diagnostic-overrides/health": diagnostic_overrides_health,
-    "/api/kernel/health": kernel_data_health,
     "/api/loop/health": loop_data_health,
 }
 

@@ -387,7 +387,8 @@ class HealthPayloadTests(unittest.TestCase):
         h = self._health_with({"generated_at": _iso(_NOW - timedelta(days=10)),
                                "outcome_progress": {"status": "ok"}})
         self.assertEqual(h["outcome"]["staleness_class"], "stale")
-        self.assertEqual(h["kernel"]["staleness_class"], "fresh")
+        self.assertNotIn("kernel", h)
+        self.assertNotIn("kernel", h["panels"])
         self.assertEqual(h["outcome"]["watchdog"]["state"], "stopped_reporting")
         self.assertEqual(h["status"], "degraded")
         self.assertEqual(h["status_set_by"]["panel"], "outcome")

@@ -583,7 +583,7 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
     def _active_payload(self) -> dict:
         with (self.state / "controller.run.lock").open("r") as handle:
             fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-            return server.discovery_live_payload()
+            return server.legacy_discovery_live_data()
 
     def _complete_build(self, entry: Path, *, build_key: str,
                         manifest_sha: str, contract: dict) -> None:
@@ -771,7 +771,7 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
                    result={"returncode": 0}),
         ])
 
-        payload = server.discovery_live_payload()
+        payload = server.legacy_discovery_live_data()
         activity = payload["activity"]
 
         self.assertFalse(payload["active"])
@@ -807,7 +807,7 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
                            model="local-validator", provider="controller"),
                 ])
 
-                payload = server.discovery_live_payload()
+                payload = server.legacy_discovery_live_data()
                 activity = payload["activity"]
 
                 self.assertEqual(activity["status"], "failed")
@@ -1817,7 +1817,7 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
         self._complete_build(entry, build_key=build_key,
                              manifest_sha=manifest_sha, contract=contract)
 
-        activity = server.discovery_live_payload()["activity"]
+        activity = server.legacy_discovery_live_data()["activity"]
 
         self.assertEqual(activity["status"], "failed")
         self.assertEqual(activity["phase"]["id"], "evidence_binding")
@@ -1833,7 +1833,7 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
     def test_v10_correctness_parser_failure_preserves_completed_gpu_execution(self) -> None:
         self._write_v10_correctness_parser_terminal()
 
-        activity = server.discovery_live_payload()["activity"]
+        activity = server.legacy_discovery_live_data()["activity"]
 
         self.assertEqual(activity["status"], "failed")
         self.assertEqual(activity["phase"]["id"], "correctness_validation")
@@ -1877,7 +1877,7 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
         release.unlink()
         release.symlink_to(outside)
 
-        activity = server.discovery_live_payload()["activity"]
+        activity = server.legacy_discovery_live_data()["activity"]
 
         self.assertFalse(activity["gpu"]["screen_started"])
         self.assertFalse(activity["correctness"]["execution_started"])
@@ -1936,7 +1936,7 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
             }) + "\n",
         ]))
 
-        payload = server.discovery_live_payload()  # lock is not held
+        payload = server.legacy_discovery_live_data()  # lock is not held
         activity = payload["activity"]
 
         self.assertFalse(payload["active"])
@@ -2019,7 +2019,7 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
         newer = datetime.now(timezone.utc).timestamp() + 60
         os.utime(next_config, (newer, newer))
 
-        payload = server.discovery_live_payload()
+        payload = server.legacy_discovery_live_data()
 
         self.assertEqual(payload["deployment"], "campaign-a")
         self.assertEqual(payload["activity"]["status"], "failed")
@@ -2057,7 +2057,7 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
 
         with (v7_state / "controller.run.lock").open("r") as handle:
             fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-            payload = server.discovery_live_payload()
+            payload = server.legacy_discovery_live_data()
 
         self.assertTrue(payload["active"])
         self.assertEqual(payload["deployment"], "campaign-v7")

@@ -374,7 +374,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
             self.bundle, self.bundle / "config/deployment.json")
         self._make_supervisor_success(runtime)
 
-        payload = server.discovery_live_payload()
+        payload = server.legacy_discovery_live_data()
 
         self.assertEqual(payload["deployment"], "campaign-a")
         self.assertFalse(payload["active"])
@@ -418,7 +418,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
             self.bundle, self.bundle / "config/deployment.json")
         self._make_supervisor_success(runtime)
 
-        payload = server.discovery_live_payload()
+        payload = server.legacy_discovery_live_data()
 
         self.assertEqual(payload["activity"]["status"], "complete")
         self.assertFalse(payload["activity"]["resume"]["required"])
@@ -558,7 +558,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
         identity["exit_code"] = 1
         identity_path.write_bytes(server._canonical_json_bytes(identity) + b"\n")
 
-        payload = server.discovery_live_payload()
+        payload = server.legacy_discovery_live_data()
 
         activity = payload["activity"]
         self.assertEqual(activity["status"], "failed")
@@ -578,7 +578,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
         self._write_portfolio_terminal()
         with (self.state / "controller.run.lock").open("r") as handle:
             fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-            payload = server.discovery_live_payload()
+            payload = server.legacy_discovery_live_data()
 
         activity = payload["activity"]
         self.assertEqual(activity["status"], "running")
@@ -593,7 +593,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
     def test_active_precheckpoint_planner_is_visible(self) -> None:
         with (self.state / "controller.run.lock").open("r") as handle:
             fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-            payload = server.discovery_live_payload()
+            payload = server.legacy_discovery_live_data()
             self.assertTrue(payload["active"])
             self.assertIn("first durable checkpoint", payload["status_message"])
             self.assertEqual(payload["_freshness"]["reporting"], "observed")
@@ -606,9 +606,8 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
         with mock.patch("dashboard.server.time.time", return_value=now):
             health = server.health_payload()
 
-        envelope = health["panels"]["kernel_live"]
-        self.assertFalse(server.discovery_live_payload()["active"])
-        self.assertEqual(envelope["watchdog"]["state"], "idle")
+        self.assertFalse(server.legacy_discovery_live_data()["active"])
+        self.assertNotIn("kernel_live", health["panels"])
         self.assertFalse(any(
             entry["panel"] == "kernel_live"
             and entry["verdict"] == "degraded"
@@ -630,7 +629,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
 
         with (self.state / "controller.run.lock").open("r") as handle:
             fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-            payload = server.discovery_live_payload()
+            payload = server.legacy_discovery_live_data()
 
         self.assertEqual(payload["activity"]["phase"]["id"], "planner")
         self.assertEqual(payload["activity"]["stall"]["state"], "healthy")
@@ -653,7 +652,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
         rogue = {**valid, "prompt": "secret text"}
         path = self.operations / "live/planner.jsonl"
         path.write_text(json.dumps(valid) + "\n" + json.dumps(rogue) + "\n")
-        payload = server.discovery_live_payload()
+        payload = server.legacy_discovery_live_data()
         self.assertEqual(len(payload["planner_log"]), 1)
         self.assertNotIn("secret text", json.dumps(payload))
         self.assertNotIn("prompt", payload["planner_log"][0])
@@ -664,7 +663,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
         (self.operations / "live/autokernel.jsonl").write_text(encoded)
         (self.operations / "live/planner.jsonl").write_text(encoded)
 
-        payload = server.discovery_live_payload()
+        payload = server.legacy_discovery_live_data()
 
         self.assertEqual(payload["telemetry_integrity"]["state"], "verified")
         self.assertTrue(payload["telemetry_integrity"]["verified"])
@@ -721,7 +720,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
         def reader() -> None:
             try:
                 reader_started.set()
-                result.append(server.discovery_live_payload())
+                result.append(server.legacy_discovery_live_data())
             except BaseException as exc:  # surfaced in the owning test thread
                 failures.append(exc)
             finally:
@@ -754,7 +753,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
         (self.operations / "live/autokernel.jsonl").write_text(
             json.dumps(event) + "\n")
 
-        payload = server.discovery_live_payload()
+        payload = server.legacy_discovery_live_data()
 
         integrity = payload["telemetry_integrity"]
         self.assertEqual(integrity["state"], "degraded")
@@ -766,9 +765,9 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
         self.assertEqual(payload["_freshness"]["unreported"],
                          ["telemetry_stream_integrity"])
         health = server.health_payload()
-        self.assertEqual(health["panels"]["kernel_live"]["unreported"],
-                         ["telemetry_stream_integrity"])
-        self.assertNotEqual(health["status"], "ok")
+        self.assertNotIn("kernel_live", health["panels"])
+        self.assertFalse(any(entry["panel"] == "kernel_live"
+                             for entry in health["attention"]))
 
     def test_busy_producer_transaction_is_bounded_and_not_health_gating(self) -> None:
         """A stuck writer gets a pulse response, not false mirror corruption."""
@@ -786,7 +785,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
                 fcntl.flock(fd, fcntl.LOCK_EX)
             os.write(fds[0], encoded)
             started = time.monotonic()
-            payload = server.discovery_live_payload()
+            payload = server.legacy_discovery_live_data()
             elapsed = time.monotonic() - started
         finally:
             for fd in reversed(fds):
@@ -809,7 +808,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
         (self.operations / "live/autokernel.jsonl").symlink_to(target)
         (self.operations / "live/planner.jsonl").write_text(encoded)
 
-        payload = server.discovery_live_payload()
+        payload = server.legacy_discovery_live_data()
 
         self.assertEqual(payload["telemetry_integrity"]["state"], "degraded")
         self.assertFalse(payload["telemetry_integrity"]["verified"])
@@ -824,7 +823,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
         os.link(target, self.operations / "live/autokernel.jsonl")
         (self.operations / "live/planner.jsonl").write_text(encoded)
 
-        payload = server.discovery_live_payload()
+        payload = server.legacy_discovery_live_data()
 
         self.assertEqual(payload["telemetry_integrity"]["state"], "degraded")
         self.assertFalse(payload["telemetry_integrity"]["verified"])
@@ -852,7 +851,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
             return real_open(path, flags, mode, dir_fd=dir_fd)
 
         with mock.patch.object(server.os, "open", side_effect=swapping_open):
-            payload = server.discovery_live_payload()
+            payload = server.legacy_discovery_live_data()
 
         self.assertTrue(swapped)
         self.assertFalse(payload["telemetry_integrity"]["verified"])
@@ -880,7 +879,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
             return raw
 
         with mock.patch.object(server.os, "pread", side_effect=swapping_pread):
-            payload = server.discovery_live_payload()
+            payload = server.legacy_discovery_live_data()
 
         self.assertTrue(swapped)
         self.assertFalse(payload["telemetry_integrity"]["verified"])
@@ -906,7 +905,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
             return raw
 
         with mock.patch.object(server.os, "pread", side_effect=mutating_pread):
-            payload = server.discovery_live_payload()
+            payload = server.legacy_discovery_live_data()
 
         self.assertTrue(mutated)
         self.assertFalse(payload["telemetry_integrity"]["verified"])
@@ -937,7 +936,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
 
         with mock.patch.object(
                 server.os, "pread", side_effect=swapping_second_pread):
-            payload = server.discovery_live_payload()
+            payload = server.legacy_discovery_live_data()
 
         self.assertTrue(swapped)
         self.assertFalse(payload["telemetry_integrity"]["verified"])
@@ -967,7 +966,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
 
         with mock.patch.object(
                 server.os, "pread", side_effect=mutating_second_pread):
-            payload = server.discovery_live_payload()
+            payload = server.legacy_discovery_live_data()
 
         self.assertTrue(mutated)
         self.assertFalse(payload["telemetry_integrity"]["verified"])
@@ -985,7 +984,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
         (self.operations / "live/planner.jsonl").write_text(
             json.dumps(planner_event) + "\n")
 
-        payload = server.discovery_live_payload()
+        payload = server.legacy_discovery_live_data()
 
         integrity = payload["telemetry_integrity"]
         self.assertEqual(integrity["state"], "conflict")
@@ -1005,7 +1004,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
         (self.operations / "live/autokernel.jsonl").write_text(
             json.dumps(event) + "\n")
 
-        payload = server.discovery_live_payload()
+        payload = server.legacy_discovery_live_data()
 
         self.assertEqual(payload["autokernel_log"], [])
         self.assertEqual(payload["telemetry_integrity"]["state"], "degraded")
@@ -1020,7 +1019,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
         (self.operations / "live/autokernel.jsonl").write_text(
             json.dumps(event) + "\n")
 
-        payload = server.discovery_live_payload()
+        payload = server.legacy_discovery_live_data()
 
         self.assertEqual(payload["autokernel_log"], [])
         self.assertEqual(payload["telemetry_integrity"]["state"], "degraded")
@@ -1040,7 +1039,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
         (self.operations / "live/autokernel.jsonl").write_text(
             json.dumps(event) + "\n")
 
-        payload = server.discovery_live_payload()
+        payload = server.legacy_discovery_live_data()
 
         self.assertEqual(payload["autokernel_log"], [])
         self.assertIn("rejected by telemetry contract",
@@ -1052,7 +1051,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
         (self.operations / "live/autokernel.jsonl").write_text(
             json.dumps(event) + "\n")
 
-        payload = server.discovery_live_payload()
+        payload = server.legacy_discovery_live_data()
 
         self.assertEqual(payload["autokernel_log"], [])
         self.assertIn("rejected by telemetry contract",
@@ -1066,7 +1065,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
         (self.operations / "live/planner.jsonl").write_text(
             json.dumps(drifted) + "\n")
 
-        payload = server.discovery_live_payload()
+        payload = server.legacy_discovery_live_data()
 
         integrity = payload["telemetry_integrity"]
         self.assertEqual(integrity["state"], "conflict")
@@ -1089,7 +1088,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
         (self.operations / "live/planner.jsonl").write_text(
             "".join(json.dumps(row) + "\n" for row in planner_rows))
 
-        payload = server.discovery_live_payload()
+        payload = server.legacy_discovery_live_data()
 
         integrity = payload["telemetry_integrity"]
         self.assertEqual(integrity["state"], "conflict")
@@ -1120,7 +1119,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
             }],
         }))
 
-        payload = server.discovery_live_payload()
+        payload = server.legacy_discovery_live_data()
         activity = payload["activity"]
 
         self.assertEqual(activity["status"], "stopped")
@@ -1205,7 +1204,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
         with (self.state / "controller.run.lock").open("r") as handle, \
                 mock.patch.object(server.time, "time", return_value=observed_now):
             fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-            payload = server.discovery_live_payload()
+            payload = server.legacy_discovery_live_data()
         activity = payload["activity"]
 
         self.assertEqual(payload["telemetry_integrity"]["state"], "verified")
@@ -1435,7 +1434,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
             }],
         }))
 
-        payload = server.discovery_live_payload()
+        payload = server.legacy_discovery_live_data()
         integrity = payload["telemetry_integrity"]
 
         self.assertEqual(integrity["state"], "legacy")
@@ -1492,7 +1491,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
             },
         }) + "\n")
 
-        payload = server.discovery_live_payload()
+        payload = server.legacy_discovery_live_data()
         activity = payload["activity"]
 
         self.assertFalse(payload["active"])
@@ -1519,7 +1518,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
         config = json.loads(config_path.read_text())
         config["controller"]["operations_root"] = "/etc"
         config_path.write_text(json.dumps(config))
-        payload = server.discovery_live_payload()
+        payload = server.legacy_discovery_live_data()
         self.assertFalse(payload["available"])
         self.assertEqual(payload["autokernel_log"], [])
 
@@ -1549,7 +1548,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
 
         with (self.state / "controller.run.lock").open("r") as handle:
             fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-            payload = server.discovery_live_payload()
+            payload = server.legacy_discovery_live_data()
 
         self.assertTrue(payload["active"])
         self.assertEqual(payload["deployment"], "campaign-a")
@@ -1574,7 +1573,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
         }))
         self._write_supervisor_graph_mismatch(v21, config_path)
 
-        payload = server.discovery_live_payload()
+        payload = server.legacy_discovery_live_data()
 
         self.assertEqual(payload["deployment"], "campaign-v21")
         self.assertEqual(payload["launch_evidence"], "supervisor_terminal")
@@ -1599,9 +1598,8 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
         self.assertEqual(payload["deployment_history"][0]["disposition"],
                          "historical")
         health = server.health_payload()
-        live = health["panels"]["kernel_live"]
-        self.assertEqual(live["watchdog"]["state"], "stopped_reporting")
-        self.assertTrue(any(
+        self.assertNotIn("kernel_live", health["panels"])
+        self.assertFalse(any(
             entry["panel"] == "kernel_live"
             and entry["verdict"] == "degraded"
             for entry in health["attention"]))
@@ -1634,7 +1632,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
         old_config = self.bundle / "config/deployment.json"
         os.utime(old_config, (touched, touched))
 
-        payload = server.discovery_live_payload()
+        payload = server.legacy_discovery_live_data()
 
         self.assertEqual(payload["deployment"], "campaign-newer")
         self.assertEqual(payload["launch_evidence"], "supervisor_terminal")
@@ -1663,7 +1661,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
         ledger = runtime / "death-ledger.jsonl"
         ledger.chmod(0o644)
 
-        payload = server.discovery_live_payload()
+        payload = server.legacy_discovery_live_data()
 
         self.assertEqual(payload["deployment"], "campaign-a")
         self.assertEqual(payload["launch_evidence"], "controller")
@@ -1914,7 +1912,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
                 self.assertIsNone(server._supervisor_terminal_observation(
                     self.bundle, config_path, config))
                 self.assertEqual(
-                    server.discovery_live_payload()["launch_evidence"],
+                    server.legacy_discovery_live_data()["launch_evidence"],
                     "unlaunched")
         spec_path.write_bytes(original_spec)
 
@@ -1922,7 +1920,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
             b'"exit_code":1', b'"exit_code":NaN'))
         self.assertIsNone(server._supervisor_terminal_observation(
             self.bundle, config_path, config))
-        self.assertEqual(server.discovery_live_payload()["launch_evidence"],
+        self.assertEqual(server.legacy_discovery_live_data()["launch_evidence"],
                          "unlaunched")
         identity_path.write_bytes(original_identity)
 
@@ -1943,7 +1941,7 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
                 self.assertIsNone(server._supervisor_terminal_observation(
                     self.bundle, config_path, config))
                 self.assertEqual(
-                    server.discovery_live_payload()["launch_evidence"],
+                    server.legacy_discovery_live_data()["launch_evidence"],
                     "unlaunched")
 
 

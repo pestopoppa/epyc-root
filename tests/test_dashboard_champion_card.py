@@ -64,7 +64,7 @@ class ChampionCardTests(unittest.TestCase):
         (self.state / "state.json").write_text(json.dumps({
             "updated_at": "2026-08-28T12:00:00Z", "next": 2, "complete": False,
             "iterations": [], "champion_seeded_at": "2026-08-28T12:02:05Z"}))
-        activity = server.discovery_live_payload().get("activity") or {}
+        activity = server.legacy_discovery_live_data().get("activity") or {}
         return activity.get("champion") or {}
 
     def test_a_champion_ahead_of_production_is_never_called_equal_to_it(self):

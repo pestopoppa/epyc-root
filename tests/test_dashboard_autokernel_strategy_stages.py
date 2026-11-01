@@ -254,7 +254,7 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
     def _active(self) -> dict:
         with (self.state_root / "controller.run.lock").open("r") as handle:
             fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-            return server.discovery_live_payload()
+            return server.legacy_discovery_live_data()
 
     def _write_source_claim(self, *, acquired_at: str,
                             claim_id: str = "akd-1a2840d5bfe6433e",
@@ -714,7 +714,7 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         (attribution / "timestamps.csv").write_text(
             "start_ns,end_ns\n1,2\n")
 
-        activity = server.discovery_live_payload()["activity"]
+        activity = server.legacy_discovery_live_data()["activity"]
 
         self.assertEqual(activity["status"], "failed")
         self.assertEqual(activity["phase"]["id"], "candidate_attribution")
@@ -767,7 +767,7 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         (attribution / "timestamps.csv").write_text(
             "start_ns,end_ns\n1,2\n")
 
-        activity = server.discovery_live_payload()["activity"]
+        activity = server.legacy_discovery_live_data()["activity"]
 
         self.assertEqual(activity["status"], "failed")
         self.assertEqual(activity["phase"]["id"], "anchor_attribution")
@@ -815,7 +815,7 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
             claim_id="akd-a27c5e21725a4e37", holder_pid=2096922,
             holder_start_ticks=48012147)
 
-        activity = server.discovery_live_payload()["activity"]
+        activity = server.legacy_discovery_live_data()["activity"]
 
         self.assertEqual(activity["status"], "failed")
         self.assertEqual(activity["phase"]["id"], "candidate_attribution")
@@ -1058,7 +1058,7 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         policy = json.loads((self.operation / "evidence-policy.json").read_text())
         policy["manifest_sha256"] = current_manifest_sha
         (self.operation / "evidence-policy.json").write_text(json.dumps(policy))
-        activity = server.discovery_live_payload()["activity"]
+        activity = server.legacy_discovery_live_data()["activity"]
         self.assertEqual(activity["turn"], 2)
         self.assertEqual(activity["status"], "stopped")
         self.assertEqual(activity["phase"]["id"], "source_materialization")
@@ -1248,7 +1248,7 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         _time.return_value = datetime.fromisoformat(
             "2026-08-20T17:43:00+00:00").timestamp()
 
-        terminal_payload = server.discovery_live_payload()
+        terminal_payload = server.legacy_discovery_live_data()
         terminal_activity = terminal_payload["activity"]
         self.assertFalse(terminal_payload["active"])
         self.assertEqual(terminal_activity["status"], "failed")
@@ -1280,7 +1280,7 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         (self.state_root / "state.json").write_text(json.dumps(state))
         receipt = json.loads(
             (self.operation / "proof/correctness/receipt.json").read_text())
-        activity = server.discovery_live_payload()["activity"]
+        activity = server.legacy_discovery_live_data()["activity"]
         self.assertEqual(activity["status"], "stopped")
         self.assertEqual(activity["phase"]["id"], "candidate_attribution")
         self.assertEqual(activity["phase"]["started_at"], receipt["ended_at"])
@@ -1421,7 +1421,7 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         self._receipt("proof/attribution-anchor/receipt.json",
                       "epyc.autokernel.gpu_kernel_attribution.v2",
                       status="complete", result="PASS")
-        activity = server.discovery_live_payload()["activity"]
+        activity = server.legacy_discovery_live_data()["activity"]
         self.assertEqual(activity["phase"]["id"], "candidate_attribution")
         self.assertEqual(activity["stage_contract"]["first_incomplete_stage"],
                          "candidate_attribution")
@@ -1446,7 +1446,7 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
                         "replication_of": "f" * 64},
             },
         }))
-        activity = server.discovery_live_payload()["activity"]
+        activity = server.legacy_discovery_live_data()["activity"]
         self.assertEqual(activity["stage_contract"]["replication"], "S2")
         pipeline = {row["id"]: row["state"] for row in activity["pipeline"]}
         self.assertEqual(pipeline["replication_s1"], "complete")
@@ -1477,14 +1477,14 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
             "payload": {"state": "discovery_screened",
                         "controller_state_sha256": "e" * 64},
         }) + "\n")
-        stopped = server.discovery_live_payload()["activity"]
+        stopped = server.legacy_discovery_live_data()["activity"]
         self.assertEqual(stopped["phase"]["id"], "next_hypothesis")
         self.assertEqual(stopped["status"], "stopped")
         self.assertTrue(stopped["resume"]["possible"])
         self.assertIn("next hypothesis", stopped["resume"]["detail"])
         with (self.state_root / "controller.run.lock").open("r") as handle:
             fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-            running = server.discovery_live_payload()["activity"]
+            running = server.legacy_discovery_live_data()["activity"]
         self.assertEqual(running["phase"]["id"], "next_hypothesis")
         self.assertEqual(running["status"], "running")
         self.assertTrue(any(row["event"] == "next_hypothesis_transition"
@@ -1503,7 +1503,7 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
                 "target_runtime_reason": None,
             }],
         }))
-        activity = server.discovery_live_payload()["activity"]
+        activity = server.legacy_discovery_live_data()["activity"]
         contract = activity["stage_contract"]
         self.assertEqual(contract["replication"], "S2")
         self.assertEqual(contract["exact_attribution_direction"], "improved")
@@ -1536,7 +1536,7 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
             "iterations": [{"turn": 1, "hypothesis_id": "akh-stage-fixture",
                             "status": "screen_refused", "refusal": refusal}],
         }))
-        projected = server.discovery_live_payload()["activity"]["refusal"]
+        projected = server.legacy_discovery_live_data()["activity"]["refusal"]
         self.assertTrue(projected["detected"])
         self.assertEqual(projected["type"], "authoring_refused")
         self.assertEqual(projected["class"], "CompileRefusal")
@@ -1544,7 +1544,7 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         self.assertFalse(projected["scientific_budget_spent"])
 
         receipt_path.write_text("{}\n")
-        rejected = server.discovery_live_payload()["activity"]["refusal"]
+        rejected = server.legacy_discovery_live_data()["activity"]["refusal"]
         self.assertEqual(rejected["class"], None)
 
     def test_planner_and_critic_provider_interruptions_are_restartable(self) -> None:
@@ -1556,7 +1556,7 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
                             "status": "planner_transient",
                             "reason": "provider unavailable"}],
         }))
-        planner = server.discovery_live_payload()["activity"]
+        planner = server.legacy_discovery_live_data()["activity"]
         self.assertEqual(planner["phase"]["id"], "planner")
         self.assertTrue(planner["provider_retry"]["detected"])
         self.assertTrue(planner["provider_retry"]["same_hypothesis"])
@@ -1579,7 +1579,7 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         }
         (self.operations / "live/autokernel.jsonl").write_text(
             json.dumps(event) + "\n")
-        critic = server.discovery_live_payload()["activity"]
+        critic = server.legacy_discovery_live_data()["activity"]
         self.assertEqual(critic["phase"]["id"], "critic")
         self.assertTrue(critic["provider_retry"]["detected"])
         self.assertFalse(critic["provider_retry"]["planner_rerun"])
@@ -1609,7 +1609,7 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
                 "scientific_budget_spent": False,
             }],
         }))
-        activity = server.discovery_live_payload()["activity"]
+        activity = server.legacy_discovery_live_data()["activity"]
         self.assertEqual(activity["phase"]["id"], "next_hypothesis")
         self.assertEqual(activity["refusal"]["type"], "authoring_refused")
         self.assertEqual(activity["refusal"]["class"], "CompileRefusal")
@@ -1659,7 +1659,7 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
                         "scientific_budget_spent": False,
                     }],
                 }))
-                activity = server.discovery_live_payload()["activity"]
+                activity = server.legacy_discovery_live_data()["activity"]
                 self.assertEqual(activity["phase"]["id"], "next_hypothesis")
                 self.assertEqual(activity["refusal"]["type"], disposition)
                 self.assertEqual(activity["refusal"]["class"], refusal_class)

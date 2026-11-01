@@ -5,7 +5,7 @@ does what it claims; this one is what survived an attempt to REFUTE those claims
 Every test here corresponds to a way the panel/health surface was found to render
 CLEAN over a dead, broken or absent producer — the scar it exists to close:
 
-    Today's ``/kernel`` page is ABSENCE-TOLERANT OVER A MISSING DIRECTORY — it
+    Today's ``/timeline`` page is ABSENCE-TOLERANT OVER A MISSING DIRECTORY — it
     renders clean when its producer is dead, which is the exact shape of AutoPilot
     dying at trial 1302 and staying dead ~23 HOURS with every dashboard green.
 
@@ -23,6 +23,7 @@ import json
 import tempfile
 import types
 import unittest
+from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -88,7 +89,7 @@ class _Artifact:
 class FutureTimestampTest(unittest.TestCase):
     """``age = max(0.0, now - ts)`` clamps at zero.
 
-    PRE-FIX (observed): a kernel contract dated one year ahead read
+    PRE-FIX (observed): a timeline panel dated one year ahead read
     ``staleness_class=fresh``, ``reporting=observed``, ``watchdog=ok``,
     ``age_s=0.0`` — and the fold over it was ``ok``. It would have read that way
     forever, however long the loop had been dead. One producer host with a clock
@@ -99,7 +100,7 @@ class FutureTimestampTest(unittest.TestCase):
     """
 
     def test_a_future_dated_report_is_undatable_not_fresh(self):
-        env = _env("kernel", timestamp=_NOW + 365 * _DAY, source="produced_at",
+        env = _env("timeline", timestamp=_NOW + 365 * _DAY, source="produced_at",
                    populated=True, watermark="ak:1")
         self.assertEqual(env["staleness_class"], panels.CLASS_MISSING)
         self.assertEqual(env["watchdog"]["state"], panels.WATCHDOG_FUTURE_TIMESTAMP)
@@ -108,11 +109,11 @@ class FutureTimestampTest(unittest.TestCase):
 
     def test_a_future_dated_report_degrades_the_fold(self):
         envs = _healthy_total()
-        envs["kernel"] = _env("kernel", timestamp=_NOW + _DAY, source="produced_at",
+        envs["timeline"] = _env("timeline", timestamp=_NOW + _DAY, source="produced_at",
                               populated=True)
         out = panels.fold(envs)
         self.assertEqual(out["status"], panels.STATUS_DEGRADED)
-        self.assertEqual(out["status_set_by"]["panel"], "kernel")
+        self.assertEqual(out["status_set_by"]["panel"], "timeline")
 
     def test_it_fires_on_an_unwatched_panel_too(self):
         """A defect in the EVIDENCE is not a liveness question, so it is visible
@@ -124,7 +125,7 @@ class FutureTimestampTest(unittest.TestCase):
     def test_ntp_jitter_inside_the_tolerance_is_still_fresh(self):
         """COMPLIANT-PATH CONTROL: two hosts are never perfectly in sync. A report
         a few seconds ahead is a healthy producer, not a defect."""
-        env = _env("kernel", timestamp=_NOW + 5.0, source="produced_at",
+        env = _env("timeline", timestamp=_NOW + 5.0, source="produced_at",
                    populated=True, watermark="ak:1")
         self.assertEqual(env["staleness_class"], panels.CLASS_FRESH)
         self.assertEqual(env["watchdog"]["state"], panels.WATCHDOG_OK)
@@ -132,9 +133,9 @@ class FutureTimestampTest(unittest.TestCase):
 
     def test_the_boundary_is_the_declared_tolerance(self):
         self.assertGreater(panels.FUTURE_SKEW_TOLERANCE_S, 0)
-        inside = _env("kernel", timestamp=_NOW + panels.FUTURE_SKEW_TOLERANCE_S - 1,
+        inside = _env("timeline", timestamp=_NOW + panels.FUTURE_SKEW_TOLERANCE_S - 1,
                       source="produced_at", populated=True)
-        outside = _env("kernel", timestamp=_NOW + panels.FUTURE_SKEW_TOLERANCE_S + 1,
+        outside = _env("timeline", timestamp=_NOW + panels.FUTURE_SKEW_TOLERANCE_S + 1,
                        source="produced_at", populated=True)
         self.assertEqual(inside["staleness_class"], panels.CLASS_FRESH)
         self.assertEqual(outside["staleness_class"], panels.CLASS_MISSING)
@@ -255,10 +256,10 @@ class FoldTotalityTest(unittest.TestCase):
 
     def test_a_panel_that_drops_out_of_the_fold_is_named(self):
         envs = _healthy_total()
-        del envs["kernel"]
+        del envs["timeline"]
         out = panels.fold(envs)
         self.assertEqual(out["status"], panels.STATUS_DEGRADED)
-        self.assertEqual(out["status_set_by"]["panel"], "kernel")
+        self.assertEqual(out["status_set_by"]["panel"], "timeline")
         self.assertIn("REGISTERED BUT NOT FOLDED", out["status_set_by"]["why"])
 
     def test_a_total_healthy_fold_is_ok(self):
@@ -280,7 +281,7 @@ class FoldNamesTheOffenderTest(unittest.TestCase):
     ``status``.
 
     PRE-FIX (observed, live): ``/api/health`` answered ``status: absent`` —
-    caused by ``kernel`` never having exported — while ``worst.panel`` was
+    caused by ``timeline`` never having exported — while ``worst.panel`` was
     ``bus`` (an hour-old heartbeat, non-gating). A card pairing the colour of one
     with the sentence of the other points the operator at the wrong repository.
 
@@ -290,13 +291,17 @@ class FoldNamesTheOffenderTest(unittest.TestCase):
 
     def test_status_and_its_cause_are_both_on_the_wire(self):
         envs = _healthy_total()
-        envs["kernel"] = _env("kernel", artifact_present=False, timestamp=None)
+        source = replace(panels.PANELS["timeline"],
+                         absence_is_anomalous=True)
+        envs["timeline"] = panels.envelope(source, panels.Observation(
+            artifact_present=False, timestamp=None, source="generated_at"),
+            now=_NOW)
         envs["bus"] = _env("bus", timestamp=_NOW - 30 * _DAY, source="heartbeats",
                            populated=True)
-        out = panels.fold(envs)
+        out = panels.fold(envs, registry={**panels.PANELS, "timeline": source})
         self.assertEqual(out["status"], panels.STATUS_ABSENT)
         self.assertEqual(out["worst"]["panel"], "bus")        # worst by score
-        self.assertEqual(out["status_set_by"]["panel"], "kernel")  # cause of status
+        self.assertEqual(out["status_set_by"]["panel"], "timeline")  # cause of status
 
     def test_status_set_by_is_never_null_while_status_is_not_ok(self):
         for envs in (self._absent(), self._degraded(), _healthy_total()):
@@ -316,7 +321,11 @@ class FoldNamesTheOffenderTest(unittest.TestCase):
 
     def _absent(self):
         envs = _healthy_total()
-        envs["kernel"] = _env("kernel", artifact_present=False, timestamp=None)
+        source = replace(panels.PANELS["timeline"],
+                         absence_is_anomalous=True)
+        envs["timeline"] = panels.envelope(source, panels.Observation(
+            artifact_present=False, timestamp=None, source="generated_at"),
+            now=_NOW)
         return envs
 
     def _degraded(self):
@@ -353,7 +362,7 @@ class KernelV2SelfReportTest(unittest.TestCase):
         return doc
 
     def test_no_observed_section_is_absence_however_fresh_produced_at_is(self):
-        env = panels.envelope(panels.PANELS["kernel"],
+        env = panels.envelope(panels.RETIRED_PANEL_SOURCES["kernel"],
                               server._kernel_observation(self._doc()), now=_NOW)
         self.assertTrue(env["artifact_present"])
         self.assertEqual(env["reporting"], panels.REPORTING_ABSENT)
@@ -364,7 +373,7 @@ class KernelV2SelfReportTest(unittest.TestCase):
     def test_an_empty_self_report_does_not_launder_it(self):
         """The producer claiming ``unreported_sections: []`` while reporting
         nothing must not buy a clean card."""
-        env = panels.envelope(panels.PANELS["kernel"],
+        env = panels.envelope(panels.RETIRED_PANEL_SOURCES["kernel"],
                               server._kernel_observation(
                                   self._doc(unreported_sections=[])), now=_NOW)
         self.assertEqual(panels.panel_verdict(env)[0], panels.STATUS_ABSENT)
@@ -389,7 +398,7 @@ class KernelV2SelfReportTest(unittest.TestCase):
         """COMPLIANT-PATH CONTROL: a healthy v2 export is unaffected."""
         doc = self._doc(sections={n: {"status": "observed", "as_of": _iso(_NOW_DT)}
                                   for n in _V2_SECTIONS})
-        env = panels.envelope(panels.PANELS["kernel"],
+        env = panels.envelope(panels.RETIRED_PANEL_SOURCES["kernel"],
                               server._kernel_observation(doc), now=_NOW)
         self.assertEqual(env["reporting"], panels.REPORTING_OBSERVED)
         self.assertEqual(env["staleness_class"], panels.CLASS_FRESH)
@@ -401,7 +410,7 @@ class KernelV2SelfReportTest(unittest.TestCase):
         it is dated normally and its missing owners are named."""
         doc = self._doc()
         doc["sections"]["campaign"] = {"status": "observed", "stopped": False}
-        env = panels.envelope(panels.PANELS["kernel"],
+        env = panels.envelope(panels.RETIRED_PANEL_SOURCES["kernel"],
                               server._kernel_observation(doc), now=_NOW)
         self.assertEqual(env["reporting"], panels.REPORTING_OBSERVED)
         self.assertEqual(env["staleness_class"], panels.CLASS_FRESH)
@@ -428,7 +437,7 @@ class UnreadableArtifactTest(unittest.TestCase):
 
     def test_a_corrupt_export_is_present_and_broken(self):
         with _Artifact("KERNEL_DASHBOARD_JSON", "{truncated"):
-            out = server.kernel_payload()
+            out = server.legacy_kernel_data()
         fr = out["_freshness"]
         self.assertTrue(fr["artifact_present"])        # something IS there
         self.assertEqual(fr["reporting"], panels.REPORTING_ABSENT)  # nothing datable
@@ -440,13 +449,13 @@ class UnreadableArtifactTest(unittest.TestCase):
         """The degraded shell has no ``schema``, and unlabelled means v1 — so a
         corrupt file was being reported as a readable legacy contract."""
         with _Artifact("KERNEL_DASHBOARD_JSON", "{truncated"):
-            self.assertIsNone(server.kernel_payload()["_contract_version"])
+            self.assertIsNone(server.legacy_kernel_data()["_contract_version"])
 
     def test_a_missing_export_still_says_never_exported(self):
         """COMPLIANT-PATH CONTROL: the never-exported diagnosis is preserved for
         the case it actually describes."""
         with _Artifact("KERNEL_DASHBOARD_JSON", None):
-            fr = server.kernel_payload()["_freshness"]
+            fr = server.legacy_kernel_data()["_freshness"]
         self.assertFalse(fr["artifact_present"])
         self.assertEqual(fr["watchdog"]["state"], panels.WATCHDOG_NEVER)
         self.assertIn("NOBODY IS REPORTING", fr["watchdog"]["reason"])
@@ -455,12 +464,12 @@ class UnreadableArtifactTest(unittest.TestCase):
         """COMPLIANT-PATH CONTROL."""
         doc = {"runs": [{"ts": _iso(_NOW_DT)}], "generated_at": _iso(_NOW_DT)}
         with _Artifact("KERNEL_DASHBOARD_JSON", doc):
-            out = server.kernel_payload()
+            out = server.legacy_kernel_data()
         self.assertEqual(out["_contract_version"], "v1")
         self.assertEqual(out["_freshness"]["reporting"], panels.REPORTING_OBSERVED)
 
     def test_every_file_backed_reader_uses_the_same_rule(self):
-        for attr, payload in (("KERNEL_DASHBOARD_JSON", server.kernel_payload),
+        for attr, payload in (("KERNEL_DASHBOARD_JSON", server.legacy_kernel_data),
                               ("TIMELINE_PATH", server.timeline_payload),
                               ("AUTOPILOT_OUTCOME_JSON", server.outcome_payload),
                               ("BENCHMARK_ARTIFACT_INVENTORY",
@@ -571,16 +580,16 @@ class RegistryEvasionTest(unittest.TestCase):
     """
 
     def test_an_unidentifiable_route_handler_is_a_gap(self):
-        mod = _fake_hub(routes={"/api/kernel":
+        mod = _fake_hub(routes={"/api/loop":
                                 lambda m: functools.partial(m.outcome_payload)})
         gaps = panels.registry_gaps(mod)
-        self.assertTrue(any("/api/kernel" in m for m in gaps["route_mismatch"]),
+        self.assertTrue(any("/api/loop" in m for m in gaps["route_mismatch"]),
                         gaps)
         self.assertIn("unidentifiable", " ".join(gaps["route_mismatch"]))
 
     def test_a_callable_object_panel_is_discovered(self):
         mod = _fake_hub(extra={"ghost_payload":
-                               lambda m: functools.partial(m.kernel_payload)})
+                               lambda m: functools.partial(m.loop_payload)})
         self.assertIn("ghost_payload", panels.discover_payload_functions(mod))
         self.assertEqual(panels.registry_gaps(mod)["unregistered_payload_functions"],
                          ["ghost_payload"])
@@ -603,7 +612,7 @@ class RegistryEvasionTest(unittest.TestCase):
         """COMPLIANT-PATH CONTROL: the widened discovery must not start counting
         a payload function the hub merely IMPORTS as a panel it serves."""
         mod = types.ModuleType("borrower")
-        mod.kernel_payload = server.kernel_payload
+        mod.loop_payload = server.loop_payload
         self.assertEqual(panels.discover_payload_functions(mod), set())
 
     def test_the_real_hub_still_has_no_gaps(self):

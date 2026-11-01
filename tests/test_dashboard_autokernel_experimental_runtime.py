@@ -139,7 +139,7 @@ class ExperimentalRuntimeDashboardApiTest(unittest.TestCase):
     def _active(self) -> dict:
         with (self.state_root / "controller.run.lock").open("r") as handle:
             fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-            return server.discovery_live_payload()
+            return server.legacy_discovery_live_data()
 
     def _claim(self) -> None:
         holder_pid = os.getpid()
@@ -256,7 +256,7 @@ class ExperimentalRuntimeDashboardApiTest(unittest.TestCase):
         self.assertNotIn("holder_start_ticks", exported)
         self.assertNotIn("writer_pid", exported)
 
-        stopped = server.discovery_live_payload()["activity"]
+        stopped = server.legacy_discovery_live_data()["activity"]
         self.assertEqual(stopped["status"], "stopped")
         self.assertEqual(stopped["stage_contract"]["first_incomplete_stage"],
                          "matched_np1")

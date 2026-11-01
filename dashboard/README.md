@@ -141,13 +141,10 @@ for `:8100`. Neither layer touches the orchestrator API (`:8000`).
 - `GET /api/handoff_board` — compact cards for all four columns (live scan, 30 s cache)
 - `GET /api/handoff_detail?id=<state>/<stem>` — full card + scrubbed markdown body (path-traversal guarded)
 - `GET /api/handoff_timeline` — the git-derived timeline artifact + freshness
-- `GET /api/kernel` — the controller-era AutoKernel contract (v2, v1 still readable)
-  + freshness. **The page this fed is retired**; the route is not
-- `GET /api/kernel/live` — active discovery lock/state plus bounded, secret-free
-  AutoKernel and planner lifecycle tails from the deployment-owned live contract.
-  Same standing: retired page, live route
-- `GET /api/kernel/health` — that producer's data health only; HTTP 200 when
-  fully reported and current, HTTP 503 with `absent`/`degraded` detail otherwise
+- `GET /api/kernel`, `/api/kernel/live`, `/api/kernel/health` — **retired
+  2026-11-01**; these paths now return 404. The old terminal-contract and
+  discovery readers remain available only for offline regression tests; they are
+  not served or folded into global dashboard health.
 - `GET /kernel` — **retired 2026-08-30**: a `301` to `/loop`, `Cache-Control:
   no-store`, plain-text body (withheld on HEAD). `static/kernel.html` is deleted
   and the `kernel` registry row is gone; see below for why a redirect and not an
@@ -247,14 +244,10 @@ trusted.
 * `/health` stays transport-only because
   `scripts/dashboard/hub_supervisor.sh` restarts the hub on a non-ok body, and
   restarting the dashboard cannot revive a producer in another repository.
-* `/api/kernel/health` is the non-recursive data probe for the controller-era
-  producer. It reads and folds only the `kernel` envelope; it never calls the
-  global `/api/health` fold. This lets a consumer see a live hub and an
-  absent/partial AutoKernel producer as two different facts. It was the registry
-  probe for the `kernel` row until that row was removed with the page on
-  2026-08-30; the route stays because `/api/kernel` does. Today it answers
-  `503 degraded`, which is more than `/api/kernel` itself will say — see *Known
-  open items on this surface*.
+* The retired `/api/kernel*` endpoints are not health inputs. `/api/health` folds
+  only registered, served dashboard panels; the active Kernel R&D page has its
+  own `/api/loop/health` probe and keeps the loop and operator-gate envelopes
+  independent.
 
 Producer side (contract v2): `epyc-inference-research` →
 `scripts/kernel_rnd/autokernel/dashboard.py`. The campaign driver exports only
@@ -289,10 +282,10 @@ historical incidents but do not keep current health red after exact mirror
 equality is restored. The actor seam writes only an
 allowlisted lifecycle vocabulary, provider/model identities, return codes,
 decisions and transcript hashes. Prompts, model text, commands, environment and
-credentials are structurally excluded. `/api/kernel/live` also observes the
-deployment's controller lock, so a long first planner call is visible before its
-first durable state checkpoint; that lock observation never exposes or scrapes
-the ephemeral actor container. When several sealed deployments coexist, the
+credentials are structurally excluded. The retained offline discovery reader
+also observes the deployment's controller lock, so a long first planner call
+was visible before its first durable state checkpoint; that observation never
+exposed or scraped the ephemeral actor container. When several sealed deployments coexist, the
 activity hero selects a held controller first, then the terminal deployment with
 the newest producer-authored progress timestamp. A newer config-file mtime never
 turns a real failed run into “idle.” The newest bundle with no controller state,
@@ -508,7 +501,8 @@ cards, it cannot make Kernel-R&D healthy or fresh.
 
 The retired Kernel-R&D page executed its current-state renderer in the
 static-JavaScript suite, not just a syntax parser — a rule that outlives the page
-it was written for, and one any renderer built on `/api/kernel` inherits. This
+it was written for, and one any renderer built on the former `/api/kernel`
+contract inherited. This
 mattered because the complete-kernel-set card
 once referenced a free identifier: the script parsed, the API remained complete,
 but rendering stopped before controls, empirical gates, activity, or the seven
@@ -527,14 +521,14 @@ that needs its producer's code installed goes dark when the producer's repo
 moves. That means the schema strings, the section status and the export path are
 literals here, and literals drift. Two rules keep them honest:
 
-* **Hub-derived fields are underscored.** `/api/kernel` serves the producer's
-  document *plus* `_contract_version`, `_freshness`, `_render` and the separate
+* **Hub-derived fields are underscored.** The retained offline kernel reader
+  returned the producer's document *plus* `_contract_version`, `_freshness`, `_render` and the separate
   `_progression` projection. It used to
   overwrite `contract_version` — a key the producer owns and writes as the
   integer `2` — with the string `"v2"`, so the body the hub served no longer
   validated under `schemas.validate_kernel_dashboard_v2`. The seam suite now
-  asserts every producer key survives byte-identical and that what is served
-  still validates as a contract.
+  asserts every producer key survives byte-identical and that the legacy reader
+  still returns a valid contract. No `/api/kernel` route serves it.
 * **The empty-state sentence is derived on the wire** (`server._kernel_render`),
   not written into `static/kernel.html`. v2 carries seven owner sections and *no
   run log*, so the page's hardcoded *"no runs recorded yet — the kernel-R&D loop
@@ -543,11 +537,10 @@ literals here, and literals drift. Two rules keep them honest:
   the section table from `d.sections`, shows the reporting banner
   (`reporting`/`content`/`watchdog`/`absence_means`) above the fold, and prints
   `_render.note` where it has nothing of its own to draw. That page was retired on
-  2026-08-30 and its markup deleted; `_kernel_render` stays on the wire because
-  `/api/kernel` does, and the rule it encodes — the empty-state sentence is
-  derived from the document, never hardcoded in the renderer — is the reusable
-  part.
-* **`evidence` names the file that was actually read.** The registry declares the
+  2026-08-30 and its markup deleted; `_kernel_render` remains useful to offline
+  regression tests, and the rule it encodes — the empty-state sentence is derived
+  from the document, never hardcoded in the renderer — is the reusable part.
+* **`evidence` names the file that was actually read.** Retired source metadata declares the
   default; the two env-overridable readers (`KERNEL_DASHBOARD_JSON`,
   `AUTOPILOT_OUTCOME_JSON`) put the resolved path in the envelope and keep the
   declared one under `declared_evidence`. A card that names a path the hub is not
@@ -623,18 +616,15 @@ audits its own source to keep it that way.
   page is never misled; an automated consumer of `/api/health` remains
   under-informed. This change closes the `/api/loop/health` gap without changing
   what `health_payload()` folds.
-* **`/api/kernel`, `/api/kernel/live` and `/api/kernel/health` still exist and
-  still serve the retired page's data.** Only the *page* was retired. Removing the
-  routes would strand `panels.PANELS["kernel"]` and `panels.PANELS["kernel_live"]`,
-  which means editing `panels.py` and therefore changing `health_payload()`'s
-  fold — the same function under concurrent edit. The consequence is real, not
-  cosmetic, and worth stating exactly: `/api/kernel` currently reports
-  `_freshness.reporting == "observed"` and `watchdog == "idle"` over a 16.8-day-old
-  export, because the producer travels the compliant-silence path the hub
-  deliberately honours (*the hub never infers idleness*). So that JSON does **not**
-  loudly read stale, and a consumer polling it would be told a dead campaign is a
-  quiet one. `/api/kernel/health` does answer `503 degraded`. The page a human
-  could land on is gone; the route a script could still trust is not.
+* **P6.5 — retired API surface (2026-11-01).** The old `/api/kernel*` routes and
+  `kernel` / `kernel_live` global panel entries are removed together. `/api/health`
+  no longer publishes the top-level `kernel` compatibility alias or folds the
+  retired campaign/discovery producers; their stale or malformed data cannot
+  affect the live dashboard verdict. `/kernel` remains a permanent redirect to
+  `/loop`, whose own loop and operator-gate freshness envelopes remain separate.
+  No in-repository HTTP consumer of the retired endpoints was found. External
+  callers, if any, must migrate to the served `/api/loop` contract; these retired
+  paths now return 404.
 
 ## Decision cockpit (`/cockpit`) — AP-50
 

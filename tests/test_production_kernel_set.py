@@ -176,7 +176,7 @@ def test_every_contract_section_reaches_the_page_no_allowlist() -> None:
     those two fell through to the bare word "reported", discarding their content.
     """
     import json as _json
-    payload = S.kernel_payload()
+    payload = S.legacy_kernel_data()
     if (payload.get("_render") or {}).get("mode") != "contract_v2":
         pytest.skip("live contract is not v2 on this host")
     contract = _json.loads(Path(S.KERNEL_DASHBOARD_JSON).read_text(encoding="utf-8"))
@@ -187,7 +187,7 @@ def test_every_contract_section_reaches_the_page_no_allowlist() -> None:
 
 def test_not_reported_sections_are_flagged_not_silently_empty() -> None:
     """`not_reported` is a VALUE, not an omission — the incident-8 distinction."""
-    payload = S.kernel_payload()
+    payload = S.legacy_kernel_data()
     if (payload.get("_render") or {}).get("mode") != "contract_v2":
         pytest.skip("live contract is not v2 on this host")
     unreported = set((payload.get("_freshness") or {}).get("unreported") or ())

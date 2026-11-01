@@ -558,16 +558,17 @@ class Wiring(unittest.TestCase):
         named as degraded rather than subtracted."""
         self.assertIn(PANEL, S.panel_envelopes())
 
-    def test_the_existing_kernel_surface_is_untouched(self):
-        """This is a SEPARATE surface. The Kernel-R&D panel keeps its own
-        producer, route and probe — one contract's rewrite must not be another
-        contract's outage."""
-        self.assertIs(S.API_ROUTES["/api/kernel"], S.kernel_payload)
-        self.assertIs(S.PANEL_HEALTH_ROUTES["/api/kernel/health"], S.kernel_data_health)
-        self.assertNotEqual(panels.source("kernel").evidence,
-                            panels.source(PANEL).evidence)
-        self.assertNotEqual(panels.source("kernel").producer,
-                            panels.source(PANEL).producer)
+    def test_retired_kernel_endpoints_are_not_served_or_folded(self):
+        """The retired reader is neither a served route nor a live panel."""
+        self.assertNotIn("/api/kernel", S.API_ROUTES)
+        self.assertNotIn("/api/kernel/live", S.API_ROUTES)
+        self.assertNotIn("/api/kernel/health", S.PANEL_HEALTH_ROUTES)
+        self.assertNotIn("kernel", panels.PANELS)
+        self.assertNotIn("kernel_live", panels.PANELS)
+        envelopes = S.panel_envelopes()
+        self.assertNotIn("kernel", envelopes)
+        self.assertNotIn("kernel_live", envelopes)
+        self.assertNotIn("kernel", S.health_payload())
 
 
 # --------------------------------------------------------------------------- #
