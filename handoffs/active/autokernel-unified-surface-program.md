@@ -1393,7 +1393,7 @@ MMVQ, `ne11>=5` on MMQ — "the July crossover"), reversal documented in-source.
 Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN_STATE_BF16` in 9 files) are already in.
 
 ### P2 — surface dimension (U2)  · exit: two bundle files, two floors, a CPU serving A/B record on disk
-- [ ] `Bundle.surface`; per-surface store filenames; `load_bundle()` per surface; shared cor invariant test
+- [x] `Bundle.surface`; per-surface store filenames; `load_bundle()` per surface; shared cor invariant test ✅ 2026-11-01 — Research `a25f5ff79b2db6c4c883d7eb1402ada87ca46c63` + `064d758ee4218014628eb021d9526eaafff7f456`: opt-in typed CPU/GPU v3 snapshots and separate bundle/journal paths; shared COR refusal/CAS promotion, per-surface load/epoch/recovery, deadlock-safe lock order, and explicit-store `champion_reanchor` compatibility with missing/corrupt-authority refusal and legacy fallback. R6: 74 bundle/journal + 1 explicit CPU + 1 legacy CPU + 19 reanchor tests passed; changed-line Ruff and scoped diff checks passed. [artifact](../../artifacts/engineering/autokernel-bundle-surface-20261101/README.md) [no-belief: source implementation and synthetic correctness verification only; no native measurement, live-store mutation, or production promotion]
 - [x] `serving.Recipe` CPU variant (device, cpu_list, numa, threads) — the CPU session's canonical recipe codified ✅ 2026-10-30 [no-belief: source identity/launch validation] <!-- evidence-integrity: Research `6cf25cfab8e45e760cbe4291134b58730ae1eb70`; artifact: artifacts/compute/task-evidence-repair-20261031/serving-recipe-cpu/EVIDENCE.json; hygiene, not quota -->
 
   <!-- task-evidence-integrity:start SERVING-RECIPE-CPU -->

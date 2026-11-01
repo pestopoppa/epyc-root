@@ -1,0 +1,101 @@
+{
+  "scope": "MODEL_FREE_R6_ONLY",
+  "family": "34-35",
+  "actual_cpus": [
+    130,
+    131
+  ],
+  "root_lane": null,
+  "root_status": null,
+  "implementation_commit": "a25f5ff79b2db6c4c883d7eb1402ada87ca46c63",
+  "merge_commit": "a25f5ff79b2db6c4c883d7eb1402ada87ca46c63",
+  "start_utc": "2026-11-01T04:44:10.128404+00:00",
+  "end_utc": "2026-11-01T04:44:11.008890+00:00",
+  "own_pid": 64847,
+  "own_start_ticks": "163072336",
+  "runner_pid": 64819,
+  "runner_start_ticks": "163072328",
+  "boot_id": "3be2fb1a-7293-4c34-b733-c85d772b9474",
+  "live_grants": [
+    {
+      "id": "codex-ni-inf12-gate2-triton36-r13-20261030",
+      "class": "block-correctness",
+      "regions": "mi210_0,184-191",
+      "start": "2026-11-01T04:20Z",
+      "end": "2026-11-01T04:50Z"
+    },
+    {
+      "id": "codex3-cs8-stt5-validation-baseline-r2-20261030",
+      "class": "block-correctness",
+      "regions": "48-71",
+      "start": "2026-11-01T02:11Z",
+      "end": "2026-11-01T06:00Z"
+    },
+    {
+      "id": "codex3-pareval120-k20-gen-20261031",
+      "class": "block-correctness",
+      "regions": "0-23",
+      "start": "2026-11-01T03:47Z",
+      "end": "2026-11-01T06:00Z"
+    }
+  ],
+  "staged_closure": [
+    " M scripts/kernel_rnd/autokernel/loop/actors.py",
+    " M scripts/kernel_rnd/autokernel/loop/champion_reanchor.py",
+    " M scripts/kernel_rnd/autokernel/loop/hotspots.py",
+    " M scripts/kernel_rnd/autokernel/loop/run.py",
+    " M scripts/kernel_rnd/autokernel/loop/test_actors.py",
+    " M scripts/kernel_rnd/autokernel/loop/test_champion_reanchor.py",
+    " M scripts/kernel_rnd/autokernel/prior_art.py",
+    "?? scripts/kernel_rnd/autokernel/loop/test_hotspots.py"
+  ],
+  "returncode": 0,
+  "failure": null,
+  "elapsed_s": 0.9129681580234319,
+  "sampled_peak_tree_rss_bytes": 50700288,
+  "kernel_childset_empty": true,
+  "captured": [
+    {
+      "pid": 64847,
+      "birth": 163072336,
+      "ppid": 64819,
+      "uid": 1000
+    },
+    {
+      "pid": 64848,
+      "birth": 163072336,
+      "ppid": 64847,
+      "uid": 1000
+    },
+    {
+      "pid": 64858,
+      "birth": 163072358,
+      "ppid": 64848,
+      "uid": 1000
+    },
+    {
+      "pid": 65248,
+      "birth": 163072408,
+      "ppid": 64847,
+      "uid": 1000
+    }
+  ],
+  "native_or_GPU_execution": false,
+  "source_closure": [
+    " M scripts/kernel_rnd/autokernel/loop/actors.py",
+    " M scripts/kernel_rnd/autokernel/loop/champion_reanchor.py",
+    " M scripts/kernel_rnd/autokernel/loop/hotspots.py",
+    " M scripts/kernel_rnd/autokernel/loop/run.py",
+    " M scripts/kernel_rnd/autokernel/loop/test_actors.py",
+    " M scripts/kernel_rnd/autokernel/loop/test_champion_reanchor.py",
+    " M scripts/kernel_rnd/autokernel/prior_art.py",
+    "?? scripts/kernel_rnd/autokernel/loop/test_hotspots.py"
+  ],
+  "adapted_script_sha256": "f783ba0b757d7ee40d5a68de7895064a26ce929cca58420b4cba054b81bdb4c7",
+  "output_log_sha256": "af148964b327efcbd374c36a24a219a098c70388f774b1929407c681bd99c43a",
+  "rss_sampler": {
+    "interval_s": 0.1,
+    "limit_bytes": 8589934592,
+    "source": "/proc/<pid>/statm"
+  }
+}
