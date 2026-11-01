@@ -5,32 +5,27 @@
     "handoff-blocked": 2,
     "handoff-completed": 221,
     "progress": 1144,
-    "research": 261
+    "research": 263
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-01T15:52:43Z",
   "last_touch": {
     "advanced": {
-      "added": 0,
-      "changed": 7,
+      "added": 2,
+      "changed": 0,
       "removed": 0
     },
-    "at": "2026-11-01T16:33:30Z",
+    "at": "2026-11-01T21:26:46Z",
     "scope_paths": [
-      "handoffs/active/autokernel-restart-and-strip.md",
-      "handoffs/active/delta-mem-reproduction.md",
-      "handoffs/active/kv-unified-stack-rollout.md",
-      "handoffs/active/non-inference-backlog.md",
-      "handoffs/active/speculative-decoding-mtp-refresh.md",
-      "handoffs/active/stack-change-governance-pipeline.md",
-      "progress/2026-11/2026-11-01-codex-ni.md"
+      "research/deep-dives/intake-2603-dsh-superagent-prototype.md",
+      "research/deep-dives/intake-digests/2026-11-01-ids-2603-2603.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-01T16:33:30Z",
+  "scan_time": "2026-11-01T21:26:46Z",
   "schema_version": 1,
-  "source_set_hash": "3e3a2689e9d9fda92d094e1cff3839458ce5377bcf99af676408d62fbd96b4cf",
+  "source_set_hash": "424d78a6435563ebe16101a73930aa4af854961372df2c48be6b691dcafe4e62",
   "sources": [
     {
       "content_hash": "79865b0c101f4b6a9b14665950a430467345202b33986b3ba348bc3df428170a",
@@ -3865,6 +3860,14 @@
       "type": "research"
     },
     {
+      "content_hash": "1268d4d070a90d06f960c0b1ba759692828bb66e91211723b7f59d24edee39bb",
+      "modified": "2026-11-01T21:26:08Z",
+      "path": "research/deep-dives/intake-2603-dsh-superagent-prototype.md",
+      "size": 8849,
+      "title": "intake-2603 \u2014 dsh-superagent-prototype vs the backlog churn pipeline",
+      "type": "research"
+    },
+    {
       "content_hash": "7dddcc33d694de92a94444f7662976abd97eb9b5f60140af3e1d21bbf27aa2f7",
       "modified": "2026-11-01T15:45:21Z",
       "path": "research/deep-dives/intake-digests/2026-03-14-ids-117-117.md",
@@ -4574,6 +4577,14 @@
       "path": "research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md",
       "size": 275393,
       "title": "Intake dive digest \u2014 2026-10-31, intake-2546#record .. intake-2602#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "9ba53d01e924ba76ce2bb52e78fb7b067555e811a215cd1c9a4112d160443807",
+      "modified": "2026-11-01T21:26:23Z",
+      "path": "research/deep-dives/intake-digests/2026-11-01-ids-2603-2603.md",
+      "size": 6355,
+      "title": "Intake dive digest \u2014 2026-11-01, intake-2603#record .. intake-2603#record",
       "type": "research"
     },
     {
@@ -16497,7 +16508,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 2058,
+  "total_new": 2060,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

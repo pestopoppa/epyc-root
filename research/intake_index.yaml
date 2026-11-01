@@ -375381,3 +375381,150 @@
   disposition_evidence:
   - W4UP-3 -> P5 / TD-23.D1
   - W4UP-5 -> M4
+- id: intake-2603
+  arxiv_id: null
+  url: https://github.com/deepseek-ai/dsh-superagent-prototype
+  source_type: repo
+  title: 'dsh-superagent: proactive per-ticket coding agent bundle for DeepSeek Harness (research prototype)'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - autonomous_research
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-11-01'
+  authors:
+  - DeepSeek AI (repo owner deepseek-ai; README calls it a research prototype, not an official product)
+  key_claims:
+  - Ticket state is derived only from structured facts (a Report enum progress/waiting/ready/blocked/failed/dropped plus a structured
+    Attention question); inferring "waiting on a person" from a report's free text is an explicitly rejected design.
+  - Each open Ticket has exactly one stage, derived first-match from a fixed ordered table (delivery failure, attention, ready, blocked/failed,
+    queued, idle, working).
+  - Transient model-provider/network failures (HTTP 408, 429, 5xx, refused/reset/timed-out connection) are retried three times with
+    growing backoff, and a worker whose turn failed is told to go on.
+  - Inputs a cut-off Executor turn did not take are re-delivered to the replacement Assignment on retry/restart; post-decision work
+    (relays, launches, input deliveries) is stored first and executed afterwards as a retried effect queue.
+  - Concurrency limit applies to worker slots with one extra reserved slot for a person's message or status request; a restarted Assignment
+    gets a recovery note to check directory, git history and GitHub before repeating any outside action.
+  - A worker that finds nothing for a human to act on reports dropped, which closes the ticket silently.
+  techniques:
+  - Source/Trigger/Thread/Eval/Mandate/Ticket/Assignment/Subscription domain model
+  - structured Report enum + Attention question
+  - first-match derived ticket stage table
+  - stored-work effect queue with idempotent outbox
+  - reserved human slot in worker concurrency
+  - restart recovery note
+  reported_results:
+  - 'GitHub API 2026-11-01: created 2026-10-31T09:32:46Z, 6940 stars, 693 forks, MIT. 216 files; TypeScript; one SQLite store. No performance
+    or quality numbers published.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - session-bus-thin-dispatcher.md
+    experiments: []
+    intake_entries:
+    - intake-1186
+  credibility_score: null
+  contradicting_evidence:
+  - 'README: research prototype, adapted for publication, not identical to the internal version or to the article it cites; some designs
+    in the article are not implemented.'
+  referenced_arxiv_ids: []
+  notes: 'Companion of intake-1186 (deepseek-harness), a DISTINCT repo; not a duplicate. Read from disk: README, SETUP header, docs/000-005,
+    docs/007 sections Persistence/Configuration reload/Reviewing/Open questions, all prompts/*.md headers plus work.md, worker.md, handoff*.md,
+    src/app/tools/executor.ts:78 (report enum). NOT read: src/ implementation beyond that line, tests/, docs/006 and 008, skills/. Retry/redelivery
+    claims are verified as documented contracts, not against code. Cited article "Exploring Super-agent Design: Towards a More Autonomous
+    Agent System" not locatable in two bounded searches 2026-11-01 (unverified-in-stage1, not evidence of nonexistence).'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: github.com/deepseek-ai/dsh-superagent-prototype @ main 6337fc823ce20251c8de8085948165c81aaa701e (2026-10-31), git clone --depth 1, retrieved 2026-11-01
+  reader_should_conclude: Cite as a documented design for a structured-report, store-first ticket executor; it is a pattern source for
+    the backlog churn dispatcher, not a component to adopt. No measured outcomes exist.
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: docs/001-domain.md:60 @ 6337fc8
+    quote: '| Inferring "waiting on a person" from a report''s free text | The classification needs structured facts; the Executor asks
+      through a structured field |'
+    quote_sha256: 9271291243eb989832bc1b4d5043137da7b6c90ce61eacf61160796f3d259ce1
+    source_revision: github.com/deepseek-ai/dsh-superagent-prototype @ main 6337fc823ce20251c8de8085948165c81aaa701e (2026-10-31), git clone --depth 1, retrieved 2026-11-01
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: docs/003-execution.md:7 @ 6337fc8
+    quote: Each open Ticket has one stage, determined by what it is waiting for. Read the table from top to bottom; the first matching
+      row wins.
+    quote_sha256: 7b083a94e73ce5d3b770898df4139cfa6f00e0b841576db208a927fa5cda0145
+    source_revision: github.com/deepseek-ai/dsh-superagent-prototype @ main 6337fc823ce20251c8de8085948165c81aaa701e (2026-10-31), git clone --depth 1, retrieved 2026-11-01
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: docs/003-execution.md:124 @ 6337fc8
+    quote: 'A passing failure of the model provider or the network, an HTTP 408, 429 or 5xx or a refused, reset or timed-out connection,
+      is tried again first, three times with a growing backoff: a launch runs again, and a worker whose turn failed is told to go on;
+      a failed prepare command is not tried again.'
+    quote_sha256: a7d39f9047b9b876b2b3839fc60e0b3ca72e81677aaa873e6839f6e832585872
+    source_revision: github.com/deepseek-ai/dsh-superagent-prototype @ main 6337fc823ce20251c8de8085948165c81aaa701e (2026-10-31), git clone --depth 1, retrieved 2026-11-01
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: docs/003-execution.md:152 @ 6337fc8
+    quote: A retry or a restart gives the new Assignment again the messages delivered to the Assignment it replaces that its Executor
+      Session did not take
+    quote_sha256: c53d50ce9b854e3057a4ff0c6756bc490137c4e7adf316d0b8721610bfa26973
+    source_revision: github.com/deepseek-ai/dsh-superagent-prototype @ main 6337fc823ce20251c8de8085948165c81aaa701e (2026-10-31), git clone --depth 1, retrieved 2026-11-01
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: docs/003-execution.md:155 @ 6337fc8
+    quote: What dsh-superagent does after a decision, such as relaying a candidate, a follow-up or a report to the main Session, launching
+      an Assignment or delivering an Input, is stored first and done afterwards.
+    quote_sha256: 49f330df19b7898fbe0465fec68df0f5cb89c7ac8f4fedcc27e83b7df5315123
+    source_revision: github.com/deepseek-ai/dsh-superagent-prototype @ main 6337fc823ce20251c8de8085948165c81aaa701e (2026-10-31), git clone --depth 1, retrieved 2026-11-01
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: docs/003-execution.md:59 @ 6337fc8
+    quote: The configured concurrency limit applies to these slots, with one extra slot for a person's message or a status request.
+    quote_sha256: 75514fb7c00b42e853ea8e503bdfd386e1ab6f24d7395e12a6ee3aa9df44bbeb
+    source_revision: github.com/deepseek-ai/dsh-superagent-prototype @ main 6337fc823ce20251c8de8085948165c81aaa701e (2026-10-31), git clone --depth 1, retrieved 2026-11-01
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: docs/003-execution.md:146 @ 6337fc8
+    quote: Running Assignments end with "host restarted" and new ones start with a recovery note that tells the Executor to check its
+      directory, git history and GitHub before repeating any outside action, oldest Ticket first.
+    quote_sha256: d199881905591d9a38386bc9898c8a0647d33cec89d70b022e3fed56b4c26199
+    source_revision: github.com/deepseek-ai/dsh-superagent-prototype @ main 6337fc823ce20251c8de8085948165c81aaa701e (2026-10-31), git clone --depth 1, retrieved 2026-11-01
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: prompts/work.md:45 @ 6337fc8
+    quote: When the work ends with nothing for a human to do (not reproduced, not a defect, a decision already tracked elsewhere, no request),
+      report dropped
+    quote_sha256: acdea85ea5725b367b2dbd9ab1d1e0b6f92c044b1bba2a5a93ce6662b40331d7
+    source_revision: github.com/deepseek-ai/dsh-superagent-prototype @ main 6337fc823ce20251c8de8085948165c81aaa701e (2026-10-31), git clone --depth 1, retrieved 2026-11-01
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 2
+    effect: narrowed
+    note: Verified as the documented contract in docs/003; the retry implementation in src/ was not read.
+  - claim_index: 3
+    effect: narrowed
+    note: Verified as documented contract only; implementation not read.
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed verbatim; the Report enum is also in src/app/tools/executor.ts:78.
+  depends_on: []
+  dive_corrections: '2026-11-01 (Stage 2, wave 1): repo dived from disk at 6337fc8 against scripts/coordination/handoff_sessions.py and backlog_gen.py
+    at origin/main c4cdeec05. Gap found in OUR dispatcher: dispatch_once clears pending_event on every turn end (handoff_sessions.py:711)
+    and backlog_gen treats grants/<id>.ended as done (backlog_gen.py:220), so a run-end filing turn that crashes before touching filing-done/<id>.FILED
+    is never re-delivered. Dive-surfaced source: the cited article "Exploring Super-agent Design" - declined: no locatable URL in two bounded
+    searches; reopen when DeepSeek publishes a link. Stage-2b waves run: 0 (nothing else surfaced).'
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'Dive complete; four churn-pipeline task lines (DSH-1..4) prepared in research/deep-dives/intake-2603-dsh-superagent-prototype.md and
+    await operator approval of the Stage-3 plan before any handoff write (proposed owner session-bus-thin-dispatcher.md; scripts/coordination/** merges also need operator ack per ratified D9).'

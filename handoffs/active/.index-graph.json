@@ -3939,7 +3939,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-01T21:27:32Z",
+  "generated_at": "2026-11-01T21:29:33Z",
   "nodes": [
     {
       "age_days": 94,
@@ -4990,7 +4990,7 @@
       "id": "EVL-47",
       "last_advanced": "2026-11-01",
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
-      "open": 362,
+      "open": 363,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -5495,13 +5495,13 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 82,
+      "closed": 83,
       "domain": "inference-research",
       "handoff": "gpu-serving-tie-in-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-01",
       "next_action": "Resolve GPU-ZOS-2.3 extension analysis contract; bind per-role recipes/resources for M4 and PB-QCOST-1",
-      "open": 35,
+      "open": 34,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
@@ -8690,7 +8690,7 @@
         "RTG-19",
         "RTG-36"
       ],
-      "closed": 75,
+      "closed": 77,
       "domain": "routing-and-optimization",
       "handoff": "kv-unified-stack-rollout.md",
       "id": "RTG-57",
