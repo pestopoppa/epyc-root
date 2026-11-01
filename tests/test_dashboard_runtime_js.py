@@ -121,7 +121,8 @@ def test_explicit_experimental_scope_reaches_reader_and_page(tmp_path, monkeypat
         assert "<dt>champion head</dt>" not in ident
         assert "not measurements of the selected live experiment" in rendered["text_by_id"]["opgate-scope"]
     else:
-        assert "<dt>champion head</dt>" in ident
+        label = "live run head" if payload.get("canonical_store_root") != payload.get("store_root") else "champion head"
+        assert f"<dt>{label}</dt>" in ident
         assert "<dt>experimental candidate head</dt>" not in ident
     # 7c1d96cb (2026-09-14) removed the champion summary card (`champ`,
     # `champ-badge`, `champ-scope`) and the progress tiles; the champion renderer

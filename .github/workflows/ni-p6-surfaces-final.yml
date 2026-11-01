@@ -1,0 +1,64 @@
+name: NI P6 final source primary verification
+on:
+  push:
+    branches: [codex/ni-p6-surfaces-final-20261101]
+permissions:
+  contents: read
+jobs:
+  primary:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTEST_ADDOPTS: ''
+      PYTEST_PLUGINS: ''
+      PYTHONHASHSEED: '0'
+      EPYC_INFERENCE_RESEARCH_ROOT: ${{ github.workspace }}/research
+    steps:
+      - name: Initialize retained outcome
+        run: mkdir -p evidence
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: candidate
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-inference-research
+          ref: 94b1dd64c163d915eb1347b118f57e44e981bf78
+          path: research
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Exact existing dependency closure and source identities
+        run: |
+          python -m venv "$RUNNER_TEMP/p6-venv"
+          "$RUNNER_TEMP/p6-venv/bin/python" -m pip install --only-binary=:all: --no-deps --require-hashes -r candidate/scripts/ci/vb_tuadv_native_requirements.txt > evidence/pip-install.log 2>&1
+          "$RUNNER_TEMP/p6-venv/bin/python" -m pip freeze --all > evidence/dependencies.txt
+          "$RUNNER_TEMP/p6-venv/bin/python" --version > evidence/python-version.txt
+          node --version > evidence/node-version.txt
+          git -C candidate rev-parse HEAD > evidence/candidate.sha
+          git -C research rev-parse HEAD > evidence/research.sha
+          git -C research ls-tree -r HEAD scripts/kernel_rnd/autokernel/loop > evidence/research-native-tree.txt
+          find candidate/dashboard candidate/tests -type f \( -name '*.py' -o -name '*.js' -o -name '*.html' -o -name '*.json' -o -name '*.db' \) -print0 | sort -z | xargs -0 sha256sum > evidence/source-sha256.txt
+          find research/scripts/kernel_rnd/autokernel/loop -type f -print0 | sort -z | xargs -0 sha256sum > evidence/research-native-source-sha256.txt
+          sha256sum candidate/scripts/ci/vb_tuadv_native_requirements.txt candidate/.github/workflows/ni-p6-surfaces-final.yml > evidence/recipe-sha256.txt
+          printf '%s\n' 'Broad original context: run41294664497 at b7b1b6409423337c958a5d9722ebc9688a648072; baseline7011d23a76a28cb71860a29d00c442d3ed1d25db; no new failure or skipped common test. This final delta changes only lane timestamp ordering, its tests and this primary-only recipe.' > evidence/broad-context.txt
+      - name: Required contracts and actual surviving page renderers
+        run: |
+          set +e
+          cd candidate
+          "$RUNNER_TEMP/p6-venv/bin/python" -m pytest -q tests/test_dashboard_activity.py tests/test_dashboard_panels.py tests/test_dashboard_panels_redteam.py tests/test_dashboard_loop_surface.py tests/test_dashboard_kernel_api_retirement.py tests/test_dashboard_kernel_rnd_merge.py tests/test_dashboard_kernel_freshness_envelopes.py tests/test_dashboard_operator_gates.py tests/test_dashboard_runtime_js.py tests/test_dashboard_progression.py tests/test_dashboard_authoring_refusal_visible.py tests/test_dashboard_champion_card.py tests/test_dashboard_controller_state_contract.py tests/test_dashboard_r21_4_fixtures.py tests/test_dashboard_knowledge_card.py tests/test_production_kernel_set.py tests/test_dashboard_serial_loop.py tests/test_dashboard_serial_completed.py tests/test_dashboard_terminal_loop.py tests/test_dashboard_runtime_progress.py tests/test_dashboard_runtime_observation.py -o junit_logging=all --junitxml=../evidence/primary.junit.xml > ../evidence/primary.log 2>&1
+          rc=$?
+          printf '%s\n' "$rc" > ../evidence/primary.exit
+          tail -60 ../evidence/primary.log
+          exit "$rc"
+      - name: Preserve original primary evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni-p6-final-original-${{ github.run_id }}-${{ github.run_attempt }}
+          path: evidence/
+          if-no-files-found: error

@@ -1,7 +1,7 @@
 """The production kernel SET projection — three kernels, four binaries.
 
 KRD-AUDIT-20260812 (`mainC`, for `inference`). The freeze covers a kernel SET —
-llama.cpp `production-consolidated-v9` plus whisper.cpp and qwentts.cpp at
+llama.cpp `production-consolidated-v10` plus whisper.cpp and qwentts.cpp at
 `production-speech-v1` — and the dashboard projected only llama. Measured on the live
 surface before the change: `whisper`, `qwentts`, `speech` and `ggml` appeared ZERO
 times in `autokernel_current_state()`. Two of three frozen kernels could drift, be
@@ -12,6 +12,7 @@ about, and the assertion is that the surface goes loud. A panel that cannot go r
 the incident-8 shape (a dead loop rendering as a clean, empty, trusted page).
 """
 from __future__ import annotations
+from dashboard import kernel_contract as legacy, kernel_identity as KI
 
 import json
 import sys
@@ -24,7 +25,7 @@ sys.path.insert(0, str(REPO / "dashboard"))
 import server as S  # noqa: E402
 
 SPEECH = REPO / "artifacts/operator/ratify_speech_kernel_freeze_20260731.json"
-V9 = REPO / "artifacts/operator/ratify_v9_final_freeze_20260811.json"
+V10 = REPO / "artifacts/operator/ratify_v10_final_freeze_20260922.json"
 
 
 def _speech_with(tmp_path: Path, mutate) -> Path:
@@ -37,7 +38,7 @@ def _speech_with(tmp_path: Path, mutate) -> Path:
 
 def test_all_three_kernels_are_projected() -> None:
     """The gap this audit was commissioned to find: two thirds of the freeze missing."""
-    result = S.production_kernel_set()
+    result = KI.production_kernel_set()
     titles = {m["title"] for m in result["members"]}
     assert len(result["members"]) == 3
     assert any("whisper" in t for t in titles) and any("qwentts" in t for t in titles)
@@ -57,14 +58,14 @@ def test_llama_identity_is_NOT_read_from_the_speech_attestation(tmp_path: Path) 
         data["kernels"]["llama_cpp"]["branch"] = "production-consolidated-v8"
         data["kernels"]["llama_cpp"]["commit"] = "67a433bf45a8a091d83b4ea0b32ff0735fd51800"
 
-    result = S.production_kernel_set(speech_attestation_path=_speech_with(tmp_path, wreck))
+    result = KI.production_kernel_set(speech_attestation_path=_speech_with(tmp_path, wreck))
     llama = next(m for m in result["members"] if m["key"] == "llama_cpp")
-    assert llama["branch"] == "production-consolidated-v9"
+    assert llama["branch"] == "production-consolidated-v10"
     assert llama["matches_attestation"] is True
 
 
 def test_a_missing_speech_attestation_is_loud_and_names_what_is_unproven(tmp_path) -> None:
-    result = S.production_kernel_set(speech_attestation_path=tmp_path / "absent.json")
+    result = KI.production_kernel_set(speech_attestation_path=tmp_path / "absent.json")
     assert result["intact"] is False
     assert result["alarms"]
     assert "whisper" in result["speech"]["error"] and "qwentts" in result["speech"]["error"]
@@ -72,7 +73,7 @@ def test_a_missing_speech_attestation_is_loud_and_names_what_is_unproven(tmp_pat
 
 def test_binary_drift_is_reported_as_drift_not_as_absence(tmp_path: Path) -> None:
     """A rebuilt frozen binary is the thing the digests exist to catch."""
-    result = S.production_kernel_set(
+    result = KI.production_kernel_set(
         speech_attestation_path=_speech_with(
             tmp_path, lambda d: d["kernels"]["whisper_cpp"].update(binary_sha256="0" * 64)))
     assert result["intact"] is False
@@ -80,7 +81,7 @@ def test_binary_drift_is_reported_as_drift_not_as_absence(tmp_path: Path) -> Non
 
 
 def test_a_tree_at_the_wrong_commit_is_reported(tmp_path: Path) -> None:
-    result = S.production_kernel_set(
+    result = KI.production_kernel_set(
         speech_attestation_path=_speech_with(
             tmp_path, lambda d: d["kernels"]["qwentts_cpp"].update(commit="dead" * 10)))
     assert result["intact"] is False
@@ -101,13 +102,13 @@ def test_untracked_content_in_a_frozen_tree_is_a_distinct_alarm(tmp_path: Path,
     subprocess.run(["git", "-C", str(repo), "commit", "-q", "-m", "freeze"],
                    check=True, env=env)
     (repo / "untracked").write_text("do not delete\n", encoding="utf-8")
-    state = S._working_tree_state(repo)
+    state = KI._working_tree_state(repo)
     assert state["clean"] is False and state["dirty_count"] == 1
     assert state["dirty_paths"] == ["?? untracked"]
 
 
 def test_an_attested_binary_missing_from_disk_is_reported(tmp_path: Path) -> None:
-    result = S.production_kernel_set(
+    result = KI.production_kernel_set(
         speech_attestation_path=_speech_with(
             tmp_path, lambda d: d["kernels"]["whisper_cpp"].update(binary="/nonexistent/x")))
     assert result["intact"] is False
@@ -116,14 +117,14 @@ def test_an_attested_binary_missing_from_disk_is_reported(tmp_path: Path) -> Non
 
 def test_unverifiable_is_NOT_the_same_as_matching(tmp_path: Path) -> None:
     """Three-valued on purpose: a digest we could not compute must never read as a pass."""
-    identity = S._binary_identity("probe", tmp_path / "nope", "a" * 64)
+    identity = KI._binary_identity("probe", tmp_path / "nope", "a" * 64)
     assert identity["matches"] is None and identity["present"] is False
     assert identity["error"]
 
 
 def test_a_missing_llama_attestation_carries_a_REASON_not_just_a_blank() -> None:
     """D-1 residual. The render was made loud earlier; the reason string was still None."""
-    result = S._production_kernel_summary(Path("/nonexistent/ratify.json"),
+    result = KI._production_kernel_summary(Path("/nonexistent/ratify.json"),
                                           Path("/mnt/raid0/llm/llama.cpp"))
     assert result["available"] is False
     assert result["error"] and "not exported" in result["error"]
@@ -131,16 +132,16 @@ def test_a_missing_llama_attestation_carries_a_REASON_not_just_a_blank() -> None
 
 def test_the_singular_llama_view_is_preserved_for_existing_consumers() -> None:
     """The brief asked for no duplicate panels and no broken compatibility."""
-    state = S.autokernel_current_state()
+    state = legacy.autokernel_current_state()
     assert "production_kernel" in state and "production_kernel_set" in state
-    assert state["production_kernel"]["branch"] == "production-consolidated-v9"
+    assert state["production_kernel"]["branch"] == "production-consolidated-v10"
 
 
 @pytest.mark.parametrize("field", ["ggml", "branch", "head"])
 def test_each_speech_kernel_projects_the_identity_fields_that_must_match(field) -> None:
     """ggml generation is load-bearing: the three trees run three generations, and a
     binary inheriting another tree's ggml runs silently wrong (CLAUDE.md)."""
-    speech = S._speech_kernel_summary()
+    speech = KI._speech_kernel_summary()
     assert speech["available"] is True
     for kernel in speech["kernels"]:
         assert kernel[field], f"{kernel['key']} is missing {field}"
@@ -154,7 +155,7 @@ def test_the_panel_declares_its_own_receipt_coverage() -> None:
     intermediate, so the repair is not "render them all" — it is that a reader acts on
     what the page implies, and silence implied completeness.
     """
-    coverage = S.autokernel_current_state()["receipt_coverage"]
+    coverage = legacy.autokernel_current_state()["receipt_coverage"]
     assert coverage["projected_schemas"], "coverage must enumerate what it shows"
     assert coverage["probe_root"]
     assert "CURATED" in coverage["note"] and "not absence of evidence" in coverage["note"]
@@ -176,10 +177,9 @@ def test_every_contract_section_reaches_the_page_no_allowlist() -> None:
     those two fell through to the bare word "reported", discarding their content.
     """
     import json as _json
-    payload = S.legacy_kernel_data()
-    if (payload.get("_render") or {}).get("mode") != "contract_v2":
-        pytest.skip("live contract is not v2 on this host")
-    contract = _json.loads(Path(S.KERNEL_DASHBOARD_JSON).read_text(encoding="utf-8"))
+    payload = legacy.legacy_kernel_data()
+    assert payload["_render"]["mode"] == "contract_v2"
+    contract = _json.loads(Path(legacy.KERNEL_DASHBOARD_JSON).read_text(encoding="utf-8"))
     assert set(payload["sections"]) == set(contract["sections"]), (
         "the page must receive every section the producer exports — a filtered view "
         "would make a newly added section invisible by construction")
@@ -187,9 +187,8 @@ def test_every_contract_section_reaches_the_page_no_allowlist() -> None:
 
 def test_not_reported_sections_are_flagged_not_silently_empty() -> None:
     """`not_reported` is a VALUE, not an omission — the incident-8 distinction."""
-    payload = S.legacy_kernel_data()
-    if (payload.get("_render") or {}).get("mode") != "contract_v2":
-        pytest.skip("live contract is not v2 on this host")
+    payload = legacy.legacy_kernel_data()
+    assert payload["_render"]["mode"] == "contract_v2"
     unreported = set((payload.get("_freshness") or {}).get("unreported") or ())
     silent = {n for n, s in payload["sections"].items()
               if isinstance(s, dict) and s.get("status") == "not_reported"}
@@ -213,7 +212,7 @@ def test_all_four_stable_links_are_projected_and_resolved() -> None:
     on this host. Projecting the brief's names rather than the disk's would have
     rendered four permanently-absent links — a panel that is loud about nothing.
     """
-    links = S._stable_link_projection()
+    links = KI._stable_link_projection()
     assert {l["name"] for l in links} == {"cpu", "gpu", "stt", "tts"}
     for link in links:
         assert link["present"] and link["matches_expected"], link
@@ -222,13 +221,13 @@ def test_all_four_stable_links_are_projected_and_resolved() -> None:
 
 def test_a_repointed_stable_link_is_loud(monkeypatch, tmp_path: Path) -> None:
     """The failure a digest check cannot see: right binary, wrong path to it."""
-    bogus = dict(S.PRODUCTION_STABLE_LINKS)
+    bogus = dict(KI.PRODUCTION_STABLE_LINKS)
     bogus["stt"] = ("/mnt/raid0/llm/whisper.cpp/build/bin", "whisper-server")
-    monkeypatch.setattr(S, "PRODUCTION_STABLE_LINK_ROOT", tmp_path)  # links absent
-    links = S._stable_link_projection()
+    monkeypatch.setattr(KI, "PRODUCTION_STABLE_LINK_ROOT", tmp_path / "absent-links")  # links absent
+    links = KI._stable_link_projection()
     assert all(l["present"] is False for l in links)
     assert all("absent or dangling" in (l["error"] or "") for l in links)
-    result = S.production_kernel_set()
+    result = KI.production_kernel_set()
     assert result["intact"] is False
     assert any("stable link" in a for a in result["alarms"])
 
@@ -237,18 +236,17 @@ def test_every_binary_resolves_its_ggml_inside_its_own_tree() -> None:
     """The live invariant. Includes the two llama binaries, whose ggml arrives one
     hop away through libllama-server-impl.so — stopping at the direct NEEDED set
     would report 'no ggml libraries' and call that a pass."""
-    for name, (directory, binary) in S.PRODUCTION_STABLE_LINKS.items():
-        root = next(a for a in ("/mnt/raid0/llm/llama.cpp", "/mnt/raid0/llm/whisper.cpp",
-                                "/mnt/raid0/llm/qwentts.cpp") if directory.startswith(a))
-        evidence = S._linkage_evidence(Path(directory) / binary, Path(root))
+    for name, (directory, binary) in KI.production_link_targets().items():
+        root = directory
+        evidence = KI._linkage_evidence(Path(directory) / binary, Path(root))
         assert evidence["ggml_libs"], f"{name}: found no ggml family at all"
         assert evidence["verified"] is True, f"{name}: {evidence.get('foreign')}"
 
 
 def test_foreign_tree_ggml_is_reported_as_foreign(tmp_path: Path) -> None:
     """Mutation: verify against the WRONG tree root and the same libs become foreign."""
-    evidence = S._linkage_evidence(
-        Path("/mnt/raid0/llm/whisper.cpp/build/bin/whisper-server"), tmp_path)
+    evidence = KI._linkage_evidence(
+        Path(KI.production_link_targets()["stt"][0]) / "whisper-server", tmp_path / "wrong-tree")
     assert evidence["ggml_libs"]
     assert evidence["verified"] is False
     assert evidence["foreign"], "libraries outside the expected tree must be listed"
@@ -257,24 +255,24 @@ def test_foreign_tree_ggml_is_reported_as_foreign(tmp_path: Path) -> None:
 def test_a_ggml_bearing_LD_LIBRARY_PATH_is_loud(monkeypatch) -> None:
     """INC-20260731: LD_LIBRARY_PATH is consulted BEFORE RUNPATH, so one ggml-bearing
     entry defeats every tree-local guarantee the binaries carry."""
-    monkeypatch.setenv("LD_LIBRARY_PATH", "/mnt/raid0/llm/llama.cpp/build/bin")
-    ambient = S._ambient_foreign_ggml_dirs()
+    monkeypatch.setenv("LD_LIBRARY_PATH", str(KI.PRODUCTION_LLAMA_BINARIES["cpu"].parent))
+    ambient = KI._ambient_foreign_ggml_dirs()
     assert ambient["clean"] is False and ambient["ggml_bearing_entries"]
-    assert S.production_kernel_set()["intact"] is False
+    assert KI.production_kernel_set()["intact"] is False
 
 
 def test_a_clean_environment_reports_clean(monkeypatch) -> None:
     """The compliant path — this must not be a check that can only ever fail."""
     monkeypatch.setenv("LD_LIBRARY_PATH", "/opt/rocm/lib")
-    assert S._ambient_foreign_ggml_dirs()["clean"] is True
+    assert KI._ambient_foreign_ggml_dirs()["clean"] is True
 
 
 def test_linkage_is_read_WITHOUT_executing_the_binary() -> None:
     """The brief forbids executing the production binary, so the method is recorded
     on the wire: readelf, not ldd. The weaker coverage is stated, not hidden."""
-    evidence = S._linkage_evidence(
-        Path("/mnt/raid0/llm/qwentts.cpp/build/tts-server"),
-        Path("/mnt/raid0/llm/qwentts.cpp"))
+    evidence = KI._linkage_evidence(
+        Path(KI.production_link_targets()["tts"][0]) / "tts-server",
+        Path(KI.production_link_targets()["tts"][0]))
     assert "readelf" in evidence["method"] and "non-executing" in evidence["method"]
     assert "dlopen" in evidence["method"]
 
@@ -285,14 +283,105 @@ def test_wrong_ggml_generation_is_loud(tmp_path: Path) -> None:
     (tree / "CMakeLists.txt").write_text(
         "set(GGML_VERSION_MAJOR 0)\nset(GGML_VERSION_MINOR 17)\n"
         "set(GGML_VERSION_PATCH 0)\n", encoding="utf-8")
-    result = S._ggml_generation_identity(tree.parent, "0.18.0")
+    result = KI._ggml_generation_identity(tree.parent, "0.18.0")
     assert result["matches"] is False
     assert "GENERATION DRIFT" in result["error"]
 
 
 def test_unattested_llama_ggml_generation_is_unverified() -> None:
-    result = S.production_kernel_set()
+    result = KI.production_kernel_set()
     llama = next(m for m in result["members"] if m["key"] == "llama_cpp")
     assert llama["ggml_generation"]["observed"] == "0.16.0"
     assert llama["ggml_generation"]["matches"] is None
     assert any("ggml generation unverified" in alarm for alarm in result["alarms"])
+
+
+def test_missing_expected_and_observed_identity_cannot_match(tmp_path):
+    incomplete = tmp_path / "incomplete-freeze.json"
+    incomplete.write_text("{}")
+    report = KI._production_kernel_summary(incomplete, tmp_path / "absent-tree")
+    assert report["checkout"]["matches_attestation"] is None
+    assert report["checkout"]["error"]
+
+
+@pytest.fixture(autouse=True)
+def _frozen_set_fixture(tmp_path, monkeypatch):
+    """Original synthetic attestations and passive ELF output; no production reads."""
+    import hashlib
+    import subprocess
+    from datetime import datetime, timezone
+    real_run = subprocess.run
+    members = {}
+    stable = tmp_path / "kernels/production"
+    stable.mkdir(parents=True)
+    for slot, branch, version, binary_name in (
+            ("cpu", "production-consolidated-v10", "0.16.0", "llama-server"),
+            ("stt", "production-speech-v1", "0.18.0", "whisper-server"),
+            ("tts", "production-speech-v1", "0.17.0", "tts-server")):
+        tree = tmp_path / slot
+        tree.mkdir()
+        (tree / "ggml").mkdir()
+        major, minor, patch = version.split(".")
+        (tree / "ggml/CMakeLists.txt").write_text(
+            f"set(GGML_VERSION_MAJOR {major})\nset(GGML_VERSION_MINOR {minor})\nset(GGML_VERSION_PATCH {patch})\n")
+        real_run(["git", "init", "-q", "-b", branch, str(tree)], check=True)
+        real_run(["git", "-C", str(tree), "add", "ggml"], check=True)
+        real_run(["git", "-C", str(tree), "-c", "user.name=test", "-c",
+                  "user.email=test@example.invalid", "commit", "-qm", "fixture"], check=True)
+        commit = real_run(["git", "-C", str(tree), "rev-parse", "HEAD"],
+                          capture_output=True, text=True, check=True).stdout.strip()
+        out = tmp_path / "kernels/builds" / slot / "bin"
+        out.mkdir(parents=True)
+        binary = out / binary_name
+        binary.write_bytes(f"unexecutable synthetic {slot}".encode())
+        (out / "libggml.so").write_bytes(b"synthetic dynamic dependency")
+        (stable / slot).symlink_to(out, target_is_directory=True)
+        members[slot] = dict(tree=str(tree), branch=branch, head=commit,
+                             ggml=version, binary=str(binary),
+                             binary_sha256=hashlib.sha256(binary.read_bytes()).hexdigest())
+    gpu = tmp_path / "kernels/builds/gpu/bin"
+    gpu.mkdir(parents=True)
+    (gpu / "llama-server").write_bytes(b"synthetic hip")
+    (gpu / "libggml.so").write_bytes(b"synthetic dependency")
+    (stable / "gpu").symlink_to(gpu, target_is_directory=True)
+    manifest = json.loads(V10.read_text())
+    manifest.update(production_head=members["cpu"]["head"], production_binary_sha256={
+        "cpu": members["cpu"]["binary_sha256"],
+        "hip": hashlib.sha256((gpu / "llama-server").read_bytes()).hexdigest()},
+        binary_location={"cpu": f"{stable}/cpu -> builds/cpu/bin",
+                         "gpu": f"{stable}/gpu -> builds/gpu/bin"})
+    ratification = tmp_path / "llama-freeze.json"
+    ratification.write_text(json.dumps(manifest))
+    speech = json.loads((REPO / "artifacts/operator/ratify_speech_kernel_freeze_20260731.json").read_text())
+    for key, slot in (("whisper_cpp", "stt"), ("qwentts_cpp", "tts")):
+        speech["kernels"][key].update({**members[slot], "commit": members[slot]["head"]})
+    speech_path = tmp_path / "speech-freeze.json"
+    speech_path.write_text(json.dumps(speech))
+    monkeypatch.setattr(sys.modules[__name__], "SPEECH", speech_path)
+    for module in (KI, legacy):
+        monkeypatch.setattr(module, "PRODUCTION_KERNEL_ATTESTATION", ratification)
+        monkeypatch.setattr(module, "PRODUCTION_KERNEL_REPO", Path(members["cpu"]["tree"]))
+        monkeypatch.setattr(module, "SPEECH_KERNEL_ATTESTATION", speech_path)
+    monkeypatch.setattr(KI, "PRODUCTION_LLAMA_BINARIES", {
+        "cpu": Path(members["cpu"]["binary"]), "hip": gpu / "llama-server"})
+    monkeypatch.setattr(KI, "PRODUCTION_STABLE_LINK_ROOT", stable)
+    monkeypatch.setattr(KI, "PRODUCTION_STABLE_LINKS", {
+        "cpu": (None, "llama-server"), "gpu": (None, "llama-server"),
+        "stt": (str(Path(members["stt"]["binary"]).parent), "whisper-server"),
+        "tts": (str(Path(members["tts"]["binary"]).parent), "tts-server")})
+    monkeypatch.delenv("LD_LIBRARY_PATH", raising=False)
+    def passive_elf(args, **kwargs):
+        if args[0] == "readelf":
+            return subprocess.CompletedProcess(args, 0,
+                " (NEEDED) Shared library: [libggml.so]\n (RUNPATH) Library runpath: [$ORIGIN]\n", "")
+        return real_run(args, **kwargs)
+    monkeypatch.setattr(subprocess, "run", passive_elf)
+    terminal = {"schema": legacy.KERNEL_SCHEMA_V2, "contract_version": 2,
+                "produced_at": datetime.now(timezone.utc).isoformat(),
+                "sections": {key: {"status": "not_reported", "as_of": None}
+                             for key in ("campaign", "champion", "headroom", "release_package",
+                                         "backend_standing", "resource_claims", "blocking_conditions",
+                                         "new_future_section")}}
+    export = tmp_path / "terminal.json"
+    export.write_text(json.dumps(terminal))
+    monkeypatch.setattr(legacy, "KERNEL_DASHBOARD_JSON", export)

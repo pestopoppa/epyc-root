@@ -18,9 +18,9 @@
   either: an archive page is still a navigable surface rendering stale numbers.
   So /kernel is now a 301 to here, its markup is deleted, and every producer
   behind it that was dead (v37 controller; kernel_dashboard.json at 16.8 d) or
-  frozen (kernel_progression.json: file rewritten, observed_through 16.7 d and
-  not advancing) went with it. History lives in git, in the handoffs and in the
-  artifacts — not on a route a human can land on and misread.
+  frozen went with it. The optional discovery projection is now shown separately
+  below: observed_through dates its historical observations, never file refresh
+  time, and its own banner names missing, malformed and stale data.
 
   ONE producer from that page was live and moved here rather than being dropped:
   the operator-gated champion bundle (+48.9%). It keeps its OWN four-valued
@@ -344,9 +344,6 @@
 
 <main>
   <div id="banner"></div>
-  <div id="operator-attention" class="operator-attention unknown" role="status" aria-live="polite">
-    R24-8 alarm state UNKNOWN — awaiting a loop status report.
-  </div>
 
   <!-- The page opens with THE headline (operator note, 2026-08-31: no scope
        lecture above it — the /kernel-retirement pointer lives in one line in
@@ -372,6 +369,10 @@
       &middot; <a href="https://github.com/pestopoppa/epyc-root/blob/main/docs/design/inf70-close-out-20260908/CHAMPION-FINAL.md">validation and close-out</a>
     </p>
   </section>
+
+  <div id="operator-attention" class="operator-attention unknown" role="status" aria-live="polite">
+    R24-8 alarm state UNKNOWN — awaiting a loop status report.
+  </div>
 
   <div class="trajectory-support">
     <section id="sec-capabilities"><h2>Champion Capabilities
@@ -491,6 +492,10 @@
   <section id="sec-ident">
     <h2>Identity &amp; gate</h2>
     <div class="pad"><dl class="kv" id="ident"></dl></div>
+  </section>
+  <section>
+    <h2>Discovery funnel and lane observations</h2>
+    <div id="discovery-progression"><div class="empty">Waiting for the independent discovery projection.</div></div>
   </section>
 </main>
 
@@ -2627,6 +2632,7 @@ function renderIdentity(d){
       ["anchor commit", short(L.anchor_commit)],
       [experimental ? "experimental candidate head" : separate ? "live run head" : "champion head",
        short(L.champion_head)],
+      ["iterations (selected report)", `${L.iterations_done ?? "unknown"} / ${L.iterations_planned ?? "unknown"}`],
       ["surface", `${L.surface} · ${L.pairs} pairs`],
       ["noise floor", num(L.noise_floor_pct) ? L.noise_floor_pct.toFixed(3) + "%" : "—"],
       ["generated at", L.generated_at]);
@@ -2879,6 +2885,53 @@ function renderRuntimePreparation(d){
   host.innerHTML=h;
 }
 
+function renderDiscoveryProgression(d){
+  const host=document.getElementById("discovery-progression");
+  const view=d.progression||{state:"absent",data:null};
+  const state=view.state||"unknown", body=view.data;
+  const age=view._freshness?.age_s;
+  const ageText=Number.isFinite(age)?`${Math.round(age/86400)} days old`:"age unknown";
+  let html=`<div class="pad"><strong class="${state==="fresh"?"muted":"warn"}">`+
+    `${esc(state.toUpperCase())}</strong> · observation horizon ${esc(ageText)}. `+
+    `Historical discovery observations; no promotion authority.</div>`;
+  if(!body){
+    host.innerHTML=html+`<div class="empty">${esc(view.error||"No discovery producer reported.")}</div>`;
+    return;
+  }
+  if(state!=="fresh") html+=`<div class="pad warn">LAST OBSERVATIONS — current lane standing is unproven.</div>`;
+  const rows=Array.isArray(body.candidates)?body.candidates:[];
+  const funnel=body.funnel||{};
+  html+=`<div class="pad" data-discovery-funnel="true">`+
+    ["candidate","strict_keep","champion","promotable"].map(key=>
+      `${esc(key.replaceAll("_"," "))}: <strong>${esc(funnel[key]??"unknown")}</strong>`).join(" · ")+`</div>`;
+  for(const lane of ["CPU","GPU"]){
+    const laneRows=rows.filter(row=>row.lane===lane);
+    // A lane hero is the latest observation, not a ranking across incomparable workloads.
+    const observedTime=row=>{
+      const value=typeof row.observed_at==="string" && /(?:Z|[+-]\d{2}:\d{2})$/.test(row.observed_at)
+        ? Date.parse(row.observed_at) : NaN;
+      return Number.isFinite(value)?value:-Infinity;
+    };
+    const latest=[...laneRows].sort((a,b)=>observedTime(b)-observedTime(a))[0];
+    const label=latest && !Number.isFinite(observedTime(latest))?"observation (time unknown)":"latest observation";
+    html+=`<div class="pad" data-discovery-lane="${lane}"><strong>${lane} ${label}</strong>: `;
+    html+=latest?`${esc(latest.candidate)} · ${esc(latest.workload||"workload unknown")} · `+
+      `${esc(latest.stage)} · ${esc((latest.effect_fraction*100).toFixed(2))}% (higher better)`:
+      `no observation reported`;
+    html+=`</div>`;
+  }
+  html+=rows.length?`<table><thead><tr><th>Lane / candidate</th><th>Workload</th><th>Stage</th>`+
+    `<th>Observed effect</th><th>Evidence</th></tr></thead><tbody>`+rows.map(row=>`<tr>`+
+    `<td>${esc(row.lane)} / ${esc(row.candidate)}</td><td>${esc(row.workload||"unknown")}</td>`+
+    `<td>${esc(row.stage)}</td><td>${esc((row.effect_fraction*100).toFixed(2))}%</td>`+
+    `<td>${esc((row.evidence||[]).map(item=>item.path||"unlocated").join("; "))}</td></tr>`).join("")+`</tbody></table>`:
+    `<div class="empty">The producer reported no candidate observations.</div>`;
+  const queued=Array.isArray(body.unexplored)?body.unexplored:[];
+  html+=`<div class="pad">Unexplored hypotheses: ${esc(queued.length)}`+
+    queued.map(row=>`<div>${esc(row.lane)} · ${esc(row.hypothesis||"unnamed")} · ${esc(row.state||"unknown")}</div>`).join("")+`</div>`;
+  host.innerHTML=html;
+}
+
 function render(d){
   const L = d.loop;
   const retained=retainedSerialTarget(d);
@@ -2913,6 +2966,7 @@ function render(d){
   // Third and fourth producers, rendered unconditionally for the same reason.
   // None of the four dates any of the others.
   renderOperatorGate(d);
+  renderDiscoveryProgression(d);
   renderKnowledge(d);
   renderCampaign(d);
   renderDispositions(detail);
@@ -2924,6 +2978,8 @@ function render(d){
 
 function renderFetchFailure(err){
   serialView=null;
+  document.getElementById("discovery-progression").innerHTML =
+    '<div class="warn">UNKNOWN — hub unreachable; discovery observations cannot be refreshed.</div>';
   document.getElementById("trajectory").innerHTML =
     '<div class="warn"><strong>TRAJECTORY UNKNOWN</strong> — hub unreachable; the last plotted evidence was cleared.</div>';
   document.getElementById("champion-capabilities").innerHTML =

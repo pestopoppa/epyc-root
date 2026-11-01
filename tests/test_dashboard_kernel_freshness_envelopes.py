@@ -21,10 +21,10 @@ producer behind it was dead or frozen — ``kernel_progression.json`` among them
 (the file was still being rewritten while its ``observed_through`` horizon stood
 16.7 d back and was not advancing). The funnel's render assertions are therefore
 gone from this file: they asserted against markup that no longer exists. The
-reader ``server._read_kernel_progression`` remains an offline helper. It no
-longer serves ``/api/kernel``; nothing here covers its rendering any more,
-because nothing renders it. That reduction in coverage is recorded rather than
-quietly absorbed.
+reader in ``kernel_contract`` remains an offline helper. The surviving page now
+renders the existing progression export through ``kernel_progression`` with its
+own horizon and envelope; ``test_dashboard_progression.py`` exercises the actual
+funnel and lane markup, including negative, malformed and stale states.
 
 GAP A MOVED. The operator-gated bundle was the ONE live producer on that page, so
 its card moved to ``/loop`` and the render assertions below moved with it — same
@@ -78,7 +78,7 @@ REPO = Path(__file__).resolve().parents[1]
 PAGE = REPO / "dashboard/static/loop.html"
 HARNESS = Path(__file__).resolve().parent / "js" / "render_harness.js"
 
-REAL_BUNDLE = Path("/mnt/raid0/llm/autokernel/surface/operator_gate_bundle.json")
+REAL_BUNDLE = REPO / "tests/fixtures/autokernel_producers/operator_gate_bundle.json"
 
 sys.path.insert(0, str(REPO))
 from dashboard import loop_status, server
@@ -100,7 +100,7 @@ FIVE_STATES = {"relevant", "superseded", "unverifiable", "absent", "malformed"}
 
 def _real(path: Path) -> bytes:
     if not path.is_file():
-        pytest.skip(f"no emitted record at {path}; refusing to invent one")
+        raise AssertionError(f"missing recorded original producer bundle: {path}")
     return path.read_bytes()
 
 
@@ -209,7 +209,14 @@ def bundle_at(tmp_path, monkeypatch, subject):
     place.path = target
     place.subject = subject
     place.effect = json.loads(raw)["headline"]["effect_fraction"]
-    place.display_pct = f"{place.effect * 100:.1f}%"
+    # Expected visible cells come from the original native gate fields, not the
+    # old selected-reference headline that the current vector deliberately avoids.
+    place.references = [f"{row['delta_pct']:.3f}%"
+                        for gate in json.loads(raw)["gates"]
+                        for group in ("surfaces", "points")
+                        for row in gate.get(group, []) if "delta_pct" in row]
+    assert place.references
+    place.display_pct = place.references[0]
     return place
 
 
@@ -480,7 +487,7 @@ def _render(payload: dict, fn: str, tmp_path: Path) -> dict:
     return out
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def loop_body() -> dict:
     """The REAL ``/api/loop`` payload — the one ``render`` is fed in a browser.
 
@@ -555,10 +562,9 @@ def test_a_superseded_bundle_renders_a_loud_verdict_beside_the_number(
     assert "no longer in the champion lineage" in _text(card)
     assert "SUPERSEDED" in card.split(bundle_at.display_pct)[0], (
         "the verdict must precede the number, not trail it")
-    # And it must not be painted as a live gain. `og-num dated` is the amber
-    # rendering; `og-num pos` is the green one.
-    assert "og-num dated" in card and "og-num pos" not in card, (
-        "a figure whose subject moved was painted as a current gain")
+    assert 'og-verdict superseded' in card and 'subject: superseded' in card
+    assert "og-num pos" not in card
+    assert all(reference in card for reference in bundle_at.references)
 
 
 @pytestmark_node
@@ -574,7 +580,8 @@ def test_a_promoted_past_bundle_renders_the_loud_verdict_too(
     card = _opgate(payload, tmp_path)
     assert "SUPERSEDED" in card
     assert "promoted past" in _text(card)
-    assert "og-num dated" in card and "og-num pos" not in card
+    assert 'og-verdict superseded' in card and 'subject: superseded' in card
+    assert "og-num pos" not in card
 
 
 @pytestmark_node
@@ -591,8 +598,9 @@ def test_an_unverifiable_subject_says_so_and_renders_no_calm_state(
     assert "UNVERIFIABLE" in card
     assert "cannot be established" in _text(card)
     assert "STALE" not in card
-    assert "og-num dated" in card and "og-num pos" not in card, (
-        "an unverifiable figure was painted as a current gain")
+    assert 'og-verdict unverifiable' in card and 'subject: unverifiable' in card
+    assert "og-num pos" not in card
+    assert all(reference in card for reference in bundle_at.references)
 
 
 @pytestmark_node
@@ -613,10 +621,10 @@ def test_a_relevant_OLD_bundle_renders_CALM(bundle_at, loop_body, tmp_path):
         assert alarm not in card, f"a calm state rendered the {alarm} alarm"
     assert "og-verdict" not in card, "a banner rendered over the healthy state"
     text = _text(card)
-    assert "measured 3.1d ago" in text
+    assert re.search(r"measured 3\.1\s*d ago", text)
     assert "no newer serving measurement exists" in text
-    assert "og-num pos" in card and "og-num dated" not in card, (
-        "age alone ambered a relevant figure")
+    assert "subject: relevant" in card and "og-num dated" not in card
+    assert all(reference in card for reference in bundle_at.references)
     # The badge is the neutral evidence pill, not the stale/amber style.
     badge = out["text_by_id"].get("opgate-badgetxt") or ""
     assert badge.startswith("evidence ·"), badge
@@ -632,8 +640,9 @@ def test_an_EXTREME_age_renders_advice_and_stays_calm(
     assert "consider re-measuring" in _text(card)
     for alarm in ("STALE", "SUPERSEDED", "UNVERIFIABLE"):
         assert alarm not in card
-    assert "og-num pos" in card and "og-num dated" not in card, (
-        "the >30d advisory coloured the number amber on its own")
+    assert "subject: relevant" in card and "og-verdict" not in card
+    assert "og-num dated" not in card
+    assert all(reference in card for reference in bundle_at.references)
 
 
 @pytestmark_node

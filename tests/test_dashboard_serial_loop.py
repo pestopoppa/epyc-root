@@ -90,11 +90,11 @@ def test_original_writer_reader_page_keeps_canonical_history(sources, tmp_path):
     assert wire["knowledge"]["attempts"] == baseline["knowledge"]["attempts"] > 0
     rendered = _run(_page_js(), wire, tmp_path, ["render"])
     assert rendered["threw"] == []
-    assert "1 / 3" in rendered["by_id"]["tiles"]
+    assert "1 / 3" in rendered["by_id"]["ident"]
     assert "Routing cursor 0" in rendered["by_id"]["serial"]
     assert str(child) in rendered["by_id"]["serial"]
     assert str(canonical) in rendered["by_id"]["ident"]
-    assert rendered["by_id"]["champ"] and rendered["by_id"]["know"]
+    assert rendered["by_id"]["trajectory"] and rendered["by_id"]["know"]
     assert str(router) == wire["store_root"]
     wire["serial"]["routing"]["stop_requested"] = True
     stopping = _run(_page_js(), wire, tmp_path, ["renderSerial"])
@@ -119,13 +119,19 @@ def test_headline_stage_uses_only_a_fresh_joined_running_child(sources):
     assert loop_status.snapshot()[0]["display_step"] == "serial routing only"
 
 
-def test_serial_router_is_the_selected_health_producer(sources):
+def test_serial_router_is_the_selected_health_producer(sources, monkeypatch):
     _canonical, _router, _child, _active, _routing = sources
     with server._watchdog_lock:
         server._watchdog_state.clear()
 
+    # P6.7 folds the independent gate subject as well as this healthy router.
+    # The original recorded gate remains bound to separate real subject trees in
+    # its own suite; this seam isolates only the routing constituent here.
+    monkeypatch.setattr(server, "_read_operator_gate_bundle", lambda: {
+        "freshness": {"state": "relevant"}})
     code, health = server.loop_data_health()
 
+    assert health["constituents"]["operator_gates"]["status"] == "ok"
     assert code == 200 and health["status"] == "ok"
     assert health["selected_producer"] == "serial_router"
     assert health["serial_state"] == health["loop_state"] == "running"
@@ -164,7 +170,7 @@ def test_older_or_foreign_child_is_not_current(sources, tmp_path, changed):
     rendered = _run(_page_js(), wire, tmp_path, ["render"])
     assert rendered["threw"] == []
     assert "No joined current-child details" in rendered["by_id"]["serial"]
-    assert "1 / 3" not in rendered["by_id"]["tiles"]
+    assert "1 / 3" not in rendered["by_id"]["ident"]
 
 
 @pytest.mark.parametrize("fault", ["stale", "failed", "malformed", "missing", "fifo", "symlink"])
@@ -217,8 +223,8 @@ def test_terminal_distinctions_do_not_claim_batch_iterations(sources, tmp_path, 
     assert wire["serial"]["child"] is None
     rendered = _run(_page_js(), wire, tmp_path, ["render"])
     assert rendered["threw"] == []
-    assert "1 / 3" not in rendered["by_id"]["tiles"]
-    assert rendered["by_id"]["champ"] and rendered["by_id"]["know"]
+    assert "1 / 3" not in rendered["by_id"]["ident"]
+    assert rendered["by_id"]["trajectory"] and rendered["by_id"]["know"]
 
 
 @pytest.mark.parametrize("phase,failures,label", [
@@ -313,7 +319,10 @@ count = 0 if stopped[0]''')
             (directory / "read-by-hub").touch()
         return result
     monkeypatch.setattr(producer, "write", observe)
-    assert sr.main(argv) == 0
+    # Match the producer's own injected-child tests: exercise the router body.
+    # The CLI watchdog deliberately starts a fresh interpreter, which cannot
+    # inherit _inputs' fake-child command or this observation seam.
+    assert sr._main(argv) == 0
     assert len(seen) == 2 and seen[0][1] != seen[1][1]
     assert seen[0][0]["serial"]["active"]["store"] != seen[1][0]["serial"]["active"]["store"]
     for wire, _mark in seen:
@@ -321,5 +330,5 @@ count = 0 if stopped[0]''')
         assert wire["knowledge"]["attempts"] > 0
         rendered = _run(_page_js(), wire, tmp_path, ["render"])
         assert rendered["threw"] == []
-        assert "1 / 1" in rendered["by_id"]["tiles"]
+        assert "1 / 1" in rendered["by_id"]["ident"]
     assert loop_status.snapshot()[0]["serial"]["state"] == "complete"

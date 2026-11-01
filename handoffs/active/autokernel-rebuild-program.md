@@ -1,6 +1,7 @@
 # AutoKernel — teardown and rebuild program
 
 **Scratch**: `/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/`
+**P6 scratch (NI, 2026-11-01)**: `/mnt/raid0/llm/tmp/codex-ni-p6-surfaces-20261101/`; reused lane `/mnt/raid0/llm/tmp/codex-ni-ap-legacy-status-wrap-20261030/` (no new checkout).
 **Owner:** operator-directed audit + rebuild session, 2026-08-28.
 **Code lanes:** `lane/ak-rebuild-20260828` (epyc-root, this file) and a matching lane in
 **epyc-inference-research** for the loop itself.
