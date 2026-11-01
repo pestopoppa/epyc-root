@@ -193,3 +193,7 @@ Consumed all three reviews. The FA-8 source preflight passed four offline tests 
 ## 22:55Z — Review sampler and build executor repairs
 
 Consumed all three events. Preserved the independently reviewed sampler and build executor drafts: seven offline tests each pass. The sampler disables proxies and refuses redirects by default; actual peer/process identity and a total deadline remain unproven. The executor freezes mode for verification and refuses observed mode changes, but actual argv binding, real supervision and source/toolchain custody remain open. Neither is a runnable row. The FA-8 validator remains untracked pending independent review. No real network, build or compute ran; no row was published. GitNexus is unindexed; no application symbol was edited.
+
+## 23:06Z — Investigate blocked VKQ3 qualification and delegate independent calibration and inference row preparation
+
+Investigated the original codex3 CPU-FA-VKQ-3 qualification failure: its original prompt was exposed, and the existing no-redraw protocol prohibits retrying it. The independent calibration failure and KVU-15b/KVU-16a row preparation are delegated; dispatcher events are registered for their result files. GPU replay remains pending qualification and KVU-12.5 is armed. GitNexus indexing could not start because CPU admission was refused. No inference was run.
