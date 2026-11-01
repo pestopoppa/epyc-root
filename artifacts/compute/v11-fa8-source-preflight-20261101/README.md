@@ -1,0 +1,5 @@
+# V11-FA-8 source-object preflight
+
+This read-only helper verifies the exact historical arm A and C commits, tree IDs, relevant kernel-object SHA-256 digests and source anchors against a Git object database. It emits only source identity. Run `python3 -B artifacts/compute/v11-fa8-source-preflight-20261101/preflight.py --repo /mnt/raid0/llm/llama.cpp` and the adjacent `test_preflight.py`; no source tree is modified and no compute, build or qualification occurs.
+
+A is the historical ROCWMMA-ON arm; C is the historical ROCWMMA-OFF arm with the earlier fixes. Identifying their source files does not prove actual dispatch, a compiled binary, loaded library identity, GPU residency or model behavior. The real per-channel V and per-row actual warp-share instrumentation, source-compatible diagnostic patches, source-bound experimental builds, deterministic oracle controls, output/capture custody, prompt bindings, keeper launcher and belief writer remain unimplemented. This preflight is not a row and must not be used to claim a measurement.
