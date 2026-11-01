@@ -690,7 +690,7 @@ Each one turns a practice that was missing on 2026-09-23 into a standing gate.
   - Acceptance: each path ends in its intended disposition with no orphan process, no lost claim and no
     discarded retained patch. The keep→continuation case fails on research main before the DS41-C45 fix and passes
     after it.
-- [ ] **OAB-31 — a discard-invariant test with mandatory disposition records.** For every non-fatal failure
+- [x] **OAB-31 — a discard-invariant test with mandatory disposition records.** For every non-fatal failure ✅ 2026-11-01 [Research c17d0d0b7ae5d697875e67fb2799426b69d65800](https://github.com/pestopoppa/epyc-inference-research/blob/c17d0d0b7ae5d697875e67fb2799426b69d65800/data/engineering/oab31-implementation-20261101/README.md) [no-belief: model-free engineering tests, no measurement]
   path in `iterate()`/`pipeline`, cover each produced artifact: accepted hypothesis, authored patch, and
   completed actor reply. The test asserts that the artifact is either carried forward (resume, reinstatement,
   or the hypothesis pool) or dropped with a disposition record naming the reason and the retained artifact path.
