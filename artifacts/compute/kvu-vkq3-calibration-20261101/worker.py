@@ -2,6 +2,7 @@
 """One genuine >64k architect replay per VKQ arm; no transcript in native receipts."""
 import hashlib,json,os,pathlib,signal,socket,subprocess,sys,tempfile,threading,time,urllib.request
 import mode_guard
+import cancellable_tokenizer
 D=pathlib.Path(__file__).resolve().parent;K=pathlib.Path('/mnt/raid0/llm/kernels/builds/cpu-20261004-9a3f1392a/bin');B=pathlib.Path('/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/dsc25592');sys.path.insert(0,'/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/kpf64_replay');import adapter
 MODEL='/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf';DRAFT='/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf';SMALL='/mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf'
 def sha(p):
@@ -34,8 +35,10 @@ def main():
   if sha(D/'CONTEXT-METADATA.json')!=plan['context_metadata_sha256'] or hashlib.sha256(prompt.encode()).hexdigest()!=c['sha256']:raise RuntimeError('context envelope changed')
   if stopping():partial('stop or grant lost before tokenizer');return 75
   tkenv={'PATH':'/usr/bin:/bin','LD_LIBRARY_PATH':str(K),'OMP_NUM_THREADS':'1','HIP_VISIBLE_DEVICES':'-1','ROCR_VISIBLE_DEVICES':'-1'}
-  tk=subprocess.run([str(K/'llama-tokenize'),'-m',MODEL,'--stdin','--ids','--no-escape'],input=prompt.encode(),capture_output=True,env=tkenv,timeout=120,check=True)
-  actual_count=len(json.loads(tk.stdout)); del tk
+  tkcmd=[sys.executable,'-B',str(D/'pdeath_exec.py'),str(os.getpid()),str(K/'llama-tokenize'),'-m',MODEL,'--stdin','--ids','--no-escape']
+  try: tkout=cancellable_tokenizer.run(tkcmd,prompt.encode(),tkenv,stopping,120)
+  except cancellable_tokenizer.Stopped:partial('stop during tokenizer');return 75
+  actual_count=len(json.loads(tkout)); del tkout
   if actual_count<=65536:raise RuntimeError('architect tokenizer count mismatch')
   atom(out/'tokenization.json',{'count':actual_count,'tokenizer_binary_sha256':sha(K/'llama-tokenize'),'model_catalog_sha256':sha(D/'FULL-MODELS.sha256'),'model_shard0_sha256':'5ce89370720f8bf90890f439361282104c1aa1482d4013bb9a50923e758e71a4','prompt_sha256':c['sha256'],'flags':['--stdin','--ids','--no-escape'],'plan_sha256':sha(D/'PLAN.json')})
  else:prompt='Explain one way to make a network retry safe.'
@@ -48,8 +51,8 @@ def main():
   if mode in ('full','qualification'):cmd=['numactl','--interleave=all',*cmd,'--no-mmap','--spec-draft-model',DRAFT,'--spec-draft-type-k','f16','--spec-draft-type-v','f16']
   env={'PATH':'/usr/bin:/bin','LD_LIBRARY_PATH':str(K),'OMP_NUM_THREADS':'1','HIP_VISIBLE_DEVICES':'-1','ROCR_VISIBLE_DEVICES':'-1'}
   if arm['GGML_FA_VKQ_F16']:env['GGML_FA_VKQ_F16']=arm['GGML_FA_VKQ_F16']
-  log=os.fdopen(os.open(out/(name+'.server.log'),os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600),'wb');p=subprocess.Popen(cmd,stdout=log,stderr=subprocess.STDOUT,env=env);birth=pathlib.Path('/proc',str(p.pid),'stat').read_text().rsplit(') ',1)[1].split()[19]
-  atom(out/(name+'.server.json'),{'arm':name,'mode':mode,'argv':cmd,'pid':p.pid,'birth':birth,'grant_sha256':hashlib.sha256(grant).hexdigest() if grant else None,'grant_text':grant.decode() if grant else None,'env_knob':arm['GGML_FA_VKQ_F16'],'source_sha256':sha(D/'SOURCE-SHA256SUMS'),'plan_sha256':sha(D/'PLAN.json'),'context_sha256':hashlib.sha256(prompt.encode()).hexdigest(),'binary_sha256':sha(K/'llama-server'),'runtime_catalog_sha256':sha(D/'RUNTIME-INPUTS.sha256'),'full_model_catalog_sha256':sha(D/'FULL-MODELS.sha256') if mode=='full' else None,'draft_head_sha256':'5ff54097406a905cf3a724c709124ceb0e3e10235ee862298969e91c96fa96e6' if mode=='full' else None,'cpu_affinity':sorted(os.sched_getaffinity(0)),'started_epoch':time.time()})
+  log=os.fdopen(os.open(out/(name+'.server.log'),os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600),'wb');launch_cmd=[sys.executable,'-B',str(D/'pdeath_exec.py'),str(os.getpid()),*cmd];p=subprocess.Popen(launch_cmd,stdout=log,stderr=subprocess.STDOUT,env=env);birth=pathlib.Path('/proc',str(p.pid),'stat').read_text().rsplit(') ',1)[1].split()[19]
+  atom(out/(name+'.server.json'),{'arm':name,'mode':mode,'argv':cmd,'launch_argv':launch_cmd,'pid':p.pid,'birth':birth,'grant_sha256':hashlib.sha256(grant).hexdigest() if grant else None,'grant_text':grant.decode() if grant else None,'env_knob':arm['GGML_FA_VKQ_F16'],'source_sha256':sha(D/'SOURCE-SHA256SUMS'),'plan_sha256':sha(D/'PLAN.json'),'context_sha256':hashlib.sha256(prompt.encode()).hexdigest(),'binary_sha256':sha(K/'llama-server'),'runtime_catalog_sha256':sha(D/'RUNTIME-INPUTS.sha256'),'full_model_catalog_sha256':sha(D/'FULL-MODELS.sha256') if mode=='full' else None,'draft_head_sha256':'5ff54097406a905cf3a724c709124ceb0e3e10235ee862298969e91c96fa96e6' if mode=='full' else None,'cpu_affinity':sorted(os.sched_getaffinity(0)),'started_epoch':time.time()})
   try:
    url=f'http://127.0.0.1:{port}';ready=False;limit=time.monotonic()+1800
    while time.monotonic()<limit and p.poll() is None and not stopping():
@@ -70,10 +73,11 @@ def main():
    while t.is_alive() and p.poll() is None and not stopping():t.join(.1)
    if stopping():partial('interrupted exposed request');return 75
    t.join(1)
-   if t.is_alive() or 'error' in state:atom(out/(name+'.failure.json'),{'reason':'request_failed','error':state.get('error')});continue
+   if t.is_alive():partial('request thread failed to drain');return 75
+   if 'error' in state:atom(out/(name+'.failure.json'),{'reason':'request_failed','error':state.get('error')});continue
    try:body=json.loads(state['raw'])
    except Exception as e:atom(out/(name+'.failure.json'),{'reason':'bad_native_json','error':repr(e)});continue
-   timings=body.get('timings') or {};draft=timings.get('draft_n');accepted=timings.get('draft_n_accepted');tokens=body.get('tokens');result={'arm':name,'http_status':state['http_status'],'native_response':body,'response_sha256':hashlib.sha256(state['raw'].encode()).hexdigest(),'draft_n':draft,'draft_n_accepted':accepted,'acceptance':accepted/draft if isinstance(draft,int) and isinstance(accepted,int) and draft>0 and 0<=accepted<=draft else None,'tokens':tokens if isinstance(tokens,list) else None,'grant_sha256':hashlib.sha256(grant).hexdigest() if grant else None,'finished_epoch':time.time()};atom(out/(name+'.response.json'),result);outputs[name]=result
+   timings=body.get('timings') or {};draft=timings.get('draft_n');accepted=timings.get('draft_n_accepted');tokens=body.get('tokens');result={'arm':name,'http_status':state['http_status'],'native_response':body,'response_sha256':hashlib.sha256(state['raw'].encode()).hexdigest(),'draft_n':draft,'draft_n_accepted':accepted,'acceptance':mode_guard.native_acceptance(draft,accepted),'tokens':mode_guard.token_ids(tokens),'grant_sha256':hashlib.sha256(grant).hexdigest() if grant else None,'finished_epoch':time.time()};atom(out/(name+'.response.json'),result);outputs[name]=result
   finally:
    if p.poll() is None:
     p.send_signal(signal.SIGTERM)
@@ -82,7 +86,7 @@ def main():
    log.close();atom(out/(name+'.drain.json'),{'pid':p.pid,'birth':birth,'returncode':p.returncode,'drained':p.poll() is not None,'server_log_sha256':sha(out/(name+'.server.log'))})
  if mode=='qualification':
   a=outputs.get('hybrid')
-  if not a or a.get('http_status')!=200 or not isinstance(a.get('draft_n'),int) or a['draft_n']<=0:raise RuntimeError('qualification control failed or MTP count missing')
+  if not a or a.get('http_status')!=200 or type(a.get('draft_n')) is not int or a['draft_n']<=0:raise RuntimeError('qualification control failed or MTP count missing')
   atom(out/'QUALIFICATION.json', {'kind':'qualification_control','http_status':a['http_status'],'target_exposed':False,'draft_n':a['draft_n']});emit({'kind':'qualification_control','http_status':a['http_status'],'target_exposed':False,'draft_n':a['draft_n']})
   return 0
  a=outputs.get('hybrid');b=outputs.get('legacy');div=None

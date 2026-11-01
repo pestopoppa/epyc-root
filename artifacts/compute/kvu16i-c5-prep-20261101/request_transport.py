@@ -33,7 +33,19 @@ def execute(port, tag, body, expected_sha, stop, abort, deadline, *, timeout=600
                          headers={'Content-Type':'application/json'})
             response = conn.getresponse()
             content = response.read()
-            result.append((response.status, len(content), hashlib.sha256(content).hexdigest()))
+            try:
+                payload = json.loads(content)
+            except (ValueError, UnicodeDecodeError):
+                payload = None
+            timings = payload.get('timings') if isinstance(payload, dict) else None
+            if not isinstance(timings, dict):
+                timings = {}
+            # Native fields only: missing or invalid counters remain unknown.
+            counters = {}
+            for key in ('prompt_n', 'predicted_n', 'cache_n', 'draft_n', 'draft_n_accepted'):
+                value = timings.get(key)
+                counters[key] = value if type(value) is int and value >= 0 else None
+            result.append((response.status, len(content), hashlib.sha256(content).hexdigest(), counters))
         except BaseException as exc:
             caught.append(exc)
         finally:
@@ -61,7 +73,7 @@ def execute(port, tag, body, expected_sha, stop, abort, deadline, *, timeout=600
         raise RuntimeError(f'HTTP request failed: {type(caught[0]).__name__}') from caught[0]
     if not result:
         raise RuntimeError('HTTP request ended without response')
-    status, size, response_hash = result[0]
+    status, size, response_hash, counters = result[0]
     return {'tag':tag, 'body_sha256':actual, 'http_status':status, 'completed':True,
             'response_bytes':size, 'response_sha256':response_hash,
-            'start_t':started, 'end_t':time.monotonic(), 'trigger_observed':None}
+            'start_t':started, 'end_t':time.monotonic(), 'trigger_observed':None, **counters}

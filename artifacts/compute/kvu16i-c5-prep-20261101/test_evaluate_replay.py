@@ -4,7 +4,7 @@ import evaluate_replay as E
 class TestEvaluate(unittest.TestCase):
     def setUp(self):
         self.expected = [(str(i), 'h'+str(i)) for i in range(48)]
-        self.requests = [{'tag':t, 'body_sha256':h, 'http_status':200, 'completed':True, 'trigger_observed':i<5} for i,(t,h) in enumerate(self.expected)]
+        self.requests = [{'tag':t, 'body_sha256':h, 'http_status':200, 'completed':True, 'nodraft':i % 2 == 0, 'prompt_n':129, 'predicted_n':3} for i,(t,h) in enumerate(self.expected)]
         self.samples = [{'t':1,'phase':'load','own_vram_b':10*E.GIB,'hip_resident':True}, {'t':2,'phase':'load','own_vram_b':11*E.GIB,'hip_resident':True}, {'t':2.8,'phase':'warm','own_vram_b':12*E.GIB,'hip_resident':True}, {'t':3,'phase':'t7a','own_vram_b':12*E.GIB,'hip_resident':True}, {'t':3.5,'phase':'t7a','own_vram_b':12*E.GIB,'hip_resident':True}, {'t':4,'phase':'t7a','own_vram_b':12*E.GIB,'hip_resident':True}]
         self.evidence = dict.fromkeys(('capture_complete','load_complete','t7a_complete','cleanup_verified','source_bound'), True)
         self.evidence.update(load_start_t=1, load_end_t=2, t7a_start_t=2.9, t7a_end_t=3.9)
@@ -17,8 +17,12 @@ class TestEvaluate(unittest.TestCase):
         self.evidence['cleanup_verified']=False; self.assertEqual(self.run_eval()['verdict'],'UNKNOWN')
     def test_incomplete_request_unknown(self):
         self.requests[-1]['completed']=False; self.assertEqual(self.run_eval()['verdict'],'UNKNOWN')
-    def test_trigger_count_is_observed_not_inferred(self):
-        self.requests[0]['trigger_observed']=False; self.assertEqual(self.run_eval()['verdict'],'UNKNOWN')
+    def test_fewer_than_five_modelled_transitions_is_unknown(self):
+        for req in self.requests: req['predicted_n'] = 0
+        self.assertEqual(self.run_eval()['verdict'],'UNKNOWN')
+    def test_missing_native_counts_are_unknown(self):
+        del self.requests[0]['prompt_n']
+        self.assertEqual(self.run_eval()['verdict'],'UNKNOWN')
     def test_nonfinite_clock_and_missing_hip_unknown(self):
         self.samples[-1]['t']=float('nan'); self.assertEqual(self.run_eval()['verdict'],'UNKNOWN')
         self.samples[-1]['t']=4; self.samples[-1]['hip_resident']=False; self.assertEqual(self.run_eval()['verdict'],'UNKNOWN')

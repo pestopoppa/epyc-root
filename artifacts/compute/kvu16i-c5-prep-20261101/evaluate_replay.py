@@ -6,6 +6,7 @@ reads a model, or turns partial observations into measurement warrants.
 """
 from __future__ import annotations
 import math
+from h1_event_model import classify
 
 GIB = 1024 ** 3
 
@@ -14,7 +15,7 @@ def evaluate(expected, requests, samples, evidence):
     """Evaluate strictly bound completed replay. Times are monotonic seconds.
 
     expected: ordered list of (tag, request-body sha256); requests: ordered dicts
-    tag, body_sha256, http_status, completed, trigger_observed. Samples: ordered
+    tag, body_sha256, http_status, completed, nodraft, prompt_n, predicted_n. Samples: ordered
     dicts t, phase (load/warm/t7a), own_vram_b, hip_resident. evidence: dict with
     capture_complete, load_complete, t7a_complete, cleanup_verified, source_bound.
     No percentage, timing, quality, or production registry decision is implied.
@@ -27,9 +28,13 @@ def evaluate(expected, requests, samples, evidence):
     for r, (tag, digest) in zip(requests, expected):
         if (r.get('tag'), r.get('body_sha256')) != (tag, digest) or r.get('completed') is not True or r.get('http_status') != 200:
             return unknown('request identity, completion, or HTTP failure')
-    triggers = sum(r.get('trigger_observed') is True for r in requests)
+    try:
+        classified = classify(requests)
+    except ValueError:
+        return unknown('H1 event model lacks valid native timing counters')
+    triggers = sum(r['h1_event_model'] for r in classified)
     if triggers < 5:
-        return unknown('fewer than five observed trigger transitions')
+        return unknown('fewer than five H1 modeled transitions')
     if not samples:
         return unknown('no residency samples')
     last = -math.inf
@@ -69,4 +74,4 @@ def evaluate(expected, requests, samples, evidence):
     runtime = (all_peak - load_peak) / GIB
     return {'verdict': 'HOLDS' if phase_growth <= 0.3 else 'FAILS', 'reason': None,
             'phase_growth_gib': phase_growth, 'runtime_term_gib': runtime,
-            'trigger_count': triggers, 'load_peak_bytes': load_peak, 'whole_run_peak_bytes': all_peak}
+            'h1_modeled_transition_count': triggers, 'load_peak_bytes': load_peak, 'whole_run_peak_bytes': all_peak}

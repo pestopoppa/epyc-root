@@ -37,3 +37,17 @@ The VKQ3 independent calibration review corrected draft process-group custody, n
 KVU-16i candidate preparation added a draft evidence reducer, PID-birth-aware GPU sampler and request transport. Sixteen offline fixture tests pass. A complete keeper-compatible producer, observed trigger witnesses, STOP/drain verification and write-side capture remain open; no inference was launched. Moved our earlier KVU-16h safety guard notes beneath their correct parent task and clarified the wrapper chronology.
 
 The required handoff index check initially found the generated master rollup stale. Regenerated `.index-state.json`, `.index-graph.json` and the master rollup, then `index_state.py --check` exited 0 (existing scratch-field advisories remain). The review snapshots are not ready rows, and no qualification was performed.
+
+## KVU-12.5 proposed verdict review
+
+Rejected the proposed SPLIT_BETTER as filed. Raw launch and both wave files show CPU 0–95 / 96 threads, contradicting the handoff's q3/24-thread description. The generated threshold omitted the declared within-launch wave-range term; under explicit median or maximum normalization, the doubled unified per-stream wave range exceeds the reported stream gap. The denominator is not specified, so this is not a claim of equivalence. Evidence and hashes: [review capsule](../../artifacts/compute/kvu12-5-ratification-20261101/README.md). The quarter-scoped parent remains open; no new run was made.
+
+## Inference packet continuation
+
+VKQ3 draft now uses a standalone parent-death exec wrapper rather than Python preexec hooks, STOP-aware tokenizer cancellation and fail-closed native counters/token IDs. Twenty-four offline tests pass from the capsule directory. No actual keeper execution, forced-kill cleanup, target control or inference was performed. Exposure audit and belief projection/canary remain open; do not redraw original.
+
+KVU-16i draft now captures native timing counters and implements request sequencing; 26 offline tests pass. The H1 transitions are a model derived from native counters, not observed graph pins. Integrated keeper/server launcher, native evidence/STOP drain, and write capture remain open. No row was published.
+
+A quarter-scoped KVU-12.5 successor draft specifies range/median and has a reducer plus fail-closed job/launcher scaffold; eleven offline tests pass. Its producer, target control, source binding and cleanup remain unbuilt, so it was not published. Added VB-KVU-125-QUARTER to the existing belief source family before any measurement; projection and planning-context canary remain open.
+
+Reopened the previously ticked KVU-12.5 quarter pair because the retained run did not use the specified quarter; the verdict-review task itself is complete as a rejection. The original run and its `VERDICT.json` remain unchanged.

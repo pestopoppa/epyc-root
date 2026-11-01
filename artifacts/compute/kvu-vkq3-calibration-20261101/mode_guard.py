@@ -25,3 +25,15 @@ def emit(path, event):
         os.fsync(fd)
     finally:
         os.close(fd)
+
+
+def native_acceptance(draft, accepted):
+    if type(draft) is not int or type(accepted) is not int or draft <= 0 or not 0 <= accepted <= draft:
+        return None
+    return accepted / draft
+
+
+def token_ids(value):
+    if not isinstance(value, list) or not value or not all(type(t) is int and t >= 0 for t in value):
+        return None
+    return value
