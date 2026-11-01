@@ -1,3 +1,4 @@
+test_append_preserves_other_writer_and_detects_old_inode (test_legacy.Bootstrap.test_append_preserves_other_writer_and_detects_old_inode) ... ok
 test_read_only_dry_and_collision (test_legacy.Bootstrap.test_read_only_dry_and_collision) ... ok
 test_actual_port_overrides_empty_declaration (test_legacy.Legacy.test_actual_port_overrides_empty_declaration) ... ok
 test_changed_tree_unknown (test_legacy.Legacy.test_changed_tree_unknown) ... ok
@@ -14,7 +15,7 @@ test_real_owned_socket (test_legacy.Legacy.test_real_owned_socket) ... ok
 test_unrelated_socket_excluded (test_legacy.Legacy.test_unrelated_socket_excluded) ... ok
 
 ----------------------------------------------------------------------
-Ran 14 tests in 0.030s
+Ran 15 tests in 0.027s
 
 OK
 exit_code=0

@@ -21,8 +21,41 @@ sys.path.insert(0, str(V1))
 _spec = importlib.util.spec_from_file_location('qualify_launcher', V1/'qualify_launcher.py')
 q = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(q)
+from dryrun_check import Refused as DryrunRefused
 
 ROOT = Path('/mnt/raid0/llm/tmp/compute-flags')
+
+def _append_registration(ledger: Path, rid: str, cells: list[str], line: str) -> tuple[str,str]:
+    """Append one row to the captured ledger inode; never replace another writer's ledger."""
+    from dryrun_check import row_record
+    fd = os.open(ledger, os.O_RDWR | os.O_APPEND | os.O_NOFOLLOW)
+    try:
+        opened = os.fstat(fd)
+        def same_inode() -> bool:
+            current = ledger.lstat()
+            return (stat.S_ISREG(current.st_mode) and
+                    (current.st_dev,current.st_ino)==(opened.st_dev,opened.st_ino))
+        if not stat.S_ISREG(opened.st_mode) or not same_inode():
+            return ('wait-registration','FILLERS inode changed before append')
+        raw = os.pread(fd,opened.st_size,0)
+        if len(raw)!=opened.st_size:return ('wait-registration','FILLERS read changed')
+        if raw and not raw.endswith(b'\n'):return refusal('FILLERS lacks final newline')
+        if any(x.startswith('| '+rid+' |') for x in raw.decode().splitlines()):
+            try:prior = row_record(ledger,rid)
+            except DryrunRefused:return refusal('existing row duplicated/malformed')
+            if prior['cells'] != cells:return refusal('existing row collides with ready row')
+            return ('ok','row already registered')
+        if not same_inode():return ('wait-registration','FILLERS inode changed before append')
+        payload=(line+'\n').encode()
+        if os.write(fd,payload)!=len(payload):
+            return ('wait-registration','FILLERS short append')
+        os.fsync(fd)
+        if not same_inode():return ('wait-registration','FILLERS inode changed during append')
+        try: prior=row_record(ledger,rid)
+        except Exception:return ('wait-registration','row absent/duplicated after append')
+        if prior['cells'] != cells:return refusal('existing row collides with ready row')
+        return ('ok','row registered')
+    finally:os.close(fd)
 
 def bootstrap_row(manifest: Path, flags: Path, dry: bool = False) -> tuple[str,str]:
     """Keeper single-writer registration before qualification's row_binding."""
@@ -75,24 +108,10 @@ def bootstrap_row(manifest: Path, flags: Path, dry: bool = False) -> tuple[str,s
         return refusal('bootstrap requires keeper parent lineage')
     with (flags/'ws58-keeper-state'/'qual-v2-row.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
-        original = ledger.read_text()
-        if any(x.startswith('| '+m['id']+' |') for x in original.splitlines()):
-            prior = row_record(ledger,m['id'])
-            if prior['cells'] != cells:return refusal('existing row collides with ready row')
-            q.row_binding(m,flags)
-            return ('ok','row already registered')
-        # Single keeper writer plus a final digest check prevent accidental
-        # overwrite of a ledger updated during validation.
-        if ledger.read_text() != original:return refusal('FILLERS changed during registration')
-        fd,name = __import__('tempfile').mkstemp(prefix='.qual-v2-row-',dir=flags)
-        try:
-            with os.fdopen(fd,'w') as out:out.write(original.rstrip('\n')+'\n'+line+'\n')
-            os.chmod(name,ledger.stat().st_mode & 0o777)
-            os.replace(name,ledger)
-        finally:
-            if os.path.exists(name):os.unlink(name)
+        state,reason=_append_registration(ledger,m['id'],cells,line)
+        if state!='ok':return (state,reason)
     row_record(ledger,m['id']);q.row_binding(m,flags)
-    return ('ok','row registered')
+    return ('ok',reason)
 
 class UnknownLegacy(Exception): pass
 
@@ -539,7 +558,7 @@ def main() -> int:
     elif a.command == 'conflict': state, reason = conflict(a.manifest, a.flags)
     elif a.command == 'bootstrap-row':
         try: state, reason = bootstrap_row(a.manifest, a.flags, a.dry)
-        except (q.Refused,OSError,ValueError,KeyError,json.JSONDecodeError) as exc:
+        except (q.Refused,DryrunRefused,OSError,ValueError,KeyError,json.JSONDecodeError) as exc:
             state,reason=refusal('bootstrap:'+str(exc))
     else: state, reason = qualify_pending(a.manifest, a.flags, a.region_lock, a.timeout, a.dry)
     print(state + '\t' + reason.replace('\n', ' ')[:240])

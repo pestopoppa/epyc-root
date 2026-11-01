@@ -104,6 +104,29 @@ class Legacy(unittest.TestCase):
    with self.assertRaises(gate.UnknownLegacy):gate._actual_listeners('irrelevant',gate.ROOT)
 
 class Bootstrap(unittest.TestCase):
+ def test_append_preserves_other_writer_and_detects_old_inode(self):
+  cells=['fixture','owner','/tmp/launch','72-95','1200 s','8','/tmp/STOP',
+         'BACKLOG','block-correctness','1200 s','900 s','n','n','/tmp/policy',
+         'description','decision','cpu',
+         'requested_window_s=1200; est_output_GiB=0.1; scratch_root=/mnt/raid0/llm/tmp/fixture; claimed_cpus=dynamic']
+  line='| '+' | '.join(cells)+' |'
+  with tempfile.TemporaryDirectory() as td:
+   ledger=Path(td)/'FILLERS.md';header='| ID | Owner |\n';ledger.write_text(header)
+   state,_=gate._append_registration(ledger,'fixture',cells,line)
+   self.assertEqual(state,'ok');self.assertTrue(ledger.read_text().startswith(header))
+   self.assertEqual(gate._append_registration(ledger,'fixture',cells,line)[0],'ok')
+   ledger.write_text(header+line+'\n'+line+'\n')
+   self.assertEqual(gate._append_registration(ledger,'fixture',cells,line)[0],'bad')
+   ledger.write_text(header)
+   real_write=os.write
+   def concurrent_replace(fd,payload):
+    other=Path(td)/'other';other.write_text(header+'| other | concurrent |\n')
+    os.replace(other,ledger)
+    return real_write(fd,payload)
+   with patch.object(gate.os,'write',side_effect=concurrent_replace):
+    state,_=gate._append_registration(ledger,'fixture',cells,line)
+   self.assertEqual(state,'wait-registration')
+   self.assertEqual(ledger.read_text(),header+'| other | concurrent |\n')
  def test_read_only_dry_and_collision(self):
   m={'id':'fixture','owner':'owner','production':True,'regions':'72-95',
      'launcher':{'path':'/mnt/raid0/llm/tmp/fixture/launch.sh','sha256':'a'*64},

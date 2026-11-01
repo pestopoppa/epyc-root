@@ -29,7 +29,7 @@ test_speech_units_and_source_identity (test_workload_kinds.Typed.test_speech_uni
 test_unified_kv_and_full_work_unit_feasibility (test_workload_kinds.Typed.test_unified_kv_and_full_work_unit_feasibility) ... ok
 
 ----------------------------------------------------------------------
-Ran 29 tests in 0.045s
+Ran 29 tests in 0.026s
 
 OK
 exit_code=0
