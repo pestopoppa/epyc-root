@@ -195,3 +195,7 @@ Retired the superseded unsuffixed Nemotron TC READY under the handoff owner by a
 ### Crisp HIP candidate 20 consumed
 
 `HIP-CANDIDATE-20.md` records isolated `scratch-candidate20`, retaining candidate19 source/lifecycle files and adding checker19 symlink-referent coverage; 28 synthetic tests, byte compilation and eight file checksum checks passed. Candidate inventory SHA `fe75b6ab761d036c13ada8b37ff498034ee3ae8801fe060d6d55f1e0f015ca3b`. It rejects external and non-regular referents, but does not prove trusted source/toolchain provenance at the protected invocation, actual HIP compiler, host-transition custody, escaped descendant cleanup or continuous writer fencing. Delegated independent candidate/checker/fence review; registered `HIP-CANDIDATE-REVIEW-21.done`, `HIP-TOOL-21.done`, `HIP-FENCE-21.done`. Candidate stays held; no build, inference, qualification or READY mutation.
+
+### Candidate 20 identity correction
+
+Independent review during this boundary found `build-guard.py` does not call `toolchain_seal.py`; helper tests alone do not bind the protected invocation. The reviewer initially verified the reported candidate20 snapshot, then observed its live toolchain source/tests and regenerated inventory changed during the review; the original `HIP-CANDIDATE-20.md` hashes no longer identify current scratch bytes. The candidate remains held. Consume `HIP-CANDIDATE-REVIEW-21.done` and `HIP-TOOL-21.done` next for exact hashes, provenance and independent review; do not infer readiness from either inventory.
