@@ -3162,13 +3162,14 @@ something else, which is exactly how 3 of them became uncountable.
 _Filed via `/research-intake`. Four rows plus one design input. Zero compute. **WS-3 is a decision
 gate on WS-2**; **WS-4 is independent of the other three.**_
 
-- [ ] **WS-1 — Artifact reconciliation at the drain boundary.** Compare **worker-written completion
+- [x] **WS-1 — Artifact reconciliation at the drain boundary.** ✅ 2026-11-01 — ROOT `516ea39b198a68b55ef07f14dfbf6149741e5ca5`; [test/artifact](../../artifacts/coordination/ws1-fairness-20261101/README.md). [no-belief: software conformance controls only] Compare **worker-written completion
   artifacts** against the handled set, **independent of whether a bus row exists** — that
   independence is the whole value, because the lost-wake case is precisely the one where no row was
   seen. One-shot and receipted. **Notifier, no standing obligation**: it tells someone once and then
   stops, so it cannot become a background source of noise. This is the mechanism referenced from
   [`coordinator-role-failure-modes-and-refactor.md`](coordinator-role-failure-modes-and-refactor.md)
   → the F-33(a) evidence note. `intake-1331#record`.
+  - Implementation `11e75b83b39c01a3857dd3e339911d40e4ca0d91`, fairness and terminal-disposition repair `516ea39b198a68b55ef07f14dfbf6149741e5ca5`: coordinator non-peek drain reads native worker-checkpoint journals independently of bus delivery, flushes a byte-capped notice before writing its receipt, and requires an explicit terminal disposition to suppress a notice. 36 focused controls pass, including the reproduced scan-cap starvation case, legacy-receipt migration, nonterminal status and malformed records. Unknown/truncated coverage remains unknown; arbitrary unresolved prefixes do not carry a future-drain coverage guarantee. No processed watermark, store-before-deliver change, live process restart or inference.
 - [ ] **WS-2 — Durable processed watermark.** A monotonic `seq` on bus rows plus a `processed_seq` in
   the **owner-write-only** `cursors/<agent>.json`, advanced **only** by a sequence-naming disposition
   — replacing the O(history) `routed_view` recomputation. **Unlike WS-1, this one creates a standing
