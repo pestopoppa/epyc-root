@@ -184,3 +184,81 @@ class YieldTests(AutoStartFixture):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TmuxWindowTests(AutoStartFixture):
+    """Operator 2026-11-01: every session runs in tmux window agent:h-<slug> (by name), JSONL still captured via tee, pid/rc
+    files for the dispatcher, pane reused on resume (respawn-pane), killed on done, protected windows untouched."""
+
+    def fake_tmux_factory(self, windows):
+        calls = []
+
+        def fake(*args, timeout=20):
+            calls.append(args)
+            if args[0] == "list-windows":
+                return 0, "\n".join(windows) + "\n"
+            if args[0] in ("new-window", "respawn-pane"):
+                line = args[-1]  # the bash -c script: emulate the pane writing the pid file
+                pidf = line.split("echo $! > '")[1].split("'")[0]
+                _w(pidf, "99999991\n")
+                if args[0] == "new-window":
+                    windows.append(args[args.index("-n") + 1])
+                return 0, ""
+            if args[0] == "kill-window":
+                windows.remove(args[args.index("-t") + 1].split(":=")[1])
+                return 0, ""
+            return 0, ""
+        return fake, calls
+
+    def test_start_creates_named_window_resume_respawns_done_kills(self):
+        windows = ["btop", "claude", "codex-gen"]
+        fake, calls = self.fake_tmux_factory(windows)
+        e = {"handoff": "handoffs/active/mid.md", "engine": "codex", "cwd": self.repo}
+        with patch.object(hs, "tmux", fake), patch.object(hs, "project_cwd", return_value=self.repo):
+            pid, out = hs.launch(self.flags, "mid", e, "PROMPT", fresh=True)
+            self.assertEqual(pid, 99999991)
+            self.assertIn("h-mid", windows)
+            nw = [c for c in calls if c[0] == "new-window"][0]
+            self.assertEqual(nw[:5], ("new-window", "-d", "-t", "agent:", "-n"))
+            self.assertEqual(nw[5], "h-mid")
+            script = nw[-1]
+            self.assertIn(f"tee '{out}'", script, "JSONL capture kept")
+            self.assertIn("pretty", script)
+            self.assertIn(f"'{out}.rc'", script, "exit status file")
+            self.assertIn("'codex' 'exec' '--json' '-'", script)
+            self.assertIn(("set-option", "-w", "-t", "agent:=h-mid", "remain-on-exit", "on"), calls)
+            # resume: the window exists -> respawn-pane by NAME, no new window, never send-keys
+            pid2, out2 = hs.launch(self.flags, "mid", dict(e, session_id="thr"), "PROMPT2", fresh=False)
+            rs = [c for c in calls if c[0] == "respawn-pane"][0]
+            self.assertEqual(rs[:4], ("respawn-pane", "-k", "-t", "agent:=h-mid"))
+            self.assertEqual(sum(1 for c in calls if c[0] == "new-window"), 1)
+            self.assertFalse(any(c[0] == "send-keys" for c in calls))
+            self.assertFalse(any("codex-gen" in str(c) or "agent:=claude" in str(c) for c in calls if c[0] != "list-windows"))
+            # done -> kill-window by name
+            hs.kill_window("mid")
+            self.assertNotIn("h-mid", windows)
+            self.assertIn(("kill-window", "-t", "agent:=h-mid"), calls)
+            hs.kill_window("claude")  # protected: never killed
+            self.assertIn("claude", windows)
+
+    def test_no_tmux_session_falls_back_to_detached(self):
+        e = {"handoff": "handoffs/active/mid.md", "engine": "codex", "cwd": self.repo}
+        with patch.object(hs, "tmux", lambda *a, **k: (1, "no server")), patch.object(hs, "project_cwd", return_value=self.repo), \
+                patch.object(hs.subprocess, "Popen") as popen:
+            popen.return_value.pid = 4242
+            pid, out = hs.launch(self.flags, "mid", e, "PROMPT", fresh=True)
+        self.assertEqual(pid, 4242)
+        self.assertIn("TMUX-FALLBACK mid", self.log_text())
+
+    def test_pretty_filter_and_rc(self):
+        import io
+        src = io.StringIO('{"type":"thread.started","thread_id":"thr-1"}\n{"type":"item.completed","item":{"type":"command_execution","command":"ls"}}\nplain\n')
+        dst = io.StringIO()
+        hs.pretty(src, dst)
+        self.assertIn("[session thr-1]", dst.getvalue())
+        self.assertIn("[item.completed] ls", dst.getvalue())
+        self.assertIn("plain", dst.getvalue())
+        out = os.path.join(self.flags, "x.jsonl")
+        _w(out + ".rc", "3\n")
+        self.assertEqual(hs.last_rc({"last_output": out}), 3)
+        self.assertIsNone(hs.last_rc({"last_output": out + "nope"}))

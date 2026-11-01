@@ -36,6 +36,7 @@ Subcommands:
     transfer <slug> --engine claude|opencode|codex [--force]
                             start a FRESH session of <engine> from files only; refused while the old one is live.
     status                  print the registry.
+    pretty                  stdin JSONL -> readable lines (the tmux pane filter)
     rank                    print the handoff ranking (auto-start / yield order) with candidate rows per handoff.
 
 Verified headless resume forms (2026-11-01 round-trips):
@@ -272,6 +273,120 @@ are your complete starting state. `git -C {repo} fetch origin` first; then act p
 {idle_prompt(slug, e, flags)}"""
 
 
+# ---------------------------------------------------------------- tmux windows (operator, 2026-11-01)
+# Every handoff session runs inside window `h-<slug>` of the existing tmux session `agent` so the operator can watch it
+# live. Windows are addressed by NAME only (`agent:=h-<slug>`), never by index. The engine's JSONL still goes to
+# handoff-sessions/<slug>/<ts>.jsonl (tee), the pane shows a readable form (`handoff_sessions.py pretty`), the engine pid
+# and exit status land in <out>.pid / <out>.rc for the dispatcher. The pane stays open after the turn (remain-on-exit),
+# is reused on the next resume (respawn-pane) and is killed when the session is marked done. No send-keys, ever.
+TMUX_SESSION = "agent"
+PROTECTED_WINDOWS = ("codex-gen", "claude")
+
+
+def tmux(*args, timeout=20):
+    """Run one tmux command; (rc, stdout). Monkeypatched in tests."""
+    try:
+        r = subprocess.run(["tmux", *args], capture_output=True, text=True, timeout=timeout)
+        return r.returncode, r.stdout
+    except (OSError, subprocess.TimeoutExpired) as ex:
+        return 1, str(ex)
+
+
+def window_name(slug: str) -> str:
+    return f"h-{slug}"
+
+
+def window_target(slug: str) -> str:
+    return f"{TMUX_SESSION}:={window_name(slug)}"  # `=` : exact name match, never an index
+
+
+def tmux_has_window(slug: str) -> bool | None:
+    """True/False, or None when the tmux session itself is unavailable (then the engine runs detached as before)."""
+    rc, out = tmux("list-windows", "-t", TMUX_SESSION, "-F", "#{window_name}")
+    if rc != 0:
+        return None
+    return window_name(slug) in out.splitlines()
+
+
+def shell_quote(x: str) -> str:
+    return "'" + str(x).replace("'", "'\\''") + "'"
+
+
+def pane_command(cmd, prompt_file, out, cwd) -> str:
+    """The shell line the pane runs: engine (stdin = prompt) -> tee JSONL -> readable filter; pid and rc files."""
+    me = os.path.abspath(__file__)
+    eng = " ".join(shell_quote(c) for c in cmd)
+    return (f"cd {shell_quote(cwd)} && {eng} < {shell_quote(prompt_file)} > >(tee {shell_quote(out)} | "
+            f"python3 -I {shell_quote(me)} pretty) 2>&1 & echo $! > {shell_quote(out + '.pid')}; wait $!; rc=$?; "
+            f"echo $rc > {shell_quote(out + '.rc')}; echo \"[handoff_sessions] engine exit rc=$rc $(date -u +%FT%TZ) - pane stays open; "
+            f"the dispatcher reuses it on the next resume\"")
+
+
+def launch_in_tmux(slug, cmd, prompt_file, out, cwd):
+    """Run the engine in agent:h-<slug>; returns the engine pid or None when tmux is unavailable/failed."""
+    has = tmux_has_window(slug)
+    if has is None:
+        return None
+    if window_name(slug) in PROTECTED_WINDOWS:
+        return None
+    line = ["bash", "-c", pane_command(cmd, prompt_file, out, cwd)]
+    if has:
+        rc, msg = tmux("respawn-pane", "-k", "-t", window_target(slug), *line)
+    else:
+        rc, msg = tmux("new-window", "-d", "-t", TMUX_SESSION + ":", "-n", window_name(slug), *line)
+    if rc != 0:
+        return None
+    tmux("set-option", "-w", "-t", window_target(slug), "remain-on-exit", "on")
+    pidf = out + ".pid"
+    for _ in range(50):  # the pane writes the engine pid within a moment
+        try:
+            pid = int(open(pidf).read().strip() or 0)
+            if pid:
+                return pid
+        except (OSError, ValueError):
+            pass
+        time.sleep(0.1)
+    return None
+
+
+def kill_window(slug):
+    if window_name(slug) in PROTECTED_WINDOWS:
+        return
+    if tmux_has_window(slug):
+        tmux("kill-window", "-t", window_target(slug))
+
+
+def last_rc(e) -> int | None:
+    try:
+        return int(open((e.get("last_output") or "") + ".rc").read().strip())
+    except (OSError, ValueError):
+        return None
+
+
+def pretty(src=sys.stdin, dst=sys.stdout):
+    """Readable form of an engine JSONL stream for the pane (the JSONL itself is kept by tee)."""
+    for line in src:
+        line = line.rstrip("\n")
+        try:
+            ev = json.loads(line)
+        except ValueError:
+            dst.write(line + "\n"); dst.flush(); continue
+        if not isinstance(ev, dict):
+            continue
+        t = ev.get("type") or ""
+        item = ev.get("item") if isinstance(ev.get("item"), dict) else ev
+        txt = item.get("text") or item.get("command") or item.get("message") or item.get("result") or ""
+        if isinstance(ev.get("message"), dict):  # claude stream-json
+            parts = ev["message"].get("content") or []
+            txt = " ".join(p.get("text") or p.get("name") or "" for p in parts if isinstance(p, dict))
+        sid = ev.get("thread_id") or ev.get("session_id") or ev.get("sessionID")
+        if sid:
+            dst.write(f"[session {sid}]\n")
+        if txt or t:
+            dst.write(f"[{t or item.get('type', '?')}] {str(txt)[:600]}\n")
+        dst.flush()
+
+
 # ---------------------------------------------------------------- engines
 def engine_cmd(engine, session_id, fresh: bool):
     if engine == "codex":
@@ -317,6 +432,10 @@ def launch(flags, slug, e, prompt, fresh=False, runner=None):
             return runner(cmd, pf, out, cwd=cwd)
         except TypeError:  # older 3-argument test runners
             return runner(cmd, pf, out)
+    pid = launch_in_tmux(slug, cmd, pf, out, cwd)
+    if pid:
+        return pid, out
+    log(flags, f"TMUX-FALLBACK {slug}: no window in session {TMUX_SESSION}; engine runs detached")
     p = subprocess.Popen(cmd, stdin=open(pf), stdout=open(out, "w"), stderr=subprocess.STDOUT, cwd=cwd,
                          start_new_session=True)
     return p.pid, out
@@ -510,13 +629,13 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 e["last_wrapup"] = m[-1]
             if "FRESH-SESSION-REQUESTED" in tailtxt:
                 e["fresh_next"] = True
-            e["pid"], e["pending_event"], e["last_end"] = None, None, now_iso()
+            e["pid"], e["pending_event"], e["last_end"], e["last_rc"] = None, None, now_iso(), last_rc(e)
             if landed(e.get("last_wrapup")):
                 e["status"], e["push_retries"] = "suspended", 0
             else:
                 e["status"] = "unpushed"  # never suspended without proof the wrap-up landed
                 log(flags, f"UNPUSHED {slug} wrapup={e.get('last_wrapup')}: resuming to push")
-            log(flags, f"TURN-END {slug} session={e.get('session_id')} wrapup={e.get('last_wrapup')}")
+            log(flags, f"TURN-END {slug} session={e.get('session_id')} rc={e.get('last_rc')} wrapup={e.get('last_wrapup')}")
     # 2. new run ends owned by a pilot
     for rid, p in end_events(flags):
         key = os.path.basename(p)
@@ -541,7 +660,8 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
     for slug, e in S.items():
         if e.get("status") not in ("done", "live") and not alive(e.get("pid")) and e.get("handoff") and open_tasks(e["handoff"], repo) == 0:
             e["status"], e["done_at"] = "done", now_iso()
-            log(flags, f"DONE {slug}: no open tasks left in {e['handoff']}; slot freed")
+            kill_window(slug)
+            log(flags, f"DONE {slug}: no open tasks left in {e['handoff']}; slot freed; tmux window {window_name(slug)} killed")
     paused = _parse(reg.get("paused_until") or "") > now
     live = sum(1 for e in S.values() if alive(e.get("pid")))  # suspended sessions (waiting on a running row) have no pid
     cap = int(reg.get("max_live", 5))
@@ -652,7 +772,7 @@ def _go(flags, slug, e, prompt, runner, ev, fresh=False):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("cmd", choices=["brief", "start", "dispatch", "status", "transfer", "rank"])
+    ap.add_argument("cmd", choices=["brief", "start", "dispatch", "status", "transfer", "rank", "pretty"])
     ap.add_argument("slug", nargs="?")
     ap.add_argument("--flags", default=FLAGS)
     ap.add_argument("--loop", action="store_true")
@@ -663,6 +783,9 @@ def main(argv=None):
     ap.add_argument("--priority", default=None, help="backlog-priority.json for the auto-start ranking (default: backlog_gen's)")
     ap.add_argument("--keeper-log", default=None)
     a = ap.parse_args(argv)
+    if a.cmd == "pretty":
+        pretty()
+        return 0
     reg = load(reg_path(a.flags), {"sessions": {}})
     if a.cmd == "status":
         print(json.dumps(reg, indent=2))
