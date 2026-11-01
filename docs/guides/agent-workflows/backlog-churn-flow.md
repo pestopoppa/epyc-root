@@ -58,6 +58,30 @@ A non-inference task that unblocks an inference row declares it, so the generato
 
 Workers fill `unblocks:` when they file a task. A blocked row with no unblocking task shows a placeholder asking for one.
 
+## Session per handoff (pilot, operator-approved 2026-11-01)
+
+Handoffs with a live inference thread can be owned by **one resumable agent session** instead of a generalist worker.
+The handoff file is the durable record; the session is a cache.
+
+- **Registry** `compute-flags/handoff-sessions.json` (`epyc.handoff-sessions.v1`): per handoff its path, engine
+  (codex default; claude; opencode), session id, status (`live` / `suspended` / `done`), `waits_on` row ids, last
+  resume, last wrap-up, brief path, and the ownership matchers `row_ids` / `row_patterns` / `handoff_rows`.
+- **Ownership**: `backlog_gen.py` drops matched READY rows, `inference_prep` entries and code-queue lines on the handoff
+  from `BACKLOG-<worker>.md` and writes `BACKLOG-handoff-<slug>.md`. Ownership moves only through the registry, never by
+  editing grants, the keeper, gates or READY manifests.
+- **Brief** `compute-flags/briefs/HANDOFF-<slug>.md` (`handoff_sessions.py brief <slug>`): this flow, scoped to one handoff.
+- **Dispatcher** `scripts/coordination/handoff_sessions.py dispatch --loop` (`hs-dispatcher-v1`, zero-token): on
+  `grants/<id>.ended|.complete` for an owned row it resumes the owner headlessly with fetch / re-read / result path,
+  rc, end line and decision_rule from the READY manifest / file-the-verdict instructions; starts a suspended handoff
+  that has advanceable rows after a 45 min cooldown; at most `max_live` (5) sessions run, extra events queue; a
+  usage-limit error pauses the dispatcher 30 min and re-queues the event (logged in `handoff-sessions.log`).
+- **Headless resume forms** (verified 2026-11-01): `codex exec resume --json <thread_id> -` (prompt on stdin);
+  `claude -p --resume <session_id>`; `opencode run -s <ses_id> --format json` (prompt on stdin, needs its backend).
+- **Lifecycle**: a session ALWAYS runs the per-task wrap-up (progress, handoff ticks with evidence, commit, push) before
+  it ends a turn, and suspends once its row is armed. At a milestone or when large it wraps up and prints
+  `FRESH-SESSION-REQUESTED`; the next dispatch starts a fresh session from the handoff and brief.
+- Tiny chores with no inference thread stay with the generalist workers (and their subagents).
+
 ## Roles
 
 - **Workers (Codex NI / refactor / codex3)**: run the five steps against their BACKLOG file, forever. Goal text: `compute-flags/GOAL-<worker>.md`.
