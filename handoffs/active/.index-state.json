@@ -4,7 +4,7 @@
       "blocked": 58,
       "handoffs": 59,
       "oldest_advance": "2026-07-29",
-      "open": 1038
+      "open": 1039
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -761,7 +761,7 @@
     },
     "dflash2-block-drafter-experimental-build.md": {
       "blocked": 0,
-      "closed": 26,
+      "closed": 27,
       "guarded": 0,
       "last_advanced": "2026-11-01",
       "open": 18,
@@ -773,7 +773,7 @@
       },
       "row_id": "INF-62",
       "state": "active",
-      "total": 44
+      "total": 45
     },
     "document-parser-table-bench.md": {
       "blocked": 0,
@@ -2873,10 +2873,10 @@
     },
     "yarn-context-extension-research.md": {
       "blocked": 0,
-      "closed": 41,
+      "closed": 43,
       "guarded": 0,
       "last_advanced": "2026-11-01",
-      "open": 33,
+      "open": 34,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2885,7 +2885,7 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 74
+      "total": 77
     }
   },
   "row_id_collisions": {},
