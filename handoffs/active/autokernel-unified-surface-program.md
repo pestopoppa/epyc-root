@@ -4199,6 +4199,7 @@ or FIFO default changed. Both current CPU placements still own q0–q3, so timin
 **Starvation evidence**: a region-lock build claim on cpu 0-3 waited 3872 s behind a live AK loop on 2026-10-05.
 
 - [ ] **AKU-RED-LOOP — triage the red research AutoKernel loop suites** (filed 2026-09-17; handed over by
+  - 2026-11-01 narrow recovery-fixture checkpoint: Research `99b9622f2780eb2b5d0ea5906e274ced7f7d07ea` gives the real interrupted-owner fixture a declared 300 s stage/1,000 s campaign bound before scheduler selection. Its retained actual held receipt was 13.493 s, exceeding the generic 10 s test budget; the scheduler correctly fenced the old fixture. Authentic non-scratch before/after controls now pass all five recovery tests without weakening ownership, receipt accounting or no-old-sample-mix checks. [Raw logs and original/new receipts](https://github.com/pestopoppa/epyc-inference-research/tree/99b9622f2780eb2b5d0ea5906e274ced7f7d07ea/artifacts/engineering/akx-runtime-recovery-20261101). The scratch-location refusal remains a valid historical-evidence gate. This parent remains open for measurement-granularity pause/yield; no production, model or deployment change and no new parent completion credit. [no-belief: fixture repair and native controls]
   `sub-redtests`, see `progress/2026-09/2026-09-16-sub-redtests.md` → *Handover*). Under python3,
   `scripts/kernel_rnd/autokernel/loop` shows 30 failed and 30 errors. Clusters: the `test_serial_run.py`
   settlement refusal; `ProducerSourceRefused` in 13 errors; `test_seed.py` prompt text; missing
