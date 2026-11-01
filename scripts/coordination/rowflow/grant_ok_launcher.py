@@ -59,7 +59,7 @@ ENGINE_RE = re.compile(r"^filler_run\d*\.sh$")
 VALUE_FLAGS = {"--id", "--class", "--cmd", "--min-window", "--stop", "--complete-cmd", "--port",
                "--sched-port", "--excl-lock", "--gpu-threads", "--workdir", "--gpu-quiet", "--role",
                "--claim-cpus", "--precond-cmd",
-               "--requires-tool"}  # ws58 2026-11-01: engine v14 (D1 canonical) passes repeatable --requires-tool
+               "--requires-tool", "--qual-interpreter"}  # ws58 2026-11-01: engine v14/v15 (D1 canonical) passes repeatable --requires-tool
 BOOL_FLAGS = {"--self-claim", "--repeat", "--no-fold-siblings"}
 LIST_RE = re.compile(r"^[0-9]+(-[0-9]+)?(,[0-9]+(-[0-9]+)?)*$")
 QUARTERS = ("q0", "q1", "q2", "q3")

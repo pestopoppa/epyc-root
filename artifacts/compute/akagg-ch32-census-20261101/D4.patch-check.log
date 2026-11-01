@@ -1,0 +1,31 @@
+Applied patch to 'common/arg.cpp' cleanly.
+Applied patch to 'common/chat.cpp' with conflicts.
+Applied patch to 'common/chat.h' with conflicts.
+Applied patch to 'common/common.h' with conflicts.
+Applied patch to 'conversion/__init__.py' with conflicts.
+Applied patch to 'conversion/lfm2.py' cleanly.
+error: conversion/lfm3.py: does not exist in index
+Applied patch to 'gguf-py/gguf/constants.py' with conflicts.
+Applied patch to 'gguf-py/gguf/gguf_writer.py' with conflicts.
+Applied patch to 'gguf-py/gguf/tensor_mapping.py' with conflicts.
+Applied patch to 'src/llama-quant.cpp' with conflicts.
+Applied patch to 'tools/mtmd/CMakeLists.txt' with conflicts.
+Applied patch to 'tools/mtmd/clip-impl.h' with conflicts.
+Applied patch to 'tools/mtmd/clip-model.h' with conflicts.
+Applied patch to 'tools/mtmd/clip.cpp' with conflicts.
+Falling back to direct application...
+Falling back to direct application...
+Applied patch to 'tools/mtmd/models/models.h' with conflicts.
+Applied patch to 'tools/mtmd/mtmd-audio.cpp' with conflicts.
+Applied patch to 'tools/mtmd/mtmd-audio.h' with conflicts.
+Applied patch to 'tools/mtmd/mtmd-cli.cpp' with conflicts.
+error: tools/mtmd/mtmd-helper-gen.cpp: does not exist in index
+Applied patch to 'tools/mtmd/mtmd-helper.cpp' with conflicts.
+Applied patch to 'tools/mtmd/mtmd-helper.h' with conflicts.
+Applied patch to 'tools/mtmd/mtmd.cpp' with conflicts.
+Applied patch to 'tools/mtmd/mtmd.h' with conflicts.
+Applied patch to 'tools/server/README.md' with conflicts.
+Applied patch to 'tools/server/server-chat.cpp' cleanly.
+Applied patch to 'tools/server/server-context.cpp' with conflicts.
+Applied patch to 'tools/tts/README.md' cleanly.
+Applied patch to 'tools/tts/tts.cpp' with conflicts.

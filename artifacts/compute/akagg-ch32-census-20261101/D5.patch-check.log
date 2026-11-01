@@ -1,0 +1,10 @@
+Falling back to direct application...
+Applied patch to 'tools/server/CMakeLists.txt' cleanly.
+Applied patch to 'tools/server/README.md' with conflicts.
+Applied patch to 'tools/server/server-chat.cpp' cleanly.
+Applied patch to 'tools/server/server-chat.h' cleanly.
+Applied patch to 'tools/server/server-context.cpp' with conflicts.
+Falling back to direct application...
+Falling back to direct application...
+Applied patch to 'tools/server/server-task.cpp' with conflicts.
+Applied patch to 'tools/server/server-task.h' with conflicts.

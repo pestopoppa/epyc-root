@@ -1,0 +1,602 @@
+5bb180da83ec56a8704ffa833b387b5ec2479120
+100644 7bc770ab4f8a3f90e7afb5409fd079ac1c882de8 1	common/arg.cpp
+100644 e6374fce83cb4e36d0041078708fdb050b96df1c 2	common/arg.cpp
+100644 8b302d5d77f0af164dd1aa57b64322a0e92aec7b 3	common/arg.cpp
+100644 127278dfb2ac5987b914fee42a5eea17b451b625 1	common/chat-diff-analyzer.cpp
+100644 7db1dcb0fa84d635bdac5b4fdadd34a927127cf4 2	common/chat-diff-analyzer.cpp
+100644 a7e370578fd9290f9516b87dc5f0515820748629 3	common/chat-diff-analyzer.cpp
+100644 22d2ee4a2a11738777063dbdcb96afd294a33162 1	common/chat.cpp
+100644 8105a2dc6c5ff87edfc2c11dd0dbb0b1e12d96dd 2	common/chat.cpp
+100644 118072b6b514f332b678f3ac441c7ffd4359fbe0 3	common/chat.cpp
+100644 8f13217ab442a34b85bcf5dd44300d88275f15fd 1	common/common.cpp
+100644 8ddd023777e67d9d77bf421609a816d8ebc7b2d3 2	common/common.cpp
+100644 c5db228329f5506de623217304bcb3980887c0f5 3	common/common.cpp
+100644 bffc1767a7d1f370d0c7af27d0c4f5ba939e4577 1	common/common.h
+100644 15ac6b4e9b61cfd8d4d240e1ac8ac432f197345c 2	common/common.h
+100644 2cd6e2ec9858a91837746b8c392d59fbd2e18829 3	common/common.h
+100644 6b69a4418856ef2462f2a07a306174acdc913626 1	common/download.cpp
+100644 e8e938426f2a6a81e846bed0412c497a6219d810 2	common/download.cpp
+100644 ae0f7ffede42ec4c8abd09c7489e0da5369b9300 3	common/download.cpp
+100644 816e1c7f58a13241fd11dce90cda869c0ff8a0ba 1	common/download.h
+100644 3e789e9e93698bf8de67debaa48cd26d2af28668 2	common/download.h
+100644 8c30cfc3eadbb0f51532ae9776fa7ca45fa68af4 3	common/download.h
+100644 870596d617fb3575914fb14af66a1b446322aabe 1	common/jinja/value.cpp
+100644 92b5eb908b92238755ef328129c62fd859d6037d 2	common/jinja/value.cpp
+100644 0ecbbf8a8f7f63f93e470b5db62ab1d365c7d7bb 3	common/jinja/value.cpp
+100644 75a299e23eceee419cfec5f208606ec36fb5de01 1	common/sampling.cpp
+100644 89da0314f55d03b64b983d04e3b6db595dd08e55 2	common/sampling.cpp
+100644 564fa9c4dbf4aac5a4d3dcc68a9259e804ac7f4b 3	common/sampling.cpp
+100644 3cb08767bd46bc099a7aab159c632b8cfdcdba8b 1	common/speculative.cpp
+100644 feed1f545172d8e9c85179d9360fb69815c717f4 2	common/speculative.cpp
+100644 d8afd4095498ecc14f0f6e53d5f2e46015533dea 3	common/speculative.cpp
+100644 062bf209314a0569c76a2287e99992e50965d7ca 1	common/speculative.h
+100644 6a1c2aab775d0d9cbf1413ba0de980c774044232 2	common/speculative.h
+100644 a59846829683b96296b22285aab72c35b75cce5b 3	common/speculative.h
+100644 02102fac8d90053baa7605d077d6c37b06272933 1	conversion/__init__.py
+100644 b49fea3a7ad920e75d20b1dc92653cb27de8a09f 2	conversion/__init__.py
+100644 c2683aec471cb538b37168eca4383a8e470e7bf6 3	conversion/__init__.py
+100644 1b85ef0a1b899cb571a6b05290a291f30a84c8f8 1	conversion/base.py
+100644 dbfaf371eca51029a58113d3dc8b4f4278d50c60 2	conversion/base.py
+100644 e3d265157addc7c73a1d8a1b4d4964b1e5507a19 3	conversion/base.py
+100644 ea6ae23d58e730903b97535ce41f0082915ae424 1	conversion/deepseek.py
+100644 0bf69be3be98b343ca7f99e44deaadd17954022e 2	conversion/deepseek.py
+100644 817eb76128b6ddeb25c949e203ff20a33c7a2e82 3	conversion/deepseek.py
+100644 9820461c9ee417525b1de79f78590012a0099ec7 2	conversion/laguna.py
+100644 29e0b3d6b318b73aa7f5c608103b9e3a90ddd271 3	conversion/laguna.py
+100644 9bc2b99fde5d9257b2c7817c0513e57a7584cf1e 1	conversion/qwen.py
+100644 a3f7543228f2da22222f98ec932b64e921fc6d47 2	conversion/qwen.py
+100644 43d2fb466ffed6096111fb9de43e3c9acbe1f515 3	conversion/qwen.py
+100644 1665da44a5d549bafab7a2c25c9be9719e429fa7 2	conversion/qwen4exp.py
+100644 7ca26c2a3399a7423b023e38796e3da375351be5 3	conversion/qwen4exp.py
+100755 91c006278f1498669a6878934a9da381560dc7c3 1	convert_hf_to_gguf_update.py
+100755 e5d3196efe415c0a15c09cc84e4f15197506efb2 2	convert_hf_to_gguf_update.py
+100755 d49fb8f3ff3e80170ccd747b6b7bb0111d6bcdbb 3	convert_hf_to_gguf_update.py
+100644 4100b92f8f18b987c8a6b9fa49b21c02f2aa7baf 1	docs/speculative.md
+100644 3957db85c9c17a0ec240a1e73de708ba82402b1c 2	docs/speculative.md
+100644 a32842a256b0d17df4dc7d024296e1ee0fc2f8dd 3	docs/speculative.md
+100644 d87ba48beb14d54c037d329aa1aa96b6baf13f6f 1	examples/speculative-simple/speculative-simple.cpp
+100644 1f4fba760d2461d2568eb6730f9c995d8a59460c 2	examples/speculative-simple/speculative-simple.cpp
+100644 e4a878b828423957772250e19a9b4e2a100ccc3e 3	examples/speculative-simple/speculative-simple.cpp
+100644 f7fa5e30602faa5a3c5d23923b8f05e249bbe922 1	examples/speculative/speculative.cpp
+100644 99ad9faf80e5c67e88545cb69c9637bc24f17f62 2	examples/speculative/speculative.cpp
+100644 8f347b0d4eeedf27df83e31dcea7b9d94cb340d4 3	examples/speculative/speculative.cpp
+100644 efa5420a698294675588d9fc3ca7eae5eddd770f 1	ggml/include/ggml-rpc.h
+100644 599ccb96b65115bb0c79dc3f42db0df42945d3da 2	ggml/include/ggml-rpc.h
+100644 482bd3666d1c1608172ff0e677b37b5c2ec460e5 3	ggml/include/ggml-rpc.h
+100644 92ba65222a6ca9ae088121b0dd65e697d64a15c9 1	ggml/include/ggml.h
+100644 3a2e483b9c94ddfb0ca5257b449daf3f0177b8c5 2	ggml/include/ggml.h
+100644 c37ba947140e1b84c67440632691323b05e96329 3	ggml/include/ggml.h
+100644 1f29ec86712d07cc867f3d41745db0b012e784f9 1	ggml/src/ggml-backend-meta.cpp
+100644 bf41d6a25d8660492cf8480fc8f2b8b3efd03e75 2	ggml/src/ggml-backend-meta.cpp
+100644 679d5216d255b94673aa12ae9dcadadb5bc6e032 3	ggml/src/ggml-backend-meta.cpp
+100644 0b8d9fac6505e9a43fec2483c135361270c88445 1	ggml/src/ggml-cpu/ggml-cpu.c
+100644 e4a92df42303da6ad62be58133fa9e6e2f721c20 2	ggml/src/ggml-cpu/ggml-cpu.c
+100644 ab82e3d6c04395b702ccbf3a9ac3e954d8d8cfcf 3	ggml/src/ggml-cpu/ggml-cpu.c
+100644 49023ebf617ef9af551d07d81c303102cbbbc833 1	ggml/src/ggml-cpu/ggml-cpu.cpp
+100644 80597f985cdd2bf3dd03b6c8346297963a0901f9 2	ggml/src/ggml-cpu/ggml-cpu.cpp
+100644 81ff5d79fa98dbfeb9c149e58883d922fe001743 3	ggml/src/ggml-cpu/ggml-cpu.cpp
+100644 8022ab49dbc2f3f3013869423d74b04b1f3a2d97 1	ggml/src/ggml-cpu/ops.cpp
+100644 cf728020bab796e98dbabd544dda41b517cf9df0 2	ggml/src/ggml-cpu/ops.cpp
+100644 7a73e138ef1fc3040ef00a2280c0344e2b4ae5f1 3	ggml/src/ggml-cpu/ops.cpp
+100644 e956c25d3edafa70a6a1f7cc8385a87a8e95e3b5 1	ggml/src/ggml-cpu/ops.h
+100644 51d78e3678a8835a37b86204ded3f661da291a87 2	ggml/src/ggml-cpu/ops.h
+100644 2728b08b6c976ed864353f8eb84e2e10d309f287 3	ggml/src/ggml-cpu/ops.h
+100644 f18758f16bb62040333418bab06ce22efe826b20 1	ggml/src/ggml-cpu/repack.cpp
+100644 12226afb6e915e02c7f46db9e444aa7ffadece7d 2	ggml/src/ggml-cpu/repack.cpp
+100644 2632ae3a063c40c81438c7e8ab992e5903481d86 3	ggml/src/ggml-cpu/repack.cpp
+100644 c4b19a787b0e4b5bc6e8763a9281ec207340f639 2	ggml/src/ggml-cuda/dsv4-hc.cu
+100644 ca1d2dc8a48289091d0e598192ddf46a22defb52 3	ggml/src/ggml-cuda/dsv4-hc.cu
+100644 e67cc7fdf784c18bc4ce93918005cbf048148c26 1	ggml/src/ggml-cuda/fattn-common.cuh
+100644 ffc413bbda5f0afd02cdc7f3c0d5f10c80eb89d3 2	ggml/src/ggml-cuda/fattn-common.cuh
+100644 41d948335ef512f961e7332e834445a0fc53ad45 3	ggml/src/ggml-cuda/fattn-common.cuh
+100644 7f4cfd5511ff8efebead9162a1b295c05d80e469 1	ggml/src/ggml-cuda/fattn-mma-f16.cuh
+100644 6c7834f9d5817bd1f950386402cbacfaab0a81c2 2	ggml/src/ggml-cuda/fattn-mma-f16.cuh
+100644 296aa2b349640b32e343b8d35a9a85d015f2ddab 3	ggml/src/ggml-cuda/fattn-mma-f16.cuh
+100644 3e07a9f7e04faa763d6850cd17faff3cbbc8fd33 1	ggml/src/ggml-cuda/fattn-tile.cuh
+100644 b6565f77d7cb782f4354a40f5fd2bfeab15c130f 2	ggml/src/ggml-cuda/fattn-tile.cuh
+100644 b5ea915e132e7943f59736d2db4d2e784b34b959 3	ggml/src/ggml-cuda/fattn-tile.cuh
+100644 6850716fc0dc7be99a03c911e95380f5612919ab 1	ggml/src/ggml-cuda/fattn-wmma-f16.cu
+100644 501007ba251bee022ff220982165f246b415199b 2	ggml/src/ggml-cuda/fattn-wmma-f16.cu
+100644 00ffacf2992104e94af25e6b4091b5c55fc94dff 1	ggml/src/ggml-cuda/fattn.cu
+100644 c4ab16ce5c85af00b400fe7fbe025295ebef9ab5 2	ggml/src/ggml-cuda/fattn.cu
+100644 5fa3e530840c48200c5e206a664886faa37fd7b4 3	ggml/src/ggml-cuda/fattn.cu
+100644 1b431a724d7237121dea29ca9c82bcd4817337a7 1	ggml/src/ggml-cuda/gated_delta_net.cu
+100644 27e580888e7d7092e53ae161dfc29c0c5fe0bacd 2	ggml/src/ggml-cuda/gated_delta_net.cu
+100644 ae2374cbcdd79b3383d622b85d3d6a086c8d5e5e 3	ggml/src/ggml-cuda/gated_delta_net.cu
+100644 850a21efd04be0a3c59c49e5536118e6373a13db 1	ggml/src/ggml-cuda/ggml-cuda.cu
+100644 962f4fc4fdda3945978c03a2963e2ab4f246161f 2	ggml/src/ggml-cuda/ggml-cuda.cu
+100644 7c45d0d1fb2359d8d6c0e9b0b515ca48c5eddea5 3	ggml/src/ggml-cuda/ggml-cuda.cu
+100644 e18ada5377d5e111ab8ff90e4df4a292697a49af 1	ggml/src/ggml-cuda/mmvq.cu
+100644 343471e16859353dbf2bd13498f53ab77e92faa0 2	ggml/src/ggml-cuda/mmvq.cu
+100644 8068ba364ccea214012e1666728f7f51c58906d6 3	ggml/src/ggml-cuda/mmvq.cu
+100644 09d9f3a7d624160b291351f0fbf050fa153657b3 1	ggml/src/ggml-cuda/norm.cu
+100644 daa95651dec3d80fc27cf33d56ed6a93dee82e2b 2	ggml/src/ggml-cuda/norm.cu
+100644 d804b933bbb563c8732b966e92efb348b6ed4e67 3	ggml/src/ggml-cuda/norm.cu
+100644 af7fe105b673e04b602c83116131ba378ff6a62d 1	ggml/src/ggml-cuda/quantize.cu
+100644 e2ca3991535cba26de9534ed282f58617cf36a22 2	ggml/src/ggml-cuda/quantize.cu
+100644 ea089a8c62490c1b8a716fe4dd97f0da5c19dc14 3	ggml/src/ggml-cuda/quantize.cu
+100644 e20a5cb6bed10e6fb42e2df0222038e5a4a8b6c1 1	ggml/src/ggml-cuda/rope.cu
+100644 b12d15c50157cde35353babb6ae8f7a477e1bc40 2	ggml/src/ggml-cuda/rope.cu
+100644 b4fca778fa69f257ca41539fc27085ad21eb9809 3	ggml/src/ggml-cuda/rope.cu
+100644 3022249c77d5b0f8f81ede471633216b65b089e4 1	ggml/src/ggml-cuda/ssm-scan.cu
+100644 70392cbc4ec3e08650834b62f620be9a7013bfc1 2	ggml/src/ggml-cuda/ssm-scan.cu
+100644 dcc199f734ff1ed2723069796ccbd412238040e5 3	ggml/src/ggml-cuda/ssm-scan.cu
+100644 b9932bce9c7fad0dea3ab4184225125e71322097 1	ggml/src/ggml-cuda/vecdotq.cuh
+100644 f9c802737ed6b6f7961206b7134df563889ad221 2	ggml/src/ggml-cuda/vecdotq.cuh
+100644 f65fe530eb4f292fb6cffc4e1cb83cb6e1720629 3	ggml/src/ggml-cuda/vecdotq.cuh
+100644 7121193f1c84e9ba5b694ae3b74597534e0192fc 1	ggml/src/ggml-hip/CMakeLists.txt
+100644 e1eef9678c96ad5f6f36078d0898619003a82459 2	ggml/src/ggml-hip/CMakeLists.txt
+100644 75d4d60e87989f9d79062f55d4942023807f1459 3	ggml/src/ggml-hip/CMakeLists.txt
+100644 80e47f2c2f89b9728a8804b9bec3489423be7e83 1	ggml/src/ggml-metal/ggml-metal-device.m
+100644 3b4fec295327869d895082163c4b5a9b7eeba3fe 2	ggml/src/ggml-metal/ggml-metal-device.m
+100644 d1bce8bad85ae6d99ed4fb374fc033b14ccde45c 3	ggml/src/ggml-metal/ggml-metal-device.m
+100644 969fddfa5b8916c6ff474b411898267cd91216a1 1	ggml/src/ggml-metal/ggml-metal.metal
+100644 41aaa55c91cc1f836eba48ee446f47f3dce72294 2	ggml/src/ggml-metal/ggml-metal.metal
+100644 3c514930e2df66655d4568e8d147423109475baa 1	ggml/src/ggml-vulkan/ggml-vulkan.cpp
+100644 c3bd74f2776670a6be3d99d16430c59ac89668fd 2	ggml/src/ggml-vulkan/ggml-vulkan.cpp
+100644 436bfe3bb0548eef627d67a281866ba6ef239ff4 3	ggml/src/ggml-vulkan/ggml-vulkan.cpp
+100644 086b6ab084001f8f4d8555aa1687ccb0aa8f6191 1	ggml/src/ggml.c
+100644 7f34a9c63611ab6565d27f4b666f2328e01643f0 2	ggml/src/ggml.c
+100644 01dc8d05c3168ea9075f12687d95bee02a25e9c9 3	ggml/src/ggml.c
+100644 63ac2ed1f5cf402555994945935090b401087605 1	gguf-py/gguf/constants.py
+100644 8920068801f78d086804093d003df520bf71b39a 2	gguf-py/gguf/constants.py
+100644 92a69bd57369f817cb41a26135f1bac6b48fb910 3	gguf-py/gguf/constants.py
+100644 1e277f0687c5addfec6c9057a3263d1031c5bfd0 1	gguf-py/gguf/gguf_writer.py
+100644 6da5514f1a34d247cd566804281067bebbee07a8 2	gguf-py/gguf/gguf_writer.py
+100644 93ec95eb648e73fd6e150432e68db5e01ed0d276 3	gguf-py/gguf/gguf_writer.py
+100644 acbc79258a31d5bfe7fa3dd9b0bb5309e0b829f2 1	gguf-py/gguf/lazy.py
+100644 6a0aee88110782eebd27c84fffb9e5a36f5952d9 2	gguf-py/gguf/lazy.py
+100644 a39f22321597311ad54d03d360e155ae309ff5fd 3	gguf-py/gguf/lazy.py
+100644 9efb36f8a447921456c297e4db94562508b1988c 1	gguf-py/gguf/tensor_mapping.py
+100644 b15cd0f3fb5d8484b1f3de76a4d4a9933b0655ee 2	gguf-py/gguf/tensor_mapping.py
+100644 ab6abf9cb704d2e98c7e48077665ec4ad580b003 3	gguf-py/gguf/tensor_mapping.py
+100644 a311ac2023579376ed571a614dcac9d259692e56 1	include/llama.h
+100644 335d9dcd630bf88a7f3ffd11032f102d6e11e247 2	include/llama.h
+100644 3af6e22233efe53bff96ee5857af26fb886c9a04 3	include/llama.h
+100644 75c5f4cec0d406ca4615bf871c8b68aefd486a4b 2	models/templates/poolside-Laguna-S-2.1.jinja
+100644 acf45eb429178c36d1f4b41400b647510b359545 3	models/templates/poolside-Laguna-S-2.1.jinja
+100644 320784c3a8cc8f83e1d01be64b7c6208ccd97916 1	src/CMakeLists.txt
+100644 60133950b354faf38435dcb353314d294d0f8337 2	src/CMakeLists.txt
+100644 97250c2e885645386702f516d1f00ff2c9b121f2 3	src/CMakeLists.txt
+100644 72968607db809f91ff87afb68a222b4ef52a6cf7 1	src/llama-arch.cpp
+100644 1000dfa0e4f4012186116ca2c6f819ca1cc7fe64 2	src/llama-arch.cpp
+100644 1476a079a7cd764beb2a8ced9190047fc3a5cbc9 3	src/llama-arch.cpp
+100644 b74d53af4a325633ae034518e6f8b29fea9a661c 1	src/llama-arch.h
+100644 d828e3fe47a0fa97b90b542219fe933d6e9c5ef6 2	src/llama-arch.h
+100644 0c842d312db1ef60930003da885a1ab2dd3dfde6 3	src/llama-arch.h
+100644 3a469bc90bd90fbdf3d924afa696d4b61fcd1d00 1	src/llama-context.cpp
+100644 a9461f7123956db0706f77e51e7f1eed6315ea46 2	src/llama-context.cpp
+100644 9ee64b566779ea42af3ce4d4589d170ad1923fdf 3	src/llama-context.cpp
+100644 348bbae95770f3bcb6b2eb464624a24fa4d8028f 1	src/llama-ext.h
+100644 3dda3cf55c5bdfbc66b3455ef329d577b4afa0c2 2	src/llama-ext.h
+100644 8b3932bd7507876802c61176d412524e0df257d6 3	src/llama-ext.h
+100644 c8ecb0a2854cc2a43ca3102ebafea89e386d917f 1	src/llama-graph.cpp
+100644 4902f8751be4c30da8db41b810c0f4947a411a46 2	src/llama-graph.cpp
+100644 80be4bb57373235560039d372e09eaf40d3599c1 3	src/llama-graph.cpp
+100644 c84cb6a452b1dfc69a6ef4a3a3c5cd0c09429af2 1	src/llama-graph.h
+100644 2cc064ae5ebe6a040a3d42013b99ba0d8b4aa19d 2	src/llama-graph.h
+100644 816fa07cc7c434623d0843fcb3d36e78c5eaf9ac 3	src/llama-graph.h
+100644 9d0683d2fec4037e6284aab9d9256e518f867acb 1	src/llama-hparams.cpp
+100644 f0581dde1b4f0669992c433f9f9a7b4e6f368545 2	src/llama-hparams.cpp
+100644 b83f45ba9efe50a6f9e8d9187eb3df33385db866 3	src/llama-hparams.cpp
+100644 8be5f28f39e6c8c71e0e502cbde1be623e354c4c 1	src/llama-hparams.h
+100644 a2cc0e1f54ca2b20ced61b05781ea27cbc3dd5ff 2	src/llama-hparams.h
+100644 3e025368b91f9357ed9505df4092ee855b051c8c 3	src/llama-hparams.h
+100644 7cb6cc18dac37b8240298956cf7ece61c503cf30 1	src/llama-kv-cache-dsv4.cpp
+100644 3fa3c8d609cd43cac701e22a34e850166cb536fd 2	src/llama-kv-cache-dsv4.cpp
+100644 f8caae9d6be595afb8b8feebbfb3285005516c05 3	src/llama-kv-cache-dsv4.cpp
+100644 76b1daf5787136d6cdbfe9835d00a2b691eff034 1	src/llama-kv-cache-dsv4.h
+100644 a928ef635a20204bddde4618918fab91c0b1c3ab 2	src/llama-kv-cache-dsv4.h
+100644 ce39867c03427575930c3bdfdbca89523c0514a3 3	src/llama-kv-cache-dsv4.h
+100644 e70583e64152ec6c57feeaf5f6e23fe58796ac89 1	src/llama-kv-cache.cpp
+100644 626d6540fa3130018f471124b18faf07c834254e 2	src/llama-kv-cache.cpp
+100644 b7dfadef4638f6221608f48aff0a1f83df281063 3	src/llama-kv-cache.cpp
+100644 531d99dbdec185d92a7b4126b2f61e432949e161 1	src/llama-kv-cache.h
+100644 524aba49c3c9cccf29a4a6e59a37c1b23b96198f 2	src/llama-kv-cache.h
+100644 9bfb8f231fe6626df5053208b119ce525c3a7b66 3	src/llama-kv-cache.h
+100644 fddd31a0b219ea0dd5a81ae4dd605cc964f1a225 1	src/llama-kv-cells.h
+100644 5167c037db3e83d96a0b5f7f0d8e4801af9a4225 2	src/llama-kv-cells.h
+100644 9c0d51e4e066f277d7523f03d56e85b4d1e50c2a 3	src/llama-kv-cells.h
+100644 d4e59d77e5709cff127bbec74a742d413b1a2838 2	src/llama-memory-hybrid-idx.cpp
+100644 2c5a57680dc8c2a5ca0aaae6a6a116f6890de78f 3	src/llama-memory-hybrid-idx.cpp
+100644 e3472646d0f6ed43181d1d7a0091b6058b82f6f6 2	src/llama-memory-hybrid-idx.h
+100644 0ac4265dfc4cb9d2a6f319fd6e81a19901577442 3	src/llama-memory-hybrid-idx.h
+100644 28f8bb7934bbc807a08dc13ad58724ec77281903 1	src/llama-model-loader.cpp
+100644 4644843564dced04a082924956dfbcbc268d55e5 2	src/llama-model-loader.cpp
+100644 bc93c6f9e62dc81d524dc0c572d90b4e696f64fc 3	src/llama-model-loader.cpp
+100644 c476026d3e510ad03d3e6f0d619ecea7fc95319c 1	src/llama-model-loader.h
+100644 7d36eb0a12bfab7e7b66ec1fbf5147c22d6bf3bb 2	src/llama-model-loader.h
+100644 ed59079a4eadd8a310c013de20a87d782d490377 3	src/llama-model-loader.h
+100644 a3928523ba8d2cb8a2e15fe533a5369cbe29cb9c 1	src/llama-model-saver.cpp
+100644 f58862fde8fbf6b77cab39207c59c89dd9e205c9 2	src/llama-model-saver.cpp
+100644 46b1d2ae2744a5c58d88dac642e23ccbe6ea5184 3	src/llama-model-saver.cpp
+100644 eaf3f35d2d8e86722d130be89430298b991babfc 1	src/llama-model.cpp
+100644 8beed8c7896815811a802979c4fa9840456c7187 2	src/llama-model.cpp
+100644 5d48d702c5b86537d32d6fa761832d9fdebd97d4 3	src/llama-model.cpp
+100644 45b054cedf1d1e6accc7cf8aafcbae374614e64f 1	src/llama-model.h
+100644 e7d9d434256127950f1ce31dc687a930aade4d11 2	src/llama-model.h
+100644 6335dc2bc3182243893d9369dc3130d786de4462 3	src/llama-model.h
+100644 b66759b277608f6f3d204994b2113242a774102a 1	src/llama-quant.cpp
+100644 720c90769fd74723f88f41749d0ce12ae155a98a 2	src/llama-quant.cpp
+100644 b8f96bcef30fc94e147fd3dfc04a8f9af25a3488 3	src/llama-quant.cpp
+100644 707cd4bac4bfa03e2f662baef0a2d4943a1ce584 1	src/llama-vocab.h
+100644 b7c28926338b5716bd24f70e4c1e202a4b9ec781 2	src/llama-vocab.h
+100644 898a23ae6e2e7d450773729f6c2c1d6c55e99dd4 3	src/llama-vocab.h
+100644 0de6048f2820f78fe8486ffff6ee930074517eeb 1	src/llama.cpp
+100644 6529a2aed74988d3a261506a80f004d69a4e76aa 2	src/llama.cpp
+100644 9beb14841f9867f771c484a1a90882ee06481649 3	src/llama.cpp
+100644 499c73a1c49c421d456b134bd3d2c9a094c809ff 1	src/models/cohere2moe.cpp
+100644 c50910edc59d936a85636fc9436d2e45299e7e8a 2	src/models/cohere2moe.cpp
+100644 649682610eaaa3746c87526e32b8a2671c521591 3	src/models/cohere2moe.cpp
+100644 32262e6840b041925b95395c78173d055172bdf5 1	src/models/deepseek32.cpp
+100644 12cc4ab2ac5aed992d4d5efc2134de4ffb698614 2	src/models/deepseek32.cpp
+100644 083b32ecf4304a8b08f10d89106210a6d7a15969 3	src/models/deepseek32.cpp
+100644 579608b3e69633e8a8bb003edcc41d43d7f4747f 1	src/models/deepseek4.cpp
+100644 2a3d75db230085e440d5a8c351172deb3c1d97b4 2	src/models/deepseek4.cpp
+100644 af04dddd39219c73df0b1d3a1a76aad5cf6d291c 3	src/models/deepseek4.cpp
+100644 a7b4f4435a8892d519c3351f267d91d0f178b279 1	src/models/dflash.cpp
+100644 257ab16e9f7f326b245acb0c9f95ec85d5647c49 2	src/models/dflash.cpp
+100644 6f28d2f1db4cc74ccb0cf02a0f0a8cef7e0ce327 3	src/models/dflash.cpp
+100644 f94b7f80ff5b85a383d00d5d32e71f19d9e1303e 2	src/models/gemma-embedding2.cpp
+100644 2c7fa6750941582a9c7974a19c38e6cb6648e821 3	src/models/gemma-embedding2.cpp
+100644 6378130e79ec55ec72377d3e16bd9ca0b8d6d2ad 1	src/models/gemma4-assistant.cpp
+100644 64c61596d42125d828adc654bbcb64ec4ef613f6 2	src/models/gemma4-assistant.cpp
+100644 6ebc3c3e8e35a04a83d31aa55ce51ac9ad54c908 3	src/models/gemma4-assistant.cpp
+100644 32fe6def6f3c0bd4d2b436a44ae07a5023a638fc 1	src/models/glm-dsa.cpp
+100644 cff17d258b3a9535b5a6a8a714b86dfd7536d99f 2	src/models/glm-dsa.cpp
+100644 a9d62c0768f571bfe4e2031b2a5d013836a08e25 3	src/models/glm-dsa.cpp
+100644 47a0beaf217f19219e3e8fb8d5c35664625d7c73 1	src/models/hy-v3.cpp
+100644 ad3925e001d698767fba66dd4a4f688f3e5dddeb 2	src/models/hy-v3.cpp
+100644 080b30c1a5d11528a3558812c00282bc8583cb05 3	src/models/hy-v3.cpp
+100644 f5783ad2d55315cb83ccc97ffc5bdacb3cb25eab 2	src/models/laguna.cpp
+100644 cbc7b26d7cec653e8b4e1a270f18936b32599817 3	src/models/laguna.cpp
+100644 beab9f6bc7df422c2e35f79d03ef223f02a40035 1	src/models/models.h
+100644 95cc291a2fd2f1f57b6e7e0db51b0a986c47db3f 2	src/models/models.h
+100644 94a7896172f36fd085bcc34c72d215034b6f976b 3	src/models/models.h
+100644 a456269347b9aec0711d0c31100f9f528f437c61 1	src/models/nemotron-h.cpp
+100644 57d34ceb6930cd92f40dd39497d9b1a03b45b859 2	src/models/nemotron-h.cpp
+100644 e9c61308feb11f192926b41c180894ad82672648 3	src/models/nemotron-h.cpp
+100644 d8ffe43ae76c1bfc1ed8dd953e8b060b78824d59 1	src/models/qwen35.cpp
+100644 3168f99f989a98eaceb861599c2f28363ce2b669 2	src/models/qwen35.cpp
+100644 802f2e2f13e9111472daff00bf367aa9e77eb5af 3	src/models/qwen35.cpp
+100644 7b0876cbb04b232b1dd47600606a0a12fe4e659b 1	src/models/qwen35moe.cpp
+100644 15c56de8bd5c05f3ba1ba18110e89f0b31f01ce2 2	src/models/qwen35moe.cpp
+100644 fdbb2c63d44123750ed874697127f00828fd2757 3	src/models/qwen35moe.cpp
+100644 46d97a948eae25f3fdb451338a4d6d43c284dfd5 2	src/models/qwen4exp.cpp
+100644 e055abdf55d2225e04d823ca4f732dffe12e4d38 3	src/models/qwen4exp.cpp
+100644 9b7b18a3678b0e7c3d2cfa9eb62e5cf6554d5859 1	src/models/step35.cpp
+100644 d101d115ef667634113e0759dc62409995011bf8 2	src/models/step35.cpp
+100644 3e225a11efa3fba7229dc127ea5818c931a2d4ba 3	src/models/step35.cpp
+100644 855295c152faa78fa4acdec54013940c41627be9 1	tests/CMakeLists.txt
+100644 cc34baffcff23372afcaf669359e1e1395d65825 2	tests/CMakeLists.txt
+100644 991bf547998d8a2a553329e4d44499126c9413c2 3	tests/CMakeLists.txt
+100644 fae0e8eb93ddcd3fe56b7dc27cb17fb520c881bf 1	tests/test-backend-ops.cpp
+100644 40fbc5d7a4863f3a0bf000a553f698a07e96a749 2	tests/test-backend-ops.cpp
+100644 ba7f7eb4e56caa7379b8f801cad09c3a3c74f765 3	tests/test-backend-ops.cpp
+100644 78e42c65a50c868d0014c7fc30b1df866326ffab 1	tests/test-chat-auto-parser.cpp
+100644 4218f8d5747d73c9ac0054207db9afa187079895 2	tests/test-chat-auto-parser.cpp
+100644 b9a40718276b3c7aafd7b890f07ffaaef7486f12 3	tests/test-chat-auto-parser.cpp
+100644 2cdf35739820690066cc4504eff3339889100c5c 1	tests/test-llama-archs.cpp
+100644 b78c1637aad85419d9313bbfd4285c8249b2dc2b 2	tests/test-llama-archs.cpp
+100644 2bfa1cf75bc156c8202bc61ac3fe6c58046fb861 3	tests/test-llama-archs.cpp
+100644 be19316db8a71b3f12f20bc641b4c861bc9e4eae 1	tests/test-recurrent-state-rollback.cpp
+100644 5d1f0140b623cb9a44476f8e15a0279e9e3a9887 2	tests/test-recurrent-state-rollback.cpp
+100644 2aecff90e7bb4b8c09e32ae3dab24d41ca2138f0 1	tests/test-sampling.cpp
+100644 89fca9d952c1e0afa9e215863514d31ba640f1e2 2	tests/test-sampling.cpp
+100644 353a5a1a1df2ec29d13a73116ca1af3d62151b64 3	tests/test-sampling.cpp
+100644 f93ae914ce27231e00360f7fe39e5d39b81dfd51 1	tools/cli/README.md
+100644 d5856df573a5334816aa3aaf1add2fb5da22489f 2	tools/cli/README.md
+100644 be8fb09d238ba8cc652575ec3ef3be81d35e2d6d 3	tools/cli/README.md
+100644 d90f81748662ccc148452892859a0259d0aa523e 1	tools/completion/README.md
+100644 3b5acf750f5e20e4ae261d81371c371d9f838711 2	tools/completion/README.md
+100644 c396609abf7b1bd3e4b9066d67403ca8c7dfa7e6 3	tools/completion/README.md
+100644 0756893881ff04ac7e45b61e1d8b12eccf299d45 1	tools/llama-bench/llama-bench.cpp
+100644 be09245a0e2c30ebbc1b57f033e302a3ff8414fc 2	tools/llama-bench/llama-bench.cpp
+100644 96ae4870ff3c7b7ac4b78a0efb75ca43d3807612 3	tools/llama-bench/llama-bench.cpp
+100644 ea684d9f156dc129057d39b5cbb49d0073919ba3 1	tools/mtmd/CMakeLists.txt
+100644 96f5c4b9cbe2c6f4b57bcae64a8aba082d55b383 2	tools/mtmd/CMakeLists.txt
+100644 398b73904f5c787c882ffb472cb1e0ad23240d1c 3	tools/mtmd/CMakeLists.txt
+100644 b8866506493eda63f78b8282c3b56d4d27967acb 1	tools/mtmd/clip.cpp
+100644 385dc303a3e8ecf9451f641a3620867a055607d6 2	tools/mtmd/clip.cpp
+100644 793b8cd1a6319798b4e24a054ca8a52becabd9c7 3	tools/mtmd/clip.cpp
+100644 365a944659a95a243dcba9c72f2775ee7229455d 1	tools/server/README.md
+100644 099bd67d6fe2508acb1abaf780c6ce86dd710648 2	tools/server/README.md
+100644 4e4472ec24bd0822be30e327aecd549cc15a2bc8 3	tools/server/README.md
+100644 78b5c6819b03ed8f4b5c8fea85b0fc1d593f777e 1	tools/server/server-common.cpp
+100644 12033e1f55a2c8eca8f54007e76586c3b8b0b0b6 2	tools/server/server-common.cpp
+100644 c32c0d1a5aa7b09e0afe4655a305c6d73f8e27d7 3	tools/server/server-common.cpp
+100644 715477e2e08d86f1ed6b6dcb47583d9f73a99815 1	tools/server/server-context.cpp
+100644 600c59d10f36fd3b301131b76e5caafacb775d6d 2	tools/server/server-context.cpp
+100644 a18b7542c3af4fc367e6dcfcd09870e399bdca4b 3	tools/server/server-context.cpp
+100644 89026eb4e3f0be0de9c5b2d69d027050d269525b 1	tools/server/server-schema.cpp
+100644 10807c5769c853841daa2a5682361be0eb252bd9 2	tools/server/server-schema.cpp
+100644 54e126aa0c3572895042cd0a8c4faf4a0eb0b9f7 3	tools/server/server-schema.cpp
+100644 be22d9859efdae762745a6f7717e56beca82abf4 1	tools/server/tests/unit/test_slot_save.py
+100644 453c35d3dd74ac952b900bc966ddcfa3b57ca41c 2	tools/server/tests/unit/test_slot_save.py
+100644 488b63701d1bb157c12967c10b63168328ac185c 3	tools/server/tests/unit/test_slot_save.py
+100644 c6568479ca4ab9fd8b31c03cbc5aa98a8fd6ced2 1	tools/server/tests/unit/test_speculative.py
+100644 89a68ed3c7fef31473bae98d606666b8d600e88a 2	tools/server/tests/unit/test_speculative.py
+100644 7a03543025887d1e41da821866234bf53e13fcc5 3	tools/server/tests/unit/test_speculative.py
+100644 5d5c873ac4cceed3acab39ce01639a0bb5844c5e 1	tools/server/tests/utils.py
+100644 6c874c73465b14091d09b695d71d337a5ccc1b39 2	tools/server/tests/utils.py
+100644 1c84f51211455b138e0ae157286b0fa65a7c0cba 3	tools/server/tests/utils.py
+
+Auto-merging common/arg.cpp
+CONFLICT (content): Merge conflict in common/arg.cpp
+Auto-merging common/chat-auto-parser-generator.cpp
+Auto-merging common/chat-auto-parser.h
+Auto-merging common/chat-diff-analyzer.cpp
+CONFLICT (content): Merge conflict in common/chat-diff-analyzer.cpp
+Auto-merging common/chat.cpp
+CONFLICT (content): Merge conflict in common/chat.cpp
+Auto-merging common/chat.h
+Auto-merging common/common.cpp
+CONFLICT (content): Merge conflict in common/common.cpp
+Auto-merging common/common.h
+CONFLICT (content): Merge conflict in common/common.h
+Auto-merging common/download.cpp
+CONFLICT (content): Merge conflict in common/download.cpp
+Auto-merging common/download.h
+CONFLICT (content): Merge conflict in common/download.h
+Auto-merging common/jinja/value.cpp
+CONFLICT (content): Merge conflict in common/jinja/value.cpp
+Auto-merging common/sampling.cpp
+CONFLICT (content): Merge conflict in common/sampling.cpp
+Auto-merging common/sampling.h
+Auto-merging common/speculative.cpp
+CONFLICT (content): Merge conflict in common/speculative.cpp
+Auto-merging common/speculative.h
+CONFLICT (content): Merge conflict in common/speculative.h
+Auto-merging conversion/__init__.py
+CONFLICT (content): Merge conflict in conversion/__init__.py
+Auto-merging conversion/base.py
+CONFLICT (content): Merge conflict in conversion/base.py
+Auto-merging conversion/deepseek.py
+CONFLICT (content): Merge conflict in conversion/deepseek.py
+Auto-merging conversion/laguna.py
+CONFLICT (add/add): Merge conflict in conversion/laguna.py
+Auto-merging conversion/qwen.py
+CONFLICT (content): Merge conflict in conversion/qwen.py
+Auto-merging conversion/qwen4exp.py
+CONFLICT (add/add): Merge conflict in conversion/qwen4exp.py
+Auto-merging convert_hf_to_gguf_update.py
+CONFLICT (content): Merge conflict in convert_hf_to_gguf_update.py
+Auto-merging docs/speculative.md
+CONFLICT (content): Merge conflict in docs/speculative.md
+Auto-merging examples/simple/simple.cpp
+Auto-merging examples/speculative-simple/speculative-simple.cpp
+CONFLICT (content): Merge conflict in examples/speculative-simple/speculative-simple.cpp
+Auto-merging examples/speculative/speculative.cpp
+CONFLICT (content): Merge conflict in examples/speculative/speculative.cpp
+Auto-merging ggml/CMakeLists.txt
+Auto-merging ggml/include/ggml-cpu.h
+Auto-merging ggml/include/ggml-rpc.h
+CONFLICT (content): Merge conflict in ggml/include/ggml-rpc.h
+Auto-merging ggml/include/ggml.h
+CONFLICT (content): Merge conflict in ggml/include/ggml.h
+Auto-merging ggml/src/ggml-alloc.c
+Auto-merging ggml/src/ggml-backend-meta.cpp
+CONFLICT (content): Merge conflict in ggml/src/ggml-backend-meta.cpp
+Auto-merging ggml/src/ggml-backend.cpp
+Auto-merging ggml/src/ggml-blas/ggml-blas.cpp
+Auto-merging ggml/src/ggml-common.h
+Auto-merging ggml/src/ggml-cpu/CMakeLists.txt
+Auto-merging ggml/src/ggml-cpu/arch/x86/quants.c
+Auto-merging ggml/src/ggml-cpu/ggml-cpu-impl.h
+Auto-merging ggml/src/ggml-cpu/ggml-cpu.c
+CONFLICT (content): Merge conflict in ggml/src/ggml-cpu/ggml-cpu.c
+Auto-merging ggml/src/ggml-cpu/ggml-cpu.cpp
+CONFLICT (content): Merge conflict in ggml/src/ggml-cpu/ggml-cpu.cpp
+Auto-merging ggml/src/ggml-cpu/llamafile/sgemm.cpp
+Auto-merging ggml/src/ggml-cpu/ops.cpp
+CONFLICT (content): Merge conflict in ggml/src/ggml-cpu/ops.cpp
+Auto-merging ggml/src/ggml-cpu/ops.h
+CONFLICT (content): Merge conflict in ggml/src/ggml-cpu/ops.h
+Auto-merging ggml/src/ggml-cpu/repack.cpp
+CONFLICT (content): Merge conflict in ggml/src/ggml-cpu/repack.cpp
+Auto-merging ggml/src/ggml-cpu/vec.cpp
+Auto-merging ggml/src/ggml-cpu/vec.h
+Auto-merging ggml/src/ggml-cuda/common.cuh
+Auto-merging ggml/src/ggml-cuda/dsv4-hc.cu
+CONFLICT (add/add): Merge conflict in ggml/src/ggml-cuda/dsv4-hc.cu
+Auto-merging ggml/src/ggml-cuda/fattn-common.cuh
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/fattn-common.cuh
+Auto-merging ggml/src/ggml-cuda/fattn-mma-f16.cuh
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/fattn-mma-f16.cuh
+Auto-merging ggml/src/ggml-cuda/fattn-tile.cuh
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/fattn-tile.cuh
+Auto-merging ggml/src/ggml-cuda/fattn-vec.cuh
+CONFLICT (modify/delete): ggml/src/ggml-cuda/fattn-wmma-f16.cu deleted in 2851b3bcbf and modified in c72ec82f5.  Version c72ec82f5 of ggml/src/ggml-cuda/fattn-wmma-f16.cu left in tree.
+Auto-merging ggml/src/ggml-cuda/fattn.cu
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/fattn.cu
+Auto-merging ggml/src/ggml-cuda/gated_delta_net.cu
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/gated_delta_net.cu
+Auto-merging ggml/src/ggml-cuda/ggml-cuda.cu
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/ggml-cuda.cu
+Auto-merging ggml/src/ggml-cuda/mmvq.cu
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/mmvq.cu
+Auto-merging ggml/src/ggml-cuda/norm.cu
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/norm.cu
+Auto-merging ggml/src/ggml-cuda/quantize.cu
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/quantize.cu
+Auto-merging ggml/src/ggml-cuda/rope.cu
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/rope.cu
+Auto-merging ggml/src/ggml-cuda/ssm-scan.cu
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/ssm-scan.cu
+Auto-merging ggml/src/ggml-cuda/topk-moe.cu
+Auto-merging ggml/src/ggml-cuda/topk-moe.cuh
+Auto-merging ggml/src/ggml-cuda/unary.cu
+Auto-merging ggml/src/ggml-cuda/vecdotq.cuh
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/vecdotq.cuh
+Auto-merging ggml/src/ggml-cuda/vendors/hip.h
+Auto-merging ggml/src/ggml-et/ggml-et-ops.cpp
+Auto-merging ggml/src/ggml-hip/CMakeLists.txt
+CONFLICT (content): Merge conflict in ggml/src/ggml-hip/CMakeLists.txt
+Auto-merging ggml/src/ggml-metal/ggml-metal-device.m
+CONFLICT (content): Merge conflict in ggml/src/ggml-metal/ggml-metal-device.m
+Auto-merging ggml/src/ggml-metal/ggml-metal-impl.h
+Auto-merging ggml/src/ggml-metal/ggml-metal-ops.cpp
+CONFLICT (modify/delete): ggml/src/ggml-metal/ggml-metal.metal deleted in 2851b3bcbf and modified in c72ec82f5.  Version c72ec82f5 of ggml/src/ggml-metal/ggml-metal.metal left in tree.
+Auto-merging ggml/src/ggml-quants.c
+Auto-merging ggml/src/ggml-vulkan/ggml-vulkan.cpp
+CONFLICT (content): Merge conflict in ggml/src/ggml-vulkan/ggml-vulkan.cpp
+Auto-merging ggml/src/ggml-webgpu/ggml-webgpu.cpp
+Auto-merging ggml/src/ggml-webgpu/wgsl-shaders/ssm_scan.wgsl
+Auto-merging ggml/src/ggml.c
+CONFLICT (content): Merge conflict in ggml/src/ggml.c
+Auto-merging gguf-py/gguf/constants.py
+CONFLICT (content): Merge conflict in gguf-py/gguf/constants.py
+Auto-merging gguf-py/gguf/gguf_writer.py
+CONFLICT (content): Merge conflict in gguf-py/gguf/gguf_writer.py
+Auto-merging gguf-py/gguf/lazy.py
+CONFLICT (content): Merge conflict in gguf-py/gguf/lazy.py
+Auto-merging gguf-py/gguf/tensor_mapping.py
+CONFLICT (content): Merge conflict in gguf-py/gguf/tensor_mapping.py
+Auto-merging include/llama.h
+CONFLICT (content): Merge conflict in include/llama.h
+Auto-merging models/templates/poolside-Laguna-S-2.1.jinja
+CONFLICT (add/add): Merge conflict in models/templates/poolside-Laguna-S-2.1.jinja
+Auto-merging src/CMakeLists.txt
+CONFLICT (content): Merge conflict in src/CMakeLists.txt
+Auto-merging src/llama-arch.cpp
+CONFLICT (content): Merge conflict in src/llama-arch.cpp
+Auto-merging src/llama-arch.h
+CONFLICT (content): Merge conflict in src/llama-arch.h
+Auto-merging src/llama-context.cpp
+CONFLICT (content): Merge conflict in src/llama-context.cpp
+Auto-merging src/llama-context.h
+Auto-merging src/llama-cparams.h
+Auto-merging src/llama-ext.h
+CONFLICT (content): Merge conflict in src/llama-ext.h
+Auto-merging src/llama-graph.cpp
+CONFLICT (content): Merge conflict in src/llama-graph.cpp
+Auto-merging src/llama-graph.h
+CONFLICT (content): Merge conflict in src/llama-graph.h
+Auto-merging src/llama-hparams.cpp
+CONFLICT (content): Merge conflict in src/llama-hparams.cpp
+Auto-merging src/llama-hparams.h
+CONFLICT (content): Merge conflict in src/llama-hparams.h
+Auto-merging src/llama-kv-cache-dsv4.cpp
+CONFLICT (content): Merge conflict in src/llama-kv-cache-dsv4.cpp
+Auto-merging src/llama-kv-cache-dsv4.h
+CONFLICT (content): Merge conflict in src/llama-kv-cache-dsv4.h
+Auto-merging src/llama-kv-cache.cpp
+CONFLICT (content): Merge conflict in src/llama-kv-cache.cpp
+Auto-merging src/llama-kv-cache.h
+CONFLICT (content): Merge conflict in src/llama-kv-cache.h
+Auto-merging src/llama-kv-cells.h
+CONFLICT (content): Merge conflict in src/llama-kv-cells.h
+Auto-merging src/llama-memory-hybrid-idx.cpp
+CONFLICT (add/add): Merge conflict in src/llama-memory-hybrid-idx.cpp
+Auto-merging src/llama-memory-hybrid-idx.h
+CONFLICT (add/add): Merge conflict in src/llama-memory-hybrid-idx.h
+Auto-merging src/llama-memory-hybrid.cpp
+Auto-merging src/llama-memory-recurrent.cpp
+Auto-merging src/llama-memory-recurrent.h
+Auto-merging src/llama-mmap.cpp
+Auto-merging src/llama-mmap.h
+Auto-merging src/llama-model-loader.cpp
+CONFLICT (content): Merge conflict in src/llama-model-loader.cpp
+Auto-merging src/llama-model-loader.h
+CONFLICT (content): Merge conflict in src/llama-model-loader.h
+Auto-merging src/llama-model-saver.cpp
+CONFLICT (content): Merge conflict in src/llama-model-saver.cpp
+Auto-merging src/llama-model.cpp
+CONFLICT (content): Merge conflict in src/llama-model.cpp
+Auto-merging src/llama-model.h
+CONFLICT (content): Merge conflict in src/llama-model.h
+Auto-merging src/llama-quant.cpp
+CONFLICT (content): Merge conflict in src/llama-quant.cpp
+Auto-merging src/llama-vocab.cpp
+Auto-merging src/llama-vocab.h
+CONFLICT (content): Merge conflict in src/llama-vocab.h
+Auto-merging src/llama.cpp
+CONFLICT (content): Merge conflict in src/llama.cpp
+Auto-merging src/models/bailingmoe2.cpp
+Auto-merging src/models/cohere2moe.cpp
+CONFLICT (content): Merge conflict in src/models/cohere2moe.cpp
+Auto-merging src/models/deepseek32.cpp
+CONFLICT (content): Merge conflict in src/models/deepseek32.cpp
+Auto-merging src/models/deepseek4.cpp
+CONFLICT (content): Merge conflict in src/models/deepseek4.cpp
+Auto-merging src/models/delta-net-base.cpp
+Auto-merging src/models/dflash.cpp
+CONFLICT (content): Merge conflict in src/models/dflash.cpp
+Auto-merging src/models/dream.cpp
+Auto-merging src/models/exaone-moe.cpp
+Auto-merging src/models/gemma-embedding2.cpp
+CONFLICT (add/add): Merge conflict in src/models/gemma-embedding2.cpp
+Auto-merging src/models/gemma4-assistant.cpp
+CONFLICT (content): Merge conflict in src/models/gemma4-assistant.cpp
+Auto-merging src/models/gemma4.cpp
+Auto-merging src/models/glm-dsa.cpp
+CONFLICT (content): Merge conflict in src/models/glm-dsa.cpp
+Auto-merging src/models/glm4-moe.cpp
+Auto-merging src/models/glm4.cpp
+Auto-merging src/models/hy-v3.cpp
+CONFLICT (content): Merge conflict in src/models/hy-v3.cpp
+Auto-merging src/models/laguna.cpp
+CONFLICT (add/add): Merge conflict in src/models/laguna.cpp
+Auto-merging src/models/mamba-base.cpp
+Auto-merging src/models/mimo2.cpp
+Auto-merging src/models/models.h
+CONFLICT (content): Merge conflict in src/models/models.h
+Auto-merging src/models/nemotron-h.cpp
+CONFLICT (content): Merge conflict in src/models/nemotron-h.cpp
+Auto-merging src/models/plamo2.cpp
+Auto-merging src/models/qwen2.cpp
+Auto-merging src/models/qwen35.cpp
+CONFLICT (content): Merge conflict in src/models/qwen35.cpp
+Auto-merging src/models/qwen35moe.cpp
+CONFLICT (content): Merge conflict in src/models/qwen35moe.cpp
+Auto-merging src/models/qwen3next.cpp
+Auto-merging src/models/qwen4exp.cpp
+CONFLICT (add/add): Merge conflict in src/models/qwen4exp.cpp
+Auto-merging src/models/step35.cpp
+CONFLICT (content): Merge conflict in src/models/step35.cpp
+Auto-merging tests/CMakeLists.txt
+CONFLICT (content): Merge conflict in tests/CMakeLists.txt
+Auto-merging tests/test-backend-ops.cpp
+CONFLICT (content): Merge conflict in tests/test-backend-ops.cpp
+Auto-merging tests/test-chat-auto-parser.cpp
+CONFLICT (content): Merge conflict in tests/test-chat-auto-parser.cpp
+Auto-merging tests/test-llama-archs.cpp
+CONFLICT (content): Merge conflict in tests/test-llama-archs.cpp
+CONFLICT (modify/delete): tests/test-recurrent-state-rollback.cpp deleted in 2851b3bcbf and modified in c72ec82f5.  Version c72ec82f5 of tests/test-recurrent-state-rollback.cpp left in tree.
+Auto-merging tests/test-sampling.cpp
+CONFLICT (content): Merge conflict in tests/test-sampling.cpp
+Auto-merging tools/cli/README.md
+CONFLICT (content): Merge conflict in tools/cli/README.md
+Auto-merging tools/cli/cli-context.cpp
+Auto-merging tools/completion/README.md
+CONFLICT (content): Merge conflict in tools/completion/README.md
+Auto-merging tools/llama-bench/README.md
+Auto-merging tools/llama-bench/llama-bench.cpp
+CONFLICT (content): Merge conflict in tools/llama-bench/llama-bench.cpp
+Auto-merging tools/mtmd/CMakeLists.txt
+CONFLICT (content): Merge conflict in tools/mtmd/CMakeLists.txt
+Auto-merging tools/mtmd/clip-impl.h
+Auto-merging tools/mtmd/clip-model.h
+Auto-merging tools/mtmd/clip.cpp
+CONFLICT (content): Merge conflict in tools/mtmd/clip.cpp
+Auto-merging tools/mtmd/models/models.h
+Auto-merging tools/mtmd/mtmd.cpp
+Auto-merging tools/server/README.md
+CONFLICT (content): Merge conflict in tools/server/README.md
+Auto-merging tools/server/server-common.cpp
+CONFLICT (content): Merge conflict in tools/server/server-common.cpp
+Auto-merging tools/server/server-common.h
+Auto-merging tools/server/server-context.cpp
+CONFLICT (content): Merge conflict in tools/server/server-context.cpp
+Auto-merging tools/server/server-context.h
+Auto-merging tools/server/server-schema.cpp
+CONFLICT (content): Merge conflict in tools/server/server-schema.cpp
+Auto-merging tools/server/server-task.cpp
+Auto-merging tools/server/server-task.h
+Auto-merging tools/server/server.cpp
+Auto-merging tools/server/tests/unit/test_slot_save.py
+CONFLICT (content): Merge conflict in tools/server/tests/unit/test_slot_save.py
+Auto-merging tools/server/tests/unit/test_speculative.py
+CONFLICT (content): Merge conflict in tools/server/tests/unit/test_speculative.py
+Auto-merging tools/server/tests/utils.py
+CONFLICT (content): Merge conflict in tools/server/tests/utils.py

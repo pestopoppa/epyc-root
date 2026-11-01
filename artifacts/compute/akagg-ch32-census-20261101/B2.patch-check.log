@@ -1,0 +1,9 @@
+Applied patch to 'conversion/__init__.py' with conflicts.
+Falling back to direct application...
+Applied patch to 'gguf-py/gguf/constants.py' with conflicts.
+Applied patch to 'src/llama-arch.cpp' with conflicts.
+Applied patch to 'src/llama-arch.h' with conflicts.
+Applied patch to 'src/llama-context.cpp' with conflicts.
+Applied patch to 'src/llama-model.cpp' with conflicts.
+Applied patch to 'src/models/models.h' with conflicts.
+Falling back to direct application...

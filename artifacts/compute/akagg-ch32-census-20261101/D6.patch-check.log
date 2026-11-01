@@ -1,0 +1,7 @@
+error: examples/realtime_client.py: does not exist in index
+Applied patch to 'tools/server/README.md' with conflicts.
+Applied patch to 'tools/server/server-chat.cpp' cleanly.
+Applied patch to 'tools/server/server-chat.h' cleanly.
+error: tools/server/server-realtime.cpp: does not exist in index
+error: tools/server/server-realtime.h: does not exist in index
+Applied patch to 'tools/server/server-task.h' with conflicts.

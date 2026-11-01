@@ -1,0 +1,9 @@
+Applied patch to 'tools/server/README.md' cleanly.
+Applied patch to 'tools/server/server-context.cpp' with conflicts.
+Applied patch to 'tools/server/server-context.h' cleanly.
+Applied patch to 'tools/server/server-http.cpp' cleanly.
+Applied patch to 'tools/server/server-http.h' cleanly.
+Applied patch to 'tools/server/server-models.cpp' cleanly.
+Applied patch to 'tools/server/server-models.h' with conflicts.
+Applied patch to 'tools/server/server-task.h' cleanly.
+Applied patch to 'tools/server/server.cpp' cleanly.
