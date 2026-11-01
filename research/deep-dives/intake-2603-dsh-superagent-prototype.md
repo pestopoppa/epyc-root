@@ -62,6 +62,27 @@ been written to a handoff.
 Proposed index-row edit (RTG-34 Next action; the row is owned by `routing-and-optimization-index.md`):
 `AIR-6 — deploy exact guarded source and require ordinary-work refusal; then DSH-2 run-end ack-by-receipt`.
 
+## Stage-3 extension (operator follow-up, 2026-11-01): AutoKernel, autopilot and loop design
+
+Code was read at origin/main: research `e822b01d3`, orchestrator `02a152a8`. Each insight has one verdict per consumer.
+
+| Insight | AutoKernel | Autopilot | Loop-design guide |
+|---|---|---|---|
+| Structured turn report instead of free-text state | **already present**: actor replies are schema-checked and salvaged only when complete (`scripts/kernel_rnd/autokernel/loop/actors.py:2201` `_has_answer`) | **already present**: fenced `json:autopilot_actions` plus a JSON schema and a repair turn (`scripts/autopilot/controller_io.py:768`, `:1027`, `:1069`, TD-21) | **applies → DSH-5**: the guide has no general rule that a loop reads an actor's terminal state from a structured record |
+| Ack-by-receipt redelivery | **already present**: resume re-queues critic-accepted-unbuilt and interrupted authors at most once, and infrastructure faults release the claim with a retry count (`resume.py:502`; guide l.500-503). The stage-receipt generalisation is already filed as open task AK-RSM-1 (`autokernel-research-loop.md:179`), so no new task | **already present**: in-flight trial recovery against the journal (`autopilot.py:7312` `_recover_from_in_flight_trial`) | **applies → DSH-5** (same rule) |
+| Transient-error retry | **already present**: `BACKOFF_S = (30, 120, 480, 1800)`, `_with_backoff` (`actors.py:82`, `:2217`); budget exhaustion is an abstention, not a retry (guide l.694-696) | **already present**: health backoff (`autopilot.py:9343`) | **already present** (guide l.694-696). DSH-3 brings the dispatcher up to the same standard |
+| Reserved slot | **does not apply now**: AK runs one campaign under region claims. Stage admission across concurrent targets is already designed as CTC-3 (`autokernel-concurrent-target-coordination.md:22`), which is parked with the AK hold | **does not apply**: autopilot runs a single trial loop, so there is no slot pool | context only |
+| Store-first queue | **already present**: SQLite claims store (`resume.py`, `claims` table) | **already present**: the journal plus the strategy store; in-flight recovery depends on it | **applies → DSH-5** |
+| Source/Eval/Mandate model | **does not apply**: no external request intake; campaign authority comes from ratification | **does not apply**: same reason | does not apply |
+
+The AutoKernel liveness watchdog (`ds41_watchdog3.sh`) sits in scratch that is no longer on disk (`/mnt/raid0/llm/tmp/ds41-scope-20260926/`). I could not read it, so I make no claim about it. AK-RSM-1 stage receipts would give any future watchdog a structured terminal state to read.
+
+**Net result**: both loops already follow the dsh contracts, and only the dispatcher (DSH-1..4) falls short. The general lesson goes into the loop-design guide so that new loops start compliant:
+
+| ID | Proposed task line (owner `handoffs/active/session-bus-thin-dispatcher.md`, RTG-34) |
+|---|---|
+| DSH-5 | `- [ ] DSH-5 [S] Add a fifth "loop block must show" item to docs/guides/agent-workflows/agent-loop-design.md: how the loop learns each actor's terminal state (a structured record, never free-text parsing) and when an input counts as consumed (ack by durable receipt, redelivered at most N times). Cite actors.py _has_answer/resume.py, controller_io.py extract_action_with_repair/autopilot.py _recover_from_in_flight_trial as conforming examples, and handoff_sessions.py as the DSH-1/2 counterexample. [no-belief: doc rule; no measurement]` |
+
 ## Dive-surfaced sources
 
 | Source | Would settle | Bears on | Disposition |

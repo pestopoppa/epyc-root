@@ -11,21 +11,20 @@
   "last_compile": "2026-11-01T15:52:43Z",
   "last_touch": {
     "advanced": {
-      "added": 2,
-      "changed": 0,
+      "added": 0,
+      "changed": 1,
       "removed": 0
     },
-    "at": "2026-11-01T21:26:46Z",
+    "at": "2026-11-01T21:36:28Z",
     "scope_paths": [
-      "research/deep-dives/intake-2603-dsh-superagent-prototype.md",
-      "research/deep-dives/intake-digests/2026-11-01-ids-2603-2603.md"
+      "research/deep-dives/intake-2603-dsh-superagent-prototype.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-01T21:26:46Z",
+  "scan_time": "2026-11-01T21:36:28Z",
   "schema_version": 1,
-  "source_set_hash": "424d78a6435563ebe16101a73930aa4af854961372df2c48be6b691dcafe4e62",
+  "source_set_hash": "fef51d3104bb01903f5bd466a8f76398e716a02732de138503c03a3e26cf0986",
   "sources": [
     {
       "content_hash": "79865b0c101f4b6a9b14665950a430467345202b33986b3ba348bc3df428170a",
@@ -3860,10 +3859,10 @@
       "type": "research"
     },
     {
-      "content_hash": "1268d4d070a90d06f960c0b1ba759692828bb66e91211723b7f59d24edee39bb",
-      "modified": "2026-11-01T21:26:08Z",
+      "content_hash": "8d3ef44660a9956d14e3e9ea94fac3747493a751cd1af9d8555afc7e2c250c70",
+      "modified": "2026-11-01T21:36:28Z",
       "path": "research/deep-dives/intake-2603-dsh-superagent-prototype.md",
-      "size": 8849,
+      "size": 12358,
       "title": "intake-2603 \u2014 dsh-superagent-prototype vs the backlog churn pipeline",
       "type": "research"
     },

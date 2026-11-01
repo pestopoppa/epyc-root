@@ -8,3 +8,6 @@
 - Stage 3: tasks DSH-1..4 are prepared for `handoffs/active/session-bus-thin-dispatcher.md` (RTG-34) and AWAIT operator approval.
   No handoff was edited. Plan and exact task lines: `research/deep-dives/intake-2603-dsh-superagent-prototype.md`.
 - Wiki: section added to `wiki/agent-architecture.md`; manifest touched for the dive and digest. [no-belief: intake record; no measurement]
+- Extension (operator follow-up): AutoKernel and autopilot already conform to the dsh contracts (structured replies,
+  at-most-once resume or in-flight recovery, transient backoff); the file:line evidence is in the dive. Proposed DSH-5 adds a loop-design guide rule.
+  DSH-1..5 await application by ws58 in session-bus-thin-dispatcher.md. [no-belief: intake record; no measurement]

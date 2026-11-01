@@ -375523,7 +375523,7 @@
     at origin/main c4cdeec05. Gap found in OUR dispatcher: dispatch_once clears pending_event on every turn end (handoff_sessions.py:711)
     and backlog_gen treats grants/<id>.ended as done (backlog_gen.py:220), so a run-end filing turn that crashes before touching filing-done/<id>.FILED
     is never re-delivered. Dive-surfaced source: the cited article "Exploring Super-agent Design" - declined: no locatable URL in two bounded
-    searches; reopen when DeepSeek publishes a link. Stage-2b waves run: 0 (nothing else surfaced).'
+    searches; reopen when DeepSeek publishes a link. Stage-2b waves run: 0 (nothing else surfaced). Stage-3 extension 2026-11-01: AutoKernel (research e822b01d3) and autopilot (orchestrator 02a152a8) already conform to the structured-report, receipt-redelivery and retry contracts; only the dispatcher falls short; DSH-5 (loop-design guide rule) proposed.'
   integration_disposition: monitor
   disposition_evidence:
   - 'Dive complete; four churn-pipeline task lines (DSH-1..4) prepared in research/deep-dives/intake-2603-dsh-superagent-prototype.md and
