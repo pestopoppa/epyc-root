@@ -79,7 +79,8 @@ FANOUT_LINE = ("Working mode: FAN OUT - your own thread only reviews, integrates
                "change; never a transcript), only where it saves wall-clock without raising tokens per completed task - the metric "
                "(exceptions: agents/shared/OPERATING_CONSTRAINTS.md -> *When NOT to fan out*). This applies on every engine; do not "
                "rely on AGENTS.md/CLAUDE.md being loaded. Never re-read or re-verify what the scripts (wrapup.py, file_result.py, "
-               "publish_row.py) already guarantee.")
+               "publish_row.py) already guarantee. Every subagent gets ONE bounded job (<=40 tool calls) and ends; never spawn a "
+               "subagent to watch, poll, wait or monitor anything (2026-11-01: single luna subagents made ~1000 calls each).")
 NO_POLL_LINE = ("NEVER wait in this turn: no sleep, no polling of grants/dry-run/queue files, no wait_agent/status loops - publish or "
                 "delegate, wrap up, end the turn; the dispatcher resumes you on the event (grant end, dry-run result, or a file you "
                 "registered under handoff-sessions/<slug>/awaiting/).")
@@ -1207,7 +1208,19 @@ def wrapped(e, cache=None) -> bool:
     A session that never ran a turn (no session_id, no last_end) has nothing to have wrapped and passes."""
     lw = e.get("last_wrapup")
     if not lw:
-        return not e.get("session_id") and not e.get("last_end")
+        if not e.get("session_id") and not e.get("last_end"):
+            return True
+        # ws58 2026-11-01: a session that never printed WRAPPED but left nothing unlanded (clean lane, empty cherry) has
+        # nothing to wrap; refusing it deadlocked codex-gen and others (104 UNWRAPPED refusals, no rows published).
+        cwd = e.get("cwd") or ""
+        if not cwd.startswith(LANES_DIR + "/") or not os.path.isdir(cwd):
+            return False
+        try:
+            dirty = subprocess.run(["git", "-C", cwd, "status", "--porcelain", "--untracked-files=no"], capture_output=True, text=True, timeout=60).stdout.strip()
+            ahead = subprocess.run(["git", "-C", cwd, "cherry", "origin/main"], capture_output=True, text=True, timeout=60).stdout
+        except (OSError, subprocess.TimeoutExpired):
+            return False
+        return not dirty and "+" not in ahead
     if cache is None:
         cache = {}
     if lw not in cache:
