@@ -3157,6 +3157,9 @@ FAILED-RUN rc=64 reason=cross-role-region-preflight; class=admission; owner acti
 
 - [ ] **R18-A admission successor:** restore a mutually enforced cross-role placement contract and execute the unchanged independent three-symbol-surface comparison; preserve original rc64 evidence.
 
+- [x] **R18-A r3 qualification refusal diagnosis** ✅ 2026-11-01: the keeper's archived cutoff proof omitted `stop_observed` and `unknown_disposition`, although the cutoff job waits for STOP and drains its active compiler before writing that proof. The keeper refused rc=70; its [launcher log](/mnt/raid0/llm/tmp/compute-flags/qual/8bdab7b2bf453038bca728214bbf51f7d126e81b3b77fc54262af8c1319c637d/launcher.out) and `proof-cutoff.json` retain the evidence. A [proposed patch](../../artifacts/compute/r18a-cutoff-proof-20261101/cutoff-witness.patch) adds the required fields after that check; it has not been qualified. The existing r3 READY is owned by `codex-refactor-01a16fc3` and its migrated result spec is incomplete; do not duplicate its run or edit its manifest. Current API PID 2307743 has the cross-role flag enabled, unlike the original refused PID, but the successor still needs its own strict preflight. [belief: cc]
+- [ ] **R18-A successor repair:** reconcile ownership of the existing r3 row, apply and review the cutoff proof repair in an owned successor, supply the actual result path and unchanged three-surface decision rule, repin its closure and obtain keeper qualification and strict placement preflight before the full comparison. Preserve the existing refused evidence; do not modify the keeper or another session's READY manifest.
+
 
 ### 2026-10-30 R18-A private-anchor comparison filing
 

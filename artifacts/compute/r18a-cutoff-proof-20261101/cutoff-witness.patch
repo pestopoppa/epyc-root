@@ -1,0 +1,10 @@
+--- r3/qualification_job.py
++++ r3-cutoff-fix/qualification_job.py
+@@ -88,6 +88,7 @@
+   partial={'partial':True,'work_unit':WORK,'completed_before_cutoff':1,'active_child_pid':pid,'active_child_birth_ticks':bt,'stop_observed':True}
+   if official:
+    atomic(os.environ['WS58_QUAL_PROOF'],{'id':ID,'nonce':os.environ['WS58_QUAL_NONCE'],'phase':'cutoff','partial':True,
++       'stop_observed':stop.exists(),'deadline_reached':False,'unknown_disposition':'UNKNOWN',
+        'first_request':first,'disk':{'job_floor_gib':150},'observed_cpus':cpus})
+   else: atomic(D/'validation/local/cutoff.json',{'kind':'local-smoke-only','first_request':first,'partial':partial,'event':event,'children_drained':child.poll() is not None})
+   return 75
