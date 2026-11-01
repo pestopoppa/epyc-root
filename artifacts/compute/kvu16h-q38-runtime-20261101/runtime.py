@@ -47,8 +47,8 @@ class Runtime:
         return bool(self.stop_requested())
 
     def start(self, arm, recipe):
-        if self.active is not None or self.stopping():
-            raise RuntimeFailure('active server or STOP')
+        if self.cleanup_unverified or self.active is not None or self.stopping():
+            raise RuntimeFailure('unverified cleanup, active server or STOP')
         try:
             handle = self.supervisor.spawn(arm, copy.deepcopy(recipe))
         except SpawnFailure as exc:
@@ -73,7 +73,7 @@ class Runtime:
         server.verified = True
 
     def request(self, server, body, kind):
-        if server is not self.active or server.stopped or not server.verified or self.stopping():
+        if self.cleanup_unverified or server is not self.active or server.stopped or not server.verified or self.stopping():
             raise RuntimeFailure('request without verified active server')
         if kind not in ('warm', 'measure'):
             raise RuntimeFailure('invalid request kind')
@@ -94,8 +94,11 @@ class Runtime:
             ok = self.supervisor.stop_and_drain(server.handle) is True
         except BaseException:
             ok = False
+        if not ok:
+            # Retain the captured handle for investigation or a later drain attempt.
+            # Cleanup uncertainty is sticky: another run requires external reconciliation.
+            self.cleanup_unverified = True
+            return False
         server.stopped = True
         self.active = None
-        if not ok:
-            self.cleanup_unverified = True
-        return ok
+        return True

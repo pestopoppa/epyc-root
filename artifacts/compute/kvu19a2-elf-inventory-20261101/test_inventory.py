@@ -1,7 +1,9 @@
 import importlib.util
+import os
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 spec = importlib.util.spec_from_file_location('inventory', Path(__file__).with_name('inventory.py'))
 m = importlib.util.module_from_spec(spec)
@@ -33,6 +35,24 @@ class InventoryTests(unittest.TestCase):
             (root / 'lib.so.1').write_bytes(b'\x7fELFx')
             (root / 'lib.so').symlink_to('lib.so.1')
             self.assertEqual(list(m.inventory(root)['files']), ['lib.so.1'])
+
+    def test_unreadable_subtree_refuses_partial_inventory(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / 'visible').write_bytes(b'\x7fELFvisible')
+            hidden = root / 'hidden'
+            hidden.mkdir()
+            (hidden / 'lib.so').write_bytes(b'\x7fELFhidden')
+            actual_scandir = os.scandir
+
+            def refuse_hidden(path):
+                if Path(path) == hidden:
+                    raise PermissionError('simulated unreadable subtree')
+                return actual_scandir(path)
+
+            with patch.object(m.os, 'scandir', side_effect=refuse_hidden):
+                with self.assertRaises(PermissionError):
+                    m.inventory(root)
 
 
 if __name__ == '__main__':

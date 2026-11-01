@@ -13,7 +13,10 @@ def inventory(root):
     if root.is_symlink() or not root.is_dir():
         raise ValueError('build root must be an existing real directory')
     records = {}
-    for directory, dirs, files in os.walk(root, followlinks=False):
+    def fail_walk(error):
+        raise error
+
+    for directory, dirs, files in os.walk(root, followlinks=False, onerror=fail_walk):
         dirs.sort()
         files.sort()
         parent = Path(directory)
@@ -22,8 +25,8 @@ def inventory(root):
                 raise ValueError('symlinked directory refused')
         for name in files:
             path = parent / name
-            # Build trees commonly have shared-library symlinks. Record their target;
-            # never follow them for a digest and reject escapes or dangling links.
+            # Build trees commonly have shared-library symlinks. Validate and skip
+            # them; never duplicate their target digest or allow escape/dangling.
             if path.is_symlink():
                 target = path.resolve(strict=True)
                 if not target.is_relative_to(root.resolve(strict=True)) or not target.is_file():

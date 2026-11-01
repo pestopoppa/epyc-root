@@ -36,8 +36,26 @@ class Tests(unittest.TestCase):
         self.s.fail=OSError('unknown')
         with self.assertRaises(RuntimeFailure): self.r.start('drafted',{})
         self.assertTrue(self.r.cleanup_unverified)
-        self.s.fail=None; h=self.r.start('drafted',{}); self.s.ok=False
-        self.assertFalse(self.r.stop(h)); self.assertTrue(self.r.cleanup_unverified)
+        self.s.fail=None
+        with self.assertRaises(RuntimeFailure): self.r.start('drafted',{})
+        self.assertEqual(len([x for x in self.s.calls if x[0]=='spawn']),1)
+    def test_failed_drain_preserves_handle_and_blocks_reentry(self):
+        h=self.r.start('drafted',{}); self.r.verify(h,'drafted',{})
+        self.s.ok=False
+        self.assertFalse(self.r.stop(h)); self.assertIs(self.r.active,h)
+        self.assertFalse(h.stopped); self.assertTrue(self.r.cleanup_unverified)
+        with self.assertRaises(RuntimeFailure): self.r.start('nodraft',{})
+        with self.assertRaises(RuntimeFailure): self.r.request(h,{},'measure')
+        self.assertEqual(self.t.sent,[])
+        self.s.ok=True
+        self.assertTrue(self.r.stop(h)); self.assertIsNone(self.r.active)
+        with self.assertRaises(RuntimeFailure): self.r.start('nodraft',{})
+    def test_unverified_spawn_blocks_reentry(self):
+        self.s.fail=SpawnFailure('identity unknown',False)
+        with self.assertRaises(SpawnFailure): self.r.start('drafted',{})
+        self.s.fail=None
+        with self.assertRaises(RuntimeFailure): self.r.start('nodraft',{})
+        self.assertEqual(len([x for x in self.s.calls if x[0]=='spawn']),1)
     def test_stop_blocks_spawn_and_request(self):
         self.r.stop_requested=lambda:True
         with self.assertRaises(RuntimeFailure): self.r.start('drafted',{})
