@@ -103,3 +103,15 @@ Published `stt5-v3-tc-validation-score-r1-20261101` for keeper qualification, ma
 ### Duplicate v3-TC completion notice
 
 The `.complete` marker repeats the 21:48:43Z v3-TC collection already filed above and in the handoff, with 2,891 successful and five failed chunks. Its filing receipt is present; the separately published scorer was observed awaiting its first keeper dry run. No duplicate collection filing or successor publication was made.
+
+### Crisp HIP repair delegated
+
+The current backlog's remaining qualification rows are already queued, parked, or superseded; the highest actionable unblock is the held Crisp HIP build packet `/mnt/raid0/llm/tmp/h-stt5-crisp-hip-rowflow-draft-20261101/`. Independent review identified missing predecessor-writer exclusion and toolchain/configuration content pins, a generic C++ rather than HIP-specific active compiler check, and missing dry-run install linkage verification. Delegated repair and independent review; registered their completion files in `compute-flags/handoff-sessions/stt5/awaiting/` so the dispatcher can resume on either report. The draft remains held; no build, qualification or new READY row was launched. This is a no-wait boundary, not a claim that the HIP repair is complete.
+
+### Crisp HIP preparation report
+
+The held packet now verifies selected host compiler/tool executables by realpath and SHA and fixes the isolated fixture's verifier path; packet `70d5e7da3bab0e9b1ab0914723cddcd56138fd77af01cb40eed12c2aeeff6643`. This is a partial toolchain seal: selected binaries alone do not bind headers, compiler resources, libraries or effective CMake configuration. Independent review `/mnt/raid0/llm/tmp/h-stt5-crisp-hip-rowflow-draft-20261101/HIP-FINAL-REVIEW-20261101.md` SHA `8db1c173632c3e9a473756fc34378525dee97fb3dbc202409d6d8bc2689d1107` confirms the held launcher still lacks predecessor lifetime fencing, HIP-specific compiler progress, full configuration/cache custody and proven native descendant drain. Delegated guard and compiler/config repairs in isolated scratch; registered report events under `compute-flags/handoff-sessions/stt5/awaiting/`. No build, inference, keeper qualification or READY mutation occurred.
+
+### Crisp HIP independent review consumed
+
+The independent review `HIP-REVIEW-20261101.md` confirms the earlier findings: predecessor lifetime fencing, complete toolchain/configuration custody, HIP-specific compiler progress and native stop/descendant safety require repair. The fixture verifier path has since been corrected in the held packet. Delegated independent integration, fencing and toolchain/stop repairs in separate scratch workspaces; registered `HIP-INTEGRATION-NEXT.done`, `HIP-FENCING-NEXT.done` and `HIP-INVENTORY-NEXT.done` under `compute-flags/handoff-sessions/stt5/awaiting/` for event-driven continuation. The launcher remains held; no build, qualification, inference or READY mutation was performed.

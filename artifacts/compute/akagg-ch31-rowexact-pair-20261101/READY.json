@@ -1,0 +1,45 @@
+{
+ "decision_rule": "Diagnostic only: complete when separate-process route 0 and route 4 solo controls and four matched four-sequence prompt rotations per route finish on pinned C5 and Qwen3.5-0.8B Q8_0. Report first comparable graph-node bitwise difference, compared/shape-skip/unmatched counts and logit/argmax for each pair; this is a route intervention, not fixed-input isolated-op causation, original Q38FN reproduction, performance, keep, or promotion. Require nonzero compared nodes and identical nodes/logits in each solo control. Keeper dryrun is excluded.",
+ "dryrun_timeout_s": 600,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "257a64709a409a6cdab48d9b3d1a605b7165f3be5afbf1954e9efd51cf539bbb"
+ },
+ "estimate_s": 900,
+ "gib": 16,
+ "handoff_task": "handoffs/active/autokernel-champion-aggregate.md:CH-31-DEF1",
+ "id": "akagg-ch31-rowexact-pair-c5-20261101",
+ "keep": [
+  "**/*.json",
+  "**/*.jsonl",
+  "**/*.md",
+  "**/*.txt",
+  "**/*.csv",
+  "**/*.tsv",
+  "**/*.sh",
+  "**/*.py",
+  "**/*.out",
+  "**/*.sha256",
+  "INPUT.sha256",
+  "units.jsonl"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/akagg-ch31-rowexact-pair-20261101/launcher.sh",
+  "sha256": "7b6367c9099cf3a7024557c80f2fe5db0c894126522047c66150cf022be90c82"
+ },
+ "min_window_s": 600,
+ "owner": "handoff-akagg",
+ "ports": [],
+ "priority_rank": 24.0,
+ "published_at": "2026-11-01T22:07:50Z",
+ "published_from": "/mnt/raid0/llm/tmp/akagg-ch31-rowexact-pair-20261101/spec.json",
+ "regions": "0-23",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/akagg-ch31-rowexact-pair-20261101/units.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/akagg-ch31-rowexact-pair-20261101",
+ "stop_file": "/mnt/raid0/llm/tmp/akagg-ch31-rowexact-pair-20261101/STOP",
+ "window_s": 1380,
+ "workdir": "/mnt/raid0/llm/tmp/akagg-ch31-rowexact-pair-20261101"
+}
