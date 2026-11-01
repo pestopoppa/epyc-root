@@ -674,8 +674,8 @@ def shape_of(d, o=None):
     cls = o.get("class", "gpu" if "mi210" in regs else "cpu")
     if "mi210" in regs or cls in ("gpu", "cpu+gpu"):
         return "gpu"
-    if o.get("gpu_quiet") == "exclusive":
-        return "quiet-host"
+    if o.get("gpu_quiet") == "exclusive" and len(quarters_of(o.get("claim_cpus") or "0-95", fold=True)) >= 4:
+        return "quiet-host"   # ws58 2026-11-01: gpu-quiet on a quarter claim = that quarter + GPU idle, not the whole host
     nq = len(quarters_of(o.get("claim_cpus") or regs, fold=True)) if regs not in ("any-cpu-quarter",) and not regs.startswith("any-of") else 1
     nq = max(nq, -(-int(d.get("gib") or 0) // QUARTER_RAM_GIB) if int(d.get("gib") or 0) > QUARTER_RAM_GIB else 1)
     if nq >= 4:
