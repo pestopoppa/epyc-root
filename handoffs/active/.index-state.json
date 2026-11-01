@@ -777,7 +777,7 @@
     },
     "dflash2-block-drafter-experimental-build.md": {
       "blocked": 0,
-      "closed": 38,
+      "closed": 39,
       "guarded": 0,
       "last_advanced": "2026-11-01",
       "open": 22,
@@ -789,7 +789,7 @@
       },
       "row_id": "INF-62",
       "state": "active",
-      "total": 60
+      "total": 61
     },
     "document-parser-table-bench.md": {
       "blocked": 0,
