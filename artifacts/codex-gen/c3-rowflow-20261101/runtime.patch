@@ -1,0 +1,193 @@
+--- a/host-job-v2.sh
++++ b/host-job-v2.sh
+@@ -16,4 +16,12 @@
+ cd "$D"
+ PYTHONPATH="$D/analysis-package" taskset -c "$FILLER_CPUS" /usr/bin/python3.12 -B -m scripts.benchmark.autokernel_profile_beliefs \
+   --kind nemo-native --input-receipt "$E/pass-B/capture.json" --output "$E/pass-B/belief-receipt.json"
+-printf '%s\n' "$E" > "$D/SUCCESS"
++SHARED_E="$(/usr/bin/python3 -B "$D/publish-result-v2.py" "$E")"
++publish_success_marker() {
++  # A rowflow dry-run must not make the real poller believe production completed.
++  if [[ ${FILLER_DRYRUN:-0} == 1 ]]; then
++    return 0
++  fi
++  printf '%s\n' "$SHARED_E" > "$D/SUCCESS"
++}
++publish_success_marker
+--- a/host-job-wrapper-v2.sh
++++ b/host-job-wrapper-v2.sh
+@@ -1,5 +1,5 @@
+ #!/bin/bash
+ set -euo pipefail
+ D=/mnt/raid0/llm/tmp/refactor-c3-native-profile-r4-20261101
+-PRESERVE=HOME,FILLER_ID,FILLER_CPUS,FILLER_DEADLINE,FILLER_PIDFILE,FILLER_END,FILLER_END_ISO,FILLER_STOPFILE,FILLER_PORTS,FILLER_STATE_DIR,FILLER_GRANTS_DIR,FILLER_FLAGS_DIR,FILLERS_MD,FILLER_THREADS,FILLER_QUAL_FIXTURE,FILLER_RESULTS_DIR,FILLER_QUAL_PHASE,FILLER_LIB,FILLER_DISK_POLICY,WS58_QUAL,WS58_QUAL_NONCE,WS58_QUAL_CPUS,WS58_QUAL_RESULTS,WS58_QUAL_FIXTURE,WS58_QUAL_PROOF,WS58_MANIFEST_PATH,WS58_QUALIFIER_PATH,WS58_QUAL_GPU_HELD,WS58_QUAL_PRODUCTION,WS58_QUAL_WINDOW_S,WS58_PRODUCTION_RECIPE_SHA256,WS58_QUAL_CUTOFF_EVENT,OMP_NUM_THREADS,OPENBLAS_NUM_THREADS,MKL_NUM_THREADS,NEMO_CAMPAIGN_ID,NEMO_EXPECT_R13_INHERITED_CLAIM,NEMO_PROFILER_PYTHON,PYTHONDONTWRITEBYTECODE
++PRESERVE=HOME,FILLER_ID,FILLER_CPUS,FILLER_DEADLINE,FILLER_PIDFILE,FILLER_END,FILLER_END_ISO,FILLER_STOPFILE,FILLER_PORTS,FILLER_STATE_DIR,FILLER_GRANTS_DIR,FILLER_FLAGS_DIR,FILLERS_MD,FILLER_THREADS,FILLER_QUAL_FIXTURE,FILLER_RESULTS_DIR,FILLER_QUAL_PHASE,FILLER_DRYRUN,FILLER_DRYRUN_DIR,FILLER_LIB,FILLER_DISK_POLICY,WS58_QUAL,WS58_QUAL_NONCE,WS58_QUAL_CPUS,WS58_QUAL_RESULTS,WS58_QUAL_FIXTURE,WS58_QUAL_PROOF,WS58_MANIFEST_PATH,WS58_QUALIFIER_PATH,WS58_QUAL_GPU_HELD,WS58_QUAL_PRODUCTION,WS58_QUAL_WINDOW_S,WS58_PRODUCTION_RECIPE_SHA256,WS58_QUAL_CUTOFF_EVENT,OMP_NUM_THREADS,OPENBLAS_NUM_THREADS,MKL_NUM_THREADS,NEMO_CAMPAIGN_ID,NEMO_EXPECT_R13_INHERITED_CLAIM,NEMO_PROFILER_PYTHON,PYTHONDONTWRITEBYTECODE
+ exec sudo -n --preserve-env="$PRESERVE" /usr/bin/chroot /proc/1/root /usr/bin/setpriv --reuid=1000 --regid=1000 --groups=992 /bin/bash "$D/host-job-v2.sh" "$@"
+--- a/complete-v2.py
++++ b/complete-v2.py
+@@ -1,16 +1,26 @@
+ #!/usr/bin/env python3
+ from pathlib import Path
+-import json,os,sys
++import hashlib,json,os,sys
+ D=Path(__file__).resolve().parent
+ if os.environ.get('WS58_QUAL')=='1':
+     out=Path(os.environ.get('FILLER_RESULTS_DIR',''))/'normal.json'
+     raise SystemExit(0 if out.is_file() and not out.is_symlink() and out.stat().st_size>1 else 1)
++# Dry-runs produce a real per-run receipt but must never satisfy the production
++# completion predicate; filler_run15 stores their completion under dryrun/<id>.
++if os.environ.get('FILLER_DRYRUN') == '1':
++    raise SystemExit(1)
+ marker=D/'SUCCESS'
+ try:
+     run=Path(marker.read_text().strip())
+     result=run/'pass-B'/'belief-receipt.json'
+     capture=run/'pass-B'/'capture.json'
+-    valid=(str(run).startswith('/mnt/micron/refactor-c3-native-profile-r4-20261101/run-') and
+-           result.is_file() and capture.is_file())
++    provenance=run/'source-provenance.json'
++    proof=json.loads(provenance.read_text())
++    valid=(str(run).startswith(str(D / 'results' / 'run-')) and
++           all(p.is_file() and not p.is_symlink() for p in (result,capture,provenance)) and
++           proof.get('schema')=='c3-native-r4-shared-result-provenance-v1' and
++           proof.get('run_id')==run.name and
++           all(proof.get('artifacts',{}).get(name,{}).get('sha256')==hashlib.sha256(p.read_bytes()).hexdigest()
++               for name,p in (('belief-receipt.json',result),('capture.json',capture))))
+ except (OSError,ValueError): valid=False
+ raise SystemExit(0 if valid else 1)
+--- a/SOURCE.sha256
++++ b/SOURCE.sha256
+@@ -4,7 +4,7 @@
+ 525a361e1d50f7818181b1ea69853437ce302833e532cca09a98691160527e08  analysis-pins.json
+ 1136adf2ec83a6c6556501e80374f44f7f9add614ada3ef0c52bf2bf63fedf25  autokernel_profile_beliefs.py
+ fbc9bcb84481e560d94e0f61446052ba94dfaaa5f6238d1648e77337832439c2  capture.sh
+-2f116563245e5deeb0e48f4705f6f9eb312e7e19c76e1f48c04c3be8938b0502  complete-v2.py
++5a5f1aa6bfbabd77f3775cdf3ac6c3c1e7bba53f439cac3ca2468cd3236042c3  complete-v2.py
+ 14e3187b07a74851374fdaf11d3a952c0954a8ef98bcb04f39a6d357231afceb  cutoff-job.sh
+ 241e522f4a7d7208e7485834c90d77676434a9bc88fd253575e034ad2934237c  engine/filler_lib.sh
+ e940173f539fcae2e814ab4022e3b3cb48eff1fc3d3a7ccdb5de898be5168aeb  engine/filler_run13.sh
+@@ -14,8 +14,8 @@
+ 508d154d6414d61fbd7ffc9ab68286c98ee09c9547ba25f5627d8e8090ed86ee  gpu-controls/r11_snapshot.py
+ 6f23700554c82f1129383884f98d3d22a5deedc3bf33dcf67e600285f533a444  gpu-controls/smoke_admission.py
+ 1cf4ef6c0a9c61b3677eadd5fdd54c0a8239adade253fc73822c70e3420c6fde  gpu-controls/supervisor.py
+-ca984b21e29ad18b5077dfb48158548121d48ef0b4970da6f04a2bfdf04bb33a  host-job-v2.sh
+-7806a29969c21bece32904944a228f0c8480084e618dfdd7e2d31b135c6ea7da  host-job-wrapper-v2.sh
++383dc2a48b0a28c618604737d80988827ce5b85e36ad34d4f1334b17434d6bbe  host-job-v2.sh
++1e0cec363981b7bd8b2f8409ba997abe3e54a94315d3b94c249f348df7726855  host-job-wrapper-v2.sh
+ 1951c2dca5c56c0023e46acf01b2b8d1e47828e64a67fc8110e4d37620f24a34  host-job.sh
+ 743f7fc459a8299ec6d57acccc4c10b819d5b610a6095b1f5f9cff06b66138e0  inherited_claim.py
+ 18f69735a706ac66bf4f81f2c9e537474239fc33ec7bc0e5c218135b3ddf6e69  l-smoke-job.sh
+@@ -49,3 +49,4 @@
+ 57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33  verify_ggml_linkage.sh
+ 785c190295e3af21d0e2bc6ca51444507212a05f7cd22af9a514e4199c2d6871  verify_l_smoke.py
+ 33ad37e777ae61e93051dcf5cbae680af449dc71cf36d24d2ecd4df7c70bbfae  verify_smoke.py
++455e26df61cee934f85ad53309142bcbf0c6624ba9fea5cc4f101f00be17df57  publish-result-v2.py
+--- a/V2-SOURCE.sha256
++++ b/V2-SOURCE.sha256
+@@ -1,8 +1,8 @@
+ 0882d046124f266c7356508aef983bb710827851f0b8ac4e696a69dcdbe4360c  /mnt/raid0/llm/tmp/refactor-c3-native-profile-r4-20261101/launch-v2.sh
+-7806a29969c21bece32904944a228f0c8480084e618dfdd7e2d31b135c6ea7da  /mnt/raid0/llm/tmp/refactor-c3-native-profile-r4-20261101/host-job-wrapper-v2.sh
+-ca984b21e29ad18b5077dfb48158548121d48ef0b4970da6f04a2bfdf04bb33a  /mnt/raid0/llm/tmp/refactor-c3-native-profile-r4-20261101/host-job-v2.sh
++1e0cec363981b7bd8b2f8409ba997abe3e54a94315d3b94c249f348df7726855  /mnt/raid0/llm/tmp/refactor-c3-native-profile-r4-20261101/host-job-wrapper-v2.sh
++383dc2a48b0a28c618604737d80988827ce5b85e36ad34d4f1334b17434d6bbe  /mnt/raid0/llm/tmp/refactor-c3-native-profile-r4-20261101/host-job-v2.sh
+ b450feba0d88da6fed4ca33a1ade2d7de312547d5a74585841031223ac0ddc05  /mnt/raid0/llm/tmp/refactor-c3-native-profile-r4-20261101/qual_fixture_job.py
+-2f116563245e5deeb0e48f4705f6f9eb312e7e19c76e1f48c04c3be8938b0502  /mnt/raid0/llm/tmp/refactor-c3-native-profile-r4-20261101/complete-v2.py
++5a5f1aa6bfbabd77f3775cdf3ac6c3c1e7bba53f439cac3ca2468cd3236042c3  /mnt/raid0/llm/tmp/refactor-c3-native-profile-r4-20261101/complete-v2.py
+ 5fdc621548020daacaf227466d655f20dabe1d92a043ab570995bddad7626fb4  /mnt/raid0/llm/tmp/refactor-c3-native-profile-r4-20261101/prof_native_v3.py
+ fbc9bcb84481e560d94e0f61446052ba94dfaaa5f6238d1648e77337832439c2  /mnt/raid0/llm/tmp/refactor-c3-native-profile-r4-20261101/capture.sh
+ 036662be2351be690089f91391affb4d180e72e2cf51bbdc073e7c646a210cd7  /mnt/raid0/llm/tmp/refactor-c3-native-profile-r4-20261101/smoke-job.sh
+@@ -18,3 +18,4 @@
+ 3df3d61841684c4060523ce39ba21196c331f63e071191524b745265b1f0116d  /mnt/raid0/llm/tmp/refactor-c3-native-profile-r4-20261101/v2-production-recipe.json
+ 9d1ef452310fdc8b952f2731703980cfc132953f8e440a8be8e3dc58b8c19ea6  /mnt/raid0/llm/tmp/refactor-c3-native-profile-r4-20261101/read_launcher_logs.py
+ 1dc557b1cd1144e76840ad9437852a485962fa8ed6bf4bd0dbd54b1a337790f4  /mnt/raid0/llm/tmp/refactor-c3-native-profile-r4-20261101/rate-evidence.json
++455e26df61cee934f85ad53309142bcbf0c6624ba9fea5cc4f101f00be17df57  /mnt/raid0/llm/tmp/refactor-c3-native-profile-r4-20261101/publish-result-v2.py
+--- a/row-spec.json
++++ b/row-spec.json
+@@ -24,11 +24,12 @@
+     "qual_fixture.json",
+     "v2-request.json",
+     "v2-production-recipe.json",
++    "results/**",
+     "RESULT-NEEDS-SPEC.jsonl"
+   ],
+   "dryrun_timeout_s": 1500,
+   "launcher": "/mnt/raid0/llm/tmp/refactor-c3-native-profile-r4-20261101/launch-v2.v15.sh",
+   "ram_gib": 64,
+-  "result_path": "/mnt/micron/refactor-c3-native-profile-r4-20261101/run-*/pass-B/belief-receipt.json",
++  "result_path": "/mnt/raid0/llm/tmp/refactor-c3-native-profile-r4-20261101/results/run-*/pass-B/belief-receipt.json",
+   "result_format": "json"
+ }
+--- /dev/null
++++ b/publish-result-v2.py
+@@ -0,0 +1,71 @@
++#!/usr/bin/env python3
++"""Publish host-only C3 outputs into the rowflow-visible shared scratch tree."""
++from __future__ import annotations
++import datetime as dt
++import hashlib
++import json
++import os
++from pathlib import Path
++import shutil
++import sys
++
++HOST_ROOT = Path('/mnt/micron/refactor-c3-native-profile-r4-20261101')
++SHARED_ROOT = Path('/mnt/raid0/llm/tmp/refactor-c3-native-profile-r4-20261101')
++
++def sha(path: Path) -> str:
++    h = hashlib.sha256()
++    with path.open('rb') as f:
++        for block in iter(lambda: f.read(1 << 20), b''):
++            h.update(block)
++    return h.hexdigest()
++
++def main() -> int:
++    if len(sys.argv) != 2:
++        raise SystemExit('usage: publish-result-v2.py HOST_RUN_DIR')
++    source = Path(sys.argv[1])
++    if source.parent != HOST_ROOT or not source.name.startswith('run-') or source.is_symlink() or not source.is_dir():
++        raise SystemExit('refusing unexpected host run path')
++    source_pass = source / 'pass-B'
++    names = ('capture.json', 'belief-receipt.json')
++    for name in names:
++        p = source_pass / name
++        if p.is_symlink() or not p.is_file():
++            raise SystemExit(f'missing or unsafe source artifact: {p}')
++        json.loads(p.read_text())
++    results = SHARED_ROOT / 'results'
++    results.mkdir(parents=True, exist_ok=True)
++    dest = results / source.name
++    stage = results / f'.{source.name}.tmp-{os.getpid()}'
++    if dest.exists() or stage.exists():
++        raise SystemExit(f'result destination already exists: {dest}')
++    try:
++        stage_pass = stage / 'pass-B'
++        stage_pass.mkdir(parents=True)
++        artifacts = {}
++        for name in names:
++            src = source_pass / name
++            dst = stage_pass / name
++            shutil.copyfile(src, dst)
++            source_sha, copied_sha = sha(src), sha(dst)
++            if source_sha != copied_sha:
++                raise SystemExit(f'copy hash mismatch: {name}')
++            artifacts[name] = {'host_source': str(src), 'shared_copy': str(dest / 'pass-B' / name),
++                               'sha256': source_sha}
++        provenance = {
++            'schema': 'c3-native-r4-shared-result-provenance-v1',
++            'run_id': source.name,
++            'host_run_path': str(source),
++            'shared_run_path': str(dest),
++            'copied_at_utc': dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
++            'artifacts': artifacts,
++        }
++        (stage / 'source-provenance.json').write_text(json.dumps(provenance, sort_keys=True, indent=2) + '\n')
++        os.rename(stage, dest)  # publish only after artifacts + provenance are complete
++    except BaseException:
++        shutil.rmtree(stage, ignore_errors=True)
++        raise
++    print(dest)
++    return 0
++
++if __name__ == '__main__':
++    raise SystemExit(main())
