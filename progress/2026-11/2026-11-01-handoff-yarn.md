@@ -66,3 +66,8 @@ The disabled E1 draft now derives disjoint dry-run and production output roots a
 ## S2 custody controls
 
 Two test-owned-process controls exercised actual disabled-candidate `owned_window.py`: ordinary STOP drained a fake worker and grandchild, while killing the lock-holding parent left a detached fake server alive and its old cohort lock reacquirable. The latter is a reproduced custody defect caused by lock descriptors being closed in children, not a safety pass. Candidate remains disabled; direct-child descriptor inheritance alone cannot prove lifetime across detached descendants. See `artifacts/compute/yarn-s2-custody-control-20261101/`. No native inference or scheduler change occurred.
+
+
+## S2 readiness STOP fix
+
+The disabled S2 v15 candidate now rechecks admission after server readiness and worker setup; an earlier test showed it could otherwise start a worker after STOP. The private manifest and launcher chain were re-pinned. Eleven offline and four test-owned-process controls passed, including both new STOP cases and the parent-loss defect reproducer. Candidate remains disabled: an interval remains between last check and spawn, and parent-death lock custody is still broken. The repo checkpoint omits historical scope/manifest JSON flagged by the PII hook; complete disabled source is KEEP-marked in scratch. No inference or READY.

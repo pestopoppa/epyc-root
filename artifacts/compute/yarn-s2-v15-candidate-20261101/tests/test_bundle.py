@@ -6,7 +6,7 @@ def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 class BundleTests(unittest.TestCase):
  def test_manifest_covers_exact_private_files(self):
   root=R/'host-src'; p=root/'SOURCE-MANIFEST-v15.json'
-  self.assertEqual(sha(p),'aca5319284d9a3c04901e71e90aefe05dd29991337aacf53566237e36fee5160')
+  self.assertEqual(sha(p),'30bece771abc91a4eeebce670eb3cb81d00c4d3fd15aa092020c30f3baaf4289')
   manifest=json.loads(p.read_text())
   for name,digest in manifest['files'].items():
    self.assertEqual(sha(root/name),digest,name)
