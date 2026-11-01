@@ -1,0 +1,7 @@
+# 2026-11-01 — Codex3 row repairs
+
+EVL34: recovered the historical dependency freeze byte-for-byte; host verification checked all 3,253 non-GGUF entries with no missing files or digest mismatches. The isolated successor source catalog and working Git-lane freeze path passed model-free closure checks. The launcher is deliberately disabled pending the canonical LOOP49 engine and qualification; no inference ran. The full R10 result path was verified against the original hash-matching result and remains recorded in the earlier results-filing artifact. The proposed handoff restoration was excluded from this checkpoint after the normal PII hook flagged its timestamp as an account number. [belief: cc]
+
+PIP02 R32 pool1: host-native final records show seven completed groups and five terminal groups with 61 complete pages, 13 unknown pages and one geometry error. No missing page appears in those final summaries; the partial result carries no quality verdict and no rerun is warranted from that snapshot. The earlier container-only absence statement is corrected. [belief: cc]
+
+The host recheck identified 58 own stale launcher rows without live matching processes, active grants, current queue bookings or ready manifests. Evidence and proposed reconciliation were delivered to the canonical writer; three live GPU-queue rows were excluded. No shared FILLERS overwrite, STOP or process kill was performed. [no-belief: operational state snapshot]

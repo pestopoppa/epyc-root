@@ -1,0 +1,1072 @@
+[
+  {
+    "id": "codex3-hil15b-heavy-r3-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/launch.sh",
+    "recorded_pid": [
+      "2871160"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue",
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-hil15b-heavy-r6-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r6/launch.sh",
+    "recorded_pid": [
+      "2172325"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-hsf5p-profile6-r12-20261030",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-hsf-profile6-r12-20261030/launch.sh",
+    "recorded_pid": [
+      "2158837"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-gpu.queue"
+    ],
+    "eligible": false,
+    "active_queue_mentions": [
+      "ws58-gpu.queue"
+    ],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-hsf5p-profile6-r13-20261030",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-hsf-profile6-r13-split-20261030/launch.sh",
+    "recorded_pid": [
+      "2423676"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-gpu.queue"
+    ],
+    "eligible": false,
+    "active_queue_mentions": [
+      "ws58-gpu.queue"
+    ],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-hsf5p-profile6-r15-20261030",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-hsf-profile6-r15-split-20261030/launch.sh",
+    "recorded_pid": [
+      "3081266"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-gpu.queue"
+    ],
+    "eligible": false,
+    "active_queue_mentions": [
+      "ws58-gpu.queue"
+    ],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-fresh-s0-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-samequarter/paddle-s0/pip02-s0-q1.sh",
+    "recorded_pid": [
+      "133192"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-fresh-s1-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-samequarter/paddle-s1/pip02-s1-q1.sh",
+    "recorded_pid": [
+      "3648337"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-odl-relocatable-r2-s24-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2-reprep-20261030/shard-24/odl-relocatable-s24.sh",
+    "recorded_pid": [
+      "2650515"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue",
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": false,
+    "dead_launcher_candidate": true
+  },
+  {
+    "id": "codex3-pip02-odl-relocatable-r2-s25-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2-reprep-20261030/shard-25/odl-relocatable-s25.sh",
+    "recorded_pid": [
+      "2651424"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue",
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": false,
+    "dead_launcher_candidate": true
+  },
+  {
+    "id": "codex3-pip02-odl-relocatable-r2-s28-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2-reprep-20261030/shard-28/odl-relocatable-s28.sh",
+    "recorded_pid": [
+      "2681544"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue",
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": false,
+    "dead_launcher_candidate": true
+  },
+  {
+    "id": "codex3-pip02-odl-relocatable-r2-s29-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2-reprep-20261030/shard-29/odl-relocatable-s29.sh",
+    "recorded_pid": [
+      "2681642"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue",
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": false,
+    "dead_launcher_candidate": true
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g104-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next24-20261030/group-104/parallel-g104.sh",
+    "recorded_pid": [
+      "702325"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g11-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-11/parallel-g11.sh",
+    "recorded_pid": [
+      "2468854"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue",
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g110-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next24-20261030/group-110/parallel-g110.sh",
+    "recorded_pid": [
+      "262716"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g113-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next24-20261030/group-113/parallel-g113.sh",
+    "recorded_pid": [
+      "262782"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g116-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next32-20261030/group-116/parallel-g116.sh",
+    "recorded_pid": [
+      "40783"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g119-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next32-20261030/group-119/parallel-g119.sh",
+    "recorded_pid": [
+      "1087856"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g122-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next32-20261030/group-122/parallel-g122.sh",
+    "recorded_pid": [
+      "40955"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g128-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next36-20261030/group-128/parallel-g128.sh",
+    "recorded_pid": [
+      "131212"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g131-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next36-20261030/group-131/parallel-g131.sh",
+    "recorded_pid": [
+      "239591"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g134-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next36-20261030/group-134/parallel-g134.sh",
+    "recorded_pid": [
+      "262919"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g137-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next36-20261030/group-137/parallel-g137.sh",
+    "recorded_pid": [
+      "240574"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g140-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next40-20261030/group-140/parallel-g140.sh",
+    "recorded_pid": [
+      "241097"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g143-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next40-20261030/group-143/parallel-g143.sh",
+    "recorded_pid": [
+      "264395"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g146-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next40-20261030/group-146/parallel-g146.sh",
+    "recorded_pid": [
+      "264493"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g149-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next40-20261030/group-149/parallel-g149.sh",
+    "recorded_pid": [
+      "264576"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g17-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-17/parallel-g17.sh",
+    "recorded_pid": [
+      "2468929"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue",
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g23-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-23/parallel-g23.sh",
+    "recorded_pid": [
+      "2386268"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g26-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-26/parallel-g26.sh",
+    "recorded_pid": [
+      "2484439"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g29-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-29/parallel-g29.sh",
+    "recorded_pid": [
+      "2386443"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g32-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-32/parallel-g32.sh",
+    "recorded_pid": [
+      "2467494"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g35-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-35/parallel-g35.sh",
+    "recorded_pid": [
+      "2467555"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g38-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next4-20261030/group-38/parallel-g38.sh",
+    "recorded_pid": [
+      "2578969"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g41-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next4-20261030/group-41/parallel-g41.sh",
+    "recorded_pid": [
+      "2681718"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g44-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next4-20261030/group-44/parallel-g44.sh",
+    "recorded_pid": [
+      "2706175"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g47-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next4-20261030/group-47/parallel-g47.sh",
+    "recorded_pid": [
+      "2706439"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g50-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next8-20261030/group-50/parallel-g50.sh",
+    "recorded_pid": [
+      "2706569"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g53-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next8-20261030/group-53/parallel-g53.sh",
+    "recorded_pid": [
+      "2706678"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g56-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next8-20261030/group-56/parallel-g56.sh",
+    "recorded_pid": [
+      "2794929"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g59-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next8-20261030/group-59/parallel-g59.sh",
+    "recorded_pid": [
+      "2794996"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g65-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next12-20261030/group-65/parallel-g65.sh",
+    "recorded_pid": [
+      "3014573"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g74-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next16-20261030/group-74/parallel-g74.sh",
+    "recorded_pid": [
+      "184800"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g77-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next16-20261030/group-77/parallel-g77.sh",
+    "recorded_pid": [
+      "702689"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g8-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-8/parallel-g8.sh",
+    "recorded_pid": [
+      "2502965"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g80-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next16-20261030/group-80/parallel-g80.sh",
+    "recorded_pid": [
+      "711089"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g83-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next16-20261030/group-83/parallel-g83.sh",
+    "recorded_pid": [
+      "236719"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g86-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next20-20261030/group-86/parallel-g86.sh",
+    "recorded_pid": [
+      "1973320"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g89-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next20-20261030/group-89/parallel-g89.sh",
+    "recorded_pid": [
+      "263136"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g92-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next20-20261030/group-92/parallel-g92.sh",
+    "recorded_pid": [
+      "711277"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g95-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next20-20261030/group-95/parallel-g95.sh",
+    "recorded_pid": [
+      "202822"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r11-g98-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next24-20261030/group-98/parallel-g98.sh",
+    "recorded_pid": [
+      "1974122"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r14-pool0-20261030",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-pool-r14-20261030/packets/pool-0/pool-p0.sh",
+    "recorded_pid": [
+      "1607259"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r14-pool1-20261030",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-pool-r14-20261030/packets/pool-1/pool-p1.sh",
+    "recorded_pid": [
+      "1607464"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r14-pool2-20261030",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-pool-r14-20261030/packets/pool-2/pool-p2.sh",
+    "recorded_pid": [
+      "1176444"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r14-pool3-20261030",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-pool-r14-20261030/packets/pool-3/pool-p3.sh",
+    "recorded_pid": [
+      "1607549"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r15-pool2-20261030",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-pool-r15-20261030/packets/pool-2/pool-p2.sh",
+    "recorded_pid": [
+      "2460186"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue",
+      "ws58-quarters-20261030.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r15-pool3-20261030",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-pool-r15-20261030/packets/pool-3/pool-p3.sh",
+    "recorded_pid": [
+      "1978495"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r17-head-20261030",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-head-r17-20261030/packet/head.sh",
+    "recorded_pid": [
+      "2437360"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue",
+      "ws58-quarters-20261030.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r22-pool0-20261030",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip-split-r22-20261030/packets/pool-0/launch-p0.sh",
+    "recorded_pid": [
+      "2651369"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261030.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r22-pool3-20261030",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip-split-r22-20261030/packets/pool-3/launch-p3.sh",
+    "recorded_pid": [
+      "3219586"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261030.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r8-g107-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r8-20261029/packets/group-107/parallel-g107.sh",
+    "recorded_pid": [
+      "1773931"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  },
+  {
+    "id": "codex3-pip02-paddle-relocatable-r9-g5-20261029",
+    "launcher": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r9-20261029/packets/group-5/parallel-g5.sh",
+    "recorded_pid": [
+      "2486784"
+    ],
+    "host_matches": [],
+    "grants": [],
+    "queue_mentions": [
+      "ws58-quarters-20261029.queue",
+      "ws58-quarters-20261029.queue"
+    ],
+    "eligible": true,
+    "active_queue_mentions": [],
+    "host_file_exists": true,
+    "host_file_executable": true,
+    "dead_launcher_candidate": false
+  }
+]
