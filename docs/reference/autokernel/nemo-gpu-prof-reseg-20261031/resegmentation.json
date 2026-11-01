@@ -6,97 +6,119 @@
       "status": "COMPLETE",
       "source_csv_sha256": "c1bebdff0cfb35e98df39ba3fb729f9114b0f676cf3bf6ef4ba76ce267d8ca94",
       "source_run_sha256": "e746d105ccfa01e7542d918a9aaf6ed3073b0171775f341979895b988a278a4d",
-      "source_burst_dispatches": 332946,
-      "server_predicted_n": 160,
-      "server_wall_ms_per_generated_token": 56.9829,
-      "boundary_method": "repeated ordered full kernel-name graph fingerprint anchored by k_set_rows/rms_norm/k_get_rows (L) or 40 SSM scans per graph (B)",
-      "fingerprints_by_dispatch_count": {
-        "2065": "4070ef32141057d213c0439f8b09b7a736641d52941c13cd752418e17df2f6cc",
-        "2081": "d5d9ff850d2e69462cee89ce4547df4ca4165e515977ffc611406bf412a184a7"
+      "source_server_log_sha256": "c888ec209b00c3953c4a3e34f13b78dcbc06f698a4dc14d70c6723a4ddacc49f",
+      "server_request_mark": {
+        "label": "P",
+        "start_monotonic_ns": 1038910109876864,
+        "end_monotonic_ns": 1038919613719809,
+        "generated_tokens": 160,
+        "request_window_kernel_dispatches": 332946,
+        "request_window_first_kernel_ns": 1038910427852983,
+        "request_window_last_kernel_ns": 1038919611487758,
+        "request_window_kernel_busy_ms": 5282.795,
+        "request_window_kernel_span_ms": 9183.6348,
+        "gpu_kernel_busy_ms_per_generated_token": 33.0175
       },
-      "complete_steady_graphs": 156,
-      "steady_dispatch_counts": {
-        "2065": 55,
-        "2081": 101
+      "server_eval_timing": {
+        "eval_ms": 9117.26,
+        "generated_tokens": 160,
+        "wall_ms_per_generated_token": 56.98,
+        "tokens_per_second": 17.55
       },
-      "gpu_kernel_busy_ms_per_token": {
-        "n": 156,
-        "mean_ms": 32.8851,
-        "median_ms": 32.7793,
-        "min_ms": 32.6193,
-        "max_ms": 33.7271
-      },
-      "gpu_elapsed_span_ms_per_token": {
-        "n": 156,
-        "mean_ms": 57.3104,
-        "median_ms": 56.0987,
-        "min_ms": 46.8941,
-        "max_ms": 155.6772
-      },
-      "busy_to_server_wall_ratio": 0.5771,
-      "excluded_graphs": [
-        {
-          "position": 0,
-          "dispatches": 2250,
-          "fingerprint": "dd1ffb025a7b179700c1f6d8168fe92c964bb92cdbd992e4b6435273fb110c64",
-          "busy_ms": 35.0962
+      "busy_to_server_wall_ratio": 0.5794,
+      "boundary_method": "The run.json server timing mark bounds one measured request in the same monotonic clock as rocprof Start_Timestamp/End_Timestamp. All complete GPU kernel dispatches inside that interval are summed and divided by the server-reported generated-token count. The final server eval-time row independently confirms the token count and wall ms/token. No per-token kernel boundary is inferred from kernel-name fingerprints.",
+      "prior_fingerprint_crosscheck": {
+        "fingerprint_steady_graphs": 156,
+        "fingerprint_busy_ms_per_token": {
+          "n": 156,
+          "mean_ms": 32.8851,
+          "median_ms": 32.7793,
+          "min_ms": 32.6193,
+          "max_ms": 33.7271
         },
-        {
-          "position": 56,
-          "dispatches": 2257,
-          "fingerprint": "69ea173290a5669493f7a491d658ed23f243d08b2516e0efd2797720c924ecdc",
-          "busy_ms": 34.3583
+        "fingerprint_span_ms_per_token": {
+          "n": 156,
+          "mean_ms": 57.3104,
+          "median_ms": 56.0987,
+          "min_ms": 46.8941,
+          "max_ms": 155.6772
         },
-        {
-          "position": 158,
-          "dispatches": 2082,
-          "fingerprint": "05c890388e2a4e2a63a654e461cd8d5b445d506172df911d3c0e2f5a718fa480",
-          "busy_ms": 32.7773
-        }
-      ],
-      "prefill_and_early_dispatches": 2601,
-      "accounting": "GPU kernel busy sums each dispatch End-Start; elapsed graph span and server wall are separate, with host idle and overlap. Results are observed sample descriptive statistics, not a throughput claim or causal hardware counter."
+        "excluded_graphs": [
+          {
+            "position": 0,
+            "dispatches": 2250,
+            "fingerprint": "dd1ffb025a7b179700c1f6d8168fe92c964bb92cdbd992e4b6435273fb110c64",
+            "busy_ms": 35.0962
+          },
+          {
+            "position": 56,
+            "dispatches": 2257,
+            "fingerprint": "69ea173290a5669493f7a491d658ed23f243d08b2516e0efd2797720c924ecdc",
+            "busy_ms": 34.3583
+          },
+          {
+            "position": 158,
+            "dispatches": 2082,
+            "fingerprint": "05c890388e2a4e2a63a654e461cd8d5b445d506172df911d3c0e2f5a718fa480",
+            "busy_ms": 32.7773
+          }
+        ],
+        "note": "Fingerprint groups are retained only as a secondary cross-check; the server-marked interval is the primary measurement."
+      },
+      "accounting": "GPU kernel busy is summed End_Timestamp - Start_Timestamp divided by server-reported generated tokens. Request-window busy and per-token wall are distinct observables; their ratio is descriptive and does not assign host/GPU idle or overlap causes."
     },
     "B": {
       "status": "COMPLETE",
       "source_csv_sha256": "4bfb3cdd73c7ff8cda2c8bab783ee9bbd21f46d19fec540b6add518a25e000ad",
       "source_run_sha256": "3520876cae4b58156ff55f4772dd5c0acf55b3ee8a4019199c532eac05b00b95",
-      "source_burst_dispatches": 179633,
-      "server_predicted_n": 96,
-      "server_wall_ms_per_generated_token": 33.9236,
-      "boundary_method": "repeated ordered full kernel-name graph fingerprint anchored by k_set_rows/rms_norm/k_get_rows (L) or 40 SSM scans per graph (B)",
-      "fingerprints_by_dispatch_count": {
-        "1845": "ea8c887a6af65a262c2fd93c9047fa67c4ded6264fd31e4536f086f241f891a8"
+      "source_server_log_sha256": "c3acce2a3a81262903cbd93c8aaf8a1d4afb543ff75733165519de136d834513",
+      "server_request_mark": {
+        "label": "M",
+        "start_monotonic_ns": 1038940436817403,
+        "end_monotonic_ns": 1038944938908668,
+        "generated_tokens": 96,
+        "request_window_kernel_dispatches": 179633,
+        "request_window_first_kernel_ns": 1038940869793162,
+        "request_window_last_kernel_ns": 1038944441563939,
+        "request_window_kernel_busy_ms": 2138.3473,
+        "request_window_kernel_span_ms": 3571.7708,
+        "gpu_kernel_busy_ms_per_generated_token": 22.2745
       },
-      "complete_steady_graphs": 94,
-      "steady_dispatch_counts": {
-        "1845": 94
+      "server_eval_timing": {
+        "eval_ms": 3256.66,
+        "generated_tokens": 96,
+        "wall_ms_per_generated_token": 33.92,
+        "tokens_per_second": 29.48
       },
-      "gpu_kernel_busy_ms_per_token": {
-        "n": 94,
-        "mean_ms": 20.513,
-        "median_ms": 20.3339,
-        "min_ms": 20.2665,
-        "max_ms": 21.1472
+      "busy_to_server_wall_ratio": 0.6566,
+      "boundary_method": "The run.json server timing mark bounds one measured request in the same monotonic clock as rocprof Start_Timestamp/End_Timestamp. All complete GPU kernel dispatches inside that interval are summed and divided by the server-reported generated-token count. The final server eval-time row independently confirms the token count and wall ms/token. No per-token kernel boundary is inferred from kernel-name fingerprints.",
+      "prior_fingerprint_crosscheck": {
+        "fingerprint_steady_graphs": 94,
+        "fingerprint_busy_ms_per_token": {
+          "n": 94,
+          "mean_ms": 20.513,
+          "median_ms": 20.3339,
+          "min_ms": 20.2665,
+          "max_ms": 21.1472
+        },
+        "fingerprint_span_ms_per_token": {
+          "n": 94,
+          "mean_ms": 22.0249,
+          "median_ms": 21.7007,
+          "min_ms": 20.9512,
+          "max_ms": 27.9407
+        },
+        "excluded_graphs": [
+          {
+            "position": 0,
+            "dispatches": 1861,
+            "fingerprint": "a0137f176df3541a14892285284c052b500ba6b04cbcde0b782ed2f3c09aa8c5",
+            "busy_ms": 21.6515
+          }
+        ],
+        "note": "Fingerprint groups are retained only as a secondary cross-check; the server-marked interval is the primary measurement."
       },
-      "gpu_elapsed_span_ms_per_token": {
-        "n": 94,
-        "mean_ms": 22.0249,
-        "median_ms": 21.7007,
-        "min_ms": 20.9512,
-        "max_ms": 27.9407
-      },
-      "busy_to_server_wall_ratio": 0.6047,
-      "excluded_graphs": [
-        {
-          "position": 0,
-          "dispatches": 1861,
-          "fingerprint": "a0137f176df3541a14892285284c052b500ba6b04cbcde0b782ed2f3c09aa8c5",
-          "busy_ms": 21.6515
-        }
-      ],
-      "prefill_and_early_dispatches": 4342,
-      "accounting": "GPU kernel busy sums each dispatch End-Start; elapsed graph span and server wall are separate, with host idle and overlap. Results are observed sample descriptive statistics, not a throughput claim or causal hardware counter."
+      "accounting": "GPU kernel busy is summed End_Timestamp - Start_Timestamp divided by server-reported generated tokens. Request-window busy and per-token wall are distinct observables; their ratio is descriptive and does not assign host/GPU idle or overlap causes."
     }
   }
 }
