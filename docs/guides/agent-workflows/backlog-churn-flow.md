@@ -1,121 +1,84 @@
-# Churn through the backlog — the one workflow (operator, 2026-11-01)
+# Churn through the backlog — the one workflow (operator, 2026-11-01; simplified the same evening)
 
 "If I ever ask to churn through the task backlog it should just work." This page is the canonical definition;
-skills and goals point here. There is no other backlog workflow for the Codex workers.
+skills and goals point here. Operator ruling (2026-11-01): **remove every gate that is not indispensable** — each
+extra artifact was a place for a row to get stuck and token-wasting busywork for workers.
 
 ## The flowchart (verbatim from the operator)
 
-1. The entire task backlog consists of prioritized tasks of two types: **inference** and **non-inference**.
-2. Non-inference tasks that block inference tasks can be built/completed/implemented **regardless of compute usage**.
+1. The task backlog consists of prioritized tasks of two types: **inference** and **non-inference**.
+2. Non-inference tasks that block inference tasks can be done **regardless of compute usage**.
 3. Once an inference task is unblocked, its **launcher is prepared and dry-run in a realistic environment**.
-4. Once dry runs pass, it is **passed to the scheduler so it may be armed** in the inference backlog.
-5. Go back to completing the next set of blocking non-inference tasks. Rinse. Repeat. **Do not stop until ALL
-   non-inference tasks are exhausted and inference tasks armed.**
+4. Once dry runs pass, it is **passed to the scheduler so it may be armed**.
+5. Go back to the next blocking non-inference tasks. Rinse. Repeat. **Do not stop until ALL non-inference tasks are
+   exhausted and inference tasks armed.**
 
-## Operator rulings (2026-11-01) and the structured loop
+## The row flow (`scripts/coordination/rowflow/`)
 
-1. **Starved lane first.** The next inference row to advance is the highest-priority row in any lane (CPU/GPU) below
-   its floor of 2 armed rows; only then global priority. `backlog_gen.py` already orders BACKLOG this way.
-2. **3 retries, then park.** After 3 failed keeper qualifications of one logical row, the row is `parked`
-   (PARKED NEEDS-OPERATOR) and nobody retries it. **Lineage** = the manifest's `lineage` field; else the lineage of the
-   id in its `supersedes` field; else the ID stem (id minus trailing `-YYYYMMDD`, `-vN`, `-rN`, `-rearm`, `-retryN`).
-   Each distinct failed id counts once. The generator writes `compute-flags/operator-escalations/<lineage>.md`
-   (each refusal, what was tried, options). Re-admission is the operator's call: a fresh manifest with
-   `lineage_reset: <n>` counts only failures above n.
-3. **Cross-session blocks: the row owner fixes it.** If your row is blocked by another session's code, fix that code
-   yourself in an ordinary reviewed commit and name the code owner for review. Never wait on another worker's queue.
-4. **Non-blocking work until unblocked.** When none of your inference rows can advance, do non-blocking code tasks
-   by priority, re-reading BACKLOG at every task boundary; switch back as soon as a row can advance.
+**The owner writes TWO things**: the launcher script (on the canonical engine `filler_run15.sh`) and a small spec.
 
-The loop every worker runs (GOAL files carry the same text):
+```json
+{"id": "<row-id>", "owner": "<session>", "launcher": "/mnt/raid0/llm/tmp/<job>/launch.sh", "lane": "cpu|gpu",
+ "result_path": "/mnt/raid0/llm/tmp/<job>/out/results.jsonl", "result_format": "jsonl",
+ "decision_rule": "<how the result is judged>", "estimate_s": 3600, "handoff_task": "handoffs/active/<h>.md:<ROW-ID>",
+ "priority_rank": 10}
+```
+Optional: `regions` (default `mi210_0,184-191` / `any-cpu-quarter`), `ram_gib` (48), `scratch_root`, `keep`,
+`dryrun_timeout_s` (900 cpu / 1500 gpu), `lineage`, `lineage_reset`, `supersedes`.
 
-- START: re-read `BACKLOG-<worker>.md`.
-- Did any of my rows fail since the last loop? File the verdict, fix the root cause, publish a new id, go to
-  qualification. Rule 2 limit applies (parked rows are not retried).
-- Pick the next row (rule 1):
-  - **blocked** → do its unblocking tasks (rule 3 when the blocking code is another session's);
-  - **needs-launcher** → build it on the canonical engine v14 (`filler_run14.sh`);
-  - **needs-qualification** → submit the v2 row. Keeper qualification passes → ARMED; the scheduler grants it, the
-    worker never holds an armed row or waits for a grant. Fails → the refusal becomes a blocking task.
-- No row can advance → rule 4.  Backlog empty → report done and stop.
+`python3 scripts/coordination/rowflow/publish_row.py spec.json` derives everything else (engine/min-window/ports from
+the launcher, window, scratch_root + keep for the reaper, checksums) into `compute-flags/ready/<id>.json`
+(`epyc.row.v3`). Legacy manifests: `rowflow.py publish --migrate compute-flags/ready/<id>.json` (writes a sibling
+`launch.v15.sh` repointed at the new engine; the original launcher is untouched).
 
-## The three definitions
+**The keeper is the qualifier** (`ws58-calendar-keeper-v10.sh` → `rowflow.py`, deterministic, no LLM):
 
-| term | means exactly |
+| step | what happens |
 |---|---|
-| the backlog | `/mnt/raid0/llm/tmp/compute-flags/BACKLOG-<worker>.md` (worker = `ni` / `refactor` / `codex3`), regenerated every 10 min by `scripts/coordination/backlog_gen.py` (`ws58-backlog-gen-v1.sh`). Inference rows first, in priority order, each with its state (`blocked` / `needs-launcher` / `needs-qualification` / `parked` / `qualified-armed` / `running` / `done`) and, under every blocked row, the non-inference tasks that unblock it; then the remaining non-inference tasks. |
-| dry run passes | the **keeper's qualification** of the row on the real config: `ws58-calendar-keeper-v9.sh` runs `bin/qual-v1/qualify_launcher.py` through the canonical engine `filler_run14.sh` and logs `READY-QUAL <manifest>: <receipt>`. A worker's own smoke is preparation, not the pass. Contract: `artifacts/coordination/ni-d1d4-hard-gate-20261101/README.md`. |
-| armed | an `epyc.ready.v2` manifest in `compute-flags/ready/` that the keeper accepted (receipt on disk, no hold, no `READY-SKIP`); `grant_ok.sh` v3 refuses anything else. The keeper arms it when a bin frees; nobody hand-arms. |
+| dry run | when the row's lane is free the keeper runs the EXACT launcher through its engine under the real region-lock claim on the REAL lane (GPU rows on the MI210) with a real short `grants/<id>.grant`. One dry run per lane per tick, starved lane first, then `priority_rank`. |
+| **PASS** | the first real unit of measured output lands in `result_path` in the filer's format (`result_format`), the job then exits or stops cleanly on the stop file (rc 0/75), and for GPU rows VRAM was in use during the run. Startup alone never counts. Record: `compute-flags/dryrun/<id>/PASS.json` (launcher sha, units, VRAM max, log). |
+| **FAIL** | `dryrun/<id>/FAIL-n.json` = the owner's **one fix task** (reason + launcher.out tail), shown in the backlog. Not retried until the launcher file changes. 3 FAILs in a lineage → `parked` + `operator-escalations/<lineage>.md`. |
+| arm | a passing row's poller is started and its queue line appended; the grant writers grant it. `grant_ok.sh` v4 admits only a row with a PASS whose launcher sha is unchanged (an edited launcher is `stale` and needs a new dry run — automatic, no ceremony). |
+| end | `grants/<id>.ended`; the dispatcher resumes the OWNING handoff session with `result_path` + `decision_rule`; the session files the verdict itself and touches `filing-done/<id>.FILED`; the keeper's reaper reclaims scratch deterministically. |
 
-## Linking the two lists: `unblocks:`
+`rowflow.py status <id>`: `needs-dryrun | dryrun-running | failed | parked | stale | grantable | armed | running | done`.
 
-A non-inference task that unblocks an inference row declares it, so the generator can nest it under the row:
+**Retired** (2026-11-01): `epyc.ready.v2` manifests, `ready/<id>.row.md`, the 18-cell FILLERS row for new rows,
+keeper nonces / receipt files / fixtures / cutoff proofs (`qual-v1`, `qual-v2-row`), the owner-wide worker breaker,
+the registry-row check, `validate_fillers.py` and `keeper_qual_gate` in `grant_ok`, `ws58_arm-v2.py`, the sonnet filing
+subagent for piloted handoffs. The FILLERS table remains the legacy registry of rows armed before 2026-11-01.
 
-- in `WORK-<worker>-code.md`, append `[unblocks: <ready-id>[,<row-id>]]` to the task line;
-- or add `{"<task text>": ["<ready-id>", ...]}` to `compute-flags/unblocks.json`;
-- `backlog-priority.json` rows already carry `unblocks: [<row ids>]`, and `inference_prep` entries join a READY id
-  (`filler`) to its handoff row (`row`). Keeper refusal reasons, holds and schema mismatches become `fix:` tasks automatically.
+## Backlogs (`scripts/coordination/backlog_gen.py`, every 10 min)
 
-Workers fill `unblocks:` when they file a task. A blocked row with no unblocking task shows a placeholder asking for one.
+Objective: **unblock the maximum number of inference rows as quickly as possible so every lane always has ready work.**
+Non-inference tasks are ranked by `score = Σ lane_weight(row)` over the inference rows they unblock (transitively via
+`[unblocks: <row-id>|<handoff-row>|<file:line of another task>]`, `unblocks.json`, backlog-priority `unblocks`),
+`lane_weight = 1/(1+ready rows in that lane)` host-wide (GPU first while it has the fewest), then effort `[S]<[M]<[L]`.
+Zero-unblock tasks sort last. Inference rows: emptiest lane first, then `priority_rank`.
 
-## Session per handoff (pilot, operator-approved 2026-11-01)
+Workers: the ni / refactor / codex3 Codex sessions are **closed**. The single always-open generalist is **codex-gen**
+(`compute-flags/BACKLOG-<worker>.md` and `compute-flags/GOAL-<worker>.md` with worker = codex-gen): **small tasks only**
+(`[S]`, bounded, ~30 min, no design judgment; a `[too-big: …]` note re-routes the task). Everything else goes to the
+owning **per-handoff session** (`compute-flags/BACKLOG-handoff-<slug>.md`), or is listed under "needs a handoff session"
+until one is started. The closed sessions' legacy queues (`compute-flags/WORK-<worker>-code.md`) are read and routed the
+same way; nothing is lost.
 
-Handoffs with a live inference thread can be owned by **one resumable agent session** instead of a generalist worker.
-The handoff file is the durable record; the session is a cache.
+## Session per handoff (`scripts/coordination/handoff_sessions.py`)
 
-- **Registry** `compute-flags/handoff-sessions.json` (`epyc.handoff-sessions.v1`): per handoff its path, engine
-  (codex default; claude; opencode), session id, status (`live` / `suspended` / `done`), `waits_on` row ids, last
-  resume, last wrap-up, brief path, and the ownership matchers `row_ids` / `row_patterns` / `handoff_rows`.
-- **Ownership**: `backlog_gen.py` drops matched READY rows, `inference_prep` entries and code-queue lines on the handoff
-  from `BACKLOG-<worker>.md` and writes `BACKLOG-handoff-<slug>.md`. Ownership moves only through the registry, never by
-  editing grants, the keeper, gates or READY manifests.
-- **Brief** `compute-flags/briefs/HANDOFF-<slug>.md` (`handoff_sessions.py brief <slug>`): this flow, scoped to one handoff.
-- **Dispatcher** `scripts/coordination/handoff_sessions.py dispatch --loop` (`hs-dispatcher-v1`, zero-token): on
-  `grants/<id>.ended|.complete` for an owned row it resumes the owner headlessly with fetch / re-read / result path,
-  rc, end line and decision_rule from the READY manifest / file-the-verdict instructions; starts a suspended handoff
-  that has advanceable rows after a 45 min cooldown; at most `max_live` (5) sessions run, extra events queue; a
-  usage-limit error pauses the dispatcher 30 min and re-queues the event (logged in `handoff-sessions.log`).
-- **Headless resume forms** (verified 2026-11-01): `codex exec resume --json <thread_id> -` (prompt on stdin);
-  `claude -p --resume <session_id>`; `opencode run -s <ses_id> --format json` (prompt on stdin, needs its backend).
-- **Lifecycle**: a session ALWAYS runs the per-task wrap-up (progress, handoff ticks with evidence, commit, push) before
-  it ends a turn, and suspends once its row is armed. At a milestone or when large it wraps up and prints
-  `FRESH-SESSION-REQUESTED`; the next dispatch starts a fresh session from the handoff and brief.
-- Tiny chores with no inference thread stay with the generalist workers (and their subagents).
+Registry `compute-flags/handoff-sessions.json`; the brief `compute-flags/briefs/HANDOFF-<slug>.md` is self-sufficient (a
+cold agent of any engine can take over from it + the handoff + the progress file + the backlog). The dispatcher resumes
+the owner on `grants/<id>.ended|.complete`, starts suspended sessions with advanceable rows, caps live sessions.
+
+**Portability (binding)**: a session wraps up at EVERY task boundary (progress file, ticks, pathspec commit, push via
+`serialized_push.py`, `git cherry origin/main` empty) and prints `WRAPPED <sha>`; the dispatcher refuses to resume a
+session for new work while its last task is unwrapped (`UNWRAPPED <slug>` in the log). Ownership can move at any time:
+`handoff_sessions.py transfer <slug> --engine claude|opencode|codex` starts a fresh session from the files alone and
+records `transferred_from` in the registry.
 
 ## Roles
 
-- **Workers (Codex NI / refactor / codex3)**: run the five steps against their BACKLOG file, forever. Goal text: `compute-flags/GOAL-<worker>.md`.
-- **ws58 (calendar owner)**: keep the generator, the flow scoreboard and the keeper healthy; file results; put new work into the
-  backlog (handoffs, `backlog-priority.json`, READY rows). **No ad-hoc orders** to the panes: if something must change, change the
-  backlog or the goal file.
-- **Operator**: trust-boundary ratifications and destructive host actions only.
-
-## Keeper qualification slot — one native attempt per tick, refusals memoised (keeper v9, ws58 2026-11-01)
-
-`qualify_pending` walks READY rows by `priority_rank` and runs at most ONE real (native) qualification per 120 s tick.
-Keeper v8 ended the tick on the first `would-qualify` row whatever happened next, so a row the qualifier refuses
-*before* spawning anything (no 18-cell FILLERS.md registry row for `row_binding`, bad fixture, stale receipt) took the
-slot every tick and starved every lower-ranked row — on 2026-11-01 two NI rows without registry rows kept the only
-runnable GPU row unqualified for hours while the MI210 sat idle. v9 rules:
-
-- a pre-run refusal (`READY-QUAL-PRERUN-REFUSAL`) does **not** consume the slot; the keeper moves to the next row;
-- every refusal is memoised in `compute-flags/ws58-keeper-state/qual-refused/<id>.json` (`bin/keeper_qual_memo.py`,
-  keyed on manifest sha + `ready/<id>.row.md` sha + the id's FILLERS.md row); the row is skipped while unchanged and
-  retried the tick after any of those change. The memo text is the row's `fix:` task in BACKLOG, independent of the
-  keeper-log window;
-- `backlog_gen.py` / FLOW-SCOREBOARD count a row as **qualified-armed only when the predeclared receipt file exists**.
-  "Receipt named but missing" is a *blocked* row: cause `keeper` (awaiting keeper qualification — ws58's starvation,
-  own scoreboard column) or, after READY-QUAL/arming, cause `worker` (receipt lost; republish under a new id);
-- the worker-breaker blocks **arming**, not qualification: a breaker-active owner's row is still qualified by the
-  keeper, and that fresh receipt is exactly what releases the breaker (`reconcile_failures`). No deadlock, but the row
-  must pass `row_binding` — register its FILLERS.md row first.
-
-## Metrics (FLOW-SCOREBOARD.md, `scripts/coordination/flow_scoreboard.py`, every 10 min)
-
-Per worker per day: inference rows armed (keeper-qualified); blocking tasks closed; idle compute-hours with a blocked row as the
-cause. The 50-ticks/day code quota and its pane nudges are retired (`compute-flags/retired/`). The science scoreboard v4 stays beside it.
-
-## Retired layers
-
-`OWNER-ORDER-20261029.md`, `LOOP-CONTRACT.md` and `CODEX-GOAL-20261028.md` live in `compute-flags/retired/` with a header pointing
-here. Still-binding rules were folded into `GOAL-<worker>.md`; the code-quota rule was dropped.
+- **Handoff sessions / codex-gen**: run the flow against their backlog file, forever. Never arm rows, write grants,
+  hold or kill compute; the keeper and writers own the calendar.
+- **ws58 (calendar owner)**: keeps the keeper, generator, dispatcher and writers healthy; starts handoff sessions;
+  puts new work into the backlog. No ad-hoc orders to panes: change the backlog or the goal file.
+- **Operator**: trust-boundary ratifications, destructive host actions, un-parking a lineage.

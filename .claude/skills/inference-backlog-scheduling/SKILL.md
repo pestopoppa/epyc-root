@@ -12,6 +12,15 @@ the backlog is empty, without ever perturbing a decision-grade measurement. Idle
 work is a reportable failure, not a resting state.
 
 Canonical protocol (read it once per session): `docs/guides/agent-workflows/compute-fillers.md`.
+
+> **2026-11-01 simplified row flow (operator: "remove every gate that is not indispensable").** For NEW rows the
+> owner writes TWO things: the launcher (on `filler_run15.sh`) and a small spec; `scripts/coordination/rowflow/publish_row.py`
+> derives the rest into `compute-flags/ready/<id>.json` (`epyc.row.v3`). The keeper is the qualifier: ONE deterministic
+> dry run on the REAL lane (`compute-flags/dryrun/<id>/PASS.json` | `FAIL-n.json`), and a passing row is grantable while its
+> launcher sha is unchanged. **Retired for new rows**: the 18-cell FILLERS.md row, `ready/<id>.row.md`, `epyc.ready.v2`
+> manifests, nonces/receipts, the owner-wide worker breaker, the registry-row check, `validate_fillers.py` in `grant_ok`
+> (v4). Where this file still says "FILLERS row" below, read "v3 row" for new rows; FILLERS.md stays as the legacy
+> registry of rows armed before 2026-11-01. Flow: `docs/guides/agent-workflows/backlog-churn-flow.md`.
 Live state lives outside the repo: queue `/mnt/raid0/llm/tmp/compute-flags/FILLERS.md`, grants
 `compute-flags/grants/`, calendar `/mnt/raid0/llm/tmp/compute-calendar-<date>.md` (append-only
 REVISION lines). **The calendar's input is the prioritized backlog
@@ -31,7 +40,7 @@ explicit lists such as `72-95`; whole host `0-95`; the MI210 (`mi210_0`) **with 
 same filesystem frees nothing until it is swept; see `references/disk-bin.md`, bought by raid0
 reaching 100 % and an ORCH ENOSPC on 10-27).
 
-**Items** are FILLERS.md rows (18 columns; `validate_fillers.py` is the schema). What the packer reads:
+**Items** are rows: `compute-flags/ready/<id>.json` (`epyc.row.v3`, new flow) or legacy FILLERS.md rows (18 columns; `validate_fillers.py`). What the packer reads:
 
 | Field | Meaning for packing |
 |---|---|
@@ -103,8 +112,8 @@ When the operator asks to churn / work / clear the backlog, this and nothing els
 
 1. The backlog is prioritized tasks of two types: inference and non-inference.
 2. Non-inference tasks that block inference tasks are built regardless of compute usage.
-3. Once an inference task is unblocked, its launcher is prepared and dry-run in a realistic environment (= the keeper's qualification, `READY-QUAL`).
-4. Once the dry run passes it goes to the scheduler to be armed (an accepted `epyc.ready.v2` row in `compute-flags/ready/`).
+3. Once an inference task is unblocked, its launcher is prepared and dry-run in a realistic environment (= the keeper's dry run on the real lane, `DRYRUN-RESULT PASS` -> `dryrun/<id>/PASS.json`).
+4. Once the dry run passes the keeper arms it (`ROW-ARM ARMED`) and the writers grant it; `grant_ok.sh` v4 re-checks PASS + launcher sha at grant time.
 5. Back to the next blocking non-inference tasks. Repeat until all non-inference tasks are exhausted and inference tasks armed.
 
 Each Codex worker reads ONE generated file, `compute-flags/BACKLOG-<worker>.md` (`scripts/coordination/backlog_gen.py`, every 10 min), and its goal `compute-flags/GOAL-<worker>.md`. The calendar owner keeps the generator, `scripts/coordination/flow_scoreboard.py` (FLOW-SCOREBOARD.md) and the keeper healthy, files results and puts new work into the backlog; it sends no ad-hoc pane orders. New tasks that unblock a row carry `[unblocks: <ready-id>]`.

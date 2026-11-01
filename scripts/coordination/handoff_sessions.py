@@ -12,11 +12,20 @@ Registry: compute-flags/handoff-sessions.json (schema epyc.handoff-sessions.v1)
                              "row_ids": [...], "row_patterns": [regex...], "handoff_rows": [INF-..], "pid": <int|null>}}}
     backlog_gen.py reads the same file: matched rows leave BACKLOG-<worker>.md and go to BACKLOG-handoff-<slug>.md.
 
+2026-11-01 portability rulings (operator): the owner files its own results (no filing subagent); the session
+wraps up at EVERY task boundary and prints `WRAPPED <sha>`; the dispatcher parses the LAST `WRAPPED <sha>` into
+`last_wrapup` and REFUSES to resume a session for new work while `last_wrapup` is missing or not landed on
+origin/main (`UNWRAPPED <slug>: refusing resume`, event re-queued); `transfer <slug> --engine X` moves a handoff to
+a FRESH session of another engine from FILES ONLY (brief + handoff + latest progress + BACKLOG), recording
+`transferred_from`. The brief is self-sufficient for a cold agent of any engine.
+
 Subcommands:
     brief <slug>            write compute-flags/briefs/HANDOFF-<slug>.md (the session's goal file)
     start <slug>            start a fresh headless session with its brief, record session_id (registry)
     dispatch [--loop]       one pass (or loop): resume owners on grants/<id>.ended|.complete, start idle
                             handoffs with unblockable work, respect max_live, pause on usage-limit errors.
+    transfer <slug> --engine claude|opencode|codex [--force]
+                            start a FRESH session of <engine> from files only; refused while the old one is live.
     status                  print the registry.
 
 Verified headless resume forms (2026-11-01 round-trips):
@@ -39,13 +48,16 @@ import time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import backlog_gen as bg  # noqa: E402
 
-VERSION = "hs-dispatcher-v1"
+VERSION = "hs-dispatcher-v2"
 FLAGS = bg.FLAGS_DEFAULT
 ROOT = "/workspace"
 USAGE_RX = re.compile(r"usage limit|rate[ _-]?limit|quota exceeded|too many requests|\b429\b|hit your limit", re.I)
 ADV_RX = re.compile(r"^- \[(blocked|needs-launcher|needs-qualification)\] ", re.M)
 IDLE_COOLDOWN_S = 45 * 60
 PAUSE_S = 30 * 60
+ENGINES = ("codex", "claude", "opencode")
+# `WRAPPED <sha>` is the boundary line (2026-11-01 ruling); `WRAPUP: <sha>` is the v1 form, still accepted.
+WRAPPED_RX = re.compile(r"(?:WRAPPED|WRAPUP:)\s+([0-9a-f]{7,40})\b")
 
 
 def landed(sha, repo=ROOT) -> bool:
@@ -105,28 +117,59 @@ def alive(pid) -> bool:
 
 # ---------------------------------------------------------------- briefs and prompts
 def brief_text(slug: str, e: dict, flags: str) -> str:
+    """Self-sufficient brief: everything a COLD agent of any engine needs (2026-11-01 portability rulings)."""
+    rows = ", ".join(f"`{x}`" for x in (e.get("row_ids") or [])) or "(none listed)"
+    pats = ", ".join(f"`{x}`" for x in (e.get("row_patterns") or [])) or "(none)"
+    hrows = ", ".join(f"`{x}`" for x in (e.get("handoff_rows") or [])) or "(none)"
     return f"""# HANDOFF-{slug} — session-per-handoff brief (ws58 pilot, operator-approved 2026-11-01)
 
 You are the ONE session that owns `{e['handoff']}` (engine {e.get('engine', 'codex')}). The handoff file is the durable
-record; you are a cache. Its READY rows and tasks moved to you from the generalist workers.
+record; you are a cache. Its READY rows and tasks moved to you from the generalist workers. Everything you need is in
+this brief and on disk/origin/main — you may have no transcript of earlier turns; never assume one.
 
-Your backlog: `{flags}/BACKLOG-handoff-{slug}.md` (regenerated every 10 min by backlog_gen.py; rows matched by the
-registry `{reg_path(flags)}`). Your flow: `docs/guides/agent-workflows/backlog-churn-flow.md` (section *Session per
-handoff*) and the loop in `{flags}/GOAL-codex3.md`, scoped to THIS handoff only:
+## Where things are
+- Repo root: `{ROOT}` (branch main; always `git -C {ROOT} fetch origin` first). Handoff: `{ROOT}/{e['handoff']}`.
+- Your backlog: `{flags}/BACKLOG-handoff-{slug}.md` (regenerated every 10 min by backlog_gen.py from the registry
+  `{reg_path(flags)}`). Owned row ids: {rows}; row patterns: {pats}; handoff task rows: {hrows}.
+- Progress files: `progress/YYYY-MM/YYYY-MM-DD-handoff-{slug}.md` (one per day, append per boundary).
+- Row manifests: `{flags}/ready/<id>.json` or `{flags}/ready/armed/<id>.json` (schema `epyc.row.v3`: `result_path`,
+  `decision_rule`, `handoff_task`; older v2 manifests carry the same keys plus more). Grants: `{flags}/grants/`.
+- This brief: `{flags}/briefs/HANDOFF-{slug}.md`. Flow doc: `docs/guides/agent-workflows/backlog-churn-flow.md`
+  (section *Session per handoff*).
 
-- START every turn: `git -C {ROOT} fetch origin`; re-read the handoff and BACKLOG-handoff-{slug}.md.
-- A row of yours ended: file the verdict against its predeclared decision_rule (result path, rc, end line), tick the
-  handoff with evidence, decide the follow-up, publish the next id (v2 manifest), go to qualification.
-- Rule 1 starved lane first; rule 2: 3 failed qualifications of a lineage -> parked, stop retrying; rule 3: you fix
-  cross-session code blocking your row (reviewed commit, name the owner); rule 4: non-blocking code while waiting.
-- Never edit grants, the keeper, gates or another session's READY manifest. Never pkill by name. Commits: pathspec only,
-  push via `python3 scripts/coordination/serialized_push.py --fetch --push`.
-- ALWAYS run the project wrap-up (`/wrap-up` per-task routine: progress entry, handoff ticks with evidence, commit,
-  push) before you end a turn, i.e. before you are suspended. Suspend once your row is accepted (armed) by the keeper.
-  Record your wrap-up commit in the last line of your reply as `WRAPUP: <commit or path>`.
-- At a milestone, or when your context is large, wrap up and say `FRESH-SESSION-REQUESTED`; ws58 starts a new
-  session from the handoff and this brief.
-- No unblockable work left in this handoff: wrap up and reply `IDLE: <reason>`.
+## Row lifecycle (you drive every step yourself)
+1. Write a spec JSON (id, owner, launcher, lane cpu|gpu, result_path, result_format, decision_rule, estimate_s,
+   handoff_task, priority_rank) and publish it: `python3 scripts/coordination/rowflow/publish_row.py <spec.json>`.
+2. The keeper dry-runs/qualifies the row and grants it (`grants/<id>`); you NEVER arm, grant, qualify or run compute.
+3. `grants/<id>.ended|.complete` appears -> the dispatcher resumes you with rc, end line, result_path, decision_rule.
+4. YOU file the verdict: read `result_path`, apply `decision_rule`, tick the handoff with evidence (rc, result path,
+   numbers). No filing subagent exists; nobody files for you. Then `touch {flags}/filing-done/<id>.FILED`: that
+   receipt lets the deterministic keeper reaper reclaim the row's scratch_root (reclaim is never your job).
+   Row state: `python3 scripts/coordination/rowflow/rowflow.py status <id>` (needs-dryrun, dryrun-running, failed
+   [fix task in {flags}/dryrun/<id>/FAIL-*.json], parked, grantable, armed, running, done).
+5. Decide the next step (follow-up row, park, done) and publish the next row (step 1). Rule 1 starved lane first;
+   rule 2: 3 failed qualifications of a lineage -> parked, stop retrying; rule 3: you fix cross-session code blocking
+   your row (reviewed commit, name the owner); rule 4: non-blocking code while waiting.
+
+## Wrap-up contract — at EVERY task boundary, before you end any turn
+- Progress entry in `progress/YYYY-MM/YYYY-MM-DD-handoff-{slug}.md`; handoff ticks with evidence; pathspec-limited
+  commit (`git commit -- <paths>`); push via `python3 scripts/coordination/serialized_push.py --fetch --push`
+  (held lock = wait and retry); prove `git cherry origin/main <sha>` is empty.
+- Then print the line `WRAPPED <sha>` (sha = the landed commit) as the LAST line of your reply. The dispatcher parses
+  it into the registry and will NOT resume you for new work until that sha is on origin/main.
+- At a milestone, or when your context is large, wrap up and also say `FRESH-SESSION-REQUESTED`.
+- No unblockable work left in this handoff: wrap up and reply `IDLE: <reason>` after the `WRAPPED` line.
+
+## Hard rules
+- Never arm, grant, qualify, kill or launch compute; never edit grants, the keeper, gates or another session's READY
+  manifest. Never pkill/pgrep by name; kill only PIDs you captured.
+- Git: never `git add -A`/`git add .`; pathspec-limited commits only; push only through serialized_push.py.
+- Suspend once your row is accepted (armed) by the keeper; do not poll.
+
+## Transfer rule
+Ownership of this handoff may move to another engine (codex/claude/opencode) at ANY boundary via
+`handoff_sessions.py transfer`. The new session starts from FILES ONLY (this brief, the handoff, your latest progress
+file, the backlog) — so your state must be complete on disk AND on origin/main at every boundary.
 """
 
 
@@ -154,15 +197,58 @@ def end_prompt(slug, e, flags, rid, endfile):
     return f"""[{VERSION}] Run end in your handoff {e['handoff']}: row `{rid}`.
 1. `git -C {ROOT} fetch origin`; re-read {e['handoff']} and {flags}/BACKLOG-handoff-{slug}.md.
 2. Facts: end file {endfile}: `{endline}` (rc={rc}); launcher end line: `{tail}`;
-   READY manifest {mp or '(not found)'}; result_path: {m.get('result_path')}; decision_rule: {json.dumps(m.get('decision_rule'))[:800]}.
-3. File the verdict against that decision_rule (handoff tick with evidence), decide the follow-up, and continue the flow
-   per {flags}/briefs/HANDOFF-{slug}.md. Run the wrap-up before you end this turn; last line `WRAPUP: <commit>`."""
+   manifest {mp or '(not found; look in ' + flags + '/ready/<id>.json or ready/armed/<id>.json)'} (schema {m.get('schema', 'epyc.row.v2|v3')});
+   result_path: {m.get('result_path')}; handoff_task: {m.get('handoff_task')}; decision_rule: {json.dumps(m.get('decision_rule'))[:800]}.
+3. YOU file the verdict yourself: read result_path, apply decision_rule, tick the handoff with evidence. No filing
+   subagent does this for you. Then `touch {flags}/filing-done/{rid}.FILED` — that receipt is what lets the
+   deterministic keeper reaper reclaim the scratch_root; without it nothing is reclaimed (reclaim is not your job).
+   Row state any time: `python3 scripts/coordination/rowflow/rowflow.py status <id>` (needs-dryrun, dryrun-running,
+   failed [owner fix task in {flags}/dryrun/<id>/FAIL-*.json], parked, grantable, armed, running, done).
+4. Decide the next step and publish the next row: `python3 scripts/coordination/rowflow/publish_row.py <spec.json>`
+   (spec: id, owner, launcher, lane cpu|gpu, result_path, result_format, decision_rule, estimate_s, handoff_task,
+   priority_rank). Continue per {flags}/briefs/HANDOFF-{slug}.md.
+5. Wrap up at this task boundary (progress/YYYY-MM/YYYY-MM-DD-handoff-{slug}.md, handoff ticks, pathspec commit,
+   serialized_push.py, `git cherry origin/main <sha>` empty) and print `WRAPPED <sha>` as your LAST line."""
 
 
 def idle_prompt(slug, e, flags):
     return f"""[{VERSION}] Continue your handoff {e['handoff']}. `git -C {ROOT} fetch origin`; re-read the handoff and
 {flags}/BACKLOG-handoff-{slug}.md; take the top actionable item per {flags}/briefs/HANDOFF-{slug}.md.
-Run the wrap-up before you end this turn; last line `WRAPUP: <commit>` (or `IDLE: <reason>`)."""
+Wrap up at EVERY task boundary (progress/YYYY-MM/YYYY-MM-DD-handoff-{slug}.md, handoff ticks, pathspec commit,
+serialized_push.py, `git cherry origin/main <sha>` empty) and print `WRAPPED <sha>` as your LAST line
+(add `IDLE: <reason>` after it when nothing unblockable is left)."""
+
+
+def transfer_prompt(slug, e, flags, repo=ROOT):
+    """FILES-ONLY cold-start prompt for a fresh engine: brief + handoff + latest progress file + BACKLOG."""
+    brief = brief_text(slug, e, flags)
+    hp = os.path.join(repo, e["handoff"])
+    prog = sorted(glob.glob(os.path.join(repo, "progress", "*", f"*handoff-{slug}*.md")),
+                  key=lambda p: (os.path.getmtime(p), p))
+    pp = prog[-1] if prog else None
+    bp = os.path.join(flags, f"BACKLOG-handoff-{slug}.md")
+
+    def rd(p):
+        try:
+            return open(p, errors="replace").read()
+        except (OSError, TypeError):
+            return "(file not found)"
+    prev = e.get("transferred_from") or []
+    prev_s = f"{prev[-1]['engine']} session {prev[-1]['session_id']}" if prev else "another engine"
+    return f"""[{VERSION}] TRANSFER: you are the NEW owner session (engine {e.get('engine')}) of handoff {e['handoff']},
+taken over from {prev_s}. The previous engine's transcript is UNAVAILABLE and must not be assumed: the files below
+are your complete starting state. `git -C {repo} fetch origin` first; then act per the brief.
+
+===== BRIEF ({flags}/briefs/HANDOFF-{slug}.md) =====
+{brief}
+===== HANDOFF ({hp}) =====
+{rd(hp)}
+===== LATEST PROGRESS ({pp or 'none found: progress/YYYY-MM/*handoff-' + slug + '*.md'}) =====
+{rd(pp)}
+===== BACKLOG ({bp}) =====
+{rd(bp)}
+===== END OF FILES =====
+{idle_prompt(slug, e, flags)}"""
 
 
 # ---------------------------------------------------------------- engines
@@ -238,7 +324,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False):
                 log(flags, f"USAGE-LIMIT {slug}: dispatcher paused until {reg['paused_until']} (work not dropped; re-queued)")
                 if e.get("pending_event"):
                     st.setdefault("queue", []).insert(0, e["pending_event"])
-            m = re.findall(r"WRAPUP: ([^\s\"\\]+)", tailtxt)
+            m = WRAPPED_RX.findall(tailtxt)
             if m:
                 e["last_wrapup"] = m[-1]
             if "FRESH-SESSION-REQUESTED" in tailtxt:
@@ -281,7 +367,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False):
                 e["push_retries"] = e.get("push_retries", 0) + 1
                 _go(flags, slug, e, PUSH_PROMPT.format(v=VERSION, sha=e.get("last_wrapup")), runner, None)
                 live += 1
-        q, rest = st.get("queue") or [], []
+        q, rest, lcache, launched = st.get("queue") or [], [], {}, set()
         for ev in q:
             e = S.get(ev["slug"])
             if not e or e.get("status") == "done":
@@ -289,15 +375,24 @@ def dispatch_once(flags, runner=None, now=None, seed=False):
             if alive(e.get("pid")) or live >= cap or not e.get("session_id"):
                 rest.append(ev)
                 continue
+            if not wrapped(e, lcache):  # 2026-11-01 ruling: no new work on an unwrapped session; keep the event
+                e["pending_event"] = ev
+                rest.append(ev)
+                log(flags, f"UNWRAPPED {ev['slug']}: refusing resume; last_wrapup={e.get('last_wrapup')}")
+                continue
             _go(flags, ev["slug"], e, end_prompt(ev["slug"], e, flags, ev["rid"], ev["end"]), runner, ev)
+            launched.add(ev["slug"])
             live += 1
         st["queue"] = rest
         for slug, e in S.items():  # idle handoffs with unblockable work
             if live >= cap or e.get("status") == "done" or alive(e.get("pid")) or not e.get("_advanceable"):
                 continue
-            if any(ev["slug"] == slug for ev in st["queue"]):
+            if slug in launched or any(ev["slug"] == slug for ev in st["queue"]):
                 continue
             if now - _parse(e.get("last_end") or e.get("last_resume") or "") < IDLE_COOLDOWN_S:
+                continue
+            if not wrapped(e, lcache):
+                log(flags, f"UNWRAPPED {slug}: refusing resume; last_wrapup={e.get('last_wrapup')}")
                 continue
             fresh = bool(e.get("fresh_next")) or not e.get("session_id")
             _go(flags, slug, e, (brief_text(slug, e, flags) + "\n" if fresh else "") + idle_prompt(slug, e, flags),
@@ -312,6 +407,45 @@ def dispatch_once(flags, runner=None, now=None, seed=False):
     return reg, st
 
 
+def wrapped(e, cache=None) -> bool:
+    """Gate for resuming a session with NEW work: its last `WRAPPED <sha>` must be on origin/main.
+    A session that never ran a turn (no session_id, no last_end) has nothing to have wrapped and passes."""
+    lw = e.get("last_wrapup")
+    if not lw:
+        return not e.get("session_id") and not e.get("last_end")
+    if cache is None:
+        cache = {}
+    if lw not in cache:
+        cache[lw] = landed(lw)
+    return cache[lw]
+
+
+def transfer(flags, slug, engine, force=False, runner=None, repo=ROOT):
+    """Move a handoff to a FRESH session of `engine`, started from files only (brief, handoff, latest progress,
+    BACKLOG). Refused while the previous session is live unless force. Records `transferred_from` history."""
+    if engine not in ENGINES:
+        raise ValueError(f"engine must be one of {ENGINES}: {engine}")
+    reg = load(reg_path(flags), {"sessions": {}})
+    e = reg["sessions"][slug]
+    if alive(e.get("pid")) and not force:
+        raise RuntimeError(f"REFUSED transfer {slug}: previous {e.get('engine')} session pid={e['pid']} is live; "
+                           f"let it wrap up first (or --force)")
+    bd = os.path.join(flags, "briefs")
+    os.makedirs(bd, exist_ok=True)
+    e["brief"] = os.path.join(bd, f"HANDOFF-{slug}.md")
+    bg.write_atomic(e["brief"], brief_text(slug, e, flags))
+    e.setdefault("transferred_from", []).append(
+        {"engine": e.get("engine", "codex"), "session_id": e.get("session_id"), "at": now_iso(),
+         "last_wrapup": e.get("last_wrapup"), "forced": bool(force and alive(e.get("pid")))})
+    e["engine"] = engine
+    _go(flags, slug, e, transfer_prompt(slug, e, flags, repo), runner, None, fresh=True)
+    e["session_id"] = session_id_from(e.get("last_output") or "", engine)  # may still be None; reaped by dispatch
+    log(flags, f"TRANSFER {slug} -> {engine} from={e['transferred_from'][-1]['engine']}:"
+               f"{e['transferred_from'][-1]['session_id']} pid={e.get('pid')} session={e.get('session_id')}")
+    save(reg_path(flags), reg)
+    return e
+
+
 def _go(flags, slug, e, prompt, runner, ev, fresh=False):
     if fresh:
         e["session_id"], e["fresh_next"] = None, False
@@ -322,16 +456,29 @@ def _go(flags, slug, e, prompt, runner, ev, fresh=False):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("cmd", choices=["brief", "start", "dispatch", "status"])
+    ap.add_argument("cmd", choices=["brief", "start", "dispatch", "status", "transfer"])
     ap.add_argument("slug", nargs="?")
     ap.add_argument("--flags", default=FLAGS)
     ap.add_argument("--loop", action="store_true")
     ap.add_argument("--interval", type=int, default=60)
     ap.add_argument("--seed", action="store_true", help="mark existing end files seen without resuming")
+    ap.add_argument("--engine", choices=list(ENGINES), help="transfer: the engine of the new fresh session")
+    ap.add_argument("--force", action="store_true", help="transfer: even while the previous session is live")
     a = ap.parse_args(argv)
     reg = load(reg_path(a.flags), {"sessions": {}})
     if a.cmd == "status":
         print(json.dumps(reg, indent=2))
+        return 0
+    if a.cmd == "transfer":
+        if not a.slug or not a.engine:
+            ap.error("transfer needs <slug> and --engine")
+        try:
+            e = transfer(a.flags, a.slug, a.engine, force=a.force)
+        except RuntimeError as ex:
+            log(a.flags, str(ex))
+            print(ex, file=sys.stderr)
+            return 2
+        print(json.dumps({k: e.get(k) for k in ("engine", "session_id", "pid", "last_output", "transferred_from")}, indent=2))
         return 0
     if a.cmd in ("brief", "start"):
         e = reg["sessions"][a.slug]

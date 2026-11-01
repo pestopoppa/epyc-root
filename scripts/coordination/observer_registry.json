@@ -111,21 +111,39 @@
       "script": "scripts/champion/fold_gates/bundle_gate_c3.sh",
       "contract": "v1",
       "notes": "Tracked C3 one-shot bundle gate. `observe` folds checked ps/argv and the native loop process_identity from every enumerated DS41/Q38FN campaign store through observer_guard; legacy, missing or unreadable identity is unobservable. CPU and GPU preflight refuses unless both channels establish absence. Synthetic shell battery exercises its actual dry-run preflight and instrument boundary.",
-      "sandbox": {"kind": "bundle_gate", "battery": "scripts/champion/fold_gates/regression/test_bundle_gate_observer.sh", "observe_argv": ["observe"]}
+      "sandbox": {
+        "kind": "bundle_gate",
+        "battery": "scripts/champion/fold_gates/regression/test_bundle_gate_observer.sh",
+        "observe_argv": [
+          "observe"
+        ]
+      }
     },
     {
       "id": "champion_bundle_c4_preflight",
       "script": "scripts/champion/fold_gates/bundle_gate_c4.sh",
       "contract": "v1",
       "notes": "Tracked C4 one-shot bundle gate. `observe` folds checked ps/argv and the native loop process_identity from every enumerated DS41/Q38FN campaign store through observer_guard; legacy, missing or unreadable identity is unobservable. Preflight refuses unless both channels establish absence. Synthetic shell battery exercises its actual dry-run preflight and instrument boundary.",
-      "sandbox": {"kind": "bundle_gate", "battery": "scripts/champion/fold_gates/regression/test_bundle_gate_observer.sh", "observe_argv": ["observe"]}
+      "sandbox": {
+        "kind": "bundle_gate",
+        "battery": "scripts/champion/fold_gates/regression/test_bundle_gate_observer.sh",
+        "observe_argv": [
+          "observe"
+        ]
+      }
     },
     {
       "id": "champion_bundle_c5_preflight",
       "script": "scripts/champion/fold_gates/bundle_gate_c5.sh",
       "contract": "v1",
       "notes": "Tracked C5 one-shot bundle gate. Item b's `observe` folds checked ps/argv and native loop process_identity from every enumerated DS41/Q38FN campaign store through observer_guard; legacy, missing or unreadable identity is unobservable. Its preflight refuses unless both channels establish absence. C5's reviewed structured verdict helper and Q38FN sign-only semantics are preserved. Synthetic shell battery exercises the actual dry-run preflight and instrument boundary.",
-      "sandbox": {"kind": "bundle_gate", "battery": "scripts/champion/fold_gates/regression/test_bundle_gate_observer.sh", "observe_argv": ["observe"]}
+      "sandbox": {
+        "kind": "bundle_gate",
+        "battery": "scripts/champion/fold_gates/regression/test_bundle_gate_observer.sh",
+        "observe_argv": [
+          "observe"
+        ]
+      }
     },
     {
       "id": "champion_bundle_c5_original_fixture",
@@ -187,10 +205,14 @@
           "STARTUP_TIMEOUT": "1"
         },
         "heartbeat": "{tmp}/root/coordination/session-bus/heartbeats/coordinator-daemon.json",
-        "observe_argv": ["observe"]
+        "observe_argv": [
+          "observe"
+        ]
       },
       "action_probe": {
-        "argv": ["once"],
+        "argv": [
+          "once"
+        ],
         "env": {
           "DAEMON": "{stub}",
           "DAEMON_MARKER": "{mark}",
@@ -377,6 +399,12 @@
       "script": "scripts/fillers/v11/v11_driver.py",
       "contract": "exempt",
       "reason": "Not a watchdog: a read-only PRE-LAUNCH refusal check (V11-086 'one DS41-class server host-wide') that scans /proc/*/cmdline once, never signals anything, and runs only inside an armed grant. Polarity is fail-closed: a cmdline that is unreadable for any reason other than the process having exited counts as a DS41-class server (unknown means busy) and the run refuses rc=6. Reviewed 2026-10-21 (v11-drivers)."
+    },
+    {
+      "id": "handoff_sessions_dispatcher",
+      "script": "scripts/coordination/handoff_sessions.py",
+      "contract": "exempt",
+      "reason": "Reviewed 2026-11-01 (rowflow). The dispatcher observes only sessions it started itself: liveness is the pid it recorded in handoff-sessions.json checked via /proc/<pid>/stat (zombie-aware), never an argv/name pattern. The 'pkill/pgrep' token is prompt TEXT handed to the agent sessions forbidding exactly that. Not battery-adoptable: it is an event-driven resumer (grants/<id>.ended -> resume owner), not a watchdog of a daemon it does not own."
     }
   ]
 }
