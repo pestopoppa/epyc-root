@@ -4,7 +4,7 @@
       "blocked": 59,
       "handoffs": 59,
       "oldest_advance": "2026-07-29",
-      "open": 1039
+      "open": 1038
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -777,10 +777,10 @@
     },
     "dflash2-block-drafter-experimental-build.md": {
       "blocked": 0,
-      "closed": 38,
+      "closed": 40,
       "guarded": 0,
       "last_advanced": "2026-11-01",
-      "open": 22,
+      "open": 21,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -789,7 +789,7 @@
       },
       "row_id": "INF-62",
       "state": "active",
-      "total": 60
+      "total": 61
     },
     "document-parser-table-bench.md": {
       "blocked": 0,

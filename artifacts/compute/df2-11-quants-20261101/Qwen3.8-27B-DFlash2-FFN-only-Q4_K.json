@@ -1,0 +1,33 @@
+{
+  "attempt_id": "562bf3573a834ae287ad6f8869aaf352",
+  "bytes": 1938449952,
+  "command": [
+    "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/llama-quantize",
+    "--tensor-type-file",
+    "/mnt/raid0/llm/tmp/h-df2-11-quants-20261101/ffn-only-q4.types",
+    "/mnt/raid0/llm/models/dflash/df2-11-20261101/Qwen3.8-27B-DFlash2-BF16.gguf",
+    "/mnt/raid0/llm/tmp/h-df2-11-quants-20261101/outputs/Qwen3.8-27B-DFlash2-FFN-only-Q4_K.gguf.part",
+    "Q4_K_M",
+    "24"
+  ],
+  "ended_unix": 1793572878.533579,
+  "mapped_ggml_llama_paths": [
+    "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libggml-base.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libggml-cpu.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libggml.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libllama-common.so.0.0.10419",
+    "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libllama-quantize-impl.so",
+    "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libllama.so.0.0.10419"
+  ],
+  "provenance": {
+    "arm": "ffn-only-q4",
+    "build_commit": "c72ec82f5417bb2937310326120f149b665e8400",
+    "contract_sha256": "6f6fd79de3a146eb9d2c35b20764bb735c09d60c31dde5db054483179570e1ac",
+    "map_sha256": "bc569174dbfa08eed7a077401c4212d3e99f1d9de40aa79e9480237ecafb84be",
+    "source_sha256": "26af33a15b21475d668e4ee55639beea49932e7360b1144c6282721bcd127c14"
+  },
+  "quantizer_pid": 237114,
+  "scientific_measurement": false,
+  "sha256": "42c9c566170705ce3c3666300921d470a9fcac48f3747b2d60fd374676373625",
+  "started_unix": 1793572872.4511247
+}

@@ -1,0 +1,27 @@
+{
+ "at": "2026-11-01T22:39:13Z",
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-df2-sl4-offline-validate-r3-20261101/launcher.out",
+ "elapsed_s": 5,
+ "ended": null,
+ "engine_sha256": "af46a9fc763086760335f4ac5b0d3df4b8d106db977c0fb2a7f6e30d7e7f4945",
+ "first_unit_at": null,
+ "fix_task": "fix dry-run failure of handoff-df2-sl4-offline-validate-r3-20261101: job ended (rc=? (no ended record)) before writing a unit to /mnt/raid0/llm/tmp/handoff-df2-sl4-validate-r3-20261101/results/RESULT.json (json) (see compute-flags/dryrun/handoff-df2-sl4-offline-validate-r3-20261101/launcher.out; the keeper retries as soon as the launcher file changes)",
+ "id": "handoff-df2-sl4-offline-validate-r3-20261101",
+ "launcher_out_tail": [
+  "",
+  "==== dry run 2026-11-01T22:39:08Z regions=72-95 launcher_sha=e552b846b2f6ce414a3fadb75ad99e0df3996005c90ae38d9914594a6dd42c20 units_before=0",
+  "/mnt/raid0/llm/tmp/handoff-df2-sl4-validate-r3-20261101/launch.sh: line 17: WS58_REGIONS: parameter null or not set",
+  "==== ORPHANS [183817, 183823]: processes still naming this row after the dry run ended (a wrapper detached them; the owner stops them by pid)",
+  "==== dry run FAIL: job ended (rc=? (no ended record)) before writing a unit to /mnt/raid0/llm/tmp/handoff-df2-sl4-validate-r3-20261101/results/RESULT.json (json) (2026-11-01T22:39:13Z)"
+ ],
+ "launcher_sha256": "e552b846b2f6ce414a3fadb75ad99e0df3996005c90ae38d9914594a6dd42c20",
+ "reason": "job ended (rc=? (no ended record)) before writing a unit to /mnt/raid0/llm/tmp/handoff-df2-sl4-validate-r3-20261101/results/RESULT.json (json)",
+ "regions": "72-95",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/handoff-df2-sl4-validate-r3-20261101/results/RESULT.json",
+ "row_sha256": "72074298f3ef440d4892ef0f8d8f11e64f69814269f5624485c129afc764ee58",
+ "rowflow_sha256": "71818f7af967b97a879d79f2e2898787e84c35a7fa04449db3a59cfd0f870111",
+ "units": 0,
+ "vram_used_max_bytes": null,
+ "warning": "ORPHANS [183817, 183823]: processes still naming this row after the dry run ended (a wrapper detached them; the owner stops them by pid)"
+}
