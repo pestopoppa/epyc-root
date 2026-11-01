@@ -126,7 +126,7 @@ for `:8100`. Neither layer touches the orchestrator API (`:8000`).
 | `dashboard/handoff_parser.py` | pure parser: cards, tasks, status-derived Blocked column |
 | `dashboard/freshness.py` | the one age→`fresh/aging/stale/missing` classifier (+ a legacy mtime badge) |
 | `dashboard/loop_status.py` | read side of the **rebuilt AutoKernel loop's** `loop-status.json` contract: four-valued freshness + derived folds |
-| `dashboard/eval_errors.py` | read-only projector for complete AutoPilot EvalTower `question_results.jsonl` batches; error categories and event timestamps come from the producer |
+| `dashboard/eval_errors.py` | read-only projector for finalized AutoPilot EvalTower `question_results.jsonl` batches; partial coverage leaves missing questions unknown and withholds full-batch rates |
 | `dashboard/static/handoffs.html` | kanban UI + modal + hand-rolled SVG charts (no framework, no CDN) |
 | `dashboard/static/loop.html` | **THE Kernel R&D page** (`/loop`): the rebuilt AutoKernel loop's state, freshness banner, dispositions incl. negatives, GPU held-vs-busy — **plus** the operator-gated champion evidence merged in from the retired `/kernel`, on its own second envelope. Two producers, two envelopes, neither dating the other |
 | `dashboard/static/cockpit.html` | **AP-50 decision cockpit** (`/cockpit`): view plane over the orchestrator's `epyc.autopilot.decision_cockpit.v1` contract — see *Decision cockpit* below |
@@ -160,7 +160,7 @@ for `:8100`. Neither layer touches the orchestrator API (`:8000`).
   (`/mnt/raid0/llm/tmp/gpu-window/mi210.json.executor-status.json`) + its `gpu_window`
   panel envelope (stale at 300 s), so a dead watchdog shows in `/api/health` even while
   `:8000` is down. The window verdict is the orchestrator's, not this route's
-- `GET /api/eval_errors` — the latest complete AutoPilot EvalTower batch from
+- `GET /api/eval_errors` — the latest finalized AutoPilot EvalTower batch from
   producer-owned `question_results.jsonl` sidecars, with its own semantic
   freshness envelope. This episodic panel is excluded from the global health gate.
 - `GET /loop` — **THE Kernel R&D page.** The rebuilt AutoKernel loop, and since

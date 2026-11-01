@@ -133,6 +133,29 @@ class EvalErrorsReaderTests(unittest.TestCase):
         self.assertEqual(projected["counts"]["excluded_error"], 2)
         self.assertEqual(projected["counts"]["error"], 3)
 
+    def test_finalized_partial_batch_keeps_missing_questions_unknown_and_withholds_rate(self):
+        start = {"requested_n": 4, "label": "partial-control", "trial_id": None,
+                 "eval_batch_id": "partial-control", "complete": False}
+        results = [
+            {"eval_batch_id": "partial-control", "label": "partial-control",
+             "trial_id": None, "requested_n": 4, "ordinal": ordinal,
+             "ended_at_s": 2000 + ordinal,
+             "result": {"disposition": "scored", "error": ordinal == 0,
+                        "correct": ordinal != 0}}
+            for ordinal in (0, 1, 3)
+        ]
+        batch = {"start": start,
+                 "complete": {"complete": True, "requested_n": 4, "completed_n": 3,
+                              "label": "partial-control", "trial_id": None,
+                              "eval_batch_id": "partial-control"},
+                 "results": results, "start_count": 1, "complete_count": 1}
+        projected = eval_errors._batch_projection("partial-control", batch)
+        self.assertEqual(projected["status"], "partial")
+        self.assertEqual(projected["counts"]["observed"], 3)
+        self.assertEqual(projected["counts"]["unknown"], 1)
+        self.assertIsNone(projected["counts"]["error_rate"])
+        self.assertIsNone(projected["counts"]["reliability"])
+
     def test_route_and_panel_registry_are_closed(self):
         self.assertIs(server.API_ROUTES["/api/eval_errors"], server.eval_errors_payload)
         self.assertFalse(any(panels.registry_gaps(server).values()))

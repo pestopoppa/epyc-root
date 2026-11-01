@@ -842,7 +842,7 @@ function renderEvalErrors(data){
   const state = data.status || 'unknown';
   const freshness = f.staleness_class || 'missing';
   const freshnessText = 'source ' + freshness + (f.age_s != null ? ' · ' + fmtDur(f.age_s) + ' old' : '');
-  if (state !== 'reported'){
+  if (state !== 'reported' && state !== 'partial'){
     body.innerHTML = '<div class="stats"><div class="stat"><span class="n dimv">unknown</span>' +
       '<span class="l">eval error state</span><span class="s">' + esc(freshnessText) + '</span></div></div>' +
       '<div class="note">' + esc(data.error || (state === 'empty_batch' ? 'complete batch has no result rows' : state)) +
@@ -851,12 +851,12 @@ function renderEvalErrors(data){
   }
   const c = data.counts || {};
   const b = data.batch || {};
-  const ratio = n => c.total > 0 ? ((n / c.total) * 100).toFixed(1) + '%' : '—';
+  const ratio = key => typeof c[key] === 'number' ? (c[key] * 100).toFixed(1) + '%' : 'withheld';
   const stat = (value, label, sub) => '<div class="stat"><span class="n">' + esc(value) +
     '</span><span class="l">' + esc(label) + '</span><span class="s">' + esc(sub) + '</span></div>';
   let h = '<div class="stats">';
-  h += stat(ratio(c.error), 'error rate · lower is better', (c.error || 0) + '/' + c.total + ' rows');
-  h += stat(ratio(c.non_error), 'reliability · higher is better', (c.non_error || 0) + '/' + c.total + ' non-error');
+  h += stat(ratio('error_rate'), 'error rate · lower is better', (c.error || 0) + '/' + c.total + ' observed rows');
+  h += stat(ratio('reliability'), 'reliability · higher is better', (c.non_error || 0) + '/' + c.total + ' observed non-error');
   h += stat(c.excluded_error || 0, 'excluded error rows', 'infra + scoring + legacy unknown');
   h += stat(c.infra_failed || 0, 'excluded · infrastructure', 'not in quality denominator');
   h += stat(c.scoring_failed || 0, 'excluded · scoring', 'not in quality denominator');
@@ -868,10 +868,11 @@ function renderEvalErrors(data){
   h += '<div class="note">batch ' + esc(b.label || b.eval_batch_id || '?') +
     ' · trial ' + esc(b.trial_id == null ? 'unknown' : b.trial_id) +
     ' · source attribution ' + esc(data.attribution || 'unattributed') +
-    ' · complete ' + esc(b.completed) + '/' + esc(b.requested) +
+    ' · observed ' + esc(b.completed) + '/' + esc(b.requested) + ' · unknown ' + esc(c.unknown || 0) +
+    (state === 'partial' ? ' · full-batch rates withheld' : '') +
     ' · ' + esc(timestamp) + ' · ' + esc(freshnessText) +
     (data.artifact ? ' · ' + esc(data.artifact) : '') + '</div>';
-  h += '<div class="note">Reliability is the producer’s non-error fraction over all completed rows. ' +
+  h += '<div class="note">Rates are shown only when every requested question has a result row. Reliability is the producer’s non-error fraction over all completed rows. ' +
     'Task failures remain in the quality denominator; infrastructure and scoring failures are excluded. ' +
     esc(data.attribution_reason || '') + '.</div>';
   body.innerHTML = h;

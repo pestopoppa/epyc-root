@@ -1,8 +1,9 @@
 """Read the AutoPilot EvalTower's append-only per-question sidecars.
 
 This is a read-only view of the producer-owned JSONL contract in
-``scripts/autopilot/eval_tower.py``. It deliberately consumes completed
-``eval_batch_id`` batches only and never derives categories from error text.
+``scripts/autopilot/eval_tower.py``. It consumes finalized
+``eval_batch_id`` batches only, withholds full-batch rates when requested
+questions are missing, and never derives categories from error text.
 """
 from __future__ import annotations
 
@@ -90,6 +91,13 @@ def _batch_projection(batch_id: str, batch: dict[str, Any]) -> dict[str, Any] | 
         return None
     if len(set(ordinals)) != len(ordinals):
         return None
+    # EvalTower writes a final marker for the rows that reached its result list;
+    # its serial path can break on wall-budget timeout and the pipelined path can
+    # leave holes when a lane is abandoned. A marker therefore proves the
+    # observed subset is finalized, not that every requested question was
+    # evaluated. Keep those missing ordinals unknown and never publish a
+    # full-batch rate for a partial subset.
+    partial = completed < requested
     for row in [*results, complete]:
         for key in ("eval_batch_id", "label", "trial_id", "requested_n"):
             left, right = row.get(key), start.get(key)
@@ -148,14 +156,16 @@ def _batch_projection(batch_id: str, batch: dict[str, Any]) -> dict[str, Any] | 
     counts["excluded_error"] = (
         counts["infra_failed"] + counts["scoring_failed"] + counts["unclassified_error"]
     )
-    counts["error_rate"] = counts["error"] / total if total else None
-    counts["reliability"] = counts["non_error"] / total if total else None
+    counts["observed"] = completed
+    counts["unknown"] = requested - completed
+    counts["error_rate"] = counts["error"] / total if total and not partial else None
+    counts["reliability"] = counts["non_error"] / total if total and not partial else None
     timestamp = max(timestamps) if timestamps else None
     label = start.get("label")
     trial_id = start.get("trial_id")
     return {
         "schema": "epyc.dashboard.autopilot_eval_errors.v1",
-        "status": "reported" if total else "empty_batch",
+        "status": "partial" if partial else ("reported" if total else "empty_batch"),
         "artifact": None,
         "batch": {
             "eval_batch_id": batch_id,
