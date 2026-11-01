@@ -1,0 +1,322 @@
+[
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/config.json",
+    "old": "471f9af8faca2de3c72412a199a83753af6cb73ca560298e1515f8a3db062686",
+    "now": "471f9af8faca2de3c72412a199a83753af6cb73ca560298e1515f8a3db062686",
+    "match": true,
+    "size": 1437,
+    "st_dev": 2431,
+    "st_ino": 98196127,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/model.onnx",
+    "old": "c138d35aa879e951e5a51779e84f75f0a52955e7208fe70be362a831ef7da66d",
+    "now": "c138d35aa879e951e5a51779e84f75f0a52955e7208fe70be362a831ef7da66d",
+    "match": true,
+    "size": 1053521,
+    "st_dev": 2431,
+    "st_ino": 98207299,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/model_int8.onnx",
+    "old": "6081f8b64cac5415300c034d8a5440631dbb293a43c113f9d5c9ba1552f07ece",
+    "now": "6081f8b64cac5415300c034d8a5440631dbb293a43c113f9d5c9ba1552f07ece",
+    "match": true,
+    "size": 92079820,
+    "st_dev": 2431,
+    "st_ino": 98207300,
+    "st_nlink": 2
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/model.safetensors",
+    "old": "934ec8acec584db77c9975bf01fc87e2461e462b691f2596880a4570f0b1d485",
+    "now": "934ec8acec584db77c9975bf01fc87e2461e462b691f2596880a4570f0b1d485",
+    "match": true,
+    "size": 63773752,
+    "st_dev": 2431,
+    "st_ino": 98196117,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/tokenizer_config.json",
+    "old": "8d9de03e8b4df1b3d6932b32061c99c249292a624dc7a77956a61f354442a4eb",
+    "now": "8d9de03e8b4df1b3d6932b32061c99c249292a624dc7a77956a61f354442a4eb",
+    "match": true,
+    "size": 21371,
+    "st_dev": 2431,
+    "st_ino": 98196123,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/sentence_bert_config.json",
+    "old": "1e706dd577662985d2255fcc6e952f0c128f7b24e2e965d2964b8eb9937b42e4",
+    "now": "1e706dd577662985d2255fcc6e952f0c128f7b24e2e965d2964b8eb9937b42e4",
+    "match": true,
+    "size": 52,
+    "st_dev": 2431,
+    "st_ino": 98196133,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/config_sentence_transformers.json",
+    "old": "3460abc6a6424f4c06a39aff395ca8e63dc7848590ed9030043be99154ec8863",
+    "now": "3460abc6a6424f4c06a39aff395ca8e63dc7848590ed9030043be99154ec8863",
+    "match": true,
+    "size": 464,
+    "st_dev": 2431,
+    "st_ino": 98196129,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/tokenizer.json",
+    "old": "61b39467f37049ad5a5e4485d22c8104ff9ca13364da8934768aeec25bfbd790",
+    "now": "61b39467f37049ad5a5e4485d22c8104ff9ca13364da8934768aeec25bfbd790",
+    "match": true,
+    "size": 3583846,
+    "st_dev": 2431,
+    "st_ino": 98196121,
+    "st_nlink": 2
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/special_tokens_map.json",
+    "old": "6edfb9d64c0d7e5cbaa53516e90280fe1f42ba5ea7923d005a5f9b6e082142cf",
+    "now": "6edfb9d64c0d7e5cbaa53516e90280fe1f42ba5ea7923d005a5f9b6e082142cf",
+    "match": true,
+    "size": 581,
+    "st_dev": 2431,
+    "st_ino": 98196125,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/model.onnx.data",
+    "old": "8a0ef6889104daddc6d1281a843d2720cb564cac0581ae9aac23b5fd43559c7c",
+    "now": "8a0ef6889104daddc6d1281a843d2720cb564cac0581ae9aac23b5fd43559c7c",
+    "match": true,
+    "size": 131501056,
+    "st_dev": 2431,
+    "st_ino": 98207298,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/modules.json",
+    "old": "48c40af6b8d1105cefe7174e2c840281cbf14d677e28977327db0791d7de7bbc",
+    "now": "48c40af6b8d1105cefe7174e2c840281cbf14d677e28977327db0791d7de7bbc",
+    "match": true,
+    "size": 422,
+    "st_dev": 2431,
+    "st_ino": 98196131,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/2_Dense/config.json",
+    "old": "4007adf64df167dacb0467e9d423934c5b256d607b7e7cfbbdbef4852401cbad",
+    "now": "4007adf64df167dacb0467e9d423934c5b256d607b7e7cfbbdbef4852401cbad",
+    "match": true,
+    "size": 138,
+    "st_dev": 2431,
+    "st_ino": 98196143,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/2_Dense/model.safetensors",
+    "old": "426cc3d350d5d76b8f521146c1559ca186f15158f02cbe897c162bcdfe8ca744",
+    "now": "426cc3d350d5d76b8f521146c1559ca186f15158f02cbe897c162bcdfe8ca744",
+    "match": true,
+    "size": 1179736,
+    "st_dev": 2431,
+    "st_ino": 98196145,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/3_Dense/config.json",
+    "old": "a61a38725e2366f2ac8e6d37cfc43fc4d9600fe8e3fff61f671a130be280cc69",
+    "now": "a61a38725e2366f2ac8e6d37cfc43fc4d9600fe8e3fff61f671a130be280cc69",
+    "match": true,
+    "size": 138,
+    "st_dev": 2431,
+    "st_ino": 98196149,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/3_Dense/model.safetensors",
+    "old": "cc331fe59d88a9d7a862f2daf0c0b0e3dae27272e2bca19cb2357eb2491bf2a4",
+    "now": "cc331fe59d88a9d7a862f2daf0c0b0e3dae27272e2bca19cb2357eb2491bf2a4",
+    "match": true,
+    "size": 196696,
+    "st_dev": 2431,
+    "st_ino": 98196151,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/1_Dense/config.json",
+    "old": "2b6a02c4ecc2fc2ad6ffe1174b6330387927d589c790350a4043d62eb2450c2e",
+    "now": "2b6a02c4ecc2fc2ad6ffe1174b6330387927d589c790350a4043d62eb2450c2e",
+    "match": true,
+    "size": 138,
+    "st_dev": 2431,
+    "st_ino": 98196137,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/1_Dense/model.safetensors",
+    "old": "7b1edf2f24bb5adf25b44b7b38ef291ddfed941d9bcdb5301021992f11ad81e1",
+    "now": "7b1edf2f24bb5adf25b44b7b38ef291ddfed941d9bcdb5301021992f11ad81e1",
+    "match": true,
+    "size": 589912,
+    "st_dev": 2431,
+    "st_ino": 98196139,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/.cache/huggingface/.gitignore",
+    "old": "684888c0ebb17f374298b65ee2807526c066094c701bcc7ebbe1c1095f494fc1",
+    "now": "684888c0ebb17f374298b65ee2807526c066094c701bcc7ebbe1c1095f494fc1",
+    "match": true,
+    "size": 1,
+    "st_dev": 2431,
+    "st_ino": 98196115,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/.cache/huggingface/download/sentence_bert_config.json.metadata",
+    "old": "a2dd4cb757f0e102b29135373ff640b8465bc1d4b692f35c6f0d2d892d153ddc",
+    "now": "a2dd4cb757f0e102b29135373ff640b8465bc1d4b692f35c6f0d2d892d153ddc",
+    "match": true,
+    "size": 100,
+    "st_dev": 2431,
+    "st_ino": 98196134,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/.cache/huggingface/download/special_tokens_map.json.metadata",
+    "old": "6726023fda63f905c1ef9a5452bce79354a68739f6ec75c9971cbdd4f8533f56",
+    "now": "6726023fda63f905c1ef9a5452bce79354a68739f6ec75c9971cbdd4f8533f56",
+    "match": true,
+    "size": 100,
+    "st_dev": 2431,
+    "st_ino": 98196126,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/.cache/huggingface/download/tokenizer_config.json.metadata",
+    "old": "a41e7887b08faa12ce6ea587309a3794c24e17759f610a9ccc7803c16f6fdacf",
+    "now": "a41e7887b08faa12ce6ea587309a3794c24e17759f610a9ccc7803c16f6fdacf",
+    "match": true,
+    "size": 101,
+    "st_dev": 2431,
+    "st_ino": 98196124,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/.cache/huggingface/download/modules.json.metadata",
+    "old": "b79beaf16620c74913b117551df6c81dc1dc7e8cea28c320bac5f59d163681e2",
+    "now": "b79beaf16620c74913b117551df6c81dc1dc7e8cea28c320bac5f59d163681e2",
+    "match": true,
+    "size": 101,
+    "st_dev": 2431,
+    "st_ino": 98196132,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/.cache/huggingface/download/config.json.metadata",
+    "old": "a993c1965149f3c4f15c7d9d7078ae06b4af3f8d763f629e005d1f6ffea42daa",
+    "now": "a993c1965149f3c4f15c7d9d7078ae06b4af3f8d763f629e005d1f6ffea42daa",
+    "match": true,
+    "size": 101,
+    "st_dev": 2431,
+    "st_ino": 98196128,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/.cache/huggingface/download/model.safetensors.metadata",
+    "old": "5a969ff8efb24ea3aa146ed3eb44aa2ca70777b23d5dab785bcafbf220cc6941",
+    "now": "5a969ff8efb24ea3aa146ed3eb44aa2ca70777b23d5dab785bcafbf220cc6941",
+    "match": true,
+    "size": 124,
+    "st_dev": 2431,
+    "st_ino": 98196120,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/.cache/huggingface/download/tokenizer.json.metadata",
+    "old": "9ce98dd5a8a7becf6626281ef95293f96aeeef309ef5f8ab6cd5c624739ced97",
+    "now": "9ce98dd5a8a7becf6626281ef95293f96aeeef309ef5f8ab6cd5c624739ced97",
+    "match": true,
+    "size": 98,
+    "st_dev": 2431,
+    "st_ino": 98196122,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/.cache/huggingface/download/config_sentence_transformers.json.metadata",
+    "old": "b3255ad60a4dd338a660719cbdbb63152b992fd97075861ece08236f0e6a3950",
+    "now": "b3255ad60a4dd338a660719cbdbb63152b992fd97075861ece08236f0e6a3950",
+    "match": true,
+    "size": 101,
+    "st_dev": 2431,
+    "st_ino": 98196130,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/.cache/huggingface/download/2_Dense/config.json.metadata",
+    "old": "4fa58026bc6fed8d3724db5784899bf2a71f3c0f645eec668f8e319548aa5544",
+    "now": "4fa58026bc6fed8d3724db5784899bf2a71f3c0f645eec668f8e319548aa5544",
+    "match": true,
+    "size": 100,
+    "st_dev": 2431,
+    "st_ino": 98196144,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/.cache/huggingface/download/2_Dense/model.safetensors.metadata",
+    "old": "c71a1fab46b3fb45b506dbaeb539c5e1af85a3847a059265b43af98286573c57",
+    "now": "c71a1fab46b3fb45b506dbaeb539c5e1af85a3847a059265b43af98286573c57",
+    "match": true,
+    "size": 125,
+    "st_dev": 2431,
+    "st_ino": 98196146,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/.cache/huggingface/download/3_Dense/config.json.metadata",
+    "old": "e211b2ea3ad7103d484d2c0aac77d47e2ff525f5f6908e64637f2c3817f0aad1",
+    "now": "e211b2ea3ad7103d484d2c0aac77d47e2ff525f5f6908e64637f2c3817f0aad1",
+    "match": true,
+    "size": 101,
+    "st_dev": 2431,
+    "st_ino": 98196150,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/.cache/huggingface/download/3_Dense/model.safetensors.metadata",
+    "old": "eb52a0ae6a0a0a6592f777959dd0a7d2e5df0771095fb313621f29f712fc1c08",
+    "now": "eb52a0ae6a0a0a6592f777959dd0a7d2e5df0771095fb313621f29f712fc1c08",
+    "match": true,
+    "size": 125,
+    "st_dev": 2431,
+    "st_ino": 98196152,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/.cache/huggingface/download/1_Dense/config.json.metadata",
+    "old": "816c7f45bafad0e2fc7d0d586d3ee800c578644fb0b30cf7e79cb71c2a9bcbf1",
+    "now": "816c7f45bafad0e2fc7d0d586d3ee800c578644fb0b30cf7e79cb71c2a9bcbf1",
+    "match": true,
+    "size": 101,
+    "st_dev": 2431,
+    "st_ino": 98196138,
+    "st_nlink": 1
+  },
+  {
+    "path": "/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8/.cache/huggingface/download/1_Dense/model.safetensors.metadata",
+    "old": "6240872e2d1b145bba3a8618450e32897d370c475aca6f1210550d3f65ff2284",
+    "now": "6240872e2d1b145bba3a8618450e32897d370c475aca6f1210550d3f65ff2284",
+    "match": true,
+    "size": 125,
+    "st_dev": 2431,
+    "st_ino": 98196140,
+    "st_nlink": 1
+  }
+]

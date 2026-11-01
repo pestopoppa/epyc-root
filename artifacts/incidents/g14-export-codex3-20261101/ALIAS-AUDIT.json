@@ -1,0 +1,94 @@
+[
+  {
+    "path": "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/model.onnx",
+    "st_dev": 2431,
+    "st_ino": 96246829,
+    "st_nlink": 1,
+    "aliases_in_bounded_trees": [
+      "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/model.onnx"
+    ]
+  },
+  {
+    "path": "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/model.onnx.data",
+    "st_dev": 2431,
+    "st_ino": 96246828,
+    "st_nlink": 2,
+    "aliases_in_bounded_trees": [
+      "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/model.onnx.data",
+      "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/quantization-input/model.onnx.data"
+    ]
+  },
+  {
+    "path": "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/model_int8.onnx",
+    "st_dev": 2431,
+    "st_ino": 96247689,
+    "st_nlink": 1,
+    "aliases_in_bounded_trees": [
+      "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/model_int8.onnx"
+    ]
+  },
+  {
+    "path": "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/onnx_config.json",
+    "st_dev": 2431,
+    "st_ino": 96246826,
+    "st_nlink": 1,
+    "aliases_in_bounded_trees": [
+      "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/onnx_config.json"
+    ]
+  },
+  {
+    "path": "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/tokenizer.json",
+    "st_dev": 2431,
+    "st_ino": 96246825,
+    "st_nlink": 1,
+    "aliases_in_bounded_trees": [
+      "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/tokenizer.json"
+    ]
+  },
+  {
+    "path": "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/EXPORT_COMPLETE.json",
+    "st_dev": 2431,
+    "st_ino": 96246830,
+    "st_nlink": 1,
+    "aliases_in_bounded_trees": [
+      "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/EXPORT_COMPLETE.json"
+    ]
+  },
+  {
+    "path": "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/INT8_COMPLETE.json",
+    "st_dev": 2431,
+    "st_ino": 96247685,
+    "st_nlink": 1,
+    "aliases_in_bounded_trees": [
+      "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/INT8_COMPLETE.json"
+    ]
+  },
+  {
+    "path": "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/quantization-input/model.onnx",
+    "st_dev": 2431,
+    "st_ino": 96247646,
+    "st_nlink": 1,
+    "aliases_in_bounded_trees": [
+      "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/quantization-input/model.onnx"
+    ]
+  },
+  {
+    "path": "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/quantization-input/model.onnx.data",
+    "st_dev": 2431,
+    "st_ino": 96246828,
+    "st_nlink": 2,
+    "aliases_in_bounded_trees": [
+      "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/model.onnx.data",
+      "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/quantization-input/model.onnx.data"
+    ]
+  },
+  {
+    "path": "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/existing-int8-corrected-contract/onnx_config.json",
+    "st_dev": 2431,
+    "st_ino": 96246834,
+    "st_nlink": 1,
+    "aliases_in_bounded_trees": [
+      "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/existing-int8-corrected-contract/onnx_config.json"
+    ]
+  }
+]

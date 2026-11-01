@@ -1,0 +1,13 @@
+Actual command text sent to exec (not an existing executable command file):
+D=/mnt/micron/codex3-lanes/root/tmp/g14-export-codex3-20261101; OLD=/mnt/raid0/llm/tmp/codex-ni-g14-reason32m-20261030; cp "$OLD"/{run.py,colbert_encoder.py,MODEL-PINS.json,SNIPPETS.json} "$D"; /usr/bin/python3 - "$D" <<'PY'
+import sys,pathlib
+p=pathlib.Path(sys.argv[1])/"run.py"
+s=p.read_text().replace("Path('/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae')", "D/'candidate'")
+s=s.replace("'max_abs':float(np.abs(a-b).max()),'max_cosine_divergence'", "'max_abs':float(np.abs(a-b).max()),'per_position_l2':np.linalg.norm(a-b,axis=-1).tolist(),'max_l2':float(np.linalg.norm(a-b,axis=-1).max()),'max_cosine_divergence'")
+p.write_text(s)
+PY
+The above was embedded within a single-quoted bash -c string. The shell removed inner single quotes before Python saw the heredoc; both replacements failed. failed-runner.py.txt is the actual retained source, unchanged.
+Native command: G14_MODE=smoke G14_REEXPORT=1 under flock /mnt/raid0/llm/tmp/compute-flags/prep-locks/78-79.lock, taskset 78,79, prep_supervisor.py 300 -- <scratch>/venv/bin/python -B <scratch>/run.py. Full environment is described in INCIDENT.md; native.log.gz preserves the unmodified log.
+
+Exact native bash -c body passed through host chroot/setpriv:
+D=/mnt/micron/codex3-lanes/root/tmp/g14-export-codex3-20261101; OLD=/mnt/raid0/llm/tmp/codex-ni-g14-reason32m-20261030; export PYTHONPATH="$D/venv/lib/python3.12/site-packages:$OLD/overlay:/mnt/raid0/llm/venvs/llama-gguf-convert/lib/python3.12/site-packages:$OLD/support" OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false CUDA_VISIBLE_DEVICES=-1 HIP_VISIBLE_DEVICES=-1 ROCR_VISIBLE_DEVICES=-1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 HF_DATASETS_OFFLINE=1 COLBERT_ENCODE_ONNX_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONNOUSERSITE=1 G14_MODE=smoke G14_REEXPORT=1; flock -n /mnt/raid0/llm/tmp/compute-flags/prep-locks/78-79.lock taskset -c 78,79 /usr/bin/python3 -B /mnt/raid0/llm/tmp/codex3-kpf-item4-control-20261030/prep/prep_supervisor.py 300 -- "$D/venv/bin/python" -B "$D/run.py" > "$D/native.log" 2>&1
