@@ -9,7 +9,7 @@ branch A, flag OFF) landed on orchestrator main 2026-10-04; its gate half (branc
 **Categories**: inference_serving, kv_cache, llama_cpp_experimental, orchestration
 **Parent index**: [routing-and-optimization-index.md](routing-and-optimization-index.md) (row RTG-58, applied by the
 owning session)
-**Scratch**: `/mnt/raid0/llm/tmp/kv-prefix-fork/`, `/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-normalization-r14/`, `/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-normalization-r13/`, `/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-native-successor-r10/`, `/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-format-r9/`, `/mnt/raid0/llm/tmp/codex-ni-20261027-c5-graph-v2/`, `/mnt/raid0/llm/tmp/codex3-kpf-real-actions-20261030/`, `/mnt/raid0/llm/tmp/codex3-kpf174d-offline-a-20261030`, `/mnt/raid0/llm/tmp/codex3-kpf174d-131b-controls-20261030`, `/mnt/raid0/llm/tmp/codex3-kpf-item4-control-20261030/build-r3`, `/mnt/raid0/llm/tmp/codex3-filing-1650-20261030` · worktrees: `/mnt/raid0/llm/worktrees/kv-prefix-fork-*`
+**Scratch**: `/mnt/raid0/llm/tmp/kv-prefix-fork/`, `/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-normalization-r14/`, `/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-normalization-r13/`, `/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-native-successor-r10/`, `/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-format-r9/`, `/mnt/raid0/llm/tmp/codex-ni-20261027-c5-graph-v2/`, `/mnt/raid0/llm/tmp/codex3-kpf-real-actions-20261030/`, `/mnt/raid0/llm/tmp/codex3-kpf174d-offline-a-20261030`, `/mnt/raid0/llm/tmp/codex3-kpf174d-131b-controls-20261030`, `/mnt/raid0/llm/tmp/codex3-kpf-item4-control-20261030/build-r3`, `/mnt/raid0/llm/tmp/codex3-filing-1650-20261030`, `/mnt/raid0/llm/tmp/codex-ni-kpf24-20261101/` · worktrees: `/mnt/raid0/llm/worktrees/kv-prefix-fork-*`
 **Owners**: **workspace-ec** executes every phase: P1 server/KV side, P2 orchestrator side (as stack owner), P3, P4
 and P5. **ak-ds41-main** keeps this handoff and its index row.
 **Owner change, 2026-10-20 (operator):** P1 is reassigned to the 2026-10-20 operator session. workspace-ec has had no
@@ -673,10 +673,11 @@ KPF-22..24 and KPF-26 need P1 live.
   - Retire the 256-char hash routing on kvu servers. Keep `canonicalize_prompt` only if INF-05 KV-6's measurement
     says it is cheap.
   - Record the decision in `prefix_cache.py`'s docstring and in INF-05's rows.
-- [ ] **KPF-24: the KV-pool gate counts unique cells.** In `kv_pool_admission._fits` / `reservation_tokens`, reserve
+- [x] **KPF-24: the KV-pool gate counts unique cells.** ✅ 2026-11-01 — APP `45952718bc270ccf93e3dd431b18d812eaeed1bf`, published via `bea44931a9b8ff95f26f0276da7a34bd6bc123e5`; [original verification packet](https://github.com/pestopoppa/epyc-orchestrator/blob/b81105736ebd22b9fc013e96ac63d3cf6ec58566/artifacts/kpf24-source-20261101/README.md) [no-belief: software verification]. In `kv_pool_admission._fits` / `reservation_tokens`, reserve
   `prompt − fork credit + max_new` per request. Read the server's unique-cell figure (KPF-16) rather than summing
   per-request reservations. Add `cache_credit_source: "fork"` next to `fp_history` / `slots_text`. Tests in
   `tests/unit/test_kv_prefix_history.py` and a new `test_kv_pool_unique_cells.py`.
+  - *(2026-11-01, accepted source completion.)* The gate now consumes native `llamacpp:kv_cells_used`/`llamacpp:kv_cells_size` and the same `/slots` pool snapshots in attention-cell units. Native idle/external cells count, own outstanding reservations and the candidate are added once, and unknown ownership cannot justify subtracting overlap; own cells can therefore be conservatively reserved twice. Valid zero requires valid capacity; missing/fork-off counters stay unknown; capacity drift refuses until a consistent refresh. Fork credit is prompt-bounded, retains generation and is labeled only after its live-source check, with separate prefill provenance. Legacy/index-off behavior is preserved. Original final hosted run `41298363381` at `2293e16e`: 281 passed, zero failures/errors, six explicit native/history skips; Ruff exit 0. Immutable main `29fdfc5a` reproduces the earlier three stale flag-off fixture failures. Candidate and baseline full `make gates` outputs are byte-identical and both exit 2 before integration collection for unset pytest-asyncio fixture-loop scope; this is not a green full-gate receipt. All four original run APIs/ZIPs/logs/JUnits/dependencies/source hashes and authentic exits remain in the pinned packet. No runtime enable, inference, reload, quality/performance/adoption, global pending-reservation ledger or KPF-26 conclusion. The pre-existing `084921bb`/`46c2d833` reservation halves receive no separate new credit. [no-belief: software verification]
 - [x] **KPF-25: byte-stable trunks.** ✅ 2026-10-20 Audit the fan-out prompt builders for anything that varies across siblings
   inside the trunk: ordering, timestamps, ids, per-child text placed before the junction. Use the RTG-27
   prompt-construction-determinism findings. Add a test that N children's prompts share a byte-identical trunk of the
@@ -758,8 +759,9 @@ KPF-22..24 and KPF-26 need P1 live.
 - KPF-23 note: decision recorded in `prefix_cache.py`'s docstring (landed with branch A) — `PrefixRouter` kept as the
   legacy opt-in; index pin policy `idle` pins only verified idle slots; hash routing retires after the KPF-27d shadow
   metric.
-- KPF-24 note: `cache_credit_source: "prefix_index"` added on branch B; fork credit on the reservation behind
-  `_FORK`; switch from the client estimate to the server's unique-cell figure once KPF-16 publishes it.
+- KPF-24 history: branch B added `cache_credit_source: "prefix_index"` and reservation fork credit behind
+  `_FORK`. The remaining native unique-cell consumer and `"fork"` source label are complete in APP `45952718`,
+  published via `bea44931`; see the original KPF-24 task and pinned verification packet above. Flags stay unchanged.
 
 ### P3: sequence-affine KV cell allocation (workspace-ec) — effort: measure S (~2-3 days), build S-M (~1 week)
 
