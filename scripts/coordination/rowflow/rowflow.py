@@ -481,6 +481,10 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     for k in ("lineage", "lineage_reset", "supersedes", "notes", "row", "dryrun_whole_host"):
         if spec.get(k) is not None:
             row[k] = spec[k]
+    if spec.get("shape") is not None:
+        need(str(spec["shape"]) in SHAPES or re.fullmatch(r"multi-quarter\([2-3]\)", str(spec["shape"])), f"shape must be one of {SHAPES} or multi-quarter(n)")
+        row["shape"] = str(spec["shape"])
+    row["shape"] = shape_of(row, o)   # recorded: quarter | multi-quarter(n) | host | quiet-host | gpu
     atomic_json(ready_path(flags, rid), row)
     return row
 
@@ -650,10 +654,39 @@ def open_grants(flags):
     return out
 
 
+SHAPES = ("quarter", "multi-quarter", "host", "quiet-host", "gpu")
+QUARTER_RAM_GIB = 256   # a quarter's share of the bookable RAM (1069 GiB / 4, rounded): a bigger model is multi-quarter
+
+
+def shape_of(d, o=None):
+    """quarter | multi-quarter(n) | host | quiet-host | gpu - the spec's `shape` wins; else derived from the launcher's
+    claim (claim_cpus), ram_gib, gpu_quiet and role/class (operator 2026-11-01: heavy rows and timing baselines that
+    need every quarter plus the GPU idle must be scheduled explicitly, never squeezed onto a quarter)."""
+    sp = str(d.get("shape") or "").strip()
+    if sp:
+        return sp
+    regs = str(d.get("regions") or "")
+    if o is None:
+        try:
+            o = parse_launcher(d["launcher"]["path"])
+        except (Refused, OSError, StopIteration, ValueError, KeyError):
+            o = {}
+    cls = o.get("class", "gpu" if "mi210" in regs else "cpu")
+    if "mi210" in regs or cls in ("gpu", "cpu+gpu"):
+        return "gpu"
+    if o.get("gpu_quiet") == "exclusive":
+        return "quiet-host"
+    nq = len(quarters_of(o.get("claim_cpus") or regs, fold=True)) if regs not in ("any-cpu-quarter",) and not regs.startswith("any-of") else 1
+    nq = max(nq, -(-int(d.get("gib") or 0) // QUARTER_RAM_GIB) if int(d.get("gib") or 0) > QUARTER_RAM_GIB else 1)
+    if nq >= 4:
+        return "host"
+    return f"multi-quarter({nq})" if nq >= 2 else "quarter"
+
+
 def row_shape(d):
     """(options, bench): the alternative region sets (frozensets over q0..q3/gpu-quiet) a row must hold at once, derived
     from the row's regions AND its launcher's region-lock claim (static parse; the engine's own defaults). bench = a
-    timing row (keeps off q3 while a GPU grant is open)."""
+    timing row (keeps off q3 while a GPU grant is open). A `host` / `quiet-host` shape books every quarter (+ GPU)."""
     regs = str(d.get("regions") or "")
     try:
         o = parse_launcher(d["launcher"]["path"])
@@ -676,6 +709,16 @@ def row_shape(d):
         bases = [{x.strip()} for x in regs[len("any-of"):].split(",") if re.fullmatch(r"q[0-3]", x.strip())]
     else:
         bases = [quarters_of(regs)]
+    shape = shape_of(d, o)
+    if shape == "quiet-host":
+        extra |= set(REGIONS)
+    elif shape == "host":
+        extra |= set(QUARTERS)
+    elif shape.startswith("multi-quarter("):
+        n = int(shape[len("multi-quarter("):-1] or 2)
+        base_q = set().union(*[b for b in bases]) | {q for q in extra if q in QUARTERS}
+        if len(base_q) < n:   # RAM-derived width: any n quarters, as alternatives
+            bases = [set(c) for c in __import__("itertools").combinations(QUARTERS, n)]
     opts = []
     for b in bases:
         fs = frozenset(b | extra)
@@ -691,7 +734,13 @@ def dryrun_shape(d, opts, flags=None):
     any other engine keeps its whole shape and waits until all of it is free."""
     eng = d.get("engine", {}).get("path") if isinstance(d.get("engine"), dict) else None
     installed = os.path.join(flags or FLAGS, "bin", "rowflow", CANONICAL_ENGINE)
-    if d.get("dryrun_whole_host") or (eng and os.path.realpath(eng) != os.path.realpath(installed)):
+    constrainable = not (eng and os.path.realpath(eng) != os.path.realpath(installed))
+    shape = shape_of(d)
+    fits_quarter = int(d.get("gib") or 0) <= QUARTER_RAM_GIB
+    # by shape: quarter -> one quarter; multi-quarter/host -> one quarter only when constrainable AND the model fits a
+    # quarter's RAM, else the real shape (the reservation is capped to first unit + dryrun_timeout_s by dryrun_run);
+    # quiet-host -> correctness-only on one quarter (the dry run proves plumbing, not timing; gpu-quiet is not needed)
+    if d.get("dryrun_whole_host") or not constrainable or (shape != "quarter" and shape != "quiet-host" and not fits_quarter):
         return opts, False
     out = []
     for o in opts:
@@ -699,6 +748,8 @@ def dryrun_shape(d, opts, flags=None):
         if len(qs) <= 1:
             out.append(o)
             continue
+        if shape == "quiet-host":
+            o = frozenset(q for q in o if q != GPU)
         keep = {GPU} if GPU in o else set()
         for q in (["q3"] if GPU in o else qs):
             fs = frozenset(keep | {q})
@@ -718,21 +769,52 @@ def grant_regions(d, option, one_quarter):
     return regs
 
 
-def plan(free, cands, ram_gib, gpu_grant_open=False):
+DRAIN_AFTER_S = 3600      # a host / multi-quarter row that waited this long drains the host (age boost; never preempts)
+DRAIN_UNKNOWN_S = 1800    # drain target when the busy regions carry no grant end (foreign hold): backfill <= 30 min
+
+
+def _fits(c, free, ram, gpu_grant_open):
+    opts = [o for o in c["options"] if o and o <= free]
+    if c.get("bench") and gpu_grant_open:
+        opts = [o for o in opts if "q3" not in o]
+    if ram - float(c.get("gib") or 0) < RAM_MARGIN_GIB:
+        return []
+    return opts
+
+
+def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), quiet_ok=True):
     """PURE. One snapshot -> assignments. free: free regions; cands: [{id, kind: grant|dryrun, lane, rank, lane_count, gib,
-    bench, options: [frozenset]}]; ram_gib: MemAvailable now. Order: starved lane (fewest live rows) first, then rank,
-    then a grantable row before a dry run. Fixpoint: as long as any pending candidate fits the remaining free regions and
-    RAM it is placed, so no region stays idle while a fitting row waits. Never hands a region twice.
-    Returns (assigned [(cand, option)], idle {region: reason}, pending)."""
+    bench, options: [frozenset], shape?, since? (epoch the row became runnable), window_s? (how long it would hold)}];
+    ram_gib: MemAvailable now; grant_ends: end epochs of the running grants; quiet_ok: quiet-host rows allowed now (window knob).
+    Order: starved lane (fewest live rows) first, then rank, then a grantable row before a dry run. Fixpoint: as long as
+    any pending candidate fits the remaining free regions and RAM it is placed, so no region stays idle while a fitting
+    row waits. Never hands a region twice.
+    DRAIN (never preempt): the top quiet-host row, or the top multi-quarter/host row that has waited DRAIN_AFTER_S, that
+    cannot be placed now sets T = the latest end among the running grants; only rows that END before T are backfilled, so
+    nothing idles while the host drains and nothing delays T; at T its whole shape is free and it is placed first.
+    Returns (assigned [(cand, option)], idle {region: reason}, pending); plan.last_drain = (cand, T) or None."""
+    now = time.time() if now is None else now
     pending = sorted(cands, key=lambda c: (c["lane_count"], float(c["rank"]), 0 if c["kind"] == "grant" else 1, c["id"]))
+    if not quiet_ok:
+        pending = [c for c in pending if c.get("shape") != "quiet-host"]
     free, ram, out = set(free), float(ram_gib), []
+    drain, T = None, None
+    for c in pending:
+        big = any(len([r for r in o if r in QUARTERS]) >= 2 for o in c["options"])
+        if big and (c.get("shape") == "quiet-host" or now - float(c.get("since") or now) >= DRAIN_AFTER_S):
+            pending.remove(c); pending.insert(0, c)   # the drain row goes FIRST: at T it takes the host before any quarter row
+            if not _fits(c, free, ram, gpu_grant_open):
+                later = [float(e) for e in grant_ends if float(e) > now]
+                drain, T = c, (max(later) if later else now + DRAIN_UNKNOWN_S)
+            break
+    plan.last_drain = (drain, T) if drain else None
     while pending:
         placed = None
         for c in pending:
-            opts = [o for o in c["options"] if o and o <= free]
-            if c.get("bench") and gpu_grant_open:
-                opts = [o for o in opts if "q3" not in o]
-            if not opts or ram - float(c.get("gib") or 0) < RAM_MARGIN_GIB:
+            if drain is not None and c is not drain and now + float(c.get("window_s") or 0) > T:
+                continue  # backfill only with rows that end before T
+            opts = _fits(c, free, ram, gpu_grant_open)
+            if not opts:
                 continue
             # prefer the smallest option, then the one other pending rows want least (keeps their alternatives open)
             demand = {r: sum(1 for x in pending if x is not c for o2 in x["options"] if r in o2) for r in free}
@@ -750,6 +832,8 @@ def plan(free, cands, ram_gib, gpu_grant_open=False):
             idle[r] = "no runnable row needs it (every grantable/dry-runnable row is placed, running, failed or parked)"
             continue
         c = want[0]; why = []
+        if drain is not None:
+            why.append(f"draining for {drain.get('shape', 'host')} {drain['id']} until {dt.datetime.fromtimestamp(T, dt.timezone.utc):%H:%MZ}")
         for o in c["options"]:
             if r in o:
                 miss = o - free
@@ -761,6 +845,28 @@ def plan(free, cands, ram_gib, gpu_grant_open=False):
                     why.append(f"RAM: {c.get('gib')} GiB would leave {ram - float(c.get('gib') or 0):.0f} GiB < {RAM_MARGIN_GIB} margin")
         idle[r] = f"{c['kind']} {c['id']} " + ("; ".join(why) or "blocked")
     return out, idle, pending
+
+
+plan.last_drain = None
+
+
+def quiet_ok_now(flags, now=None):
+    """Knob, OFF by default: <flags>/allocator.json {"quiet_windows": ["22:00-06:00", ...]} (UTC) limits quiet-host grants
+    to those windows; absent or empty = any time."""
+    cfg = load_json(os.path.join(flags, "allocator.json")) or {}
+    wins = cfg.get("quiet_windows") or []
+    if not wins:
+        return True
+    t = dt.datetime.fromtimestamp(now or time.time(), dt.timezone.utc)
+    cur = t.hour * 60 + t.minute
+    for w in wins:
+        try:
+            a, b = w.split("-"); a = int(a[:2]) * 60 + int(a[3:5]); b = int(b[:2]) * 60 + int(b[3:5])
+        except (ValueError, IndexError):
+            continue
+        if (a <= cur < b) if a <= b else (cur >= a or cur < b):
+            return True
+    return False
 
 
 # ---------------------------------------------------------------- status
@@ -1160,6 +1266,16 @@ def arm_one(flags, rid, d):
     return pid, f"ARMED {rid} pid={pid}"
 
 
+def iso_epoch(s):
+    """epoch of an ISO-ish UTC stamp (…T%H:%MZ or …T%H:%M:%SZ); None when unparsable."""
+    for f in ("%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%MZ"):
+        try:
+            return dt.datetime.strptime(str(s), f).replace(tzinfo=dt.timezone.utc).timestamp()
+        except (ValueError, TypeError):
+            pass
+    return None
+
+
 def mem_available_gib():
     try:
         for l in open("/proc/meminfo"):
@@ -1340,9 +1456,16 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         if kind == "dryrun":
             opts, one_q = dryrun_shape(d, opts, flags)
         shapes[rid] = (opts, one_q)
+        since = (load_json(pass_path(flags, rid)) or {}).get("passed_at") if kind == "grant" else d.get("published_at")
+        window = int(d["window_s"]) if kind == "grant" else max(int(d["min_window_s"]) + 300, int(d.get("dryrun_timeout_s") or 900) + STOP_GRACE_S + 300)
         cands.append({"id": rid, "kind": kind, "lane": d["lane"], "rank": float(d.get("priority_rank") or 100), "lane_count": counts[d["lane"]],
-                      "gib": int(d.get("gib") or 0), "bench": bench, "options": opts})
-    assigned, idle, pending = plan(free, cands, mem_available_gib(), gpu_open)
+                      "gib": int(d.get("gib") or 0), "bench": bench, "options": opts, "shape": shape_of(d), "window_s": window,
+                      "since": iso_epoch(since)})
+    ends = [iso_epoch(g["end"]) for g in grants if g.get("end")]
+    assigned, idle, pending = plan(free, cands, mem_available_gib(), gpu_open, grant_ends=[e for e in ends if e], quiet_ok=quiet_ok_now(flags))
+    if plan.last_drain:
+        dc, T = plan.last_drain
+        log(f"DRAIN {dc['id']} ({dc.get('shape')}) until {dt.datetime.fromtimestamp(T, dt.timezone.utc):%Y-%m-%dT%H:%MZ}: new rows only if they end before then")
     log(f"SNAPSHOT free={','.join(sorted(free)) or '-'} busy={','.join(f'{r}:{holders.get(r, '?')}' for r in sorted(busy)) or '-'} "
         f"cands={len(cands)} assigned={len(assigned)} lanes cpu={counts['cpu']} gpu={counts['gpu']}")
     out = []

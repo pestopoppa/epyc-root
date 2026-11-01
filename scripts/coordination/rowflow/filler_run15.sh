@@ -87,7 +87,7 @@ if [ "$DRYRUN" = 1 ]; then
   LAUNCHER_LOCK=$STATE/$ID.launcher.lock; RUNNER_LOCK=$STATE/$ID.runner.lock; PIDFILE=$STATE/$ID.pids
   # allocator 2026-11-01: a multi-quarter row is dry-run on ONE quarter - the region-lock claim is the grant's own cpus
   # (gpu class: its host threads, folding onto q3), so a dry run never holds more than it needs.
-  if [ "${FILLER_DRYRUN_ONE_QUARTER:-0}" = 1 ]; then [ "$CLASS" = gpu ] && CLAIM_CPUS=$GPUTHR || CLAIM_CPUS=""; fi
+  if [ "${FILLER_DRYRUN_ONE_QUARTER:-0}" = 1 ]; then if [ "$CLASS" = gpu ]; then CLAIM_CPUS=$GPUTHR; else CLAIM_CPUS=""; GPUQ=none; fi; fi  # quiet-host rows: plumbing only
 fi
 ts() { date -u +%FT%TZ; }
 log() { echo "$(ts) [$ID] $*"; }
