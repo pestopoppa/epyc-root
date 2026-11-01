@@ -9,7 +9,13 @@ OWNER CONTRACT (two things): the launcher script and a small spec. `publish_row.
                      optional: result_format (jsonl|json|csv|tsv|text-lines|markdown-table|custom:<cmd>; default by
                                extension), regions (default gpu -> mi210_0,184-191; cpu -> any-cpu-quarter),
                                ram_gib (48), priority_rank (100), scratch_root (launcher's job dir), keep (globs),
-                               dryrun_timeout_s (900 cpu / 1500 gpu), lineage, lineage_reset, supersedes
+                               dryrun_timeout_s (900 cpu / 1500 gpu), lineage, lineage_reset, supersedes,
+                               snapshot (true forces the snapshot below)
+
+    SNAPSHOT RULE   a launcher, engine or job file under worktrees/ or /workspace (or a /workspace/repos/<x> target) is
+                    copied at publish time into <scratch_root>/snapshot/ (git archive HEAD of its directory when the
+                    worktree is clean, else a working-tree copy with dirty=true), paths rewritten, files chmod a-w; the
+                    row's launcher/engine/result paths point INTO the snapshot. Row field `snapshot` records it.
 
     published row    compute-flags/ready/<id>.json  schema epyc.row.v3 (derived: engine, min_window_s, window_s,
                      ports, gib, launcher sha256, scratch_root/keep for the reaper)
@@ -59,6 +65,29 @@ MAX_FAILS = 3
 STOP_GRACE_S = 600  # a job may finish its current item before honouring the stop file
 DEFAULT_KEEP = ["**/*.json", "**/*.jsonl", "**/*.md", "**/*.txt", "**/*.csv", "**/*.tsv", "**/*.sh", "**/*.py"]
 _STEM_SUFFIX = re.compile(r"(?:[-_](?:\d{8}(?:T\d{4,6}Z?)?|v\d+|r\d+|rearm|retry\d*|try\d+))+$", re.I)
+SNAPSHOT_MAX_BYTES = 256 << 20  # a snapshot copies a directory; a launcher that lives next to models is a spec defect
+
+
+def _default_snapshot_roots():
+    """Directories whose contents change under the keeper's feet: lane worktrees (merged/removed per session) and the
+    /workspace clone plus every repo its repos/ symlinks resolve to. A launcher, job or engine under one of them is
+    SNAPSHOTTED into the row's scratch_root at publish time (tests override the list)."""
+    roots = [_LLM + "worktrees/", "/workspace/"]
+    for p in ["/workspace", _LLM + "epyc-root"] + sorted(glob.glob("/workspace/repos/*")):
+        if not os.path.isdir(p):
+            continue
+        try:
+            rp = os.path.realpath(p)
+        except OSError:
+            continue
+        if os.path.basename(rp).startswith("llama.cpp"):
+            continue  # the production kernel tree is FROZEN: a binary under it is not volatile
+        if rp and rp != "/" and rp.rstrip("/") + "/" not in roots:
+            roots.append(rp.rstrip("/") + "/")
+    return roots
+
+
+SNAPSHOT_ROOTS = _default_snapshot_roots()
 
 
 class Refused(Exception):
@@ -186,6 +215,163 @@ def parse_launcher(path):
     return o
 
 
+# ---------------------------------------------------------------- snapshot (rows are independent of lanes)
+def volatile_root(path):
+    """The SNAPSHOT_ROOTS entry a path falls under, spelled or resolved (/workspace/repos/<x> symlinks count), else None."""
+    if not isinstance(path, str) or not os.path.isabs(path):
+        return None
+    for p in (path, os.path.realpath(path)):
+        for r in SNAPSHOT_ROOTS:
+            if p == r.rstrip("/") or p.startswith(r):
+                return r
+    return None
+
+
+_ABS_TOKEN = re.compile(r"(?<![\w.])(/[^\s'\"`;|&()<>]+)")
+
+
+def referenced_paths(o):
+    """Absolute, existing paths the engine line executes or uses: the engine, --cmd/--complete-cmd tokens, --workdir."""
+    out = []
+    for s in (o.get("engine", ""), o.get("cmd", ""), o.get("complete_cmd", ""), o.get("workdir", "")):
+        for t in _ABS_TOKEN.findall(" " + str(s)):
+            t = t.rstrip("/.,:") or t
+            if os.path.exists(t) and t not in out:
+                out.append(t)
+    return out
+
+
+def _git(wt, *args):
+    r = subprocess.run(["git", "-C", wt] + list(args), capture_output=True, text=True, timeout=120)
+    return r.returncode, r.stdout
+
+
+def _dir_bytes(d):
+    n = 0
+    for root, dirs, files in os.walk(d):
+        dirs[:] = [x for x in dirs if x not in (".git", "__pycache__")]
+        for f in files:
+            try:
+                n += os.lstat(os.path.join(root, f)).st_size
+            except OSError:
+                pass
+    return n
+
+
+def _rmtree_ro(d):
+    """rmtree of a tree whose files are read-only (the previous snapshot of this row)."""
+    for root, dirs, files in os.walk(d):
+        for x in dirs:
+            try:
+                os.chmod(os.path.join(root, x), 0o755)
+            except OSError:
+                pass
+    shutil.rmtree(d, ignore_errors=True)
+
+
+def snapshot_dir(src, dst):
+    """Snapshot directory `src` (resolved) into `dst`. Inside a git worktree with a clean, tracked `src`: `git archive
+    HEAD:<rel>` and the commit is recorded; otherwise (untracked or dirty) the working-tree files are copied and
+    source_commit is null with dirty=true. Returns the unit record (without shas; those are taken after rewriting)."""
+    need(os.path.isdir(src), f"snapshot source {src} is not a directory")
+    size = _dir_bytes(src)
+    need(size <= SNAPSHOT_MAX_BYTES, f"snapshot source {src} is {size >> 20} MiB (> {SNAPSHOT_MAX_BYTES >> 20} MiB); "
+         "put the launcher and its job files in a small directory of their own")
+    rc, top = _git(src, "rev-parse", "--show-toplevel")
+    rec = {"source_path": src, "snapshot_dir": dst, "source_commit": None, "dirty": False, "method": "copy", "git_toplevel": None}
+    if rc == 0 and top.strip():
+        top = os.path.realpath(top.strip())
+        rel = os.path.relpath(src, top)
+        need(rel != ".", f"{src} is a repository top level; a launcher is snapshotted by directory, so it needs a subdirectory of its own")
+        rec["git_toplevel"] = top
+        _, head = _git(top, "rev-parse", "HEAD")
+        _, tracked = _git(top, "ls-files", "--", rel)
+        _, dirty = _git(top, "status", "--porcelain", "--untracked-files=all", "--", rel)
+        if head.strip() and tracked.strip() and not dirty.strip():
+            os.makedirs(dst)
+            r = subprocess.run(["git", "-C", top, "archive", "--format=tar", f"HEAD:{rel}"], capture_output=True, timeout=300)
+            need(r.returncode == 0, f"git archive HEAD:{rel} failed in {top}: {r.stderr.decode(errors='replace')[:200]}")
+            x = subprocess.run(["tar", "-x", "-C", dst], input=r.stdout, capture_output=True, timeout=300)
+            need(x.returncode == 0, f"extracting the archive of {rel} failed: {x.stderr.decode(errors='replace')[:200]}")
+            rec.update(source_commit=head.strip(), method="git-archive")
+            return rec
+        rec.update(dirty=True, dirty_head=head.strip() or None,
+                   dirty_reason="untracked" if not tracked.strip() else "uncommitted changes under " + rel)
+    shutil.copytree(src, dst, symlinks=True, ignore=shutil.ignore_patterns(".git", "__pycache__", "*.pyc"))
+    return rec
+
+
+def snapshot_launcher(launcher, o, scratch):
+    """Snapshot the launcher's directory, the engine's directory and every other referenced path's directory that lives
+    under a SNAPSHOT_ROOT into <scratch>/snapshot/, rewrite every spelled/resolved source directory to its snapshot
+    directory inside the snapshot's text files, make the files read-only and return (manifest, mapping)."""
+    snap = os.path.join(scratch, "snapshot")
+    if os.path.lexists(snap):
+        _rmtree_ro(snap)
+    src_dir = os.path.dirname(os.path.realpath(launcher))
+    need(not (scratch + "/").startswith(src_dir + "/") and not src_dir.startswith(scratch + "/"),
+         f"launcher dir {src_dir} and scratch_root {scratch} nest; a snapshotted launcher needs a scratch_root of its own (default {TMP}<id>)")
+    units = [(src_dir, os.path.join(snap, "launcher"), {launcher})]
+    for p in referenced_paths(o):
+        if not volatile_root(p):
+            continue
+        rp = os.path.realpath(p)
+        d = rp if os.path.isdir(rp) else os.path.dirname(rp)
+        if any(d == u[0] or d.startswith(u[0] + "/") for u in units):
+            units_match = next(u for u in units if d == u[0] or d.startswith(u[0] + "/"))
+            units_match[2].add(p)
+            continue
+        units.append((d, os.path.join(snap, "ext", d.lstrip("/")), {p}))
+    os.makedirs(snap, exist_ok=True)
+    mapping = {}
+    recs = []
+    for d, dst, spelled_paths in units:
+        rec = snapshot_dir(d, dst)
+        mapping[d] = dst
+        for sp in spelled_paths:  # the spelled form of each reference (e.g. /workspace/repos/<x>/...) maps too
+            sd = sp if os.path.isdir(sp) else os.path.dirname(sp)
+            sreal = os.path.realpath(sd)
+            if sreal == d:
+                mapping[sd.rstrip("/")] = dst
+            elif sreal.startswith(d + "/"):
+                mapping[sd.rstrip("/")] = os.path.join(dst, os.path.relpath(sreal, d))
+        recs.append(rec)
+    # longest source first so a nested spelling never gets a partial rewrite
+    rewrites = sorted(mapping.items(), key=lambda kv: -len(kv[0]))
+    files = {}
+    for root, dirs, fns in os.walk(snap):
+        for fn in fns:
+            fp = os.path.join(root, fn)
+            if os.path.islink(fp):
+                continue
+            with open(fp, "rb") as f:
+                data = f.read()
+            if b"\0" not in data:
+                new = data
+                for s, t in rewrites:
+                    new = new.replace(s.encode(), t.encode())
+                if new != data:
+                    with open(fp, "wb") as f:
+                        f.write(new)
+            os.chmod(fp, os.stat(fp).st_mode & ~0o222)
+            files[os.path.relpath(fp, snap)] = sha256(fp)
+
+    def remap(p):
+        for s, t in rewrites:
+            if p == s or p.startswith(s + "/"):
+                return t + p[len(s):]
+        return p
+    new_launcher = remap(os.path.realpath(launcher))
+    need(os.path.isfile(new_launcher), f"snapshot has no launcher at {new_launcher}")
+    manifest = {"source_path": launcher, "source_commit": recs[0]["source_commit"], "dirty": recs[0]["dirty"], "snapshot_dir": snap,
+                "launcher": new_launcher, "method": recs[0]["method"], "git_toplevel": recs[0]["git_toplevel"],
+                "rewrites": dict(rewrites), "units": recs, "sha256": files, "taken_at": now_iso()}
+    for k in ("dirty_head", "dirty_reason"):
+        if recs[0].get(k):
+            manifest[k] = recs[0][k]
+    return manifest, remap
+
+
 # ---------------------------------------------------------------- publish
 def guess_format(result_path):
     ext = os.path.splitext(result_path.split("*")[0].rstrip("/"))[1].lower()
@@ -212,13 +398,35 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     need((lane == "gpu") == (o["class"] in ("gpu", "cpu+gpu")), f"lane {lane} disagrees with engine --class {o['class']}")
     est = int(spec["estimate_s"])
     need(est > 0, "estimate_s must be positive seconds")
-    scratch = os.path.normpath(spec.get("scratch_root") or (TMP + launcher[len(TMP):].split("/")[0] if launcher.startswith(TMP) else os.path.dirname(launcher)))
+    result_path = str(spec["result_path"])
+    need(os.path.isabs(result_path), "result_path must be absolute")
+    # rows are independent of lanes: a launcher / engine / job file under a worktree or /workspace changes under the keeper's
+    # feet (lane merges before every resume, removal at session end), so it is snapshotted into the row's own scratch_root
+    # and the row points INTO the snapshot - the dry run and the real run execute the same bytes by construction
+    volatile = [p for p in [launcher] + referenced_paths(o) if volatile_root(p)]
+    snap = None
+    if volatile or spec.get("snapshot") is True:
+        scratch = os.path.normpath(spec.get("scratch_root") or TMP + rid)
+        need(scratch.startswith(TMP) and scratch[len(TMP):].split("/")[0] not in ("", "compute-flags", "disk-audit-20261028"),
+             f"scratch_root {scratch} must be a job dir under {TMP} (not compute-flags)")
+        os.makedirs(scratch, exist_ok=True)
+        try:
+            snap, remap = snapshot_launcher(launcher, o, scratch)
+        except Refused as e:
+            raise Refused(f"launcher {launcher} lives under a lane/worktree path ({', '.join(volatile) or 'snapshot: true'}) and could not be snapshotted: {e}")
+        launcher = snap["launcher"]
+        o = parse_launcher(launcher)
+        eng = o["engine"]
+        need(os.path.isfile(eng), f"engine {eng} missing from the snapshot")
+        result_path = remap(result_path)
+        if result_path.startswith(snap["snapshot_dir"] + "/"):
+            os.makedirs(os.path.dirname(result_path.split("*")[0]) or "/", exist_ok=True)
+    else:
+        scratch = os.path.normpath(spec.get("scratch_root") or (TMP + launcher[len(TMP):].split("/")[0] if launcher.startswith(TMP) else os.path.dirname(launcher)))
     need(scratch.startswith(TMP) and scratch[len(TMP):].split("/")[0] not in ("", "compute-flags", "disk-audit-20261028"),
          f"scratch_root {scratch} must be a job dir under {TMP} (not compute-flags)")
     need(launcher.startswith(scratch + "/"), f"launcher {launcher} is not inside scratch_root {scratch}")
     keep = list(spec.get("keep") or DEFAULT_KEEP)
-    result_path = str(spec["result_path"])
-    need(os.path.isabs(result_path), "result_path must be absolute")
     if result_path.startswith(scratch + "/"):
         rel = os.path.relpath(result_path, scratch)
         if rel not in keep:
@@ -246,6 +454,8 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
         "dryrun_timeout_s": int(spec.get("dryrun_timeout_s") or (1500 if lane == "gpu" else 900)),
         "published_at": now_iso(), "published_from": source or "spec",
     }
+    if snap:
+        row["snapshot"] = snap
     for k in ("lineage", "lineage_reset", "supersedes", "notes", "row"):
         if spec.get(k) is not None:
             row[k] = spec[k]

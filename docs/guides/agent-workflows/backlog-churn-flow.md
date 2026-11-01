@@ -43,6 +43,20 @@ the launcher, window, scratch_root + keep for the reaper, checksums) into `compu
 
 `rowflow.py status <id>`: `needs-dryrun | dryrun-running | failed | parked | stale | grantable | armed | running | done`.
 
+**Rows are independent of lanes (snapshot rule, 2026-11-01).** Lane worktrees (`worktrees/mains/h-<slug>`) merge
+`origin/main` before every resume and vanish when the session ends; `/workspace`, `/mnt/raid0/llm/epyc-root` and the repos
+`/workspace/repos/*` resolve to move with every pull. A row whose launcher, engine or job file lives there would flip its
+sha (`stale` churn) or run code the dry run never saw. So `publish_row.py` SNAPSHOTS such a row: the launcher's directory,
+the engine's directory and the directory of every other absolute path on the engine line (`--cmd`, `--complete-cmd`,
+`--workdir`) are copied into `<scratch_root>/snapshot/` (`launcher/`, `ext/<path>/`) — `git archive HEAD` of that directory
+when the worktree is clean (commit recorded), else a working-tree copy with `snapshot.dirty: true`, `source_commit: null`.
+Lane paths inside the copied text files are rewritten to the snapshot, files are made read-only, every file's sha256 is
+recorded, and the row's `launcher.path`, `engine.path`, `result_path`, `stop_file`, `workdir` point INTO the snapshot: dry
+run and real run execute the same bytes by construction; editing or removing the lane afterwards changes nothing the keeper
+sees. `scratch_root` defaults to `tmp/<id>`; `"snapshot": true` forces it for a stable launcher; an impossible snapshot
+(>256 MiB directory, repo top level, launcher inside its own scratch_root) is a refusal. `tmp/<job>/` launchers are untouched.
+
+
 **Retired** (2026-11-01): `epyc.ready.v2` manifests, `ready/<id>.row.md`, the 18-cell FILLERS row for new rows,
 keeper nonces / receipt files / fixtures / cutoff proofs (`qual-v1`, `qual-v2-row`), the owner-wide worker breaker,
 the registry-row check, `validate_fillers.py` and `keeper_qual_gate` in `grant_ok`, `ws58_arm-v2.py`, the sonnet filing
