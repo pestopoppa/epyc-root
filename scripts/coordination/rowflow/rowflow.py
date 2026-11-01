@@ -1478,6 +1478,12 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             kind = "dryrun"
         else:
             continue
+        # ws58 2026-11-01: a row flagged UNDERUSED is never granted again until its owner republishes it (a single-core
+        # prep step inside a quarter/host grant idles compute; kvu-vkq3 took the whole host to run llama-tokenize).
+        uu = os.path.join(flags, "dryrun", rid, "UNDERUSED.json")
+        mf = os.path.join(flags, "ready", rid + ".json")
+        if os.path.exists(uu) and os.path.exists(mf) and os.path.getmtime(uu) >= os.path.getmtime(mf):
+            continue
         opts, bench = row_shape(d)
         one_q = False
         if kind == "dryrun":
