@@ -41,3 +41,8 @@ Offline snapshot and read-only host cohort fold both identify 23 unexposed A0s a
 ## S2 one-item worker candidate
 
 Prepared a v32-based worker patch and guard for a future S2 v15 continuation. It caps the initial eligible worklist at one, refuses another exposure start, leaves remaining accounting uncapped, and corrects the misleading `plan-exhausted` status when pending items remain. Five model-free controls pass, including the candidate's actual selection/exposure hooks with test doubles and true-exhaustion/deadline controls. The retained patch applies in a dry-run to the retained original source. Artifact `artifacts/compute/yarn-s2-one-item-20261101/`. This does not implement the full v15 launcher or prove live custody, stop/drain or native behavior; no READY or inference was run.
+
+
+## E1 v15 offline components
+
+Prepared a standalone request/source/recipe binding verifier requiring independently supplied build-attestation digests, plus a pure six-cell lifecycle loop which stops after one validated cell during dry-run. Twenty synthetic-fixture controls pass. The components are not integrated into the launcher or job and do not establish approved binary-source provenance, active-request stop/drain, real output, booking or keeper qualification; no inference or READY occurred. Reviewable files and explicit limitations: `artifacts/compute/yarn-e1-v15-contract-20261101/README.md`.
