@@ -1,0 +1,10 @@
+{
+ "adopted": true,
+ "id": "yarn-oolong-s0-split256-eligible28-anyofq012-v27-20261030",
+ "launcher_sha256": "71ac2c3bf9c5ee24492874be17a7283fe5486a61bf7fa2d965b0288c9bc96479",
+ "note": "legacy armed row adopted 2026-11-01: qualified under the retired flow (old receipt); not re-dry-run",
+ "passed_at": "2026-11-01T17:09:13Z",
+ "regions": "0-23",
+ "result_path": "/mnt/micron/refactor-yarn-s0-v27-20261030/cohort/results",
+ "units": null
+}

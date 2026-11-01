@@ -71,3 +71,8 @@ Two test-owned-process controls exercised actual disabled-candidate `owned_windo
 ## S2 readiness STOP fix
 
 The disabled S2 v15 candidate now rechecks admission after server readiness and worker setup; an earlier test showed it could otherwise start a worker after STOP. The private manifest and launcher chain were re-pinned. Eleven offline and four test-owned-process controls passed, including both new STOP cases and the parent-loss defect reproducer. Candidate remains disabled: an interval remains between last check and spawn, and parent-death lock custody is still broken. The repo checkpoint omits historical scope/manifest JSON flagged by the PII hook; complete disabled source is KEEP-marked in scratch. No inference or READY.
+
+
+## S0 v27 adopted receipt dispatch
+
+The S0/v27 PASS receipt is explicitly a legacy qualification adopted at 17:09:13Z, not a new dry run. `rowflow.py status` reported done and the October 30 terminal result is already filed in the handoff. The current S2 and E1 source drafts remain disabled with material custody and source/qualification gaps; no next READY was published. GPU A2 launcher preparation and S2 custody repair were delegated in private scratch without launching inference or altering grants. The generated backlog's CPU label for A2 conflicts with the handoff's 27B GPU E1 arm and must not be used as a resource specification. Receipt archived at `artifacts/compute/yarn-s0-v27-adopted-receipt-20261101/PASS.json`.
