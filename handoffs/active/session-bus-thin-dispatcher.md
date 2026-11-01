@@ -2788,7 +2788,7 @@ Residuals the repair did NOT close. All four were observed in the same window; n
   this lands, a Claude pane holding pending input still needs a human at the keyboard, which is the
   condition C51–C54 were opened to remove. Calibrate on an expendable Claude pane and pin it with a
   fixture case; this seat must not send keys to a live main.
-- [ ] **DP-3** (MED): **`bus_supervisor.sh`'s stale-source check is mitigated by a config constant, not
+- [x] **DP-3** (MED): ✅ 2026-11-01 — DECLINED/SUPERSEDED (hygiene, zero new code-quota credit); implementing ROOT `bc6dc77f79dea8eee61d07a6c637036b48f04e5c`; test: `scripts/coordination/tests/test_supervisor_stale_source.sh`. [belief: cc] **`bus_supervisor.sh`'s stale-source check is mitigated by a config constant, not
   fixed.** `STALE_SRC_SKEW_S=5` (`scripts/coordination/bus_supervisor.sh:362`) exists because
   `ps -p <pid> -o etimes=` reports WHOLE seconds, so a computed `started` can land up to a second
   before the real start and a source written in the same second as a legitimate restart reads as newer
@@ -2798,6 +2798,7 @@ Residuals the repair did NOT close. All four were observed in the same window; n
   The real fix removes the tolerance rather than tuning it — take the start time at sub-second
   resolution (`/proc/<pid>/stat` field 22 against `/proc/uptime`, monotonic and already trusted
   elsewhere on this plane) and compare exactly. File owned by a parallel session; not edited here.
+  - Superseded by H-4: the implementing commit removed the timestamp/skew predicate and compares the daemon's startup-captured committed coordination tree with current HEAD. Its commit message documents operator authorization; no independent operator transcript was located in this review. Uncommitted edits/touches are intentionally ignored, so the original timestamp semantics above are not claimed implemented. The native stale-source test passed 13/13 on 2026-11-01, including absent/recycled PID unknown, committed-tree mismatch and the guard against reintroducing mtime knobs. The original parallel-session ownership sentence predates this replacement and is historical. [belief: cc]
 - [ ] **DP-4** (HIGH): **shared child clones are reachable from inside every lane worktree, so worktree
   isolation does not prevent cross-agent index contamination.** `repos/<name>` is a symlink OUT of any
   lane worktree to the single shared clone at `/mnt/raid0/llm/<name>`, so a main sitting in its own
@@ -3162,13 +3163,14 @@ something else, which is exactly how 3 of them became uncountable.
 _Filed via `/research-intake`. Four rows plus one design input. Zero compute. **WS-3 is a decision
 gate on WS-2**; **WS-4 is independent of the other three.**_
 
-- [ ] **WS-1 — Artifact reconciliation at the drain boundary.** Compare **worker-written completion
+- [x] **WS-1 — Artifact reconciliation at the drain boundary.** ✅ 2026-11-01 — ROOT `516ea39b198a68b55ef07f14dfbf6149741e5ca5`; [test/artifact](../../artifacts/coordination/ws1-fairness-20261101/README.md). [no-belief: software conformance controls only] Compare **worker-written completion
   artifacts** against the handled set, **independent of whether a bus row exists** — that
   independence is the whole value, because the lost-wake case is precisely the one where no row was
   seen. One-shot and receipted. **Notifier, no standing obligation**: it tells someone once and then
   stops, so it cannot become a background source of noise. This is the mechanism referenced from
   [`coordinator-role-failure-modes-and-refactor.md`](coordinator-role-failure-modes-and-refactor.md)
   → the F-33(a) evidence note. `intake-1331#record`.
+  - Implementation `11e75b83b39c01a3857dd3e339911d40e4ca0d91`, fairness and terminal-disposition repair `516ea39b198a68b55ef07f14dfbf6149741e5ca5`: coordinator non-peek drain reads native worker-checkpoint journals independently of bus delivery, flushes a byte-capped notice before writing its receipt, and requires an explicit terminal disposition to suppress a notice. 36 focused controls pass, including the reproduced scan-cap starvation case, legacy-receipt migration, nonterminal status and malformed records. Unknown/truncated coverage remains unknown; arbitrary unresolved prefixes do not carry a future-drain coverage guarantee. No processed watermark, store-before-deliver change, live process restart or inference.
 - [ ] **WS-2 — Durable processed watermark.** A monotonic `seq` on bus rows plus a `processed_seq` in
   the **owner-write-only** `cursors/<agent>.json`, advanced **only** by a sequence-naming disposition
   — replacing the O(history) `routed_view` recomputation. **Unlike WS-1, this one creates a standing
