@@ -12,11 +12,38 @@ skills and goals point here. There is no other backlog workflow for the Codex wo
 5. Go back to completing the next set of blocking non-inference tasks. Rinse. Repeat. **Do not stop until ALL
    non-inference tasks are exhausted and inference tasks armed.**
 
+## Operator rulings (2026-11-01) and the structured loop
+
+1. **Starved lane first.** The next inference row to advance is the highest-priority row in any lane (CPU/GPU) below
+   its floor of 2 armed rows; only then global priority. `backlog_gen.py` already orders BACKLOG this way.
+2. **3 retries, then park.** After 3 failed keeper qualifications of one logical row, the row is `parked`
+   (PARKED NEEDS-OPERATOR) and nobody retries it. **Lineage** = the manifest's `lineage` field; else the lineage of the
+   id in its `supersedes` field; else the ID stem (id minus trailing `-YYYYMMDD`, `-vN`, `-rN`, `-rearm`, `-retryN`).
+   Each distinct failed id counts once. The generator writes `compute-flags/operator-escalations/<lineage>.md`
+   (each refusal, what was tried, options). Re-admission is the operator's call: a fresh manifest with
+   `lineage_reset: <n>` counts only failures above n.
+3. **Cross-session blocks: the row owner fixes it.** If your row is blocked by another session's code, fix that code
+   yourself in an ordinary reviewed commit and name the code owner for review. Never wait on another worker's queue.
+4. **Non-blocking work until unblocked.** When none of your inference rows can advance, do non-blocking code tasks
+   by priority, re-reading BACKLOG at every task boundary; switch back as soon as a row can advance.
+
+The loop every worker runs (GOAL files carry the same text):
+
+- START: re-read `BACKLOG-<worker>.md`.
+- Did any of my rows fail since the last loop? File the verdict, fix the root cause, publish a new id, go to
+  qualification. Rule 2 limit applies (parked rows are not retried).
+- Pick the next row (rule 1):
+  - **blocked** → do its unblocking tasks (rule 3 when the blocking code is another session's);
+  - **needs-launcher** → build it on the canonical engine v14 (`filler_run14.sh`);
+  - **needs-qualification** → submit the v2 row. Keeper qualification passes → ARMED; the scheduler grants it, the
+    worker never holds an armed row or waits for a grant. Fails → the refusal becomes a blocking task.
+- No row can advance → rule 4.  Backlog empty → report done and stop.
+
 ## The three definitions
 
 | term | means exactly |
 |---|---|
-| the backlog | `/mnt/raid0/llm/tmp/compute-flags/BACKLOG-<worker>.md` (worker = `ni` / `refactor` / `codex3`), regenerated every 10 min by `scripts/coordination/backlog_gen.py` (`ws58-backlog-gen-v1.sh`). Inference rows first, in priority order, each with its state (`blocked` / `needs-launcher` / `needs-qualification` / `qualified-armed` / `running` / `done`) and, under every blocked row, the non-inference tasks that unblock it; then the remaining non-inference tasks. |
+| the backlog | `/mnt/raid0/llm/tmp/compute-flags/BACKLOG-<worker>.md` (worker = `ni` / `refactor` / `codex3`), regenerated every 10 min by `scripts/coordination/backlog_gen.py` (`ws58-backlog-gen-v1.sh`). Inference rows first, in priority order, each with its state (`blocked` / `needs-launcher` / `needs-qualification` / `parked` / `qualified-armed` / `running` / `done`) and, under every blocked row, the non-inference tasks that unblock it; then the remaining non-inference tasks. |
 | dry run passes | the **keeper's qualification** of the row on the real config: `ws58-calendar-keeper-v8.sh` runs `bin/qual-v1/qualify_launcher.py` through the canonical engine `filler_run14.sh` and logs `READY-QUAL <manifest>: <receipt>`. A worker's own smoke is preparation, not the pass. Contract: `artifacts/coordination/ni-d1d4-hard-gate-20261101/README.md`. |
 | armed | an `epyc.ready.v2` manifest in `compute-flags/ready/` that the keeper accepted (receipt on disk, no hold, no `READY-SKIP`); `grant_ok.sh` v3 refuses anything else. The keeper arms it when a bin frees; nobody hand-arms. |
 

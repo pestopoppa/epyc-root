@@ -26,6 +26,20 @@ Inference-row states (operator flowchart, 2026-11-01):
     * on a READY manifest (optional, read-only here):  "blocked_by": ["<task text>", ...]
     * backlog-priority.json rows already carry "unblocks": [<row ids>]; inference_prep entries carry
       "filler" (the READY id) and "row" (the handoff row id), which is how the two id spaces are joined.
+
+Operator rulings (2026-11-01), encoded here:
+    rule 1 (starved lane first) - advanceable rows (blocked / needs-launcher / needs-qualification) are ordered
+        first by "is my lane (cpu/gpu) below its FLOOR of qualified-armed rows", then by priority rank. Then
+        parked, qualified-armed, running, done.
+    rule 2 (3 retries, then park) - a row's LINEAGE is, in order: the manifest's `lineage` field; else the
+        lineage of the id named by its `supersedes` field; else the ID STEM (the id with trailing
+        `-YYYYMMDD[...]`, `-vN`, `-rN`, `-rearm[-rN]`, `-retryN` suffixes stripped, e.g.
+        codex-hil15-s0-micron-v12-20261031 -> codex-hil15-s0-micron). Every distinct id of a lineage with a
+        keeper qualification failure (QUAL-FAILURE, or READY-SKIP qual-failed) counts once. At >= MAX_QUAL_FAILS
+        failures and no live qualified/running/done id, the lineage's open rows become `parked` (PARKED
+        NEEDS-OPERATOR); a one-page summary goes to compute-flags/operator-escalations/<lineage>.md and workers
+        stop retrying it. Un-park (operator's call): a fresh manifest carrying
+        `lineage_reset: <n>` counts only failures above n; or withdraw the lineage.
 """
 from __future__ import annotations
 
@@ -43,8 +57,17 @@ PRIORITY_DEFAULT = "/workspace/handoffs/active/backlog-priority.json"
 WORKERS = ("ni", "refactor", "codex3")
 FLOOR = 2
 B_MARK, E_MARK = "<!-- BLOCKED-INFERENCE:start -->", "<!-- BLOCKED-INFERENCE:end -->"
-STATE_ORDER = {"blocked": 0, "needs-launcher": 1, "needs-qualification": 2,
-               "qualified-armed": 3, "running": 4, "done": 5}
+STATE_ORDER = {"blocked": 0, "needs-launcher": 1, "needs-qualification": 2, "parked": 3,
+               "qualified-armed": 4, "running": 5, "done": 6}
+ADVANCEABLE = ("blocked", "needs-launcher", "needs-qualification")
+MAX_QUAL_FAILS = 3
+_STEM_SUFFIX = re.compile(r"(?:[-_](?:\d{8}(?:T\d{4,6}Z?)?|v\d+|r\d+|rearm|retry\d*|try\d+))+$", re.I)
+
+
+def id_stem(rid: str) -> str:
+    """Lineage by shared ID stem: strip trailing date / -vN / -rN / -rearm / -retryN suffixes."""
+    s = _STEM_SUFFIX.sub("", rid or "")
+    return s or rid
 
 
 def worker_of(owner: str) -> str | None:
@@ -69,7 +92,7 @@ def lane_of(d: dict) -> str:
 
 def fold_keeper_log(path: str, tail: int = 6000) -> dict:
     """State fold of the keeper log: last refusal per id, ids the keeper qualified/armed/queued."""
-    st = {"skip": {}, "qual": set(), "armed": set(), "queued": set(), "refused": {}, "idle": []}
+    st = {"skip": {}, "qual": set(), "armed": set(), "queued": set(), "refused": {}, "idle": [], "fails": {}}
     try:
         lines = open(path, errors="replace").readlines()[-tail:]
     except OSError:
@@ -94,8 +117,11 @@ def fold_keeper_log(path: str, tail: int = 6000) -> dict:
         detail = rest.split(":", 1)[1].strip() if ":" in rest else rest
         if ev == "READY-SKIP":
             st["skip"][rid] = detail.split(" (left in place", 1)[0][:200]
+            if "qual-failed" in rest:
+                st["fails"].setdefault(rid, []).append((ts, detail[:300]))
         elif ev == "QUAL-FAILURE":
             st["skip"][rid] = ("qualification failed: " + detail)[:200]
+            st["fails"].setdefault(rid, []).append((ts, detail[:300]))
         elif ev == "READY-QUAL":
             st["skip"].pop(rid, None)
             st["qual"].add(rid)
@@ -246,10 +272,80 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
                                            + tasks_for(rid, e.get("row"), [], w, placeholder=False),
         })
 
+    # rule 2: lineage, failure counting, parking
+    manifests = {}
+    for p in glob.glob(F + "ready/*.json"):
+        d = load_json(p)
+        if isinstance(d, dict):
+            manifests[d.get("id") or os.path.basename(p)[:-5]] = d
+
+    def lineage_of(rid: str, depth: int = 0) -> str:
+        d = manifests.get(rid) or {}
+        if d.get("lineage"):
+            return str(d["lineage"])
+        if d.get("supersedes") and depth < 20:
+            sup = d["supersedes"]
+            sup = sup[0] if isinstance(sup, list) and sup else sup
+            if isinstance(sup, str) and sup:
+                return lineage_of(sup, depth + 1)
+        return id_stem(rid)
+
+    fails_by_lineage: dict[str, list] = {}
+    for fid, evs in klog["fails"].items():
+        fails_by_lineage.setdefault(lineage_of(fid), []).append((fid, evs))
+    parked: dict[str, dict] = {}
     for w in WORKERS:
-        per[w]["rows"].sort(key=lambda r: (STATE_ORDER[r["state"]], float(r["rank"]) if str(r["rank"]).replace(".", "", 1).isdigit() else 999))
+        rows = per[w]["rows"]
+        for r in rows:
+            r["lineage"] = lineage_of(r["id"])
+        for lin in {r["lineage"] for r in rows}:
+            members = [r for r in rows if r["lineage"] == lin]
+            fl = sorted(fails_by_lineage.get(lin, []), key=lambda x: x[1][-1][0])
+            reset = max([int((manifests.get(r["id"]) or {}).get("lineage_reset") or 0) for r in members] + [0])
+            nfail = max(0, len(fl) - reset)
+            for r in members:
+                r["lineage_fails"] = nfail
+            if nfail < MAX_QUAL_FAILS or any(r["state"] in ("qualified-armed", "running", "done") for r in members):
+                continue
+            for r in members:
+                if r["state"] in ADVANCEABLE:
+                    r["parked_from"] = r["state"]
+                    r["state"] = "parked"
+                    r["tasks"] = [f"PARKED NEEDS-OPERATOR: {nfail} failed keeper qualifications in lineage {lin}; "
+                                  f"do not retry. See operator-escalations/{lin}.md"]
+            parked[lin] = {"worker": w, "fails": fl, "rows": members}
+
+    for w in WORKERS:
+        starved = {ln for ln in ("cpu", "gpu") if per[w]["qual"][ln] < FLOOR}
+        per[w]["starved"] = sorted(starved)
+
+        def _key(r):
+            rank = float(r["rank"]) if str(r["rank"]).replace(".", "", 1).isdigit() else 999
+            if r["state"] in ADVANCEABLE:  # rule 1: starved lane first, then global priority
+                return (0, 0 if r["lane"] in starved else 1, rank, STATE_ORDER[r["state"]])
+            return (1, STATE_ORDER[r["state"]], rank, 0)
+        per[w]["rows"].sort(key=_key)
         per[w]["code"] = work_lines[w]
-    return {"generated_at": now.strftime("%Y-%m-%dT%H:%MZ"), "workers": per}
+    return {"generated_at": now.strftime("%Y-%m-%dT%H:%MZ"), "workers": per, "parked": parked}
+
+
+def escalation_md(lin: str, p: dict, generated_at: str) -> str:
+    L = [f"# PARKED NEEDS-OPERATOR — lineage `{lin}` (worker {p['worker']}; generated {generated_at})", "",
+         f"{len(p['fails'])} failed keeper qualifications (limit {MAX_QUAL_FAILS}, operator rule 2, 2026-11-01). "
+         "Workers have stopped retrying this lineage.", "", "## Refusals (each id, oldest first)", ""]
+    for fid, evs in p["fails"]:
+        for ts, det in evs:
+            L.append(f"- {ts} **{fid}**: {det}")
+    L += ["", "## What was tried (ids in the lineage and their last state)", ""]
+    for r in p["rows"]:
+        L.append(f"- {r['id']} ({r['lane']}, rank {r['rank']}): parked from {r.get('parked_from', r['state'])}; "
+                 + ("; ".join(r.get("reasons") or []) or "no open reason"))
+    L += ["", "## Options", "",
+          "1. **Fix and re-admit**: name the root cause; the worker publishes a fresh id with `lineage_reset: "
+          f"{len(p['fails'])}` in the manifest (failures are then counted from zero).",
+          "2. **Re-scope**: change the row (smaller shape, different lane/model, relaxed gate) under a new `lineage`.",
+          "3. **Drop**: withdraw every id (`ready/<id>.withdrawn`) and remove the backlog-priority entry.", ""]
+    return "\n".join(L)
 
 
 def render(w: str, data: dict) -> str:
@@ -264,7 +360,9 @@ def render(w: str, data: dict) -> str:
     for lane in ("cpu", "gpu"):
         if d["qual"][lane] < FLOOR:
             L.append(f"- [FLOOR] {lane.upper()}: {d['qual'][lane]} qualified-armed row(s) < {FLOOR}. Unblock and qualify rows below first.")
-    L += ["", "## Inference rows (priority order)", ""]
+    if d.get("starved"):
+        L.append("Rule 1: rows in starved lane(s) " + "/".join(x.upper() for x in d["starved"]) + " are listed first.")
+    L += ["", "## Inference rows (starved lane first, then priority; parked rows are NOT retried)", ""]
     if not d["rows"]:
         L.append("- none")
     for r in d["rows"]:
@@ -327,9 +425,18 @@ def run_once(flags: str, priority: str, keeper_log: str, out: str, dry_run: bool
                 s = open(wp, errors="replace").read()
                 s = re.sub(re.escape(B_MARK) + r".*?" + re.escape(E_MARK) + r"\n*", "", s, flags=re.S)
                 write_atomic(wp, sec + s)
+    esc = os.path.join(flags, "operator-escalations")
+    for lin, p in data["parked"].items():
+        dest = os.path.join(esc, re.sub(r"[^A-Za-z0-9_.-]", "_", lin) + ".md")
+        if dry_run:
+            print(f"===== {dest}")
+        else:
+            os.makedirs(esc, exist_ok=True)
+            write_atomic(dest, escalation_md(lin, p, data["generated_at"]))
     summary = {w: {"rows": len(data["workers"][w]["rows"]),
                    "blocked": sum(1 for r in data["workers"][w]["rows"] if r["state"] == "blocked"),
-                   "qual": data["workers"][w]["qual"]} for w in WORKERS}
+                   "qual": data["workers"][w]["qual"],
+                   "parked": sum(1 for r in data["workers"][w]["rows"] if r["state"] == "parked")} for w in WORKERS}
     print(data["generated_at"], json.dumps(summary, sort_keys=True))
     return data
 

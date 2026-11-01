@@ -81,9 +81,12 @@ def test_states_and_linkage(tmp_path):
     assert c3["c3-qualified-after-skip"]["state"] == "qualified-armed"
     rf = {r["id"]: r for r in data["workers"]["refactor"]["rows"]}
     assert rf["rf-row"]["state"] == "blocked" and "port 8099" in rf["rf-row"]["reasons"][0]
-    # ordering: blocked first, then needs-launcher, ..., done last; rank inside a state
-    states = [r["state"] for r in data["workers"]["ni"]["rows"]]
-    assert states == sorted(states, key=bg.STATE_ORDER.__getitem__)
+    # ordering (rule 1): advanceable rows first, starved-lane rows first among them; then parked/armed/running/done
+    rows = data["workers"]["ni"]["rows"]
+    adv = [r for r in rows if r["state"] in bg.ADVANCEABLE]
+    assert rows[:len(adv)] == adv
+    rest = [r["state"] for r in rows[len(adv):]]
+    assert rest == sorted(rest, key=bg.STATE_ORDER.__getitem__)
     assert data["workers"]["ni"]["qual"] == {"cpu": 1, "gpu": 0, "host": 0}
     md = bg.render("ni", data)
     assert "[FLOOR] CPU: 1" in md and "[FLOOR] GPU: 0" in md
@@ -124,3 +127,61 @@ def test_flow_scoreboard_counts(tmp_path):
     rows2, _ = fs.compute(str(F), str(pri), str(F / "ws58-calendar-keeper.log"), state, now)
     assert rows2["ni"]["closed"] == 1
     assert "| codex3 | 1 |" in fs.render(rows2, now)
+
+
+def test_starved_lane_first(tmp_path):
+    F, pri = _flags(tmp_path)
+    # give ni a second qualified CPU row: CPU is at floor, GPU (0) is starved
+    receipt = tmp_path / "QUAL-ok.json"
+    (F / "ready" / "ni-qualified2.json").write_text(json.dumps(
+        {"id": "ni-qualified2", "owner": "codex-ni", "priority_rank": 1, "regions": "any-cpu-quarter",
+         "schema": "epyc.ready.v2", "qualification": {"receipt": str(receipt)}}))
+    data = bg.build(str(F), str(pri), str(F / "ws58-calendar-keeper.log"))
+    ni = data["workers"]["ni"]
+    assert ni["starved"] == ["gpu"]
+    assert ni["rows"][0]["id"] == "ni-skipped", "starved-lane (gpu) row beats higher-priority cpu rows"
+    assert [r["id"] for r in ni["rows"][1:3]] == ["kpf-r12", "kpf-r11"], "then global priority (rank 1, 2)"
+
+
+def test_lineage_stem_and_supersedes():
+    assert bg.id_stem("codex-hil15-s0-micron-v12-20261031") == "codex-hil15-s0-micron"
+    assert bg.id_stem("ct21-rearm-r1-20261028") == "ct21"
+    assert bg.id_stem("kpf-r12") == "kpf"
+
+
+def _fail_lines(F, ids):
+    with open(F / "ws58-calendar-keeper.log", "a") as f:
+        for i, rid in enumerate(ids):
+            f.write(f"2026-11-01T13:0{i}:00Z QUAL-FAILURE qual-failed {F}/ready/{rid}.json: gate {i} refused\n")
+
+
+def test_park_at_three_and_escalation_file(tmp_path):
+    F, pri = _flags(tmp_path)
+    for rid, extra in (("c3-foo-v1-20261030", {}), ("c3-foo-v2-20261031", {}),
+                       ("c3-renamed", {"supersedes": "c3-foo-v2-20261031"}), ("c3-bar-v1", {"lineage": "bar"})):
+        d = {"id": rid, "owner": "codex3", "priority_rank": 4, "regions": "any-cpu-quarter", "schema": "epyc.ready.v2"}
+        d.update(extra)
+        (F / "ready" / f"{rid}.json").write_text(json.dumps(d))
+    _fail_lines(F, ["c3-foo-v1-20261030", "c3-foo-v2-20261031"])
+    data = bg.build(str(F), str(pri), str(F / "ws58-calendar-keeper.log"))
+    c3 = {r["id"]: r for r in data["workers"]["codex3"]["rows"]}
+    assert c3["c3-renamed"]["lineage"] == "c3-foo" and c3["c3-renamed"]["lineage_fails"] == 2
+    assert c3["c3-renamed"]["state"] == "needs-qualification" and not data["parked"]
+    _fail_lines(F, ["c3-renamed", "c3-bar-v1"])
+    data = bg.build(str(F), str(pri), str(F / "ws58-calendar-keeper.log"))
+    c3 = {r["id"]: r for r in data["workers"]["codex3"]["rows"]}
+    assert all(c3[i]["state"] == "parked" for i in ("c3-foo-v1-20261030", "c3-foo-v2-20261031", "c3-renamed"))
+    assert c3["c3-bar-v1"]["state"] == "blocked" and c3["c3-bar-v1"]["lineage_fails"] == 1
+    assert list(data["parked"]) == ["c3-foo"]
+    assert "PARKED NEEDS-OPERATOR" in bg.render("codex3", data)
+    out = tmp_path / "out"
+    out.mkdir()
+    bg.run_once(str(F), str(pri), str(F / "ws58-calendar-keeper.log"), str(out), dry_run=False)
+    esc = (F / "operator-escalations" / "c3-foo.md").read_text()
+    assert esc.count("\n- 2026-11-01T13") == 3 and "## Options" in esc and "c3-renamed" in esc
+    # lineage_reset re-admits
+    d = json.loads((F / "ready" / "c3-renamed.json").read_text())
+    d["lineage_reset"] = 3
+    (F / "ready" / "c3-renamed.json").write_text(json.dumps(d))
+    data = bg.build(str(F), str(pri), str(F / "ws58-calendar-keeper.log"))
+    assert not data["parked"]
