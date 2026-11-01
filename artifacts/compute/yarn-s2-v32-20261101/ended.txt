@@ -1,0 +1,7 @@
+rc=75 time=2026-11-01T17:44:57Z reason=job-rc-75:exited
+job_id=yarn-oolong-s2-host256-eligible26-v32-20261031
+owner=codex-refactor-01a16fc3
+step=job-run
+estimated_wall_s=43200
+started=2026-11-01T10:11:36Z
+regions=24-47
