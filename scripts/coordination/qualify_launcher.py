@@ -22,7 +22,7 @@ import time
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from dryrun_check import checked_manifest, floor_gib, grant_cpus
+from dryrun_check import checked_manifest, floor_gib, grant_cpus, seconds
 
 class Refused(ValueError):
     pass
@@ -55,6 +55,59 @@ def path_of(m, key):
     value = m.get(key)
     return Path(value['path'] if isinstance(value, dict) else value)
 
+def canonical_engine_path():
+    """Resolve the keeper-configured deployment root, never this import's directory."""
+    root = Path(os.environ.get('WS58_ROOT', '/workspace')).resolve()
+    return root / 'scripts/coordination/filler_run14.sh'
+
+def check_row_binding(m):
+    """Reject a pinned row whose scheduling contract disagrees with its manifest."""
+    row_path = path_of(m, 'row')
+    matches = []
+    for line in row_path.read_text().splitlines():
+        if not line.startswith('|'):
+            continue
+        cells = [cell.strip() for cell in line.strip().strip('|').split('|')]
+        if cells and cells[0] == m['id']:
+            matches.append(cells)
+    require(len(matches) == 1 and len(matches[0]) == 18, 'row-id-missing-duplicate-or-shape')
+    cells = matches[0]
+    try:
+        notes = dict(re.findall(r'(?:^|;\s*)([A-Za-z][A-Za-z0-9_]*)=([^;]+)', cells[17]))
+        requested = int(notes['requested_window_s'])
+        estimate = float(notes['est_output_GiB'])
+        process_limit = float(notes.get('process_limit_GiB', m['gib']))
+        reserved_ram = float(cells[5].removesuffix('GiB').strip())
+        row_window = seconds(cells[9])
+        row_minimum = seconds(cells[10])
+    except (KeyError, ValueError, TypeError) as exc:
+        raise Refused('row-scheduling-fields-invalid:' + str(exc))
+    require(row_window == int(m['window_s']) == requested, 'row-window-manifest-mismatch')
+    require(row_minimum == int(m['min_window_s']), 'row-min-window-manifest-mismatch')
+    require(reserved_ram == float(m['gib']), 'row-ram-manifest-mismatch')
+    require(process_limit == float(m.get('process_limit_GiB', m['gib'])), 'row-process-limit-manifest-mismatch')
+    require(estimate == float(m['est_output_GiB']), 'row-output-estimate-manifest-mismatch')
+    require(Path(notes['scratch_root']).resolve() == Path(m['scratch_root']).resolve(), 'row-scratch-root-manifest-mismatch')
+    row_claim = notes['claimed_cpus'].strip()
+    declared_claim = str(m['claimed_cpus']).strip()
+    if declared_claim.startswith('any-'):
+        require(row_claim == declared_claim, 'row-relocatable-cpus-manifest-mismatch')
+    else:
+        try:
+            require(grant_cpus(row_claim) == grant_cpus(declared_claim), 'row-cpus-manifest-mismatch')
+        except Exception as exc:
+            if isinstance(exc, Refused):
+                raise
+            raise Refused('row-cpus-invalid:' + str(exc))
+    require(cells[3] == str(m['regions']), 'row-regions-manifest-mismatch')
+    if m.get('booking_class') is not None:
+        require(cells[8] == str(m['booking_class']), 'row-booking-class-manifest-mismatch')
+    return {'row_sha256': sha(row_path), 'reserved_ram_gib': reserved_ram,
+            'process_limit_GiB': process_limit, 'est_output_GiB': estimate,
+            'scratch_root': str(Path(m['scratch_root']).resolve()),
+            'claimed_cpus': row_claim, 'window_s': row_window,
+            'min_window_s': row_minimum}
+
 def finite_positive(value):
     return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value) and value > 0
 
@@ -70,6 +123,9 @@ def static_check(m, allowlist):
         require(finite_positive(m.get(field)), 'invalid:' + field)
     require(m['min_window_s'] % 60 == 0 and m['window_s'] >= m['min_window_s'], 'window-alignment')
     require(finite_positive(m.get('qual_timeout_s', 300)) and m.get('qual_timeout_s', 300) <= 600, 'invalid-qual-timeout')
+    require(finite_positive(m.get('gib')), 'invalid:reserved-ram-gib')
+    require(finite_positive(m.get('process_limit_GiB', m.get('gib'))) and
+            m.get('process_limit_GiB', m.get('gib')) <= m.get('gib'), 'invalid:process-limit-gib')
     require(isinstance(m.get('est_output_GiB'), (float, int)) and math.isfinite(m['est_output_GiB']) and m['est_output_GiB'] >= 0, 'invalid-output-estimate')
     claimed = m.get('claimed_cpus', '')
     relocatable = str(m.get('regions', '')).startswith('any-')
@@ -79,7 +135,10 @@ def static_check(m, allowlist):
         require(bool(grant_cpus(str(claimed))), 'invalid-claimed-cpus')
     for field in ('launcher', 'engine', 'job', 'qual_fixture', 'source_manifest', 'row'):
         require(path_of(m, field).is_file(), 'missing:' + field)
-    require(path_of(m, 'engine').resolve() == HERE / 'filler_run14.sh', 'noncanonical-engine')
+    require(path_of(m, 'engine').resolve() == canonical_engine_path(), 'noncanonical-engine')
+    scratch = Path(m['scratch_root'])
+    require(scratch.is_absolute() and scratch.is_dir(), 'scratch-root-missing')
+    check_row_binding(m)
     require(load(allowlist) == {'kind': 'epyc.engine-allowlist.v1', 'engines': [sha(path_of(m, 'engine'))]}, 'engine-not-allowlisted')
     checked_manifest(path_of(m, 'source_manifest'))
     return m

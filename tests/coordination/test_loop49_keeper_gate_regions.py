@@ -1,7 +1,10 @@
 """Region binding at the keeper's exclusive grant boundary."""
 from pathlib import Path
 import sys
+import tempfile
+from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'scripts/coordination'))
@@ -34,6 +37,36 @@ class GrantRegionBinding(unittest.TestCase):
         for value in ('q1,q1', 'q1,', ''):
             with self.subTest(value=value), self.assertRaises(gate.Refused):
                 gate.validate_regions('any-cpu-quarter', value)
+
+    def test_disk_capacity_uses_manifest_scratch_path(self):
+        with tempfile.TemporaryDirectory() as scratch:
+            stats = SimpleNamespace(f_bavail=10, f_frsize=1024**3)
+            with patch.object(gate.os, 'statvfs', return_value=stats) as statvfs:
+                self.assertEqual(gate.free_gib(scratch), 10)
+            statvfs.assert_called_once_with(scratch)
+
+    def test_state_uses_scratch_filesystem_for_disk_gate(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp); flags = base/'flags'; flags.mkdir(); (flags/'grants').mkdir()
+            scratch = base/'job-output'; scratch.mkdir()
+            manifest = {'id':'disk-1', 'scratch_root':str(scratch), 'ports':[]}
+            options = SimpleNamespace(flags_dir=str(flags), fingerprint_now=False,
+                                      allowlist='unused', policy='unused')
+            with patch.object(gate, 'options', return_value=options), \
+                 patch.object(gate, 'load', return_value=manifest), \
+                 patch.object(gate, 'verify'), patch.object(gate, 'manifests', return_value=[]), \
+                 patch.object(gate, 'free_gib', return_value=149) as free, \
+                 patch.object(gate, 'scheduling_state', return_value='READY-WAIT-DISK') as schedule:
+                self.assertEqual(gate.state(base/'manifest.json')[1], 'READY-WAIT-DISK')
+            free.assert_called_once_with(scratch)
+            self.assertEqual(schedule.call_args.args[2], 149)
+
+    def test_grant_boundary_requires_external_row_id(self):
+        with self.assertRaisesRegex(gate.Refused, 'grant-row-id-required'):
+            gate.before_grant_unbound(Path('/does/not/matter'), None)
+        with patch.object(gate, 'state', return_value=({'id':'row-a'}, 'READY-QUALIFIED')):
+            with self.assertRaisesRegex(gate.Refused, 'grant-manifest-row-mismatch'):
+                gate.before_grant_unbound(Path('/unused'), 'row-b')
 
 
 if __name__ == '__main__':

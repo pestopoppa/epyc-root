@@ -13,11 +13,19 @@ renames fixtures. Qualification `.ended` records say `phase=qualification` and
 production phase before attributing consumed science compute. An engine refusal
 before any grant records `granted=false`. SIGKILL needs keeper recovery through
 `failed_run_rollup.record_launcher_dead`: it verifies PID **and** `/proc` birth,
-then exclusively creates the receipt; it never signals a reused PID.
+then exclusively creates the receipt; it never signals a reused PID. The
+launcher's immutable `<id>.launcher.json` records id, PID/birth, phase, and
+grants directory; recovery refuses path/id mismatches and files the stored
+phase. The v7f keeper candidate checks `ps` plus birth on each tick and invokes
+recovery as soon as the original launcher is absent or PID birth changes,
+rather than waiting for the ordinary terminal grace period.
 
 Keeper calls `qualify_launcher.py run` with `--manifest`, `--nonce` (32+ hex),
 `--regions` (two allowed SMT sibling CPUs), `--flags-dir`, `--nonce-store`,
-`--allowlist`, `--policy`. Nonce store must be protected by a separate keeper OS
+`--allowlist`, `--policy`, with `WS58_ROOT` supplied by keeper configuration as
+the canonical deployment root. The canonical engine path is always
+`$WS58_ROOT/scripts/coordination/filler_run14.sh`; an imported copy of the
+qualifier cannot nominate its own adjacent engine. Nonce store must be protected by a separate keeper OS
 identity; same-UID workers are **not** a security boundary. `run` creates immutable
 issued and sealed records. `verify --fingerprint-now` is mandatory immediately
 before starting a launcher; `verify` without it provides the cheap per-tick
@@ -49,9 +57,11 @@ are separate nonce destinations; the native results directory is untouched.
 
 Before grant creation, the writer must invoke
 `loop49_keeper_gate.py before-grant --manifest <current-manifest> --row-id <id> --regions <actual-grant-regions>`
-and require exit 0 immediately before its exclusive `.grant` creation. This
-re-verifies the receipt, launcher fingerprint, manifest bindings, conflicts,
-and disk state at the actual issuance boundary. Re-run after any wait; an earlier
+and require exit 0 immediately before its exclusive `.grant` creation. Both
+`--row-id` and `--regions` are mandatory and bound to the exact writer row and
+allocation. This re-verifies the receipt, launcher fingerprint, manifest
+bindings, conflicts, and free space on the manifest's actual `scratch_root`
+filesystem at the issuance boundary. Re-run after any wait; an earlier
 `before-arm` result is not a grant authorization. Legacy/rearm/carry-over
 manifest markers are refused; retries use a new qualified id and manifest.
 Before arming, keeper applies `scheduling_state` against all READY, queued and
@@ -95,11 +105,16 @@ with `LOOP49_TEST_GRANT=<issued grant>` and `LOOP49_TEST_ARTIFACTS=<retained roo
 No test cleanup deletes or renames fixtures.
 
 Manifest includes `row:{"path":"<ready/<id>.row.md>"}` (or a string path).
-Qualification binds its hash and makes a retained nonce-bound row copy with
-only the synthetic window and CPU scope changed; `dryrun_check admit` runs on
-that copy under the real row id before any fixture side effects. This preserves
-the real admission implementation without calling the retired T1 grant-time
-proof gate. Native row custody and source paths are unchanged.
+Before qualification, the pinned row's id, region expression, booking class
+when declared, requested and minimum windows, reserved RAM, process limit,
+output estimate, scratch root, and CPU claim must agree with the manifest.
+A relocatable claim must use the same `any-*` value in both; the synthetic
+copy substitutes the exact qualified CPU scope for real admission. The row
+hash is bound, then a retained nonce-bound row copy changes only the synthetic
+window and CPU scope; `dryrun_check admit` runs on that copy under the real row
+id before fixture side effects. This preserves the real admission
+implementation without calling the retired T1 grant-time proof gate. Native
+row custody and source paths are unchanged.
 
 Belief source wiring is tracked as `VB-LOOP49-QUALIFICATION-WIRE` in
 `handoffs/active/vidya-belief-substrate-program.md`. The row is intentionally open:

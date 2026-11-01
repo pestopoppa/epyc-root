@@ -11,6 +11,7 @@ from collections import Counter
 from enum import Enum
 import json
 from pathlib import Path
+import re
 import subprocess
 import sys
 
@@ -99,7 +100,38 @@ def record_launcher_dead(identity_path, ended_path):
     cleanup; this separate recovery path is required before filing that attempt.
     """
     from filler_engine14 import launcher_dead, ended
-    identity = json.loads(Path(identity_path).read_text())
-    if not launcher_dead(int(identity['pid']), identity['birth']):
+    identity_file = Path(identity_path)
+    identity = json.loads(identity_file.read_text())
+    row_id = identity.get('id')
+    if not isinstance(row_id, str) or re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]*', row_id) is None:
+        raise ValueError('invalid-launcher-id')
+    phase = identity.get('phase')
+    if phase not in ('qualification', 'production'):
+        raise ValueError('invalid-launcher-phase')
+    grants_dir = identity.get('grants_dir')
+    if not isinstance(grants_dir, str) or not Path(grants_dir).is_absolute():
+        raise ValueError('invalid-launcher-grants-dir')
+    grants_root = Path(grants_dir)
+    try:
+        if grants_root.is_symlink() or grants_root.resolve(strict=True) != grants_root or not grants_root.is_dir():
+            raise ValueError('unsafe-launcher-grants-dir')
+    except OSError as exc:
+        raise ValueError('unsafe-launcher-grants-dir') from exc
+
+    ended_target = Path(ended_path)
+    if (not ended_target.is_absolute() or ended_target.name != row_id + '.ended'
+            or ended_target.parent != grants_root or ended_target.is_symlink()):
+        raise ValueError('ended-path-identity-mismatch')
+    if (not identity_file.is_absolute() or identity_file.name != row_id + '.launcher.json'
+            or identity_file.parent != grants_root or identity_file.is_symlink()):
+        raise ValueError('identity-path-mismatch')
+    try:
+        pid = identity['pid']
+        birth = identity['birth']
+    except KeyError as exc:
+        raise ValueError('invalid-launcher-identity') from exc
+    if type(pid) is not int or pid <= 0 or not isinstance(birth, str) or not birth.isdigit():
+        raise ValueError('invalid-launcher-identity')
+    if not launcher_dead(pid, birth):
         raise ValueError('launcher-still-alive')
-    ended(Path(ended_path), 70, 'launcher-dead:pid=%s:birth=%s' % (identity['pid'], identity['birth']))
+    ended(ended_target, 70, 'launcher-dead:pid=%s:birth=%s' % (pid, birth), phase=phase)

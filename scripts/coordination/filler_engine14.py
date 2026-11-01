@@ -28,14 +28,16 @@ def launcher_dead(pid, expected_birth):
     except FileNotFoundError:
         return True
 
-def ended(path, rc, reason, partial=False):
+def ended(path, rc, reason, partial=False, phase=None):
     path.parent.mkdir(parents=True, exist_ok=True)
+    phase = phase or ('qualification' if os.environ.get('WS58_QUAL') == '1' else 'production')
+    require(phase in ('qualification', 'production'), 'invalid-phase')
     # Exclusive creation forbids overwrites, including an older reused row id.
     with path.open('x') as f:
         f.write('rc=%d time=%s reason=%s\npartial=%s\n' %
                 (rc, datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'), reason.replace('\n', ' ')[:300], str(partial).lower()))
         f.write('native_complete=%s\n' % str(reason in ('complete', 'completion-predicate-failed-native-retained')).lower())
-        f.write('phase=%s\ngranted=%s\n' % ('qualification' if os.environ.get('WS58_QUAL') == '1' else 'production', str(path.with_suffix('.grant').exists()).lower()))
+        f.write('phase=%s\ngranted=%s\n' % (phase, str(path.with_suffix('.grant').exists()).lower()))
 
 def signalled(signum, frame):
     if ACTIVE is not None:
@@ -247,6 +249,7 @@ def main():
         print(json.dumps({'exec_namespace': namespace(args.workdir, args.requires_tool)}, sort_keys=True)); return 0
     env = dict(os.environ)
     qual = env.get('WS58_QUAL') == '1'
+    phase = 'qualification' if qual else 'production'
     import re
     if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]*', args.id or ''):
         print('invalid-id', file=sys.stderr); return 64
@@ -265,7 +268,9 @@ def main():
         require(args.cmd and args.stop, 'id-cmd-stop-required')
         require(args.complete_cmd, 'complete-cmd-missing')
         require(Path(args.workdir).is_dir(), 'workdir-missing')
-        create(target.parent / (args.id + '.launcher.json'), {'pid': os.getpid(), 'birth': birth(os.getpid()), 'id': args.id})
+        create(target.parent / (args.id + '.launcher.json'), {
+            'pid': os.getpid(), 'birth': birth(os.getpid()), 'id': args.id,
+            'phase': phase, 'grants_dir': str(target.parent.resolve(strict=True))})
         signal.signal(signal.SIGTERM, signalled); signal.signal(signal.SIGINT, signalled)
         policy = Path(env.get('WS58_QUAL_POLICY', str(Path(__file__).parent / 'dryrun_disk_policy.json')))
         rc = qualify(args, env, policy) if qual else production(args, env, policy)
@@ -282,14 +287,14 @@ def main():
     finally:
         if args.id and owns_lock:
             try:
-                ended(target, rc, reason, rc == 75)
+                ended(target, rc, reason, rc == 75, phase=phase)
             except FileExistsError:
                 rc = 66
             lock.close()
         elif args.id and lock is None and not target.exists():
             # Includes template refusal before any grant polling.
             try:
-                ended(target, rc, reason, rc == 75)
+                ended(target, rc, reason, rc == 75, phase=phase)
             except FileExistsError:
                 rc = 66
     print('engine rc=%d reason=%s' % (rc, reason), file=sys.stderr)

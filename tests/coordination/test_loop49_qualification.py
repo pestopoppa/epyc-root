@@ -50,9 +50,14 @@ class AuditRegression(unittest.TestCase):
         self.d = self.art / self.id().split('.')[-1]; self.d.mkdir()
         self.m = dict(id='real-row-id', requires_tools=['bash'], ports=[], shared_state=[], exclusive_class=None,
             window_s=600, min_window_s=60, items=2, tokens_per_item=1, n_ctx_required=32,
-            est_output_GiB=0, claimed_cpus='any-cpu-quarter', regions='any-cpu-quarter', scratch_root=str(self.d))
+            est_output_GiB=0, gib=8, process_limit_GiB=6, claimed_cpus='any-cpu-quarter',
+            regions='any-cpu-quarter', scratch_root=str(self.d))
         for key in ('launcher', 'job', 'qual_fixture', 'source_manifest', 'row'):
             path = self.d / key; path.write_text('# fixture\n'); self.m[key] = str(path)
+        row_cells = [self.m['id'], 'refactor', self.m['launcher'], self.m['regions'], '60 s', '8 GiB',
+            str(self.d/'STOP'), 'READY', 'cpu', '600 s', '60 s', 'n', 'n', 'manifest.json', 'fixture',
+            'n/a (fixture)', 'cpu', 'requested_window_s=600; est_output_GiB=0; scratch_root=%s; claimed_cpus=any-cpu-quarter; process_limit_GiB=6' % self.d]
+        Path(self.m['row']).write_text('| ' + ' | '.join(row_cells) + ' |\n')
         self.m['engine'] = str(q.HERE / 'filler_run14.sh')
         self.allow = self.d / 'allow.json'
         q.create(self.allow, {'kind':'epyc.engine-allowlist.v1','engines':[q.sha(self.m['engine'])]})
@@ -66,7 +71,7 @@ class AuditRegression(unittest.TestCase):
             exec_namespace={'tools':{'bash':'/usr/bin/bash'}})
 
     def static(self):
-        with patch.object(q, 'checked_manifest', return_value='fixture'):
+        with patch.object(q, 'checked_manifest', return_value='fixture'), patch.dict(os.environ, {'WS58_ROOT': str(ROOT)}):
             return q.static_check(self.m, self.allow)
 
     def evidence(self):

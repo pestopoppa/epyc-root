@@ -26,6 +26,10 @@ def manifests(root):
             except (ValueError,OSError): pass
     return result
 
+def free_gib(path):
+    stats = os.statvfs(path)
+    return stats.f_bavail * stats.f_frsize / 1024**3
+
 
 def state(path, namespace=False):
     args=options(path); args.fingerprint_now=namespace
@@ -41,15 +45,18 @@ def state(path, namespace=False):
     for p,other in manifests(flags):
         if other['id'] != m['id'] and set(m['ports']) & set(other.get('ports',[])):
             raise Refused('port-overlap')
-    stats=os.statvfs(flags)
-    result=scheduling_state(m,active,stats.f_bavail*stats.f_frsize/1024**3,args.policy)
+    scratch_value = m['scratch_root']
+    scratch_root = Path(scratch_value['path'] if isinstance(scratch_value, dict) else scratch_value)
+    result=scheduling_state(m,active,free_gib(scratch_root),args.policy)
     return m,result
 
 
 def before_grant_unbound(path, row_id=None):
     """Fail closed at the production grant boundary, including launcher drift."""
+    if row_id is None:
+        raise Refused('grant-row-id-required')
     m, status = state(path, namespace=True)
-    if row_id is not None and m['id'] != row_id:
+    if m['id'] != row_id:
         raise Refused('grant-manifest-row-mismatch')
     # D1: an old queued row cannot inherit a prior attempt's receipt. A retry
     # needs a fresh manifest/id and a fresh keeper-sealed qualification.
