@@ -1,0 +1,107 @@
+{
+  "admission": {
+    "grant_regions": "132-133",
+    "observed_cpus": [
+      132,
+      133
+    ],
+    "rc": 0
+  },
+  "children_drained": true,
+  "completion": {
+    "complete_cmd_present": true,
+    "is_complete_rc": 0
+  },
+  "cutoff_observation": null,
+  "disk": {
+    "est_output_gib": 0.01,
+    "job_floor_gib": 150,
+    "policy_floor_gib": 150
+  },
+  "engine_path": "/mnt/raid0/llm/tmp/codex-ni-hard-qual-gate-20261101/src/scripts/coordination/filler_run14.sh",
+  "engine_sha256": "6fe168333738d15e5988d5af42e2b4c348194d722bac11c32368183ae89cd3ef",
+  "evidence_sha256": {
+    "proof-cutoff.json": "7cf8f275eeb22b40cbcea6fee9ac160172d20885615c1d89e87a8087ef6efb4c",
+    "proof-normal.json": "234402318a71b4b68b94c0a51de531596d4e5cca306dfd0b6d7e80c5896d9ce2",
+    "receipt-partial.json": "7aac6bc0469dbe73d6e27f01f32befdb9f74e729bd12f9acc14a8653798a7208"
+  },
+  "exclusive_class": null,
+  "exec_namespace": {
+    "cwd": "/mnt/raid0/llm/tmp/codex-ni-hard-qual-gate-20261101/fixture-run",
+    "cwd_exists": true,
+    "env_fingerprint_sha256": "5dc999f877f07b9c0ba2a62f83f483df8a646b7083d27b769bcf9037cb73448a",
+    "interpreter": {
+      "path": "/usr/bin/python3.13",
+      "sha256": "efb29ce53d36ebaeee80e3aa44fd6c7f9d71bbded5fe1665240b2ed8ecaeee0e",
+      "version": "Python 3.13.7"
+    },
+    "kernel": "6.14.0-37-generic",
+    "root_inode": 77217577,
+    "tools": {
+      "python3": "/usr/bin/python3.13",
+      "taskset": "/usr/bin/taskset"
+    }
+  },
+  "feasibility": {
+    "production_threads": 2,
+    "rate_scope": "qualification-same-recipe",
+    "rate_tok_s": 1000.0
+  },
+  "first_request": {
+    "measured_tok_s": 1000.0,
+    "n_ctx_per_slot": 32,
+    "n_ctx_total": 32,
+    "ok": true,
+    "prompt_tokens": 16,
+    "scope": "MODEL_FREE_ENGINE_MECHANICS_ONLY",
+    "wall_s": 0.001
+  },
+  "fixture_path": "/mnt/raid0/llm/tmp/codex-ni-df2-12-1-prep-20261101/qual_fixture.py",
+  "fixture_sha256": "a973f9183c91725251adbf561c814a731c2092324e2adb382c23bcbb9fd1ea73",
+  "helper_sha256": {
+    "dryrun_check.py": "102b6d297d78f2fc60a841d6349f1005e9e78ba4704552bf10bb84cb80bb2f7f",
+    "filler_lib.sh": "241e522f4a7d7208e7485834c90d77676434a9bc88fd253575e034ad2934237c",
+    "keeper_qual_gate.py": "0588749a447dc15e46014aa4ee883ec46d15afcb0ffc26a9c3ece5c4efd6c8ca",
+    "qualify_launcher.py": "923029f824c937806cdb7491e69935b71472d479bed357f6b9c735120f26afe8",
+    "ready_manifest.schema.json": "971bcae547916611c53d53b52cc36b1a6aa54b4bfa211f163bd53bed07586279"
+  },
+  "id": "ni-qual-fixture-1793498474-365668",
+  "job_path": "/mnt/raid0/llm/tmp/codex-ni-df2-12-1-prep-20261101/qual_fixture.py",
+  "job_sha256": "a973f9183c91725251adbf561c814a731c2092324e2adb382c23bcbb9fd1ea73",
+  "kind": "epyc.qual.fixture.v1",
+  "launcher_group": {
+    "birth_ticks": 162094815,
+    "drained": true,
+    "pgid": 365688
+  },
+  "launcher_path": "/mnt/raid0/llm/tmp/codex-ni-hard-qual-gate-20261101/fixture-run/launch.sh",
+  "launcher_sha256": "671a4c9cc0e7c5517310b1726866749495a67de2a216f9220deb18ac36715e9d",
+  "manifest_sha256": "aa46f4e602b5c41b660fb1e3c74fa81e82336b774ff959548b66ec3f5b572bda",
+  "nonce": "b4eb55db1917695a0a6bc10718e6c528fda56d439e8f1d3cd1b0f3806a748750",
+  "policy_sha256": "a271e93a7a9ac54386352d254e5ad2ab57a5f39fc40daad99106afa919bfa157",
+  "ports": [],
+  "production_recipe_sha256": null,
+  "ran_at": "2026-11-01T02:01:15Z",
+  "ran_by": "ws58-calendar-keeper",
+  "rate_evidence_sha256": null,
+  "rc75": {
+    "cutoff_mode": "fixture-immediate-deadline",
+    "exit_code": 75,
+    "partial_flag": true
+  },
+  "receipt_sha256_excluding_self": "9ca36d56adc329d15e972802df4d5a455401b881df430cee7acecc7e10f6b9fe",
+  "resource_claim": {
+    "cpus": "132-133",
+    "gpu_claim_ancestor": null,
+    "gpu_quiet_exclusive": false,
+    "region_lock_tag": "qual-ni-qual-fixture-1793498474-365668"
+  },
+  "result_writer": {
+    "ok": true,
+    "result_path": "/mnt/raid0/llm/tmp/codex-ni-hard-qual-gate-20261101/fixture-run/flags/qual/b4eb55db1917695a0a6bc10718e6c528fda56d439e8f1d3cd1b0f3806a748750/results/QUAL-RESULT.json",
+    "sha256": "c0e56f371db4ffaf7d6b85886805e48038d7513c347de02f2d800445191b19e8"
+  },
+  "shared_state": [],
+  "source_manifest_sha256": "6269f9e8cefccf17ab40231fcd14f1db945b13c4c870706a17982ea352051da4",
+  "speech_inputs_sha256": null
+}

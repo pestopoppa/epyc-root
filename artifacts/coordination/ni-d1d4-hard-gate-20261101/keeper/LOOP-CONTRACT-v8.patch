@@ -1,0 +1,14 @@
+--- a/LOOP-CONTRACT.md
++++ b/LOOP-CONTRACT.md
+@@ -50,3 +50,11 @@
+ - Launchers MUST take their CPUs from the environment the keeper sets: --claim-cpus "${WS58_REGIONS}" and taskset -c "$FILLER_CPUS". NEVER hard-code a CPU range.
+ - Smoke on any 2 SMT-sibling CPUs (R11). The smoke region need not match the run region.
+ - The keeper picks the first free quarter, logs READY-RELOCATE, and records the assigned quarter in FILLERS.
++
++## D1-D4 hard qualification amendment (operator, 2026-11-01)
++
++This section supersedes the 2026-10-29 no-T1-in-launcher and READY-per-hour quota rules. A production row is grantable only with schema `epyc.ready.v2`, a keeper-issued one-use nonce, and a fresh `epyc.qual.pass.v1` receipt verified by `keeper_qual_gate.py` at both READY enrollment and the common `grant_ok.sh` write boundary. The receipt binds manifest, launcher, canonical engine, job, source manifest, helper closure, fixture, 150 GiB policy, namespace fingerprint, real first request/context, result writer, fixture completion predicate, and forced rc75/partial. A model-free `epyc.qual.fixture.v1` receipt never grants production. New rows use the one canonical `filler_run14.sh` from `engine-allowlist.json`; packet-private engine forks are refused. An `.ended` id is never reused; rc75 continuation is a new id.
++
++When `free GiB - est_output_GiB - 2 < 150`, show `READY-WAIT-DISK`: leave READY parked, issue no grant, create no FAILED-RUN, and exclude the parked row from runnable READY and science counts. Qualification waits for an admitted free CPU pair and, for a model first request, an actual GPU quiet claim; no plan-only claim authorizes a model request.
++
++The scoreboard reports structured FILED verdicts within 24 hours, net of the same owner's exact-joined structured or legacy FAILED-RUN filings. No numeric science target is inherited from the old READY-rate policy; any daily target requires owner-approved `science-quota.json`. `VALIDATOR-FAILED` retains native result and is replayed with validate-only; `WITHDRAWN` and `DIAGNOSTIC-RESULT` are separate outcomes. Root-cause family A-I and phase are fields in new filing receipts.

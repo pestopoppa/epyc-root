@@ -1,0 +1,43 @@
+{
+  "admission": {
+    "grant_regions": "132-133",
+    "observed_cpus": [
+      132,
+      133
+    ],
+    "rc": 0
+  },
+  "children_drained": true,
+  "completion": {
+    "complete_cmd_present": true,
+    "is_complete_rc": 0
+  },
+  "cutoff_observation": null,
+  "disk": {
+    "est_output_gib": 0.01,
+    "job_floor_gib": 150,
+    "policy_floor_gib": 150
+  },
+  "first_request": {
+    "measured_tok_s": 1000.0,
+    "n_ctx_per_slot": 32,
+    "n_ctx_total": 32,
+    "ok": true,
+    "prompt_tokens": 16,
+    "scope": "MODEL_FREE_ENGINE_MECHANICS_ONLY",
+    "wall_s": 0.001
+  },
+  "id": "ni-qual-fixture-1793498474-365668",
+  "kind": "epyc.qual.engine.v1",
+  "nonce": "b4eb55db1917695a0a6bc10718e6c528fda56d439e8f1d3cd1b0f3806a748750",
+  "rc75": {
+    "cutoff_mode": "fixture-immediate-deadline",
+    "exit_code": 75,
+    "partial_flag": true
+  },
+  "result_writer": {
+    "ok": true,
+    "result_path": "/mnt/raid0/llm/tmp/codex-ni-hard-qual-gate-20261101/fixture-run/flags/qual/b4eb55db1917695a0a6bc10718e6c528fda56d439e8f1d3cd1b0f3806a748750/results/QUAL-RESULT.json",
+    "sha256": "c0e56f371db4ffaf7d6b85886805e48038d7513c347de02f2d800445191b19e8"
+  }
+}

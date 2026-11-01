@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "epyc.filed.verdict.v1",
+  "type": "object",
+  "required": ["id", "owner", "filed_at", "outcome_class", "phase", "compute_burned"],
+  "properties": {
+    "id": {"type": "string", "minLength": 1},
+    "owner": {"type": "string", "minLength": 1},
+    "filed_at": {"type": "string", "format": "date-time"},
+    "outcome_class": {"enum": ["SCIENCE-VERDICT", "PARTIAL-VERDICT", "DIAGNOSTIC-RESULT", "FAILED-RUN", "VALIDATOR-FAILED", "WITHDRAWN"]},
+    "phase": {"enum": ["pre-grant", "admission", "native", "validation", "filing"]},
+    "compute_burned": {"type": "boolean"},
+    "root_cause_family": {"type": ["string", "null"], "enum": ["A", "B", "C", "D", "E", "F", "G", "H", "I", null]},
+    "verdict": {
+      "type": "object",
+      "required": ["status", "kind", "native_result_sha256"],
+      "properties": {"status": {"const": "filed"}, "kind": {"enum": ["science", "diagnostic"]},
+                     "native_result_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
+    },
+    "native_result_path": {"type": "string"},
+    "validator_error": {"type": "string"}
+  },
+  "allOf": [
+    {"if": {"properties": {"outcome_class": {"const": "FAILED-RUN"}}}, "then": {"required": ["root_cause_family"]}},
+    {"if": {"properties": {"outcome_class": {"enum": ["SCIENCE-VERDICT", "PARTIAL-VERDICT", "DIAGNOSTIC-RESULT"]}}}, "then": {"required": ["verdict", "native_result_path"]}},
+    {"if": {"properties": {"outcome_class": {"const": "VALIDATOR-FAILED"}}}, "then": {"required": ["native_result_path", "validator_error"]}}
+  ],
+  "additionalProperties": true
+}

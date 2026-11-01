@@ -1,0 +1,10 @@
+--- a/.claude/skills/coordinator-agent/references/compute-owner-takeover.md
++++ b/.claude/skills/coordinator-agent/references/compute-owner-takeover.md
+@@ -57,3 +57,7 @@
+ Reap-after-filing deletes a filed run's scratch 3 days after `grants/<id>.complete`. A result that was never filed is
+ therefore on a clock: the filing gap check (step 3) is what keeps raw outputs from being reaped before anyone has
+ read them. Target state (LOOP task): the keeper refuses to reap a root until `filing-done/<id>.FILED` exists.
++
++## 2026-11-01 D1-D4 filing contract
++
++New filing receipts use `epyc.filed.verdict.v1` fields `outcome_class`, `phase`, `compute_burned`, and `root_cause_family` A-I for FAILED-RUN. File a structured `verdict` with a native result digest only after a real science or diagnostic result exists. A validator crash after `NATIVE_COMPLETE` is `VALIDATOR-FAILED`; retain its native output and replay validation with `--validate-only` instead of rerunning the native job. Owner-retired and stop-before-start are `WITHDRAWN`. A diagnostic result declared invalid by its own job is `DIAGNOSTIC-RESULT` with its native result, not FAILED-RUN. The science scoreboard counts only structured FILED verdicts backed by rc0/75 and debits exact-joined structured or legacy FAILED-RUN to the row owner. READY-WAIT-DISK is parked outside runnable READY and science counts.

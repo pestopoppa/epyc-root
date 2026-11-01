@@ -1,0 +1,1 @@
+{"first_request":{"measured_tok_s":1000.0,"n_ctx_per_slot":32,"n_ctx_total":32,"ok":true,"prompt_tokens":16,"scope":"MODEL_FREE_ENGINE_MECHANICS_ONLY","wall_s":0.001},"raw_response":{"content":"fixture","timings":{"draft_n":0},"tokens":[1]}}

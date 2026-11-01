@@ -115,9 +115,14 @@ def row_record(path: Path, row_id: str) -> dict[str, object]:
     scratch = Path(notes["scratch_root"].strip())
     if not scratch.is_absolute() or not scratch.resolve().is_relative_to(Path("/mnt/raid0/llm").resolve()):
         refuse(f"row {row_id}: scratch_root must be under raid0")
+    declared_cpus = notes["claimed_cpus"].strip()
+    # v14 relocatable rows bind their actual CPU scope to the writer grant.
+    # Fixed lists retain the legacy exact check. The empty marker is resolved
+    # by admission()/resources() below, never interpreted as "no CPU proof".
+    declared_set = set() if declared_cpus == "dynamic" else cpus(declared_cpus)
     return {"requested": requested, "estimate": estimate, "ram": ram,
             "process_limit": process_limit,
-            "cpus": cpus(notes["claimed_cpus"].strip()), "scratch": scratch,
+            "cpus": declared_set, "scratch": scratch,
             "notes": notes, "cells": row}
 
 
@@ -219,7 +224,7 @@ def admission(args: argparse.Namespace) -> dict[str, object]:
         refuse("grant expired")
     if args.min_window_s != seconds(row["cells"][10]):
         refuse("launcher min-window differs from row")
-    expected_cpus = cpus(args.pf_cpus) if getattr(args, "scoped_pf", False) else row["cpus"]
+    expected_cpus = cpus(args.pf_cpus) if getattr(args, "scoped_pf", False) else (row["cpus"] or grant_cpus(regions))
     # filler_run12 invokes admit again inside the actual entry. Its admit argv
     # has no scoped-PF switch, so use only the checker's nonce-bound isolated
     # grant context to carry the two-core scope into that second admission.
@@ -309,8 +314,8 @@ def boundary(args: argparse.Namespace) -> None:
 
 def resources(args: argparse.Namespace) -> None:
     row = row_record(Path(args.row_file), args.id)
-    required = cpus(os.environ["DRYRUN_REQUIRED_CPUS"]) if args.scoped_pf else row["cpus"]
     allowed = cpus(args.allowed_cpus)
+    required = cpus(os.environ["DRYRUN_REQUIRED_CPUS"]) if args.scoped_pf else (row["cpus"] or allowed)
     limits_record(row["ram"], row["process_limit"], required, allowed)
     print(f"RESOURCE_PASS id={args.id} scope={'two-core-PF' if args.scoped_pf else 'normal-grant'}", flush=True)
 

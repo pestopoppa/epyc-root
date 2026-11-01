@@ -1,0 +1,69 @@
+{
+  "scope": "MODEL_FREE_FIXTURE_ONLY",
+  "family": "36-37",
+  "actual_cpus": [
+    132,
+    133
+  ],
+  "parent_pid": 365665,
+  "parent_birth_utc": "2026-11-01T02:01:14.817119+00:00",
+  "live_grants": [
+    {
+      "id": "codex-ni-inf12-gate2-triton36-r13-20261030",
+      "class": "block-correctness",
+      "regions": "mi210_0,184-191"
+    },
+    {
+      "id": "codex3-cs8-stt5-validation-nemotron-tc-r2-20261030",
+      "class": "block-correctness",
+      "regions": "72-95"
+    },
+    {
+      "id": "codex3-pareval120-k20-gen-20261031",
+      "class": "block-correctness",
+      "regions": "0-23"
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r30-pool2-20261031",
+      "class": "block-correctness",
+      "regions": "24-47"
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r35-pool0-20261031",
+      "class": "block-correctness",
+      "regions": "48-71"
+    }
+  ],
+  "returncode": 0,
+  "failure": null,
+  "elapsed_s": 0.4286814199294895,
+  "sampled_peak_tree_rss_bytes": 34201600,
+  "captured": [
+    {
+      "pid": 365668,
+      "birth": 162094805,
+      "ppid": 365665,
+      "uid": 1000
+    },
+    {
+      "pid": 365688,
+      "birth": 162094815,
+      "ppid": 365668,
+      "uid": 1000
+    },
+    {
+      "pid": 365693,
+      "birth": 162094816,
+      "ppid": 365688,
+      "uid": 1000
+    },
+    {
+      "pid": 365694,
+      "birth": 162094816,
+      "ppid": 365693,
+      "uid": 1000
+    }
+  ],
+  "children_drained": true,
+  "native_or_gpu": false
+}
