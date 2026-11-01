@@ -10,5 +10,5 @@
   "schema": "epyc.durable-compute-packet.v1",
   "source_dependency_sha256": "e958f225c98dd4000c453492548dda05331fba34a93938207f2bee87c0dbd20f",
   "source_evidence_entries": 47,
-  "total_bytes_before_index_and_manifest": 261451
+  "total_bytes_before_index_and_manifest": 261265
 }

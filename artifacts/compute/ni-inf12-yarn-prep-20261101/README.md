@@ -13,7 +13,9 @@ READY state. MAIN accepted the private r2 packet as preparation and audit only.
   attributed to either attempt; a line count is not a completed official item
   denominator.
 - `raw/yarn-r1/`: r1 armed manifest, launcher/admission logs, filing and smoke
-  receipts. The terminal is an admission refusal; no science ran.
+  receipts. The terminal is an admission refusal; no science ran. Three refusal streams
+  are deterministic gzip archives; evidence records both source SHA-256 and compressed
+  SHA-256, and decompression reproduces the original bytes.
 - `metadata/`: bounded CPU tokenizer receipt/script/log and the planned prompt
   count metadata. No rendered 500k prompt text is stored here.
 - `src/`: the private r2 candidate and behavioral tests. The canonical engine

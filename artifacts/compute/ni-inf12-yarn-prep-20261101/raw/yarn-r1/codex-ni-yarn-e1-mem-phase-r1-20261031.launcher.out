@@ -1,3 +1,0 @@
-2026-10-31T16:49:46Z [codex-ni-yarn-e1-mem-phase-r1-20261031] launcher up pid=484062 class=gpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/STOP minwin=5700s ports=18437
-2026-10-31T21:02:33Z [codex-ni-yarn-e1-mem-phase-r1-20261031] REFUSED t1-admission rc=70 DRYRUN_REFUSED: row codex-ni-yarn-e1-mem-phase-r1-20261031: missing normal launch proof fields ('dryrun_pass', 'launcher_path', 'job_path', 'source_manifest') 
-2026-10-31T21:02:33Z [codex-ni-yarn-e1-mem-phase-r1-20261031] ended rc=6 reason=t1-admission:DRYRUN_REFUSED: row codex-ni-yarn-e1-mem-phase-r1-20261031: missing normal launch proof fields ('dryrun_pass', 'launcher_path', 'job_path', 'source_manifest')  (grant deleted)

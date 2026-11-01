@@ -82,10 +82,12 @@
       "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/READY-PUBLISHED.row.md"
     },
     {
-      "artifact_path": "raw/yarn-r1/ws58-launcher.out",
-      "sha256": "1d31ccea3e0e8bdae2ffbf6e6ded0097e9eeef7e157a198dc5a55227b82c19b4",
-      "size_bytes": 755,
-      "source_path": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/ws58-launcher.out"
+      "artifact_path": "raw/yarn-r1/ws58-launcher.out.gz",
+      "sha256": "adf07885f5d381b93827b20d25ab09b429a1888c4023a91e0e2effb085f0e18f",
+      "size_bytes": 340,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/ws58-launcher.out",
+      "source_sha256": "1d31ccea3e0e8bdae2ffbf6e6ded0097e9eeef7e157a198dc5a55227b82c19b4",
+      "encoding": "gzip; decompresses byte-for-byte to source_sha256"
     },
     {
       "artifact_path": "raw/yarn-r1/SMOKE-RECEIPT.json",
@@ -112,10 +114,12 @@
       "source_path": "/mnt/raid0/llm/tmp/compute-flags/ready/armed/codex-ni-yarn-e1-mem-phase-r1-20261031.json"
     },
     {
-      "artifact_path": "raw/yarn-r1/codex-ni-yarn-e1-mem-phase-r1-20261031.launcher.out",
-      "sha256": "1d31ccea3e0e8bdae2ffbf6e6ded0097e9eeef7e157a198dc5a55227b82c19b4",
-      "size_bytes": 755,
-      "source_path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-yarn-e1-mem-phase-r1-20261031.launcher.out"
+      "artifact_path": "raw/yarn-r1/codex-ni-yarn-e1-mem-phase-r1-20261031.launcher.out.gz",
+      "sha256": "adf07885f5d381b93827b20d25ab09b429a1888c4023a91e0e2effb085f0e18f",
+      "size_bytes": 340,
+      "source_path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-yarn-e1-mem-phase-r1-20261031.launcher.out",
+      "source_sha256": "1d31ccea3e0e8bdae2ffbf6e6ded0097e9eeef7e157a198dc5a55227b82c19b4",
+      "encoding": "gzip; decompresses byte-for-byte to source_sha256"
     },
     {
       "artifact_path": "raw/yarn-r1/codex-ni-yarn-e1-mem-phase-r1-20261031.row.md",
@@ -130,10 +134,12 @@
       "source_path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-yarn-e1-mem-phase-r1-20261031.smoke.log"
     },
     {
-      "artifact_path": "raw/yarn-r1/archived.ended",
-      "sha256": "28c3bdc0934b716455333cb3d6a3a1682b63bff718ac0327225939339102be8a",
-      "size_bytes": 211,
-      "source_path": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ni-yarn-e1-mem-phase-r1-20261031.ended"
+      "artifact_path": "raw/yarn-r1/archived.ended.gz",
+      "sha256": "1d5cdefbe451f22e2cdff4613130762d0ade6a4cb7fde78637e67359af78810c",
+      "size_bytes": 191,
+      "source_path": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ni-yarn-e1-mem-phase-r1-20261031.ended",
+      "source_sha256": "28c3bdc0934b716455333cb3d6a3a1682b63bff718ac0327225939339102be8a",
+      "encoding": "gzip; decompresses byte-for-byte to source_sha256"
     },
     {
       "artifact_path": "raw/yarn-r1/FILED",
