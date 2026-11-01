@@ -205,9 +205,15 @@ function renderThenFail(d){renderDiscoveryProgression(d);renderFetchFailure("fix
     assert 'data-discovery-funnel' not in html and 'FRESH' not in html
 
 
-def test_deep_optional_json_is_malformed_without_breaking_the_loop(tmp_path, monkeypatch):
+@pytest.mark.parametrize('depth', [reader.MAX_DEPTH + 1, 2000])
+def test_deep_optional_json_is_malformed_without_breaking_the_loop(tmp_path, monkeypatch, depth):
     path = tmp_path / 'deep-progression.json'
-    path.write_text('[' * 2000 + '0' + ']' * 2000)
+    # The first case parses successfully and would otherwise be forwarded; the
+    # second exhausts the JSON parser. Both remain an optional-card failure.
+    body = document()
+    nested = '[' * depth + '0' + ']' * depth
+    raw = json.dumps(body)[:-1] + ', "additive_field": ' + nested + '}'
+    path.write_text(raw)
     assert path.stat().st_size < reader.MAX_BYTES
     before = server.loop_data_health()
     monkeypatch.setattr(reader, 'PATH', path)

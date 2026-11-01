@@ -19,6 +19,7 @@ SCHEMA = "epyc.autokernel.progression.v1"
 PATH = Path(os.environ.get("KERNEL_PROGRESSION_JSON",
                           "/mnt/raid0/llm/autokernel/surface/kernel_progression.json"))
 MAX_BYTES = 4 * 1024 * 1024
+MAX_DEPTH = 64
 STAGES = frozenset({"candidate", "inconclusive", "strict_keep", "rejected", "screened_out"})
 
 
@@ -35,6 +36,17 @@ def _timestamp(value: object) -> float | None:
 
 
 def _validate(body: object) -> dict:
+    # A parsed document is returned inside an HTTP envelope. Bound depth well
+    # below Python's encoder recursion limit as well as catching parser failure.
+    pending = [(body, 0)]
+    while pending:
+        value, depth = pending.pop()
+        if depth > MAX_DEPTH:
+            raise ValueError("progression exceeds nesting bound")
+        if isinstance(value, dict):
+            pending.extend((item, depth + 1) for item in value.values())
+        elif isinstance(value, list):
+            pending.extend((item, depth + 1) for item in value)
     if not isinstance(body, dict) or body.get("schema") != SCHEMA:
         raise ValueError("unknown progression schema")
     if (body.get("authority") != "presentation_projection_only"
