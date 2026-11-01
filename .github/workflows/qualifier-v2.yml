@@ -1,0 +1,40 @@
+name: Versioned qualifier controls
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/coordination/qual_router.py'
+      - 'scripts/coordination/qual_v2/**'
+      - 'scripts/coordination/filler_run14.sh'
+      - 'scripts/coordination/tests/d1d4/**'
+      - '.github/workflows/qualifier-v2.yml'
+  pull_request:
+    paths:
+      - 'scripts/coordination/qual_router.py'
+      - 'scripts/coordination/qual_v2/**'
+      - 'scripts/coordination/filler_run14.sh'
+      - 'scripts/coordination/tests/d1d4/**'
+      - '.github/workflows/qualifier-v2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  qualifier-controls:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test version routing, claims and real child cleanup
+        run: >-
+          python3 -B -m unittest -q
+          scripts.coordination.tests.d1d4.test_vkq_v2_source
+          scripts.coordination.tests.d1d4.test_r22_v2_source
+          scripts.coordination.tests.d1d4.test_version_routing
+          scripts.coordination.tests.d1d4.test_qualification_drain
+          scripts.coordination.tests.d1d4.test_claim_first
+          scripts.coordination.tests.d1d4.test_qualification_drain_real
