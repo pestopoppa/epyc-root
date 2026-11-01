@@ -453,7 +453,7 @@ First full smoke run of the trial loop. Four defects, three silent.
   distinguishes infra from genuine, same mechanism as the seeding path. Unclassifiable, and stated as
   such rather than estimated.
 
-- [ ] **Close the write-side provenance gap — this is why the assessment above is unresolvable.**
+- [x] **Close the write-side provenance gap — this is why the assessment above is unresolvable.** ✅ 2026-11-01 — APP IMPLEMENTS `7e67e78ce5e6cf3979420ef76d2fab038fd844fd`; [published Git proof and test receipt](https://github.com/pestopoppa/epyc-orchestrator/blob/99791dd82732a6ffccad1c79c67e9b019143ba66/artifacts/engineering/reward-write-provenance-20261031/code-commit-proof.json); 122 model-free controls. Authored facts carry prospectively; absent or conflicting facts remain unknown. Historical failures below remain open. [no-belief: prospective software source repair; no native-run measurement warrant]
   `seeding_injection.py`'s context builder must carry `disposition` / `infra_reason` / `http_status`
   on every reward, so the next occurrence IS filterable. Verbatim the belief-kernel rule: wiring the
   **write** is cheap and permanent; retrofitting the **read** is impossible.
