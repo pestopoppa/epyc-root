@@ -157,6 +157,7 @@ INF70_AGENT_RUNS = Path("/mnt/raid0/llm/tmp/inf70/agents")
 ORCHESTRATOR = Path("/mnt/raid0/llm/epyc-orchestrator")
 
 SOURCES: dict[str, Source] = {s.name: s for s in (
+    Source("cs22v0-parity", "cs22v0_parity", _files("VERIFIER-RECEIPT.json", "**/VERIFIER-RECEIPT.json"), task="VB-SPEECH-CS22V0-VERIFIER", note="strict original native parity verifier; explicit relocation map only; fixed corpus and common postprocessor"),
     Source("dev-harness-aggregate", "dev_harness_aggregate", _files("*.aggregate.json.belief.json"), task="VB-LB1.1", note="prospective privacy-published aggregate captures only; historical aggregates refuse"),
     Source("inf34-a2-raw-prefill", "inf34_a2_raw", _files("raw-a2.observation.json"),
            task="VB-INF34-A2-DIAG-WIRE", note="prospective exact original A2 observation; paired producer/source/view epoch; controls/partials decline; no crossover or protocol claim"),
