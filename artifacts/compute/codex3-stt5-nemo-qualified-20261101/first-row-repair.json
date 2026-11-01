@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-01T13:26:36.471104+00:00",
+  "operation": "same-length table-delimiter repair",
+  "path": "/mnt/raid0/llm/tmp/compute-flags/FILLERS.md",
+  "row_id": "refactor-01a16fc3-m4-c2-off-ratio-20261027",
+  "old_row_sha256": "0da4a38b22db980d0b33f1c70260fa8bbabb6d445062ed2d85ced00ab2a6f93b",
+  "new_row_sha256": "f99472b73791c4614c70fbbae28c83bc1d041c9e2843335655e5cafcff3c1558",
+  "bytes": 1671,
+  "offset": 723570,
+  "inode": 188911713,
+  "scope": "move existing final-cell delimiter to end; no text, status, grant or queue changes"
+}

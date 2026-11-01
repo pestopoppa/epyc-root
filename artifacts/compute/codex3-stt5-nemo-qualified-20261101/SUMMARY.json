@@ -1,0 +1,20 @@
+{
+  "arming": "held pending registry writer safety",
+  "children_drained": true,
+  "classification": "offline scorer qualification only; no new ASR inference, WER comparison, or page-level verdict",
+  "complete_cmd_rc": 0,
+  "cutoff_partial": true,
+  "cutoff_rc": 75,
+  "id": "codex3-stt5-nemo-rescore-v2-20261101",
+  "keeper_log_event": "2026-11-01T13:30:53Z READY-QUAL",
+  "keeper_ran_at": "2026-11-01T13:30:53Z",
+  "manifest_path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-stt5-nemo-rescore-v2-20261101.json",
+  "native_child_drained": true,
+  "native_cutoff_event": true,
+  "normal_admission_rc": 0,
+  "normal_result_sha256": "3f45ae7d6e810678673c9fade22ba14c7eef1afb0d20be7498b40bcda5db061f",
+  "normal_result_writer_ok": true,
+  "receipt_path": "/mnt/raid0/llm/tmp/codex3-stt5-nemo-rescore-v2-20261101/qualification/QUAL-codex3-stt5-nemo-rescore-v2-20261101.json",
+  "receipt_sha256": "8c812bf34563f17e4485e1c744245accec04c62a09552190b596089ed6d4f7d6",
+  "schema": "codex3.nemo.qualification-summary.v1"
+}

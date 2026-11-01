@@ -1,0 +1,9 @@
+{
+  "at": "2026-11-01T13:28:12.651906+00:00",
+  "id": "codex3-stt5-nemo-rescore-v2-20261101",
+  "row_sha256": "9f2f9be435219e0db2374e4869d71bdac418f96c1e383892d075bd7da9f95562",
+  "source_row_sha256": "3825d02937fa2082b274209b96b54ae9cd5b1281f758c1553b571ba4acac41d5",
+  "registry_inode": 188911713,
+  "operation": "append validated BACKLOG row only; no arm or grant",
+  "manifest_hold_retained": true
+}

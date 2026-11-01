@@ -1,0 +1,30 @@
+{
+  "at": "2026-11-01T13:29:27.317044+00:00",
+  "rows": [
+    {
+      "row": "refactor-01a16fc3-m4-load-q3-v3-20261027",
+      "old_sha256": "283b01f6ebc320b7b575e3a67b9a125fe5be28d4f37048e360d1966092d17269",
+      "new_sha256": "218579d6eae3cc995a21b8472bdc780ccf4283e39a8d1ef096c4268600584426",
+      "offset": 571402
+    },
+    {
+      "row": "refactor-01a16fc3-m4-load-gpu-v1-20261027",
+      "old_sha256": "5a78d8263e28cc6cf4a064aebb337f4ab9d960bcb10000b4468f4e200bd3aee3",
+      "new_sha256": "6b0cd0db97761d109d0adbd8a82ea48fd25dd13441a440e1264cb0243473efdf",
+      "offset": 585970
+    },
+    {
+      "row": "refactor-01a16fc3-m4-gpu-hol-20261027",
+      "old_sha256": "aa6af210c63934d30480ff16aab45add0d5e7cb3b877aa2cde1dd34ade6d4d51",
+      "new_sha256": "29d0449181276b79d195683879097e9671f1a528374abc5974c751dec3f0d983",
+      "offset": 640556
+    },
+    {
+      "row": "refactor-c3-native-bolt-profile-r2-20261030",
+      "old_sha256": "5e281acb7a20c20b28d0c50ef2fb32e6d5e3095af0f2ca9ff9bd11c6b12abedc",
+      "new_sha256": "d37b7a7e94c6c0cffddadec5c6a03979f093601101b983b3a3fdd8753be0b760",
+      "offset": 1277548
+    }
+  ],
+  "scope": "same-length delimiter relocation; other bytes unchanged"
+}
