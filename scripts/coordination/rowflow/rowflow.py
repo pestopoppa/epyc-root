@@ -622,6 +622,11 @@ def quarters_of(regions, fold=False):
                 if c < 96 or fold:
                     qs.add(f"q{(c % 96) // 24}")
     return qs
+def ws58_cpus(regions):
+    """The cpu part of a regions string ('mi210_0,184-191' -> '184-191'), exported as WS58_REGIONS."""
+    return ",".join(t for t in str(regions or "").split(",") if re.fullmatch(r"\d+(-\d+)?", t.strip()))
+
+
 
 
 def cpu_list(q):
@@ -1128,7 +1133,8 @@ def dryrun_run(flags, rid, regions, one_quarter=False):
     env = dict(os.environ, FILLER_DRYRUN="1", FILLER_DRYRUN_DIR=dd, FILLER_STATE_DIR=os.path.join(dd, "state"),
                FILLER_FLAGS_DIR=flags, FILLER_GRANTS_DIR=G,
                FILLER_POLL="5", FILLER_OWNER=str(d["owner"]), FILLER_EST_WALL_S=str(d["estimate_s"]),
-               FILLER_DRYRUN_ONE_QUARTER="1" if one_quarter else "0")
+               FILLER_DRYRUN_ONE_QUARTER="1" if one_quarter else "0",
+               WS58_REGIONS=ws58_cpus(regions))  # ws58 2026-11-01: launchers written for the v8 keeper read it
     if d.get("dryrun_native_result"):
         env["FILLER_DRYRUN_RESULT_PATH"] = result_path
     with open(grant, "w") as f:
@@ -1264,7 +1270,7 @@ def lane_counts(flags, allrows):
 
 
 # ---------------------------------------------------------------- arm + grant (the allocator writes grants itself)
-def arm_one(flags, rid, d):
+def arm_one(flags, rid, d, regions=None):
     """Start the row's poller (the exact launcher through its engine, polling grants/<id>.grant). Regions are NOT
     resolved here: the grant the allocator writes later carries them."""
     dd = dry_dir(flags, rid)
@@ -1273,6 +1279,8 @@ def arm_one(flags, rid, d):
     before = sum(1 for l in tail(log, 100000) if "launcher up pid=" in l)
     env = dict(os.environ, FILLER_OWNER=str(d["owner"]), FILLER_EST_WALL_S=str(d["estimate_s"]),
                FILLER_STATE_DIR=os.path.join(dd, "state"), FILLER_FLAGS_DIR=flags, FILLER_GRANTS_DIR=os.path.join(flags, "grants"))
+    if regions and ws58_cpus(regions):
+        env["WS58_REGIONS"] = ws58_cpus(regions)
     for k in ("FILLER_DRYRUN", "FILLER_DRYRUN_DIR", "FILLER_DRYRUN_ONE_QUARTER"):
         env.pop(k, None)
     with open(log, "a") as out:
@@ -1514,7 +1522,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         try:  # one row's failure never aborts the tick (22:33Z: an import error after ROW-ARM left q0 ungranted for 3 ticks)
             a = load_json(armed_path(flags, rid))
             if not (a and alive(a.get("pid"))):
-                pid, msg = arm_one(flags, rid, d)
+                pid, msg = arm_one(flags, rid, d, regions)
                 log(f"ROW-ARM {msg}")
                 if not pid:
                     continue
