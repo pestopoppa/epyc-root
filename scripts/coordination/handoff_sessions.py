@@ -158,6 +158,15 @@ def alive(pid) -> bool:
 # ---------------------------------------------------------------- briefs and prompts
 def brief_text(slug: str, e: dict, flags: str) -> str:
     """Self-sufficient brief: everything a COLD agent of any engine needs (2026-11-01 portability rulings)."""
+    if is_generalist(e):
+        try:
+            goal = open(os.path.join(flags, f"GOAL-{GENERALIST}.md"), errors="replace").read()
+        except OSError:
+            goal = "(GOAL-codex-gen.md missing)"
+        return (goal + f"\n\n## Managed-session contract (dispatcher)\n{FANOUT_LINE}\n{lane_line(slug)}\n"
+                f"Your backlog: `{flags}/BACKLOG-{GENERALIST}.md`; rows/tasks labelled 'yours' are yours. Wrap up with ONE JSON -> "
+                f"`python3 scripts/coordination/churn/wrapup.py --json <file> --lane {lane_dir(slug)}` (slug {GENERALIST}); its "
+                f"`WRAPPED <sha>` is your LAST line. One turn = ALL ready items, via sub-agents; never a one-item turn.\n")
     rows = ", ".join(f"`{x}`" for x in (e.get("row_ids") or [])) or "(none listed)"
     pats = ", ".join(f"`{x}`" for x in (e.get("row_patterns") or [])) or "(none)"
     hrows = ", ".join(f"`{x}`" for x in (e.get("handoff_rows") or [])) or "(none)"
@@ -293,7 +302,7 @@ def end_prompt(slug, e, flags, rid, endfile, delta="", filing=None):
         tail = open(outp, errors="replace").read().strip().splitlines()[-1][:400]
     except (OSError, IndexError):
         pass
-    return f"""[{VERSION}] Run end in your handoff {e['handoff']}: row `{rid}`. {FANOUT_LINE} {lane_line(slug)}
+    return f"""[{VERSION}] Run end in your handoff {e.get('handoff') or 'codex-gen backlog'}: row `{rid}`. {FANOUT_LINE} {lane_line(slug)}
 {delta_block(delta).replace('{flags}', flags).replace('<slug>', slug)}1. The handoff is {e['handoff']} in your lane; the state above is current.
 2. Facts: end file {endfile}: `{endline}` (rc={rc}); launcher end line: `{tail}`;
    manifest {mp or '(not found; look in ' + flags + '/ready/<id>.json or ready/armed/<id>.json)'} (schema {m.get('schema', 'epyc.row.v2|v3')});
@@ -314,15 +323,17 @@ def delta_block(delta):
 
 
 def idle_prompt(slug, e, flags, delta=""):
-    return f"""[{VERSION}] Continue your handoff {e['handoff']}. {FANOUT_LINE} {lane_line(slug)}
+    return f"""[{VERSION}] Continue your handoff {e.get('handoff') or 'codex-gen backlog'}. {FANOUT_LINE} {lane_line(slug)}
 {delta_block(delta).replace('{flags}', flags).replace('<slug>', slug)}Take the top actionable item per {flags}/briefs/HANDOFF-{slug}.md (inference first). Wrap up with ONE JSON ->
 `python3 scripts/coordination/churn/wrapup.py --json <file> --lane {lane_dir(slug)}` (CAF-2); its `WRAPPED <sha>` is your
 LAST line (add `IDLE: <reason>` after it when nothing unblockable is left)."""
 
 
 def continue_prompt(slug, e, flags, why="", delta=""):
-    return f"""[{VERSION}] continue: next task. Your handoff {e['handoff']} still has open work ({why}); a session pauses ONLY when
-everything left waits on an inference row that is queued or running (operator rule 2026-11-01). {FANOUT_LINE}
+    return f"""[{VERSION}] continue: FINISH ALL READY ITEMS IN THIS ONE TURN (budget rule 22:45Z: one resume per session per
+{MIN_RESUME_GAP_S // 60} min; a one-item turn wastes the whole context re-read). Your handoff {e.get('handoff') or 'codex-gen backlog'}
+still has open work ({why}); fan every independent item out to sub-agents now and land them all before wrapping up.
+A session pauses ONLY when everything left waits on an inference row that is queued or running. {FANOUT_LINE}
 {lane_line(slug)}
 {delta_block(delta).replace('{flags}', flags).replace('<slug>', slug)}INFERENCE FIRST: publish this handoff's measurement
 tasks as rows (`publish_row.py`, fastest-clearable blockers first) before any non-inference task; then the top non-inference
@@ -756,7 +767,7 @@ def mark_yields(flags, reg, data, cap):
     top = {h["handoff"] for h in (data.get("handoff_rank") or [])[:cap]}
     ranked = {h["handoff"]: h for h in data.get("handoff_rank") or []}
     for slug, e in S.items():
-        if e.get("status") == "done" or not e.get("handoff"):
+        if e.get("status") == "done" or not e.get("handoff") or is_generalist(e):
             continue
         hf = "handoffs/" + str(e["handoff"]).split("handoffs/", 1)[-1]
         outranked = bool(ranked) and hf not in top
@@ -819,6 +830,47 @@ def auto_start(flags, reg, live, cap, runner=None, repo=None, priority=None, kee
 OWN_TASK_RX = re.compile(r"^- \S+ L\d+ \[(cpu|gpu)\] ", re.M)
 IDLE_RX = re.compile(r"IDLE:\s*(.*)")
 IDLE_REPORT_COOLDOWN_S = 30 * 60  # a session that itself said IDLE: <reason> is re-asked after this long
+MIN_RESUME_GAP_S = 10 * 60        # budget emergency 22:45Z: at most one non-filing resume per session per 10 min
+CONTEXT_ROTATE_TOKENS = 150_000   # per-call input context above this -> fresh session at the next landed wrap-up (rotation)
+CODEX_SESSIONS = os.path.expanduser("~/.codex/sessions")
+GENERALIST = bg.GENERALIST        # codex-gen: an ordinary dispatcher-managed, always-on session (no handoff; never yields)
+
+
+def context_size(session_id, engine="codex"):
+    """Per-call input context of a session = input_tokens of the LAST token_count event in its Codex rollout; None if unknown."""
+    if engine != "codex" or not session_id:
+        return None
+    files = glob.glob(os.path.join(CODEX_SESSIONS, "*", "*", "*", f"rollout-*{session_id}*.jsonl"))
+    if not files:
+        return None
+    last = None
+    try:
+        with open(max(files, key=os.path.getmtime), "rb") as f:
+            f.seek(0, 2)
+            f.seek(max(0, f.tell() - 400_000))
+            for ln in f.read().decode(errors="replace").splitlines():
+                if '"token_count"' in ln:
+                    try:
+                        d = json.loads(ln)
+                        last = int((((d.get("payload") or {}).get("info") or {}).get("last_token_usage") or {}).get("input_tokens") or 0)
+                    except ValueError:
+                        pass
+    except OSError:
+        return None
+    return last
+
+
+def is_generalist(e) -> bool:
+    return bool(e.get("generalist")) or not e.get("handoff")
+
+
+def ensure_generalist(reg):
+    """codex-gen is a managed session like any other: same events, NOOP gate, lane h-codex-gen, window agent:h-codex-gen."""
+    S = reg.setdefault("sessions", {})
+    if GENERALIST not in S:
+        S[GENERALIST] = {"handoff": None, "generalist": True, "engine": reg.get("default_engine", "codex"), "session_id": None,
+                         "status": "suspended", "pid": None, "row_ids": [], "row_patterns": [], "handoff_rows": [], "waits_on": []}
+    return S[GENERALIST]
 
 
 def work_state(flags, slug, e, repo=None) -> tuple[str, str]:
@@ -827,6 +879,18 @@ def work_state(flags, slug, e, repo=None) -> tuple[str, str]:
         b = open(os.path.join(flags, f"BACKLOG-handoff-{slug}.md")).read()
     except OSError:
         b = ""
+    if is_generalist(e):  # codex-gen: its backlog is BACKLOG-codex-gen.md; never done, pauses only on an empty backlog
+        try:
+            b = open(os.path.join(flags, f"BACKLOG-{GENERALIST}.md")).read()
+        except OSError:
+            b = ""
+        adv = ADV_RX.findall(b)
+        nf = re.findall(r"^- \[needs-filing\] ", b, re.M)
+        ni = (b.split("## Non-inference", 1)[1] if "## Non-inference" in b else "").split("\n## ", 1)[0]
+        ntasks = len([l for l in ni.splitlines() if l.startswith("- [")])
+        if adv or nf or ntasks:
+            return "continue", f"codex-gen backlog: {len(adv)} row fix(es), {len(nf)} filing(s), {ntasks} small task(s)"
+        return "pause", "codex-gen backlog empty (resumed when backlog_gen adds an eligible item or an event arrives)"
     adv = ADV_RX.findall(b)
     waiting = re.findall(r"^- \[(?:qualified-armed|running)\] \S+ rank=\S+ \*\*([^*]+)\*\*", b, re.M)
     ni = b.split("## Non-inference", 1)[1] if "## Non-inference" in b else ""
@@ -897,6 +961,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
     st = load(state_path(flags), {"seen": [], "queue": []})
     seen = set(st.get("seen") or [])
     pilots = bg.load_pilots(reg_path(flags))
+    ensure_generalist(reg)
     S = reg.get("sessions") or {}
     # 1. reap finished turns (and our own zombie children)
     try:
@@ -937,6 +1002,11 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 e["last_effect"] = effect
             if "FRESH-SESSION-REQUESTED" in tailtxt:
                 e["fresh_next"] = True
+            e["context_tokens"] = context_size(e.get("session_id"), e.get("engine", "codex"))
+            if (e["context_tokens"] or 0) > CONTEXT_ROTATE_TOKENS and not e.get("fresh_next"):  # context rotation
+                e["fresh_next"] = True
+                e["rotated_from"] = {"session_id": e.get("session_id"), "context_tokens": e["context_tokens"], "at": now_iso()}
+                log(flags, f"ROTATE {slug}: per-call context {e['context_tokens']} > {CONTEXT_ROTATE_TOKENS}; next resume is a FRESH session from brief + state delta")
             mi = IDLE_RX.findall(tailtxt)
             e["idle_reported"] = (rep.get("question") or "idle") if rep and rep.get("state") == "idle" else (mi[-1][:200] if mi else None)
             ev, e["pid"], e["last_end"], e["last_rc"] = e.get("pending_event"), None, now_iso(), last_rc(e)
@@ -977,6 +1047,14 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
         if seed:
             continue
         slug = bg.pilot_of(pilots, rid, None, manifest_for(flags, rid)[1].get("handoff"))
+        if (not slug or slug not in S) and GENERALIST in S:  # ownerless row: the dispatcher files it, else codex-gen does
+            if kind == "run-end" and not filed(flags, rid):
+                rc, out = file_result(flags, rid, lane_dir(GENERALIST))
+                if rc == 0:
+                    log(flags, f"FILED-BY-SCRIPT {rid} (no owner): {out.strip().splitlines()[0][:160] if out.strip() else ''}")
+                    continue
+                log(flags, f"ORPHAN {rid} -> {GENERALIST}: file_result rc={rc}")
+            slug = GENERALIST
         if slug and slug in S:
             if kind == "run-end" and any(ev["slug"] == slug and ev["rid"] == rid for ev in st.get("queue") or []):
                 log(flags, f"DEDUPE {rid} -> {slug}: a run-end for this row is already queued; dropped {key}")  # CAF-6
@@ -1010,7 +1088,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
         e["_advanceable"] = bool(ADV_RX.search(b)) or "## Non-inference" in b and "\n- [" in b.split("## Non-inference", 1)[1]
     # 3b. pause rule: continue / pause / done per work_state (operator 2026-11-01 21:15Z); logged on change
     for slug, e in S.items():
-        if e.get("status") == "done" or alive(e.get("pid")) or not e.get("handoff"):
+        if e.get("status") == "done" or alive(e.get("pid")) or (not e.get("handoff") and not is_generalist(e)):
             continue
         ws, why = work_state(flags, slug, e, repo)
         e["_work"] = (ws, why)
@@ -1066,6 +1144,9 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             if alive(e.get("pid")) or live >= cap + FILING_SLOTS or not e.get("session_id"):  # DSH-4: filing never queues behind auto-start
                 rest.append(ev)
                 continue
+            if ev.get("kind") in ("awaiting", "dryrun") and now - _parse(e.get("last_resume") or "") < MIN_RESUME_GAP_S:
+                rest.append(ev)  # not a filing event: wait for the gap (the next resume carries it with everything else)
+                continue
             if not wrapped(e, lcache):  # 2026-11-01 ruling: no new work on an unwrapped session; keep the event
                 e["pending_event"] = ev
                 rest.append(ev)
@@ -1084,9 +1165,12 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             launched.add(ev["slug"])
             live += 1
         st["queue"] = rest
-        for slug, e in S.items():  # continue at once: anything open that is not waiting on a queued/running row
-            if live >= cap or e.get("status") in ("done", "retry", "failed") or alive(e.get("pid")) or (e.get("_work") or ("", ""))[0] != "continue":
+        for slug, e in S.items():  # continue: anything open that is not waiting on a queued/running row
+            if (live >= cap and not is_generalist(e)) or e.get("status") in ("done", "retry", "failed") or alive(e.get("pid")) \
+                    or (e.get("_work") or ("", ""))[0] != "continue":
                 continue
+            if now - _parse(e.get("last_resume") or "") < MIN_RESUME_GAP_S:
+                continue  # budget rule: one non-filing resume per session per MIN_RESUME_GAP_S
             if slug in launched or any(ev["slug"] == slug for ev in st["queue"]):
                 continue
             if e.get("yield"):
@@ -1166,6 +1250,11 @@ def _go(flags, slug, e, prompt, runner, ev, fresh=False):
     if e.get("cwd") != lane:
         log(flags, f"LANE {slug}: cwd {e.get('cwd') or ROOT} -> {lane} ({sync})")
     e["cwd"], e["lane_sync"] = lane, sync
+    if fresh:  # a fresh session (auto-start, rotation, generalist) always has its brief file on disk
+        bd = os.path.join(flags, "briefs")
+        os.makedirs(bd, exist_ok=True)
+        e["brief"] = os.path.join(bd, f"HANDOFF-{slug}.md")
+        bg.write_atomic(e["brief"], brief_text(slug, e, flags))
     r = _git(lane, "rev-parse", "HEAD")
     e["head_at_resume"] = r.stdout.strip() if r.returncode == 0 else None
     if sync == "merge-conflict":

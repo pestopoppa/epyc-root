@@ -1,0 +1,1674 @@
+{
+  "schema": "df2-11-tensor-maps.v1",
+  "input": {
+    "selector_hidden.weight": {
+      "shape": [
+        5120,
+        256
+      ],
+      "type": "BF16"
+    },
+    "selector_predecessor.weight": {
+      "shape": [
+        256,
+        248320
+      ],
+      "type": "BF16"
+    },
+    "selector_successor.weight": {
+      "shape": [
+        256,
+        248320
+      ],
+      "type": "BF16"
+    },
+    "fc.weight": {
+      "shape": [
+        25600,
+        5120
+      ],
+      "type": "BF16"
+    },
+    "enc.output_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.0.attn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.0.attn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "BF16"
+    },
+    "blk.0.attn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.0.ffn_down.weight": {
+      "shape": [
+        17408,
+        5120
+      ],
+      "type": "BF16"
+    },
+    "blk.0.ffn_gate.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "BF16"
+    },
+    "blk.0.ffn_up.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "BF16"
+    },
+    "blk.0.ffn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.0.ffn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "BF16"
+    },
+    "blk.0.ffn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.0.attn_k_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.0.attn_k.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "BF16"
+    },
+    "blk.0.attn_output.weight": {
+      "shape": [
+        4096,
+        5120
+      ],
+      "type": "BF16"
+    },
+    "blk.0.attn_q_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.0.attn_q.weight": {
+      "shape": [
+        5120,
+        4096
+      ],
+      "type": "BF16"
+    },
+    "blk.0.attn_v.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "BF16"
+    },
+    "blk.1.attn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.1.attn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "BF16"
+    },
+    "blk.1.attn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.1.ffn_down.weight": {
+      "shape": [
+        17408,
+        5120
+      ],
+      "type": "BF16"
+    },
+    "blk.1.ffn_gate.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "BF16"
+    },
+    "blk.1.ffn_up.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "BF16"
+    },
+    "blk.1.ffn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.1.ffn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "BF16"
+    },
+    "blk.1.ffn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.1.attn_k_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.1.attn_k.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "BF16"
+    },
+    "blk.1.attn_output.weight": {
+      "shape": [
+        4096,
+        5120
+      ],
+      "type": "BF16"
+    },
+    "blk.1.attn_q_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.1.attn_q.weight": {
+      "shape": [
+        5120,
+        4096
+      ],
+      "type": "BF16"
+    },
+    "blk.1.attn_v.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "BF16"
+    },
+    "blk.2.attn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.2.attn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "BF16"
+    },
+    "blk.2.attn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.2.ffn_down.weight": {
+      "shape": [
+        17408,
+        5120
+      ],
+      "type": "BF16"
+    },
+    "blk.2.ffn_gate.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "BF16"
+    },
+    "blk.2.ffn_up.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "BF16"
+    },
+    "blk.2.ffn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.2.ffn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "BF16"
+    },
+    "blk.2.ffn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.2.attn_k_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.2.attn_k.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "BF16"
+    },
+    "blk.2.attn_output.weight": {
+      "shape": [
+        4096,
+        5120
+      ],
+      "type": "BF16"
+    },
+    "blk.2.attn_q_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.2.attn_q.weight": {
+      "shape": [
+        5120,
+        4096
+      ],
+      "type": "BF16"
+    },
+    "blk.2.attn_v.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "BF16"
+    },
+    "blk.3.attn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.3.attn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "BF16"
+    },
+    "blk.3.attn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.3.ffn_down.weight": {
+      "shape": [
+        17408,
+        5120
+      ],
+      "type": "BF16"
+    },
+    "blk.3.ffn_gate.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "BF16"
+    },
+    "blk.3.ffn_up.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "BF16"
+    },
+    "blk.3.ffn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.3.ffn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "BF16"
+    },
+    "blk.3.ffn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.3.attn_k_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.3.attn_k.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "BF16"
+    },
+    "blk.3.attn_output.weight": {
+      "shape": [
+        4096,
+        5120
+      ],
+      "type": "BF16"
+    },
+    "blk.3.attn_q_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.3.attn_q.weight": {
+      "shape": [
+        5120,
+        4096
+      ],
+      "type": "BF16"
+    },
+    "blk.3.attn_v.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "BF16"
+    },
+    "blk.4.attn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.4.attn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "BF16"
+    },
+    "blk.4.attn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.4.ffn_down.weight": {
+      "shape": [
+        17408,
+        5120
+      ],
+      "type": "BF16"
+    },
+    "blk.4.ffn_gate.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "BF16"
+    },
+    "blk.4.ffn_up.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "BF16"
+    },
+    "blk.4.ffn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.4.ffn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "BF16"
+    },
+    "blk.4.ffn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.4.attn_k_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.4.attn_k.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "BF16"
+    },
+    "blk.4.attn_output.weight": {
+      "shape": [
+        4096,
+        5120
+      ],
+      "type": "BF16"
+    },
+    "blk.4.attn_q_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.4.attn_q.weight": {
+      "shape": [
+        5120,
+        4096
+      ],
+      "type": "BF16"
+    },
+    "blk.4.attn_v.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "BF16"
+    },
+    "output_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    }
+  },
+  "ffn-only-q4": {
+    "selector_hidden.weight": {
+      "shape": [
+        5120,
+        256
+      ],
+      "type": "BF16"
+    },
+    "selector_predecessor.weight": {
+      "shape": [
+        256,
+        248320
+      ],
+      "type": "BF16"
+    },
+    "selector_successor.weight": {
+      "shape": [
+        256,
+        248320
+      ],
+      "type": "BF16"
+    },
+    "fc.weight": {
+      "shape": [
+        25600,
+        5120
+      ],
+      "type": "BF16"
+    },
+    "enc.output_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.0.attn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.0.attn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "BF16"
+    },
+    "blk.0.attn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.0.ffn_down.weight": {
+      "shape": [
+        17408,
+        5120
+      ],
+      "type": "Q4_K"
+    },
+    "blk.0.ffn_gate.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q4_K"
+    },
+    "blk.0.ffn_up.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q4_K"
+    },
+    "blk.0.ffn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.0.ffn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "BF16"
+    },
+    "blk.0.ffn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.0.attn_k_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.0.attn_k.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "BF16"
+    },
+    "blk.0.attn_output.weight": {
+      "shape": [
+        4096,
+        5120
+      ],
+      "type": "BF16"
+    },
+    "blk.0.attn_q_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.0.attn_q.weight": {
+      "shape": [
+        5120,
+        4096
+      ],
+      "type": "BF16"
+    },
+    "blk.0.attn_v.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "BF16"
+    },
+    "blk.1.attn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.1.attn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "BF16"
+    },
+    "blk.1.attn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.1.ffn_down.weight": {
+      "shape": [
+        17408,
+        5120
+      ],
+      "type": "Q4_K"
+    },
+    "blk.1.ffn_gate.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q4_K"
+    },
+    "blk.1.ffn_up.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q4_K"
+    },
+    "blk.1.ffn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.1.ffn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "BF16"
+    },
+    "blk.1.ffn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.1.attn_k_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.1.attn_k.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "BF16"
+    },
+    "blk.1.attn_output.weight": {
+      "shape": [
+        4096,
+        5120
+      ],
+      "type": "BF16"
+    },
+    "blk.1.attn_q_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.1.attn_q.weight": {
+      "shape": [
+        5120,
+        4096
+      ],
+      "type": "BF16"
+    },
+    "blk.1.attn_v.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "BF16"
+    },
+    "blk.2.attn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.2.attn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "BF16"
+    },
+    "blk.2.attn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.2.ffn_down.weight": {
+      "shape": [
+        17408,
+        5120
+      ],
+      "type": "Q4_K"
+    },
+    "blk.2.ffn_gate.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q4_K"
+    },
+    "blk.2.ffn_up.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q4_K"
+    },
+    "blk.2.ffn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.2.ffn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "BF16"
+    },
+    "blk.2.ffn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.2.attn_k_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.2.attn_k.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "BF16"
+    },
+    "blk.2.attn_output.weight": {
+      "shape": [
+        4096,
+        5120
+      ],
+      "type": "BF16"
+    },
+    "blk.2.attn_q_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.2.attn_q.weight": {
+      "shape": [
+        5120,
+        4096
+      ],
+      "type": "BF16"
+    },
+    "blk.2.attn_v.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "BF16"
+    },
+    "blk.3.attn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.3.attn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "BF16"
+    },
+    "blk.3.attn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.3.ffn_down.weight": {
+      "shape": [
+        17408,
+        5120
+      ],
+      "type": "Q4_K"
+    },
+    "blk.3.ffn_gate.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q4_K"
+    },
+    "blk.3.ffn_up.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q4_K"
+    },
+    "blk.3.ffn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.3.ffn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "BF16"
+    },
+    "blk.3.ffn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.3.attn_k_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.3.attn_k.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "BF16"
+    },
+    "blk.3.attn_output.weight": {
+      "shape": [
+        4096,
+        5120
+      ],
+      "type": "BF16"
+    },
+    "blk.3.attn_q_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.3.attn_q.weight": {
+      "shape": [
+        5120,
+        4096
+      ],
+      "type": "BF16"
+    },
+    "blk.3.attn_v.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "BF16"
+    },
+    "blk.4.attn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.4.attn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "BF16"
+    },
+    "blk.4.attn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.4.ffn_down.weight": {
+      "shape": [
+        17408,
+        5120
+      ],
+      "type": "Q4_K"
+    },
+    "blk.4.ffn_gate.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q4_K"
+    },
+    "blk.4.ffn_up.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q4_K"
+    },
+    "blk.4.ffn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.4.ffn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "BF16"
+    },
+    "blk.4.ffn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.4.attn_k_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.4.attn_k.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "BF16"
+    },
+    "blk.4.attn_output.weight": {
+      "shape": [
+        4096,
+        5120
+      ],
+      "type": "BF16"
+    },
+    "blk.4.attn_q_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.4.attn_q.weight": {
+      "shape": [
+        5120,
+        4096
+      ],
+      "type": "BF16"
+    },
+    "blk.4.attn_v.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "BF16"
+    },
+    "output_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    }
+  },
+  "fc-q8-rest-q4-k-m": {
+    "selector_hidden.weight": {
+      "shape": [
+        5120,
+        256
+      ],
+      "type": "Q4_K"
+    },
+    "selector_predecessor.weight": {
+      "shape": [
+        256,
+        248320
+      ],
+      "type": "Q4_K"
+    },
+    "selector_successor.weight": {
+      "shape": [
+        256,
+        248320
+      ],
+      "type": "Q4_K"
+    },
+    "fc.weight": {
+      "shape": [
+        25600,
+        5120
+      ],
+      "type": "Q8_0"
+    },
+    "enc.output_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.0.attn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.0.attn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "Q4_K"
+    },
+    "blk.0.attn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.0.ffn_down.weight": {
+      "shape": [
+        17408,
+        5120
+      ],
+      "type": "Q4_K"
+    },
+    "blk.0.ffn_gate.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q4_K"
+    },
+    "blk.0.ffn_up.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q4_K"
+    },
+    "blk.0.ffn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.0.ffn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "Q4_K"
+    },
+    "blk.0.ffn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.0.attn_k_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.0.attn_k.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "Q4_K"
+    },
+    "blk.0.attn_output.weight": {
+      "shape": [
+        4096,
+        5120
+      ],
+      "type": "Q4_K"
+    },
+    "blk.0.attn_q_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.0.attn_q.weight": {
+      "shape": [
+        5120,
+        4096
+      ],
+      "type": "Q4_K"
+    },
+    "blk.0.attn_v.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "Q4_K"
+    },
+    "blk.1.attn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.1.attn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "Q4_K"
+    },
+    "blk.1.attn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.1.ffn_down.weight": {
+      "shape": [
+        17408,
+        5120
+      ],
+      "type": "Q4_K"
+    },
+    "blk.1.ffn_gate.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q4_K"
+    },
+    "blk.1.ffn_up.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q4_K"
+    },
+    "blk.1.ffn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.1.ffn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "Q4_K"
+    },
+    "blk.1.ffn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.1.attn_k_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.1.attn_k.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "Q4_K"
+    },
+    "blk.1.attn_output.weight": {
+      "shape": [
+        4096,
+        5120
+      ],
+      "type": "Q4_K"
+    },
+    "blk.1.attn_q_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.1.attn_q.weight": {
+      "shape": [
+        5120,
+        4096
+      ],
+      "type": "Q4_K"
+    },
+    "blk.1.attn_v.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "Q4_K"
+    },
+    "blk.2.attn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.2.attn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "Q4_K"
+    },
+    "blk.2.attn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.2.ffn_down.weight": {
+      "shape": [
+        17408,
+        5120
+      ],
+      "type": "Q6_K"
+    },
+    "blk.2.ffn_gate.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q4_K"
+    },
+    "blk.2.ffn_up.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q4_K"
+    },
+    "blk.2.ffn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.2.ffn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "Q4_K"
+    },
+    "blk.2.ffn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.2.attn_k_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.2.attn_k.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "Q4_K"
+    },
+    "blk.2.attn_output.weight": {
+      "shape": [
+        4096,
+        5120
+      ],
+      "type": "Q4_K"
+    },
+    "blk.2.attn_q_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.2.attn_q.weight": {
+      "shape": [
+        5120,
+        4096
+      ],
+      "type": "Q4_K"
+    },
+    "blk.2.attn_v.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "Q6_K"
+    },
+    "blk.3.attn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.3.attn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "Q4_K"
+    },
+    "blk.3.attn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.3.ffn_down.weight": {
+      "shape": [
+        17408,
+        5120
+      ],
+      "type": "Q4_K"
+    },
+    "blk.3.ffn_gate.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q4_K"
+    },
+    "blk.3.ffn_up.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q4_K"
+    },
+    "blk.3.ffn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.3.ffn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "Q4_K"
+    },
+    "blk.3.ffn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.3.attn_k_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.3.attn_k.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "Q4_K"
+    },
+    "blk.3.attn_output.weight": {
+      "shape": [
+        4096,
+        5120
+      ],
+      "type": "Q4_K"
+    },
+    "blk.3.attn_q_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.3.attn_q.weight": {
+      "shape": [
+        5120,
+        4096
+      ],
+      "type": "Q4_K"
+    },
+    "blk.3.attn_v.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "Q4_K"
+    },
+    "blk.4.attn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.4.attn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "Q4_K"
+    },
+    "blk.4.attn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.4.ffn_down.weight": {
+      "shape": [
+        17408,
+        5120
+      ],
+      "type": "Q6_K"
+    },
+    "blk.4.ffn_gate.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q4_K"
+    },
+    "blk.4.ffn_up.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q4_K"
+    },
+    "blk.4.ffn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.4.ffn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "Q4_K"
+    },
+    "blk.4.ffn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.4.attn_k_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.4.attn_k.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "Q4_K"
+    },
+    "blk.4.attn_output.weight": {
+      "shape": [
+        4096,
+        5120
+      ],
+      "type": "Q4_K"
+    },
+    "blk.4.attn_q_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.4.attn_q.weight": {
+      "shape": [
+        5120,
+        4096
+      ],
+      "type": "Q4_K"
+    },
+    "blk.4.attn_v.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "Q6_K"
+    },
+    "output_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    }
+  }
+}

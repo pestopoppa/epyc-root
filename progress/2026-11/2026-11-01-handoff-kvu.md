@@ -185,3 +185,7 @@ The three safe successor rows remain published; the original VKQ3 row is exposur
 ## 22:43Z — Review inference preparation components
 
 Consumed all three events. The KVU-19a-2 build executor, FA-8 source preflight and KVU-12.6 raw slot sampler pass respectively five, four and five offline synthetic tests. They are unintegrated drafts under independent review: the executor lacks real supervision and input custody, the preflight cannot prove compiled/runtime dispatch, and raw per-slot totals do not establish unique unified KV occupancy. Their completion events are registered for owner review before committing or using the drafts. No inference row was published; no build, network request or compute ran. GitNexus is unindexed; no application symbol was edited.
+
+## 22:45Z — FA-8 source preflight and component review
+
+Consumed all three reviews. The FA-8 source preflight passed four offline tests and verified both historical Git objects; this establishes source identity only, not a build, runtime route or GPU measurement. The unintegrated sampler redirect bypass and executor mutable-mode defect remained present at the start of this turn; both repairs were reassigned and registered as dispatcher events. FA-8 instrumentation preparation also has a registered event. No inference row, build, live network or compute ran. GitNexus remains unindexed; no application symbol was edited.

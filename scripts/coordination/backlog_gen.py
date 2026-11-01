@@ -138,7 +138,9 @@ def load_pilots(path: str | None) -> dict[str, dict]:
         out[slug] = {"handoff": "handoffs/" + str(e["handoff"]).split("handoffs/", 1)[-1],
                      "ids": set(e.get("row_ids") or []),
                      "patterns": [re.compile(p) for p in (e.get("row_patterns") or []) if isinstance(p, str)],
-                     "rows": set(e.get("handoff_rows") or [])}
+                     "rows": set(e.get("handoff_rows") or []),
+                     # a LIVE owner is one that is running or will be resumed for new work; yielded/failed sessions are not
+                     "live": e.get("status") in ("live", "suspended", "unpushed", "retry") and not e.get("yield")}
     return out
 
 
@@ -468,7 +470,7 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
     # ---- one owner per row (2026-11-01 bug: a blocked row sat in codex-gen while its fix task sat in a session's
     # backlog, so codex-gen stalled on "routed" work and nobody owned the row). A codex-gen row moves to the session whose
     # handoff file holds a task that unblocks it, or whose index row (inference_prep `row`) maps to a piloted handoff. ----
-    handoff_bucket0 = {p["handoff"]: f"handoff-{slug}" for slug, p in pilots.items()}
+    handoff_bucket0 = {p["handoff"]: f"handoff-{slug}" for slug, p in pilots.items() if p["live"]}
     for rec in list(per[GENERALIST]["rows"]):
         tgt = handoff_bucket0.get(rec.get("handoff") or "")
         if not tgt:
@@ -485,6 +487,17 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
                 per[tgt]["qual"][rec["lane"]] += 1
         else:
             rec["owner_note"] = "yours (no handoff session)"
+    # an item belongs to a handoff session only while that session is live or will be resumed for it (operator 22:40Z):
+    # a yielded/failed session's actionable rows (fix tasks, filing) go to codex-gen so nothing is orphaned
+    for slug, p in pilots.items():
+        if p["live"]:
+            continue
+        w = f"handoff-{slug}"
+        for rec in list(per[w]["rows"]):
+            if rec["state"] in ADVANCEABLE or rec["state"] == "needs-filing":
+                per[w]["rows"].remove(rec)
+                per[GENERALIST]["rows"].append(rec)
+                rec["owner_note"] = f"yours (owner session {slug} is yielded/absent)"
 
     # ---- parked lineages (escalation notes are written by rowflow; this only reports them) ----
     parked: dict[str, dict] = {}
@@ -601,12 +614,15 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
         h["position"] = i
     needs_session = [h for h in handoff_rank if not h["session"]]
     hs_order = {h["handoff"]: i for i, h in enumerate(needs_session)}
+    live_bucket = {p["handoff"]: f"handoff-{slug}" for slug, p in pilots.items() if p["live"]}
     for wl in scored:
         tgt = handoff_bucket.get(wl["file"])
-        if wl["size"] == "S" and not wl["too_big"] and (tgt is None or wl["source"] == GENERALIST or not wl["unblocked_rows"]):
+        small = wl["size"] == "S" and not wl["too_big"]
+        if small and (tgt is None or tgt not in live_bucket.values() or wl["source"] == GENERALIST or not wl["unblocked_rows"]):
+            # ONE owner: a small task is codex-gen's unless its handoff session is live and the task unblocks that session's rows
+            if tgt and tgt not in live_bucket.values():
+                wl["route_note"] = f"yours ({tgt[8:]} session yielded/absent)"
             per[GENERALIST]["code"].append(wl)
-            if tgt:
-                per[tgt]["code"].append(wl)  # visible to the owning session too; whoever lands it ticks it
         elif tgt:
             per[tgt]["code"].append(wl)
         else:
@@ -667,7 +683,7 @@ def render(w: str, data: dict) -> str:
         if r["state"] == "done":
             continue  # counted above; not work
         L.append(f"- [{r['state']}] {r['lane']} rank={r['rank']} **{r['id']}**" + (f" (row {r['row']})" if r.get("row") else "")
-                 + (f" — {r['owner_note']}" if r.get("owner_note") and r["state"] in ADVANCEABLE else ""))
+                 + (f" — {r['owner_note']}" if r.get("owner_note") and r["state"] in ADVANCEABLE + ("needs-filing",) else ""))
         if r["state"] == "needs-filing":
             L.append(f"    - file: read result_path, apply decision_rule, tick the handoff, then `touch {FLAGS_DEFAULT}/filing-done/{r['id']}.FILED` (DSH-2)")
         for t in r["tasks"]:
@@ -676,7 +692,8 @@ def render(w: str, data: dict) -> str:
     if not d["code"]:
         L.append("- none")
     for wl in d["code"]:
-        tag = f"score={wl['score']}" + (f" unblocks={','.join(wl['unblocked_rows'][:4])}" if wl["unblocked_rows"] else "")
+        tag = f"score={wl['score']}" + (f" unblocks={','.join(wl['unblocked_rows'][:4])}" if wl["unblocked_rows"] else "") \
+            + (f" {wl['route_note']}" if wl.get("route_note") else "")
         L.append(f"{wl['raw']}  <!-- {tag} -->")
     if d.get("routed"):
         L += ["", "## Routed elsewhere (NOT yours: M/L or `[too-big:]` tasks whose handoff has no session yet — the dispatcher "
