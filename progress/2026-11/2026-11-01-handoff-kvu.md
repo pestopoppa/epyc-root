@@ -95,3 +95,7 @@ Reviewed and preserved the [Q38-T7 guard draft](../../artifacts/compute/kvu16h-q
 ## KVU-19a-2 candidate source preservation
 
 Reviewed and preserved [the recovered candidate and patch](../../artifacts/compute/kvu19a2-candidate-20261101/README.md). All capsule SHA-256 checks pass; the base tile matches `git show 90c12df42`, and applying the patch to a temporary base reproduces the candidate byte-for-byte. The candidate is not bound to the historical run; companion source and build compatibility remain unproven. No build or GPU test ran. Dispatched a source-bound row draft, an independent capsule review and offline P3 v2/X0 guard preparation; their dispatcher events require owner review. The existing Q38 lifecycle-plan draft also remains unreviewed. GitNexus is not indexed in this lane; this boundary edits no application symbol.
+
+## Q38 dedicated lifecycle design
+
+Reviewed the [prospective lifecycle design](../../artifacts/compute/kvu16h-q38-lifecycle-plan-20261101/README.md): separate captured server processes, matched requests, independent verified warm-ups, source/binary binding and partial-run custody are required. The document is not a producer and does not protect deployed runners. Delegated implementation with offline tests, independent review of P3 v2/X0 guard drafts, and recovery of the tile candidate's companion source; their event files are registered for owner review. No compute, build or row qualification ran. GitNexus remains unindexed in this lane; no application symbol was edited at this boundary.
