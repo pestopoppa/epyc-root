@@ -59,3 +59,14 @@ writes everything but `wrapped_sha`; `wrapup.py` fills it after the push._
 - [x] **CAF-7 — codex-gen routing.** ✅ 2026-11-01 ROOT `f080425df` [no-belief: tooling; no measurement] Deletes: codex-gen's bookkeeping tasks (regenerate/commit/push, republish) — they
   call CAF-2/4/5 directly; `GOAL-codex-gen.md` (and its git copy in `scripts/coordination/churn/`) loses the manual steps.
   Deps: CAF-2, CAF-4.
+
+## Open at 2026-11-01 wrap-up (ws58)
+
+- [ ] **Land the MIN_RESUME_GAP_S fix** (gap only after no-effect turns): installed in compute-flags/bin, not on origin/main; owner of `handoff_sessions.py` commits it.
+- [ ] **Inventory-target dispatcher change**: in progress, owned by another agent.
+- [ ] **CAF burn measurement**: tokens per completed task before/after CAF-1..7 via `churn/tokens_per_task.py`.
+- [ ] **Net line count must go down**: `handoff_sessions.py`, `backlog_gen.py`, `rowflow/`, `churn/` grew this day; find deletions (guardrail unmet).
+- [x] **Hotfixes landed** ✅ 2026-11-01 ROOT `139d9cf7a` `ddf791068` `0fec383f5` `a57b57239` [no-belief: tooling-repair; no measurement]
+- [x] **Keeper v11 single allocator** ✅ 2026-11-01 ROOT `1a9186e11` [no-belief: build/landing]
+- [x] **churn_up.sh persistence runbook** ✅ 2026-11-01 ROOT `d095b4a4d` [no-belief: build/landing]
+

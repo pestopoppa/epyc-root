@@ -3939,7 +3939,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-01T23:23:07Z",
+  "generated_at": "2026-11-01T23:39:58Z",
   "nodes": [
     {
       "age_days": 94,
@@ -4752,14 +4752,14 @@
       "track": "repl session memory maturity"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
       "closed": 27,
       "domain": "research-evaluation",
       "handoff": "repl-turn-efficiency.md",
       "id": "EVL-37",
-      "last_advanced": "2026-10-31",
+      "last_advanced": "2026-11-01",
       "next_action": "Obtain S4-T1 live seeding proof at its inference-owner boundary; ingest the first granted real Omega capture via VB-S4-OMEGA-FIRST-AB",
       "open": 17,
       "priority": 0.8497,
@@ -8844,13 +8844,13 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 12,
+      "closed": 15,
       "domain": "routing-and-optimization",
       "handoff": "churn-pipeline.md",
       "id": "RTG-62",
       "last_advanced": "2026-11-01",
-      "next_action": "CAF-1 \u2014 no-poll resume (deletion-first line first); then CAF-6 run-end dedupe",
-      "open": 0,
+      "next_action": "Land MIN_RESUME_GAP_S fix; measure CAF burn; cut net line count (open boxes)",
+      "open": 4,
       "priority": 0.0,
       "priority_basis": {
         "campaign": 0,
@@ -8858,7 +8858,7 @@
         "unblocks": 0
       },
       "priority_rank": 173,
-      "readiness": "no_open",
+      "readiness": "ready",
       "state": "active",
       "track": "churn pipeline"
     },
@@ -9280,7 +9280,9 @@
       "RTG-18"
     ],
     "method": "override file > backlog-priority.json > derived heuristic (no authored priority field exists in the index rows)",
-    "open_rows_missing_from_file": [],
+    "open_rows_missing_from_file": [
+      "RTG-62"
+    ],
     "order": "per node, priority_basis.source says which won. file/override: the operator's ordering method (tier + rank in backlog-priority.json). heuristic: has open work > CURRENT-CAMPAIGN.md membership (2 newest block, 1 older) > rows transitively gated via dep edges > ready before blocked; heuristic rows sit below file rows",
     "priority": "0.0 lowest .. 1.0 highest, mid-rank percentile; priority_rank 1 = highest",
     "sources": {
@@ -9301,8 +9303,8 @@
   },
   "readiness_counts": {
     "blocked": 41,
-    "no_open": 6,
-    "ready": 132
+    "no_open": 5,
+    "ready": 133
   },
   "readiness_values": {
     "blocked": "open work, but at least one `dep` target still has open > 0",
