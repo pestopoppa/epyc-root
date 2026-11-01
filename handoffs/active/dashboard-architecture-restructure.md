@@ -419,7 +419,7 @@ Machine harness 25→48→59→81 checks, 0 fail (independently rerun); 4 quiet 
       has the right instrument in `/api/health` (the three-valued fold over `panels.py`). The `/kernel`
       PAGE is honest, so a human is not deceived; only an automated consumer of `registry.json` is.
 
-- [ ] **D-3 / OBS-2 (MED) — `hub_supervisor.sh` cannot say "I cannot tell", and its stale-source
+- [x] **D-3 / OBS-2 (MED) — `hub_supervisor.sh` cannot say "I cannot tell", and its stale-source ✅ 2026-11-01 — closure hygiene; implemented 2026-10-31 in ROOT@1b9130e930cc28af397fa8d2c82ac05f3445080a:`tests/test_hub_supervisor_observation.py`, `tests/hub_supervisor_contract.py` [closure: hygiene] [no-belief: implementation and software tests, no measurement claim]
       check is wired to the one path that never runs.** Filed 2026-08-12 by the class-sweep
       that followed the coordinator-daemon watchdog blindness. Two defects, one file:
     - `health_ok()` is two-valued. A curl timeout, a removed `curl` binary, a hub moved off `:8100`
