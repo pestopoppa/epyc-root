@@ -15,3 +15,7 @@ Consumed GPU, CPU and ThinkingCap investigations. Filed CPU2b rc=0, 12/12 legs a
 ## 23:22Z — Advance ThinkingCap suite and four-arm evaluation preparations
 
 Consumed both AMS-TCAP preparation results: the 20-item AIME25 draft is objective but incomplete; agentic/planning oracle and frozen full suite remain. The analyzer draft passes four offline tests, while execution, instrumentation, head compatibility, and keeper allocation remain unproven. Dispatched bounded independent suite, launcher, and instrumentation implementation tasks with file-triggered outcomes. ThinkingCap weight fetch is separately in progress. No inference row published.
+
+## 23:33Z — Integrate ThinkingCap launcher and instrumentation preparations
+
+Consumed launcher and instrumentation v2 results. Offline drafts pass 4 and 5 synthetic tests respectively and fail closed: raw completion exposes token IDs and MTP draft counters, but actual tokenizer markers, model head activation, objective agentic oracle and live behavior are not yet proved. Dispatched bounded collector integration, template validation and protocol design, each with a file-triggered result. No inference launched or row published. Previous wrap-up commit remained local when the shared serialized push lock was held; this wrap retries publishing it.
