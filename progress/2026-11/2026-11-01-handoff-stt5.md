@@ -207,3 +207,7 @@ Independent review during this boundary found `build-guard.py` does not call `to
 ### Crisp HIP ancestor fence fixture consumed
 
 `HIP-FENCE-22.md` reports five passing synthetic ancestor-identity checks, fixture SHA `01eed4bdab55f202d0023e93a322433466242f3e7baf69457e0bbbcdec2c2446`; it does not retain the chain through the real host transition or prove lock custody, protected-action atomicity or safe retirement. `HIP-GUARD-22` and `HIP-TOOL-22` reports were absent at inspection. Delegated trusted checker invocation, bounded fence and symlink audit; registered `HIP-GUARD-23.done`, `HIP-FENCE-23.done`, `HIP-TOOL-23.done`. Launcher remains held; no build, inference, qualification or READY mutation. The generated backlog predates the already filed Nemotron retirement.
+
+### Crisp HIP pinned ancestor fixture consumed
+
+`HIP-FENCE-23.md` reports six passing synthetic checks for retained ancestor descriptors, inode/parent-edge revalidation and rename/replacement detection; fixture SHA `91247d5a820313354d21a3ad8edc428666601bebafa54b09a3061047e53fb186`. It does not establish host transition, lock custody, owner permissions or atomicity of later pathname operations. Guard-22/23 and tool-22/23 reports were absent at inspection. Delegated checker invocation, combined lock/ancestor fixture and symlink audit; registered `HIP-GUARD-24.done`, `HIP-FENCE-24.done`, `HIP-TOOL-24.done`. Launcher remains held; no build, inference, qualification or READY mutation.
