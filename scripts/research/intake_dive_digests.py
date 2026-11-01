@@ -11,7 +11,7 @@ which the scanner picks up (research/deep-dives is scanned with recurse: true).
 Run grouping: the index carries no session field, so a run is a maximal
 ID-ordered stretch of entries with the same `ingested_date`; a new run also
 starts where an operator-submitted (`discovered_via: input`) entry follows an
-expansion entry (a fresh submission batch). Slug: `<date>-intake-<first>-<last>`.
+expansion entry (a fresh submission batch). Slug: `<date>-ids-<first>-<last>` (no `intake-` prefix: cite-check would read a link to the digest as a citation).
 
 Deterministic and idempotent: output depends only on the index; files whose
 content is unchanged are not rewritten. Every intake ID in the emitted text is
@@ -86,7 +86,7 @@ def dive_entries(index: list[dict]) -> list[dict]:
 
 
 def run_slug(run: list[dict]) -> str:
-    return f"{run[0].get('ingested_date')}-intake-{_num(run[0])}-{_num(run[-1])}"
+    return f"{run[0].get('ingested_date')}-ids-{_num(run[0])}-{_num(run[-1])}"
 
 
 def _bullets(lines: list[str]) -> list[str]:

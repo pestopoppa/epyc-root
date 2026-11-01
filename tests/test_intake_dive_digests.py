@@ -31,12 +31,12 @@ INDEX = [
 def test_grouping_splits_on_date_and_new_input_batch():
     runs = mod.group_runs(mod.dive_entries(INDEX))
     assert [[mod._num(e) for e in r] for r in runs] == [[10, 11], [13], [14]]
-    assert mod.run_slug(runs[0]) == "2026-10-21-intake-10-11"
+    assert mod.run_slug(runs[0]) == "2026-10-21-ids-10-11"
 
 
 def test_render_cites_record_form_and_carries_dive_fields():
     docs = mod.build(INDEX)
-    text = docs["2026-10-21-intake-13-13"]
+    text = docs["2026-10-21-ids-13-13"]
     assert "intake-5#record" in text and "intake-6#02" in text and "intake-7#record" in text
     assert "intake-12" not in text
     assert "anchor `a.md:1`" in text and "*narrowed*" in text and "handoffs/active/x.md" in text
