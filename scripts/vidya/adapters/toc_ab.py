@@ -19,6 +19,9 @@ module is written against the FILED event fields, not against that code): per ta
 from __future__ import annotations
 
 import sys
+import hashlib
+import json
+from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping
@@ -42,6 +45,77 @@ PLACEMENTS = frozenset({"top", "tail", "none"})
 TASK_INT_FIELDS = ("turns", "rolling_input_tokens", "prefix_cache_invalidations")
 
 
+USAGE_FIELDS = ("backend_attempts", "cached_replays", "observed_input_calls", "observed_output_calls", "total_input_tokens", "total_output_tokens", "total_tokens")
+UNKNOWN_USAGE = {"status": "unknown", **{key: None for key in USAGE_FIELDS}}
+
+
+def _short_label(value: str) -> str:
+    return value if len(value) <= 48 else value[:32] + "#" + hashlib.sha256(value.encode()).hexdigest()[:12]
+
+
+def _usage(events: list, task_id: str) -> dict:
+    """Re-derive the conservative producer selection from native events."""
+    usages = [e for e in events if e.get("event") == "episode_usage"]
+    finals = [e for e in events if e.get("event") == "final"]
+    if (len(usages) != 1 or not finals or usages[0].get("task_id") != task_id
+            or type(usages[0].get("graph_attempts")) is not int
+            or usages[0].get("graph_attempts") != len(finals)
+            or events.index(usages[0]) <= events.index(finals[-1])):
+        return dict(UNKNOWN_USAGE)
+    u = usages[0].get("usage")
+    if (not isinstance(u, dict) or set(u) != {"status", *USAGE_FIELDS}
+            or u.get("status") not in {"complete", "partial"}
+            or not all(ns.nonneg_int(u.get(k)) and u[k] < 2**63 for k in USAGE_FIELDS[:4])
+            or u["observed_input_calls"] > u["backend_attempts"]
+            or u["observed_output_calls"] > u["backend_attempts"]):
+        return dict(UNKNOWN_USAGE)
+    for kind in ("input", "output"):
+        complete = (u[f"observed_{kind}_calls"] == u["backend_attempts"]
+                    and u["backend_attempts"] + u["cached_replays"] > 0)
+        value = u[f"total_{kind}_tokens"]
+        if not (ns.nonneg_int(value) and value < 2**63 if complete else value is None):
+            return dict(UNKNOWN_USAGE)
+    a, b = u["total_input_tokens"], u["total_output_tokens"]
+    total = a + b if a is not None and b is not None else None
+    if (total is not None and total >= 2**63) or u["total_tokens"] != total or u["status"] != ("complete" if total is not None else "partial"):
+        return dict(UNKNOWN_USAGE)
+    return dict(u)
+
+
+def _native_task(row: dict, task: dict) -> bool:
+    """Reopen the exact pinned bytes; the sidecar alone cannot warrant usage."""
+    segment = task.get("trajectory_segment")
+    if not isinstance(segment, dict) or set(segment) != {"offset", "length", "sha256"}:
+        return False
+    off, length = segment["offset"], segment["length"]
+    if not ns.nonneg_int(off) or not ns.nonneg_int(length) or not length or not ns.SHA256.fullmatch(str(segment["sha256"])):
+        return False
+    try:
+        with open(row["results_path"], "rb") as handle:
+            handle.seek(off)
+            body = handle.read(length)
+        if len(body) != length or hashlib.sha256(body).hexdigest() != segment["sha256"]:
+            return False
+        events = [json.loads(line) for line in body.decode("utf-8").splitlines() if line.strip()]
+        if (not body.endswith(b"\n") or not events or any(
+                not isinstance(e, dict) or e.get("schema") != "epyc.orchestrator.trajectory_event.v1"
+                or e.get("task_id") != task["task_id"] or type(e.get("seq")) is not int
+                or e["seq"] != i for i, e in enumerate(events, 1))):
+            return False
+        finals = [e for e in events if e.get("event") == "final"]
+        if len(finals) != 1:
+            return False
+        fin = finals[0]
+        fields = ("terminal_state", "turns", "rolling_input_tokens", "prefix_cache_invalidations", "compressor_wall_s")
+        if any(fin.get(k) != task.get(k) for k in fields):
+            return False
+        if fin.get("rolling_input_tokens_observed_turns") != fin.get("turns"):
+            return False
+        return _usage(events, task["task_id"]) == task["episode_usage"]
+    except (OSError, UnicodeError, ValueError, KeyError, TypeError):
+        return False
+
+
 def _task_problems(tasks: Any) -> list[str]:
     if not isinstance(tasks, list) or not tasks:
         return ["extra.tasks must be a non-empty list of per-task records"]
@@ -61,6 +135,12 @@ def _task_problems(tasks: Any) -> list[str]:
         for key in TASK_INT_FIELDS:
             if not ns.nonneg_int(t.get(key)):
                 p.append(f"tasks[{i}].{key} must be a non-negative integer")
+        if "episode_usage" in t:
+            u = t["episode_usage"]
+            if not isinstance(u, dict) or set(u) != {"status", *USAGE_FIELDS} or not isinstance(t.get("trajectory_segment"), dict):
+                p.append(f"tasks[{i}]: invalid episode usage or missing trajectory segment")
+        elif "trajectory_segment" in t:
+            p.append(f"tasks[{i}]: trajectory segment without episode usage")
         if not ns.finite(t.get("compressor_wall_s")) or t.get("compressor_wall_s", -1) < 0:
             p.append(f"tasks[{i}].compressor_wall_s must be a non-negative number")
     return p
@@ -177,7 +257,31 @@ def write_belief_measurements(
 
 
 def native_rows(sidecar_path: str | Path) -> tuple[dict, ...]:
-    return ns.native_rows(sidecar_path, validate_row)
+    rows = ns.native_rows(sidecar_path, validate_row)
+    segments = []
+    for native in rows:
+        row = native["row"]
+        for task in row["extra"]["tasks"]:
+            if "episode_usage" in task:
+                if not native["attestation_present"] or not _native_task(row, task):
+                    return ()
+                seg = task["trajectory_segment"]
+                segments.append((row["results_path"], seg["offset"], seg["offset"] + seg["length"]))
+    segments.sort()
+    if any(a[0] == b[0] and b[1] < a[2] for a, b in zip(segments, segments[1:])):
+        return ()
+    expanded = list(rows)
+    for native in rows:
+        for task in native["row"]["extra"]["tasks"]:
+            if "episode_usage" not in task:
+                continue
+            expanded.append({**native, "episode_task": task["task_id"], "episode_field": "status"})
+            # Denominators and replay counts have no intrinsic better/worse direction.
+            # Carry them in claim text, not as directional performance claims.
+            for field in USAGE_FIELDS[4:]:
+                if task["episode_usage"][field] is not None:
+                    expanded.append({**native, "episode_task": task["task_id"], "episode_field": field})
+    return tuple(expanded)
 
 
 def rows_for_run(run_dir: str | Path) -> tuple[dict, ...]:
@@ -193,9 +297,41 @@ def project(native: Any):
     if problems:
         raise ProjectionError("TOC A/B row is not a producer-authored capture: " + "; ".join(problems))
     locator = f"toc-ab:{row['run_id']}:{row['extra']['arm_label']}:{row['results_path']}"
-    return ns.to_claim_tuple(row, source_kind=SOURCE_KIND, locator=locator,
-                             sidecar_path=native.get("sidecar_path", ""),
-                             no_protocol_ids=("observation:none",), legacy_schema_protocol=True)
+    tup = ns.to_claim_tuple(row, source_kind=SOURCE_KIND, locator=locator,
+                            sidecar_path=native.get("sidecar_path", ""),
+                            no_protocol_ids=("observation:none",), legacy_schema_protocol=True)
+    tasks = [task for task in row["extra"]["tasks"] if "episode_usage" in task]
+    if tasks and (not ns.results_present(row) or any(not _native_task(row, task) for task in tasks)):
+        raise ProjectionError("episode usage is not bound to the native trajectory")
+    if "episode_task" not in native:
+        return tup
+    task = next((t for t in row["extra"]["tasks"] if t["task_id"] == native["episode_task"]), None)
+    field = native.get("episode_field")
+    if (task is None or field not in (*USAGE_FIELDS[4:], "status") or not _native_task(row, task)
+            or not ns.results_present(row)
+            or (field != "status" and task["episode_usage"].get(field) is None)):
+        raise ProjectionError("episode usage is not bound to the native trajectory")
+    usage = task["episode_usage"]
+    ident = ns.content_hash({"arm_measurement": row["measurement_id"], "task": task["task_id"], "field": field})[:24]
+    run_label = _short_label(row["run_id"])
+    arm_label = _short_label(row["extra"]["arm_label"])
+    task_label = _short_label(task["task_id"])
+    if field == "status":
+        counters = ", ".join(f"{key}={usage[key]}" for key in USAGE_FIELDS[:4])
+        return replace(tup, measurement_id="tocepisode_" + ident, metric="toc_ab_task_solved",
+                       value=int(task["solved"]), unit="task_solved", metric_direction="higher_better",
+                       reps=1, reps_basis="scored:tasks",
+                       claim=f"TOC {run_label} arm {arm_label} task {task_label}: solved={task['solved']}; usage={usage['status']}; {counters}",
+                       attestation_locator=locator + f":task:{task['task_id']}:status",
+                       observation={"outcome_native": usage["status"]})
+    summary = ", ".join(f"{k}={usage[k]}" for k in USAGE_FIELDS[:4])
+    return replace(tup, measurement_id="tocepisode_" + ident, metric="toc_episode_" + field,
+                   value=usage[field], unit="tokens" if field.endswith("tokens") else "calls",
+                   metric_direction="lower_better", reps=1, reps_basis="observed:episodes",
+                   claim=f"TOC {run_label} arm {arm_label} task {task_label}: {field}={usage[field]}; status={usage['status']}; {summary}",
+                   attestation_locator=locator + f":task:{task['task_id']}:{field}",
+                   observation={"outcome_native": usage["status"]})
+
 
 
 def frames_for_sidecar(sidecar_path: str | Path, *, as_of: str) -> list[dict]:
