@@ -1,0 +1,127 @@
+{
+  "booking_class": "block-correctness",
+  "claimed_cpus": "dynamic",
+  "class": "diagnostic",
+  "decision_rule": "Selection-only English FLEURS validation; no test verdict or model promotion.",
+  "engine": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/filler_run14.sh",
+    "sha256": "6fe168333738d15e5988d5af42e2b4c348194d722bac11c32368183ae89cd3ef"
+  },
+  "enrollment": "n/a: diagnostic",
+  "est_output_GiB": 8,
+  "exclusive_class": null,
+  "gib": 32,
+  "hold": null,
+  "id": "codex3-cs8-stt5-validation-unified-en-r2-20261101",
+  "items": 2364,
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-unified-en-r2-proof-c1r0-review-20261101/launch.sh",
+    "sha256": "cc575e65dc27dd6c3a78857b1335e281998fbbe9aa1bd46f75c8070b92befa4f"
+  },
+  "job_floor_gib": 150,
+  "keep": [
+    "*.py",
+    "*.sh",
+    "*.json",
+    "*.sha256",
+    "*.out",
+    "attempts/*.json",
+    "restored-scorer/**/*"
+  ],
+  "keep_globs": [
+    "*.py",
+    "*.sh",
+    "*.json",
+    "*.sha256",
+    "*.out",
+    "attempts/*.json",
+    "restored-scorer/**/*"
+  ],
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-unified-en-r2-proof-c1r0-review-20261101/launch.sh",
+    "sha256": "cc575e65dc27dd6c3a78857b1335e281998fbbe9aa1bd46f75c8070b92befa4f"
+  },
+  "launcher_log": "/mnt/raid0/llm/tmp/codex3-unified-en-r2-proof-c1r0-review-20261101/ws58-launcher.out",
+  "log_consumer": "/mnt/raid0/llm/tmp/codex3-unified-en-r2-proof-c1r0-review-20261101/log_consumer.py",
+  "min_window_s": 900,
+  "notes": "PROPOSAL: UNKNOWN feasibility; original no-redraw ledger and default runner mutex; real keeper qualification required.",
+  "owner": "codex3",
+  "ports": [],
+  "priority_rank": 100,
+  "process_limit_GiB": 32,
+  "production": true,
+  "production_recipe": {
+    "path": "/mnt/raid0/llm/tmp/codex3-unified-en-r2-proof-c1r0-review-20261101/production-recipe.proposed.json",
+    "sha256": "8552128a225d0fe32a99c034b633f2000bed6ffc9bc39afdaec60b26ca067088"
+  },
+  "qual_fixture": {
+    "items": 2,
+    "path": "/mnt/raid0/llm/tmp/codex3-unified-en-r2-proof-c1r0-review-20261101/qualification-fixture.json",
+    "sha256": "8727abbfa91413b3fbd3c2ca95379a607ab145d3e9460e435df74adaaa2250ae"
+  },
+  "qual_timeout_s": 300,
+  "qualification": {
+    "receipt": "/mnt/raid0/llm/tmp/codex3-unified-en-r2-proof-c1r0-review-20261101/qualification/QUAL-codex3-cs8-stt5-validation-unified-en-r2-20261101.json"
+  },
+  "qualification_row": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-unified-en-r2-20261101.row.md",
+    "sha256": "b2df95491ab3ed0f90b238f62325d2e475297a2b10c95e7741f175f9d5493a37"
+  },
+  "qualifier_version": "epyc.qual-v2-row",
+  "rate_basis": {
+    "batch_size": 1,
+    "concurrent_workers": 8,
+    "decode_mode": "buffered-streaming-six-contexts",
+    "production_threads": 3,
+    "scope": "unified-unknown-calibration",
+    "work_unit": "six-context English FLEURS validation"
+  },
+  "regions": "any-cpu-quarter",
+  "request_manifest_sha256": "8727abbfa91413b3fbd3c2ca95379a607ab145d3e9460e435df74adaaa2250ae",
+  "requires_tools": [
+    "bash",
+    "python3",
+    "taskset",
+    "sha256sum",
+    "git",
+    "flock",
+    "/usr/bin/stdbuf"
+  ],
+  "result_path": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/validation-results",
+  "runtime_dependencies": [
+    "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031",
+    "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030",
+    "/mnt/micron/codex3-lanes/orchestrator"
+  ],
+  "schema": "epyc.ready.v2",
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-unified-en-r2-proof-c1r0-review-20261101",
+  "shared_state": [
+    "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/validation-results"
+  ],
+  "source_manifest": "/mnt/raid0/llm/tmp/codex3-unified-en-r2-proof-c1r0-review-20261101/SOURCES.sha256",
+  "speech": {
+    "batch_size": 1,
+    "decode_mode": "buffered-streaming-six-contexts",
+    "fixture_audio": {
+      "path": "/mnt/raid0/llm/whisper.cpp/samples/jfk.wav",
+      "sha256": "59dfb9a4acb36fe2a2affc14bacbee2920ff435cb13cc314a08c13f66ba7860e"
+    },
+    "fixture_audio_seconds": 11.0,
+    "pcm_sha256": "a29462b8ebd467318000e683b9117ade46230d3255ed2024e7db894abd9b38c9",
+    "planned_audio_seconds": 22591.08,
+    "qualification_decode_mode": "buffered-streaming-c1r0",
+    "right_context": 0,
+    "sample_rate_hz": 16000,
+    "source_binary": {
+      "path": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced-v2/transcribe-cli",
+      "sha256": "c8386e4d73648f191816fe8ac18be69cdf7400438726e874bdf7b15f5e78d3ae"
+    },
+    "source_catalog": {
+      "path": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/SOURCE-SHA256SUMS",
+      "sha256": "3bf5d3ee509b461530216475792414aa54a978178f5cc87ef43636a101097617"
+    },
+    "threads": 3
+  },
+  "window_s": 36000,
+  "workload_kind": "speech"
+}

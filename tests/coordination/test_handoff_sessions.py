@@ -39,7 +39,8 @@ def test_run_end_resumes_owner_with_manifest_facts(tmp_path):
                  "BACKLOG-handoff-h0.md", "WRAPUP"):
         assert frag in prompt
     assert reg["sessions"]["h0"]["status"] == "live"
-    reg, _ = hs.dispatch_once(str(F), runner)  # pid not alive -> suspended, no duplicate resume
+    hs.landed = lambda sha, repo=None: True
+    reg, _ = hs.dispatch_once(str(F), runner)  # pid not alive, wrap-up landed -> suspended, no duplicate resume
     assert reg["sessions"]["h0"]["status"] == "suspended" and len(calls) == 1
 
 
@@ -66,3 +67,22 @@ def test_idle_handoff_with_work_is_started_and_usage_limit_pauses(tmp_path):
     reg, _ = hs.dispatch_once(str(F), runner)
     assert reg["paused_until"] and reg["sessions"]["h0"]["waits_on"] == ["h0-b"]
     assert "USAGE-LIMIT" in (F / "handoff-sessions.log").read_text()
+
+
+def test_unpushed_wrapup_is_resumed_immediately(tmp_path, monkeypatch):
+    F, calls, runner = _setup(tmp_path, n=1, cap=5)
+    monkeypatch.setattr(hs, "landed", lambda sha, repo=None: False)
+    reg = json.loads((F / "handoff-sessions.json").read_text())
+    out = tmp_path / "o.jsonl"
+    out.write_text('{"text":"done WRAPUP: abc1234"}\n')
+    reg["sessions"]["h0"].update(pid=999999999, last_output=str(out), status="live")
+    (F / "handoff-sessions.json").write_text(json.dumps(reg))
+    reg, _ = hs.dispatch_once(str(F), runner, seed=True)
+    assert len(calls) == 1 and "serialized_push" in calls[0][1] and "abc1234" in calls[0][1]
+    assert reg["sessions"]["h0"]["status"] == "live"
+    reg, _ = hs.dispatch_once(str(F), runner)  # still not landed -> stays unpushed and retried, never suspended
+    assert reg["sessions"]["h0"]["status"] != "suspended"
+    monkeypatch.setattr(hs, "landed", lambda sha, repo=None: True)
+    Path(reg["sessions"]["h0"]["last_output"]).write_text("WRAPUP: abc1234\n")
+    reg, _ = hs.dispatch_once(str(F), runner)
+    assert reg["sessions"]["h0"]["status"] == "suspended"

@@ -16,7 +16,7 @@
      if m.get('hold') is not None: bad('hold=%s' % m.get('hold')); continue
      if m.get('schema') != 'epyc.ready.v2': bad('qualification schema missing (hard gate)'); continue
 -    gate = os.environ.get('WS58_QUAL_GATE', '/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/keeper_qual_gate.py')
-+    gate = os.environ.get('WS58_QUAL_GATE', '/mnt/raid0/llm/tmp/compute-flags/bin/qual-v2/keeper_qual_gate.py')
++    gate = os.environ.get('WS58_QUAL_GATE', '/mnt/raid0/llm/tmp/compute-flags/bin/qual-router-v1.py')
      ck = __import__('subprocess').run([sys.executable, '-I', gate, 'check', '--manifest', p, '--flags', '/mnt/raid0/llm/tmp/compute-flags'], capture_output=True, text=True, timeout=60)
      if ck.returncode:
          why = ck.stdout.strip().split('\t', 1)[-1] if ck.stdout.strip() else ck.stderr.strip()
@@ -1470,7 +1470,7 @@
 +if __name__ == '__main__': raise SystemExit(main())
 --- /dev/null
 +++ b/bin/qual-v2-row/qualify_launcher.py
-@@ -0,0 +1,1091 @@
+@@ -0,0 +1,1116 @@
 +#!/usr/bin/env python3
 +"""Keeper-owned, one-use pre-grant qualification for the canonical filler engine.
 +
@@ -1652,11 +1652,15 @@
 +    need(m['job_floor_gib'] == 150, 'job floor differs from canonical 150 GiB')
 +    basis = m.get('rate_basis')
 +    allowed={'llm':('qualification-same-recipe','calibrated-production','calibrated-work-unit','r22-unknown-calibration',VKQ_BOOTSTRAP_SCOPE),
-+             'speech':('speech-calibrated-production',),
++             'speech':('speech-calibrated-production','parakeet-unknown-calibration','unified-unknown-calibration'),
 +             'command':('command-same-recipe','command-calibrated-production')}
 +    need(isinstance(basis, dict) and basis.get('scope') in allowed[kind] and
 +         type(basis.get('production_threads')) is int and basis['production_threads'] > 0, 'rate_basis missing')
-+    if basis['scope']==VKQ_BOOTSTRAP_SCOPE:
++    if basis['scope']=='parakeet-unknown-calibration':
++        need(parakeet_unknown_ok(m), 'Parakeet unknown-calibration scope/pins mismatch')
++    elif basis['scope']=='unified-unknown-calibration':
++        need(unified_unknown_ok(m), 'Unified unknown-calibration scope/pins mismatch')
++    elif basis['scope']==VKQ_BOOTSTRAP_SCOPE:
 +        need(vkq_bootstrap_allowed(m),'VKQ calibration bootstrap binding invalid')
 +    elif basis['scope']=='r22-unknown-calibration':
 +        need(r22_unknown_calibration_ok(m), 'R22 unknown-calibration scope/pins mismatch')
@@ -1681,6 +1685,12 @@
 +         receipt.name == 'QUAL-'+m['id']+'.json', 'qualification.receipt path must be predeclared QUAL-id.json')
 +    need(type(m.get('production')) is bool, 'production boolean missing')
 +    return m
++
++def parakeet_unknown_ok(m: dict) -> bool:
++    return manifest_digest(m)=='6a746f1fff1448de9a7d0576244bfb667bd287df3997469cb779990119b4e73f'
++
++def unified_unknown_ok(m: dict) -> bool:
++    return manifest_digest(m)=='9f984b1940c533d40bed92ba1484eaecd680d86f871a43d3e6836ea940a2e5c6'
 +
 +def r22_unknown_calibration_ok(m: dict) -> bool:
 +    """Exact diagnostic-only unit. UNKNOWN means no completion estimate."""
@@ -1747,6 +1757,10 @@
 +    from dryrun_check import checked_manifest, Refused as DryrunRefused
 +    try: out['source_manifest_sha256'] = checked_manifest(source)
 +    except DryrunRefused as exc: raise Refused(str(exc)) from exc
++    if m['rate_basis']['scope']=='parakeet-unknown-calibration':
++        need(out['source_manifest_sha256']=='4739e3a3a6a48cd255a0a28d1eab8ebfae1c337b5242ffd2189df8f05cae5366', 'Parakeet source manifest changed')
++    if m['rate_basis']['scope']=='unified-unknown-calibration':
++        need(out['source_manifest_sha256']=='b319ec9c663c64c2f135e5c6daecbb42b65d52efdec4ceeb6a7f6fb7a447d3e6', 'Unified source manifest changed')
 +    if m['rate_basis']['scope']=='r22-unknown-calibration':
 +        need(out['source_manifest_sha256']=='68b92a41bd4d1b86845b6b2ae421eb63fa84511e38c064d6a337ea06ab51449a', 'R22 source manifest changed')
 +    out['policy_sha256'] = sha(POLICY)
@@ -2100,6 +2114,12 @@
 +        need(vkq_bootstrap_allowed(m),'VKQ calibration bootstrap binding invalid')
 +        return None  # genuinely unmeasured; no fabricated numeric rate
 +    kind=m.get('workload_kind','llm');scope=m['rate_basis']['scope']
++    if scope=='parakeet-unknown-calibration':
++        need(parakeet_unknown_ok(m), 'Parakeet unknown-calibration scope changed')
++        return None
++    if scope=='unified-unknown-calibration':
++        need(unified_unknown_ok(m), 'Unified unknown-calibration scope changed')
++        return None
 +    if scope=='r22-unknown-calibration':
 +        need(r22_unknown_calibration_ok(m), 'R22 unknown-calibration scope changed')
 +        return None
@@ -2114,6 +2134,8 @@
 +    if m['rate_basis']['scope']==VKQ_BOOTSTRAP_SCOPE:
 +        return rate is None and vkq_bootstrap_allowed(m)
 +    kind=m.get('workload_kind','llm')
++    if m['rate_basis']['scope']=='parakeet-unknown-calibration': return rate is None and parakeet_unknown_ok(m)
++    if m['rate_basis']['scope']=='unified-unknown-calibration': return rate is None and unified_unknown_ok(m)
 +    if m['rate_basis']['scope']=='r22-unknown-calibration': return rate is None and r22_unknown_calibration_ok(m)
 +    if kind=='llm':needed=m['items']*rate if m['rate_basis']['scope']=='calibrated-work-unit' else m['items']*m['tokens_per_item']/rate
 +    elif kind=='speech':needed=m['speech']['planned_audio_seconds']*rate  # RTF = wall_s/audio_s
@@ -2126,7 +2148,7 @@
 +        return {'rate_scope':VKQ_BOOTSTRAP_SCOPE,'forecast':'UNKNOWN','calibration_only':True,'budget_s':m['window_s']}
 +    kind=m.get('workload_kind','llm')
 +    obj={'rate_scope':m['rate_basis']['scope'],'production_threads':m['rate_basis']['production_threads']}
-+    if m['rate_basis']['scope']=='r22-unknown-calibration':return {**obj,'feasibility':'UNKNOWN','work_unit':m['rate_basis']['work_unit']}
++    if m['rate_basis']['scope'] in ('r22-unknown-calibration','parakeet-unknown-calibration','unified-unknown-calibration'):return {**obj,'feasibility':'UNKNOWN','work_unit':m['rate_basis']['work_unit']}
 +    if kind=='llm':
 +        if m['rate_basis']['scope']=='calibrated-work-unit':obj.update(wall_s_per_unit=rate,work_unit=m['rate_basis']['work_unit'])
 +        else:obj['rate_tok_s']=rate
@@ -2170,6 +2192,9 @@
 +        first.get('work_unit')!=m['rate_basis']['work_unit']):return False
 +    if kind=='speech':
 +        s=m['speech']
++        unified=m.get('rate_basis',{}).get('scope')=='unified-unknown-calibration'
++        if unified and not unified_unknown_ok(m):return False
++        observed_mode=s['qualification_decode_mode'] if unified else s['decode_mode']
 +        return (first.get('scope')=='TARGET_NATIVE_SPEECH' and
 +                first.get('manifest_sha256')==m['request_manifest_sha256'] and
 +                first.get('input_sha256')==s['fixture_audio']['sha256'] and
@@ -2177,7 +2202,7 @@
 +                first.get('source_binary_sha256')==s['source_binary']['sha256'] and
 +                type(first.get('audio_duration_s')) in (int,float) and first['audio_duration_s']==s['fixture_audio_seconds'] and
 +                first.get('sample_rate')==s['sample_rate_hz'] and
-+                first.get('decode_mode')==s['decode_mode'] and first.get('right_context')==s['right_context'] and
++                first.get('decode_mode')==observed_mode and first.get('right_context')==s['right_context'] and
 +                first.get('batch')==s['batch_size'] and first.get('threads')==2 and
 +                type(first.get('wall_s')) in (int,float) and first['wall_s']>0)
 +    if kind=='command':
@@ -2564,7 +2589,7 @@
 +if __name__ == '__main__': raise SystemExit(main())
 --- /dev/null
 +++ b/bin/qual-v2-row/ready_manifest.schema.json
-@@ -0,0 +1,609 @@
+@@ -0,0 +1,615 @@
 +{
 +  "$defs": {
 +    "pinnedFile": {
@@ -2990,6 +3015,8 @@
 +            "qualification-same-recipe",
 +            "calibrated-production",
 +            "speech-calibrated-production",
++            "parakeet-unknown-calibration",
++            "unified-unknown-calibration",
 +            "command-same-recipe",
 +            "command-calibrated-production",
 +            "calibrated-work-unit",
@@ -3100,6 +3127,10 @@
 +        "threads": {
 +          "minimum": 1,
 +          "type": "integer"
++        },
++        "qualification_decode_mode": {
++          "minLength": 1,
++          "type": "string"
 +        }
 +      },
 +      "required": [
