@@ -92,7 +92,7 @@ This packet is for rollout evidence only. It does not enable `AUTOPILOT_BSV2_ACC
 
 ### Research Intake Update — 2026-07-14
 
-- [ ] **When AP-29 KnowledgeDistiller is wired** (currently deferred — see AP-29), apply an explicit **predictability + staleness gate** to it: what to precompute, for how many consumers, invalidate on stack/config change (framing from intake-819 + the 2026-05-20 predictability-co-objective note; adopt_patterns only, no importable artifact). This is a rider on AP-29, **not** new standalone scaffolding.
+- [ ] **When AP-29 KnowledgeDistiller is wired** [too-big: conditional on owner-controlled AP-29 comparison and wiring] (currently deferred — see AP-29), apply an explicit **predictability + staleness gate** to it: what to precompute, for how many consumers, invalidate on stack/config change (framing from intake-819 + the 2026-05-20 predictability-co-objective note; adopt_patterns only, no importable artifact). This is a rider on AP-29, **not** new standalone scaffolding.
 
 
 ### Research-intake integration — 2026-07-22 (measurement-discipline hardening + orx/OpenHyra patterns)
