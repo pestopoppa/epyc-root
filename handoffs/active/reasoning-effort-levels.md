@@ -137,10 +137,7 @@ llama.cpp silently shrinks `n_ctx_slot = n_ctx / n_parallel` → **truncation** 
 meant to fix). This makes budget-selection and admission-control **one problem**.
 
 **The router design this implies (the operator's framing):**
-- [x] **TB-5 — Expose `max_tokens` / `reasoning_budget` as a per-request tunable surface** the router
-      sets from **assessed task complexity** (easy → tight budget, hard → generous). Requires per-request
-      budget plumbing through the orchestrator serving path (llama-server already accepts it per request).
-      Natural extension of [[project_learned_routing_controller]] — budget becomes a routing *output*. ✅ 2026-11-01 — Orchestrator `2b9e710de2d5e183c790523c72dbbeca117e8a16` on `origin/main`; 55 focused controls passed under R6. Evidence: [TB-5 artifact](../../artifacts/engineering/tb5-request-budget-surface-20261101/README.md). [no-belief: implementation and deterministic software controls; no measurement or production behavior claim]
+- [x] **TB-5 — Expose `max_tokens` / `reasoning_budget` as a per-request tunable surface** the router sets from **assessed task complexity** (easy → tight budget, hard → generous). Requires per-request budget plumbing through the orchestrator serving path (llama-server already accepts it per request). Natural extension of [[project_learned_routing_controller]] — budget becomes a routing *output*. ✅ 2026-11-01 — Orchestrator `2b9e710de2d5e183c790523c72dbbeca117e8a16` on `origin/main`; 55 focused controls passed under R6. Evidence: [TB-5 artifact](../../artifacts/engineering/tb5-request-budget-surface-20261101/README.md). [no-belief: implementation and deterministic software controls; no measurement or production behavior claim]
 - [x] **TB-6-exec — np × context throughput surface, ALL GPU architect candidates (GPU-only study).**
       ✅ 2026-07-23 — COMPLETE for **A1** (122B-A10B UD-IQ2_M, MoE, MTP2), **A3** (Qwen3.6-27B dense Q8, MTP4),
       **A4** (Qwen3.6-35B-A3B Q8, MoE, MTP4) — each at its own max-opt MTP depth, v7 kernel, MI210. Grid
