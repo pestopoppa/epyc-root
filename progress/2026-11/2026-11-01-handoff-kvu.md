@@ -173,3 +173,7 @@ Consumed both events. Filed the bounded original VKQ3 FAIL-2 facts in the handof
 ## KVU-12.6 length support
 
 Consumed both events. The retained KVU-12.6 driver hashes to `43e4fcad361693cddbed8f616bb0f02895e0f4fd7ab2dc01233cca74459ecdf0` and lacks 48k/96k length keys. Preserved the [minimal patch draft](../../artifacts/compute/kvu12-6-prep-20261101/README.md); it is not installed or a runnable row. Actual resident cells and resume depths require native measurement and a predeclared matching rule. Clone3 security review found no new definite source defect but inherited pre-exec signal behavior remains unverified; no compile or process ran. Registered independent patch review, producer preparation and signal-contract work. GitNexus is unindexed; no application symbol was edited.
+
+## KVU-12.6 preflight and signal custody
+
+Consumed all three events and pushed the previously blocked lane checkpoint. Independent review verified the pinned length patch and six nominal selections. The [matrix preflight](../../artifacts/compute/kvu12-6-producer-20261101/README.md) passes five offline tests but does not capture actual occupancy or implement a runnable producer. The [clone3 signal analysis](../../artifacts/compute/kvu16h-q38-clone3-signal-20261101/README.md) identifies inherited signal mask/disposition custody as unresolved; its proposed launcher architecture is one possible design, not a proven requirement. No build, live process or compute ran. Producer continuation is registered for review. GitNexus remains unindexed; no application symbol was edited.
