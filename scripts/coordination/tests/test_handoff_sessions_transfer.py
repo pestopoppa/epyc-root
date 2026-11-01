@@ -176,7 +176,10 @@ class WrappedParsingTests(_Fixture):
         self.assertIn("OPEN yarn: 1 advanceable row(s)", self.log_text())
         ld.assert_any_call("83c110265331")
         # a row published during the turn is an effect -> 21:15Z pause rule: resumed at once with "continue: next task"
-        e.update({"pid": 99999999, "last_output": out, "status": "live", "last_resume": hs.now_iso()})
+        e.update({"pid": 99999999, "last_output": out, "status": "live",
+                  "last_resume": hs._dt.datetime.now(hs._dt.timezone.utc).replace(microsecond=0).strftime("%Y-%m-%dT%H:%M:%SZ")})
+        _w(os.path.join(self.flags, "ready", "yarn-9.json"), "{}")  # placeholder so the next turn has an effect
+        e["last_resume"] = hs._dt.datetime.fromtimestamp(hs.time.time() - 11 * 60, hs._dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
         hs.save(hs.reg_path(self.flags), reg)
         _w(os.path.join(self.flags, "ready", "yarn-9.json"), json.dumps({"schema": "epyc.row.v3", "id": "yarn-9", "owner": "yarn", "lane": "cpu"}))
         with patch.object(hs, "landed", return_value=True):
@@ -184,7 +187,7 @@ class WrappedParsingTests(_Fixture):
         e = reg["sessions"][self.slug]
         self.assertEqual(e["status"], "live")
         self.assertEqual(len(self.calls), 1)
-        self.assertIn("continue: next task", self.calls[0]["prompt"])
+        self.assertIn("continue: FINISH ALL READY ITEMS", self.calls[0]["prompt"])
         self.assertIn("INFERENCE FIRST", self.calls[0]["prompt"])
         self.assertIn("NEVER wait in this turn", self.calls[0]["prompt"])
 
