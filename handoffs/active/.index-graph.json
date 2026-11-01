@@ -3939,7 +3939,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-01T21:46:05Z",
+  "generated_at": "2026-11-01T21:50:36Z",
   "nodes": [
     {
       "age_days": 94,
@@ -6401,13 +6401,13 @@
         "INF-06",
         "INF-50"
       ],
-      "closed": 34,
+      "closed": 35,
       "domain": "inference-research",
       "handoff": "dflash2-block-drafter-experimental-build.md",
       "id": "INF-62",
       "last_advanced": "2026-11-01",
       "next_action": "DF2 open rows (DF2-DRAFTER-CAPABILITY, DF2-11/12/13/15/16/20, DF2-LB1); Qwopus items CANCELLED 2026-10-27",
-      "open": 22,
+      "open": 23,
       "priority": 0.9538,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-df2-byte-capture-ready-20261027: harness fix",
@@ -6484,7 +6484,7 @@
         "INF-62",
         "INF-64"
       ],
-      "closed": 75,
+      "closed": 76,
       "domain": "inference-research",
       "handoff": "autokernel-champion-aggregate.md",
       "id": "INF-65",
@@ -8116,8 +8116,8 @@
       "handoff": "session-bus-thin-dispatcher.md",
       "id": "RTG-34",
       "last_advanced": "2026-11-01",
-      "next_action": "AIR-6 \u2014 deploy exact guarded source and require ordinary-work refusal; then resume live canaries",
-      "open": 37,
+      "next_action": "AIR-6 \u2014 deploy exact guarded source and require ordinary-work refusal; then DSH-2 run-end ack-by-receipt",
+      "open": 42,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
