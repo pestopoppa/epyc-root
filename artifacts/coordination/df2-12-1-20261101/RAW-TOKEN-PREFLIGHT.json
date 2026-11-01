@@ -1,0 +1,26 @@
+{
+  "schema": "epyc.df2_12_1.raw_vocab_preflight.v1",
+  "manifest_sha256": "de3096605c354c6346418267ad09efc5cbf6eb7599816301a940e3b93cb8e0e1",
+  "tokenizer_binary_sha256": "3893e741f796e21342fd0d5a599db9e9eb3050448532689339f2523f19776407",
+  "mode": "vocab-only raw prompts; no rendered chat template or model inference",
+  "counts": {
+    "frontdoor_mtp": {
+      "A": 95,
+      "B": 95,
+      "C": 95,
+      "D": 95,
+      "E": 95
+    },
+    "architect_dflash": {
+      "A": 95,
+      "B": 95,
+      "C": 95,
+      "D": 95,
+      "E": 95
+    }
+  },
+  "equal_raw_salted": {
+    "frontdoor_mtp": true,
+    "architect_dflash": true
+  }
+}

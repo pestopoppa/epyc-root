@@ -1,0 +1,140 @@
+{
+  "schema": "epyc.df2_12_1.instrumented_frontend.v1",
+  "role": "cpu",
+  "scope": "INSTRUMENTED_PRODUCTION_CODE_FRONTEND_NOT_LIVE_FROZEN_BINARY",
+  "source_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "source_context_sha256": "f45a212c0a71e648fae6133ef7ae541ad8c2e00d850240a9d100339993bca902",
+  "patched_context_sha256": "ae7b293f8799342ea3683877445185fe9f62b1ace483a12c7dfe272595bb1979",
+  "trace_patch_sha256": "af9fbaf7ed56b92ea9aa1ab8cb401b97d02915e0a71a62d2a1930ca0bd1b9271",
+  "frozen_inputs": {
+    "/mnt/raid0/llm/tmp/champ2/tools/server/server-context.cpp": {
+      "sha256": "f45a212c0a71e648fae6133ef7ae541ad8c2e00d850240a9d100339993bca902",
+      "mtime_ns": 1788866201809693965
+    },
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/tools/server/libserver-context.a": {
+      "sha256": "f704d1fa77f14f1218e723c1104e4896a7234777ca072922fea0c7df146b543d",
+      "mtime_ns": 1790001464160695838
+    },
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/tools/server/CMakeFiles/llama-server-impl.dir/server.cpp.o": {
+      "sha256": "0e1c0fbf5aab29d3ea2de07c911a066474d88e53bbaec1a75a6be510f2235a13",
+      "mtime_ns": 1790001468553734044
+    },
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/tools/server/CMakeFiles/llama-server-impl.dir/server-http.cpp.o": {
+      "sha256": "6470f12bafb35e72a1a51c2c771928d667e7dd66b709ca49674f19e0216ce629",
+      "mtime_ns": 1790001469047738342
+    },
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/tools/server/CMakeFiles/llama-server-impl.dir/server-models.cpp.o": {
+      "sha256": "13288474832b866e4e95471217367e1f3a8564510e23612f21aec7df6b2ddf57",
+      "mtime_ns": 1790001471566760265
+    },
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/tools/ui/libllama-ui.a": {
+      "sha256": "c208bf06f1ddd4681aeffb48373112aedc95f68874b76caaa15d314779bbaa4f",
+      "mtime_ns": 1790001461136669556
+    },
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/vendor/cpp-httplib/libcpp-httplib.a": {
+      "sha256": "7ac0a63741e667d2706bc831299bd3cbe5dd6330bb0bad42af3df4f5322a6b32",
+      "mtime_ns": 1790001434374437568
+    },
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/common/libllama-common-base.a": {
+      "sha256": "b67d2fa6a0b82c27f95e274967635b546701968e409623c3c3ff165af08ae45e",
+      "mtime_ns": 1790001423819176690
+    },
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303": {
+      "sha256": "dfd31d4bb51818e5507b9eeaa7766452cab914f02bdbd1e0f18b4c3e9294de09",
+      "mtime_ns": 1790001453775605636
+    },
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libmtmd.so.0.0.10303": {
+      "sha256": "ba6f3ba8797a42d0d0b9927484a2b5d7e1dd8a0694521ff4bf49c9c413d419ab",
+      "mtime_ns": 1790001451114582550
+    },
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303": {
+      "sha256": "5cdd003d3f441e1efe42e4c06e4434b0195f25ab6317d64aa7e7cf60deaba844",
+      "mtime_ns": 1790001443459516197
+    },
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml.so.0.16.0": {
+      "sha256": "87074c95c8709c491e84b2c8b9c0b8fa911b1cd309fbd5536a4947063a96998e",
+      "mtime_ns": 1790001438306471583
+    },
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0": {
+      "sha256": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0",
+      "mtime_ns": 1790001437596465439
+    },
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0": {
+      "sha256": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a",
+      "mtime_ns": 1790001427319376597
+    },
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server": {
+      "sha256": "4483bcfc92c5c3bb0005df31e1c668cb565d49f7b40ba94f4df5a126cbbb648c",
+      "mtime_ns": 1790001471717942515
+    },
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/test-recurrent-state-rollback": {
+      "sha256": "1b430e8d5910553f6867db9ee80ac684552ce0c1f973a3c84557d8c796d44892",
+      "mtime_ns": 1790021005430985145
+    }
+  },
+  "compile_argv": [
+    "/usr/bin/c++",
+    "-DGGML_BACKEND_SHARED",
+    "-DGGML_SHARED",
+    "-DGGML_USE_CPU",
+    "-DLLAMA_SHARED",
+    "-I/mnt/raid0/llm/tmp/champ2/tools/server",
+    "-I/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/tools/server",
+    "-I/mnt/raid0/llm/tmp/champ2/tools/server/../mtmd",
+    "-I/mnt/raid0/llm/tmp/champ2",
+    "-I/mnt/raid0/llm/tmp/champ2/common/.",
+    "-I/mnt/raid0/llm/tmp/champ2/common/../vendor",
+    "-I/mnt/raid0/llm/tmp/champ2/src/../include",
+    "-I/mnt/raid0/llm/tmp/champ2/ggml/src/../include",
+    "-I/mnt/raid0/llm/tmp/champ2/tools/mtmd/.",
+    "-O3",
+    "-DNDEBUG",
+    "-fPIC",
+    "-Wmissing-declarations",
+    "-Wmissing-noreturn",
+    "-Wall",
+    "-Wextra",
+    "-Wpedantic",
+    "-Wcast-qual",
+    "-Wno-unused-function",
+    "-Wno-array-bounds",
+    "-Wextra-semi",
+    "-o",
+    "/mnt/raid0/llm/tmp/codex-ni-df2-12-1-prep-20261101/frontend-instrument/cpu/obj/server-context.cpp.o",
+    "-c",
+    "/mnt/raid0/llm/tmp/codex-ni-df2-12-1-prep-20261101/trace-patch-build/server-context.cpp"
+  ],
+  "link_argv": [
+    "/usr/bin/c++",
+    "-fPIC",
+    "-O3",
+    "-DNDEBUG",
+    "-shared",
+    "-Wl,-soname,libllama-server-impl.so",
+    "-o",
+    "/mnt/raid0/llm/tmp/codex-ni-df2-12-1-prep-20261101/frontend-instrument/cpu/bin/libllama-server-impl.so",
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/tools/server/CMakeFiles/llama-server-impl.dir/server.cpp.o",
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/tools/server/CMakeFiles/llama-server-impl.dir/server-http.cpp.o",
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/tools/server/CMakeFiles/llama-server-impl.dir/server-models.cpp.o",
+    "-Wl,-rpath,$ORIGIN",
+    "/mnt/raid0/llm/tmp/codex-ni-df2-12-1-prep-20261101/frontend-instrument/cpu/obj/libserver-context.a",
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/tools/ui/libllama-ui.a",
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/vendor/cpp-httplib/libcpp-httplib.a",
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303",
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/common/libllama-common-base.a",
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libmtmd.so.0.0.10303",
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303",
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0"
+  ],
+  "output_binary": "/mnt/raid0/llm/tmp/codex-ni-df2-12-1-prep-20261101/frontend-instrument/cpu/bin/llama-server",
+  "output_test": "/mnt/raid0/llm/tmp/codex-ni-df2-12-1-prep-20261101/frontend-instrument/cpu/bin/test-recurrent-state-rollback",
+  "output_dso": "/mnt/raid0/llm/tmp/codex-ni-df2-12-1-prep-20261101/frontend-instrument/cpu/bin/libllama-server-impl.so",
+  "output_hashes": {
+    "llama-server": "4483bcfc92c5c3bb0005df31e1c668cb565d49f7b40ba94f4df5a126cbbb648c",
+    "test-recurrent-state-rollback": "1b430e8d5910553f6867db9ee80ac684552ce0c1f973a3c84557d8c796d44892",
+    "libllama-server-impl.so": "8b38b9f2444aaa367125e4409ad3eecbfe6b97f2d9961f58f4ac1dbbc2bb70df"
+  },
+  "utc": "2026-11-01T01:53:06.631356+00:00"
+}

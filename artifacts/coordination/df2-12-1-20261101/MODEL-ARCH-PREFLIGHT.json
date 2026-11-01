@@ -1,0 +1,47 @@
+{
+  "schema": "epyc.df2_12_1.gguf_arch_preflight.v1",
+  "scope": "HEADER_AND_FROZEN_SOURCE_ELIGIBILITY; small qwen35 native failure separately sourced in NATIVE-DIRTY-FAILURE.md",
+  "source_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "source_arch_path": "/mnt/raid0/llm/llama.cpp/src/llama-arch.cpp",
+  "source_arch_sha256": "c5fd40fd85550db7bdead2fd992c6d2f5dc119f95137cb2bc03844e0d12464df",
+  "source_functions": ["llm_arch_is_recurrent", "llm_arch_is_hybrid", "llm_arch_supports_rs_rollback"],
+  "models": {
+    "frontdoor_target": {
+      "path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "size_bytes": 37801097504,
+      "sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+      "general.architecture": "qwen35moe",
+      "hybrid_source_supported": true,
+      "rs_rollback_source_supported": true,
+      "dirty_context_test_pass": false
+    },
+    "architect_target": {
+      "path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "size_bytes": 29047086048,
+      "sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+      "general.architecture": "qwen35",
+      "hybrid_source_supported": true,
+      "rs_rollback_source_supported": true,
+      "dirty_context_test_pass": false
+    },
+    "rollback_smoke_small": {
+      "path": "/mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf",
+      "size_bytes": 811843840,
+      "sha256": "0ad885ffd4bb022fc4f0d33a3308fa108ef8613159d3b3a67e23abca056b7a6c",
+      "general.architecture": "qwen35",
+      "hybrid_source_supported": true,
+      "rs_rollback_source_supported": true,
+      "dirty_context_test_pass": false,
+      "native_result_scope": "R11 CPU small-model unit test; two dirty-restore mismatches; no target-role parity observation"
+    },
+    "rejected_drafter": {
+      "path": "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+      "size_bytes": 2056414752,
+      "sha256": "7f1c9a31a6ed40044c69f6508b50fd63b87abd8e1fb7fe4290303df549153751",
+      "general.architecture": "dflash",
+      "hybrid_source_supported": false,
+      "rs_rollback_source_supported": false,
+      "reason": "test-recurrent-state-rollback skips non-recurrent/non-hybrid architecture"
+    }
+  }
+}

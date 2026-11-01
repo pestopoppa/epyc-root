@@ -1,0 +1,36 @@
+{
+  "pid": 808966,
+  "birth_ticks": 162231558,
+  "pgid": 808802,
+  "observed_cpus": [
+    128,
+    129
+  ],
+  "peak_rss_bytes": 1639329792,
+  "kfd_seen": false,
+  "peak_host_vram_used_bytes": 54318866432,
+  "launched_epoch": 1793499842.3464513,
+  "ended_epoch": 1793499846.9983156,
+  "returncode": 1,
+  "own_pid_dead": true,
+  "mapped_llama_ggml_libraries": {
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a",
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0",
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml.so.0.16.0": "87074c95c8709c491e84b2c8b9c0b8fa911b1cd309fbd5536a4947063a96998e",
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303": "dfd31d4bb51818e5507b9eeaa7766452cab914f02bdbd1e0f18b4c3e9294de09",
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303": "5cdd003d3f441e1efe42e4c06e4434b0195f25ab6317d64aa7e7cf60deaba844"
+  },
+  "argv": [
+    "/mnt/raid0/llm/tmp/codex-ni-df2-12-1-prep-20261101/frontend-instrument/cpu/bin/test-recurrent-state-rollback",
+    "--model",
+    "/mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf",
+    "--ctx-size",
+    "1024",
+    "--batch-size",
+    "128",
+    "--ubatch-size",
+    "128",
+    "--n-gpu-layers",
+    "0"
+  ]
+}

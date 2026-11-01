@@ -1,0 +1,29 @@
+{
+  "pid": 771238,
+  "birth_ticks": 162219393,
+  "pgid": 770664,
+  "observed_cpus": [
+    128,
+    129
+  ],
+  "peak_rss_bytes": 1639358464,
+  "kfd_seen": false,
+  "peak_host_vram_used_bytes": 54316773376,
+  "launched_epoch": 1793499720.6995676,
+  "ended_epoch": 1793499725.2311976,
+  "returncode": 1,
+  "own_pid_dead": true,
+  "argv": [
+    "/mnt/raid0/llm/tmp/codex-ni-df2-12-1-prep-20261101/frontend-instrument/cpu/bin/test-recurrent-state-rollback",
+    "--model",
+    "/mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf",
+    "--ctx-size",
+    "1024",
+    "--batch-size",
+    "128",
+    "--ubatch-size",
+    "128",
+    "--n-gpu-layers",
+    "0"
+  ]
+}

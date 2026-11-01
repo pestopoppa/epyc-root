@@ -1,0 +1,15 @@
+{
+  "schema": "epyc.df2_12_1.rollback_test.v1",
+  "identity_sha256": "ea4783c955ee027f3155105661abbb254e9798b237226ac00eef04653265c721",
+  "test_binary_sha256": "1b430e8d5910553f6867db9ee80ac684552ce0c1f973a3c84557d8c796d44892",
+  "hybrid_model": "/mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf",
+  "hybrid_model_size": 811843840,
+  "hybrid_model_sha256": "0ad885ffd4bb022fc4f0d33a3308fa108ef8613159d3b3a67e23abca056b7a6c",
+  "rc": 1,
+  "output": "warning: no usable GPU found, --gpu-layers option will be ignored\nwarning: one possible reason is that llama.cpp was compiled without GPU support\nwarning: consult docs/build.md for compilation instructions\nmain : dirty-ctx logits mismatch at position 6, token 0 (6.07728 != 8.13747)\n",
+  "wall_s": 4.532238245010376,
+  "dirty_context_reached": false,
+  "pass": false,
+  "utc": "2026-11-01T02:22:05.231742+00:00",
+  "native_process_receipt_sha256": "2c1da39f89f30c842b71e30e82a530384a16afa8df28eebf9c7bf54f9d1e0e70"
+}

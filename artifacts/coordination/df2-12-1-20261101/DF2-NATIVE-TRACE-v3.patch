@@ -1,0 +1,78 @@
+--- a/tools/server/server-context.cpp
++++ b/tools/server/server-context.cpp
+@@ -19,6 +19,7 @@
+ #include "mtmd-helper.h"
+ 
+ #include <algorithm>
++#include <atomic>
+ #include <cstddef>
+ #include <cstring>
+ #include <cinttypes>
+@@ -3508,6 +3509,12 @@
+                         }
+ 
+                         slot.n_prompt_tokens_cache = n_past;
++                        if (getenv("DF2_NATIVE_TRACE") != nullptr && strcmp(getenv("DF2_NATIVE_TRACE"), "1") == 0) {
++                            const llama_pos df2_pos_min = llama_memory_seq_pos_min(llama_get_memory(ctx_tgt), slot.id);
++                            SLT_INF(slot, "DF2_NATIVE_REUSE_V1 slot=%d task=%d cache_prompt=%d n_past=%d old_prompt_tokens=%d seq_pos_min=%d checkpoints=%zu\n",
++                                    slot.id, slot.task->id, slot.task->params.cache_prompt ? 1 : 0,
++                                    n_past, slot.prompt.n_tokens(), df2_pos_min, slot.prompt.checkpoints.size());
++                        }
+                         slot.n_prompt_tokens_processed = 0;
+ 
+                         slot.prompt.tokens.keep_first(n_past);
+@@ -3995,6 +4002,42 @@
+     }
+ 
+     void post_decode(int32_t n_batch_tokens, int32_t off, llama_batch & batch_view) {
++        // DF2-12.1 measurement instrument: ordinary serving has no trace-side counter mutation.
++        const bool df2_trace = getenv("DF2_NATIVE_TRACE") != nullptr && strcmp(getenv("DF2_NATIVE_TRACE"), "1") == 0;
++        static std::atomic<uint64_t> df2_trace_batch_counter{0};
++        const uint64_t this_df2_batch_id = df2_trace
++            ? df2_trace_batch_counter.fetch_add(1, std::memory_order_relaxed) + 1 : 0;
++        if (df2_trace) {
++            GGML_ASSERT(batch_view.n_tokens == n_batch_tokens); // get_view(off, n_tokens) at the caller
++            for (const auto & trace_slot : slots) {
++                int32_t n_slot_tokens = 0;
++                for (int32_t i = 0; i < batch_view.n_tokens; ++i) {
++                    for (int32_t j = 0; j < batch_view.n_seq_id[i]; ++j) {
++                        if (batch_view.seq_id[i][j] == trace_slot.id) {
++                            ++n_slot_tokens;
++                            break; // count each token once per slot
++                        }
++                    }
++                }
++                if (n_slot_tokens > 0) {
++                    GGML_ASSERT(trace_slot.task != nullptr);
++                    const bool is_prompt = trace_slot.state == SLOT_STATE_PROCESSING_PROMPT || trace_slot.state == SLOT_STATE_DONE_PROMPT;
++                    uint64_t df2_prompt_fp = 14695981039346656037ULL;
++                    const auto df2_task_tokens = trace_slot.task->tokens.get_tokens();
++                    for (const llama_token df2_token : df2_task_tokens) {
++                        const uint32_t df2_id = (uint32_t) df2_token;
++                        for (int shift = 0; shift < 32; shift += 8) {
++                            df2_prompt_fp ^= (df2_id >> shift) & 0xff;
++                            df2_prompt_fp *= 1099511628211ULL;
++                        }
++                    }
++                    SRV_INF("DF2_NATIVE_BATCH_V1 batch=%" PRIu64 " slot=%d task=%d phase=%s prompt_len=%zu prompt_fp=%" PRIu64 " slot_tokens=%d decoded_subbatch_len=%d scheduler_batch_len=%d off=%d\n",
++                            this_df2_batch_id, trace_slot.id, trace_slot.task->id, is_prompt ? "prompt" : "decode",
++                            df2_task_tokens.size(), df2_prompt_fp,
++                            n_slot_tokens, n_batch_tokens, (int) batch.size(), off);
++                }
++            }
++        }
+         // for checking if a given batch index is inside batch_view
+         auto is_inside_view = [&](int32_t idx) {
+             return idx >= off && idx < off + n_batch_tokens;
+@@ -4155,6 +4198,11 @@
+                 GGML_ASSERT(accepted.size() >= 1);
+ 
+                 const uint32_t n_rollback = slot.spec_draft.size() + 1 - accepted.size();
++                if (df2_trace) {
++                    SLT_INF(slot, "DF2_NATIVE_ROUND_V1 batch=%" PRIu64 " slot=%d task=%d draft_n=%zu accepted=%zu rollback=%u decoded_subbatch_len=%d scheduler_batch_len=%d off=%d\n",
++                            this_df2_batch_id, slot.id, slot.task->id, n_draft, accepted.size() - 1, n_rollback,
++                            n_batch_tokens, (int) batch.size(), off);
++                }
+ 
+                 const bool use_ckpt_tgt =
+                     !serial_verify && (
