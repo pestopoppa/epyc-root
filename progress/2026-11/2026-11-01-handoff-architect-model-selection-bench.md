@@ -11,3 +11,7 @@ Dispatched three file-triggered investigations for a current-model GPU row, CPU 
 ## 23:12Z — File completed CPU2b baseline and prepare approved ThinkingCap comparison
 
 Consumed GPU, CPU and ThinkingCap investigations. Filed CPU2b rc=0, 12/12 legs and 36/36 rows as uncertified throughput characterization; broader comparison remains open because incumbent and current tokens/task were absent. Historical GPQA arms are superseded by the current-model retarget. Dispatched ThinkingCap weight verification, objective suite and runner preparation with file-triggered outcomes.
+
+## 23:22Z — Advance ThinkingCap suite and four-arm evaluation preparations
+
+Consumed both AMS-TCAP preparation results: the 20-item AIME25 draft is objective but incomplete; agentic/planning oracle and frozen full suite remain. The analyzer draft passes four offline tests, while execution, instrumentation, head compatibility, and keeper allocation remain unproven. Dispatched bounded independent suite, launcher, and instrumentation implementation tasks with file-triggered outcomes. ThinkingCap weight fetch is separately in progress. No inference row published.
