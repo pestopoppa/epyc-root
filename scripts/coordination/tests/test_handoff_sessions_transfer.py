@@ -143,7 +143,7 @@ class UnwrappedGateTests(_Fixture):
             reg, st = self.dispatch()
         self.assertEqual(len(self.calls), 1)
         self.assertIn("row `yarn-1`", self.calls[0]["prompt"])
-        self.assertIn("file the verdict yourself", self.calls[0]["prompt"])
+        self.assertIn("File the verdict yourself", self.calls[0]["prompt"])
         self.assertIn("filing-done/yarn-1.FILED", self.calls[0]["prompt"])
         self.assertEqual(st["queue"], [])
 

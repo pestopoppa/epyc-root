@@ -206,20 +206,21 @@ runs under "Own inference tasks to publish as rows" and your handoff's rank amon
    rule 2: 3 failed qualifications of a lineage -> parked, stop retrying; rule 3: you fix cross-session code blocking
    your row (reviewed commit, name the owner); rule 4: non-inference work is its own later turn, never an in-turn wait.
 
-## Wrap-up contract — at EVERY task boundary, before you end any turn
-- Progress entry in `progress/YYYY-MM/YYYY-MM-DD-handoff-{slug}.md`; handoff ticks with evidence; pathspec-limited
-  commit in your LANE (`git -C {lane_dir(slug)} commit -- <paths>`); push the lane to main via
-  `python3 scripts/coordination/serialized_push.py --agent handoff-{slug} --repo {lane_dir(slug)} --fetch --push`
-  (held lock = wait and retry; non-fast-forward = merge origin/main into the lane and retry); prove
-  `git -C {lane_dir(slug)} cherry origin/main <sha>` is empty.
-- Write `{flags}/handoff-sessions/{slug}/report.json` = {{"state": "progress|ready|blocked|failed|idle|dropped",
-  "wrapped_sha": "<sha>", "question": "<for the operator, or null>", "rows_published": ["<row ids>"]}} (DSH-1: the
-  dispatcher reads this record FIRST; the WRAPPED line below is the fallback). Then print `WRAPPED <sha>` (sha = the
-  landed commit) as the LAST line of your reply. The dispatcher will NOT resume you for new work until that sha is on
-  origin/main. A run-end event counts as consumed ONLY when `filing-done/<id>.FILED` exists (DSH-2): without the
-  receipt it is redelivered to you (3x, then operator-escalations/).
+## Wrap-up contract — at EVERY task boundary, before you end any turn (CAF-2: ONE command)
+- Write ONE JSON: {{"slug": "{slug}", "state": "progress|ready|blocked|failed|idle|dropped", "task_text": "<what you did>",
+  "ticks": ["<exact text of each handoff box you completed>"], "progress_md": "<the progress entry>", "paths": ["<files you
+  changed, lane-relative>"], "belief": "cc|clm_<id>|no-belief: <reason>", "message": "<commit subject + body>",
+  "question": null, "rows_published": ["<row ids>"], "trailers": ["Co-Authored-By: ...", "Claude-Session: ..."]}} and run
+  `python3 scripts/coordination/churn/wrapup.py --json <file> --lane {lane_dir(slug)}`. It merges origin/main into your
+  lane, appends the progress entry (`progress/YYYY-MM/YYYY-MM-DD-handoff-{slug}.md`), ticks the boxes BY TEXT with the
+  belief tag, runs `index_state.py --check`, makes the pathspec commit with your trailers, pushes the lane to main through
+  `serialized_push.py`, proves `git cherry origin/main` empty, writes `{flags}/handoff-sessions/{slug}/report.json` (the
+  DSH-1 record, with `wrapped_sha`) and prints `WRAPPED <sha>` as its last line - make that the LAST line of your reply.
+  You never run progress/tick/commit/push/cherry by hand. The dispatcher reads report.json first and will NOT resume you
+  for new work until that sha is on origin/main. A run-end event counts as consumed ONLY when `filing-done/<id>.FILED`
+  exists (DSH-2; `file_result.py` touches it).
 - At a milestone, or when your context is large, wrap up and also say `FRESH-SESSION-REQUESTED`.
-- No unblockable work left in this handoff: wrap up and reply `IDLE: <reason>` after the `WRAPPED` line.
+- No unblockable work left in this handoff: wrap up with state `idle` and reply `IDLE: <reason>` after the `WRAPPED` line.
 
 ## Hard rules
 - Never arm, grant, qualify, kill or launch compute; never edit grants, the keeper, gates or another session's READY
@@ -249,7 +250,37 @@ def manifest_for(flags, rid):
     return None, {}
 
 
-def end_prompt(slug, e, flags, rid, endfile, delta=""):
+FILE_RESULT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "churn", "file_result.py")
+
+
+def file_result(flags, rid, lane) -> tuple[int, str]:
+    """CAF-5: let the script file a numeric decision_rule before any agent turn. (rc, stdout). Monkeypatched in tests."""
+    try:
+        r = subprocess.run([sys.executable, "-I", FILE_RESULT, rid, "--flags", flags, "--lane", lane or ROOT],
+                           capture_output=True, text=True, timeout=120)
+        return r.returncode, (r.stdout or "") + (r.stderr or "")
+    except (OSError, subprocess.TimeoutExpired) as ex:
+        return 2, str(ex)
+
+
+def filing_step(flags, rid, filing):
+    """Step 3 of the run-end prompt. CAF-5 deletes the agent filing turn for numeric rules: when file_result.py filed
+    the row (rc 0) the agent only carries the TICK line into its wrap-up; rc 4 = the rule needs the agent's verdict JSON."""
+    rc, out = filing if filing else (None, "")
+    tick = next((ln for ln in out.splitlines() if ln.startswith("TICK ")), "")
+    if rc == 0:
+        return (f"3. FILED BY SCRIPT (file_result.py): {out.strip().splitlines()[0][:300] if out.strip() else 'filed'}. The receipt "
+                f"filing-done/{rid}.FILED exists; do NOT re-file. Put this tick line in your wrap-up ticks: `{tick[5:300]}`.")
+    if rc == 4:
+        return (f"3. The decision_rule is not machine-checkable. Write {{\"verdict\": \"pass|fail|inconclusive\", \"rationale\": \"...\", "
+                f"\"tick_text\": \"<exact open box text>\"}} to a file and run `python3 scripts/coordination/churn/file_result.py {rid} "
+                f"--flags {flags} --verdict-json <file> --lane <your lane>`: it writes the verdict record, ticks the box and touches "
+                f"filing-done/{rid}.FILED (the receipt that acks this event and lets the reaper reclaim scratch).")
+    return (f"3. Filing script result rc={rc}: {out.strip()[:200]}. File the verdict yourself (read result_path, apply decision_rule, "
+            f"tick the handoff with evidence) and `touch {flags}/filing-done/{rid}.FILED` — the receipt acks this event.")
+
+
+def end_prompt(slug, e, flags, rid, endfile, delta="", filing=None):
     mp, m = manifest_for(flags, rid)
     try:
         endline = open(endfile).read().strip()[:400]
@@ -267,16 +298,14 @@ def end_prompt(slug, e, flags, rid, endfile, delta=""):
 2. Facts: end file {endfile}: `{endline}` (rc={rc}); launcher end line: `{tail}`;
    manifest {mp or '(not found; look in ' + flags + '/ready/<id>.json or ready/armed/<id>.json)'} (schema {m.get('schema', 'epyc.row.v2|v3')});
    result_path: {m.get('result_path')}; handoff_task: {m.get('handoff_task')}; decision_rule: {json.dumps(m.get('decision_rule'))[:800]}.
-3. YOU file the verdict yourself: read result_path, apply decision_rule, tick the handoff with evidence. No filing
-   subagent does this for you. Then `touch {flags}/filing-done/{rid}.FILED` — that receipt is what lets the
-   deterministic keeper reaper reclaim the scratch_root; without it nothing is reclaimed (reclaim is not your job).
+{filing_step(flags, rid, filing)}
    Row state any time: `python3 scripts/coordination/rowflow/rowflow.py status <id>` (needs-dryrun, dryrun-running,
    failed [owner fix task in {flags}/dryrun/<id>/FAIL-*.json], parked, grantable, armed, running, done).
 4. Decide the next step and publish the next row: `python3 scripts/coordination/rowflow/publish_row.py <spec.json>`
    (spec: id, owner, launcher, lane cpu|gpu, result_path, result_format, decision_rule, estimate_s, handoff_task,
    priority_rank). Continue per {flags}/briefs/HANDOFF-{slug}.md.
-5. Wrap up at this task boundary (progress/YYYY-MM/YYYY-MM-DD-handoff-{slug}.md, handoff ticks, pathspec commit,
-   serialized_push.py, `git cherry origin/main <sha>` empty) and print `WRAPPED <sha>` as your LAST line."""
+5. Wrap up: ONE JSON -> `python3 scripts/coordination/churn/wrapup.py --json <file> --lane {lane_dir(slug)}` (CAF-2); its
+   `WRAPPED <sha>` is your LAST line."""
 
 
 def delta_block(delta):
@@ -286,10 +315,9 @@ def delta_block(delta):
 
 def idle_prompt(slug, e, flags, delta=""):
     return f"""[{VERSION}] Continue your handoff {e['handoff']}. {FANOUT_LINE} {lane_line(slug)}
-{delta_block(delta).replace('{flags}', flags).replace('<slug>', slug)}Take the top actionable item per {flags}/briefs/HANDOFF-{slug}.md (inference first).
-Wrap up at EVERY task boundary (progress/YYYY-MM/YYYY-MM-DD-handoff-{slug}.md, handoff ticks, pathspec commit,
-serialized_push.py, `git cherry origin/main <sha>` empty) and print `WRAPPED <sha>` as your LAST line
-(add `IDLE: <reason>` after it when nothing unblockable is left)."""
+{delta_block(delta).replace('{flags}', flags).replace('<slug>', slug)}Take the top actionable item per {flags}/briefs/HANDOFF-{slug}.md (inference first). Wrap up with ONE JSON ->
+`python3 scripts/coordination/churn/wrapup.py --json <file> --lane {lane_dir(slug)}` (CAF-2); its `WRAPPED <sha>` is your
+LAST line (add `IDLE: <reason>` after it when nothing unblockable is left)."""
 
 
 def continue_prompt(slug, e, flags, why="", delta=""):
@@ -298,9 +326,9 @@ everything left waits on an inference row that is queued or running (operator ru
 {lane_line(slug)}
 {delta_block(delta).replace('{flags}', flags).replace('<slug>', slug)}INFERENCE FIRST: publish this handoff's measurement
 tasks as rows (`publish_row.py`, fastest-clearable blockers first) before any non-inference task; then the top non-inference
-item per {flags}/briefs/HANDOFF-{slug}.md. Wrap up at this task boundary (progress/YYYY-MM/YYYY-MM-DD-handoff-{slug}.md,
-handoff ticks, pathspec commit, serialized_push.py, `git cherry origin/main <sha>` empty) and print `WRAPPED <sha>` as
-your LAST line (add `IDLE: <reason>` after it only if truly nothing is publishable or doable)."""
+item per {flags}/briefs/HANDOFF-{slug}.md. Wrap up with ONE JSON -> `python3 scripts/coordination/churn/wrapup.py --json <file>
+--lane {lane_dir(slug)}` (CAF-2); its `WRAPPED <sha>` is your LAST line (add `IDLE: <reason>` after it only if truly nothing
+is publishable or doable)."""
 
 
 def transfer_prompt(slug, e, flags, repo=ROOT):
@@ -1034,7 +1062,10 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             elif ev.get("kind") == "awaiting":
                 pr = awaiting_prompt(ev["slug"], e, flags, ev.get("data") or {})
             else:
-                pr = end_prompt(ev["slug"], e, flags, ev["rid"], ev["end"], delta(ev["slug"]))
+                filing = None if filed(flags, ev["rid"]) else file_result(flags, ev["rid"], e.get("cwd") or lane_dir(ev["slug"]))
+                if filing and filing[0] == 0:
+                    log(flags, f"FILED-BY-SCRIPT {ev['rid']} -> {ev['slug']}: {filing[1].strip().splitlines()[0][:160] if filing[1].strip() else ''}")
+                pr = end_prompt(ev["slug"], e, flags, ev["rid"], ev["end"], delta(ev["slug"]), filing)
             _go(flags, ev["slug"], e, pr, runner, ev if ev.get("kind") in (None, "run-end") else None)
             launched.add(ev["slug"])
             live += 1

@@ -1,0 +1,250 @@
+#!/usr/bin/env python3
+"""CAF-5 — file a row's run result without an agent turn when its decision_rule is machine-checkable.
+
+    python3 scripts/coordination/churn/file_result.py <row-id> [--flags DIR] [--verdict-json FILE]
+                                                          [--lane DIR] [--dry-run]
+
+Reads the epyc.row.v3 manifest (<flags>/ready/<id>.json or ready/*/<id>.json), the end record
+(<flags>/grants/<id>.ended|.complete, first line `rc=N ...`) and the result at `result_path`
+(json: top-level keys, dotted paths allowed; jsonl: LAST record's keys plus `units` = record count;
+`rc` always available). A decision_rule is MACHINE-CHECKABLE when it is a conjunction/disjunction
+of `<metric> <op> <number>[%]` (ops < <= > >= == !=, `and`/`or`, parentheses). `%` and a leading
+sign are notation only: the metric is compared against the bare number.
+
+Exit codes: 0 verdict filed (pass|fail|inconclusive — a missing metric is inconclusive, never pass);
+4 NEEDS-AGENT-VERDICT (rule not machine-checkable and no --verdict-json); 2 manifest or end record
+missing / bad --verdict-json; 5 checkbox tick failed (verdict still written, FILED not touched).
+The verdict record validates against scripts/coordination/filed_verdict.schema.json
+(epyc.filed.verdict.v1, additionalProperties) and adds {row, verdict, rule, values, rc, result_path,
+filed_by, at}. Stdlib only.
+"""
+import argparse, datetime, glob, hashlib, json, os, re, sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.dirname(HERE))
+DEFAULT_FLAGS = os.environ.get("ROWFLOW_FLAGS", "/mnt/raid0/llm/tmp/compute-flags")
+OPS = {"<": lambda a, b: a < b, "<=": lambda a, b: a <= b, ">": lambda a, b: a > b,
+       ">=": lambda a, b: a >= b, "==": lambda a, b: a == b, "!=": lambda a, b: a != b}
+TOKEN = re.compile(r"\s*(?:(?P<num>[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?%?)|(?P<op><=|>=|==|!=|<|>)"
+                   r"|(?P<kw>\b(?:and|or)\b)|(?P<par>[()])|(?P<id>[A-Za-z_][\w.\-]*))")
+
+
+class RuleError(ValueError):
+    pass
+
+
+class Missing(KeyError):
+    pass
+
+
+def tokenize(rule):
+    pos, out = 0, []
+    while pos < len(rule.rstrip()):
+        m = TOKEN.match(rule, pos)
+        if not m or m.end() == pos:
+            raise RuleError(f"unparseable at {rule[pos:pos + 20]!r}")
+        pos = m.end()
+        kind = m.lastgroup
+        out.append((kind, m.group(kind)))
+    return out
+
+
+def parse(rule):
+    """Return a nested tuple AST or raise RuleError. ('cmp', name, op, number) | ('and'|'or', a, b)."""
+    toks = tokenize(rule)
+    if not toks:
+        raise RuleError("empty rule")
+    i = [0]
+
+    def peek():
+        return toks[i[0]] if i[0] < len(toks) else (None, None)
+
+    def take(kind=None, val=None):
+        k, v = peek()
+        if k is None or (kind and k != kind) or (val and v != val):
+            raise RuleError(f"expected {val or kind}, got {v!r}")
+        i[0] += 1
+        return v
+
+    def atom():
+        if peek() == ("par", "("):
+            take(); node = expr(); take("par", ")"); return node
+        name = take("id"); op = take("op"); num = take("num")
+        return ("cmp", name, op, float(num.rstrip("%")))
+
+    def term():
+        node = atom()
+        while peek() == ("kw", "and"):
+            take(); node = ("and", node, atom())
+        return node
+
+    def expr():
+        node = term()
+        while peek() == ("kw", "or"):
+            take(); node = ("or", node, term())
+        return node
+
+    node = expr()
+    if i[0] != len(toks):
+        raise RuleError(f"trailing tokens from {toks[i[0]][1]!r}")
+    return node
+
+
+def lookup(metrics, name):
+    cur = metrics
+    for part in name.split("."):
+        if not isinstance(cur, dict) or part not in cur:
+            raise Missing(name)
+        cur = cur[part]
+    if isinstance(cur, bool):
+        return float(cur)
+    if isinstance(cur, (int, float)):
+        return float(cur)
+    try:
+        return float(str(cur).strip().rstrip("%"))
+    except ValueError:
+        raise Missing(name)
+
+
+def evaluate(node, metrics, values):
+    if node[0] == "cmp":
+        _, name, op, num = node
+        v = lookup(metrics, name); values[name] = v
+        return OPS[op](v, num)
+    a = evaluate(node[1], metrics, values)
+    b = evaluate(node[2], metrics, values)
+    return (a and b) if node[0] == "and" else (a or b)
+
+
+def load_manifest(flags, rid):
+    for p in [os.path.join(flags, "ready", rid + ".json")] + sorted(glob.glob(os.path.join(flags, "ready", "*", rid + ".json"))):
+        if os.path.isfile(p):
+            with open(p) as fh:
+                return p, json.load(fh)
+    return None, None
+
+
+def load_end(flags, rid):
+    for suf in (".ended", ".complete"):
+        p = os.path.join(flags, "grants", rid + suf)
+        if os.path.isfile(p):
+            with open(p, errors="replace") as fh:
+                line = fh.readline().strip()
+            m = re.search(r"\brc=(\d+)", line)
+            return p, (int(m.group(1)) if m else (0 if suf == ".complete" else None)), line
+    return None, None, ""
+
+
+def load_result(path, fmt):
+    """Return (metrics dict, sha256 or None). Globs resolve to the last match in sorted order."""
+    paths = sorted(glob.glob(path)) if any(c in path for c in "*?[") else [path]
+    paths = [p for p in paths if os.path.isfile(p)]
+    if not paths:
+        return {}, None
+    with open(paths[-1], "rb") as fh:
+        raw = fh.read()
+    sha = hashlib.sha256(raw).hexdigest()
+    text = raw.decode("utf-8", errors="replace")
+    if fmt == "jsonl":
+        recs = [json.loads(l) for l in text.splitlines() if l.strip()]
+        last = recs[-1] if recs and isinstance(recs[-1], dict) else {}
+        return dict(last, units=len(recs)), sha
+    if fmt == "json":
+        try:
+            d = json.loads(text)
+        except ValueError:
+            return {}, sha
+        return d if isinstance(d, dict) else {"value": d}, sha
+    return {}, sha  # csv/tsv/text: only rc is checkable
+
+
+def decide(rule, metrics):
+    """-> (verdict, values, machine_checkable, reason)."""
+    try:
+        ast = parse(rule)
+    except RuleError as e:
+        return None, {}, False, str(e)
+    values = {}
+    try:
+        ok = evaluate(ast, metrics, values)
+    except Missing as e:
+        return "inconclusive", values, True, f"metric missing from result: {e.args[0]}"
+    return ("pass" if ok else "fail"), values, True, ""
+
+
+def tick_line(rid, rc, verdict, values, filed_by):
+    vals = " ".join(f"{k}={v:g}" for k, v in values.items())
+    return (f"{rid} … ✅ {datetime.date.today().isoformat()} rc={rc} {verdict} {vals} "
+            f"[no-belief: row verdict filed by {filed_by}]").replace("  ", " ")
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    ap.add_argument("row_id")
+    ap.add_argument("--flags", default=DEFAULT_FLAGS)
+    ap.add_argument("--verdict-json", help="agent-written {verdict, rationale[, tick_text, filed_by]}")
+    ap.add_argument("--lane", default=os.getcwd(), help="worktree root that holds handoffs/ (for --verdict-json tick_text)")
+    ap.add_argument("--dry-run", action="store_true")
+    a = ap.parse_args(argv)
+    rid, flags = a.row_id, a.flags
+    mp, m = load_manifest(flags, rid)
+    if not m:
+        print(f"ERROR {rid}: no manifest in {flags}/ready/ or ready/*/", file=sys.stderr); return 2
+    ep, rc, endline = load_end(flags, rid)
+    if ep is None:
+        print(f"ERROR {rid}: no grants/{rid}.ended|.complete in {flags}", file=sys.stderr); return 2
+    agent = None
+    if a.verdict_json:
+        try:
+            with open(a.verdict_json) as fh:
+                agent = json.load(fh)
+            assert agent.get("verdict") in ("pass", "fail", "inconclusive")
+        except (OSError, ValueError, AssertionError) as e:
+            print(f"ERROR {rid}: bad --verdict-json ({e}); need {{verdict: pass|fail|inconclusive, rationale}}", file=sys.stderr); return 2
+    rule = str(m.get("decision_rule") or "")
+    result_path, fmt = str(m.get("result_path") or ""), str(m.get("result_format") or "json")
+    metrics, sha = load_result(result_path, fmt) if result_path else ({}, None)
+    metrics = dict(metrics, rc=rc if rc is not None else "?")
+    verdict, values, machine, reason = decide(rule, metrics)
+    filed_by = "file_result.py"
+    if not machine:
+        if agent is None:
+            print(f"NEEDS-AGENT-VERDICT {rid}: {rule}"); return 4
+        verdict, filed_by, reason = agent["verdict"], str(agent.get("filed_by") or "agent"), str(agent.get("rationale") or "")
+    now = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
+    rec = {"$schema": "epyc.filed.verdict.v1", "id": rid, "row": rid, "owner": str(m.get("owner") or "?"), "filed_at": now, "at": now,
+           "outcome_class": "SCIENCE-VERDICT" if verdict in ("pass", "fail") else "PARTIAL-VERDICT", "phase": "filing",
+           "compute_burned": True, "root_cause_family": None,
+           "verdict": {"status": "filed", "kind": "science", "native_result_sha256": sha or hashlib.sha256(b"").hexdigest(),
+                       "result": verdict}, "native_result_path": result_path, "result_exists": sha is not None,
+           "row_verdict": verdict, "rule": rule, "machine_checkable": machine, "values": values, "rc": rc, "end_line": endline,
+           "result_path": result_path, "result_format": fmt, "handoff_task": m.get("handoff_task"), "manifest": mp,
+           "filed_by": filed_by, "reason": reason, "agent_verdict": agent, "dry_run": a.dry_run}
+    done = os.path.join(flags, "filing-done")
+    summary = f"FILED {rid}: {verdict} rc={rc} rule={rule!r} values={json.dumps(values)} by={filed_by}" + (" (dry-run)" if a.dry_run else "")
+    print(summary)
+    if a.dry_run:
+        print("TICK " + tick_line(rid, rc, verdict, values, filed_by)); return 0
+    os.makedirs(done, exist_ok=True)
+    with open(os.path.join(done, rid + ".verdict.json"), "w") as fh:
+        json.dump(rec, fh, indent=1, sort_keys=True)
+    tick = (agent or {}).get("tick_text")
+    task = str(m.get("handoff_task") or "")
+    if tick and ":" in task:
+        import flip_checkbox
+        hpath, token = task.rsplit(":", 1)
+        try:
+            flip_checkbox.flip(os.path.join(a.lane, hpath), token, datetime.date.today().isoformat(),
+                               f"rc={rc} {verdict}; {tick}", dry_run=False)
+            print(f"TICKED {token} in {hpath}")
+        except flip_checkbox.CheckboxFlipError as e:
+            print(f"ERROR tick failed: {e}", file=sys.stderr); return 5
+    else:
+        print("TICK " + tick_line(rid, rc, verdict, values, filed_by))
+    with open(os.path.join(done, rid + ".FILED"), "w") as fh:
+        fh.write(summary + "\n")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

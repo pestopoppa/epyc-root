@@ -239,3 +239,22 @@ Pidfiles the status reads: `ws58-keeper-watchdog.pid`, `ws58-calendar-keeper.pid
 `ws58-flow-scoreboard.pid`, `handoff-sessions.dispatcher.pid`, `ws58-disk-trend.pid`, `ws58-filing-watch.pid`,
 `grant-ws58-quarters-<day>.pid`, `grant-gpu-<MMDD>-v<n>.pid` — all under `compute-flags/`. A loop started by hand must write its
 pidfile or `--status` reports it DOWN and a later `churn_up.sh` would start a second copy.
+
+## AI-free mechanization (CAF, 2026-11-01; `handoffs/active/churn-pipeline.md`)
+
+**Mechanized wrap-up (CAF-2, 2026-11-01).** A session ends a task by writing the turn record (`{slug, state, task_text,
+ticks: [text], progress_md, paths, belief, message, question, rows_published, trailers?}`) and running
+`python3 scripts/coordination/churn/wrapup.py --json <rec.json>` (lane defaults to `worktrees/mains/h-<slug>`); the six
+manual steps are gone. The tool merges origin/main into the lane, resolves every tick by TEXT (exactly one open `- [ ]`
+across `handoffs/active|blocked`, else refuses before writing), appends `progress_md` under `## <HH:MMZ> — <task_text>` in
+`progress/YYYY-MM/YYYY-MM-DD-handoff-<slug>.md`, flips the boxes as `- [x] … ✅ <date> [belief: …]`, runs
+`index_state.py --check` when a handoffs/ file is touched, commits ONLY the pathspec (`paths` + progress + ticked files,
+with `trailers`), pushes via `serialized_push.py --repo <lane>` (5 retries on a held lock), proves `cherry origin/main`
+empty, writes `handoff-sessions/<slug>/report.json` with `wrapped_sha`/`wrapped_at`, and prints `WRAPPED <sha>` as the
+last line (`--dry-run` = plan only, nothing written). Any failure stops with rc 1 and a one-line `[wrapup] FAIL: …`.
+
+**CAF-5 `scripts/coordination/churn/file_result.py`** — files a row's run result without an agent turn when its `decision_rule` is machine-checkable. `python3 scripts/coordination/churn/file_result.py <row-id> [--flags DIR] [--verdict-json FILE] [--lane DIR] [--dry-run]` loads the epyc.row.v3 manifest (`ready/<id>.json` or `ready/*/<id>.json`), the end record `grants/<id>.ended|.complete` (`rc=N` on line 1; `.complete` without rc = 0) and the result at `result_path` (json: top-level keys, dotted paths; jsonl: LAST record + `units` = record count; `rc` always present).
+A rule is machine-checkable when it parses as `<metric> <op> <number>[%]` comparisons (`< <= > >= == !=`) joined by `and`/`or` with optional parentheses, e.g. `tps_delta >= +2% and ppl_delta <= 0.1%`; `%` and the sign are notation, the metric is compared to the bare number (no `eval()`, tiny tokenizer + recursive-descent evaluator). Verdict is `pass|fail|inconclusive`; a metric missing from the result (or a missing result file) is `inconclusive` with the name in `reason`, never a pass.
+It writes `<flags>/filing-done/<id>.verdict.json` — a record valid against the existing `scripts/coordination/filed_verdict.schema.json` (`epyc.filed.verdict.v1`: `outcome_class` SCIENCE-VERDICT for pass/fail, PARTIAL-VERDICT for inconclusive, `phase: filing`, `verdict.native_result_sha256`) extended with `{row, row_verdict, rule, values, rc, result_path, filed_by, at, reason}` — prints one `FILED …` summary line plus the suggested tick line (`<ROW-ID> … ✅ <date> rc=<rc> <verdict> <values> [no-belief: row verdict filed by file_result.py]`) for the wrapup.py step, then touches `<flags>/filing-done/<id>.FILED` (the DSH-2 receipt the dispatcher and reaper key on). `--dry-run` prints the same and writes nothing.
+Non-numeric rules exit 4 with `NEEDS-AGENT-VERDICT <id>: <rule>`; the agent then writes `{verdict: pass|fail|inconclusive, rationale[, tick_text]}` and re-runs with `--verdict-json FILE`, which files it with `filed_by: agent`; when `tick_text` is present the handoff box named by `handoff_task` (`handoffs/active/<h>.md:<ROW-ID>`, resolved under `--lane`) is ticked via `flip_checkbox.flip` by token (exit 5 if the anchor is missing/ambiguous — verdict written, FILED not touched). Exit 2 = manifest or end record missing / bad `--verdict-json`.
+Dispatcher wiring: on `grants/<id>.ended|.complete` run `file_result.py <id> --flags <flags>` first; exit 0 → skip the agent filing turn and hand only the printed TICK line to wrapup.py; exit 4 → send the existing `end_prompt` with the `--verdict-json` instruction instead of "YOU file the verdict". Tests: `python3 -W ignore -m unittest scripts.coordination.tests.test_churn_file_result` (12 tests, temp flags dir only).

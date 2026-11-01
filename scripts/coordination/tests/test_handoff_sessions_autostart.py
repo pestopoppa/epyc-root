@@ -526,3 +526,26 @@ class CAF3Tests(DSHTests):
         data = bg.build(self.flags, os.path.join(self.repo, "handoffs/active/backlog-priority.json"), "nolog", sessions_path=hs.reg_path(self.flags))
         self.assertIn("next task:", bg.resume_delta(data, "alpha")) if data["workers"]["handoff-alpha"]["code"] else None
         self.assertEqual(bg.resume_delta(data, "nope"), "(no backlog bucket for this session yet)")
+
+
+class CAF5Tests(DSHTests):
+    def test_numeric_rule_filed_by_script_non_numeric_asks_agent_json(self):
+        self.session()
+        _w(os.path.join(self.flags, "grants", "row-a.ended"), "rc=0\n")
+        with patch.object(hs, "file_result", lambda flags, rid, lane: (0, f"FILED {rid}: pass rc=0 rule=tps>=10 values=tps=12 by=file_result.py\nTICK INF-9 ✅ 2026-11-01 rc=0 pass tps=12 [no-belief: row verdict filed by file_result.py]\n")):
+            reg, _ = self.dispatch()
+        p = self.calls[0]["prompt"]
+        self.assertIn("FILED BY SCRIPT", p)
+        self.assertIn("do NOT re-file", p)
+        self.assertIn("INF-9 ✅ 2026-11-01 rc=0 pass", p)
+        self.assertNotIn("YOU file the verdict yourself", p)
+        self.assertIn("FILED-BY-SCRIPT row-a -> alpha", self.log_text())
+        self.session(); self.calls.clear()
+        _w(os.path.join(self.flags, "grants", "row-b.ended"), "rc=0\n")
+        with patch.object(hs, "file_result", lambda flags, rid, lane: (4, f"NEEDS-AGENT-VERDICT {rid}: judge coherence\n")):
+            reg, _ = self.dispatch()
+        p = self.calls[0]["prompt"]
+        self.assertIn("not machine-checkable", p)
+        self.assertIn("--verdict-json", p)
+        self.assertIn("filing-done/row-b.FILED", p)
+        self.assertTrue(os.path.exists(hs.FILE_RESULT))
