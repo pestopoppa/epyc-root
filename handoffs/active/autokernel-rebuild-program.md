@@ -871,7 +871,7 @@ on measurement, D3 approved and shipped.** Detail in each entry.
 ### Open
 
 - [ ] **R18-A — flip `PRODUCTION_RECIPE_IS_VERIFIABLE` to `True`, with the symbol-identity evidence
-      attached.** `controller/build_recipe.py:43`. It was set `False` because production's recipe
+      attached.** [too-big: unchanged symbol identity gate needs handoff-owned independent comparison] `controller/build_recipe.py:43`. It was set `False` because production's recipe
       cannot be read back from disk (`build-hip/` has only `bin/`, no `CMakeCache.txt`), and it is
       recorded, not gated — nothing refuses on it; it is emitted as
       `production_reference_is_verifiable` in `Recipe.to_dict()` (`:152`) and pinned by
