@@ -1,4 +1,8 @@
 62869396b2af0244a70dbf076e82a3989da715786fdc97777fb368d5a3836db1  artifacts/compute/akagg-ch32-ggml-impl-20261101/CONV1D-PROVENANCE.json
+3dfed6921e67e54f5ceb1d0055ccdd466b89ab2cc62addf9454a58279b115611  artifacts/compute/akagg-ch32-ggml-impl-20261101/DEPTHWISE-PROVENANCE.json
 a746bbd86152b72fe4f1fb91a53e4a784bd4141bf00736022f9162c2dc3590c4  artifacts/compute/akagg-ch32-ggml-impl-20261101/GGML-FUNCTIONS.json
+6416c896f0fb5b4043fce01aac77f6137aa8a4360c9faafb6e390e24d237998a  artifacts/compute/akagg-ch32-ggml-impl-20261101/GGML-LFM-FUNCTIONS.json
 325268509daea5879ff49ead83ff60e250499b6db3b2808ce8d746fb4a2745bd  artifacts/compute/akagg-ch32-ggml-impl-20261101/compare_impl.py
+fd346cd7f3a59962fda30c820dead5ac1611c40e354f94c2b2f15f49e5fd9a58  artifacts/compute/akagg-ch32-ggml-impl-20261101/compare_lfm.py
 efd9598e8b88938009f6330006cf4ec45926eea6cf503fe67c9f4ed0d38fb2ed  artifacts/compute/akagg-ch32-ggml-impl-20261101/conv1d_provenance.py
+999572015308449dd3c854da5fb962a8c39667ed4449fb713fd4891fba50fcc3  artifacts/compute/akagg-ch32-ggml-impl-20261101/depthwise_provenance.py

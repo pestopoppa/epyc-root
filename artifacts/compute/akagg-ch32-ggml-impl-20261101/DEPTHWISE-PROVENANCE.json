@@ -1,0 +1,30 @@
+{
+  "C5": "c72ec82f5417bb2937310326120f149b665e8400",
+  "D4": "19ff817fb25e9a1b838b1d7f9f4325f7bf9779c4",
+  "D4_parent": "eb7818c0b85c08ccb39ec2299548b85147c47495",
+  "upstream_fix": "a72e04abe0fe9b36e203033ac71bd5f379c35bc5",
+  "ancestor_fix_C5": false,
+  "ancestor_fix_D4_parent": true,
+  "D4_use": [
+    "19ff817fb25e9a1b838b1d7f9f4325f7bf9779c4:tools/mtmd/models/lfm3a.cpp:52:        x = depthwise ? ggml_conv_2d_dw_direct(ctx0, w, x, 2, 2, 0, 1, 1, 1)"
+  ],
+  "C5_constructor": "struct ggml_tensor * ggml_conv_2d_dw_direct(\n        struct ggml_context * ctx,\n        struct ggml_tensor  * a,\n        struct ggml_tensor  * b,\n        int                   stride0,\n        int                   stride1,\n        int                   pad0,\n        int                   pad1,\n        int                   dilation0,\n        int                   dilation1) {\n    GGML_ASSERT(a->ne[2] == 1);\n    GGML_ASSERT(a->ne[3] == b->ne[2]);\n    int64_t ne[4];\n    ne[0] = ggml_calc_conv_output_size(b->ne[0], a->ne[0], stride0, pad0, dilation0);\n    ne[1] = ggml_calc_conv_output_size(b->ne[1], a->ne[1], stride1, pad1, dilation1);\n    ne[2] = b->ne[2];\n    ne[3] = b->ne[3];\n\n    struct ggml_tensor * result = ggml_new_tensor(ctx, b->type, 4, ne);\n\n    if (ggml_is_contiguous_channels(b)) {\n        // Result will be permuted the same way as input (CWHN order)\n        const int64_t type_size = ggml_type_size(result->type);\n        GGML_ASSERT(ggml_blck_size(result->type) == 1);\n        result->nb[0] = result->ne[2] * type_size;\n        result->nb[1] = result->ne[0] * result->nb[0];\n        result->nb[2] = type_size;\n    }\n\n    int32_t params[] = { stride0, stride1, pad0, pad1, dilation0, dilation1 };\n    ggml_set_op_params(result, params, sizeof(params));\n\n    result->op     = GGML_OP_CONV_2D_DW;\n    result->src[0] = a;\n    result->src[1] = b;\n    return result;\n}",
+  "cases": {
+    "C5": {
+      "dispatch_case": "ggml_cuda_op_conv2d_dw(ctx, dst);\n            break;",
+      "supports_op_case": "return op->src[0]->type == GGML_TYPE_F32;"
+    },
+    "D4_parent": {
+      "dispatch_case": "ggml_cuda_op_conv2d_dw(ctx, dst);\n            break;",
+      "supports_op_case": "return (op->src[0]->type == GGML_TYPE_F16 || op->src[0]->type == GGML_TYPE_F32) &&\n                   op->src[1]->type == GGML_TYPE_F32 && op->type == GGML_TYPE_F32;"
+    }
+  },
+  "upstream_fix_stat": "a72e04abe0 cuda : add F16 kernel support for CONV_2D_DW (#29064)\n ggml/src/ggml-cuda/conv2d-dw.cu | 40 +++++++++++++++++++++++++++-------------\n ggml/src/ggml-cuda/ggml-cuda.cu |  3 ++-\n 2 files changed, 29 insertions(+), 14 deletions(-)\n",
+  "selected_blame_lines": [
+    "08246a28f60 ggml/src/ggml-cuda/ggml-cuda.cu (Muhammad Saad          2026-10-08 03:21:42 -0400 5691)                     return op->src[0]->type == GGML_TYPE_F16 || op->src[0]->type == GGML_TYPE_F32 || op->src[0]->type == GGML_TYPE_BF16;",
+    "53ed051ce5e ggml/src/ggml-cuda/ggml-cuda.cu (leejet                 2026-09-24 15:24:57 +0800 6042)             return (op->src[0]->type == GGML_TYPE_F16 || op->src[0]->type == GGML_TYPE_F32) &&",
+    "9eaa51e7f08 ggml/src/ggml-cuda/ggml-cuda.cu (Aman Gupta             2025-06-20 09:50:24 +0800 6045)         case GGML_OP_CONV_2D_DW:",
+    "a72e04abe0f ggml/src/ggml-cuda/ggml-cuda.cu (yomi                   2026-09-25 00:38:46 +0800 6046)             return (op->src[0]->type == GGML_TYPE_F16 || op->src[0]->type == GGML_TYPE_F32) &&"
+  ],
+  "scope": "Source dispatch and supports-op only. No actual tensor dtype, model load, fallback, ROCm execution, or correctness verdict. Equivalent focused support may avoid a full ggml bump."
+}

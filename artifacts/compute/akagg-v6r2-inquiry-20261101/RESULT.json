@@ -1,0 +1,37 @@
+{
+  "schema": "epyc.akagg.v6r2.source-inquiry.v1",
+  "v6_source": "632ce0f927",
+  "forward_port": "111bff89da1f06939908781ca5156d5fca24e875",
+  "ancestry": {
+    "v9": {
+      "commit": "0db32c06e3e550065b78311a6031ef3dd2c4f27c",
+      "ancestor_rc": 0
+    },
+    "v10": {
+      "commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+      "ancestor_rc": 0
+    },
+    "c5": {
+      "commit": "c72ec82f5417bb2937310326120f149b665e8400",
+      "ancestor_rc": 0
+    }
+  },
+  "ancestry_command": [
+    "git",
+    "-C",
+    "/mnt/raid0/llm/llama.cpp",
+    "merge-base",
+    "--is-ancestor",
+    "111bff89da1f06939908781ca5156d5fca24e875",
+    "<base>"
+  ],
+  "image_path": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libllama-common.so.0.0.10419",
+  "image_sha256": "e0ed8e7ee7641977ce60f8dc03ee1abc026159c647badae7495cf5b6253e68fe",
+  "manifest_path": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/SHA256SUMS",
+  "manifest_entry": "e0ed8e7ee7641977ce60f8dc03ee1abc026159c647badae7495cf5b6253e68fe  ./libllama-common.so.0.0.10419",
+  "observed_strings": [
+    "--kv-streaming-sink",
+    "--kv-streaming-window"
+  ],
+  "scope": "Source and content proof only; no execution, speed, parity or production behavior claim. Edge-case discard clamps differ between original v6 patch and port."
+}

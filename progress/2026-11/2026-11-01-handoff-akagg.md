@@ -51,3 +51,6 @@
 
 - CH-19 evidence audit rederived four ON/OFF medians from 40 valid measured rows and separated one invalid preflight; no top-level floor/noise keys were present. Existing do-not-fold decision stands because all medians are below a positive-gain threshold, but no within-noise or decisive-regression claim is established. Retained raw records, script and audit under `artifacts/compute/akagg-ch19-floor-audit-20261101/`.
 - CH-32 D1 ggml source check: Voxtral graph calls conv1d twice; upstream parent includes batched-layout #28738, absent C5. Recorded source evidence and V11-116 pending tests; actual workload applicability and whether a source fix or bump is needed are unproved.
+
+- V6R-2 inquiry complete: port `111bff89` is ancestral to v9/v10/C5; both CLI flags are present in C5 manifest-hashed libcommon. Updated V11-062 to IN, retaining a context-shift regression gate and the v6 edge-clamp difference; no runtime equivalence claim.
+- CH-32 D4: C5 GPU depthwise conv accepts F32 weights, upstream parent adds F16 via #29064; D4 uses the op, but actual model dtypes and fallback unverified. Retained reproducible evidence and V11-117 conditional gate.

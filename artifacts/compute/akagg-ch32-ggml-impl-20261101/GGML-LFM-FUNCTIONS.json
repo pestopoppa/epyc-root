@@ -1,0 +1,111 @@
+{
+  "C5": "c72ec82f5417bb2937310326120f149b665e8400",
+  "D4_parent": "eb7818c0b85c08ccb39ec2299548b85147c47495",
+  "scope": "Exact function-body text, lexical parser. Changes in helpers, compile flags, kernels and dependent structures are not included; absence of a diff is not semantic/runtime evidence.",
+  "checks": [
+    {
+      "path": "ggml/src/ggml.c",
+      "function": "ggml_conv_2d",
+      "c5_sha256": "6cb6081295d666e0d370599b561d0086a142807632a51014740f882ae56af8da",
+      "upstream_parent_sha256": "6cb6081295d666e0d370599b561d0086a142807632a51014740f882ae56af8da",
+      "byte_identical": true,
+      "diff": []
+    },
+    {
+      "path": "ggml/src/ggml.c",
+      "function": "ggml_conv_2d_direct",
+      "c5_sha256": "2e57d5ea5c58edfeb2c4ef656a036641d66bb83989177d58a4b24dbe8cfee182",
+      "upstream_parent_sha256": "2e57d5ea5c58edfeb2c4ef656a036641d66bb83989177d58a4b24dbe8cfee182",
+      "byte_identical": true,
+      "diff": []
+    },
+    {
+      "path": "ggml/src/ggml.c",
+      "function": "ggml_conv_2d_dw_direct",
+      "c5_sha256": "f7da4c36c0136f562804767074d05c015dff5f81fda56ac0304ffefa78820a32",
+      "upstream_parent_sha256": "f7da4c36c0136f562804767074d05c015dff5f81fda56ac0304ffefa78820a32",
+      "byte_identical": true,
+      "diff": []
+    },
+    {
+      "path": "ggml/src/ggml.c",
+      "function": "ggml_pad_ext",
+      "c5_sha256": "588ec929e0d77b0274b201b8087436ceeb2cb5ea8187e85bdd756f0831919aa2",
+      "upstream_parent_sha256": "588ec929e0d77b0274b201b8087436ceeb2cb5ea8187e85bdd756f0831919aa2",
+      "byte_identical": true,
+      "diff": []
+    },
+    {
+      "path": "ggml/src/ggml.c",
+      "function": "ggml_repeat_4d",
+      "c5_sha256": "c2ec8362de2674aa7c5c7be90d0bb99221fe0308fed7618a0ed57fc27159b58f",
+      "upstream_parent_sha256": "c2ec8362de2674aa7c5c7be90d0bb99221fe0308fed7618a0ed57fc27159b58f",
+      "byte_identical": true,
+      "diff": []
+    },
+    {
+      "path": "ggml/src/ggml.c",
+      "function": "ggml_scale_bias",
+      "c5_sha256": "c897e7426d87e258da83c66fcee35784705c3caba1bf99a24773f5ef2e5baaad",
+      "upstream_parent_sha256": "c897e7426d87e258da83c66fcee35784705c3caba1bf99a24773f5ef2e5baaad",
+      "byte_identical": true,
+      "diff": []
+    },
+    {
+      "path": "ggml/src/ggml.c",
+      "function": "ggml_ssm_conv",
+      "c5_sha256": "49de149bf6c035b4c088920f144208d7b366db1184b9c28ecbc64572421384a3",
+      "upstream_parent_sha256": "49de149bf6c035b4c088920f144208d7b366db1184b9c28ecbc64572421384a3",
+      "byte_identical": true,
+      "diff": []
+    },
+    {
+      "path": "ggml/src/ggml.c",
+      "function": "ggml_rope_ext",
+      "c5_sha256": "9d06856202a12afaf2ca9f53db643f19a1638d07232689c4fa521cc51562b65d",
+      "upstream_parent_sha256": "9d06856202a12afaf2ca9f53db643f19a1638d07232689c4fa521cc51562b65d",
+      "byte_identical": true,
+      "diff": []
+    },
+    {
+      "path": "ggml/src/ggml.c",
+      "function": "ggml_rope_multi",
+      "c5_sha256": "471d5e05768803ca103b903b7a2ebee352eda1cbfdef97dc2d5fcb2702bf9d30",
+      "upstream_parent_sha256": "471d5e05768803ca103b903b7a2ebee352eda1cbfdef97dc2d5fcb2702bf9d30",
+      "byte_identical": true,
+      "diff": []
+    },
+    {
+      "path": "ggml/src/ggml.c",
+      "function": "ggml_set_rows",
+      "c5_sha256": "904bfa63b347fb496b27eb95f1af9fb86128b15790d8acc675dcefa912131f58",
+      "upstream_parent_sha256": "904bfa63b347fb496b27eb95f1af9fb86128b15790d8acc675dcefa912131f58",
+      "byte_identical": true,
+      "diff": []
+    },
+    {
+      "path": "ggml/src/ggml.c",
+      "function": "ggml_mul_mat",
+      "c5_sha256": "6b234e1f9d4457437caa9df944126dc65ef908a9a217396846f6fd1c7bb61e11",
+      "upstream_parent_sha256": "6b234e1f9d4457437caa9df944126dc65ef908a9a217396846f6fd1c7bb61e11",
+      "byte_identical": true,
+      "diff": []
+    },
+    {
+      "path": "ggml/src/ggml.c",
+      "function": "ggml_cast",
+      "c5_sha256": "b9d6b739d93d08469818af950b341a7e58f16b232a9476f2a382cd26d16d60a5",
+      "upstream_parent_sha256": "b9d6b739d93d08469818af950b341a7e58f16b232a9476f2a382cd26d16d60a5",
+      "byte_identical": true,
+      "diff": []
+    },
+    {
+      "path": "ggml/src/ggml.c",
+      "function": "ggml_arange",
+      "c5_sha256": "8d111bd70eef29d54c5828eab7f58a6d89a7d6b8e20f2538db3265d0d8d2d71b",
+      "upstream_parent_sha256": "8d111bd70eef29d54c5828eab7f58a6d89a7d6b8e20f2538db3265d0d8d2d71b",
+      "byte_identical": true,
+      "diff": []
+    }
+  ]
+}
