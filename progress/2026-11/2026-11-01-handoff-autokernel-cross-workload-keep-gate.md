@@ -1,0 +1,5 @@
+# INF-75 session boundary — 2026-11-01
+
+Backlog's first actionable task is AKX-P1c, the historical sync17-fix2 screen. The P3c fixture is not the CPU census or W1 T1 witness and P1c remains open. Located both exact source commits in `/mnt/raid0/llm/tmp/inf70/retest1wt` (also `fix2wt` and `foldwt`): `ef81196d5bdd4190b46dff4ae7eecc333a46c8ce` is ancestor of `2516c9807b8a92d472c8e75a0a1ce8558d2e34a7`; six CPU files differ. Candidate source sets `GGML_SCALE_SPLIT` and `GGML_SOLO_YIELD_ROWCOL` ON and `GGML_TINY_SOLO_CLAMP` OFF. These are source facts, not execution witnesses. No owned P1c READY row or result found; no compute launched. Next prepare a sealed experimental build and correctness-surface row covering INF-70 CPU and W1, with footprint and T1 witnesses, then publish to rowflow for keeper qualification. Preserve P1c open until all its stated acceptance criteria are met. [no-belief: source inspection]
+
+GitNexus status was stale; the required wrapper re-index was refused by host CPU admission (exit 64). Impact lookup for the task text returned target not found, risk unknown. No code was edited. Shared worktree contains unrelated changes, left untouched.

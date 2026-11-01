@@ -647,6 +647,7 @@ Global constraints:
   - **No benchmark window:** the replay classifies against the **recorded** A/B verdicts, and measures nothing new.
 - [ ] **AKX-P1c — replay sync17-fix2.**
   - Screen `2516c9807` against `ef81196d5` on the INF-70 CPU workload and on W1.
+  - 2026-11-01 source-location checkpoint: both commits are present in `/mnt/raid0/llm/tmp/inf70/retest1wt` (also `fix2wt` and `foldwt`); baseline `ef81196d5bdd4190b46dff4ae7eecc333a46c8ce` is an ancestor of candidate `2516c9807b8a92d472c8e75a0a1ce8558d2e34a7`, with six changed CPU files. Candidate source defaults `GGML_SCALE_SPLIT` and `GGML_SOLO_YIELD_ROWCOL` ON and `GGML_TINY_SOLO_CLAMP` OFF. These source facts are not a workload execution witness. Next: prepare a sealed experimental build and correctness-surface row for both workloads, including footprint output and T1 evidence; publish through rowflow for keeper qualification. No replay or compute row has been run or published in this checkpoint. [no-belief: source inspection and preparation only]
   - **Pass criteria:**
     - TOUCHED on the CPU workload, with `knob_reads` naming the default-ON knobs;
     - a footprint `env_knobs[].default_after` flip;
