@@ -1165,4 +1165,6 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
 
 ### C3 r4 inherited-lock review — 2026-11-01
 
+- [ ] **C3 r4 rowflow inherited-lock source repair** — integrate and test the canonical R15 engine path, FD9/inode/lock and row-specific provenance through both profiler and native-join verifier, then reseal and bind a successor. Paused candidate/review files are preserved under `/mnt/raid0/llm/tmp/codex-gen-wrapup-pending-20261101/`; the current draft's engine-path match and engine pin need correction. No qualification or profile result follows from the draft.
+
 `refactor-c3-native-bolt-profile-r4-20261101` dry-run failed rc1 before a result: the R15 outer engine holds MI210 while the native profiler attempts to acquire it again. Its inherited-claim producer and native-join verifier recognize only an R13 ancestor and R13 purpose; asserting R13 for R15 or using a different lock would misstate custody. A valid R15 successor needs reviewed end-to-end inherited-FD/lock-inode and verifier support. This session’s brief forbids editing gates, the keeper, and another owner’s READY manifest, so the existing row is unchanged. The earlier C3 R3 diagnostic remains separately filed above; this is no new profiling result. [no-belief: failure and code-path inspection]
