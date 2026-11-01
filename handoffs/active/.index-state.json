@@ -553,7 +553,7 @@
     },
     "conversation-stack.md": {
       "blocked": 42,
-      "closed": 57,
+      "closed": 59,
       "guarded": 0,
       "last_advanced": "2026-11-01",
       "open": 33,
@@ -565,7 +565,7 @@
       },
       "row_id": "INF-79",
       "state": "active",
-      "total": 132
+      "total": 134
     },
     "coordinator-role-failure-modes-and-refactor.md": {
       "blocked": 0,
@@ -2475,7 +2475,7 @@
       "blocked": 0,
       "closed": 23,
       "guarded": 0,
-      "last_advanced": "2026-10-31",
+      "last_advanced": "2026-11-01",
       "open": 3,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
