@@ -1,0 +1,9 @@
+# CAFE-4 v10 geometry offline fixtures — 2026-11-01
+
+Artifact `test_v10_geometry.py` SHA-256 `16412a1372913c93803385417538f598b042b200e946e75f4e7904669c0666a9`; `python3 -B test_v10_geometry.py` passed 5 tests in 0.019 s. The fixture is a bounded deterministic synthetic machine; it performs no native build, model inference, GPU work, row qualification or lane edits.
+
+Unlike the prior draft-only fixture, the synthetic target batch explicitly contains **sampled token + D draft tokens**. It checks that the logit row after the sampled token predicts draft 0, that each subsequent row predicts the next proposal, then retains sampled plus the accepted prefix, removes the boundary token and suffix and replays the boundary. It exercises all cuts including zero/full acceptance for D=1..16 (152 width/cut combinations); each case checks D+1 batch rows, observed cut and retained boundary.
+
+Separate negative controls test (a) corruption of rollback state with the replay input held identical, (b) skipped rollback, and (c) altered replay input. They report these as distinct fault classes; changed input alone is not evidence of a snapshot fault. Insufficient snapshot capacity, a failed target decode, refused removal, malformed widths and invalid cuts yield UNKNOWN rather than mismatch detection or pass. Synthetic logits include a state witness so the selected controls are deterministic.
+
+These fixtures define an expected geometry and discrimination contract only. They do not establish that v10 actually constructs this batch, that seq_rm retains the requested state, that numerical tolerances are appropriate, that MTP is used, or that a GPU is resident. The native harness must capture and independently assess real batch/ubatch, positions, logits, effective snapshot capacity, deletion and decode return codes, a state-specific fault, no-rollback same-shape control, binary/library identity and the device evidence.
