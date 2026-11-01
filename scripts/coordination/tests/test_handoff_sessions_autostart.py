@@ -96,7 +96,8 @@ class AutoStartTests(AutoStartFixture):
         S = reg["sessions"]
         # max_live=2: the gpu-unblocking handoff first (score 1.0), then the best backlog-priority rank (zed, rank 1);
         # alpha (rank 9) is NOT started although it sorts first alphabetically
-        self.assertEqual(sorted(S), ["mid", "zed"], S.keys())
+        self.assertEqual(sorted(k for k in S if k != "codex-gen"), ["mid", "zed"], S.keys())
+        self.assertTrue(S["codex-gen"]["generalist"], "codex-gen is an ordinary managed session, always registered")
         self.assertEqual(len(self.calls), 2)
         self.assertIn("handoffs/active/mid.md", self.calls[0]["prompt"])
         self.assertIn("handoffs/active/zed.md", self.calls[1]["prompt"])
@@ -151,7 +152,7 @@ class AutoStartTests(AutoStartFixture):
         hs.save(hs.reg_path(self.flags), self.reg)
         reg, _ = self.dispatch()
         self.assertEqual(self.calls, [])
-        self.assertEqual(reg["sessions"], {})
+        self.assertEqual([k for k in reg["sessions"] if k != "codex-gen"], [])
         reg["auto_start"] = True
         hs.save(hs.reg_path(self.flags), reg)
         reg, _ = self.dispatch()
@@ -326,8 +327,8 @@ class WindowClutterTests(AutoStartFixture):
         self.assertFalse(any(c[0] == "send-keys" for c in calls))
 
 
-class DSHTests(AutoStartFixture):
-    """intake-2603 DSH-1..4 (operator "All four", 2026-11-01)."""
+class _DSHBase(AutoStartFixture):
+    """shared helpers: a registered session and a finished turn."""
 
     def session(self, **kw):
         e = {"handoff": "handoffs/active/alpha.md", "engine": "codex", "session_id": "t1", "status": "suspended", "pid": None,
@@ -346,6 +347,9 @@ class DSHTests(AutoStartFixture):
         if rc is not None:
             _w(out + ".rc", f"{rc}\n")
         return out
+
+class DSHTests(_DSHBase):
+    """intake-2603 DSH-1..4 (operator "All four", 2026-11-01)."""
 
     def test_dsh2_run_end_acked_by_receipt_requeued_then_escalated(self):
         self.session()
@@ -372,7 +376,6 @@ class DSHTests(AutoStartFixture):
         self.assertIn("ESCALATE row-a -> alpha", self.log_text())
         self.assertTrue(os.path.exists(os.path.join(self.flags, "operator-escalations", "filing-row-a.md")))
         self.assertEqual(sum(1 for c in self.calls if "row `row-a`" in c["prompt"]), 4, "1 delivery + 3 redeliveries, never a 5th")
-        self.assertNotIn("row `row-a`", self.calls[-1]["prompt"])  # the session continues its other open work instead
         # a turn that files (FILED receipt) consumes the event: nothing re-queued
         self.session()
         self.calls.clear()
@@ -470,7 +473,7 @@ class DSHTests(AutoStartFixture):
         self.assertIn("report.json", hs.brief_text("alpha", reg["sessions"]["alpha"], self.flags))
 
 
-class CAF1Tests(DSHTests):
+class CAF1Tests(_DSHBase):
     def test_brief_forbids_polling_and_dryrun_result_resumes(self):
         e = self.session()
         b = hs.brief_text("alpha", e, self.flags)
@@ -512,7 +515,7 @@ class CAF1Tests(DSHTests):
         self.assertEqual([ev for ev in st["queue"] if ev["rid"] == "row-b"], [])
 
 
-class CAF3Tests(DSHTests):
+class CAF3Tests(_DSHBase):
     def test_resume_prompt_carries_state_delta_not_reread(self):
         self.session()
         _w(os.path.join(self.flags, "ready", "row-a.json"), json.dumps({"schema": "epyc.row.v3", "id": "row-a", "owner": "o", "lane": "gpu",
@@ -531,7 +534,7 @@ class CAF3Tests(DSHTests):
         self.assertEqual(bg.resume_delta(data, "nope"), "(no backlog bucket for this session yet)")
 
 
-class CAF5Tests(DSHTests):
+class CAF5Tests(_DSHBase):
     def test_numeric_rule_filed_by_script_non_numeric_asks_agent_json(self):
         self.session()
         _w(os.path.join(self.flags, "grants", "row-a.ended"), "rc=0\n")
@@ -552,3 +555,52 @@ class CAF5Tests(DSHTests):
         self.assertIn("--verdict-json", p)
         self.assertIn("filing-done/row-b.FILED", p)
         self.assertTrue(os.path.exists(hs.FILE_RESULT))
+
+
+class BudgetTests(_DSHBase):
+    def test_resume_gap_generalist_orphans_and_rotation(self):
+        # 1. one non-filing resume per MIN_RESUME_GAP_S: a session resumed 1 min ago with open work is NOT resumed again
+        e = self.session(last_resume=hs._dt.datetime.fromtimestamp(hs.time.time() - 60, hs._dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"))
+        reg, _ = self.dispatch()
+        self.assertEqual([c for c in self.calls if "alpha" in c["prompt"] and "FINISH ALL READY ITEMS" in c["prompt"]], [])
+        # ... but a run-end (filing) event still is
+        _w(os.path.join(self.flags, "grants", "row-a.ended"), "rc=0\n")
+        reg, _ = self.dispatch()
+        self.assertTrue(any("row `row-a`" in c["prompt"] for c in self.calls))
+        # 2. codex-gen: registered automatically, resumed on its own backlog (bypasses the cap), never yields
+        self.reg["max_live"] = 1
+        self.session(status="live", pid=os.getpid())
+        _w(os.path.join(self.flags, "BACKLOG-codex-gen.md"), "## Inference rows\n- [blocked] cpu rank=3 **r-orphan** (row r-orphan) — yours (no handoff session)\n\n## Non-inference tasks\n\n- [S] handoffs/active/zed.md:10 — small fix\n")
+        _w(os.path.join(self.flags, "GOAL-codex-gen.md"), "# GOAL\nGOAL-MARKER\n")
+        self.calls.clear()
+        with patch.object(hs, "alive", lambda pid: pid == os.getpid()):
+            reg, _ = self.dispatch()
+        g = reg["sessions"]["codex-gen"]
+        self.assertEqual(g["status"], "live")
+        self.assertIn("GOAL-MARKER", self.calls[0]["prompt"])
+        self.assertIn("codex-gen backlog: 1 row fix(es), 0 filing(s), 1 small task(s)", self.log_text())
+        self.assertFalse(g.get("yield"))
+        self.assertTrue(os.path.exists(os.path.join(self.flags, "briefs", "HANDOFF-codex-gen.md")))
+        # 3. an ownerless run-end: file_result rc 4 -> routed to codex-gen; rc 0 -> filed, no turn
+        _w(os.path.join(self.flags, "grants", "orphan-1.ended"), "rc=0\n")
+        with patch.object(hs, "file_result", lambda f, rid, lane: (4, "NEEDS-AGENT-VERDICT")):
+            reg, st = self.dispatch()
+        self.assertIn("ORPHAN orphan-1 -> codex-gen: file_result rc=4", self.log_text())
+        self.assertTrue(any(ev["slug"] == "codex-gen" and ev["rid"] == "orphan-1" for ev in st["queue"]) or
+                        any("row `orphan-1`" in c["prompt"] for c in self.calls))
+        _w(os.path.join(self.flags, "grants", "orphan-2.ended"), "rc=0\n")
+        with patch.object(hs, "file_result", lambda f, rid, lane: (0, "FILED orphan-2: pass\nTICK x")):
+            reg, st = self.dispatch()
+        self.assertIn("FILED-BY-SCRIPT orphan-2 (no owner)", self.log_text())
+        self.assertFalse(any(ev["rid"] == "orphan-2" for ev in st["queue"]))
+        # 4. context rotation: a turn whose per-call context exceeds the threshold makes the next resume FRESH
+        e = self.session(pid=99999979)
+        e["last_output"] = self.turn('{"text":"WRAPPED abc1234"}\n', rc=0)
+        hs.save(hs.reg_path(self.flags), self.reg)
+        with patch.object(hs, "context_size", lambda sid, eng="codex": 180_000):
+            reg, _ = self.dispatch()
+        e = reg["sessions"]["alpha"]
+        self.assertEqual(e["rotated_from"]["context_tokens"], 180_000)
+        self.assertEqual(self.calls[-1]["cmd"], ["codex", "exec", "--json", "-"], "the next resume was a FRESH session (rotation)")
+        self.assertIn("brief", self.calls[-1]["prompt"].lower())
+        self.assertIn("ROTATE alpha: per-call context 180000 > 150000", self.log_text())
