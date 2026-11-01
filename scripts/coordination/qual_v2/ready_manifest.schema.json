@@ -423,6 +423,8 @@
             "qualification-same-recipe",
             "calibrated-production",
             "speech-calibrated-production",
+            "parakeet-unknown-calibration",
+            "unified-unknown-calibration",
             "command-same-recipe",
             "command-calibrated-production",
             "calibrated-work-unit",
@@ -533,6 +535,10 @@
         "threads": {
           "minimum": 1,
           "type": "integer"
+        },
+        "qualification_decode_mode": {
+          "minLength": 1,
+          "type": "string"
         }
       },
       "required": [

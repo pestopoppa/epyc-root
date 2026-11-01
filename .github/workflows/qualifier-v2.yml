@@ -38,3 +38,6 @@ jobs:
           scripts.coordination.tests.d1d4.test_qualification_drain
           scripts.coordination.tests.d1d4.test_claim_first
           scripts.coordination.tests.d1d4.test_qualification_drain_real
+          scripts.coordination.tests.d1d4.test_parakeet_v2_source
+          scripts.coordination.tests.d1d4.test_unified_v2_source
+          scripts.coordination.tests.d1d4.test_speech_cross_scope

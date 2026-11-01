@@ -1,7 +1,7 @@
 """Apply reviewed patch to copies; compare commit payload and unchanged v1."""
 import hashlib,os,pathlib,shutil,subprocess,tempfile,unittest
 from unittest.mock import patch
-D=pathlib.Path(__file__).resolve().parent;F=pathlib.Path('/mnt/raid0/llm/tmp/compute-flags');S=D/'source/scripts/coordination';PATCH=D/'keeper-guard-deploy.patch'
+D=pathlib.Path(__file__).resolve().parent;F=pathlib.Path('/mnt/raid0/llm/tmp/compute-flags');S=D.parents[2]/'scripts/coordination';PATCH=D/'deployment.patch'
 BASE={'ws58-calendar-keeper-v8.sh':'a8fc18c67f08fed08c1f74e629083d55cbcd1b9560b21d3029e0e9e0f7b4e5a7','grant_ok.sh':'2e40f0cf5e93e91c1a55f2d3a22e0e08a209555cdb06c90181764f7546978908'}
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def files(p):return {str(f.relative_to(p)):sha(f) for f in p.rglob('*') if f.is_file()}

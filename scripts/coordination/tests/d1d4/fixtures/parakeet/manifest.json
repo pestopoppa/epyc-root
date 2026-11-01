@@ -1,0 +1,131 @@
+{
+  "booking_class": "block-correctness",
+  "claimed_cpus": "dynamic",
+  "class": "diagnostic",
+  "decision_rule": "Selection-only FLEURS validation; no test verdict or model promotion.",
+  "engine": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/filler_run14.sh",
+    "sha256": "6fe168333738d15e5988d5af42e2b4c348194d722bac11c32368183ae89cd3ef"
+  },
+  "enrollment": "n/a: diagnostic",
+  "est_output_GiB": 8,
+  "exclusive_class": null,
+  "gib": 8,
+  "hold": null,
+  "id": "codex3-cs8-stt5-validation-parakeet-r4-20261101",
+  "items": 1437,
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-parakeet-r4-d8296-review-20261101/launch.sh",
+    "sha256": "5b8f6415ddf80cf26c19067a16358450b2ba663fc7c24eeaa85c2bad6b6b5aba"
+  },
+  "job_floor_gib": 150,
+  "keep": [
+    "*.py",
+    "*.sh",
+    "*.json",
+    "*.sha256",
+    "*.out",
+    "validation-results/*.json",
+    "validation-results/*.stdout",
+    "validation-results/*.stderr",
+    "validation-results/*.txt",
+    "validation-results/chunks/*.json",
+    "validation-results/chunks/pcm/*.wav"
+  ],
+  "keep_globs": [
+    "*.py",
+    "*.sh",
+    "*.json",
+    "*.sha256",
+    "*.out",
+    "validation-results/*.json",
+    "validation-results/*.stdout",
+    "validation-results/*.stderr",
+    "validation-results/*.txt",
+    "validation-results/chunks/*.json",
+    "validation-results/chunks/pcm/*.wav"
+  ],
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-parakeet-r4-d8296-review-20261101/launch.sh",
+    "sha256": "5b8f6415ddf80cf26c19067a16358450b2ba663fc7c24eeaa85c2bad6b6b5aba"
+  },
+  "launcher_log": "/mnt/raid0/llm/tmp/codex3-parakeet-r4-d8296-review-20261101/ws58-launcher.out",
+  "log_consumer": "/mnt/raid0/llm/tmp/codex3-parakeet-r4-d8296-review-20261101/log_consumer.py",
+  "min_window_s": 900,
+  "notes": "PROPOSAL: UNKNOWN feasibility; distinct ledger and fail-closed old ledger check under legacy mutex; keeper qualification required.",
+  "owner": "codex3",
+  "ports": [],
+  "priority_rank": 100,
+  "process_limit_GiB": 8,
+  "production": true,
+  "production_recipe": {
+    "path": "/mnt/raid0/llm/tmp/codex3-parakeet-r4-d8296-review-20261101/production-recipe.proposed.json",
+    "sha256": "b92269be9ea18f757ac45ca9c68c08f9b953e2e40785588ee89474535720e071"
+  },
+  "qual_fixture": {
+    "items": 2,
+    "path": "/mnt/raid0/llm/tmp/codex3-parakeet-r4-d8296-review-20261101/qualification-fixture.json",
+    "sha256": "596fef16ff53f685763f8cff506c952556355cb0fa4395fcc541cf882f7c622c"
+  },
+  "qual_timeout_s": 300,
+  "qualification": {
+    "receipt": "/mnt/raid0/llm/tmp/codex3-parakeet-r4-d8296-review-20261101/qualification/QUAL-codex3-cs8-stt5-validation-parakeet-r4-20261101.json"
+  },
+  "qualification_row": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-parakeet-r4-20261101.row.md",
+    "sha256": "5d31a387550bd0e2c5a9aeb3fde19e58d11a7e040de009bc423f77ab4c664c35"
+  },
+  "qualifier_version": "epyc.qual-v2-row",
+  "rate_basis": {
+    "batch_size": 1,
+    "decode_mode": "native-default-auto",
+    "production_threads": 24,
+    "scope": "parakeet-unknown-calibration",
+    "work_unit": "FLEURS validation complete corpus"
+  },
+  "regions": "any-cpu-quarter",
+  "request_manifest_sha256": "596fef16ff53f685763f8cff506c952556355cb0fa4395fcc541cf882f7c622c",
+  "requires_tools": [
+    "bash",
+    "python3",
+    "taskset",
+    "sha256sum"
+  ],
+  "result_path": "/mnt/raid0/llm/tmp/codex3-parakeet-r4-d8296-review-20261101/validation-results",
+  "runtime_dependencies": [
+    "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-parakeet-r3-20261030",
+    "/mnt/raid0/llm/whisper.cpp",
+    "/mnt/micron/codex3-lanes/orchestrator"
+  ],
+  "schema": "epyc.ready.v2",
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-parakeet-r4-d8296-review-20261101",
+  "shared_state": [
+    "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-parakeet-r3-20261030/validation-results",
+    "/mnt/raid0/llm/tmp/codex3-parakeet-r4-d8296-review-20261101/validation-results"
+  ],
+  "source_manifest": "/mnt/raid0/llm/tmp/codex3-parakeet-r4-d8296-review-20261101/SOURCES.sha256",
+  "speech": {
+    "batch_size": 1,
+    "decode_mode": "native-default-auto",
+    "fixture_audio": {
+      "path": "/mnt/raid0/llm/whisper.cpp/samples/jfk.wav",
+      "sha256": "59dfb9a4acb36fe2a2affc14bacbee2920ff435cb13cc314a08c13f66ba7860e"
+    },
+    "fixture_audio_seconds": 11.0,
+    "pcm_sha256": "a29462b8ebd467318000e683b9117ade46230d3255ed2024e7db894abd9b38c9",
+    "planned_audio_seconds": 16743.42,
+    "right_context": "UNKNOWN",
+    "sample_rate_hz": 16000,
+    "source_binary": {
+      "path": "/mnt/raid0/llm/whisper.cpp/build/bin/parakeet-cli",
+      "sha256": "71e5dd39248017f158afb2fa78e8ffdb83d3889f6405fafbc30ff3422deea5b6"
+    },
+    "source_catalog": {
+      "path": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-parakeet-r3-20261030/SOURCE-SHA256SUMS",
+      "sha256": "190a55c7d1bba3a6d1fbe9f4f415b1122a66414ce8e59d970228a9fa085475b0"
+    },
+    "threads": 24
+  },
+  "window_s": 36000,
+  "workload_kind": "speech"
+}
