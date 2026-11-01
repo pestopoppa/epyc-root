@@ -1,0 +1,11 @@
+--- x0_shape_b.py
++++ x0_shape_b.py.guarded
+@@ -165,6 +165,8 @@
+                     help="after the X0 rows, run probe_decode_x0.py (2k/16k/50k/80k, 1500 tok, + no-draft) on this live server")
+     ap.add_argument("--dry-run", action="store_true")
+     a = ap.parse_args()
++    if a.with_probe:
++        ap.error("KVU-16h: probe requires separate drafted and no-draft servers")
+     src_path = a.argv_file or LIVE
+     argv, notes = build_argv(read_argv(src_path), a.arm, a.port, a.ctx, a.draft_n_max)
+     out_path = C.RESULTS / f"shape_b.{a.arm}.rep{a.rep}.json"

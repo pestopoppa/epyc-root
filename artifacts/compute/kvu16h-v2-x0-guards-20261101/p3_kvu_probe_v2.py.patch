@@ -1,0 +1,27 @@
+--- p3_kvu_probe_v2.py
++++ p3_kvu_probe_v2.py.guarded
+@@ -260,6 +260,7 @@
+ 
+ # ------------------------------------------------------------------ phase A1
+ def measure_level(srv: Server, P: str, p_tok: int, level: str, fill: int, rows: list, out: Path, rec: dict) -> None:
++    raise RuntimeError("KVU-16h: A1 requires separate drafted and no-draft servers")
+     for i, (variant, extra) in enumerate((("drafted", None), ("nodraft", NODRAFT),
+                                           ("drafted", None), ("nodraft", NODRAFT))):
+         with SlotPoller(srv.base) as poll:
+@@ -308,6 +309,7 @@
+ 
+ 
+ def phase_a1(a) -> int:
++    raise RuntimeError("KVU-16h: A1 requires separate drafted and no-draft servers")
+     out = OUT / "a1.json"
+     nonce = uuid.uuid4().hex[:12]
+     srv = Server("a1", a.port)
+@@ -614,6 +616,8 @@
+     ap.add_argument("--keep-slot-file", action="store_true")
+     ap.add_argument("--dry-run", action="store_true")
+     a = ap.parse_args()
++    if a.phase in ("all", "a1"):
++        ap.error("KVU-16h: A1 requires separate drafted and no-draft servers")
+     if a.phase == "report":
+         return phase_report(a)
+     if not a.arm:

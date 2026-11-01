@@ -1,0 +1,19 @@
+--- probe_decode_x0.py
++++ probe_decode_x0.py.guarded
+@@ -56,6 +56,8 @@
+ 
+ 
+ def stream_chat(body: dict, path: str = "/v1/chat/completions") -> dict:
++    if body.get("speculative.n_max") == 0:
++        raise RuntimeError("KVU-16h: no-draft requests require a separate server")
+     """Streamed request; returns timings, TTFT and reasoning/content sizes."""
+     body = {**body, "stream": True}
+     if path.endswith("chat/completions"):
+@@ -133,6 +135,7 @@
+     ap.add_argument("--url", required=True)  # X0: no default, never hit production :8083 by accident
+     ap.add_argument("--out-dir", type=Path, default=Path("/mnt/raid0/llm/tmp/x0-27b-quants/results/probe"))
+     a = ap.parse_args()
++    ap.error("KVU-16h: probe requires separate drafted and no-draft servers")
+     URL, OUT = a.url.rstrip("/"), a.out_dir
+     OUT.mkdir(parents=True, exist_ok=True)
+     t_idle = time.time() + a.wait_idle_s

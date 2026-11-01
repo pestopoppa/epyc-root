@@ -1,0 +1,5 @@
+# P3 v2 and X0 guard drafts
+
+These are review drafts copied from scratch, not installed guards. The P3 v2 draft refuses A1/all at CLI before side effects and refuses direct A1/measurement calls. The X0 probe draft refuses its CLI and request-level no-draft sends; its outer shape-B draft refuses `--with-probe` before reading configuration or launching. Other paths, copies, shared helpers and direct use outside these functions are not covered. None implements the required separate no-draft server lifecycle or separate warm-up. Source and draft SHA-256 values are in `HASHES.txt`; the patches apply to the corresponding captured scratch sources at those hashes. Originals are unchanged.
+
+`python3 -B artifacts/compute/kvu16h-v2-x0-guards-20261101/test_guards.py` passed four AST-based structural checks. All drafts parse. These checks do not execute the full imported runners, their actual CLI dependencies, or a server. Review, live source identity and integration are required before any claim that a deployed runner is protected. No compute was run.

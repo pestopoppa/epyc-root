@@ -103,3 +103,7 @@ Reviewed the [prospective lifecycle design](../../artifacts/compute/kvu16h-q38-l
 ## KVU-19a-2 companion source
 
 The dispatcher redelivered the candidate-source event already integrated in commit `687d2e33e57e`; consumed its stale awaiting marker. Reviewed the [companion record](../../artifacts/compute/kvu19a2-companion-20261101/README.md): Git commit `a0d0ae238e714aaab04e973ef4b5a4b7c9917744` resolves to the stated tree, and its common and tile objects match the recorded hashes. The patch reconstructs a prospective candidate, not a historical binary or a proven build. Independent review, source-bound build-row preparation and Q38 implementation review have dispatcher events registered. No compute or build ran. GitNexus remains unindexed; no application symbol was edited.
+
+## P3 v2 and X0 runner inventory
+
+Reviewed the identified mixed-server paths in P3 v2 and X0 and preserved their [guard drafts](../../artifacts/compute/kvu16h-v2-x0-guards-20261101/README.md). Four AST-based tests pass; independent review verified patch round trips and corrected the outer option to `--with-probe`. Drafts are not installed, do not cover all clients and do not implement separate lifecycles. No compute ran. The DF2 runner inventory, P3 v2/X0 lifecycle implementation and Q38 final review have registered completion events. GitNexus is unindexed; this boundary changes no application symbol.
