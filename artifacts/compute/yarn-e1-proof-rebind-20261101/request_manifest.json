@@ -1,0 +1,79 @@
+{
+  "decision_rule": {
+    "direction": "lower VRAM is better",
+    "e1_commit": "9a3f1392a",
+    "historical_excess_gib": 15,
+    "metric": "own-PID KFD VRAM plus hipMalloc-shim phase series",
+    "quality_or_champion_verdict": false,
+    "w_commit": "b0ba1d427"
+  },
+  "id": "codex-ni-yarn-e1-mem-phase-r2-20261101",
+  "input_manifest": {
+    "path": "/mnt/raid0/llm/tmp/yarn-e1-proof-handoff-20261101/src/inputs/manifest.json",
+    "sha256": "2eb07287faba49ed5e368700b273aa8345e927cf53d0aeb34371aca2888b1b04"
+  },
+  "metadata_only_tokenizer": {
+    "path": "/mnt/raid0/llm/tmp/yarn-e1-proof-handoff-20261101/src/qualification/REQUEST-METADATA.json",
+    "qualification_claim": false,
+    "sha256": "418ebb28a22fef449550e2dc0e06088185d6f39ae549b91b9db0e5ee58404718"
+  },
+  "model": {
+    "edge_sha256": "7fb575fe9cecac00633ef8d939a472037750d54399fef69e9d07e74a6b815134",
+    "path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+    "size_bytes": 29047086048
+  },
+  "production_recipe": {
+    "path": "/mnt/raid0/llm/tmp/yarn-e1-proof-handoff-20261101/src/qualification/production_recipe.json",
+    "sha256": "a204d971f5c5fff26a4f3e7b6e8a5c207af0c5bb32d42f68a0019ab7da894978"
+  },
+  "request_max": {
+    "arm": "A1",
+    "messages_sha256": "4fb2675f66aab44fe40b397aefb3d03f504ff925f5118853393fc619046a0780",
+    "needle": "N19",
+    "prompt_tokens_required": 498965,
+    "rendered_sha256": "8307912edb92fa5df0de817f687e0651fa5e05209aefbb2de9c03db303caa5c4",
+    "stage": "500k"
+  },
+  "runner": {
+    "path": "/mnt/raid0/llm/tmp/yarn-e1-proof-handoff-20261101/src/yarn_needle.py",
+    "sha256": "8bc1a7f001c661675d30e8d37e00803ab232b7534d3adf9023ddeb1e87a729ed"
+  },
+  "schema": "epyc.yarn-e1-request-manifest.v1",
+  "science_cells": [
+    [
+      "E1",
+      "A0",
+      "low"
+    ],
+    [
+      "W",
+      "A0",
+      "low"
+    ],
+    [
+      "E1",
+      "A1",
+      "low"
+    ],
+    [
+      "W",
+      "A1",
+      "low"
+    ],
+    [
+      "E1",
+      "A1",
+      "high"
+    ],
+    [
+      "W",
+      "A1",
+      "high"
+    ]
+  ],
+  "science_cells_mutated": false,
+  "template": {
+    "path": "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+    "sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551"
+  }
+}

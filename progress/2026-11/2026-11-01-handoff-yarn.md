@@ -15,3 +15,9 @@ Prepared a separate candidate with the published split-continuation helper integ
 ## S3/v30 second window
 
 Filed terminal rc75 at 15:45:26Z: one new native A0 item completed, no A1 and zero matching pairs. Cumulative S3 inventory is two completed A0, three predecessor unknown A0, 25 unexposed A0 and 30 unexposed A1. Worker reports deadline; do not redraw or change the 120 denominator. The dispatched launcher end line was from the prior day; the current line, result and worker are captured in `artifacts/compute/yarn-s3-v30-20261101/`. Host result access required the host root view. Old PIDs absent and port clear at inspection do not establish a complete descendant audit. A fresh v14 successor and keeper qualification remain.
+
+# YaRN handoff — 2026-11-01
+
+Rebound the private E1-MEM split-proof candidate request, recipe and fixture to the modified runner after linking its original inputs. Original six scientific cells, decision rule, input digest and maximum prompt remain unchanged; the recipe changes only the identical-digest shim path. All 53 source hashes, seven proof tests and eight qualification contract tests passed. Request and fixture hashes, provenance and limitations are recorded in `artifacts/compute/yarn-e1-proof-rebind-20261101/README.md`. This is offline preparation, not inference, qualification or a result. A fresh ID, deployed engine binding, booking, measured work-unit duration and keeper qualification remain.
+
+The top Jet-Long ubatch task retains the prior CRITICAL impact warning for editing core decode. A possible server-only slicing approach has LOW impact in the stale production GitNexus index (3 upstream symbols, 1 flow), but must first address boundary and mixed-slot handling, retries, output indices and graph reservation; no code was changed. GitNexus reindex was refused by the CPU admission guard. The session-bus drain refused `handoff-yarn` because it is not a roster ID.

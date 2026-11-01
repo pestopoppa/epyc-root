@@ -1,0 +1,58 @@
+{
+  "items": 2,
+  "normal_and_cutoff": {
+    "cutoff_after_native_first_event": true,
+    "same_entry": true,
+    "work_unit": "one paired E1/W A1/high comparison: each image runs 400k cache seed then exact 500k N19 request"
+  },
+  "qualification_claim": "keeper-issued native proof required; this fixture alone is not qualification",
+  "request": {
+    "arm": "A1",
+    "messages_sha256": "4fb2675f66aab44fe40b397aefb3d03f504ff925f5118853393fc619046a0780",
+    "needle": "N19",
+    "production_recipe_sha256": "a204d971f5c5fff26a4f3e7b6e8a5c207af0c5bb32d42f68a0019ab7da894978",
+    "prompt_tokens_required": 498965,
+    "rendered_sha256": "8307912edb92fa5df0de817f687e0651fa5e05209aefbb2de9c03db303caa5c4",
+    "request_manifest_sha256": "b9d97671d32cf58871e9ca379afc4c7a703199aeb404c11f1866e23f55fe97b3",
+    "stage": "500k"
+  },
+  "required_capacity": {
+    "kv_cache_mode": "split",
+    "parallel": 1,
+    "per_slot_context": 524288,
+    "total_context": 524288
+  },
+  "schema": "epyc.yarn-e1-qual-fixture.v1",
+  "science_cells": [
+    [
+      "E1",
+      "A0",
+      "low"
+    ],
+    [
+      "W",
+      "A0",
+      "low"
+    ],
+    [
+      "E1",
+      "A1",
+      "low"
+    ],
+    [
+      "W",
+      "A1",
+      "low"
+    ],
+    [
+      "E1",
+      "A1",
+      "high"
+    ],
+    [
+      "W",
+      "A1",
+      "high"
+    ]
+  ]
+}

@@ -1,0 +1,186 @@
+{
+  "backend": {
+    "device": "ROCm0",
+    "flash_attention": "on",
+    "kv_types": [
+      "q8_0",
+      "q8_0"
+    ],
+    "ngl": "all",
+    "omp_threads": 1,
+    "shim": "/mnt/raid0/llm/tmp/yarn-e1-proof-handoff-20261101/src/helper/libhipmalloc_trace.so",
+    "shim_sha256": "f6d2f088bc238108353e65ed61fb828b2d27ec12beb900f95ad1aadf5911b234"
+  },
+  "calibration": {
+    "qualification_is_not_calibration": true,
+    "status": "missing-same-image-complete-work-unit-measurement"
+  },
+  "images": {
+    "E1": {
+      "argv": [
+        "/mnt/raid0/llm/kernels/builds/gpu-20261004-9a3f1392a/bin/llama-server",
+        "-m",
+        "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        18437,
+        "-np",
+        1,
+        "-t",
+        8,
+        "-ub",
+        2048,
+        "--flash-attn",
+        "on",
+        "--jinja",
+        "-ctk",
+        "q8_0",
+        "-ctv",
+        "q8_0",
+        "--no-kv-unified",
+        "--no-mmap",
+        "-ngl",
+        "all",
+        "--cache-ram",
+        0,
+        "--chat-template-file",
+        "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+        "--device",
+        "ROCm0",
+        "--slot-save-path",
+        "<cell>/slots",
+        "--verbosity",
+        4,
+        "-c",
+        524288,
+        "--rope-scaling",
+        "yarn",
+        "--rope-scale",
+        2,
+        "--yarn-orig-ctx",
+        262144,
+        "--override-kv",
+        "qwen35.context_length=int:524288,qwen35.rope.scaling.type=str:yarn,qwen35.rope.scaling.factor=float:2,qwen35.rope.scaling.original_context_length=int:262144"
+      ],
+      "binary": {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20261004-9a3f1392a/bin/llama-server",
+        "sha256": "ffbbe30ec8d91c8f7abc341d587070837bdb77918983fda85b2677437cf22877"
+      },
+      "ggml_dsos": [
+        {
+          "path": "/mnt/raid0/llm/kernels/builds/gpu-20261004-9a3f1392a/bin/libggml-base.so.0.16.0",
+          "sha256": "80efc4984107c27a1c69eec46efe059327c3234309693686b3f2bbc6d025c1a2"
+        },
+        {
+          "path": "/mnt/raid0/llm/kernels/builds/gpu-20261004-9a3f1392a/bin/libggml-cpu.so.0.16.0",
+          "sha256": "2faaa83455f48dfc3368090f785430d4f53874fc95890c7aaa0fd0f6c5b9ca6c"
+        },
+        {
+          "path": "/mnt/raid0/llm/kernels/builds/gpu-20261004-9a3f1392a/bin/libggml-hip.so.0.16.0",
+          "sha256": "0557aa6a92186a3b4d38236d71d52b901933170452c285c6696f428b434bcfec"
+        },
+        {
+          "path": "/mnt/raid0/llm/kernels/builds/gpu-20261004-9a3f1392a/bin/libggml.so.0.16.0",
+          "sha256": "bff079152349464f53b0d4870e3bd8604b99927f844e40c22d0a2e5bb4fda110"
+        }
+      ],
+      "source_commit": "9a3f1392a"
+    },
+    "W": {
+      "argv": [
+        "/mnt/raid0/llm/kernels/builds/gpu-20261004-b0ba1d427/bin/llama-server",
+        "-m",
+        "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        18437,
+        "-np",
+        1,
+        "-t",
+        8,
+        "-ub",
+        2048,
+        "--flash-attn",
+        "on",
+        "--jinja",
+        "-ctk",
+        "q8_0",
+        "-ctv",
+        "q8_0",
+        "--no-kv-unified",
+        "--no-mmap",
+        "-ngl",
+        "all",
+        "--cache-ram",
+        0,
+        "--chat-template-file",
+        "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+        "--device",
+        "ROCm0",
+        "--slot-save-path",
+        "<cell>/slots",
+        "--verbosity",
+        4,
+        "-c",
+        524288,
+        "--rope-scaling",
+        "yarn",
+        "--rope-scale",
+        2,
+        "--yarn-orig-ctx",
+        262144,
+        "--override-kv",
+        "qwen35.context_length=int:524288,qwen35.rope.scaling.type=str:yarn,qwen35.rope.scaling.factor=float:2,qwen35.rope.scaling.original_context_length=int:262144"
+      ],
+      "binary": {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20261004-b0ba1d427/bin/llama-server",
+        "sha256": "33248d7623f4d2dff26482fddabc316d294419fd871971ea4357ba16c443d84b"
+      },
+      "ggml_dsos": [
+        {
+          "path": "/mnt/raid0/llm/kernels/builds/gpu-20261004-b0ba1d427/bin/libggml-base.so.0.16.0",
+          "sha256": "3fd54a6bd24f0338d5d35419d895ecf74342653101b45643533a05f17457de9d"
+        },
+        {
+          "path": "/mnt/raid0/llm/kernels/builds/gpu-20261004-b0ba1d427/bin/libggml-cpu.so.0.16.0",
+          "sha256": "b350739936778a30319183c0836ca9979d381410088728d0918c9a1a63470a7b"
+        },
+        {
+          "path": "/mnt/raid0/llm/kernels/builds/gpu-20261004-b0ba1d427/bin/libggml-hip.so.0.16.0",
+          "sha256": "d470f5322dead62d3ccb0fa5be85e05d4437970d9e0008a18ee61a969231c150"
+        },
+        {
+          "path": "/mnt/raid0/llm/kernels/builds/gpu-20261004-b0ba1d427/bin/libggml.so.0.16.0",
+          "sha256": "f88bc58f71fbfa8bb64c863715c78fa6e29f4186e678ac81294dd1ced58c4e27"
+        }
+      ],
+      "source_commit": "b0ba1d427"
+    }
+  },
+  "kv_cache_mode": "split",
+  "kv_mode_basis": "explicit --no-kv-unified; native qualification must still prove kv_unified=false",
+  "model": {
+    "edge_sha256": "7fb575fe9cecac00633ef8d939a472037750d54399fef69e9d07e74a6b815134",
+    "path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+    "size_bytes": 29047086048
+  },
+  "qualification_work_unit": "one paired E1/W A1/high comparison: each image runs 400k cache seed then exact 500k N19 request",
+  "request": {
+    "arm": "A1",
+    "first_request_stage": "500k",
+    "messages_sha256": "4fb2675f66aab44fe40b397aefb3d03f504ff925f5118853393fc619046a0780",
+    "needle": "N19",
+    "prompt_tokens_required": 498965,
+    "rendered_prompt_sha256": "8307912edb92fa5df0de817f687e0651fa5e05209aefbb2de9c03db303caa5c4",
+    "seed_stage": "400k",
+    "template_sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551"
+  },
+  "schema": "epyc.yarn-e1-production-recipe.v1",
+  "status": "candidate-pinned-unqualified",
+  "template": {
+    "path": "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+    "sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551"
+  }
+}
