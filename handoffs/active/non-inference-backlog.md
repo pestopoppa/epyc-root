@@ -1057,7 +1057,7 @@ Queue ownership: INF-26 arm-P2 is complete and its stale rank entry was removed 
 - [ ] **LOOP-10**: grant-gpu v16 — the GPU writer (v15) must check every CPU quarter a GPU row names itself, not rely on keeper v4. [no-belief: tooling-repair]
 - [ ] **LOOP-11**: keeper must run the arm checks BEFORE starting the launcher; today a refusal leaves orphan pollers. [no-belief: tooling-repair]
 - [ ] **LOOP-12**: process supervision for grant writers and keeper so a session crash does not kill them (10-28 ~11:25Z). systemd-run is unavailable; investigate why the setsid children died, then pick a supervisor. [no-belief: tooling-repair]
-- [ ] **LOOP-13**: workers add `scratch_root` + `keep` to every `ready/*.json` manifest (owner ruling R10, sent to both workers 2026-10-28). [no-belief: tooling-repair]
+- [ ] **LOOP-13**: workers add `scratch_root` + `keep` to every `ready/*.json` manifest (owner ruling R10, sent to both workers 2026-10-28). [no-belief: tooling-repair] [too-big: worker and grant-writer guarantees need owner reconciliation; canonical publisher alone can be bypassed]
 
 ## 2026-10-28/29 results-filing mechanism, loop daemons and disk follow-ons (workspace-58)
 
