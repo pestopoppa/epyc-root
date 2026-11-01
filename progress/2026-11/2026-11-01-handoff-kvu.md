@@ -177,3 +177,7 @@ Consumed both events. The retained KVU-12.6 driver hashes to `43e4fcad361693cddb
 ## KVU-12.6 preflight and signal custody
 
 Consumed all three events and pushed the previously blocked lane checkpoint. Independent review verified the pinned length patch and six nominal selections. The [matrix preflight](../../artifacts/compute/kvu12-6-producer-20261101/README.md) passes five offline tests but does not capture actual occupancy or implement a runnable producer. The [clone3 signal analysis](../../artifacts/compute/kvu16h-q38-clone3-signal-20261101/README.md) identifies inherited signal mask/disposition custody as unresolved; its proposed launcher architecture is one possible design, not a proven requirement. No build, live process or compute ran. Producer continuation is registered for review. GitNexus remains unindexed; no application symbol was edited.
+
+## 22:41Z — Inference producer continuation
+
+The three safe successor rows remain published; the original VKQ3 row is exposure-contaminated and must not be retried. KVU-15b requires live proof and sufficient credited organic calls; KVU-16a is an existing measured package awaiting signature. No duplicate or preparation-only row was published. Dispatched concrete offline continuation of KVU-12.6, V11-FA-8 and KVU-19a-2 producer work; dispatcher events are registered under handoff-sessions/kvu/awaiting. Each output requires owner review before integration. No build, qualification or inference ran. GitNexus reported this lane unindexed; no application symbol was edited.
