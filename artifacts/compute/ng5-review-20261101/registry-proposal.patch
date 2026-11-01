@@ -1,0 +1,16 @@
+--- a/orchestration/model_registry.yaml
++++ b/orchestration/model_registry.yaml
+@@ -154,6 +154,13 @@
+       replicates differ by +4.17% (11/11 consistent), i.e. monotonic host drift
+       over the ~2h window. DIRECTION survives — composed loses against both the
+       early and the late baseline, 0/12 and 0/11 — but quoted MAGNITUDES are soft.
++      For every n-gram performance claim, identify the prompt corpus and its
++      repeated-5-gram fraction, or record the fraction as unknown. Prompt
++      screening alone cannot rule out copying from a prior generated answer.
++      Do not repeat a prompt against the same live server when measuring a
++      context-reading drafter; use distinct prompts and a non-context-drafter
++      control arm. Preserve the original raw evidence and do not infer missing
++      historical corpus statistics.
+ 
+   where_ngram_does_win: >
+     TASK-CLASS SCOPED, not a default. Composed wins only where the OUTPUT repeats
