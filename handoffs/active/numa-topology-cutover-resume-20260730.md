@@ -1611,7 +1611,7 @@ was in flight and several items touch the shared clone.
 
 ### Discovered 2026-08-12 while working P1-3 / P1-5 / P1-10 (`mainD`)
 
-- [ ] **Propagate the `dual-half-negative` supersession to the LIVE strategy store.** The YAML is the
+- [ ] **Propagate the `dual-half-negative` supersession to the LIVE strategy store.** [too-big: live strategy-store seeding requires the embedder service owner] The YAML is the
   record; `orchestration/repl_memory/strategies/strategies.db` is what AutoPilot reads. Until
   `scripts/autopilot/seed_operator_strategies.py --apply` runs (dry run: 1 insert, 47 skipped) a
   restarted AutoPilot still reads the stale quarter-granularity prior. Needs a live BGE embedder, so it
