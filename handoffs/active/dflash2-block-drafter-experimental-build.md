@@ -200,6 +200,7 @@ shipped MTP (1.5×) is a floor, not the ceiling.
       GPU-MoE/gemma4 MTP; re-scope it to that regime rather than leave it standing over dense-27B DFlash2.
 - [ ] **DF2-DRAFTER-CAPABILITY — generalize:** treat "train a DFlash2 drafter for target model X" as a
       reusable capability (the pipeline, not a one-off), since every new serving candidate will need one.
+  - [x] **Drafter onboarding guide.** ✅ 2026-11-01 — [target pins, capture/training and conversion evidence, pilot controls and adoption route](../../docs/guides/agent-workflows/dflash2-drafter-onboarding.md) documented from the current handoff and existing stack-change process. The feature dumper, offline trainer, checkpoint tensor parity and target-specific measurements remain open; the guide does not establish the reusable pipeline. [no-belief: documentation and source review, no measurement]
 
 ## OPEN — composing DFlash2 with n-gram lookup (3090/LABD intake, 2026-10-03)
 

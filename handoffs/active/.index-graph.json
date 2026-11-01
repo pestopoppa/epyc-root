@@ -3939,7 +3939,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-01T19:18:43Z",
+  "generated_at": "2026-11-01T19:38:13Z",
   "nodes": [
     {
       "age_days": 94,
@@ -6310,7 +6310,7 @@
       "blocked_by": [
         "RTG-57"
       ],
-      "closed": 47,
+      "closed": 49,
       "domain": "inference-research",
       "handoff": "yarn-context-extension-research.md",
       "id": "INF-59",
@@ -6401,7 +6401,7 @@
         "INF-06",
         "INF-50"
       ],
-      "closed": 31,
+      "closed": 32,
       "domain": "inference-research",
       "handoff": "dflash2-block-drafter-experimental-build.md",
       "id": "INF-62",

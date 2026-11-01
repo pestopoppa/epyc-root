@@ -761,7 +761,7 @@
     },
     "dflash2-block-drafter-experimental-build.md": {
       "blocked": 0,
-      "closed": 31,
+      "closed": 32,
       "guarded": 0,
       "last_advanced": "2026-11-01",
       "open": 19,
@@ -773,7 +773,7 @@
       },
       "row_id": "INF-62",
       "state": "active",
-      "total": 50
+      "total": 51
     },
     "document-parser-table-bench.md": {
       "blocked": 0,
@@ -2873,7 +2873,7 @@
     },
     "yarn-context-extension-research.md": {
       "blocked": 0,
-      "closed": 47,
+      "closed": 49,
       "guarded": 0,
       "last_advanced": "2026-11-01",
       "open": 36,
@@ -2885,7 +2885,7 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 83
+      "total": 85
     }
   },
   "row_id_collisions": {},
