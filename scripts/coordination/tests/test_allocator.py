@@ -311,3 +311,18 @@ class Incident20261101(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+
+class AdmitImport(unittest.TestCase):
+    def test_admit_imports_the_parser_under_isolated_python(self):
+        """22:33Z 2026-11-01: `python3 -I` does not add the script dir to sys.path; admit() must still reach grant_ok_launcher."""
+        import subprocess, tempfile, textwrap
+        rf_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "rowflow", "rowflow.py")
+        code = textwrap.dedent(f"""
+            import importlib.util, sys
+            spec = importlib.util.spec_from_file_location("rowflow_iso", {rf_path!r}); m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+            ok, line = m.admit({tempfile.gettempdir()!r}, "no-such-row", {{}}, 1, "0-23", 600)
+            print("OK" if (ok is False and line.startswith("refuse")) else "BAD " + repr((ok, line)))
+        """)
+        r = subprocess.run([sys.executable, "-I", "-c", code], capture_output=True, text=True, timeout=60)
+        self.assertEqual(r.stdout.strip(), "OK", r.stdout + r.stderr)
