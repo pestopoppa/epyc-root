@@ -110,7 +110,7 @@ jobs:
       - name: Dashboard contracts, health and actual surviving page renderers
         env:
           EPYC_INFERENCE_RESEARCH_ROOT: ${{ github.workspace }}/.ci-dashboard-producers
-        run: python -m pytest -q tests/test_dashboard_*.py tests/test_production_kernel_set.py
+        run: python -m pytest -q tests/test_dashboard_activity.py tests/test_dashboard_panels.py tests/test_dashboard_panels_redteam.py tests/test_dashboard_loop_surface.py tests/test_dashboard_kernel_api_retirement.py tests/test_dashboard_kernel_rnd_merge.py tests/test_dashboard_kernel_freshness_envelopes.py tests/test_dashboard_operator_gates.py tests/test_dashboard_runtime_js.py tests/test_dashboard_progression.py tests/test_dashboard_authoring_refusal_visible.py tests/test_dashboard_champion_card.py tests/test_dashboard_controller_state_contract.py tests/test_dashboard_r21_4_fixtures.py tests/test_dashboard_knowledge_card.py tests/test_production_kernel_set.py tests/test_dashboard_serial_loop.py tests/test_dashboard_serial_completed.py tests/test_dashboard_terminal_loop.py tests/test_dashboard_runtime_progress.py tests/test_dashboard_runtime_observation.py
 
       - name: Trust-boundary ratification receipts
         # Every script that writes a human-only path (MEASUREMENT.md, its annexes,

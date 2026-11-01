@@ -2632,6 +2632,7 @@ function renderIdentity(d){
       ["anchor commit", short(L.anchor_commit)],
       [experimental ? "experimental candidate head" : separate ? "live run head" : "champion head",
        short(L.champion_head)],
+      ["iterations (selected report)", `${L.iterations_done ?? "unknown"} / ${L.iterations_planned ?? "unknown"}`],
       ["surface", `${L.surface} · ${L.pairs} pairs`],
       ["noise floor", num(L.noise_floor_pct) ? L.noise_floor_pct.toFixed(3) + "%" : "—"],
       ["generated at", L.generated_at]);

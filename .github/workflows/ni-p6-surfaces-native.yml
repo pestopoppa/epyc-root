@@ -46,6 +46,8 @@ jobs:
           git -C candidate rev-parse HEAD > evidence/candidate.sha
           git -C baseline rev-parse HEAD > evidence/baseline.sha
           git -C research rev-parse HEAD > evidence/research.sha
+          git -C research ls-tree -r HEAD scripts/kernel_rnd/autokernel/loop > evidence/research-native-tree.txt
+          find research/scripts/kernel_rnd/autokernel/loop -type f -print0 | sort -z | xargs -0 sha256sum > evidence/research-native-source-sha256.txt
           find candidate/dashboard candidate/tests -type f \( -name '*.py' -o -name '*.js' -o -name '*.html' -o -name 'kernel_progression_recorded*.json' \) -print0 | sort -z | xargs -0 sha256sum > evidence/source-sha256.txt
           sha256sum candidate/scripts/ci/vb_tuadv_native_requirements.txt candidate/.github/workflows/ni-p6-surfaces-native.yml > evidence/recipe-sha256.txt
       - name: Original baseline on the same runner and dependencies
@@ -58,9 +60,23 @@ jobs:
           rc=$?
           printf '%s\n' "$rc" > ../evidence/baseline.exit
           exit 0
-      - name: Candidate dashboard behavior and actual page renderers
+      - name: Primary affected contracts and actual surviving page renderers
         env:
           EPYC_INFERENCE_RESEARCH_ROOT: ${{ github.workspace }}/research
+          NI_P6_NATIVE_LOG_ROOT: ${{ github.workspace }}/evidence/native-primary
+        run: |
+          set +e
+          cd candidate
+          "$RUNNER_TEMP/p6-venv/bin/python" -m pytest -q tests/test_dashboard_activity.py tests/test_dashboard_panels.py tests/test_dashboard_panels_redteam.py tests/test_dashboard_loop_surface.py tests/test_dashboard_kernel_api_retirement.py tests/test_dashboard_kernel_rnd_merge.py tests/test_dashboard_kernel_freshness_envelopes.py tests/test_dashboard_operator_gates.py tests/test_dashboard_runtime_js.py tests/test_dashboard_progression.py tests/test_dashboard_authoring_refusal_visible.py tests/test_dashboard_champion_card.py tests/test_dashboard_controller_state_contract.py tests/test_dashboard_r21_4_fixtures.py tests/test_dashboard_knowledge_card.py tests/test_production_kernel_set.py tests/test_dashboard_serial_loop.py tests/test_dashboard_serial_completed.py tests/test_dashboard_terminal_loop.py tests/test_dashboard_runtime_progress.py tests/test_dashboard_runtime_observation.py --junitxml=../evidence/primary.junit.xml > ../evidence/primary.log 2>&1
+          rc=$?
+          printf '%s\n' "$rc" > ../evidence/primary.exit
+          tail -60 ../evidence/primary.log
+          exit "$rc"
+      - name: Candidate broad diagnostic, including baseline failures
+        if: always()
+        env:
+          EPYC_INFERENCE_RESEARCH_ROOT: ${{ github.workspace }}/research
+          NI_P6_NATIVE_LOG_ROOT: ${{ github.workspace }}/evidence/native-broad
         run: |
           set +e
           cd candidate
@@ -68,7 +84,36 @@ jobs:
           rc=$?
           printf '%s\n' "$rc" > ../evidence/candidate.exit
           tail -100 ../evidence/candidate.log
-          exit "$rc"
+          exit 0
+      - name: Reject new broad failures or newly skipped common tests
+        if: always()
+        run: |
+          "$RUNNER_TEMP/p6-venv/bin/python" - <<'PYTEST_DIFF'
+          import json
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          def read(name):
+              tree = ET.parse(Path("evidence") / f"{name}.junit.xml")
+              cases = {f"{row.get('classname')}::{row.get('name')}": row
+                       for row in tree.findall(".//testcase")}
+              failed = {key for key, row in cases.items()
+                        if row.find("failure") is not None or row.find("error") is not None}
+              skipped = {key for key, row in cases.items() if row.find("skipped") is not None}
+              return cases, failed, skipped
+          old, old_failed, old_skipped = read("baseline")
+          new, new_failed, new_skipped = read("candidate")
+          common = set(old) & set(new)
+          result = {"baseline_failures": sorted(old_failed), "candidate_failures": sorted(new_failed),
+                    "new_failures": sorted(new_failed - old_failed),
+                    "newly_skipped_common": sorted((new_skipped & common) - old_skipped),
+                    "candidate_cases": len(new), "candidate_skipped": sorted(new_skipped)}
+          Path("evidence/broad-differential.json").write_text(json.dumps(result, indent=2) + "\n")
+          print(json.dumps(result, indent=2))
+          assert len(new) >= 700, "broad collection collapsed"
+          assert not result["new_failures"], "candidate introduced broad failures"
+          assert not result["newly_skipped_common"], "candidate skipped an existing assertion"
+          assert Path("evidence/primary.exit").read_text().strip() == "0", "primary contracts failed"
+          PYTEST_DIFF
       - name: Retain original logs, JUnit, dependency and source identities
         if: always()
         uses: actions/upload-artifact@v4

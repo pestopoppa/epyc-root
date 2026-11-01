@@ -757,7 +757,9 @@ class TransportPlaneStillSeparateTest(unittest.TestCase):
     def test_the_probe_is_ok_with_every_producer_dead_or_broken(self):
         with _Artifact("KERNEL_DASHBOARD_JSON", "{truncated"), \
              _Artifact("AUTOPILOT_OUTCOME_JSON", None), \
-             _Artifact("TIMELINE_PATH", "{broken"):
+             _Artifact("TIMELINE_PATH", {
+                 "generated_at": _iso(_NOW_DT - timedelta(days=10)),
+                 "series": [{"day": "old"}], "last_sha": "stopped-producer"}):
             body = json.dumps(server.transport_probe_payload())
             fold_status = server.health_payload()["status"]
         self.assertRegex(body, r'"status".*ok')

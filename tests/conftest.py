@@ -38,7 +38,8 @@ def _dashboard_artifacts_are_test_owned(request, tmp_path, monkeypatch):
         for name, value in list(vars(module).items()):
             if (isinstance(value, Path) and str(value).startswith((
                     "/mnt/raid0/llm/autokernel", "/mnt/raid0/llm/llama.cpp",
-                    "/mnt/raid0/llm/epyc-inference-research"))):
+                    "/mnt/raid0/llm/epyc-inference-research",
+                    "/workspace/repos/epyc-inference-research"))):
                 monkeypatch.setattr(module, name, tmp_path / "absent" / name)
     for key in ("AUTOKERNEL_LOOP_STORE_ROOT", "AUTOKERNEL_FROZEN_TREE", "AUTOKERNEL_CHAMPION_TREE"):
         monkeypatch.setenv(key, str(tmp_path / "absent" / key))

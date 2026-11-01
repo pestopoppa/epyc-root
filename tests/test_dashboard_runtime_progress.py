@@ -49,7 +49,7 @@ def test_original_progress_age_and_selection_survive_fresh_router_heartbeat(sour
     assert "threads=96" in card and "GLM depth3" in card
     assert "1h" in card or "60m" in card
     assert "<details>" in card and "/original/retained-selection" in card
-    assert rendered["by_id"]["champ"] and rendered["by_id"]["know"]
+    assert rendered["by_id"]["trajectory"] and rendered["by_id"]["know"]
     # A new publisher timestamp does not move the old phase/count observation.
     _write(producer, child, row)
     later = loop_status.snapshot(now=now + 10)[0]["serial"]["child"]["runtime_preparation"]
