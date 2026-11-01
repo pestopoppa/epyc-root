@@ -1,0 +1,41 @@
+{
+  "schema": "codex3-row-repairs-evidence/v1",
+  "status": "PREPARED_NOT_PUBLISHED",
+  "evl": {
+    "original_run": "codex3-evl34-r11-budget-v7-ab-20261030",
+    "historical_manifest_non_gguf_files": 3253,
+    "historical_manifest_mismatches": 0,
+    "historical_missing_file_recovered_byte_identical": true,
+    "recovered_sha256": "f133fc7fe76c72e24d294dfa1bee242d70375841959782ce78b80841cd0f9111",
+    "successor_state": "UNQUALIFIED_NOT_READY",
+    "qualification_dependency": "NI canonical qualifier and filler_run14; ws58 live deployment",
+    "successor_packet_validation": "146 member sha256s and packet sha256 OK; host source_closure verified with recovered input via explicit test environment",
+    "launch_refusal": "--job returns 78 before model path pending LOOP49",
+    "git_freeze_binding": "final root artifact pathname awaiting parent integration"
+  },
+  "pip": {
+    "state": "offline PARTIAL",
+    "completed_groups": 7,
+    "exhausted_groups": [
+      20,
+      32,
+      80,
+      128,
+      140
+    ],
+    "exhausted_pages": {
+      "complete": 61,
+      "unknown": 13,
+      "geometry_error": 1,
+      "missing": 0
+    },
+    "quality_verdict": null,
+    "checker": "proposed checker rejected, not included"
+  },
+  "stale": {
+    "eligible_rechecked_rows": 58,
+    "owner_row_diff": "proposed only in session scratch; canonical writer must reconcile from rechecked IDs",
+    "live_gpu_queue_rows_excluded": 3,
+    "no_stop_no_kill": true
+  }
+}

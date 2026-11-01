@@ -77,6 +77,8 @@ is kept verbatim in ``extra.protocol_id_native`` and the tuple is graded as the 
 
 from __future__ import annotations
 
+import hashlib
+import json
 import re
 import sys
 from datetime import datetime, timezone
@@ -131,7 +133,7 @@ METRIC_DIRECTIONS = {
     # higher_better
     "eot_recall": HIGHER, "pasr": HIGHER, "interruption_respond_rate": HIGHER,
     "routing_precision": HIGHER, "routing_recall": HIGHER, "paralinguistic_accuracy": HIGHER,
-    "exact_value_retention": HIGHER, "lid_accuracy": HIGHER, "lexicon_term_recall": HIGHER,
+    "exact_value_retention": HIGHER, "lid_accuracy": HIGHER, "lexicon_keyword_f": HIGHER, "lexicon_term_recall": HIGHER,
     "lexicon_term_precision": HIGHER, "neighbour_tok_s": HIGHER,
     # higher-is-correct, mapped to higher_better (see module docstring)
     "t_stop_backchannel_s": HIGHER, "t_stop_off_talk_s": HIGHER,
@@ -145,11 +147,12 @@ LEXICON_METRIC_FIELD = {
     "lexicon_insertions_per_hour": "insertions_per_hour",
     "lexicon_non_list_word_wer": "non_list_word_wer",
 }
+LEX2_METRIC_FIELD = {**LEXICON_METRIC_FIELD, "lexicon_keyword_f": "keyword_f"}
 KIND_METRICS: dict[str, frozenset[str] | None] = {
     "generic": None,
     "stt_arm_wer": frozenset({"stt_corpus_wer"}),
     "stt_fitting_screen": frozenset({"stt_fitting_accept_ref"}),
-    "stt_lexicon_trial": frozenset(LEXICON_METRIC_FIELD),
+    "stt_lexicon_trial": frozenset(LEX2_METRIC_FIELD),
     "vad_arm": frozenset({"false_cut_rate", "eot_fpr", "eot_recall", "int_fpr", "eot_latency_ms",
                           "latency_ms", "cpu_ms"}),
     "end_of_turn": frozenset({"eot_recall", "eot_fpr", "int_fpr", "false_cut_rate",
@@ -325,8 +328,9 @@ def _stt_arm_problems(f: Mapping[str, Any], h: Mapping[str, Any]) -> list[str]:
             _AT_HASH12.match(f["corpus_id"]) and f["corpus_id"].endswith("@" + bind[:12])):
         p.append("fields.corpus_id must be corpus_id@<corpus manifest sha256>[:12]")
     column = f.get("column")
-    if column not in STT_COLUMNS:
-        p.append(f"fields.column must be one of {sorted(STT_COLUMNS)}")
+    allowed_columns = STT_COLUMNS | ({"lex1_lexical"} if f.get("lex2_native_schema") == "epyc.cs8.lex2.prospective.v1" else set())
+    if column not in allowed_columns:
+        p.append(f"fields.column must be one of {sorted(allowed_columns)}")
     elif f.get("candidate") is not (column == "v2_candidate"):
         p.append("fields.candidate must be true exactly when column == 'v2_candidate'")
     if not isinstance(f.get("streaming"), bool):
@@ -401,6 +405,122 @@ def _lexicon_problems(row: Mapping[str, Any], f: Mapping[str, Any]) -> list[str]
     if src and ns.finite(f.get(src)) and row.get("value") != f[src]:
         p.append(f"value must equal fields.{src} for metric {row.get('metric')!r}")
     return p
+
+
+def _lex2_native_problems(row: Mapping[str, Any], f: Mapping[str, Any], h: Mapping[str, Any]) -> list[str]:
+    """Prospective LEX2 aggregate; never backfill an unattested historical grid."""
+    p = _stt_arm_problems(f, h)
+    for key in ("runner_id", "runner_commit", "ggml_version", "backend", "device",
+                "stratum", "dataset_revision", "list_scope", "case_policy", "model_file"):
+        if not ns.text(f.get(key)):
+            p.append("fields." + key + " required")
+    for key in ("weights_sha256", "dev_manifest_sha256", "test_manifest_sha256",
+                "overlap_exclusions_sha256", "native_capture_sha256", "scorer_sha256"):
+        if not _hex64(f.get(key)):
+            p.append("fields." + key + " must be sha256")
+    metric_field = LEX2_METRIC_FIELD.get(row.get("metric"))
+    if not metric_field or not ns.finite(f.get(metric_field)) or f[metric_field] != row.get("value"):
+        p.append("REFUSED: metric value missing or mismatched")
+    if not _pos_int(f.get("n")):
+        p.append("fields.n must be positive")
+    if not isinstance(f.get("raw_token_unk_count"), (int, type(None))) or isinstance(f.get("raw_token_unk_count"), bool):
+        p.append("raw token unknown count must be null or integer")
+    if f.get("raw_token_unk_count") is not None and f["raw_token_unk_count"] < 0:
+        p.append("invalid raw token unknown count")
+    if not is_production_runner(f.get("runner_id")) and not ns.text(f.get("whisper_parity_gate_ref")):
+        p.append("REFUSED: non-production STT runner lacks whisper parity gate ref")
+    if is_production_runner(f.get("runner_id")) and not str(f.get("runner_commit", "")).startswith(PRODUCTION_WHISPER_COMMIT_PREFIX):
+        p.append("REFUSED: production runner commit mismatch")
+    if f.get("stratum") not in ("dev", "heldout"):
+        p.append("REFUSED: invalid LEX2 split")
+    if f.get("column") != "lex1_lexical":
+        p.append("REFUSED: LEX2 lexical observations require lex1_lexical column")
+    if f.get("stratum") == "heldout" and not _hex64(f.get("dev_selection_sha256")):
+        p.append("REFUSED: heldout requires frozen dev selection digest")
+    if f.get("attempted_n") != f.get("n") or f.get("unknown_n") != 0:
+        p.append("REFUSED: incomplete or unknown attempts cannot yield aggregate tuple")
+    path = f.get("native_capture_path")
+    try:
+        if not isinstance(path, str) or ns.file_sha256(Path(path)) != f.get("native_capture_sha256"):
+            p.append("REFUSED: native capture missing or changed")
+    except (OSError, ValueError):
+        p.append("REFUSED: native capture missing or changed")
+    if not p:
+        try:
+            bundle = json.loads(Path(path).read_text())
+            if bundle.get("schema") != "epyc.cs8.lex2.native_bundle.v1":
+                raise ValueError("invalid native bundle schema")
+            if ns.file_sha256(Path(bundle["terminal_path"])) != bundle.get("terminal_sha256"):
+                raise ValueError("native terminal drift")
+            terminal = json.loads(Path(bundle["terminal_path"]).read_text())
+            if terminal.get("state") not in ("complete_raw", "incomplete_raw") or terminal.get("counts", {}).get("unknown") != 0:
+                raise ValueError("native terminal incomplete or unknown")
+            items = bundle.get("items")
+            if not isinstance(items, list) or len(items) != f["n"]:
+                raise ValueError("incomplete native bundle")
+            manifest_path = Path(f["split_manifest_path"])
+            expected_manifest = f["test_manifest_sha256"] if f["stratum"] == "heldout" else f["dev_manifest_sha256"]
+            if ns.file_sha256(manifest_path) != expected_manifest: raise ValueError("manifest digest mismatch")
+            original = json.loads(manifest_path.read_text())["records"]
+            selected = [r for r in original if f["stratum"] != "heldout" or r.get("eligibility") == "heldout"]
+            expected_clips = {r["file_id"] for r in selected}
+            if len(expected_clips) != len(selected) or len(expected_clips) != f["n"]: raise ValueError("manifest cohort mismatch")
+            clips = set()
+            for item in items:
+                attempt_path, disposition_path = Path(item["attempt_path"]), Path(item["disposition_path"])
+                if ns.file_sha256(attempt_path) != item["attempt_sha256"] or ns.file_sha256(disposition_path) != item["disposition_sha256"]:
+                    raise ValueError("attempt/disposition file drift")
+                attempt = json.loads(attempt_path.read_text()); disposition = json.loads(disposition_path.read_text())
+                def native_hash(obj):
+                    obj = dict(obj); saved = obj.pop("record_sha256")
+                    actual = hashlib.sha256(json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False).encode()).hexdigest()
+                    if saved != actual: raise ValueError("record hash drift")
+                    return saved
+                ah = native_hash(attempt); native_hash(disposition)
+                if attempt.get("schema") != "epyc.cs8.lex2.prospective_attempt.v1" or disposition.get("schema") != "epyc.cs8.lex2.prospective_disposition.v1" or disposition.get("attempt_sha256") != ah:
+                    raise ValueError("unlinked capture")
+                clip = attempt["clip_id"]
+                if clip in clips: raise ValueError("duplicate clip")
+                clips.add(clip)
+                for key in ("dev_manifest_sha256", "test_manifest_sha256", "overlap_exclusions_sha256", "dataset_revision"):
+                    if attempt.get(key) != f.get(key): raise ValueError("capture identity mismatch")
+                if attempt.get("model_sha256") != f.get("weights_sha256") or attempt.get("scope") != f.get("list_scope") or attempt.get("split") != f.get("stratum"):
+                    raise ValueError("arm or split identity mismatch")
+                if disposition.get("status") not in ("ok", "failure") or disposition.get("child_reaped") is not True:
+                    raise ValueError("unknown or unreaped attempt")
+                for key in ("result", "stdout", "stderr", "samples"):
+                    if ns.file_sha256(Path(disposition[key + "_path"])) != disposition[key + "_sha256"]:
+                        raise ValueError(key + " evidence drift")
+                native_result = json.loads(Path(disposition["result_path"]).read_text())
+                if native_result.get("status") != disposition["status"] or native_result.get("rc") != disposition.get("returncode") or native_result.get("reaped") is not True:
+                    raise ValueError("native result disposition mismatch")
+                binding = native_result.get("binding", {})
+                for native_key, attempt_key in (("clip_id", "clip_id"), ("wav_sha256", "clip_sha256"), ("context_sha256", "context_sha256"), ("model_sha256", "model_sha256"), ("runtime_sha256", "binary_sha256"), ("grant_id", "grant_id"), ("configured_alpha", "configured_alpha"), ("engine", "engine"), ("scope", "scope"), ("spm_sha256", "tokenizer_sha256")):
+                    if binding.get(native_key) != attempt.get(attempt_key): raise ValueError("native result binding mismatch")
+                samples = [json.loads(line) for line in Path(disposition["samples_path"]).read_text().splitlines()]
+                if not any(x.get("sampled_while_child_live") and x.get("grant_id") == attempt["grant_id"] and x.get("grant_sha256") == attempt["grant_sha256"] for x in samples):
+                    raise ValueError("no original in-window grant observation")
+                if disposition.get("status") == "ok" and not any(x.get("sampled_while_child_live") and x.get("ggml_mapping_observed") is True and x.get("ggml_library_sha256") == attempt.get("ggml_sha256") and x.get("ggml_library_path") == str(Path(attempt["ggml_path"]).resolve()) for x in samples):
+                    raise ValueError("no in-window mapped ggml proof")
+                if disposition.get("status") == "ok" and attempt.get("engine") == "nemo":
+                    stderr = Path(disposition["stderr_path"])
+                    if ns.file_sha256(stderr) != disposition["stderr_sha256"]: raise ValueError("stderr drift")
+                    text = stderr.read_text()
+                    if not re.search(r"LEX2 external tokenizer vocabulary verified \([1-9][0-9]* pieces\)", text): raise ValueError("vocabulary proof missing")
+                    alpha = attempt["configured_alpha"]
+                    if alpha > 0 and attempt["context_count"] > 0 and not re.search(r"RNNT word boosting active phrases=[1-9][0-9]* effective_alpha=" + re.escape(f"{alpha:.6f}") + r"(?:\s|$)", text): raise ValueError("native boost trace missing")
+                if f.get("stratum") == "heldout" and (attempt.get("dev_selection_sha256") != f.get("dev_selection_sha256") or attempt.get("excluded_dev_call") is not False):
+                    raise ValueError("heldout selection or overlap mismatch")
+            if clips != expected_clips: raise ValueError("original clip coverage mismatch")
+        except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError) as exc:
+            p.append("REFUSED: invalid native bundle: " + str(exc))
+    return p
+
+
+def _lexicon_kind_problems(row: Mapping[str, Any], f: Mapping[str, Any], h: Mapping[str, Any]) -> list[str]:
+    if f.get("lex2_native_schema") == "epyc.cs8.lex2.prospective.v1":
+        return _lex2_native_problems(row, f, h)
+    return _stt_arm_problems(f, h) + _lexicon_problems(row, f)
 
 
 def _vad_problems(f: Mapping[str, Any]) -> list[str]:
@@ -573,7 +693,7 @@ _KIND_CHECKS = {
     "interruption": lambda row, f, h: _interruption_problems(f),
     "coresidency_degraded": lambda row, f, h: _coresidency_problems(f),
     "stt_arm_wer": lambda row, f, h: _stt_arm_problems(f, h),
-    "stt_lexicon_trial": lambda row, f, h: _stt_arm_problems(f, h) + _lexicon_problems(row, f),
+    "stt_lexicon_trial": _lexicon_kind_problems,
     "stt_fitting_screen": lambda row, f, h: _fitting_problems(row, f),
     "generic": lambda row, f, h: [],
 }
@@ -878,6 +998,8 @@ def project(native: Any) -> ClaimTuple:
     applicability = {"quant": h["quant"], "device": h["device"], "scope_basis": "native"}
     if row["record_kind"] in STT_KINDS:
         applicability["backend"] = f["backend"]
+    if f.get("lex2_native_schema") == "epyc.cs8.lex2.prospective.v1":
+        applicability["model_file"] = f["model_file"]
     model_sha = f.get("weights_sha256")
     if _hex64(model_sha):
         applicability["model_sha256"] = model_sha

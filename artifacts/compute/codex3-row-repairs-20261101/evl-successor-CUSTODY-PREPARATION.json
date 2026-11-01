@@ -1,0 +1,14 @@
+{
+  "schema": "evl34-custody-successor/v1",
+  "state": "UNQUALIFIED_NOT_READY",
+  "original_run": "codex3-evl34-r11-budget-v7-ab-20261030",
+  "source_manifest_sha256": "0815be1a48d142890e09fffe5777b553dbdbc15a218e5715df03485214b67ba3",
+  "launcher_sha256": "671a5349194e2019896d79a1612b7e3acef60bfc573765c2447ded02b9a0568f",
+  "requirements_freeze_git_path": "artifacts/compute/codex3-row-repairs-20261101/requirements-freeze.txt",
+  "requirements_freeze_sha256": "f133fc7fe76c72e24d294dfa1bee242d70375841959782ce78b80841cd0f9111",
+  "model_or_inference_ran": false,
+  "canonical_engine_required": true,
+  "loop49_qualification_required": true,
+  "launch_disabled_until_qualification": true,
+  "historical_engine_removed_from_launcher": true
+}

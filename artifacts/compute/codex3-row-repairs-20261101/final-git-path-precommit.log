@@ -1,0 +1,3 @@
+/mnt/micron/codex3-lanes/root/artifacts/compute/codex3-row-repairs-20261101/requirements-freeze.txt: OK
+local Python source inventory verified
+{"schema": "bounded-r11-native-profile-supervisor/v1", "elapsed_s": 1.0087452889420092, "sampled_peak_tree_rss_bytes": 106217472, "samples": 11, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 3253241, "leader_birth": 161784542, "child_rc": 0, "children_drained": true, "failure": null}
