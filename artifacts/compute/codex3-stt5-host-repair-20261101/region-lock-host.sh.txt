@@ -1,0 +1,6 @@
+#!/bin/bash
+set -euo pipefail
+D=/mnt/raid0/llm/tmp/codex3-g1b-successor-20261101/baseline-batch
+/usr/bin/sha256sum --check --quiet "$D/LOCK-MODULES.sha256"
+cd /mnt/micron/codex3-lanes/orchestrator
+exec /usr/bin/python3 -B -m src.runtime.region_lock_cli "$@"

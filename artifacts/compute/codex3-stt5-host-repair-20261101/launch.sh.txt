@@ -1,0 +1,18 @@
+#!/bin/bash
+set -euo pipefail
+D=/mnt/raid0/llm/tmp/codex3-g1b-successor-20261101/baseline-batch
+ENGINE=/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/filler_run14.sh
+ID=codex3-stt5-turbo-auto-unexposed100-v1-20261101
+export LD_LIBRARY_PATH=/mnt/raid0/llm/whisper.cpp/build/bin OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 HIP_VISIBLE_DEVICES=-1 ROCR_VISIBLE_DEVICES=-1
+cd "$D"
+case ${1:-} in
+ --job) exec /usr/bin/python3 -B "$D/job.py";;
+ --engine)
+  export FILLER_RL="$D/region-lock-host.sh"
+  exec /bin/bash "$ENGINE" --id "$ID" --class cpu --role build --claim-cpus "${WS58_REGIONS:?}" --min-window 900 --stop "$D/STOP" --workdir "$D" --requires-tool /usr/bin/python3 --qual-interpreter /usr/bin/python3 --complete-cmd 'if [ "${WS58_QUAL:-0}" = 1 ]; then test -s "$FILLER_RESULTS_DIR/normal.result.json"; else /usr/bin/python3 -c '\''import json,sys; sys.exit(json.load(open(sys.argv[1])).get("status")!="COMPLETE_RAW")'\'' /mnt/raid0/llm/tmp/codex3-g1b-successor-20261101/baseline-batch/results/terminal.json; fi' --cmd '/bin/bash /mnt/raid0/llm/tmp/codex3-g1b-successor-20261101/baseline-batch/launch.sh --job';;
+ '')
+  forwarded=()
+  while IFS='=' read -r -d '' key value; do case $key in WS58_*|FILLER_*|FILLERS_MD) forwarded+=("$key=$value");; esac; done < <(env -0)
+  exec sudo -n /usr/bin/chroot /proc/1/root /usr/bin/setpriv --reuid=1000 --regid=1000 --groups=992 /usr/bin/env "${forwarded[@]}" /bin/bash "$D/launch.sh" --engine;;
+ *) exit 64;;
+esac

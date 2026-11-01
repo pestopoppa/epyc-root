@@ -1,0 +1,14 @@
+test_active_stop_with_real_owned_stub_not_target (test_job.Tests.test_active_stop_with_real_owned_stub_not_target) ... ok
+test_actual_v1_first_request_contract (test_job.Tests.test_actual_v1_first_request_contract) ... ok
+test_entry_refuses_missing_keeper_routing (test_job.Tests.test_entry_refuses_missing_keeper_routing) ... ok
+test_exact_auto_argv (test_job.Tests.test_exact_auto_argv) ... ok
+test_failed_post_audit_never_publishes_complete (test_job.Tests.test_failed_post_audit_never_publishes_complete) ... ok
+test_legacy_lock_exclusion (test_job.Tests.test_legacy_lock_exclusion) ... ok
+test_old_exposure_guard (test_job.Tests.test_old_exposure_guard) ... ok
+test_prior_exposures_never_launch (test_job.Tests.test_prior_exposures_never_launch) ... ok
+test_valid_resume_and_tamper (test_job.Tests.test_valid_resume_and_tamper) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.063s
+
+OK
