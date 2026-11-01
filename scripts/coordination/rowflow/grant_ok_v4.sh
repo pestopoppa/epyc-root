@@ -19,6 +19,7 @@ set -u
 F=${ROWFLOW_FLAGS:-/mnt/raid0/llm/tmp/compute-flags}
 HERE=$(dirname "$(readlink -f "$0")")
 ROWFLOW=${ROWFLOW_PY:-$F/bin/rowflow/rowflow.py}
+LAUNCHER_CHECK=${ROWFLOW_LAUNCHER_CHECK:-$F/bin/rowflow/grant_ok_launcher.py}
 RAM_ADMIT=${GRANT_OK_TEST_RAM_ADMIT:-$F/ram_admit.sh}
 PROC=${GRANT_OK_TEST_PROC:-/proc}
 POS=(); WIN=""; REG=""; RES=""; PID=""; NEW=0; HAVE_REG=0; HAVE_RES=0
@@ -57,7 +58,7 @@ PY
   [ $HAVE_REG = 1 ] && args+=(--regions "$REG")
   [ $HAVE_RES = 1 ] && args+=(--reserve "$RES")
   if [ -n "$PID" ]; then
-    l=$(/usr/bin/python3 -I -B "$HERE/grant_ok_launcher.py" "${args[@]}" 2>&1); lrc=$?
+    l=$(/usr/bin/python3 -I -B "$LAUNCHER_CHECK" "${args[@]}" 2>&1); lrc=$?
     case $lrc in
       0) ;;
       10|12|13|14|15) echo "$l" | head -1; exit $lrc;;
