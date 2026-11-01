@@ -1675,7 +1675,7 @@
       "blocked": 0,
       "closed": 12,
       "guarded": 0,
-      "last_advanced": "2026-10-24",
+      "last_advanced": "2026-11-01",
       "open": 5,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -1897,10 +1897,10 @@
     },
     "numa-topology-cutover-resume-20260730.md": {
       "blocked": 0,
-      "closed": 102,
+      "closed": 103,
       "guarded": 0,
       "last_advanced": "2026-10-31",
-      "open": 44,
+      "open": 43,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2873,10 +2873,10 @@
     },
     "yarn-context-extension-research.md": {
       "blocked": 0,
-      "closed": 45,
+      "closed": 47,
       "guarded": 0,
       "last_advanced": "2026-11-01",
-      "open": 35,
+      "open": 36,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2885,7 +2885,7 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 80
+      "total": 83
     }
   },
   "row_id_collisions": {},

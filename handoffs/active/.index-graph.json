@@ -3939,7 +3939,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-01T18:34:56Z",
+  "generated_at": "2026-11-01T18:41:42Z",
   "nodes": [
     {
       "age_days": 94,
@@ -5974,13 +5974,13 @@
       "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 102,
+      "closed": 103,
       "domain": "inference-research",
       "handoff": "numa-topology-cutover-resume-20260730.md",
       "id": "INF-45",
       "last_advanced": "2026-10-31",
       "next_action": "P0-3 \u2014 cold-start the stack, re-bench the contention matrix, commit + push all three repos",
-      "open": 44,
+      "open": 43,
       "priority": 0.0751,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): Note this regression is independent of ngram \u2014 it reproduces on `draft-mtp`",
@@ -6310,13 +6310,13 @@
       "blocked_by": [
         "RTG-57"
       ],
-      "closed": 45,
+      "closed": 47,
       "domain": "inference-research",
       "handoff": "yarn-context-extension-research.md",
       "id": "INF-59",
       "last_advanced": "2026-11-01",
       "next_action": "Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power",
-      "open": 35,
+      "open": 36,
       "priority": 0.8786,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): YARN-AGG-1 \u2014 Aggregation and recall arms for the YaRN gate: Oolong, HELMET recall and RAG,",
@@ -8760,14 +8760,14 @@
       "track": "kv prefix fork and paged attention"
     },
     {
-      "age_days": 8,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
       "closed": 12,
       "domain": "routing-and-optimization",
       "handoff": "model-artifact-integrity.md",
       "id": "RTG-59",
-      "last_advanced": "2026-10-24",
+      "last_advanced": "2026-11-01",
       "next_action": "SEC-ART-POST-f: recompile lean registry + stack_priors at next stack-change, then SEC-ART-2; POST-b.1 v2 template roll-out; POST-d",
       "open": 5,
       "priority": 0.4624,

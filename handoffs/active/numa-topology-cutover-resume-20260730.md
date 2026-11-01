@@ -758,8 +758,10 @@ contention matrix is refreshed.
   `test_stack_templates_v2` (3), `test_quarter_stack_smoke` (3),
   `test_gpu_shadow_lane_p2` (1), `test_model_descriptors_schema` (1).
   Most funnel into the contention matrix or into quarter-shaped fixtures.
-- [ ] `NUMA_NODE0` / `NUMA_Q0A` are now referenced **only by tests and comments** —
-  no production path reads them. Deletion candidates once fixtures stop naming them.
+- [x] ~~`NUMA_NODE0` / `NUMA_Q0A` are referenced only by tests and comments; both are deletion candidates.~~
+  Corrected 2026-11-01: orchestrator `f4230b222` removed `NUMA_NODE0`; `NUMA_Q0A` remains a live shape
+  in `scripts/server/stack_numa.py` and its CPU-shape registries. Do not delete it based on the old claim.
+  [no-belief: source inventory correction]
 
 ### Operational lesson — do not re-arm a chain you have not positively identified
 
