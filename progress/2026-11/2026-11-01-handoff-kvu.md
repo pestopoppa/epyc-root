@@ -189,3 +189,7 @@ Consumed all three events. The KVU-19a-2 build executor, FA-8 source preflight a
 ## 22:45Z — FA-8 source preflight and component review
 
 Consumed all three reviews. The FA-8 source preflight passed four offline tests and verified both historical Git objects; this establishes source identity only, not a build, runtime route or GPU measurement. The unintegrated sampler redirect bypass and executor mutable-mode defect remained present at the start of this turn; both repairs were reassigned and registered as dispatcher events. FA-8 instrumentation preparation also has a registered event. No inference row, build, live network or compute ran. GitNexus remains unindexed; no application symbol was edited.
+
+## 22:55Z — Review sampler and build executor repairs
+
+Consumed all three events. Preserved the independently reviewed sampler and build executor drafts: seven offline tests each pass. The sampler disables proxies and refuses redirects by default; actual peer/process identity and a total deadline remain unproven. The executor freezes mode for verification and refuses observed mode changes, but actual argv binding, real supervision and source/toolchain custody remain open. Neither is a runnable row. The FA-8 validator remains untracked pending independent review. No real network, build or compute ran; no row was published. GitNexus is unindexed; no application symbol was edited.
