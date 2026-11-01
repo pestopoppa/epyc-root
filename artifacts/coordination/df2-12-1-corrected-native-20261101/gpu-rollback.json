@@ -1,0 +1,15 @@
+{
+  "schema": "epyc.df2_12_1.rollback_test.v1",
+  "identity_sha256": "cbe9ec4577c187172e1c505825b967b51476bcb077b2da0299edd2aedbaa628a",
+  "test_binary_sha256": "65e79b0c493b75ceed3e8c7fcee8d98d421dcff604a3960abf061a602c282ac3",
+  "hybrid_model": "/mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf",
+  "hybrid_model_size": 811843840,
+  "hybrid_model_sha256": "0ad885ffd4bb022fc4f0d33a3308fa108ef8613159d3b3a67e23abca056b7a6c",
+  "rc": 0,
+  "output": "main : recurrent rollback checkpoint restored successfully\n",
+  "wall_s": 1.6155939102172852,
+  "dirty_context_reached": true,
+  "pass": true,
+  "utc": "2026-11-01T03:18:37.560165+00:00",
+  "native_process_receipt_sha256": "2b4ce4619a914fcdb4a7b9a2915e210a8a20e47a56bafbeb0c3bb069c0948fd4"
+}
