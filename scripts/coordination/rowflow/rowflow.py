@@ -770,6 +770,7 @@ def grant_regions(d, option, one_quarter):
 
 
 DRAIN_AFTER_S = 3600      # a host / multi-quarter row that waited this long drains the host (age boost; never preempts)
+DRAIN_MAX_WAIT_S = 3600  # ws58 hotfix: drain only when the host frees within 1 h
 DRAIN_UNKNOWN_S = 1800    # drain target when the busy regions carry no grant end (foreign hold): backfill <= 30 min
 
 
@@ -806,12 +807,14 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
             if not _fits(c, free, ram, gpu_grant_open):
                 later = [float(e) for e in grant_ends if float(e) > now]
                 drain, T = c, (max(later) if later else now + DRAIN_UNKNOWN_S)
+                if T - now > DRAIN_MAX_WAIT_S:   # ws58 hotfix 2026-11-01: never hold the host empty for hours
+                    drain, T = None, None
             break
     plan.last_drain = (drain, T) if drain else None
     while pending:
         placed = None
         for c in pending:
-            if drain is not None and c is not drain and now + float(c.get("window_s") or 0) > T:
+            if drain is not None and c is not drain and now + float(c.get("estimate_s") or c.get("window_s") or 0) > T:
                 continue  # backfill only with rows that end before T
             opts = _fits(c, free, ram, gpu_grant_open)
             if not opts:
