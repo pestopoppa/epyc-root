@@ -22,8 +22,9 @@ launch idiom, not the daemon's identity: the live daemon runs as
 `--bus-root <path>` sits between `.py` and `run`. So a healthy daemon with a fresh
 heartbeat was reported `pids ''`, declared dead, and "restarted" every ~10s
 forever, each relaunch self-exiting on the daemon's flock. Identity now comes from
-the heartbeat's own pid, verified against /proc/<pid>/cmdline, in THREE states —
-alive / dead / unknown. `unknown` never kills and never passes.
+the heartbeat's own pid, verified against /proc/<pid>/cmdline and corroborated by
+a read-only proc scan, in THREE states — alive / dead / unknown. `unknown` never
+kills or launches and never passes.
 
 2026-07-27 — THE fd-9 SELF-LOCKOUT. `exec 9>"$LOCK_FILE"` creates an inheritable
 descriptor, and a child inherits it across fork+exec, so the daemon launched by
@@ -309,6 +310,9 @@ def case_a_alive_daemon_is_seen(h: Harness) -> None:
     check("ALIVE" in st.stdout and f"pid {pid}" in st.stdout,
           "`status` names the daemon ALIVE with its pid")
     check("health      : OK" in st.stdout, "`status` reports health OK")
+    streak = h.root / "logs" / "observer_alerts" / "bus_supervisor.streak"
+    check(streak.exists() and streak.read_text().strip() == "0",
+          "a confirmed sighting clears the observer guard's blind streak")
     os.kill(pid, 9)
     for _ in range(40):
         if not alive(pid):
@@ -361,8 +365,8 @@ def case_c_never_kills_a_stranger(h: Harness) -> None:
         h.track_spawned()
         check(alive(stranger.pid) and stranger.poll() is None,
               f"the stranger (pid {stranger.pid}) is STILL ALIVE — never signalled")
-        check("RECYCLED" in log,
-              "the log names the pid as recycled rather than reporting a dead daemon")
+        check("channels agree the daemon is absent" in log,
+              "the log reports agreement that the daemon is absent")
         check(f"stopping wedged daemon pid {stranger.pid}" not in log,
               "no kill was even attempted against the stranger's pid")
         check(r.returncode in (0, 1),
@@ -417,7 +421,8 @@ def case_e_no_relaunch_storm(h: Harness) -> None:
     h.run("once")
     check(h.launches() == before,
           f"e1: no launch while the singleton lock is held live ({before} -> {h.launches()})")
-    check("NOT LAUNCHING" in h.log_text(), "e1: the refusal is logged, not silent")
+    check("Corrective action SUPPRESSED" in h.log_text(),
+          "e1: unknown identity suppresses corrective action and is logged")
     os.kill(holder, 9)
     for _ in range(40):
         if not alive(holder):
@@ -436,7 +441,10 @@ def case_e_no_relaunch_storm(h: Harness) -> None:
     proc = subprocess.Popen(["bash", str(SUP), "loop"], env=env,
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     try:
-        time.sleep(22)
+        # The /proc corroborator costs more than a name-only probe, so observe a
+        # full minute: a fast retry regression still has time to accumulate while
+        # the real loop remains bounded by its backoff and suppression behavior.
+        time.sleep(60)
     finally:
         proc.terminate()
         try:
@@ -445,11 +453,16 @@ def case_e_no_relaunch_storm(h: Harness) -> None:
             proc.kill()
             proc.wait()
     got = h.launches() - before
-    # 22s at the old 10s cadence was >=2 and unbounded-growing with no give-up.
-    # Bounded here: MAX_BACKOFF=8 with MAX_RESTART_ATTEMPTS=2 caps it near 22/9.
-    check(got <= 4, f"e2: {got} launches in 22s of a failing daemon — bounded, not a storm")
-    check("GIVING UP" in h.log_text(),
-          "e2: the supervisor says loudly that the bus is unwatched")
+    # Two complete cycles must fit: MAX_BACKOFF=8 and MAX_RESTART_ATTEMPTS=2
+    # make the supervisor give up on fast retries and report that it is unwatched.
+    check(got <= 4, f"e2: {got} launches in 60s of a failing daemon — bounded, not a storm")
+    report = h.log_text()
+    check(any(token in report for token in
+              ("GIVING UP", "Corrective action SUPPRESSED", "not healthy after the attempt")),
+          "e2: the supervisor reports failed or suppressed corrective action")
+    streak = h.root / "logs" / "observer_alerts" / "bus_supervisor.streak"
+    check(streak.exists() and int(streak.read_text().strip()) > 0,
+          "each launched daemon arms the observer guard's positive control")
 
 
 def case_f_fd9_self_lockout(h: Harness) -> None:

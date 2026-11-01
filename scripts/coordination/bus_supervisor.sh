@@ -19,11 +19,11 @@
 # heartbeat is exactly the liveness signal the bus protocol already defines.
 # A daemon restart increments the epoch, so a relaunch is self-announcing.
 #
-# IDENTITY = the pid inside that heartbeat, verified against /proc/<pid>/cmdline.
-# Never a `pgrep` name pattern (C49, below). The verdict is THREE-VALUED — alive,
-# dead, unknown — because the two-valued version treated "I cannot see it" as
-# "it is dead" and restart-looped a perfectly healthy daemon for as long as it was
-# left running. Unknown never kills, never silently passes, and says so in the log.
+# IDENTITY = the pid inside that heartbeat, verified against /proc/<pid>/cmdline,
+# and corroborated by an independent read-only proc scan. Never a kill target is
+# selected from a scan (C49, below). The verdict is THREE-VALUED — alive, dead,
+# unknown — because the two-valued version treated "I cannot see it" as "it is
+# dead" and restart-looped a healthy daemon. Unknown never kills or launches.
 #
 # ---------------------------------------------------------------------------
 # ADOPTION
@@ -69,6 +69,13 @@ EPYC_ROOT="${EPYC_ROOT:-/mnt/raid0/llm/epyc-root}"
 # even when EPYC_ROOT is unset.
 # shellcheck source=./daemon_provenance.sh
 source "${BASH_SOURCE[0]%/*}/daemon_provenance.sh"
+# observer_guard.sh sources env.sh as well, so source it before deriving paths
+# such as LOG_DIR/SUP_LOG; env.sh intentionally resets those global defaults.
+# shellcheck source=./observer_guard.sh
+source "${BASH_SOURCE[0]%/*}/observer_guard.sh"
+OG_NAME="bus_supervisor"
+OG_STATE_DIR="${OG_STATE_DIR:-${EPYC_ROOT}/logs/observer_alerts}"
+
 BUS_ROOT="${BUS_ROOT:-${EPYC_BUS_ROOT:-${EPYC_ROOT}/coordination/session-bus}}"
 HEARTBEAT="${BUS_ROOT}/heartbeats/coordinator-daemon.json"
 DAEMON="${DAEMON:-${EPYC_ROOT}/scripts/coordination/session_bus_coordinator.py}"
@@ -164,7 +171,7 @@ PY_EOF
 # cannot see it" into "it is dead" and then acted on that — restarting a healthy
 # daemon forever. Collapsing it the other way (unknown => alive) is the fail-open
 # twin: the bus would sit unwatched while everything looked fine. So `unknown` is
-# its own state, it NEVER kills and it NEVER silently passes; the caller reports it.
+# its own state, it NEVER kills or launches and it NEVER silently passes; the caller reports it.
 #
 # Sets globals rather than echoing because a `$(...)` subshell cannot return three
 # fields, and losing the pid is how a kill ends up aimed at the wrong thing.
@@ -176,56 +183,82 @@ DAEMON_WHY=""
 
 resolve_daemon() {
   DAEMON_STATE=""; DAEMON_PID=""; DAEMON_WHY=""
-  local pid cmdline state_field
-  if [[ ! -f "$HEARTBEAT" ]]; then
-    DAEMON_STATE="dead"
-    DAEMON_WHY="no heartbeat file at $HEARTBEAT — no daemon has ever published here"
-    return 0
-  fi
-  pid=$(daemon_pid_from_heartbeat || true)
-  if [[ -z "$pid" ]]; then
-    DAEMON_STATE="unknown"
-    DAEMON_WHY="heartbeat $HEARTBEAT carries no usable pid (unreadable, truncated mid-write, or written by a pre-pid daemon)"
-    return 0
-  fi
-  if [[ ! -d /proc ]]; then
-    DAEMON_STATE="unknown"
-    DAEMON_WHY="no /proc on this host — heartbeat pid $pid cannot be resolved"
-    return 0
-  fi
-  if [[ ! -d "/proc/$pid" ]]; then
-    DAEMON_STATE="dead"
-    DAEMON_WHY="heartbeat pid $pid does not exist"
-    return 0
-  fi
-  # /proc/<pid>/cmdline is world-readable on Linux, so a daemon owned by another
-  # uid is still identifiable — `kill -0` would only have said "permission denied"
-  # and could not tell that apart from "gone".
-  cmdline=$(tr '\0' ' ' < "/proc/$pid/cmdline" 2>/dev/null || true)
-  if [[ -z "$cmdline" ]]; then
-    # Empty argv: a zombie, a kernel thread, or a process that vanished mid-read.
-    state_field=$(awk '{ sub(/^[^)]*\) /, ""); print $1 }' "/proc/$pid/stat" 2>/dev/null || true)
-    if [[ "$state_field" == "Z" ]]; then
-      DAEMON_STATE="dead"
-      DAEMON_WHY="heartbeat pid $pid is a ZOMBIE — it has exited and is awaiting reaping"
-      return 0
-    fi
-    DAEMON_STATE="unknown"
-    DAEMON_WHY="pid $pid exists but its argv is unreadable — identity unverifiable"
-    return 0
-  fi
-  if [[ "$cmdline" != *"$DAEMON_MARKER"* ]]; then
-    # A pid the kernel handed to somebody else. DEAD as far as the daemon goes, and
-    # emphatically NOT a kill target — this branch is the whole reason the marker
-    # exists (mirrors _identity_verdict in session_bus_coordinator.py).
-    DAEMON_STATE="dead"
-    DAEMON_WHY="heartbeat pid $pid was RECYCLED — it is now '${cmdline:0:70}', NOT the coordinator-daemon (left alone)"
-    return 0
-  fi
-  DAEMON_STATE="alive"
-  DAEMON_PID="$pid"
-  DAEMON_WHY="pid $pid is alive and is the coordinator-daemon"
+  local state pid
+  state="$(observe_daemon)" || true
+  case "$state" in
+    present)
+      DAEMON_STATE="alive"
+      pid="$(daemon_pid_from_heartbeat || true)"
+      # Repeat the authoritative-channel identity check immediately before making
+      # this pid available to signal. A scan result is never a pid source.
+      if [[ -n "$pid" && "$(og_pid_alive "$pid" "$DAEMON_MARKER")" == "present" ]]; then
+        DAEMON_PID="$pid"
+        DAEMON_WHY="heartbeat pid $pid and independent proc scan agree the coordinator-daemon is present"
+      else
+        DAEMON_STATE="unknown"
+        DAEMON_WHY="identity changed during observation; no signal target is safe"
+      fi
+      ;;
+    absent) DAEMON_STATE="dead"; DAEMON_WHY="heartbeat-pid and independent proc-scan channels agree the daemon is absent" ;;
+    *) DAEMON_STATE="unknown"; DAEMON_WHY="$(og_why)" ;;
+  esac
   return 0
+}
+
+# Three-valued identity observation; this is also the public behavioural-test
+# entrypoint. Only heartbeat-pid may name a signal target.
+proc_scan_available() {
+  [[ -d /proc && -r /proc/self/cmdline ]] || return 1
+  local d
+  for d in /proc/[0-9]*; do
+    [[ -d "$d" ]] || continue
+    if [[ ! -r "$d/cmdline" ]]; then
+      # A process that exited during the walk is not a blind spot. A still-live
+      # but unreadable entry means og_proc_scan could silently skip a match.
+      [[ -d "$d" ]] || continue
+      return 1
+    fi
+  done
+  return 0
+}
+
+observe_daemon() {
+  og_round_begin
+  local pid hb_state scan_state
+  if [[ ! -e "$HEARTBEAT" ]]; then
+    hb_state=absent
+    og_channel hb_pid "$hb_state" "no heartbeat file at $HEARTBEAT"
+  elif [[ ! -r "$HEARTBEAT" ]]; then
+    hb_state=unavailable
+    og_channel hb_pid "$hb_state" "heartbeat exists but is unreadable"
+  else
+    pid="$(og_json_pid "$HEARTBEAT")"
+    if [[ -z "$pid" ]]; then
+      hb_state=unavailable
+      og_channel hb_pid "$hb_state" "heartbeat carries no usable pid"
+    else
+      hb_state="$(og_pid_alive "$pid" "$DAEMON_MARKER")"
+      og_channel hb_pid "$hb_state" "pid=$pid"
+    fi
+  fi
+  if proc_scan_available; then
+    scan_state="$(og_present_if_any "$(og_proc_scan "$DAEMON_MARKER")")"
+    og_channel proc_scan "$scan_state" "/proc argv scan"
+  else
+    scan_state=unavailable
+    og_channel proc_scan "$scan_state" "/proc cmdline is unreadable"
+  fi
+  # The shared fold treats a positive channel as presence even if another channel
+  # is unavailable. This supervisor must be stricter: a present-but-stale daemon
+  # can be signalled, so partial blindness cannot license the present/wedged path.
+  if [[ "$hb_state" == unavailable || "$scan_state" == unavailable ]]; then
+    og_verdict >/dev/null || true
+    OG_WHY="partial blindness: hb_pid=${hb_state}, proc_scan=${scan_state}; both channels must be evaluable before a corrective action"
+    printf '%s\n' "$OG_WHY" > "$(_og_why_file)" 2>/dev/null || true
+    printf 'unobservable\n'
+    return 3
+  fi
+  og_verdict
 }
 
 # One line naming the state and its evidence, for logs and `status`.
@@ -237,6 +270,8 @@ daemon_identity_line() {
 health_ok() {
   resolve_daemon
   [[ "$DAEMON_STATE" == "alive" ]] || return 1
+  og_note_sighting
+  og_clear
   local age; age=$(heartbeat_age_s)
   (( age <= STALE_AFTER ))
 }
@@ -299,6 +334,7 @@ start_daemon() {
   # watch A, launch B, and conclude B never started.
   nohup "$DAEMON" --bus-root "$BUS_ROOT" run 9>&- >>"$DAEMON_LOG" 2>&1 &
   local child=$!
+  og_note_launch
   local waited=0
   while (( waited < STARTUP_TIMEOUT )); do
     sleep 1; waited=$(( waited + 1 ))
@@ -883,9 +919,8 @@ acquire_supervisor_lock() {
 }
 
 check_once() {
-  # A HEALTHY daemon can still be the wrong daemon. Order matters: a dead one is
-  # restarted by the branch below and comes back on current source anyway, so the
-  # stale-source question only applies to one that is up and answering.
+  # A HEALTHY daemon can still be the wrong daemon. The stale-source question only
+  # applies to one that is confirmed present and answering.
   if health_ok; then check_stale_source; return 0; fi
   # health_ok left the verdict in DAEMON_STATE/DAEMON_WHY. Each state gets its own
   # response, because the three need three different ones — the old single branch
@@ -905,26 +940,20 @@ check_once() {
       start_daemon
       ;;
     unknown|*)
-      if (( age <= STALE_AFTER )); then
-        # THE 2026-08-12 CASE. Something is ticking on time and we cannot name it.
-        # Killing is impossible (no confirmed pid) and relaunching is pointless
-        # (the flock). The old code called this "dead" and restarted forever.
-        log "IDENTITY UNKNOWN with a FRESH heartbeat (${age}s) — $DAEMON_WHY"
-        log "  A daemon is ticking; this supervisor cannot prove which process it is."
-        log "  NOT killing (no confirmed pid) and NOT relaunching (it would self-exit on the"
-        log "  daemon's flock). Reported, not passed: a check that cannot tell is not a clean one."
-        return 3
-      fi
-      log "IDENTITY UNKNOWN and heartbeat STALE (${age}s) — $DAEMON_WHY"
-      log "  Nothing here can be safely signalled. Attempting a bounded relaunch instead:"
-      log "  the daemon's own flock makes a duplicate harmless, and a real start republishes"
-      log "  the pid that ends this ambiguity."
-      start_daemon
+      log "IDENTITY UNKNOWN (${age}s) — $DAEMON_WHY"
+      log "  Corrective action SUPPRESSED: no kill or launch while either identity channel is blind or disagrees."
+      og_alarm "$DAEMON_WHY"
+      return 3
       ;;
   esac
 }
 
 case "${1:-loop}" in
+  observe)
+    state="$(observe_daemon)" || rc=$?
+    printf 'state=%s\n' "$state"
+    exit "${rc:-0}"
+    ;;
   status)
     age=$(heartbeat_age_s)
     # Three states printed as three states. `daemon pids : none` used to be the

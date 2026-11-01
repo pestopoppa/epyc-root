@@ -171,10 +171,33 @@
     {
       "id": "bus_supervisor",
       "script": "scripts/coordination/bus_supervisor.sh",
-      "contract": "unadopted",
-      "owning_handoff": "handoffs/active/session-bus-thin-dispatcher.md",
-      "task_marker": "OBS-1",
-      "notes": "THE SPECIMEN. Being repaired in a parallel session (C49) as this row is written \u2014 the repair replaces the pattern with the heartbeat pid, which removes the instance. This row keeps the FILE enrolled so the class stays enforced afterwards: adopting observer_guard.sh + an `observe` entrypoint is what subjects it to the battery. Not edited from here; the file has a live owner.",
+      "contract": "v1",
+      "migration": "OBS-1; handoff task text remains unchanged until the owning writer records the accepted implementation evidence.",
+      "notes": "Adopted OBS-1: folds the authoritative heartbeat-pid identity channel with an independent observer_guard proc argv scan. Disagreement or any unavailable channel is unobservable, alarms, and suppresses both signalling and launch, including when a present target's heartbeat is stale. Signal targets come only from the heartbeat pid and are re-verified before each signal; proc scan output is corroboration only. A preflight turns still-live but unreadable /proc/<pid>/cmdline entries into unavailable; processes that exit during the walk remain an unavoidable observation race, so absence describes the readable proc snapshot. Launch/sighting hooks arm and clear observer_guard's blind-streak detector. `observe` is covered by the shared real-stand-in battery, including action suppression under disagreement and partial blindness, plus corrective launch when both channels agree the daemon is absent.",
+      "sandbox": {
+        "env": {
+          "EPYC_ROOT": "{tmp}/root",
+          "BUS_ROOT": "{tmp}/root/coordination/session-bus",
+          "DAEMON_MARKER": "{mark}",
+          "DAEMON": "{stub}",
+          "DAEMON_LOCK_FILE": "{tmp}/daemon.lock",
+          "LOCK_FILE": "{tmp}/supervisor.lock",
+          "REGISTRY_PATH": "{tmp}/registry.json",
+          "OG_STATE_DIR": "{tmp}/alerts",
+          "STARTUP_TIMEOUT": "1"
+        },
+        "heartbeat": "{tmp}/root/coordination/session-bus/heartbeats/coordinator-daemon.json",
+        "observe_argv": ["observe"]
+      },
+      "action_probe": {
+        "argv": ["once"],
+        "env": {
+          "DAEMON": "{stub}",
+          "DAEMON_MARKER": "{mark}",
+          "STARTUP_TIMEOUT": "1"
+        },
+        "marker": "{tmp}/launched.marker"
+      },
       "runtime": {
         "pidfile": "/mnt/raid0/llm/epyc-root/logs/bus_supervisor.pid",
         "expected_path": "scripts/coordination/bus_supervisor.sh",
