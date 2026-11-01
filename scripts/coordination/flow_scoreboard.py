@@ -33,6 +33,11 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "rowflow"))
 import backlog_gen as bg  # noqa: E402
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "churn"))
+try:
+    import tokens_per_task as tpt  # noqa: E402  (headline metric, operator 2026-11-01 22:55Z)
+except ImportError:
+    tpt = None
 try:
     import rowflow as _rf  # noqa: E402
 except ImportError:
@@ -123,17 +128,39 @@ def compute(flags: str, priority: str, keeper_log: str, state: dict, now: _dt.da
 
 
 def render(rows: dict, now: _dt.datetime) -> str:
+    metric = None
+    if tpt is not None:
+        try:
+            metric = tpt.compute(top=3)
+        except Exception as ex:  # the scoreboard must never die on the metric
+            metric = {"error": repr(ex), "per": {}, "top_turns": []}
+
+    def tok_task(w):
+        r = (metric or {}).get("per", {}).get(w[8:] if w.startswith("handoff-") else w)
+        if not r:
+            return "-"
+        return (tpt.fmt_m(r["tokens_per_task"]) if r["tokens_per_task"] else f"inf ({tpt.fmt_m(r['tokens'])} spent, 0 done)") \
+            + f" [{r.get('completed', 0)} done]"
     L = [f"# FLOW scoreboard {now:%Y-%m-%dT%H:%MZ} (per bucket, today UTC; replaces the 50-tick code quota, 2026-11-01)", "",
-         "Flow: unblock -> launcher -> keeper dry run (PASS) -> armed -> granted. Good = rows qualified up, blocking tasks closed up, "
-         "open fix: tasks and idle-hours down. Parked rows need the operator (operator-escalations/<lineage>.md).", "",
-         "| bucket | rows qualified today (dry-run PASS) | dry-run FAILs today | blocking tasks closed today | blocking tasks open now "
+         "**Headline: tokens per completed task** (operator 2026-11-01: process the whole backlog with the fewest tokens PER TASK, "
+         "not per hour). tokens = the session's Codex rollouts + its lane sub-agents; completed = boxes ticked in landed wrap-ups + "
+         "rows published + filings. Every change must make this number drop. Then the flow: unblock -> launcher -> keeper dry run "
+         "(PASS) -> armed -> granted; good = rows qualified up, blocking tasks closed up, open fix: tasks and idle-hours down.", "",
+         "| bucket | **tokens / completed task (today)** | rows qualified today (dry-run PASS) | dry-run FAILs today | blocking tasks closed today | blocking tasks open now "
          "| open fix: tasks (FAIL, launcher unchanged) | blocked rows now | parked rows | dry runs running (keeper) "
          "| qualified-armed cpu/gpu/host | idle compute-hours with a blocked row as cause |",
-         "|---|---:|---:|---:|---:|---:|---:|---:|---:|---|---:|"]
+         "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---:|"]
     for w, r in rows.items():
         q = r["qual"]
-        L.append(f"| {w} | {r['armed']} | {r['dryrun_fail']} | {r['closed']} | {r['open_blocking']} | {r['open_fix']} | {r['blocked_rows']} "
+        L.append(f"| {w} | {tok_task(w)} | {r['armed']} | {r['dryrun_fail']} | {r['closed']} | {r['open_blocking']} | {r['open_fix']} | {r['blocked_rows']} "
                  f"| {r['parked']} | {r['awaiting_keeper']} | {q['cpu']}/{q['gpu']}/{q['host']} | {r['idle_h']} |")
+    if metric and metric.get("per"):
+        un = metric["per"].get("unattributed")
+        L += ["", "Most expensive session turns today: " + "; ".join(
+            f"{t['slug']} {t['start']:%H:%M}Z {tpt.fmt_m(t['tokens'])} — {t['subject'][:80]}" for t in metric["top_turns"]) + "."
+              + (f" Unattributed (shared-/workspace-era sub-agent) spend: {tpt.fmt_m(un['tokens'])}." if un else "")]
+    elif metric and metric.get("error"):
+        L += ["", f"tokens-per-task metric unavailable: {metric['error']}"]
     waiting = [(w, r["awaiting_ids"]) for w, r in rows.items() if r.get("awaiting_ids")]
     if waiting:
         L += ["", "Rows whose dry run is running now (ws58 keeper, not the owner's task): "

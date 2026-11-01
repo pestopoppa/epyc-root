@@ -75,8 +75,11 @@ PAUSE_S = 30 * 60
 ENGINES = ("codex", "claude", "opencode")
 # `WRAPPED <sha>` is the boundary line (2026-11-01 ruling); `WRAPUP: <sha>` is the v1 form, still accepted.
 FANOUT_LINE = ("Working mode: FAN OUT - your own thread only reviews, integrates and handles task boundaries; execution goes to "
-               "3-5 concurrent subagents on the cheapest capable model/effort (exceptions: agents/shared/OPERATING_CONSTRAINTS.md "
-               "-> *When NOT to fan out*). This applies on every engine; do not rely on AGENTS.md/CLAUDE.md being loaded.")
+               "3-5 concurrent subagents on the cheapest capable model/effort with TIGHT, FILE-POINTED prompts (paths + the exact "
+               "change; never a transcript), only where it saves wall-clock without raising tokens per completed task - the metric "
+               "(exceptions: agents/shared/OPERATING_CONSTRAINTS.md -> *When NOT to fan out*). This applies on every engine; do not "
+               "rely on AGENTS.md/CLAUDE.md being loaded. Never re-read or re-verify what the scripts (wrapup.py, file_result.py, "
+               "publish_row.py) already guarantee.")
 NO_POLL_LINE = ("NEVER wait in this turn: no sleep, no polling of grants/dry-run/queue files, no wait_agent/status loops - publish or "
                 "delegate, wrap up, end the turn; the dispatcher resumes you on the event (grant end, dry-run result, or a file you "
                 "registered under handoff-sessions/<slug>/awaiting/).")
