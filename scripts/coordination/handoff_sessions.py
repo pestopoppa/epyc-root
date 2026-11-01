@@ -993,7 +993,8 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             continue
         ev = next((x for x in st.get("queue") or [] if x["slug"] == slug and x.get("kind") == "awaiting"), None)
         if ev:
-            ev["data"] = (ev.get("data") or []) + fired  # coalesce: 15 awaited files must not become 15 turns
+            prev = ev.get("data") or []
+            ev["data"] = ([prev] if isinstance(prev, dict) else list(prev)) + fired  # coalesce: 15 awaited files, ONE turn
         else:
             st.setdefault("queue", []).append({"slug": slug, "rid": f"awaiting-{len(fired)}", "end": fired[0]["registration"] + ".fired",
                                                "kind": "awaiting", "data": fired})
