@@ -247,3 +247,7 @@ Consumed four distinct reports: `HIP-REVIEW-28.md` independently reproduced 40 s
 ## 23:37Z — Investigated blocked Voxtral qualification and delegated three bounded row repairs
 
 Investigated Voxtral FAIL-1: launcher requires unset WS58_REGIONS before the engine can derive the keeper grant allocation; no retry or inference was performed. Delegated bounded Ultra, HIP build, and v3 scorer repairs, with completion events registered as ULTRA-CODEX, HIP-CODEX, and SCORE-CODEX. Existing VOX-REVIEW32 event covers the separately prepared successor. Prior uncommitted handoff and progress records are preserved in this boundary.
+
+## 23:39Z — Record Crisp HIP packet audit and integrate concurrent main changes
+
+Crisp HIP audit found that the published source path is missing; the relocated source matches the pinned commit and manifest after path substitution. A retained build partial reports a disk reserve; a direct guard STOP fixture does not establish the rowflow stop boundary. The earlier boundary commit was rejected as non-fast-forward after origin/main advanced; this wrap integrates main and republishes the boundary.
