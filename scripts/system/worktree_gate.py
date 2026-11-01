@@ -469,8 +469,20 @@ def _owning_repo(path: str) -> str | None:
     cp = _git(["rev-parse", "--path-format=absolute", "--git-common-dir"], cwd=path)
     if cp.returncode != 0:
         return None
-    common = Path(cp.stdout.strip())
-    return str(common.parent) if common.name == ".git" else None
+    lines = cp.stdout.splitlines()
+    if len(lines) != 1 or not os.path.isabs(lines[0]):
+        return None
+    common = Path(lines[0])
+    candidate = common.parent if common.name == ".git" else common
+    try:
+        check = _git(["rev-parse", "--path-format=absolute", "--git-common-dir"], cwd=str(candidate))
+        resolved = check.stdout.splitlines()
+        if (check.returncode != 0 or len(resolved) != 1 or not os.path.isabs(resolved[0])
+                or not os.path.samefile(common, resolved[0])):
+            return None
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    return str(candidate)
 
 
 def _find(path: str) -> Worktree | None:

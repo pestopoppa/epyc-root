@@ -73,6 +73,65 @@ def verdict(path, *, min_idle=0.0, probe=None):
     return wt
 
 
+
+@pytest.fixture(params=["external", "bare"])
+def unusual_common_repo(repo, tmp_path, request):
+    origin = tmp_path / "origin.git"
+    common = tmp_path / ("private.git" if request.param == "external" else "bare-store")
+    if request.param == "external":
+        main = tmp_path / "external-main"
+        git(tmp_path, "clone", "--separate-git-dir", str(common), str(origin), str(main))
+        git(main, "config", "core.worktree", str(main))
+        assert git(main, "config", "--bool", "core.bare").strip() == "false"
+    else:
+        git(tmp_path, "clone", "--bare", str(origin), str(common))
+        git(common, "config", "remote.origin.fetch", "+refs/heads/*:refs/remotes/origin/*")
+        git(common, "fetch", "origin")
+        main = common
+    assert Path(git(main, "rev-parse", "--path-format=absolute", "--git-common-dir").strip()).samefile(common)
+    return main
+
+
+def test_unusual_common_registration_and_removal(unusual_common_repo, tmp_path):
+    repo = unusual_common_repo
+    p = add_wt(repo, tmp_path, "common-ok")
+    assert wg._find(str(repo)) is None  # the main repository is never a linked candidate
+    assert verdict(p).verdict == wg.REMOVABLE
+    ok, msg = wg.remove_one(str(p), base="origin/main", min_idle_days=0, fetch=False)
+    assert ok, msg
+    assert not p.exists()
+    assert "b/common-ok" in git(repo, "branch", "--list", "b/common-ok")
+
+
+def test_unusual_common_refusals(unusual_common_repo, tmp_path):
+    repo = unusual_common_repo
+    dirty = add_wt(repo, tmp_path, "common-dirty")
+    (dirty / "untracked").write_text("x")
+    unlanded = add_wt(repo, tmp_path, "common-unlanded", landed=False)
+    kept = add_wt(repo, tmp_path, "common-keep")
+    (Path(git(kept, "rev-parse", "--absolute-git-dir").strip()) / "epyc-keep").write_text("keep")
+    for path, expected in [(dirty, "DIRTY"), (unlanded, "UNLANDED"), (kept, "PROTECTED")]:
+        assert verdict(path).verdict == expected
+        ok, _ = wg.remove_one(str(path), base="origin/main", min_idle_days=0, fetch=False)
+        assert not ok and path.exists()
+
+
+def test_owning_repo_fails_closed_for_unknown_and_mismatched_context(repo, tmp_path, monkeypatch):
+    bogus = tmp_path / "bogus"
+    bogus.mkdir()
+    assert wg._find(str(bogus)) is None
+    assert wg._find(str(repo)) is None
+    nested = repo / "nested"
+    nested.mkdir()
+    assert wg._find(str(nested)) is None
+    original = wg._git
+    def mismatched(args, cwd, timeout=60):
+        if Path(cwd) == repo:
+            return subprocess.CompletedProcess(args, 0, str(tmp_path / "other") + "\n", "")
+        return original(args, cwd, timeout)
+    monkeypatch.setattr(wg, "_git", mismatched)
+    assert wg._owning_repo(str(nested)) is None
+
 def test_landed_clean_is_removable_and_remove_keeps_branch(repo, tmp_path):
     p = add_wt(repo, tmp_path, "ok")
     assert verdict(p).verdict == wg.REMOVABLE
