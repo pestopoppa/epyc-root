@@ -17,7 +17,7 @@ a session's memory. All paths are under `/mnt/raid0/llm/tmp/compute-flags/` (`F`
 | GPU writer | `F/grant-gpu-*-v*.sh` | grants `ws58-gpu.queue` rows | `ps -eo pid,args \| grep -F grant-gpu-` is a NAME pattern — use the pid in its `.log` start line instead |
 | **Filing watcher** | `F/ws58-filing-watch.sh` | appends every new `grants/*.ended\|.complete` to `F/filing-due.jsonl` | `tail -1 F/filing-watch.log` → pid → `ps -p` |
 | Filing receipts | `F/filing-done/<id>.FILED` | one line: verdict or failure class + commit SHA | — |
-| Rulings / contract | `F/LOOP-CONTRACT.md`, `F/OWNER-RULINGS-YYYYMMDD.md`, `F/CODEX-GOAL-*.md` | the binding loop rules | — |
+| Rulings / contract | `F/GOAL-<worker>.md` (worker = ni, refactor, codex3) + `F/BACKLOG-<worker>.md` (generated, `ws58-backlog-gen-v1.sh`) + `F/FLOW-SCOREBOARD.md` (`ws58-flow-scoreboard-v1.sh`) | the binding loop: `docs/guides/agent-workflows/backlog-churn-flow.md`. `OWNER-ORDER-20261029.md`, `LOOP-CONTRACT.md`, `CODEX-GOAL-20261028.md` and the code-tick scoreboard are retired under `F/retired/` | — |
 | Codex channels | refactor: `tmp/refactor-01a16fc3/compute-coordination-20261026/owner-reply.md`; NI: `tmp/codex-ni-20261024-scheduling/OWNER-REPLY.json` (`updates[]`) | owner → worker messages | — |
 
 ## Takeover checklist (run at every cold start, resume, or when the owner session is dead)
@@ -36,6 +36,7 @@ a session's memory. All paths are under `/mnt/raid0/llm/tmp/compute-flags/` (`F`
    dispatch a filer for the new lines and re-arm. (Never `&`; never poll with sleep in the foreground.)
 5. **Idle compute.** `region-lock status` + `ls F/grants/*.grant` + the keeper's last `READY-WAIT`/`READY-SKIP`
    lines tell you why a region is idle. Fix scheduler causes yourself; worker causes go to the Codex channel.
+6. **Backlog flow health**: `ps -eo pid,args | grep -F ws58-backlog-gen-v1.sh` and `grep -F ws58-flow-scoreboard-v1.sh` must each show one process; `BACKLOG-*.md` mtimes < 15 min. If not, restart from `F/ws58-backlog-gen-v1.sh` / `F/ws58-flow-scoreboard-v1.sh` (setsid, nohup), record the pid in `F/ws58-backlog-gen.pid`. Do NOT send the panes orders.
 
 ## Filing subagent brief (copy verbatim, fill the gap list)
 

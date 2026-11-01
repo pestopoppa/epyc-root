@@ -93,6 +93,10 @@ The canonical calendar-side contract with the Codex NI session (`codex-ni-202610
 
 Origin: 10-24 ~18:14Z, an ungranted Codex test run inside a quiet-gate block, and a Codex push onto a kernel experimental branch the same day. Also 10-24: idle CPU gaps that were never announced to Codex.
 
+### Codex worker loop since 2026-11-01: the churn flow
+
+The per-worker contract above is superseded in its day-to-day form by the five-step churn flow, `docs/guides/agent-workflows/backlog-churn-flow.md`: each worker reads `compute-flags/BACKLOG-<worker>.md`, does the non-inference tasks under its blocked inference rows, prepares the launcher, lets the keeper qualify it (`READY-QUAL`, the realistic dry run) and goes on to the next blocked row. The owner assigns nothing by message; it edits the backlog inputs. `[unblocks: <ready-id>]` on a task line links it to the row it frees.
+
 ## RAM admission (2026-10-22)
 
 Operator ask: structure the inference calendar with RAM in mind. Host RAM is a booked resource, like regions.

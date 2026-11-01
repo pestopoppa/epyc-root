@@ -110,6 +110,7 @@ writers and the **results-filing watcher** are alive (pid from their log, `ps -p
 `filing-due.jsonl` id that has no `filing-done/<id>.FILED` **immediately** — then arm the wake-up for new run ends.
 The whole procedure, paths and the filer brief: [`references/compute-owner-takeover.md`](references/compute-owner-takeover.md).
 Operator 2026-10-28: results are filed the moment a run ends, never on request, and any session can take this over.
+- **Churning the backlog is a defined flow, not a set of orders**: `docs/guides/agent-workflows/backlog-churn-flow.md`. The owner's job is generator + flow scoreboard + keeper health, results filing, and putting new work into the backlog. Never send ad-hoc tmux orders to the Codex panes; change `BACKLOG-<worker>.md` inputs or `GOAL-<worker>.md` instead.
 
 ### 0b-bis. THE SINGLE CONTROL SURFACE — `fleet_control.sh`
 

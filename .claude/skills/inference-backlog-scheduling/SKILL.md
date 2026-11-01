@@ -40,7 +40,7 @@ reaching 100 % and an ORCH ENOSPC on 10-27).
 | peak host RAM GiB | private/anon peak **plus** file-mapped weights (mmap counts); DS41-1017 = 739 |
 | resumable vs atomic | resumable rows take any slice ≥ min-window and skip done work; atomic rows (e.g. KPF-64 arms, 4.1-6.6 h, fixed order) need the whole slice in one bin |
 | class (DERIVED, CTC-Q-C) | `quiet` only when `decision` names a champion/candidate baseline or an AK keep gate with a cited floor file; `timing-pairable` when indicative; `correctness` otherwise. `--print-class ROW` prints it; a declared class stricter than derived is refused |
-| QUEUED vs BACKLOG | QUEUED = status ARMED, `ready=y`, a live launcher pid polling this id: **ready to run, waiting only for a window**. Anything blocked (code fix, decision, HOLD, missing launcher) is BACKLOG with `blocker=<missing launcher\|harness fix\|build\|operator decision>` and an owner. A failed or HELD end demotes the row in the read-out step itself (`docs/guides/agent-workflows/compute-fillers.md` → *Queue semantics*) |
+| QUEUED vs BACKLOG | QUEUED = status ARMED, `ready=y`, a live launcher pid polling this id: **ready to run, waiting only for a window**. Anything blocked (code fix, decision, HOLD, missing launcher) is BACKLOG with `blocker=<missing launcher\|harness fix\|build\|operator decision>` and an owner. A failed or HELD end demotes the row in the read-out step itself (`docs/guides/agent-workflows/compute-fillers.md` → *Queue semantics*). Row states on BACKLOG-<worker>.md: blocked / needs-launcher / needs-qualification / qualified-armed / running / done. |
 
 ## 2. Compatibility rules (what may share a bin)
 
@@ -96,6 +96,19 @@ Run this loop at every task boundary and on every watcher event (`event-watch-ws
    stocked only from fix-and-retry chains empties whenever the chain stalls. Origin: on 10-26 the
    GPU sat idle 10.5 h; on 10-27 q1/q3 sat idle ~4 h because every row came from a
    fix-and-retry chain.
+
+### "Churn through the backlog" = the five-step flow (operator, 2026-11-01)
+
+When the operator asks to churn / work / clear the backlog, this and nothing else is meant. Canonical page: `docs/guides/agent-workflows/backlog-churn-flow.md`.
+
+1. The backlog is prioritized tasks of two types: inference and non-inference.
+2. Non-inference tasks that block inference tasks are built regardless of compute usage.
+3. Once an inference task is unblocked, its launcher is prepared and dry-run in a realistic environment (= the keeper's qualification, `READY-QUAL`).
+4. Once the dry run passes it goes to the scheduler to be armed (an accepted `epyc.ready.v2` row in `compute-flags/ready/`).
+5. Back to the next blocking non-inference tasks. Repeat until all non-inference tasks are exhausted and inference tasks armed.
+
+Each Codex worker reads ONE generated file, `compute-flags/BACKLOG-<worker>.md` (`scripts/coordination/backlog_gen.py`, every 10 min), and its goal `compute-flags/GOAL-<worker>.md`. The calendar owner keeps the generator, `scripts/coordination/flow_scoreboard.py` (FLOW-SCOREBOARD.md) and the keeper healthy, files results and puts new work into the backlog; it sends no ad-hoc pane orders. New tasks that unblock a row carry `[unblocks: <ready-id>]`.
+
 1. **Read the bins.** `region-lock status` (claims), `rocm-smi --showuse --showmemuse` (a held
    gpu-quiet at 0 % use is idle, not busy), `MemAvailable`, open `grants/*.grant`, live writer pids.
    Real utilisation, never the lock table alone.
