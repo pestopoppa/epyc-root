@@ -1,0 +1,16 @@
+test_launcher_hard_disabled (test_bundle.BundleTests.test_launcher_hard_disabled) ... ok
+test_manifest_covers_exact_private_files (test_bundle.BundleTests.test_manifest_covers_exact_private_files) ... ok
+test_original_cohort_identity_and_stop_routes (test_bundle.BundleTests.test_original_cohort_identity_and_stop_routes) ... ok
+test_empty_missing_and_repeat_selection_fail_closed (test_one_item.OneItemTest.test_empty_missing_and_repeat_selection_fail_closed) ... ok
+test_selects_first_and_rejects_second (test_one_item.OneItemTest.test_selects_first_and_rejects_second) ... ok
+test_wrong_item_does_not_consume_budget (test_one_item.OneItemTest.test_wrong_item_does_not_consume_budget) ... ok
+test_native_selection_exposure_guard_and_remaining (test_worker_integration.Integration.test_native_selection_exposure_guard_and_remaining) ... ok
+test_remaining_items_do_not_report_plan_exhaustion (test_worker_integration.Integration.test_remaining_items_do_not_report_plan_exhaustion) ... ok
+test_smoke_retains_multi_item_behavior (test_stop_race.StopRace.test_smoke_retains_multi_item_behavior) ... ok
+test_stop_already_set_before_native_call (test_stop_race.StopRace.test_stop_already_set_before_native_call) ... ok
+test_stop_arrives_during_begin_preserves_unknown_and_skips_http (test_stop_race.StopRace.test_stop_arrives_during_begin_preserves_unknown_and_skips_http) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.010s
+
+OK

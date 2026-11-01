@@ -51,3 +51,8 @@ Prepared a standalone request/source/recipe binding verifier requiring independe
 ## Disabled E1 v15 integration draft
 
 Integrated the previously separate entry-binding verifier and six-cell lifecycle into a private, default-disabled E1 v15 source draft with fresh ID and corrected own-root routing. Removed mtime source proof and added stop checks during load/active runner. Twenty-four offline controls passed, including actual entry and subprocess-double stop during load; bash syntax and compilation passed. The draft is not a READY or usable runtime: dependency sealing, dry-run isolation, restart/idempotency, actual process-tree drain, independently established build provenance, work-unit calibration and keeper qualification remain. No inference or publication occurred. See `artifacts/compute/yarn-e1-v15-integration-20261101/README.md` for limitations.
+
+
+## Disabled S2 v15 bundle candidate
+
+Prepared a fresh-ID v15 source draft retaining the original cohort and one-item exposure guard. Independent review found a stop arriving between the loop check and exposure start could begin a request; the candidate checks stop before and after marker creation, preserving a raced marker as unknown. A later check-to-HTTP race remains and requires active-request cancellation/drain. Both launchers unconditionally refuse execution; live custody, source closure, realistic dry-run timing and native qualification are open. Eleven offline tests pass when run from the candidate's tests directory; running discovery from its parent fails because test fixtures use relative paths. No READY or inference occurred. Evidence: `artifacts/compute/yarn-s2-v15-candidate-20261101/README.md`.
