@@ -269,8 +269,28 @@ def engine_cmd(engine, session_id, fresh: bool):
     raise ValueError(engine)
 
 
+def project_cwd(e: dict, repo=None) -> str:
+    """Operator rule 2026-11-01: every launched session starts INSIDE the project (the repo or one of its worktrees) so it
+    loads AGENTS.md / CLAUDE.md like any project agent. Returns the validated cwd or raises ValueError (the dispatcher
+    refuses to spawn)."""
+    repo = repo or ROOT
+    cwd = os.path.realpath(e.get("cwd") or repo)
+    if not os.path.isdir(cwd):
+        raise ValueError(f"cwd {cwd} does not exist")
+    def common(d):
+        r = subprocess.run(["git", "-C", d, "rev-parse", "--git-common-dir"], capture_output=True, text=True)
+        if r.returncode:
+            return None
+        return os.path.realpath(os.path.join(d, r.stdout.strip()))
+    want, have = common(repo), common(cwd)
+    if want is None or have is None or want != have:
+        raise ValueError(f"cwd {cwd} is not the project repo {repo} or one of its worktrees (git common dir {have} != {want})")
+    return cwd
+
+
 def launch(flags, slug, e, prompt, fresh=False, runner=None):
-    """Start the engine detached; prompt on stdin; output captured to a file (never a pipe)."""
+    """Start the engine detached; prompt on stdin; output captured to a file (never a pipe). cwd = project_cwd(e)."""
+    cwd = project_cwd(e)  # ValueError -> the caller logs REFUSED-CWD and does not spawn
     d = os.path.join(flags, "handoff-sessions", slug)
     os.makedirs(d, exist_ok=True)
     stamp = now_iso().replace(":", "")
@@ -278,8 +298,11 @@ def launch(flags, slug, e, prompt, fresh=False, runner=None):
     open(pf, "w").write(prompt)
     cmd = engine_cmd(e.get("engine", "codex"), e.get("session_id"), fresh)
     if runner:
-        return runner(cmd, pf, out)
-    p = subprocess.Popen(cmd, stdin=open(pf), stdout=open(out, "w"), stderr=subprocess.STDOUT, cwd=ROOT,
+        try:
+            return runner(cmd, pf, out, cwd=cwd)
+        except TypeError:  # older 3-argument test runners
+            return runner(cmd, pf, out)
+    p = subprocess.Popen(cmd, stdin=open(pf), stdout=open(out, "w"), stderr=subprocess.STDOUT, cwd=cwd,
                          start_new_session=True)
     return p.pid, out
 
@@ -455,7 +478,12 @@ def transfer(flags, slug, engine, force=False, runner=None, repo=ROOT):
 def _go(flags, slug, e, prompt, runner, ev, fresh=False):
     if fresh:
         e["session_id"], e["fresh_next"] = None, False
-    pid, out = launch(flags, slug, e, prompt, fresh=fresh, runner=runner)
+    try:
+        pid, out = launch(flags, slug, e, prompt, fresh=fresh, runner=runner)
+    except ValueError as exc:  # project_cwd refused: never spawn outside the project
+        log(flags, f"REFUSED-CWD {slug}: {exc}")
+        e.update({"status": "suspended", "pending_event": ev, "last_refusal": str(exc)})
+        return
     e.update({"pid": pid, "last_output": out, "status": "live", "last_resume": now_iso(), "pending_event": ev})
     log(flags, f"{'START' if fresh else 'RESUME'} {slug} pid={pid} event={(ev or {}).get('rid', 'idle')} out={out}")
 

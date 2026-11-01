@@ -179,5 +179,42 @@ class FanoutPolicyTests(unittest.TestCase):
         self.assertIn("## Working mode: fan out", hs.brief_text("x", e, flags))
 
 
+
+class ProjectCwdTests(unittest.TestCase):
+    """Operator rule 2026-11-01: a session is spawned only with cwd inside the project repo or one of its worktrees."""
+
+    def test_repo_and_worktree_accepted_other_dirs_refused(self):
+        import subprocess, tempfile
+        repo = tempfile.mkdtemp()
+        subprocess.run(["git", "-C", repo, "init", "-q"], check=True)
+        subprocess.run(["git", "-C", repo, "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "--allow-empty", "-m", "x"], check=True)
+        wt = tempfile.mkdtemp() + "/wt"
+        subprocess.run(["git", "-C", repo, "worktree", "add", "-q", wt, "-b", "lane"], check=True)
+        self.assertEqual(hs.project_cwd({}, repo=repo), os.path.realpath(repo))
+        self.assertEqual(hs.project_cwd({"cwd": wt}, repo=repo), os.path.realpath(wt))
+        other = tempfile.mkdtemp()
+        with self.assertRaises(ValueError):
+            hs.project_cwd({"cwd": other}, repo=repo)
+        other_repo = tempfile.mkdtemp()
+        subprocess.run(["git", "-C", other_repo, "init", "-q"], check=True)
+        with self.assertRaises(ValueError):
+            hs.project_cwd({"cwd": other_repo}, repo=repo)
+        # the dispatcher refuses to spawn and logs REFUSED-CWD instead of launching
+        flags = tempfile.mkdtemp()
+        calls = []
+        def runner(cmd, pf, out, cwd=None):
+            calls.append(cwd); return 1, out
+        e = {"handoff": "handoffs/active/x.md", "engine": "codex", "cwd": other}
+        hs.ROOT, old = repo, hs.ROOT
+        try:
+            hs._go(flags, "x", e, "p", runner, None, fresh=True)
+            self.assertEqual(calls, [])
+            self.assertIn("REFUSED-CWD", open(os.path.join(flags, "handoff-sessions.log")).read())
+            e2 = {"handoff": "handoffs/active/x.md", "engine": "codex", "cwd": wt}
+            hs._go(flags, "x", e2, "p", runner, None, fresh=True)
+            self.assertEqual(calls, [os.path.realpath(wt)])
+        finally:
+            hs.ROOT = old
+
 if __name__ == "__main__":
     unittest.main()

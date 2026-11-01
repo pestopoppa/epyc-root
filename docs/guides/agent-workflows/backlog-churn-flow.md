@@ -69,6 +69,12 @@ Registry `compute-flags/handoff-sessions.json`; the brief `compute-flags/briefs/
 cold agent of any engine can take over from it + the handoff + the progress file + the backlog). The dispatcher resumes
 the owner on `grants/<id>.ended|.complete`, starts suspended sessions with advanceable rows, caps live sessions.
 
+**Every launched session (any engine; spawn, resume, transfer)**: starts with its cwd INSIDE the project — `/workspace` or
+one of its git worktrees — so it loads AGENTS.md and CLAUDE.md like any project agent (`handoff_sessions.py` validates
+`project_cwd()` and logs `REFUSED-CWD` instead of spawning anywhere else); and carries the **subagent fan-out policy**
+explicitly in its brief and prompts (own thread = review/integration/boundaries; execution = 3–5 concurrent subagents on
+the cheapest capable model/effort; exceptions in `agents/shared/OPERATING_CONSTRAINTS.md` → *When NOT to fan out*).
+
 **Portability (binding)**: a session wraps up at EVERY task boundary (progress file, ticks, pathspec commit, push via
 `serialized_push.py`, `git cherry origin/main` empty) and prints `WRAPPED <sha>`; the dispatcher refuses to resume a
 session for new work while its last task is unwrapped (`UNWRAPPED <slug>` in the log). Ownership can move at any time:
