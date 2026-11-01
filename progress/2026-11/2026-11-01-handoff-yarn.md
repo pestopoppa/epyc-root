@@ -10,3 +10,8 @@ The shared checkout was 3,575 commits behind origin/main; this checkpoint uses a
 ## E1-MEM proof candidate
 
 Prepared a separate candidate with the published split-continuation helper integrated into the actual GPU preflight. Seven proof tests including historical A1 log with host stubs and eight model-free qualification controls passed; source manifest covers 53 verified dependencies. Corrected its silent omission of absent rendered prompt files and demonstrated refusal with N15 missing. Evidence and source copies: `artifacts/compute/yarn-e1-proof-candidate-20261101/`. The original evidence packet is unchanged. No native inference or READY publication. The request manifest's historical runner pin still needs reconciliation; canonical v14 was absent and booking and keeper qualification remain.
+
+
+## S3/v30 second window
+
+Filed terminal rc75 at 15:45:26Z: one new native A0 item completed, no A1 and zero matching pairs. Cumulative S3 inventory is two completed A0, three predecessor unknown A0, 25 unexposed A0 and 30 unexposed A1. Worker reports deadline; do not redraw or change the 120 denominator. The dispatched launcher end line was from the prior day; the current line, result and worker are captured in `artifacts/compute/yarn-s3-v30-20261101/`. Host result access required the host root view. Old PIDs absent and port clear at inspection do not establish a complete descendant audit. A fresh v14 successor and keeper qualification remain.

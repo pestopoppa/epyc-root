@@ -1,0 +1,31 @@
+{
+  "row": "yarn-oolong-s3-host256-eligible27-v30-20261031",
+  "result_path": "/mnt/micron/refactor-yarn-s3-v30-20261031/cohort/results",
+  "host_access": "chroot /proc/1/root as uid 1000",
+  "rc": 75,
+  "end_line": "2026-11-01T15:45:26Z [yarn-oolong-s3-host256-eligible27-v30-20261031] ended rc=75 reason=job-rc-75:exited (grant deleted)",
+  "decision_rule": "Partial diagnostic; higher completed matching-pair coverage is better. Original120 denominator and three predecessor A0 unknown remain. Only27 S3 candidates may run, A1 only after matching successful A0; no redraw or full-cohort verdict.",
+  "counts": {
+    "error": 0,
+    "ok": 2,
+    "unexposed": 55,
+    "unknown": 3
+  },
+  "completed_matching_pairs": 0,
+  "new_a0_item": "817080234",
+  "previous_a0_item": "817080233",
+  "predecessor_unknown_a0": [
+    "817080206",
+    "817080207",
+    "817080243"
+  ],
+  "worker": {
+    "n_ok": 1,
+    "n_err": 0,
+    "n_skipped_deadline": 25,
+    "remaining": 25,
+    "stop_reason": "deadline",
+    "plan_sha256": "022ba34ca80ac0d8fa734d7fdf3d9b5e484f4ad2265fba81f31021d87619ff04"
+  },
+  "limitations": "Native records copied after end. Old launcher log reported in dispatch was an earlier window. Inspection found old pids absent and port free, not proof of complete descendant cleanup or future state. A0 status ok means native completion, not an answered or correct response. No A1 record, pair or cohort verdict."
+}
