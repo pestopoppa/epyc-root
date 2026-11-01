@@ -1,0 +1,3 @@
+# GPU serving tie-in — 2026-11-01
+
+- Reconciled the generated backlog's top INF-22 q2 load blocker against the current FILLERS record and native q3-v4 artifacts. The q2 row is CANCELLED as superseded; q3-v4 completed rc0 and the recorded COMPLETE and launcher log digests match. The refusal concerned resource coverage while q2 was occupied, not an identified gate defect. No compute launched and no row republished. The existing handoff records the load-only result; the full M4 fold gate remains open. The generated backlog may continue to display its stale priority snapshot; do not repeat the superseded precursor. [no-belief: reconciliation of previously filed load-only evidence]
