@@ -1,6 +1,6 @@
 # G14 experimental candidate overwrite incident — 2026-11-01
 
-Status: FAILED RUN — path-custody error; diagnostic evidence only, zero verdict or qualification. G14 remains OPEN with no quota credit. No restoration or canonical installation.
+Status: Reviewed and filed in ROOT source `35cb389190cd87b01e4cb64a497a187a3a75bf1a`: FAILED-RUN — path-custody error, diagnostic only with no scientific verdict or qualification. Original G14 remains OPEN with no quota credit; no restoration, canonical installation, parity or verified drain claim.
 
 At 08:08 UTC I attempted to copy the earlier diagnostic harness to this scratch directory and replace its hard-coded CAND path with a scratch candidate. The exact intended Python source was `s=s.replace("Path('/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae')", "D/'candidate'")`. It was embedded in an outer single-quoted shell command; shell processing stripped the inner single quotes. The replacement did not match. I did not validate the result. The retained `run.py:29` proves CAND remained the pre-existing experimental directory. I then set G14_REEXPORT=1, forcing overwrite. This was my error; no source or product change caused it.
 
