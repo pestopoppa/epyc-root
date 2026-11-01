@@ -2,7 +2,9 @@
 """Verify a three-arm run's custody and schedule, without grading its outcome.
 
 This checks that directory names and recorded arm identities match the plan and
-that payload bytes match their recorded hashes. Directory order is a caller
+that payload bytes match their recorded hashes. Payloads and record hashes are
+co-mutable: coordinated changes to both pass. This is internal consistency,
+not independently protected custody or tamper evidence. Directory order is a caller
 assertion, not proof of execution order. It cannot establish that a response came
 from a model, a score is correct, a reset occurred, or the source identities and
 grant are genuine. A runner must prove those independently before interpretation.
@@ -105,7 +107,7 @@ def verify(plan_path: Path, capture_dir: Path) -> dict:
         if {p.name for p in entry.iterdir()} != files:
             raise ValueError(f'unexpected capture files at {i}')
     return {'status': 'custody_only', 'records': len(sequence), 'plan_sha256': _sha(plan_raw),
-            'limitations': 'No actual execution order, grant, identity, reset, native measurement, scorer or outcome verified.'}
+            'limitations': 'Co-mutable payloads and hashes prove internal consistency only, not independent tamper evidence. No actual execution order, grant, identity, reset, native measurement, scorer or outcome verified.'}
 
 
 def main() -> None:

@@ -26,8 +26,15 @@ class CaptureVerification(unittest.TestCase):
             result = verify_capture.verify(pp, captures)
             self.assertEqual(result['status'], 'custody_only')
             self.assertIn('No actual execution order', result['limitations'])
+            self.assertIn('Co-mutable payloads and hashes', result['limitations'])
             (captures / '000001' / 'turn-0001-response.bin').write_bytes(b'tampered')
             with self.assertRaises(ValueError): verify_capture.verify(pp, captures)
+            # A co-mutated record and payload is self-consistent but not independent evidence.
+            record_path = captures / '000001' / 'record.json'
+            record = json.loads(record_path.read_text())
+            record['turns'][0]['response_sha256'] = hashlib.sha256(b'tampered').hexdigest()
+            record_path.write_text(json.dumps(record))
+            self.assertIn('not independent tamper evidence', verify_capture.verify(pp, captures)['limitations'])
 
     def test_refuses_incomplete_and_synthetic(self):
         with tempfile.TemporaryDirectory() as root:
