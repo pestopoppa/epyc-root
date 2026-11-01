@@ -684,10 +684,14 @@ def row_shape(d):
     return opts, (gq == "exclusive" or o.get("role") == "bench")
 
 
-def dryrun_shape(d, opts):
+def dryrun_shape(d, opts, flags=None):
     """A dry run never holds more than it needs: a row booking several quarters is dry-run on ONE quarter (the engine
-    claims the grant's cpus under FILLER_DRYRUN_ONE_QUARTER=1) unless the spec says dryrun_whole_host."""
-    if d.get("dryrun_whole_host"):
+    claims the grant's cpus under FILLER_DRYRUN_ONE_QUARTER=1) unless the spec says dryrun_whole_host. Only the INSTALLED
+    engine honours that env (a private engine copy, or a wrapper that re-execs its own engine, cannot be constrained), so
+    any other engine keeps its whole shape and waits until all of it is free."""
+    eng = d.get("engine", {}).get("path") if isinstance(d.get("engine"), dict) else None
+    installed = os.path.join(flags or FLAGS, "bin", "rowflow", CANONICAL_ENGINE)
+    if d.get("dryrun_whole_host") or (eng and os.path.realpath(eng) != os.path.realpath(installed)):
         return opts, False
     out = []
     for o in opts:
@@ -829,8 +833,9 @@ def status(flags, rid, allrows=None):
         out.update(state="grantable", reason=f"dry run passed {p.get('passed_at')} ({p.get('units')} unit(s) in {p.get('result_path')})"); return out
     if nf >= MAX_FAILS:
         out.update(state="parked", reason=f"{nf} failed dry runs in lineage {lin}; operator-escalations/{lin}.md"); return out
-    if last_fail and last_fail.get("launcher_sha256") == cur and last_fail.get("row_sha256", row_sha(flags, rid)) == row_sha(flags, rid) \
-            and last_fail.get("rowflow_sha256", sha256(__file__)) == sha256(__file__):  # a spec edit or a rowflow fix retries the row
+    if last_fail and last_fail.get("launcher_sha256") == cur and last_fail.get("row_sha256", row_sha(flags, rid)) == row_sha(flags, rid):
+        # sha-keyed FAIL memo: only a launcher or spec edit retries the row, never a rowflow change (22:25Z 2026-11-01:
+        # an unchanged single-threaded launcher was re-dry-run after the allocator landed)
         out.update(state="failed", reason=str(last_fail.get("reason"))[:300], fail_file=fail_paths(flags, rid)[-1],
                    fix_task=last_fail.get("fix_task")); return out
     if p:
@@ -874,6 +879,45 @@ def kill_group(pid, grace=20):
         os.killpg(pid, signal.SIGKILL)
     except (ProcessLookupError, PermissionError):
         pass
+
+
+_ACQ = re.compile(r"\[region-lock\] acquiring regions \[([^\]]*)\]")
+_HELD = re.compile(r"\[region-lock\] held \[([^\]]*)\]")
+
+
+def lock_waits(lines, holds):
+    """Region sets a job asked region-lock for and has NOT been granted (acquire lines without a matching held line)."""
+    asked = []
+    for l in lines:
+        m = _ACQ.search(l)
+        if m:
+            asked.append({x.strip().strip("'\"") for x in m.group(1).split(",") if x.strip()})
+            continue
+        m = _HELD.search(l)
+        if m:
+            got = {x.strip().strip("'\"") for x in m.group(1).split(",") if x.strip()}
+            asked = [a for a in asked if a != got]
+    return asked
+
+
+def busy_pct(s0, s1, cpus):
+    b = sum(s1.get(c, (0, 0))[0] - s0.get(c, (0, 0))[0] for c in cpus)
+    t = sum(s1.get(c, (0, 0))[1] - s0.get(c, (0, 0))[1] for c in cpus)
+    return 100.0 * b / t if t > 0 else 100.0
+
+
+def row_orphans(rid):
+    """READ-ONLY: pids (other than ours) whose argv names this exact row id. Reported in the dry-run record; never killed."""
+    out = []
+    for q in os.listdir("/proc"):
+        if not q.isdigit() or int(q) == os.getpid():
+            continue
+        try:
+            if rid in open(f"/proc/{q}/cmdline", "rb").read().decode("utf8", "replace"):
+                out.append(int(q))
+        except OSError:
+            continue
+    return out
 
 
 def record_fail(flags, rid, d, reason, extra):
@@ -968,6 +1012,10 @@ def dryrun_run(flags, rid, regions, one_quarter=False):
     warning = None
     ended = os.path.join(dd, "ended")
     verdict, reason = None, None
+    lout = os.path.join(dd, "launcher.out")
+    out_lines0 = len(tail(lout, 10**6))
+    cpu0 = cpu_sample()
+    hold_cpus = [c for q in holds if q in QUARTERS for lo in [int(q[1]) * 24] for c in list(range(lo, lo + 24)) + list(range(lo + 96, lo + 120))]
     try:
         while True:
             time.sleep(5)
@@ -975,6 +1023,20 @@ def dryrun_run(flags, rid, regions, one_quarter=False):
                 v = vram_used_bytes()
                 if v is not None:
                     vram_max = max(vram_max or 0, v)
+            # a dry run must never wait on a lock: a region-lock acquire for regions outside what this dry run holds, or one
+            # not satisfied within 60 s, is the row's defect (whole-host claim on a one-quarter dry run)
+            waits = lock_waits(tail(lout, 10**6)[out_lines0:], holds)
+            if waits and (waits[0] - holds or time.time() - t0 > 60):
+                verdict, reason = "FAIL", (f"job waits on region-lock for {','.join(sorted(waits[0]))} while the dry run holds "
+                                           f"{','.join(sorted(holds))}: whole-host claim; cannot dry-run on one quarter (constrain "
+                                           "--claim-cpus / the job's own claim, or set dryrun_whole_host: true in the spec)")
+                break
+            if first_unit_at is None and hold_cpus and not gpu and time.time() - t0 > 300:
+                pct = busy_pct(cpu0, cpu_sample(), hold_cpus)
+                if pct < UNDERUSED_PCT:
+                    verdict, reason = "FAIL", (f"single-threaded preflight: job used {pct:.1f}% of its {len(hold_cpus)} claimed cpus for "
+                                               f"{int(time.time() - t0)}s with no unit (a quarter row must use the quarter: shrink its regions or fix the launcher)")
+                    break
             units = count_units(d["result_path"], d["result_format"], d.get("workdir"))
             new_units = units - units0
             if new_units > 0 and first_unit_at is None:
@@ -1028,6 +1090,10 @@ def dryrun_run(flags, rid, regions, one_quarter=False):
                     p.wait(timeout=30)
                 except subprocess.TimeoutExpired:
                     pass
+        orphans = row_orphans(rid)
+        if orphans:  # a sudo/chroot/setsid wrapper detached them from the launcher's group; reported, never killed by pattern
+            warning = (warning + "; " if warning else "") + f"ORPHANS {orphans}: processes still naming this row after the dry run ended (a wrapper detached them; the owner stops them by pid)"
+            out.write(f"==== {warning}\n")
         try:
             os.remove(grant)
         except OSError:
@@ -1269,7 +1335,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         opts, bench = row_shape(d)
         one_q = False
         if kind == "dryrun":
-            opts, one_q = dryrun_shape(d, opts)
+            opts, one_q = dryrun_shape(d, opts, flags)
         shapes[rid] = (opts, one_q)
         cands.append({"id": rid, "kind": kind, "lane": d["lane"], "rank": float(d.get("priority_rank") or 100), "lane_count": counts[d["lane"]],
                       "gib": int(d.get("gib") or 0), "bench": bench, "options": opts})
