@@ -400,7 +400,7 @@ Machine harness 25→48→59→81 checks, 0 fail (independently rerun); 4 quiet 
       because the dependency lives in prose rather than in a child box — the same screener blind
       spot as an `OPERATOR:` prefix. Worth a generator signal.*
 - [ ] H1/H2 blind-spot panels (owned by RTG-03) get homes assigned post-split: breaker/fallback →
-      `/machine`; REL-1 eval error-rate → autopilot page.
+      `/machine`; REL-1 eval error-rate → autopilot page. [too-big: multi-worker data contracts and cross-page feeds belong to RTG-03]
 - [x] **D-1 (HIGH) — the production-kernel panel is absence-tolerant, QUIETLY.** ✅ 2026-08-12 — FIXED by `inference`, verified by `mainC` **from the ref, not the working tree**. `origin/main`'s `kernel.html` now renders the unavailable branch as a `headline fail` reading **ATTESTATION UNAVAILABLE**, plus a `detail fail` sentence — *"Production identity is unasserted; do not infer freeze or checkout state."* That is the absence_means sentence the defect asked for, at the same visual weight as the healthy headline; the `muted` line is gone. **Cosmetic residual, not reopening:** `_production_kernel_summary` still returns `error: None` for a merely-absent file, so the third line falls back to a generic "attestation not found" rather than naming the path the way `_read_kernel_contract` synthesises one. The alarm is loud, which was the defect; the reason is still unnamed, which is a nicety. Filed 2026-08-12 by
       `mainC` from the Kernel-R&D operational-truth audit
       ([`artifacts/audit/kernel-rnd-dashboard-operational-truth-20260812.md`](../../artifacts/audit/kernel-rnd-dashboard-operational-truth-20260812.md)).
