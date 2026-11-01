@@ -36,6 +36,7 @@ Subcommands:
     transfer <slug> --engine claude|opencode|codex [--force]
                             start a FRESH session of <engine> from files only; refused while the old one is live.
     status                  print the registry.
+    rank                    print the handoff ranking (auto-start / yield order) with candidate rows per handoff.
 
 Verified headless resume forms (2026-11-01 round-trips):
     codex   : codex exec resume --json <thread_id> -      (prompt on stdin; start: codex exec --json -)
@@ -153,6 +154,11 @@ this brief and on disk/origin/main — you may have no transcript of earlier tur
   (section *Session per handoff*).
 
 ## Row lifecycle (you drive every step yourself)
+**Inference first.** Your first job is to turn this handoff's measurement/inference tasks into published rows
+(`publish_row.py`), starting with the ones whose blockers you can clear fastest, so every lane always has runnable rows.
+Non-inference tasks come only after that, or while your rows wait. Your BACKLOG file lists the open boxes that read like
+runs under "Own inference tasks to publish as rows" and your handoff's rank among all handoffs.
+
 1. Write a spec JSON (id, owner, launcher, lane cpu|gpu, result_path, result_format, decision_rule, estimate_s,
    handoff_task, priority_rank) and publish it: `python3 scripts/coordination/rowflow/publish_row.py <spec.json>`.
 2. The keeper dry-runs/qualifies the row and grants it (`grants/<id>`); you NEVER arm, grant, qualify or run compute.
@@ -397,20 +403,47 @@ def write_backlog_for(flags, slug, data=None, priority=None, keeper_log=None, re
         log(flags, f"BACKLOG-WRITE-FAILED {slug}: {ex!r}")
 
 
+def mark_yields(flags, reg, data, cap):
+    """Operator 2026-11-01: a session whose handoff is not in the top-`cap` handoffs by rows unblocked YIELDS its slot -
+    it finishes its current task and wraps up, then is not resumed for NEW work (run-end events for its own rows still
+    reach it). Never killed mid-task. The flag clears when the handoff is back in the top-`cap`."""
+    S = reg.get("sessions") or {}
+    top = {h["handoff"] for h in (data.get("handoff_rank") or [])[:cap]}
+    ranked = {h["handoff"]: h for h in data.get("handoff_rank") or []}
+    for slug, e in S.items():
+        if e.get("status") == "done" or not e.get("handoff"):
+            continue
+        hf = "handoffs/" + str(e["handoff"]).split("handoffs/", 1)[-1]
+        outranked = bool(ranked) and hf not in top
+        if outranked and not e.get("yield"):
+            h = ranked.get(hf) or {}
+            e["yield"] = True
+            log(flags, f"YIELD {slug}: handoff rank #{h.get('position', '?')} score={h.get('score', 0)} is below the live cap {cap}; "
+                       f"finishes its current task, then not resumed for new work")
+        elif not outranked and e.get("yield"):
+            e["yield"] = False
+            log(flags, f"UNYIELD {slug}: handoff back in the top {cap}")
+
+
 def auto_start(flags, reg, live, cap, runner=None, repo=None, priority=None, keeper_log=None):
     """Start sessions for the best handoffs that need one until live == cap. Returns the new live count."""
-    if live >= cap or not reg.get("auto_start", True):
+    if not reg.get("auto_start", True):
         return live
     S = reg.setdefault("sessions", {})
     try:
-        cands, _ = candidates(flags, reg, repo, priority, keeper_log)
+        cands, data = candidates(flags, reg, repo, priority, keeper_log)
     except Exception as ex:
         log(flags, f"AUTO-START-SKIPPED candidates failed: {ex!r}")
+        return live
+    mark_yields(flags, reg, data, cap)
+    if live >= cap:
         return live
     started = []
     for h in cands:
         if live >= cap:
             break
+        if h.get("position", 0) > cap and any(e.get("status") != "done" and alive(e.get("pid")) for e in S.values()):
+            break  # below the cap and the slot would only be a leftover: wait for a higher-ranked handoff to need it
         slug = h.get("slug") or slug_for(h["handoff"], S)
         e = S.get(slug) or new_entry(reg, h["handoff"], h.get("row_id"))
         if e.get("status") == "done":  # the handoff grew open tasks again: fresh session, same slug
@@ -542,6 +575,8 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 continue
             if slug in launched or any(ev["slug"] == slug for ev in st["queue"]):
                 continue
+            if e.get("yield"):
+                continue  # outranked: no new work; its slot goes to a higher-ranked handoff
             if now - _parse(e.get("last_end") or e.get("last_resume") or "") < IDLE_COOLDOWN_S:
                 continue
             if not wrapped(e, lcache):
@@ -617,7 +652,7 @@ def _go(flags, slug, e, prompt, runner, ev, fresh=False):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("cmd", choices=["brief", "start", "dispatch", "status", "transfer"])
+    ap.add_argument("cmd", choices=["brief", "start", "dispatch", "status", "transfer", "rank"])
     ap.add_argument("slug", nargs="?")
     ap.add_argument("--flags", default=FLAGS)
     ap.add_argument("--loop", action="store_true")
@@ -631,6 +666,14 @@ def main(argv=None):
     reg = load(reg_path(a.flags), {"sessions": {}})
     if a.cmd == "status":
         print(json.dumps(reg, indent=2))
+        return 0
+    if a.cmd == "rank":  # the auto-start / yield ranking with the candidate rows each handoff carries
+        _, data = candidates(a.flags, reg, None, a.priority, a.keeper_log)
+        cap = int(reg.get("max_live", 5))
+        for h in data.get("handoff_rank") or []:
+            mark = "live-cap" if h["position"] <= cap else "below"
+            print(f"#{h['position']:>3} {mark:8} score={h['score']:<7} rows={len(h['rows'])} own-inference-tasks={h['candidate_rows']} "
+                  f"session={h['session'] or '-':<12} priority={h['row_id'] or '-'} rank={h['priority_rank']} {h['handoff']}")
         return 0
     if a.cmd == "transfer":
         if not a.slug or not a.engine:

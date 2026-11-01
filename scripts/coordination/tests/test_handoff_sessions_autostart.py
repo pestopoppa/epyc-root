@@ -161,5 +161,26 @@ class AutoStartTests(AutoStartFixture):
         self.assertEqual(hs.slug_for("handoffs/active/yarn-context-extension-research.md", taken), "yarn-context-extension-2")
 
 
+class YieldTests(AutoStartFixture):
+    def test_outranked_session_yields_after_its_turn_and_is_not_resumed_for_new_work(self):
+        # cap 1; alpha (rank 9, score 0) has a live-looking session; mid (score 1.0) outranks it
+        self.reg["max_live"] = 1
+        self.reg["sessions"] = {"alpha": {"handoff": "handoffs/active/alpha.md", "engine": "codex", "session_id": "t1",
+                                          "status": "live", "pid": 99999980, "last_wrapup": "abc1234", "last_end": "2026-11-01T10:00:00Z"}}
+        hs.save(hs.reg_path(self.flags), self.reg)
+        _w(os.path.join(self.flags, "BACKLOG-handoff-alpha.md"), "## Non-inference\n- [M] handoffs/active/alpha.md:10 — alpha big task\n")
+        with patch.object(hs, "alive", return_value=True):
+            reg, _ = self.dispatch()
+        self.assertEqual(self.calls, [], "never killed or replaced mid-task; cap is full")
+        self.assertTrue(reg["sessions"]["alpha"]["yield"])
+        self.assertIn("YIELD alpha: handoff rank #", self.log_text())
+        # its turn ends (pid gone, wrap-up landed): not resumed for new work although it has advanceable tasks; mid gets the slot
+        reg, _ = self.dispatch()
+        S = reg["sessions"]
+        self.assertEqual(S["alpha"]["status"], "suspended")
+        self.assertEqual([c["prompt"].split("owns `")[1].split("`")[0] for c in self.calls], ["handoffs/active/mid.md"])
+        self.assertIn("mid", S)
+
+
 if __name__ == "__main__":
     unittest.main()

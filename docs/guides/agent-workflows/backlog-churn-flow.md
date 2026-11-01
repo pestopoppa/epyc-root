@@ -75,11 +75,20 @@ row holds no slot) < `max_live`, the dispatcher STARTS a fresh session for the b
 semantics: brief written, cwd inside the project, fan-out line, the WRAPPED gate — and logs `AUTO-START <slug>
 handoff=… engine=… pid=… score=… rows=… priority=… rank=…`. The ranking is `backlog_gen`'s `needs_session`: handoff
 score = Σ lane_weight over the DISTINCT advanceable inference rows the handoff's open tasks unblock (transitive, same
-score as the task ranking) plus the rows whose fix task points into it; ties — including score 0 — by the
+score as the task ranking) plus the rows whose fix task points into it, plus ½ × lane_weight for each of the handoff's
+OWN unpublished inference tasks (open boxes that read like a run; at most 8 — the `unblocks:` graph is sparse, so without
+this most handoffs score 0); ties — including score 0 — by the
 `backlog-priority.json` rank of the handoff's index row (`.index-state.json`), never alphabetically. The same order
 drives the "Routed elsewhere" section of `BACKLOG-codex-gen.md`. A session whose handoff has no open `- [ ]` left (or
 whose file left `handoffs/active/`) becomes `done` and frees its slot. Registry knobs: `default_engine` (codex),
-`auto_start` (true), `max_live` (5).
+`auto_start` (true), `max_live` (5). The same ranking covers handoffs WITH sessions (`handoff_sessions.py rank`): a
+session whose handoff falls below the top-`max_live` **yields** — it finishes its current task and wraps up, is marked
+`yield` and is not resumed for NEW work (its own rows' run-end events still reach it); never killed mid-task.
+
+**Inference first (operator, 2026-11-01)** — every brief and every `BACKLOG-handoff-<slug>.md` opens with it: the
+session's first job is to turn the handoff's measurement/inference tasks into published rows (`publish_row.py`), fastest
+blockers first, so every lane always has runnable rows; non-inference tasks come after, or while rows wait. The backlog
+lists the handoff's rank and its own inference tasks that read like runs.
 
 **`running` (BACKLOG state) means: `grants/<id>.grant` open, NO `grants/<id>.ended|.complete`, and the recorded
 launcher/poller pid (armed record or queue line) alive.** A grant with an `.ended` is `done`; a grant whose pid is dead

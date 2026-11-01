@@ -269,6 +269,34 @@ def handoff_file_of(text: str) -> str | None:
     return m.group(0) if m else None
 
 
+INFER_RX = re.compile(r"llama-bench|bench(?:mark)?(?:\s+run|ing|\b)|measure|\bt/s\b|tok(?:ens?)?/s|sweep|dry[- ]run|re-?run|"
+                      r"\brun (?:the|a|an|it|this|one|two|three|n=|\d)|publish_row|profil(?:e|ing) run|latency|throughput|"
+                      r"correctness (?:run|check|gate)|A/B|ablat|baseline", re.I)
+GPU_RX = re.compile(r"MI210|\bGPU\b|gfx90a|HIP|VRAM|rocm", re.I)
+CANDIDATE_CAP = 8
+CANDIDATE_WEIGHT = 0.5  # an unpublished inference task is half a row: it still needs a spec, a launcher and a dry run
+
+
+def handoff_inference_tasks(repo: str, hf: str, cap: int = CANDIDATE_CAP) -> list[dict]:
+    """A handoff's OWN unpublished inference tasks: open `- [ ]` boxes whose text reads like a measurement/run. These are
+    rows the session can publish, so they count toward the handoff (operator, 2026-11-01: the `unblocks:` graph is
+    sparse, most handoffs would otherwise score 0). Capped (CANDIDATE_CAP) and half-weighted (CANDIDATE_WEIGHT) so a
+    huge handoff of unpublished ideas cannot outrank one with real stuck rows."""
+    out = []
+    try:
+        lines = open(os.path.join(repo, hf), errors="replace").read().splitlines()
+    except OSError:
+        return out
+    for i, l in enumerate(lines, 1):
+        if not re.match(r"^\s*- \[ \]", l):
+            continue
+        if INFER_RX.search(l):
+            out.append({"line": i, "text": re.sub(r"^\s*- \[ \]\s*", "", l)[:140], "lane": "gpu" if GPU_RX.search(l) else "cpu"})
+            if len(out) >= cap:
+                break
+    return out
+
+
 def handoff_priority(priority_path: str, prows: dict) -> tuple[dict[str, dict], dict[str, str]]:
     """(handoff file -> {row_id, rank}, index row id -> handoff file). The handoff's index row comes from
     handoffs/active/.index-state.json (beside backlog-priority.json); the rank is that row's backlog-priority rank
@@ -500,18 +528,38 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
         for hf in targets:
             if hf not in handoff_bucket:
                 hs_rows.setdefault(hf, {})[r["id"]] = r
-    needs_session = []
-    for hf in set(hs_rows) | set(hs_tasks):
+    # ---- the same ranking for EVERY handoff (with or without a session): the dispatcher yields slots by it ----
+    for w in buckets:  # rows owned by piloted handoffs count for their handoff too
+        for r in per[w]["rows"]:
+            if r["state"] in ADVANCEABLE and r.get("handoff"):
+                hs_rows.setdefault(r["handoff"], {})[r["id"]] = r
+    for wl in scored:
+        if wl["file"] in handoff_bucket:
+            hs_tasks.setdefault(wl["file"], []).append(wl)
+            for rid in wl["unblocked_rows"]:
+                if rid in rows_by_id:
+                    hs_rows.setdefault(wl["file"], {})[rid] = rows_by_id[rid]
+    repo = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(priority_path))))
+    handoff_rank = []
+    for hf in set(hs_rows) | set(hs_tasks) | set(handoff_bucket) | set(hpri):
         rr = hs_rows.get(hf, {})
+        cand = handoff_inference_tasks(repo, hf)
+        if not rr and not cand and not hs_tasks.get(hf) and hf not in handoff_bucket:
+            continue  # nothing to do in it
         pr = hpri.get(hf, {"row_id": None, "rank": 9999.0})
         best = min([float(r["rank"]) if str(r["rank"]).replace(".", "", 1).isdigit() else 999 for r in rr.values()] + [999])
-        needs_session.append({"handoff": hf, "score": round(sum(lane_weight(r["lane"]) for r in rr.values()), 4),
-                              "rows": sorted(rr), "lanes": sorted({r["lane"] for r in rr.values()}),
-                              "row_id": pr["row_id"], "priority_rank": pr["rank"], "best_row_rank": best,
-                              "tasks": len(hs_tasks.get(hf, []))})
-    # order: most inference unblocked first; ties (incl. score 0) by backlog-priority rank of the handoff's index row,
-    # then the best rank among its rows, then task count. Never alphabetical.
-    needs_session.sort(key=lambda h: (-h["score"], h["priority_rank"], h["best_row_rank"], -h["tasks"], h["handoff"]))
+        handoff_rank.append({"handoff": hf, "score": round(sum(lane_weight(r["lane"]) for r in rr.values())
+                                                           + CANDIDATE_WEIGHT * sum(lane_weight(c["lane"]) for c in cand), 4),
+                             "rows": sorted(rr), "lanes": sorted({r["lane"] for r in rr.values()} | {c["lane"] for c in cand}),
+                             "candidate_rows": len(cand), "candidates": cand[:4],
+                             "row_id": pr["row_id"], "priority_rank": pr["rank"], "best_row_rank": best,
+                             "tasks": len(hs_tasks.get(hf, [])), "session": handoff_bucket.get(hf, "")[8:] or None})
+    # order: most inference unblocked/publishable first; ties (incl. score 0) by backlog-priority rank of the handoff's
+    # index row, then the best rank among its rows, then task count. Never alphabetical.
+    handoff_rank.sort(key=lambda h: (-h["score"], h["priority_rank"], h["best_row_rank"], -h["tasks"], h["handoff"]))
+    for i, h in enumerate(handoff_rank, 1):
+        h["position"] = i
+    needs_session = [h for h in handoff_rank if not h["session"]]
     hs_order = {h["handoff"]: i for i, h in enumerate(needs_session)}
     for wl in scored:
         tgt = handoff_bucket.get(wl["file"])
@@ -538,7 +586,7 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
         per[w]["rows"].sort(key=_key)
     return {"generated_at": now.strftime("%Y-%m-%dT%H:%MZ"), "workers": per, "parked": parked,
             "pilots": {s: p["handoff"] for s, p in pilots.items()}, "ready_by_lane": ready_by_lane, "klog_idle": klog["idle"][-3:],
-            "needs_session": needs_session}
+            "needs_session": needs_session, "handoff_rank": handoff_rank}
 
 
 def render(w: str, data: dict) -> str:
@@ -555,6 +603,17 @@ def render(w: str, data: dict) -> str:
     for r in d["rows"]:
         counts[r["state"]] = counts.get(r["state"], 0) + 1
     L.append("State counts: " + ", ".join(f"{k}={counts.get(k, 0)}" for k in STATE_ORDER) + ".")
+    if w.startswith("handoff-"):
+        hr = next((h for h in data.get("handoff_rank", []) if h.get("session") == w[8:]), None)
+        if hr:
+            L.append(f"Handoff rank: #{hr['position']} of {len(data['handoff_rank'])} (score={hr['score']}, rows={len(hr['rows'])}, "
+                     f"own unpublished inference tasks={hr['candidate_rows']}). Below the live cap the dispatcher yields your slot after your next wrap-up.")
+        L += ["", "**Inference first.** Turn this handoff's measurement/inference tasks into published rows (`publish_row.py`), "
+              "fastest-clearable blockers first, so every lane always has runnable rows; non-inference tasks come after that or while your rows wait."]
+        if hr and hr.get("candidates"):
+            L.append("Own inference tasks to publish as rows (open boxes that read like a run; verify in the handoff):")
+            for c in hr["candidates"]:
+                L.append(f"- {w[8:]} L{c['line']} [{c['lane']}] {c['text']}")
     for lane in ("cpu", "gpu"):
         if rbl[lane] < FLOOR:
             L.append(f"- [FLOOR] {lane.upper()}: {rbl[lane]} ready row(s) host-wide < {FLOOR}. Tasks that unblock a {lane.upper()} row rank first.")
@@ -583,7 +642,7 @@ def render(w: str, data: dict) -> str:
             if h and wl["file"] not in shown_h:
                 shown_h.add(wl["file"])
                 L.append(f"- **{wl['file']}** — handoff score={h['score']} rows={','.join(h['rows'][:4]) or '-'} "
-                         f"priority={h['row_id'] or '-'} rank={h['priority_rank'] if h['priority_rank'] < 9999 else '-'}")
+                         f"own-inference-tasks={h['candidate_rows']} priority={h['row_id'] or '-'} rank={h['priority_rank'] if h['priority_rank'] < 9999 else '-'}")
             L.append(f"    - {wl['route']}: {wl['raw'][:200]}")
         if len(d["routed"]) > 60:
             L.append(f"- ... {len(d['routed']) - 60} more")
