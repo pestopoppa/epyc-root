@@ -1,0 +1,36 @@
+{
+  "counts": {
+    "legacy_complete_returned_after_owner_drain_unsealed": 33,
+    "legacy_partial_returned_after_owner_drain_unsealed": 1518,
+    "missing_result": 10,
+    "unproven_or_other": 100
+  },
+  "limit": "Legacy owner calls owned_window_v7, whose return follows its drain loop. These unsealed records are source-derived custody observations, not independently authenticated result-to-capture bindings and never grant eligibility.",
+  "samples": {
+    "legacy_complete_returned_after_owner_drain_unsealed": {
+      "capture": "/mnt/micron/codex3-pip-head-r26-20261030/attempts/codex3-pip02-paddle-relocatable-r29-head-20261031-4688c24334414d88b619a6bd8fea483b/capture.json",
+      "capture_sha256": "0eded4841b60f19b86b1aaf2b13c7b5dfdb769a5fe6290eb2ff9fdd310d6626c",
+      "owner": "/mnt/micron/codex3-pip-head-r26-20261030/parallel_owner.py",
+      "owner_sha256": "1d0a85f45e3c8793d0a72f539ceddbb04bd3c8bfc03de716b62fafb0a388ad8d",
+      "result": "/mnt/micron/codex3-pip-head-r26-20261030/attempts/codex3-pip02-paddle-relocatable-r29-head-20261031-4688c24334414d88b619a6bd8fea483b/result.json",
+      "result_sha256": "147a64e5caafc18e4b65bf6ee19d356ad5fec1c386f664479385d683390136c1"
+    },
+    "legacy_partial_returned_after_owner_drain_unsealed": {
+      "capture": "/mnt/micron/codex3-pip-pool0-merged-r35-20261031/attempts/codex3-pip02-paddle-relocatable-r35-pool0-20261031-01aa07119d064fafbdd273fd57b6de46/capture.json",
+      "capture_sha256": "0020239715639539a5c0c89d0de231398971aac12445d5f34d3e8b4651e6b507",
+      "owner": "/mnt/micron/codex3-pip-pool0-merged-r35-20261031/parallel_owner.py",
+      "owner_sha256": "0d6fd3d6fbe8616a8585924fb2764d3c756ee29eb094ea6626f68b8239e347d7",
+      "result": "/mnt/micron/codex3-pip-pool0-merged-r35-20261031/attempts/codex3-pip02-paddle-relocatable-r35-pool0-20261031-01aa07119d064fafbdd273fd57b6de46/result.json",
+      "result_sha256": "50f2d27970c873a94352b24231806b6eeb5c2796ea9a0c9cbeee30b48ac8445b"
+    },
+    "unproven_or_other": {
+      "capture": "/mnt/micron/codex3-pip-split-r22-20261030/attempts/codex3-pip02-paddle-relocatable-r22-pool2-20261030-76519482793a402f829a709413beb380/capture.json",
+      "capture_sha256": "01dee3cacd4f2d4eecb670d8a1cd6ebe701acd8f08bdce7ae18637f258e19bb2",
+      "owner": "/mnt/micron/codex3-pip-split-r22-20261030/parallel_owner.py",
+      "owner_sha256": "0a0309e82848c24277357fdfb660ed01bccbfbec12dc6aef9599d5daf2a3caab",
+      "result": "/mnt/micron/codex3-pip-split-r22-20261030/attempts/codex3-pip02-paddle-relocatable-r22-pool2-20261030-76519482793a402f829a709413beb380/result.json",
+      "result_sha256": "e9f96b2f62faa5a77d01309df1762aa61a7db162ed9275a322909dd23f29ab96"
+    }
+  },
+  "schema": "pip02-native-result-contract-census/v1"
+}

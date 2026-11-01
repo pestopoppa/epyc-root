@@ -1,0 +1,3 @@
+Host v8 review snapshot: /mnt/raid0/llm/tmp/codex3-pip-exposure-recheck-20261101/all-shards-inventory-v8.json
+SHA-256: 329575a52b3f502e178c6853eea45c7b66f563015821399223b5a9ef7a9e3c86
+Snapshot contains observational review, not an admission record.
