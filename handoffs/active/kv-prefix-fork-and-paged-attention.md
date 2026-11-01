@@ -775,7 +775,7 @@ Measure first. The build is gated on the measurement.
   - **Gate (proposed, confirm when the counter exists):** build KPF-32 only if mixed blocks are ≥ 10% of live blocks
     for decode/verify rows in two windows. Otherwise close P3 with the measurement recorded.
 - [ ] **KPF-31: GitNexus on `find_slot`**, plus `apply_ubatch` and `llama_kv_cells` (`src/llama-kv-cells.h`), in
-  the P3 worktree. `find_slot` feeds slot restore (see the GitNexus table).
+  the P3 worktree. `find_slot` feeds slot restore (see the GitNexus table). [too-big: P3 worktree identity and fresh index need the owning handoff session]
 - [ ] **KPF-32: affine allocator.** In `find_slot` (`llama-kv-cache.cpp:901-1075`), give each sequence a cursor into
   its own 256-cell chunk, matching the FA block size of KVU-19a/19b. Place its new tokens there, and open a new chunk
   when it is full. Fall back to first-fit when fragmented. Dispatch keys on unified KV and n_seq > 1 (shape), with

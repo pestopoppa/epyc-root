@@ -87,7 +87,7 @@ handoff owns the shared red-test baseline.
       dashboard/journal/planner sweep (5), plus two reproduced on a clean detached worktree
       (`test_legacy_source_change_after_preflight_blocks_scorer_replay`,
       `test_generation_tail_replaces_only_target_response_and_sidecar_bytes`) that no dispatch had claimed as
-      pre-existing (found 2026-09-14, noninf sweep).
+      pre-existing (found 2026-09-14, noninf sweep). [too-big: current full unit-suite baseline needs broad run and result triage; handoff session owns it]
   - [x] Repair collection of `test_repl_thinking_budget.py` by qualifying its sibling test and plugin imports. ✅ 2026-11-01 orchestrator `a7818b43`: focused file 55 passed; full-suite baseline remains open. [no-belief: test collection repair]
 - [x] **Give `test_recent_eval_qids_excludes_only_rows_inside_recency_window` a frozen or relative clock** — it
       fails with the calendar because its hardcoded `2026-07-01T00:00:00Z` row is 75 days old against the

@@ -383,7 +383,7 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
       - *(2026-10-04 PM.)* Folded in champion Y `61bdb185c` (the all-keeps fold, executed by ak-ds41-main with
         workspace-89; ledger in `autokernel-champion-aggregate.md`). Y gates: FA 2949/2949, MUL_MAT 1139/1139, 27B greedy
         Y ≡ X 3/3. Standing receipt refreshed: Y champion-only tg +0.35% (pp +18.2% is flagged as unpaired host drift).
-    - [ ] **KVU-16h-runner — bench runners give `n_max: 0` (no-draft) arms their own server launch.** (filed
+    - [ ] **KVU-16h-runner — bench runners give `n_max: 0` (no-draft) arms their own server launch.** [too-big: remaining cross-runner inventory and validation spans multiple harnesses; handoff owner] (filed
       2026-10-04, workspace-ec, from workspace-89's suggestion) Mixing per-request `speculative.n_max: 0` into a drafted
       server's traffic is exactly the KVU-16h trigger: it grows VRAM on every pre-fix build and alternates HIP-graph
       shapes, so a no-draft arm measured on a shared server contaminates both arms. In the shared bench runners
