@@ -1,0 +1,5 @@
+# 2026-11-01 — handoff mi210-big-model-and-acceleration-roadmap
+
+## 23:43Z — Resolve PF1 publication prerequisites and prepare current rowflow adaptation
+
+Investigated INF-34 PF1 for GPU row publication. The 2026-10-27 native packet is superseded: PF-INVALIDATION.md invalidates all preflights bound to source seal e5b51ff0 after a writer category correction; current seal e2d82fd03ef9e28167e7a8299c98e597c5d51981dfcadf7920203145b5595744 requires owner review and fresh same-entry preflights. The old launcher uses filler_run12 and lacks the current filler_run15 complete-cmd contract. No row or inference was launched; historical receipts do not establish readiness. A bounded adaptation draft is in progress at /mnt/raid0/llm/tmp/compute-flags/handoff-sessions/mi210-big-model-and-acceleration-roadmap/pf1-row-draft/ with DONE.json registered as a resume event. PF1 results remain observation-grade; holdout is conditional on initial completion and a later window. Existing AXA-2 v13 row is already published; do not duplicate it.
