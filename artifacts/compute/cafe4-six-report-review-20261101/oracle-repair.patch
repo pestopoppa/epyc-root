@@ -1,0 +1,284 @@
+--- a/examples/rs-rollback/rs-rollback.cpp
++++ b/examples/rs-rollback/rs-rollback.cpp
+@@ -13,15 +13,21 @@
+ // conv-window or SSM snapshot write shows up as a token mismatch.
+ #include "llama.h"
+ 
++#include <algorithm>
++#include <cmath>
++#include <cerrno>
++#include <climits>
++#include <cstdlib>
+ #include <cstdio>
+ #include <cstring>
+ #include <string>
+ #include <vector>
+ 
+-static llama_token greedy(llama_context * ctx, const llama_vocab * vocab) {
++static llama_token greedy_row(llama_context * ctx, const llama_vocab * vocab, int row) {
+     const int     n_vocab = llama_vocab_n_tokens(vocab);
+-    const float * logits  = llama_get_logits_ith(ctx, -1);
++    const float * logits  = llama_get_logits_ith(ctx, row);
+ 
++    if (!logits || n_vocab <= 0) return -1;
+     llama_token best   = 0;
+     float       best_v = logits[0];
+     for (int i = 1; i < n_vocab; i++) {
+@@ -33,16 +39,40 @@
+     return best;
+ }
+ 
++static llama_token greedy(llama_context * ctx, const llama_vocab * vocab) { return greedy_row(ctx, vocab, -1); }
++
+ int main(int argc, char ** argv) {
+     std::string model_path;
+     std::string prompt    = "Explain how a jet engine works, step by step.";
+     int         n_predict = 128;
+     int         stride    = 16;  // roll back every `stride` accepted tokens
+     int         rewind    = 4;   // how many tokens to discard and re-generate
++    int         verify_batch = 0; // 0 selects the original one-token mode
++    bool        inject_fault = false;
++    int         n_gpu_layers = 0;  // explicit CPU default; pass -ngl to offload
+     int         n_rs_seq  = 8;   // snapshot ring depth; must be >= rewind + 1
+ 
+     for (int i = 1; i < argc; i++) {
+-        if (!strcmp(argv[i], "-m") && i + 1 < argc) {
++        if (!strcmp(argv[i], "--verify-batch")) {
++            if (i + 1 >= argc) { fprintf(stderr, "missing --verify-batch value\n"); return 1; }
++            char * end = nullptr; errno = 0;
++            const long parsed = strtol(argv[++i], &end, 10);
++            if (errno || !end || *end || end == argv[i] || parsed < 2 || parsed > INT_MAX - 1) {
++                fprintf(stderr, "--verify-batch requires an integer >= 2\n"); return 1;
++            }
++            verify_batch = (int) parsed;
++        } else if (!strcmp(argv[i], "--fault-inject")) {
++            inject_fault = true;
++        } else if (!strcmp(argv[i], "-ngl")) {
++            if (i + 1 >= argc) { fprintf(stderr, "missing -ngl value\n"); return 1; }
++            char * end = nullptr;
++            errno = 0;
++            const long parsed = strtol(argv[++i], &end, 10);
++            if (errno || !end || *end || end == argv[i] || parsed < 0 || parsed > INT_MAX) {
++                fprintf(stderr, "invalid -ngl value\n"); return 1;
++            }
++            n_gpu_layers = (int) parsed;
++        } else if (!strcmp(argv[i], "-m") && i + 1 < argc) {
+             model_path = argv[++i];
+         } else if (!strcmp(argv[i], "-n") && i + 1 < argc) {
+             n_predict = atoi(argv[++i]);
+@@ -56,15 +86,21 @@
+             prompt = argv[i];
+         }
+     }
++    if (n_predict <= 0 || stride <= 0 || rewind <= 0 || n_rs_seq <= 0 ||
++        (verify_batch && (n_rs_seq < verify_batch + 1 || n_predict <= stride + verify_batch)) ||
++        (inject_fault && !verify_batch)) {
++        fprintf(stderr, "invalid sizes: verify needs n_rs_seq >= batch+1, n_predict > stride+batch; fault requires verify mode\n");
++        return 1;
++    }
+     if (model_path.empty()) {
+-        fprintf(stderr, "usage: %s -m model.gguf [-n N] [-s stride] [-r rewind] [-k n_rs_seq]\n", argv[0]);
++        fprintf(stderr, "usage: %s -m model.gguf [-n N] [-s stride] [-r rewind] [-k n_rs_seq] [-ngl N] [--verify-batch D] [--fault-inject]\n", argv[0]);
+         return 1;
+     }
+ 
+     llama_backend_init();
+ 
+     llama_model_params mparams = llama_model_default_params();
+-    mparams.n_gpu_layers       = 99;
++    mparams.n_gpu_layers       = n_gpu_layers;
+     llama_model * model        = llama_model_load_from_file(model_path.c_str(), mparams);
+     if (!model) {
+         fprintf(stderr, "failed to load model\n");
+@@ -78,18 +114,39 @@
+     llama_tokenize(vocab, prompt.c_str(), prompt.size(), ptoks.data(), ptoks.size(), true, true);
+ 
+     int n_rollbacks = 0;
++    int injected = 0;
++    std::vector<llama_token> ref, rb;
++    std::vector<std::vector<float>> oracle_logits; // independently serial target run
++    const int n_vocab = llama_vocab_n_tokens(vocab);
++    auto logit_error = [&](const float * actual, size_t index, double & max_error) -> bool {
++        if (!actual || index >= oracle_logits.size() || n_vocab <= 0) return false;
++        max_error = 0;
++        for (int k = 0; k < n_vocab; ++k) {
++            const double a = actual[k], b = oracle_logits[index][k];
++            if (!std::isfinite(a) || !std::isfinite(b)) return false;
++            max_error = std::max(max_error, std::abs(a - b));
++        }
++        return true;
++    };
+ 
+     auto run = [&](bool with_rollback, std::vector<llama_token> & out) -> bool {
+         llama_context_params cparams = llama_context_default_params();
+         cparams.n_ctx                = n_prompt + n_predict + 64;
+         cparams.n_batch              = n_prompt + 64;
++        if (verify_batch > (int) cparams.n_batch) cparams.n_batch = verify_batch;
++        if (verify_batch > (int) cparams.n_ubatch) cparams.n_ubatch = verify_batch;
+         cparams.n_rs_seq             = n_rs_seq;
+         llama_context * ctx          = llama_init_from_model(model, cparams);
+         if (!ctx) {
+             fprintf(stderr, "failed to create context\n");
+             return false;
+         }
++        if (with_rollback && verify_batch && llama_n_rs_seq(ctx) < (uint32_t) (verify_batch + 1)) {
++            fprintf(stderr, "UNKNOWN effective snapshot ring below requested capacity\n");
++            llama_free(ctx); return false;
++        }
+         llama_memory_t mem = llama_get_memory(ctx);
++        if (!mem) { llama_free(ctx); return false; }
+ 
+         llama_batch batch = llama_batch_get_one(ptoks.data(), ptoks.size());
+         if (llama_decode(ctx, batch)) {
+@@ -100,7 +157,13 @@
+ 
+         int since = 0;
+         while ((int) out.size() < n_predict) {
++            if (!with_rollback) {
++                const float * logits = llama_get_logits_ith(ctx, -1);
++                if (!logits || n_vocab <= 0) { llama_free(ctx); return false; }
++                oracle_logits.emplace_back(logits, logits + n_vocab);
++            }
+             llama_token tok = greedy(ctx, vocab);
++            if (tok < 0) { llama_free(ctx); return false; }
+             out.push_back(tok);
+ 
+             batch = llama_batch_get_one(&tok, 1);
+@@ -111,7 +174,97 @@
+             n_pos++;
+             since++;
+ 
+-            if (with_rollback && since >= stride && (int) out.size() + rewind < n_predict) {
++            if (with_rollback && verify_batch && since >= stride &&
++                (int) out.size() + verify_batch <= n_predict) {
++                const size_t before = out.size();
++                if (n_vocab < 2 || oracle_logits.size() <= before + (size_t) verify_batch ||
++                    ref.size() < before + (size_t) verify_batch ||
++                    !std::equal(out.begin(), out.end(), ref.begin())) {
++                    fprintf(stderr, "UNKNOWN serial oracle/prefix unavailable or diverged\n"); return false;
++                }
++                // Generate the proposed draft independently in a fresh context using
++                // only the candidate's own current token prefix, never reference IDs.
++                llama_context_params dparams = cparams; dparams.n_rs_seq = 0;
++                llama_context * draft_ctx = llama_init_from_model(model, dparams);
++                if (!draft_ctx) { fprintf(stderr, "UNKNOWN draft context unavailable\n"); return false; }
++                llama_batch db = llama_batch_get_one(ptoks.data(), ptoks.size());
++                if (llama_decode(draft_ctx, db)) { llama_free(draft_ctx); return false; }
++                for (llama_token token : out) {
++                    db = llama_batch_get_one(&token, 1);
++                    if (llama_decode(draft_ctx, db)) { llama_free(draft_ctx); return false; }
++                }
++                std::vector<llama_token> draft;
++                for (int j = 0; j < verify_batch; ++j) {
++                    llama_token token = greedy(draft_ctx, vocab);
++                    if (token < 0) { llama_free(draft_ctx); return false; }
++                    // Force a rejection halfway without borrowing any oracle token.
++                    if (j == verify_batch / 2) token = (token + 1) % n_vocab;
++                    draft.push_back(token);
++                    db = llama_batch_get_one(&token, 1);
++                    if (llama_decode(draft_ctx, db)) { llama_free(draft_ctx); return false; }
++                }
++                llama_free(draft_ctx);
++                const llama_token first_prediction = greedy(ctx, vocab);
++                if (first_prediction < 0) return false;
++                const llama_pos start = n_pos;
++                llama_batch verify = llama_batch_init(verify_batch, 0, 1);
++                if (!verify.token || !verify.pos || !verify.n_seq_id || !verify.seq_id || !verify.logits) {
++                    llama_batch_free(verify); fprintf(stderr, "UNKNOWN batch allocation\n"); return false;
++                }
++                verify.n_tokens = verify_batch;
++                for (int j = 0; j < verify_batch; ++j) {
++                    verify.token[j] = draft[j]; verify.pos[j] = start + j;
++                    verify.n_seq_id[j] = 1; verify.seq_id[j][0] = 0; verify.logits[j] = true;
++                }
++                const int rc = llama_decode(ctx, verify);
++                llama_batch_free(verify);
++                if (rc != 0) { fprintf(stderr, "UNKNOWN decode(verify) rc=%d\n", rc); return false; }
++                n_pos += verify_batch;
++                int accept = 0;
++                for (int j = 0; j < verify_batch; ++j) {
++                    const llama_token prediction = j == 0 ? first_prediction : greedy_row(ctx, vocab, j - 1);
++                    if (prediction < 0) return false;
++                    if (prediction != draft[j]) break;
++                    // Compare row logits only where accepted prefix agrees with the
++                    // independent serial oracle; batch numerical drift is explicit.
++                    if (draft[j] != ref[before + (size_t) j]) {
++                        fprintf(stderr, "UNKNOWN accepted draft disagrees with serial token oracle\n"); return false;
++                    }
++                    double err = 0;
++                    if (!logit_error(llama_get_logits_ith(ctx, j), before + (size_t) j + 1, err)) {
++                        fprintf(stderr, "UNKNOWN missing or nonfinite row logits\n"); return false;
++                    }
++                    fprintf(stderr, "VERIFY_ROW row=%d oracle_index=%zu max_abs=%.9g\n", j, before + (size_t) j + 1, err);
++                    if (err > 1e-5) { fprintf(stderr, "UNKNOWN batched-vs-serial row tolerance exceeded\n"); return false; }
++                    ++accept;
++                }
++                if (accept >= verify_batch) { fprintf(stderr, "UNKNOWN no actual rejection in verify batch\n"); return false; }
++                const llama_pos keep = start + accept - 1;
++                if (!llama_memory_seq_rm(mem, 0, keep, -1)) {
++                    fprintf(stderr, "UNKNOWN rollback refused keep=%d\n", (int) keep); return false;
++                }
++                n_pos = keep;
++                // Only candidate-generated/target-accepted IDs enter the output.
++                for (int j = 0; j < accept; ++j) out.push_back(draft[j]);
++                llama_token replay = accept ? draft[accept-1] : out.back();
++                const bool fault_here = inject_fault && injected == 0;
++                if (fault_here) { replay = (replay + 1) % n_vocab; ++injected; }
++                batch = llama_batch_get_one(&replay, 1);
++                if (llama_decode(ctx, batch)) { fprintf(stderr, "UNKNOWN decode(replay) failed\n"); return false; }
++                ++n_pos; ++n_rollbacks;
++                double err = 0;
++                if (!logit_error(llama_get_logits_ith(ctx, -1), out.size(), err)) {
++                    fprintf(stderr, "UNKNOWN missing or nonfinite replay logits\n"); return false;
++                }
++                fprintf(stderr, "REPLAY_RESULT width=%d accepted=%d keep=%d fault=%d max_abs=%.9g\n",
++                    verify_batch, accept, (int) keep, (int) fault_here, err);
++                if (fault_here) {
++                    fprintf(stderr, err > 1e-5 ? "FAULT_DETECTED replay-state logits mismatch\n" : "UNKNOWN fault did not change observed logits\n");
++                    return false; // fault test must end nonzero; marker distinguishes actual detection
++                }
++                if (err > 1e-5) { fprintf(stderr, "UNKNOWN replay-vs-serial tolerance exceeded\n"); return false; }
++                since = 0;
++            } else if (with_rollback && !verify_batch && since >= stride && (int) out.size() + rewind < n_predict) {
+                 n_rollbacks++;
+                 // over-generate `rewind` tokens, then throw them away
+                 for (int r = 0; r < rewind; r++) {
+@@ -143,13 +296,17 @@
+                 since = 0;
+             }
+         }
++        if (!with_rollback) {
++            const float * logits = llama_get_logits_ith(ctx, -1);
++            if (!logits || n_vocab <= 0) { llama_free(ctx); return false; }
++            oracle_logits.emplace_back(logits, logits + n_vocab);
++        }
+         llama_free(ctx);
+         return true;
+     };
+ 
+     bool ok = true;
+ 
+-    std::vector<llama_token> ref, rb;
+     if (!run(false, ref)) {
+         return 1;
+     }
+@@ -175,12 +332,16 @@
+     printf("rollbacks done  : %d\n", n_rollbacks);
+     // a run that never entered the rollback branch compared two identical
+     // straight-through generations and proved nothing, so it is not a pass
+-    if (n_rollbacks == 0) {
++    if (inject_fault && injected == 0) {
++        fprintf(stderr, "RESULT: FAIL (requested fault never injected)\n");
++        ok = false;
++    } else if (n_rollbacks == 0) {
+         printf("RESULT: FAIL (no rollback was attempted: need n_predict > stride + rewind, "
+                "got n_predict=%d stride=%d rewind=%d)\n", n_predict, stride, rewind);
+         ok = false;
+-    } else if (mismatch) {
+-        printf("first mismatch  : index %d (ref=%d rb=%d)\n", first, ref[first], rb[first]);
++    } else if (mismatch || ref.size() != rb.size()) {
++        if (first >= 0) printf("first mismatch  : index %d (ref=%d rb=%d)\n", first, ref[first], rb[first]);
++        else printf("length mismatch : ref=%zu rb=%zu\n", ref.size(), rb.size());
+         printf("RESULT: FAIL\n");
+         ok = false;
+     } else {

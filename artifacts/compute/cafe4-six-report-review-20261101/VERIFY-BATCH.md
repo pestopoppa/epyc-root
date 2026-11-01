@@ -1,0 +1,5 @@
+# CAFE-4 verify-batch proposal — incomplete
+
+Isolated source candidate adds `--verify-batch`, batched synthetic-draft decode, partial seq_rm, replay, `--fault-inject` and `-ngl`; two abstract structural/index fixtures passed for widths 2–64. Patch SHA-256 `0c16e28505f8b52463b88b57fcb12962fb95ae411db5242b4ede0d7f8d847151`; candidate SHA `3b8ee277b39e7c4e3817a79e97a627deae22062f988c3b4c13c15e0d031b5469`. No C++ compilation, model, GPU, inference, production modification, qualifying or publishing occurred.
+
+The design is NOT an acceptance-ready reproducibility harness: it obtains accepted tokens from the precomputed reference rather than deriving acceptance using target verify logits, and its injected mismatch proves the comparator detects a deliberately changed emitted token, not that recurrent-state corruption is detected. It requires independent target per-position logits acceptance and a fault control on retained state, bounded failure-path/API compatibility checks and real positive and negative runs. This is a proposal, not CAFE-4 closure or rollback correctness evidence.

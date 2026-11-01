@@ -46,3 +46,7 @@ Consumed independent verify-batch and belief reports; preserved them under artif
 ## 22:37Z — Audit CAFE-4 verify oracle and enroll belief source
 
 Retry: the initial wrap stopped because the belief task made the generated index stale. Refreshed the generated lane index before retry; prospective CAFE-4 enrollment and independent oracle audit remain as recorded in the preceding entry.
+
+## 22:39Z — Reconcile six CAFE-4 oracle and wiring reports
+
+Consumed all six CAFE-4 reports and preserved them, the repaired source patch and bounded synthetic fixtures in artifacts/compute/cafe4-six-report-review-20261101/. Independently reran the five offline synthetic tests (120 strict partial cut points); they do not execute llama.cpp. The repaired source no longer appends reference tokens to candidate output, but its replay-token mutation is an input-perturbation control, not proof of detecting a broken snapshot. V10 actual server geometry includes the sampled token plus D drafts; the reviewed synthetic D-token draft-only batch is narrower. Removal with boundary replay needs D-a+1 snapshot capacity; check actual n_rs_seq, n_batch and n_ubatch, cut coverage, same-shape numeric controls, strict inputs, cleanup, and runtime provenance. The prior belief enrollment VB-CAFE4-ROLLBACK-WIRE already covers the prospective source; no duplicate or new ladder. Delegated v10-aligned repair, improved fixtures and state-fault design with completion events. No model, native build, qualification or production edit.
