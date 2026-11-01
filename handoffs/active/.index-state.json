@@ -4,7 +4,7 @@
       "blocked": 59,
       "handoffs": 59,
       "oldest_advance": "2026-07-29",
-      "open": 1043
+      "open": 1042
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -1897,10 +1897,10 @@
     },
     "numa-topology-cutover-resume-20260730.md": {
       "blocked": 0,
-      "closed": 103,
+      "closed": 104,
       "guarded": 0,
-      "last_advanced": "2026-10-31",
-      "open": 43,
+      "last_advanced": "2026-11-01",
+      "open": 42,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",

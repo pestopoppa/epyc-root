@@ -3939,7 +3939,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-01T18:41:42Z",
+  "generated_at": "2026-11-01T18:44:27Z",
   "nodes": [
     {
       "age_days": 94,
@@ -5971,16 +5971,16 @@
       "track": "numa prefill decode disaggregation"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 103,
+      "closed": 104,
       "domain": "inference-research",
       "handoff": "numa-topology-cutover-resume-20260730.md",
       "id": "INF-45",
-      "last_advanced": "2026-10-31",
+      "last_advanced": "2026-11-01",
       "next_action": "P0-3 \u2014 cold-start the stack, re-bench the contention matrix, commit + push all three repos",
-      "open": 43,
+      "open": 42,
       "priority": 0.0751,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): Note this regression is independent of ngram \u2014 it reproduces on `draft-mtp`",
