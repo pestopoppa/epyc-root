@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "epyc.ready.manifest.v2",
+  "title": "LOOP-49 qualified READY manifest",
+  "type": "object",
+  "required": ["id", "launcher", "engine", "job", "row", "source_manifest", "qual_fixture", "requires_tools", "ports", "exclusive_class", "shared_state", "regions", "claimed_cpus", "window_s", "min_window_s", "items", "tokens_per_item", "n_ctx_required", "est_output_GiB", "scratch_root", "gib"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"},
+    "launcher": {"$ref": "#/$defs/path"}, "engine": {"$ref": "#/$defs/path"},
+    "job": {"$ref": "#/$defs/path"}, "row": {"$ref": "#/$defs/path"},
+    "source_manifest": {"$ref": "#/$defs/path"}, "qual_fixture": {"$ref": "#/$defs/path"},
+    "requires_tools": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "ports": {"type": "array", "items": {"type": "integer", "minimum": 1, "maximum": 65535}, "uniqueItems": true},
+    "exclusive_class": {"type": ["null", "string"]},
+    "shared_state": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "regions": {"type": "string", "minLength": 1}, "claimed_cpus": {"type": "string", "minLength": 1},
+    "window_s": {"type": "integer", "minimum": 60, "multipleOf": 60},
+    "min_window_s": {"type": "integer", "minimum": 60, "multipleOf": 60},
+    "items": {"type": "integer", "minimum": 1}, "tokens_per_item": {"type": "integer", "minimum": 1},
+    "n_ctx_required": {"type": "integer", "minimum": 1}, "est_output_GiB": {"type": "number", "minimum": 0},
+    "gib": {"type": "number", "exclusiveMinimum": 0}, "scratch_root": {"type": "string", "pattern": "^/"},
+    "qual_timeout_s": {"type": "integer", "minimum": 1, "maximum": 600},
+    "qual_forced_deadline_s": {"type": "integer", "minimum": 1, "maximum": 20},
+    "qual_result_file": {"type": "string", "minLength": 1},
+    "hold": {"type": ["null", "string"]}
+  },
+  "$defs": {
+    "path": {"oneOf": [{"type": "string", "pattern": "^/"}, {"type": "object", "required": ["path"], "properties": {"path": {"type": "string", "pattern": "^/"}, "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}}}]}
+  }
+}

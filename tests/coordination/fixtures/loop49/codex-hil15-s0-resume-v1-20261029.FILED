@@ -1,0 +1,1 @@
+FAILED-RUN rc=6 time=2026-10-29T20:21:56Z reason=t1-admission:DRYRUN_REFUSED: disk free-after-output 149.23 GiB < floor 150 GiB; class=disk-floor; owner action=meet existing 150 GiB plus output reserve before authorized retry; preserve original cohort; commit=d9729d5b78e1915082ddd83f5630da32072f7a50; pushed_utc=2026-10-29T20:42:39Z

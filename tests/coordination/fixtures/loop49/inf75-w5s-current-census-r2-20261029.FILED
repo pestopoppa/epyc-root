@@ -1,0 +1,1 @@
+FAILED-RUN rc=1 reason=job-rc-1:exited (job.py validate_entry ValueError 'disk floor151GiB' after admission passed); class=disk-floor; ran=0; owner action=codex-ni: make the in-job disk refusal exit as a refusal rc (not rc1), align the 151 GiB job floor with the 150 GiB admission floor, re-arm when disk recovers; group=disk-floor-job-internal; SHA af66baa5a (progress 7d7e414ac)
