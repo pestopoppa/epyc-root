@@ -54,3 +54,8 @@
 
 - V6R-2 inquiry complete: port `111bff89` is ancestral to v9/v10/C5; both CLI flags are present in C5 manifest-hashed libcommon. Updated V11-062 to IN, retaining a context-shift regression gate and the v6 edge-clamp difference; no runtime equivalence claim.
 - CH-32 D4: C5 GPU depthwise conv accepts F32 weights, upstream parent adds F16 via #29064; D4 uses the op, but actual model dtypes and fallback unverified. Retained reproducible evidence and V11-117 conditional gate.
+
+- CH-32 D4 source preflight found C5 GPU direct-conv2d eligibility broader than upstream #25617’s contiguous-input rule; D4 uses the op. Recorded reproducible evidence and V11-118 pending test. No actual model-stride, fallback, residency or correctness result.
+
+- V6R-1 registry inquiry complete: 16 current role-model entries resolved to six readable GGUF headers, none marked diff-transformer; registry SHA matches fetched orchestrator main. Evaluation and other model sources remain open; no decline. Retained receipt.
+- CH-17: retained non-applied design/test proposal for per-role drafter reselection; current selected-pair load check is not a comparison of all candidates. No gate/topology edit or freeze decision.

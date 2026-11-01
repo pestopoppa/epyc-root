@@ -1,0 +1,227 @@
+{
+  "schema": "epyc.akagg.v6r1.registry-inquiry.v1",
+  "registry_path": "/workspace/repos/epyc-orchestrator/orchestration/model_registry.yaml",
+  "registry_sha256": "448535e1bef4e7062513d9b4fd7bcc01c198a820683a0d218cf525a0363ad103",
+  "orchestrator_checkout_head": "9e138e3a3e22ecf8c57cd5bf50beed571d107b54",
+  "registry_tracked_dirty": false,
+  "probe_path": "/workspace/repos/epyc-orchestrator/scripts/analysis/gguf_arch_probe.py",
+  "probe_sha256": "0e3e23684cdb31e8d678ab9867304ce29239e46b2e7c8bd4372d993bd5f32195",
+  "field_examined": "roles.*.model",
+  "role_count": 16,
+  "unique_header_paths": 6,
+  "roles": {
+    "frontdoor": {
+      "declared_name": "Qwen3.6-35B-A3B-MTP-Q8_0",
+      "declared_architecture": "qwen35moe",
+      "declared_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "resolved_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "header": {
+        "status": "ok",
+        "architecture": "qwen35moe",
+        "general_name": "Qwen3.6-35B-A3B",
+        "size_bytes": 37801097504,
+        "mtime_ns": 1782411254270412235
+      }
+    },
+    "coder_escalation": {
+      "declared_name": "Qwen3.8-27B-Q8_0",
+      "declared_architecture": "qwen35",
+      "declared_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "resolved_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "header": {
+        "status": "ok",
+        "architecture": "qwen35",
+        "general_name": "Qwen3.8-27B",
+        "size_bytes": 29047086048,
+        "mtime_ns": 1786727071030792493
+      }
+    },
+    "ingest_long_context": {
+      "declared_name": "Qwen3.8-27B-Q8_0",
+      "declared_architecture": "qwen35",
+      "declared_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "resolved_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "header": {
+        "status": "ok",
+        "architecture": "qwen35",
+        "general_name": "Qwen3.8-27B",
+        "size_bytes": 29047086048,
+        "mtime_ns": 1786727071030792493
+      }
+    },
+    "architect_general": {
+      "declared_name": "Qwen3.8-Flash-Next-UD-IQ4_XS",
+      "declared_architecture": "qwen4exp",
+      "declared_path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+      "resolved_path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+      "header": {
+        "status": "ok",
+        "architecture": "qwen4exp",
+        "general_name": "Qwen3.8 Flash Next",
+        "size_bytes": 10946624,
+        "mtime_ns": 1787946258053345946
+      }
+    },
+    "architect_critic": {
+      "declared_name": "Qwen3.8-27B-Q8_0",
+      "declared_architecture": "qwen35",
+      "declared_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "resolved_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "header": {
+        "status": "ok",
+        "architecture": "qwen35",
+        "general_name": "Qwen3.8-27B",
+        "size_bytes": 29047086048,
+        "mtime_ns": 1786727071030792493
+      }
+    },
+    "worker_general": {
+      "declared_name": "Qwen3.6-35B-A3B-MTP-Q8_0",
+      "declared_architecture": "qwen35moe",
+      "declared_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "resolved_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "header": {
+        "status": "ok",
+        "architecture": "qwen35moe",
+        "general_name": "Qwen3.6-35B-A3B",
+        "size_bytes": 37801097504,
+        "mtime_ns": 1782411254270412235
+      }
+    },
+    "worker_math": {
+      "declared_name": "Qwen3.6-35B-A3B-MTP-Q8_0",
+      "declared_architecture": "qwen35moe",
+      "declared_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "resolved_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "header": {
+        "status": "ok",
+        "architecture": "qwen35moe",
+        "general_name": "Qwen3.6-35B-A3B",
+        "size_bytes": 37801097504,
+        "mtime_ns": 1782411254270412235
+      }
+    },
+    "worker_vision": {
+      "declared_name": "Qwen3-VL-30B-A3B-Instruct",
+      "declared_architecture": "qwen3vlmoe",
+      "declared_path": "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf",
+      "resolved_path": "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf",
+      "header": {
+        "status": "ok",
+        "architecture": "qwen3vlmoe",
+        "general_name": "Qwen_Qwen3 VL 30B A3B Instruct",
+        "size_bytes": 18556687200,
+        "mtime_ns": 1765496348393312076
+      }
+    },
+    "vision_escalation": {
+      "declared_name": "Qwen3-VL-30B-A3B-Instruct",
+      "declared_architecture": "qwen3vlmoe",
+      "declared_path": "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf",
+      "resolved_path": "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf",
+      "header": {
+        "status": "ok",
+        "architecture": "qwen3vlmoe",
+        "general_name": "Qwen_Qwen3 VL 30B A3B Instruct",
+        "size_bytes": 18556687200,
+        "mtime_ns": 1765496348393312076
+      }
+    },
+    "worker_summarize": {
+      "declared_name": "Qwen3.6-35B-A3B-MTP-Q8_0",
+      "declared_architecture": "qwen35moe",
+      "declared_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "resolved_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "header": {
+        "status": "ok",
+        "architecture": "qwen35moe",
+        "general_name": "Qwen3.6-35B-A3B",
+        "size_bytes": 37801097504,
+        "mtime_ns": 1782411254270412235
+      }
+    },
+    "toolrunner": {
+      "declared_name": "Qwen3.6-35B-A3B-MTP-Q8_0",
+      "declared_architecture": "qwen35moe",
+      "declared_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "resolved_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "header": {
+        "status": "ok",
+        "architecture": "qwen35moe",
+        "general_name": "Qwen3.6-35B-A3B",
+        "size_bytes": 37801097504,
+        "mtime_ns": 1782411254270412235
+      }
+    },
+    "draft_qwen25": {
+      "declared_name": "Qwen2.5-0.5B",
+      "declared_architecture": "dense",
+      "declared_path": "QuantFactory/Qwen2.5-0.5B-GGUF/Qwen2.5-0.5B.Q8_0.gguf",
+      "resolved_path": "/mnt/raid0/llm/models/QuantFactory/Qwen2.5-0.5B-GGUF/Qwen2.5-0.5B.Q8_0.gguf",
+      "header": {
+        "status": "ok",
+        "architecture": "qwen2",
+        "general_name": "Models",
+        "size_bytes": 531067776,
+        "mtime_ns": 1765636412618033014
+      }
+    },
+    "draft_qwen3_coder_0_75b": {
+      "declared_name": "Qwen3-Coder-Instruct-DRAFT-0.75B-32k-Q4_0",
+      "declared_architecture": "dense",
+      "declared_path": "/mnt/raid0/llm/models/Qwen3-Coder-Instruct-DRAFT-0.75B-32k-Q4_0.gguf",
+      "resolved_path": "/mnt/raid0/llm/models/Qwen3-Coder-Instruct-DRAFT-0.75B-32k-Q4_0.gguf",
+      "header": {
+        "status": "ok",
+        "architecture": "qwen3",
+        "general_name": "Qwen3 Coder Instruct DRAFT 0.75B",
+        "size_bytes": 469076608,
+        "mtime_ns": 1767873681803172068
+      }
+    },
+    "qwen38_flash_next_ud_iq4xs_local": {
+      "declared_name": "Qwen3.8-Flash-Next-UD-IQ4_XS",
+      "declared_architecture": "qwen4exp",
+      "declared_path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+      "resolved_path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+      "header": {
+        "status": "ok",
+        "architecture": "qwen4exp",
+        "general_name": "Qwen3.8 Flash Next",
+        "size_bytes": 10946624,
+        "mtime_ns": 1787946258053345946
+      }
+    },
+    "qwen38_27b_q8_local": {
+      "declared_name": "Qwen3.8-27B-Q8_0",
+      "declared_architecture": "qwen35",
+      "declared_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "resolved_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "header": {
+        "status": "ok",
+        "architecture": "qwen35",
+        "general_name": "Qwen3.8-27B",
+        "size_bytes": 29047086048,
+        "mtime_ns": 1786727071030792493
+      }
+    },
+    "qwen36_35b_a3b_mtp_q8_local": {
+      "declared_name": "Qwen3.6-35B-A3B-MTP-Q8_0",
+      "declared_architecture": "qwen35moe",
+      "declared_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "resolved_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "header": {
+        "status": "ok",
+        "architecture": "qwen35moe",
+        "general_name": "Qwen3.6-35B-A3B",
+        "size_bytes": 37801097504,
+        "mtime_ns": 1782411254270412235
+      }
+    }
+  },
+  "limitations": [
+    "Registry role entries and readable local GGUF headers only; inaccessible paths are unknown.",
+    "No claim that other sources, future models, or prospective imports are unsuitable.",
+    "Header file stat does not establish full model-byte digest; no model load or inference."
+  ]
+}
