@@ -8,6 +8,7 @@ import secrets
 import sys
 from types import SimpleNamespace
 from qualify_launcher import load, verify, static_check, scheduling_state, run, Refused
+from dryrun_check import grant_cpus
 
 
 def options(manifest=None):
@@ -45,7 +46,7 @@ def state(path, namespace=False):
     return m,result
 
 
-def before_grant(path, row_id=None):
+def before_grant_unbound(path, row_id=None):
     """Fail closed at the production grant boundary, including launcher drift."""
     m, status = state(path, namespace=True)
     if row_id is not None and m['id'] != row_id:
@@ -60,10 +61,56 @@ def before_grant(path, row_id=None):
     return m
 
 
+def validate_regions(manifest_regions, actual_regions):
+    """Bind the writer's concrete allocation to the qualified manifest."""
+    if not isinstance(manifest_regions, str) or not manifest_regions.strip():
+        raise Refused('manifest-regions-missing')
+    if not isinstance(actual_regions, str) or not actual_regions.strip():
+        raise Refused('grant-regions-missing')
+    actual_parts = [part.strip() for part in actual_regions.replace(';', ',').split(',')]
+    if any(not part for part in actual_parts) or len(actual_parts) != len(set(actual_parts)):
+        raise Refused('grant-regions-malformed')
+    actual_gpu = 'mi210_0' in actual_parts
+    actual_cpu_parts = [part for part in actual_parts if part != 'mi210_0']
+    try:
+        actual_cpu = grant_cpus(','.join(actual_cpu_parts)) if actual_cpu_parts else set()
+    except Exception as exc:
+        raise Refused('grant-regions-malformed:' + str(exc))
+    raw = manifest_regions.strip()
+    if raw == 'any-cpu-quarter' or raw == 'any-of' or raw.startswith('any-of '):
+        candidates = {'q%d' % q for q in range(4)} if raw == 'any-cpu-quarter' else set(raw[len('any-of'):].replace(',', ' ').split())
+        if not candidates or not candidates <= {'q0', 'q1', 'q2', 'q3'}:
+            raise Refused('manifest-any-of-malformed')
+        if actual_gpu or not any(actual_cpu == grant_cpus(q) for q in candidates):
+            raise Refused('assigned-region-outside-relocatable-manifest')
+        return True
+    manifest_parts = [part.strip() for part in raw.replace(';', ',').split(',')]
+    if any(not part for part in manifest_parts):
+        raise Refused('manifest-regions-malformed')
+    manifest_gpu = 'mi210_0' in manifest_parts
+    manifest_cpu_parts = [part for part in manifest_parts if part != 'mi210_0']
+    try:
+        manifest_cpu = grant_cpus(','.join(manifest_cpu_parts)) if manifest_cpu_parts else set()
+    except Exception as exc:
+        raise Refused('manifest-regions-malformed:' + str(exc))
+    if not actual_cpu or not actual_cpu <= manifest_cpu or actual_gpu != manifest_gpu:
+        raise Refused('assigned-region-outside-manifest')
+    return True
+
+
+def before_grant(path, row_id=None, regions=None):
+    """Recheck qualification and bind requested allocation immediately pre-grant."""
+    m = before_grant_unbound(path, row_id)
+    if regions is None:
+        raise Refused('grant-regions-required')
+    validate_regions(m.get('regions'), regions)
+    return m
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('command',choices=('scan','before-arm','before-grant','recover-dead','pending'))
-    p.add_argument('--manifest'); p.add_argument('--row-id'); p.add_argument('--dry',action='store_true')
+    p.add_argument('--manifest'); p.add_argument('--row-id'); p.add_argument('--regions'); p.add_argument('--dry',action='store_true')
     p.add_argument('--identity'); p.add_argument('--ended')
     args=p.parse_args()
     if args.command == 'recover-dead':
@@ -87,7 +134,7 @@ def main():
         except Exception as exc: print('READY-SKIP qual:'+str(exc)); return 2
     if args.command=='before-grant':
         try:
-            m = before_grant(Path(args.manifest), args.row_id)
+            m = before_grant(Path(args.manifest), args.row_id, args.regions)
             print('GRANT-QUALIFIED ' + m['id'])
             return 0
         except Exception as exc:

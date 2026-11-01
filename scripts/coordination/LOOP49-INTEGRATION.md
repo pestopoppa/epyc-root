@@ -48,7 +48,7 @@ return codes; a killed process alone does not prove resumability. Result dirs
 are separate nonce destinations; the native results directory is untouched.
 
 Before grant creation, the writer must invoke
-`loop49_keeper_gate.py before-grant --manifest <current-manifest> --row-id <id>`
+`loop49_keeper_gate.py before-grant --manifest <current-manifest> --row-id <id> --regions <actual-grant-regions>`
 and require exit 0 immediately before its exclusive `.grant` creation. This
 re-verifies the receipt, launcher fingerprint, manifest bindings, conflicts,
 and disk state at the actual issuance boundary. Re-run after any wait; an earlier
@@ -100,3 +100,8 @@ only the synthetic window and CPU scope changed; `dryrun_check admit` runs on
 that copy under the real row id before any fixture side effects. This preserves
 the real admission implementation without calling the retired T1 grant-time
 proof gate. Native row custody and source paths are unchanged.
+
+Belief source wiring is tracked as `VB-LOOP49-QUALIFICATION-WIRE` in
+`handoffs/active/vidya-belief-substrate-program.md`. The row is intentionally open:
+registration and qualification-receipt production do not establish a reader or
+planning-context canary.
