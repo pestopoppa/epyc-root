@@ -1,5 +1,7 @@
 # PromptForge mutation safety contract (RTG-55)
 
+**Scratch**: `/mnt/raid0/llm/tmp/refactor-01a16fc3/mhs11-20261101/` (MHS-11 guide-citation patch and validation evidence only).
+
 **Status**: stub
 **Created**: 2026-09-07 (research intake, operator-approved plan; successor of ../completed/meta-harness-optimization.md whose active pointer was retired 2026-08-23)
 **Categories**: meta_harness, autopilot, safety
