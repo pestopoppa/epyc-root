@@ -33,6 +33,11 @@ Before interpreting a junction arm, the harness must fail closed unless it has:
 3. Runtime evidence, bound to the same request and slot, that a context checkpoint
    was created at the intended token boundary; distinguish context checkpoints
    from speculative decoding checkpoints. A configured boundary is insufficient.
+   The v10 trace requires verbosity 4 or higher. Its `n_tokens` is the token
+   count before the current undecoded batch, not proof of a user-message
+   boundary; an owned, single-in-flight request and independently verified
+   template spans are necessary to attribute it. Checkpoint creation also does
+   not establish subsequent reuse.
 4. Paired per-turn native `cache_n`, `prompt_n`, and `prompt_ms`, and a separately
    measured closed-loop task-quality gate. Count failures and missing evidence as
    inconclusive, not zero cache or a pass. Record last-turn prompt size for the
