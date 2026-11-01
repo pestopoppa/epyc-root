@@ -845,7 +845,7 @@ justify best-of-N anywhere. Whether the instrument is worth using is decided by 
       single-token in every tokenizer we run, and it sidesteps the token-bias artifact that appears at
       large K. [intake-1162] [intake-1169]
       - The 1–9 alphabet is the implementation choice, with per-tokenizer/context verification required before use; no actual tokenizer or model was tested. EV-15c/d guards, native scoring and deployment remain open. [no-belief: design specification and deterministic math]
-- [ ] **EV-15c — Guard the two silent failure modes**, both of which return a well-formed logprob array
+- [ ] **EV-15c — Guard the two silent failure modes** [too-big: native capture provenance and template validation need handoff design], both of which return a well-formed logprob array
       containing nothing scoreable and neither of which raises: (i) a thinking model emitting its
       reasoning token at position 0, and (ii) a generation-oriented chat template, which costs ~50% of
       the signal on one backbone and ~20% on another. Assert the score position before trusting a
