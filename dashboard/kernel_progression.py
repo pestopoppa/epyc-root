@@ -90,7 +90,7 @@ def snapshot(*, path: Path | None = None, now: float | None = None) -> tuple[dic
         state, error = "observed", None
     except FileNotFoundError:
         pass
-    except (OSError, ValueError, UnicodeError) as exc:
+    except (OSError, ValueError, UnicodeError, RecursionError) as exc:
         state, error = "malformed", str(exc)
         # Permission/I/O failure is unobservable, rather than proof of absence.
         present = True

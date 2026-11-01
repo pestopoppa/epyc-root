@@ -278,31 +278,7 @@ def test_malformed_original_process_identity_cannot_hide_child_join(sources, mut
     assert "original process identity" in row["reader_error"]
 
 
-def _isolated_native_owner(case):
-    """The real watchdog requires a dedicated owner, independent of test order."""
-    import sys
-    import subprocess
-    if os.environ.get("NI_P6_NATIVE_OWNER_CASE") == case:
-        return False
-    env = {**os.environ, "NI_P6_NATIVE_OWNER_CASE": case}
-    command = [sys.executable, "-m", "pytest", "-q", case]
-    retained = os.environ.get("NI_P6_NATIVE_LOG_ROOT")
-    if retained:
-        out = Path(retained) / case.split("::")[-1]
-        out.mkdir(parents=True, exist_ok=True)
-        command += ["--junitxml=" + str(out / "original.junit.xml"),
-                    "--basetemp=" + str(out / "original-fixtures")]
-    result = subprocess.run(command, env=env, capture_output=True, text=True, timeout=120)
-    if retained:
-        (out / "original.log").write_text(result.stdout + result.stderr)
-        (out / "original.exit").write_text(str(result.returncode) + "\n")
-    assert result.returncode == 0, result.stdout + result.stderr
-    return True
-
-
 def test_actual_owned_children_switch_and_preserve_original_history(sources, producer, tmp_path, monkeypatch):
-    if _isolated_native_owner("tests/test_dashboard_serial_loop.py::test_actual_owned_children_switch_and_preserve_original_history"):
-        return
     fixture = importlib.import_module("autokernel.loop.test_serial_run")
     sr = importlib.import_module("autokernel.loop.serial_run")
     child_source = fixture.CHILD.replace("count = 0 if stopped[0]", '''
@@ -343,7 +319,10 @@ count = 0 if stopped[0]''')
             (directory / "read-by-hub").touch()
         return result
     monkeypatch.setattr(producer, "write", observe)
-    assert sr.main(argv) == 0
+    # Match the producer's own injected-child tests: exercise the router body.
+    # The CLI watchdog deliberately starts a fresh interpreter, which cannot
+    # inherit _inputs' fake-child command or this observation seam.
+    assert sr._main(argv) == 0
     assert len(seen) == 2 and seen[0][1] != seen[1][1]
     assert seen[0][0]["serial"]["active"]["store"] != seen[1][0]["serial"]["active"]["store"]
     for wire, _mark in seen:

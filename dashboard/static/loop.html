@@ -2972,6 +2972,8 @@ function render(d){
 
 function renderFetchFailure(err){
   serialView=null;
+  document.getElementById("discovery-progression").innerHTML =
+    '<div class="warn">UNKNOWN — hub unreachable; discovery observations cannot be refreshed.</div>';
   document.getElementById("trajectory").innerHTML =
     '<div class="warn"><strong>TRAJECTORY UNKNOWN</strong> — hub unreachable; the last plotted evidence was cleared.</div>';
   document.getElementById("champion-capabilities").innerHTML =

@@ -29,11 +29,11 @@ def snapshot(tmp_path, body, *, now=NOW):
     return reader.snapshot(path=path, now=now)[0]
 
 
-def run_renderer(tmp_path, payload, name='renderDiscoveryProgression'):
+def run_renderer(tmp_path, payload, name='renderDiscoveryProgression', extra_js=''):
     page = (ROOT / 'dashboard/static/loop.html').read_text()
     assert 'id="discovery-progression"' in page
     js = '\n'.join(re.findall(r'<script[^>]*>(.*?)</script>', page, re.S))
-    (tmp_path / 'page.js').write_text(js)
+    (tmp_path / 'page.js').write_text(js + '\n' + extra_js)
     (tmp_path / 'payload.json').write_text(json.dumps(payload))
     proc = subprocess.run(['node', str(ROOT / 'tests/js/render_harness.js'),
                            str(tmp_path / 'page.js'), str(tmp_path / 'payload.json'), name],
@@ -191,3 +191,31 @@ def test_card_cannot_change_loop_or_operator_gate_health(tmp_path, monkeypatch):
     assert panels.source('kernel_progression').gates_health is False
     assert server.API_ROUTES['/api/loop/progression'] is server.progression_payload
     assert server.PANEL_HEALTH_ROUTES['/api/loop/progression/health'] is server.progression_health
+
+
+def test_failed_refresh_clears_previously_rendered_fresh_data(tmp_path):
+    body = document()
+    observed = datetime.fromisoformat(body['observed_through'].replace('Z', '+00:00')).timestamp()
+    view = snapshot(tmp_path, body, now=observed + 60)
+    assert view['state'] == 'fresh'
+    html = run_renderer(tmp_path, {'progression': view}, name='renderThenFail', extra_js='''
+function renderThenFail(d){renderDiscoveryProgression(d);renderFetchFailure("fixture offline");}
+''')
+    assert 'UNKNOWN' in html and 'hub unreachable' in html
+    assert 'data-discovery-funnel' not in html and 'FRESH' not in html
+
+
+def test_deep_optional_json_is_malformed_without_breaking_the_loop(tmp_path, monkeypatch):
+    path = tmp_path / 'deep-progression.json'
+    path.write_text('[' * 2000 + '0' + ']' * 2000)
+    assert path.stat().st_size < reader.MAX_BYTES
+    before = server.loop_data_health()
+    monkeypatch.setattr(reader, 'PATH', path)
+    payload = server.loop_payload()
+    assert payload['progression']['state'] == 'malformed'
+    assert payload['progression']['data'] is None
+    code, own_probe = reader.health()
+    assert (code, own_probe['status'], own_probe['state']) == (503, 'degraded', 'malformed')
+    after = server.loop_data_health()
+    assert (before[0], before[1]['status']) == (after[0], after[1]['status'])
+    assert run_renderer(tmp_path, payload).count('MALFORMED') == 1

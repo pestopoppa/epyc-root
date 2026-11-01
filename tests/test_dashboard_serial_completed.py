@@ -5,12 +5,10 @@ from pathlib import Path
 
 from dashboard import loop_status
 from tests.test_dashboard_runtime_js import _page_js, _run
-from tests.test_dashboard_serial_loop import _isolated_native_owner, producer, sources  # noqa: F401
+from tests.test_dashboard_serial_loop import producer, sources  # noqa: F401
 
 
 def test_terminal_original_cpu_gpu_results_remain_selectable(sources, tmp_path, monkeypatch):  # noqa: F811
-    if _isolated_native_owner("tests/test_dashboard_serial_completed.py::test_terminal_original_cpu_gpu_results_remain_selectable"):
-        return
     fixture = importlib.import_module("autokernel.loop.test_serial_run")
     sr = importlib.import_module("autokernel.loop.serial_run")
     work = tmp_path / "actual-terminal"
@@ -34,7 +32,9 @@ status.write(Path(sr.option(argv, "--store")), state="complete", epoch="fixture"
     assert child_source != fixture.CHILD
     (work / "child.py").write_text(child_source)
     monkeypatch.setenv(loop_status.STORE_ROOT_ENV, str(router))
-    assert sr.main(argv) == 0
+    # Use the same router-body seam as the producer's own injected-child tests.
+    # This verifies original children/continuations and rendering, not the CLI supervisor.
+    assert sr._main(argv) == 0
     # Never parse the large result/native captures to render a completed batch.
     original_reader = loop_status._serial_bytes
     def bounded(path, **kwargs):
