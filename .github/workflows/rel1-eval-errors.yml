@@ -1,0 +1,107 @@
+name: REL-1 EvalTower error surface
+
+on:
+  push:
+    branches:
+      - codex-ni/rel1-eval-errors-final-20261101
+    paths:
+      - '.github/workflows/rel1-eval-errors.yml'
+      - '.github/workflows/tests.yml'
+      - 'dashboard/**'
+      - 'tests/test_dashboard_eval_errors.py'
+      - 'tests/fixtures/eval_errors/**'
+      - 'scripts/ci/proposal_fixture_native/requirements.txt'
+  pull_request:
+    paths:
+      - '.github/workflows/rel1-eval-errors.yml'
+      - '.github/workflows/tests.yml'
+      - 'dashboard/**'
+      - 'tests/test_dashboard_eval_errors.py'
+      - 'tests/fixtures/eval_errors/**'
+      - 'scripts/ci/proposal_fixture_native/requirements.txt'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rel1-eval-errors-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  eval-errors:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+      PYTEST_ADDOPTS: ''
+    steps:
+      - name: Initialize the evidence directory
+        run: |
+          mkdir -p "$RUNNER_TEMP/rel1-eval-errors"
+          printf '%s\n' '{"state":"setup_pending","exit_code":null}' \
+            > "$RUNNER_TEMP/rel1-eval-errors/status.json"
+
+      - name: Checkout the exact proposed source commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          path: source
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+
+      - name: Install the existing hash-pinned pytest closure
+        run: python -m pip install --require-hashes -r source/scripts/ci/proposal_fixture_native/requirements.txt
+
+      - name: Capture source, runtime, and dependency identities
+        run: |
+          cd source
+          git rev-parse HEAD > "$RUNNER_TEMP/rel1-eval-errors/source-head.txt"
+          sha256sum \
+            .github/workflows/rel1-eval-errors.yml \
+            .github/workflows/tests.yml \
+            dashboard/README.md \
+            dashboard/eval_errors.py \
+            dashboard/panels.py \
+            dashboard/server.py \
+            dashboard/static/autopilot.html \
+            scripts/ci/proposal_fixture_native/requirements.txt \
+            tests/fixtures/eval_errors/README.md \
+            tests/fixtures/eval_errors/source_batch.jsonl \
+            tests/test_dashboard_eval_errors.py \
+            > "$RUNNER_TEMP/rel1-eval-errors/source-closure.sha256"
+          python --version > "$RUNNER_TEMP/rel1-eval-errors/python-version.txt" 2>&1
+          python -m pip freeze > "$RUNNER_TEMP/rel1-eval-errors/dependencies.txt"
+          printf '%s\n' '{"state":"ready_to_test","exit_code":null}' \
+            > "$RUNNER_TEMP/rel1-eval-errors/status.json"
+
+      - name: Run the reader and panel-registry controls
+        env:
+          PYTHONPATH: ${{ github.workspace }}/source
+        run: |
+          cd source
+          set +e
+          python -m pytest --noconftest -c /dev/null --import-mode=importlib \
+            -p no:cacheprovider -o addopts= -q \
+            --junitxml="$RUNNER_TEMP/rel1-eval-errors/original-junit.xml" \
+            tests/test_dashboard_eval_errors.py tests/test_dashboard_panels.py \
+            > "$RUNNER_TEMP/rel1-eval-errors/original-stdout.log" 2>&1
+          rc=$?
+          printf '%s\n' "$rc" > "$RUNNER_TEMP/rel1-eval-errors/exit-code.txt"
+          if [ "$rc" -eq 0 ]; then state=passed; else state=failed; fi
+          printf '{"state":"%s","exit_code":%s}\n' "$state" "$rc" \
+            > "$RUNNER_TEMP/rel1-eval-errors/status.json"
+          exit "$rc"
+
+      - name: Preserve original logs and JUnit on every outcome
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rel1-eval-errors-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/rel1-eval-errors/
+          if-no-files-found: error

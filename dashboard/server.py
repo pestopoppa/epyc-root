@@ -124,7 +124,8 @@ if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 
-from dashboard import campaign_status, handoff_parser, kernel_progression, loop_status, panels
+from dashboard import (campaign_status, eval_errors, handoff_parser,
+                       kernel_progression, loop_status, panels)
 
 
 REPO = Path(__file__).resolve().parents[1]
@@ -1256,6 +1257,78 @@ def outcome_payload() -> dict:
     return data
 
 
+def _eval_errors_observation(data: dict) -> panels.Observation:
+    """Date EvalTower data from the newest finalized batch's observed result rows."""
+    status = data.get("status")
+    evidence = data.get("artifact")
+    if status == "missing":
+        return panels.Observation(
+            artifact_present=False, detail=data.get("error") or "no EvalTower report",
+            evidence=evidence)
+    if status in {"unreadable", "incomplete"}:
+        return panels.Observation(
+            artifact_present=True, timestamp=None, populated=None,
+            detail=data.get("error") or "EvalTower report is unavailable",
+            evidence=evidence)
+    batch = data.get("batch") if isinstance(data.get("batch"), dict) else {}
+    timestamp = batch.get("ended_at_epoch")
+    if isinstance(timestamp, bool) or not isinstance(timestamp, (int, float)):
+        timestamp = None
+    counts = data.get("counts") if isinstance(data.get("counts"), dict) else {}
+    return panels.Observation(
+        artifact_present=True,
+        timestamp=float(timestamp) if timestamp is not None else None,
+        source="question_result.ended_at_s",
+        populated=bool(counts.get("total", 0)),
+        detail=("complete batch contains no result rows" if data.get("status") == "empty_batch"
+                else None),
+        evidence=evidence,
+        watermark=batch.get("eval_batch_id"),
+    )
+
+
+def eval_errors_payload() -> dict:
+    """Read and freshness-stamp the latest complete EvalTower batch."""
+    data = eval_errors.read_latest()
+    data["_freshness"] = _panel_envelope(
+        "eval_errors", _eval_errors_observation(data))
+    return data
+
+
+def eval_errors_health() -> tuple[int, dict]:
+    """Panel-specific data probe; `/health` remains transport-only.
+
+    The episodic panel is nongating in the global fold, but its own health route
+    distinguishes absent, partial, malformed, stale, and current producer data.
+    """
+    data = eval_errors_payload()
+    state = data.get("status")
+    freshness = data.get("_freshness")
+    freshness = freshness if isinstance(freshness, dict) else {}
+    staleness = freshness.get("staleness_class")
+    if state == "missing":
+        status = panels.STATUS_ABSENT
+        why = data.get("error") or "no EvalTower report is available"
+    elif state == "reported" and staleness in {panels.CLASS_FRESH, panels.CLASS_AGING}:
+        status = panels.STATUS_OK
+        why = "latest complete EvalTower batch is within its freshness envelope"
+    elif state == "reported":
+        status = panels.STATUS_DEGRADED
+        why = (freshness.get("detail") or
+               f"EvalTower report freshness is {staleness or 'unknown'}")
+    else:
+        status = panels.STATUS_DEGRADED
+        why = data.get("error") or f"EvalTower data state is {state or 'unknown'}"
+    return (200 if status == panels.STATUS_OK else 503), {
+        "status": status,
+        "panel": "eval_errors",
+        "state": state,
+        "staleness_class": staleness,
+        "why": why,
+        "evidence": data.get("artifact"),
+    }
+
+
 def _read_gpu_window_status() -> tuple:
     """Read the G1 executor-status file → ``(artifact_present, data)``."""
     present, data, err = _read_json_object(GPU_WINDOW_STATUS_JSON, "G1 executor status")
@@ -1587,6 +1660,7 @@ def panel_envelopes() -> dict:
             graph_data, artifact_present=graph_present),
         "outcome": lambda: _outcome_observation(
             outcome_data, artifact_present=outcome_present),
+        "eval_errors": lambda: eval_errors_payload()["_freshness"],
         "benchmark_artifacts": lambda: _benchmark_observation(
             bench_data, artifact_present=bench_present),
         "gpu_window": lambda: gpu_window_payload()["_freshness"],
@@ -2033,6 +2107,7 @@ API_ROUTES = {
     "/api/diagnostic-overrides": diagnostic_overrides_payload,
     "/api/queue": queue_payload,
     "/api/outcome": outcome_payload,
+    "/api/eval_errors": eval_errors_payload,
     "/api/gpu_window": gpu_window_payload,
     "/api/benchmark_artifacts": benchmark_artifacts_payload,
     "/api/dashboards": dashboards_payload,
@@ -2049,6 +2124,7 @@ PANEL_HEALTH_ROUTES = {
     "/api/loop/progression/health": progression_health,
     "/api/diagnostic-overrides/health": diagnostic_overrides_health,
     "/api/loop/health": loop_data_health,
+    "/api/eval_errors/health": eval_errors_health,
 }
 
 
