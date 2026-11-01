@@ -120,6 +120,11 @@ def running_path(flags, rid): return os.path.join(dry_dir(flags, rid), "RUNNING.
 def fail_paths(flags, rid): return sorted(glob.glob(os.path.join(dry_dir(flags, rid), "FAIL-*.json")))
 
 
+def row_sha(flags, rid):
+    p = ready_path(flags, rid)
+    return sha256(p) if os.path.isfile(p) else None
+
+
 def rows(flags):
     out = {}
     for p in sorted(glob.glob(os.path.join(flags, "ready", "*.json"))):
@@ -299,6 +304,9 @@ def count_units(result_path, fmt, workdir=None):
         return 1 if r.returncode == 0 else 0
     n = 0
     for p in paths:
+        if os.path.isdir(p):  # a directory result: every regular file written under it is one unit
+            n += sum(len(fn) for _, _, fn in os.walk(p))
+            continue
         try:
             text = open(p, errors="replace").read()
         except OSError:
@@ -410,17 +418,18 @@ def resolve_regions(flags, regions, free=None, grants=None):
 def lineage_of(rid, allrows):
     d = allrows.get(rid) or {}
     seen = set()
+    root = rid  # the id whose stem names the lineage: follows supersedes hops
     while True:
         if d.get("lineage"):
             return str(d["lineage"])
         sup = d.get("supersedes")
         sup = sup[0] if isinstance(sup, list) and sup else sup
         if isinstance(sup, str) and sup and sup not in seen:
-            seen.add(sup); d = allrows.get(sup) or {}
+            seen.add(sup); root = sup; d = allrows.get(sup) or {}
             if not d:
                 return id_stem(sup)
             continue
-        return id_stem(rid)
+        return id_stem(root)
 
 
 def lineage_fails(flags, rid, allrows):
@@ -475,7 +484,8 @@ def status(flags, rid, allrows=None):
         out.update(state="grantable", reason=f"dry run passed {p.get('passed_at')} ({p.get('units')} unit(s) in {p.get('result_path')})"); return out
     if nf >= MAX_FAILS:
         out.update(state="parked", reason=f"{nf} failed dry runs in lineage {lin}; operator-escalations/{lin}.md"); return out
-    if last_fail and last_fail.get("launcher_sha256") == cur:
+    if last_fail and last_fail.get("launcher_sha256") == cur and last_fail.get("row_sha256", row_sha(flags, rid)) == row_sha(flags, rid) \
+            and last_fail.get("rowflow_sha256", sha256(__file__)) == sha256(__file__):  # a spec edit or a rowflow fix retries the row
         out.update(state="failed", reason=str(last_fail.get("reason"))[:300], fail_file=fail_paths(flags, rid)[-1],
                    fix_task=last_fail.get("fix_task")); return out
     if p:
@@ -532,7 +542,7 @@ def kill_group(pid, grace=20):
 def record_fail(flags, rid, d, reason, extra):
     n = len(fail_paths(flags, rid)) + 1
     rec = {"id": rid, "at": now_iso(), "launcher_sha256": sha256(d["launcher"]["path"]) if os.path.isfile(d["launcher"]["path"]) else None,
-           "reason": reason, "launcher_out_tail": tail(os.path.join(dry_dir(flags, rid), "launcher.out")),
+           "row_sha256": row_sha(flags, rid), "rowflow_sha256": sha256(__file__), "reason": reason, "launcher_out_tail": tail(os.path.join(dry_dir(flags, rid), "launcher.out")),
            "fix_task": f"fix dry-run failure of {rid}: {reason} (see compute-flags/dryrun/{rid}/launcher.out; the keeper retries as soon as the launcher file changes)",
            **extra}
     atomic_json(os.path.join(dry_dir(flags, rid), f"FAIL-{n}.json"), rec)
@@ -624,6 +634,9 @@ def dryrun_run(flags, rid, regions=None):
                 m = re.match(r"rc=(\d+)", rc_line)
                 rc = int(m.group(1)) if m else -1
                 units = count_units(d["result_path"], d["result_format"], d.get("workdir")) - units0
+                if "reason=disk-floor" in rc_line or "reason=hard-end" in rc_line and units <= 0 and time.time() - t0 < 60:
+                    verdict, reason = "WAIT", f"host condition, not the row: {rc_line[:100]} (free disk under the 150 GiB floor); retried later, no FAIL recorded"
+                    break
                 if units <= 0:
                     verdict, reason = "FAIL", f"job ended ({rc_line[:120]}) before writing a unit to {d['result_path']} ({d['result_format']})"
                 elif rc not in (0, 75):
@@ -637,8 +650,10 @@ def dryrun_run(flags, rid, regions=None):
                 verdict, reason = "FAIL", f"first unit written but the job did not stop within {STOP_GRACE_S}s of the stop file (not resumable / FILLER_STOPFILE ignored)"
                 break
             if time.time() - t0 > timeout:
+                started = any("START regions=" in l for l in tail(os.path.join(dd, "launcher.out"), 400))
                 verdict, reason = "FAIL", f"no unit in {d['result_path']} ({d['result_format']}) within dryrun_timeout_s={timeout}" + \
-                                 ("" if any("START regions=" in l for l in tail(os.path.join(dd, "launcher.out"), 400)) else " and the engine never reached START (admission/precond/port refusal; see launcher.out)")
+                                 (" (the job ran: if result_path is only a completion marker, point the spec at the job's per-item output, or raise dryrun_timeout_s)" if started
+                                  else " and the engine never reached START (admission/precond/port refusal; see launcher.out)")
                 break
     finally:
         if p.poll() is None:  # poll(), not ps: an exited-but-unreaped launcher is a zombie that ps still lists
@@ -670,6 +685,8 @@ def dryrun_run(flags, rid, regions=None):
            "result_format": d["result_format"], "first_unit_at": first_unit_at, "vram_used_max_bytes": vram_max,
            "engine_sha256": sha256(d["engine"]["path"]) if os.path.isfile(d["engine"]["path"]) else None,
            "ended": head1(ended) or None, "dryrun_log": os.path.join(dd, "launcher.out"), "elapsed_s": int(time.time() - t0)}
+    if verdict == "WAIT":
+        return verdict, reason
     if verdict == "PASS":
         atomic_json(pass_path(flags, rid), {"id": rid, "passed_at": now_iso(), "launcher_sha256": lsha, **rec})
         for fp in fail_paths(flags, rid):
