@@ -2,8 +2,9 @@
 
 **Status**: active, refreshed 2026-06-19 — L1-L4+L4b merged; evidence refresh remains open
 **Created**: 2026-04-13 (via research intake)
-**Updated**: 2026-06-19 (wrap-up stale review; open work unchanged, still inference-gated)
+**Updated**: 2026-11-01 (KV-1 source-log audit partial result; exact router-key and launch identity gaps remain)
 **Categories**: kv_cache_optimization, inference_serving
+**Scratch**: `/mnt/raid0/llm/tmp/refactor-kv1-20261101/` · worktrees: `/mnt/raid0/llm/worktrees/refactor-kv1-*/`
 
 ## Current Work — Resume Here
 
@@ -314,6 +315,8 @@ Evidence: intake-1196#record (KVFlow, dive-overturned), intake-1207 (SGLang Rust
   there is no eviction order to improve**, and at 2 it is a coin flip. This gate has now been named
   in two consecutive passes (intake-1182's dive, then intake-1196#record) with an unchanged blocker — by
   the CLAUDE.md recurrence check that is proof it was never blocked. Do it before anything else here.
+  - Partial zero-inference result, 2026-11-01: see [KV-1 prefix working-set audit](../../docs/reports/kv1-prefix-working-set-audit-20261101.md). The log contains 130 rows, 125 dispatched with fingerprints (98 at `c2048`, 27 shorter), and five undispatched rows without fingerprints. Grouping by launch ID where available, one 8083 launch shared across two roles had a `c2048` distinct-prefix upper bound of 4 against 2 slots. Other endpoints lack launch IDs, so their per-port results cannot establish physical-server grouping. There was no `coder_primary` traffic. The logged `c2048` fingerprint does not identify exact router-key counts: records fingerprint the raw caller wire prefix, while `PrefixRouter` canonicalizes and hashes its first 256 characters. KV-1 remains open.
+  - [ ] **KV-1a — Record a privacy-preserving hash of the exact canonical PrefixRouter key and immutable server launch identity in serving records, then rerun KV-1 on a complete window.** Retain no raw prompt or canonical key.
 - [x] **KV-2 — Pass `role` and `session_id` into `PrefixRouter.get_slot_for_prompt`.** ✅ 2026-10-29 [belief: cc] [source: epyc-orchestrator@9c507dfff650aa1999b9e5816fc4c8216fb5bd45; test: epyc-orchestrator/tests/unit/test_prefix_cache.py] Both are
   already present at the call site (`model_server.py:91` requires `role`;
   `inference.py:755-767` attaches the session id) and the router receives **only prompt text**; role
