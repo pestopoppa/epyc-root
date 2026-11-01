@@ -1,0 +1,11 @@
+APP SOURCE PROVENANCE
+commit: 58598acd1031a500c41eef9034d26c165eab0a4f
+parent: a643cb331b1389eda0b414eb54bdac9bf90fe04b
+remote: origin/main (fetch, ls-remote, and ancestry verified)
+changed paths:
+  orchestration/repl_memory/bilinear_scorer.py
+  orchestration/repl_memory/hybrid_router.py
+  orchestration/repl_memory/retrieval_config.py
+  orchestration/repl_memory/retriever.py
+  tests/unit/test_bilinear_selection.py
+Source evidence draft SHA-256: e4f6b1cdc8d6d08ff973b3953e8b51cbdf059a89f35fa4492fd28606c3016669
