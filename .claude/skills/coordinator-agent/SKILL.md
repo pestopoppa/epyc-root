@@ -105,6 +105,12 @@ ls -t /mnt/raid0/llm/tmp/compute-calendar-*.md | head -1
 /usr/bin/python3 -I .claude/skills/inference-backlog-scheduling/scripts/queue_status.py | head -40
 ```
 
+**Backlog-churn pipeline (the calendar keeper, grant writers, backlog generator, handoff-session dispatcher, filing and
+disk watchers, tmux session `agent`) — cold start is ONE command**: `scripts/coordination/churn/churn_up.sh --status` first
+(read-only; every loop UP, every installed file `ok` vs git), then `churn_up.sh --dry-run` and `churn_up.sh` if anything is
+DOWN. Runbook and expected output: `docs/guides/agent-workflows/backlog-churn-flow.md` → *Reboot / cold start*. It never
+starts an agent and never sends keys; it prints the two manual steps (Claude ws58, codex-gen).
+
 **Compute-owner takeover — do this before triage, every cold start or resume.** Prove the calendar keeper, both grant
 writers and the **results-filing watcher** are alive (pid from their log, `ps -p`), clear crash residue, and file every
 `filing-due.jsonl` id that has no `filing-done/<id>.FILED` **immediately** — then arm the wake-up for new run ends.

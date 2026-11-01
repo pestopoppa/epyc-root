@@ -8,6 +8,11 @@ compute), and 10 rc0 results sat unfiled for days because filing depended on one
 Everything here is **files + zero-token daemons**. Any session can take over by running the checks below; nothing lives in
 a session's memory. All paths are under `/mnt/raid0/llm/tmp/compute-flags/` (`F`).
 
+> **2026-11-01 update.** The liveness/restart steps below are superseded by `scripts/coordination/churn/churn_up.sh`
+> (`--status` = steps 1, 2 and 6 read-only; a live run = install + residue cleanup + start what is down). Script names in
+> the table are the 2026-10-28 generation; the current set is listed in `docs/guides/agent-workflows/backlog-churn-flow.md`
+> → *Reboot / cold start*. The filing-gap duty (steps 3–4) is unchanged.
+
 ## The pieces
 
 | Piece | Path | Role | Liveness check |
