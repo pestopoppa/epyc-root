@@ -374,3 +374,9 @@ Sources: [YaRN context-extension handoff](../handoffs/active/yarn-context-extens
 ## YaRN S3 partial accounting — 2026-11-01
 
 The S3/v30 window ended at its deadline with one additional completed A0 and no A1. Its cumulative accounting was two completed A0, three UNKNOWN A0, 25 unexposed A0 and 30 unexposed A1, with zero matched pairs among the 27 non-UNKNOWN original pairs. The original 120-pair campaign denominator remains unchanged; this partial produces no full-cohort verdict. ([YaRN handoff](../handoffs/active/yarn-context-extension-research.md); [filing evidence](../artifacts/compute/yarn-s3-v30-20261101/summary.json); [handoff progress](../progress/2026-11/2026-11-01-handoff-yarn.md))
+
+## Compiled Update — 2026-11-01 (YaRN E1-MEM proof preparation)
+
+The E1-MEM split-proof candidate passed seven offline proof tests, eight model-free qualification controls and verification of 53 source-dependency hashes. It also refuses the N15 missing-control case. Request-manifest rebinding and canonical v14 integration remain incomplete, followed by booking and keeper qualification; this is preparation evidence only and includes no inference or long-context result. The separately recorded S3 partial and its original 120-pair denominator remain as described above. ([YaRN session record](../progress/2026-11/2026-11-01-handoff-yarn.md); [YaRN handoff](../handoffs/active/yarn-context-extension-research.md); [E1 candidate record](../artifacts/compute/yarn-e1-proof-candidate-20261101/README.md))
+
+Sources: [YaRN session record](../progress/2026-11/2026-11-01-handoff-yarn.md) · [YaRN handoff](../handoffs/active/yarn-context-extension-research.md) · [E1 candidate record](../artifacts/compute/yarn-e1-proof-candidate-20261101/README.md)

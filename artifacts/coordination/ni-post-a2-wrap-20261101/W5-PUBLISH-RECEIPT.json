@@ -1,0 +1,14 @@
+{
+  "id": "inf75-w5s-current-census-r7-v2-20261101",
+  "state": "PUBLISHED_PENDING_KEEPER_QUALIFICATION",
+  "at": "2026-11-01T14:55:49.565359+00:00",
+  "manifest_sha256": "ceaf9d1c36ed691cff8e0c594147ac7d884b16f028dfacb5cd8f21c44f93119c",
+  "source_manifest_sha256": "0cf518295ebf665818b25b21731aa7a527c6f6f1b3225551fec130b1e64889c0",
+  "row_sha256": "fca952e1981ef7c2033b1b83d6cf106547a7760397d96931e2e562b761fe806d",
+  "namespace_normal_equals_qualification": true,
+  "bootstrap_dry": "would-register",
+  "qualified": false,
+  "armed": false,
+  "science_result": null,
+  "grant_nonce_queue_written": false
+}

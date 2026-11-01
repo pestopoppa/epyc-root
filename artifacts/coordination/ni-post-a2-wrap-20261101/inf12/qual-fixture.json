@@ -1,0 +1,27 @@
+{
+  "cutoff": "keeper STOP after actual eventqa_65536 first generation while native child is live; captured child drained, rc75/UNKNOWN",
+  "first_request": "TARGET_NATIVE_HF from actual model.generate token tensors, observed DynamicCache and committed JSONL",
+  "id": "codex-ni-inf12-gate2-triton36-v3-20261101",
+  "items": 2,
+  "kind": "epyc.qual.fixture.v1",
+  "no_fake_http_witness": true,
+  "normal_items": [
+    {
+      "arm": "base",
+      "prompt_tokens_expected": 67283,
+      "question_index": 0,
+      "source": "eventqa_65536",
+      "split": "Accurate_Retrieval"
+    },
+    {
+      "arm": "base",
+      "prompt_tokens_expected": 258333,
+      "question_index": 0,
+      "source": "eventqa_full",
+      "split": "Accurate_Retrieval"
+    }
+  ],
+  "not_full_gate_qualification": true,
+  "production": true,
+  "same_entry": "launch.sh -> engine14 -> job.sh -> copied official evaluator"
+}

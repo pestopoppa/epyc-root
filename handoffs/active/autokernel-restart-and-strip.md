@@ -278,6 +278,7 @@ nobody invokes. The staleness watchdog was correct and simply unreachable on the
       fix — a champion-instrumented campaign passing preflight and spending screen budget — has
       never been observed. Relaunch against the finalized champion and watch to `sci >= 1`;
       **do not record AK-INST-1 as validated until a campaign banks a real screen.**
+      - 2026-11-01 audit: current C5 descends from the reviewed instrument and retains its contract hash, but the latest witness remains `sci=0`. The champion launch hold permits only CH-27; AK-INST-3 needs a separately authorized campaign and a real screen. [Audit](../../artifacts/coordination/ni-post-a2-wrap-20261101/AK-INST-3-AUDIT.md). [no-belief: read-only source and scheduling audit]
 
 ## 2026-10-07 current-source deletion-premise correction
 

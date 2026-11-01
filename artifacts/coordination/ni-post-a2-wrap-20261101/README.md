@@ -1,0 +1,19 @@
+# NI post-a2caa3 source and admission checkpoint
+
+This is a proposed ROOT artifact record for `artifacts/coordination/ni-post-a2-wrap-20261101/README.md`. It records preparation and corrections only. It creates no qualification receipt, grant or completed science task.
+
+The proposed artifact also includes byte copies of the INF-12 and SPEC-GRAM.3 draft source/manifest files, the small W5 publication/withdrawal receipts, R16 source declaration/plan, RTG-36 proposal and patch, HPR async proposal, and the shared-index incident note. `SOURCE-CUT.json` gives SHA-256 for every copied file. Model weights, binaries, raw inference outputs and the overwritten 3.6 MB Git index are excluded; their source paths and status remain explicit below.
+
+| Item | Evidence | State |
+|---|---|---|
+| LOOP-58 / native v3 | `/mnt/raid0/llm/tmp/codex-ni-native-qual-v3-20261101/publication-v3-root.patch`, SHA-256 `6db24ccfcb203942eb16b974b6cd5a2f913ec5d4b479ba967734e36682062d40`; `PUBLICATION-REVIEW.md`, `OWNER-INSTALL.md`, 97 focused test logs | Source proposal only; no valid full shared CI green, no owner install or mapped live row |
+| INF-12 Gate 2 HF | `/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/REVIEW.json`, SHA-256 `a01b4e5ebd96054bdd21b1017a47a025b5683c8620c36f98b715ae4675182af4`; draft manifest `inf12/ready.json`, SHA-256 `2cb7347069c7e862a6ea1c753d424d5a40728e29196c1efee7d2d938c3fac029` | Draft only; 22 sources and two 3,671-row arms unchanged, no keeper receipt or full accuracy |
+| SPEC-GRAM.3 CPP | Same inventory; draft manifest `specgram3/ready.json`, SHA-256 `069a46fdeb2274c12a82361c8277c7045be3e493d67230508fe5bb56ce352dbb` | Draft only; all 48 component cells, eight greedy pairs and 5,450-call replay retained; no native result |
+| Owner bootstrap | `owner-bootstrap-dry.json`, SHA-256 `2a2b321aa06f60ba25e08c89cf961bcd8e127f1b45cff2bcc3b900c919ce51a6` | Isolated draft-map check only; live installer says `ready_to_apply=false` |
+| W5s v2 withdrawal | `/mnt/raid0/llm/tmp/codex-ni-v2-w5s-20261101/PUBLISH-RECEIPT.json`, SHA-256 `26a46662d1558a7871d6de02bced25575295dbea6540b22175ce0e92acbfae88`; `WITHDRAWAL-LONGEST-FIXTURE.json`, SHA-256 `636231120211ea7d141256ba3b04c7b16c58c03be19fc39c41b1fcba01471041` | Published then withdrawn without nonce, receipt or grant; future fixture must include 4,096-token HTTP prefill |
+| Shared index incident | `/mnt/raid0/llm/tmp/compute-flags/codex-channels/codex-ni.md` 15:36Z message; overwritten index saved at `/mnt/raid0/llm/tmp/codex-ni-full-wrap-20261101/WORKSPACE-INDEX-AFTER-ACCIDENT-20261101` | Index restored to HEAD; intervening staging unknown |
+| KPF-18.0d R16 | `/mnt/raid0/llm/tmp/codex-ni-kpf18-r16-native-capture-20261101/SOURCE-DECLARATION.json`, SHA-256 `d1277ccd61735f872ee90295574a4c21a27fc0e43cd27ce602d28e58c8d46edc`; `NATIVE-SUCCESSOR-PLAN.md`, SHA-256 `5f274e44b7c5660503930cb0f46070e37189f820828105493a4831438b93194e` | PROPOSED finite source closure; no fresh native control or booking; R6 history remains INVALID |
+| RTG-36 WARM | `/mnt/raid0/llm/tmp/rtg36-scg-priors-warm-review-20261101/PROPOSED.md`, SHA-256 `33a4b8a5a48b1ecaaffc34f6486d865f36fe59e943a2208eb1d7f04ec1fa1562` | HIGH impact source-only proposal; four isolated tests and ruff passed; no Orchestrator edit/deploy |
+| HPR async long CPU | `/mnt/raid0/llm/tmp/codex-ni-async-cpu-qual-v1-20261101/ASYNC-CPU-QUALIFICATION-PROPOSAL.md`, SHA-256 `d69d807eb6339f787eae6ec5ec7991ab7bef3efd7e179c2840398529ce65f6f0` | Source-only design; 7,200-second bound is not a throughput prediction; no keeper qualification |
+
+The prior full wrap is ROOT `a2caa3bba85352998884494adda29c8a971d2781`. This checkpoint adds no result tick. The source patch and successor manifests remain in owner scratch pending main review and owner installation. Preserve those scratch roots until a durable source/evidence publication is accepted.

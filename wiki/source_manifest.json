@@ -9,10 +9,28 @@
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-01T15:52:43Z",
-  "mode": "touch",
-  "scan_time": "2026-11-01T15:52:43Z",
+  "last_touch": {
+    "advanced": {
+      "added": 0,
+      "changed": 7,
+      "removed": 0
+    },
+    "at": "2026-11-01T16:33:30Z",
+    "scope_paths": [
+      "handoffs/active/autokernel-restart-and-strip.md",
+      "handoffs/active/delta-mem-reproduction.md",
+      "handoffs/active/kv-unified-stack-rollout.md",
+      "handoffs/active/non-inference-backlog.md",
+      "handoffs/active/speculative-decoding-mtp-refresh.md",
+      "handoffs/active/stack-change-governance-pipeline.md",
+      "progress/2026-11/2026-11-01-codex-ni.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-11-01T16:33:30Z",
   "schema_version": 1,
-  "source_set_hash": "3ca01387f55f0ed282ae55742479ffcea94fbe1c8c5e4e5f46ee35a9879d5b5d",
+  "source_set_hash": "3e3a2689e9d9fda92d094e1cff3839458ce5377bcf99af676408d62fbd96b4cf",
   "sources": [
     {
       "content_hash": "79865b0c101f4b6a9b14665950a430467345202b33986b3ba348bc3df428170a",
@@ -151,10 +169,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "70876ba885b6019705cc213d5b43595754f9deb33226945ca86c657e77c95c20",
-      "modified": "2026-11-01T15:45:21Z",
+      "content_hash": "c9399a687bc004b7e06ee1783ad2a4534eefa2a2d1726eef64d31ef13f9fcc80",
+      "modified": "2026-11-01T15:57:32Z",
       "path": "handoffs/active/autokernel-restart-and-strip.md",
-      "size": 26238,
+      "size": 26631,
       "title": "AutoKernel \u2014 restart-loop fix, v28 launch, and the dead-weight strip",
       "type": "handoff-active"
     },
@@ -279,10 +297,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b7a5ecdeb5e390657d3e4c44fea85f4587b78f0ad28c845448865a955c711700",
+      "content_hash": "14cf18ecc5c17973ae6e1ac04467c322af7cca0acf2a654827156db3e14b3b8b",
       "modified": "2026-11-01T15:50:36Z",
       "path": "handoffs/active/conversation-stack.md",
-      "size": 275473,
+      "size": 275890,
       "title": "Conversation stack: speech-native interlocutor, orchestrator voice-turn contract, cascade fallback",
       "type": "handoff-active"
     },
@@ -359,10 +377,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "fb28b4e3bf8b77bd9e9ad6c8f209853fdb07efce8c04865f7cbe84c6e7dd47c6",
-      "modified": "2026-11-01T15:45:21Z",
+      "content_hash": "2dff075cf96301a212a4dab36a55fa9b900431df4923a9b4c926f6c0d37ab969",
+      "modified": "2026-11-01T15:57:32Z",
       "path": "handoffs/active/delta-mem-reproduction.md",
-      "size": 29318,
+      "size": 29934,
       "title": "\u03b4-mem Reproduction + Frozen-Memory Topology Spike",
       "type": "handoff-active"
     },
@@ -383,10 +401,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "3244aaa3d8b22a5636a11d6375b3d7bd8cb813d5b31ea3ac15bdfd0de90d7b16",
+      "content_hash": "4de4c70758053bc2a859d16d3d1d0ae6332717df275ceb09149c61dadd630a52",
       "modified": "2026-11-01T15:45:21Z",
       "path": "handoffs/active/dflash2-block-drafter-experimental-build.md",
-      "size": 115693,
+      "size": 116234,
       "title": "dFlash2 block drafter \u2014 experimental build + measured comparison vs MTP",
       "type": "handoff-active"
     },
@@ -711,10 +729,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "3925d1f31b05f80b2f0c6b478a421652ebef56aa024c4c3344b35e9b087e48f0",
-      "modified": "2026-11-01T15:45:21Z",
+      "content_hash": "de4ddf87c9731d46c92f53e25b707e7d3de6ddde45331deac104e4de45829e39",
+      "modified": "2026-11-01T15:57:32Z",
       "path": "handoffs/active/kv-unified-stack-rollout.md",
-      "size": 244132,
+      "size": 244456,
       "title": "Unified KV (`--kv-unified`) stack rollout and shared-pool serving",
       "type": "handoff-active"
     },
@@ -927,10 +945,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "c0ddece3021d5e06fb66bfca2269efdf616527716d4e221dba6888509175b538",
-      "modified": "2026-11-01T15:45:21Z",
+      "content_hash": "7ac4cc399cc35dbd7b538753ed7d5d7c58da145371f8561adce96e8e91bd0484",
+      "modified": "2026-11-01T15:57:32Z",
       "path": "handoffs/active/non-inference-backlog.md",
-      "size": 243704,
+      "size": 244943,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -1255,18 +1273,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "512a45fb0ec2b5b76e5e6240ee6b7b4fe9d8c35fd17eba77ccbff6e76abdb3ad",
-      "modified": "2026-11-01T15:45:21Z",
+      "content_hash": "b383d00930cc6574261b731b83d48e06010e63f561b80f3edd7ed747c21aa92b",
+      "modified": "2026-11-01T15:57:32Z",
       "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
-      "size": 147230,
+      "size": 147809,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
     {
-      "content_hash": "649ae8d979b3f032c57ac63b2f3ac59c82e64bcae4d494a1ed3258e664a6e445",
-      "modified": "2026-11-01T15:45:21Z",
+      "content_hash": "c6462ed64ec46e5e79c18dc53040964b057d4c3333b68b649a986a1f0b8d75c7",
+      "modified": "2026-11-01T15:57:32Z",
       "path": "handoffs/active/stack-change-governance-pipeline.md",
-      "size": 32769,
+      "size": 33113,
       "title": "Stack Change Governance Pipeline",
       "type": "handoff-active"
     },
@@ -14343,10 +14361,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "dc8c0b9ee76dbe2affc220a3d03ead55bc77bcf800ff5429933b89af8c281864",
-      "modified": "2026-11-01T15:45:21Z",
+      "content_hash": "14d34e48c262b449a7cb20b87f24b814a237864cc66c838fdcfe98fb7f2687e8",
+      "modified": "2026-11-01T16:22:55Z",
       "path": "progress/2026-11/2026-11-01-codex-ni.md",
-      "size": 14177,
+      "size": 21718,
       "title": "2026-11-01 Codex NI wrap-up",
       "type": "progress"
     },
@@ -14383,18 +14401,18 @@
       "type": "progress"
     },
     {
-      "content_hash": "3fa128980b3d3d93e059985093bf1aa5833f69fce810dd56eeddb1917883bafa",
+      "content_hash": "0e5b6f7c11675976bf9c9d427d354d3b6448acf0fcf1139f0a2defce95a76378",
       "modified": "2026-11-01T15:45:21Z",
       "path": "progress/2026-11/2026-11-01-handoff-df2.md",
-      "size": 1359,
+      "size": 2222,
       "title": "DF2 handoff \u2014 2026-11-01",
       "type": "progress"
     },
     {
-      "content_hash": "19adfe0ba3a29ab75a77cd57682ce961081a176fe0e08a69694a1d5704e3ea52",
+      "content_hash": "67c9b9e33a02148dddf55827eb0e2675dde2b5d167b5d16dea8239924abff7b8",
       "modified": "2026-11-01T15:45:21Z",
       "path": "progress/2026-11/2026-11-01-handoff-stt5.md",
-      "size": 3014,
+      "size": 3807,
       "title": "2026-11-01 \u2014 conversation-stack handoff pickup",
       "type": "progress"
     },
@@ -14975,10 +14993,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "e7b1a9603d503bfe467825fd36a06e74f19898ef3675c14b3155b56d1c256630",
+      "content_hash": "cc748c402723cd42d32beb467a3c5dc35fb3263e69a19c6ad2f1d89977594239",
       "modified": "2026-11-01T15:45:21Z",
       "path": "docs/guides/agent-workflows/backlog-churn-flow.md",
-      "size": 8253,
+      "size": 10040,
       "title": "Churn through the backlog \u2014 the one workflow (operator, 2026-11-01)",
       "type": "docs"
     },

@@ -82,6 +82,7 @@ COULD-NOT-CHECK and exits non-zero — it is NOT "no violations found".
 """
 from __future__ import annotations
 
+import ast
 import argparse
 import fnmatch
 import hashlib
@@ -222,6 +223,98 @@ def mentions_boundary(text: str, globs: list[str]) -> list[str]:
     return hits
 
 
+def executable_python_text(text: str) -> str:
+    """Mask only syntactic docstrings; keep every other Python string and statement.
+
+    A docstring can cite CLAUDE.md while unrelated code writes an output file.
+    If the script may inspect or execute its docstrings, preserve the original
+    text. AST positions are UTF-8 byte offsets. On parse failure, preserve the
+    original text so malformed scripts still fail closed under the text rule.
+    """
+    try:
+        tree = ast.parse(text)
+    except (SyntaxError, ValueError):
+        return text
+    re_imports = [
+        node for node in tree.body if isinstance(node, ast.Import)
+        for alias in node.names if alias.name == "re" and alias.asname is None
+    ]
+    genuine_re = len(re_imports) == 1
+    approved_import = re_imports[0] if genuine_re else None
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Name) and node.id == "re" and isinstance(node.ctx, (ast.Store, ast.Del)):
+            genuine_re = False
+        if isinstance(node, ast.arg) and node.arg == "re":
+            genuine_re = False
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) and node.name == "re":
+            genuine_re = False
+        if isinstance(node, (ast.Import, ast.ImportFrom)):
+            if any((alias.asname or alias.name.split(".")[0]) == "re"
+                   and not (node is approved_import and alias.name == "re" and alias.asname is None)
+                   for alias in node.names):
+                genuine_re = False
+        if isinstance(node, ast.ExceptHandler) and node.name == "re":
+            genuine_re = False
+        if isinstance(node, (ast.Global, ast.Nonlocal)) and "re" in node.names:
+            genuine_re = False
+        if isinstance(node, (ast.MatchAs, ast.MatchStar)) and node.name == "re":
+            genuine_re = False
+        if isinstance(node, ast.MatchMapping) and node.rest == "re":
+            genuine_re = False
+    keep_module_docstring = False
+    defined_names = {
+        node.name for node in ast.walk(tree)
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+    }
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Name) and node.id == "__doc__":
+            keep_module_docstring = True
+        if isinstance(node, ast.Name) and node.id == "getdoc":
+            return text
+        if isinstance(node, ast.Attribute) and node.attr in ("__doc__", "__dict__", "getdoc"):
+            return text
+        if not isinstance(node, ast.Call):
+            continue
+        if isinstance(node.func, ast.Name) and node.func.id in (
+            "exec", "eval", "compile", "globals", "locals", "__import__", "setattr"
+        ):
+            return text
+        if isinstance(node.func, ast.Attribute) and node.func.attr in ("exec", "eval", "compile"):
+            if not (node.func.attr == "compile" and isinstance(node.func.value, ast.Name)
+                    and node.func.value.id == "re" and genuine_re and node.args
+                    and isinstance(node.args[0], ast.Constant)
+                    and isinstance(node.args[0].value, str)):
+                return text
+        if isinstance(node.func, ast.Name) and node.func.id == "getattr":
+            if len(node.args) < 2 or not isinstance(node.args[1], ast.Constant):
+                return text
+            if node.args[1].value in ("__doc__", "__dict__"):
+                return text
+        if isinstance(node.func, ast.Name) and node.func.id == "vars" and node.args:
+            if isinstance(node.args[0], ast.Name) and node.args[0].id in defined_names:
+                return text
+    raw = bytearray(text.encode("utf-8"))
+    offsets = [0]
+    for line in text.splitlines(keepends=True):
+        offsets.append(offsets[-1] + len(line.encode("utf-8")))
+    for node in ast.walk(tree):
+        if not isinstance(node, (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        if keep_module_docstring and isinstance(node, (ast.Module, ast.ClassDef)):
+            continue
+        if not node.body or not isinstance(node.body[0], ast.Expr):
+            continue
+        expr = node.body[0]
+        if not isinstance(expr.value, ast.Constant) or not isinstance(expr.value.value, str):
+            continue
+        start = offsets[expr.lineno - 1] + expr.col_offset
+        end = offsets[expr.end_lineno - 1] + expr.end_col_offset
+        for pos in range(start, end):
+            if raw[pos] not in (10, 13):
+                raw[pos] = 32
+    return raw.decode("utf-8")
+
+
 def patch_targets(
     code: str, script: Path, repo_root: Path, globs: list[str]
 ) -> tuple[list[str], list[str], list[str]]:
@@ -356,7 +449,9 @@ def verify_exemption(
 # ------------------------------------------------------------------ scan
 
 
-def classify(path: Path, text: str, repo_root: Path, globs: list[str]) -> dict | None:
+def classify(
+    path: Path, text: str, repo_root: Path, globs: list[str], *, legacy_text: bool = False
+) -> dict | None:
     code = strip_comments(text)
     writes = writes_files(text)
     via: dict[str, list[str]] = {}
@@ -366,7 +461,11 @@ def classify(path: Path, text: str, repo_root: Path, globs: list[str]) -> dict |
     d_hits = declared_targets(text, globs)
     if d_hits:
         via["declared"] = d_hits
-    t_hits = mentions_boundary(normalise(code), globs)
+    # A Python docstring is not an executable path expression. Keep literals
+    # elsewhere, including assigned multiline strings and writer arguments.
+    text_code = (strip_comments(executable_python_text(text))
+                 if path.suffix == ".py" and not legacy_text else code)
+    t_hits = mentions_boundary(normalise(text_code), globs)
     if t_hits and writes:
         via["text"] = t_hits
     if not via:
@@ -400,11 +499,15 @@ def scan(
             if any(fnmatch.fnmatch(str(path), f"*{s}*") for s in ("/receipts/", "/__pycache__/")):
                 continue
             try:
-                text = path.read_text(encoding="utf-8", errors="replace")
+                source = path.read_bytes()
+                text = source.decode("utf-8", errors="replace")
             except OSError as exc:
                 errors.append(f"{COULD_NOT_CHECK}: could not read {path}: {exc}")
                 continue
-            finding = classify(path, text, repo_root, globs)
+            script = str(path.relative_to(repo_root))
+            pin = exemptions.get(script, {}).get("script_sha256")
+            legacy_text = isinstance(pin, str) and hashlib.sha256(source).hexdigest() == pin
+            finding = classify(path, text, repo_root, globs, legacy_text=legacy_text)
             if finding is not None:
                 texts[finding["script"]] = text
                 findings.append(finding)

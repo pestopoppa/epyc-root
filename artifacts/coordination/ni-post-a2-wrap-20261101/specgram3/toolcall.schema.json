@@ -1,0 +1,90 @@
+{
+ "type": "object",
+ "properties": {
+  "name": {
+   "enum": [
+    "http_get",
+    "http_post",
+    "web_search",
+    "web_research",
+    "fetch_wikipedia",
+    "search_arxiv",
+    "search_papers",
+    "search_wikipedia",
+    "get_wikipedia_article",
+    "search_books",
+    "json_query",
+    "csv_to_json",
+    "json_to_csv",
+    "sql_query",
+    "python_eval",
+    "run_shell",
+    "git_status",
+    "lint_python",
+    "calculate",
+    "statistics",
+    "monte_carlo",
+    "symbolic_solve",
+    "matrix_solve",
+    "matrix_eigenvalues",
+    "matrix_svd",
+    "solve_ode",
+    "optimize",
+    "monte_carlo_native",
+    "mcmc",
+    "bayesopt",
+    "plot_braille",
+    "plot_function",
+    "histogram",
+    "plot_sixel",
+    "render_math",
+    "read_file",
+    "write_file",
+    "list_directory",
+    "get_current_date",
+    "get_current_time",
+    "embed_text",
+    "similarity_search",
+    "classify_text",
+    "ocr_extract",
+    "vision_analyze",
+    "vision_search",
+    "vision_face_identify",
+    "task_create",
+    "task_update",
+    "task_list",
+    "budget_override",
+    "user_profile",
+    "user_search",
+    "user_context",
+    "user_conclude"
+   ]
+  },
+  "arguments": {
+   "type": "object",
+   "properties": {
+    "path": {
+     "type": "string"
+    },
+    "url": {
+     "type": "string"
+    },
+    "query": {
+     "type": "string"
+    },
+    "timeout": {
+     "type": "integer"
+    },
+    "flag": {
+     "type": "boolean"
+    }
+   },
+   "additionalProperties": false
+  }
+ },
+ "required": [
+  "name",
+  "arguments"
+ ],
+ "additionalProperties": false
+}

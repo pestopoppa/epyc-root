@@ -1,0 +1,87 @@
+{
+  "cases": [
+    {
+      "cpus": "0-23",
+      "expected": 0,
+      "name": "q0",
+      "qual": false,
+      "rc": 0,
+      "stderr": "",
+      "stdout": "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23"
+    },
+    {
+      "cpus": "24-47",
+      "expected": 0,
+      "name": "q1",
+      "qual": false,
+      "rc": 0,
+      "stderr": "",
+      "stdout": "24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47"
+    },
+    {
+      "cpus": "48-71",
+      "expected": 0,
+      "name": "q2",
+      "qual": false,
+      "rc": 0,
+      "stderr": "",
+      "stdout": "48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71"
+    },
+    {
+      "cpus": "72-95",
+      "expected": 0,
+      "name": "q3",
+      "qual": false,
+      "rc": 0,
+      "stderr": "",
+      "stdout": "72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95"
+    },
+    {
+      "cpus": "178,179",
+      "expected": 0,
+      "name": "r11",
+      "qual": true,
+      "rc": 0,
+      "stderr": "",
+      "stdout": "178,179"
+    },
+    {
+      "cpus": "any-cpu-quarter",
+      "expected": 64,
+      "name": "symbolic",
+      "qual": false,
+      "rc": 64,
+      "stderr": "REFUSED: numeric CPU ranges required",
+      "stdout": ""
+    },
+    {
+      "cpus": "178,178",
+      "expected": 64,
+      "name": "duplicate",
+      "qual": true,
+      "rc": 64,
+      "stderr": "REFUSED: CPU range outside host or duplicate",
+      "stdout": ""
+    }
+  ],
+  "complete_absent_rc": 1,
+  "decision_rule": "Lower is better: each real toolcall-eager T0.3/0.8 B1/B5 grammar delta <2 ms/token and share <5% of the historical 24.86 ms decode step; zero invalid script tokens. Full parent acceptance also requires uncapped greedy byte-identical outputs and exact 1.0.1 full-corpus forced-token/trim replay; missing auxiliary tokenizer equality remains unknown.",
+  "engine_invoked": false,
+  "engine_sha256": "6fe168333738d15e5988d5af42e2b4c348194d722bac11c32368183ae89cd3ef",
+  "kind": "epyc.local.specgram3-r3-static-controls.v1",
+  "model_loaded": false,
+  "not_qualification": true,
+  "rate_projection_48_cells_s": 4267.07564163208,
+  "result_absent": true,
+  "result_path": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/specgram3/out/RESULT.json",
+  "row_id": "codex-ni-specgram3-llg101-cpu-r3-20261101",
+  "source_contract": {
+    "active_cutoff_event": true,
+    "drain_check": true,
+    "native_birth": true,
+    "native_event": true,
+    "partial_unknown": true,
+    "rc75": true
+  },
+  "window_s": 21600
+}

@@ -1,0 +1,11 @@
+{
+  "kind": "epyc.local.phase-path-test-double.v1",
+  "not_native_execution": true,
+  "not_qualification": true,
+  "results": {
+    "specgram3-normal": 0,
+    "specgram3-cutoff": 1,
+    "inf12-normal": 0,
+    "inf12-cutoff": 1
+  }
+}

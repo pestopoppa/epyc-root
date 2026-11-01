@@ -1,0 +1,17 @@
+{
+  "status": "MAIN-accepted",
+  "scope": "recorded R6 X1 CPU framing components only; no fresh native control verdict",
+  "result_path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-normalization-r14/revision-r3/cpu-replay/results/bridge/RESULT.json",
+  "result_sha256": "9c782023a139941349fb664e79c666df5ea894a231395761053bae2dd03a3225",
+  "replay_source_manifest": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-normalization-r14/revision-r3/SOURCES.sha256",
+  "replay_source_sha256": "a25958a20707bb0a5ed327224126bb7be2a7ed88869083381fe4b9e3d2a77023",
+  "component_sha256": {
+    "normalize_bridge.py": "a68c3a1e0986bcf4c8a058965bbaa78bc6592ce1172aac6e4d1831eadd9e1ad4",
+    "fork_binding.py": "4b391c730c52401c0944a6c5964a52d8f8cd785576b68ee37806290530887c0c",
+    "evidence_view.py": "434f97561317bd0a5f75f2bcee2c7ea56b362278958ff77959c7008085422212"
+  },
+  "data_manifest_sha256": "bf9745c975d70738b44709015c1cfd41a3bb7e7361d2578d469e3d87cd11af65",
+  "layouts_sha256": "20aae347d3213988ae84310d4859434941451f205b410cc24d2fe292b42559bd",
+  "fork_bindings_sha256": "eacbebf58017d8f44da91df7db08cff8291e3a1b947448aa599fae6b067c2de7",
+  "historical_r6_verdict": "INVALID unchanged"
+}

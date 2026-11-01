@@ -1,0 +1,170 @@
+{
+  "binary_projection": {
+    "source_and_target_llguidance_native_library_sha256": "9ac6b493c5d7e8130308896e71815180411edb3442ea0c12862495ccd3537bc6",
+    "source_and_target_text_section_sha256": "77c1d0292b63b3991c0f8f74644f2a6e10cecb437116c2cf582ad8c7a4d76c38",
+    "source_binary_path": "/mnt/raid0/llm/tmp/codex-ni-specgram3-v2-20261101/r11-calibration/source-bench-specgram3-rpath-http-v1",
+    "source_binary_sha256": "2947f6da21998eef692c38215bd300fdb319658120e34ebe0b27f87d5db96063",
+    "source_rebuild_command_sha256": "f8c1ac46f293c3fb831da9127c7cc06a51543a75d1ee445a5f8406172a026fd6",
+    "target_binary_path": "/mnt/raid0/llm/tmp/codex-ni-specgram3-v2-20261101/bench-specgram3",
+    "target_binary_sha256": "fe14f8ff209fd591261bdfbda6d9f45330a08c954cd8097b76d0206f7e8119a2",
+    "target_rebuild_result_sha256": "df29a666e47e449cc26a4083322bafc795edbf4abd664dce18efebf19fa51555"
+  },
+  "current_actual_step_share": "UNMEASURED",
+  "kind": "epyc.raw.r11.calibration-projection.v2",
+  "not_a_new_measurement": true,
+  "observed_cpu_affinity": [
+    178,
+    179
+  ],
+  "observed_wall_s_per_unit": 88.89740920066833,
+  "observed_work_units": 2,
+  "production_recipe_sha256": "f9f41a01d8135407e3543de12981451c94ec57da4f1450e2427b0202f76fc38a",
+  "production_threads": 24,
+  "projection_note": "Same native benchmark binary/model/threads/source; new recipe adds only backend_type discriminator and successor namespace. Original R11 raw calibration remains source, no new model timing.",
+  "projection_rule": "Preserve the measured native cost-cell wall time. Retain the unchanged native source, benchmark arguments/context/thread/work-unit, LLGuidance 1.0.1 wheel bytes and frozen production CPU libraries. The new benchmark binary only relocates the absolute LLGuidance NEEDED/RUNPATH path from the original packet wheel to the identical wheel copied into this v2 scratch; old/new ELF .text sections are byte-identical. Remove only the old recipe separate HTTP-server witness. This is an explicit feasibility projection, not a new measurement or qualification.",
+  "removed_recipe_component": "server (separate llama-server /completion first-request witness; not used for benchmark cell timing)",
+  "retained_native_core": {
+    "binary": "/mnt/raid0/llm/tmp/codex-ni-specgram3-v2-20261101/bench-specgram3",
+    "binary_sha256": "fe14f8ff209fd591261bdfbda6d9f45330a08c954cd8097b76d0206f7e8119a2",
+    "first_cell": {
+      "kind": "toolcall-eager",
+      "prompt_tokens": 96,
+      "script": 0,
+      "script_tokens": 25
+    },
+    "llguidance_header": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-specgram3-v2-20261101/llguidance.h",
+      "sha256": "2578a515ab2e10db9dba912b82c6c3ff13ee48cbf1ce4f7f80eedcb01c28137e"
+    },
+    "llguidance_native_library": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-specgram3-v2-20261101/wheel/llguidance/_lib.abi3.so",
+      "sha256": "9ac6b493c5d7e8130308896e71815180411edb3442ea0c12862495ccd3537bc6"
+    },
+    "llguidance_version": "1.0.1",
+    "n_batch": 4096,
+    "n_ctx": 4096,
+    "n_seq_max": 1,
+    "n_ubatch": 512,
+    "runtime_libraries": {
+      "libggml-base.so.0.16.0": {
+        "path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0",
+        "sha256": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a"
+      },
+      "libggml-cpu.so.0.16.0": {
+        "path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0",
+        "sha256": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0"
+      },
+      "libggml.so.0.16.0": {
+        "path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml.so.0.16.0",
+        "sha256": "87074c95c8709c491e84b2c8b9c0b8fa911b1cd309fbd5536a4947063a96998e"
+      },
+      "libllama-common.so.0.0.10303": {
+        "path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303",
+        "sha256": "dfd31d4bb51818e5507b9eeaa7766452cab914f02bdbd1e0f18b4c3e9294de09"
+      },
+      "libllama.so.0.0.10303": {
+        "path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303",
+        "sha256": "5cdd003d3f441e1efe42e4c06e4434b0195f25ab6317d64aa7e7cf60deaba844"
+      }
+    },
+    "source": "/mnt/raid0/llm/tmp/codex-ni-specgram3-v2-20261101/bench-grammar-sampler.cpp",
+    "source_sha256": "31b0df47c8b312d2506e890626d7e4e29c7892399a4782c82cf0d1da776bfa5a",
+    "teacher_forced_cell_reps": 30,
+    "threads": 24,
+    "work_unit": "native-real-logit-cost-cell"
+  },
+  "scope": "R11 two-SMT-CPU raw calibration projected onto the same native benchmark code and dependencies for conservative feasibility only.",
+  "source_calibration": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-specgram3-v2-20261101/r11-calibration/20261101T121628Z/R11-CALIBRATION.json",
+    "sha256": "203a2f3730e2a8e44a73372904b27d9946d3013f5d03ebff86ac9e3a695eead8"
+  },
+  "source_commands": [
+    {
+      "argv": [
+        "/mnt/raid0/llm/tmp/codex-ni-specgram3-v2-20261101/bench-specgram3",
+        "--model",
+        "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+        "--logits-model",
+        "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+        "--threads",
+        "24",
+        "--label",
+        "frontdoor-t0.3",
+        "--grammar-file",
+        "/mnt/raid0/llm/tmp/codex-ni-specgram3-v2-20261101/toolcall.gbnf",
+        "--schema-file",
+        "/mnt/raid0/llm/tmp/codex-ni-specgram3-v2-20261101/toolcall.schema.json",
+        "--llguidance-file",
+        "/mnt/raid0/llm/tmp/codex-ni-specgram3-v2-20261101/toolcall.lark",
+        "--paired",
+        "--profiles",
+        "real",
+        "--batches",
+        "1",
+        "--kinds",
+        "toolcall-eager",
+        "--reps",
+        "30",
+        "--temp",
+        "0.3",
+        "--step-ms",
+        "24.86",
+        "--out",
+        "/mnt/raid0/llm/tmp/codex-ni-specgram3-v2-20261101/r11-calibration/20261101T121628Z/results.jsonl",
+        "--max-seconds",
+        "256.0018358230591"
+      ],
+      "path": "/mnt/raid0/llm/tmp/codex-ni-specgram3-v2-20261101/r11-calibration/20261101T121628Z/COMMAND-component-t0.3.json",
+      "sha256": "710aa75aeda4af95a1dd6d5291be7d82469cdd84c47fb009e6e7cecc7e114ac6"
+    },
+    {
+      "argv": [
+        "/mnt/raid0/llm/tmp/codex-ni-specgram3-v2-20261101/bench-specgram3",
+        "--model",
+        "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+        "--logits-model",
+        "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+        "--threads",
+        "24",
+        "--label",
+        "frontdoor-t0.8",
+        "--grammar-file",
+        "/mnt/raid0/llm/tmp/codex-ni-specgram3-v2-20261101/toolcall.gbnf",
+        "--schema-file",
+        "/mnt/raid0/llm/tmp/codex-ni-specgram3-v2-20261101/toolcall.schema.json",
+        "--llguidance-file",
+        "/mnt/raid0/llm/tmp/codex-ni-specgram3-v2-20261101/toolcall.lark",
+        "--paired",
+        "--profiles",
+        "real",
+        "--batches",
+        "1",
+        "--kinds",
+        "toolcall-eager",
+        "--reps",
+        "30",
+        "--temp",
+        "0.8",
+        "--step-ms",
+        "24.86",
+        "--out",
+        "/mnt/raid0/llm/tmp/codex-ni-specgram3-v2-20261101/r11-calibration/20261101T121628Z/results.jsonl",
+        "--max-seconds",
+        "166.66842079162598"
+      ],
+      "path": "/mnt/raid0/llm/tmp/codex-ni-specgram3-v2-20261101/r11-calibration/20261101T121628Z/COMMAND-component-t0.8.json",
+      "sha256": "fc04a8dabe2c29f0b31ca8f83608b6e71a92338a0542662c74150ce985c0fabc"
+    }
+  ],
+  "source_component_result_sha256": "798b10500d89111c29d1477b0c2cc61e4c101ef976addcccf0d3f9991a409bf6",
+  "source_recipe": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-specgram3-v2-20261101/r11-calibration/source-production-recipe-http-witness-v1.json",
+    "sha256": "58c291e191c2b698e6892f4eea4dbb825efd98e13253a908d7c3e3b6457f1100",
+    "sha256_claimed_by_raw": "58c291e191c2b698e6892f4eea4dbb825efd98e13253a908d7c3e3b6457f1100"
+  },
+  "target_recipe": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-specgram3-v2-20261101/production-recipe.json",
+    "sha256": "2fb6b07425e7c71515f31b8eb84f773e0137755deae41ea5e0fdcb36e88f457e"
+  },
+  "work_unit": "native-real-logit-cost-cell"
+}

@@ -1,0 +1,63 @@
+{
+  "current_sha256": {
+    "bin/qual-v1/filler_run14.sh": "6fe168333738d15e5988d5af42e2b4c348194d722bac11c32368183ae89cd3ef",
+    "bin/qual-v1/qualify_launcher.py": "923029f824c937806cdb7491e69935b71472d479bed357f6b9c735120f26afe8",
+    "bin/qual-v2/keeper_qual_gate.py": null,
+    "engine-allowlist.json": "3d9c7c7a0a2c5bdb800bb41178b1652c4afd5ef04c5e34ebf439e3fd4b618ac9",
+    "grant_ok.sh": "2e40f0cf5e93e91c1a55f2d3a22e0e08a209555cdb06c90181764f7546978908",
+    "ws58-calendar-keeper-v8.sh": "a8fc18c67f08fed08c1f74e629083d55cbcd1b9560b21d3029e0e9e0f7b4e5a7"
+  },
+  "expected_predecessor_sha256": {
+    "bin/qual-v1/filler_run14.sh": "6fe168333738d15e5988d5af42e2b4c348194d722bac11c32368183ae89cd3ef",
+    "bin/qual-v1/qualify_launcher.py": "923029f824c937806cdb7491e69935b71472d479bed357f6b9c735120f26afe8",
+    "bin/qual-v2/keeper_qual_gate.py": "d1d7d8458f3d56994bf0f45b2bc253a96391124e6df4255c80493ac1523a5d56",
+    "engine-allowlist.json": "3d9c7c7a0a2c5bdb800bb41178b1652c4afd5ef04c5e34ebf439e3fd4b618ac9",
+    "grant_ok.sh": "31d4775bfaa3274ce68498579dec1c0c906d9ff3a8d98fdd44139f6a7f71aa34",
+    "ws58-calendar-keeper-v8.sh": "d29bdb45ce1e2b21447a9c5d1c2f192485169fa01c7212b13352e85a38a0c165"
+  },
+  "grant_write": false,
+  "installer_unchanged": true,
+  "keeper_restart_required": true,
+  "kind": "qual-v3-native-install-plan.v1",
+  "new_destinations_absent": true,
+  "p0_source_unchanged": true,
+  "ready_to_apply": false,
+  "requires_predecessor": "P0 qual-v2 package 71ba671971dcc6365efb11c3ac0d4e9a7283f7b41cda19135d8d3d927d62e353",
+  "reviewed_source_sha256": {
+    "bin/qual-router-v1/keeper_qual_router.py": "22053abc79a3b301bf3d17ea67d1c0ec28c25c1103aeb9f396a8fd8699fd3a04",
+    "bin/qual-v3-native/dryrun_check.py": "102b6d297d78f2fc60a841d6349f1005e9e78ba4704552bf10bb84cb80bb2f7f",
+    "bin/qual-v3-native/dryrun_disk_policy.json": "a271e93a7a9ac54386352d254e5ad2ab57a5f39fc40daad99106afa919bfa157",
+    "bin/qual-v3-native/filler_lib.sh": "241e522f4a7d7208e7485834c90d77676434a9bc88fd253575e034ad2934237c",
+    "bin/qual-v3-native/keeper_qual_gate.py": "d1d7d8458f3d56994bf0f45b2bc253a96391124e6df4255c80493ac1523a5d56",
+    "bin/qual-v3-native/qualify_launcher.py": "a72b4742bfa24e3238c8a5767796088aa8c7792900a11d546255e05e49952261",
+    "bin/qual-v3-native/ready_manifest.schema.json": "971bcae547916611c53d53b52cc36b1a6aa54b4bfa211f163bd53bed07586279",
+    "grant_ok.sh": "ff8fe03de4c2561b8786ec50555b3a4a401986da560dcd8eeb216e1b24ce7bd7",
+    "qualifier-bundles.v1.json": "773d7df0815b43142d5a73597ef87050df9b2a3565a8325b3c2f5a0314f24a61",
+    "ws58-calendar-keeper-v8.sh": "32e66b2b19b972a2bc0ed752ea88d511e3829bcb37e6554cc2cd2aeb618ab0f3"
+  },
+  "source_sha256": {
+    "bin/qual-router-v1/keeper_qual_router.py": "22053abc79a3b301bf3d17ea67d1c0ec28c25c1103aeb9f396a8fd8699fd3a04",
+    "bin/qual-v3-native/dryrun_check.py": "102b6d297d78f2fc60a841d6349f1005e9e78ba4704552bf10bb84cb80bb2f7f",
+    "bin/qual-v3-native/dryrun_disk_policy.json": "a271e93a7a9ac54386352d254e5ad2ab57a5f39fc40daad99106afa919bfa157",
+    "bin/qual-v3-native/filler_lib.sh": "241e522f4a7d7208e7485834c90d77676434a9bc88fd253575e034ad2934237c",
+    "bin/qual-v3-native/keeper_qual_gate.py": "d1d7d8458f3d56994bf0f45b2bc253a96391124e6df4255c80493ac1523a5d56",
+    "bin/qual-v3-native/qualify_launcher.py": "a72b4742bfa24e3238c8a5767796088aa8c7792900a11d546255e05e49952261",
+    "bin/qual-v3-native/ready_manifest.schema.json": "971bcae547916611c53d53b52cc36b1a6aa54b4bfa211f163bd53bed07586279",
+    "grant_ok.sh": "ff8fe03de4c2561b8786ec50555b3a4a401986da560dcd8eeb216e1b24ce7bd7",
+    "qualifier-bundles.v1.json": "773d7df0815b43142d5a73597ef87050df9b2a3565a8325b3c2f5a0314f24a61",
+    "ws58-calendar-keeper-v8.sh": "32e66b2b19b972a2bc0ed752ea88d511e3829bcb37e6554cc2cd2aeb618ab0f3"
+  },
+  "v2_qualifier_links_immutable_v1": false,
+  "would_install": [
+    "bin/qual-router-v1/keeper_qual_router.py",
+    "bin/qual-v3-native/dryrun_check.py",
+    "bin/qual-v3-native/dryrun_disk_policy.json",
+    "bin/qual-v3-native/filler_lib.sh",
+    "bin/qual-v3-native/keeper_qual_gate.py",
+    "bin/qual-v3-native/qualify_launcher.py",
+    "bin/qual-v3-native/ready_manifest.schema.json",
+    "grant_ok.sh",
+    "qualifier-bundles.v1.json",
+    "ws58-calendar-keeper-v8.sh"
+  ]
+}

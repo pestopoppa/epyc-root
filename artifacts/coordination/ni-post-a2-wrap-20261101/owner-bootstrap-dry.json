@@ -1,0 +1,31 @@
+{
+  "kind": "epyc.local.owner-bootstrap-dry.v1",
+  "not_live_install": true,
+  "not_qualification": true,
+  "owner_installer_ready_to_apply": false,
+  "route_map_is_uninstalled_draft": true,
+  "rows": [
+    {
+      "backend": "transformers-hf-inprocess",
+      "bound_files_dry_pass": true,
+      "manifest_sha256": "2cb7347069c7e862a6ea1c753d424d5a40728e29196c1efee7d2d938c3fac029",
+      "owner_route_draft_pass": true,
+      "production_recipe_sha256": "33a7f8f7141f4ba8674fa1883b5341389344dc7745492456794e4221db81af17",
+      "result_path": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/inf12/outputs/RESULT.json",
+      "row_id": "codex-ni-inf12-gate2-triton36-v3-20261101",
+      "source_manifest_sha256": "60dd6a17dd894871f318158f50e19500b2a9d3c1a0efac7552cbea5e8448772b"
+    },
+    {
+      "backend": "llama.cpp-in-process",
+      "bound_files_dry_pass": true,
+      "manifest_sha256": "069a46fdeb2274c12a82361c8277c7045be3e493d67230508fe5bb56ce352dbb",
+      "owner_route_draft_pass": true,
+      "production_recipe_sha256": "f9f41a01d8135407e3543de12981451c94ec57da4f1450e2427b0202f76fc38a",
+      "result_path": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/specgram3/out/RESULT.json",
+      "row_id": "codex-ni-specgram3-llg101-cpu-r3-20261101",
+      "source_manifest_sha256": "e34f20e8abf16bad8b1000103bfd61e53f401ff6159a5e4a1f5d4e614991b410"
+    }
+  ],
+  "source_bundle_dir_substituted_only_in_local_module": "/mnt/raid0/llm/tmp/codex-ni-native-qual-v3-20261101/qual-v3-native",
+  "v2_link_present": false
+}

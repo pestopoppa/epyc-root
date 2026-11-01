@@ -1,0 +1,50 @@
+{
+  "created_utc": "2026-11-01T15:35:36.868580+00:00",
+  "engine_sha256": "6fe168333738d15e5988d5af42e2b4c348194d722bac11c32368183ae89cd3ef",
+  "host_controls_sha256": "333125af5b061380495b39b86a77c61abdd303661e296eb4edf090634efe122b",
+  "kind": "epyc.ni.native-successors.source-review.v1",
+  "no_model_loaded": true,
+  "not_qualification": true,
+  "owner_bootstrap_dry_sha256": "2a2b321aa06f60ba25e08c89cf961bcd8e127f1b45cff2bcc3b900c919ce51a6",
+  "owner_install_dry_sha256": "7a48e03f55ee85a5ca5ff9223216c15af79d3d8de8bfb53858a5da1d50dcee93",
+  "owner_install_required": true,
+  "owner_row_map_proposed_sha256": "f4f028e1e78322edf073d3b1a53f05edce473744e3a3ccf0456a95e83e3fb6b0",
+  "row_proposals_sha256": "47987a480e391eb19ff0eccd06a9ee10e2aa360878cc2b95fbe9b76c2a58c59a",
+  "rows": [
+    {
+      "backend": "transformers-hf-inprocess",
+      "decision_rule": "MemoryAgentBench official full-matrix delta/base accuracy ratio within \u00b120% of 1.31\u00d7 (1.048\u20131.572 inclusive); higher ratio is better. All four official splits, all 22 sources, 3,671 QA rows per arm are required; no missing or nonfinite cells may be discarded.",
+      "id": "codex-ni-inf12-gate2-triton36-v3-20261101",
+      "job_sha256": "b81b8bf92e0d63ae4ee6de979aabac8b5c4644791bf6bed9759716809b678482",
+      "launcher_sha256": "d892565d9381ab930ccdcc80240adabecce3613253d57b9e630547990688e52e",
+      "not_ready": true,
+      "production_recipe_sha256": "33a7f8f7141f4ba8674fa1883b5341389344dc7745492456794e4221db81af17",
+      "qual_fixture_sha256": "3fd0ab2d34cd3b45649858492b29c2e5a46ccac340e349c7dfcef1b84e7b8918",
+      "rate_evidence_sha256": "5b963e8b6d7d0c26228c9521b193636f26fa3f5a48ec39cb5101275364df0f13",
+      "ready_path": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/inf12/ready.json",
+      "ready_sha256": "2cb7347069c7e862a6ea1c753d424d5a40728e29196c1efee7d2d938c3fac029",
+      "regions": "mi210_0,184-191",
+      "result_path": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/inf12/outputs/RESULT.json",
+      "source_manifest_path": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/inf12/SOURCE-SHA256SUMS",
+      "source_manifest_sha256": "60dd6a17dd894871f318158f50e19500b2a9d3c1a0efac7552cbea5e8448772b"
+    },
+    {
+      "backend": "llama.cpp-in-process",
+      "decision_rule": "Lower is better: each real toolcall-eager T0.3/0.8 B1/B5 grammar delta <2 ms/token and share <5% of the historical 24.86 ms decode step; zero invalid script tokens. Full parent acceptance also requires uncapped greedy byte-identical outputs and exact 1.0.1 full-corpus forced-token/trim replay; missing auxiliary tokenizer equality remains unknown.",
+      "id": "codex-ni-specgram3-llg101-cpu-r3-20261101",
+      "job_sha256": "3a4f467f79c76d5e5778cffb27296b520b13b1eb1ca609110fbefc7f28b0d46d",
+      "launcher_sha256": "1fe3d8c7bbacf92ea0d01f5b0ef6be872089eac6108114fd6d33499eb4feefeb",
+      "not_ready": true,
+      "production_recipe_sha256": "f9f41a01d8135407e3543de12981451c94ec57da4f1450e2427b0202f76fc38a",
+      "qual_fixture_sha256": "33a25bb3212687dc55925925f8e71aca910da0cdcc48507d6736f1ddf71267fa",
+      "rate_evidence_sha256": "7df3d25271db06dee61834cd694be3ae2d432e8da90734b487d84d3f9f12e3b9",
+      "ready_path": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/specgram3/ready.json",
+      "ready_sha256": "069a46fdeb2274c12a82361c8277c7045be3e493d67230508fe5bb56ce352dbb",
+      "regions": "any-cpu-quarter",
+      "result_path": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/specgram3/out/RESULT.json",
+      "source_manifest_path": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/specgram3/SOURCE-MANIFEST.sha256",
+      "source_manifest_sha256": "e34f20e8abf16bad8b1000103bfd61e53f401ff6159a5e4a1f5d4e614991b410"
+    }
+  ],
+  "source_v3_verifier_sha256": "a72b4742bfa24e3238c8a5767796088aa8c7792900a11d546255e05e49952261"
+}

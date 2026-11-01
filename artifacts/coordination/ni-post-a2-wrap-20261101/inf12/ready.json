@@ -1,0 +1,79 @@
+{
+  "claim_policy": "GPU companion CPUs fixed by current keeper region grammar; launcher derives numeric claim from the granted WS58_REGIONS and never invents placement",
+  "claimed_cpus": "dynamic",
+  "decision_rule": "MemoryAgentBench official full-matrix delta/base accuracy ratio within \u00b120% of 1.31\u00d7 (1.048\u20131.572 inclusive); higher ratio is better. All four official splits, all 22 sources, 3,671 QA rows per arm are required; no missing or nonfinite cells may be discarded.",
+  "engine": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/filler_run14.sh",
+    "sha256": "6fe168333738d15e5988d5af42e2b4c348194d722bac11c32368183ae89cd3ef"
+  },
+  "est_output_GiB": 20,
+  "exclusive_class": "mi210_0-exclusive-no-fold",
+  "gib": 48,
+  "hold": "PROPOSAL ONLY: owner v3 install/map and keeper qualification pending",
+  "id": "codex-ni-inf12-gate2-triton36-v3-20261101",
+  "items": 3,
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/inf12/job.sh",
+    "sha256": "b81b8bf92e0d63ae4ee6de979aabac8b5c4644791bf6bed9759716809b678482"
+  },
+  "job_floor_gib": 150,
+  "kv_cache_mode": "unified",
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/inf12/launch.sh",
+    "sha256": "d892565d9381ab930ccdcc80240adabecce3613253d57b9e630547990688e52e"
+  },
+  "llm_backend_type": "transformers-hf-inprocess",
+  "min_window_s": 1200,
+  "n_ctx_required": 262144,
+  "n_parallel_required": 1,
+  "owner": "codex-ni",
+  "per_slot_n_ctx_required": 262144,
+  "ports": [],
+  "production": true,
+  "production_recipe": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/inf12/production-recipe.json",
+    "sha256": "33a7f8f7141f4ba8674fa1883b5341389344dc7745492456794e4221db81af17"
+  },
+  "prompt_tokens_required": 67283,
+  "qual_fixture": {
+    "items": 2,
+    "path": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/inf12/qual-fixture.json",
+    "sha256": "3fd0ab2d34cd3b45649858492b29c2e5a46ccac340e349c7dfcef1b84e7b8918"
+  },
+  "qual_timeout_s": 600,
+  "qualification": {
+    "receipt": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/inf12/qualification/QUAL-codex-ni-inf12-gate2-triton36-v3-20261101.json"
+  },
+  "rate_basis": {
+    "evidence": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/inf12/RATE-EVIDENCE-v3.json",
+      "sha256": "5b963e8b6d7d0c26228c9521b193636f26fa3f5a48ec39cb5101275364df0f13"
+    },
+    "production_threads": 1,
+    "scope": "calibrated-work-unit",
+    "wall_s_per_unit": 376.59283999097534,
+    "work_unit": "one actual official MemoryAgentBench Accurate_Retrieval QA question; eventqa_65536 or eventqa_full"
+  },
+  "regions": "mi210_0,184-191",
+  "request_manifest_sha256": "a66de0a958b95f0668b04dfabe06ac16dea77e3090a4e4874630670c9ae53915",
+  "requires_tools": [
+    "bash",
+    "python3",
+    "taskset",
+    "sha256sum",
+    "/workspace/repos/epyc-orchestrator/scripts/region-lock"
+  ],
+  "result_path": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/inf12/outputs/RESULT.json",
+  "schema": "epyc.ready.v2",
+  "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/inf12",
+  "shared_state": [
+    "Qwen3-4B-Instruct-2507",
+    "delta-mem_qwen3_4b-instruct",
+    "MemoryAgentBench:Accurate_Retrieval/eventqa_full",
+    "r14-new-output-namespace"
+  ],
+  "source_manifest": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/inf12/SOURCE-SHA256SUMS",
+  "source_manifest_sha256": "60dd6a17dd894871f318158f50e19500b2a9d3c1a0efac7552cbea5e8448772b",
+  "window_s": 1800,
+  "workload_kind": "llm"
+}

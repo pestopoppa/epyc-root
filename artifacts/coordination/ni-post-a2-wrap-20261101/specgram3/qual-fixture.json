@@ -1,0 +1,54 @@
+{
+  "cutoff": "keeper waits for event from native benchmark child after its first successful script-0 llama_decode, issues STOP, verifies child drain and rc75",
+  "cutoff_item": {
+    "entry": "same --job command",
+    "expected_exit": 75,
+    "expected_partial": true,
+    "receipt_or_nonce_written": false
+  },
+  "first_request": "TARGET_NATIVE_LLAMA evidence from live owned bench-specgram3 child after successful in-process script-0 llama_decode; no separate HTTP server",
+  "id": "codex-ni-specgram3-llg101-cpu-r3-20261101",
+  "items": 2,
+  "kind": "epyc.qual.fixture.v1",
+  "model_edge_sha256": "07b181eed5d3b8c0317427faea571256f2f6bb3d97265bf6ccc096f5e9dac6a9",
+  "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+  "model_size": 37801097504,
+  "n_ctx": 4096,
+  "n_parallel": 1,
+  "native_context": {
+    "kv_unified": false,
+    "n_batch": 4096,
+    "n_ctx": 4096,
+    "n_seq_max": 1,
+    "n_threads": 24,
+    "n_threads_batch": 24,
+    "n_ubatch": 512,
+    "type_k": "F16",
+    "type_v": "F16"
+  },
+  "no_short_smoke_claim": true,
+  "normal_items": [
+    {
+      "batch": 1,
+      "kind": "toolcall-eager",
+      "llguidance": "1.0.1",
+      "profile": "real",
+      "temperature": 0.3,
+      "work_unit": "native-real-logit-cost-cell"
+    },
+    {
+      "batch": 1,
+      "kind": "toolcall-eager",
+      "llguidance": "1.0.1",
+      "profile": "real",
+      "temperature": 0.8,
+      "work_unit": "native-real-logit-cost-cell"
+    }
+  ],
+  "normal_work_units": 2,
+  "notes": "Actual model-backed native cost cells; keeper qualification must execute this fixture. This declaration is not proof.",
+  "production": true,
+  "result_writer": "qualification/<keeper-nonce>/results/{normal,cutoff}/RESULT.json; phase-isolated immutable writer paths",
+  "same_entry": "job.py -> job_base.py full",
+  "threads": 24
+}

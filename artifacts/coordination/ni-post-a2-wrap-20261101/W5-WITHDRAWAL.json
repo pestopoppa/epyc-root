@@ -1,0 +1,12 @@
+{
+  "id": "inf75-w5s-current-census-r7-v2-20261101",
+  "state": "WITHDRAWN_FOR_QUALIFICATION_FIX",
+  "at": "2026-11-01T14:58:28.205352+00:00",
+  "reason": "Qualification fixture exercises only the 19-token decode request; original native workload also includes a 2048-token prefill. Need a production-shaped longest-request fixture before keeper qualification.",
+  "nonce_states_before": [],
+  "receipt_before": false,
+  "grant_before": false,
+  "no_science_claim": true,
+  "clarification": "The 2048 value names the native prefill batch shape; the original prefill HTTP request actually contains 4096 token IDs and must be preserved in qualification.",
+  "original_prefill_prompt_ids": 4096
+}

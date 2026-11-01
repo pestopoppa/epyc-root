@@ -1,0 +1,28 @@
+{
+  "admission_note": "conservative maximum of observed full-context generation times; not a measured rate for every shape or a guaranteed fixture wall duration",
+  "admission_wall_s_per_unit": 376.59283999097534,
+  "full_gate_result": false,
+  "kind": "epyc.inf12.native-rate-evidence.v1",
+  "observations": [
+    {
+      "generation_wall_s": 35.08504903805442,
+      "prompt_tokens": 67283,
+      "result_file_sha256": "80f0342cdabeba3de9ec56f7c708d9fb4da7a7e946468863088b412e888a72bd",
+      "result_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/outputs/full-results-a2a7450236b5ab426bda4ee4b08c517c8d45313ab4e009f94ce2948b57f2a931/Accurate_Retrieval__eventqa_65536__base.jsonl",
+      "source": "eventqa_65536"
+    },
+    {
+      "generation_wall_s": 376.59283999097534,
+      "prompt_tokens": 258341,
+      "result_file_sha256": "3be32d5e4ec6ab08c54261bb66d767b1b729ec068724da4f5750b47096f211fc",
+      "result_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/outputs/full-results-a2a7450236b5ab426bda4ee4b08c517c8d45313ab4e009f94ce2948b57f2a931/Accurate_Retrieval__eventqa_full__base.jsonl",
+      "source": "eventqa_full"
+    }
+  ],
+  "observed_wall_s_per_unit": 376.59283999097534,
+  "production_recipe_sha256": "33a7f8f7141f4ba8674fa1883b5341389344dc7745492456794e4221db81af17",
+  "production_threads": 1,
+  "projection": "historical r13 full-context actual question to copied same full evaluator/model/data; new native hook disabled on full run; qualification first shape differs and is not a new measured production rate",
+  "scope": "calibration-only",
+  "work_unit": "one actual official MemoryAgentBench Accurate_Retrieval QA question; eventqa_65536 or eventqa_full"
+}

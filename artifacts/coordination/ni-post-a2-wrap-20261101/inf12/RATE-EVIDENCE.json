@@ -1,0 +1,25 @@
+{
+  "basis": "largest observed real full-context request time, not fabricated throughput; 23 existing full-context rows are read-only partial diagnostic evidence",
+  "observed": [
+    {
+      "context_id": 0,
+      "input_len": 258333,
+      "output_len": 18,
+      "query_time_len_s": 347.04429723112844,
+      "question_index": 0
+    },
+    {
+      "context_id": 0,
+      "input_len": 258341,
+      "output_len": 40,
+      "query_time_len_s": 376.59283999097534,
+      "question_index": 1
+    }
+  ],
+  "schema": "epyc.rate-evidence.v1",
+  "scientific_verdict": "Gate 2 remains open; no pass/fail conclusion",
+  "source_attempt": "codex-ni-inf12-gate2-triton36-r13-20261030",
+  "source_result_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/outputs/full-results-a2a7450236b5ab426bda4ee4b08c517c8d45313ab4e009f94ce2948b57f2a931/Accurate_Retrieval__eventqa_full__base.jsonl",
+  "source_result_sha256": "3be32d5e4ec6ab08c54261bb66d767b1b729ec068724da4f5750b47096f211fc",
+  "source_was_terminal": true
+}

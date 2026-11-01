@@ -1,0 +1,7 @@
+{
+  "identity": "R16 finite source closure; R15/R6 historical evidence preserved",
+  "native_manifest_sha256": "8369a9349249663c1807900007cb78d3744216a0dc156c68c9c506afe0297b0c",
+  "schema": "codex-ni.source-closure.v1",
+  "source_manifest_sha256": "8c610e4b86762b87aa2c23413a43df98c7d4ad99282f1cd0a7f73ebd407532e5",
+  "status": "PROPOSED"
+}

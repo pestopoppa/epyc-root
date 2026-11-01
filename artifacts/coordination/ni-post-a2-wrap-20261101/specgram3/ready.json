@@ -1,0 +1,82 @@
+{
+  "actual_workload": "native llama.cpp teacher-forced logits and autoregressive greedy; LLM inference shape is model/context/thread pinned",
+  "admission_note": "full run preserves 48 component cells, actual greedy 8 prompts, and original 5450-call x 7-cell native 1.0.1 replay; current actual step-share remains UNMEASURED and is not an adoption gate.",
+  "claimed_cpus": "dynamic",
+  "decision_rule": "Lower is better: each real toolcall-eager T0.3/0.8 B1/B5 grammar delta <2 ms/token and share <5% of the historical 24.86 ms decode step; zero invalid script tokens. Full parent acceptance also requires uncapped greedy byte-identical outputs and exact 1.0.1 full-corpus forced-token/trim replay; missing auxiliary tokenizer equality remains unknown.",
+  "engine": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/filler_run14.sh",
+    "sha256": "6fe168333738d15e5988d5af42e2b4c348194d722bac11c32368183ae89cd3ef"
+  },
+  "est_output_GiB": 1,
+  "exclusive_class": null,
+  "gib": 56,
+  "hold": "PROPOSAL ONLY: owner v3 install/map and keeper qualification pending",
+  "id": "codex-ni-specgram3-llg101-cpu-r3-20261101",
+  "items": 48,
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/specgram3/job.py",
+    "sha256": "3a4f467f79c76d5e5778cffb27296b520b13b1eb1ca609110fbefc7f28b0d46d"
+  },
+  "job_floor_gib": 150,
+  "kv_cache_mode": "split",
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/specgram3/launch.sh",
+    "sha256": "1fe3d8c7bbacf92ea0d01f5b0ef6be872089eac6108114fd6d33499eb4feefeb"
+  },
+  "llm_backend_type": "llama.cpp-in-process",
+  "min_window_s": 1200,
+  "model_edge_sha256": "07b181eed5d3b8c0317427faea571256f2f6bb3d97265bf6ccc096f5e9dac6a9",
+  "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+  "n_ctx_required": 4096,
+  "n_parallel_required": 1,
+  "owner": "codex-ni",
+  "per_slot_n_ctx_required": 4096,
+  "ports": [],
+  "priority_rank": 1,
+  "production": true,
+  "production_recipe": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/specgram3/production-recipe.json",
+    "sha256": "f9f41a01d8135407e3543de12981451c94ec57da4f1450e2427b0202f76fc38a"
+  },
+  "prompt_tokens_required": 96,
+  "qual_fixture": {
+    "items": 2,
+    "path": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/specgram3/qual-fixture.json",
+    "sha256": "33a25bb3212687dc55925925f8e71aca910da0cdcc48507d6736f1ddf71267fa"
+  },
+  "qual_timeout_s": 300,
+  "qualification": {
+    "receipt": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/specgram3/qualification/QUAL-codex-ni-specgram3-llg101-cpu-r3-20261101.json"
+  },
+  "qualification_dependency": "R11 raw calibration is explicitly projected to the byte-identical native benchmark code/dependencies for conservative feasibility only. Keeper normal and active-cutoff TARGET_NATIVE_LLAMA qualification remain pending; main review/publication required.",
+  "rate_basis": {
+    "calibration_affinity_cpus": [
+      178,
+      179
+    ],
+    "calibration_projection": "explicit native-core and RPATH-only binary projection; old HTTP witness removed; no speedup extrapolation",
+    "evidence": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/specgram3/RATE-EVIDENCE-r3.json",
+      "sha256": "7df3d25271db06dee61834cd694be3ae2d432e8da90734b487d84d3f9f12e3b9"
+    },
+    "production_threads": 24,
+    "scope": "calibrated-work-unit",
+    "wall_s_per_unit": 88.89740920066833,
+    "work_unit": "native-real-logit-cost-cell"
+  },
+  "regions": "any-cpu-quarter",
+  "request_manifest_sha256": "403a1c155ca59b482ea2e3a92cd5afd194529fb2e5040e2798348eb8edb11f9c",
+  "requires_tools": [
+    "/usr/bin/taskset",
+    "/usr/bin/python3",
+    "/usr/bin/bash"
+  ],
+  "result_path": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/specgram3/out/RESULT.json",
+  "schema": "epyc.ready.v2",
+  "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/specgram3",
+  "shared_state": [],
+  "source_manifest": "/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/specgram3/SOURCE-MANIFEST.sha256",
+  "source_manifest_sha256": "e34f20e8abf16bad8b1000103bfd61e53f401ff6159a5e4a1f5d4e614991b410",
+  "window_s": 21600,
+  "workload_kind": "llm"
+}

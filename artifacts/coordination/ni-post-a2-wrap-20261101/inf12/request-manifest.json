@@ -1,0 +1,13 @@
+{
+  "adapter": "/mnt/raid0/llm/models/delta-mem_qwen3_4b-instruct",
+  "id": "codex-ni-inf12-gate2-triton36-v3-20261101",
+  "kv_cache_mode": "unified",
+  "model": "/mnt/raid0/llm/models/Qwen3-4B-Instruct-2507",
+  "observed_full_context_prompt_tokens": 258333,
+  "operation": "Run the pinned MemoryAgentBench eventqa_full/base entry with the unchanged official prompt builder and Qwen3-4B recipe; preserve resumable full-population output.",
+  "qualification": "normal and active-cutoff fixture must invoke the same launch.sh -> job.sh -> official evaluator entry, with a real eventqa_full tokenization/forward and real JSONL result writer; this request document does not claim either qualification was run.",
+  "required_context": 262144,
+  "schema": "epyc.llm.request.v1",
+  "source_manifest": "/mnt/raid0/llm/tmp/codex-ni-v2-gpu-20261101/SOURCE-SHA256SUMS",
+  "work_unit": "Accurate_Retrieval/eventqa_full/base:first-unfinished-question"
+}

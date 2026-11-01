@@ -1,0 +1,51 @@
+{
+  "acceptance_rule": "each real toolcall-eager T0.3/0.8 B1/B5 cell grammar_delta_ms_per_token <2 AND grammar_share_pct <5; invalid script tokens=0; lower is better",
+  "current_actual_step_share": "UNMEASURED",
+  "first_native_context": {
+    "chat_template": "<|im_start|>system\\n{system_prompt}<|im_end|>\\n<|im_start|>user\\n{user_prompt}<|im_end|>\\n<|im_start|>assistant\\n<think>\\n\\n</think>\\n\\n",
+    "event": "first successful in-process llama_decode for script 0; native child log records prefix/script token counts",
+    "prompt_tokens": 96,
+    "script": "# read the page\\nTOOL(\"http_get\", url=\"https://example.org/a\", timeout=30)\\n",
+    "script_tokens": 25,
+    "system_prompt": "You are an agent. Answer with ONE line in exactly one of these forms: TOOL(\"name\", key=value, ...) to call a tool (tools: http_get(url, timeout), calculate(expr)); FINAL(\"answer\") to give the final answer; or plain Python code. You may put one '# comment' line first.",
+    "user_prompt": "Fetch https://example.org/a with a 30 second timeout."
+  },
+  "forced_token_replay_calls": 5450,
+  "greedy_prompts": 8,
+  "greedy_token_cap_per_arm": 256,
+  "historical_step_denominator_ms": 24.86,
+  "kind": "epyc.specgram3.native-request-manifest.v2",
+  "model": {
+    "edge_sha256": "07b181eed5d3b8c0317427faea571256f2f6bb3d97265bf6ccc096f5e9dac6a9",
+    "path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+    "size": 37801097504
+  },
+  "native_cost_cells": 48,
+  "not_claimed": [
+    "current actual step-share gate",
+    "adoption",
+    "parent completion"
+  ],
+  "qualification_workload": {
+    "backend": "llama.cpp-in-process",
+    "batch": 4096,
+    "context": 4096,
+    "fixture_cell_reps": 30,
+    "kv_cache_mode": "split",
+    "n_parallel": 1,
+    "temperature": [
+      0.3,
+      0.8
+    ],
+    "threads": 24,
+    "ubatch": 512,
+    "work_unit": "native-real-logit-cost-cell"
+  },
+  "replay_cells": 7,
+  "task": "SPEC-GRAM3 combined diagnostic continuation",
+  "unchanged_parent_gates": [
+    "actual greedy output byte parity across all 8 prompts",
+    "original 5450-call x 7-cell replay under native LLGuidance 1.0.1",
+    "auxiliary Q36 tokenizer equality remains UNKNOWN and is not a parent seal"
+  ]
+}

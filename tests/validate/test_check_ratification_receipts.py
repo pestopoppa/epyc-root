@@ -218,6 +218,62 @@ def test_mentions_without_writes_and_comment_only_mentions_are_ignored(repo: Pat
     assert rc == 0
 
 
+def test_python_docstring_only_boundary_mention_is_not_a_write(repo: Path) -> None:
+    """An archived source may cite doctrine while writing only its own output."""
+    path = repo / "scripts" / "operator" / "archived.py"
+    path.write_text(
+        'def f():\n'
+        '    """See CLAUDE.md Process Management."""\n'
+        '    from pathlib import Path\n'
+        '    Path("scratch/result.json").write_text("{}")\n'
+    )
+    rc, report = _run(repo)
+    assert rc == 0
+    assert report["scripts"] == []
+
+
+def test_archived_pbq_source_cites_doctrine_without_writing_it() -> None:
+    path = ROOT / "artifacts/engineering/pbqcost-deadline-contract-20261101/candidate-source/kpf18_gate.py"
+    text = path.read_text()
+    assert "CLAUDE.md" in text and mod.writes_files(text)
+    assert mod.classify(path, text, ROOT, ["CLAUDE.md"]) is None
+
+
+@pytest.mark.parametrize("body", [
+    'from pathlib import Path\nmessage = """CLAUDE.md\\npolicy note"""\nPath("out").write_text("x")\n',
+    'from pathlib import Path\nx = 1\n"""CLAUDE.md"""\nPath("out").write_text("x")\n',
+    'from pathlib import Path\n@decorate("CLAUDE.md")\ndef f():\n    Path("out").write_text("x")\n',
+    'from pathlib import Path\ntarget = "CLAUDE.md"\nPath(target).write_text("x")\n',
+    'from pathlib import Path\ndef f():\n    """doctrine""" ; Path("CLAUDE.md").write_text("x")\n',
+    'from pathlib import Path\ndef f():\n    """CLAUDE.md"""\nexec(f.__doc__)\nPath("out").write_text("x")\n',
+    'from pathlib import Path\ndef f():\n    """CLAUDE.md"""\neval(f.__doc__)\nPath("out").write_text("x")\n',
+    'from pathlib import Path\nimport builtins\ndef f():\n    """CLAUDE.md"""\nbuiltins.exec(f.__doc__)\nPath("out").write_text("x")\n',
+    'from pathlib import Path\ndef f():\n    """CLAUDE.md"""\ngetattr(f, "__doc__")\nPath("out").write_text("x")\n',
+    'from pathlib import Path\ndef f():\n    """CLAUDE.md"""\ngetdoc(f)\nPath("out").write_text("x")\n',
+    'from pathlib import Path\ndef f():\n    """CLAUDE.md"""\ngetattr(f, attr)\nPath("out").write_text("x")\n',
+    'from pathlib import Path\ndef f():\n    """CLAUDE.md"""\ncompile(f.__doc__, "<string>", "exec")\nPath("out").write_text("x")\n',
+    'from pathlib import Path\nimport re\nclass Shim:\n    def compile(self, x): pass\nre = Shim()\ndef f():\n    """CLAUDE.md"""\nre.compile("x")\nPath("out").write_text("x")\n',
+    'from pathlib import Path\nimport re\ndef f(re):\n    """CLAUDE.md"""\n    re.compile("x")\n    Path("out").write_text("x")\n',
+    'from pathlib import Path\nimport re\nfrom other import re\ndef f():\n    """CLAUDE.md"""\nre.compile("x")\nPath("out").write_text("x")\n',
+    'from pathlib import Path\nimport re, other as re\ndef f():\n    """CLAUDE.md"""\nre.compile("x")\nPath("out").write_text("x")\n',
+    'from pathlib import Path\nimport re\nglobals()["re"] = other\ndef f():\n    """CLAUDE.md"""\nre.compile("x")\nPath("out").write_text("x")\n',
+    'from pathlib import Path\nimport re\nclass C:\n    """CLAUDE.md"""\nsetattr(C, "__doc__", "changed")\nre.compile("x")\nPath("out").write_text("x")\n',
+    'from pathlib import Path\nimport re\nclass C:\n    """CLAUDE.md"""\nlocals()["x"] = C.__doc__\nre.compile("x")\nPath("out").write_text("x")\n',
+    'from pathlib import Path\nimport re\nclass C:\n    """CLAUDE.md"""\n__import__("builtins")\nre.compile("x")\nPath("out").write_text("x")\n',
+    'from pathlib import Path\nimport re\nclass C:\n    """CLAUDE.md"""\n    value = __doc__\nre.compile("x")\nPath("out").write_text("x")\n',
+    'from pathlib import Path\nimport re\n"""CLAUDE.md"""\ndef f():\n    print(__doc__)\nre.compile("x")\nPath("out").write_text("x")\n',
+    'from pathlib import Path\n"""CLAUDE.md"""\nif True print("broken")\nPath("out").write_text("x")\n',
+])
+def test_python_executable_or_unparseable_boundary_mentions_still_fail(
+    repo: Path, body: str
+) -> None:
+    path = repo / "scripts" / "operator" / "candidate.py"
+    path.write_text(body)
+    rc, report = _run(repo)
+    assert rc == 1
+    assert _verdicts(report)["scripts/operator/candidate.py"] == "FAIL"
+
+
 def test_other_repo_globs_are_not_root_boundary(repo: Path) -> None:
     _script(repo, "eras.sh", 'echo row >> "$ORCH/orchestration/instrument_eras.yaml"\n')
     assert _run(repo)[1]["scripts"] == []
@@ -314,6 +370,23 @@ def test_not_a_boundary_write_overrules_only_the_text_rule(repo: Path) -> None:
     s = _script(repo, "waive.sh", 'sha256sum "$ROOT/MEASUREMENT.md"\ncat > "$OUT" <<JSON\n{}\nJSON\n')
     rc, report = _run(repo, "--exemptions", str(_pin(repo, s, kind="not-a-boundary-write")))
     assert _verdicts(report)[s] == "EXEMPT" and rc == 0
+
+
+def test_hash_pinned_python_exemption_keeps_legacy_text_finding(repo: Path) -> None:
+    path = repo / "scripts/operator/archived.py"
+    path.write_text('def f():\n    """CLAUDE.md"""\n    from pathlib import Path\n'
+                    '    Path("scratch/result.json").write_text("{}")\n')
+    script = "scripts/operator/archived.py"
+    pin = _pin(repo, script, kind="not-a-boundary-write")
+    rc, report = _run(repo, "--exemptions", str(pin))
+    assert rc == 0
+    assert _verdicts(report)[script] == "EXEMPT"
+    assert {f["script"]: f for f in report["scripts"]}[script]["classified_via"] == ["text"]
+
+    path.write_text(path.read_text() + "# changed\n")
+    rc, report = _run(repo, "--exemptions", str(pin))
+    assert rc == 2
+    assert any("remove the stale entry" in error for error in report["errors"])
 
 
 def test_not_a_boundary_write_cannot_overrule_a_patch(repo: Path) -> None:

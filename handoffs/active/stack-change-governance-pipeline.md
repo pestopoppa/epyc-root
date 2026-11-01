@@ -123,6 +123,7 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
     `discover_active_roles` drop `worker_vision` / `vision_escalation` (:8086). `live_stack` is KEPT, because ~40
     declared consumers need it (`live_stack_role_records` is CRITICAL in impact analysis); two helpers sit beside it.
     7 new tests plus a negative control. Argv identity 11/11, no relaunch. Not ticked until signed and applied.
+  - 2026-11-01: an isolated source proposal rebased on Orchestrator `2e45e6a` preserves `live_stack` and adds default-launch filtering; four focused tests passed. It is unmerged and the derived stack change remains unsigned. [Proposal](../../artifacts/coordination/ni-post-a2-wrap-20261101/RTG36-PROPOSED.md). [no-belief: source proposal only]
 - [ ] **SCG-PRIORS-WARM-b — switch the default-start readers to `live_stack_default_launch_role_records()`.** (filed
   2026-10-04, workspace-ec, from STACKCHG-HYGIENE PACKAGE §8 A-3; after SCG-PRIORS-WARM is applied) The RESIDENT
   consumers that mean "expected up after a default start" still read `live_stack`: `/health` core probes (a missing

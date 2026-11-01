@@ -1,0 +1,74 @@
+{
+  "backend_type": "llama.cpp-in-process",
+  "kind": "epyc.specgram3.native-production-recipe.v2",
+  "kv_cache_mode": "split",
+  "model": {
+    "edge_sha256": "07b181eed5d3b8c0317427faea571256f2f6bb3d97265bf6ccc096f5e9dac6a9",
+    "path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+    "size": 37801097504
+  },
+  "native_benchmark": {
+    "binary": "/mnt/raid0/llm/tmp/codex-ni-specgram3-v2-20261101/bench-specgram3",
+    "binary_sha256": "fe14f8ff209fd591261bdfbda6d9f45330a08c954cd8097b76d0206f7e8119a2",
+    "first_cell": {
+      "kind": "toolcall-eager",
+      "prompt_tokens": 96,
+      "script": 0,
+      "script_tokens": 25
+    },
+    "llguidance_header": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-specgram3-v2-20261101/llguidance.h",
+      "sha256": "2578a515ab2e10db9dba912b82c6c3ff13ee48cbf1ce4f7f80eedcb01c28137e"
+    },
+    "llguidance_native_library": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-specgram3-v2-20261101/wheel/llguidance/_lib.abi3.so",
+      "sha256": "9ac6b493c5d7e8130308896e71815180411edb3442ea0c12862495ccd3537bc6"
+    },
+    "llguidance_version": "1.0.1",
+    "n_batch": 4096,
+    "n_ctx": 4096,
+    "n_seq_max": 1,
+    "n_ubatch": 512,
+    "runtime_libraries": {
+      "libggml-base.so.0.16.0": {
+        "path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0",
+        "sha256": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a"
+      },
+      "libggml-cpu.so.0.16.0": {
+        "path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0",
+        "sha256": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0"
+      },
+      "libggml.so.0.16.0": {
+        "path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml.so.0.16.0",
+        "sha256": "87074c95c8709c491e84b2c8b9c0b8fa911b1cd309fbd5536a4947063a96998e"
+      },
+      "libllama-common.so.0.0.10303": {
+        "path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303",
+        "sha256": "dfd31d4bb51818e5507b9eeaa7766452cab914f02bdbd1e0f18b4c3e9294de09"
+      },
+      "libllama.so.0.0.10303": {
+        "path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303",
+        "sha256": "5cdd003d3f441e1efe42e4c06e4434b0195f25ab6317d64aa7e7cf60deaba844"
+      }
+    },
+    "source": "/mnt/raid0/llm/tmp/codex-ni-specgram3-v2-20261101/bench-grammar-sampler.cpp",
+    "source_sha256": "31b0df47c8b312d2506e890626d7e4e29c7892399a4782c82cf0d1da776bfa5a",
+    "teacher_forced_cell_reps": 30,
+    "threads": 24,
+    "work_unit": "native-real-logit-cost-cell"
+  },
+  "native_context_defaults": {
+    "compiled_libllama_path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303",
+    "compiled_libllama_sha256": "5cdd003d3f441e1efe42e4c06e4434b0195f25ab6317d64aa7e7cf60deaba844",
+    "default_kv_unified": false,
+    "default_type_k": "F16",
+    "default_type_v": "F16",
+    "header_path": "/mnt/raid0/llm/llama.cpp/include/llama.h",
+    "header_sha256": "c22da7e1590de110f37a580e27fd09ce22cc4fc1ef1ce1876eb1a36b457eb4b2",
+    "source_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "source_path": "/mnt/raid0/llm/llama.cpp/src/llama-context.cpp",
+    "source_sha256": "4d20f4562089a02ef8769dcd245b7388ced2a4420df16ca310676a7718f2d9f3"
+  },
+  "qualification_proof_contract": "TARGET_NATIVE_LLAMA; common model/context/parallel/KV/prompt/thread fields are read from this pinned native recipe and verified against the live owned benchmark child event.",
+  "scope": "Same native in-process llama.cpp benchmark entry for fixture and full run; fixture first event is the first successful script-0 llama_decode. No separate HTTP/server witness."
+}

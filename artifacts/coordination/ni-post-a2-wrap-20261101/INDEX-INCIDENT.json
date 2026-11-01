@@ -1,0 +1,13 @@
+{
+  "event": "NI worker replaced /workspace/.git/index",
+  "kind": "ni.root_shared_index_incident.v1",
+  "observed_at": "2026-11-01T15:34:00Z",
+  "overwritten_index_copy": "/mnt/raid0/llm/tmp/codex-ni-full-wrap-20261101/WORKSPACE-INDEX-AFTER-ACCIDENT-20261101",
+  "owner_action": "Each owner checks its staged set before commit",
+  "post_restore": "nine tracked unstaged paths and empty staged diff matched NI 15:03Z status; tracked working-tree files unchanged",
+  "recovery": "Main saved overwritten index and restored index to workspace HEAD",
+  "reported_at": "2026-11-01T15:36:21Z",
+  "source": "/mnt/raid0/llm/tmp/compute-flags/codex-channels/codex-ni.md, message 2026-11-01T15:36:21Z",
+  "uncertainty": "No exact pre-accident index snapshot; staging between 15:03Z and 15:34Z cannot be verified or recovered",
+  "workspace_head_at_restore": "bc7d2af82cde0be5bfda232502b366a411142c85"
+}

@@ -1,0 +1,892 @@
+diff --git a/scripts/coordination/qual-v3-native/keeper_qual_gate.py b/scripts/coordination/qual-v3-native/keeper_qual_gate.py
+--- a/scripts/coordination/qual-v3-native/keeper_qual_gate.py
++++ b/scripts/coordination/qual-v3-native/keeper_qual_gate.py
+@@ -313,6 +313,15 @@
+         return ('active' if start<=now else 'booked',regions)
+     except (OSError,ValueError,IndexError):return ('malformed','')
+ 
++def verify_ready(manifest: Path, flags: Path, fingerprint: bool = True) -> dict:
++    """Apply owner/lock completion checks before every READY receipt read."""
++    m=q.load_manifest(manifest)
++    if isinstance(m.get('qualifier_execution'),dict) and m['qualifier_execution'].get('mode') == 'async-owner-cpu-v1':
++        from async_qual_dispatcher import verify_terminal
++        return verify_terminal(manifest,flags,m,q,fingerprint)
++    return q.verify(manifest,flags,fingerprint)
++
++
+ def classify(manifest: Path, flags: Path, *, fingerprint: bool = True) -> tuple[str, str]:
+     try:
+         m = q.load_manifest(manifest)
+@@ -326,7 +335,7 @@
+         grant_state,_=grant_status(flags/'grants'/(m['id']+'.grant'))
+         if grant_state!='absent': return refusal('grant file '+grant_state+'; id cannot be reused')
+         if q.disk_wait(manifest): return ('wait-disk', 'free - output - 2 GiB below 150 GiB')
+-        q.verify(manifest, flags, fingerprint)
++        verify_ready(manifest,flags,fingerprint)
+         return ('ok', 'keeper-issued qualification valid')
+     except (q.Refused, OSError, ValueError, KeyError, json.JSONDecodeError, subprocess.TimeoutExpired) as exc:
+         return refusal('qual:' + str(exc))
+@@ -376,7 +385,7 @@
+         if not other:return ('wait-conflict','active/valid booked manifest unparseable '+rid)
+         if eligible_booked:
+             if other.get('schema')!='epyc.ready.v2':continue
+-            try:q.verify(p,flags,True)
++            try:verify_ready(p,flags,True)
+             except (q.Refused,OSError,ValueError,KeyError,subprocess.TimeoutExpired):continue
+         if live and other.get('schema') != 'epyc.ready.v2':
+             try:
+@@ -399,7 +408,7 @@
+         if len(bits) > 1 and bits[1] == 'free': free.add(bits[0])
+     return free
+ 
+-def qual_pair(m: dict, flags: Path, rl: Path) -> str | None:
++def qual_pairs(m: dict, flags: Path, rl: Path) -> list[str] | None:
+     # R11 uses two SMT threads under a family mutex. A correctness quarter
+     # may be held; no CPU quarter region-lock claim is taken for qualification.
+     gpu = 'mi210_0' in str(m.get('regions', ''))
+@@ -426,13 +435,22 @@
+             live.append((kind, grant_cpus(reg)))
+         except (OSError, ValueError, AttributeError, q.Refused): return None
+         except Exception: return None  # unknown native grant parser failure waits
++    safe=[]
+     for base in (26,32,36,50,56,74,80):
+         pair = {base+96, base+97}
+         physical = {base,base+1}
+         if any(pair & given or ('timing' in kind and (physical & {x%96 for x in given} or
+                     set(range(96)) <= {x%96 for x in given})) for kind,given in live):continue
+-        return f'{base+96}-{base+97}'
+-    return None
++        safe.append(f'{base+96}-{base+97}')
++    return safe
++
++def qual_pair(m: dict, flags: Path, rl: Path) -> str | None:
++    pairs=qual_pairs(m,flags,rl)
++    return pairs[0] if pairs else None
++
++def qual_pair_safe(m: dict, flags: Path, rl: Path, pair: str) -> bool:
++    pairs=qual_pairs(m,flags,rl)
++    return pairs is not None and pair in pairs
+ 
+ def qualify_pending(manifest: Path, flags: Path, rl: Path, timeout: int, dry: bool = False) -> tuple[str, str]:
+     try:
+@@ -441,6 +459,28 @@
+         if m.get('hold') not in (None, 'breaker'): return refusal('held')
+         if (flags / 'grants' / (m['id']+'.ended')).exists(): return refusal('ended id cannot be reused')
+         if q.disk_wait(manifest): return ('wait-disk', 'free - output - 2 GiB below floor')
++        async_mode=(isinstance(m.get('qualifier_execution'),dict) and
++                    m['qualifier_execution'].get('mode') == 'async-owner-cpu-v1')
++        if async_mode:
++            # The receipt is written by q.run before the supervisor publishes its
++            # terminal record and releases the pair lock. Route first so neither
++            # this probe nor the grant-time classify path can accept it early.
++            state_path=flags/'ws58-keeper-state'/'async-qualification'/(m['id']+'.json')
++            if state_path.exists():
++                try:
++                    prior=json.loads(state_path.read_text());pair=prior.get('resource_pair')
++                except (OSError,ValueError):return refusal('async task state malformed; manual review/new id required')
++                if not pair:return refusal('async task has no recorded resource pair; new manifest id required')
++                if prior.get('status') in ('starting','pending') and not qual_pair_safe(m,flags,rl,pair):
++                    from async_qual_dispatcher import tick as async_tick
++                    return async_tick(manifest,flags,rl,m,pair,q,qual_pair,dry=dry,
++                                      deadline_s=m['qual_timeout_s'],pair_safe_fn=lambda _:False)
++            else:
++                pair=qual_pair(m,flags,rl)
++                if not pair:return ('wait-resource','no admitted R11 SMT pair/GPU resource')
++            from async_qual_dispatcher import tick as async_tick
++            return async_tick(manifest,flags,rl,m,pair,q,qual_pair,dry=dry,
++                              deadline_s=m['qual_timeout_s'],pair_safe_fn=lambda p:qual_pair_safe(m,flags,rl,p))
+         try:
+             q.verify(manifest, flags, True)
+             return ('qualified', 'already valid')
+@@ -449,7 +489,8 @@
+             return refusal('stale qualification receipt; republish under a new id')
+         pair = qual_pair(m, flags, rl)
+         if not pair: return ('wait-resource', 'no admitted R11 SMT pair/GPU resource')
+-        if dry: return ('would-qualify', pair)
++        if dry:
++            return ('would-qualify', pair)
+         base=int(pair.split('-')[0])-96
+         lock_path=flags/'prep-locks'/f'{base}-{base+1}.lock'
+         lock_path.parent.mkdir(parents=True,exist_ok=True)
+@@ -525,7 +566,7 @@
+             for path in (flags/'ready').glob('*.json'):
+                 m=read_json(path)
+                 if not m or m.get('schema')!='epyc.ready.v2' or m.get('owner')!=owner: continue
+-                try: proof=q.verify(path,flags,True)
++                try: proof=verify_ready(path,flags,True)
+                 except (q.Refused,OSError,ValueError,KeyError,subprocess.TimeoutExpired): continue
+                 age=dt.datetime.fromisoformat(proof['ran_at'].replace('Z','+00:00')).timestamp()
+                 if age>rec['tripped_at']:
+diff --git a/scripts/coordination/qual-v3-native/qualify_launcher.py b/scripts/coordination/qual-v3-native/qualify_launcher.py
+--- a/scripts/coordination/qual-v3-native/qualify_launcher.py
++++ b/scripts/coordination/qual-v3-native/qualify_launcher.py
+@@ -154,7 +154,14 @@
+         need(isinstance(c,dict) and isinstance(c.get('work_unit'),str) and c['work_unit'] and
+              type(c.get('planned_work_units')) in (int,float) and math.isfinite(c['planned_work_units']) and c['planned_work_units']>0,
+              'command work_unit/planned_work_units missing')
+-    need(m.get('qual_timeout_s',300) in (300,600), 'qual_timeout_s must be 300 or 600')
++    qmode=m.get('qualifier_execution')
++    if 'qualifier_execution' in m:
++        need(isinstance(qmode,dict) and set(qmode)=={'mode','max_wall_s'} and
++             qmode.get('mode')=='async-owner-cpu-v1' and qmode.get('max_wall_s')==7200 and
++             'mi210_0' not in str(m.get('regions','')) and m.get('qual_timeout_s')==7200,
++             'async 7200-second profile is CPU-only')
++    else:
++        need(m.get('qual_timeout_s',300) in (300,600), 'qual_timeout_s must be 300 or 600')
+     for key in ('est_output_GiB', 'job_floor_gib'):
+         v = m.get(key)
+         need(type(v) in (int, float) and math.isfinite(v) and v >= 0, f'{key} malformed')
+@@ -233,7 +240,8 @@
+             need(observed.get('work_unit')==m['rate_basis']['work_unit'],'LLM calibration work unit mismatch')
+         out['rate_evidence_sha256'] = evidence['sha256']
+     out['helper_sha256'] = {name: sha(Path(__file__).with_name(name)) for name in
+-                            ('qualify_launcher.py', 'keeper_qual_gate.py', 'dryrun_check.py', 'filler_lib.sh', 'ready_manifest.schema.json')}
++                            ('qualify_launcher.py', 'keeper_qual_gate.py', 'dryrun_check.py', 'filler_lib.sh',
++                             'ready_manifest.schema.json', 'async_qual_dispatcher.py', 'async_qual_supervisor.py', 'qualifier_start_gate.py')}
+     allow = json.loads(ALLOWLIST.read_text())
+     need(allow.get('kind') == 'epyc.engine-allowlist.v1' and
+          allow.get('engine') == out['engine'], 'engine path/sha not canonical allowlist entry')
+@@ -295,20 +303,33 @@
+ 
+ def group_members(pgid: int, birth: int, proc_root:Path=Path('/proc')) -> list[int]:
+     leader=proc_root/str(pgid)/'stat'
+-    if leader.exists():
+-        try:now_birth=int(leader.read_text().rsplit(') ',1)[1].split()[19])
++    def current_leader_birth():
++        try:stat=leader.read_text().rsplit(') ',1)[1].split()
++        except FileNotFoundError:return None
+         except (OSError,ValueError,IndexError):raise Refused('captured group leader identity unreadable')
+-        need(now_birth==birth,'captured launcher group leader PID was reused')
++        need(int(stat[2])==pgid and int(stat[3])==pgid,'captured group leader escaped its session')
++        value=int(stat[19])
++        need(value==birth,'captured launcher group leader PID was reused')
++        return value
++    initial=current_leader_birth()
+     members=[]
+     for proc in proc_root.iterdir():
+         if not proc.name.isdecimal():continue
+         try:
+             stat=proc.joinpath('stat').read_text().rsplit(') ',1)[1].split()
+-            if int(stat[2]) != pgid or stat[0] in ('Z','X','x'):continue
++            if int(stat[2]) != pgid or int(stat[3]) != pgid or stat[0] in ('Z','X','x'):continue
+             need(proc.stat().st_uid == os.getuid() and int(stat[19]) >= birth,
+                  'captured process group identity changed')
+             members.append(int(proc.name))
+         except (FileNotFoundError,ProcessLookupError,PermissionError,ValueError,IndexError):continue
++    final=current_leader_birth()
++    if initial is None:
++        need(final is None and not members,
++             'captured group leader absent; refusing PGID reuse inference')
++        return []
++    if final is None:
++        need(not members,'captured group leader disappeared; refusing PGID reuse inference')
++        return []
+     return members
+ 
+ def stop_group(pid: int, birth: int | None = None) -> None:
+@@ -691,6 +712,16 @@
+     need(end > dt.datetime.now(dt.timezone.utc) + dt.timedelta(seconds=m['min_window_s'] + 60), 'qualification synthetic window too short')
+     path.write_text(f"regions={pair} start={now:%Y-%m-%dT%H:%MZ} end={end:%Y-%m-%dT%H:%MZ}\n")
+ 
++def _bounded_deadline_timeout(timeout:int,deadline_epoch:float|None,now:float|None=None)->int:
++    """Bound a relative child timeout to a task's absolute wall deadline."""
++    need(type(timeout) is int and timeout>0,'qualifier child timeout must be positive')
++    if deadline_epoch is None:return timeout
++    need(type(deadline_epoch) in (int,float) and math.isfinite(deadline_epoch),
++         'async absolute deadline malformed')
++    remaining=int(deadline_epoch-(time.time() if now is None else now))
++    need(remaining>0,'async absolute deadline expired before qualifier child start')
++    return min(timeout,remaining)
++
+ def run(manifest: Path, flags: Path, nonce: str, timeout: int) -> dict:
+     m, state = read_state(manifest, flags, nonce, 'issued')
+     assert_owner_route(m)
+@@ -723,19 +754,51 @@
+     # Adopt orphaned job children so a successful launcher cannot hide a live
+     # server. Only descendants of this qualifier process are ever signalled.
+     need(ctypes.CDLL(None).prctl(36, 1, 0, 0, 0) == 0, 'subreaper setup failed')
++    owner_path=Path(os.environ['WS58_QUAL_OWNER_STATE']) if os.environ.get('WS58_QUAL_OWNER_STATE') else None
++    # Async qualification's deadline begins when the keeper acquired the pair
++    # lock, not when this launcher eventually starts. The namespace preflight
++    # above consumes part of that budget, so recompute immediately before the
++    # child starts. `timeout` is also an upper bound, preventing a wall-clock
++    # adjustment from extending the original remaining budget.
++    deadline_env=os.environ.get('WS58_QUAL_DEADLINE_EPOCH')
++    if deadline_env is not None:
++        try: deadline_epoch=float(deadline_env)
++        except (ValueError,OverflowError) as exc: raise Refused('async absolute deadline malformed') from exc
++        timeout=_bounded_deadline_timeout(timeout,deadline_epoch)
+     with (qdir / 'launcher.out').open('w') as out:
+-        p = subprocess.Popen(['setsid', 'bash', m['launcher']['path']], cwd=str(ROOT), env=env,
+-                             stdout=out, stderr=subprocess.STDOUT)
+-        birth = group_birth(p.pid)
+-        try: rc = p.wait(timeout=timeout)
+-        except subprocess.TimeoutExpired:
+-            stop_group(p.pid,birth)
+-            try: p.wait(timeout=8)
+-            except subprocess.TimeoutExpired: pass
+-            drain_children()
+-            raise Refused('qualification timeout; captured process group drained')
++        gate_read,gate_write=os.pipe()
++        try:
++            p = subprocess.Popen([sys.executable,'-B',str(Path(__file__).with_name('qualifier_start_gate.py')),
++                                  str(gate_read),m['launcher']['path']], cwd=str(ROOT), env=env,
++                                 stdin=subprocess.DEVNULL,stdout=out,stderr=subprocess.STDOUT,
++                                 start_new_session=True,close_fds=True,pass_fds=(gate_read,))
++            os.close(gate_read);gate_read=-1
++            birth = group_birth(p.pid)
++            owner_record={'schema':'epyc.qualifier-active-group.v1','task_id':m['id'],
++                          'manifest_sha256':manifest_digest(m),'fixture_sha256':files['qual_fixture']['sha256'],
++                          'state':'running','pgid':p.pid,'birth_ticks':birth,'uid':os.getuid()}
++            if owner_path:atomic_json(owner_path,owner_record)
++            # Launcher code cannot run until its exact process group is durable in the owner record.
++            if os.write(gate_write,b'G')!=1:raise Refused('qualifier launcher start gate short write')
++            os.close(gate_write);gate_write=-1
++            try: rc = p.wait(timeout=timeout)
++            except subprocess.TimeoutExpired:
++                stop_group(p.pid,birth)
++                try: p.wait(timeout=8)
++                except subprocess.TimeoutExpired: pass
++                drain_children()
++                if owner_path:atomic_json(owner_path,{**owner_record,'state':'drained','reason':'deadline','drained_at':time.time()})
++                raise Refused('qualification timeout; captured process group drained')
++        finally:
++            for fd in (gate_read,gate_write):
++                if fd>=0:
++                    try:os.close(fd)
++                    except OSError:pass
++    # p.wait reaps the group leader. First drain every adopted descendant, then
++    # verify the absent-leader group is empty; never infer a reused PGID.
++    drain_children()
+     stop_group(p.pid,birth)
+-    drain_children()
++    if owner_path:atomic_json(owner_path,{**owner_record,'state':'drained','exit_code':rc,'drained_at':time.time()})
+     need(rc == 0, f'qualification launcher rc={rc}; see {qdir / "launcher.out"}')
+     if gpu_qual:
+         need(gpu_claim_ancestor(m['id']) == gpu_claim, 'exclusive GPU claim lost during qualification')
+@@ -925,33 +988,155 @@
+     atomic_json(qdir / 'receipt-partial.json', obj)
+     return obj
+ 
++def _proc_identity(pid:int)->dict:
++    root=Path(f'/proc/{pid}')
++    try:row=root.joinpath('stat').read_text().rsplit(') ',1)[1].split()
++    except (OSError,ValueError,IndexError) as exc:raise Refused(f'process identity unavailable for {pid}') from exc
++    try:
++        return {'pid':pid,'state':row[0],'ppid':int(row[1]),'pgid':int(row[2]),'sid':int(row[3]),
++                'birth_ticks':int(row[19]),'uid':root.stat().st_uid}
++    except (OSError,ValueError,IndexError) as exc:raise Refused(f'process identity unreadable for {pid}') from exc
++
++def _is_descendant_of_owner(owner_pid:int,owner_birth:int)->bool:
++    pid=os.getppid();seen=set()
++    while pid>1 and pid not in seen:
++        seen.add(pid);ident=_proc_identity(pid)
++        if pid==owner_pid:return ident['birth_ticks']==owner_birth and ident['uid']==os.getuid()
++        pid=ident['ppid']
++    return False
++
++def _cutoff_timeout(manifest:Path,flags:Path,nonce:str,requested:int,job_pid:int,m:dict)->int:
++    need(type(requested) is int and 0<requested<=240,'ordinary active cutoff timeout must be 1..240 seconds')
++    profile=m.get('qualifier_execution')
++    if not isinstance(profile,dict) or profile.get('mode')!='async-owner-cpu-v1':return requested
++    need(set(profile)=={'mode','max_wall_s'} and profile.get('max_wall_s')==7200 and
++         m.get('qual_timeout_s')==7200 and 'mi210_0' not in str(m.get('regions','')),
++         'long active cutoff requires reviewed CPU async profile')
++    need(requested==240,'async cutoff must enter through the pinned canonical 240-second command')
++    need(os.environ.get('WS58_QUAL')=='1' and os.environ.get('WS58_QUAL_NONCE')==nonce and
++         os.environ.get('WS58_QUAL_TASK_ID')==m['id'],'async cutoff qualification namespace mismatch')
++    task=flags/'ws58-keeper-state'/'async-qualification'/(m['id']+'.json')
++    active=flags/'ws58-keeper-state'/'async-qualification'/(m['id']+'.active.json')
++    owner_env=Path(os.environ.get('WS58_QUAL_OWNER_STATE','/nonexistent'))
++    need(not task.is_symlink() and task.is_file() and not active.is_symlink() and active.is_file() and
++         owner_env.resolve()==active.resolve(),'async owner state path absent or mismatched')
++    try:record=json.loads(task.read_text());group=json.loads(active.read_text())
++    except (OSError,ValueError) as exc:raise Refused('async cutoff owner state unreadable') from exc
++    expected_manifest=manifest_digest(m);fixture_sha=sha(Path(m['qual_fixture']['path']))
++    source_sha=sha(Path(m['source_manifest']))
++    need(record.get('schema')=='epyc.async-cpu-qualification.v1' and record.get('status')=='pending' and
++         record.get('task_id')==m['id'] and record.get('manifest_sha256')==expected_manifest and
++         record.get('fixture_sha256')==fixture_sha and record.get('source_manifest_sha256')==source_sha and
++         record.get('resource_pair')==os.environ.get('WS58_QUAL_CPUS') and
++         record.get('nonce_sha256')==hashlib.sha256(nonce.encode()).hexdigest(),
++         'async task identity/digest/nonce binding mismatch')
++    issued_m,_=read_state(manifest,flags,nonce,'issued')
++    need(issued_m.get('id')==m['id'],'async cutoff nonce is not keeper-issued')
++    owner=record.get('owner') or {};owner_pid=owner.get('supervisor_pid');owner_birth=owner.get('supervisor_birth_ticks')
++    need(type(owner_pid) is int and type(owner_birth) is int and _is_descendant_of_owner(owner_pid,owner_birth),
++         'async cutoff is outside captured supervisor ancestry')
++    owner_ident=_proc_identity(owner_pid)
++    need(owner_ident['birth_ticks']==owner_birth and owner_ident['uid']==os.getuid() and owner_ident['state'] not in ('Z','X','x'),
++         'async supervisor identity changed or is not live')
++    need(group.get('schema')=='epyc.qualifier-active-group.v1' and group.get('task_id')==m['id'] and
++         group.get('manifest_sha256')==expected_manifest and group.get('fixture_sha256')==fixture_sha and
++         group.get('state')=='running','active qualifier group binding mismatch')
++    pgid=group.get('pgid');group_birth=group.get('birth_ticks')
++    need(type(pgid) is int and type(group_birth) is int,'active qualifier group identity absent')
++    leader=_proc_identity(pgid);job=_proc_identity(job_pid)
++    need(leader['birth_ticks']==group_birth and leader['pgid']==pgid and leader['sid']==pgid and
++         leader['uid']==os.getuid() and job['pgid']==pgid and job['sid']==pgid and job['uid']==os.getuid() and
++         job['state'] not in ('Z','X','x'),'cutoff job is outside captured active group')
++    created=record.get('created_at');deadline=record.get('deadline_epoch');now=time.time()
++    need(type(created) in (int,float) and type(deadline) in (int,float) and
++         math.isfinite(created) and math.isfinite(deadline) and
++         0<deadline-created<=7200 and created<=now<deadline,
++         'async absolute wall deadline absent, expired, or exceeds 7200 seconds')
++    remaining=int(deadline-now)
++    need(remaining>0,'async absolute wall deadline expired')
++    return min(remaining,7200)
++
++def _async_cutoff_mode(m:dict)->bool:
++    return isinstance(m.get('qualifier_execution'),dict) and m['qualifier_execution'].get('mode')=='async-owner-cpu-v1'
++
++def _publish_cutoff(manifest:Path,flags:Path,nonce:str,stopfile:Path,job_pid:int,m:dict,
++                    event_path:Path,mono_deadline:float,async_mode:bool)->dict:
++    lockfd=None
++    try:
++        if async_mode:
++            import fcntl
++            task_lock=flags/'ws58-keeper-state'/'async-qualification'/(m['id']+'.lock')
++            need(task_lock.parent.is_dir() and task_lock.is_file() and not task_lock.is_symlink(),
++                 'async task lock absent or unsafe')
++            lockfd=os.open(task_lock,os.O_RDWR|os.O_CLOEXEC|getattr(os,'O_NOFOLLOW',0))
++            opened=os.fstat(lockfd);current=task_lock.stat()
++            need((opened.st_dev,opened.st_ino)==(current.st_dev,current.st_ino),
++                 'async task lock inode changed')
++            try:fcntl.flock(lockfd,fcntl.LOCK_EX|fcntl.LOCK_NB)
++            except BlockingIOError:raise Refused('async task state is being reconciled; refuse cutoff STOP')
++            wall_left=_cutoff_timeout(manifest,flags,nonce,240,job_pid,m)
++            need(time.monotonic()<mono_deadline and wall_left>0,
++                 'async cutoff deadline expired before STOP')
++        event=json.loads(event_path.read_text())
++        need(event.get('id')==m['id'] and event.get('nonce')==nonce and
++             event.get('phase')=='cutoff' and event.get('native_first_event') is True and
++             first_request_ok(m,event.get('first_request',{})),
++             'cutoff marker has no native first event')
++        job_ident=_proc_identity(job_pid)
++        need(job_ident['state'] not in ('Z','X','x'),'cutoff job ended before native first-event marker')
++        pid=event.get('native_pid');birth=event.get('native_birth_ticks')
++        need(type(pid) is int and pid>1 and type(birth) is int and birth>0,
++             'cutoff native child identity absent')
++        native=_proc_identity(pid)
++        need(native['birth_ticks']==birth and native['pgid']==job_ident['pgid'] and
++             native['sid']==job_ident['sid'] and native['uid']==os.getuid(),
++             'cutoff native child not live in captured launcher group')
++        # Recheck authorization after event and process validation while the
++        # keeper/supervisor state lock still excludes terminal reconciliation.
++        if async_mode:
++            wall_left=_cutoff_timeout(manifest,flags,nonce,240,job_pid,m)
++            need(time.monotonic()<mono_deadline and wall_left>0,
++                 'async cutoff deadline expired before STOP')
++        observed={'native_pid':pid,'native_birth_ticks':birth,'native_first_event':True,
++                  'event_sha256':sha(event_path),'observed_at':time.time()}
++        observed_path=flags/'qual'/nonce/'cutoff-observed.json'
++        need(not observed_path.exists() and not observed_path.is_symlink(),
++             'cutoff observation already exists; refuse replay')
++        atomic_json(observed_path,observed)
++        fd=os.open(stopfile,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
++        with os.fdopen(fd,'w') as f:f.write('qualification active cutoff\n')
++        return observed
++    finally:
++        if lockfd is not None:
++            try:
++                import fcntl
++                fcntl.flock(lockfd,fcntl.LOCK_UN)
++            except OSError:pass
++            os.close(lockfd)
++
+ def trigger_cutoff(manifest:Path,flags:Path,nonce:str,stopfile:Path,timeout_s:int,job_pid:int)->dict:
+-    """Issue STOP only after an actual native event from a live owned child."""
++    """Issue STOP on an actual first event; async CPU wait derives from its owner deadline."""
+     m=load_manifest(manifest);need(m['production'],'active cutoff belongs to production qualification only')
++    timeout_s=_cutoff_timeout(manifest,flags,nonce,timeout_s,job_pid,m)
+     qdir=flags/'qual'/nonce
+     need(stopfile.resolve().is_relative_to(qdir.resolve()) and not stopfile.exists(), 'cutoff STOP path invalid')
+-    event_path=qdir/'cutoff-event.json';deadline=time.monotonic()+timeout_s
++    event_path=qdir/'cutoff-event.json';started=time.monotonic();deadline=started+timeout_s
++    async_mode=_async_cutoff_mode(m)
++    next_auth_check=started+1.0
+     while time.monotonic()<deadline:
+-        try:job_stat=Path(f'/proc/{job_pid}/stat').read_text().rsplit(') ',1)[1].split()
+-        except OSError:raise Refused('cutoff job exited before native first-event marker')
+-        need(job_stat[0] not in ('Z','X','x'),'cutoff job ended before native first-event marker')
++        now_mono=time.monotonic()
++        if async_mode and now_mono>=next_auth_check:
++            # Revalidate nonce/task/manifest/fixture/source, owner ancestry and
++            # captured process-group birth during the wait. The original
++            # monotonic deadline prevents a backward wall-clock adjustment
++            # from extending the initially authorized budget.
++            wall_left=_cutoff_timeout(manifest,flags,nonce,240,job_pid,m)
++            need(now_mono<deadline and wall_left>0,'async cutoff deadline expired while waiting')
++            next_auth_check=now_mono+1.0
++        job_ident=_proc_identity(job_pid)
++        need(job_ident['state'] not in ('Z','X','x'),'cutoff job ended before native first-event marker')
+         if event_path.is_file():
+-            event=json.loads(event_path.read_text())
+-            need(event.get('id')==m['id'] and event.get('nonce')==nonce and
+-                 event.get('phase')=='cutoff' and event.get('native_first_event') is True and
+-                 first_request_ok(m,event.get('first_request',{})), 'cutoff marker has no native first event')
+-            pid=event.get('native_pid');birth=event.get('native_birth_ticks')
+-            need(type(pid) is int and pid>1 and type(birth) is int and birth>0,'cutoff native child identity absent')
+-            stat=Path(f'/proc/{pid}/stat').read_text().rsplit(') ',1)[1].split()
+-            need(int(stat[19])==birth and os.getpgid(pid)==os.getpgrp() and
+-                 Path(f'/proc/{pid}').stat().st_uid==os.getuid(),
+-                 'cutoff native child not live in captured launcher group')
+-            observed={'native_pid':pid,'native_birth_ticks':birth,'native_first_event':True,
+-                      'event_sha256':sha(event_path),'observed_at':time.time()}
+-            atomic_json(qdir/'cutoff-observed.json',observed)
+-            fd=os.open(stopfile,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+-            with os.fdopen(fd,'w') as f:f.write('qualification active cutoff\n')
+-            return observed
++            return _publish_cutoff(manifest,flags,nonce,stopfile,job_pid,m,event_path,deadline,async_mode)
+         time.sleep(.05)
+     raise Refused('cutoff native first-event marker timed out before STOP')
+ 
+@@ -962,7 +1147,7 @@
+     ap.add_argument('--manifest', required=True, type=Path)
+     ap.add_argument('--flags', type=Path, default=ROOT)
+     ap.add_argument('--nonce')
+-    ap.add_argument('--timeout', type=int, default=300)
++    ap.add_argument('--timeout', type=int, default=240)
+     ap.add_argument('--no-fingerprint-now', action='store_true')
+     ap.add_argument('--free-gib', type=float)
+     ap.add_argument('--qual-cpus', default='')
+diff --git a/scripts/coordination/qual-v3-native/ready_manifest.schema.json b/scripts/coordination/qual-v3-native/ready_manifest.schema.json
+--- a/scripts/coordination/qual-v3-native/ready_manifest.schema.json
++++ b/scripts/coordination/qual-v3-native/ready_manifest.schema.json
+@@ -472,6 +472,31 @@
+         "speech",
+         "command"
+       ]
++    },
++    "qual_timeout_s": {
++      "enum": [
++        300,
++        600,
++        7200
++      ],
++      "type": "integer"
++    },
++    "qualifier_execution": {
++      "additionalProperties": false,
++      "properties": {
++        "mode": {
++          "const": "async-owner-cpu-v1"
++        },
++        "max_wall_s": {
++          "const": 7200,
++          "type": "integer"
++        }
++      },
++      "required": [
++        "mode",
++        "max_wall_s"
++      ],
++      "type": "object"
+     }
+   },
+   "required": [
+diff --git a/scripts/coordination/qual-v3-native/async_qual_dispatcher.py b/scripts/coordination/qual-v3-native/async_qual_dispatcher.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/coordination/qual-v3-native/async_qual_dispatcher.py
+@@ -0,0 +1,252 @@
++"""Unapplied keeper-side async CPU qualifier integration for native-v3."""
++from __future__ import annotations
++import fcntl,hashlib,json,os,subprocess,sys,time
++from pathlib import Path
++
++SUPERVISOR=Path(__file__).with_name('async_qual_supervisor.py')
++MAX_CPU_WALL_S=7200
++class _PairUnsafe(Exception):pass
++
++def _sha(path):
++ h=hashlib.sha256()
++ with Path(path).open('rb') as f:
++  for b in iter(lambda:f.read(1<<20),b''):h.update(b)
++ return h.hexdigest()
++
++def _birth(pid):return int(Path(f'/proc/{pid}/stat').read_text().rsplit(') ',1)[1].split()[19])
++def _same_owner_identity(pid,birth):
++ try:
++  row=Path(f'/proc/{pid}/stat').read_text().rsplit(') ',1)[1].split()
++  return int(row[19])==birth and int(row[2])==pid and int(row[3])==pid and Path(f'/proc/{pid}').stat().st_uid==os.getuid()
++ except (OSError,ValueError,IndexError):return False
++
++def _live(pid,birth):
++ try:
++  row=Path(f'/proc/{pid}/stat').read_text().rsplit(') ',1)[1].split()
++  return int(row[19])==birth and row[0] not in ('Z','X','x') and int(row[2])==pid and int(row[3])==pid and Path(f'/proc/{pid}').stat().st_uid==os.getuid()
++ except (OSError,ValueError,IndexError):return False
++
++def _owner_status(pid,birth):
++ """Tri-state PID/birth check: never treat unreadable proc state as owner exit."""
++ if type(pid) is not int or pid<=0 or type(birth) is not int or birth<=0:return 'unknown'
++ path=Path(f'/proc/{pid}')
++ try:
++  raw=path.joinpath('stat').read_text()
++ except FileNotFoundError:return 'gone'
++ except OSError:return 'unknown'
++ try:
++  row=raw.rsplit(') ',1)[1].split()
++  actual_birth=int(row[19]);pgid=int(row[2]);sid=int(row[3]);uid=path.stat().st_uid
++ except (OSError,ValueError,IndexError):return 'unknown'
++ if actual_birth!=birth:return 'reused'
++ if pgid!=pid or sid!=pid or uid!=os.getuid():return 'unknown'
++ if row[0] in ('Z','X','x'):return 'gone'
++ return 'live'
++
++
++def _verify_under_pair_lock(flags,pair,verify_fn):
++ try:base=int(pair.split('-')[0])-96
++ except (ValueError,IndexError):return False,None
++ path=flags/'prep-locks'/f'{base}-{base+1}.lock'
++ try:fd=os.open(path,os.O_CREAT|os.O_RDWR|os.O_CLOEXEC,0o600)
++ except OSError:return False,None
++ acquired=False
++ try:
++  try:fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
++  except BlockingIOError:return False,None
++  acquired=True
++  opened=os.fstat(fd);current=path.stat()
++  if (opened.st_dev,opened.st_ino)!=(current.st_dev,current.st_ino):return False,None
++  return True,verify_fn()
++ finally:
++  if acquired:
++   try:fcntl.flock(fd,fcntl.LOCK_UN)
++   except OSError:pass
++  os.close(fd)
++
++def _pair_lock_available(flags,pair):
++ ok,_=_verify_under_pair_lock(flags,pair,lambda:None)
++ return ok
++
++def _atomic(path,obj):
++ path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)
++ tmp=path.with_name(path.name+'.tmp.'+str(os.getpid()))
++ tmp.write_text(json.dumps(obj,sort_keys=True,indent=2)+'\n')
++ with tmp.open('rb') as f:os.fsync(f.fileno())
++ os.replace(tmp,path)
++
++def verify_terminal(manifest,flags,m,q,fingerprint=True):
++ """Grant-time guard for async rows; require terminal owner and released pair lock."""
++ task_id=m.get('id')
++ state_path=Path(flags)/'ws58-keeper-state'/'async-qualification'/(str(task_id)+'.json')
++ try:rec=json.loads(state_path.read_text())
++ except (OSError,ValueError) as exc:raise q.Refused('async qualification owner record absent or malformed') from exc
++ pair=rec.get('resource_pair')
++ ident={'task_id':task_id,'manifest_sha256':q.manifest_digest(m),
++        'fixture_sha256':_sha(Path(m['qual_fixture']['path'])),
++        'source_manifest_sha256':_sha(Path(m['source_manifest']))}
++ if not pair or any(rec.get(k)!=v for k,v in ident.items()):
++  raise q.Refused('async qualification owner record binding changed')
++ owner=rec.get('owner') or {};pid=owner.get('supervisor_pid');birth=owner.get('supervisor_birth_ticks')
++ owner_status=_owner_status(pid,birth)
++ if owner_status not in ('gone','reused'):
++  raise q.Refused('async qualification owner still active or identity unavailable')
++ if rec.get('status')!='terminal-pass':
++  raise q.Refused('async qualification has no terminal-pass owner record')
++ ok,proof=_verify_under_pair_lock(Path(flags),pair,lambda:q.verify(manifest,flags,fingerprint))
++ if not ok:raise q.Refused('async qualification pair lock remains held or changed')
++ return proof
++
++
++def _cleanup(q,rec,active_path):
++ ok=True
++ if rec.get('supervisor_spawned') is True and not rec.get('owner'):ok=False
++ try:
++  if active_path.is_file():
++   a=json.loads(active_path.read_text())
++   if a.get('state')=='running':q.stop_group(int(a['pgid']),int(a['birth_ticks']))
++ except BaseException:ok=False
++ try:
++  owner=rec.get('owner') or {}
++  if _live(int(owner['supervisor_pid']),int(owner['supervisor_birth_ticks'])):
++   q.stop_group(int(owner['pgid']),int(owner['group_birth_ticks']))
++ except (KeyError,ValueError,TypeError):pass
++ except BaseException:ok=False
++ try:
++  owner=rec.get('owner') or {}
++  if _live(int(owner['supervisor_pid']),int(owner['supervisor_birth_ticks'])):ok=False
++ except (KeyError,ValueError,TypeError):pass
++ return ok
++
++def tick(manifest:Path,flags:Path,rl:Path,m:dict,pair:str,q,qual_pair_fn,*,dry=False,deadline_s=MAX_CPU_WALL_S,pair_safe_fn=None):
++ """Return a bounded keeper tuple; q.issue is always called by this keeper process."""
++ if deadline_s!=MAX_CPU_WALL_S or 'mi210_0' in str(m.get('regions','')):
++  return 'bad','async long qualifier is limited to the reviewed CPU 7200-second profile'
++ task_id=m['id'];base=int(pair.split('-')[0])-96
++ state_dir=flags/'ws58-keeper-state'/'async-qualification'
++ state_path=state_dir/(task_id+'.json');active_path=state_dir/(task_id+'.active.json')
++ id_lock_path=state_dir/(task_id+'.lock');family_lock_path=flags/'prep-locks'/f'{base}-{base+1}.lock'
++ state_dir.mkdir(parents=True,exist_ok=True);family_lock_path.parent.mkdir(parents=True,exist_ok=True)
++ if dry:
++  if state_path.exists():
++   try:
++    probe=json.loads(state_path.read_text());owner=probe.get('owner') or {}
++    if any(probe.get(k)!=v for k,v in {'manifest_sha256':q.manifest_digest(m),'fixture_sha256':_sha(Path(m['qual_fixture']['path'])),'source_manifest_sha256':_sha(Path(m['source_manifest'])),'resource_pair':pair}.items()):return 'bad','async task binding changed'
++    if probe.get('status')=='terminal-fail':return 'bad',str(probe.get('reason','terminal failure'))
++    if pair_safe_fn is not None and probe.get('status')!='terminal-pass' and not pair_safe_fn(pair):
++     return 'wait-resource','recorded pair is currently unsafe'
++    owner_state=_owner_status(owner.get('supervisor_pid'),owner.get('supervisor_birth_ticks'))
++    if owner_state=='live':return 'qualifying-pending','owner-tracked async qualifier running'
++    if owner_state=='unknown':return 'bad','async supervisor identity is unreadable; refusing receipt'
++    if probe.get('status')=='terminal-pass':
++     ok,_=_verify_under_pair_lock(flags,pair,lambda:q.verify(manifest,flags,True))
++     if not ok:return 'qualifying-pending','owner exited; pair lock has not been released'
++     return 'qualified','verified receipt; owner exited and pair lock released'
++   except BaseException:return 'bad','async task state is not verifiable'
++  if Path(m['qualification']['receipt']).exists():
++   return 'bad','receipt exists without terminal async owner record; new manifest id required'
++  return 'would-qualify',pair
++ with id_lock_path.open('a+') as idlock:
++  try:fcntl.flock(idlock,fcntl.LOCK_EX|fcntl.LOCK_NB)
++  except BlockingIOError:return 'qualifying-pending','another keeper tick is reconciling this task'
++  fixture=Path(m['qual_fixture']['path']);source_manifest=Path(m['source_manifest'])
++  ident={'task_id':task_id,'manifest_sha256':q.manifest_digest(m),'fixture_sha256':_sha(fixture),
++         'source_manifest_sha256':_sha(source_manifest),'resource_pair':pair}
++  if state_path.exists():
++   try:rec=json.loads(state_path.read_text())
++   except (OSError,ValueError):return 'bad','async state malformed; manual review/new id required'
++   if any(rec.get(k)!=v for k,v in ident.items()):
++    clean=_cleanup(q,rec,active_path);rec.update(status='terminal-fail',reason='task digest/pair changed',cleanup_verified=clean)
++    _atomic(state_path,rec);return 'bad','async task binding changed; new manifest id required'
++   owner=rec.get('owner') or {}
++   pid=owner.get('supervisor_pid');birth=owner.get('supervisor_birth_ticks')
++   if pair_safe_fn is not None and rec.get('status')!='terminal-pass' and not pair_safe_fn(pair):
++    if type(pid) is int and type(birth) is int and _live(pid,birth):
++     clean=_cleanup(q,rec,active_path);rec.update(status='terminal-fail',reason='recorded pair became unsafe while owner ran',cleanup_verified=clean);_atomic(state_path,rec)
++     return 'bad','recorded pair became unsafe while owner ran'
++    return 'wait-resource','recorded pair is currently unsafe'
++   if rec.get('status')=='terminal-fail':
++    if type(pid) is int and type(birth) is int and _live(pid,birth):
++     if time.time()<rec.get('deadline_epoch',0):return 'qualifying-pending',f"failed owner cleanup pending {pid}/{birth}"
++    clean=rec.get('cleanup_verified') is True
++    if not clean:clean=_cleanup(q,rec,active_path)
++    rec['cleanup_verified']=clean;_atomic(state_path,rec)
++    return 'bad',str(rec.get('reason','terminal failure'))
++   if type(pid) is not int or type(birth) is not int:
++    rec.update(status='terminal-fail',reason='owner PID/birth absent',cleanup_verified=False);_atomic(state_path,rec)
++    return 'bad',rec['reason']
++   owner_state=_owner_status(pid,birth)
++   if owner_state=='unknown':return 'bad','async supervisor identity unreadable; refusing receipt or cleanup'
++   if owner_state=='live':
++    if time.time()>=rec.get('deadline_epoch',0):
++     clean=_cleanup(q,rec,active_path);rec.update(status='terminal-fail',reason='hard async deadline expired',cleanup_verified=clean);_atomic(state_path,rec)
++     return 'bad',rec['reason']
++    return 'qualifying-pending',f"owner={pid}/{birth} pair={pair}"
++   # Terminal pass is accepted only after the owner released its lock.
++   if rec.get('status')=='terminal-pass':
++    try:
++     ok,_=_verify_under_pair_lock(flags,pair,lambda:q.verify(manifest,flags,True))
++     if not ok:return 'qualifying-pending','owner exited; pair lock has not been released'
++     return 'qualified',str(m['qualification']['receipt'])
++    except BaseException:pass
++   clean=_cleanup(q,rec,active_path);rec.update(status='terminal-fail',reason='owner lost before verified terminal receipt',cleanup_verified=clean);_atomic(state_path,rec)
++   return 'bad',rec['reason']
++  if Path(m['qualification']['receipt']).exists():
++   return 'bad','stale receipt exists without async owner record; new manifest id required'
++  lockfd=os.open(family_lock_path,os.O_CREAT|os.O_RDWR|os.O_CLOEXEC,0o600)
++  proc=None;captured_birth=None
++  try:
++   try:fcntl.flock(lockfd,fcntl.LOCK_EX|fcntl.LOCK_NB)
++   except BlockingIOError:return 'wait-resource','physical pair lock busy'
++   if qual_pair_fn(m,flags,rl)!=pair:return 'wait-resource','actual pair/region status changed'
++   now=time.time();deadline=now+deadline_s
++   rec={'schema':'epyc.async-cpu-qualification.v1',**ident,'status':'starting',
++        'created_at':now,'deadline_epoch':deadline,'owner':None,'nonce_issued':False,'supervisor_spawned':False}
++   _atomic(state_path,rec)
++   nonce=q.issue(manifest,flags);rec['nonce_issued']=True;rec['nonce_sha256']=hashlib.sha256(nonce.encode()).hexdigest();_atomic(state_path,rec)
++   readfd,writefd=os.pipe();os.set_inheritable(readfd,True)
++   argv=[sys.executable,'-B',str(SUPERVISOR),'--manifest',str(manifest),'--flags',str(flags),
++         '--qualifier',str(Path(q.__file__).resolve()),'--nonce',nonce,'--pair',pair,
++         '--region-lock',str(rl),
++         '--deadline',str(deadline),'--state',str(state_path),'--active-state',str(active_path),
++         '--pair-lock',str(family_lock_path),'--lock-fd',str(lockfd),'--gate-fd',str(readfd)]
++   env=dict(os.environ,WS58_QUAL_CPUS=pair,WS58_QUAL_GPU_HELD='0',OMP_NUM_THREADS='1',OPENBLAS_NUM_THREADS='1',MKL_NUM_THREADS='1')
++   proc=subprocess.Popen(argv,cwd=str(flags),env=env,stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,
++                         stderr=subprocess.DEVNULL,start_new_session=True,close_fds=True,
++                         pass_fds=(lockfd,readfd))
++   os.close(readfd);readfd=-1
++   rec['supervisor_spawned']=True
++   birth=_birth(proc.pid)
++   if birth<=0:raise RuntimeError('supervisor birth identity unavailable')
++   captured_birth=birth
++   rec['owner']={'supervisor_pid':proc.pid,'supervisor_birth_ticks':captured_birth,'pgid':proc.pid,
++                 'group_birth_ticks':captured_birth,'resource_lock_path':str(family_lock_path)}
++   rec['status']='pending';rec['owner_recorded_at']=time.time();_atomic(state_path,rec)
++   os.write(writefd,b'G');os.close(writefd);writefd=-1
++   return 'qualifying-pending',f'owner={proc.pid}/{birth} pair={pair}'
++  except BaseException as exc:
++   clean=proc is None
++   if rec and proc is not None:rec['supervisor_spawned']=True
++   if proc is not None:
++    if captured_birth is not None and _same_owner_identity(proc.pid,captured_birth):
++     try:
++      q.stop_group(proc.pid,captured_birth)
++      try:proc.wait(timeout=2)
++      except subprocess.TimeoutExpired:pass
++      clean=not _same_owner_identity(proc.pid,captured_birth)
++     except BaseException:clean=False
++    else:
++     # Never infer a signal target from a PID whose original birth was not captured
++     # or whose PID now names a different process.
++     clean=False
++   rec=locals().get('rec',{})
++   if rec:
++    rec.update(status='terminal-fail',reason='keeper async launch failed: '+type(exc).__name__,cleanup_verified=clean)
++    _atomic(state_path,rec)
++   return 'bad','async launch refused: '+type(exc).__name__
++  finally:
++   for fd in (locals().get('readfd',-1),locals().get('writefd',-1)):
++    if isinstance(fd,int) and fd>=0:
++     try:os.close(fd)
++     except OSError:pass
++   os.close(lockfd)
+diff --git a/scripts/coordination/qual-v3-native/async_qual_supervisor.py b/scripts/coordination/qual-v3-native/async_qual_supervisor.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/coordination/qual-v3-native/async_qual_supervisor.py
+@@ -0,0 +1,100 @@
++#!/usr/bin/env python3
++"""Unapplied native-v3 async CPU qualifier supervisor entry point."""
++from __future__ import annotations
++import argparse,fcntl,hashlib,importlib.util,json,os,sys,time,traceback
++from pathlib import Path
++
++def qualifier_command(region_lock,qualifier,manifest,flags,nonce,pair,task_id,timeout):
++ # This is the same cross-role region-lock namespace used by canonical
++ # filler_run14 ordinary CPU jobs. Its WS58_QUAL branch tasksets the row but
++ # skips filler_run14's normal run_one region-lock wrapper, so qualification
++ # must hold the shared region lock around q.run itself.
++ return [str(region_lock),'run','--cpu-list',str(pair),'--role','build',
++         '--timeout-s',str(timeout),'--tag','async-qual-'+str(task_id),'--',
++         sys.executable,'-B',str(qualifier),'run','--manifest',str(manifest),
++         '--flags',str(flags),'--nonce',str(nonce),'--timeout',str(timeout)]
++
++def atomic(path,obj):
++ path=Path(path);tmp=path.with_name(path.name+'.tmp.'+str(os.getpid()))
++ tmp.write_text(json.dumps(obj,sort_keys=True,indent=2)+'\n')
++ with tmp.open('rb') as f:os.fsync(f.fileno())
++ os.replace(tmp,path)
++
++def finish_terminal(state_path,rec):
++ lock=state_path.with_name(state_path.stem+'.lock')
++ with lock.open('a+') as fd:
++  fcntl.flock(fd,fcntl.LOCK_EX)
++  current=json.loads(state_path.read_text())
++  if current.get('status')=='terminal-fail':return current
++  owner=current.get('owner') or {}
++  try:birth=int(Path(f'/proc/{os.getpid()}/stat').read_text().rsplit(') ',1)[1].split()[19])
++  except (OSError,ValueError,IndexError):return current
++  if owner.get('supervisor_pid')!=os.getpid() or owner.get('supervisor_birth_ticks')!=birth:return current
++  if rec.get('status')=='terminal-pass' and time.time()>=current.get('deadline_epoch',0):
++   rec.update(status='terminal-fail',reason='hard deadline elapsed before durable pass',cleanup_verified=True)
++  current.update({k:v for k,v in rec.items() if k not in ('owner','manifest_sha256','fixture_sha256','source_manifest_sha256','resource_pair','deadline_epoch','task_id','schema')})
++  atomic(state_path,current)
++  return current
++
++def main(argv=None):
++ p=argparse.ArgumentParser()
++ for name in ('manifest','flags','qualifier','nonce','pair','region-lock','state','active-state','pair-lock'):
++  p.add_argument('--'+name,required=True)
++ p.add_argument('--deadline',type=float,required=True);p.add_argument('--lock-fd',type=int,required=True);p.add_argument('--gate-fd',type=int,required=True)
++ a=p.parse_args(argv);manifest=Path(a.manifest);flags=Path(a.flags);state_path=Path(a.state);active=Path(a.active_state);lock_path=Path(a.pair_lock)
++ try:
++  fdstat=os.fstat(a.lock_fd);pathstat=lock_path.stat()
++  if (fdstat.st_dev,fdstat.st_ino)!=(pathstat.st_dev,pathstat.st_ino):raise RuntimeError('inherited pair lock inode changed')
++  # pass_fds shares the same open-file description; this verifies a live lock without waiting.
++  fcntl.flock(a.lock_fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
++  token=os.read(a.gate_fd,1);os.close(a.gate_fd)
++  if token!=b'G':raise RuntimeError('keeper start-gate closed before owner record commit')
++  spec=importlib.util.spec_from_file_location('async_qualifier_exact_source',a.qualifier)
++  q=importlib.util.module_from_spec(spec);spec.loader.exec_module(q)
++  remaining=int(a.deadline-time.time())
++  if not 0<remaining<=7200:raise RuntimeError('async CPU deadline absent, expired, or exceeds hard 7200s bound')
++  m=q.load_manifest(manifest)
++  if 'mi210_0' in str(m.get('regions','')):raise RuntimeError('async CPU supervisor cannot own a GPU row')
++  os.environ.update({'WS58_QUAL_CPUS':a.pair,'OMP_NUM_THREADS':'1','OPENBLAS_NUM_THREADS':'1','MKL_NUM_THREADS':'1',
++                     'WS58_QUAL_OWNER_STATE':str(active),'WS58_QUAL_TASK_ID':m['id'],
++                     'WS58_QUAL_DEADLINE_EPOCH':str(a.deadline)})
++  rec=json.loads(state_path.read_text())
++  if rec.get('status')!='pending' or rec.get('owner',{}).get('supervisor_pid')!=os.getpid():
++   raise RuntimeError('keeper owner record not bound to this supervisor')
++  try:
++   # The async runner is not itself a normal grant: filler_run14's
++   # WS58_QUAL branch tasksets the pair directly and exits before run_one's
++   # region-lock wrapper. Hold the ordinary shared region lock explicitly so
++   # a concurrent grant cannot execute on these two CPUs. q.run recomputes
++   # the remaining absolute deadline immediately before it launches the job.
++   cp=__import__('subprocess').run(
++       qualifier_command(a.region_lock,a.qualifier,manifest,flags,a.nonce,a.pair,m['id'],remaining),
++       env=os.environ.copy(),timeout=remaining+25)
++   if cp.returncode!=0:raise RuntimeError('region-locked native qualifier rc='+str(cp.returncode))
++   verified=q.verify(manifest,flags,True)
++   if verified.get('id')!=m['id']:
++    raise RuntimeError('native verifier returned mismatched receipt')
++   rec.update(status='terminal-pass',reason='q.verify accepted keeper-issued native receipt',
++              receipt_sha256=q.sha(Path(m['qualification']['receipt'])),
++              receipt_path=m['qualification']['receipt'],finished_at=time.time(),cleanup_verified=True)
++  except BaseException as exc:
++   cleanup=True
++   try:
++    if active.is_file():
++     ar=json.loads(active.read_text())
++     if ar.get('state')=='running':q.stop_group(int(ar['pgid']),int(ar['birth_ticks']))
++   except BaseException:cleanup=False
++   rec.update(status='terminal-fail',reason='qualifier exception: '+type(exc).__name__,
++              detail=str(exc)[:240],finished_at=time.time(),cleanup_verified=cleanup)
++  rec=finish_terminal(state_path,rec)
++  return 0 if rec.get('status')=='terminal-pass' else 1
++ except BaseException as exc:
++  try:
++   rec=json.loads(state_path.read_text());rec.update(status='terminal-fail',reason='supervisor startup failed: '+type(exc).__name__,
++      detail=str(exc)[:240],finished_at=time.time(),cleanup_verified=False);finish_terminal(state_path,rec)
++  except BaseException:pass
++  return 1
++ finally:
++  try:os.close(a.lock_fd)
++  except OSError:pass
++if __name__=='__main__':raise SystemExit(main())
+diff --git a/scripts/coordination/qual-v3-native/qualifier_start_gate.py b/scripts/coordination/qual-v3-native/qualifier_start_gate.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/coordination/qual-v3-native/qualifier_start_gate.py
+@@ -0,0 +1,19 @@
++#!/usr/bin/env python3
++"""Unapplied v3 helper: hold launcher before execution until owner state is durable."""
++from __future__ import annotations
++import os,sys
++
++def main(argv=None):
++ argv=sys.argv[1:] if argv is None else argv
++ if len(argv)!=2:return 64
++ try:fd=int(argv[0]);launcher=argv[1]
++ except (TypeError,ValueError):return 64
++ try:
++  token=os.read(fd,1)
++ finally:
++  try:os.close(fd)
++  except OSError:pass
++ if token!=b'G':return 75
++ os.execv('/bin/bash',['/bin/bash',launcher])
++ return 127
++if __name__=='__main__':raise SystemExit(main())
+diff --git a/scripts/coordination/qual-v3-native/ws58-calendar-keeper-v8-async-cpu-v1.sh b/scripts/coordination/qual-v3-native/ws58-calendar-keeper-v8-async-cpu-v1.sh
+--- a/scripts/coordination/qual-v3-native/ws58-calendar-keeper-v8-async-cpu-v1.sh
++++ b/scripts/coordination/qual-v3-native/ws58-calendar-keeper-v8-async-cpu-v1.sh
+@@ -375,6 +375,7 @@
+       qualified) continue;;
+       wait-disk) log "READY-WAIT-DISK $mf: $reason"; continue;;
+       wait-resource) log "READY-WAIT-QUAL-RESOURCE $mf: $reason"; continue;;
++      qualifying-pending) log "READY-PENDING-QUAL $mf: $reason"; continue;;
+       bad) log "READY-SKIP qual-failed $mf: $reason"; continue;;
+       would-qualify) ;;
+       *) log "READY-SKIP qual-error $mf: $probe"; continue;;
+@@ -386,6 +387,7 @@
+       qualified) log "READY-QUAL $mf: $reason";;
+       wait-disk) log "READY-WAIT-DISK $mf: $reason";;
+       wait-resource) log "READY-WAIT-QUAL-RESOURCE $mf: $reason";;
++      qualifying-pending) log "READY-PENDING-QUAL $mf: $reason";;
+       bad) log "READY-SKIP qual-failed $mf: $reason"
+            python3 -I - "$mf" "$reason" <<'PYALERT'
+ import datetime,json,pathlib,sys

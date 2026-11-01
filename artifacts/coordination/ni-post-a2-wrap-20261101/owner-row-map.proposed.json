@@ -1,0 +1,18 @@
+{
+  "bundles": {
+    "v1": {
+      "gate_sha256": "d1d7d8458f3d56994bf0f45b2bc253a96391124e6df4255c80493ac1523a5d56",
+      "verifier_sha256": "923029f824c937806cdb7491e69935b71472d479bed357f6b9c735120f26afe8"
+    },
+    "v3-native": {
+      "gate_sha256": "d1d7d8458f3d56994bf0f45b2bc253a96391124e6df4255c80493ac1523a5d56",
+      "verifier_sha256": "a72b4742bfa24e3238c8a5767796088aa8c7792900a11d546255e05e49952261"
+    }
+  },
+  "default": "v1",
+  "kind": "epyc.qualifier-bundles.v1",
+  "rows": {
+    "codex-ni-inf12-gate2-triton36-v3-20261101": "v3-native",
+    "codex-ni-specgram3-llg101-cpu-r3-20261101": "v3-native"
+  }
+}

@@ -1,0 +1,234 @@
+--- a/src/registry/stack_priors.py
++++ b/src/registry/stack_priors.py
+@@ -295,6 +295,32 @@
+     return live
+ 
+ 
++def stack_prior_default_launched(record: dict[str, Any]) -> bool:
++    """Whether a default ``start`` launches the role represented by this record.
++
++    WARM roles remain ``live_stack`` (declared and routable once started), but do
++    not count as expected after default start. Older artifacts fall back to tier.
++    """
++    serving = record.get("serving") if isinstance(record, dict) else None
++    if not isinstance(serving, dict):
++        return False
++    flag = serving.get("default_launch")
++    if isinstance(flag, bool):
++        return flag
++    return serving.get("tier") != "warm"
++
++
++def live_stack_default_launch_role_records(
++    path: Path = DEFAULT_OUTPUT,
++) -> dict[str, dict[str, Any]]:
++    """Live stack role records whose serving process starts by default."""
++    return {
++        role: record
++        for role, record in live_stack_role_records(path).items()
++        if stack_prior_default_launched(record)
++    }
++
++
+ def launcher_tenant_role_records(path: Path = DEFAULT_OUTPUT) -> dict[str, dict[str, Any]]:
+     """Return launcher-tenant stack-prior role records keyed by role name.
+ 
+@@ -1302,6 +1328,16 @@
+                             launch_requirements,
+                         ),
+                     }
++    default_ports = {
++        server.get("port")
++        for server in _filter_by_numa_mode(HOT_SERVERS, numa_mode)
++        if isinstance(server, dict) and isinstance(server.get("port"), int)
++    }
++    for record in roles.values():
++        record["default_launch"] = bool(
++            not record.get("launcher_only_tenant")
++            and set(record.get("ports") or []) & default_ports
++        )
+     return aliases, roles
+ 
+ 
+@@ -2843,6 +2879,9 @@
+         else server_cfg.get("tier")
+         if isinstance(server_cfg, dict)
+         else None,
++        "default_launch": bool(launch_cfg.get("default_launch"))
++        if isinstance(launch_cfg, dict)
++        else False,
+         "effective_context_tokens": launch_cfg.get("effective_context_tokens")
+         if isinstance(launch_cfg, dict)
+         and isinstance(launch_cfg.get("effective_context_tokens"), int)
+--- a/scripts/benchmark/seeding_types.py
++++ b/scripts/benchmark/seeding_types.py
+@@ -84,6 +84,21 @@
+     return dict(sorted(live_stack_role_records(stack_priors_path).items()))
+ 
+ 
++def _load_default_launch_stack_prior_roles(
++    stack_priors_path: Path = STACK_PRIORS_PATH,
++) -> dict[str, dict[str, Any]]:
++    """Live stack-prior roles launched by a default ``start``."""
++    try:
++        from src.registry.stack_priors import stack_prior_default_launched
++    except ImportError:
++        return {}
++    return {
++        role: record
++        for role, record in _load_live_stack_prior_roles(stack_priors_path).items()
++        if stack_prior_default_launched(record)
++    }
++
++
+ def _read_stack_prior_default_roles(
+     stack_priors_path: Path = STACK_PRIORS_PATH,
+ ) -> list[str]:
+@@ -94,7 +109,7 @@
+     changes.
+     """
+     active: list[str] = []
+-    for role_name, record in _load_live_stack_prior_roles(stack_priors_path).items():
++    for role_name, record in _load_default_launch_stack_prior_roles(stack_priors_path).items():
+         if role_name in STACK_PRIOR_SEEDING_EXCLUDED_ROLES:
+             continue
+         serving = record.get("serving")
+@@ -142,7 +157,7 @@
+ ) -> list[dict[str, Any]]:
+     """Read active seeding role metadata from generated stack priors."""
+     active: list[dict[str, Any]] = []
+-    for role_name, record in _load_live_stack_prior_roles(stack_priors_path).items():
++    for role_name, record in _load_default_launch_stack_prior_roles(stack_priors_path).items():
+         if (
+             role_name in STACK_PRIOR_SEEDING_EXCLUDED_ROLES
+             or role_name in SEEDING_EXCLUDED_ROLES
+--- /dev/null
++++ b/tests/unit/test_stack_priors_default_launch.py
+@@ -0,0 +1,127 @@
++from __future__ import annotations
++
++from pathlib import Path
++
++import yaml
++
++from scripts.benchmark import seeding_types as seeding
++from src.registry.stack_priors import (
++    _serving_record,
++    _stack_manifest_info,
++    live_stack_default_launch_role_records,
++    live_stack_role_records,
++    stack_prior_default_launched,
++)
++
++FIXTURE = {
++    "roles": {
++        "frontdoor": {
++            "deployment_status": "live_stack",
++            "serving": {
++                "endpoint": "http://localhost:8070",
++                "ports": [8070],
++                "tier": "hot",
++                "default_launch": True,
++            },
++        },
++        "worker_vision": {
++            "deployment_status": "live_stack",
++            "serving": {
++                "endpoint": "http://localhost:8086",
++                "ports": [8086],
++                "tier": "warm",
++                "default_launch": False,
++            },
++        },
++        "vision_escalation": {
++            "deployment_status": "live_stack",
++            "serving": {
++                "endpoint": "http://localhost:8086",
++                "ports": [8086],
++                "tier": "warm",
++                "default_launch": False,
++            },
++        },
++        "candidate": {
++            "deployment_status": "benchmark_or_candidate",
++            "serving": {
++                "endpoint": "http://localhost:9999",
++                "ports": [9999],
++                "tier": "hot",
++                "default_launch": True,
++            },
++        },
++    }
++}
++
++
++def write_fixture(tmp_path: Path, *, with_flag: bool = True) -> Path:
++    payload = yaml.safe_load(yaml.safe_dump(FIXTURE))
++    if not with_flag:
++        for rec in payload["roles"].values():
++            rec["serving"].pop("default_launch", None)
++    path = tmp_path / "priors.yaml"
++    path.write_text(yaml.safe_dump(payload), encoding="utf-8")
++    return path
++
++
++def test_warm_role_remains_live_but_is_filtered_from_default_role_readers(
++    tmp_path: Path,
++) -> None:
++    path = write_fixture(tmp_path)
++    assert set(live_stack_role_records(path)) == {
++        "frontdoor",
++        "worker_vision",
++        "vision_escalation",
++    }
++    assert set(live_stack_default_launch_role_records(path)) == {"frontdoor"}
++    assert seeding._read_stack_prior_default_roles(path) == ["frontdoor"]
++    assert [
++        record["name"] for record in seeding._read_stack_prior_active_roles(path)
++    ] == ["frontdoor"]
++
++
++def test_old_artifact_uses_tier_fallback(tmp_path: Path) -> None:
++    path = write_fixture(tmp_path, with_flag=False)
++    assert seeding._read_stack_prior_default_roles(path) == ["frontdoor"]
++    assert stack_prior_default_launched({"serving": {"tier": "warm"}}) is False
++    assert stack_prior_default_launched({"serving": {"tier": "hot"}}) is True
++    assert (
++        stack_prior_default_launched({"serving": {"endpoint": "http://localhost:1"}})
++        is True
++    )
++
++
++def test_explicit_compiled_flag_overrides_tier_fallback() -> None:
++    assert (
++        stack_prior_default_launched(
++            {"serving": {"tier": "warm", "default_launch": True}}
++        )
++        is True
++    )
++    assert (
++        stack_prior_default_launched(
++            {"serving": {"tier": "hot", "default_launch": False}}
++        )
++        is False
++    )
++
++
++def test_compiler_launch_classification_matches_hot_launch_set() -> None:
++    from scripts.server.stack_manifest import HOT_SERVERS, _filter_by_numa_mode
++
++    _, roles = _stack_manifest_info(numa_mode="full")
++    assert roles
++    hot_ports = {
++        server["port"]
++        for server in _filter_by_numa_mode(HOT_SERVERS, "full")
++        if isinstance(server, dict) and isinstance(server.get("port"), int)
++    }
++    warm = [role for role, record in roles.items() if record.get("tier") == "warm"]
++    assert warm
++    for role, record in roles.items():
++        expected = bool(set(record.get("ports") or []) & hot_ports)
++        assert record["default_launch"] is expected, role
++        result = _serving_record(role, {}, None, role, None, "test", record)
++        assert result["default_launch"] is expected, role
++    assert all(roles[role]["default_launch"] is False for role in warm)
