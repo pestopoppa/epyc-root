@@ -395,12 +395,13 @@ import.
 - [ ] **CJ-7b — `anti-apply` as a cheap capability probe** (intake-1151, Diff-XYZ). Given new code and
       a diff, recover the old code. Single-turn, supervised, automatic metrics, no judge. Useful as a
       fast instrument-health probe rather than a quality gate.
-- [ ] **CJ-7c — paired descriptive/lazy instructions + hidden execution tests** (intake-1157,
+- [x] **CJ-7c — paired descriptive/lazy instructions + hidden execution tests** ✅ 2026-11-01 — APP `57a79c78545f07568009af7b735be22bf04db28e`; [source and native tests](https://github.com/pestopoppa/epyc-orchestrator/tree/6fffd846369a4cfd7a1cff4a496a2b1816f88da1/docs/evidence/cj7c-paired-edit-20261101). [no-belief: opt-in instrument and model-free controls] (intake-1157,
       CanItEdit). The design, not the 105-problem dataset: every problem carries a fully-specified AND
       a minimal instruction, making instruction specificity a *controlled variable*. Scoring is hidden
       execution tests — no judge anywhere in the path, the same property that made IFBench an
       adopt_component. Independently rediscovered by intake-1152, which found hard instructions are
       ~5x shorter. Pairs with DCP-8 in `delegation-context-preassembly.md`.
+  - 2026-11-01: Two first-party Python edit pairs share initial code and hidden execution cases; only instruction specificity changes. Expected outputs and verdicts remain in the trusted parent, while each contained child receives one case input. Twelve native controls passed, including a reproduced false-pass exploit and its rejection after repair, input mutation, early exit, timeout, source-read refusal, process/resource limits and verified cleanup after pidfd setup failure. Ruff and normal privacy hooks passed. No models, 105-task dataset reproduction, efficacy, quality or suite adoption is claimed. DCP-8 refers to the same instrument and receives no second completion credit. Prospective benchmark capture is tracked separately under VB-CJ7C-PAIRED-EDIT-WRITE. [no-belief: source and native controls]
 - [ ] **CJ-7d — suite-construction principle** (intake-1154): build the suite to *provoke* the specific
       failure mode under study rather than sampling generic tasks. Aider's laziness benchmark is the
       worked example. A design note governing CJ-7a-c, not separate work.
