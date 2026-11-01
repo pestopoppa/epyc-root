@@ -1,0 +1,6 @@
+# Codex refactor session — 2026-11-01
+
+- Withdrew the 19 dead-launcher STALE-ARMED rows owned by `codex-refactor-01a16fc3`; moved the one additional `refactor`-owned C6 IQKFA row to BACKLOG with a LOOP-49 plus >=12 GiB RSS hold, removed its quarter queue entry, and verified its exact launcher PID was dead. Post-action owner queue count: 0 STALE-ARMED. Fleetwide scope remains with other owners. Evidence: [withdrawal record](../../artifacts/engineering/refactor-stale-armed-withdrawal-20261101/RESULT.md).
+- Reopened S0-V34-LOCK-LOSS-REPRODUCER after audit found no implementation SHA, committed artifact, test, or receipt supporting its prior tick. The historical prose remains as context, not completion evidence.
+- LOOP-50 implementation is present in commit `24975d5d55d35fb8314cda9562a9712f2601b534`; blocking pre-commit hook regression suite passed. The task-line evidence and hook gate are being reconciled in this lane.
+- LOOP-49 implementation candidate is under review. Independent review identified qualification/production placement mismatch, keeper grant-path hard-gate gaps, and insufficient receipt/grant integration coverage; these are being repaired before any CPU qualification grant.
