@@ -9,6 +9,11 @@ record the model and tokenizer identity before any experiment. Differences in
 content as well as length can affect outcomes, so this is not a pure length
 causal estimate.
 
+`tokenizer.py` counts standalone prompt strings with no BOS or chat-template
+framing; those counts are not `/chat` prompt totals. Its identity and listener
+witness inputs are caller assertions. A live runner must bind them to an owned
+server and grant and enforce transport deadlines independently.
+
 `prepare.py` verifies the base prompt by SHA-256 and compares its bytes to the
 blob at the specified commit and path in the local `--source-repo` Git object
 database (with Git replacement objects disabled). It writes the exact prompt
