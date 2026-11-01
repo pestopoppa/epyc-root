@@ -61,3 +61,8 @@ Prepared a fresh-ID v15 source draft retaining the original cohort and one-item 
 ## E1 v15 output isolation and notification recovery
 
 The disabled E1 draft now derives disjoint dry-run and production output roots and has a single-writer completion notification journal that recovers a missing notification from a matching completed marker, rejects conflicting/duplicate notifications and fails closed on torn lines. Thirty synthetic controls pass, including actual entry path and recovery. This is not validation of scientific markers, writer exclusion or atomic marker durability. The keeper watches a fixed result path, which still must be reconciled with the separate dry-run root; source sealing, live stop/drain, content provenance and native qualification remain open. No inference or READY publication occurred. Evidence `artifacts/compute/yarn-e1-v15-output-recovery-20261101/`.
+
+
+## S2 custody controls
+
+Two test-owned-process controls exercised actual disabled-candidate `owned_window.py`: ordinary STOP drained a fake worker and grandchild, while killing the lock-holding parent left a detached fake server alive and its old cohort lock reacquirable. The latter is a reproduced custody defect caused by lock descriptors being closed in children, not a safety pass. Candidate remains disabled; direct-child descriptor inheritance alone cannot prove lifetime across detached descendants. See `artifacts/compute/yarn-s2-custody-control-20261101/`. No native inference or scheduler change occurred.
