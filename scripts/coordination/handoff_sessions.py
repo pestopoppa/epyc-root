@@ -110,6 +110,7 @@ MAX_REQUEUE = 3                       # run-end event redelivered at most 3 time
 TRANSIENT_RX = re.compile(r"\b(408|50[0-9]|502|503|504)\b|connection reset|ECONNRESET|ETIMEDOUT|timed? ?out|stream disconnected|"
                           r"server_error|overloaded|temporarily unavailable", re.I)
 TRANSIENT_BACKOFF_S = (120, 240, 480)  # "go on" retries after 2/4/8 min
+DRYRUN_EVENT_MAX_AGE_S = 30 * 60      # dry-run results older than this are not events (restart safety)
 FILING_SLOTS = 1                       # DSH-4: one slot above max_live reserved for run-end filing resumes
 GO_ON_PROMPT = ("[{v}] go on. Your previous turn ended with a transient error (rc={rc}: {err}) and no wrap-up; this is retry "
                 "{n}/3. Continue exactly where you were and finish with `WRAPPED <sha>` (and report.json).")
@@ -816,7 +817,13 @@ def end_events(flags):
     """(rid, path, kind): grant ends and dry-run results (CAF-1: the dispatcher, not the session, watches these files)."""
     for p in glob.glob(os.path.join(flags, "grants", "*.ended")) + glob.glob(os.path.join(flags, "grants", "*.complete")):
         yield os.path.basename(p).rsplit(".", 1)[0], p, "run-end"
+    cutoff = time.time() - DRYRUN_EVENT_MAX_AGE_S
     for p in glob.glob(os.path.join(flags, "dryrun", "*", "PASS.json")) + glob.glob(os.path.join(flags, "dryrun", "*", "FAIL-*.json")):
+        try:
+            if os.path.getmtime(p) < cutoff:
+                continue  # historic result: the backlog already carries it as the row's fix task; no resume storm on (re)start
+        except OSError:
+            continue
         yield os.path.basename(os.path.dirname(p)), p, "dryrun"
 
 
