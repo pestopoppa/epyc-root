@@ -57,6 +57,9 @@ IDLE_COOLDOWN_S = 45 * 60
 PAUSE_S = 30 * 60
 ENGINES = ("codex", "claude", "opencode")
 # `WRAPPED <sha>` is the boundary line (2026-11-01 ruling); `WRAPUP: <sha>` is the v1 form, still accepted.
+FANOUT_LINE = ("Working mode: FAN OUT - your own thread only reviews, integrates and handles task boundaries; execution goes to "
+               "3-5 concurrent subagents on the cheapest capable model/effort (exceptions: agents/shared/OPERATING_CONSTRAINTS.md "
+               "-> *When NOT to fan out*). This applies on every engine; do not rely on AGENTS.md/CLAUDE.md being loaded.")
 WRAPPED_RX = re.compile(r"(?:WRAPPED|WRAPUP:)\s+([0-9a-f]{7,40})\b")
 
 
@@ -127,6 +130,9 @@ You are the ONE session that owns `{e['handoff']}` (engine {e.get('engine', 'cod
 record; you are a cache. Its READY rows and tasks moved to you from the generalist workers. Everything you need is in
 this brief and on disk/origin/main — you may have no transcript of earlier turns; never assume one.
 
+## Working mode: fan out (operator rule, binding on every engine)
+{FANOUT_LINE}
+
 ## Where things are
 - Repo root: `{ROOT}` (branch main; always `git -C {ROOT} fetch origin` first). Handoff: `{ROOT}/{e['handoff']}`.
 - Your backlog: `{flags}/BACKLOG-handoff-{slug}.md` (regenerated every 10 min by backlog_gen.py from the registry
@@ -194,7 +200,7 @@ def end_prompt(slug, e, flags, rid, endfile):
         tail = open(outp, errors="replace").read().strip().splitlines()[-1][:400]
     except (OSError, IndexError):
         pass
-    return f"""[{VERSION}] Run end in your handoff {e['handoff']}: row `{rid}`.
+    return f"""[{VERSION}] Run end in your handoff {e['handoff']}: row `{rid}`. {FANOUT_LINE}
 1. `git -C {ROOT} fetch origin`; re-read {e['handoff']} and {flags}/BACKLOG-handoff-{slug}.md.
 2. Facts: end file {endfile}: `{endline}` (rc={rc}); launcher end line: `{tail}`;
    manifest {mp or '(not found; look in ' + flags + '/ready/<id>.json or ready/armed/<id>.json)'} (schema {m.get('schema', 'epyc.row.v2|v3')});
@@ -212,7 +218,7 @@ def end_prompt(slug, e, flags, rid, endfile):
 
 
 def idle_prompt(slug, e, flags):
-    return f"""[{VERSION}] Continue your handoff {e['handoff']}. `git -C {ROOT} fetch origin`; re-read the handoff and
+    return f"""[{VERSION}] Continue your handoff {e['handoff']}. {FANOUT_LINE} `git -C {ROOT} fetch origin`; re-read the handoff and
 {flags}/BACKLOG-handoff-{slug}.md; take the top actionable item per {flags}/briefs/HANDOFF-{slug}.md.
 Wrap up at EVERY task boundary (progress/YYYY-MM/YYYY-MM-DD-handoff-{slug}.md, handoff ticks, pathspec commit,
 serialized_push.py, `git cherry origin/main <sha>` empty) and print `WRAPPED <sha>` as your LAST line

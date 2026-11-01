@@ -23,3 +23,14 @@
   (llama-server on the MI210, VRAM 55.5 GB sampled 17:07Z during the run), CPU `codex3-cs8-g1b-cascade-20261031` on q0.
 - Tests: `scripts/coordination/tests/test_rowflow.py` (8, end-to-end on the engine with a stub region-lock),
   `test_backlog_gen_ranking.py`, `test_handoff_sessions_transfer.py` (7).
+- **First rows under the new flow**: dry-run PASS `codex3-cs8-g1b-cascade-20261031` (CPU q0, 17:48:42Z, 773 units in `results/`,
+  truncated by signal after the 600 s stop grace — warning recorded), ROW-ARM 17:48:51Z pid 699068, **granted 17:49:41Z by the
+  quarters writer through grant_ok v4** (`regions=0-23 start=17:49Z`). Earlier grant_ok-v4 grants of adopted legacy rows:
+  `kpf64-fb-atomic-repair-20261028` 17:17:46Z, `codex-ni-s18-qwenvl-cpu-r1-20261031` 17:48:35Z. GPU: both GPU dry runs
+  (`ufh14-a3a-single-warm-r2`, `codex-ni-pbqcost-confirm-q-r3`) ran llama-server on the MI210 (VRAM 53-55.5 GB sampled during
+  the runs) but their migrated `result_path` is a completion marker (RUN_COMPLETE.json / VERDICT.json) -> FAIL "no unit within
+  1500 s" = the owner's fix task (point result_path at the per-item output). `codex3-cs8-stt5-validation-nemotron-crisp` failed
+  at launch (source snapshot missing) - a class-A failure the dry run now catches before any grant. Disk-floor kills at 17:17Z
+  (free dipped under 150 GiB) are a host WAIT, not a FAIL, since 90f9e7022.
+- Operator rule (coordinator relay): every launched session carries the subagent fan-out policy — `FANOUT_LINE` in
+  handoff_sessions.py brief ("Working mode: fan out" section) + end/idle/transfer prompts; test `FanoutPolicyTests`.

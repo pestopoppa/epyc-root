@@ -163,5 +163,21 @@ class WrappedParsingTests(_Fixture):
         self.assertEqual(hs.WRAPPED_RX.findall("WRAPUP: abcdef0 then WRAPPED 1234567"), ["abcdef0", "1234567"])
 
 
+
+class FanoutPolicyTests(unittest.TestCase):
+    """Operator rule 2026-11-01: every launched session carries the subagent fan-out policy explicitly."""
+
+    def test_brief_and_prompts_carry_fanout(self):
+        import tempfile
+        e = {"handoff": "handoffs/active/x.md", "engine": "codex", "row_ids": ["r1"], "row_patterns": [], "handoff_rows": ["INF-1"]}
+        flags = tempfile.mkdtemp()
+        for name, text in (("brief", hs.brief_text("x", e, flags)), ("end", hs.end_prompt("x", e, flags, "r1", flags + "/r1.ended")),
+                           ("idle", hs.idle_prompt("x", e, flags))):
+            self.assertIn("FAN OUT", text, name)
+            self.assertIn("3-5 concurrent subagents", text, name)
+            self.assertIn("OPERATING_CONSTRAINTS.md", text, name)
+        self.assertIn("## Working mode: fan out", hs.brief_text("x", e, flags))
+
+
 if __name__ == "__main__":
     unittest.main()
