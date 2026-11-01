@@ -1,0 +1,219 @@
+{
+  "allocator_candidate": {
+    "compiled_library_manifest": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/ALLOCATOR-SHA256SUMS",
+    "env": "PYTORCH_HIP_ALLOC_CONF",
+    "runtime_preflight": "torch.cuda.memory._set_allocator_settings before model load; no CUDA init",
+    "setting": "max_split_size_mb:512"
+  },
+  "class": "block-correctness",
+  "decision_rule": "Diagnostic capture of the complete pinned MemoryAgentBench population for both base and Delta-Mem. Report per-source and sample-weighted raw metrics; no threshold or pass/fail decision. Smoke does not grade or close Gate 2.",
+  "diagnostic": true,
+  "disk_admission_observation": {
+    "available_GiB": 370.595,
+    "available_bytes": 397923463168,
+    "estimated_output_GiB": 20,
+    "post_output_floor_GiB": 150,
+    "required_available_GiB": 170,
+    "sampled_at": "2026-10-30T14:14:02.959524+00:00",
+    "status": "passed unchanged 20GiB output plus150GiB reserve; actual job checks same predicate before work"
+  },
+  "enrollment": "n/a: diagnostic capture only; no pass/fail threshold",
+  "est_output_GiB": 20,
+  "external_symlink_targets": [
+    "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/venv",
+    "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/triton36-overlay",
+    "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/datasets-cache",
+    "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/hub-cache",
+    "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/hf-home",
+    "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/nltk_data",
+    "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/tiktoken-cache"
+  ],
+  "feasibility": {
+    "caveat": "These are r8 base-arm measurements for two sources only. Delta arm and remaining 2671 records/arm need per-source rates. No single total ETA or full-population feasibility claim.",
+    "context": "Full schedule unchanged: eventqa_full source cap 800000; model max_position_embeddings 262144; existing evaluator model-window truncation and 4000-token buffer/generation allowance retained; eval batch size 1. Effective memory context budget described by the existing recipe as 258104 tokens before query/template.",
+    "measured_base_subtotal_gpu_hours": 17.99,
+    "measured_sources": [
+      {
+        "base_arm_eta_gpu_hours": 13.69,
+        "completed_base_records": 500,
+        "evidence": "r8 pinned result JSONL, 500 complete records",
+        "mean_seconds_per_question": 98.587,
+        "source": "Accurate_Retrieval/eventqa_131072"
+      },
+      {
+        "base_arm_eta_gpu_hours": 4.3,
+        "completed_base_records": 500,
+        "evidence": "r8 pinned result JSONL, 500 complete records",
+        "mean_seconds_per_question": 30.942,
+        "source": "Accurate_Retrieval/eventqa_65536"
+      }
+    ],
+    "memory": "48 GiB process budget. R8 actual OOM: 47.54 GiB allocated + 11.62 GiB reserved/unallocated, 3.76 GiB device free; failed 4.68 GiB activation allocation on 63.98 GiB GPU. R9 same OOM. R10 reached the first eventqa_full/base request with KFD present and native allocator setting applied, then hit the smoke cap without a result; memory-fix effectiveness unknown.",
+    "population_records_per_arm": 3671,
+    "prior_8h_estimate": "invalidated: eventqa_131072 base alone is 13.69 h from 500 records; eventqa_65536 base is 4.30 h from 500 records",
+    "two_arm_subtotal_if_delta_matches_base_gpu_hours": 35.98,
+    "unmeasured_records_per_arm": 2671,
+    "window_plan": "1800 s requested windows; 1200 s minimum admitted window; full matrix retains all official sources and both arms; keeper resumes rc75 + STATE partial; no scope narrowing."
+  },
+  "full_context_repair_status": "UNVERIFIED: r8 and r9 OOMed in eventqa_full/base; r10 applied max_split_size_mb:512 before torch init but was stopped at its 300-second cap before a native result. R11 smoke used eventqa_65536/base and does not validate the 256K-context repair.",
+  "full_gate2_status": "open; diagnostic capture only, no verdict",
+  "gib": 48,
+  "hold": null,
+  "id": "codex-ni-inf12-gate2-triton36-r13-20261030",
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/job.sh",
+    "sha256": "6eae5abc2fbf0db9b47746d9cc8d985e0ca2f8410d49ca718eae96897331d747"
+  },
+  "keep": [
+    "*-SHA256SUMS",
+    "*.json",
+    "*.md",
+    "*.py",
+    "*.sh",
+    "code/**/*.py",
+    "code/**/*.json",
+    "code/**/*.sh",
+    "deps/*.py",
+    "deps/*.sh",
+    "deps/*.json",
+    "venv",
+    "triton36-overlay",
+    "hf-home",
+    "hub-cache",
+    "datasets-cache",
+    "nltk_data",
+    "tiktoken-cache",
+    "triton36-cache/**",
+    "outputs/**/*.json",
+    "outputs/**/*.jsonl",
+    "outputs/**/*.sqlite",
+    "outputs/**/*.tsv",
+    "outputs/**/*.log",
+    "outputs/**/*.status",
+    "outputs/LAST-RUN",
+    "review-evidence/**",
+    "normal-entry-no-grant.log",
+    "launcher-state/**",
+    "ws58-launcher.out"
+  ],
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/launch.sh",
+    "sha256": "f12222c148a430db52ea5c75af92af331bbe9e64000d46c98156fc22be3ce410"
+  },
+  "launcher_log_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/ws58-launcher.out",
+  "log_consumer": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/verify_cutoff.py",
+  "log_consumer_scope": "verify_cutoff.py consumes retained cutoff-tests/<run>/job.log and verifies both anchored direct-child reaps; native evaluator log also preserves runtime/pin diagnostics.",
+  "log_consumer_sha256": "7e97d97dd1cc060dcdeafac3fb0e5372e106614352f392474dec2f95fe8047f9",
+  "manifests": {
+    "ALLOCATOR-SHA256SUMS": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/ALLOCATOR-SHA256SUMS",
+      "sha256": "ce6fd7d9fc7cf9ffebbf651d926c51a97b2518dcbc2129f02dbaa2f05f9c5291"
+    },
+    "DATA-SHA256SUMS": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/DATA-SHA256SUMS",
+      "sha256": "1f193e25d0b336586bdb263455af3003773893ac6c883bebed99284d5aaa68b2"
+    },
+    "MODEL-SHA256SUMS": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/MODEL-SHA256SUMS",
+      "sha256": "a893729581725f8ee191644824df190296a4fc2f352199a9e58a39227bb1d51c"
+    },
+    "RUNNER-SHA256SUMS": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/RUNNER-SHA256SUMS",
+      "sha256": "d92b6fe1bca29306e4425a7f19c95f6b160e46e17766d06668a2cf81bbe75128"
+    },
+    "SOURCE-SHA256SUMS": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/SOURCE-SHA256SUMS",
+      "sha256": "0fee46333c4641175a5b7787f23e67af17d5ce981f62f2f23b2f84a58819108f"
+    },
+    "TRITON36-SHA256SUMS": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/TRITON36-SHA256SUMS",
+      "sha256": "39e9ef7b0f5205364ddd1094e87eed057c93ac06624755e68a7475f228a2b300"
+    }
+  },
+  "min_effect": "n/a (diagnostic capture; no effect-size/pass threshold)",
+  "min_window_s": 1200,
+  "normal_entry_proof": {
+    "caller_WS58_REGIONS": "mi210_0,184-191",
+    "diagnostic_marker_verified": true,
+    "engine_environment": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/review-evidence/normal-engine.env",
+    "full_result_gate": "complete-cmd requires nonempty fresh fingerprint full summary; summary validates3671records/arm; smoke cannot complete",
+    "grant_absent": true,
+    "status": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/outputs/normal-entry-no-grant.status",
+    "true_noarg_env_i": true
+  },
+  "output_estimate_basis": {
+    "context_scale": 1.969177,
+    "effective_context_tokens": 258104,
+    "full_population_records_both_arms": 7342,
+    "margin_fraction": 0.25,
+    "note": "Conservative all-record bound uses the largest measured mean from 500 R8 records, scaled to the full model context and all 7,342 rows, then adds 25%. It is a storage bound, not a runtime/ETA estimate.",
+    "projected_output_GiB_before_margin": 15.712,
+    "projected_output_GiB_with_margin": 19.64,
+    "projected_output_bytes_before_margin": 16870688146,
+    "r11_65k_smoke_json_plus_jsonl_bytes": 598857,
+    "r8_eventqa_131072_base_records": 500,
+    "r8_eventqa_131072_json_plus_jsonl_bytes": 583449958,
+    "r8_largest_measured_bytes_per_record": 1166899.916,
+    "reference_context_tokens": 131072,
+    "rounded_est_output_GiB": 20
+  },
+  "owner": "codex-ni",
+  "pin_fingerprint": "a2a7450236b5ab426bda4ee4b08c517c8d45313ab4e009f94ce2948b57f2a931",
+  "post_output_floor_GiB": 150,
+  "priority_rank": 42,
+  "priority_source": {
+    "generated_at": "2026-10-29T23:15Z",
+    "origin_main_sha": "9a0429afb8f6b76c8c1efa12623cbf5a136890e2",
+    "rank": 42,
+    "ref": "origin/main:handoffs/active/backlog-priority.json",
+    "row": "INF-12"
+  },
+  "regions": "mi210_0,184-191",
+  "result_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/outputs/full-results-a2a7450236b5ab426bda4ee4b08c517c8d45313ab4e009f94ce2948b57f2a931",
+  "retention_v2": 1,
+  "row_ready": true,
+  "scheduled_model": {
+    "adapter_path": "/mnt/raid0/llm/models/delta-mem_qwen3_4b-instruct",
+    "hash_method": "full-file SHA-256 manifests",
+    "model_manifest_sha256": "a893729581725f8ee191644824df190296a4fc2f352199a9e58a39227bb1d51c",
+    "path": "/mnt/raid0/llm/models/Qwen3-4B-Instruct-2507"
+  },
+  "schema": 1,
+  "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13",
+  "smoke": {
+    "child_rc": 0,
+    "cleanup_scope": "direct-child-only",
+    "descendants_censused": false,
+    "direct_child_reaped": true,
+    "exit_ok": true,
+    "first_request_ok": true,
+    "full_context_repair_status": "UNVERIFIED: R10 eventqa_full/base request reached KFD/native allocator preflight then rc75 cutoff without output.",
+    "gpu_samples": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/outputs/20261030T141010Z-2122882/GPU-SAMPLES.tsv",
+    "gpu_samples_sha256": "8836011f3326ca076c68932d0f0579e01bfdcd236c17a01cfa992c1aabdf9851",
+    "job_log_sha256": "bd0c28c8f1b07d180547188e6ca3b2e747259c2fcc9b107972d2d61e809e72af",
+    "launcher_sha256": "f12222c148a430db52ea5c75af92af331bbe9e64000d46c98156fc22be3ce410",
+    "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-inf12-gate2-triton36-r13-20261030.smoke.log",
+    "log_path_note": "ready smoke log is actual --smoke launcher stdout from this fresh launcher; ws58-launcher.out reserved for actual normal keeper stdout",
+    "model": "/mnt/raid0/llm/models/Qwen3-4B-Instruct-2507; adapter=/mnt/raid0/llm/models/delta-mem_qwen3_4b-instruct; bf16; HIP 6.2.41133",
+    "ran_at": "2026-10-30T14:10:10Z",
+    "regions": "gpu-quiet exclusive only; taskset184-185; no CPU-region claim",
+    "result_json": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/outputs/20261030T141010Z-2122882/results/Accurate_Retrieval__eventqa_65536__base.json",
+    "result_json_sha256": "02ec4969f568ea0c72012fdbc14bda448f08c2d4c3246ae29e8bd58ef837450a",
+    "result_jsonl": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/outputs/20261030T141010Z-2122882/results/Accurate_Retrieval__eventqa_65536__base.jsonl",
+    "result_jsonl_sha256": "74526840d1e4c8d6ab1934470743af208f5d2d0bf29ac37405e4d75215375ee1",
+    "result_writer_ok": true,
+    "scope": "one real first question from Accurate_Retrieval/eventqa_65536/base; representative 65K smoke only, not 256K validation or Gate 2 result",
+    "smoke_json": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/outputs/20261030T141010Z-2122882/SMOKE.json",
+    "smoke_json_sha256": "220bc579eeec2b3192d0acddc077a568a566fbd32fdac6baa49d59127320085f",
+    "wall_s": 77,
+    "work_started": true
+  },
+  "stop": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/STOP",
+  "window_s": 1800,
+  "write_scope_accounting": {
+    "generated_triton_cache_allowance_GiB": 0.25,
+    "outputs_and_native_logs_GiB": 19.64,
+    "shared_cache_paths": "hf-home/hub-cache/datasets-cache/nltk_data/tiktoken-cache retain original R11 targets; offline inputs, no model/dataset download or duplicate; statvfs guard accounts same RAID filesystem including any generated cache writes",
+    "total_rounded_GiB": 20
+  }
+}

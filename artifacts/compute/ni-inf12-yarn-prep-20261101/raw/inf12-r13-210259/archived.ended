@@ -1,0 +1,7 @@
+rc=75 time=2026-10-31T21:30:32Z reason=job-rc-75:exited
+job_id=codex-ni-inf12-gate2-triton36-r13-20261030
+owner=codex-ni
+step=job-run
+estimated_wall_s=1800
+started=2026-10-31T21:02:59Z
+regions=mi210_0,184-191

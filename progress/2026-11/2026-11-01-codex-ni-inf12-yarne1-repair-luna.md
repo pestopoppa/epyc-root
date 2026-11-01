@@ -1,0 +1,7 @@
+### INF12 R13 and YARN E1 memory admission audit / r2 preparation
+
+Audited R13 attempts `20261031T210259Z-128495` and `20261101T003829Z-2260396` as separate exposures. The 21:02:59Z attempt ended `rc=75` at 21:30:31Z during `Accurate_Retrieval/eventqa_131072/base`, with `work-deadline`; retained attempt-local evidence does not establish how many official items completed. Its terminal is archived. The separate 00:38:29Z attempt also ended partial; its observed 444-line shared JSONL does not establish a completed-item count. No current INF12 attempt outcome is asserted.
+
+YARN r1 was refused at T1 admission (`rc=6`) for missing `dryrun_pass`, `launcher_path`, `job_path`, and `source_manifest`; no native science work began. Prepared private r2 candidate with exact N19 maximum 498,965-token request pins, unchanged six science cells, strict native-event/completion validation, and a fail-closed owner-booking/window check. Eight behavioral/model-free tests, Python compilation, shell syntax, and all 52 source hashes passed. Canonical deployment, booking, keeper qualification, and current-image work-unit timing remain missing. No READY, native GPU qualification, or science result.
+
+Evidence: `artifacts/compute/ni-inf12-yarn-prep-20261101/`; source dependency manifest SHA-256 `e958f225c98dd4000c453492548dda05331fba34a93938207f2bee87c0dbd20f`. [no-belief: attempt audit and model-free source/pin preparation only; no completed native measurement]

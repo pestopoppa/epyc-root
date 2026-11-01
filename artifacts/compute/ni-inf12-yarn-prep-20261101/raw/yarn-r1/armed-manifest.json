@@ -1,0 +1,87 @@
+{
+  "id": "codex-ni-yarn-e1-mem-phase-r1-20261031",
+  "owner": "codex-ni",
+  "priority_rank": 80,
+  "priority_rank_basis": "S-tier covered; M YARN-E1-MEM historical attribution",
+  "regions": "mi210_0,184-191",
+  "min_window_s": 5700,
+  "window_s": 6000,
+  "requested_window_s": 6000,
+  "gib": 64,
+  "class": "diagnostic",
+  "booking_class": "block-correctness",
+  "enrollment": "n/a: historical diagnostic",
+  "hold": null,
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/launch.sh",
+    "sha256": "2de2f8a2ca145885cbad13fe850141d5359d38441d41ad2563ba329d6584531b"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/run.py",
+    "sha256": "618a412d8e4283ebb71dab5a65babb2bca59e949ad50ef63935e2f231781922b"
+  },
+  "result_path": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/out/RESULT.json",
+  "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031",
+  "keep": [
+    "*.py",
+    "*.sh",
+    "*.json",
+    "*.sha256",
+    "*.log",
+    "helper/*.py",
+    "helper/*.sh",
+    "helper/*.so",
+    "out/*/complete.json",
+    "out/*/runtime-proof.json",
+    "out/*/launch.json",
+    "out/*/phase-attribution.json",
+    "out/*/native/*/*/*.json",
+    "out/*/native/*/*/*.jsonl",
+    "out/*/kfd.jsonl",
+    "out/*/hipmalloc.jsonl",
+    "out/*/server.log",
+    "out/*/runner.log"
+  ],
+  "est_output_GiB": 2,
+  "log_consumer": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/analyze_phase.py",
+  "launcher_log_path": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/ws58-launcher.out",
+  "source_manifest": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/SOURCE.sha256",
+  "source_manifest_sha256": "e00ddd70be99f2e96b5db3f92ce9e348fb4ab78096f80e277583fe9ac3633f2c",
+  "decision_rule": "Historical E1 memory attribution on unchanged 2026-10-04 E1 and W images: own-PID KFD VRAM and hipMalloc shim series joined to the original YaRN E1 smoke and 128k/240k/400k/500k native needle stages for A0/A1. Higher VRAM is worse; identify the first phase with the +15 GiB excess and whether W removes it. Split stage groups are diagnostic and reset the server between groups; no quality or current champion claim.",
+  "min_effect": "n/a (historical memory attribution diagnostic)",
+  "gpu_quiet": "exclusive",
+  "no_fold_siblings": true,
+  "smoke": {
+    "ran_at": "2026-10-31T16:48:36.967180+00:00",
+    "regions": "184-185; exclusive GPU-only R7",
+    "model": "canonical Qwen3.8-27B-Q8_0, 64MiB edges+size pinned",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "cleanup_verified": true,
+    "wall_s": 9.601231336593628,
+    "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-yarn-e1-mem-phase-r1-20261031.smoke.log",
+    "scope": "native load, response, writer and cleanup only; no E1 inference measurement"
+  },
+  "feasibility": {
+    "original_E1_A0_estimate_min": 35.2,
+    "original_E1_A1_estimate_min": 85.1,
+    "historical_A1_stage_min": {
+      "128k": 5.5,
+      "240k": 10.6,
+      "400k": 25.5,
+      "500k": 22.1
+    },
+    "split_into": "low/high per-image groups; high reloads 400k prefix so allow 95min",
+    "min_window_s": 5700,
+    "window_s": 6000,
+    "smoke_wall_s": 9.601231336593628
+  },
+  "keeper_log": [
+    {
+      "ts": "2026-10-31T16:49:48Z",
+      "state": "armed",
+      "reason": "QUEUED codex-ni-yarn-e1-mem-phase-r1-20261031 484062 | OK: 1 row(s) checked, 0 refusal(s), 1 warning(s) | admit: validator OK; admit: MemAvailable 953 GiB, need 64 GiB; class=block-correctness launcher=filler_run13.s"
+    }
+  ]
+}

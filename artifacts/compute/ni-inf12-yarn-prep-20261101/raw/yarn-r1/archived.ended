@@ -1,0 +1,1 @@
+rc=6 time=2026-10-31T21:02:33Z reason=t1-admission:DRYRUN_REFUSED: row codex-ni-yarn-e1-mem-phase-r1-20261031: missing normal launch proof fields ('dryrun_pass', 'launcher_path', 'job_path', 'source_manifest') 

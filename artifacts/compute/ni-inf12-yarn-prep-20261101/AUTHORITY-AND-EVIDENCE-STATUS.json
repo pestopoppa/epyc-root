@@ -1,0 +1,39 @@
+{
+  "schema": "epyc.ni-private-packet-authority-status.v1",
+  "row_id": "codex-ni-yarn-e1-mem-phase-r2-20261101",
+  "overall": "UNQUALIFIED_NOT_READY",
+  "old_r1": {
+    "status": "ADMISSION_REFUSED",
+    "reason": "missing T1 admission fields dryrun_pass, launcher_path, job_path, source_manifest",
+    "native_work_started": false,
+    "retroactive_pass_allowed": false
+  },
+  "candidate": {
+    "engine": "/mnt/raid0/llm/tmp/codex-ni-hard-qual-gate-20261101/src/scripts/coordination/filler_run14.sh",
+    "canonical_deployment_binding": "MISSING",
+    "accepted_owner_booking": "MISSING",
+    "launch_without_booking": "REFUSED_UNREADY_BEFORE_ENGINE"
+  },
+  "required_before_new_native_launch": [
+    {"item": "canonical_v14_source_deployed_and_owner_reviewed", "status": "MISSING", "authority": "ws58 source owner"},
+    {"item": "READY_manifest_bound_owner_booking_and_long_native_window", "status": "MISSING", "authority": "ws58 resource/window owner"},
+    {"item": "keeper_issued_qualification_nonce_and_current_quiet_resource_claim", "status": "MISSING", "authority": "ws58 keeper"}
+  ],
+  "booking_record_expected_by_current_v2_proposal": {
+    "kind": "epyc.qual.booking.v1",
+    "state": "BOOKED",
+    "path_pattern": "compute-flags/qual-bookings/<id>.json",
+    "required_pins": ["manifest_binding_sha256", "source_manifest_sha256", "production_recipe_sha256", "engine_sha256", "qual_fixture_sha256", "request_manifest_sha256", "prompt_tokens_required", "window_s", "min_window_s", "recipe_target_sha256"],
+    "status": "PROPOSED_NOT_DEPLOYED"
+  },
+  "required_before_science_feasibility_or_ready": {
+    "item": "same_recipe_complete_paired_E1_W_A1_high_work_unit_measurement_with_conservative_three_pair_bound_including_loads_probes_analysis_and_cleanup",
+    "status": "MISSING",
+    "observed_wall_s_per_unit": null,
+    "historical_planning_floor_s_for_three_pairs": 17127.348,
+    "planning_floor_is_not_current_rate_or_adequacy_evidence": true
+  },
+  "science_cells_mutated": false,
+  "ready_published": false,
+  "native_gpu_work_performed": false
+}

@@ -1,0 +1,295 @@
+{
+  "schema": "epyc.ni-attempt-evidence.v1",
+  "sources": [
+    {
+      "artifact_path": "raw/inf12-r13-003829/STATE.json",
+      "sha256": "628ced32e69a7a573492eb5bf29d625a8054968460961bde5f4e6b4ede002a60",
+      "size_bytes": 452,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/outputs/20261101T003829Z-2260396/STATE.json"
+    },
+    {
+      "artifact_path": "raw/inf12-r13-003829/job.log.gz",
+      "compressed_sha256": "ef207e8ae0c1b46400fd4765c8d415e9dcfa72d8f466c85a4a65095bceb7b030",
+      "compression": "gzip; decompression reproduces source bytes",
+      "raw_sha256": "1aec5325609da4bd9ba191a49972b058e54f894c4be2b84d881553afd68b4b43",
+      "sha256": "ef207e8ae0c1b46400fd4765c8d415e9dcfa72d8f466c85a4a65095bceb7b030",
+      "size_bytes": 7729,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/outputs/20261101T003829Z-2260396/job.log",
+      "stored_size_bytes": 2248
+    },
+    {
+      "artifact_path": "raw/inf12-r13-003829/GPU-SAMPLES.tsv",
+      "sha256": "de484c849598b9732a65a367fdfc5df3d2f646e1242cde142cdc55da900580b5",
+      "size_bytes": 3700,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/outputs/20261101T003829Z-2260396/GPU-SAMPLES.tsv"
+    },
+    {
+      "artifact_path": "raw/inf12-r13-003829/archived.ended",
+      "sha256": "f0084e51cf6cfc87eeda46856328e40f78ae4088c2e2173d66d3d5a10af3c313",
+      "size_bytes": 209,
+      "source_path": "/mnt/raid0/llm/tmp/compute-flags/grants-archive-ws58/codex-ni-inf12-gate2-triton36-r13-20261030.ended.keeper-1793495132"
+    },
+    {
+      "artifact_path": "raw/inf12-r13-003829/rearm.receipt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "source_path": "/mnt/raid0/llm/tmp/compute-flags/ws58-keeper-state/rearm-codex-ni-inf12-gate2-triton36-r13-20261030.1793495132"
+    },
+    {
+      "artifact_path": "raw/inf12-r13-210259/STATE.json",
+      "sha256": "df5ab284279732c07809477a5c2764a9520a7ad5efe8890cd801482997c50a7c",
+      "size_bytes": 450,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/outputs/20261031T210259Z-128495/STATE.json"
+    },
+    {
+      "artifact_path": "raw/inf12-r13-210259/job.log.gz",
+      "compressed_sha256": "8d7e167037e4a6d4ba6d17a951b5f2cdab54842e63d7d5904e9f2837ea472260",
+      "compression": "gzip; decompression reproduces source bytes",
+      "raw_sha256": "931a31687ae03c5168a2287cf869756e0dc4b9147cf5c93b529e810cb9e14c5b",
+      "sha256": "8d7e167037e4a6d4ba6d17a951b5f2cdab54842e63d7d5904e9f2837ea472260",
+      "size_bytes": 7047,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/outputs/20261031T210259Z-128495/job.log",
+      "stored_size_bytes": 2125
+    },
+    {
+      "artifact_path": "raw/inf12-r13-210259/GPU-SAMPLES.tsv",
+      "sha256": "a7c411b3f030fb30d2fc049a697bbd049ba181166deae094395c073e42d2a0dc",
+      "size_bytes": 3902,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/outputs/20261031T210259Z-128495/GPU-SAMPLES.tsv"
+    },
+    {
+      "artifact_path": "raw/inf12-r13-210259/archived.ended",
+      "sha256": "82bad0bd1f6bcd61cbf6ed0578577726b0764e9e81f3e657801d672e7400d5de",
+      "size_bytes": 209,
+      "source_path": "/mnt/raid0/llm/tmp/compute-flags/grants-archive-ws58/codex-ni-inf12-gate2-triton36-r13-20261030.ended.keeper-1793482232"
+    },
+    {
+      "artifact_path": "raw/inf12-r13-210259/rearm.receipt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "source_path": "/mnt/raid0/llm/tmp/compute-flags/ws58-keeper-state/rearm-codex-ni-inf12-gate2-triton36-r13-20261030.1793482232"
+    },
+    {
+      "artifact_path": "raw/inf12-r13-210259/READY-PUBLISHED.json",
+      "sha256": "56cc280aed669cd58b018ed07873b74718b17841fb4cee7cb86617345322bf81",
+      "size_bytes": 11940,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/READY-PUBLISHED.json"
+    },
+    {
+      "artifact_path": "raw/inf12-r13-210259/READY-PUBLISHED.row.md",
+      "sha256": "a3cf6b80990b7183ac1d451cae3e6a0e0b4100b715626f3024521b5e761bd9f5",
+      "size_bytes": 1616,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261030-r13/READY-PUBLISHED.row.md"
+    },
+    {
+      "artifact_path": "raw/yarn-r1/ws58-launcher.out",
+      "sha256": "1d31ccea3e0e8bdae2ffbf6e6ded0097e9eeef7e157a198dc5a55227b82c19b4",
+      "size_bytes": 755,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/ws58-launcher.out"
+    },
+    {
+      "artifact_path": "raw/yarn-r1/SMOKE-RECEIPT.json",
+      "sha256": "8ad1220fe2502eccd957486cc776250fa85ebd41cb3ac38bf98da45b20ca153d",
+      "size_bytes": 552,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/SMOKE-RECEIPT.json"
+    },
+    {
+      "artifact_path": "raw/yarn-r1/SMOKE-RECEIPT-r1.json",
+      "sha256": "9d3b621a99d4eb5dcd22b1b46f0c122234e8d840194b51d9ef5530ec71b17542",
+      "size_bytes": 552,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/SMOKE-RECEIPT-r1.json"
+    },
+    {
+      "artifact_path": "raw/yarn-r1/SOURCE.sha256",
+      "sha256": "e00ddd70be99f2e96b5db3f92ce9e348fb4ab78096f80e277583fe9ac3633f2c",
+      "size_bytes": 1031,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/SOURCE.sha256"
+    },
+    {
+      "artifact_path": "raw/yarn-r1/armed-manifest.json",
+      "sha256": "f76634a0e40a37be9b6b840334ac86ef938b7fbb4ede79e06575e4ee16b94b8f",
+      "size_bytes": 3558,
+      "source_path": "/mnt/raid0/llm/tmp/compute-flags/ready/armed/codex-ni-yarn-e1-mem-phase-r1-20261031.json"
+    },
+    {
+      "artifact_path": "raw/yarn-r1/codex-ni-yarn-e1-mem-phase-r1-20261031.launcher.out",
+      "sha256": "1d31ccea3e0e8bdae2ffbf6e6ded0097e9eeef7e157a198dc5a55227b82c19b4",
+      "size_bytes": 755,
+      "source_path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-yarn-e1-mem-phase-r1-20261031.launcher.out"
+    },
+    {
+      "artifact_path": "raw/yarn-r1/codex-ni-yarn-e1-mem-phase-r1-20261031.row.md",
+      "sha256": "c66b837d5e245fa434b35345297ebebc9b11316eba1e982a63d0f06c3035e74f",
+      "size_bytes": 1747,
+      "source_path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-yarn-e1-mem-phase-r1-20261031.row.md"
+    },
+    {
+      "artifact_path": "raw/yarn-r1/codex-ni-yarn-e1-mem-phase-r1-20261031.smoke.log",
+      "sha256": "810f9857fdda40aa1bb1e56cfd3b93f74122b19faad776fee58b62aebf86c537",
+      "size_bytes": 297,
+      "source_path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-yarn-e1-mem-phase-r1-20261031.smoke.log"
+    },
+    {
+      "artifact_path": "raw/yarn-r1/archived.ended",
+      "sha256": "28c3bdc0934b716455333cb3d6a3a1682b63bff718ac0327225939339102be8a",
+      "size_bytes": 211,
+      "source_path": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ni-yarn-e1-mem-phase-r1-20261031.ended"
+    },
+    {
+      "artifact_path": "raw/yarn-r1/FILED",
+      "sha256": "ff1f3afbbf3928022c02707dff79ccb49477dc28a5a4509f2ab36f454b320ee1",
+      "size_bytes": 181,
+      "source_path": "/mnt/raid0/llm/tmp/compute-flags/filing-done/codex-ni-yarn-e1-mem-phase-r1-20261031.FILED"
+    },
+    {
+      "artifact_path": "raw/yarn-r1/e1-dryrun.log",
+      "sha256": "92fa0edb1c15c32bf999200dc3fa9e8151b795e4fc5ee5f78d24371cb68ca747",
+      "size_bytes": 3051,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/e1-dryrun.log"
+    },
+    {
+      "artifact_path": "raw/yarn-r1/READY.flag",
+      "sha256": "eb3815cf3722e45b63a1ced84438bb8d3d753efb6b1da43bff83af2acb18aec7",
+      "size_bytes": 27,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/READY.flag"
+    },
+    {
+      "artifact_path": "raw/yarn-r1/READY-PUBLISHED",
+      "sha256": "68314035b8ed8982cf4f56f3f823c89b8d2fa1b927c7b9ff1992dbed1c7c16b8",
+      "size_bytes": 33,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/READY-PUBLISHED"
+    },
+    {
+      "artifact_path": "raw/yarn-r1/FAILED-r1.flag",
+      "sha256": "e1600cac091882c89693c6521171c16be5a010447c8246e9cce887b1287e19f8",
+      "size_bytes": 33,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/FAILED-r1.flag"
+    },
+    {
+      "artifact_path": "metadata/R6-METADATA-RECEIPT.json",
+      "sha256": "1ccc59f397312d3b6424a5988ff542d408c6cf4c9b48233716a74979eb227278",
+      "size_bytes": 1725,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-yarne1-repair-20261101/R6-METADATA-RECEIPT.json"
+    },
+    {
+      "artifact_path": "metadata/500k-request-metadata.log",
+      "sha256": "625ce382ae2f46188a430d556382fa6ad50c133eb5c6735b80a99f0b13901203",
+      "size_bytes": 548,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-yarne1-repair-20261101/500k-request-metadata.log"
+    },
+    {
+      "artifact_path": "metadata/run_bounded_metadata.py",
+      "sha256": "c61430495749668003c1545e18dfc971fa04c0b37ea582fb66a68e55fa6d846d",
+      "size_bytes": 5333,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-yarne1-repair-20261101/run_bounded_metadata.py"
+    },
+    {
+      "artifact_path": "src/launch.sh",
+      "sha256": "7dc274c4c3852edb650cd162fe3a31db362db378474fdbdac7ad823159ef0314",
+      "size_bytes": 2449,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-yarne1-repair-20261101/yarn-packet-r2/launch.sh"
+    },
+    {
+      "artifact_path": "src/run.py",
+      "sha256": "e743cdea74d30dc3f9b2f98eeeb9635ee9bdb713b8eefb2313186d2b88f280b5",
+      "size_bytes": 22657,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-yarne1-repair-20261101/yarn-packet-r2/run.py"
+    },
+    {
+      "artifact_path": "src/yarn_needle.py",
+      "sha256": "b56be101fb3923f64cb2c4526414fccdf5382f7595c743899fbd2ed896b15c69",
+      "size_bytes": 63615,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-yarne1-repair-20261101/yarn-packet-r2/yarn_needle.py"
+    },
+    {
+      "artifact_path": "src/analyze_phase.py",
+      "sha256": "5260012c324641bf4bb84aacd1a5143fb7b48ec0c0720f3c2ecdc87a63a30160",
+      "size_bytes": 3323,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-yarne1-repair-20261101/yarn-packet-r2/analyze_phase.py"
+    },
+    {
+      "artifact_path": "src/prepare_500k_request_metadata.py",
+      "sha256": "da22255b9b8cf1c245e9238b0e6621ddc064f88b366c61716f0bdb947d20b876",
+      "size_bytes": 6063,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-yarne1-repair-20261101/yarn-packet-r2/prepare_500k_request_metadata.py"
+    },
+    {
+      "artifact_path": "src/prepare_qualification_bundle.py",
+      "sha256": "7b7c28bb70e8477c7b92a2190b4dbf7aad1d86878f421f0f35d373b0280f8e0e",
+      "size_bytes": 9171,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-yarne1-repair-20261101/yarn-packet-r2/prepare_qualification_bundle.py"
+    },
+    {
+      "artifact_path": "src/prepare_source_manifest.py",
+      "sha256": "0987777c1a4f513f07743044430705986248c7c79ae539f2ed8d70629d67f71e",
+      "size_bytes": 3230,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-yarne1-repair-20261101/yarn-packet-r2/prepare_source_manifest.py"
+    },
+    {
+      "artifact_path": "src/test_qualification_contract.py",
+      "sha256": "2f5400c792acf7367138c26b22e654fb8c118982a8a8b647efe78fcee06efe47",
+      "size_bytes": 19455,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-yarne1-repair-20261101/yarn-packet-r2/test_qualification_contract.py"
+    },
+    {
+      "artifact_path": "src/SOURCE.sha256",
+      "sha256": "e958f225c98dd4000c453492548dda05331fba34a93938207f2bee87c0dbd20f",
+      "size_bytes": 7915,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-yarne1-repair-20261101/yarn-packet-r2/SOURCE.sha256"
+    },
+    {
+      "artifact_path": "src/helper/check_complete.py",
+      "sha256": "705aebfadc97cc62a81db87e99ae4fb883a9a40bb9552d440ccce1be44ea5825",
+      "size_bytes": 8628,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-yarne1-repair-20261101/yarn-packet-r2/helper/check_complete.py"
+    },
+    {
+      "artifact_path": "src/helper/validate_launch_window.py",
+      "sha256": "37389a65e7d3e66a3328320e2bb41f3e233e515998dc5182bb3874cd91407af6",
+      "size_bytes": 7322,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-yarne1-repair-20261101/yarn-packet-r2/helper/validate_launch_window.py"
+    },
+    {
+      "artifact_path": "src/helper/kfd_sampler.py",
+      "sha256": "ecc0f70176377e6ed8532ef89cf20d16bfc2f306b11570f110e35f6de87f1672",
+      "size_bytes": 2874,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-yarne1-repair-20261101/yarn-packet-r2/helper/kfd_sampler.py"
+    },
+    {
+      "artifact_path": "src/qualification/REQUEST-METADATA.json",
+      "sha256": "418ebb28a22fef449550e2dc0e06088185d6f39ae549b91b9db0e5ee58404718",
+      "size_bytes": 3709,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-yarne1-repair-20261101/yarn-packet-r2/qualification/REQUEST-METADATA.json"
+    },
+    {
+      "artifact_path": "src/qualification/WORK-UNIT-CALIBRATION-REQUIRED.json",
+      "sha256": "695d67b3b4c9e7dc4c066dfc604a7e209d9780a73ac0b485a8e5796c935cc885",
+      "size_bytes": 1263,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-yarne1-repair-20261101/yarn-packet-r2/qualification/WORK-UNIT-CALIBRATION-REQUIRED.json"
+    },
+    {
+      "artifact_path": "src/qualification/production_recipe.json",
+      "sha256": "fbff79e22b601fb32210338fd3bd90e4a124730a439fa019dc10c14ede3a8161",
+      "size_bytes": 6177,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-yarne1-repair-20261101/yarn-packet-r2/qualification/production_recipe.json"
+    },
+    {
+      "artifact_path": "src/qualification/qual_fixture.json",
+      "sha256": "f25a42521e041e0dc6530075fb6df3afc3695d044f34c5857bc215b1e0f28cdf",
+      "size_bytes": 1334,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-yarne1-repair-20261101/yarn-packet-r2/qualification/qual_fixture.json"
+    },
+    {
+      "artifact_path": "src/qualification/request_manifest.json",
+      "sha256": "2ea9ec467f77fffdf3079d70c1a96e03041e62c2e9d2d380c53eb31c638c30e0",
+      "size_bytes": 2324,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-yarne1-repair-20261101/yarn-packet-r2/qualification/request_manifest.json"
+    },
+    {
+      "artifact_path": "src/qualification/bundle.log",
+      "sha256": "29ec7f9c2b0c32106aa2ef35d0868f913eeef406f0e4317ee6fd71a171d66411",
+      "size_bytes": 372,
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni-inf12-yarne1-repair-20261101/yarn-packet-r2/qualification/bundle.log"
+    }
+  ]
+}

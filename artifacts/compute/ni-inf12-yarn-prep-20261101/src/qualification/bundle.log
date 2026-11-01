@@ -1,0 +1,7 @@
+{
+  "request_manifest_sha256": "2ea9ec467f77fffdf3079d70c1a96e03041e62c2e9d2d380c53eb31c638c30e0",
+  "production_recipe_sha256": "fbff79e22b601fb32210338fd3bd90e4a124730a439fa019dc10c14ede3a8161",
+  "qual_fixture_sha256": "f25a42521e041e0dc6530075fb6df3afc3695d044f34c5857bc215b1e0f28cdf",
+  "prompt_tokens_required": 498965,
+  "calibration_status": "MISSING; no READY"
+}

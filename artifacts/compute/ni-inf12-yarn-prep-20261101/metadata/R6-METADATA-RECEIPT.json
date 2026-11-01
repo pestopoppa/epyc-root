@@ -1,0 +1,80 @@
+{
+  "scope": "MODEL_FREE_METADATA_ONLY",
+  "family": "34-35",
+  "actual_cpus": [
+    130,
+    131
+  ],
+  "live_grants": [
+    {
+      "id": "codex-ni-inf12-gate2-triton36-r13-20261030",
+      "class": "block-correctness",
+      "regions": "mi210_0,184-191"
+    },
+    {
+      "id": "codex3-cs8-stt5-validation-nemotron-tc-r2-20261030",
+      "class": "block-correctness",
+      "regions": "72-95"
+    },
+    {
+      "id": "codex3-pareval120-k20-gen-20261031",
+      "class": "block-correctness",
+      "regions": "0-23"
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r30-pool2-20261031",
+      "class": "block-correctness",
+      "regions": "24-47"
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r35-pool0-20261031",
+      "class": "block-correctness",
+      "regions": "48-71"
+    }
+  ],
+  "returncode": 0,
+  "failure": null,
+  "elapsed_s": 6.24918104801327,
+  "sampled_peak_tree_rss_bytes": 310001664,
+  "kernel_childset_empty": true,
+  "captured": [
+    {
+      "pid": 419697,
+      "birth": 162119042,
+      "ppid": 419696,
+      "uid": 1000
+    },
+    {
+      "pid": 419746,
+      "birth": 162119053,
+      "ppid": 419697,
+      "uid": 1000
+    },
+    {
+      "pid": 419900,
+      "birth": 162119181,
+      "ppid": 419697,
+      "uid": 1000
+    },
+    {
+      "pid": 420039,
+      "birth": 162119303,
+      "ppid": 419697,
+      "uid": 1000
+    },
+    {
+      "pid": 420174,
+      "birth": 162119426,
+      "ppid": 419697,
+      "uid": 1000
+    },
+    {
+      "pid": 420246,
+      "birth": 162119547,
+      "ppid": 419697,
+      "uid": 1000
+    }
+  ],
+  "inference_or_GPU_execution": false,
+  "original_wrapper": "/mnt/raid0/llm/tmp/codex-ni-dp5-delegated-publication-20261031/run_bounded_r6.py"
+}

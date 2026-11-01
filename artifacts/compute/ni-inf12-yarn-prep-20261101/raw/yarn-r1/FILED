@@ -1,0 +1,1 @@
+2026-11-01T00:35:00Z FAILED-RUN rc=6 class=admission; DRYRUN_REFUSED missing launch proof fields (dryrun_pass, launcher_path, job_path, source_manifest); no science; main=2a781aaa5

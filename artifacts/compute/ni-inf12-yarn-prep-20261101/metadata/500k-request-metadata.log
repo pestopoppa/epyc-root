@@ -1,0 +1,30 @@
+{
+  "max_prompt": {
+    "needle": "N19",
+    "token_count": 498965,
+    "rendered_sha256": "8307912edb92fa5df0de817f687e0651fa5e05209aefbb2de9c03db303caa5c4"
+  },
+  "all_planned": [
+    {
+      "needle": "N15",
+      "token_count": 498957
+    },
+    {
+      "needle": "N16",
+      "token_count": 498963
+    },
+    {
+      "needle": "N17",
+      "token_count": 498965
+    },
+    {
+      "needle": "N18",
+      "token_count": 498961
+    },
+    {
+      "needle": "N19",
+      "token_count": 498965
+    }
+  ],
+  "all_messages_match_historical": true
+}

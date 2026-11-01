@@ -1,0 +1,14 @@
+{
+  "artifact": "ni-inf12-yarn-prep-20261101",
+  "file_count_before_index_and_manifest": 59,
+  "omissions": [
+    "rendered 500k prompt payloads",
+    "model weights",
+    "shared model/ggml DSOs"
+  ],
+  "qualification": "candidate only; unqualified; no READY/native GPU",
+  "schema": "epyc.durable-compute-packet.v1",
+  "source_dependency_sha256": "e958f225c98dd4000c453492548dda05331fba34a93938207f2bee87c0dbd20f",
+  "source_evidence_entries": 47,
+  "total_bytes_before_index_and_manifest": 261451
+}

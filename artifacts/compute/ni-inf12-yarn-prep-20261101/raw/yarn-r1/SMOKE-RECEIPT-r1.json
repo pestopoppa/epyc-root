@@ -1,0 +1,17 @@
+{
+  "watcher_pid": 474257,
+  "watcher_birth": "158775829",
+  "boot_id": "3be2fb1a-7293-4c34-b733-c85d772b9474",
+  "started_at": 1793465285.0784764,
+  "source": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031",
+  "state": "SMOKE_DONE",
+  "child_pid": 474259,
+  "child_birth": "158775831",
+  "child_started_at": 1793465285.0792315,
+  "rc": 1,
+  "ended_at": 1793465286.5958395,
+  "wall_s": 1.516608715057373,
+  "launcher_sha256": "2de2f8a2ca145885cbad13fe850141d5359d38441d41ad2563ba329d6584531b",
+  "cleanup_verified": true,
+  "server_pid": 474298
+}

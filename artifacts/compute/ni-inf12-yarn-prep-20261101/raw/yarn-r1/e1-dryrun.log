@@ -1,0 +1,170 @@
+{
+ "counts_tokens_hf": {
+  "128k": 127944,
+  "240k": 239426,
+  "400k": 399368,
+  "500k": 498886,
+  "s2": 7006
+ },
+ "needle_depths": [
+  {
+   "needle": "N00",
+   "stage": "128k",
+   "target": 0.1,
+   "token_pos": 13015,
+   "depth": 0.102
+  },
+  {
+   "needle": "N01",
+   "stage": "128k",
+   "target": 0.3,
+   "token_pos": 38552,
+   "depth": 0.301
+  },
+  {
+   "needle": "N02",
+   "stage": "128k",
+   "target": 0.5,
+   "token_pos": 64980,
+   "depth": 0.508
+  },
+  {
+   "needle": "N03",
+   "stage": "128k",
+   "target": 0.7,
+   "token_pos": 89213,
+   "depth": 0.697
+  },
+  {
+   "needle": "N04",
+   "stage": "128k",
+   "target": 0.9,
+   "token_pos": 114605,
+   "depth": 0.896
+  },
+  {
+   "needle": "N05",
+   "stage": "240k",
+   "target": 0.1,
+   "token_pos": 24138,
+   "depth": 0.101
+  },
+  {
+   "needle": "N06",
+   "stage": "240k",
+   "target": 0.3,
+   "token_pos": 72089,
+   "depth": 0.301
+  },
+  {
+   "needle": "N07",
+   "stage": "240k",
+   "target": 0.5,
+   "token_pos": 119705,
+   "depth": 0.5
+  },
+  {
+   "needle": "N08",
+   "stage": "240k",
+   "target": 0.7,
+   "token_pos": 167374,
+   "depth": 0.699
+  },
+  {
+   "needle": "N09",
+   "stage": "240k",
+   "target": 0.9,
+   "token_pos": 215442,
+   "depth": 0.9
+  },
+  {
+   "needle": "N10",
+   "stage": "400k",
+   "target": 0.1,
+   "token_pos": 40339,
+   "depth": 0.101
+  },
+  {
+   "needle": "N11",
+   "stage": "400k",
+   "target": 0.3,
+   "token_pos": 119740,
+   "depth": 0.3
+  },
+  {
+   "needle": "N12",
+   "stage": "400k",
+   "target": 0.5,
+   "token_pos": 200221,
+   "depth": 0.501
+  },
+  {
+   "needle": "N13",
+   "stage": "400k",
+   "target": 0.7,
+   "token_pos": 279466,
+   "depth": 0.7
+  },
+  {
+   "needle": "N14",
+   "stage": "400k",
+   "target": 0.9,
+   "token_pos": 359269,
+   "depth": 0.9
+  },
+  {
+   "needle": "N15",
+   "stage": "500k",
+   "target": 0.1,
+   "token_pos": 51454,
+   "depth": 0.103
+  },
+  {
+   "needle": "N16",
+   "stage": "500k",
+   "target": 0.3,
+   "token_pos": 150484,
+   "depth": 0.302
+  },
+  {
+   "needle": "N17",
+   "stage": "500k",
+   "target": 0.5,
+   "token_pos": 249633,
+   "depth": 0.5
+  },
+  {
+   "needle": "N18",
+   "stage": "500k",
+   "target": 0.7,
+   "token_pos": 349938,
+   "depth": 0.701
+  },
+  {
+   "needle": "N19",
+   "stage": "500k",
+   "target": 0.9,
+   "token_pos": 449069,
+   "depth": 0.9
+  }
+ ],
+ "short_grader_map": {
+  "prod:None": 14,
+  "prod:gsm8k": 3,
+  "prod:letter": 3,
+  "prod:mmlu_pro": 2,
+  "prod:f1": 2,
+  "gsm8k:gsm8k": 30,
+  "mmlu:mmlu": 30
+ },
+ "coherence_gate": {
+  "path": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/vendor/scripts/lib",
+  "library": "coherence_gate 1.0.0",
+  "commit": "95157ad70f76ba5b825eb9e487cda3520e336f86"
+ }
+}
+NOTE estimate A0: {'F': 30.6, 'M': 35.2} min (F = assessment fit, M = micro-bench upper bound)
+NOTE estimate A1: {'F': 64.3, 'M': 85.1} min (F = assessment fit, M = micro-bench upper bound)
+NOTE estimate A0Q4: {'F': 30.6, 'M': 35.2} min (F = assessment fit, M = micro-bench upper bound)
+NOTE estimate A2: {'F': 49.0, 'M': 62.2} min (F = assessment fit, M = micro-bench upper bound)
+DRY-RUN OK

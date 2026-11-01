@@ -1,0 +1,13 @@
+test_candidate_contract_names_keeper_and_both_real_high_cells (test_qualification_contract.QualificationContract.test_candidate_contract_names_keeper_and_both_real_high_cells) ... ok
+test_completion_rejects_empty_and_cross_recipe_native_events (test_qualification_contract.QualificationContract.test_completion_rejects_empty_and_cross_recipe_native_events) ... ok
+test_exact_500k_request_metadata (test_qualification_contract.QualificationContract.test_exact_500k_request_metadata) ... ok
+test_launcher_refuses_without_manifest_bound_owner_booking (test_qualification_contract.QualificationContract.test_launcher_refuses_without_manifest_bound_owner_booking) ... ok
+test_native_event_writer_refuses_prompt_hash_kv_and_context_mismatches (test_qualification_contract.QualificationContract.test_native_event_writer_refuses_prompt_hash_kv_and_context_mismatches) ... ok
+test_qualification_work_unit_is_not_calibration (test_qualification_contract.QualificationContract.test_qualification_work_unit_is_not_calibration) ... ok
+test_science_cells_preserved (test_qualification_contract.QualificationContract.test_science_cells_preserved) ... ok
+test_window_validator_requires_and_accepts_exact_owner_booking (test_qualification_contract.QualificationContract.test_window_validator_requires_and_accepts_exact_owner_booking) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.174s
+
+OK

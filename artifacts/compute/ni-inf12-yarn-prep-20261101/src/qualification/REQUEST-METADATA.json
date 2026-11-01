@@ -1,0 +1,90 @@
+{
+  "schema": "epyc.yarn-e1-request-metadata.v1",
+  "kind": "metadata-only-tokenizer-count",
+  "no_inference": true,
+  "qualification_claim": false,
+  "planned_500k_prompts": [
+    {
+      "stage": "500k",
+      "arm": "A1",
+      "needle": "N15",
+      "messages_sha256": "70256982ae713d03df037f4a054882f2cf5b2f32d78894152248884eb1e83f64",
+      "rendered_sha256": "631ed0eec4f1da4dcaf175d11520bfeab6228091338a93ee178ddf145acd4c75",
+      "rendered_bytes": 2482894,
+      "token_count": 498957,
+      "historical_prompt_tokens": 498957,
+      "request_bytes_match_historical": true
+    },
+    {
+      "stage": "500k",
+      "arm": "A1",
+      "needle": "N16",
+      "messages_sha256": "8830de04b4cfe779e32454db803bd48d6bb91a9a8e84872d6a7acef72dad1dcb",
+      "rendered_sha256": "1c93230b4d718f99481bcf5da5890012e9b876d062d8deb1bef961bca81f7270",
+      "rendered_bytes": 2482913,
+      "token_count": 498963,
+      "historical_prompt_tokens": 498963,
+      "request_bytes_match_historical": true
+    },
+    {
+      "stage": "500k",
+      "arm": "A1",
+      "needle": "N17",
+      "messages_sha256": "b67911fed662dc17a1c1c52b8c7cce89df55a5ac0d0eec2bd5f91cbbcd55db56",
+      "rendered_sha256": "5ca65ff7533a2e08c7b4c3e6332c18dd7fbfff61f853e2020bab17e747bd0b7e",
+      "rendered_bytes": 2482899,
+      "token_count": 498965,
+      "historical_prompt_tokens": 498965,
+      "request_bytes_match_historical": true
+    },
+    {
+      "stage": "500k",
+      "arm": "A1",
+      "needle": "N18",
+      "messages_sha256": "e7882eba8fef307b9f944181b34b65dee8241c5f8686835200ac8ec35ce0ae3a",
+      "rendered_sha256": "0056af4bddebbe26fcbb2c66ceb445a83061395997aa2040be2033facd154863",
+      "rendered_bytes": 2482907,
+      "token_count": 498961,
+      "historical_prompt_tokens": 498961,
+      "request_bytes_match_historical": true
+    },
+    {
+      "stage": "500k",
+      "arm": "A1",
+      "needle": "N19",
+      "messages_sha256": "4fb2675f66aab44fe40b397aefb3d03f504ff925f5118853393fc619046a0780",
+      "rendered_sha256": "8307912edb92fa5df0de817f687e0651fa5e05209aefbb2de9c03db303caa5c4",
+      "rendered_bytes": 2482903,
+      "token_count": 498965,
+      "historical_prompt_tokens": 498965,
+      "request_bytes_match_historical": true
+    }
+  ],
+  "prompt": {
+    "stage": "500k",
+    "arm": "A1",
+    "needle": "N19",
+    "messages_sha256": "4fb2675f66aab44fe40b397aefb3d03f504ff925f5118853393fc619046a0780",
+    "rendered_sha256": "8307912edb92fa5df0de817f687e0651fa5e05209aefbb2de9c03db303caa5c4",
+    "rendered_bytes": 2482903,
+    "token_count": 498965,
+    "historical_prompt_tokens": 498965,
+    "request_bytes_match_historical": true,
+    "tokenizer_binary_sha256": "fd4bde26084ff28e973087694e8bc04e81bda3cce6a62f47fb8d81690b118071",
+    "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf"
+  },
+  "identity_audit": {
+    "runner_sha256_matches_task_source": false,
+    "input_manifest_sha256_matches_task_source": true,
+    "template_sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551",
+    "historical_prompt_sha256": "70256982ae713d03df037f4a054882f2cf5b2f32d78894152248884eb1e83f64",
+    "historical_image": "v10 gpu-20260921-ffc1bac82; historical result is not current-image calibration",
+    "current_recipe_binary": "/mnt/raid0/llm/kernels/builds/gpu-20261004-9a3f1392a/bin/llama-server",
+    "request_bytes_match_historical": true,
+    "max_request_messages_sha256": "4fb2675f66aab44fe40b397aefb3d03f504ff925f5118853393fc619046a0780",
+    "max_request_needle": "N19",
+    "historical_prompt_tokens": 498965
+  },
+  "historical_image": "v10 gpu-20260921-ffc1bac82; historical timings are not current-image calibration",
+  "historical_count_is_not_assumed": true
+}

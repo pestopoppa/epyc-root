@@ -1,0 +1,25 @@
+{
+  "conservative_bound": {
+    "items_times_wall_s_per_unit_must_fit_declared_window": true,
+    "requirement": "measured paired high-unit wall time must conservatively bound all three comparison pairs including both image loads, cache seeds, stage requests, probes, analysis, and cleanup",
+    "status": "UNPROVEN"
+  },
+  "evidence": [],
+  "historical_planning_only": {
+    "e1_high_requests_and_local_probes_s": 2854.558,
+    "image": "v10 gpu-20260921-ffc1bac82; not a calibration for this recipe",
+    "paired_high_unit_lower_bound_s_before_loads": 5709.116,
+    "status": "planning estimate only; cannot qualify or establish current feasibility",
+    "three_pair_proxy_s_before_loads": 17127.348
+  },
+  "observed_wall_s_per_unit": null,
+  "planned_comparison_pairs": 3,
+  "production_recipe_sha256": "fbff79e22b601fb32210338fd3bd90e4a124730a439fa019dc10c14ede3a8161",
+  "production_threads": 8,
+  "qualification_run_is_not_eligible": true,
+  "ready_manifest_must_remain_unpublished": true,
+  "reason": "no accepted same-image complete A1/high work-unit timing exists",
+  "schema": "epyc.yarn-work-unit-calibration.v1",
+  "status": "MISSING",
+  "work_unit": "one paired E1/W A1/high comparison: each image runs 400k cache seed then exact 500k N19 request"
+}
