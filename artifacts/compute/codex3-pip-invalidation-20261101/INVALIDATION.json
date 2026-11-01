@@ -1,0 +1,36 @@
+{
+  "finding": "selection is ineligible; inventory omitted unpadded shard directory; no page may be redrawn",
+  "intermediate_inventory_path": "/mnt/raid0/llm/tmp/codex3-pip-exposure-recheck-20261101/all-shards-inventory-v3.json",
+  "intermediate_inventory_sha256": "c3398f3bb52830b1dff6b70b0058b11dc4a45dc853a89c77efa3ed512a322dbc",
+  "limits": "Intermediate inventory itself omitted additional attempts and must not be used to authorize any other selection.",
+  "prior_starts": [
+    {
+      "page_index": 64,
+      "start_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-08/shard-8/502f87404374741092e0b73a3209565d89ad6d3455e3f040751ba3b6fff1cf8c.start",
+      "start_sha256": "b5ec9367645bf435cf58ed4db77ec7bea4f07c239f60bbc1d7c9a4aa46db01e7"
+    },
+    {
+      "page_index": 65,
+      "start_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-08/shard-8/657c855c6a202436a64ad6a68598c0f9b6f81d599c5fa4eab686a549b8b372a5.start",
+      "start_sha256": "f9b19d499c6344bb940be94c23ff2df2d1ec26068cc0340901599ae68ef4bd09"
+    },
+    {
+      "page_index": 66,
+      "start_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-08/shard-8/2444b61b589dd5b54fb7b73c53c074e44d2290021ad2e2d1e8442c227abef754.start",
+      "start_sha256": "8cb504681cb3486679950187f51dcbdd439d3b7b4c820b5797b10466547c4370"
+    },
+    {
+      "page_index": 67,
+      "start_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-08/shard-8/0bd9d9972326850753e60ee537a4ced0bae2baadf3cf4968f6b7d81be3cde381.start",
+      "start_sha256": "cd05fdf62637ac676fc55c1ae51032337152b9616f79d8120c1be9d3d6acc72e"
+    },
+    {
+      "page_index": 68,
+      "start_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-08/shard-8/f52e8b61fa48be91c754c307ce9f58e5bf68fae05510b7768c3f9d991958b333.start",
+      "start_sha256": "42a65b717a4e60cdba83aa4f5de1105c75dc5bbb7724ac1318b18b4b65884bf4"
+    }
+  ],
+  "schema": "pip02.selection-invalidation.v1",
+  "selection_path": "/mnt/raid0/llm/tmp/codex3-pip-v2-repair-20261101/selection-review.json",
+  "selection_sha256": "53a4e3a3f84cfc964f47ce72a683dcee43890c7ce6ac88ec79a36f7b7c1f9398"
+}
