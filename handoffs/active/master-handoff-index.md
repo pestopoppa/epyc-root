@@ -142,9 +142,9 @@ nobody is moving.
 |--------|----------|------|---------|----------------|
 | inference-research | 59 | 1045 | 58 | 2026-07-29 |
 | pipeline-integration | 5 | 69 | 1 | 2026-08-25 |
-| research-evaluation | 41 | 682 | 15 | 2026-07-29 |
+| research-evaluation | 41 | 683 | 15 | 2026-07-29 |
 | reviewer-control-plane | 6 | 26 | 12 | 2026-07-29 |
-| routing-and-optimization | 53 | 658 | 17 | 2026-07-29 |
+| routing-and-optimization | 53 | 657 | 17 | 2026-07-29 |
 | user-facing-harness | 14 | 126 | 17 | 2026-08-12 |
 <!-- END GENERATED index_state -->
 
