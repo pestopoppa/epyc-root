@@ -99,6 +99,14 @@ PUSH_PROMPT = ("[{v}] Your wrap-up {sha} is NOT on origin/main (`git cherry orig
                "commit was reported). Push your wrap-up now via `python3 scripts/coordination/serialized_push.py --fetch "
                "--push` from your worktree; a held push lock means wait and retry until PUSH VERIFIED. Last line `WRAPUP: <sha>`.")
 MAX_PUSH_RETRIES = 6
+# DSH-2/3/4 (intake-2603, operator "All four" 2026-11-01)
+MAX_REQUEUE = 3                       # run-end event redelivered at most 3 times without filing-done/<id>.FILED
+TRANSIENT_RX = re.compile(r"\b(408|50[0-9]|502|503|504)\b|connection reset|ECONNRESET|ETIMEDOUT|timed? ?out|stream disconnected|"
+                          r"server_error|overloaded|temporarily unavailable", re.I)
+TRANSIENT_BACKOFF_S = (120, 240, 480)  # "go on" retries after 2/4/8 min
+FILING_SLOTS = 1                       # DSH-4: one slot above max_live reserved for run-end filing resumes
+GO_ON_PROMPT = ("[{v}] go on. Your previous turn ended with a transient error (rc={rc}: {err}) and no wrap-up; this is retry "
+                "{n}/3. Continue exactly where you were and finish with `WRAPPED <sha>` (and report.json).")
 
 
 def now_iso() -> str:
@@ -194,8 +202,12 @@ runs under "Own inference tasks to publish as rows" and your handoff's rank amon
   `python3 scripts/coordination/serialized_push.py --agent handoff-{slug} --repo {lane_dir(slug)} --fetch --push`
   (held lock = wait and retry; non-fast-forward = merge origin/main into the lane and retry); prove
   `git -C {lane_dir(slug)} cherry origin/main <sha>` is empty.
-- Then print the line `WRAPPED <sha>` (sha = the landed commit) as the LAST line of your reply. The dispatcher parses
-  it into the registry and will NOT resume you for new work until that sha is on origin/main.
+- Write `{flags}/handoff-sessions/{slug}/report.json` = {{"state": "progress|ready|blocked|failed|idle|dropped",
+  "wrapped_sha": "<sha>", "question": "<for the operator, or null>", "rows_published": ["<row ids>"]}} (DSH-1: the
+  dispatcher reads this record FIRST; the WRAPPED line below is the fallback). Then print `WRAPPED <sha>` (sha = the
+  landed commit) as the LAST line of your reply. The dispatcher will NOT resume you for new work until that sha is on
+  origin/main. A run-end event counts as consumed ONLY when `filing-done/<id>.FILED` exists (DSH-2): without the
+  receipt it is redelivered to you (3x, then operator-escalations/).
 - At a milestone, or when your context is large, wrap up and also say `FRESH-SESSION-REQUESTED`.
 - No unblockable work left in this handoff: wrap up and reply `IDLE: <reason>` after the `WRAPPED` line.
 
@@ -297,6 +309,8 @@ are your complete starting state. {lane_line(slug)} Then act per the brief.
 {rd(pp)}
 ===== BACKLOG ({bp}) =====
 {rd(bp)}
+===== LAST TURN REPORT (report.json, DSH-1) =====
+{json.dumps(e.get("last_report")) if e.get("last_report") else "(none)"}
 ===== END OF FILES =====
 {idle_prompt(slug, e, flags)}"""
 
@@ -466,6 +480,38 @@ def pane_status(flags, slug, every=30, once=False):
         if e.get("status") == "done" or once:
             return 0
         time.sleep(every)
+
+
+def report_path(flags, slug):
+    return os.path.join(flags, "handoff-sessions", slug, "report.json")
+
+
+def turn_report(flags, slug, e):
+    """DSH-1: the session's structured turn report, if written during this turn (mtime >= last_resume); else None.
+    {state: progress|ready|blocked|failed|idle|dropped, wrapped_sha, question, rows_published}"""
+    p = report_path(flags, slug)
+    try:
+        if os.path.getmtime(p) + 1 < _parse(e.get("last_resume") or ""):
+            return None
+        r = json.load(open(p))
+        return r if isinstance(r, dict) else None
+    except (OSError, ValueError):
+        return None
+
+
+def filed(flags, rid) -> bool:
+    return os.path.exists(os.path.join(flags, "filing-done", f"{rid}.FILED"))
+
+
+def escalate_filing(flags, slug, ev):
+    d = os.path.join(flags, "operator-escalations")
+    os.makedirs(d, exist_ok=True)
+    p = os.path.join(d, f"filing-{ev['rid']}.md")
+    bg.write_atomic(p, f"# Filing escalation: row {ev['rid']} (handoff session {slug})\n\n"
+                       f"The run-end event ({ev.get('end')}) was delivered {MAX_REQUEUE + 1} times to session `{slug}` and no "
+                       f"`filing-done/{ev['rid']}.FILED` receipt appeared (DSH-2 cap). The row stays `needs-filing` in the backlog "
+                       f"until an operator or the owner files it and touches the receipt. Generated {now_iso()}.\n")
+    return p
 
 
 def last_rc(e) -> int | None:
@@ -770,19 +816,45 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 log(flags, f"USAGE-LIMIT {slug}: dispatcher paused until {reg['paused_until']} (work not dropped; re-queued)")
                 if e.get("pending_event"):
                     st.setdefault("queue", []).insert(0, e["pending_event"])
+            rep = turn_report(flags, slug, e)  # DSH-1: structured record first, transcript regex as the fallback
             m = WRAPPED_RX.findall(tailtxt)
-            if m:
+            if rep and re.fullmatch(r"[0-9a-f]{7,40}", str(rep.get("wrapped_sha") or "")):
+                e["last_wrapup"] = rep["wrapped_sha"]
+            elif m:
                 e["last_wrapup"] = m[-1]
+            e["last_report"] = {k: rep.get(k) for k in ("state", "wrapped_sha", "question", "rows_published")} if rep else None
             if "FRESH-SESSION-REQUESTED" in tailtxt:
                 e["fresh_next"] = True
             mi = IDLE_RX.findall(tailtxt)
-            e["idle_reported"] = mi[-1][:200] if mi else None
-            e["pid"], e["pending_event"], e["last_end"], e["last_rc"] = None, None, now_iso(), last_rc(e)
-            if landed(e.get("last_wrapup")):
-                e["status"], e["push_retries"] = "suspended", 0
-            else:
-                e["status"] = "unpushed"  # never suspended without proof the wrap-up landed
+            e["idle_reported"] = (rep.get("question") or "idle") if rep and rep.get("state") == "idle" else (mi[-1][:200] if mi else None)
+            ev, e["pid"], e["last_end"], e["last_rc"] = e.get("pending_event"), None, now_iso(), last_rc(e)
+            e["pending_event"] = None
+            wrapped_now = bool(e.get("last_wrapup")) and (bool(m) or bool(rep and rep.get("wrapped_sha")))
+            if ev and not filed(flags, ev["rid"]):  # DSH-2: a run-end is acked by the FILED receipt, not by the turn ending
+                n = int(ev.get("redelivered", 0)) + 1
+                if n <= MAX_REQUEUE:
+                    st.setdefault("queue", []).insert(0, dict(ev, redelivered=n))
+                    log(flags, f"REQUEUE {ev['rid']} -> {slug}: turn ended without filing-done/{ev['rid']}.FILED (redelivery {n}/{MAX_REQUEUE})")
+                else:
+                    log(flags, f"ESCALATE {ev['rid']} -> {slug}: no FILED receipt after {MAX_REQUEUE} redeliveries; "
+                               f"{escalate_filing(flags, slug, ev)}")
+            transient = (e["last_rc"] not in (None, 0)) and not wrapped_now and not any(USAGE_RX.search(ln) for ln in errs) \
+                and any(TRANSIENT_RX.search(ln) for ln in (errs or tailtxt.splitlines()[-20:]))
+            if transient:  # DSH-3
+                n = int(e.get("transient_retries", 0)) + 1
+                if n <= len(TRANSIENT_BACKOFF_S):
+                    e["transient_retries"], e["status"] = n, "retry"
+                    e["retry_at"] = _dt.datetime.fromtimestamp(now + TRANSIENT_BACKOFF_S[n - 1], _dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+                    e["retry_error"] = (errs or tailtxt.splitlines()[-1:] or [""])[-1][:200]
+                    log(flags, f"TRANSIENT {slug}: rc={e['last_rc']} retry {n}/{len(TRANSIENT_BACKOFF_S)} at {e['retry_at']}: {e['retry_error']}")
+                else:
+                    e["status"], e["failed"] = "failed", f"{n - 1} transient retries exhausted (rc={e['last_rc']})"
+                    log(flags, f"FAILED {slug}: {e['failed']}; shown in the backlog")
+            elif e.get("last_wrapup") and not landed(e.get("last_wrapup")):
+                e["status"] = "unpushed"  # a WRAPPED sha exists but is not on origin/main: PUSH_PROMPT
                 log(flags, f"UNPUSHED {slug} wrapup={e.get('last_wrapup')}: resuming to push")
+            else:
+                e["status"], e["push_retries"], e["transient_retries"] = "suspended", 0, 0
             log(flags, f"TURN-END {slug} session={e.get('session_id')} rc={e.get('last_rc')} wrapup={e.get('last_wrapup')}")
     # 2. new run ends owned by a pilot
     for rid, p in end_events(flags):
@@ -836,11 +908,17 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 _go(flags, slug, e, PUSH_PROMPT.format(v=VERSION, sha=e.get("last_wrapup"), slug=slug, lane=lane_dir(slug)), runner, None)
                 live += 1
         q, rest, lcache, launched = st.get("queue") or [], [], {}, set()
+        for slug, e in S.items():  # DSH-3: "go on" after the backoff
+            if e.get("status") == "retry" and not alive(e.get("pid")) and e.get("session_id") and live < cap \
+                    and now >= _parse(e.get("retry_at") or ""):
+                _go(flags, slug, e, GO_ON_PROMPT.format(v=VERSION, rc=e.get("last_rc"), err=e.get("retry_error"), n=e.get("transient_retries")), runner, e.get("pending_event"))
+                launched.add(slug)
+                live += 1
         for ev in q:
             e = S.get(ev["slug"])
             if not e or e.get("status") == "done":
                 continue
-            if alive(e.get("pid")) or live >= cap or not e.get("session_id"):
+            if alive(e.get("pid")) or live >= cap + FILING_SLOTS or not e.get("session_id"):  # DSH-4: filing never queues behind auto-start
                 rest.append(ev)
                 continue
             if not wrapped(e, lcache):  # 2026-11-01 ruling: no new work on an unwrapped session; keep the event
@@ -853,7 +931,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             live += 1
         st["queue"] = rest
         for slug, e in S.items():  # continue at once: anything open that is not waiting on a queued/running row
-            if live >= cap or e.get("status") == "done" or alive(e.get("pid")) or (e.get("_work") or ("", ""))[0] != "continue":
+            if live >= cap or e.get("status") in ("done", "retry", "failed") or alive(e.get("pid")) or (e.get("_work") or ("", ""))[0] != "continue":
                 continue
             if slug in launched or any(ev["slug"] == slug for ev in st["queue"]):
                 continue

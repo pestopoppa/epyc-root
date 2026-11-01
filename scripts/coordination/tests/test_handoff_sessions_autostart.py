@@ -324,3 +324,147 @@ class WindowClutterTests(AutoStartFixture):
         self.assertEqual(nw[0][:6], ("new-window", "-d", "-t", "agent:", "-n", "h-alpha"))
         self.assertEqual(reg["sessions"]["alpha"]["status"], "live")
         self.assertFalse(any(c[0] == "send-keys" for c in calls))
+
+
+class DSHTests(AutoStartFixture):
+    """intake-2603 DSH-1..4 (operator "All four", 2026-11-01)."""
+
+    def session(self, **kw):
+        e = {"handoff": "handoffs/active/alpha.md", "engine": "codex", "session_id": "t1", "status": "suspended", "pid": None,
+             "last_wrapup": "abc1234", "last_end": "2026-11-01T10:00:00Z", "last_resume": "2026-11-01T10:00:00Z",
+             "row_ids": ["row-a", "row-b"]}
+        e.update(kw)
+        self.reg["auto_start"] = False
+        self.reg["sessions"] = {"alpha": e}
+        hs.save(hs.reg_path(self.flags), self.reg)
+        return e
+
+    def turn(self, text, rc=None):
+        """Simulate a finished turn: dead pid, output file with `text`, optional rc file."""
+        out = os.path.join(self.flags, "handoff-sessions", "alpha", "turn.jsonl")
+        _w(out, text)
+        if rc is not None:
+            _w(out + ".rc", f"{rc}\n")
+        return out
+
+    def test_dsh2_run_end_acked_by_receipt_requeued_then_escalated(self):
+        self.session()
+        _w(os.path.join(self.flags, "grants", "row-a.ended"), "rc=0\n")
+        reg, st = self.dispatch()  # event queued and delivered (end_prompt)
+        self.assertEqual(len(self.calls), 1)
+        self.assertIn("row `row-a`", self.calls[0]["prompt"])
+        e = reg["sessions"]["alpha"]
+        self.assertEqual(e["pending_event"]["rid"], "row-a")
+        # the filing turn "crashes": ends with a WRAPPED line but no FILED receipt -> redelivered, not dropped
+        for n in (1, 2, 3):
+            e = reg["sessions"]["alpha"]
+            e.update({"pid": 99999979, "last_output": self.turn('{"text":"WRAPPED abc1234"}\n')})
+            hs.save(hs.reg_path(self.flags), reg)
+            reg, st = self.dispatch()
+            self.assertIn(f"REQUEUE row-a -> alpha: turn ended without filing-done/row-a.FILED (redelivery {n}/3)", self.log_text())
+            self.assertEqual(len(self.calls), 1 + n, "the event is re-delivered once per crashed turn")
+            self.assertIn("row `row-a`", self.calls[-1]["prompt"])
+        # fourth crash -> escalation, no further delivery
+        e = reg["sessions"]["alpha"]
+        e.update({"pid": 99999979, "last_output": self.turn('{"text":"WRAPPED abc1234"}\n')})
+        hs.save(hs.reg_path(self.flags), reg)
+        reg, st = self.dispatch()
+        self.assertIn("ESCALATE row-a -> alpha", self.log_text())
+        self.assertTrue(os.path.exists(os.path.join(self.flags, "operator-escalations", "filing-row-a.md")))
+        self.assertEqual(sum(1 for c in self.calls if "row `row-a`" in c["prompt"]), 4, "1 delivery + 3 redeliveries, never a 5th")
+        self.assertNotIn("row `row-a`", self.calls[-1]["prompt"])  # the session continues its other open work instead
+        # a turn that files (FILED receipt) consumes the event: nothing re-queued
+        self.session()
+        self.calls.clear()
+        _w(os.path.join(self.flags, "grants", "row-b.ended"), "rc=0\n")
+        reg, st = self.dispatch()
+        _w(os.path.join(self.flags, "filing-done", "row-b.FILED"), "")
+        reg["sessions"]["alpha"].update({"pid": 99999979, "last_output": self.turn('{"text":"WRAPPED abc1234"}\n')})
+        hs.save(hs.reg_path(self.flags), reg)
+        reg, st = self.dispatch()
+        self.assertEqual([ev["rid"] for ev in st["queue"]], [])
+        self.assertNotIn("REQUEUE row-b", self.log_text())
+
+    def test_dsh4_filing_resume_gets_a_slot_above_max_live(self):
+        self.reg["max_live"] = 1
+        self.session()
+        self.reg["sessions"]["busy"] = {"handoff": "handoffs/active/zed.md", "engine": "codex", "session_id": "t2", "status": "live",
+                                        "pid": os.getpid(), "last_wrapup": "abc1234"}
+        hs.save(hs.reg_path(self.flags), self.reg)
+        _w(os.path.join(self.flags, "grants", "row-a.ended"), "rc=0\n")
+        with patch.object(hs, "alive", lambda pid: pid == os.getpid()):
+            reg, st = self.dispatch()
+        self.assertEqual(len(self.calls), 1, "max_live is full, yet the run-end filing resume is dispatched")
+        self.assertIn("row `row-a`", self.calls[0]["prompt"])
+
+    def test_dsh3_transient_error_retries_with_backoff_then_fails(self):
+        e = self.session(pid=99999979)
+        e["last_output"] = self.turn('{"type":"error","message":"stream disconnected before completion: 502 Bad Gateway"}\n', rc=1)
+        hs.save(hs.reg_path(self.flags), self.reg)
+        t0 = 1_800_000_000.0
+        reg, _ = hs.dispatch_once(self.flags, runner=self.runner, repo=self.repo, now=t0)
+        e = reg["sessions"]["alpha"]
+        self.assertEqual((e["status"], e["transient_retries"]), ("retry", 1))
+        self.assertIn("TRANSIENT alpha: rc=1 retry 1/3", self.log_text())
+        self.assertEqual(self.calls, [], "not resumed before the backoff")
+        with patch.object(hs, "landed", return_value=True), patch.object(hs, "project_cwd", return_value=self.repo):
+            reg, _ = hs.dispatch_once(self.flags, runner=self.runner, repo=self.repo, now=t0 + 121)
+        self.assertEqual(len(self.calls), 1)
+        self.assertIn("go on", self.calls[0]["prompt"])
+        self.assertIn("retry 1/3", self.calls[0]["prompt"])
+        for n in (2, 3):  # two more transient failures -> retries 2 and 3
+            reg["sessions"]["alpha"].update({"pid": 99999979, "last_output": self.turn('{"type":"error","message":"connection reset"}\n', rc=1)})
+            hs.save(hs.reg_path(self.flags), reg)
+            reg, _ = hs.dispatch_once(self.flags, runner=self.runner, repo=self.repo, now=t0 + 1000 * n)
+            self.assertEqual(reg["sessions"]["alpha"]["transient_retries"], n)
+        reg["sessions"]["alpha"].update({"pid": 99999979, "last_output": self.turn('{"type":"error","message":"504 gateway timeout"}\n', rc=1)})
+        hs.save(hs.reg_path(self.flags), reg)
+        reg, _ = hs.dispatch_once(self.flags, runner=self.runner, repo=self.repo, now=t0 + 9000)
+        self.assertEqual(reg["sessions"]["alpha"]["status"], "failed")
+        self.assertIn("FAILED alpha: 3 transient retries exhausted", self.log_text())
+        # the backlog shows the failed session
+        data = bg.build(self.flags, os.path.join(self.repo, "handoffs/active/backlog-priority.json"), "nolog", sessions_path=hs.reg_path(self.flags))
+        self.assertIn("[FAILED] session: 3 transient retries exhausted", bg.render("handoff-alpha", data))
+        # PUSH_PROMPT only when a WRAPPED sha exists but has not landed
+        e = self.session(pid=99999979, last_wrapup=None)
+        e["last_output"] = self.turn('{"text":"no wrap-up line at all"}\n', rc=0)
+        hs.save(hs.reg_path(self.flags), self.reg)
+        self.calls.clear()
+        with patch.object(hs, "landed", return_value=False):
+            reg, _ = self.dispatch()
+        self.assertNotEqual(reg["sessions"]["alpha"]["status"], "unpushed", "no sha -> nothing to push")
+        self.assertFalse(any("NOT on origin/main" in c["prompt"] for c in self.calls))
+        e = self.session(pid=99999979, last_wrapup=None)
+        e["last_output"] = self.turn('{"text":"WRAPPED feedfacecafe"}\n', rc=0)
+        hs.save(hs.reg_path(self.flags), self.reg)
+        self.calls.clear()
+        with patch.object(hs, "landed", return_value=False), patch.object(hs, "project_cwd", return_value=self.repo):
+            reg, _ = hs.dispatch_once(self.flags, runner=self.runner, repo=self.repo)
+        self.assertIn("UNPUSHED alpha wrapup=feedfacecafe", self.log_text())
+        self.assertTrue(any("NOT on origin/main" in c["prompt"] for c in self.calls))
+
+    def test_dsh1_report_json_first_regex_fallback_and_transfer_includes_it(self):
+        e = self.session(pid=99999979, last_wrapup=None, last_resume="2026-11-01T10:00:00Z")
+        e["last_output"] = self.turn('{"text":"WRAPPED 0000000bad"}\n', rc=0)
+        _w(hs.report_path(self.flags, "alpha"), json.dumps({"state": "progress", "wrapped_sha": "c0ffee123456", "question": None, "rows_published": ["r1"]}))
+        hs.save(hs.reg_path(self.flags), self.reg)
+        with patch.object(hs, "landed", return_value=True):
+            reg, _ = self.dispatch()
+        e = reg["sessions"]["alpha"]
+        self.assertEqual(e["last_wrapup"], "c0ffee123456", "report.json wins over the transcript regex")
+        self.assertEqual(e["last_report"]["rows_published"], ["r1"])
+        # idle via report state -> idle_reported; a stale report (older than the resume) is ignored -> regex fallback
+        e.update({"pid": 99999979, "last_resume": "2099-01-01T00:00:00Z", "last_output": self.turn('{"text":"WRAPPED 83c110265331"}\n', rc=0)})
+        hs.save(hs.reg_path(self.flags), reg)
+        with patch.object(hs, "landed", return_value=True):
+            reg, _ = self.dispatch()
+        self.assertEqual(reg["sessions"]["alpha"]["last_wrapup"], "83c110265331")
+        self.assertIsNone(reg["sessions"]["alpha"]["last_report"])
+        # transfer prompt carries the last report
+        reg["sessions"]["alpha"]["last_report"] = {"state": "blocked", "wrapped_sha": "c0ffee123456", "question": "which lane?", "rows_published": []}
+        hs.save(hs.reg_path(self.flags), reg)
+        with patch.object(hs, "project_cwd", return_value=self.repo):
+            hs.transfer(self.flags, "alpha", "claude", runner=self.runner, repo=self.repo)
+        self.assertIn("LAST TURN REPORT (report.json, DSH-1)", self.calls[-1]["prompt"])
+        self.assertIn("which lane?", self.calls[-1]["prompt"])
+        self.assertIn("report.json", hs.brief_text("alpha", reg["sessions"]["alpha"], self.flags))

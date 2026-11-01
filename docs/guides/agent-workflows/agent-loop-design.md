@@ -16,7 +16,7 @@ paragraphs describing the same system.
 
 ---
 
-## The four things a loop block must show
+## The five things a loop block must show
 
 1. **Every actor, and what it reads.** An actor whose inputs are not listed is an
    actor you cannot reason about. AutoKernel's planner was a pure function of a
@@ -31,6 +31,20 @@ paragraphs describing the same system.
    the defect was invisible in the code.
 4. **Which single step costs real resources.** Every gate should sit before it. If a
    gate sits after the expensive step, say why.
+5. **How the loop learns each actor's terminal state, and when an input counts as
+   consumed** (DSH-5, intake-2603#record, 2026-11-01). Terminal state is a *structured
+   record* the actor writes — never free-text parsing of its transcript. Consumption is
+   an *ack by durable receipt*, redelivered at most N times, then escalated; a turn
+   ending is not an ack. Conforming: AutoKernel's `loop/actors.py` `_has_answer` +
+   `loop/resume.py` (an answer exists only when the schema-shaped record does), the
+   autopilot's `controller_io.py` `extract_action_with_repair` and `autopilot.py`
+   `_recover_from_in_flight_trial` (an in-flight trial is re-entered from its record,
+   not from log text). Counterexample until 2026-11-01: `handoff_sessions.py` parsed
+   `WRAPPED <sha>` out of the engine transcript and dropped a run-end event as soon as
+   the turn ended, so a crashed filing turn lost the row. With DSH-1 (`report.json`
+   per turn, regex kept as fallback) and DSH-2 (run-end kept pending until
+   `filing-done/<id>.FILED`, re-queued at most 3 times, then `operator-escalations/`)
+   the dispatcher conforms; the fallback regex is the transition-week exception.
 
 ## Budgets
 

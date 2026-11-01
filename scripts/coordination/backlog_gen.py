@@ -64,7 +64,8 @@ LEGACY_QUEUES = ("ni", "refactor", "codex3")  # closed sessions whose WORK-*-cod
 FLOOR = 2
 B_MARK, E_MARK = "<!-- BLOCKED-INFERENCE:start -->", "<!-- BLOCKED-INFERENCE:end -->"
 STATE_ORDER = {"blocked": 0, "needs-launcher": 1, "needs-qualification": 2, "parked": 3,
-               "qualified-armed": 4, "running": 5, "done": 6}
+               "qualified-armed": 4, "running": 5, "needs-filing": 6, "done": 7}
+FILING_FLOW_START = 1793491200.0  # 2026-11-01T00:00:00Z: rows ended before the owner-files-its-own-results flow are not owed a receipt
 ADVANCEABLE = ("blocked", "needs-launcher", "needs-qualification")
 MAX_FAILS = 3
 SIZE_ORDER = {"S": 0, "M": 1, "L": 2}
@@ -217,8 +218,18 @@ def grant_run_state(F: str, rid: str) -> tuple[str | None, str]:
     """(state, reason) from the grant files alone. `done` on .ended/.complete/FILED; `running` only on an open .grant with
     no end record AND a live recorded pid (or no pid recorded anywhere - then the grant is the only evidence);
     `stale-grant` when the recorded pid is dead; None when no grant exists."""
-    if os.path.exists(F + f"grants/{rid}.ended") or os.path.exists(F + f"grants/{rid}.complete") or os.path.exists(F + f"filing-done/{rid}.FILED"):
-        return "done", "grants/<id>.ended|.complete or filing-done present"
+    if os.path.exists(F + f"filing-done/{rid}.FILED"):
+        return "done", "filing-done receipt present"
+    for term in (".ended", ".complete"):
+        ep = F + f"grants/{rid}{term}"
+        if os.path.exists(ep):
+            try:
+                recent = os.path.getmtime(ep) >= FILING_FLOW_START
+            except OSError:
+                recent = False
+            if recent:  # DSH-2: ended but not FILED is owed a filing, not done
+                return "needs-filing", f"grants/<id>{term} present, no filing-done/<id>.FILED receipt: the owner files the verdict and touches the receipt"
+            return "done", f"grants/<id>{term} present (pre-flow row)"
     if not os.path.exists(F + f"grants/{rid}.grant"):
         return None, ""
     pid = recorded_pid(F, rid)
@@ -235,6 +246,8 @@ def row_state_v3(flags: str, rid: str, allrows: dict) -> tuple[str, list[str], d
     gs, greason = grant_run_state(F, rid)
     if gs == "done":
         return "done", [], {}
+    if gs == "needs-filing":
+        return "needs-filing", ["file: " + greason], {}
     if gs == "stale-grant":
         return "blocked", ["wait (ws58 keeper): " + greason], {}
     if _rf is None:
@@ -330,6 +343,8 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
     klog = fold_keeper_log(keeper_log)
     pilots = load_pilots(sessions_path if sessions_path is not None else F + SESSIONS_NAME)
     buckets = [GENERALIST] + [f"handoff-{s}" for s in pilots]
+    _reg = load_json(sessions_path if sessions_path is not None else F + SESSIONS_NAME) or {}
+    failed_sessions = {s: e.get("failed") for s, e in (_reg.get("sessions") or {}).items() if isinstance(e, dict) and e.get("failed")}
 
     # non-inference backlog-priority rows: row-id -> task descriptions, and task-id -> row ids (for scoring)
     unblockers_by_row: dict[str, list[str]] = {}
@@ -399,6 +414,9 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
             gs, greason = grant_run_state(F, rid)
             if gs == "done":
                 state = "done"
+            elif gs == "needs-filing":
+                state = "needs-filing"
+                reasons.append("file: " + greason)
             elif gs == "running":
                 state = "running"
             elif gs == "stale-grant":
@@ -431,8 +449,9 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
         seen_ids.add(rid)
         w = bucket_for(rid, e.get("row"), e.get("handoff"))
         blocker = str(e.get("blocker") or "")
-        if os.path.exists(F + f"grants/{rid}.ended") or os.path.exists(F + f"filing-done/{rid}.FILED"):
-            state = "done"
+        gs0 = grant_run_state(F, rid)[0]
+        if gs0 in ("done", "needs-filing"):
+            state = gs0
         else:
             state = "needs-launcher" if re.search(r"missing launcher", blocker, re.I) else "blocked"
         rec = {"id": rid, "lane": e.get("lane") if e.get("lane") in ("cpu", "gpu") else "cpu", "rank": e.get("rank") or 999,
@@ -586,7 +605,7 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
         per[w]["rows"].sort(key=_key)
     return {"generated_at": now.strftime("%Y-%m-%dT%H:%MZ"), "workers": per, "parked": parked,
             "pilots": {s: p["handoff"] for s, p in pilots.items()}, "ready_by_lane": ready_by_lane, "klog_idle": klog["idle"][-3:],
-            "needs_session": needs_session, "handoff_rank": handoff_rank}
+            "needs_session": needs_session, "handoff_rank": handoff_rank, "failed_sessions": failed_sessions}
 
 
 def render(w: str, data: dict) -> str:
@@ -604,6 +623,9 @@ def render(w: str, data: dict) -> str:
         counts[r["state"]] = counts.get(r["state"], 0) + 1
     L.append("State counts: " + ", ".join(f"{k}={counts.get(k, 0)}" for k in STATE_ORDER) + ".")
     if w.startswith("handoff-"):
+        fs = (data.get("failed_sessions") or {}).get(w[8:])
+        if fs:
+            L.append(f"- [FAILED] session: {fs} — the dispatcher stopped retrying (DSH-3); ws58 transfers or restarts it.")
         hr = next((h for h in data.get("handoff_rank", []) if h.get("session") == w[8:]), None)
         if hr:
             L.append(f"Handoff rank: #{hr['position']} of {len(data['handoff_rank'])} (score={hr['score']}, rows={len(hr['rows'])}, "
@@ -624,6 +646,8 @@ def render(w: str, data: dict) -> str:
         if r["state"] == "done":
             continue  # counted above; not work
         L.append(f"- [{r['state']}] {r['lane']} rank={r['rank']} **{r['id']}**" + (f" (row {r['row']})" if r.get("row") else ""))
+        if r["state"] == "needs-filing":
+            L.append(f"    - file: read result_path, apply decision_rule, tick the handoff, then `touch {FLAGS_DEFAULT}/filing-done/{r['id']}.FILED` (DSH-2)")
         for t in r["tasks"]:
             L.append(f"    - unblock: {t}")
     L += ["", "## Non-inference tasks — ranked by inference rows unblocked (lane-weighted), then effort S<M<L", ""]
