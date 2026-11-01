@@ -25,3 +25,37 @@ Owner: the `handoff_sessions.py` dispatcher (ws58). Zero compute._
 - [x] **DSH-4** ✅ 2026-11-01 ROOT `7259bbdc8` [no-belief: dispatcher conformance; no measurement] [S] Reserve one dispatch slot above max_live for run-end filing resumes, so a finished row's owner is never queued behind auto-start. Acceptance: fixture with max_live live sessions still dispatches a run-end event. [no-belief: dispatcher scheduling; no measurement]
 - [x] **DSH-5** ✅ 2026-11-01 ROOT `7259bbdc8` [no-belief: dispatcher conformance; no measurement] [S] Add a fifth "loop block must show" item to docs/guides/agent-workflows/agent-loop-design.md: how the loop learns each actor's terminal state (a structured record, never free-text parsing) and when an input counts as consumed (ack by durable receipt, redelivered at most N times). Cite actors.py _has_answer/resume.py, controller_io.py extract_action_with_repair/autopilot.py _recover_from_in_flight_trial as conforming examples, and handoff_sessions.py as the DSH-1/2 counterexample. [no-belief: doc rule; no measurement]
 
+## Churn AI-free mechanization (2026-11-01; operator approved CAF-1..7 with the D9 acknowledgement)
+
+_Source: `research/deep-dives/churn-ai-free-audit-20261101.md` §3 (turn count drives cost; bookkeeping = 23% of
+handoff-session spend). Deletion-first: each line names what it deletes before anything is built. ONE schema for the
+turn record: `compute-flags/handoff-sessions/<slug>/report.json` = the wrapup JSON (DSH-1 and CAF-2 are the same file):
+`{"slug", "state": "progress|ready|blocked|failed|idle|dropped", "task_text", "ticks": [text], "progress_md", "paths": [],
+"belief": "cc|clm_<id>|no-belief: <reason>", "message", "question", "rows_published": [], "wrapped_sha"}` — the agent
+writes everything but `wrapped_sha`; `wrapup.py` fills it after the push._
+
+- [x] **CAF-1 — no-poll resume.** ✅ 2026-11-01 ROOT `72632c80d` [no-belief: dispatcher conformance; no measurement]
+  Deletes: the brief's "do not poll"/"non-blocking code while waiting" prose and every in-turn wait (monitor_wait,
+  13.9% of spend). `handoff_sessions.py` resumes a session on its grant end, its dry-run result
+  (`dryrun/<id>/PASS.json|FAIL-n.json`) or a file registered under `handoff-sessions/<slug>/awaiting/`. Plus the no-op
+  guard: a turn with no commit, no row, no filing is not resumed until a new event (`NOOP` log). Evidence: audit §3.
+- [x] **CAF-6 — run-end dedupe.** ✅ 2026-11-01 ROOT `72632c80d` [no-belief: dispatcher conformance; no measurement]
+  Deletes: the duplicate `.ended`+`.complete` delivery (`DEDUPE` log; 2 RUN-END lines for stt5-v3-tc-rebind-r1 at 21:49Z).
+- [ ] **CAF-2 — `scripts/coordination/churn/wrapup.py`.** Deletes: the brief's six-step manual wrap-up prose (progress,
+  tick, index check, pathspec commit, serialized_push, cherry) and the agent turns that perform it (wrapup_mech 6.4%);
+  the WRAPPED-line regex becomes the one-week fallback only. JSON (schema above) in → progress append, tick-by-text,
+  `index_state.py --check`, pathspec commit in the lane with trailers, `serialized_push.py --repo <lane>`, cherry empty,
+  `report.json` written with `wrapped_sha`, prints `WRAPPED <sha>`. Deps: none.
+- [ ] **CAF-3 — resume delta.** Deletes: "re-read the handoff and BACKLOG" from every prompt and the re-read turns
+  (read_brief 22%); `backlog_gen` emits a per-slug state delta (rows: state/rc/result_path; next task text; own inference
+  tasks) that the resume prompt carries. Deps: none.
+- [ ] **CAF-4 — `publish_row.py --repair` + spec lint.** Deletes: the session turn after a dry-run FAIL of the two known
+  classes (result_path → completion marker; derivable spec fields) and the keeper→agent→republish loop for them
+  (republish 1.5% + spec_fix 5.2%); the lint stops them at publish time. Deps: none.
+- [ ] **CAF-5 — `scripts/coordination/churn/file_result.py`.** Deletes: the agent filing turn for rows whose
+  `decision_rule` is numeric (filing_verdict 1.7%) and the end_prompt's "YOU file the verdict" prose for them; the
+  dispatcher files such rows itself and touches `.FILED`; non-numeric rules take the agent's `{verdict, rationale}` JSON.
+  Deps: CAF-2.
+- [ ] **CAF-7 — codex-gen routing.** Deletes: codex-gen's bookkeeping tasks (regenerate/commit/push, republish) — they
+  call CAF-2/4/5 directly; `GOAL-codex-gen.md` (and its git copy in `scripts/coordination/churn/`) loses the manual steps.
+  Deps: CAF-2, CAF-4.

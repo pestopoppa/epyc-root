@@ -777,3 +777,30 @@ def main(argv=None):
 
 if __name__ == "__main__":
     sys.exit(main())
+
+
+def resume_delta(data: dict, slug: str, limit_rows: int = 8) -> str:
+    """CAF-3: the compact per-slug state a resume prompt carries INSTEAD of "re-read the BACKLOG" (read_brief was 22% of
+    handoff-session spend). Rows by state with the one-line reason, the next non-inference tasks, the handoff's own
+    inference tasks to publish, and the handoff rank. The BACKLOG file remains the full view."""
+    w = data["workers"].get(f"handoff-{slug}")
+    if not w:
+        return "(no backlog bucket for this session yet)"
+    L = []
+    rows = [r for r in w["rows"] if r["state"] != "done"]
+    for r in rows[:limit_rows]:
+        why = ("; ".join(r.get("reasons") or [])[:160]) or ""
+        L.append(f"- row {r['id']} [{r['state']}, {r['lane']}, rank {r['rank']}]" + (f": {why}" if why else ""))
+    if len(rows) > limit_rows:
+        L.append(f"- ... {len(rows) - limit_rows} more rows (see BACKLOG-handoff-{slug}.md)")
+    if not rows:
+        L.append("- rows: none open")
+    hr = next((h for h in data.get("handoff_rank", []) if h.get("session") == slug), None)
+    if hr:
+        L.append(f"- handoff rank #{hr['position']}/{len(data['handoff_rank'])} score={hr['score']}; own inference tasks to publish: "
+                 + ("; ".join(f"L{c['line']} [{c['lane']}] {c['text'][:90]}" for c in hr.get("candidates", [])[:3]) or "none detected"))
+    for wl in w["code"][:3]:
+        L.append(f"- next task: {wl['file']}:{wl['line']} — {wl['text'][:150]}")
+    if not w["code"]:
+        L.append("- non-inference tasks: none in the backlog")
+    return "\n".join(L)

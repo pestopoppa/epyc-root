@@ -176,7 +176,8 @@ this brief and on disk/origin/main — you may have no transcript of earlier tur
   start of EVERY turn: `git -C {lane_dir(slug)} fetch origin && (git -C {lane_dir(slug)} merge --ff-only origin/main ||
   git -C {lane_dir(slug)} merge --no-edit origin/main)` (the dispatcher does the same before resuming you; a reported
   merge conflict is your first task). Handoff: `{lane_dir(slug)}/{e['handoff']}`.
-- Your backlog: `{flags}/BACKLOG-handoff-{slug}.md` (regenerated every 10 min by backlog_gen.py from the registry
+- Every resume prompt carries your STATE delta (rows, next tasks, own inference tasks; CAF-3) - act on it, do not start a
+  turn by re-reading files. Full view when needed: `{flags}/BACKLOG-handoff-{slug}.md` (regenerated every 10 min by backlog_gen.py from the registry
   `{reg_path(flags)}`). Owned row ids: {rows}; row patterns: {pats}; handoff task rows: {hrows}.
 - Progress files: `progress/YYYY-MM/YYYY-MM-DD-handoff-{slug}.md` (one per day, append per boundary).
 - Row manifests: `{flags}/ready/<id>.json` or `{flags}/ready/armed/<id>.json` (schema `epyc.row.v3`: `result_path`,
@@ -248,7 +249,7 @@ def manifest_for(flags, rid):
     return None, {}
 
 
-def end_prompt(slug, e, flags, rid, endfile):
+def end_prompt(slug, e, flags, rid, endfile, delta=""):
     mp, m = manifest_for(flags, rid)
     try:
         endline = open(endfile).read().strip()[:400]
@@ -262,7 +263,7 @@ def end_prompt(slug, e, flags, rid, endfile):
     except (OSError, IndexError):
         pass
     return f"""[{VERSION}] Run end in your handoff {e['handoff']}: row `{rid}`. {FANOUT_LINE} {lane_line(slug)}
-1. Re-read {e['handoff']} and {flags}/BACKLOG-handoff-{slug}.md (in your lane).
+{delta_block(delta).replace('{flags}', flags).replace('<slug>', slug)}1. The handoff is {e['handoff']} in your lane; the state above is current.
 2. Facts: end file {endfile}: `{endline}` (rc={rc}); launcher end line: `{tail}`;
    manifest {mp or '(not found; look in ' + flags + '/ready/<id>.json or ready/armed/<id>.json)'} (schema {m.get('schema', 'epyc.row.v2|v3')});
    result_path: {m.get('result_path')}; handoff_task: {m.get('handoff_task')}; decision_rule: {json.dumps(m.get('decision_rule'))[:800]}.
@@ -278,18 +279,24 @@ def end_prompt(slug, e, flags, rid, endfile):
    serialized_push.py, `git cherry origin/main <sha>` empty) and print `WRAPPED <sha>` as your LAST line."""
 
 
-def idle_prompt(slug, e, flags):
-    return f"""[{VERSION}] Continue your handoff {e['handoff']}. {FANOUT_LINE} {lane_line(slug)} Re-read the handoff and
-{flags}/BACKLOG-handoff-{slug}.md; take the top actionable item per {flags}/briefs/HANDOFF-{slug}.md.
+def delta_block(delta):
+    return (f"STATE (CAF-3; this replaces re-reading the BACKLOG — open {{flags}}/BACKLOG-handoff-<slug>.md only for rows not listed):\n{delta}\n"
+            if delta else "")
+
+
+def idle_prompt(slug, e, flags, delta=""):
+    return f"""[{VERSION}] Continue your handoff {e['handoff']}. {FANOUT_LINE} {lane_line(slug)}
+{delta_block(delta).replace('{flags}', flags).replace('<slug>', slug)}Take the top actionable item per {flags}/briefs/HANDOFF-{slug}.md (inference first).
 Wrap up at EVERY task boundary (progress/YYYY-MM/YYYY-MM-DD-handoff-{slug}.md, handoff ticks, pathspec commit,
 serialized_push.py, `git cherry origin/main <sha>` empty) and print `WRAPPED <sha>` as your LAST line
 (add `IDLE: <reason>` after it when nothing unblockable is left)."""
 
 
-def continue_prompt(slug, e, flags, why=""):
+def continue_prompt(slug, e, flags, why="", delta=""):
     return f"""[{VERSION}] continue: next task. Your handoff {e['handoff']} still has open work ({why}); a session pauses ONLY when
 everything left waits on an inference row that is queued or running (operator rule 2026-11-01). {FANOUT_LINE}
-{lane_line(slug)} Re-read {flags}/BACKLOG-handoff-{slug}.md. INFERENCE FIRST: publish this handoff's measurement
+{lane_line(slug)}
+{delta_block(delta).replace('{flags}', flags).replace('<slug>', slug)}INFERENCE FIRST: publish this handoff's measurement
 tasks as rows (`publish_row.py`, fastest-clearable blockers first) before any non-inference task; then the top non-inference
 item per {flags}/briefs/HANDOFF-{slug}.md. Wrap up at this task boundary (progress/YYYY-MM/YYYY-MM-DD-handoff-{slug}.md,
 handoff ticks, pathspec commit, serialized_push.py, `git cherry origin/main <sha>` empty) and print `WRAPPED <sha>` as
@@ -672,12 +679,12 @@ def handoff_slug(sessions: dict, handoff: str):
     return None
 
 
-def candidates(flags, reg, repo=None, priority=None, keeper_log=None):
+def candidates(flags, reg, repo=None, priority=None, keeper_log=None, data=None):
     """Handoffs needing a session, best first (backlog_gen's needs_session ranking), filtered to files that exist in the
-    repo with open tasks and no live/suspended session."""
+    repo with open tasks and no live/suspended session. `data` = a build from this pass, to avoid a second one."""
     repo = repo or ROOT
-    data = bg.build(flags, priority_for(repo, priority), keeper_log or os.path.join(flags, "ws58-calendar-keeper.log"),
-                    sessions_path=reg_path(flags))
+    data = data or bg.build(flags, priority_for(repo, priority), keeper_log or os.path.join(flags, "ws58-calendar-keeper.log"),
+                            sessions_path=reg_path(flags))
     out = []
     S = reg.get("sessions") or {}
     for h in data.get("needs_session") or []:
@@ -735,13 +742,13 @@ def mark_yields(flags, reg, data, cap):
             log(flags, f"UNYIELD {slug}: handoff back in the top {cap}")
 
 
-def auto_start(flags, reg, live, cap, runner=None, repo=None, priority=None, keeper_log=None):
+def auto_start(flags, reg, live, cap, runner=None, repo=None, priority=None, keeper_log=None, data=None):
     """Start sessions for the best handoffs that need one until live == cap. Returns the new live count."""
     if not reg.get("auto_start", True):
         return live
     S = reg.setdefault("sessions", {})
     try:
-        cands, data = candidates(flags, reg, repo, priority, keeper_log)
+        cands, data = candidates(flags, reg, repo, priority, keeper_log, data)
     except Exception as ex:
         log(flags, f"AUTO-START-SKIPPED candidates failed: {ex!r}")
         return live
@@ -981,6 +988,17 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             if e.get("await_event") and not e.get("noop_reason"):
                 e["noop_reason"] = why  # the backlog as it was when the no-op turn ended; a changed backlog is an event
         e["work_state"], e["work_reason"] = ws, why
+    try:  # CAF-3: one backlog build per pass; its per-slug delta rides in every resume prompt instead of a re-read
+        _, bdata = candidates(flags, reg, repo, priority, keeper_log)
+    except Exception as ex:
+        bdata = None
+        log(flags, f"DELTA-SKIPPED {ex!r}")
+
+    def delta(slug):
+        try:
+            return bg.resume_delta(bdata, slug) if bdata else ""
+        except Exception:
+            return ""
     paused = _parse(reg.get("paused_until") or "") > now
     live = sum(1 for e in S.values() if alive(e.get("pid")))  # suspended sessions (waiting on a running row) have no pid
     cap = int(reg.get("max_live", 5))
@@ -1016,7 +1034,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             elif ev.get("kind") == "awaiting":
                 pr = awaiting_prompt(ev["slug"], e, flags, ev.get("data") or {})
             else:
-                pr = end_prompt(ev["slug"], e, flags, ev["rid"], ev["end"])
+                pr = end_prompt(ev["slug"], e, flags, ev["rid"], ev["end"], delta(ev["slug"]))
             _go(flags, ev["slug"], e, pr, runner, ev if ev.get("kind") in (None, "run-end") else None)
             launched.add(ev["slug"])
             live += 1
@@ -1036,11 +1054,11 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 log(flags, f"UNWRAPPED {slug}: refusing resume; last_wrapup={e.get('last_wrapup')}")
                 continue
             fresh = bool(e.get("fresh_next")) or not e.get("session_id")
-            _go(flags, slug, e, (brief_text(slug, e, flags) + "\n" if fresh else "") + continue_prompt(slug, e, flags, e["_work"][1]),
+            _go(flags, slug, e, (brief_text(slug, e, flags) + "\n" if fresh else "") + continue_prompt(slug, e, flags, e["_work"][1], delta(slug)),
                 runner, None, fresh)
             live += 1
         # 5. AUTO-START: fill the remaining slots with the best handoffs that have no session yet
-        live = auto_start(flags, reg, live, cap, runner, repo, priority, keeper_log)
+        live = auto_start(flags, reg, live, cap, runner, repo, priority, keeper_log, bdata)
         S = reg["sessions"]
     for e in S.values():
         e.pop("_advanceable", None)

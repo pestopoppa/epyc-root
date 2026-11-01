@@ -1,0 +1,459 @@
+{
+  "state": "COMPLETE_DIAGNOSTIC_ONLY",
+  "phase": "full",
+  "cases": [
+    {
+      "phase": "full",
+      "case": "solo_control",
+      "rc": 0,
+      "seqs": 1,
+      "nodes": [
+        [
+          "893",
+          "0",
+          "-",
+          "494",
+          "0"
+        ],
+        [
+          "893",
+          "0",
+          "-",
+          "494",
+          "0"
+        ]
+      ],
+      "logits": [
+        [
+          "IDENTICAL",
+          "0",
+          "248320",
+          "0.000e+00",
+          "314",
+          "==",
+          "314"
+        ],
+        [
+          "IDENTICAL",
+          "0",
+          "248320",
+          "0.000e+00",
+          "9564",
+          "==",
+          "9564"
+        ]
+      ],
+      "raw": "/mnt/raid0/llm/tmp/akagg-ch31-rowexact-20261101/full/solo_control.out",
+      "argv": [
+        "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/llama-rowexact",
+        "-m",
+        "/mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf",
+        "-t",
+        "24",
+        "-n",
+        "2",
+        "--prefix",
+        "8",
+        "--mode",
+        "multi",
+        "--seqs",
+        "1",
+        "--n-seq-max",
+        "4",
+        "--prompt",
+        "0",
+        "--show",
+        "1000"
+      ],
+      "claim": "diagnostic only; first difference is not causal attribution"
+    },
+    {
+      "phase": "full",
+      "case": "four_seq_prompt_0",
+      "rc": 0,
+      "seqs": 4,
+      "nodes": [
+        [
+          "1127",
+          "1008",
+          "node_13",
+          "260",
+          "0"
+        ],
+        [
+          "1127",
+          "993",
+          "node_13",
+          "260",
+          "0"
+        ],
+        [
+          "1127",
+          "1001",
+          "node_13",
+          "260",
+          "0"
+        ],
+        [
+          "1127",
+          "1001",
+          "node_13",
+          "260",
+          "0"
+        ]
+      ],
+      "logits": [
+        [
+          "DIFFER",
+          "248319",
+          "248320",
+          "2.460e-01",
+          "314",
+          "==",
+          "314"
+        ],
+        [
+          "DIFFER",
+          "248320",
+          "248320",
+          "2.237e-01",
+          "886",
+          "==",
+          "886"
+        ],
+        [
+          "DIFFER",
+          "248318",
+          "248320",
+          "2.584e-01",
+          "6105",
+          "==",
+          "6105"
+        ],
+        [
+          "DIFFER",
+          "248319",
+          "248320",
+          "2.084e-01",
+          "3397",
+          "==",
+          "3397"
+        ]
+      ],
+      "raw": "/mnt/raid0/llm/tmp/akagg-ch31-rowexact-20261101/full/four_seq_prompt_0.out",
+      "argv": [
+        "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/llama-rowexact",
+        "-m",
+        "/mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf",
+        "-t",
+        "24",
+        "-n",
+        "1",
+        "--prefix",
+        "8",
+        "--mode",
+        "multi",
+        "--seqs",
+        "4",
+        "--n-seq-max",
+        "4",
+        "--prompt",
+        "0",
+        "--show",
+        "1000"
+      ],
+      "claim": "diagnostic only; first difference is not causal attribution"
+    },
+    {
+      "phase": "full",
+      "case": "four_seq_prompt_1",
+      "rc": 0,
+      "seqs": 4,
+      "nodes": [
+        [
+          "1127",
+          "993",
+          "node_13",
+          "260",
+          "0"
+        ],
+        [
+          "1127",
+          "1001",
+          "node_13",
+          "260",
+          "0"
+        ],
+        [
+          "1127",
+          "1001",
+          "node_13",
+          "260",
+          "0"
+        ],
+        [
+          "1127",
+          "1008",
+          "node_13",
+          "260",
+          "0"
+        ]
+      ],
+      "logits": [
+        [
+          "DIFFER",
+          "248320",
+          "248320",
+          "2.237e-01",
+          "886",
+          "==",
+          "886"
+        ],
+        [
+          "DIFFER",
+          "248318",
+          "248320",
+          "2.584e-01",
+          "6105",
+          "==",
+          "6105"
+        ],
+        [
+          "DIFFER",
+          "248319",
+          "248320",
+          "2.084e-01",
+          "3397",
+          "==",
+          "3397"
+        ],
+        [
+          "DIFFER",
+          "248319",
+          "248320",
+          "2.460e-01",
+          "314",
+          "==",
+          "314"
+        ]
+      ],
+      "raw": "/mnt/raid0/llm/tmp/akagg-ch31-rowexact-20261101/full/four_seq_prompt_1.out",
+      "argv": [
+        "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/llama-rowexact",
+        "-m",
+        "/mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf",
+        "-t",
+        "24",
+        "-n",
+        "1",
+        "--prefix",
+        "8",
+        "--mode",
+        "multi",
+        "--seqs",
+        "4",
+        "--n-seq-max",
+        "4",
+        "--prompt",
+        "1",
+        "--show",
+        "1000"
+      ],
+      "claim": "diagnostic only; first difference is not causal attribution"
+    },
+    {
+      "phase": "full",
+      "case": "four_seq_prompt_2",
+      "rc": 0,
+      "seqs": 4,
+      "nodes": [
+        [
+          "1127",
+          "1001",
+          "node_13",
+          "260",
+          "0"
+        ],
+        [
+          "1127",
+          "1001",
+          "node_13",
+          "260",
+          "0"
+        ],
+        [
+          "1127",
+          "1008",
+          "node_13",
+          "260",
+          "0"
+        ],
+        [
+          "1127",
+          "993",
+          "node_13",
+          "260",
+          "0"
+        ]
+      ],
+      "logits": [
+        [
+          "DIFFER",
+          "248318",
+          "248320",
+          "2.584e-01",
+          "6105",
+          "==",
+          "6105"
+        ],
+        [
+          "DIFFER",
+          "248319",
+          "248320",
+          "2.084e-01",
+          "3397",
+          "==",
+          "3397"
+        ],
+        [
+          "DIFFER",
+          "248319",
+          "248320",
+          "2.460e-01",
+          "314",
+          "==",
+          "314"
+        ],
+        [
+          "DIFFER",
+          "248320",
+          "248320",
+          "2.237e-01",
+          "886",
+          "==",
+          "886"
+        ]
+      ],
+      "raw": "/mnt/raid0/llm/tmp/akagg-ch31-rowexact-20261101/full/four_seq_prompt_2.out",
+      "argv": [
+        "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/llama-rowexact",
+        "-m",
+        "/mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf",
+        "-t",
+        "24",
+        "-n",
+        "1",
+        "--prefix",
+        "8",
+        "--mode",
+        "multi",
+        "--seqs",
+        "4",
+        "--n-seq-max",
+        "4",
+        "--prompt",
+        "2",
+        "--show",
+        "1000"
+      ],
+      "claim": "diagnostic only; first difference is not causal attribution"
+    },
+    {
+      "phase": "full",
+      "case": "four_seq_prompt_3",
+      "rc": 0,
+      "seqs": 4,
+      "nodes": [
+        [
+          "1127",
+          "1001",
+          "node_13",
+          "260",
+          "0"
+        ],
+        [
+          "1127",
+          "1008",
+          "node_13",
+          "260",
+          "0"
+        ],
+        [
+          "1127",
+          "993",
+          "node_13",
+          "260",
+          "0"
+        ],
+        [
+          "1127",
+          "1001",
+          "node_13",
+          "260",
+          "0"
+        ]
+      ],
+      "logits": [
+        [
+          "DIFFER",
+          "248319",
+          "248320",
+          "2.084e-01",
+          "3397",
+          "==",
+          "3397"
+        ],
+        [
+          "DIFFER",
+          "248319",
+          "248320",
+          "2.460e-01",
+          "314",
+          "==",
+          "314"
+        ],
+        [
+          "DIFFER",
+          "248320",
+          "248320",
+          "2.237e-01",
+          "886",
+          "==",
+          "886"
+        ],
+        [
+          "DIFFER",
+          "248318",
+          "248320",
+          "2.584e-01",
+          "6105",
+          "==",
+          "6105"
+        ]
+      ],
+      "raw": "/mnt/raid0/llm/tmp/akagg-ch31-rowexact-20261101/full/four_seq_prompt_3.out",
+      "argv": [
+        "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/llama-rowexact",
+        "-m",
+        "/mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf",
+        "-t",
+        "24",
+        "-n",
+        "1",
+        "--prefix",
+        "8",
+        "--mode",
+        "multi",
+        "--seqs",
+        "4",
+        "--n-seq-max",
+        "4",
+        "--prompt",
+        "3",
+        "--show",
+        "1000"
+      ],
+      "claim": "diagnostic only; first difference is not causal attribution"
+    }
+  ]
+}
