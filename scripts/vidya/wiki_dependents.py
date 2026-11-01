@@ -158,7 +158,9 @@ def merge_redirects() -> dict[str, str]:
 def live_entry_ids() -> set[str]:
     ids = set()
     for raw in INDEX.read_text(encoding="utf-8").splitlines():
-        m = re.match(r"^\s*- id:\s*intake-(\d+)", raw)
+        # `id` is not always an entry's first key (15 entries carry it mid-entry at two-space
+        # indent); missing those reported live entries as dangling.
+        m = re.match(r"^(?:\s*- |  )id:\s*intake-(\d+)", raw)
         if m:
             ids.add(str(int(m.group(1))))
     return ids
