@@ -163,3 +163,7 @@ The independent review `HIP-REVIEW-20261101.md` confirms the earlier findings: p
 ### Crisp HIP fence and lifecycle repairs consumed
 
 `HIP-FENCE-6.md` repairs a synthetic ancestor traversal binding race and passes six tests, but cannot make later protected action atomic or fence uncooperative writers. `HIP-LIFECYCLE-12.md` reports four synthetic tests with owned child/grandchild processes for STOP, signal-at-spawn, pidfd custody and the previously recursive mock regression; its scratch controller is unintegrated and has not proved actual build/host-transition behavior or containment of escaped descendants. Delegated independent lifecycle review, held candidate integration and bounded fence work; registered `HIP-LIFECYCLE-REVIEW-13.done`, `HIP-INTEGRATE-13.done` and `HIP-FENCE-13.done` events. Launcher stays held; no build, inference, qualification or READY mutation.
+
+### Crisp HIP integration 6 event consumed
+
+`HIP-INTEGRATE-6.md` reported no safe integration when its named source and lifecycle artifacts were absent; it did not modify the held packet. Later isolated source (`HIP-SOURCE-8.md`) and lifecycle (`HIP-LIFECYCLE-12.md`) prototypes have synthetic coverage but remain unintegrated, with real host transition, complete provenance and bounded predecessor cutover outstanding. Delegated candidate integration, lifecycle custody review and cutover fixture work; registered `HIP-INTEGRATE-14.done`, `HIP-LIFE-14.done` and `HIP-CUTOVER-14.done` events. Launcher remains held; no build, inference, qualification or READY mutation.
