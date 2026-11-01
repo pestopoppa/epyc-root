@@ -1,0 +1,18 @@
+{
+  "record_kind": "operator-review-record; values transcribed from tool outputs, not a native attestation",
+  "source_commit": "92385a1d1161b5709be446f74bd918f21bf7a076",
+  "published_commit": "740a29f5680e9943b54c4ace162f61d1c39c81fb",
+  "target": "/mnt/raid0/llm/tmp/codex3-seq-rate-era-20261101/merge-worktree",
+  "target_absent_after": true,
+  "allocated_bytes_before_du": 299618304,
+  "shared_filesystem_available_bytes_before": 231924723712,
+  "shared_filesystem_available_bytes_after": 232221044736,
+  "shared_filesystem_note": "Observed availability is shared and affected by concurrent activity; difference is not exclusively attributable to this removal.",
+  "removal": "native gate default fetch and checks, no force or prune",
+  "references": "detached target; branch refs retained, private common and registered main remain",
+  "protected_sha256": {
+    "handoffs/active/rao-redel-substrate-spike.md": "a59bb63be2dea0252ce10e9aba8e2bc3e31926d8198ca9bf16fe656180df664a",
+    "/mnt/raid0/llm/tmp/codex3-reward-provenance-1740/fixture/scripts/analysis/dar_decisive_subset.py": "40385971b4abb302ada4fb9c6e1610e723882ab8321c680ec020cfd13659d129",
+    "/mnt/raid0/llm/tmp/codex3-reward-provenance-1740/fixture/tests/analysis/test_dar_decisive_split.py": "1bb09bf74cfc7870801b1c2f8e1b1e9657203eed71e3acd12b0c8cd5b5be047d"
+  }
+}
