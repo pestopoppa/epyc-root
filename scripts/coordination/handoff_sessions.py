@@ -28,6 +28,11 @@ has no open `- [ ]` task left (or whose file left handoffs/active/) becomes `don
 session waiting on a running row has no live pid and does not count as live. Every start is logged `AUTO-START`.
 Registry knobs: `auto_start` (default true), `default_engine`, `max_live`.
 
+PAUSE RULE (operator, 2026-11-01 21:15Z): a session may be paused ONLY when everything left in its handoff waits on an
+inference row that is queued or running. After a landed wrap-up, any open task / publishable row / failed-dry-run fix ->
+resumed at once ("continue: next task"); nothing open and no rows waiting -> done (slot to the next ranked handoff);
+the reason is logged (`OPEN`/`PAUSE`/`DONE <slug>: <why>`) and shown in the tmux pane between turns.
+
 Subcommands:
     brief <slug>            write compute-flags/briefs/HANDOFF-<slug>.md (the session's goal file)
     start <slug>            start a fresh headless session with its brief, record session_id (registry)
@@ -37,6 +42,7 @@ Subcommands:
                             start a FRESH session of <engine> from files only; refused while the old one is live.
     status                  print the registry.
     pretty                  stdin JSONL -> readable lines (the tmux pane filter)
+    pane-status <slug>      the pane's between-turns loop: RUNNING / PAUSED - waiting on row / RESUMING / DONE every 30 s
     rank                    print the handoff ranking (auto-start / yield order) with candidate rows per handoff.
 
 Verified headless resume forms (2026-11-01 round-trips):
@@ -241,6 +247,16 @@ serialized_push.py, `git cherry origin/main <sha>` empty) and print `WRAPPED <sh
 (add `IDLE: <reason>` after it when nothing unblockable is left)."""
 
 
+def continue_prompt(slug, e, flags, why=""):
+    return f"""[{VERSION}] continue: next task. Your handoff {e['handoff']} still has open work ({why}); a session pauses ONLY when
+everything left waits on an inference row that is queued or running (operator rule 2026-11-01). {FANOUT_LINE}
+`git -C {ROOT} fetch origin`; re-read {flags}/BACKLOG-handoff-{slug}.md. INFERENCE FIRST: publish this handoff's measurement
+tasks as rows (`publish_row.py`, fastest-clearable blockers first) before any non-inference task; then the top non-inference
+item per {flags}/briefs/HANDOFF-{slug}.md. Wrap up at this task boundary (progress/YYYY-MM/YYYY-MM-DD-handoff-{slug}.md,
+handoff ticks, pathspec commit, serialized_push.py, `git cherry origin/main <sha>` empty) and print `WRAPPED <sha>` as
+your LAST line (add `IDLE: <reason>` after it only if truly nothing is publishable or doable)."""
+
+
 def transfer_prompt(slug, e, flags, repo=ROOT):
     """FILES-ONLY cold-start prompt for a fresh engine: brief + handoff + latest progress file + BACKLOG."""
     brief = brief_text(slug, e, flags)
@@ -312,24 +328,24 @@ def shell_quote(x: str) -> str:
     return "'" + str(x).replace("'", "'\\''") + "'"
 
 
-def pane_command(cmd, prompt_file, out, cwd) -> str:
+def pane_command(cmd, prompt_file, out, cwd, slug="", flags=FLAGS) -> str:
     """The shell line the pane runs: engine (stdin = prompt) -> tee JSONL -> readable filter; pid and rc files."""
     me = os.path.abspath(__file__)
     eng = " ".join(shell_quote(c) for c in cmd)
     return (f"cd {shell_quote(cwd)} && {eng} < {shell_quote(prompt_file)} > >(tee {shell_quote(out)} | "
             f"python3 -I {shell_quote(me)} pretty) 2>&1 & echo $! > {shell_quote(out + '.pid')}; wait $!; rc=$?; "
-            f"echo $rc > {shell_quote(out + '.rc')}; echo \"[handoff_sessions] engine exit rc=$rc $(date -u +%FT%TZ) - pane stays open; "
-            f"the dispatcher reuses it on the next resume\"")
+            f"echo $rc > {shell_quote(out + '.rc')}; echo \"[handoff_sessions] engine exit rc=$rc $(date -u +%FT%TZ)\"; "
+            f"exec python3 -I {shell_quote(me)} pane-status {shell_quote(slug)} --flags {shell_quote(flags)}")
 
 
-def launch_in_tmux(slug, cmd, prompt_file, out, cwd):
+def launch_in_tmux(slug, cmd, prompt_file, out, cwd, flags=FLAGS):
     """Run the engine in agent:h-<slug>; returns the engine pid or None when tmux is unavailable/failed."""
     has = tmux_has_window(slug)
     if has is None:
         return None
     if window_name(slug) in PROTECTED_WINDOWS:
         return None
-    line = ["bash", "-c", pane_command(cmd, prompt_file, out, cwd)]
+    line = ["bash", "-c", pane_command(cmd, prompt_file, out, cwd, slug, flags)]
     if has:
         rc, msg = tmux("respawn-pane", "-k", "-t", window_target(slug), *line)
     else:
@@ -354,6 +370,33 @@ def kill_window(slug):
         return
     if tmux_has_window(slug):
         tmux("kill-window", "-t", window_target(slug))
+
+
+def pane_status_line(e: dict) -> str:
+    """The one clear state line the pane shows between turns (operator: never 'Pane is dead')."""
+    st = e.get("status")
+    if st == "done":
+        return "DONE"
+    if st == "live":
+        return f"RUNNING turn since {e.get('last_resume')} (pid {e.get('pid')})"
+    if e.get("work_state") == "pause":
+        return f"PAUSED — {e.get('work_reason')} since {e.get('last_end')}"
+    if e.get("yield"):
+        return f"PAUSED — yielded: handoff below the live cap; not resumed for new work (open: {e.get('work_reason')})"
+    if e.get("status") == "unpushed":
+        return f"RESUMING … (wrap-up {e.get('last_wrapup')} not yet on origin/main)"
+    return f"RESUMING … ({e.get('work_reason') or 'open work; waiting for a free slot'})"
+
+
+def pane_status(flags, slug, every=30, once=False):
+    """Loop in the pane after the engine exits: one state line every 30 s until the registry says done."""
+    while True:
+        reg = load(reg_path(flags), {"sessions": {}})
+        e = (reg.get("sessions") or {}).get(slug) or {"status": "done"}
+        print(f"{now_iso()} [{window_name(slug)}] {pane_status_line(e)}", flush=True)
+        if e.get("status") == "done" or once:
+            return 0
+        time.sleep(every)
 
 
 def last_rc(e) -> int | None:
@@ -432,7 +475,7 @@ def launch(flags, slug, e, prompt, fresh=False, runner=None):
             return runner(cmd, pf, out, cwd=cwd)
         except TypeError:  # older 3-argument test runners
             return runner(cmd, pf, out)
-    pid = launch_in_tmux(slug, cmd, pf, out, cwd)
+    pid = launch_in_tmux(slug, cmd, pf, out, cwd, flags)
     if pid:
         return pid, out
     log(flags, f"TMUX-FALLBACK {slug}: no window in session {TMUX_SESSION}; engine runs detached")
@@ -587,6 +630,40 @@ def auto_start(flags, reg, live, cap, runner=None, repo=None, priority=None, kee
     return live
 
 
+# ---------------------------------------------------------------- pause rule (operator, 2026-11-01 21:15Z)
+# A session may be PAUSED only when everything left in its handoff waits on an inference row that is queued or running.
+# Otherwise, after a landed wrap-up it is resumed at once ("continue: next task"). Nothing open and no rows -> done.
+OWN_TASK_RX = re.compile(r"^- \S+ L\d+ \[(cpu|gpu)\] ", re.M)
+IDLE_RX = re.compile(r"IDLE:\s*(.*)")
+IDLE_REPORT_COOLDOWN_S = 30 * 60  # a session that itself said IDLE: <reason> is re-asked after this long
+
+
+def work_state(flags, slug, e, repo=None) -> tuple[str, str]:
+    """('continue'|'pause'|'done', reason) from BACKLOG-handoff-<slug>.md + the handoff's open boxes."""
+    try:
+        b = open(os.path.join(flags, f"BACKLOG-handoff-{slug}.md")).read()
+    except OSError:
+        b = ""
+    adv = ADV_RX.findall(b)
+    waiting = re.findall(r"^- \[(?:qualified-armed|running)\] \S+ rank=\S+ \*\*([^*]+)\*\*", b, re.M)
+    ni = b.split("## Non-inference", 1)[1] if "## Non-inference" in b else ""
+    ni = ni.split("\n## ", 1)[0]
+    ntasks = len([l for l in ni.splitlines() if l.startswith("- [")])
+    own = len(OWN_TASK_RX.findall(b))
+    open_boxes = open_tasks(e.get("handoff", ""), repo)
+    if adv:
+        return "continue", f"{len(adv)} advanceable row(s) (blocked/needs-launcher/needs-qualification)"
+    if own:
+        return "continue", f"{own} own inference task(s) to publish as rows"
+    if ntasks:
+        return "continue", f"{ntasks} non-inference task(s) in the backlog"
+    if waiting:
+        return "pause", "waiting on row(s) " + ", ".join(waiting[:6]) + " (queued/running)"
+    if open_boxes:
+        return "continue", f"{open_boxes} open box(es) in the handoff, none waiting on a row"
+    return "done", "nothing open and no rows waiting"
+
+
 # ---------------------------------------------------------------- dispatcher
 def end_events(flags):
     for p in glob.glob(os.path.join(flags, "grants", "*.ended")) + glob.glob(os.path.join(flags, "grants", "*.complete")):
@@ -629,6 +706,8 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 e["last_wrapup"] = m[-1]
             if "FRESH-SESSION-REQUESTED" in tailtxt:
                 e["fresh_next"] = True
+            mi = IDLE_RX.findall(tailtxt)
+            e["idle_reported"] = mi[-1][:200] if mi else None
             e["pid"], e["pending_event"], e["last_end"], e["last_rc"] = None, None, now_iso(), last_rc(e)
             if landed(e.get("last_wrapup")):
                 e["status"], e["push_retries"] = "suspended", 0
@@ -656,12 +735,19 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             b = ""
         e["waits_on"] = re.findall(r"^- \[(?:qualified-armed|running)\] \S+ rank=\S+ \*\*([^*]+)\*\*", b, re.M)
         e["_advanceable"] = bool(ADV_RX.search(b)) or "## Non-inference" in b and "\n- [" in b.split("## Non-inference", 1)[1]
-    # 3b. a session whose handoff has no open task left (or left handoffs/active/) is done: it frees its slot
+    # 3b. pause rule: continue / pause / done per work_state (operator 2026-11-01 21:15Z); logged on change
     for slug, e in S.items():
-        if e.get("status") not in ("done", "live") and not alive(e.get("pid")) and e.get("handoff") and open_tasks(e["handoff"], repo) == 0:
+        if e.get("status") == "done" or alive(e.get("pid")) or not e.get("handoff"):
+            continue
+        ws, why = work_state(flags, slug, e, repo)
+        e["_work"] = (ws, why)
+        if ws == "done":
             e["status"], e["done_at"] = "done", now_iso()
             kill_window(slug)
-            log(flags, f"DONE {slug}: no open tasks left in {e['handoff']}; slot freed; tmux window {window_name(slug)} killed")
+            log(flags, f"DONE {slug}: {why}; slot freed; tmux window {window_name(slug)} killed")
+        elif e.get("work_state") != ws or e.get("work_reason") != why:
+            log(flags, f"{'PAUSE' if ws == 'pause' else 'OPEN'} {slug}: {why}")
+        e["work_state"], e["work_reason"] = ws, why
     paused = _parse(reg.get("paused_until") or "") > now
     live = sum(1 for e in S.values() if alive(e.get("pid")))  # suspended sessions (waiting on a running row) have no pid
     cap = int(reg.get("max_live", 5))
@@ -690,20 +776,20 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             launched.add(ev["slug"])
             live += 1
         st["queue"] = rest
-        for slug, e in S.items():  # idle handoffs with unblockable work
-            if live >= cap or e.get("status") == "done" or alive(e.get("pid")) or not e.get("_advanceable"):
+        for slug, e in S.items():  # continue at once: anything open that is not waiting on a queued/running row
+            if live >= cap or e.get("status") == "done" or alive(e.get("pid")) or (e.get("_work") or ("", ""))[0] != "continue":
                 continue
             if slug in launched or any(ev["slug"] == slug for ev in st["queue"]):
                 continue
             if e.get("yield"):
                 continue  # outranked: no new work; its slot goes to a higher-ranked handoff
-            if now - _parse(e.get("last_end") or e.get("last_resume") or "") < IDLE_COOLDOWN_S:
-                continue
+            if e.get("idle_reported") and now - _parse(e.get("last_end") or "") < IDLE_REPORT_COOLDOWN_S:
+                continue  # the session itself said IDLE: <reason>; re-asked after the cooldown
             if not wrapped(e, lcache):
                 log(flags, f"UNWRAPPED {slug}: refusing resume; last_wrapup={e.get('last_wrapup')}")
                 continue
             fresh = bool(e.get("fresh_next")) or not e.get("session_id")
-            _go(flags, slug, e, (brief_text(slug, e, flags) + "\n" if fresh else "") + idle_prompt(slug, e, flags),
+            _go(flags, slug, e, (brief_text(slug, e, flags) + "\n" if fresh else "") + continue_prompt(slug, e, flags, e["_work"][1]),
                 runner, None, fresh)
             live += 1
         # 5. AUTO-START: fill the remaining slots with the best handoffs that have no session yet
@@ -711,6 +797,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
         S = reg["sessions"]
     for e in S.values():
         e.pop("_advanceable", None)
+        e.pop("_work", None)
     st["seen"] = sorted(seen)
     reg["dispatcher"] = {"version": VERSION, "last_pass": now_iso(), "live": live, "paused": paused}
     save(reg_path(flags), reg)
@@ -772,7 +859,7 @@ def _go(flags, slug, e, prompt, runner, ev, fresh=False):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("cmd", choices=["brief", "start", "dispatch", "status", "transfer", "rank", "pretty"])
+    ap.add_argument("cmd", choices=["brief", "start", "dispatch", "status", "transfer", "rank", "pretty", "pane-status"])
     ap.add_argument("slug", nargs="?")
     ap.add_argument("--flags", default=FLAGS)
     ap.add_argument("--loop", action="store_true")
@@ -786,6 +873,8 @@ def main(argv=None):
     if a.cmd == "pretty":
         pretty()
         return 0
+    if a.cmd == "pane-status":
+        return pane_status(a.flags, a.slug)
     reg = load(reg_path(a.flags), {"sessions": {}})
     if a.cmd == "status":
         print(json.dumps(reg, indent=2))

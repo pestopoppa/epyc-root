@@ -93,6 +93,15 @@ before), the pane shows `handoff_sessions.py pretty`, `<ts>.jsonl.pid|.rc` carry
 (`last_rc` in the registry), the pane stays open after the turn (remain-on-exit) and the window is killed on `done`.
 No tmux session → `TMUX-FALLBACK` (detached engine, as before).
 
+**Pause rule (operator, 2026-11-01 21:15Z — binding).** A session may be paused ONLY when everything left in its handoff
+waits on an inference row that is queued or running. After a landed wrap-up the dispatcher reads `BACKLOG-handoff-<slug>.md`:
+any advanceable row (blocked / needs-launcher / needs-qualification), own inference task to publish, or non-inference
+task → resumed at once with `continue: next task` (logged `OPEN <slug>: <why>`); every open item waiting on a
+qualified-armed/running row → `PAUSE <slug>: waiting on row(s) …`; nothing open and no rows → `DONE`, slot to the next
+ranked handoff. A session that itself replies `IDLE: <reason>` is re-asked after 30 min. Between turns the tmux pane runs
+`handoff_sessions.py pane-status <slug>` and shows one line every 30 s: `RUNNING turn …` / `PAUSED — waiting on row <id>
+(queued|running) since <t>` / `RESUMING …` / `DONE` — never "Pane is dead".
+
 **Inference first (operator, 2026-11-01)** — every brief and every `BACKLOG-handoff-<slug>.md` opens with it: the
 session's first job is to turn the handoff's measurement/inference tasks into published rows (`publish_row.py`), fastest
 blockers first, so every lane always has runnable rows; non-inference tasks come after, or while rows wait. The backlog

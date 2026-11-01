@@ -127,11 +127,15 @@ class AutoStartTests(AutoStartFixture):
             "finished": {"handoff": "handoffs/active/closed.md", "engine": "codex", "session_id": "t2", "status": "suspended",
                          "pid": None, "last_wrapup": "abc1234", "last_end": "2026-11-01T10:00:00Z"}}
         hs.save(hs.reg_path(self.flags), self.reg)
+        # `waiting` has nothing open but a running row: the ONLY state in which a session may be paused
+        _w(os.path.join(self.flags, "BACKLOG-handoff-waiting.md"), "## Inference rows\n- [running] cpu rank=1 **row-x**\n\n## Non-inference tasks\n\n- none\n")
         reg, _ = self.dispatch()
         S = reg["sessions"]
         self.assertEqual(S["finished"]["status"], "done")
-        self.assertIn("DONE finished: no open tasks left in handoffs/active/closed.md", self.log_text())
-        self.assertEqual(S["waiting"]["status"], "suspended", "a suspended session is left alone")
+        self.assertIn("DONE finished: nothing open and no rows waiting", self.log_text())
+        self.assertEqual(S["waiting"]["status"], "suspended", "paused: everything left waits on a queued/running row")
+        self.assertIn("PAUSE waiting: waiting on row(s) row-x (queued/running)", self.log_text())
+        self.assertEqual(S["waiting"]["work_state"], "pause")
         # the suspended session holds no slot: with max_live=1 exactly one auto-start happened, for the best candidate
         self.assertEqual(len(self.calls), 1)
         self.assertIn("mid", S)
@@ -262,3 +266,27 @@ class TmuxWindowTests(AutoStartFixture):
         _w(out + ".rc", "3\n")
         self.assertEqual(hs.last_rc({"last_output": out}), 3)
         self.assertIsNone(hs.last_rc({"last_output": out + "nope"}))
+
+
+class PauseRuleTests(AutoStartFixture):
+    def test_work_state_and_pane_status(self):
+        e = {"handoff": "handoffs/active/alpha.md", "status": "suspended", "last_end": "2026-11-01T10:00:00Z"}
+        bp = os.path.join(self.flags, "BACKLOG-handoff-a.md")
+        _w(bp, "## Inference rows\n- [blocked] cpu rank=1 **r1**\n- [running] cpu rank=2 **r2**\n\n## Non-inference tasks\n\n- none\n")
+        self.assertEqual(hs.work_state(self.flags, "a", e, self.repo)[0], "continue")
+        _w(bp, "## Inference rows\n- [running] cpu rank=2 **r2**\n\n## Non-inference tasks\n\n- none\n")
+        self.assertEqual(hs.work_state(self.flags, "a", e, self.repo), ("pause", "waiting on row(s) r2 (queued/running)"))
+        _w(bp, "Own inference tasks to publish as rows:\n- a L12 [gpu] run llama-bench\n## Inference rows\n- [running] cpu rank=2 **r2**\n")
+        self.assertEqual(hs.work_state(self.flags, "a", e, self.repo)[0], "continue")
+        _w(bp, "## Inference rows\n\n- none\n\n## Non-inference tasks\n\n- none\n")
+        self.assertEqual(hs.work_state(self.flags, "a", e, self.repo), ("continue", "1 open box(es) in the handoff, none waiting on a row"))
+        e["handoff"] = "handoffs/active/closed.md"
+        self.assertEqual(hs.work_state(self.flags, "a", e, self.repo)[0], "done")
+        # pane status lines: never "Pane is dead"
+        self.assertTrue(hs.pane_status_line({"status": "live", "last_resume": "2026-11-01T10:00:00Z"}).startswith("RUNNING turn"))
+        self.assertEqual(hs.pane_status_line({"status": "suspended", "work_state": "pause", "work_reason": "waiting on row(s) r2 (queued/running)",
+                                              "last_end": "2026-11-01T10:00:00Z"}),
+                         "PAUSED — waiting on row(s) r2 (queued/running) since 2026-11-01T10:00:00Z")
+        self.assertTrue(hs.pane_status_line({"status": "suspended", "work_state": "continue", "work_reason": "x"}).startswith("RESUMING"))
+        self.assertEqual(hs.pane_status_line({"status": "done"}), "DONE")
+        self.assertIn("pane-status", hs.pane_command(["codex"], "p", "o", "/w"))
