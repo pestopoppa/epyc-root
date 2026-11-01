@@ -1174,6 +1174,9 @@ def admit(flags, rid, d, pid, regions, window_s):
     """The ONE launcher-side admission (grant_ok_launcher.check: the parser of the live poller's argv, window >= min+300,
     regions survive its parse and cover its claim, --precond-cmd). Returns (ok, line)."""
     import argparse as _ap
+    here = os.path.dirname(os.path.abspath(__file__))
+    if here not in sys.path:  # the keeper runs `python3 -I`: isolated mode does not put the script's directory on sys.path
+        sys.path.insert(0, here)
     import grant_ok_launcher as gate
     cls = "gpu" if "mi210" in regions else ("whole-host" if regions == "0-95" else "block-correctness")
     a = _ap.Namespace(row=rid, pid=int(pid), window_s=int(window_s), regions=regions, reserve=None, derived_class=cls, fillers="/dev/null", proc="/proc")
@@ -1352,20 +1355,24 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             spawn_dryrun(flags, rid, regions, shapes[rid][1], keeper_log)
             log(f"DRYRUN-START {rid} regions={regions} holds={','.join(sorted(opt))}{' one-quarter' if shapes[rid][1] else ''}")
             out.append(("dryrun", rid, regions)); continue
-        a = load_json(armed_path(flags, rid))
-        if not (a and alive(a.get("pid"))):
-            pid, msg = arm_one(flags, rid, d)
-            log(f"ROW-ARM {msg}")
-            if not pid:
-                continue
-        else:
-            pid = a["pid"]
-        ok, line = admit(flags, rid, d, pid, regions, d["window_s"])
-        if not ok:
-            log(f"SKIP {rid}: {line[:200]}"); continue
-        gl = write_grant(flags, rid, regions, opt, d["window_s"])
-        log(f"GRANT {rid} {gl} ({line[:160]})")
-        out.append(("grant", rid, regions))
+        try:  # one row's failure never aborts the tick (22:33Z: an import error after ROW-ARM left q0 ungranted for 3 ticks)
+            a = load_json(armed_path(flags, rid))
+            if not (a and alive(a.get("pid"))):
+                pid, msg = arm_one(flags, rid, d)
+                log(f"ROW-ARM {msg}")
+                if not pid:
+                    continue
+            else:
+                pid = a["pid"]
+            ok, line = admit(flags, rid, d, pid, regions, d["window_s"])
+            if not ok:
+                log(f"SKIP {rid}: {line[:200]}"); continue
+            gl = write_grant(flags, rid, regions, opt, d["window_s"])
+            log(f"GRANT {rid} {gl} ({line[:160]})")
+            out.append(("grant", rid, regions))
+        except Exception as e:  # noqa: BLE001 - logged, counted, alerted on repeat
+            log(f"ERROR {rid}: {type(e).__name__}: {e}")
+            seen.add(f"error:{rid}")
     for r, why in idle.items():
         log(f"IDLE-WHY {r}: {why}")
     left = free - set().union(*[o for _, o in assigned]) if assigned else free
