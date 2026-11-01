@@ -130,7 +130,7 @@ Tick waypoints + one-line progress entry per phase; claim numbers per MEASUREMEN
 
 ## Research Intake Update — 2026-08-21 (Stage-2b, intake-1279#record)
 
-- [ ] **(Z) Fix the llama-server log retention hole.** A correctness question about production
+- [ ] **(Z) Fix the llama-server log retention hole.** [too-big: retention ownership and missing-window cause require subsystem investigation] A correctness question about production
       (upstream #27442, disclosed 2026-08-20) **could not be answered from retained evidence**: no
       llama-server or orchestrator log on disk is newer than 2026-08-11, a nine-day gap spanning
       disclosure. Where the frontdoor log *does* cover, it is clean — 11,670 timing lines, zero
