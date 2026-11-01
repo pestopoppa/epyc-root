@@ -200,7 +200,7 @@ Client and harness side (ak-ds41-main):
       separator), fixed in ff92a580.
     - Observed on the live records: `prefill_source: "unmeasured"` and `allowance_s: 0`, so no long call has been
       priced yet; the corrected-`doomed` window (B1d) starts only once records show a measured source.
-  - [ ] **UFH14-B1c — opencode/codex provider configs used with local models outside the actor seats.** Apply the same derived parameters.
+  - [ ] **UFH14-B1c — opencode/codex provider configs used with local models outside the actor seats.** Apply the same derived parameters. [too-big: requires live local inference and server-derived values; handoff session owns verification]
     - *(Annotation, workspace-ec, 2026-10-04.)* opencode half APPLIED with the operator's explicit OK
       (AskUserQuestion, 2026-10-04): `/home/node/.config/opencode/opencode.jsonc` `headerTimeout`/`chunkTimeout` =
       14,400,000 ms for `qwen-local` and `qwen-gpu`; backup `/mnt/raid0/llm/tmp/ufh14-b1-20261003/opencode.jsonc.bak-20261004`.
