@@ -187,7 +187,7 @@ def guess_format(result_path):
     return {".jsonl": "jsonl", ".json": "json", ".csv": "csv", ".tsv": "tsv", ".md": "markdown-table"}.get(ext, "text-lines")
 
 
-def publish(spec, flags=FLAGS, source=None):
+def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     for k in ("id", "owner", "launcher", "lane", "result_path", "decision_rule", "estimate_s", "handoff_task"):
         need(k in spec and spec[k] not in (None, ""), f"spec.{k} missing")
     rid = str(spec["id"])
@@ -200,7 +200,7 @@ def publish(spec, flags=FLAGS, source=None):
     o = parse_launcher(launcher)
     need(o["id"] == rid, f"launcher --id {o['id']} != spec id {rid}")
     eng = o["engine"]
-    need(os.path.basename(eng) == CANONICAL_ENGINE, f"engine must be {CANONICAL_ENGINE} (found {os.path.basename(eng)}; "
+    need(allow_legacy_engine or os.path.basename(eng) == CANONICAL_ENGINE, f"engine must be {CANONICAL_ENGINE} (found {os.path.basename(eng)}; "
          "older engines require the retired manifest/FILLERS stack and refuse without it)")
     need(os.path.isfile(eng), f"engine {eng} missing")
     lane = spec["lane"]
@@ -782,6 +782,90 @@ def arm_tick(flags):
     return msgs
 
 
+# ---------------------------------------------------------------- adopt legacy armed rows (one-time bridge, 2026-11-01)
+def adopt_armed(flags=FLAGS):
+    """Legacy rows that were ARMED under the old flow (live poller in a queue, no .complete) keep their place: a v3 row
+    is written from ready/armed/<id>.json (or the poller's argv), PASS.json is marked adopted (the old-flow receipt was
+    its qualification) and ARMED.json names the live poller. grant_ok v4 then admits them exactly as before; their
+    old engine keeps its own grant-time checks. Nothing is started or stopped. Idempotent."""
+    out = []
+    queues = [os.path.join(flags, "ws58-gpu.queue")] + sorted(glob.glob(os.path.join(flags, "ws58-quarters-*.queue")))
+    done_lists = set()
+    for dl in glob.glob(os.path.join(flags, "ws58-quarters-*.queue.done")) + [os.path.join(flags, "ws58-gpu.queue.held")]:
+        try:
+            done_lists |= set(open(dl).read().split())
+        except OSError:
+            pass
+    existing = rows(flags)
+    for q in queues:
+        try:
+            lines = open(q).read().splitlines()
+        except OSError:
+            continue
+        gpu = q.endswith("ws58-gpu.queue")
+        for line in lines:
+            f = line.split("|")
+            if len(f) < 5 or f[0].startswith("#"):
+                continue
+            rid, pid = f[0], f[1]
+            regions = f[6] if gpu and len(f) > 6 else f[4]
+            if rid in done_lists or os.path.exists(os.path.join(flags, "grants", rid + ".complete")) or not alive(pid):
+                continue
+            if rid in existing and os.path.exists(pass_path(flags, rid)):
+                continue
+            m = None
+            for d in ("ready/armed", "ready", "ready/legacy-20261101"):
+                m = load_json(os.path.join(flags, d, rid + ".json"))
+                if m:
+                    break
+            try:
+                argv = open(f"/proc/{int(pid)}/cmdline", "rb").read().split(b"\0")
+            except (OSError, ValueError):
+                argv = []
+            argv = [a.decode("utf8", "replace") for a in argv]
+            eng = next((a for a in argv if ENGINE_RE.search(a)), None)
+            try:
+                # the poller's argv is the truth for an armed legacy row: no launcher parsing, no publish() rules
+                need(eng and os.path.isfile(eng), "no filler_run engine in the poller argv")
+                def opt(flag, default=None):
+                    return argv[argv.index(flag) + 1] if flag in argv and argv.index(flag) + 1 < len(argv) else default
+                m = m or {}
+                L = m.get("launcher")
+                lp = L.get("path") if isinstance(L, dict) else (L if isinstance(L, str) else None)
+                lp = lp if isinstance(lp, str) and os.path.isfile(lp) else eng
+                minwin = int(opt("--min-window", m.get("min_window_s") or 0) or 0)
+                cls = opt("--class", "")
+                ports = [int(x) for x in str(opt("--port", "")).split(",") if x.isdigit()]
+                lane = "gpu" if "mi210" in regions else "cpu"
+                scratch = m.get("scratch_root") if isinstance(m.get("scratch_root"), str) else None
+                if not (scratch and lp.startswith(os.path.normpath(scratch) + "/")):
+                    scratch = TMP + lp[len(TMP):].split("/")[0] if lp.startswith(TMP) else os.path.dirname(lp)
+                kp = m.get("keep")
+                if isinstance(kp, str):
+                    kp = [x.strip() for x in kp.split(",") if x.strip()]
+                rp = m.get("result_path") if isinstance(m.get("result_path"), str) else os.path.join(scratch, "ADOPTED-LEGACY-no-result_path")
+                row = {"schema": SCHEMA, "id": rid, "owner": str(m.get("owner") or "unknown-legacy"), "lane": lane, "regions": regions,
+                       "launcher": {"path": lp, "sha256": sha256(lp)}, "engine": {"path": eng, "sha256": sha256(eng)},
+                       "result_path": rp, "result_format": guess_format(rp), "decision_rule": m.get("decision_rule") or "ADOPTED legacy armed row (see FILLERS.md / its manifest)",
+                       "handoff_task": m.get("row") or m.get("handoff") or "FILLERS:" + rid, "estimate_s": int(f[2]), "min_window_s": minwin,
+                       "window_s": int(f[2]), "gib": int(f[4] if gpu else f[3]), "ports": ports, "priority_rank": float(m.get("priority_rank") or 100),
+                       "scratch_root": os.path.normpath(scratch), "keep": kp or DEFAULT_KEEP, "workdir": opt("--workdir", "/workspace"),
+                       "stop_file": opt("--stop", ""), "dryrun_timeout_s": 900, "published_at": now_iso(), "published_from": "adopt-armed",
+                       "adopted_legacy": {"engine": os.path.basename(eng), "class": cls, "manifest_had": sorted(m.keys())[:12]}}
+                atomic_json(ready_path(flags, rid), row)
+                os.makedirs(dry_dir(flags, rid), exist_ok=True)
+                atomic_json(pass_path(flags, rid), {"id": rid, "passed_at": now_iso(), "launcher_sha256": row["launcher"]["sha256"], "adopted": True,
+                                                    "note": "legacy armed row adopted 2026-11-01: qualified under the retired flow (old receipt); not re-dry-run",
+                                                    "units": None, "result_path": rp, "regions": regions})
+                atomic_json(armed_path(flags, rid), {"id": rid, "pid": int(pid), "regions": regions, "queue": os.path.basename(q), "at": now_iso(),
+                                                     "launcher_sha256": row["launcher"]["sha256"], "adopted": True})
+                existing[rid] = row
+                out.append(f"ADOPTED {rid} pid={pid} queue={os.path.basename(q)} regions={regions} engine={os.path.basename(eng)}")
+            except Refused as e:
+                out.append(f"REFUSED {rid}: {e}")
+    return out
+
+
 # ---------------------------------------------------------------- cli
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -793,6 +877,7 @@ def main(argv=None):
     sub.add_parser("dryrun-pick")
     s = sub.add_parser("dryrun-run"); s.add_argument("id"); s.add_argument("--regions")
     sub.add_parser("arm-tick")
+    sub.add_parser("adopt-armed")
     a = ap.parse_args(argv)
     try:
         if a.cmd == "publish":
@@ -826,6 +911,10 @@ def main(argv=None):
             return {"PASS": 0, "WAIT": 1}.get(v, 2)
         if a.cmd == "arm-tick":
             for m in arm_tick(a.flags):
+                print(m)
+            return 0
+        if a.cmd == "adopt-armed":
+            for m in adopt_armed(a.flags):
                 print(m)
             return 0
     except Refused as e:
