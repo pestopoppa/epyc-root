@@ -1,0 +1,7 @@
+rc=0 time=2026-11-01T21:56:45Z reason=complete
+job_id=handoff-df2-11-inputs-20261101
+owner=handoff-df2
+step=job-run
+estimated_wall_s=3600
+started=2026-11-01T21:53:32Z
+regions=0-23

@@ -1,0 +1,32 @@
+{
+  "schema": "df2-11-acquisition.v1",
+  "artifacts": [
+    {
+      "repo": "incoai/Qwen3.8-27B-DFlash2-GGUF",
+      "revision": "6cb5872e2cee6b4e780a8414922350be8e42d65c",
+      "filename": "Qwen3.8-27B-DFlash2-BF16.gguf",
+      "bytes": 3860293152,
+      "sha256": "26af33a15b21475d668e4ee55639beea49932e7360b1144c6282721bcd127c14",
+      "url": "https://huggingface.co/incoai/Qwen3.8-27B-DFlash2-GGUF/resolve/6cb5872e2cee6b4e780a8414922350be8e42d65c/Qwen3.8-27B-DFlash2-BF16.gguf",
+      "destination": "inputs/Qwen3.8-27B-DFlash2-BF16.gguf"
+    },
+    {
+      "repo": "incoai/Qwen3.8-27B-DFlash2-GGUF",
+      "revision": "6cb5872e2cee6b4e780a8414922350be8e42d65c",
+      "filename": "Qwen3.8-27B-DFlash2-Q4_K_M.gguf",
+      "bytes": 1143006752,
+      "sha256": "18a380efc9b7ed8d88677fc895f5c11ae170653434ee378f7348f715c14d0594",
+      "url": "https://huggingface.co/incoai/Qwen3.8-27B-DFlash2-GGUF/resolve/6cb5872e2cee6b4e780a8414922350be8e42d65c/Qwen3.8-27B-DFlash2-Q4_K_M.gguf",
+      "destination": "inputs/Qwen3.8-27B-DFlash2-Q4_K_M.gguf"
+    },
+    {
+      "repo": "analogalok/Qwen3.8-27B-DFlash2-Q2_K-GGUF",
+      "revision": "d0682a20f75bf49169590cb99c1dc1c709b43b2a",
+      "filename": "Qwen3.8-27B-DFlash2-Q2_K.gguf",
+      "bytes": 705431072,
+      "sha256": "bbbcd5b66b571f438ff2018184648e37211a1d82c492d32834af2da2c7193755",
+      "url": "https://huggingface.co/analogalok/Qwen3.8-27B-DFlash2-Q2_K-GGUF/resolve/d0682a20f75bf49169590cb99c1dc1c709b43b2a/Qwen3.8-27B-DFlash2-Q2_K.gguf",
+      "destination": "inputs/Qwen3.8-27B-DFlash2-Q2_K.gguf"
+    }
+  ]
+}
