@@ -1,6 +1,6 @@
 # RTE frontdoor rowflow v15 candidate
 
-This packet migrates the existing RTE frontdoor row to the canonical rowflow `filler_run15.sh` engine. It was published for keeper qualification; this session did not run inference, tokenizer work, or an API request.
+This packet migrates the existing RTE frontdoor row to the canonical rowflow `filler_run15.sh` engine. Codex-gen published it in error after the owner had parked the same production-logging lineage at three qualification failures. Do not retry, rearm, or republish it to evade that limit; reconcile its publication at the owner/keeper boundary. This session did not run inference, tokenizer work, or an API request.
 
 The rowflow dry-run executes the same job path as production under rowflow's short grant and region-lock claim. It starts the pinned production kernel-store server and calls the original owner checker, which sends one real `/chat` request. A result unit is emitted only after matched dispatch/serving records, native token counts, exact loaded source provenance, and the committed live checker all pass. The dry-run unit is tagged qualification-only and cannot complete the row; a separate scheduled production attempt must emit a production-mode unit. Tokenizer preflight is recorded but never counts by itself. Each request and its owner-checker output live under a unique attempt directory; the strict completion predicate validates production mode, grant hash, owner receipt hash, and request identity.
 
