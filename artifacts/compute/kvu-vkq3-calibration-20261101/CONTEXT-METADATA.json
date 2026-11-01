@@ -1,0 +1,10 @@
+{
+  "selection": "fixed next source-index metadata row after previously exposed candidate; no score selection; independent calibration only",
+  "selected": {
+    "session": "codex-06",
+    "turn": 34,
+    "sha256": "be82b737c800252d7c267f56a61ddeefad47f46f2dab4c55746d09b8954d2333",
+    "selection_tokenizer_count": 70814
+  },
+  "architect_tokenizer_count": "must be measured under grant and exceed 65536"
+}

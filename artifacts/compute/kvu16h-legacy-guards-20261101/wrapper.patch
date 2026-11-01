@@ -1,0 +1,14 @@
+--- gpu_slot_ak.sh.orig
++++ gpu_slot_ak.sh
+@@ -46,6 +46,11 @@
+   shift
+ done
+ [ -n "$MODE" ] || { echo "need --dry-run or --execute" >&2; exit 64; }
++# Fail before preflight, results, claim, or earlier arms: the legacy P3 A1
++# child mixes no-draft traffic with a drafted server and has been retired.
++case ",$ORDER," in
++  *,p3,*) echo "REFUSING: legacy P3 A1 requires dedicated server lifecycles; use /mnt/raid0/llm/tmp/codex-kvu16h-runner-20261028/" >&2; exit 64 ;;
++esac
+ [ "$PORT" != 8083 ] || { echo "REFUSING: scratch port only (8083 is production)" >&2; exit 64; }
+ export GPU_SLOT_BIN="$BIN"   # slot_common.BIN default for every child
+ LDP="$BIN:/opt/rocm/lib"

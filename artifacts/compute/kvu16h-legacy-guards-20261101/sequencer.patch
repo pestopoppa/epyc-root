@@ -1,0 +1,14 @@
+--- slot_run.py.orig
++++ slot_run.py
+@@ -192,6 +192,11 @@
+     ap.add_argument("--bin-dir", default=None)
+     ap.add_argument("--dry-run", action="store_true")
+     ARGS = ap.parse_args()
++    # Refuse before results or earlier arms: legacy P3 A1 shares a drafted
++    # server with its request-level no-draft arm (KVU-16h).
++    if "p3" in ARGS.order.split(","):
++        ap.error("legacy P3 A1 requires dedicated server lifecycles; see "
++                 "/mnt/raid0/llm/tmp/codex-kvu16h-runner-20261028/")
+     if ARGS.port == 8083:
+         raise SystemExit("REFUSING: scratch port only")
+     if ARGS.bin_dir:
