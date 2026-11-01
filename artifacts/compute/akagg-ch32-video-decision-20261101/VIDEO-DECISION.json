@@ -1,0 +1,175 @@
+{
+  "refs": {
+    "C5": "c72ec82f5417bb2937310326120f149b665e8400",
+    "C1": "a4cb4c61fd9d9c2066c7c1747821d3d65b8943bd",
+    "C2": "7e3eeee0480902c90cbdff172f407dc063cf0770",
+    "D3": "19cce6919992fdffd92e0ac152caaf1e2b8f254e",
+    "d1_model": "d05706b4f32a545814856e98ca518292585443b9",
+    "D8": "d4f1b18b3a1522eec48decbe9ff7dc66eb60a9f4"
+  },
+  "scope": "Exact upstream ancestry, path-existence and source-diff context. Hand ports may adapt or intentionally scope out a surface; no minimum whole-commit requirement, ABI, build or runtime conclusion.",
+  "ancestry": {
+    "C1_before_d1_parent": true,
+    "C2_before_d1_parent": true,
+    "D3_before_d1_parent": true,
+    "d1_before_D8_parent": true,
+    "d1_before_C5": false
+  },
+  "first_parent_is_lfm3_d1_history": [
+    "d05706b4f32a545814856e98ca518292585443b9 model : add LiquidAI/d1-2B and LiquidAI/d1-omni-2B (#31275)"
+  ],
+  "paths": {
+    "C5": {
+      "common/common.h": true,
+      "conversion/lfm3.py": false,
+      "src/models/lfm3.cpp": false,
+      "tools/server/server-decision.cpp": false,
+      "tools/server/server-decision.h": false
+    },
+    "C1": {
+      "common/common.h": true,
+      "conversion/lfm3.py": false,
+      "src/models/lfm3.cpp": false,
+      "tools/server/server-decision.cpp": true,
+      "tools/server/server-decision.h": true
+    },
+    "D3": {
+      "common/common.h": true,
+      "conversion/lfm3.py": true,
+      "src/models/lfm3.cpp": true,
+      "tools/server/server-decision.cpp": true,
+      "tools/server/server-decision.h": true
+    },
+    "d1_parent": {
+      "common/common.h": true,
+      "conversion/lfm3.py": true,
+      "src/models/lfm3.cpp": true,
+      "tools/server/server-decision.cpp": true,
+      "tools/server/server-decision.h": true
+    },
+    "d1_model": {
+      "common/common.h": true,
+      "conversion/lfm3.py": true,
+      "src/models/lfm3.cpp": true,
+      "tools/server/server-decision.cpp": true,
+      "tools/server/server-decision.h": true
+    },
+    "D8_parent": {
+      "common/common.h": true,
+      "conversion/lfm3.py": true,
+      "src/models/lfm3.cpp": true,
+      "tools/server/server-decision.cpp": true,
+      "tools/server/server-decision.h": true
+    },
+    "D8": {
+      "common/common.h": true,
+      "conversion/lfm3.py": true,
+      "src/models/lfm3.cpp": true,
+      "tools/server/server-decision.cpp": true,
+      "tools/server/server-decision.h": true
+    }
+  },
+  "d1_numstat": {
+    "files": 19,
+    "added": 307,
+    "deleted": 63,
+    "entries": [
+      [
+        "2",
+        "0",
+        "common/common.cpp"
+      ],
+      [
+        "2",
+        "0",
+        "common/common.h"
+      ],
+      [
+        "1",
+        "0",
+        "conversion/__init__.py"
+      ],
+      [
+        "3",
+        "1",
+        "conversion/lfm2.py"
+      ],
+      [
+        "59",
+        "2",
+        "conversion/lfm3.py"
+      ],
+      [
+        "2",
+        "0",
+        "gguf-py/gguf/constants.py"
+      ],
+      [
+        "16",
+        "12",
+        "src/llama-context.cpp"
+      ],
+      [
+        "10",
+        "6",
+        "src/llama-graph.cpp"
+      ],
+      [
+        "1",
+        "0",
+        "src/llama-hparams.h"
+      ],
+      [
+        "3",
+        "0",
+        "src/llama-kv-cache.cpp"
+      ],
+      [
+        "4",
+        "1",
+        "src/llama-model.cpp"
+      ],
+      [
+        "27",
+        "0",
+        "src/models/lfm-base.cpp"
+      ],
+      [
+        "29",
+        "9",
+        "src/models/lfm3.cpp"
+      ],
+      [
+        "7",
+        "0",
+        "src/models/models.h"
+      ],
+      [
+        "2",
+        "0",
+        "tools/server/server-common.cpp"
+      ],
+      [
+        "8",
+        "1",
+        "tools/server/server-context.cpp"
+      ],
+      [
+        "119",
+        "31",
+        "tools/server/server-decision.cpp"
+      ],
+      [
+        "10",
+        "0",
+        "tools/server/server-decision.h"
+      ],
+      [
+        "2",
+        "0",
+        "tools/server/server-task.h"
+      ]
+    ]
+  },
+  "D8_decision_patch": "diff --git a/tools/server/server-decision.cpp b/tools/server/server-decision.cpp\nindex ba70c7b01..8b9911f64 100644\n--- a/tools/server/server-decision.cpp\n+++ b/tools/server/server-decision.cpp\n@@ -388,10 +388,10 @@ std::vector<server_decision_question> server_decision_context::parse_questions(c\n \n static const size_t DECISION_MAX_IMAGES = 8;\n \n-// any media, mtmd tells an audio clip from an image by its content\n+// any media, mtmd tells an audio clip or a video from an image by its content\n static void decision_load_image(const json & url, std::vector<raw_buffer> & files) {\n     if (!url.is_string() || !string_starts_with(url.get<std::string>(), \"data:\")) {\n-        throw std::invalid_argument(\"images must be data URLs (data:image/...;base64,... or data:audio/...;base64,...)\");\n+        throw std::invalid_argument(\"media must be data URLs (data:image/..., data:audio/... or data:video/...;base64,...)\");\n     }\n     if (files.size() >= DECISION_MAX_IMAGES) {\n         throw std::invalid_argument(string_format(\"too many images, the maximum is %zu\", DECISION_MAX_IMAGES));\n@@ -457,6 +457,9 @@ json server_decision_context::parse_state(const json & body, std::vector<raw_buf\n             } else if (part.is_object() && json_value(part, \"type\", std::string()) == \"input_audio\" && part.contains(\"input_audio\")) {\n                 const json input_audio = json_value(part, \"input_audio\", json::object());\n                 decision_load_audio(input_audio.contains(\"data\") ? input_audio.at(\"data\") : json_value(input_audio, \"url\", json()), files);\n+            } else if (is_lfm3_d1() && part.is_object() && json_value(part, \"type\", std::string()) == \"video_url\" && part.contains(\"video_url\")) {\n+                const json & video_url = part.at(\"video_url\");\n+                decision_load_image(video_url.is_object() && video_url.contains(\"url\") ? video_url.at(\"url\") : video_url, files);\n             } else {\n                 content.push_back(part);\n             }\n@@ -1236,7 +1239,10 @@ void server_decision_context::fill_task(\n     if (type == COMMON_DECISION_TYPE_OPENJEV || type == COMMON_DECISION_TYPE_LEV || type == COMMON_DECISION_TYPE_NIMBLE || type == COMMON_DECISION_TYPE_PPLX_DECIDER || type == COMMON_DECISION_TYPE_VLLM_D3 || type == COMMON_DECISION_TYPE_LFM2_D1 ||\n         type == COMMON_DECISION_TYPE_H2O_LIGHTNING || type == COMMON_DECISION_TYPE_LFM3_D1 || type == COMMON_DECISION_TYPE_LFM3_D1_OMNI) {\n         if (!media.empty()) {\n-            task.tokens = process_mtmd_prompt(mctx, prompt, media, init_opt);\n+            // the d1 reference sees the frames of a video, not its soundtrack\n+            mtmd_helper_init_opt opt = init_opt;\n+            opt.video_params.no_soundtrack = is_lfm3_d1();\n+            task.tokens = process_mtmd_prompt(mctx, prompt, media, opt);\n             return;\n         }\n     }\n"
+}

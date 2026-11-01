@@ -45,3 +45,6 @@
 
 - CH-32 B: Ouro uses loop metadata and GGUF writer methods absent from C5 and introduced in Nanbeige B1; retained reproducible exact-file source evidence. Equivalent hand-port of shared support may suffice; no full minimum-chain/build verdict.
 - CH-30b: verified 114/114 store hashes for the old f8 image `a1f0c8cf9`; neither original nor folded leak fix is ancestral. Its graphs-off workarounds cannot be removed on the strength of the later fold. Retained custody receipt; no launcher changed.
+
+- CH-32 D8 decision-video dependency: identified C5-absent LFM3-d1 decision context introduced by #31275, ancestral to D8’s parent; retained reproducible source evidence. Full upstream commit necessity and buildability remain unproved.
+- CH-14 completed: wrote `docs/guides/manual-research-champion-runbook.md`, covering member admission, full-candidate gating, manual-bundle authority boundary, specialized emitter and `/api/loop` freshness; verified linked paths and controller/emitter/reader source, and flagged stale historical refresh build paths. No gate or compute changed.
