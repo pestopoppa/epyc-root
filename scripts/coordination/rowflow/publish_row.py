@@ -37,10 +37,12 @@ def is_marker(p):
 
 # Operator 2026-11-01 23:55Z "DO BETTER" (third occurrence: inf70, kvu-vkq3 tokenize, sr6 `sha256sum -c FULL-MODEL.sha256` on one
 # core inside a whole-host quiet grant): hashing model weights or single-core prep inside the grant is refused at publish.
-PREP_RX = re.compile(r"(?:sha256sum|sha256|shasum|md5sum|b2sum)\b[^\n]*(?:\.gguf|FULL-MODEL|MODEL[^\s]*\.sha256|SHA256SUMS|\.sha256\b)"
+PREP_RX = re.compile(r"(?:sha256sum|sha256|shasum|md5sum|b2sum|hashlib\.sha256)\b[^\n]*(?:\.gguf|FULL-MODEL|\bMODEL[^\s]*\.sha256|/models?/|weights?)"
                      r"|\b(?:tokeni[sz]e|tokenizer\.encode|pretokeni[sz]e)\b"
                      r"|\b(?:wget|curl|aria2c|rsync|huggingface-cli download|hf_hub_download|snapshot_download)\b"
                      r"|\bcp\b[^\n]*\.gguf", re.I)
+# small source/packet checksum lists (SOURCE-SHA256SUMS, PACKET-SHA256SUMS, INPUT.sha256 over scripts) are cheap integrity
+# checks and stay allowed; only WEIGHT hashing (gguf / FULL-MODEL / models dir) and single-core prep are refused.
 PREP_MSG = "verify/prepare inputs once before publishing, not inside the grant"
 
 
