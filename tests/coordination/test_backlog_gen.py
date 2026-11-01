@@ -246,3 +246,30 @@ def test_no_registry_is_unchanged(tmp_path):
     F, pri = _flags(tmp_path)
     data = bg.build(str(F), str(pri), str(F / "ws58-calendar-keeper.log"))
     assert set(data["workers"]) == set(bg.WORKERS)
+
+
+def test_withdrawal_marker_suppresses_prep_only_and_manifest_prep(tmp_path):
+    F, pri = _flags(tmp_path)
+    # kpf-r11 has only inference_prep; ni-qualified has both a manifest and
+    # a prep entry. Both must stay absent after their exact marker appears.
+    (F / "ready/kpf-r11.withdrawn").write_text("")
+    (F / "ready/ni-qualified.withdrawn").write_text("")
+    # A marker for a different ID must not suppress the live prep row.
+    (F / "ready/kpf-r12-other.withdrawn").write_text("")
+    data = bg.build(str(F), str(pri), str(F / "ws58-calendar-keeper.log"))
+    ids = {r["id"] for w in data["workers"].values() for r in w["rows"]}
+    assert "kpf-r11" not in ids
+    assert "ni-qualified" not in ids
+    assert "kpf-r12" in ids
+
+
+def test_withdrawn_prep_is_absent_from_piloted_handoff(tmp_path):
+    F, pri = _flags(tmp_path)
+    (F / "handoff-sessions.json").write_text(json.dumps({"sessions": {"kpf": {
+        "handoff": "handoffs/active/kpf.md", "status": "live", "handoff_rows": ["RTG-1"]}}}))
+    (F / "ready/kpf-r11.withdrawn").write_text("")
+    data = bg.build(str(F), str(pri), str(F / "ws58-calendar-keeper.log"))
+    ids = {r["id"] for w in data["workers"].values() for r in w["rows"]}
+    assert "kpf-r11" not in ids
+    assert "kpf-r12" in ids
+    assert "kpf-r12" in {r["id"] for r in data["workers"]["handoff-kpf"]["rows"]}
