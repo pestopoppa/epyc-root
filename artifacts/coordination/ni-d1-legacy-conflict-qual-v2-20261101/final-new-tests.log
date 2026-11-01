@@ -1,0 +1,20 @@
+test_read_only_dry_and_collision (test_legacy.Bootstrap.test_read_only_dry_and_collision) ... ok
+test_actual_port_overrides_empty_declaration (test_legacy.Legacy.test_actual_port_overrides_empty_declaration) ... ok
+test_changed_tree_unknown (test_legacy.Legacy.test_changed_tree_unknown) ... ok
+test_disjoint_q0_q1_missing_excl (test_legacy.Legacy.test_disjoint_q0_q1_missing_excl) ... ok
+test_expired_future_ended_ignored (test_legacy.Legacy.test_expired_future_ended_ignored) ... ok
+test_explicit_shared_and_excl (test_legacy.Legacy.test_explicit_shared_and_excl) ... ok
+test_malformed_explicit_shared_and_excl_fail_closed (test_legacy.Legacy.test_malformed_explicit_shared_and_excl_fail_closed) ... ok
+test_missing_identity_and_partial_proc_wait (test_legacy.Legacy.test_missing_identity_and_partial_proc_wait) ... ok
+test_missing_ports_allowed_only_with_complete_proc (test_legacy.Legacy.test_missing_ports_allowed_only_with_complete_proc) ... ok
+test_missing_shared_wait_and_sidecar_binding (test_legacy.Legacy.test_missing_shared_wait_and_sidecar_binding) ... ok
+test_overlap_q3_and_smt (test_legacy.Legacy.test_overlap_q3_and_smt) ... ok
+test_qualifier_resolves_to_immutable_v1 (test_legacy.Legacy.test_qualifier_resolves_to_immutable_v1) ... ok
+test_real_owned_socket (test_legacy.Legacy.test_real_owned_socket) ... ok
+test_unrelated_socket_excluded (test_legacy.Legacy.test_unrelated_socket_excluded) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.030s
+
+OK
+exit_code=0

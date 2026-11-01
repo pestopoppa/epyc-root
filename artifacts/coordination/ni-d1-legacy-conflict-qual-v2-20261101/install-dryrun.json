@@ -1,0 +1,37 @@
+{
+  "candidate_sha256": {
+    "grant_ok.sh": "31d4775bfaa3274ce68498579dec1c0c906d9ff3a8d98fdd44139f6a7f71aa34",
+    "keeper_qual_gate.py": "c95312351c9c0810445ab201555c3d444ac4738e7e5f4d62da8c3065d14455d2",
+    "ws58-calendar-keeper-v8.sh": "d29bdb45ce1e2b21447a9c5d1c2f192485169fa01c7212b13352e85a38a0c165"
+  },
+  "current_sha256": {
+    "grant_ok.sh": "2e40f0cf5e93e91c1a55f2d3a22e0e08a209555cdb06c90181764f7546978908",
+    "keeper_qual_gate.py": "0588749a447dc15e46014aa4ee883ec46d15afcb0ffc26a9c3ece5c4efd6c8ca",
+    "ws58-calendar-keeper-v8.sh": "a8fc18c67f08fed08c1f74e629083d55cbcd1b9560b21d3029e0e9e0f7b4e5a7"
+  },
+  "expected_old_sha256": {
+    "grant_ok.sh": "2e40f0cf5e93e91c1a55f2d3a22e0e08a209555cdb06c90181764f7546978908",
+    "keeper_qual_gate.py": "0588749a447dc15e46014aa4ee883ec46d15afcb0ffc26a9c3ece5c4efd6c8ca",
+    "ws58-calendar-keeper-v8.sh": "a8fc18c67f08fed08c1f74e629083d55cbcd1b9560b21d3029e0e9e0f7b4e5a7"
+  },
+  "grant_write": false,
+  "keeper_restart_required": true,
+  "mode": "dry-run",
+  "nemo_receipt_before": {
+    "reason": "receipt manifest/id mismatch",
+    "status": "invalid before install"
+  },
+  "reviewed_candidate_sha256": {
+    "grant_ok.sh": "31d4775bfaa3274ce68498579dec1c0c906d9ff3a8d98fdd44139f6a7f71aa34",
+    "keeper_qual_gate.py": "c95312351c9c0810445ab201555c3d444ac4738e7e5f4d62da8c3065d14455d2",
+    "ws58-calendar-keeper-v8.sh": "d29bdb45ce1e2b21447a9c5d1c2f192485169fa01c7212b13352e85a38a0c165"
+  },
+  "single_engine_allowlist_unchanged": true,
+  "v1_qualifier_unchanged": true,
+  "would_change": [
+    "/mnt/raid0/llm/tmp/compute-flags/bin/qual-v2/keeper_qual_gate.py",
+    "/mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper-v8.sh",
+    "/mnt/raid0/llm/tmp/compute-flags/grant_ok.sh"
+  ],
+  "would_link_qualifier_to_immutable_v1": "/mnt/raid0/llm/tmp/compute-flags/bin/qual-v2/qualify_launcher.py"
+}

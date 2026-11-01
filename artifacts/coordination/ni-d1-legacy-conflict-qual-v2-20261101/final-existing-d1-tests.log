@@ -1,0 +1,35 @@
+test_owner_only_three_failures_and_fresh_qual_releases (test_breaker.Breaker.test_owner_only_three_failures_and_fresh_qual_releases) ... ok
+test_group_survivor_fails_closed (test_cleanup_identity.Cleanup.test_group_survivor_fails_closed) ... ok
+test_plain_pidfile_refused_before_signal (test_cleanup_identity.Cleanup.test_plain_pidfile_refused_before_signal) ... ok
+test_registered_survivor_fails_closed (test_cleanup_identity.Cleanup.test_registered_survivor_fails_closed) ... ok
+test_reused_group_leader_refused_before_signal (test_cleanup_identity.Cleanup.test_reused_group_leader_refused_before_signal) ... ok
+test_reused_pid_identity_never_claimed_live (test_cleanup_identity.Cleanup.test_reused_pid_identity_never_claimed_live) ... ok
+test_context_and_prompt_are_separate (test_qual_core.QualificationCore.test_context_and_prompt_are_separate) ... ok
+test_manifest_hash_ignores_only_keeper_mutables (test_qual_core.QualificationCore.test_manifest_hash_ignores_only_keeper_mutables) ... ok
+test_nonce_state_replay_and_tamper (test_qual_core.QualificationCore.test_nonce_state_replay_and_tamper) ... ok
+test_placement_maps_smt_and_refuses_wrong_claim (test_qual_core.QualificationCore.test_placement_maps_smt_and_refuses_wrong_claim) ... ok
+test_policy_park_margin (test_qual_core.QualificationCore.test_policy_park_margin) ... ok
+test_production_cutoff_requires_observed_deadline (test_qual_core.QualificationCore.test_production_cutoff_requires_observed_deadline) ... ok
+test_conflict_ignores_stale_armed_and_expired_grant_but_respects_eligible_booking (test_resource_windows.Windows.test_conflict_ignores_stale_armed_and_expired_grant_but_respects_eligible_booking) ... ok
+test_expired_gpu_ignored_active_correctness_allows_smt_hold_blocks (test_resource_windows.Windows.test_expired_gpu_ignored_active_correctness_allows_smt_hold_blocks) ... ok
+test_legacy_plain_failed_joins_native_and_owner_but_ambiguous_skip (test_scoreboard.ScienceScore.test_legacy_plain_failed_joins_native_and_owner_but_ambiguous_skip) ... ok
+test_only_filed_native_verdict_earns_credit_failed_debits_owner (test_scoreboard.ScienceScore.test_only_filed_native_verdict_earns_credit_failed_debits_owner) ... ok
+test_runnable_ready_requires_hard_receipt (test_scoreboard.ScienceScore.test_runnable_ready_requires_hard_receipt) ... ok
+test_control_baseline (test_verify_controls.VerifyControls.test_control_baseline) ... ok
+test_edited_receipt_refused (test_verify_controls.VerifyControls.test_edited_receipt_refused) ... ok
+test_helper_change_refused (test_verify_controls.VerifyControls.test_helper_change_refused) ... ok
+test_namespace_mismatch_refused (test_verify_controls.VerifyControls.test_namespace_mismatch_refused) ... ok
+test_replayed_nonce_refused (test_verify_controls.VerifyControls.test_replayed_nonce_refused) ... ok
+test_result_changed_refused (test_verify_controls.VerifyControls.test_result_changed_refused) ... ok
+test_wrong_cpu_proof_refused (test_verify_controls.VerifyControls.test_wrong_cpu_proof_refused) ... ok
+test_command_real_work_units (test_workload_kinds.Typed.test_command_real_work_units) ... ok
+test_llm_context_never_dummy (test_workload_kinds.Typed.test_llm_context_never_dummy) ... ok
+test_prework_cutoff_cannot_produce_production_partial (test_workload_kinds.Typed.test_prework_cutoff_cannot_produce_production_partial) ... ok
+test_speech_units_and_source_identity (test_workload_kinds.Typed.test_speech_units_and_source_identity) ... ok
+test_unified_kv_and_full_work_unit_feasibility (test_workload_kinds.Typed.test_unified_kv_and_full_work_unit_feasibility) ... ok
+
+----------------------------------------------------------------------
+Ran 29 tests in 0.045s
+
+OK
+exit_code=0
