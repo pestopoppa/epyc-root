@@ -1,0 +1,104 @@
+{
+  "scope": "MODEL_FREE_R6_ONLY",
+  "family": "34-35",
+  "actual_cpus": [
+    130,
+    131
+  ],
+  "root_lane": "/mnt/raid0/llm/tmp/codex-ni-ap-legacy-status-wrap-20261030",
+  "root_status": [
+    "?? scanner-migration/"
+  ],
+  "implementation_commit": "12c5b907a11b1d60da426c1c8632758657f4dfae",
+  "merge_commit": "54577ffa9c41f6460c8e7f827221871263bd8baa",
+  "start_utc": "2026-11-01T03:27:26.005689+00:00",
+  "end_utc": "2026-11-01T03:27:26.867551+00:00",
+  "own_pid": 2456379,
+  "own_start_ticks": "162611923",
+  "runner_pid": 2456335,
+  "runner_start_ticks": "162611915",
+  "boot_id": "3be2fb1a-7293-4c34-b733-c85d772b9474",
+  "live_grants": [
+    {
+      "id": "codex-ni-inf12-gate2-triton36-r13-20261030",
+      "class": "block-correctness",
+      "regions": "mi210_0,184-191",
+      "start": "2026-11-01T03:20Z",
+      "end": "2026-11-01T03:50Z"
+    },
+    {
+      "id": "codex3-cs8-stt5-validation-baseline-r2-20261030",
+      "class": "block-correctness",
+      "regions": "48-71",
+      "start": "2026-11-01T02:11Z",
+      "end": "2026-11-01T06:00Z"
+    },
+    {
+      "id": "codex3-pareval120-k20-gen-20261031",
+      "class": "block-correctness",
+      "regions": "0-23",
+      "start": "2026-10-31T23:56Z",
+      "end": "2026-11-01T03:56Z"
+    }
+  ],
+  "staged_closure": [
+    " M scripts/kernel_rnd/autokernel/loop/actors.py",
+    " M scripts/kernel_rnd/autokernel/loop/hotspots.py",
+    " M scripts/kernel_rnd/autokernel/loop/run.py",
+    " M scripts/kernel_rnd/autokernel/loop/test_actors.py",
+    " M scripts/kernel_rnd/autokernel/prior_art.py",
+    "?? scripts/kernel_rnd/autokernel/loop/test_hotspots.py"
+  ],
+  "returncode": 0,
+  "failure": null,
+  "elapsed_s": 0.9346853438764811,
+  "sampled_peak_tree_rss_bytes": 70504448,
+  "kernel_childset_empty": true,
+  "captured": [
+    {
+      "pid": 2456379,
+      "birth": 162611923,
+      "ppid": 2456335,
+      "uid": 1000
+    },
+    {
+      "pid": 2456380,
+      "birth": 162611924,
+      "ppid": 2456379,
+      "uid": 1000
+    },
+    {
+      "pid": 2456384,
+      "birth": 162611967,
+      "ppid": 2456379,
+      "uid": 1000
+    },
+    {
+      "pid": 2456385,
+      "birth": 162611967,
+      "ppid": 2456379,
+      "uid": 1000
+    }
+  ],
+  "native_or_GPU_execution": false,
+  "source_closure": [
+    " M scripts/kernel_rnd/autokernel/loop/actors.py",
+    " M scripts/kernel_rnd/autokernel/loop/hotspots.py",
+    " M scripts/kernel_rnd/autokernel/loop/run.py",
+    " M scripts/kernel_rnd/autokernel/loop/test_actors.py",
+    " M scripts/kernel_rnd/autokernel/prior_art.py",
+    "?? scripts/kernel_rnd/autokernel/loop/test_hotspots.py"
+  ],
+  "adapted_script_sha256": "6f5b391ec009206bcd2f48c82e1cdd9fbd8ed0c5fbd6d7e36c6e707cce2fe67b",
+  "output_log_sha256": "c9bcb144c21494e85f380ae0032b056c0b060b27bbfcfada9bc048d41195af09",
+  "rss_sampler": {
+    "interval_s": 0.1,
+    "limit_bytes": 8589934592,
+    "source": "/proc/<pid>/statm"
+  },
+  "implementation_commit_resolution": "first parent of merge_commit; runner legacy HEAD^2 field was upstream parent",
+  "executed_controls": [
+    "test_lane_watchdog.py::test_direct_run_is_supervised_and_rejects_forged_marker",
+    "autokernel.loop.run --help verifies --store and --out options"
+  ]
+}
