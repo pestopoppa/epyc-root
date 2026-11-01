@@ -465,6 +465,27 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
         if e.get("row"):
             rows_by_handoff_row.setdefault(e["row"], []).append(rec)
 
+    # ---- one owner per row (2026-11-01 bug: a blocked row sat in codex-gen while its fix task sat in a session's
+    # backlog, so codex-gen stalled on "routed" work and nobody owned the row). A codex-gen row moves to the session whose
+    # handoff file holds a task that unblocks it, or whose index row (inference_prep `row`) maps to a piloted handoff. ----
+    handoff_bucket0 = {p["handoff"]: f"handoff-{slug}" for slug, p in pilots.items()}
+    for rec in list(per[GENERALIST]["rows"]):
+        tgt = handoff_bucket0.get(rec.get("handoff") or "")
+        if not tgt:
+            for wl in all_lines:
+                if (rec["id"] in wl["unblocks"] or (rec.get("row") and rec["row"] in wl["unblocks"])) and wl["file"] in handoff_bucket0:
+                    tgt = handoff_bucket0[wl["file"]]
+                    break
+        if tgt and tgt != GENERALIST:
+            per[GENERALIST]["rows"].remove(rec)
+            per[tgt]["rows"].append(rec)
+            rec["routed_to"] = tgt
+            if rec["state"] == "qualified-armed":
+                per[GENERALIST]["qual"][rec["lane"]] -= 1
+                per[tgt]["qual"][rec["lane"]] += 1
+        else:
+            rec["owner_note"] = "yours (no handoff session)"
+
     # ---- parked lineages (escalation notes are written by rowflow; this only reports them) ----
     parked: dict[str, dict] = {}
     for w in buckets:
@@ -645,7 +666,8 @@ def render(w: str, data: dict) -> str:
     for r in d["rows"]:
         if r["state"] == "done":
             continue  # counted above; not work
-        L.append(f"- [{r['state']}] {r['lane']} rank={r['rank']} **{r['id']}**" + (f" (row {r['row']})" if r.get("row") else ""))
+        L.append(f"- [{r['state']}] {r['lane']} rank={r['rank']} **{r['id']}**" + (f" (row {r['row']})" if r.get("row") else "")
+                 + (f" — {r['owner_note']}" if r.get("owner_note") and r["state"] in ADVANCEABLE else ""))
         if r["state"] == "needs-filing":
             L.append(f"    - file: read result_path, apply decision_rule, tick the handoff, then `touch {FLAGS_DEFAULT}/filing-done/{r['id']}.FILED` (DSH-2)")
         for t in r["tasks"]:

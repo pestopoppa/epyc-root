@@ -378,11 +378,18 @@ def guess_format(result_path):
     return {".jsonl": "jsonl", ".json": "json", ".csv": "csv", ".tsv": "tsv", ".md": "markdown-table"}.get(ext, "text-lines")
 
 
+FETCH_KINDS = ("fetch", "prepare", "inputs", "download", "copy")
+
+
 def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     for k in ("id", "owner", "launcher", "lane", "result_path", "decision_rule", "estimate_s", "handoff_task"):
         need(k in spec and spec[k] not in (None, ""), f"spec.{k} missing")
     rid = str(spec["id"])
     need(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]+", rid), "bad id")
+    # operator 2026-11-01: fetch-only rows (download/copy inputs, e.g. acquire.py at 3% of a core holding a quarter) are
+    # session preparation, not compute. The spec says what kind of row it is; fetch/prepare kinds are refused.
+    need(str(spec.get("kind", "compute")).lower() not in FETCH_KINDS,
+         "prepare inputs before publishing: fetching/copying data is session preparation, not a compute row")
     need(spec["lane"] in ("cpu", "gpu"), "lane must be cpu or gpu")
     launcher = os.path.abspath(str(spec["launcher"]))
     need(os.path.isfile(launcher), f"launcher {launcher} missing")

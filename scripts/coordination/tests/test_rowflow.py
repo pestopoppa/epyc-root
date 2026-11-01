@@ -114,6 +114,12 @@ class RowflowTests(unittest.TestCase):
         bad = fx.spec("t-pub-20261101", d, min_window_s=999)
         with self.assertRaises(rf.Refused):
             rf.publish(bad, fx.flags)
+        # operator 2026-11-01: a fetch-only row is refused with the exact preparation message
+        for kind in ("fetch", "prepare", "inputs"):
+            with self.assertRaises(rf.Refused) as cm:
+                rf.publish(fx.spec("t-pub-20261101", d, kind=kind), fx.flags)
+            self.assertIn("prepare inputs before publishing: fetching/copying data is session preparation, not a compute row", str(cm.exception))
+        rf.publish(fx.spec("t-pub-20261101", d, kind="compute"), fx.flags)  # explicit compute kind is fine
 
     def test_02_dryrun_pass_then_grantable_then_stale(self):
         fx = self.fx
