@@ -49,13 +49,13 @@ writes everything but `wrapped_sha`; `wrapup.py` fills it after the push._
 - [x] **CAF-3 — resume delta.** ✅ 2026-11-01 ROOT `bcd7653b1` [no-belief: tooling; no measurement] Deletes: "re-read the handoff and BACKLOG" from every prompt and the re-read turns
   (read_brief 22%); `backlog_gen` emits a per-slug state delta (rows: state/rc/result_path; next task text; own inference
   tasks) that the resume prompt carries. Deps: none.
-- [x] **CAF-4 — `publish_row.py --repair` + spec lint.** ✅ 2026-11-01 ROOT `(this commit)` [no-belief: tooling; no measurement] Deletes: the session turn after a dry-run FAIL of the two known
+- [x] **CAF-4 — `publish_row.py --repair` + spec lint.** ✅ 2026-11-01 ROOT `f080425df` [no-belief: tooling; no measurement] Deletes: the session turn after a dry-run FAIL of the two known
   classes (result_path → completion marker; derivable spec fields) and the keeper→agent→republish loop for them
   (republish 1.5% + spec_fix 5.2%); the lint stops them at publish time. Deps: none.
 - [x] **CAF-5 — `scripts/coordination/churn/file_result.py`.** ✅ 2026-11-01 ROOT `9e10d1186` [no-belief: tooling; no measurement] Deletes: the agent filing turn for rows whose
   `decision_rule` is numeric (filing_verdict 1.7%) and the end_prompt's "YOU file the verdict" prose for them; the
   dispatcher files such rows itself and touches `.FILED`; non-numeric rules take the agent's `{verdict, rationale}` JSON.
   Deps: CAF-2.
-- [x] **CAF-7 — codex-gen routing.** ✅ 2026-11-01 ROOT `(this commit)` [no-belief: tooling; no measurement] Deletes: codex-gen's bookkeeping tasks (regenerate/commit/push, republish) — they
+- [x] **CAF-7 — codex-gen routing.** ✅ 2026-11-01 ROOT `f080425df` [no-belief: tooling; no measurement] Deletes: codex-gen's bookkeeping tasks (regenerate/commit/push, republish) — they
   call CAF-2/4/5 directly; `GOAL-codex-gen.md` (and its git copy in `scripts/coordination/churn/`) loses the manual steps.
   Deps: CAF-2, CAF-4.
