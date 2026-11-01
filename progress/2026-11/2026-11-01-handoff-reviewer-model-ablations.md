@@ -1,0 +1,9 @@
+# 2026-11-01 — handoff reviewer-model-ablations
+
+## 23:42Z — Prepare actionable reviewer ablation rows
+
+Reviewed the inference backlog against the handoff. RM-2 A0/A1/A3/A4 already have results; A4g requires an expert-routing-skew profile and a concrete repair hypothesis, while the external reference requires a bounded budget and window. RM-6 and RM-7 depend on a leading or winning arm. RM-11a and RM-11b are independent next candidates: delegated bounded read-only preparation of the cross-family selector and solve-accuracy instrumentation, with completion files registered under awaiting/. RM-11a must pin the governed selector and scorer and preserve the instrument boundary; the shared research checkout is dirty and must not be modified. No compute launched and no result claimed. Next: consume the preparation files, clear the identified instrument/launcher gaps in an isolated checkout as needed, then publish eligible rows.
+
+## 23:42Z — Prepare actionable reviewer ablation rows
+
+Reviewed the inference backlog against the handoff. RM-2 A0/A1/A3/A4 already have results; A4g requires an expert-routing-skew profile and a concrete repair hypothesis, while the external reference requires a bounded budget and window. RM-6 and RM-7 depend on a leading or winning arm. RM-11a and RM-11b are independent next candidates: delegated bounded read-only preparation of the cross-family selector and solve-accuracy instrumentation, with completion files registered under awaiting/. RM-11a must pin the governed selector and scorer and preserve the instrument boundary; the shared research checkout is dirty and must not be modified. No compute launched and no result claimed. Next: consume the preparation files, clear the identified instrument/launcher gaps in an isolated checkout as needed, then publish eligible rows.

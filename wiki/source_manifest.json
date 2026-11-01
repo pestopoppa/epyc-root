@@ -1,30 +1,36 @@
 {
   "by_type": {
     "docs": 251,
-    "handoff-active": 179,
+    "handoff-active": 180,
     "handoff-blocked": 2,
     "handoff-completed": 221,
-    "progress": 1144,
-    "research": 263
+    "progress": 1146,
+    "research": 264
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-01T15:52:43Z",
   "last_touch": {
     "advanced": {
-      "added": 0,
-      "changed": 1,
+      "added": 4,
+      "changed": 3,
       "removed": 0
     },
-    "at": "2026-11-01T21:36:28Z",
+    "at": "2026-11-01T23:36:20Z",
     "scope_paths": [
+      "docs/guides/agent-workflows/backlog-churn-flow.md",
+      "handoffs/active/churn-pipeline.md",
+      "progress/2026-11/2026-11-01-workspace-58-rowflow.md",
+      "progress/2026-11/2026-11-01-workspace-58.md",
+      "progress/2026-11/2026-11-01-ws58-churn-up.md",
+      "research/deep-dives/churn-ai-free-audit-20261101.md",
       "research/deep-dives/intake-2603-dsh-superagent-prototype.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-01T21:36:28Z",
+  "scan_time": "2026-11-01T23:36:20Z",
   "schema_version": 1,
-  "source_set_hash": "fef51d3104bb01903f5bd466a8f76398e716a02732de138503c03a3e26cf0986",
+  "source_set_hash": "9e09212e04d4f75c8d5642432a4de67c3adeea172f2b873e9369542893fbc726",
   "sources": [
     {
       "content_hash": "79865b0c101f4b6a9b14665950a430467345202b33986b3ba348bc3df428170a",
@@ -264,6 +270,14 @@
       "path": "handoffs/active/capability-registry-and-promotion.md",
       "size": 23938,
       "title": "Capability Registry, Safe Role-Restart Applicator & Promotion Workflow",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "29f769beec141096f3b067bcba48ca15770e73a8659b1f77415c44c89ffa5337",
+      "modified": "2026-11-01T23:34:41Z",
+      "path": "handoffs/active/churn-pipeline.md",
+      "size": 8809,
+      "title": "Churn pipeline \u2014 dispatcher, backlogs, rows (ws58, opened 2026-11-01)",
       "type": "handoff-active"
     },
     {
@@ -3603,6 +3617,14 @@
       "type": "research"
     },
     {
+      "content_hash": "29f3cfc1bcabf63a3ab0b949e3075e450aa657fef575910115a332b8b8f0d9ef",
+      "modified": "2026-11-01T23:34:20Z",
+      "path": "research/deep-dives/churn-ai-free-audit-20261101.md",
+      "size": 10632,
+      "title": "Churn pipeline: AI-free audit (2026-11-01)",
+      "type": "research"
+    },
+    {
       "content_hash": "b7853d70bae82e676e8e5b5a675b96d58e6979737356774438bd1b737f3dbd63",
       "modified": "2026-11-01T15:45:21Z",
       "path": "research/deep-dives/claude-mem-persistent-memory.md",
@@ -3859,10 +3881,10 @@
       "type": "research"
     },
     {
-      "content_hash": "8d3ef44660a9956d14e3e9ea94fac3747493a751cd1af9d8555afc7e2c250c70",
-      "modified": "2026-11-01T21:36:28Z",
+      "content_hash": "dd4ba49d08276b1c26a2df8cd2a1f1904a2fc7fcbed657d02b6e86ff9f455089",
+      "modified": "2026-11-01T23:34:20Z",
       "path": "research/deep-dives/intake-2603-dsh-superagent-prototype.md",
-      "size": 12358,
+      "size": 12483,
       "title": "intake-2603 \u2014 dsh-superagent-prototype vs the backlog churn pipeline",
       "type": "research"
     },
@@ -14483,11 +14505,27 @@
       "type": "progress"
     },
     {
-      "content_hash": "8493dff511699039e760ec42db771a7080f920290080dfb36ffb907202057079",
-      "modified": "2026-11-01T15:45:21Z",
+      "content_hash": "0b5c3148b6016240f8ecb466da48bd06b21dd92dd1a867c6b387de17b2ab1748",
+      "modified": "2026-11-01T23:34:20Z",
+      "path": "progress/2026-11/2026-11-01-workspace-58-rowflow.md",
+      "size": 4166,
+      "title": "2026-11-01 \u2014 ws58: simplified inference-row pipeline (operator: \"remove every gate that is not indispensable\")",
+      "type": "progress"
+    },
+    {
+      "content_hash": "b1ae76ec675305243c144fb1303c7bf2b31f055e9ff4cd9e6875625861474c17",
+      "modified": "2026-11-01T23:34:41Z",
       "path": "progress/2026-11/2026-11-01-workspace-58.md",
-      "size": 2570,
+      "size": 20306,
       "title": "2026-11-01 workspace-58",
+      "type": "progress"
+    },
+    {
+      "content_hash": "d9bbbe4cf21cb4b62ca09e35bae9f97c8116b25ac693f7d9e66a94bce0a95bfa",
+      "modified": "2026-11-01T23:34:20Z",
+      "path": "progress/2026-11/2026-11-01-ws58-churn-up.md",
+      "size": 2551,
+      "title": "2026-11-01 \u2014 ws58: backlog-churn pipeline persisted to git + one-command cold start",
       "type": "progress"
     },
     {
@@ -15003,11 +15041,11 @@
       "type": "docs"
     },
     {
-      "content_hash": "cc748c402723cd42d32beb467a3c5dc35fb3263e69a19c6ad2f1d89977594239",
-      "modified": "2026-11-01T15:45:21Z",
+      "content_hash": "37e2f640e5bbf6a3f929b48baba96d4188d252cb98ed60f87d2cad099ae17bd5",
+      "modified": "2026-11-01T23:34:19Z",
       "path": "docs/guides/agent-workflows/backlog-churn-flow.md",
-      "size": 10040,
-      "title": "Churn through the backlog \u2014 the one workflow (operator, 2026-11-01)",
+      "size": 32371,
+      "title": "Churn through the backlog \u2014 the one workflow (operator, 2026-11-01; simplified the same evening)",
       "type": "docs"
     },
     {
@@ -16507,7 +16545,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 2060,
+  "total_new": 2064,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
