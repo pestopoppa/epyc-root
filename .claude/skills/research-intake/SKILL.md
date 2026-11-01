@@ -61,6 +61,16 @@ deep-dive the *newly submitted* sources before planning around them, and (c) per
 | **3** | **plan mode** | Audited, high-ROI action plan: reusable primitives, minimum-rigor probes, trigger-gated follow-ons, handoff edits, index rows, and explicit declines. Iterate with the operator until approved. **Does not begin until the Stage-2 close-out gate closes** | the plan file only |
 | **4** | auto | Implement exactly the approved plan | everything the plan names |
 
+**Dive files must reach the wiki (binding, 2026-11-01).** The wiki scanner (`compile_sources.py`,
+configured by `wiki.yaml`) reads only `.md` files under `research/deep-dives/`. Since 2026-11-01 it also reads
+subfolders. On 10-31 an intake wrote its dives as YAML in a subfolder, and none of its findings reached the
+wiki until a sweep found the gap. Therefore:
+- Write each Stage-2 dive, and the run's README/summary, as **Markdown** under `research/deep-dives/`. A
+  subfolder per run is fine. A YAML/JSON ledger may sit beside the Markdown dive, but never replace it.
+- Stage-4 close-out check: run `compile_sources.py` (read-only) and confirm every dive `.md` of this run
+  appears in `total_new` or is already in `wiki/source_manifest.json`. List any that are missing in the
+  Stage-4 report and fix them before closing.
+
 **The load-bearing rule.** Operator comments, critiques and suggestions made during stages 1–3 are
 **context, not authorization**. They are appended to the steering ledger and folded into the Stage-3
 plan. They never justify writing a handoff, stub, or index row before the plan is approved — not
