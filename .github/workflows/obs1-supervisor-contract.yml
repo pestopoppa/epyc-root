@@ -40,7 +40,7 @@ jobs:
           set -euo pipefail
           OBS1_RESULT_DIR="$RUNNER_TEMP/obs1-supervisor-contract"
           mkdir -p "$OBS1_RESULT_DIR"
-          python -m pip install pytest==9.0.3 iniconfig==2.3.0 packaging==26.0 pluggy==1.6.0 Pygments==2.20.0 2>&1 | tee "$OBS1_RESULT_DIR/dependencies.stdout.txt"
+          python -m pip install pytest==9.0.3 iniconfig==2.3.0 packaging==26.0 pluggy==1.6.0 Pygments==2.20.0 PyYAML==6.0.3 2>&1 | tee "$OBS1_RESULT_DIR/dependencies.stdout.txt"
           git rev-parse HEAD > "$OBS1_RESULT_DIR/source-commit.txt"
           sha256sum \
             scripts/coordination/bus_supervisor.sh \
