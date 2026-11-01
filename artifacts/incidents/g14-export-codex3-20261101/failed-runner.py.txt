@@ -1,0 +1,125 @@
+#!/usr/bin/env python3
+"""Private G14 native export/document parity diagnostic; no serving writes."""
+import os,sys,json,time,hashlib,signal,resource,functools
+from pathlib import Path
+D=Path(__file__).resolve().parent
+OUT=Path(os.environ.get('G14_OUTPUT',D/'results')); OUT.mkdir(parents=True,exist_ok=True)
+MODE=os.environ.get('G14_MODE','normal'); start=time.monotonic(); partial=False
+resource.setrlimit(resource.RLIMIT_AS,(8*1024**3,8*1024**3))
+def stopped(*args):
+ global partial
+ partial=True
+signal.signal(signal.SIGTERM,stopped)
+def write(name,d):
+ p=OUT/name;t=p.with_suffix('.tmp');t.write_text(json.dumps(d,indent=2));t.replace(p)
+def expired():
+ return partial or (int(os.environ.get('G14_STOP_AFTER_ROWS','0'))>0 and len(rows)>=int(os.environ['G14_STOP_AFTER_ROWS'])) or (os.environ.get('FILLER_STOPFILE') and Path(os.environ['FILLER_STOPFILE']).exists()) or (os.environ.get('FILLER_DEADLINE') and time.time()>float(os.environ['FILLER_DEADLINE'])-20)
+def checkpoint(rows):
+ write('RESULT.json',{'schema':'g14-prefix-native/v1','status':'PARTIAL','partial':True,'source_manifest_sha256':hashlib.sha256((D/'SOURCE.sha256').read_bytes()).hexdigest(),'rows':rows,'elapsed_s':time.monotonic()-start});raise SystemExit(75)
+import torch,numpy as np,onnxruntime as ort,onnx
+from pylate import models
+from colbert_export.export import export_model
+import colbert_encoder as enc
+assert torch.__version__=='2.6.0+cpu'
+assert torch.version.cuda is None and torch.version.hip is None
+assert not any('/dev/kfd' in os.readlink(p) for p in Path('/proc/self/fd').iterdir() if p.exists())
+# 1.7.0 assumes the newer torch default; explicit here preserves its dynamic_shapes API.
+torch.onnx.export=functools.partial(torch.onnx.export,dynamo=True)
+SOURCE=Path('/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8')
+CAND=Path('/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae')
+pins=json.loads((D/'MODEL-PINS.json').read_text())
+for path,pin in pins.items():
+ st=Path(path).stat();assert st.st_size==pin['size'] and st.st_mtime_ns==pin['mtime_ns'],path
+rows=[]
+if expired():checkpoint(rows)
+if os.environ.get('G14_REEXPORT')=='1' or not (CAND/'EXPORT_COMPLETE.json').exists():
+ before_export=hashlib.sha256((SOURCE/'model_int8.onnx').read_bytes()).hexdigest()
+ export_model(str(SOURCE),CAND,verbose=True,force=True)
+ assert hashlib.sha256((SOURCE/'model_int8.onnx').read_bytes()).hexdigest()==before_export
+ if (CAND/'INT8_COMPLETE.json').exists():(CAND/'INT8_COMPLETE.json').unlink()
+ cfg=json.loads((CAND/'onnx_config.json').read_text());assert cfg['embedding_dim']==128
+ graph=onnx.load(str(CAND/'model.onnx'),load_external_data=False)
+ info={'exporter_sha':'00e26aae0006b322727db277672211d9a0e3ccec','version':'1.7.0','torch':torch.__version__,'adaptation':'explicit dynamo=True','opsets':[(x.domain,x.version) for x in graph.opset_import],'embedding_dim':128,'source':str(SOURCE),'dense_shapes':[[384,768],[768,768],[768,128]],'source_safetensors_sha256':hashlib.sha256((SOURCE/'model.safetensors').read_bytes()).hexdigest()}
+ (CAND/'EXPORT_COMPLETE.json').write_text(json.dumps(info,indent=2))
+# Inline exporter local functions and discard only intermediate shape annotations.
+# Torch2.6/ONNX quantizer otherwise creates false ranks rejected by native ORT ALL.
+if not (CAND/'INT8_COMPLETE.json').exists():
+ before=hashlib.sha256((SOURCE/'model_int8.onnx').read_bytes()).hexdigest()
+ from colbert_export.quantize import quantize_model
+ from onnx import inliner
+ pre=CAND/'quantization-input';pre.mkdir(exist_ok=True)
+ inlined=inliner.inline_local_functions(onnx.load(str(CAND/'model.onnx')))
+ del inlined.graph.value_info[:]
+ onnx.save(inlined,str(pre/'model.onnx'))
+ quantize_model(pre)
+ (pre/'model_int8.onnx').replace(CAND/'model_int8.onnx')
+ assert hashlib.sha256((SOURCE/'model_int8.onnx').read_bytes()).hexdigest()==before
+ (CAND/'INT8_COMPLETE.json').write_text(json.dumps({'baseline_before_after_sha256':before,'adaptation':'inline local functions; remove intermediate value_info shape annotations only; then unmodified exporter1.7 quantize_model QInt8','runtime':ort.__version__}))
+VIEW=CAND/'existing-int8-corrected-contract';VIEW.mkdir(exist_ok=True)
+for name in ['model_int8.onnx','tokenizer.json']:
+ target=VIEW/name
+ if not target.exists():os.link(SOURCE/name,target)
+config_bytes=(CAND/'onnx_config.json').read_bytes()
+(VIEW/'onnx_config.json').write_bytes(config_bytes)
+oldhash=hashlib.sha256((SOURCE/'model_int8.onnx').read_bytes()).hexdigest()
+assert (VIEW/'model_int8.onnx').stat().st_ino==(SOURCE/'model_int8.onnx').stat().st_ino
+assert (SOURCE/'model_int8.onnx').stat().st_size==92079820
+write('BASELINE_CUSTODY.json',{'original':str(SOURCE/'model_int8.onnx'),'view':str(VIEW/'model_int8.onnx'),'sha256':oldhash,'bytes':92079820,'same_inode':True,'config_source':str(CAND/'onnx_config.json')})
+if expired():checkpoint(rows)
+texts=json.loads((D/'SNIPPETS.json').read_text())
+# Smoke traces the real native path; the full packet retains all twenty banked snippets.
+if MODE=='smoke':texts=texts[:1]
+arms=[('reason-existing',SOURCE,SOURCE/'model_int8.onnx'),('reason-corrected-old',VIEW,VIEW/'model_int8.onnx'),('reason-export170',CAND,CAND/'model.onnx'),('reason-export170-int8',CAND,CAND/'model_int8.onnx'),('lateon-existing',Path('/mnt/raid0/llm/models/lateon-onnx-int8'),Path('/mnt/raid0/llm/models/lateon-onnx-int8/model_int8.onnx'))]
+for arm,modeldir,graph in arms:
+ if expired():checkpoint(rows)
+ refdir=SOURCE if arm.startswith('reason') else modeldir
+ model=models.ColBERT(str(refdir),device='cpu',local_files_only=True);model.eval()
+ heads=[(x.linear.in_features,x.linear.out_features,str(x.activation_function)) for x in list(model)[1:]]
+ assert heads==[(384,768,'Identity()'),(768,768,'Identity()'),(768,128,'Identity()')] if arm.startswith('reason') else True
+ enc._clear_loaded_state();enc._MODEL_DIR=modeldir;enc._MODEL_PATH=graph;enc._TOKENIZER_PATH=modeldir/'tokenizer.json'
+ assert enc.ensure_loaded();assert enc._session.get_providers()==['CPUExecutionProvider']
+ for i,text in enumerate(texts):
+  for cap in ([32,64,128] if i==0 else [64]):
+   if expired():checkpoint(rows)
+   model.document_length=cap
+   features=model.tokenize([text],is_query=False,pad=True)
+   captured={}
+   real=enc._session
+   class Capture:
+    def run(self,names,feed):
+     captured.update({k:v.copy() for k,v in feed.items()});return real.run(names,feed)
+   enc._session=Capture()
+   try:actual=enc.encode(text,cap,role=enc.ROLE_DOCUMENT)
+   finally:enc._session=real
+   assert actual is not None,(arm,i,cap)
+   checks={k:bool(np.array_equal(v,features[k].numpy())) for k,v in captured.items()}
+   mask_np=captured['attention_mask'].astype(bool)
+   real_equal=bool(np.array_equal(captured['input_ids'][mask_np],features['input_ids'].numpy()[mask_np]))
+   if not checks['attention_mask'] or not real_equal:
+    rows.append({'arm':arm,'snippet':i,'cap':cap,'status':'TOKEN_MISMATCH','same_full_feed':checks,'native':{k:v.tolist() for k,v in captured.items()},'pylate':{k:v.tolist() for k,v in features.items()},'cosine_computed':False,'reason':'native existing contract omits trained do_lower_case from sentence_bert_config.json'});write('ROWS.json',rows);continue
+   # Padding is masked; retain both original ID feeds and report the difference explicitly.
+   # Numeric comparison uses the identical native input feed through native PyLate forward.
+   features={k:torch.from_numpy(v.copy()) for k,v in captured.items()}
+   with torch.no_grad():raw=model({k:v.clone() for k,v in features.items()})['token_embeddings'][0]
+   mask=features['attention_mask'][0].bool();reference=torch.nn.functional.normalize(raw[mask],dim=-1).numpy()
+   assert actual.shape==reference.shape,(arm,actual.shape,reference.shape)
+   # No pooling, no reference truncation, all per-position coordinates retained.
+   cosine=1-np.sum(actual*reference,axis=-1); delta=np.abs(actual-reference)
+   doc=model.encode([text],is_query=False,show_progress_bar=False,convert_to_numpy=True)[0]
+   if hasattr(doc,'cpu'):doc=doc.cpu().numpy()
+   item={'arm':arm,'snippet':i,'cap':cap,'role':'document','prefix':enc.prefix_for_role(enc.ROLE_DOCUMENT),'do_lower_case':enc._do_lower_case,'feed':{k:{'dtype':str(v.dtype),'shape':list(v.shape),'values':v.tolist()} for k,v in captured.items()},'same_full_feed_before_mask':checks,'same_real_token_ids':real_equal,'same_attention_mask':checks['attention_mask'],'numeric_reference_feed':'exact captured native feed; full mask and every real ID independently match PyLate tokenize; masked padding ID differences reported','shape':list(actual.shape),'max_abs':float(delta.max()),'max_cosine_divergence':float(np.abs(cosine).max()),'pylate_document_encode_shape':list(doc.shape),'document_encode_same_shape':doc.shape==actual.shape,'reference_semantics':'native PyLate forward on independently tokenized role=document inputs, mask padding then L2; encode() punctuation skiplist shape separately recorded','provider':real.get_providers()}
+   np.savez(OUT/f'{arm}-{i}-{cap}.npz',actual=actual,reference=reference,cosine_divergence=cosine,absolute_delta=delta)
+   rows.append(item);write('ROWS.json',rows)
+ del model
+ write('PROGRESS.json',{'completed_arm':arm,'rows':len(rows)})
+# New per-position fidelity diagnostic, not a retrieval/adoption/old pooled 1e-2 gate.
+pairwise=[]
+for i in range(len(texts)):
+ for cap in ([32,64,128] if i==0 else [64]):
+  a=np.load(OUT/f'reason-corrected-old-{i}-{cap}.npz')['actual']
+  for candidate in ['reason-export170','reason-export170-int8']:
+   b=np.load(OUT/f'{candidate}-{i}-{cap}.npz')['actual'];assert a.shape==b.shape
+   pairwise.append({'snippet':i,'cap':cap,'candidate':candidate,'baseline_bytes':92079820,'baseline_contract':'new1.7config on exact oldgraph hardlink','max_abs':float(np.abs(a-b).max()),'max_cosine_divergence':float(np.abs(1-np.sum(a*b,axis=-1)).max())})
+write('PAIRWISE.json',pairwise)
+write('RESULT.json',{'schema':'g14-prefix-native/v1','status':'COMPLETE','partial':False,'mode':MODE,'rows':rows,'row_count':len(rows),'pairwise':pairwise,'elapsed_s':time.monotonic()-start,'source_manifest_sha256':hashlib.sha256((D/'SOURCE.sha256').read_bytes()).hexdigest(),'old_metrics_reusable':False,'old_metrics_reason':'8.24e-3 and2.72e-3 used prefix-free ONNX vs prefixed PyLate, pooling and reference truncation','scope':'export and per-position fidelity only; no retrieval quality/adoption claim','prefix3_complete':False,'prefix3_unmet':'PyLate.encode punctuation skiplist pipeline shape differs. Full banked20 snippets require normal run; punctuation skiplist contract is reported without truncation'})
+print('NATIVE_RESULT_WRITTEN',OUT/'RESULT.json',len(rows),flush=True)

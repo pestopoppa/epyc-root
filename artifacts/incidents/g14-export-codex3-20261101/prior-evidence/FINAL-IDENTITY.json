@@ -1,0 +1,31 @@
+{
+  "root_origin_main": "cd26173d1980d6ddd059d639a5038b6582fd7406",
+  "app_origin_main": "4cd6622f37079f44477ed3f138cc99639ef71685",
+  "source_sha256": "857000058e6a990051db8f11774eac92333895a65321cfceb6d3afc732e72f39",
+  "graphs": {
+    "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/model_int8.ort-basic.onnx": {
+      "bytes": 33011563,
+      "sha256": "01bf7c108e7ddd04df41e2a7b4dcd095b0ce06219e74d1526902dbaabf965a01"
+    },
+    "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/model_int8.inline.onnx": {
+      "bytes": 76900488,
+      "sha256": "050bc89738a4775ff2ec4c25d90d315eb4dd58582ef3da6d9838ee873fd9a26a"
+    },
+    "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/model.inline.onnx": {
+      "bytes": 134850189,
+      "sha256": "5d2a1b0096d41434d72bd2a67b199bac51b726b2a9524efe8c393ccf5d8eb172"
+    },
+    "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/model.onnx": {
+      "bytes": 3546367,
+      "sha256": "18193815d5d5b9309211074d578651c461f8e9598380334cf1055ca164b2ada0"
+    },
+    "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/model_int8.onnx": {
+      "bytes": 76900488,
+      "sha256": "3e5657a26348e059a626af3abc22ccac9e5c38d073d36a5ea3212cbf0869ba3f"
+    },
+    "/mnt/raid0/llm/models/experimental/reason32m-g14-20261030-export170-00e26aae/model.ort-basic.onnx": {
+      "bytes": 33001237,
+      "sha256": "f569b6f6a4a473acea9d00dfbd675e3d5cd4736a7423f513c909e92496fe6f6e"
+    }
+  }
+}

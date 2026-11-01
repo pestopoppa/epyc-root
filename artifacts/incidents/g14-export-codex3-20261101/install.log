@@ -1,0 +1,28 @@
+Collecting pylate-onnx-export@ git+https://github.com/lightonai/next-plaid.git@00e26aae0006b322727db277672211d9a0e3ccec#subdirectory=next-plaid-onnx/python
+  Cloning https://github.com/lightonai/next-plaid.git (to revision 00e26aae0006b322727db277672211d9a0e3ccec) to /tmp/pip-install-wwk2ctn1/pylate-onnx-export_d3c78595fcab4bf9b7099c6e1421f909
+  Running command git clone --filter=blob:none --quiet https://github.com/lightonai/next-plaid.git /tmp/pip-install-wwk2ctn1/pylate-onnx-export_d3c78595fcab4bf9b7099c6e1421f909
+  Running command git rev-parse -q --verify 'sha^00e26aae0006b322727db277672211d9a0e3ccec'
+  Running command git fetch -q https://github.com/lightonai/next-plaid.git 00e26aae0006b322727db277672211d9a0e3ccec
+  Running command git checkout -q 00e26aae0006b322727db277672211d9a0e3ccec
+  Resolved https://github.com/lightonai/next-plaid.git to commit 00e26aae0006b322727db277672211d9a0e3ccec
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Collecting pylate==1.4.0
+  Downloading pylate-1.4.0-py3-none-any.whl.metadata (17 kB)
+Downloading pylate-1.4.0-py3-none-any.whl (149 kB)
+Building wheels for collected packages: pylate-onnx-export
+  Building wheel for pylate-onnx-export (pyproject.toml): started
+  Building wheel for pylate-onnx-export (pyproject.toml): finished with status 'done'
+  Created wheel for pylate-onnx-export: filename=pylate_onnx_export-1.7.0-py3-none-any.whl size=13942 sha256=323663c485166fdf005f6761bb67afee5ecf2203934788569e802bd9745b4e40
+  Stored in directory: /tmp/pip-ephem-wheel-cache-1xb79u7p/wheels/d8/70/64/bb651ed81dfabe9d48434a65527436f370801665d405c3269c
+Successfully built pylate-onnx-export
+Installing collected packages: pylate-onnx-export, pylate
+Successfully installed pylate-1.4.0 pylate-onnx-export-1.7.0
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.2
+[notice] To update, run: /mnt/micron/codex3-lanes/root/tmp/g14-export-codex3-20261101/venv/bin/python3 -m pip install --upgrade pip
+{"schema": "bounded-r11-native-profile-supervisor/v1", "elapsed_s": 7.118982864078134, "sampled_peak_tree_rss_bytes": 137052160, "samples": 71, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 3728723, "leader_birth": 164294115, "child_rc": 0, "children_drained": true, "failure": null}
