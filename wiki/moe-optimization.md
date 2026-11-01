@@ -449,7 +449,7 @@ The 2026-07-02 refresh surfaces five threads that sharpen the MoE picture. (1) A
 
 ### 2026-07-02 Refresh — hybrid-MoE offload, embedding-vs-experts, V4-Flash port result, CPU-MTP wall
 
-- **CPU+GPU hybrid MoE offload reopens with the MI210 arrival (2026-07-02), but the PCIe expert-transfer bottleneck is the binding constraint.** The `-ot "exps=CPU"` / `--n-cpu-moe N` levers are production-ready in llama.cpp: attention + dense FFN stay on GPU while routed experts route to NUMA-distributed CPU RAM, exploiting our 192 threads + 1.1 TB budget for expert compute. PCIe latency (~64 GB/s bidirectional), not CPU compute speed, is the bottleneck. A two-tier expert cache (LRU-hot experts pinned in VRAM, cold experts in CPU RAM; llama.cpp issue #20757) shows 12-14 t/s vs 0.5-1 t/s for pure CPU offload in proof-of-concept — the most impactful pending feature for a discrete-GPU MoE setup, still unmerged. hipBLASLt grouped GEMM bundles MoE expert matmuls into one kernel launch for +29% (CDNA3+ only). [gpu-acceleration-path.md](../handoffs/active/gpu-acceleration-path.md), [intake-310](https://huggingface.co/blog/Doctor-Shotgun/llamacpp-moe-offload-guide)
+- **CPU+GPU hybrid MoE offload reopens with the MI210 arrival (2026-07-02), but the PCIe expert-transfer bottleneck is the binding constraint.** The `-ot "exps=CPU"` / `--n-cpu-moe N` levers are production-ready in llama.cpp: attention + dense FFN stay on GPU while routed experts route to NUMA-distributed CPU RAM, exploiting our 192 threads + 1.1 TB budget for expert compute. PCIe latency (~64 GB/s bidirectional), not CPU compute speed, is the bottleneck. A two-tier expert cache (LRU-hot experts pinned in VRAM, cold experts in CPU RAM; llama.cpp issue #20757) shows 12-14 t/s vs 0.5-1 t/s for pure CPU offload in proof-of-concept — the most impactful pending feature for a discrete-GPU MoE setup, still unmerged. hipBLASLt grouped GEMM bundles MoE expert matmuls into one kernel launch for +29% (CDNA3+ only). [gpu-acceleration-path.md](../handoffs/active/gpu-acceleration-path.md), [intake-310#record](https://huggingface.co/blog/Doctor-Shotgun/llamacpp-moe-offload-guide)
 
 - **DGX Spark's unified memory would have eliminated the expert-offload PCIe bottleneck entirely — no Spark was acquired, so this remains the reference contrast, not a deployment.** On unified memory, expert weights are simply *there* (no CPU→GPU transfer): benchmarked MoE decode ~70 t/s single-chip (Gemma 26B MoE 69.9 t/s), obsoleting the entire `-ot "exps=CPU"` offloading paradigm for models that fit the 128 GB pool. The MI210 that did arrive is a discrete GPU, so the two-tier expert cache (not unified memory) is the relevant integration target. [gpu-acceleration-path.md](../handoffs/active/gpu-acceleration-path.md)
 
@@ -714,7 +714,7 @@ Per [`large-moe-expert-parallelism.md`](../handoffs/active/large-moe-expert-para
 - [DeepSeek-V4-Flash CPU Port Handoff](../handoffs/completed/deepseek-v4-flash-cpu-port.md) -- Strategy-B port attempt: 284B/13B-active `deepseek4` MoE (CSA+HCA+indexer+compressor+manifold-HC), Q4 8-11 t/s provisional throughput FAIL vs 18 t/s floor (floor needs V4-arch-aware recalibration to ~8-12 t/s); ik_llama API-gap is a structural rewrite
 - [Engram Conditional Memory Handoff](../handoffs/active/engram-conditional-memory.md) -- LongCat-Flash-Lite n-gram-augmented MoE (68.5B/2.9-4.5B-active, ~31.4B n-gram tables) CPU probe closed negative (37 t/s, 53.8% sentinel, dominated by gemma4-MTP); family viable, checkpoint not
 - [intake-758](https://arxiv.org/abs/2601.21204) "Scaling Embeddings Outperforms Scaling Experts" (Meituan LongCat, arXiv 2601.21204) -- n-gram embedding scaling as a sparsity axis orthogonal to MoE with superior high-sparsity Pareto; embedding ≤50% of total; width amplifies / depth diminishes; scaling-law justification behind LongCat-Flash-Lite
-- [intake-310](https://huggingface.co/blog/Doctor-Shotgun/llamacpp-moe-offload-guide) Doctor-Shotgun MoE offload guide -- `-ot "exps=CPU"` / `--n-cpu-moe` production-ready; PCIe latency is the bottleneck not CPU compute; two-tier expert cache 12-14 t/s vs 0.5-1 t/s pure offload
+- [intake-310#record](https://huggingface.co/blog/Doctor-Shotgun/llamacpp-moe-offload-guide) Doctor-Shotgun MoE offload guide -- `-ot "exps=CPU"` / `--n-cpu-moe` production-ready; PCIe latency is the bottleneck not CPU compute; two-tier expert cache 12-14 t/s vs 0.5-1 t/s pure offload
 - [intake-637](https://huggingface.co/antirez/deepseek-v4-gguf) antirez/deepseek-v4-gguf -- 284B/13B-active `deepseek4` MoE, heterogeneous per-tensor-role quant (Q2 80.8 GiB / Q4 153.3 GiB), optional 3.6 GiB MTP-as-drafter sidecar
 - [intake-738](https://github.com/deepseek-ai/DeepSpec/blob/main/DSpark_paper.pdf) DSpark (DeepSeek) -- semi-AR drafter + utilization-keyed adaptive verification depth; GPU-concurrency-specific, largely inert on concurrency-1 CPU decode; catalog-only, +26.7-30.9% accept-length vendor-reported
 - [intake-742](https://arxiv.org/abs/2605.20104) Graft (arXiv 2605.20104) -- training-free prune-then-graft draft tree; MoE-Spec is tree-native so on-topic, but EAGLE-3-based + GPU adjacency; catalog-only until a CPU-refill variant is measured
@@ -861,3 +861,45 @@ Sources: [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-e
 - **IQK flash attention on DS41 changes logits slightly.** Step-0 logits differ at all 129,280 positions (max 0.4093) with 19/20 top-token overlap; forced-step flips were 2/65 on the open-ended prompt and 0/65 on the others. Fold remains unauthorized. ([source](../progress/2026-10/2026-10-28-inf12-lb49-ready.md))
 
 Sources: [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) · [C6 CPU ops R3](../progress/2026-10/2026-10-31-codex3-c6-r3-correctness.md) · [LB4.9 FU06](../progress/2026-10/2026-10-31-codex-ni-lb49-fu06-closeout.md)
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
+
+**Confidence: verified** — 8 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
+
+- intake-2123#record (DeepGEMM): Citable as a design reference for the Mega MoE dataflow (interleaved gate/up layout, in-epilogue SwiGLU with the topk weight folded before the down projection, static-shape masked grouping). Verdict adopt_patterns, integrated; linked to autokernel-champion-aggregate.
+- intake-2134#record (EPLB): Citable for the algorithm (greedy hottest-per-replica replication, LPT equal-cardinality packing, divisibility switch between hierarchical and global) and as the reference arm of RT-6, not for balance or speed numbers. Verdict worth_investigating, integrated; linked to moe-routing-tap-and-locality-measurement.
+- intake-2135#record (DeepEP): Citable for how EngramBuffer stores and fetches rows: GPU-initiated one-sided gets from a NIC-registered HBM or host-NUMA shard, one launch for all layers, per-layer wait hook, intra-forward overlap only. Verdict adopt_patterns, disposition monitor.
+- intake-2138#record (UltraEP): Citable for exact post-gating planning as the alternative to history-window planning (authors measured the window failing on non-stationary prefill and training load) and the quota-driven threshold-search algorithm. Verdict adopt_patterns, integrated; linked to moe-routing-tap-and-locality-measurement.
+- intake-2139#record (MoonEP): Citable for design only: exact-load per-layer planning with a strict per-rank token capacity, owner-push prefetch of redundant experts into a layer-shared slot pool, MXFP4-capable. No speed, overhead or balance numbers are carried. Verdict adopt_patterns, integrated.
+- intake-2140#record (ROCm MORI): AMD-side proof that EP dispatch/combine and KV transfer exist as open ROCm libraries, limited to MI300/MI355 plus RDMA-NIC class, and a UMBP host-tier recipe using hipHostRegister mapped pieces. Verdict adopt_patterns, disposition monitor; linked to kv-unified-stack-rollout.
+- intake-2141#record (UltraEP repository): The planner is a single-block GPU kernel with no CPU build of the quota algorithm; host code is only an EPLB-style legacy greedy. MIT-licensed and readable, so RT-6a can port the oracle to numpy. Verdict adopt_patterns, integrated.
+- intake-2142#record (LPLB): Citable for the min-max replica-edge LP formulation, the at-most-one-replica-per-expert constraint, the authors stated limitations, and a fixed-5-iteration on-device IPM costing about 100 us. No throughput claim is carried. Verdict adopt_patterns, integrated.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
+
+**Confidence: verified** — 1 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
+
+- intake-2551#record (Looped MoE scaling laws): confirms the filing and supplies the numbers stage 1 omitted; the paper says nothing on deployment efficiency or bandwidth, and no checkpoint or code was found. Citable for the scaling-law form and the sparsity-recurrence interaction. Integrated via cpu-decode-roofline-program.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+
+**Confidence: verified** — 3 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-20, IDs 2191–2213 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2191-2213.md)
+
+- intake-2195#record (ID Balancing paper): Full text checked the relay numbers individually: the ">50%" and ">12%" Top-3 claims are confirmed, while "8.4 -> 7.8" and "89.6%" are abstract/figure-only and MinVio is a training average. Worth investigating; linked to the moe-routing-tap-and-locality-measurement handoff.
+
+### Run 2026-10-22, IDs 2386–2458 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2386-2458.md)
+
+- intake-2449#record (ik fused softmax+topk PR): the PR is not flash attention; it implements MoE-router fusion only, overturning the Stage-1 framing as part of ik CPU FA work. Verdict worth_investigating; linked to autokernel-all-devices-all-dimensions.md.
+
+### Run 2026-10-22, IDs 2461–2493 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2461-2493.md)
+
+- intake-2487#record (MxMoE mixed-precision MoE quantization): Accuracy headline uses r=1 (no hardware term) and the hardware term is RTX-4090 CUDA tile profiles; arXiv id resolved from the repo README. Adopt-patterns; monitor; handoff iqk-iquant-enablement.

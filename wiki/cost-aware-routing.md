@@ -573,3 +573,36 @@ Sources: [PB-QCOST-1 results](../docs/design/pb-qcost-1-results-20261023.md)
 - **The N-way contention metric now names its event.** `contention_nway_non_allow_count` counts N-way checks returning non-ALLOW whether or not the pairwise result changed, and is no longer divided by the unrelated admitted count; the old key remains a deprecated alias. Admission decisions are unchanged. ([source](../handoffs/active/autopilot-continuous-optimization.md))
 
 Sources: [scoring-infra-standardization](../handoffs/active/scoring-infra-standardization.md) · [autopilot-continuous-optimization](../handoffs/active/autopilot-continuous-optimization.md) · [2026-10-30 progress](../progress/2026-10/2026-10-30.md)
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
+
+**Confidence: verified** — 2 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
+
+- intake-2567#record (ThinkingCap Qwen3.8-Flash-Next blog): stage 1 had no numbers and implied a method; dive fills the vendor-run, single-source BF16/vLLM table, discloses no method, and shows all six deltas negative, so 'no quality loss' is not carried. Not evidence for our quant. Integrated via architect-model-selection-bench.
+- intake-2582#record (d1-2B and d1-3B GGUF cards): corrects 'text-only' (both are VL models) and supplies quant sizes and the board comparison; speeds are Transformers-only, not llama.cpp, EPYC or MI210, and no ECE is reported. Integrated via typed-decision-plane.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+
+**Confidence: verified** — 12 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-21, IDs 2214–2340 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2214-2340.md)
+
+- intake-2216#record (Dual-Pool Token-Budget Routing): Simulation-only, same-group-corroborated argument that length-tiering a fleet by max_model_len pays when a large short-request fraction exists and the engine reserves max-context KV per request. Adopt-patterns, integrated; linked to within-role-placement-state-machine.md.
+- intake-2243#record (METR Metrics of Agent Ability): Cite for metric vocabulary only (score-at-fixed-expenditure, score-at-plateau, expenditure-at-fixed-score, cost-of-pass); it contains no measurements of its own. Worth-investigating; linked to harness-improvement-loop.md.
+- intake-2244#record (Minions on-device/cloud collaboration): Cite for the mechanism (code-generated job grid, answer-or-abstain workers with citations, sufficiency-gated aggregation) and the authors' own small-LM failure analysis. Worth-investigating; linked to delegation-context-preassembly.
+- intake-2262#record (Cost-of-Pass): Cite for the definition, the frontier form, and the C.8 random-guesser weakness with its mitigations; the paper's dollar figures and halving claims are not imported. Adopt-patterns; linked to harness-improvement-loop.md.
+- intake-2274#record (Large Language Monkeys): Repeated-sampling coverage grows without bound but is only collectable with a selector; majority vote or reward models flatten near 100 samples while a deterministic checker converts coverage. Worth-investigating; linked to delegation-context-preassembly.
+- intake-2293#record (Planner+executor model-mixing benchmark): Unforced, no model delegated in any of 7 variants (n=1 each) despite 'Use PROACTIVELY' language and a registered subagent; the main model did all the work. Worth-investigating, integrated; linked to harness-improvement-loop.md.
+- intake-2296#record (The Larger the Better? (budget-matched code generation)): Cite as the budget-matched comparison method (equal FLOPs or wall-time, sweep model size versus sample count) and as evidence that a deterministic checker makes small-model many-sample runs pay. Adopt-patterns; linked to repl-turn-efficiency.md.
+- intake-2312#record (Are More LLM Calls All You Need?): 'More calls can lower accuracy' holds for plurality or filter-then-vote selection and not for any-sample-correct with a checker; check this before running any N-sample arm with a vote. Adopt-patterns; linked to repl-turn-efficiency.md.
+
+### Run 2026-10-31, IDs 2535–2544 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2535-2544.md)
+
+- intake-2535#record (Spotify Portal token-usage post): Headline 90% narrowed to a Claude-context-token estimate with no accuracy measurement; HN practitioner replication (anecdotal) reports 5-7%. Adopt-patterns; companion plugin source dived as intake-2536#record.
+- intake-2539#record (Anthropic advisor strategy post): Confirmed as vendor-reported. Worth investigating; related sources were dived as intake-2541#record and inside intake-2540#record.
+- intake-2540#record (Claude Code docs: subagents, hook agent fields, advisor): Advisor doc read in full in wave 2; no further sources surfaced. Adopt-component for subagent and advisor configuration.
+- intake-2541#record (Anthropic doc: Optimizing for cost and intelligence): Full read; the benefit-shrinks-as-executor-approaches-advisor point is supported by two passages, not a curve. Adopt-patterns; surfaced sources declined at the two-wave cap.

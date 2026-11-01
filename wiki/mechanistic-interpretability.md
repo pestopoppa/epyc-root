@@ -72,3 +72,15 @@ Qwen-Scope's **Section 8** identifies SAE features causally linked to **endless 
 - `handoffs/active/eval-tower-verification.md` — Section 4 feature-coverage redundancy as candidate EV-8 work track
 - `handoffs/active/mathsmith-hc-formalizer-eval.md` — Section 4 framework for S4 test-suite construction
 - `handoffs/active/reasoning-compression.md` — Section 8 mechanism noted alongside Action 9 reasoning-length-alarm
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+
+**Confidence: verified** — 4 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-20, IDs 2191–2213 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2191-2213.md)
+
+- intake-2202#record (Refusal mediated by a single direction): Stage-1 digest replaced by verified mechanics; the capability-cost claim was narrowed (TruthfulQA drop, some models outside CI, relative CE rise). Knowledge-only; follow-on geometry sources were selected for wave 2.
+- intake-2203#record (Refusal as an affine function): Ten-model and "incoherent" claims were narrowed to what the HTML shows (one RNN failure, qualitative refusal scoring, no capability metrics). Worth investigating; disposition monitor; handoff reasoning-compression.
+- intake-2211#record (Geometry of Refusal (concept cones)): Dive settled that the single-direction picture from intake-2202#record is an incomplete description of refusal geometry in dense small chat models, and that cosine/orthogonality to one direction is not a sufficient independence test. Adopt-patterns; handoff reasoning-compression.
+- intake-2212#record (Hidden Dimensions of LLM Alignment): This is a study of fine-tuning shifts in one trained model (plus two DPO checks); it supports a multi-feature picture but does not measure refusal-direction structure in released chat models. Knowledge-only.

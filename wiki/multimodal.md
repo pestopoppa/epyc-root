@@ -1597,3 +1597,48 @@ Sources: [S-18 READY capsule](../artifacts/compute/codex-ni-s18-qwenvl-cpu-r1-20
 - `/v1/realtime` (PR 31269, intake-2579#record; [w2_speech](../research/deep-dives/ws58-20261031/dives/w2_speech.yaml)) is OpenAI-realtime-shaped with no server-side VAD (`turn_detection` null), so CS-22 keeps its own VAD/endpointing (W2SP-2). `mtmd_audio_stream` (PR 30629, intake-2580#record) is an experimental stateful streaming C API with Voxtral-Realtime-4B support; W2SP-6 adds a Voxtral-RT arm to CS-8.STT5.
 - d1 decision models (intake-2582#record): d1-2B/3B are vision-language, not text-only; speed tables are Transformers on H100/M5, and an upstream issue found Q8_0 collapsing decision-head probabilities in a sibling model. W2SP-3 (typed-decision-plane, TD-23) screens d1-2B Q8_0 with BF16-vs-Q8 parity at >=99% top-choice agreement plus ECE/Brier.
 - Hex STT (intake-2573#record) is a thin wrapper over transcribe.cpp with GPU-only Parakeet streaming and inconsistent self-reported WER; Dessa full-duplex (intake-2564#record) is marketing only, monitored until a checkpoint appears.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
+
+**Confidence: verified** — 17 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-21, IDs 2341–2373 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2341-2373.md)
+
+- intake-2341#record (Underdog Bark 3.0 Clean): verdict not_applicable: English-only fails the it/de/fr language gate, and Clean is a lossy rewriting STT that deletes speech content. Integrated via conversation-stack.
+- intake-2342#record (Underdog Bark 3.0 Plus): README read in full; Plus is the faithful (verbatim) arm, stating that it does not clean speech up, with the same 627M-parameter packing as its sibling. Disposition monitor; linked to conversation-stack.
+- intake-2355#record (nemotron-3.5-asr-streaming-0.6b): 40-locale cache-aware streaming transducer covering it/de/fr/en; a latency arm not an accuracy upgrade, with same-pipeline FLEURS WER 1.4-2.0x worse than Parakeet-TDT-0.6B-v3. Narrowed '40+ locales' to 32 usable plus 8 tokenizer-only. Integrated via conversation-stack.
+- intake-2356#record (nemotron-speech-streaming-en-0.6b): English cache-aware streaming transducer (March 2026), parent of Nemotron 3.5 but a different lineage from parakeet-unified-en: it wins at 160 ms lookahead or less, unified from about 240 ms and offline. Integrated via conversation-stack.
+- intake-2360#record (Silero VAD v6.2.3): pre-trained streaming voice activity detector, dive-verified at creation, with close-out completed. Verdict adopt_component; linked to conversation-stack.
+- intake-2363#record (FireRedASR2S all-in-one ASR system): dive-verified at creation (Stage 1 and 2 combined) as an industrial all-in-one ASR system relevant to the speech plane. Integrated via conversation-stack.
+- intake-2364#record (TEN VAD): low-latency streaming voice activity detector, dive-verified at creation and compared with the other VAD candidates. Integrated via conversation-stack.
+- intake-2366#record (TurboBias 2.0 context biasing): decoder-side phrase boosting that works on TDT as well as RNNT, needs no retraining, and costs 5-13% GPU throughput when models are pre-registered; evidence is English-only with keyword precision as the only false-positive measure. Verdict adopt_patterns; linked to conversation-stack.
+- intake-2367#record (NeMo PR 14277 GPU phrase boosting): NeMo supports phrase boosting for TDT since 2025-08-08, so the claim that Parakeet TDT ignores boosting is a missing ggml feature, not a model limitation; the PR is implemented and smoke-tested, not accuracy evidence. Verdict adopt_component; linked to conversation-stack.
+- intake-2369#record (Stateful Conformer cache-based streaming): mechanism paper for cache-aware streaming: limited-context training plus per-layer activation caches give streaming equal to offline for the same context. Two claims narrowed (CTC 'all benchmarks', 'lower inference time'). Verdict adopt_patterns; linked to conversation-stack.
+- intake-2370#record (omnivoice.cpp): ggml port of multilingual zero-shot TTS; a sibling TTS runner, not a replacement for qwentts.cpp and not an STT component, with no HIP build path or log, so the README is not evidence of working ROCm. Integrated via conversation-stack.
+
+### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
+
+- intake-2552#record (LFM3-Audio-2B model card): stage-1 filing confirmed; English-only voice chat and LiveASR, with vendor-run numbers (including the 50 ms TTFT and 6.23 WER) not transferable to our hardware or corpora and no accuracy case for replacing ASR. Integrated via conversation-stack.
+- intake-2554#record (LFM3-Omni-2B model card): confirmed with exact rows; citable for modality coverage only, all numbers vendor-measured, and Omni underperforms Audio-2B on VoiceBench and tool calling. Integrated via conversation-stack.
+- intake-2564#record (Dessa full-duplex speech model): filing confirmed; the page has no technical spec and availability is waitlist only, so only a monitor trigger for audio-only full-duplex models is carried. Disposition monitor; linked to conversation-stack.
+- intake-2575#record (LFM3-Audio/Omni GGUF llama.cpp port): resolved the open question: implementing PRs located, release b11960, distance 1657 builds, with a realtime path; ROCm and EPYC CPU support are untested upstream and the 277 ms figure is a PR demo on unstated hardware. Integrated via conversation-stack.
+- intake-2579#record (llama.cpp PR 31269 realtime server): settles the /v1/realtime event contract, Mac/CUDA-only test coverage, and that llama-server provides no turn detection, so CS-22 VAD/endpointing remains our job. No ROCm, EPYC CPU or latency claim carried. Integrated via conversation-stack.
+- intake-2580#record (llama.cpp PR 30629 mtmd_audio_stream): confirms the experimental mtmd_audio_stream API surface and a native Voxtral Realtime streaming path in llama.cpp; WER and latency belong to intake-2383#record, not this PR. Integrated via conversation-stack.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+
+**Confidence: verified** — 9 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-22, IDs 2374–2385 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2374-2385.md)
+
+- intake-2374#record (TurboBias ASR context biasing): Confirmed TurboBias v1 as the upstream of the NeMo-Speech.cpp tree and parakeet_web port; v1 evidence uses the authors' own FastConformer models, not Parakeet or Nemotron. Adopt-component; integrated into conversation-stack.
+- intake-2376#record (TEN Turn Detection): Confirmed the earlier decline note (7B text-only) and added facts: en/zh only, a licence conflict between HF and repo, test-set construction (422/426 unfinished are prefixes), no latency or small model. Adopt-patterns; handoff conversation-stack.
+- intake-2377#record (FireRedLID language ID): Resolved the earlier "not read" status: the label list includes it/de/fr/en, the model is 887 M parameters, with no short-utterance or per-language evidence and a closed English-failure issue. Worth investigating; handoff conversation-stack.
+- intake-2378#record (CrispASR ggml speech engine): Entry created already dive-verified; closed out under the operator ruling limiting Stage 2 to four waves. Worth investigating as an MIT C++ ggml speech engine; integrated into conversation-stack.
+- intake-2379#record (sherpa-onnx speech toolkit): Entry created already dive-verified at Stage 2 close-out; verdict adopt-patterns for the ONNX Runtime streaming/offline speech toolkit, integrated into conversation-stack.
+- intake-2381#record (OmniVoice omnilingual zero-shot TTS): Entry created already dive-verified at Stage 2 close-out. Worth investigating as a zero-shot multilingual TTS candidate; integrated into conversation-stack.
+- intake-2383#record (Voxtral Realtime): Entry created already dive-verified; new opportunity for streaming ASR, linked to the conversation-stack and autokernel-champion handoffs.
+- intake-2384#record (MagpieTTS Multilingual 357M): Entry created already dive-verified, expanded from intake-2355#record and intake-2366#record. Worth investigating; disposition monitor; handoff conversation-stack.
+- intake-2385#record (audio.cpp): Entry created already dive-verified; worth investigating as an all-in-one pure C++ ggml audio inference engine. Integrated into conversation-stack.

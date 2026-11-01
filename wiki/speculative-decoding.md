@@ -3053,3 +3053,57 @@ Sources: [speculative decoding/MTP refresh](../handoffs/active/speculative-decod
 - Drafter fine-tuning plan ([w5_ft](../research/deep-dives/ws58-20261031/dives/w5_ft.yaml)): the served 27B DFlash2 drafter measures 0.29-0.39 acceptance on production agentic temp-1 traffic vs 0.62-0.73 on the benchmark shape. DF2-FT-1 (proposed, replaces MTP-2) is a KL re-alignment pilot on DS41-C95 wire contexts with C4 held out, using the existing NeMo trainer and GGUF converter: ~13 MI210-hours, PROMOTE at >= +0.05 held-out acceptance on both reps and >= +8% tok/s. W5FT-5 proposes a standing rule: any drafter not co-trained on the exact served trunk and quant gets frozen-trunk KL re-alignment. Nemotron 3 Ultra MTP Boosting (intake-2578#record; [w2_spec](../research/deep-dives/ws58-20261031/dives/w2_spec.yaml)) is the vendor precedent (acceptance 4.387 -> 4.584 at draft length 7).
 - Flash-Next MTP acceptance collapse (intake-2577#record): 20% lifetime acceptance hid windows of exactly 0, root-caused to a vLLM strided Mamba state-slot bug fixed by PR #55375; not a llama.cpp or generic MTP defect. Proposed SPEC2-1 per-request canary (>=64 drafted, 0 accepted) and SPEC2-2 simultaneous multi-prefill probe.
 - llama.cpp #28286 (intake-2591#record): draft-mtp at parallel 4 on a GDN-hybrid target drifts into another slot's content at temp 0; stale-closed with no root cause, and v10 has the same code shape. W3SPEC-1 proposes a 12-prompt solo vs c=2-5 token-for-token probe on the 27B DFlash2 and :8070 MTP np4 shapes. #28158 (intake-2592#record) is Vulkan-only, knowledge-only for us. NCM (intake-2568#record) is a drafter candidate only if a served-vocab generator or measured acceptance appears.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
+
+**Confidence: verified** — 1 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
+
+- intake-2116#record (DeepInfer): The dive verified the mechanism: cumulative product of per-position confidences, greedy rank-and-cut maximizing expected tokens per second against a measured step-latency curve, fixed 5-token draft with variable verify length, lossless rejection sampling. A Stage 1 description of the feature was corrected against code. Verdict adopt_patterns, integrated; linked to speculative-decoding-mtp-refresh.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
+
+**Confidence: verified** — 13 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
+
+- intake-2546#record (Next-Concept Modeling blog): restates the paper (intake-2568#record) with the same numbers and no independent corroboration; numbers should be cited from the paper, and NCM is never cited as faster than autoregressive decoding. Disposition monitor; linked to dflash2-block-drafter-experimental-build.
+- intake-2548#record (Multi-Token Prediction Done Right): recomputing every Table 2 cell found no text/table mismatch; KL-MTP is about equal to Soft-MTP on spec decoding, so the gain comes from the KL target. Integrated via dflash2-block-drafter-experimental-build.
+- intake-2549#record (Soft-MTP official code): confirms stage-1 claims and adds a freeze_backbone mode plus released NTP checkpoints as a testbed for the frozen-trunk question; loss.py serves as reference for heads projecting through a frozen lm_head. Integrated via dflash2-block-drafter-experimental-build.
+- intake-2560#record (DCOCO vLLM implementation): confirmed as a serving artifact, not a training artifact, built on vLLM's LiLiCorr candidate-head code; usable only as a reference for DCOCOHead shapes and math when sizing a llama.cpp port. Integrated via dflash2-block-drafter-experimental-build.
+- intake-2561#record (DCOCO paper): vLLM/B200 result against DFlash-1 (not DFlash2) with a joint-retraining caveat; stage 1's hidden-state framing was incomplete (it also uses candidate embeddings and logits), and 'training-free add-on' is not carried. Integrated via dflash2-block-drafter-experimental-build.
+- intake-2568#record (Next-Concept Modeling paper): confirms filing and fills the empty results; citable for coarse-to-fine non-AR generation against diffusion LMs at about 100M, but no acceptance-rate measurement and no shared vocabulary with any served model, so it is not evidence for drafting. Disposition monitor; linked to dflash2-block-drafter-experimental-build.
+- intake-2569#record (Domino drafting paper): mechanism and headline numbers confirmed: a sequential causal-correction head needing drafter co-training, +16.6% tau and +12.3% speedup over DFlash-1 on A100 (its own numbers). DCOCO's claim that Domino falls below DFlash under load is not carried. Integrated via dflash2-block-drafter-experimental-build.
+- intake-2577#record (vLLM #55357 Flash-Next MTP acceptance collapse): root-caused by a commenter to a strided Mamba state-index bug in qwen4_exp short-conv kernels, triggered by multi-prefill scheduler steps and fixed by merged PR #55375; it is not a generic MTP collapse. Verdict adopt_patterns; linked to speculative-decoding-mtp-refresh.
+- intake-2578#record (Nemotron 3 Ultra paper): Sec 3.4 gives one vendor-reported MTP recipe (frozen backbone, forward-KL T=2, sampled hidden states, 12K steps) with +0.2 average acceptance length at draft length 7 on SPEED-Bench; not a wall-clock or CPU/llama.cpp result. Verdict adopt_patterns; linked to dflash2-block-drafter-experimental-build.
+- intake-2591#record (llama.cpp #28286 draft-mtp with parallel>1): verified as an unresolved upstream report of cross-slot content mixing on a GDN-hybrid (qwen4exp) target on ROCm; the thread has no root cause and no fix, and 'fixed upstream' or 'qwen4exp-only' are not carried. Integrated via dflash2-block-drafter-experimental-build.
+- intake-2592#record (llama.cpp #28158 Qwen3.8 speculative token id out of range): open Vulkan-only report with no fix; the OP's off-by-one hypothesis is contradicted by a constant id, and the suggested clamp would hide a crash as silent garbage. Not a risk for our CPU/HIP serving. Disposition knowledge_only; linked to qwen-mtp-llamacpp-port.
+- intake-2597#record (llama.cpp issue 26695 seq_rm on rollback): upstream-acknowledged single-seq limitation of llama_memory_seq_rm for whole-batch rollback under n_rs_seq>0, with the maintainer rationale that spec decoding never removes the anchor; not evidence for or against np>1 cross-slot contamination. Integrated via dflash2-block-drafter-experimental-build.
+- intake-2598#record (llama.cpp issue 28019 qwen4exp multi-seq replay): the issue's multi-seq failure was a pre-#28123 artifact; qwen4exp rollback needs #28123 (ported locally), and slot reuse across unrelated conversations under MTP/DFlash is the suspect condition, untested on our binary. Integrated via dflash2-block-drafter-experimental-build.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+
+**Confidence: verified** — 13 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-20, IDs 2063–2115 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2063-2115.md)
+
+- intake-2079#record (llama.cpp MTP clean-up PR 23269): an MTP/speculative clean-up already present in v10, champion and fork, not a checkpoint-invalidation fix; the 14% and 15-20% figures are unverified third-party anecdotes. Verdict already_integrated; linked to autokernel-champion-aggregate.md.
+- intake-2085#record (vLLM MTP draft KV groups PR): evidence for an exact-partition guard before a positional drafter-identification rule; it never mentions hit rate, which belongs to #58368. Verdict adopt_patterns.
+- intake-2093#record (llama.cpp PARTIAL_ONLY plain KV PR): before absorbing #30514 into the fork, a fork destination should get full drafter KV, since PARTIAL_ONLY does not carry a plain-KV drafter. Verdict adopt_patterns; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2094#record (llama.cpp MTP hidden state PR): if the fork restores an MTP drafter, pending_h/verify_h are not restored; effect is draft-logit drift only (author-measured), not target-output divergence. Verdict worth_investigating.
+- intake-2103#record (llama.cpp draft state in slot file PR): overturns the ledger description: #30574 saves the draft state in the slot file, fixing issue #28619 as a follow-up to #30514, not a Gemma 4 restore test. Verdict worth_investigating; linked to autokernel-champion-aggregate.md.
+- intake-2104#record (llama.cpp slots save draft context issue): closed as completed: confirmed in substance and fixed upstream by #30574 (merged 2026-10-15). Verdict already_integrated.
+- intake-2107#record (llama.cpp EAGLE3 qwen3.5 PR): the get_state/set_state hooks and data_spec-in-checkpoint are confirmed to originate here, though the PR is mainly about EAGLE3 support for Qwen. Verdict already_integrated.
+- intake-2110#record (vLLM lookahead-aware prefix hashing PR): confirmed in the PR diff (lookahead gating, request block hasher, lookahead-aware truncation); not merged, open with conflicts. Verdict worth_investigating; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2111#record (vLLM EAGLE-reachable SWA tail fix): confirmed in merged code (EAGLE-only shared_prefix_boundary); author E2E and GSM8K numbers are not independently reproduced. Verdict worth_investigating; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2113#record (vLLM EAGLE group ownership PR): ownership-tag design versus the flag-all failure mode; the ledger claim of an SWA-specific rule was corrected, and GB200 numbers are MTP only, not DFlash2 evidence. Verdict adopt_patterns; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2115#record (vLLM DFlash2 + YaRN zero-hit issue): per-group min-reconcile mechanism and dense-vs-sparse retention control extracted; no one tested #62206 or #61455 against it, and hit or TTFT figures are not ours. Verdict adopt_patterns; linked to kv-prefix-fork-and-paged-attention.md.
+
+### Run 2026-10-22, IDs 2386–2458 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2386-2458.md)
+
+- intake-2394#record (Guided plus speculative decoding): added the target-side rollback rule, draft-side masking via the EAGLE3 d2t map and CPU-callback capture design; draft-side grammar adds +0.12..+0.22 accepted tokens per iteration. Verdict worth_investigating.
+- intake-2422#record (llguidance fast-forward PR 17062): the speculator is a forced-extension step with no verification or rollback; the whole batch drops to EXTEND mode if any request has ff tokens. Verdict worth_investigating; linked to autokernel-research-loop.md.

@@ -501,7 +501,7 @@ Speculative decoding is the primary acceleration method. The production stack us
 - **Model registry drives configuration**: `model_registry.yaml` in both epyc-orchestrator and epyc-inference-research defines acceleration type, draft model, draft_max, p_split, thread count, NUMA config, and mlock for each role. orchestrator_stack.py reads this and applies spec_overrides per role.
 - **All acceleration params must be sweep-verified**: bench_all_spec_sweeps.sh produces comprehensive measurements. Prior assumptions have been overturned multiple times (coder tree beneficial, 480B tree harmful, registry values 3.6x inflated).
 - **v3 rebuild pending validations**: Paged attention RSS under NUMA 4-way, PPL sweep (done 2026-04-13). No blocking issues but measurement confirmation needed.
-- **CPU+GPU hybrid inference** is a potential future direction (intake-310: expert offloading guide for MoE models in llama.cpp). No GPU hardware is currently present.
+- **CPU+GPU hybrid inference** is a potential future direction (intake-310#record: expert offloading guide for MoE models in llama.cpp). No GPU hardware is currently present.
 
 ## Open Questions
 
@@ -550,7 +550,7 @@ Speculative decoding is the primary acceleration method. The production stack us
 - [Progress 2026-03-21](/workspace/progress/2026-03/2026-03-21.md) -- Worker swap, registry corrections, sweep-verified params
 - [Progress 2026-04-14 Session 22](/workspace/progress/2026-04/2026-04-14.md) -- Differential Transformer V2 implementation (9 files, 155 LOC core), zero new ggml ops, regression-safe on all production models, blocked on pretrained weights
 - [llama-cpp-fork-rebase.md](/workspace/handoffs/completed/llama-cpp-fork-rebase.md) -- Cherry-pick results (4 commits, zero conflicts), Qwen3.6 think-loop fix confirmed, conflict risk reassessment (lower than estimated), experimental patch drop strategy, full rebase deferred but unblocked
-- Intake entries: 5 results including CPU+GPU hybrid MoE inference guide (intake-310, high relevance), rocWMMA (intake-303), and community model evaluations
+- Intake entries: 5 results including CPU+GPU hybrid MoE inference guide (intake-310#record, high relevance), rocWMMA (intake-303#record), and community model evaluations
 - [intake-427] GLM-5.1-555B-A14B-REAP GGUF -- 325GB Q4_K_M, 14B active, ~25-40 tok/s CPU estimate, stack simplification candidate
 - [glm51-reap-cpu-evaluation.md] GLM-5.1 REAP CPU Evaluation -- deployment feasibility, storage constraints, llama.cpp flags
 - [intake-699](https://huggingface.co/unsloth/GLM-5.2-GGUF) GLM-5.2 (754B GLM-MoE-DSA, MIT) -- now PRIMARY GLM target (supersedes GLM-5.1); unsloth UD-IQ2 ~238GB fits ~633GB raid0 free; IndexShare indexer-reuse (arxiv:2603.12201); gated on DSA forward pass (dense-MLA fallback today, PR #21149). vendor benchmarks=external; storage/fork facts=verified
@@ -704,3 +704,45 @@ DeepSeek-V4.1-Flash now serves the 1017 MXFP4-experts nine-shard build (501,602,
 - **Build reproducibility (DS41-C46).** Four clean -j64 builds, two concurrent under load, gave identical digests over 303 objects; only the web-UI bundle differs.
 
 Sources: [Progress 3c4ca599 2026-10-24](../progress/2026-10/2026-10-24-3c4ca599.md), [Progress 3c4ca599 2026-10-23](../progress/2026-10/2026-10-23-3c4ca599.md)
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
+
+**Confidence: verified** — 1 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
+
+- intake-2121#record (DeepSeek-V4.1-Flash-1017 model card): Verified the vendor sampling recommendation (T=1.0, top_p=1.0), a config/tokenizer/tensor map identical to the local September snapshot (sha256), and two reference-code deltas. Verdict already_integrated; linked to deepseek-v41-flash-evaluation.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
+
+**Confidence: verified** — 10 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-21, IDs 2341–2373 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2341-2373.md)
+
+- intake-2347#record (mudler/parakeet.cpp): narrowed the WER-vs-NeMo and Ultra/Redux validation claims without overturning any; the leading candidate runner for a Parakeet TDT v3 STT arm (CPU first, HIP gfx90a an untested build item). Its RTFx is not EPYC/MI210 data and its ggml 0.13.0 is a separate generation. Integrated via conversation-stack.
+- intake-2349#record (NVIDIA NeMo-Speech.cpp): vendor reference ggml runtime, strong for Nemotron streaming, but second choice to mudler/parakeet.cpp for our Parakeet TDT bake-off: .nemo-only converter, no HIP wiring, offline TDT only. Integrated via conversation-stack.
+- intake-2350#record (s2s.cpp and Parakeet-Ultra-GGUF): the best-matched open reference for the full interlocutor cascade and a ready ggml runner for Ultra (MIT, Q8_0 GGUF); gfx90a support is a small unproven build item, not a blocker. Integrated via conversation-stack.
+- intake-2359#record (transcribe.cpp): multi-family C/C++ ggml speech-to-text library, dive-verified at creation, the runtime behind several Parakeet GGUF entries. Integrated via conversation-stack.
+- intake-2371#record (wavo Rust STT): verdict not_applicable: a young, AI-written, offline-only Rust runner for the GGUF files transcribe.cpp publishes, with Apple/NVIDIA speed claims and no accuracy, streaming or AMD Instinct evidence. Disposition knowledge_only; linked to conversation-stack.
+
+### Run 2026-10-30, IDs 2511–2521 — [digest](../research/deep-dives/intake-digests/2026-10-30-ids-2511-2521.md)
+
+- intake-2516#record (llama.cpp issue 31385 unsloth DS41 eval bug): whole thread read; independent evidence that unsloth quants with an MXFP8 table (UD-Q4_K_XL and others) cannot run correctly on current upstream llama.cpp. Does not affect our DS41 port, which rejects type 43 cleanly. Linked to deepseek-v41-flash-evaluation.
+- intake-2521#record (llama.cpp issue 31263 GSQ-RCO DS41): confirmed: pre-#31086-layout DS41 GGUFs do not load on upstream, while unsloth quants without an MXFP8 table do. Verdict already_integrated; disposition knowledge_only.
+
+### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
+
+- intake-2573#record (Hex voice dictation (transcribe.cpp)): the STT path is a thin Rust wrapper over transcribe.cpp and adds no new runner; evidence only that transcribe.cpp 0.4.1 serves Parakeet Unified streaming on Vulkan, with self-reported inconsistent WER/xRT. Disposition knowledge_only; linked to conversation-stack.
+- intake-2585#record (llama.cpp PR 298 Ouro looped LM): unmerged community port, Metal-validated, with static load-time looping (no early exit or per-token loop count), decode and KV cost about R times, and no x86 number. Integrated via gpu-acceleration-path and gpu-serving-tie-in-program.
+- intake-2586#record (llama.cpp PR 25994 Nanbeige4.2): confirms merge and mechanism: upstream has had a static looped-arch path since 2026-07-27, absent from v10; porting to an experimental branch is a cherry of about 265 lines, and each loop re-streams the full weights. Integrated via gpu-acceleration-path.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+
+**Confidence: verified** — 1 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-20, IDs 2191–2213 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2191-2213.md)
+
+- intake-2201#record (Cudila llama.cpp cvec-hooks commit): Diff showed the commit-message figures are unbacked, and v10 qwen4exp has no build_cvec call so control vectors are ignored; a stale qwen35 no-build_cvec note in the reasoning-compression handoff was found. Worth investigating; integrated.

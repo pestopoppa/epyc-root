@@ -157,7 +157,7 @@ The practical path for EPYC is layered: YaRN for the 256K-to-1M extension case (
 - Can MemAgent's RL-trained compaction policy be distilled into our session compaction without the full sequential architecture -- extracting the "what to remember" signal without the "process segment by segment" overhead?
 - For the hybrid approach (YaRN for first 128K, chunked processing for overflow): what is the optimal segment size and memory buffer size for our specific models, and does the transition introduce artifacts?
 - How does context extension interact with speculative decoding at long contexts? Acceptance rates may change as the draft model's effective context diverges from the target's.
-- **Tulving episodic memory benchmark as quality gate** (intake-408): Existing long-context eval (RULER, NIAH, LongBench) tests retrieval. The Tulving benchmark (arXiv 2501.13121, 200ch/100K variant) tests episodic memory — entity tracking and temporal ordering across extended narratives. Sharp cliff: most models lose 30-60% recall from 10K→100K. Chronological awareness degrades faster than recall at every scale. Proposed as a YaRN quality gate alongside RULER — if YaRN-extended models pass NIAH but fail Tulving temporal ordering, it signals attention distribution problems YaRN doesn't compensate. [research-evaluation-index.md P3b/P4]
+- **Tulving episodic memory benchmark as quality gate** (intake-408#record): Existing long-context eval (RULER, NIAH, LongBench) tests retrieval. The Tulving benchmark (arXiv 2501.13121, 200ch/100K variant) tests episodic memory — entity tracking and temporal ordering across extended narratives. Sharp cliff: most models lose 30-60% recall from 10K→100K. Chronological awareness degrades faster than recall at every scale. Proposed as a YaRN quality gate alongside RULER — if YaRN-extended models pass NIAH but fail Tulving temporal ordering, it signals attention distribution problems YaRN doesn't compensate. [research-evaluation-index.md P3b/P4]
 
 ## Related Categories
 
@@ -348,3 +348,24 @@ Sources: [YaRN context-extension handoff](../handoffs/active/yarn-context-extens
 - YaRN r1 was refused at admission (`rc=6`, missing dry-run/launcher/job/manifest fields) with no native work. Private r2 is model-free prep: exact max N19 = 498,965 tokens, 52 source hashes pinned, launch refuses before v14 without a manifest-bound booking. No GPU result. [yarn](../handoffs/active/yarn-context-extension-research.md), [progress](../progress/2026-11/2026-11-01-codex-ni-inf12-yarne1-repair-luna.md)
 - OOLONG S0 v35 (rc=70, `DRYRUN_REFUSED: malformed claimed_cpus`) and S1 v31 (rc=75, admission lost before cutoff) are admission-class FAILED-RUNs with zero new pairs; denominators and sealed cells are preserved. The CPU-claim path must be requalified before continuation.
 - INF12 R13 attempt `20261031T210259Z-128495` ended rc=75 at the work deadline during `eventqa_131072/base`; completed items cannot be attributed, and it is distinct from attempt `20261101T003829Z-2260396`. [delta-mem](../handoffs/active/delta-mem-reproduction.md)
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
+
+**Confidence: verified** — 1 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
+
+- intake-2127#record (PowerAttention): Citable only as: a retrofitted dense 7B with ~2K windows shows usable propagation across roughly 6 of 28 layers (authors estimate), and sliding-window stacks collapse on multi-hop tasks. It is not cited as a measured effective-receptive-field result. Verdict worth_investigating, integrated.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+
+**Confidence: verified** — 4 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-21, IDs 2214–2340 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2214-2340.md)
+
+- intake-2264#record (When Does Divide and Conquer Work): Verdict adopt-patterns for chunk-size sparse search and a task-noise screen before choosing divide-and-conquer for long context. Linked to repl-turn-efficiency.md.
+- intake-2275#record (lambda-RLM reference repo): Adopt-patterns applies to the design only, not the code or its k* formula. Linked to repl-turn-efficiency.md.
+- intake-2309#record (Controllable Examination for Long-Context LMs (LongBioBench)): The arXiv id was resolved in the dive (2506.02921, LongBioBench), correcting the earlier 'unverified' note. Verdict adopt_component, integrated; linked to yarn-context-extension-research.
+- intake-2319#record (100-LongBench): Rankings on traditional average scores nearly match base-ability rankings, while LongScore reorders them (Qwen2.5-14B/7B rank first on average but near last on LongScore). Adopt-patterns, integrated; linked to yarn-context-extension-research.

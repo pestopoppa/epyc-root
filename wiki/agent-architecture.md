@@ -5591,3 +5591,85 @@ Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) ·
 - Single agent vs subagents (intake-2565#record; [w1_agent](../research/deep-dives/ws58-20261031/dives/w1_agent.yaml)), vendor guidance: a single agent with skills "frequently outperformed" subagent designs; the only number is one customer at ~2x. A design heuristic, not evidence for our stack, where delegate() roles are local CPU models. Its fold procedure (golden set, fold one subagent at a time, repeat, keep only if folding scores worse) is adopted: AGENT-1 (routing-intelligence) replays delegation records, noting the three worker roles share one Qwen3.6-35B-A3B-MTP server so folding is free; AGENT-4 warns a small-context worker call can be cheaper per token on a bandwidth-bound CPU.
 - C2C KV-cache communication (intake-2559#record, intake-2576#record): +3.1-5.4% over text-to-text on sub-4B multiple-choice receivers, with the latency win exactly the avoided sharer decode; fusers are per pair and HF/CUDA only. Proposed AGENT-5: an offline n=200 four-arm CPU probe with a shuffled-cache negative control, promoting only at >=3 points paired over T2T.
 - Octopus (intake-2563#record; [w5_meta](../research/deep-dives/ws58-20261031/dives/w5_meta.yaml)), design analogy only: four mechanisms fix recorded intake failures and are filed as ID-RI-ANCHOR-GATE (script-written anchors, cross-paste detection on `quote_sha256`), ID-RI-LANE-HEAD (`stale_epoch`), ID-RI-STAGE-GUARD (script-formed stage grants) and ID-RI-DECLINE-VOCAB (closed decline codes). Anchor gating proves containment, not entailment.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
+
+**Confidence: verified** — 2 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
+
+- intake-2144#record (Harness Updating Is Not Harness Benefit): Citable for a factorial design separating who writes harness updates from who benefits, skill-load rate and adherence as diagnostics explaining a null harness gain, and one multi-benchmark data point. Verdict adopt_patterns, integrated; linked to harness-improvement-loop and episodic-memory-integrity.
+- intake-2146#record (Recursive Harness Self-Improvement): Pattern-level and low relevance: the cost framing and change-record schema are reusable, but the performance and cost headline is not decision-grade because pairwise LLM-judge outcomes are observations under judge dependence. Verdict adopt_patterns, integrated; linked to delegation-context-preassembly.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
+
+**Confidence: verified** — 3 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
+
+- intake-2556#record (Triton AI Compiler (PTX Gym agent client)): stage-1 claims confirmed except 'starts from Triton-generated PTX', which is the README's claim, not the code default. Reusable design: plan/candidate/repair loop, unified-diff patch tools, negative 'tried' memory, cost gate, ABBA timing. Integrated via agentic-rocm-kernel-authoring.
+- intake-2563#record (Octopus Superintelligence OS): re-dive of architecture, verifier, ledger and security docs; only the design mechanisms are citable as analogies for intake-skill gates, since Octopus reports no measurement and says models do not exercise the self-evolution affordances. Integrated via intake-derived-work-2026-07-25.
+- intake-2565#record (Building agents: folding subagents into the main loop): single-vendor guidance with anecdotal numbers only; citable for the 30-50 tool threshold, three keep-a-subagent conditions and the flipped-task fold eval, not as a measured result for our local delegate() roles. Integrated via agentic-serving-harness-fixes and tool-use-eval-contract.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+
+**Confidence: verified** — 41 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-21, IDs 2214–2340 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2214-2340.md)
+
+- intake-2225#record (Agent Debugger): Citable as a design precedent for the file-system environment and proposer/filter decomposition only; the QC F1 numbers are self-reported and not evidence the debugger works. Adopt-patterns; linked to harness-improvement-loop.md.
+- intake-2226#record (Agent Skills open format spec): The spec limits frontmatter to six fields, with version, author, tags and trust_level belonging in the metadata string map; B3 export output is therefore non-conformant until fixed. Adopt-patterns; linked to harness-selection-and-integration.
+- intake-2227#record (Anthropic dynamic workflows): Cite for mechanisms (plan-in-code, order-based replay with banned nondeterminism, unverified-not-refuted, held-first prefix stagger, schema-validated subagent output), not for any default values. Adopt-patterns; linked to repl-turn-efficiency.md.
+- intake-2228#record (Anthropic long-running harness design): Cite for mechanisms (separate evaluator, sprint contract, conditional evaluator, reset-with-handoff versus compaction); the $9 vs $200 cost comparison is not citable. Adopt-patterns; linked to context-folding-progressive.md.
+- intake-2229#record (Not All Skills Help (ASSAY)): ASSAY measures per-skill causal effects by randomized masking (Bernoulli inclusion, difference-in-means over masks); dive read main sections and appendices A, H, K, not the template appendices. Adopt-patterns, integrated; linked to episodic-memory-integrity.md.
+- intake-2231#record (Pi vs OMP comparison): Verified that OMP costs more time and tokens per task than minimal Pi on SaaS tool use and that harness rankings differ by task; qualitative source. Worth-investigating; linked to harness-improvement-loop.md.
+- intake-2233#record (Code World Models for game playing): An LLM synthesizes a Python world model from rules text and five random-play trajectories, refined against generated unit tests; relevant to model-based kernel authoring. Worth-investigating, integrated; linked to agentic-rocm-kernel-authoring.
+- intake-2236#record (GRASP skill proposer): Admits a candidate skill-library edit only if it nets fixes over regressions on a balanced held-out probe without regressing beyond the current library; prose sections read, per-cell tables not. Adopt-patterns, integrated; linked to eval-tower-verification.md.
+- intake-2238#record (LLM-generated skills for data science): Across 56 tasks, 9 model configurations and 7,560 runs, neither full LLM-generated skills nor ablated variants significantly improved results; narrowed relative to the Stage-1 'fourth regression' label. Adopt-patterns, integrated; linked to episodic-memory-integrity.md.
+- intake-2239#record (Right Family, Wrong Skill): Use v4 only: cite the metric design (Recall vs HSR vs CleanHit) and protocol dependence; the v1 zero-exposure result used ground-truth information and is not citable. Adopt-patterns; linked to episodic-memory-integrity.md.
+- intake-2240#record (Deep Agents harness engineering): Cite mechanisms only, labelled vendor claim; the 52.8 to 66.5 gain is tuning-set with unreported variance and not a measured harness-only gain. Adopt-patterns; linked to harness-improvement-loop.md.
+- intake-2245#record (NVIDIA OO Agents (NOOA)): A feature-and-API design for in-process Python-object agents, not a persistence or recovery design, so it supports neither side of the D-f/D decisions. Worth-investigating; linked to repl-session-memory-maturity.md.
+- intake-2250#record (NVIDIA SkillEvaluator): Not a fit for M-24: it lints scripts and hygiene rather than literal constants in prose skills. Only its pattern files (as regex seeds) and activation-gate idea are reusable. Adopt-patterns; linked to episodic-memory-integrity.md.
+- intake-2252#record (AgenTracer): Take the decisive-error definition and the fault-injection idea; the +18.18% and 'outperforms Claude' claims are not citable and AgenTracer-8B / TracerTraj are not a gold set. Adopt-patterns; linked to harness-improvement-loop.md.
+- intake-2253#record (agentskills/agentskills repo): AG-01 stands and is stronger than first framed: exports fail the reference validator on four counts (unknown keys, non-slug name, directory mismatch, no nested metadata). Adopt-patterns; linked to harness-selection-and-integration.
+- intake-2254#record (Akita Oh-My-Pi vs OpenCode): Cite for the qualitative harness contrast and the multi-harness reviewer-union observation; not as evidence Oh-My-Pi uses more tokens, which was unmetered. Worth-investigating; linked to harness-improvement-loop.md.
+- intake-2255#record (Archon): A budget-constrained discrete architecture search over an ensemble/fusion grammar; a comparison point for AutoPilot, PromptForge and HIL rather than an adoptable component. Worth-investigating; linked to repl-turn-efficiency.md.
+- intake-2263#record (Verified World Model vs play adequacy): A world model passing transition accuracy 1.0 and 98%+ state accuracy can still lose at play because its under-1% errors are the pivotal dynamics. Adopt-patterns, integrated; linked to agentic-rocm-kernel-authoring.
+- intake-2266#record (GRASP code): The regression gate compares a candidate against one fresh unseeded re-run of the incumbent with no variance estimate and an error-handling asymmetry favouring the candidate; the pattern is portable only with fixes. Adopt-patterns; linked to eval-tower-verification.md.
+- intake-2279#record (Sharing State Between Prompts and Programs): Cite for an explicit read/write allowlist with a must-assign check enforced by the handler as a published prompt-to-program boundary design, and eager loading as a token-for-steps trade. Worth-investigating; linked to qwen-chat-template-evaluation.
+- intake-2280#record (NVIDIA labs-OO-Agents repo): The release lacks the pinned paper revision and result artifacts; the benchmark runner and a process-level sandbox are public, so it is not a reproduction. Worth-investigating; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2287#record (Evaluating Skills, Not Just Agents): Spearman 0.14 means only that two static scans disagree (n=145); -0.018/-0.027 (n=62, wide CIs) says static scores are not a proxy for live lift; Skill Lift 0.21 is a vendor composite. Adopt-patterns; linked to harness-improvement-loop.md.
+- intake-2288#record (When Skills Don't Help): A 180-run MCP-grounded CTF study (15 challenges x 4 documentation conditions x 3 trials, one model) re-labelled as a skills ablation; the dive narrowed the wave-1 framing. Worth-investigating, integrated; linked to episodic-memory-integrity.md.
+- intake-2290#record (SkVM): Across eight models, enabling skills degrades 15 percent of tasks overall (7 percent for Opus 4.6, 25 percent for Qwen3-30B) and leaves 17 percent unchanged. Adopt-patterns, integrated; linked to episodic-memory-integrity.md.
+- intake-2292#record (WorldCoder): Builds a Python transition/reward program from interaction data by LLM refinement and plans with it; learning cost is front-loaded and per-action cost is zero LLM calls. Adopt-patterns, monitor; linked to autokernel-research-loop.md.
+- intake-2303#record (Exgentic agent-llm-traces): A public message-content agent-trace corpus usable as fixture and replay source; outcome-labelled rather than failure-labelled, and the blog and v1 URL descriptions differ. Worth-investigating; linked to tool-output-compression.md.
+- intake-2305#record (GraphTracer): Withdrawn by its authors for a methodology error; no number or claim is citable, and the Information Dependency Graph idea survives only as an untested sketch. Verdict not_applicable; linked to harness-improvement-loop.md.
+- intake-2314#record (STRIATUM-CTF): Primary study behind the 180 runs re-analysed elsewhere: 15 CTF challenges x 4 documentation conditions x 3 trials on Claude Sonnet 4.5, with baseline 39/45 and other conditions slightly lower. Adopt-patterns, monitor; linked to episodic-memory-integrity.md.
+- intake-2320#record (AgentDebugX): Closed loop of detect, attribute, recover, rerun, with deterministic rule packs (malformed tool calls, no-progress loops, invalid outputs, premature success) before an LLM judge. Adopt_component, integrated; linked to harness-improvement-loop.md.
+- intake-2324#record (Failure attribution and critical step prediction): Several claims were withdrawn at Stage 4 for lacking anchored supporting quotes, so they are not citable. Dispositioned integrated with monitor; linked to harness-improvement-loop.md.
+- intake-2325#record (smsharma/clax CLAUDE.md history): CLAUDE.md prescribes recording failed approaches in CHANGELOG.md, concise test output, a --fast deterministic subsample and commit-per-unit with no regressions. Adopt-patterns, integrated; linked to autokernel-cross-workload-keep.
+- intake-2329#record (GRADE): Gives no labelled corpus and no judge-free failure class; it offers a judge-free execution-feature shortlist whose top-1 edge is not robust, and a control ladder. Adopt-patterns; linked to harness-improvement-loop.md.
+- intake-2335#record (REFLECT): Contributes the replay-flip verification idea and its controls rather than a corpus; its WTQ labels show the highest step agreement reported (alpha 0.82). Worth-investigating; linked to harness-improvement-loop.md.
+- intake-2336#record (Famas failure attribution): Spectrum-based failure attributor that re-executes the failed task about 20 times, abstracts logs into agent-action-state triples and ranks suspicious ones. Adopt-patterns, integrated; linked to harness-improvement-loop.md.
+
+### Run 2026-10-22, IDs 2386–2458 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2386-2458.md)
+
+- intake-2386#record (Locals): dive narrowed the 83% vs 28% figure to a reply-checkpoint-only ablation that predates the stable-think template and session-start fixes; claims 5-13 were appended. Verdict adopt_patterns; linked to agentic-serving-harness-fixes.md.
+- intake-2392#record (CODESKILL): headline narrowed to +11.03/+5.10 (v2) vs +9.69/+4.01 (v1), single run, with only CODESKILL rows changed between versions. Verdict worth_investigating; linked to harness-improvement-loop.md.
+
+### Run 2026-10-30, IDs 2522–2528 — [digest](../research/deep-dives/intake-digests/2026-10-30-ids-2522-2528.md)
+
+- intake-2523#record (Mainplane open-source Go agent harness): Mechanism confirmed: the "search tools" are rg via the run tool plus a system-prompt recipe for the .log record format, and continuation is user-issued rather than automatic. Adopt-patterns; handoffs tool-output-compression and repl-session-memory-maturity.
+
+### Run 2026-10-30, IDs 2529–2534 — [digest](../research/deep-dives/intake-digests/2026-10-30-ids-2529-2534.md)
+
+- intake-2529#record (Bitter Lesson (Sutton)): Confirmed as framing only; intake-2522#record extends it to agent memory without evidence. Knowledge-only.
+
+### Run 2026-10-31, IDs 2535–2544 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2535-2544.md)
+
+- intake-2537#record (FastContext repository explorer): The abstract headline was overturned as a trained-explorer, total-token claim (same-model rows, main-only tokens). Adopt-patterns; dive-surfaced sources declined at the two-wave cap.
+- intake-2538#record (Terminus-4B small agentic model): Headline narrowed to best case, main-only tokens. Adopt-patterns; the Debug2Fix source was ingested as intake-2543#record and other surfaced sources declined at the two-wave cap.
+- intake-2543#record (Debug2Fix): Abstract framing narrowed: the lock does most of the work. Worth investigating; single-agent debugging-tool sources declined at the two-wave cap.

@@ -1901,7 +1901,7 @@ A companion **repo / weights collection / project page is a DISTINCT artifact** 
 accompanies. The intake schema's dedup key is an exact `arxiv_id` or `url` match — being
 *referenced in another entry's notes* is not a collision.
 
-`intake-335` (github.com/gepa-ai/gepa) was filed 2026-04-12 as "Duplicate — the GEPA paper already
+`intake-335#record` (github.com/gepa-ai/gepa) was filed 2026-04-12 as "Duplicate — the GEPA paper already
 references this GitHub repo in its notes." Nobody read the codebase. Re-reading it surfaced a
 shipped engine layer absent from the paper, a six-month-stale local pin, and a **live defect in
 EPYC's own autopilot** that the "already integrated" label had hidden for months.
@@ -4318,3 +4318,21 @@ Sources: [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md) · [tick
 - The 10-31 intake deep-dive record ([README](../research/deep-dives/ws58-20261031/README.md)) covers intake entries 2545 to 2602 in five waves. Scratch downloads were deleted; quotes stay checkable through their `quote_sha256` in `research/intake_index.yaml`. The briefs require raw-source reads (WebFetch digests do not count) and prefer overturning a stage-1 claim.
 - Second readers: every anchor quote was mechanically re-found; the semantic haiku reader returned 335 verdicts with 7 "no", after which 6 anchors were dropped and 1 claim narrowed. Declines (`declines_w1..w4.json`) are each also recorded on the surfacing entry, for reasons such as already carried in our tree (llama.cpp PR #28123, intake-2598#record) or no EPYC decision depending on them.
 - Corrections worth reusing as process examples: the NUPA misattribution (intake-2550#record), the d1 "text-only" premise (intake-2582#record), and the narrowed ThinkingCap headline (intake-2567#record). Declines are flagged for operator review rather than closed silently (MEM-3).
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+
+**Confidence: verified** — 10 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-22, IDs 2386–2458 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2386-2458.md)
+
+- intake-2387#record (Agent Beacon): thresholds verified in Go source; several claims narrowed (evaluator score override, placeholder-approval guard is prompt-only, 30-day backfill, Codex lacks file/MCP capture). Verdict adopt_patterns; linked to dev-harness-trace-mining.md.
+- intake-2403#record (OTel GenAI semconv): the brief pointer is stale (Moved stubs); the live spec lives elsewhere in the semantic-conventions repo. Verdict adopt_patterns; linked to unified-trace-memory-service.md.
+- intake-2407#record (Entire CLI): a capture-and-link layer, not a retention rescue: forward capture is durable but backfill is capped at 30 days per repo and excludes OpenCode. Verdict adopt_patterns.
+- intake-2419#record (Claude Code monitoring docs): the whole page was read: metrics list, full event catalogue, hook/compaction/subagent events and privacy gating, beyond the tables covered earlier. Verdict adopt_patterns; linked to unified-trace-memory-service.md.
+- intake-2436#record (Codex CLI OTel): full surface established: three pipelines, event list, metrics catalog, content gating and gen_ai.usage.* span attributes. Verdict adopt_patterns; linked to harness-improvement-loop.md.
+- intake-2437#record (opencode observability): OTel exists in V2 as env-driven OTLP logs and traces with Effect spans and no GenAI semconv; V1 AI-SDK flag was dropped; a new operational finding was recorded. Verdict adopt_patterns; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2438#record (Codex rollout JSONL): input_tokens includes cached and cache-write tokens, and reasoning is a subset of output, settled from the writer and protocol types. Verdict adopt_patterns; linked to unified-trace-memory-service.md.
+- intake-2444#record (Clio): privacy thresholds are described but never quantified; paper read in sections with appendices. Verdict adopt_patterns; linked to dev-harness-trace-mining.md.
+- intake-2446#record (OpenClio): source read shows it is vLLM-in-process only (not OpenAI-compatible) and embeds facet values after LLM extraction, so not a drop-in for a llama-server endpoint. Verdict adopt_patterns; linked to unified-trace-memory-service.md.
+- intake-2447#record (Kura): no licence file exists, contrary to the MIT-style assumption, so it is a pattern reference only and low priority. Verdict adopt_patterns; linked to unified-trace-memory-service.md.

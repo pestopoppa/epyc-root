@@ -5,27 +5,27 @@
     "handoff-blocked": 2,
     "handoff-completed": 221,
     "progress": 1140,
-    "research": 145
+    "research": 261
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-01T12:30:34Z",
   "last_touch": {
     "advanced": {
-      "added": 0,
-      "changed": 2,
+      "added": 116,
+      "changed": 0,
       "removed": 0
     },
-    "at": "2026-11-01T12:36:47Z",
+    "at": "2026-11-01T13:11:15Z",
     "scope_paths": [
-      "handoffs/active/conversation-stack.md",
-      "progress/2026-11/2026-11-01-codex3.md"
+      "research/deep-dives/intake-digests",
+      "research/deep-dives/ws58-20261031/dives"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-01T12:36:47Z",
+  "scan_time": "2026-11-01T13:11:15Z",
   "schema_version": 1,
-  "source_set_hash": "25044759939bb6d6f9a3ec1a4f2798e15e738f44d63b25bfeb044ac3618a8baf",
+  "source_set_hash": "0d7b2b7e1a4e056653e350f6fc4615de527841f1b614ef614367261d324273de",
   "sources": [
     {
       "content_hash": "79865b0c101f4b6a9b14665950a430467345202b33986b3ba348bc3df428170a",
@@ -3860,6 +3860,718 @@
       "type": "research"
     },
     {
+      "content_hash": "7dddcc33d694de92a94444f7662976abd97eb9b5f60140af3e1d21bbf27aa2f7",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-03-14-ids-117-117.md",
+      "size": 8466,
+      "title": "Intake dive digest \u2014 2026-03-14, intake-117#record .. intake-117#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "108b9a878bf8a14ea16c2b99eccea7252363f63e51b4d7af374a72d64272cd0e",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-04-06-ids-272-272.md",
+      "size": 9785,
+      "title": "Intake dive digest \u2014 2026-04-06, intake-272#record .. intake-272#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "132f0eb7ee34b602c736143ece5a0ea7785d2b7eae10027218a2abc3c94f84c2",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-04-12-ids-346-346.md",
+      "size": 2655,
+      "title": "Intake dive digest \u2014 2026-04-12, intake-346#record .. intake-346#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "eac7e2d28a9df4e1522c2acf30ba740c066eeb196d304b82ca38cb1f0d3caa75",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-04-14-ids-363-363.md",
+      "size": 7367,
+      "title": "Intake dive digest \u2014 2026-04-14, intake-363#record .. intake-363#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "52bcbb0c4f93ec5439ce26b7188fe93a512260beda28960f169d1c0d08427814",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-04-17-ids-408-408.md",
+      "size": 13320,
+      "title": "Intake dive digest \u2014 2026-04-17, intake-408#record .. intake-408#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "27bd7fcd312aa531fbd4a1b5688f1a1b75436677b4e82ce5cd9ffd2e056285c1",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-05-19-ids-547-547.md",
+      "size": 7917,
+      "title": "Intake dive digest \u2014 2026-05-19, intake-547#record .. intake-547#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "ffd9e7a62eb851867d3ad72912b9385e81f90dce9c0763195a7be63d5ca257b0",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-06-03-ids-664-678.md",
+      "size": 32055,
+      "title": "Intake dive digest \u2014 2026-06-03, intake-664#record .. intake-678#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "6b727db6742f24229345764990cf9bd8a6ef64b04af0fbd59d85740281ba2bd9",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-06-22-ids-725-725.md",
+      "size": 11425,
+      "title": "Intake dive digest \u2014 2026-06-22, intake-725#record .. intake-725#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "10a2122a8c3cbd65326782a26d377387f7bfe01664a46f22a6120e122a5936a9",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-07-02-ids-772-772.md",
+      "size": 5334,
+      "title": "Intake dive digest \u2014 2026-07-02, intake-772#record .. intake-772#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "854f8b5deaed67745b93709e28fcfdb0691d823e0732d88f36e60a1c90d20c38",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-07-08-ids-779-780.md",
+      "size": 12019,
+      "title": "Intake dive digest \u2014 2026-07-08, intake-779#record .. intake-780#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "a7032b311c8a2d24378740a6b235555a26349df17cc362b5d7f6b757644bbfa1",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-07-11-ids-803-804.md",
+      "size": 17083,
+      "title": "Intake dive digest \u2014 2026-07-11, intake-803#record .. intake-804#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "f099f9f46c7d4e447ee8abba3001b800dd15746288d1e2486dcfaa0f9b9428b6",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-07-21-ids-875-875.md",
+      "size": 12767,
+      "title": "Intake dive digest \u2014 2026-07-21, intake-875#record .. intake-875#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "46c72df0b6bf9850d19aecfa04628651b13c751d21e3b99032839502794311fb",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-07-22-ids-883-883.md",
+      "size": 17702,
+      "title": "Intake dive digest \u2014 2026-07-22, intake-883#record .. intake-883#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "3f577c94f54ff329213f9ffd2a4273d4f78438d51bea33d49f802176b40e0ca1",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-07-25-ids-896-896.md",
+      "size": 11323,
+      "title": "Intake dive digest \u2014 2026-07-25, intake-896#record .. intake-896#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "80d8e49fa20444ffb84ae82965d28cdf8d12fd5980e1d1a13b828f88b486265b",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-07-27-ids-901-901.md",
+      "size": 12342,
+      "title": "Intake dive digest \u2014 2026-07-27, intake-901#record .. intake-901#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "dd4575ea0d87d0ae9c755b4e918abc19561118cb595bd662356c5dd4829bafca",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-07-28-ids-903-911.md",
+      "size": 36516,
+      "title": "Intake dive digest \u2014 2026-07-28, intake-903#record .. intake-911#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "ae8eb911d98404a2c7c4f51fd5049351a52d60adffff2ecab79bfeb2099869e8",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-07-29-ids-913-936.md",
+      "size": 273300,
+      "title": "Intake dive digest \u2014 2026-07-29, intake-913#record .. intake-936#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "b33463d1421514ac9fc9445f6304df7e24753586ca1b9832f877ce81d8adbce3",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-07-29-ids-937-937.md",
+      "size": 15679,
+      "title": "Intake dive digest \u2014 2026-07-29, intake-937#record .. intake-937#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "a6941ec6ec1bffa0e5764f34082be9ed79893110380e528482a7e8dfbbe53ddd",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-08-03-ids-938-990.md",
+      "size": 377219,
+      "title": "Intake dive digest \u2014 2026-08-03, intake-938#record .. intake-990#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "3b9648b21f12817af790394e3fe1e78612412ad53573eee259307ad490c43d75",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-08-05-ids-991-1004.md",
+      "size": 78143,
+      "title": "Intake dive digest \u2014 2026-08-05, intake-991#record .. intake-1004#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "8f664d0a6b794ec078d78d19d9846a80f417e396460979d9444d97394acc023c",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-08-07-ids-1006-1023.md",
+      "size": 112781,
+      "title": "Intake dive digest \u2014 2026-08-07, intake-1006#record .. intake-1023#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "9099756f93acc516f408eaaa051709483f933db6dc98a73b2f59633ded76d0c6",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-08-09-ids-1024-1037.md",
+      "size": 108898,
+      "title": "Intake dive digest \u2014 2026-08-09, intake-1024#record .. intake-1037#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "9f91e97f57f8cab8de4bd42ea5ec3288bafbf62c3ab8455208328b7f1413b243",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-08-09-ids-1038-1067.md",
+      "size": 120525,
+      "title": "Intake dive digest \u2014 2026-08-09, intake-1038#record .. intake-1067#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "46b46bb988c409c04abd32a61a1338e9fc7ce1df1f203e3e4db96a1d0c8670de",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-08-10-ids-1068-1072.md",
+      "size": 25946,
+      "title": "Intake dive digest \u2014 2026-08-10, intake-1068#record .. intake-1072#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "4166e2f161d0c7699154ee7044baf635d03645b65d11e63245274805e6afd3bb",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-08-10-ids-1075-1101.md",
+      "size": 250998,
+      "title": "Intake dive digest \u2014 2026-08-10, intake-1075#record .. intake-1101#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "124dc65493140166e8302f70e30ca040985a9d9b1fdc319f9f58d836f5277899",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-08-11-ids-1102-1103.md",
+      "size": 20959,
+      "title": "Intake dive digest \u2014 2026-08-11, intake-1102#record .. intake-1103#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "fafb99eeedca8bb22aa772b89a5ecc2e6481c7e33591e6f66ce3cdb279bc647c",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-08-12-ids-1104-1115.md",
+      "size": 102153,
+      "title": "Intake dive digest \u2014 2026-08-12, intake-1104#record .. intake-1115#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "0f57b4a2a04d7aecc5130a157fcdf25491b7d09f071bc35efe650963a679d0f0",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-08-13-ids-1116-1127.md",
+      "size": 72572,
+      "title": "Intake dive digest \u2014 2026-08-13, intake-1116#record .. intake-1127#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "431fab9fb872017efe284a1b551ed63c0d8f5f4ce46a6e5bd5d8472370e4a9cc",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-08-14-ids-1128-1139.md",
+      "size": 115603,
+      "title": "Intake dive digest \u2014 2026-08-14, intake-1128#record .. intake-1139#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "19e42a5a1d24f045b8ecb87e49cbbf964b36b6d448c8eecb6b57bc160c30944d",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-08-15-ids-1140-1147.md",
+      "size": 101466,
+      "title": "Intake dive digest \u2014 2026-08-15, intake-1140#record .. intake-1147#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "82fbb74e92c1a4089034f4c6396bb500257816fc3fbd5f4313348ca74824c3e1",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-08-16-ids-1148-1152.md",
+      "size": 39369,
+      "title": "Intake dive digest \u2014 2026-08-16, intake-1148#record .. intake-1152#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "c19823aeb15285efa25221054348ae9c060d5d60b8cbaca40710e4142ed30024",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-08-18-ids-1153-1164.md",
+      "size": 49434,
+      "title": "Intake dive digest \u2014 2026-08-18, intake-1153#record .. intake-1164#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "60ede40db34efab01ad9759d61658758d8487bec10475bde19c445a4a0dc6f39",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-08-19-ids-1167-1171.md",
+      "size": 35831,
+      "title": "Intake dive digest \u2014 2026-08-19, intake-1167#record .. intake-1171#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "9a70ee7ea5e9e8fc07dbf04f92e4276eec5cd2844d2cb7992df0935c80d94fdf",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-08-19-ids-1175-1190.md",
+      "size": 107453,
+      "title": "Intake dive digest \u2014 2026-08-19, intake-1175#record .. intake-1190#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "929e5357dc71057d3b057c15610c546e722a70012bc71630afbfcbc327515003",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-08-20-ids-1196-1211.md",
+      "size": 198405,
+      "title": "Intake dive digest \u2014 2026-08-20, intake-1196#record .. intake-1211#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "6f525f178d376af7577833a9a53454d67261b7713f17a12bfb8ca5e6f6131b03",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-08-20-ids-1212-1214.md",
+      "size": 30435,
+      "title": "Intake dive digest \u2014 2026-08-20, intake-1212#record .. intake-1214#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "5ac02e1b05c7cb70bb6a220d97bf8606b3696ae0e49a51bf1165f394b8154382",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-08-21-ids-1215-1217.md",
+      "size": 15689,
+      "title": "Intake dive digest \u2014 2026-08-21, intake-1215#record .. intake-1217#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "2b17bb7cab4866d829011b541de831db38bbe77b94fea1338db8e9c18c69e89d",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-08-21-ids-1218-1251.md",
+      "size": 218761,
+      "title": "Intake dive digest \u2014 2026-08-21, intake-1218#record .. intake-1251#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "8ce09434e5bf5cf6a74e31e355d1dd40c31bd7cd022bbf27a58efab0aaa528db",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-08-21-ids-1252-1279.md",
+      "size": 230496,
+      "title": "Intake dive digest \u2014 2026-08-21, intake-1252#record .. intake-1279#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "aba81b9b8332b0bd188de07fd8bfbd4ffc8a4d23188f02299ba9b011814be986",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-08-22-ids-1280-1294.md",
+      "size": 286376,
+      "title": "Intake dive digest \u2014 2026-08-22, intake-1280#record .. intake-1294#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "e18d60f75ba04ce4a3196193670e2fbdad5e73f0a785f7e9fda44f858fd40615",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-09-07-ids-1297-1310.md",
+      "size": 64667,
+      "title": "Intake dive digest \u2014 2026-09-07, intake-1297#record .. intake-1310#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "be9aeca175d38b1fa00ce009d9240589b11f782cd3d62de5d1f4ff5913f04246",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-09-07-ids-1313-1345.md",
+      "size": 453184,
+      "title": "Intake dive digest \u2014 2026-09-07, intake-1313#record .. intake-1345#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "2d7fa35ecede430771234f1d0d3502e920414a1a94890e37cf306495f0d5cefe",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-09-14-ids-1346-1380.md",
+      "size": 366493,
+      "title": "Intake dive digest \u2014 2026-09-14, intake-1346#record .. intake-1380#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "e1e97206cc37dbc53c4d6d61fa7e9d0f533abcc8382c0139ccb9813d7a75ec11",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-09-15-ids-1381-1424.md",
+      "size": 235974,
+      "title": "Intake dive digest \u2014 2026-09-15, intake-1381#record .. intake-1424#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "b795aec635209110572d26a68a89506fd06e259b6acc591567ff15982b898185",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-09-15-ids-1425-1434.md",
+      "size": 114091,
+      "title": "Intake dive digest \u2014 2026-09-15, intake-1425#record .. intake-1434#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "241fbce963dae74e349e2871afcbff9db666654960ed944c4ccfb91d924f129a",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-09-16-ids-1435-1442.md",
+      "size": 25540,
+      "title": "Intake dive digest \u2014 2026-09-16, intake-1435#record .. intake-1442#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "c23af85f1fd2c8611053f57b0a3aee1e45060d975d17c0ce27c9e02db163a8d9",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-09-17-ids-1444-1459.md",
+      "size": 34891,
+      "title": "Intake dive digest \u2014 2026-09-17, intake-1444#record .. intake-1459#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "2456499f5720a95f45ef0d3790f69e4bcfe1d7f8f047fc313bd663f0a97868e8",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-09-17-ids-1462-1492.md",
+      "size": 92046,
+      "title": "Intake dive digest \u2014 2026-09-17, intake-1462#record .. intake-1492#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "0477dfa401d851f5536bf656cdd1fc2cfc5b30926dd310fe72b9915da985a647",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-09-18-ids-1493-1493.md",
+      "size": 6322,
+      "title": "Intake dive digest \u2014 2026-09-18, intake-1493#record .. intake-1493#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "42ea95d7a22b4934ca9f8d1c2f09c3c7df5b69f312ac78432c9c104ef6d0d511",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-09-23-ids-1498-1527.md",
+      "size": 246024,
+      "title": "Intake dive digest \u2014 2026-09-23, intake-1498#record .. intake-1527#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "db46f3bc7f50881614ec83de82e012277ec630db531a64f2259e783e994d581e",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-09-25-ids-1528-1531.md",
+      "size": 21027,
+      "title": "Intake dive digest \u2014 2026-09-25, intake-1528#record .. intake-1531#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "b84d677704da603c8eba91fc9f2ceee0084c90438125dfda2b3709fd19740012",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-09-25-ids-1532-1562.md",
+      "size": 203752,
+      "title": "Intake dive digest \u2014 2026-09-25, intake-1532#record .. intake-1562#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "8528ff644fdf6f9f3fb3836522ee8da1e297f30fd104b766cc342d3bfd468744",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-09-25-ids-1563-1575.md",
+      "size": 80215,
+      "title": "Intake dive digest \u2014 2026-09-25, intake-1563#record .. intake-1575#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "7ccc9a6c556d4973d70bec9ba88388a5ea3d399e874da61814d1cc026c271573",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-09-25-ids-1576-1591.md",
+      "size": 39800,
+      "title": "Intake dive digest \u2014 2026-09-25, intake-1576#record .. intake-1591#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "46a916a7c254b7667a6557b379508c062e1de39cb0025eb23552e4b2491b8575",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-09-25-ids-1592-1633.md",
+      "size": 124212,
+      "title": "Intake dive digest \u2014 2026-09-25, intake-1592#record .. intake-1633#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "efbbc77bff1b2154828d71c0252ae4ff6de9a04e97585532cf0a2c24c09d4105",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-09-25-ids-1634-1653.md",
+      "size": 105376,
+      "title": "Intake dive digest \u2014 2026-09-25, intake-1634#record .. intake-1653#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "96ec441906d25c75eb6ad7019af44c41c5d616a102b77982f944e21a9152f4b7",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-09-25-ids-1654-1675.md",
+      "size": 100561,
+      "title": "Intake dive digest \u2014 2026-09-25, intake-1654#record .. intake-1675#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "d70ce4ca27719c425d2509f17880533c4434f7a58a7e2a55df710182115bf84c",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-09-25-ids-1676-1688.md",
+      "size": 74789,
+      "title": "Intake dive digest \u2014 2026-09-25, intake-1676#record .. intake-1688#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "1e3a62e098790158b63a5c30c29bfdab8da08086a05b3e2fb19c77c13cc49e6c",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-09-25-ids-1689-1743.md",
+      "size": 397724,
+      "title": "Intake dive digest \u2014 2026-09-25, intake-1689#record .. intake-1743#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "e21a16974db403b1b0eb213f1e0207ef9b2163cbc82066c5c86eeb713cd6b231",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-09-25-ids-1744-1747.md",
+      "size": 36704,
+      "title": "Intake dive digest \u2014 2026-09-25, intake-1744#record .. intake-1747#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "e504a64b137de5995533ebb1ffe88bed5cfb7607d729629b886e4e7f29663277",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-09-25-ids-1748-1751.md",
+      "size": 35794,
+      "title": "Intake dive digest \u2014 2026-09-25, intake-1748#record .. intake-1751#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "4c4e3621b68b7dd38074c3216873978438321cd9eda7f3691c14bd79b4ace6ec",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-09-25-ids-1752-1782.md",
+      "size": 154668,
+      "title": "Intake dive digest \u2014 2026-09-25, intake-1752#record .. intake-1782#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "a5496bc409509b95cad75160668a60a342532489be71d3f75da2f22369df7d50",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-09-26-ids-1783-1821.md",
+      "size": 306607,
+      "title": "Intake dive digest \u2014 2026-09-26, intake-1783#record .. intake-1821#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "7b3534de25df7500ad5c9d8a7d7919e156ab667253b8f19a6ca1cbb9650ea29b",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-09-26-ids-1822-1826.md",
+      "size": 52161,
+      "title": "Intake dive digest \u2014 2026-09-26, intake-1822#record .. intake-1826#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "a0969111076d7664832623d67ef676127fca9f0d34151f597983eee1b1c7a5d6",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-10-03-ids-1827-1830.md",
+      "size": 20707,
+      "title": "Intake dive digest \u2014 2026-10-03, intake-1827#record .. intake-1830#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "88780f190b1f66a1dfcf7b396e8f43e770894b5083c363bc1fbfea7683defbd5",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-10-03-ids-1831-1840.md",
+      "size": 19337,
+      "title": "Intake dive digest \u2014 2026-10-03, intake-1831#record .. intake-1840#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "3bf741deaa269baa1414b8b626099b392fff9dd0b5c9d7d3494ff06684204945",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-10-03-ids-1841-1849.md",
+      "size": 23996,
+      "title": "Intake dive digest \u2014 2026-10-03, intake-1841#record .. intake-1849#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "5d67f75fd2dda9bae9c0c186e23dd472331fab315900b3617f2824a1f19ff094",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-10-03-ids-1850-1899.md",
+      "size": 227180,
+      "title": "Intake dive digest \u2014 2026-10-03, intake-1850#record .. intake-1899#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "e6872e23e038a6d6cb50507d46b9d63c4372ddb11ccd8d45540dbc9a51a314e8",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-10-06-ids-1900-1922.md",
+      "size": 45563,
+      "title": "Intake dive digest \u2014 2026-10-06, intake-1900#record .. intake-1922#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "c81918c216b5b034f528377722a9afc13b71e5132b103a9ca0fabf30776135b9",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-10-06-ids-1924-1936.md",
+      "size": 39308,
+      "title": "Intake dive digest \u2014 2026-10-06, intake-1924#record .. intake-1936#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "e777d68fb7bd9b57247f57e842548700c64d075bd6b5addbf5bd92354a4df481",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-10-06-ids-1937-1959.md",
+      "size": 200805,
+      "title": "Intake dive digest \u2014 2026-10-06, intake-1937#record .. intake-1959#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "6ed8cd30f1e5612062f7262916b5c4007e9dcf810169eb82ea5979b37dcaa99c",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-10-07-ids-1960-1962.md",
+      "size": 8669,
+      "title": "Intake dive digest \u2014 2026-10-07, intake-1960#record .. intake-1962#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "5b99eaeac8664c3bd985bafda1f4d8cdda0a398cababa010409daeca085d883a",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-10-07-ids-1963-1976.md",
+      "size": 73734,
+      "title": "Intake dive digest \u2014 2026-10-07, intake-1963#record .. intake-1976#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "da79e57fb1704acce61f5cda6a2fc404aca4ac1987b89f9db36d93bd82e859c8",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-10-20-ids-1977-2060.md",
+      "size": 430193,
+      "title": "Intake dive digest \u2014 2026-10-20, intake-1977#record .. intake-2060#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "5330efe93fe637a852dd8b248bf4a56114b67a6f9294a73534e40543cd8043d2",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-10-20-ids-2061-2062.md",
+      "size": 24479,
+      "title": "Intake dive digest \u2014 2026-10-20, intake-2061#record .. intake-2062#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "d3b69023d2c518b90a1f627185494431749526dd9e9d4f086c38bba4977444bb",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-10-20-ids-2063-2115.md",
+      "size": 240006,
+      "title": "Intake dive digest \u2014 2026-10-20, intake-2063#record .. intake-2115#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "7f70c542af2870bf458fc5860192822e20ea59e824bcc9deda1f6a45208910b9",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md",
+      "size": 670737,
+      "title": "Intake dive digest \u2014 2026-10-20, intake-2116#record .. intake-2190#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "6a469e05de5b5987d644b3025ebf38abb0d3082fc5c61046a076738dc6b0ff30",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-10-20-ids-2191-2213.md",
+      "size": 166539,
+      "title": "Intake dive digest \u2014 2026-10-20, intake-2191#record .. intake-2213#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "7b1ea8369f486805a3231038a5211f2cb6b3b76b2326cf3a5893c8da594cd3ae",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-10-21-ids-2214-2340.md",
+      "size": 851713,
+      "title": "Intake dive digest \u2014 2026-10-21, intake-2214#record .. intake-2340#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "4a95dd50399ed32d6d9b5be1db122b850afb015b6c6492c89aa7fd9b5f3f584f",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-10-21-ids-2341-2373.md",
+      "size": 418822,
+      "title": "Intake dive digest \u2014 2026-10-21, intake-2341#record .. intake-2373#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "fa3d05f005c432d151bcaa46a33a521dc204e90ea05f7b203e58bec4ac8f731b",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-10-22-ids-2374-2385.md",
+      "size": 148224,
+      "title": "Intake dive digest \u2014 2026-10-22, intake-2374#record .. intake-2385#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "d716dc5813320d17ead970d278262df335a1a44cc00884311d8043d1690caf2c",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-10-22-ids-2386-2458.md",
+      "size": 439768,
+      "title": "Intake dive digest \u2014 2026-10-22, intake-2386#record .. intake-2458#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "7ba054aeced957ccaa5afb03cfb33c6d533b057dbb289097f12d67df1e694f8b",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-10-22-ids-2461-2493.md",
+      "size": 252892,
+      "title": "Intake dive digest \u2014 2026-10-22, intake-2461#record .. intake-2493#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "21f29801050944d6ce9cf40425369b9ec945c64b3d78049e655fee406aff7641",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-10-22-ids-2494-2510.md",
+      "size": 113166,
+      "title": "Intake dive digest \u2014 2026-10-22, intake-2494#record .. intake-2510#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "76d2866b1ed40385fd27a07c88c2f7988013c455a3cd66595d90e0b505d641ef",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-10-30-ids-2511-2521.md",
+      "size": 38182,
+      "title": "Intake dive digest \u2014 2026-10-30, intake-2511#record .. intake-2521#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "5366335ee487fd3e703f83e66991cb17991a4edddd9452384346df5b6ce425b3",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-10-30-ids-2522-2528.md",
+      "size": 27100,
+      "title": "Intake dive digest \u2014 2026-10-30, intake-2522#record .. intake-2528#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "ef7edaad080e61c2d80170bbe78450537bd2ee588d3c7addb6665956fbf81c3c",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-10-30-ids-2529-2534.md",
+      "size": 15549,
+      "title": "Intake dive digest \u2014 2026-10-30, intake-2529#record .. intake-2534#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "8b51b282027110f320dccd3150f87358ceb27123955545ec711946816c3ebd25",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-10-31-ids-2535-2544.md",
+      "size": 39889,
+      "title": "Intake dive digest \u2014 2026-10-31, intake-2535#record .. intake-2544#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "e5c0fbf0ae3533ded22775a5e5725ea8a3cbd010356e827b5062220e5851d1da",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md",
+      "size": 275393,
+      "title": "Intake dive digest \u2014 2026-10-31, intake-2546#record .. intake-2602#record",
+      "type": "research"
+    },
+    {
       "content_hash": "c733c629d076f15c3c6ceea4ec87b9d5f0031a2d87028a7b9eeba55574535c28",
       "modified": "2026-11-01T12:25:54Z",
       "path": "research/deep-dives/intake-trio-202604-references.md",
@@ -4401,6 +5113,222 @@
       "path": "research/deep-dives/ws58-20261031/briefs/stage2b.md",
       "size": 2411,
       "title": "Stage-2b combined ingest-and-dive brief (ws58 intake, 2026-10-31)",
+      "type": "research"
+    },
+    {
+      "content_hash": "9e0384305362e53cfbbd718fff0e24c10477bb39d40967b302b0e87911576e8d",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/declines_w1.md",
+      "size": 1175,
+      "title": "ws58 2026-10-31 dive record: declines_w1",
+      "type": "research"
+    },
+    {
+      "content_hash": "0df06b0b115e1c086d1e14b9f699d33a9675480d0ba761bbae04b13a7bacf919",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/declines_w2.md",
+      "size": 1297,
+      "title": "ws58 2026-10-31 dive record: declines_w2",
+      "type": "research"
+    },
+    {
+      "content_hash": "7a6e8db3482c0756ba91cf7950c234653a19f4f22da05887e69a87866daf8317",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/declines_w3.md",
+      "size": 583,
+      "title": "ws58 2026-10-31 dive record: declines_w3",
+      "type": "research"
+    },
+    {
+      "content_hash": "39578b5eb3114e8958903794c97052d246e843672ae02aaed76401889afa6b26",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/declines_w4.md",
+      "size": 882,
+      "title": "ws58 2026-10-31 dive record: declines_w4",
+      "type": "research"
+    },
+    {
+      "content_hash": "ae2096882eceddea4a3425cfb5b666799e39705f0b5a7d59a50d1776c31c32d6",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/second_reader_w1.md",
+      "size": 23134,
+      "title": "ws58 2026-10-31 dive record: second_reader_w1",
+      "type": "research"
+    },
+    {
+      "content_hash": "5d5066c9a2cdd8dca1335f25e8c8ff880cb205950c0dc51f02a304cb626559ba",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/second_reader_w23.md",
+      "size": 21847,
+      "title": "ws58 2026-10-31 dive record: second_reader_w23",
+      "type": "research"
+    },
+    {
+      "content_hash": "eb79524eace4d7ef16e606748dac409b355ec767f1c910bfbba554c4a60e3e73",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/second_reader_w4.md",
+      "size": 4556,
+      "title": "ws58 2026-10-31 dive record: second_reader_w4",
+      "type": "research"
+    },
+    {
+      "content_hash": "7e7e7f6ccc4919c23e6c2c30d38a32a067f78771a2282cfb5b42d60a3c7e1efb",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/w1_agent.md",
+      "size": 39081,
+      "title": "ws58 2026-10-31 dive record: w1_agent",
+      "type": "research"
+    },
+    {
+      "content_hash": "8cf1bbf80065bcb81cd50182cd25bdd9c5b93586283ade59dd6ffca008a37751",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/w1_kern.md",
+      "size": 43565,
+      "title": "ws58 2026-10-31 dive record: w1_kern",
+      "type": "research"
+    },
+    {
+      "content_hash": "fcee1db2d80b38e99d22c93456848bf8def8f261c06d4df7daf4c746336b6787",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/w1_loop.md",
+      "size": 25084,
+      "title": "ws58 2026-10-31 dive record: w1_loop",
+      "type": "research"
+    },
+    {
+      "content_hash": "9bb98ff939911f50f732bca302acc274215abf5eb7b8653ce6840be51ea413e2",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/w1_mem.md",
+      "size": 28811,
+      "title": "ws58 2026-10-31 dive record: w1_mem",
+      "type": "research"
+    },
+    {
+      "content_hash": "ce0e2f70978c082eee2b7aecb19a8e084fa3ad7e809b029d6fd76e928fcffb2b",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/w1_mtp.md",
+      "size": 24871,
+      "title": "ws58 2026-10-31 dive record: w1_mtp",
+      "type": "research"
+    },
+    {
+      "content_hash": "a48cf06f913400458c7f96023b56d82202b10dcb8d994e391343a968442f6f16",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/w1_spec.md",
+      "size": 34249,
+      "title": "ws58 2026-10-31 dive record: w1_spec",
+      "type": "research"
+    },
+    {
+      "content_hash": "3b9391b10b46efaea97850d89edb5474bb0c8bddc5da5f32c482f85e0346c9a6",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/w1_speech.md",
+      "size": 23159,
+      "title": "ws58 2026-10-31 dive record: w1_speech",
+      "type": "research"
+    },
+    {
+      "content_hash": "290ef874ca430ad1a101a577c4b0742b1c72c19378ed752f3ff718c9f5f6c9eb",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/w1_tcap.md",
+      "size": 13771,
+      "title": "ws58 2026-10-31 dive record: w1_tcap",
+      "type": "research"
+    },
+    {
+      "content_hash": "08633be235e258f9f37b6c32ff277e7876c4f3f61accf0f275f7ee9e141257b2",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/w2_kern.md",
+      "size": 33166,
+      "title": "ws58 2026-10-31 dive record: w2_kern",
+      "type": "research"
+    },
+    {
+      "content_hash": "17c27e805402aa7481cd4bb0aa4c959e557618392de6ef4897726268101af7fc",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/w2_loop.md",
+      "size": 27131,
+      "title": "ws58 2026-10-31 dive record: w2_loop",
+      "type": "research"
+    },
+    {
+      "content_hash": "f927bf19ce50c826d299351c98282300ab379774347eeca4571e6a6614f28986",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/w2_spec.md",
+      "size": 25724,
+      "title": "ws58 2026-10-31 dive record: w2_spec",
+      "type": "research"
+    },
+    {
+      "content_hash": "552c0d435116cc35a354469439485c713d57f5f91a86c83ad36d3e5a5556c9d7",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/w2_speech.md",
+      "size": 37531,
+      "title": "ws58 2026-10-31 dive record: w2_speech",
+      "type": "research"
+    },
+    {
+      "content_hash": "adf980e4052e2c9043fc53bed44e9ccfdbc474ffc862f9a7e07cca029c34ad00",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/w3_dec.md",
+      "size": 48443,
+      "title": "ws58 2026-10-31 dive record: w3_dec",
+      "type": "research"
+    },
+    {
+      "content_hash": "663cff6c883f3766a986b571b4091e95adb1bd74b176f83257aa689c502fbcc4",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/w3_spec.md",
+      "size": 19759,
+      "title": "ws58 2026-10-31 dive record: w3_spec",
+      "type": "research"
+    },
+    {
+      "content_hash": "79ca60a81860219a6a336787249052f4d34503128eda0c47f7e9db8a0e686d4b",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/w4_up.md",
+      "size": 36161,
+      "title": "ws58 2026-10-31 dive record: w4_up",
+      "type": "research"
+    },
+    {
+      "content_hash": "57edc960f4d2260451b13caafc0259cc6531f41ae6db6cf384e167d9848080e7",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/w5_fold.md",
+      "size": 11543,
+      "title": "ws58 2026-10-31 dive record: w5_fold",
+      "type": "research"
+    },
+    {
+      "content_hash": "f3f9115bd2dc5b783a54fcf3353013d045c04aec0fde5e7cbcbd8aafc6e857bf",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/w5_ft.md",
+      "size": 16209,
+      "title": "ws58 2026-10-31 dive record: w5_ft",
+      "type": "research"
+    },
+    {
+      "content_hash": "1f2fbe04d465e360b39dc9a2f496b0e8d6d51f79d3124180d08feb403d020b45",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/w5_gpu.md",
+      "size": 20089,
+      "title": "ws58 2026-10-31 dive record: w5_gpu",
+      "type": "research"
+    },
+    {
+      "content_hash": "d01325bfdffa65c7b44b7a6c457eb8d31684a83dc561466905b7c545ffc090da",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/w5_meta.md",
+      "size": 19811,
+      "title": "ws58 2026-10-31 dive record: w5_meta",
+      "type": "research"
+    },
+    {
+      "content_hash": "26fdb3260b48fb5b4ed2376f517f2ccfd65acd35a8632dfa288ea3a0047ad82a",
+      "modified": "2026-11-01T13:11:04Z",
+      "path": "research/deep-dives/ws58-20261031/dives/w5_verif.md",
+      "size": 18537,
+      "title": "ws58 2026-10-31 dive record: w5_verif",
       "type": "research"
     },
     {
@@ -15516,7 +16444,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1936,
+  "total_new": 2052,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

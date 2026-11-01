@@ -3074,3 +3074,64 @@ Sources: [serving-harness fixes](../handoffs/active/agentic-serving-harness-fixe
 - Hybrid decision models at parallel 4 re-process the shared prefix per slot (intake-2602#record, open, unconfirmed); the reporter's local fix gives 3.8x decisions/s. Draft PR #29832 (intake-2601#record) reads typed decisions from ordinary chat models; W4UP-3 pins the build set for the d1 screen (intake-2600#record).
 - AKV agent cache editing (intake-2590#record; [w2_kern](../research/deep-dives/ws58-20261031/dives/w2_kern.yaml)) is single-agent drop/repos, not cross-agent KV transfer; its serving gains (1.36x mean latency on 8x A800) do not transfer to llama-server or hybrids. See kv-cache.
 - Looped models on the GPU ([w5_gpu](../research/deep-dives/ws58-20261031/dives/w5_gpu.yaml), byte arithmetic, not measured; intake-2585#record, intake-2586#record): a loop of L costs ~1/L aggregate decode, and Ouro-1.4B is KV-bound beyond ~123 tokens. Proposed GPU-LOOP-1 build and roofline, GPU-LOOP-2 reliability-worker probe, GPU-LOOP-3 per-request loop dial.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
+
+**Confidence: verified** — 5 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
+
+- intake-2119#record (DualPath): Citable for the token-count-proxy, two-dimension decode-side routing rule with a 1.05 x mean threshold, the cache-compute-ratio metric with its 50x model spread, and the working-set discussion. Verdict adopt_patterns, integrated; linked to within-role-placement-state-machine.
+- intake-2126#record (NanoFlow): Citable for the exact async-batch-formation contract (batch i+1 formed before i completes, one extra step of EOS lag, under 1% only because mean decode exceeds 100 steps) and the per-layer write-through KV design. Verdict adopt_patterns, integrated; linked to gpu-serving-tie-in-program.
+- intake-2129#record (HISA): Citable for the block-then-token indexing structure, the O(L/B + mB) cost model and GPU-measured speedups with their conditions (A100 kernel, 8xH200 SGLang, 128K, concurrency-dependent TPOT). Not cited as an end-to-end result for our hardware. Verdict worth_investigating, disposition monitor.
+- intake-2131#record (CONCUR): Citable for one thing: an AIMD agent-admission window gated on high KV usage and low hit rate beat fixed caps on GPU+SGLang offline batch. Numbers are vendor-reported and configuration dependent. Verdict worth_investigating, integrated; linked to kv-unified-stack-rollout.
+- intake-2136#record (DeepSeek V4.1 Flash deployment post): Parent text of the vendor Q&A in intake-2116#record and adds little engine detail. Citable for the SWA-state-not-persisted design with vendor-reported 180 s / above 98% figures and the V4-versus-V4.1 capacity change. Verdict adopt_patterns, integrated; linked to heterogeneous-slot-fabric-residency.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
+
+**Confidence: verified** — 5 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-30, IDs 2511–2521 — [digest](../research/deep-dives/intake-digests/2026-10-30-ids-2511-2521.md)
+
+- intake-2514#record (llama.cpp PR 31086 DSV4.1 flash): upstream deepseek41 layout (single per_layer_token_embd, BF16 table, ple.* keys) in release b11870; the stage-1 MXFP8-drop request was reattributed to #30817. Our DS41 port reads only the antirez layout, so upstream-layout GGUFs are not loadable. Linked to deepseek-v41-flash-evaluation.
+
+### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
+
+- intake-2562#record (Resin inference-engine library): technical filing accurate; the 'no numbers' note was corrected. Value lies in the unified pool with recurrent-state prefix snapshots at LCM-aligned boundaries and in its AK-loop skill prompts; performance claims not cited. Integrated via autokernel-research-loop and kv-prefix-fork-and-paged-attention.
+- intake-2571#record (Parallel Loop Transformer paper): stage-1 author list was partial (first author Bohong Wu, ByteDance Seed); the only primary wall-clock decode evidence in the group, valid for GPU memory-bound MoE serving with KV-sharing, with no CPU/EPYC evidence and unreleased models. Integrated via gpu-acceleration-path.
+- intake-2584#record (LoopCoder-v2): a vendor 7B PLT coder reports 43.0 to 64.4 on SWE-bench Verified at R=2 with R=3/4 regressing, harness unnamed, no timings; speed or near-constant-latency claims are not measured and loop count is not a runtime dial. Integrated via gpu-acceleration-path.
+- intake-2599#record (llama.cpp PR 30408 vllm d3 multi-seq): ubatch-split fix for non-causal and output_all multi-seq batches; not a requirement for MTP/DFlash2 np>1 identity (causal), needed only if the d1 screen build serves a non-causal or embedding-mode decision model at np>1. Integrated via typed-decision-plane.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+
+**Confidence: verified** — 15 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-20, IDs 2063–2115 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2063-2115.md)
+
+- intake-2105#record (llama.cpp slot save with media PR): merged 2026-08-12 but absent from v10 and the fork; no bearing on text-only context banks except a hazard from the changed on-disk slot file format. Verdict not_applicable; linked to autokernel-champion-aggregate.md.
+
+### Run 2026-10-21, IDs 2214–2340 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2214-2340.md)
+
+- intake-2214#record (susun X note): Practitioner read of DeepInfer; usable only for the author's own routing heuristics as design hypotheses and the pipeline-vs-expert-parallel prefill position, since DeepSeek figures must be cited from the article and code entries. Adopt-patterns, integrated; linked to numa-prefill-decode-disaggregation.md.
+- intake-2215#record (vLLM-Ascend ShortRequestFirst): A shipped, default-off waiting-queue shortest-first-with-aging policy; its value is the tuning doctrine (threshold at the prompt-length valley, P70-P85 start, aging bound from the long-wait tail) and cheap observability. Adopt-patterns, integrated; linked to kv-unified-stack-rollout.md.
+- intake-2217#record (EWSJF scheduler): Citable only for the shape of a waiting-queue ordering score (wait time over estimated prefill cost plus a log-length boost) and the observation that learned lane counts with adjacent partitions help. Adopt-patterns, integrated; linked to kv-unified-stack-rollout.md.
+- intake-2218#record (Medha long-context serving): Strongest written argument that head-of-line blocking from mixed short/long traffic is solved inside an instance by time-budgeted chunked prefill; its single pool experiment is the only counter-evidence cited. Adopt-patterns, integrated; linked to gpu-serving-tie-in-program.md.
+- intake-2219#record (Fairness-aware chunked-prefill scheduling): A textbook aging ordering (wait time minus remaining work) in a Sarathi-style chunked-prefill engine, measured only against FCFS on an 8B model at small context. Adopt-patterns, integrated; linked to kv-unified-stack-rollout.md.
+- intake-2220#record (GreenLLM): A GPU-DVFS energy paper whose length-routing stage is an undirected example (two identical prefill workers split near 1024 prompt tokens, no selection method). Adopt-patterns, integrated; linked to within-role-placement-state-machine.md.
+- intake-2221#record (FlowPrefill): Answers a different question than the KVU-16g prefill budget: that bounds neighbour prefill per iteration while a slot decodes, whereas FlowPrefill addresses preemption among prefills. Adopt-patterns, integrated; linked to gpu-serving-tie-in-program.md.
+- intake-2222#record (LAPS length-aware prefill): Peer-reviewed (MLSys 2026) statement of intra-prefill long/short interference and one remedy: never batch a short prefill with a long-prefill chunk in the same forward pass. Adopt-patterns, integrated; linked to gpu-serving-tie-in-program.md.
+- intake-2223#record (SLOWeave deadline-aware chunking): The same fixed-time-budget-with-cost-model mechanism that KVU-16g already ships and PB-QCOST-1 already calibrates, presented as new. Adopt-patterns, integrated; linked to gpu-serving-tie-in-program.md.
+- intake-2295#record (Block-Attention): Not proposable against live roles: it needs a block-fine-tuned model and a pure-attention shiftable KV, neither of which exists in the lineup; the '<=1% gap' claim is not cited. Worth-investigating; linked to repl-turn-efficiency.md.
+- intake-2297#record (CacheClip): Independent numbers confirm selective-recompute KV reuse is lossy (15% NIAH, 9% LongBench at 20% recompute, widening with length); not to be ported to hybrid live roles. Worth-investigating; linked to repl-turn-efficiency.md.
+
+### Run 2026-10-22, IDs 2386–2458 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2386-2458.md)
+
+- intake-2389#record (TraceLab): the three abstract claims were confirmed with exact numbers from the paper, repo and collector code. Verdict worth_investigating as a coding-agent workload characterization; linked to agentic-serving-harness-fixes.md.
+- intake-2430#record (Autellix): the accumulated-service-time key was confirmed, but the headline speedup is against a no-prefix-cache baseline; real gain over prefix-cached FCFS is about 2-4x on A100 vLLM. Verdict worth_investigating; linked to dynamic-stack-concurrency.md.
+
+### Run 2026-10-22, IDs 2461–2493 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2461-2493.md)
+
+- intake-2468#record (disaggregated-llama.cpp fork): Base, commit and mechanism confirmed; added HIP/CPU absence, Blackwell-only scope, documentation inconsistencies and the port cost versus v10 (not an ancestor). Worth investigating; no handoff linked.

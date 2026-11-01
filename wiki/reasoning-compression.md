@@ -163,3 +163,13 @@ Sources: [2026-10-29 progress](../progress/2026-10/2026-10-29.md) · [agentic-se
 - ThinkingCap-Qwen3.8-Flash-Next (intake-2567#record; [w1_tcap](../research/deep-dives/ws58-20261031/dives/w1_tcap.yaml)), vendor-run on vLLM/H200 with the base in the same harness: mean thinking tokens 11007 -> 6394 (-41.9% as a ratio of means), median 6406 -> 3042, macro accuracy 89.79 -> 88.76 (-1.03pp). All six accuracy deltas are negative; the 51% headline is RealWorldQA where base thinking is only 1,102 tokens; no training method is disclosed.
 - The checkpoint keeps the base MTP head (vendor statement; intake-2572#record): acceptance 2.77 vs 2.72 tokens/step on vLLM. GGUF IQ4_XS is 95.5 GB.
 - Derived TCAP-1 (architect-model-selection-bench): A/B base UD-IQ4_XS vs ThinkingCap IQ4_XS with thinking on, PROMOTE only if thinking tokens fall >=25% on >=3 of 4 families with paired-accuracy CI lower bound >= -3pp and alpha within 0.03 of 0.8209. It has no benefit while architect_general runs thinking OFF. TCAP-2: INF-70's "MTP needs an FP8 re-download" is obsolete; the shared-Q8_0 head (2.79 GB) is on disk.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+
+**Confidence: verified** — 2 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-21, IDs 2214–2340 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2214-2340.md)
+
+- intake-2316#record (Trace Length as uncertainty signal): Trace length is a free per-question correctness predictor in Qwen-derived reasoning models, comparable to verbalized confidence, and it vanishes in non-reasoning models. Worth-investigating; linked to repl-turn-efficiency.md.
+- intake-2327#record (What Characterizes Effective Reasoning): Within-question, shorter and less-reviewing chains correlate with correctness on ten reasoning models; the failed-step fraction is the better-supported statistic, with magnitudes and truncation handling uncertain. Worth-investigating; linked to repl-turn-efficiency.md.

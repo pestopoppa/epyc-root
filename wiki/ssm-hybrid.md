@@ -88,7 +88,7 @@ The only remaining theoretical option is Approach B (linearized Delta Net approx
 
 SEAL control vectors are also incompatible with SSM-hybrid architectures. The SEAL concise reasoning experiment found that applying control vectors to Qwen3.5-35B-A3B (Gated Delta Net) causes catastrophic generation collapse to 1 token, while the same technique works normally on MoE (Qwen3-Coder-30B-A3B) and dense (Qwen2.5-Coder-32B) architectures. This means inference-time activation steering is not viable for SSM-hybrid models.
 
-Nemotron-Cascade 2 (intake-237/238) provides direct benchmarking data: Mamba2 (in Nemotron) vs Delta Net (in Qwen3.5) on RTX 3090, with cascade RL training for small models. This is relevant for understanding the SSM landscape but the GPU-specific benchmarks do not transfer to CPU inference. The Qwen3.5 serving recipe (intake-152) provides configuration tips for hybrid MoE + Delta Net models but the tips are primarily GPU-oriented (vLLM, SGLang).
+Nemotron-Cascade 2 (intake-237#record/238) provides direct benchmarking data: Mamba2 (in Nemotron) vs Delta Net (in Qwen3.5) on RTX 3090, with cascade RL training for small models. This is relevant for understanding the SSM landscape but the GPU-specific benchmarks do not transfer to CPU inference. The Qwen3.5 serving recipe (intake-152) provides configuration tips for hybrid MoE + Delta Net models but the tips are primarily GPU-oriented (vLLM, SGLang).
 
 The Multiscreen architecture (intake-256) represents a potential future alternative -- it replaces softmax attention with absolute query-key screening, achieving sub-quadratic complexity while preserving the attention paradigm. Unlike Delta Net, Multiscreen would theoretically be compatible with existing KV cache and speculation infrastructure. However, no pretrained Multiscreen models exist and no llama.cpp implementation is available. Three additional cross-head attention mechanisms (IHA, MEA, KHA) from the 2026-04-12 research intake also offer alternatives, all requiring pretraining with no retrofit possible.
 
@@ -224,7 +224,7 @@ The reason these are tracked under SSM-hybrid (and not under speculative-decodin
 - [Multiscreen attention evaluation](/workspace/handoffs/active/multiscreen-attention-evaluation.md) -- Sub-quadratic attention alternative, watch item status, expanded mechanism cluster
 - [Qwen3.5 frontdoor benchmark](/workspace/handoffs/completed/qwen35-frontdoor-benchmark.md) -- Production benchmark results, spec-decode bust confirmation, MoE lookup acceleration
 - [intake-152](https://docs.vllm.ai/projects/recipes/en/latest/Qwen/Qwen3.5.html) Qwen3.5 serving recipe -- Configuration tips for hybrid MoE + Delta Net
-- [intake-237/238] Nemotron-Cascade 2 -- Mamba2 vs Delta Net benchmarks, cascade RL
+- [intake-237#record/238] Nemotron-Cascade 2 -- Mamba2 vs Delta Net benchmarks, cascade RL
 - [Log-Linear Gated DeltaNet readiness tracker](/workspace/handoffs/active/log-linear-gated-deltanet-readiness.md) -- Gate criteria, implementation plan, monitoring targets for Log-Linear GDN adoption
 - [Memory Caching + Log-Linear Attention deep dive](/workspace/research/deep-dives/memory-caching-log-linear-attention.md) -- Bottleneck correction (verification not state copy), MC/Log-Linear analysis, llama.cpp implementation path
 - [intake-354](https://arxiv.org/abs/2602.24281) Memory Caching: RNNs with Growing Memory -- GRM/SSC design space, O(NL) segmented caching
@@ -711,3 +711,51 @@ Sources: [KV prefix fork and paged attention](../handoffs/active/kv-prefix-fork-
 - **Bolt (Mamba/SSM hybrid) decode profile: 40-scan groups visible, per-op attribution unresolved.** The resegmented trace shows 97 observed groups of 40 SSM scans (94 in the steady sample); Bolt step busy is 20.51 ms against 33.92 ms server wall per step, versus Qwen3.8-27B plain 32.89 ms busy and 56.98 ms wall. In the frozen-v9 G15 table `gated_delta_net_cuda` was rank 3 at 16.69% of GPU time. These are diagnostics; no hardware-counter cause for Bolt's ~53 vs ~100 t/s gap vs Qwen3.6-35B-A3B Q8 is established. ([source](../progress/2026-10/2026-10-31-codex-ni-nemo-prof-reseg.md))
 
 Sources: [log-linear-gated-deltanet-readiness](../handoffs/active/log-linear-gated-deltanet-readiness.md) · [G16a native](../progress/2026-10/2026-10-31-g16a-native.md) · [INF-33 CPU seam](../progress/2026-10/2026-10-28-inf33-cpu-seam.md) · [NEMO reseg](../progress/2026-10/2026-10-31-codex-ni-nemo-prof-reseg.md) · [AK-PM-16](../progress/2026-10/2026-10-30-codex-ni-ak-pm16-closeout.md)
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
+
+**Confidence: verified** — 3 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
+
+- intake-2550#record (Qwenputer blog): DeepMind accuracy rows verified against the repo, but the claims that Qwen GDN layers act as RAM, NUPA 100% for the RISC-V model, and in-weights execution beating a tool are not carried (the tool arm matches or beats it, n=40). Integrated via autokernel-all-devices-all-dimensions.
+- intake-2574#record (Qwenputer repo): stage-1 claims confirmed, with the exact write/read construction located in code; the GDN-as-RAM property is a statement about the gated delta rule structure with saturated alpha/beta, not a Qwen-specific finding. Integrated via autokernel-all-devices-all-dimensions and kv-prefix-fork-and-paged-attention.
+- intake-2587#record (Hybrid models hide reasoning in RNN state): single-author, unreviewed blog with a single-task, small-seed result that beta<=1 GDN hybrids failed to generalise hidden state tracking; a CoT-monitorability note with no serving lever. Disposition knowledge_only; linked to cpu-decode-roofline-program.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+
+**Confidence: verified** — 26 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-20, IDs 2063–2115 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2063-2115.md)
+
+- intake-2071#record (vLLM hybrid partial-hit RFC): partial hits plus tail checkpoint shipped; the spec-decode/async question is answered only by assertion in the RFC and resolved structurally in code. Verdict adopt_patterns; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2072#record (vLLM Mamba junction-stop PR): junction-stop and prompt-bounded-publish mechanics usable for KPF-15/17 review; 0-of-84 figures are author-reported simulation only. Verdict adopt_patterns; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2073#record (vLLM prompt-tail hit restore PR): lesson is a predicate mismatch with a measured cost; hit and TPS numbers are author-reported single runs, and the diff touches no drafter state. Verdict adopt_patterns; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2074#record (vLLM stale Mamba spec blocks PR): failure class is publish-before-written with chunk-alignment-dependent trigger; counts are small-n and it is not a drafter-state bug. Verdict adopt_patterns; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2075#record (vLLM Mamba align chunk PR): mechanism: a state is keyed at a position it was not captured at after a later chunk crossed the boundary; it is not evidence llama.cpp checkpoints are poisoned. Verdict adopt_patterns; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2076#record (vLLM EAGLE resend boundaries PR): hazard: the last-logit cap and drafter drop are separate bounds, and stacking both on the identical-resend path costs a whole unit and can hit 0; the 64 figure was superseded. Verdict adopt_patterns; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2077#record (vLLM hybrid Mamba prefix inconsistency fix): lesson: two independently correct safety bounds should be derived once in one helper, and a checkpoint grid resolved in one place for producer and consumer; no performance figure transfers. Verdict worth_investigating.
+- intake-2078#record (vLLM mamba align + EAGLE test PR): section 3 is the clearest statement that a tail-only checkpoint cannot serve shared trunk plus private suffix; it is an unmerged test PR. Verdict adopt_patterns; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2086#record (vLLM Kimi K3 prefix checkpoints PR): lessons: manager and worker share one validity predicate, key the checkpoint at the position actually captured, and a checkpoint step skipping scratch relocation creates unwritten registered blocks. Verdict adopt_patterns; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2087#record (vLLM Mamba prefill checkpoints PR): splitting prefill at a state-capture boundary costs a second forward, which an in-kernel intermediate export avoids; TTFT figures are author single runs on Kimi-K3 and do not transfer. Verdict adopt_patterns; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2088#record (vLLM Mamba state-block guard PR): records the failure class of a hash published at schedule time before the state is written, with abort as trigger; an unmerged AI-assisted draft validated on one machine. Verdict worth_investigating; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2089#record (vLLM hybrid-Mamba e2e test PR 48970): closed, superseded test PR whose recall-based grading its author judged flaky; replacement #53189 should be checked instead. Verdict superseded.
+- intake-2090#record (vLLM MTP prefix-caching accuracy bug): umbrella report whose 20% magnitude is the reporter claim only; fix attribution must come from the individual PRs. Verdict worth_investigating.
+- intake-2091#record (vLLM Marconi-style admission PR): shared-prefix admission on hybrid caches is detected reactively and split at block_size floors; a design fact, with PR latency figures not a result for our fork. Verdict worth_investigating.
+- intake-2092#record (vLLM hybrid prefix-cache 0% hit bug): the 0% figure is not current behavior: main with #37898 gets 40/64 on the same workload (author); residual issue is the block-granularity floor and detection lag. Verdict worth_investigating; linked to kv-unified-stack-rollout.md.
+- intake-2099#record (vLLM hybrid MTP prefix-cache regression tests): not a ready logits oracle for KPF-17/18; only a few patterns copy over (cached-token-count invariant, same-engine cold control, live block size, boundary-straddling prompts). Verdict adopt_patterns; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2100#record (vLLM align-mode never hits bug): not a corruption trigger and no evidence that priority scheduling disables align caching; useful only for which Mamba states exist in align mode; counts are third-party, one rig each. Verdict worth_investigating; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2101#record (vLLM lost-shared-prefix metrics proposal): not landed behavior; value is a test pattern (negative control, per-request counter delta triad) and a hint that checkpoint retention is a policy knob; figures author-reported. Verdict adopt_patterns; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2102#record (Marconi): cited only for the two-state admission rule and the recency + alpha*flop_efficiency utility; the 34.4x headline is against a per-block baseline we do not run. Verdict adopt_patterns; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2106#record (llama.cpp hybrid checkpoint restore issue): the issue title and type differ from the surfacing description, and the proposed fix was rejected. Verdict superseded.
+- intake-2108#record (vLLM Mamba align materialize PR 53479): overturned as a deliverable: PR is open and draft, and its own status comment says the branch is superseded pending #54076 and #54713. Verdict worth_investigating; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2109#record (vLLM selective hybrid caching PR): confirmed in merged code: junction pinning, 3-tuple return from get_computed_blocks and reachable-boundary tails; one author retention claim narrowed. Verdict worth_investigating; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2112#record (vLLM Mamba cache group block size fix): invariant: checkpoint cadence belongs to the recurrent state; DFlash never writes target blocks; the 0 to 100 percent reuse and -95 percent TTFT are not reproduced. Verdict adopt_patterns; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2114#record (vLLM prefix_cache_retention_interval default PR): records the default change and its semantics (0 = latest replayable boundary only); the zero-reuse consequence is third-party single-setup. Verdict adopt_patterns; linked to kv-prefix-fork-and-paged-attention.md.
+
+### Run 2026-10-20, IDs 2191–2213 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2191-2213.md)
+
+- intake-2205#record (Qwen3.8-Next architecture design report): Dive harvested the inference-relevant mechanism set (QSA parameters, 4-branch Gated Residual read/write rule, n-gram placement, MTP acceptance) and confirmed the indexer-budget claim from intake-1945#record. Worth investigating; disposition monitor; handoffs cpu-decode-roofline-program and reasoning-compression.
+- intake-2213#record (FlashQLA): Settled ops (chunked fwd/bwd only, no decode), algorithm (chunk 64, WY/UT, fused state carry, fp32 acc), vendor speedups with conditions and MIT licence; our v10 prefill is sequential on CPU and HIP. Monitor; handoffs mi210-big-model-and-acceleration-roadmap and cpu-prefill-compute-large-models.

@@ -354,3 +354,39 @@ Sources: [paw-compiled-specialists handoff](../handoffs/active/paw-compiled-spec
 - Looped transformers ([w1_loop](../research/deep-dives/ws58-20261031/dives/w1_loop.yaml), [w2_loop](../research/deep-dives/ws58-20261031/dives/w2_loop.yaml)): full-stack looping is strongest at fixed parameters (intake-2547#record, no wall-clock); PLT is the only wall-clock evidence (+2% latency for 2 loops, in-house GPU; intake-2571#record); LoopCoder-v2 R=2 lifts SWE-bench Verified 43.0 -> 64.4 but R=3 collapses (intake-2584#record); looped MoE still trails a non-looped larger MoE (intake-2551#record).
 - llama.cpp: Nanbeige looped arch #25994 is merged upstream but absent from v10; the Ouro port #29823 is open, decoding at ~1/R (intake-2586#record, intake-2585#record). Proposed W2LOOP-1/CH-34: build both on an experimental branch and measure Ouro-1.4B at loops 1/2/4 on EPYC, promoting only if loops=4 decode >= 0.35x of loops=1 (predicted ~0.26x).
 - GDN beta cap (intake-2587#record, single-author blog): OLMo-Hybrid (beta up to 2) solves a parity task where Qwen3.5-4B (beta capped at 1) is at chance. Knowledge-only.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
+
+**Confidence: verified** — 3 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
+
+- intake-2170#record (Harness-Zero): Evidence about where harness gains can live (weights vs external scaffolding), not input to the HIL-4 A/B/C loop-architecture decision. Portable mechanisms include a reviewer wrapper. Verdict worth_investigating, integrated; linked to episodic-memory-integrity.
+- intake-2183#record (AI4AI at Test-Time): Mechanism and caution only: a strong model writing deterministic, routed, format-enforcing scaffold code for a weak model is the weights-free form of consultant/grunt, with gains scaling with the weak target. Verdict adopt_patterns, integrated; linked to delegation-context-preassembly.
+- intake-2184#record (EvoHarness-RL): Evidence that frozen prompt-level memory/skill stores do not help a small open policy (mixed to negative against ReAct) while trained coordination does, plus an experience-store maintenance design. Verdict adopt_patterns, integrated; linked to episodic-memory-integrity.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
+
+**Confidence: verified** — 5 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-21, IDs 2341–2373 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2341-2373.md)
+
+- intake-2357#record (MCR-RNNT unified ASR transducer): NVIDIA trains one RNN-T for offline plus buffered streaming with a symmetric KL between modes, halving the low-latency WER penalty (12.48 to 8.24 at 0.32 s) at 2x training compute; wave-1 curve and code-availability claims narrowed. Disposition monitor; linked to conversation-stack.
+- intake-2358#record (UltiMed French-medical fine-tune): single-author fine-tune of parakeet-ultra: in-domain macro WER 9.0 to 3.4 on partly synthetic data at a measured +1.0 pp macro cost on general FLEURS; headline gain narrowed. Verdict adopt_patterns; linked to conversation-stack.
+- intake-2368#record (Nemotron 3.5 ASR fine-tuning posts): marketing-plus-tutorial posts; the Greek and Bulgarian results are outside our language gate and the notebook is an AN4 toy, overturning the wave-2 'recipe' pointer. Transferable only as practice: replay and re-check non-target languages. Verdict adopt_patterns; linked to conversation-stack.
+
+### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
+
+- intake-2547#record (Looped Transformer paper): dive adds scope limits (dense, up to 1B, no MoE) and confirms the paper carries no latency data; usable as design guidance (full-loop vs middle-block, normalized re-injection for PLT) but not as decode-speedup evidence. Integrated via autokernel-champion-aggregate and gpu-acceleration-path.
+- intake-2572#record (ThinkingCap HF model card): stage-1 GGUF list confirmed with exact sizes (IQ4_XS 95.5 GB); finetune keeps the MTP head (vendor statement), acceptance 2.77 vs 2.72 in vLLM, only 2 prompts on llama.cpp. Not a solution to INF-70 Axis E. Integrated via architect-model-selection-bench.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+
+**Confidence: verified** — 1 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-20, IDs 2191–2213 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2191-2213.md)
+
+- intake-2193#record (Qwen3.8-27B-Coder390-EfficientThink card): Full-card read re-framed the LCB gain as a likely cap artifact versus the official LCB v6 figure and narrowed the "official MTP head fused" claim. Worth investigating; integrated via architect-model-selection-bench.

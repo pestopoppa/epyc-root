@@ -19,7 +19,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
 
 ## Research intake note — 2026-10-31: retrieval over compaction is not new
 
-**Retrieval over compaction — prior art and our position (research intake 2026-10-30, intake-2522..2534).** Keeping the full session record and letting the agent search it is not new: MemGPT (2023, intake-2530) kept every message in searchable recall storage beside a recursive summary; Cursor (2026-01-06, intake-2524), Claude Code and OpenClaw (intake-2534) keep a summary and hand the agent the full transcript. Our REPL already does the same: old context is written to a file with a `read_file` pointer (`src/graph/compaction.py`), long outputs spill with `peek` pointers, and the session-log block carries the summary plus `Full log: peek(...)`. The only new element in Mainplane (intake-2522, intake-2523) is dropping the summary entirely; its evidence is one session's hand-off cost (n=1) with no task-accuracy measurement. Measured evidence that summaries lose execution state is TRACE (intake-2527) and PCC (intake-2528#record); evidence that literal search is what makes recall easy is NoLiMa (intake-2531). The deciding experiment is the first-party A/B in tool-output-compression.md (TOC-MP-1..4).
+**Retrieval over compaction — prior art and our position (research intake 2026-10-30, intake-2522#record..2534).** Keeping the full session record and letting the agent search it is not new: MemGPT (2023, intake-2530#record) kept every message in searchable recall storage beside a recursive summary; Cursor (2026-01-06, intake-2524), Claude Code and OpenClaw (intake-2534) keep a summary and hand the agent the full transcript. Our REPL already does the same: old context is written to a file with a `read_file` pointer (`src/graph/compaction.py`), long outputs spill with `peek` pointers, and the session-log block carries the summary plus `Full log: peek(...)`. The only new element in Mainplane (intake-2522#record, intake-2523) is dropping the summary entirely; its evidence is one session's hand-off cost (n=1) with no task-accuracy measurement. Measured evidence that summaries lose execution state is TRACE (intake-2527#record) and PCC (intake-2528#record); evidence that literal search is what makes recall easy is NoLiMa (intake-2531). The deciding experiment is the first-party A/B in tool-output-compression.md (TOC-MP-1..4).
 
 Source: research intake session intake-mainplane-20261030, plan sha256 525849605518c57ce866f299b686116b6686df9efb457f4af9fc5f0866ffe097.
 
@@ -1200,3 +1200,61 @@ Sources: [tool-output-compression](../handoffs/active/tool-output-compression.md
 - Tool-surface size (intake-2565#record; [w1_agent](../research/deep-dives/ws58-20261031/dives/w1_agent.yaml)): vendor guidance says tool choice degrades past 30-50 definitions. Locally the REPL exposes ~55 globals plus 55 deferred registry tools, and only 4/81 enforced and 26/685 non-enforced frontdoor REPL rows called any tool in a turn-1 replay. Proposed AGENT-2: a reduced-surface arm, promoted only if a role advertises >50 tools and tool-call rate rises with pass rate not lower.
 - Local constraints for any KV-fusion path (AGENT-6): state serializes per layer in cache dtype (so f16, not q8_0), V layout depends on v_trans/flash-attn, and hybrids write only attention-layer cache. Resin's slab pool restores attention, SWA and recurrent state at one aligned boundary (AGENT-10 compares llama.cpp `seq_cp`).
 - Looped models: PLT shares first-loop KV across loops while the Ouro port keeps one KV entry per loop and layer, so KV grows R times (intake-2571#record, intake-2585#record; [w1_loop](../research/deep-dives/ws58-20261031/dives/w1_loop.yaml)).
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
+
+**Confidence: verified** — 8 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
+
+- intake-2150#record (ACON): A procedure for tuning an LLM compaction prompt from paired success/fail trajectories, validated only on hosted gpt-4.1-class agents with peak-token proxies. Usable for the tuning loop and contrastive-pair measurement. Verdict adopt_patterns, integrated; linked to tool-output-compression.
+- intake-2151#record (VISTA latent context managers): Exposing per-block size, age and status to the agent with byte-exact file recovery beat fixed masking and clearing on a 1M-token tool benchmark (50.7 vs 28.0/26.7). It refines rather than contradicts an earlier intake finding. Verdict adopt_patterns, integrated.
+- intake-2152#record (LCM): A vendor design paper whose only evidence is OOLONG aggregation, where the gain over Claude Code comes from out-of-context map operators. It does not test agent recovery of compacted content. Verdict adopt_patterns, integrated; linked to delegation-context-preassembly.
+- intake-2153#record (Yuj harness repository): Gives exact reusable constants for age-tiered tool-result elision and public per-task outcomes reproducing the paper arithmetic, but the data is the author own. At HEAD the stall detector is only an equal-observation check. Verdict adopt_patterns, integrated; linked to context-folding-progressive.
+- intake-2157#record (Masking Stale Observations): Observation masking is a regime-dependent, turn-increasing, token-saving intervention: large gain for mid-accuracy models with good evidence, near zero or negative for strong models, with extra turns paid in every regime. Verdict adopt_patterns, integrated; linked to context-folding-progressive.
+- intake-2158#record (Active Context Compression (Focus)): A small N=5 feasibility demonstration of agent-initiated checkpoint-and-prune; its own text shows the cadence had to be externally mandated. Value is as a named baseline. Verdict worth_investigating, integrated; linked to tool-output-compression.
+- intake-2172#record (AgentSwing): Citable for the eta/rho failure decomposition and the finding that routing without lookahead is no better than a good static strategy. BrowseComp numbers are not evidence for any EPYC role. Verdict adopt_patterns, integrated; linked to tool-output-compression.
+- intake-2189#record (AgentLongBench): A fixed-bucket static long-transcript QA suite (32K to 4M) with a useful difficulty notion (ACL); it does not generate lengths on demand and does not run a policy inside the agent loop. Verdict adopt_patterns, integrated; linked to tool-output-compression.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+
+**Confidence: verified** — 19 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-20, IDs 2063–2115 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2063-2115.md)
+
+- intake-2096#record (llama.cpp checkpoints across slot save PR): supersedes the earlier recorded status: PR #26004 is now merged (2026-10-08), where the earlier dive read it as open. Verdict worth_investigating; linked to autokernel-champion-aggregate.md.
+- intake-2098#record (llama.cpp chat split-by-role PR): closed unmerged; its role-span idea is superseded by merged template-autoparser message-span work from PR #22929. Verdict superseded.
+
+### Run 2026-10-21, IDs 2214–2340 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2214-2340.md)
+
+- intake-2241#record (Y-Combinator for LLMs (lambda-calculus)): A design contrast, not evidence of gains for this stack: fixed-plan chunk-map-reduce is a legitimate cheap arm against open-ended REPL for long-input aggregation. Worth-investigating; linked to repl-turn-efficiency.md.
+- intake-2258#record (Chain of Agents): Cite for the sequential-chain mechanism and the authors' ablations with their scope (2024 API models, temperature 0, single runs); 'sequential beats parallel' is not a general result. Worth-investigating; linked to delegation-context-preassembly.
+- intake-2273#record (LLMxMapReduce): Cite for the typed per-chunk record and recursive collapse as design candidates and the direction of the schema ablation, scope-limited (Llama3-70B, InfiniteBench, single run). Worth-investigating; linked to delegation-context-preassembly.
+- intake-2276#record (Manus context engineering): Reports KV-cache hit rate as the key production-agent metric (~100:1 input:output, vendor-reported without method) and prescribes a stable prompt prefix. Dispositioned knowledge, integrated; linked to repl-turn-efficiency.md.
+- intake-2282#record (PRISM): Two design rules are usable: emit diffs to a typed state, and keep the state append-only so the prefix cache holds; its retrieval-task quality claims are not. Worth-investigating; linked to delegation-context-preassembly.
+- intake-2284#record (SRLM uncertainty-guided RLM): A best-of-K selector over REPL programs bought with K-fold parallel compute; the 22 is points not percent and equal wall-clock, not equal tokens, so not a free improvement. Worth-investigating; linked to repl-turn-efficiency.md.
+- intake-2306#record (Are Long-LLMs A Necessity?): Cite the action-space idea (retrieve or scan, append or merge, null to skip) and the token-cost caveat (112% on summarization); 'long-LLMs are not necessary' is not established. Worth-investigating; linked to delegation-context-preassembly.
+- intake-2308#record (LongAgent): Cite only the mechanism: answer clustering then pairwise chunk-sharing is a cheap deterministic way to adjudicate conflicting chunk readers, and members hallucinate when a chunk lacks the answer. Worth-investigating; linked to delegation-context-preassembly.
+
+### Run 2026-10-22, IDs 2386–2458 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2386-2458.md)
+
+- intake-2409#record (Memory condensation study): useful as a second independent-harness data point that heuristic observation masking is the cheap safe condenser; says nothing about 100+ event horizons. Verdict adopt_patterns; linked to harness-improvement-loop.md.
+
+### Run 2026-10-30, IDs 2522–2528 — [digest](../research/deep-dives/intake-digests/2026-10-30-ids-2522-2528.md)
+
+- intake-2522#record (Mainplane "Compaction is a mistake"): Numbers confirmed verbatim but scope narrowed to n=1, hand-off cost only, no accuracy; novelty is LOW since summary-plus-pointer already ships in Claude Code and Cursor and our orchestrator writes old context to REPL files. Adopt-patterns; handoff tool-output-compression.
+- intake-2524#record (Cursor dynamic context discovery): Confirmed as the summary-plus-pointer hybrid that Mainplane argues against, published earlier; our orchestrator already implements the same hybrid (summary with a Full log peek pointer). Already integrated; handoff tool-output-compression.
+- intake-2525#record (Addressable Recall Compaction paper): Retrieval benefit is real but narrow (synthetic lookup, Qwen3 only, no code released, CC BY-NC-ND); serving-cost claims are a roofline replay on a modeled H200. Usable patterns: content-addressed spill stubs. Handoff tool-output-compression.
+- intake-2526#record (Beyond Compaction: Structured Context Eviction): Evidence concerns eviction under a budget, not retrieval; implications for our A/B are logging re-fetch cost per arm and prefix-cache invalidation on CPU prefill. Agent-authored episode annotation declined for small workers. Handoff tool-output-compression.
+- intake-2527#record (Towards Reliable Context Compression for Long-Horizon Agents): v2 read: single benchmark (AppWorld, 168 tasks), 2 runs per task, 4,096-token window, no pointer/grep arm. Adoptable: Pass^2/Pass@2 reliability metrics and a post-boundary blocked-action count. Handoff tool-output-compression.
+- intake-2528#record (Parallel Context Compaction paper): One claim (monotonic block-size gain) was overturned by the paper's own Fig 4a and the parallel speedup narrowed. Best quantified evidence that summaries are unstable run to run and compaction can dominate wall time on small models. Handoff tool-output-compression.
+
+### Run 2026-10-30, IDs 2529–2534 — [digest](../research/deep-dives/intake-digests/2026-10-30-ids-2529-2534.md)
+
+- intake-2534#record (OpenClaw session pruning and compaction): Confirmed as another shipping harness that keeps the full transcript on disk beside a summary; docs are unpinned and may differ from the read commit, and some compaction.md sections were not read. Adopt-patterns; handoff tool-output-compression.
+
+### Run 2026-10-31, IDs 2535–2544 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2535-2544.md)
+
+- intake-2544#record (SWE-Pruner): Headline token cut narrowed to the Table 1 figure of -23.1%. Worth investigating; history/observation compression sources declined, owned by the tool-output-compression lineage.

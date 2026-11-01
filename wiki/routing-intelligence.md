@@ -1576,3 +1576,16 @@ Sources: [2026-10-29 delivered routing and scoring](../progress/2026-10/2026-10-
 
 - d1-Omni-2B (intake-2553#record; [w1_agent](../research/deep-dives/ws58-20261031/dives/w1_agent.yaml)), vendor card: typed calibrated answers in one forward pass. The stage-1 "no llama.cpp path" claim was overturned: a GGUF is served via `/v1/systemone` from b11960 (noul/choice/score only); our frozen tree lacks it, a build cost rather than a decline. Text d1-2B beats Omni on 7 of 9 decision rows and is the router comparator.
 - Proposed AGENT-12 (typed-decision-plane): replay frozen routed tasks on a scratch upstream server in four arms (d1-2B, d1-Omni, TD-23 incumbent, learned MLP router), promoting only if accuracy and ECE are no worse and p50 latency is lower, with permuted option keys as the negative control. AGENT-14: read the LFM Open License before any use beyond a screen.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
+
+**Confidence: verified** — 5 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
+
+- intake-2553#record (d1-Omni-2B model card): overturned the 'no GGUF/llama.cpp path' claim: LiquidAI publishes d1-Omni-2B-GGUF and d1-2B-GGUF. Treated as a candidate local typed-decision backend; benchmark scores are not expected accuracy. Integrated via conversation-stack and typed-decision-plane.
+- intake-2581#record (d1-Omni-2B-GGUF card): adds beyond intake-2553#record the exact serve command, batch flags, supported type subset and file sizes for llama.cpp /v1/systemone; limited to noul/choice/score-only and yields no quality, calibration or latency number. Integrated via typed-decision-plane.
+- intake-2593#record (llama.cpp PR 29818 /v1/systemone): full request/response contract recorded plus the temperature-in-GGUF fact; the parity table (up to 2.2e-2 on one request, against each model's own Python reference) is not calibration or batch-invariance evidence. Integrated via typed-decision-plane.
+- intake-2601#record (llama.cpp PR 29832 generic typed decisions): open draft demonstrating model-agnostic typed decisions through next-token label readout, so any in-lineup chat model could be scored; probabilities come from a few hand-picked examples and are not accuracy evidence. Integrated via typed-decision-plane.
+- intake-2602#record (llama.cpp issue 31475 systemone prefix re-read): open, unconfirmed perf defect for hybrid decision models at np>1 with an unmerged local fix; the 0.007 shift is a single-probability observation, not a noise floor, so shifts are to be measured on our model. Verdict new_opportunity; linked to typed-decision-plane.

@@ -894,9 +894,9 @@ Three eval-consumer disciplines arrive from the same intake batch: a redundancy 
 
 ### Key findings
 
-- **CJ-13 — two-cheap-readers redundancy arm.** Pair a typed judge with a local LLM judge; report pairwise agreement and human-disagreement cost per the intake-1475/1486 methodology; label the result "agreement is not accuracy". No adoption decision — CJ-GATE remains the operator's. ([canonical-judge-suite-revamp](../handoffs/active/canonical-judge-suite-revamp.md))
+- **CJ-13 — two-cheap-readers redundancy arm.** Pair a typed judge with a local LLM judge; report pairwise agreement and human-disagreement cost per the intake-1475#record/1486 methodology; label the result "agreement is not accuracy". No adoption decision — CJ-GATE remains the operator's. ([canonical-judge-suite-revamp](../handoffs/active/canonical-judge-suite-revamp.md))
 - **CJ-14 — the dinostomp measurement discipline for new judge instruments**: hashed manifests/run records, a blind probe as the lower bound, pre-registered per-item distributions (intake-1490). The motivating audit is direct: the reference implementation's shipped shuffled-context control was defective, and the informed-vs-blind lift was ~25 points only after correction.
-- **ECR-TD-1 — cost-order anchor + same-rubric local comparison.** The per-million-checks cost order at list rates is Jev ~$160, DeepSeek Flash $260, Gemini $1,600, Astra $18,700, Fable 5.1 $33,000 (intake-1475). Before assuming a typed judge is the cheapest adequate reader, run one same-rubric local cheap-judge arm. ([eval-benchmark-cost-reduction](../handoffs/active/eval-benchmark-cost-reduction.md))
+- **ECR-TD-1 — cost-order anchor + same-rubric local comparison.** The per-million-checks cost order at list rates is Jev ~$160, DeepSeek Flash $260, Gemini $1,600, Astra $18,700, Fable 5.1 $33,000 (intake-1475#record). Before assuming a typed judge is the cheapest adequate reader, run one same-rubric local cheap-judge arm. ([eval-benchmark-cost-reduction](../handoffs/active/eval-benchmark-cost-reduction.md))
 - **ECR-TD-2 — external dashboard citations must be snapshot-captured** (payload hash or rendered snapshot) before entering a claim tuple: the "3–329 s" baseline is not derivable from its cited live page (intake-1492#record).
 - **VB-TDP-1 — the write side lands before the first measurement run.** One self-hashed ClaimTuple per TD-2/TD-3/PAW-3 run at the source table; "a tuple invented on read cannot gate a decision." ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
 - **The quality figures these instruments will adjudicate stay unresolved.** An independent rerank reproduction ties Cohere Pro (nDCG 0.692 vs 0.691, CI crosses 0) with 24.7% order sensitivity (intake-1486); the vendor's own evals put the system behind Sol/Opus (intake-1471#record, corrected). Calibration is the named gap: 65% of a 7B's wrong fields scored >0.90 (intake-1474), so no gate precedes TD-2's ECE/reliability measurement.
@@ -1713,7 +1713,7 @@ cross-model tables are drawn to argue about. A table that does not say which sca
 row cannot distinguish a better model from a better harness.
 
 Apply the gate **first** to the two citation families landing in this wave: the BEAM citations
-(`intake-1330`) and the LOCA-bench citations (`intake-1342`; the plan item that filed this rule
+(`intake-1330#record`) and the LOCA-bench citations (`intake-1342`; the plan item that filed this rule
 mistyped the id as `intake-1331`, which is the firstmate outcome-store entry — corrected here).
 
 **Filed as compiled knowledge, NOT as a `MEASUREMENT_POLICY` amendment.** The measurement trust
@@ -1731,7 +1731,7 @@ harness-design cost and then prices only its own training side (~1,800 H200 GPU-
 and the weights/training cost — or be declined.** A one-sided budget cannot support a claim that
 one regime beats the other.
 
-### The interaction-protocol rule and the resolution rule (`intake-1330`)
+### The interaction-protocol rule and the resolution rule (`intake-1330#record`)
 
 A benchmark that publishes **no admissible-protocol rule** — no statement of what an evaluated
 system is and is not allowed to do while answering — cannot arbitrate cross-system comparisons.
@@ -1750,7 +1750,7 @@ harness-limited rather than question-conditioned responsiveness or multi-criteri
 ([judge source](https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/src/evaluation/compute_metrics.py),
 [100K prompt files](https://github.com/mohammadtavakoli78/BEAM/tree/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K)).
 
-### The aggregation-identity check is TWO-SIDED (`intake-1337`)
+### The aggregation-identity check is TWO-SIDED (`intake-1337#record`)
 
 - **Positive case:** four external BEAM_10M headlines **reproduce the unweighted ten-ability mean to
   the decimal**. The published headline is that mean; the identity holds.
@@ -3489,7 +3489,7 @@ Terminal-Bench also defines an 8-category failure taxonomy (Disobey Task Specifi
 
 The Tulving Episodic Memory Benchmark (arXiv 2501.13121, ICLR 2025) introduces a complementary evaluation paradigm to the existing RULER/NIAH/LongBench/ZeroSCROLLS suite. Where those benchmarks test retrieval ("find the needle"), Tulving tests episodic memory: can a model track entity states across 200 chapters and order events chronologically? The benchmark generates synthetic book-like narratives with controlled ground truth (dates, locations, entity names, event contents) using a skewed geometric distribution for entity frequency, enabling multi-occurrence tracking evaluation.
 
-Two metrics: **Simple Recall Score** (F1 grouped by matching event count bins: 0/1/2/3-5/6+, averaged across bins — already correct on the EVENT basis, and worth stating explicitly because the authors' shipped `bins_items_correct_answer` column is computed from `n_chapters_correct_answer`, **not** from the item count its name invites you to read: reproducing that column matches 686/686 on chapters and only 629/686 on items, verified 2026-09-14 under M-12e, research `dcb769c1`) and **Chronological Awareness Score** (average of Latest State score and Kendall τ temporal ordering score). The chronological score is dramatically harder — even GPT-5 only achieves 0.804 vs 0.942 recall. **Provenance correction (2026-09-07)**: that 0.804-vs-0.942 gap is a **post-paper leaderboard value**, not a benchmark result from the paper — it comes from the repo README ranking table at `github.com/ahstat/episodic-memory-benchmark` @ `892b22af097d4389d4f1b9cd47b5c51fdacd9bef`, where GPT-5 is flagged "evaluated after paper acceptance"; cite the SHA or a paper table, never the bare figure. 11 datasets span 10K-1M tokens across **4 released variant directories / 3 book styles** (default, world news, sci-fi; plus ordered and GPT-4o-generated variations) — a previously compiled "4 narrative styles" conflated the directory count with the style count. (`intake-408#01`, `intake-408#record`)
+Two metrics: **Simple Recall Score** (F1 grouped by matching event count bins: 0/1/2/3-5/6+, averaged across bins — already correct on the EVENT basis, and worth stating explicitly because the authors' shipped `bins_items_correct_answer` column is computed from `n_chapters_correct_answer`, **not** from the item count its name invites you to read: reproducing that column matches 686/686 on chapters and only 629/686 on items, verified 2026-09-14 under M-12e, research `dcb769c1`) and **Chronological Awareness Score** (average of Latest State score and Kendall τ temporal ordering score). The chronological score is dramatically harder — even GPT-5 only achieves 0.804 vs 0.942 recall. **Provenance correction (2026-09-07)**: that 0.804-vs-0.942 gap is a **post-paper leaderboard value**, not a benchmark result from the paper — it comes from the repo README ranking table at `github.com/ahstat/episodic-memory-benchmark` @ `892b22af097d4389d4f1b9cd47b5c51fdacd9bef`, where GPT-5 is flagged "evaluated after paper acceptance"; cite the SHA or a paper table, never the bare figure. 11 datasets span 10K-1M tokens across **4 released variant directories / 3 book styles** (default, world news, sci-fi; plus ordered and GPT-4o-generated variations) — a previously compiled "4 narrative styles" conflated the directory count with the style count. (`intake-408#record`, `intake-408#record`)
 
 Key findings for benchmark methodology:
 - **95% deterministic scoring.** Ground truth items are specific tokens (dates, location names, entity names). Exact + normalized string matching covers ~95% of cases. The LLM-as-judge handles only ~5% partial matches (e.g., "Bethpage State Park" vs "Bethpage Black Course" = 0.5). This aligns with our ch07 deterministic scoring philosophy.
@@ -3502,7 +3502,7 @@ Pre-generated datasets are available on Figshare (MIT license). Integration into
 
 2026-06-20 EPYC baseline: `epyc-inference-research` run `20260619_141212` completed the documented 20ch/456-QA Tulving slice on `ingest_long_context` with production/default GGUF expert settings (`--skip-moe-reduction`). Raw artifacts were packaged in research commit `b6edc64`; research `9e63af0` fixed Tulving ground-truth parsing for NumPy-array/list-repr answers and regenerated the score artifacts plus `tulving_failure_modes.md`. The corrected deterministic scorer covered `456/456` questions with no missing ground truth, avg F1 `0.4309`, Simple Recall **`0.5684`** (scorer v2, over the 366 `get=="all"` questions; the `0.5530` figure was v1, computed over all 456), Chronological Awareness `0.1593` — kept, with the caveat that 37/45 tau questions now fail closed for partial coverage and 30/45 carry <2 ground-truth items — and avg decode `17.27 t/s`; the benchmark log ended `448 completed, 8 skipped, 0 errors` because the corrected resume reused the first 8 rows. This result is a mixed baseline: usable lexical entity/time/location recall, poor event-content/full-detail retrieval, weak chronology, and failed zero-answer hallucination checks. It should drive targeted follow-up model-batched comparisons, not routing/memory promotion. **M-12e re-score 2026-09-14** — research `dcb769c1`, artifact `benchmarks/results/runs/20260619_141212/tulving_score_rescored_20260914.json`; the original `tulving_score.json` is untouched, and `SCORER_VERSION = 2` now rides in every scored artifact so v1 and v2 figures cannot be compared by accident.
 
-> Source: [intake-408](/workspace/research/intake_index.yaml) -- arXiv 2501.13121, ICLR 2025; [decision-aware-routing.md](/workspace/handoffs/active/decision-aware-routing.md) -- routing intelligence data; [research-evaluation-index.md](/workspace/handoffs/active/research-evaluation-index.md) P3b -- integration plan
+> Source: [intake-408#record](/workspace/research/intake_index.yaml) -- arXiv 2501.13121, ICLR 2025; [decision-aware-routing.md](/workspace/handoffs/active/decision-aware-routing.md) -- routing intelligence data; [research-evaluation-index.md](/workspace/handoffs/active/research-evaluation-index.md) P3b -- integration plan
 
 > Source: [Integration Test Coverage](/workspace/handoffs/active/integration-test-coverage.md) -- intake-369, Terminal-Bench 2.0 methodology patterns, outcome-driven verification, container-per-test, three-property test design
 ## Math-Verify Integration for Math Benchmarks
@@ -7515,3 +7515,117 @@ The English NeMo offline re-score already filed all four settings. Its later eig
 The research actor-wire CI repair explicitly disables a shared helper’s admission waiver in the refusal test. Its factory-not-reached assertion and production admission gate are preserved; hosted run 41303563156 passed on research commit aa2143357d5382934580bcab6744b87b5fd1a6d4. This is a test-fixture repair; the broader multi-repository CI task remains open. [Progress](../progress/2026-11/2026-11-01-codex3.md) · [CI evidence](../artifacts/coordination/codex3-full-wrap-20261101-1230/README.md)
 
 Sources: [Conversation stack](../handoffs/active/conversation-stack.md) · [Codex3 progress](../progress/2026-11/2026-11-01-codex3.md) · [Control review](../artifacts/coordination/codex3-full-wrap-20261101-1230/STT5-CONTROL-REVIEW.md).
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
+
+**Confidence: verified** — 15 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
+
+- intake-2149#record (Continual Learning Bench): A metric and protocol source rather than a leaderboard: paired stateful-vs-stateless per-instance gain, headroom normalisation (with its small-denominator hazard), stability/plasticity measures. Verdict adopt_patterns, integrated; linked to conversational-memory-eval-instrument.
+- intake-2154#record (Scaffold Effects on GAIA): Citable only as: scaffold/loop structure is a model-conditional variable on GAIA with frontier API models, so a single-scaffold number is not a model property. The 28-point figure must be qualified as the robust slice. Verdict adopt_patterns, integrated.
+- intake-2156#record (SEA-Eval): Citable for a fixed-order sequence design (repeat, variant, interference after unrelated tasks) and a congested-memory condition for exposing memory-dependent effects. Verdict adopt_patterns, integrated; linked to conversational-memory-eval-instrument.
+- intake-2164#record (Theory of Reliable Self-Evolution): Design input only: the decomposition and the validation-budget-is-the-bottleneck finding are usable as HIL-2 reporting text, while the theorems rest on assumptions such as a fixed task distribution. Verdict adopt_patterns, integrated; linked to harness-improvement-loop.
+- intake-2165#record (One Recipe, Many Harnesses): Defect-mass pre-screen, regression-penalized selection score, instance-token memory filter and retention metric are portable and cheap; headline gains rest on small splits and one run per cell. Verdict adopt_patterns, integrated; linked to promptforge-mutation-safety-contract.
+- intake-2166#record (HarnessX): Useful for failure cases and gate design only: the Telecom R7 and GAIA Global-collapse cases show a per-edit seesaw misses accumulated sub-threshold coupling, relevant to PromptForge. Verdict adopt_patterns, integrated; linked to promptforge-mutation-safety-contract.
+- intake-2168#record (Continual Learning Bench repository): A source of tasks, scorers and artifacts rather than a turnkey local benchmark: a local llama-server or orchestrator /v1 endpoint is not a supported configuration, since LiteLLM is called without api_base in the ICL path. Verdict adopt_patterns, integrated; linked to conversational-memory-eval-instrument.
+- intake-2169#record (SkillLearnBench): Citable for protocol and three cautions, not effect sizes: a distilled skill must be both adopted and correct so skill-usage rate is reported beside accuracy, and learned skills can score below no-skill. Verdict adopt_patterns, integrated; linked to episodic-memory-integrity.
+- intake-2173#record (PACE): Citable for the diagnosis (greedy keep/revert is uncontrolled adaptive testing) and the paired-discordant e-process form for HIL A/B arms; not a familywise or run-level guarantee, which the paper disclaims. Verdict adopt_patterns, integrated; linked to promptforge-mutation-safety-contract.
+- intake-2174#record (Statistical Godel Machine): Citable for the trajectory-level union-bound structure with a predictable summable allocation and the ledger discipline (count opened attempts including failed, reserve before observing, never reset on restart). Verdict adopt_patterns, integrated; linked to autopilot-sequential-allocation.
+- intake-2175#record (Statistical Limits of Self-Improving Agents): Citable only for the structural point of fixing the candidate family and gate thresholds before looking at validation data; the VC margin is vacuous at EPYC sample sizes. Verdict adopt_patterns, disposition declined; no linked handoff.
+- intake-2180#record (SkillLearnBench repository): Usable as a corpus of 1,277 generated and human SKILL.md files for read-only calibration of a literal-constant lint, and as a definition check on its adoption metric. Verdict adopt_patterns, integrated; linked to episodic-memory-integrity.
+- intake-2181#record (SkillGenBench): Independent corroboration that generated skills are about neutral against a no-skill arm under deterministic verifiers, plus protocol hygiene (no-skill arm, task-level bootstrap CI). Verdict adopt_patterns, integrated; linked to episodic-memory-integrity.
+- intake-2187#record (Online multiple testing with e-values): e-LOND is correct and sharp but an FDR procedure whose levels shrink like gamma_t; it does not rescue a spent flat-alpha budget and at the paper default gamma is stricter than flat 0.05 per fingerprint. Verdict adopt_patterns, integrated; linked to autopilot-sequential-allocation.
+- intake-2188#record (Approval policies for ML-based modifications): Located as arXiv:1912.12413 (Biometrics 77(1)); the dive read the arXiv v1 preprint only (proofs, Algorithms 1-2, simulation). Verdict adopt_patterns, integrated; linked to autopilot-sequential-allocation.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
+
+**Confidence: verified** — 9 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-21, IDs 2341–2373 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2341-2373.md)
+
+- intake-2346#record (Open ASR Leaderboard paper): verdict adopt_patterns: leaderboard averages (4.94, 6.26, 6.32, 6.34) are four different measurands for one model and must carry date, set list, reference track and scorer SHA; leaderboard RTFx is not transferable. Integrated via conversation-stack and vidya-belief-substrate-program.
+- intake-2352#record (huggingface open_asr_leaderboard code): verdict adopt_patterns: the numbers 6.32 (March scorer, 8 sets), 6.23-6.26 (current, 7 sets, standard refs), 4.94 (cleaned refs) and 6.51 (live nine-column average) measure different things and cannot be quoted as one. Integrated via conversation-stack.
+- intake-2353#record (Earnings22-Cleaned-AA dataset): verdict adopt_patterns: it is six other calls (0/6 overlap with the leaderboard standard test), so standard-vs-cleaned Earnings22 WER differences mix calls, scorer and references. Integrated via conversation-stack.
+- intake-2354#record (Benchmaxxer Repellant blog): verdict adopt_patterns: states design intent, discloses a vendor-supplied-data conflict and measures nothing, so it is not evidence that private sets prevent benchmark fitting; 'private' is not a technical property. Integrated via conversation-stack.
+- intake-2365#record (FD-Bench full-duplex benchmark): full-duplex benchmarking pipeline, dive-verified at creation with close-out completed. Verdict adopt_patterns; linked to conversation-stack.
+- intake-2372#record (Quantifying Benchmark Optimization in ASR): on VoxPopuli the best-WER open models are those that reproduce reference conventions, so vendor or model-card VoxPopuli/LibriSpeech WERs for several model families are not clean evidence of transcription ability. Verdict adopt_patterns; linked to conversation-stack.
+- intake-2373#record (Artificial Analysis AA-WER Streaming): the claim that Nemotron is 2nd in streaming ASR latency is dated: 2nd on first-partial at launch, 3rd now, 9th of 47 on time to final, and its 80 ms variant is 46th of 47 on WER. Verdict adopt_patterns; linked to conversation-stack.
+
+### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
+
+- intake-2583#record (Open d1 Liquid AI blog): dated 2026-10-07 and narrowed to d1-3B and d1-omni-600M; figures are vendor-reported and do not apply to the 2B models, and a licence-wording mismatch is noted. Integrated via typed-decision-plane.
+- intake-2595#record (llama.cpp issue 30402 vllm-d3 batch dependence): narrowed to the vllm-d3 model and a non-causal split; the invariant is that non-causal sequences stay whole in one ubatch. Not proof d1 is batch-dependent, and fix 30408 is unretested on a build containing cbe28bb3. Integrated via typed-decision-plane.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+
+**Confidence: verified** — 51 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-21, IDs 2214–2340 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2214-2340.md)
+
+- intake-2224#record (Artificial Analysis DeepSeek V4 Flash): AA independently measured DeepSeek V4 Flash 0731 (max) at 78.65% on Terminal-Bench 2.1 under Terminus 2 / E2B / 3 repeats, consistent with the earlier ~79% figure. Worth-investigating; linked to harness-improvement-loop.md.
+- intake-2234#record (EdgeBench): 134 executable tasks in six families, 12+ hours per run, hidden-judge feedback with host-side auto-evaluation; arXiv v1 verified. Worth-investigating, integrated; linked to eval-benchmark-cost-reduction.
+- intake-2235#record (SForge (EdgeBench harness)): Apache-2.0 harness (v1.1.0, shallow clone verified) whose judge server hides auto-evaluation entries from the agent unless a host-side admin secret is supplied. Dispositioned monitor; linked to autokernel-research-loop.md.
+- intake-2246#record (Oolong): The aggregation (classify-then-count) counterpart to retrieval suites: a retrieval-style PASS at a given length says nothing about aggregation at that length. Worth-investigating; linked to yarn-context-extension-research.
+- intake-2260#record (Composio DeepSeek V4 Flash harness): Cite only for the exclusion-handling worked example (excluding ungradable runs that correlate with an arm's behaviour changes its rank). Worth-investigating; linked to harness-improvement-loop.md.
+- intake-2261#record (rlm-replication-study): Only a worked example that classify-then-Counter is competitive on counting-light questions and collapses on exact counts; its 87.8% figure is not citable. Worth-investigating; linked to rao-redel-substrate-spike.md.
+- intake-2267#record (HELMET): Cite when arguing a needle-only gate underdetermines downstream behaviour and for the observation that context extension can degrade shorter lengths; its numbers are not reproduced. Worth-investigating; linked to yarn-context-extension-research.
+- intake-2268#record (HoloBench): Cite for the finding that amount of relevant information, not raw length, drives aggregation loss, and for generated-SQL gold; its numbers (API models) are not imported. Worth-investigating; linked to yarn-context-extension-research.
+- intake-2271#record (How Inference Compute Shapes Evaluation): Cite for 'a fixed-budget score is budget-censored; pin and report the budget'; text sections read in full, regression appendices only skimmed. Worth-investigating; linked to harness-improvement-loop.md.
+- intake-2272#record (terminal-bench-2-traces): A table of 445 trial outcomes, not a trace corpus; usable only as an external illustration of harness-level failure domains (timeout, context overflow, infra). Adopt-patterns; linked to harness-improvement-loop.md.
+- intake-2281#record (Oolong repo and datasets): Local scoring should use the released scorer rather than paper prose (numeric = 0.75**abs(diff) on ints only, real answers via boxed extraction) with dataset revisions pinned. Worth-investigating; linked to rao-redel-substrate-spike.md.
+- intake-2291#record (TRAIL): Usable for its failure-category vocabulary and its warning that long-trace judges fail; its base rates are not a prior for our traces and the 11% is a mean needing context. Adopt-patterns; linked to harness-improvement-loop.md.
+- intake-2298#record (CatchBench): A method warning, not a leaderboard: any mechanical failure detector must be reported against a run-length baseline and checked for a construction-order shortcut. Adopt-patterns; linked to harness-improvement-loop.md.
+- intake-2300#record (Consensus is Not Verification): Agreement is not correctness when errors are correlated; temperature sampling barely diversifies answers (2.9% plurality flips); verbalized confidence is a consensus proxy. Adopt-patterns; linked to repl-turn-efficiency.md.
+- intake-2310#record (LongRCA Bench): Natural long failures are hard to localize (best baseline 13.2% exact step, own method 24.1%, one backbone) and human exact-step agreement is only 40.3%. Adopt-patterns; linked to harness-improvement-loop.md.
+- intake-2315#record (TelemetrySuffBench): Take the detection-versus-origin distinction and stage collapse: a scan over symptom-level events (errors, truncation, loops, terminal status) detects failure and labels only the first visible symptom. Adopt-patterns; linked to harness-improvement-loop.md.
+- intake-2317#record (Who&When): Cite as 184 annotated failure logs (126 algorithm-generated, 58 hand-crafted), never 127 trajectories; each hand-crafted cell is n=58, so one log is 1.7 points. Adopt-patterns; linked to harness-improvement-loop.md.
+- intake-2321#record (AgentRx): Cite as 170 trajectories (v2), 115 only for v1; its agreement figure is a category kappa on 30 trajectories rather than step agreement, and it shows no judge-free class. Adopt-patterns; linked to harness-improvement-loop.md.
+- intake-2322#record (akitaonrails llm-coding-benchmark): No dollar or score is importable as a baseline (one run carries three costs and two scores); useful as evidence that an unmetered or cache-blind token ledger understates agent cost. Adopt-patterns; linked to harness-improvement-loop.md.
+- intake-2323#record (Great Models Think Alike): Judge-family affinity and correlated errors are measured (MCQ, leaderboard models), not proven causal; CAPA/error-consistency is usable as a report on our own judge and grader records. Adopt-patterns; linked to canonical-judge-suite-revamp.md.
+- intake-2328#record (General Agent Evaluation (Exgentic)): Some claims were withdrawn at Stage 4 for lacking quotes; within one backbone, agent architecture choice swings results. Adopt-patterns, integrated; linked to harness-improvement-loop.md.
+- intake-2330#record (kubernetes-sigs inference-perf): A credible reference design for agentic/session load (conversation_replay, trace_session_replay, goodput, generator self-check), but not a gate statistic for us. Adopt-patterns; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2331#record (KernelBench-Hard agent traces): 740 jsonl files (466 MB) of single agent runs in Claude-Code session format across 19 harness prefixes. Worth-investigating, integrated; linked to harness-improvement-loop.md.
+- intake-2332#record (MP-Bench failure attribution): 289 logs from 121 multi-agent configurations (169 hand-crafted, 120 automatic), each annotated by three experts (~346 expert-hours). Adopt-patterns, integrated; linked to harness-improvement-loop.md.
+- intake-2338#record (TIDE): AUV separates agents with equal final success but different speed (AlfWorld: two models at 0.807 success, AUV 0.590 vs 0.629); Loop Ratio is high for small models. Adopt-patterns, integrated; linked to harness-improvement-loop.md.
+- intake-2339#record (TraceElephant): The only step-labelled natural-failure corpus here with full inputs and tool statuses plus a SWE-Agent slice, making it the best candidate for calibrating a first-mechanical-symptom detector. Adopt-patterns; linked to harness-improvement-loop.md.
+- intake-2340#record (Who&When Pro): A large synthetic label set whose labels are right by construction, but human check is label-visible acceptance on 0.8% of rows; usable as a unit-test set. Worth-investigating; linked to harness-improvement-loop.md.
+
+### Run 2026-10-22, IDs 2374–2385 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2374-2385.md)
+
+- intake-2375#record (Contextual Earnings-22 ASR benchmark): Corrected two assumptions: the benchmark is released on HF, and its split is not leak-free in the HF release. Adopt-component; integrated into conversation-stack.
+- intake-2380#record (vad_eval_comparison Silero vs TEN VAD): Entry created already dive-verified, expanded from the two VAD source entries (intake-2364#record and intake-2363#record). Adopt-component for the multilingual VAD AUC comparison; integrated into conversation-stack.
+- intake-2382#record (RW-Voice-EQ Bench): Entry created already dive-verified; adopt-patterns for the real-world voice emotional-intelligence benchmark design, integrated into conversation-stack.
+
+### Run 2026-10-22, IDs 2386–2458 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2386-2458.md)
+
+- intake-2397#record (SWE-chat paper): source measures in-session human pushback; pushback classifier prompt and annotation validation read in full. Verdict worth_investigating; linked to dev-harness-trace-mining.md.
+- intake-2404#record (AIPerf): the docs page equals the TraceLab tutorial in ai-dynamo/aiperf; the guide replays a TraceLab corpus larger than the one assumed. Verdict adopt_patterns; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2405#record (InferenceX): bench_serving is a vLLM benchmark_serving descendant limited to the random dataset; agentic numbers come from AgentX/AIPerf. Verdict adopt_patterns; linked to agentic-serving-harness-fixes.md.
+- intake-2406#record (SWE-chat repo): repo is a thin loader plus notebook; label-bearing assets are gated parquet tables and the judge prompt. Verdict worth_investigating; linked to unified-trace-memory-service.md.
+- intake-2415#record (JSONSchemaBench): measured forced share is 13% flexible and 15% compact (max 29% on MCPspec), not the 35-40% hand estimate. Verdict worth_investigating; linked to autokernel-research-loop.md.
+- intake-2417#record (kv-cache-tester): the Stage-1 premise holds for Weka traces too: hash_id_scope is local in every published trace, so no cross-session sharing. Verdict adopt_patterns; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2418#record (cc-traces-weka corpus): the family is 22 repos with differing filters; only v7 062126 (42.5% sub-agent requests) and its 256k-capped sibling matter for EPYC. Verdict adopt_patterns; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2426#record (Invisible Failures): arXiv v2 and the Apache-2.0 repo read; taxonomy signals and archetypes inspected. Verdict adopt_patterns; linked to dev-harness-trace-mining.md.
+- intake-2427#record (SWE-Together): the abstract phrase on correctness was resolved against the paper and repo (tagging, metrics, adjudication code). Verdict worth_investigating; linked to harness-improvement-loop.md.
+- intake-2428#record (Transluce misalignment study): the around-2% headline is the severe subset; any-presence rates are 14.7% and 34.7% on SWE-chat; no judge accuracy is given. Verdict adopt_patterns; linked to dev-harness-trace-mining.md.
+- intake-2429#record (Anthropic autonomy measurement): interruption rates are mechanical telemetry; only reasons and stop classification are model-made. Verdict adopt_patterns; linked to dev-harness-trace-mining.md.
+- intake-2435#record (swebench-cc-traces): raw carries full request content, the only public Claude Code trace set so; both repos read via HF API and sampled. Verdict worth_investigating; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2443#record (Docent): the judge/cluster stack can run against a local OpenAI-compatible endpoint only via OPENAI_BASE_URL plus a preferences override; the repo was previously unread. Verdict adopt_patterns; linked to dev-harness-trace-mining.md.
+- intake-2445#record (Agentic coding returns to expertise): the page contains neither interrupt nor tenure evidence as the brief framed; only rated expertise, actions per prompt, success and abandonment are measured. Verdict adopt_patterns; linked to harness-improvement-loop.md.
+- intake-2448#record (AI Agents and Higher-Order Work): full text read where earlier notes covered only the abstract; author attribution came from the brief and was not verified. Verdict adopt_patterns; linked to harness-improvement-loop.md.
+
+### Run 2026-10-22, IDs 2461–2493 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2461-2493.md)
+
+- intake-2483#record (Certifying Compressed Language Models): The Stage-1 premise (an audit that contradicts SLQ) was overturned: the audited 17 do not include SLQ or any kaitchup card, and SLQ is only cited in related work. Worth investigating; handoff iqk-iquant-enablement.
+- intake-2484#record (statistical test for LLM degradation (ICLR 2026)): Minted and dived in one pass from the v2 HTML. Adopt-patterns for statistical significance testing of quantization accuracy loss; handoffs eval-tower-verification and tq3-quantization-evaluation.
+- intake-2491#record (amazon-science LLM-Accuracy-Stats code): Code for the degradation test (paper dived as intake-2484#record): CC BY-NC 4.0 licence, permutation path as README default, no seeding, and a zero-discordant defect where max-drop returns p=0.0. Adopt-patterns; handoff eval-tower-verification.
+
+### Run 2026-10-30, IDs 2529–2534 — [digest](../research/deep-dives/intake-digests/2026-10-30-ids-2529-2534.md)
+
+- intake-2531#record (NoLiMa): Confirmed as in-context reading only with a synthetic single needle and no tool/search arm; the extrapolation to grep over agent transcripts is ours. Appendices not read. Worth investigating; handoff tool-output-compression.
+- intake-2532#record (tau2-Bench): Confirmed as a dual-control conversational agent benchmark; appendix policies and figures not read. Adopt-patterns; handoff tool-output-compression.
+- intake-2533#record (tau-bench): Confirmed as a tool-agent-user interaction benchmark; appendices not read. Adopt-patterns; handoff tool-output-compression.

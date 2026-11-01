@@ -946,7 +946,7 @@ plane next.
 
 - [intake-1286](https://arxiv.org/abs/2402.02750) KIVI (ICML 2024) -- the warrant every "per-channel K / per-token V" citation inherits. Dive-verified 2026-08-22: measured, not asserted, but **2-bit-only** by its own OB 1, with no 4-bit or 8-bit axis ablation anywhere; reports **no perplexity at all** and rejects single-decode-step metrics; the full-precision residual window, not the axis, does most of the recovery. Retires the `kv-cache-quantization.md:320` "primary quality gap". Cite as `intake-1286#record`
 - [intake-1291](https://arxiv.org/abs/2606.09864) Alignment Collapse Under KV Cache Quantization -- behavioural drift decouples from perplexity (15.2% AdvBench flip at 4-bit, PPL 1.03x); INT8 exonerated on the safety axis (CondFlip <=3.2% across 11 models) but **not** on instruction-following (Qwen-2.5-7B IFEval 69.50 -> 59.89 at 8-bit, CondFlip 23.14%); K carries 76-102% of 4-bit damage; **Group-64 is its mitigation and our group-32 blocks are finer**. Unreviewed preprint, NVIDIA-only, no independent replication located. Cite as `intake-1291#record`
-- [intake-1282](https://arxiv.org/abs/2605.17613) VeriCache -- KV-quantization-adjacent: draft on the compressed cache, verify against the FULL cache so the target is the real FP16 model. Its quantization-compressor arm is its weakest (1.4-1.9x). Expressible in frozen v9 via `-ctkd`/`-ctvd`; detail on [KV Cache](kv-cache.md). Cite as `intake-1282#record`
+- [intake-1282#record](https://arxiv.org/abs/2605.17613) VeriCache -- KV-quantization-adjacent: draft on the compressed cache, verify against the FULL cache so the target is the real FP16 model. Its quantization-compressor arm is its weakest (1.4-1.9x). Expressible in frozen v9 via `-ctkd`/`-ctvd`; detail on [KV Cache](kv-cache.md). Cite as `intake-1282#record`
 
 
 ## Compiled Update — 2026-10-03: EXL3 on the 27B — answer the bytes question first (X0)
@@ -1151,3 +1151,67 @@ Sources: [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-e
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
 - EXL3 evidence inventory adds no rows, frames or grade; original smoke remains FAIL and prior PPL stays QUALITY_NOT_WORSE only within its original scope. [Source](../handoffs/active/exl3-cpu-mi210-implementation.md)
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
+
+**Confidence: verified** — 12 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-21, IDs 2341–2373 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2341-2373.md)
+
+- intake-2343#record (moondream parakeet-ultra): Stage-2 dive confirmed the card's numbers and the stock-class/CC-BY-4.0 facts, and narrowed the speed claims. Integrated via conversation-stack.
+- intake-2344#record (moondream parakeet-redux ternary Parakeet): packed-format readability resolved (spec in ternary.json; own decode matches the zero fraction); the 'Closed Photon' framing narrowed since a Python engine path exists. Integrated via conversation-stack and tq3-quantization-evaluation.
+- intake-2348#record (parakeet-unified-en-0.6b-gguf): first read: one RNN-T model for offline and streaming, English only, NVIDIA Open Model License, converted not retrained; the GGUF is unique to transcribe.cpp and speeds are M4/Ryzen 4750U author numbers. Integrated via conversation-stack.
+- intake-2351#record (Olicorne parakeet-ultra ONNX pair): best non-Photon evidence that Ultra's weights carry about a 2 pp macro FLEURS gain over base v3, and a CPU-EP int8 ONNX is a ready candidate for the CS-26 fallback. Integrated via conversation-stack.
+
+### Run 2026-10-30, IDs 2511–2521 — [digest](../research/deep-dives/intake-digests/2026-10-30-ids-2511-2521.md)
+
+- intake-2511#record (Unsloth DeepSeek-V4.1-Flash run guide): narrowed: only three low-bit quants changed in V3.1 and Q4_K_XL is unchanged; citable for the 1017 GGUF ladder keeping native MXFP4 experts and vendor-only KLD figures, not as a reason to replace the served antirez file. Verdict superseded; linked to deepseek-v41-flash-evaluation.
+- intake-2512#record (unsloth DeepSeek-V4.1-Flash-1017-GGUF): header-only survey of every UD quant; the 2026-10-30 update changed only UD-IQ1_M, UD-IQ1_S and UD-Q2_K_XL. The active-bytes table is a header-derived upper bound, not a speed prediction. Verdict superseded; linked to deepseek-v41-flash-evaluation.
+- intake-2513#record (antirez deepseek-v4.1-flash-gguf): confirmed as the identity of the served DS41 trunk (antirez/ds4 layout, lossless MXFP4 experts, I8-packed FP8 Engram); routed experts match UD-Q4_K_XL's information and the dense path is equal or higher precision. Verdict already_integrated; linked to deepseek-v41-flash-evaluation.
+- intake-2515#record (llama.cpp PR 30817 DeepSeek-V4.1-Flash): confirmed as the origin of the MXFP8 (type 43) Engram encoding in unsloth GGUFs, a lossless per-row shuffle of antirez I8 rows; superseded by #31086 and its type id now collides with upstream F8_E4M3. Disposition knowledge_only.
+- intake-2518#record (ISTA-DASLab DS41 GSQ-RCO GGUF): low-bit (2-bit-class) DS41-1017 build in the upstream layout with vendor accuracy claims at effort 50; the '100% recovery' claim narrowed since AIME25 is saturated and sampling conditions unstated, and the card still carries TBD comments. Disposition monitor; linked to deepseek-v41-flash-evaluation.
+- intake-2519#record (Unsloth Dynamic 3.0 GGUFs page): documents what Dynamic 3.0 changed (calibration set, layer selection, PTQ only) on Qwen3.8-27B; no V3.1 description exists on the page, so the seed's 'Dynamic V3.1' has no published method. Disposition knowledge_only.
+- intake-2520#record (llama.cpp PR 27512 OCP FP8 E4M3): upstream ggml type 43 became F8_E4M3 on 2026-10-29, explaining the unsloth gibberish; any EPYC tree importing it must refuse PR-#30817 MXFP8 GGUFs explicitly. Linked to deepseek-v41-flash-evaluation.
+
+### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
+
+- intake-2594#record (llama.cpp issue 30064 Q8_0 systemone collapse): a Metal-only fusion bug, now fixed; it corrects stage 1's claim that decision-head tensors were quantized, is not evidence Q8_0 hurts decision heads, and the BF16-head recipe is not a requirement. The same-file CPU/GPU, BF16/quant test design is kept. Integrated via typed-decision-plane.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+
+**Confidence: verified** — 27 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-20, IDs 2191–2213 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2191-2213.md)
+
+- intake-2197#record (Qwen3.8-Flash-Next abliterated GSQ-RCO Strata GGUF): Byte-identity was upgraded from digest to hash-verified (9 LFS oids), the KL reference was identified as the abliterated BF16 rather than stock, and the Stage-1 Strata ppl contradiction was downgraded to unreconcilable. A supply-chain angle was proposed; handoff model-artifact-integrity.
+- intake-2206#record (ISTA-DASLab Qwen3.8-Flash-Next GSQ-RCO GGUF): Stage 1 treated four directories as uniform standard types servable by iqk; the dive shows per-tensor mixes including Q2_0 (no iqk kernel), IQ4_NL (not whitelisted) and iqk-stubbed IQ1_M, with card launch flags differing from v10. Integrated into iqk-iquant-enablement.
+- intake-2207#record (GSQ paper): The paper covers only uniform symmetric group-wise formats and GGUF K-quants (no IQ types or Q2_0); the Kimi-K2.5 result includes a 12.7-point GPQA-D loss versus the 4.5-bpp base, and quantisation costs 10-68 h on 8xH200. Monitor; handoff iqk-iquant-enablement.
+
+### Run 2026-10-22, IDs 2461–2493 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2461-2493.md)
+
+- intake-2461#record (Statistically-Lossless Quantization paper): Full text plus repo checked: the Qwen3.5-27B 3.30/5.19/4.1-bit figures are subset-only, the implemented EAR renormalizes over the BF16 top-10 and is teacher-forced on FineWeb-Edu, and Table 3 speedups are per-GPU. Adopt-patterns; handoffs exl3-cpu-mi210-implement and vidya-belief-substrate-program.
+- intake-2462#record (kaitchup Qwen3.8-27B SLQ collection): Checkpoints are a customized SLQ over GPTQ, AutoRound and GSQ candidates rather than the paper pipeline, and the FP8 comparison should use the weights-only 98.10% rather than 97.71%. Declined for our stack; handoff exl3-cpu-mi210-implement.
+- intake-2463#record (IST-DASLab GitHub organization): Triage table re-derived from repos.json and saved READMEs, with per-repo reasons added for every quantization/sparsity/kernel repo lacking its own entry. No repo was overturned.
+- intake-2464#record (IST-DASLab/SLQ code): Pipeline and no-GGUF claims confirmed at a pinned clone; added the EAR implementation detail (renormalized over the BF16 top-10, teacher-forced FineWeb-Edu) omitted by Stage 1 and the paper prose. Worth investigating; handoff exl3-cpu-mi210-implement.
+- intake-2465#record (IST-DASLab/GSQ code): Confirmed no GGUF writer on main, symmetric INT/ternary grids and an unreproducible Qwen3-8B GGUF chart; a side branch holds IQuant GGUF repack code with a negative KL result. Triggers for iqk-iquant-enablement NEW-10/NEW-11 were evaluated as not met.
+- intake-2466#record (IST-DASLab gptq-gguf-toolkit): Claim 2 was overturned (the README never says IQ is unsupported; it lists MoE only); claims 0 and 1 narrowed (layout matches ggml by structural reading only, search runs in HF/PyTorch on CUDA). Adopt-patterns; monitor; handoff iqk-iquant-enablement.
+- intake-2467#record (Disaggregated Quantization paper): Accuracy is vLLM/GB300 on BF16-dequantised GGUF with a single eval per cell, not llama.cpp-native; a training-free RTN-NVFP4-prefill control omitted by Stage 1 recovers 60/79/75% of the MMLU-Pro gain at IQ1_S/IQ1_M/IQ2_XXS. Handoff iqk-iquant-enablement.
+- intake-2469#record (EvoPress): All three Stage-1 claims hold (claim 1 narrowed to integer-keyed files; paper says 2-4 bit practically used); Table 3 and Table 8 numbers added and credibility raised from 3 to 4. Adopt-patterns; monitor; handoff iqk-iquant-enablement.
+- intake-2470#record (RCO exact budget compression): Claim 2 narrowed: the advantage over EvoPress is clearly outside seed noise only at 2.25 bit, baselines are the authors' reproductions, and the GGUF mention concerns equal expert counts for pruned-MoE export. Adopt-patterns; monitor; handoff iqk-iquant-enablement.
+- intake-2472#record (Hardware-Native Joint Sparse-Quantization): Filed claims confirmed; the abstract headline mixes a 4.35 pp Qwen3-30B margin with a 96.09% Kimi-K2.5 recovery referenced to native INT4, and Table 3 shows no accuracy-per-bit edge over REAP/GSQ. Worth investigating.
+- intake-2473#record (MoE-Quant data-aware GPTQ for DeepSeek): Stage-1 claims confirmed with vendor-reported recovery numbers and a source-precision caveat. Disposition knowledge-only: nothing adoptable for DS41; the adopt-patterns verdict is no longer accurate.
+- intake-2474#record (WUSH adaptive transforms): Claims confirmed with numbers; the theory is joint W+A while the evidence is W4A4-only. A flagged dive inference notes the activation-quantisation term drops out for weight-only targets. Worth investigating.
+- intake-2475#record (GPTQ as Babai nearest plane): Claims confirmed; claim 2 narrowed (min-pivot gain about 1% in tr(D), "modest" per the paper, act-order in all experiments). Applicability to llama-quantize imatrix-weighted RTN-style quantizers is none, so verdict moved to knowledge-only.
+- intake-2479#record (FP-Quant MXFP4/NVFP4 PTQ): Paper pinned at arXiv v3; regime-specific numbers added and the implicit DS41 relevance overturned. Disposition monitor (trigger E-L5 only); the worth-investigating verdict is no longer accurate.
+- intake-2480#record (QMoE sub-1-bit compression): Claims confirmed and bounded: entropy-coding a very low-bit, highly sparse tensor pays only at ternary-class sparsity, which our low-bit lanes do not reach. Disposition knowledge-only.
+- intake-2481#record (ISTA-DASLab Qwen3.8-27B GSQ-RCO GGUFs): Type inventory corrected: every build also uses IQ1_S/IQ1_M, IQ2_XXS, Q2_K, Q4_K and IQ4_XS, all native enums with no Q2_0; card arithmetic re-derived and confirmed. Declined; handoff exl3-cpu-mi210-implement.
+- intake-2482#record (ISTA-DASLab Qwen3.8-27B NVFP4 prefiller): File/size claim confirmed via the HF API; only 4 of 8 trained variants are released, Blackwell is required, the card admits roughly 1.3x speedup, and the repo id dangles. Relevance lowered from medium to low.
+- intake-2485#record (Progressive Mixed-Precision Decoding): The asymmetry is real (3p/2d 28.1 vs 2p/3d 22.2 vs 2/2 18.3) and needs no weight training; relevant to a GGUF-native prefill-high/decode-low probe. Worth investigating; handoff iqk-iquant-enablement.
+- intake-2486#record (Which Quantization Should I Use? (llama.cpp evaluation)): Minted and dived in one combined pass; only v1 HTML read in full. Verdict superseded.
+- intake-2488#record (Great Inversion transform study): Minted and dived from the v1 HTML (abstract, Sec 1, 2.8, 4.1, 5, 7.3, 8, 9.3, 10.4-12.2, Table 16). Worth investigating; surfaced sources were dispositioned at Stage-2 close-out.
+- intake-2489#record (GSQ side branch gsvq-iquant-qwen3-sweep-results): Reported numbers confirmed exactly; the objective is unweighted MSE to dense weights and the name map is dense-only. Worth investigating; previously only a side-channel mention inside intake-2465#record.
+- intake-2490#record (HermiHg Qwen3.8-27B-DFlash2 Q2_K_S-MIX): The same artifact intake-1256#record cited against a Q2_K floor, but the repo was rebuilt on 2026-08-25 and the evidence quoted then (dummy imatrix, file size, sha) no longer matches. Worth investigating.
+- intake-2492#record (Comprehensive evaluation of MXFP4/NVFP4 quantization): Resolves the not-read item in intake-2488#record: the only independent rotation-gain check is a single-model (LLaMA-3.2-1B) PPL study whose v1 conclusion contradicted its own table, so the result is a weak directional signal. Worth investigating.
+- intake-2493#record (AMXFP4): Corrects the Stage-1 framing: asymmetry means two per-sign FP8 E5M2 scales per group (no zero-point), and the "beats MXFP4" headline is against an E5M2-scaled MXFP4, not OCP E8M0. Worth investigating.

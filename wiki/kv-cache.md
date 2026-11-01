@@ -1104,7 +1104,7 @@ point at, as untrusted content.
   84.3%-attention-sparsity justification for per-token V, and RotateKV (arXiv:2501.16383v2) as
   independent evidence that per-channel keys are a remedy rather than a requirement. Cite as
   `intake-1286#record`.
-- [intake-1282](https://arxiv.org/abs/2605.17613) VeriCache (arXiv preprint, dive-verified 2026-08-22,
+- [intake-1282#record](https://arxiv.org/abs/2605.17613) VeriCache (arXiv preprint, dive-verified 2026-08-22,
   credibility 1/Low) — draft-on-compressed / verify-on-full architecture; the decomposed headline
   (1.92–2.73× alone, 1.4–1.9× on the quantization arm); the tier-relocation memory direction; the
   HBM-to-interconnect sweep placing our MI210 at its worst end; and the frozen-v9 `-ctkd`/`-ctvd` +
@@ -1123,7 +1123,7 @@ point at, as untrusted content.
 
 - [intake-1286](https://arxiv.org/abs/2402.02750) KIVI (ICML 2024) -- the warrant behind every "per-channel K / per-token V" citation in this corpus. Dive-verified 2026-08-22: the prescription is measured, not asserted, but OB 1 establishes it **at 2 bits only** and the paper runs no 4-bit or 8-bit axis ablation; it reports **no perplexity anywhere**; and the full-precision residual window, not the axis, does most of the accuracy recovery (Llama-2-7B GSM8K 5.76 -> 12.74 at a fixed axis). Retires the `kv-cache-quantization.md:320` "primary quality gap". Cite as `intake-1286#record`
 - [intake-1291](https://arxiv.org/abs/2606.09864) Alignment Collapse Under KV Cache Quantization -- ConditionalFlip as a paired behavioural gate; K carries 76-102% of the damage at 4-bit; **Group-64 is its mitigation, which our group-32 blocks are already finer than**. Unreviewed preprint, NVIDIA-only hardware, no independent replication located. Cite as `intake-1291#record`
-- [intake-1282](https://arxiv.org/abs/2605.17613) VeriCache -- draft on the compressed KV cache, verify against the FULL KV cache; the algorithmic core is expressible in frozen v9 via `-ctkd`/`-ctvd` with the model as its own drafter, while the systems contribution needs an interconnect we do not have. Cite as `intake-1282#record`
+- [intake-1282#record](https://arxiv.org/abs/2605.17613) VeriCache -- draft on the compressed KV cache, verify against the FULL KV cache; the algorithmic core is expressible in frozen v9 via `-ctkd`/`-ctvd` with the model as its own drafter, while the systems contribution needs an interconnect we do not have. Cite as `intake-1282#record`
 - [intake-1292](https://github.com/ggml-org/llama.cpp/issues/25913) llama.cpp `/slots` save/restore (issue #25913 + PR #26004) -- post-restore reuse is zero only for a DIVERGENT or EXACT-REPEAT prompt and full for a strict continuation; detectable today via `timings.cache_n`; PR #25592 (live in-memory checkpoint path) is the larger exposure for us. Cite as `intake-1292#record`
 
 
@@ -1470,3 +1470,80 @@ Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-
 
 - AKV / Cache Engineering for Agents (intake-2596#record, intake-2590#record; [w3_dec](../research/deep-dives/ws58-20261031/dives/w3_dec.yaml)): drop removes entries from future attention and repos RoPE-rotates retained keys, with no re-prefill. The load-bearing finding: KV state is history-dependent, so token-prefix matching can reuse a wrong state; AKV keys its radix tree on tokens plus operation history. Paper numbers (-27.7% price-table cost, 8x A800) exclude linear-attention models and do not transfer.
 - Proposed: W3DEC-6 (an edited slot carries operation history in its key or is excluded from reuse; today's PrefixIndex keys on prompt text only), W3DEC-7 (zero-inference old-tool-response share screen, escalating at >=40% resident and >=20% of decode steps past 48K), W3DEC-8 (drop+repos probe on attention-only roles; hybrids excluded). Owner [KPF](../handoffs/active/kv-prefix-fork-and-paged-attention.md).
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
+
+**Confidence: verified** — 7 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-20, IDs 2061–2062 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2061-2062.md)
+
+- intake-2061#record (vLLM partial prefix cache hit for hybrid mode (PR 2/N)): Dive record for the vLLM change supporting partial prefix cache hits on hybrid (SSM plus attention) models. Verdict adopt_patterns, integrated; linked to kv-prefix-fork-and-paged-attention.
+- intake-2062#record (vLLM partial prefix cache primitives (PR 1/N)): Dive record for the vLLM primitives enabling partial prefix caching on hybrid models, the first of the series. Verdict adopt_patterns, integrated; linked to kv-prefix-fork-and-paged-attention.
+
+### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
+
+- intake-2117#record (DeepSeek-V4.1-Flash KV report): Citable only for the layer map and CSA2 mode assignment, the CED global-KV mechanism, the FP4 main-KV format and the 890 B/token global-KV figure. The 552B vs 763.2B parameter conflict resolved as a scope difference (backbone plus Engram). Verdict worth_investigating, integrated; see deepseek-v41-flash-evaluation.
+- intake-2122#record (FlashMLA): Primary-source facts verified: the two per-token layouts, the indices/topk_length/attn_sink contract and the scheduler-metadata reuse hazard. Our fork already carries the 528 B row convention. Verdict adopt_patterns, integrated; linked to llama-cpp-dsa-contribution.
+- intake-2125#record (YOCO): Citable for two things only: the O(N+CL) cache formula and the exactness condition for prefill early exit (layers with no own KV reading only a shared KV can be skipped for non-logit prompt rows). Its headline speedup ratios are not carried over. Verdict worth_investigating, integrated.
+- intake-2128#record (YOCO++): Independent small-scale evidence that plain YOCO is slightly worse than a standard Transformer (-0.39 avg points, +0.0106 val loss at 1.1B/100B tokens, single run), plus a training-time KV-residual fix. Verdict adopt_patterns, integrated; linked to kv-unified-stack-rollout.
+- intake-2130#record (YOIO/CLSA): Citable for one shared single-head indexer feeding 16 YOCO cross-decoder layers, trained by distillation, and the GPU observation that per-layer token top-k can exceed dense attention time at 128K. Verdict worth_investigating, integrated.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
+
+**Confidence: verified** — 5 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-30, IDs 2511–2521 — [digest](../research/deep-dives/intake-digests/2026-10-30-ids-2511-2521.md)
+
+- intake-2517#record (llama.cpp issue 30944 DS4.1 single-token corruption): open upstream correctness defect on prompt-prefix reuse and checkpoint restore; the Stage-1 lazy-mode host-to-GPU race framing was retracted by its author. Whether our port is affected is untested. Disposition monitor; linked to deepseek-v41-flash-evaluation.
+
+### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
+
+- intake-2559#record (Cache-to-Cache (C2C) paper): nothing falsified; C2C is a trained per-pair post-prefill KV rewrite giving +3-5 points over text handoff at 0.6B receivers, with the latency win equal to the avoided sharer decode. Not carried to 27B-35B roles. Disposition knowledge_only; linked to kv-prefix-fork-and-paged-attention.
+- intake-2576#record (C2C code and fusers): confirmed; README numbers disagree with paper v2 and only an HF transformers/CUDA path exists (no llama.cpp). Usable as the executable reference for an offline probe with the released Qwen3-8B + Qwen2.5-7B fuser. Disposition knowledge_only; linked to kv-prefix-fork-and-paged-attention.
+- intake-2590#record (AKV cache engineering for agents (repo)): the stage-1 cross-agent KV premise was overturned; substance is more relevant than expected for the orchestrator, notably the history-dependence hazard once KV is edited. The 27.7%/1.5x figures are SGLang plus API-price accounting, not a predicted llama-server gain. Integrated via context-folding-progressive.
+- intake-2596#record (Cache Engineering for Agents paper): confirms the AKV repo entry (intake-2590#record) and adds the exact drop/repos formulas and the history-dependence hazard; cost numbers are price-table estimates and serving numbers are SGLang BF16 on 8xA800, not transferable to EPYC/MI210, and hybrid-SSM models are out of scope. Integrated via context-folding-progressive.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+
+**Confidence: verified** — 26 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-20, IDs 2063–2115 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2063-2115.md)
+
+- intake-2063#record (vLLM prefix-cache retention PR): mechanism confirmed in merged code, while a premise in the PR body was overturned. Verdict adopt_patterns; linked to kv-unified-stack-rollout.md.
+- intake-2066#record (vLLM APC hybrid docs): docs verified against code: names match current code and conditions are enforced by silent narrowing; survey claim that align mode is required is stale. Verdict already_integrated.
+- intake-2068#record (llama.cpp PR 22929): the entry did not name a bug; the PR is a step toward fixing full prompt re-processing, and removal of --checkpoint-every-n-tokens is confirmed. Verdict adopt_patterns; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2080#record (llama.cpp checkpoints beyond pos_next PR): the pos_min/pos_max range of a saved checkpoint is known wrong for SWA models in v10, champion and fork (open upstream TODO); the pos_max - n_swa proposal is not merged. Verdict worth_investigating; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2081#record (llama.cpp two near-end checkpoints PR): provenance only: near-end checkpoint offsets in our trees come from this PR, with nothing to port; the <=4 begin-thinking-token assumption is unverified for our lineup. Verdict already_integrated.
+- intake-2082#record (llama.cpp checkpoint coverage PR): unmerged and closed; reports a failure mode where dense recent checkpoints evict older ones under FIFO, plus one candidate eviction policy. Verdict worth_investigating.
+- intake-2083#record (llama.cpp SWA checkpoint cells PR): origin of the SWA checkpoint range bug, already in v10, champion and fork; qwen35 hybrid/MTP lanes are not exposed since masking acts only where swa_type is set. Verdict already_integrated; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2084#record (llama.cpp user-message checkpoints PR): provenance reference for checkpoint placement in v10: near-prompt-end offsets, user-message starts with message_delimiters, spacing 8192. Verdict already_integrated; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2095#record (llama.cpp SWA reuse off-by-two PR): v10 and the fork have the off-by-two; the fix is one clean hunk to absorb via the next fresh-production pull, not by patching v10. Verdict adopt_component; linked to autokernel-champion-aggregate.md.
+- intake-2097#record (llama.cpp iSWA seq_pos_max PR): resolved as an open unmerged PR; the body is stale (max() fix dropped), the head diff is an assertion, and v10 carries the unfixed behaviour. Verdict worth_investigating.
+
+### Run 2026-10-21, IDs 2214–2340 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2214-2340.md)
+
+- intake-2230#record (Don't Break the Cache): Citable only for qualitative layout rules (static prefix first, dynamic content last, fixed tool block, history edits break reuse); the 'up to 80% saving' figure is not an expected result. Adopt-patterns; linked to repl-turn-efficiency.md.
+- intake-2283#record (Prompt Cache): Origin of non-prefix modular KV reuse (positions by schema, per-module attention); its 'comparable' quality claim is a single-run LongBench result with a visible 28-43% degradation. Adopt-patterns; linked to context-folding-progressive.md.
+- intake-2326#record (KV concatenation-aware fine-tuning vs recompute): Fine-tuning versus recompute is a false dichotomy (they stack, +9.7 at 124k) yet the stack still loses about 24 points to full attention; neither is servable on EPYC hybrid/recurrent roles. Worth-investigating; linked to kv-prefix-fork-and-paged-attention.md.
+
+### Run 2026-10-22, IDs 2386–2458 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2386-2458.md)
+
+- intake-2398#record (Continuum): entry created from a full read of arXiv v7; the 8x headline is an internal-testbed figure and the InferCept critique was checked. Verdict adopt_patterns; linked to agentic-serving-harness-fixes.md.
+- intake-2399#record (Multi-turn serving cost paper): the only gap-related parameter (1 h TTL) is a retention bound with synthetic arrivals; sections 1-4.3.8 and 5 read. Verdict adopt_patterns.
+- intake-2400#record (InferCept): full text read; found an elapsed-time estimator needing no tool-latency predictor, and human-pause timing is modelled, not measured. Verdict adopt_patterns; linked to agentic-serving-harness-fixes.md.
+- intake-2411#record (vllm-continuum repo): the paper empirical-CDF TTL estimation is absent from released code per the README; only a fixed 2 s pin gate and mean-based statistic ship. Verdict adopt_patterns.
+- intake-2412#record (Pensieve): the portable part is the V = recompute-cost / idle-time victim-ordering score; leading-chunk drop, two-range prefill and multi-token kernel do not port to Gated-DeltaNet. Verdict adopt_patterns; linked to autokernel-research-loop.md.
+- intake-2413#record (Preble): the brief arXiv id was wrong (2407.00022 is another paper); Preble is 2407.00023. Verdict adopt_patterns on residency scheduling; linked to kv-prefix-fork-and-paged-attention.md.
+- intake-2420#record (Zen4 FA bf16 PR): author-measured bf16 KV is about equal to fp16 KV on Zen4 FA, so no meaningful bf16 speedup is expected. Verdict worth_investigating.
+- intake-2421#record (CPU FA improvements PR): bf16 KV only competes with quantized KV, never measured against f16, with no TG; gains are Zen4 bf16 FMA on a different FA kernel family than production. Verdict worth_investigating.
+- intake-2424#record (More FA improvements PR): only text numbers are prefill (134 t/s at 32k q8_0 KV; 150 with Q8_K_R8) and the ~30% is versus ik own main branch; mainline numbers are image-only. Verdict worth_investigating.
+- intake-2425#record (ik CPU FA PR): the only ik CPU-FA PR with mainline-vs-iqk numbers as text; gap is large for D=128 LLaMA-8B (PP 13x, TG 2.2x at 16k) but small for D=256 Gemma3 TG (+5.7%). Verdict worth_investigating; linked to autokernel-all-devices-all-dimensions.md.
+- intake-2433#record (KV cache management evaluation article): a sizing recipe, not a metric; all stages assume a multi-tier external KV manager, so only stages 1 and 3 port to llama-server. Verdict adopt_patterns.
+- intake-2434#record (agentic-coding-analysis): overturned the premise that a global cross-session id mode does not exist in code: it exists. Verdict adopt_patterns; linked to autokernel-research-loop.md.
+
+### Run 2026-10-22, IDs 2494–2510 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2494-2510.md)
+
+- intake-2498#record (Gemma quantized KV cache corruption bug (iqk FA)): Root cause verified from code: in compute_helper_q the Q8_0 per-block-repack branch broke out of the whole KV loop at the first block whose first cell in the last row was not +0.0. Adopt-patterns; handoff autokernel-all-devices.

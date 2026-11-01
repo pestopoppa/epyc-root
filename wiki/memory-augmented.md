@@ -551,7 +551,7 @@ The EVL-50 stub owns the instrument work: a BEAM 128K/100K adapter and a `contex
 existing Tulving adapter — the two pieces our five-suite long-context roster lacked. Adapter
 authoring is pure code; compute-gated work is filed, never run.
 
-- **CME-1** — `BEAMAdapter` registered at the five enumerated points of the intake-1330 dive
+- **CME-1** — `BEAMAdapter` registered at the five enumerated points of the intake-1330#record dive
   (`_get_long_context_adapter`, `ADAPTER_SUITES`, the `get_adapter` dispatch, `ROLE_SUITE_MAP`);
   loads `Mohammadta/BEAM` 100K (20 rows; `probing_questions` is a STRING needing
   `ast.literal_eval`); emits `scoring_method: "llm_judge"` with the nugget list in `scoring_config`
@@ -1490,3 +1490,49 @@ Sources: [repl-session-memory-maturity](../handoffs/active/repl-session-memory-m
 - Numerics (intake-2574#record): bf16 is bit-exact against the IR on fla chunk and fused-recurrent kernels (18 runs); fp32 gives 0 wrong tokens but 70-400 dims per run are not bit-exact.
 - Derived: MEM-1 (cheap screen, autokernel champion) adds a one-hot RAM oracle to GATED_DELTA_NET tests on an experimental branch, bit-exact for power-of-2 cases; MEM-2 (cheap screen, KPF) hashes recurrent state before/after checkpoint restore or fork, targeting KPF-18.0b item 2 (1 of 12 CPU pairs not bit-exact); MEM-3 declines an in-weights calculator for serving (~1.6-2x weight bytes per token for accuracy a tool already matches), flagged for operator review.
 - Open-ontologies certificate pattern (intake-2558#record): an untrusted Rust reasoner emits a per-triple certificate and an independent Lean-4 checker sharing no code re-checks it. Derived MEM-4/MEM-6 (vidya): a standalone `scripts/vidya/cert_check.py` verifier of the gate certificate, binding to frontier and as_of, non-hard until a month of zero false refusals.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
+
+**Confidence: verified** — 3 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
+
+- intake-2178#record (Evo-Harness): Independent-ish evidence that LLM self-judged outcomes poison harness evolution (Table 4) and that small/open solvers gain little from evolved skill libraries; Table 1 effect sizes are not cited. Verdict adopt_patterns, integrated; linked to episodic-memory-integrity.
+- intake-2182#record (AutoSkill): Design reference only for SkillBank maintenance (query-only extraction, add/merge/discard against the nearest existing skill, versioned merge, abstain-below-threshold retrieval); it carries no evidence of benefit. Verdict adopt_patterns, integrated.
+- intake-2190#record (Raw Experience to Skill Consumption study): A fourth, structurally different datapoint making skill benefit a distribution over (domain, consumer, extractor) cells: mean about +2 pp, a quarter of cells negative, local Qwen consumers worse. Verdict adopt_patterns, integrated; linked to episodic-memory-integrity.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+
+**Confidence: verified** — 18 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-21, IDs 2214–2340 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2214-2340.md)
+
+- intake-2237#record (Honcho memory infrastructure): Usable as a source of prompt and schema wording for HS-4 section 3.1 profile memory, not as evidence of memory quality since its performance claims are vendor-only. Adopt-patterns; linked to unified-trace-memory-service.
+- intake-2249#record (SkillClaw): Aggregates session trajectories across users, groups them by referenced skill and runs an LLM evolver to update skills; dive was PARTIAL (sections 1-5, tables). Worth-investigating, monitor; linked to episodic-memory-integrity.md.
+- intake-2251#record (SkillGraph): Citable as a design reference for typed skill dependencies and maintenance-threshold vocabulary only; the graph-vs-flat margin is not evidence because the flat control matches. Adopt-patterns; linked to episodic-memory-integrity.md.
+- intake-2259#record (Coalition-Aware Skill Reliability): Knockout audits of MemSkill banks show 'coalition pollution' where an outcome gate admits a skill that hurts when paired; the arXiv v1 PDF has no appendix. Adopt-patterns, integrated; linked to episodic-memory-integrity.md.
+- intake-2289#record (SkillsVote): Couples pre-task agentic search of a structured skill library with post-task decomposition of trajectories into skill-linked subtasks; extended tables and prompts not read. Worth-investigating, monitor; linked to episodic-memory-integrity.md.
+- intake-2301#record (Demystifying Agent Skills): Skills built from the same trajectories beat direct workflow memory by +6.06 pp (CI [+0.76, +11.36]) but skill versus raw is +2.84 pp with a CI spanning zero; narrows the wave-2 characterisation. Adopt-patterns, integrated; linked to episodic-memory-integrity.md.
+- intake-2311#record (MemSkill): A shared bank of memory-operation skills (Insert, Update, Delete, Skip) with a PPO-trained controller choosing a top-K subset; the acceptance rule was confirmed as a best-so-far comparison. Adopt-patterns, integrated; linked to episodic-memory-integrity.md.
+- intake-2318#record (Agentic Skills in the Wild): On SkillsBench (84 tasks, 3 runs per condition) Claude Opus 4.6 pass rate falls from 55.4 force-loaded to lower as the setting becomes realistic, confirming retrieval-setting dependence. Adopt-patterns, integrated; linked to episodic-memory-integrity.md.
+- intake-2333#record (Managing Procedural Memory in LLM Agents): Static skills raise full-pass accuracy by +2.8 points on average across 13 models, measured as best of handcrafted or LLM-generated skill minus no skill. Adopt-patterns, integrated; linked to episodic-memory-integrity.md.
+- intake-2337#record (SWE-Skills-Bench): Across 49 public SWE skills (~565 tasks, Claude Code with Haiku 4.5), 39 skills change the pass rate by zero and the mean gain is +1.2 points (89.8 to 91.0 percent). Adopt-patterns, integrated; linked to episodic-memory-integrity.md.
+
+### Run 2026-10-22, IDs 2386–2458 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2386-2458.md)
+
+- intake-2395#record (Measure Before You Manage): paper concerns task-local working memory, not cross-session lessons; protocol history read from Appendix F. Verdict adopt_patterns; linked to dev-harness-trace-mining.md.
+- intake-2396#record (Agent Memory Distillation): headline gains use same-benchmark memory; the paper own disjoint re-run retains most but not all (BFCL about two-thirds), one student, single run. Verdict adopt_patterns; linked to dev-harness-trace-mining.md.
+- intake-2408#record (Agent Memory characterization): a cost characterization of QA-recall memories with no evidence that memory content changes agent behaviour; transferable content is cost discipline. Verdict adopt_patterns; linked to dev-harness-trace-mining.md.
+- intake-2410#record (ERL): the one source in its group running a held-out A/B of injected lessons; supplies a design template (disjoint split, pass^3, random-k and reward-free controls). Verdict adopt_patterns; linked to dev-harness-trace-mining.md.
+- intake-2431#record (Self-generated in-context examples): exemplar injection helps on held-out tasks (+4 to +16 pts) under strict split, with GPT-4o-mini on 3 benchmarks and no token-cost measurement. Verdict adopt_patterns; linked to unified-trace-memory-service.md.
+- intake-2432#record (Environment test-time adaptation): exploration-time environment knowledge rather than lessons from the agent own trajectories; closer to a pre-task probe than ERL. Verdict worth_investigating.
+
+### Run 2026-10-30, IDs 2529–2534 — [digest](../research/deep-dives/intake-digests/2026-10-30-ids-2529-2534.md)
+
+- intake-2530#record (MemGPT): Confirmed that summary, searchable full history and agent-initiated recall shipped in 2023 with a summary-vs-search evaluation, setting the novelty of intake-2522#record to LOW. Adopt-patterns; handoff tool-output-compression.
+
+### Run 2026-10-31, IDs 2535–2544 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2535-2544.md)
+
+- intake-2542#record (SWE Context Bench): The abstract's "reduce runtime and token cost" was overturned for the controlled setting. Worth investigating; memory-infrastructure repos (Mem0, OpenViking, LangMem, Supermemory) declined at the two-wave cap.

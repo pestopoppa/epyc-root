@@ -517,3 +517,38 @@ Sources: [promptforge-mutation-safety-contract handoff](../handoffs/active/promp
 - **The ThinkPRM verifier fails closed on same-family generators.** The T2 postpass classifies ThinkPRM as Qwen and rejects Qwen or unknown generators before loading the verifier; verifier probabilities are judgments, not correctness labels or a scorer override. ([source](../handoffs/active/eval-tower-verification.md))
 
 Sources: [tool-use-eval-contract](../handoffs/active/tool-use-eval-contract.md) · [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md) · [eval-tower-verification](../handoffs/active/eval-tower-verification.md)
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
+
+**Confidence: verified** — 2 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
+
+- intake-2171#record (Safety Under Scaffolding): Useful for measurement hygiene, not as evidence that scaffold effects are small: the small pooled scaffold effect (0.5% of variance) is for proxy safety benchmarks under non-optimised, content-preserving scaffolds on six frontier models. Verdict adopt_patterns, integrated.
+- intake-2185#record (AgentBreeder): Two portable cautions, not effect sizes: a safety/refusal objective is reward-hackable by trivial refusal and needs a paired helpfulness/completion canary, and a capability-equal comparison is required. Verdict adopt_patterns, integrated; linked to promptforge-mutation-safety-contract.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+
+**Confidence: verified** — 14 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-20, IDs 2191–2213 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2191-2213.md)
+
+- intake-2191#record (ProjectDiscovery abliterated models): Dive overturned the stated cost inconsistency, confirmed exec_command and .env/SSH-key targeting (demo shows .env only), found no released artifacts, and noted serving was transformers rather than GGUF. Adopt-patterns, integrated into model-exec-containment and model-artifact-integrity.
+- intake-2199#record (Malice in Agentland backdoor paper): Pinned v5 and replaced the abstract digest with verified numbers (TM1 2.5% to 97.13%, TM2 surviving clean SFT/LoRA/GRPO, TM3 2.3-5% to 91.65-100%); guardrail count corrected to four. Adopt-patterns; handoffs model-exec-containment and frontier-f3-data-flywheel.
+- intake-2200#record (chat-template inference-time backdoors): Verified the mechanism (substring trigger, system-context prepend, byte-identical dormant render), llama.cpp as the primary engine via llama-server --jinja --chat-template-file, and the disclosure outcome. New opportunity for template integrity checks; integrated into model-artifact-integrity.
+- intake-2204#record (steering-vector safety pitfalls paper): The 57/50 figures were kept but flagged as condition-less, and the "measure cosine before deploying" advice was found to be our inference rather than the paper's; audited behaviours are not concision vectors. Integrated via reasoning-compression.
+- intake-2208#record (model supply-chain pwning write-up): Confirmed the surfacing summary and the Nutanix write-token case, flagged a 129 vs 147 HF-token inconsistency, and narrowed "no lockfile equivalent" using HF commit-sha plus LFS-sha256 metadata. Adopt-patterns; handoffs model-exec-containment and model-artifact-integrity.
+- intake-2209#record (Trigger in the Haystack backdoor scanner): Settled scanner inputs (model files, attention weights, full logits; inference only), detection rates (0.878 Task 1, 5/6 Task 2, FNR 0.11, 0/13 FP) and scope (fixed-trigger SFT, <=14B dense, two tasks). Worth investigating; monitor; handoff model-artifact-integrity.
+- intake-2210#record (near-constant-number poisoning paper): Scope of the 250-sample constant was settled (DoS, pretraining, 600M-13B dense), with fine-tuning counts and persistence limits recorded (clean FT and alignment SFT degrade it). Adopt-patterns; handoffs frontier-f3-data-flywheel and agent-world-env-synthesis.
+
+### Run 2026-10-21, IDs 2214–2340 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2214-2340.md)
+
+- intake-2242#record (Many-Tier Instruction Hierarchy): Cite only for the tag syntax and benchmark construction recipe (conflict groups by construction, deterministic checkers, all-or-nothing scoring) and for the finding that frontier models struggle with many tiers. Worth-investigating; linked to qwen-chat-template-evaluation.
+- intake-2269#record (IH-Benchmark): Tool-output compliance is a separate capability from system-prompt compliance; thinking mode and a one-sentence untrusted-content warning are levers it exposes. Worth-investigating; linked to qwen-chat-template-evaluation.
+- intake-2270#record (IH-Challenge): Cite for the skeleton-plus-executable-grader design and for prompt-level mitigations not stacking with trained robustness (vendor model and evals); the open dataset exists. Worth-investigating; linked to qwen-chat-template-evaluation.
+- intake-2286#record (Skill-Inject): Skill files are an instruction-in-instruction injection surface not covered by role priority or data/instruction separation; scripts and description fields are the stronger carriers. Worth-investigating; linked to qwen-chat-template-evaluation.
+- intake-2294#record (The Attacker Moves Second): Twelve recent jailbreak and prompt-injection defences are bypassed by adaptive attacks, mostly above 90% ASR despite near-zero reported static ASR. Adopt-patterns, integrated; linked to qwen-chat-template-evaluation.
+- intake-2302#record (Design Patterns for Securing LLM Agents): Six patterns (action-selector, plan-then-execute, LLM map-reduce, dual LLM, code-then-execute, context-minimisation) give structural isolation of untrusted data independent of model. Adopt-patterns, integrated; linked to qwen-chat-template-evaluation.
+- intake-2313#record (Spotlighting indirect-injection defence): Delimiting, datamarking and encoding of untrusted input plus a system-prompt sentence cut ASR on GPT-family models from over 50% to under 2-3% on a synthetic single-keyword corpus. Adopt-patterns, integrated; linked to qwen-chat-template-evaluation.

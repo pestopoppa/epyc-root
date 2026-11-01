@@ -1950,3 +1950,33 @@ Sources: [autopilot handoff](../handoffs/active/autopilot-continuous-optimizatio
 - TU-ADV-1 Fixture A (Pokee `fly_menu_navigator` nested-tool mismatch) is classified within the eight-turn bound (CI 41287125421, 406 passed). Fixture B abstracts the Factorio RCON reward shortcut (traces unpublished) and rejects the exploit before teacher/store. [tool-use-eval](../handoffs/active/tool-use-eval-contract.md)
 - A native evaluator provenance bridge rejects malformed or unverifiable provenance at the `DistillationPipeline`/`SkillBank` boundary; absent provenance stays UNKNOWN. TU-LED captures argument-validation outcomes per request (cap 4,096 calls); the box stays open.
 - MHS-11 replaced `prompt_forge.py` line-number citations with symbol names (docs-only). [promptforge](../handoffs/active/promptforge-mutation-safety-contract.md)
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
+
+**Confidence: verified** — 3 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
+
+- intake-2118#record (deepseek-recipe): Special-token injection is prevented by structural provenance rather than escaping. A static read found llama-server at the pinned commit does not do this; no live probe has been run yet. Verdict worth_investigating, integrated; linked to qwen-chat-template-evaluation.
+- intake-2132#record (XGrammar): Citable for the mechanism: context-independent token masks precomputed per automaton position, only the sub-1% context-dependent remainder checked at runtime, O(1) persistent-stack rollback, plus the authors own per-token overhead claim. Verdict worth_investigating, integrated; linked to speculative-decoding-mtp-refresh.
+- intake-2137#record (XGrammar-2): Citable for TagDispatch free-then-constrained semantics, the finding that dynamic tool sets defeat whole-grammar caches (0% reuse) while substructure reuse rises with tool count, and the JIT trade (cheaper compile, costlier mask). Verdict worth_investigating, integrated.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+
+**Confidence: verified** — 8 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-22, IDs 2386–2458 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2386-2458.md)
+
+- intake-2388#record (Space Barrier paper): memory comparison is against token tables, not llguidance; the 2.5x agent result includes the engine kernels and reverses at 8 agents; forced-span gain vanishes at 16 slots. Verdict worth_investigating; linked to agentic-serving-harness-fixes.md.
+- intake-2391#record (Pre3 DPDA): the +36% throughput figure is not found in the body (20% in Sec. 4.4, 40% in the conclusion) and -40% TPOT is a single table cell. Verdict worth_investigating.
+- intake-2401#record (llguidance): llama.cpp v10 integration uses none of ff_tokens, rollback or validate_tokens, per the pinned C header and full integration read. Verdict worth_investigating; linked to agentic-serving-harness-fixes.md.
+- intake-2402#record (Compressed FSM jump-forward): retokenization mechanism and about 4% cost established; current SGLang keeps the jump-forward interface but has no caller in the runtime. Verdict adopt_patterns.
+- intake-2414#record (LLGuidance blog): a design/perf write-up with no fast-forward content and no llama.cpp number; the 50 us figure is vendor, JSON-schema, GPU-overlap framing. Verdict worth_investigating.
+- intake-2416#record (SGLang jump-forward removal): removal was maintenance simplification; jump-forward was already inert under the overlap scheduler, not abandoned because forced spans do not pay. Verdict worth_investigating.
+- intake-2423#record (Formalizing BPE): on-topic for canonical-tokenization trimming; the paper supports the concern that append can invalidate many tokens. Verdict worth_investigating.
+
+### Run 2026-10-31, IDs 2535–2544 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2535-2544.md)
+
+- intake-2536#record (spotify portal-ai-plugins shunt plugin): Plugin source read fully except eval fixtures and transport-eval bodies (partial read). Adopt-patterns for hook-based delegation; no dive-surfaced sources.

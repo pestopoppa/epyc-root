@@ -530,3 +530,14 @@ Three conclusions must remain separate. Build success shows that the artifact co
 - Reuse base: MIT ptx_verifier `volta_graph`/`volta_graph_check` are ISA-independent; its AMD analysis records no events yet, so its race path proves nothing. Cost 8-11 kLoC new Rust, 6-9 engineer-weeks, first milestone MMVQ plus FA-vec.
 - Proposed RVP-RACE-1: seeded one-barrier-deletion HIP mutants (MMQ, MMVQ, LDS-DMA double buffer, FA-mma softmax), 20 runs each; passing in >=1 of 20 counts as a miss. RVP-RACE-2: the gfx90a race executor as the GPU `race_detector_id`, done when t0_provider emits a non-null id. RVP-EQV-1 declines Volta-class equivalence for bit-level kernels (1116 of 1497 AK GPU rows). Owner rocm-verify-profile-backend.
 - Edge-value input families, per-element worst-error bounds and exhaustive bit-level decode checks per served quant (w1 KERN-3/4/5; [w1_kern](../research/deep-dives/ws58-20261031/dives/w1_kern.yaml)) are the proposed complement for the bit-level kernels equivalence cannot cover.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
+
+**Confidence: verified** — 3 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
+
+- intake-2557#record (Volta Blackwell PTX checker): confirmed as a best-effort (not sound) race/deadlock/equivalence checker for PTX, with sampled checks never ACCEPT; usable as an MIT scaffold for an AMDGCN symbolic executor but gfx90a reuse needs wave64, LDS, DPP and MFMA support. Integrated via rocm-verify-profile-backend.
+- intake-2558#record (Open Ontologies certificate-checked derivations): architecture pattern confirmed (untrusted producer, plain-text certificate with rule and premises, small independent checker, exit code) with five named blind spots in the soundness boundary. No ontology-quality claim carried. Integrated via vidya-belief-substrate-program.
+- intake-2570#record (Equivalence Checking of ML GPU Kernels): stage-1 claims confirmed; real-number equivalence is feasible for structured-CTA kernels in minutes and the race checker is sound for barrier-synchronized kernels, but floats are treated as reals and quantized, bit-manipulating and async-copy kernels are out of scope. Integrated via rocm-verify-profile-backend.

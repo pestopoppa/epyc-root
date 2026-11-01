@@ -264,3 +264,12 @@ for the prescriptions, which have not been A/B'd (INF-78 OAB-9).
 - [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-orchestrator-actor-backend.md): *Techniques learned in the opencode seat* §1 (*Avoid*
   list).
 - [opencode-p03-audit-20260916.md](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md): row 6 (restrict agents through `permission`, not through a flag that only looks restrictive).
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
+
+**Confidence: verified** — 1 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
+
+- intake-2155#record (Arbiter): Citable for the structural-rule inventory and the v2 corrections; the 152 findings, the different-models-find-different-things claim and the architecture-failure correlation are not established. Verdict worth_investigating, integrated; linked to promptforge-mutation-safety-contract.
