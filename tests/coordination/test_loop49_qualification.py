@@ -1,8 +1,10 @@
-"""20 audit regressions. Retain every fixture; never unlink or rename.
+"""20 offline audit regressions. Retain every fixture; never unlink or rename.
 
-Require an explicit externally-issued compute grant to execute this suite:
-LOOP49_TEST_GRANT=<existing grant file> LOOP49_TEST_ARTIFACTS=<retained dir>.
-Historical FILED bytes are copied unchanged beside this test's receipt ledger.
+These unit tests use tiny local fixtures and retained historical FILED bytes;
+they do not run inference, require a compute grant, or produce a qualification
+receipt or compute smoke. Set LOOP49_TEST_ARTIFACTS=<retained dir> so generated
+test artifacts remain available for audit. Historical FILED bytes are copied
+unchanged beside this test's receipt ledger.
 """
 import argparse
 import copy
@@ -15,7 +17,6 @@ import secrets
 import subprocess
 import sys
 import unittest
-import time
 from datetime import datetime, timezone
 from unittest.mock import patch
 
@@ -28,13 +29,6 @@ import filler_engine14 as engine
 class AuditRegression(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        grant = os.environ.get('LOOP49_TEST_GRANT')
-        if not grant or not Path(grant).is_file():
-            raise unittest.SkipTest('explicit compute grant required; no fixtures executed')
-        from dryrun_check import parse_grant
-        regions, start, end = parse_grant(Path(grant))
-        if not start.timestamp() <= time.time() < end.timestamp():
-            raise unittest.SkipTest('compute grant is not current')
         if not os.environ.get('LOOP49_TEST_ARTIFACTS'):
             raise unittest.SkipTest('retained artifact root required')
         cls.art = Path(os.environ['LOOP49_TEST_ARTIFACTS']) / secrets.token_hex(8)
@@ -54,6 +48,11 @@ class AuditRegression(unittest.TestCase):
             regions='any-cpu-quarter', scratch_root=str(self.d))
         for key in ('launcher', 'job', 'qual_fixture', 'source_manifest', 'row'):
             path = self.d / key; path.write_text('# fixture\n'); self.m[key] = str(path)
+        model_path = self.d / 'model'; model_path.write_text('model fixture bytes\n')
+        Path(self.m['source_manifest']).write_text(f'{q.sha(model_path)}  {model_path.resolve()}\n')
+        self.m['qualification_model'] = {
+            'id': 'fixture-model', 'path': str(model_path), 'sha256': q.sha(model_path),
+        }
         row_cells = [self.m['id'], 'refactor', self.m['launcher'], self.m['regions'], '60 s', '8 GiB',
             str(self.d/'STOP'), 'READY', 'cpu', '600 s', '60 s', 'n', 'n', 'manifest.json', 'fixture',
             'n/a (fixture)', 'cpu', 'requested_window_s=600; est_output_GiB=0; scratch_root=%s; claimed_cpus=any-cpu-quarter; process_limit_GiB=6' % self.d]
@@ -63,18 +62,58 @@ class AuditRegression(unittest.TestCase):
         q.create(self.allow, {'kind':'epyc.engine-allowlist.v1','engines':[q.sha(self.m['engine'])]})
         self.policy = self.d / 'policy.json'
         q.create(self.policy, dict(interim_until_utc='2000-01-01T00:00Z', interim_floor_gib=150, normal_floor_gib=150))
-        self.result = self.d / 'result.json'; q.create(self.result, {'native': True})
+        self.qual_root = self.d / 'qual' / ('a' * 32)
+        self.results = self.qual_root / 'results'; self.results.mkdir(parents=True)
+        self.result = self.results / 'result.json'; q.create(self.result, {'native': True})
+        self.first_request_path = self.results / 'first-request.json'
+        self.grants = self.qual_root / 'grants'; self.grants.mkdir()
+        self.grant = self.grants / (self.m['id'] + '.grant')
+        self.grant.write_text('synthetic qualification grant marker\n')
+        self.rc75_ended = self.grants / (self.m['id'] + '.deadline.ended')
+        self.rc75_ended.write_text(
+            'rc=75 time=2026-11-01T00:00:00Z reason=fixture-deadline\n'
+            'partial=true\nnative_complete=false\nphase=qualification\ngranted=true\n')
+        self.launcher_ended = self.grants / (self.m['id'] + '.ended')
+        self.launcher_ended.write_text(
+            'rc=0 time=2026-11-01T00:00:00Z reason=qualification-complete\n'
+            'partial=false\nnative_complete=false\nphase=qualification\ngranted=true\n')
         self.p = dict(admission={'rc':0,'affinity_ok':True},completion={'complete_cmd_present':True,'is_complete_rc':0},
-            rc75={'exit_code':75,'partial_flag':True},disk={'job_floor_gib':150,'policy_floor_gib':150},children_drained=True,
+            rc75={'exit_code':75,'partial_flag':True, 'ended_path':str(self.rc75_ended),
+                  'ended_line_sha256':q.sha(self.rc75_ended)},
+            launcher_terminal={'path':str(self.launcher_ended), 'sha256':q.sha(self.launcher_ended)},
+            disk={'job_floor_gib':150,'policy_floor_gib':150},children_drained=True,
             first_request={'ok':True,'n_ctx':32,'prompt_tokens':1,'measured_tok_s':10},
-            result_writer={'ok':True,'result_path':str(self.result),'sha256':q.sha(self.result)},
-            exec_namespace={'tools':{'bash':'/usr/bin/bash'}})
+            result_writer={'ok':True,'result_path':str(self.result.resolve()),'sha256':q.sha(self.result)},
+            exec_namespace={'tools':{'bash':'/usr/bin/bash'}}, nonce=self.qual_root.name,
+            qualification_root=str(self.qual_root))
+        self.refresh_native_record()
 
     def static(self):
         with patch.object(q, 'checked_manifest', return_value='fixture'), patch.dict(os.environ, {'WS58_ROOT': str(ROOT)}):
             return q.static_check(self.m, self.allow)
 
+    def refresh_native_record(self):
+        f = self.p['first_request']
+        f['native_record'] = {
+            'record_kind': 'epyc.qual.native-first-request.v1',
+            'provenance': 'native-runtime',
+            'source_manifest_sha256': q.sha(self.m['source_manifest']),
+            'model_id': self.m['qualification_model']['id'],
+            'model_sha256': self.m['qualification_model']['sha256'],
+            'result_path': str(self.result.resolve()),
+            'result_sha256': q.sha(self.result),
+        }
+        self.first_request_path.write_text(json.dumps(f, sort_keys=True) + '\n')
+        self.p['first_request_record'] = {
+            'record_kind': f['native_record']['record_kind'],
+            'path': str(self.first_request_path.resolve()),
+            'sha256': q.sha(self.first_request_path),
+        }
+
     def evidence(self):
+        self.refresh_native_record()
+        self.p['rc75']['ended_line_sha256'] = q.sha(self.rc75_ended)
+        self.p['launcher_terminal']['sha256'] = q.sha(self.launcher_ended)
         return q.evidence_check(self.m, self.p, self.policy)
 
     def filed(self, case):
@@ -139,10 +178,10 @@ class AuditRegression(unittest.TestCase):
         self.assertEqual(q.scheduling_state(self.m,[],149.23,self.policy),'READY-WAIT-DISK')
         self.assertFalse((self.d/'grants').exists())
         r=filer.classify(dict(root_cause_family='C',state='READY-WAIT-DISK',rc=0,granted=False,compute_burned=False))
-        self.assertFalse(r['qualified_science_run']); self.assertEqual(r['science_score'],0)
+        self.assertNotIn('qualified_science_run', r); self.assertNotIn('science_score', r)
 
     def test_T10_yarn_stale_real_id_path(self):
-        self.assertIn(b'128k', self.filed('T10'))
+        self.assertIn(b'frozen-cohort-path-changed', self.filed('T10'))
         launch=self.d/'stale-launch.sh'; launch.write_text('test "$WS58_QUAL_NONCE" = predecessor-id || exit 70\n')
         rc=q.invoke(launch,self.d,dict(os.environ,WS58_QUAL_NONCE='real-row-id'),3,self.d/'stale.log')
         self.assertEqual(rc,70)
@@ -193,6 +232,20 @@ class AuditRegression(unittest.TestCase):
         proc=subprocess.run([sys.executable,str(q.HERE/'failed_run_rollup.py'),'--workdir',str(self.d),'--validate-only',sys.executable,'-c','raise RuntimeError("validator")'],capture_output=True)
         self.assertNotEqual(proc.returncode,0); self.assertTrue(self.result.is_file())
 
+    def test_D2_science_quota_counts_qualified_diagnostic_verdict_and_failed_grant(self):
+        diagnostic = filer.classify(dict(root_cause_family='I', phase='production', rc=0,
+            diagnostic_result=True, qualified=True, granted=True, science_score=999, qualified_science_run=True, verdict='diagnostic verdict: source defect confirmed'))
+        self.assertEqual(diagnostic['outcome'], 'DIAGNOSTIC-RESULT')
+        self.assertNotIn('qualified_science_run', diagnostic)
+        self.assertNotIn('science_score', diagnostic)
+        failed = filer.classify(dict(root_cause_family='A', phase='production', rc=127,
+            granted=True, qualified=False))
+        self.assertNotIn('science_score', failed)
+        partial_no_verdict = filer.classify(dict(root_cause_family='E', phase='production', rc=75,
+            partial=True, granted=True, qualified=True, verdict=None))
+        self.assertNotIn('qualified_science_run', partial_no_verdict)
+        self.assertNotIn('science_score', partial_no_verdict)
+
     def sealed_receipt(self):
         p=copy.deepcopy(self.p)
         binding=q.hashes(self.m,self.policy)
@@ -203,8 +256,35 @@ class AuditRegression(unittest.TestCase):
         q.create(store/('a'*32+'.issued.json'),{'id':self.m['id'],'binding':binding})
         q.create(store/('a'*32+'.sealed.json'),{'id':self.m['id'],'receipt_sha256':p['receipt_sha256_excluding_self']})
         q.create(q.receipt_path(self.m),p)
-        opts=argparse.Namespace(allowlist=self.allow,nonce_store=store,policy=self.policy,fingerprint_now=False)
+        opts=argparse.Namespace(allowlist=self.allow,nonce_store=store,policy=self.policy,flags_dir=self.d,fingerprint_now=False)
         return p,opts
+
+    def test_synthetic_retained_positive_quota_proof_chain(self):
+        # Synthetic protocol fixture only: no benchmark or measurement claim.
+        import science_quota as sq
+        from datetime import timedelta
+        self.m['owner'] = 'refactor'
+        Path(self.m['source_manifest']).write_text('')
+        self.refresh_native_record()
+        Path(self.m['launcher']).write_text("printf '%s\\n' '{\"exec_namespace\": {\"tools\": {\"bash\": \"/usr/bin/bash\"}}}'\n")
+        _, opts = self.sealed_receipt()
+        manifests = self.d / 'manifests'; manifests.mkdir()
+        q.create(manifests / 'manifest.json', self.m)
+        terminals = self.d / 'production-grants'; terminals.mkdir()
+        row_id = self.m['id']
+        (terminals / (row_id + '.grant')).write_text('regions=q0 start=2026-11-01T00:00Z end=2026-11-01T01:00Z\n')
+        engine.ended(terminals / (row_id + '.ended'), 0, 'complete', phase='production', owner='refactor')
+        filings = self.d / 'filings'; filings.mkdir()
+        now = datetime.now(timezone.utc)
+        q.create(filings / (row_id + '.FILED'), dict(id=row_id, outcome='COMPLETE',
+                 verdict='synthetic-protocol-fixture', filed_at=now.isoformat()))
+        rows = sq.collect_records(filings, terminals, manifests, nonce_store=str(opts.nonce_store),
+                                  allowlist=str(self.allow), policy=str(self.policy), flags_dir=str(self.d))
+        self.assertEqual(len(rows), 1)
+        validated = sq.validate(rows[0])
+        self.assertTrue(validated['_qualification_valid'], validated['_qualification_reason'])
+        self.assertEqual(sq.score(validated), 1)
+        self.assertEqual(sq.summarize(rows, datetime.now(timezone.utc), timedelta(hours=24))['owners']['refactor']['science_score'], 1)
 
     def test_T19_filed_disk_refusal_cannot_be_recast_as_pass(self):
         filed = self.filed('T9')
@@ -248,12 +328,13 @@ class AuditRegression(unittest.TestCase):
 
         # Dead-launcher recovery checks PID birth before writing. A live PID
         # with its actual birth is refused; a missing PID is filed once only.
-        identity = self.d / 'identity.json'; ended = self.d / 'grants' / 'dead.ended'
-        identity.parent.mkdir(exist_ok=True)
-        identity.write_text(json.dumps({'pid':os.getpid(),'birth':engine.birth(os.getpid())}))
+        identity = self.grants / 'dead.launcher.json'; ended = self.grants / 'dead.ended'
+        identity.write_text(json.dumps({'pid':os.getpid(),'birth':engine.birth(os.getpid()),
+            'id':'dead','phase':'qualification','grants_dir':str(self.grants.resolve())}))
         with self.assertRaisesRegex(ValueError, 'launcher-still-alive'):
             filer.record_launcher_dead(identity, ended)
-        identity.write_text(json.dumps({'pid':2147483647,'birth':'1'}))
+        identity.write_text(json.dumps({'pid':2147483647,'birth':'1','id':'dead',
+            'phase':'qualification','grants_dir':str(self.grants.resolve())}))
         filed = self.filed('T15')
         self.assertIn(b'--job', filed)
         filer.record_launcher_dead(identity, ended)
@@ -261,6 +342,41 @@ class AuditRegression(unittest.TestCase):
         self.assertIn(b'launcher-dead:', first)
         with self.assertRaises(FileExistsError): filer.record_launcher_dead(identity, ended)
         self.assertEqual(ended.read_bytes(), first)
+
+        # Production recovery charges only the owner bound by the verified
+        # manifest and receipt; an edited identity owner fails closed.
+        production_id = 'dead-production'
+        manifest_path = self.d / 'manifest.json'
+        production_manifest = dict(self.m, id=production_id, owner='refactor')
+        manifest_path.write_text(json.dumps(production_manifest))
+        production_identity = self.grants / (production_id + '.launcher.json')
+        production_ended = self.grants / (production_id + '.ended')
+        identity_payload = {
+            'pid':2147483647, 'birth':'1', 'id':production_id, 'phase':'production',
+            'grants_dir':str(self.grants.resolve()), 'owner':'forged-owner',
+            'manifest_path':str(manifest_path), 'nonce_store':str(self.d/'nonce-store'),
+            'allowlist_path':str(self.allow), 'policy_path':str(self.policy),
+            'flags_dir':str(self.d),
+        }
+        production_identity.write_text(json.dumps(identity_payload))
+        identity_payload.pop('owner')
+        production_identity.write_text(json.dumps(identity_payload))
+        with self.assertRaisesRegex(ValueError, 'owner-proof-missing'):
+            filer.record_launcher_dead(production_identity, production_ended)
+        identity_payload['owner'] = 'forged-owner'
+        production_identity.write_text(json.dumps(identity_payload))
+        with self.assertRaisesRegex(ValueError, 'owner-binding-mismatch'):
+            filer.record_launcher_dead(production_identity, production_ended)
+        self.assertFalse(production_ended.exists())
+        identity_payload['owner'] = 'refactor'
+        production_identity.write_text(json.dumps(identity_payload))
+        (self.grants / (production_id + '.grant')).write_text(
+            'regions=q0 start=2026-11-01T00:00Z end=2026-11-01T01:00Z\n')
+        with patch.object(q, 'verify', return_value={'id':production_id}), patch.dict(os.environ, {}, clear=True):
+            filer.record_launcher_dead(production_identity, production_ended)
+        production_terminal = production_ended.read_text()
+        self.assertIn('phase=production\ngranted=true\n', production_terminal)
+        self.assertIn('owner=refactor\n', production_terminal)
 
         # Confirm an actual launcher edit invalidates the issued file binding.
         Path(self.m['launcher']).write_text('changed launcher\n')

@@ -111,7 +111,41 @@ def check_row_binding(m):
 def finite_positive(value):
     return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value) and value > 0
 
+def native_diagnostic_manifest_check(m):
+    require(re.fullmatch(r'[a-f0-9]{64}', m.get('qual_complete_cmd_sha256', '')) is not None,
+            'missing-pinned-completion-predicate')
+    require(type(m.get('qual_fixture_items')) is int and m['qual_fixture_items'] > 0,
+            'missing-or-invalid-qual-fixture-items')
+    require(type(m.get('qual_forced_deadline_s')) is int and
+            1 <= m['qual_forced_deadline_s'] <= 20, 'invalid-native-diagnostic-deadline')
+
+def qualification_numeric_fields_check(m, profile):
+    fields = ('window_s', 'min_window_s', 'items')
+    if profile == 'inference':
+        fields += ('tokens_per_item', 'n_ctx_required')
+    for field in fields:
+        require(finite_positive(m.get(field)), 'invalid:' + field)
+
+def qualification_model_check(m):
+    model = m.get('qualification_model')
+    require(isinstance(model, dict) and isinstance(model.get('id'), str) and bool(model['id']),
+            'missing-qualification-model-identity')
+    require(isinstance(model.get('path'), str) and Path(model['path']).is_absolute() and
+            Path(model['path']).is_file(), 'missing-qualification-model-file')
+    require(re.fullmatch(r'[a-f0-9]{64}', model.get('sha256', '')) is not None,
+            'invalid-qualification-model-sha256')
+    model_path = Path(model['path']).resolve()
+    require(sha(model_path) == model['sha256'], 'qualification-model-hash-mismatch')
+    return {'qualification_model_path': str(model_path),
+            'qualification_model_sha256': sha(model_path)}
+
 def static_check(m, allowlist):
+    profile = m.get('qualification_profile', 'inference')
+    require(profile in ('inference', 'native-diagnostic'), 'invalid-qualification-profile')
+    if profile == 'native-diagnostic':
+        native_diagnostic_manifest_check(m)
+    else:
+        qualification_model_check(m)
     require(re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]*', m['id']), 'invalid-id')
     for field in ('requires_tools', 'ports', 'shared_state'):
         require(isinstance(m.get(field), list), 'missing-or-invalid:' + field)
@@ -119,8 +153,7 @@ def static_check(m, allowlist):
     require(all(type(p) is int and 0 < p < 65536 for p in m['ports']), 'invalid-ports')
     require(all(isinstance(s, str) and s for s in m['shared_state']), 'invalid-shared-state')
     require('exclusive_class' in m and (m['exclusive_class'] is None or isinstance(m['exclusive_class'], str)), 'invalid-exclusive-class')
-    for field in ('window_s', 'min_window_s', 'items', 'tokens_per_item', 'n_ctx_required'):
-        require(finite_positive(m.get(field)), 'invalid:' + field)
+    qualification_numeric_fields_check(m, profile)
     require(m['min_window_s'] % 60 == 0 and m['window_s'] >= m['min_window_s'], 'window-alignment')
     require(finite_positive(m.get('qual_timeout_s', 300)) and m.get('qual_timeout_s', 300) <= 600, 'invalid-qual-timeout')
     require(finite_positive(m.get('gib')), 'invalid:reserved-ram-gib')
@@ -149,6 +182,8 @@ def hashes(m, policy):
     for field in ('launcher', 'engine', 'job', 'qual_fixture', 'source_manifest'):
         result[field + '_path'] = str(path_of(m, field).resolve())
         result[field + '_sha256'] = sha(path_of(m, field))
+    if m.get('qualification_profile', 'inference') == 'inference':
+        result.update(qualification_model_check(m))
     row = path_of(m, 'row') if m.get('row') else None
     if row is not None:
         result['row_sha256'] = sha(row)
@@ -163,6 +198,30 @@ def namespace(workdir, tools, interpreter=sys.executable):
             'interpreter': {'path': interp, 'sha256': sha(interp), 'version': sys.version.split()[0]},
             'tools': {t: shutil.which(t) for t in tools},
             'env_fingerprint_sha256': digest({k: os.environ.get(k, '') for k in ('PATH', 'HOME', 'LD_LIBRARY_PATH', 'VIRTUAL_ENV')})}
+
+def ended_fields(path):
+    """Parse an immutable engine terminal marker; malformed evidence refuses."""
+    lines = Path(path).read_text().splitlines()
+    require(len(lines) >= 4, 'ended-marker-malformed')
+    match = re.fullmatch(r'rc=(\d+) time=[^ ]+ reason=.*', lines[0])
+    require(match is not None, 'ended-marker-malformed')
+    fields = {'rc': int(match.group(1))}
+    for name in ('partial', 'phase', 'granted'):
+        hits = [line[len(name) + 1:] for line in lines if line.startswith(name + '=')]
+        require(len(hits) == 1, 'ended-marker-malformed')
+        fields[name] = hits[0]
+    require(fields['partial'] in ('true', 'false') and
+            fields['phase'] in ('qualification', 'production') and
+            fields['granted'] in ('true', 'false'), 'ended-marker-malformed')
+    fields['partial'] = fields['partial'] == 'true'
+    fields['granted'] = fields['granted'] == 'true'
+    return fields
+
+def check_ended(path, expected_rc, expected_partial, reason):
+    data = ended_fields(path)
+    require(data['rc'] == expected_rc and data['partial'] is expected_partial and
+            data['phase'] == 'qualification' and data['granted'] is True, reason)
+    return data
 
 def kill_owned(proc):
     if proc.poll() is None:
@@ -220,9 +279,93 @@ def evidence_check(m, p, policy):
     require(p['admission']['affinity_ok'] is True, 'affinity')
     require(p['completion']['complete_cmd_present'] is True and p['completion']['is_complete_rc'] == 0, 'completion')
     require(p['rc75']['exit_code'] == 75 and p['rc75']['partial_flag'] is True, 'rc75')
-    require(p['disk']['job_floor_gib'] == p['disk']['policy_floor_gib'] == floor_gib(Path(policy)), 'disk-floor-mismatch')
+    profile = m.get('qualification_profile', 'inference')
+    if profile == 'native-diagnostic':
+        control = p.get('disk', {}).get('diagnostic_control', {})
+        expected_floor = floor_gib(Path(policy))
+        require(p['disk'].get('policy_floor_gib') == expected_floor and
+                p['disk'].get('job_floor_gib') == expected_floor and
+                control.get('kind') == 'epyc.qual.diagnostic-disk-control.v1' and
+                control.get('policy_sha256') == sha(policy) and
+                control.get('floor_gib') == expected_floor, 'diagnostic-disk-control-unbound')
+    else:
+        require(p['disk']['job_floor_gib'] == p['disk']['policy_floor_gib'] == floor_gib(Path(policy)), 'disk-floor-mismatch')
     require(p['children_drained'] is True, 'children-not-drained')
+    qroot = Path(p.get('qualification_root', '')).resolve()
+    require(qroot.name == p.get('nonce') and qroot.parent.name == 'qual', 'nonce-root-binding')
+    grants_root = (qroot / 'grants').resolve()
+    partial_ended = p['rc75']
+    partial_ended_path = Path(partial_ended.get('ended_path', '')).resolve()
+    require(partial_ended_path.name == m['id'] + '.deadline.ended' and
+            partial_ended_path.is_relative_to(grants_root) and partial_ended_path.is_file() and
+            sha(partial_ended_path) == partial_ended.get('ended_line_sha256'),
+            'rc75-ended-marker-unbound')
+    check_ended(partial_ended_path, 75, True, 'rc75-ended-marker-invalid')
+    terminal = p.get('launcher_terminal', {})
+    terminal_path = Path(terminal.get('path', '')).resolve()
+    require(terminal_path == (grants_root / (m['id'] + '.ended')).resolve() and
+            terminal_path.is_file() and sha(terminal_path) == terminal.get('sha256'),
+            'launcher-terminal-marker-unbound')
+    check_ended(terminal_path, 0, False, 'launcher-terminal-marker-invalid')
+    if profile == 'native-diagnostic':
+        # Control-only qualification proves the pinned launcher/job/predicate
+        # plumbing. It deliberately makes no throughput or n_ctx claim.
+        require(p.get('qualification_profile') == profile, 'profile-mismatch')
+        require('first_request' not in p, 'native-diagnostic-inference-metrics-present')
+        fixture = p.get('fixture', {})
+        require(fixture.get('path') == str(path_of(m, 'qual_fixture').resolve()) and
+                fixture.get('sha256') == sha(path_of(m, 'qual_fixture')) and
+                fixture.get('items') == m['qual_fixture_items'], 'fixture-binding')
+        require(p['completion']['complete_cmd_present'] is True and
+                p['completion']['is_complete_rc'] == 0 and
+                p['completion'].get('predicate_sha256') == m['qual_complete_cmd_sha256'],
+                'completion-predicate-unbound')
+        writer = p['result_writer']
+        require(writer.get('ok') is True and Path(writer['result_path']).is_file() and
+                sha(writer['result_path']) == writer.get('sha256') and
+                Path(writer['result_path']).resolve().is_relative_to(
+                    (qroot / 'results').resolve()),
+                'result-writer')
+        partial = p.get('rc75', {})
+        require(partial.get('exit_code') == 75 and partial.get('partial_flag') is True and
+                partial.get('partial_sha256') and partial.get('partial_path') and
+                Path(partial['partial_path']).resolve().is_relative_to((qroot / 'partial-results').resolve()) and
+                sha(partial['partial_path']) == partial['partial_sha256'], 'rc75-partial-binding')
+        require(all(p['exec_namespace']['tools'].get(t) for t in m['requires_tools']), 'tool-missing')
+        return
     f = p['first_request']
+    # A model-free fixture can exercise entry/completion/deadline plumbing, but
+    # its synthetic rate is not a measurement and must never mint a pass receipt.
+    require(f.get('fixture_only') is not True and
+            f.get('scope') != 'model-free launcher qualification fixture',
+            'first-request-is-fixture-only')
+    model = m.get('qualification_model')
+    require(isinstance(model, dict), 'missing-qualification-model-identity')
+    native = f.get('native_record')
+    require(isinstance(native, dict), 'native-first-request-record-missing')
+    require(native.get('record_kind') == 'epyc.qual.native-first-request.v1' and
+            native.get('provenance') == 'native-runtime', 'native-first-request-provenance-invalid')
+    require(native.get('source_manifest_sha256') == sha(path_of(m, 'source_manifest')),
+            'native-first-request-source-mismatch')
+    require(native.get('model_id') == model.get('id') and
+            native.get('model_sha256') == model.get('sha256'), 'native-first-request-model-mismatch')
+    writer = p['result_writer']
+    result_path = Path(writer.get('result_path', '')).resolve()
+    qroot = Path(p.get('qualification_root', '')).resolve()
+    results_root = (qroot / 'results').resolve()
+    require(writer.get('ok') is True and result_path.is_file() and result_path.is_relative_to(results_root) and
+            sha(result_path) == writer.get('sha256') and
+            native.get('result_path') == str(result_path) and
+            native.get('result_sha256') == writer.get('sha256'),
+            'native-first-request-result-mismatch')
+    record = p.get('first_request_record')
+    require(isinstance(record, dict) and record.get('record_kind') == native['record_kind'],
+            'native-first-request-record-pointer-missing')
+    record_path = Path(record.get('path', '')).resolve()
+    require(record_path == (results_root / 'first-request.json').resolve() and
+            record_path.is_file() and sha(record_path) == record.get('sha256'),
+            'native-first-request-record-unretained')
+    require(load(record_path) == f, 'native-first-request-record-content-mismatch')
     require(f['ok'] is True and f['n_ctx'] >= m['n_ctx_required'] and f['prompt_tokens'] >= m['tokens_per_item'], 'n_ctx-or-prompt')
     require(finite_positive(f['measured_tok_s']), 'invalid-rate')
     require(m['items'] * m['tokens_per_item'] / f['measured_tok_s'] <= m['window_s'], 'infeasible-window')
@@ -290,6 +433,10 @@ def _run(m, args):
     rc = invoke(path_of(m, 'launcher'), args.flags_dir, env, m.get('qual_timeout_s', 300), root / 'launcher.log')
     require(rc == 0, 'qual-launcher-rc:' + str(rc))
     p = load(root / 'receipt-partial.json')
+    terminal_path = grants / (m['id'] + '.ended')
+    require(terminal_path.is_file(), 'launcher-terminal-marker-missing')
+    check_ended(terminal_path, 0, False, 'launcher-terminal-marker-invalid')
+    p['launcher_terminal'] = {'path': str(terminal_path.resolve()), 'sha256': sha(terminal_path)}
     require(hashes(m, args.policy) == binding, 'files-changed-during-qualification')
     p.update(binding, kind='epyc.qual.pass.v1', id=m['id'], nonce=args.nonce,
              ran_at=datetime.now(timezone.utc).isoformat(), ran_by='ws58-calendar-keeper')

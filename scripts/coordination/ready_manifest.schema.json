@@ -3,7 +3,7 @@
   "$id": "epyc.ready.manifest.v2",
   "title": "LOOP-49 qualified READY manifest",
   "type": "object",
-  "required": ["id", "launcher", "engine", "job", "row", "source_manifest", "qual_fixture", "requires_tools", "ports", "exclusive_class", "shared_state", "regions", "claimed_cpus", "window_s", "min_window_s", "items", "tokens_per_item", "n_ctx_required", "est_output_GiB", "scratch_root", "gib"],
+  "required": ["id", "launcher", "engine", "job", "row", "source_manifest", "qual_fixture", "requires_tools", "ports", "exclusive_class", "shared_state", "regions", "claimed_cpus", "window_s", "min_window_s", "items", "est_output_GiB", "scratch_root", "gib"],
   "properties": {
     "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"},
     "launcher": {"$ref": "#/$defs/path"}, "engine": {"$ref": "#/$defs/path"},
@@ -22,9 +22,30 @@
     "qual_timeout_s": {"type": "integer", "minimum": 1, "maximum": 600},
     "qual_forced_deadline_s": {"type": "integer", "minimum": 1, "maximum": 20},
     "qual_result_file": {"type": "string", "minLength": 1},
+    "qualification_profile": {"enum": ["inference", "native-diagnostic"]},
+    "qualification_model": {"$ref": "#/$defs/qualification_model"},
+    "qual_complete_cmd_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "qual_fixture_items": {"type": "integer", "minimum": 1},
     "hold": {"type": ["null", "string"]}
   },
+  "allOf": [
+    {
+      "if": {"properties": {"qualification_profile": {"const": "native-diagnostic"}}, "required": ["qualification_profile"]},
+      "then": {"required": ["qual_complete_cmd_sha256", "qual_fixture_items", "qual_forced_deadline_s"]},
+      "else": {"required": ["qualification_model", "tokens_per_item", "n_ctx_required"]}
+    }
+  ],
   "$defs": {
+    "qualification_model": {
+      "type": "object",
+      "required": ["id", "path", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "path": {"type": "string", "pattern": "^/"},
+        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      },
+      "additionalProperties": false
+    },
     "path": {"oneOf": [{"type": "string", "pattern": "^/"}, {"type": "object", "required": ["path"], "properties": {"path": {"type": "string", "pattern": "^/"}, "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}}}]}
   }
 }

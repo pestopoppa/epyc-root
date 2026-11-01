@@ -2,8 +2,10 @@
 """Single canonical engine implementation; all artifacts are retained."""
 from __future__ import annotations
 import argparse
+import base64
 from datetime import datetime, timezone
 import fcntl
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -19,25 +21,65 @@ ACTIVE = None
 
 def birth(pid):
     # comm can contain spaces/parentheses; stat field 22 is offset 19 after comm.
-    return Path('/proc/%d/stat' % pid).read_text().rsplit(')', 1)[1].split()[19]
+    try:
+        require(type(pid) is int and pid > 0, 'proc-pid-invalid')
+        tail = Path('/proc/%d/stat' % pid).read_text().rsplit(')', 1)
+        require(len(tail) == 2, 'proc-birth-malformed')
+        fields = tail[1].split()
+        require(len(fields) > 19 and fields[19].isdigit(), 'proc-birth-malformed')
+        return fields[19]
+    except FileNotFoundError:
+        raise
+    except Refused:
+        raise
+    except (OSError, IndexError, ValueError, TypeError) as exc:
+        raise Refused('proc-birth-malformed:' + type(exc).__name__)
 
 def launcher_dead(pid, expected_birth):
     """PID reuse is dead custody; never signal a process with a new birth."""
+    require(isinstance(expected_birth, (str, int)) and str(expected_birth).isdigit(),
+            'proc-expected-birth-invalid')
     try:
         return birth(pid) != str(expected_birth)
     except FileNotFoundError:
         return True
 
-def ended(path, rc, reason, partial=False, phase=None):
+def ended(path, rc, reason, partial=False, phase=None, owner=None):
     path.parent.mkdir(parents=True, exist_ok=True)
     phase = phase or ('qualification' if os.environ.get('WS58_QUAL') == '1' else 'production')
     require(phase in ('qualification', 'production'), 'invalid-phase')
     # Exclusive creation forbids overwrites, including an older reused row id.
+    grant_name = (path.name.removesuffix('.deadline.ended') + '.grant'
+                  if path.name.endswith('.deadline.ended') else path.with_suffix('.grant').name)
+    grant_path = path.with_name(grant_name)
+    grant_fields = {}
+    if grant_path.is_file() and not grant_path.is_symlink():
+        try:
+            regions, start, end = parse_grant(grant_path)
+            grant_bytes = grant_path.read_bytes()
+            grant_fields = {
+                'grant_path': str(grant_path.resolve()),
+                'grant_sha256': sha(grant_path),
+                'grant_body_b64': base64.b64encode(grant_bytes).decode('ascii'),
+                'grant_regions': regions,
+                'grant_start': start.strftime('%Y-%m-%dT%H:%MZ'),
+                'grant_end': end.strftime('%Y-%m-%dT%H:%MZ'),
+            }
+        except Exception:
+            # Preserve terminal custody even if grant metadata is malformed;
+            # downstream science scoring will refuse the missing binding.
+            grant_fields = {}
     with path.open('x') as f:
         f.write('rc=%d time=%s reason=%s\npartial=%s\n' %
                 (rc, datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'), reason.replace('\n', ' ')[:300], str(partial).lower()))
         f.write('native_complete=%s\n' % str(reason in ('complete', 'completion-predicate-failed-native-retained')).lower())
-        f.write('phase=%s\ngranted=%s\n' % (phase, str(path.with_suffix('.grant').exists()).lower()))
+        f.write('phase=%s\ngranted=%s\n' % (phase, str(grant_path.exists()).lower()))
+        f.write('id=%s\n' % path.name.removesuffix('.ended'))
+        owner = owner if phase == 'production' else None
+        if owner:
+            f.write('owner=%s\n' % owner.replace('\n', ' ')[:120])
+        for key, value in grant_fields.items():
+            f.write('%s=%s\n' % (key, value))
 
 def signalled(signum, frame):
     if ACTIVE is not None:
@@ -94,8 +136,8 @@ def wrapped_job_command(args, cpulist, timeout_s):
     return shlex.join(command)
 
 def qualify(args, env, policy):
-    root = Path(os.environ['WS58_QUAL_ROOT'])
-    m = load(os.environ['WS58_QUAL_MANIFEST'])
+    root = Path(env['WS58_QUAL_ROOT'])
+    m = load(env['WS58_QUAL_MANIFEST'])
     require(m['id'] == args.id, 'real-id-mismatch')
     grant = Path(env['FILLER_GRANTS_DIR']) / (args.id + '.grant')
     regions, start, end = parse_grant(grant)
@@ -124,8 +166,10 @@ def qualify(args, env, policy):
     require(rc == 0, 'fixture-job:' + reason)
     completion_rc = complete(args, jobenv)
     require(completion_rc == 0, 'completion-predicate-failed')
-    # Native fixture writes evidence at the actual request boundary, not a smoke.
-    request = load(results / 'first-request.json')
+    profile = m.get('qualification_profile', 'inference')
+    # Only the inference profile has a first-request record. Diagnostic fixtures
+    # deliberately exercise launcher controls without a model-shaped artifact.
+    request = load(results / 'first-request.json') if profile != 'native-diagnostic' else None
     result = results / m.get('qual_result_file', 'result.json')
     require(result.resolve().is_relative_to(results.resolve()), 'result-outside-nonce')
     require(result.is_file(), 'result-writer-missing')
@@ -144,16 +188,39 @@ def qualify(args, env, policy):
     require(partial.get('partial') is True, 'partial-flag-missing')
     line = root / 'grants' / (args.id + '.deadline.ended')
     ended(line, partial_rc, partial_reason, True)
-    create(root / 'receipt-partial.json', {
+    receipt = {
+        'qualification_profile': m.get('qualification_profile', 'inference'),
+        'nonce': env['WS58_QUAL_NONCE'],
+        'qualification_root': str(root.resolve()),
         'admission': {'rc': 0, 'grant_regions': regions, 'claimed_cpus': m['claimed_cpus'], 'affinity_ok': os.sched_getaffinity(0) == allowed},
         'exec_namespace': namespace(args.workdir, args.requires_tool),
-        'fixture': {'path': jobenv['FILLER_QUAL_FIXTURE'], 'sha256': sha(jobenv['FILLER_QUAL_FIXTURE']), 'items': 2},
-        'first_request': dict(request, wall_s=time.monotonic() - begin),
+        'fixture': {'path': jobenv['FILLER_QUAL_FIXTURE'], 'sha256': sha(jobenv['FILLER_QUAL_FIXTURE']),
+                    'items': m.get('qual_fixture_items', 2)},
         'result_writer': {'ok': True, 'result_path': str(result), 'sha256': sha(result)},
-        'completion': {'complete_cmd_present': True, 'is_complete_rc': completion_rc},
-        'rc75': {'forced_deadline_s': forced, 'exit_code': partial_rc, 'partial_flag': True, 'ended_line_sha256': sha(line), 'ended_path': str(line)},
-        'disk': {'job_floor_gib': request['job_floor_gib'], 'policy_floor_gib': floor_gib(policy), 'est_output_gib': m['est_output_GiB']},
-        'ports': m['ports'], 'exclusive_class': m['exclusive_class'], 'shared_state': m['shared_state'], 'children_drained': True})
+        'completion': {'complete_cmd_present': bool(args.complete_cmd), 'is_complete_rc': completion_rc,
+                       'predicate_sha256': hashlib.sha256(args.complete_cmd.encode()).hexdigest()},
+        'rc75': {'forced_deadline_s': forced, 'exit_code': partial_rc, 'partial_flag': True,
+                 'partial_path': str(partial_results / 'partial.json'),
+                 'partial_sha256': sha(partial_results / 'partial.json'),
+                 'ended_line_sha256': sha(line), 'ended_path': str(line)},
+        'disk': {'job_floor_gib': request['job_floor_gib'] if request else floor_gib(policy),
+                 'policy_floor_gib': floor_gib(policy), 'est_output_gib': m['est_output_GiB']},
+        'ports': m['ports'], 'exclusive_class': m['exclusive_class'], 'shared_state': m['shared_state'], 'children_drained': True}
+    if profile == 'native-diagnostic':
+        # Explicit policy control receipt; it asserts policy plumbing only, not
+        # workload output size or feasibility.
+        receipt['disk']['diagnostic_control'] = {
+            'kind': 'epyc.qual.diagnostic-disk-control.v1',
+            'policy_sha256': sha(policy), 'floor_gib': floor_gib(policy)}
+    else:
+        receipt['first_request'] = dict(request, wall_s=time.monotonic() - begin)
+        record = request.get('native_record')
+        receipt['first_request_record'] = {
+            'record_kind': record.get('record_kind') if isinstance(record, dict) else None,
+            'path': str((results / 'first-request.json').resolve()),
+            'sha256': sha(results / 'first-request.json'),
+        }
+    create(root / 'receipt-partial.json', receipt)
     return 0
 
 def production(args, env, policy):
@@ -166,8 +233,23 @@ def production(args, env, policy):
     require(all(env.get(k) for k in ('WS58_READY_MANIFEST', 'WS58_NONCE_STORE', 'WS58_ENGINE_ALLOWLIST')), 'keeper-qualified-receipt-required')
     from qualify_launcher import verify
     from types import SimpleNamespace
-    verify(load(env['WS58_READY_MANIFEST']), SimpleNamespace(allowlist=env['WS58_ENGINE_ALLOWLIST'], nonce_store=env['WS58_NONCE_STORE'],
+    manifest = load(env['WS58_READY_MANIFEST'])
+    verify(manifest, SimpleNamespace(allowlist=env['WS58_ENGINE_ALLOWLIST'], nonce_store=env['WS58_NONCE_STORE'],
         policy=str(policy), fingerprint_now=False, flags_dir=str(flags)))
+    require(manifest.get('id') == args.id, 'manifest-id-mismatch')
+    owner = bind_production_owner(manifest)
+    args.ended_owner = owner
+    # Do not publish a recoverable production identity until qualification and
+    # the manifest owner have both been verified. A crash before this point is
+    # pre-grant and cannot be charged as a production run.
+    create(grants / (args.id + '.launcher.json'), {
+        'pid': os.getpid(), 'birth': birth(os.getpid()), 'id': args.id,
+        'phase': 'production', 'grants_dir': str(grants.resolve(strict=True)),
+        'owner': owner, 'manifest_path': str(Path(env['WS58_READY_MANIFEST']).resolve()),
+        'nonce_store': str(Path(env['WS58_NONCE_STORE']).resolve()),
+        'allowlist_path': str(Path(env['WS58_ENGINE_ALLOWLIST']).resolve()),
+        'policy_path': str(Path(policy).resolve()), 'flags_dir': str(flags.resolve()),
+    })
     print('launcher up pid=%d birth=%s class=%s' % (os.getpid(), birth(os.getpid()), getattr(args, 'class')), flush=True)
     while not (grants / (args.id + '.grant')).exists():
         if Path(args.stop).exists():
@@ -210,6 +292,11 @@ def production(args, env, policy):
     if rc != 0:
         raise EngineExit(rc, reason)
     return 0
+
+def bind_production_owner(manifest):
+    owner = manifest.get('owner') if isinstance(manifest, dict) else None
+    require(isinstance(owner, str) and owner.strip(), 'manifest-owner-missing')
+    return owner
 
 class EngineExit(Exception):
     def __init__(self, rc, reason):
@@ -254,6 +341,7 @@ def main():
     if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]*', args.id or ''):
         print('invalid-id', file=sys.stderr); return 64
     target = Path(env.get('FILLER_GRANTS_DIR', env.get('FILLER_FLAGS_DIR', '/mnt/raid0/llm/tmp/compute-flags') + '/grants')) / (args.id + '.ended')
+    args.ended_owner = None  # Set only after production verifies the manifest.
     rc, reason = 70, 'engine-interrupted'
     lock = None
     owns_lock = False
@@ -268,9 +356,10 @@ def main():
         require(args.cmd and args.stop, 'id-cmd-stop-required')
         require(args.complete_cmd, 'complete-cmd-missing')
         require(Path(args.workdir).is_dir(), 'workdir-missing')
-        create(target.parent / (args.id + '.launcher.json'), {
-            'pid': os.getpid(), 'birth': birth(os.getpid()), 'id': args.id,
-            'phase': phase, 'grants_dir': str(target.parent.resolve(strict=True))})
+        if qual:
+            create(target.parent / (args.id + '.launcher.json'), {
+                'pid': os.getpid(), 'birth': birth(os.getpid()), 'id': args.id,
+                'phase': phase, 'grants_dir': str(target.parent.resolve(strict=True))})
         signal.signal(signal.SIGTERM, signalled); signal.signal(signal.SIGINT, signalled)
         policy = Path(env.get('WS58_QUAL_POLICY', str(Path(__file__).parent / 'dryrun_disk_policy.json')))
         rc = qualify(args, env, policy) if qual else production(args, env, policy)
@@ -287,14 +376,14 @@ def main():
     finally:
         if args.id and owns_lock:
             try:
-                ended(target, rc, reason, rc == 75, phase=phase)
+                ended(target, rc, reason, rc == 75, phase=phase, owner=args.ended_owner)
             except FileExistsError:
                 rc = 66
             lock.close()
         elif args.id and lock is None and not target.exists():
             # Includes template refusal before any grant polling.
             try:
-                ended(target, rc, reason, rc == 75, phase=phase)
+                ended(target, rc, reason, rc == 75, phase=phase, owner=args.ended_owner)
             except FileExistsError:
                 rc = 66
     print('engine rc=%d reason=%s' % (rc, reason), file=sys.stderr)

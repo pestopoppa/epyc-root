@@ -48,12 +48,41 @@ set `WS58_EXEC_MODE=host-chroot` inside the chroot.
 
 Fixture job receives `FILLER_QUAL_FIXTURE`, `FILLER_QUAL_PHASE=complete|deadline`,
 `FILLER_RESULTS_DIR`, `FILLER_CPUS`, `FILLER_DEADLINE`, `FILLER_END`, `FILLER_ID`.
-Complete fixture writes `first-request.json` with real `ok`, `n_ctx`,
-`prompt_tokens`, `measured_tok_s`, `job_floor_gib`, plus `result.json` (or manifest
-`qual_result_file`). Deadline fixture writes `partial.json` with `partial:true`
+Inference-profile complete fixtures write `first-request.json` with real `ok`,
+`n_ctx`, `prompt_tokens`, `measured_tok_s`, `job_floor_gib`, plus `result.json`
+(or manifest `qual_result_file`). Native-diagnostic complete fixtures write a
+result only; they do not need inference metrics. Deadline fixture writes
+`partial.json` with `partial:true`
 and itself exits 75. Engine checks the actual completion predicate and actual
 return codes; a killed process alone does not prove resumability. Result dirs
 are separate nonce destinations; the native results directory is untouched.
+
+`qualification_profile` defaults to `inference`, preserving the real first-request,
+`n_ctx`, prompt-token and throughput-window checks. `native-diagnostic` is a
+control-only profile: it never accepts fixture rates as feasibility evidence. It
+requires `qual_complete_cmd_sha256` to pin the completion predicate and
+`qual_fixture_items` to bind the fixture's declared item count, the pinned
+fixture identity, successful COMPLETE_CMD execution, a hashed result inside the
+nonce's results directory, and a second fixture run that itself exits 75 with a
+hashed partial marker inside that nonce's partial-results directory. This proves
+launcher/control behavior only. Its disk-floor record is explicitly a diagnostic
+policy control receipt, not a measured workload disk result. `tokens_per_item`
+and `n_ctx_required` are inference-profile requirements; diagnostic `items`
+counts fixture work units and may be 28 without inventing token/rate fields. It
+cannot qualify C6's missing 28 workload cells or establish production
+throughput; C6 remains held pending honest full-run measurements.
+
+Inference manifests pin `qualification_model.id`, an absolute `path`, and the
+model file's SHA-256. Static qualification verifies the file bytes; the issued
+binding and pass receipt carry the resolved model path and actual bytes hash, so
+model replacement or path drift invalidates qualification.
+
+Both profiles bind the fixture rc75 marker at `<nonce>/grants/<id>.deadline.ended`
+and the outer launcher's final `<nonce>/grants/<id>.ended`. The receipt records
+each path and SHA-256. Verification requires the first marker to say rc 75,
+partial true, qualification phase, granted true, and the final marker to say rc
+0, partial false, qualification phase, granted true. The final marker is
+captured after the launcher exits and writes it.
 
 Before grant creation, the writer must invoke
 `loop49_keeper_gate.py before-grant --manifest <current-manifest> --row-id <id> --regions <actual-grant-regions>`
@@ -98,11 +127,62 @@ for repair without compute retry. Owner retirement is WITHDRAWN; job diagnostic
 results are DIAGNOSTIC-RESULT. Science score counts qualified production grants
 ending 0/75 with verdict; failed production grants subtract, publishes score 0.
 
-Tests: 20 retained receipt regressions in `test_loop49_qualification.py`; these
-are component regressions, not the report's full keeper dry-run acceptance
-matrix. They have not been executed without an explicit compute grant. Run only
-with `LOOP49_TEST_GRANT=<issued grant>` and `LOOP49_TEST_ARTIFACTS=<retained root>`.
-No test cleanup deletes or renames fixtures.
+The D2 consumer is `science_quota.py`; it reads filing records, never READY/hour
+counters. Collect directly from retained artifacts and score in one command:
+
+```bash
+python3 scripts/coordination/science_quota.py \
+  --collect-filed-dir "$FLAGS_DIR/filing-done" \
+  --ended-dir "$FILLER_GRANTS_DIR" \
+  --manifest-dir "$READY_MANIFEST_DIR" \
+  --nonce-store "$WS58_NONCE_STORE" \
+  --allowlist "$WS58_ENGINE_ALLOWLIST" \
+  --policy "$WS58_POLICY" \
+  --flags-dir "$FLAGS_DIR" \
+  --normalized-out "$RETAINED_ROOT/science-quota-input.jsonl" \
+  --as-of 2026-11-01T00:00:00Z
+```
+
+`--ended-dir` and `--manifest-dir` are searched recursively; duplicate
+manifests for one id are treated as absent. Collection derives identity,
+outcome, verdict, and event time from each `.FILED`, then binds any matching
+terminal and canonical `QUAL-<id>.json` receipt. The verifier inputs are needed
+for qualification credit. Omit `--normalized-out` to score without retaining
+an intermediate JSONL, or use positional `<normalized.jsonl>` for a later
+score-only replay. The collector accepts no caller-supplied score flags.
+
+The scorer reads each `source_receipt.path` and requires exact
+bytes/SHA equality with the embedded retained receipt, matching id, outcome,
+verdict and filing time. A score also requires the retained production `.ended`
+and `.grant` bytes; a positive verdict additionally calls the canonical
+qualifier verifier against the actual `epyc.qual.pass.v1` receipt, nonce store,
+manifest and deployment policy. Caller booleans alone cannot create science
+credit. Missing provenance scores zero with an explicit `unscored_reasons`
+count. The three real legacy receipts in
+`tests/coordination/fixtures/loop49/science-receipts.jsonl` currently yield
+**0/3 scorable**: their old terminal records do not retain LOOP49 production
+phase/grant proof. No qualification or verdict is inferred retroactively.
+Qualified production `DIAGNOSTIC-RESULT` with a verdict counts +1; a granted
+production `FAILED-RUN` counts −1.
+
+Tests: the source suite (including historical receipt regressions) is offline
+and uses local fixtures: it runs no model inference and consumes no production
+compute grants. Qualification fixtures exercise synthetic local grant records
+only. Export `LOOP49_TEST_ARTIFACTS=<retained root>` so generated artifacts remain
+available. Run under the CPU region lock on one quarter (for example CPUs 0–23,
+q0) with an indefinite acquisition timeout (`--timeout-s 0`). The lock resets
+its child's working directory, so explicitly change to the exported source root:
+
+```bash
+export WS58_ROOT=/mnt/raid0/llm/worktrees/mains/codex-refactor-01a16fc3
+export LOOP49_TEST_ARTIFACTS=/mnt/raid0/llm/tmp/refactor-01a16fc3/loop49-source-tests
+CPU_LIST=0-23
+/workspace/repos/epyc-orchestrator/scripts/region-lock run --cpu-list "$CPU_LIST" --timeout-s 0 --role build --tag loop49-qualification-tests -- \
+  bash -c 'cd "$WS58_ROOT" && /workspace/repos/epyc-orchestrator/.venv/bin/python3 -m pytest -q tests/coordination/test_loop49*.py tests/coordination/test_science_quota.py'
+```
+
+No test cleanup deletes or renames fixtures. These component regressions are not
+the report's full keeper dry-run acceptance matrix.
 
 Manifest includes `row:{"path":"<ready/<id>.row.md>"}` (or a string path).
 Before qualification, the pinned row's id, region expression, booking class
@@ -120,3 +200,5 @@ Belief source wiring is tracked as `VB-LOOP49-QUALIFICATION-WIRE` in
 `handoffs/active/vidya-belief-substrate-program.md`. The row is intentionally open:
 registration and qualification-receipt production do not establish a reader or
 planning-context canary.
+
+`failed_run_rollup.py` only classifies forensic outcomes. Its output is non-authoritative for science quota; score fields are stripped, including caller-provided values. Use `science_quota.py` to verify retained evidence and emit scores. Production terminal ownership is passed from the verified manifest explicitly; ambient `WS58_OWNER` cannot supply ownership. Recovery re-verifies the retained manifest before passing its owner.

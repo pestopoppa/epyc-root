@@ -63,6 +63,10 @@ class ManifestBinding(unittest.TestCase):
         engine = fake_root/'scripts/coordination/filler_run14.sh'; engine.write_text('# copied\n')
         for field in ('launcher', 'job', 'qual_fixture', 'source_manifest'):
             path = self.root/field; path.write_text('# fixture\n'); self.m[field] = str(path)
+        model = self.root / 'model'
+        model.write_text('model identity fixture\n')
+        self.m['qualification_model'] = {
+            'id': 'fixture-model', 'path': str(model), 'sha256': q.sha(model)}
         self.m['engine'] = str(engine)
         allow = self.root/'allow.json'
         allow.write_text(json.dumps({'kind':'epyc.engine-allowlist.v1',

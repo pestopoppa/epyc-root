@@ -2,7 +2,8 @@
 """Structured filer outcomes; failed validation never erases native completion.
 
 Input is JSONL with explicit forensic family A..I (no guessing from rc). Output
-is retained JSONL or a Markdown rollup. --validate-only replays a validator on
+is retained JSONL or a Markdown rollup. Science quota scores are emitted only
+by science_quota.py after retained evidence verification. --validate-only replays a validator on
 retained outputs without launching the native job.
 """
 from __future__ import annotations
@@ -63,10 +64,10 @@ def classify(record):
         outcome = Outcome.FAILED
     result['outcome'] = outcome.value
     result['root_cause_family'] = family.value
-    # Operator D2: failed grants subtract; republishing and disk waits never score.
-    result['qualified_science_run'] = bool(record.get('phase') == 'production' and record.get('qualified') is True and record.get('granted') is True
-        and outcome in (Outcome.COMPLETE, Outcome.PARTIAL) and record.get('verdict'))
-    result['science_score'] = 1 if result['qualified_science_run'] else -1 if outcome == Outcome.FAILED and record.get('phase') == 'production' and record.get('granted') else 0
+    # Classification is forensic metadata, never evidence-backed quota authority.
+    # Strip caller-supplied score fields too: copying them would retain the bypass.
+    result.pop('qualified_science_run', None)
+    result.pop('science_score', None)
     result['retain_native_output'] = outcome == Outcome.VALIDATOR
     return result
 
@@ -134,4 +135,28 @@ def record_launcher_dead(identity_path, ended_path):
         raise ValueError('invalid-launcher-identity')
     if not launcher_dead(pid, birth):
         raise ValueError('launcher-still-alive')
-    ended(ended_target, 70, 'launcher-dead:pid=%s:birth=%s' % (pid, birth), phase=phase)
+    owner = None
+    if phase == 'production':
+        owner = identity.get('owner')
+        verifier_fields = ('manifest_path', 'nonce_store', 'allowlist_path', 'policy_path', 'flags_dir')
+        if not isinstance(owner, str) or not owner.strip() or any(
+                not isinstance(identity.get(key), str) or not identity[key]
+                for key in verifier_fields):
+            raise ValueError('production-launcher-owner-proof-missing')
+        try:
+            from types import SimpleNamespace
+            import qualify_launcher
+            manifest = qualify_launcher.load(identity['manifest_path'])
+            if manifest.get('id') != row_id or manifest.get('owner') != owner:
+                raise ValueError('production-launcher-owner-binding-mismatch')
+            verified = qualify_launcher.verify(manifest, SimpleNamespace(
+                allowlist=identity['allowlist_path'], nonce_store=identity['nonce_store'],
+                policy=identity['policy_path'], fingerprint_now=False,
+                flags_dir=identity['flags_dir']))
+            if verified.get('id') != row_id or verified.get('id') != manifest.get('id'):
+                raise ValueError('production-launcher-receipt-binding-mismatch')
+        except ValueError:
+            raise
+        except Exception as exc:
+            raise ValueError('production-launcher-owner-proof-invalid') from exc
+    ended(ended_target, 70, 'launcher-dead:pid=%s:birth=%s' % (pid, birth), phase=phase, owner=owner)
