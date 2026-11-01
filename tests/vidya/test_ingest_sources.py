@@ -210,12 +210,20 @@ def _s4_omega_ab(tmp: Path) -> Path:
     return _helpers("test_s4_omega_ab_adapter").write_fixture(tmp)
 
 
+def _usage_provenance(tmp: Path) -> Path:
+    # The reader-owned fixture is a self-contained, synthetic copy of the
+    # current writer shape; it exercises CLI dispatch without claiming a live
+    # usage measurement.
+    return _helpers("test_usage_provenance_adapter")._native_fixtures(tmp)[0]
+
+
 BUILDERS = {
     "inf34-a2-raw-prefill": lambda tmp: _helpers("test_inf34_a2_raw").write_fixture(tmp),
     "session-intercall-gap": lambda tmp: _helpers("test_session_gap_adapter").write_fixture(tmp),
     "orchestrator-serving-call": lambda tmp: _helpers("test_serving_call_adapter").write_fixture(tmp),
     "research-screen": _research_screen,
     "s4-omega-ab": _s4_omega_ab,
+    "usage-provenance": _usage_provenance,
     "kb-rag-qlen": _kb_rag,
     "inf70-arms": _inf70_arms,
     "contention-gate": _contention_gate,
