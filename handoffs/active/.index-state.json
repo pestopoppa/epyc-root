@@ -4,7 +4,7 @@
       "blocked": 59,
       "handoffs": 59,
       "oldest_advance": "2026-07-29",
-      "open": 1043
+      "open": 1041
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -34,7 +34,7 @@
       "blocked": 17,
       "handoffs": 14,
       "oldest_advance": "2026-08-12",
-      "open": 124
+      "open": 123
     }
   },
   "duplicates": {},
@@ -201,10 +201,10 @@
     },
     "autokernel-champion-aggregate.md": {
       "blocked": 1,
-      "closed": 72,
+      "closed": 74,
       "guarded": 0,
-      "last_advanced": "2026-10-31",
-      "open": 41,
+      "last_advanced": "2026-11-01",
+      "open": 39,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -265,10 +265,10 @@
     },
     "autokernel-rebuild-program.md": {
       "blocked": 1,
-      "closed": 162,
+      "closed": 163,
       "guarded": 0,
       "last_advanced": "2026-11-01",
-      "open": 44,
+      "open": 45,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -277,7 +277,7 @@
       },
       "row_id": "INF-66",
       "state": "active",
-      "total": 207
+      "total": 209
     },
     "autokernel-research-loop.md": {
       "blocked": 1,
@@ -553,7 +553,7 @@
     },
     "conversation-stack.md": {
       "blocked": 42,
-      "closed": 60,
+      "closed": 65,
       "guarded": 0,
       "last_advanced": "2026-11-01",
       "open": 33,
@@ -565,7 +565,7 @@
       },
       "row_id": "INF-79",
       "state": "active",
-      "total": 135
+      "total": 140
     },
     "coordinator-role-failure-modes-and-refactor.md": {
       "blocked": 0,
@@ -1417,9 +1417,9 @@
     },
     "kv-unified-stack-rollout.md": {
       "blocked": 0,
-      "closed": 74,
+      "closed": 75,
       "guarded": 0,
-      "last_advanced": "2026-10-31",
+      "last_advanced": "2026-11-01",
       "open": 52,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -1429,7 +1429,7 @@
       },
       "row_id": "RTG-57",
       "state": "active",
-      "total": 126
+      "total": 127
     },
     "laguna-s21-cpu-port.md": {
       "blocked": 0,
@@ -2185,10 +2185,10 @@
     },
     "repl-embedding-retrieval.md": {
       "blocked": 2,
-      "closed": 27,
+      "closed": 28,
       "guarded": 0,
       "last_advanced": "2026-11-01",
-      "open": 21,
+      "open": 20,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2505,10 +2505,10 @@
     },
     "speculative-decoding-mtp-refresh.md": {
       "blocked": 1,
-      "closed": 54,
+      "closed": 55,
       "guarded": 0,
       "last_advanced": "2026-11-01",
-      "open": 37,
+      "open": 36,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2873,7 +2873,7 @@
     },
     "yarn-context-extension-research.md": {
       "blocked": 0,
-      "closed": 51,
+      "closed": 54,
       "guarded": 0,
       "last_advanced": "2026-11-01",
       "open": 36,
@@ -2885,7 +2885,7 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 87
+      "total": 90
     }
   },
   "row_id_collisions": {},

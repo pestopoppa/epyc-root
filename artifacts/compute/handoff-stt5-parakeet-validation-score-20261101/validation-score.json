@@ -1,0 +1,183 @@
+{
+  "cells": {
+    "parakeet|auto|stt_norm/v1|de": {
+      "ci95": [
+        5.170520459206875,
+        7.932473346722893
+      ],
+      "classes": {
+        "decode_error": 3,
+        "numeral_uncovered": 49,
+        "ok": 289,
+        "unknown_marker": 22
+      },
+      "n": 363,
+      "native_unk_count": "UNKNOWN: no raw token IDs",
+      "normalized_marker_unk_count": 0,
+      "normalizer_route": "COULD_NOT_CHECK",
+      "taxonomy_check": {
+        "outcome": "FAIL",
+        "reasons": [
+          "categorical correctness failures present: {'decode_error': 3}. These are NOT WER contributions; correctness is lexicographically prior to speed and such a candidate receives no speed rank at all, not a penalised one (kernel-research.md:355-360)"
+        ]
+      },
+      "wer_percent": 6.383265856950067
+    },
+    "parakeet|auto|stt_norm/v1|en": {
+      "ci95": [
+        5.907182628007838,
+        7.783739377795793
+      ],
+      "classes": {
+        "numeral_uncovered": 42,
+        "ok": 326,
+        "unknown_marker": 26
+      },
+      "n": 394,
+      "native_unk_count": "UNKNOWN: no raw token IDs",
+      "normalized_marker_unk_count": 0,
+      "normalizer_route": "COULD_NOT_CHECK",
+      "taxonomy_check": {
+        "outcome": "PASS",
+        "reasons": []
+      },
+      "wer_percent": 6.841339155749636
+    },
+    "parakeet|auto|stt_norm/v1|fr": {
+      "ci95": [
+        7.062023110161424,
+        9.645189801381468
+      ],
+      "classes": {
+        "numeral_uncovered": 38,
+        "ok": 234,
+        "unknown_marker": 17
+      },
+      "n": 289,
+      "native_unk_count": "UNKNOWN: no raw token IDs",
+      "normalized_marker_unk_count": 0,
+      "normalizer_route": "COULD_NOT_CHECK",
+      "taxonomy_check": {
+        "outcome": "PASS",
+        "reasons": []
+      },
+      "wer_percent": 8.32963456132564
+    },
+    "parakeet|auto|stt_norm/v1|it": {
+      "ci95": [
+        2.7730155457346486,
+        4.767201655307112
+      ],
+      "classes": {
+        "decode_error": 1,
+        "numeral_uncovered": 44,
+        "ok": 313,
+        "unknown_marker": 33
+      },
+      "n": 391,
+      "native_unk_count": "UNKNOWN: no raw token IDs",
+      "normalized_marker_unk_count": 0,
+      "normalizer_route": "COULD_NOT_CHECK",
+      "taxonomy_check": {
+        "outcome": "FAIL",
+        "reasons": [
+          "categorical correctness failures present: {'decode_error': 1}. These are NOT WER contributions; correctness is lexicographically prior to speed and such a candidate receives no speed rank at all, not a penalised one (kernel-research.md:355-360)"
+        ]
+      },
+      "wer_percent": 3.5913806863527533
+    },
+    "parakeet|auto|stt_norm/v2|de": {
+      "ci95": [
+        5.473295616174188,
+        8.26729321362197
+      ],
+      "classes": {
+        "decode_error": 3,
+        "numeral_uncovered": 36,
+        "ok": 302,
+        "unknown_marker": 22
+      },
+      "n": 363,
+      "native_unk_count": "UNKNOWN: no raw token IDs",
+      "normalized_marker_unk_count": 0,
+      "normalizer_route": "COULD_NOT_CHECK",
+      "taxonomy_check": {
+        "outcome": "FAIL",
+        "reasons": [
+          "categorical correctness failures present: {'decode_error': 3}. These are NOT WER contributions; correctness is lexicographically prior to speed and such a candidate receives no speed rank at all, not a penalised one (kernel-research.md:355-360)"
+        ]
+      },
+      "wer_percent": 6.720647773279352
+    },
+    "parakeet|auto|stt_norm/v2|en": {
+      "ci95": [
+        5.862345281832301,
+        7.741464394330637
+      ],
+      "classes": {
+        "numeral_uncovered": 42,
+        "ok": 326,
+        "unknown_marker": 26
+      },
+      "n": 394,
+      "native_unk_count": "UNKNOWN: no raw token IDs",
+      "normalized_marker_unk_count": 0,
+      "normalizer_route": "COULD_NOT_CHECK",
+      "taxonomy_check": {
+        "outcome": "PASS",
+        "reasons": []
+      },
+      "wer_percent": 6.79529183351535
+    },
+    "parakeet|auto|stt_norm/v2|fr": {
+      "ci95": [
+        4.781489441947804,
+        6.5951272646912775
+      ],
+      "classes": {
+        "numeral_uncovered": 35,
+        "ok": 237,
+        "unknown_marker": 17
+      },
+      "n": 289,
+      "native_unk_count": "UNKNOWN: no raw token IDs",
+      "normalized_marker_unk_count": 0,
+      "normalizer_route": "COULD_NOT_CHECK",
+      "taxonomy_check": {
+        "outcome": "PASS",
+        "reasons": []
+      },
+      "wer_percent": 5.659241420830825
+    },
+    "parakeet|auto|stt_norm/v2|it": {
+      "ci95": [
+        2.693439264420071,
+        4.705404717636448
+      ],
+      "classes": {
+        "decode_error": 1,
+        "numeral_uncovered": 34,
+        "ok": 323,
+        "unknown_marker": 33
+      },
+      "n": 391,
+      "native_unk_count": "UNKNOWN: no raw token IDs",
+      "normalized_marker_unk_count": 0,
+      "normalizer_route": "COULD_NOT_CHECK",
+      "taxonomy_check": {
+        "outcome": "FAIL",
+        "reasons": [
+          "categorical correctness failures present: {'decode_error': 1}. These are NOT WER contributions; correctness is lexicographically prior to speed and such a candidate receives no speed rank at all, not a penalised one (kernel-research.md:355-360)"
+        ]
+      },
+      "wer_percent": 3.5420475319926874
+    }
+  },
+  "metric_definition": "campaign-deletion-inclusive-WER",
+  "repetition_check": "COULD_NOT_CHECK: no validation-derived envelope supplied",
+  "resamples": 4000,
+  "schema": "cs8-stt5-validation-score/v1",
+  "seed": 146064415,
+  "selection_only": true,
+  "settings_selection": "UNKNOWN: validation execution failures"
+}

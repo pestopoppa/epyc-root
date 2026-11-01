@@ -3939,7 +3939,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-01T20:31:42Z",
+  "generated_at": "2026-11-01T21:27:32Z",
   "nodes": [
     {
       "age_days": 94,
@@ -6101,13 +6101,13 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 54,
+      "closed": 55,
       "domain": "inference-research",
       "handoff": "speculative-decoding-mtp-refresh.md",
       "id": "INF-50",
       "last_advanced": "2026-11-01",
       "next_action": "Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold",
-      "open": 37,
+      "open": 36,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -6310,7 +6310,7 @@
       "blocked_by": [
         "RTG-57"
       ],
-      "closed": 51,
+      "closed": 54,
       "domain": "inference-research",
       "handoff": "yarn-context-extension-research.md",
       "id": "INF-59",
@@ -6477,20 +6477,20 @@
       "track": "autokernel restart-loop fix"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [
         "INF-06",
         "INF-62",
         "INF-64"
       ],
-      "closed": 72,
+      "closed": 74,
       "domain": "inference-research",
       "handoff": "autokernel-champion-aggregate.md",
       "id": "INF-65",
-      "last_advanced": "2026-10-31",
+      "last_advanced": "2026-11-01",
       "next_action": "Qualify C6 serving gates and resolve baseline GPU properties; assemble the CAS review package without updating champion",
-      "open": 41,
+      "open": 39,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -6525,13 +6525,13 @@
         "INF-64",
         "INF-65"
       ],
-      "closed": 162,
+      "closed": 163,
       "domain": "inference-research",
       "handoff": "autokernel-rebuild-program.md",
       "id": "INF-66",
       "last_advanced": "2026-11-01",
       "next_action": "Resolve R18-A host CUID identity differences under the unchanged rule; continue R23-62",
-      "open": 44,
+      "open": 45,
       "priority": 0.9017,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LBH-2.1 \u2014 re-run the INF-70 llama-bench units whose protocol could not be resolved or was ",
@@ -6867,7 +6867,7 @@
       "age_days": 0,
       "blocked": 42,
       "blocked_by": [],
-      "closed": 60,
+      "closed": 65,
       "domain": "inference-research",
       "handoff": "conversation-stack.md",
       "id": "INF-79",
@@ -8683,18 +8683,18 @@
       "track": "typed decision plane"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [
         "INF-41",
         "RTG-19",
         "RTG-36"
       ],
-      "closed": 74,
+      "closed": 75,
       "domain": "routing-and-optimization",
       "handoff": "kv-unified-stack-rollout.md",
       "id": "RTG-57",
-      "last_advanced": "2026-10-31",
+      "last_advanced": "2026-11-01",
       "next_action": "KVU-16f-1: re-derive :8083 KQ-mask term for -b 512; HPR-b 64k holdout re-run after Codex HPR-B-SIM-FIX-2",
       "open": 52,
       "priority": 0.9942,
@@ -9106,13 +9106,13 @@
         "UFH-01",
         "UFH-07"
       ],
-      "closed": 27,
+      "closed": 28,
       "domain": "user-facing-harness",
       "handoff": "repl-embedding-retrieval.md",
       "id": "UFH-12",
       "last_advanced": "2026-11-01",
       "next_action": "REPL-EMB-2.8b trace write side, then 2.9-2.12 package gates; UFH-12-PROD-ADOPT is a separate decision",
-      "open": 21,
+      "open": 20,
       "priority": 0.9653,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep UFH12-REQUESTB-FULL-PRIVATE-APPLY-1: harness fix (ws58)",
