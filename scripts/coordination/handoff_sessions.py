@@ -54,7 +54,8 @@ def landed(sha, repo=ROOT) -> bool:
         return False
     subprocess.run(["git", "-C", repo, "fetch", "-q", "origin", "main"], capture_output=True, timeout=120)
     r = subprocess.run(["git", "-C", repo, "cherry", "origin/main", sha], capture_output=True, text=True)
-    return r.returncode == 0 and not r.stdout.strip()
+    # "- <sha>" = an equivalent patch is already upstream (rebased on push): landed. Only "+" lines are unlanded.
+    return r.returncode == 0 and not any(ln.startswith("+") for ln in r.stdout.splitlines())
 
 
 PUSH_PROMPT = ("[{v}] Your wrap-up {sha} is NOT on origin/main (`git cherry origin/main {sha}` is non-empty or no WRAPUP "
