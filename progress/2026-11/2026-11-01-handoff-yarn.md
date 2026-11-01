@@ -36,3 +36,8 @@ A read-only entry audit exposed a critical gap in the earlier request rebind: ca
 ## S2 successor preparation audit
 
 Offline snapshot and read-only host cohort fold both identify 23 unexposed A0s and two A1s whose matching A0 completed, with all five unknown A0s excluded and A0 selected first. The old entry binds v32 ID, stop path and source manifest; a successor needs a fresh source-bound v15 bundle and live custody/inventory proof. The keeper dry-run must observe an actual new result; default 900 seconds is much shorter than prior 27046/29089-second native A0 calls. Because first-output polling can race the start of another item, enforce and validate a one-item stop boundary. No new launcher, inference or READY was published. Source/eligibility notes: `artifacts/compute/yarn-s2-v15-prep-20261101/README.md`.
+
+
+## S2 one-item worker candidate
+
+Prepared a v32-based worker patch and guard for a future S2 v15 continuation. It caps the initial eligible worklist at one, refuses another exposure start, leaves remaining accounting uncapped, and corrects the misleading `plan-exhausted` status when pending items remain. Five model-free controls pass, including the candidate's actual selection/exposure hooks with test doubles and true-exhaustion/deadline controls. The retained patch applies in a dry-run to the retained original source. Artifact `artifacts/compute/yarn-s2-one-item-20261101/`. This does not implement the full v15 launcher or prove live custody, stop/drain or native behavior; no READY or inference was run.

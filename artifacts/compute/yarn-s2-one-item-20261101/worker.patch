@@ -1,0 +1,42 @@
+--- worker.v32.py
++++ worker.one-item.py
+@@ -6,6 +6,9 @@
+ sys.path.insert(0,str(Path(__file__).resolve().parent))
+ sys.path.insert(1,str(D))
+ import exposure,bounded_append
++from one_item import OneItemBudget
++item_budget=OneItemBudget()
++selection_used=False
+ from resource_budget import ResourcePause
+ from cutoff_policy_s2 import verify_old, censored, record_cutoff
+ sys.path.insert(2,'/mnt/raid0/llm/worktrees/yarn-native-gate-runner-20261022')
+@@ -49,7 +52,12 @@
+   summary=cohort_status.read(Path(__file__).resolve().parent/"SCOPE-s2-conservative.json",Path(out)/"plan"/"items.jsonl",Path(out))
+   allowed=eligible_gate.eligible(scope,summary,which)
+   items=[i for i in items if i["item_id"] in allowed]
+- return [i for i in items if (which,i["item_id"]) not in prior and (not ledger.exists() or exposure.state(ledger,which,i["item_id"],i["prompt_sha256"])=="unexposed")]
++ eligible=[i for i in items if (which,i["item_id"]) not in prior and (not ledger.exists() or exposure.state(ledger,which,i["item_id"],i["prompt_sha256"])=="unexposed")]
++ global selection_used
++ if mode=="cohort" and not selection_used:
++  selection_used=True
++  return item_budget.first_pending(eligible)
++ return eligible
+ r.pending_for_arm=pending
+ # GPU E1 rates cannot bound CPU. Allow a fresh prefill only with a conservative
+ # 20000 s provisional window, and kill/censor any in-flight item when grant ends.
+@@ -88,6 +96,7 @@
+   ledger=Path(out)/"exposures"
+   if not ledger.is_dir() or ledger.is_symlink():raise RuntimeError("exposure directory unavailable")
+   if exposure.state(ledger,arm,item,prompt)!="unexposed":raise InfrastructureCutoff("prior exposure requires reconciliation")
++  if mode=="cohort": item_budget.claim(item)
+   exposure.begin(ledger,arm,item,prompt,hashlib.sha256(grant_bytes).hexdigest(),kind="r11" if mode=="smoke" else "grant")
+   try:
+    result=super().chat(messages, max_tokens=max_tokens, thinking=thinking, timeout=max(1.0, float(deadline)-time.time()+(5.0 if mode=="smoke" else -5.0)))
+@@ -111,5 +120,7 @@
+ except (InfrastructureCutoff,ResourcePause) as exc:
+  print("in-flight or prior exposure remains unknown: "+str(exc),flush=True)
+  sys.exit(75)
++if mode=="cohort" and run.get("remaining", 0)>0 and run.get("stop_reason")=="plan-exhausted":
++ run["stop_reason"]="one-item-boundary"
+ if mode=='characterize' and run['n_ok'] != 1: raise RuntimeError('characterization did not complete one item; retain as censored or error')
+ print(json.dumps(run)); sys.exit(7 if run['stop_reason']=='server-unreachable' else 0)
