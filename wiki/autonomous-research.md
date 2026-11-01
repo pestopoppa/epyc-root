@@ -4586,3 +4586,12 @@ Sources: [autopilot-continuous-optimization](../handoffs/active/autopilot-contin
 - intake-2304#record (Frontier-Eng): A 47-task generative-optimisation benchmark; useful findings are the diminishing-returns shape and depth-over-width result, both from a single model-framework pair. Adopt-patterns; linked to harness-improvement-loop.md.
 - intake-2307#record (Anthropic long-running scientific computing): Harness lessons recur across two oracle-bound coding tasks but are not shown outside coding; transferable parts are the progress file with failures and the oracle pattern. Adopt-patterns; linked to harness-improvement-loop.md.
 - intake-2334#record (Anthropic quantum circuits with Claude): A 53-hour run with minimal human input produced the elliptic-curve point-addition design; the headline improvement over published circuits is vendor-reported. Adopt-patterns, monitor; linked to harness-improvement-loop.md.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch f, workspace-58)
+
+**Confidence: verified** — 1 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-08-21-ids-1218-1251 — [digest](../research/deep-dives/intake-digests/2026-08-21-ids-1218-1251.md)
+
+- intake-1226#record (GPU Kernel Scientist): The dive found the target is AMD MI300 (CDNA3), not gfx90a, with no profiler and no released framework: the only artifact is one example HIP kernel in a ZIP, and the loop depended on a defunct competition endpoint. Verdict adopt_patterns (no component exists), dive-verified; handoff agentic-rocm-kernel-authoring.

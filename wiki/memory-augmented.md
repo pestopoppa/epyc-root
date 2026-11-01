@@ -1536,3 +1536,19 @@ Sources: [repl-session-memory-maturity](../handoffs/active/repl-session-memory-m
 ### Run 2026-10-31, IDs 2535–2544 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2535-2544.md)
 
 - intake-2542#record (SWE Context Bench): The abstract's "reduce runtime and token cost" was overturned for the controlled setting. Worth investigating; memory-infrastructure repos (Mem0, OpenViking, LangMem, Supermemory) declined at the two-wave cap.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch f, workspace-58)
+
+**Confidence: verified** — 5 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-08-03-ids-938-990 — [digest](../research/deep-dives/intake-digests/2026-08-03-ids-938-990.md)
+
+- intake-988#record (EvolveR): The dive found a gradient-free ablation (principle distillation plus retrieval) that beats the paper's own RL-only arm, portable to an inference-only host and similar in shape to the adopted ReasoningBank baseline. Correction: it never evaluates on ALFWorld or WebShop; it is a multi-hop QA paper. Verdict adopt_patterns, dive-verified; handoff engram-conditional-memory.
+
+### Run 2026-08-21-ids-1218-1251 — [digest](../research/deep-dives/intake-digests/2026-08-21-ids-1218-1251.md)
+
+- intake-1228#record (KernelBlaster): The dive found a persistent CUDA knowledge base of state/optimization/score entries queried on unseen tasks, with reported geomean speedups of 1.43x/2.50x/1.50x; the Level 3 subset size is never stated, the repository was never shipped, and the system is CUDA/Nsight-bound. Verdict adopt_patterns, dive-verified; handoff autokernel-research-loop.
+- intake-1229#record (KernelSkill): The dive's load-bearing correction: the long-term memory is hand-curated by the authors before any run and never written to by the system. Code is a CUDA/NCU pipeline with no license; the typed skill-record schema (bottleneck-to-method mapping) is the narrow takeaway. Verdict adopt_patterns, dive-verified; handoff autokernel-research-loop.
+- intake-1230#record (EvoKernel): The dive found value-driven, stage-conditioned memory retrieval (Q-values per memory item) lifting correctness from 11.0% to 83.0%, with the 3.60x median speedup measured over initial drafts, not PyTorch. No code is released and the toolchain is Ascend C. Verdict adopt_patterns, dive-verified; handoff autokernel-research-loop.
+- intake-1231#record (KernelEvolve (Meta)): The dive found the most reusable idea in the family is a knowledge base partitioned by epistemic type (constraints, guidance, and more), but the paper provides no ablation of its memory components. Verdict worth_investigating, deliberately weaker than its siblings for evidential reasons; dive-verified; handoff autokernel-research-loop.

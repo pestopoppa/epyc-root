@@ -1980,3 +1980,12 @@ Sources: [autopilot handoff](../handoffs/active/autopilot-continuous-optimizatio
 ### Run 2026-10-31, IDs 2535–2544 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2535-2544.md)
 
 - intake-2536#record (spotify portal-ai-plugins shunt plugin): Plugin source read fully except eval fixtures and transport-eval bodies (partial read). Adopt-patterns for hook-based delegation; no dive-surfaced sources.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch f, workspace-58)
+
+**Confidence: verified** — 1 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-08-21-ids-1218-1251 — [digest](../research/deep-dives/intake-digests/2026-08-21-ids-1218-1251.md)
+
+- intake-1237#record (QiMeng-Xpiler (OSDI 2025)): The dive confirmed the headline 100/100 for CUDA C to HIP is accuracy, not performance; the four-direction average is 0.78x, below parity, and HIPIFY already reaches 85.7 on the same cases. The repo has no license. Verdict adopt_patterns, dive-verified.

@@ -7629,3 +7629,20 @@ Sources: [Conversation stack](../handoffs/active/conversation-stack.md) · [Code
 - intake-2531#record (NoLiMa): Confirmed as in-context reading only with a synthetic single needle and no tool/search arm; the extrapolation to grep over agent transcripts is ours. Appendices not read. Worth investigating; handoff tool-output-compression.
 - intake-2532#record (tau2-Bench): Confirmed as a dual-control conversational agent benchmark; appendix policies and figures not read. Adopt-patterns; handoff tool-output-compression.
 - intake-2533#record (tau-bench): Confirmed as a tool-agent-user interaction benchmark; appendices not read. Adopt-patterns; handoff tool-output-compression.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch f, workspace-58)
+
+**Confidence: verified** — 6 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-08-03-ids-938-990 — [digest](../research/deep-dives/intake-digests/2026-08-03-ids-938-990.md)
+
+- intake-970#record (ENAMEL efficiency benchmark): The dive identified right-censoring of the efficiency score, the unbiased eff@k estimator and the Hodges-Lehmann aggregator as transferable primitives not held elsewhere in the project. The shipped harness is not expected to run as-is on this host. Verdict adopt_patterns, dive-verified; handoff architect-model-selection-bench.
+- intake-973#record (GSO software-optimization benchmark): The dive found the harmonic-mean speedup aggregation and the equivalence-contract discipline to be the most transferable findings; its timing discipline is declined, and 2 of 102 tasks target llama-cpp-python. The full image set exceeds free disk, hence adopt_patterns rather than adopt_component. Dive-verified; handoff architect-model-selection-bench.
+- intake-977#record (MLE-bench): The dive found MLE-Bench Lite quantizes at 1.52 pp (66 task-runs), producing exact ties at the top of the board, and that n=3 is underpowered. A 21-competition local sub-split is a feasible regression instrument but its score must never be reported as a Lite score. Verdict worth_investigating, dive-verified; handoff architect-model-selection-bench.
+- intake-986#record (effibench-enhanced): The dive found a re-upload with no lineage; two of three blockers are fixed (the openjdk image, the time import) but the fail-open-to-0.0 metric is byte-identical to upstream, with a second silent-zero in statistics.cpp. Verdict not_applicable as a dependency, dive-verified; handoff architect-model-selection-bench.
+- intake-987#record (Cirron perf counters): The dive confirmed from source two defects that bite under automated use: two leaked file descriptors per measurement, and a dead error check (end.restype = None) that silently returns instruction_count=0. Unmaintained since 2024. Verdict not_applicable as shipped, dive-verified; recorded so the defects are known.
+
+### Run 2026-08-21-ids-1218-1251 — [digest](../research/deep-dives/intake-digests/2026-08-21-ids-1218-1251.md)
+
+- intake-1225#record (ParEval): The dive found a balanced 420-prompt parallel-code benchmark (60 per execution model) that covers the CPU, with an AMD arm less constrained than the NVIDIA arm (no offload-arch pin) and a single gpu.cu serving both vendors. MIT, self-contained, locally measured baseline. Verdict adopt_component as a secondary layer, dive-verified; handoff vidya-belief-substrate-program.

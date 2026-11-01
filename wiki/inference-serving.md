@@ -3135,3 +3135,12 @@ Sources: [serving-harness fixes](../handoffs/active/agentic-serving-harness-fixe
 ### Run 2026-10-22, IDs 2461–2493 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2461-2493.md)
 
 - intake-2468#record (disaggregated-llama.cpp fork): Base, commit and mechanism confirmed; added HIP/CPU absence, Blackwell-only scope, documentation inconsistencies and the port cost versus v10 (not an ancestor). Worth investigating; no handoff linked.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch f, workspace-58)
+
+**Confidence: verified** — 1 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-08-03-ids-938-990 — [digest](../research/deep-dives/intake-digests/2026-08-03-ids-938-990.md)
+
+- intake-958#record (QuixiFlow vLLM fork): The dive found main is zero-delta and the three stale branches are far behind; the flagship rocm-fp8-marlin branch provably does not build (missing .cu files, an undefined fp8_marlin_gemm symbol). The FP8 concept duplicates the existing MMQ/dequant path and serving is llama.cpp. Verdict not_applicable, dive-verified.

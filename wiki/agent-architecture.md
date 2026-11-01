@@ -5673,3 +5673,12 @@ Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) ·
 - intake-2537#record (FastContext repository explorer): The abstract headline was overturned as a trained-explorer, total-token claim (same-model rows, main-only tokens). Adopt-patterns; dive-surfaced sources declined at the two-wave cap.
 - intake-2538#record (Terminus-4B small agentic model): Headline narrowed to best case, main-only tokens. Adopt-patterns; the Debug2Fix source was ingested as intake-2543#record and other surfaced sources declined at the two-wave cap.
 - intake-2543#record (Debug2Fix): Abstract framing narrowed: the lock does most of the work. Worth investigating; single-agent debugging-tool sources declined at the two-wave cap.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch f, workspace-58)
+
+**Confidence: verified** — 1 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-08-21-ids-1218-1251 — [digest](../research/deep-dives/intake-digests/2026-08-21-ids-1218-1251.md)
+
+- intake-1232#record (QiMeng parent paper): The dive found a three-layer system whose central component (LPCM) is unimplemented, with both agents sharing one shape: an outer search over an optimization tree with inner generation plus symbolic verify-and-repair. The artifact worth pursuing is QiMeng-Xpiler. Verdict worth_investigating, dive-verified; handoff agentic-rocm-kernel-authoring.

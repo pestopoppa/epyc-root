@@ -6912,3 +6912,21 @@ Sources: [agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-
 - intake-2508#record (ik_llama.cpp PR 1935 (disable FA mask optimization)): Settles D2498-5: the disable is scoped to the mask_effective_nk1 helper, narrowing the earlier "disabled the trim altogether" wording. Already integrated; knowledge-only; handoff autokernel-all-devices.
 - intake-2509#record (ik_llama.cpp FA early-termination multi-slot fix): The port has no per-row mask-union bug: fa_kv_extent loops over j < q_step and l < k_step at the same four sites the upstream fix patched. Already integrated; knowledge-only; handoff autokernel-all-devices.
 - intake-2510#record (ik_llama.cpp CPU FA empty attention mask check): The port edge is real but benign: an all -inf row leaves first_k == last_k == nek1 and narrows nek1 to 0. Worth investigating; handoff autokernel-all-devices.
+
+## Compiled Update — 2026-11-01 (intake dive digest backfill, batch f, workspace-58)
+
+**Confidence: verified** — 7 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
+
+
+### Run 2026-08-03-ids-938-990 — [digest](../research/deep-dives/intake-digests/2026-08-03-ids-938-990.md)
+
+- intake-957#record (QuixiAI llama.cpp fork): The dive verified via the GitHub compare API that the fork has zero commits of its own (ahead 0, behind 108, no tags, no owner commits). Verdict not_applicable, dive-verified; out-of-scope is a measured property of the artifact. Linked handoffs include autokernel-research-loop.
+- intake-959#record (QuixiCore-ROCm HipKittens fork): The dive found a 77-commit fork with measured CDNA3 kernel work and a commit log that records rejected experiments with mechanism. Correction: CDNA2 support is declared in the manifest but has zero implemented paths, so no code ports to gfx90a. Verdict worth_investigating (the accept/reject discipline transfers), dive-verified.
+- intake-960#record (GEAK perf_knowledge): The dive found a distinct Apache-2.0 vendor knowledge base (roughly 586 documents) with first-class gfx90a coverage under hardware/cdna2_mi200 and 40 gfx90a capability-index entries. Verdict adopt_component as reference material for the analyzer and planner context compiler; dive-verified. Handoffs include autokernel-research-loop.
+- intake-964#record (AMDGPU TableGen oracle): The dive verified a four-step offline recipe that authoritatively answers whether gfx90a has an instruction. Correction: AMDGPU.td lacks the processor definitions (def GFX90A is in GCNProcessors.td), and feature chains must be followed or answers are false negatives. Verdict adopt_component, pinned at an LLVM release tag; dive-verified.
+
+### Run 2026-08-21-ids-1218-1251 — [digest](../research/deep-dives/intake-digests/2026-08-21-ids-1218-1251.md)
+
+- intake-1233#record (QiMeng-GEMM): The dive found a prompt mechanism (meta-prompts plus beam search) over five primitives with a hand-authored per-platform hint repository, not a compiler. Verdict superseded by QiMeng-TensorOp (intake-1234#record), which automates hardware-fact acquisition and reaches primitive-level code. Dive-verified; handoff agentic-rocm-kernel-authoring.
+- intake-1234#record (QiMeng-TensorOp): The dive found the one new mechanism in the line: hardware facts acquired by LLM retrieval over vendor manuals, plus sketch/kernel generation split and LLM-assisted MCTS. Verdict adopt_patterns: the mechanism, not the results, is the takeaway. Dive-verified; handoff agentic-rocm-kernel-authoring.
+- intake-1235#record (QiMeng-Attention): The dive found a small vendor-neutral DSL (Copy, Compute, Loop, Allocate, Reshape) whose two-stage split is necessary for correct generation and maps onto gfx90a (LDS as shared, VGPRs as register); CuTe is chosen to trade peak performance for reliability. Verdict adopt_patterns, dive-verified; handoff agentic-rocm-kernel-authoring.
