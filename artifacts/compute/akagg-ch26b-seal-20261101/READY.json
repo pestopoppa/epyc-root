@@ -1,0 +1,44 @@
+{
+ "decision_rule": "Full scientific result only if full/calibrate-summary.json exists and 24 independent A/A pairs (48 valid launches) are completed on source 49550eda5 using matched_process_v2, 5 comparison pairs, pinned 1017 model and recipe; report floor_pct and interval; dryrun units excluded. Otherwise partial, no floor.",
+ "dryrun_timeout_s": 1200,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "257a64709a409a6cdab48d9b3d1a605b7165f3be5afbf1954e9efd51cf539bbb"
+ },
+ "estimate_s": 9000,
+ "gib": 600,
+ "handoff_task": "handoffs/active/autokernel-champion-aggregate.md:CH-26b",
+ "id": "akagg-ch26b-1017-c2-20261101",
+ "keep": [
+  "**/*.json",
+  "**/*.jsonl",
+  "**/*.md",
+  "**/*.txt",
+  "**/*.csv",
+  "**/*.tsv",
+  "**/*.sh",
+  "**/*.py",
+  "measured.jsonl"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/akagg-ch26b-20261101/launcher.sh",
+  "sha256": "9c0ec1aa39b5df4446c8c5d00bfb6a9614c1d208e5a15151bbcb0a1caa63b20c"
+ },
+ "min_window_s": 8000,
+ "owner": "handoff-akagg",
+ "ports": [
+  18741
+ ],
+ "priority_rank": 20.0,
+ "published_at": "2026-11-01T21:33:59Z",
+ "published_from": "/mnt/raid0/llm/tmp/akagg-ch26b-20261101/spec.json",
+ "regions": "0-95",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/akagg-ch26b-20261101/measured.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/akagg-ch26b-20261101",
+ "stop_file": "/mnt/raid0/llm/tmp/akagg-ch26b-20261101/STOP",
+ "window_s": 11100,
+ "workdir": "/mnt/raid0/llm/tmp/akagg-ch26b-20261101"
+}
