@@ -1,0 +1,16 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/df2-sl2-export-cpu-20261101/launcher.out",
+ "elapsed_s": 80,
+ "ended": "rc=0 time=2026-11-01T22:14:18Z reason=complete",
+ "engine_sha256": "257a64709a409a6cdab48d9b3d1a605b7165f3be5afbf1954e9efd51cf539bbb",
+ "first_unit_at": "2026-11-01T22:14:18Z",
+ "id": "df2-sl2-export-cpu-20261101",
+ "launcher_sha256": "f263f17daf351a391efd3389907d626a85d4a1104ddeadea3cce5623327e3027",
+ "passed_at": "2026-11-01T22:14:23Z",
+ "regions": "0-23",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/handoff-df2-sl2-build-20261101/out/results.jsonl",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}
