@@ -1,6 +1,23 @@
 #!/usr/bin/env python3
 """Corrected degeneracy classifier for INF-70 gdn-rowexact runs.
 
+DEPRECATED 2026-10-04 -- superseded by the shared deterministic `coherence_gate` library
+(epyc-inference-research, branch feat/coherence-gate-ec): tier 0 paired byte-identity vs an
+anchor, tier 1 ground-truth answer checks + `degeneracy.v2` (real token ids required), tier 2
+an optional orchestrator-hosted judge for residual divergences. New gates MUST use it; this
+file stays only so the INF-70 harness keeps running until the client is switched over.
+Audit: /mnt/raid0/llm/tmp/q38t7-rescore/AUDIT.md, rectification:
+/mnt/raid0/llm/tmp/classifier-rectify/RECTIFY.md.
+
+Known defects of the v1 rules below (they are kept byte-for-byte so old labels stay replayable):
+  * `uniq < 0.35` is a fixed threshold on |set(ids)|/n, which falls with n (Heaps' law):
+    known-coherent model reasoning crosses it at ~300-500 tokens. Hence V1_MAX_N below.
+  * the classes read as a semantic verdict; they are not. "COHERENT" means only "no
+    token-stream degeneracy trigger fired". Nothing here checks that the answer is right.
+  * until 2026-10-04 every chat-path client passed `tokens=list(range(npred))`, which made
+    `uniq`, `top` and `run` vacuous (uniq == 1, top == 1/n, run == 1). Those labels carry
+    only the `words` and `ascii` rules. classify() now REFUSES synthetic ids.
+
 Classes (by REASON, never a bare pass/fail):
   HTTP-ERROR  the request failed / no JSON
   EMPTY       zero tokens returned, no eos  (server produced nothing)
@@ -20,12 +37,60 @@ import collections, json, os, sys
 MIN_N = 16          # below this the token statistics are meaningless
 EOS_MAX_N = 4       # <= this many tokens ending in eos == EARLY-EOS
 # Stable identity for the rule set below; output metadata does not change its verdicts.
-CLASSIFIER_ID = "inf70-classify.v1"
+CLASSIFIER_ID = "inf70-classify.v1.1"
+
+V1_MAX_N = 256      # above this the fixed uniq < 0.35 rule false-flags coherent text
+
+
+class ClassifierInputError(ValueError):
+    """The caller handed classify() input on which its verdict would be meaningless."""
+
+
+class SyntheticTokenIds(ClassifierInputError):
+    """`tokens` has invalid IDs or matches a known placeholder pattern."""
+
+
+class MissingTokenIds(ClassifierInputError):
+    """Non-empty content was classified without its token ids."""
+
+class OutOfCalibratedRange(ClassifierInputError):
+    """n exceeds V1_MAX_N, where the fixed uniq threshold is length-biased."""
+
+
+def _is_synthetic(toks):
+    """Conservatively refuse the known consecutive-placeholder pattern; it can occur in real IDs."""
+    if not all(isinstance(t, int) and not isinstance(t, bool) and t >= 0 for t in toks):
+        return True
+    if len(toks) < MIN_N:
+        return False
+    return all(b - a == 1 for a, b in zip(toks, toks[1:]))
+
+
+def check_input(d):
+    """Raise ClassifierInputError unless `d` can yield a meaningful v1 verdict."""
+    toks = d.get("tokens")
+    content = d.get("content", "") or ""
+    if toks is None or (not toks and content.strip()):
+        raise MissingTokenIds(
+            "content is non-empty but `tokens` is missing: pass the real generated ids "
+            "(llama-server `return_tokens`, or POST /tokenize on the content)")
+    if not isinstance(toks, list):
+        raise SyntheticTokenIds("`tokens` must be a list of nonnegative integer IDs")
+    if _is_synthetic(toks):
+        raise SyntheticTokenIds(
+            f"`tokens` contains invalid IDs or matches a consecutive placeholder pattern (length {len(toks)}): "
+            "uniq/top/run would be vacuous. Pass real token ids.")
+    if len(toks) > V1_MAX_N:
+        raise OutOfCalibratedRange(
+            f"n={len(toks)} > V1_MAX_N={V1_MAX_N}: the fixed uniq<0.35 rule false-flags coherent "
+            "text at this length. Use coherence_gate degeneracy.v2 (length-aware uniq).")
+
 
 def classify(d):
     if not isinstance(d, dict) or "error" in d:
         return dict(cls="HTTP-ERROR", classifier=CLASSIFIER_ID, n=0,
                     note=str(d.get("error"))[:80] if isinstance(d, dict) else "not-a-dict")
+    check_input(d)
     toks = d.get("tokens") or []
     n = len(toks)
     stop = d.get("stop_type")
@@ -73,7 +138,10 @@ if __name__ == "__main__":
                 d = json.load(open(os.path.join(ad, f)))
             except Exception as e:
                 print(f"  {f[:-5]:<14} UNREADABLE {e}"); continue
-            r = classify(d)
+            try:
+                r = classify(d)
+            except ClassifierInputError as e:
+                print(f"  {f[:-5]:<14} REFUSED    {type(e).__name__}: {e}"); continue
             t = d.get("timings", {}) if isinstance(d, dict) else {}
             pp = t.get("prompt_per_second")
             tg = t.get("predicted_per_second")
@@ -85,5 +153,8 @@ if __name__ == "__main__":
             rows = json.load(open(os.path.join(ad, "probe.json")))
             print(f"  -- probe: {len(rows)} lengths")
             for row in rows:
-                rr = classify({"tokens": row.get("tokens"), "content": row.get("content", ""), "stop_type": row.get("stop_type")})
+                try:
+                    rr = classify({"tokens": row.get("tokens"), "content": row.get("content", ""), "stop_type": row.get("stop_type")})
+                except ClassifierInputError as e:
+                    rr = {"cls": "REFUSED:" + type(e).__name__}
                 print(f"     k={row['k']:<4} prompt_n={row['prompt_n']:<4} {rr['cls']:<10} {row.get('content','')[:60]!r}")
