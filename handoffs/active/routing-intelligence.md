@@ -297,7 +297,7 @@ Current 2026-07-06 refresh: live Fable/DS-E1 reads report `ri10_telemetry_collec
       `run_ri18_resume_pause.sh` half is **DECLINED** (✅ 2026-10-03): that wrapper is retired with the run. The
       root cause, that the driver's process rc can disagree with the segment's own `end` event, stays in the driver.
       It is fixed under the same trigger as RI-18a.
-- [ ] **RI-19 — fix or remove the MemRL `ClassificationRetriever` path.** The store holds 0 `classification` memories, so `classify_and_route`/`should_use_direct_mode` (`keyword_matcher.py:294,:373`, enabled by `classifier_config.yaml:110,113`) always fall back to keywords while still paying a retrieval. Either seed/write classification memories and show they beat keywords, or set `use_memrl: false` and delete the dead branch. (filed 2026-09-26)
+- [ ] **RI-19 — fix or remove the MemRL `ClassificationRetriever` path.** [too-big: owner must run the required matched 30-request comparison before deleting the branch] The store holds 0 `classification` memories, so `classify_and_route`/`should_use_direct_mode` (`keyword_matcher.py:294,:373`, enabled by `classifier_config.yaml:110,113`) always fall back to keywords while still paying a retrieval. Either seed/write classification memories and show they beat keywords, or set `use_memrl: false` and delete the dead branch. (filed 2026-09-26)
   - 2026-10-01 (RI-16): this path is the `priors` stage, measured at 156 ms p50 / 275 ms p95 on live `/chat`. Next step:
     set `use_memrl: false` on a branch, re-run the RI-16 30-request set, and confirm `priors` drops to near 0 with the
     same routed roles; then delete the branch.
