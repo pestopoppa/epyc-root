@@ -1,0 +1,32 @@
+{
+  "items": 2,
+  "schema": "epyc.qual.fixture.v1",
+  "workloads": [
+    {
+      "kv_cache_mode": "split",
+      "n_ctx_per_slot": 8192,
+      "n_ctx_total": 8192,
+      "n_parallel": 1,
+      "phase": "normal",
+      "production_recipe_sha256": "a48dbd8445caaa51ac1ae9756aa1f69936110cd2e937b6fd9209e56bc01272c4",
+      "production_threads": 48,
+      "prompt_id": "q38fn-decode-p01",
+      "prompt_tokens": 102,
+      "request_manifest_sha256": "57c9006dfde7443a1bf9b58c08f1ac6834dddcdf3cafcfb770717f141b1d8640",
+      "tokens_per_item": 256
+    },
+    {
+      "kv_cache_mode": "split",
+      "n_ctx_per_slot": 8192,
+      "n_ctx_total": 8192,
+      "n_parallel": 1,
+      "phase": "cutoff",
+      "production_recipe_sha256": "a48dbd8445caaa51ac1ae9756aa1f69936110cd2e937b6fd9209e56bc01272c4",
+      "production_threads": 48,
+      "prompt_id": "q38fn-decode-p01",
+      "prompt_tokens": 102,
+      "request_manifest_sha256": "57c9006dfde7443a1bf9b58c08f1ac6834dddcdf3cafcfb770717f141b1d8640",
+      "tokens_per_item": 256
+    }
+  ]
+}

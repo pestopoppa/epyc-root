@@ -1,0 +1,44 @@
+{
+ "batch": 2048,
+ "cpu_list": "0-95",
+ "ctk": "f16",
+ "ctv": "f16",
+ "ctx": 8192,
+ "device": "none",
+ "env": {
+  "GGML_FA_SPLIT_KV": "0",
+  "GGML_FUSED_DECODE_OFF": "1",
+  "GGML_IQK": "1",
+  "GGML_NOHUGEPAGE_PROCESS": "1",
+  "OMP_DYNAMIC": "false",
+  "OMP_PLACES": "cores",
+  "OMP_PROC_BIND": "spread",
+  "OMP_WAIT_POLICY": "active"
+ },
+ "extra_flags": [
+  "--device-draft",
+  "none",
+  "--draft-p-min",
+  "0.5"
+ ],
+ "fa": "on",
+ "kv_unified": false,
+ "metric": "aggregate_tok_s",
+ "model": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+ "n_predict": 256,
+ "name": "q38fn-802bf9ac6-cpu-t48-mtp-d4",
+ "ngl": 0,
+ "np": 1,
+ "schema": "epyc.autokernel.canonical_recipe.v1",
+ "spec_decode": {
+  "draft_n_max": 4,
+  "drafter": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf",
+  "ngld": 0,
+  "type": "draft-mtp"
+ },
+ "temperature": 0.0,
+ "threads": 48,
+ "top_k": 1,
+ "top_p": 0.95,
+ "ubatch": 512
+}

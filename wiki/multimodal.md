@@ -1642,3 +1642,12 @@ Sources: [S-18 READY capsule](../artifacts/compute/codex-ni-s18-qwenvl-cpu-r1-20
 - intake-2383#record (Voxtral Realtime): Entry created already dive-verified; new opportunity for streaming ASR, linked to the conversation-stack and autokernel-champion handoffs.
 - intake-2384#record (MagpieTTS Multilingual 357M): Entry created already dive-verified, expanded from intake-2355#record and intake-2366#record. Worth investigating; disposition monitor; handoff conversation-stack.
 - intake-2385#record (audio.cpp): Entry created already dive-verified; worth investigating as an all-in-one pure C++ ggml audio inference engine. Integrated into conversation-stack.
+
+
+## Compiled Update — 2026-11-01 (CS-8.LEX2 dev-only lexical selection)
+
+**Confidence: verified for the 100-clip dev grid and frozen lexical rule; this is not P-STT-1 WER, test-set evidence or a speech release decision.**
+
+- The original hostfix2 dev grid completed 100 clips × 15 cells (1,500 native successes, zero native failures and zero exposed unknowns). Under the frozen rule, NeMo local context at alpha 1 was selected: pooled casefolded keyword F 0.701754 versus alpha-zero 0.574803. The paired global-zero minus local-zero call-bootstrap interval was [0, 0], the predeclared lexical noise floor. The heldout plan is NOT READY, binds 755 rows after 17 dev-call exclusions, and has not been run. The result measures lexical reference agreement only; normalization routes, raw-token UNK and heldout speech quality remain unresolved. ([conversation-stack handoff](../handoffs/active/conversation-stack.md); [codex3 progress](../progress/2026-11/2026-11-01-codex3.md); [compact cell summary](../artifacts/compute/codex3-lex2-dev-selection-20261101/DEV-SUMMARY.json); [heldout plan](../artifacts/compute/codex3-lex2-dev-selection-20261101/HELDOUT-PLAN.json))
+
+Sources: [conversation-stack](../handoffs/active/conversation-stack.md) · [codex3 progress](../progress/2026-11/2026-11-01-codex3.md) · [LEX2 selected-cell summary](../artifacts/compute/codex3-lex2-dev-selection-20261101/DEV-SUMMARY.json) · [heldout plan](../artifacts/compute/codex3-lex2-dev-selection-20261101/HELDOUT-PLAN.json)

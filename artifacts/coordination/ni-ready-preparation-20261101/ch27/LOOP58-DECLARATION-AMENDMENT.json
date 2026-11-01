@@ -1,0 +1,17 @@
+{
+  "id": "codex-ni-ch27-c5-raw-recalibration-v2-20261101",
+  "at": "2026-11-01T14:36:12.203520+00:00",
+  "state": "PRE_NONCE_DECLARATION_COMPLETED",
+  "before_sha256": "bd825e228966aad9ddd81dcd66ac8e53f574cd60eb3a72875eb99e2fb7b517b3",
+  "after_sha256": "e4ef3ad8059404b59b1b35eabebf752342f9f555155b776336150a8b064724c2",
+  "fields_added": {
+    "decision_rule": "verbatim existing scientific_protocol.decision_rule",
+    "result_path": "/mnt/raid0/llm/tmp/codex-ni-v2-ch27-20261101/COMPLETE.json"
+  },
+  "request_protocol_unchanged": true,
+  "source_dependencies_unchanged": true,
+  "nonce_states_before": [],
+  "receipt_before": false,
+  "grant_before": false,
+  "qualified": false
+}

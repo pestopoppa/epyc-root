@@ -5682,3 +5682,12 @@ Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) ·
 ### Run 2026-08-21-ids-1218-1251 — [digest](../research/deep-dives/intake-digests/2026-08-21-ids-1218-1251.md)
 
 - intake-1232#record (QiMeng parent paper): The dive found a three-layer system whose central component (LPCM) is unimplemented, with both agents sharing one shape: an outer search over an optimization tree with inner generation plus symbolic verify-and-repair. The artifact worth pursuing is QiMeng-Xpiler. Verdict worth_investigating, dive-verified; handoff agentic-rocm-kernel-authoring.
+
+
+## Compiled Update — 2026-11-01 (Codex backlog churn flow)
+
+**Confidence: verified for the published workflow and wiring; this is an operating contract, not evidence that the backlog is empty or rows are qualified.**
+
+- Codex workers now follow one five-step loop: prioritize inference rows and their blockers; complete non-inference blockers independent of compute; prepare realistic launchers; let the keeper qualify them with READY-QUAL; then continue until non-inference blockers are exhausted and inference rows are armed. The backlog generator nests declared unblocks under the affected READY row and refreshes the worker views every ten minutes. The flow scoreboard tracks armed rows, blocker closures and idle compute time. The prior 50-tick quota is retired. Workers do not self-qualify: a worker smoke is preparation, while the keeper receipt is the qualification boundary. ([canonical flow](../docs/guides/agent-workflows/backlog-churn-flow.md); [compute-fillers contract](../docs/guides/agent-workflows/compute-fillers.md); [ws58 implementation checkpoint](../progress/2026-11/2026-11-01-workspace-58-churn-flow.md); [NI owner-boundary checkpoint](../progress/2026-11/2026-11-01-codex-ni.md))
+
+Sources: [backlog churn flow](../docs/guides/agent-workflows/backlog-churn-flow.md) · [compute fillers](../docs/guides/agent-workflows/compute-fillers.md) · [ws58 churn-flow progress](../progress/2026-11/2026-11-01-workspace-58-churn-flow.md) · [non-inference backlog](../handoffs/active/non-inference-backlog.md)

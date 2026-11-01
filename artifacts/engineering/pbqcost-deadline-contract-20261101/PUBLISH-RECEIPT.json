@@ -1,0 +1,11 @@
+{
+  "state": "PUBLISHED_PENDING_KEEPER_QUALIFICATION",
+  "id": "codex-ni-pbqcost-confirm-q-r3-20261101",
+  "ci_run_id": 41307788637,
+  "ci_head": "58737a05e8e6984620934eecc97691f522c52bb2",
+  "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-pbqcost-confirm-q-r3-20261101.json",
+  "manifest_sha256": "9d8b191f1a2a9fa4610f229bc636bd36cdd710ee099bbcfbdc76bbd9336d61ab",
+  "qualification_receipt": "/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/qualification/QUAL-codex-ni-pbqcost-confirm-q-r3-20261101.json",
+  "qualified": false,
+  "published_at": "2026-11-01T12:56:59Z"
+}

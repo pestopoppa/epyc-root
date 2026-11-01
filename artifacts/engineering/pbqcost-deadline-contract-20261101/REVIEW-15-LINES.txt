@@ -1,0 +1,17 @@
+1. Fresh successor: codex-ni-pbqcost-confirm-q-r3-20261101; status PUBLISH-PENDING-QUAL.
+2. Candidate manifest: /mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/CANDIDATE-MANIFEST.json.
+3. Source pin manifest: /mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/SOURCE.sha256.
+4. SOURCE.sha256 digest: ee5660d5a62e0b0b55a000afa955739739d88256e910cecc0ccf75e305e0eaff.
+5. Proposed row: /mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/FILLERS-ROW-DRAFT.md.
+6. Real parser controls: /mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/CONTROLLED-ENTRY-RESULT.json (PASS).
+7. Actual full Probe.run_all dispatch path exercised: 66 unchanged planned calls, zero model/native requests.
+8. UTC-Z accepted by actual parser; legacy +00:00 serialization rejected; strict parser unchanged.
+9. Original 66-request protocol, ub 512/256/1024, n=1/4, lengths/repeats and decision tolerances preserved.
+10. Planned prompt fixture is 64000 tokens; feasibility estimate uses separately labeled historical 385.12 tok/s evidence.
+11. Canonical engine hash is pinned; production recipe and its actual server config are source-bound.
+12. Completion gate validates real terminal enums, manifest recipe file/hash, and native-row request/context evidence.
+13. Normal/cutoff entry uses captured launcher process group and exact PID drain; model-free process test retained.
+14. Affinity maps normal FILLER_CPUS and keeper WS58_QUAL_CPUS; folded q3 retained, no_fold=0.
+15. Keeper qualification, receipt and any READY/FILLERS publication remain pending; no qualification or science claim made.
+
+Post-publication correction (2026-11-01): MAIN approved and published the runtime row/manifest after CI run 41307788637 passed. The packet is PUBLISHED_PENDING_KEEPER_QUALIFICATION; keeper nonce/qualification receipt remain pending. There is still no qualification or science claim. See PUBLISH-RECEIPT.json.

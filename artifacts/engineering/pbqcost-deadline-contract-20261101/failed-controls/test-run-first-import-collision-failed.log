@@ -1,0 +1,15 @@
+...F....                                                                 [100%]
+=================================== FAILURES ===================================
+______ test_captured_process_inherits_launcher_group_and_drains_owned_pid ______
+
+    def test_captured_process_inherits_launcher_group_and_drains_owned_pid():
+        parent_pgid = os.getpgrp()
+>       p = K.captured_process_popen([sys.executable, '-c', 'import time; time.sleep(30)'],
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+            stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+E       AttributeError: module 'kpf18_gate' has no attribute 'captured_process_popen'
+
+/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/tests/test_captured_server_group.py:20: AttributeError
+=========================== short test summary info ============================
+FAILED ../mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/tests/test_captured_server_group.py::test_captured_process_inherits_launcher_group_and_drains_owned_pid
+1 failed, 7 passed in 0.05s

@@ -1,0 +1,92 @@
+{
+  "scope": "Wiki target existence in private-index candidate tree: unchanged unmaterialized targets checked against origin/main Git objects",
+  "git_backed_existing_targets": 130,
+  "remaining_issues": [
+    [
+      "INFO",
+      "wiki/benchmark-methodology.md",
+      "cross-repo target under repos/epyc-inference-research cannot be verified from this worktree (the repos/ symlink farm exists only in /workspace); skipped, not flagged dangling: ../repos/epyc-inference-research/docs/reference/models/model-admission-2026-07-16.md"
+    ],
+    [
+      "INFO",
+      "wiki/benchmark-methodology.md",
+      "cross-repo target under repos/epyc-inference-research cannot be verified from this worktree (the repos/ symlink farm exists only in /workspace); skipped, not flagged dangling: ../repos/epyc-inference-research/docs/reference/models/model-smoke-queue-2026-07-16.md"
+    ],
+    [
+      "INFO",
+      "wiki/benchmark-methodology.md",
+      "cross-repo target under repos/epyc-inference-research cannot be verified from this worktree (the repos/ symlink farm exists only in /workspace); skipped, not flagged dangling: ../repos/epyc-inference-research/data/cpu_optimization/2026-05-04-q6k-default-on-validation/findings.md"
+    ],
+    [
+      "INFO",
+      "wiki/benchmark-methodology.md",
+      "cross-repo target under repos/epyc-inference-research cannot be verified from this worktree (the repos/ symlink farm exists only in /workspace); skipped, not flagged dangling: ../repos/epyc-inference-research/data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/findings.md"
+    ],
+    [
+      "INFO",
+      "wiki/benchmark-methodology.md",
+      "cross-repo target under repos/epyc-inference-research cannot be verified from this worktree (the repos/ symlink farm exists only in /workspace); skipped, not flagged dangling: ../repos/epyc-inference-research/data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/findings_phase2.md"
+    ],
+    [
+      "INFO",
+      "wiki/benchmark-methodology.md",
+      "cross-repo target under repos/epyc-inference-research cannot be verified from this worktree (the repos/ symlink farm exists only in /workspace); skipped, not flagged dangling: ../repos/epyc-inference-research/data/cpu_optimization/2026-05-04-reap246b-arch-probe/findings.md"
+    ],
+    [
+      "INFO",
+      "wiki/benchmark-methodology.md",
+      "cross-repo target under repos/epyc-inference-research cannot be verified from this worktree (the repos/ symlink farm exists only in /workspace); skipped, not flagged dangling: ../repos/epyc-inference-research/docs/chapters/06-benchmarking-framework.md"
+    ],
+    [
+      "INFO",
+      "wiki/benchmark-methodology.md",
+      "cross-repo target under repos/epyc-inference-research cannot be verified from this worktree (the repos/ symlink farm exists only in /workspace); skipped, not flagged dangling: ../repos/epyc-inference-research/docs/chapters/07-benchmark-suite-construction.md"
+    ],
+    [
+      "WARNING",
+      "wiki/benchmark-methodology.md",
+      "Link anchor not found in target: ../handoffs/active/typed-decision-plane.md#coherence-judge-and-coherence_gate-rollout-filed-2026-10-04-workspace-ec"
+    ],
+    [
+      "INFO",
+      "wiki/inference-serving.md",
+      "cross-repo target under repos/epyc-inference-research cannot be verified from this worktree (the repos/ symlink farm exists only in /workspace); skipped, not flagged dangling: ../repos/epyc-inference-research/docs/reference/models/model-admission-2026-07-16.md"
+    ],
+    [
+      "INFO",
+      "wiki/inference-serving.md",
+      "cross-repo target under repos/epyc-inference-research cannot be verified from this worktree (the repos/ symlink farm exists only in /workspace); skipped, not flagged dangling: ../repos/epyc-inference-research/docs/reference/models/model-smoke-queue-2026-07-16.md"
+    ],
+    [
+      "INFO",
+      "wiki/inference-serving.md",
+      "cross-repo target under repos/epyc-inference-research cannot be verified from this worktree (the repos/ symlink farm exists only in /workspace); skipped, not flagged dangling: ../repos/epyc-inference-research/data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/findings_phase2.md"
+    ],
+    [
+      "INFO",
+      "wiki/local-inference.md",
+      "cross-repo target under repos/epyc-inference-research cannot be verified from this worktree (the repos/ symlink farm exists only in /workspace); skipped, not flagged dangling: ../repos/epyc-inference-research/docs/reference/models/model-admission-2026-07-16.md"
+    ],
+    [
+      "INFO",
+      "wiki/moe-optimization.md",
+      "cross-repo target under repos/epyc-inference-research cannot be verified from this worktree (the repos/ symlink farm exists only in /workspace); skipped, not flagged dangling: ../repos/epyc-inference-research/data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/findings.md"
+    ],
+    [
+      "INFO",
+      "wiki/moe-optimization.md",
+      "cross-repo target under repos/epyc-inference-research cannot be verified from this worktree (the repos/ symlink farm exists only in /workspace); skipped, not flagged dangling: ../repos/epyc-inference-research/data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/findings_phase2.md"
+    ],
+    [
+      "INFO",
+      "wiki/moe-optimization.md",
+      "cross-repo target under repos/epyc-inference-research cannot be verified from this worktree (the repos/ symlink farm exists only in /workspace); skipped, not flagged dangling: ../repos/epyc-inference-research/data/cpu_optimization/2026-05-04-reap246b-arch-probe/findings.md"
+    ],
+    [
+      "INFO",
+      "wiki/multimodal.md",
+      "cross-repo target under repos/epyc-orchestrator cannot be verified from this worktree (the repos/ symlink farm exists only in /workspace); skipped, not flagged dangling: ../repos/epyc-orchestrator/docs/chapters/05-data-processing-pipelines.md"
+    ]
+  ],
+  "error_count": 0
+}

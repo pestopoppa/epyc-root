@@ -1,0 +1,43 @@
+{
+  "actual_model_or_qualification_run": false,
+  "canonical_bound_files": "PASS",
+  "canonical_load_manifest": "PASS",
+  "entry_boundary_test": {
+    "canonical_load_manifest_bound_files_exit_code": 0,
+    "command": "taskset -c 168,169 /usr/bin/python3 entry-boundary-check.py",
+    "cutoff_main": "reached intentional subprocess.Popen first-effect tripwire after actual recipe/request/fixture validation",
+    "exit_code": 0,
+    "launch_environment_matches_pin": true,
+    "normal_main": "reached intentional subprocess.Popen first-effect tripwire after actual recipe/request/fixture validation",
+    "proof_or_cutoff_forged": false,
+    "server_ctx": "8192",
+    "server_execution_or_model_read": false,
+    "server_parallelism": "1",
+    "server_threads": "48",
+    "source_sha256_check_exit_code": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "668447183352dd980d26a1324dcd67c85b6cbfd568d29866df8d5fd307e99d76",
+    "synthetic_affinity": "168-169"
+  },
+  "fixture_test": {
+    "canonical_first_request_ok": "PASS",
+    "captured_birth_mismatch_refused": "PASS",
+    "captured_child_SIGTERM_wait_drain": "PASS",
+    "native_readback_positive": "PASS",
+    "rejects": [
+      "context",
+      "parallelism",
+      "KV",
+      "binary",
+      "mapped_libraries",
+      "launch_environment",
+      "native_evaluated_prompt_count"
+    ]
+  },
+  "keeper_nonce_or_receipt": false,
+  "manifest_digest": "9a0283145f7e810098dc157a26be413bdc92670e59cf962a1f78b979bb3754de",
+  "qualification_entry_sha256": "31a7ca27b9ac7bf4683dc3021b87707ffcaf0d18bdcbb73cff0640788c7041e1",
+  "qualification_status": "PENDING keeper normal/cutoff execution",
+  "schema": "epyc.ch27.qualification-readback-validation.v1",
+  "source_manifest_sha256": "c6ced3164df31ec911415e8119d7f0598095d2dff14bc68e3806930dd92f0319"
+}

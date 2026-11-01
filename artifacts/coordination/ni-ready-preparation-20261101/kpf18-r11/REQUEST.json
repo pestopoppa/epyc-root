@@ -1,0 +1,23 @@
+{
+  "full_stages": [
+    "target_prefix",
+    "target_suffix",
+    "draft_initial",
+    "draft_first_decode"
+  ],
+  "historical_r6_verdict": "INVALID unchanged",
+  "input": {
+    "ledger_path": "/mnt/raid0/llm/tmp/cal-1026/kpf18-g3-native-control-r6/out/capture/EVENT-LEDGER.json",
+    "ledger_sha256": "a6b18b1b96bc773fa74559c9bfc28248287c1dfcf08deb7ef07278d95d9f304a",
+    "raw_path": "/mnt/raid0/llm/tmp/cal-1026/kpf18-g3-native-control-r6/out/capture/X1.native.raw",
+    "raw_sha256": "7cbf105def05e9f874080f6def041754b19c109c7c9ddab5b2d64bf4666a33ee"
+  },
+  "qualification": "same R7 integration_replay.py --bounded-smoke over original X1, positive source/child and both draft stages; active cutoff after native view build, result remains partial",
+  "schema": "kpf18.r11.v2.request.v1",
+  "source": {
+    "data_manifest_sha256": "3dbaad39c1354d0f47173c78b85ccb60722fb84b4c57857055265d083730885f",
+    "r7_root": "/mnt/raid0/llm/tmp/codex-ni-kpf18-native-segfault-r7-20261030",
+    "source_manifest_sha256": "e6beebeaeb9b996437fcfaef2dac56bc178e601a1bc6ea77cd6cfedd8cc5c19b"
+  },
+  "work_unit": "original-X1-native-observation"
+}

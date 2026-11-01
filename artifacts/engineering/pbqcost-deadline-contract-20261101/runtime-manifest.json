@@ -1,0 +1,95 @@
+{
+  "claimed_cpus": "dynamic",
+  "decision_rule": "Full original 66-request model-identification diagnostic, ub 512 then 256 then 1024, n=1/4, exact original lengths/repeats, raw wall-clock log-pump 3-decimal intervals. Per-n q coefficient agreement with 0.9865 ms/token uses original train RMSE tolerance; otherwise measured coefficient replaces assumption. q-axis identified at 3 levels/spread >=500 and held-out interval MAPE <=10%; original confirm and amended per-phase 88-95 contention grade unchanged. Lower MAPE/residual is better; no adoption or performance certification.",
+  "decision_rule_source": [
+    "/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/protocol/PREDECLARATION.md",
+    "/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/protocol/AMENDMENT-confirm-R.md"
+  ],
+  "engine": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/filler_run14.sh",
+    "sha256": "6fe168333738d15e5988d5af42e2b4c348194d722bac11c32368183ae89cd3ef"
+  },
+  "est_output_GiB": 0.5,
+  "exclusive_class": "mi210_0",
+  "gib": 64,
+  "id": "codex-ni-pbqcost-confirm-q-r3-20261101",
+  "items": 1,
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/job.sh",
+    "sha256": "61fd630bb661452f6171ec587def242184e53ce452ba9f6570d6901402d17168"
+  },
+  "job_floor_gib": 150,
+  "keep": "*.py,*.sh,*.json,*.md,*.sha256,*.log,tests/*.py,protocol/*.md,qualification/*.json,out/*.json,out/run/*.json,out/run/*.jsonl,out/run/logs/*.log",
+  "keep_globs": "*.py,*.sh,*.json,*.md,*.sha256,*.log,tests/*.py,protocol/*.md,qualification/*.json,out/*.json,out/run/*.json,out/run/*.jsonl,out/run/logs/*.log",
+  "kv_cache_mode": "unified",
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/launch.sh",
+    "sha256": "c9d9dd8ac5f4cf61958432f36b74ed08865a7817daaf6f5834a92ef79e12d9d0"
+  },
+  "log_consumer": "/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/verdict_q.py",
+  "min_effect": "n/a (model-identification diagnostic)",
+  "min_window_s": 6000,
+  "n_ctx_required": 393216,
+  "n_parallel_required": 5,
+  "notes": "Production recipe is normalized from historical native run config; historical port 18091 is explicitly excluded. Qualification uses unique port 18397. Native live qualification must read GET /props + /slots and startup logs for n_ctx/slots/KV, then match actual /proc argv; production argv preserves -c 393216, actual effective per-slot context readback is 262144. Longest planned 64000-token prompt is the normal/cutoff tool-route first request.",
+  "owner": "codex-ni",
+  "per_slot_n_ctx_required": 262144,
+  "ports": [
+    18397
+  ],
+  "priority_rank": 3,
+  "priority_rank_source": "/mnt/raid0/llm/tmp/compute-flags/codex-channels/codex-ni.md:436 (accepted repair order: yarn, specgram3, PB-QCOST, INF-12)",
+  "production": true,
+  "production_recipe": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/production_recipe.json",
+    "sha256": "e52565c42c19850767db5b9e7fa2a1c620bd46d7238ad2a17bfb25c1bcb78a2d"
+  },
+  "prompt_tokens_required": 64000,
+  "protocol_version": "PB-QCOST original r2 successor; epyc.ready.v2 canonical engine",
+  "qual_fixture": {
+    "items": 2,
+    "path": "/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/qualification/qual_entry.py",
+    "sha256": "d2485c29aade7e7c0302f5b1ebf91f0b971d6f812db57555c69c343499b7da08"
+  },
+  "qual_interpreter": "/usr/bin/python3.13",
+  "qual_timeout_s": 600,
+  "qualification": {
+    "receipt": "/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/qualification/QUAL-codex-ni-pbqcost-confirm-q-r3-20261101.json"
+  },
+  "qualification_status": "PUBLISH-PENDING-QUAL",
+  "rate_basis": {
+    "evidence": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/rate-evidence.json",
+      "sha256": "7c495e84a6d9c47d25411f96fc0a4f4213129b6c6106a52df22a6cae3fde3c82"
+    },
+    "production_threads": 8,
+    "rate_tok_s": 385.12,
+    "scope": "calibrated-production"
+  },
+  "raw_globs": "out/run/logs/*.server.log,out/run/vram/*.jsonl,out/run/pb_qcost_1.jsonl",
+  "regions": "mi210_0,184-191",
+  "request_manifest_sha256": "e52565c42c19850767db5b9e7fa2a1c620bd46d7238ad2a17bfb25c1bcb78a2d",
+  "requires_tools": [
+    "/usr/bin/python3.13",
+    "/usr/bin/taskset",
+    "/usr/bin/numactl"
+  ],
+  "result_path": "/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/VERDICT.json",
+  "retention": {
+    "keep_globs": "*.py,*.sh,*.json,*.md,*.sha256,*.log,tests/*.py,protocol/*.md,qualification/*.json,out/*.json,out/run/*.json,out/run/*.jsonl,out/run/logs/*.log",
+    "keep_raw_logs": true,
+    "raw_globs": "out/run/logs/*.server.log,out/run/vram/*.jsonl,out/run/pb_qcost_1.jsonl",
+    "version": 2
+  },
+  "retention_v2": 1,
+  "schema": "epyc.ready.v2",
+  "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101",
+  "shared_state": [],
+  "source_attempt_id": "codex-ni-pbqcost-confirm-q-r2-20261030",
+  "source_manifest": "/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/SOURCE.sha256",
+  "tokens_per_item": 1624000,
+  "tokens_total": 1624000,
+  "window_s": 6300,
+  "workload_class": "gpu",
+  "workload_kind": "llm"
+}

@@ -1,0 +1,30 @@
+{
+  "actual_prior_bounded_result": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-kpf18-native-segfault-r7-20261030/cpu-replay/smoke-runs/r7-20261030T171624Z-1115955/RESULT.json",
+    "sha256": "e3c81970088d6d7f097338e0a46d40647b4ca8f54e8a1de1bdab3c57ca666e9e",
+    "status": "BOUNDED_PASS",
+    "wall_s": 264.908
+  },
+  "cutoff": "same job starts an actual native child in the qualifier process group; keeper observes source first event, issues STOP, job drains child and returns rc75 partial UNKNOWN",
+  "items": 2,
+  "mode": "--bounded-smoke; same exact R7 source with full native input; partial result only",
+  "native_input": "original X1 raw/ledger, source and child",
+  "runner": "/mnt/raid0/llm/tmp/codex-ni-kpf18-native-segfault-r7-20261030/integration_replay.py",
+  "schema": "kpf18.r11.v2.qual-fixture.v1",
+  "selected_shapes": [
+    {
+      "shape": "source target-prefix and draft-initial",
+      "stage_names": [
+        "target_prefix",
+        "draft_initial"
+      ]
+    },
+    {
+      "shape": "forked child target-suffix and draft-first-decode",
+      "stage_names": [
+        "target_suffix",
+        "draft_first_decode"
+      ]
+    }
+  ]
+}

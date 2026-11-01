@@ -1,0 +1,1 @@
+rc=1 elapsed_s=1 sampled_peak_rss_kib=7240 cpus=84-85 omp_threads=1

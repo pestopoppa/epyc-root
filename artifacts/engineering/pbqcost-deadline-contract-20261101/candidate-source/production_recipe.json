@@ -1,0 +1,34 @@
+{
+  "device": "ROCm0",
+  "draft_model": "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+  "historical_native_source": {
+    "argv": "/mnt/raid0/llm/tmp/overnight-20261020/argv.8083-gate.txt",
+    "full_argv_record": "/mnt/raid0/llm/tmp/pb-qcost-1/launch.log",
+    "observed_port": 18091,
+    "run": "/mnt/raid0/llm/tmp/pb-qcost-1/runs/20261021T212922Z",
+    "server_log": "/mnt/raid0/llm/tmp/pb-qcost-1/runs/20261021T212922Z/logs/pbq1-20261021T212923Z.server.log"
+  },
+  "kv_cache": "q8_0/q8_0",
+  "native_context_readback_source": {
+    "kv_unified": true,
+    "n_ctx_slot": 262144,
+    "n_slots": 5
+  },
+  "normalization": {
+    "excluded_fields": [
+      "port",
+      "slot-save-path",
+      "output-directory"
+    ],
+    "reason": "unique transport/output paths do not affect model/threads/context/batching recipe; the fresh qualification port is independently pinned in manifest ports"
+  },
+  "phase_batching": "-b=-ub; ub phases 512,256,1024 in predeclared order",
+  "schema": "epyc.pbqcost.normalized-production-recipe.v1",
+  "server": {
+    "ctx": 393216,
+    "model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+    "parallel": 5,
+    "threads": 8,
+    "unified": true
+  }
+}

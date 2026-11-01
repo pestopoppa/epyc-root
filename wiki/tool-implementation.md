@@ -1989,3 +1989,12 @@ Sources: [autopilot handoff](../handoffs/active/autopilot-continuous-optimizatio
 ### Run 2026-08-21-ids-1218-1251 — [digest](../research/deep-dives/intake-digests/2026-08-21-ids-1218-1251.md)
 
 - intake-1237#record (QiMeng-Xpiler (OSDI 2025)): The dive confirmed the headline 100/100 for CUDA C to HIP is accuracy, not performance; the four-direction average is 0.78x, below parity, and HIPIFY already reaches 85.7 on the same cases. The repo has no license. Verdict adopt_patterns, dive-verified.
+
+
+## Compiled Update — 2026-11-01 (EVL38 scheduled-gate retirement)
+
+**Confidence: verified for workflow deletion and the shared CI run; the run is not a whole-candidate readiness result.**
+
+- EVL38's periodic candidate-gate workflow is deleted. The generic ROOT hermetic workflow remains manually dispatchable: run 41307788637 passed its only hermetic job on main at source commit 58737a05e8e6984620934eecc97691f522c52bb2. The earlier scheduled run 41223677301 captured its native receipt but failed full-candidate reference validation on nine host-local scratch paths. The manual pass verifies the shared CI path only; it does not restore the schedule, establish candidate readiness, or grant promotion authority. ([retirement report](../docs/reports/evl38-schedule-retirement-20261101.md); [CI capture](../artifacts/ci/evl38-manual-dispatch-20261101/README.md); [NI progress](../progress/2026-11/2026-11-01-codex-ni.md); [generic workflow](../.github/workflows/tests.yml))
+
+Sources: [EVL38 retirement report](../docs/reports/evl38-schedule-retirement-20261101.md) · [manual CI capture](../artifacts/ci/evl38-manual-dispatch-20261101/README.md) · [NI progress](../progress/2026-11/2026-11-01-codex-ni.md) · [shared ROOT tests workflow](../.github/workflows/tests.yml)

@@ -497,7 +497,7 @@ Sources: [document-parser-table-bench](../handoffs/active/document-parser-table-
 
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
-- Paddle R32 ended partial; five exhausted groups record 61 complete pages, 13 unknown and one geometry error, with seven other completed groups; R35 ended rc75 with 36 complete, 9 missing and one pre-exposure refusal among 46 visited-page summaries. Retained/replayed entries prevent a net-new count; cause unresolved and no quality verdict. [Source](../handoffs/active/document-parser-table-bench.md)
+- Paddle R32 ended partial; five exhausted groups record 61 complete pages, 13 unknown and one geometry error, with seven other completed groups; R35 ended rc75 with 36 complete, 9 missing and one pre-exposure refusal among 46 visited-page summaries. Retained/replayed entries prevent a net-new count; cause unresolved and no quality verdict. [Handoff](../handoffs/active/document-parser-table-bench.md) · [codex3 progress](../progress/2026-11/2026-11-01-codex3.md)
 
 ## Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)
 

@@ -1,0 +1,1 @@
+rc=0 elapsed_s=1.068 sampled_peak_tree_rss_bytes=23416832 cpus=84-85 omp_threads=1 limit_s=900 limit_gib=8 relocation_from=36-37 via_q3; exceeded=none

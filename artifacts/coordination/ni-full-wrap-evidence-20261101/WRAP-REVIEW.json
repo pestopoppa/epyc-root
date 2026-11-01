@@ -1,0 +1,49 @@
+{
+  "scope": "Operator-invoked full wrap-up; accepted source cutoff b1d26902; later preparation/withdrawal status retained explicitly",
+  "created_at": "2026-11-01T14:30:20.930294+00:00",
+  "source_commits": [
+    "58737a05e8e6984620934eecc97691f522c52bb2",
+    "fceacc1ce5e69d7dece663b61da51c8f7dfe35ad",
+    "b1d26902a173bbe2facc4313ea7a677a86694209"
+  ],
+  "D1_tests": {
+    "new": 15,
+    "existing": 29,
+    "failures": 0,
+    "skips": 0
+  },
+  "EVL38_manual_CI": {
+    "run": 41307788637,
+    "conclusion": "success"
+  },
+  "index_check": {
+    "exit": 0,
+    "problems": 0
+  },
+  "wiki": {
+    "pages_synthesized": 5,
+    "changed_sources_reviewed": 10,
+    "article_structure_errors": 0,
+    "unmaterialized_link_targets_verified_in_Git": 355,
+    "source_tree_link_errors": 0,
+    "existing_warnings": 130,
+    "raw_checkout_lint": "355 false missing-target errors because this reused lane does not materialize all unchanged Git objects; all 355 targets verified in Git; no source/link edits to bypass them"
+  },
+  "README_freshness": {
+    "exit": 0,
+    "warnings": []
+  },
+  "index_pruning": {
+    "safe_rows": 0,
+    "removed": 0,
+    "compacted": 0
+  },
+  "checkbox_flips": 0,
+  "new_open_task": "D1 owner install/actual qualification; source and tests are complete",
+  "science_or_inference_ticks": 0,
+  "scratch_cleanup": "read-only scratch gate plan retained; raw evidence and active packets preserved; no permanent deletion; 0 GiB reclaimed",
+  "delivery": "own NI channel and flags posted; direct outbound thread tool absent, bus daemon dead; no acknowledgment claimed",
+  "integrated_base": "6d04476422993bcd06d25250c67340cc64c87f03",
+  "R11": "WITHDRAWN_SUPERSEDED before grant",
+  "CH27": "PUBLISHED_PENDING_KEEPER_QUALIFICATION; LOOP58 declarations amended pre-nonce"
+}

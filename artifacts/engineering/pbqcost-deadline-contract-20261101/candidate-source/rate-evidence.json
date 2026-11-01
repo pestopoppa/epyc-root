@@ -1,0 +1,19 @@
+{
+  "calibration_point": {
+    "n_generating": 4,
+    "parallel_slots": 5,
+    "prompt_tokens": 64000,
+    "ubatch": 512
+  },
+  "calibration_port": 18091,
+  "calibration_port_excluded_from_normalized_recipe": true,
+  "historical_native_log_line": "1792618726.756 ... prompt eval time = 166184.04 ms / 64000 tokens, 385.12 tokens per second",
+  "measured_tok_s": 385.12,
+  "production_recipe_sha256": "e52565c42c19850767db5b9e7fa2a1c620bd46d7238ad2a17bfb25c1bcb78a2d",
+  "production_threads": 8,
+  "rate_use": "feasibility estimate only, not a successor result or performance claim",
+  "source_launch_log": "/mnt/raid0/llm/tmp/pb-qcost-1/launch.log",
+  "source_log": "/mnt/raid0/llm/tmp/pb-qcost-1/runs/20261021T212922Z/logs/pbq1-20261021T212923Z.server.log",
+  "source_run": "/mnt/raid0/llm/tmp/pb-qcost-1/runs/20261021T212922Z",
+  "source_summary": "/mnt/raid0/llm/tmp/pb-qcost-1/runs/20261021T212922Z/summary.json"
+}

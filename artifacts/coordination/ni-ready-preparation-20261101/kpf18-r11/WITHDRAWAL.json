@@ -1,0 +1,10 @@
+{
+  "id": "codex-ni-kpf18-r11-full-bridge-v2-20261101",
+  "state": "WITHDRAWN_SUPERSEDED",
+  "at": "2026-11-01T14:27:38.587274+00:00",
+  "reason": "Same original X1 R7 bridge framing already completed rc0 in 652.013s on 2026-10-30; original R14 bridge task already ticked. Repeating it would not unblock the remaining native-control/model/GPU/canary tasks.",
+  "evidence": "handoffs/active/kv-prefix-fork-and-paged-attention.md original-event filing at line1120; artifacts/compute/results-filing-20261030-1752.json",
+  "qualification_receipt": false,
+  "grant": false,
+  "original_evidence_unchanged": true
+}

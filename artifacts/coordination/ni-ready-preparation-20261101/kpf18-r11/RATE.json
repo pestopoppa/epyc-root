@@ -1,0 +1,12 @@
+{
+  "completed_work_units": 1,
+  "elapsed_s": 652.013,
+  "observed_work_units_per_s": 0.001533711751146066,
+  "production_recipe_sha256": "05645f4a341fa849e5ce64ef8360dbe6396cd01180ca90c92c3a0c1d3cf84446",
+  "production_threads": 2,
+  "schema": "kpf18.r11.v2.rate.v1",
+  "scope": "native R7 exact full X1 all-four-stage CPU replay; diagnostic only",
+  "source_result_path": "/mnt/raid0/llm/tmp/codex-ni-kpf18-native-segfault-r7-20261030/cpu-replay/attempts/1793382000-1793385600/RESULT.json",
+  "source_result_sha256": "2b7eae2083bd5a116c8bd60db07a9a398154e8eb2d3b6098924a14d2eeeb8edf",
+  "work_unit": "original-X1-native-observation"
+}

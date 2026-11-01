@@ -1,0 +1,68 @@
+....FF.....                                                              [100%]
+=================================== FAILURES ===================================
+__________ test_normal_production_claim_uses_actual_gpu_host_cpu_set ___________
+
+    def test_normal_production_claim_uses_actual_gpu_host_cpu_set():
+>       trace = claim_trace({'FILLER_CPUS': '184-191', 'WS58_REGIONS': 'mi210_0,q3'},
+                            unset=('WS58_QUAL_CPUS',))
+
+/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/tests/test_launcher_claim_mapping.py:23: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+extra = {'FILLER_CPUS': '184-191', 'WS58_REGIONS': 'mi210_0,q3'}
+unset = ('WS58_QUAL_CPUS',)
+
+    def claim_trace(extra: dict[str, str], unset: tuple[str, ...] = ()) -> str:
+        env = os.environ.copy()
+        for key in unset:
+            env.pop(key, None)
+        env.update({'WS58_FINGERPRINT_ONLY': '1', **extra})
+        p = subprocess.run(['bash', '-x', str(LAUNCH)], env=env, text=True,
+                           stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=15)
+>       assert p.returncode == 0, p.stdout + p.stderr
+E       AssertionError: + set -euo pipefail
+E         + D=/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101
+E         + ENGINE=/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/filler_run14.sh
+E         + CLAIM_CPUS=184-191
+E         + exec bash /mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/filler_run14.sh --id codex-ni-pbqcost-confirm-q-r3-20261101 --class gpu --gpu-quiet exclusive --claim-cpus 184-191 --role bench --min-window 6000 --stop /mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/STOP --port 18397 --complete-cmd 'python3 -B '\''/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/completion_check.py'\''' --workdir /mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101 --requires-tool /usr/bin/python3.13 --requires-tool /usr/bin/taskset --requires-tool /usr/bin/numactl --qual-interpreter /usr/bin/python3.13 --cmd 'bash '\''/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/job.sh'\'''
+E         REFUSED: fingerprint plumbing missing
+E         
+E       assert 65 == 0
+E        +  where 65 = CompletedProcess(args=['bash', '-x', '/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/launch.sh'], returncode=65, stdo...-cmd 'bash '\\''/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/job.sh'\\'''\nREFUSED: fingerprint plumbing missing\n").returncode
+
+/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/tests/test_launcher_claim_mapping.py:18: AssertionError
+_________ test_keeper_claim_uses_relocated_two_cpu_qualification_pair __________
+
+    def test_keeper_claim_uses_relocated_two_cpu_qualification_pair():
+>       trace = claim_trace({'WS58_QUAL_CPUS': '84-85', 'WS58_REGIONS': '84-85',
+                             'FILLER_CPUS': '184-191'})
+
+/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/tests/test_launcher_claim_mapping.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+extra = {'WS58_QUAL_CPUS': '84-85', 'WS58_REGIONS': '84-85', 'FILLER_CPUS': '184-191'}
+unset = ()
+
+    def claim_trace(extra: dict[str, str], unset: tuple[str, ...] = ()) -> str:
+        env = os.environ.copy()
+        for key in unset:
+            env.pop(key, None)
+        env.update({'WS58_FINGERPRINT_ONLY': '1', **extra})
+        p = subprocess.run(['bash', '-x', str(LAUNCH)], env=env, text=True,
+                           stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=15)
+>       assert p.returncode == 0, p.stdout + p.stderr
+E       AssertionError: + set -euo pipefail
+E         + D=/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101
+E         + ENGINE=/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/filler_run14.sh
+E         + CLAIM_CPUS=84-85
+E         + exec bash /mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/filler_run14.sh --id codex-ni-pbqcost-confirm-q-r3-20261101 --class gpu --gpu-quiet exclusive --claim-cpus 84-85 --role bench --min-window 6000 --stop /mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/STOP --port 18397 --complete-cmd 'python3 -B '\''/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/completion_check.py'\''' --workdir /mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101 --requires-tool /usr/bin/python3.13 --requires-tool /usr/bin/taskset --requires-tool /usr/bin/numactl --qual-interpreter /usr/bin/python3.13 --cmd 'bash '\''/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/job.sh'\'''
+E         REFUSED: fingerprint plumbing missing
+E         
+E       assert 65 == 0
+E        +  where 65 = CompletedProcess(args=['bash', '-x', '/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/launch.sh'], returncode=65, stdo...-cmd 'bash '\\''/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/job.sh'\\'''\nREFUSED: fingerprint plumbing missing\n").returncode
+
+/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/tests/test_launcher_claim_mapping.py:18: AssertionError
+=========================== short test summary info ============================
+FAILED ../mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/tests/test_launcher_claim_mapping.py::test_normal_production_claim_uses_actual_gpu_host_cpu_set
+FAILED ../mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/tests/test_launcher_claim_mapping.py::test_keeper_claim_uses_relocated_two_cpu_qualification_pair
+2 failed, 9 passed in 0.29s

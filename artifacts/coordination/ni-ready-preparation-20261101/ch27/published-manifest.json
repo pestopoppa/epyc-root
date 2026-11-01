@@ -1,0 +1,110 @@
+{
+  "claimed_cpus": "0-95",
+  "engine": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/filler_run14.sh",
+    "sha256": "6fe168333738d15e5988d5af42e2b4c348194d722bac11c32368183ae89cd3ef"
+  },
+  "est_output_GiB": 0.1,
+  "exclusive_class": "gpu-quiet-exclusive",
+  "gib": 200,
+  "gpu_quiet": "exclusive",
+  "gpu_used_for_workload": false,
+  "id": "codex-ni-ch27-c5-raw-recalibration-v2-20261101",
+  "items": 48,
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-v2-ch27-20261101/job.sh",
+    "sha256": "593955e19bf55c2a6df0fc667af7f11ebb54ebded44a471bce0093d07a66ce6d"
+  },
+  "job_floor_gib": 150,
+  "keep": [
+    "*.py",
+    "*.sh",
+    "*.json",
+    "*.sha256",
+    "*.out",
+    "research-source/**",
+    "calibration-attempts/**",
+    "qualification/*.json"
+  ],
+  "kv_cache_mode": "split",
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-v2-ch27-20261101/launch.sh",
+    "sha256": "5213ace7bc1cd16afd7e02b42425b4d05dab0110514d0a4031c784d9cb47702d"
+  },
+  "launcher_log_path": "/mnt/raid0/llm/tmp/codex-ni-v2-ch27-20261101/ws58-launcher.out",
+  "log_consumer": "/mnt/raid0/llm/tmp/codex-ni-v2-ch27-20261101/qualification_entry.py",
+  "measurement_class": "diagnostic-cpu-whole-host-timing-gpu-quiet",
+  "min_window_s": 5400,
+  "n_ctx_required": 8192,
+  "n_parallel_required": 1,
+  "owner": "codex-ni",
+  "per_slot_n_ctx_required": 8192,
+  "ports": [
+    18651
+  ],
+  "priority_rank": 1,
+  "production": true,
+  "production_recipe": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-v2-ch27-20261101/production-recipe.json",
+    "sha256": "a48dbd8445caaa51ac1ae9756aa1f69936110cd2e937b6fd9209e56bc01272c4"
+  },
+  "prompt_tokens_required": 102,
+  "qual_fixture": {
+    "items": 2,
+    "path": "/mnt/raid0/llm/tmp/codex-ni-v2-ch27-20261101/qual_fixture.json",
+    "sha256": "04a45f15df4f7c20f420233a36629f70edccb58dc8baca540d61ece64f5274d2"
+  },
+  "qual_interpreter": "/usr/bin/python3",
+  "qual_timeout_s": 600,
+  "qualification": {
+    "receipt": "/mnt/raid0/llm/tmp/codex-ni-v2-ch27-20261101/qualification/QUAL-codex-ni-ch27-c5-raw-recalibration-v2-20261101.json"
+  },
+  "rate_basis": {
+    "evidence": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-v2-ch27-20261101/rate-evidence.json",
+      "sha256": "544e8422be2bc6ad487610e31456b864021c4e425d2f3b0350f36545c3f594b8"
+    },
+    "production_threads": 48,
+    "rate_tok_s": 49.13879319359498,
+    "scope": "calibrated-production"
+  },
+  "raw_globs": "calibration-attempts/**/server.log,calibration-attempts/*.supervisor.log,ws58-launcher.out",
+  "regions": "0-95",
+  "request_manifest_sha256": "57c9006dfde7443a1bf9b58c08f1ac6834dddcdf3cafcfb770717f141b1d8640",
+  "requires_tools": [
+    "/usr/bin/bash",
+    "/usr/bin/curl",
+    "/usr/bin/flock",
+    "/usr/bin/numactl",
+    "/usr/bin/python3",
+    "/usr/bin/sha256sum",
+    "/usr/bin/ss",
+    "/usr/bin/taskset"
+  ],
+  "retention_v2": 1,
+  "schema": "epyc.ready.v2",
+  "scientific_protocol": {
+    "decision_rule": "One current-C5 prospective RAW recipe A/A window only; matched_process_v2; 24 independent pairs/48 launches; comparison_pairs=5 unchanged; aggregate_tok_s higher-is-better; floor_pct is A/A dispersion estimate only; preserve raw CMake digests and historical dd3 COR separately; no normalization, floor carry-forward, or search.",
+    "decode_tokens_per_item": 256,
+    "estimated_active_protocol_s": 4800,
+    "kv_cache_mode": "split",
+    "measurement": "whole-host CPU timing on regions 0-95 with exclusive GPU-quiet reservation; no MI210 kernel utilization claim",
+    "min_window_s": 5400,
+    "model_role": "Qwen3.8-Flash-Next UD-IQ4_XS plus shared MTP Q8_0; no model copies",
+    "parallel": 1,
+    "production_context": 8192,
+    "request_prompt_tokens": 102,
+    "server_threads": 48,
+    "window_s": 5700
+  },
+  "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-v2-ch27-20261101",
+  "shared_state": [
+    "q38fn-c5-calibration-campaign:ak-q38fn-cpu-decode-20261003",
+    "q38fn-c5-recipe:cff9ad900700c8057a2783946e5e5dc5ed718818728dd1bdbdfb9e0199b16fb8",
+    "q38fn-c5-request:57c9006dfde7443a1bf9b58c08f1ac6834dddcdf3cafcfb770717f141b1d8640"
+  ],
+  "source_manifest": "/mnt/raid0/llm/tmp/codex-ni-v2-ch27-20261101/SOURCE.sha256",
+  "tokens_per_item": 256,
+  "window_s": 5700,
+  "workload_kind": "llm"
+}

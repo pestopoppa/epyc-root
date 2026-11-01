@@ -1,0 +1,14 @@
+{
+  "state": "PUBLISHED_PENDING_KEEPER_QUALIFICATION",
+  "id": "codex-ni-kpf18-r11-full-bridge-v2-20261101",
+  "published_at": "2026-11-01T14:17:14.053598+00:00",
+  "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-kpf18-r11-full-bridge-v2-20261101.json",
+  "manifest_sha256": "5871362a957c34752791698f02e2720a6a5c17a23b56ffec2e64b357f7cc9b44",
+  "row_sha256": "99cc8453973bf3ecc98144f24cc2f7f8728a5628c58533de1149b2fa2e2527a6",
+  "source_manifest_sha256": "4e3416eee5e2d7149060298e8f54b294b65a8b68448221ba5a4846e93549f244",
+  "qualified": false,
+  "armed": false,
+  "keeper_nonce_written_by_NI": false,
+  "live_FillERS_grants_queues_touched": false,
+  "review": "exact 18-cell bootstrap dry and canonical load/bound/namespace pass; local native fixture/drain controls only"
+}

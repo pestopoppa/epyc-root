@@ -1,31 +1,30 @@
 {
   "by_type": {
-    "docs": 249,
+    "docs": 251,
     "handoff-active": 179,
     "handoff-blocked": 2,
     "handoff-completed": 221,
-    "progress": 1140,
+    "progress": 1141,
     "research": 261
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-01T12:30:34Z",
   "last_touch": {
     "advanced": {
-      "added": 116,
-      "changed": 0,
+      "added": 0,
+      "changed": 1,
       "removed": 0
     },
-    "at": "2026-11-01T13:11:15Z",
+    "at": "2026-11-01T14:30:21Z",
     "scope_paths": [
-      "research/deep-dives/intake-digests",
-      "research/deep-dives/ws58-20261031/dives"
+      "progress/2026-11/2026-11-01-codex-ni.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-01T13:11:15Z",
+  "scan_time": "2026-11-01T14:30:21Z",
   "schema_version": 1,
-  "source_set_hash": "0d7b2b7e1a4e056653e350f6fc4615de527841f1b614ef614367261d324273de",
+  "source_set_hash": "1b8bfe46c099abed6f5dd1fd16e707ba05604d626ea2f8ec9377f8c6f6164b12",
   "sources": [
     {
       "content_hash": "79865b0c101f4b6a9b14665950a430467345202b33986b3ba348bc3df428170a",
@@ -292,10 +291,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "1353860a0ee48061ae647a7a8f0a68c68837699bcd2e076d1be9ded75b22c8fc",
-      "modified": "2026-11-01T12:30:03Z",
+      "content_hash": "5904b522ca7f6dae47c6d374f92881c6a59e52b8def717ba1f794a0570fb971c",
+      "modified": "2026-11-01T13:43:48Z",
       "path": "handoffs/active/conversation-stack.md",
-      "size": 271514,
+      "size": 271925,
       "title": "Conversation stack: speech-native interlocutor, orchestrator voice-turn contract, cascade fallback",
       "type": "handoff-active"
     },
@@ -404,10 +403,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "f2faafaa5617d44f4f6c97f386c75a74aa1eca862a6dfd5ca32ab49f5bb0c2af",
-      "modified": "2026-11-01T12:25:54Z",
+      "content_hash": "3355214148e571971f34a4ba71b16650dd0465477840ecbee7e51a493f530cc8",
+      "modified": "2026-11-01T13:43:48Z",
       "path": "handoffs/active/document-parser-table-bench.md",
-      "size": 110551,
+      "size": 110956,
       "title": "Document Parser Table-Extraction Benchmark \u2014 PaddleOCR-VL-1.6 pipeline vs ODL",
       "type": "handoff-active"
     },
@@ -628,10 +627,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "2f1054565425ed695626563742b413559258d3ea832f02597dbe35ddecb25fb4",
-      "modified": "2026-11-01T12:25:54Z",
+      "content_hash": "4783cae24cde3b36643761c6434d247449a800237329ebd2087978a19b70e2a8",
+      "modified": "2026-11-01T13:59:37Z",
       "path": "handoffs/active/gpu-serving-tie-in-program.md",
-      "size": 202506,
+      "size": 204073,
       "title": "GPU Serving Tie-In Program \u2014 one fabric, two devices",
       "type": "handoff-active"
     },
@@ -940,10 +939,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "dafcf9b1844b1e820928d96d67a22d3108c7caaa1d4cabcdc4c149be51ddb7ab",
-      "modified": "2026-11-01T12:25:54Z",
+      "content_hash": "f34bf1d0ddb41efa57d534093a6baed08c48477143dfbcf5a97b6053c89397ef",
+      "modified": "2026-11-01T13:59:37Z",
       "path": "handoffs/active/non-inference-backlog.md",
-      "size": 242391,
+      "size": 243187,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -14356,10 +14355,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "c0254a0e78451ea8d3980f69f8913d06e1c440ece178369f3b42361ec562cd10",
-      "modified": "2026-11-01T12:25:54Z",
+      "content_hash": "dc8c0b9ee76dbe2affc220a3d03ead55bc77bcf800ff5429933b89af8c281864",
+      "modified": "2026-11-01T14:30:20Z",
       "path": "progress/2026-11/2026-11-01-codex-ni.md",
-      "size": 9601,
+      "size": 14177,
       "title": "2026-11-01 Codex NI wrap-up",
       "type": "progress"
     },
@@ -14388,10 +14387,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "1ecab6f65f983ea3bc57765880ed026fc09f73e8645c0a3c6cfd5faf889a3192",
-      "modified": "2026-11-01T12:29:07Z",
+      "content_hash": "923c165186fcd8f6f84f8a1bbb394013e726a1b68a1b1a32c65b7c70387e47d1",
+      "modified": "2026-11-01T13:43:48Z",
       "path": "progress/2026-11/2026-11-01-codex3.md",
-      "size": 6058,
+      "size": 6893,
       "title": "2026-11-01 \u2014 codex3",
       "type": "progress"
     },
@@ -14433,6 +14432,14 @@
       "path": "progress/2026-11/2026-11-01-total-episode-tokens.md",
       "size": 1174,
       "title": "Complete REPL episode token accounting",
+      "type": "progress"
+    },
+    {
+      "content_hash": "143e7a9f95e0e4508efdc7998146f8b7ff80581bf084b00c585539e696c6474d",
+      "modified": "2026-11-01T13:43:48Z",
+      "path": "progress/2026-11/2026-11-01-workspace-58-churn-flow.md",
+      "size": 1419,
+      "title": "2026-11-01 \u2014 ws58: backlog churn flow installed (operator: \"churn through the backlog should just work\")",
       "type": "progress"
     },
     {
@@ -14956,6 +14963,14 @@
       "type": "docs"
     },
     {
+      "content_hash": "45fb11dd74cf0182fb96beae45bf06179b43b7e9a9ddc7102477fb6993c96ab5",
+      "modified": "2026-11-01T13:43:48Z",
+      "path": "docs/guides/agent-workflows/backlog-churn-flow.md",
+      "size": 3887,
+      "title": "Churn through the backlog \u2014 the one workflow (operator, 2026-11-01)",
+      "type": "docs"
+    },
+    {
       "content_hash": "7829cfe299a19061f3fe97127c52aa05e0136ab31dee2183f77ce506c914e7cf",
       "modified": "2026-11-01T12:25:54Z",
       "path": "docs/guides/agent-workflows/benchmark-analyst.md",
@@ -14980,10 +14995,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "8a3f2840e03a011c293ebd34bdf6ce34daf098bf3f225618e356d849aa70bcc7",
-      "modified": "2026-11-01T12:25:54Z",
+      "content_hash": "7fbebbc4c6bf1b7a075fd226f9ee06d94a2a25fcdc01fe87b16d417b9c4bd3f1",
+      "modified": "2026-11-01T13:43:48Z",
       "path": "docs/guides/agent-workflows/compute-fillers.md",
-      "size": 33234,
+      "size": 33820,
       "title": "Compute Fillers",
       "type": "docs"
     },
@@ -16124,6 +16139,14 @@
       "type": "docs"
     },
     {
+      "content_hash": "0c5f81c9bd26fc530b095476aad1b6d8be7b015f09f71cef209bd9fbdae74153",
+      "modified": "2026-11-01T13:43:48Z",
+      "path": "docs/reports/evl38-schedule-retirement-20261101.md",
+      "size": 2276,
+      "title": "EVL38 scheduled gate retirement \u2014 2026-11-01",
+      "type": "docs"
+    },
+    {
       "content_hash": "fa112d95158e91400304c3df056699549aedc16d6ef3112054b6b3709efcc31e",
       "modified": "2026-11-01T12:25:54Z",
       "path": "docs/reports/hyg1-build-freshness-20261101.md",
@@ -16444,7 +16467,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 2052,
+  "total_new": 2055,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

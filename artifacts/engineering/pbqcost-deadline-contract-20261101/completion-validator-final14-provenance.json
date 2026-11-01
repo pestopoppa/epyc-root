@@ -1,0 +1,50 @@
+{
+  "kind": "pbqcost-candidate-completion-validator-controls",
+  "date_utc": "2026-11-01",
+  "candidate_id": "codex-ni-pbqcost-confirm-q-r3-20261101",
+  "source_status": "MAIN-approved source packet; runtime packet published pending keeper qualification",
+  "published_at": "2026-11-01T12:56:59Z",
+  "ci_run_id": 41307788637,
+  "ci_head": "58737a05e8e6984620934eecc97691f522c52bb2",
+  "test_run": {
+    "result": "14 passed",
+    "elapsed_s": 0.39,
+    "rc": 0,
+    "cpus": "84-85",
+    "omp_threads": 1,
+    "sampled_peak_rss_kib": 7464,
+    "log": "completion-validator-final14-test-run.log"
+  },
+  "source_pins": {
+    "original_source_manifest_path": "/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/SOURCE.sha256",
+    "original_source_manifest_sha256": "ee5660d5a62e0b0b55a000afa955739739d88256e910cecc0ccf75e305e0eaff",
+    "completion_check_sha256": "77f1991c6ce6149b2acfdc25675a362bb694a080cddbde86a000727c1712aed8",
+    "durable_code_pin_manifest": "candidate-source/SOURCE-CODE.sha256"
+  },
+  "published_packet": {
+    "runtime_manifest": "published-ready-manifest.json",
+    "runtime_manifest_sha256": "9d8b191f1a2a9fa4610f229bc636bd36cdd710ee099bbcfbdc76bbd9336d61ab",
+    "row": "published-ready-row.md",
+    "row_sha256": "c1a6552aaba3143e0f0e45f7ab2675340e5b97361e4d3f06bd965fede82be10e",
+    "receipt": "PUBLISH-RECEIPT.json",
+    "receipt_state": "PUBLISHED_PENDING_KEEPER_QUALIFICATION",
+    "qualification_receipt": "/mnt/raid0/llm/tmp/codex-ni-pbqcost-v2-20261101/qualification/QUAL-codex-ni-pbqcost-confirm-q-r3-20261101.json",
+    "qualified": false
+  },
+  "bounded_result": {
+    "full_probe_run_all_dispatches": 66,
+    "planned_calls_unchanged": true,
+    "native_requests": 0,
+    "model_loads": 0,
+    "science_verdict": "NOT_RUN",
+    "qualifier": "model-free software controls only; no science result"
+  },
+  "publication_correction": "The unused legacy dryrun_pass placeholder was removed from the published packet; canonical v2 uses its inner FILLER_PREFLIGHT nonce and no legacy receipt was fabricated.",
+  "open_gates": [
+    "P0 D1 legacy-key conflict blocks all grants pending the accepted controller-only qualification-v2 repair",
+    "formal keeper nonce and qualification receipt remain pending",
+    "original q-axis protocol measurement and science verdict remain pending"
+  ],
+  "retention": "Prior failed controls remain under failed-controls/ and existing r2 failed-run artifacts are unchanged.",
+  "belief": "no-belief: bounded software verification; no inference or measurement claim"
+}

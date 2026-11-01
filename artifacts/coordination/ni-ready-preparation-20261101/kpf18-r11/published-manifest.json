@@ -1,0 +1,86 @@
+{
+  "booking_class": "block-correctness",
+  "claimed_cpus": "dynamic",
+  "class": "diagnostic",
+  "command": {
+    "planned_work_units": 1,
+    "work_unit": "original-X1-native-observation"
+  },
+  "decision_rule": "Diagnostic full original X1 R7 bridge: exact raw/ledger/source hashes, all four stages and framing_pass true; historical R6 remains INVALID. Controlled cutoff is rc75 partial UNKNOWN after owned worker drain.",
+  "engine": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/bin/qual-v1/filler_run14.sh",
+    "sha256": "6fe168333738d15e5988d5af42e2b4c348194d722bac11c32368183ae89cd3ef"
+  },
+  "est_output_GiB": 0.1,
+  "exclusive_class": null,
+  "feasibility": "One full original X1 four-stage replay completed in 652.013 s on two native CPU cores (R7 original result); 3600-second window, 3300-second minimum and 90-second cleanup reserve. Later source or placement may vary.",
+  "gib": 64,
+  "id": "codex-ni-kpf18-r11-full-bridge-v2-20261101",
+  "items": 1,
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-kpf18-cpu-repair-20261101/r11/job.py",
+    "sha256": "18075a685d38be87313fd18a69ef27748ff00ca29ded465911e30689febf9b15"
+  },
+  "job_floor_gib": 150,
+  "keep": [
+    "*.sh",
+    "*.py",
+    "*.json",
+    "*.sha256",
+    "*.log",
+    "*.out",
+    "qualification/*.json",
+    "runs/*/*.json",
+    "runs/*/*.log",
+    "runs/*/bridge/*.json",
+    "runs/*/bridge/*.txt"
+  ],
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-kpf18-cpu-repair-20261101/r11/launch.sh",
+    "sha256": "3254e7f5b59c3f99099c5a39d99421ab6c1ba0cdaa0902f950377fefd690d60e"
+  },
+  "log_consumer": "/mnt/raid0/llm/tmp/codex-ni-kpf18-cpu-repair-20261101/r11/log_consumer.py",
+  "min_window_s": 3300,
+  "owner": "codex-ni",
+  "ports": [],
+  "priority_rank": 3,
+  "production": true,
+  "production_recipe": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-kpf18-cpu-repair-20261101/r11/REQUEST.json",
+    "sha256": "05645f4a341fa849e5ce64ef8360dbe6396cd01180ca90c92c3a0c1d3cf84446"
+  },
+  "qual_fixture": {
+    "items": 2,
+    "path": "/mnt/raid0/llm/tmp/codex-ni-kpf18-cpu-repair-20261101/r11/QUAL-FIXTURE.json",
+    "sha256": "4bde7b68988e72be8cb0ba9aec30913e7769ead36c920f916584f5fda7e7feca"
+  },
+  "qual_timeout_s": 600,
+  "qualification": {
+    "receipt": "/mnt/raid0/llm/tmp/codex-ni-kpf18-cpu-repair-20261101/r11/qualification/QUAL-codex-ni-kpf18-r11-full-bridge-v2-20261101.json"
+  },
+  "qualification_status": "PUBLISH-PENDING-QUAL",
+  "rate_basis": {
+    "evidence": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-kpf18-cpu-repair-20261101/r11/RATE.json",
+      "sha256": "d91ec6e970537c467627c4d0335e11d589e1851228797a5e2f59458e7aeb45fc"
+    },
+    "production_threads": 2,
+    "scope": "command-calibrated-production",
+    "work_units_per_s": 0.001533711751146066
+  },
+  "raw_globs": "runs/*/worker.log,runs/*/bridge/exception.txt",
+  "regions": "any-cpu-quarter",
+  "request_manifest_sha256": "05645f4a341fa849e5ce64ef8360dbe6396cd01180ca90c92c3a0c1d3cf84446",
+  "requires_tools": [
+    "/usr/bin/python3",
+    "/usr/bin/taskset"
+  ],
+  "result_path": "/mnt/raid0/llm/tmp/codex-ni-kpf18-cpu-repair-20261101/r11/COMPLETE.json",
+  "retention_v2": 1,
+  "schema": "epyc.ready.v2",
+  "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-kpf18-cpu-repair-20261101/r11",
+  "shared_state": [],
+  "source_manifest": "/mnt/raid0/llm/tmp/codex-ni-kpf18-cpu-repair-20261101/r11/SOURCE.sha256",
+  "window_s": 3600,
+  "workload_kind": "command"
+}

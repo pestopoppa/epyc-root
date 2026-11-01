@@ -1,6 +1,6 @@
-1. Source base: `origin/main` at `b407d6a704a034a8ac1dba8db16902d57352bc24`; keeper source SHA-256 `c95312351c9c0810445ab201555c3d444ac4738e7e5f4d62da8c3065d14455d2`.
-2. Apply `keeper-v2.patch` to root `scripts/coordination/keeper_qual_gate.py`; main commits and pushes source and this packet.
-3. Reviewed package SHA-256: `71ba671971dcc6365efb11c3ac0d4e9a7283f7b41cda19135d8d3d927d62e353`.
+1. Controller source is already published in ROOT `fceacc1ce5e69d7dece663b61da51c8f7dfe35ad`; the final reviewed package/evidence record is in ROOT `b1d26902a173bbe2facc4313ea7a677a86694209`. Reviewed package SHA-256: `71ba671971dcc6365efb11c3ac0d4e9a7283f7b41cda19135d8d3d927d62e353`.
+2. `keeper-v2.patch` is the historical incremental diff against the `fceacc1` controller source. Do not apply it to current ROOT main; the controller change is already present.
+3. Install using the supplied full reviewed controller and installer files. The packet patch is an audit artifact, not an installation step.
 4. ws58 dry-run: `python3 install_for_ws58.py`; compare `install-dryrun.json` before the owner boundary.
 5. ws58 install: `WS58_OWNER_BOUNDARY=1 WS58_REVIEWED_PACKAGE_SHA256=71ba671971dcc6365efb11c3ac0d4e9a7283f7b41cda19135d8d3d927d62e353 python3 install_for_ws58.py --apply`.
 6. ws58 alone restarts its captured keeper PID at its boundary; grant guard and keeper then use qual-v2 controller.

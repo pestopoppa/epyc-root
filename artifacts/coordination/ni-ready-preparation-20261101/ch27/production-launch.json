@@ -1,0 +1,428 @@
+{
+ "absent_environment": [],
+ "argv": [
+  "taskset",
+  "-c",
+  "0-95",
+  "numactl",
+  "--interleave=all",
+  "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/llama-server",
+  "-m",
+  "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+  "-np",
+  "1",
+  "-c",
+  "8192",
+  "-t",
+  "48",
+  "-tb",
+  "48",
+  "-b",
+  "2048",
+  "-ub",
+  "512",
+  "-ctk",
+  "f16",
+  "-ctv",
+  "f16",
+  "--device",
+  "none",
+  "-ngl",
+  "0",
+  "-fa",
+  "on",
+  "--host",
+  "127.0.0.1",
+  "--port",
+  "18651",
+  "--metrics",
+  "--slots",
+  "-md",
+  "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf",
+  "-ngld",
+  "0",
+  "--spec-type",
+  "draft-mtp",
+  "--spec-draft-n-max",
+  "4",
+  "--no-kv-unified",
+  "--device-draft",
+  "none",
+  "--draft-p-min",
+  "0.5",
+  "--no-mmap",
+  "--no-webui"
+ ],
+ "backend": "cpu",
+ "build_dir": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5",
+ "capability": {
+  "backend": "cpu",
+  "contention": "unproven",
+  "cpu_placement": "unproven",
+  "gpu_residency": "not_applicable",
+  "reasons": [],
+  "schema": "epyc.autokernel.recipe_capability.v1",
+  "speculation": "external_draft",
+  "supported": true,
+  "witnesses": [
+   {
+    "expected": "0",
+    "field": "environ:GGML_FA_SPLIT_KV",
+    "key": "GGML_FA_SPLIT_KV",
+    "kind": "process_environ",
+    "reason": null,
+    "status": "declared"
+   },
+   {
+    "expected": "1",
+    "field": "environ:GGML_FUSED_DECODE_OFF",
+    "key": "GGML_FUSED_DECODE_OFF",
+    "kind": "process_environ",
+    "reason": null,
+    "status": "declared"
+   },
+   {
+    "expected": "1",
+    "field": "environ:GGML_IQK",
+    "key": "GGML_IQK",
+    "kind": "process_environ",
+    "reason": null,
+    "status": "declared"
+   },
+   {
+    "expected": "1",
+    "field": "environ:GGML_NOHUGEPAGE_PROCESS",
+    "key": "GGML_NOHUGEPAGE_PROCESS",
+    "kind": "process_environ",
+    "reason": null,
+    "status": "declared"
+   },
+   {
+    "expected": "false",
+    "field": "environ:OMP_DYNAMIC",
+    "key": "OMP_DYNAMIC",
+    "kind": "process_environ",
+    "reason": null,
+    "status": "declared"
+   },
+   {
+    "expected": "cores",
+    "field": "environ:OMP_PLACES",
+    "key": "OMP_PLACES",
+    "kind": "process_environ",
+    "reason": null,
+    "status": "declared"
+   },
+   {
+    "expected": "spread",
+    "field": "environ:OMP_PROC_BIND",
+    "key": "OMP_PROC_BIND",
+    "kind": "process_environ",
+    "reason": null,
+    "status": "declared"
+   },
+   {
+    "expected": "active",
+    "field": "environ:OMP_WAIT_POLICY",
+    "key": "OMP_WAIT_POLICY",
+    "kind": "process_environ",
+    "reason": null,
+    "status": "declared"
+   }
+  ]
+ },
+ "command_argv": [
+  "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/llama-server",
+  "-m",
+  "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+  "-np",
+  "1",
+  "-c",
+  "8192",
+  "-t",
+  "48",
+  "-tb",
+  "48",
+  "-b",
+  "2048",
+  "-ub",
+  "512",
+  "-ctk",
+  "f16",
+  "-ctv",
+  "f16",
+  "--device",
+  "none",
+  "-ngl",
+  "0",
+  "-fa",
+  "on",
+  "--host",
+  "127.0.0.1",
+  "--port",
+  "18651",
+  "--metrics",
+  "--slots",
+  "-md",
+  "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf",
+  "-ngld",
+  "0",
+  "--spec-type",
+  "draft-mtp",
+  "--spec-draft-n-max",
+  "4",
+  "--no-kv-unified",
+  "--device-draft",
+  "none",
+  "--draft-p-min",
+  "0.5",
+  "--no-mmap",
+  "--no-webui"
+ ],
+ "drafter": {
+  "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf",
+  "role": "drafter",
+  "schema": "epyc.autokernel.launch_artifact.v1",
+  "sha256": "5ff54097406a905cf3a724c709124ceb0e3e10235ee862298969e91c96fa96e6"
+ },
+ "dsos": [
+  {
+   "path": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libggml-base.so",
+   "role": "dso",
+   "schema": "epyc.autokernel.launch_artifact.v1",
+   "sha256": "7d99abc4a3fe58112c324aa0b5ebd3b2293f24b1e923d5f72bd626fe58528b84"
+  },
+  {
+   "path": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libggml-base.so.0",
+   "role": "dso",
+   "schema": "epyc.autokernel.launch_artifact.v1",
+   "sha256": "7d99abc4a3fe58112c324aa0b5ebd3b2293f24b1e923d5f72bd626fe58528b84"
+  },
+  {
+   "path": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libggml-cpu.so",
+   "role": "dso",
+   "schema": "epyc.autokernel.launch_artifact.v1",
+   "sha256": "27c7e27656fb413028c8c9ba16da44267ecaf20dc7dfdcc177c0e90bced25c3f"
+  },
+  {
+   "path": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libggml-cpu.so.0",
+   "role": "dso",
+   "schema": "epyc.autokernel.launch_artifact.v1",
+   "sha256": "27c7e27656fb413028c8c9ba16da44267ecaf20dc7dfdcc177c0e90bced25c3f"
+  },
+  {
+   "path": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libggml.so",
+   "role": "dso",
+   "schema": "epyc.autokernel.launch_artifact.v1",
+   "sha256": "838262cb0bbd3f192ac7a4d036e567fce2b7bcbacbc7c322cfa9cd46ae8d951a"
+  },
+  {
+   "path": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libggml.so.0",
+   "role": "dso",
+   "schema": "epyc.autokernel.launch_artifact.v1",
+   "sha256": "838262cb0bbd3f192ac7a4d036e567fce2b7bcbacbc7c322cfa9cd46ae8d951a"
+  },
+  {
+   "path": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libllama-common.so",
+   "role": "dso",
+   "schema": "epyc.autokernel.launch_artifact.v1",
+   "sha256": "e0ed8e7ee7641977ce60f8dc03ee1abc026159c647badae7495cf5b6253e68fe"
+  },
+  {
+   "path": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libllama-common.so.0",
+   "role": "dso",
+   "schema": "epyc.autokernel.launch_artifact.v1",
+   "sha256": "e0ed8e7ee7641977ce60f8dc03ee1abc026159c647badae7495cf5b6253e68fe"
+  },
+  {
+   "path": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libllama-server-impl.so",
+   "role": "dso",
+   "schema": "epyc.autokernel.launch_artifact.v1",
+   "sha256": "9df976d767eedbb8f2b0aead55db99e2ce58145b8b6a5fb333faef9a8060f8dc"
+  },
+  {
+   "path": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libllama.so",
+   "role": "dso",
+   "schema": "epyc.autokernel.launch_artifact.v1",
+   "sha256": "ec45054f0f729d84c776a125d7fdd75457f66256f555c28851fa7ad318319081"
+  },
+  {
+   "path": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libllama.so.0",
+   "role": "dso",
+   "schema": "epyc.autokernel.launch_artifact.v1",
+   "sha256": "ec45054f0f729d84c776a125d7fdd75457f66256f555c28851fa7ad318319081"
+  },
+  {
+   "path": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libmtmd.so",
+   "role": "dso",
+   "schema": "epyc.autokernel.launch_artifact.v1",
+   "sha256": "8f19c153fa7785bb78a6b037016b014a467cbd2c8d55704bfe1750cc5f7a4f4f"
+  },
+  {
+   "path": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libmtmd.so.0",
+   "role": "dso",
+   "schema": "epyc.autokernel.launch_artifact.v1",
+   "sha256": "8f19c153fa7785bb78a6b037016b014a467cbd2c8d55704bfe1750cc5f7a4f4f"
+  }
+ ],
+ "environment_policy": {
+  "allowed_inherit_keys": [],
+  "measurement_keys": [
+   "GGML_FA_SPLIT_KV",
+   "GGML_FUSED_DECODE_OFF",
+   "GGML_IQK",
+   "GGML_NOHUGEPAGE_PROCESS",
+   "OMP_DYNAMIC",
+   "OMP_PLACES",
+   "OMP_PROC_BIND",
+   "OMP_WAIT_POLICY"
+  ],
+  "schema": "epyc.autokernel.environment_policy.v1",
+  "version": "q38fn-cpu-t48-mtp-d4-v1",
+  "witnesses": {
+   "GGML_FA_SPLIT_KV": "process_environ",
+   "GGML_FUSED_DECODE_OFF": "process_environ",
+   "GGML_IQK": "process_environ",
+   "GGML_NOHUGEPAGE_PROCESS": "process_environ",
+   "OMP_DYNAMIC": "process_environ",
+   "OMP_PLACES": "process_environ",
+   "OMP_PROC_BIND": "process_environ",
+   "OMP_WAIT_POLICY": "process_environ"
+  }
+ },
+ "executable": {
+  "path": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/llama-server",
+  "role": "executable",
+  "schema": "epyc.autokernel.launch_artifact.v1",
+  "sha256": "bfab92dffa31ad24f65ca53ec082ef8f1751b54d56efdc0f106bef797a72ee2e"
+ },
+ "execution_digest": "1ea88a68ea5702fd6bc950a830c7a5ef2e73b9cd70e7d1b62162a6bcc185ad0f",
+ "launch_contract": "orchestrator-production/v1",
+ "launch_env": {
+  "GGML_FA_SPLIT_KV": "0",
+  "GGML_FUSED_DECODE_OFF": "1",
+  "GGML_IQK": "1",
+  "GGML_NOHUGEPAGE_PROCESS": "1",
+  "LD_LIBRARY_PATH": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin",
+  "OMP_DYNAMIC": "false",
+  "OMP_PLACES": "cores",
+  "OMP_PROC_BIND": "spread",
+  "OMP_WAIT_POLICY": "active"
+ },
+ "model": {
+  "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+  "role": "model",
+  "schema": "epyc.autokernel.launch_artifact.v1",
+  "sha256": "5ce89370720f8bf90890f439361282104c1aa1482d4013bb9a50923e758e71a4"
+ },
+ "port": 18651,
+ "provenance": {
+  "build": "kernel-store image cpu-20261024-c72ec82f5-c5 at c72ec82f5 (native-openmp-gcc15-cpu-v1; SHA256SUMS + PROVENANCE.md in the image), IDENTITY.json receipt in the bundle",
+  "export_sha256": "902f634e2d82cef5df65bab9fec7f324ddb2d3d5da7f6a8b41734859c9bba113",
+  "instance_mode": "full",
+  "recipe_origin": "qwen38-flash-next-cpu-mtp rev 2026-10-20 cpu-decode, MTP d4 p0.5, 48 threads, UD-IQ4_XS (served file)",
+  "source:branch": "codex/ch27-c5-20261025",
+  "source:head": "c72ec82f5417bb2937310326120f149b665e8400"
+ },
+ "readback_expectations": [],
+ "relevant_environment": {
+  "GGML_FA_SPLIT_KV": {
+   "state": "value",
+   "value": "0"
+  },
+  "GGML_FUSED_DECODE_OFF": {
+   "state": "value",
+   "value": "1"
+  },
+  "GGML_IQK": {
+   "state": "value",
+   "value": "1"
+  },
+  "GGML_NOHUGEPAGE_PROCESS": {
+   "state": "value",
+   "value": "1"
+  },
+  "OMP_DYNAMIC": {
+   "state": "value",
+   "value": "false"
+  },
+  "OMP_PLACES": {
+   "state": "value",
+   "value": "cores"
+  },
+  "OMP_PROC_BIND": {
+   "state": "value",
+   "value": "spread"
+  },
+  "OMP_WAIT_POLICY": {
+   "state": "value",
+   "value": "active"
+  }
+ },
+ "runtime_binary_dir": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin",
+ "runtime_ld_paths": [
+  "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin"
+ ],
+ "schema": "epyc.autokernel.canonical_launch.v1",
+ "snapshot_digest": "fbebd2ac7f7ee251d185377c2620f203cc25143fd7b8ce50f5026a508e2f85f1",
+ "template": {
+  "batch": 2048,
+  "cpu_list": "0-95",
+  "ctk": "f16",
+  "ctv": "f16",
+  "ctx": 8192,
+  "device": "none",
+  "env": {
+   "GGML_FA_SPLIT_KV": "0",
+   "GGML_FUSED_DECODE_OFF": "1",
+   "GGML_IQK": "1",
+   "GGML_NOHUGEPAGE_PROCESS": "1",
+   "OMP_DYNAMIC": "false",
+   "OMP_PLACES": "cores",
+   "OMP_PROC_BIND": "spread",
+   "OMP_WAIT_POLICY": "active"
+  },
+  "env_readback": [],
+  "extra_flags": [
+   "--device-draft",
+   "none",
+   "--draft-p-min",
+   "0.5"
+  ],
+  "fa": "on",
+  "kv_unified": false,
+  "metric": "aggregate_tok_s",
+  "model": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+  "n_predict": 256,
+  "name": "q38fn-802bf9ac6-cpu-t48-mtp-d4",
+  "ngl": 0,
+  "np": 1,
+  "schema": "epyc.autokernel.canonical_recipe.v1",
+  "spec_decode": {
+   "draft_n_max": 4,
+   "drafter": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf",
+   "ngld": 0,
+   "type": "draft-mtp"
+  },
+  "temperature": 0.0,
+  "threads": 48,
+  "top_k": 1,
+  "top_p": 0.95,
+  "ubatch": 512
+ },
+ "template_hash": "cff9ad900700c8057a2783946e5e5dc5ed718818728dd1bdbdfb9e0199b16fb8",
+ "topology_prefix": [
+  "taskset",
+  "-c",
+  "0-95",
+  "numactl",
+  "--interleave=all"
+ ],
+ "workload": {
+  "metric": "aggregate_tok_s",
+  "n_predict": 256,
+  "temperature": 0.0,
+  "top_k": 1,
+  "top_p": 0.95
+ }
+}

@@ -1,0 +1,26 @@
+{
+  "identity_method": "exact file size plus first and last 64 MiB SHA-256; full hash is retained historical metadata only and intentionally not recomputed during keeper qualification",
+  "models": [
+    {
+      "edge_block_bytes": 67108864,
+      "first_edge_sha256": "82496310a88af24bcecac133737e30ac723fb6346a3757aeae3620b3e74900fc",
+      "known_full_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+      "known_full_sha256_source": "retained RUNTIME-PINS.json in failed r2 bundle; metadata only, not recomputed during v2 prep",
+      "last_edge_sha256": "ff2d3c1de7bd6659549fdc83687f4e4a9e4514dede54121bce4a15b3c0b909ee",
+      "mtime_ns": 1786727071030792493,
+      "path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "size_bytes": 29047086048
+    },
+    {
+      "edge_block_bytes": 67108864,
+      "first_edge_sha256": "f3628003ac6423b17b8eaf7a89517b7193bfc8cbfefe53a7ad40e4ec8251fae0",
+      "known_full_sha256": "7f1c9a31a6ed40044c69f6508b50fd63b87abd8e1fb7fe4290303df549153751",
+      "known_full_sha256_source": "retained RUNTIME-PINS.json in failed r2 bundle; metadata only, not recomputed during v2 prep",
+      "last_edge_sha256": "8e4b1f51df1eb5287093f5d46970c495d75bd45c9ff92e8d7418c65bd38bb88f",
+      "mtime_ns": 1787172135435655139,
+      "path": "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+      "size_bytes": 2056414752
+    }
+  ],
+  "schema": "epyc.model-identity.edge64m.v1"
+}

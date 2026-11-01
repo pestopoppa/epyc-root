@@ -1,0 +1,14 @@
+{
+  "base": "6d04476422993bcd06d25250c67340cc64c87f03",
+  "old_head": "b1d26902a173bbe2facc4313ea7a677a86694209",
+  "materialized": [
+    "handoffs/active/autokernel-champion-aggregate.md",
+    "handoffs/active/conversation-stack.md",
+    "handoffs/active/dflash2-block-drafter-experimental-build.md",
+    "handoffs/active/master-handoff-index.md",
+    "handoffs/active/non-inference-backlog.md",
+    "handoffs/active/yarn-context-extension-research.md"
+  ],
+  "backup": "/mnt/raid0/llm/tmp/codex-ni-full-wrap-20261101/final-source-sync-20261101T143408Z",
+  "staging_preserved_empty": true
+}

@@ -1,0 +1,7 @@
+# Retained failure record
+
+The UTC-Z full-entry parser test passed its actual parser and 66-request dispatch controls, and the main reviewer accepted that repair. The first attempt at the new process-group test failed 1/8 because pytest had an unrelated `kpf18_gate` module cached; a direct import reused that stale module without `captured_process_popen`. A second attempt importing through `pb_hol_1` hit the same module cache. The retained log is `test-run-first-import-collision-failed.log`. The repaired test uses a fresh Python child to import the pinned PB-HOL helper in isolation, then verifies the actual child PID inherits the process group and is drained. The succeeding bounded run is separately recorded in `test-run.log` and `TEST-RESOURCE-RECEIPT.txt`.
+
+The original failed r2 attempt and its false controlled-Sampler receipt remain untouched. This successor has no keeper qualification receipt and is not READY or qualified.
+
+A later first run of the normal/qualification claim mapping controls failed 2/11 because the test invoked the canonical launcher's fingerprint-only mode without the required manifest/qualifier environment. The trace showed the intended normalized `--claim-cpus 184-191` and qualification `--claim-cpus 84-85`, then the engine correctly refused missing fingerprint plumbing. That harness failure is retained at `test-run-claim-mapping-failed.log`; the test now supplies the draft manifest and installed canonical qualifier paths before rerunning.
