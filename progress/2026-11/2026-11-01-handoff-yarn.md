@@ -26,3 +26,13 @@ The top Jet-Long ubatch task retains the prior CRITICAL impact warning for editi
 ## S2 v32 terminal filing
 
 The S2 row ended rc75 at 17:44:57Z on November 1. Its actual host results and final launcher accounting show 2 completed A0s, 5 unknown A0s, 23 unexposed A0s, 30 unexposed A1s and zero matching pairs under the original 26-eligible S2 rule and 120-pair campaign denominator. The new completed A0 `617060025` scored 0; `617060024` adds one unknown to the prior four. The worker reported a deadline, but the outer grant listed 22:11Z. Host result, worker, exposure snapshot and end marker are retained in `artifacts/compute/yarn-s2-v32-20261101/`; the October 31 end line quoted by the dispatcher belongs to an earlier window. Preserve all unknowns and require completed matching A0 before A1. A new safe continuation requires source/ID and v15 qualification plus verified custody and drain.
+
+
+## E1-MEM candidate entry audit
+
+A read-only entry audit exposed a critical gap in the earlier request rebind: candidate `launch.sh` still binds the historical packet root, historical row ID and v14 engine. It invokes the old packet's `run.py`, so the new candidate runner digest is not an executable routing proof; the old runner currently differs from both the candidate and historical recorded hashes. The v15 engine also removes the legacy WS58 qualification coupling required by this candidate. Three literal-binding negative controls reject the candidate-root, fresh-ID and v15 expectations; the audit was independently rerun and its JSON reproduced exactly. Evidence and script are in `artifacts/compute/yarn-e1-entry-routing-20261101/`. No launcher or inference ran. A fresh-ID candidate requires launcher/job changes, dependency repinning and end-to-end routing/cutoff controls before publication.
+
+
+## S2 successor preparation audit
+
+Offline snapshot and read-only host cohort fold both identify 23 unexposed A0s and two A1s whose matching A0 completed, with all five unknown A0s excluded and A0 selected first. The old entry binds v32 ID, stop path and source manifest; a successor needs a fresh source-bound v15 bundle and live custody/inventory proof. The keeper dry-run must observe an actual new result; default 900 seconds is much shorter than prior 27046/29089-second native A0 calls. Because first-output polling can race the start of another item, enforce and validate a one-item stop boundary. No new launcher, inference or READY was published. Source/eligibility notes: `artifacts/compute/yarn-s2-v15-prep-20261101/README.md`.

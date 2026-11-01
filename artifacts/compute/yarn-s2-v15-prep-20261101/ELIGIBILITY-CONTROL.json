@@ -1,0 +1,43 @@
+{
+  "a0_unexposed": [
+    "oolong_synth@131072#617060026",
+    "oolong_synth@131072#617060027",
+    "oolong_synth@131072#617060028",
+    "oolong_synth@131072#617060029",
+    "oolong_synth@131072#617060030",
+    "oolong_synth@131072#617060032",
+    "oolong_synth@131072#617060034",
+    "oolong_synth@131072#917090021",
+    "oolong_synth@131072#917090022",
+    "oolong_synth@131072#917090023",
+    "oolong_synth@131072#917090024",
+    "oolong_synth@131072#917090025",
+    "oolong_synth@131072#917090026",
+    "oolong_synth@131072#917090027",
+    "oolong_synth@131072#917090028",
+    "oolong_synth@131072#917090029",
+    "oolong_synth@131072#917090030",
+    "oolong_synth@131072#917090031",
+    "oolong_synth@131072#917090032",
+    "oolong_synth@131072#917090033",
+    "oolong_synth@131072#917090034",
+    "oolong_synth@131072#917090035",
+    "oolong_synth@131072#917090036"
+  ],
+  "a1_eligible": [
+    "oolong_synth@131072#617060023",
+    "oolong_synth@131072#617060025"
+  ],
+  "count_a0": 23,
+  "count_a1": 2,
+  "note": "offline fold of committed terminal accounting; production must rederive from live original exposure and response evidence before any launch",
+  "prior_candidate_total": 26,
+  "total_original": 30,
+  "unknown_excluded": [
+    "oolong_synth@131072#617060021",
+    "oolong_synth@131072#617060022",
+    "oolong_synth@131072#617060024",
+    "oolong_synth@131072#617060031",
+    "oolong_synth@131072#617060033"
+  ]
+}

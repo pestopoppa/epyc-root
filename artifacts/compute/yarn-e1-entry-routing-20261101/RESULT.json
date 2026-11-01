@@ -1,0 +1,33 @@
+{
+  "candidate": "/mnt/raid0/llm/tmp/yarn-e1-proof-handoff-20261101/src",
+  "candidate_runner_sha256": "8bc1a7f001c661675d30e8d37e00803ab232b7534d3adf9023ddeb1e87a729ed",
+  "candidate_source_manifest_covers_candidate_files": true,
+  "declared_launcher_root": "/mnt/raid0/llm/tmp/codex-ni-inf12-yarne1-repair-20261101/yarn-packet-r2",
+  "job_invokes_old_root": true,
+  "launch_sha256": "7dc274c4c3852edb650cd162fe3a31db362db378474fdbdac7ad823159ef0314",
+  "negative_controls": [
+    {
+      "control": "wrong candidate directory",
+      "reason": "D: expected /mnt/raid0/llm/tmp/yarn-e1-proof-handoff-20261101/src, got /mnt/raid0/llm/tmp/codex-ni-inf12-yarne1-repair-20261101/yarn-packet-r2",
+      "rejected": true
+    },
+    {
+      "control": "fresh row identity",
+      "reason": "ID: expected codex-ni-yarn-e1-mem-phase-r2-20261101-fresh, got codex-ni-yarn-e1-mem-phase-r2-20261101",
+      "rejected": true
+    },
+    {
+      "control": "v15 engine",
+      "reason": "ENGINE: expected /mnt/raid0/llm/worktrees/mains/handoff-yarn/scripts/coordination/rowflow/filler_run15.sh, got /mnt/raid0/llm/tmp/codex-ni-hard-qual-gate-20261101/src/scripts/coordination/filler_run14.sh",
+      "rejected": true
+    }
+  ],
+  "old_engine": "/mnt/raid0/llm/tmp/codex-ni-hard-qual-gate-20261101/src/scripts/coordination/filler_run14.sh",
+  "old_engine_sha256": "6fe168333738d15e5988d5af42e2b4c348194d722bac11c32368183ae89cd3ef",
+  "old_row_id": "codex-ni-yarn-e1-mem-phase-r2-20261101",
+  "old_runner_sha256": "b56be101fb3923f64cb2c4526414fccdf5382f7595c743899fbd2ed896b15c69",
+  "scope": "static source routing and negative controls only; no launch, inference, or qualification",
+  "v15_engine": "/mnt/raid0/llm/worktrees/mains/handoff-yarn/scripts/coordination/rowflow/filler_run15.sh",
+  "v15_engine_sha256": "257a64709a409a6cdab48d9b3d1a605b7165f3be5afbf1954e9efd51cf539bbb",
+  "v15_native_contract_differs_from_legacy_ws58_qual": true
+}
