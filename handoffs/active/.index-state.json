@@ -26,9 +26,9 @@
     },
     "routing-and-optimization-index.md": {
       "blocked": 17,
-      "handoffs": 53,
+      "handoffs": 54,
       "oldest_advance": "2026-07-29",
-      "open": 655
+      "open": 650
     },
     "user-facing-harness-index.md": {
       "blocked": 17,
@@ -502,6 +502,22 @@
       "row_id": "RTG-06",
       "state": "active",
       "total": 8
+    },
+    "churn-pipeline.md": {
+      "blocked": 0,
+      "closed": 5,
+      "guarded": 0,
+      "last_advanced": null,
+      "open": 0,
+      "owner_index": "routing-and-optimization-index.md",
+      "prune": {
+        "blocker": null,
+        "candidate": true,
+        "evidence": null
+      },
+      "row_id": "RTG-62",
+      "state": "active",
+      "total": 5
     },
     "colbert-reranker-web-research.md": {
       "blocked": 1,
@@ -2460,7 +2476,7 @@
       "closed": 170,
       "guarded": 0,
       "last_advanced": "2026-11-01",
-      "open": 42,
+      "open": 37,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2469,7 +2485,7 @@
       },
       "row_id": "RTG-34",
       "state": "active",
-      "total": 212
+      "total": 207
     },
     "shape-keyed-contention-gating.md": {
       "blocked": 0,
@@ -4241,7 +4257,7 @@
       "id": "RTG-34",
       "index": "routing-and-optimization-index.md",
       "line": 43,
-      "next_action": "AIR-6 \u2014 deploy exact guarded source and require ordinary-work refusal; then DSH-2 run-end ack-by-receipt",
+      "next_action": "AIR-6 \u2014 deploy exact guarded source and require ordinary-work refusal; then resume live canaries",
       "track": "session bus thin dispatcher"
     },
     "RTG-35": {
@@ -4473,6 +4489,15 @@
       "line": 65,
       "next_action": "Repair CI report compatibility and runtime isolation, then rerun baseline",
       "track": "multi-repo refactoring"
+    },
+    "RTG-62": {
+      "deps": [],
+      "handoff": "churn-pipeline.md",
+      "id": "RTG-62",
+      "index": "routing-and-optimization-index.md",
+      "line": 66,
+      "next_action": "CAF-1 \u2014 no-poll resume (deletion-first line first); then CAF-6 run-end dedupe",
+      "track": "churn pipeline"
     },
     "UFH-01": {
       "deps": [

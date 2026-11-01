@@ -45,10 +45,9 @@ product built on DeepSeek Harness. Our keeper, grants and inference lanes have n
 the churn pipeline. What it does contribute is four reliability contracts that our dispatcher lacks. One of them (DSH-2) exposes a
 live lost-event bug.
 
-## Derived-actionables ledger (proposed. Owner: `handoffs/active/session-bus-thin-dispatcher.md`, RTG-34)
+## Derived-actionables ledger (INTEGRATED 2026-11-01: operator approved "All four" + DSH-5; filed and ticked in `handoffs/active/churn-pipeline.md` (RTG-62), ROOT `7259bbdc8`)
 
-Merging `scripts/coordination/**` also needs operator acknowledgement under ratified D9 (master index OP-D9 row). Nothing below has
-been written to a handoff.
+Merging `scripts/coordination/**` was acknowledged by the operator under ratified D9 on 2026-11-01. Disposition: **integrated** — every row below is implemented and ticked in `handoffs/active/churn-pipeline.md`.
 
 | ID | Proposed task line | Replaces / improves | Posture |
 |---|---|---|---|
