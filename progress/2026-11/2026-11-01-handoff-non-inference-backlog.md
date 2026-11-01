@@ -7,3 +7,7 @@ Synced lane with origin/main. The generated backlog classifies NIB2-18 as an inf
 ## 23:40Z — Recover triage checkpoint after concurrent origin update
 
 The first wrap-up committed the triage checkpoint but its push lost a race with another origin/main update. This wrap-up merges that update and republishes the checkpoint; delegated reviews and their registered completion events remain as recorded above.
+
+## 23:50Z — Review DS-6 gate and NIB2-77 custody findings
+
+Consumed ds6.md and nib77.md review events. DS-6 remains parked: July DS-E1 readiness did not prove a material static-prewarm shortfall; a suggested comparison lacks a concrete launcher, counterfactual and materiality rule, so no speculative row was published. NIB2-77 remains open: the 2026-10-21 custody package retains 35 exact lane paths pending accountable stewardship, and the review found no completed acceptance cleanup receipt. Delegated bounded follow-ups to specify a genuinely runnable DS-6 row, investigate evidence for individual lane custody, and design the LOOP-32 reservation alarm. Registered ds6_spec, nib77_custody and loop32_design completion events in handoff-sessions/non-inference-backlog/awaiting; review their non-inference-backlog-review/*.md artifacts at the next boundary. Previous loop13 review remains separately registered.
