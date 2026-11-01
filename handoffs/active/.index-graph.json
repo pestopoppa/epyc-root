@@ -3939,7 +3939,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-01T15:51:53Z",
+  "generated_at": "2026-11-01T16:08:25Z",
   "nodes": [
     {
       "age_days": 94,
@@ -6401,7 +6401,7 @@
         "INF-06",
         "INF-50"
       ],
-      "closed": 27,
+      "closed": 28,
       "domain": "inference-research",
       "handoff": "dflash2-block-drafter-experimental-build.md",
       "id": "INF-62",
@@ -6873,7 +6873,7 @@
       "id": "INF-79",
       "last_advanced": "2026-11-01",
       "next_action": "Qualify the repaired STT5 offline scorer, retain filed WER, then finish STT3 acceptance and STT7 predictions",
-      "open": 32,
+      "open": 33,
       "priority": 0.948,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-parakeet-observed-canary-20261027: harness fix",
