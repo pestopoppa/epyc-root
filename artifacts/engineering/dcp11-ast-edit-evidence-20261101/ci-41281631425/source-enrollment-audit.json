@@ -1,0 +1,8 @@
+{
+  "grading_ladder_added": false,
+  "new_measurement_producer": false,
+  "reason": "DCP-11 changes delegation context packaging and its manifest; it does not emit a new measurement record or add a new evidentiary source class.",
+  "review": "No new source enrollment or grading ladder was introduced. The hosted test result is code validation evidence, not a project measurement claim.",
+  "schema": "ni.dcp11.source-enrollment-audit.v1",
+  "vidya_adapter_row_required": false
+}
