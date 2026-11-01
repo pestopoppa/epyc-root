@@ -1,0 +1,3 @@
+# 2026-11-01 — AutoKernel all devices handoff
+
+Reviewed the top actionable AKX-ALL-8 floor successor. R4's rc127 failure and receipt were already filed; no floor was measured. Prepared a review-only incremental-observation patch and documented the v3 output and lock-contract gaps in `artifacts/compute/akxall8-v3-successor-prep-20261101/README.md`. The patch applies and compiles against the identified R4 owned source; no inference, keeper qualification, or publication occurred. The original 24+24-pair criterion, independent lock witness, and live production-recipe comparison remain open. [no-belief: preparation and source inspection only]

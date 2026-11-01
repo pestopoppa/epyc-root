@@ -1,0 +1,27 @@
+--- a/serving.py
++++ b/serving.py
+@@ -1988,8 +1988,22 @@
+             for arm in order:
+                 if should_stop():
+                     raise ActorStopped("stop requested before serving-floor calibration launch")
+-                values[arm].append(_measure_once(recipe, build_dir, port,
+-                                   evidence=windows[arm], **options))
++                value = _measure_once(recipe, build_dir, port,
++                                      evidence=windows[arm], **options)
++                values[arm].append(value)
++                # Optional prospective per-process observation, never a floor verdict.
++                unit_path = os.environ.get("AKX_PROCESS_UNITS_JSONL")
++                if unit_path:
++                    import os as _os
++                    unit = {"schema": "epyc.akx.floor_process_unit.v1",
++                            "arm": arm, "value": value, "metric": recipe.metric,
++                            "recipe_hash": recipe.recipe_hash,
++                            "request_digest": request_digest(recipe, frozen_requests),
++                            "longctx": longctx is not None}
++                    with open(unit_path, "a", encoding="utf-8") as stream:
++                        stream.write(json.dumps(unit, sort_keys=True, allow_nan=False) + "\n")
++                        stream.flush()
++                        _os.fsync(stream.fileno())
+         outlier_guard = _apply_outlier_guard(recipe, build_dir, port, options,
+                                              plan, values, windows,
+                                              should_stop=should_stop)
