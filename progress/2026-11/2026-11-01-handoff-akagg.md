@@ -37,3 +37,8 @@
 - CH-32: retained reproducible first-patch conflict hunks (B1 2, C1 14, D1 16) and source contexts. This is not a minimal prerequisite or buildability result.
 - CH-18.d: verified #28957, #29231, #30629 and server follow-up #30636 upstream; #29231 and v10/C5 local guard have identical stable patch IDs. Added V11-114/115 presence and runtime gates; HIP and Voxtral checks remain unrun.
 - Published `akagg-ch31-rowexact-c5-20261101`: C5 manifest-pinned rowexact, Qwen3.5-0.8B model, non-vacuous one-sequence/two-token control and four four-sequence rotations. Separate dryrun/full, per-case native completion records and stop checks. Static parser fixtures, input checks, shell/Python syntax pass. Result is diagnostic only, cannot establish Q38FN causality. No compute launched.
+
+- Closed CH-18.b’s requested upstream check and conservative shortfall proposal; retained a separate open CH-18.b-IMPLEMENT task for coverage proof, implementation and runtime validation. The proposal is not a performance/correctness verdict.
+
+- CH-31 row retention repaired: republished own unchanged launcher with raw `*.out` and SHA manifests kept, in addition to defaults, and refreshed the Git snapshot. No qualification or inference launched.
+- CH-20.1 stale in-progress status corrected: recorded compare ended rc143 with FileNotFoundError and only three individual launches, no five-pair result; original 2.862% dd3 floor is historical. Retained raw records, box stays open.

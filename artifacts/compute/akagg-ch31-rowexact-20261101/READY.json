@@ -18,6 +18,9 @@
   "**/*.tsv",
   "**/*.sh",
   "**/*.py",
+  "**/*.out",
+  "**/*.sha256",
+  "INPUT.sha256",
   "units.jsonl"
  ],
  "lane": "cpu",
@@ -29,7 +32,7 @@
  "owner": "handoff-akagg",
  "ports": [],
  "priority_rank": 25.0,
- "published_at": "2026-11-01T21:43:41Z",
+ "published_at": "2026-11-01T21:45:31Z",
  "published_from": "/mnt/raid0/llm/tmp/akagg-ch31-rowexact-20261101/spec.json",
  "regions": "0-23",
  "result_format": "jsonl",

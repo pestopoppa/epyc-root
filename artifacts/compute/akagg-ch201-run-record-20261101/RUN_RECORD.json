@@ -1,0 +1,18 @@
+{
+ "schema": "epyc.ds41_1017_baseline.run_record.v1",
+ "finished_utc": "2026-10-22T08:43:43Z",
+ "floor_file": "/mnt/raid0/llm/tmp/ds41-1017-baseline-20261021/aa/floor-store/serving-floor.ds41-1017-mxfp4-cpu-t48-targetonly.requests-e50732d9ce365259d5bb95fe31e36995f98bcd0986dc0e48d489f99390e42f58.matched_process_v2.pairs-5.json",
+ "compare_rc": 143,
+ "predeclared": "/mnt/raid0/llm/tmp/ds41-1017-baseline-20261021/PREDECLARED.md",
+ "floor": {
+  "floor_pct": 2.862,
+  "unit": "process",
+  "n": 24,
+  "calibration_pairs": 24,
+  "comparison_pairs": 5,
+  "request_digest": "e50732d9ce365259d5bb95fe31e36995f98bcd0986dc0e48d489f99390e42f58",
+  "content_sha256": "8f2e058d7686b9f77b3b3e8eac498664c8d3148fa30cd0e35a316e172db1cf06",
+  "instrument": "matched_process_v2"
+ },
+ "compare_error": "FileNotFoundError(2, 'No such file or directory')"
+}
