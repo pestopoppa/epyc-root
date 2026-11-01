@@ -1,0 +1,40 @@
+--- a/tests/test-recurrent-state-rollback.cpp
++++ b/tests/test-recurrent-state-rollback.cpp
+@@ -121,7 +121,7 @@
+ 
+     constexpr float eps = 1e-5f;
+     std::vector<std::vector<float>> logits_src_replay(n_rollback);
+-    const auto replay_and_compare = [&](const char * mode) {
++    const auto replay_and_compare = [&](const char * mode, bool record_full_reference) {
+         for (uint32_t i = 0; i < n_rollback; ++i) {
+             const llama_pos pos = rollback_pos + i;
+             if (!decode_one(ctx_src, tokens[pos], pos) ||
+@@ -137,7 +137,9 @@
+                 return false;
+             }
+ 
+-            logits_src_replay[i].assign(logits_src, logits_src + n_vocab);
++            if (record_full_reference) {
++                logits_src_replay[i].assign(logits_src, logits_src + n_vocab);
++            }
+             for (int token = 0; token < n_vocab; ++token) {
+                 if (std::fabs(logits_src[token] - logits_dst[token]) > eps) {
+                     fprintf(stderr, "%s : %s logits mismatch at position %d, token %d (%g != %g)\n",
+@@ -148,7 +150,7 @@
+         }
+         return true;
+     };
+-    if (!replay_and_compare("full")) {
++    if (!replay_and_compare("full", true)) {
+         return 1;
+     }
+ 
+@@ -163,7 +165,7 @@
+     ckpt_partial.update_tgt(ctx_src, 0, partial_flags);
+     ckpt_partial.load_tgt(ctx_dst, 0, partial_flags);
+ 
+-    if (!replay_and_compare("partial")) {
++    if (!replay_and_compare("partial", false)) {
+         return 1;
+     }
+ 

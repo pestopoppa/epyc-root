@@ -1,0 +1,6 @@
+warning: no usable GPU found, --gpu-layers option will be ignored
+warning: one possible reason is that llama.cpp was compiled without GPU support
+warning: consult docs/build.md for compilation instructions
+diagnostic full reference first logit=8.13747
+diagnostic partial reference first logit=6.07728
+main : recurrent rollback checkpoint restored successfully
