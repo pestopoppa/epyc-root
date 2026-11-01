@@ -1,0 +1,16 @@
+{
+  "id": 41279642985,
+  "name": "OBS-1 supervisor observation contract",
+  "path": ".github/workflows/obs1-supervisor-contract.yml",
+  "workflow_id": 403322569,
+  "run_number": 4,
+  "event": "push",
+  "status": "completed",
+  "conclusion": "success",
+  "head_branch": "codex-ni/obs1-contract-20261101",
+  "head_sha": "70d01ac9982a6c95a5645eb8cff10174b0d24a35",
+  "created_at": "2026-11-01T06:09:05Z",
+  "updated_at": "2026-11-01T06:11:42Z",
+  "run_started_at": "2026-11-01T06:09:05Z",
+  "html_url": "https://github.com/pestopoppa/epyc-root/actions/runs/41279642985"
+}

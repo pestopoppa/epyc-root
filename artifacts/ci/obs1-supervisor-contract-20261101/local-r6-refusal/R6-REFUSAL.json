@@ -1,0 +1,56 @@
+{
+  "scope": "MODEL_FREE_R6_OBSERVATION_CONTRACT",
+  "command": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_observer_contract.py",
+    "-k",
+    "bus_supervisor"
+  ],
+  "cwd": "/mnt/raid0/llm/tmp/codex-ni-ap-legacy-status-wrap-20261030",
+  "cpu_affinity": [
+    132,
+    133
+  ],
+  "mutex_family": "36-37",
+  "start_utc": "2026-11-01T05:50:51.656418+00:00",
+  "end_utc": null,
+  "runner_pid": null,
+  "runner_start_ticks": null,
+  "test_pid": null,
+  "test_start_ticks": null,
+  "boot_id": null,
+  "live_grants": [],
+  "source_closure_before": null,
+  "source_closure_after": {
+    "tracked_status": {
+      "scripts/coordination/bus_supervisor.sh": " M",
+      "scripts/coordination/observer_registry.json": " M",
+      "scripts/coordination/tests/test_bus_supervisor.py": " M",
+      "tests/test_observer_contract.py": " M"
+    },
+    "read_path_sha256": {
+      "scripts/coordination/bus_supervisor.sh": "797c2e482535638024bc9df7d4f8e7a0f0f417f3b5051675ed40497b6bd0e5f8",
+      "scripts/coordination/daemon_provenance.sh": "0b2def46c83858dfe3363adf49c89631b73f136fd4eab7fbe5256eee15184342",
+      "scripts/coordination/observer_guard.sh": "e67a3de609a2aa42c69e0dd3e51ee48fa2805d5d9d7dacf47908bdaa4cbab117",
+      "scripts/coordination/observer_registry.json": "b0a4ab9227fde780f08e3867c23d30bd0268513a42859ea9d7e1d9918e374de2",
+      "scripts/coordination/tests/test_bus_supervisor.py": "e671239e6ef23c082e1a96c64b3c0c40ea65223b9d3e2ebae9e29d9e4b72805a",
+      "scripts/lib/env.sh": "713a9b3b8b01a44de632903f804a23fd3cf27f59c8b3feeac92dbbb02d26d497",
+      "tests/test_observer_contract.py": "2b8c1058d201656c0366655f8210bbcbc05224e50b5006e197ff5c0a75e70175"
+    }
+  },
+  "returncode": null,
+  "failure": "RuntimeError: timing grant affects physical CPUs (132, 133): codex3-kvu-lb1d-t96-quiet-r1-20261031 (0-95,mi210_0)",
+  "elapsed_s": 0.020657473942264915,
+  "sampled_peak_process_tree_rss_bytes": 0,
+  "rss_limit_bytes": 8589934592,
+  "time_limit_s": 900,
+  "sample_interval_s": 0.1,
+  "captured_pid_records": [],
+  "all_captured_processes_drained": true,
+  "native_or_gpu_execution": false,
+  "output_path": "/tmp/obs1-r6-output.log",
+  "output_sha256": null
+}
