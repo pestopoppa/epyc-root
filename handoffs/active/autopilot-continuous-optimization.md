@@ -405,7 +405,7 @@ First full smoke run of the trial loop. Four defects, three silent.
 
 - [x] **P1 code repair — configured-primary provenance.** Orchestrator main `63f34e9845b028b364a14ad0c618dc60ef96c0a1` measures only both configured primary instances, including faithful overlap; alternate placements emit existing unknown-pair entries. Actual writer→YAML→loader→public-policy controls preserve existing unknown traffic behavior, unqualified all-unknown output and correct mixed topology stamps.166 controls, Ruff and full `make gates` pass with task-private tools. Stored matrix and consumer policy unchanged; the old1.89 row is archival commentary, not a new measured result. The original re-bench below remains open. ✅ 2026-10-30 [no-belief: prospective writer source repair; no new ratio]
 
-- [ ] **P1 — THE CONTENTION MATRIX ADMITS A DIFFERENTLY-MEASURED PRIOR AS A ROLE-PAIR VERDICT.**
+- [ ] **P1 — THE CONTENTION MATRIX ADMITS A DIFFERENTLY-MEASURED PRIOR AS A ROLE-PAIR VERDICT.** [too-big: live n-way policy and matched geometry rebench need gate owner]
   `scripts/server/contention_matrix.py:306-313` has **inverted marker polarity**: when it substitutes
   a DISJOINT geometry for a downed primary it returns `(a, b, None)` — **no marker** — and it
   sets `"overlap_measured"` only in the FAITHFUL overlapping case. *(Verified by `mainC` at the
@@ -514,7 +514,7 @@ First full smoke run of the trial loop. Four defects, three silent.
   the prompt ships the author's unresolved self-correction (says 3, then 6; correct answer is 6).
   ✅ 2026-10-31 — RESEARCH `a0a3df0ff43a9a66fe1f1f05a9e24e9214511b70`: corrected example and three executable input/output cases; native scorer accepts a correct bounded-path program and rejects wrong constants. [Test](../../artifacts/compute/codex3-ma-hard-code-001-20261031/TEST.log). The separate live-pool rebuild below remains open; no historical scores were re-derived. [belief: cc]
 
-- [ ] **The live pool still carries the OLD oracle** — the rebuild takes effect on the next pool
+- [ ] **The live pool still carries the OLD oracle** [too-big: pool-owner rebuild and instrument evidence remain unverified] — the rebuild takes effect on the next pool
   rebuild, which is a measurement-instrument boundary (`eval_tower` stamps instrument identity) and
   needs scheduling by the pool owner. Until then the 4 debugbench rows in `core_v2` still score
   vacuously, and **historical debugbench scores remain uninterpretable and were not re-derived**.
