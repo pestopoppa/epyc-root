@@ -139,7 +139,9 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import re
 import sys
+from urllib.parse import urlsplit
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping
@@ -330,6 +332,101 @@ def _study_of(receipt: Mapping) -> Any:
     return None
 
 
+def _decision_backend_pin(receipt: Mapping) -> dict[str, Any] | None:
+    """Validate and retain the producer's optional pin without reopening live state."""
+    if "decision_backend_pin" not in receipt:
+        return None
+    prefix = "receipt.decision_backend_pin"
+    pin = _mapping(receipt["decision_backend_pin"], prefix)
+    if _study_of(receipt) != "calibration":
+        raise ProjectionError(f"{prefix} is only valid on calibration receipts")
+    if pin.get("schema") != "typed_decisions.llama_decision_backend.v1":
+        raise ProjectionError(f"{prefix}.schema is unsupported")
+    def text_field(name: str) -> str:
+        value = pin.get(name)
+        if not isinstance(value, str) or not value.strip():
+            raise ProjectionError(f"{prefix}.{name} must be non-empty text")
+        return value
+    def hex_field(name: str, minimum: int, maximum: int) -> str:
+        value = text_field(name)
+        if not re.fullmatch(r"[0-9a-f]+", value) or not minimum <= len(value) <= maximum:
+            raise ProjectionError(f"{prefix}.{name} has invalid lowercase hex")
+        return value
+    hex_field("gguf_sha256", 64, 64)
+    commit = hex_field("server_build_commit", 7, 40)
+    architecture = text_field("model_architecture")
+    if pin.get("native_temperature_prefix") != architecture + ".decision.temperature.":
+        raise ProjectionError(f"{prefix}.native_temperature_prefix disagrees with architecture")
+    temperatures = _mapping(pin.get("decision_temperatures"), f"{prefix}.decision_temperatures")
+    for key, value in temperatures.items():
+        marker = "decision.temperature."
+        if not isinstance(key, str) or not (key.startswith(marker) or "." + marker in key) or not key.split(marker, 1)[1]:
+            raise ProjectionError(f"{prefix}.decision_temperatures has invalid key")
+        if isinstance(value, bool) or not isinstance(value, (str, int, float)):
+            raise ProjectionError(f"{prefix}.decision_temperatures.{key} is invalid")
+        try:
+            number = float(value)
+        except (ValueError, OverflowError) as exc:
+            raise ProjectionError(f"{prefix}.decision_temperatures.{key} is invalid") from exc
+        if not math.isfinite(number) or number <= 0:
+            raise ProjectionError(f"{prefix}.decision_temperatures.{key} is invalid")
+    model_path = text_field("model_path")
+    if not Path(model_path).is_absolute() or not Path(model_path).name:
+        raise ProjectionError(f"{prefix}.model_path must be absolute")
+    flags = _mapping(pin.get("server_argv_flags"), f"{prefix}.server_argv_flags")
+    if set(flags) != {"np", "batch", "ubatch"}:
+        raise ProjectionError(f"{prefix}.server_argv_flags must contain np, batch, ubatch")
+    for name in flags:
+        _positive_int(flags[name], f"{prefix}.server_argv_flags.{name}")
+    if pin.get("argv_custody") != "proc_observed" or pin.get("server_build_commit_custody") != "executable_version":
+        raise ProjectionError(f"{prefix} has invalid process or build custody")
+    version = text_field("server_version")
+    if not re.search(r"(?i)(?:commit\s+|\()" + re.escape(commit) + r"\)", version):
+        raise ProjectionError(f"{prefix}.server_version disagrees with build commit")
+    process = _mapping(pin.get("process"), f"{prefix}.process")
+    for key in ("pid", "start_ticks"):
+        _positive_int(process.get(key), f"{prefix}.process.{key}")
+    if not isinstance(process.get("exe"), str) or not process["exe"]:
+        raise ProjectionError(f"{prefix}.process.exe is invalid")
+    if not isinstance(process.get("argv_sha256"), str) or not re.fullmatch(r"[0-9a-f]{64}", process["argv_sha256"]):
+        raise ProjectionError(f"{prefix}.process.argv_sha256 is invalid")
+    for key, length in (("model_identity", 5),):
+        value = pin.get(key)
+        if not isinstance(value, list) or len(value) != length or any(type(x) is not int or x < 0 for x in value):
+            raise ProjectionError(f"{prefix}.{key} is invalid")
+    exe_identity = process.get("exe_identity")
+    if not isinstance(exe_identity, list) or len(exe_identity) != 2 or any(type(x) is not int or x < 0 for x in exe_identity):
+        raise ProjectionError(f"{prefix}.process.exe_identity is invalid")
+    socket = text_field("socket_inode")
+    if not socket.isdecimal() or int(socket) <= 0:
+        raise ProjectionError(f"{prefix}.socket_inode is invalid")
+    endpoint = text_field("endpoint")
+    try:
+        url = urlsplit(endpoint)
+        valid_endpoint = url.scheme == "http" and url.hostname in ("localhost", "127.0.0.1") and url.port and url.path == "/completion" and not (url.query or url.fragment or url.username or url.password)
+    except ValueError:
+        valid_endpoint = False
+    if not valid_endpoint or pin.get("endpoint_kind") != "llama_completion_json" or pin.get("transport_method") != "direct_local_completion_v1" or pin.get("decision_temperature_scaling") != "not_asserted_for_json":
+        raise ProjectionError(f"{prefix}.endpoint or transport is invalid")
+    count = _positive_int(pin.get("request_count"), f"{prefix}.request_count")
+    requests = pin.get("requests")
+    if not isinstance(requests, list) or len(requests) != count:
+        raise ProjectionError(f"{prefix}.requests does not match request_count")
+    for i, request in enumerate(requests):
+        row = _mapping(request, f"{prefix}.requests[{i}]")
+        _positive_int(row.get("n_predict"), f"{prefix}.requests[{i}].n_predict")
+        _finite(row.get("temperature"), f"{prefix}.requests[{i}].temperature")
+        _int_value(row.get("seed"), f"{prefix}.requests[{i}].seed")
+        digest = row.get("json_schema_sha256")
+        if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest) or row.get("stream") is not False or row.get("stop") != "server_default_not_requested" or row.get("other_sampling") != "server_default_not_requested":
+            raise ProjectionError(f"{prefix}.requests[{i}] has invalid decode evidence")
+    # JSON copy isolates the projection from later mutation of caller dictionaries.
+    try:
+        return json.loads(json.dumps(dict(pin), allow_nan=False))
+    except (TypeError, ValueError) as exc:
+        raise ProjectionError(f"{prefix} is not finite JSON") from exc
+
+
 def _validate_receipt(receipt: Mapping) -> str:
     """Refuse anything that is not a typed-decision study receipt; return the study."""
     study = _study_of(receipt)
@@ -337,6 +434,7 @@ def _validate_receipt(receipt: Mapping) -> str:
         raise ProjectionError(
             f"not a typed-decision measurement receipt (study={study!r}; expected one of "
             f"{list(STUDIES)}) — a mapping miss is reported, never skipped silently")
+    _decision_backend_pin(receipt)
     if study == "routing_replay":
         # The routing harness writes its own envelope (aggregates/config/snapshot +
         # metric_directions), not the measure.py counts/results pair. The identity
@@ -1024,6 +1122,11 @@ def project(native: Any) -> ClaimTuple:
         "category_source": category_source,
         "protocol_id_present": bool(protocol_id),
     }
+    pin = _decision_backend_pin(receipt)
+    if pin is not None:
+        if digest and not re.fullmatch(r"[0-9a-f]{64}", digest):
+            raise ProjectionError("receipt_sha256 must be lowercase hex for a backend pin")
+        extra["decision_backend_pin"] = pin
     if study == "routing_replay":
         snapshot = _mapping(receipt.get("snapshot"), "receipt.snapshot")
         aggregates = _mapping(receipt.get("aggregates"), "receipt.aggregates")
@@ -1046,14 +1149,19 @@ def project(native: Any) -> ClaimTuple:
                                         "higher_better|lower_better",
         )
 
+    claim_text = _claim(receipt, metric, protocol_id=protocol_id,
+                        direction_present=direction is not None)
+    if pin is not None:
+        claim_text += (" Captured direct JSON backend configuration is recorded in the "
+                       "source scope; backend/device are not recorded, and configuration "
+                       "matching is not enforced by planning.")
     fields: dict[str, Any] = dict(
         measurement_id=_identity(receipt, metric_key),
         metric=metric.metric,
         value=metric.value,
         date=_date(receipt),
         category=category,
-        claim=_claim(receipt, metric, protocol_id=protocol_id,
-                     direction_present=direction is not None),
+        claim=claim_text,
         protocol_id=protocol_id,
         reps=metric.reps,
         reps_basis=metric.reps_basis,
@@ -1068,6 +1176,21 @@ def project(native: Any) -> ClaimTuple:
         source_kind=SOURCE_KIND,
         extra=extra,
     )
+    if pin is not None:
+        temperature_bytes = json.dumps(pin["decision_temperatures"], sort_keys=True,
+                                       ensure_ascii=True, separators=(",", ":"),
+                                       allow_nan=False).encode("utf-8")
+        knobs = {"server_argv_np": pin["server_argv_flags"]["np"],
+                 "server_argv_batch": pin["server_argv_flags"]["batch"],
+                 "server_argv_ubatch": pin["server_argv_flags"]["ubatch"],
+                 "decision_temperatures_json_sha256": hashlib.sha256(temperature_bytes).hexdigest(),
+                 "transport_method": pin["transport_method"]}
+        if digest:
+            knobs["source_receipt_sha256"] = digest
+        fields["applicability"] = {"model_file": Path(pin["model_path"]).name,
+                                   "model_sha256": pin["gguf_sha256"],
+                                   "build_sha": pin["server_build_commit"],
+                                   "scope_basis": "native", "knobs": knobs}
     if direction is not None:
         fields["metric_direction"] = direction
     return ClaimTuple(**fields)
