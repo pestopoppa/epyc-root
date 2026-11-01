@@ -48,6 +48,21 @@ IDLE_COOLDOWN_S = 45 * 60
 PAUSE_S = 30 * 60
 
 
+def landed(sha, repo=ROOT) -> bool:
+    """Proof a wrap-up landed: `git cherry origin/main <sha>` is empty (and the sha resolves)."""
+    if not sha or not re.fullmatch(r"[0-9a-f]{7,40}", sha):
+        return False
+    subprocess.run(["git", "-C", repo, "fetch", "-q", "origin", "main"], capture_output=True, timeout=120)
+    r = subprocess.run(["git", "-C", repo, "cherry", "origin/main", sha], capture_output=True, text=True)
+    return r.returncode == 0 and not r.stdout.strip()
+
+
+PUSH_PROMPT = ("[{v}] Your wrap-up {sha} is NOT on origin/main (`git cherry origin/main {sha}` is non-empty or no WRAPUP "
+               "commit was reported). Push your wrap-up now via `python3 scripts/coordination/serialized_push.py --fetch "
+               "--push` from your worktree; a held push lock means wait and retry until PUSH VERIFIED. Last line `WRAPUP: <sha>`.")
+MAX_PUSH_RETRIES = 6
+
+
 def now_iso() -> str:
     return _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -228,8 +243,11 @@ def dispatch_once(flags, runner=None, now=None, seed=False):
             if "FRESH-SESSION-REQUESTED" in tailtxt:
                 e["fresh_next"] = True
             e["pid"], e["pending_event"], e["last_end"] = None, None, now_iso()
-            if e.get("status") == "live":
-                e["status"] = "suspended"
+            if landed(e.get("last_wrapup")):
+                e["status"], e["push_retries"] = "suspended", 0
+            else:
+                e["status"] = "unpushed"  # never suspended without proof the wrap-up landed
+                log(flags, f"UNPUSHED {slug} wrapup={e.get('last_wrapup')}: resuming to push")
             log(flags, f"TURN-END {slug} session={e.get('session_id')} wrapup={e.get('last_wrapup')}")
     # 2. new run ends owned by a pilot
     for rid, p in end_events(flags):
@@ -255,6 +273,13 @@ def dispatch_once(flags, runner=None, now=None, seed=False):
     live = sum(1 for e in S.values() if alive(e.get("pid")))
     cap = int(reg.get("max_live", 5))
     if not paused:
+        for slug, e in S.items():  # wrap-up not landed: resume at once, no cooldown
+            if e.get("status") == "unpushed" and not alive(e.get("pid")) and e.get("session_id") and live < cap:
+                if e.get("push_retries", 0) >= MAX_PUSH_RETRIES:
+                    continue
+                e["push_retries"] = e.get("push_retries", 0) + 1
+                _go(flags, slug, e, PUSH_PROMPT.format(v=VERSION, sha=e.get("last_wrapup")), runner, None)
+                live += 1
         q, rest = st.get("queue") or [], []
         for ev in q:
             e = S.get(ev["slug"])
