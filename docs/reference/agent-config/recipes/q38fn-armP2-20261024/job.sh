@@ -77,7 +77,7 @@ runstep s3_ppl_UD 900 ppl "$UD"
 coh(){ # model tag
   local port=18941 pid
   ss -ltn | grep ":$port " >/dev/null && { echo "port $port busy"; return 7; }
-  nice -n 10 taskset -c "$CPUS" $B/llama-server -m "$1" --host 127.0.0.1 --port $port --no-webui -np 1 -c 2048 -t $T -fa on -ctk f16 -ctv f16 -lv 4 > "$D/logs/srv-$2.log" 2>&1 & pid=$!
+  nice -n 10 taskset -c "$CPUS" $B/llama-server -m "$1" --host 127.0.0.1 --port $port --no-webui -np 1 -c 2048 -t $T -fa on -ctk f16 -ctv f16 -lv 3 > "$D/logs/srv-$2.log" 2>&1 & pid=$!
   trap "kill -TERM $pid 2>/dev/null" TERM
   local ok=0 i
   for i in $(seq 1 120); do

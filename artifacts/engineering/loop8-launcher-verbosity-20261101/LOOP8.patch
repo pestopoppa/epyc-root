@@ -1,0 +1,35 @@
+--- /mnt/raid0/llm/tmp/ws58-q38fn-armP-20261024/job.sh
++++ /mnt/raid0/llm/tmp/ws58-q38fn-armP-20261024/job.sh
+@@ -77 +77 @@
+-  nice -n 10 taskset -c "$CPUS" $B/llama-server -m "$1" --host 127.0.0.1 --port $port --no-webui -np 1 -c 2048 -t $T -fa on -ctk f16 -ctv f16 -lv 4 > "$D/logs/srv-$2.log" 2>&1 & pid=$!
++  nice -n 10 taskset -c "$CPUS" $B/llama-server -m "$1" --host 127.0.0.1 --port $port --no-webui -np 1 -c 2048 -t $T -fa on -ctk f16 -ctv f16 -lv 3 > "$D/logs/srv-$2.log" 2>&1 & pid=$!
+--- /mnt/raid0/llm/tmp/ws58-q38fn-armP2-20261024/job.sh
++++ /mnt/raid0/llm/tmp/ws58-q38fn-armP2-20261024/job.sh
+@@ -80 +80 @@
+-  nice -n 10 taskset -c "$CPUS" $B/llama-server -m "$1" --host 127.0.0.1 --port $port --no-webui -np 1 -c 2048 -t $T -fa on -ctk f16 -ctv f16 -lv 4 > "$D/logs/srv-$2.log" 2>&1 & pid=$!
++  nice -n 10 taskset -c "$CPUS" $B/llama-server -m "$1" --host 127.0.0.1 --port $port --no-webui -np 1 -c 2048 -t $T -fa on -ctk f16 -ctv f16 -lv 3 > "$D/logs/srv-$2.log" 2>&1 & pid=$!
+--- /mnt/raid0/llm/tmp/ws58-g2conc-20261024/job.sh
++++ /mnt/raid0/llm/tmp/ws58-g2conc-20261024/job.sh
+@@ -64 +64 @@
+-SRVARGS=(-m "$TRUNK" --host 127.0.0.1 --no-webui -np 4 -c 32768 -t "$THREADS" --no-mmap -lv 4 -fa on -ctk f16 -ctv f16
++SRVARGS=(-m "$TRUNK" --host 127.0.0.1 --no-webui -np 4 -c 32768 -t "$THREADS" --no-mmap -lv 3 -fa on -ctk f16 -ctv f16
+--- /mnt/raid0/llm/tmp/ws58-g2conc-20261024/job.sh
++++ /mnt/raid0/llm/tmp/ws58-g2conc-20261024/job.sh
+@@ -76 +76 @@
+-  LD_LIBRARY_PATH="$BIN" timeout 20 "$SERVER" -m /nonexistent.gguf -np 4 -c 32768 -t 24 --no-mmap -lv 4 -fa on -ctk f16 -ctv f16 \
++  LD_LIBRARY_PATH="$BIN" timeout 20 "$SERVER" -m /nonexistent.gguf -np 4 -c 32768 -t 24 --no-mmap -lv 3 -fa on -ctk f16 -ctv f16 \
+--- /mnt/raid0/llm/tmp/yarn-e1-20261004/launch_arm.sh
++++ /mnt/raid0/llm/tmp/yarn-e1-20261004/launch_arm.sh
+@@ -34 +34 @@
+-        --device ROCm0 --slot-save-path "$D/results/kv_slots_scratch" --verbosity 4)   # verbosity 3 retains info-level print_info/llama_context proof lines without trace logs
++        --device ROCm0 --slot-save-path "$D/results/kv_slots_scratch" --verbosity 3)   # verbosity 3 retains info-level print_info/llama_context proof lines without trace logs
+--- /mnt/raid0/llm/tmp/yarn-e1-20261004/launch_arm.sh
++++ /mnt/raid0/llm/tmp/yarn-e1-20261004/launch_arm.sh
+@@ -34 +34 @@
+-        --device ROCm0 --slot-save-path "$D/results/kv_slots_scratch" --verbosity 3)   # -lv 4: print_info/llama_context proof lines
++        --device ROCm0 --slot-save-path "$D/results/kv_slots_scratch" --verbosity 3)   # verbosity 3 retains info-level print_info/llama_context proof lines without trace logs
+--- docs/reference/agent-config/recipes/q38fn-armP2-20261024/job.sh
++++ docs/reference/agent-config/recipes/q38fn-armP2-20261024/job.sh
+@@ -80 +80 @@
+-  nice -n 10 taskset -c "$CPUS" $B/llama-server -m "$1" --host 127.0.0.1 --port $port --no-webui -np 1 -c 2048 -t $T -fa on -ctk f16 -ctv f16 -lv 4 > "$D/logs/srv-$2.log" 2>&1 & pid=$!
++  nice -n 10 taskset -c "$CPUS" $B/llama-server -m "$1" --host 127.0.0.1 --port $port --no-webui -np 1 -c 2048 -t $T -fa on -ctk f16 -ctv f16 -lv 3 > "$D/logs/srv-$2.log" 2>&1 & pid=$!

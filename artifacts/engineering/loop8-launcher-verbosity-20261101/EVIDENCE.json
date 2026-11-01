@@ -1,0 +1,59 @@
+{
+  "schema": "epyc.loop8.launcher_verbosity_repair.v1",
+  "date": "2026-11-01",
+  "task": "LOOP-8: drop verbosity level 4 (trace) from q38fn-armP / armP2 / g2conc / yarn-e1 launchers",
+  "change": "Set these launchers to verbosity 3 (info), the documented default. This removes trace output while preserving info-level startup/proof lines used by the YARN E1 validators.",
+  "source_evidence": [
+    {
+      "name": "q38fn-armP",
+      "path": "/mnt/raid0/llm/tmp/ws58-q38fn-armP-20261024/job.sh",
+      "sha256_after": "fa0741b3621ed8dfde30275d67087f9b0b0e2834f3b7e41c916fcf0d17352322",
+      "sha256_before": "e53055a362a07f9f84039910981d17af0649d80538a147afb53b158727a603bc",
+      "verbosity_after": 3,
+      "syntax_check": "bash -n PASS"
+    },
+    {
+      "name": "q38fn-armP2",
+      "path": "/mnt/raid0/llm/tmp/ws58-q38fn-armP2-20261024/job.sh",
+      "sha256_after": "343066e0c8fc49361813500f045712086ac9eaa15ab22f742ce54f956f570902",
+      "sha256_before": "ee35ba732c2e4fcd55eee05fdf5eea287b1d746a7111bf5d1e495fee8c8ab59a",
+      "verbosity_after": 3,
+      "syntax_check": "bash -n PASS"
+    },
+    {
+      "name": "g2conc",
+      "path": "/mnt/raid0/llm/tmp/ws58-g2conc-20261024/job.sh",
+      "sha256_after": "cb2369fcfbfab9de9dcd3ae893678753c83226274edd19795f5213e56f65cbe0",
+      "sha256_before": "89439a88602bb461fd837b8718ef27731ea6a2d65c67682361524e2cf079e18d",
+      "verbosity_after": 3,
+      "syntax_check": "bash -n PASS"
+    },
+    {
+      "name": "yarn-e1",
+      "path": "/mnt/raid0/llm/tmp/yarn-e1-20261004/launch_arm.sh",
+      "sha256_after": "b78695989dced131fa4a9da8679b953d7f7a9516ac63220279520aabdb67859e",
+      "sha256_before": "4d4eee8f1f2d648a126a23f84eccee6d974d0b51ccb637efb9841fbcd831c9cb",
+      "verbosity_after": 3,
+      "syntax_check": "bash -n PASS"
+    },
+    {
+      "name": "q38fn-armP2-tracked-recipe",
+      "path": "docs/reference/agent-config/recipes/q38fn-armP2-20261024/job.sh",
+      "sha256_after": "343066e0c8fc49361813500f045712086ac9eaa15ab22f742ce54f956f570902",
+      "sha256_before": "ee35ba732c2e4fcd55eee05fdf5eea287b1d746a7111bf5d1e495fee8c8ab59a",
+      "verbosity_after": 3,
+      "syntax_check": "bash -n PASS"
+    }
+  ],
+  "validation": {
+    "bash_syntax": "PASS for all five shell files",
+    "static_assertion": "PASS: no -lv 4 or --verbosity 4 remains; each source explicitly selects verbosity 3",
+    "server_contract": "/mnt/raid0/llm/llama.cpp/tools/server/README.md:115 documents 3=info, 4=trace, default=3; `common/arg.cpp:3685-3696` drops messages above threshold",
+    "inference_or_model_execution": "none"
+  },
+  "live_state": {
+    "associated_grants_ended": true,
+    "captured_launcher_pids_absent_at_audit": true
+  },
+  "limitations": "The four ws58 historical scratch launchers are outside Git; their exact path and before/after digests plus a replayable diff are retained here. The armP2 recipe is tracked and changed directly. No new server run was made."
+}
