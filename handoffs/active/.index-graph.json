@@ -3939,7 +3939,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-01T18:53:49Z",
+  "generated_at": "2026-11-01T18:56:45Z",
   "nodes": [
     {
       "age_days": 94,
@@ -8144,13 +8144,13 @@
       "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 22,
+      "closed": 23,
       "domain": "routing-and-optimization",
       "handoff": "shape-keyed-contention-gating.md",
       "id": "RTG-35",
       "last_advanced": "2026-10-31",
       "next_action": "REGION-SIBLING-1: merge fix/region-lock-smt-siblings-ec 4ae008a8 after operator approval (OP-77); then the q* nomenclature review",
-      "open": 4,
+      "open": 3,
       "priority": 0.1676,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): Look at this together with `contention_nway_non_allow_count` (`contention_gate.py:325`",

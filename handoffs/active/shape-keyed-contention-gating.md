@@ -585,11 +585,17 @@ verdict is the current production shape.
 - [x] **Retire the stale `q*` nomenclature on half-sized instances** ✅ 2026-10-31 — reconciliation: APP `7ef445baffe0fd261c7daeffc0dfe1d42eaf2de1`; `tests/unit/test_contention_matrix_shape_labels.py`; durable artifact `artifacts/ni/source-acceptance-20261031/README.md` (actual topology CLI proof). [no-belief: audit-reconciliation] — a reader seeing `q0` on a
       48-thread instance infers a quarter. It already caused one agent to describe this live defect as
       a legacy one.
-- [ ] **Look at this together with `contention_nway_non_allow_count`** (`contention_gate.py:325`
+- [x] **Look at this together with `contention_nway_non_allow_count`** (`contention_gate.py:325`
       increments outside the precedence test, so it counts every N-way non-ALLOW check, including a
       verdict less restrictive than an existing pairwise decision — `mainC`, same day). Both are
       *the value asserts more than the measurement supports*,
       in the same subsystem, found by different agents hours apart; one review, not two local fixes.
+      ✅ 2026-11-01 reconciliation: APP `7ef445baffe0fd261c7daeffc0dfe1d42eaf2de1` corrected the
+      half-instance labels; APP `4b0eb6a9a932`, `de636086e679` and `b387c5dded66` corrected the
+      counter name and description while retaining the old name as a compatibility alias. The latter
+      counts non-ALLOW checks, not changes to the final pairwise verdict. See the adjacent source
+      acceptance evidence and the completed counter item in `autopilot-continuous-optimization.md`.
+      [no-belief: source and evidence reconciliation]
 - [ ] **REGION-SIBLING-1 — `region-lock` must map SMT-sibling CPUs to their physical core's region, not drop
       them.** (filed 2026-10-04, workspace-ec, from INC-20261004-subagent-unlocked-cpu-in-held-window)
       `src/runtime/instance_topology.py` `parse_cpu_list` keeps only CPUs 0-95 and silently discards

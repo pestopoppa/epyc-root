@@ -28,7 +28,7 @@
       "blocked": 17,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 651
+      "open": 650
     },
     "user-facing-harness-index.md": {
       "blocked": 17,
@@ -2473,10 +2473,10 @@
     },
     "shape-keyed-contention-gating.md": {
       "blocked": 0,
-      "closed": 22,
+      "closed": 23,
       "guarded": 0,
       "last_advanced": "2026-10-31",
-      "open": 4,
+      "open": 3,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
