@@ -4,7 +4,7 @@
       "blocked": 59,
       "handoffs": 59,
       "oldest_advance": "2026-07-29",
-      "open": 1040
+      "open": 1042
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -201,10 +201,10 @@
     },
     "autokernel-champion-aggregate.md": {
       "blocked": 1,
-      "closed": 74,
+      "closed": 75,
       "guarded": 0,
       "last_advanced": "2026-11-01",
-      "open": 39,
+      "open": 38,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -761,10 +761,10 @@
     },
     "dflash2-block-drafter-experimental-build.md": {
       "blocked": 0,
-      "closed": 33,
+      "closed": 34,
       "guarded": 0,
       "last_advanced": "2026-11-01",
-      "open": 19,
+      "open": 22,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -773,7 +773,7 @@
       },
       "row_id": "INF-62",
       "state": "active",
-      "total": 52
+      "total": 56
     },
     "document-parser-table-bench.md": {
       "blocked": 0,
