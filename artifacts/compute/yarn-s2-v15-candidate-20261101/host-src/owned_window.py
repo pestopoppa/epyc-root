@@ -28,7 +28,9 @@ def run(server_argv,worker_argv,env,window,active,ready,deadline,on_cutoff=None)
    if ready(server,server_id):break
    time.sleep(.1)
   else:raise TimeoutError("server not ready")
+  if not allowed():raise TimeoutError("admission lost after server readiness")
   actual_worker=worker_argv(server,server_id) if callable(worker_argv) else worker_argv
+  if not allowed():raise TimeoutError("admission lost before worker spawn")
   worker,worker_id=spawn(actual_worker,"worker")
   observer_started=False
   while allowed() and server.poll() is None and worker.poll() is None:
