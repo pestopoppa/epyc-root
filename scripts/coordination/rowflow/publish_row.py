@@ -1,11 +1,140 @@
 #!/usr/bin/env python3
-"""publish_row.py <spec.json> [--migrate] - the owner's ONE tool: publish an inference row from its launcher + spec.
-Thin wrapper over rowflow.py publish (same directory). Spec fields: see rowflow.py docstring."""
+"""publish_row.py <spec.json> [--migrate] | publish_row.py --repair <row-id>   [--flags DIR] - the owner's ONE tool.
+
+publish   LINT the spec, then rowflow.publish derives the rest. The lint rewrites the two defects that used to cost a dry
+          run plus an agent turn (CAF-4): a result_path that is a completion marker (.complete/.ended/.done/.FILED,
+          grants/, COMPLETE*/TERMINAL*) becomes the declared results file in the same run dir (result_format json ->
+          RESULT.json, jsonl -> results.jsonl; no declared format -> refused in one line), and the derivable fields
+          lane (launcher --class), scratch_root (the launcher's job dir), keep (result_path relative to scratch_root) and
+          kind=compute are filled when missing. Every rewrite is printed as one LINT line.
+--repair  after a dry-run FAIL of a known class: rebuild the spec from ready/<id>.json, apply the fix, lint, republish
+          under the SAME id (a spec change makes the keeper re-dry-run it; the keeper starts that run, not this tool).
+          Known: (1) "no unit in <p>" / "before writing a unit to <p>" where <p> is a completion marker or a results file
+          (RESULT.json|results.jsonl) was written in its run dir during the run; (2) a publish refusal naming a
+          lint-derivable field. Anything else: exit 3 `UNKNOWN-FAILURE-CLASS <reason>` and nothing changes."""
+import argparse
+import datetime as dt
 import os
+import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import rowflow  # noqa: E402
+import rowflow as rf  # noqa: E402
+
+_MARKER = re.compile(r"\.(complete|ended|done|FILED)$|/grants/|/(RUN_)?(COMPLETE|TERMINAL)[^/]*$", re.I)
+RESULT_FILE = {"json": "RESULT.json", "jsonl": "results.jsonl"}
+RESULT_NAMES = ("RESULT.json", "RESULT.jsonl", "results.jsonl", "results.json")
+SPEC_KEYS = ("id", "owner", "lane", "regions", "result_path", "result_format", "decision_rule", "estimate_s", "handoff_task",
+             "priority_rank", "scratch_root", "keep", "dryrun_timeout_s", "min_window_s", "lineage", "lineage_reset", "supersedes",
+             "notes", "row", "snapshot")
+DERIVABLE = ("lane", "scratch_root", "keep", "kind")
+_UNIT_RE = re.compile(r"(?:no unit in|before writing a unit to) (\S+) \(")
+
+
+def is_marker(p):
+    return bool(_MARKER.search(str(p or "")))
+
+
+def lint(spec):
+    """Rewrite the known spec defects in place; returns the LINT notes. Everything else is rowflow.publish's job."""
+    notes = []
+    launcher = os.path.abspath(str(spec.get("launcher") or ""))
+    if os.path.isfile(launcher):
+        if not spec.get("lane"):
+            try:
+                cls = rf.parse_launcher(launcher)["class"]
+                spec["lane"] = "gpu" if cls in ("gpu", "cpu+gpu") else "cpu"
+                notes.append(f"lane={spec['lane']} (launcher --class {cls})")
+            except rf.Refused:
+                pass  # publish reports the launcher defect
+        if not spec.get("scratch_root") and launcher.startswith(rf.TMP):
+            spec["scratch_root"] = rf.TMP + launcher[len(rf.TMP):].split("/")[0]
+            notes.append(f"scratch_root={spec['scratch_root']} (launcher's job dir)")
+    rp = str(spec.get("result_path") or "")
+    if is_marker(rp):
+        fn = RESULT_FILE.get(str(spec.get("result_format") or ""))
+        rf.need(fn, f"result_path {rp} is a completion marker, not a results file: declare result_format json|jsonl "
+                    f"(-> RESULT.json|results.jsonl in the run dir) or point result_path at the file the filer reads")
+        rundir = spec.get("scratch_root") if "/grants/" in rp else os.path.dirname(rp)
+        rf.need(rundir, f"result_path {rp} is a grants/ marker and the spec has no scratch_root to place {fn} in")
+        spec["result_path"] = rp = os.path.join(rundir, fn)
+        notes.append(f"result_path={rp} (was a completion marker)")
+    sr = str(spec.get("scratch_root") or "").rstrip("/")
+    if not spec.get("keep") and sr and rp.startswith(sr + "/"):
+        spec["keep"] = [os.path.relpath(rp, sr)]
+        notes.append(f"keep={spec['keep']}")
+    if not spec.get("kind"):
+        spec["kind"] = "compute"
+        notes.append("kind=compute")
+    return notes
+
+
+def results_written_during(fail, rundir):
+    """The newest RESULT.json|results.jsonl in rundir whose mtime falls inside the failed dry run, else None."""
+    try:
+        t0 = dt.datetime.strptime(fail["at"], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=dt.timezone.utc).timestamp() - int(fail.get("elapsed_s") or 0) - 60
+    except (KeyError, TypeError, ValueError):
+        return None
+    hits = [p for p in (os.path.join(rundir, n) for n in RESULT_NAMES) if os.path.isfile(p) and os.path.getmtime(p) >= t0]
+    return max(hits, key=os.path.getmtime) if hits else None
+
+
+def repair(rid, flags):
+    """Returns (rc, message). rc 0 = republished; 3 = unknown failure class (nothing changed)."""
+    row = rf.load_json(rf.ready_path(flags, rid))
+    rf.need(row and row.get("schema") == rf.SCHEMA, f"no epyc.row.v3 row at ready/{rid}.json")
+    fails = rf.fail_paths(flags, rid)
+    rf.need(fails, f"no FAIL record under dryrun/{rid}/; nothing to repair")
+    fail = rf.load_json(fails[-1]) or {}
+    reason = str(fail.get("reason") or "")
+    spec = {k: row[k] for k in SPEC_KEYS if row.get(k) is not None}
+    spec.update(launcher=row["launcher"]["path"], ram_gib=row.get("gib"))
+    m = _UNIT_RE.search(reason)
+    if m:
+        rp = m.group(1)
+        found = results_written_during(fail, os.path.dirname(rp.split("*")[0]))
+        if found:
+            spec["result_path"], spec["result_format"] = found, rf.guess_format(found)
+        elif is_marker(rp):
+            if spec.get("result_format") == "text-lines":
+                spec.pop("result_format")  # the extension guess for a marker, not a declaration: lint refuses or rewrites
+        else:
+            return 3, f"UNKNOWN-FAILURE-CLASS {reason}"
+    elif not re.search(r"spec\.(%s) missing" % "|".join(DERIVABLE), reason):
+        return 3, f"UNKNOWN-FAILURE-CLASS {reason}"
+    for note in lint(spec):
+        print(f"LINT {note}")
+    new = rf.publish(spec, flags, source=f"repair:{fails[-1]}")
+    changed = [f"{k} {row.get(k)!r} -> {new.get(k)!r}" for k in ("result_path", "result_format", "lane", "regions", "scratch_root", "keep") if row.get(k) != new.get(k)]
+    rf.need(changed, f"repair of {rid} would republish an identical row; the keeper would fail it again")
+    return 0, f"REPAIRED {rid} -> {new['id']}: " + "; ".join(changed)
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("spec", nargs="?")
+    ap.add_argument("--migrate", action="store_true", help="spec is a legacy ready/<id>.json manifest")
+    ap.add_argument("--repair", metavar="ROW_ID")
+    ap.add_argument("--flags", default=rf.FLAGS)
+    a = ap.parse_args(argv)
+    try:
+        if a.repair:
+            rc, msg = repair(a.repair, a.flags)
+            print(msg)
+            return rc
+        rf.need(a.spec, "spec.json or --repair <row-id> required")
+        spec = rf.load_json(a.spec)
+        rf.need(spec, f"{a.spec} is not a JSON object")
+        if a.migrate:
+            spec = rf.spec_from_legacy(spec, a.flags)
+        for note in lint(spec):
+            print(f"LINT {note}")
+        print(rf.published_line(rf.publish(spec, a.flags, source=os.path.abspath(a.spec)), a.flags))
+        return 0
+    except rf.Refused as e:
+        print(f"REFUSED: {e}")
+        return 2
+
 
 if __name__ == "__main__":
-    raise SystemExit(rowflow.main(["publish"] + sys.argv[1:]))
+    raise SystemExit(main())

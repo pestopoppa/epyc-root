@@ -463,11 +463,18 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     }
     if snap:
         row["snapshot"] = snap
+    elif isinstance(spec.get("snapshot"), dict):  # a republish from ready/<id>.json (publish_row.py --repair) keeps its snapshot record
+        row["snapshot"] = spec["snapshot"]
     for k in ("lineage", "lineage_reset", "supersedes", "notes", "row"):
         if spec.get(k) is not None:
             row[k] = spec[k]
     atomic_json(ready_path(flags, rid), row)
     return row
+
+
+def published_line(row, flags):
+    return (f"PUBLISHED {row['id']} lane={row['lane']} regions={row['regions']} window_s={row['window_s']} min_window_s={row['min_window_s']} "
+            f"gib={row['gib']} ports={row['ports']} result={row['result_path']} ({row['result_format']}) -> {ready_path(flags, row['id'])}")
 
 
 def spec_from_legacy(manifest, flags=FLAGS, rewrite_engine=True):
@@ -1125,9 +1132,7 @@ def main(argv=None):
             need(spec, f"{a.spec} is not a JSON object")
             if a.migrate:
                 spec = spec_from_legacy(spec, a.flags)
-            row = publish(spec, a.flags, source=os.path.abspath(a.spec))
-            print(f"PUBLISHED {row['id']} lane={row['lane']} regions={row['regions']} window_s={row['window_s']} min_window_s={row['min_window_s']} "
-                  f"gib={row['gib']} ports={row['ports']} result={row['result_path']} ({row['result_format']}) -> {ready_path(a.flags, row['id'])}")
+            print(published_line(publish(spec, a.flags, source=os.path.abspath(a.spec)), a.flags))
             return 0
         if a.cmd == "status":
             if a.grant:
