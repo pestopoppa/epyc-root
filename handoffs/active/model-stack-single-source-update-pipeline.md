@@ -134,6 +134,8 @@ Any future stack update should be accepted only when these hold:
   consumption after a generated worker swap. The simulated vision and
   long-context swaps also prove factual-risk role-tier consumption for their
   role classes.
+  - 2026-11-01 codex3 bounded expansion: APP `a643cb331b1389eda0b414eb54bdac9bf90fe04b` adds the migrated SSU-F11 recipe readers as an actual witness surface. The temporary master→lean compiler step, stale-check refusal, approved update and in-process recipe/env/thread readers pass in the affected 17/17 suite. [Source-bound proof](https://github.com/pestopoppa/epyc-orchestrator/blob/a643cb331b1389eda0b414eb54bdac9bf90fe04b/artifacts/engineering/w4-recipe-swap-20261101/README.md) retains earlier sparse-input failures and their baseline reproduction. No model/server/full promotion-gate execution. This standing expansion item remains OPEN; no completion tick for this bounded addition. [no-belief: synthetic source conformance only]
+
 - [x] Fix promotion-gate test regressions: `_role_result` fixture missing
   `tool_chains` attribute (orchestrator `91cb03bf`), and stale ingest
   topology fixture expectation (`083e2736`). Full promotion-gate `181 passed`,

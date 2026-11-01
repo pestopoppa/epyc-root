@@ -1073,7 +1073,7 @@ unit, direction only, no fold). The *recipe change* is INF-70's recommendation t
       still passed; `test_selfdraft_recipe.py` covers both shapes, spec=none, and a fail-control; suite
       587 → 592). Third of the three gaps above; the first two landed the same day as `b5f58b74` and
       `4952e95e`.
-- [ ] **U3-EXPRESS — run a DELIBERATE expressiveness pass over the recipe schema instead of waiting for the
+- [x] ✅ 2026-11-01 — Research `138f47a5c67c3b197c8a0791c9f90c50d0ac51be`; [pre-fix audit and regression cases](https://github.com/pestopoppa/epyc-inference-research/blob/138f47a5c67c3b197c8a0791c9f90c50d0ac51be/scripts/kernel_rnd/autokernel/loop/readiness/U3_EXPRESS_AUDIT.md). [belief: cc] **U3-EXPRESS — run a DELIBERATE expressiveness pass over the recipe schema instead of waiting for the
       next question to expose the next gap.** Three gaps in one day (env var, identity hash, self-draft), each
       found by tripping over it mid-measurement, each blocking a measurement outright. Enumerate what a
       `Recipe` must be able to express for the surfaces this campaign already runs — multi-GPU / split modes,
@@ -1083,6 +1083,8 @@ unit, direction only, no fold). The *recipe change* is INF-70's recommendation t
       showed can be load-bearing — then write a failing test per gap before fixing any of them. Belongs with
       **U3 (RUNTIME_CONFIG arm type)**: a RUNTIME_CONFIG arm mutates a codified recipe, so the arm type is
       bounded by exactly what the recipe can say. Blocked on nothing.
+
+  - 2026-11-01 codex3 acceptance: Completed the requested deliberate expressiveness audit and wrote the gap tests before runtime/schema fixes. The opt-in pre-fix suite records 24 cases: 8 pass, 12 fail, 4 error (expected overall rc1). The frozen production interface was read only. This closes the audit deliverable, not recipe readiness: unsupported capabilities and the red cases remain unimplemented. No model execution, production edit, successful qualification or performance claim. [belief: cc]
 
 - [ ] **U3-DEFAULTS-b — carry a PER-SURFACE recipe on the champion record.** R23-58 makes the champion
       `ef81196d5` + *CPU* recipe (shim ON) + *GPU* recipe (shim NOT set). `champion.py`/`Bundle` can express
