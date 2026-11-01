@@ -1,0 +1,56 @@
+{
+  "candidate_results": {
+    "P05": {
+      "decision": "DECLINE",
+      "draft_count_presence": 15,
+      "gain_pct": {
+        "aggregate": 21.837304262630198,
+        "code": 35.176865859219156,
+        "prose": 22.939399682057914,
+        "rag": 6.459049834072528
+      },
+      "matched_token_identity": 4,
+      "matched_total": 15,
+      "p_min": 0.5
+    },
+    "P075": {
+      "decision": "DECLINE",
+      "draft_count_presence": 15,
+      "gain_pct": {
+        "aggregate": 23.9285188749925,
+        "code": 36.834110483874525,
+        "prose": 28.413022714115897,
+        "rag": 5.058295005703273
+      },
+      "matched_token_identity": 6,
+      "matched_total": 15,
+      "p_min": 0.75
+    },
+    "P09": {
+      "decision": "DECLINE",
+      "draft_count_presence": 15,
+      "gain_pct": {
+        "aggregate": 17.62083565509016,
+        "code": 28.81958287914095,
+        "prose": 24.195694027511205,
+        "rag": -1.2410200713988573
+      },
+      "matched_token_identity": 5,
+      "matched_total": 15,
+      "p_min": 0.9
+    }
+  },
+  "floors_pct": {
+    "aggregate": 2.193124559147619,
+    "code": 4.478398269244321,
+    "prose": 2.73777206933985,
+    "rag": 3.7889234564317475
+  },
+  "grant_id": "codex3-cafe1-pmin-hostfix-20261031",
+  "plan_sha256": "e4dbdf8677c37cc3ff03666b8da8635ca499403a41bbdce947aca01d0c7954bb",
+  "prompt_manifest_sha256": "3cda64879d67ffcf7a1960aa0b526d9f21cef8bfc3440a88c56032479cf14e2e",
+  "raw_terminal_sha256": "915f0a532eae272572aa57843fae4ebaf72f2458c079821a5ff44fa72caa6539",
+  "schema": "cafe1.analysis.v1",
+  "scope": "single private full-target timing window; not a deployment",
+  "source_catalog_sha256": "71f4f300ce7286cef7719c7001c314e49dbeca069d6678d3466a4c9ae91c0426"
+}
