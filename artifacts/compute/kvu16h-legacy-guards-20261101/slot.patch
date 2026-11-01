@@ -1,0 +1,19 @@
+--- p3_kvu_probe_slot.py.orig
++++ p3_kvu_probe_slot.py
+@@ -300,6 +300,7 @@
+ 
+ 
+ def phase_a1(a) -> int:
++    raise RuntimeError('KVU-16h: legacy A1 mixes no-draft requests into a drafted server; use the dedicated-lifecycle successor /mnt/raid0/llm/tmp/codex-kvu16h-runner-20261028/')
+     out = OUT / "a1.json"
+     nonce = uuid.uuid4().hex[:12]
+     srv = Server("a1", a.port)
+@@ -539,6 +540,8 @@
+     ap.add_argument("--keep-slot-file", action="store_true")
+     ap.add_argument("--dry-run", action="store_true")
+     a = ap.parse_args()
++    if a.phase in ("all", "a1"):
++        ap.error('KVU-16h: legacy A1 mixes no-draft requests into a drafted server; use the dedicated-lifecycle successor /mnt/raid0/llm/tmp/codex-kvu16h-runner-20261028/')
+     global SLOTDIR
+     if not a.arm:
+         ap.error("--arm on|off is required")

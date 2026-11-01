@@ -1,0 +1,14 @@
+--- /mnt/raid0/llm/tmp/handoff-kvu-legacy-p3-guard-20261101/p3_kvu_probe.py.orig	2026-10-03 14:27:32.917108455 +0000
++++ /mnt/raid0/llm/tmp/x0-27b-quants/p3_kvu_probe.py	2026-11-01 21:20:01.834536655 +0000
+@@ -595,6 +595,11 @@
+     ap.add_argument("--keep-slot-file", action="store_true")
+     ap.add_argument("--dry-run", action="store_true")
+     a = ap.parse_args()
++    # The legacy A1 mixes no-draft requests into one drafted server, triggering
++    # KVU-16h. Its diagnostic successor owns independent server lifecycles.
++    if a.phase in ("all", "a1"):
++        ap.error("legacy P3 A1 disabled: drafted and no-draft require dedicated servers; "
++                 "see /mnt/raid0/llm/tmp/codex-kvu16h-runner-20261028/")
+     if a.dry_run:
+         return dry(a)
+     for d in (P3, LOGS, SLOTDIR):
