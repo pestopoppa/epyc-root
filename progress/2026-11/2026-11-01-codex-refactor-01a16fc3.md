@@ -6,3 +6,5 @@
 - LOOP-49 implementation candidate is under review. Independent review identified qualification/production placement mismatch, keeper grant-path hard-gate gaps, and insufficient receipt/grant integration coverage; these are being repaired before any CPU qualification grant.
 
 - LOOP-50 replay initially exposed a false positive: its failure-state words were in the task specification, not the completion evidence. Fixed evidence-clause parsing in `8dd30dc08` and added `tests/test_belief_capture_check.py`; all three controls, collectability, committed-range replay and the full pre-commit wrapper regression passed.
+
+- Reopened `S0-V34-LOCK-LOSS-REPRODUCER` after the tick audit found no SHA, Git artifact, test or receipt for the old completion assertion. The audit is linked from the owning handoff; the historical prose is explicitly non-evidentiary.
