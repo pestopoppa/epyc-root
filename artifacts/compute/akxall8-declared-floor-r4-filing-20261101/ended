@@ -1,0 +1,7 @@
+rc=127 time=2026-11-01T05:50:23Z reason=job-rc-127:exited
+job_id=refactor-akxall8-c5-declared-floor-r4-20261031
+owner=refactor
+step=job-run
+estimated_wall_s=14400
+started=2026-11-01T05:50:23Z
+regions=mi210_0,0-95
