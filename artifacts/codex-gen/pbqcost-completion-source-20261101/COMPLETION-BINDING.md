@@ -1,0 +1,11 @@
+# PB-QCOST completion binding candidate
+
+The original full-run `FAIL_MAPE` record remains a completed negative measurement, not a scientific pass. It is retained unchanged under `tests/fixtures/full-fail-mape/` and remains a label-semantics control only; it has no r3 attempt identity and cannot complete the r3 row.
+
+A new full execution writes only under `out/attempts/<row-id>/`. `ATTEMPT.json` pins the row id, random attempt run id, source-code manifest digest, candidate-manifest digest, protocol hashes, and exact input/verdict paths. An interrupted attempt without terminal markers resumes the same directory and run id. Any existing verdict or result marker refuses re-entry, so a previous terminal pair can never be reused by a new invocation. After the driver succeeds, the runner atomically records FINALIZING with the raw-input hash before producing terminal records. Startup in FINALIZING invokes only the model-free finalizer: it re-derives VERDICT from that pinned input, rewrites RESULT, verifies the whole pair, and atomically marks COMPLETE last. This recovers crashes after verdict or result writes while rejecting mixed artifacts or changed raw input. Existing legacy `D/VERDICT.json` and `D/out/RESULT.json` are never read by the completion predicate, and old `out/run` data is not reused.
+
+The producer writes the run identity, raw-input SHA-256, source pins, and protocol pins into `VERDICT.json`; after the verdict is written, it writes `RESULT.json` with the exact verdict-file SHA-256 and the same identity/hash tuple. The consumer verifies the run, verdict, attempt record, raw input, recorded result/verdict digests, and current protocol hashes agree. It recomputes confirm/q overall labels from the nested per-n verdicts, verifies proof/grade/label consistency, and accepts terminal `FAIL_MAPE` or q-axis `FAIL` as completed outcomes without calling either a scientific pass.
+
+`launch.sh`, `run.py`, `verdict_q.py`, and `completion_check.py` verify `SOURCE-CODE.sha256` against its manifest digest and verify every listed file before use. The manifest excludes itself and its checksum list to avoid circular hashing; deployment metadata must pin the candidate manifest digest separately.
+
+Validation is offline only; this candidate has not launched or measured anything.
