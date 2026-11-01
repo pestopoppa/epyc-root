@@ -1,0 +1,87 @@
+{
+  "format": "inf75-r7-reviewed-candidate-seal.v2",
+  "status": "isolated candidate; parked READY row untouched; not for publish/retry",
+  "baseline": {
+    "packet_root": "/mnt/raid0/llm/tmp/codex-w5s-current-census-r2-20261029/successor-r7",
+    "sources_sha256": "56d1200787c95554df54c8a1130a77f3a6948df903ad86ed646fe79bb18cec3f",
+    "packet_files": {
+      "KEEP": "802f113e6a9da33a15a2e7e60c60a8677bf17fe5a35600b8bf15496f0e3a1584",
+      "enrollment.py": "d7c437c50df0ef5426a29e358d90399b4b8f0083afa5c7b9c80e3be4e9f9bf1d",
+      "full_main.py": "35be47b9d81b58121496d855e99ee3f9f53bbd8e4d3cdd93c7eea87a01d8b18e",
+      "job.py": "b330e6d692c40444c3f13ec586951bd5313ae02d08721808599216698401b070",
+      "launch.v15.sh": null,
+      "server_probe_full.py": "fef7b7590d6b90a395ee651236a19a9100e095ea7ed432061014b471fe5648b3",
+      "work.py": "adf1da0a72a74fe0c47dd7e539188078a57fa24dfed3a0bb315c292c0e71dc66",
+      "completion_check.py": null,
+      "test_w5s_dryrun_contract.py": null,
+      "test_rowflow_dryrun_output.py": null
+    },
+    "rowflow": {
+      "rowflow.py": {
+        "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/rowflow.py",
+        "sha256": "bedff7d2706d39c13720f764813dc9ca40dd2d4cfddbdf7bf0d85afa3b43ad6a"
+      },
+      "publish_row.py": {
+        "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/publish_row.py",
+        "sha256": "a82473c252b06692a542f2aec99a556d6e7dac62a22975f52e1201818c93d813"
+      }
+    }
+  },
+  "candidate": {
+    "packet_root": "/tmp/inf75-r7-candidate-reviewed/packet",
+    "sources_sha256": "7bab9f5c30293ffda7a2bcad1e17180f1e6ef5efc0f32d77394eaba4be1cb578",
+    "source_pins_sha256": "233bb1cd703a897fa663bd4b350b3dbf68a92a203ead6a0793088fee4e23f944",
+    "packet_files": [
+      {
+        "path": "/tmp/inf75-r7-candidate-reviewed/packet/KEEP",
+        "sha256": "c1164573fe2cf1cdb456717b9ff9ae92bfff16346c638d9e27088495491883c4"
+      },
+      {
+        "path": "/tmp/inf75-r7-candidate-reviewed/packet/enrollment.py",
+        "sha256": "dd137deb3549a85d93bfe5799a013557bc8227a1eecec6779490891f935ce125"
+      },
+      {
+        "path": "/tmp/inf75-r7-candidate-reviewed/packet/full_main.py",
+        "sha256": "b2b634fc4c8987f1da060f8ec29ad5152638c8604e4ae577ebfaf4af82808809"
+      },
+      {
+        "path": "/tmp/inf75-r7-candidate-reviewed/packet/job.py",
+        "sha256": "9e669454a5a5f91a798ab4320ffd1bb1709ddead010f1a79fe030bff33009af2"
+      },
+      {
+        "path": "/tmp/inf75-r7-candidate-reviewed/packet/launch.v15.sh",
+        "sha256": "5f45ffb40436478fce657664a1b275ae2f62cd37c9e8684496181e9fcc0a6549"
+      },
+      {
+        "path": "/tmp/inf75-r7-candidate-reviewed/packet/server_probe_full.py",
+        "sha256": "8db0f32bb0efd327b53029253f5a738828c44d038660d4655af3500203ca6b2b"
+      },
+      {
+        "path": "/tmp/inf75-r7-candidate-reviewed/packet/work.py",
+        "sha256": "c05270a121014b44b65a18dc649af2acdfefb417c4c1be159cdd7f8d12257a6f"
+      },
+      {
+        "path": "/tmp/inf75-r7-candidate-reviewed/packet/completion_check.py",
+        "sha256": "50fb146a05dbb12c59356fdabc7680aec20a4a64129b11b3db3830107c75195c"
+      },
+      {
+        "path": "/tmp/inf75-r7-candidate-reviewed/packet/test_w5s_dryrun_contract.py",
+        "sha256": "1c19f13acffa51fa20fbccf14ed1a74c22966c17a4c3172b0b6e8b6855c9dcf9"
+      },
+      {
+        "path": "/tmp/inf75-r7-candidate-reviewed/packet/test_rowflow_dryrun_output.py",
+        "sha256": "ae909f00a19c59ee7c02aefd43022f4ba9955aa6939304223c144001381f49d0"
+      }
+    ],
+    "rowflow": [
+      {
+        "path": "/tmp/inf75-r7-candidate-reviewed/rowflow/rowflow.py",
+        "sha256": "e21428e815ffda0ee1a4af62594b78cc9c5a066499fe4980833865807951c188"
+      },
+      {
+        "path": "/tmp/inf75-r7-candidate-reviewed/rowflow/publish_row.py",
+        "sha256": "3f0de6b37ca240f29d9aeea60081595e7a936f03f81af5974d282cb283471dfa"
+      }
+    ]
+  }
+}

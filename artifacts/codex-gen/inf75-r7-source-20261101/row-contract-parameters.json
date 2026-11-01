@@ -1,0 +1,34 @@
+{
+  "status": "review-only; parked row untouched; do not publish/retry",
+  "id": "inf75-w5s-current-census-r7-20261031",
+  "lane": "cpu",
+  "regions": "0-95",
+  "estimate_s": 5700,
+  "min_window_s": 5400,
+  "window_s": 7140,
+  "gib": 192,
+  "dryrun_timeout_s": 2400,
+  "result_path": "/mnt/raid0/llm/tmp/codex-w5s-current-census-r2-20261029/successor-r7/LAST-RESULT.json",
+  "result_format": "json",
+  "dryrun_whole_host": true,
+  "dryrun_native_result": true,
+  "admission_class": "diagnostic",
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex-w5s-current-census-r2-20261029/successor-r7/launch.v15.sh",
+    "sha256": "5f45ffb40436478fce657664a1b275ae2f62cd37c9e8684496181e9fcc0a6549"
+  },
+  "engine": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+    "sha256": "316830c77eefeda21a4ebf70aab3fe05977e53e58696fd9f582020614d0921c4"
+  },
+  "keep": [
+    "LAST-RESULT.json",
+    "BUILD-RECEIPT-PATH",
+    "native-attempts/**/*.json"
+  ],
+  "scratch_root": "/mnt/raid0/llm/tmp/codex-w5s-current-census-r2-20261029/successor-r7",
+  "workdir": "/mnt/raid0/llm/tmp/codex-w5s-current-census-r2-20261029/successor-r7",
+  "stop_file": "/mnt/raid0/llm/tmp/codex-w5s-current-census-r2-20261029/successor-r7/STOP",
+  "source_manifest_sha256": "fbb285c6cff7a97a6ff8c158d51708f3b5f2b3c5e8426cb1eedcbccfce6adb0a",
+  "source_pins_sha256": "2c5c491da224796f90fae8eb4de904121d89198384fbce5f1ba1d8fae828aec9"
+}

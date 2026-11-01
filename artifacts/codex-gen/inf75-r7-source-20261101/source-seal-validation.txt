@@ -1,0 +1,4 @@
+baseline SOURCES sha256=56d1200787c95554df54c8a1130a77f3a6948df903ad86ed646fe79bb18cec3f preserved byte-for-byte
+candidate SOURCES sha256=7bab9f5c30293ffda7a2bcad1e17180f1e6ef5efc0f32d77394eaba4be1cb578
+candidate source-pins sha256=233bb1cd703a897fa663bd4b350b3dbf68a92a203ead6a0793088fee4e23f944
+changed entries=10; limited to 10 packet paths; all candidate hashes match

@@ -26,7 +26,7 @@ RESULT_FILE = {"json": "RESULT.json", "jsonl": "results.jsonl"}
 RESULT_NAMES = ("RESULT.json", "RESULT.jsonl", "results.jsonl", "results.json")
 SPEC_KEYS = ("id", "owner", "lane", "regions", "result_path", "result_format", "decision_rule", "estimate_s", "handoff_task",
              "priority_rank", "scratch_root", "keep", "dryrun_timeout_s", "min_window_s", "lineage", "lineage_reset", "supersedes",
-             "notes", "row", "snapshot", "admission_class", "dryrun_whole_host")
+             "notes", "row", "snapshot", "admission_class", "dryrun_whole_host", "dryrun_native_result")
 DERIVABLE = ("lane", "scratch_root", "keep", "kind")
 _UNIT_RE = re.compile(r"(?:no unit in|before writing a unit to) (\S+) \(")
 

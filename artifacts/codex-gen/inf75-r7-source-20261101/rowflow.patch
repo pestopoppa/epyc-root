@@ -1,0 +1,225 @@
+--- a/rowflow.py
++++ b/rowflow.py
+@@ -9,8 +9,8 @@
+                      optional: result_format (jsonl|json|csv|tsv|text-lines|markdown-table|custom:<cmd>; default by
+                                extension), regions (default gpu -> mi210_0,184-191; cpu -> any-cpu-quarter),
+                                ram_gib (48), priority_rank (100), scratch_root (launcher's job dir), keep (globs),
+-                               dryrun_timeout_s (900 cpu / 1500 gpu), lineage, lineage_reset, supersedes,
+-                               snapshot (true forces the snapshot below)
++                               dryrun_timeout_s (900 cpu / 1500 gpu), dryrun_native_result (count a unique per-attempt native JSON unit
++                               without touching result_path), lineage, lineage_reset, supersedes, snapshot (true forces the snapshot below)
+ 
+     SNAPSHOT RULE   a launcher, engine or job file under worktrees/ or /workspace (or a /workspace/repos/<x> target) is
+                     copied at publish time into <scratch_root>/snapshot/ (git archive HEAD of its directory when the
+@@ -402,6 +402,8 @@
+     if spec.get("admission_class") is not None:
+         need(isinstance(spec["admission_class"], str) and spec["admission_class"] in ADMISSION_CLASSES,
+              "admission_class must be one of " + ", ".join(sorted(ADMISSION_CLASSES)))
++    if spec.get("dryrun_native_result") is not None:
++        need(isinstance(spec["dryrun_native_result"], bool), "dryrun_native_result must be boolean")
+     launcher = os.path.abspath(str(spec["launcher"]))
+     need(os.path.isfile(launcher), f"launcher {launcher} missing")
+     for term in (".ended", ".complete"):
+@@ -478,7 +480,7 @@
+         row["snapshot"] = snap
+     elif isinstance(spec.get("snapshot"), dict):  # a republish from ready/<id>.json (publish_row.py --repair) keeps its snapshot record
+         row["snapshot"] = spec["snapshot"]
+-    for k in ("lineage", "lineage_reset", "supersedes", "notes", "row", "dryrun_whole_host"):
++    for k in ("lineage", "lineage_reset", "supersedes", "notes", "row", "dryrun_whole_host", "dryrun_native_result"):
+         if spec.get(k) is not None:
+             row[k] = spec[k]
+     if spec.get("shape") is not None:
+@@ -1071,6 +1073,24 @@
+     return " ".join(fields) + "\n"
+ 
+ 
++def new_dryrun_native_result_path(dd):
++    """Create a fresh result path for this exact qualification attempt."""
++    import tempfile
++    dry_dir = os.path.abspath(dd)
++    if os.path.islink(dry_dir):
++        raise Refused("dry-run output root may not be a symlink")
++    root = os.path.join(dry_dir, "native-attempts")
++    if os.path.islink(root):
++        raise Refused("dry-run native-attempts directory may not be a symlink")
++    os.makedirs(root, mode=0o700, exist_ok=True)
++    if os.path.realpath(root) != os.path.join(os.path.realpath(dry_dir), "native-attempts"):
++        raise Refused("dry-run native-attempts directory escaped its row")
++    os.chmod(root, 0o700)
++    attempt = tempfile.mkdtemp(prefix="attempt-", dir=root)
++    os.chmod(attempt, 0o700)
++    return os.path.join(attempt, "native-result.json")
++
++
+ def dryrun_run(flags, rid, regions, one_quarter=False):
+     """The dry run on the regions the allocator assigned. Returns (verdict, message). verdict in PASS | FAIL | WAIT."""
+     allrows = rows(flags)
+@@ -1102,11 +1122,15 @@
+             os.remove(os.path.join(dd, stale))
+         except OSError:
+             pass
+-    units0 = count_units(d["result_path"], d["result_format"], d.get("workdir"))
++    result_path = new_dryrun_native_result_path(dd) if d.get("dryrun_native_result") else d["result_path"]
++    result_format = "json" if d.get("dryrun_native_result") else d["result_format"]
++    units0 = count_units(result_path, result_format, d.get("workdir"))
+     env = dict(os.environ, FILLER_DRYRUN="1", FILLER_DRYRUN_DIR=dd, FILLER_STATE_DIR=os.path.join(dd, "state"),
+                FILLER_FLAGS_DIR=flags, FILLER_GRANTS_DIR=G,
+                FILLER_POLL="5", FILLER_OWNER=str(d["owner"]), FILLER_EST_WALL_S=str(d["estimate_s"]),
+                FILLER_DRYRUN_ONE_QUARTER="1" if one_quarter else "0")
++    if d.get("dryrun_native_result"):
++        env["FILLER_DRYRUN_RESULT_PATH"] = result_path
+     with open(grant, "w") as f:
+         f.write(dryrun_grant_text(rid, d.get("admission_class"), regions, holds, start, end))
+     out = open(os.path.join(dd, "launcher.out"), "a")
+@@ -1146,11 +1170,11 @@
+                     verdict, reason = "FAIL", (f"single-threaded preflight: job used {pct:.1f}% of its {len(hold_cpus)} claimed cpus for "
+                                                f"{int(time.time() - t0)}s with no unit (a quarter row must use the quarter: shrink its regions or fix the launcher)")
+                     break
+-            units = count_units(d["result_path"], d["result_format"], d.get("workdir"))
++            units = count_units(result_path, result_format, d.get("workdir"))
+             new_units = units - units0
+             if new_units > 0 and first_unit_at is None:
+                 first_unit_at = now_iso()
+-                out.write(f"==== first unit at {first_unit_at}: {new_units} new unit(s) in {d['result_path']}\n"); out.flush()
++                out.write(f"==== first unit at {first_unit_at}: {new_units} new unit(s) in {result_path}\n"); out.flush()
+                 if not os.path.exists(ended):
+                     open(os.path.join(dd, "stop"), "w").close()
+                     stop_requested = time.time()
+@@ -1158,12 +1182,12 @@
+                 rc_line = (head1(ended) or "rc=? (no ended record)")
+                 m = re.match(r"rc=(\d+)", rc_line)
+                 rc = int(m.group(1)) if m else -1
+-                units = count_units(d["result_path"], d["result_format"], d.get("workdir")) - units0
++                units = count_units(result_path, result_format, d.get("workdir")) - units0
+                 if "reason=disk-floor" in rc_line or "reason=hard-end" in rc_line and units <= 0 and time.time() - t0 < 60:
+                     verdict, reason = "WAIT", f"host condition, not the row: {rc_line[:100]} (free disk under the 150 GiB floor); retried later, no FAIL recorded"
+                     break
+                 if units <= 0:
+-                    verdict, reason = "FAIL", f"job ended ({rc_line[:120]}) before writing a unit to {d['result_path']} ({d['result_format']})"
++                    verdict, reason = "FAIL", f"job ended ({rc_line[:120]}) before writing a unit to {result_path} ({d['result_format']})"
+                 elif rc not in (0, 75):
+                     verdict, reason = "FAIL", f"first unit written but the job ended {rc_line[:120]}"
+                 elif gpu and (vram_max is None or vram_max < 64 << 20):
+@@ -1181,7 +1205,7 @@
+                 break
+             if time.time() - t0 > timeout:
+                 started = any("START regions=" in l for l in tail(os.path.join(dd, "launcher.out"), 400))
+-                verdict, reason = "FAIL", f"no unit in {d['result_path']} ({d['result_format']}) within dryrun_timeout_s={timeout}" + \
++                verdict, reason = "FAIL", f"no unit in {result_path} ({d['result_format']}) within dryrun_timeout_s={timeout}" + \
+                                  (" (the job ran: if result_path is only a completion marker, point the spec at the job's per-item output, or raise dryrun_timeout_s)" if started
+                                   else " and the engine never reached START (admission/precond/port refusal; see launcher.out)")
+                 break
+@@ -1215,8 +1239,8 @@
+     cur_sha = sha256(lp) if os.path.isfile(lp) else None
+     if verdict == "PASS" and cur_sha != lsha:
+         verdict, reason = "FAIL", "launcher changed while the dry run was running"
+-    rec = {"regions": regions, "units": count_units(d["result_path"], d["result_format"], d.get("workdir")) - units0, "result_path": d["result_path"],
+-           "result_format": d["result_format"], "first_unit_at": first_unit_at, "vram_used_max_bytes": vram_max,
++    rec = {"regions": regions, "units": count_units(result_path, result_format, d.get("workdir")) - units0, "result_path": result_path,
++           "result_format": result_format, "first_unit_at": first_unit_at, "vram_used_max_bytes": vram_max,
+            "engine_sha256": sha256(d["engine"]["path"]) if os.path.isfile(d["engine"]["path"]) else None,
+            "ended": head1(ended) or None, "warning": warning, "dryrun_log": os.path.join(dd, "launcher.out"), "elapsed_s": int(time.time() - t0)}
+     if verdict == "WAIT":
+--- a/publish_row.py
++++ b/publish_row.py
+@@ -26,7 +26,7 @@
+ RESULT_NAMES = ("RESULT.json", "RESULT.jsonl", "results.jsonl", "results.json")
+ SPEC_KEYS = ("id", "owner", "lane", "regions", "result_path", "result_format", "decision_rule", "estimate_s", "handoff_task",
+              "priority_rank", "scratch_root", "keep", "dryrun_timeout_s", "min_window_s", "lineage", "lineage_reset", "supersedes",
+-             "notes", "row", "snapshot", "admission_class", "dryrun_whole_host")
++             "notes", "row", "snapshot", "admission_class", "dryrun_whole_host", "dryrun_native_result")
+ DERIVABLE = ("lane", "scratch_root", "keep", "kind")
+ _UNIT_RE = re.compile(r"(?:no unit in|before writing a unit to) (\S+) \(")
+ 
+--- /dev/null
++++ b/tests/test_rowflow_r7_dryrun_native.py
+@@ -0,0 +1,89 @@
++import json
++import os
++import sys
++import tempfile
++import unittest
++from pathlib import Path
++from unittest.mock import patch
++
++HERE=Path(__file__).resolve().parent
++sys.path.insert(0,str(HERE.parent/'rowflow'))
++sys.path.insert(0,str(HERE))
++import rowflow as rf
++import publish_row
++from test_rowflow import Fixture
++
++class DryrunNativeResultTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls): cls.fx=Fixture()
++    @classmethod
++    def tearDownClass(cls): cls.fx.cleanup()
++
++    def test_each_dryrun_counts_only_unique_native_file_and_preserves_production(self):
++        fx=self.fx; rid='w5s-dryrun-native-isolation'
++        d=fx.job(rid)
++        production=Path(d)/'LAST-RESULT.json'
++        production.write_text('{"production":"keep"}\n')
++        spec=fx.spec(rid,d,result_path=str(production),result_format='json',regions='0-95',
++                     min_window_s=300,dryrun_timeout_s=60,dryrun_native_result=True,
++                     dryrun_whole_host=True,admission_class='diagnostic')
++        row=rf.publish(spec,fx.flags)
++        self.assertTrue(row['dryrun_native_result'])
++
++        class Done:
++            pid=424242
++            def poll(self): return 0
++            def wait(self,timeout=None): return 0
++
++        def launch(_argv, cwd, env, stdout, stderr, start_new_session):
++            result=Path(env['FILLER_DRYRUN_RESULT_PATH'])
++            launched.append(result)
++            result.write_text('{"schema":"native-test","value":1}\n')
++            Path(env['FILLER_DRYRUN_DIR'],'ended').write_text('rc=0 complete\n')
++            return Done()
++
++        attempts=[]; launched=[]
++        for _ in range(2):
++            with patch.object(rf,'status',return_value={'state':'needs-dryrun'}), \
++                 patch.object(rf,'rl_status',return_value={r:('free','') for r in rf.REGIONS}), \
++                 patch.object(rf,'open_grants',return_value=[]), \
++                 patch.object(rf.subprocess,'Popen',side_effect=launch), \
++                 patch.object(rf.time,'sleep',return_value=None):
++                verdict, message=rf.dryrun_run(fx.flags,rid,'0-95')
++            self.assertEqual(verdict,'PASS',message)
++            result_paths=list((Path(fx.flags)/'dryrun'/rid/'native-attempts').glob('attempt-*/native-result.json'))
++            self.assertEqual(len(result_paths),len(attempts)+1)
++            attempt_result=launched[-1]
++            attempts.append(attempt_result)
++            self.assertTrue(attempt_result.exists())
++            self.assertEqual(rf.count_units(str(attempt_result),'json'),1)
++        self.assertNotEqual(attempts[0].parent,attempts[1].parent)
++        self.assertEqual(production.read_text(),'{"production":"keep"}\n')
++        self.assertEqual(list(Path(fx.flags,'grants').glob(rid+'.grant')),[])
++
++    def test_repair_round_trip_preserves_optional_native_result_flag(self):
++        fx=self.fx;rid='w5s-repair-native-result';d=fx.job(rid)
++        spec=fx.spec(rid,d,result_path=str(Path(d)/'LAST-RESULT.json'),result_format='json',
++                     dryrun_native_result=True,dryrun_whole_host=True)
++        row=rf.publish(spec,fx.flags)
++        row.pop('lane')
++        Path(rf.ready_path(fx.flags,rid)).write_text(json.dumps(row)+'\n')
++        failure=Path(rf.dry_dir(fx.flags,rid));failure.mkdir(parents=True,exist_ok=True)
++        (failure/'FAIL-1.json').write_text(json.dumps({'reason':'spec.lane missing'})+'\n')
++        rc,message=publish_row.repair(rid,fx.flags)
++        self.assertEqual(rc,0,message)
++        repaired=rf.load_json(rf.ready_path(fx.flags,rid))
++        self.assertTrue(repaired['dryrun_native_result'])
++
++    def test_native_output_root_symlink_is_refused(self):
++        with tempfile.TemporaryDirectory() as td:
++            root=Path(td);dry=root/'dryrun';dry.mkdir();outside=root/'outside';outside.mkdir()
++            (dry/'native-attempts').symlink_to(outside,target_is_directory=True)
++            with self.assertRaises(rf.Refused):rf.new_dryrun_native_result_path(str(dry))
++
++    def test_false_flag_preserves_legacy_result_contract(self):
++        fx=self.fx;rid='w5s-dryrun-native-optional';d=fx.job(rid)
++        row=rf.publish(fx.spec(rid,d),fx.flags)
++        self.assertNotIn('dryrun_native_result',row)
++
++if __name__=='__main__': unittest.main()
