@@ -3,7 +3,12 @@
 The adjacent `root_lm_system.rlm_slice.md` is an original draft adaptation of
 the patterns recorded in intake-537, not a recovered or verified copy of the
 open-weight-tuned prompt. The source wording and license have not yet been
-verified. The draft omits several documented features, including few-shot
+verified. The original article was unavailable, but a [secondary mirror](https://ainewstoday.co/recursive-language-models-an-all-in-one-deep-dive/)
+contains the reported prompt. The author's [historical repository prompt](https://github.com/avbiswas/fast-rlm/blob/14b2f20676b13844a17bc498c745c519e7783a93/src/prompt.ts)
+contains overlapping guidance and is in an MIT-licensed repository; its exact
+equivalence to the article and the article's own license remain unverified.
+Preserve the repository license and attribution when adapting its prompt. The
+draft omits several documented features, including few-shot
 examples and batching. Asking a child to return text still incurs child decode;
 this draft does not establish a decode saving.
 
