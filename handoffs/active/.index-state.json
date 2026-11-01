@@ -4,7 +4,7 @@
       "blocked": 59,
       "handoffs": 59,
       "oldest_advance": "2026-07-29",
-      "open": 1042
+      "open": 1043
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -28,7 +28,7 @@
       "blocked": 17,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 654
+      "open": 652
     },
     "user-facing-harness-index.md": {
       "blocked": 17,
@@ -553,7 +553,7 @@
     },
     "conversation-stack.md": {
       "blocked": 42,
-      "closed": 56,
+      "closed": 57,
       "guarded": 0,
       "last_advanced": "2026-11-01",
       "open": 33,
@@ -565,7 +565,7 @@
       },
       "row_id": "INF-79",
       "state": "active",
-      "total": 131
+      "total": 132
     },
     "coordinator-role-failure-modes-and-refactor.md": {
       "blocked": 0,
@@ -1673,10 +1673,10 @@
     },
     "model-artifact-integrity.md": {
       "blocked": 0,
-      "closed": 11,
+      "closed": 12,
       "guarded": 0,
       "last_advanced": "2026-10-24",
-      "open": 6,
+      "open": 5,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1849,10 +1849,10 @@
     },
     "non-inference-backlog.md": {
       "blocked": 1,
-      "closed": 129,
+      "closed": 130,
       "guarded": 0,
       "last_advanced": "2026-11-01",
-      "open": 67,
+      "open": 66,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2873,10 +2873,10 @@
     },
     "yarn-context-extension-research.md": {
       "blocked": 0,
-      "closed": 44,
+      "closed": 45,
       "guarded": 0,
       "last_advanced": "2026-11-01",
-      "open": 34,
+      "open": 35,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2885,7 +2885,7 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 78
+      "total": 80
     }
   },
   "row_id_collisions": {},
