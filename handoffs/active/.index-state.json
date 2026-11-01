@@ -761,7 +761,7 @@
     },
     "dflash2-block-drafter-experimental-build.md": {
       "blocked": 0,
-      "closed": 29,
+      "closed": 30,
       "guarded": 0,
       "last_advanced": "2026-11-01",
       "open": 18,
@@ -773,7 +773,7 @@
       },
       "row_id": "INF-62",
       "state": "active",
-      "total": 47
+      "total": 48
     },
     "document-parser-table-bench.md": {
       "blocked": 0,
@@ -1337,9 +1337,9 @@
     },
     "integration-test-coverage.md": {
       "blocked": 0,
-      "closed": 1,
+      "closed": 2,
       "guarded": 5,
-      "last_advanced": "2026-10-07",
+      "last_advanced": "2026-11-01",
       "open": 1,
       "owner_index": "research-evaluation-index.md",
       "prune": {
@@ -1349,7 +1349,7 @@
       },
       "row_id": "EVL-30",
       "state": "active",
-      "total": 7
+      "total": 8
     },
     "internal-interaction-lifecycle.md": {
       "blocked": 0,
@@ -2873,7 +2873,7 @@
     },
     "yarn-context-extension-research.md": {
       "blocked": 0,
-      "closed": 43,
+      "closed": 44,
       "guarded": 0,
       "last_advanced": "2026-11-01",
       "open": 34,
@@ -2885,7 +2885,7 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 77
+      "total": 78
     }
   },
   "row_id_collisions": {},

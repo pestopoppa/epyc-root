@@ -3939,7 +3939,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-01T16:59:40Z",
+  "generated_at": "2026-11-01T17:51:40Z",
   "nodes": [
     {
       "age_days": 94,
@@ -4556,14 +4556,14 @@
       "track": "intake derived work 2026 07 25"
     },
     {
-      "age_days": 25,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 1,
+      "closed": 2,
       "domain": "research-evaluation",
       "handoff": "integration-test-coverage.md",
       "id": "EVL-30",
-      "last_advanced": "2026-10-07",
+      "last_advanced": "2026-11-01",
       "next_action": "Recorded red-baseline classification; pick targeted API/parser regression slice as risk warrants",
       "open": 1,
       "priority": 0.289,
@@ -6310,7 +6310,7 @@
       "blocked_by": [
         "RTG-57"
       ],
-      "closed": 43,
+      "closed": 44,
       "domain": "inference-research",
       "handoff": "yarn-context-extension-research.md",
       "id": "INF-59",
@@ -6401,7 +6401,7 @@
         "INF-06",
         "INF-50"
       ],
-      "closed": 29,
+      "closed": 30,
       "domain": "inference-research",
       "handoff": "dflash2-block-drafter-experimental-build.md",
       "id": "INF-62",
