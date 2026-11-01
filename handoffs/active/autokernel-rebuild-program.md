@@ -139,7 +139,7 @@ why every prior reachability audit was wrong.
   `champ2`, `build-champ-a2728701`. No GPU/CPU inference, no builds, no process management.
 - **SURFACES CONSOLIDATED 2026-08-30** — there is now exactly **one** kernel dashboard page,
   `/loop`, titled **Kernel R&D**; `/kernel` 301-redirects to it and `kernel.html` is deleted.
-  See P6.1–P6.4 for what landed and P6.5–P6.8 for what is knowingly left open. The champion
+  See P6.1–P6.7 for what landed and P6.8 for the remaining render-coverage task. The champion
   headline card is now **one number against one named anchor** and renders `NOT YET MEASURED`
   until the A/B exists (root `bdeb450f` → `e1d22546`, 19/19 mutations caught).
 - **Next action:** let run 21 run. Then (a) close out **R18-B** — the run-18 post-promotion
@@ -570,7 +570,7 @@ failure mode this program exists to end.
 
       **Open, derived from the merge (2026-08-30) — do not close P6 with these outstanding:**
 
-  - [ ] P6.5 — **retire the retired page's API surface.** `/api/kernel`, `/api/kernel/live` and
+  - [x] P6.5 — **retire the retired page's API surface.** `/api/kernel`, `/api/kernel/live` and ✅ 2026-11-01 — Implements ROOT `e035bc86917b179de0e17d8c66180c60615849cf`; [artifact and verification](../../artifacts/engineering/p65-api-retirement-20261101/README.md). [no-belief: deterministic software verification]
         `/api/kernel/health` still serve data nothing renders. Removing them strands
         `panels.PANELS["kernel"]` / `["kernel_live"]` and changes what `health_payload()` folds —
         a peer's live file, so it was deliberately left alone rather than done blind. Do it as part
