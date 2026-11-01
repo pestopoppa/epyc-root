@@ -553,7 +553,7 @@
     },
     "conversation-stack.md": {
       "blocked": 42,
-      "closed": 59,
+      "closed": 60,
       "guarded": 0,
       "last_advanced": "2026-11-01",
       "open": 33,
@@ -565,7 +565,7 @@
       },
       "row_id": "INF-79",
       "state": "active",
-      "total": 134
+      "total": 135
     },
     "coordinator-role-failure-modes-and-refactor.md": {
       "blocked": 0,
@@ -761,7 +761,7 @@
     },
     "dflash2-block-drafter-experimental-build.md": {
       "blocked": 0,
-      "closed": 32,
+      "closed": 33,
       "guarded": 0,
       "last_advanced": "2026-11-01",
       "open": 19,
@@ -773,7 +773,7 @@
       },
       "row_id": "INF-62",
       "state": "active",
-      "total": 51
+      "total": 52
     },
     "document-parser-table-bench.md": {
       "blocked": 0,
@@ -2873,7 +2873,7 @@
     },
     "yarn-context-extension-research.md": {
       "blocked": 0,
-      "closed": 49,
+      "closed": 51,
       "guarded": 0,
       "last_advanced": "2026-11-01",
       "open": 36,
@@ -2885,7 +2885,7 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 85
+      "total": 87
     }
   },
   "row_id_collisions": {},

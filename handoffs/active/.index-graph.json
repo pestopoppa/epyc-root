@@ -3939,7 +3939,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-01T19:38:13Z",
+  "generated_at": "2026-11-01T20:31:42Z",
   "nodes": [
     {
       "age_days": 94,
@@ -6310,7 +6310,7 @@
       "blocked_by": [
         "RTG-57"
       ],
-      "closed": 49,
+      "closed": 51,
       "domain": "inference-research",
       "handoff": "yarn-context-extension-research.md",
       "id": "INF-59",
@@ -6401,7 +6401,7 @@
         "INF-06",
         "INF-50"
       ],
-      "closed": 32,
+      "closed": 33,
       "domain": "inference-research",
       "handoff": "dflash2-block-drafter-experimental-build.md",
       "id": "INF-62",
@@ -6867,7 +6867,7 @@
       "age_days": 0,
       "blocked": 42,
       "blocked_by": [],
-      "closed": 59,
+      "closed": 60,
       "domain": "inference-research",
       "handoff": "conversation-stack.md",
       "id": "INF-79",
