@@ -60,11 +60,18 @@ class _Fixture(unittest.TestCase):
         _w(os.path.join(self.repo, "handoffs/active/backlog-priority.json"), json.dumps({"rows": {}, "inference_prep": []}))
         _w(os.path.join(self.repo, "handoffs/active/.index-state.json"), json.dumps({"handoffs": {}, "rows": {}}))
         self.calls = []
+        self._lane = patch.object(hs, "ensure_lane", lambda slug, repo=None: (self.repo, "fast-forwarded"))
+        self._lane.start()
+        self._cwd = patch.object(hs, "project_cwd", lambda e, repo=None: self.repo)  # the fixture repo is not a git clone
+        self._cwd.start()
 
     def dispatch(self, **kw):
         return hs.dispatch_once(self.flags, runner=self.runner, repo=self.repo, **kw)
 
+
     def tearDown(self):
+        self._lane.stop()
+        self._cwd.stop()
         self.td.cleanup()
 
     def runner(self, cmd, prompt_file, out):
@@ -199,7 +206,7 @@ class ProjectCwdTests(unittest.TestCase):
         subprocess.run(["git", "-C", repo, "init", "-q"], check=True)
         subprocess.run(["git", "-C", repo, "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "--allow-empty", "-m", "x"], check=True)
         wt = tempfile.mkdtemp() + "/wt"
-        subprocess.run(["git", "-C", repo, "worktree", "add", "-q", wt, "-b", "lane"], check=True)
+        subprocess.run(["git", "-C", repo, "worktree", "add", "-q", wt, "-b", "wt-lane"], check=True)
         self.assertEqual(hs.project_cwd({}, repo=repo), os.path.realpath(repo))
         self.assertEqual(hs.project_cwd({"cwd": wt}, repo=repo), os.path.realpath(wt))
         other = tempfile.mkdtemp()
@@ -217,12 +224,25 @@ class ProjectCwdTests(unittest.TestCase):
         e = {"handoff": "handoffs/active/x.md", "engine": "codex", "cwd": other}
         hs.ROOT, old = repo, hs.ROOT
         try:
-            hs._go(flags, "x", e, "p", runner, None, fresh=True)
+            with patch.object(hs, "ensure_lane", lambda slug, repo=None: (other, "created")):  # a lane outside the project
+                hs._go(flags, "x", e, "p", runner, None, fresh=True)
             self.assertEqual(calls, [])
             self.assertIn("REFUSED-CWD", open(os.path.join(flags, "handoff-sessions.log")).read())
             e2 = {"handoff": "handoffs/active/x.md", "engine": "codex", "cwd": wt}
-            hs._go(flags, "x", e2, "p", runner, None, fresh=True)
+            with patch.object(hs, "ensure_lane", lambda slug, repo=None: (wt, "fast-forwarded")):
+                hs._go(flags, "x", e2, "p", runner, None, fresh=True)
             self.assertEqual(calls, [os.path.realpath(wt)])
+            self.assertEqual(e2["cwd"], wt)
+            # a real lane on this fixture repo: created from origin/main, then fast-forwarded
+            subprocess.run(["git", "-C", repo, "branch", "-M", "main"], check=True)
+            subprocess.run(["git", "-C", repo, "remote", "add", "origin", repo], check=True)
+            subprocess.run(["git", "-C", repo, "fetch", "-q", "origin"], check=True)
+            with patch.object(hs, "LANES_DIR", tempfile.mkdtemp()):
+                d, st = hs.ensure_lane("x", repo=repo)
+                self.assertEqual((os.path.basename(d), st), ("h-x", "created"))
+                self.assertEqual(subprocess.run(["git", "-C", d, "rev-parse", "--abbrev-ref", "HEAD"], capture_output=True, text=True).stdout.strip(), "lane/h-x")
+                self.assertEqual(hs.ensure_lane("x", repo=repo)[1], "fast-forwarded")
+                self.assertEqual(hs.project_cwd({"cwd": d}, repo=repo), os.path.realpath(d))
         finally:
             hs.ROOT = old
 

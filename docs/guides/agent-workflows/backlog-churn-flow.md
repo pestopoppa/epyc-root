@@ -85,13 +85,25 @@ whose file left `handoffs/active/`) becomes `done` and frees its slot. Registry 
 session whose handoff falls below the top-`max_live` **yields** — it finishes its current task and wraps up, is marked
 `yield` and is not resumed for NEW work (its own rows' run-end events still reach it); never killed mid-task.
 
+**Lane worktree per session (ws58, 2026-11-01; INC 2026-08-21 class — four sessions committed in the shared `/workspace`
+clone within one minute and swept up each other's staged files).** Every session works and commits ONLY in
+`/mnt/raid0/llm/worktrees/mains/h-<slug>` on branch `lane/h-<slug>` (created from origin/main by `git worktree add`; a
+worktree of `/workspace`, so the project-cwd rule holds). The dispatcher fast-forwards or merges origin/main into the
+lane before every resume (a conflict becomes the session's first task); the brief and every prompt say **never commit in
+`/workspace`**; wrap-up pushes the lane to main through `serialized_push.py --repo <lane>` and proves
+`git -C <lane> cherry origin/main` empty. Live sessions migrate at their next resume (`LANE <slug>: cwd … -> …` in the
+log). On `done` the lane goes to `scripts/system/worktree_gate.py remove` (never prune/gc).
+
 **tmux window per session (operator, 2026-11-01).** start/resume/transfer run the engine inside window `h-<slug>` of
 the tmux session `agent` (created with `new-window -d -t agent: -n h-<slug>`, reused with `respawn-pane -k`; addressed by
 NAME `agent:=h-<slug>`, never by index; no `send-keys`, ever; the `codex-gen` and `claude` windows are never touched).
 The JSONL is still tee'd to `handoff-sessions/<slug>/<ts>.jsonl` (the dispatcher reads session id / WRAPPED from it as
 before), the pane shows `handoff_sessions.py pretty`, `<ts>.jsonl.pid|.rc` carry the engine pid and exit status
 (`last_rc` in the registry), the pane stays open after the turn (remain-on-exit) and the window is killed on `done`.
-No tmux session → `TMUX-FALLBACK` (detached engine, as before).
+No tmux session → `TMUX-FALLBACK` (detached engine, as before). **No clutter (operator, later the same evening):** the
+window is killed when the session pauses (waiting on a row), yields or is done, and created again by name on the next
+resume; the turn's output stays in `handoff-sessions/<slug>/<ts>.jsonl` and `handoff-sessions.log` carries the state line
+(`STATE <slug>: paused - waiting on row(s) … ; tmux window h-<slug> killed`).
 
 **Pause rule (operator, 2026-11-01 21:15Z — binding).** A session may be paused ONLY when everything left in its handoff
 waits on an inference row that is queued or running. After a landed wrap-up the dispatcher reads `BACKLOG-handoff-<slug>.md`:

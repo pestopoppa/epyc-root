@@ -67,7 +67,11 @@ class AutoStartFixture(unittest.TestCase):
         hs.save(hs.reg_path(self.flags), self.reg)
         self.calls = []
 
+        self._lane = patch.object(hs, "ensure_lane", lambda slug, repo=None: (self.repo, "fast-forwarded"))
+        self._lane.start()
+
     def tearDown(self):
+        self._lane.stop()
         self.td.cleanup()
 
     def runner(self, cmd, prompt_file, out, cwd=None):
@@ -290,3 +294,33 @@ class PauseRuleTests(AutoStartFixture):
         self.assertTrue(hs.pane_status_line({"status": "suspended", "work_state": "continue", "work_reason": "x"}).startswith("RESUMING"))
         self.assertEqual(hs.pane_status_line({"status": "done"}), "DONE")
         self.assertIn("pane-status", hs.pane_command(["codex"], "p", "o", "/w"))
+
+
+class WindowClutterTests(AutoStartFixture):
+    def test_pause_kills_window_resume_recreates_it(self):
+        windows = ["btop", "claude", "codex-gen", "h-alpha"]
+        fake, calls = TmuxWindowTests.fake_tmux_factory(self, windows)
+        self.reg["max_live"] = 3
+        self.reg["auto_start"] = False
+        self.reg["sessions"] = {"alpha": {"handoff": "handoffs/active/alpha.md", "engine": "codex", "session_id": "t1", "status": "suspended",
+                                          "pid": None, "last_wrapup": "abc1234", "last_end": "2026-11-01T10:00:00Z",
+                                          "last_output": os.path.join(self.flags, "handoff-sessions/alpha/old.jsonl")}}
+        hs.save(hs.reg_path(self.flags), self.reg)
+        # paused: everything left waits on a running row -> window killed, state line logged with the pause reason
+        _w(os.path.join(self.flags, "BACKLOG-handoff-alpha.md"), "## Inference rows\n- [running] cpu rank=1 **row-x**\n\n## Non-inference tasks\n\n- none\n")
+        with patch.object(hs, "tmux", fake), patch.object(hs, "landed", return_value=True), patch.object(hs, "project_cwd", return_value=self.repo):
+            reg, _ = hs.dispatch_once(self.flags, repo=self.repo)  # no stub runner: the tmux path is exercised
+        self.assertNotIn("h-alpha", windows)
+        self.assertIn(("kill-window", "-t", "agent:=h-alpha"), calls)
+        self.assertIn("STATE alpha: paused - waiting on row(s) row-x (queued/running); tmux window h-alpha killed", self.log_text())
+        self.assertEqual(reg["sessions"]["alpha"]["status"], "suspended")
+        # the row ends -> open work again -> resumed; the window is created again BY NAME
+        _w(os.path.join(self.flags, "BACKLOG-handoff-alpha.md"), "## Inference rows\n- [blocked] cpu rank=1 **row-x**\n")
+        with patch.object(hs, "tmux", fake), patch.object(hs, "landed", return_value=True), patch.object(hs, "project_cwd", return_value=self.repo):
+            reg, _ = hs.dispatch_once(self.flags, repo=self.repo)
+        self.assertIn("h-alpha", windows)
+        nw = [c for c in calls if c[0] == "new-window"]
+        self.assertEqual(len(nw), 1)
+        self.assertEqual(nw[0][:6], ("new-window", "-d", "-t", "agent:", "-n", "h-alpha"))
+        self.assertEqual(reg["sessions"]["alpha"]["status"], "live")
+        self.assertFalse(any(c[0] == "send-keys" for c in calls))

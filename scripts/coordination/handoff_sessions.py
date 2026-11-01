@@ -77,6 +77,11 @@ ENGINES = ("codex", "claude", "opencode")
 FANOUT_LINE = ("Working mode: FAN OUT - your own thread only reviews, integrates and handles task boundaries; execution goes to "
                "3-5 concurrent subagents on the cheapest capable model/effort (exceptions: agents/shared/OPERATING_CONSTRAINTS.md "
                "-> *When NOT to fan out*). This applies on every engine; do not rely on AGENTS.md/CLAUDE.md being loaded.")
+def lane_line(slug):
+    return (f"Work ONLY in your lane worktree {lane_dir(slug)} (branch {lane_branch(slug)}; origin/main was merged in before "
+            f"this resume) and NEVER commit in {ROOT}; wrap up by pushing the lane to main with serialized_push.py --repo {lane_dir(slug)}.")
+
+
 WRAPPED_RX = re.compile(r"(?:WRAPPED|WRAPUP:)\s+([0-9a-f]{7,40})\b")
 
 
@@ -151,7 +156,11 @@ this brief and on disk/origin/main — you may have no transcript of earlier tur
 {FANOUT_LINE}
 
 ## Where things are
-- Repo root: `{ROOT}` (branch main; always `git -C {ROOT} fetch origin` first). Handoff: `{ROOT}/{e['handoff']}`.
+- **Your lane worktree: `{lane_dir(slug)}` on branch `{lane_branch(slug)}`** — your cwd and the ONLY place you edit and
+  commit. **Never commit in `{ROOT}`** (the shared clone: parallel commits sweep up each other's staged files). At the
+  start of EVERY turn: `git -C {lane_dir(slug)} fetch origin && (git -C {lane_dir(slug)} merge --ff-only origin/main ||
+  git -C {lane_dir(slug)} merge --no-edit origin/main)` (the dispatcher does the same before resuming you; a reported
+  merge conflict is your first task). Handoff: `{lane_dir(slug)}/{e['handoff']}`.
 - Your backlog: `{flags}/BACKLOG-handoff-{slug}.md` (regenerated every 10 min by backlog_gen.py from the registry
   `{reg_path(flags)}`). Owned row ids: {rows}; row patterns: {pats}; handoff task rows: {hrows}.
 - Progress files: `progress/YYYY-MM/YYYY-MM-DD-handoff-{slug}.md` (one per day, append per boundary).
@@ -181,8 +190,10 @@ runs under "Own inference tasks to publish as rows" and your handoff's rank amon
 
 ## Wrap-up contract — at EVERY task boundary, before you end any turn
 - Progress entry in `progress/YYYY-MM/YYYY-MM-DD-handoff-{slug}.md`; handoff ticks with evidence; pathspec-limited
-  commit (`git commit -- <paths>`); push via `python3 scripts/coordination/serialized_push.py --fetch --push`
-  (held lock = wait and retry); prove `git cherry origin/main <sha>` is empty.
+  commit in your LANE (`git -C {lane_dir(slug)} commit -- <paths>`); push the lane to main via
+  `python3 scripts/coordination/serialized_push.py --agent handoff-{slug} --repo {lane_dir(slug)} --fetch --push`
+  (held lock = wait and retry; non-fast-forward = merge origin/main into the lane and retry); prove
+  `git -C {lane_dir(slug)} cherry origin/main <sha>` is empty.
 - Then print the line `WRAPPED <sha>` (sha = the landed commit) as the LAST line of your reply. The dispatcher parses
   it into the registry and will NOT resume you for new work until that sha is on origin/main.
 - At a milestone, or when your context is large, wrap up and also say `FRESH-SESSION-REQUESTED`.
@@ -191,7 +202,8 @@ runs under "Own inference tasks to publish as rows" and your handoff's rank amon
 ## Hard rules
 - Never arm, grant, qualify, kill or launch compute; never edit grants, the keeper, gates or another session's READY
   manifest. Never pkill/pgrep by name; kill only PIDs you captured.
-- Git: never `git add -A`/`git add .`; pathspec-limited commits only; push only through serialized_push.py.
+- Git: work ONLY in your lane worktree; never commit in {ROOT}; never `git add -A`/`git add .`; pathspec-limited commits
+  only; push only through serialized_push.py (lane -> main). Never `git worktree prune`, never `git gc`.
 - Suspend once your row is accepted (armed) by the keeper; do not poll.
 
 ## Transfer rule
@@ -222,8 +234,8 @@ def end_prompt(slug, e, flags, rid, endfile):
         tail = open(outp, errors="replace").read().strip().splitlines()[-1][:400]
     except (OSError, IndexError):
         pass
-    return f"""[{VERSION}] Run end in your handoff {e['handoff']}: row `{rid}`. {FANOUT_LINE}
-1. `git -C {ROOT} fetch origin`; re-read {e['handoff']} and {flags}/BACKLOG-handoff-{slug}.md.
+    return f"""[{VERSION}] Run end in your handoff {e['handoff']}: row `{rid}`. {FANOUT_LINE} {lane_line(slug)}
+1. Re-read {e['handoff']} and {flags}/BACKLOG-handoff-{slug}.md (in your lane).
 2. Facts: end file {endfile}: `{endline}` (rc={rc}); launcher end line: `{tail}`;
    manifest {mp or '(not found; look in ' + flags + '/ready/<id>.json or ready/armed/<id>.json)'} (schema {m.get('schema', 'epyc.row.v2|v3')});
    result_path: {m.get('result_path')}; handoff_task: {m.get('handoff_task')}; decision_rule: {json.dumps(m.get('decision_rule'))[:800]}.
@@ -240,7 +252,7 @@ def end_prompt(slug, e, flags, rid, endfile):
 
 
 def idle_prompt(slug, e, flags):
-    return f"""[{VERSION}] Continue your handoff {e['handoff']}. {FANOUT_LINE} `git -C {ROOT} fetch origin`; re-read the handoff and
+    return f"""[{VERSION}] Continue your handoff {e['handoff']}. {FANOUT_LINE} {lane_line(slug)} Re-read the handoff and
 {flags}/BACKLOG-handoff-{slug}.md; take the top actionable item per {flags}/briefs/HANDOFF-{slug}.md.
 Wrap up at EVERY task boundary (progress/YYYY-MM/YYYY-MM-DD-handoff-{slug}.md, handoff ticks, pathspec commit,
 serialized_push.py, `git cherry origin/main <sha>` empty) and print `WRAPPED <sha>` as your LAST line
@@ -250,7 +262,7 @@ serialized_push.py, `git cherry origin/main <sha>` empty) and print `WRAPPED <sh
 def continue_prompt(slug, e, flags, why=""):
     return f"""[{VERSION}] continue: next task. Your handoff {e['handoff']} still has open work ({why}); a session pauses ONLY when
 everything left waits on an inference row that is queued or running (operator rule 2026-11-01). {FANOUT_LINE}
-`git -C {ROOT} fetch origin`; re-read {flags}/BACKLOG-handoff-{slug}.md. INFERENCE FIRST: publish this handoff's measurement
+{lane_line(slug)} Re-read {flags}/BACKLOG-handoff-{slug}.md. INFERENCE FIRST: publish this handoff's measurement
 tasks as rows (`publish_row.py`, fastest-clearable blockers first) before any non-inference task; then the top non-inference
 item per {flags}/briefs/HANDOFF-{slug}.md. Wrap up at this task boundary (progress/YYYY-MM/YYYY-MM-DD-handoff-{slug}.md,
 handoff ticks, pathspec commit, serialized_push.py, `git cherry origin/main <sha>` empty) and print `WRAPPED <sha>` as
@@ -275,7 +287,7 @@ def transfer_prompt(slug, e, flags, repo=ROOT):
     prev_s = f"{prev[-1]['engine']} session {prev[-1]['session_id']}" if prev else "another engine"
     return f"""[{VERSION}] TRANSFER: you are the NEW owner session (engine {e.get('engine')}) of handoff {e['handoff']},
 taken over from {prev_s}. The previous engine's transcript is UNAVAILABLE and must not be assumed: the files below
-are your complete starting state. `git -C {repo} fetch origin` first; then act per the brief.
+are your complete starting state. {lane_line(slug)} Then act per the brief.
 
 ===== BRIEF ({flags}/briefs/HANDOFF-{slug}.md) =====
 {brief}
@@ -289,12 +301,69 @@ are your complete starting state. `git -C {repo} fetch origin` first; then act p
 {idle_prompt(slug, e, flags)}"""
 
 
+# ---------------------------------------------------------------- lane worktrees (ws58, 2026-11-01 - INC 2026-08-21 class)
+# Every session works and commits in its OWN worktree /mnt/raid0/llm/worktrees/mains/h-<slug> on branch lane/h-<slug>
+# (created from origin/main; a worktree of /workspace, so the project-cwd rule holds). origin/main is fast-forwarded or
+# merged into the lane before every resume. NEVER commit in /workspace: parallel commits in the shared clone sweep up each
+# other's staged files. Wrap-up pushes the lane to main through serialized_push.py. Never prune or gc.
+LANES_DIR = "/mnt/raid0/llm/worktrees/mains"
+WORKTREE_GATE = "scripts/system/worktree_gate.py"
+
+
+def lane_dir(slug: str) -> str:
+    return os.path.join(LANES_DIR, window_name(slug))
+
+
+def lane_branch(slug: str) -> str:
+    return f"lane/{window_name(slug)}"
+
+
+def _git(cwd, *args, timeout=300):
+    return subprocess.run(["git", "-C", cwd, *args], capture_output=True, text=True, timeout=timeout)
+
+
+def ensure_lane(slug: str, repo=None) -> tuple[str, str]:
+    """(lane path, sync state). Creates the worktree from origin/main when missing (reusing an existing lane/h-<slug>
+    branch), then fast-forwards or merges origin/main into it. 'merge-conflict' leaves the lane untouched (merge aborted)
+    and the session is told to resolve it first. Raises RuntimeError when the worktree cannot be created."""
+    repo = repo or ROOT
+    d = lane_dir(slug)
+    _git(repo, "fetch", "-q", "origin", "main")
+    if not os.path.exists(os.path.join(d, ".git")):
+        os.makedirs(LANES_DIR, exist_ok=True)
+        if _git(repo, "rev-parse", "--verify", "--quiet", f"refs/heads/{lane_branch(slug)}").returncode == 0:
+            r = _git(repo, "worktree", "add", d, lane_branch(slug))
+        else:
+            r = _git(repo, "worktree", "add", "-b", lane_branch(slug), d, "origin/main")
+        if r.returncode:
+            raise RuntimeError(f"worktree add {d} failed: {(r.stderr or r.stdout).strip()[:300]}")
+        return d, "created"
+    if _git(d, "merge", "--ff-only", "origin/main").returncode == 0:
+        return d, "fast-forwarded"
+    if _git(d, "merge", "--no-edit", "origin/main").returncode == 0:
+        return d, "merged"
+    _git(d, "merge", "--abort")
+    return d, "merge-conflict"
+
+
+def remove_lane(flags, slug, repo=None):
+    """On done: hand the lane to the removal gate (never a raw `worktree remove`, never prune/gc). Logs the verdict."""
+    d = lane_dir(slug)
+    if not os.path.exists(d):
+        return
+    gate = os.path.join(repo or ROOT, WORKTREE_GATE)
+    r = subprocess.run([sys.executable, "-I", gate, "remove", d], capture_output=True, text=True, timeout=300)
+    log(flags, f"LANE-REMOVE {slug} {d}: rc={r.returncode} {(r.stdout or r.stderr).strip().splitlines()[-1][:200] if (r.stdout or r.stderr).strip() else ''}")
+
+
 # ---------------------------------------------------------------- tmux windows (operator, 2026-11-01)
 # Every handoff session runs inside window `h-<slug>` of the existing tmux session `agent` so the operator can watch it
 # live. Windows are addressed by NAME only (`agent:=h-<slug>`), never by index. The engine's JSONL still goes to
 # handoff-sessions/<slug>/<ts>.jsonl (tee), the pane shows a readable form (`handoff_sessions.py pretty`), the engine pid
 # and exit status land in <out>.pid / <out>.rc for the dispatcher. The pane stays open after the turn (remain-on-exit),
-# is reused on the next resume (respawn-pane) and is killed when the session is marked done. No send-keys, ever.
+# is reused on the next resume (respawn-pane) while the session is live/continuing, and is KILLED when the session
+# pauses (waiting on a row), yields or is done (operator: no clutter; the turn's JSONL stays readable on disk and
+# handoff-sessions.log carries the state line). Recreated by name on the next resume. No send-keys, ever.
 TMUX_SESSION = "agent"
 PROTECTED_WINDOWS = ("codex-gen", "claude")
 
@@ -744,9 +813,16 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
         if ws == "done":
             e["status"], e["done_at"] = "done", now_iso()
             kill_window(slug)
+            remove_lane(flags, slug, repo)
             log(flags, f"DONE {slug}: {why}; slot freed; tmux window {window_name(slug)} killed")
-        elif e.get("work_state") != ws or e.get("work_reason") != why:
-            log(flags, f"{'PAUSE' if ws == 'pause' else 'OPEN'} {slug}: {why}")
+        else:
+            idle_window = ws == "pause" or bool(e.get("yield"))  # operator: no window clutter while paused/yielded
+            if idle_window and tmux_has_window(slug):
+                kill_window(slug)
+                log(flags, f"STATE {slug}: {'paused' if ws == 'pause' else 'yielded'} - {why}; tmux window {window_name(slug)} killed "
+                           f"(last turn: {e.get('last_output')})")
+            if e.get("work_state") != ws or e.get("work_reason") != why:
+                log(flags, f"{'PAUSE' if ws == 'pause' else 'OPEN'} {slug}: {why}")
         e["work_state"], e["work_reason"] = ws, why
     paused = _parse(reg.get("paused_until") or "") > now
     live = sum(1 for e in S.values() if alive(e.get("pid")))  # suspended sessions (waiting on a running row) have no pid
@@ -757,7 +833,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 if e.get("push_retries", 0) >= MAX_PUSH_RETRIES:
                     continue
                 e["push_retries"] = e.get("push_retries", 0) + 1
-                _go(flags, slug, e, PUSH_PROMPT.format(v=VERSION, sha=e.get("last_wrapup")), runner, None)
+                _go(flags, slug, e, PUSH_PROMPT.format(v=VERSION, sha=e.get("last_wrapup"), slug=slug, lane=lane_dir(slug)), runner, None)
                 live += 1
         q, rest, lcache, launched = st.get("queue") or [], [], {}, set()
         for ev in q:
@@ -847,6 +923,17 @@ def transfer(flags, slug, engine, force=False, runner=None, repo=ROOT):
 def _go(flags, slug, e, prompt, runner, ev, fresh=False):
     if fresh:
         e["session_id"], e["fresh_next"] = None, False
+    try:
+        lane, sync = ensure_lane(slug)
+    except (RuntimeError, OSError, subprocess.TimeoutExpired) as exc:
+        log(flags, f"LANE-FAILED {slug}: {exc}; not spawned")
+        e.update({"status": "suspended", "pending_event": ev, "last_refusal": str(exc)})
+        return
+    if e.get("cwd") != lane:
+        log(flags, f"LANE {slug}: cwd {e.get('cwd') or ROOT} -> {lane} ({sync})")
+    e["cwd"], e["lane_sync"] = lane, sync
+    if sync == "merge-conflict":
+        prompt = (f"[{VERSION}] FIRST: `git -C {lane} merge origin/main` conflicts; resolve it in your lane, commit, then continue.\n") + prompt
     try:
         pid, out = launch(flags, slug, e, prompt, fresh=fresh, runner=runner)
     except ValueError as exc:  # project_cwd refused: never spawn outside the project
