@@ -27,8 +27,16 @@ Row states (epyc.row.v3, scripts/coordination/rowflow/rowflow.py is the one sour
                          a legacy manifest needs `rowflow.py publish --migrate`, or a `blocked_by` entry is open
     parked               >= MAX_FAILS failed dry runs in the lineage (operator-escalations/<lineage>.md); nobody retries
     qualified-armed      dry run PASSED and the launcher is unchanged (grantable / poller armed); writers grant it
-    running              grants/<id>.grant open
+    running              grants/<id>.grant open, NO grants/<id>.ended|.complete, and the recorded launcher/poller pid (armed
+                         record or queue line) is alive; a grant whose pid is dead or whose .ended exists is never "running"
+                         (2026-11-01 bug: an HSF row showed running while grants/<id>.ended said rc=1)
     done                 grants/<id>.ended|.complete or filing-done/<id>.FILED
+
+Handoffs that NEED A SESSION (no entry in handoff-sessions.json) are ranked the same way, for the dispatcher's auto-start
+and the "Routed elsewhere" section: handoff_score = sum of lane_weight over the DISTINCT advanceable inference rows that
+the handoff's tasks unblock (its WORK lines, transitively) plus the advanceable rows whose fix task points into it
+(handoff_task / unblock tasks); ties - including score 0 - break on handoffs/active/backlog-priority.json rank of the
+handoff's index row (handoffs/active/.index-state.json row_id), then best row rank; NEVER alphabetically.
 
 Workers (operator, 2026-11-01): the ni / refactor / codex3 Codex sessions are CLOSED. `codex-gen` is the single
 always-open generalist and takes SMALL tasks only ([S], no `[too-big:` note); every other task is routed to the
@@ -176,13 +184,61 @@ def task_key(wl: dict) -> str:
     return f"code [{wl['size']}] {wl['file']}:{wl['line']} — {wl['text'][:160]}"
 
 
+def _pid_alive(pid) -> bool:
+    try:
+        pid = int(pid)
+    except (TypeError, ValueError):
+        return False
+    try:
+        st = open(f"/proc/{pid}/stat").read().rsplit(")", 1)[1].split()[0]
+        return st != "Z"
+    except OSError:
+        return False
+
+
+def recorded_pid(F: str, rid: str):
+    """The launcher/poller pid the calendar recorded for a row: ready/armed/<id>.json `pid`, else a `id|pid|...` line in a
+    *.queue file. None when nothing recorded a pid (the grant itself carries none)."""
+    a = load_json(F + f"ready/armed/{rid}.json")
+    if isinstance(a, dict) and a.get("pid"):
+        return a["pid"]
+    for q in glob.glob(F + "*.queue"):
+        try:
+            for l in open(q, errors="replace"):
+                f = l.strip().split("|")
+                if len(f) > 1 and f[0] == rid and f[1].isdigit():
+                    return int(f[1])
+        except OSError:
+            continue
+    return None
+
+
+def grant_run_state(F: str, rid: str) -> tuple[str | None, str]:
+    """(state, reason) from the grant files alone. `done` on .ended/.complete/FILED; `running` only on an open .grant with
+    no end record AND a live recorded pid (or no pid recorded anywhere - then the grant is the only evidence);
+    `stale-grant` when the recorded pid is dead; None when no grant exists."""
+    if os.path.exists(F + f"grants/{rid}.ended") or os.path.exists(F + f"grants/{rid}.complete") or os.path.exists(F + f"filing-done/{rid}.FILED"):
+        return "done", "grants/<id>.ended|.complete or filing-done present"
+    if not os.path.exists(F + f"grants/{rid}.grant"):
+        return None, ""
+    pid = recorded_pid(F, rid)
+    if pid is None:
+        return "running", "grants/<id>.grant open (no pid recorded; the grant is the only evidence)"
+    if _pid_alive(pid):
+        return "running", f"grants/<id>.grant open, launcher pid {pid} alive"
+    return "stale-grant", f"grants/<id>.grant open but launcher pid {pid} is dead and no .ended exists (grant writer/keeper must end it)"
+
+
 def row_state_v3(flags: str, rid: str, allrows: dict) -> tuple[str, list[str], dict]:
     """(state, reasons, rowflow status) for an epyc.row.v3 row."""
     F = flags.rstrip("/") + "/"
-    if os.path.exists(F + f"grants/{rid}.ended") or os.path.exists(F + f"grants/{rid}.complete") or os.path.exists(F + f"filing-done/{rid}.FILED"):
+    gs, greason = grant_run_state(F, rid)
+    if gs == "done":
         return "done", [], {}
+    if gs == "stale-grant":
+        return "blocked", ["wait (ws58 keeper): " + greason], {}
     if _rf is None:
-        if os.path.exists(F + f"grants/{rid}.grant"):
+        if gs == "running":
             return "running", [], {}
         return "needs-qualification", [], {}
     try:
@@ -192,8 +248,8 @@ def row_state_v3(flags: str, rid: str, allrows: dict) -> tuple[str, list[str], d
     s = st.get("state")
     if s == "done":
         return "done", [], st
-    if s == "running":
-        return "running", [], st
+    if s == "running":  # rowflow trusts the open grant; the BACKLOG additionally needs no end record and a live pid
+        return ("running", [], st) if gs == "running" else ("blocked", ["wait (ws58 keeper): grant open but " + (greason or "no grant evidence")], st)
     if s in ("grantable", "armed"):
         return "qualified-armed", [], st
     if s == "parked":
@@ -205,12 +261,42 @@ def row_state_v3(flags: str, rid: str, allrows: dict) -> tuple[str, list[str], d
     return "needs-qualification", [], st
 
 
+HANDOFF_RX = re.compile(r"handoffs/active/[A-Za-z0-9._-]+\.md")
+
+
+def handoff_file_of(text: str) -> str | None:
+    m = HANDOFF_RX.search(str(text or ""))
+    return m.group(0) if m else None
+
+
+def handoff_priority(priority_path: str, prows: dict) -> tuple[dict[str, dict], dict[str, str]]:
+    """(handoff file -> {row_id, rank}, index row id -> handoff file). The handoff's index row comes from
+    handoffs/active/.index-state.json (beside backlog-priority.json); the rank is that row's backlog-priority rank
+    (lower = more urgent; 9999 = unranked)."""
+    idx = load_json(os.path.join(os.path.dirname(os.path.abspath(priority_path)), ".index-state.json")) or {}
+    out, row_handoff = {}, {}
+    for rid, r in (idx.get("rows") or {}).items():
+        if isinstance(r, dict) and r.get("handoff"):
+            row_handoff[rid] = "handoffs/active/" + str(r["handoff"]).split("/")[-1]
+    for base, h in (idx.get("handoffs") or {}).items():
+        if not isinstance(h, dict):
+            continue
+        rid = h.get("row_id")
+        r = prows.get(rid) if rid else None
+        rank = r.get("rank") if isinstance(r, dict) and isinstance(r.get("rank"), (int, float)) else 9999
+        out["handoffs/active/" + base] = {"row_id": rid, "rank": float(rank)}
+        if rid:
+            row_handoff.setdefault(rid, "handoffs/active/" + base)
+    return out, row_handoff
+
+
 def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | None = None,
           sessions_path: str | None = None) -> dict:
     now = now or _dt.datetime.now(_dt.timezone.utc)
     F = flags.rstrip("/") + "/"
     pri = load_json(priority_path) or {}
     prows = pri.get("rows") or {}
+    hpri, row_handoff = handoff_priority(priority_path, prows)
     prep = pri.get("inference_prep") or []
     unblocks_map = load_json(F + "unblocks.json") or {}
     klog = fold_keeper_log(keeper_log)
@@ -282,10 +368,14 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
             if reasons and state in ("needs-qualification", "qualified-armed"):
                 state = "blocked"
         else:
-            if os.path.exists(F + f"grants/{rid}.ended") or os.path.exists(F + f"grants/{rid}.complete") or os.path.exists(F + f"filing-done/{rid}.FILED"):
+            gs, greason = grant_run_state(F, rid)
+            if gs == "done":
                 state = "done"
-            elif os.path.exists(F + f"grants/{rid}.grant"):
+            elif gs == "running":
                 state = "running"
+            elif gs == "stale-grant":
+                state = "blocked"
+                reasons.append("wait (ws58 keeper): " + greason)
             else:
                 state = "blocked"
                 reasons.append(f"legacy manifest (schema {d.get('schema') or 'unset'}): migrate with "
@@ -293,13 +383,15 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
                                "(fills result_path/decision_rule if the manifest lacks them; repoints the engine to filler_run15.sh in a new launch.v15.sh)")
         prep_entry = next((e for e in prep if e.get("filler") == rid), None)
         row_id = (prep_entry or {}).get("row") or d.get("row") or (str(d.get("handoff_task") or "").split(":")[-1] if v3 else None)
+        hfile = handoff_file_of(d.get("handoff") or d.get("handoff_task")) or row_handoff.get(row_id or "")
         w = bucket_for(rid, row_id, d.get("handoff") or (str(d.get("handoff_task") or "").split(":")[0] if v3 else None))
         if state == "qualified-armed":
             per[w]["qual"][lane] += 1
         rec = {"id": rid, "lane": lane, "rank": d.get("priority_rank") or (prep_entry or {}).get("rank") or 999,
                "state": state, "row": row_id, "reasons": reasons, "cause": ("keeper" if any(r.startswith("wait (") for r in reasons) else "worker") if state == "blocked" else "",
                "tasks": tasks_for(rid, row_id, reasons, w) if state == "blocked" else [],
-               "lineage": st.get("lineage") or id_stem(rid), "lineage_fails": st.get("lineage_fails", 0), "owner": d.get("owner")}
+               "lineage": st.get("lineage") or id_stem(rid), "lineage_fails": st.get("lineage_fails", 0), "owner": d.get("owner"),
+               "handoff": hfile}
         per[w]["rows"].append(rec)
         if row_id:
             rows_by_handoff_row.setdefault(row_id, []).append(rec)
@@ -320,7 +412,8 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
                "tasks": (tasks_for(rid, e.get("row"), [blocker[:200]] if state == "blocked" else [], w) if state == "blocked"
                          else (["write the launcher on filler_run15.sh, then `publish_row.py <spec.json>` (id, owner, launcher, lane, result_path, decision_rule, estimate_s, handoff_task)"]
                                + tasks_for(rid, e.get("row"), [], w, placeholder=False)) if state == "needs-launcher" else []),
-               "lineage": id_stem(rid), "lineage_fails": 0, "owner": e.get("owner")}
+               "lineage": id_stem(rid), "lineage_fails": 0, "owner": e.get("owner"),
+               "handoff": handoff_file_of(e.get("handoff")) or row_handoff.get(e.get("row") or "")}
         per[w]["rows"].append(rec)
         if e.get("row"):
             rows_by_handoff_row.setdefault(e["row"], []).append(rec)
@@ -387,6 +480,39 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
 
     # ---- routing: small -> codex-gen; everything else -> the handoff session owning the file, else "needs a session" ----
     handoff_bucket = {p["handoff"]: f"handoff-{slug}" for slug, p in pilots.items()}
+    rows_by_id = {r["id"]: r for w in buckets for r in per[w]["rows"]}
+    # ---- handoffs that need a session: score = lane-weighted DISTINCT advanceable rows the handoff's tasks unblock ----
+    hs_rows: dict[str, dict[str, dict]] = {}   # handoff file -> {row id -> rec}
+    hs_tasks: dict[str, list[dict]] = {}
+    for wl in scored:
+        if wl["file"] in handoff_bucket or not HANDOFF_RX.fullmatch(wl["file"]):
+            continue
+        hs_tasks.setdefault(wl["file"], []).append(wl)
+        for rid in wl["unblocked_rows"]:
+            if rid in rows_by_id:
+                hs_rows.setdefault(wl["file"], {})[rid] = rows_by_id[rid]
+    for r in advanceable.values():  # a stuck row's fix task belongs to its owning handoff; unblock tasks that point into one count too
+        targets = {r.get("handoff")} if r.get("handoff") else set()
+        for t in r["tasks"]:
+            hf = handoff_file_of(t)
+            if hf:
+                targets.add(hf)
+        for hf in targets:
+            if hf not in handoff_bucket:
+                hs_rows.setdefault(hf, {})[r["id"]] = r
+    needs_session = []
+    for hf in set(hs_rows) | set(hs_tasks):
+        rr = hs_rows.get(hf, {})
+        pr = hpri.get(hf, {"row_id": None, "rank": 9999.0})
+        best = min([float(r["rank"]) if str(r["rank"]).replace(".", "", 1).isdigit() else 999 for r in rr.values()] + [999])
+        needs_session.append({"handoff": hf, "score": round(sum(lane_weight(r["lane"]) for r in rr.values()), 4),
+                              "rows": sorted(rr), "lanes": sorted({r["lane"] for r in rr.values()}),
+                              "row_id": pr["row_id"], "priority_rank": pr["rank"], "best_row_rank": best,
+                              "tasks": len(hs_tasks.get(hf, []))})
+    # order: most inference unblocked first; ties (incl. score 0) by backlog-priority rank of the handoff's index row,
+    # then the best rank among its rows, then task count. Never alphabetical.
+    needs_session.sort(key=lambda h: (-h["score"], h["priority_rank"], h["best_row_rank"], -h["tasks"], h["handoff"]))
+    hs_order = {h["handoff"]: i for i, h in enumerate(needs_session)}
     for wl in scored:
         tgt = handoff_bucket.get(wl["file"])
         if wl["size"] == "S" and not wl["too_big"] and (tgt is None or wl["source"] == GENERALIST or not wl["unblocked_rows"]):
@@ -398,6 +524,7 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
         else:
             wl["route"] = "needs a handoff session for " + wl["file"]
             per[GENERALIST]["routed"].append(wl)
+    per[GENERALIST]["routed"].sort(key=lambda wl: (hs_order.get(wl["file"], 10**6), wl["order"]))
 
     for w in buckets:
         starved = {ln for ln in ("cpu", "gpu") if ready_by_lane[ln] < FLOOR}
@@ -410,7 +537,8 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
             return (1, STATE_ORDER[r["state"]], rank, 0)
         per[w]["rows"].sort(key=_key)
     return {"generated_at": now.strftime("%Y-%m-%dT%H:%MZ"), "workers": per, "parked": parked,
-            "pilots": {s: p["handoff"] for s, p in pilots.items()}, "ready_by_lane": ready_by_lane, "klog_idle": klog["idle"][-3:]}
+            "pilots": {s: p["handoff"] for s, p in pilots.items()}, "ready_by_lane": ready_by_lane, "klog_idle": klog["idle"][-3:],
+            "needs_session": needs_session}
 
 
 def render(w: str, data: dict) -> str:
@@ -446,9 +574,17 @@ def render(w: str, data: dict) -> str:
         tag = f"score={wl['score']}" + (f" unblocks={','.join(wl['unblocked_rows'][:4])}" if wl["unblocked_rows"] else "")
         L.append(f"{wl['raw']}  <!-- {tag} -->")
     if d.get("routed"):
-        L += ["", "## Routed elsewhere (NOT yours: M/L or `[too-big:]` tasks whose handoff has no session yet — ws58/dispatcher starts one)", ""]
+        L += ["", "## Routed elsewhere (NOT yours: M/L or `[too-big:]` tasks whose handoff has no session yet — the dispatcher "
+              "auto-starts one per handoff, highest score first; ties by backlog-priority rank, never alphabetical)", ""]
+        ns = {h["handoff"]: h for h in data.get("needs_session", [])}
+        shown_h = set()
         for wl in d["routed"][:60]:
-            L.append(f"- {wl['route']}: {wl['raw'][:200]}")
+            h = ns.get(wl["file"])
+            if h and wl["file"] not in shown_h:
+                shown_h.add(wl["file"])
+                L.append(f"- **{wl['file']}** — handoff score={h['score']} rows={','.join(h['rows'][:4]) or '-'} "
+                         f"priority={h['row_id'] or '-'} rank={h['priority_rank'] if h['priority_rank'] < 9999 else '-'}")
+            L.append(f"    - {wl['route']}: {wl['raw'][:200]}")
         if len(d["routed"]) > 60:
             L.append(f"- ... {len(d['routed']) - 60} more")
     if not w.startswith("handoff-") and data.get("pilots"):

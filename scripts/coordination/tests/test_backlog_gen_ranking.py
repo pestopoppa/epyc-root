@@ -76,3 +76,95 @@ class RankingTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+
+class NeedsSessionAndRunningStateTests(unittest.TestCase):
+    """2026-11-01 ws58: (a) handoffs needing a session are ranked by lane-weighted rows unblocked, ties by
+    backlog-priority rank (never alphabetically), and a stuck row's handoff counts; (b) `running` needs an open grant,
+    no .ended and a live recorded pid (the HSF row bug: running shown while grants/<id>.ended said rc=1)."""
+
+    def setUp(self):
+        self.d = tempfile.mkdtemp(prefix="bg-ns-")
+        self.flags = os.path.join(self.d, "flags")
+        for sub in ("ready/armed", "grants"):
+            os.makedirs(os.path.join(self.flags, sub))
+        bg._rf = None
+        self.ha = os.path.join(self.d, "handoffs", "active")
+        os.makedirs(self.ha)
+        self.pri = os.path.join(self.ha, "backlog-priority.json")
+        json.dump({"rows": {"INF-1": {"kind": "inference-ready", "rank": 1}, "INF-9": {"kind": "inference-ready", "rank": 9},
+                            "INF-5": {"kind": "inference-ready", "rank": 5}},
+                   "inference_prep": []}, open(self.pri, "w"))
+        json.dump({"handoffs": {"alpha.md": {"row_id": "INF-9"}, "mid.md": {"row_id": "INF-5"}, "zed.md": {"row_id": "INF-1"}},
+                   "rows": {"INF-9": {"handoff": "alpha.md"}, "INF-5": {"handoff": "mid.md"}, "INF-1": {"handoff": "zed.md"}}},
+                  open(os.path.join(self.ha, ".index-state.json"), "w"))
+        self.sessions = os.path.join(self.d, "hs.json")
+        json.dump({"sessions": {}}, open(self.sessions, "w"))
+
+    def tearDown(self):
+        shutil.rmtree(self.d, ignore_errors=True)
+
+    def row(self, rid, lane="cpu", **extra):
+        json.dump({"schema": "epyc.row.v3", "id": rid, "owner": "o", "lane": lane, "priority_rank": 3,
+                   "regions": "mi210_0,184-191" if lane == "gpu" else "any-cpu-quarter", **extra},
+                  open(os.path.join(self.flags, "ready", rid + ".json"), "w"))
+
+    def build(self):
+        return bg.build(self.flags, self.pri, os.path.join(self.flags, "nolog"), sessions_path=self.sessions)
+
+    def test_needs_session_ranking_not_alphabetical(self):
+        self.row("row-gpu-1", "gpu", handoff_task="handoffs/active/mid.md:INF-5")
+        with open(os.path.join(self.flags, "WORK-codex-gen-code.md"), "w") as f:
+            f.write("- [M] handoffs/active/alpha.md:10 — alpha task\n"
+                    "- [M] handoffs/active/zed.md:10 — zed task\n"
+                    "- [M] handoffs/active/mid.md:10 — mid task [unblocks: row-gpu-1]\n")
+        data = self.build()
+        ns = data["needs_session"]
+        self.assertEqual([h["handoff"].split("/")[-1] for h in ns], ["mid.md", "zed.md", "alpha.md"])
+        self.assertEqual(ns[0]["score"], 1.0)  # gpu lane weight 1/(1+0); the row counted ONCE though both the task
+        self.assertEqual(ns[0]["rows"], ["row-gpu-1"])  # and the row's own handoff_task point at mid.md
+        self.assertEqual((ns[1]["row_id"], ns[1]["priority_rank"]), ("INF-1", 1.0))
+        self.assertEqual((ns[2]["row_id"], ns[2]["priority_rank"]), ("INF-9", 9.0))
+        routed = data["workers"]["codex-gen"]["routed"]
+        self.assertEqual([wl["file"].split("/")[-1] for wl in routed], ["mid.md", "zed.md", "alpha.md"])
+        text = bg.render("codex-gen", data)
+        self.assertLess(text.index("**handoffs/active/mid.md**"), text.index("**handoffs/active/zed.md**"))
+        self.assertLess(text.index("**handoffs/active/zed.md**"), text.index("**handoffs/active/alpha.md**"))
+        self.assertIn("handoff score=1.0 rows=row-gpu-1 priority=INF-5 rank=5.0", text)
+
+    def test_stuck_row_without_tasks_still_counts_for_its_handoff(self):
+        # a FILLERS-migrated row has no handoff_task path; the inference_prep `row` -> index-state maps it to alpha.md
+        self.row("HSF-ROW-2", handoff_task="FILLERS:HSF-ROW-2", blocked_by=["dry run failed"])
+        pri = json.load(open(self.pri))
+        pri["inference_prep"] = [{"rank": 4, "filler": "HSF-ROW-2", "row": "INF-9", "lane": "cpu", "blocker": "harness fix"}]
+        json.dump(pri, open(self.pri, "w"))
+        open(os.path.join(self.flags, "WORK-codex-gen-code.md"), "w").write("- [M] handoffs/active/zed.md:10 — zed task\n")
+        data = self.build()
+        ns = {h["handoff"].split("/")[-1]: h for h in data["needs_session"]}
+        self.assertEqual(ns["alpha.md"]["rows"], ["HSF-ROW-2"])
+        self.assertEqual(ns["alpha.md"]["score"], 1.0)
+        self.assertEqual([h["handoff"].split("/")[-1] for h in data["needs_session"]], ["alpha.md", "zed.md"])
+
+    def test_running_requires_live_grant_without_ended(self):
+        G = os.path.join(self.flags, "grants")
+        for rid in ("HSF-ENDED", "HSF-DEADPID", "HSF-LIVE", "HSF-NOPID"):
+            self.row(rid, handoff_task="handoffs/active/zed.md:INF-1")
+            open(os.path.join(G, rid + ".grant"), "w").write("regions=0-23 start=x end=y\n")
+        open(os.path.join(G, "HSF-ENDED.ended"), "w").write("rc=1 time=2026-10-26T21:47:27Z reason=exited\n")
+        json.dump({"id": "HSF-DEADPID", "pid": 99999997}, open(os.path.join(self.flags, "ready/armed/HSF-DEADPID.json"), "w"))
+        json.dump({"id": "HSF-LIVE", "pid": os.getpid()}, open(os.path.join(self.flags, "ready/armed/HSF-LIVE.json"), "w"))
+        states = {r["id"]: r for r in self.build()["workers"]["codex-gen"]["rows"]}
+        self.assertEqual(states["HSF-ENDED"]["state"], "done", "an .ended record (rc=1) is never running")
+        self.assertEqual(states["HSF-DEADPID"]["state"], "blocked")
+        self.assertIn("pid 99999997 is dead", states["HSF-DEADPID"]["reasons"][0])
+        self.assertEqual(states["HSF-LIVE"]["state"], "running")
+        self.assertEqual(states["HSF-NOPID"]["state"], "running")
+        self.assertEqual(bg.grant_run_state(self.flags + "/", "HSF-ENDED")[0], "done")
+        self.assertEqual(bg.grant_run_state(self.flags + "/", "HSF-DEADPID")[0], "stale-grant")
+        self.assertIsNone(bg.grant_run_state(self.flags + "/", "no-such-row")[0])
+        # legacy (non-v3) manifests follow the same rule
+        json.dump({"schema": "epyc.ready.v2", "id": "LEG-DEAD", "regions": "0-23"}, open(os.path.join(self.flags, "ready", "LEG-DEAD.json"), "w"))
+        open(os.path.join(G, "LEG-DEAD.grant"), "w").write("regions=0-23\n")
+        json.dump({"id": "LEG-DEAD", "pid": 99999997}, open(os.path.join(self.flags, "ready/armed/LEG-DEAD.json"), "w"))
+        states = {r["id"]: r for r in self.build()["workers"]["codex-gen"]["rows"]}
+        self.assertEqual(states["LEG-DEAD"]["state"], "blocked")

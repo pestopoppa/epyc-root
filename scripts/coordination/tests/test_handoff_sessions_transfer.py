@@ -56,7 +56,13 @@ class _Fixture(unittest.TestCase):
                         "status": "suspended", "row_patterns": ["yarn"], "row_ids": ["yarn-1"],
                         "last_wrapup": "deadbeef1", "last_end": "2026-11-01T10:00:00Z", "pid": None}}}
         hs.save(hs.reg_path(self.flags), self.reg)
+        # auto-start ranking inputs live beside the handoffs: empty here so nothing but the fixture session exists
+        _w(os.path.join(self.repo, "handoffs/active/backlog-priority.json"), json.dumps({"rows": {}, "inference_prep": []}))
+        _w(os.path.join(self.repo, "handoffs/active/.index-state.json"), json.dumps({"handoffs": {}, "rows": {}}))
         self.calls = []
+
+    def dispatch(self, **kw):
+        return hs.dispatch_once(self.flags, runner=self.runner, repo=self.repo, **kw)
 
     def tearDown(self):
         self.td.cleanup()
@@ -118,7 +124,7 @@ class UnwrappedGateTests(_Fixture):
     def test_end_event_not_resumed_while_unwrapped(self):
         _w(os.path.join(self.flags, "grants", "yarn-1.ended"), "rc=0\n")
         with patch.object(hs, "landed", return_value=False):
-            reg, st = hs.dispatch_once(self.flags, runner=self.runner)
+            reg, st = self.dispatch()
         self.assertEqual(self.calls, [], "no resume while last_wrapup is not landed")
         self.assertEqual([ev["rid"] for ev in st["queue"]], ["yarn-1"])
         e = reg["sessions"][self.slug]
@@ -127,7 +133,7 @@ class UnwrappedGateTests(_Fixture):
         self.assertIn("UNWRAPPED yarn: refusing resume; last_wrapup=deadbeef1", self.log_text())
         # once the wrap-up lands, the queued event is served
         with patch.object(hs, "landed", return_value=True):
-            reg, st = hs.dispatch_once(self.flags, runner=self.runner)
+            reg, st = self.dispatch()
         self.assertEqual(len(self.calls), 1)
         self.assertIn("row `yarn-1`", self.calls[0]["prompt"])
         self.assertIn("file the verdict yourself", self.calls[0]["prompt"])
@@ -139,7 +145,7 @@ class UnwrappedGateTests(_Fixture):
         hs.save(hs.reg_path(self.flags), self.reg)
         _w(os.path.join(self.flags, "grants", "yarn-1.ended"), "rc=0\n")
         with patch.object(hs, "landed", return_value=True):
-            reg, st = hs.dispatch_once(self.flags, runner=self.runner)
+            reg, st = self.dispatch()
         self.assertEqual(self.calls, [])
         self.assertEqual(len(st["queue"]), 1)
         self.assertIn("last_wrapup=None", self.log_text())
@@ -152,7 +158,7 @@ class WrappedParsingTests(_Fixture):
         self.reg["sessions"][self.slug].update({"pid": 99999999, "last_output": out, "status": "live"})
         hs.save(hs.reg_path(self.flags), self.reg)
         with patch.object(hs, "landed", return_value=True) as ld:
-            reg, _ = hs.dispatch_once(self.flags, runner=self.runner)
+            reg, _ = self.dispatch()
         e = reg["sessions"][self.slug]
         self.assertEqual(e["last_wrapup"], "83c110265331")
         self.assertEqual(e["status"], "suspended")

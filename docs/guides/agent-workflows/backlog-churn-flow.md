@@ -69,6 +69,22 @@ Registry `compute-flags/handoff-sessions.json`; the brief `compute-flags/briefs/
 cold agent of any engine can take over from it + the handoff + the progress file + the backlog). The dispatcher resumes
 the owner on `grants/<id>.ended|.complete`, starts suspended sessions with advanceable rows, caps live sessions.
 
+**Auto-start (2026-11-01 evening; origin: all compute idle while dozens of handoffs sat under "needs a handoff session"
+and nothing consumed that list).** Every pass, while live sessions (a live pid; a suspended session waiting on a running
+row holds no slot) < `max_live`, the dispatcher STARTS a fresh session for the best handoff without one — `start`
+semantics: brief written, cwd inside the project, fan-out line, the WRAPPED gate — and logs `AUTO-START <slug>
+handoff=… engine=… pid=… score=… rows=… priority=… rank=…`. The ranking is `backlog_gen`'s `needs_session`: handoff
+score = Σ lane_weight over the DISTINCT advanceable inference rows the handoff's open tasks unblock (transitive, same
+score as the task ranking) plus the rows whose fix task points into it; ties — including score 0 — by the
+`backlog-priority.json` rank of the handoff's index row (`.index-state.json`), never alphabetically. The same order
+drives the "Routed elsewhere" section of `BACKLOG-codex-gen.md`. A session whose handoff has no open `- [ ]` left (or
+whose file left `handoffs/active/`) becomes `done` and frees its slot. Registry knobs: `default_engine` (codex),
+`auto_start` (true), `max_live` (5).
+
+**`running` (BACKLOG state) means: `grants/<id>.grant` open, NO `grants/<id>.ended|.complete`, and the recorded
+launcher/poller pid (armed record or queue line) alive.** A grant with an `.ended` is `done`; a grant whose pid is dead
+is `blocked` ("stale grant", keeper/writer must end it). Origin: an HSF row showed `running` while its `.ended` said rc=1.
+
 **Every launched session (any engine; spawn, resume, transfer)**: starts with its cwd INSIDE the project — `/workspace` or
 one of its git worktrees — so it loads AGENTS.md and CLAUDE.md like any project agent (`handoff_sessions.py` validates
 `project_cwd()` and logs `REFUSED-CWD` instead of spawning anywhere else); and carries the **subagent fan-out policy**
