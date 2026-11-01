@@ -1,0 +1,5 @@
+# Complete REPL episode token accounting
+
+APP implementation `44fa7f7d61305564c9b88ae14a13d7eb93ae785b`, proof `73dff64ccb79518b65ce351f41291564b6c62e0f`, and ROOT strict projection `a50cb6e807a1594de5e660ded02e116773f36746` are on main. The request-local native ledger covers REPL creation through FINAL repair, including failed two-stage fallthrough; prior routing is excluded. Input/output/total backend-reported tokens retain observed-call denominators, separate cache replay and explicit unknowns. Per-arm/task native byte segments bind repeated task IDs correctly.
+
+APP 24 controls and two executor-to-private-ledger model-free canaries passed; ROOT 54 controls passed. One host-startup test was deliberately deselected, not passed. Early two-stage without trajectory and ambiguous graph-final export remain unavailable. The original TOTAL-token code task is completed with exact implementing SHAs, without reasserting the false historical session-log closure. Generic planning scope remains unavailable; the separate prospective VB wiring box stays open. No inference, scientific A/B, performance or live deployment claim. [no-belief: source and model-free controls]

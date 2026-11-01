@@ -1,0 +1,16 @@
+Synthetic comparison with unmodified pinned EvoReplay, before source change:
+pinned upstream added/recycled: (4, 1) local: (4, 2)
+child_rc=1; supervisor failure=null; samples=2; sampled_peak_tree_rss_bytes=23023616; children_drained=true
+
+After source change, same synthetic fixture:
+pinned upstream added/recycled: (4, 1) local: (4, 1)
+child_rc=0; supervisor failure=null; samples=2; sampled_peak_tree_rss_bytes=23003136; children_drained=true
+
+Focused fixture suite after final test edit:
+........                                                                 [100%]
+8 passed in 0.03s
+child_rc=0; supervisor failure=null; samples=4; sampled_peak_tree_rss_bytes=49508352; children_drained=true
+
+All executions used CPUs 26,27, OMP_NUM_THREADS=1 and the R4 prep supervisor.
+The comparison imports the unmodified upstream file with its unused checkpoint
+import stubbed and uses only synthetic code strings; it performs no inference.
