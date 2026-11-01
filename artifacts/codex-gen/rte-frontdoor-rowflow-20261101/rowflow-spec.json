@@ -1,0 +1,40 @@
+{
+  "schema": "epyc.row.v3",
+  "id": "codex-ni-rte-frontdoor-quarter-20261031",
+  "owner": "codex-ni",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "launcher": "/mnt/raid0/llm/tmp/codex-ni-rte-frontdoor-quarter-v15-candidate-20261101/launcher.v15.sh",
+  "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-rte-frontdoor-quarter-v15-candidate-20261101",
+  "workdir": "/mnt/raid0/llm/tmp/codex-ni-rte-frontdoor-quarter-v15-candidate-20261101",
+  "result_path": "/mnt/raid0/llm/tmp/codex-ni-rte-frontdoor-quarter-v15-candidate-20261101/attempts/*/ROWFLOW-UNIT.json",
+  "result_format": "json",
+  "decision_rule": "Diagnostic software acceptance only. The first rowflow dry-run unit is a real production-kernel `/chat` owner-checker request executed under rowflow's short grant/region-lock claim, with isolated attempt output. It must complete the original checker successfully with matched nonempty dispatch/serving blocks, exact loaded b0f8613d65f30986f147e5467b1c66892c887ce5 provenance, native nonnull prompt/cache counts and committed live-check rc=0; tokenizer preflight alone never counts. The dry-run unit is tagged attempt_mode=dryrun, qualification_only=true and is never production completion. A separate scheduled production attempt must write a source-sealed unit tagged attempt_mode=production, qualification_only=false, with nonempty grant hash and the same successful owner receipt. The completion predicate checks production mode, owner receipt hash, request identity, exact source and live-check result. Both modes require matching FILLER_ID and row-specific active grant, and honor engine FILLER_STOPFILE. No performance, traffic-week or promotion claim.",
+  "handoff_task": "FILLERS:codex-ni-rte-frontdoor-quarter-20261031",
+  "estimate_s": 3600,
+  "min_window_s": 1800,
+  "ram_gib": 80,
+  "priority_rank": 130,
+  "dryrun_timeout_s": 900,
+  "ports": [
+    8070
+  ],
+  "stop_file": "/mnt/raid0/llm/tmp/codex-ni-rte-frontdoor-quarter-v15-candidate-20261101/STOP",
+  "keep": [
+    "SOURCE-REVIEW.sha256",
+    "*.py",
+    "*.sh",
+    "*.json",
+    "attempts/**/*.json",
+    "attempts/**/*.jsonl",
+    "attempts/**/*.out",
+    "KEEP"
+  ],
+  "engine": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+    "sha256": "316830c77eefeda21a4ebf70aab3fe05977e53e58696fd9f582020614d0921c4"
+  },
+  "source_review_manifest_sha256": "af538ed1ce8f4c3d9faa40a0e30055955f6a2f211a9b765a03247eb8a690979c",
+  "admission_class": "diagnostic",
+  "kind": "compute"
+}
