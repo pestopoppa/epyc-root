@@ -96,7 +96,7 @@ DAR-1 (offline regret, ✅ 2026-04-15), the DAR-1 current-traffic replays (✅ 2
   - `quant_bits` (from model registry)
   - The existing model feature vector and stack-prior extraction provide these six fields, with additional explicit speed/quality-known masks; eight current-source feature controls passed. Fallback model specifications remain degraded defaults, not measurements. This reconciles only the feature-vector item; the fixed-reward retraining and DAR-4 adoption remain open. [Evidence](../../artifacts/engineering/dar4-model-features-20261031/dar4-model-features-audit-20261031.log). [no-belief: source and fixture controls]
 - [x] Create new `bilinear_scorer.py` module ✅ 2026-10-31 [no-belief: prior source and fixture controls only] [implementation: APP 6f288fe483c2d9c8467ff3088740f9ec2e1efc83; test: epyc-orchestrator/tests/unit/test_bilinear_scorer.py; historical closure hygiene, not quota]
-- [ ] Modify `retriever.py` selection logic to use bilinear scorer instead of per-action Q lookup
+- [x] Modify `retriever.py` selection logic to use bilinear scorer instead of per-action Q lookup ✅ 2026-11-01 — APP `58598acd1031a500c41eef9034d26c165eab0a4f`; artifact `../../artifacts/engineering/dar4-bilinear-selection-20261101/README.md`; R6 61 passed, receipt SHA-256 `75dd4668817b7e6c8c31764c36dc623bc84f5caeb540390bffb3f29b4a0a4237` [belief: cc]
 - [ ] Test: add a simulated new model with known features, measure cold-start convergence vs current approach
 - [ ] Zero cold-start: when a new model joins the fleet, its features are known from specs — no routing history needed
 

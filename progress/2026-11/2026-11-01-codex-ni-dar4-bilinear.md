@@ -1,0 +1,7 @@
+# DAR-4 bilinear selection — 2026-11-01
+
+Published orchestrator source commit `58598acd1031a500c41eef9034d26c165eab0a4f` to `origin/main`; it adds a bounded, explicit opt-in candidate-value hook at the routing retriever. Empirical Q remains the confidence and risk evidence. Telemetry-only, unsupported, untrained, invalid-score, and unattested-weight paths retain incumbent Q selection. Invalid or malformed weight loads do not mutate a previous last-known-good scorer.
+
+R6 verification: 61 model-free tests passed, including the actual `HybridRouter.route()` control, existing bilinear scorer, and risk-gate regression suites. Ruff and diff checks passed. Receipt: `artifacts/engineering/dar4-bilinear-selection-20261101/R6-RECEIPT.json` (SHA-256 `75dd4668817b7e6c8c31764c36dc623bc84f5caeb540390bffb3f29b4a0a4237`); output SHA-256 `548119495157b78dc6f8340423dde247022fe0b8ae1fee20e3da3c3504ee1ad1`. CPU 132–133 / mutex 36–37, 19.306 s, peak sampled process-tree RSS 203,198,464 bytes, all children drained. No native/GPU/model run, quality claim, deployment, or live route flag. [belief: cc]
+
+The ODL-011 intrinsic diagnostic source is now prospectively enrolled in the existing ODL family in `scripts/vidya/adapters/README.md` and `handoffs/active/vidya-belief-substrate-program.md` (task remains open; no ODL completion tick). Exact source evidence and receipt are in the bounded artifact directory above.
