@@ -1,0 +1,43 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____________________ test_fairness_after_resolved_prefix ______________________
+
+setup_checkpoint = (PosixPath('/tmp/pytest-of-root/pytest-85/test_fairness_after_resolved_p0/bus'), PosixPath('/tmp/pytest-of-root/pytest...6fa6e7a3c14d21fb699c9f8d', 'boundary_reason': 'task-boundary', ...}, 'schema_version': 'worker_checkpoint.receipt.v1'})
+lane = PosixPath('/tmp/pytest-of-root/pytest-85/test_fairness_after_resolved_p0/mainA')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x737d446ff980>
+capsys = <_pytest.capture.CaptureFixture object at 0x737d442ff2f0>
+
+    def test_fairness_after_resolved_prefix(setup_checkpoint, lane, monkeypatch, capsys):
+        root, original, receipt = setup_checkpoint
+        for index in range(2):
+            text = f'Additional actual worker task {index}'
+            handoff = lane / 'handoffs/active/worker.md'
+            with handoff.open('a') as f:
+                f.write(f'\n- [ ] {text}\n')
+            req = request(task_text=text, task_id=f'fairness-{index}', boundary_key=f'fairness-{index}',
+                          completed_at=datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'))
+            wc.run_checkpoint(req, repo=lane)
+        journals = sorted(original.parent.glob('*.json'))
+        assert len(journals) == 3
+        ids = [cr._message(p, 'mainA', datetime.now(timezone.utc).timestamp()) for p in journals]
+        assert all(ids)
+        handled, noticed, tail = ids
+        (root / 'outbox/coordinator-agent.jsonl').write_text(json.dumps({'from':'coordinator-agent','kind':'ack','corr_id':handled[1],'payload':{'disposition':'done'}})+'\n')
+        drain(root)
+        capsys.readouterr()
+        notices = root / 'checkpoint-notices/coordinator-agent'
+        (notices / (tail[0] + '.json')).unlink()
+        assert (notices / (noticed[0] + '.json')).exists()
+        monkeypatch.setattr(cr, 'MAX_FILES', 1)
+        all_output = ''
+        for _ in range(4):
+            drain(root)
+            all_output += capsys.readouterr().err
+>       assert tail[0] in all_output
+E       AssertionError: assert 'wcp-fb6c5279e0e0beebde791679' in ''
+
+/tmp/test_ws1_fairness.py:36: AssertionError
+=========================== short test summary info ============================
+FAILED ../../../../tmp/test_ws1_fairness.py::test_fairness_after_resolved_prefix
+1 failed in 0.45s
+{"schema": "bounded-r11-native-profile-supervisor/v1", "elapsed_s": 0.717118461150676, "sampled_peak_tree_rss_bytes": 66740224, "samples": 8, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 3575078, "leader_birth": 162864647, "child_rc": 1, "children_drained": true, "failure": null}

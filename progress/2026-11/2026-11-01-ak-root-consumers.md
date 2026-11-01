@@ -1,0 +1,5 @@
+# AutoKernel ROOT consumer resolution
+
+Research implementation `dd9bb44a8937d8316d0195288c10438f9a61c180` is published through merge `30d5abef4fdad5f81d29365a4099ffd7b36e69cf`, preserving peer ancestry. Actor seat capture and CPU-window bus publication now resolve ROOT-owned code through the existing shared resolver. CPU-lock owner discovery in claim.py and ak_check.py remains separate, retaining direct orchestrator and linked-common-directory handling.
+
+Seventy resolver/window controls and nine actual ROOT-contract capture controls passed. Two unrelated full watchdog lifecycle cases were excluded due the required outer supervisor, and OpenCode version/configuration were explicit test doubles. [Source/readset/native proof](https://github.com/pestopoppa/epyc-inference-research/tree/30d5abef4fdad5f81d29365a4099ffd7b36e69cf/artifacts/engineering/ak-root-resolution-20261101). The original four-consumer task is completed with the intentional exceptions documented. No inference, production kernel, live configuration validation or deployment was performed. [no-belief: code-only resolution and native controls]

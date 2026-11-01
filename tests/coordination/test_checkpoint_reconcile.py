@@ -161,3 +161,131 @@ def test_peek_does_not_consume_notice(setup_checkpoint, capsys):
     assert 'checkpoint notice:' not in capsys.readouterr().err
     assert drain(root) == 0
     assert 'checkpoint notice:' in capsys.readouterr().err
+def test_fairness_after_resolved_prefix(setup_checkpoint, lane, monkeypatch, capsys):
+    root, original, receipt = setup_checkpoint
+    for index in range(2):
+        text = f'Additional actual worker task {index}'
+        handoff = lane / 'handoffs/active/worker.md'
+        with handoff.open('a') as f:
+            f.write(f'\n- [ ] {text}\n')
+        req = request(task_text=text, task_id=f'fairness-{index}', boundary_key=f'fairness-{index}',
+                      completed_at=datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'))
+        wc.run_checkpoint(req, repo=lane)
+    journals = sorted(original.parent.glob('*.json'))
+    assert len(journals) == 3
+    ids = [cr._message(p, 'mainA', datetime.now(timezone.utc).timestamp()) for p in journals]
+    assert all(ids)
+    handled, noticed, tail = ids
+    (root / 'outbox/coordinator-agent.jsonl').write_text(json.dumps({'from':'coordinator-agent','kind':'ack','corr_id':handled[1],'payload':{'disposition':'done'}})+'\n')
+    drain(root)
+    capsys.readouterr()
+    notices = root / 'checkpoint-notices/coordinator-agent'
+    (notices / (tail[0] + '.json')).unlink()
+    (notices / (handled[0] + '.json')).unlink(missing_ok=True)
+    (notices / (noticed[0] + '.json')).write_text(json.dumps({'checkpoint_id': noticed[0], 'message_id': noticed[1]}))
+    monkeypatch.setattr(cr, 'MAX_FILES', 1)
+    all_output = ''
+    for _ in range(4):
+        drain(root)
+        all_output += capsys.readouterr().err
+    assert tail[0] in all_output
+    assert (notices / (tail[0] + '.json')).exists()
+    assert all_output.count('checkpoint notice:') == 1
+
+
+def test_handled_receipt_is_distinct_and_source_change_is_unknown(setup_checkpoint, capsys):
+    root, journal, receipt = setup_checkpoint
+    key, msg = cr._message(journal, "mainA", datetime.now(timezone.utc).timestamp())
+    (root / "outbox/coordinator-agent.jsonl").write_text(json.dumps({"from": "coordinator-agent", "kind": "ack", "corr_id": msg, "payload": {"disposition": "done"}}) + "\n")
+    result = cr.reconcile(root, "coordinator-agent", Path("."), common=journal.parents[2])
+    assert result == {"scanned": 1, "unknown": 0, "truncated": False}
+    saved = json.loads((root / "checkpoint-notices/coordinator-agent" / (key + ".json")).read_text())
+    assert saved["kind"] == "handled"
+    assert "checkpoint notice:" not in capsys.readouterr().err
+    journal.write_text("{bad")
+    result = cr.reconcile(root, "coordinator-agent", Path("."), common=journal.parents[2])
+    assert result["unknown"] == 1
+    assert "checkpoint notice:" not in capsys.readouterr().err
+
+
+def test_legacy_notified_receipt_upgrades_only_after_validation(setup_checkpoint, capsys):
+    root, journal, receipt = setup_checkpoint
+    drain(root)
+    capsys.readouterr()
+    key, msg = cr._message(journal, "mainA", datetime.now(timezone.utc).timestamp())
+    done = root / "checkpoint-notices/coordinator-agent" / (key + ".json")
+    done.write_text(json.dumps({"checkpoint_id": key, "message_id": msg}))
+    drain(root)
+    assert "checkpoint notice:" not in capsys.readouterr().err
+    record = json.loads(done.read_text())
+    assert record["kind"] == "notified" and record["source_signature"] == cr._source_signature(journal)
+
+
+def test_unknown_receipt_is_not_resolved_and_cap_reports_truncation(setup_checkpoint, monkeypatch, capsys):
+    root, journal, receipt = setup_checkpoint
+    drain(root)
+    capsys.readouterr()
+    done = root / "checkpoint-notices/coordinator-agent" / (receipt["checkpoint_id"] + ".json")
+    done.write_text("{bad")
+    result = cr.reconcile(root, "coordinator-agent", Path("."), common=journal.parents[2])
+    assert result["unknown"] == 1
+    assert done.read_text() == "{bad"
+    done.unlink()
+    monkeypatch.setattr(cr, "MAX_FILES", 0)
+    result = cr.reconcile(root, "coordinator-agent", Path("."), common=journal.parents[2])
+    assert result["truncated"] is True
+    assert not done.exists()
+
+
+def test_stale_legacy_notice_migrates_but_remains_unknown(setup_checkpoint, capsys):
+    root, journal, _ = setup_checkpoint
+    drain(root)
+    capsys.readouterr()
+    doc = json.loads(journal.read_text())
+    doc["completed_at"] = "2000-01-01T00:00:00Z"
+    doc["receipt"]["payload"]["completed_at"] = doc["completed_at"]
+    journal.write_text(json.dumps(doc))
+    key, msg = cr._message(journal, "mainA", datetime.now(timezone.utc).timestamp(), allow_stale=True)
+    done = root / "checkpoint-notices/coordinator-agent" / (key + ".json")
+    done.write_text(json.dumps({"checkpoint_id": key, "message_id": msg}))
+    result = cr.reconcile(root, "coordinator-agent", Path("."), common=journal.parents[2])
+    assert result["unknown"] == 1 and result["scanned"] == 1
+    assert json.loads(done.read_text())["kind"] == "notified"
+    result = cr.reconcile(root, "coordinator-agent", Path("."), common=journal.parents[2])
+    assert result["unknown"] == 1 and result["scanned"] == 0
+    assert "checkpoint notice:" not in capsys.readouterr().err
+
+
+def test_symlinked_worker_directory_reports_unknown(setup_checkpoint):
+    root, journal, _ = setup_checkpoint
+    directory = journal.parent
+    saved = directory.with_name("saved")
+    directory.rename(saved)
+    directory.symlink_to(saved, target_is_directory=True)
+    result = cr.reconcile(root, "coordinator-agent", Path("."), common=journal.parents[2])
+    assert result["unknown"] == 1 and result["scanned"] == 0
+
+
+def test_correlated_status_is_not_a_terminal_disposition(setup_checkpoint, capsys):
+    root, journal, _ = setup_checkpoint
+    key, msg = cr._message(journal, "mainA", datetime.now(timezone.utc).timestamp())
+    (root / "outbox/coordinator-agent.jsonl").write_text(json.dumps({"from": "coordinator-agent", "kind": "status", "corr_id": msg, "payload": {"disposition": "in_progress"}}) + "\n")
+    assert drain(root) == 0
+    assert key in capsys.readouterr().err
+    done = json.loads((root / "checkpoint-notices/coordinator-agent" / (key + ".json")).read_text())
+    assert done["kind"] == "notified"
+
+
+@pytest.mark.parametrize("field", ["completed_at", "payload"])
+def test_malformed_native_shapes_remain_unknown(setup_checkpoint, capsys, field):
+    root, journal, _ = setup_checkpoint
+    data = json.loads(journal.read_text())
+    if field == "completed_at":
+        data[field] = []
+    else:
+        data["receipt"][field] = []
+    journal.write_text(json.dumps(data))
+    assert drain(root) == 0
+    assert "checkpoint notice:" not in capsys.readouterr().err
+    result = cr.reconcile(root, "coordinator-agent", Path("."), common=journal.parents[2])
+    assert result["unknown"] == 1
