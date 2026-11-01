@@ -4,7 +4,7 @@
       "blocked": 59,
       "handoffs": 59,
       "oldest_advance": "2026-07-29",
-      "open": 1042
+      "open": 1040
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -16,7 +16,7 @@
       "blocked": 15,
       "handoffs": 41,
       "oldest_advance": "2026-07-29",
-      "open": 687
+      "open": 688
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -201,7 +201,7 @@
     },
     "autokernel-champion-aggregate.md": {
       "blocked": 1,
-      "closed": 79,
+      "closed": 82,
       "guarded": 0,
       "last_advanced": "2026-11-01",
       "open": 36,
@@ -213,7 +213,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 116
+      "total": 119
     },
     "autokernel-concurrent-target-coordination.md": {
       "blocked": 0,
@@ -505,7 +505,7 @@
     },
     "churn-pipeline.md": {
       "blocked": 0,
-      "closed": 5,
+      "closed": 12,
       "guarded": 0,
       "last_advanced": "2026-11-01",
       "open": 0,
@@ -517,7 +517,7 @@
       },
       "row_id": "RTG-62",
       "state": "active",
-      "total": 5
+      "total": 12
     },
     "colbert-reranker-web-research.md": {
       "blocked": 1,
@@ -777,10 +777,10 @@
     },
     "dflash2-block-drafter-experimental-build.md": {
       "blocked": 0,
-      "closed": 36,
+      "closed": 38,
       "guarded": 0,
       "last_advanced": "2026-11-01",
-      "open": 24,
+      "open": 22,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2812,7 +2812,7 @@
       "closed": 335,
       "guarded": 0,
       "last_advanced": "2026-11-01",
-      "open": 365,
+      "open": 366,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2821,7 +2821,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 704
+      "total": 705
     },
     "within-role-placement-state-machine.md": {
       "blocked": 1,

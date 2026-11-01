@@ -1,0 +1,18 @@
+{
+  "research_repo": "/mnt/raid0/llm/epyc-inference-research",
+  "research_commit": "99301fa149af86a6f9743d2b0405c9234ba39586",
+  "source_files": {
+    "README.md": "30f1e45829de64c253db03c7454cd99ff6c4a69baecfde4d6cc0d687ec4de2d0",
+    "build.py": "2950c814b5ac02cad382cf97f9dc6cedbfcf8bdccdcc9246f587a4327728f5d2",
+    "claimed_run.py": "833d9d8dde2bd2868ff67d8a90c595f2ca91bc2a931ba7d1aebffef405a58f7e",
+    "contract.hpp": "1ff3230b79cf448f4ba5af037498be176551221ecc379566a51e7ceefba952cf",
+    "fixtures.py": "a1a5b53c61d8930874b1f62a796597e822f22b6613c127a8887033350534d17b",
+    "kernels.hip": "180f1a37f634bd1f69e7777b9735410e92511dc583a55a9d80152c8747356d0e",
+    "runtime.hpp": "2604ac577aea3297955532d6e3e890394f92ac4c6ebc7ed541fc04a23fcc9b08",
+    "test_claimed_run.py": "cb2ad9aef83c4d46c0aff412c1d6de4166de681308f6ea25b9f7db715a0a3047",
+    "test_contract.cpp": "80de3552440095c22869eb51d373dd6161d92e426e28b80524be84f9fb643a28",
+    "test_runtime.hip": "2733ea92d08c0231ba056e1e48c467c55ac8efa9b70a5571e2135923704bc744",
+    "verify_host.py": "31024e467c9a27af21ae5babf43931f6d0698014c6c377a47a929aa4bd489770"
+  },
+  "purpose": "Compile-only exact-target rebuild after EXL3-3b teardown source change; no device execution or correctness qualification"
+}
