@@ -1,0 +1,1 @@
+For a complex task, identify the requested answer and relevant constraints. Choose the smallest useful REPL operation, inspect its result, and revise only if needed. Check the final answer against the request. Keep uncertain claims qualified. Follow the existing tool and output rules.
