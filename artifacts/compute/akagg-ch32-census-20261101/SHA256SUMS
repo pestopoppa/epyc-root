@@ -37,6 +37,7 @@ ed4a1484675343a2ac756097ecd9be35f6a103f33e73335d6a177c956723deeb  artifacts/comp
 dae0cee14e3353a3305e28b0064400e8938be092625f8db510ca0c41a4c60d7e  artifacts/compute/akagg-ch32-census-20261101/D8.ggml-include-diff.txt
 c49190e8eef9195bf7366ca00ef731488b752d344714d0851c6141abb27c0246  artifacts/compute/akagg-ch32-census-20261101/D8.merge-tree
 1064efdd07b3ee15a23f60edc0a6ef08d37c68c2043fc6d7e944cd440ed81745  artifacts/compute/akagg-ch32-census-20261101/D8.patch-check.log
+f47b3b9f30015135d5bbe23fb6ff331898ae6eb6dc414e99746cd4fffba0bdb9  artifacts/compute/akagg-ch32-census-20261101/GGML-API-SIGNATURE-TEXT.json
 6f90d5f52893a3bf640a1759836dbec492e3afb854dfbd8c05970c0ab7820abd  artifacts/compute/akagg-ch32-census-20261101/GGML-API-TOKEN-SCAN.json
 b3a2dafe3ce19af61c50646b36d836d161f8f00b61de0e80ab181d7360056e78  artifacts/compute/akagg-ch32-census-20261101/GGML-COUNTS.json
 8301fc9950eeb6df08bce4327fbba7bc5e119a2c6519e375a64950a5da356306  artifacts/compute/akagg-ch32-census-20261101/GROUP-SEQUENTIAL-INDEX.json
@@ -47,3 +48,4 @@ aecf6d8b8358978b494b1bd7926dc439bff4d0eea47e7204c8f209cf5b5d7191  artifacts/comp
 5f4caf0c3e5f52cb18b2e9444c7b9b66031ef9dff60e7a539536d22b7c86da1d  artifacts/compute/akagg-ch32-census-20261101/group-B-B1.log
 3ec29089bf895ab89098ddd0ec386b84cd1054313b1a799654d2d27482d9639b  artifacts/compute/akagg-ch32-census-20261101/group-C-C1.log
 0e9243f33741db3ae17a75644699f7cc4c7820cce91c39c78dfcbd6975e6965a  artifacts/compute/akagg-ch32-census-20261101/group-D-D1.log
+df5e339756e8c6cabbfe3451400723e41f117802084ba0001e1b9fb9c6716fe9  artifacts/compute/akagg-ch32-census-20261101/regenerate_prerequisite_evidence.py

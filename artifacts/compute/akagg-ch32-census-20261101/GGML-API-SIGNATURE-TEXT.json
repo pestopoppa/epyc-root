@@ -1,0 +1,226 @@
+{
+  "A": {
+    "compared_function_tokens": [],
+    "non_function_or_not_extracted": [],
+    "differences": {},
+    "method": "Regex of comments-stripped .h declarations compares argument text, not return type, struct layout, enums/macros, ABI or semantics."
+  },
+  "B1": {
+    "compared_function_tokens": [
+      "ggml_add",
+      "ggml_build_forward_expand",
+      "ggml_get_rows",
+      "ggml_rope_ext"
+    ],
+    "non_function_or_not_extracted": [
+      "ggml_tensor"
+    ],
+    "differences": {},
+    "method": "Regex of comments-stripped .h declarations compares argument text, not return type, struct layout, enums/macros, ABI or semantics."
+  },
+  "B2": {
+    "compared_function_tokens": [
+      "ggml_add",
+      "ggml_build_forward_expand",
+      "ggml_get_rows",
+      "ggml_rope_ext"
+    ],
+    "non_function_or_not_extracted": [
+      "ggml_tensor"
+    ],
+    "differences": {},
+    "method": "Regex of comments-stripped .h declarations compares argument text, not return type, struct layout, enums/macros, ABI or semantics."
+  },
+  "C1": {
+    "compared_function_tokens": [
+      "ggml_add",
+      "ggml_build_forward_expand",
+      "ggml_concat",
+      "ggml_gelu_erf",
+      "ggml_get_rows",
+      "ggml_view_1d"
+    ],
+    "non_function_or_not_extracted": [
+      "ggml_tensor"
+    ],
+    "differences": {},
+    "method": "Regex of comments-stripped .h declarations compares argument text, not return type, struct layout, enums/macros, ABI or semantics."
+  },
+  "C2": {
+    "compared_function_tokens": [],
+    "non_function_or_not_extracted": [],
+    "differences": {},
+    "method": "Regex of comments-stripped .h declarations compares argument text, not return type, struct layout, enums/macros, ABI or semantics."
+  },
+  "D1": {
+    "compared_function_tokens": [
+      "ggml_add",
+      "ggml_backend_alloc_ctx_tensors",
+      "ggml_backend_buffer_clear",
+      "ggml_backend_buffer_get_size",
+      "ggml_backend_tensor_get",
+      "ggml_backend_tensor_set",
+      "ggml_build_forward_expand",
+      "ggml_concat",
+      "ggml_cont",
+      "ggml_conv_1d",
+      "ggml_div",
+      "ggml_element_size",
+      "ggml_format_name",
+      "ggml_geglu_erf_split",
+      "ggml_gelu_erf",
+      "ggml_graph_get_tensor",
+      "ggml_init",
+      "ggml_mul",
+      "ggml_nbytes",
+      "ggml_nelements",
+      "ggml_new_tensor_1d",
+      "ggml_new_tensor_2d",
+      "ggml_reshape_2d",
+      "ggml_reshape_3d",
+      "ggml_rope_ext",
+      "ggml_row_size",
+      "ggml_set_input",
+      "ggml_set_name",
+      "ggml_set_output",
+      "ggml_set_rows",
+      "ggml_tensor_overhead",
+      "ggml_time_us",
+      "ggml_transpose",
+      "ggml_view_2d"
+    ],
+    "non_function_or_not_extracted": [
+      "ggml_backend_buffer_ptr",
+      "ggml_cgraph",
+      "ggml_context_ptr",
+      "ggml_init_params",
+      "ggml_tensor"
+    ],
+    "differences": {},
+    "method": "Regex of comments-stripped .h declarations compares argument text, not return type, struct layout, enums/macros, ABI or semantics."
+  },
+  "D2": {
+    "compared_function_tokens": [
+      "ggml_time_ms"
+    ],
+    "non_function_or_not_extracted": [],
+    "differences": {},
+    "method": "Regex of comments-stripped .h declarations compares argument text, not return type, struct layout, enums/macros, ABI or semantics."
+  },
+  "D3": {
+    "compared_function_tokens": [
+      "ggml_add",
+      "ggml_build_forward_expand",
+      "ggml_cont",
+      "ggml_cont_3d",
+      "ggml_cont_4d",
+      "ggml_conv_2d",
+      "ggml_conv_2d_dw_direct",
+      "ggml_get_rows",
+      "ggml_mul",
+      "ggml_new_tensor_1d",
+      "ggml_permute",
+      "ggml_reshape_2d",
+      "ggml_reshape_3d",
+      "ggml_reshape_4d",
+      "ggml_rope_ext",
+      "ggml_rope_multi",
+      "ggml_row_size",
+      "ggml_set_input",
+      "ggml_set_name",
+      "ggml_sigmoid",
+      "ggml_transpose",
+      "ggml_view_2d"
+    ],
+    "non_function_or_not_extracted": [
+      "ggml_cgraph",
+      "ggml_tensor"
+    ],
+    "differences": {},
+    "method": "Regex of comments-stripped .h declarations compares argument text, not return type, struct layout, enums/macros, ABI or semantics."
+  },
+  "D4": {
+    "compared_function_tokens": [
+      "ggml_add",
+      "ggml_arange",
+      "ggml_backend_alloc_ctx_tensors",
+      "ggml_backend_buffer_clear",
+      "ggml_backend_tensor_copy",
+      "ggml_backend_tensor_get",
+      "ggml_backend_tensor_memset",
+      "ggml_build_forward_expand",
+      "ggml_cast",
+      "ggml_concat",
+      "ggml_cont",
+      "ggml_conv_2d",
+      "ggml_conv_2d_direct",
+      "ggml_conv_2d_dw_direct",
+      "ggml_format_name",
+      "ggml_get_rows",
+      "ggml_graph_get_tensor",
+      "ggml_graph_node",
+      "ggml_init",
+      "ggml_mul",
+      "ggml_mul_mat",
+      "ggml_nbytes",
+      "ggml_nelements",
+      "ggml_new_tensor_1d",
+      "ggml_new_tensor_2d",
+      "ggml_pad_ext",
+      "ggml_repeat",
+      "ggml_repeat_4d",
+      "ggml_reshape_2d",
+      "ggml_reshape_3d",
+      "ggml_reshape_4d",
+      "ggml_rope_ext",
+      "ggml_row_size",
+      "ggml_scale_bias",
+      "ggml_set_input",
+      "ggml_set_name",
+      "ggml_set_output",
+      "ggml_sigmoid",
+      "ggml_silu_inplace",
+      "ggml_ssm_conv",
+      "ggml_sum_rows",
+      "ggml_tensor_overhead",
+      "ggml_transpose",
+      "ggml_view_2d",
+      "ggml_view_4d"
+    ],
+    "non_function_or_not_extracted": [
+      "ggml_cgraph",
+      "ggml_init_params",
+      "ggml_tensor"
+    ],
+    "differences": {},
+    "method": "Regex of comments-stripped .h declarations compares argument text, not return type, struct layout, enums/macros, ABI or semantics."
+  },
+  "D5": {
+    "compared_function_tokens": [],
+    "non_function_or_not_extracted": [],
+    "differences": {},
+    "method": "Regex of comments-stripped .h declarations compares argument text, not return type, struct layout, enums/macros, ABI or semantics."
+  },
+  "D6": {
+    "compared_function_tokens": [],
+    "non_function_or_not_extracted": [],
+    "differences": {},
+    "method": "Regex of comments-stripped .h declarations compares argument text, not return type, struct layout, enums/macros, ABI or semantics."
+  },
+  "D7": {
+    "compared_function_tokens": [],
+    "non_function_or_not_extracted": [],
+    "differences": {},
+    "method": "Regex of comments-stripped .h declarations compares argument text, not return type, struct layout, enums/macros, ABI or semantics."
+  },
+  "D8": {
+    "compared_function_tokens": [
+      "ggml_conv_2d"
+    ],
+    "non_function_or_not_extracted": [
+      "ggml_tensor"
+    ],
+    "differences": {},
+    "method": "Regex of comments-stripped .h declarations compares argument text, not return type, struct layout, enums/macros, ABI or semantics."
+  }
+}

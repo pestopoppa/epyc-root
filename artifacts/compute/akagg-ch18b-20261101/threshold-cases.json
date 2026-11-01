@@ -1,0 +1,69 @@
+{
+  "c5": "c72ec82f5417bb2937310326120f149b665e8400",
+  "upstream_tip": "785322d17f2d51e5185cf996a1f4e46d87640841",
+  "off_by_two_commit": "61ad80bf93",
+  "checkpoint_invalidation_commit": "f174553e1621c6a22a64e7bfcbb58d3a5c49e6fb",
+  "rows": [
+    {
+      "pos_next": 100,
+      "n_swa": 512,
+      "has_new_tokens": true,
+      "assumed_pos_min": 0,
+      "c5_threshold": 0,
+      "upstream_threshold": 0,
+      "c5_enters_restore_search": true,
+      "upstream_enters_restore_search": true
+    },
+    {
+      "pos_next": 511,
+      "n_swa": 512,
+      "has_new_tokens": true,
+      "assumed_pos_min": 0,
+      "c5_threshold": 0,
+      "upstream_threshold": 1,
+      "c5_enters_restore_search": true,
+      "upstream_enters_restore_search": false
+    },
+    {
+      "pos_next": 512,
+      "n_swa": 512,
+      "has_new_tokens": true,
+      "assumed_pos_min": 0,
+      "c5_threshold": 0,
+      "upstream_threshold": 2,
+      "c5_enters_restore_search": true,
+      "upstream_enters_restore_search": false
+    },
+    {
+      "pos_next": 513,
+      "n_swa": 512,
+      "has_new_tokens": true,
+      "assumed_pos_min": 0,
+      "c5_threshold": 1,
+      "upstream_threshold": 3,
+      "c5_enters_restore_search": false,
+      "upstream_enters_restore_search": false
+    },
+    {
+      "pos_next": 100,
+      "n_swa": 512,
+      "has_new_tokens": false,
+      "assumed_pos_min": 0,
+      "c5_threshold": 0,
+      "upstream_threshold": 0,
+      "c5_enters_restore_search": true,
+      "upstream_enters_restore_search": true
+    },
+    {
+      "pos_next": 100,
+      "n_swa": 0,
+      "has_new_tokens": true,
+      "assumed_pos_min": 0,
+      "c5_threshold": 100,
+      "upstream_threshold": 100,
+      "c5_enters_restore_search": false,
+      "upstream_enters_restore_search": false
+    }
+  ],
+  "limitations": "Arithmetic of checked-in predicates only with assumed positions. No server execution, no correctness/performance claim; live cache completeness not measured."
+}
