@@ -4214,7 +4214,7 @@ named. MTP is not a serving option until that gate passes.
       "foreign process during my window" resolves immediately into "GPU peer on 184-191, ignore" or "CPU peer on
       0-95, real contention" — which is the difference between a shrug and an incident. Cheap: two extra reads per
       sample in the existing sampler loops (`agents/*/arm.sh`, `reanchor2/arm.sh`).
-- [ ] **HYG-1 — the stale shared build dir is a live trap; rebuild it or remove it.**
+- [x] **HYG-1 — the stale shared build dir is a live trap; rebuild it or remove it.** ✅ 2026-11-01 — the stale paths, including `build-cpu`, were removed by the broader HYG-1b cleanup; verified absent in the current shared tree. The content-freshness rule is committed in `CLAUDE.md`. Evidence: cleanup commit `8e17643f79`, guard commit `d5c4bd62837ef8c5f07c879da596b151adc55416`, `docs/reports/hyg1-build-freshness-20261101.md` [belief: cc]
       `cpu-fusion-20260829/build-cpu` (Sep 1) sat two days behind its source and cost a full investigation — four
       hypotheses raised and retracted across two investigators, none of which source-level reasoning could have
       caught, because the source was correct. The shared tree holds **five** build dirs spanning Aug 30 – Sep 3
