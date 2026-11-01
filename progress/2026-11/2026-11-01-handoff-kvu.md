@@ -197,3 +197,7 @@ Consumed all three events. Preserved the independently reviewed sampler and buil
 ## 23:06Z — Investigate blocked VKQ3 qualification and delegate independent calibration and inference row preparation
 
 Investigated the original codex3 CPU-FA-VKQ-3 qualification failure: its original prompt was exposed, and the existing no-redraw protocol prohibits retrying it. The independent calibration failure and KVU-15b/KVU-16a row preparation are delegated; dispatcher events are registered for their result files. GPU replay remains pending qualification and KVU-12.5 is armed. GitNexus indexing could not start because CPU admission was refused. No inference was run.
+
+## 23:06Z — Repair independent VKQ3 calibration qualification resource shape
+
+Republished handoff-kvu-vkq3-independent-calibration-20261101 with dryrun_whole_host=true: FAIL-1 assigned CPUs 48–71 while the target-model worker requires 0–95 and 256 GiB; the original whole-host guard remains intact. The prior attempt did not reach the target worker. Keeper qualification is pending. The original codex3 row remains unsafe to retry because its prompt was exposed. KVU-15b requires organic serving records in two windows; KVU-16a has an unresolved stack-change decision and the ubatch-512 value is derived, while the measured value applies to ubatch 2048. No inference was run.

@@ -27,5 +27,6 @@
     "SOURCE-SHA256SUMS",
     "region-lock",
     "REGION-LOCK-PYTHON-ALLOW.txt"
-  ]
+  ],
+  "dryrun_whole_host": true
 }
