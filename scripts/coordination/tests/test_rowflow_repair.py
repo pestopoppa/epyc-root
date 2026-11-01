@@ -63,7 +63,7 @@ class RepairTests(unittest.TestCase):
         d = fx.job(rid)  # writes out/results.jsonl, exits 0 after 10 units
         marker = os.path.join(d, "out", "run.complete")
         rf.publish(fx.spec(rid, d, result_path=marker, dryrun_timeout_s=60), fx.flags)  # pre-lint row, as legacy rows were
-        v, msg = rf.dryrun_run(fx.flags, rid)
+        v, msg = rf.dryrun_run(fx.flags, rid, "0-23")
         self.assertEqual(v, "FAIL", msg)
         self.assertIn("before writing a unit to " + marker, msg)
         old_sha = rf.row_sha(fx.flags, rid)
@@ -84,7 +84,7 @@ class RepairTests(unittest.TestCase):
         rid = "t-unknown-20261101"
         d = fx.job(rid, "crash")
         rf.publish(fx.spec(rid, d, dryrun_timeout_s=40), fx.flags)
-        self.assertEqual(rf.dryrun_run(fx.flags, rid)[0], "FAIL")
+        self.assertEqual(rf.dryrun_run(fx.flags, rid, "0-23")[0], "FAIL")
         old_sha = rf.row_sha(fx.flags, rid)
         rc, out = run(["--repair", rid, "--flags", fx.flags])
         self.assertEqual(rc, 3, out)

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """End-to-end tests of the simplified row flow (scripts/coordination/rowflow/): publish -> keeper dry run on the real
 engine (filler_run15.sh under a stub region-lock) -> grantable -> stale on launcher change; FAIL records, parking,
-legacy migration, unit counting, grant_ok v4. Everything runs in a temp dir; no live compute-flags file is touched."""
+legacy migration, unit counting, the allocator's plan()/shape helpers and launcher admission. Everything runs in a temp dir;
+no live compute-flags file is touched."""
 import json
 import os
 import shutil
-import subprocess
 import sys
 import tempfile
 import textwrap
@@ -126,9 +126,18 @@ class RowflowTests(unittest.TestCase):
         rid = "t-ok-20261101"
         d = fx.job(rid)
         rf.publish(fx.spec(rid, d), fx.flags)
-        picks = rf.dryrun_pick(fx.flags)
-        self.assertTrue(any(p[0] == rid for p in picks), picks)
-        v, msg = rf.dryrun_run(fx.flags, rid)
+        row = rf.rows(fx.flags)[rid]
+        self.assertEqual(rf.status(fx.flags, rid)["state"], "needs-dryrun")
+        opts, bench = rf.row_shape(row)
+        self.assertEqual(sorted(sorted(o) for o in opts), [["q0"], ["q1"], ["q2"], ["q3"]])
+        dopts, one_q = rf.dryrun_shape(row, opts)
+        c = {"id": rid, "kind": "dryrun", "lane": row["lane"], "rank": row["priority_rank"], "lane_count": 0, "gib": row["gib"],
+             "bench": bench, "options": dopts}
+        assigned, idle, pending = rf.plan({"q0", "q1", "q2", "q3"}, [c], 1000)
+        self.assertEqual([x["id"] for x, _ in assigned], [rid])
+        regions = rf.grant_regions(row, assigned[0][1], one_q)
+        self.assertEqual(regions, "0-23")
+        v, msg = rf.dryrun_run(fx.flags, rid, regions, one_q)
         self.assertEqual(v, "PASS", msg + "\n" + "\n".join(rf.tail(os.path.join(rf.dry_dir(fx.flags, rid), "launcher.out"), 40)))
         p = json.load(open(rf.pass_path(fx.flags, rid)))
         self.assertGreaterEqual(p["units"], 1)
@@ -136,43 +145,42 @@ class RowflowTests(unittest.TestCase):
         self.assertFalse(os.path.exists(os.path.join(fx.flags, "grants", rid + ".grant")), "dry-run grant must be gone")
         self.assertFalse(os.path.exists(os.path.join(fx.flags, "grants", rid + ".ended")), "the real id must not be consumed")
         self.assertEqual(rf.status(fx.flags, rid)["state"], "grantable")
-        rc, line = rf.grant_check(fx.flags, rid)
-        self.assertEqual(rc, 0, line)
-        # the launcher changes -> a new dry run is needed, automatically, and the writer is refused
+        # a grantable row is a "grant" candidate for the allocator; the launcher-side admission is rf.admit (not run here:
+        # it parses a LIVE poller's argv, and there is none)
+        self.assertTrue(callable(rf.admit))
+        self.assertEqual(rf.grant_regions(row, frozenset({"q3"}), False), "72-95")
+        # a second dry run of a grantable row is a no-op
+        self.assertEqual(rf.dryrun_run(fx.flags, rid, "0-23")[0], "WAIT")
+        # the launcher changes -> a new dry run is needed, automatically; the row is a dry-run candidate again, not a grant
         with open(os.path.join(d, "launch.sh"), "a") as f:
             f.write("# edited\n")
-        self.assertEqual(rf.status(fx.flags, rid)["state"], "stale")
-        rc, line = rf.grant_check(fx.flags, rid)
-        self.assertEqual(rc, 2, line)
-        # grant_ok v4 through the shell with a stub ram_admit
-        ram = os.path.join(fx.root, "ram_admit.sh")
-        write(ram, "#!/bin/bash\necho admit-stub\n", 0o755)
-        env = dict(os.environ, GRANT_OK_TEST_RAM_ADMIT=ram, ROWFLOW_PY=os.path.join(_RF, "rowflow.py"))
-        r = subprocess.run(["bash", os.path.join(_RF, "grant_ok_v4.sh"), rid, "8"], capture_output=True, text=True, env=env)
-        self.assertEqual(r.returncode, 10, r.stdout + r.stderr)
-        self.assertIn("stale", r.stdout)
+        st = rf.status(fx.flags, rid)
+        self.assertEqual(st["state"], "stale")
+        self.assertNotIn(st["state"], ("grantable", "armed"))
 
     def test_03_dryrun_fail_is_one_fix_task_and_parks_after_three(self):
         fx = self.fx
         rid = "t-crash-20261101"
         d = fx.job(rid, "crash")
         rf.publish(fx.spec(rid, d, dryrun_timeout_s=40), fx.flags)
-        v, msg = rf.dryrun_run(fx.flags, rid)
+        v, msg = rf.dryrun_run(fx.flags, rid, "0-23")
         self.assertEqual(v, "FAIL", msg)
         st = rf.status(fx.flags, rid)
         self.assertEqual(st["state"], "failed")
         self.assertIn("fix dry-run failure", st["fix_task"])
         # unchanged launcher: not retried
-        self.assertEqual(rf.dryrun_run(fx.flags, rid)[0], "WAIT")
-        self.assertFalse(any(p[0] == rid for p in rf.dryrun_pick(fx.flags)))
+        self.assertEqual(rf.dryrun_run(fx.flags, rid, "0-23")[0], "WAIT")
+        # not an allocator candidate: neither a dry-run state nor a grant state
+        self.assertNotIn(rf.status(fx.flags, rid)["state"], ("needs-dryrun", "stale", "grantable", "armed"))
         # two more edits -> two more fails -> parked + escalation note
         for i in range(2):
             with open(os.path.join(d, "launch.sh"), "a") as f:
                 f.write(f"# attempt {i}\n")
             self.assertEqual(rf.status(fx.flags, rid)["state"], "needs-dryrun")
-            self.assertEqual(rf.dryrun_run(fx.flags, rid)[0], "FAIL")
+            self.assertEqual(rf.dryrun_run(fx.flags, rid, "0-23")[0], "FAIL")
         st = rf.status(fx.flags, rid)
         self.assertEqual(st["state"], "parked", st)
+        self.assertNotIn(st["state"], ("needs-dryrun", "stale", "grantable", "armed"))
         self.assertTrue(os.path.exists(os.path.join(fx.flags, "operator-escalations", "t-crash.md")))
         # lineage_reset in a fresh spec re-admits
         rid2 = "t-crash-r2-20261101"
@@ -185,11 +193,12 @@ class RowflowTests(unittest.TestCase):
         rid = "t-noexit-20261101"
         d = fx.job(rid, "noexit")
         rf.publish(fx.spec(rid, d, dryrun_timeout_s=60), fx.flags)
+        grace = rf.STOP_GRACE_S
         rf.STOP_GRACE_S = 12  # (stop-file ignored -> PASS with warning since 2026-11-01)
         try:
-            v, msg = rf.dryrun_run(fx.flags, rid)
+            v, msg = rf.dryrun_run(fx.flags, rid, "24-47")
         finally:
-            rf.STOP_GRACE_S = 180
+            rf.STOP_GRACE_S = grace
         self.assertEqual(v, "PASS", msg)  # truncation by signal is production's own hard-end path: pass, with a warning
         self.assertIn("did not stop", msg)
         self.assertIn("did not stop", json.load(open(rf.pass_path(fx.flags, rid)))["warning"])
@@ -267,11 +276,23 @@ class RowflowTests(unittest.TestCase):
         self.assertEqual(rf.quarters_of("0-47,96-143"), {"q0", "q1"})
         self.assertEqual(rf.quarters_of("mi210_0,184-191"), set())
         self.assertEqual(rf.quarters_of("q2"), {"q2"})
-        free = {"q0", "q1", "q2", "q3", "gpu-quiet"}
-        self.assertEqual(rf.resolve_regions(self.fx.flags, "any-cpu-quarter", free, [("x", "0-23")]), "24-47")
-        self.assertFalse(rf.lane_free(self.fx.flags, "mi210_0,184-191", free, [("y", "mi210_0,184-191")]))
-        self.assertTrue(rf.lane_free(self.fx.flags, "mi210_0,184-191", free, [("y", "0-23")]))
-        self.assertFalse(rf.lane_free(self.fx.flags, "24-47", free, [("y", "0-95")]))
+        self.assertEqual(rf.quarters_of("184-191", fold=True), {"q3"})
+        # an any-cpu-quarter cpu row offers four single-quarter options
+        d = self.fx.job("t-shape-20261101")
+        opts, bench = rf.row_shape({"regions": "any-cpu-quarter", "launcher": {"path": os.path.join(d, "launch.sh")}})
+        self.assertEqual(sorted(sorted(o) for o in opts), [["q0"], ["q1"], ["q2"], ["q3"]])
+        self.assertFalse(bench)
+        # the planner keeps off a busy quarter (q0 held by another job) and picks the next free one
+        c = {"id": "x", "kind": "dryrun", "lane": "cpu", "rank": 100, "lane_count": 0, "gib": 8, "bench": False, "options": opts}
+        assigned, idle, pending = rf.plan({"q1", "q2", "q3", "gpu-quiet"}, [c], 1000)
+        self.assertEqual([(x["id"], sorted(o)) for x, o in assigned], [("x", ["q1"])])
+        self.assertEqual(set(idle), {"q2", "q3", "gpu-quiet"})
+        # a GPU row needs gpu-quiet; nothing is placed on a CPU-only snapshot
+        g = {"id": "g", "kind": "grant", "lane": "gpu", "rank": 1, "lane_count": 0, "gib": 8, "bench": False,
+             "options": [frozenset({"gpu-quiet", "q3"})]}
+        assigned, idle, pending = rf.plan({"q0", "q1", "q2", "q3"}, [g], 1000)
+        self.assertEqual(assigned, [])
+        self.assertIn("gpu-quiet busy", idle["q3"])
 
 
 if __name__ == "__main__":

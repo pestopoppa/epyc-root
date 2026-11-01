@@ -61,16 +61,11 @@ start_bg() {  # start_bg <pidfile> <cwd> <cmd...>  (setsid, detached; pidfile wr
 # ---------------------------------------------------------------- 1. install git copies
 # dst-relative-to-F  src-absolute
 INSTALL=(
-  "ws58-calendar-keeper-v10.sh    $RF/ws58-calendar-keeper-v10.sh"
+  "ws58-calendar-keeper-v11.sh    $RF/ws58-calendar-keeper-v11.sh"
   "ws58-keeper-watchdog.sh        $CH/ws58-keeper-watchdog.sh"
   "ws58-disk-trend.sh             $CH/ws58-disk-trend.sh"
   "ws58-backlog-gen-v1.sh         $CH/ws58-backlog-gen-v1.sh"
   "ws58-flow-scoreboard-v1.sh     $CH/ws58-flow-scoreboard-v1.sh"
-  "grant_ok.sh                    $RF/grant_ok_v4.sh"
-  "grant_ok_v4.sh                 $RF/grant_ok_v4.sh"
-  "grant_ok_launcher.py           $CH/legacy/grant_ok_launcher.py"
-  "validate_fillers.py            $CO/validate_fillers.py"
-  "ram_admit.sh                   $CH/ram_admit.sh"
   "GOAL-codex-gen.md              $CH/GOAL-codex-gen.md"
   "bin/backlog_gen.py             $CO/backlog_gen.py"
   "bin/handoff_sessions.py        $CO/handoff_sessions.py"
@@ -80,12 +75,10 @@ INSTALL=(
   "bin/rowflow/filler_lib.sh      $RF/filler_lib.sh"
   "bin/rowflow/grant_ok_launcher.py $RF/grant_ok_launcher.py"
   "bin/rowflow/publish_row.py     $RF/publish_row.py"
-  "bin/rowflow/grant_ok_v4.sh     $RF/grant_ok_v4.sh"
   "bin/rowflow/dryrun_disk_policy.json $RF/dryrun_disk_policy.json"
-  # grant-writer TEMPLATES: the keeper derives each day's / version's writer from the newest one by sed (see gen_* below)
-  "grant-ws58-quarters-20261101.sh $CH/grant-ws58-quarters-20261101.sh"
-  "grant-gpu-1101-v20.sh          $CH/grant-gpu-1101-v20.sh"
 )
+# RETIRED 2026-11-01 evening (allocator): grant-writer templates, grant_ok*.sh, ram_admit.sh, validate_fillers.py, the legacy
+# grant_ok_launcher.py. rowflow.py allocate (keeper v11) is the one actor that writes grants.
 # every pid the pipeline records in a pidfile whose argv names <path> (liveness by recorded pid + argv, never by name search)
 known_pids_using() {
   local f p out=""
@@ -112,9 +105,9 @@ do_install() {
   local line
   for line in "${INSTALL[@]}"; do install_one $line; done
   local cur; cur=$(cat "$F/ws58-calendar-keeper.current" 2>/dev/null)
-  if [ "$cur" != "ws58-calendar-keeper-v10.sh" ]; then
-    act "SET ws58-calendar-keeper.current = ws58-calendar-keeper-v10.sh (was '${cur:-}')"
-    [ $MODE = dry ] || echo ws58-calendar-keeper-v10.sh > "$F/ws58-calendar-keeper.current"
+  if [ "$cur" != "ws58-calendar-keeper-v11.sh" ]; then
+    act "SET ws58-calendar-keeper.current = ws58-calendar-keeper-v11.sh (was '${cur:-}')"
+    [ $MODE = dry ] || echo ws58-calendar-keeper-v11.sh > "$F/ws58-calendar-keeper.current"
   fi
   [ $MODE = dry ] || mkdir -p "$F/grants" "$F/ready" "$F/dryrun" "$F/ws58-keeper-state" "$F/filing-done" "$F/briefs" "$F/handoff-sessions"
 }
@@ -141,7 +134,7 @@ except Exception: print("")' "$F/dryrun/$id/ARMED.json" 2>/dev/null)
   [ -n "$p" ] || p=$(python3 -I -c 'import json,sys
 try: print(json.load(open(sys.argv[1])).get("pid") or "")
 except Exception: print("")' "$F/dryrun/$id/RUNNING.json" 2>/dev/null)   # a keeper dry run holds a real short grant
-  [ -n "$p" ] || p=$(cat "$F"/ws58-quarters-2026????.queue "$F"/ws58-gpu.queue 2>/dev/null | awk -F'|' -v id="$id" '$1==id{print $2}' | tail -1)
+  [ -n "$p" ] || p=$(cat "$F"/*.queue 2>/dev/null | awk -F'|' -v id="$id" '$1==id{print $2}' | tail -1)
   echo "$p"
 }
 clean_grants() {
@@ -194,87 +187,14 @@ PY
 ); say "$out"
 }
 
-# ---------------------------------------------------------------- 3. grant writers
-# Both writers are per-day / per-version files that the keeper generates from the newest one by sed and starts when the
-# predecessor is dead (succession walks ONE day/version per 120 s tick). After a reboot we fast-forward with the SAME
-# recipes so the lanes are not idle for hours, then the keeper owns succession again.
-active_day() { date -u -d '-5 hours -52 minutes' +%Y%m%d; }   # the quarter day rolls at 05:52Z
-live_quarter_writer() { local d f; for f in "$F"/grant-ws58-quarters-2026????.pid; do [ -e "$f" ] || continue; d=$(basename "$f" .pid); is_proc "$(pid_of "$f")" "$d.sh" && { echo "${d#grant-ws58-quarters-} $(pid_of "$f")"; return 0; }; done; return 1; }
-ensure_quarter_writer() {
-  say "== quarter grant writer"
-  local live; if live=$(live_quarter_writer); then say "  live: $live"; return; fi
-  local day last src dst cap0 cap1 s0 prevs0
-  day=$(active_day); dst=$F/grant-ws58-quarters-$day.sh
-  last=$(ls "$F"/grant-ws58-quarters-2026????.sh 2>/dev/null | sed -n 's/.*quarters-\(2026[0-9]\{4\}\)\.sh$/\1/p' | sort | tail -1)
-  [ -n "$last" ] || { fail "no quarter writer template in $F"; return; }
-  if [ ! -e "$dst" ]; then
-    src=$F/grant-ws58-quarters-$last.sh
-    cap0=$(sed -n "s/^CAP=\$(date -u -d '\([^']*\)'.*/\1/p" "$src" | sed -n 1p)
-    prevs0=$(sed -n 's/.*S0=$(date -u -d "\([^"]*\)".*/\1/p' "$src" | sed -n 1p)
-    cap1=$(date -u -d "${day:0:4}-${day:4:2}-${day:6:2} +1 day" +%Y-%m-%d)T06:00:00Z
-    s0="${day:0:4}-${day:4:2}-${day:6:2}T05:52:00Z"
-    [ -n "$cap0" ] && [ -n "$prevs0" ] || { fail "cannot parse CAP/S0 from $src"; return; }
-    act "GENERATE $dst from $src ($last->$day, CAP $cap0->$cap1, gate $prevs0->$s0) [keeper recipe]"
-    if [ $MODE != dry ]; then
-      sed -e "s/$last/$day/g" -e "s/$cap0/$cap1/g" -e "s/$prevs0/$s0/g" \
-          -e "1a # churn_up $(date -u +%FT%TZ): successor of grant-ws58-quarters-$last.sh (reboot fast-forward); start gated $s0, cap $cap1." "$src" > "$dst.tmp" \
-        && mv -f "$dst.tmp" "$dst" && chmod +x "$dst"
-      bash -n "$dst" || { fail "bash -n $dst"; return; }
-      grep -q "CAP=\$(date -u -d '$cap1'" "$dst" || { fail "CAP line not $cap1 in $dst"; return; }
-    fi
-  fi
-  [ -e "$F/ws58-quarters-$day.queue" ] || act "CREATE $F/ws58-quarters-$day.queue"
-  [ $MODE = dry ] || [ -e "$F/ws58-quarters-$day.queue" ] || echo "# ws58 ${day:4:2}-${day:6:2} quarter queue (id|launcher_pid|window_s|gib|regions); created by churn_up" > "$F/ws58-quarters-$day.queue"
-  act "START quarter writer $dst (marker ws58-keeper-state/started-quarters-$day)"
-  [ $MODE = dry ] && return
-  touch "$F/ws58-keeper-state/started-quarters-$day"
-  (cd "$F" && setsid bash "$dst" </dev/null >/dev/null 2>&1 &)
-  sleep 2; live=$(live_quarter_writer) && say "      live: $live" || fail "quarter writer did not stay up (see $F/grant-ws58-quarters-$day.log)"
-}
-gpu_newest() { ls "$F"/grant-gpu-????-v[0-9]*.sh 2>/dev/null | sed -n 's/.*grant-gpu-\([0-9]\{4\}\)-v\([0-9]*\)\.sh$/\2 \1/p' | sort -n | tail -1; }
-ensure_gpu_writer() {
-  say "== GPU grant writer"
-  local cur n md name p3 now pid cap1 nd next dst oldwait oldbirth
-  cur=$(gpu_newest); [ -n "$cur" ] || { fail "no GPU writer template in $F"; return; }
-  n=${cur% *}; md=${cur#* }; name="grant-gpu-$md-v$n"
-  pid=$(pid_of "$F/$name.pid")
-  if is_proc "$pid" "$name.sh"; then say "  live: $name pid $pid"; return; fi
-  p3=$(sed -n "s/^P3=\$(date -u -d '\([^']*\)'.*/\1/p" "$F/$name.sh" | sed -n 1p); now=$(date -u +%s)
-  if [ ! -e "$F/$name.pid" ] && [ $(( $(date -u -d "$p3" +%s) - now )) -gt 10800 ]; then
-    # never started and its cap is still useful: its predecessor wait is false for a missing or reused pid
-    act "START never-started GPU writer $name (cap $p3)"
-    [ $MODE = dry ] && return
-    touch "$F/ws58-keeper-state/started-$name"; (cd "$F" && setsid bash "$F/$name.sh" </dev/null >/dev/null 2>&1 &)
-    sleep 2; is_proc "$(pid_of "$F/$name.pid")" "$name.sh" && say "      live pid $(pid_of "$F/$name.pid")" || fail "GPU writer $name did not stay up (see $F/$name.log)"
-    return
-  fi
-  # successor: cap = the next 06:00Z at least 3 h away; predecessor = the dead pid with birth 0 (keeper v7d rule)
-  cap1=$(date -u -d "$(date -u +%Y-%m-%d)T06:00:00Z" +%s); while [ $(( cap1 - now )) -le 10800 ]; do cap1=$(( cap1 + 86400 )); done
-  cap1=$(date -u -d "@$cap1" +%Y-%m-%dT%H:%M:%SZ); nd=$(date -u -d "$cap1" +%m%d); next=$((n+1)); dst=$F/grant-gpu-$nd-v$next.sh
-  [ -n "$pid" ] || pid=999999999   # no pid file: a pid that cannot exist; predecessor_alive is false for it
-  oldwait=$(sed -n 's/^while ps -o pid= -p \([0-9]*\) .*&& predecessor_alive [0-9]* \([0-9]*\); do sleep 30; done$/\1/p' "$F/$name.sh" | sed -n 1p)
-  oldbirth=$(sed -n 's/^while ps -o pid= -p [0-9]* .*&& predecessor_alive [0-9]* \([0-9]*\); do sleep 30; done$/\1/p' "$F/$name.sh" | sed -n 1p)
-  [[ "$oldwait" =~ ^[0-9]+$ && "$oldbirth" =~ ^[0-9]+$ ]] || { fail "GPU writer $name: wait line format unknown; keeper succession will handle it"; return; }
-  if [ -e "$dst" ]; then
-    act "START existing successor $dst"
-  else
-    act "GENERATE $dst from $name.sh (cap $p3->$cap1; predecessor $pid birth 0) [keeper recipe]"
-    if [ $MODE != dry ]; then
-      sed -e "s/grant-gpu-$md-v$n/grant-gpu-$nd-v$next/g" -e "s/$p3/$cap1/g" \
-          -e "s/^while ps -o pid= -p $oldwait /while ps -o pid= -p $pid /" \
-          -e "s/predecessor_alive $oldwait $oldbirth/predecessor_alive $pid 0/g" \
-          -e "s/^log \"v$((n-1)) ($oldwait) gone; v$n starting\"/log \"v$n ($pid) gone; v$next starting\"/" \
-          -e "s/^log \"armed v$n /log \"armed v$next /" \
-          -e "1a # v$next (churn_up $(date -u +%FT%TZ), reboot fast-forward): successor of $name; predecessor $pid is dead (birth 0); cap $cap1." \
-          "$F/$name.sh" > "$dst.tmp" && mv -f "$dst.tmp" "$dst" && chmod +x "$dst"
-      bash -n "$dst" || { fail "bash -n $dst"; return; }
-      grep -q "^P3=\$(date -u -d '$cap1'" "$dst" || { fail "P3 line not $cap1 in $dst"; return; }
-      grep -q "predecessor_alive $pid 0" "$dst" || { fail "predecessor rewrite failed in $dst"; return; }
-    fi
-  fi
-  [ $MODE = dry ] && return
-  touch "$F/ws58-keeper-state/started-grant-gpu-$nd-v$next"; (cd "$F" && setsid bash "$dst" </dev/null >/dev/null 2>&1 &)
-  sleep 2; is_proc "$(pid_of "$dst.pid" 2>/dev/null || pid_of "${dst%.sh}.pid")" "grant-gpu-$nd-v$next.sh" && say "      live pid $(pid_of "${dst%.sh}.pid")" || fail "GPU writer v$next did not stay up (see ${dst%.sh}.log)"
+# ---------------------------------------------------------------- 3. legacy grant writers (retired 2026-11-01 evening)
+# The allocator (rowflow.py allocate, keeper v11) is the only grant writer. A live legacy writer beside it would double-book:
+# report it (never kill it here: the owner stops it by captured pid at a safe boundary).
+legacy_writers() { local f p; for f in "$F"/grant-*.pid; do [ -e "$f" ] || continue; p=$(pid_of "$f"); is_proc "$p" "$(basename "$f" .pid).sh" && echo "$(basename "$f" .pid) pid $p"; done; }
+check_legacy_writers() {
+  say "== legacy grant writers (must be none: the allocator writes grants)"
+  local w n=0; while read -r w; do [ -n "$w" ] || continue; n=1; fail "legacy writer alive: $w (stop it by its pid at a safe boundary)"; done < <(legacy_writers)
+  [ $n = 0 ] && say "  none"
 }
 
 # ---------------------------------------------------------------- 4. loops
@@ -312,9 +232,7 @@ status_loops() {
   done
   p=$(pid_of "$F/ws58-calendar-keeper.pid")
   if is_proc "$p" "$(cat "$F/ws58-calendar-keeper.current" 2>/dev/null)"; then printf '  %-16s %-8s UP   since %s (%s)\n' keeper "$p" "$(ps -o lstart= -p "$p")" "$(cat "$F/ws58-calendar-keeper.current")"; else printf '  %-16s %-8s DOWN\n' keeper "${p:-none}"; RC=1; fi
-  local q; if q=$(live_quarter_writer); then printf '  %-16s %-8s UP   %s\n' quarter-writer "${q#* }" "grant-ws58-quarters-${q% *}.sh"; else printf '  %-16s %-8s DOWN\n' quarter-writer none; RC=1; fi
-  local cur n2 md name gp; cur=$(gpu_newest); n2=${cur% *}; md=${cur#* }; name="grant-gpu-$md-v$n2"; gp=$(pid_of "$F/$name.pid")
-  if [ -n "$cur" ] && is_proc "$gp" "$name.sh"; then printf '  %-16s %-8s UP   %s.sh cap %s\n' gpu-writer "$gp" "$name" "$(sed -n "s/^P3=\$(date -u -d '\([^']*\)'.*/\1/p" "$F/$name.sh" | sed -n 1p)"; else printf '  %-16s %-8s DOWN (newest %s)\n' gpu-writer "${gp:-none}" "${name:-none}"; RC=1; fi
+  local w; w=$(legacy_writers); if [ -n "$w" ]; then printf '  %-16s %s\n' legacy-writers "ALIVE: $w (double-booking risk; stop by pid)"; RC=1; else printf '  %-16s none\n' legacy-writers; fi
 }
 
 # ---------------------------------------------------------------- 5. tmux (windows by name; never send keys)
@@ -378,7 +296,7 @@ manual_steps() {
   window 'claude' (tmux select-window -t $TMUX_SESSION:claude):
       cd $REPO && claude
       first message:  You are ws58, owner of the EPYC compute calendar. Run scripts/coordination/churn/churn_up.sh --status,
-                      then follow docs/guides/agent-workflows/backlog-churn-flow.md (Roles -> ws58): keep the keeper, writers,
+                      then follow docs/guides/agent-workflows/backlog-churn-flow.md (Roles -> ws58): keep the keeper (allocator),
                       generator and dispatcher healthy, file results, put new work into the backlog. Fan out subagents; wrap up per task.
   window 'codex-gen' (tmux select-window -t $TMUX_SESSION:codex-gen):
       cd $REPO && codex
@@ -393,7 +311,7 @@ say "churn_up $MODE  $(date -u +%FT%TZ)  repo=$REPO ($(git -C "$REPO" rev-parse 
 [ -d "$F" ] || { [ $MODE = live ] && mkdir -p "$F" || { fail "$F missing"; }; }
 case $MODE in
   status) status_install; status_loops; status_tmux; status_state;;
-  *)      do_install; clean_grants; clean_registry; show_lanes; ensure_loops; ensure_quarter_writer; ensure_gpu_writer; ensure_tmux; manual_steps;;
+  *)      do_install; clean_grants; clean_registry; show_lanes; ensure_loops; check_legacy_writers; ensure_tmux; manual_steps;;
 esac
 [ $RC = 0 ] && say "churn_up $MODE: OK" || say "churn_up $MODE: PROBLEMS (see FAIL/DOWN/DIFFERS lines)"
 exit $RC

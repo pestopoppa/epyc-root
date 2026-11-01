@@ -39,10 +39,10 @@ the launcher, window, scratch_root + keep for the reaper, checksums) into `compu
 
 | step | what happens |
 |---|---|
-| dry run | when the row's lane is free the keeper runs the EXACT launcher through its engine under the real region-lock claim on the REAL lane (GPU rows on the MI210) with a real short `grants/<id>.grant`. One dry run per lane per tick, starved lane first, then `priority_rank`. |
+| dry run | the allocator assigns the dry run a free region from its tick snapshot and runs the EXACT launcher through its engine under the real region-lock claim on the REAL lane (GPU rows on the MI210) with a real short `grants/<id>.grant`. A row booking several quarters (`0-95`) is dry-run on ONE quarter (`FILLER_DRYRUN_ONE_QUARTER=1`: the engine claims only the grant's cpus) unless the spec says `dryrun_whole_host: true`; a dry run never holds more than it needs. |
 | **PASS** | the first real unit of measured output lands in `result_path` in the filer's format (`result_format`), the job then exits or stops cleanly on the stop file (rc 0/75), and for GPU rows VRAM was in use during the run. Startup alone never counts. Record: `compute-flags/dryrun/<id>/PASS.json` (launcher sha, units, VRAM max, log). |
 | **FAIL** | `dryrun/<id>/FAIL-n.json` = the owner's **one fix task** (reason + launcher.out tail), shown in the backlog. Not retried until the launcher file changes. 3 FAILs in a lineage → `parked` + `operator-escalations/<lineage>.md`. |
-| arm | a passing row's poller is started and its queue line appended; the grant writers grant it. `grant_ok.sh` v4 admits only a row with a PASS whose launcher sha is unchanged (an edited launcher is `stale` and needs a new dry run — automatic, no ceremony). |
+| arm + grant | the allocator starts a passing row's poller and WRITES its grant from the same snapshot (`regions=… start=… end=… holds=…`; `any-cpu-quarter` is resolved only here, never at arm time), after admission through the one parser `grant_ok_launcher.py` (live argv: window ≥ min+300, regions cover the claim, `--precond-cmd`) and the 64 GiB RAM margin. Only a row with a PASS whose launcher sha is unchanged is grantable (an edited launcher is `stale` and needs a new dry run — automatic, no ceremony). |
 | end | `grants/<id>.ended`; the dispatcher resumes the OWNING handoff session with `result_path` + `decision_rule`; the session files the verdict itself and touches `filing-done/<id>.FILED`; the keeper's reaper reclaims scratch deterministically. |
 
 `rowflow.py status <id>`: `needs-dryrun | dryrun-running | failed | parked | stale | grantable | armed | running | done`.
@@ -65,6 +65,37 @@ sees. `scratch_root` defaults to `tmp/<id>`; `"snapshot": true` forces it for a 
 keeper nonces / receipt files / fixtures / cutoff proofs (`qual-v1`, `qual-v2-row`), the owner-wide worker breaker,
 the registry-row check, `validate_fillers.py` and `keeper_qual_gate` in `grant_ok`, `ws58_arm-v2.py`, the sonnet filing
 subagent for piloted handoffs. The FILLERS table remains the legacy registry of rows armed before 2026-11-01.
+**Retired the same evening (allocator)**: both grant writers (`grant-ws58-quarters-<day>.sh`, `grant-gpu-<MMDD>-v<n>.sh`),
+`grant_ok.sh`/`grant_ok_v4.sh`, `ram_admit.sh`, the legacy `grant_ok_launcher.py` copy, keeper v10's carry-over / writer
+succession / idle alarm, arm-time region resolution, `dryrun-pick`/`arm-tick`, the daily `ws58-quarters-<day>.queue` and
+`ws58-gpu.queue` (history only; rowflow appends `ws58-armed.queue` `id|pid|window_s|gib|regions` for the backlog generator).
+
+## The allocator (`rowflow.py allocate`, keeper v11, 2026-11-01 evening)
+
+Origin: 21:50Z the keeper armed `handoff-df2-11-inputs` pinned to q0 and in the same tick started a dry run on q0; DF2 waited
+while q2 sat idle — three actors (keeper, quarter writer, GPU writer) each deciding from its own snapshot. Now ONE actor:
+every 120 s tick the keeper runs `rowflow.py allocate`, which reads region-lock, the open grants (their `holds=` token)
+and the live dry runs ONCE, then assigns dry runs and grants together from that snapshot — starved lane (fewest live
+rows) first, then `priority_rank`, then a grantable row before a dry run; a region is never handed twice; as long as a
+pending row fits the remaining free regions and RAM it is placed. It arms the poller, admits, writes the grant and
+spawns the dry runs itself. Invariants it enforces every tick (keeper log lines):
+
+| line | meaning |
+|---|---|
+| `SNAPSHOT free=… busy=q:id,…` | the tick's one snapshot |
+| `GRANT <id> regions=… holds=…` / `DRYRUN-START <id> regions=…` | assignments |
+| `IDLE-WHY <region>: <reason>` | a region stayed free: no fitting row, or which row needs what that is busy / RAM short |
+| `HEAL stale-grant <id>` | grant whose poller pid is dead with no `.ended`: moved to `grants/stale-<ts>/`, row re-granted |
+| `HEAL conflict <id>` | granted onto a region another job holds, before START: grant withdrawn, re-assigned next tick |
+| `CONFLICT <id>` | same, but the job already started (queued in region-lock): logged, never killed |
+| `UNDERUSED <region> <id>` | < 5 % of a held quarter's CPUs busy for 10 min: owner fix task `dryrun/<id>/UNDERUSED.json`; never killed |
+| `IDLE-VIOLATION <id>` | a fitting grantable row was not placed (allocator bug; should never appear) |
+| `ALERT <condition> repeated 3 ticks` | any HEAL/CONFLICT/UNDERUSED/violation seen 3 ticks running → `ws58-keeper-alerts.jsonl` |
+
+Proof: `scripts/coordination/tests/test_allocator.py` (property test over random states: no double booking, no idle region
+while a fitting row waits, starved lane first; today's incidents as regression cases) and
+`scripts/coordination/tests/test_grant_ok_launcher_flags.py` (every engine flag parses). `rowflow.py allocate --plan` is the
+read-only preview (`ws58-calendar-keeper-v11.sh --dry-run` prints it).
 
 ## Backlogs (`scripts/coordination/backlog_gen.py`, every 10 min)
 
@@ -97,7 +128,7 @@ score as the task ranking) plus the rows whose fix task points into it, plus ½ 
 OWN unpublished inference tasks (open boxes that read like a run; at most 8 — the `unblocks:` graph is sparse, so without
 this most handoffs score 0); ties — including score 0 — by the
 `backlog-priority.json` rank of the handoff's index row (`.index-state.json`), never alphabetically. The same order
-drives the "Routed elsewhere" section of `BACKLOG-codex-gen.md`. A session whose handoff has no open `- [ ]` left (or
+drives the "Routed elsewhere" section of `/mnt/raid0/llm/tmp/compute-flags/BACKLOG-codex-gen.md`. A session whose handoff has no open `- [ ]` left (or
 whose file left `handoffs/active/`) becomes `done` and frees its slot. Registry knobs: `default_engine` (codex),
 `auto_start` (true), `max_live` (5). The same ranking covers handoffs WITH sessions (`handoff_sessions.py rank`): a
 session whose handoff falls below the top-`max_live` **yields** — it finishes its current task and wraps up, is marked
@@ -139,7 +170,7 @@ lists the handoff's rank and its own inference tasks that read like runs.
 
 **`running` (BACKLOG state) means: `grants/<id>.grant` open, NO `grants/<id>.ended|.complete`, and the recorded
 launcher/poller pid (armed record or queue line) alive.** A grant with an `.ended` is `done`; a grant whose pid is dead
-is `blocked` ("stale grant", keeper/writer must end it). Origin: an HSF row showed `running` while its `.ended` said rc=1.
+is `blocked` ("stale grant"; the allocator heals it next tick). Origin: an HSF row showed `running` while its `.ended` said rc=1.
 
 **Every launched session (any engine; spawn, resume, transfer)**: starts with its cwd INSIDE the project — `/workspace` or
 one of its git worktrees — so it loads AGENTS.md and CLAUDE.md like any project agent (`handoff_sessions.py` validates
@@ -156,8 +187,8 @@ records `transferred_from` in the registry.
 ## Roles
 
 - **Handoff sessions / codex-gen**: run the flow against their backlog file, forever. Never arm rows, write grants,
-  hold or kill compute; the keeper and writers own the calendar.
-- **ws58 (calendar owner)**: keeps the keeper, generator, dispatcher and writers healthy; starts handoff sessions;
+  hold or kill compute; the keeper (allocator) owns the calendar.
+- **ws58 (calendar owner)**: keeps the keeper (the allocator), generator and dispatcher healthy; starts handoff sessions;
   puts new work into the backlog. No ad-hoc orders to panes: change the backlog or the goal file.
 - **Operator**: trust-boundary ratifications, destructive host actions, un-parking a lineage.
 
@@ -165,12 +196,13 @@ records `transferred_from` in the registry.
 
 | ruling | where it lives |
 |---|---|
-| **Remove every gate that is not indispensable.** The dry run on the real lane is the only proof a row needs. | `rowflow.py`, `grant_ok.sh` v4, keeper v10 step 5 ("Retired" list above) |
+| **Remove every gate that is not indispensable.** The dry run on the real lane is the only proof a row needs. | `rowflow.py`, keeper v11 step 5 ("Retired" lists above) |
+| **One allocator, one snapshot per tick** (2026-11-01 evening: "compute keeps idling because of scheduling races"): dry runs and grants compete fairly from one snapshot, a region is never handed twice, invariants self-heal and alert on the 3rd repeat. | `rowflow.py allocate`, keeper v11, "The allocator" above, `test_allocator.py` |
 | **The owner writes only a launcher and a spec**; publishing derives everything else. | `publish_row.py`, "The row flow" above |
 | **The dry run is robust**: a disk floor below `dryrun_disk_policy.json` is a WAIT, never a FAIL; a job that ignores the stop file after 600 s grace is truncated by signal and PASSES with a warning (the engine hard-end is production's own truncation path); directory results count as units; a FAIL is retried only when launcher, spec or rowflow change (sha-keyed). | `rowflow.py` (`dryrun-run`), `bin/rowflow/dryrun_disk_policy.json` |
 | **The owner files its own results** (`filing-done/<id>.FILED`) when the dispatcher resumes it with `result_path` + `decision_rule`; the sonnet filing subagent is retired. | "end" row above, `handoff_sessions.py`, `filing_watch.sh` (writes `filing-due.jsonl`, raises the takeover alarm) |
 | **Session per handoff, at most 5 live, auto-started in rank order (rows unblocked), inference first.** | "Session per handoff" above, `handoff-sessions.json` knobs `max_live`/`auto_start` |
-| **codex-gen takes small tasks only.** | `GOAL-codex-gen.md` (git: `scripts/coordination/churn/GOAL-codex-gen.md`) |
+| **codex-gen takes small tasks only.** | `/mnt/raid0/llm/tmp/compute-flags/GOAL-codex-gen.md` (git: `scripts/coordination/churn/GOAL-codex-gen.md`) |
 | **Per-task wrap-up and transfer portability** (`WRAPPED <sha>`, `transfer`). | "Portability" above |
 | **Fan-out in every launched session.** | brief section + prompts in `handoff_sessions.py` |
 | **Sessions launch inside `/workspace`** (or one of its worktrees). | `project_cwd()` in `handoff_sessions.py`, `REFUSED-CWD` |
@@ -178,9 +210,9 @@ records `transferred_from` in the registry.
 
 ## Reboot / cold start (one command; nothing depends on any session's memory)
 
-Everything the pipeline executes is in git — `scripts/coordination/churn/` (keeper watchdog, grant-writer templates,
-`GOAL-codex-gen.md`, the zero-token watchers, `ram_admit.sh`, the legacy `grant_ok_launcher.py` the GPU writer imports),
-`scripts/coordination/rowflow/` (keeper v10, rowflow, engine, `grant_ok_v4.sh`, disk policy) and `scripts/coordination/`
+Everything the pipeline executes is in git — `scripts/coordination/churn/` (keeper watchdog, `GOAL-codex-gen.md`, the
+zero-token watchers), `scripts/coordination/rowflow/` (keeper v11, rowflow with the allocator, engine, the one
+`grant_ok_launcher.py`, disk policy) and `scripts/coordination/`
 (`backlog_gen.py`, `handoff_sessions.py`, `flow_scoreboard.py`, `filing_watch.sh`, `filing_takeover_alarm.py`,
 `validate_fillers.py`). `compute-flags/` holds only installed copies plus state. The installed copy of every file must equal
 the git copy (`--status` prints `ok`/`DIFFERS` per file); a hot-fix in `compute-flags/` that is not committed is a defect, not a
@@ -202,11 +234,9 @@ whose poller/dry-run pid is gone are moved (never deleted) to `grants/stale-rebo
 the row is re-armed, and `handoff-sessions.json` entries whose pid is gone become `suspended` (wrap-up landed) or `unpushed`
 (only while the dispatcher is not running; region-lock claims clear themselves — the library drops dead-pid records on
 read); (3) starts, only if its pidfile pid is not alive with the expected argv (never `pgrep`): the keeper **watchdog**
-(which starts `ws58-calendar-keeper.current` = v10 within 120 s), `ws58-backlog-gen-v1.sh`, `ws58-flow-scoreboard-v1.sh`,
-the dispatcher (`handoff_sessions.py dispatch --loop --interval 60`), `ws58-disk-trend.sh`, `filing_watch.sh`; (4)
-fast-forwards the grant writers with the keeper's own sed recipes — today's `grant-ws58-quarters-<day>.sh` (day rolls at
-05:52Z) and the next `grant-gpu-<MMDD>-v<n+1>.sh` (cap = next 06:00Z ≥ 3 h away, predecessor = the dead pid with birth 0)
-— and starts them when no writer is live, after which the keeper owns succession again; (5) recreates tmux session `agent`
+(which starts `ws58-calendar-keeper.current` = v11 within 120 s), `ws58-backlog-gen-v1.sh`, `ws58-flow-scoreboard-v1.sh`,
+the dispatcher (`handoff_sessions.py dispatch --loop --interval 60`), `ws58-disk-trend.sh`, `filing_watch.sh`; (4) refuses
+to leave a legacy grant writer (`grant-*.pid` alive) beside the allocator — `--status` fails on it; (5) recreates tmux session `agent`
 with windows `claude` and `codex-gen` by name and sets `renumber-windows off`; (6) prints the two things it never does.
 
 **By hand, in the two windows** (never via `send-keys`): `claude` → `cd /workspace && claude`, first message *"You are ws58,
@@ -220,14 +250,13 @@ auto-starts them in `h-<slug>` windows.
 
 ```
 == install state (installed sha16 vs git sha16)
-  ws58-calendar-keeper-v10.sh          ok 865cbde56b81185d
+  ws58-calendar-keeper-v11.sh          ok <sha16>
   …                                    ok …                       (every line ok; DIFFERS = install not applied or uncommitted hot-fix)
 == loops (pidfile -> pid, alive+argv, started)
   watchdog         <pid>    UP   since <lstart>
   backlog-gen      <pid>    UP   …      flow-scoreboard … UP      dispatcher … UP      disk-trend … UP      filing-watch … UP
-  keeper           <pid>    UP   since <lstart> (ws58-calendar-keeper-v10.sh)
-  quarter-writer   <pid>    UP   grant-ws58-quarters-<today>.sh
-  gpu-writer       <pid>    UP   grant-gpu-<MMDD>-v<n>.sh cap <next 06:00Z>
+  keeper           <pid>    UP   since <lstart> (ws58-calendar-keeper-v11.sh)
+  legacy-writers   none     (any live grant-*.pid process = double-booking risk -> FAIL)
 == tmux
   window 1 claude: claude …   window 2 codex-gen: node …   window N h-<slug>: … (one per live handoff session)
   renumber-windows (effective): off
@@ -236,8 +265,8 @@ churn_up status: OK                                                 (exit 0; any
 ```
 
 Pidfiles the status reads: `ws58-keeper-watchdog.pid`, `ws58-calendar-keeper.pid`, `ws58-backlog-gen.pid`,
-`ws58-flow-scoreboard.pid`, `handoff-sessions.dispatcher.pid`, `ws58-disk-trend.pid`, `ws58-filing-watch.pid`,
-`grant-ws58-quarters-<day>.pid`, `grant-gpu-<MMDD>-v<n>.pid` — all under `compute-flags/`. A loop started by hand must write its
+`ws58-flow-scoreboard.pid`, `handoff-sessions.dispatcher.pid`, `ws58-disk-trend.pid`, `ws58-filing-watch.pid` — all under
+`compute-flags/`. A loop started by hand must write its
 pidfile or `--status` reports it DOWN and a later `churn_up.sh` would start a second copy.
 
 ## AI-free mechanization (CAF, 2026-11-01; `handoffs/active/churn-pipeline.md`)

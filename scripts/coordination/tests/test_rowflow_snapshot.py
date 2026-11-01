@@ -109,7 +109,7 @@ class SnapshotTests(unittest.TestCase):
             f.write("# lane edited after publish\n")
         os.remove(os.path.join(d, "job.sh"))
         self.assertEqual(rf.status(fx.flags, rid)["state"], "grantable")
-        self.assertEqual(rf.grant_check(fx.flags, rid)[0], 0)
+        self.assertEqual(rf.status(fx.flags, rid)["state"], "grantable")  # grantable == admitted by the allocator
         # ... and removing the lane altogether (session done) changes nothing either
         shutil.move(fx.wt, fx.wt + ".gone")
         try:
@@ -173,7 +173,7 @@ class SnapshotTests(unittest.TestCase):
             write(os.path.join(d, f), "#!/bin/bash\nexit 1\n", 0o755)
         write(os.path.join(fx.lane_engine_dir, "filler_run15.sh"), "#!/bin/bash\nexit 1\n", 0o755)
         try:
-            v, msg = rf.dryrun_run(fx.flags, rid)
+            v, msg = rf.dryrun_run(fx.flags, rid, "0-23")
         finally:
             git(fx.wt, "checkout", "-q", "--", ".")
         self.assertEqual(v, "PASS", msg + "\n" + "\n".join(rf.tail(os.path.join(rf.dry_dir(fx.flags, rid), "launcher.out"), 40)))

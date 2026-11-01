@@ -11,7 +11,6 @@ _COORD = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ENGINE = os.path.join(_COORD, "rowflow", "filler_run15.sh")
 GATES = {
     "rowflow": os.path.join(_COORD, "rowflow", "grant_ok_launcher.py"),
-    "churn/legacy": os.path.join(_COORD, "churn", "legacy", "grant_ok_launcher.py"),
 }
 # Flags a gate may carry that the engine does not accept (documented exceptions). Currently none.
 KNOWN_EXTRA = {}
