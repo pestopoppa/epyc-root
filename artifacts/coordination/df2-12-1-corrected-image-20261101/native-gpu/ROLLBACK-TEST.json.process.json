@@ -1,0 +1,38 @@
+{
+  "pid": 2217934,
+  "birth_ticks": 162558917,
+  "pgid": 2217839,
+  "observed_cpus": [
+    184,
+    185
+  ],
+  "peak_rss_bytes": 1109008384,
+  "kfd_seen": true,
+  "peak_host_vram_used_bytes": 2138886144,
+  "launched_epoch": 1793503115.9446394,
+  "ended_epoch": 1793503117.4464965,
+  "returncode": 0,
+  "own_pid_dead": true,
+  "mapped_llama_ggml_libraries": {
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a",
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0",
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so": "daf086c2a805a8cac8ab800198762a379e3d6852342f86539bf7d83837280d80",
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0.16.0": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079",
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml.so.0.16.0": "8709bbacc79b0d4faf43d66370a5db73d9ab378995f1f0964c03df8af6422639",
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303": "0f33ec5cc9967c14c8eeb2d560d6d827301c50cf42dfd701cc1752cc4a7bf9cb",
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303": "808a4de5ad3f9754f1c3c70bdd87da3418aa73b3b39d26e4dc38ba4c75b5c60a"
+  },
+  "argv": [
+    "/mnt/raid0/llm/tmp/codex-ni-df2-12-1-prep-20261101/frontend-instrument-corrected/gpu/bin/test-recurrent-state-rollback",
+    "--model",
+    "/mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf",
+    "--ctx-size",
+    "1024",
+    "--batch-size",
+    "128",
+    "--ubatch-size",
+    "128",
+    "--n-gpu-layers",
+    "99"
+  ]
+}

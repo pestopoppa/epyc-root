@@ -1,0 +1,117 @@
+{
+  "schema": "epyc.df2_12_1.image_preflight.v1",
+  "binary": "/mnt/raid0/llm/tmp/codex-ni-df2-12-1-prep-20261101/frontend-instrument-corrected/gpu/bin/llama-server",
+  "test_binary": "/mnt/raid0/llm/tmp/codex-ni-df2-12-1-prep-20261101/frontend-instrument-corrected/gpu/bin/test-recurrent-state-rollback",
+  "source_root": "/mnt/raid0/llm/llama.cpp",
+  "source_sha": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "source_commit_epoch": 1790001410,
+  "artifacts": {
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0": {
+      "sha256": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a",
+      "mtime_ns": 1790001481878850105,
+      "size": 939848
+    },
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0": {
+      "sha256": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0",
+      "mtime_ns": 1790001493440951019,
+      "size": 2982176
+    },
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so": {
+      "sha256": "daf086c2a805a8cac8ab800198762a379e3d6852342f86539bf7d83837280d80",
+      "mtime_ns": 1793142007143035590,
+      "size": 68101784
+    },
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0.16.0": {
+      "sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079",
+      "mtime_ns": 1790001510815103014,
+      "size": 68250624
+    },
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml.so.0.16.0": {
+      "sha256": "8709bbacc79b0d4faf43d66370a5db73d9ab378995f1f0964c03df8af6422639",
+      "mtime_ns": 1790001511515109147,
+      "size": 59440
+    },
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-batched-bench-impl.so": {
+      "sha256": "7c9cdc42f62c89aaab2793c2b42bffeebeb80ec33eccb0ba249a9fb9b8f35850",
+      "mtime_ns": 1790021021162399740,
+      "size": 44144
+    },
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-bench-impl.so": {
+      "sha256": "0b7d16945e7d1d4379100751130d7374a2272a9632772caa2b522558b9a5af24",
+      "mtime_ns": 1790001551374757428,
+      "size": 511656
+    },
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-cli-impl.so": {
+      "sha256": "37aef2003cce81fdccc703e135514c2fa0be6bda9643698fb45ec0ee849321b4",
+      "mtime_ns": 1790021026006941072,
+      "size": 460944
+    },
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303": {
+      "sha256": "0f33ec5cc9967c14c8eeb2d560d6d827301c50cf42dfd701cc1752cc4a7bf9cb",
+      "mtime_ns": 1790001527223246937,
+      "size": 6067360
+    },
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-completion-impl.so": {
+      "sha256": "a2c30ac9f85857cee0032894999fb0d4ffef55fdb70a574594a61521bd804fc4",
+      "mtime_ns": 1790021022605993538,
+      "size": 106880
+    },
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-fit-params-impl.so": {
+      "sha256": "4b2da5ccd953a2eea7ca30cbf379433a0a112aace97d7614e5e0efe953f922c3",
+      "mtime_ns": 1790021021490928291,
+      "size": 34824
+    },
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-perplexity-impl.so": {
+      "sha256": "faa780af6275c74aa3e87ee45482ee4a2f1d2da7e7c9701226cee81708425b47",
+      "mtime_ns": 1790021023137507076,
+      "size": 163688
+    },
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-quantize-impl.so": {
+      "sha256": "c3311e0f4dc436268c56c9120b536249d7ee4b4c93ccd8cbd86d152c7414846b",
+      "mtime_ns": 1790021021807629026,
+      "size": 84048
+    },
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303": {
+      "sha256": "808a4de5ad3f9754f1c3c70bdd87da3418aa73b3b39d26e4dc38ba4c75b5c60a",
+      "mtime_ns": 1790001516692154523,
+      "size": 4513808
+    },
+    "/mnt/raid0/llm/tmp/codex-ni-df2-12-1-prep-20261101/frontend-instrument-corrected/gpu/bin/libllama-server-impl.so": {
+      "sha256": "16466579feac479f27c15083ec8e78b1dc105aa8f7546f58796ccaa7df635d20",
+      "mtime_ns": 1793498038961075497,
+      "size": 7185344
+    },
+    "/mnt/raid0/llm/tmp/codex-ni-df2-12-1-prep-20261101/frontend-instrument-corrected/gpu/bin/llama-server": {
+      "sha256": "2b49713f0e3c022132393bf302dab954a1e2c1974b91c28d01ce2d192abdfa7b",
+      "mtime_ns": 1790001545090254286,
+      "size": 17984
+    },
+    "/mnt/raid0/llm/tmp/codex-ni-df2-12-1-prep-20261101/frontend-instrument-corrected/gpu/bin/test-recurrent-state-rollback": {
+      "sha256": "65e79b0c493b75ceed3e8c7fcee8d98d421dcff604a3960abf061a602c282ac3",
+      "mtime_ns": 1793501455616641974,
+      "size": 49136
+    }
+  },
+  "binary_mtime_after_commit": true,
+  "version_rc": 0,
+  "version": "version: 10303 (ffc1bac82)\nbuilt with GNU 15.2.0 for Linux x86_64\n",
+  "dirty_context_test_symbol": true,
+  "native_round_trace_symbol": true,
+  "linkage_rc": 0,
+  "linkage_output": "{\"dynamic_link_paths\": {\"libggml-base.so.0\": \"/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0\", \"libggml-cpu.so.0\": \"/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0\", \"libggml-hip.so.0\": \"/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0.16.0\", \"libggml.so.0\": \"/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml.so.0.16.0\", \"libllama-common.so.0\": \"/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303\", \"libllama-server-impl.so\": \"/mnt/raid0/llm/tmp/codex-ni-df2-12-1-prep-20261101/frontend-instrument-corrected/gpu/bin/libllama-server-impl.so\", \"libllama.so.0\": \"/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303\", \"libmtmd.so.0\": \"/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libmtmd.so.0.0.10303\"}, \"hip_plugin_residency\": \"REQUIRES_NATIVE_KFD_VRAM_AND_PROC_MAPS\", \"official_frozen_verifier_rc\": 0, \"pass\": true, \"scope\": \"instrumented frontend + exact frozen production kernel DSOs\"}\n",
+  "ld_library_path": "/mnt/raid0/llm/tmp/codex-ni-df2-12-1-prep-20261101/frontend-instrument-corrected/gpu/bin:/opt/rocm/lib",
+  "utc": "2026-11-01T02:52:53.935282+00:00",
+  "corrected_test_binding": {
+    "pass": true,
+    "build_receipt_path": "/mnt/raid0/llm/tmp/codex-ni-df2-12-1-prep-20261101/frontend-instrument-corrected/gpu/CORRECTED-BUILD-RECEIPT.json",
+    "build_receipt_sha256": "0ebeca8e42145f18bc54f037e2d110470c3929f09ebf370fbef95da46867cf75",
+    "base_source_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "original_test_source_sha256": "b200438e63d75b051782b4f2face659d1fb62c4b7da45d2266e2096abe22d3e3",
+    "corrected_test_source_path": "/mnt/raid0/llm/tmp/codex-ni-df2-12-1-prep-20261101/dirty-diagnostic/test-oracle-fix-minimal.cpp",
+    "corrected_test_source_sha256": "e0a4b418b8d7d4f7e59cbc3d7aa8941baf2d0f794bbbe18b71fa7166ee72a9db",
+    "test_patch_path": "/mnt/raid0/llm/tmp/codex-ni-df2-12-1-prep-20261101/dirty-diagnostic/TEST-ORACLE-FIX.patch",
+    "test_patch_sha256": "e55c0418c0468948450af20440364a4c9f4e51e00f5bc04dac8aec010e6562ed",
+    "corrected_test_binary_sha256": "65e79b0c493b75ceed3e8c7fcee8d98d421dcff604a3960abf061a602c282ac3"
+  },
+  "pass": true
+}

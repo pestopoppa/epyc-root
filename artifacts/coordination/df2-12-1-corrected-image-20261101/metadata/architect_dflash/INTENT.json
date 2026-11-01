@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "/mnt/raid0/llm/tmp/codex-ni-df2-12-1-prep-20261101/metadata/bin/metadata_prompt_count",
+    "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+    "/mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja"
+  ],
+  "frozen_common_so": "/mnt/raid0/llm/kernels/production/cpu/libllama-common.so.0.0.10303",
+  "input_path": "/mnt/raid0/llm/tmp/codex-ni-df2-12-1-prep-20261101/metadata/input.jsonl",
+  "input_sha256": "32f675c237774bc3c4eb87a8afbd2d015bf6d64fe409d03e71db3a58fd079702",
+  "model_sha256_expected": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+  "planned_manifest_sha256": "de3096605c354c6346418267ad09efc5cbf6eb7599816301a940e3b93cb8e0e1",
+  "role": "architect_dflash",
+  "schema": "epyc.df2_12_1.metadata_token_preflight.v1",
+  "scope": "FROZEN_V10_CPU_VOCAB_ONLY_MINJA_NO_TENSORS_NO_SERVER_REQUEST",
+  "source_sha256": "0e3ebbf25d3f2def8e35047219042d82c3c0d16bc509b72cf93d7a6737898c69",
+  "template_sha256_expected": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551",
+  "tool_sha256": "3e78680fead7561047bd01dc2a9a1caaccfc1f0f7385156704923452087fc90d",
+  "utc": "2026-11-01T03:15:33.333438+00:00"
+}
