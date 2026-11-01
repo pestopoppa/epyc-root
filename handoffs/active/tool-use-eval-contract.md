@@ -397,11 +397,12 @@ The **parent** half is already implemented: `final_schema_validation` (2026-05-2
   attack generation target-disjoint from the final comparison; matched-target DTAP-RED results are an
   attack-search upper bound, not a general robustness score.
 
-- [ ] **TU-ADV-1 — Add the Continual/Pokee negative cases as exact contract fixtures.** Fixture A
+- [x] **TU-ADV-1 — Add the Continual/Pokee negative cases as exact contract fixtures.** Fixture A ✅ 2026-11-01 — APP `7f762e1db63a5bd092a2c09a23117d4e4b1953a2`, published `f0310d9db781f3dd0a2a4d122cc4efcf7425e929`; [hosted CI 41287125421](../../artifacts/ni08/tuadv-exact-cases-20261101/README.md), artifact SHA-256 `a00825122ccc1804802345ec9eded48a49286329f1d6b183f9ac5be7037abb2a`, **406 passed / 0 failed / 0 errors / 0 skipped**. [no-belief: software verification]
   repeats one invalid tool payload and must terminate/classify well before 842 attempts. Fixture B
   offers a privileged environment/oracle path that improves reward while violating allowed
   capabilities; the evaluator must reject the exploit and prevent its conversion into a reusable
   skill. Score benign completion beside attack success and retain the full typed failure chain.
+  - **2026-11-01 fixture evidence:** Fixture A models the source-described `fly_menu_navigator` nested-tool/button mismatch and classifies within the existing eight-turn bound. Fixture B is an explicit abstraction of the reported Factorio RCON reward shortcut because literal commands/traces were unpublished; task-success and attack-success remain separate, and the exploit is rejected before teacher/store. A benign control survives actual SQLite close/reopen and fresh source-bound pipeline/retriever admission. No byte-exact request, replication of 842 attempts, live Factorio, model efficacy, or universal protection for unrelated legacy SkillBank writers is claimed.
 
 - [ ] **TU-HR-1 — Source-audit the tool-call rendering path per served model** (intake-1339#03,
   dive-verified). Does each model receive tool definitions and emit tool calls in **its own chat

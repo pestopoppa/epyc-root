@@ -1,0 +1,43 @@
+/opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages/pytest_asyncio/plugin.py:300: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the "fixture" caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to "function" scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform linux -- Python 3.13.15, pytest-9.2.0, pluggy-1.7.0
+rootdir: /home/runner/work/epyc-orchestrator/epyc-orchestrator
+configfile: pyproject.toml
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 406 items
+
+tests/unit/test_step_events.py ..............                            [  3%]
+tests/integration/test_execute_turn.py ............................      [ 10%]
+tests/unit/test_context_assembly.py .................................    [ 18%]
+tests/unit/test_context_discovery.py .................................   [ 26%]
+tests/unit/test_dcp4_wiring.py .......                                   [ 28%]
+tests/unit/test_contextbench_score.py ............                       [ 31%]
+tests/unit/test_distillation.py .......................                  [ 36%]
+scripts/autopilot/evals/dtap/tests/test_adversarial_contract_fixtures.py . [ 37%]
+..............                                                           [ 40%]
+scripts/autopilot/evals/dtap/tests/test_dtap_harness.py ................ [ 44%]
+........................................................................ [ 62%]
+..                                                                       [ 62%]
+scripts/autopilot/evals/dtap/tests/test_failure_ledger.py .............. [ 66%]
+                                                                         [ 66%]
+scripts/autopilot/evals/dtap/tests/test_judge_guard.py ................. [ 70%]
+.....                                                                    [ 71%]
+scripts/autopilot/evals/dtap/tests/test_tool_contract.py ............... [ 75%]
+                                                                         [ 75%]
+tests/unit/test_chat_pipeline_stages.py ................................ [ 83%]
+......................................                                   [ 92%]
+tests/unit/test_stream_adapter.py .........                              [ 94%]
+tests/unit/test_chat_request_role_validation.py .............            [ 98%]
+tests/unit/test_q_reward_role_key.py ........                            [100%]
+
+=============================== warnings summary ===============================
+src/graph/graph.py:10
+  /home/runner/work/epyc-orchestrator/epyc-orchestrator/src/graph/graph.py:10: PydanticGraphDeprecationWarning: Importing `Graph` from `pydantic_graph` is deprecated. The `BaseNode`-based `Graph` runner and its persistence machinery are deprecated and will be removed (or repurposed) in v2; use the builder-based `GraphBuilder` API instead, or pin to `pydantic_graph<2` to keep using them.
+    from pydantic_graph import Graph
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+--- generated xml file: /home/runner/work/_temp/ni-code-contracts/junit.xml ----
+================== 406 passed, 1 warning in 136.90s (0:02:16) ==================

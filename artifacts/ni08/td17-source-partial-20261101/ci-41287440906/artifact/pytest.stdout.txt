@@ -1,0 +1,24 @@
+/opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages/pytest_asyncio/plugin.py:300: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the "fixture" caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to "function" scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform linux -- Python 3.13.15, pytest-9.2.0, pluggy-1.7.0
+rootdir: /home/runner/work/epyc-orchestrator/epyc-orchestrator
+configfile: pyproject.toml
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 70 items
+
+tests/unit/test_typed_decisions_jev_ood_calibration.py .......           [ 10%]
+tests/unit/test_typed_decisions.py ..................................... [ 62%]
+.....                                                                    [ 70%]
+tests/unit/test_typed_decisions_bench.py .....................           [100%]
+
+=============================== warnings summary ===============================
+src/graph/graph.py:10
+  /home/runner/work/epyc-orchestrator/epyc-orchestrator/src/graph/graph.py:10: PydanticGraphDeprecationWarning: Importing `Graph` from `pydantic_graph` is deprecated. The `BaseNode`-based `Graph` runner and its persistence machinery are deprecated and will be removed (or repurposed) in v2; use the builder-based `GraphBuilder` API instead, or pin to `pydantic_graph<2` to keep using them.
+    from pydantic_graph import Graph
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+--- generated xml file: /home/runner/work/_temp/ni-td17-contracts/junit.xml ----
+======================== 70 passed, 1 warning in 1.59s =========================
