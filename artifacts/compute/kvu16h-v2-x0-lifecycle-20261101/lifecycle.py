@@ -48,8 +48,15 @@ def run_arm(runtime: Any, variant: str, cases: list[dict[str, Any]]) -> list[dic
         for case in cases:
             # P3 adapter must independently reconstruct neighbor occupancy per arm.
             occupancy = runtime.prepare_occupancy(handle, case)
-            if not occupancy.get('verified', False):
+            if not isinstance(occupancy, dict) or occupancy.get('verified') is not True:
                 raise InvalidRun('occupancy is unverified')
+            signature = occupancy.get('comparison')
+            if not isinstance(signature, dict) or not signature:
+                raise InvalidRun('occupancy comparison missing')
+            try:
+                occupancy_sha = payload_sha(signature)
+            except (TypeError, ValueError) as exc:
+                raise InvalidRun('occupancy comparison is not canonical JSON') from exc
             warm = copy.deepcopy(case['warm'])
             measure = copy.deepcopy(case['measure'])
             warm_result = runtime.request(handle, warm)
@@ -59,6 +66,7 @@ def run_arm(runtime: Any, variant: str, cases: list[dict[str, Any]]) -> list[dic
                 raise InvalidRun('measured request lacks required cache hit')
             rows.append({'id': case['id'], 'variant': variant, 'warm_sha256': payload_sha(warm),
                          'measure_sha256': payload_sha(measure), 'occupancy': occupancy,
+                         'occupancy_sha256': occupancy_sha,
                          'warm_result': warm_result, 'result': result})
         return rows
     finally:
@@ -74,4 +82,6 @@ def run_pair(runtime: Any, cases: list[dict[str, Any]]) -> list[dict[str, Any]]:
     for a, b in zip(drafted, nodraft, strict=True):
         if (a['id'], a['warm_sha256'], a['measure_sha256']) != (b['id'], b['warm_sha256'], b['measure_sha256']):
             raise InvalidRun('arm payloads differ')
+        if a['occupancy_sha256'] != b['occupancy_sha256']:
+            raise InvalidRun('arm occupancy differs')
     return drafted + nodraft
