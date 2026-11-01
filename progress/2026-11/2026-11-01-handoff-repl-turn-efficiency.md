@@ -141,3 +141,7 @@ The strategy integration seam has a fake-only enrollment callback; its producer 
 ## Omega and S4 audit reports consumed
 
 Consumed `omega-privacy.done` and `s4-publication-audit.done`. The latter corroborates the already-published `handoff-s4-t1-progressfix-v2-20261101` offline checks: source/runtime pins and 18 tests passed, while keeper qualification remains necessary. Omega's earlier logfix drafts are not publishable: they retain old scratch paths and omit the private progress-log override; the separate candidate copy was not yet verified. Delegated completion and independent review of that repair plus strategy integration, with registered event reports. No additional row, inference or success verdict is claimed here. [no-belief: model-free review]
+
+## Omega independent audit consumed
+
+Consumed `omega-independent-final.done`. The reviewed privacy-candidate is not self-contained: its spec, launcher, supervisor and venv configuration still refer to the prior templatefix tree, and it lacks `ORCHESTRATOR_PROGRESS_LOG_DIR`. Its copied pins therefore do not establish the repair. Delegated a fresh self-contained correction, focused progress-flush/stop/custody tests, and strategy schema implementation with registered reports. Do not republish that audited candidate or claim Omega success. [no-belief: model-free review]
