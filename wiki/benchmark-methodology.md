@@ -7359,3 +7359,13 @@ The EVL historical dependency freeze was recovered with 3,253 non-GGUF hashes ve
 - CJ-7a (inverse-mutation edit fixtures, intake-1150#record) and CJ-7c (paired descriptive/lazy Python edit tasks with hidden tests, 12 controls including a reproduced false-pass exploit) are model-free instruments. [CJ](../handoffs/active/canonical-judge-suite-revamp.md)
 - Eval tower E5 partial: suite-health reports guarded and prompt-tap writes serialized (29 tests); HIGH GitNexus impact stopped ET-8, so ET-15/E5 stay open. [eval-tower](../handoffs/active/eval-tower-architecture-audit-2026-07-20.md)
 - AP-29 gains a matched episodic-only vs abstracting control via temporary StrategyStores (17 tests); AP-70 rotation-boundary instrumentation is default-off. A recovery fixture's 10 s budget was repaired against a real 13.493 s held receipt. [autopilot](../handoffs/active/autopilot-continuous-optimization.md), [progress](../progress/2026-11/2026-11-01-ap29-recovery-components.md)
+
+## Compiled Update — 2026-11-01 (codex3 qualification review)
+
+**Confidence: verified source and filing review; no new inference or scientific verdict.**
+
+The English NeMo offline re-score already filed all four settings. Its later eight WER cells and intervals match the committed result; repeated scoring adds no independent sample. The newer proposed packet omits two validation guards retained by the committed caller, and its provenance hashes an earlier source version. Original scorer catalog binding remains UNKNOWN in that later provenance. Keep the existing deletion-inclusive result, including R6’s categorical failure, and require final source binding plus keeper qualification before publishing the replacement. [Speech handoff](../handoffs/active/conversation-stack.md) · [Exact control review](../artifacts/coordination/codex3-full-wrap-20261101-1230/STT5-CONTROL-REVIEW.md)
+
+The research actor-wire CI repair explicitly disables a shared helper’s admission waiver in the refusal test. Its factory-not-reached assertion and production admission gate are preserved; hosted run 41303563156 passed on research commit aa2143357d5382934580bcab6744b87b5fd1a6d4. This is a test-fixture repair; the broader multi-repository CI task remains open. [Progress](../progress/2026-11/2026-11-01-codex3.md) · [CI evidence](../artifacts/coordination/codex3-full-wrap-20261101-1230/README.md)
+
+Sources: [Conversation stack](../handoffs/active/conversation-stack.md) · [Codex3 progress](../progress/2026-11/2026-11-01-codex3.md) · [Control review](../artifacts/coordination/codex3-full-wrap-20261101-1230/STT5-CONTROL-REVIEW.md).

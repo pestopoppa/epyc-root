@@ -1,0 +1,48 @@
+{
+  "schema": "codex3.wrapup.validation.v1",
+  "source_main": "bc7d2af82cde0be5bfda232502b366a411142c85",
+  "documentation_workflow": "PASS: populate, rewrite links, recent-results, mkdocs build --verbose",
+  "dashboard": {
+    "passed": 535,
+    "subtests_passed": 181
+  },
+  "trust_receipts": {
+    "tests_passed": 41,
+    "scripts_validated": 59,
+    "failures": 0
+  },
+  "index_check_rc": 0,
+  "wiki_lint_rc": 0,
+  "wiki_lint_errors": 0,
+  "wiki_lint_warnings": 130,
+  "readme_freshness": "PASS: no warnings",
+  "belief_ledger": "FRESH: intake-2602, lag 0",
+  "additional_native_host_belief_suite": {
+    "failed": 22,
+    "passed": 3552,
+    "skipped_by_existing_tests": 505,
+    "subtests_passed": 24,
+    "limitation": "External sealed C6 fixture lacks files; sparse source/producer identity differences. Not a green full-suite claim; no tests/vidya or evidence-seal changes."
+  },
+  "checkbox_flips": 0,
+  "new_open_followups": 1,
+  "pruned_or_compacted": [],
+  "scratch_freed_GiB": 0,
+  "ready_manifest_files_preserved": 18,
+  "wiki_uncompiled_source": "handoffs/active/rao-redel-substrate-spike.md: protected pre-existing change excluded",
+  "additional_native_host_belief_rerun": {
+    "failed": 6,
+    "passed": 3572,
+    "skipped_by_existing_tests": 501,
+    "subtests_passed": 24,
+    "elapsed_s": 411.88,
+    "failures": [
+      "3: incomplete sealed C6 native capture",
+      "2: checker revision absent because archived producer lacks Git metadata",
+      "1: managed-tooling child_cleanup_ok false under host supervisor; cause unproven"
+    ],
+    "log": "/mnt/raid0/llm/tmp/codex3-wrapup-20261101-current/ci-cleanup/belief-stable.log",
+    "log_sha256": "6ee39be4d08370a360479ea5bb468d9ba4cb4e1daf6cd516707dea9215b1d7f1",
+    "verdict": "NOT GREEN; not CI parity"
+  }
+}

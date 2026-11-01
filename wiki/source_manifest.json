@@ -9,10 +9,23 @@
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-01T12:30:34Z",
-  "mode": "touch",
-  "scan_time": "2026-11-01T12:30:34Z",
+  "last_touch": {
+    "advanced": {
+      "added": 0,
+      "changed": 2,
+      "removed": 0
+    },
+    "at": "2026-11-01T12:36:47Z",
+    "scope_paths": [
+      "handoffs/active/conversation-stack.md",
+      "progress/2026-11/2026-11-01-codex3.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-11-01T12:36:47Z",
   "schema_version": 1,
-  "source_set_hash": "4145c0c5bd925addfa8336e76be38651f54ac7af0972944acd45ea8465af090e",
+  "source_set_hash": "25044759939bb6d6f9a3ec1a4f2798e15e738f44d63b25bfeb044ac3618a8baf",
   "sources": [
     {
       "content_hash": "79865b0c101f4b6a9b14665950a430467345202b33986b3ba348bc3df428170a",
@@ -279,10 +292,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "a32b8babd420ce8c9bdd99e68a2217fdb19128fe4bfb201ab82d93cdddd2c150",
-      "modified": "2026-11-01T12:25:54Z",
+      "content_hash": "1353860a0ee48061ae647a7a8f0a68c68837699bcd2e076d1be9ded75b22c8fc",
+      "modified": "2026-11-01T12:30:03Z",
       "path": "handoffs/active/conversation-stack.md",
-      "size": 270658,
+      "size": 271514,
       "title": "Conversation stack: speech-native interlocutor, orchestrator voice-turn contract, cascade fallback",
       "type": "handoff-active"
     },
@@ -13447,10 +13460,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "859eec456001e2cd2fde73ebc12245f403daa6569a1695697f6a8dd1cd9f3f0f",
-      "modified": "2026-11-01T12:25:54Z",
+      "content_hash": "1ecab6f65f983ea3bc57765880ed026fc09f73e8645c0a3c6cfd5faf889a3192",
+      "modified": "2026-11-01T12:29:07Z",
       "path": "progress/2026-11/2026-11-01-codex3.md",
-      "size": 4798,
+      "size": 6058,
       "title": "2026-11-01 \u2014 codex3",
       "type": "progress"
     },

@@ -1,0 +1,2 @@
+# Preserve native command logs verbatim.
+*.log -whitespace

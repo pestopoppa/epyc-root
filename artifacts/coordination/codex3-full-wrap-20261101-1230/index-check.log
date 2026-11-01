@@ -1,0 +1,7 @@
+cite-check: clean — 253 citation(s) across 6 document(s)    review=4  weak=5  ok=117  record=127    [review] intake-2341  handoffs/active/conversation-stack.md    [review] intake-2344  handoffs/active/conversation-stack.md    [review] intake-2550  handoffs/active/conversation-stack.md    [review] intake-2574  handoffs/active/conversation-stack.md    [weak] intake-408  wiki/benchmark-methodology.md    [weak] intake-1330  wiki/benchmark-methodology.md    [weak] intake-1337  wiki/benchmark-methodology.md    [weak] intake-1475  wiki/benchmark-methodology.md    [weak] intake-408  wiki/source_manifest.json
+SCRATCH (warning): kv-unified-stack-rollout.md: /native: scratch must live under /mnt/raid0/llm/tmp/ or /mnt/raid0/llm/worktrees/
+SCRATCH (warning): multimodal-pipeline.md: /data/runtime: scratch must live under /mnt/raid0/llm/tmp/ or /mnt/raid0/llm/worktrees/; /canary: scratch must live under /mnt/raid0/llm/tmp/ or /mnt/raid0/llm/worktrees/
+SCRATCH (warning): qwen-chat-template-evaluation.md: /running: scratch must live under /mnt/raid0/llm/tmp/ or /mnt/raid0/llm/worktrees/
+SCRATCH (warning): 113 handoff(s) declare no **Scratch** field (e.g. agent-file-prose-compression.md, agent-world-env-synthesis.md, amd-ai-lab-website-publication.md) — add one when you next touch the handoff; docs/guides/agent-workflows/handoff-index-authoring.md § Scratch roots
+
+0 problem(s)
