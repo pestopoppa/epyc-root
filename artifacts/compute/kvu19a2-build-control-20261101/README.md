@@ -1,0 +1,5 @@
+# KVU-19a-2 qualification control source
+
+This tiny, deterministic CMake project supplies distinct qualification inputs for a future build producer. It is not the target model or kernel source and must not write to target source, output, or event paths. `SOURCE.json` binds the exact two files. The eventual keeper-owned producer must verify those hashes at entry, copy them into its isolated qualification directory without following untrusted paths, build with the declared toolchain, run the captured control binary, verify the exact `kvu19-build-control-v1` output and exit status, verify owned cleanup, and only then emit its native per-item qualification event. Failure, timeout, or missing custody must not yield a pass.
+
+`verify_source.py` checks the exact expected file set and contents against `SOURCE.json` without invoking a compiler or process. The source inventory and script are prospective preparation only: no build, execution, resource qualification, target execution, toolchain binding or cleanup has been verified. These files alone are not a runnable row.

@@ -1,0 +1,7 @@
+{
+  "files": {
+    "CMakeLists.txt": "efb80bc1ebf7b75b93a5c4ec60d6608244817d082896cc07689b0076314f3b42",
+    "control.c": "9b1b58e066bb642aed0697259e08bf55fc788ec00d9bcb6f621621bf42f1a201"
+  },
+  "schema": "kvu19.build-control-source.v1"
+}
