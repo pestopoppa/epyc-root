@@ -1,0 +1,44 @@
+{
+  "C5": "c72ec82f5417bb2937310326120f149b665e8400",
+  "D4": "19ff817fb25e9a1b838b1d7f9f4325f7bf9779c4",
+  "D4_parent": "eb7818c0b85c08ccb39ec2299548b85147c47495",
+  "upstream_fix": "39da130fcd1b6ca47d3c0522a40eccff41ea3dfb",
+  "ancestor_fix_C5": false,
+  "ancestor_fix_D4_parent": true,
+  "states": {
+    "C5": {
+      "kernel_width_cases": [
+        3,
+        4,
+        5,
+        9,
+        15
+      ],
+      "switch": "case 3:  launch_kernel(std::integral_constant<int, 3 >{}); break;\n        case 4:  launch_kernel(std::integral_constant<int, 4 >{}); break;\n        case 5:  launch_kernel(std::integral_constant<int, 5 >{}); break;\n        case 9:  launch_kernel(std::integral_constant<int, 9 >{}); break;\n        case 15: launch_kernel(std::integral_constant<int, 15>{}); break;\n        default: GGML_ABORT(\"Only support kernel sizes 3, 4, 5, 9, 15 right now.\");",
+      "src1_binding": "const struct ggml_tensor * src1 = dst->src[1];  // conv1d.weight",
+      "nc_binding": "const int64_t nc  = src1->ne[0];                // d_conv",
+      "supports_op_body": "// assumes d_inner % threads == 0\n            return op->src[0]->ne[1] % 128 == 0;"
+    },
+    "D4_parent": {
+      "kernel_width_cases": [
+        3,
+        4,
+        5,
+        7,
+        9,
+        15
+      ],
+      "switch": "case 3:  launch_kernel(std::integral_constant<int, 3 >{}); break;\n        case 4:  launch_kernel(std::integral_constant<int, 4 >{}); break;\n        case 5:  launch_kernel(std::integral_constant<int, 5 >{}); break;\n        case 7:  launch_kernel(std::integral_constant<int, 7 >{}); break;\n        case 9:  launch_kernel(std::integral_constant<int, 9 >{}); break;\n        case 15: launch_kernel(std::integral_constant<int, 15>{}); break;\n        default: GGML_ABORT(\"Only support kernel sizes 3, 4, 5, 7, 9, 15 right now.\");",
+      "src1_binding": "const struct ggml_tensor * src1 = dst->src[1];  // conv1d.weight",
+      "nc_binding": "const int64_t nc  = src1->ne[0];                // d_conv",
+      "supports_op_body": "// assumes d_inner % threads == 0\n            return op->src[0]->ne[1] % 128 == 0;"
+    }
+  },
+  "D4_use": [
+    "19ff817fb25e9a1b838b1d7f9f4325f7bf9779c4:tools/mtmd/models/lfm3a-gen.cpp:107:    cur = ggml_ssm_conv(ctx0, ggml_reshape_3d(ctx0, bx, bx->ne[0], n_embd_c, 1), layer.conv_dw_w);",
+    "19ff817fb25e9a1b838b1d7f9f4325f7bf9779c4:tools/mtmd/models/lfm3a.cpp:115:            cur = ggml_ssm_conv(ctx0, bx, layer.conv_dw_w);"
+  ],
+  "source_diff": "diff --git a/ggml/src/ggml-cuda/ssm-conv.cu b/ggml/src/ggml-cuda/ssm-conv.cu\nindex 1463169cf..f41438b31 100644\n--- a/ggml/src/ggml-cuda/ssm-conv.cu\n+++ b/ggml/src/ggml-cuda/ssm-conv.cu\n@@ -151,9 +151,10 @@ static void ssm_conv_f32_cuda(const float * src0, const float * src1, const floa\n         case 3:  launch_kernel(std::integral_constant<int, 3 >{}); break;\n         case 4:  launch_kernel(std::integral_constant<int, 4 >{}); break;\n         case 5:  launch_kernel(std::integral_constant<int, 5 >{}); break;\n+        case 7:  launch_kernel(std::integral_constant<int, 7 >{}); break;\n         case 9:  launch_kernel(std::integral_constant<int, 9 >{}); break;\n         case 15: launch_kernel(std::integral_constant<int, 15>{}); break;\n-        default: GGML_ABORT(\"Only support kernel sizes 3, 4, 5, 9, 15 right now.\");\n+        default: GGML_ABORT(\"Only support kernel sizes 3, 4, 5, 7, 9, 15 right now.\");\n     }\n }\n \n",
+  "fix_stat": "39da130fcd ggml-cuda : support ssm_conv kernel size 7 (#30873)\n ggml/src/ggml-cuda/ssm-conv.cu | 3 ++-\n tests/test-backend-ops.cpp     | 4 ++--\n 2 files changed, 4 insertions(+), 3 deletions(-)\n",
+  "scope": "Source condition only: if actual src1 ne0=7, src0 ne1 divisible by 128 and GPU executes this kernel, C5 takes abort. Actual model widths, device residency, routing/fallback and correctness not measured."
+}

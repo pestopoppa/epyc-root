@@ -62,3 +62,5 @@
 
 - Dispatcher backlog snapshot 22:00Z reports `akagg-ch31-rowexact-c5-20261101` qualified and armed; suspend at the keeper boundary. `akagg-ch26b-1017-c2-20261101` is listed as needing qualification. Neither snapshot is a scientific result; file a verdict only after the dispatcher reports the ended row and the full result is read.
 - CH-31 row `akagg-ch31-rowexact-c5-20261101` ended rc0. Control 893 nodes compared/0 differ per row, logits identical; 16 four-sequence rows first differ at F32 MUL_MAT node_13, logits max deltas 0.2084–0.2584, argmax same, 260 skipped per row. Rotations share inputs and node slicing is heuristic; no causal or Q38FN verdict. Raw results and linkage retained in `artifacts/compute/akagg-ch31-rowexact-result-20261101/`; diagnostic only, parent remains open.
+
+- CH-32 D4 SSM-conv: source evidence confirms C5 GPU kernel lacks width 7 while upstream parent carries #30873; D4 uses SSM-conv but actual width and routing remain unverified. Retained reproducible evidence and V11-119 conditional gate; no runtime verdict.
