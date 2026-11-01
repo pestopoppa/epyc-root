@@ -1,0 +1,33 @@
+{
+  "counts": {
+    "low_entropy-0": 184,
+    "low_entropy-1": 184,
+    "planted-0": 274,
+    "planted-1": 262,
+    "reuse_a": 180,
+    "reuse_b": 189,
+    "salt-A": 261,
+    "salt-B": 261,
+    "salt-C": 261,
+    "salt-D": 261,
+    "salt-E": 261
+  },
+  "manifest_sha256": "de3096605c354c6346418267ad09efc5cbf6eb7599816301a940e3b93cb8e0e1",
+  "max_count_metadata_only": 274,
+  "max_ids": [
+    "planted-0"
+  ],
+  "model_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+  "native_same_image_api_crosscheck_required": true,
+  "rendered_and_tokens_sha256": "e36c5b7ec65dd72032b0e6f2986652a4885c4b42100168ab222c5b5d42d60c13",
+  "role": "architect_dflash",
+  "salt_equal_length": true,
+  "schema": "epyc.df2_12_1.metadata_token_preflight.v1",
+  "scope": "FROZEN_V10_CPU_VOCAB_ONLY_MINJA_NO_TENSORS_NO_SERVER_REQUEST",
+  "source_sha256": "0e3ebbf25d3f2def8e35047219042d82c3c0d16bc509b72cf93d7a6737898c69",
+  "stderr_sha256": "8cf49100ca13a52b198d8bd2b78cc916cb6f32baec6564ba5f0ab33f134307dc",
+  "template_sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551",
+  "tool_sha256": "3e78680fead7561047bd01dc2a9a1caaccfc1f0f7385156704923452087fc90d",
+  "utc": "2026-11-01T03:15:53.463598+00:00",
+  "wall_s": 0.5241843450348824
+}

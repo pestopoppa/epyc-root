@@ -1,0 +1,103 @@
+{
+  "scope": "VOCAB_METADATA_ONLY_NO_TENSORS_R6",
+  "command": [
+    "/usr/bin/python3",
+    "metadata_run.py",
+    "architect_dflash"
+  ],
+  "actual_cpus": [
+    32,
+    33
+  ],
+  "live_grants_last": [
+    {
+      "id": "codex-ni-inf12-gate2-triton36-r13-20261030",
+      "class": "block-correctness",
+      "cpus": [
+        184,
+        185,
+        186,
+        187,
+        188,
+        189,
+        190,
+        191
+      ],
+      "regions": "mi210_0,184-191"
+    },
+    {
+      "id": "codex3-cs8-stt5-validation-baseline-r2-20261030",
+      "class": "block-correctness",
+      "cpus": [
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71
+      ],
+      "regions": "48-71"
+    },
+    {
+      "id": "codex3-pareval120-k20-gen-20261031",
+      "class": "block-correctness",
+      "cpus": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "regions": "0-23"
+    }
+  ],
+  "child_pid": 2154658,
+  "child_birth": "162540654",
+  "sampled_pids": [
+    2154658,
+    2160937
+  ],
+  "sampled_peak_tree_rss_bytes": 120197120,
+  "elapsed_s": 20.18860234087333,
+  "returncode": 0,
+  "failure": null,
+  "child_drained": true,
+  "utc": "2026-11-01T03:15:53.501676+00:00"
+}
