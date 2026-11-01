@@ -48,3 +48,9 @@ model, tasks, sampling, slot-reset and execution conditions. Since chat message
 framing can change the prompt and behavior, record that difference and do not
 attribute any accuracy change solely to checkpointing. This contract does not
 specify an effect-size threshold or claim a ready-to-publish inference row.
+
+The experimental append-state hook patches a builder class across an awaited
+native turn, including context compaction before prompt construction. Its lock
+excludes other hooked calls only. Use it solely in an independently verified
+single-task process, and disable or verify compaction behavior before any live
+call. Stub tests do not establish native-entry behavior or process isolation.
