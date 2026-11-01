@@ -249,6 +249,15 @@
     </section>
   </div>
 
+  <!-- REL-1 · EvalTower error classification, from producer-owned batch sidecars -->
+  <section class="panel" id="p-eval-errors" data-panel="evalErrors">
+    <div class="ph">EvalTower error rate<span class="stamp" data-stamp="evalErrors"></span></div>
+    <p class="why">Latest complete eval batch. Error rate and reliability use all completed result rows;
+      infrastructure/scoring errors stay separate from scored-wrong answers. A missing or stale report
+      is unknown evidence, not zero.</p>
+    <div id="eval-errors-body"><span class="muted">loading…</span></div>
+  </section>
+
   <!-- 3 · autopilot log -->
   <section class="panel" id="p-log" data-panel="log">
     <div class="ph">
@@ -816,6 +825,55 @@ function renderKPIs(){
   if (Array.isArray(health.code_stale_paths) && health.code_stale_paths.length){
     h += '<div class="note">changed: ' + esc(health.code_stale_paths.slice(0, 6).join(', ')) + '</div>';
   }
+  body.innerHTML = h;
+}
+
+/* ======================================================================
+   REL-1 · EVALTOWER ERROR CLASSIFICATION
+   This is a ROOT hub artifact reader, separate from trial-outcome reliability.
+   ====================================================================== */
+function renderEvalErrors(data){
+  const body = $('#eval-errors-body');
+  if (!data){
+    body.innerHTML = '<div class="deadbody">EvalTower report unavailable from the project hub.</div>';
+    return;
+  }
+  const f = data._freshness || {};
+  const state = data.status || 'unknown';
+  const freshness = f.staleness_class || 'missing';
+  const freshnessText = 'source ' + freshness + (f.age_s != null ? ' · ' + fmtDur(f.age_s) + ' old' : '');
+  if (state !== 'reported'){
+    body.innerHTML = '<div class="stats"><div class="stat"><span class="n dimv">unknown</span>' +
+      '<span class="l">eval error state</span><span class="s">' + esc(freshnessText) + '</span></div></div>' +
+      '<div class="note">' + esc(data.error || (state === 'empty_batch' ? 'complete batch has no result rows' : state)) +
+      (data.artifact ? ' · ' + esc(data.artifact) : '') + '</div>';
+    return;
+  }
+  const c = data.counts || {};
+  const b = data.batch || {};
+  const ratio = n => c.total > 0 ? ((n / c.total) * 100).toFixed(1) + '%' : '—';
+  const stat = (value, label, sub) => '<div class="stat"><span class="n">' + esc(value) +
+    '</span><span class="l">' + esc(label) + '</span><span class="s">' + esc(sub) + '</span></div>';
+  let h = '<div class="stats">';
+  h += stat(ratio(c.error), 'error rate · lower is better', (c.error || 0) + '/' + c.total + ' rows');
+  h += stat(ratio(c.non_error), 'reliability · higher is better', (c.non_error || 0) + '/' + c.total + ' non-error');
+  h += stat(c.excluded_error || 0, 'excluded error rows', 'infra + scoring + legacy unknown');
+  h += stat(c.infra_failed || 0, 'excluded · infrastructure', 'not in quality denominator');
+  h += stat(c.scoring_failed || 0, 'excluded · scoring', 'not in quality denominator');
+  h += stat(c.scored_wrong || 0, 'scored wrong', 'answer was scored');
+  h += stat(c.task_failed || 0, 'task failed', 'counted incorrect by producer');
+  if (c.unclassified_error) h += stat(c.unclassified_error, 'legacy error · unclassified', 'category not guessed');
+  h += '</div>';
+  const timestamp = b.ended_at_epoch == null ? 'time unknown' : new Date(b.ended_at_epoch * 1000).toISOString();
+  h += '<div class="note">batch ' + esc(b.label || b.eval_batch_id || '?') +
+    ' · trial ' + esc(b.trial_id == null ? 'unknown' : b.trial_id) +
+    ' · source attribution ' + esc(data.attribution || 'unattributed') +
+    ' · complete ' + esc(b.completed) + '/' + esc(b.requested) +
+    ' · ' + esc(timestamp) + ' · ' + esc(freshnessText) +
+    (data.artifact ? ' · ' + esc(data.artifact) : '') + '</div>';
+  h += '<div class="note">Reliability is the producer’s non-error fraction over all completed rows. ' +
+    'Task failures remain in the quality denominator; infrastructure and scoring failures are excluded. ' +
+    esc(data.attribution_reason || '') + '.</div>';
   body.innerHTML = h;
 }
 
@@ -1526,6 +1584,10 @@ async function pollSlow(){
     slot('brief',     '/dashboard/api/optimization_brief', renderBrief),
     slot('insight',   '/dashboard/api/insight_graph', renderInsight),
     slot('readiness', '/dashboard/api/repo_readiness', renderReadiness),
+    fetch(location.origin + '/api/eval_errors', {cache:'no-store'})
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(d => { panelOk('evalErrors'); renderEvalErrors(d); })
+      .catch(e => { panelFail('evalErrors', e); renderEvalErrors(null); }),
   ]);
 }
 

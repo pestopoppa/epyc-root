@@ -1,0 +1,5 @@
+{"schema_version":1,"row_type":"batch_start","eval_batch_id":"evaltower-T1-1793396458477-ee7e0158-3q","label":"T1","requested_n":3,"complete":false}
+{"schema_version":1,"row_type":"question_result","eval_batch_id":"evaltower-T1-1793396458477-ee7e0158-3q","label":"T1","requested_n":3,"ordinal":0,"ended_at_s":1793396458.479,"result":{"correct":true}}
+{"schema_version":1,"row_type":"question_result","eval_batch_id":"evaltower-T1-1793396458477-ee7e0158-3q","label":"T1","requested_n":3,"ordinal":1,"ended_at_s":1793396458.568,"result":{"correct":false,"error":true,"disposition":"infra_failed"}}
+{"schema_version":1,"row_type":"question_result","eval_batch_id":"evaltower-T1-1793396458477-ee7e0158-3q","label":"T1","requested_n":3,"ordinal":2,"ended_at_s":1793396458.569,"result":{"correct":false,"error":true,"disposition":"infra_failed"}}
+{"schema_version":1,"row_type":"batch_complete","eval_batch_id":"evaltower-T1-1793396458477-ee7e0158-3q","label":"T1","requested_n":3,"completed_n":3,"complete":true}

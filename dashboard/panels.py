@@ -548,6 +548,30 @@ _PANEL_SOURCE_CATALOG = _index((
               "refuses to guess in the operator's favour.",
     ),
     PanelSource(
+        panel="eval_errors",
+        kind=KIND_FILETREE,
+        payload_func="eval_errors_payload",
+        route="/api/eval_errors",
+        producer="orchestrator EvalTower (_EvalQuestionJsonlWriter)",
+        producer_repo="epyc-orchestrator",
+        evidence="/mnt/raid0/llm/tmp/eval_tower_trials/trial_*/question_results.jsonl",
+        timestamp_field="latest complete batch question_result[].ended_at_s",
+        absence_means=(
+            "no EvalTower batch sidecar has been written in the configured artifact "
+            "root. This is unknown eval state, never a measured zero; malformed or "
+            "incomplete sidecars are reported as unavailable."
+        ),
+        warn_s=6 * _HOUR,
+        stale_s=2 * _DAY,
+        gates_health=False,
+        absence_is_anomalous=False,
+        notes=(
+            "Episodic evaluation evidence. The page reports source-native error and "
+            "reliability denominators; missing or stale sidecars never imply zero. "
+            "Staleness is shown on the panel and does not gate the global hub fold."
+        ),
+    ),
+    PanelSource(
         panel="gpu_window",
         kind=KIND_EXPORT,
         payload_func="gpu_window_payload",
