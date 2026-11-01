@@ -385,7 +385,11 @@ def issue(manifest: Path, flags: Path) -> str:
             pid = int(stat[1])
         need(keeper_pid in ancestry, 'nonce issue is not a keeper descendant')
         cmd = (Path(f'/proc/{keeper_pid}/cmdline').read_bytes().replace(b'\0', b' ')).decode(errors='replace')
-        need('ws58-calendar-keeper-v8.sh' in cmd, 'issuer is not v8 keeper')
+        # v8 introduced keeper-owned qualification; every later keeper revision (v9 ...) is the same issuer.
+        # Pinning the literal filename made the first keeper restart under a new version refuse every row
+        # (2026-11-01: 'issuer is not v8 keeper' while the GPU sat idle).
+        kv = re.search(r'ws58-calendar-keeper-v(\d+)[a-z]?\.sh', cmd)
+        need(kv is not None and int(kv.group(1)) >= 8, 'issuer is not a v8+ keeper')
         for old in (flags/'qual-nonces').glob('*.json'):
             try:record=json.loads(old.read_text())
             except (OSError,ValueError):raise Refused('nonce store unreadable; refuse issuance')
