@@ -1,0 +1,7 @@
+0ec79fb1769f7a1998eaf8d34a8eccb92f083f64272bc9b5da8ea23c5d1cd752  artifacts/compute/akagg-ch31-rowexact-pair-20261101/INPUT.sha256
+2354d92e07b4c7c52157b4d9f12751986518f7eec07952bd1b86e2b7a80df16a  artifacts/compute/akagg-ch31-rowexact-pair-20261101/READY.json
+f8f429ac2f44842f8909ab4ca18e54108b9e0684f253476504d6c70b69f6676c  artifacts/compute/akagg-ch31-rowexact-pair-20261101/job.sh
+7b6367c9099cf3a7024557c80f2fe5db0c894126522047c66150cf022be90c82  artifacts/compute/akagg-ch31-rowexact-pair-20261101/launcher.sh
+fd2bb940631e568c8f5efc0cc34c3016e31714054c8c79d20c717e8a80154b35  artifacts/compute/akagg-ch31-rowexact-pair-20261101/run.py
+e811906ae839ae1c48611e842664ba8a16af0015615cee450f17ff753c712e04  artifacts/compute/akagg-ch31-rowexact-pair-20261101/spec.json
+57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33  artifacts/compute/akagg-ch31-rowexact-pair-20261101/verify_ggml_linkage.sh
