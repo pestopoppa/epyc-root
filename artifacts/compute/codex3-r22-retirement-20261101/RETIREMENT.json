@@ -1,0 +1,13 @@
+{
+  "archive": {
+    "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-r22-2-batched-floor-r2-20261031.withdrawn": "50b726c29185d8b71a80fad0213eb50fafbf15664288e60fded4dc74c0e54d46",
+    "/mnt/raid0/llm/tmp/compute-flags/ready/withdrawn/codex3-r22-2-batched-floor-r2-20261031.json": "e39e2f03e9f59cd777dbe22ac955ec981223b73878e8ee01b4646ceb56e2c24e",
+    "/mnt/raid0/llm/tmp/compute-flags/ready/withdrawn/codex3-r22-2-batched-floor-r2-20261031.row.md": "7927d951e50a29a671a6aad2e2c7fe9ad8109d2758de96a7632c5d3b24e68dfb"
+  },
+  "id": "codex3-r22-2-batched-floor-r2-20261031",
+  "managed_retirement_guard": "PASS at observation",
+  "new_qualification": "NOT RUN",
+  "observed_utc": "2026-11-01T15:16:53.704311+00:00",
+  "schema": "r22.retirement-observation.v1",
+  "scope": "No ready manifest, armed manifest, grant, queue entry, canonical registry row, matching process or old full ledger observed at transition. The archived files and marker do not guarantee future exclusivity; successor must recheck under custody."
+}
