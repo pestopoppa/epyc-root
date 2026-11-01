@@ -28,7 +28,7 @@
       "blocked": 17,
       "handoffs": 54,
       "oldest_advance": "2026-07-29",
-      "open": 650
+      "open": 654
     },
     "user-facing-harness-index.md": {
       "blocked": 17,
@@ -505,19 +505,19 @@
     },
     "churn-pipeline.md": {
       "blocked": 0,
-      "closed": 12,
+      "closed": 15,
       "guarded": 0,
       "last_advanced": "2026-11-01",
-      "open": 0,
+      "open": 4,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
-        "blocker": null,
-        "candidate": true,
+        "blocker": "open-tasks",
+        "candidate": false,
         "evidence": null
       },
       "row_id": "RTG-62",
       "state": "active",
-      "total": 12
+      "total": 19
     },
     "colbert-reranker-web-research.md": {
       "blocked": 1,
@@ -2235,7 +2235,7 @@
       "blocked": 0,
       "closed": 27,
       "guarded": 0,
-      "last_advanced": "2026-10-31",
+      "last_advanced": "2026-11-01",
       "open": 17,
       "owner_index": "research-evaluation-index.md",
       "prune": {
@@ -4496,7 +4496,7 @@
       "id": "RTG-62",
       "index": "routing-and-optimization-index.md",
       "line": 66,
-      "next_action": "CAF-1 \u2014 no-poll resume (deletion-first line first); then CAF-6 run-end dedupe",
+      "next_action": "Land MIN_RESUME_GAP_S fix; measure CAF burn; cut net line count (open boxes)",
       "track": "churn pipeline"
     },
     "UFH-01": {
