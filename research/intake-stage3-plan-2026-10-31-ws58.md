@@ -8,7 +8,7 @@ Session: `intake-ws58-20261031`. Lane worktree `/mnt/raid0/llm/worktrees/intake-
 
 - 23 operator URLs plus 9 Stage-1 expansions (intake-2545..2576); every medium-or-higher source dived in wave 1 (29 entries).
 - Stage-2b waves 2-4 ingested and dived 26 surfaced sources (intake-2577..2602). Waves 1-4 ran before the first plan; wave 5 (five helpers, 2026-11-01) answered the operator's revision points and re-dived intake-2563. Five of six permitted waves are used; the remaining surfaced items were declined with reasons recorded on the entries they came from.
-- Verification: 57 dive-verified, 2 dive-overturned (intake-2553: d1-Omni does have a llama.cpp path; intake-2594: the Q8_0 collapse was a Metal bug, not quantization). Every anchor was re-found mechanically and checked by an independent second reader; 7 objections were resolved by dropping or narrowing anchors.
+- Verification: 57 dive-verified, 2 dive-overturned (intake-2553#record: d1-Omni does have a llama.cpp path; intake-2594#record: the Q8_0 collapse was a Metal bug, not quantization). Every anchor was re-found mechanically and checked by an independent second reader; 7 objections were resolved by dropping or narrowing anchors.
 - Stage-1 defect caught: Stage-1 fetchers attached 7 cross-reference arXiv ids that were not in the fetched sources; all were removed before persisting.
 
 ## Revision 2 (2026-11-01): answers to the operator's eight points
@@ -74,9 +74,9 @@ Minimum-rigor controls. Empirical items (DF2-12.1, DF2-LAT, DF2-PM, DF2-FT-1, RV
 | AGENT-1 | intake-2565 Stage-2 dive w1 ledger | Run the fold article procedure as a zero-inference REPLAY over existing delegation records: for each delegate() role (worker_math, worker_general, worker_summarize, worker_vision, coder_escalation) compute from _delegations artifacts / delegation reports the ... | P6 / RI-25 |
 | AGENT-10 | intake-2562 Stage-2 dive w1 ledger | Use Resin docs/cache-pool.md + architecture.md Prefix reuse as design reference for hybrid prefix reuse: its snapshots are taken at an alignment equal to the LCM of all group block sizes and restore attention, SWA and recurrent state at the same boundary, ... | K3 |
 | AGENT-11 | intake-2562 Stage-2 dive w1 ledger | Decline engine/runner split as an adoption target: there is no CPU or ROCm runner, and production serving is llama.cpp (frozen v10). Treat the split as vocabulary only. | decline: the Resin engine/runner split has no CPU or ROCm runner and production serving is llama.cpp. |
-| AGENT-12 | intake-2553 Stage-2 dive w1 ledger | Screen d1-Omni-2B-GGUF (Q8_0, 1.85 GB) and d1-2B-GGUF as local typed-decision backends on a separate, scratch-built upstream llama-server (b11960+ in its own build dir; production tree untouched). Probe: replay a frozen set of already-routed orchestrator ... | P5 / TD-23.D1 |
-| AGENT-13 | intake-2553 Stage-2 dive w1 ledger | Speech turn-taking decider test (only after human-recorded strata exist): d1-Omni-2B reads a short audio window and answers noul/score questions (end of turn? backchannel needed?) on the CS-45 corpus; compare against the CS-22 controller policy and the D1 ... | M4 |
-| AGENT-14 | intake-2553 Stage-2 dive w1 ledger | Read LFM Open License v1.0 and the Open d1 blog before any use beyond a screen (licence is not Apache/MIT; sourcing policy is open-source only). | P5 / TD-23.D1 |
+| AGENT-12 | intake-2553#record Stage-2 dive w1 ledger | Screen d1-Omni-2B-GGUF (Q8_0, 1.85 GB) and d1-2B-GGUF as local typed-decision backends on a separate, scratch-built upstream llama-server (b11960+ in its own build dir; production tree untouched). Probe: replay a frozen set of already-routed orchestrator ... | P5 / TD-23.D1 |
+| AGENT-13 | intake-2553#record Stage-2 dive w1 ledger | Speech turn-taking decider test (only after human-recorded strata exist): d1-Omni-2B reads a short audio window and answers noul/score questions (end of turn? backchannel needed?) on the CS-45 corpus; compare against the CS-22 controller policy and the D1 ... | M4 |
+| AGENT-14 | intake-2553#record Stage-2 dive w1 ledger | Read LFM Open License v1.0 and the Open d1 blog before any use beyond a screen (licence is not Apache/MIT; sourcing policy is open-source only). | P5 / TD-23.D1 |
 | AGENT-2 | intake-2565 Stage-2 dive w1 ledger | Count and cap the model-visible tool surface: REPL exposes ~55 globals (peek, grep, delegate, escalate, run_shell, registry_*, benchmark_*, ...) in environment.py _build_globals while tool_registry.yaml holds 55 further tools (TOOL/CALL/list_tools = already ... | P6 / UFH14-TOOLS-1 |
 | AGENT-3 | intake-2565 Stage-2 dive w1 ledger | Add a per-fold eval: before folding any worker role into skills, require a frozen end-to-end set covering every production chain (architect -> coder_escalation, frontdoor -> worker_*) and every must-not-break rule, repeated >=2 times, reporting flipped tasks. ... | M3 |
 | AGENT-4 | intake-2565 Stage-2 dive w1 ledger | Do NOT adopt the article single-loop thesis for our CPU stack without measurement: the article premise is frontier models with thinking on; our workers are local quantised Qwen3.x on a BW-bound CPU where a separate small-context worker call is cheaper per ... | K3 |
@@ -108,11 +108,11 @@ Minimum-rigor controls. Empirical items (DF2-12.1, DF2-LAT, DF2-PM, DF2-FT-1, RV
 | MEM-4 | intake-2558 Stage-2 dive w1 ledger | Write scripts/vidya/cert_check.py: a standalone verifier for the gate's epyc.vidya/certificate/v1, sharing NO imports with fold.py, gate.py or lattice.py. It reads the ledger JSONL and the ratified policy file directly, re-derives pro/con grade dominance and ... | P7 / VB-CERT-1 |
 | MEM-5 | intake-2558 Stage-2 dive w1 ledger | No certificate/checker layer for scripts/handoffs/index_state.py or registry consistency checks. | decline: the handoff index check already re-derives and compares on every run, so a certificate layer adds nothing. |
 | MEM-6 | intake-2558 Stage-2 dive w1 ledger | When writing MEM-4, make the checker read and compare certificate.frontier and as_of explicitly and record in the certificate's proves-field that a certificate binds to a frontier, not to the truth of the world. | P7 / VB-CERT-1 |
-| MTP-1 | intake-2548, intake-2549 Stage-2 dive w1 ledger | Amend the DF2-DRAFTER-CAPABILITY trainer and data contract (the INF-62 record contract inherited from the cancelled DF2-QWOPUS) so the default objective is forward-KL self-distillation to the target's own teacher-forced NTP distribution rather than hard ... | P2 / DF2-FT-1 |
-| MTP-2 | intake-2548, intake-2549 Stage-2 dive w1 ledger | Bounded frozen-trunk probe on the Soft-MTP repo (MI210, ROCm torch, <=4 GPU-h, no llama.cpp). Take the released 167M (or 332M) NTP checkpoint, set freeze_backbone=true, and train fresh K=3 DeepSeek-style heads under two arms with identical data order, seed, ... | P2 / DF2-FT-1 |
-| MTP-3 | intake-2548 Stage-2 dive w1 ledger | No change to Axis E. Restoring the Qwen3.8-Flash-Next MTP head loads the published unsloth shared-Q8_0 head (no training), so the MTP-objective choice does not touch it. | K1 |
-| MTP-4 | intake-2548 Stage-2 dive w1 ledger | Record a trigger on the speculative-decoding refresh. If a served fine-tune ships with a stock (base-co-trained) MTP head, as already observed for ThinkingCap and Qwopus, the remedy is head-only re-alignment on the frozen fine-tuned trunk against its own NTP ... | P2 / DF2-FT-1 |
-| MTP-5 | intake-2548 Stage-2 dive w1 ledger | Decline adopting Soft-MTP as a pretraining objective. | decline: Soft-MTP as a pretraining objective needs trunk training, which this stack does not do. |
+| MTP-1 | intake-2548#record, intake-2549 Stage-2 dive w1 ledger | Amend the DF2-DRAFTER-CAPABILITY trainer and data contract (the INF-62 record contract inherited from the cancelled DF2-QWOPUS) so the default objective is forward-KL self-distillation to the target's own teacher-forced NTP distribution rather than hard ... | P2 / DF2-FT-1 |
+| MTP-2 | intake-2548#record, intake-2549 Stage-2 dive w1 ledger | Bounded frozen-trunk probe on the Soft-MTP repo (MI210, ROCm torch, <=4 GPU-h, no llama.cpp). Take the released 167M (or 332M) NTP checkpoint, set freeze_backbone=true, and train fresh K=3 DeepSeek-style heads under two arms with identical data order, seed, ... | P2 / DF2-FT-1 |
+| MTP-3 | intake-2548#record Stage-2 dive w1 ledger | No change to Axis E. Restoring the Qwen3.8-Flash-Next MTP head loads the published unsloth shared-Q8_0 head (no training), so the MTP-objective choice does not touch it. | K1 |
+| MTP-4 | intake-2548#record Stage-2 dive w1 ledger | Record a trigger on the speculative-decoding refresh. If a served fine-tune ships with a stock (base-co-trained) MTP head, as already observed for ThinkingCap and Qwopus, the remedy is head-only re-alignment on the frozen fine-tuned trunk against its own NTP ... | P2 / DF2-FT-1 |
+| MTP-5 | intake-2548#record Stage-2 dive w1 ledger | Decline adopting Soft-MTP as a pretraining objective. | decline: Soft-MTP as a pretraining objective needs trunk training, which this stack does not do. |
 | SPEC-1 | intake-2561, intake-2560 Stage-2 dive w1 ledger | DF2-LAT zero-training lattice-headroom probe. (i) Experimental build from the current champion tip, env-gated and off by default: append the 16 unary draft logits to each packed DFlash2 lattice row (src/models/dflash.cpp build_post_sampling; row is K+K*K=272 ... | P2 / DF2-LAT |
 | SPEC-2 | intake-2561 Stage-2 dive w1 ledger | DF2-PM point-mass proposal screen at production temperature. Behind an env knob in the experimental build, the DFlash2 temp>0 branch takes the argmax selector walk instead of sampling softmax(scores/T), and emits dist {id, prob 1.0} per slot. The existing ... | P2 / DF2-PM |
 | SPEC-3 | intake-2561, intake-2560 Stage-2 dive w1 ledger | Port the DCOCO head to llama.cpp as a replacement DFlash2 selector, and train it on the frozen DFlash2 backbone. Gated on SPEC-1 PROMOTE. Port: converter keys/tensors for cand_proj, ctx_h_proj, cand_ctx_proj + LN, pair_proj and the 386->256->1 MLP (~100 LOC ... | M1 |
@@ -152,7 +152,7 @@ Minimum-rigor controls. Empirical items (DF2-12.1, DF2-LAT, DF2-PM, DF2-FT-1, RV
 | W2SP-4 | intake-2582 Stage-2 dive w2 ledger | Record in TD-23 candidate list that d1-2B/3B are VL models with LFM Open License v1.0 and that the llama.cpp path supports noul/choice/score only; routing questions are choice+score so the subset is sufficient. | K4 |
 | W2SP-5 | intake-2581 Stage-2 dive w2 ledger | Spoken-state decision probe (turn completeness / intent) with d1-Omni-2B on the CS-45 turn-taking corpus once human_recorded strata exist; score with the CS-45 measurands against the CS-47 semantic-gate arms. | M4 |
 | W2SP-6 | intake-2580, intake-2383 Stage-2 dive w2 ledger | Add a Voxtral-Mini-4B-Realtime GGUF through mtmd-cli run_audio_stream arm to the CS-8.STT5 screen (ranks and rejects only) on a scratch upstream build; record encoder and decoder times separately as the CLI already prints them. | P4 / CS-8.STT8 |
-| W3DEC-1 | intake-2593, intake-2594 Stage-2 dive w3 ledger | Add a precision-and-backend parity gate to the TD-23 decision-backend screen BEFORE any quality or calibration number is read: for the chosen decision GGUF (d1-2B Q8_0 first), serve the BF16 file on CPU as reference, then Q8_0 on CPU, Q8_0 on HIP (MI210), and ... | P5 / TD-23.D1 |
+| W3DEC-1 | intake-2593, intake-2594#record Stage-2 dive w3 ledger | Add a precision-and-backend parity gate to the TD-23 decision-backend screen BEFORE any quality or calibration number is read: for the chosen decision GGUF (d1-2B Q8_0 first), serve the BF16 file on CPU as reference, then Q8_0 on CPU, Q8_0 on HIP (MI210), and ... | P5 / TD-23.D1 |
 | W3DEC-2 | intake-2595, intake-2593 Stage-2 dive w3 ledger | Add a batch-/schedule-invariance gate to the same screen: serve with -np 3, -b = -ub = 2048 (state must fit one ubatch), send request A alone (x5), then A concurrently with a shorter, a longer and an identical companion (x5 each, with a blocker request to ... | P5 / TD-23.D1 |
 | W3DEC-3 | intake-2593, intake-2581, intake-2582 Stage-2 dive w3 ledger | Plan the build route for any /v1/systemone work: the frozen v10 tree has neither the endpoint (PR 29818 merge a4cb4c61 is not an ancestor of ffc1bac82; no systemone string; no *decision* file in tools/server) nor LFM3 (needs >= b11960). Cheapest honest route ... | P5 / TD-23.D1 |
 | W3DEC-4 | intake-2593, intake-2582 Stage-2 dive w3 ledger | Record in the TD-18 calibration receipt the model pin that determines the probabilities: GGUF sha256, every decision.temperature.* metadata key/value (read with gguf-dump), llama.cpp build SHA, -b/-ub/-np, and the question kind plus option count (some ... | P5 / TD-18.1 |
@@ -174,11 +174,11 @@ Minimum-rigor controls. Empirical items (DF2-12.1, DF2-LAT, DF2-PM, DF2-FT-1, RV
 | W5FOLD-2 | intake-2600 Stage-2 wave-5 plan-revision analysis | Decline #30100 (Metal MUL_MAT+ADD fusion) for the champion | decline: the fix touches only the Metal backend; no CPU or HIP code path in our stack changes. |
 | W5FOLD-3 | intake-2601 Stage-2 wave-5 plan-revision analysis | Track draft PR #29832 as the possible replacement base for the systemone fold when it merges | P9 / CH-36 |
 | W5FOLD-4 | intake-2575, intake-2579, intake-2580 Stage-2 wave-5 plan-revision analysis | Real conflict and ggml-delta census before any audio-group cherry-pick | P9 / CH-32 |
-| W5FT-1 | intake-2548, intake-2549, intake-297 Stage-2 wave-5 plan-revision analysis | Candidate (a), the 27B DFlash2 drafter (1.9B, GGUF-verified). Capture: 5 taps + final hidden = 61,440 B/token, only for completions plus their 2,048-token window (the drafter attends a 2,048 sliding window). ~0.8-1.2M tokens = 50-75 GB. Capture runs on the ... | P2 / DF2-FT-1 |
-| W5FT-2 | intake-2548, intake-2578 Stage-2 wave-5 plan-revision analysis | Candidate (c), the frontdoor Qwen3.6-35B-A3B MTP head (blk.40: 0.845B params, of which ~0.80B are 256x experts; hidden 2048; served from the same Q8_0 file at draft_max 4). Capture the trunk pre-head hidden at every position (4,096 B/token). It is both the ... | P2 / DF2-FT-1 |
-| W5FT-3 | intake-2548, intake-2578 Stage-2 wave-5 plan-revision analysis | Candidate (b), the Qwen3.8-Flash-Next MTP head (shared-Q8_0 file: 32 tensors, 2.607B params, of which 2.517B are 512x experts; attention with a QSA indexer, top_k 2048; 4-stream hyper-connections). Capture: the hc stream state at 10,240 x bf16 = 20,480 ... | P2 / DF2-FT-1 |
-| W5FT-4 | intake-2548, intake-2549 Stage-2 wave-5 plan-revision analysis | Settle KL versus hard labels on the real served drafter (arms H and K plus a second seed in DF2-FT-1), not on the Soft-MTP 167M toy. The toy result would not transfer: different module (non-causal block drafter with a selector), different vocabulary (50,304 ... | P2 / DF2-FT-1 |
-| W5FT-5 | intake-2548 Stage-2 wave-5 plan-revision analysis | Fold MTP-4 (realign a served finetune's stock head) into a standing onboarding rule. Any served drafter or MTP head not co-trained on the exact served trunk and quant gets frozen-trunk KL re-alignment on its own traffic. That covers fine-tunes (the ... | P2 / DF2-FT-1 |
+| W5FT-1 | intake-2548#record, intake-2549, intake-297 Stage-2 wave-5 plan-revision analysis | Candidate (a), the 27B DFlash2 drafter (1.9B, GGUF-verified). Capture: 5 taps + final hidden = 61,440 B/token, only for completions plus their 2,048-token window (the drafter attends a 2,048 sliding window). ~0.8-1.2M tokens = 50-75 GB. Capture runs on the ... | P2 / DF2-FT-1 |
+| W5FT-2 | intake-2548#record, intake-2578 Stage-2 wave-5 plan-revision analysis | Candidate (c), the frontdoor Qwen3.6-35B-A3B MTP head (blk.40: 0.845B params, of which ~0.80B are 256x experts; hidden 2048; served from the same Q8_0 file at draft_max 4). Capture the trunk pre-head hidden at every position (4,096 B/token). It is both the ... | P2 / DF2-FT-1 |
+| W5FT-3 | intake-2548#record, intake-2578 Stage-2 wave-5 plan-revision analysis | Candidate (b), the Qwen3.8-Flash-Next MTP head (shared-Q8_0 file: 32 tensors, 2.607B params, of which 2.517B are 512x experts; attention with a QSA indexer, top_k 2048; 4-stream hyper-connections). Capture: the hc stream state at 10,240 x bf16 = 20,480 ... | P2 / DF2-FT-1 |
+| W5FT-4 | intake-2548#record, intake-2549 Stage-2 wave-5 plan-revision analysis | Settle KL versus hard labels on the real served drafter (arms H and K plus a second seed in DF2-FT-1), not on the Soft-MTP 167M toy. The toy result would not transfer: different module (non-causal block drafter with a selector), different vocabulary (50,304 ... | P2 / DF2-FT-1 |
+| W5FT-5 | intake-2548#record Stage-2 wave-5 plan-revision analysis | Fold MTP-4 (realign a served finetune's stock head) into a standing onboarding rule. Any served drafter or MTP head not co-trained on the exact served trunk and quant gets frozen-trunk KL re-alignment on its own traffic. That covers fine-tunes (the ... | P2 / DF2-FT-1 |
 | W5FT-6 | intake-2578 Stage-2 wave-5 plan-revision analysis | Scope SPEC2-4 (Nemotron Sec 3.4 recipe). Hidden-state sampling over earlier draft steps applies to recursive MTP heads (frontdoor, Flash-Next), not to DFlash2, which drafts its whole block in one non-causal pass from the anchor. T=2 versus T=1 is a free extra ... | P2 / DF2-FT-1 |
 | W5GPU-1 | intake-2547, intake-2571, intake-2551 Stage-2 wave-5 plan-revision analysis | Restate LOOP-1 with GPU arithmetic: loops multiply weight bytes, KV reads and FLOPs equally, so aggregate is about 1/L at every batch; batching removes only the weight term; MHA KV (768 KiB/token at 4 loops) makes Ouro-1.4B KV-bound beyond about 123 tokens of ... | P10 / GPU-LOOP-1 |
 | W5GPU-2 | intake-2585, intake-2586 Stage-2 wave-5 plan-revision analysis | Per-request num_loops (setter, graph-param/can_reuse, k-class batch split, prefix-cache rule k2<=k, k_max cache sizing) with a router-oracle decision rule. | P10 / GPU-LOOP-3 |
@@ -207,12 +207,12 @@ Minimum-rigor controls. Empirical items (DF2-12.1, DF2-LAT, DF2-PM, DF2-FT-1, RV
 | PRE-2545 | intake-2545 Stage-1 preliminary actionable | Identify the STT model/runtime from the linked GitHub repo (expansion seed) before scoring for the speech lane. | K4 |
 | PRE-2546 | intake-2546 Stage-1 preliminary actionable | Read the paper (expansion seed arXiv 2610.14162) and judge whether coarse-to-fine parallel generation has a drafter or non-AR serving role for EPYC. | M1 |
 | PRE-2547 | intake-2547 Stage-1 preliminary actionable | Dive: decide whether looped/parallel-loop decoding changes bytes-per-token on bandwidth-bound CPU decode, and whether any served or candidate model is looped. | P10 / GPU-LOOP-1 |
-| PRE-2548 | intake-2548 Stage-1 preliminary actionable | Dive: verify Table 2 and decide whether Soft-MTP is the objective to use if we train or restore MTP heads (Flash-Next Axis E, drafter training). | P2 / DF2-FT-1 |
-| PRE-2549 | intake-2549 Stage-1 preliminary actionable | Dive with intake-2548: check the loss implementation and whether it composes with head-only training on a frozen trunk. | P2 / DF2-FT-1 |
+| PRE-2548 | intake-2548#record Stage-1 preliminary actionable | Dive: verify Table 2 and decide whether Soft-MTP is the objective to use if we train or restore MTP heads (Flash-Next Axis E, drafter training). | P2 / DF2-FT-1 |
+| PRE-2549 | intake-2549 Stage-1 preliminary actionable | Dive with intake-2548#record: check the loss implementation and whether it composes with head-only training on a frozen trunk. | P2 / DF2-FT-1 |
 | PRE-2550 | intake-2550 Stage-1 preliminary actionable | Dive: separate the transferable mechanism (exact GDN-state addressing) from the demo; decide if it informs GDN-hybrid serving or memory work. | P3 / AKX-ALL-31.GDN |
 | PRE-2551 | intake-2551 Stage-1 preliminary actionable | Dive: check whether looped MoE trades weight bytes for compute in a way that suits bandwidth-bound EPYC decode. | K2 |
 | PRE-2552 | intake-2552 Stage-1 preliminary actionable | Dive: establish the actual llama.cpp audio path and whether it can replace or augment the whisper.cpp + qwentts.cpp cascade on EPYC/MI210. | P4 / CS-8.STT8 |
-| PRE-2553 | intake-2553 Stage-1 preliminary actionable | Dive: compare with the d1/Jev decision-model lineage already indexed and decide whether an audio/vision decision front end serves orchestrator routing or the speech turn-taking loop. | P5 / TD-23.D1 |
+| PRE-2553 | intake-2553#record Stage-1 preliminary actionable | Dive: compare with the d1/Jev decision-model lineage already indexed and decide whether an audio/vision decision front end serves orchestrator routing or the speech turn-taking loop. | P5 / TD-23.D1 |
 | PRE-2554 | intake-2554 Stage-1 preliminary actionable | Dive: verify the llama.cpp realtime speech-server path and which ggml generation it needs relative to the frozen kernel set. | M4 |
 | PRE-2555 | intake-2555 Stage-1 preliminary actionable | Dive: extract the loop design and the verified-vs-numeric gap; map onto the AK candidate gate and gfx90a/x86 targets. | P3 / AKX-ALL-31.EDGE |
 | PRE-2556 | intake-2556 Stage-1 preliminary actionable | Dive with intake-2555: read the loop and trace layout for AK reuse. | P3 / RVP-CTR-1 |
@@ -543,7 +543,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
       ]
     },
     {
-      "id": "intake-2548",
+      "id": "intake-2548#record",
       "integration_disposition": "integrated",
       "handoffs_updated": [
         "dflash2-block-drafter-experimental-build.md"
@@ -622,7 +622,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
       ]
     },
     {
-      "id": "intake-2553",
+      "id": "intake-2553#record",
       "integration_disposition": "integrated",
       "handoffs_updated": [
         "conversation-stack.md",
@@ -1223,7 +1223,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
       ]
     },
     {
-      "id": "intake-2594",
+      "id": "intake-2594#record",
       "integration_disposition": "integrated",
       "handoffs_updated": [
         "typed-decision-plane.md"
@@ -1575,7 +1575,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     },
     {
       "scan_id": "S3",
-      "source_ref": "intake-2548 claims 0-2; intake-2578 claims 0-2; intake-297 re-read",
+      "source_ref": "intake-2548#record claims 0-2; intake-2578 claims 0-2; intake-297 re-read",
       "implementation_ref": "handoffs/active/dflash2-block-drafter-experimental-build.md:196 and INF-62 contract",
       "mechanism": "Training draft heads against the target distribution on a frozen trunk",
       "consumer": "DF2-DRAFTER-CAPABILITY capture contract",
@@ -1815,7 +1815,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     },
     {
       "scan_id": "S14",
-      "source_ref": "intake-2548 claims; intake-2578 claims; wave-5 drafter costing",
+      "source_ref": "intake-2548#record claims; intake-2578 claims; wave-5 drafter costing",
       "implementation_ref": "handoffs/active/dflash2-block-drafter-experimental-build.md DF2-4, agentic-serving-harness-fixes.md:60-79 acceptance on production traffic",
       "mechanism": "Forward-KL fine-tuning of a draft model on a frozen trunk",
       "consumer": "Served 27B DFlash2 drafter on :8083",
@@ -1965,31 +1965,31 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
     },
     {
       "ledger_id": "W5FT-1",
-      "source": "intake-2548, intake-2549, intake-297 Stage-2 wave-5 plan-revision analysis",
+      "source": "intake-2548#record, intake-2549, intake-297 Stage-2 wave-5 plan-revision analysis",
       "action": "Candidate (a), the 27B DFlash2 drafter (1.9B, GGUF-verified). Capture: 5 taps + final hidden = 61,440 B/token, only for completions plus their 2,048-token window (the drafter attends a 2,048 sliding window). ~0.8-1.2M tokens = 50-75 GB. Capture runs on the ...",
       "terminal_mapping": "P2 / DF2-FT-1"
     },
     {
       "ledger_id": "W5FT-2",
-      "source": "intake-2548, intake-2578 Stage-2 wave-5 plan-revision analysis",
+      "source": "intake-2548#record, intake-2578 Stage-2 wave-5 plan-revision analysis",
       "action": "Candidate (c), the frontdoor Qwen3.6-35B-A3B MTP head (blk.40: 0.845B params, of which ~0.80B are 256x experts; hidden 2048; served from the same Q8_0 file at draft_max 4). Capture the trunk pre-head hidden at every position (4,096 B/token). It is both the ...",
       "terminal_mapping": "P2 / DF2-FT-1"
     },
     {
       "ledger_id": "W5FT-3",
-      "source": "intake-2548, intake-2578 Stage-2 wave-5 plan-revision analysis",
+      "source": "intake-2548#record, intake-2578 Stage-2 wave-5 plan-revision analysis",
       "action": "Candidate (b), the Qwen3.8-Flash-Next MTP head (shared-Q8_0 file: 32 tensors, 2.607B params, of which 2.517B are 512x experts; attention with a QSA indexer, top_k 2048; 4-stream hyper-connections). Capture: the hc stream state at 10,240 x bf16 = 20,480 ...",
       "terminal_mapping": "P2 / DF2-FT-1"
     },
     {
       "ledger_id": "W5FT-4",
-      "source": "intake-2548, intake-2549 Stage-2 wave-5 plan-revision analysis",
+      "source": "intake-2548#record, intake-2549 Stage-2 wave-5 plan-revision analysis",
       "action": "Settle KL versus hard labels on the real served drafter (arms H and K plus a second seed in DF2-FT-1), not on the Soft-MTP 167M toy. The toy result would not transfer: different module (non-causal block drafter with a selector), different vocabulary (50,304 ...",
       "terminal_mapping": "P2 / DF2-FT-1"
     },
     {
       "ledger_id": "W5FT-5",
-      "source": "intake-2548 Stage-2 wave-5 plan-revision analysis",
+      "source": "intake-2548#record Stage-2 wave-5 plan-revision analysis",
       "action": "Fold MTP-4 (realign a served finetune's stock head) into a standing onboarding rule. Any served drafter or MTP head not co-trained on the exact served trunk and quant gets frozen-trunk KL re-alignment on its own traffic. That covers fine-tunes (the ...",
       "terminal_mapping": "P2 / DF2-FT-1"
     },
@@ -3122,7 +3122,7 @@ From `entry_updates`: `integration_disposition`, `handoffs_updated` and `disposi
       ]
     },
     "PRE-2549": {
-      "required_outcome": "Dive with intake-2548: check the loss implementation and whether it composes with head-only training on a frozen trunk.",
+      "required_outcome": "Dive with intake-2548#record: check the loss implementation and whether it composes with head-only training on a frozen trunk.",
       "review_status": "preserved",
       "review_basis": "Main read the dive passage and the current consumer; DF2-FT-1 carry the required behavior with controls and a decision rule.",
       "task_refs": [
