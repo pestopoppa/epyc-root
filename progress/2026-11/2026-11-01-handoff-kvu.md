@@ -99,3 +99,7 @@ Reviewed and preserved [the recovered candidate and patch](../../artifacts/compu
 ## Q38 dedicated lifecycle design
 
 Reviewed the [prospective lifecycle design](../../artifacts/compute/kvu16h-q38-lifecycle-plan-20261101/README.md): separate captured server processes, matched requests, independent verified warm-ups, source/binary binding and partial-run custody are required. The document is not a producer and does not protect deployed runners. Delegated implementation with offline tests, independent review of P3 v2/X0 guard drafts, and recovery of the tile candidate's companion source; their event files are registered for owner review. No compute, build or row qualification ran. GitNexus remains unindexed in this lane; no application symbol was edited at this boundary.
+
+## KVU-19a-2 companion source
+
+The dispatcher redelivered the candidate-source event already integrated in commit `687d2e33e57e`; consumed its stale awaiting marker. Reviewed the [companion record](../../artifacts/compute/kvu19a2-companion-20261101/README.md): Git commit `a0d0ae238e714aaab04e973ef4b5a4b7c9917744` resolves to the stated tree, and its common and tile objects match the recorded hashes. The patch reconstructs a prospective candidate, not a historical binary or a proven build. Independent review, source-bound build-row preparation and Q38 implementation review have dispatcher events registered. No compute or build ran. GitNexus remains unindexed; no application symbol was edited.

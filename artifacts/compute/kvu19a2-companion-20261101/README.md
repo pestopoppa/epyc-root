@@ -1,0 +1,7 @@
+# KVU-19a-2 candidate companion source
+
+The clean tracked scratch `src-store` is commit `a0d0ae238e714aaab04e973ef4b5a4b7c9917744`, tree `507ee1a6b1c5f09d56a337232f99eb82c1aeea55`. Its `fattn-common.cuh` defines `flash_attn_kv_chunk_is_dead`; its committed tile has the same `KV_live_ptr` interface as the recovered candidate. Replacing only its tile with the candidate yields the saved patch; the patch was applied to a temporary copy and matched the candidate byte for byte. The diff affects the KV-loop skip strategy, not the surrounding tile. This establishes a prospectively reconstructible candidate source tree, not build compatibility, a historical build identity, or a reproduced failure.
+
+Committed store `fattn-common.cuh` SHA-256: `b3292f030e05a92cfcf65e80bd2cbd951babc763ed57662a11c8714f24332d87`; committed store tile: `878a3640f685e68c6c3d3102c331c43054bfb0bce81f68c3224ad271b8d9d844`; recovered candidate: `3f79373e68603691630c7dc38703411456cdf5fa12348d07812323568cdb1e82`. Each store file matches its Git object. The full tree's tracked state was clean; untracked files were not audited.
+
+Next: create an isolated experimental tree from the pinned commit, apply the patch, capture full tree/toolchain/build and ELF identity, then use authorized rowflow for builds and repeated deterministic GPU cases. The code-bearing patch is an experimental artifact only: do not modify the frozen production tree. No build or GPU work was performed.
