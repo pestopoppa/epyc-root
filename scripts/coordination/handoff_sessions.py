@@ -1265,6 +1265,19 @@ def wrapped(e, cache=None) -> bool:
             ahead = subprocess.run(["git", "-C", cwd, "cherry", "origin/main"], capture_output=True, text=True, timeout=60).stdout
         except (OSError, subprocess.TimeoutExpired):
             return False
+        if not dirty and "+" in ahead:
+            # ws58 23:46Z: an unlanded commit in a clean lane (its push died, e.g. a dead push lock) is landed HERE,
+            # deterministically, instead of refusing the session forever (codex-gen sat UNWRAPPED for 30 min).
+            try:
+                subprocess.run(["git", "-C", cwd, "fetch", "-q", "origin"], timeout=120)
+                if subprocess.run(["git", "-C", cwd, "rebase", "-q", "origin/main"], timeout=120).returncode != 0:
+                    subprocess.run(["git", "-C", cwd, "rebase", "--abort"], timeout=60)
+                    return False
+                subprocess.run(["python3", os.path.join(ROOT, "scripts/coordination/serialized_push.py"), "--agent", "dispatcher",
+                                "--repo", cwd, "--fetch", "--push"], capture_output=True, timeout=600)
+                ahead = subprocess.run(["git", "-C", cwd, "cherry", "origin/main"], capture_output=True, text=True, timeout=60).stdout
+            except (OSError, subprocess.TimeoutExpired):
+                return False
         return not dirty and "+" not in ahead
     if cache is None:
         cache = {}
