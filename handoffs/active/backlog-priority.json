@@ -1,7 +1,7 @@
 {
  "schema": "backlog_priority.v1",
  "generated_by": "scripts/handoffs/backlog_priority.py + scripts/handoffs/backlog_priority_curated.json",
- "generated_at": "2026-10-29T23:15Z",
+ "generated_at": "2026-11-01T08:07Z",
  "method": "LOOP-CONTRACT 2026-10-28 (operator-adopted loop redesign): every row and prep item carries kind = inference-prep | inference-ready | non-inference, and the bands rank inference-prep (T0: FILLERS BACKLOG rows blocked on a harness fix or a missing launcher, seeded via --seed-prep) above inference-ready (T4-T6) above all non-inference (T1-T3, T7; held inference counts as non-inference until its hold clears). Within the bands, operator method 2026-10-24: inference items ranked by the inference-backlog-scheduling model (live > ready decision-bearing > routine; ROI = decision value per compute-hour; operator holds push down with the blocker named); non-inference tasks that gate an inference task inherit and rank just above it; non-inference tasks blocked by nothing are the top tier (T1 gates compute, T2 does not); everything else blocked follows its blockers. Row priority = its best open item. score = rank percentile among rows with open work (1.0 = highest). Approximate: ~120 curated items, the rest keyword heuristics; row Deps edges are coarse. Regenerate: python3 scripts/handoffs/backlog_priority.py (see dashboard/README.md).",
  "tiers": {
   "0": "T0 inference-prep",
@@ -19,11 +19,6 @@
    "row": "INF-65",
    "task": "CH-24 - v11 promotion: gate or strip the unconditional qwen4exp fused-path debug output. T",
    "done": "patches done, handed to 3c4ca599 for C4 (/mnt/raid0/llm/tmp/ws58-ch24-20261024/patches/)"
-  },
-  {
-   "row": "INF-65",
-   "task": "CH-20.2 - `test-llama-archs` fixture generation aborts at `deepseek41` (\"Dense\": `key not ",
-   "done": "patches done, handed to 3c4ca599 for C4 (/mnt/raid0/llm/tmp/ws58-ch24-20261024/patches/)"
   }
  ],
  "kinds": [
@@ -34,16 +29,6 @@
  "inference_prep": [
   {
    "rank": 1,
-   "filler": "codex-ni-meta-fix-build-20261027",
-   "row": "INF-65",
-   "kind": "inference-prep",
-   "s": 0.93,
-   "blocker": "harness fix",
-   "owner": "Codex NI / MAIN",
-   "why": "FILLERS BACKLOG blocker=harness fix; mapped by handoff autokernel-champion-aggregate.md"
-  },
-  {
-   "rank": 2,
    "filler": "kpf18-g3-r10-integration-cpu",
    "row": "RTG-58",
    "kind": "inference-prep",
@@ -53,7 +38,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix: rc1 06:03:31Z, framing_pass=false, DataError native fork has no tas; mapped by filler-id alias /(^|-)kpf(18|64)-/"
   },
   {
-   "rank": 3,
+   "rank": 2,
    "filler": "kpf18-g3-r11-integration-cpu",
    "row": "RTG-58",
    "kind": "inference-prep",
@@ -63,7 +48,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix: rc70 06:31:34Z, deadline hit before the full 1.78 GB replay produce; mapped by filler-id alias /(^|-)kpf(18|64)-/"
   },
   {
-   "rank": 4,
+   "rank": 3,
    "filler": "kpf18-g3-r12-integration-cpu",
    "row": "RTG-58",
    "kind": "inference-prep",
@@ -73,7 +58,7 @@
    "why": "FILLERS BACKLOG blocker=missing launcher (ws58 12:25Z sweep: ARMED with dead/absent pid); mapped by filler-id alias /(^|-)kpf(18|64)-/"
   },
   {
-   "rank": 5,
+   "rank": 4,
    "filler": "kpf64-f-fb",
    "row": "RTG-58",
    "kind": "inference-prep",
@@ -83,7 +68,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix: FB never DONE across 10 consecutive 4 h grants (each hard-ended; mapped by filler-id alias /(^|-)kpf(18|64)-/"
   },
   {
-   "rank": 6,
+   "rank": 5,
    "filler": "fa4-c5-matched-bands",
    "row": "RTG-57",
    "kind": "inference-prep",
@@ -93,7 +78,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix: attempt3 rc1 06:16:50Z at the driver.py:441 gate: OFF nonfinite cas; mapped by handoff kv-unified-stack-rollout.md"
   },
   {
-   "rank": 7,
+   "rank": 6,
    "filler": "fa4-c5-rwoff-build",
    "row": "RTG-57",
    "kind": "inference-prep",
@@ -103,27 +88,7 @@
    "why": "FILLERS BACKLOG blocker=missing launcher: refused rc70 at 23:30:13Z by the night HOLD before clone/build; mapped by handoff kv-unified-stack-rollout.md"
   },
   {
-   "rank": 8,
-   "filler": "hpr-fixture-env-source-proof-publish-20261026",
-   "row": "RTG-57",
-   "kind": "inference-prep",
-   "s": 0.87,
-   "blocker": "missing launcher (ws58 12:25Z sweep: ARMED with dead/absent pid)",
-   "owner": "codex-ni-01a16d6b",
-   "why": "FILLERS BACKLOG blocker=missing launcher (ws58 12:25Z sweep: ARMED with dead/absent pid); mapped by filler-id alias /^hpr-/"
-  },
-  {
-   "rank": 9,
-   "filler": "hpr-golden-large-originals-20261026",
-   "row": "RTG-57",
-   "kind": "inference-prep",
-   "s": 0.87,
-   "blocker": "missing launcher (ws58 12:25Z sweep: ARMED with dead/absent pid)",
-   "owner": "codex-ni-01a16d6b",
-   "why": "FILLERS BACKLOG blocker=missing launcher (ws58 12:25Z sweep: ARMED with dead/absent pid); mapped by filler-id alias /^hpr-/"
-  },
-  {
-   "rank": 10,
+   "rank": 7,
    "filler": "refactor-01a16fc3-m4-c2-off-ratio-20261027",
    "row": "INF-22",
    "kind": "inference-prep",
@@ -133,7 +98,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by filler-id alias /(^|-)m4-/"
   },
   {
-   "rank": 11,
+   "rank": 8,
    "filler": "refactor-01a16fc3-m4-gpu-hol-20261027",
    "row": "INF-22",
    "kind": "inference-prep",
@@ -143,7 +108,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by filler-id alias /(^|-)m4-/"
   },
   {
-   "rank": 12,
+   "rank": 9,
    "filler": "refactor-01a16fc3-m4-load-gpu-v1-20261027",
    "row": "INF-22",
    "kind": "inference-prep",
@@ -153,7 +118,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by filler-id alias /(^|-)m4-/"
   },
   {
-   "rank": 13,
+   "rank": 10,
    "filler": "refactor-01a16fc3-m4-load-q2-20261027",
    "row": "INF-22",
    "kind": "inference-prep",
@@ -163,7 +128,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix (grant_ok refuse: launcher claims gpu-quiet shared + q2; mapped by filler-id alias /(^|-)m4-/"
   },
   {
-   "rank": 14,
+   "rank": 11,
    "filler": "refactor-01a16fc3-m4-load-q3-v3-20261027",
    "row": "INF-22",
    "kind": "inference-prep",
@@ -173,7 +138,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by filler-id alias /(^|-)m4-/"
   },
   {
-   "rank": 15,
+   "rank": 12,
    "filler": "refactor-01a16fc3-m4-recut-cpu-build-20261027",
    "row": "INF-22",
    "kind": "inference-prep",
@@ -183,7 +148,7 @@
    "why": "FILLERS BACKLOG blocker=missing launcher (ws58 12:25Z sweep: ARMED with dead/absent pid); mapped by filler-id alias /(^|-)m4-/"
   },
   {
-   "rank": 16,
+   "rank": 13,
    "filler": "lb49-c5-graph-readonly-20261027",
    "row": "INF-81",
    "kind": "inference-prep",
@@ -193,17 +158,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by handoff autokernel-all-devices-all-dimensions.md"
   },
   {
-   "rank": 17,
-   "filler": "codex-ni-gnx-esrch-20261026",
-   "row": "INF-50",
-   "kind": "inference-prep",
-   "s": 0.77,
-   "blocker": "missing launcher (ws58 12:25Z sweep: ARMED with dead/absent pid)",
-   "owner": "codex-ni-01a16d6b",
-   "why": "FILLERS BACKLOG blocker=missing launcher (ws58 12:25Z sweep: ARMED with dead/absent pid); mapped by filler-id alias /(^|-)gnx-/"
-  },
-  {
-   "rank": 18,
+   "rank": 14,
    "filler": "codex-ni-gnx-r2-nativeproof-20261026",
    "row": "INF-50",
    "kind": "inference-prep",
@@ -213,7 +168,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix: original native read-only proof failed status rc=64 (source clone h; mapped by filler-id alias /(^|-)gnx-/"
   },
   {
-   "rank": 19,
+   "rank": 15,
    "filler": "codex-ni-gnx-r2-nativeproof-recovery1-20261026",
    "row": "INF-50",
    "kind": "inference-prep",
@@ -223,7 +178,7 @@
    "why": "FILLERS BACKLOG blocker=missing launcher (ws58 12:25Z sweep: ARMED with dead/absent pid); mapped by filler-id alias /(^|-)gnx-/"
   },
   {
-   "rank": 20,
+   "rank": 16,
    "filler": "codex-ni-gnx-split-resolve-20261027",
    "row": "INF-50",
    "kind": "inference-prep",
@@ -233,7 +188,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by handoff speculative-decoding-mtp-refresh.md"
   },
   {
-   "rank": 21,
+   "rank": 17,
    "filler": "codex-ni-inf50-existing-graph-r9-20261027",
    "row": "INF-50",
    "kind": "inference-prep",
@@ -243,7 +198,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by handoff speculative-decoding-mtp-refresh.md"
   },
   {
-   "rank": 22,
+   "rank": 18,
    "filler": "codex-ni-inf50-native-20261026",
    "row": "INF-50",
    "kind": "inference-prep",
@@ -253,7 +208,7 @@
    "why": "FILLERS BACKLOG blocker=missing launcher (ws58 12:25Z sweep: ARMED with dead/absent pid); mapped by filler-id alias /(^|-)inf50-/"
   },
   {
-   "rank": 23,
+   "rank": 19,
    "filler": "codex-ni-inf50-native-window-recovery-20261026",
    "row": "INF-50",
    "kind": "inference-prep",
@@ -263,7 +218,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix: min-window 3690 + 300 margin = 3990 > the exact 3900 window its gua; mapped by filler-id alias /(^|-)inf50-/"
   },
   {
-   "rank": 24,
+   "rank": 20,
    "filler": "codex-ni-inf50-real-graph-r4-20261026",
    "row": "INF-50",
    "kind": "inference-prep",
@@ -273,7 +228,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix: v4 rc1 10:11:22Z, ~8 min in; mapped by handoff speculative-decoding-mtp-refresh.md"
   },
   {
-   "rank": 25,
+   "rank": 21,
    "filler": "codex-ni-inf50-real-graph-r8-20261027",
    "row": "INF-50",
    "kind": "inference-prep",
@@ -283,7 +238,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by handoff speculative-decoding-mtp-refresh.md"
   },
   {
-   "rank": 26,
+   "rank": 22,
    "filler": "refactor-xgrammar-a2-cpu-parity-v1-20261027",
    "row": "INF-50",
    "kind": "inference-prep",
@@ -293,7 +248,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by handoff speculative-decoding-mtp-refresh.md"
   },
   {
-   "rank": 27,
+   "rank": 23,
    "filler": "inf75-c5-native-abi-canary-q2",
    "row": "INF-75",
    "kind": "inference-prep",
@@ -303,7 +258,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by filler-id alias /(^|-)inf75-/"
   },
   {
-   "rank": 28,
+   "rank": 24,
    "filler": "inf75-c5-w1-gpu-primary-census-r2",
    "row": "INF-75",
    "kind": "inference-prep",
@@ -313,7 +268,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by filler-id alias /(^|-)inf75-/"
   },
   {
-   "rank": 29,
+   "rank": 25,
    "filler": "inf75-c5-w1-gpu-primary-census-r3",
    "row": "INF-75",
    "kind": "inference-prep",
@@ -323,7 +278,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by filler-id alias /(^|-)inf75-/"
   },
   {
-   "rank": 30,
+   "rank": 26,
    "filler": "inf75-c5-w3-host-excluding-census-v1",
    "row": "INF-75",
    "kind": "inference-prep",
@@ -333,7 +288,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by filler-id alias /(^|-)inf75-/"
   },
   {
-   "rank": 31,
+   "rank": 27,
    "filler": "inf75-c5-w3-host-excluding-census-v2",
    "row": "INF-75",
    "kind": "inference-prep",
@@ -343,7 +298,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix (node2 not reclaimable within 120 s while HPR-B/page cache resident); mapped by filler-id alias /(^|-)inf75-/"
   },
   {
-   "rank": 32,
+   "rank": 28,
    "filler": "inf75-c5-w3-host-excluding-census-v3",
    "row": "INF-75",
    "kind": "inference-prep",
@@ -353,7 +308,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by filler-id alias /(^|-)inf75-/"
   },
   {
-   "rank": 33,
+   "rank": 29,
    "filler": "UFH12-REQUESTB-FULL-PRIVATE-APPLY-1",
    "row": "UFH-12",
    "kind": "inference-prep",
@@ -363,7 +318,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix (ws58); mapped by handoff repl-embedding-retrieval.md"
   },
   {
-   "rank": 34,
+   "rank": 30,
    "filler": "codex-ni-ufh12-gp1-20261027",
    "row": "UFH-12",
    "kind": "inference-prep",
@@ -373,7 +328,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by handoff repl-embedding-retrieval.md"
   },
   {
-   "rank": 35,
+   "rank": 31,
    "filler": "HSF-5P-NEXT-PROFILE-2",
    "row": "INF-23",
    "kind": "inference-prep",
@@ -383,7 +338,7 @@
    "why": "FILLERS BACKLOG blocker=missing launcher: stopped 23:29:54Z rc1 by the ws58 night whole-host HOLD (owner; mapped by filler-id alias /^HSF-/"
   },
   {
-   "rank": 36,
+   "rank": 32,
    "filler": "HSF-5P-NEXT-PROFILE-3",
    "row": "INF-23",
    "kind": "inference-prep",
@@ -393,7 +348,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix: rc1 03:51:05Z, A2 stop_profiled owns_port raised PermissionError re; mapped by filler-id alias /^HSF-/"
   },
   {
-   "rank": 37,
+   "rank": 33,
    "filler": "HSF-5P-NEXT-PROFILE-4",
    "row": "INF-23",
    "kind": "inference-prep",
@@ -403,7 +358,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix: rc1 04:21:04Z, REAL control failure: the warmup stream-0 request di; mapped by filler-id alias /^HSF-/"
   },
   {
-   "rank": 38,
+   "rank": 34,
    "filler": "HSF-5P-NEXT-PROFILE-5",
    "row": "INF-23",
    "kind": "inference-prep",
@@ -413,7 +368,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix: rc1 06:53:23Z, INVALID for attribution: B restore state invalid, dr; mapped by filler-id alias /^HSF-/"
   },
   {
-   "rank": 39,
+   "rank": 35,
    "filler": "codex-ni-df2-byte-capture-ready-20261027",
    "row": "INF-62",
    "kind": "inference-prep",
@@ -423,7 +378,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by handoff dflash2-block-drafter-experimental-build.md"
   },
   {
-   "rank": 40,
+   "rank": 36,
    "filler": "codex-ni-df2-row-exact-build-20261027",
    "row": "INF-62",
    "kind": "inference-prep",
@@ -433,7 +388,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by handoff dflash2-block-drafter-experimental-build.md"
   },
   {
-   "rank": 41,
+   "rank": 37,
    "filler": "refactor-01a16fc3-df2-k1-download-q2-v2-20261027",
    "row": "INF-62",
    "kind": "inference-prep",
@@ -443,7 +398,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix (ws58 13:20Z); mapped by handoff dflash2-block-drafter-experimental-build.md"
   },
   {
-   "rank": 42,
+   "rank": 38,
    "filler": "codex-ni-parakeet-observed-canary-20261027",
    "row": "INF-79",
    "kind": "inference-prep",
@@ -453,7 +408,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by handoff conversation-stack.md"
   },
   {
-   "rank": 43,
+   "rank": 39,
    "filler": "refactor-01a16fc3-parakeet-reference-cpu-q1-20261027",
    "row": "INF-79",
    "kind": "inference-prep",
@@ -463,7 +418,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by handoff conversation-stack.md"
   },
   {
-   "rank": 44,
+   "rank": 40,
    "filler": "codex-ni-ufh08-hil15b-v2-publish-20261025",
    "row": "UFH-08",
    "kind": "inference-prep",
@@ -473,7 +428,7 @@
    "why": "FILLERS BACKLOG blocker=missing launcher: no accepted source-publication receipt or completion marker fo; mapped by filler-id alias /(^|-)(hil15|hil16|hil15b|hi"
   },
   {
-   "rank": 45,
+   "rank": 41,
    "filler": "refactor-hil15b-checkpoint-canary-20261027",
    "row": "UFH-08",
    "kind": "inference-prep",
@@ -483,7 +438,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by handoff harness-improvement-loop.md"
   },
   {
-   "rank": 46,
+   "rank": 42,
    "filler": "refactor-hil15b-heavy-pilot-20261027",
    "row": "UFH-08",
    "kind": "inference-prep",
@@ -493,7 +448,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by handoff harness-improvement-loop.md"
   },
   {
-   "rank": 47,
+   "rank": 43,
    "filler": "refactor-hil15b-q2-v2-pilot-20261027",
    "row": "UFH-08",
    "kind": "inference-prep",
@@ -503,7 +458,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by handoff harness-improvement-loop.md"
   },
   {
-   "rank": 48,
+   "rank": 44,
    "filler": "refactor-hil15b-short-window-pilot-20261027",
    "row": "UFH-08",
    "kind": "inference-prep",
@@ -513,7 +468,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by handoff harness-improvement-loop.md"
   },
   {
-   "rank": 49,
+   "rank": 45,
    "filler": "refactor-hil16b-replay-q2-20261027",
    "row": "UFH-08",
    "kind": "inference-prep",
@@ -523,7 +478,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by handoff harness-improvement-loop.md"
   },
   {
-   "rank": 50,
+   "rank": 46,
    "filler": "refactor-hil16b-replay-v2-20261027",
    "row": "UFH-08",
    "kind": "inference-prep",
@@ -533,7 +488,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by handoff harness-improvement-loop.md"
   },
   {
-   "rank": 51,
+   "rank": 47,
    "filler": "refactor-cme7t-20261027",
    "row": "FILLERS:refactor-cme7t-20261027",
    "kind": "inference-prep",
@@ -543,7 +498,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by filler-id alias /(^|-)cme/"
   },
   {
-   "rank": 52,
+   "rank": 48,
    "filler": "codex-ni-usage-prov1-r4-20261025",
    "row": "UFH-01",
    "kind": "inference-prep",
@@ -553,7 +508,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix: validation result is FAIL (gitnexus-readonly-queries rc=69), not th; mapped by row id UFH-01 named"
   },
   {
-   "rank": 53,
+   "rank": 49,
    "filler": "codex-ni-db1-telemetry-20261026",
    "row": "FILLERS:codex-ni-db1-telemetry-20261026",
    "kind": "inference-prep",
@@ -563,7 +518,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix: original grant run failed rc=128 on malformed patch (fragment witho; mapped by unmapped"
   },
   {
-   "rank": 54,
+   "rank": 50,
    "filler": "codex-ni-db1-telemetry-context-recovery-20261026",
    "row": "FILLERS:codex-ni-db1-telemetry-context-recovery-20261026",
    "kind": "inference-prep",
@@ -573,7 +528,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix: granted 12:18:58Z, ended 12:19:21Z rc2 (reason exited); mapped by unmapped"
   },
   {
-   "rank": 55,
+   "rank": 51,
    "filler": "codex-ni-db1-telemetry-lint-scope-recovery-20261026",
    "row": "FILLERS:codex-ni-db1-telemetry-lint-scope-recovery-20261026",
    "kind": "inference-prep",
@@ -583,7 +538,7 @@
    "why": "FILLERS BACKLOG blocker=missing launcher (ws58 12:25Z sweep: ARMED with dead/absent pid); mapped by unmapped"
   },
   {
-   "rank": 56,
+   "rank": 52,
    "filler": "codex-ni-db1-telemetry-recovery-20261026",
    "row": "FILLERS:codex-ni-db1-telemetry-recovery-20261026",
    "kind": "inference-prep",
@@ -593,7 +548,7 @@
    "why": "FILLERS BACKLOG blocker=missing launcher (ws58 12:25Z sweep: ARMED with dead/absent pid); mapped by unmapped"
   },
   {
-   "rank": 57,
+   "rank": 53,
    "filler": "codex-ni-embedder-guarded-regression-20261026",
    "row": "FILLERS:codex-ni-embedder-guarded-regression-20261026",
    "kind": "inference-prep",
@@ -603,7 +558,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix: rc1 at 23:17:14Z, 374 pass / 6 fail of 380, no publication; mapped by unmapped"
   },
   {
-   "rank": 58,
+   "rank": 54,
    "filler": "r6-cutover-repairs-phase1-20261026",
    "row": "FILLERS:r6-cutover-repairs-phase1-20261026",
    "kind": "inference-prep",
@@ -613,7 +568,7 @@
    "why": "FILLERS BACKLOG blocker=missing launcher: ws58 moved it to q1, but guard.sh pins 0-23; mapped by unmapped"
   },
   {
-   "rank": 59,
+   "rank": 55,
    "filler": "r6-cutover-repairs-q1-successor-20261026",
    "row": "FILLERS:r6-cutover-repairs-q1-successor-20261026",
    "kind": "inference-prep",
@@ -623,7 +578,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix: rc1 21:11Z focused stage 7 pass / 3 errors (D1 test missing fixture; mapped by unmapped"
   },
   {
-   "rank": 60,
+   "rank": 56,
    "filler": "refactor-01a16fc3-b2-baseline-20261026",
    "row": "FILLERS:refactor-01a16fc3-b2-baseline-20261026",
    "kind": "inference-prep",
@@ -633,7 +588,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix: V12 attempt rc143 ~09:41Z, ~2 min in (likely guard halt); mapped by unmapped"
   },
   {
-   "rank": 61,
+   "rank": 57,
    "filler": "refactor-01a16fc3-model-free-repair-20261026",
    "row": "FILLERS:refactor-01a16fc3-model-free-repair-20261026",
    "kind": "inference-prep",
@@ -643,7 +598,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix: attempt1 rc1 19:52:56Z, 455 pass / 112 fail (429 from cross-test ra; mapped by unmapped"
   },
   {
-   "rank": 62,
+   "rank": 58,
    "filler": "refactor-01a16fc3-rvp-att-canary-v2",
    "row": "FILLERS:refactor-01a16fc3-rvp-att-canary-v2",
    "kind": "inference-prep",
@@ -653,7 +608,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by unmapped"
   },
   {
-   "rank": 63,
+   "rank": 59,
    "filler": "refactor-01a16fc3-rvp-att-canary",
    "row": "FILLERS:refactor-01a16fc3-rvp-att-canary",
    "kind": "inference-prep",
@@ -663,7 +618,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by unmapped"
   },
   {
-   "rank": 64,
+   "rank": 60,
    "filler": "rte-log1-source-recovery-20261026",
    "row": "FILLERS:rte-log1-source-recovery-20261026",
    "kind": "inference-prep",
@@ -673,7 +628,7 @@
    "why": "FILLERS BACKLOG blocker=missing launcher (ws58 12:25Z sweep: ARMED with dead/absent pid); mapped by unmapped"
   },
   {
-   "rank": 65,
+   "rank": 61,
    "filler": "refactor-b2-producer-e-q2-20261027",
    "row": "RTG-61",
    "kind": "inference-prep",
@@ -683,7 +638,7 @@
    "why": "FILLERS BACKLOG blocker=harness fix; mapped by handoff refactoring-multirepo-2026-10.md"
   },
   {
-   "rank": 66,
+   "rank": 62,
    "filler": "refactor-01a16fc3-inf34-pf1-initial-20261027",
    "row": "INF-44",
    "kind": "inference-prep",
@@ -694,29 +649,11 @@
   }
  ],
  "rows": {
-  "INF-65": {
+  "RTG-58": {
    "kind": "inference-prep",
    "tier": 0,
    "rank": 1,
    "score": 1.0,
-   "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-meta-fix-build-20261027: harness fix",
-   "unblocks": [
-    "INF-66",
-    "INF-73",
-    "INF-74",
-    "INF-75",
-    "INF-78",
-    "INF-81",
-    "RTG-58",
-    "UFH-12"
-   ],
-   "blocker": ""
-  },
-  "RTG-58": {
-   "kind": "inference-prep",
-   "tier": 0,
-   "rank": 2,
-   "score": 0.9942,
    "basis": "T0 inference-prep best open item (P): inference-prep kpf18-g3-r10-integration-cpu: harness fix: rc1 06:03:31Z, framing_pass=fals",
    "unblocks": [
     "INF-81"
@@ -726,8 +663,8 @@
   "RTG-57": {
    "kind": "inference-prep",
    "tier": 0,
-   "rank": 3,
-   "score": 0.9884,
+   "rank": 2,
+   "score": 0.9942,
    "basis": "T0 inference-prep best open item (P): inference-prep fa4-c5-matched-bands: harness fix: attempt3 rc1 06:16:50Z at the driver.py:",
    "unblocks": [
     "INF-59",
@@ -746,8 +683,8 @@
   "INF-22": {
    "kind": "inference-prep",
    "tier": 0,
-   "rank": 4,
-   "score": 0.9827,
+   "rank": 3,
+   "score": 0.9884,
    "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
    "unblocks": [],
    "blocker": ""
@@ -755,8 +692,8 @@
   "INF-81": {
    "kind": "inference-prep",
    "tier": 0,
-   "rank": 5,
-   "score": 0.9769,
+   "rank": 4,
+   "score": 0.9827,
    "basis": "T0 inference-prep best open item (P): inference-prep lb49-c5-graph-readonly-20261027: harness fix",
    "unblocks": [],
    "blocker": ""
@@ -764,9 +701,9 @@
   "INF-50": {
    "kind": "inference-prep",
    "tier": 0,
-   "rank": 6,
-   "score": 0.9711,
-   "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-esrch-20261026: missing launcher (ws58 12:25Z sweep: ARMED wit",
+   "rank": 5,
+   "score": 0.9769,
+   "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
    "unblocks": [
     "INF-62",
     "INF-65",
@@ -784,8 +721,8 @@
   "INF-75": {
    "kind": "inference-prep",
    "tier": 0,
-   "rank": 7,
-   "score": 0.9653,
+   "rank": 6,
+   "score": 0.9711,
    "basis": "T0 inference-prep best open item (P): inference-prep inf75-c5-native-abi-canary-q2: harness fix",
    "unblocks": [
     "INF-81"
@@ -795,8 +732,8 @@
   "UFH-12": {
    "kind": "inference-prep",
    "tier": 0,
-   "rank": 8,
-   "score": 0.9595,
+   "rank": 7,
+   "score": 0.9653,
    "basis": "T0 inference-prep best open item (P): inference-prep UFH12-REQUESTB-FULL-PRIVATE-APPLY-1: harness fix (ws58)",
    "unblocks": [],
    "blocker": ""
@@ -804,8 +741,8 @@
   "INF-23": {
    "kind": "inference-prep",
    "tier": 0,
-   "rank": 9,
-   "score": 0.9538,
+   "rank": 8,
+   "score": 0.9595,
    "basis": "T0 inference-prep best open item (P): inference-prep HSF-5P-NEXT-PROFILE-2: missing launcher: stopped 23:29:54Z rc1 by the ws58 ",
    "unblocks": [],
    "blocker": ""
@@ -813,8 +750,8 @@
   "INF-62": {
    "kind": "inference-prep",
    "tier": 0,
-   "rank": 10,
-   "score": 0.948,
+   "rank": 9,
+   "score": 0.9538,
    "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-df2-byte-capture-ready-20261027: harness fix",
    "unblocks": [
     "INF-65",
@@ -832,8 +769,8 @@
   "INF-79": {
    "kind": "inference-prep",
    "tier": 0,
-   "rank": 11,
-   "score": 0.9422,
+   "rank": 10,
+   "score": 0.948,
    "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-parakeet-observed-canary-20261027: harness fix",
    "unblocks": [],
    "blocker": ""
@@ -841,8 +778,8 @@
   "UFH-08": {
    "kind": "inference-prep",
    "tier": 0,
-   "rank": 12,
-   "score": 0.9364,
+   "rank": 11,
+   "score": 0.9422,
    "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-ufh08-hil15b-v2-publish-20261025: missing launcher: no accepted so",
    "unblocks": [],
    "blocker": ""
@@ -850,8 +787,8 @@
   "UFH-01": {
    "kind": "inference-prep",
    "tier": 0,
-   "rank": 13,
-   "score": 0.9306,
+   "rank": 12,
+   "score": 0.9364,
    "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-usage-prov1-r4-20261025: harness fix: validation result is FAIL (g",
    "unblocks": [
     "INF-78",
@@ -867,8 +804,8 @@
   "RTG-61": {
    "kind": "inference-prep",
    "tier": 0,
-   "rank": 14,
-   "score": 0.9249,
+   "rank": 13,
+   "score": 0.9306,
    "basis": "T0 inference-prep best open item (P): inference-prep refactor-b2-producer-e-q2-20261027: harness fix",
    "unblocks": [],
    "blocker": ""
@@ -876,8 +813,8 @@
   "INF-44": {
    "kind": "inference-prep",
    "tier": 0,
-   "rank": 15,
-   "score": 0.9191,
+   "rank": 14,
+   "score": 0.9249,
    "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-inf34-pf1-initial-20261027: harness fix",
    "unblocks": [],
    "blocker": ""
@@ -885,8 +822,8 @@
   "INF-70": {
    "kind": "inference-ready",
    "tier": 4,
-   "rank": 16,
-   "score": 0.9133,
+   "rank": 15,
+   "score": 0.9191,
    "basis": "T4 inference-ready best open item (I): G2-CONC — BLOCKING PROMOTION GATE. Must run on the PROMOTION CANDIDATE BINARY, not on an a",
    "unblocks": [
     "INF-72",
@@ -900,11 +837,29 @@
   "INF-60": {
    "kind": "inference-ready",
    "tier": 5,
-   "rank": 17,
-   "score": 0.9075,
+   "rank": 16,
+   "score": 0.9133,
    "basis": "T5 inference-ready best open item (I): Q38-T10.1r - reload the orchestrator API so `spec_off_bitwise_roles` (default_prod ON, orc",
    "unblocks": [
     "INF-61"
+   ],
+   "blocker": ""
+  },
+  "INF-65": {
+   "kind": "inference-ready",
+   "tier": 5,
+   "rank": 17,
+   "score": 0.9075,
+   "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
+   "unblocks": [
+    "INF-66",
+    "INF-73",
+    "INF-74",
+    "INF-75",
+    "INF-78",
+    "INF-81",
+    "RTG-58",
+    "UFH-12"
    ],
    "blocker": ""
   },
@@ -985,104 +940,12 @@
    "unblocks": [],
    "blocker": ""
   },
-  "UFH-14": {
+  "INF-48": {
    "kind": "inference-ready",
    "tier": 5,
    "rank": 23,
    "score": 0.8728,
-   "basis": "T5 inference-ready best open item (I): UFH14-A3A-F2 — decode-stall comparison, alternated. (filed 2026-10-29) The original A3a qu",
-   "unblocks": [
-    "RTG-30"
-   ],
-   "blocker": ""
-  },
-  "RTG-54": {
-   "kind": "inference-ready",
-   "tier": 6,
-   "rank": 24,
-   "score": 0.8671,
-   "basis": "T6 inference-ready best open item (I): CT-12.3d — escaped-cost check: re-run `06-ct12-served-path` through the orchestrator path ",
-   "unblocks": [],
-   "blocker": ""
-  },
-  "INF-73": {
-   "kind": "inference-ready",
-   "tier": 6,
-   "rank": 25,
-   "score": 0.8613,
-   "basis": "T6 inference-ready best open item (I): U3-EXPRESS — run a DELIBERATE expressiveness pass over the recipe schema instead of waitin",
-   "unblocks": [
-    "INF-74",
-    "INF-75",
-    "INF-81"
-   ],
-   "blocker": ""
-  },
-  "EVL-37": {
-   "kind": "inference-ready",
-   "tier": 6,
-   "rank": 26,
-   "score": 0.8555,
-   "basis": "T6 inference-ready best open item (I): RUS-3 — Repeated-sample run to measure within-question trace-length agreement (needs an in",
-   "unblocks": [
-    "INF-78",
-    "UFH-12"
-   ],
-   "blocker": ""
-  },
-  "INF-74": {
-   "kind": "inference-ready",
-   "tier": 6,
-   "rank": 27,
-   "score": 0.8497,
-   "basis": "T6 inference-ready best open item (I): INF-74-CGROUP-ROOT — land the root-owned cgroup delegation script. (filed 2026-10-28, work",
-   "unblocks": [],
-   "blocker": ""
-  },
-  "INF-80": {
-   "kind": "inference-ready",
-   "tier": 6,
-   "rank": 28,
-   "score": 0.8439,
-   "basis": "T6 inference-ready best open item (I): EXL3-6c5 — full-model window (main session, memory/CPU heavy). Load + greedy smoke, then s",
-   "unblocks": [],
-   "blocker": ""
-  },
-  "INF-26": {
-   "kind": "inference-ready",
-   "tier": 6,
-   "rank": 29,
-   "score": 0.8382,
-   "basis": "T6 inference-ready best open item (I): T3 — Port only if T2 wins. Gate: IQ4_KT must reach ≥95% of Q4_K_M tg128 under the canonica",
-   "unblocks": [],
-   "blocker": ""
-  },
-  "INF-72": {
-   "kind": "inference-ready",
-   "tier": 6,
-   "rank": 30,
-   "score": 0.8324,
-   "basis": "T6 inference-ready best open item (I): RT-6.2 — Replay fidelity items. Diff the DeepInfer re-implementation against `policy.py` (",
-   "unblocks": [],
-   "blocker": ""
-  },
-  "INF-78": {
-   "kind": "inference-ready",
-   "tier": 6,
-   "rank": 31,
-   "score": 0.8266,
-   "basis": "T6 inference-ready best open item (I): OAB-4 — A/B against the bounded seat on the same driver. Extend",
-   "unblocks": [
-    "UFH-12"
-   ],
-   "blocker": ""
-  },
-  "INF-48": {
-   "kind": "inference-ready",
-   "tier": 6,
-   "rank": 32,
-   "score": 0.8208,
-   "basis": "T6 inference-ready best open item (I): RVP-C4-7 — Confirm the nine Hawkeye cdna4 counters collect on gfx90a. `SQ_WAVES`,",
+   "basis": "T5 inference-ready best open item (I): RVP-RACE-1 — Measure whether the correctness gate can see a race at all (intake-2557#recor",
    "unblocks": [
     "EVL-49",
     "INF-03",
@@ -1097,6 +960,98 @@
     "INF-75",
     "INF-78"
    ],
+   "blocker": ""
+  },
+  "UFH-14": {
+   "kind": "inference-ready",
+   "tier": 5,
+   "rank": 24,
+   "score": 0.8671,
+   "basis": "T5 inference-ready best open item (I): UFH14-A3A-F2 — decode-stall comparison, alternated. (filed 2026-10-29) The original A3a qu",
+   "unblocks": [
+    "RTG-30"
+   ],
+   "blocker": ""
+  },
+  "RTG-54": {
+   "kind": "inference-ready",
+   "tier": 6,
+   "rank": 25,
+   "score": 0.8613,
+   "basis": "T6 inference-ready best open item (I): CT-12.3d — escaped-cost check: re-run `06-ct12-served-path` through the orchestrator path ",
+   "unblocks": [],
+   "blocker": ""
+  },
+  "INF-73": {
+   "kind": "inference-ready",
+   "tier": 6,
+   "rank": 26,
+   "score": 0.8555,
+   "basis": "T6 inference-ready best open item (I): Named next variant if the dispatch-PROVEN A/B is neutral: reference-restoring prepass, two",
+   "unblocks": [
+    "INF-74",
+    "INF-75",
+    "INF-81"
+   ],
+   "blocker": ""
+  },
+  "EVL-37": {
+   "kind": "inference-ready",
+   "tier": 6,
+   "rank": 27,
+   "score": 0.8497,
+   "basis": "T6 inference-ready best open item (I): RUS-3 — Repeated-sample run to measure within-question trace-length agreement (needs an in",
+   "unblocks": [
+    "INF-78",
+    "UFH-12"
+   ],
+   "blocker": ""
+  },
+  "INF-74": {
+   "kind": "inference-ready",
+   "tier": 6,
+   "rank": 28,
+   "score": 0.8439,
+   "basis": "T6 inference-ready best open item (I): INF-74-CGROUP-ROOT — land the root-owned cgroup delegation script. (filed 2026-10-28, work",
+   "unblocks": [],
+   "blocker": ""
+  },
+  "INF-80": {
+   "kind": "inference-ready",
+   "tier": 6,
+   "rank": 29,
+   "score": 0.8382,
+   "basis": "T6 inference-ready best open item (I): EXL3-6c5 — full-model window (main session, memory/CPU heavy). Load + greedy smoke, then s",
+   "unblocks": [],
+   "blocker": ""
+  },
+  "INF-26": {
+   "kind": "inference-ready",
+   "tier": 6,
+   "rank": 30,
+   "score": 0.8324,
+   "basis": "T6 inference-ready best open item (I): T3 — Port only if T2 wins. Gate: IQ4_KT must reach ≥95% of Q4_K_M tg128 under the canonica",
+   "unblocks": [],
+   "blocker": ""
+  },
+  "INF-78": {
+   "kind": "inference-ready",
+   "tier": 6,
+   "rank": 31,
+   "score": 0.8266,
+   "basis": "T6 inference-ready best open item (I): OAB-4 — A/B against the bounded seat on the same driver. Extend",
+   "unblocks": [
+    "UFH-12"
+   ],
+   "blocker": ""
+  },
+  "EVL-02": {
+   "kind": "inference-ready",
+   "tier": 6,
+   "rank": 32,
+   "score": 0.8208,
+   "basis": "T6 inference-ready best open item (I): AMS-TCAP-1 — A/B a thinking-on effort mode for architect_general with ThinkingCap-Qwen3.8-",
+   "unblocks": [],
    "blocker": ""
   },
   "EVL-10": {
@@ -1117,11 +1072,20 @@
    "unblocks": [],
    "blocker": ""
   },
-  "RTG-41": {
+  "INF-05": {
    "kind": "inference-ready",
    "tier": 6,
    "rank": 35,
    "score": 0.8035,
+   "basis": "T6 inference-ready best open item (I): KV-1a — Record a privacy-preserving hash of the exact canonical PrefixRouter key and immut",
+   "unblocks": [],
+   "blocker": ""
+  },
+  "RTG-41": {
+   "kind": "inference-ready",
+   "tier": 6,
+   "rank": 36,
+   "score": 0.7977,
    "basis": "T6 inference-ready best open item (I): UTM-V7 — Profile-write precision audit checklist from the Honcho deriver rubric. Define th",
    "unblocks": [
     "EVL-52"
@@ -1131,8 +1095,8 @@
   "INF-41": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 36,
-   "score": 0.7977,
+   "rank": 37,
+   "score": 0.7919,
    "basis": "T6 inference-ready best open item (I): S-18 — measure Qwen3-VL-30B on CPU the first time it is started (STACKCHG-DFLASH2 PACKAGE ",
    "unblocks": [
     "INF-59",
@@ -1152,8 +1116,8 @@
   "INF-43": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 37,
-   "score": 0.7919,
+   "rank": 38,
+   "score": 0.7861,
    "basis": "T6 inference-ready best open item (I): T3 — Re-run the 27 confounded E5 cells on declared placement. Per model the grid must",
    "unblocks": [],
    "blocker": ""
@@ -1161,8 +1125,8 @@
   "INF-54": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 38,
-   "score": 0.7861,
+   "rank": 39,
+   "score": 0.7803,
    "basis": "T6 inference-ready best open item (I): STEP 3 (only if Step 2 wins): the 3-6 day port. Decision-flipper: IQ4_KT must reach >=95% ",
    "unblocks": [],
    "blocker": ""
@@ -1170,8 +1134,8 @@
   "EVL-34": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 39,
-   "score": 0.7803,
+   "rank": 40,
+   "score": 0.7746,
    "basis": "T6 inference-ready best open item (I): EVL-34 natural-delegation rerun (filed 2026-10-29, ws58 filer B): rerun with a model that ",
    "unblocks": [],
    "blocker": ""
@@ -1179,8 +1143,8 @@
   "EVL-36": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 40,
-   "score": 0.7746,
+   "rank": 41,
+   "score": 0.7688,
    "basis": "T6 inference-ready best open item (I): D-RI-PREVIEW-1.1 — fix the scorer/driver defect behind 90/90 `bad_final`, then re-run `s5-",
    "unblocks": [],
    "blocker": ""
@@ -1188,8 +1152,8 @@
   "EVL-46": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 41,
-   "score": 0.7688,
+   "rank": 42,
+   "score": 0.763,
    "basis": "T6 inference-ready best open item (I): TU-DTAP-2a — run the matched attack arm of the CRM case through the same scheduled runner.",
    "unblocks": [],
    "blocker": ""
@@ -1197,17 +1161,26 @@
   "INF-12": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 42,
-   "score": 0.763,
+   "rank": 43,
+   "score": 0.7572,
    "basis": "T6 inference-ready best open item (I): INF-12 Gate 2 r8 feasibility re-estimate (filed 2026-10-29, ws58 filer B): at the measured",
+   "unblocks": [],
+   "blocker": ""
+  },
+  "PIP-01": {
+   "kind": "inference-ready",
+   "tier": 6,
+   "rank": 44,
+   "score": 0.7514,
+   "basis": "T6 inference-ready best open item (I): PREFIX-3 — re-run the banked ONNX↔PyLate parity through `colbert_encoder.encode(role=ROLE_",
    "unblocks": [],
    "blocker": ""
   },
   "RTG-10": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 43,
-   "score": 0.7572,
+   "rank": 45,
+   "score": 0.7457,
    "basis": "T6 inference-ready best open item (I): DCP-15 — Measure and propagate format and schema constraints in architect-written delegate",
    "unblocks": [],
    "blocker": ""
@@ -1215,9 +1188,9 @@
   "UFH-07": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 44,
-   "score": 0.7514,
-   "basis": "T6 inference-ready best open item (I): Instrument TOTAL tokens per episode (not peak) in any compression A/B. REOPENED 2026-09-16",
+   "rank": 46,
+   "score": 0.7399,
+   "basis": "T6 inference-ready best open item (I): TOC-MP-4 — Exact-value needle screen across arms 1-3 before the full A/B (correctness-clas",
    "unblocks": [
     "UFH-12"
    ],
@@ -1226,8 +1199,8 @@
   "RTG-56": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 45,
-   "score": 0.7457,
+   "rank": 47,
+   "score": 0.7341,
    "basis": "T6 inference-ready best open item (I): TD-29.M4 — Confirm prompt-prefix cache reuse between the tool call and the typed call. Che",
    "unblocks": [
     "INF-78",
@@ -1238,8 +1211,8 @@
   "EVL-08": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 46,
-   "score": 0.7399,
+   "rank": 48,
+   "score": 0.7283,
    "basis": "T6 inference-ready best open item (I): CJ-2d. Wire a representative sample — reuse the existing hard-slice construction (n=53",
    "unblocks": [
     "INF-76"
@@ -1249,8 +1222,8 @@
   "EVL-48": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 47,
-   "score": 0.7341,
+   "rank": 49,
+   "score": 0.7225,
    "basis": "T6 inference-ready best open item (I): VL vision-encoder prefill baseline — the unrun half of A3. 2026-08-12 ran the BGE encode h",
    "unblocks": [],
    "blocker": ""
@@ -1258,8 +1231,8 @@
   "INF-24": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 48,
-   "score": 0.7283,
+   "rank": 50,
+   "score": 0.7168,
    "basis": "T6 inference-ready best open item (I): RE-4 protocol repair — redesign LongCoT-Mini execution so models may do bounded reasoning ",
    "unblocks": [],
    "blocker": ""
@@ -1267,8 +1240,8 @@
   "RTG-34": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 49,
-   "score": 0.7225,
+   "rank": 51,
+   "score": 0.711,
    "basis": "T6 inference-ready best open item (I): R9 — replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
    "unblocks": [
     "RTG-48",
@@ -1281,8 +1254,8 @@
   "PIP-02": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 50,
-   "score": 0.7168,
+   "rank": 52,
+   "score": 0.7052,
    "basis": "T6 inference-ready best open item (I): Follow-up: record the cleanup proof box from retained evidence (`server-vm.jsonl`, `server",
    "unblocks": [],
    "blocker": ""
@@ -1290,26 +1263,17 @@
   "UFH-05": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 51,
-   "score": 0.711,
+   "rank": 53,
+   "score": 0.6994,
    "basis": "T6 inference-ready best open item (I): RC-CVEC-SAFETY — Behavioural safety gate for every candidate steering vector. Add refusal ",
-   "unblocks": [],
-   "blocker": ""
-  },
-  "EVL-02": {
-   "kind": "inference-ready",
-   "tier": 6,
-   "rank": 52,
-   "score": 0.7052,
-   "basis": "T6 inference-ready best open item (I): GPU arms A1/A3/A4 × `gpqa_diamond_cot` full n=198 — *primary* CoT measure (deferred behind",
    "unblocks": [],
    "blocker": ""
   },
   "EVL-33": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 53,
-   "score": 0.6994,
+   "rank": 54,
+   "score": 0.6936,
    "basis": "T6 inference-ready best open item (I): PRB-T4-RERUN — GPU re-run of livecodebench + mmlu_pro (and math/olympiadbench at n=400) af",
    "unblocks": [],
    "blocker": ""
@@ -1317,8 +1281,8 @@
   "INF-07": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 54,
-   "score": 0.6936,
+   "rank": 55,
+   "score": 0.6879,
    "basis": "T6 inference-ready best open item (I): E5 — NUMA×batch interaction sweep (post-v7-promotion quiet window; the never-measured 2D c",
    "unblocks": [
     "EVL-49",
@@ -1329,8 +1293,8 @@
   "INF-61": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 55,
-   "score": 0.6879,
+   "rank": 56,
+   "score": 0.6821,
    "basis": "T6 inference-ready best open item (I): INF-61-ABA — same-window MTP n-max 4 vs 8 ABA at np>=2 on Qwen3.8-27B before any grid cell",
    "unblocks": [],
    "blocker": ""
@@ -1338,8 +1302,8 @@
   "RTG-02": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 56,
-   "score": 0.6821,
+   "rank": 57,
+   "score": 0.6763,
    "basis": "T6 inference-ready best open item (I): AP-29b — Compare correctness-first LEXICOGRAPHIC selection against the scalarized cost-awa",
    "unblocks": [
     "EVL-04",
@@ -1350,8 +1314,8 @@
   "RTG-15": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 57,
-   "score": 0.6763,
+   "rank": 58,
+   "score": 0.6705,
    "basis": "T6 inference-ready best open item (I): P4.4 sep-CMA-ES cold-start spike (large cost; no longer justified for the current trained-",
    "unblocks": [],
    "blocker": ""
@@ -1359,8 +1323,8 @@
   "RTG-27": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 58,
-   "score": 0.6705,
+   "rank": 59,
+   "score": 0.6647,
    "basis": "T6 inference-ready best open item (I): D3 — manual canonical bench (sampling quality cert) *(clean window; certifies #1–3)*. Gree",
    "unblocks": [
     "INF-81",
@@ -1371,8 +1335,8 @@
   "RTG-21": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 59,
-   "score": 0.6647,
+   "rank": 60,
+   "score": 0.659,
    "basis": "T6 inference-ready best open item (I): MF-VBS-2 — Verify-before-FINAL gate. Add an explicit \"run the acceptance check with `run_p",
    "unblocks": [],
    "blocker": ""
@@ -1380,8 +1344,8 @@
   "EVL-12": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 60,
-   "score": 0.659,
+   "rank": 61,
+   "score": 0.6532,
    "basis": "T6 inference-ready best open item (I): E5 [agent] remaining LOWs sweep — ET-8 watchdog=0 fail-fast; ET-15 suite-health freshness ",
    "unblocks": [],
    "blocker": ""
@@ -1389,8 +1353,8 @@
   "EVL-29": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 61,
-   "score": 0.6532,
+   "rank": 62,
+   "score": 0.6474,
    "basis": "T6 inference-ready best open item (I): ID-20 — TRL + OpenEnv: DECLINE the bridge; keep only the GPU-free half. The blocker is not",
    "unblocks": [],
    "blocker": ""
@@ -1398,8 +1362,8 @@
   "EVL-35": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 62,
-   "score": 0.6474,
+   "rank": 63,
+   "score": 0.6416,
    "basis": "T6 inference-ready best open item (I): RE-4.4 — reasoning-budget ladder (follow-on curve; the reasoning-compression signal): re-r",
    "unblocks": [],
    "blocker": ""
@@ -1407,18 +1371,9 @@
   "INF-02": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 63,
-   "score": 0.6416,
-   "basis": "T6 inference-ready best open item (I): Hard design constraints on any first-party fan-out A/B, fixed before one is built. (a) Mat",
-   "unblocks": [],
-   "blocker": ""
-  },
-  "INF-05": {
-   "kind": "inference-ready",
-   "tier": 6,
    "rank": 64,
    "score": 0.6358,
-   "basis": "T6 inference-ready best open item (I): KV-6 — Measure `canonicalize_prompt` before optimising anything downstream of it. It makes",
+   "basis": "T6 inference-ready best open item (I): Hard design constraints on any first-party fan-out A/B, fixed before one is built. (a) Mat",
    "unblocks": [],
    "blocker": ""
   },
@@ -1445,7 +1400,7 @@
    "tier": 6,
    "rank": 67,
    "score": 0.6185,
-   "basis": "T6 inference-ready best open item (I): KB-GS-1 — Run a four-arm retrieval A/B on our own corpus. Deliberately NOT a replication.",
+   "basis": "T6 inference-ready best open item (I): G13 — doc-truncation recall sweep. recall@10 on the K7 70-case pool at `_DOC_MAX_TOKENS`",
    "unblocks": [],
    "blocker": ""
   },
@@ -1511,20 +1466,11 @@
    "unblocks": [],
    "blocker": ""
   },
-  "PIP-01": {
+  "PIP-05": {
    "kind": "inference-ready",
    "tier": 6,
    "rank": 74,
    "score": 0.578,
-   "basis": "T6 inference-ready best open item (I): S6: A/B test — Compare reranked (10 results → top 3 by ColBERT) vs current (5 results → to",
-   "unblocks": [],
-   "blocker": ""
-  },
-  "PIP-05": {
-   "kind": "inference-ready",
-   "tier": 6,
-   "rank": 75,
-   "score": 0.5723,
    "basis": "T6 inference-ready best open item (I): Measure LightOnOCR latency only inside the parser-quality comparison above, after structur",
    "unblocks": [],
    "blocker": ""
@@ -1532,8 +1478,8 @@
   "REV-07": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 76,
-   "score": 0.5665,
+   "rank": 75,
+   "score": 0.5723,
    "basis": "T6 inference-ready best open item (I): RM-6 — RA-8 field-order A/B (evidence-first vs verdict-first GBNF) on the leading arm — op",
    "unblocks": [],
    "blocker": ""
@@ -1541,8 +1487,8 @@
   "RTG-14": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 77,
-   "score": 0.5607,
+   "rank": 76,
+   "score": 0.5665,
    "basis": "T6 inference-ready best open item (I): P3-3. Shadow/optimization calibration: use `consult_gate_probe` on T2/T3 hard workflow sli",
    "unblocks": [],
    "blocker": ""
@@ -1550,8 +1496,8 @@
   "RTG-28": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 78,
-   "score": 0.5549,
+   "rank": 77,
+   "score": 0.5607,
    "basis": "T6 inference-ready best open item (I): E-2 — Measure the curve, once per model. Sweep the levels on the already-pinned",
    "unblocks": [],
    "blocker": ""
@@ -1559,8 +1505,8 @@
   "PIP-03": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 79,
-   "score": 0.5491,
+   "rank": 78,
+   "score": 0.5549,
    "basis": "T6 inference-ready best open item (I): Run a matched-prompt Qwen-Image-2.1 vs ERNIE generation comparison and record prompt, sett",
    "unblocks": [],
    "blocker": ""
@@ -1568,8 +1514,8 @@
   "UFH-15": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 80,
-   "score": 0.5434,
+   "rank": 79,
+   "score": 0.5491,
    "basis": "T6 inference-ready best open item (I): HS-4 P0.4 carry — live `/v1` override validation, shell-agnostic (moved 2026-09-16 from th",
    "unblocks": [],
    "blocker": ""
@@ -1577,8 +1523,8 @@
   "EVL-04": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 81,
-   "score": 0.5376,
+   "rank": 80,
+   "score": 0.5434,
    "basis": "T6 inference-ready best open item (I): SEQ-3b — Re-run clean under E8 (expensive, no ruling needed). Restart the candidate at",
    "unblocks": [],
    "blocker": ""
@@ -1586,8 +1532,8 @@
   "EVL-14": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 82,
-   "score": 0.5318,
+   "rank": 81,
+   "score": 0.5376,
    "basis": "T6 inference-ready best open item (I): EV-4 — Complete the decision-grade HE-R+ calibration baseline through the inference-batch ",
    "unblocks": [],
    "blocker": ""
@@ -1595,8 +1541,8 @@
   "INF-42": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 83,
-   "score": 0.526,
+   "rank": 82,
+   "score": 0.5318,
    "basis": "T6 inference-ready best open item (I): LFM2-1 (revised): No bench, no port, no deployment. `lfm2moe` arch support is present in o",
    "unblocks": [],
    "blocker": ""
@@ -1604,8 +1550,8 @@
   "INF-76": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 84,
-   "score": 0.5202,
+   "rank": 83,
+   "score": 0.526,
    "basis": "T6 inference-ready best open item (I): PAW-3 — Evaluate compiled programs on FuzzyBench (internal, unlicensed). Build the eval ma",
    "unblocks": [],
    "blocker": ""
@@ -1613,8 +1559,8 @@
   "RTG-04": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 85,
-   "score": 0.5145,
+   "rank": 84,
+   "score": 0.5202,
    "basis": "T6 inference-ready best open item (I): BEP-2 / J8 — CPU latency A/B for the legacy structured patchset path. Head-to-head bench: ",
    "unblocks": [],
    "blocker": ""
@@ -1622,8 +1568,8 @@
   "RTG-05": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 86,
-   "score": 0.5087,
+   "rank": 85,
+   "score": 0.5145,
    "basis": "T6 inference-ready best open item (I): J8 optional provenance: run the legacy batch-edit vs interleaved-REPL A/B only if the batc",
    "unblocks": [],
    "blocker": ""
@@ -1631,8 +1577,8 @@
   "RTG-08": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 87,
-   "score": 0.5029,
+   "rank": 86,
+   "score": 0.5087,
    "basis": "T6 inference-ready best open item (I): Run ACM's own UNREPORTED ablation (`runtime.py disable_query_memory`, the `re_mem_noquery`",
    "unblocks": [],
    "blocker": ""
@@ -1640,8 +1586,8 @@
   "RTG-16": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 88,
-   "score": 0.4971,
+   "rank": 87,
+   "score": 0.5029,
    "basis": "T6 inference-ready best open item (I): Fix `real_suite_v1` discriminability BEFORE certifying OP-1 (forward work from the audit a",
    "unblocks": [],
    "blocker": ""
@@ -1649,8 +1595,8 @@
   "UFH-04": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 89,
-   "score": 0.4913,
+   "rank": 88,
+   "score": 0.4971,
    "basis": "T6 inference-ready best open item (I): MD-PB-2 — consider integrating PaperBench-style evaluation into MD-9 A/B test rubric",
    "unblocks": [],
    "blocker": ""
@@ -1658,8 +1604,8 @@
   "INF-51": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 90,
-   "score": 0.4855,
+   "rank": 89,
+   "score": 0.4913,
    "basis": "T6 inference-ready best open item (I): Run 4-axis inference sweep: 3 workloads (retrieval/reasoning/dialogue) x 3 budgets (25/50/",
    "unblocks": [],
    "blocker": ""
@@ -1667,8 +1613,8 @@
   "RTG-43": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 91,
-   "score": 0.4798,
+   "rank": 90,
+   "score": 0.4855,
    "basis": "T6 inference-ready best open item (I): Post-soak §5 cleanup (code + tests as ONE change): retire the legacy per-role build path —",
    "unblocks": [],
    "blocker": ""
@@ -1676,8 +1622,8 @@
   "INF-67": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 92,
-   "score": 0.474,
+   "rank": 91,
+   "score": 0.4798,
    "basis": "T2 non-inference best open item (N): FD-OFF-PROD — declare `GGML_FUSED_DECODE_OFF=1` for production `architect_general` (:8074)",
    "unblocks": [
     "INF-70",
@@ -1692,8 +1638,8 @@
   "INF-64": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 93,
-   "score": 0.4682,
+   "rank": 92,
+   "score": 0.474,
    "basis": "T2 non-inference best open item (N): AK-INST-3 (new, 2026-08-28) — AK-INST-1 is fixed in code but UNPROVEN end-to-end. The",
    "unblocks": [
     "EVL-49",
@@ -1709,6 +1655,15 @@
     "RTG-58",
     "UFH-12"
    ],
+   "blocker": ""
+  },
+  "INF-72": {
+   "kind": "non-inference",
+   "tier": 2,
+   "rank": 93,
+   "score": 0.4682,
+   "basis": "T2 non-inference best open item (N): RT-10 — DS41 tap hook and DS41 trace, then RT-6/RT-7 on DS41. The Q38FN tap records `ffn_m",
+   "unblocks": [],
    "blocker": ""
   },
   "RTG-59": {
@@ -1816,11 +1771,20 @@
    ],
    "blocker": ""
   },
-  "EVL-03": {
+  "RTG-49": {
    "kind": "non-inference",
    "tier": 2,
    "rank": 103,
    "score": 0.4104,
+   "basis": "T2 non-inference best open item (N): FM-8 — Declarative project subagent types and a main-thread dispatch audit hook (intake-25",
+   "unblocks": [],
+   "blocker": ""
+  },
+  "EVL-03": {
+   "kind": "non-inference",
+   "tier": 2,
+   "rank": 104,
+   "score": 0.4046,
    "basis": "T2 non-inference best open item (N): Non-owned audit findings untouched (other owners / other agents' flux files): H2",
    "unblocks": [],
    "blocker": ""
@@ -1828,8 +1792,8 @@
   "EVL-20": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 104,
-   "score": 0.4046,
+   "rank": 105,
+   "score": 0.3988,
    "basis": "T2 non-inference best open item (N): F1 — per-split GPU/CPU timing under static `-cmoe` on one MoE model; report",
    "unblocks": [],
    "blocker": ""
@@ -1837,8 +1801,8 @@
   "EVL-27": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 105,
-   "score": 0.3988,
+   "rank": 106,
+   "score": 0.3931,
    "basis": "T2 non-inference best open item (N): W1 — D2 PR spearhead (1–2 weeks; specced in llama-cpp-dsa-contribution.md): the prompt-pro",
    "unblocks": [],
    "blocker": ""
@@ -1846,8 +1810,8 @@
   "EVL-42": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 106,
-   "score": 0.3931,
+   "rank": 107,
+   "score": 0.3873,
    "basis": "T2 non-inference best open item (N): 2a-iii-followon. Bound process/thread COUNT via cgroup v2 `pids.max` — the correct mechani",
    "unblocks": [],
    "blocker": ""
@@ -1855,8 +1819,8 @@
   "INF-40": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 107,
-   "score": 0.3873,
+   "rank": 108,
+   "score": 0.3815,
    "basis": "T2 non-inference best open item (N): Registry integration — now UNBLOCKED, and NOT yet done. The prior gate was \"registry",
    "unblocks": [],
    "blocker": ""
@@ -1864,8 +1828,8 @@
   "INF-58": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 108,
-   "score": 0.3815,
+   "rank": 109,
+   "score": 0.3757,
    "basis": "T2 non-inference best open item (O): V9-8. Implement and prospectively ratify the resident promotion fast path described in",
    "unblocks": [],
    "blocker": ""
@@ -1873,8 +1837,8 @@
   "REV-03": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 109,
-   "score": 0.3757,
+   "rank": 110,
+   "score": 0.3699,
    "basis": "T2 non-inference best open item (O): RC-6a — operator PR + sign-off (human-amendment-only): land the drafted P-REV-1 blocks int",
    "unblocks": [],
    "blocker": ""
@@ -1882,8 +1846,8 @@
   "REV-06": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 110,
-   "score": 0.3699,
+   "rank": 111,
+   "score": 0.3642,
    "basis": "T2 non-inference best open item (N): LB-1 — Reproduce + attribute the regression: which calls dominate (plan-review prompt coun",
    "unblocks": [],
    "blocker": ""
@@ -1891,8 +1855,8 @@
   "RTG-23": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 111,
-   "score": 0.3642,
+   "rank": 112,
+   "score": 0.3584,
    "basis": "T2 non-inference best open item (N): W5 — regime-profiled offered load (NEXT INSTRUMENT ERA, pairs with batching",
    "unblocks": [],
    "blocker": ""
@@ -1900,8 +1864,8 @@
   "RTG-48": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 112,
-   "score": 0.3584,
+   "rank": 113,
+   "score": 0.3526,
    "basis": "T2 non-inference best open item (O): RTG48-C49-COMMENTS-D9 — publish the exact two-file cadence comment correction after D9 ack",
    "unblocks": [
     "RTG-49",
@@ -1913,8 +1877,8 @@
   "RTG-52": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 113,
-   "score": 0.3526,
+   "rank": 114,
+   "score": 0.3468,
    "basis": "T2 non-inference best open item (N): RTG52-D9-SOURCE — integrate reviewed target-selection and exact assignment-stdin source co",
    "unblocks": [],
    "blocker": ""
@@ -1922,8 +1886,8 @@
   "EVL-13": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 114,
-   "score": 0.3468,
+   "rank": 115,
+   "score": 0.341,
    "basis": "T2 non-inference best open item (N): Cluster E — scoring → tracked as EV-CONF in [eval-tower-verification.md](eval-tower-verifi",
    "unblocks": [],
    "blocker": ""
@@ -1931,8 +1895,8 @@
   "EVL-16": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 115,
-   "score": 0.341,
+   "rank": 116,
+   "score": 0.3353,
    "basis": "T2 non-inference best open item (N): W8b — live candidate evidence after guard deploy: continue W8 candidate attempts under the",
    "unblocks": [],
    "blocker": ""
@@ -1940,8 +1904,8 @@
   "EVL-19": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 116,
-   "score": 0.3353,
+   "rank": 117,
+   "score": 0.3295,
    "basis": "T2 non-inference best open item (N): R2-current — accrue a current-era, trusted per-question ledger sufficient for a reproducib",
    "unblocks": [],
    "blocker": ""
@@ -1949,8 +1913,8 @@
   "EVL-25": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 117,
-   "score": 0.3295,
+   "rank": 118,
+   "score": 0.3237,
    "basis": "T2 non-inference best open item (N): W3 — GPU fine-tunes (MI210 present since 2026-07-02; the HW gate is CLEARED. The DATA gate",
    "unblocks": [],
    "blocker": ""
@@ -1958,8 +1922,8 @@
   "INF-19": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 118,
-   "score": 0.3237,
+   "rank": 119,
+   "score": 0.3179,
    "basis": "T2 non-inference best open item (N): G3-4 — future decision instrument (separate from G3-3). Select and run a decision-grade,",
    "unblocks": [],
    "blocker": ""
@@ -1967,17 +1931,17 @@
   "INF-30": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 119,
-   "score": 0.3179,
-   "basis": "T2 non-inference best open item (N): Z9 (Z, prerequisite for G18) — write the ~30-line pure-PyTorch constant-decay simple-GLA",
+   "rank": 120,
+   "score": 0.3121,
+   "basis": "T2 non-inference best open item (N): G18 (G, prerequisite `Z9`) — SALA correctness-first port + CPU parity smoke. On",
    "unblocks": [],
    "blocker": ""
   },
   "UFH-03": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 120,
-   "score": 0.3121,
+   "rank": 121,
+   "score": 0.3064,
    "basis": "T2 non-inference best open item (N): S2-CGE-1 — Feed complete, independently verified targets into Memento's existing SFT path ",
    "unblocks": [],
    "blocker": ""
@@ -1985,8 +1949,8 @@
   "EVL-07": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 121,
-   "score": 0.3064,
+   "rank": 122,
+   "score": 0.3006,
    "basis": "T2 non-inference best open item (N): RCP-W1 — Reference-lineup relaunch + preflight: `orchestrator_stack.py` relaunch under thr",
    "unblocks": [],
    "blocker": ""
@@ -1994,8 +1958,8 @@
   "EVL-24": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 122,
-   "score": 0.3006,
+   "rank": 123,
+   "score": 0.2948,
    "basis": "T2 non-inference best open item (N): W3 — reliability ladder (ongoing): `scripts/lab/promote_job.py` enforcing shadow → reviewe",
    "unblocks": [],
    "blocker": ""
@@ -2003,8 +1967,8 @@
   "EVL-30": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 123,
-   "score": 0.2948,
+   "rank": 124,
+   "score": 0.289,
    "basis": "T2 non-inference best open item (N): Record the `epyc-orchestrator` `origin/main` red-test baseline so sessions stop reading it",
    "unblocks": [],
    "blocker": ""
@@ -2012,8 +1976,8 @@
   "INF-09": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 124,
-   "score": 0.289,
+   "rank": 125,
+   "score": 0.2832,
    "basis": "T2 non-inference best open item (N): PC-4 — experimental qwen35 prefill barrier/graph-fusion prototype:",
    "unblocks": [],
    "blocker": ""
@@ -2021,8 +1985,8 @@
   "REV-05": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 125,
-   "score": 0.2832,
+   "rank": 126,
+   "score": 0.2775,
    "basis": "T2 non-inference best open item (N): HG-1 — Threshold policy from H4/H5 reliability-by-confidence-bucket curves (per-domain).",
    "unblocks": [],
    "blocker": ""
@@ -2030,8 +1994,8 @@
   "RTG-03": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 126,
-   "score": 0.2775,
+   "rank": 127,
+   "score": 0.2717,
    "basis": "T2 non-inference best open item (N): [C1 fix #2] Manifest writer intent-not-realized gap — writer lives in",
    "unblocks": [],
    "blocker": ""
@@ -2039,8 +2003,8 @@
   "RTG-06": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 127,
-   "score": 0.2717,
+   "rank": 128,
+   "score": 0.2659,
    "basis": "T2 non-inference best open item (O): W4 — promotion workflow + first cohort (recurring, ~half day/month): monthly pass per §C.3",
    "unblocks": [],
    "blocker": ""
@@ -2048,8 +2012,8 @@
   "RTG-07": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 128,
-   "score": 0.2659,
+   "rank": 129,
+   "score": 0.2601,
    "basis": "T2 non-inference best open item (N): Q4 — does the interference model need E5 (NUMA×batch) first? STILL OPEN, but the premise",
    "unblocks": [],
    "blocker": ""
@@ -2057,8 +2021,8 @@
   "RTG-38": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 129,
-   "score": 0.2601,
+   "rank": 130,
+   "score": 0.2543,
    "basis": "T2 non-inference best open item (N): Finish W4 swap-CI so representative stack changes prove generated",
    "unblocks": [],
    "blocker": ""
@@ -2066,8 +2030,8 @@
   "RTG-47": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 130,
-   "score": 0.2543,
+   "rank": 131,
+   "score": 0.2486,
    "basis": "T2 non-inference best open item (N): Re-eyeball the tap's ACTIVE/streaming card path + live ↑/↓ counters once inference actuall",
    "unblocks": [],
    "blocker": ""
@@ -2075,8 +2039,8 @@
   "RTG-51": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 131,
-   "score": 0.2486,
+   "rank": 132,
+   "score": 0.2428,
    "basis": "T2 non-inference best open item (N): Encode the authority split in Coordinator and Inference role files.",
    "unblocks": [],
    "blocker": ""
@@ -2084,8 +2048,8 @@
   "EVL-38": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 132,
-   "score": 0.2428,
+   "rank": 133,
+   "score": 0.237,
    "basis": "T2 non-inference best open item (N): Bring epyc-llama Standardized/L3 -> L4 (incremental_validation, generated_docs, health_aut",
    "unblocks": [],
    "blocker": ""
@@ -2093,18 +2057,9 @@
   "RTG-13": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 133,
-   "score": 0.237,
-   "basis": "T2 non-inference best open item (N): W6 — strategy provenance (impl 4.2, ~2 days, needs W1): `strategies.db` rows gain `evidenc",
-   "unblocks": [],
-   "blocker": ""
-  },
-  "RTG-49": {
-   "kind": "non-inference",
-   "tier": 2,
    "rank": 134,
    "score": 0.2312,
-   "basis": "T2 non-inference best open item (N): FM-2 — AdaMAST fixed-catalog grading pilot. Stage 1 (now): `adamast judge --taxonomy",
+   "basis": "T2 non-inference best open item (N): W6 — strategy provenance (impl 4.2, ~2 days, needs W1): `strategies.db` rows gain `evidenc",
    "unblocks": [],
    "blocker": ""
   },
@@ -2173,11 +2128,47 @@
    ],
    "blocker": "operator decision or approval pending"
   },
-  "EVL-01": {
+  "EVL-15": {
    "kind": "non-inference",
    "tier": 7,
    "rank": 142,
    "score": 0.185,
+   "basis": "T7 non-inference best open item (N): (Z) Fix the llama-server log retention hole. A correctness question about production",
+   "unblocks": [],
+   "blocker": "operator decision or approval pending"
+  },
+  "INF-03": {
+   "kind": "non-inference",
+   "tier": 7,
+   "rank": 143,
+   "score": 0.1792,
+   "basis": "T7 non-inference best open item (N): C5-ISA-1 — Archive the AMDGCN ISA of every AK GPU candidate and check the claimed instruct",
+   "unblocks": [],
+   "blocker": "operator ruling: parked 2026-09-27"
+  },
+  "RTG-30": {
+   "kind": "non-inference",
+   "tier": 7,
+   "rank": 144,
+   "score": 0.1734,
+   "basis": "T7 non-inference best open item (N): RI-25 — Zero-inference fold replay over delegation records (intake-2565#record). Apply the",
+   "unblocks": [],
+   "blocker": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)"
+  },
+  "RTG-35": {
+   "kind": "non-inference",
+   "tier": 7,
+   "rank": 145,
+   "score": 0.1676,
+   "basis": "T7 non-inference best open item (N): Look at this together with `contention_nway_non_allow_count` (`contention_gate.py:325`",
+   "unblocks": [],
+   "blocker": "operator decision or approval pending"
+  },
+  "EVL-01": {
+   "kind": "non-inference",
+   "tier": 7,
+   "rank": 146,
+   "score": 0.1618,
    "basis": "T7 non-inference best open item (O): AFC-P5.E3 — run the n=30 compliance campaign. READY but HELD (operator: \"I will tell",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -2185,26 +2176,17 @@
   "EVL-49": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 143,
-   "score": 0.1792,
+   "rank": 147,
+   "score": 0.1561,
    "basis": "T7 non-inference best open item (N): S-04 — Capture contemporaneous E5 Stage-B readiness before future execution. The July stag",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
   },
-  "INF-03": {
-   "kind": "non-inference",
-   "tier": 7,
-   "rank": 144,
-   "score": 0.1734,
-   "basis": "T7 non-inference best open item (I): INF03-REGAUDIT-RUNNER — PROPOSED: bind the MMQ timing runner to the exact passing static I",
-   "unblocks": [],
-   "blocker": "operator ruling: parked 2026-09-27"
-  },
   "INF-37": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 145,
-   "score": 0.1676,
+   "rank": 148,
+   "score": 0.1503,
    "basis": "T7 non-inference best open item (N): INF37-MOE-Q8-FUSION — Qualify and implement a correctness-gated multi-token MoE GLU fusion",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -2212,8 +2194,8 @@
   "RTG-09": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 146,
-   "score": 0.1618,
+   "rank": 149,
+   "score": 0.1445,
    "basis": "T7 non-inference best open item (N): URE-2a — Non-authoritative live cascade shadow. After CJ-16 — now a LOCAL judge cascade (o",
    "unblocks": [
     "INF-78",
@@ -2227,29 +2209,11 @@
    ],
    "blocker": "PARKED/FROZEN by operator (UFH-13 parked until 2nd MI210 + swapped-stack autopilot)"
   },
-  "RTG-30": {
-   "kind": "non-inference",
-   "tier": 7,
-   "rank": 147,
-   "score": 0.1561,
-   "basis": "T7 non-inference best open item (N): RI-18c — apply the DROP (clause 1's pre-registered action). (filed 2026-10-03, from the RI",
-   "unblocks": [],
-   "blocker": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)"
-  },
-  "RTG-35": {
-   "kind": "non-inference",
-   "tier": 7,
-   "rank": 148,
-   "score": 0.1503,
-   "basis": "T7 non-inference best open item (N): REGION-SIBLING-1 — `region-lock` must map SMT-sibling CPUs to their physical core's region",
-   "unblocks": [],
-   "blocker": "operator decision or approval pending"
-  },
   "RTG-36": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 149,
-   "score": 0.1445,
+   "rank": 150,
+   "score": 0.1387,
    "basis": "T7 non-inference best open item (N): SCG-PRIORS-WARM — `stack_priors` must not classify WARM-tier roles as `live_stack`. (filed",
    "unblocks": [
     "INF-59",
@@ -2269,8 +2233,8 @@
   "UFH-11": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 150,
-   "score": 0.1387,
+   "rank": 151,
+   "score": 0.1329,
    "basis": "T7 non-inference best open item (O): WEB-1 — operator publication choice: provide the contact destination (email, booking link,",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -2278,8 +2242,8 @@
   "UFH-13": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 151,
-   "score": 0.1329,
+   "rank": 152,
+   "score": 0.1272,
    "basis": "T7 non-inference best open item (N): TE-3 — build and freeze the manifest (zero inference).",
    "unblocks": [],
    "blocker": "PARKED/FROZEN by operator (UFH-13 parked until 2nd MI210 + swapped-stack autopilot)"
@@ -2287,20 +2251,11 @@
   "EVL-11": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 152,
-   "score": 0.1272,
+   "rank": 153,
+   "score": 0.1214,
    "basis": "T7 non-inference best open item (N): BLOCKED: needs Harbor adapter + TB Core baseline (agent-world-env-synthesis) before MR/TB ",
    "unblocks": [],
    "blocker": "external: upstream PR / artifact / disk reclaim"
-  },
-  "EVL-15": {
-   "kind": "non-inference",
-   "tier": 7,
-   "rank": 153,
-   "score": 0.1214,
-   "basis": "T7 non-inference best open item (N): (Z) Fix the llama-server log retention hole. A correctness question about production",
-   "unblocks": [],
-   "blocker": "operator decision or approval pending"
   },
   "EVL-21": {
    "kind": "non-inference",

@@ -1,0 +1,25 @@
+{
+  "schema": "backlog-priority-retirement-preparation-v1",
+  "canonical_base": "origin/main",
+  "canonical_path": "scripts/handoffs/backlog_priority_curated.json",
+  "base_sha256": "2a253c06cac66e38e0c2fd5a1198eac6993fa327dd788f3a6a4e25bf82bbd258",
+  "prepared_sha256": "38d2e04f6690dff9fb34941a12e6bbe40e69eb211a7b1ecf51275b18117eb06b",
+  "removed_from_inference_prep": [
+    "codex-ni-gnx-esrch-20261026",
+    "codex-ni-meta-fix-build-20261027",
+    "hpr-fixture-env-source-proof-publish-20261026",
+    "hpr-golden-large-originals-20261026"
+  ],
+  "inference_prep_count_before": 66,
+  "inference_prep_count_after": 62,
+  "changed_json_keys": [
+    "inference_prep"
+  ],
+  "canonical_apply_performed": true,
+  "canonical_apply_by": "MAIN",
+  "canonical_apply_surface": "canonical ROOT W",
+  "canonical_apply_root_head": "c3e89f524bd938fc58646ff9ed6e5b1218033181",
+  "canonical_curated_sha256": "38d2e04f6690dff9fb34941a12e6bbe40e69eb211a7b1ecf51275b18117eb06b",
+  "canonical_generated_priority_sha256": "77bb32516ea0f884a08d1c40d083b6c01f43d8bdb8556468fb809da2e402c2f3",
+  "canonical_publication_status": "MAIN applied curated and generated priority SHAs; this artifact records the completed bounded metadata change"
+}

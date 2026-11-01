@@ -1,0 +1,59 @@
+--- a/scripts/handoffs/backlog_priority_curated.json
++++ b/scripts/handoffs/backlog_priority_curated.json
+@@ -2055,15 +2055,6 @@
+    "decision": "Verify default-off store-only embedder source under model-free tripwires before source publication"
+   },
+   {
+-   "filler": "codex-ni-gnx-esrch-20261026",
+-   "row": "INF-50",
+-   "map": "filler-id alias /(^|-)gnx-/",
+-   "owner": "codex-ni-01a16d6b",
+-   "blocker": "missing launcher (ws58 12:25Z sweep: ARMED with dead/absent pid)",
+-   "cls": "block-correctness",
+-   "decision": "prove exact reviewed ESRCH+absent-task guard patch with complete34 fake fixtures and normal source publication"
+-  },
+-  {
+    "filler": "codex-ni-gnx-r2-nativeproof-20261026",
+    "row": "INF-50",
+    "map": "filler-id alias /(^|-)gnx-/",
+@@ -2134,15 +2125,6 @@
+    "blocker": "harness fix",
+    "cls": "block-correctness",
+    "decision": "genuine fresh current C5 grammar caller/impact audit before owner full-candidate fold review"
+-  },
+-  {
+-   "filler": "codex-ni-meta-fix-build-20261027",
+-   "row": "INF-65",
+-   "map": "handoff autokernel-champion-aggregate.md",
+-   "owner": "Codex NI / MAIN",
+-   "blocker": "harness fix",
+-   "cls": "block-correctness",
+-   "decision": "build private C5 Meta host-view candidate with full CPU and HIP house profiles and model-free native fixtures"
+   },
+   {
+    "filler": "codex-ni-parakeet-observed-canary-20261027",
+@@ -2197,24 +2179,6 @@
+    "blocker": "missing launcher: refused rc70 at 23:30:13Z by the night HOLD before clone/build (owner scheduling error)",
+    "cls": "block-correctness",
+    "decision": "Feature-scoped C5 c72ec82f5 full scratch build; sole feature delta GGML_HIP_ROCWMMA_FATTN=OFF, prerequisite matched FA4 band A/B; no promotion"
+-  },
+-  {
+-   "filler": "hpr-fixture-env-source-proof-publish-20261026",
+-   "row": "RTG-57",
+-   "map": "filler-id alias /^hpr-/",
+-   "owner": "codex-ni-01a16d6b",
+-   "blocker": "missing launcher (ws58 12:25Z sweep: ARMED with dead/absent pid)",
+-   "cls": "block-correctness",
+-   "decision": "prove HPR fixture setup env semantics and publish one-file review ref"
+-  },
+-  {
+-   "filler": "hpr-golden-large-originals-20261026",
+-   "row": "RTG-57",
+-   "map": "filler-id alias /^hpr-/",
+-   "owner": "codex-ni-01a16d6b",
+-   "blocker": "missing launcher (ws58 12:25Z sweep: ARMED with dead/absent pid)",
+-   "cls": "block-correctness",
+-   "decision": "preserve and publish the four HPR golden v3 original byte streams missing from research"
+   },
+   {
+    "filler": "inf75-c5-native-abi-canary-q2",
