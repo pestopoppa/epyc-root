@@ -62,10 +62,13 @@ def evaluate(expected, requests, samples, evidence):
         return unknown('T7A interval is not bracketed by adjacent samples')
     baseline = before[-1]
 
-    if len(load) < 2 or len(t7a) < 2:
-        return unknown('load or T7A observation window lacks two samples')
-    if any(s.get('hip_resident') is not True or s['own_vram_b'] <= 0 for s in load + t7a + [baseline, after[0]]):
-        return unknown('positive own HIP residency not proven throughout sampled windows')
+    # Before backend initialization the server legitimately has no HIP/KFD residency.
+    # Once positive residency appears, it may not disappear within the load window.
+    first_positive = next((i for i, s in enumerate(load) if s.get('hip_resident') is True and s['own_vram_b'] > 0), None)
+    if first_positive is None or len(load[first_positive:]) < 2 or len(t7a) < 2:
+        return unknown('load or T7A observation window lacks two positive residency samples')
+    if any(s.get('hip_resident') is not True or s['own_vram_b'] <= 0 for s in load[first_positive:] + t7a + [baseline, after[0]]):
+        return unknown('positive own HIP residency lost after initialization')
     if max(s['t'] for s in load) >= min(s['t'] for s in t7a):
         return unknown('load and T7A windows overlap or are reversed')
     load_peak = max(s['own_vram_b'] for s in load)

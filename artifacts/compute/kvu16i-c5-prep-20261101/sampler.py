@@ -23,7 +23,7 @@ def start_ticks(procdir):
 
 
 def read_sample(pid, birth, hip_library, proc_root=Path('/proc'), kfd_root=Path('/sys/class/kfd/kfd/proc'),
-                card=Path('/sys/class/drm/card2/device/mem_info_vram_used')):
+                card=Path('/sys/class/drm/card2/device/mem_info_vram_used'), allow_uninitialized=False):
     proc = proc_root / str(pid)
     before = start_ticks(proc)
     if before != birth:
@@ -32,8 +32,9 @@ def read_sample(pid, birth, hip_library, proc_root=Path('/proc'), kfd_root=Path(
     hip = any(line.split()[-1] == hip_library for line in maps.splitlines() if line.split() and line.split()[-1].startswith('/'))
     gpu = kfd_root / str(pid)
     files = list(gpu.glob('vram_*'))
-    if not files:
+    if not files and not allow_uninitialized:
         raise RuntimeError('own process has no KFD VRAM entries')
+    # Before GPU initialization only, absence is recorded as zero, never as residency.
     own = sum(int(f.read_text().strip()) for f in files)
     card_used = int(card.read_text().strip())
     if start_ticks(proc) != birth:
@@ -53,9 +54,12 @@ def ceiling(sample):
 
 
 class Sampler:
-    def __init__(self, pid, birth, hip_library, sink, interval=0.5, reader=read_sample):
+    def __init__(self, pid, birth, hip_library, sink, interval=0.5, reader=read_sample, startup=False, phase=None):
         self.pid, self.birth, self.hip_library = pid, birth, hip_library
         self.sink, self.interval, self.reader = Path(sink), interval, reader
+        self.startup = startup
+        self.phase = phase or (lambda: 'unknown')
+        self.residency_seen = False
         self.abort, self.stop_event = threading.Event(), threading.Event()
         self.reason = None
         self.last = None
@@ -65,7 +69,13 @@ class Sampler:
         try:
             with self.sink.open('x', encoding='utf-8') as out:
                 while not self.stop_event.is_set():
-                    record = self.reader(self.pid, self.birth, self.hip_library)
+                    if self.startup and not self.residency_seen:
+                        record = self.reader(self.pid, self.birth, self.hip_library, allow_uninitialized=True)
+                    else:
+                        record = self.reader(self.pid, self.birth, self.hip_library)
+                    if record.get('hip_resident') is True and record.get('own_vram_b', 0) > 0:
+                        self.residency_seen = True
+                    record['phase'] = self.phase()
                     self.last = record
                     out.write(json.dumps(record, sort_keys=True) + '\n')
                     out.flush()

@@ -26,7 +26,7 @@ def append_event(path, event):
         os.close(fd)
 
 
-def run_sequence(port, warm, warm_expected, t7a, transport, stop, abort, deadline, sink):
+def run_sequence(port, warm, warm_expected, t7a, transport, stop, abort, deadline, sink, before_target):
     """Return completed T7A rows; record an incomplete sequence on exception.
 
     The caller is responsible for testing socket and server cleanup even when
@@ -50,6 +50,8 @@ def run_sequence(port, warm, warm_expected, t7a, transport, stop, abort, deadlin
             if row.get('completed') is not True or row.get('http_status') != 200:
                 raise RuntimeError('warm-up did not finish with HTTP 200')
             append_event(sink, {'kind':'warm_complete', **row})
+        # This must durably refuse any re-exposure before the first target request.
+        before_target()
         start = time.monotonic()
         append_event(sink, {'kind':'t7a_started', 't':start})
         for tag, body, digest in t7a:

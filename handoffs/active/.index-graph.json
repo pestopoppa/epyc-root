@@ -3939,7 +3939,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-01T21:50:36Z",
+  "generated_at": "2026-11-01T21:52:29Z",
   "nodes": [
     {
       "age_days": 94,
@@ -4990,7 +4990,7 @@
       "id": "EVL-47",
       "last_advanced": "2026-11-01",
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
-      "open": 364,
+      "open": 365,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -6484,13 +6484,13 @@
         "INF-62",
         "INF-64"
       ],
-      "closed": 76,
+      "closed": 77,
       "domain": "inference-research",
       "handoff": "autokernel-champion-aggregate.md",
       "id": "INF-65",
       "last_advanced": "2026-11-01",
       "next_action": "Qualify C6 serving gates and resolve baseline GPU properties; assemble the CAS review package without updating champion",
-      "open": 38,
+      "open": 37,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -8690,7 +8690,7 @@
         "RTG-19",
         "RTG-36"
       ],
-      "closed": 77,
+      "closed": 78,
       "domain": "routing-and-optimization",
       "handoff": "kv-unified-stack-rollout.md",
       "id": "RTG-57",

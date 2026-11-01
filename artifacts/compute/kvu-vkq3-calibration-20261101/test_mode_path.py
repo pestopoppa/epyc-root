@@ -1,4 +1,4 @@
-import os, subprocess, tempfile, unittest
+import os, subprocess, tempfile, unittest, hashlib, re
 from pathlib import Path
 
 D=Path('/mnt/raid0/llm/tmp/handoff-kvu-vkq3-independent-calibration-20261101')
@@ -21,6 +21,14 @@ class ModePathTests(unittest.TestCase):
         e,c=self.capture('1'); self.assertEqual(e['FILLER_DRYRUN'],'1'); self.assertEqual(e['FILLER_ID'],'synthetic-fixture');self.assertIn('/qualification/QUALIFICATION.json',c)
     def test_full_mode_reaches_job(self):
         e,c=self.capture('0'); self.assertEqual(e['FILLER_DRYRUN'],'0');self.assertEqual(e['FILLER_ID'],'synthetic-fixture');self.assertIn('/run/TERMINAL.json',c)
+    def test_launcher_pins_source_catalog_except_its_own_hash(self):
+        text=(D/'launch.sh').read_text()
+        pin=re.search(r'" = "([0-9a-f]{64})" \] \|\| \{ echo "source catalog pin mismatch"',text)
+        self.assertIsNotNone(pin)
+        lines=(D/'SOURCE-SHA256SUMS').read_bytes().splitlines(keepends=True)
+        selected=b''.join(line for line in lines if not line.endswith(b'  launch.sh\n'))
+        self.assertEqual(hashlib.sha256(selected).hexdigest(),pin.group(1))
+        self.assertNotEqual(hashlib.sha256(selected.replace(b'worker.py',b'worker.px')).hexdigest(),pin.group(1))
     def test_engine_rejects_unknown_mode(self):
         for dry in ('', 'x', '2'):
             p=subprocess.run(['/bin/bash',str(D/'launch.sh'),'--engine'],env={**os.environ,'FILLER_DRYRUN':dry},capture_output=True,timeout=5)

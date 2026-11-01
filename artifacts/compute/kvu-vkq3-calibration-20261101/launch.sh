@@ -5,6 +5,8 @@ ID=handoff-kvu-vkq3-independent-calibration-20261101
 cd "$D"
 case ${1:-} in
  --job)
+  # Bind every dependent source to the launcher hash that rowflow qualifies.
+  [ "$(sed '/  launch\.sh$/d' SOURCE-SHA256SUMS | sha256sum | cut -d' ' -f1)" = "c9e3e5a6fe2395dd157b6ab197d9617fd9c1ad2ca2b737b09781b763d88ebced" ] || { echo "source catalog pin mismatch" >&2; exit 64; }
   sha256sum -c --quiet SOURCE-SHA256SUMS
   sha256sum -c --quiet SOURCE-INPUTS.sha256
   sha256sum -c --quiet RUNTIME-INPUTS.sha256

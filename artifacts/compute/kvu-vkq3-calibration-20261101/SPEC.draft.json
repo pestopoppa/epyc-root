@@ -1,0 +1,31 @@
+{
+  "id": "handoff-kvu-vkq3-independent-calibration-20261101",
+  "owner": "handoff-kvu",
+  "launcher": "/mnt/raid0/llm/tmp/handoff-kvu-vkq3-independent-calibration-20261101/launch.sh",
+  "lane": "cpu",
+  "regions": "0-95",
+  "ram_gib": 256,
+  "result_path": "/mnt/raid0/llm/tmp/handoff-kvu-vkq3-independent-calibration-20261101/events.jsonl",
+  "result_format": "jsonl",
+  "estimate_s": 14400,
+  "dryrun_timeout_s": 3600,
+  "handoff_task": "handoffs/active/kv-unified-stack-rollout.md:CPU-FA-VKQ-3",
+  "priority_rank": 30,
+  "scratch_root": "/mnt/raid0/llm/tmp/handoff-kvu-vkq3-independent-calibration-20261101",
+  "decision_rule": "Independent calibration only, not replacement for the original exposed prompt. Ignore qualification_control events. Compare actual native draft and accepted counts, acceptance delta and first generated-token divergence only when both independent target arms completed with HTTP 200, valid positive native draft counts and valid token IDs. If any arm is interrupted, missing, invalid or fails cleanup, verdict UNKNOWN; never retry an exposed arm. No fixed numerical acceptance threshold or adoption verdict.",
+  "notes": "Qualification uses a short distinct non-target prompt with the same target model and MTP head. Target prompt >64k must be checked using the target tokenizer before exposure. The keeper performs qualification; 3600 seconds is a conservative allowance, not measured full-target wall time.",
+  "keep": [
+    "**/*.json",
+    "**/*.jsonl",
+    "**/*.md",
+    "**/*.txt",
+    "**/*.csv",
+    "**/*.tsv",
+    "**/*.sh",
+    "**/*.py",
+    "**/*.sha256",
+    "SOURCE-SHA256SUMS",
+    "region-lock",
+    "REGION-LOCK-PYTHON-ALLOW.txt"
+  ]
+}

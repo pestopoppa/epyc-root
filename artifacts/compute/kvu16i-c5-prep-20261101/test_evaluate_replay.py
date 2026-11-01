@@ -13,6 +13,13 @@ class TestEvaluate(unittest.TestCase):
         v=self.run_eval(); self.assertEqual(v['verdict'],'HOLDS'); self.assertEqual(v['runtime_term_gib'],1)
     def test_fail_above_threshold(self):
         self.samples[-1]['own_vram_b'] += E.GIB; self.assertEqual(self.run_eval()['verdict'],'FAILS')
+    def test_pre_initialization_zero_is_not_a_failed_load(self):
+        self.samples.insert(0, {'t':0.5,'phase':'load','own_vram_b':0,'hip_resident':False})
+        self.evidence['load_start_t']=0.4
+        self.assertEqual(self.run_eval()['verdict'],'HOLDS')
+    def test_residency_loss_after_initialization_is_unknown(self):
+        self.samples.insert(2, {'t':1.5,'phase':'load','own_vram_b':0,'hip_resident':False})
+        self.assertEqual(self.run_eval()['verdict'],'UNKNOWN')
     def test_missing_or_false_evidence_unknown(self):
         self.evidence['cleanup_verified']=False; self.assertEqual(self.run_eval()['verdict'],'UNKNOWN')
     def test_incomplete_request_unknown(self):

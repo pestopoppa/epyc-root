@@ -86,8 +86,9 @@ def main():
    log.close();atom(out/(name+'.drain.json'),{'pid':p.pid,'birth':birth,'returncode':p.returncode,'drained':p.poll() is not None,'server_log_sha256':sha(out/(name+'.server.log'))})
  if mode=='qualification':
   a=outputs.get('hybrid')
-  if not a or a.get('http_status')!=200 or type(a.get('draft_n')) is not int or a['draft_n']<=0:raise RuntimeError('qualification control failed or MTP count missing')
-  atom(out/'QUALIFICATION.json', {'kind':'qualification_control','http_status':a['http_status'],'target_exposed':False,'draft_n':a['draft_n']});emit({'kind':'qualification_control','http_status':a['http_status'],'target_exposed':False,'draft_n':a['draft_n']})
+  if not a or a.get('http_status')!=200 or a.get('acceptance') is None or a.get('tokens') is None:raise RuntimeError('qualification control failed or native MTP counts/token IDs invalid')
+  control={'kind':'qualification_control','http_status':a['http_status'],'target_exposed':False,'draft_n':a['draft_n'],'draft_n_accepted':a['draft_n_accepted'],'acceptance':a['acceptance'],'token_count':len(a['tokens']),'plan_sha256':sha(D/'PLAN.json'),'full_model_catalog_sha256':sha(D/'FULL-MODELS.sha256'),'source_sha256':sha(D/'SOURCE-SHA256SUMS'),'grant_sha256':hashlib.sha256(grant).hexdigest()}
+  atom(out/'QUALIFICATION.json',control);emit(control)
   return 0
  a=outputs.get('hybrid');b=outputs.get('legacy');div=None
  if a and b and a['acceptance'] is not None and b['acceptance'] is not None and a['tokens'] is not None and b['tokens'] is not None:

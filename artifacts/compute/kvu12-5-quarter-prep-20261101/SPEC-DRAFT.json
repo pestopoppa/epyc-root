@@ -1,0 +1,31 @@
+{
+  "id": "handoff-kvu12-5-quarter-20261101",
+  "owner": "handoff-kvu",
+  "launcher": "/mnt/raid0/llm/tmp/handoff-kvu12-5-quarter-20261101/launch.sh",
+  "lane": "cpu",
+  "regions": "72-95",
+  "result_path": "/mnt/raid0/llm/tmp/handoff-kvu12-5-quarter-20261101/events.jsonl",
+  "result_format": "jsonl",
+  "estimate_s": 39600,
+  "min_window_s": 39600,
+  "ram_gib": 60,
+  "priority_rank": 30,
+  "dryrun_timeout_s": 1800,
+  "handoff_task": "handoffs/active/kv-unified-stack-rollout.md#KVU-12.5 re-run",
+  "scratch_root": "/mnt/raid0/llm/tmp/handoff-kvu12-5-quarter-20261101",
+  "keep": [
+    "*.py",
+    "*.sh",
+    "*.json",
+    "*.jsonl",
+    "*.md",
+    "*.sha256",
+    "SOURCE-SHA256SUMS",
+    "REGION-LOCK-INPUTS.sha256",
+    "REGION-LOCK-PYTHON-ALLOW.txt",
+    "corpus/**",
+    "qualification/**",
+    "run/**"
+  ],
+  "decision_rule": "Use target mode only: both 4-wave np8 L64k arms must have 8 successful streams, matched corpus, binary, model, args, quarter placement and GPU-idle observations. Compute each decode metric wave-range = 100*(max-min)/median across waves 1-3, stream rate = wave median of 8 streams; threshold = max(2*max(np4 anchor floor, unified range, split range),3%). Apply predeclared PLAN s10 better/no-difference/mixed rule; incomplete or invalid is UNKNOWN/INVALID. Qualification control is excluded. No deployment claim."
+}

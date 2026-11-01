@@ -25,3 +25,17 @@ The engine can no longer be assumed to prove cleanup when its captured group lea
 ## Tokenizer cancellation repair — 2026-11-01
 
 The native tokenizer now runs as a captured child through the same parent-death exec wrapper and checks STOP, grant continuity and deadline at most every 0.2 s during communication. On stop or timeout, it terminates and waits for its own captured child, with a bounded escalation if necessary; no prompt exposure has occurred at this point. Offline fake-process tests cover STOP, timeout, retry input only once and preexisting STOP; a benign real child completed normally without being signalled. Twenty-three offline tests and source SHA checks pass. No actual inference, qualification, forced-kill test, or keeper grant was run. Full qualification path, child cleanup on abrupt death, cross-producer exposure custody and write-side projection/canary remain open.
+
+A further offline assertion verifies that both the server and tokenizer commands use the parent-death wrapper with the current worker PID; the final suite is 24 passing tests.
+
+## Qualification native-output hardening — 2026-11-01
+
+The short target-model control only becomes a qualification result when HTTP 200 contains valid native draft and accepted counts and nonempty generated token IDs. Its receipt binds the plan, target model catalog, source catalog and actual grant by SHA-256; `completion.py` refuses missing, malformed or inconsistent values. This closes an offline qualification false-positive in which any positive draft count alone was accepted even if the accepted count or tokens were missing. The 24 offline tests pass, including invalid-count and malformed-hash negatives. No target model, tokenizer, server, inference, qualification or grant was run. This is not proof of end-to-end readiness; the remaining blockers in the prior section still apply.
+
+## Bounded source-hash exposure search — 2026-11-01
+
+A read-only fixed-string search for selected prompt SHA `be82b737c800252d7c267f56a61ddeefad47f46f2dab4c55746d09b8954d2333` traversed `/mnt/raid0/llm/tmp` JSON, JSONL, Markdown and text files up to 10 MB, excluding private-session content. Matches in `EXPOSURE-HASH-MATCHES.txt` were source indexes, this plan and their copied snapshots, and session output; none was an exposure receipt. This bounds the search: it cannot prove absence from larger, inaccessible, non-text or differently represented records. This source is a separate calibration, never a replacement for the original exposure. `SPEC.draft.json` is an unpublished row specification; keeper qualification is required before any grant. No inference ran.
+
+## Qualification source binding — 2026-11-01
+
+The rowflow keeper pins the launcher hash, but an editable checksum catalog alone did not bind the worker and its dependencies to that launcher. The launcher now embeds the digest of every source-catalog line except its own launcher line, avoiding a hash cycle. Job entry checks that digest before checking catalog members. A tamper control changes a dependent filename and confirms the digest changes; all 25 offline tests, shell syntax and catalog member checks pass. This is static source-custody verification, not a model-load or end-to-end qualification claim.

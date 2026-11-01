@@ -2469,6 +2469,8 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
   20261004T063830Z summary and the row-4c result.
   - *(2026-10-04 PM.)* The row is applied, and row 4c ran (`results/fuc-20261004T110509Z/`, durable copy under
     `artifacts/kvu16h-vram-20261004/`); the adapter itself is still to be written.
+- [ ] **VB-KVU16I-C5 — wire the prospective KVU-16i v11 candidate replay.** Capture candidate source/ELF/model and predeclared workload, grant/placement, per-phase time bounds, own-PID HIP/KFD plus device VRAM samples, native request counters and hashes, STOP/drain and cleanup as native write-side records. Record H1 transitions as a model, not observed graph pins; keep phase-growth and load-to-runtime peak distinct. Reuse the KVU-16h source family and shared grade; build projection and pass a real planning-context canary before calling it wired. No candidate run has occurred. [no-belief: prospective task]
+
 - [ ] **VB-CPU-FA-VKQ — write side for the CPU FlashAttention FP16-VKQ harness and probe** (filed 2026-10-04,
   workspace-ec). Producers: the CPU FA harness (`harness-out/{nan,det,perf}_*.txt`: per-case finite/mismatch verdict
   and nmse vs a CPU-exact reference, determinism hashes, µs per FA op) and the model probe `fa_vkq_probe`
