@@ -233,7 +233,10 @@ runs under "Own inference tasks to publish as rows" and your handoff's rank amon
   for new work until that sha is on origin/main. A run-end event counts as consumed ONLY when `filing-done/<id>.FILED`
   exists (DSH-2; `file_result.py` touches it).
 - At a milestone, or when your context is large, wrap up and also say `FRESH-SESSION-REQUESTED`.
-- No unblockable work left in this handoff: wrap up with state `idle` and reply `IDLE: <reason>` after the `WRAPPED` line.
+- **Rows queued or running are never a reason to stop** (operator 2026-11-01 23:30Z: compute must be the ONLY bottleneck;
+  waiting for rows to become available is a pipeline FAILURE). While your rows run, continue with this handoff's other
+  blockers and unpublished inference tasks; deficit lanes (inventory below target in your STATE delta) come first. Pause only
+  when NOTHING is open except items waiting on your own running rows - then say `IDLE: waiting on rows <ids>` after `WRAPPED`.
 
 ## Hard rules
 - Never arm, grant, qualify, kill or launch compute; never edit grants, the keeper, gates or another session's READY
@@ -337,7 +340,7 @@ def continue_prompt(slug, e, flags, why="", delta=""):
     return f"""[{VERSION}] continue: FINISH ALL READY ITEMS IN THIS ONE TURN (budget rule 22:45Z: one resume per session per
 {MIN_RESUME_GAP_S // 60} min; a one-item turn wastes the whole context re-read). Your handoff {e.get('handoff') or 'codex-gen backlog'}
 still has open work ({why}); fan every independent item out to sub-agents now and land them all before wrapping up.
-A session pauses ONLY when everything left waits on an inference row that is queued or running. {FANOUT_LINE}
+Rows queued or running are no reason to stop: a session pauses ONLY when nothing is open except items waiting on its own running rows. {FANOUT_LINE}
 {lane_line(slug)}
 {delta_block(delta).replace('{flags}', flags).replace('<slug>', slug)}INFERENCE FIRST: publish this handoff's measurement
 tasks as rows (`publish_row.py`, fastest-clearable blockers first) before any non-inference task; then the top non-inference
@@ -802,8 +805,6 @@ def auto_start(flags, reg, live, cap, runner=None, repo=None, priority=None, kee
     for h in cands:
         if live >= cap:
             break
-        if h.get("position", 0) > cap and any(e.get("status") != "done" and alive(e.get("pid")) for e in S.values()):
-            break  # below the cap and the slot would only be a leftover: wait for a higher-ranked handoff to need it
         slug = h.get("slug") or slug_for(h["handoff"], S)
         e = S.get(slug) or new_entry(reg, h["handoff"], h.get("row_id"))
         if e.get("status") == "done":  # the handoff grew open tasks again: fresh session, same slug
@@ -835,6 +836,10 @@ OWN_TASK_RX = re.compile(r"^- \S+ L\d+ \[(cpu|gpu)\] ", re.M)
 IDLE_RX = re.compile(r"IDLE:\s*(.*)")
 IDLE_REPORT_COOLDOWN_S = 30 * 60  # a session that itself said IDLE: <reason> is re-asked after this long
 MIN_RESUME_GAP_S = 10 * 60        # budget emergency 22:45Z: at most one non-filing resume per session per 10 min
+STARVED_TICKS = 2                  # keeper ticks (~2 min each) a lane may sit free with zero candidates before INVENTORY-STARVED
+STARVED_ALARM_EVERY_S = 30 * 60
+PUSH_LOCK_DIR = os.path.join(ROOT, "coordination", "push-locks")
+PUSH_LOCK_REPORT_EVERY_S = 10 * 60
 CONTEXT_ROTATE_TOKENS = 150_000   # per-call input context above this -> fresh session at the next landed wrap-up (rotation)
 CODEX_SESSIONS = os.path.expanduser("~/.codex/sessions")
 GENERALIST = bg.GENERALIST        # codex-gen: an ordinary dispatcher-managed, always-on session (no handoff; never yields)
@@ -862,6 +867,44 @@ def context_size(session_id, engine="codex"):
     except OSError:
         return None
     return last
+
+
+def inventory_alarm(flags, st, data, now):
+    """Governing objective: compute must be the ONLY bottleneck. A lane that the keeper reports free (IDLE-ALARM in the last
+    5 min) with zero ready rows AND zero candidate rows for more than STARVED_TICKS ticks -> INVENTORY-STARVED <lane>,
+    naming the 3 nearest-to-ready rows and their blockers. Logged at most every 30 min per lane."""
+    if not data:
+        return
+    inv = data.get("inventory") or {}
+    idle = {}
+    for ts, b in data.get("klog_idle") or []:
+        t = _parse(ts)
+        if now - t <= 300:
+            idle["gpu" if "gpu" in b else "cpu"] = True
+    rows = [r for w in data["workers"].values() for r in w["rows"]]
+    starved = st.setdefault("starved_since", {})
+    for lane, v in inv.items():
+        cands = [r for r in rows if r["lane"] == lane and r["state"] in bg.ADVANCEABLE]
+        if v["ready"] == 0 and idle.get(lane) and not [r for r in cands if r["state"] == "needs-qualification"]:
+            since = starved.setdefault(lane, now)
+            if now - since >= STARVED_TICKS * 120 and now - st.get("starved_alarm", {}).get(lane, 0) >= STARVED_ALARM_EVERY_S:
+                near = sorted(cands, key=lambda r: (bg.STATE_ORDER[r["state"]], float(r["rank"]) if str(r["rank"]).replace(".", "", 1).isdigit() else 999))[:3]
+                desc = "; ".join(f"{r['id']} [{r['state']}] " + ("; ".join(r.get('reasons') or r.get('tasks') or [])[:120]) for r in near) or "no candidate rows at all"
+                log(flags, f"INVENTORY-STARVED {lane}: free region, 0 ready rows, 0 publishable candidates for {int((now - since) / 60)} min; nearest-to-ready: {desc}")
+                st.setdefault("starved_alarm", {})[lane] = now
+        else:
+            starved.pop(lane, None)
+
+
+def dead_push_lock(flags, st, now):
+    """Report (never release) a push lock whose holder pid is dead; it blocked every push for ~10 min tonight."""
+    for p in glob.glob(os.path.join(PUSH_LOCK_DIR, "push-*.json")):
+        d = bg.load_json(p) or {}
+        pid = d.get("pid")
+        if pid and not alive(pid) and now - st.get("push_lock_report", {}).get(p, 0) >= PUSH_LOCK_REPORT_EVERY_S:
+            log(flags, f"PUSH-LOCK-DEAD {p}: holder {d.get('agent')} pid {pid} is dead since <= {d.get('acquired') or d.get('at') or '?'}; every push is blocked. "
+                       f"NOT released automatically: `serialized_push.py --force-release {d.get('agent')}` is the operator's/holder's call.")
+            st.setdefault("push_lock_report", {})[p] = now
 
 
 def is_generalist(e) -> bool:
@@ -1123,6 +1166,8 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             return bg.resume_delta(bdata, slug) if bdata else ""
         except Exception:
             return ""
+    inventory_alarm(flags, st, bdata, now)
+    dead_push_lock(flags, st, now)
     paused = _parse(reg.get("paused_until") or "") > now
     live = sum(1 for e in S.values() if alive(e.get("pid")))  # suspended sessions (waiting on a running row) have no pid
     cap = int(reg.get("max_live", 5))
@@ -1173,8 +1218,8 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             if (live >= cap and not is_generalist(e)) or e.get("status") in ("done", "retry", "failed") or alive(e.get("pid")) \
                     or (e.get("_work") or ("", ""))[0] != "continue":
                 continue
-            if now - _parse(e.get("last_resume") or "") < MIN_RESUME_GAP_S:
-                continue  # budget rule: one non-filing resume per session per MIN_RESUME_GAP_S
+            if not e.get("last_effect") and now - _parse(e.get("last_resume") or "") < MIN_RESUME_GAP_S:
+                continue  # gap only after a turn that produced nothing (ws58 23:30Z: the gap throttled productive sessions to 0 alive)
             if slug in launched or any(ev["slug"] == slug for ev in st["queue"]):
                 continue
             if e.get("yield"):

@@ -62,6 +62,11 @@ GENERALIST = "codex-gen"
 WORKERS = (GENERALIST,)
 LEGACY_QUEUES = ("ni", "refactor", "codex3")  # closed sessions whose WORK-*-code.md queues are re-routed
 FLOOR = 2
+# Governing objective (operator 2026-11-01 23:30Z): compute capacity must be the ONLY bottleneck. Ready rows per lane
+# should be >= INVENTORY_FACTOR x the lane's capacity. The target is a PRIORITY ORDER (deficit lanes' blockers first),
+# NEVER a stop condition: blockers are processed whether or not rows are queued or running.
+LANE_CAPACITY = {"cpu": 4, "gpu": 1, "host": 1}   # cpu quarters, MI210, whole host
+INVENTORY_FACTOR = 2
 B_MARK, E_MARK = "<!-- BLOCKED-INFERENCE:start -->", "<!-- BLOCKED-INFERENCE:end -->"
 STATE_ORDER = {"blocked": 0, "needs-launcher": 1, "needs-qualification": 2, "parked": 3,
                "qualified-armed": 4, "running": 5, "needs-filing": 6, "done": 7}
@@ -513,8 +518,14 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
             if r["state"] in ("qualified-armed", "running"):
                 ready_by_lane[r["lane"]] += 1
 
+    inventory = {ln: {"ready": ready_by_lane.get(ln, 0), "target": INVENTORY_FACTOR * cap,
+                      "deficit": max(0, INVENTORY_FACTOR * cap - ready_by_lane.get(ln, 0))} for ln, cap in LANE_CAPACITY.items()}
+
     def lane_weight(lane: str) -> float:
         return 1.0 / (1 + ready_by_lane.get(lane, 0))
+
+    def deficit_weight(lane: str) -> float:  # inventory target = priority order: rows for a lane below target rank first
+        return lane_weight(lane) if inventory.get(lane, {}).get("deficit", 0) else 0.0
 
     # ---- scoring: rows each task unblocks, transitively ----
     advanceable = {r["id"]: r for w in buckets for r in per[w]["rows"] if r["state"] in ADVANCEABLE}
@@ -554,8 +565,9 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
         ub = rows_unblocked(wl)
         wl["unblocked_rows"] = sorted(ub)
         wl["score"] = round(sum(lane_weight(r["lane"]) for r in ub.values()), 4)
+        wl["deficit_score"] = round(sum(deficit_weight(r["lane"]) for r in ub.values()), 4)
         wl["best_rank"] = min([float(r["rank"]) if str(r["rank"]).replace(".", "", 1).isdigit() else 999 for r in ub.values()] + [999])
-        wl["order"] = (-wl["score"], SIZE_ORDER.get(wl["size"], 3), wl["best_rank"], i)
+        wl["order"] = (-wl["deficit_score"], -wl["score"], SIZE_ORDER.get(wl["size"], 3), wl["best_rank"], i)
         scored.append(wl)
     scored.sort(key=lambda x: x["order"])
 
@@ -603,13 +615,15 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
         best = min([float(r["rank"]) if str(r["rank"]).replace(".", "", 1).isdigit() else 999 for r in rr.values()] + [999])
         handoff_rank.append({"handoff": hf, "score": round(sum(lane_weight(r["lane"]) for r in rr.values())
                                                            + CANDIDATE_WEIGHT * sum(lane_weight(c["lane"]) for c in cand), 4),
+                             "deficit_score": round(sum(deficit_weight(r["lane"]) for r in rr.values())
+                                                    + CANDIDATE_WEIGHT * sum(deficit_weight(c["lane"]) for c in cand), 4),
                              "rows": sorted(rr), "lanes": sorted({r["lane"] for r in rr.values()} | {c["lane"] for c in cand}),
                              "candidate_rows": len(cand), "candidates": cand[:4],
                              "row_id": pr["row_id"], "priority_rank": pr["rank"], "best_row_rank": best,
                              "tasks": len(hs_tasks.get(hf, [])), "session": handoff_bucket.get(hf, "")[8:] or None})
     # order: most inference unblocked/publishable first; ties (incl. score 0) by backlog-priority rank of the handoff's
     # index row, then the best rank among its rows, then task count. Never alphabetical.
-    handoff_rank.sort(key=lambda h: (-h["score"], h["priority_rank"], h["best_row_rank"], -h["tasks"], h["handoff"]))
+    handoff_rank.sort(key=lambda h: (-h["deficit_score"], -h["score"], h["priority_rank"], h["best_row_rank"], -h["tasks"], h["handoff"]))
     for i, h in enumerate(handoff_rank, 1):
         h["position"] = i
     needs_session = [h for h in handoff_rank if not h["session"]]
@@ -642,7 +656,7 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
         per[w]["rows"].sort(key=_key)
     return {"generated_at": now.strftime("%Y-%m-%dT%H:%MZ"), "workers": per, "parked": parked,
             "pilots": {s: p["handoff"] for s, p in pilots.items()}, "ready_by_lane": ready_by_lane, "klog_idle": klog["idle"][-3:],
-            "needs_session": needs_session, "handoff_rank": handoff_rank, "failed_sessions": failed_sessions}
+            "needs_session": needs_session, "handoff_rank": handoff_rank, "failed_sessions": failed_sessions, "inventory": inventory}
 
 
 def render(w: str, data: dict) -> str:
@@ -812,6 +826,9 @@ def resume_delta(data: dict, slug: str, limit_rows: int = 8) -> str:
         L.append(f"- ... {len(rows) - limit_rows} more rows (see BACKLOG-handoff-{slug}.md)")
     if not rows:
         L.append("- rows: none open")
+    inv = data.get("inventory") or {}
+    L.append("- inventory (ready rows vs target; deficit lanes' blockers come FIRST, never a reason to stop): "
+             + ", ".join(f"{ln} {v['ready']}/{v['target']}" for ln, v in inv.items()))
     hr = next((h for h in data.get("handoff_rank", []) if h.get("session") == slug), None)
     if hr:
         L.append(f"- handoff rank #{hr['position']}/{len(data['handoff_rank'])} score={hr['score']}; own inference tasks to publish: "
