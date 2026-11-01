@@ -1046,7 +1046,7 @@ wherever it appears._
 _From `intake-1246#record` (AutoKernel), `intake-1244#record` (CodegenBench), `intake-1249#record`
 (KLineage), `intake-1250#record` (Kernel-Smith), `intake-1240#record` (GPU Forecasters)._
 
-- [ ] **C5-14 — Add AutoKernel to the controller roster as the ONLY surveyed kernel controller that needs
+- [x] ✅ 2026-11-01 [belief: cc] Evidence: epyc-inference-research `a23bd9c65203c9e8a9cbf7cabd76b716a9303d49`; artifact `scripts/kernel_rnd/autokernel/controller/ARENA_INTEGRATION.md`; docs-only `git diff --check` passed. **C5-14 — Add AutoKernel to the controller roster as the ONLY surveyed kernel controller that needs
       no vendor profiler.** `intake-1246#record` (MIT, `github.com/RightNow-AI/autokernel` @ `78435821`,
       1,531 stars): Phase A uses **`torch.profiler` with shape recording only** — zero `ncu`/`nsys` in paper
       or code. Our environment has rocprof v1/v2/v3 and omniperf and specifically **NO ncu/nsys**, which has
