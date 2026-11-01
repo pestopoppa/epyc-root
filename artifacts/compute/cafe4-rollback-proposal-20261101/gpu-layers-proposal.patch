@@ -1,0 +1,51 @@
+--- upstream/rs-rollback.cpp	2026-11-01 22:28:01.696228573 +0000
++++ candidate/rs-rollback.cpp	2026-11-01 22:28:15.046564396 +0000
+@@ -13,6 +13,9 @@
+ // conv-window or SSM snapshot write shows up as a token mismatch.
+ #include "llama.h"
+ 
++#include <cerrno>
++#include <climits>
++#include <cstdlib>
+ #include <cstdio>
+ #include <cstring>
+ #include <string>
+@@ -39,10 +42,20 @@
+     int         n_predict = 128;
+     int         stride    = 16;  // roll back every `stride` accepted tokens
+     int         rewind    = 4;   // how many tokens to discard and re-generate
++    int         n_gpu_layers = 0;  // explicit CPU default; pass -ngl to offload
+     int         n_rs_seq  = 8;   // snapshot ring depth; must be >= rewind + 1
+ 
+     for (int i = 1; i < argc; i++) {
+-        if (!strcmp(argv[i], "-m") && i + 1 < argc) {
++        if (!strcmp(argv[i], "-ngl")) {
++            if (i + 1 >= argc) { fprintf(stderr, "missing -ngl value\n"); return 1; }
++            char * end = nullptr;
++            errno = 0;
++            const long parsed = strtol(argv[++i], &end, 10);
++            if (errno || !end || *end || end == argv[i] || parsed < 0 || parsed > INT_MAX) {
++                fprintf(stderr, "invalid -ngl value\n"); return 1;
++            }
++            n_gpu_layers = (int) parsed;
++        } else if (!strcmp(argv[i], "-m") && i + 1 < argc) {
+             model_path = argv[++i];
+         } else if (!strcmp(argv[i], "-n") && i + 1 < argc) {
+             n_predict = atoi(argv[++i]);
+@@ -57,14 +70,14 @@
+         }
+     }
+     if (model_path.empty()) {
+-        fprintf(stderr, "usage: %s -m model.gguf [-n N] [-s stride] [-r rewind] [-k n_rs_seq]\n", argv[0]);
++        fprintf(stderr, "usage: %s -m model.gguf [-n N] [-s stride] [-r rewind] [-k n_rs_seq] [-ngl N]\n", argv[0]);
+         return 1;
+     }
+ 
+     llama_backend_init();
+ 
+     llama_model_params mparams = llama_model_default_params();
+-    mparams.n_gpu_layers       = 99;
++    mparams.n_gpu_layers       = n_gpu_layers;
+     llama_model * model        = llama_model_load_from_file(model_path.c_str(), mparams);
+     if (!model) {
+         fprintf(stderr, "failed to load model\n");

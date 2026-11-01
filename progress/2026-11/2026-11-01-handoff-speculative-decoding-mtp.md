@@ -30,3 +30,7 @@ The listed INF-50 window predecessor is superseded by the completed margin recov
 ## 22:29Z — Document NG5 corpus and repetition evidence
 
 Consumed the NG5 review and added handoff reporting/replication guidance plus corpus/fraction availability notes beside the identified NG1, NG2, NG4, T3, T3c, T5 and COPYSPEC observations. The original 6–17% remains scoped to the original screened prompts; missing information is described as not recorded in this handoff, not as irrecoverable. The INF-50 index row has no ngram numeric claim. Preserved the source review and a source-only registry caveat proposal under artifacts/compute/ng5-review-20261101/. The shared research registry has unrelated dirty changes and was not edited; the separate master and generated-lean updates and exhaustive numeric-claim inventory remain before NG5 can close. No measurement warrant, new protocol or deployment conclusion was created.
+
+## 22:32Z — Review CAFE-4 rollback source proposal
+
+Consumed CAFE-4 source checkpoint and preserved the upstream source, partial GPU-layer patch and report under artifacts/compute/cafe4-rollback-proposal-20261101/. Independently checked the three pinned upstream Git blobs and patch SHA 75a28f9c93995f7611c32759e0ae9c8b4f6370d628a7212b88c7a298c84fadcd. The patch only adds -ngl; verify-batch partial-accept rollback, replay oracle and fault-injection control remain unimplemented. No build, inference, kernel edit, keeper qualification or performance claim. Delegated implementation and two independent reviews with completion events. CAFE-4 remains open.
