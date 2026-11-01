@@ -331,7 +331,7 @@ Landed work lives in [`conversation-stack-completed-through-2026-10-22.md`](../c
   - Honour `x_session_id` on the voice route, and on `/v1` behind a flag.
   - Add a **summary-refresh** call that returns a compact semantic state for the interlocutor's context trim (CS-25).
   - Check overlap with the trace store (`src/trace/navigation.py`) and with the HS-4 P1/P3 plans (UFH-01) before building, so there is one store, not two.
-- [ ] **CS-16 — implement spoken form, display payload and preserve fields.**
+- [x] **CS-16 — implement spoken form, display payload and preserve fields.** ✅ 2026-11-01 — APP `ee58e8394832e6b3de2a3de9bcb65f947e4b6b05`; focused route/cascade/preserve controls in `tests/unit/test_voice_route_contract.py`, `tests/unit/test_tts_text_normalize.py`, `tests/unit/test_voice_controller_contract.py`, and `tests/unit/test_voice_http_clients.py` (200 initial + 161 post-review; R6 guarded). [no-belief: source implementation and deterministic controls; no measurement claim]
   - Add a voice response profile: a system prompt that yields short, speakable answers within `max_spoken_seconds`, with no markdown.
   - Add an optional `display` payload for code, commands, URLs and tables. Exact artefacts are *shown*, not spoken.
   - Add `must_preserve[]` (numbers, proper nouns, caveats) and `response_mode: normal | verbatim`.
