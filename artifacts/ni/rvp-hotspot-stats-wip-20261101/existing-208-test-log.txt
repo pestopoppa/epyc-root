@@ -1,0 +1,59 @@
+........................................................................ [ 34%]
+........................................................................ [ 69%]
+................................................................         [100%]
+208 passed in 6.11s
+      ok  the decision arithmetic: 207 collected, floor 181
+      ok  the loop package: 5876 collected, floor 385
+
+0 suite floor violation(s)
+
+CODE BASELINE VIOLATION:
+  - new in-scope source has no baseline entry: floor_units.py
+  - new in-scope source has no baseline entry: same_code_tripwire.py
+  - actor_metrics.py: 487 code lines exceeds ceiling 381 by 106
+  - actors.py: 2925 code lines exceeds ceiling 2909 by 16
+  - archive.py: 500 code lines exceeds ceiling 469 by 31
+  - belief_context.py: 591 code lines exceeds ceiling 580 by 11
+  - bench.py: 386 code lines exceeds ceiling 385 by 1
+  - champion_reanchor.py: 512 code lines exceeds ceiling 465 by 47
+  - gpu_serving_profile.py: 699 code lines exceeds ceiling 697 by 2
+  - lane_targets.py: 325 code lines exceeds ceiling 267 by 58
+  - loop.py: 1396 code lines exceeds ceiling 1394 by 2
+  - production.py: 1312 code lines exceeds ceiling 1311 by 1
+  - residency.py: 537 code lines exceeds ceiling 477 by 60
+  - resolved_recipe.py: 1374 code lines exceeds ceiling 1364 by 10
+  - roofline_coverage.py: 227 code lines exceeds ceiling 213 by 14
+  - run.py: 6204 code lines exceeds ceiling 6127 by 77
+  - serial_run.py: 2369 code lines exceeds ceiling 2340 by 29
+  - serving.py: 1587 code lines exceeds ceiling 1566 by 21
+  - serving_beliefs.py: 203 code lines exceeds ceiling 181 by 22
+  - status.py: 402 code lines exceeds ceiling 262 by 140
+  - surface_fold.py: 283 code lines exceeds ceiling 225 by 58
+loop package composition: 104143 code / 15684 prose / 11934 blank (11.9% prose)
+loop package: 131761 LOC across 199 files (informational budget 3450)
+      8138  run.py
+      4723  campaign_control.py
+      4359  actors.py
+      4359  gates.py
+      3683  resume.py
+      2751  serial_run.py
+      2471  worker_lifecycle.py
+      2464  unified_worker.py
+      2437  serving.py
+      2212  loop.py
+
+NOTE: the loop package is 131761 LOC, over the informational 3450; this is not a violation.
+
+NOTE: 24 test file(s) are coupled to guarded documentation. Each makes a deletion cost a regeneration.
+      19 reference(s) to program.md                   test_program_md.py
+      13 reference(s) to README.md                    execution/test_worktree.py
+      11 reference(s) to README.md                    test_readme.py
+       8 reference(s) to FOOTPRINT.md                 test_campaign_footprint.py
+       7 reference(s) to README.md                    loop/test_patch_retention.py
+       5 reference(s) to README.md                    execution/test_execution_chain.py
+       5 reference(s) to FOOTPRINT.md                 test_check_regrowth_guards.py
+       4 reference(s) to HYPOTHESES.md                controller/test_hypothesis_path_end_to_end.py
+       2 reference(s) to HYPOTHESIS_PORTFOLIO_V2.md   controller/test_discovery_deployment.py
+       2 reference(s) to README.md                    loop/test_ak_check.py
+
+1 guard violation(s)

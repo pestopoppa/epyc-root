@@ -309,3 +309,12 @@ Sources: [yarn-context-extension-research](../handoffs/active/yarn-context-exten
 - **YARN-JUDGE-1 closed on integration, not quality.** One genuine native HELMET longqa cell (7,390 prompt tokens, 55 output tokens, 1 judged/0 unjudged) ran end to end with a cloud-judge pin matching the 50-item validation pin (49/50 agreement, Cohen kappa 0.940; 19 rule labels and 31 cross-family model labels, not human labels). Descriptive accuracy 0/1 after 8192-context truncation establishes nothing about long-context quality. ([source](../handoffs/active/yarn-context-extension-research.md))
 
 Sources: [yarn-context-extension-research](../handoffs/active/yarn-context-extension-research.md) · [paw-b-yarn-interim](../progress/2026-10/2026-10-31-paw-b-yarn-interim.md) · [YaRN R10](../progress/2026-10/2026-10-31-codex-ni-yarn-r10.md) · [S0 v33 admission](../progress/2026-10/2026-10-31-yarn-v33-admission-0816.md) · [2026-10-30 inference pipeline](../progress/2026-10/2026-10-30-codex3-inference-pipeline.md)
+
+## Compiled Update — 2026-11-01 (YaRN native-entry failure and retained denominator)
+
+**Confidence: verified** for the terminal classification and paired-count inventory; the planned comparison has no measured verdict here.
+
+- The exact `yarn-128k-mi210-sol-r10-20261031` normal-entry run failed rc1 at a frozen-cohort-path guard before arm admission. It recorded 0/120 A0 items, 0/120 A1 items, and 0/120 pairs; therefore that run’s predeclared paired rule is unevaluated, not a pass, fail, or null effect. Keep its original 120-pair denominator and unresolved item identities; do not redraw. This failed R10 run is distinct from the completed 141-item YaRN aggregate and its 120-pair subset.
+- The unsupported S0-V34 lock-loss-reproducer completion claim is reopened after the audit found no source SHA, artifact, test, or receipt. This is a task-state correction only; no reproduction evidence was produced.
+
+Sources: [YaRN context-extension handoff](../handoffs/active/yarn-context-extension-research.md) · [tick-science audit](../docs/reports/tick-science-audit-20261031.md) · [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md) · [workspace-58 progress](../progress/2026-10/2026-10-31-workspace-58.md)

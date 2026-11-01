@@ -5472,3 +5472,13 @@ Sources: [rao-redel-substrate-spike](../handoffs/active/rao-redel-substrate-spik
 
 - FM-7: read-heavy-main share 0.007% post 10-15 (under the 3% rule), so M1 DECLINED; Claude subagents use 60.7% of tokens with a median 49.9k first-request overhead, Codex 68.0% with 21.8k. ([progress](../progress/2026-10/2026-10-31-fm7.md))
 - FM-8 added .claude/agents explorer/runner/clerk plus a WARN-mode dispatch audit hook; the checkbox stays unticked pending live dispatch checks. ([progress](../progress/2026-10/2026-10-31-fm8.md))
+
+## Compiled Update — 2026-11-01 (qualification boundaries in agent loops)
+
+**Confidence: verified** for the audit classifications; these findings govern task-state evidence and do not establish agent-quality outcomes.
+
+- The tick audit distinguishes an implementation/preparation checkpoint from the predeclared end-to-end result. It records false completion ticks and born-ticked rows as separate failure modes; both require preserving the original task identity and adding evidence without promoting a partial return into acceptance.
+- Agent-run qualification remains staged: a small endpoint smoke may establish a transport path while leaving the actual model request and the historical multi-leg result open. Likewise, RUS-3 and F2 watcher failures remain preparation failures, with their terminal metadata retained and no experiment verdict invented.
+- These controls keep the checklist state aligned with what the owning task's acceptance rule actually requires; they do not themselves qualify an agent loop.
+
+Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) · [serving-harness fixes](../handoffs/active/agentic-serving-harness-fixes.md) · [REPL turn-efficiency handoff](../handoffs/active/repl-turn-efficiency.md) · [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md)

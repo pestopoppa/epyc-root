@@ -494,7 +494,9 @@ YaRN 128K MI210 R1's original 05:26:22Z grant ended rc1 at `live grant/GPU/disk 
 
 ### Refactor S0 continuation repair checkpoint — 2026-10-31
 
-- [ ] **S0-V34-LOCK-LOSS-REPRODUCER:** reopened because the tick audit found no SHA, artifact, test, or receipt supporting the completion claim; completion remains unverified. See [tick-science audit](../../docs/reports/tick-science-audit-20261031.md#bad-ticks-still-x-when-audited).
+- [ ] **S0-V34-LOCK-LOSS-REPRODUCER:** reproduced the old global-lock-table guard intermittently refusing while the actual canonical CLI continuously retained GLOBAL/build FD kernel locks under unrelated lock churn. Exact module/interpreter/cwd/source/UID/birth authentication and per-owner fdinfo controls pass. This establishes a matching failure mechanism, not proof of the unique historical event. ✅ 2026-10-31 [belief: cc] [reopened: 2026-11-01; original completion claim unsupported; see audit correction below]
+  - 2026-11-01 audit correction: the original statement above is retained as historical task/evidence text, not an accepted completion. The committed tick-science audit found no implementing SHA, artifact, test or receipt supporting this tick. Completion remains unverified; the owning refactor session must supply the required evidence before any future result tick. [audit](../../docs/reports/tick-science-audit-20261031.md).
+
 - [ ] **S0-V34-FINAL-QUALIFICATION:** complete fresh native normal and active STOP/drain through the final repaired source before publishing a continuation. Source is prepared; final smoke refused at standing admission before exposure. Preserve original1known/2unknown/57unexposed inventory,120campaign denominator and A0-first eligibility. No unqualified READY or redraw. Evidence in `/mnt/raid0/llm/tmp/refactor-01a16fc3/yarn-s0-v34-lock-witness-20261031/`; worker inventory SHA31516b49ce8877c1e3913800347ecbfc7705786849e08eccb8a1f56693506c9a.
 
 ### Retained launcher qualification checkpoints — 2026-10-31

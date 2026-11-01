@@ -2994,3 +2994,13 @@ Sources: [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-prog
 
 - KVU-15d lease-ownership recording (94 tests), M-21 probe tagging, stack-template launch gate (115 tests) and machine-frame transport (fixture frames roughly halved; not a live bandwidth claim) landed as source changes. ([kvu15d](../progress/2026-10/2026-10-31-kvu15d-m21.md), [frames](../progress/2026-10/2026-10-31-codex3-mhs-machine-closures.md))
 - Keeper v7 reaps one day after run completion and filing receipt (LOOP-23). ([progress](../progress/2026-10/2026-10-31-codex3-loop23.md))
+
+## Compiled Update — 2026-11-01 (refusal records and admission-time lease evidence)
+
+**Confidence: verified** for source/test and record-shape facts; no serving deployment or causal queue-latency conclusion is implied.
+
+- UFH14-B6a records structured refusal `blockers` and `wait_ms`, with focused coverage across the refusal gates. The value is the observed wait in that admission decision; it is not total request queue time.
+- KVU-15d snapshots whether a request held the long-prefill lease at admission. Read that ownership field together with its admission verdict; do not treat it as a causal estimate or equate it with all pre-dispatch waiting.
+- Two preparation terminals are negative qualification evidence only: RUS-3-TRUNC's smoke failed rc1 before native events and lacked `latest-collection.json`; the F2 smoke timed out without an eligible GPU/q3 window. They produced no cohort or decode-stall result.
+
+Sources: [serving-harness fixes](../handoffs/active/agentic-serving-harness-fixes.md) · [KV unified-stack rollout](../handoffs/active/kv-unified-stack-rollout.md) · [REPL turn-efficiency handoff](../handoffs/active/repl-turn-efficiency.md) · [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md)

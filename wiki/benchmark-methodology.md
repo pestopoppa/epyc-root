@@ -7300,3 +7300,21 @@ Sources: [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harn
 - WRAP-4: the '184-191 disjoint' premise was false (SMT siblings of 88-95), so earlier 'clean-window' attributions are void; raw rates kept, no corrected CI invented; sync16 NO-GO stands. ([review](../docs/reviews/inf70-wrap4-physical-cores-20261031.md))
 - Killed or failed runs stay UNKNOWN with no redraw (HPR R5 35/36, JetLong HTTP 400 at the slot cap, ParEval seg2 5 ok / 98 UNKNOWN). ([progress](../progress/2026-10/2026-10-31-codex-ni-cpu-prep-audit-wrap.md))
 - LB3.4 retained confirmation: CONFIRMED +21.51 pp (CI +11.83 to +32.26); the post-reload live watch is UNKNOWN. ([progress](../progress/2026-10/2026-10-31-lb34-retained-confirmation.md))
+
+## Compiled Update — 2026-11-01 (tick audit and nonterminal-run discipline)
+
+**Confidence: verified** for the audit inventory and source/receipt statuses; this is checklist-governance evidence, not model-quality evidence.
+
+- The 2026-10-30..31 audit examined 264 newly checked boxes. It found 79 born-ticked completions, 24 ticks whose cited evidence existed only in temporary storage, and four launcher-qualification ticks later associated with failed runs. These are evidence-provenance and workflow findings; the counts do not estimate model performance.
+- Reopened completion claims when their predeclared rule was not met: PREFIX-3 retained 22/22 rows with contract/token-position mismatches and cosine unknown; INF-50 R3 T1 retained 37/37 raw returns but its outer run failed rc1 because the required `--complete-cmd` was missing; S0-V34 had no supporting source hash, artifact, test, or receipt. Preserve each original denominator and failure classification. A high return count alone does not satisfy a broader acceptance rule.
+- The RUS-3-TRUNC smoke failed before native events and the F2 smoke timed out before a qualified launcher/GPU window. Neither is a scientific run; neither supplies samples or a decode-stall result.
+
+Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) · [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md) · [ColBERT PREFIX-3 handoff](../handoffs/active/colbert-reranker-web-research.md) · [MTP refresh handoff](../handoffs/active/speculative-decoding-mtp-refresh.md) · [RUS turn-efficiency handoff](../handoffs/active/repl-turn-efficiency.md) · [serving-harness handoff](../handoffs/active/agentic-serving-harness-fixes.md)
+
+## Compiled Update — 2026-11-01 (CS-8 STT5 partial scorer run)
+
+**Confidence: verified** for collection coverage and scorer status; the partial WER values are not a final cross-arm verdict.
+
+- `codex3-cs8-stt5-validation-nemo-en-20261031` ran all 1,580 chunks, but the scorer aborted at R6 on the `decode_error` taxonomy. The scorer aborted on the `decode_error` taxonomy at R6 before writing the canonical score file; R13 remains unscored. This is collection/scorer status only, with no comparable per-arm score or head-to-head verdict. ([source](../progress/2026-11/2026-11-01-workspace-58.md))
+
+Sources: [workspace-58 progress](../progress/2026-11/2026-11-01-workspace-58.md) · [conversation stack handoff](../handoffs/active/conversation-stack.md)

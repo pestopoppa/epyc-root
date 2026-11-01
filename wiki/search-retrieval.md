@@ -1592,3 +1592,12 @@ Sources: [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.
 - **ColBERT encoder PREFIX-3 is a negative/unknown pipeline finding.** The unchanged APP `colbert_encoder.encode(role=ROLE_DOCUMENT)` vs native PyLate 1.4 gave 44 rows with Reason `OUTPUT_CONTRACT_MISMATCH` (22) and LateOn `TOKEN_OR_POSITION_MISMATCH` (22): 18x128 vs 17x128 (punctuation pruning, raw text without `[D]`/lowercasing), so cosine was never computed. The older 8.24e-3 / 2.72e-3 figures must not be cited as current parity; the G14 110-row diagnostic repeats this with a corrected-contract graph, but is not a parity or adoption verdict. ([colbert-reranker-web-research](../handoffs/active/colbert-reranker-web-research.md))
 
 Sources: [internal-kb-rag](../handoffs/active/internal-kb-rag.md) · [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md) · [colbert-reranker-web-research](../handoffs/active/colbert-reranker-web-research.md) · [native filings](../progress/2026-10/2026-10-30-codex3-ni-native-filings.md) · [G13 truncation filing](../progress/2026-10/2026-10-31-codex3-g13-truncskip.md)
+
+## Compiled Update — 2026-11-01 (PREFIX-3 remains nonterminal)
+
+**Confidence: verified** for the original PREFIX-3 row audit; that mismatched run has no reranker similarity verdict.
+
+- In the original PREFIX-3 run, all 22 retained Reason and 22 LateOn rows had contract or token-position mismatches, and cosine remained unknown. The task is reopened; those row counts do not establish acceptance under its original comparison contract.
+- The separate PREFIX-4 follow-up has 44 cosine-computable rows: Reason 19 PASS / 3 NUMERIC_FAIL and LateOn 22 PASS at 1e-2. This follow-up is not an adoption verdict. Preserve both runs as nonterminal evidence and do not convert PREFIX-3’s unknown cosine into a negative or positive result.
+
+Sources: [ColBERT reranker web research](../handoffs/active/colbert-reranker-web-research.md) · [tick-science audit](../docs/reports/tick-science-audit-20261031.md) · [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md)

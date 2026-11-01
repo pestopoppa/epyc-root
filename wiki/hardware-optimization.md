@@ -6749,3 +6749,12 @@ Sources: [G16 accepted capsule](../artifacts/compute/codex-ni-g16-greedy-aligned
 - R18 CUID forensics: ROCm 6.2 -fuse-cuid=hash hashes input path plus arguments, explaining all 141 changed HIP host names; full R18 identity remains false. ([audit](../docs/audits/r18-cuid-path-hash-forensics-20261031.md))
 - Z10 static audit: the fp16-denormal Q-scale reciprocal overflow is absent from the CUDA/HIP FA Q-quant path at v10 ffc1bac8; static conclusion only. ([audit](../docs/engineering/z10-fp16-denorm-static-audit-20261031.md))
 - C5 and C6 MUL_MAT runs each had 65 failures and 326 unsupported cases; the G-AK verdict is null. ([progress](../progress/2026-10/2026-10-31-codex3.md))
+
+## Compiled Update — 2026-11-01 (conditional profiler-counter gate)
+
+**Confidence: verified** for source behavior and focused controls; live profiler capture and adoption remain unverified.
+
+- C5-7's conditional source seam adds a declaration-aware counter gate at the HIP decision-grade terminal. For opted-in rows, missing, wrong, or ambiguous counter declarations suppress the speedup belief and rankability; legacy rows without a declaration keep prior behavior. The reader hashes/parses one stable raw-CSV buffer and binds counter, kernel, dispatch, source, campaign, workload, units, and normalization. Zero-valued counters remain valid evidence.
+- The focused unit controls and compilation passed on the implementation commit. This replays supplied profiler receipts; it does not establish end-to-end PMC capture, a broader native caller, live activation, or completion of C5-7.
+
+Sources: [agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) · [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) · [counter-gate progress record](../progress/2026-10/2026-10-31-c5-7-counter-gate.md)

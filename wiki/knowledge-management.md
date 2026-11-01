@@ -4252,3 +4252,12 @@ Sources: [non-inference-backlog](../handoffs/active/non-inference-backlog.md) ·
 
 - PREFIX-4: all 44 native rows cosine-computable; qd-v1 stores now refuse under the new encoder, so a rebuild is needed. Embedding v9/v10 parity 200/200 cosines >= 0.9999 (prerequisite only). ([colbert](../progress/2026-10/2026-10-31-colbert-prefix4.md), [parity](../progress/2026-10/2026-10-31-codex3.md))
 - REPL-EMB-2.13 audit: all lookups use side=query, writes side=document; no edit needed. ([audit](../docs/reference/repl-emb-2-13-side-callsite-audit-20261031.md))
+
+## Compiled Update — 2026-11-01 (failed-run gate and canonical engine policy)
+
+**Confidence: verified** for the operator rulings as recorded in the active audit/progress trail; the implementation remains open.
+
+- The latest failed-run audit governs this update: D1 makes hard pre-grant qualification the default; D2 counts failed science runs against the owning quota rather than substituting a READY-rate metric; D3 requires one canonical engine allowlist; D4 keeps disk-blocked work in READY-WAIT-DISK. The qualification implementation is still in progress, so these are policy and handoff boundaries, not a claim that the gate is deployed.
+- Durable conclusions belong in committed reports/progress as observations with their path and commit; a scratch receipt alone does not establish a measurement tuple. This wrap also preserves the two reopened nonterminal claims and the unaccepted RVP research WIP without adding measurement warrants.
+
+Sources: [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md) · [tick-science audit](../docs/reports/tick-science-audit-20261031.md) · [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) · [workspace-58 failed-run progress](../progress/2026-10/2026-10-31-workspace-58.md)

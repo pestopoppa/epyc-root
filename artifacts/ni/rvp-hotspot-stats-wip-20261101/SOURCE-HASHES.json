@@ -1,0 +1,47 @@
+{
+  "source_repo": "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code",
+  "source_HEAD": "f6630e61058c0ebebaa0467e70cedead8c4081da",
+  "wip_patch_sha256": "68e9e1e75792a799ed15b04a4561cb96fe5d630ec942a0d81a99dbfe65a358ff",
+  "existing_test_log_sha256": "123666a3aa76fb04c5f00b76155540cfb9b38bc61b32cf4183545b240b6a1655",
+  "source_files": [
+    {
+      "path": "scripts/kernel_rnd/autokernel/loop/actors.py",
+      "current_sha256": "d346ce49734344e565189d0aff0f14aca15779f14efacf00d027c82431a1a662",
+      "HEAD_sha256": "a52568c214f33c6d94d0faa21c3e0aac881713946de11720c11494c345101ae9",
+      "tracked_delta": true
+    },
+    {
+      "path": "scripts/kernel_rnd/autokernel/loop/hotspots.py",
+      "current_sha256": "8dfe75ff6f55af50899857d5422f4a67cc57e788e32b89e67bf91c80279fe93f",
+      "HEAD_sha256": "7e4369964eb16f6bc677b82a839d6b4343cad256bd4cc7f17c47b7ff3878b49b",
+      "tracked_delta": true
+    },
+    {
+      "path": "scripts/kernel_rnd/autokernel/loop/run.py",
+      "current_sha256": "126f6def165c66d8fc9d78cd8e56cb09276d35066c21c534b748de5118d0e9ee",
+      "HEAD_sha256": "357b3551f135c82451f7fc96ebd3ec751417719406b9a38a34b7503eaf14f761",
+      "tracked_delta": true
+    },
+    {
+      "path": "scripts/kernel_rnd/autokernel/loop/test_actors.py",
+      "current_sha256": "d2eeaf061cff1f69ba5cda2c1a80c47b68b3c53e8a75a2f8364be7aaca148cb5",
+      "HEAD_sha256": "420284add3d91e4987785f2d5cf7883b2d70b3b43105929e4c2bb13aaef927e5",
+      "tracked_delta": true
+    },
+    {
+      "path": "scripts/kernel_rnd/autokernel/prior_art.py",
+      "current_sha256": "5d598d916fb18d0ffa445d3b95069f5a09a7f4b0c5fb60b326e0c0b1db4290d3",
+      "HEAD_sha256": "b425a232ba619a72c9cf10b1eef785a199ed78e0f6b8b8fb06357649288c1fd0",
+      "tracked_delta": true
+    },
+    {
+      "path": "scripts/kernel_rnd/autokernel/loop/test_hotspots.py",
+      "current_sha256": "7ae3f73d75f9a2996d1120fe745f22255e5f8419d71c1f50a534289e8b774147",
+      "HEAD_sha256": null,
+      "tracked_delta": false
+    }
+  ],
+  "classification": "unaccepted Research owner WIP; do not stage, commit, index, or claim adopted",
+  "validation_note": "Existing publication.log reports 208 passed in 6.11s, but also one guard violation and multiple code-baseline violations. This wrap did not rerun tests.",
+  "cleanup_fix": "PENDING owner review/repair; do not mark source accepted or publish from this checkpoint."
+}

@@ -2935,3 +2935,13 @@ Sources: [qwen38-27b-replace-qwen36](../handoffs/active/qwen38-27b-replace-qwen3
 - **MTP-adjacent tests are READY only.** CAFE-1 p-min (0/0.5/0.75/0.9 + A/A, 5 blocks x 3 prompts) and SW-2 (private v9 clamp, caps 0/7/8/8 echoed) were withdrawn and republished after host-lock and scratch-root defects; controls used tiny or spec-none models, so no acceptance or clamp result exists, and absent draft counters are UNKNOWN, not zero. ([source](../handoffs/active/speculative-decoding-mtp-refresh.md))
 
 Sources: [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding-mtp-refresh.md) · [dflash2-block-drafter-experimental-build](../handoffs/active/dflash2-block-drafter-experimental-build.md) · [NEMO LILI-2 closure](../progress/2026-10/2026-10-31-codex-ni-nemo-accepted-wrap.md) · [ZOS serial R4](../progress/2026-10/2026-10-31-zos23-serial-r4.md) · [KPF-18.1 CPU/FU03](../progress/2026-10/2026-10-31-codex3-kpf181-fu03-results.md)
+
+## Compiled Update — 2026-11-01 (MTP and DF2 status boundaries)
+
+**Confidence: verified** for the recorded run and source-plan status; no speed or quality result is claimed.
+
+- INF-50-GNX-R3-T1-REQUAL is reopened: 37/37 retained raw returns do not satisfy the broader task rule because its outer run failed rc1 when `--complete-cmd` was missing. The original FAILED-RUN classification and raw returns remain intact.
+- DF2-12.1 is an active source/packet task owned by its worker. Proposed next-generation configuration and engineering constraints are planning context only until qualifying native inputs and review arrive; this update adds no performance or production conclusion.
+- The task remains tied to a predeclared acceptance contract. Do not infer completion from a partial population or from source preparation alone.
+
+Sources: [speculative decoding/MTP refresh](../handoffs/active/speculative-decoding-mtp-refresh.md) · [DFlash2 block-drafter build](../handoffs/active/dflash2-block-drafter-experimental-build.md) · [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md) · [tick-science audit](../docs/reports/tick-science-audit-20261031.md)
