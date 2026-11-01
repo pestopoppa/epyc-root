@@ -48,3 +48,6 @@
 
 - CH-32 D8 decision-video dependency: identified C5-absent LFM3-d1 decision context introduced by #31275, ancestral to D8’s parent; retained reproducible source evidence. Full upstream commit necessity and buildability remain unproved.
 - CH-14 completed: wrote `docs/guides/manual-research-champion-runbook.md`, covering member admission, full-candidate gating, manual-bundle authority boundary, specialized emitter and `/api/loop` freshness; verified linked paths and controller/emitter/reader source, and flagged stale historical refresh build paths. No gate or compute changed.
+
+- CH-19 evidence audit rederived four ON/OFF medians from 40 valid measured rows and separated one invalid preflight; no top-level floor/noise keys were present. Existing do-not-fold decision stands because all medians are below a positive-gain threshold, but no within-noise or decisive-regression claim is established. Retained raw records, script and audit under `artifacts/compute/akagg-ch19-floor-audit-20261101/`.
+- CH-32 D1 ggml source check: Voxtral graph calls conv1d twice; upstream parent includes batched-layout #28738, absent C5. Recorded source evidence and V11-116 pending tests; actual workload applicability and whether a source fix or bump is needed are unproved.

@@ -1,0 +1,4 @@
+62869396b2af0244a70dbf076e82a3989da715786fdc97777fb368d5a3836db1  artifacts/compute/akagg-ch32-ggml-impl-20261101/CONV1D-PROVENANCE.json
+a746bbd86152b72fe4f1fb91a53e4a784bd4141bf00736022f9162c2dc3590c4  artifacts/compute/akagg-ch32-ggml-impl-20261101/GGML-FUNCTIONS.json
+325268509daea5879ff49ead83ff60e250499b6db3b2808ce8d746fb4a2745bd  artifacts/compute/akagg-ch32-ggml-impl-20261101/compare_impl.py
+efd9598e8b88938009f6330006cf4ec45926eea6cf503fe67c9f4ed0d38fb2ed  artifacts/compute/akagg-ch32-ggml-impl-20261101/conv1d_provenance.py

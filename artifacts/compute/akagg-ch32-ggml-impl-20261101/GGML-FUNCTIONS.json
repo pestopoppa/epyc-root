@@ -1,0 +1,100 @@
+{
+  "C5": "c72ec82f5417bb2937310326120f149b665e8400",
+  "D1_parent": "59d5fad7c111d30a547d690b69235ed9e05c035d",
+  "scope": "Exact function-body text, lexical parser. Changes in helpers, compile flags, kernels and dependent structures are not included; absence of a diff is not semantic/runtime evidence.",
+  "checks": [
+    {
+      "path": "ggml/src/ggml.c",
+      "function": "ggml_set_rows",
+      "c5_sha256": "904bfa63b347fb496b27eb95f1af9fb86128b15790d8acc675dcefa912131f58",
+      "upstream_parent_sha256": "904bfa63b347fb496b27eb95f1af9fb86128b15790d8acc675dcefa912131f58",
+      "byte_identical": true,
+      "diff": []
+    },
+    {
+      "path": "ggml/src/ggml.c",
+      "function": "ggml_conv_1d",
+      "c5_sha256": "6b4552a33776fdeb8bd856b1b32b65901ec6c85935b829ba3728131571fa320c",
+      "upstream_parent_sha256": "3bd5040abb1c139bf158e445c5f9e49849732dc0cedb704cb35eef8963f3afe4",
+      "byte_identical": false,
+      "diff": [
+        "--- C5/ggml_conv_1d",
+        "+++ D1_parent/ggml_conv_1d",
+        "@@ -12,7 +12,8 @@",
+        "                 ggml_reshape_2d(ctx, im2col, im2col->ne[0], (im2col->ne[2] * im2col->ne[1])), // [N, OL, IC * K] => [N*OL, IC * K]",
+        "                 ggml_reshape_2d(ctx, a, (a->ne[0] * a->ne[1]), a->ne[2]));                    // [OC\uff0cIC, K] => [OC, IC * K]",
+        " ",
+        "-    result = ggml_reshape_3d(ctx, result, im2col->ne[1], a->ne[2], im2col->ne[2]); // [N, OC, OL]",
+        "+    result = ggml_reshape_3d(ctx, result, im2col->ne[1], im2col->ne[2], a->ne[2]); // [OC, N, OL]",
+        "+    result = ggml_cont(ctx, ggml_permute(ctx, result, 0, 2, 1, 3));                // [N, OC, OL]",
+        " ",
+        "     return result;",
+        " }"
+      ]
+    },
+    {
+      "path": "ggml/src/ggml.c",
+      "function": "ggml_gelu_erf",
+      "c5_sha256": "5bd1696bf8aca12b3b01b88b8cb6ce15a99c47fd94db562a0dfe8d0c326a9497",
+      "upstream_parent_sha256": "5bd1696bf8aca12b3b01b88b8cb6ce15a99c47fd94db562a0dfe8d0c326a9497",
+      "byte_identical": true,
+      "diff": []
+    },
+    {
+      "path": "ggml/src/ggml.c",
+      "function": "ggml_rope_ext",
+      "c5_sha256": "9d06856202a12afaf2ca9f53db643f19a1638d07232689c4fa521cc51562b65d",
+      "upstream_parent_sha256": "9d06856202a12afaf2ca9f53db643f19a1638d07232689c4fa521cc51562b65d",
+      "byte_identical": true,
+      "diff": []
+    },
+    {
+      "path": "ggml/src/ggml.c",
+      "function": "ggml_new_tensor_2d",
+      "c5_sha256": "943fb54fcdba9ccbe9fd1fbac1f5b9d94f4ad723ad65ad6324eea1cdbfe027d4",
+      "upstream_parent_sha256": "943fb54fcdba9ccbe9fd1fbac1f5b9d94f4ad723ad65ad6324eea1cdbfe027d4",
+      "byte_identical": true,
+      "diff": []
+    },
+    {
+      "path": "ggml/src/ggml.c",
+      "function": "ggml_view_2d",
+      "c5_sha256": "4ebde4488922dbbaae4ed85e9c8581eb8e89ea310c2b43ddb62512bb68e7f7da",
+      "upstream_parent_sha256": "4ebde4488922dbbaae4ed85e9c8581eb8e89ea310c2b43ddb62512bb68e7f7da",
+      "byte_identical": true,
+      "diff": []
+    },
+    {
+      "path": "ggml/src/ggml.c",
+      "function": "ggml_get_rows",
+      "c5_sha256": "a0ead798a7b50ee399224b1193990a735283f35367b11b656f73770ad7b7a283",
+      "upstream_parent_sha256": "a0ead798a7b50ee399224b1193990a735283f35367b11b656f73770ad7b7a283",
+      "byte_identical": true,
+      "diff": []
+    },
+    {
+      "path": "ggml/src/ggml.c",
+      "function": "ggml_concat",
+      "c5_sha256": "b5326d00c6a1a6c75c9fe1d7a4efca292299af9416408963b8b54c87f2c1f04a",
+      "upstream_parent_sha256": "b5326d00c6a1a6c75c9fe1d7a4efca292299af9416408963b8b54c87f2c1f04a",
+      "byte_identical": true,
+      "diff": []
+    },
+    {
+      "path": "ggml/src/ggml-cpu/ops.cpp",
+      "function": "ggml_compute_forward_set_rows",
+      "c5_sha256": "617e29043cd87323ccb4fba8de15df19863a8afdc075ac9e71d9d21cf619cec4",
+      "upstream_parent_sha256": "617e29043cd87323ccb4fba8de15df19863a8afdc075ac9e71d9d21cf619cec4",
+      "byte_identical": true,
+      "diff": []
+    },
+    {
+      "path": "ggml/src/ggml-cuda/set-rows.cu",
+      "function": "ggml_cuda_op_set_rows",
+      "c5_sha256": "a1072a38ebdc5ecdc0824ceb0dedfbd7f74bb391415751b3d3081811f8f8ccc2",
+      "upstream_parent_sha256": "a1072a38ebdc5ecdc0824ceb0dedfbd7f74bb391415751b3d3081811f8f8ccc2",
+      "byte_identical": true,
+      "diff": []
+    }
+  ]
+}

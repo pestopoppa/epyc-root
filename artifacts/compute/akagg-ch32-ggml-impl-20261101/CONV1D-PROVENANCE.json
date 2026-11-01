@@ -1,0 +1,17 @@
+{
+  "C5": "c72ec82f5417bb2937310326120f149b665e8400",
+  "D1": "2851b3bcbf8d993a2243ae751c0a7dfa8e944a40",
+  "upstream_fix": "6868a52cb337450658006ad2f9281c2eb63f1666",
+  "ancestor_fix_C5": false,
+  "ancestor_fix_D1_parent": true,
+  "D1_use": [
+    "2851b3bcbf8d993a2243ae751c0a7dfa8e944a40:tools/mtmd/models/voxtral-rt.cpp:34:    ggml_tensor * cur = ggml_conv_1d(ctx0, model.conv1d_1_w, inp, 1, 0, 1);",
+    "2851b3bcbf8d993a2243ae751c0a7dfa8e944a40:tools/mtmd/models/voxtral-rt.cpp:46:    cur = ggml_conv_1d(ctx0, model.conv1d_2_w, cur, 2, 0, 1);"
+  ],
+  "first_parent_search": [
+    "6868a52cb337450658006ad2f9281c2eb63f1666 ggml: fix conv_1d result layout for batched input (#28738)"
+  ],
+  "upstream_fix_stat": "commit 6868a52cb337450658006ad2f9281c2eb63f1666\nAuthor:     Pascal <admin@serveurperso.com>\nAuthorDate: Wed Oct 14 13:16:08 2026 +0200\nCommit:     GitHub <noreply@github.com>\nCommitDate: Wed Oct 14 14:16:08 2026 +0300\n\n    ggml: fix conv_1d result layout for batched input (#28738)\n    \n    * ggml: fix conv_1d result layout for batched input\n    \n    The GEMM behind conv_1d folds the batch into its rows, so the product\n    sits in memory as [OL, N, OC] while the reshape claims [OL, OC, N].\n    The shape is right and the contents are transposed, so nothing fires:\n    no assert, no abort, the graph just runs and the channels come out\n    interleaved with the batches. With N == 1 the two readings describe\n    the same buffer, which is why the three vocoders in the tree never\n    hit it, they all squeeze to 2d right after the call.\n    \n    Reshape to the real layout and permute OC and N back. The N == 1 path\n    keeps its direct reshape, so the current callers build the same graph\n    and pay for no extra copy.\n    \n    tests/test-conv-1d.cpp compares one batched convolution against N\n    single batch convolutions built from the same weight and the same\n    input slices. Five of the seven geometries fail before this change and\n    all seven pass after. N == 1 and OC == 1 pass either way, since\n    swapping two dimensions when one of them is 1 changes nothing.\n    \n    The batched path matters to downstream audio projects where several\n    synthesis lanes share a single graph. Nothing in mtmd batches a\n    vocoder today, each one streams one flow and carries its left context\n    between calls, but the op is correct now if one of them grows a lane\n    dimension.\n    \n    * ggml: build the same conv_1d graph for every batch size\n    \n    Address review from ggerganov: drop the N == 1 branch of ggml_conv_1d.\n    The GEMM result is always reshaped to [OC, N, OL] and permuted back,\n    as ggml_conv_2d does, so every batch size builds the same graph. For\n    N == 1 this adds a cont on an already ordered tensor.\n\n ggml/src/ggml.c        |   3 +-\n tests/CMakeLists.txt   |   1 +\n tests/test-conv-1d.cpp | 129 +++++++++++++++++++++++++++++++++++++++++++++++++\n 3 files changed, 132 insertions(+), 1 deletion(-)\n",
+  "scope": "Source ancestry/usage and function text only. #28738 concerns batched layout; no D1 input-shape or correctness/runtime verdict, and no proof a whole ggml bump is necessary.",
+  "whole_ggml_c_diff_sha256_only_note": "Use separate GGML-FUNCTIONS.json for exact extracted function diffs."
+}

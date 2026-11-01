@@ -1,0 +1,35 @@
+{
+  "schema": "epyc.akagg.ch19.floor-audit.v1",
+  "input": "/mnt/raid0/llm/tmp/intake-fixes-20261020/t3-ch19-screen/20261021T191000Z/records.jsonl",
+  "input_sha256": "96d5c85958009c4d6cd748b0b9c5dafa3e012dae4fa60327884b812e16c9e678",
+  "predeclared_script": "/mnt/raid0/llm/tmp/cpu-queue-f8/timing/t3-ch19-screen.sh",
+  "predeclared_script_sha256": "f44f12add675495f7b5de6fb618b3461e4b3f1317355249c01bb9bea1a2815b3",
+  "measurement_rows": 40,
+  "valid_measurement_rows": 40,
+  "preflight_rows": [
+    {
+      "valid": 0,
+      "why": "wrapper_rc=1"
+    }
+  ],
+  "cells": {
+    "p512-g0-d0": {
+      "pair_count": 5,
+      "median_on_over_off": 0.9849548124842986
+    },
+    "p0-g128-d0": {
+      "pair_count": 5,
+      "median_on_over_off": 0.9957522070105582
+    },
+    "p512-g0-d8192": {
+      "pair_count": 5,
+      "median_on_over_off": 0.9901070134688188
+    },
+    "p0-g128-d8192": {
+      "pair_count": 5,
+      "median_on_over_off": 0.9754720861253019
+    }
+  },
+  "record_top_level_floor_or_noise_keys": [],
+  "scope": "Read-only descriptive rederivation; no new noise floor, significance, bounded-null, keep, or regression claim."
+}
