@@ -251,3 +251,7 @@ Investigated Voxtral FAIL-1: launcher requires unset WS58_REGIONS before the eng
 ## 23:39Z — Record Crisp HIP packet audit and integrate concurrent main changes
 
 Crisp HIP audit found that the published source path is missing; the relocated source matches the pinned commit and manifest after path substitution. A retained build partial reports a disk reserve; a direct guard STOP fixture does not establish the rowflow stop boundary. The earlier boundary commit was rejected as non-fast-forward after origin/main advanced; this wrap integrates main and republishes the boundary.
+
+## 23:47Z — Consume scorer, Voxtral and Crisp HIP row repair reports
+
+Consumed SCORE-CODEX, VOX-CODEX and HIP-CODEX. The scorer candidate passes 10 model-free checks and avoids requiring WS58_REGIONS; independent review is registered before publication. The Voxtral candidate uses grant-derived CPUs and has static source/cutover checks, but needs fresh writer/exposure checks and independent review before successor publication. The Crisp HIP audit verifies 7,249 relocated source entries and identifies a missing published source path, stale CMake cache and unproven rowflow STOP; successor implementation is delegated. No row was published or compute run. The prior two lane commits remain queued for serialized push after earlier non-fast-forward rejections.
