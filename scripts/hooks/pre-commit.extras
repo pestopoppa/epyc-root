@@ -28,6 +28,15 @@ if [ -n "$_vac_staged" ]; then
 fi
 unset _vac_staged
 
+# Handoff checkbox integrity: receipts are host-local, so this is a blocking
+# host gate and supports --range replay for audits. Sibling repositories do not
+# carry the checker; absence means the contract is out of scope there.
+_belief_checker="$(git rev-parse --show-toplevel)/scripts/handoffs/belief_capture_check.py"
+if [[ -f "$_belief_checker" ]]; then
+    python3 "$_belief_checker" --report || status=1
+fi
+unset _belief_checker
+
 # SIGPIPE grep -q lint (warn-only, never sets $status). Older worktrees may carry
 # this extras file before the companion checker has arrived; skip it when absent.
 _sigpipe_checker="${HOOK_SRC_DIR}/check_sigpipe_grep_q.py"
