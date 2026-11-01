@@ -200,7 +200,7 @@ Full ledger: [`qwen36-27b-cpu-feasibility.md`](../archived/qwen36-27b-cpu-feasib
     VRAM: own-PID KFD peak 50.795 GiB (min 47.813), card peak 50.821 GiB, 809 samples taken during the run.
     Calendar wrapper ended rc1 ("expected one actual N+C report, found 0"): FALSE FAIL; runner rc was 0 and wrote the report to the default results dir, not the wrapper `out/`.
     - [x] **Q38-T7b-C2 — rerun phase C with a valid speed comparison:** clear the prefix cache between arms (or alternate ABAB with distinct/cache-busted prompts) and assert nodraft TTFT is not identical across streams. Done when a paired C table with non-degenerate nodraft TTFT is filed here.
-    - [ ] **Q38-T7b-W — wrapper report-path fix:** bind the wrapper's "actual N+C report" check to the runner's results dir (or pass the runner an output dir) so rc0 runs are not marked failed. Also investigate why `/props` reports spec_types `['None']` under a dflash n-max-7 argv.
+    - [ ] **Q38-T7b-W — wrapper report-path fix:** [too-big: successor repair and bundled props investigation require handoff owner integration] bind the wrapper's "actual N+C report" check to the runner's results dir (or pass the runner an output dir) so rc0 runs are not marked failed. Also investigate why `/props` reports spec_types `['None']` under a dflash n-max-7 argv.
   - **2026-10-20 (Q38-T9, per-class replay, no inference): no class loses; the 24-prompt mix cannot refute a prose/chat sign flip.**
     Frozen input `artifacts/gpu-block-27b-20261004/results/q38_t7/20261004T025247Z/calls.jsonl`, sha256
     `56315a4b7adf11f759efab5f9a9616eb600b382e0a81f8b9c5d1c41326855bf2` (68 lines; phase A = 48 records = 24 prompts x 2 arms;
