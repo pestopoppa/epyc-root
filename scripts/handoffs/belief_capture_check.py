@@ -80,6 +80,18 @@ def names_run(line: str) -> bool:
     return bool(re.search(r"\b(?:run|receipt)\s*(?:[:#=]\s*)?[A-Za-z0-9][\w.-]+", line, re.I))
 
 
+def completion_evidence(body: str) -> str:
+    """Exclude task-specification wording from checks of the completion claim.
+
+    Backlog titles often name the failure states a guard must reject. When a
+    tick has the canonical dated completion marker, only the text after that
+    marker asserts what was completed; scanning the title creates false
+    positives for tasks such as LOOP-50 itself.
+    """
+    marker = re.search(r"✅\s*20\d{2}-\d{2}-\d{2}(?:\s*[—:-]\s*)?", body)
+    return body[marker.end():] if marker else body
+
+
 def receipt_state(paths: list[Path]) -> tuple[str | None, str | None]:
     if not paths:
         return None, None
@@ -115,7 +127,7 @@ def check(repo: Path, diff: str, receipt_root: Path) -> list[str]:
             label = f"{path}:{number}"
             if DECLINED.search(body):
                 errors.append(f"{label}: a declined task cannot be ticked [x]")
-            if UNKNOWN.search(body):
+            if UNKNOWN.search(completion_evidence(body)):
                 errors.append(f"{label}: tick line states unknown/inconclusive completion")
             belief = BELIEF.search(body)
             if belief:
