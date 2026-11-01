@@ -215,3 +215,11 @@ Independent review during this boundary found `build-guard.py` does not call `to
 ### Ultra independent25 dry-run FAIL-1
 
 `stt5-ultra-independent25-r1-20261101` failed keeper dry-run at 22:41:13Z before any progress unit: launcher line 12 required unset `WS58_REGIONS` (launcher SHA `d65a42f3017e8450fe5f895b4668b82f62c3bbd46f85ace4c5711a2f910f7916`). FAIL-1 reported orphan PIDs 235126 and 235131; a single `ps -p 235126,235131` found neither present, and no signal was sent. Delegated separate successor repair and independent audit; registered `ULTRA-FAIL1-FIX.done`, `ULTRA-FAIL1-AUDIT.done`, and `HIP-FOLLOW-25.done`. No launcher/READY mutation, retry, qualification or inference occurred; verify and publish a safe successor after repair review.
+
+### Ultra dry-run independent audit consumed
+
+`h-stt5-ultra-fail1-audit-20261101.md` confirms the row launcher aborts at the unset `WS58_REGIONS` expansion before rowflow or the job, with zero recorded units. Its proposed fallback needs proof against the actual keeper grant/CPU contract; do not hardcode the observed dry-run allocation. The separate repair report was absent at inspection; the previously reported orphan PIDs were absent in the owner single check. Delegated independent repair review and safe cutover analysis; registered `ULTRA-REVIEW-26.done`, `ULTRA-CUTOVER-26.done`, `HIP-INTEGRATE-26.done`. No launcher, READY, grant, qualification or inference changed.
+
+### Ultra repaired launcher review consumed
+
+`h-stt5-ultra-review26.md` confirms removing the optional `--claim-cpus` override lets the CPU rowflow engine derive placement from its grant, but the review was static and the successor is not qualified. Owner checked r2 scratch `/mnt/raid0/llm/tmp/handoff-stt5-ultra25-r2-fail1fix-20261101`: `sha256sum -c PACKET-SHA256SUMS --quiet` failed `job.py`, `guarded_job.sh`, `host_guarded_job.sh`, and missing `SOURCE-SHA256SUMS`; no successor was published and the existing READY is unchanged. Delegated packet repair verification and ledger/cutover review; registered `ULTRA-PACKET-27.done`, `ULTRA-LEDGER-27.done`, `HIP-INTEGRATE-27.done`. Previously reported dry-run PIDs were absent at the earlier single check. No inference, keeper qualification or grant mutation.
