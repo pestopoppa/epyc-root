@@ -44,7 +44,7 @@ The loop every worker runs (GOAL files carry the same text):
 | term | means exactly |
 |---|---|
 | the backlog | `/mnt/raid0/llm/tmp/compute-flags/BACKLOG-<worker>.md` (worker = `ni` / `refactor` / `codex3`), regenerated every 10 min by `scripts/coordination/backlog_gen.py` (`ws58-backlog-gen-v1.sh`). Inference rows first, in priority order, each with its state (`blocked` / `needs-launcher` / `needs-qualification` / `parked` / `qualified-armed` / `running` / `done`) and, under every blocked row, the non-inference tasks that unblock it; then the remaining non-inference tasks. |
-| dry run passes | the **keeper's qualification** of the row on the real config: `ws58-calendar-keeper-v8.sh` runs `bin/qual-v1/qualify_launcher.py` through the canonical engine `filler_run14.sh` and logs `READY-QUAL <manifest>: <receipt>`. A worker's own smoke is preparation, not the pass. Contract: `artifacts/coordination/ni-d1d4-hard-gate-20261101/README.md`. |
+| dry run passes | the **keeper's qualification** of the row on the real config: `ws58-calendar-keeper-v9.sh` runs `bin/qual-v1/qualify_launcher.py` through the canonical engine `filler_run14.sh` and logs `READY-QUAL <manifest>: <receipt>`. A worker's own smoke is preparation, not the pass. Contract: `artifacts/coordination/ni-d1d4-hard-gate-20261101/README.md`. |
 | armed | an `epyc.ready.v2` manifest in `compute-flags/ready/` that the keeper accepted (receipt on disk, no hold, no `READY-SKIP`); `grant_ok.sh` v3 refuses anything else. The keeper arms it when a bin frees; nobody hand-arms. |
 
 ## Linking the two lists: `unblocks:`
@@ -89,6 +89,26 @@ The handoff file is the durable record; the session is a cache.
   backlog (handoffs, `backlog-priority.json`, READY rows). **No ad-hoc orders** to the panes: if something must change, change the
   backlog or the goal file.
 - **Operator**: trust-boundary ratifications and destructive host actions only.
+
+## Keeper qualification slot — one native attempt per tick, refusals memoised (keeper v9, ws58 2026-11-01)
+
+`qualify_pending` walks READY rows by `priority_rank` and runs at most ONE real (native) qualification per 120 s tick.
+Keeper v8 ended the tick on the first `would-qualify` row whatever happened next, so a row the qualifier refuses
+*before* spawning anything (no 18-cell FILLERS.md registry row for `row_binding`, bad fixture, stale receipt) took the
+slot every tick and starved every lower-ranked row — on 2026-11-01 two NI rows without registry rows kept the only
+runnable GPU row unqualified for hours while the MI210 sat idle. v9 rules:
+
+- a pre-run refusal (`READY-QUAL-PRERUN-REFUSAL`) does **not** consume the slot; the keeper moves to the next row;
+- every refusal is memoised in `compute-flags/ws58-keeper-state/qual-refused/<id>.json` (`bin/keeper_qual_memo.py`,
+  keyed on manifest sha + `ready/<id>.row.md` sha + the id's FILLERS.md row); the row is skipped while unchanged and
+  retried the tick after any of those change. The memo text is the row's `fix:` task in BACKLOG, independent of the
+  keeper-log window;
+- `backlog_gen.py` / FLOW-SCOREBOARD count a row as **qualified-armed only when the predeclared receipt file exists**.
+  "Receipt named but missing" is a *blocked* row: cause `keeper` (awaiting keeper qualification — ws58's starvation,
+  own scoreboard column) or, after READY-QUAL/arming, cause `worker` (receipt lost; republish under a new id);
+- the worker-breaker blocks **arming**, not qualification: a breaker-active owner's row is still qualified by the
+  keeper, and that fresh receipt is exactly what releases the breaker (`reconcile_failures`). No deadlock, but the row
+  must pass `row_binding` — register its FILLERS.md row first.
 
 ## Metrics (FLOW-SCOREBOARD.md, `scripts/coordination/flow_scoreboard.py`, every 10 min)
 

@@ -16,7 +16,11 @@ Inference-row states (operator flowchart, 2026-11-01):
     needs-launcher       - in backlog-priority.json inference_prep with blocker "missing launcher", no READY manifest.
     needs-qualification  - epyc.ready.v2 manifest present, no hold, no keeper refusal; the keeper's
                            qualification (the realistic dry run) has not run or passed yet.
-    qualified-armed      - the keeper accepted the row: receipt on disk and the keeper arms it when a bin frees.
+    qualified-armed      - the keeper accepted the row: the predeclared receipt FILE is on disk (ready/ or ready/armed/)
+                           and the keeper arms it when a bin frees. A receipt that is named but missing is NOT
+                           qualified: the row is `blocked` with cause "keeper" (awaiting keeper qualification) or,
+                           after READY-QUAL/arming, cause "worker" (receipt lost; republish). Keeper v9 refusal memos
+                           (ws58-keeper-state/qual-refused/<id>.json, keeper_qual_memo.py) are the row's fix task.
     running              - a live grant names the id (grants/<id>.grant, no .ended) or the keeper logged QUEUED.
     done                 - grants/<id>.ended or filing-done/<id>.FILED exists.
 
@@ -73,6 +77,39 @@ _STEM_SUFFIX = re.compile(r"(?:[-_](?:\d{8}(?:T\d{4,6}Z?)?|v\d+|r\d+|rearm|retry
 
 _RUN_FAIL = re.compile(r"qual-run-rc=|qualification failed rc|qual:row \S+ expected|QUAL-FAILURE", re.I)
 _NOT_A_RUN = re.compile(r"schema|receipt|nonce|wait|disk|breaker|^held\b", re.I)
+_RECEIPT_ABSENT = re.compile(r"qualification receipt absent", re.I)
+_BREAKER = re.compile(r"worker-breaker active", re.I)
+_BREAKER_HINT = (" - released automatically by the next keeper-QUALIFIED row of this owner (reconcile_failures); "
+                 "the breaker blocks arming, not qualification, so publish/fix a row that qualifies")
+_REGISTRY_ROW = re.compile(r"expected exactly one 18-cell record", re.I)
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+try:
+    import keeper_qual_memo as _kqm  # keeper v9 refusal memos (ws58-keeper-state/qual-refused/<id>.json)
+except ImportError:  # older bundle without the memo helper: fall back to the keeper-log window only
+    _kqm = None
+
+
+def keeper_refusal_memo(manifest_path: str, flags: str) -> dict | None:
+    """The keeper's memoised qualification refusal for this row, only while the row is unchanged since."""
+    if _kqm is None:
+        return None
+    try:
+        return _kqm.current_memo(manifest_path, flags.rstrip("/"))
+    except Exception:
+        return None
+
+
+def keeper_refusal_task(memo: dict, rid: str) -> str:
+    reason = str(memo.get("reason") or "")[:240]
+    t = f"keeper qualification refused ({memo.get('refusals', 1)}x, row unchanged since {memo.get('at', '?')}): {reason}"
+    if _REGISTRY_ROW.search(reason):
+        t += (f" -> register the row: FILLERS.md has no `| {rid} |` 18-cell row and qual-v1 row_binding reads it; append the single "
+              f"row of compute-flags/ready/{rid}.row.md to compute-flags/FILLERS.md (whole-file atomic replace) and validate with "
+              f"`python3 scripts/coordination/validate_fillers.py --file /mnt/raid0/llm/tmp/compute-flags/FILLERS.md --row {rid}`")
+    else:
+        t += " -> fix the cause; the keeper retries as soon as the manifest, the ready row or its FILLERS.md row changes"
+    return t
 
 
 def is_qual_run_failure(event: str, detail: str) -> bool:
@@ -252,7 +289,7 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
         t = []
         for r in reasons:
             if r:
-                t.append("fix: " + r)
+                t.append(("wait (ws58 keeper): " if r.startswith("awaiting keeper qualification") else "fix: ") + r)
         for wl in work_lines[w]:
             if rid in wl["unblocks"] or (row_id and row_id in wl["unblocks"]):
                 t.append(f"code [{wl['size']}] {wl['file']}:{wl['line']} — {wl['text'][:160]}")
@@ -266,23 +303,32 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
             t.append("(no unblocking task filed yet — file one with `unblocks: " + rid + "`)")
         return t
 
-    for p in sorted(glob.glob(F + "ready/*.json")):
+    # ready/ (pending) first, then ready/armed/ (v2 only: legacy armed manifests are refused by grant_ok v3 and are
+    # not this backlog's rows). A v2 row is QUALIFIED only when its predeclared receipt FILE exists; a receipt that is
+    # named but missing is a blocked row whose cause is the keeper (it has not qualified it) - counting it as
+    # qualified hid the 2026-11-01 GPU starvation.
+    manifest_paths = sorted(glob.glob(F + "ready/*.json")) + sorted(glob.glob(F + "ready/armed/*.json"))
+    for p in manifest_paths:
         d = load_json(p)
         if not isinstance(d, dict):
             continue
+        armed_dir = "/ready/armed/" in p
+        v2 = d.get("schema") == "epyc.ready.v2"
+        if armed_dir and not v2:
+            continue
         rid = d.get("id") or os.path.basename(p)[:-5]
         w = worker_of(str(d.get("owner", "")))
-        if w not in per:
+        if w not in per or rid in seen_ids:
             continue
         if os.path.exists(F + f"ready/{rid}.withdrawn"):
             continue
         seen_ids.add(rid)
         lane = lane_of(d)
         q = d.get("qualification") if isinstance(d.get("qualification"), dict) else {}
-        receipt = q.get("receipt")
-        has_receipt = bool(receipt and os.path.isfile(receipt)) or rid in klog["qual"]
-        v2 = d.get("schema") == "epyc.ready.v2"
+        receipt = q.get("receipt") if isinstance(q.get("receipt"), str) else None
+        receipt_on_disk = bool(receipt and os.path.isfile(receipt))
         reasons = []
+        cause = "worker"
         if os.path.exists(F + f"grants/{rid}.ended") or os.path.exists(F + f"filing-done/{rid}.FILED"):
             state = "done"
         elif os.path.exists(F + f"grants/{rid}.grant") or rid in klog["queued"]:
@@ -290,17 +336,30 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
         else:
             if d.get("hold"):
                 reasons.append("hold: " + str(d.get("hold"))[:140])
-            if rid in klog["skip"]:
-                reasons.append("keeper: " + klog["skip"][rid])
+            memo = keeper_refusal_memo(p, F)
+            if memo:
+                reasons.append(keeper_refusal_task(memo, rid))
+            skip = klog["skip"].get(rid)
+            if skip and not _RECEIPT_ABSENT.search(skip) and not (memo and skip.strip()[:120] == str(memo.get("reason", "")).strip()[:120]):
+                reasons.append("keeper: " + skip + (_BREAKER_HINT if _BREAKER.search(skip) else ""))
             if rid in klog["refused"]:
                 reasons.append("grant refused: " + klog["refused"][rid])
             if not v2:
                 reasons.append(f"manifest schema {d.get('schema') or 'unset'} != epyc.ready.v2 (migrate the manifest)")
             for b in d.get("blocked_by") or []:
                 reasons.append(str(b)[:160])
+            if v2 and receipt and not receipt_on_disk:
+                if rid in klog["qual"] or armed_dir:
+                    reasons.append(f"qualification receipt {receipt} named but MISSING although the keeper "
+                                   + ("armed the row" if armed_dir else "logged READY-QUAL")
+                                   + " (reaped/deleted?) - the row cannot be granted; republish under a new id")
+                elif not reasons:
+                    cause = "keeper"
+                    reasons.append(f"awaiting keeper qualification: receipt {receipt} is named but absent; the ws58 keeper "
+                                   "(qualify_pending) has not qualified this row yet - no worker action, ws58 owns the keeper")
             if reasons:
                 state = "blocked"
-            elif has_receipt:
+            elif receipt_on_disk:
                 state = "qualified-armed"
             else:
                 state = "needs-qualification"
@@ -313,7 +372,7 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
             per[w]["qual"][lane] += 1
         per[w]["rows"].append({
             "id": rid, "lane": lane, "rank": d.get("priority_rank") or (prep_entry or {}).get("rank") or 999,
-            "state": state, "row": row_id, "reasons": reasons,
+            "state": state, "row": row_id, "reasons": reasons, "cause": cause if state == "blocked" else "",
             "tasks": tasks_for(rid, row_id, reasons, w) if state == "blocked" else [],
         })
 

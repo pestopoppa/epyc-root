@@ -62,7 +62,11 @@ def compute(flags: str, priority: str, keeper_log: str, state: dict, now: _dt.da
             idle_lane["gpu" if "gpu" in m.group(1) else "cpu"] += 1
     rows = {}
     for w in bg.WORKERS:
-        blocked = [r for r in data["workers"][w]["rows"] if r["state"] in ("blocked", "needs-launcher")]
+        allrows = data["workers"][w]["rows"]
+        # rows the KEEPER owes a qualification (receipt named, file missing, no refusal): ws58's starvation, not the
+        # worker's blocking tasks; shown in their own column so an idle bin with such a row is never "nothing to run"
+        awaiting = [r for r in allrows if r["state"] == "blocked" and r.get("cause") == "keeper"]
+        blocked = [r for r in allrows if r["state"] in ("blocked", "needs-launcher") and r.get("cause") != "keeper"]
         keys = {f"{r['id']}|{t}" for r in blocked for t in r["tasks"]}
         seen = state["seen"].setdefault(w, {})
         gone = [k for k in seen if k not in keys]
@@ -74,6 +78,7 @@ def compute(flags: str, priority: str, keeper_log: str, state: dict, now: _dt.da
         lanes_blocked = {r["lane"] for r in blocked}
         idle_h = sum(idle_lane[l] * TICK_H for l in ("cpu", "gpu") if l in lanes_blocked)
         rows[w] = {"armed": armed[w], "closed": state["closed"][w], "open_blocking": len(keys),
+                   "awaiting_keeper": len(awaiting), "awaiting_ids": [r["id"] for r in awaiting][:8],
                    "blocked_rows": len(blocked), "qual": data["workers"][w]["qual"], "idle_h": round(idle_h, 2)}
     return rows, state
 
@@ -81,11 +86,15 @@ def compute(flags: str, priority: str, keeper_log: str, state: dict, now: _dt.da
 def render(rows: dict, now: _dt.datetime) -> str:
     L = [f"# FLOW scoreboard {now:%Y-%m-%dT%H:%MZ} (per worker, today UTC; replaces the 50-tick code quota, 2026-11-01)", "",
          "Flow: unblock -> launcher -> keeper qualification (dry run) -> armed. Good = rows armed up, blocking tasks closed up, idle-hours down.", "",
-         "| worker | rows armed (qualified) today | blocking tasks closed today | blocking tasks open now | blocked rows now | qualified-armed cpu/gpu/host | idle compute-hours with a blocked row as cause |",
-         "|---|---:|---:|---:|---:|---|---:|"]
+         "| worker | rows armed (qualified) today | blocking tasks closed today | blocking tasks open now | blocked rows now | awaiting keeper qualification (receipt named, file missing) | qualified-armed cpu/gpu/host (receipt on disk) | idle compute-hours with a blocked row as cause |",
+         "|---|---:|---:|---:|---:|---:|---|---:|"]
     for w, r in rows.items():
         q = r["qual"]
-        L.append(f"| {w} | {r['armed']} | {r['closed']} | {r['open_blocking']} | {r['blocked_rows']} | {q['cpu']}/{q['gpu']}/{q['host']} | {r['idle_h']} |")
+        L.append(f"| {w} | {r['armed']} | {r['closed']} | {r['open_blocking']} | {r['blocked_rows']} | {r['awaiting_keeper']} | {q['cpu']}/{q['gpu']}/{q['host']} | {r['idle_h']} |")
+    waiting = [(w, r["awaiting_ids"]) for w, r in rows.items() if r.get("awaiting_ids")]
+    if waiting:
+        L += ["", "Rows the keeper still owes a qualification (ws58 action, not the worker's): "
+              + "; ".join(f"{w}: " + ", ".join(ids) for w, ids in waiting) + "."]
     L += ["", "Source: BACKLOG-<worker>.md (scripts/coordination/backlog_gen.py) and ws58-calendar-keeper.log. No pane nudges; the backlog file is the only instruction.", ""]
     return "\n".join(L)
 
