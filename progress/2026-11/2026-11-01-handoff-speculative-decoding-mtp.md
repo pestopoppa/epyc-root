@@ -38,3 +38,11 @@ Consumed CAFE-4 source checkpoint and preserved the upstream source, partial GPU
 ## 22:34Z — Review CAFE-4 correctness and v10 compatibility
 
 Consumed both CAFE-4 reports and preserved them in artifacts/compute/cafe4-independent-review-20261101/. Both verify pinned local upstream blob identities but not independent remote attribution or compile compatibility. The existing single harness patch adds only -ngl while the multi harness still hardcodes 99 GPU layers; neither provides the requested verify-batch/fault control. The reviews specify strict argument and capacity checks, independent reference and replay contexts, real batched partial acceptance and removal checks, nonzero comparison counts, same-shape/logit controls, and a fault that reaches the oracle. V10 header names and recurrent test precedent are source evidence only; loaded binary, CPU/GPU residency and keeper execution remain unproven. Delegated independent review of the next implementation, v10 rollback semantics and belief wiring; registered completion events. No inference, build or production mutation.
+
+## 22:35Z — Audit CAFE-4 verify oracle and enroll belief source
+
+Consumed independent verify-batch and belief reports; preserved them under artifacts/compute/cafe4-oracle-belief-review-20261101/. The reviewed sketch copies oracle IDs into the candidate accepted prefix, making those matches tautological; its forced output mismatch tests the comparator, not sensitivity to broken rollback state. It lacks per-row independent logits, full/zero/edge cut coverage, effective snapshot capacity and runtime proof. No compile, model or performance evidence exists. Added prospective CAFE-4 native record source and VB-CAFE4-ROLLBACK-WIRE, with source-carrier selection, positive/fault/partial custody and planning-context canary remaining open; no new ladder or retrospective warrant. Delegated oracle repair and bounded fixtures with registered completion events.
+
+## 22:37Z — Audit CAFE-4 verify oracle and enroll belief source
+
+Retry: the initial wrap stopped because the belief task made the generated index stale. Refreshed the generated lane index before retry; prospective CAFE-4 enrollment and independent oracle audit remain as recorded in the preceding entry.
