@@ -9,10 +9,12 @@ record the model and tokenizer identity before any experiment. Differences in
 content as well as length can affect outcomes, so this is not a pure length
 causal estimate.
 
-`prepare.py` verifies the base prompt by SHA-256, writes the exact prompt bytes
-for the three arms, and records the source commit, source path and hashes. It
-does not make a network request, invoke a model, or publish a row. Supply the
-base prompt from a verified source snapshot; a file path alone is not identity.
+`prepare.py` verifies the base prompt by SHA-256 and compares its bytes to the
+blob at the specified commit and path in the local `--source-repo` Git object
+database (with Git replacement objects disabled). It writes the exact prompt
+bytes for the three arms and records the source commit, source path and hashes.
+It does not make a network request, invoke a model, or publish a row. The commit
+itself must still be selected and trusted by the experiment owner.
 For the S4 isolated snapshot, the source manifest identifies orchestrator
 commit `9e138e3a3e22ecf8c57cd5bf50beed571d107b54`, base path
 `orchestration/prompts/root_lm_system.md`, and digest
