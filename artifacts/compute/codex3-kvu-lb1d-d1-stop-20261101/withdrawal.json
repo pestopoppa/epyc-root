@@ -1,0 +1,11 @@
+{
+  "id": "codex3-kvu-lb1d-t96-quiet-r1-20261031",
+  "owner": "codex3",
+  "at": "2026-11-01T06:08:09.350774+00:00",
+  "action": "cooperative STOP; retain partial evidence; no rearm until qualified",
+  "reason": "Binding operator D1: no qualification receipt, no grant. Armed legacy packet has only Qwen3.5-0.8B control smoke, target Q38FN load untested, and no qualification field. This is not an inference verdict.",
+  "armed_manifest_sha256": "c6181480cd0e63e6d24fd5081792bd2e2e4efef4302c60cede14bf3d6dc3f2f5",
+  "stopfile": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/STOP",
+  "rule": "operator D1 HARD pre-grant gate; user ruling 2026-10-31",
+  "raw_root": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet"
+}
