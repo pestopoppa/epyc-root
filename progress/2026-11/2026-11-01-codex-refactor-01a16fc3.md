@@ -27,3 +27,8 @@
 ### README freshness checker repair — 2026-11-01
 
 - Fixed false missing-README warnings when the checker runs from a nested lane: `.claude/skills/project-wiki/scripts/check_readme_freshness.py` now prefers valid umbrella repository entries, then discovers Git repository roots from the nearest ancestor outward. Six region-locked regression tests in `.claude/skills/project-wiki/scripts/tests/test_check_readme_freshness.py` passed; the README freshness check is now clean. [no-belief: tooling-repair]
+
+### C6 IQKFA remainder RAM correction — 2026-11-01
+
+- Corrected the candidate packet and live FILLERS row to 12 GiB (`gib=12`, `rss_limit_GiB=12`, `process_limit_GiB=12`). The live row remains `BACKLOG`/`ready=n`, explicitly blocked on the LOOP49 canonical engine/checker pin and qualification. The former 8 GiB `ready/armed` manifest was withdrawn byte-identically to `/mnt/raid0/llm/tmp/compute-flags/ready/withdrawn-c6-stale-armed-20261101T023954Z/refactor-c6-iqkfa-remainder-729599d69-20261031.json` (SHA-256 `9943f022c114fcf1ab89d229637e0dfdf6a89ffa9d552ef4b88f76d542ad6e0e`); receipt `/mnt/raid0/llm/tmp/compute-flags/ready/withdrawn-c6-stale-armed-20261101T023954Z/WITHDRAWAL.json` SHA-256 `f09af5a6dc7f07d114e602a3cdcbe1ebcbcae24f0132ad2cdfc2760846f9e4b0`.
+- R11 static validation on SMT siblings 144,145 passed: `bash -n` 1/1; `py_compile` 3/3; `validate_fillers --row` checked 1 row with 0 refusals/0 row warnings (two unrelated global blank-line warnings at lines 55 and 157). Peak RSS was 18,256 KiB under the 8 GiB virtual-memory cap. All 28 correctness cells remain **UNTESTED**; this is not a feasibility or throughput result. [no-belief: static correction only]
