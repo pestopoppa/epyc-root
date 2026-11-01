@@ -1,0 +1,91 @@
+{
+  "partial": true,
+  "cleanup_verified": true,
+  "failure": "HOLD_OR_STOP_DETECTED",
+  "root_pid": 2398196,
+  "native_rc": 1,
+  "captured": {
+    "2398196": {
+      "birth": 163472174,
+      "current": null
+    },
+    "2404117": {
+      "birth": 163478138,
+      "current": null
+    },
+    "2404120": {
+      "birth": 163478141,
+      "current": null
+    },
+    "2414458": {
+      "birth": 163485424,
+      "current": null
+    },
+    "2417162": {
+      "birth": 163490038,
+      "current": null
+    },
+    "2427611": {
+      "birth": 163493659,
+      "current": null
+    },
+    "2432154": {
+      "birth": 163498692,
+      "current": null
+    },
+    "2432300": {
+      "birth": 163498892,
+      "current": null
+    },
+    "2432301": {
+      "birth": 163498892,
+      "current": null
+    },
+    "2432302": {
+      "birth": 163498892,
+      "current": null
+    },
+    "2432313": {
+      "birth": 163498905,
+      "current": null
+    },
+    "2488147": {
+      "birth": 163544888,
+      "current": null
+    },
+    "2488150": {
+      "birth": 163544889,
+      "current": null
+    },
+    "2544222": {
+      "birth": 163551817,
+      "current": null
+    },
+    "2557890": {
+      "birth": 163555996,
+      "current": null
+    },
+    "2571885": {
+      "birth": 163565365,
+      "current": null
+    },
+    "2571929": {
+      "birth": 163565565,
+      "current": null
+    },
+    "2571930": {
+      "birth": 163565565,
+      "current": null
+    },
+    "2571931": {
+      "birth": 163565565,
+      "current": null
+    },
+    "2571940": {
+      "birth": 163565596,
+      "current": null
+    }
+  },
+  "sampled_peak_kib": 94638588,
+  "rc": 75
+}

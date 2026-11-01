@@ -1,0 +1,7 @@
+rc=75 time=2026-11-01T06:08:17Z reason=job-rc-75:exited
+job_id=codex3-kvu-lb1d-t96-quiet-r1-20261031
+owner=codex3
+step=job-run
+estimated_wall_s=5700
+started=2026-11-01T05:50:48Z
+regions=0-95,mi210_0
