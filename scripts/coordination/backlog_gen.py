@@ -326,6 +326,10 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
             w = f"handoff-{slug}"
         if not rid or rid in seen_ids or w not in per:
             continue
+        # A withdrawn READY ID stays withdrawn even when only its priority
+        # entry remains, or its manifest was skipped above.
+        if os.path.exists(F + f"ready/{rid}.withdrawn"):
+            continue
         seen_ids.add(rid)
         blocker = str(e.get("blocker") or "")
         state = "needs-launcher" if re.search(r"missing launcher", blocker, re.I) else "blocked"
