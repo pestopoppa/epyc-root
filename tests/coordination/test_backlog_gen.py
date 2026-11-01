@@ -212,3 +212,37 @@ def test_schema_rechecks_are_not_qualification_runs(tmp_path):
                    "2026-11-01T12:01:00Z READY-SKIP y-r2: hold=keeper qualification failed rc70: launcher replaced\n"
                    "2026-11-01T12:02:00Z READY-SKIP qual-failed /f/ready/y-r3.json: qual:row y-r3: expected exactly one record\n")
     assert sorted(bg.fold_keeper_log(str(log), tail=1)["fails"]) == ["y-r1", "y-r2", "y-r3"]
+
+
+def test_piloted_handoff_rows_move_to_handoff_backlog(tmp_path):
+    F, pri = _flags(tmp_path)
+    (F / "ready" / "yarn-oolong-s1-v9-20261101.json").write_text(json.dumps(
+        {"id": "yarn-oolong-s1-v9-20261101", "owner": "codex-refactor-01a16fc3", "priority_rank": 2,
+         "regions": "any-cpu-quarter", "schema": "epyc.ready.v2"}))
+    (F / "WORK-ni-code.md").write_text(
+        (F / "WORK-ni-code.md").read_text() + "- [L] handoffs/active/yarn-x.md:5 — **Y-1 — yarn inert**\n")
+    reg = F / "handoff-sessions.json"
+    reg.write_text(json.dumps({"sessions": {
+        "yarn": {"handoff": "/workspace/handoffs/active/yarn-x.md", "status": "live", "row_patterns": ["yarn"]},
+        "kpf": {"handoff": "handoffs/active/kpf.md", "status": "suspended", "handoff_rows": ["RTG-1"]},
+        "old": {"handoff": "handoffs/active/old.md", "status": "done", "row_patterns": ["ni-"]}}}))
+    data = bg.run_once(str(F), str(pri), str(F / "ws58-calendar-keeper.log"), str(F), False)
+    ids = lambda w: {r["id"] for r in data["workers"][w]["rows"]}
+    assert "yarn-oolong-s1-v9-20261101" in ids("handoff-yarn")
+    assert "yarn-oolong-s1-v9-20261101" not in ids("refactor")
+    # handoff_rows join: inference_prep entries for RTG-1 (incl. a READY manifest) leave the generalists
+    assert {"kpf-r12", "kpf-r11", "ni-qualified"} <= ids("handoff-kpf")
+    assert not ({"kpf-r12", "kpf-r11", "ni-qualified"} & ids("ni"))
+    # a done pilot no longer captures rows
+    assert "ni-held" in ids("ni")
+    yb = (F / "BACKLOG-handoff-yarn.md").read_text()
+    assert "Y-1 — yarn inert" in yb and "briefs/HANDOFF-yarn.md" in yb
+    nb = (F / "BACKLOG-ni.md").read_text()
+    assert "Y-1 — yarn inert" not in nb and "handoffs/active/yarn-x.md" in nb
+    assert "Y-1" not in (F / "WORK-ni-code.md").read_text().split(bg.E_MARK)[0]
+
+
+def test_no_registry_is_unchanged(tmp_path):
+    F, pri = _flags(tmp_path)
+    data = bg.build(str(F), str(pri), str(F / "ws58-calendar-keeper.log"))
+    assert set(data["workers"]) == set(bg.WORKERS)

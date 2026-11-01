@@ -40,6 +40,12 @@ Operator rulings (2026-11-01), encoded here:
         NEEDS-OPERATOR); a one-page summary goes to compute-flags/operator-escalations/<lineage>.md and workers
         stop retrying it. Un-park (operator's call): a fresh manifest carrying
         `lineage_reset: <n>` counts only failures above n; or withdraw the lineage.
+
+Session-per-handoff pilot (operator, 2026-11-01): handoffs listed in compute-flags/handoff-sessions.json
+(`--sessions`) are owned by ONE resumable session each, not by the generalist workers. Their READY rows,
+inference_prep entries and code-queue lines (matched by `row_ids`, `row_patterns`, `handoff_rows`, or the
+manifest's `handoff` field / the code line's file) are EXCLUDED from BACKLOG-<worker>.md and emitted to
+BACKLOG-handoff-<slug>.md instead. See scripts/coordination/handoff_sessions.py.
 """
 from __future__ import annotations
 
@@ -53,6 +59,7 @@ import sys
 import time
 
 FLAGS_DEFAULT = "/mnt/raid0/llm/tmp/compute-flags"
+SESSIONS_NAME = "handoff-sessions.json"
 PRIORITY_DEFAULT = "/workspace/handoffs/active/backlog-priority.json"
 WORKERS = ("ni", "refactor", "codex3")
 FLOOR = 2
@@ -165,6 +172,31 @@ def load_json(p):
         return None
 
 
+def load_pilots(path: str | None) -> dict[str, dict]:
+    """slug -> {handoff, ids, patterns, rows} for every piloted handoff not marked done."""
+    reg = load_json(path) if path else None
+    out = {}
+    for slug, e in ((reg or {}).get("sessions") or {}).items():
+        if not isinstance(e, dict) or e.get("status") == "done" or not e.get("handoff"):
+            continue
+        out[slug] = {"handoff": "handoffs/" + str(e["handoff"]).split("handoffs/", 1)[-1],
+                     "ids": set(e.get("row_ids") or []),
+                     "patterns": [re.compile(x, re.I) for x in e.get("row_patterns") or []],
+                     "rows": set(e.get("handoff_rows") or [])}
+    return out
+
+
+def pilot_of(pilots: dict, rid: str, row_id: str | None = None, handoff: str | None = None) -> str | None:
+    for slug, p in pilots.items():
+        if rid in p["ids"] or (row_id and row_id in p["rows"]):
+            return slug
+        if handoff and str(handoff).endswith(p["handoff"].split("/")[-1]):
+            return slug
+        if any(x.search(rid or "") for x in p["patterns"]):
+            return slug
+    return None
+
+
 def parse_work_lines(path: str) -> list[dict]:
     """Code-queue lines of WORK-<w>-code.md (outside the BLOCKED-INFERENCE section)."""
     out = []
@@ -189,7 +221,8 @@ def _rank_of(desc: str) -> float:
     return float(m.group(1)) if m else 9999.0
 
 
-def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | None = None) -> dict:
+def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | None = None,
+          sessions_path: str | None = None) -> dict:
     now = now or _dt.datetime.now(_dt.timezone.utc)
     F = flags.rstrip("/") + "/"
     pri = load_json(priority_path) or {}
@@ -197,6 +230,8 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
     prep = pri.get("inference_prep") or []
     unblocks_map = load_json(F + "unblocks.json") or {}
     klog = fold_keeper_log(keeper_log)
+    pilots = load_pilots(sessions_path if sessions_path is not None else F + SESSIONS_NAME)
+    buckets = list(WORKERS) + [f"handoff-{s}" for s in pilots]
 
     # row-id -> non-inference tasks (from backlog-priority rows whose `unblocks` names it)
     unblockers_by_row: dict[str, list[str]] = {}
@@ -205,8 +240,12 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
             for tgt in r.get("unblocks") or []:
                 unblockers_by_row.setdefault(tgt, []).append(f"{rid} (T{r.get('tier')} rank {r.get('rank')}): {r.get('basis', '')[:140]}")
 
-    per: dict[str, dict] = {w: {"rows": [], "code": [], "qual": {"cpu": 0, "gpu": 0, "host": 0}} for w in WORKERS}
+    per: dict[str, dict] = {w: {"rows": [], "code": [], "qual": {"cpu": 0, "gpu": 0, "host": 0}} for w in buckets}
     work_lines = {w: parse_work_lines(F + f"WORK-{w}-code.md") for w in WORKERS}
+    for slug, p in pilots.items():  # code lines on a piloted handoff move to its bucket
+        work_lines[f"handoff-{slug}"] = [wl for w in WORKERS for wl in work_lines[w] if wl["file"] == p["handoff"]]
+        for w in WORKERS:
+            work_lines[w] = [wl for wl in work_lines[w] if wl["file"] != p["handoff"]]
     seen_ids = set()
 
     def tasks_for(rid: str, row_id: str | None, reasons: list[str], w: str, placeholder: bool = True) -> list[str]:
@@ -267,6 +306,9 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
                 state = "needs-qualification"
         prep_entry = next((e for e in prep if e.get("filler") == rid), None)
         row_id = prep_entry.get("row") if prep_entry else d.get("row")
+        slug = pilot_of(pilots, rid, row_id, d.get("handoff"))
+        if slug:
+            w = f"handoff-{slug}"
         if state == "qualified-armed":
             per[w]["qual"][lane] += 1
         per[w]["rows"].append({
@@ -279,6 +321,9 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
     for e in prep:
         rid = e.get("filler") or e.get("row")
         w = worker_of(str(e.get("owner", "")))
+        slug = pilot_of(pilots, rid or "", e.get("row"), e.get("handoff"))
+        if slug:
+            w = f"handoff-{slug}"
         if not rid or rid in seen_ids or w not in per:
             continue
         seen_ids.add(rid)
@@ -314,7 +359,7 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
     for fid, evs in klog["fails"].items():
         fails_by_lineage.setdefault(lineage_of(fid), []).append((fid, evs))
     parked: dict[str, dict] = {}
-    for w in WORKERS:
+    for w in buckets:
         rows = per[w]["rows"]
         for r in rows:
             r["lineage"] = lineage_of(r["id"])
@@ -335,7 +380,7 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
                                   f"do not retry. See operator-escalations/{lin}.md"]
             parked[lin] = {"worker": w, "fails": fl, "rows": members}
 
-    for w in WORKERS:
+    for w in buckets:
         starved = {ln for ln in ("cpu", "gpu") if per[w]["qual"][ln] < FLOOR}
         per[w]["starved"] = sorted(starved)
 
@@ -346,7 +391,8 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
             return (1, STATE_ORDER[r["state"]], rank, 0)
         per[w]["rows"].sort(key=_key)
         per[w]["code"] = work_lines[w]
-    return {"generated_at": now.strftime("%Y-%m-%dT%H:%MZ"), "workers": per, "parked": parked}
+    return {"generated_at": now.strftime("%Y-%m-%dT%H:%MZ"), "workers": per, "parked": parked,
+            "pilots": {s: p["handoff"] for s, p in pilots.items()}}
 
 
 def escalation_md(lin: str, p: dict, generated_at: str) -> str:
@@ -371,7 +417,8 @@ def escalation_md(lin: str, p: dict, generated_at: str) -> str:
 def render(w: str, data: dict) -> str:
     d = data["workers"][w]
     L = [f"# BACKLOG-{w} — the one backlog (auto-generated {data['generated_at']}; regenerated every 10 min, do not edit)",
-         "", f"Goal: GOAL-{w}.md. Work top to bottom. A blocked row's unblocking tasks are non-inference work: do them,",
+         "", (f"Goal: briefs/HANDOFF-{w[8:]}.md (session-per-handoff pilot; handoff {data.get('pilots', {}).get(w[8:])})."
+              if w.startswith("handoff-") else f"Goal: GOAL-{w}.md.") + " Work top to bottom. A blocked row's unblocking tasks are non-inference work: do them,",
          "then prepare the launcher, then let the keeper qualify it (the dry run), then it is armed. Repeat until nothing is blocked.", ""]
     counts = {}
     for r in d["rows"]:
@@ -400,6 +447,8 @@ def render(w: str, data: dict) -> str:
         n += 1
     if n == 0:
         L.append("- none")
+    if not w.startswith("handoff-") and data.get("pilots"):
+        L += ["", "Piloted handoffs (owned by their own session, excluded here): " + ", ".join(sorted(data["pilots"].values())) + "."]
     L += ["", "Filing a task that unblocks a row: append `[unblocks: <ready-id>]` to its line in WORK-" + w +
           "-code.md, or add it to compute-flags/unblocks.json. See scripts/coordination/backlog_gen.py.", ""]
     return "\n".join(L)
@@ -427,9 +476,10 @@ def write_atomic(path: str, content: str):
     os.replace(tmp, path)
 
 
-def run_once(flags: str, priority: str, keeper_log: str, out: str, dry_run: bool, update_work: bool = True) -> dict:
-    data = build(flags, priority, keeper_log)
-    for w in WORKERS:
+def run_once(flags: str, priority: str, keeper_log: str, out: str, dry_run: bool, update_work: bool = True,
+             sessions: str | None = None) -> dict:
+    data = build(flags, priority, keeper_log, sessions_path=sessions)
+    for w in data["workers"]:
         text = render(w, data)
         dest = os.path.join(out, f"BACKLOG-{w}.md")
         if dry_run:
@@ -456,7 +506,7 @@ def run_once(flags: str, priority: str, keeper_log: str, out: str, dry_run: bool
     summary = {w: {"rows": len(data["workers"][w]["rows"]),
                    "blocked": sum(1 for r in data["workers"][w]["rows"] if r["state"] == "blocked"),
                    "qual": data["workers"][w]["qual"],
-                   "parked": sum(1 for r in data["workers"][w]["rows"] if r["state"] == "parked")} for w in WORKERS}
+                   "parked": sum(1 for r in data["workers"][w]["rows"] if r["state"] == "parked")} for w in data["workers"]}
     print(data["generated_at"], json.dumps(summary, sort_keys=True))
     return data
 
@@ -467,6 +517,7 @@ def main(argv=None):
     ap.add_argument("--priority", default=PRIORITY_DEFAULT)
     ap.add_argument("--keeper-log", default=None)
     ap.add_argument("--out", default=None, help="where BACKLOG-*.md go (default: --flags)")
+    ap.add_argument("--sessions", default=None, help="handoff-sessions registry (default: <flags>/handoff-sessions.json)")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--no-work-section", action="store_true", help="do not refresh the WORK-*-code.md section")
     ap.add_argument("--loop", action="store_true")
@@ -476,7 +527,7 @@ def main(argv=None):
     out = a.out or a.flags
     while True:
         try:
-            run_once(a.flags, a.priority, klog, out, a.dry_run, not a.no_work_section)
+            run_once(a.flags, a.priority, klog, out, a.dry_run, not a.no_work_section, a.sessions)
         except Exception as e:  # never die in the loop
             print(_dt.datetime.now(_dt.timezone.utc).strftime("%FT%TZ"), "backlog_gen error:", repr(e), file=sys.stderr)
         if not a.loop:
