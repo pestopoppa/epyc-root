@@ -1,0 +1,27 @@
+{
+  "cpus": [
+    168,
+    169
+  ],
+  "diagnostic_only": true,
+  "elapsed_s": 148.25734249781817,
+  "end_utc": "2026-11-01T13:15:01.256320+00:00",
+  "peak_rss_sum_bytes": 5702311936,
+  "pid": 2515049,
+  "rc": 0,
+  "reason": null,
+  "remaining": [],
+  "rss_limit_bytes": 7516192768,
+  "sample_count": 530,
+  "schema": "pip02-public-diagnostic-supervisor/v1",
+  "seen": {
+    "2515049": 166122623,
+    "2515334": 166122872,
+    "2520340": 166123789,
+    "2524745": 166124125,
+    "2579264": 166136558,
+    "2584047": 166136895
+  },
+  "start_utc": "2026-11-01T13:12:32.999333+00:00",
+  "state": "FINISHED"
+}

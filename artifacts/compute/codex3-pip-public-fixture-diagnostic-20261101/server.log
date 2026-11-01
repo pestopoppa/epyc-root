@@ -1,0 +1,24 @@
+warning: no usable GPU found, --gpu-layers option will be ignored
+warning: one possible reason is that llama.cpp was compiled without GPU support
+warning: consult docs/build.md for compilation instructions
+0.00.001.643 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.001.961 W srv  llama_server: -----------------
+0.00.001.961 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.001.961 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.001.961 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.001.961 W srv  llama_server: -----------------
+0.00.003.996 I srv    load_model: loading model '/mnt/raid0/llm/models/PaddleOCR-VL-1.6-GGUF/PaddleOCR-VL-1.6-GGUF.gguf'
+0.00.126.488 W load: empty token at index 96148
+0.09.037.454 I srv    load_model: loaded multimodal model, '/mnt/raid0/llm/models/PaddleOCR-VL-1.6-GGUF/PaddleOCR-VL-1.6-GGUF-mmproj.gguf'
+0.09.110.650 I srv    load_model: initializing, n_slots = 12, n_ctx_slot = 8192, kv_unified = 'false'
+0.09.112.741 I srv  llama_server: model loaded
+0.09.112.750 I srv  llama_server: listening on http://127.0.0.1:40813
+0.43.556.772 W Forcing pure content template, will not render reasoning or tools separately.0.43.589.042 I slot get_availabl: id 11 | task -1 | selected slot by LRU, t_last = -1
+0.43.589.092 I slot launch_slot_: id 11 | task 1 | processing task, is_child = 0
+1.38.654.659 W srv          stop: cancel task, id_task = 4
+2.15.612.451 I slot print_timing: id 11 | task 1 | prompt eval time =   91669.81 ms /   634 tokens (  144.59 ms per token,     6.92 tokens per second)
+2.15.612.513 I slot print_timing: id 11 | task 1 |        eval time =     353.49 ms /     6 tokens (   58.92 ms per token,    16.97 tokens per second)
+2.15.612.520 I slot print_timing: id 11 | task 1 |       total time =   92023.31 ms /   640 tokens
+2.15.612.534 I slot print_timing: id 11 | task 1 |    graphs reused =          5
+2.15.615.081 I slot      release: id 11 | task 1 | stop processing: n_tokens = 639, truncated = 0
+2.25.545.293 I srv    operator(): operator(): cleaning up before exit...

@@ -1,0 +1,46 @@
+{
+  "diagnostic_only": true,
+  "first_response": {
+    "native_birth_ticks": 166124125,
+    "native_pid": 2524745,
+    "qualification_proof": false,
+    "request_sha256": "c0dcad950a562afd4b2502289a89e5ca19c28eaae72da5ad590f539fae685b0b",
+    "response_sha256": "3127e35b59c1d5a4f6ff33f38789f7439ae33e8f0a8a72d26ac29f84ccf2c372",
+    "result_path": "/mnt/raid0/llm/tmp/codex3-pip-v2-repair-20261101/diagnostic-20261101-v2/results/output/region-f1ff60afdc3657f934d419b6-000000.result.json",
+    "result_sha256": "8dfb29aac5200ee9bb97aa9c22806a31d402abc0b605f35ac48e7c09504b0104",
+    "schema": "pip02-native-response-event/v1",
+    "start_path": "/mnt/raid0/llm/tmp/codex3-pip-v2-repair-20261101/diagnostic-20261101-v2/results/output/region-f1ff60afdc3657f934d419b6-000000.start.json",
+    "start_sha256": "9a132f30d5f7272b568bcaf15eb92a60150da5b715048ebc823c2fcf8f21cec5",
+    "status": 200,
+    "usage": {
+      "completion_tokens": 6,
+      "prompt_tokens": 634,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "total_tokens": 640
+    }
+  },
+  "fixture_crop_verified": true,
+  "not_qualification": true,
+  "port": 40813,
+  "production_rate": null,
+  "schema": "pip02-public-diagnostic/v1",
+  "server": {
+    "binary_sha256": "0aadef69f2b75a1bf5a839a22ed88a5e2f895e5dc492acaae058354690ea9b05",
+    "birth_ticks": 166122872,
+    "cmdline_sha256": "006ad54cca807e58cac026eef554899af67ec316c5f8c8b69432b79d97442dd2",
+    "libraries": {
+      "/mnt/raid0/llm/llama.cpp-experimental/build-v9-cpu/bin/libggml-cpu.so.0.16.0": "e2aab84abb5511b42b37d07aafa23c5952d472edf38bd59971895a90c624a23c",
+      "/mnt/raid0/llm/llama.cpp-experimental/build-v9-cpu/bin/libllama-server-impl.so": "943b783011be4cf922c528f6cc33a5be732269a39f277a3310e1e23ff2e59c19",
+      "/mnt/raid0/llm/llama.cpp-experimental/build-v9-cpu/bin/libmtmd.so.0.0.10125": "c4ee6af5e2c8737369c3edbf7593fda037eafcc1299d09751b4ab86887b5e4ae"
+    },
+    "log_path": "/mnt/raid0/llm/tmp/codex3-pip-v2-repair-20261101/diagnostic-20261101-v2/server.log",
+    "mmproj_path": "/mnt/raid0/llm/models/PaddleOCR-VL-1.6-GGUF/PaddleOCR-VL-1.6-GGUF-mmproj.gguf",
+    "mmproj_sha256": "204d757d7610d9b3faab10d506d69e5b244e32bf765e2bab2d0167e65e0a058a",
+    "model_path": "/mnt/raid0/llm/models/PaddleOCR-VL-1.6-GGUF/PaddleOCR-VL-1.6-GGUF.gguf",
+    "model_sha256": "f3ae46ec885050acf4b3d31944431e1fd90d50664fb09126af4a3c050ba14ee8",
+    "pid": 2515334
+  },
+  "worker_rc": 1
+}

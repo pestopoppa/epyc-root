@@ -1,0 +1,22 @@
+{
+  "cpus": [
+    168,
+    169
+  ],
+  "diagnostic_only": true,
+  "elapsed_s": 2.7242727959528565,
+  "end_utc": "2026-11-01T13:11:46.007500+00:00",
+  "peak_rss_sum_bytes": 24137728,
+  "pid": 2509033,
+  "rc": 1,
+  "reason": null,
+  "remaining": [],
+  "rss_limit_bytes": 7516192768,
+  "sample_count": 11,
+  "schema": "pip02-public-diagnostic-supervisor/v1",
+  "seen": {
+    "2509033": 166117651
+  },
+  "start_utc": "2026-11-01T13:11:43.283540+00:00",
+  "state": "FINISHED"
+}
