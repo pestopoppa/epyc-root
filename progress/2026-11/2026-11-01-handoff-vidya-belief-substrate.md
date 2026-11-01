@@ -27,3 +27,7 @@ Extracted exact GFX producer and test bytes from research commit 26d89b6ea20f216
 ## 23:55Z — Recover serialized push and review source candidates
 
 Recovered the serialized push path: the lock was recorded for a single push by handoff-kvu at 2026-11-01T23:49:58Z and its recorded local PID 1393042 was gone. Used serialized_push.py --force-release handoff-kvu as handoff-vidya-belief-substrate; the tool journals the displacement. Two prior commits, 0d909ebcc and c1193136eaa, were unpublished before this boundary and are included in this push. C6, GPU pool and host candidate directories were left untracked by earlier interrupted workers with no completion reports; delegated bounded completion and review, with new dispatcher event flags. No inference row has yet been published; no inference launched and no task ticked.
+
+## 23:56Z — Recover second stale push lock
+
+Prior boundary push was blocked by a second abandoned single-push lock, holder handoff-batched-decode-measurement PID 1474678, confirmed gone. Used the attributed serialized_push.py force-release for that holder; the tool journals displacement. Prior unpublished lane commits 0d909ebcc, c1193136eaa and 380e01a51cb must be pushed at this boundary. The C6, host and GPU pool source candidates remain untracked pending completed validation; bounded reviews and dispatcher flags are registered. No inference was run, row published or acceptance box ticked.
