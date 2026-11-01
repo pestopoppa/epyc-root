@@ -161,28 +161,44 @@ runner_pid() { og_json_pid "$HEARTBEAT"; }
 # Echoes the state; exit 0 / 1 / 3 respectively.
 observe_runner() {
   og_round_begin
-  local pid; pid="$(runner_pid)"
+  local pid hb_state scan_state; pid="$(runner_pid)"
 
   if [[ ! -e "$HEARTBEAT" ]]; then
     # No heartbeat at all: the runner has never started here, or its queue dir
     # was wiped. That is a real negative, not a blind spot.
-    og_channel hb_pid absent "no heartbeat file at $HEARTBEAT"
+    hb_state=absent
+    og_channel hb_pid "$hb_state" "no heartbeat file at $HEARTBEAT"
   elif [[ ! -r "$HEARTBEAT" ]]; then
-    og_channel hb_pid unavailable "heartbeat exists but is unreadable"
+    hb_state=unavailable
+    og_channel hb_pid "$hb_state" "heartbeat exists but is unreadable"
   elif [[ -z "$pid" ]]; then
-    og_channel hb_pid unavailable "heartbeat carries no parsable pid"
+    hb_state=unavailable
+    og_channel hb_pid "$hb_state" "heartbeat carries no parsable pid"
   else
-    og_channel hb_pid "$(og_pid_alive "$pid" "$RUNNER_MARK")" "pid=$pid"
+    hb_state="$(og_pid_alive "$pid" "$RUNNER_MARK")"
+    og_channel hb_pid "$hb_state" "pid=$pid"
   fi
 
   # Independent corroboration. NOT a kill target (shared host — see
   # INC-20260731-broad-process-pattern-kills); its only job is to disagree.
   if [[ -r /proc/self/cmdline ]]; then
-    og_channel proc_scan "$(og_present_if_any "$(og_proc_scan "$RUNNER_MARK")")"
+    scan_state="$(og_present_if_any "$(og_proc_scan "$RUNNER_MARK")")"
+    og_channel proc_scan "$scan_state"
   else
-    og_channel proc_scan unavailable "/proc not readable"
+    scan_state=unavailable
+    og_channel proc_scan "$scan_state" "/proc not readable"
   fi
 
+  # The shared fold accepts a positive channel when another is unavailable.
+  # This caller must be stricter: a stale heartbeat can authorize a restart, so
+  # any blind channel suppresses both stopping and launching.
+  if [[ "$hb_state" == unavailable || "$scan_state" == unavailable ]]; then
+    og_verdict >/dev/null || true
+    OG_WHY="partial blindness: hb_pid=${hb_state}, proc_scan=${scan_state}; both channels must be evaluable before a corrective action"
+    printf '%s\n' "$OG_WHY" > "$(_og_why_file)" 2>/dev/null || true
+    printf 'unobservable\n'
+    return 3
+  fi
   og_verdict
 }
 
