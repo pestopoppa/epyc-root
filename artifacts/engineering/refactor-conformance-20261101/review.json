@@ -1,0 +1,134 @@
+{
+  "app_base_commit_context": "25d4bc71351437b45d400c36e986b502d94c3c5c",
+  "command_argv": [
+    "/home/daniele/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/bin/python3.11",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-c",
+    "/dev/null",
+    "--rootdir",
+    "/mnt/raid0/llm/tmp/codex3-reward-provenance-1740/fixture",
+    "-o",
+    "addopts=",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "--junitxml=/mnt/raid0/llm/tmp/codex3-refactor-conformance-20261101/fresh.junit.xml",
+    "tests/unit/test_stack_change_pipeline_simulated_fixtures.py",
+    "tests/unit/test_ssuf11_recipe_launch.py"
+  ],
+  "counts": {
+    "collected": 17,
+    "error": 0,
+    "executed": 17,
+    "failure": 0,
+    "passed": 17,
+    "skipped": 0
+  },
+  "custody": "Paused tracked ROOT and APP drafts were checksum-backed up, temporarily restored to HEAD, and restored and hash-verified after execution; protected untracked APP test remained untouched. Both tracked repository trees were clean for capture. Private backups and diffs are excluded.",
+  "declared_app_readset": [
+    {
+      "path": "tests/unit/test_stack_change_pipeline_simulated_fixtures.py",
+      "sha256": "9d369b136f1d74128f2d25ec08dc0dd7ab9983fcd5d87960fbed48376ee7d94f"
+    },
+    {
+      "path": "tests/unit/test_ssuf11_recipe_launch.py",
+      "sha256": "e0c4575e76c6261269390f2d6c53be9e00abf779f8a1e0835ad9af964be6f74d"
+    },
+    {
+      "path": "scripts/registry/stack_change_pipeline.py",
+      "sha256": "64b38b5b851313d89d99fe37a30c75104b9aac22c5905fb1043714c4a924e8a0"
+    },
+    {
+      "path": "scripts/server/stack_env.py",
+      "sha256": "b85a1db422fc8e8deb3ffac5ecc541341950f9c2cd0eaf76d7a7d232a3778f6f"
+    },
+    {
+      "path": "scripts/server/orchestrator_stack.py",
+      "sha256": "ea637a727ecc16e52c54a1904c5f3124bb1da819910521863d69a9826ebf5c23"
+    },
+    {
+      "path": "scripts/validate/check_shared_with_derivations.py",
+      "sha256": "788297130f66f181daeee1952fc64f2a1e19c7824507546216521cfdb20174ed"
+    },
+    {
+      "path": "scripts/validate/stack_change_guard.py",
+      "sha256": "001c8ac12b0ea6de9ef9c79ea48530608ea01b02b9f47bd461b25552e76e7836"
+    },
+    {
+      "path": "scripts/benchmark/seeding_rewards.py",
+      "sha256": "77a220b407c6bde07dccc5a15a3284a3800026d60b137418302d26dfbb80dd8a"
+    },
+    {
+      "path": "scripts/autopilot/gen_system_card.py",
+      "sha256": "b6cb2436941eee6467bf8633864b20ccca425fddca1d057cb92fbde21f215ac7"
+    },
+    {
+      "path": "orchestration/repl_memory/q_scorer.py",
+      "sha256": "0b07bc1a9109fc77c36d7f18d1b902caa8a5d1056baadd25611d85e4f46a1a68"
+    },
+    {
+      "path": "src/registry/stack_priors.py",
+      "sha256": "213042a3aa5fe678a5dd70515ce1e2c8949faa8ae5d359f232e9ee7afcfee8ce"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "a37982f40ecef2acd195fb4f488633692005c5ebcba148387293f4f38e78acc4"
+    }
+  ],
+  "environment_allowlist": {
+    "pip_freeze_exit": 0,
+    "platform": "Linux-6.14.0-37-generic-x86_64-with-glibc2.39",
+    "python": "3.11.17 (main, Oct 21 2026, 17:46:53) [Clang 23.1.3 ]",
+    "variables": {
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONPATH": "/mnt/raid0/llm/tmp/codex3-reward-provenance-1740/fixture:/mnt/raid0/llm/epyc-orchestrator/.venv/lib/python3.11/site-packages"
+    }
+  },
+  "fixture_execution_conformant": true,
+  "ledger_claim_id": null,
+  "limitations": [
+    "Only named synthetic fixtures were executed; no numerical baseline comparison.",
+    "No planner-context canary was performed; no loop-wired claim.",
+    "No inference, performance, deployment, promotion, or undeclared dependency completeness claim.",
+    "No GitHub run identity or attestation was invented."
+  ],
+  "native_measurement_id": "ci-fixture:b8796bc8db42d85f0b45db5984fd6a252549980a970a5f66ff52ed3211da0057",
+  "prestart_refusal": "First guard attempt stopped on missing declared uv.lock before native capture and before test launch. UNKNOWN; no receipt, tuple, or verdict was generated. The declaration was corrected before the separate fresh execution.",
+  "producer_decided_proposition": "In captured runner {\"attempt\": \"\", \"job\": \"\", \"os\": \"Linux-6.14.0-37-generic-x86_64-with-glibc2.39\", \"python\": \"3.11.17\", \"run_id\": \"\"}, argv [\"/home/daniele/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/bin/python3.11\", \"-m\", \"pytest\", \"--noconftest\", \"-c\", \"/dev/null\", \"--rootdir\", \"/mnt/raid0/llm/tmp/codex3-reward-provenance-1740/fixture\", \"-o\", \"addopts=\", \"-p\", \"no:cacheprovider\", \"-q\", \"--junitxml=/mnt/raid0/llm/tmp/codex3-refactor-conformance-20261101/fresh.junit.xml\", \"tests/unit/test_stack_change_pipeline_simulated_fixtures.py\", \"tests/unit/test_ssuf11_recipe_launch.py\"] at tested repository SHAs {\"app\": \"a643cb331b1389eda0b414eb54bdac9bf90fe04b\", \"root\": \"84fc682bb0a94cb88d3f4a2019e1579d096cb0f3\"} reported these named collected JUnit cases and statuses [{\"classname\": \"tests.unit.test_stack_change_pipeline_simulated_fixtures\", \"name\": \"test_pipeline_report_names_simulated_fixture_target\", \"status\": \"passed\"}, {\"classname\": \"tests.unit.test_stack_change_pipeline_simulated_fixtures\", \"name\": \"test_simulated_check_runs_promotion_gate_when_requested\", \"status\": \"passed\"}, {\"classname\": \"tests.unit.test_stack_change_pipeline_simulated_fixtures\", \"name\": \"test_simulated_check_fails_when_promotion_gate_fails\", \"status\": \"passed\"}, {\"classname\": \"tests.unit.test_stack_change_pipeline_simulated_fixtures\", \"name\": \"test_simulated_update_does_not_write_real_operator_summary\", \"status\": \"passed\"}, {\"classname\": \"tests.unit.test_stack_change_pipeline_simulated_fixtures\", \"name\": \"test_simulated_recipe_swap_tracks_compiled_registry_in_process\", \"status\": \"passed\"}, {\"classname\": \"tests.unit.test_stack_change_pipeline_simulated_fixtures\", \"name\": \"test_simulated_frontdoor_swap_updates_generated_consumers_with_approval\", \"status\": \"passed\"}, {\"classname\": \"tests.unit.test_stack_change_pipeline_simulated_fixtures\", \"name\": \"test_simulated_worker_swap_updates_generated_consumers_with_approval\", \"status\": \"passed\"}, {\"classname\": \"tests.unit.test_stack_change_pipeline_simulated_fixtures\", \"name\": \"test_simulated_vision_swap_updates_generated_consumers_with_approval\", \"status\": \"passed\"}, {\"classname\": \"tests.unit.test_stack_change_pipeline_simulated_fixtures\", \"name\": \"test_simulated_ingest_swap_updates_generated_consumers_with_approval\", \"status\": \"passed\"}, {\"classname\": \"tests.unit.test_stack_change_pipeline_simulated_fixtures\", \"name\": \"test_simulated_shared_runtime_aliases_compile_as_one_runtime_descriptor\", \"status\": \"passed\"}, {\"classname\": \"tests.unit.test_stack_change_pipeline_simulated_fixtures\", \"name\": \"test_simulated_retired_role_enum_is_removed_by_update\", \"status\": \"passed\"}, {\"classname\": \"tests.unit.test_stack_change_pipeline_simulated_fixtures\", \"name\": \"test_simulated_runtime_requirement_drift_fails_until_regenerated\", \"status\": \"passed\"}, {\"classname\": \"tests.unit.test_stack_change_pipeline_simulated_fixtures\", \"name\": \"test_simulated_context_kv_and_acceleration_drift_are_rejected\", \"status\": \"passed\"}, {\"classname\": \"tests.unit.test_ssuf11_recipe_launch\", \"name\": \"test_recipe_env_survives_ambient_strip_and_override\", \"status\": \"passed\"}, {\"classname\": \"tests.unit.test_ssuf11_recipe_launch\", \"name\": \"test_recipe_shape_uses_machine_definition_and_rejects_drift\", \"status\": \"passed\"}, {\"classname\": \"tests.unit.test_ssuf11_recipe_launch\", \"name\": \"test_process_attestation_reads_recipe_and_reports_drift\", \"status\": \"passed\"}, {\"classname\": \"tests.unit.test_ssuf11_recipe_launch\", \"name\": \"test_process_attestation_refuses_mixed_snapshots\", \"status\": \"passed\"}]; executed cases passed and command exited zero: true. Skipped cases and inference, performance, promotion, live_host_corpus, unselected_cases, undeclared_dependency_completeness are excluded.",
+  "proof_sha256": {
+    "capture_driver_private": "5437ffedf44a49f0fc51a9d1d8a8743d9e62a06a6bd32f64f8c592f0da7ec6b2",
+    "environment_declaration_private": "b380f2ad8046b24da218f648f3a783a2712c164dafbb46dd7f72daa4518756a7",
+    "native_producer": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+    "native_receipt_unsigned_seal": "b8796bc8db42d85f0b45db5984fd6a252549980a970a5f66ff52ed3211da0057",
+    "original_junit": "f284fa6a78bc7b864d83aee3d718dc89f0e28507609e6db94c56f043c96ae60a",
+    "original_receipt_file": "09f26f7a98059fcd2446ab668583306533fa18cbd60b3ffcd6d03bddddb26280",
+    "original_stdout": "7fd77ccb49fdfd43c32b6d3539d48180d93444886ceb0bcb673dbd073dae247e",
+    "pre_execution_request": "f8b48ab4cf1e722bc1e304cfff225f2650d2debf1d57323c40a254e817d3f609"
+  },
+  "readset_limit": "12 explicit APP paths, not complete runtime import coverage. Environment and scratch driver also pinned in original receipt.",
+  "reason_no_ledger_claim_id": "No canonical ledger was written; no claim ID invented.",
+  "research_context_commit_not_tested": "5e3cf5355bc701f6c055ce83836fcdabfca8cfcd",
+  "runner": {
+    "attempt": "",
+    "job": "",
+    "os": "Linux-6.14.0-37-generic-x86_64-with-glibc2.39",
+    "python": "3.11.17",
+    "run_id": ""
+  },
+  "scope": "Review capsule; original native receipt and all pinned read sidecars remain in private custody. Hashes are commitments, not independently reopenable native artifacts.",
+  "shared_grade": [
+    "Judged",
+    "Located"
+  ],
+  "tested_repositories": {
+    "app": "a643cb331b1389eda0b414eb54bdac9bf90fe04b",
+    "root": "84fc682bb0a94cb88d3f4a2019e1579d096cb0f3"
+  }
+}
