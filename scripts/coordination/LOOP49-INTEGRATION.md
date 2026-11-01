@@ -47,12 +47,19 @@ and itself exits 75. Engine checks the actual completion predicate and actual
 return codes; a killed process alone does not prove resumability. Result dirs
 are separate nonce destinations; the native results directory is untouched.
 
-Before grant creation, keeper applies `scheduling_state` against all READY,
-queued and live manifests for port conflicts, and live/queued manifests for
-exclusive classes/shared state. Current helper's `active` list is caller-owned;
-keeper must refresh it after each accepted arm. Disk uses policy floor plus
-output estimate plus 2 GiB; WAIT-DISK writes no grant and never counts toward
-READY depth, science quota or failed-24h.
+Before grant creation, the writer must invoke
+`loop49_keeper_gate.py before-grant --manifest <current-manifest> --row-id <id>`
+and require exit 0 immediately before its exclusive `.grant` creation. This
+re-verifies the receipt, launcher fingerprint, manifest bindings, conflicts,
+and disk state at the actual issuance boundary. Re-run after any wait; an earlier
+`before-arm` result is not a grant authorization. Legacy/rearm/carry-over
+manifest markers are refused; retries use a new qualified id and manifest.
+Before arming, keeper applies `scheduling_state` against all READY, queued and
+live manifests for port conflicts, and live/queued manifests for exclusive
+classes/shared state. Current helper's `active` list is caller-owned; keeper
+must refresh it after each accepted arm. Disk uses policy floor plus output
+estimate plus 2 GiB; WAIT-DISK writes no grant and never counts toward READY
+depth, science quota or failed-24h.
 
 Export `WS58_READY_MANIFEST`, `WS58_NONCE_STORE`, `WS58_ENGINE_ALLOWLIST` to
 production launcher. Engine cheaply re-verifies the qualified receipt before
@@ -61,12 +68,17 @@ manifest paths or update forwarding after moving them to armed. It must verify
 namespace again at the actual writer grant boundary, not only queue enrollment.
 
 Outside-root changes still required: ws58_arm-v2 / grant_ok_launcher must parse
-canonical Python-engine argv and verify its PID birth. Queue writers must recheck
-qualification/namespace/disk/conflicts at grant issuance. Existing queued legacy
-rows and `carry_over`/`rearm_rc75` cannot bypass D1: disable those paths or migrate
+canonical Python-engine argv and verify its PID birth, and every installed queue
+writer must call the `before-grant` command above (the checked-in helper does not
+intercept external writers by itself). Existing queued legacy rows and
+`carry_over`/`rearm_rc75` paths cannot bypass D1: disable those paths or migrate
 rows to fresh qualified ids. `.ended` is never overwritten or removed; resume is
-always a new id. Class-specific GPU claim semantics and cross-role disjoint
-placement must be exercised under a granted integration fixture before use.
+always a new id. After SIGKILL, invoke
+`loop49_keeper_gate.py recover-dead --identity <pid-birth.json> --ended <path>`;
+it creates the terminal record only after PID and `/proc` birth mismatch proves
+the original launcher is gone, and never signals a PID. Class-specific GPU claim
+semantics and cross-role disjoint placement must be exercised under a granted
+integration fixture before use.
 
 Filer reads structured native/validator records with explicit forensic
 `root_cause_family` A..I. Validator replay uses `failed_run_rollup.py --workdir
