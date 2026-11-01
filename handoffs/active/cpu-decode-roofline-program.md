@@ -2513,7 +2513,7 @@ They are filed here rather than described in prose so the dashboard can see them
       rested on it.** Cores **184-191 are the SMT siblings of physical cores 88-95**, which are inside the
       0-95 bench region. The label is inherited from `champion1/arm.sh` and is wrong in **every report that
       used it** — including a contention escalation retracted on its authority. The relabel was routed to
-      HARNESS-1; **the re-examination half has no owner.**
+      HARNESS-1; the conclusion audit is complete in `docs/reviews/inf70-wrap4-physical-cores-20261031.md`. Historical raw records remain unchanged; affected interpretations are withdrawn or narrowed as the audit states.
 - [ ] **WRAP-5 — report the llama.cpp GGUF C reader segfault upstream (fold into UP-2).** B12 found
       llama.cpp's own C reader segfaults dumping these files — **on the pristine source too**, established
       only because it ran the control. A reproducible upstream crash with a control arm, filed nowhere.
