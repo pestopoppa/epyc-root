@@ -367,7 +367,7 @@ pinned SHA `f25f310b` plus a read of our own tree. Full evidence in intake-901 `
     checkpoint_type=...)`, a signature `SQLiteSessionStore.save_checkpoint(checkpoint)` has never had;
     the `TypeError` is swallowed at debug level, so those snapshots are silently dropped (pre-existing,
     found 2026-09-17). Route them through a real snapshot write (fenced) or delete the dead calls.
-    - [ ] **D-f3a — Give `graph_snapshots` a reader or a retention bound.** Nothing reads the table yet
+    - [ ] **D-f3a — Give `graph_snapshots` a reader or a retention bound.** [too-big: source landed; live API volume confirmation belongs to D-f1 owner] Nothing reads the table yet
       (`SQLiteStatePersistence.load_next()` is still `None` by design, TM-7). With
       `STATE_HISTORY_SNAPSHOTS` on, it grows by one row per turn without bound. Either wire a consumer
       (trace/debug view) or add a prune (keep the last N runs), and confirm the volume on the live
