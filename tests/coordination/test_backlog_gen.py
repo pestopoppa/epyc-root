@@ -273,3 +273,14 @@ def test_withdrawn_prep_is_absent_from_piloted_handoff(tmp_path):
     assert "kpf-r11" not in ids
     assert "kpf-r12" in ids
     assert "kpf-r12" in {r["id"] for r in data["workers"]["handoff-kpf"]["rows"]}
+
+
+def test_prep_only_terminal_receipts_do_not_reappear_as_actionable(tmp_path):
+    F, pri = _flags(tmp_path)
+    (F / "grants/kpf-r11.ended").write_text("rc=70\n")
+    (F / "filing-done/kpf-r12.FILED").write_text("{}")
+    data = bg.build(str(F), str(pri), str(F / "ws58-calendar-keeper.log"))
+    rows = {r["id"]: r for r in data["workers"]["ni"]["rows"]}
+    for rid in ("kpf-r11", "kpf-r12"):
+        assert rows[rid]["state"] == "done"
+        assert rows[rid]["tasks"] == []
