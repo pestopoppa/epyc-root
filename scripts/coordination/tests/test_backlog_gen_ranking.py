@@ -130,7 +130,7 @@ class NeedsSessionAndRunningStateTests(unittest.TestCase):
         text = bg.render("codex-gen", data)
         self.assertLess(text.index("**handoffs/active/mid.md**"), text.index("**handoffs/active/zed.md**"))
         self.assertLess(text.index("**handoffs/active/zed.md**"), text.index("**handoffs/active/alpha.md**"))
-        self.assertIn("handoff score=1.0 rows=row-gpu-1 priority=INF-5 rank=5.0", text)
+        self.assertIn("handoff score=1.0 rows=row-gpu-1 own-inference-tasks=0 priority=INF-5 rank=5.0", text)
 
     def test_stuck_row_without_tasks_still_counts_for_its_handoff(self):
         # a FILLERS-migrated row has no handoff_task path; the inference_prep `row` -> index-state maps it to alpha.md
@@ -168,3 +168,27 @@ class NeedsSessionAndRunningStateTests(unittest.TestCase):
         json.dump({"id": "LEG-DEAD", "pid": 99999997}, open(os.path.join(self.flags, "ready/armed/LEG-DEAD.json"), "w"))
         states = {r["id"]: r for r in self.build()["workers"]["codex-gen"]["rows"]}
         self.assertEqual(states["LEG-DEAD"]["state"], "blocked")
+
+    def test_own_inference_tasks_count_as_candidate_rows(self):
+        # alpha has two open boxes that read like runs (one GPU) and one prose box; zed has only a prose box
+        open(os.path.join(self.ha, "alpha.md"), "w").write("# a\n- [ ] run llama-bench at depth 32k on the MI210\n- [ ] measure t/s for Q4_K_M on one CPU quarter\n- [ ] rewrite the README\n- [x] done sweep\n")
+        open(os.path.join(self.ha, "zed.md"), "w").write("# z\n- [ ] rewrite the README\n")
+        open(os.path.join(self.flags, "WORK-codex-gen-code.md"), "w").write("- [M] handoffs/active/zed.md:10 — zed task\n")
+        data = self.build()
+        hr = {h["handoff"].split("/")[-1]: h for h in data["handoff_rank"]}
+        self.assertEqual(hr["alpha.md"]["candidate_rows"], 2)
+        self.assertEqual(hr["alpha.md"]["score"], 1.0)  # 0.5 * (gpu 1/(1+0) + cpu 1/(1+0))
+        self.assertEqual(hr["alpha.md"]["candidates"][0]["lane"], "gpu")
+        self.assertEqual(hr["zed.md"]["candidate_rows"], 0)
+        self.assertEqual([h["handoff"].split("/")[-1] for h in data["needs_session"]][:2], ["alpha.md", "zed.md"])
+        self.assertEqual(hr["alpha.md"]["position"], 1)
+        # a piloted handoff is ranked too (dispatcher yields slots by it) and its backlog carries the inference-first line
+        json.dump({"sessions": {"a": {"handoff": "handoffs/active/alpha.md", "status": "live"}}}, open(self.sessions, "w"))
+        data = self.build()
+        hr = {h["handoff"].split("/")[-1]: h for h in data["handoff_rank"]}
+        self.assertEqual(hr["alpha.md"]["session"], "a")
+        self.assertNotIn("alpha.md", [h["handoff"].split("/")[-1] for h in data["needs_session"]])
+        text = bg.render("handoff-a", data)
+        self.assertIn("**Inference first.**", text)
+        self.assertIn("Handoff rank: #1 of", text)
+        self.assertIn("L2 [gpu] run llama-bench", text)
