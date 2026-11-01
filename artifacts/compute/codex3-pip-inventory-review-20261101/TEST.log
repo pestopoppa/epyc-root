@@ -1,0 +1,20 @@
+test_capture_and_worker_roots_must_match (test_inventory.Inventory.test_capture_and_worker_roots_must_match) ... ok
+test_competing_padded_and_unpadded_fail_closed (test_inventory.Inventory.test_competing_padded_and_unpadded_fail_closed) ... ok
+test_discovered_attempt_root_cannot_be_omitted (test_inventory.Inventory.test_discovered_attempt_root_cannot_be_omitted) ... ok
+test_duplicate_index_refuses_even_if_hash_matches (test_inventory.Inventory.test_duplicate_index_refuses_even_if_hash_matches) ... ok
+test_empty_capture_scope_refuses (test_inventory.Inventory.test_empty_capture_scope_refuses) ... ok
+test_metadata_or_order_drift_refuses (test_inventory.Inventory.test_metadata_or_order_drift_refuses) ... ok
+test_missing_capture_protects_entire_shard (test_inventory.Inventory.test_missing_capture_protects_entire_shard) ... ok
+test_partial_corrupt_and_unbound_results_protect_scope (test_inventory.Inventory.test_partial_corrupt_and_unbound_results_protect_scope) ... ok
+test_region_capture_provenance_is_not_inferred (test_inventory.Inventory.test_region_capture_provenance_is_not_inferred) ... ok
+test_reordered_and_metadata_modified_plan_refuse (test_inventory.Inventory.test_reordered_and_metadata_modified_plan_refuse) ... ok
+test_unpadded_prior_request_never_eligible (test_inventory.Inventory.test_unpadded_prior_request_never_eligible) ... ok
+test_unscanned_declared_root_refuses (test_inventory.Inventory.test_unscanned_declared_root_refuses) ... ok
+test_unsupported_nested_layout_refuses (test_inventory.Inventory.test_unsupported_nested_layout_refuses) ... ok
+test_verified_bound_complete_can_clear_scope (test_inventory.Inventory.test_verified_bound_complete_can_clear_scope) ... ok
+test_worker_config_scope_mismatch_refuses (test_inventory.Inventory.test_worker_config_scope_mismatch_refuses) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.021s
+
+OK
