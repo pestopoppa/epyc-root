@@ -11,6 +11,7 @@ import json
 import math
 import os
 from pathlib import Path
+import stat
 import time
 
 from dashboard import panels
@@ -92,11 +93,18 @@ def snapshot(*, path: Path | None = None, now: float | None = None) -> tuple[dic
     body = None
     state, error, present = "absent", "not exported", False
     try:
-        with path.open("rb") as stream:
+        descriptor = os.open(path, os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW | os.O_CLOEXEC)
+        with os.fdopen(descriptor, "rb") as stream:
+            before = os.fstat(stream.fileno())
+            if not stat.S_ISREG(before.st_mode) or not 0 < before.st_size <= MAX_BYTES:
+                raise ValueError("progression is not a bounded nonempty regular file")
             raw = stream.read(MAX_BYTES + 1)
+            after = os.fstat(stream.fileno())
         present = True
-        if len(raw) > MAX_BYTES:
-            raise ValueError("progression exceeds read bound")
+        if (len(raw) != before.st_size
+                or (before.st_dev, before.st_ino, before.st_mtime_ns, before.st_size)
+                != (after.st_dev, after.st_ino, after.st_mtime_ns, after.st_size)):
+            raise ValueError("progression changed while read")
         body = _validate(json.loads(raw, parse_constant=lambda value: (_ for _ in ()).throw(
             ValueError("non-finite JSON number"))))
         state, error = "observed", None

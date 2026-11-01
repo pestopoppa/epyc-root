@@ -5,9 +5,11 @@ import copy
 from datetime import datetime, timezone
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
+import sys
 
 import pytest
 
@@ -225,3 +227,38 @@ def test_deep_optional_json_is_malformed_without_breaking_the_loop(tmp_path, mon
     after = server.loop_data_health()
     assert (before[0], before[1]['status']) == (after[0], after[1]['status'])
     assert run_renderer(tmp_path, payload).count('MALFORMED') == 1
+
+
+def test_fifo_refuses_without_blocking_the_served_loop(tmp_path):
+    path = tmp_path / 'producer.fifo'
+    os.mkfifo(path)
+    # A regression must time out this owned child, not hang the entire test job.
+    code = '''
+import json, sys
+from pathlib import Path
+from dashboard import kernel_progression as reader, panels, server
+reader.PATH = Path(sys.argv[1])
+server.loop_status.snapshot = lambda: ({"loop": None}, panels.Observation(artifact_present=False))
+server._read_operator_gate_bundle = lambda: {"freshness": {"state": "relevant"}}
+payload = server.loop_payload()
+status, probe = reader.health()
+print(json.dumps([payload["progression"]["state"], payload["progression"]["data"], status, probe["status"]]))
+'''
+    result = subprocess.run([sys.executable, '-c', code, str(path)],
+                            capture_output=True, text=True, timeout=5, check=True)
+    assert json.loads(result.stdout) == ['malformed', None, 503, 'degraded']
+
+
+@pytest.mark.parametrize('kind', ['regular', 'symlink', 'hardlink'])
+def test_regular_export_and_link_policy(tmp_path, kind):
+    path = tmp_path / 'producer.json'
+    if kind == 'regular':
+        path.write_bytes(FIXTURE.read_bytes())
+    elif kind == 'symlink':
+        path.symlink_to(FIXTURE)
+    else:
+        os.link(FIXTURE, path)
+    view = reader.snapshot(path=path, now=NOW)[0]
+    assert view['artifact_present'] is True
+    assert view['state'] == ('malformed' if kind == 'symlink' else 'stale')
+    assert view['_freshness']['evidence'] == str(path)
