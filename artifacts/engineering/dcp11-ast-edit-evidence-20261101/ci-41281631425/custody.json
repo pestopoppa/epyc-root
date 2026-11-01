@@ -1,0 +1,67 @@
+{
+  "artifact_files": {
+    "dependencies.stdout.txt": {
+      "bytes": 56357,
+      "sha256": "58e1dc34fe64ff627fd966a5ba153c29c5f2c1be6503294b4f5fa19d374406fc"
+    },
+    "junit.xml": {
+      "bytes": 43296,
+      "sha256": "2364893b34a7591eb53bcc49c015904f72dd0f6aa820d6e1afdfe6a0636a2c54"
+    },
+    "pip-freeze.txt": {
+      "bytes": 3341,
+      "sha256": "414bcb0b0bd209366116219425058da383ed5e53ae065a5f03619ea29c8a5b2b"
+    },
+    "pytest.exit-code": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "pytest.stdout.txt": {
+      "bytes": 3159,
+      "sha256": "020226232e10c702fc7c865088efa82565764a1283fdf91446958e1cd54d27e1"
+    },
+    "source-commit.txt": {
+      "bytes": 41,
+      "sha256": "a50c7cd4035334fc3e37f61c632316154cb176226ae6602e3df3f0dc785bb933"
+    },
+    "source-files.sha256": {
+      "bytes": 2390,
+      "sha256": "ff27727e87f9073976480d11d13dd828bfd457d8731297a43b2d4b24ea8518be"
+    }
+  },
+  "candidate": {
+    "base_commit": "0123e65a1af7cdd0e59c3ad37a62a43189aa1a92",
+    "branch": "codex/ni-dcp11-ast-render-ci-20261101",
+    "commit": "b7110ec02502113ba8f1554ca54153c734e44bd6",
+    "repo": "epyc-orchestrator",
+    "tree": "5ad047730d504892329c85de9bb77e447ea679fc"
+  },
+  "hosted_run": {
+    "completed_at": "2026-11-01T06:40:09Z",
+    "conclusion": "success",
+    "event": "push",
+    "id": 41281631425,
+    "job": "focused-contracts",
+    "runner_python": "3.13.15",
+    "started_at": "2026-11-01T06:38:19Z",
+    "status": "completed",
+    "test_exit_code": "0",
+    "url": "https://github.com/pestopoppa/epyc-orchestrator/actions/runs/41281631425",
+    "workflow": "NI programmatic feedback and DTAP contracts"
+  },
+  "hosted_validation_only": true,
+  "local_tests_or_production_runtime_claimed": false,
+  "schema": "ni.dcp11.hosted-ci-custody.v1",
+  "source_manifest_verified_against_candidate_checkout": true,
+  "tests": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "stdout_summary": "298 passed, 1 warning in 14.43s",
+    "testcases": 298,
+    "warnings": [
+      "pytest-asyncio emitted a deprecation notice because asyncio_default_fixture_loop_scope is unset",
+      "Pytest summarized one PydanticGraph Graph import deprecation warning"
+    ]
+  }
+}

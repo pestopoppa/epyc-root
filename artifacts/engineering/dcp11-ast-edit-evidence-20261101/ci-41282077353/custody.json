@@ -1,0 +1,207 @@
+{
+  "artifact_files": {
+    "dependencies.stdout.txt": {
+      "bytes": 56357,
+      "sha256": "d23bbadedd9e7b1cd1a98fcc50a13376e8c81ca952d422cf43140159d02ba82b"
+    },
+    "junit.xml": {
+      "bytes": 43429,
+      "sha256": "b904930fd4d58768a40bb550f60fe498ad9999e88087d1016d472cc271d27c88"
+    },
+    "pip-freeze.txt": {
+      "bytes": 3341,
+      "sha256": "3f650c01d51652a62232cd8e3f89dcf46327deba692315f03085eb4660655d9a"
+    },
+    "pytest.exit-code": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "pytest.stdout.txt": {
+      "bytes": 3159,
+      "sha256": "ad6bc473239edf7028ab631f9c5222c124c069e274ed80d35e39b37392c268ef"
+    },
+    "source-commit.txt": {
+      "bytes": 41,
+      "sha256": "ed541ea3c663a3c17d83ec54261925c046948dd2716196a085b10cf62c9bec1e"
+    },
+    "source-files.sha256": {
+      "bytes": 2390,
+      "sha256": "2cde95fad14d5459a4ff913abf72eab821c1875d55c966e9a411587d4ee9184f"
+    }
+  },
+  "candidate": {
+    "branch": "codex/ni-dcp11-ast-render-ci-20261101",
+    "commit": "ee471a4d3cd6c9a1f81fd3e560495dd1f35dbcd3",
+    "parent": "b7110ec02502113ba8f1554ca54153c734e44bd6",
+    "repo": "epyc-orchestrator",
+    "tree": "ee471a4d3cd6c9a1f81fd3e560495dd1f35dbcd3"
+  },
+  "hosted_run": {
+    "completed_at": "2026-11-01T06:47:02Z",
+    "conclusion": "success",
+    "event": "push",
+    "id": 41282077353,
+    "job": "focused-contracts",
+    "runner_python": "3.13.15",
+    "started_at": "2026-11-01T06:45:20Z",
+    "status": "completed",
+    "test_exit_code": "0",
+    "url": "https://github.com/pestopoppa/epyc-orchestrator/actions/runs/41282077353",
+    "workflow": "NI programmatic feedback and DTAP contracts"
+  },
+  "hosted_validation_only": true,
+  "local_tests_or_production_runtime_claimed": false,
+  "schema": "ni.dcp11.hosted-ci-custody.v1",
+  "source_manifest": {
+    "checks": [
+      {
+        "actual": "59332dd51369ab0cd15d6e66d168723271c4eb0b0461cbb4568d1cb267bebefb",
+        "expected": "59332dd51369ab0cd15d6e66d168723271c4eb0b0461cbb4568d1cb267bebefb",
+        "match": true,
+        "path": "src/trace/step_events.py"
+      },
+      {
+        "actual": "cceb317bcd3cc0edcf22ed2a93d0b56544a2e55319aa5c0d829317d33a716fe1",
+        "expected": "cceb317bcd3cc0edcf22ed2a93d0b56544a2e55319aa5c0d829317d33a716fe1",
+        "match": true,
+        "path": "src/graph/helpers.py"
+      },
+      {
+        "actual": "c24d8421ebc495e3ee728a11a51a66f6b5d08d941c80f03df329daa24930a924",
+        "expected": "c24d8421ebc495e3ee728a11a51a66f6b5d08d941c80f03df329daa24930a924",
+        "match": true,
+        "path": "src/context_assembly.py"
+      },
+      {
+        "actual": "52a1fd3f97f6852ba8a7c434ebe95b37a52ad5367d94029d9c3e646cc68511e6",
+        "expected": "52a1fd3f97f6852ba8a7c434ebe95b37a52ad5367d94029d9c3e646cc68511e6",
+        "match": true,
+        "path": "src/context_discovery.py"
+      },
+      {
+        "actual": "bce9d601e16f546c47eab36f7a89e703e34f1fe12fb5299a067e41232f09d8e2",
+        "expected": "bce9d601e16f546c47eab36f7a89e703e34f1fe12fb5299a067e41232f09d8e2",
+        "match": true,
+        "path": "src/config/models.py"
+      },
+      {
+        "actual": "7edca28220a75ed462a0d450015ec5b93a27294732b36ee4c8b5983e3d7f3055",
+        "expected": "7edca28220a75ed462a0d450015ec5b93a27294732b36ee4c8b5983e3d7f3055",
+        "match": true,
+        "path": "src/repl_environment/session_artifacts.py"
+      },
+      {
+        "actual": "f4d7a1ef2441f80f4175814252d2164e1e4635c1505f36ca3378aa7ba50d8e90",
+        "expected": "f4d7a1ef2441f80f4175814252d2164e1e4635c1505f36ca3378aa7ba50d8e90",
+        "match": true,
+        "path": "tests/unit/test_step_events.py"
+      },
+      {
+        "actual": "b2add0c60bdf848b4b98275fcc7dc914ed9e8693cd095f2cdef553f6624aeef2",
+        "expected": "b2add0c60bdf848b4b98275fcc7dc914ed9e8693cd095f2cdef553f6624aeef2",
+        "match": true,
+        "path": "tests/unit/test_context_assembly.py"
+      },
+      {
+        "actual": "76ab28b0d7386b8ab5e258fdc941268bf3b59526110f61dfd729af294d3e1030",
+        "expected": "76ab28b0d7386b8ab5e258fdc941268bf3b59526110f61dfd729af294d3e1030",
+        "match": true,
+        "path": "tests/unit/test_context_discovery.py"
+      },
+      {
+        "actual": "d8b718ee94dbd63c9bc6a8a03d3db2f3c0cf02669ee44efe9e42ce87505d1151",
+        "expected": "d8b718ee94dbd63c9bc6a8a03d3db2f3c0cf02669ee44efe9e42ce87505d1151",
+        "match": true,
+        "path": "tests/unit/test_dcp4_wiring.py"
+      },
+      {
+        "actual": "aebf632ceefe9351e37857d40daa5a661fdb9cf93fd4383e03002d4f6cc3b1f1",
+        "expected": "aebf632ceefe9351e37857d40daa5a661fdb9cf93fd4383e03002d4f6cc3b1f1",
+        "match": true,
+        "path": "tests/unit/test_contextbench_score.py"
+      },
+      {
+        "actual": "eb4e1e1a8bcfb7390d3a88c24c2b2556ac9223d0f0d03dbc5b58e8e5d5730a80",
+        "expected": "eb4e1e1a8bcfb7390d3a88c24c2b2556ac9223d0f0d03dbc5b58e8e5d5730a80",
+        "match": true,
+        "path": "tests/integration/test_execute_turn.py"
+      },
+      {
+        "actual": "9b08db70c9a4a68d4a86d73970f7f7c97fb8fe58bc052e5bd957cacdc2cba98f",
+        "expected": "9b08db70c9a4a68d4a86d73970f7f7c97fb8fe58bc052e5bd957cacdc2cba98f",
+        "match": true,
+        "path": "orchestration/repl_memory/distillation/pipeline.py"
+      },
+      {
+        "actual": "4470e66f28144d5f4c187bcc54a02d7269eb5948c807a60e2fc66cfaa62393e5",
+        "expected": "4470e66f28144d5f4c187bcc54a02d7269eb5948c807a60e2fc66cfaa62393e5",
+        "match": true,
+        "path": "scripts/autopilot/evals/dtap/harness/runner.py"
+      },
+      {
+        "actual": "713415f37b0356aa62afc1afa3e8a172341e988b2efffc7fc3000c1b18ccd3bf",
+        "expected": "713415f37b0356aa62afc1afa3e8a172341e988b2efffc7fc3000c1b18ccd3bf",
+        "match": true,
+        "path": "scripts/autopilot/evals/dtap/tests/test_adversarial_contract_fixtures.py"
+      },
+      {
+        "actual": "110614a894be145c42514a9ea1514c459c773afd72123557c30025c9622aa1f4",
+        "expected": "110614a894be145c42514a9ea1514c459c773afd72123557c30025c9622aa1f4",
+        "match": true,
+        "path": "scripts/autopilot/evals/dtap/tests/test_dtap_harness.py"
+      },
+      {
+        "actual": "96e3079af209639c13075a1cc974811a396757654aadc6c1bb4ee811f7a9cb82",
+        "expected": "96e3079af209639c13075a1cc974811a396757654aadc6c1bb4ee811f7a9cb82",
+        "match": true,
+        "path": "scripts/autopilot/evals/dtap/tests/test_failure_ledger.py"
+      },
+      {
+        "actual": "812c3b3db6f90c62ced28021db4f18a3d2233657d30c4481becf9734a9c063f5",
+        "expected": "812c3b3db6f90c62ced28021db4f18a3d2233657d30c4481becf9734a9c063f5",
+        "match": true,
+        "path": "scripts/autopilot/evals/dtap/tests/test_judge_guard.py"
+      },
+      {
+        "actual": "68aae66208beb781e32fa888a5517091c0d3c658a1ba8645d4cdd63aecca4fdf",
+        "expected": "68aae66208beb781e32fa888a5517091c0d3c658a1ba8645d4cdd63aecca4fdf",
+        "match": true,
+        "path": "scripts/autopilot/evals/dtap/tests/test_tool_contract.py"
+      },
+      {
+        "actual": "26e035d28f8d3dfc5b6d525f89237f46d24ed5c7a7d69b06478f159b6ea0ea62",
+        "expected": "26e035d28f8d3dfc5b6d525f89237f46d24ed5c7a7d69b06478f159b6ea0ea62",
+        "match": true,
+        "path": "scripts/skillbank/seed_skills.py"
+      },
+      {
+        "actual": "a37982f40ecef2acd195fb4f488633692005c5ebcba148387293f4f38e78acc4",
+        "expected": "a37982f40ecef2acd195fb4f488633692005c5ebcba148387293f4f38e78acc4",
+        "match": true,
+        "path": "pyproject.toml"
+      },
+      {
+        "actual": "5ed42a204e72e0d1370e6b7225e731f8c2998249aae7539d38b8af941e9514ce",
+        "expected": "5ed42a204e72e0d1370e6b7225e731f8c2998249aae7539d38b8af941e9514ce",
+        "match": true,
+        "path": "uv.lock"
+      },
+      {
+        "actual": "523a5fcd8cac2471fc257c3232197e388fb8e39f44f9061555411d54fb65d3c7",
+        "expected": "523a5fcd8cac2471fc257c3232197e388fb8e39f44f9061555411d54fb65d3c7",
+        "match": true,
+        "path": ".github/workflows/ni-code-contracts-20261101.yml"
+      }
+    ],
+    "count": 23,
+    "verified_against_git_blobs_at_commit": true
+  },
+  "tests": {
+    "covered_control": "conditional TYPE_CHECKING and try/except module-scope import blocks are included with a later target function; unrelated function-local import omitted; actual estimated budget asserted",
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "stdout_summary": "299 passed, 1 warning in 13.68s",
+    "testcases": 299
+  }
+}
