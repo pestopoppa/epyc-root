@@ -14,7 +14,8 @@ class Runtime:
     def identity(self, handle):
         return 'drafted' if self.bad_identity else handle
     def prepare_occupancy(self, handle, case):
-        return {'verified': not self.bad_occupancy, 'arm': handle}
+        return {'verified': not self.bad_occupancy, 'arm': handle,
+                'comparison': {'neighbors': 2, 'prefix_sha256': 'same'}}
     def request(self, handle, payload):
         self.calls.append((handle, payload))
         return {'timings': {'cache_n': self.cache}}
@@ -36,6 +37,21 @@ class Lifecycle(unittest.TestCase):
         self.assertEqual(rt.stopped, rt.started)
         self.assertEqual([x[0] for x in rt.calls], ['drafted','drafted','nodraft','nodraft'])
         self.assertEqual(rows[0]['measure_sha256'], rows[1]['measure_sha256'])
+    def test_occupancy_mismatch_rejects_pair_after_cleanup(self):
+        rt = Runtime()
+        rt.prepare_occupancy = lambda handle, case: {
+            'verified': True, 'comparison': {'neighbors': 1 if handle == 'drafted' else 2}}
+        with self.assertRaisesRegex(InvalidRun, 'occupancy differs'):
+            run_pair(rt, [case()])
+        self.assertEqual(rt.stopped, ['drafted', 'nodraft'])
+
+    def test_missing_occupancy_comparison_stops_first_arm(self):
+        rt = Runtime()
+        rt.prepare_occupancy = lambda handle, case: {'verified': True}
+        with self.assertRaisesRegex(InvalidRun, 'occupancy comparison missing'):
+            run_pair(rt, [case()])
+        self.assertEqual(rt.stopped, ['drafted'])
+
     def test_unverified_cleanup_refuses_second_arm(self):
         for value in (False, None):
             rt = Runtime()

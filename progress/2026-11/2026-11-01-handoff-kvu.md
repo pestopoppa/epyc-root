@@ -201,3 +201,15 @@ Investigated the original codex3 CPU-FA-VKQ-3 qualification failure: its origina
 ## 23:06Z — Repair independent VKQ3 calibration qualification resource shape
 
 Republished handoff-kvu-vkq3-independent-calibration-20261101 with dryrun_whole_host=true: FAIL-1 assigned CPUs 48–71 while the target-model worker requires 0–95 and 256 GiB; the original whole-host guard remains intact. The prior attempt did not reach the target worker. Keeper qualification is pending. The original codex3 row remains unsafe to retry because its prompt was exposed. KVU-15b requires organic serving records in two windows; KVU-16a has an unresolved stack-change decision and the ubatch-512 value is derived, while the measured value applies to ubatch 2048. No inference was run.
+
+## 23:16Z — File VKQ3 inconclusive run and advance runner and tile investigation
+
+Filed independent VKQ3 calibration inconclusive: rc=1 after a 120 s tokenizer timeout before target arms; the sole event is the excluded qualification control. Preserved native event and launcher log, and registered a tokenizer investigation event. Original exposed prompt remains no-redraw. The uninstalled P3/X0 draft now rejects missing or differing occupancy witnesses; eight fake-runtime tests pass. Prepared an unfiled, explicitly unconfirmed KVU-19a-2 upstream issue draft. The available serving-call file has one credited call, below KVU-15b’s 200-call gate; other windows were not exhaustively audited. KVU-16a still requires its stack decision and shape-matched evidence. No new inference was run by this session.
+
+## 23:27Z — Consume tokenizer diagnosis and preserve calibration evidence
+
+Consumed the tokenizer failure investigation and independent custody audit. The 120 s timeout occurred before target-server launch in the inspected worker; bounded exposure searches do not prove global novelty. Prepared an independent synthetic tokenizer diagnostic contract and delegated its implementation; no diagnostic row is ready. Preserved the prior inconclusive calibration result and reviewed the uninstalled P3/X0 occupancy check (eight fake tests). Prepared an unfiled KVU-19a-2 issue draft and inventoried DF29 port handling; the successor has a bind race. No inference was run.
+
+## 23:37Z — Review VKQ3 diagnostic and recover pending wrap-up
+
+Consumed the offline tokenizer supervisor implementation and independently reviewed it: eight fake-child tests pass but review found an early-closed stdin false-success defect and cleanup gaps. Repair and separate grant/identity integration are delegated with completion events. The earlier wrap-up attempts stopped before commit for an unknown reason; this boundary uses one detached wrap-up and completion event. Includes the prior inconclusive calibration, runner guard, issue draft, exposure audit and port inventory work. No inference was run.

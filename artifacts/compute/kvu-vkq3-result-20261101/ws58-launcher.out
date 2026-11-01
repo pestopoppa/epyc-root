@@ -1,0 +1,39 @@
+2026-11-01T22:29:02Z [handoff-kvu-vkq3-independent-calibration-20261101] launcher up pid=4059607 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-kvu-vkq3-independent-calibration-20261101/stop minwin=9000s ports=none dryrun=1
+2026-11-01T22:29:02Z [handoff-kvu-vkq3-independent-calibration-20261101] START regions=48-71 cpus=48-71 threads=24 gpu=0 end=2026-11-02T01:03Z
+[region-lock] acquiring regions ['q0', 'q1', 'q2', 'q3'] as role='bench' (timeout_s=9238.0) …
+[region-lock] held ['q0', 'q1', 'q2', 'q3'] after 2121.8s wait; running: /bin/bash /mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh --inner --id handoff-kvu-vkq3-independent-calibration-20261101 --class cpu --cmd env -i PATH=/usr/bin:/bin LANG=C.UTF-8 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 HIP_VISIBLE_DEVICES=-1 ROCR_VISIBLE_DEVICES=-1 FILLER_DRYRUN=1 FILLER_ID="$FILLER_ID" FILLER_CPUS="$FILLER_CPUS" FILLER_NEEDGPU="$FILLER_NEEDGPU" FILLER_STOPFILE="$FILLER_STOPFILE" FILLER_END="$FILLER_END" FILLER_DEADLINE="$FILLER_DEADLINE" WS58_REGIONS="$WS58_REGIONS" /bin/bash /mnt/raid0/llm/tmp/handoff-kvu-vkq3-independent-calibration-20261101/launch.sh --job --min-window 9000 --stop /mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-kvu-vkq3-independent-calibration-20261101/stop --port  --workdir /mnt/raid0/llm/tmp/handoff-kvu-vkq3-independent-calibration-20261101 --gpu-threads 184-191
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/handoff-kvu-vkq3-independent-calibration-20261101/worker.py", line 98, in <module>
+    if __name__=='__main__':sys.exit(main())
+                                     ^^^^^^
+  File "/mnt/raid0/llm/tmp/handoff-kvu-vkq3-independent-calibration-20261101/worker.py", line 22, in main
+    if not grant or os.environ.get('FILLER_CPUS')!='0-95':raise RuntimeError('genuine whole-host grant missing')
+                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: genuine whole-host grant missing
+job rc=1
+2026-11-01T23:05:21Z [handoff-kvu-vkq3-independent-calibration-20261101] ended rc=1 reason=job-rc-1:exited (grant deleted)
+2026-11-01T23:05:21Z [handoff-kvu-vkq3-independent-calibration-20261101] one window done; exiting (no --repeat)
+2026-11-01T23:06:55Z [handoff-kvu-vkq3-independent-calibration-20261101] launcher up pid=745731 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-kvu-vkq3-independent-calibration-20261101/stop minwin=9000s ports=none dryrun=1
+2026-11-01T23:06:55Z [handoff-kvu-vkq3-independent-calibration-20261101] START regions=0-95 cpus=0-95 threads=96 gpu=0 end=2026-11-02T01:40Z
+[region-lock] acquiring regions ['q0', 'q1', 'q2', 'q3'] as role='bench' (timeout_s=9185.0) …
+[region-lock] held ['q0', 'q1', 'q2', 'q3'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh --inner --id handoff-kvu-vkq3-independent-calibration-20261101 --class cpu --cmd env -i PATH=/usr/bin:/bin LANG=C.UTF-8 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 HIP_VISIBLE_DEVICES=-1 ROCR_VISIBLE_DEVICES=-1 FILLER_DRYRUN=1 FILLER_ID="$FILLER_ID" FILLER_CPUS="$FILLER_CPUS" FILLER_NEEDGPU="$FILLER_NEEDGPU" FILLER_STOPFILE="$FILLER_STOPFILE" FILLER_END="$FILLER_END" FILLER_DEADLINE="$FILLER_DEADLINE" WS58_REGIONS="$WS58_REGIONS" /bin/bash /mnt/raid0/llm/tmp/handoff-kvu-vkq3-independent-calibration-20261101/launch.sh --job --min-window 9000 --stop /mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-kvu-vkq3-independent-calibration-20261101/stop --port  --workdir /mnt/raid0/llm/tmp/handoff-kvu-vkq3-independent-calibration-20261101 --gpu-threads 184-191
+job rc=0
+2026-11-01T23:08:28Z [handoff-kvu-vkq3-independent-calibration-20261101] ended rc=0 reason=complete (grant deleted)
+2026-11-01T23:08:28Z [handoff-kvu-vkq3-independent-calibration-20261101] ALL DONE: wrote /mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-kvu-vkq3-independent-calibration-20261101/complete, row marked COMPLETE; exiting for good
+2026-11-01T23:08:55Z [handoff-kvu-vkq3-independent-calibration-20261101] launcher up pid=759821 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/handoff-kvu-vkq3-independent-calibration-20261101/STOP minwin=9000s ports=none dryrun=0
+2026-11-01T23:09:00Z [handoff-kvu-vkq3-independent-calibration-20261101] START regions=0-95 cpus=0-95 threads=96 gpu=0 end=2026-11-02T04:00Z
+[region-lock] acquiring regions ['q0', 'q1', 'q2', 'q3'] as role='bench' (timeout_s=17460.0) …
+[region-lock] held ['q0', 'q1', 'q2', 'q3'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh --inner --id handoff-kvu-vkq3-independent-calibration-20261101 --class cpu --cmd env -i PATH=/usr/bin:/bin LANG=C.UTF-8 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 HIP_VISIBLE_DEVICES=-1 ROCR_VISIBLE_DEVICES=-1 FILLER_DRYRUN=0 FILLER_ID="$FILLER_ID" FILLER_CPUS="$FILLER_CPUS" FILLER_NEEDGPU="$FILLER_NEEDGPU" FILLER_STOPFILE="$FILLER_STOPFILE" FILLER_END="$FILLER_END" FILLER_DEADLINE="$FILLER_DEADLINE" WS58_REGIONS="$WS58_REGIONS" /bin/bash /mnt/raid0/llm/tmp/handoff-kvu-vkq3-independent-calibration-20261101/launch.sh --job --min-window 9000 --stop /mnt/raid0/llm/tmp/handoff-kvu-vkq3-independent-calibration-20261101/STOP --port  --workdir /mnt/raid0/llm/tmp/handoff-kvu-vkq3-independent-calibration-20261101 --gpu-threads 184-191
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/handoff-kvu-vkq3-independent-calibration-20261101/worker.py", line 98, in <module>
+    if __name__=='__main__':sys.exit(main())
+                                     ^^^^^^
+  File "/mnt/raid0/llm/tmp/handoff-kvu-vkq3-independent-calibration-20261101/worker.py", line 39, in main
+    try: tkout=cancellable_tokenizer.run(tkcmd,prompt.encode(),tkenv,stopping,120)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/raid0/llm/tmp/handoff-kvu-vkq3-independent-calibration-20261101/cancellable_tokenizer.py", line 22, in run
+    raise TimeoutError('tokenizer timed out')
+TimeoutError: tokenizer timed out
+job rc=1
+2026-11-01T23:11:58Z [handoff-kvu-vkq3-independent-calibration-20261101] ended rc=1 reason=job-rc-1:exited (grant deleted)
+2026-11-01T23:11:58Z [handoff-kvu-vkq3-independent-calibration-20261101] one window done; exiting (no --repeat)
