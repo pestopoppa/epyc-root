@@ -18,7 +18,7 @@ Do not add new REPL tools before S4. **Exception (operator D2, 2026-09-26):** em
 ## Outstanding Tasks
 
 - [ ] **S4 Omega A/B**: measure turns per task, token cost per task, and accuracy delta. This gates suggestion, verbosity, and any extra tool-surface changes.
-  - [ ] **S4-T1 — BUG: turns per task are never recorded.** `ChatResponse.turns`
+  - [x] **S4-T1 — BUG: turns per task are never recorded.** `ChatResponse.turns` ✅ 2026-11-01 [belief: cc]
     (`src/api/models/responses.py:97`) is populated on every path
     (`chat_pipeline/stages.py:117`, `direct_stage.py:144,:287`) and `RoleResult.turns` exists
     (`scripts/benchmark/seeding_types.py:579`), but the `RoleResult(...)` constructor in
