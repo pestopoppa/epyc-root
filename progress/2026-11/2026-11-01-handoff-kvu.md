@@ -213,3 +213,7 @@ Consumed the tokenizer failure investigation and independent custody audit. The 
 ## 23:37Z — Review VKQ3 diagnostic and recover pending wrap-up
 
 Consumed the offline tokenizer supervisor implementation and independently reviewed it: eight fake-child tests pass but review found an early-closed stdin false-success defect and cleanup gaps. Repair and separate grant/identity integration are delegated with completion events. The earlier wrap-up attempts stopped before commit for an unknown reason; this boundary uses one detached wrap-up and completion event. Includes the prior inconclusive calibration, runner guard, issue draft, exposure audit and port inventory work. No inference was run.
+
+## 23:49Z — Consume completed wrap-up and inspect GPU row provenance
+
+Consumed successful prior wrap-up aac62c34c0209a163ab94cc39e3173c26fd66d25. GPU replay has no recorded qualification failure; launcher digest matches the manifest but the installed engine digest differs from its publication receipt. No causal claim was established; independent source review of engine provenance is delegated. Existing tokenizer repair, integration and row preparation events remain pending. No inference was run.
