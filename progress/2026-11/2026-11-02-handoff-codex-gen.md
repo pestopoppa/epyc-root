@@ -111,3 +111,7 @@ The observer census hook now passes after restoring the tracked sparse-checkout 
 ## 09:29Z — Correct CH-26b filing and triage KVU-16i
 
 Correction to the earlier CH-26b pass and tick in this progress file: later native residency analysis, now merged from origin/main, finds CPU placement and contention unproven for all 48 launches. Refiled `akagg-ch26b-1017-c2-r2-20261101` inconclusive; 3.016% and its 1.94675–4.95% interval are descriptive only, not an admissible decision floor. The owner handoff keeps CH-26b open and preserves evidence. Merged origin/main after stashing the old conflicting local tick (stash retained). `publish_row.py --repair handoff-kvu-16i-c5-replay-20261101` returned UNKNOWN-FAILURE-CLASS; a bounded repair was delegated.
+
+## 09:38Z — Record handoff-kvu-16i-c5 replay dry-run pass
+
+Dispatcher reported dry-run PASS for handoff-kvu-16i-c5-replay-20261101 (one JSONL unit, rc 0); the row is grantable. The dry-run record reports two orphan processes for its owner to address. Earlier automatic repair attempts for inf70-cls-rect-live-20261101 and codex-ni-s18-qwenvl-cpu-r2-20261101 returned UNKNOWN-FAILURE-CLASS; investigations were delegated, and no completion has been reported.
