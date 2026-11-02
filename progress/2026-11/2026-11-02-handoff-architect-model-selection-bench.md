@@ -91,3 +91,7 @@ Reviewed untracked EffiBench run_python.py: pinned patch digest and synthetic co
 ## 00:51Z — Record EffiBench false-success defect and prepare fixes
 
 Independent review found upstream evaluate_solution.py can return success with zero matching tasks. The untracked EffiBench wrapper also lacks merge and 306-denominator checks, and its git diff hash excludes untracked checkout files; it remains unvalidated and uncommitted. Delegated bounded fixes and offline tests, plus GPQA manifest and launcher preparation; completion events are registered. No inference or row publication. Prior commit 07c3fe4b0f3e was not pushed because serialized_push failed after its lock retry; include it in this retry.
+
+## 00:52Z — Record GPQA per-item output hazard
+
+GPQA runner inspection found one-item manifests cannot safely share per_question.jsonl: v7_quality_gate_runner.py rejects same-suite IDs not in the current manifest and rewrites the output, so previous records can be moved to rejected JSONL. A stop-aware launcher must retain separate per-item outputs and validate consolidation. The native runner supports validated resume and flush but has no FILLER_STOPFILE/deadline handling. No row was published or inference run. Prior wrap-up succeeded at 2bc26c7d4f2a3c3a97bc23edbb4b2dcaa42c3784. Two small offline fixes are delegated with completion events registered.
