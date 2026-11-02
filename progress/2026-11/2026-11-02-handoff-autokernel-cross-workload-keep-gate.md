@@ -21,3 +21,9 @@ The evidence adapter now checks that the sealed source patch is exactly the dete
 ## AKX-P1c build preparation
 
 Hardened the staged historical quantizer build completion check to require the recorded source, toolchain, build, linkage and binary artifacts under the run directory and recompute their SHA-256 digests; missing, fabricated and modified artifacts refuse. Two completion fixtures and two partial gcov extraction tests pass. This is build preparation only: compiler identity, source-to-binary provenance, runtime coverage and replay remain unproved; no row was published or compute run. W5s r7 remains parked after three failures; the shared first failure was an enrollment class/window mismatch, with whole-host admission also unresolved.
+
+## 10:23Z — Bind quantizer build compiler custody to receipt
+
+## AKX-P1c compiler custody
+
+The staged historical quantizer build now rechecks compiler bytes after compilation and its completion validator binds both compiler paths and hashes to the recorded manifest, refusing symlinked run and artifact paths. Four focused completion fixtures passed. This is preparation only: the build remains unrun, source-to-binary provenance and coverage replay are not established.

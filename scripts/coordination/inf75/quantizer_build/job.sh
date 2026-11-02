@@ -39,6 +39,8 @@ bin="$run/build/bin/llama-quantize"
 export LD_LIBRARY_PATH="$run/build/bin"
 /mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh "$bin" "$run/build" > "$run/linkage.log" 2>&1
 check_window
+# Refuse a receipt if either compiler changed while this run was building.
+sha256sum --check "$run/compiler.sha256" > /dev/null
 python3 - "$result" "$run" "$commit" "$cc" "$cxx" <<'PY'
 import hashlib,json,os,pathlib,sys,tempfile
 out=pathlib.Path(sys.argv[1]); run=pathlib.Path(sys.argv[2]); commit,cc,cxx=sys.argv[3:]

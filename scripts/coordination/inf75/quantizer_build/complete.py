@@ -20,8 +20,9 @@ def valid(record, root=ROOT):
                 record['status'] != 'built' or record['source_commit'] != COMMIT or
                 record['linkage_rc'] != 0):
             return False
-        run = Path(record['run_dir']).resolve(strict=True)
-        if run.parent != (root / 'runs').resolve(strict=True):
+        run = Path(record['run_dir'])
+        if (not run.is_absolute() or run.resolve(strict=True) != run or
+                run.parent != (root / 'runs').resolve(strict=True)):
             return False
         files = record['files']
         if not isinstance(files, dict) or not all(str(run / name) in files for name in REQUIRED):
@@ -32,7 +33,8 @@ def valid(record, root=ROOT):
             path = Path(name)
             if not isinstance(expected, str) or not re.fullmatch(r'[0-9a-f]{64}', expected):
                 return False
-            if not path.is_absolute() or path.is_symlink() or not path.resolve(strict=True).is_relative_to(run):
+            if (not path.is_absolute() or path.resolve(strict=True) != path or
+                    not path.is_relative_to(run)):
                 return False
             h = hashlib.sha256()
             with path.open('rb') as f:
@@ -40,6 +42,22 @@ def valid(record, root=ROOT):
                     h.update(chunk)
             if h.hexdigest() != expected:
                 return False
+        # The manifest is itself an artifact, but its entries must also bind the
+        # recorded compiler paths to the actual executables used for this run.
+        compilers = [Path(record[key]) for key in ('cc', 'cxx')]
+        if any(not p.is_absolute() or p.resolve(strict=True) != p or not p.is_file()
+               for p in compilers):
+            return False
+        lines = (run / 'compiler.sha256').read_text().splitlines()
+        expected_lines = []
+        for compiler in compilers:
+            h = hashlib.sha256()
+            with compiler.open('rb') as f:
+                for chunk in iter(lambda: f.read(1024 * 1024), b''):
+                    h.update(chunk)
+            expected_lines.append(f'{h.hexdigest()}  {compiler}')
+        if lines != expected_lines:
+            return False
         return True
     except (OSError, ValueError, TypeError, KeyError):
         return False
