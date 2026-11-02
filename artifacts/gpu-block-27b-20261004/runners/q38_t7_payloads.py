@@ -8,6 +8,7 @@ warming both arms changes historical phase B; never merge those timings.
 from __future__ import annotations
 
 import collections
+import copy
 import hashlib
 import json
 import math
@@ -17,8 +18,8 @@ from dataclasses import dataclass
 import degeneracy as detector
 import lib_gpublock as lib
 import q38_t7 as original
-from q38_t7_isolated import Pair
-from q38_t7_transport import parse_sse
+from q38_t7_isolated import Pair, run_pairs
+from q38_t7_transport import OwnedHttpTransport, _local_url, parse_sse
 
 
 @dataclass(frozen=True)
@@ -34,20 +35,22 @@ class Plan:
     pairs: tuple[Pair, ...]
     metadata: dict
     tokenizer_sha256: str
+    model_sha256: str
     sha256: str
 
 
-def _plan_hash(pairs: tuple[Pair, ...], metadata: dict, tokenizer_sha256: str) -> str:
+def _plan_hash(pairs: tuple[Pair, ...], metadata: dict, tokenizer_sha256: str, model_sha256: str) -> str:
     items = [{'key': p.key, 'body': p.body, 'warm_body': p.warm_body,
               'min_cached_tokens': p.min_cached_tokens, 'arms': p.arms,
               'nodraft_body': p.nodraft_body} for p in pairs]
-    payload = json.dumps({'pairs': items, 'metadata': metadata, 'tokenizer_sha256': tokenizer_sha256}, sort_keys=True,
+    payload = json.dumps({'pairs': items, 'metadata': metadata, 'tokenizer_sha256': tokenizer_sha256,
+                          'model_sha256': model_sha256}, sort_keys=True,
                          separators=(',', ':'), ensure_ascii=False, allow_nan=False).encode()
     return hashlib.sha256(payload).hexdigest()
 
 
 def build_plan(prompts: list[dict], contexts: list[FrozenContext], *, gen: int = 1500,
-               gen_nodraft: int = 500, tokenizer_sha256: str) -> Plan:
+               gen_nodraft: int = 500, tokenizer_sha256: str, model_sha256: str) -> Plan:
     """Build original A and B bodies with separately warmed B arms.
 
     Each target's final B repetition has the original no-draft generation cap;
@@ -59,6 +62,8 @@ def build_plan(prompts: list[dict], contexts: list[FrozenContext], *, gen: int =
         raise ValueError('nonempty workload and positive generation limits required')
     if not isinstance(tokenizer_sha256, str) or re.fullmatch(r'[0-9a-f]{64}', tokenizer_sha256) is None:
         raise ValueError('pinned tokenizer SHA-256 required')
+    if not isinstance(model_sha256, str) or re.fullmatch(r'[0-9a-f]{64}', model_sha256) is None:
+        raise ValueError('pinned model SHA-256 required')
     pairs, metadata, ids = [], {}, set()
     for prompt in prompts:
         if (not isinstance(prompt, dict) or not isinstance(prompt.get('id'), str)
@@ -103,7 +108,8 @@ def build_plan(prompts: list[dict], contexts: list[FrozenContext], *, gen: int =
         metadata[key] = {'phase': 'B', 'type': 'needle', 'target': context.target,
                          'expected': facts}
     frozen = tuple(pairs)
-    return Plan(frozen, metadata, tokenizer_sha256, _plan_hash(frozen, metadata, tokenizer_sha256))
+    return Plan(frozen, metadata, tokenizer_sha256, model_sha256,
+                _plan_hash(frozen, metadata, tokenizer_sha256, model_sha256))
 
 
 def _body_hash(body: dict) -> str:
@@ -111,8 +117,32 @@ def _body_hash(body: dict) -> str:
                                      ensure_ascii=False, allow_nan=False).encode()).hexdigest()
 
 
+def run_attested_plan(runtime, recipes: dict, plan: Plan) -> dict:
+    """Fail before exposure unless the owned transport and model pins match.
+
+    The owner, journal and external native/cgroup/tokenizer verifiers still
+    require separate qualification before any target execution.
+    """
+    frozen = copy.deepcopy(plan)
+    if _plan_hash(frozen.pairs, frozen.metadata, frozen.tokenizer_sha256, frozen.model_sha256) != frozen.sha256:
+        raise ValueError('frozen plan was modified')
+    from q38_t7_native_verify import NativeIdentityVerifier
+    if (not isinstance(getattr(runtime, 'transport', None), OwnedHttpTransport)
+            or runtime.transport.supervisor is not getattr(runtime, 'supervisor', None)
+            or not isinstance(getattr(runtime.supervisor, 'identity_verifier', None), NativeIdentityVerifier)
+            or runtime.transport.tokenizer.tokenizer_sha256 != frozen.tokenizer_sha256):
+        raise ValueError('owned native transport and tokenizer identity required')
+    if set(recipes) != {'drafted', 'nodraft'} or any(
+        not isinstance(recipes[arm], dict) or not isinstance(recipes[arm].get('shape'), dict)
+        or recipes[arm]['shape'].get('model_sha256') != frozen.model_sha256
+        for arm in ('drafted', 'nodraft')
+    ):
+        raise ValueError('arm models do not match frozen plan')
+    return run_pairs(runtime, copy.deepcopy(recipes), list(frozen.pairs))
+
+
 def _result(response: dict, *, stream: bool, tokenizer_sha256: str,
-            require_tokens: bool) -> tuple[str, str, str | None, list[int]]:
+            model_sha256: str, require_tokens: bool) -> tuple[str, str, str | None, list[int]]:
     if not isinstance(response, dict) or response.get('http_status') != 200 or response.get('error'):
         raise ValueError('missing or failed native response')
     if stream:
@@ -151,9 +181,22 @@ def _result(response: dict, *, stream: bool, tokenizer_sha256: str,
         if (not isinstance(proof, dict) or proof.get('method') != 'retokenized_text'
                 or proof.get('text_sha256') != text_digest
                 or proof.get('tokenizer_sha256') != tokenizer_sha256
+                or proof.get('model_sha256') != model_sha256
                 or proof.get('token_ids_sha256') != hashlib.sha256(
                     json.dumps(tokens, separators=(',', ':')).encode()).hexdigest()):
             raise ValueError('tokenizer provenance missing or mismatched')
+        raw_tokens = proof.get('tokenizer_response')
+        evidence = proof.get('identity_evidence_sha256')
+        if (not isinstance(raw_tokens, str)
+                or hashlib.sha256(raw_tokens.encode()).hexdigest() != proof.get('tokenizer_response_sha256')
+                or type(proof.get('pid')) is not int or proof['pid'] <= 0
+                or not isinstance(proof.get('birth'), str) or not proof['birth'].isdigit()
+                or not isinstance(evidence, str) or re.fullmatch(r'[0-9a-f]{64}', evidence) is None):
+            raise ValueError('native tokenizer receipt missing or mismatched')
+        token_response = json.loads(raw_tokens)
+        if not isinstance(token_response, dict) or token_response.get('tokens') != tokens:
+            raise ValueError('native tokenizer response does not match token IDs')
+        _local_url(proof.get('server_url'))
         if stream and (response.get('stream_complete') is not True
                        or not isinstance(response.get('raw_stream_sha256'), str)
                        or re.fullmatch(r'[0-9a-f]{64}', response['raw_stream_sha256']) is None):
@@ -172,7 +215,7 @@ def score(plan: Plan, run: dict, ground_truth: dict[str, dict]) -> dict:
     """
     unknown = lambda why: {'status': 'UNKNOWN', 'reason': why, 'protocol': 'independent-warm-v1'}
     try:
-        if _plan_hash(plan.pairs, plan.metadata, plan.tokenizer_sha256) != plan.sha256:
+        if _plan_hash(plan.pairs, plan.metadata, plan.tokenizer_sha256, plan.model_sha256) != plan.sha256:
             return unknown('frozen plan was modified')
     except (TypeError, ValueError):
         return unknown('invalid frozen plan')
@@ -188,7 +231,7 @@ def score(plan: Plan, run: dict, ground_truth: dict[str, dict]) -> dict:
                 for kind in (('warm', 'measure') if pair.warm_body is not None else ('measure',))}
     if set(by) != expected:
         return unknown('missing or unexpected record')
-    rows_a, rows_b, texts = [], [], {}
+    rows_a, rows_b, texts, identities = [], [], {}, {}
     try:
         for pair in plan.pairs:
             meta = plan.metadata[pair.key]
@@ -200,7 +243,13 @@ def score(plan: Plan, run: dict, ground_truth: dict[str, dict]) -> dict:
                 response = record['response']
                 content, reasoning, finish, toks = _result(
                     response, stream=meta.get('type') == 'decode', tokenizer_sha256=plan.tokenizer_sha256,
-                    require_tokens=meta.get('type') != 'needle')
+                    model_sha256=plan.model_sha256, require_tokens=meta.get('type') != 'needle')
+                if meta.get('type') != 'needle':
+                    proof = response['tokenizer_provenance']
+                    identity = (proof['pid'], proof['birth'], proof['server_url'])
+                    if arm in identities and identities[arm] != identity:
+                        raise ValueError('multiple server identities in one arm')
+                    identities[arm] = identity
                 timings = response.get('timings')
                 if not isinstance(timings, dict):
                     raise ValueError('native timings missing')
@@ -240,6 +289,8 @@ def score(plan: Plan, run: dict, ground_truth: dict[str, dict]) -> dict:
                                    'abstained': original.abstained(content)})
     except (KeyError, TypeError, ValueError) as exc:
         return unknown(str(exc))
+    if set(identities) != {'drafted', 'nodraft'} or identities['drafted'][:2] == identities['nodraft'][:2]:
+        return unknown('arms lack distinct captured server identities')
     ids = [value['id'] for value in plan.metadata.values() if value['phase'] == 'A']
     a = {'rows': rows_a, 'n_prompts': len(ids),
          'greedy_identical': sum(texts[(pid, 'dflash2')] == texts[(pid, 'nodraft')] for pid in ids),
@@ -265,7 +316,8 @@ def score(plan: Plan, run: dict, ground_truth: dict[str, dict]) -> dict:
     if missing_speed:
         verdict['speed_valid'] = False
     verdict['speed_missing'] = missing_speed
-    return {'status': 'COMPLETE', 'protocol': 'independent-warm-v1', 'plan_sha256': plan.sha256, 'A': a, 'B': b,
+    return {'status': 'COMPLETE', 'protocol': 'independent-warm-v1', 'plan_sha256': plan.sha256,
+            'server_identities': identities, 'A': a, 'B': b,
             'verdict': verdict,
             'historical_timing_comparable': False}
 

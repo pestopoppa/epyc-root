@@ -7,6 +7,7 @@ import sys
 import tempfile
 import time
 import unittest
+from unittest import mock
 
 import q38_t7_runtime as runtime
 import q38_t7_supervisor as supervisor
@@ -55,6 +56,8 @@ class SupervisorTest(unittest.TestCase):
             handle = self.sup.spawn(arm, self.recipes[arm])
             self.handles.append(handle)
             self.assertTrue(self.sup.verify(handle, arm, self.recipes[arm]))
+            with mock.patch.object(supervisor, '_sha256', side_effect=AssertionError('rehash during request')):
+                self.assertTrue(self.sup.verify(handle, arm, self.recipes[arm]))
             self.assertEqual('-md' in handle.argv, arm == 'drafted')
             self.assertEqual('--spec-type' in handle.argv, arm == 'drafted')
             self.assertTrue(self.sup.stop_and_drain(handle))

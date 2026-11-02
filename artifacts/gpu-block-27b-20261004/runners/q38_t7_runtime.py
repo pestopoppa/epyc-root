@@ -69,7 +69,8 @@ class Runtime:
     def verify(self, server, arm, recipe):
         if server is not self.active or server.stopped or server.arm != arm:
             raise RuntimeFailure('server identity mismatch')
-        if self.supervisor.verify(server.handle, arm, copy.deepcopy(recipe)) is not True:
+        verify_ready = getattr(self.supervisor, 'wait_ready', self.supervisor.verify)
+        if verify_ready(server.handle, arm, copy.deepcopy(recipe)) is not True:
             raise RuntimeFailure('server recipe or process identity unverified')
         server.verified = True
 

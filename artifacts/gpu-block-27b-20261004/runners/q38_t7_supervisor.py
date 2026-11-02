@@ -9,11 +9,14 @@ only the exact child it captured, never a process-name pattern or a process grou
 from __future__ import annotations
 
 from dataclasses import dataclass
+import copy
 import hashlib
+import json
 import os
 from pathlib import Path
 import signal
 import subprocess
+import time
 from typing import Any, Callable
 
 from q38_t7_runtime import SpawnFailure
@@ -37,7 +40,7 @@ def _draft_flag(arg: str) -> bool:
     return name == '-md' or name.startswith(('--model-draft', '--draft', '--spec-', '--speculative'))
 
 
-def command_for(arm: str, recipe: dict[str, Any]) -> tuple[list[str], dict[str, str]]:
+def command_for(arm: str, recipe: dict[str, Any], *, verify_digests: bool = True) -> tuple[list[str], dict[str, str]]:
     """Build from a common recipe and explicit arm fields; reject ambiguity."""
     if arm not in ('drafted', 'nodraft') or set(recipe) != {
         'binary', 'model', 'shape', 'draft_model', 'draft_options'
@@ -66,7 +69,7 @@ def command_for(arm: str, recipe: dict[str, Any]) -> tuple[list[str], dict[str, 
         raise ValueError('explicit string environment required')
     if any(k.upper().startswith('LLAMA_ARG_') or 'DRAFT' in k.upper() for k in env):
         raise ValueError('ambient llama and draft environment forbidden')
-    if _sha256(binary) != shape['binary_sha256'] or _sha256(model) != shape['model_sha256']:
+    if verify_digests and (_sha256(binary) != shape['binary_sha256'] or _sha256(model) != shape['model_sha256']):
         raise ValueError('binary or model digest mismatch')
     options, draft = recipe['draft_options'], recipe['draft_model']
     argv = [binary, *args]
@@ -80,7 +83,7 @@ def command_for(arm: str, recipe: dict[str, Any]) -> tuple[list[str], dict[str, 
             raise ValueError('invalid draft options')
         if options['type'] != 'draft-dflash' or type(options['n_max']) is not int or options['n_max'] < 1:
             raise ValueError('invalid speculative recipe')
-        if _sha256(draft) != options['draft_sha256']:
+        if verify_digests and _sha256(draft) != options['draft_sha256']:
             raise ValueError('draft digest mismatch')
         argv += ['-md', draft, '--spec-type', options['type'], '--spec-draft-n-max', str(options['n_max'])]
     return argv, dict(env)
@@ -92,6 +95,9 @@ class Handle:
     birth: str
     pidfd: int
     argv: list[str]
+    arm: str
+    recipe: dict[str, Any]
+    recipe_sha256: str
     closed: bool = False
 
 
@@ -124,7 +130,10 @@ class Supervisor:
             birth = _birth(process.pid)
             if process.poll() is not None:
                 raise RuntimeError('child exited before identity capture')
-            return Handle(process, birth, pidfd, argv)
+            recipe_copy = copy.deepcopy(recipe)
+            recipe_hash = hashlib.sha256(json.dumps(recipe_copy, sort_keys=True, separators=(',', ':'),
+                                                     allow_nan=False).encode()).hexdigest()
+            return Handle(process, birth, pidfd, argv, arm, recipe_copy, recipe_hash)
         except BaseException as exc:
             # This exact PID belongs to our unreaped Popen child. Descendant
             # custody was not established, so cleanup remains unverified.
@@ -143,13 +152,29 @@ class Supervisor:
         if handle.closed or handle.process.poll() is not None:
             return False
         try:
-            argv, _ = command_for(arm, recipe)
-            return (argv == handle.argv and _birth(handle.process.pid) == handle.birth
+            # Full model/draft hashing belongs at launch, not on every request;
+            # the native identity and tokenizer attestors must independently
+            # bind the actually loaded model throughout the run.
+            argv, _ = command_for(arm, recipe, verify_digests=False)
+            recipe_hash = hashlib.sha256(json.dumps(recipe, sort_keys=True, separators=(',', ':'),
+                                                     allow_nan=False).encode()).hexdigest()
+            return (arm == handle.arm and recipe_hash == handle.recipe_sha256
+                    and argv == handle.argv and _birth(handle.process.pid) == handle.birth
                     and self.identity_verifier(handle, arm, recipe) is True
                     and handle.process.poll() is None
                     and _birth(handle.process.pid) == handle.birth)
         except Exception:
             return False
+
+    def wait_ready(self, handle: Handle, arm: str, recipe: dict[str, Any], *, timeout: float = 10.0) -> bool:
+        """Wait for the exact captured process to satisfy native identity."""
+        deadline = time.monotonic() + max(0.0, timeout)
+        while True:
+            if self.verify(handle, arm, recipe):
+                return True
+            if handle.process.poll() is not None or time.monotonic() >= deadline:
+                return False
+            time.sleep(min(.05, max(0.0, deadline - time.monotonic())))
 
     def stop_and_drain(self, handle: Handle) -> bool:
         if handle.closed:
