@@ -629,6 +629,13 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
   - Needs a cancellable in-flight registry per URL and a request priority field, and it must preserve the FCFS
     no-starvation invariant.
   - This is the only way to turn the server's abort-all into one recompute without touching the kernel.
+  - [x] **KVU-5 isolated ownership and drain foundation** — orchestrator branch
+    `codex/rtg57-admission-20261102` through `f3d98dfd` implements in-process owner-bound attempt
+    selection, output-commit exclusion, preemption-count history and task/nonce-bound verified-drain
+    lifecycle; 14 deterministic/concurrent tests and Ruff pass. It is not connected to traffic,
+    does not cancel or release reservations, and does not survive process restart. Cross-worker
+    ownership, a trusted native drain verifier, transport and safe idempotent requeue remain open.
+    ✅ 2026-11-02 [no-belief: source and deterministic controls]
 - [ ] **KVU-6 — cache-aware ordering on kvu servers** (audit #7 / T9).
   - [x] **KVU-6 admitted-ticket bypass accounting** — orchestrator `c1bd9953` snapshots each admitted
     ticket's observed bypass count alongside its wait, without changing selection; the existing flag-off
@@ -764,6 +771,12 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
       *Not done / follow-ups*. Done when an upstream issue link is recorded here, or the repro shows it is not
       reproducible on the unpatched kernel.
       - *(2026-11-02, source-pair build.)* `handoff-kvu-kvu19a2-build-20261102` rc=0 built both baseline and candidate test-backend-ops and HIP libraries; their four recorded digests match copies under `/mnt/raid0/llm/tmp/kvu/kvu19a2-preserved-20261102/{base,candidate}/bin`. [Build result](../../progress/evidence/kvu19a2-build-result-20261102/result.json). The node-owned source snapshot remains mutable by the same UID; no GPU repeatability verdict exists. A separate capture-harness compilation smoke produced executable SHA-256 `6bb3b80930695241498cd7e1513ec903886dcb3a8a1301d5df13214d0ee64c8a`, preserved beside the libraries. Its declared rule excluded qualification as a full build, yet the publisher marked it complete; `file_result.py` could not find the manifest removed by the publisher; the original manifest and end record were staged for the same filing tool, and the result was filed inconclusive. No full-build claim is made. [no-belief: build and qualification only]
+      - *(2026-11-02, model-free GPU custody smoke.)* One FA case per base/candidate completed rc0 with
+        zero NaNs and observed own KFD and mapped ggml identities. Output hashes differ, but one process
+        per arm cannot establish repeatability or causality; VRAM was not sampled, source-build custody
+        remains incomplete, and the backend logged an additional load warning. Research evidence
+        `artifacts/kvu19a2-smoke-20261102/result.json` SHA-256 `2c5fff863c3228ed3c62b6cbcbf0703ec80a079d0675e3820943d6b44585905c`;
+        prospective write-side capture is `VB-KVU19A2-WIRE`. [belief: cc]
       - *(2026-11-01, binding draft defect.)* Independent review found unreadable directories may be silently omitted and FIFO inspection can block. The draft now propagates traversal errors and rejects FIFOs with nonblocking opens; five offline tests pass. Mutable paths and build-entry custody still prevent using it as an input attestation. [no-belief: offline source review only]
       - *(2026-11-01, ELF inventory defect.)* The inventory may silently omit unreadable subtrees; The draft now propagates traversal errors; five offline tests pass. It still cannot attest source, expected ELF coverage or runtime linkage. [no-belief: offline source review only]
       - *(2026-11-01, ELF inventory draft.)* The [offline component](../../artifacts/compute/kvu19a2-elf-inventory-20261101/README.md) passed four synthetic tests; it cannot establish source identity, expected binary completeness or runtime linkage. A build producer remains open. [no-belief: synthetic tests only]
@@ -1387,6 +1400,12 @@ here: none of the RTG-57 ids remain undefined. The owner named in these texts (w
       and bank cells while retaining existing default banks; invalid sizes and too-short retained token
       files refuse. 92 offline tests pass. Actual occupancy, resume-depth observations, comparison and
       producer capture remain open. ✅ 2026-11-02 [no-belief: source and deterministic test controls]
+    - [x] **KVU-12.6 prospective occupancy producer and analysis** — research branch
+      `codex/rtg57-kvu126-matrix-20261102` through `1160ec9d1` binds native gauge samples to the
+      overlap of all streams' decode windows and requires pinned comparison/row data; missing,
+      ambiguous or late samples refuse. 100 offline tests pass. Existing production binaries do
+      not expose the required unique-cell gauge; an experimental native implementation, actual
+      runs and a predeclared decision remain open. ✅ 2026-11-02 [no-belief: prospective code and fake-server controls]
     - *(2026-11-01, matrix preflight.)* The independently reviewed [preflight](../../artifacts/compute/kvu12-6-producer-20261101/README.md) checks the pinned driver and six proposed nominal cells; five offline tests pass. It does not measure live occupancy or provide a runnable producer, and the comparison remains open. [no-belief: offline matrix validation only]
     - *(2026-11-01, prospective length preparation.)* The [source-bound patch draft](../../artifacts/compute/kvu12-6-prep-20261101/README.md) adds the missing 48k and 96k keys to the retained driver; neither is present in its existing length map. Nominal np8×48k and np4×96k do not alone establish equal actual occupancy or resume depth. Producer, native occupancy criteria, qualification and belief capture remain open; no row or measurement was made. [no-belief: offline source preparation only]
 - [ ] **KVU-12.1 — checkpoint-policy arms in the CPU np x ctx matrix.** On the frontdoor Qwen3.6-35B-A3B and the 27B add four hybrid-checkpoint arms to the KVU-12 matrix: dense (today: --checkpoint-min-step spacing plus n-4 / n-4-n_ubatch; record the positions actually materialized, since a chunk spanning several cadence boundaries materializes only its end), tail plus junction only (<=2 recurrent states per request via checkpoint_at on the fork build), fixed-interval with a cap on checkpoints per request, and a coarser grid whose resume is at most I tokens earlier than dense. Record per arm and per context length L: retained checkpoint count per sequence, bytes per checkpoint, resume prompt_n and cache_n, TTFT, and hit length against checkpoint spacing; baseline is the dense count at the current granularity; cite no external figure. Output sizes --ctx-checkpoints and --checkpoint-min-step and answers HYBRID-PREFIX-REUSE (b). Counts and prompt_n are correctness-class (build-role claim, no quiet host); TTFT and throughput wait for the scheduled exclusive window. Controls: frozen manifest = corpus manifest + bank_manifest sha256 + binary sha256; baseline = the dense arm on the same binary; raw per-request rows through the VB-KVU-CPU emitter; holdout = stride and cap chosen at L=32k and evaluated at 64k and 128k; denominator = every request including pool-full and errors; predeclared rule = an alternate arm replaces dense only if its resume prompt_n is within the dense arm's wave-to-wave spread at every L and its checkpoint bytes per sequence are lower at every L, else dense stays.
