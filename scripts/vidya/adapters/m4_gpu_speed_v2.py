@@ -58,6 +58,7 @@ class Trust:
     plan_path: Path
     plan_sha256: str
     sources: tuple[tuple[Path, str], ...]
+    qualification_only: bool = False
 
     def plan(self) -> dict:
         if len(self.plan_sha256) != 64 or not self.sources:
@@ -201,6 +202,8 @@ def validate_capture(path: str | Path, trust: Trust, *, require_guardian: bool =
 
 
 def project(path: str | Path, trust: Trust) -> ClaimTuple:
+    if trust.qualification_only:
+        raise ProjectionError("qualification-only source cannot project measurement")
     doc, _, value = validate_capture(path, trust)
     raw = _read(_capture(doc["requests_path"], trust))
     return ClaimTuple(measurement_id=doc["measurement_id"], metric="aggregate_decode_tokens_per_s", value=value,

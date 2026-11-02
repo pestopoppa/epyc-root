@@ -12,3 +12,10 @@ SOURCE_SEALS = ()  # (absolute path, SHA-256) pairs, including the native produc
 GRANTS_DIR = "/mnt/raid0/llm/tmp/compute-flags/grants"
 HOLD_DIR = "/mnt/raid0/llm/tmp/compute-flags"
 EXECUTION_ENABLED = False
+
+# Optional independent test-only binding. Never use this plan for measurements.
+DRYRUN_CAPTURE_ROOT = ""
+DRYRUN_PLAN_PATH = ""
+DRYRUN_PLAN_SHA256 = ""
+DRYRUN_GRANTS_DIR = ""
+DRYRUN_HOLD_DIR = ""

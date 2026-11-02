@@ -26,9 +26,10 @@ def main():
         raise RuntimeError('watch output does not match enrolled plan')
     if trust.capture_root != output and trust.capture_root not in output.parents:
         raise RuntimeError('watch output outside approved capture root')
-    grant = Path(write_capture.enrollment.GRANTS_DIR) / (cell['grant']['id'] + '.grant')
+    grants_dir, hold_dir = write_capture.grant_directories(env)
+    grant = Path(grants_dir) / (cell['grant']['id'] + '.grant')
     command = [sys.executable, '-s', '-B', str(Path(__file__).with_name('server_np_sweep.py')), *sys.argv[1:]]
-    return watch.run(command, grant, env['FILLER_STOPFILE'], write_capture.enrollment.HOLD_DIR,
+    return watch.run(command, grant, env['FILLER_STOPFILE'], hold_dir,
                      int(env['FILLER_DEADLINE']), output, env=env)
 
 

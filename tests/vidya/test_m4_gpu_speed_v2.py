@@ -265,3 +265,105 @@ def test_native_request_batch_fake_http_and_partial_records(tmp_path):
         assert [x.success for x in results] == [True, False]
     finally:
         server.shutdown(); server.server_close(); thread.join(timeout=5)
+
+
+@pytest.mark.parametrize('partial', [False, True])
+def test_native_cell_fake_http_kfd_and_partial_fail_closed(tmp_path, monkeypatch, partial):
+    """Exercise actual run_cell and V2 writer with explicitly synthetic hardware."""
+    import importlib.util
+    import threading
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    from types import SimpleNamespace
+    source = Path(__file__).resolve().parents[2] / 'scripts/benchmark/m4_gpu_speed/server_np_sweep.py'
+    sys.path.insert(0, str(source.parent))
+    import write_capture
+    spec = importlib.util.spec_from_file_location('m4_native_cell_fixture', source)
+    native = importlib.util.module_from_spec(spec); sys.modules[spec.name] = native; spec.loader.exec_module(native)
+    _, original, doc = setup_capture(tmp_path)
+    plan = json.loads(original.plan_path.read_text()); cell = plan['cells']['c']
+    device_vram = tmp_path/'device-vram'; device_vram.write_text('20')
+    cell['kfd_vram_file'] = 'vram_0'; cell['device_vram_path'] = str(device_vram)
+    original.plan_path.write_text(json.dumps(plan))
+    trust = Trust(original.capture_root, original.plan_path, digest(original.plan_path.read_bytes()), original.sources)
+    now = datetime.now(timezone.utc)
+    start = (now-timedelta(minutes=1)).strftime('%Y-%m-%dT%H:%MZ')
+    end = (now+timedelta(minutes=3)).strftime('%Y-%m-%dT%H:%MZ')
+    grant = f'regions=mi210_0,184-191 start={start} end={end}'.encode()
+    monkeypatch.setenv('M4_PLAN_CELL', 'c')
+    monkeypatch.setattr(write_capture, 'preflight', lambda *args: (trust, cell, grant))
+    monkeypatch.setattr(write_capture, 'grant_proof', lambda *args: grant)
+    class Handler(BaseHTTPRequestHandler):
+        def log_message(self, *args): pass
+        def do_POST(self):
+            content = json.loads(self.rfile.read(int(self.headers['Content-Length'])))
+            time.sleep(1.15)
+            if partial and content['prompt'] == 'bad':
+                self.send_response(503); self.end_headers(); return
+            payload = json.dumps({'timings': {'predicted_n':10, 'predicted_ms':1000, 'prompt_n':5}}).encode()
+            self.send_response(200); self.send_header('Content-Length', str(len(payload))); self.end_headers(); self.wfile.write(payload)
+    server = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
+    thread = threading.Thread(target=server.serve_forever); thread.start()
+    proc = SimpleNamespace(pid=123)
+    monkeypatch.setattr(native, 'start_server', lambda *a: proc)
+    monkeypatch.setattr(native, 'wait_for_health', lambda *a: None)
+    monkeypatch.setattr(native, 'stop_server', lambda *a: {'ps_verified_dead':True})
+    monkeypatch.setattr(native.subprocess, 'run', lambda *a, **k: SimpleNamespace(stdout='pid=123,'))
+    original_read = Path.read_text; original_iter = Path.iterdir
+    def fixture_read(path, *args, **kwargs):
+        if str(path) == '/proc/123/stat':
+            return '123 (fake) ' + ' '.join(['S'] + ['0'] * 18 + ['45'])
+        if str(path) == '/proc/123/maps':
+            return '0-1 r-xp 0 00:00 0 ' + str(tmp_path/'libggml.so')
+        if str(path) == '/sys/class/kfd/kfd/proc/123/vram_0':
+            return '10'
+        return original_read(path, *args, **kwargs)
+    def fixture_iter(path):
+        if str(path) == '/sys/class/kfd/kfd/proc':
+            return iter([Path('/synthetic-kfd-process')])
+        return original_iter(path)
+    monkeypatch.setattr(Path, 'read_text', fixture_read)
+    monkeypatch.setattr(Path, 'iterdir', fixture_iter)
+    out = original.capture_root/'run'; out.mkdir()
+    args = SimpleNamespace(port_base=server.server_port, llama_server=tmp_path/'binary', threads=2,
+        context_size=65536, ubatch_size=512, kv_type='q8_0', no_flash_attn=False, no_jinja=False,
+        no_mlock=True, extra_server_arg=[], dry_run=False, startup_timeout=2, warmup_prompts=0,
+        warmup_n_predict=4, request_timeout=3, measure_ttft=False, n_predict=10, question_pool=tmp_path/'prompt')
+    prompts = [native.PromptSpec('a','fake',1,'good'), native.PromptSpec('b','fake',1,'bad')]
+    try:
+        if partial:
+            with pytest.raises(ProjectionError, match='invalid or incomplete request'):
+                native.run_cell(model=native.ModelSpec('fake',tmp_path/'model'), np_level=2, prompts=prompts,
+                                args=args, output_dir=out, cell_index=0)
+            records = [json.loads(x) for x in (out/'requests.jsonl').read_text().splitlines()]
+            assert len(records) == 2 and sum(x['success'] for x in records) == 1
+            with pytest.raises(ProjectionError):
+                validate_capture(out/'capture-v2-0.json', trust)
+        else:
+            row = native.run_cell(model=native.ModelSpec('fake',tmp_path/'model'), np_level=2, prompts=prompts,
+                                  args=args, output_dir=out, cell_index=0)
+            assert row['aggregate_decode_tps'] == 20
+            assert validate_capture(out/'capture-v2-0.json', trust)[2] == 20
+    finally:
+        server.shutdown(); server.server_close(); thread.join(timeout=5)
+
+
+def test_qualification_only_never_projects(tmp_path):
+    path, trusted, _ = setup_capture(tmp_path)
+    fixture_trust = Trust(trusted.capture_root, trusted.plan_path, trusted.plan_sha256, trusted.sources, qualification_only=True)
+    assert validate_capture(path, fixture_trust)[2] == 20
+    with pytest.raises(ProjectionError, match='qualification-only'):
+        project(path, fixture_trust)
+
+
+def test_dry_run_does_not_fallback_to_live_enrollment(monkeypatch):
+    import os
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts/benchmark/m4_gpu_speed'))
+    import enrollment
+    import write_capture
+    monkeypatch.setenv('FILLER_DRYRUN', '1')
+    monkeypatch.setattr(enrollment, 'EXECUTION_ENABLED', True)
+    monkeypatch.setattr(enrollment, 'DRYRUN_PLAN_SHA256', '')
+    with pytest.raises(ProjectionError, match='enrollment absent'):
+        write_capture.enrolled()
+    with pytest.raises(ProjectionError, match='dry-run grant authority absent'):
+        write_capture.grant_directories(os.environ)

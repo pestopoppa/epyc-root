@@ -19,8 +19,27 @@ from m4_gpu_speed_v2 import Trust, validate_capture
 import enrollment
 
 
+def _dryrun(env):
+    value = env.get('FILLER_DRYRUN', '0')
+    if value not in ('0', '1'):
+        raise ProjectionError('invalid dry-run selector')
+    return value == '1'
+
+
+def grant_directories(env):
+    if _dryrun(env):
+        if not enrollment.DRYRUN_GRANTS_DIR or not enrollment.DRYRUN_HOLD_DIR:
+            raise ProjectionError('dry-run grant authority absent')
+        return enrollment.DRYRUN_GRANTS_DIR, enrollment.DRYRUN_HOLD_DIR
+    return enrollment.GRANTS_DIR, enrollment.HOLD_DIR
+
+
 def enrolled():
-    if not (enrollment.EXECUTION_ENABLED and enrollment.CAPTURE_ROOT and enrollment.PLAN_PATH and enrollment.PLAN_SHA256 and enrollment.SOURCE_SEALS):
+    dryrun = _dryrun(os.environ)
+    root = enrollment.DRYRUN_CAPTURE_ROOT if dryrun else enrollment.CAPTURE_ROOT
+    plan = enrollment.DRYRUN_PLAN_PATH if dryrun else enrollment.PLAN_PATH
+    digest = enrollment.DRYRUN_PLAN_SHA256 if dryrun else enrollment.PLAN_SHA256
+    if not (enrollment.EXECUTION_ENABLED and root and plan and digest and enrollment.SOURCE_SEALS):
         raise ProjectionError("M4 GPU source and plan enrollment absent")
     seals = tuple((Path(p), h) for p, h in enrollment.SOURCE_SEALS)
     own = Path(__file__).resolve().parent
@@ -30,7 +49,7 @@ def enrolled():
                 own.parent / 'm4_cpu_ownership/m4_cgroup_guard.py'}
     if not required.issubset({p for p, _ in seals}):
         raise ProjectionError('source enrollment does not cover actual entry and guardian')
-    return Trust(Path(enrollment.CAPTURE_ROOT), Path(enrollment.PLAN_PATH), enrollment.PLAN_SHA256, seals)
+    return Trust(Path(root), Path(plan), digest, seals, qualification_only=dryrun)
 
 
 def grant_proof(cell, env):
@@ -42,7 +61,8 @@ def grant_proof(cell, env):
         raise ProjectionError("unsafe grant identity")
     if env.get("FILLER_ID") != grant_id or env.get("FILLER_NEEDGPU") != "1":
         raise ProjectionError("actual grant identity differs from plan")
-    grant_path = Path(enrollment.GRANTS_DIR) / (grant_id + ".grant")
+    grants_dir, hold_dir = grant_directories(env)
+    grant_path = Path(grants_dir) / (grant_id + ".grant")
     try:
         raw = grant_path.read_bytes()
         fields = dict(field.split("=", 1) for field in raw.decode().split())
@@ -54,7 +74,7 @@ def grant_proof(cell, env):
         if int(env["FILLER_END"]) != end or not start <= time.time() < deadline < end:
             raise ValueError("outside grant or deadline")
         stop = Path(env["FILLER_STOPFILE"])
-        if not stop.is_absolute() or str(stop) != grant["stopfile"] or stop.exists() or list(Path(enrollment.HOLD_DIR).glob("HOLD_*")):
+        if not stop.is_absolute() or str(stop) != grant["stopfile"] or stop.exists() or list(Path(hold_dir).glob("HOLD_*")):
             raise ValueError("STOP, HOLD or invalid STOP path")
     except (OSError, UnicodeError, ValueError, KeyError) as exc:
         raise ProjectionError(f"actual grant refusal: {exc}") from exc
