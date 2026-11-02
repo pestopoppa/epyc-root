@@ -1,4 +1,5 @@
 import json
+import datetime
 import sys
 from pathlib import Path
 import tempfile
@@ -9,14 +10,18 @@ sys.path.insert(0, str(ROOT / 'scripts/vidya'))
 from adapters import kvu16a_native as adapter
 from adapters import _native_sidecar as ns
 from claim_tuple import ProjectionError
+import cli
+import ingest_sources
+import loop_beliefs
+from ledger import Ledger
 
 class KVU16aBeliefTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory(); self.root = Path(self.tmp.name)
         self.plan = {'belief_adapter_sha256': ns.file_sha256(Path(adapter.__file__)), 'producer_sha256':'a'*64,
                      'producer_files_sha256':{k:'a'*64 for k in ('producer.py','sampler.py','device_identity.py','server_lifecycle.py')},
-                     'producer_path':'/synthetic/producer.py', 'argv':['server','--no-cache-idle-slots'],
-                     'effective_env':{'GGML_IQK':'1'}, 'identities':{'/synthetic/model':'b'*64},
+                     'producer_path':'/synthetic/producer.py', 'argv':['server','-m','/synthetic/model.gguf','--no-cache-idle-slots'],
+                     'effective_env':{'GGML_IQK':'1'}, 'identities':{'/synthetic/model.gguf':'b'*64},
                      'max_gap_seconds':1.0, 'healthy_samples':2}
         self.records = [{'status':'observed','own_vram_b':2048+i,'pid':123,'birth_ticks':1,'phase':'healthy',
                          'hip_resident':True,'sample_start_monotonic_s':1.0+i*0.2,
@@ -48,6 +53,35 @@ class KVU16aBeliefTests(unittest.TestCase):
         self.assertTrue(adapter.frames_for_sidecar(path, as_of='2026-11-02T15:00:00Z'))
         (self.root/'server.log').write_text('changed')
         with self.assertRaises(ProjectionError): adapter.native_rows(path)
+    def test_registered_ingest_reaches_planning_context(self):
+        sidecar = adapter.record_run(self.root)
+        ledger = Ledger(self.root / 'ledger.jsonl')
+        now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        self.assertIn('kvu16a-sampled-load', cli._FILE_SOURCES)
+        self.assertEqual(set(cli._FILE_SOURCES), set(ingest_sources.SOURCES))
+        report = ingest_sources.ingest(ledger, 'kvu16a-sampled-load', [sidecar.parent], as_of=now)
+        self.assertFalse(report['refused'], report['refused'])
+        self.assertEqual(report['rows_projected'], 1)
+        class Sync:
+            def status(self, *args, **kwargs):
+                return {'fresh': True, 'lag_entries': 0, 'index_max_id': 0, 'synced_max_id': 0, 'last_sync': now}
+        config = self.root / 'alarm.yaml'
+        config.write_text('backend: file\nfile:\n  path: ' + str(self.root / 'alarms.jsonl') + '\n')
+        def context(model, name):
+            return loop_beliefs.prepare('kvu16a.synthetic.' + name, {'model_file': model, 'backend': 'gpu'},
+                ledger=ledger.path, index_path=self.root / 'index', as_of=now, sync_module=Sync(),
+                known_good=self.root / (name + '-known.json'), alarm_state=self.root / (name + '-alarm.json'),
+                alarm_config=config, read_log=self.root / (name + '-reads.jsonl'))
+        found = context('model.gguf', 'target')
+        self.assertEqual(found['status'], 'ready')
+        self.assertEqual(len(found['evidence']['claim_ids']), 1)
+        other = context('unrelated.gguf', 'other')
+        self.assertFalse(other.get('evidence', {}).get('claim_ids', []))
+        (self.root / 'samples.jsonl').write_text('corrupt')
+        refused = ingest_sources.ingest(None, 'kvu16a-sampled-load', [sidecar], as_of=now, dry_run=True)
+        self.assertTrue(refused['refused'])
+        self.assertEqual(refused['frames_emitted'], 0)
+
     def test_missing_sample_or_missing_grant_is_unknown(self):
         self.records[0]['own_vram_b'] = None; self.write()
         self.assertIsNone(adapter.record_run(self.root))
