@@ -20,12 +20,18 @@ validation requires the applicable compute authorization.
 - Experimental llama fork `cdf1532b9`: one-stream physical unique-cell gauge implemented;
   CPU build and model-free shared-cell tests passed. A no-model router could not expose metrics;
   loaded endpoint and candidate integration remain open.
+- Research `6dc3606f2`: KVU-12.6 four-cell pre-run plan and post-run evidence separation;
+  103 offline tests pass. Runtime custody and decision tolerance still need work.
 - Orchestrator through `f3d98dfd`: isolated owner, selection and drain-state foundation for
   KVU-5; 14 tests passed. No live preemption or retry is enabled.
 - Research `bda6ad1cf`: sealed FA-4b response-integrity replay accounted for 2,400 responses;
   the earlier one-of-four equivalence result is unchanged. Three focused tests passed.
 - Research `db970501e`: prospective FA-4a matched-input finite/stress control with two offline
   tests; native producer and acceptance remain open.
+- Research `ce5a407bc`: FA-4b sample-size sensitivity under observed discordance; not a
+  power guarantee or an uncapped-quality result. Three offline tests pass.
+- Research `b79bee067`: HPR R5 exposure ledger and no-redraw guard; four offline tests pass.
+  Request 116 remains unknown and the guarded successor is not installed or qualified.
 - Root Q38-T7 guarded successor refuses mixed drafted/no-draft A/B phases; three offline tests
   passed. Historical direct invocation and dedicated independent lifecycles remain unprotected.
 - Root isolated Q38 coordinator and captured-child supervisor passed 14 fake HTTP/process tests;
