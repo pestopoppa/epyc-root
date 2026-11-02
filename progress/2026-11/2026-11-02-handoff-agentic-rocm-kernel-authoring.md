@@ -67,3 +67,7 @@ At this boundary no completion report existed for the MLA surface, MoE surface o
 ## 00:40Z — Validate selector snapshot evaluator and recipe identity bindings
 
 Consumed rpucg-identity.done and reviewed the revision to artifacts/agentic-rocm/rpucg-snapshot.patch: the caller now supplies evaluator and recipe bytes, which must match SHA-256 identities sealed in the snapshot. Independently applied the patch in isolated scratch and passed six focused tests, including missing and changed content. This is still an unintegrated prospective prototype: an authenticated source for bytes, proof of actual runtime use, a capture producer and the selector A/B remain outstanding. This wrap-up also retries publishing the lane commits left by previous serialized push failures.
+
+## 00:42Z — Diagnose non-fast-forward publication failures and recover pending lane commits
+
+Diagnosed repeated publication failures: after the start-of-turn merge, origin/main advanced before serialized push, which correctly refused a non-fast-forward update. The lane still carries the reviewed selector and identity-binding drafts; this wrap-up retries merging and publishing them. No MLA, MoE or counter-seam completion marker was present and no inference row was published.
