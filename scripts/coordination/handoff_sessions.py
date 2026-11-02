@@ -298,8 +298,26 @@ def filing_step(flags, rid, filing):
             f"tick the handoff with evidence) and `touch {flags}/filing-done/{rid}.FILED` — the receipt acks this event.")
 
 
+def related_ids(flags, rid):
+    """SA-3: the ids a resumed owner needs for a targeted delta instead of a cold re-read: row, manifest, handoff task,
+    lineage, grant end file(s), prior dry-run FAIL/PASS records, verdict record."""
+    mp, m = manifest_for(flags, rid)
+    fails = sorted(glob.glob(os.path.join(flags, "dryrun", rid, "FAIL-*.json")))
+    rel = {"row": rid, "manifest": mp, "handoff_task": m.get("handoff_task"), "lineage": (m.get("lineage") or bg.id_stem(rid)),
+           "result_path": m.get("result_path"), "decision_rule": m.get("decision_rule"),
+           "ends": [p for p in (os.path.join(flags, "grants", rid + ".ended"), os.path.join(flags, "grants", rid + ".complete")) if os.path.exists(p)],
+           "prior_fail": fails[-1] if fails else None, "pass": os.path.join(flags, "dryrun", rid, "PASS.json") if os.path.exists(os.path.join(flags, "dryrun", rid, "PASS.json")) else None,
+           "verdict": os.path.join(flags, "filing-done", rid + ".verdict.json") if os.path.exists(os.path.join(flags, "filing-done", rid + ".verdict.json")) else None}
+    return rel
+
+
+def related_line(rel):
+    return ("Related: " + "; ".join(f"{k}={v}" for k, v in rel.items() if v and k not in ("decision_rule", "result_path")))[:900]
+
+
 def end_prompt(slug, e, flags, rid, endfile, delta="", filing=None):
     mp, m = manifest_for(flags, rid)
+    rel = related_ids(flags, rid)
     try:
         endline = open(endfile).read().strip()[:400]
     except OSError:
@@ -313,9 +331,9 @@ def end_prompt(slug, e, flags, rid, endfile, delta="", filing=None):
         pass
     return f"""[{VERSION}] Run end in your handoff {e.get('handoff') or 'codex-gen backlog'}: row `{rid}`. {FANOUT_LINE} {lane_line(slug)}
 {delta_block(delta).replace('{flags}', flags).replace('<slug>', slug)}1. The handoff is {e['handoff']} in your lane; the state above is current.
-2. Facts: end file {endfile}: `{endline}` (rc={rc}); launcher end line: `{tail}`;
-   manifest {mp or '(not found; look in ' + flags + '/ready/<id>.json or ready/armed/<id>.json)'} (schema {m.get('schema', 'epyc.row.v2|v3')});
-   result_path: {m.get('result_path')}; handoff_task: {m.get('handoff_task')}; decision_rule: {json.dumps(m.get('decision_rule'))[:800]}.
+2. Facts: end file {endfile}: `{endline}` (rc={rc}); launcher end line: `{tail}`; manifest {mp or '(none)'} (schema {m.get('schema', 'epyc.row.v3')});
+   result_path: {m.get('result_path')}; decision_rule: {json.dumps(m.get('decision_rule'))[:800]}.
+   {related_line(rel)}
 {filing_step(flags, rid, filing)}
    Row state any time: `python3 scripts/coordination/rowflow/rowflow.py status <id>` (needs-dryrun, dryrun-running,
    failed [owner fix task in {flags}/dryrun/<id>/FAIL-*.json], parked, grantable, armed, running, done).
@@ -872,6 +890,7 @@ OWN_TASK_RX = re.compile(r"^- \S+ L\d+ \[(cpu|gpu)\] ", re.M)
 IDLE_RX = re.compile(r"IDLE:\s*(.*)")
 IDLE_REPORT_COOLDOWN_S = 30 * 60  # a session that itself said IDLE: <reason> is re-asked after this long
 MIN_RESUME_GAP_S = 10 * 60        # budget emergency 22:45Z: at most one non-filing resume per session per 10 min
+WATCHDOG_MIN_STARTS = 3             # SA-2: alarm when this many starts in an hour produced no ready row
 AUTO_START_COOLDOWN_S = 30 * 60     # SA-1: a handoff is not restarted within this long of its last end/start
 MAX_STARTS_PER_HOUR = 10            # SA-1: global auto-start cap
 STARVED_TICKS = 2                  # keeper ticks (~2 min each) a lane may sit free with zero candidates before INVENTORY-STARVED
@@ -905,6 +924,21 @@ def context_size(session_id, engine="codex"):
     except OSError:
         return None
     return last
+
+
+def start_watchdog(flags, st, now):
+    """SA-2: zero-token counters over the last hour - AUTO-STARTs and DONEs (dispatcher state) vs ready rows produced
+    (dryrun/*/PASS.json mtime). Starts without any effect -> AUTO-START-NO-EFFECT alarm (once per hour)."""
+    starts = [t for t in (st.get("starts") or []) if now - t < 3600]
+    dones = [t for t in (st.get("dones") or []) if now - t < 3600]
+    st["dones"] = dones
+    produced = [p for p in glob.glob(os.path.join(flags, "dryrun", "*", "PASS.json")) if now - os.path.getmtime(p) < 3600]
+    st["watchdog"] = {"starts_h": len(starts), "dones_h": len(dones), "ready_rows_h": len(produced), "at": now_iso()}
+    if len(starts) >= WATCHDOG_MIN_STARTS and not produced and now - st.get("watchdog_alarm", 0) >= 3600:
+        log(flags, f"AUTO-START-NO-EFFECT {len(starts)} auto-start(s) and {len(dones)} done(s) in the last hour produced 0 ready rows (dry-run PASS); "
+                   f"the starts are not converting - check the real-row gate and the briefs")
+        st["watchdog_alarm"] = now
+    return st["watchdog"]
 
 
 def inventory_alarm(flags, st, data, now):
@@ -1144,7 +1178,8 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             if kind == "run-end" and any(ev["slug"] == slug and ev["rid"] == rid for ev in st.get("queue") or []):
                 log(flags, f"DEDUPE {rid} -> {slug}: a run-end for this row is already queued; dropped {key}")  # CAF-6
                 continue
-            st.setdefault("queue", []).append({"slug": slug, "rid": rid, "end": p, "kind": kind})
+            st.setdefault("queue", []).append({"slug": slug, "rid": rid, "end": p, "kind": kind,
+                                               "related": {k: v for k, v in related_ids(flags, rid).items() if k in ("handoff_task", "lineage", "prior_fail", "manifest")}})
             S[slug]["await_event"], S[slug]["noop_reason"] = False, None
             log(flags, f"{'RUN-END' if kind == 'run-end' else 'DRYRUN-RESULT'} {rid} -> {slug}")
     for slug, e in S.items():  # CAF-1: files a session registered as awaited - ALL fired files of a slug ride in ONE event
@@ -1181,6 +1216,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             e["status"], e["done_at"] = "done", now_iso()
             kill_window(slug)
             remove_lane(flags, slug, repo)
+            st.setdefault("dones", []).append(now)
             log(flags, f"DONE {slug}: {why}; slot freed; tmux window {window_name(slug)} killed")
         else:
             idle_window = ws == "pause" or bool(e.get("yield"))  # operator: no window clutter while paused/yielded
@@ -1206,6 +1242,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             return ""
     inventory_alarm(flags, st, bdata, now)
     dead_push_lock(flags, st, now)
+    start_watchdog(flags, st, now)
     paused = _parse(reg.get("paused_until") or "") > now
     live = sum(1 for e in S.values() if alive(e.get("pid")))  # suspended sessions (waiting on a running row) have no pid
     cap = int(reg.get("max_live", 5))
