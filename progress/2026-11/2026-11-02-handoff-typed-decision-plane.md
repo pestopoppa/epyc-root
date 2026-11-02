@@ -1,0 +1,21 @@
+# 2026-11-02 — handoff typed-decision-plane
+
+## 01:58Z — Resolve inference row readiness and prepare remaining priority work
+
+No inference row was published: preparation exposed missing required execution inputs, rather than a qualified runnable recipe. TD-1d.0: the historic four-round result compares 16 native decisions with 24 JSON decisions; restore the missing /mnt/raid0/llm/tmp/champion-sidecar launcher and driver and predeclare equal-work coverage/fallback before a successor run. TD-16: the pinned hunch fixture and sidecar scripts were not found; preserve ruling-6 order TD-29 → TD-1d.0 → TD-12 → TD-16/17 and prepare the full amended controls. TD-11: the frozen snapshot exists (SHA-256 12ca8b0bec364b63358c530c8d06e0e700a58daac95249a460965c629e4856af), but the runner lacks policy variants, same-row current classifier output and the required labelled 20-card OOD fixture; implement/freeze these before measuring. Preparation reports: /mnt/raid0/llm/tmp/compute-flags/handoff-sessions/typed-decision-plane/{td1d,td16,td11}-prep.txt. TD-17 adapter is present in APP commit 5cb3f2c9a7d510f498acbd77eaaed587a59d5399; source evidence is available in ROOT commit 5385eb05c although its linked artifact is absent from this lane. Independent TD-17, TD-29.M0a and TD-30a readiness investigations are delegated; completion files are registered in awaiting/{td17,td29,td30}-prep.json. No compute launched and no handoff boxes completed.
+
+## 03:48Z — Repair sparse-checkout guard prerequisite and prepare inference inputs
+
+Resolved prior wrap-up failure: observer census referenced a tracked origin/main file omitted by sparse checkout. Restored exact origin/main bytes of artifacts/operator/ratify_e8_autopilot_quality_fence_20260726.sh locally; observer_census.py now passes (26 observers). No guard or registry edits. Delegated concrete TD-16 pinned fixture recovery, TD-1d.0 champion-row preparation, and TD-11 20-card OOD candidate under artifacts/typed_decisions; output events registered under awaiting/{td16,td1d,td11}-build.json. Review outputs, validate, include completed lane paths in a future wrap-up, then publish rows only once their full launchers and acceptance rules are ready. No compute launched or row published; frozen TD-28 remains excluded.
+
+## 03:48Z — Preserve observer prerequisite across sparse-checkout merges
+
+The first retry exposed that merge reapplied sparse checkout and removed the restored tracked file. Added that single origin/main path to this lane’s sparse-checkout patterns; the unchanged observer census again passes all 26 registered observers. Prior progress entry records the ongoing delegated preparation.
+
+## 03:49Z — Preserve observer prerequisite across sparse-checkout merges
+
+The first retry exposed that merge reapplied sparse checkout and removed the restored tracked file. Added that single origin/main path to this lane’s sparse-checkout patterns; the unchanged observer census again passes all 26 registered observers. Prior progress entry records the ongoing delegated preparation.
+
+## 03:49Z — Preserve observer prerequisite across sparse-checkout merges
+
+The first retry exposed that merge reapplied sparse checkout and removed the restored tracked file. Added that single origin/main path to this lane’s sparse-checkout patterns; the unchanged observer census again passes all 26 registered observers. Prior progress entry records the ongoing delegated preparation.
