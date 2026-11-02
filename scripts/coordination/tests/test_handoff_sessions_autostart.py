@@ -823,8 +823,8 @@ class WrappedGateTests(_DSHBase):
             subprocess.run(["git", "-C", d, "remote", "add", "origin", d], check=True); subprocess.run(["git", "-C", d, "fetch", "-q", "origin"], check=True)
             _w(os.path.join(d, "f.txt"), "2")  # dirty tracked edit
             e = {"session_id": "t", "last_end": "x", "cwd": d}
-            self.assertTrue(hs.wrapped(e), "one wrap-up resume for a dirty lane")
-            self.assertFalse(hs.wrapped(e), "then refused until it wraps")
+            self.assertTrue(hs.wrapped(e), "a dirty lane is resumed (its prompt ends with wrapup.py)")
+            self.assertTrue(hs.wrapped(e), "and is not refused afterwards; the stuck rule caps churn")
         e = {"last_wrapup": None}
         hs.log_unwrapped(self.flags, "s", e); hs.log_unwrapped(self.flags, "s", e)
         self.assertEqual(self.log_text().count("UNWRAPPED s:"), 1)

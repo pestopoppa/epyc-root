@@ -1519,9 +1519,8 @@ def wrapped(e, cache=None) -> bool:
             ahead = subprocess.run(["git", "-C", cwd, "cherry", "origin/main"], capture_output=True, text=True, timeout=60).stdout
         except (OSError, subprocess.TimeoutExpired):
             return False
-        if dirty and not e.get("dirty_wrap_resume"):
-            e["dirty_wrap_resume"] = now_iso()  # a dirty lane gets ONE wrap-up resume (its prompt ends with wrapup.py); then refused
-            return True
+        if dirty:
+            return True  # the resume's prompt ends with wrapup.py, which is how a dirty lane gets clean; the stuck rule caps churn
         if not dirty and "+" in ahead:
             if land_lane(cwd):  # ws58 23:46Z: a clean lane's unlanded commit is landed here instead of refusing forever
                 ahead = ""
