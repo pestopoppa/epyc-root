@@ -119,3 +119,7 @@ Closed R23-9 from historical evidence: standalone DFlash2 smoke returned rc=1 (d
 ## 11:22Z — Publish the R22-5 private-v10 CPU compile-only qualification
 
 Published autokernel-r22-5-v10-cpu-compile-20261102-v1: publish_row.py smoke PASS on CPUs 0-3, one completed native object-compile unit, rc=75 partial-native-incomplete. The row builds a private v10-derived source with 18 attention boundary cases and records source/object/binary digest and case-selector content proof; it never runs the binary. This smoke proves the compiled translation unit only, not correctness execution or integrated gate behavior. The granted continuation must compile/link the full target and satisfy the manifest decision rule. Result: /mnt/raid0/llm/tmp/autokernel-rebuild/r22-compile-v3/results.jsonl. R23-9 was independently closed and landed as 76c38cde7d64ee9a8657eac4099b69e30a3ad8f9. R23-6 GPU smoke remains preflight-blocked pending the operator-controlled reboot required by kernel-research host-health policy.
+
+## 11:26Z — File failed R22-5 CPU compile and prepare repair
+
+Filed autokernel-r22-5-v10-cpu-compile-20261102-v1 as fail: granted run rc=1, full target build rc=2, results contain only the completed smoke object and no linked binary. GCC 15 reports missing fixed-width integer types in ggml-cpu/iqk/iqk_common.h; the matrix integration and correctness remain unproven. A private scratch successor with an explicit <cstdint> include is being prepared. R22-5 remains open.
