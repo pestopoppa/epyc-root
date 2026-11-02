@@ -99,3 +99,7 @@ Consumed three v10 calibration investigations: no suitable exact-v10 CPU-prefill
 ## 00:56Z — Authenticate v10 calibration instrument
 
 Kernel store cpu-20260921-ffc1bac82/PROVENANCE.md identifies the v10 build and SHA256SUMS authenticates llama-bench, libllama-bench-impl.so, llama-completion and test-backend-ops; sha256sum --check passed for all four. All six hardening markers occur in libllama-bench-impl.so. The existing live_controls.py hashes MODEL at lines 509 and 1868 during execution, contrary to row grant rules, so it is not yet publishable. Also requires clean instrument-root checkout; do not edit frozen production. Delegated a safe pre-grant hash-binding patch design. Previous progress commit c5bdb3672bb3 was recovered to origin/main at 6b3627014a0d through the serialized push lease. No inference or row published.
+
+## 00:57Z — Prepare calibration model-binding change
+
+Prior wrap-up succeeded at 84da91844e317cb6550feb6381e90dcecf04ae04. Delegated a reviewable lane-only patch for live_controls pre-grant model identity, a row-preparation gap checklist, and calibration belief-write wiring check. Existing source calls _sha256_file(MODEL) in _write_declaration and _validate_resume_existing; any fix must preserve binding and tamper protection while moving weight hashing outside the grant. Registered output events; no inference or row publication. Research GitNexus impact queries were invoked for both functions; no impact result returned during this turn, so source edits remain gated.
