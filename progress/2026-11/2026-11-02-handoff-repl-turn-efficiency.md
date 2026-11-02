@@ -139,3 +139,7 @@ Reviewed width design: the existing uncommitted guide proposes a 3→2→1 exper
 ## 09:39Z — Integrate index admission and Omega fix preparation
 
 Reviewed the GitNexus admission and Omega fix reports. The lane-specific index attempt was denied because cross-role region locks were unavailable; no guard was bypassed. The demonstrated Omega progress-log environment fix belongs in a fresh successor snapshot, with isolated directory setup, refreshed source seals and a model-free flush check; the parked snapshot was not modified or retried. Dispatched index-admission investigation and independent task and row preparation, with completion events registered.
+
+## 09:41Z — Prepare main-model token efficiency reporting contract
+
+Prepared a zero-inference reporting definition for Main Model Token Efficiency: mean reward divided by mean main-model trajectory tokens, normalized to the matched no-scaffold arm, alongside reward, total tokens and wall clock. Missing counts are incomplete and zero-token cases must not be divided. This is a proposed reporting contract, not evidence of runner adoption or a measurement; the handoff box remains open. Independent row readiness, implementation and owner routing investigations have completion events registered.
