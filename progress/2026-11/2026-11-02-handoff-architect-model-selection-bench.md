@@ -79,3 +79,7 @@ Previous wrap-up succeeded at b6860b18feb98d5363dc571884dbc79a68ec87e3 and publi
 ## 00:47Z — File scoped NUMA recipe integration analysis
 
 Reviewed RECIPE-NUMA-1 and filed artifacts/architect-model-selection-bench/region-recipe-integration.md. The research canonical recipe currently hardcodes a full-host prefix; a region-scoped implementation and validation remain necessary in epyc-inference-research. The architect single-region interleave result and concurrent-quarter node-local placement evidence concern different scopes, so neither establishes a universal memory policy. No inference or new measurement; checkbox remains open. Prior wrap-up commit 40fde83f5874 failed serialized push and is included in the retry.
+
+## 00:48Z — Record retargeted GPQA launcher constraints
+
+The prior wrap-up successfully published bc2482220e19e0215b3c22f9ca958cc61aefbaa3, including the NUMA brief and pending progress. GPQA review corrected the earlier estimate: historical full CoT A3 used an 8192-token cap. The scratch draft combines server context 16384 with four slots, potentially yielding 4096 context per slot; its actual slot allocation must be established before an 8192-token run. It also lacks a pinned required DFlash2 input and rowflow-compatible stop/resume. No row published or inference performed. Current-model GPQA and EffiBench integration are delegated; completion events registered.
