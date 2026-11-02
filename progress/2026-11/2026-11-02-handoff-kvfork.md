@@ -55,3 +55,7 @@ Closed KPF-27e on its existing 2026-11-01 source audit: orchestrator 6d631212d18
 ## 10:35Z — Complete KPF-27e interface mapping
 
 KPF-27e's existing source audit establishes the specified P1 field mapping and gated checkpoint_at dispatch. Shadow-window metrics remain KPF-27d. Initial wrap-up required a generated-index refresh after the checkbox change.
+
+## 10:39Z — Land KPF-27e interface mapping
+
+KPF-27e field mapping and checkpoint_at dispatch are complete per existing source evidence. The generated handoff index conflict against current main was resolved and regenerated in merge commit 92096dcd8. KPF-27d still owns live shadow measurements.
