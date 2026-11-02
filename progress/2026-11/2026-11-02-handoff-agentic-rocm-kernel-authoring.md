@@ -47,3 +47,31 @@ No completion marker was available for the pending real-model capture or control
 ## 00:35Z — Review model capture assessment, controller roster draft and prospective selector validator
 
 Consumed hawkeye-adapter.done, tensor-model-search.done and selector-dataset.done. Preserved the bounded local model assessment: inspected V4.1 Flash uses top-6 sqrtsoftplus and Qwen3.8 Flash top-10, while V4.1 sparse attention is not established as the required k228 MLA surface; neither is a proven exact producer. Reviewed the discovery-only Hawkeye/SwizzlePerf patch, whose agent reported 13 adapter tests passed and which independently passes git apply --check; it refuses execution and does not alter the historical panel. Preserved the draft without claiming target integration or C5-8 completion. Rejected the initial RPUCG snapshot validator as overrestrictive: it requires all ancestry nodes to pass correctness, whereas the handoff requires passing correctness for eligible evaluated candidates. Requested a corrected draft and tests. No inference row published.
+
+## 00:36Z — Review corrected prospective selector snapshot draft
+
+Consumed fix-rpucg-snapshot.done and reviewed artifacts/agentic-rocm/rpucg-snapshot.patch. The revised validator permits failed ineligible ancestors without rewards and refuses failed eligible nodes, while retaining digest and DAG checks. Independently applied in isolated scratch and ran five focused unit tests successfully. Preserved as a prototype only: evaluator and recipe identifiers are unverified strings, DAG closure excludes external parents, and no native producer, RPUCG selector, actual A/B, or target integration exists. AR-RPUCG remains open; fixture tests are not a measurement.
+
+## 00:37Z — Recover selector draft publication and advance real-model capture prerequisites
+
+The previous wrap-up created 9ab3026e7027 but its serialized push failed, so this boundary carries that commit forward for publication. No governed inference row is yet backed by an exact real-model hook and manifest. Dispatched separate bounded searches for the exact k228 MLA and k175 MoE model surfaces, plus recovery of the interrupted C5-7 in-run evidence-provider patch; registered completion events. These are preparation, not GPU execution or completed tasks.
+
+## 00:38Z — Recover unpublished selector prototype while capture prerequisites are prepared
+
+The previous boundary could not publish commits 9ab3026e7027 and 3f9371a6bdfb after serialized push failed; this wrap-up retries publication. At this boundary none of the three new MLA search, MoE search or counter-seam completion markers was present, so no new inference row or implementation result is asserted. Their dispatcher events remain registered.
+
+## 00:39Z — Prepare selector identity binding and recover pending lane publication
+
+At this boundary no completion report existed for the MLA surface, MoE surface or C5-7 counter-seam work. Assigned a bounded improvement to the prospective RPUCG snapshot prototype so evaluator and recipe identities are content-bound rather than unverified strings; completion event registered. Previous wrap-up attempts failed to publish the lane; this attempt carries those pending commits forward. No GPU computation, row publication, or completed result checkbox.
+
+## 00:40Z — Validate selector snapshot evaluator and recipe identity bindings
+
+Consumed rpucg-identity.done and reviewed the revision to artifacts/agentic-rocm/rpucg-snapshot.patch: the caller now supplies evaluator and recipe bytes, which must match SHA-256 identities sealed in the snapshot. Independently applied the patch in isolated scratch and passed six focused tests, including missing and changed content. This is still an unintegrated prospective prototype: an authenticated source for bytes, proof of actual runtime use, a capture producer and the selector A/B remain outstanding. This wrap-up also retries publishing the lane commits left by previous serialized push failures.
+
+## 00:42Z — Diagnose non-fast-forward publication failures and recover pending lane commits
+
+Diagnosed repeated publication failures: after the start-of-turn merge, origin/main advanced before serialized push, which correctly refused a non-fast-forward update. The lane still carries the reviewed selector and identity-binding drafts; this wrap-up retries merging and publishing them. No MLA, MoE or counter-seam completion marker was present and no inference row was published.
+
+## 00:43Z — Prepare lock-safe publication race remedy
+
+Repeated non-fast-forward push failures trace to a gap between wrapup.py merging origin/main and serialized_push.py acquiring its push lock; another session can publish in that window. Requested a bounded review and candidate patch for a lock-safe remedy without modifying the shared coordination scripts or keeper. Capture and counter-seam completion events remain outstanding; no new row was published. This wrap-up retries publication of the pending lane commits.
