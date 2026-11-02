@@ -17,3 +17,11 @@ The sparse lane omitted a tracked observer-registry target, causing the first wr
 ## 02:03Z — Restore sparse observer target and publish readiness checkpoint
 
 The sparse lane omitted a tracked observer-registry target, causing the first wrap-up commit hook to fail. Materialized that exact tracked blob in the sparse checkout; the observer census then passed, and the readiness record was committed as `ec56dd60b`. The R7 owner-result marker remains registered for the delegated launcher preparation.
+
+## 02:05Z — Consume R7 preparation signal
+
+The registered OWNER-RESULT.json appeared with status `preparing`, so it is not a completed preparation receipt and the draft row was not published. The isolated R7 packet contains a noncohort dry-run path and a pinned app-source checkout, but its producer is still completing offline checks. A new `awaiting/r7-final.json` registers the distinct FINAL-RESULT.json marker; the producer was instructed to create it atomically only on completion or failure. On that event review the result and publish the spec if safe, preserving all frozen slots. No compute was launched.
+
+## 02:05Z — Consume R7 preparation signal
+
+The registered OWNER-RESULT.json appeared with status `preparing`, so it is not a completed preparation receipt and the draft row was not published. The isolated R7 packet contains a noncohort dry-run path and a pinned app-source checkout, but its producer is still completing offline checks. A new `awaiting/r7-final.json` registers the distinct FINAL-RESULT.json marker; the producer was instructed to create it atomically only on completion or failure. On that event review the result and publish the spec if safe, preserving all frozen slots. No compute was launched.
