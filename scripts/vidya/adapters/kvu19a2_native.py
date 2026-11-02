@@ -32,10 +32,10 @@ def row_problems(row: Any) -> list[str]:
         problems.append("unexpected protocol or metric")
     if not ns.nonneg_int(row.get("value")) or row.get("reps") != 1:
         problems.append("nan count must be a nonnegative integer from one launch")
-    for key in ("arm", "case", "source_archive_sha256", "executable_sha256", "hip_sha256", "raw_sha256"):
+    for key in ("arm", "case", "source_archive_sha256", "executable_sha256", "hip_sha256", "raw_sha256", "producer_sha256"):
         if not ns.text(extra.get(key)):
             problems.append(f"missing {key}")
-    for key in ("source_archive_sha256", "executable_sha256", "hip_sha256", "raw_sha256"):
+    for key in ("source_archive_sha256", "executable_sha256", "hip_sha256", "raw_sha256", "producer_sha256"):
         if not ns.SHA256.fullmatch(str(extra.get(key, ""))):
             problems.append(f"invalid {key}")
     if not isinstance(extra.get("mapped_ggml"), dict):
@@ -48,7 +48,9 @@ def row_problems(row: Any) -> list[str]:
                 raise ValueError("native result missing or changed")
             data = json.loads(Path(row["results_path"]).read_text())
             observation = data["observations"][extra["index"]]
-            if (data.get("run_id") != row["run_id"] or observation.get("observed") is not True
+            if (data.get("schema") != "kvu19a2.native-run.v1" or data.get("run_id") != row["run_id"]
+                    or data.get("producer") != row["producer"] or data.get("producer_sha256") != extra["producer_sha256"]
+                    or observation.get("observed") is not True
                     or observation.get("nan_elements") != row["value"]
                     or any(observation.get(k) != extra.get(k) for k in observation)):
                 raise ValueError("native observation mismatch")
@@ -70,6 +72,10 @@ def record_run(output_dir: Path, *, run_id: str, producer: str, observations: li
     """
     if not ns.text(run_id) or not ns.text(producer) or not observations:
         raise ns.CaptureError("run identity and observations required")
+    producer_path = Path(producer)
+    if not producer_path.is_absolute() or not producer_path.is_file():
+        raise ns.CaptureError("producer source file required")
+    producer_sha256 = ns.file_sha256(producer_path)
     for obs in observations:
         if not isinstance(obs, dict) or type(obs.get("observed")) is not bool:
             raise ns.CaptureError("observation status required")
@@ -93,6 +99,7 @@ def record_run(output_dir: Path, *, run_id: str, producer: str, observations: li
     output_dir.mkdir(parents=True, exist_ok=True)
     result = output_dir / "kvu19a2-native.json"
     native = {"schema": "kvu19a2.native-run.v1", "run_id": run_id, "producer": producer,
+              "producer_sha256": producer_sha256,
               "captured_at": now, "observations": observations}
     with result.open("x") as stream:
         stream.write(ns.canonical_json(native) + "\n")
@@ -104,7 +111,7 @@ def record_run(output_dir: Path, *, run_id: str, producer: str, observations: li
         if not obs["observed"]:
             continue
         identity = {"run_id": run_id, "index": index, "results": digest}
-        extra = dict(obs, index=index)
+        extra = dict(obs, index=index, producer_sha256=producer_sha256)
         row = {"schema": SCHEMA, "run_id": run_id, "producer": producer, "emitted_at": now,
                "date": now, "measurement_id": "kvu19a2_" + ns.content_hash(identity)[:24],
                "metric": "fa_output_nan_elements", "value": obs["nan_elements"], "unit": "elements",
