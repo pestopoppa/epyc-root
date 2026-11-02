@@ -28,3 +28,9 @@ Intended next use: apply this patch as a candidate change on a fresh experimenta
 - `git diff --check <parent> <source-commit> -- ggml/src/ggml-cuda/quantize.cu`: passed.
 - Source hashes above were computed from the parent and commit Git objects, not from the experimental checkout's locally modified file.
 - No production or experimental files were changed. No build or compute workload was run.
+
+## v10 source compatibility review (2026-11-02)
+
+The preserved patch passed `git apply --check --verbose` against clean tracked `ggml/src/ggml-cuda/quantize.cu` at production v10 `ffc1bac82eeca6f9099e1ccd9ba49703c460a115`; its single hunk applied at line 57 with a 17-line offset. This is a read-only textual check, not a build, correctness test, or performance result. The change targets `quantize_q8_1`; the separate `quantize_q8_1_1d` fast path is unchanged. The future gate must prove it exercises the affected multidimensional path rather than assuming tg128 triggers it.
+
+The proposed research `loop/bench.py::compare` helper must not be described as counterbalanced based on its docstring: its reviewed measured loop invokes anchor then candidate on each pair. Its global sampler alone does not attribute GPU residency to the launched PID. Prepare a task-specific paired protocol with predeclared ordering, content-bound anchor and candidate builds, per-process GPU residency, exact model/recipe and correctness gates before publishing the 20-pair row. The necessary full candidate build and benchmark frame are not yet present.
