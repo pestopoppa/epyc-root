@@ -22,6 +22,13 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+try:
+    from dashboard import handoff_parser as _hp
+except ImportError:  # loaded as a top-level module (tests / scripts)
+    import handoff_parser as _hp  # type: ignore[no-redef]
+
+HANDOFF_ROOT = Path(__file__).resolve().parents[1] / "handoffs"
+
 SCHEMA = "epyc.pipeline_status.v1"
 REGIONS = ("q0", "q1", "q2", "q3", "gpu-quiet")
 
@@ -151,7 +158,7 @@ def step_of(entry: dict, report: dict | None, live: bool, last: dict | None) -> 
 # --------------------------------------------------------------------------- #
 # compute
 # --------------------------------------------------------------------------- #
-def _rows(flags: Path) -> dict[str, dict]:
+def _rows(flags: Path, fmap: dict | None = None) -> dict[str, dict]:
     """{row_id: {state, ...}} for every published row that is not finished.
 
     state: running (grant, no end) | ready (dry run PASS) | dryrun-fail | dryrun-pending
@@ -173,7 +180,9 @@ def _rows(flags: Path) -> dict[str, dict]:
         j = _json(flags / "ready" / f"{rid}.json")
         ht = j.get("handoff_task") if isinstance(j, dict) else None
         h = ht.partition(":")[0] if isinstance(ht, str) and ht else None
-        return h if h and h.endswith(".md") else None      # "FILLERS" etc. is not a handoff path
+        if not (h and h.endswith(".md")):                   # "FILLERS" etc. is not a handoff path
+            return None
+        return _hp.resolve_folded_file(h, fmap)             # a folded source -> its target
 
     out: dict[str, dict] = {}
     for rid, p in granted.items():
@@ -279,8 +288,8 @@ def region_cpu_pct() -> dict:
     return out
 
 
-def compute_payload(flags: Path, now: float) -> dict:
-    rows = _rows(flags)
+def compute_payload(flags: Path, now: float, fmap: dict | None = None) -> dict:
+    rows = _rows(flags, fmap)
     snap = keeper_snapshot(flags)
     busy = dict((snap or {}).get("busy") or {})
     for r in rows.values():                       # the grants are the primary record of who holds what
@@ -323,14 +332,33 @@ CLASSES = {
 _INFERENCE_TIERS = {0, 4, 5, 6}   # backlog-priority tiers: 0 prep, 4 live, 5 ready, 6 routine
 
 
-def classify_handoffs(graph: dict | None, rows: dict) -> dict:
+def _rollup_counts(graph: dict | None, root: Path) -> dict[str, int]:
+    """Open ``[roll-up]`` boxes per ``handoffs/<state>/<file>`` key (index ``open`` counts them)."""
+    out: dict[str, int] = {}
+    for n in ((graph or {}).get("nodes") or ()) if isinstance(graph, dict) else ():
+        if not isinstance(n, dict) or not isinstance(n.get("handoff"), str):
+            continue
+        state = n.get("state") or "active"
+        key = f"handoffs/{state}/{n['handoff']}"
+        if key in out:
+            continue
+        try:
+            out[key] = _hp.count_open_rollups((root / state / n["handoff"]).read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            out[key] = 0
+    return out
+
+
+def classify_handoffs(graph: dict | None, rows: dict, rollups: dict | None = None) -> dict:
     """Group the graph's nodes by handoff and class each handoff by its blockers.
 
     Per node: no open work -> done; tier 0 or an inference tier -> readied-waiting when
     the handoff owns a ready/running rowflow row (``ready/<id>.json handoff_task``),
     else needs-ready; any other open node -> non-inference. Per handoff the first
     class present wins in the order non-inference, needs-ready, readied-waiting, done
-    (agent work outranks waiting for compute).
+    (agent work outranks waiting for compute). ``rollups`` (open ``[roll-up]`` boxes per
+    handoff key) is subtracted from the handoff's ``open``: a handoff whose only open
+    boxes are non-dispatchable parents is done, never double-counted.
     """
     nodes = (graph or {}).get("nodes") if isinstance(graph, dict) else None
     if not isinstance(nodes, list):
@@ -365,7 +393,13 @@ def classify_handoffs(graph: dict | None, rows: dict) -> dict:
         else:
             h["classes"].add("non-inference")
     out, counts = [], {k: 0 for k in CLASSES}
-    for h in by.values():
+    for key, h in by.items():
+        ru = (rollups or {}).get(key, 0)
+        if ru:
+            h["open"] = max(h["open"] - ru, 0)
+            h["rollup_open"] = ru
+            if h["open"] == 0:
+                h["classes"] = set()
         cls = next((c for c in ("non-inference", "needs-ready", "readied-waiting") if c in h["classes"]), "done")
         h["class"] = cls
         h["owner"] = CLASSES[cls][0]
@@ -389,14 +423,20 @@ def _slug_rank(slug: str, entry: dict, last: dict | None) -> float:
     return float(r) if isinstance(r, (int, float)) else 1e9
 
 
-def build_payload(flags: Path | None = None, now: float | None = None, graph: dict | None = None) -> dict:
+def build_payload(flags: Path | None = None, now: float | None = None, graph: dict | None = None,
+                  handoff_root: Path | None = None) -> dict:
     flags = flags or flags_dir()
+    root = Path(handoff_root) if handoff_root is not None else HANDOFF_ROOT
+    fmap = _hp.load_folded_map(root)        # D5 redirects; absent file = empty map
     now = time.time() if now is None else now
     reg = _json(flags / "handoff-sessions.json")
     if not isinstance(reg, dict) or not isinstance(reg.get("sessions"), dict):
         return {"schema": SCHEMA, "present": False, "error": f"{flags}/handoff-sessions.json unreadable",
                 "generated_at": now}
-    compute = compute_payload(flags, now)
+    compute = compute_payload(flags, now, fmap)
+    for e in reg["sessions"].values():          # a slug still naming a folded source follows the fold
+        if isinstance(e, dict) and e.get("handoff"):
+            e["handoff"] = _hp.resolve_folded_file(e["handoff"], fmap)
     for e in reg["sessions"].values():          # rows with no handoff_task path: link via the owning session
         if not isinstance(e, dict) or not e.get("handoff"):
             continue
@@ -436,7 +476,7 @@ def build_payload(flags: Path | None = None, now: float | None = None, graph: di
         counts[s["step"]] += 1
     counts["queued"] = len(queued)
     disp = reg.get("dispatcher") or {}
-    overview = classify_handoffs(graph, compute["rows"])
+    overview = classify_handoffs(graph, compute["rows"], _rollup_counts(graph, root))
     by_sess: dict[str, dict] = {}
     for it in queued + sessions:                 # sessions last: a live/paused entry outranks a queued one
         if it.get("handoff"):

@@ -524,7 +524,8 @@ _ACT_CHECKED_RE = re.compile(r"^\s*[-*] \[[xX]\]")
 _ACT_UNCHECKED_RE = re.compile(r"^\s*[-*] \[ \]")
 
 
-_ACT_EMPTY = {"commits": 0, "handoffs_touched": 0, "boxes_checked": 0, "boxes_added": 0}
+_ACT_EMPTY = {"commits": 0, "handoffs_touched": 0, "boxes_checked": 0, "boxes_added": 0,
+              "moved": 0, "fold_commits": 0}
 
 
 _ACT_WINDOW_DAYS = 14
@@ -533,7 +534,11 @@ _ACT_WINDOW_DAYS = 14
 _ACT_ROLLUPS = (1, 7, 14)
 
 
-_ACT_DAY_RE = re.compile(r"^commit:[0-9a-fA-F]+\|(\d{4}-\d{2}-\d{2})$")
+# ``commit:<sha>[|<date>][|<Repoint-Reason trailers>|<D9-ack trailers>]`` (see _ACT_FORMAT).
+_ACT_COMMIT_RE = re.compile(r"^commit:([^|\s]+)(?:\|(\d{4}-\d{2}-\d{2}))?(?:\|(.*))?$")
+_ACT_FORMAT = ("--format=commit:%H|%cd|%(trailers:key=Repoint-Reason,valueonly=true,separator=%x3B)"
+               "|%(trailers:key=D9-ack,valueonly=true,separator=%x3B)")
+_ACT_BOX_RE = re.compile(r"^\s*[-*] \[([ xX])\]\s*(.*)$")
 
 
 def _parse_semantic_timestamp(value: object) -> float | None:
@@ -566,31 +571,111 @@ def _panel_envelope(panel: str, obs: "panels.Observation", *,
     return panels.envelope(source, obs, now=now, watchdog_state=snapshot)
 
 
+def _is_fold_commit(tail: str | None) -> tuple[bool, bool]:
+    """``(fold, refactor)`` from a commit's trailers (D5, BRF-T2-3).
+
+    ``fold``: a ``Repoint-Reason:`` trailer -- every fold commit retires index ids, so it
+    is a readiness-neutral migration and is excluded wholesale. ``refactor``: a ``D9-ack:``
+    trailer naming the backlog refactor -- tooling commits carry it too, so it only turns
+    on moved-box pairing and never hides real filing or closing.
+    """
+    if not tail:
+        return False, False
+    repoint, _, ack = tail.rpartition("|")
+    return bool(repoint.strip()), "backlog refactor" in ack.lower()
+
+
+def _box_key(text: str) -> str:
+    return re.sub(r"\s+", " ", text.replace("\u2705", "")).strip().lower()
+
+
+def _act_commits(text: str):
+    """Split ``git log -p`` output into per-commit records with their box lines."""
+    cur = None
+    path = None
+    for line in text.splitlines():
+        m = _ACT_COMMIT_RE.match(line)
+        if m:
+            if cur is not None:
+                yield cur
+            fold, refactor = _is_fold_commit(m.group(3))
+            cur = {"sha": m.group(1), "date": m.group(2), "fold": fold, "refactor": refactor,
+                   "touched": set(), "boxes": []}
+            path = None
+            continue
+        if cur is None:
+            continue
+        if line.startswith("diff --git "):
+            pm = _ACT_DIFF_PATH_RE.match(line)
+            path = pm.group(1) if pm else None
+            if pm:
+                cur["touched"].add(pm.group(1))
+        elif line and line[0] in "+-" and not line.startswith(("+++", "---")):
+            bm = _ACT_BOX_RE.match(line[1:])
+            if bm:
+                cur["boxes"].append((path, line[0], bm.group(1) in "xX", _box_key(bm.group(2))))
+    if cur is not None:
+        yield cur
+
+
+def _count_commit(c: dict) -> tuple[int, int, int]:
+    """``(checked, added, moved)`` for one commit.
+
+    Ordinary commits: added ``[x]`` = closed, added ``[ ]`` = filed. In a fold or
+    backlog-refactor commit a box removed in one file and added in another is MOVED
+    (neither closed nor filed). A fold commit is readiness-neutral migration: beyond
+    the moves only an in-place ``[ ]`` -> ``[x]`` flip counts as closed and any other box
+    line it adds is excluded. A refactor-only commit counts its unpaired boxes normally.
+    """
+    added = [(p, chk, k) for p, sign, chk, k in c["boxes"] if sign == "+"]
+    if not (c["fold"] or c.get("refactor")):
+        return (sum(1 for _, chk, _ in added if chk),
+                sum(1 for _, chk, _ in added if not chk), 0)
+    removed: dict[str, list] = {}
+    for p, sign, chk, k in c["boxes"]:
+        if sign == "-":
+            removed.setdefault(k, []).append((p, chk))
+    checked = filed = moved = 0
+    for p, chk, k in added:
+        pool = removed.get(k) or []
+        other = next((r for r in pool if r[0] != p), None)
+        if other is not None:
+            pool.remove(other)
+            moved += 1
+            continue
+        if not c["fold"]:
+            checked, filed = checked + chk, filed + (not chk)
+            continue
+        flip = next((r for r in pool if r[0] == p and not r[1] and chk), None)
+        if flip is not None:
+            pool.remove(flip)
+            checked += 1
+    return checked, filed, moved
+
+
 def _parse_activity_log(text: str) -> dict:
-    """Fold ``git log --format=commit:%H -p`` output into today's-activity counters.
+    """Fold ``git log -p`` output (``_ACT_FORMAT``) into today's-activity counters.
 
     ``boxes_checked`` counts added ``[x]`` lines (a flip shows as -``[ ]``/+``[x]``,
     a task added-already-done as just +``[x]`` — both are completions recorded
-    today). ``boxes_added`` counts added ``[ ]`` lines (new tracked tasks).
+    today). ``boxes_added`` counts added ``[ ]`` lines (new tracked tasks). Fold
+    commits (by trailer) are excluded from ``commits``/``handoffs_touched`` and
+    contribute only ``moved`` boxes plus genuine in-place ticks (``_count_commit``).
     """
-    commits = 0
+    out = dict(_ACT_EMPTY)
     touched: set[str] = set()
-    boxes_checked = boxes_added = 0
-    for line in text.splitlines():
-        if line.startswith("commit:"):
-            commits += 1
-        elif line.startswith("diff --git "):
-            m = _ACT_DIFF_PATH_RE.match(line)
-            if m:
-                touched.add(m.group(1))
-        elif line.startswith("+") and not line.startswith("+++"):
-            body = line[1:]
-            if _ACT_CHECKED_RE.match(body):
-                boxes_checked += 1
-            elif _ACT_UNCHECKED_RE.match(body):
-                boxes_added += 1
-    return {"commits": commits, "handoffs_touched": len(touched),
-            "boxes_checked": boxes_checked, "boxes_added": boxes_added}
+    for c in _act_commits(text):
+        checked, added, moved = _count_commit(c)
+        out["boxes_checked"] += checked
+        out["boxes_added"] += added
+        out["moved"] += moved
+        if c["fold"] or moved:
+            out["fold_commits"] += 1
+        if not c["fold"]:
+            out["commits"] += 1
+            touched |= c["touched"]
+    out["handoffs_touched"] = len(touched)
+    return out
 
 
 def _activity_today() -> dict:
@@ -602,7 +687,7 @@ def _activity_today() -> dict:
     try:
         proc = subprocess.run(
             ["git", "-C", str(REPO), "log", "--since=midnight",
-             "--format=commit:%H", "-p", "--", "handoffs/"],
+             "--date=format:%Y-%m-%d", _ACT_FORMAT, "-p", "--", "handoffs/"],
             capture_output=True, text=True, timeout=10, check=False)
     except (OSError, subprocess.SubprocessError):
         return dict(_ACT_EMPTY)
@@ -612,37 +697,42 @@ def _activity_today() -> dict:
 
 
 def _parse_activity_log_by_day(text: str) -> list[dict]:
-    """Fold ``git log --format=commit:%H|%ad -p`` output into PER-DAY counters.
+    """Fold ``git log -p`` output (``_ACT_FORMAT``) into PER-DAY counters.
 
     Same counting rules as :func:`_parse_activity_log` (added ``[x]`` = closed,
-    added ``[ ]`` = filed), bucketed by the commit's local date so a trailing
-    window can be rolled up without a second scanner. Returns newest-day-first.
-    Each row carries a ``_touched`` set of handoff paths, which
+    added ``[ ]`` = filed, fold commits contribute only ``moved`` and in-place ticks),
+    bucketed by the commit's local date so a trailing window can be rolled up without
+    a second scanner. Returns newest-day-first. Each row carries a ``_touched`` set of
+    handoff paths and a ``_folds`` list of fold-commit shas, which
     :func:`_activity_window` unions per window and then strips.
     """
     days: dict[str, dict] = {}
-    cur: dict | None = None
-    for line in text.splitlines():
-        m = _ACT_DAY_RE.match(line)
-        if m:
-            cur = days.setdefault(m.group(1), {
-                "date": m.group(1), "commits": 0, "_touched": set(),
-                "boxes_checked": 0, "boxes_added": 0})
+    for c in _act_commits(text):
+        if not c["date"]:
+            continue
+        cur = days.setdefault(c["date"], {
+            "date": c["date"], "commits": 0, "_touched": set(), "_folds": [],
+            "boxes_checked": 0, "boxes_added": 0, "moved": 0, "fold_commits": 0})
+        checked, added, moved = _count_commit(c)
+        cur["boxes_checked"] += checked
+        cur["boxes_added"] += added
+        cur["moved"] += moved
+        if c["fold"] or moved:
+            cur["fold_commits"] += 1
+            cur["_folds"].append(c["sha"][:12])
+        if not c["fold"]:
             cur["commits"] += 1
-            continue
-        if cur is None:
-            continue
-        if line.startswith("diff --git "):
-            pm = _ACT_DIFF_PATH_RE.match(line)
-            if pm:
-                cur["_touched"].add(pm.group(1))
-        elif line.startswith("+") and not line.startswith("+++"):
-            body = line[1:]
-            if _ACT_CHECKED_RE.match(body):
-                cur["boxes_checked"] += 1
-            elif _ACT_UNCHECKED_RE.match(body):
-                cur["boxes_added"] += 1
+            cur["_touched"] |= c["touched"]
     return sorted(days.values(), key=lambda r: r["date"], reverse=True)
+
+
+def _refactor_markers(rows: list[dict]) -> list[dict]:
+    """One annotation per day that carries fold commits: the activity chart draws a
+    marker there so a headline jump is not read as progress or regression."""
+    return [{"date": r["date"], "commits": list(r.get("_folds") or []),
+             "moved": r.get("moved", 0),
+             "label": "backlog refactor fold: boxes moved, not closed or filed"}
+            for r in sorted(rows, key=lambda r: r["date"]) if r.get("fold_commits")]
 
 
 def _activity_rollup(rows: list[dict], days: int, today: str) -> dict:
@@ -659,6 +749,7 @@ def _activity_rollup(rows: list[dict], days: int, today: str) -> dict:
             "commits": sum(r["commits"] for r in sel),
             "handoffs_touched": len(touched),
             "boxes_checked": closed, "boxes_added": filed,
+            "moved": sum(r.get("moved", 0) for r in sel),
             "net": filed - closed}
 
 
@@ -670,15 +761,15 @@ def _activity_window(days: int = _ACT_WINDOW_DAYS) -> dict:
     on any git failure rather than 500ing the board.
     """
     today = datetime.now().date().isoformat()
-    empty = {"window_days": days, "today": today, "per_day": [],
+    empty = {"window_days": days, "today": today, "per_day": [], "refactor_markers": [],
              "rollups": {f"{n}d": {"days": n, "since": today, "commits": 0,
                                    "handoffs_touched": 0, "boxes_checked": 0,
-                                   "boxes_added": 0, "net": 0}
+                                   "boxes_added": 0, "moved": 0, "net": 0}
                          for n in _ACT_ROLLUPS}}
     try:
         proc = subprocess.run(
             ["git", "-C", str(REPO), "log", f"--since={days} days ago",
-             "--date=format:%Y-%m-%d", "--format=commit:%H|%ad", "-p",
+             "--date=format:%Y-%m-%d", _ACT_FORMAT, "-p",
              "--", "handoffs/"],
             capture_output=True, text=True, timeout=30, check=False)
     except (OSError, subprocess.SubprocessError):
@@ -687,12 +778,13 @@ def _activity_window(days: int = _ACT_WINDOW_DAYS) -> dict:
         return empty
     rows = _parse_activity_log_by_day(proc.stdout)
     rollups = {f"{n}d": _activity_rollup(rows, n, today) for n in _ACT_ROLLUPS}
-    per_day = [{k: v for k, v in r.items() if k != "_touched"}
+    per_day = [{k: v for k, v in r.items() if not k.startswith("_")}
                | {"handoffs_touched": len(r["_touched"]),
                   "net": r["boxes_added"] - r["boxes_checked"]}
                for r in rows]
     return {"window_days": days, "today": today,
-            "per_day": per_day, "rollups": rollups}
+            "per_day": per_day, "rollups": rollups,
+            "refactor_markers": _refactor_markers(rows)}
 
 
 READER_ERROR_KEY = "_reader_error"
@@ -816,13 +908,41 @@ def _validate_id(handoff_id: str) -> Path | None:
     return candidate if candidate.is_file() else None
 
 
+def _folded_redirect(handoff_id: str) -> tuple[str, str | None] | None:
+    """``(active/<target-stem>, track)`` for a ``state/stem`` id whose file was folded."""
+    parts = (handoff_id or "").split("/")
+    if len(parts) != 2 or parts[0] not in handoff_parser.STATES or not parts[1]:
+        return None
+    fmap = handoff_parser.load_folded_map(HANDOFF_DIR)
+    base = parts[1] + ".md"
+    if base not in fmap["files"]:
+        return None
+    target = handoff_parser.resolve_folded_file(base, fmap)
+    if not isinstance(target, str) or not target.endswith(".md") or target == base:
+        return None
+    return f"active/{target[:-3]}", fmap["files"][base].get("track")
+
+
 def detail_payload(handoff_id: str) -> tuple[int, dict]:
-    """Return ``(http_status, payload)`` for one handoff's detail view."""
+    """Return ``(http_status, payload)`` for one handoff's detail view.
+
+    A retired id (its file folded into another, D5 ``.folded.json``) resolves to the
+    fold target's card, carrying ``redirected_from`` and the target ``## Track:`` anchor.
+    """
     path = _validate_id(handoff_id or "")
+    redirected_from = anchor = None
+    if path is None:
+        hop = _folded_redirect(handoff_id or "")
+        if hop is not None and _validate_id(hop[0]) is not None:
+            redirected_from, (handoff_id, anchor) = handoff_id, hop
+            path = _validate_id(handoff_id)
     if path is None:
         return 404, {"error": "handoff not found", "id": handoff_id}
     state = handoff_id.split("/")[0]
     card = handoff_parser.parse_file(state, path, detail=True)
+    if redirected_from:
+        card["redirected_from"] = redirected_from
+        card["anchor"] = anchor
     return 200, card
 
 
@@ -961,6 +1081,16 @@ def queue_payload() -> dict:
 
     none_ready = sum(1 for r in rows if r.get("status") == "READY" and r.get("lane") == "none")
     ungated = [r.get("task_id") for r in rows if not r.get("gating")]
+    # A row whose spec_ref names a folded handoff keeps its text; the resolved target
+    # rides alongside so the badge never dangles (D5 ``.folded.json``).
+    fmap = handoff_parser.load_folded_map(HANDOFF_DIR)
+    for row in rows:
+        ref = row.get("spec_ref")
+        if isinstance(ref, str) and ref.startswith("handoffs/"):
+            p, sep, frag = ref.partition("#")
+            resolved = handoff_parser.resolve_folded_file(p, fmap)
+            if resolved != p:
+                row["spec_ref_resolved"] = resolved + sep + frag
 
     alarms = []
     if rows and none_ready == 0:
@@ -2141,6 +2271,9 @@ def graph_payload() -> dict:
     """Read the index graph artifact, tolerating absence/corruption."""
     present, data = _read_graph_contract()
     steps = handoff_step_counts()
+    # The D5 redirect map rides with the graph so a bookmarked retired row id or
+    # folded file id resolves client-side (handoffs.html ``?id=``).
+    data["folded"] = handoff_parser.load_folded_map(HANDOFF_DIR)
     for node in data.get("nodes") or ():
         if isinstance(node, dict) and node.get("handoff") in steps:
             node["steps_since_tick"] = steps[node["handoff"]]

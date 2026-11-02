@@ -23,6 +23,7 @@ rather than raising, so a single weird file can never 500 the page.
 
 from __future__ import annotations
 
+import json
 import re
 from datetime import datetime, timezone
 from pathlib import Path
@@ -53,6 +54,16 @@ SENTINEL_RE = re.compile(
 )
 # Skip these filenames when walking a state directory.
 _SKIP_NAMES = {"README.md", "BLOCKED.md"}
+# Backlog refactor 2026-11 (BRF-T2-2): a ``> **Folded into …`` blockquote banner marks a
+# source handoff whose open work moved into another file. Only the blockquote form is a
+# banner, so a "Folded into AR-3" remark on a task line never flips a file's lifecycle.
+FOLDED_BANNER_RE = re.compile(r"^>\s*\*\*Folded into\b(.*)$", re.M | re.I)
+_FOLDED_TARGET_RE = re.compile(r"\(([^)\s]+?\.md)(?:#[^)]*)?\)|`([^`\s]+?\.md)`")
+# A roll-up box is a non-dispatchable parent whose children carry the work; counting it
+# as well would double-count every decomposition.
+ROLLUP_RE = re.compile(r"\[roll-up\]", re.I)
+# D5 redirect map (old handoff file / retired row id -> fold target). Absent = empty map.
+FOLDED_MAP_NAMES = (".folded.json", "active/.folded.json")
 
 
 # --------------------------------------------------------------------------- #
@@ -229,10 +240,15 @@ def count_tasks(text: str) -> tuple[int, int, str, list[dict]]:
 
     ``tasks`` is the structured checklist (only populated for the checkbox case);
     each item is ``{"done": bool, "text": str}``.
+
+    Boxes tagged ``[roll-up]`` (non-dispatchable parents) are skipped: their children
+    are the tracked work, so counting the parent too would double-count.
     """
     tasks: list[dict] = []
     checked = 0
     for mark, task_text in CHECKBOX_RE.findall(text):
+        if ROLLUP_RE.search(task_text):
+            continue
         is_done = mark in ("x", "X")
         checked += 1 if is_done else 0
         tasks.append({"done": is_done, "text": task_text.strip()})
@@ -244,6 +260,103 @@ def count_tasks(text: str) -> tuple[int, int, str, list[dict]]:
     if marker_count:
         return marker_count, 0, "markers", []
     return 0, 0, "none", []
+
+
+def count_open_rollups(text: str) -> int:
+    """Unticked ``[roll-up]`` boxes (what an index ``open`` count over-counts by)."""
+    return sum(1 for mark, t in CHECKBOX_RE.findall(text or "")
+               if mark == " " and ROLLUP_RE.search(t))
+
+
+def parse_folded(text: str) -> str | None:
+    """Target basename of a ``> **Folded into …`` banner.
+
+    ``None`` = no banner; ``""`` = a banner that names no parseable ``.md`` link.
+    """
+    m = FOLDED_BANNER_RE.search(text or "")
+    if not m:
+        return None
+    t = _FOLDED_TARGET_RE.search(m.group(1))
+    if not t:
+        return ""
+    return (t.group(1) or t.group(2)).rsplit("/", 1)[-1]
+
+
+def _folded_entry(value) -> dict | None:
+    if isinstance(value, str) and value.strip():
+        return {"target": value.strip().rsplit("/", 1)[-1], "track": None}
+    if isinstance(value, dict):
+        tgt = value.get("target") or value.get("into") or value.get("to")
+        if isinstance(tgt, str) and tgt.strip():
+            track = value.get("track") or value.get("anchor")
+            return {"target": tgt.strip().rsplit("/", 1)[-1],
+                    "track": track if isinstance(track, str) else None}
+    return None
+
+
+def load_folded_map(handoff_root: Path) -> dict:
+    """Read the D5 ``.folded.json`` redirect map; ``{"files": {}, "ids": {}}`` when absent.
+
+    Accepted shapes: ``{"files": {old.md: target.md | {"target", "track"}}, "ids":
+    {OLD-ID: NEW-ID | {"target", "track"}}}`` or a flat ``{old.md: target.md}``. Keys and
+    targets may carry a ``handoffs/<state>/`` prefix; they are normalised to basenames.
+    Malformed input degrades to the empty map (fail soft, like the rest of the parser).
+    """
+    out: dict = {"files": {}, "ids": {}}
+    for name in FOLDED_MAP_NAMES:
+        try:
+            data = json.loads((Path(handoff_root) / name).read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if not isinstance(data, dict):
+            continue
+        files = data.get("files", data.get("handoffs"))
+        ids = data.get("ids", data.get("rows"))
+        if files is None and ids is None:
+            files = {k: v for k, v in data.items() if isinstance(k, str) and k.endswith(".md")}
+        for bucket, src in (("files", files), ("ids", ids)):
+            if not isinstance(src, dict):
+                continue
+            for key, value in src.items():
+                entry = _folded_entry(value)
+                if entry and isinstance(key, str) and key.strip():
+                    k = key.strip().rsplit("/", 1)[-1] if bucket == "files" else key.strip()
+                    out[bucket].setdefault(k, entry)
+    return out
+
+
+def resolve_folded_file(path, fmap: dict | None):
+    """Follow a stale handoff path through the fold chain, keeping the caller's form.
+
+    ``x.md`` -> ``y.md``; ``handoffs/<state>/x.md`` -> ``handoffs/active/y.md``. Paths
+    that were never folded (and non-strings) come back unchanged; cycles stop.
+    """
+    files = (fmap or {}).get("files") or {}
+    if not isinstance(path, str) or not path or not files:
+        return path
+    head, _, base = path.rpartition("/")
+    cur, seen = base, set()
+    while cur in files and cur not in seen:
+        seen.add(cur)
+        cur = files[cur]["target"]
+    if cur == base:
+        return path
+    if not head:
+        return cur
+    parts = head.split("/")
+    if parts[-1] in STATES:
+        parts[-1] = "active"
+    return "/".join(parts + [cur])
+
+
+def resolve_folded_id(row_id, fmap: dict | None):
+    """Follow a retired index row id through the ``ids`` chain (unchanged if never folded)."""
+    ids = (fmap or {}).get("ids") or {}
+    cur, seen = row_id, set()
+    while isinstance(cur, str) and cur in ids and cur not in seen:
+        seen.add(cur)
+        cur = ids[cur]["target"]
+    return cur
 
 
 def _status_short(status: str, limit: int = 140) -> str:
@@ -355,6 +468,7 @@ def parse_file(state: str, path: Path, *, detail: bool = False) -> dict:
     meta = parse_metadata(text)
     dates = parse_dates(meta)
     done, total, source, tasks = count_tasks(text)
+    folded_into = parse_folded(text)
     status_full = meta.get("status", "")
     try:
         mtime = path.stat().st_mtime
@@ -377,7 +491,9 @@ def parse_file(state: str, path: Path, *, detail: bool = False) -> dict:
         "priority": parse_priority(meta),
         "status_short": _status_short(status_full),
         "blocked_hint": _is_blocked_status(status_full),
-        "lifecycle": parse_lifecycle(meta, status_full),
+        "lifecycle": ("folded" if folded_into is not None
+                      else parse_lifecycle(meta, status_full)),
+        "folded_into": folded_into or None,
         "done": done,
         "total": total,
         "progress_source": source,
@@ -504,9 +620,16 @@ def build_board(handoff_root: Path, *, file_activity: dict | None = None,
     dates exactly as before. See ``_derive_activity``.
     """
     columns: dict[str, list[dict]] = {s: [] for s in STATES}
+    # Folded sources (banner, moved out of active/) get their own column: they carry only
+    # a closed ledger and must not read as handoffs finished (BRF-T2-2).
+    columns["folded"] = []
 
     for state, path in iter_handoff_files(handoff_root):
         card = parse_file(state, path)
+        if card.get("lifecycle") == "folded" and state != "active":
+            _derive_activity(card, file_activity, dirty_ids)
+            columns["folded"].append(card)
+            continue
         # Derive the recency signal while the card still carries its real id
         # (the blocked reroute below keeps the id but rewrites ``state``).
         _derive_activity(card, file_activity, dirty_ids)
@@ -522,9 +645,10 @@ def build_board(handoff_root: Path, *, file_activity: dict | None = None,
 
     # Stable, useful ordering per column.
     for state, cards in columns.items():
-        cards.sort(key=_card_sort_key(state))
+        cards.sort(key=_card_sort_key("completed" if state == "folded" else state))
 
     counts = {s: len(columns[s]) for s in STATES}
+    counts["folded"] = len(columns["folded"])
     return {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "columns": columns,

@@ -76,6 +76,7 @@ _COMMIT_RE = re.compile(r"^\x00([0-9a-f]{7,40}) (.+)$")
 _DIFF_RE = re.compile(r"^diff --git a/(.+) b/(.+)$")
 _RENAME_FROM_RE = re.compile(r"^rename from (.+)$")
 _RENAME_TO_RE = re.compile(r"^rename to (.+)$")
+_ROLLUP_RE = re.compile(r"\[roll-up\]", re.I)
 _ADDED_CHECKBOX_RE = re.compile(r"^\+\s*[-*]\s*\[([ xX])\]\s*(.*)$")
 _ADDED_META_RE = re.compile(r"^\+\s*\*\*(Created|Updated|Date)\*\*:\s*(.*)$", re.I)
 _PATH_RE = re.compile(r"^handoffs/(active|blocked|completed|archived)/(.+)\.md$")
@@ -645,8 +646,8 @@ def build_timeline(repo: Path) -> dict:
                 cbag = seen_checked.setdefault(ikey, set())
                 for mark, text, inline_date in blk.checkboxes:
                     tkey = _task_key(text)
-                    if not tkey:
-                        continue
+                    if not tkey or _ROLLUP_RE.search(text):
+                        continue   # roll-up parents never count (children carry the work)
                     if tkey not in obag:
                         obag.add(tkey)
                         # a task enters the backlog roughly when its handoff was created

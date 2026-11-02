@@ -152,7 +152,9 @@
   .oc-notice{font-size:10.5px;color:var(--muted);margin-top:10px;line-height:1.5}
 
   /* kanban */
-  .kanban{display:grid;grid-template-columns:repeat(4,minmax(240px,1fr));gap:14px;align-items:start}
+  .kanban{display:grid;grid-template-columns:repeat(5,minmax(200px,1fr));gap:14px;align-items:start}
+  .card.lifecycle-folded{opacity:.6}
+  .flow-refactor{font-size:11px;color:var(--muted,#8b949e);margin-top:4px}
   @media(max-width:1100px){.kanban{grid-template-columns:repeat(2,minmax(240px,1fr))}}
   @media(max-width:620px){.kanban{grid-template-columns:1fr}}
   .column{background:var(--panel);border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;min-height:120px}
@@ -415,6 +417,7 @@
     <div class="column" data-state="blocked"><h3><span class="swatch"></span>Blocked<span class="count"></span></h3><div class="cards"></div></div>
     <div class="column" data-state="completed"><h3><span class="swatch"></span>Completed<span class="count"></span></h3><div class="cards"></div></div>
     <div class="column" data-state="archived"><h3><span class="swatch"></span>Archived<span class="count"></span></h3><div class="cards"></div></div>
+    <div class="column" data-state="folded" title="Sources folded into another handoff (backlog refactor) — not completed work"><h3><span class="swatch"></span>Folded<span class="count"></span></h3><div class="cards"></div></div>
   </div>
 
   <section class="graph">
@@ -627,8 +630,9 @@ function priGroupHead(pri, group){
 }
 function renderBoard(data){
   const cols = data.columns||{};
-  for(const state of ["active","blocked","completed","archived"]){
+  for(const state of ["active","blocked","completed","archived","folded"]){
     const colEl = $(`.column[data-state=${state}]`);
+    if(!colEl) continue;
     const list = colEl.querySelector(".cards");
     const cards = cols[state]||[];
     colEl.querySelector(".count").textContent = cards.length;
@@ -649,7 +653,7 @@ function renderBoard(data){
   setBadge("#board-badge", (data._freshness&&data._freshness.staleness_class)||"fresh");
   const gen = data.generated_at ? " · scanned " + data.generated_at.replace("T"," ").replace("Z"," UTC") : "";
   $("#subline").textContent =
-    `${data.counts.active} active · ${data.counts.blocked} blocked · ${data.counts.completed} completed · ${data.counts.archived} archived${gen}`;
+    `${data.counts.active} active · ${data.counts.blocked} blocked · ${data.counts.completed} completed · ${data.counts.archived} archived${data.counts.folded?` · ${data.counts.folded} folded`:""}${gen}`;
   renderBacklog(data.backlog||{}, data.activity_today);
   renderFlow(data.activity_window, data.activity_today);
 }
@@ -731,6 +735,22 @@ function renderFlow(win, act){
       b.title = r.date+": "+(r.boxes_checked||0)+" closed, "+(r.boxes_added||0)+" filed (net "+
                 netStr(r.net!=null?r.net:((r.boxes_added||0)-(r.boxes_checked||0)))+")";
       spark.appendChild(b);
+    }
+    // One-time backlog-refactor annotation: fold commits move boxes between files, so the
+    // day's jump is neither progress nor regression (BRF-T2-3).
+    const marks = Array.isArray(win && win.refactor_markers) ? win.refactor_markers : [];
+    const host = spark.parentNode;
+    const old = host && host.querySelector(".flow-refactor");
+    if(old) old.remove();
+    if(marks.length && host){
+      const md = new Set(marks.map(m=>m.date));
+      days.forEach((r,i)=>{ if(md.has(r.date) && spark.children[i]){
+        spark.children[i].style.outline="1px dashed var(--muted,#8b949e)";
+        spark.children[i].title = "backlog refactor fold · "+spark.children[i].title; }});
+      const moved = marks.reduce((n,m)=>n+(m.moved||0),0);
+      host.appendChild(el("div","flow-refactor",
+        "\u2507 backlog refactor on "+marks.map(m=>m.date).join(", ")+": "+moved+
+        " box(es) moved between handoffs \u2014 excluded from closed/filed"));
     }
   }
 }
@@ -956,6 +976,24 @@ function openModal(id, title){
   loadDetail(id);
 }
 $("#modal-close").addEventListener("click", closeModal);
+// Deep link ``?id=``: a ``state/stem`` id opens its card (the detail API follows
+// ``.folded.json`` for folded files); a bare row id resolves through the graph's
+// ``folded.ids`` chain to the node that now owns it.
+(async function deepLink(){
+  await Promise.resolve();   // after the rest of the script block has initialised
+  let id = null;
+  try{ id = new URLSearchParams(location.search).get("id"); }catch(e){ return; }
+  if(!id) return;
+  if(id.includes("/")){ openModal(id); return; }
+  try{
+    const g = await getJSON("/api/handoff_graph");
+    const ids = (g.folded && g.folded.ids) || {};
+    const seen = new Set();
+    while(ids[id] && !seen.has(id)){ seen.add(id); id = ids[id].target; }
+    const n = (g.nodes||[]).find(x=>x.id===id);
+    if(n && n.handoff) openModal((n.state||"active")+"/"+n.handoff.replace(/\.md$/,""));
+  }catch(e){ /* deep link is best-effort */ }
+})();
 modal.addEventListener("click", e=>{ if(e.target===modal) closeModal(); });
 document.addEventListener("keydown", e=>{ if(e.key==="Escape") closeModal(); });
 
@@ -967,6 +1005,8 @@ async function loadDetail(id){
   $("#m-title").textContent = d.title||id;
   const meta=$("#m-meta");
   meta.innerHTML="";
+  if(d.redirected_from) meta.appendChild(el("span","chip lc lc-folded",
+    "folded from "+d.redirected_from+(d.anchor?" \u2192 "+d.anchor:"")));
   if(d.priority && d.priority!=="NONE") meta.appendChild(el("span","chip pri-"+d.priority,d.priority));
   meta.appendChild(el("span","chip date","state: "+d.state));
   if(d.created) meta.appendChild(el("span","chip date","created "+d.created));
