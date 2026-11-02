@@ -67,6 +67,14 @@ separates completed source from prospective validation; the dated notes below re
 Never reinterpret an observation as a passed gate. The operator stop and existing measurement, kernel and
 coordination rules remain binding.
 
+### Implementation progress — 2026-11-02
+
+- **KPF-17:** full C5 + P1 experimental candidate `experimental/kpf17-champion-p1-20261102` at `9c2dfe160` adds busy-source partial-restore test and negative control. Linked CPU test build and own ggml linkage verified; model execution and mutation detection remain open. [no-belief: source/build only]
+- **KPF-22:** orchestrator main `f678231c` prevents a prefix hit bypassing any earlier waiter that already fits, and fails closed for unknown reservations. Focused and related suites: 111 plus 7 tests passed. KPF-26 live validation remains open. [no-belief: software verification]
+- **KPF-30:** C5-derived `experimental/kpf30-counter-20261102` at `236413a87` adds a default-off ownership observer; standalone fixtures and changed source object compile passed. Root main `8c17604ec` adds native live capture and existing-ladder projection; VB-KPF30-WIRE tracks real runner integration and canary. Full candidate fold, runtime capture and two-window gate remain open. [no-belief: source/build only]
+- **KPF-60.GPU-X:** [reproducible derived table](../../artifacts/engineering/kpf60-gpu-crossover-20261102/README.md) estimates f16 attention KV at 65,536 bytes/token from current model metadata. Native chunk bytes and end-to-end crossover are unmeasured. [no-belief: derived estimate]
+- **KPF-64.3:** research main `fded4ce6c` + `7ac65aecf` rejects invalid family cohorts and incomplete, duplicate or failed replay coverage, preserving unknown timings; 52 tests passed. The historical 267/442 F record remains partial; the comparable-cohort amendment and subsequent F/FB work remain open. [no-belief: software verification]
+
 ## P1 dispatch corrections — 2026-11-02
 
 This section is the current dispatch interpretation of P1; dated notes below retain their original evidentiary meaning. The operator stopped inference and revoked all grants on 2026-11-02 (`progress/2026-11/2026-11-02-ws58.md`). Source inspection, design, and non-inference preparation continue; do not launch model inference or assume an old `ARMED` row, PID, window, owner, source pin, or binary path is current. The inference stop must be lifted and a fresh owner-granted window obtained for any model run. Resolve live ownership and current experimental champion before touching shared work. Do not use this section to relax a predeclared gate or amend measurement policy.
