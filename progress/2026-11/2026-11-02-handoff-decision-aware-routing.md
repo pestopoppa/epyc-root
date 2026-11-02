@@ -67,3 +67,7 @@ Consumed snapshot and writer reviews. Added scripts/analysis/dar_snapshot_inputs
 ## 01:22Z — Review prospective coverage writer and controlled sweep driver
 
 Consumed writer-fixed and sweep-driver reports. Corrected snapshot manifest cutoff wording: stability is checked at sampled points and capture is non-atomic, not proven stable throughout. Eight snapshot fixture tests pass. Writer fixes pass nine synthetic tests but custody, provenance, strict reader and real canary remain; no real data or inference run. Sweep fixture driver plans paired arms and preserves failures but has no live transport or grading and is not a runnable row. Registered custody, driver and preference-patch reviews.
+
+## 01:24Z — Harden snapshot verification and consume sweep-driver review
+
+Consumed driver-review: offline replay needs complete manifest validation and digest binding, durable malformed-observation handling, normalized failures and an honest telemetry presence label before any live use. Dispatched bounded correction and independent receipt/patch reviews. Hardened dar_snapshot_inputs.py verification to validate schema, reject all unexpected root/progress/provenance entries and recompute derived role list from baseline; ten fixture tests pass. A trusted external manifest anchor and trusted/quiescent ancestors remain necessary; no real data or inference run and no row published. GitNexus could not resolve this unindexed lane for impact; changed scope is the snapshot verification command and its fixture tests.

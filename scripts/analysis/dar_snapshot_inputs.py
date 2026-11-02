@@ -97,6 +97,9 @@ def verify(args):
         if not stat.S_ISDIR(os.stat(directory, follow_symlinks=False).st_mode): raise ValueError('invalid snapshot directory')
     manifest_data, _ = read_stable(root/'manifest.json')
     manifest = json.loads(manifest_data)
+    if not isinstance(manifest, dict) or manifest.get('schema') != 1: raise ValueError('invalid manifest schema')
+    if {p.name for p in root.iterdir()} != {'manifest.json', 'progress', 'provenance', 'baseline-roles.json'}: raise ValueError('unexpected snapshot entries')
+    if {p.name for p in (root/'provenance').iterdir()} != {'baseline.json', 'scorer-config.json'}: raise ValueError('unexpected provenance entries')
     entries = manifest['selection']['files']
     expected = set()
     for item in entries:
@@ -104,7 +107,7 @@ def verify(args):
         if not isinstance(name, str) or Path(name).name != name or not name.endswith('.jsonl') or name in expected:
             raise ValueError('invalid manifest selection')
         expected.add(name)
-    if not expected or set(names(root/'progress')) != expected: raise ValueError('progress selection mismatch')
+    if not expected or {p.name for p in (root/'progress').iterdir()} != expected: raise ValueError('progress selection mismatch')
     for item in entries:
         data, _ = read_stable(root/'progress'/item['name'])
         if len(data) != item['size'] or sha(data) != item['sha256']: raise ValueError('progress digest mismatch')
@@ -114,6 +117,9 @@ def verify(args):
     for name, digest in artifacts.items():
         data, _ = read_stable(root/name)
         if sha(data) != digest: raise ValueError('artifact digest mismatch')
+    baseline, _ = read_stable(root/'provenance'/'baseline.json')
+    derived, _ = read_stable(root/'baseline-roles.json')
+    if roles(baseline) != derived: raise ValueError('derived baseline roles mismatch')
     print('verified')
 
 def main():

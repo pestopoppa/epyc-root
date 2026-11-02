@@ -54,6 +54,20 @@ class SnapshotTest(unittest.TestCase):
         args = type('Args',(),{'parent':str(self.parent),'progress':str(self.progress),'baseline':str(self.baseline),'provenance':str(self.config)})()
         with patch.object(snapshot,'names',side_effect=changed), self.assertRaises(ValueError): snapshot.snapshot(args)
         self.assertEqual(list(self.parent.iterdir()),[])
+    def test_extra_non_jsonl_rejected(self):
+        result = self.capture(); self.assertEqual(result.returncode, 0, result.stderr)
+        path = Path(result.stdout.strip()); (path/'progress').chmod(0o700); (path/'progress'/'extra.txt').write_text('extra')
+        self.assertNotEqual(self.run_cli('verify', path).returncode, 0)
+
+    def test_baseline_roles_must_match_source(self):
+        result = self.capture(); self.assertEqual(result.returncode, 0, result.stderr)
+        path = Path(result.stdout.strip())
+        role_path = path/'baseline-roles.json'; role_path.chmod(0o600); role_path.write_text('["other"]\n')
+        manifest_path = path/'manifest.json'; manifest = json.loads(manifest_path.read_text())
+        manifest['artifacts']['baseline-roles.json'] = snapshot.sha(role_path.read_bytes())
+        manifest_path.chmod(0o600); manifest_path.write_text(json.dumps(manifest))
+        self.assertNotEqual(self.run_cli('verify', path).returncode, 0)
+
     def test_extra_progress_detected(self):
         result = self.capture(); self.assertEqual(result.returncode,0,result.stderr)
         path = Path(result.stdout.strip()); (path/'progress').chmod(0o700); (path/'progress'/'extra.jsonl').write_text('{}\n')
