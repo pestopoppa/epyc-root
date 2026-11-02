@@ -1,0 +1,32 @@
+
+==== dry run 2026-11-01T19:46:39Z regions=0-95 launcher_sha=db84524ebd28d719a2b148b3f39286b2b73bbd854ff6a6a1c91084acfc664517 units_before=0
+2026-11-01T19:46:39Z [codex3-cpu-fa-vkq3-mtp-20261031] launcher up pid=3979284 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/vkq3/STOP minwin=9000s ports=none
+2026-11-01T19:46:39Z [codex3-cpu-fa-vkq3-mtp-20261031] START regions=0-95 cpus=0-95 threads=96 gpu=0 end=2026-11-01T22:20Z
+[region-lock] acquiring regions ['q0', 'q1', 'q2', 'q3'] as role='bench' (timeout_s=9201.0) …
+[region-lock] held ['q0', 'q1', 'q2', 'q3'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/vkq3/engine/filler_run13.sh --inner --id codex3-cpu-fa-vkq3-mtp-20261031 --class cpu --cmd env -i PATH=/usr/bin:/bin LANG=C.UTF-8 RUS3_DIAGNOSTIC=1 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 HIP_VISIBLE_DEVICES=-1 ROCR_VISIBLE_DEVICES=-1 FILLER_ID="$FILLER_ID" FILLER_CPUS="$FILLER_CPUS" FILLER_NEEDGPU="$FILLER_NEEDGPU" FILLER_STOPFILE="$FILLER_STOPFILE" FILLER_END="$FILLER_END" FILLER_DEADLINE="$FILLER_DEADLINE" WS58_REGIONS="$WS58_REGIONS" /bin/bash /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/vkq3/launch.sh --job --min-window 9000 --stop /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/vkq3/STOP --port  --workdir /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/vkq3 --gpu-threads 184-191
+==== dry run FAIL: no unit in /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/vkq3/run/TERMINAL.json (json) within dryrun_timeout_s=900 (the job ran: if result_path is only a completion marker, point the spec at the job's per-item output, or raise dryrun_timeout_s) (2026-11-01T20:02:31Z)
+
+==== dry run 2026-11-01T22:23:05Z regions=48-71 launcher_sha=db84524ebd28d719a2b148b3f39286b2b73bbd854ff6a6a1c91084acfc664517 units_before=0
+2026-11-01T22:23:05Z [codex3-cpu-fa-vkq3-mtp-20261031] launcher up pid=3822757 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/vkq3/STOP minwin=9000s ports=none
+2026-11-01T22:23:05Z [codex3-cpu-fa-vkq3-mtp-20261031] START regions=48-71 cpus=48-71 threads=24 gpu=0 end=2026-11-02T00:57Z
+[region-lock] acquiring regions ['q0', 'q1', 'q2', 'q3'] as role='bench' (timeout_s=9235.0) …
+==== dry run FAIL: job ended (rc=? (no ended record)) before writing a unit to /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/vkq3/run/TERMINAL.json (json) (2026-11-01T22:27:35Z)
+2026-11-01T22:28:32Z [codex3-cpu-fa-vkq3-mtp-20261031] launcher signalled
+
+==== dry run 2026-11-02T00:06:46Z regions=48-71 launcher_sha=db84524ebd28d719a2b148b3f39286b2b73bbd854ff6a6a1c91084acfc664517 units_before=0
+2026-11-02T00:06:46Z [codex3-cpu-fa-vkq3-mtp-20261031] launcher up pid=1758226 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/vkq3/STOP minwin=9000s ports=none
+2026-11-02T00:06:46Z [codex3-cpu-fa-vkq3-mtp-20261031] START regions=48-71 cpus=48-71 threads=24 gpu=0 end=2026-11-02T02:40Z
+[region-lock] acquiring regions ['q0', 'q1', 'q2', 'q3'] as role='bench' (timeout_s=9194.0) …
+[region-lock] held ['q0', 'q1', 'q2', 'q3'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/vkq3/engine/filler_run13.sh --inner --id codex3-cpu-fa-vkq3-mtp-20261031 --class cpu --cmd env -i PATH=/usr/bin:/bin LANG=C.UTF-8 RUS3_DIAGNOSTIC=1 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 HIP_VISIBLE_DEVICES=-1 ROCR_VISIBLE_DEVICES=-1 FILLER_ID="$FILLER_ID" FILLER_CPUS="$FILLER_CPUS" FILLER_NEEDGPU="$FILLER_NEEDGPU" FILLER_STOPFILE="$FILLER_STOPFILE" FILLER_END="$FILLER_END" FILLER_DEADLINE="$FILLER_DEADLINE" WS58_REGIONS="$WS58_REGIONS" /bin/bash /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/vkq3/launch.sh --job --min-window 9000 --stop /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/vkq3/STOP --port  --workdir /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/vkq3 --gpu-threads 184-191
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/vkq3/worker.py", line 79, in <module>
+    if __name__=='__main__':sys.exit(main())
+                                     ^^^^^^
+  File "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/vkq3/worker.py", line 19, in main
+    if mode=='full' and (not grant or os.environ.get('FILLER_CPUS')!='0-95'):raise RuntimeError('genuine whole-host grant missing')
+                                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: genuine whole-host grant missing
+job rc=1
+2026-11-02T00:07:43Z [codex3-cpu-fa-vkq3-mtp-20261031] ended rc=1 reason=job-rc-1:exited (grant deleted)
+==== ORPHANS [1758136, 1758141]: processes still naming this row after the dry run ended (a wrapper detached them; the owner stops them by pid)
+==== dry run FAIL: job ended (rc=? (no ended record)) before writing a unit to /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/vkq3/run/TERMINAL.json (json) (2026-11-02T00:07:46Z)
