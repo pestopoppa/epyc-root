@@ -51,3 +51,7 @@ Consumed alias-review and ci-test-prep. The alias candidate does not prove the m
 ## 01:51Z — Restore sparse census selection and retry wrap-up
 
 Wrap-up initially failed because the lane sparse-checkout selection had reverted to exclude the operator ratifier required by the observer census. Re-selected that exact tracked path; preceding entry records the consumed review outcomes.
+
+## 01:52Z — Consume CI candidate, capture pin and alias metadata reviews
+
+Consumed ci-candidate-review, ci-pins and alias-metadata outcomes. ROOT b4e48011d prospective JUnit accounting candidate is absent from current main; original B2 JUnit has 20,652 cases, 31 failures and 104 skips and remains historical, not a clean comparator. Pin/readset draft is scratch-only and must be rebound to the actual clean integration commit. Delegated candidate integration, GitNexus index recovery and synthetic CPU-row preparation; integration correctly stopped before editing when the required index was absent. Correction to prior alias-review claim: CPython 3.13.7 module_from_spec preserves an existing non-None canonical __loader__; it can set the alias loader when the original loader is missing or None. The metadata draft and its test plan remain unvalidated and the mixed cold-import cycle unproven. No compute or row publication by owner.
