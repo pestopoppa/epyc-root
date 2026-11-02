@@ -11,6 +11,10 @@ projects trace-bound first single-call native schema validity plus terminal time
 The combined DTAP suite passed 163/163 from a protected verification worktree under a q0
 claim. Provider seed adherence, multicall attribution, task-level verification, recovery and
 complete costs remain unproved; TU-LED-1 stays open. [no-belief: software controls]
+The timeout-report adapter accepts the new reviewed runner/endpoint source set as a unit while
+retaining the original set and rejecting mixed revisions. Its original producer-to-projection
+and CLI regression passed 25 tests against the combined candidate from protected checkouts;
+this is a synthetic test, not a live timeout or planning-context canary. [no-belief: software controls]
 
 Research `codex/evl46-scorer-isolation-20261102` @ `ed1e69e7a` is an opt-in, fail-closed
 bubblewrap prototype; default scoring remains unchanged. Six focused controls and the old
@@ -24,6 +28,19 @@ host-only file and network access, honored CPUs 0–1, and verified owned-contai
 normal and timeout paths (9 tests). The caller must still hold the region claim; the container
 uses a different interpreter and test bytes remain visible to candidate code. This does not
 close the agent/grader isolation matrix or establish hidden-test secrecy. [belief: cc]
+Research `8a314b790` adds a fixed synthetic grader-reference probe: under an independently
+claimed q1 window it passed direct and `/proc` reference denial, environment/FD non-disclosure,
+host-network denial, controlled export and affinity checks (13 focused tests). Scope is that
+specific Docker scorer configuration, not the live REPL/OpenCode or embedded test code. [belief: cc]
+
+APP combined candidate `codex/evl46-seed-ledger-20261102` @ `b61c4747` contains the paired
+core, source-pinned CRM/Slack adapter, private service provisioning, partial receipt and judge
+attestation. Under q1, the real model-free service control started pinned private services,
+seeded the case, created a note and Slack message through native MCP, reproduced the initial
+state after reset, and removed owned containers and network. [Source-bound receipt](https://github.com/pestopoppa/epyc-orchestrator/blob/b61c4747/docs/evidence/dtap-crm-service-control-20261102/README.md).
+The model pair, current-grant launcher and belief canary remain unqualified. [belief: cc]
+The integrated APP candidate passed all 174 DTAP tests from a protected checkout under q0.
+[no-belief: software controls]
 
 [TU-HR-1 source/runtime census](../../docs/reference/tu-hr1-tool-render-audit-20261102.md)
 records the configured model/template groups and source forwarding paths, and distinguishes
@@ -39,8 +56,14 @@ P0.4 and P6 tests plus five subtests passed under q0. [no-belief: software contr
 ROOT `4e9d25de0` adds transport plumbing, but deliberately refuses all live I/O until a real
 grader-isolation gate is implemented. ROOT `eb870805e` adds captured-descendant timeout cleanup
 with PID birth checks; escaped descendants remain unproved. The nearby scorer accepted a wrong
-multiline answer ending in the expected answer, so it cannot yet serve the stated whole-answer
-contract. These controls are not live readiness or an acceptance result. [no-belief: software controls]
+multiline answer ending in the expected answer. ROOT `1e699f931` adds a strict task-specific JSON
+format gate before the unchanged native scorer and prepares six development and twelve acceptance
+fixtures; native positive, wrong-answer and extra-line controls passed. Scorer identity binding,
+sealed-split protection and live isolation remain unproved. These controls are not live readiness
+or an acceptance result. [no-belief: software controls]
+ROOT `69e9e3d5e` binds the reviewed native scorer bytes and seals prepared fixture/prompt/oracle
+hashes; independent seal verification and source tamper controls passed. Read-only modes are
+owner-reversible, not proof of an OS grader boundary. [no-belief: software controls]
 
 This map supersedes the historical live-status language below, not the individual acceptance
 contracts. Source review used ROOT `2d95a8a371` and orchestrator `9301fb7bc81663d176f11ebf21bf496d4ac725a3` (the shared orchestrator checkout was behind that ref). Re-resolve
