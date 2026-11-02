@@ -11,3 +11,7 @@ Assessed the four dispatcher inference candidates; no row published. YARN-E1-A2 
 ## 03:51Z — Consume Jet-Long preparation and repair sparse checkout for wrap-up
 
 Consumed Jet-Long CPU preparation: /mnt/raid0/llm/tmp/yarn/jetlong-cpu/INPUT-PLAN.md and preflight.sh identify the CPU branch, model and fix symbols; the old CPU launcher is absent. A fixture audit created a 150-cell draft inventory, but the prescribed adapter uses one fixed needle, no seed parameter and character approximations, so it cannot seal the exact-token 5-depth × 5-needle × 3-seed protocol. See /mnt/raid0/llm/tmp/yarn/fixtures-outcome.txt. A bounded runner preparation is underway; /mnt/raid0/llm/tmp/yarn/runner-outcome.txt is registered as the next event. No row, inference, or measurement. Previous wrap-up failed because sparse checkout omitted a tracked observer-registry target; materialized the single tracked path and observer census now passes. The previous staged progress entry is included in this wrap.
+
+## 10:07Z — Prepare Jet-Long CPU fixture and resumable runner
+
+Advanced JETLONG-LONGCTX-RUN: a bounded runner integration and exact-token fixture generator are under preparation, with outcome files registered; one-time model content hash started outside grant and its output registered. The existing offline resume ledger preserves interrupted attempts as unknown; it is not a runnable row. YARN-E1-PROOF adoption is under review. No inference was launched or published.
