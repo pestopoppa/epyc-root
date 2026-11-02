@@ -105,10 +105,40 @@ def verify_result(trust, aa, native, plan_digest, qualification_only):
     return True
 
 
+def spec_digest(spec):
+    return hashlib.sha256(json.dumps(spec, separators=(',', ':'), ensure_ascii=False).encode()).hexdigest()
+
+
+def render_launcher(spec):
+    """A static rowflow-readable engine invocation, checked against real enrollment."""
+    checker = shlex.join([sys.executable, '-B', str(Path(__file__).resolve()), '--check-launcher', spec_digest(spec)])
+    return '#!/bin/bash\nset -euo pipefail\n' + checker + '\nexec ' + shlex.join(spec) + '\n'
+
+
 def main():
+    if len(sys.argv) == 3 and sys.argv[1] == '--check-launcher':
+        # The static engine invocation always derives from the sealed *real*
+        # row. run15 itself substitutes the fixture STOP in dry-run mode.
+        old = os.environ.get('FILLER_DRYRUN')
+        os.environ['FILLER_DRYRUN'] = '0'
+        try:
+            _, _, _, spec, _, _ = load()
+        finally:
+            if old is None: os.environ.pop('FILLER_DRYRUN', None)
+            else: os.environ['FILLER_DRYRUN'] = old
+        if spec_digest(spec) != sys.argv[2]:
+            raise RuntimeError('static launcher differs from sealed real row')
+        return 0
     trust, aa, native, spec, plan_digest, qualification_only = load()
     if sys.argv[1:] == ['--verify-result']:
         return 0 if verify_result(trust, aa, native, plan_digest, qualification_only) else 1
+    if len(sys.argv) == 3 and sys.argv[1] == '--emit-launcher':
+        output = Path(sys.argv[2])
+        if not output.is_absolute(): raise ValueError('absolute launcher path required')
+        with output.open('x') as fh:
+            fh.write(render_launcher(spec)); fh.flush(); os.fsync(fh.fileno())
+        output.chmod(0o750)
+        return 0
     if len(sys.argv) != 1:
         raise ValueError('unexpected argument')
     os.execv('/usr/bin/bash', spec)

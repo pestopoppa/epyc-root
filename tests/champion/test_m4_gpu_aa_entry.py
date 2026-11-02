@@ -204,3 +204,21 @@ def test_keeper_nonce_unit_is_qualification_only_and_exclusive(tmp_path):
         mod.qualification_unit(env,capture,{'plan_sha256':'native-seal'},'aa-seal')
     with pytest.raises(RuntimeError, match='invalid keeper'):
         mod.qualification_unit({**env,'FILLER_DRYRUN_RESULT_PATH':str(tmp_path/'native-result.json')},capture,{'plan_sha256':'native-seal'},'aa-seal')
+
+
+def test_generated_launcher_is_rowflow_parseable(tmp_path, monkeypatch):
+    monkeypatch.setitem(sys.modules, 'run_gpu_aa', mod)
+    spec=importlib.util.spec_from_file_location('aa_launch_parse',ROOT/'scripts/champion/m4/launch_gpu_aa.py')
+    launch=importlib.util.module_from_spec(spec); spec.loader.exec_module(launch)
+    aa,native=fixture(); cap=tmp_path/'capture'; cap.mkdir(); stop=tmp_path/'STOP'
+    row={'id':'m4-aa','regions':'mi210_0,184-191','stopfile':str(stop),'min_window_s':3600,'port':18070,'dryrun_native_result':True}
+    aa.update(row=row,result_path=str(cap/'result.json'))
+    for cell in native['cells'].values(): cell['grant']={'id':row['id'],'regions':row['regions'],'stopfile':str(stop)}
+    command=launch.launch_spec(aa,native,types.SimpleNamespace(capture_root=cap))
+    shell=tmp_path/'launch.sh'; shell.write_text(launch.render_launcher(command))
+    sys.path.insert(0,str(ROOT/'scripts/coordination/rowflow'))
+    import rowflow
+    parsed=rowflow.parse_launcher(str(shell))
+    assert parsed['id']=='m4-aa' and parsed['class']=='gpu'
+    assert parsed['min_window']==3600 and parsed['claim_cpus']=='184-191'
+    assert parsed['gpu_quiet']=='exclusive' and parsed['complete_cmd'] and parsed['cmd']
