@@ -796,7 +796,7 @@ Measure first. The build is gated on the measurement.
 `/mnt/raid0/llm/tmp/kv-serving-survey-20261004/pr29510.diff` (scratch snapshot of the open PR as of 2026-10-04; it is
 upstream code, so it is not copied into this repo — re-fetch with `gh pr diff 29510 -R ggml-org/llama.cpp`).
 
-- [ ] **KPF-40: pre-check (read-only, zero compute).** Read the v11 audit. Re-derive which of our ubatch shapes
+- [x] **KPF-40: pre-check (read-only, zero compute).** Read the v11 audit. Re-derive which of our ubatch shapes ✅ 2026-11-02 [belief: cc]
   `get_n_kv_slices()` accepts on the **hybrid** split (`llama-memory-hybrid.cpp:89`, `split_equal`), which may
   overturn the survey's "verify falls back" finding (see the survey correction above). Re-check #29510's state:
   merged, reshaped by the Metal objection, or still a draft. Write the port plan into this handoff.
@@ -805,6 +805,8 @@ upstream code, so it is not copied into this repo — re-fetch with `gh pr diff 
     `/mnt/raid0/llm/tmp` path is not durable). Its actionables are filed as V11-FA-1..4 in
     [`kv-unified-stack-rollout.md`](kv-unified-stack-rollout.md) section C (owner workspace-ec). P4 relevance: on
     gfx90a, v11 MMA serves only >32-row shapes; the 3-32-row band goes to TILE, which `kv_rows` does not touch.
+  - *(2026-11-02, KPF-40 re-check.)* [Upstream #29510](https://github.com/ggml-org/llama.cpp/pull/29510) is open, not draft, at head `b3ad117508ebddf430106005515e9aec4be67444` (GitHub state queried 10:02Z); the Metal objection remains part of its review. Its current `get_n_kv_slices` accepts (1) one unique sequence, (2) equal sequence sets with `n_seqs == n_seqs_unq`, or (3) exactly one token per unique sequence with one sequence ID on every token; otherwise it returns zero. Row use also requires a unified single-stream cache and a nonzero row count. In the C5 hybrid `llama-memory-hybrid.cpp` path, non-embedding batches use `split_equal`; for independent single-ID sequences this can form equal multi-token sequence slices, including multi-sequence verify, so the old blanket claim that verify always falls back is unsupported. Different lengths, rollback-tail constraints and coupled sequence sets can change the resulting slices; shared-ID and irregular batches need explicit tests, not a coverage assumption.
+  - **Port plan:** re-resolve #29510 and the live champion at implementation time; carry its rows graph/interface and layout only into a fresh full experimental candidate, integrate with the current hybrid split and existing 19a/19b paths, and preserve normal-mask fallback for unsupported shapes, unsupported backends and shared/overlapping cells. Add CDNA MFMA and vec support plus sparse q8-to-f16 gathering as KPF-41 specifies; retain TILE and existing block-skip paths where rows are unsupported or unprofitable. Gate with slice-shape and shared-trunk correctness, fallback/graph-reuse tests, DF2-9 finite-output and DF2-4/6 parity, then the KPF-42 paired gfx90a measurements before any promotion. The audit's later correction supersedes its original MMA register/config and DF2-9 prompt-length claims.
 - [ ] **KPF-41: port.** If #29510 has merged upstream by v11, it arrives with the rebase. Otherwise port it onto the
   v11 experimental line:
   - Enable the MMA `kv_rows` path on CDNA. Upstream gates it `GGML_CUDA_CC_IS_NVIDIA && turing_mma_available`; add
