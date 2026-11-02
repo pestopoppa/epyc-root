@@ -201,7 +201,7 @@
     },
     "autokernel-champion-aggregate.md": {
       "blocked": 1,
-      "closed": 102,
+      "closed": 106,
       "guarded": 0,
       "last_advanced": "2026-11-02",
       "open": 35,
@@ -213,7 +213,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 138
+      "total": 142
     },
     "autokernel-concurrent-target-coordination.md": {
       "blocked": 0,
@@ -3652,7 +3652,7 @@
       "id": "INF-66",
       "index": "inference-research-index.md",
       "line": 22,
-      "next_action": "Resolve R18-A host CUID identity differences under the unchanged rule; continue R23-62",
+      "next_action": "Repair and qualify the parked R18-A successor under the unchanged identity rule; continue R23-62",
       "track": "autokernel teardown and rebuild"
     },
     "INF-67": {

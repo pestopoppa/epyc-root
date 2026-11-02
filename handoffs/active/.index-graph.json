@@ -3769,7 +3769,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T13:00:48Z",
+  "generated_at": "2026-11-02T13:07:52Z",
   "nodes": [
     {
       "age_days": 95,
@@ -6438,7 +6438,7 @@
         "INF-62",
         "INF-64"
       ],
-      "closed": 102,
+      "closed": 106,
       "dispatchable": 35,
       "domain": "inference-research",
       "guarded": 0,
@@ -6488,7 +6488,7 @@
       "handoff": "autokernel-rebuild-program.md",
       "id": "INF-66",
       "last_advanced": "2026-11-02",
-      "next_action": "Resolve R18-A host CUID identity differences under the unchanged rule; continue R23-62",
+      "next_action": "Repair and qualify the parked R18-A successor under the unchanged identity rule; continue R23-62",
       "open": 44,
       "priority": 0.9017,
       "priority_basis": {
