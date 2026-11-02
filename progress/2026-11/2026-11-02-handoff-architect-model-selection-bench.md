@@ -83,3 +83,11 @@ Reviewed RECIPE-NUMA-1 and filed artifacts/architect-model-selection-bench/regio
 ## 00:48Z — Record retargeted GPQA launcher constraints
 
 The prior wrap-up successfully published bc2482220e19e0215b3c22f9ca958cc61aefbaa3, including the NUMA brief and pending progress. GPQA review corrected the earlier estimate: historical full CoT A3 used an 8192-token cap. The scratch draft combines server context 16384 with four slots, potentially yielding 4096 context per slot; its actual slot allocation must be established before an 8192-token run. It also lacks a pinned required DFlash2 input and rowflow-compatible stop/resume. No row published or inference performed. Current-model GPQA and EffiBench integration are delegated; completion events registered.
+
+## 00:49Z — Review EffiBench Python runner and dataset provenance
+
+Reviewed untracked EffiBench run_python.py: pinned patch digest and synthetic cohort hash checks passed, including mutation refusal, and command shapes select python3. The supplied manifest proves consistency only, not provenance; local cache has only two complete parquet shards and cannot authenticate the historical gate dataset. Upstream generation requires a merge stage before evaluation, which the wrapper lacks. Keep the wrapper uncommitted pending end-to-end checks, merge integration, independently authenticated dataset provenance, output/denominator checks and timing protocol. No inference, model score, or adoption tick. Prior wrap-up succeeded at d09fb93687771b681046851c1d04e2acee1f5fc1.
+
+## 00:51Z — Record EffiBench false-success defect and prepare fixes
+
+Independent review found upstream evaluate_solution.py can return success with zero matching tasks. The untracked EffiBench wrapper also lacks merge and 306-denominator checks, and its git diff hash excludes untracked checkout files; it remains unvalidated and uncommitted. Delegated bounded fixes and offline tests, plus GPQA manifest and launcher preparation; completion events are registered. No inference or row publication. Prior commit 07c3fe4b0f3e was not pushed because serialized_push failed after its lock retry; include it in this retry.
