@@ -35,3 +35,7 @@ C3 r5 model-free test_host_r15.py passed rc0 HOST_ROUTE_PASS through sudo/chroot
 ## 09:27Z — File CH-26b C2 calibration result with residency limitation
 
 Filed akagg-ch26b-1017-c2-r2-20261101 inconclusive, rc0: 24 A/A pairs, 48 full ok units, matched_process_v2, comparison-size 5; estimated floor 3.016% with descriptive 95% interval 1.94675–4.95%. Native residency says contention and CPU placement unproven (0/48 proven), so no decision floor is claimed; full floor evidence copied before FILED receipt and compact summary/units retained in docs. C3 fs-verity scratch fixture reported ENOTSUP on ext4; CH-27 independent registration and native plan failure behavior need safe handling. NEMO prospective capture requires event correlation and clock alignment validation.
+
+## 09:28Z — Integrate C3, CH-27 and NEMO preparation reports
+
+Consumed three reports: fs-verity ioctl on scratch ext4 returned ENOTSUP; C3 producer and join both hash writable GGUF inside grant, so protected identity design is needed. CH-27 writes two registry plans independently and catches plan-write failures as warnings; final checker requires both, and private roots must retain global CPU/floor claims. ROCm help advertises HIP and marker tracing, but prospective NEMO capture still needs actual graph correlation and clock alignment; historical missing edges cannot be recovered. Delegated bounded fixture/design work, no new row or measurement claimed.
