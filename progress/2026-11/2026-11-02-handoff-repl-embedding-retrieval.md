@@ -63,3 +63,7 @@ Added explicit-file ingestion of validated prospective trace facts with closed-s
 ## 10:56Z — Validate shadow streams and add trace selection provenance
 
 Added strict finalized shadow-stream validation (chain, source pin, state transitions, counts and rederived overlaps) and a negative trace-facts planning canary that confirms unscoped evidence is omitted; five focused tests pass. Added a single-session v2 trace selector with source digest and selection receipt; synthetic mixed-session selection and malformed input controls pass. G-S remains open: original private-copy wrapper rc2 is not converted into an exit-zero result by a later postcheck. No real session, inference row or positive planning canary is claimed. [no-belief: synthetic controls only]
+
+## 11:07Z — Run the G-S live plan and start the private-rehearsal publication smoke
+
+G-S live-directory read-only plan completed rc 0, unblocked; plan and receipt preserved under docs/reports. Its non-quiescent scope does not prove atomicity or migration parity. Prepared separate verified private official and smoke inputs, pinned model/build and source, reviewed grant/STOP and result paths, and invoked publish_row for codex-ufh12-gs-private-v1-20261102; smoke was still running at boundary, so no PASS or ready-row claim is made. Awaiting registrations cover smoke PASS and first FAIL; next task is to inspect and fix its outcome. Added prospective live-plan belief wiring task. [belief: cc]
