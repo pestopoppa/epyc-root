@@ -297,6 +297,9 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   first: every overhead figure above is arithmetic, not measured. Note the phase classifier
   (`n_tokens==1` -> decode) breaks once the 5-wide drafter lands, and the dlsym link surface is
   untested.
+  - *(2026-11-01 triage.)* The previously named `/mnt/raid0/llm/tmp/ds41-engram-profile/`
+    is absent; the patches and an executable launcher need recovery or recreation. The 2026-10-22
+    hold applies to a 1017-model run until the stated AutoKernel work is complete.
 
 - [ ] DS41-C14 — `--node-profile` is opt-in in `run.py` (default OFF) because run.py's hermetic
   fixtures would gain a real build + a second launch if it defaulted on. Make the fixtures opt out
@@ -333,6 +336,13 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   **Still open 2026-09-25.** Run 10's re-anchor on `00d118d44` took the fresh-store route again, by hand (the old
   store is archived as `store-run9d-cor-5a60152ae/`). Nothing in the dry run checked the COR, so this is the second
   anchor change that relied on a manual comparison.
+  - *(2026-11-02 verification.)* Current research `scripts/kernel_rnd/autokernel/loop/run.py`
+    `_dry_run_accumulator_and_resume` checks the stored COR against the resolved anchor and refuses a
+    mismatch without a verified COR build; matching COR is accepted. The dry-path caller invokes it.
+    `test_serial_run.py:950-1034` exercises a resumed keep and verified COR build, but does not directly
+    assert mismatch refusal text or acceptance without an override. The refusal offers original
+    `--cor-build` / `--resume-run`, not the requested fresh-store / rebind-anchor remedies. Keep C27
+    open for the missing diagnostic guidance and focused regression cases; the core guard exists.
 - [ ] DS41-C33 — **Read run 10's first results on anchor `00d118d44`.**
   - The half-screen floor is written. Compare its interval and between-launch SD with `5a60152ae`'s 5.789%
     (2.91-9.55%): the loader changed, the decode kernels did not.
@@ -342,6 +352,11 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
 
   Acceptance: the floor file path, the launch-time mean, and the hoist's measured disposition (keep, reject or
   refused, with its reason) are recorded here.
+  - *(2026-11-01 triage.)* Three recorded calibration launches took 163, 170 and 167 s (mean
+    166.7 s for those three only; not the full-series mean or total wall). The run-10 floor path
+    and statistics were not located in the examined handoff and progress records. C39 explicitly
+    distinguishes its kept kernel from this hoist; its measured disposition remains unverified.
+    Evidence: completed sibling §C DS41-C32/C39 and `progress/2026-09/2026-09-25-main-ak-seat.md`.
 - [ ] DS41-C34 — **Delete the partial build dir left by the re-anchor, once the operator confirms.**
   `/mnt/raid0/llm/llama.cpp-experimental-fastload-ds41-20260925/build-cpu-cc-partial-20260925` is not used by run
   10 (its binary is `build-cpu/`). Deleting it needs an explicit operator confirmation.
