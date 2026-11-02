@@ -67,7 +67,7 @@
       "1. Freeze five prompt files and their two ground-truth files by the supplied SHA-256 manifest; record API, model, server, runner, and feature-flag state.",
       "2. Verify the prerequisite listed in code_prerequisite. If absent, stop before any A/B and implement/test it on the owning orchestrator branch.",
       "3. For each arm, capture baseline config attestation and serving-call log boundary; set only the arm-specific feature flag(s), verify every worker, then invoke the same five cases once in the listed order.",
-      "4. Record per-case answer, turns, functions, final status, latency, criteria results and raw serving-call rows with prefix fingerprint, cache_n, prompt_n, prompt_ms, role and port.",
+      "4. Record per-case answer, turns, functions, final status, latency, criteria results and intact serving_call.v1 rows, including record_id, record_sha256, ts_start/ts_end, dispatched, timings_source, request.prefix_fp, timings.cache_n/prompt_n/prompt_ms, role and server.port. Retain null fingerprints and report fingerprint coverage.",
       "5. Explicitly restore both flags false after every treatment arm (including error/timeout) and attest all workers; then run A0-post.",
       "6. Compute paired per-case pass/fail and latency deltas; compute prefix_cache_report.py for the exact arm windows and port, retaining raw JSON. Report B4b, B4c and interaction separately; no pooling across arms."
     ],
