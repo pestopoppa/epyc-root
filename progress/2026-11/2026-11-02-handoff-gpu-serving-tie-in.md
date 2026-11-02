@@ -51,3 +51,7 @@ Identified two distinct native SWE-bench subset report conventions and commissio
 ## 10:15Z — Support P5 native selected-instance reports
 
 Added explicit native-selected report validation for the schema-2 selected-instance partition: bound cases must be submitted, completed and resolved, while unselected IDs must exactly match the bound dataset complement. Strict remains the default; the mode is recorded in the result and the dataset is rechecked when read. Fourteen model-free tests pass. Independent review confirmed the sealed-validator contract; the distinct historic 500-submitted/40-evaluated format remains refused. No scorer correctness or gold execution is claimed. GitNexus impact was unavailable because the lane is unindexed.
+
+## 10:17Z — Correct P1-2 scope to the suspended E5 corrected-placement remeasurement and identify launcher readiness gaps.
+
+Reconciled P1-2 with the E5 owner handoff: the old Stage-B throughput is suspended, and its corrected-placement successor needs placement, cache and policy qualification before publishing. The archived launcher is missing and the current harness describes cache drops only between models. P2-5d/e are not ready inference rows: threshold is undecided and representative AutoPilot duty cycle awaits authorized restart. P4-1 remains dependent on replacement arms and measured bounds. No compute run.
