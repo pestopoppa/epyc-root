@@ -31,3 +31,7 @@ Integrated Jet-Long CPU lifecycle and recall aggregation with the prior bounded 
 ## 10:11Z — Land Jet-Long lifecycle and scorer after upstream merge
 
 Twelve offline runner, lifecycle and aggregation tests passed; merged concurrent origin changes before retrying the serialized push. No native inference or scientific result.
+
+## 10:14Z — Bind Jet-Long model content identity
+
+Recorded the 35B GGUF content identity, captured by one-time SHA-256 outside a grant with unchanged pre/post metadata, in scripts/benchmark/jetlong_cpu/model-identity.json. This is content identity, not build attestation. Existing prototype suite passes 12 tests. Fixture schema/framing and offline provenance preparation were consumed; fixture sealing, runtime provenance integration and keeper launcher work are underway with outcome receipts registered. No native inference or row published.
