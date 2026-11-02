@@ -43,6 +43,9 @@ class Runtime:
         self.supervisor, self.transport, self.journal, self.stop_requested = supervisor, transport, journal, stop
         self.active: Server | None = None
         self.cleanup_unverified = False
+        bind_stop = getattr(transport, 'bind_stop', None)
+        if callable(bind_stop):
+            bind_stop(self.stopping)
 
     def stopping(self):
         return bool(self.stop_requested())
@@ -74,7 +77,7 @@ class Runtime:
             raise RuntimeFailure('server recipe or process identity unverified')
         server.verified = True
 
-    def request(self, server, body, kind):
+    def request(self, server, body, kind, pair_key):
         if self.cleanup_unverified or server is not self.active or server.stopped or not server.verified or self.stopping():
             raise RuntimeFailure('request without verified active server')
         if kind not in ('warm', 'measure'):
@@ -86,11 +89,20 @@ class Runtime:
             raise RuntimeFailure('server identity no longer verified')
         payload = json.dumps(body, sort_keys=True, separators=(',', ':'), ensure_ascii=False, allow_nan=False).encode()
         # Journal must atomically refuse reuse and durably record exposure before send.
-        receipt = self.journal.before_request(server.arm, kind, hashlib.sha256(payload).hexdigest())
+        receipt = self.journal.before_request(server.arm, pair_key, kind, hashlib.sha256(payload).hexdigest())
         if receipt is not True:
             raise RuntimeFailure('exposure receipt missing')
-        response = self.transport.send(server.handle, copy.deepcopy(body))
-        if self.journal.after_response(server.arm, kind, response) is not True:
+        if self.stopping():
+            raise RuntimeFailure('STOP after exposure recorded; request not dispatched')
+        try:
+            response = self.transport.send(server.handle, copy.deepcopy(body))
+        except Exception as exc:
+            # Preserve the unknown outcome rather than allowing a replay after
+            # a transport exception or uncertain send.
+            self.journal.after_response(server.arm, pair_key, kind,
+                                        {'error': f'{type(exc).__name__}: {exc}', 'response_unknown': True})
+            raise
+        if self.journal.after_response(server.arm, pair_key, kind, response) is not True:
             raise RuntimeFailure('response custody unverified')
         return response
 

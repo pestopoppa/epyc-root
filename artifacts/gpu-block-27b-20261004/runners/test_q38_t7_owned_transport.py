@@ -16,6 +16,7 @@ import q38_t7_supervisor as supervisor
 import q38_t7_transport as transport
 import q38_t7_payloads as payloads
 import q38_t7_runtime as runtime
+import q38_t7_journal as journal
 
 
 SERVER = r'''
@@ -116,21 +117,23 @@ class OwnedTransportTest(unittest.TestCase):
                    'drafted': dict(self.recipe, draft_model=str(draft),
                                    draft_options={'type': 'draft-dflash', 'n_max': 7,
                                                   'draft_sha256': sha(draft)})}
-        class Journal:
-            def before_request(self, *_args): return True
-            def after_response(self, *_args): return True
-        rt = runtime.Runtime(self.sup, transport.OwnedHttpTransport(self.sup, 'a' * 64, self.proof),
-                             Journal(), lambda: False)
         prefix = 'nonce 2-4-1-9-ORCHID Mbeki Larsen'
         plan = payloads.build_plan([{'id': 'p1', 'suite': 'test', 'prompt': 'question'}],
                                    [payloads.FrozenContext(2000, 20, (prefix,), 5)],
                                    tokenizer_sha256='a' * 64,
                                    model_sha256=self.recipe['shape']['model_sha256'])
-        run = payloads.run_attested_plan(rt, recipes, plan)
-        self.assertFalse(run['partial'], run['error'])
-        self.assertEqual(run['cleanup'], {'drafted': True, 'nodraft': True})
-        report = payloads.score(plan, run, {})
-        self.assertEqual(report['status'], 'COMPLETE', report)
+        j = journal.DurableJournal(Path(self.tmp.name) / 'ledger.sqlite', cohort_id=plan.sha256,
+                                   model_sha256=plan.model_sha256, run_id='fake-run')
+        try:
+            rt = runtime.Runtime(self.sup, transport.OwnedHttpTransport(self.sup, 'a' * 64, self.proof),
+                                 j, lambda: False)
+            run = payloads.run_attested_plan(rt, recipes, plan)
+            self.assertFalse(run['partial'], run['error'])
+            self.assertEqual(run['cleanup'], {'drafted': True, 'nodraft': True})
+            report = payloads.score(plan, run, {})
+            self.assertEqual(report['status'], 'COMPLETE', report)
+        finally:
+            j.close()
 
 
 if __name__ == '__main__':

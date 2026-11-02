@@ -40,6 +40,19 @@ required at scoring. Fake servers exercise the path end to end; they do not
 prove a production model or tokenizer identity. The independently supplied
 model/tokenizer, membership and mode verifiers still need real native evidence.
 
+`q38_t7_journal.py` commits a model/cohort/arm/pair/kind/body exposure before
+dispatch and retains the response or transport error afterward. Reopening the
+same canonical SQLite database refuses an exposed or completed identity; the
+same measured body/model/arm is also refused under a changed cohort. Distinct
+declared warmup cells can share a body. Rowflow must bind and retain this one
+canonical database: replacing it or changing a model pin is outside this
+ledger's no-redraw guarantee. A STOP after the durable pre-dispatch record is
+conservatively exposed even if no request was sent. STOP is checked before
+dispatch, between HTTP reads and before/after tokenization; retained partial
+bytes are journaled and the coordinator drains its captured child. A blocked
+network read is bounded by its configured timeout and is not interrupted by the
+STOP poll itself; production STOP responsiveness still needs qualification.
+
 `test_q38_t7_isolated_http.py` starts two **fake** HTTP server subprocesses in
 sequence, routes real local HTTP calls, and verifies independent warmups,
 matching body hashes, correct arm modes, refusal on mismatched mode or cache

@@ -19,7 +19,7 @@ class InvalidRun(RuntimeError):
 class Runtime(Protocol):
     def start(self, arm: str, recipe: dict) -> Any: ...
     def verify(self, server: Any, arm: str, recipe: dict) -> None: ...
-    def request(self, server: Any, body: dict, kind: str) -> dict: ...
+    def request(self, server: Any, body: dict, kind: str, pair_key: str) -> dict: ...
     def stop(self, server: Any) -> bool: ...
     def stopping(self) -> bool: ...
 
@@ -132,7 +132,7 @@ def run_pairs(runtime: Runtime, recipes: dict, pairs: list[Pair]) -> dict:
                 if runtime.stopping():
                     raise InvalidRun('STOP before request')
                 if warm is not None:
-                    response = runtime.request(server, json.loads(warm), 'warm')
+                    response = runtime.request(server, json.loads(warm), 'warm', key)
                     records.append({'arm': arm, 'key': key, 'kind': 'warm', 'response': response,
                                     'body_sha256': hashlib.sha256(warm).hexdigest()})
                     if (not isinstance(response, dict) or response.get('http_status') != 200
@@ -140,7 +140,7 @@ def run_pairs(runtime: Runtime, recipes: dict, pairs: list[Pair]) -> dict:
                         raise InvalidRun('warm request failed')
                 if runtime.stopping():
                     raise InvalidRun('STOP before measured request')
-                response = runtime.request(server, json.loads(body), 'measure')
+                response = runtime.request(server, json.loads(body), 'measure', key)
                 records.append({'arm': arm, 'key': key, 'kind': 'measure', 'response': response,
                                 'body_sha256': hashlib.sha256(body).hexdigest()})
                 if (not isinstance(response, dict) or response.get('http_status') != 200

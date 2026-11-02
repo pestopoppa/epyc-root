@@ -127,11 +127,16 @@ def run_attested_plan(runtime, recipes: dict, plan: Plan) -> dict:
     if _plan_hash(frozen.pairs, frozen.metadata, frozen.tokenizer_sha256, frozen.model_sha256) != frozen.sha256:
         raise ValueError('frozen plan was modified')
     from q38_t7_native_verify import NativeIdentityVerifier
+    from q38_t7_journal import DurableJournal
     if (not isinstance(getattr(runtime, 'transport', None), OwnedHttpTransport)
             or runtime.transport.supervisor is not getattr(runtime, 'supervisor', None)
             or not isinstance(getattr(runtime.supervisor, 'identity_verifier', None), NativeIdentityVerifier)
             or runtime.transport.tokenizer.tokenizer_sha256 != frozen.tokenizer_sha256):
         raise ValueError('owned native transport and tokenizer identity required')
+    if (not isinstance(getattr(runtime, 'journal', None), DurableJournal)
+            or runtime.journal.cohort_id != frozen.sha256
+            or runtime.journal.model_sha256 != frozen.model_sha256):
+        raise ValueError('durable model-bound exposure journal required')
     if set(recipes) != {'drafted', 'nodraft'} or any(
         not isinstance(recipes[arm], dict) or not isinstance(recipes[arm].get('shape'), dict)
         or recipes[arm]['shape'].get('model_sha256') != frozen.model_sha256
