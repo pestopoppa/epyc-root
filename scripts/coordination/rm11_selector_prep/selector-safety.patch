@@ -1,0 +1,183 @@
+--- a/scripts/benchmark/qwable_verifier_selector_runner.py
++++ b/scripts/benchmark/qwable_verifier_selector_runner.py
+@@ -17,7 +17,6 @@
+ import json
+ import os
+ import re
+-import signal
+ import subprocess
+ import sys
+ import time
+@@ -163,18 +162,18 @@
+     return probe.returncode == 0 and probe.stdout.strip() == str(pid)
+ 
+ 
+-def process_snapshot() -> str:
+-    probe = subprocess.run(
+-        [
+-            "pgrep",
+-            "-af",
+-            "llama-server|llama-cli|llama-bench|perf record|perf stat|autopilot",
+-        ],
+-        capture_output=True,
+-        text=True,
+-        check=False,
+-    )
+-    return probe.stdout
++def record_owned_process(output_dir: Path, role: str, proc: subprocess.Popen[str], action: str) -> None:
++    """Record only processes created by this runner; not host admission evidence."""
++    event = {
++        "action": action,
++        "role": role,
++        "pid": proc.pid,
++        "returncode": proc.poll(),
++        "timestamp": datetime.now(timezone.utc).isoformat(),
++        "monotonic_seconds": time.monotonic(),
++    }
++    with (output_dir / "owned_processes.jsonl").open("a", encoding="utf-8") as handle:
++        handle.write(json.dumps(event, sort_keys=True) + "\n")
+ 
+ 
+ def server_specs(args: argparse.Namespace) -> tuple[ServerSpec, ServerSpec]:
+@@ -353,36 +352,41 @@
+ 
+ 
+ def terminate_server(proc: subprocess.Popen[str]) -> None:
+-    pid = proc.pid
+-    try:
+-        pgid = os.getpgid(pid)
+-    except ProcessLookupError:
+-        pgid = None
+-
+-    def send(sig: int) -> None:
+-        if pgid is not None:
+-            try:
+-                os.killpg(pgid, sig)
+-                return
+-            except ProcessLookupError:
+-                return
++    """Terminate and reap only the child process this runner created."""
++    if proc.poll() is None:
+         try:
+-            os.kill(pid, sig)
++            proc.terminate()
+         except ProcessLookupError:
+             pass
+-
+-    if proc.poll() is None:
+-        send(signal.SIGTERM)
+-        deadline = time.monotonic() + 10
+-        while proc.poll() is None and time.monotonic() < deadline:
+-            time.sleep(0.2)
++        try:
++            proc.wait(timeout=10)
++        except subprocess.TimeoutExpired:
++            try:
++                proc.kill()
++            except ProcessLookupError:
++                pass
++            try:
++                proc.wait(timeout=10)
++            except subprocess.TimeoutExpired as exc:
++                raise RuntimeError(f"failed to terminate server pid {proc.pid}") from exc
+     if proc.poll() is None:
+-        send(signal.SIGKILL)
+-        deadline = time.monotonic() + 10
+-        while proc.poll() is None and time.monotonic() < deadline:
+-            time.sleep(0.2)
+-    if proc.poll() is None or is_pid_alive(pid):
+-        raise RuntimeError(f"failed to terminate server pid {pid}")
++        raise RuntimeError(f"failed to terminate server pid {proc.pid}")
++
++
++def cleanup_server(proc: subprocess.Popen[str], output_dir: Path, role: str) -> None:
++    """Always attempt termination and log closure, including when telemetry fails."""
++    try:
++        try:
++            record_owned_process(output_dir, role, proc, "termination_requested")
++        finally:
++            terminate_server(proc)
++    finally:
++        try:
++            record_owned_process(output_dir, role, proc, "cleanup_attempt_finished")
++        finally:
++            log_handle = getattr(proc, "_qwable_verifier_log_handle", None)
++            if log_handle is not None:
++                log_handle.close()
+ 
+ 
+ def chat(port: int, payload: dict[str, Any], timeout_s: int) -> dict[str, Any]:
+@@ -789,8 +793,6 @@
+         if not spec.model_path.exists():
+             raise FileNotFoundError(spec.model_path)
+ 
+-    preflight = process_snapshot()
+-    (args.output_dir / "pre_pgrep.txt").write_text(preflight, encoding="utf-8")
+     questions = load_questions(args.question_pool, args.suite, args.tier)
+     selected_questions = questions[args.start : args.start + args.limit]
+     if not selected_questions:
+@@ -800,13 +802,15 @@
+     response_dir.mkdir(parents=True, exist_ok=True)
+     results_path = args.output_dir / "results.jsonl"
+     beneficiary, verifier = server_specs(args)
+-    procs: list[subprocess.Popen[str]] = []
++    procs: list[tuple[str, subprocess.Popen[str]]] = []
+     rows: list[dict[str, Any]] = []
+     try:
+         for spec in (beneficiary, verifier):
+             proc = launch_server(spec, args.output_dir / "logs" / f"{spec.name}.server.log")
+-            procs.append(proc)
++            procs.append((spec.name, proc))
++            record_owned_process(args.output_dir, spec.name, proc, "spawned")
+             wait_for_health(spec, args.startup_timeout, proc.pid)
++            record_owned_process(args.output_dir, spec.name, proc, "healthy")
+ 
+         with results_path.open("w", encoding="utf-8") as handle:
+             for question in selected_questions:
+@@ -821,14 +825,14 @@
+                 handle.write(json.dumps(row, sort_keys=True) + "\n")
+                 handle.flush()
+     finally:
+-        for proc in reversed(procs):
++        cleanup_errors: list[Exception] = []
++        for role, proc in reversed(procs):
+             try:
+-                terminate_server(proc)
+-            finally:
+-                log_handle = getattr(proc, "_qwable_verifier_log_handle", None)
+-                if log_handle is not None:
+-                    log_handle.close()
+-        (args.output_dir / "post_pgrep.txt").write_text(process_snapshot(), encoding="utf-8")
++                cleanup_server(proc, args.output_dir, role)
++            except Exception as exc:
++                cleanup_errors.append(exc)
++        if cleanup_errors:
++            raise RuntimeError(f"server cleanup failed: {cleanup_errors!r}") from cleanup_errors[0]
+ 
+     summary = {
+         "schema": "qwable_verifier_selector_execute.v1",
+@@ -868,7 +872,9 @@
+     proc: subprocess.Popen[str] | None = None
+     try:
+         proc = launch_server(verifier, args.output_dir / "logs" / "verifier_replay.server.log")
++        record_owned_process(args.output_dir, verifier.name, proc, "spawned")
+         wait_for_health(verifier, args.startup_timeout, proc.pid)
++        record_owned_process(args.output_dir, verifier.name, proc, "healthy")
+         with results_path.open("w", encoding="utf-8") as handle:
+             for case in plan["replay_cases"]:
+                 started = time.monotonic()
+@@ -914,13 +920,7 @@
+                 handle.flush()
+     finally:
+         if proc is not None:
+-            try:
+-                terminate_server(proc)
+-            finally:
+-                log_handle = getattr(proc, "_qwable_verifier_log_handle", None)
+-                if log_handle is not None:
+-                    log_handle.close()
+-        (args.output_dir / "post_pgrep.txt").write_text(process_snapshot(), encoding="utf-8")
++            cleanup_server(proc, args.output_dir, verifier.name)
+ 
+     ok_rows = [row for row in rows if row.get("status") == "ok"]
+     solvable_rows = [row for row in ok_rows if row.get("has_passing")]

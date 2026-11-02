@@ -504,7 +504,7 @@ class CAF1Tests(_DSHBase):
         self.assertIn("Dry-run FAIL for your row `row-a`", self.calls[0]["prompt"])
         self.assertIn("fix the result_path", self.calls[0]["prompt"])
         # an awaited file: registered by the session, fires when it exists
-        e = self.session(await_event=True)  # last turn was a no-op: only an event may resume it
+        e = self.session(await_event=True, last_end=hs.now_iso())  # last turn was a no-op just now: only an event may resume it (for 30 min)
         e["noop_reason"] = hs.work_state(self.flags, "alpha", e, self.repo)[1]
         hs.save(hs.reg_path(self.flags), self.reg)
         self.calls.clear()
@@ -814,3 +814,85 @@ class WrappedGateTests(_DSHBase):
         e = {"last_wrapup": None}
         hs.log_unwrapped(self.flags, "s", e); hs.log_unwrapped(self.flags, "s", e)
         self.assertEqual(self.log_text().count("UNWRAPPED s:"), 1)
+
+
+class StuckTests(_DSHBase):
+    def test_three_no_effect_turns_make_a_session_stuck_until_a_run_end(self):
+        e = self.session(last_wrapup=None)
+        hs.time.sleep(2.2)  # fixture rows were written this second; last_resume has 1 s resolution + 1 s skew allowance
+        for n in (1, 2, 3):
+            e = self.reg["sessions"]["alpha"] if n == 1 else reg["sessions"]["alpha"]
+            e.update({"pid": 99999979, "last_output": self.turn('{"text":"nothing landed"}\n', rc=0), "status": "live", "last_resume": hs.now_iso()})
+            hs.time.sleep(1.1)  # the fixture rows predate this resume: nothing published during the turn
+            _w(hs.report_path(self.flags, "alpha"), json.dumps({"state": "blocked", "question": "needs the C5 store digest", "rows_published": []}))
+            hs.save(hs.reg_path(self.flags), self.reg if n == 1 else reg)
+            with patch.object(hs, "landed", return_value=True):
+                reg, st = self.dispatch()
+        e = reg["sessions"]["alpha"]
+        self.assertEqual(e["noop_turns"], 3)
+        self.assertIn("3 consecutive turns without a landed tick, row or filing; last report: needs the C5 store digest", e["stuck"])
+        self.assertIn("STUCK alpha:", self.log_text())
+        # its own awaited / dry-run events are dropped while stuck; a continue is not offered
+        self.calls.clear()
+        _w(hs.report_path(self.flags, "alpha").replace("report.json", "awaiting/x.json"), json.dumps({"path": self.flags + "/BACKLOG-codex-gen.md", "allow_existing": True}))
+        _w(os.path.join(self.flags, "BACKLOG-codex-gen.md"), "## Inference rows\n\n- none\n")
+        _w(os.path.join(self.flags, "dryrun", "row-a", "FAIL-9.json"), json.dumps({"reason": "x"}))
+        reg, st = self.dispatch()
+        self.assertEqual([c for c in self.calls if "alpha" in c["prompt"] and "codex-gen" not in c["prompt"][:200]], [])
+        # the backlog carries the stuck line
+        data = bg.build(self.flags, os.path.join(self.repo, "handoffs/active/backlog-priority.json"), "nolog", sessions_path=hs.reg_path(self.flags))
+        self.assertIn("[stuck: 3 consecutive turns", bg.render("handoff-alpha", data))
+        # a run-end unsticks and resumes it (the session has a landed wrap-up, so the UNWRAPPED gate passes)
+        reg["sessions"]["alpha"]["last_wrapup"] = "abc1234"
+        hs.save(hs.reg_path(self.flags), reg)
+        _w(os.path.join(self.flags, "grants", "row-b.ended"), "rc=0\n")
+        with patch.object(hs, "landed", return_value=True):
+            reg, st = self.dispatch()
+        self.assertIsNone(reg["sessions"]["alpha"]["stuck"])
+        self.assertTrue(any("row `row-b`" in c["prompt"] for c in self.calls))
+        # a landed tick is an effect: turn_effect counts it
+        with patch.object(hs, "landed_ticks", lambda sha, repo=None: 2), patch.object(hs, "landed", return_value=True):
+            self.assertIn("2 landed tick(s)", hs.turn_effect(self.flags, "alpha", {"last_wrapup": "abc1234", "last_resume": hs.now_iso()}))
+        self.assertEqual(hs.turn_effect(self.flags, "alpha", {"last_wrapup": None, "last_resume": "2099-01-01T00:00:00Z"}), "", "a commit alone is not an effect")
+
+
+class LandBeforeParkTests(_DSHBase):
+    def test_noop_warning_text_and_dispatcher_lands_unlanded_ticks(self):
+        import subprocess, tempfile
+        e = {"handoff": "handoffs/active/alpha.md", "noop_turns": 2}
+        self.assertIn("WARNING: your last 2 turn(s) landed nothing", hs.continue_prompt("alpha", e, self.flags, "x"))
+        self.assertNotIn("WARNING", hs.continue_prompt("alpha", dict(e, noop_turns=0), self.flags, "x"))
+        # a clean lane with an unlanded commit that ticks a box: land_lane pushes it and the ticks count as the turn's effect
+        origin = tempfile.mkdtemp(); subprocess.run(["git", "init", "-q", "--bare", "-b", "main", origin], check=True)
+        lane = tempfile.mkdtemp()
+        g = lambda *a: subprocess.run(["git", "-C", lane, "-c", "user.email=t@t", "-c", "user.name=t", *a], check=True, capture_output=True)
+        subprocess.run(["git", "-C", lane, "init", "-q", "-b", "main"], check=True)
+        _w(os.path.join(lane, "handoffs/active/a.md"), "- [ ] A\n"); g("add", "."); g("commit", "-q", "-m", "base")
+        g("remote", "add", "origin", origin); g("push", "-q", "origin", "main"); g("fetch", "-q", "origin")
+        _w(os.path.join(lane, "handoffs/active/a.md"), "- [x] A ✅\n"); g("add", "."); g("commit", "-q", "-m", "tick A")
+        real_run = subprocess.run
+        def fake_push(cmd, **kw):
+            if "serialized_push.py" in " ".join(map(str, cmd)):
+                return real_run(["git", "-C", lane, "push", "-q", "origin", "HEAD:main"], capture_output=True)
+            return real_run(cmd, **kw)
+        with patch.object(hs.subprocess, "run", side_effect=fake_push), patch.object(hs, "ROOT", lane):
+            landed = hs.land_lane(lane)
+        self.assertEqual(len(landed), 1)
+        self.assertEqual(hs.landed_ticks(landed[0], repo=lane), 1)
+        self.assertEqual(hs.land_lane(lane), [], "nothing left to land")
+
+
+class DeadlockTests(_DSHBase):
+    def test_await_expires_and_event_rearms_dirty_lane_resume(self):
+        # a no-op session parked 31 min ago with open work is resumed again (await_event expired)
+        old = hs._dt.datetime.fromtimestamp(hs.time.time() - 31 * 60, hs._dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        e = self.session(await_event=True, noop_turns=1, last_end=old, last_resume=old)
+        e["noop_reason"] = hs.work_state(self.flags, "alpha", e, self.repo)[1]
+        hs.save(hs.reg_path(self.flags), self.reg)
+        reg, _ = self.dispatch()
+        self.assertTrue(any("FINISH ALL READY ITEMS" in c["prompt"] for c in self.calls), "parked no-op session resumed after 30 min")
+        # a queued event clears the dirty-lane one-shot so the owner can come back and wrap up
+        e = self.session(dirty_wrap_resume="2026-11-02T00:00:00Z")
+        _w(os.path.join(self.flags, "grants", "row-a.ended"), "rc=0\n")
+        reg, st = self.dispatch()
+        self.assertIsNone(reg["sessions"]["alpha"].get("dirty_wrap_resume"))
