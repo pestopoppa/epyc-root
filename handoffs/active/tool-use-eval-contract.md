@@ -4,6 +4,25 @@
 
 ## Execution map — audited 2026-11-02
 
+**Implementation checkpoint 2026-11-02 (candidate branches; not deployed).** APP
+`codex/evl46-seed-ledger-20261102` @ `9c51d450` adds opt-in `--send-seed`, recording
+whether the HTTP seed field was sent while preserving the historical default request, and
+projects trace-bound first single-call native schema validity plus terminal timeout facts.
+The combined DTAP suite passed 163/163 from a protected verification worktree under a q0
+claim. Provider seed adherence, multicall attribution, task-level verification, recovery and
+complete costs remain unproved; TU-LED-1 stays open. [no-belief: software controls]
+
+Research `codex/evl46-scorer-isolation-20261102` @ `ed1e69e7a` is an opt-in, fail-closed
+bubblewrap prototype; default scoring remains unchanged. Six focused controls and the old
+scorer smoke passed. This host refused actual namespace setup (`RTM_NEWADDR` / `uid_map`
+permission failures), so no real access-denial acceptance, hidden-test secrecy or TU-GR-1 /
+2a-iv completion is claimed. [no-belief: source and fixture controls]
+
+[TU-HR-1 source/runtime census](../../docs/reference/tu-hr1-tool-render-audit-20261102.md)
+records the configured model/template groups and source forwarding paths, and distinguishes
+them from live identity. Sampled model endpoints were unreachable in the observer's namespace;
+per-model live template/render verification remains open. [no-belief: source and operational review]
+
 This map supersedes the historical live-status language below, not the individual acceptance
 contracts. Source review used ROOT `2d95a8a371` and orchestrator `9301fb7bc81663d176f11ebf21bf496d4ac725a3` (the shared orchestrator checkout was behind that ref). Re-resolve
 the task text, source and ownership at dispatch; use isolated worktrees. Historical PIDs, flags,
