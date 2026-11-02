@@ -27,3 +27,7 @@ Consumed c5-14.done: C5-14 is already marked complete in the handoff with resear
 ## 00:29Z — Preserve outstanding inference and implementation work pending completion events
 
 At this boundary, no registered k228/k175 capture, controller null-arm, C5-7 in-run capture, C5-8, AR-RPUCG, ISA-audit runner, or C5-12 completion marker was available. A C5-12 patch file exists in the lane but was not reviewed or committed because its author has not marked the work complete. Existing prepared evidence does not establish a runnable governed inference row. Completion events remain registered; no compute was launched.
+
+## 00:30Z — Review partial C5-12 selection patch and prepare eight-arm panel contract correction
+
+Reviewed the draft C5-12 patch: it implements deterministic three-of-five selection with input validation and fixture tests, but it is standalone and does not implement the required two-tier model split, findings document, or traceback-only versus resampling comparison; its completion marker is absent and the task remains open. No inference prerequisites have produced a completion marker or a publishable row. Dispatched an independent S3-INF03-01 contract patch to make whole-agent interpretation and the no-authoring baseline explicit while preserving the existing greedy-control trigger. No compute launched.
