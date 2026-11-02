@@ -15,21 +15,35 @@ both real:
 
 So pushing is treated as a critical section with an audit trail:
 
-  * an EXCLUSIVE LOCK, taken with O_EXCL, before any network operation;
+  * an EXCLUSIVE KERNEL LOCK (fcntl.flock) before any network operation;
   * a PUBLISH MANIFEST printed before the push, so the pusher sees exactly what
     they are about to publish on everyone else's behalf;
   * DRY-RUN BY DEFAULT — publishing requires the explicit `--push` flag;
   * FAIL CLOSED and by NAME on every ambiguous repository state.
 
-WHY O_EXCL AND WHY NO AUTO-EXPIRY. Same discipline as the session-bus claim scheme
-(`session_bus.py: cmd_claim`): the create either succeeds (you own it) or fails
-(somebody else does), and there is no window between checking and taking because
-there is no check. A lock has exactly one writer for its whole life. Consequently a
-holder whose PID is gone is reported as *evidence* — "may be residue" — and never
-auto-released: an idle owner is not an absent one, and auto-expiry would destroy the
-single-writer property that makes the whole scheme sound. Displacing a holder is
-possible but must be deliberate and attributable: `--force-release <holder-id>`
-requires you to NAME the agent you are displacing, and is journaled.
+WHY A KERNEL LOCK, AND WHY THE JSON FILE IS ONLY A LABEL (2026-11-01, D9).
+Until then the lock WAS the JSON file, created with O_EXCL and never auto-expired: a
+holder whose PID was gone was reported as "may be residue" and the whole fleet waited
+for a human `--force-release`. That night handoff-codex-gen's wrap-up was killed twice
+while holding it (23:16Z, 23:44Z) and every push stopped both times. PID liveness could
+not safely decide (PIDs are reused; a --acquire hold exits by design).
+
+Now the lock is `fcntl.flock(LOCK_EX|LOCK_NB)` on `<name>-<key>.flock`, held on an fd the
+locking process keeps open for the whole critical section. The kernel releases it when
+that process dies and never while it lives, so liveness is no longer inferred:
+  * the JSON `<name>-<key>.json` is a holder LABEL (`kernel_lock: true`) that keeps
+    `--status`, `--force-release`, the pre-push guard and the journal working;
+  * a label whose flock is FREE is stale by construction: the next acquire overwrites it
+    and journals `STALE-LABEL-REPLACED` in displacements.jsonl;
+  * a live holder is never displaced; `--force-release` of a live push refuses and names
+    the pid to stop (a hold lease's keeper, which does no work, is stopped instead);
+  * `--acquire` (a lease held across CLI calls, e.g. the wrap-up lease) forks a KEEPER
+    (own session, `holder_pid` in the label) that inherits the locked fd and exits on
+    `--release`, on force-release/token change, or when `--hold-parent` (default: the
+    CLI's parent shell) dies — journaled `HOLD-PARENT-DIED`;
+  * a label WITHOUT `kernel_lock` was written by the old O_EXCL code: the old rules apply
+    to it unchanged (never auto-expired; displaced only by a named, journaled
+    `--force-release`), so the upgrade cannot displace a live legacy holder.
 
 WHY THE LOCK IS KEYED ON (st_dev, st_ino) AND NOT ON A PATH. Measured on this host:
 
@@ -70,6 +84,7 @@ EXIT CODES
 from __future__ import annotations
 
 import argparse
+import fcntl
 import hashlib
 import hmac
 import json
@@ -80,6 +95,7 @@ import socket
 import stat
 import subprocess
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -331,7 +347,7 @@ def lock_age_hours(rec: dict) -> float | None:
         return None
 
 
-def describe_holder(rec: dict) -> str:
+def describe_holder(rec: dict, kernel: str | None = None) -> str:
     """Everything a blocked reader needs to decide what to do — and nothing that
     would let them decide wrongly.
 
@@ -368,7 +384,14 @@ def describe_holder(rec: dict) -> str:
         lines.append(f"           only residue signal here: {age_txt.strip() or 'unknown'}.")
     else:
         lines.append(f"  note   : {why}")
-    if state == "gone":
+    if rec.get("kernel_lock"):
+        lines.append(f"  kernel : flock-backed label (holder process {rec.get('holder_pid', rec.get('pid'))})"
+                     + (f" — kernel lock {kernel}" if kernel else ""))
+        lines.append("           the KERNEL lock is the liveness truth: it is released when the holder "
+                     "dies, never while it lives;")
+        lines.append("           a label whose flock is free is stale and the next acquire replaces it "
+                     "(journaled STALE-LABEL-REPLACED).")
+    if state == "gone" and not rec.get("kernel_lock"):
         lines.append("  action : NOT auto-expired. If this is residue, displace it deliberately:")
         lines.append(f"           --force-release {rec.get('agent')}")
     return "\n".join(lines)
@@ -472,25 +495,169 @@ def _hold_token(token_file: os.PathLike | str | None, *, create: bool) -> str:
             else _read_token_file(token_file))
 
 
+# --- KERNEL LOCK (2026-11-01, D9) -----------------------------------------------
+# The JSON file above is now a LABEL; the lock itself is fcntl.flock(LOCK_EX|LOCK_NB)
+# on a sibling `<name>-<key>.flock` file, held on an fd the locking process keeps
+# open for the whole critical section. The kernel drops it when that process dies
+# and never while it lives — so a SIGKILLed pusher can no longer wedge the fleet
+# (measured 2026-11-01 23:16Z and 23:44Z: handoff-codex-gen died holding the O_EXCL
+# file twice and every push waited on an operator --force-release).
+#
+#   * the .flock file is never unlinked (unlinking a flock file races new lockers);
+#   * a label written by this code carries "kernel_lock": true. If its flock is FREE
+#     the label is stale by construction: it is overwritten and journaled as
+#     STALE-LABEL-REPLACED. A live holder is never displaced — not even by
+#     --force-release, which refuses and names the pid to stop instead;
+#   * a label WITHOUT kernel_lock is a legacy O_EXCL label (or a pre-upgrade holder
+#     still in flight): the old rules apply to it unchanged, so the upgrade cannot
+#     displace a live legacy holder;
+#   * a --acquire hold outlives its CLI call through a tiny KEEPER process (forked,
+#     own session) that inherits the locked fd and exits on --release, on a token
+#     change / force-release, or when the watched parent (default: the CLI's parent
+#     shell) dies. See _spawn_hold_keeper().
+_HELD: dict[str, int] = {}          # flock path -> fd held by THIS process
+KEEPER_POLL_S = 0.25
+
+
+def flock_path(label: os.PathLike | str) -> Path:
+    return Path(label).with_suffix(".flock")
+
+
+def _try_flock(fpath: Path) -> int | None:
+    """A locked fd for fpath, or None if another open file description holds it."""
+    fd = os.open(fpath, os.O_CREAT | os.O_RDWR | os.O_CLOEXEC, 0o644)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        os.close(fd)
+        return None
+    except BaseException:
+        os.close(fd)
+        raise
+    return fd
+
+
+def _drop_flock(fpath: Path) -> None:
+    """Close this process's fd. Never LOCK_UN: a keeper may share the description."""
+    fd = _HELD.pop(str(fpath), None)
+    if fd is not None:
+        os.close(fd)
+
+
+def kernel_lock_state(label: os.PathLike | str) -> str:
+    """'mine' | 'held' (another live process) | 'free'. Probing never blocks."""
+    fpath = flock_path(label)
+    if str(fpath) in _HELD:
+        return "mine"
+    if not fpath.exists():
+        return "free"
+    fd = _try_flock(fpath)
+    if fd is None:
+        return "held"
+    os.close(fd)
+    return "free"
+
+
+def _write_label(path: Path, rec: dict, exclusive: bool = False) -> None:
+    """Atomic label write. exclusive=True links instead of replacing, so a pre-flock
+    (O_EXCL-only) writer that raced in is never overwritten during the upgrade."""
+    tmp = path.with_name(path.name + f".tmp{os.getpid()}")
+    try:
+        with open(tmp, "w", encoding="utf-8") as fh:
+            json.dump(rec, fh, sort_keys=True)
+            fh.write("\n")
+        if exclusive:
+            try:
+                os.link(tmp, path)
+            except FileExistsError:
+                raise LockHeldError(
+                    f"lock-held: a legacy writer created {path} while this acquire held the "
+                    f"kernel lock; refusing.\n{describe_holder(read_lock(path) or {})}",
+                    holder=read_lock(path) or {}, condition="lock-held")
+            finally:
+                tmp.unlink()
+        else:
+            os.replace(tmp, path)
+    except BaseException:
+        try:
+            tmp.unlink()
+        except OSError:
+            pass
+        raise
+
+
+def _journal(lock_dir, entry: dict) -> None:
+    journal = Path(lock_dir) / "displacements.jsonl"
+    try:
+        with journal.open("a", encoding="utf-8") as fh:
+            fh.write(json.dumps(entry, sort_keys=True) + "\n")
+    except OSError as exc:  # journal failure must not silently swallow the act
+        print(f"serialized_push: WARNING could not journal {entry.get('event', 'displacement')}: "
+              f"{exc}", file=sys.stderr)
+
+
+def _label_decision(held: dict, agent: str, pid: int, name: str,
+                    token_file, kernel: str | None) -> str | dict:
+    """The pre-flock ownership rules, applied to an existing label.
+
+    Returns the label (idempotent: already yours), 'reclaim' (your own dead residue,
+    legacy labels only), or raises LockHeldError naming the holder.
+    """
+    desc = describe_holder(held, kernel)
+    if held.get("mode") == "hold":
+        if token_file is None:
+            raise LockHeldError(
+                f"lock-held-token-required: {agent!r} cannot prove ownership of the "
+                f"{name} lock's long-lived hold without its token file.\n{desc}",
+                holder=held, condition="lock-held-token-required",
+            )
+        presented = _token_digest(_read_token_file(token_file))
+        expected = held.get("token_sha256")
+        if (held.get("agent") == agent and isinstance(expected, str)
+                and hmac.compare_digest(presented, expected)):
+            return held
+        raise LockHeldError(
+            f"lock-held-token-mismatch: refusing the {name} lock — roster id, PID, and "
+            f"dead-process state do not confer ownership of a long-lived hold.\n{desc}",
+            holder=held, condition="lock-held-token-mismatch",
+        )
+    if held.get("agent") == agent:
+        if held.get("pid") == pid:
+            return held
+        state, why = pid_liveness(held)
+        if state in ("running", "unknown") or kernel == "held":
+            raise LockHeldError(
+                f"lock-held: your own agent id {agent!r} already holds this lock from a "
+                f"different process.\n{desc}",
+                holder=held, condition="lock-held-same-agent",
+            )
+        print(f"serialized_push: reclaiming your own lock ({why})", file=sys.stderr)
+        return "reclaim"
+    raise LockHeldError(
+        f"lock-held: refusing — {held.get('agent')!r} holds the {name} lock "
+        f"for this repo.\n{desc}",
+        holder=held, condition="lock-held",
+    )
+
+
 def acquire(lock_dir, key, agent: str, repo_path: str, pid: int | None = None,
             mode: str = "push", name: str = "push",
             token_file: os.PathLike | str | None = None) -> dict:
-    """Take the push lock with O_EXCL, or raise LockHeldError naming the holder.
+    """Take the lock — a kernel flock plus a JSON holder label — or raise
+    LockHeldError naming the holder.
 
-    Push-mode reuse rules, retained for one-shot compatibility:
+    The flock decides; the label names. Ownership rules for an existing label:
       * same agent, same PID  -> already yours; idempotent (a retry is not a race).
-      * same agent, other PID that is RUNNING -> REFUSED. Two live processes sharing
-        one roster id are exactly the concurrency this exists to stop.
-      * same agent, other PID that is GONE -> reclaimed, loudly. Your own residue
-        must not lock you out of the work you hold (session-bus precedent: re-claiming
-        your OWN row is not a collision).
-      * different agent -> ALWAYS refused, running or not. Never stolen.
+      * same agent, other live process -> REFUSED.
+      * different agent -> refused while its holder lives (flock held), or for a
+        legacy label (no kernel_lock) whatever its PID says.
+      * a kernel_lock label whose flock is FREE -> its holder is dead (the kernel
+        says so, not a PID guess): overwritten, journaled STALE-LABEL-REPLACED.
+      * a legacy label of your own agent with a dead PID -> reclaimed, loudly.
 
-    Hold mode is stricter: its acquiring process exits by design, so PID liveness
-    cannot identify the later releaser. An opaque per-operation token is created in
-    a caller-named mode-0600 file, only its SHA-256 is recorded in the public lock,
-    and every idempotent acquire or ordinary release must prove that token. Roster id,
-    dead PID, and even PID reuse confer no hold ownership.
+    Hold mode: an opaque per-operation token is created in a caller-named mode-0600
+    file, only its SHA-256 is recorded, and every idempotent acquire or release must
+    prove it. Roster id, dead PID and PID reuse confer no hold ownership.
     """
     if mode not in {"push", "hold"}:
         raise SerializedPushError(f"bad-lock-mode: {mode!r}", condition="bad-lock-mode")
@@ -499,91 +666,170 @@ def acquire(lock_dir, key, agent: str, repo_path: str, pid: int | None = None,
     pid = os.getpid() if pid is None else pid
     lock_dir = Path(lock_dir)
     path = lock_path(lock_dir, key, name)
-    rec = {
-        "agent": agent,
-        "pid": pid,
-        "host": socket.gethostname(),
-        "ts": _utcnow_iso(),
-        "repo_key": key,
-        "repo_path": str(repo_path),
-        "lock_name": name,
-        # "push" = taken for the duration of one push; a dead PID is real evidence of
-        # residue. "hold" = taken by --acquire and held across invocations; a dead PID
-        # is EXPECTED and evidence of nothing. See describe_holder().
-        "mode": mode,
-    }
-    if token_sha256 is not None:
-        rec["token_sha256"] = token_sha256
     lock_dir.mkdir(parents=True, exist_ok=True)
-    try:
-        fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
-    except FileExistsError:
-        held = read_lock(path) or {}
-        if held.get("mode") == "hold":
-            if token_file is None:
-                raise LockHeldError(
-                    f"lock-held-token-required: {agent!r} cannot prove ownership of the "
-                    f"{name} lock's long-lived hold without its token file.\n"
-                    f"{describe_holder(held)}",
-                    holder=held, condition="lock-held-token-required",
-                )
-            presented = _token_digest(_read_token_file(token_file))
-            expected = held.get("token_sha256")
-            if (held.get("agent") == agent and isinstance(expected, str)
-                    and hmac.compare_digest(presented, expected)):
-                return held
+    fpath = flock_path(path)
+
+    fd = None if str(fpath) in _HELD else _try_flock(fpath)
+    if fd is None:
+        # A LIVE process holds the kernel lock (another one, or this one).
+        held = read_lock(path)
+        if held is None:
             raise LockHeldError(
-                f"lock-held-token-mismatch: refusing the {name} lock — roster id, PID, and "
-                f"dead-process state do not confer ownership of a long-lived hold.\n"
-                f"{describe_holder(held)}",
-                holder=held, condition="lock-held-token-mismatch",
+                f"lock-held: the {name} kernel lock is held by a live process that has "
+                f"not (yet) written its label ({fpath}); retry shortly.",
+                holder={}, condition="lock-held",
             )
-        if held.get("agent") == agent:
-            if held.get("pid") == pid:
-                return held
-            state, why = pid_liveness(held)
-            if state == "running" or state == "unknown":
-                raise LockHeldError(
-                    f"lock-held: your own agent id {agent!r} already holds this lock from a "
-                    f"different process.\n{describe_holder(held)}",
-                    holder=held, condition="lock-held-same-agent",
-                )
-            # Own residue: reclaim, but say so.
-            path.unlink()
-            print(f"serialized_push: reclaiming your own lock ({why})", file=sys.stderr)
-            return acquire(lock_dir, key, agent, repo_path, pid=pid, mode=mode, name=name,
-                           token_file=token_file)
-        raise LockHeldError(
-            f"lock-held: refusing — {held.get('agent')!r} holds the {name} lock "
-            f"for this repo.\n{describe_holder(held)}",
-            holder=held, condition="lock-held",
-        )
+        got = _label_decision(held, agent, pid, name, token_file, "HELD by a live process")
+        if got == "reclaim":  # unreachable while the flock is held; never steal
+            raise LockHeldError(f"lock-held: {describe_holder(held)}", holder=held,
+                                condition="lock-held-same-agent")
+        return got
+
+    # We hold the kernel lock.
     try:
-        with os.fdopen(fd, "w", encoding="utf-8") as fh:
-            json.dump(rec, fh, sort_keys=True)
-            fh.write("\n")
+        held = read_lock(path)
+        if held is not None:
+            if held.get("kernel_lock"):
+                print(f"serialized_push: STALE-LABEL-REPLACED — {held.get('agent')!r} "
+                      f"(pid {held.get('pid')}) left a label but holds no kernel lock",
+                      file=sys.stderr)
+                _journal(lock_dir, {"event": "STALE-LABEL-REPLACED", "ts": _utcnow_iso(),
+                                    "by_agent": agent, "by_pid": os.getpid(),
+                                    "host": socket.gethostname(), "displaced": held})
+            else:
+                got = _label_decision(held, agent, pid, name, token_file, None)
+                if got != "reclaim":
+                    os.close(fd)
+                    return got
+                path.unlink()  # own legacy residue, reclaimed loudly (old rule)
+                held = None
+        rec = {
+            "agent": agent,
+            "pid": pid,
+            "host": socket.gethostname(),
+            "ts": _utcnow_iso(),
+            "repo_key": key,
+            "repo_path": str(repo_path),
+            "lock_name": name,
+            # "push" = one push; "hold" = --acquire, held across invocations by a
+            # keeper process (holder_pid). See describe_holder().
+            "mode": mode,
+            "kernel_lock": True,
+            "holder_pid": os.getpid(),
+        }
+        if token_sha256 is not None:
+            rec["token_sha256"] = token_sha256
+        _write_label(path, rec, exclusive=held is None or not held.get("kernel_lock"))
     except BaseException:
-        # Never leave a half-written lock: it would be unparseable, and an
-        # unparseable lock is treated as held by nobody-knows-whom.
-        try:
-            path.unlink()
-        except OSError:
-            pass
+        os.close(fd)
         raise
+    _HELD[str(fpath)] = fd
     return rec
+
+
+def _proc_start(pid: int) -> str | None:
+    """/proc start time of pid (field 22), or None if it is not running."""
+    try:
+        with open(f"/proc/{pid}/stat", encoding="utf-8") as fh:
+            return fh.read().rsplit(")", 1)[1].split()[19]
+    except (OSError, IndexError):
+        return None
+
+
+def _keeper_loop(path: Path, token_sha256: str | None, watch_pid: int,
+                 watch_start: str | None, lock_dir) -> None:
+    while True:
+        time.sleep(KEEPER_POLL_S)
+        try:
+            rec = read_lock(path)
+        except LockCorruptError:
+            continue  # an unreadable label is still a lock: keep holding
+        if rec is None or rec.get("token_sha256") != token_sha256 \
+                or rec.get("holder_pid") != os.getpid():
+            return  # released, force-released, or replaced
+        if watch_pid and _proc_start(watch_pid) != watch_start:
+            _journal(lock_dir, {"event": "HOLD-PARENT-DIED", "ts": _utcnow_iso(),
+                                "by_agent": rec.get("agent"), "by_pid": os.getpid(),
+                                "host": socket.gethostname(), "watch_pid": watch_pid,
+                                "displaced": rec})
+            try:
+                path.unlink()
+            except OSError:
+                pass
+            return
+
+
+def _spawn_hold_keeper(path: Path, rec: dict, watch_pid: int, lock_dir) -> int:
+    """Fork a keeper that inherits the locked fd and holds it for the lease.
+
+    The keeper calls setsid() (a tool-call timeout that kills the CLI's process
+    group does not reach it), closes stdio, and exits — dropping the kernel lock —
+    on --release (label gone), on --force-release or a token change, or when
+    watch_pid (default: the CLI's parent shell) dies. watch_pid 0 = no watch.
+    """
+    fpath = flock_path(path)
+    watch_start = _proc_start(watch_pid) if watch_pid else None
+    if watch_pid and watch_start is None:
+        raise SerializedPushError(f"hold-parent-gone: watch pid {watch_pid} is not running",
+                                  condition="hold-parent-gone")
+    child = os.fork()
+    if child == 0:  # keeper
+        try:
+            os.setsid()
+            devnull = os.open(os.devnull, os.O_RDWR)
+            for i in (0, 1, 2):
+                os.dup2(devnull, i)
+            for other, ofd in list(_HELD.items()):
+                if other != str(fpath):
+                    os.close(ofd)
+            # wait until the parent has recorded us as holder_pid
+            for _ in range(200):
+                cur = read_lock(path)
+                if cur and cur.get("holder_pid") == os.getpid():
+                    break
+                time.sleep(0.05)
+            _keeper_loop(path, rec.get("token_sha256"), watch_pid, watch_start, lock_dir)
+        finally:
+            os._exit(0)
+    rec = dict(rec, holder_pid=child, watch_pid=watch_pid)
+    _write_label(path, rec)
+    _drop_flock(fpath)  # the keeper's inherited copy keeps the lock
+    return child
+
+
+def _stop_keeper(path: Path, rec: dict, timeout_s: float = 5.0) -> None:
+    """After a hold label is removed, make sure its keeper lets go promptly."""
+    hp = rec.get("holder_pid")
+    deadline = time.monotonic() + timeout_s
+    signalled = False
+    while kernel_lock_state(path) == "held" and time.monotonic() < deadline:
+        if not signalled and isinstance(hp, int) and hp != os.getpid():
+            try:
+                cmd = Path(f"/proc/{hp}/cmdline").read_bytes()
+            except OSError:
+                cmd = b""
+            if b"serialized_push" in cmd:
+                try:
+                    os.kill(hp, 15)
+                except OSError:
+                    pass
+            signalled = True
+        time.sleep(0.05)
 
 
 def release(lock_dir, key, agent: str, name: str = "push",
             token_file: os.PathLike | str | None = None) -> bool:
     """Drop a lock you hold. False if there was nothing to drop.
 
-    A hold-mode lock requires its opaque token regardless of roster id or PID. A
-    push-mode lock retains the legacy same-process / dead-own-residue behavior for
-    one-shot compatibility.
+    A hold-mode lock requires its opaque token regardless of roster id or PID; its
+    keeper is then stopped. A push-mode lock keeps the same-process / dead-own-residue
+    behavior.
     """
     path = lock_path(lock_dir, key, name)
+    fpath = flock_path(path)
     rec = read_lock(path)
     if rec is None:
+        _drop_flock(fpath)
         return False
     if rec.get("agent") != agent:
         raise NotHolderError(
@@ -608,6 +854,9 @@ def release(lock_dir, key, agent: str, name: str = "push",
                 condition="not-holder-token-mismatch",
             )
         path.unlink()
+        _drop_flock(fpath)
+        if rec.get("kernel_lock"):
+            _stop_keeper(path, rec)
         # The caller owns token lifecycle. A wrap-up invocation may acquire and
         # release several protected sections with ONE operation-private token;
         # deleting it here would silently rotate authority mid-operation. The
@@ -616,7 +865,8 @@ def release(lock_dir, key, agent: str, name: str = "push",
         return True
     if rec.get("pid") != os.getpid():
         state, why = pid_liveness(rec)
-        if state in ("running", "unknown"):
+        if state in ("running", "unknown") or (
+                rec.get("kernel_lock") and kernel_lock_state(path) == "held"):
             raise NotHolderError(
                 f"not-holder: {agent!r} holds this lock from a different process "
                 f"that is still live.\n{describe_holder(rec)}\n"
@@ -626,6 +876,7 @@ def release(lock_dir, key, agent: str, name: str = "push",
             )
         print(f"serialized_push: releasing your own residue ({why})", file=sys.stderr)
     path.unlink()
+    _drop_flock(fpath)
     return True
 
 
@@ -635,7 +886,10 @@ def force_release(lock_dir, key, agent: str, named_holder: str,
 
     You must NAME the holder you are displacing. Naming the wrong one is refused,
     which makes it impossible to blind-break a lock whose owner you never looked at.
-    Every displacement is journaled next to the lock.
+    A push-mode kernel lock held by a LIVE process is never displaced: the refusal
+    names the pid to stop instead (stopping it releases the lock by itself). A hold
+    lease's keeper does no work, so displacing a hold stops its keeper. Every
+    displacement is journaled next to the lock.
     """
     path = lock_path(lock_dir, key, name)
     rec = read_lock(path)
@@ -652,21 +906,21 @@ def force_release(lock_dir, key, agent: str, named_holder: str,
             f"  Displacement must name the agent actually being displaced.",
             condition="holder-mismatch",
         )
-    journal = Path(lock_dir) / "displacements.jsonl"
-    entry = {
-        "ts": _utcnow_iso(),
-        "by_agent": agent,
-        "by_pid": os.getpid(),
-        "host": socket.gethostname(),
-        "displaced": rec,
-    }
-    try:
-        with journal.open("a", encoding="utf-8") as fh:
-            fh.write(json.dumps(entry, sort_keys=True) + "\n")
-    except OSError as exc:  # journal failure must not silently swallow the act
-        print(f"serialized_push: WARNING could not journal displacement: {exc}",
-              file=sys.stderr)
+    live_keeper = rec.get("mode") == "hold"  # a keeper does no work: displaceable
+    if rec.get("kernel_lock") and not live_keeper and kernel_lock_state(path) == "held":
+        raise NotHolderError(
+            f"holder-live: {holder!r} still holds the kernel lock (holder process "
+            f"{rec.get('holder_pid', rec.get('pid'))}). A live holder is never displaced; "
+            f"if it is wedged, stop THAT process and the kernel releases the lock.\n"
+            f"{describe_holder(rec, 'HELD by a live process')}",
+            condition="holder-live",
+        )
+    _journal(lock_dir, {"ts": _utcnow_iso(), "by_agent": agent, "by_pid": os.getpid(),
+                        "host": socket.gethostname(), "displaced": rec})
     path.unlink()
+    _drop_flock(flock_path(path))
+    if rec.get("kernel_lock") and live_keeper:
+        _stop_keeper(path, rec)  # label gone: the keeper exits and the kernel lets go
     return rec
 
 
@@ -1016,6 +1270,11 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--token-file",
                    help="private mode-0600 operation token for a long-lived --acquire hold; "
                         "required again for idempotent acquire, push-under-hold, and release")
+    p.add_argument("--hold-parent", type=int, default=None, metavar="PID",
+                   help="--acquire only: the keeper process that holds the kernel lock for "
+                        "the lease exits (releasing it) when this PID dies. Default: the "
+                        "parent of this CLI call (the shell running the lease); 0 = no watch, "
+                        "hold until --release / --force-release.")
     p.add_argument("--print-lock-file", action="store_true",
                    help="print the resolved lock FILE path for --repo and exit. This is the "
                         "shared resolver: the pre-push guard calls it instead of "
@@ -1031,8 +1290,11 @@ def _print_lock_state(path: Path, name: str = "push") -> dict | None:
     if rec is None:
         print(f"{name} lock: FREE  ({path})")
     else:
+        kernel = kernel_lock_state(path) if rec.get("kernel_lock") else None
         print(f"{name} lock: HELD  ({path})")
-        print(describe_holder(rec))
+        print(describe_holder(rec, {"held": "HELD by a live process", "mine": "HELD by this process",
+                                    "free": "FREE — label is stale; next acquire replaces it"}
+                                   .get(kernel) if kernel else None))
     return rec
 
 
@@ -1131,12 +1393,25 @@ def main(argv: list[str] | None = None) -> int:
 
     # ---- lock-holding operations (acquire / push) ---------------------------
     try:
-        acquire(args.lock_dir, key, args.agent, str(repo),
-                mode="hold" if args.acquire else "push", name=args.lock_name,
-                token_file=args.token_file)
+        rec = acquire(args.lock_dir, key, args.agent, str(repo),
+                      mode="hold" if args.acquire else "push", name=args.lock_name,
+                      token_file=args.token_file)
     except (LockHeldError, LockCorruptError, LeaseTokenError) as exc:
         print(f"serialized_push: REFUSING — {exc}", file=sys.stderr)
         return EXIT_LOCKED
+
+    if args.acquire and str(flock_path(path)) in _HELD:
+        # A fresh hold: this CLI call exits now, so hand the kernel lock to a keeper.
+        watch = os.getppid() if args.hold_parent is None else args.hold_parent
+        try:
+            keeper = _spawn_hold_keeper(path, rec, watch, args.lock_dir)
+        except SerializedPushError as exc:
+            release(args.lock_dir, key, args.agent, name=args.lock_name,
+                    token_file=args.token_file)
+            print(f"serialized_push: REFUSING — {exc}", file=sys.stderr)
+            return EXIT_LOCKED
+        print(f"keeper pid {keeper} holds the kernel lock"
+              + (f" until --release or until pid {watch} exits" if watch else " until --release"))
 
     if args.acquire:
         print(f"acquired {args.lock_name} lock for {repo} (key {key}) as {args.agent!r}")
