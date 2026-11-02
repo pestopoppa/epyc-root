@@ -15,3 +15,7 @@ Filed stt5-ultra-independent25-r1-20261101 inconclusive: rc=0 reason=complete co
 ## 00:18Z — Publish Ultra filing and advance successor preparations
 
 Consumed report.json: preparation boundary c983558a0b18 was wrapped at 00:12Z. The later Ultra inconclusive filing commit 2dce9ddf9743 initially failed to push because main advanced; merged and pushed it under the serialized push lease, verified origin/main at 91383dff0375. Fault investigation, Crisp HIP successor preparation and CS-5 row preparation dispatched with FAULT-FIX4, HIP-FIX4 and REF-FIX4 completion events. No row published or compute launched.
+
+## 00:19Z — File v3 scorer and partial Voxtral results
+
+Ultra prior filing receipt exists; duplicate dispatcher event requires no second verdict. Filed v3 scorer inconclusive with 16 score cells and validation failures retained; settings selection UNKNOWN. Filed Voxtral rc75 disk-floor inconclusive with 10 rc0 reaped result chunks, 11 exposures including one without a result. Before receipts, both full packets were copied and source-hash verified: v3 custody inventory 1f46e0f101adba2fdf8d3d55ad9cbcf1f121e6fa518a0e52a14043b6f78b8f1a; Voxtral inventory 9b1b19c26d4e4fd8f1513a91f939f11a600f30dac841f63fc330ea99dc3ee9e1. No test verdict or promotion; parent task stays open. Delegated no-redraw Voxtral successor, HIP build repair and Ultra fault diagnosis.
