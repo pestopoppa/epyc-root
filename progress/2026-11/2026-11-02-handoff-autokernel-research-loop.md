@@ -211,3 +211,7 @@ Consumed parser audit, FD argv audit and witness binding report. The fixed-size 
 ## 01:29Z — Review capture provenance and input byte cap
 
 Consumed decode-to-worker design and parser byte-budget report. The proposed witness requires actual copied ubatch identities, scheduler split metadata, safe propagation to CPU worker parameters and a verified q-row-to-position map, with unknown paths failing oracle_unavailable; no current implementation or gate pass exists. The temporary parser counts bytes on its already-open stream with a finite pre+N-derived budget and keeps output disabled, but is uncompiled and untested and input bytes are not authenticated. Delegated first fail-closed actual-ubatch capture patch preparation, parser cap review and descriptor argv correction review; registered completion events. No model inference, row publication or checkbox completed.
+
+## 01:30Z — Review capture input byte budget
+
+Consumed lb-parser-cap-review.txt. The temporary parser byte-budget arithmetic is correct on source inspection and rejects byte budget+1, but ifstream can read ahead, the next EOF read can block, and the budget bounds extracted characters rather than physical I/O. Input identity, exact byte count and immutable opened descriptor remain unauthenticated; no compile/test was performed. Delegated capture input authority preparation, FD argv schema correction, and actual-ubatch witness first patch; registered events. No inference run, row published or box completed.
