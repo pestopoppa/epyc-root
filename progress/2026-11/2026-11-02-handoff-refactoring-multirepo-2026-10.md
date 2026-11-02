@@ -43,3 +43,19 @@ The first wrap-up fast-forward removed the sparse-skipped operator ratifier and 
 ## 01:49Z — Resolve sparse census input and record alias review
 
 Independent alias review found the draft restores __spec__ but leaves the shared canonical module __loader__ set to the alias loader; the mixed-cycle fix is unproven. Review JSON is /mnt/raid0/llm/tmp/compute-flags/handoff-sessions/refactoring-multirepo-2026-10/alias-review.json. Repeated wrap-up attempts hit the observer census when fast-forwarding removed a sparse-skipped tracked operator script; added that exact path to this lane sparse-checkout selection and census passes. Prior entries record the remaining preparation.
+
+## 01:51Z — Consume alias review and CI test preparation
+
+Consumed alias-review and ci-test-prep. The alias candidate does not prove the mixed-import fix and may alter the canonical module __loader__; delegated a metadata correction and regression plan. CI preparation identified a broader existing candidate b4e48011d4d935f2d83c373827245bd64b38b92d for collection-skip and passed-subtest accounting, absent from current HEAD, plus a stale capture pin/readset. Its scratch packet is /mnt/raid0/llm/tmp/refactor-01a16fc3/ci-test-prep-20261102/. The earlier narrow patch must not be treated as sufficient. Delegated independent candidate review and pin-repair preparation. No tests, compute or row publication by the owner; full B2 comparison still needs accepted failure identities and both source-bound runs.
+
+## 01:51Z — Restore sparse census selection and retry wrap-up
+
+Wrap-up initially failed because the lane sparse-checkout selection had reverted to exclude the operator ratifier required by the observer census. Re-selected that exact tracked path; preceding entry records the consumed review outcomes.
+
+## 01:52Z — Consume CI candidate, capture pin and alias metadata reviews
+
+Consumed ci-candidate-review, ci-pins and alias-metadata outcomes. ROOT b4e48011d prospective JUnit accounting candidate is absent from current main; original B2 JUnit has 20,652 cases, 31 failures and 104 skips and remains historical, not a clean comparator. Pin/readset draft is scratch-only and must be rebound to the actual clean integration commit. Delegated candidate integration, GitNexus index recovery and synthetic CPU-row preparation; integration correctly stopped before editing when the required index was absent. Correction to prior alias-review claim: CPython 3.13.7 module_from_spec preserves an existing non-None canonical __loader__; it can set the alias loader when the original loader is missing or None. The metadata draft and its test plan remain unvalidated and the mixed cold-import cycle unproven. No compute or row publication by owner.
+
+## 01:53Z — Retry serialized publication of CI review findings
+
+The initial wrap-up created commit b53b8f3e379b but serialized push reported rc 4 and did not publish; retrying through the prescribed wrap-up.

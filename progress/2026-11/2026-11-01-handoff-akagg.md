@@ -69,3 +69,9 @@
 - V6R-4c production-presence subcheck: fast-loader commits `25132e042` and `90c12df42` are both absent from v10 ancestry and present in C5 ancestry. Neither load-thread flag appears in v10 common source or manifest-bound production CPU libcommon (SHA-256 `dfd31d4bb51818e5507b9eeaa7766452cab914f02bdbd1e0f18b4c3e9294de09`); image provenance records `ffc1bac82`. No claim about alternatives or runtime effects. Operator-parked loader fix and acceptance remain open. Keeper owns qualification of the two CPU rows; C3 lock repair would require a protected gate change.
 
 - CH-27a completion-path source check: deployed R15 SHA-256 `257a64709a409a6cdab48d9b3d1a605b7165f3be5afbf1954e9efd51cf539bbb` calls `is_complete` before its grant loop and `mark_complete` writes the normal ended/completed markers after cleanup. This corrects the prior assumption that a successful full dry-run necessarily causes a second window; fixture, tamper-resistant result validation and shared-campaign writer custody still need proof before publishing. No inference run or row publication.
+
+
+
+## 22:20Z — File CH-31 paired route diagnostic
+
+Row `akagg-ch31-rowexact-pair-c5-20261101` ended rc0 at 22:12:11Z. Excluding dry-run units, both solo controls and four matched rotations per route completed. Solo rows compared 893 nodes with 0 differing; route 0 four-sequence rows compared 1127 with 993–1008 differing, first node_13 MUL_MAT, logits max delta 0.2084–0.2584; route 4 compared 1127 with 0 differing and identical logits. Four-sequence rows each skipped 260 and had 0 unmatched; argmax matched throughout. Evidence and raw outputs retained at artifacts/compute/akagg-ch31-rowexact-pair-result-20261101/ and FILED receipt touched. Rotations reuse inputs; no causal, Q38FN, performance or promotion claim.

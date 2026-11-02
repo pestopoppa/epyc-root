@@ -38,3 +38,35 @@ Consumed omega-review-20261102-result.json. Omega successor must not be publishe
 ## 01:49Z — Preserve observer script across sparse merges
 
 - Added the tracked observer registry target to this worktree sparse patterns so origin/main fast-forwards do not remove it before the commit hook. Earlier attempted wrap-up entries in this file retain the Omega and RUS findings.
+
+## 01:53Z — Advance independent measurement preparation after parked qualifications
+
+- The prior wrap-up completed and pushed `3618805ecfd0ef72f0d14b63596a06b92798368a` with empty cherry. Both `handoff-rte-pfx2` and `handoff-s4-omega-isolated-pilot` now have three qualification failures and are parked; do not retry or evade the park. Requested bounded failure analysis for both, recorded by event `park-review4`.
+- RUS successor cannot be published until an attempt-scoped qualification result and model preflight/source seals exist. Delegated repair and offline tests; dispatcher event `rus-fix4`. Strategy ablation remains without a live producer and evidence custody; delegated one bounded preparation component, event `strategy4`. No inference or row publication this turn.
+- The frontdoor READY row belongs to codex-ni and was erroneously republished from the already parked RTE-LOG-1 lineage. It requires owner/keeper withdrawal; this session must not edit another owner's manifest or retry the lineage. Existing unrelated untracked files were left untouched.
+
+## 01:54Z — Publish repaired RUS sampling row and record parked qualification diagnoses
+
+- Consumed `rus-successor-ready.json`: sealed model preflight and ten source hashes verified; follow-up added attempt-scoped native qualification receipt and production-only result path, with offline controls passing. Published GPU `handoff-rus3-trunc-v2-20261102` via rowflow, same frozen questions, output cap 8192, context 16384; keep original four retained samples per question and eight mixed-question acceptance, no outcome-conditioned selection. Await keeper qualification; no inference outcome claimed.
+- Consumed `park-review4.json`: PFX v3 failed on a separate five-second `/slots` HTTP request timeout, not the overall 300-second loop. Omega v2 returned HTTP 500 because `ProgressLogger.flush` could not write `/workspace/logs/progress/`; the error record is not a qualifying unit. Both lineages are parked at three failures, so no retry or re-admission.
+- Consumed `strategy4.json`: scratch paired evaluator passed two offline tests but requires a preregistered loss threshold and independently verified captures. It confers no measurement warrant; live producer, custody, tokenizer witness, adapter and protocol remain. Further bounded preparation delegated with event `strategy5`.
+- Frontdoor inspection confirms the erroneous READY row still belongs to codex-ni; owner/keeper must coordinate its safe withdrawal, not rely on `.withdrawn` display marker. No other owner's manifest edited. Previous wrap-up successfully pushed `a0e77623f94a65823412f89c6375c86f488e0070`.
+
+## 01:55Z — Review strategy schedule and advance measurement prerequisites
+
+- Consumed `strategy5.json`: the scratch schedule auditor passed three offline tests and finds the 16-question, three-arm rotation uses its six permutations 3, 3, 3, 3, 2 and 2 times (48 planned calls); report this imbalance in the prospective protocol. It establishes neither custody nor measurement warrant. Live runner, independently protected custody, tokenizer witness, adapter and protocol remain. Delegated bounded producer and custody preparation, with dispatcher events `strategy6` and `strategy-custody6`.
+- Delegated model-free timeout repair design for parked PFX, event `pfx-offline6`; no retry or re-admission while parked. GPU RUS successor remains subject to keeper qualification.
+- Prior wrap-up pushed `3d6fd6b0d866e631c2cfcafc002d36331f103841` with empty cherry. No inference or publication this turn.
+
+## 01:57Z — Review strategy intent and capture custody prototypes
+
+- Consumed `strategy6.json`: digest-bound offline call-intent compiler passed three synthetic tests covering pairing, answer leakage, tampering and invalid orders. It does not run inference or convey grant authority.
+- Consumed `strategy-custody6.json`: external-anchor capture byte-binding prototype passed four offline tests for tampering, identity mismatch, symlink/path traversal and wrong binder hash. It verifies bytes only; independent trusted anchors, protected capture root, plan completeness, scorer, server/model identity and grant provenance still require real integration. The referenced lane binder is untracked and was not adopted or modified.
+- Delegated integration and a prospective protocol draft with events `strategy-integration7` and `strategy-protocol7`; no threshold or measurement warrant is invented. Delegated model-free Omega logging repair, event `omega-offline7`, without retrying its parked lineage.
+- Prior wrap-up pushed `d531c6320c2d22c4d770ba79cc6b7226aa815a5c`, cherry empty. No inference or row publication this turn.
+
+## 01:58Z — Review integrated strategy capture checks and advance producer
+
+- Consumed `strategy-integration7.json`: scratch integration of digest-bound call intents, externally anchored byte binding and exact question/arm coverage passed ten offline tamper and missing/duplicate/unplanned-pair tests. It does not authenticate grant, server, model, score, external channel or measurement warrant and is not publishable.
+- Delegated independent bounded live producer, native belief adapter and model/tokenizer/server identity preparation (`live8`, `adapter8`, `identity8` events); no inference, publication or invented grading rule. Existing protocol and parked-lineage offline preparation events remain pending.
+- Prior wrap-up pushed `5290f910558ee6ef39e791da7d97be749dee7eea`, cherry empty. Existing unrelated untracked files remain untouched.

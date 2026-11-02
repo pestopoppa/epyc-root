@@ -1,0 +1,7 @@
+rc=0 time=2026-11-01T22:12:11Z reason=complete
+job_id=akagg-ch31-rowexact-pair-c5-20261101
+owner=handoff-akagg
+step=job-run
+estimated_wall_s=900
+started=2026-11-01T22:11:44Z
+regions=0-23

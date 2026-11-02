@@ -1,0 +1,40 @@
+{
+  "arm": "qwen3.8-27b",
+  "suite": "aime25",
+  "id": "aime25_2025-I-6",
+  "tier": "3",
+  "capture_schema_version": "v7_quality_gate_capture.v4",
+  "runner_source_sha256": "79721927e95293d070aba294bf422a24b1182dde07310d461d9e3ddaf6c84b0e",
+  "rep": 0,
+  "seed": 42,
+  "expected": "504",
+  "extracted": "504",
+  "correct": true,
+  "empty_response": false,
+  "finish_reason": "stop",
+  "truncated": false,
+  "completion_tokens": 1403,
+  "prompt_tokens": 143,
+  "decode_tok_s": 55.72,
+  "request_error": "",
+  "prompt": "An isosceles trapezoid has an inscribed circle tangent to each of its four sides. The radius of the circle is 3, and the area of the trapezoid is 72. Let the parallel sides of the trapezoid have lengths $r$ and $s$, with $r \\neq s$. Find $r^{2}+s^{2}$.\n\nThis is an AIME problem. The answer is an integer between 0 and 999. Reason step by step, then give your final answer on its own last line in the form: ANSWER: <integer>",
+  "prompt_fingerprint": {
+    "chars": 423,
+    "utf8_bytes": 423,
+    "sha256": "56075fe228e89afbd36f47ead96ab38e1fd92fc7f1e30e1e545f8220cefe4496"
+  },
+  "response_fingerprint": {
+    "chars": 3375,
+    "utf8_bytes": 3375,
+    "sha256": "4f88414b7c3b2d8a6498c83c1edd99e6443895372da43e550bebe576d103799d"
+  },
+  "reasoning": "",
+  "reasoning_fingerprint": {
+    "chars": 0,
+    "utf8_bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "reasoning_chars": 0,
+  "empty_content_with_reasoning": false,
+  "response": "To find the value of $r^2 + s^2$ for the given isosceles trapezoid, we will use the properties of tangential quadrilaterals and the specific geometry of an isosceles trapezoid with an inscribed circle.\n\n**Step 1: Use the properties of the inscribed circle to relate the sides.**\n\nLet the parallel sides of the isosceles trapezoid have lengths $r$ and $s$. Let the non-parallel (leg) sides have length $l$.\nSince the trapezoid has an inscribed circle (it is a tangential quadrilateral), the sum of the lengths of opposite sides must be equal. Therefore:\n$$ r + s = l + l = 2l $$\nSo, the length of each leg is:\n$$ l = \\frac{r + s}{2} $$\n\n**Step 2: Relate the area to the radius and the side lengths.**\n\nThe area $A$ of a tangential polygon is given by the product of its inradius $\\rho$ and its semi-perimeter $p$.\nThe semi-perimeter $p$ of the trapezoid is:\n$$ p = \\frac{r + s + l + l}{2} = \\frac{r + s + 2l}{2} $$\nSubstituting $2l = r + s$:\n$$ p = \\frac{r + s + (r + s)}{2} = r + s $$\nGiven that the radius $\\rho = 3$ and the area $A = 72$, we have:\n$$ A = \\rho \\cdot p \\implies 72 = 3 \\cdot (r + s) $$\nSolving for the sum of the parallel sides:\n$$ r + s = \\frac{72}{3} = 24 $$\n\n**Step 3: Use the geometry of the isosceles trapezoid to find the product $rs$.**\n\nThe height $h$ of the trapezoid is equal to the diameter of the inscribed circle, since the circle is tangent to the parallel bases.\n$$ h = 2\\rho = 2(3) = 6 $$\n\nLet's drop perpendiculars from the endpoints of the shorter base to the longer base. This divides the trapezoid into a rectangle and two right-angled triangles.\nThe length of the base of each right triangle is $\\frac{|r - s|}{2}$.\nThe hypotenuse of each right triangle is the leg of the trapezoid, $l = \\frac{r + s}{2}$.\nThe height of the triangle is $h = 6$.\n\nBy the Pythagorean theorem:\n$$ l^2 = h^2 + \\left( \\frac{r - s}{2} \\right)^2 $$\nSubstitute $l = \\frac{r + s}{2}$ and $h = 6$:\n$$ \\left( \\frac{r + s}{2} \\right)^2 = 6^2 + \\left( \\frac{r - s}{2} \\right)^2 $$\nMultiply the entire equation by 4 to clear the denominators:\n$$ (r + s)^2 = 4(36) + (r - s)^2 $$\n$$ (r + s)^2 = 144 + (r - s)^2 $$\n\nWe know that $r + s = 24$. Let's substitute this value:\n$$ 24^2 = 144 + (r - s)^2 $$\n$$ 576 = 144 + (r - s)^2 $$\n$$ (r - s)^2 = 576 - 144 $$\n$$ (r - s)^2 = 432 $$\n\n**Step 4: Calculate $r^2 + s^2$.**\n\nWe know the algebraic identity:\n$$ r^2 + s^2 = \\frac{(r + s)^2 + (r - s)^2}{2} $$\nAlternatively, we can expand $(r+s)^2$ and $(r-s)^2$:\n$$ (r + s)^2 = r^2 + 2rs + s^2 $$\n$$ (r - s)^2 = r^2 - 2rs + s^2 $$\nAdding these two equations:\n$$ (r + s)^2 + (r - s)^2 = 2(r^2 + s^2) $$\nSo,\n$$ r^2 + s^2 = \\frac{(r + s)^2 + (r - s)^2}{2} $$\n\nSubstitute the known values $(r + s)^2 = 24^2 = 576$ and $(r - s)^2 = 432$:\n$$ r^2 + s^2 = \\frac{576 + 432}{2} $$\n$$ r^2 + s^2 = \\frac{1008}{2} $$\n$$ r^2 + s^2 = 504 $$\n\n**Verification:**\nLet's check if real positive $r$ and $s$ exist.\n$r+s=24$ and $(r-s)^2=432 \\implies |r-s| = \\sqrt{432} = 12\\sqrt{3} \\approx 20.78$.\n$r = \\frac{24 + 12\\sqrt{3}}{2} = 12 + 6\\sqrt{3}$\n$s = \\frac{24 - 12\\sqrt{3}}{2} = 12 - 6\\sqrt{3}$\nSince $\\sqrt{3} \\approx 1.732$, $s \\approx 12 - 10.39 = 1.61 > 0$.\nAlso $r \\neq s$ since $\\sqrt{3} \\neq 0$.\nThe area is $72$, radius $3$.\nHeight $6$.\nLeg $l = 12$.\nCheck Pythagorean: $12^2 = 6^2 + (\\frac{12\\sqrt{3}}{2})^2 = 36 + (6\\sqrt{3})^2 = 36 + 108 = 144$. Correct.\n\nThe calculation holds.\n\nANSWER: 504"
+}
