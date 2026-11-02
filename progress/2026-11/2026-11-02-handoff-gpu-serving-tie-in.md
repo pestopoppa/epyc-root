@@ -87,3 +87,7 @@ P5 input binding currently records FAIL_TO_PASS but does not bind PASS_TO_PASS, 
 ## 10:35Z — Assess E5 readiness, GPU leak promotion and P4 implementation ownership
 
 Parallel source reviews: P1-2 is dependent on the corrected-placement remeasurement owned by INF-07; existing manifests and harness do not establish the per-cell cache, live placement, warm/cold and replication requirements, and banked Gemma evidence is insufficient for automatic acceptance. GPU-LEAK-1 fix is in the experimental champion while production remains v10; promotion is the kernel owner’s gated work and v10 guards remain necessary. P4-1 inert implementation is located in the orchestrator repository; live seeding also requires the P3-5 arms and measured ceilings. Review notes: /mnt/raid0/llm/tmp/gpu-serving-tie-in/{e5,leak,stage2}-result.txt. No inference or production changes. Pre-existing gold_binding.py modification was left untouched.
+
+## 10:36Z — Prepare E5 placement, gold scorer controls and replacement tenant decision
+
+Dispatched bounded independent preparation of corrected-placement E5, known-gold scorer controls, and replacement tenant options. Results and patches are stored under /mnt/raid0/llm/tmp/gpu-serving-tie-in and registered for resumption. No inference or production changes. Existing uncommitted gold_binding.py was preserved.
