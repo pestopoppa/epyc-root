@@ -817,13 +817,28 @@ def auto_start(flags, reg, live, cap, runner=None, repo=None, priority=None, kee
     if live >= cap:
         return live
     started = []
-    real = [h for h in cands if h.get("rows")]          # stuck rows with fix tasks / rows needing a launcher
-    heur = [h for h in cands if not h.get("rows")]      # only "own unpublished inference tasks" (heuristic)
-    heur_live = sum(1 for e in S.values() if alive(e.get("pid")) and e.get("auto_start") and not (e["auto_start"].get("rows")))
-    order = real + ([] if real else [h for h in heur][:max(0, HEURISTIC_SLOTS - heur_live)])
+    pinned = set(reg.get("pinned") or [])
+    st = load(state_path(flags), {})
+    starts = [t for t in (st.get("starts") or []) if time.time() - t < 3600]
+    # SA-1 (intake ws58-jev-20261102, operator D9-ack 2026-11-02): admit ONLY handoffs with a real ready/stuck row, or pinned
+    # ones; heuristic "own inference tasks" never start a session (that path produced ~40 starts/30 min and 0 ready rows).
+    order = [h for h in cands if h.get("rows") or h["handoff"] in pinned or (h.get("slug") or "") in pinned]
     for h in order:
         if live >= cap:
             break
+        slug0 = h.get("slug") or slug_for(h["handoff"], S)
+        prev = S.get(slug0) or {}
+        last = max(_parse(prev.get("done_at") or ""), _parse(prev.get("last_end") or ""), _parse((prev.get("auto_start") or {}).get("at") or ""))
+        if last and time.time() - last < AUTO_START_COOLDOWN_S:
+            if time.time() - _parse(prev.get("throttle_logged") or "") > AUTO_START_COOLDOWN_S:
+                log(flags, f"AUTO-START-THROTTLED {slug0}: per-handoff cooldown ({int((time.time() - last) / 60)} min since its last end/start < {AUTO_START_COOLDOWN_S // 60})")
+                prev["throttle_logged"] = now_iso()
+                S[slug0] = prev
+            continue
+        if len(starts) >= MAX_STARTS_PER_HOUR:
+            log(flags, f"AUTO-START-THROTTLED {slug0}: global cap {MAX_STARTS_PER_HOUR} starts/hour reached")
+            break
+        starts.append(time.time())
         slug = h.get("slug") or slug_for(h["handoff"], S)
         e = S.get(slug) or new_entry(reg, h["handoff"], h.get("row_id"))
         if e.get("status") == "done":  # the handoff grew open tasks again: fresh session, same slug
@@ -841,6 +856,8 @@ def auto_start(flags, reg, live, cap, runner=None, repo=None, priority=None, kee
         started.append(slug)
         log(flags, f"AUTO-START {slug} handoff={h['handoff']} engine={e['engine']} pid={e.get('pid')} score={h['score']} "
                    f"rows={','.join(h['rows'][:6]) or '-'} priority={h.get('row_id') or '-'} rank={h.get('priority_rank')} live={live}/{cap}")
+    st["starts"] = starts
+    save(state_path(flags), st)
     if started:
         save(reg_path(flags), reg)  # the registry must name the new sessions before their backlogs are rendered
         for slug in started:
@@ -855,7 +872,8 @@ OWN_TASK_RX = re.compile(r"^- \S+ L\d+ \[(cpu|gpu)\] ", re.M)
 IDLE_RX = re.compile(r"IDLE:\s*(.*)")
 IDLE_REPORT_COOLDOWN_S = 30 * 60  # a session that itself said IDLE: <reason> is re-asked after this long
 MIN_RESUME_GAP_S = 10 * 60        # budget emergency 22:45Z: at most one non-filing resume per session per 10 min
-HEURISTIC_SLOTS = 2                 # at most this many live auto-started sessions chosen on heuristic "own inference tasks"
+AUTO_START_COOLDOWN_S = 30 * 60     # SA-1: a handoff is not restarted within this long of its last end/start
+MAX_STARTS_PER_HOUR = 10            # SA-1: global auto-start cap
 STARVED_TICKS = 2                  # keeper ticks (~2 min each) a lane may sit free with zero candidates before INVENTORY-STARVED
 STARVED_ALARM_EVERY_S = 30 * 60
 PUSH_LOCK_DIR = os.path.join(ROOT, "coordination", "push-locks")
