@@ -163,3 +163,7 @@ The native campaign resolver reproduced the sealed CH-27 original and generated 
 ## 10:17Z — Repair CPU observer child cleanup across process creation
 
 In scratch /mnt/raid0/llm/tmp/akagg/cpu-collector-v5/request_owner.py, defer handled signals while Popen creates the owned process, then deliver the pending interruption after capturing the process so cleanup can reap it. Eight lifecycle tests pass, including SIGTERM injected between child creation and Popen return and original callback, cutoff, unavailable-pidfd, existing-timer and exit controls. This is a prototype: descendant tracking, SIGKILL, native request binding, scheduler coverage, loss and contention evidence remain unresolved and no measurement is claimed. C3 review /mnt/raid0/llm/tmp/akagg/c3-review-v5.json: maintained host fixtures and source seals pass; obsolete fixture fails and grant-time model hashing still prevents successor publication.
+
+## 10:20Z — Prepare C3 pre-grant model identity
+
+Started one-time pre-grant SHA-256 of the C3 B Bolt GGUF using /mnt/raid0/llm/tmp/akagg/model-seal-v6/seal.py. It writes an atomic receipt and success/failure done.json; no digest is claimed until that file reports success. Runtime design labels its separate stat continuity honestly as not runtime byte verification. Successor consumer integration, launcher and CH-27 private admission are in preparation; no inference or row publication.
