@@ -380,11 +380,6 @@ def project(native: dict[str, Any]) -> ClaimTuple:
     provenance = seal["provenance"]
     arms = native["results"]
     count = sum(arms[arm]["status"] == "complete" for arm in ("control", "attack"))
-    scope = {"model_sha256": provenance["model_sha256"], "scope_basis": "native"}
-    if provenance.get("model_file"):
-        scope["model_file"] = provenance["model_file"]
-    if provenance.get("backend") in ("cpu", "gpu"):
-        scope["backend"] = provenance["backend"]
     caveat = ("Producer-reported CRM diagnostic only; scheduler issuer, same-UID forgery resistance, "
               "loaded code, actual model identity and physical-authority warrant are UNKNOWN. "
               "No security efficacy, promotion or policy claim.")
@@ -396,11 +391,12 @@ def project(native: dict[str, Any]) -> ClaimTuple:
         claim=f"Producer reports {count} completed arms in one CRM diagnostic. {caveat}",
         attestation_locator="dtap-crm-pair:" + native["seal_sha256"],
         attestation_sha256=native["seal_sha256"], source_kind=SOURCE_KIND,
-        applicability=scope,
         observation={"outcome_native": "; ".join(
             f"{arm}={arms[arm]['status']}/{arms[arm]['delivery']}" for arm in ("control", "attack"))},
         extra={"seal_sha256": native["seal_sha256"], "source_commit": provenance["source_commit"],
                "source_tree_sha256": provenance["source_tree_sha256"], "scope": caveat,
+               "producer_declared_model_sha256": provenance["model_sha256"],
+               "producer_declared_backend": provenance.get("backend", "unknown"),
                "skill_injection": "not_tested", "provider_flock_witness": "provider_reported",
                "scheduler_issuer": "UNKNOWN", "loaded_code": "UNKNOWN", "physical_authority": "UNKNOWN"},
     )

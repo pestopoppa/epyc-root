@@ -192,8 +192,8 @@ def test_source_manifest_reopens_exact_files_and_git_blobs(tmp_path, monkeypatch
         adapter._source(json.dumps(manifest).encode(), prov, seal)
 
 
-def test_mocked_custody_cli_to_planning_canary_is_synthetic_only(tmp_path, monkeypatch, capsys):
-    """Tests the registry/CLI/consumer path; does not prove native custody."""
+def test_mocked_custody_cannot_become_native_model_applicability(tmp_path, monkeypatch, capsys):
+    """Tests registry/CLI and no target match; it does not prove native custody."""
     from datetime import datetime, timezone
     import cli
     import loop_beliefs
@@ -217,7 +217,10 @@ def test_mocked_custody_cli_to_planning_canary_is_synthetic_only(tmp_path, monke
               "results": {"control": {"status": "complete", "delivery": "not_observed"},
                           "attack": {"status": "complete", "delivery": "delivered"}}}
     monkeypatch.setattr(adapter, "native_rows", lambda _path: (native,))
-    assert grade(adapter.project(native))[:2] == ("Judged", "Located")
+    claim = adapter.project(native)
+    assert grade(claim)[:2] == ("Judged", "Located")
+    assert claim.applicability == {}
+    assert claim.extra["producer_declared_model_sha256"] == model_sha
     ledger = tmp_path / "ledger.jsonl"
     now = datetime.now(timezone.utc).isoformat()
     assert cli.main(["--ledger", str(ledger), "--json", "ingest", "dtap-crm-pair",
@@ -233,5 +236,5 @@ def test_mocked_custody_cli_to_planning_canary_is_synthetic_only(tmp_path, monke
                                   alarm_state=tmp_path / "alarm-state.json", alarm_config=config,
                                   read_log=tmp_path / "reads.jsonl")
     rows = [r for r in output.get("evidence", {}).get("claims", []) if r.get("source_kind") == adapter.SOURCE_KIND]
-    assert output["status"] == "ready" and len(rows) == 1
-    assert rows[0]["value"] == 2 and "UNKNOWN" in adapter.project(native).claim
+    assert output["status"] == "ready" and rows == []
+    assert "UNKNOWN" in claim.claim
