@@ -23,6 +23,16 @@ records the configured model/template groups and source forwarding paths, and di
 them from live identity. Sampled model endpoints were unreachable in the observer's namespace;
 per-model live template/render verification remains open. [no-belief: source and operational review]
 
+ROOT `df0b7b8c8` + `efcd010dd` prepare fresh public file-task attempts with frozen identities
+and synthetic-only REPL/OpenCode adapter controls. The existing P0.4 scorer is specific to its
+edit task, and the nearby exact-match scorer is not yet proven suitable for these answer tasks.
+Live transports, task scorer, sealed fixtures, grader isolation and SC86 execution remain open;
+see [adapter controls](../../docs/design/hs4-file-trial-adapter-controls.md). 46 fixture,
+P0.4 and P6 tests plus five subtests passed under q0. [no-belief: software controls]
+ROOT `4e9d25de0` adds transport plumbing, but deliberately refuses all live I/O until a real
+grader-isolation gate is implemented; process-tree cleanup also remains necessary. This is not
+live readiness or an acceptance result. [no-belief: software controls]
+
 This map supersedes the historical live-status language below, not the individual acceptance
 contracts. Source review used ROOT `2d95a8a371` and orchestrator `9301fb7bc81663d176f11ebf21bf496d4ac725a3` (the shared orchestrator checkout was behind that ref). Re-resolve
 the task text, source and ownership at dispatch; use isolated worktrees. Historical PIDs, flags,

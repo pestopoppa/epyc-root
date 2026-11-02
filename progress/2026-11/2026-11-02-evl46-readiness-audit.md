@@ -30,3 +30,10 @@ judicious review. The edit preserves existing task text and history. [no-belief:
 - Added `docs/reference/tu-hr1-tool-render-audit-20261102.md`: source and runtime census;
   sampled local model endpoints were unavailable, so actual live model/template evidence and
   TU-HR-1 remain open. [no-belief: source and operational review]
+- ROOT `df0b7b8c8` + `efcd010dd`: fresh public fixture preparation and synthetic REPL/OpenCode
+  adapter controls; 46 tests plus five subtests passed under q0. No live driver, chosen scorer,
+  isolation, SC86 result or TU-MH-1 completion. Updated EVL-46's thin index next action;
+  stale GitNexus marked that index CRITICAL (316 upstream, 29 direct). [no-belief: software controls]
+- ROOT `4e9d25de0`: fail-closed `/chat` and OpenCode transport plumbing with 49 tests and five
+  subtests; no live I/O is enabled until real isolation, and child-tree drainage is unfinished.
+  [no-belief: software controls]
