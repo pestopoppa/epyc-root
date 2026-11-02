@@ -14,7 +14,8 @@ writer, reader, runner and watcher. Never substitute producer-supplied seals.
 
 The calibration plan schema is `epyc.m4.gpu.aa.execution.v1` with
 `intent=descriptive_only`, `native_plan_sha256`, absolute `result_path`, `row`
-(`id`, `regions=mi210_0,184-191`, `stopfile`, `min_window_s`, `port`) and ordered
+(`id`, `regions=mi210_0,184-191`, `stopfile`, `min_window_s`, `port`,
+`dryrun_native_result=true`) and ordered
 `cells`. Each cell has unique `id` and `native_cell`, `arm` A1 or A2, integer
 `pair`, and the fully bound `sweep` settings enforced by `validate_plans`.
 Each pair is adjacent, contains one A1 and one A2, and must have the same V2
@@ -25,6 +26,18 @@ model/prompt/binary/ggml content, process arguments and environment, own-device
 KFD path/VRAM limit, expected request count and source commit. Resolve actual
 recipes, resource envelope, model hashes, request shape and source closure before
 reviewed enrollment; sample fixture values are not authorized inputs.
+
+The rowflow spec must set `dryrun_native_result=true`. After validating the first
+V2 capture and its guardian, the actual entry writes the keeper's unique nonce
+result (`FILLER_DRYRUN_RESULT_PATH`) with a capture hash and
+`qualification_only=true`. The real row `result_path` is the final A/A
+reduction; completion requires that reduction and strict native replay.
+
+A second pre-reviewed dry-run plan and SHA in `aa_enrollment.py` are selected
+only when `FILLER_DRYRUN=1`. Its output is permanently marked
+`qualification_only=true`; it has independent STOP and native-plan bindings.
+The V2 source must use an equally independent qualification binding. Real and
+qualification plan paths and STOP files must never alias.
 
 After the existing rowflow's qualified publication and a coordinated grant,
 `launch_gpu_aa.py` hands off to run15 with exclusive GPU + physical q3 claim.

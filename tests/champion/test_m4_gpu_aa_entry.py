@@ -112,7 +112,7 @@ def test_launcher_binds_actual_row_and_fails_changed_grant(tmp_path):
     spec=importlib.util.spec_from_file_location('aa_launch',ROOT/'scripts/champion/m4/launch_gpu_aa.py')
     launch=importlib.util.module_from_spec(spec); spec.loader.exec_module(launch)
     aa,native=fixture(); cap=tmp_path/'capture'; cap.mkdir(); stop=tmp_path/'STOP'
-    row={'id':'m4-aa','regions':'mi210_0,184-191','stopfile':str(stop),'min_window_s':3600,'port':18070}
+    row={'id':'m4-aa','regions':'mi210_0,184-191','stopfile':str(stop),'min_window_s':3600,'port':18070,'dryrun_native_result':True}
     aa.update(row=row,result_path=str(cap/'result.json'))
     for cell in native['cells'].values():
         cell['grant']={'id':row['id'],'regions':row['regions'],'stopfile':str(stop)}
@@ -132,3 +132,71 @@ def test_default_launcher_enrollment_refuses():
     launch=importlib.util.module_from_spec(spec); spec.loader.exec_module(launch)
     with pytest.raises(RuntimeError, match='not configured'):
         launch.load()
+
+
+def test_qualification_plan_has_independent_binding(monkeypatch):
+    e=mod.aa_enrollment
+    monkeypatch.setattr(e,'EXECUTION_ENABLED',True)
+    monkeypatch.setattr(e,'PLAN_PATH','/actual')
+    monkeypatch.setattr(e,'PLAN_SHA256','actual-seal')
+    monkeypatch.setattr(e,'DRYRUN_PLAN_PATH','/fixture')
+    monkeypatch.setattr(e,'DRYRUN_PLAN_SHA256','fixture-seal')
+    monkeypatch.setenv('FILLER_DRYRUN','0')
+    assert e.selected()==('/actual','actual-seal',False)
+    monkeypatch.setenv('FILLER_DRYRUN','1')
+    assert e.selected()==('/fixture','fixture-seal',True)
+    monkeypatch.setenv('FILLER_DRYRUN','invalid')
+    with pytest.raises(RuntimeError): e.selected()
+
+
+def test_missing_qualification_binding_refuses(monkeypatch):
+    e=mod.aa_enrollment
+    monkeypatch.setattr(e,'EXECUTION_ENABLED',True)
+    monkeypatch.setattr(e,'PLAN_PATH','/actual')
+    monkeypatch.setattr(e,'PLAN_SHA256','actual-seal')
+    monkeypatch.setattr(e,'DRYRUN_PLAN_PATH','')
+    monkeypatch.setattr(e,'DRYRUN_PLAN_SHA256','')
+    monkeypatch.setenv('FILLER_DRYRUN','1')
+    with pytest.raises(RuntimeError, match='not configured'): e.selected()
+
+
+def test_qualification_cannot_reuse_real_binding(monkeypatch):
+    e=mod.aa_enrollment
+    monkeypatch.setattr(e,'EXECUTION_ENABLED',True)
+    monkeypatch.setattr(e,'PLAN_PATH','/actual')
+    monkeypatch.setattr(e,'PLAN_SHA256','actual-seal')
+    monkeypatch.setattr(e,'DRYRUN_PLAN_PATH','/actual')
+    monkeypatch.setattr(e,'DRYRUN_PLAN_SHA256','fixture-seal')
+    monkeypatch.setenv('FILLER_DRYRUN','1')
+    with pytest.raises(RuntimeError, match='differ'): e.selected()
+
+
+def test_controlled_qualification_stop_and_failure_propagation(tmp_path, monkeypatch):
+    import subprocess
+    stop=tmp_path/'stop'
+    env={'FILLER_STOPFILE':str(stop)}
+    stop.touch()
+    monkeypatch.setattr(mod.subprocess,'run',lambda *a,**kw: (_ for _ in ()).throw(AssertionError('must not run')))
+    assert mod.execute_cell(['cmd'],env,True)==75
+    stop.unlink()
+    def stopped(*args,**kwargs):
+        stop.touch()
+        raise subprocess.CalledProcessError(75,['cmd'])
+    monkeypatch.setattr(mod.subprocess,'run',stopped)
+    assert mod.execute_cell(['cmd'],env,True)==75
+    with pytest.raises(subprocess.CalledProcessError):
+        mod.execute_cell(['cmd'],env,False)
+
+
+def test_keeper_nonce_unit_is_qualification_only_and_exclusive(tmp_path):
+    import json
+    dd=tmp_path/'dryrun'; attempt=dd/'native-attempts'/'attempt-test'; attempt.mkdir(parents=True)
+    capture=tmp_path/'capture.json'; capture.write_text('{"native":true}')
+    env={'FILLER_DRYRUN_DIR':str(dd),'FILLER_DRYRUN_RESULT_PATH':str(attempt/'native-result.json')}
+    mod.qualification_unit(env,capture,{'plan_sha256':'native-seal'},'aa-seal')
+    out=json.loads((attempt/'native-result.json').read_text())
+    assert out['qualification_only'] is True and out['native_plan_sha256']=='native-seal'
+    with pytest.raises(FileExistsError):
+        mod.qualification_unit(env,capture,{'plan_sha256':'native-seal'},'aa-seal')
+    with pytest.raises(RuntimeError, match='invalid keeper'):
+        mod.qualification_unit({**env,'FILLER_DRYRUN_RESULT_PATH':str(tmp_path/'native-result.json')},capture,{'plan_sha256':'native-seal'},'aa-seal')

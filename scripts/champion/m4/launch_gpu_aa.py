@@ -24,7 +24,7 @@ ENGINE = ROOT / 'scripts/coordination/rowflow/filler_run15.sh'
 def launch_spec(aa, native, trust):
     pairs = run.validate_plans(aa, native)
     row = aa.get('row')
-    if not isinstance(row, dict) or set(row) != {'id', 'regions', 'stopfile', 'min_window_s', 'port'}:
+    if not isinstance(row, dict) or set(row) != {'id', 'regions', 'stopfile', 'min_window_s', 'port', 'dryrun_native_result'}:
         raise ValueError('reviewed row binding required')
     rid = row['id']
     if not isinstance(rid, str) or not rid or any(c not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_' for c in rid):
@@ -41,6 +41,8 @@ def launch_spec(aa, native, trust):
     if any(cell['grant'] != {'id': rid, 'regions': row['regions'], 'stopfile': str(stop)}
            or entry['sweep']['port_base'] != row['port'] for entry,cell in pairs):
         raise ValueError('row, native plan and port differ')
+    if row['dryrun_native_result'] is not True:
+        raise ValueError('rowflow must use a unique dryrun native result')
     result = Path(aa.get('result_path', ''))
     if (not result.is_absolute() or '..' in result.parts or result.parent.resolve(strict=True) != result.parent
             or (trust.capture_root != result.parent and trust.capture_root not in result.parent.parents)):
@@ -54,28 +56,30 @@ def launch_spec(aa, native, trust):
 
 
 def load():
-    if not (run.aa_enrollment.EXECUTION_ENABLED and run.aa_enrollment.PLAN_PATH and run.aa_enrollment.PLAN_SHA256):
-        raise RuntimeError('A/A enrollment not configured')
+    plan_path, plan_digest, qualification_only = run.aa_enrollment.selected()
     trust = run.write_capture.enrolled()
+    if getattr(trust, 'qualification_only', False) is not qualification_only:
+        raise RuntimeError('A/A and V2 qualification modes differ')
     seals = {str(p.resolve()): h for p, h in trust.sources}
     for path in (HERE/'run_gpu_aa.py', HERE/'aa_enrollment.py', HERE/'calibrate_gpu_aa.py', Path(__file__), ENGINE):
         path = path.resolve(strict=True)
         if seals.get(str(path)) != hashlib.sha256(path.read_bytes()).hexdigest():
             raise RuntimeError('A/A source not independently enrolled')
-    raw = Path(run.aa_enrollment.PLAN_PATH).read_bytes()
-    if hashlib.sha256(raw).hexdigest() != run.aa_enrollment.PLAN_SHA256:
+    raw = Path(plan_path).read_bytes()
+    if hashlib.sha256(raw).hexdigest() != plan_digest:
         raise RuntimeError('A/A plan seal changed')
     aa = json.loads(raw); native = trust.plan()
     if aa.get('native_plan_sha256') != trust.plan_sha256:
         raise RuntimeError('native plan seal mismatch')
     spec = launch_spec(aa, native, trust)
-    return trust, aa, native, spec
+    return trust, aa, native, spec, plan_digest, qualification_only
 
 
-def verify_result(trust, aa, native):
+def verify_result(trust, aa, native, plan_digest, qualification_only):
     result = json.loads(Path(aa['result_path']).read_bytes())
     if (result.get('schema') != 'epyc.m4.gpu.aa.descriptive.v1' or result.get('gate_authorized') is not False
-            or result.get('plan_sha256') != run.aa_enrollment.PLAN_SHA256
+            or result.get('plan_sha256') != plan_digest
+            or result.get('qualification_only') is not qualification_only
             or result.get('native_plan_sha256') != trust.plan_sha256):
         raise ValueError('invalid descriptive result')
     pairs = run.validate_plans(aa, native)
@@ -92,19 +96,19 @@ def verify_result(trust, aa, native):
              'np': cell['np'], 'pair': entry['pair'], 'arm': entry['arm'], 'request_count': cell['request_count']}
         reduction_cells.append(x)
         records.append({k: v for k,v in x.items() if k not in ('id','request_count')} | {
-            'cell_id': entry['id'], 'plan_sha256': run.aa_enrollment.PLAN_SHA256, 'status':'COMPLETE',
+            'cell_id': entry['id'], 'plan_sha256': plan_digest, 'status':'COMPLETE',
             'cleanup_verified':True, 'requests':rows, 'aggregate_decode_tps':value})
     replay = run.calibrate_gpu_aa.reduce({'schema':'epyc.m4.gpu.aa.plan.v1',
-        'intent':'descriptive_only', 'cells':reduction_cells}, records, run.aa_enrollment.PLAN_SHA256)
+        'intent':'descriptive_only', 'cells':reduction_cells}, records, plan_digest)
     if result.get('pairs') != replay['pairs'] or result.get('decision') is not None:
         raise ValueError('descriptive aggregate does not rederive')
     return True
 
 
 def main():
-    trust, aa, native, spec = load()
+    trust, aa, native, spec, plan_digest, qualification_only = load()
     if sys.argv[1:] == ['--verify-result']:
-        return 0 if verify_result(trust, aa, native) else 1
+        return 0 if verify_result(trust, aa, native, plan_digest, qualification_only) else 1
     if len(sys.argv) != 1:
         raise ValueError('unexpected argument')
     os.execv('/usr/bin/bash', spec)

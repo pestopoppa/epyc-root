@@ -114,10 +114,42 @@ def command(entry, cell, work):
     return cmd
 
 
+def execute_cell(command_argv, env, qualification_only):
+    """Return 75 on the keeper's controlled first-unit qualification stop."""
+    stop = Path(env.get('FILLER_STOPFILE', ''))
+    if qualification_only and stop.is_absolute() and stop.exists():
+        return 75
+    try:
+        subprocess.run(command_argv, env=env, check=True)
+    except subprocess.CalledProcessError:
+        if qualification_only and stop.is_absolute() and stop.exists():
+            return 75
+        raise
+    return 0
+
+
+def qualification_unit(env, capture_path, doc, plan_digest):
+    """Emit the keeper's nonce-scoped first unit, never a measurement warrant."""
+    dd = Path(env.get('FILLER_DRYRUN_DIR', ''))
+    result = Path(env.get('FILLER_DRYRUN_RESULT_PATH', ''))
+    if (not dd.is_absolute() or dd.resolve(strict=True) != dd or not result.is_absolute()
+            or result.name != 'native-result.json' or not result.parent.name.startswith('attempt-')
+            or result.parent.parent != dd / 'native-attempts'
+            or result.parent.resolve(strict=True) != result.parent):
+        raise RuntimeError('invalid keeper qualification result path')
+    payload = {'schema':'epyc.m4.gpu.aa.qualification-unit.v1', 'qualification_only':True,
+               'native_capture':str(capture_path), 'native_capture_sha256':sha(capture_path.read_bytes()),
+               'plan_sha256':plan_digest, 'native_plan_sha256':doc['plan_sha256']}
+    with result.open('x') as fh:
+        json.dump(payload, fh, sort_keys=True, allow_nan=False)
+        fh.write('\n'); fh.flush(); os.fsync(fh.fileno())
+
+
 def main():
-    if not (aa_enrollment.EXECUTION_ENABLED and aa_enrollment.PLAN_PATH and aa_enrollment.PLAN_SHA256):
-        raise RuntimeError('A/A enrollment not configured')
+    plan_path, plan_digest, qualification_only = aa_enrollment.selected()
     trust = write_capture.enrolled()
+    if getattr(trust, 'qualification_only', False) is not qualification_only:
+        raise RuntimeError('A/A and V2 qualification modes differ')
     seals = {str(p.resolve()): h for p, h in trust.sources}
     # Enrollment and orchestrator/reducer are part of the separately reviewed
     # native trust root, so replacing the A/A driver also invalidates the run.
@@ -125,9 +157,9 @@ def main():
         path = path.resolve(strict=True)
         if seals.get(str(path)) != sha(path.read_bytes()):
             raise RuntimeError('A/A source not independently enrolled')
-    aa_path = Path(aa_enrollment.PLAN_PATH).resolve(strict=True)
+    aa_path = Path(plan_path).resolve(strict=True)
     raw = aa_path.read_bytes()
-    if sha(raw) != aa_enrollment.PLAN_SHA256:
+    if sha(raw) != plan_digest:
         raise RuntimeError('A/A plan seal changed')
     aa = json.loads(raw); native = trust.plan()
     if aa.get('native_plan_sha256') != trust.plan_sha256:
@@ -149,9 +181,12 @@ def main():
         watch_dir.mkdir(mode=0o700, exist_ok=False)
         work = watch_dir / 'native'
         env = dict(os.environ, M4_PLAN_CELL=entry['native_cell'], M4_WATCH_DIR=str(watch_dir))
-        subprocess.run(command(entry, cell, work), env=env, check=True)
+        if execute_cell(command(entry, cell, work), env, qualification_only) == 75:
+            return 75
         capture_path = work / 'run' / 'capture-v2-0.json'
         doc, expected, value = validate_capture(capture_path, trust)
+        if qualification_only and not records:
+            qualification_unit(env, capture_path, doc, plan_digest)
         rows = [json.loads(line) for line in Path(doc['requests_path']).read_text().splitlines() if line.strip()]
         x = {'id': entry['id'], 'role': cell['role'], 'source_commit': cell['source_commit'],
              'image_sha256': cell['files']['binary']['sha256'], 'recipe_sha256': seal_obj(cell['recipe']),
@@ -159,10 +194,10 @@ def main():
              'np': cell['np'], 'pair': entry['pair'], 'arm': entry['arm'], 'request_count': cell['request_count']}
         reduction_cells.append(x)
         records.append({k: v for k,v in x.items() if k not in ('id','request_count')} | {
-            'cell_id': entry['id'], 'plan_sha256': aa_enrollment.PLAN_SHA256, 'status': 'COMPLETE',
+            'cell_id': entry['id'], 'plan_sha256': plan_digest, 'status': 'COMPLETE',
             'cleanup_verified': True, 'requests': rows, 'aggregate_decode_tps': value})
-    result = calibrate_gpu_aa.reduce({'schema':'epyc.m4.gpu.aa.plan.v1', 'intent':'descriptive_only', 'cells':reduction_cells}, records, aa_enrollment.PLAN_SHA256)
-    result.update({'native_plan_sha256': trust.plan_sha256, 'capture_paths': [str(Path(c['watch_result_path']).parent / 'native/run/capture-v2-0.json') for _,c in selected]})
+    result = calibrate_gpu_aa.reduce({'schema':'epyc.m4.gpu.aa.plan.v1', 'intent':'descriptive_only', 'cells':reduction_cells}, records, plan_digest)
+    result.update({'qualification_only': qualification_only, 'native_plan_sha256': trust.plan_sha256, 'capture_paths': [str(Path(c['watch_result_path']).parent / 'native/run/capture-v2-0.json') for _,c in selected]})
     with output.open('x') as fh:
         json.dump(result, fh, sort_keys=True, allow_nan=False)
         fh.write('\n'); fh.flush(); os.fsync(fh.fileno())
