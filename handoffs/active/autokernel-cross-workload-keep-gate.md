@@ -647,6 +647,8 @@ Global constraints:
     - a CPU region window for W4-CPU.
   - **No benchmark window:** the replay classifies against the **recorded** A/B verdicts, and measures nothing new.
 - [ ] **AKX-P1c — replay sync17-fix2.**
+  - [x] **AKX-P1c-CMAKE-FD — observe CMake source descriptor handling.** ✅ 2026-11-02 [belief: cc]
+    Diagnostic `inf75-cmake-source-fd-20261102` ended rc0 on CPUs 48–71. The single `LANGUAGES NONE` configure recorded exactly one `CMAKE_HOME_DIRECTORY`, `/proc/self/fd/3`, equal to its inherited source argument: `LEXICAL_FD_PRESERVED`. Preflight, cache and log hashes verified; result SHA-256 `fc6f0f0c4c9bfba3e4f0ff3d11eb0a6d73baec4bd750823f91f0269aacd917f3`, `/mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/cmake-fd-diagnostic/RESULT.json`. This is one configure observation; it does not prove compiler-descendant FD custody, a coverage build, or the P1c replay.
   - [x] **AKX-P1c-INDEX — index the pinned source snapshot for impact analysis.** ✅ 2026-11-02 [belief: cc]
     Index row `inf75-gitnexus-snapshot-6dbd6d39-20261102` ended rc0 at 11:21:39Z and `gitnexus status` reports snapshot commit `6dbd6d399ad34ca5bc733c76f545d87be6233d79` current. Metadata SHA-256 `15f2a62e0f7938a60052811bbe227a2aaf016a4b1aca0a5b0c64de67ce7f0896`; target `build_coverage.sh` blob matches this lane. The snapshot omits artifacts except operator scripts, GitNexus does not parse shell, and rowflow files changed after the snapshot, so the index cannot establish complete current impact. Scoped `quantizer_build/complete.py:valid` impact: LOW, two upstream nodes. This is index preparation, not the replay.
   - [x] **AKX-P1c-QBUILD — build the historical quantizer at 7cdd7c97.** ✅ 2026-11-02 [belief: cc]
