@@ -527,7 +527,7 @@ AXA-1, and open a registry-change note (do NOT edit the live registry — that's
 - Arm GGUFs: `/mnt/raid0/llm/models/` (paths in the Arms table).
 - Phase-2 dataset: `/mnt/raid0/llm/datasets/swe-bench-verified/` (FAIL_TO_PASS oracle).
 - Evidence: `docs/reference/architect-model-selection-2026-07-20.md`.
-- Related handoffs: [`mi210-big-model-and-acceleration-roadmap.md`](mi210-big-model-and-acceleration-roadmap.md) (AXA-1),
+- Related handoffs: [`mi210-big-model-and-acceleration-roadmap.md`](mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) (AXA-1),
   [`reviewer-model-ablations.md`](reviewer-model-ablations.md) (H5, model-role selection sibling),
   [`v7-promotion.md`](../completed/v7-promotion.md) (gate 1), [`inference-batch-loop.md`](eval-tower-program.md#track-inference-batch-loop) (gate 2).
 

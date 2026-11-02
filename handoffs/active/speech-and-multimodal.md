@@ -13,9 +13,9 @@
 **Related**:
 - [`multimodal-pipeline.md`](speech-and-multimodal.md#track-multimodal-pipeline) (INF-41). Vision stays there. Speech moved here on 2026-09-24.
 - [`kv-unified-stack-rollout.md`](kv-unified-stack-rollout.md) (RTG-57), KVU-11 / KVU-11b / KVU-11c.
-- [`gpu-serving-tie-in-program.md`](gpu-serving-tie-in-program.md) (INF-22), P2-5j (host-thread placement) and P2-9 (stale "whisper as a GPU tenant").
+- [`gpu-serving-tie-in-program.md`](mi210-serving-program.md) (INF-22), P2-5j (host-thread placement) and P2-9 (stale "whisper as a GPU tenant").
 - [`heterogeneous-slot-fabric-residency.md`](heterogeneous-slot-fabric-residency.md) (the GPU host-thread slot gap).
-- [`fable5-window2-findings-02-heterogeneous-gpu.md`](fable5-window2-findings-02-heterogeneous-gpu.md) (35B-A3B solo on an MI210; no PCIe H2D measurement).
+- [`fable5-window2-findings-02-heterogeneous-gpu.md`](mi210-serving-program.md#track-fable5-window2-findings-02-heterogeneous-gpu) (35B-A3B solo on an MI210; no PCIe H2D measurement).
 - [`vidya-belief-substrate-program.md`](vidya-belief-substrate-program.md), VB-SPEECH-CONV-1.
 
 **Source documents**:

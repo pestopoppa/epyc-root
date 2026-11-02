@@ -6,7 +6,6 @@
   "RTG-58": 0.85,
   "INF-66": 0.8,
   "RTG-57": 0.8,
-  "INF-60": 0.75,
   "INF-22": 0.7,
   "INF-73": 0.7,
   "RTG-54": 0.65,
@@ -25,14 +24,12 @@
   "UFH-12": 0.5,
   "RTG-22": 0.5,
   "INF-23": 0.45,
-  "INF-34": 0.45,
   "INF-43": 0.45,
   "INF-62": 0.45,
   "INF-72": 0.4,
   "INF-79": 0.4,
   "INF-80": 0.4,
   "EVL-08": 0.4,
-  "EVL-48": 0.4,
   "RTG-34": 0.4,
   "UFH-08": 0.4,
   "INF-07": 0.35,
@@ -48,11 +45,9 @@
   "INF-02": 0.3,
   "INF-05": 0.3,
   "INF-16": 0.3,
-  "INF-18": 0.3,
   "INF-20": 0.3,
   "EVL-03": 0.3,
   "EVL-05": 0.3,
-  "EVL-20": 0.3,
   "EVL-27": 0.3,
   "EVL-29": 0.3,
   "EVL-52": 0.3,
@@ -145,7 +140,12 @@
   "EVL-21#cpu-fused-decoder-blocks": 0.6,
   "EVL-21#laguna-s21-cpu-port": 0.1,
   "EVL-21#moe-spec-cpu-spec-dec-integration": 0.3,
-  "EVL-21#v9-kernel-per-request-speculative-params": 0.3
+  "EVL-21#v9-kernel-per-request-speculative-params": 0.3,
+  "INF-22#fable5-window2-findings-02-heterogeneous-gpu": 0.3,
+  "INF-22#fable5-window2-findings-05c-mi210-lever-category-matrix": 0.4,
+  "INF-22#gpu-acceleration-path": 0.3,
+  "INF-22#mi210-big-model-and-acceleration-roadmap": 0.45,
+  "INF-22#qwen38-27b-replace-qwen36": 0.75
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
@@ -426,7 +426,7 @@
    "before": ""
   },
   {
-   "row": "INF-60",
+   "row": "INF-22",
    "tok": "Q38-T10.1a",
    "kind": "N",
    "cls": "N",
@@ -441,7 +441,7 @@
    "done": "landed in orchestrator fc0c0be5"
   },
   {
-   "row": "INF-60",
+   "row": "INF-22",
    "tok": "Q38-T10.1r",
    "kind": "I",
    "cls": "ready",
@@ -455,7 +455,7 @@
    "before": ""
   },
   {
-   "row": "INF-60",
+   "row": "INF-22",
    "tok": "Q38-T7a",
    "kind": "I",
    "cls": "ready",
@@ -2564,6 +2564,24 @@
    {
     "track": "cpu-fused-decoder-blocks",
     "next_action": "FD-DIV-1b persists on C5: locate and fix the fused-yarn divergence in the champion; FD-OFF-PROD closes at V11-106"
+   }
+  ],
+  "INF-72>INF-22": [
+   {
+    "track": "mi210-big-model-and-acceleration-roadmap",
+    "next_action": "PF1 — measure the CPU-vs-MI210 prefill crossover on the served Qwen3.8-Flash-Next UD-IQ4_XS (DR-3e retired 2026-10-28, 122B deprecated)"
+   }
+  ],
+  "INF-44>INF-22": [
+   {
+    "track": "mi210-big-model-and-acceleration-roadmap",
+    "next_action": "PF1 — measure the CPU-vs-MI210 prefill crossover on the served Qwen3.8-Flash-Next UD-IQ4_XS (DR-3e retired 2026-10-28, 122B deprecated)"
+   }
+  ],
+  "INF-61>INF-22": [
+   {
+    "track": "qwen38-27b-replace-qwen36",
+    "next_action": "Q38-T7b closed; run Q38-T7a passive log read, then VB-SERVING-DF2; Q38-T10.1 gate after"
    }
   ]
  }

@@ -74,7 +74,7 @@ K32/K33 external-draft path; K24 base-decode "regression" ruled a host artifact 
   rotation and routing-table quant exclusion were already covered locally.
 
 **K28** (GDN long-prefill recurrence kernel, GPU, `gated_delta_net.cu:191`) is owned as a `- [ ]`
-task in [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md).
+task in [mi210-big-model-and-acceleration-roadmap.md](mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap).
 2026-07-18 source-readiness sidecar verdict: do not patch blindly. Functional chunking already
 exists in `delta-net-base.cpp`; the open target is the serial token scan in
 `ggml/src/ggml-cuda/gated_delta_net.cu`. Next step is an operator-window `rocprofv2`

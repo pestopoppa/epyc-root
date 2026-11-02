@@ -189,7 +189,7 @@ Same `gfx90a` predicts **compile compatibility, not performance equivalence** �
 
 The C4 row above is scored HIGH risk for "CDNA2 counter taxonomy unproven". That is only half of it:
 **the profilers themselves are absent.** `rocprofv2`, `rocprof` and `omniperf` were all missing as of
-2026-07-20 ([`mi210-big-model-and-acceleration-roadmap.md:205`](mi210-big-model-and-acceleration-roadmap.md));
+2026-07-20 ([`mi210-big-model-and-acceleration-roadmap.md:205`](mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap));
 `rocprof` v1's SQ/TA counters read zero on this box and it aborts at init on graph-enabled builds;
 `rocm-bandwidth-test` is not installed; and QuixiCore's timing recipe — otherwise worth copying — assumes
 `rocprofv3`, also absent.

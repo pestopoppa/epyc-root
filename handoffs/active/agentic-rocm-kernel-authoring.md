@@ -19,7 +19,7 @@ attempt into the panel.
 - [`exl3-cpu-mi210-implementation.md`](quantization-and-low-bit.md) — `INF-80` consumer of the
   gfx90a verify/profile substrate; EXL3 implementation and acceptance remain owned there
 - [`gpu-drafter-mi200-investigation.md`](../archived/gpu-drafter-mi200-investigation.md) — MI210-gated; consumes the kernels this loop produces
-- [`gpu-acceleration-path.md`](gpu-acceleration-path.md) — the ROCm kernel-library hand-port path this automates
+- [`gpu-acceleration-path.md`](mi210-serving-program.md#track-gpu-acceleration-path) — the ROCm kernel-library hand-port path this automates
 - [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md) / [`cpu-shape-specialized-gemv-decode.md`](../completed/cpu-shape-specialized-gemv-decode.md) — the hand-HIP endgame + the CPU ukernel loop this rhymes with
 
 ---

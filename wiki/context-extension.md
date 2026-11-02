@@ -40,7 +40,7 @@ Sources: [YaRN context-extension handoff](../handoffs/active/yarn-context-extens
 
 - [yarn-context-extension-research](../handoffs/active/yarn-context-extension-research.md) — YARN-AGG-1e, YARN-AGG-1f
 - [3c4ca599 progress, 2026-10-23](../progress/2026-10/2026-10-23-3c4ca599.md) — gate FINAL and OOM root cause
-- [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-program.md) — GPU-LEAK-1
+- [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md) — GPU-LEAK-1
 
 ---
 ## Compiled Update — 2026-10-22 (wrap-up sweep 10): a native-window answer change is not a quality regression, and the judge labels are agent-produced, not human
@@ -195,13 +195,13 @@ The practical path for EPYC is layered: YaRN for the 256K-to-1M extension case (
 
 The new CPU Qwen3.6-35B-A3B leg reached 323K with 5/5 retrieval; native and YaRN ×2 matched at 133K and 253K. At matched depth, YaRN's decode cost was at most 4%, while decode fell with depth in both arms and 8K append cost grew to about 600 seconds around 351K. DCA beat raw extrapolation in one-window 64K PPL runs, but DCA-vs-YaRN remains suggestive only and the CPU/GPU offset is unresolved.
 
-Sources: [YaRN context-extension research](../handoffs/active/yarn-context-extension-research.md), [AutoKernel all-devices/all-dimensions](../handoffs/active/autokernel-all-devices-all-dimensions.md), [GPU serving tie-in program](../handoffs/active/gpu-serving-tie-in-program.md), [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md).
+Sources: [YaRN context-extension research](../handoffs/active/yarn-context-extension-research.md), [AutoKernel all-devices/all-dimensions](../handoffs/active/autokernel-all-devices-all-dimensions.md), [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md), [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md).
 
 ### Supplemental changed-source coverage — Oct 3–6
 
 The post-manifest CPU YaRN progress distinguishes native-window cost from extension quality: Qwen3.6-35B-A3B reached 323K with 5/5 tested needles; native and static YaRN ×2 matched at 133K and 253K, while static ×2 failed the native-window inertness rule (decode loss 1.3% at depth 0 and 7.6% at 34K; MTP acceptance 53% to 48%). Dynamic per-request YaRN/DCA remains the acceptable direction in that test record; it does not establish a general context-extension quality win. The GPU tie-in handoff adds only an open memory-attribution task for the +15 GiB E1 overshoot already recorded here, not a new result.
 
-Sources: [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-ec.md), [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md), [GPU serving tie-in program](../handoffs/active/gpu-serving-tie-in-program.md), [YaRN context-extension research](../handoffs/active/yarn-context-extension-research.md).
+Sources: [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-ec.md), [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md), [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md), [YaRN context-extension research](../handoffs/active/yarn-context-extension-research.md).
 
 ## Incremental synthesis — 2026-10-06 workspace-ec wrap (native-window inertness, K-shift, Jet-Long)
 
@@ -214,7 +214,7 @@ Sources: [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-
 - **Jet-Long (cost not yet measured).** In-window exactness is reported by the paper on Qwen3, but the uncached correction costs roughly 5x the attention K+V bytes per decode step (derived estimate), the fused kernel is SM90-only, and there is no MTP or DFlash2 support. Decision gating: CTX-JETLONG-COST (arithmetic plus CPU microbenchmark; passes at <= 10% decode cost at 262K and <= 25% at 1M), then a bit-exact in-window prototype, with YARN-MSCALE-AB deciding how cheap inertness can be. The interim recommendation is a length-routed second server (D) with its RAM stated as a number, F as target, Jet-Long cached as the stretch; DCA is off the in-window path (identity only below chunk_size minus local window, refuses MTP in v1, roughly 2x attention cost).
 - **YaRN is not a short-context identity, and CPU YaRN is cost-neutral beyond that:** the same session's CPU leg (323K, 5/5 needles; decode cost at most 4% at matched depth) is recorded in the section above; its limit at depth is CPU attention cost, not the scaling method.
 
-Sources: [YaRN context-extension research](../handoffs/active/yarn-context-extension-research.md), [native-window summary](../artifacts/yarn-native-window-20261005/summary.md), [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-ec.md), [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md), [GPU serving tie-in program](../handoffs/active/gpu-serving-tie-in-program.md). Study notes (scratch, not durable): `/mnt/raid0/llm/tmp/yarn-inert-design-20261006/{OPTIONS,CTX2_KSHIFT,STAGE3_PLAN}.md`.
+Sources: [YaRN context-extension research](../handoffs/active/yarn-context-extension-research.md), [native-window summary](../artifacts/yarn-native-window-20261005/summary.md), [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-ec.md), [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md), [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md). Study notes (scratch, not durable): `/mnt/raid0/llm/tmp/yarn-inert-design-20261006/{OPTIONS,CTX2_KSHIFT,STAGE3_PLAN}.md`.
 
 ## Incremental synthesis — 2026-10-06 evening (Jet-Long gate A PASS, the small-ubatch abort, CPU prefill scaling)
 

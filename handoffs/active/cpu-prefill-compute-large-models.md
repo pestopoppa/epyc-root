@@ -477,7 +477,7 @@ operator-approved profile window.
   CPU kernel)** in [llama-cpp-dsa-contribution.md](llama-cpp-dsa-contribution.md) — both are
   prefill/long-context levers; coordinate profiling.
 - GPU sibling for hybrid models = **K28 GDN long-prefill recurrence kernel**
-  ([mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md)).
+  ([mi210-big-model-and-acceleration-roadmap.md](mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap)).
 
 ## Reporting
 

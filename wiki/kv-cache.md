@@ -102,7 +102,7 @@ Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-
 - **Hybrid checkpoint count is now declared in the registry.** RATIFY-CTXCKPT-HYBRID-20261024 puts `ctx_checkpoints: 32` on frontdoor, architect_critic and architect_general; the compiler emits and attests `--ctx-checkpoints 32` for the five hybrid targets, every other argv byte-identical (32 is the default, so no reload).
 - **KVU-16g-2 package component drafted, not deployed:** the decode-aware prefill budget flags for :8083 (see [hardware-optimization](hardware-optimization.md)). A KVU-12.1b 64k holdout (dense vs coarse, ~7.3 h, one CPU quarter) is prepared, not run.
 
-Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md), [kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.md), [qwen38-27b-replace-qwen36](../handoffs/active/qwen38-27b-replace-qwen36.md), [workspace-f8 progress 2026-10-24](../progress/2026-10/2026-10-24-workspace-f8.md), [prefill-budget package](../docs/design/prefill-budget-8083-stack-change-package.md).
+Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md), [kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.md), [qwen38-27b-replace-qwen36](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36), [workspace-f8 progress 2026-10-24](../progress/2026-10/2026-10-24-workspace-f8.md), [prefill-budget package](../docs/design/prefill-budget-8083-stack-change-package.md).
 ## Compiled Update — 2026-10-24 (wrap-up sweep 21, workspace-f8 delta): the slot-fabric source rates must come from the graphs-ON run
 
 - **KPF-18-S1.7g came out `graphs-sensitive`** (4 of 21 length-by-mode cells), so the HSF-4/5 source-rate sub-term must be re-quoted from the graphs-ON step-7 run, all numbers from that run. The difference is attributable to graphs ON, the knob and the fresh-load history jointly, not to HIP graphs alone.
@@ -258,7 +258,7 @@ Sources: [Heterogeneous slot fabric residency](../handoffs/active/heterogeneous-
 
 ### Source References (2026-10-21 sweep 6)
 - [handoffs/active/kv-prefix-fork-and-paged-attention.md](../handoffs/active/kv-prefix-fork-and-paged-attention.md)
-- [handoffs/active/gpu-serving-tie-in-program.md](../handoffs/active/gpu-serving-tie-in-program.md)
+- [handoffs/active/mi210-serving-program.md](../handoffs/active/mi210-serving-program.md)
 - [handoffs/active/kv-unified-stack-rollout.md](../handoffs/active/kv-unified-stack-rollout.md)
 - [progress/2026-10/2026-10-21-workspace-f8.md](../progress/2026-10/2026-10-21-workspace-f8.md)
 
@@ -417,7 +417,7 @@ The StreamingLLM baseline — the cluster-wide gate that must precede prioritizi
 
 - **StreamingLLM (attention-sink + sliding-window) is the easy-floor gate, and no simple KV cluster is admitted yet.** The scaffold landed in the fork (`632ce0f92`, default-off, via server context-shift `llama_memory_seq_rm`/`seq_add` + `--kv-streaming-sink/-window` + per-request fields) and was reconciled onto current v7 (`111bff89d`/`cf051d3e1`). The pre-v7 floor/admission sweep (Qwen3-1.7B Q8 CPU, 2026-07-20) ran a context-shift baseline + sink/window clusters `8:128`/`16:192`/`32:256`: all arms exited cleanly but **all failed the prompt-quality/final-marker floor**, and no streaming arm beat baseline speed (0.990–1.011×) → `admit_cluster=false`. This closes the "admit a simple KV cluster *now*?" question negatively; the full 4-axis research sweep (retrieval/reasoning/dialogue × 25/50/75% budget × 2 models) stays open. ([streaming-llm-baseline](../handoffs/active/streaming-llm-baseline.md))
 - **KV-quant monitor status:** Hadamard rotation (upstream PR #21038) landed and auto-enables when KV types are quantized — a free KV-quality improvement (custom `--kv-hadamard` removed as redundant). TurboQuant CPU KV kernels (PR #21089, TBQ3_0/TBQ4_0, ~5.2× compression) remain open/monitor; ChunkKV (arXiv:2502.00299, 12% retention, +26.5% throughput) is worth-investigating. TQ3_1S rejection stands (immature, VRAM-savings we don't need, MoE ghost-activation risk). ([tq3-quantization-evaluation](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation))
-- **Where KV physically lives (MI210):** keeping KV in HBM alongside attention weights is ideal but VRAM-limited; PCIe4 (~64 GB/s) is 7–14× slower than EPYC DDR5, so per-token KV *streaming* is an anti-pattern. GDN-hybrid residents have **O(1) KV**, so long-context ingest is comfortably GPU-served (better than a dense model) and makes teleport KV-copy near-moot — the teleport v1 instead *re-prefills from transcript* to regenerate correct KV at the target quant (a copied KV is wrong under quant-asymmetric transport). **Correction 2026-09-24:** the orchestrator does *not* store that transcript today. On `/v1`, `x_session_id` is recorded only, and the session store has no messages table. So v1 teleport depends on client-resent history until the session-keyed conversation store (conversation-stack CS-15) lands. ([gpu-acceleration-path](../handoffs/active/gpu-acceleration-path.md), [heterogeneous-slot-fabric-residency](../handoffs/active/heterogeneous-slot-fabric-residency.md), [conversation-stack](../handoffs/active/speech-and-multimodal.md))
+- **Where KV physically lives (MI210):** keeping KV in HBM alongside attention weights is ideal but VRAM-limited; PCIe4 (~64 GB/s) is 7–14× slower than EPYC DDR5, so per-token KV *streaming* is an anti-pattern. GDN-hybrid residents have **O(1) KV**, so long-context ingest is comfortably GPU-served (better than a dense model) and makes teleport KV-copy near-moot — the teleport v1 instead *re-prefills from transcript* to regenerate correct KV at the target quant (a copied KV is wrong under quant-asymmetric transport). **Correction 2026-09-24:** the orchestrator does *not* store that transcript today. On `/v1`, `x_session_id` is recorded only, and the session store has no messages table. So v1 teleport depends on client-resent history until the session-keyed conversation store (conversation-stack CS-15) lands. ([gpu-acceleration-path](../handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path), [heterogeneous-slot-fabric-residency](../handoffs/active/heterogeneous-slot-fabric-residency.md), [conversation-stack](../handoffs/active/speech-and-multimodal.md))
 
 ### Open Questions (2026-07-20)
 
@@ -429,7 +429,7 @@ The StreamingLLM baseline — the cluster-wide gate that must precede prioritizi
 
 - [streaming-llm-baseline.md](../handoffs/active/streaming-llm-baseline.md) — cluster-wide floor gate, scaffold, negative pre-v7 admission sweep.
 - [tq3-quantization-evaluation.md](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) — TurboQuant/ChunkKV/Hadamard KV-quant monitor list.
-- [gpu-acceleration-path.md](../handoffs/active/gpu-acceleration-path.md) — MI210 KV CPU/GPU-split economics + PCIe anti-pattern.
+- [gpu-acceleration-path.md](../handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path) — MI210 KV CPU/GPU-split economics + PCIe anti-pattern.
 - [heterogeneous-slot-fabric-residency.md](../handoffs/active/heterogeneous-slot-fabric-residency.md) — O(1)-KV GDN residents + re-prefill teleport (KV-copy near-moot).
 
 ## Summary
@@ -1267,7 +1267,7 @@ figures come from the :8083 KV-sizing decision package.
 
 The prefix-fork update reports branch B landed with its flag off; the API was not reloaded, and the live shadow window remains the next proof. The `/props.slot_fork` capability gates automatic fork use. First-prompt TTFT attribution is also still a proposed GPU measurement. The updated campaign record says the operator kept the shared 393K pool after the P3 decode loss (−59.5% with three resident ~99K neighbours) and routed the response to masked-block skip. The champion ledger records P3 v2 on candidate X matching the KVU-19 champion at L3. These are the documented decision and a bounded parity check, not a claim that the cache tax is eliminated for all shapes.
 
-Sources: [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md), [KV prefix fork and paged attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md), [GPU serving tie-in program](../handoffs/active/gpu-serving-tie-in-program.md), [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md), [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md).
+Sources: [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md), [KV prefix fork and paged attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md), [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md), [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md), [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md).
 
 ### Supplemental KV findings — Oct 3–6 changed files
 
@@ -1325,7 +1325,7 @@ The [experimental kernel manifest](../docs/reference/kernel-manifests/llama-v11-
 
 ### Peer placement and prefill design refinements — 2026-10-21
 
-[HSF-4 and WP-15](../handoffs/active/within-role-placement-state-machine.md) now require worker-merged dispatch/serving joins, role-specific uncached-length histograms, cached-token recovery costs and load-regime stratification before comparing placement rules. [PB-QCOST-1](../handoffs/active/gpu-serving-tie-in-program.md) requires held-out residuals and validation at the target decode concurrency before enabling the fitted prefill budget. These are prerequisites and proposed comparisons; deployment commentary and armed future GPU probes do not establish a local performance gain.
+[HSF-4 and WP-15](../handoffs/active/within-role-placement-state-machine.md) now require worker-merged dispatch/serving joins, role-specific uncached-length histograms, cached-token recovery costs and load-regime stratification before comparing placement rules. [PB-QCOST-1](../handoffs/active/mi210-serving-program.md) requires held-out residuals and validation at the target decode concurrency before enabling the fitted prefill budget. These are prerequisites and proposed comparisons; deployment commentary and armed future GPU probes do not establish a local performance gain.
 
 ## Compiled Update — 2026-10-21 (sweep 4): the prefix-cache ceiling on real agent traffic, the hybrid shift guard, the radix lesson, and the KPF-17 conformance close
 
@@ -1414,7 +1414,7 @@ Sources: [kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.
 
 KPF R15’s native attempt is scientifically invalid: the required `gate.pid_owns_port` check was absent before seeding HTTP, so rc 0 is not a geometry result. The listener-repair successor passed entry-path controls and enrolled, but PF refused the run because the declared 64 GiB output would leave 144.28 GiB free, below the 150 GiB floor. No threshold was lowered and no normal-run claim is made.
 
-Sources: [KPF handoff](../handoffs/active/kv-prefix-fork-and-paged-attention.md) · [GPU serving](../handoffs/active/gpu-serving-tie-in-program.md) · [2026-10-27 Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)
+Sources: [KPF handoff](../handoffs/active/kv-prefix-fork-and-paged-attention.md) · [GPU serving](../handoffs/active/mi210-serving-program.md) · [2026-10-27 Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)
 
 ## Compiled Update — 2026-10-28 (operator wiki sweep, workspace-58)
 

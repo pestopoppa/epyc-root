@@ -88,6 +88,14 @@
    "target": "eval-tower-program.md",
    "track": "fable5-window2-findings-01-optimizer-integrity"
   },
+  "fable5-window2-findings-02-heterogeneous-gpu.md": {
+   "target": "mi210-serving-program.md",
+   "track": "fable5-window2-findings-02-heterogeneous-gpu"
+  },
+  "fable5-window2-findings-05c-mi210-lever-category-matrix.md": {
+   "target": "mi210-serving-program.md",
+   "track": "fable5-window2-findings-05c-mi210-lever-category-matrix"
+  },
   "frontier-f2-self-running-lab.md": {
    "target": "frontier-lab-automation.md",
    "track": "frontier-f2-self-running-lab"
@@ -100,9 +108,17 @@
    "target": "engineering-hygiene-backlog.md",
    "track": "frontier-f4-continuity-backup"
   },
+  "gpu-acceleration-path.md": {
+   "target": "mi210-serving-program.md",
+   "track": "gpu-acceleration-path"
+  },
   "gpu-cot-scaffold-sidecar.md": {
    "target": "model-evaluation-queue.md",
    "track": "gpu-cot-scaffold-sidecar"
+  },
+  "gpu-serving-tie-in-program.md": {
+   "target": "mi210-serving-program.md",
+   "track": null
   },
   "inference-batch-loop.md": {
    "target": "eval-tower-program.md",
@@ -143,6 +159,10 @@
   "memento-block-reasoning-compression.md": {
    "target": "context-and-token-economy.md",
    "track": "memento-block-reasoning-compression"
+  },
+  "mi210-big-model-and-acceleration-roadmap.md": {
+   "target": "mi210-serving-program.md",
+   "track": "mi210-big-model-and-acceleration-roadmap"
   },
   "minddr-deep-research-mode.md": {
    "target": "model-evaluation-queue.md",
@@ -204,6 +224,10 @@
   "qwen-mtp-llamacpp-port.md": {
    "target": "model-evaluation-queue.md",
    "track": "qwen-mtp-llamacpp-port"
+  },
+  "qwen38-27b-replace-qwen36.md": {
+   "target": "mi210-serving-program.md",
+   "track": "qwen38-27b-replace-qwen36"
   },
   "rao-redel-substrate-spike.md": {
    "target": "context-and-token-economy.md",
@@ -320,6 +344,10 @@
    "target": "EVL-14",
    "track": "fable5-window2-findings-01-optimizer-integrity"
   },
+  "EVL-20": {
+   "target": "INF-22",
+   "track": "fable5-window2-findings-02-heterogeneous-gpu"
+  },
   "EVL-24": {
    "target": "EVL-29",
    "track": "frontier-f2-self-running-lab"
@@ -384,6 +412,10 @@
    "target": "EVL-08",
    "track": "tool-use-eval-contract"
   },
+  "EVL-48": {
+   "target": "INF-22",
+   "track": "fable5-window2-findings-05c-mi210-lever-category-matrix"
+  },
   "INF-04": {
    "target": "EVL-02",
    "track": "angelslim-techniques-evaluation"
@@ -391,6 +423,10 @@
   "INF-12": {
    "target": "EVL-02",
    "track": "delta-mem-reproduction"
+  },
+  "INF-18": {
+   "target": "INF-22",
+   "track": "gpu-acceleration-path"
   },
   "INF-19": {
    "target": "EVL-02",
@@ -411,6 +447,10 @@
   "INF-30": {
    "target": "EVL-02",
    "track": "lightning-attention-port"
+  },
+  "INF-34": {
+   "target": "INF-22",
+   "track": "mi210-big-model-and-acceleration-roadmap"
   },
   "INF-40": {
    "target": "EVL-21",
@@ -439,6 +479,10 @@
   "INF-58": {
    "target": "EVL-21",
    "track": "v9-kernel-per-request-speculative-params"
+  },
+  "INF-60": {
+   "target": "INF-22",
+   "track": "qwen38-27b-replace-qwen36"
   },
   "INF-67": {
    "target": "EVL-21",

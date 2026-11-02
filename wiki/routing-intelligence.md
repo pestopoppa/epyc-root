@@ -450,7 +450,7 @@ serving detail is compiled in [Inference Serving](inference-serving.md).
 - [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/gpu-candidates-surface-qwen38-update.md)
   — the presentation-vs-evidence-authority split, the era-labelling rule, and the
   `operator-declined — deferred` cell convention.
-- [`qwen38-27b-replace-qwen36.md`](../handoffs/active/qwen38-27b-replace-qwen36.md) — which roles the
+- [`qwen38-27b-replace-qwen36.md`](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — which roles the
   new arm serves, and the declined quality gate that made the labelling rule load-bearing.
 
 ## Compiled Update — 2026-08-13: contention decisions are now observable, but no evidence exists yet
