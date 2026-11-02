@@ -31,3 +31,15 @@ Consumed dataset-scan and prototype-qa. The available July reward replay is pre-
 ## 01:07Z — Integrate controlled-sweep and join-auditor preparation
 
 Consumed sweep-precise and join-prep. A fixture-tested aggregate-only task-ID coverage auditor exists in scratch, but no real audit has run and it does not establish E18 provenance or an episodic-memory join. The real_suite_v1/EvalTower combination is a candidate controlled workload and grader; preference propagation, actual selector telemetry, clean-window execution and source belief wiring remain before a valid sweep. Recorded the constraints in the design note. Dispatched bounded sweep patch, auditor review and exact baseline/snapshot provenance preparation; no row published or inference run.
+
+## 01:09Z — Implement aggregate task-ID join coverage auditor
+
+Added scripts/analysis/dar_join_coverage.py and six fixture tests for candidate progress/reward task-ID coverage. The auditor emits aggregate counts only and does not certify E18 scorer provenance, episodic-memory joins, stream order, training suitability or model performance. Independent review identified large numeric and truncated gzip error cases; fixed both and documented the stream-order limitation. Six unit tests pass. Added the prospective source-table entry and VB-DAR-JOIN-COVERAGE-WIRE task before real measurement. No real data scan, inference or compute row was run or published. Input-prep identified the E18 baseline artifact; immutable progress and properly provenanced reward replay still need preparation.
+
+## 01:12Z — Prepare E18 baseline input and recover auditor wrap-up
+
+Prepared pinned E18 duration-baseline bytes from orchestrator 60bfc4c43b601f758700565c5fcfab537e31df5e at /mnt/raid0/llm/tmp/decision-aware-routing/baseline-prep; SHA-256 b489647a4c8cdcf93886116f4f36c908d4ffbf4c86296a55c9268041e6dcaf09, ten roles with finite positive p50 and p90. This is configuration input, not runtime or reward provenance. Previous auditor wrap-up failed index_state --check; diagnosis dispatched. Reviewed source-hook plan and confirmed sweep scratch is not an implemented patch. Auditor remains fixture-tested; no real audit, inference or published row.
+
+## 01:14Z — Regenerate index and publish aggregate routing coverage auditor
+
+Consumed index-repair diagnosis and regenerated handoff state, graph and master rollup after adding VB-DAR-JOIN-COVERAGE-WIRE; research-evaluation open count is 694. The aggregate task-ID coverage auditor and six fixture tests are ready for publication; it does not certify reward provenance or training eligibility. Dispatched bounded writer, sweep plumbing and private snapshot preparation drafts. No real data audit, inference or row published.

@@ -16,7 +16,7 @@
       "blocked": 15,
       "handoffs": 41,
       "oldest_advance": "2026-07-29",
-      "open": 693
+      "open": 694
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -2812,7 +2812,7 @@
       "closed": 336,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 370,
+      "open": 371,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2821,7 +2821,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 710
+      "total": 711
     },
     "within-role-placement-state-machine.md": {
       "blocked": 1,
