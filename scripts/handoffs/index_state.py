@@ -496,7 +496,7 @@ def derive_readiness(nodes: list[dict], edges: list[dict]) -> dict[str, int]:
     `dep_cycles()` in `--check` is what names the cycle as a defect; this function only reports
     the consequence.
     """
-    open_by_id = {n["id"]: n.get("open", 0) for n in nodes}
+    open_by_id = {n["id"]: n.get("dispatchable", n.get("open", 0)) for n in nodes}
     gates: dict[str, set[str]] = {}
     for e in edges:
         if e.get("kind") != "dep":
@@ -511,7 +511,7 @@ def derive_readiness(nodes: list[dict], edges: list[dict]) -> dict[str, int]:
     for n in nodes:
         blockers = sorted(gates.get(n["id"], ()))
         n["blocked_by"] = blockers
-        if n.get("open", 0) == 0:
+        if n.get("dispatchable", n.get("open", 0)) == 0:
             n["readiness"] = "no_open"
         elif blockers:
             n["readiness"] = "blocked"
@@ -593,7 +593,7 @@ def derive_priority(nodes: list[dict], edges: list[dict], campaign_text: str = "
     Sort key, high to low: has open work, campaign tier, unblocks, ready-before-blocked.
     A row with no open work is always lowest. This is an ordering, not a score: the
     percentile only spreads it over the colour ramp."""
-    open_by_id = {n["id"]: n.get("open", 0) for n in nodes}
+    open_by_id = {n["id"]: n.get("dispatchable", n.get("open", 0)) for n in nodes}
     dependents: dict[str, set[str]] = {}
     for e in edges:
         if e.get("kind") == "dep":
@@ -611,7 +611,7 @@ def derive_priority(nodes: list[dict], edges: list[dict], campaign_text: str = "
             stack.extend(dependents.get(d, ()))
         unblocks = sum(1 for d in seen if open_by_id.get(d, 0) > 0)
         n["priority_basis"] = {"campaign": tiers[n["id"]], "unblocks": unblocks}
-        keys[n["id"]] = (1 if n.get("open", 0) > 0 else 0, tiers[n["id"]], unblocks,
+        keys[n["id"]] = (1 if n.get("dispatchable", n.get("open", 0)) > 0 else 0, tiers[n["id"]], unblocks,
                          1 if n.get("readiness") == "ready" else 0)
     ordered = sorted(keys.values())
     total = len(nodes)
@@ -724,7 +724,12 @@ def build_graph(state: dict) -> dict:
             # a second request. It is already the one-line contract-bounded cell.
             "next_action": r["next_action"],
             "state": st.get("state", "active"),
-            "open": st.get("open", 0),
+            # `open` = every unticked task box in the file (dispatchable + guarded + blocked),
+            # so it matches a direct count; `dispatchable` is the scheduler's narrower view and
+            # is what readiness/gating use. (RTG-18: 11 guarded checklist boxes showed open=0.)
+            "open": st.get("open", 0) + st.get("guarded", 0) + st.get("blocked", 0),
+            "dispatchable": st.get("open", 0),
+            "guarded": st.get("guarded", 0),
             "closed": st.get("closed", 0),
             "blocked": st.get("blocked", 0),
             "last_advanced": la,

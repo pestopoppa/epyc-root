@@ -3757,7 +3757,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T10:46:26Z",
+  "generated_at": "2026-11-02T10:48:34Z",
   "nodes": [
     {
       "age_days": 95,
@@ -6292,20 +6292,20 @@
       "track": "autokernel aggregate candidate (champion)"
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [
         "INF-06",
         "INF-64",
         "INF-65"
       ],
-      "closed": 164,
+      "closed": 163,
       "domain": "inference-research",
       "handoff": "autokernel-rebuild-program.md",
       "id": "INF-66",
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-01",
       "next_action": "Resolve R18-A host CUID identity differences under the unchanged rule; continue R23-62",
-      "open": 44,
+      "open": 45,
       "priority": 0.9017,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LBH-2.1 \u2014 re-run the INF-70 llama-bench units whose protocol could not be resolved or was ",
