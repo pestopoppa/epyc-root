@@ -147,3 +147,11 @@ Prepared a zero-inference reporting definition for Main Model Token Efficiency: 
 ## 09:42Z — Add scaffold token efficiency reporting contract
 
 Added the Main Model Token Efficiency reporting contract to the handoff: normalize mean reward divided by mean main-model trajectory tokens against the matched no-scaffold arm; include total tokens and wall-clock, scope and missing/zero count handling. The reporting task remains open until a scaffold A/B report actually uses it. No inference result is claimed. Delegated independent row readiness, owner routing and implementation work; registered completion events.
+
+## 09:44Z — Document the RLM fan-out prefill and decode caution
+
+Added workload-specific guidance to agent-loop-design: intake-803 reports a shift from mostly prefill to decode and longer wall clock in its tested environments; evaluate our workloads with prefill/decode and wall-clock reporting rather than generalizing the result. No model execution or measurement was performed.
+
+## 11:24Z — File refused owner-check run
+
+Filed handoff-rte-log1-ownercheck-20261101 inconclusive: rc=4, own-port-8070-already-listening before launch; available result records are dryrun=true only. The live acceptance item remains open. The separate override row has a different scratch root.

@@ -659,6 +659,26 @@ What to build instead:
   precursor lost the 2026-09-25 A/B on the 27B plain seat, so the orchestrator version must add what the seat
   lacked: exact pull accounting with a byte cap (OAB-12) and scouts that pull for the model (OAB-8).
 
+**Parallel tool-call width is an experimental scheduling policy.** When testing a native
+parallel-tool-call loop, let the orchestrator choose a phase-dependent cap rather than asking the
+actor to choose its own width. A candidate schedule is 3 calls during initial exploration, 2
+while narrowing evidence, and 1 during synthesis. Define the phase transitions before the run;
+compare it with fixed-width and actor-selected arms on the same task set and budget, recording
+accuracy, elapsed time, total tokens and realized calls per turn. Treat the schedule as a
+hypothesis, not a production default: intake-1125#02 and intake-1125#03 report a descending
+schedule outperforming the compared constant and automatic schedules in a single-context tool-call
+experiment, but that experiment did not measure independent subagents. It does not validate a
+3–5-subagent width, change the existing fan-out doctrine, or establish a win for our models and
+workloads.
+
+**RLM-shaped fan-out has a prefill-to-decode cost risk.** An RLM may spend most of its work writing
+code to solve a task and then writing code again to emit the answer. In the cited
+Needle-in-a-Haystack comparison, the plain model's tokens were mostly prefill while the RLM's were
+largely decode, and the RLM took longer in all four tested environments (intake-803). Treat this
+as a workload-specific warning when evaluating REPL or sub-LLM fan-out: report prefill and decode
+separately where available, and include wall-clock time. Do not infer a universal slowdown for our
+workloads without measuring them.
+
 Long term, the loop calls the orchestrator as a single `Backend`, and the orchestrator owns model choice
 (`handoffs/active/autokernel-orchestrator-actor-backend.md`, INF-78).
 
