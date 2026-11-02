@@ -97,11 +97,18 @@ def runtime_library_dir(binary: Path) -> Path:
 def runtime_env_prefix(binary: Path, overrides: dict[str, str | None] | None = None) -> list[str]:
     # Only explicitly reviewed recipe knobs can alter inherited launch policy.
     overrides = overrides or {}
-    allowed = {"GGML_FA_SPLIT_KV", "GGML_NOHUGEPAGE_PROCESS"}
+    allowed = {"GGML_FA_SPLIT_KV", "GGML_NOHUGEPAGE_PROCESS", "GGML_FUSED_DECODE_OFF"}
     if not isinstance(overrides, dict) or set(overrides) - allowed:
         raise ValueError("unreviewed scenario environment key")
     if any(value is not None and not isinstance(value, str) for value in overrides.values()):
         raise ValueError("invalid scenario environment value")
+    for name, value in os.environ.items():
+        if name.startswith("LLAMA_ARG_"):
+            raise ValueError(f"unbound inherited llama argument environment: {name}")
+        if name.startswith("GGML_") and name not in overrides and not (name == "GGML_IQK" and value == "1"):
+            raise ValueError(f"unbound inherited ggml environment: {name}")
+        if name in ("LD_PRELOAD", "LD_AUDIT") and value:
+            raise ValueError(f"unbound inherited loader override: {name}")
     return ["env", *[item for name, value in sorted(overrides.items()) if value is None for item in ("-u", name)],
             f"LD_LIBRARY_PATH={runtime_library_dir(binary)}",
             *[f"{name}={value}" for name, value in sorted(overrides.items()) if value is not None]]

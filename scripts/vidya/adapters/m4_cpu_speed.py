@@ -41,7 +41,7 @@ def _sha(raw: bytes) -> str:
 
 
 def _verify_recipe_env(argv: list, environment: dict) -> None:
-    if not isinstance(environment, dict) or set(environment) - {'GGML_FA_SPLIT_KV', 'GGML_NOHUGEPAGE_PROCESS'}:
+    if not isinstance(environment, dict) or set(environment) - {'GGML_FA_SPLIT_KV', 'GGML_NOHUGEPAGE_PROCESS', 'GGML_FUSED_DECODE_OFF'}:
         raise ProjectionError('invalid bound recipe environment')
     if not argv or argv[0] != 'env':
         raise ProjectionError('native environment prefix missing')
@@ -174,8 +174,9 @@ def _project(native: Any, config: SourceConfig) -> ClaimTuple:
         vision_roles={'vision_escalation','worker_vision'}
         full_roles={'architect_general','frontdoor','toolrunner','worker','worker_explore','worker_general','worker_math','worker_summarize'}
         role=native['role']
-        expected=('0,1','0-47,96-143',48) if role in vision_roles else ('all','0-95',96) if role in full_roles else None
-        if (nodes,affinity,threads) != expected:
+        valid_topology = ((role in vision_roles and (nodes, affinity, threads) == ('0,1', '0-47,96-143', 48))
+                          or (role in full_roles and (nodes, affinity) == ('all', '0-95') and type(threads) is int and 1 <= threads <= 96))
+        if not valid_topology:
             raise ProjectionError('invalid production topology')
         try: pos=argv.index('numactl')
         except ValueError as exc: raise ProjectionError('topology command missing') from exc
