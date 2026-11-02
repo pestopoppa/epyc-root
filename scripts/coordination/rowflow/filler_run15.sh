@@ -88,6 +88,14 @@ if [ "$DRYRUN" = 1 ]; then
   # allocator 2026-11-01: a multi-quarter row is dry-run on ONE quarter - the region-lock claim is the grant's own cpus
   # (gpu class: its host threads, folding onto q3), so a dry run never holds more than it needs.
   if [ "${FILLER_DRYRUN_ONE_QUARTER:-0}" = 1 ]; then if [ "$CLASS" = gpu ]; then CLAIM_CPUS=$GPUTHR; else CLAIM_CPUS=""; GPUQ=none; fi; fi  # quiet-host rows: plumbing only
+  # ws58 2026-11-02: publish_row's smoke (FILLER_SMOKE=1) is always small and must NEVER wait on a held region (a real
+  # whole-host run held q0 and every smoke blocked on its full 0-95 claim). Its claim is exactly the smoke's cpus
+  # (WS58_REGIONS), taken by taskset, not region-lock; it never takes gpu-quiet exclusive (gpu rows: shared gpu lock only).
+  SMOKE_NOLOCK=0
+  if [ "${FILLER_SMOKE:-0}" = 1 ]; then
+    SMOKE_NOLOCK=1; CLAIM_CPUS=${WS58_REGIONS:-$CLAIM_CPUS}; NOFOLD=0
+    if [ "$CLASS" = gpu ]; then GPUQ=shared; else GPUQ=none; fi
+  fi
 fi
 ts() { date -u +%FT%TZ; }
 log() { echo "$(ts) [$ID] $*"; }
@@ -276,9 +284,15 @@ run_one() {
       rlargs=("${_n[@]}"); [[ " ${rlargs[*]} " == *" --gpu-quiet "* ]] || rlargs+=(--gpu-quiet shared)
     elif [[ " ${rlargs[*]} " == *" --cpu-list "* ]]; then rlargs+=(--no-fold-siblings); fi
   fi
+  if [ "${SMOKE_NOLOCK:-0}" = 1 ]; then
+    if [ "$CLASS" = gpu ]; then rlargs=(--gpu-quiet shared); else rlargs=(); fi
+  fi
   snapshot_overrun "$regions"
   if [ -n "${FILLER_STUB_CMD:-}" ]; then
     setsid bash -c "$FILLER_STUB_CMD" 7>&- &
+  elif [ "${SMOKE_NOLOCK:-0}" = 1 ] && [ ${#rlargs[@]} = 0 ]; then
+    setsid taskset -c "${CLAIM_CPUS:-$CPUS}" /bin/bash "$SELF" --inner --id "$ID" --class "$CLASS" --cmd "$JOBCMD" --min-window "$MINWIN" --stop "$STOPFILE" \
+        --port "$PORTS" --workdir "$WORKDIR" --gpu-threads "$GPUTHR" 7>&- &
   elif [ $SELFCLAIM = 1 ]; then
     setsid /bin/bash "$SELF" --inner --id "$ID" --class "$CLASS" --cmd "$JOBCMD" --min-window "$MINWIN" --stop "$STOPFILE" \
         --port "$PORTS" --workdir "$WORKDIR" --gpu-threads "$GPUTHR" 7>&- &

@@ -472,7 +472,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
         row["snapshot"] = snap
     elif isinstance(spec.get("snapshot"), dict):  # a republish from ready/<id>.json (publish_row.py --repair) keeps its snapshot record
         row["snapshot"] = spec["snapshot"]
-    for k in ("lineage", "lineage_reset", "supersedes", "notes", "row", "dryrun_whole_host", "dryrun_native_result"):
+    for k in ("lineage", "lineage_reset", "supersedes", "notes", "row", "dryrun_native_result"):
         if spec.get(k) is not None:
             row[k] = spec[k]
     if spec.get("shape") is not None:
@@ -1119,12 +1119,12 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
                 if v is not None:
                     vram_max = max(vram_max or 0, v)
             # a dry run must never wait on a lock: a region-lock acquire for regions outside what this dry run holds, or one
-            # not satisfied within 60 s, is the row's defect (whole-host claim on a one-quarter dry run)
+            # not satisfied within 60 s, is the row's defect (the job's own claim ignores WS58_REGIONS)
             waits = lock_waits(tail(lout, 10**6)[out_lines0:], holds)
             if waits and (waits[0] - holds or time.time() - t0 > 60):
                 verdict, reason = "FAIL", (f"job waits on region-lock for {','.join(sorted(waits[0]))} while the dry run holds "
-                                           f"{','.join(sorted(holds))}: whole-host claim; cannot dry-run on one quarter (constrain "
-                                           "--claim-cpus / the job's own claim, or set dryrun_whole_host: true in the spec)")
+                                           f"{','.join(sorted(holds))}: a smoke never waits on a held region; the job's own "
+                                           "region-lock claim must honour WS58_REGIONS under FILLER_SMOKE)")
                 break
             units = count_units(result_path, result_format, d.get("workdir"))
             new_units = units - units0
