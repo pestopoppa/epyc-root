@@ -167,3 +167,7 @@ In scratch /mnt/raid0/llm/tmp/akagg/cpu-collector-v5/request_owner.py, defer han
 ## 10:20Z — Prepare C3 pre-grant model identity
 
 Started one-time pre-grant SHA-256 of the C3 B Bolt GGUF using /mnt/raid0/llm/tmp/akagg/model-seal-v6/seal.py. It writes an atomic receipt and success/failure done.json; no digest is claimed until that file reports success. Runtime design labels its separate stat continuity honestly as not runtime byte verification. Successor consumer integration, launcher and CH-27 private admission are in preparation; no inference or row publication.
+
+## 10:21Z — Seal C3 Bolt model before grant and repair successor lifecycle
+
+The one-time pre-grant SHA-256 of the 22,018,326,528-byte Bolt GGUF completed: 91d63363e782c8a3d5f4be42816eba8e0d42dd2530bd07a7d0d2dc440599af75. Receipt /mnt/raid0/llm/tmp/akagg/model-seal-v6/receipt.json records pregrant digest plus stat continuity, explicitly not runtime byte verification; current file identity check passed without rehashing. C3 successor review found the producer writes to r6 but the result publisher only accepts r5, and the dry-run completion checker refuses even a completed dry-run. Both require correction before publication. No inference or profile result.
