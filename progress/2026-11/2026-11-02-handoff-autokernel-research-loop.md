@@ -187,3 +187,7 @@ Consumed lb-native-fixed-v3.txt: the temporary source now distinguishes nonfinit
 ## 01:22Z — Recover native capture review publication
 
 The preceding wrap-up committed native capture review as dceef26ea0e7 but serialized_push returned rc=4 without publishing; retrying through the standard wrapper. Registered follow-up work remains unchanged.
+
+## 01:23Z — Address capture and descriptor review defects
+
+Consumed all three reports. The disposable Python atomic-output prototype passed 10 tests but is not the native emitter; a post-rename directory fsync failure may leave new output visible despite failure. Native v3 still needs prefix synchronization before the counter baseline, strict rejection of overflow at EOF, a defensible memory envelope, authenticated actual multirow evidence and atomic output; its emitter is disabled and must remain so. The temporary microbench FD draft passed four disposable tests but lacks demonstrated close/run race safety, sandbox/exception cleanup coverage, trusted digest-to-FD authority and actual campaign integration. Delegated targeted draft fixes, focused tests and C++ atomic writer preparation; completion events registered. No inference or row published; no checkbox completed.
