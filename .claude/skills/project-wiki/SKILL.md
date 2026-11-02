@@ -42,6 +42,31 @@ Audit the knowledge base for hygiene issues. Run via:
 
 Or invoke this skill with: "lint the knowledge base" / "check KB health"
 
+Machine-readable report (consumed by the hub Knowledge page, KT-3): add `--json` (stdout) and/or
+`--json-out <path>`; `--only a,b` runs a subset of passes. The KT-1 passes (2026-11-02) replace the
+manual wiki audit — run them as part of every lint:
+- `wiki_orphans` — wiki page with no inbound wiki link and absent from INDEX.md (WARNING).
+- `unsourced_bullets` — a `Compiled Update` bullet citing no `intake-NNN`, path/link or SHA:
+  WARNING when its section has no Source References list, INFO when only section-sourced.
+- `conflicted_citations` — runs `scripts/vidya/cli.py cite-check` over `wiki/`; conflicted/overturned
+  citations are ERROR, dangling WARNING. An unavailable gate is a WARNING, never a silent pass.
+- `contradictions` — pending pairs in `data/vidya/contradiction_queue.jsonl`, filed by the KT-2 gate
+  (`scripts/vidya/contradiction_gate.py`); adjudication is the operator's, nothing auto-resolves.
+
+### Operation 1b — Readable pages, edges, Obsidian view (KT-4)
+
+`.claude/skills/project-wiki/scripts/render_wiki.py`, all output generated:
+- `restructure <page.md>...` — topical sections first, the "Last compiled" line and every
+  `## Compiled Update` moved to a trailing `## Compile Log` (demoted one level). Lossless by
+  construction (refuses if the multiset of content lines would change) and idempotent; `--check`
+  reports without writing. Applied per page during the operator-cadence compilation sweep.
+- `index` — regenerates the one-line current-state summary per page in INDEX.md's
+  `<!-- kt4:summaries -->` block.
+- `edges [--out]` — JSON edge list (md links, `intake-NNN#claim` citations, ledger
+  `depends_on_entry`, handoff-index Deps); default `/mnt/raid0/llm/tmp/wiki-kt4/edges.json`.
+- `vault [--out]` — optional Obsidian stub vault with `[[wikilinks]]`, default
+  `/mnt/raid0/llm/tmp/wiki-kt4/obsidian-vault` (outside the tracked tree).
+
 #### Lint Passes
 
 1. **Orphan handoff detection**:
