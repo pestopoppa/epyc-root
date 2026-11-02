@@ -87,3 +87,7 @@ Diagnosed the CPU successor cross-run preservation failure: its original and ext
 ## 11:33Z — Prepare paired KPF-17a CPU successor
 
 Diagnosed the CPU successor cross-run preservation failure: its original and extended outputs were produced at different thread counts. Prepared kvfork17a-cpu-paired to compare each original and extended case under identical grant and thread count, retaining earlier receipts separately; publication smoke started but its outcome was not yet observed. No new exactness verdict is claimed.
+
+## 11:34Z — Prepare paired KPF-17a CPU successor
+
+Diagnosed the CPU successor cross-run preservation failure: its original and extended outputs were produced at different thread counts. Prepared kvfork17a-cpu-paired to compare each original and extended case under identical grant and thread count, retaining earlier receipts separately; publication smoke started but its outcome was not yet observed. No new exactness verdict is claimed.
