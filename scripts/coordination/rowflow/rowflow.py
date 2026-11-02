@@ -1081,6 +1081,92 @@ def row_orphans(rid):
     return out
 
 
+def _proc_stat(pid):
+    """(ppid, pgid, starttime) from /proc/<pid>/stat, or None when gone/zombie."""
+    try:
+        f = open(f"/proc/{pid}/stat").read().rsplit(")", 1)[1].split()
+    except (OSError, IndexError):
+        return None
+    if f[0] == "Z":
+        return None
+    return int(f[1]), int(f[2]), f[19]
+
+
+def harness_tree(root, tracked):
+    """ws58 2026-11-02: accumulate {pid: starttime} of root and every live descendant (setsid'd ones included: a new session
+    keeps its ppid until the parent dies, so sampling during the run captures them before they are reparented)."""
+    kids = {}
+    for q in os.listdir("/proc"):
+        if q.isdigit():
+            st = _proc_stat(int(q))
+            if st:
+                kids.setdefault(st[0], []).append((int(q), st[2]))
+    st = _proc_stat(root)
+    todo = [root]
+    if st:
+        tracked.setdefault(root, st[2])
+    while todo:
+        for c, birth in kids.get(todo.pop(), []):
+            if c not in tracked:
+                tracked[c] = birth
+                todo.append(c)
+    return tracked
+
+
+def _same(pid, birth):
+    st = _proc_stat(pid)
+    return st is not None and st[2] == birth
+
+
+def reap_pids(tracked, grace=20):
+    """TERM every still-same process (and every process group one of them leads), wait up to grace s, KILL, verify via
+    /proc. Only pids this harness started (or captured by row id) with a matching start time are signalled. Returns
+    (reaped, survivors)."""
+    live = {p: b for p, b in tracked.items() if _same(p, b) and p != os.getpid()}
+    if not live:
+        return [], []
+    for sig in (signal.SIGTERM, signal.SIGKILL):
+        for p, b in live.items():
+            st = _proc_stat(p)
+            if st and st[2] == b:
+                if st[1] == p:
+                    try:
+                        os.killpg(p, sig)
+                    except (ProcessLookupError, PermissionError):
+                        pass
+                try:
+                    os.kill(p, sig)
+                except (ProcessLookupError, PermissionError):
+                    pass
+        for _ in range(grace * 4 if sig == signal.SIGTERM else 20):
+            if not any(_same(p, b) for p, b in live.items()):
+                break
+            time.sleep(0.25)
+        if not any(_same(p, b) for p, b in live.items()):
+            break
+    return sorted(live), sorted(p for p, b in live.items() if _same(p, b))
+
+
+def row_dir_procs(rid, dirs):
+    """pids (not ours) whose argv names rid or whose cwd lies under one of the row's own dirs, with start times."""
+    out = {}
+    dirs = [os.path.realpath(x) + os.sep for x in dirs if x and rid in x]  # only dirs that are the row's own
+    for q in os.listdir("/proc"):
+        if not q.isdigit() or int(q) == os.getpid():
+            continue
+        try:
+            hit = rid in open(f"/proc/{q}/cmdline", "rb").read().decode("utf8", "replace")
+            if not hit and dirs:
+                cwd = os.path.realpath(os.readlink(f"/proc/{q}/cwd")) + os.sep
+                hit = any(cwd.startswith(x) for x in dirs)
+        except OSError:
+            continue
+        st = _proc_stat(int(q))
+        if hit and st:
+            out[int(q)] = st[2]
+    return out
+
+
 def record_fail(flags, rid, d, reason, extra):
     n = len(fail_paths(flags, rid)) + 1
     rec = {"id": rid, "at": now_iso(), "launcher_sha256": sha256(d["launcher"]["path"]) if os.path.isfile(d["launcher"]["path"]) else None,
@@ -1184,7 +1270,8 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
     out = open(os.path.join(dd, "launcher.out"), "a")
     out.write(f"\n==== dry run {now_iso()} regions={regions} launcher_sha={lsha} units_before={units0}\n"); out.flush()
     p = subprocess.Popen(["bash", lp], cwd=flags, env=env, stdout=out, stderr=subprocess.STDOUT, start_new_session=True)
-    atomic_json(running_path(flags, rid), {"pid": p.pid, "started": now_iso(), "regions": regions, "launcher_sha256": lsha, "grant": grant})
+    tracked = harness_tree(p.pid, {p.pid: (_proc_stat(p.pid) or (0, 0, None))[2]})  # setsid'd group: pgid == p.pid
+    atomic_json(running_path(flags, rid), {"pid": p.pid, "pgid": p.pid, "started": now_iso(), "regions": regions, "launcher_sha256": lsha, "grant": grant})
     t0 = time.time()
     vram_max = None
     gpu = "mi210_0" in regions
@@ -1197,7 +1284,9 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
     out_lines0 = len(tail(lout, 10**6))
     try:
         while True:
-            time.sleep(5)
+            for _ in range(5):
+                time.sleep(1)
+                harness_tree(p.pid, tracked)
             if gpu:
                 v = vram_used_bytes()
                 if v is not None:
@@ -1263,9 +1352,24 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
                     p.wait(timeout=30)
                 except subprocess.TimeoutExpired:
                     pass
-        orphans = row_orphans(rid)
-        if orphans:  # a sudo/chroot/setsid wrapper detached them from the launcher's group; reported, never killed by pattern
-            warning = (warning + "; " if warning else "") + f"ORPHANS {orphans}: processes still naming this row after the dry run ended (a wrapper detached them; the owner stops them by pid)"
+        # ws58 2026-11-02: the harness owns every process it started, PASS, FAIL or timeout alike (a private engine copy
+        # included): TERM the group + tracked descendants, 20 s, KILL, verify. Then anything still naming the row (argv,
+        # or cwd under the row's own dirs) is stopped by its captured pid. Never left for the owner, never by name.
+        harness_tree(p.pid, tracked)
+        reaped, surv = reap_pids(tracked)
+        try:
+            p.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            pass
+        if reaped:
+            out.write(f"==== REAPED {reaped}\n")
+        orphans = row_dir_procs(rid, [x for x in (dd, d.get("workdir")) if x and rid in x])  # a shared workdir never counts
+        if orphans:
+            r2, s2 = reap_pids(orphans)
+            out.write(f"==== ORPHANS {sorted(orphans)} still naming this row after the dry run ended; REAPED {r2}\n")
+            surv += s2
+        if surv:
+            warning = (warning + "; " if warning else "") + f"UNREAPED {sorted(set(surv))}: survived TERM+KILL"
             out.write(f"==== {warning}\n")
         try:
             os.remove(grant)

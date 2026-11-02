@@ -169,6 +169,18 @@ kill_group() { # captured pgid + birth: TERM, wait, KILL - only when the leader'
   gone "$g" && { log "group $g killed"; return 0; }
   log "REFUSED: group $g survives KILL"; return 1
 }
+INNERPG=$STATE/$ID.inner.pgid
+kill_job() { # ws58 2026-11-02: the launcher's setsid group AND the inner engine's group (region_lock_cli may start the inner
+  # engine in a session of its own, out of reach of the launcher-group kill); the inner records "pgid birth" at start
+  local r=0 g b
+  kill_group "$CUR" "$CUR_BIRTH" || r=1
+  if [ -f "$INNERPG" ]; then
+    read -r g b < "$INNERPG" || true
+    if [[ ${g:-} =~ ^[0-9]+$ ]] && [ "$g" != "$CUR" ]; then kill_group "$g" "$b" || r=1; fi
+    [ $r = 1 ] || rm -f "$INNERPG"
+  fi
+  return $r
+}
 kill_pidfile() { # pids the job registered (fl_register_pid); TERM then KILL; never a pid that is already gone
   local p
   [ -f "$PIDFILE" ] || return 0
@@ -199,6 +211,7 @@ if [ $INNER = 1 ]; then
     echo "$(ts) mi210_0 flock held"
   fi
   export FILLER_END_ISO=$(date -u -d "@$END" +%FT%TZ) FILLER_ID=$ID FILLER_DEADLINE=$(( END - 90 )) FILLER_STOPFILE=$STOPFILE FILLER_PORTS=$PORTS FILLER_PIDFILE=$PIDFILE FILLER_LIB=$HERE/filler_lib.sh FILLER_DISK_POLICY=$HERE/dryrun_disk_policy.json
+  mkdir -p "$STATE"; _pg=$(ps -o pgid= -p $$ | tr -d ' '); printf '%s %s\n' "$_pg" "$(proc_birth "$_pg")" > "$INNERPG"
   cd "$WORKDIR" || exit 3
   # No `timeout` wrapper: it moves the job into its own process group, out of reach of the launcher's captured-group kill.
   # The hard end is enforced by the launcher (TERM, wait, KILL on the whole setsid group); the job also honours FILLER_DEADLINE.
@@ -217,7 +230,7 @@ sleep_poll() { sleep "$1" 7>&- 8>&- & SLP=$!; wait $SLP 2>/dev/null; }
 on_term() {
   log "launcher signalled"
   if [ -n "$CUR" ]; then
-    kill_group "$CUR" "$CUR_BIRTH" && kill_pidfile || { log "REFUSED: signal cleanup incomplete; grant retained"; exit 70; }
+    kill_job && kill_pidfile || { log "REFUSED: signal cleanup incomplete; grant retained"; exit 70; }
   fi
   [ -e "$GRANT" ] && write_ended 143 launcher-signalled
   exit 143
@@ -308,15 +321,15 @@ run_one() {
   [ "$(ps -o pgid= -p $CUR | tr -d ' ')" = "$CUR" ] || log "WARN: $CUR is not a group leader"
   reason=exited
   while kill -0 "$CUR" 2>/dev/null; do
-    if [ "$(date -u +%s)" -ge "$e" ]; then reason=hard-end; kill_group "$CUR" "$CUR_BIRTH" || reason=cleanup-failed; break; fi
+    if [ "$(date -u +%s)" -ge "$e" ]; then reason=hard-end; kill_job || reason=cleanup-failed; break; fi
     if [ "$(df -BG --output=avail /mnt/raid0 2>/dev/null | tail -1 | tr -dc 0-9)" -lt "${FILLER_DISK_FLOOR_GIB:-150}" ] 2>/dev/null; then
-      reason=disk-floor; kill_group "$CUR" "$CUR_BIRTH" || reason=cleanup-failed; break; fi
+      reason=disk-floor; kill_job || reason=cleanup-failed; break; fi
     sleep 3 7>&- 8>&-
   done
   wait "$CUR" 2>/dev/null; rc=$?
   case $reason in hard-end|disk-floor) rc=75;; esac
   local cleanup_bad=0
-  kill_group "$CUR" "$CUR_BIRTH" || cleanup_bad=1
+  kill_job || cleanup_bad=1
   kill_pidfile || cleanup_bad=1
   CUR=""
   CUR_BIRTH=""
