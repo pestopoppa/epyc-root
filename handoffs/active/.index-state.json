@@ -4,7 +4,7 @@
       "blocked": 59,
       "handoffs": 58,
       "oldest_advance": "2026-07-29",
-      "open": 1030
+      "open": 1033
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -16,7 +16,7 @@
       "blocked": 15,
       "handoffs": 40,
       "oldest_advance": "2026-07-29",
-      "open": 722
+      "open": 723
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -1177,10 +1177,10 @@
     },
     "gpu-serving-tie-in-program.md": {
       "blocked": 0,
-      "closed": 85,
+      "closed": 86,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 32,
+      "open": 35,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1189,7 +1189,7 @@
       },
       "row_id": "INF-22",
       "state": "active",
-      "total": 117
+      "total": 121
     },
     "handoff-index-and-backlog-graph.md": {
       "blocked": 0,
@@ -2748,7 +2748,7 @@
       "closed": 336,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 401,
+      "open": 402,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2757,7 +2757,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 741
+      "total": 742
     },
     "within-role-placement-state-machine.md": {
       "blocked": 1,
@@ -3331,7 +3331,7 @@
       "id": "INF-22",
       "index": "inference-research-index.md",
       "line": 38,
-      "next_action": "Resolve GPU-ZOS-2.3 extension analysis contract; bind per-role recipes/resources for M4 and PB-QCOST-1",
+      "next_action": "Implement M4 fold-gate capture, current role bindings and qualified CPU/GPU execution; see audited execution route",
       "track": "gpu serving tie in program"
     },
     "INF-23": {
