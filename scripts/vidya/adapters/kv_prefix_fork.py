@@ -333,6 +333,8 @@ def _validate_kpf26_api(row: dict) -> list[str]:
 
 
 def validate_row(row: Any) -> list[str]:
+    if isinstance(row, dict) and row.get("schema") == "epyc.kpf30.phase_observation.v1":
+        return _validate_kpf30_phase(row)
     if isinstance(row, dict) and row.get("schema") == "epyc.kpf26.api-observation.v1":
         return _validate_kpf26_api(row)
     if isinstance(row, dict) and row.get("schema") == "epyc.kpf30.observation.v1":
@@ -391,6 +393,35 @@ def validate_row(row: Any) -> list[str]:
                                 "rather than weakening the integrity gate")
             else:
                 problems.append("record_sha256 does not re-derive")
+    return problems
+
+
+def _validate_kpf30_phase(row: dict) -> list[str]:
+    problems = []
+    for key in ("run_id", "window_id", "host", "start_utc", "end_utc", "rows", "source_log", "category"):
+        if not isinstance(row.get(key), str) or not row[key].strip():
+            problems.append(f"missing {key}")
+    for key in ("binary_sha256", "prompt_set_sha256", "rows_sha256", "source_log_sha256", "writer_sha256", "record_sha256"):
+        if not isinstance(row.get(key), str) or not re.fullmatch(r"[0-9a-f]{64}", row[key]):
+            problems.append(f"invalid {key}")
+    if row.get("phase") not in ("decode", "verify") or type(row.get("swa")) is not int or row["swa"] not in (0, 1):
+        problems.append("invalid phase or SWA")
+    if row.get("category") not in ("BASELINE", "CANDIDATE", "OPTIMUM") or not isinstance(row.get("argv"), list) or not row["argv"]:
+        problems.append("invalid scope")
+    if row.get("fan_completed") is not True or row.get("process_reaped") is not True or type(row.get("server_returncode")) is not int:
+        problems.append("missing owner completion or process-reaping evidence")
+    if type(row.get("n_rows")) is not int or row["n_rows"] <= 0:
+        problems.append("no phase rows")
+    if type(row.get("excluded_prestart_rows")) is not int or row["excluded_prestart_rows"] < 0:
+        problems.append("invalid prestart row count")
+    c = row.get("counts")
+    keys = ("blocks", "live", "mixed", "unknown", "live_unknown", "invalid_mask")
+    if not isinstance(c, dict) or set(c) != set(keys) or any(type(c.get(k)) is not int or c[k] < 0 for k in keys):
+        problems.append("invalid phase counts")
+    elif not (0 <= c["mixed"] <= c["live"] <= c["blocks"]) or c["live"] == 0 or c["unknown"] or c["live_unknown"] or c["invalid_mask"]:
+        problems.append("unknown, invalid or zero-denominator phase counts")
+    if not problems and _digest({k: v for k, v in row.items() if k != "record_sha256"}) != row["record_sha256"]:
+        problems.append("record_sha256 does not re-derive")
     return problems
 
 
@@ -539,6 +570,8 @@ def project(native: Any) -> ClaimTuple:
         raise ProjectionError("KPF row is not a runner-authored record: " + "; ".join(problems))
     sidecar = Path(native.get("sidecar_path") or ".")
     present = _rows_present(row, sidecar)
+    if row["schema"] == "epyc.kpf30.phase_observation.v1":
+        return _project_kpf30_phase(row, sidecar, present)
     if row["schema"] == "epyc.kpf26.api-observation.v1":
         return _project_kpf26_api(row, sidecar, present)
     if row["schema"] == "epyc.kpf30.observation.v1":
@@ -687,6 +720,49 @@ def _project_kpf26(row: dict, sidecar: Path, present: bool) -> ClaimTuple:
                "prompt_set_sha256": row["prompt_set_sha256"], "start_utc": row.get("start_utc"),
                "end_utc": row["end_utc"], "record_sha256": row["record_sha256"],
                "ttft_ms": row.get("ttft_ms"), "unique_cells_peak": row.get("unique_cells_peak")},
+        applicability=_applicability(row))
+
+
+def _project_kpf30_phase(row: dict, sidecar: Path, present: bool) -> ClaimTuple:
+    from adapters.kpf30_phase_capture import parse_log
+    if not present:
+        raise ProjectionError("phase rows missing or digest does not match")
+    source = Path(row["source_log"])
+    sibling = sidecar.parent / source.name
+    if sibling.is_file():
+        source = sibling
+    if not source.is_file() or _sha256_file(source) != row["source_log_sha256"]:
+        raise ProjectionError("phase source log missing or digest does not match")
+    try:
+        with source.open(encoding="utf-8", errors="strict") as f:
+            replayed, prestart = parse_log(f)
+        if prestart != row["excluded_prestart_rows"]:
+            raise ValueError("prestart exclusion count disagrees with source log")
+        rows = [json.loads(line) for line in _rows_path(row, sidecar).read_text().splitlines() if line.strip()]
+        if rows != replayed:
+            raise ValueError("phase row provenance disagrees with source log")
+        selected = [x for x in rows if x["phase"] == row["phase"] and x["swa"] == row["swa"]]
+        counts = {key: sum(x[key] for x in selected) for key in row["counts"]}
+    except (OSError, ValueError, TypeError, KeyError) as exc:
+        raise ProjectionError("invalid KPF-30 phase provenance") from exc
+    if len(selected) != row["n_rows"] or counts != row["counts"]:
+        raise ProjectionError("phase counts do not re-derive from attested rows")
+    return ClaimTuple(
+        measurement_id="kpf30-phase-" + hashlib.sha256(row["record_sha256"].encode()).hexdigest()[:32],
+        metric="kpf30_phase_mixed_live_fraction", value=counts["mixed"] / counts["live"], unit="fraction",
+        date=row["end_utc"], category=row["category"], metric_direction="lower_better",
+        claim=(f"KPF-30 {row['phase']} SWA={row['swa']} recorded {counts['mixed']} mixed of "
+               f"{counts['live']} live blocks across {row['n_rows']} mask rows; no threshold decision"),
+        protocol_id="", reps=row["n_rows"], reps_basis="mask rows recorded, not independent windows",
+        attestation_path=str(_rows_path(row, sidecar)), attestation_sha256=row["rows_sha256"],
+        attestation_locator=f"kpf30:{row['run_id']}:win={row['window_id']}:phase={row['phase']}:swa={row['swa']}",
+        attestation_present=True, attestation_verified=True, source_kind=SOURCE_KIND,
+        extra={"schema": row["schema"], "counts": counts, "phase": row["phase"], "swa": row["swa"],
+               "source_log": str(source), "source_log_sha256": row["source_log_sha256"],
+               "writer_sha256": row["writer_sha256"], "excluded_prestart_rows": prestart,
+               "window_id": row["window_id"], "run_id": row["run_id"],
+               "binary_sha256": row["binary_sha256"], "prompt_set_sha256": row["prompt_set_sha256"],
+               "record_sha256": row["record_sha256"], "sidecar_path": str(sidecar)},
         applicability=_applicability(row))
 
 
