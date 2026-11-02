@@ -16,7 +16,7 @@ publish   LINT the spec, then rowflow.publish derives the rest. The lint rewrite
 Ownership (operator 2026-11-02): handoff_task must name an existing handoffs/active/<file>.md (`file.md:ROW` or
 `file.md`); the row belongs to that HANDOFF and its PASS/FAIL/run-end events reach that handoff's session.
 Smoke = THE dry run (operator 2026-11-02): the launcher runs HERE, in the owner's turn, on 4 cpus no quiet-host grant
-holds (GPU rows: only while gpu-quiet is free, with VRAM residency checked; else refused "GPU busy, retry"), for
+(GPU rows: on their own regions, VRAM residency checked; never refused for busy resources), for
 smoke_timeout_s (300). PASS (a first unit in result_path, clean stop) writes dryrun/<id>/PASS.json: ready at once. FAIL
 writes the FAIL memo and prints launcher_out_tail; the allocator grants only PASSed rows."""
 import argparse
@@ -137,16 +137,12 @@ def check_handoff(spec, repo=None):
 
 
 def smoke_regions(lane, regions, flags):
-    """Where the smoke runs: GPU rows only while gpu-quiet is free (else refused); CPU rows on 4 cpus of a quarter no
-    quiet-host grant holds, preferring one with no region-lock holder. Nothing is booked: a dry run uses no real resources."""
-    rl = rf.rl_status()
-    grants = rf.open_grants(flags)
+    """Where the smoke runs (operator 2026-11-02: a dry run is minimal and is never held up by inference work): GPU rows
+    on their own regions, CPU rows on 4 cpus of the least-busy quarter. No lock, no refusal, nothing booked."""
     if lane == "gpu":
-        rf.need(rl.get(rf.GPU, ("free",))[0] == "free" and not any(rf.GPU in g["holds"] for g in grants), "GPU busy, retry")
         return regions
-    quiet = set().union(*[g["holds"] for g in grants if rf.GPU in g["holds"] and len(g["holds"] & set(rf.QUARTERS)) == 4] or [set()])
-    qs = sorted((q for q in rf.QUARTERS if q not in quiet), key=lambda q: rl.get(q, ("free",))[0] != "free")
-    rf.need(qs, "a quiet-host grant holds every quarter, retry")
+    rl = rf.rl_status()
+    qs = sorted(rf.QUARTERS, key=lambda q: rl.get(q, ("free",))[0] != "free")
     lo = int(qs[0][1]) * 24
     return f"{lo}-{lo + 3}"
 
