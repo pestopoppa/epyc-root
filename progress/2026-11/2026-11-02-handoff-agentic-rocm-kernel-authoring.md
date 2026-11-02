@@ -15,3 +15,11 @@ Prior lane commits remain unpublished: serialized push initially encountered an 
 ## 00:26Z — Identify C5-7 same-run evidence ordering defect and prepare in-run capture seam
 
 Consumed c57-patch.done: at research commit 39b63b061238d52d0669d2d9eb3e4d3f29affd11, the CLI loads evidence before run() generates its fresh secret workload and timing anchor identities, yet the gate requires both hashes. Thus ordinary same-run native evidence cannot generally be supplied through that CLI; existing tests use synthetic evidence and the conditional seam is not end-to-end enforcement. Requested a reviewable injected capture interface after identities are sealed with mock-provider failure and identity-binding tests; actual profiler capture remains separate. No GPU execution, measurement claim, or completed handoff checkbox.
+
+## 00:27Z — Advance ISA audit and controller implementations while inference prerequisites are prepared
+
+No registered k228/k175 or zero-profiler implementation completion was available at this boundary; the C5-7 in-run capture draft is in preparation. Existing readiness evidence does not establish a publishable inference row. Delegated three bounded independent drafts: INF03-REGAUDIT-RUNNER pre-timing audit enforcement, C5-12 token-cost levers and C5-14 controller registration, with dispatcher completion events. These are drafts, not landed source; no result checkbox was ticked and no GPU work was launched.
+
+## 00:28Z — Resolve stale C5-14 dispatch against the handoff task text
+
+Consumed c5-14.done: C5-14 is already marked complete in the handoff with research commit a23bd9c65203c9e8a9cbf7cabd76b716a9303d49 and ARENA_INTEGRATION.md as recorded evidence, so the prior dispatch was stale and no duplicate registration or tick was made. The referenced commit was not present in the examined local research object store; that alone does not negate the handoff record. Other registered implementation and capture preparation events remain outstanding.
