@@ -1,0 +1,105 @@
+{
+  "schema": "epyc.pip03.matched-plan.v1",
+  "purpose": "Four fixed, prompt-matched exploratory image pairs; retrospective ERNIE capture, prospective Qwen capture. No claim of sealed paired experiment, official benchmark or quality verdict.",
+  "cases": [
+    {
+      "id": "derived-bilingual_text_001",
+      "language": "en",
+      "prompt": "A bilingual English and Chinese museum poster with a large title, ticket price, opening hours, and four exhibit bullet points. Render the following exact headline clearly: MUSEUM OPEN TODAY.",
+      "reference_text": "MUSEUM OPEN TODAY",
+      "qwen_request": {
+        "prompt": "A bilingual English and Chinese museum poster with a large title, ticket price, opening hours, and four exhibit bullet points. Render the following exact headline clearly: MUSEUM OPEN TODAY.",
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 896,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 896
+      },
+      "ernie_exposure": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-bilingual_text_001-896x896.exposure.json",
+      "ernie_result": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-bilingual_text_001-896x896.result.json",
+      "ernie_png": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-bilingual_text_001-896x896.png",
+      "ernie_png_sha256": "95f20266d429c44ceaeecb17c851751dbc1a385c6e63618f95454514c418778a",
+      "ernie_status": "ok",
+      "ernie_possible_blank": false
+    },
+    {
+      "id": "derived-bilingual_text_002",
+      "language": "zh",
+      "prompt": "A two-panel safety sign with English instructions on the left and Chinese instructions on the right, high contrast typography. Render the following exact headline clearly: 博物馆开放时间.",
+      "reference_text": "博物馆开放时间",
+      "qwen_request": {
+        "prompt": "A two-panel safety sign with English instructions on the left and Chinese instructions on the right, high contrast typography. Render the following exact headline clearly: 博物馆开放时间.",
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 896,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 896
+      },
+      "ernie_exposure": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-bilingual_text_002-896x896.exposure.json",
+      "ernie_result": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-bilingual_text_002-896x896.result.json",
+      "ernie_png": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-bilingual_text_002-896x896.png",
+      "ernie_png_sha256": "7e7da89bfeb79b51852c4000628f361295798515bd64854963e9e6b83995bec2",
+      "ernie_status": "ok",
+      "ernie_possible_blank": false
+    },
+    {
+      "id": "derived-political_neutral_001",
+      "language": "en",
+      "prompt": "A neutral newspaper infographic explaining a city council election timeline, with clear dates, ballot boxes, and nonpartisan layout. Render the following exact headline clearly: CITY ELECTION GUIDE.",
+      "reference_text": "CITY ELECTION GUIDE",
+      "qwen_request": {
+        "prompt": "A neutral newspaper infographic explaining a city council election timeline, with clear dates, ballot boxes, and nonpartisan layout. Render the following exact headline clearly: CITY ELECTION GUIDE.",
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 896,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 896
+      },
+      "ernie_exposure": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-political_neutral_001-896x896.exposure.json",
+      "ernie_result": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-political_neutral_001-896x896.result.json",
+      "ernie_png": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-political_neutral_001-896x896.png",
+      "ernie_png_sha256": "3c33a9d4ba8429c30cefe0759762fd1f226a6ef76e9b576e5b2f2683d47c3aa1",
+      "ernie_status": "ok",
+      "ernie_possible_blank": false
+    },
+    {
+      "id": "derived-political_neutral_002",
+      "language": "zh",
+      "prompt": "A classroom poster comparing parliamentary and presidential systems, using simple icons and balanced captions. Render the following exact headline clearly: 投票日程指南.",
+      "reference_text": "投票日程指南",
+      "qwen_request": {
+        "prompt": "A classroom poster comparing parliamentary and presidential systems, using simple icons and balanced captions. Render the following exact headline clearly: 投票日程指南.",
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 896,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 896
+      },
+      "ernie_exposure": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-political_neutral_002-896x896.exposure.json",
+      "ernie_result": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-political_neutral_002-896x896.result.json",
+      "ernie_png": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-political_neutral_002-896x896.png",
+      "ernie_png_sha256": "22a018dee7fd3cb6c354fdfb372fbf9bed20df6eb7eb790bda3adfe0185150c0",
+      "ernie_status": "ok",
+      "ernie_possible_blank": false
+    }
+  ],
+  "qwen_model": "/mnt/raid0/llm/models/diffusion/qwen-image-2.1",
+  "qwen_runtime": "/mnt/raid0/llm/epyc-orchestrator/src/services/qwen_image_server.py",
+  "decision_rule": "Record all four attempts, native settings and PNG bytes/hash; incomplete, invalid, interrupted or non-reviewed results remain UNKNOWN. Attributed human review required; no cross-device speed inference.",
+  "limits": "Qwen and ERNIE use different generators and devices; equal seed is not equal noise. Both use eight steps for this control; Qwen production defaults to forty. ERNIE is an earlier diagnostic capture, not a prospective paired warrant. Enhancer and product filtering are unknown. The current Qwen server forwards true_cfg_scale and negative_prompt to its pipeline only when cfg_scale > 1.0; these requests use 1.0, so the submitted negative prompt is not effective on Qwen. Requested parameter equality is not effective conditioning equality; ERNIE effective behavior must be recorded independently.",
+  "prepublish_remaining": [
+    "Verify and bind Qwen weight identities outside grant",
+    "Implement and test isolated CPU launcher and dry-run output isolation",
+    "Capture source/runtime and request settings at write time; install existing PIP-03 producer before claim-bearing inference",
+    "Estimate first-image and total runtime and memory conservatively",
+    "Record effective Qwen and ERNIE conditioning and runtime/source identities; Qwen does not pass negative_prompt at cfg_scale 1.0"
+  ]
+}

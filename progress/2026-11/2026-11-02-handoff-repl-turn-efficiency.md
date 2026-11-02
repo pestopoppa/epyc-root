@@ -3,3 +3,70 @@
 ## 00:05Z — Consume RLM comparison and Omega/PFX successor reports
 
 Consumed rlm-compare-20261101-result.json, omega-final-20261101-result.json and pfx-final-20261101-result.json. PFX successor handoff-rte-pfx2-quarter-native-v2-20261101 was published in previous turn; quarter qualification timing remains unproven. Omega package is explicitly not publishable until attempt-scoped dryrun-native signal and run-only result path are implemented and tested; the resultfix event remains registered. RLM mirror and historical repository prompt match after normalized rendering; historical commit has no license, while MIT-licensed commit 781b0f63189e14286118ed3fe13f7763682ef558 contains byte-identical prompt.ts, SHA-256 31eba719f632c2f3caa0b451a94e739cbdab9abfb6e19de3ba56aa7b8f39d747. The original publisher remains inaccessible; preserve MIT notice and attribution for the later revision. Corrected status documentation is in the prior local commit pending serialized push. Delegated Omega package review, source-based prompt adaptation and PFX post-publication audit; registered omega-review-20261102, prompt-variant-20261102 and pfx-postpub-20261102. No inference, new publication, or tick this turn.
+
+## 00:15Z — Consume Omega package isolation review
+
+Consumed omega-review-20261102-result.json. Omega successor must not be published: its result glob still mixes dryrun and real records, lacks an attempt-scoped dryrun-native signal and has two prior failed qualifications in its lineage, one short of mandatory parking. Delegated implementation and model-free verification of isolated result paths as omega-fix-20261102; independently delegated licensed RLM adaptation and PFX2 row audit as rlm-native-20261102 and row-audit-20261102. Prior wrap-up completed and published a080eea3887ba818180f6be4921d87d75b89cadf. No inference, row publication or checkbox tick this turn.
+
+## 01:45Z — File RUS-3 truncation diagnostic and repair prefix probe qualification
+
+- Filed `handoff-rus3-trunc-v1-20261101` fail (rc=0), receipt present. Real capture `/mnt/raid0/llm/tmp/repl-rus3-trunc-v1-scorer-fix/run/full-run-*/capture/samples.jsonl`, SHA-256 `391a82c0ff0ddb89d2c9d3ec4d47b580285a66d9f349f5fcd00cdd78742ddfd9`: 40/40 samples, 18 stop/scored and correct, 22 length/unscored, 8,796 prompt and 117,445 output tokens. Ten questions: three have four retained samples, three partial and four none; no mixed outcomes and zero computable agreement, below >=8/10. All samples carry nonzero before/after same-server-PID GPU residency in-window; server and sampler rc=0. Structural capture is unattested; no population or prospective warrant. RUS-3-TRUNC remains open; revised sampling packet delegated, awaiting `/mnt/raid0/llm/tmp/repl-turn-efficiency/rus-successor-ready.json`. Full per-question counts and verdict in `filing-done/handoff-rus3-trunc-v1-20261101.verdict.json`; scratch can be reclaimed after receipt.
+- Published `handoff-rte-pfx2-quarter-native-v3-20261102` CPU, superseding v2: v1 required all CPUs in quarter qualification; v2 30-second slot snapshot expired before ~106-second prefill. V3 allows 300 seconds and retains fail-closed slot matching; source seals, compilation and three probe tests passed. Await keeper qualification; no model result claimed.
+- Omega FAIL-2: broker seccomp denied metadata chmod by copytree. A local offline sandbox test demonstrated byte-identical prompt copies with temporary copystat suppression, no seccomp change. Successor packet delegated and awaiting `/mnt/raid0/llm/tmp/repl-turn-efficiency/omega-successor-ready.json`; two prior failures mean a third parks the lineage.
+- `codex-ni-rte-frontdoor-quarter-20261031` is erroneous republication of parked RTE-LOG-1 lineage; no retry or successor permitted. Its READY manifest belongs to codex-ni, so this lane cannot withdraw it; inspection found no armed manifest or grant and prior orphan PIDs gone. Owner/keeper must withdraw it; a `.withdrawn` backlog marker does not prevent keeper admission. Preserve source packet; reconciliation remains open.
+- GitNexus status reports this lane unindexed; wrapper re-index denied by CPU admission (rc 64). No indexed source symbols were edited. Session bus drain rejected `handoff-repl-turn-efficiency` because it is not a configured roster id. Existing unrelated untracked files were left untouched.
+
+## 01:47Z — Resolve merge, recover filing progress and prepare inference successors
+
+- Merged origin/main in lane after preserving the prior failed wrap-up progress; prior wrap-up failed pre-commit on a long numeric run identifier and a tracked observer script excluded by sparse checkout. Replaced identifier with a glob, restored the tracked script, and the full pre-commit hook passed. Prior progress entry is retained in this commit.
+- Published `handoff-s4-omega-isolated-pilot-v2-20261102`, but post-publication review found its result glob also matches qualification records. Correction delegated urgently: constrain result path to run phase, add attempt-scoped dryrun-native evidence and republish same owned row; do not file qualification as inference. Await `/mnt/raid0/llm/tmp/repl-turn-efficiency/omega-correction-ready.json`. It inherits two qualification failures and must park after a third.
+- RUS successor keeps the ten-question cohort, raises output cap to 8192 and context to 16384, and retains the original >=8 mixed-question gate. Model digest and seals are completing outside the grant; do not publish until `/mnt/raid0/llm/tmp/repl-turn-efficiency/rus-successor-ready.json` confirms readiness.
+- Strategy-prompt-length ablation: three source-pinned prompt arms and suite passed 12 offline tests, but live producer, protected capture, adapter, tokenizer witness and preregistered protocol still need integration; no row published. Preparation and findings under `/mnt/raid0/llm/tmp/repl-turn-efficiency/strategy`.
+- Frontdoor erroneous republishing remains in parked RTE-LOG-1 lineage; do not retry. Keeper or codex-ni owner must withdraw their manifest. No inference was run and no scientific outcome claimed.
+
+## 01:49Z — Verify corrected Omega publication and recover previous push
+
+- Consumed Omega successor readiness event, but its initial approval was superseded by a post-publication correction: `handoff-s4-omega-isolated-pilot-v2-20261102` was republished at 01:47:35Z with `run/*/driver/native/*.records.jsonl` and `dryrun_native_result=true`. The supervisor emits the attempt-scoped qualification unit only after a complete content-hashed record and owned-backend correlation; offline gating passed with mocked correlation. Launcher digest matches READY. No inference result or qualification verdict claimed; existing lineage carries two failures and a third parks it.
+- Prior wrap-up commit `848b64811e77` failed serialized push (rc 4). A serialized retry succeeded and verified origin/main at `57dfd3dd76de`, including the recovered RUS filing progress and Omega notes.
+- RUS successor readiness and strategy producer work delegated; dispatcher event files registered. Frontdoor row is a mistaken publication of the parked lineage; no retry permitted.
+
+## 01:49Z — Complete Omega correction closeout and record successor blockers
+
+- RUS successor is not publishable: readiness and seals absent; its run-only result glob lacks an attempt-scoped dryrun-native receipt. Implement the receipt, rerun preflight and seal before publishing. Strategy scratch summarizer reports token missingness and paired outcomes with two synthetic tests; its live producer, custody, adapter, tokenizer witness and protocol remain open.
+- Previous wrap-up commit attempt failed because the fast-forward removed the sparsely checked-out tracked observer script; restored it before retry. The preceding progress entry records the Omega correction and recovered serialized push.
+
+## 01:49Z — Preserve observer script across sparse merges
+
+- Added the tracked observer registry target to this worktree sparse patterns so origin/main fast-forwards do not remove it before the commit hook. Earlier attempted wrap-up entries in this file retain the Omega and RUS findings.
+
+## 01:53Z — Advance independent measurement preparation after parked qualifications
+
+- The prior wrap-up completed and pushed `3618805ecfd0ef72f0d14b63596a06b92798368a` with empty cherry. Both `handoff-rte-pfx2` and `handoff-s4-omega-isolated-pilot` now have three qualification failures and are parked; do not retry or evade the park. Requested bounded failure analysis for both, recorded by event `park-review4`.
+- RUS successor cannot be published until an attempt-scoped qualification result and model preflight/source seals exist. Delegated repair and offline tests; dispatcher event `rus-fix4`. Strategy ablation remains without a live producer and evidence custody; delegated one bounded preparation component, event `strategy4`. No inference or row publication this turn.
+- The frontdoor READY row belongs to codex-ni and was erroneously republished from the already parked RTE-LOG-1 lineage. It requires owner/keeper withdrawal; this session must not edit another owner's manifest or retry the lineage. Existing unrelated untracked files were left untouched.
+
+## 01:54Z — Publish repaired RUS sampling row and record parked qualification diagnoses
+
+- Consumed `rus-successor-ready.json`: sealed model preflight and ten source hashes verified; follow-up added attempt-scoped native qualification receipt and production-only result path, with offline controls passing. Published GPU `handoff-rus3-trunc-v2-20261102` via rowflow, same frozen questions, output cap 8192, context 16384; keep original four retained samples per question and eight mixed-question acceptance, no outcome-conditioned selection. Await keeper qualification; no inference outcome claimed.
+- Consumed `park-review4.json`: PFX v3 failed on a separate five-second `/slots` HTTP request timeout, not the overall 300-second loop. Omega v2 returned HTTP 500 because `ProgressLogger.flush` could not write `/workspace/logs/progress/`; the error record is not a qualifying unit. Both lineages are parked at three failures, so no retry or re-admission.
+- Consumed `strategy4.json`: scratch paired evaluator passed two offline tests but requires a preregistered loss threshold and independently verified captures. It confers no measurement warrant; live producer, custody, tokenizer witness, adapter and protocol remain. Further bounded preparation delegated with event `strategy5`.
+- Frontdoor inspection confirms the erroneous READY row still belongs to codex-ni; owner/keeper must coordinate its safe withdrawal, not rely on `.withdrawn` display marker. No other owner's manifest edited. Previous wrap-up successfully pushed `a0e77623f94a65823412f89c6375c86f488e0070`.
+
+## 01:55Z — Review strategy schedule and advance measurement prerequisites
+
+- Consumed `strategy5.json`: the scratch schedule auditor passed three offline tests and finds the 16-question, three-arm rotation uses its six permutations 3, 3, 3, 3, 2 and 2 times (48 planned calls); report this imbalance in the prospective protocol. It establishes neither custody nor measurement warrant. Live runner, independently protected custody, tokenizer witness, adapter and protocol remain. Delegated bounded producer and custody preparation, with dispatcher events `strategy6` and `strategy-custody6`.
+- Delegated model-free timeout repair design for parked PFX, event `pfx-offline6`; no retry or re-admission while parked. GPU RUS successor remains subject to keeper qualification.
+- Prior wrap-up pushed `3d6fd6b0d866e631c2cfcafc002d36331f103841` with empty cherry. No inference or publication this turn.
+
+## 01:57Z — Review strategy intent and capture custody prototypes
+
+- Consumed `strategy6.json`: digest-bound offline call-intent compiler passed three synthetic tests covering pairing, answer leakage, tampering and invalid orders. It does not run inference or convey grant authority.
+- Consumed `strategy-custody6.json`: external-anchor capture byte-binding prototype passed four offline tests for tampering, identity mismatch, symlink/path traversal and wrong binder hash. It verifies bytes only; independent trusted anchors, protected capture root, plan completeness, scorer, server/model identity and grant provenance still require real integration. The referenced lane binder is untracked and was not adopted or modified.
+- Delegated integration and a prospective protocol draft with events `strategy-integration7` and `strategy-protocol7`; no threshold or measurement warrant is invented. Delegated model-free Omega logging repair, event `omega-offline7`, without retrying its parked lineage.
+- Prior wrap-up pushed `d531c6320c2d22c4d770ba79cc6b7226aa815a5c`, cherry empty. No inference or row publication this turn.
+
+## 01:58Z — Review integrated strategy capture checks and advance producer
+
+- Consumed `strategy-integration7.json`: scratch integration of digest-bound call intents, externally anchored byte binding and exact question/arm coverage passed ten offline tamper and missing/duplicate/unplanned-pair tests. It does not authenticate grant, server, model, score, external channel or measurement warrant and is not publishable.
+- Delegated independent bounded live producer, native belief adapter and model/tokenizer/server identity preparation (`live8`, `adapter8`, `identity8` events); no inference, publication or invented grading rule. Existing protocol and parked-lineage offline preparation events remain pending.
+- Prior wrap-up pushed `5290f910558ee6ef39e791da7d97be749dee7eea`, cherry empty. Existing unrelated untracked files remain untouched.
