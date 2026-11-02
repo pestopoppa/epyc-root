@@ -21,6 +21,9 @@ from adapters import _native_sidecar as ns  # noqa: E402
 
 SCHEMA = "epyc.vidya.kvu19a2.native.v1"
 SOURCE_KIND = "kvu19a2-native"
+ADAPTER_ID = "vidya.adapters.kvu19a2_native/v1"
+AUTHORITY = "measurement"
+SIDECAR_NAME = "kvu19a2_native.beliefs.jsonl"
 
 
 def row_problems(row: Any) -> list[str]:
@@ -123,7 +126,7 @@ def record_run(output_dir: Path, *, run_id: str, producer: str, observations: li
         if errors := row_problems(row):
             raise ns.CaptureError("invalid capture: " + "; ".join(errors))
         rows.append(row)
-    return result, ns.write_rows_atomic(output_dir / "belief_measurements.jsonl", rows) if rows else None
+    return result, ns.write_rows_atomic(output_dir / SIDECAR_NAME, rows) if rows else None
 
 
 @register(SOURCE_KIND)
@@ -139,10 +142,17 @@ def project(native: Any):
 
 
 def native_rows(sidecar: Path):
-    return ns.native_rows(sidecar, row_problems)
+    sidecar = Path(sidecar)
+    if not sidecar.is_file():
+        return ()
+    rows = ns.load_rows(sidecar, row_problems)
+    if rows is None:
+        raise ProjectionError("KVU19a2 native sidecar is invalid or changed")
+    return tuple({"row": row, "sidecar_path": str(sidecar),
+                  "attestation_present": ns.results_present(row)} for row in rows)
 
 
 def frames_for_sidecar(sidecar: Path, *, as_of: str):
     return [frame for native in native_rows(sidecar)
             for frame in to_frames(project(native), as_of=as_of,
-                                   adapter_id="vidya.adapters.kvu19a2_native/v1", authority="measurement")]
+                                   adapter_id=ADAPTER_ID, authority=AUTHORITY)]
