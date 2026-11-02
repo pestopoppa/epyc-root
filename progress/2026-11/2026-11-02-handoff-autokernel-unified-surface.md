@@ -207,3 +207,7 @@ Confirmed previous wrapup ef77434dbfdaaac92e0eea3468789c3ccb5c3528 reached origi
 ## 01:00Z — Resolve build and CPU calibration admission
 
 The prior preparation result events have not yet arrived. Dispatched bounded read-only checks for the v10 HIP configuration, build-row admission and CPU calibration entrypoint; events registered. Previous wrapup committed b3b39f9f56b5 but serialized push failed; this boundary retries publication. No row published and no inference or build executed.
+
+## 01:02Z — Resolve lane merge and restore publication
+
+Resolved lane divergence: preserved pre-existing modified generated index files in named stash autokernel lane preexisting generated index changes, committed the staged prior progress entry as 73ffe445e, then merged origin/main successfully. The stash remains available and was not applied over newer generated index state. Consumed the CPU floor harness review: matched_process_v2 requires 24–256 independent pairs, while current native floor admission lacks host-state/coexistence binding and the current CPU recipe remains unresolved. Dispatched readiness checks for existing candidate and calibration preparation, with events registered. No row published or compute run.
