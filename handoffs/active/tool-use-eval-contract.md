@@ -18,7 +18,7 @@ respect the other sessions' CPU reservations. [no-belief: operational state]
 - [x] Prepare source-bound paired CRM fixture, receipt reader and opt-in seed/ledger controls; retain live qualification as open work. ✅ 2026-11-02 [no-belief: tooling-repair]
 - [x] Prepare confined scorer and synthetic OpenCode controls and queue their applicable scheduler checks. ✅ 2026-11-02 [no-belief: tooling-repair]
 
-**Implementation checkpoint 2026-11-02 (candidate branches; not deployed).** APP
+**Implementation checkpoint 2026-11-02 (original candidate state).** APP
 `codex/evl46-seed-ledger-20261102` @ `9c51d450` adds opt-in `--send-seed`, recording
 whether the HTTP seed field was sent while preserving the historical default request, and
 projects trace-bound first single-call native schema validity plus terminal timeout facts.
