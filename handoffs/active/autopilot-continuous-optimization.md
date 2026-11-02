@@ -973,3 +973,10 @@ its comparator on 2 of 4 tasks there, so no frontier API is required. Cite `inta
 ### Research scorer historical reconciliation — 2026-10-31
 
 The argumentized entry-point implementation landed in orchestrator `07a20a7cface6614c595f42981e385ae3695ee42` on July 20; research replaced its diverged scorer with a fail-closed delegation shim in `d876adfef50912cdeaad14b34d416dc9608479d9` on August 23. The existing checkbox now carries the actual completion date and implementing commits. This is historical queue hygiene and earns no October 31 code completion credit; no historical result was rescored. Audit and test paths are preserved in research `f6630e61058c0ebebaa0467e70cedead8c4081da`. [no-belief: historical software-source reconciliation]
+
+## Typed decisions from intake-2604 (ws58 intake 2026-11-02; operator approved "Approve, go to Stage 4", D9 acknowledged for scripts/coordination)
+
+Plan: [README.md](../../research/deep-dives/ws58-jev-20261102/README.md). **Order (operator, 2026-11-02):** (1) SA-1 + JEV-1; (2) SA-2, SA-3, JEV-3; (3) JEV-5 phase A, KT-1, KT-3; (4) the rest (JEV-2, JEV-4, JEV-6, SA-4, KT-2, KT-4, KT-5). JEV-5 phases B/C only after the operator has used phase A.
+
+- [x] **JEV-1** ✅ 2026-11-02 epyc-orchestrator `26752665` [belief: cc] [S] `epyc-orchestrator orchestration/repl_memory/q_judge.py:153-161`: timeout, exception or unparseable output returns `(None, "unavailable")` instead of `SCORE: 1`; callers count unavailable separately; regression test (intake-2604#record). removes: the fail-open synthetic `SCORE: 1` strings and the parse default that reads an unanswered judge as a low score.
+- [x] **JEV-2** ✅ 2026-11-02 epyc-orchestrator `488b31c9` [belief: cc] [M] `_classify_meta_halt` (`scripts/autopilot/autopilot.py:8293`) — landed as a deterministic rule (no typed_decisions call needed): a named StopReason enum plus a MetaHaltRecord and a `judge_state` (asked / not asked / unavailable) journal field; no shadow accuracy study. removes: the reproduction-count heuristic and the unnamed halt counter (`autopilot.py:10399`).

@@ -62,6 +62,8 @@ class _Fixture(unittest.TestCase):
         self.calls = []
         self._lane = patch.object(hs, "ensure_lane", lambda slug, repo=None: (self.repo, "fast-forwarded"))
         self._lane.start()
+        self._disk = patch.object(hs, "free_gib", lambda path="/": 999.0)  # the real disk may be below the floor
+        self._disk.start()
         self._cwd = patch.object(hs, "project_cwd", lambda e, repo=None: self.repo)  # the fixture repo is not a git clone
         self._cwd.start()
 
@@ -71,6 +73,7 @@ class _Fixture(unittest.TestCase):
 
     def tearDown(self):
         self._lane.stop()
+        self._disk.stop()
         self._cwd.stop()
         self.td.cleanup()
 
@@ -137,7 +140,7 @@ class UnwrappedGateTests(_Fixture):
         e = reg["sessions"][self.slug]
         self.assertEqual(e["pending_event"]["rid"], "yarn-1")
         self.assertEqual(e["status"], "suspended")
-        self.assertIn("UNWRAPPED yarn: refusing resume; last_wrapup=deadbeef1", self.log_text())
+        self.assertIn("UNWRAPPED yarn: refusing resume for new work; last_wrapup=deadbeef1", self.log_text())
         # once the wrap-up lands, the queued event is served
         with patch.object(hs, "landed", return_value=True):
             reg, st = self.dispatch()

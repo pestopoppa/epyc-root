@@ -33,6 +33,15 @@ Expected Attention is already the production path. Do not reopen S1/S4/S5/S6/S7 
 
 ## Minimal S8 Artifact
 
+S8 preparation (2026-11-02): the existing Expected Attention evaluator uses a
+separate KVPress path, so it cannot establish profiles for the deployed server.
+Prepare a paired server-slot sweep with matched uncompacted continuations, a
+role workload and an explicit quality and reliability decision rule before
+publishing a compute row. Establish actual slot/cache continuity and binary
+identity as part of that preparation. The existing `keep_ratio` and
+`layer_weights` axes can be explored before S8-c; recency needs an experimental
+kernel candidate. PS-5 above is a design record, not a GPU run.
+
 ```text
 Role:
 Model:

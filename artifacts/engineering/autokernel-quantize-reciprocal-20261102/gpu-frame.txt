@@ -1,0 +1,44 @@
+GPU quantize-reciprocal tg128 frame audit (read-only; 2026-11-02)
+
+Decision
+--------
+The historical handoff dictates the candidate and the gate shape, but does NOT uniquely dictate a target model, exact `llama-bench` invocation/recipe, full anchor executable identity, or current floor receipt. A reasonable, evidence-backed proposed frame is the historical Qwen3.8-27B-Q8_0 GPU `tg128` screen, with 20 paired A/B comparisons against the contemporary anchor and the historical 0.638% floor as a provisional comparator. This is a proposal for review/preparation; it is not a measurement authorization or a fully runnable row.
+
+What is authoritative
+---------------------
+- `handoffs/active/autokernel-unified-surface-program.md` §P1b names `rescued-ak-discovery-7e8da8ea-attempt1` @ `9f85ba2fb`, `ggml/src/ggml-cuda/quantize.cu` +4/-1, as an open candidate. Scope is reciprocal-multiply plus `__shfl_sync` broadcast replacing per-lane `roundf(xi / d)`. Exact stated gate: “tg128, 20 pairs vs anchor.”
+- `docs/design/champion-consolidation-audit-20260908.md` §B.2 independently classifies that same object as unapplied GPU quantize work; it does not specify a model/command or authorize folding.
+- The frame is a GPU decode screen, not serving. `autokernel-unified-surface-program.md` §2.4 records per-surface GPU floors and separate serving floor (3.536%); no serving result can be inferred from tg128.
+
+Historical frame candidate and calibration
+------------------------------------------
+- `handoffs/active/autokernel-rebuild-program.md` R23-29 entry says “tg128/27B calibrated (floor 0.638%@20p)” and identifies the two-tier gate as “screen tg128 / keep-gate tg128 / serving np4-DFlash2 3.536%.” This is the strongest historical match to the candidate's 20-pair tg128 screen.
+- R23-20 in the same handoff records a separate keyed `dec-b4` calibration for `Qwen3.8-27B-Q8_0` at 0.949%@20 pairs (1.142% at pairs=5). That is prefill (`pp=512,tg=0,ub=4`), so it is NOT the candidate tg128 floor.
+- Proposed target model: `Qwen3.8-27B-Q8_0`, because the handoff explicitly calls the 0.638% screen “tg128/27B”; the neighboring canonical calibrated 27B surface names this exact model. However, the 0.638% source record with the complete model/recipe/binary identity was not located in the checked research tree, so model identity is strongly supported but not sealed by a native floor receipt here.
+- Do not substitute generic `artifacts/autokernel-aa-noise-floor/aa-noise-floor.json`: it uses `DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M`, 20 pairs × 9 reps, and reports raw tg128 p95 3.452%; it characterizes a different model/instrument epoch and is not the 27B 0.638% keyed floor.
+
+Required before runnable row / compute
+--------------------------------------
+1. Use a clean isolated experimental candidate based on fresh approved production v10, with the exact preserved reciprocal diff and source/tree identity. Existing shared experimental worktree is dirty; existing v9 artifacts are stale/unattributable and stubs. No binary currently proves this patch was built.
+2. Build the full HIP candidate and anchor-compatible benchmark executable; bind source/build using a manifest/content digests and fix-specific HIP code-object or source-line mapping evidence. Verify loaded ggml linkage and prove MI210 residency during the run, with PID-local sampling.
+3. Freeze and record exact model artifact(s) and digests (proposed Qwen3.8-27B-Q8_0), `llama-bench` command and all shape/runtime flags for `tg128`, model/backend/device, environment, anchor build identity, arm order/randomization, and immutable raw result location. “vs anchor” alone does not identify the executable.
+4. Before using 0.638% as a formal decision threshold, recover/verify the native keyed tg128 floor receipt and confirm its model, anchor/instrument, metric, estimator and host/window identity match this run. If it cannot be established, obtain a fresh same-surface A/A calibration before decision-grade comparison. Preserve the 20-pair candidate gate as the handoff requirement; report higher t/s as better and compare the candidate effect to the applicable floor with the existing lane estimator.
+
+Limitations
+-----------
+This audit establishes no numerical correctness, speed, dispatch coverage, build freshness, model digest, current anchor identity, floor provenance, or GPU execution. Historical floor provenance is incomplete in the files located; 0.638% is a supported historical calibration value, not proven current for a newly rebuilt v10-derived candidate. The 27B model choice is a reasoned frame proposal, not an explicit model named by P1b. No compute was run and no repository files were modified.
+
+Additional historical frame evidence (2026-11-02)
+-------------------------------------------------
+Research `data/autokernel-gpu-controls/x4-load-fe881-bff30.json` (SHA-256
+`a09969e60e7e563ffd06f37c7bca6436ba6c5b7b81b43a62bcdf3145168d504a`)
+contains a 2026-09-07 comparison of candidate and champion
+`bff30cebee0de4440dd7a6ef3607e59b970268ce` against anchor
+`fe881991f4652fdcd97b825583730e263fa7de0e` which records model
+`/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf`, surface `tg128`, 20 pairs,
+`median_over_median`, and `noise_floor_pct: 0.638`. This directly associates
+the historical model with use of that floor, strengthening the proposed model
+frame. It is a comparison using the floor, not the native calibration receipt;
+it neither proves that receipt's provenance nor admits this value for a v10
+candidate. The file does not establish the model content digest for a new run.
+A matched current floor and the other prerequisites above remain necessary.

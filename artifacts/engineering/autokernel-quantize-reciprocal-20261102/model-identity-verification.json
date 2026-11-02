@@ -1,0 +1,28 @@
+{
+  "model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+  "expected_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+  "observed_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+  "before": {
+    "device": 2431,
+    "inode": 96505457,
+    "size": 29047086048,
+    "mtime_ns": 1786727071030792493,
+    "ctime_ns": 1786727071283192651
+  },
+  "after": {
+    "device": 2431,
+    "inode": 96505457,
+    "size": 29047086048,
+    "mtime_ns": 1786727071030792493,
+    "ctime_ns": 1786727071283192651
+  },
+  "path_after": {
+    "device": 2431,
+    "inode": 96505457,
+    "size": 29047086048,
+    "mtime_ns": 1786727071030792493,
+    "ctime_ns": 1786727071283192651
+  },
+  "stable_identity": true,
+  "status": "MATCH"
+}
