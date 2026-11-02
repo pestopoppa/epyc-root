@@ -51,3 +51,23 @@ Identified two distinct native SWE-bench subset report conventions and commissio
 ## 10:15Z — Support P5 native selected-instance reports
 
 Added explicit native-selected report validation for the schema-2 selected-instance partition: bound cases must be submitted, completed and resolved, while unselected IDs must exactly match the bound dataset complement. Strict remains the default; the mode is recorded in the result and the dataset is rechecked when read. Fourteen model-free tests pass. Independent review confirmed the sealed-validator contract; the distinct historic 500-submitted/40-evaluated format remains refused. No scorer correctness or gold execution is claimed. GitNexus impact was unavailable because the lane is unindexed.
+
+## 10:17Z — Correct P1-2 scope to the suspended E5 corrected-placement remeasurement and identify launcher readiness gaps.
+
+Reconciled P1-2 with the E5 owner handoff: the old Stage-B throughput is suspended, and its corrected-placement successor needs placement, cache and policy qualification before publishing. The archived launcher is missing and the current harness describes cache drops only between models. P2-5d/e are not ready inference rows: threshold is undecided and representative AutoPilot duty cycle awaits authorized restart. P4-1 remains dependent on replacement arms and measured bounds. No compute run.
+
+## 10:18Z — Complete the historical P1-3 AutoPilot resume from E15 evidence.
+
+P1-3 completed historically: operator-authorized AutoPilot restarted 2026-08-08 17:43:46Z on the E15 boundary and trial 1474 entered four-way T1; OP-19 later retired the original E8 gate. Current AutoPilot is intentionally stopped; any new restart remains a separate operator action. This does not establish the P2-5e/f stress-duty-cycle window. P5 harness evidence was identified, but its exact exec-sandbox boundary and gold scorer remain unverified; P5-1/2 stay open. GPU-ZOS-2.2 and its NI remain open under the operator audit.
+
+## 10:20Z — Correct the isolated P4 typed-admission prototype and verify the P5 dataset conversion.
+
+P4 prototype now accepts exactly tenant_id and np_slots, obtains mode/budget/context separately, requires an explicit default-empty tenant allowlist, and rejects forbidden co-residency except solo_resident. Five synthetic unit tests and git diff --check passed; no runtime integration or activation. P5 input: the existing 500-row JSON equals all ordered rows of the specified parquet under PyArrow/JSON decoding; recorded both input hashes. P5 sandbox and scorer validation remain open. GitNexus impact unavailable for unindexed lane; local caller search found only prototype tests.
+
+## 10:23Z — Review the pending P4 validator and resolve its landing check.
+
+Independent review found no defect within the isolated P4 prototype scope. Prior wrap-ups failed index_state --check; its displayed priority warning is advisory and the hard diagnostic is being captured. No new compute or deployment.
+
+## 10:26Z — Implement fail-closed P4 response classification and land the pending prototype and handoff work.
+
+Added an isolated response classifier that accepts only explicit integer 2xx without errors and preserves status, evidence and error; nine model-free P4 tests pass, including all 100–599 status codes. The prior P1-3 completion and P5 dataset equivalence remain in the handoff; index state is regenerated for the checkbox change. P4 orchestration integration, lifecycle enforcement, seeding and activation remain open.
