@@ -12,7 +12,9 @@
 #                          watchdog restarts the keeper), (3) revoke open grants by MOVING them to grants-revoked-<ts>/,
 #                          (4) armed launchers by their recorded pid (dryrun/*/ARMED.json|RUNNING.json, lane-*.queue),
 #                          (5) the remaining zero-token loops. TERM, wait 10 s, KILL, verify with ps. `--stop --dry-run`
-#                          prints the plan only.
+#                          prints the plan only. It does NOT stop the disk janitor (disk hygiene is not inference).
+#   churn_up.sh --janitor=start|stop|status|dry-run   the disk janitor only (disk_janitor.sh: keeper --reap-now every
+#                          30 min + trash-sweep --older-than 1 hourly; log disk-janitor.log). A normal bring-up starts it too.
 # Start order (live): install -> residue -> watchdog -> keeper (started by the watchdog, verified here) -> dispatcher ->
 # backlog-gen -> flow-scoreboard -> disk-trend -> filing-watch. A component already running (pidfile pid, or ANY pid whose
 # argv holds its exact installed path) is never started twice.
@@ -33,12 +35,14 @@ TMUX_SESSION=${CHURN_TMUX_SESSION:-agent}
 TMUX_WINDOWS="claude codex-gen"
 MODE=live
 STOP=0
+JAN=""
 for a in "$@"; do case "$a" in
   --dry-run) MODE=dry;;
   --status) MODE=status;;
   --stop) STOP=1;;
+  --janitor=start|--janitor=stop|--janitor=status|--janitor=dry-run) JAN=${a#--janitor=};;
   -h|--help) sed -n 2,28p "$0"; exit 0;;
-  *) echo "usage: churn_up.sh [--dry-run|--status|--stop [--dry-run]]" >&2; exit 2;;
+  *) echo "usage: churn_up.sh [--dry-run|--status|--stop [--dry-run]|--janitor=start|stop|status|dry-run]" >&2; exit 2;;
 esac; done
 [ $MODE = status ] && [ $STOP = 1 ] && { echo "usage: --status and --stop are exclusive" >&2; exit 2; }
 KEEPER=ws58-calendar-keeper-v12.sh   # the version churn_up installs and writes into ws58-calendar-keeper.current
@@ -74,6 +78,7 @@ INSTALL=(
   "$KEEPER    $RF/$KEEPER"
   "ws58-keeper-watchdog.sh        $CH/ws58-keeper-watchdog.sh"
   "ws58-disk-trend.sh             $CH/ws58-disk-trend.sh"
+  "disk_janitor.sh                $CH/disk_janitor.sh"
   "ws58-backlog-gen-v1.sh         $CH/ws58-backlog-gen-v1.sh"
   "ws58-flow-scoreboard-v1.sh     $CH/ws58-flow-scoreboard-v1.sh"
   "GOAL-codex-gen.md              $CH/GOAL-codex-gen.md"
@@ -225,6 +230,7 @@ LOOPS=(
   "backlog-gen|ws58-backlog-gen.pid|backlog_gen.py|$F|bash $F/ws58-backlog-gen-v1.sh|$F/bin/backlog_gen.py"
   "flow-scoreboard|ws58-flow-scoreboard.pid|ws58-flow-scoreboard-v1.sh|$F|bash $F/ws58-flow-scoreboard-v1.sh|$F/ws58-flow-scoreboard-v1.sh"
   "disk-trend|ws58-disk-trend.pid|ws58-disk-trend.sh|$F|bash $F/ws58-disk-trend.sh|$F/ws58-disk-trend.sh"
+  "disk-janitor|disk-janitor.pid|disk_janitor.sh|$F|bash $F/disk_janitor.sh|$F/disk_janitor.sh"
   "filing-watch|ws58-filing-watch.pid|filing_watch.sh|$REPO|env FILING_WATCH_FLAGS_ROOT=$F FILING_WATCH_BUS_ROOT=$REPO/coordination/session-bus bash $REPO/scripts/coordination/filing_watch.sh|$REPO/scripts/coordination/filing_watch.sh"
 )
 # pids whose argv has an element that IS <path> (or ./<basename> with cwd = dirname <path>). Exact-path match over
@@ -400,6 +406,20 @@ EOF
 # ---------------------------------------------------------------- main
 say "churn_up $MODE  $(date -u +%FT%TZ)  repo=$REPO ($(git -C "$REPO" rev-parse --short HEAD 2>/dev/null)) flags=$F"
 [ -d "$F" ] || { [ $MODE = live ] && mkdir -p "$F" || { fail "$F missing"; }; }
+if [ -n "$JAN" ]; then  # the disk janitor alone; never touches inference components
+  case $JAN in
+    start) install_one "disk_janitor.sh" "$CH/disk_janitor.sh"; p=$(pid_of "$F/disk-janitor.pid")
+           if is_proc "$p" disk_janitor.sh; then say "  disk-janitor: running pid $p"
+           elif [ -n "$(argv_pids "$F/disk_janitor.sh")" ]; then warn "disk-janitor: already running as pid(s) $(argv_pids "$F/disk_janitor.sh"); not starting a duplicate"
+           else start_bg "$F/disk-janitor.pid" "$F" bash "$F/disk_janitor.sh"; fi;;
+    stop) stop_loop disk-janitor;;
+    status) p=$(pid_of "$F/disk-janitor.pid"); if is_proc "$p" disk_janitor.sh; then say "  disk-janitor UP pid $p since $(ps -o lstart= -p "$p")"; else say "  disk-janitor DOWN (pidfile '${p:-none}')"; RC=1; fi
+            say "  last log lines ($F/disk-janitor.log):"; tail -n 5 "$F/disk-janitor.log" 2>/dev/null | sed 's/^/    /';;
+    dry-run) J=$F/disk_janitor.sh; [ -f "$J" ] || J=$CH/disk_janitor.sh; bash "$J" --dry-run || RC=1;;
+  esac
+  [ $RC = 0 ] && say "churn_up janitor $JAN: OK" || say "churn_up janitor $JAN: PROBLEMS"
+  exit $RC
+fi
 case $MODE in
   status) status_install; status_loops; status_tmux; status_state;;
   *) if [ $STOP = 1 ]; then do_stop; else do_install; clean_grants; clean_registry; show_lanes; ensure_loops; check_legacy_writers; ensure_tmux; manual_steps; fi;;

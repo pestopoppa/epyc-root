@@ -1347,6 +1347,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             e["status"], e["done_at"] = "retired", now_iso()  # never resumed; the slot goes to the next handoff
             kill_window(slug)
             remove_lane(flags, slug, repo)
+            cleanup_scratch(flags, slug, e, repo)  # ws58 2026-11-02: completed tasks clean their scratch
             st.setdefault("dones", []).append(now)
             log(flags, f"DONE {slug}: {why}; session retired, slot freed; tmux window {window_name(slug)} killed")
         else:
@@ -1567,17 +1568,91 @@ def du_gib(path) -> float:
         return 0.0
 
 
-def scratch_lead(flags, slug, e, now=None, du=du_gib) -> str:
+def _registered_worktree(d) -> bool:
+    """d/.git is a FILE whose gitdir points back at d/.git (a `git worktree add` checkout the repo knows about)."""
+    g = os.path.join(d, ".git")
+    try:
+        if not os.path.isfile(g):
+            return False
+        line = open(g, encoding="utf-8", errors="replace").read().strip()
+        if not line.startswith("gitdir:"):
+            return False
+        gd = line.split(":", 1)[1].strip()
+        gd = gd if os.path.isabs(gd) else os.path.join(d, gd)
+        back = open(os.path.join(gd, "gitdir"), encoding="utf-8", errors="replace").read().strip()
+        back = back if os.path.isabs(back) else os.path.join(gd, back)  # git >= 2.48 may write relative links
+        return os.path.realpath(back) == os.path.realpath(g)
+    except OSError:
+        return False
+
+
+def find_copies(root, max_depth=4) -> list:
+    """Full repo copies inside a scratch root (ws58 2026-11-02, four disk fixes): a dir that is not a registered worktree
+    and either holds CLAUDE.md + scripts/ + handoffs/ (a cp/rsync of the repo) or a .git (a full clone or copied .git)."""
+    out = []
+    for dp, dn, fn in os.walk(root):
+        has_git = ".git" in dn or ".git" in fn
+        looks = "CLAUDE.md" in fn and "scripts" in dn and "handoffs" in dn
+        if (has_git or looks) and not _registered_worktree(dp):
+            out.append(dp)
+            dn[:] = []
+            continue
+        dn[:] = [x for x in dn if x != ".git"] if dp[len(root):].count(os.sep) < max_depth else []
+    return out
+
+
+def scratch_lead(flags, slug, e, now=None, du=du_gib, copies=find_copies) -> str:
     """Deterministic scratch quota (ws58 2026-11-02): du at most every 10 min; over 10 GiB -> the nudge LEADS with a
-    delete-superseded-dirs order and SCRATCH-OVER is logged. Never deletes anything itself."""
+    delete-superseded-dirs order and SCRATCH-OVER is logged. A full repo copy (find_copies) is logged SCRATCH-COPY and
+    leads the nudge ahead of everything else. Never deletes anything itself."""
     now = time.time() if now is None else now
     if now - float(e.get("scratch_checked") or 0) >= SCRATCH_EVERY_S:
         e["scratch_checked"] = now
-        e["scratch_over"] = [[r, round(g, 1)] for r in scratch_roots(slug, e) if (g := du(r)) > SCRATCH_QUOTA_GIB]
+        roots = scratch_roots(slug, e)
+        e["scratch_over"] = [[r, round(g, 1)] for r in roots if (g := du(r)) > SCRATCH_QUOTA_GIB]
         for r, g in e["scratch_over"]:
             log(flags, f"SCRATCH-OVER {slug}: {r} is {g} GiB (quota {SCRATCH_QUOTA_GIB:g})")
-    return "".join(f"FIRST: your scratch {r} is {g} GiB: delete superseded attempt dirs now, keep only the current one.\n"
-                   for r, g in e.get("scratch_over") or [])
+        e["scratch_copies"] = [[c, round(du(c), 1)] for r in roots for c in copies(r)]
+        for c, g in e["scratch_copies"]:
+            log(flags, f"SCRATCH-COPY {c} {g} GiB (session {slug})")
+    return ("".join(f"FIRST: delete the checkout copy {c} ({g} GiB); use `git worktree add --detach` instead.\n"
+                    for c, g in e.get("scratch_copies") or [])
+            + "".join(f"FIRST: your scratch {r} is {g} GiB: delete superseded attempt dirs now, keep only the current one.\n"
+                      for r, g in e.get("scratch_over") or []))
+
+
+SCRATCH_CLEANUP = "scripts/system/scratch_cleanup.py"
+WORKTREES_ROOT = "/mnt/raid0/llm/worktrees"
+
+
+def scratch_cleanup_args(slug, e, repo=None) -> list:
+    """The handoff's declared **Scratch** roots when its file (active or completed) declares them, else the default
+    /mnt/raid0/llm/tmp/<slug> + /mnt/raid0/llm/worktrees/<slug>-*."""
+    h = e.get("handoff") or ""
+    for base in (repo or ROOT, ROOT):
+        for cand in (os.path.join(base, h), os.path.join(base, "handoffs", "completed", os.path.basename(h))):
+            try:
+                if h and re.search(r"^\*\*Scratch\*\*:", open(cand, encoding="utf-8").read(), re.M):
+                    return ["--handoff", cand]
+            except OSError:
+                continue
+    return ["--root", os.path.join(TMP_ROOT, slug), "--worktree-glob", f"{WORKTREES_ROOT}/{slug}-*"]
+
+
+def cleanup_scratch(flags, slug, e, repo=None, run=subprocess.run) -> None:
+    """On done/retired (ws58 2026-11-02): scratch_cleanup.py apply (guarded_rm + worktree_gate decide every entry). Logged
+    SCRATCH-CLEANUP; never raises (the dispatcher loop must survive any cleanup failure)."""
+    args = scratch_cleanup_args(slug, e, repo)
+    if args[0] == "--root" and not os.path.exists(args[1]) and not glob.glob(args[3]):
+        log(flags, f"SCRATCH-CLEANUP {slug}: nothing under {args[1]} or {args[3]}")
+        return
+    tool = os.path.join(repo or ROOT, SCRATCH_CLEANUP)
+    try:
+        r = run([sys.executable, tool, "apply", *args], capture_output=True, text=True, timeout=1800)
+        tail = (r.stdout or r.stderr or "").strip().splitlines()
+        log(flags, f"SCRATCH-CLEANUP {slug} rc={r.returncode} {' '.join(args)}: {tail[-1][:200] if tail else ''}")
+    except Exception as exc:  # noqa: BLE001
+        log(flags, f"SCRATCH-CLEANUP {slug} FAILED {' '.join(args)}: {exc!r}")
 
 
 def _go(flags, slug, e, prompt, runner, ev, fresh=False):

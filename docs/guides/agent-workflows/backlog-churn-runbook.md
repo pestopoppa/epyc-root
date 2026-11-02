@@ -18,6 +18,7 @@ on current `origin/main`. Git is the only source. `F` holds copies, and `churn_u
 | Backlog generator | `scripts/coordination/backlog_gen.py` (+ wrapper `churn/ws58-backlog-gen-v1.sh`) | `bin/backlog_gen.py`, `ws58-backlog-gen-v1.sh` | The wrapper execs `python3 -I F/bin/backlog_gen.py --loop --interval 600` and writes the per-worker `BACKLOG-<worker>` markdown files every 10 min. | `ws58-backlog-gen.pid` / `backlog-gen.log` | deterministic |
 | Flow scoreboard | `churn/ws58-flow-scoreboard-v1.sh` → `flow_scoreboard.py` | `ws58-flow-scoreboard-v1.sh`, `bin/flow_scoreboard.py` | bash loop, 10 min → the `FLOW-SCOREBOARD` markdown file in `F` | `ws58-flow-scoreboard.pid` | deterministic |
 | Disk trend | `churn/ws58-disk-trend.sh` | `ws58-disk-trend.sh` | bash loop, 10 min → `disk-trend.tsv` | `ws58-disk-trend.pid` | deterministic |
+| Disk janitor | `scripts/coordination/churn/disk_janitor.sh` | `disk_janitor.sh` | bash loop. Every 30 min it runs the keeper's reap-only pass (`ws58-calendar-keeper-v12.sh --reap-now`: filed manifests, `.complete` or `.ended` + `filing-done/<id>.FILED`, and unmanifested dirs idle ≥ 1 day; a dir holding a `.git` only when every checkout in it is clean, unlocked, registered or a full clone, and `git cherry origin/main` is empty). It skips while the keeper's own `ws58-keeper-state/reap-last` is younger than 30 min. Hourly it runs `trash-sweep.sh --older-than 1` on `/mnt/raid0/llm/.trash` and on `/mnt/raid0/llm/.trash-reap` if that exists. It deletes nothing itself. Own controls: `churn_up.sh --janitor=start\|stop\|status\|dry-run`. `churn_up.sh --stop` (the inference stop) leaves it running. | `disk-janitor.pid` / `disk-janitor.log` (`FREE <n>GiB` each pass, `REAP …`, `SWEEP <trash> rc= entries=`) | deterministic |
 | Filing watch | `scripts/coordination/filing_watch.sh` | runs from `R` (not installed) | bash loop, 60 s | `ws58-filing-watch.pid` | deterministic |
 | Row engine | `scripts/coordination/rowflow/{rowflow.py,publish_row.py,filler_run15.sh,filler_lib.sh,grant_ok_launcher.py,dryrun_disk_policy.json}` | `bin/rowflow/…` | Invoked by the keeper (`allocate`), by owners (`publish`), and as each row's launcher. It has no daemon of its own. | `dryrun/<id>/{ARMED,RUNNING}.json`, `grants/<id>.{grant,ended,complete}`, `ready/` | deterministic |
 | Wrap-up / index regen | `churn/wrapup.py`, `scripts/coordination/index_regen.py` (`--dry-run`) | `bin/churn/wrapup.py`, `bin/index_regen.py` | invoked per session turn end | `index-regen.log` | deterministic |
@@ -105,6 +106,13 @@ for `llama-bench`, so a single sample proves nothing.
 **Keeper.** `grep -E 'SNAPSHOT|IDLE-WHY|UNDERUSED' F/ws58-calendar-keeper.log | tail`. A `SNAPSHOT free=… busy=… cands=N assigned=M`
 line appears every tick. `IDLE-WHY` names why a free lane got nothing. With rows ready (`cands>0`), a lane that stays in `free=`
 for several ticks is a defect, not a quiet period.
+**Disk.** `churn_up.sh --janitor=status` shows the janitor UP and its last log lines. Three checks: (1) the `FREE <n>GiB` lines
+in `F/disk-janitor.log` are flat or rising across passes (`grep FREE F/disk-janitor.log | tail`); (2) `.trash` holds nothing
+older than about 25 h (`ls /mnt/raid0/llm/.trash | head`: the `YYYYMMDD-HHMMSS-` prefix is the trash time); (3) no SCRATCH-COPY
+is outstanding (`grep SCRATCH-COPY F/handoff-sessions.log | tail`: a path listed there that still exists is a copied checkout the
+session was told to delete). The dispatcher also logs `SCRATCH-CLEANUP <slug> rc=…` when it retires a session (scratch_cleanup.py
+apply on the handoff's `**Scratch**` roots, else `tmp/<slug>` + `worktrees/<slug>-*`), and wrapup.py removes the attempt dirs
+a turn lists in `scratch_superseded`.
 **Loops.** `churn_up.sh --status` must show every loop UP, no `DIFFERS`, no `DEAD` grant, and `churn_up status: OK` (exit 0).
 
 ## 5. Stop procedure
@@ -123,6 +131,8 @@ match. It gets TERM, then KILL after 10 s, and is verified gone with `ps -o pid=
 4. Armed launchers. Each pid recorded in `dryrun/*/ARMED.json`, `dryrun/*/RUNNING.json` or `lane-*.queue` (field 2)
    whose argv names `filler_run` gets stopped.
 5. The remaining zero-token loops: backlog-gen, flow-scoreboard, disk-trend, filing-watch.
+
+The disk janitor is **not** stopped: disk hygiene is not inference. Stop it on its own with `churn_up.sh --janitor=stop`.
 
 Afterwards, `--status` must show every loop DOWN and `== grants  no open grant`. Then sample CPU and GPU as in section 4 to
 confirm the host is idle. Launchers that were never recorded (armed by hand outside rowflow) are not found by step 4. Look for

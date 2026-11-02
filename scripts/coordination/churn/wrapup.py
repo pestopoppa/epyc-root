@@ -238,6 +238,43 @@ def append_step(flags: str, slug: str, step: dict) -> None:
         log("steps", f"could not append steps.jsonl: {exc}")
 
 
+# ------------------------------------------------------------- superseded scratch (ws58 2026-11-02, four disk fixes)
+SCRATCH_CLEANUP = os.path.normpath(os.path.join(_HERE, "..", "..", "system", "scratch_cleanup.py"))
+if not os.path.isfile(SCRATCH_CLEANUP):  # the installed copy (compute-flags/bin/churn/) runs the repo tool
+    SCRATCH_CLEANUP = "/workspace/scripts/system/scratch_cleanup.py"
+TMP_ROOT, WORKTREES_ROOT = "/mnt/raid0/llm/tmp", "/mnt/raid0/llm/worktrees"
+
+
+def clean_superseded(rec: dict) -> list:
+    """Remove ONLY the attempt dirs the session itself lists as `scratch_superseded: [abs paths]`, each confined to
+    <TMP_ROOT>/<slug>/... or <WORKTREES_ROOT>/<slug>-*, through scratch_cleanup.py apply (guarded_rm + worktree_gate).
+    Runs after the push landed; never fails the wrap-up. -> [[path, rc]]."""
+    paths, slug, done = rec.get("scratch_superseded") or [], rec["slug"], []
+    if not isinstance(paths, list):
+        log("scratch", f"scratch_superseded is not a list; ignored: {paths!r}")
+        return done
+    for p in paths:
+        rp = os.path.realpath(p) if isinstance(p, str) and os.path.isabs(p) else ""
+        in_tmp = rp.startswith(f"{TMP_ROOT}/{slug}/")
+        in_wt = os.path.dirname(rp) == WORKTREES_ROOT and os.path.basename(rp).startswith(f"{slug}-")
+        if not (in_tmp or in_wt):
+            log("scratch", f"REFUSED {p!r}: not under {TMP_ROOT}/{slug}/ or {WORKTREES_ROOT}/{slug}-*")
+            continue
+        if not os.path.lexists(rp):
+            log("scratch", f"GONE {rp}")
+            continue
+        args = ["--worktree-glob", rp] if os.path.exists(os.path.join(rp, ".git")) else ["--root", rp]
+        try:
+            r = subprocess.run([sys.executable, SCRATCH_CLEANUP, "apply", *args], capture_output=True, text=True, timeout=900)
+            tail = (r.stdout or r.stderr or "").strip().splitlines()
+            log("scratch", f"{rp}: rc={r.returncode} {tail[-1][:160] if tail else ''}")
+            done.append([rp, r.returncode])
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            log("scratch", f"{rp}: FAILED {exc!r}")
+            done.append([rp, -1])
+    return done
+
+
 # ------------------------------------------------------------------------ main
 def run(rec: dict, lane: str, flags: str, dry_run: bool) -> int:
     validate(rec)
@@ -268,7 +305,10 @@ def run(rec: dict, lane: str, flags: str, dry_run: bool) -> int:
     if left:
         raise WrapupError(f"cherry origin/main not empty after push: {left.splitlines()[0]}")
     log("cherry", "empty")
+    cleaned = clean_superseded(rec)
     out = dict(rec, box=rec.get("box"), step_sha=sha, wrapped=True, wrapped_sha=sha, wrapped_at=_now().strftime("%Y-%m-%dT%H:%M:%SZ"))
+    if cleaned:
+        out["scratch_cleaned"] = cleaned
     log("report", write_report(flags, slug, out))
     append_step(flags, slug, {"at": out["wrapped_at"], "box": out["box"], "step_sha": sha, "ticks": len(rec["ticks"])})
     print(f"WRAPPED {sha}", flush=True)

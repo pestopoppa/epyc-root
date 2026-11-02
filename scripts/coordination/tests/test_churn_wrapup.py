@@ -156,6 +156,29 @@ class WrapupTests(unittest.TestCase):
         self.assertIn(needle, rep["failure"])
         self.assertNotIn("wrapped_sha", rep)
 
+    def test_scratch_superseded_cleaned_only_inside_own_roots(self):
+        tmproot = os.path.realpath(os.path.join(self.tmp, "scratchtmp"))
+        old = os.path.join(tmproot, "demo", "attempt1")
+        os.makedirs(old)
+        argv_log = os.path.join(self.tmp, "cleanup-argv")
+        fake = os.path.join(self.tmp, "fake_cleanup.py")
+        with open(fake, "w") as fh:
+            fh.write("import sys\nopen(%r, 'a').write(' '.join(sys.argv[1:]) + '\\n')\nprint('1 entry; 0 kept')\n" % argv_log)
+        rec = dict(self.rec, scratch_superseded=[old, os.path.join(tmproot, "other", "x"), "/etc", os.path.join(tmproot, "demo", "gone")])
+        with patch.object(wu, "SCRATCH_CLEANUP", fake), patch.object(wu, "TMP_ROOT", tmproot):
+            rc, out, err = self._run(rec)
+        self.assertEqual(rc, 0, err + out)
+        self.assertEqual(open(argv_log).read().splitlines(), [f"apply --root {old}"])
+        rep = json.load(open(os.path.join(self.flags, "handoff-sessions/demo/report.json")))
+        self.assertEqual(rep["scratch_cleaned"], [[old, 0]])
+        self.assertIn("REFUSED", err + out)
+
+    def test_no_scratch_superseded_runs_no_cleanup(self):
+        with patch.object(wu, "SCRATCH_CLEANUP", "/nonexistent/never-run.py"):
+            rc, out, err = self._run(self.rec)
+        self.assertEqual(rc, 0, err + out)
+        self.assertNotIn("scratch_cleaned", json.load(open(os.path.join(self.flags, "handoff-sessions/demo/report.json"))))
+
     def test_tick_zero_matches_refuses(self):
         rc, out, err = self._run(dict(self.rec, ticks=["D-9 — nowhere"]))
         self._assert_no_commit(rc, err, "matches 0 open boxes")

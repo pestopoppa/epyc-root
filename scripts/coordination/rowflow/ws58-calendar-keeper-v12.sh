@@ -9,7 +9,9 @@
 # (4) the idle alarm (IDLE-WHY names the reason every tick instead), arm-time region resolution and dryrun-pick.
 # History: v10 rowflow (arm-tick + one dry run per lane per tick); v9 qualification-slot starvation fix; v8 keeper-owned
 # qualification; v7b-d succession rewriter; v5 reap-after-filing; v2 READY auto-arm; v1 2026-10-28.
-# Usage: ws58-calendar-keeper-v11.sh [--dry-run | --reap-dry-run | --backfill-report]   (all three: one pass, change nothing)
+# Usage: ws58-calendar-keeper-v12.sh [--dry-run | --reap-dry-run | --backfill-report]   (all three: one pass, change nothing)
+#        ws58-calendar-keeper-v12.sh --reap-now   ONE live step-6 pass (legacy groups included), no allocation, then exit;
+#        scripts/coordination/churn/disk_janitor.sh runs it every 30 min so reaping never depends on the keeper loop.
 set -u
 F=/mnt/raid0/llm/tmp/compute-flags/
 G=/mnt/raid0/llm/tmp/compute-flags/grants/
@@ -20,6 +22,7 @@ case "${1:-}" in
   --dry-run) DRY=1;;
   --reap-dry-run) DRY=1; REAPONLY=reap;;          # read-only: ONLY step 6 against the live tree, prints one line per decision
   --backfill-report) DRY=1; REAPONLY=reap; REAP_LEGACY=1;;   # step 6 + legacy dirs (manifests without scratch_root/keep) + unmanifested dirs, classified
+  --reap-now) REAPONLY=reap; REAP_LEGACY=1;;   # ws58 2026-11-02 (operator: four disk fixes): ONE live reaper pass, no allocation, then exit
 esac
 mkdir -p /mnt/raid0/llm/tmp/compute-flags/ws58-keeper-state
 
@@ -51,16 +54,18 @@ allocate_tick() {
 # live process names/maps/cwd's the root; another non-complete grant/ready/armed manifest names it; KEEP marker; active handoff names the
 # root itself (file-level citations are protected in place); a non-terminal FILLERS row names it. One log line per decision.
 # REAP_LEGACY=1 also synthesises groups for old manifests (root=tmp/<first dir of launcher>, keep=small files <=4 MiB + evidence names).
-# 7-DAY RULE (operator 2026-10-28): a tmp dir no manifest names, idle >= REAP_IDLE_DAYS (newest mtime of anything inside), with no
+# IDLE RULE (operator 2026-10-28; REAP_IDLE_DAYS 7 -> 1 on 2026-11-02): a tmp dir no manifest names, idle >= REAP_IDLE_DAYS (newest mtime of anything inside), with no
 # guard hit, has its small files (<=10 MiB *.json/md/txt/tsv/csv/yaml/yml/log + receipts/verdicts) vaulted with a sha256 index, then the
-# rest deleted. Those small files stay in place. KEEP-marked dirs and dirs holding a .git are NEVER reaped automatically.
+# rest deleted. Those small files stay in place. KEEP-marked dirs are NEVER reaped automatically; a dir holding a .git only when EVERY
+# .git under it is a full clone or a registered, unlocked worktree that is clean (no change, no untracked file, no stash) and whose
+# `git cherry origin/main` is empty (git_reapable; operator 2026-11-02); any git error keeps it. All other guards still apply.
 # REAL FREE: guarded_rm.sh moves into /mnt/raid0/llm/.trash-reap (audit + manifest), then this pass deletes exactly the trash entries
 # guarded_rm reported (trash-sweep.sh refuses --older-than 0); trash-sweep --older-than 1 on that trash is the backstop.
 # Caps per pass: REAP_MAX_GIB (50) and REAP_MAX_DIRS (200); every decision logged. Any guard error => that item is skipped (SKIP-ERR).
 # Hook exception: operator 2026-10-28: keeper v5 reap-after-filing (pinned path+sha256 in destructive_scratch_scan.py; see
 # disk-audit-20261028/destructive-scratch-keeper-v5.patch).
 REAP_DAYS=${REAP_DAYS:-1}; REAP_EVERY_S=${REAP_EVERY_S:-1800}
-REAP_MAX_GIB=${REAP_MAX_GIB:-50}; REAP_MAX_DIRS=${REAP_MAX_DIRS:-200}; REAP_IDLE=${REAP_IDLE:-1}; REAP_IDLE_DAYS=${REAP_IDLE_DAYS:-7}
+REAP_MAX_GIB=${REAP_MAX_GIB:-50}; REAP_MAX_DIRS=${REAP_MAX_DIRS:-200}; REAP_IDLE=${REAP_IDLE:-1}; REAP_IDLE_DAYS=${REAP_IDLE_DAYS:-1}
 reap_filed() {
   local mode=live ln
   if [ $DRY = 1 ]; then mode=dry; else
@@ -73,7 +78,7 @@ import os, sys, re, json, glob, time, hashlib, tarfile, subprocess, fnmatch, shu
 E = os.environ; MODE = E['REAP_MODE']; LEGACY = E['REAP_LEGACY'] == '1'; DAYS = float(E['REAP_DAYS'])
 ST = E['REAP_STATE']; REPORT = E['REAP_REPORT'] == '1'
 MAXB = float(E['REAP_MAX_GIB']) * 2**30; MAXDIRS = int(E['REAP_MAX_DIRS'])
-IDLE = E.get('REAP_IDLE', '1') == '1'; IDLE_DAYS = float(E.get('REAP_IDLE_DAYS', '7'))
+IDLE = E.get('REAP_IDLE', '1') == '1'; IDLE_DAYS = float(E.get('REAP_IDLE_DAYS', '1'))
 IDLE_MAX = 10 << 20; IDLE_EXT = ('.json', '.md', '.txt', '.tsv', '.csv', '.yaml', '.yml', '.log', '.sh', '.py', '.patch', '.diff', '.jinja', '.toml', '.ini', '.cfg', '.c', '.cc', '.cpp', '.h', '.hpp', '.rs', '.go', '.js', '.ts', '.cmake', 'makefile', 'dockerfile')
 RECENT_S = 3600   # any write inside a root within the last hour blocks deletion (proxy for processes /proc cannot show us)
 budget = dict(b=0, n=0)   # bytes and dirs reaped (or would-be reaped) this pass
@@ -285,6 +290,31 @@ def scan_tree(p):
             if st.st_mtime > newest: newest = st.st_mtime
             if x in fn: size += st.st_size
     return newest, size, git
+def git_reapable(p):
+    '''ws58 2026-11-02 (operator): -> (ok, why). ok only if EVERY .git under p is a full clone or a registered, unlocked worktree
+    rooted exactly there, clean (no change, no untracked file, no stash) and with `git cherry origin/main` empty. Any error => keep.'''
+    n = 0
+    for dp, dn, fn in os.walk(p, onerror=_raise):
+        if '.git' not in dn and '.git' not in fn: continue
+        if '.git' in dn: dn[:] = [x for x in dn if x != '.git']
+        n += 1
+        def q(*a): return subprocess.run(['git', '-c', 'safe.directory=*', '-C', dp] + list(a), capture_output=True, text=True, timeout=120)
+        top = q('rev-parse', '--show-toplevel')
+        if top.returncode or os.path.realpath(top.stdout.strip()) != os.path.realpath(dp): return False, 'git: %s is not a work-tree root' % dp
+        if os.path.isfile(os.path.join(dp, '.git')):   # a worktree: its gitdir must point back here and not be locked
+            gd = q('rev-parse', '--absolute-git-dir').stdout.strip()
+            back = os.path.join(gd, 'gitdir')
+            bp = open(back).read().strip() if gd and os.path.isfile(back) else ''
+            if not bp or os.path.realpath(os.path.join(gd, bp)) != os.path.realpath(os.path.join(dp, '.git')):   # join keeps an absolute bp
+                return False, 'git: %s is not a registered worktree' % dp
+            if os.path.exists(os.path.join(gd, 'locked')): return False, 'git: worktree %s is locked' % dp
+        st = q('status', '--porcelain')
+        if st.returncode or st.stdout.strip(): return False, 'git: %s is not clean' % dp
+        sl = q('stash', 'list')
+        if sl.returncode or sl.stdout.strip(): return False, 'git: %s holds a stash' % dp
+        ch = q('cherry', 'origin/main')
+        if ch.returncode or ch.stdout.strip(): return False, 'git: %s has commits not in origin/main' % dp
+    return n > 0, 'git: %d clean checkout(s), cherry origin/main empty' % n
 def recent(root):
     for dp, dn, fn in os.walk(root, onerror=_raise):
         for x in dn + fn:
@@ -328,6 +358,7 @@ for root in sorted(groups):
     filed = []
     for rid in ids:
         c = G + rid + ".complete"
+        if not os.path.isfile(c): c = G + rid + ".ended"  # ws58 2026-11-02 (operator: reclaim): an ended+FILED run is terminal too
         receipt = F + "filing-done/" + rid + ".FILED"
         if os.path.isfile(c) and not os.path.exists(G + rid + ".grant") and os.path.isfile(receipt):
             filed.append(max(os.path.getmtime(c), os.path.getmtime(receipt)))
@@ -374,7 +405,10 @@ if IDLE or LEGACY:
             newest, size, git = scan_tree(p)
             idle_d = (now - newest) / 86400
             if idle_d < IDLE_DAYS: tally('IDLE-WAIT(<%gd)' % IDLE_DAYS, size); out('IDLE-WAIT', tag, 'newest write %.1fd ago (%s)' % (idle_d, gib(size))); continue
-            if git: tally('BLOCKED-git', size); out('BLOCKED', tag, 'holds a .git (worktree/repo); never auto-reaped (%s)' % gib(size)); continue
+            if git:
+                gok, gwhy = git_reapable(p)
+                if not gok: tally('BLOCKED-git', size); out('BLOCKED', tag, 'holds a .git not provably landed: %s (%s)' % (gwhy, gib(size))); continue
+                out('GIT-CLEAN', tag, gwhy)
             if GUARD_ERR: tally('SKIP-ERR', size); out('SKIP-ERR', tag, GUARD_ERR); continue
             bl = []
             if proc_uses(p): bl.append('process-uses-root')
@@ -407,6 +441,7 @@ PY
 tick() { if [ -n "$REAPONLY" ]; then reap_filed; return 0; fi; allocate_tick; reap_filed; }
 
 if [ $DRY = 1 ]; then tick; echo "[dry-run] one pass done; nothing changed"; exit 0; fi
+if [ -n "$REAPONLY" ]; then reap_filed; echo "reap-now pass done"; exit 0; fi   # --reap-now (disk_janitor.sh): one live pass
 log "keeper v12 start pid=$$ (no expiry; rowflow allocate)"; echo $$ > ${F}ws58-calendar-keeper.pid  # main-loop pid for ws58-keeper-watchdog.sh
 while [ "$(date -u +%s)" -lt "$STOP_AT" ]; do
   tick || log "tick error rc=$?"
