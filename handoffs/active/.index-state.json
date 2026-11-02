@@ -3656,9 +3656,7 @@
       "track": "autokernel teardown and rebuild"
     },
     "INF-67": {
-      "deps": [
-        "-"
-      ],
+      "deps": [],
       "handoff": "cpu-fused-decoder-blocks.md",
       "id": "INF-67",
       "index": "inference-research-index.md",

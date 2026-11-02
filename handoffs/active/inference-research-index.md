@@ -22,7 +22,7 @@
 | INF-66 | autokernel teardown and rebuild | [autokernel-rebuild-program.md](autokernel-rebuild-program.md) | Resolve R18-A host CUID identity differences under the unchanged rule; continue R23-62 | INF-06, INF-64, INF-65 |
 | INF-07 | batched decode measurement | [batched-decode-measurement.md](batched-decode-measurement.md) | E5 — the never-measured NUMA×batch 2D sweep; needs a post-promotion quiet window | — |
 | INF-09 | cpu prefill compute large models | [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) | PC-4 — experimental qwen35 prefill barrier/graph-fusion prototype: | — |
-| INF-67 | cpu fused decoder blocks | [cpu-fused-decoder-blocks.md](cpu-fused-decoder-blocks.md) | FD-DIV-1b persists on C5: locate and fix the fused-yarn divergence in the champion; FD-OFF-PROD closes at V11-106 | - |
+| INF-67 | cpu fused decoder blocks | [cpu-fused-decoder-blocks.md](cpu-fused-decoder-blocks.md) | FD-DIV-1b persists on C5: locate and fix the fused-yarn divergence in the champion; FD-OFF-PROD closes at V11-106 | — |
 | INF-62 | dflash2 block drafter experimental build | [dflash2-block-drafter-experimental-build.md](dflash2-block-drafter-experimental-build.md) | DF2 open rows (DF2-DRAFTER-CAPABILITY, DF2-11/12/13/15/16/20, DF2-LB1); Qwopus items CANCELLED 2026-10-27 | INF-06, INF-50 |
 | INF-12 | delta mem reproduction | [delta-mem-reproduction.md](delta-mem-reproduction.md) | Gate 2 MemoryAgentBench accuracy reproduction - GPU-only (CPU-infeasible) | — |
 | INF-13 | engram conditional memory | [engram-conditional-memory.md](engram-conditional-memory.md) | Make k budget-conditional rather than fixed (intake-936 rider) | — |

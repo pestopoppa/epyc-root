@@ -138,11 +138,6 @@
       "to": "INF-65"
     },
     {
-      "from": "INF-67",
-      "kind": "dep",
-      "to": "-"
-    },
-    {
       "from": "INF-70",
       "kind": "dep",
       "to": "INF-67"
@@ -3762,7 +3757,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T10:37:28Z",
+  "generated_at": "2026-11-02T10:38:00Z",
   "nodes": [
     {
       "age_days": 95,
