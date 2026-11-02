@@ -87,17 +87,21 @@ The 16 other packages stay provisional until owner-reviewed pilot results exist.
   row `brf-exp04-pf1-crossover-pilot-20261102`, published by ws58 2026-11-02).
   Stop rule: manifest `sufficiency` EXP-04; stop on answer/futility; no window granted → not READY. Done when: the pilot stops on answer or futility at a manifest checkpoint and its result is recorded as an OBSERVATION in the owner handoff (PF1-EXP04 filed with the owner's EXPAND/REVISE/INCONCLUSIVE review).
 - [ ] **BRF-T4-EXP09** [inference] EXP-09 pilot. Owner: [`tool-output-compression.md`](tool-output-compression.md) (TOC-SP-3). Stop rule: manifest `sufficiency` EXP-09. Done when: the pilot stops on answer or futility at a manifest checkpoint and its result is recorded as an OBSERVATION in the owner handoff.
-- [ ] **BRF-T4-CAP04** [inference] CAP-04 reasoning-budget-curve pilot, bounded at 200 generations. Owner:
-  [`reasoning-effort-levels.md`](reasoning-effort-levels.md) (TB-1) (executing session ws58). Row `brf-cap04-pilot-20261102` on the MI210 `mi210_0,184-191`;
-  est: provisional; pilot: bounded 200 items, 2.5 h cap (expected ~2 h). Metric: accuracy, higher is better. Identity: frontdoor Qwen3.6-35B-A3B-MTP-Q8_0 (sha c1283d8b) + architect_critic Qwen3.8-27B-Q8_0
-  (sha a680f44a), v10 kernel store 10303, own llama-server, chat path, enable_thinking=false, greedy, seed 42; 20
-  olympiadbench_hard + 20 GPQA-Diamond-CoT pinned items (items sha 81ef522b). Cells, each generated fresh at its own
-  budget: TB 2 models x {8k,16k,32k} x 20; E frontdoor x {L2,L3} x 20; crossed frontdoor x {L2,L3} x {8k,32k} x 10
-  GPQA, so **TB-4 COVERED (screen)**. TB-1 reports BOTH denominators (overall, finished-only) plus truncation; a knee
+- [ ] **BRF-T4-CAP04** [inference] CAP-04 reasoning-budget-curve pilot on the SERVED config, bounded at <=76 generations. Owner:
+  [`reasoning-effort-levels.md`](reasoning-effort-levels.md) (TB-1) (executing session ws58). Row `brf-cap04-pilot-20261102-v2` (supersedes `brf-cap04-pilot-20261102`, whose critic ran thinking OFF and so did not describe the served model) on the MI210 `mi210_0,184-191`;
+  est: provisional; pilot: bounded <=76 generations, 2.5 h cap (expected ~1.75 h, estimate 7800 s). Metric: accuracy, higher is better. Identity: frontdoor Qwen3.6-35B-A3B-MTP-Q8_0 (sha c1283d8b) + architect_critic Qwen3.8-27B-Q8_0
+  (sha a680f44a), v10 kernel store 10303, own llama-server, chat path, served terse template 1443ea9ab4bb, q8_0 KV, seed 42, top_k 40, top_p 0.95, repeat_penalty 1.1; 20
+  olympiadbench_hard + 20 GPQA-Diamond-CoT pinned items (items sha 81ef522b). **Served flags** (registry `model_registry.yaml` server_mode / generation_defaults, read 2026-11-02): architect_critic
+  `enable_thinking=true, reasoning_effort=medium`, temp 0.1, draft-dflash n-max 7 (`:2009-2012`, `:2577-2579`); frontdoor `enable_thinking=false` + `--reasoning off`, temp 0.3, draft-mtp n-max 4
+  (`:1837-1839`, `:2226-2228`, `stack_priors.yaml:826`). The budget (`max_tokens`) counts the thinking tokens, so truncation lands inside the thinking block; summary.json records the truncation-inside-thinking rate per cell.
+  Cells: each (item, level) has a single generation at 32768 and the 8k/16k cells are derived as a nested prefix (finished at b iff finished and completion_tokens <= b), validated by 4 fresh 8192 CHK generations
+  (prefix/equality check; derived cells count when `nested_derivation_valid` is true): E frontdoor x {L2,L3} x 20 GPQA; TB frontdoor x 20 olympiad and architect_critic x up to 12 olympiad; the crossed frontdoor x {L2,L3} x {8k,32k} x 10 GPQA
+  is the derived X view of E, so **TB-4 COVERED (screen)**. TB-1 reports BOTH denominators (overall, finished-only) plus truncation; a knee
   below the production ceiling settles TB-3 for that role only, never E-2/E-3.
   Stop rule: manifest `sufficiency` CAP-04 (exploratory; look at every cell; stop on answer or futility is an
-  operational decision, never a gate result); STOP, deadline or cap gives a resumable partial; budget overrun,
-  think leak or short slot context is INVALID. Done when: the pilot stops on answer or futility at a manifest checkpoint and its result is recorded as an OBSERVATION in the owner handoff.
+  operational decision, never a gate result). Critic LOOK at 8 items: futility when >=75% are truncated at 32768 (no knee inside the range), answer when trunc<=5% and no correctness change between that budget and 32768; otherwise continue to 12 items. STOP, deadline or 9000 s cap gives a resumable partial; budget overrun,
+  frontdoor think leak, critic thinking not engaged or short slot context is INVALID. Done when: the pilot stops on answer or futility at a manifest checkpoint and its result is recorded as an OBSERVATION in the owner handoff.
+  - OPEN sub-item **CAP04-AG** (deliberately not a checkbox: tracked inside this box so the rollup count stays stable; becomes its own box when expanded) [inference], NOT covered by this pilot: architect_general (87 GB, served on CPU). The pilot screens the curve shape on the served critic config only; architect_general is the expansion if a knee appears below the production ceiling (budget curve on its own served config, CPU, placement and thinking flags re-read from the registry at that time). Not READY until the pilot's result is recorded; est: provisional; Metric: accuracy, higher is better; Stop rule: manifest `sufficiency` CAP-04. Done when: either the pilot shows no knee below the production ceiling (recorded as an OBSERVATION: expansion not needed) or the architect_general curve stops on answer or futility at a checkpoint and is recorded as an OBSERVATION in the owner handoff.
 - [ ] **BRF-T4-R** [non-inference] NEEDS-OWNER Owner review of the four pilot results; promote or re-scope the 16 provisional packages.
 
 ## T5 — D7 decision-package delivery
