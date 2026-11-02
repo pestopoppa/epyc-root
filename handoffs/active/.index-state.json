@@ -28,7 +28,7 @@
       "blocked": 17,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 684
+      "open": 685
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -365,7 +365,7 @@
       "closed": 11,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 12,
+      "open": 13,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -374,7 +374,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 23
+      "total": 24
     },
     "batched-decode-measurement.md": {
       "blocked": 1,

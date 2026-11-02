@@ -206,8 +206,8 @@
    "fold": 3,
    "dest": "engineering-hygiene-backlog.md",
    "question": "LOOP-53: implement the `EPYC_ALLOW_SCRATCH_DELETE` override (logged) or remove it from the message?",
-   "chosen": "A",
-   "chosen_text": "Implement the logged override",
+   "chosen": "B",
+   "chosen_text": "Remove it from the message",
    "gated": [
     "ff748d37fa1b"
    ]
@@ -390,5 +390,18 @@
  ],
  "extra": {
   "EXP-01": "proxy futility screen on Qwen3.6-35B-A3B (lane-rule waiver for this pilot only); port qwen4exp to ik scratch + requantize Q38FN from Q8_0 only if the screen passes"
+ },
+ "revision": {
+  "at": "2026-11-02T19:40Z",
+  "by": "operator (AskUserQuestion, item by item)",
+  "why": "fold-3 bulk acceptance included safety-check changes; re-confirmed individually",
+  "items": {
+   "containment-scanner merge": "A merge",
+   "LOOP-53": "B remove override mention (changed from A)",
+   "LOOP-46": "A sign off",
+   "LOOP-50": "A sign off (blocking)",
+   "NIB2-97": "A acknowledge",
+   "NIB2-89": "A acknowledge, lands dormant"
+  }
  }
 }
