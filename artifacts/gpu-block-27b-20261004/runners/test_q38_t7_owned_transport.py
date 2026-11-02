@@ -1,10 +1,12 @@
 """Captured fake-server HTTP/tokenizer integration; never runs a model."""
 
 import hashlib
+import copy
 import json
 import os
 from pathlib import Path
 import socket
+import subprocess
 import sys
 import tempfile
 import time
@@ -17,6 +19,7 @@ import q38_t7_transport as transport
 import q38_t7_payloads as payloads
 import q38_t7_runtime as runtime
 import q38_t7_journal as journal
+import q38_t7_rowflow as rowflow
 
 
 SERVER = r'''
@@ -134,6 +137,72 @@ class OwnedTransportTest(unittest.TestCase):
             self.assertEqual(report['status'], 'COMPLETE', report)
         finally:
             j.close()
+
+    def test_sealed_rowflow_with_two_captured_fake_servers(self):
+        self.assertTrue(self.sup.stop_and_drain(self.handle))
+        root = Path(self.tmp.name)
+        draft = root / 'draft'; draft.write_bytes(b'fake draft')
+        recipes = {'nodraft': self.recipe,
+                   'drafted': dict(self.recipe, draft_model=str(draft),
+                                   draft_options={'type': 'draft-dflash', 'n_max': 7,
+                                                  'draft_sha256': sha(draft)})}
+        prefix = 'nonce 2-4-1-9-ORCHID Mbeki Larsen'
+        inputs = {'prompts': [{'id': 'p1', 'suite': 'test', 'prompt': 'question'}],
+                  'contexts': [{'target': 2000, 'nominal_tokens': 20, 'prefixes': [prefix],
+                                'min_cached_tokens': 5}],
+                  'gen': 1500, 'gen_nodraft': 500, 'tokenizer_sha256': 'a' * 64,
+                  'model_sha256': self.recipe['shape']['model_sha256']}
+        plan = payloads.build_plan(inputs['prompts'], [payloads.FrozenContext(2000, 20, (prefix,), 5)],
+                                   tokenizer_sha256=inputs['tokenizer_sha256'], model_sha256=inputs['model_sha256'])
+        ledger = journal.DurableJournal(root / 'ledger.sqlite', cohort_id=plan.sha256,
+                                        model_sha256=plan.model_sha256, run_id='fake-run')
+        binding = ledger.binding(); ledger.close()
+        def pin(name, value):
+            path = root / name; path.write_text(json.dumps(value))
+            return {'path': str(path), 'sha256': sha(path)}
+        stat = root.stat()
+        manifest = {'schema': 'q38-rowflow.v1', 'row_id': 'fake-row', 'run_id': 'fake-run',
+                    'plan_input': pin('input.json', inputs), 'recipes': pin('recipes.json', recipes),
+                    'ground_truth': pin('truth.json', {}), 'plan_sha256': plan.sha256,
+                    'journal': binding, 'stop': {'path': str(root / 'STOP'),
+                                                 'parent_identity': {'device': stat.st_dev, 'inode': stat.st_ino}},
+                    'result_path': str(root / 'result.json'),
+                    'source_sha256': {name: sha(Path(rowflow.__file__).parent / name)
+                                      for name in rowflow.SOURCE_FILES}}
+        pin_manifest = pin('manifest.json', manifest)
+        env = {'FILLER_ID': 'fake-row', 'FILLER_STOPFILE': str(root / 'STOP'),
+               'FILLER_DEADLINE': str(int(time.time()) + 60)}
+        def factory(j, stop):
+            return runtime.Runtime(self.sup, transport.OwnedHttpTransport(self.sup, 'a' * 64, self.proof), j, stop)
+        with self.assertRaisesRegex(ValueError, 'manifest seal'):
+            rowflow.run_rowflow(pin_manifest['path'], '0' * 64, env, factory)
+        with self.assertRaisesRegex(ValueError, 'STOP identity'):
+            rowflow.run_rowflow(pin_manifest['path'], pin_manifest['sha256'],
+                                dict(env, FILLER_STOPFILE=str(root / 'other-stop')), factory)
+        (root / 'STOP').touch()
+        with self.assertRaisesRegex(ValueError, 'STOP or rowflow deadline'):
+            rowflow.run_rowflow(pin_manifest['path'], pin_manifest['sha256'], env, factory)
+        (root / 'STOP').unlink()
+        bad = copy.deepcopy(manifest); bad['journal']['inode'] += 1
+        bad_pin = pin('bad-manifest.json', bad)
+        with self.assertRaisesRegex(ValueError, 'journal seal'):
+            rowflow.run_rowflow(bad_pin['path'], bad_pin['sha256'], env, factory)
+        bad = copy.deepcopy(manifest); bad['source_sha256']['q38_t7_rowflow.py'] = '0' * 64
+        bad_pin = pin('bad-source.json', bad)
+        with self.assertRaisesRegex(ValueError, 'source seal mismatch'):
+            rowflow.run_rowflow(bad_pin['path'], bad_pin['sha256'], env, factory)
+        cli = subprocess.run([sys.executable, '-B', rowflow.__file__, '--manifest', pin_manifest['path'],
+                              '--manifest-sha256', pin_manifest['sha256']],
+                             env={**os.environ, **env}, capture_output=True, text=True, check=False)
+        self.assertEqual(cli.returncode, 65)
+        self.assertIn('no qualified production native owner', cli.stderr)
+        run, report = rowflow.run_rowflow(pin_manifest['path'], pin_manifest['sha256'], env, factory)
+        self.assertFalse(run['partial'], run['error'])
+        self.assertEqual(report['status'], 'COMPLETE', report)
+        self.assertEqual(json.loads((root / 'result.json').read_text())['score']['status'], 'COMPLETE')
+        # Existing result cannot be replaced by a replay with the same row.
+        with self.assertRaisesRegex(ValueError, 'result must be'):
+            rowflow.run_rowflow(pin_manifest['path'], pin_manifest['sha256'], env, factory)
 
 
 if __name__ == '__main__':

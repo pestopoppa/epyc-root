@@ -52,6 +52,14 @@ dispatch, between HTTP reads and before/after tokenization; retained partial
 bytes are journaled and the coordinator drains its captured child. A blocked
 network read is bounded by its configured timeout and is not interrupted by the
 STOP poll itself; production STOP responsiveness still needs qualification.
+`q38_t7_rowflow.py` binds the journal's path, device, inode and random ledger ID
+to a SHA-256-sealed manifest, verifies source and input pins, and requires the
+rowflow ID, STOP path/parent identity and deadline. It opens an existing sealed
+ledger only and refuses an existing result path. The Python `run_rowflow`
+boundary still requires an explicitly supplied native-owner factory. Its CLI
+only validates the seal and then refuses because no production-qualified owner
+is installed; it is not a published or runnable target row. A keeper dry run
+uses a different STOP path and therefore needs its own explicitly sealed packet.
 
 `test_q38_t7_isolated_http.py` starts two **fake** HTTP server subprocesses in
 sequence, routes real local HTTP calls, and verifies independent warmups,
@@ -75,8 +83,8 @@ has an empty subtree. Its membership, effective draft-mode and exclusive-cgroup
 ownership attestations remain required external proofs; neither current cgroup
 membership nor a fake test establishes exclusive custody or effective mode.
 
-There is deliberately no production CLI, concrete cgroup-placement or mode
-attestor, native model-identity verifier or durable journal. Before target use, implement and qualify those
+There is deliberately no production owner factory, concrete cgroup-placement or mode
+attestor, or native model-identity verifier. Before target use, implement and qualify those
 against the host's child/descendant ownership, process and socket identity,
 recipe/binary/model/library binding, STOP and drain, durable no-redraw exposure,
 native cache receipts and rowflow contracts. `Runtime`'s injected verifiers

@@ -13,6 +13,7 @@ import unittest
 
 from q38_t7_journal import DurableJournal, ExposureError
 import q38_t7_runtime as runtime
+from q38_t7_rowflow import StopBoundary
 
 
 class JournalTest(unittest.TestCase):
@@ -107,6 +108,30 @@ class JournalTest(unittest.TestCase):
         finally: j.close()
         with closing(sqlite3.connect(self.db)) as db:
             self.assertEqual(db.execute('SELECT status FROM exposure').fetchone()[0], 'EXPOSED')
+
+    def test_sealed_database_replacement_refuses_before_exposure(self):
+        j = self.journal()
+        binding = j.binding()
+        self.db.rename(self.db.with_suffix('.old'))
+        self.db.write_bytes(b'')
+        try:
+            with self.assertRaisesRegex(ExposureError, 'replaced'):
+                j.before_request('drafted', 'A/p', 'measure', self.body)
+        finally: j.close()
+        with self.assertRaises(ValueError):
+            DurableJournal(self.db, cohort_id=self.cohort, model_sha256=self.model,
+                           run_id='new', expected_binding=binding)
+
+    def test_stop_boundary_refuses_replaced_parent(self):
+        import time
+        parent = Path(self.tmp.name) / 'stop-dir'; parent.mkdir()
+        original = parent.stat()
+        stop = StopBoundary(parent / 'STOP', {'device': original.st_dev, 'inode': original.st_ino},
+                            int(time.time()) + 60)
+        self.assertFalse(stop())
+        parent.rename(Path(self.tmp.name) / 'old-stop-dir')
+        parent.mkdir()
+        self.assertTrue(stop())
 
 
 if __name__ == '__main__': unittest.main()
