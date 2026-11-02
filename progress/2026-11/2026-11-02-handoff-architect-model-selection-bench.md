@@ -103,3 +103,7 @@ Filed gpqa_split_manifest.py, an offline preparer pinned to the full GPQA-CoT so
 ## 00:54Z — Record GPQA preparation review and continue launcher work
 
 Independent review confirmed gpqa_split_manifest.py preserves source order and runner schema. A failed write can leave a partial newly created destination: discard it and retry in a new directory. The splitter is offline preparation, not a runnable row. Prior serialized push failed after lock retry; efc04ea5123f and its predecessors remain local and are included in this retry. Delegated bounded EffiBench wrapper and GPU launcher work with completion events registered. No inference or row publication.
+
+## 00:56Z — Diagnose serialized push failures
+
+The serialized push failure was diagnosed from the full tool output: origin/main advanced after the lane merge, so git rejected a non-fast-forward update; the helper reported nine unpushed commits and two commits behind. No force push was attempted. Wrap-up merges current origin before retry. Delegated independent offline EffiBench review and GPQA launcher design; completion events registered. No inference or row publication.
