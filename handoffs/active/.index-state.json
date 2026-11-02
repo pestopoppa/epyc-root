@@ -1353,7 +1353,7 @@
     },
     "kv-prefix-fork-and-paged-attention.md": {
       "blocked": 1,
-      "closed": 118,
+      "closed": 121,
       "guarded": 0,
       "last_advanced": "2026-11-02",
       "open": 57,
@@ -1365,7 +1365,7 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 176
+      "total": 179
     },
     "kv-unified-stack-rollout.md": {
       "blocked": 0,
