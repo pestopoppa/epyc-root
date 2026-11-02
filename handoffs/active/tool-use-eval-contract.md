@@ -44,6 +44,14 @@ plus explicitly unattempted second arm. A scripted-endpoint pair exercised the p
 native judge and tool-suffix delivery with no model. The integrated candidate passed all 177 DTAP
 tests from a protected checkout under q2. Actual grant authority, reader/canary and live row remain
 open. [no-belief: software and fixture controls]
+ROOT `4f609b459` + `bb252dbc6` + `bf9dbd64c` add a strict original-journal reader and
+partial-arm refusal controls. It is intentionally not CLI-registered and emits no claim until
+provider-owned grant and source authority are verified; three refusal tests passed. A versioned
+lock-provider receipt is in development. [no-belief: software controls]
+
+Research candidate `544a240c9` provides a synthetic container-to-local-endpoint broker with a
+fixed client-tool profile; 24 tests passed. It is not yet an OpenCode transport or proof of
+host-side `/chat` tool isolation. [no-belief: software and fixture controls]
 
 [TU-HR-1 source/runtime census](../../docs/reference/tu-hr1-tool-render-audit-20261102.md)
 records the configured model/template groups and source forwarding paths, and distinguishes

@@ -53,6 +53,11 @@ judicious review. The edit preserves existing task text and history. [no-belief:
   arms; a scripted pair reached the real services and native judge with suffix delivery. The
   integrated DTAP suite passed 177 tests under q2 from a protected checkout. Physical-grant
   authority, reader canary and live row remain open. [no-belief: fixture controls]
+- ROOT `4f609b459` + `bb252dbc6` + `bf9dbd64c` add a fail-closed pair receipt reader;
+  three tamper/fixture/aborted controls passed under q2. It is not CLI-registered and emits no
+  claim without provider/source authority. A lock-provider receipt is being built. Research
+  `544a240c9` adds a bounded synthetic client-tool endpoint broker (24 tests), without a live
+  OpenCode or `/chat` isolation claim. [no-belief: software controls]
 - Added `docs/reference/tu-hr1-tool-render-audit-20261102.md`: source and runtime census;
   sampled local model endpoints were unavailable, so actual live model/template evidence and
   TU-HR-1 remain open. [no-belief: source and operational review]
