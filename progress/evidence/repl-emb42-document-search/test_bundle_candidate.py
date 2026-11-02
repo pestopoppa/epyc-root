@@ -76,3 +76,33 @@ def test_multichunk_unicode_pointers_round_trip_through_view_and_account_bytes()
         total += len(value.encode('utf-8'))
     assert bundle.accounting()['totals']['bytes_pulled'] == total
     assert total > sum(h['end'] - h['start'] for h in hits)
+
+
+def test_bundle_document_section_accessor_cannot_bypass_pull_budget():
+    repl, bundle = make([{'name': 'doc', 'text': TEXT}], budget=1)
+    with pytest.raises(ValueError, match=r'use context.get'):
+        repl._section(1)
+    assert bundle.accounting()['totals']['bytes_pulled'] == 0
+    hit = repl._search_sections('pear')[0]
+    with pytest.raises(ContextPullBudgetExceeded):
+        bundle.get(hit['bundle_section'], offset=hit['start'], max_chars=hit['end']-hit['start'])
+
+
+def test_legacy_section_accessor_remains_available_with_opt_in_disabled():
+    repl, bundle = make([{'name': 'doc', 'text': TEXT}])
+    repl._document_search_enabled = False
+    assert 'apricot text' in repl._section(1)
+    assert bundle.accounting()['totals']['pull_calls'] == 0
+
+
+def test_state_advertises_accounted_reads_only_for_bundle_opt_in():
+    repl, _ = make([{'name': 'doc', 'text': TEXT}])
+    state = repl.get_state()
+    assert 'context.get(bundle_section' in state
+    assert 'context: bundle view' in state
+    assert 'section(n): Get section' not in state
+    repl._document_search_enabled = False
+    state = repl.get_state()
+    assert 'section(n): Get section' in state
+    assert 'context: str' in state
+    assert 'context.get(bundle_section' not in state

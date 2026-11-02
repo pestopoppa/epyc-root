@@ -99,3 +99,7 @@ REPL-EMB-R1: prepared a scratch train-only cross-validation kernel, launcher and
 ## 11:41Z — Add Unicode pointer round-trip control to document-search candidate
 
 REPL-EMB-4.2: added a multi-chunk Unicode pointer round-trip control covering context view reads, line offsets and UTF-8 byte accounting; five bundle-candidate tests pass. This tests the preserved draft only: request integration and the complete document access path remain open. REPL-EMB-2.8a still requires a genuine authorized captured session; 2.14 is already complete; 2.11 G-C1 has a recorded verdict and G-S row v2 is running. GitNexus index creation was refused by CPU admission, so no lane impact result is available. [no-belief: deterministic candidate test only]
+
+## 11:47Z — Prevent bundle pull-budget bypass in document-search candidate
+
+REPL-EMB-4.2: corrected the unapplied bundle candidate to refuse the section(n) raw-text accessor when bundle search is enabled, directing callers to context.get; synthetic tests cover budget refusal and unchanged opt-out behavior. The candidate still needs full request integration and review of other accessors; no feature is deployed or completed. REPL-EMB-2.8a/2.8b still require request-scoped trace lifecycle and a genuine authorized session. Existing inference rows cover online shadow and G-S; other listed runs are frozen, deferred or depend on unfinished work. [no-belief: candidate correctness controls only]

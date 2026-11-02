@@ -130,6 +130,10 @@ class DocumentREPLEnvironment(REPLEnvironment):
         Returns:
             Section text with title, or error message if not found.
         """
+        # Bundle reads must use context.get so byte and pull budgets apply.
+        # The legacy section() accessor would expose unaccounted document text.
+        if self._document_search_enabled and self.context_bundle is not None:
+            raise ValueError("section() is unavailable with document search and a context bundle; use context.get")
         self._exploration_calls += 1
 
         if n < 1 or n > len(self.document_context.sections):
@@ -343,12 +347,16 @@ class DocumentREPLEnvironment(REPLEnvironment):
             String describing available variables and artifacts.
         """
         state_lines = [
-            f"context: str ({len(self.context)} chars)",
+            ("context: bundle view" if self._document_search_enabled and self.context_bundle is not None
+             else f"context: str ({len(self.context)} chars)"),
             f"artifacts: {list(self.artifacts.keys()) if self.artifacts else '{}'}",
             "",
             "Document Functions:",
             f"  sections(): {len(self.document_context.sections)} sections available",
-            f"  section(n): Get section n content (1-{len(self.document_context.sections)})",
+            ("  Document reads: use context.get(bundle_section, offset=start, "
+             "max_chars=end-start) with search_sections pointers"
+             if self._document_search_enabled and self.context_bundle is not None
+             else f"  section(n): Get section n content (1-{len(self.document_context.sections)})"),
             f"  figures(): {len(self.document_context.figures)} figures available",
             "  figure_image(id): Get figure base64 image",
             "  search_sections(query): Search section content",
