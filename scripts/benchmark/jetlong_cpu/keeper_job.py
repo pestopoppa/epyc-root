@@ -36,7 +36,7 @@ def coordinate(config, lifecycle, aggregate):
     """Pure-injection seam for offline tests; no production entry enabled."""
     required = {'command','env','base_url','plan_path','fixture_root','output_dir',
                 'arm','budget_s','minimum_cell_s','request_timeout_s','log_path',
-                'result_path', 'stop_file'}
+                'result_path', 'stop_file', 'granted_cpus'}
     if set(config) != required:
         raise ValueError('configuration keys must match draft contract')
     if config['arm'] not in ('J', 'Y'):
@@ -62,7 +62,7 @@ def coordinate_admitted(config, env, now, lifecycle, aggregate, *, startup_s, cl
     admitted = admission.validate(env, now=now,
         minimum_cell_s=config['minimum_cell_s'], startup_s=startup_s,
         cleanup_s=cleanup_s, result_path=config['result_path'])
-    bound = dict(config, budget_s=admitted['budget_s'],
+    bound = dict(config, budget_s=admitted['budget_s'], granted_cpus=admitted['cpus'],
                  stop_file=admitted['stop_file'], result_path=admitted['result_path'])
     return coordinate(bound, lifecycle, aggregate)
 
