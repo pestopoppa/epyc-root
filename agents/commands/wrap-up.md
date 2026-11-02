@@ -276,15 +276,26 @@ wrapup_lease_release
 
 Sync, regenerate, promote, release — in that order, every time.
 
-It is the same O_EXCL primitive as the push lock, keyed on the git **common dir**'s
-device+inode — so all five lane worktrees are one repository and contend for one lease, and
-neither `realpath` nor a path string can fool it. It is a *different* lease from the push
-lock: holding one never blocks the other. A lease is **never** auto-expired. `SIGKILL`, power
-loss, or a crashed shell cannot run the trap; in that case the lock and private token remain as
-residue. Inspect with `"${LEASE[@]}" --status`, verify the named operation is gone, then displace
-deliberately with `"${LEASE[@]}" --force-release <named-holder>` (journaled). Remove the private
-token directory only **after** force-release succeeds; deleting it first destroys the
-ordinary-release capability while leaving the lock held.
+It is the same primitive as the push lock — a **kernel `flock`** on `<name>-<key>.flock`, with
+the JSON file as a holder *label* only — keyed on the git **common dir**'s device+inode, so all
+five lane worktrees are one repository and contend for one lease, and neither `realpath` nor a
+path string can fool it. It is a *different* lease from the push lock: holding one never blocks
+the other. Because `--acquire` returns at once, a small **keeper process** (own session, named
+as `holder_pid` in the label) holds the kernel lock for the lease. It exits — and the kernel
+releases the lease — on `--release`, on `--force-release`, or when the **shell that ran
+`--acquire` exits** (`--hold-parent PID` overrides; `0` = hold until released). So run the
+bootstrap, the protected steps and the release in **one shell invocation**, as the trap already
+assumes; a lease split across separate tool calls ends with the first call's shell.
+
+`SIGKILL`, power loss or a crashed shell therefore no longer leave a wedge: the dead holder's
+kernel lock is gone, and the next `--acquire` overwrites the stale label and journals it as
+`STALE-LABEL-REPLACED` in `displacements.jsonl` (`HOLD-PARENT-DIED` when a keeper let go because
+its shell died). A live holder is never displaced. `--force-release <named-holder>` (journaled)
+still exists for a lease whose token is lost: it stops that lease's keeper. For a *push*-mode
+lock held by a live process it refuses and names the pid instead — stop that process and the
+kernel releases the lock. A label without `kernel_lock` (written before 2026-11-01) keeps the
+old rules: never auto-expired, inspect with `"${LEASE[@]}" --status`, displace deliberately.
+Remove the private token directory only **after** a release or force-release succeeds.
 
 If `--acquire` refuses, that is the system working. Do the unleased steps meanwhile and come
 back — do not skip step 3 or 5, and do not edit the shared surface without the lease.

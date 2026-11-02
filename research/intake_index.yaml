@@ -4636,7 +4636,7 @@
     - orchestration/repl_memory/ (episodic memory — persistent across sessions)
     handoffs:
     - user-facing-harness-index.md
-  notes: 'Most architecturally relevant LangChain project — our orchestrator uses the same graph-based execution paradigm (pydantic_graph with nodes, edges, typed TaskState). Key differences: LangGraph is a generic framework, we have a purpose-built orchestrator with domain-specific features (multi-tier model routing, speculative decoding control, MemRL Q-values). LangGraph''s durable execution (checkpoint/resume from failure) is more mature than our resume_tokens feature. Their human-in-the-loop (inspect/modify state at any point) is more general than our approval_gates (escalation boundaries only).
+  notes: 'RE-ENCOUNTER 2026-11-02 (ws58 jev intake GUI survey @ langgraph e5c961d7): LangGraph Studio is the hosted LangSmith Studio, not in the repo; get_state_history/update_state give time-travel and fork semantics worth copying for a loop replay stepper (intake-2609). Most architecturally relevant LangChain project — our orchestrator uses the same graph-based execution paradigm (pydantic_graph with nodes, edges, typed TaskState). Key differences: LangGraph is a generic framework, we have a purpose-built orchestrator with domain-specific features (multi-tier model routing, speculative decoding control, MemRL Q-values). LangGraph''s durable execution (checkpoint/resume from failure) is more mature than our resume_tokens feature. Their human-in-the-loop (inspect/modify state at any point) is more general than our approval_gates (escalation boundaries only).
 
     '
   handoffs_updated:
@@ -9940,7 +9940,7 @@
     intake:
     - intake-144 (Contextual Memory Virtualization)
     - intake-267 (ByteRover agent-native memory)
-  notes: 'Conceptual essay behind the LLM wiki pattern. Our research-intake skill is essentially an implementation of this — structured YAML index with cross-references, maintained by LLM. The "compilation vs retrieval" framing validates our approach: we compile research into persistent handoffs rather than re-discovering context per session. The linting concept (contradiction detection, orphan pages, stale claims) could enhance our intake validation. DEEP-DIVE: epyc-root IS an LLM wiki. Lint operation is the highest-value gap. Three-layer architecture validates our governance split. Patterns upstreamed to root-archetype.
+  notes: 'RE-ENCOUNTER 2026-11-02 (ws58 source 3): re-read raw from disk; the raw/ wiki/ output/ layout and ''using only wiki/'' come from intake-2617, not this gist; lint implementations compared in intake-2619/2620; transparency plan in research/deep-dives/ws58-jev-20261102/knowledge-transparency.md. Conceptual essay behind the LLM wiki pattern. Our research-intake skill is essentially an implementation of this — structured YAML index with cross-references, maintained by LLM. The "compilation vs retrieval" framing validates our approach: we compile research into persistent handoffs rather than re-discovering context per session. The linting concept (contradiction detection, orphan pages, stale claims) could enhance our intake validation. DEEP-DIVE: epyc-root IS an LLM wiki. Lint operation is the highest-value gap. Three-layer architecture validates our governance split. Patterns upstreamed to root-archetype.
 
     '
   claim_anchors:
@@ -10033,7 +10033,7 @@
     intake:
     - intake-268 (Karpathy LLM Wiki concept)
     - intake-269 (nvk/llm-wiki)
-  notes: 'Uses GGUF models via node-llama-cpp for local search — directly on our stack. The hybrid BM25+vector+LLM reranking pipeline is a well-engineered retrieval architecture. Natural markdown chunking approach could inform context-folding segment boundary detection. RRF fusion for combining search signals is a proven technique applicable if we build retrieval into the orchestrator for long-context knowledge lookup. DEEP-DIVE: Deploy as MCP server for epyc-root semantic search. Break-point scoring formula (baseScore * (1-(d/w)^2*0.7)) extractable for context-folding. 2GB models run on CPU, no GPU impact. 359-file corpus is exact target.
+  notes: 'RE-ENCOUNTER 2026-11-02 (ws58 source 3): named by the Karpathy gist as the next step once index-first navigation stops scaling. Uses GGUF models via node-llama-cpp for local search — directly on our stack. The hybrid BM25+vector+LLM reranking pipeline is a well-engineered retrieval architecture. Natural markdown chunking approach could inform context-folding segment boundary detection. RRF fusion for combining search signals is a proven technique applicable if we build retrieval into the orchestrator for long-context knowledge lookup. DEEP-DIVE: Deploy as MCP server for epyc-root semantic search. Break-point scoring formula (baseScore * (1-(d/w)^2*0.7)) extractable for context-folding. 2GB models run on CPU, no GPU impact. 359-file corpus is exact target.
 
     '
   claim_anchors:
@@ -173344,7 +173344,7 @@
   - Calibration is group-level only; individual answers are explicitly not guaranteed.
   - 'Internal inconsistencies: 11.5x/9.6x vs 12.2x/10.0x; context budget stated as ~32k tokens on one page vs 64k-together/32k-longest-question on another.'
   - 'Hosted-only model: no weights, no self-hosting path; API key required.'
-  notes: 'Stage-1 expansion read (2026-09-17T12:38Z; Mintlify; root redirects to /llms.txt; all pages fetched as raw .md; model pages describe jev-1.13.0; jaggedness page last reviewed 2026-09-16). This is the closest public SPEC of the typed-decision API and the highest-value artifact for the operator''s ''fold Jev techniques into the orchestrator'' steering: the contract (closed-set choices, per-question distributions, caller-side confidence thresholds, speculative fan-out, deterministic assembly) is implementable over llama.cpp without any hosted dependency. Bounded contradiction pass found no calibration evidence beyond vendor assertion.'
+  notes: 'RE-ENCOUNTER 2026-11-02 (ws58 jev intake, intake-2604 dive): /confidence now publishes the Choice confidence formula (p_max - 1/n)/(1 - 1/n); jev-1.14 is newest since 2026-10-14. Stage-1 expansion read (2026-09-17T12:38Z; Mintlify; root redirects to /llms.txt; all pages fetched as raw .md; model pages describe jev-1.13.0; jaggedness page last reviewed 2026-09-16). This is the closest public SPEC of the typed-decision API and the highest-value artifact for the operator''s ''fold Jev techniques into the orchestrator'' steering: the contract (closed-set choices, per-question distributions, caller-side confidence thresholds, speculative fan-out, deterministic assembly) is implementable over llama.cpp without any hosted dependency. Bounded contradiction pass found no calibration evidence beyond vendor assertion.'
   reader_should_conclude: 'Stage-2 dive-verified spec: implement the contract patterns locally; do not cite the vendor cookbook speedups as measurements, do not assume IDs/prompt isolation survive a local implementation, and treat confidence as an undisclosed statistic until calibrated locally.'
   verification: dive-verified
   handoffs_updated: []
@@ -375431,7 +375431,7 @@
   - 'README: research prototype, adapted for publication, not identical to the internal version or to the article it cites; some designs
     in the article are not implemented.'
   referenced_arxiv_ids: []
-  notes: 'Companion of intake-1186 (deepseek-harness), a DISTINCT repo; not a duplicate. Read from disk: README, SETUP header, docs/000-005,
+  notes: 'ESSAY COMPANION 2026-11-02: the design essay this prototype accompanies is ingested separately as intake-2615 (X article (DeepSeekHarness X Article); the previously unlocatable article). Companion of intake-1186 (deepseek-harness), a DISTINCT repo; not a duplicate. Read from disk: README, SETUP header, docs/000-005,
     docs/007 sections Persistence/Configuration reload/Reviewing/Open questions, all prompts/*.md headers plus work.md, worker.md, handoff*.md,
     src/app/tools/executor.ts:78 (report enum). NOT read: src/ implementation beyond that line, tests/, docs/006 and 008, skills/. Retry/redelivery
     claims are verified as documented contracts, not against code. Cited article "Exploring Super-agent Design: Towards a More Autonomous
@@ -375528,3 +375528,1483 @@
   disposition_evidence:
   - 'Dive complete; four churn-pipeline task lines (DSH-1..4) prepared in research/deep-dives/intake-2603-dsh-superagent-prototype.md and
     await operator approval of the Stage-3 plan before any handoff write (proposed owner session-bus-thin-dispatcher.md; scripts/coordination/** merges also need operator ack per ratified D9).'
+- id: intake-2604
+  arxiv_id: null
+  url: https://github.com/Archive228/jev-harness-engineering
+  source_type: repo
+  title: 'Typed Decisions in a Coding-Agent Harness: Evidence Reports, Diagnostic Routing, and a Bounded Repair Loop on Jev (jev-harness-engineering)'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - routing_intelligence
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-11-02'
+  authors:
+  - Archive228 (anonymous; X handle ArchiveExplorer; no affiliation stated)
+  key_claims:
+  - 'Jev takes a state plus independent typed questions: Choice (up to 255 options, probability vector plus a confidence), Score (2-10 ordered
+    levels) and Noul (one yes-probability).'
+  - 'Vendor pricing pinned by the article: $0.042 per million input tokens, output unmetered, model pinned to jev-1.13.0 (superseded by jev-1.14
+    on 2026-10-14).'
+  - Choice confidence for n options is (n*p_max - 1)/(n - 1), so a confidence gate is a p_max gate that depends on n.
+  - 'Build 1 evidence report: each criterion is passed/failed/unverified with provenance (check id, command, exit code, snapshots); the worker''s
+    claim never becomes a result and a semantic Noul never promotes a criterion to passed.'
+  - 'Build 2 diagnostic selector: the model chooses a diagnostic id from the harness registry; model text is never executed as shell.'
+  - Build 3 bounded repair loop with a named, exhaustive policy (check, worker repair, ask router, complete, stop with reason); an API error never
+    confirms readiness; codex policy limits are 2 repairs and 300 s.
+  - 'Live runs on 3 seeded defects: 2 automatic completions and 1 stop at confidence 0.52 below 0.60, no false complete; a fixed diagnostic order
+    repaired 3/3 and the article says no Jev advantage is established; 28/28 labelled answers are explicitly not calibration evidence.'
+  - Replay re-runs the pure policy over saved inputs and answers without calling models and reports the first divergence.
+  - Keep semantic questions narrow; leave exact arithmetic and invariants to code.
+  techniques:
+  - typed Choice/Score/Noul judgments
+  - evidence report passed/failed/unverified with provenance
+  - registry-only diagnostic selector
+  - bounded repair loop with named stop reasons
+  - pure-function policy with replay divergence
+  - snapshot-hash freshness of check results
+  reported_results:
+  - 'Live: 3 seeded defects, one run each: 2 auto-complete (confidence 0.77, 0.70), 1 stop at 0.52 < 0.60; fixed order 3/3. Offline: 28/28 on
+    two author-written labelled sets; 83 harness unit tests.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - session-bus-thin-dispatcher.md
+    experiments: []
+    intake_entries:
+    - intake-1460
+    - intake-1462
+    - intake-1472
+    - intake-2603
+  credibility_score: null
+  contradicting_evidence:
+  - Author says the toy task needs no model and that no advantage for Jev is established; n=3 live cases; requests carry no seed or temperature;
+    jev-1.13.0 superseded.
+  referenced_arxiv_ids: []
+  notes: 'X post https://x.com/ArchiveExplorer/status/2103590048230695408 (2026-09-25) reachable via curl/syndication/fxtwitter; it only links
+    an X Article that is a shortened edition of the repo article, so it is recorded here and not as a separate entry. typesafe.ai/docs 404; docs.typesafe.ai
+    read from disk (see intake-1472 re-encounter). Read FULL: the English article; PARTIAL: jev-harness-lab policy*.json, policy.py, run.py replay;
+    NOT read in detail: verification/jev-live-2026-09-20/*, other-language editions. License MIT.'
+  verification: dive-verified
+  handoffs_updated:
+  - churn-pipeline.md
+  - autopilot-continuous-optimization.md
+  - autokernel-research-loop.md
+  - dashboard-architecture-restructure.md
+  handoffs_created: []
+  source_revision: github.com/Archive228/jev-harness-engineering @ main 5d8670b6918003379e6d03a200fecf9d2cc9a2c3 (2026-09-25), git clone --depth
+    1, retrieved 2026-11-02
+  reader_should_conclude: Cite as a model-agnostic control-flow pattern source (evidence report, registry-only selector, named stop policy, replay).
+    Its live numbers are anecdotal (n=3) and say nothing about Jev's advantage.
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: jev-engineering.en.md:61 @ 5d8670b
+    quote: no more than 255 options in a Choice, and between two and ten levels in a Score
+    quote_sha256: 19639c82f4808e64e192c159c1aa4b78615be4722708a7913c6c2f547e448bcb
+    source_revision: github.com/Archive228/jev-harness-engineering @ main 5d8670b6918003379e6d03a200fecf9d2cc9a2c3 (2026-09-25), git clone --depth
+      1, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: jev-engineering.en.md:92 @ 5d8670b
+    quote: '`probabilities` gives the distribution across options, and `confidence` shows how concentrated that distribution is'
+    quote_sha256: 4dcd58be6596fc7f2f250418feb3738409a967bcc2b41843b0c523d225e43167
+    source_revision: github.com/Archive228/jev-harness-engineering @ main 5d8670b6918003379e6d03a200fecf9d2cc9a2c3 (2026-09-25), git clone --depth
+      1, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: jev-engineering.en.md:164 @ 5d8670b
+    quote: Inside such a request the questions are evaluated independently.
+    quote_sha256: 2c3100ccc65224a4a664b386c336924d91b58569917260bfdb263ebdebdcffa6
+    source_revision: github.com/Archive228/jev-harness-engineering @ main 5d8670b6918003379e6d03a200fecf9d2cc9a2c3 (2026-09-25), git clone --depth
+      1, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: jev-engineering.en.md:17 @ 5d8670b
+    quote: $0.042 per million input tokens with output unmetered
+    quote_sha256: 7d36c7b8882995f751ed62e550a32fe7c7e625f05b24e56cc9aa4356c4948905
+    source_revision: github.com/Archive228/jev-harness-engineering @ main 5d8670b6918003379e6d03a200fecf9d2cc9a2c3 (2026-09-25), git clone --depth
+      1, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: jev-engineering.en.md:96 @ 5d8670b
+    quote: for `n` options the documentation reduces it to `(n × p_max − 1) / (n − 1)`
+    quote_sha256: 08bb07b559da7fb91dc253854ead5a0fce9513ee5f965283f27ee153afe06860
+    source_revision: github.com/Archive228/jev-harness-engineering @ main 5d8670b6918003379e6d03a200fecf9d2cc9a2c3 (2026-09-25), git clone --depth
+      1, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: jev-engineering.en.md:366 @ 5d8670b
+    quote: '`unverified`: confirmation is missing; the check was never run, or the result belongs to older code.'
+    quote_sha256: a5daf43fd52eaaff49eb922731db735d5efd64fb8144e6ce97950abc809827c4
+    source_revision: github.com/Archive228/jev-harness-engineering @ main 5d8670b6918003379e6d03a200fecf9d2cc9a2c3 (2026-09-25), git clone --depth
+      1, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: jev-engineering.en.md:372 @ 5d8670b
+    quote: 'A check result needs a source: check ID, command, exit code, output, timestamp and project snapshot.'
+    quote_sha256: bcd7e0fb786168a0e6e69d61b1da2d1cf8f215310f31618e075332847b7779ff
+    source_revision: github.com/Archive228/jev-harness-engineering @ main 5d8670b6918003379e6d03a200fecf9d2cc9a2c3 (2026-09-25), git clone --depth
+      1, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: jev-engineering.en.md:368 @ 5d8670b
+    quote: It never becomes a test result.
+    quote_sha256: 85561fe960da9be1e2762eb56d2f849b85a388d848ded8681f98dfbfac455383
+    source_revision: github.com/Archive228/jev-harness-engineering @ main 5d8670b6918003379e6d03a200fecf9d2cc9a2c3 (2026-09-25), git clone --depth
+      1, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: jev-engineering.en.md:416 @ 5d8670b
+    quote: it never promotes a mandatory criterion to `passed`
+    quote_sha256: f917e3c3d5f6be084518d1a744dee9c0ba80da12fbba7d9a3d150b351bc136d3
+    source_revision: github.com/Archive228/jev-harness-engineering @ main 5d8670b6918003379e6d03a200fecf9d2cc9a2c3 (2026-09-25), git clone --depth
+      1, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: jev-engineering.en.md:500 @ 5d8670b
+    quote: Text from the model is never executed as shell.
+    quote_sha256: 4a74e4b8a13ffeaf6c3f963a05e61c3fe4c2944c41c1cd6334021dd4d47b4c8f
+    source_revision: github.com/Archive228/jev-harness-engineering @ main 5d8670b6918003379e6d03a200fecf9d2cc9a2c3 (2026-09-25), git clone --depth
+      1, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: jev-engineering.en.md:526 @ 5d8670b
+    quote: run a mandatory check, obtain an extra observation, hand a failure to the worker, complete under the contract, or stop for review
+    quote_sha256: 33e76b36a8993801d9030613ef9e47f053a6bc6f127a5fef81e5060e20d2ca28
+    source_revision: github.com/Archive228/jev-harness-engineering @ main 5d8670b6918003379e6d03a200fecf9d2cc9a2c3 (2026-09-25), git clone --depth
+      1, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: jev-engineering.en.md:534 @ 5d8670b
+    quote: an API error never confirms readiness
+    quote_sha256: c89639a7d9685735a2e15b156f25dfabc6a5c19c36289c3eec45b142c9d5a3b7
+    source_revision: github.com/Archive228/jev-harness-engineering @ main 5d8670b6918003379e6d03a200fecf9d2cc9a2c3 (2026-09-25), git clone --depth
+      1, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: jev-engineering.en.md:604 @ 5d8670b
+    quote: The policy allows up to two repairs and 300 seconds for the whole loop.
+    quote_sha256: 02114b6facc378b25fb019630af8350e9aa35868c652ffe1691b16e17ae248a1
+    source_revision: github.com/Archive228/jev-harness-engineering @ main 5d8670b6918003379e6d03a200fecf9d2cc9a2c3 (2026-09-25), git clone --depth
+      1, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: heading-and-hash
+    locator: jev-engineering.en.md:690 @ 5d8670b
+    quote: '**two automatic completions and one stop**, with no false `complete`'
+    quote_sha256: f5157e9e896d8189755143b3df4e106930661959d8a19361eed4d594885550cd
+    source_revision: github.com/Archive228/jev-harness-engineering @ main 5d8670b6918003379e6d03a200fecf9d2cc9a2c3 (2026-09-25), git clone --depth
+      1, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: heading-and-hash
+    locator: jev-engineering.en.md:684 @ 5d8670b
+    quote: '`confidence=0.52` fell below the recorded threshold of `0.60`'
+    quote_sha256: 1bf89ccbf19caf84a670f68f233f98ae07b3803f2472628075329a1d18f1554f
+    source_revision: github.com/Archive228/jev-harness-engineering @ main 5d8670b6918003379e6d03a200fecf9d2cc9a2c3 (2026-09-25), git clone --depth
+      1, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: heading-and-hash
+    locator: jev-engineering.en.md:792 @ 5d8670b
+    quote: they establish nothing about reliability on your traffic, the quality of calibration
+    quote_sha256: d5bdb3ac298dcf26813857a2ab1fd4a41ae20fdcb0b4ef283435e45144fe6dc0
+    source_revision: github.com/Archive228/jev-harness-engineering @ main 5d8670b6918003379e6d03a200fecf9d2cc9a2c3 (2026-09-25), git clone --depth
+      1, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 7
+    kind: heading-and-hash
+    locator: jev-engineering.en.md:729 @ 5d8670b
+    quote: Replay reads the saved inputs and answers, recomputes the policy actions, and calls no models
+    quote_sha256: 3509c9fddebc1c26415ef86378d27122de7576fe4772072a4072809ef8a7e57b
+    source_revision: github.com/Archive228/jev-harness-engineering @ main 5d8670b6918003379e6d03a200fecf9d2cc9a2c3 (2026-09-25), git clone --depth
+      1, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 8
+    kind: heading-and-hash
+    locator: jev-engineering.en.md:810 @ 5d8670b
+    quote: So keep questions of meaning narrow, and leave exact arithmetic and invariants to code.
+    quote_sha256: d0ed3e7d25fc2c6b9ef912317985d3adda1ba489d271b5fae185ff2d1d306777
+    source_revision: github.com/Archive228/jev-harness-engineering @ main 5d8670b6918003379e6d03a200fecf9d2cc9a2c3 (2026-09-25), git clone --depth
+      1, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 5
+    effect: narrowed
+    note: 300 s is only in policy-codex.json; default policy.json is 120 s, policy-live.json 240 s.
+  - claim_index: 6
+    effect: narrowed
+    note: Operator summary omitted that the fixed order repaired 3/3 vs Jev 2/3; the stop was recovered by hand with --selector all.
+  - claim_index: 3
+    effect: unaffected
+    note: Confirmed verbatim at :366-416.
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed verbatim; docs.typesafe.ai/api schema agrees on 255 options.
+  depends_on: []
+  dive_corrections: '2026-11-02 (Stage 2): primary source read from disk at 5d8670b. Operator summary corrections: wording-versioned-with-threshold
+    not stated (only pin the model version, :905); low-confidence=no-opinion and asked/not-asked/unavailable are structural, not stated principles
+    (:534, :721); 300 s is codex policy only; fixed order beat Jev 3/3 vs 2/3; 83 checks are unit tests. Stage-2b wave 1: intake-2605..2608 (selective
+    prediction literature); wave 2: intake-2613 (thruwire/foreman), intake-2614 (LangChain blog, vendor-partner, not independent). Dive-surfaced
+    sources declined (wave cap 2 reached): typesafe-ai/skills, typesafe-sdk-python, browser-use/jev-ultrafast, docs.typesafe.ai/patterns/* — reopen
+    if a local typed-judgment build needs vendor reference code.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/churn-pipeline.md, handoffs/active/autopilot-continuous-optimization.md, handoffs/active/autokernel-research-loop.md, handoffs/active/dashboard-architecture-restructure.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'
+- id: intake-2605
+  arxiv_id: '1705.08500'
+  url: https://arxiv.org/abs/1705.08500
+  source_type: paper
+  title: Selective Classification for Deep Neural Networks
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2604
+  verdict: worth_investigating
+  ingested_date: '2026-11-02'
+  authors:
+  - Yonatan Geifman
+  - Ran El-Yaniv
+  key_claims:
+  - Our method allows a user to set a desired risk level. At test time, the classifier rejects instances as needed, to grant the desired risk
+    (with high probability).
+  - (f,g) whose test error will be no larger than r∗ with probability of at least 1−δ.
+  - While Theorem 3.2 always holds, we note that if κf is severely skewed (far from ideal), the bound of the resulting selective classifier can
+    be far from the
+  techniques:
+  - risk-coverage selective classifier (SGR)
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-2604
+  credibility_score: 4
+  contradicting_evidence: []
+  referenced_arxiv_ids: []
+  notes: 'Stage-1 expansion from intake-2604 (2026-11-02), dived as Stage-2b wave 1. Venue not stated in the text read; not recorded. Use: setting
+    the two thresholds of a typed judgment from held-out real outcomes and replaying saved inputs. Calibration labels must be real outcomes; decisions
+    within one episode are not exchangeable.'
+  verification: dive-verified
+  handoffs_updated:
+  - churn-pipeline.md
+  handoffs_created: []
+  source_revision: arXiv:1705.08500v2 HTML (arxiv.org/html/1705.08500v2) curled to disk, read from disk, retrieved 2026-11-02
+  reader_should_conclude: Cite for how to set abstention thresholds with a stated risk or coverage target; not evidence about any agent harness.
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Abstract
+    quote: Our method allows a user to set a desired risk level. At test time, the classifier rejects instances as needed, to grant the desired
+      risk (with high probability).
+    quote_sha256: 9e68b0b9b483a06546b634d41d84f6543f9c2b160e206dc74cdd9a9203ed9f42
+    source_revision: arXiv:1705.08500v2 HTML (arxiv.org/html/1705.08500v2) curled to disk, read from disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Sec 1; Eq (2), Alg 1 (SGR), Thm 3.2
+    quote: (f,g) whose test error will be no larger than r∗ with probability of at least 1−δ.
+    quote_sha256: 4af8d2577b6004d50dcd9948e841d87ea50a5d10aadecc2f8740c40c99cad632
+    source_revision: arXiv:1705.08500v2 HTML (arxiv.org/html/1705.08500v2) curled to disk, read from disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Sec 4 (footnote 1)
+    quote: While Theorem 3.2 always holds, we note that if κf is severely skewed (far from ideal), the bound of the resulting selective classifier
+      can be far from the
+    quote_sha256: ee174a0024dfae53b59b593b23614dec93a7a2560c1734bb27940821deb39c8a
+    source_revision: arXiv:1705.08500v2 HTML (arxiv.org/html/1705.08500v2) curled to disk, read from disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  depends_on: []
+  dive_corrections: '2026-11-02 (Stage-2b wave 1): all quotes verified as exact substrings of the on-disk HTML text; no claim overturned.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/churn-pipeline.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'
+- id: intake-2606
+  arxiv_id: '2307.01928'
+  url: https://arxiv.org/abs/2307.01928
+  source_type: paper
+  title: 'Robots That Ask For Help: Uncertainty Alignment for Large Language Model Planners'
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2604
+  verdict: worth_investigating
+  ingested_date: '2026-11-02'
+  authors:
+  - Allen Z. Ren
+  - Anushri Dixit
+  - Dorsa Sadigh
+  - et al.
+  key_claims:
+  - In practice, we use a modest-sized calibration dataset (N=400) and δ=0.01, and adjust ϵ^ to achieve the desired 1−ϵ coverage (with probability
+    1−δ=0.99 over the sampling of the calibration set).
+  - We emphasize that the CP coverage guarantees hold regardless of the accuracy of f^.
+  - Another limitation is that, for the task guarantee to hold, the human needs to faithfully provide help when the robot needs it.
+  techniques:
+  - KnowNo conformal prediction over multiple-choice LLM options
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-2604
+  credibility_score: 4
+  contradicting_evidence: []
+  referenced_arxiv_ids: []
+  notes: 'Stage-1 expansion from intake-2604 (2026-11-02), dived as Stage-2b wave 1. Venue not stated in the text read; not recorded. Use: setting
+    the two thresholds of a typed judgment from held-out real outcomes and replaying saved inputs. Calibration labels must be real outcomes; decisions
+    within one episode are not exchangeable.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv:2307.01928v2 HTML (arxiv.org/html/2307.01928v2) curled to disk, read from disk, retrieved 2026-11-02
+  reader_should_conclude: Cite for how to set abstention thresholds with a stated risk or coverage target; not evidence about any agent harness.
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Sec 3.1, after Eq (2)
+    quote: In practice, we use a modest-sized calibration dataset (N=400) and δ=0.01, and adjust ϵ^ to achieve the desired 1−ϵ coverage (with
+      probability 1−δ=0.99 over the sampling of the calibration set).
+    quote_sha256: 4a0097951403dca74b1ed12cff63adbbb044522158e483d1a627c3ab73f52be7
+    source_revision: arXiv:2307.01928v2 HTML (arxiv.org/html/2307.01928v2) curled to disk, read from disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Sec 3.1
+    quote: We emphasize that the CP coverage guarantees hold regardless of the accuracy of f^.
+    quote_sha256: f37a41b5ade6db045b202cd5431f22344c286c962248c3b7db179d1bc7997321
+    source_revision: arXiv:2307.01928v2 HTML (arxiv.org/html/2307.01928v2) curled to disk, read from disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Sec 6 Conclusion, Limitations
+    quote: Another limitation is that, for the task guarantee to hold, the human needs to faithfully provide help when the robot needs it.
+    quote_sha256: d7c38873be937ff93900f7b7992f6dd04edf8c8dfd111d249edcc6cce4f407bc
+    source_revision: arXiv:2307.01928v2 HTML (arxiv.org/html/2307.01928v2) curled to disk, read from disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  depends_on: []
+  dive_corrections: '2026-11-02 (Stage-2b wave 1): all quotes verified as exact substrings of the on-disk HTML text; no claim overturned.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Stage 4 2026-11-02: Supports the JEV-6 threshold rule as background; no task cites it directly.'
+- id: intake-2607
+  arxiv_id: '2107.11277'
+  url: https://arxiv.org/abs/2107.11277
+  source_type: paper
+  title: 'Machine Learning with a Reject Option: A survey'
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2604
+  verdict: worth_investigating
+  ingested_date: '2026-11-02'
+  authors:
+  - Kilian Hendrickx
+  - Lorenzo Perini
+  - Dries Van der Plas
+  - Wannes Meert
+  - Jesse Davis
+  key_claims:
+  - 'Setting an appropriate rejection threshold τ is crucial for having an accurate dependent rejector. At a high level, the threshold is set
+    in three main ways: using domain knowledge, adhering to user-provided constraints, or tuning it empirically based on some objective function.'
+  - However, in real-world scenarios, obtaining complete knowledge of class distributions is challenging, limiting the applicability of Chow’s
+    rule (Shekhar et al.,, 2019).
+  - 'First, when rejectors do not overlap (or when we are not interested in the example’s rejection type), one can simply combine the rejection
+    sets by a logical o​r-rule: reject the example if any of the rejectors rejects it and assign such rejection type'
+  techniques:
+  - reject option, Chow rule, two-threshold rejection
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-2604
+  credibility_score: 3
+  contradicting_evidence: []
+  referenced_arxiv_ids: []
+  notes: 'Stage-1 expansion from intake-2604 (2026-11-02), dived as Stage-2b wave 1. Venue not stated in the text read; not recorded. Use: setting
+    the two thresholds of a typed judgment from held-out real outcomes and replaying saved inputs. Calibration labels must be real outcomes; decisions
+    within one episode are not exchangeable.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv:2107.11277v3 HTML (arxiv.org/html/2107.11277v3) curled to disk, read from disk, retrieved 2026-11-02
+  reader_should_conclude: Cite for how to set abstention thresholds with a stated risk or coverage target; not evidence about any agent harness.
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Sec 5 Dependent rejector, Learning the rejection threshold
+    quote: 'Setting an appropriate rejection threshold τ is crucial for having an accurate dependent rejector. At a high level, the threshold
+      is set in three main ways: using domain knowledge, adhering to user-provided constraints, or tuning it empirically based on some objective
+      function.'
+    quote_sha256: 06377fefd21f07164cee67037fc38d34fabfd72c6e5797a4c318bb25ce63854e
+    source_revision: arXiv:2107.11277v3 HTML (arxiv.org/html/2107.11277v3) curled to disk, read from disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Sec 5, Learning the rejection threshold (precedes two-threshold Eq 8, Tortorella 2000)
+    quote: However, in real-world scenarios, obtaining complete knowledge of class distributions is challenging, limiting the applicability of
+      Chow’s rule (Shekhar et al.,, 2019).
+    quote_sha256: d9f5c4dda580cc8e09b0ab70d7d2c13005d7e7450c19d01b575ba401a58fc980
+    source_revision: arXiv:2107.11277v3 HTML (arxiv.org/html/2107.11277v3) curled to disk, read from disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Sec 7 Combining multiple rejectors
+    quote: 'First, when rejectors do not overlap (or when we are not interested in the example’s rejection type), one can simply combine the rejection
+      sets by a logical o​r-rule: reject the example if any of the rejectors rejects it and assign such rejection type'
+    quote_sha256: 74747878773cd9b66d1c685d5cae7a0f0d4c5e0df1cdd14f37331cdcd673bc5d
+    source_revision: arXiv:2107.11277v3 HTML (arxiv.org/html/2107.11277v3) curled to disk, read from disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  depends_on: []
+  dive_corrections: '2026-11-02 (Stage-2b wave 1): all quotes verified as exact substrings of the on-disk HTML text; no claim overturned.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Stage 4 2026-11-02: Survey background for the JEV-6 two-threshold rule; no task cites it directly.'
+- id: intake-2608
+  arxiv_id: '2306.10193'
+  url: https://arxiv.org/abs/2306.10193
+  source_type: paper
+  title: Conformal Language Modeling
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2604
+  verdict: worth_investigating
+  ingested_date: '2026-11-02'
+  authors:
+  - Victor Quach
+  - Adam Fisch
+  - Tal Schuster
+  - Regina Barzilay
+  - et al.
+  key_claims:
+  - Importantly, however, this does not include multi-turn dialogue where successive prompts are dependent, or when there is distribution shift
+    between calibration and testing.
+  - Unlike conformal prediction, however, λ can be multi-dimensional (e.g., consist of multiple thresholds).
+  - if kmax, the maximum number of samples drawn, is too low, then many levels of ϵ will be unattainable, and the method will fail to find a valid
+    configuration (it will return null).
+  techniques:
+  - conformal stopping rule, Learn Then Test multi-threshold calibration
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-2604
+  credibility_score: 4
+  contradicting_evidence: []
+  referenced_arxiv_ids: []
+  notes: 'Stage-1 expansion from intake-2604 (2026-11-02), dived as Stage-2b wave 1. Venue not stated in the text read; not recorded. Use: setting
+    the two thresholds of a typed judgment from held-out real outcomes and replaying saved inputs. Calibration labels must be real outcomes; decisions
+    within one episode are not exchangeable.'
+  verification: dive-verified
+  handoffs_updated:
+  - churn-pipeline.md
+  handoffs_created: []
+  source_revision: arXiv:2306.10193v2 HTML (arxiv.org/html/2306.10193v2) curled to disk, read from disk, retrieved 2026-11-02
+  reader_should_conclude: Cite for how to set abstention thresholds with a stated risk or coverage target; not evidence about any agent harness.
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: App. A Assumptions (Assumption 1)
+    quote: Importantly, however, this does not include multi-turn dialogue where successive prompts are dependent, or when there is distribution
+      shift between calibration and testing.
+    quote_sha256: 1350c37211654bfff2adcfe4f2230aeabc88a3e35d96d0974c31548a4a3228be
+    source_revision: arXiv:2306.10193v2 HTML (arxiv.org/html/2306.10193v2) curled to disk, read from disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Sec 3 Background (Learn Then Test), Eq (3)
+    quote: Unlike conformal prediction, however, λ can be multi-dimensional (e.g., consist of multiple thresholds).
+    quote_sha256: b3f5fc66d540a6e92c86b6ff45161c9891845045569fe98503b57af73184ac20
+    source_revision: arXiv:2306.10193v2 HTML (arxiv.org/html/2306.10193v2) curled to disk, read from disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: App. B Limitations
+    quote: if kmax, the maximum number of samples drawn, is too low, then many levels of ϵ will be unattainable, and the method will fail to find
+      a valid configuration (it will return null).
+    quote_sha256: f19a7db34fb3647be3a531d2ecd0860c0e0822acf9c28f1f8c792bd7e41e8896
+    source_revision: arXiv:2306.10193v2 HTML (arxiv.org/html/2306.10193v2) curled to disk, read from disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  depends_on: []
+  dive_corrections: '2026-11-02 (Stage-2b wave 1): all quotes verified as exact substrings of the on-disk HTML text; no claim overturned.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/churn-pipeline.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'
+- id: intake-2609
+  arxiv_id: null
+  url: https://github.com/apache/burr
+  source_type: repo
+  title: 'Apache Burr: state-machine application framework with tracking UI and fork-from-state'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2604
+  verdict: adopt_patterns
+  ingested_date: '2026-11-02'
+  authors:
+  - Apache Burr contributors (originally DAGWorks)
+  key_claims:
+  - Applications can be forked from a saved state via a parent pointer, which is the data model for replay from a step.
+  - Applications can render their state machine as a graph (visualize).
+  techniques:
+  - state machine actions/transitions
+  - fork_parent_pointer replay
+  - graphviz visualize
+  - tracking UI
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-2604
+    - intake-146
+  credibility_score: null
+  contradicting_evidence: []
+  referenced_arxiv_ids: []
+  notes: GUI literature expansion 2026-11-02. Apache-2.0. Tracking UI is a standalone app, not embeddable in the stdlib hub; adopt the snapshot-plus-parent-pointer
+    data model only.
+  verification: dive-verified
+  handoffs_updated:
+  - dashboard-architecture-restructure.md
+  handoffs_created: []
+  source_revision: github.com/apache/burr @ main 0512d8a02178545c8b7e94c46258ca9401d936e0, git clone --depth 1, retrieved 2026-11-02
+  reader_should_conclude: Cite as the data-model precedent for a replay stepper; do not adopt the UI.
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: burr/core/application.py:857 @ 0512d8a
+    quote: 'fork_parent_pointer: Optional[burr_types.ParentPointer] = None,'
+    quote_sha256: b9dc2bf6aeab6d6782581275e0eb916780286ddb13064820d573a430474c24e5
+    source_revision: github.com/apache/burr @ main 0512d8a02178545c8b7e94c46258ca9401d936e0, git clone --depth 1, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: burr/core/application.py:2021 @ 0512d8a
+    quote: def visualize(
+    quote_sha256: 54931a70ac6f9e9d51bebc5dd381367c0bd2d36a661383f329527b7cd22f242c
+    source_revision: github.com/apache/burr @ main 0512d8a02178545c8b7e94c46258ca9401d936e0, git clone --depth 1, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  depends_on: []
+  dive_corrections: '2026-11-02: only application.py lines 855-860, 2019-2024, 2080-2084 read for anchors; UI source tree listed, not read.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/dashboard-architecture-restructure.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'
+- id: intake-2610
+  arxiv_id: null
+  url: https://github.com/xyflow/xyflow
+  source_type: repo
+  title: 'xyflow (React Flow / Svelte Flow): node-based graph editor library'
+  categories:
+  - tool_implementation
+  - agent_architecture
+  novelty: low
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2604
+  verdict: worth_investigating
+  ingested_date: '2026-11-02'
+  authors:
+  - repository maintainers
+  key_claims:
+  - Candidate substrate for an agent-loop flow viewer/editor (see research/deep-dives/ws58-jev-20261102/agent-loop-gui-survey.md).
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-2609
+  credibility_score: null
+  contradicting_evidence: []
+  referenced_arxiv_ids: []
+  notes: 'GUI literature expansion 2026-11-02 (MIT, HEAD d4bc936e, from LICENSE file). Stage-1 only: no claim here may be quoted in a plan.'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-3 task lines JEV-1..JEV-6 and SA-1..SA-4 are prepared in research/deep-dives/ws58-jev-20261102/README.md and await operator approval
+    of the plan before any handoff write (2026-11-02).
+- id: intake-2611
+  arxiv_id: null
+  url: https://github.com/mermaid-js/mermaid
+  source_type: repo
+  title: 'Mermaid: text-to-diagram renderer including stateDiagram-v2'
+  categories:
+  - tool_implementation
+  - agent_architecture
+  novelty: low
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2604
+  verdict: worth_investigating
+  ingested_date: '2026-11-02'
+  authors:
+  - repository maintainers
+  key_claims:
+  - Candidate substrate for an agent-loop flow viewer/editor (see research/deep-dives/ws58-jev-20261102/agent-loop-gui-survey.md).
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-2609
+  credibility_score: null
+  contradicting_evidence: []
+  referenced_arxiv_ids: []
+  notes: 'GUI literature expansion 2026-11-02 (MIT, HEAD 370c4af5, from LICENSE file). Stage-1 only: no claim here may be quoted in a plan.'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-3 task lines JEV-1..JEV-6 and SA-1..SA-4 are prepared in research/deep-dives/ws58-jev-20261102/README.md and await operator approval
+    of the plan before any handoff write (2026-11-02).
+- id: intake-2612
+  arxiv_id: null
+  url: https://github.com/statelyai/xstate
+  source_type: repo
+  title: 'XState: statechart runtime with a JSON machine config'
+  categories:
+  - tool_implementation
+  - agent_architecture
+  novelty: low
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2604
+  verdict: worth_investigating
+  ingested_date: '2026-11-02'
+  authors:
+  - repository maintainers
+  key_claims:
+  - Candidate substrate for an agent-loop flow viewer/editor (see research/deep-dives/ws58-jev-20261102/agent-loop-gui-survey.md).
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-2609
+  credibility_score: null
+  contradicting_evidence: []
+  referenced_arxiv_ids: []
+  notes: 'GUI literature expansion 2026-11-02 (MIT, HEAD 060cd633, from LICENSE file). Stage-1 only: no claim here may be quoted in a plan.'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-3 task lines JEV-1..JEV-6 and SA-1..SA-4 are prepared in research/deep-dives/ws58-jev-20261102/README.md and await operator approval
+    of the plan before any handoff write (2026-11-02).
+- id: intake-2613
+  arxiv_id: null
+  url: https://github.com/thruwire/foreman
+  source_type: repo
+  title: 'Foreman: semantic supervisor runtime for coding agents (Jev or other decision models)'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2604
+  verdict: adopt_patterns
+  ingested_date: '2026-11-02'
+  authors:
+  - Josh Rosen (thruwire)
+  key_claims:
+  - Check configuration comes from a central registry; target repositories never supply it.
+  - Transient decision-model failures are tolerated up to a bound and then escalate.
+  - A saved JSONL timeline lets runs be labelled after the fact and thresholds re-evaluated.
+  - The repository explicitly does not claim improved success, latency, cost or safety, nor calibrated thresholds.
+  techniques:
+  - deterministic arbiter over yes-probabilities
+  - steer once then stop
+  - assessment errors are not scores
+  - replay of saved timeline
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-2604
+  credibility_score: null
+  contradicting_evidence:
+  - Feasibility only; authors disclaim outcome and calibration claims.
+  referenced_arxiv_ids: []
+  notes: Dive-surfaced from intake-2604, Stage-2b wave 2. MIT.
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: github.com/thruwire/foreman @ main c3142ef636617f32f772140125aa310d81ceece9 (2026-10-15), git clone --depth 1, retrieved 2026-11-02
+  reader_should_conclude: Cite as a second design precedent (arbiter over thresholded probabilities, errors not scored); not outcome evidence.
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: README.md:226 @ c3142ef
+    quote: Target repositories never supply responsibility
+    quote_sha256: 0da776af7967c38c3dcfe720e9fbc812ee7862888a78365ff5098f24d702cb3a
+    source_revision: github.com/thruwire/foreman @ main c3142ef636617f32f772140125aa310d81ceece9 (2026-10-15), git clone --depth 1, retrieved
+      2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: README.md:249 @ c3142ef
+    quote: Transient decision model failures are tolerated up to
+    quote_sha256: 3a7bcf3f125dd98c18ccbe66ede0689f806c62d65fb3aa15eddb8b7c487a468d
+    source_revision: github.com/thruwire/foreman @ main c3142ef636617f32f772140125aa310d81ceece9 (2026-10-15), git clone --depth 1, retrieved
+      2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: docs/what-foreman-proves.md:34 @ c3142ef
+    quote: Runs can be labeled after the fact, threshold
+    quote_sha256: 544e42d7f97b3eea962afebe659cbc85cb6a924fc566d148c3ccff0356752ecc
+    source_revision: github.com/thruwire/foreman @ main c3142ef636617f32f772140125aa310d81ceece9 (2026-10-15), git clone --depth 1, retrieved
+      2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: docs/what-foreman-proves.md:40 @ c3142ef
+    quote: that Foreman improves success rate, latency, cost, or safety
+    quote_sha256: e4bb8097007b28b9d18f5a853c85433e493b226b2408c96c8969ead2b503e058
+    source_revision: github.com/thruwire/foreman @ main c3142ef636617f32f772140125aa310d81ceece9 (2026-10-15), git clone --depth 1, retrieved
+      2026-11-02
+    verified_by: research-intake/stage2
+  depends_on: []
+  dive_corrections: '2026-11-02 (Stage-2b wave 2): README and docs/what-foreman-proves.md read from disk.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Stage 4 2026-11-02: Second design precedent for JEV-1/JEV-3 (errors are not scores); no distinct task.'
+- id: intake-2614
+  arxiv_id: null
+  url: https://www.langchain.com/blog/building-a-harness-with-jev
+  source_type: blog
+  title: Building a Harness with Jev (LangChain blog)
+  categories:
+  - agent_architecture
+  - tool_implementation
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2604
+  verdict: worth_investigating
+  ingested_date: '2026-11-02'
+  authors:
+  - Sydney Runkle
+  - Hunter Lovell
+  key_claims:
+  - Jev is positioned as a typed-decision component beside an LLM, not a replacement.
+  - A classifier gate checks agent tool calls before execution (Auto Mode).
+  - Speed and cost multipliers are restated from TypeSafe, with no methodology.
+  techniques:
+  - typed decisions beside an LLM
+  - pre-execution tool-call classifier gate
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-2604
+    - intake-1470
+  credibility_score: null
+  contradicting_evidence:
+  - Vendor-partner post (LangChain ships langchain-typesafe); not independent corroboration.
+  referenced_arxiv_ids: []
+  notes: Dive-surfaced from intake-2604, Stage-2b wave 2.
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: www.langchain.com/blog/building-a-harness-with-jev curled to disk 2026-11-02 (post dated 2026-09-17)
+  reader_should_conclude: Restatement, not corroboration; useful only for the tool-call gate idea.
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: 'blog.txt:119 (section: Use Cases)'
+    quote: Jev isn’t a drop-in replacement for an LLM.
+    quote_sha256: 7cb9440fdaa189de6f3a347cdb4b4660f0c451e64a7a7947a56378ba73a51a1a
+    source_revision: www.langchain.com/blog/building-a-harness-with-jev curled to disk 2026-11-02 (post dated 2026-09-17)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: 'blog.txt:142 (section: Auto Mode)'
+    quote: Agents are still inherently untrustworthy.
+    quote_sha256: 72f98f6a0a64af7a4a5c58f5732e8e3242492a4f8a399e480301754093161f5a
+    source_revision: www.langchain.com/blog/building-a-harness-with-jev curled to disk 2026-11-02 (post dated 2026-09-17)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: 'blog.txt:70 (section: intro)'
+    quote: The company reports up to 200x faster inference and 400x lower cost than comparable LLMs on classification tasks.
+    quote_sha256: 9f682cc905804d250768a65cbb854196dca9c1eb81c6a48dec695b7688dca82c
+    source_revision: www.langchain.com/blog/building-a-harness-with-jev curled to disk 2026-11-02 (post dated 2026-09-17)
+    verified_by: research-intake/stage2
+  depends_on: []
+  dive_corrections: '2026-11-02 (Stage-2b wave 2): read from disk; multipliers are vendor restatements.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Stage 4 2026-11-02: Vendor-partner restatement; no task.'
+- id: intake-2615
+  arxiv_id: null
+  url: https://x.com/DeepSeekHarness/status/2116857257245987236
+  source_type: blog
+  title: 'Exploring Super-agent Design: Towards a More Autonomous Agent System (DeepSeek Harness essay)'
+  categories:
+  - agent_architecture
+  - context_management
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-11-02'
+  authors:
+  - DeepSeek Harness team
+  key_claims:
+  - Workers subscribed to a Thread receive follow-up events by code pass-through, with no Router call.
+  - Triggers pass a deterministic Fast Path then a model Slow Path.
+  - Router batches triggers arriving during a turn; amortised time per decision falls as backlog grows.
+  - Without pass-through, Router decisions rise about 30% per run.
+  - Without pass-through, cache-read tokens rise from 23.2M to 31.8M (about 37%), completion time about the same.
+  - An independent scheduled Watchdog Session monitors liveness, unproductive loops and goal drift.
+  - Giving every event its own new session loses shared context; the design is a long-lived Router plus one Worker per task.
+  - Full-duplex async start()/stop() exists but is not enabled by default.
+  techniques:
+  - Router/Worker split
+  - Fast/Slow trigger filter
+  - Thread subscriptions with code pass-through
+  - Router batching
+  - Inline/Spill context
+  - Chain of Recall
+  - Watchdog session
+  reported_results:
+  - 'Synthetic ablation (~300 messages, ~20 work requests, 5 runs, coding simulated by a time-consuming tool): Super-agent 12.4 min p50 / 15.7
+    p95; single session neutral prompt 29.5 p95. Router stress test with mock Workers: 1 to 40 triggers/min, batch 1.0 to 2.8, 2.5 s to 3.9 s
+    per request, amortised 6.4 s to 1.6 s per decision.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - session-bus-thin-dispatcher.md
+    experiments: []
+    intake_entries:
+    - intake-2603
+    - intake-2616
+  credibility_score: 2
+  contradicting_evidence:
+  - 'Essay: results are indicative only; the ablation simulated work; stress-test Workers were mocks; Super-agent uses MORE cache-read tokens
+    than single-session designs.'
+  referenced_arxiv_ids: []
+  notes: Essay companion of intake-2603 (the prototype repo); distinct source. Chinese original not located in bounded searches 2026-11-02 (unverified-in-stage1,
+    not evidence of nonexistence); English machine translation read in full. The prototype README says it is not identical to the essay's implementation.
+  verification: dive-verified
+  handoffs_updated:
+  - churn-pipeline.md
+  handoffs_created: []
+  source_revision: X Article linked from x.com/DeepSeekHarness/status/2116857257245987236 (English machine translation of the 2026-10-31 Chinese essay) via api.fxtwitter.com, saved
+    to disk, retrieved 2026-11-02
+  reader_should_conclude: Cite for the Router/Worker plus subscription design and its token argument; numbers are synthetic and indicative.
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: art:b56 @ x-article-DeepSeekHarness
+    quote: Code passes follow-up events in the Thread straight through to the subscribed Worker
+    quote_sha256: f28c07b7f8198158b6f48e2c0923eb0442256f02847bf67c47908d5bdda2664e
+    source_revision: X Article linked from x.com/DeepSeekHarness/status/2116857257245987236 (English machine translation of the 2026-10-31 Chinese essay) via api.fxtwitter.com,
+      saved to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: art:b47 (S3.1) @ x-article-DeepSeekHarness
+    quote: We use two-stage filtering that combines programmatic policies with a large model
+    quote_sha256: c84715a08664e059d189ddc787c7e3c83dd7232e5101b15e5b3fd13e18f2fcb2
+    source_revision: X Article linked from x.com/DeepSeekHarness/status/2116857257245987236 (English machine translation of the 2026-10-31 Chinese essay) via api.fxtwitter.com,
+      saved to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: art:b34 @ x-article-DeepSeekHarness
+    quote: the larger the backlog, the lower the amortized inference time per decision
+    quote_sha256: ae1e9a53136b1610f4f6afb8491c23b293dfc7fe5dc6dd76bb377fadbe6e8aea
+    source_revision: X Article linked from x.com/DeepSeekHarness/status/2116857257245987236 (English machine translation of the 2026-10-31 Chinese essay) via api.fxtwitter.com,
+      saved to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: art:b115 @ x-article-DeepSeekHarness
+    quote: its Router makes about 30% more decisions per run
+    quote_sha256: c48fed160bc82be99b59a5126eddfb1f2e6f9c6e4f4b418ecaaa3ed305409b00
+    source_revision: X Article linked from x.com/DeepSeekHarness/status/2116857257245987236 (English machine translation of the 2026-10-31 Chinese essay) via api.fxtwitter.com,
+      saved to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: art:b115 @ x-article-DeepSeekHarness
+    quote: total cache-read tokens rise from 23.2M to 31.8M, about 37% more
+    quote_sha256: 37e24ba21a8ec39e5fc21b117fb9e3d4c336b1a12b6fcf067695a570006b3d97
+    source_revision: X Article linked from x.com/DeepSeekHarness/status/2116857257245987236 (English machine translation of the 2026-10-31 Chinese essay) via api.fxtwitter.com,
+      saved to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: art:b102 (S6) @ x-article-DeepSeekHarness
+    quote: an independent Watchdog Session that runs outside the main system and is driven by scheduled messages
+    quote_sha256: acdc63251e5c245d3544015366f03a0ded636ed1ba21133d4e83920ac939346a
+    source_revision: X Article linked from x.com/DeepSeekHarness/status/2116857257245987236 (English machine translation of the 2026-10-31 Chinese essay) via api.fxtwitter.com,
+      saved to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: heading-and-hash
+    locator: art:b23 (S2) @ x-article-DeepSeekHarness
+    quote: Giving every event its own new session reverses the trade-off
+    quote_sha256: f1cbe0bd2d185dee26f4ca4054e2eae9c8459ad0e2dcce46ad96e5b97db8e0c0
+    source_revision: X Article linked from x.com/DeepSeekHarness/status/2116857257245987236 (English machine translation of the 2026-10-31 Chinese essay) via api.fxtwitter.com,
+      saved to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 7
+    kind: heading-and-hash
+    locator: art:b82 (summary omits) @ x-article-DeepSeekHarness
+    quote: but it is not yet enabled by default
+    quote_sha256: 283151a93f77080a97cfa4aeb80403ba48b8a7f93362846f898c9ef462965fad
+    source_revision: X Article linked from x.com/DeepSeekHarness/status/2116857257245987236 (English machine translation of the 2026-10-31 Chinese essay) via api.fxtwitter.com,
+      saved to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 7
+    effect: narrowed
+    note: Operator summary omitted that full-duplex is not enabled by default.
+  - claim_index: 4
+    effect: narrowed
+    note: Pass-through benefit is Router tokens, not completion time.
+  depends_on: []
+  dive_corrections: '2026-11-02 (Stage 2): all operator-summary claims confirmed against the full translated essay; caveats added. Stage-2b wave
+    1: intake-2616 (Anthropic managed-agents). Declined (wave budget): deepseek.com/harness pages, prototype docs 000/007 (repo already intake-2603).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/churn-pipeline.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'
+- id: intake-2616
+  arxiv_id: null
+  url: https://www.anthropic.com/research/managed-agents
+  source_type: blog
+  title: Scaling Managed Agents with stable interfaces (Anthropic; section Decoupling the brain from the hands)
+  categories:
+  - agent_architecture
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2615
+  verdict: worth_investigating
+  ingested_date: '2026-11-02'
+  authors:
+  - Anthropic
+  key_claims:
+  - Before decoupling, every session paid the full container setup cost up front.
+  - After decoupling the agent loop from execution environments, p50 TTFT dropped roughly 60% and p95 over 90%.
+  techniques:
+  - stateless agent loop
+  - environment daemons
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-2615
+  credibility_score: null
+  contradicting_evidence:
+  - Vendor engineering post; no independent measurement.
+  referenced_arxiv_ids: []
+  notes: Cited by intake-2615. Bears on our per-start bootstrap cost (slot thrash 2026-11-01/02).
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: www.anthropic.com/research/managed-agents (308 from /engineering/managed-agents), curled to disk 2026-11-02
+  reader_should_conclude: Cite as a vendor-measured cost of per-session bootstrap; not independent.
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: section Many brains
+    quote: every session paid the full container setup cost up front.
+    quote_sha256: fced8787336814d2d638dd9afbff39305a22b1071752c84f9f4d6cf7f4a8e25e
+    source_revision: www.anthropic.com/research/managed-agents (308 from /engineering/managed-agents), curled to disk 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: section Many brains
+    quote: our p50 TTFT dropped roughly 60% and p95 dropped over 90%
+    quote_sha256: 840d91bc6c910ee572464eed2b3967bc2cc3779d89f15cb633da9759d1ded0d8
+    source_revision: www.anthropic.com/research/managed-agents (308 from /engineering/managed-agents), curled to disk 2026-11-02
+    verified_by: research-intake/stage2
+  depends_on: []
+  dive_corrections: '2026-11-02 (Stage-2b wave 1 for intake-2615): read from disk.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Stage 4 2026-11-02: Vendor measurement of bootstrap cost supporting SA-1 context; no distinct task.'
+- id: intake-2617
+  arxiv_id: null
+  url: https://x.com/imryven/status/2115046979659055476
+  source_type: blog
+  title: Claude Code + Obsidian second brain walkthrough (Ryven X Article)
+  categories:
+  - knowledge_management
+  - agent_architecture
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-11-02'
+  authors:
+  - Ryven (imryven)
+  key_claims:
+  - Using only wiki/, what are the three best arguments I've collected about [topic]?
+  - If the wiki doesn't cover part of it, say so.
+  - Anthropic's documentation says plainly that CLAUDE.md is context, not enforced configuration.
+  - Check raw/ for files not yet ingested.
+  - List pages that contradict each other, pages with no links, ideas that appear in several places but have no page, and claims with no source
+    in raw/.
+  - Anthropic's own advice is to move multi-step procedures out of CLAUDE.md and into skills
+  - Four ways this breaks (and the fix)
+  - I have not run this walkthrough end to end
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-268
+  credibility_score: null
+  contradicting_evidence: []
+  referenced_arxiv_ids: []
+  notes: Article dated 2026-10-27. Layout raw/ wiki/ output/ and 'using only wiki/' come from this article, not from the gist (intake-268).
+  verification: dive-verified
+  handoffs_updated:
+  - dev-harness-trace-mining.md
+  handoffs_created: []
+  source_revision: X Article linked from https://x.com/imryven/status/2115046979659055476 via api.fxtwitter.com, saved to disk, retrieved 2026-11-02
+  reader_should_conclude: Cite as an untested how-to (the author says it was not run end to end); useful for the query and lint prompt shapes
+    only.
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: tw.txt:63 fxtwitter article 2115042274614599680
+    quote: Using only wiki/, what are the three best arguments I've collected about [topic]?
+    quote_sha256: 6d770ab580512c3ead709b1d53e06d6ebc9100081a55f9a07495fd54deb98a37
+    source_revision: X Article linked from https://x.com/imryven/status/2115046979659055476 via api.fxtwitter.com, saved to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: tw.txt:63
+    quote: If the wiki doesn't cover part of it, say so.
+    quote_sha256: 65cf90353c88e8a428ce9fbb1ab582b839bc3f92719ae1c2ff992eed8e116a75
+    source_revision: X Article linked from https://x.com/imryven/status/2115046979659055476 via api.fxtwitter.com, saved to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: tw.txt:109
+    quote: Anthropic's documentation says plainly that CLAUDE.md is context, not enforced configuration.
+    quote_sha256: 99e35a29b3d19cfe8c85363ae222457d634bf11b69b23ba51fd0d54dcdc6d2ed
+    source_revision: X Article linked from https://x.com/imryven/status/2115046979659055476 via api.fxtwitter.com, saved to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: tw.txt:94
+    quote: Check raw/ for files not yet ingested.
+    quote_sha256: 70a8f76e2a8a968de4748db971bc45246b9a9adeb184c8d1c565c8eb91c706e5
+    source_revision: X Article linked from https://x.com/imryven/status/2115046979659055476 via api.fxtwitter.com, saved to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: tw.txt:101
+    quote: List pages that contradict each other, pages with no links, ideas that appear in several places but have no page, and claims with no
+      source in raw/.
+    quote_sha256: 069df1ff55dad8b565ce8841511313cef8697fd98ad52d2664f0ebf2016e6584
+    source_revision: X Article linked from https://x.com/imryven/status/2115046979659055476 via api.fxtwitter.com, saved to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: tw.txt:75
+    quote: Anthropic's own advice is to move multi-step procedures out of CLAUDE.md and into skills
+    quote_sha256: 984205c008dac966219906b4203fd111ec59ef4539a9a9197217ba8075325cd0
+    source_revision: X Article linked from https://x.com/imryven/status/2115046979659055476 via api.fxtwitter.com, saved to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: heading-and-hash
+    locator: tw.txt:103
+    quote: Four ways this breaks (and the fix)
+    quote_sha256: 3aa7aad7ade8ef77373d789b5a8214668ef5e1f5e319c50f585ddd4fcb9a2986
+    source_revision: X Article linked from https://x.com/imryven/status/2115046979659055476 via api.fxtwitter.com, saved to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 7
+    kind: heading-and-hash
+    locator: tw.txt:132
+    quote: I have not run this walkthrough end to end
+    quote_sha256: e4d3b398cc1ec852cd59c80634e85ee61b0214bcdc613d5233b82edef6bb9702
+    source_revision: X Article linked from https://x.com/imryven/status/2115046979659055476 via api.fxtwitter.com, saved to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  depends_on: []
+  dive_corrections: '2026-11-02 (Stage 2, ws58 source 3): read from disk; see research/deep-dives/ws58-jev-20261102/wiki3-dive.md.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/dev-harness-trace-mining.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'
+- id: intake-2618
+  arxiv_id: null
+  url: https://www.noze.it/en/insights/llm-wiki/
+  source_type: blog
+  title: LLM Wiki (noze.it insight summary of the Karpathy gist)
+  categories:
+  - knowledge_management
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-02'
+  authors:
+  - noze.it
+  key_claims:
+  - The model, Andrej Karpathy writes in a gist published on 4 April 2026, “rediscovers knowledge from scratch on every question. There’s no accumulation.”
+  - a new document arrives, the LLM reads it and updates 10-15 related wiki pages
+  - lint (periodic passes that surface contradictions, orphan links and gaps)
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-268
+  credibility_score: null
+  contradicting_evidence: []
+  referenced_arxiv_ids: []
+  notes: Secondary restatement of intake-268; not corroboration.
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: www.noze.it/en/insights/llm-wiki/ (dated 2026-04-28) curled to disk, retrieved 2026-11-02
+  reader_should_conclude: Secondary summary; cite intake-268 instead.
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: noze.txt:12 fetched 2026-11-02; page dated 28 Apr 2026
+    quote: The model, Andrej Karpathy writes in a gist published on 4 April 2026, “rediscovers knowledge from scratch on every question. There’s
+      no accumulation.”
+    quote_sha256: 468544936b0553d9011fa1b01fe7ce5ec93c82962a003212491aad278bc815f0
+    source_revision: www.noze.it/en/insights/llm-wiki/ (dated 2026-04-28) curled to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: noze.txt:18
+    quote: a new document arrives, the LLM reads it and updates 10-15 related wiki pages
+    quote_sha256: 605df3757bdd21664e672e05db36f812107dfd19bd85dbbc65ffdc68d7007a1b
+    source_revision: www.noze.it/en/insights/llm-wiki/ (dated 2026-04-28) curled to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: noze.txt:18
+    quote: lint (periodic passes that surface contradictions, orphan links and gaps)
+    quote_sha256: 662c0a5ebc3cbb5280a5280a1971d771580f84b081684d49f688785d789b4e3d
+    source_revision: www.noze.it/en/insights/llm-wiki/ (dated 2026-04-28) curled to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  depends_on: []
+  dive_corrections: '2026-11-02 (Stage 2, ws58 source 3): read from disk; see research/deep-dives/ws58-jev-20261102/wiki3-dive.md.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Stage 4 2026-11-02: Secondary summary of intake-268; no task.'
+- id: intake-2619
+  arxiv_id: null
+  url: https://github.com/AgriciDaniel/claude-obsidian
+  source_type: repo
+  title: 'claude-obsidian: Claude Code plugin for an Obsidian LLM wiki (ingest/query/save/lint, provenance ledgers)'
+  categories:
+  - knowledge_management
+  - agent_architecture
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-11-02'
+  authors:
+  - AgriciDaniel
+  key_claims:
+  - do not claim that it performed semantic, stylistic, or prose-level contradiction analysis
+  - It reports such categories as dead or ambiguous links, orphan pages, required
+  - Assessment is `accepted`, `provisional`, `contested`, `unsupported`, or
+  - If the vault cannot answer, name the missing evidence and stop.
+  - read `wiki/hot.md` and `wiki/index.md`, then verify the directly
+  - This skill never creates a note, updates an index, logs a query, refreshes a
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-268
+  credibility_score: null
+  contradicting_evidence: []
+  referenced_arxiv_ids: []
+  notes: MIT. Lint is a read-only parser; repair is a separate hashed transaction.
+  verification: dive-verified
+  handoffs_updated:
+  - internal-kb-rag.md
+  - dashboard-architecture-restructure.md
+  handoffs_created: []
+  source_revision: github.com/AgriciDaniel/claude-obsidian @ main 2e545563172f97f02ecaaaab376ceea1246a0583 (2026-10-22), git clone --depth 1,
+    retrieved 2026-11-02
+  reader_should_conclude: Cite for a deterministic lint (links, orphans, ledger contracts) that explicitly does not claim semantic contradiction
+    detection, and for source/claim ledgers with independence keys.
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: co/skills/wiki-lint/SKILL.md:50 claude-obsidian 2e54556 MIT
+    quote: 'do not claim that it performed
+
+      semantic, stylistic, or prose-level contradiction analysis'
+    quote_sha256: c16c526bcae55809b7488a3f8c06c63d4e571c92e329bec4fc5ee65a720fa624
+    source_revision: github.com/AgriciDaniel/claude-obsidian @ main 2e545563172f97f02ecaaaab376ceea1246a0583 (2026-10-22), git clone --depth 1,
+      retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: co/skills/wiki-lint/SKILL.md:47
+    quote: It reports such categories as dead or ambiguous links, orphan pages, required
+    quote_sha256: adcaeed984856bf88e855d75a2207054e32e8649f34aebfd605d9bbaee614af8
+    source_revision: github.com/AgriciDaniel/claude-obsidian @ main 2e545563172f97f02ecaaaab376ceea1246a0583 (2026-10-22), git clone --depth 1,
+      retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: co/skills/wiki/references/provenance.md:42
+    quote: Assessment is `accepted`, `provisional`, `contested`, `unsupported`, or
+    quote_sha256: d1bc8ed44f20c0e6540b485bc22b7b3d775e2826baa5e858355880fd58d83bc3
+    source_revision: github.com/AgriciDaniel/claude-obsidian @ main 2e545563172f97f02ecaaaab376ceea1246a0583 (2026-10-22), git clone --depth 1,
+      retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: co/skills/wiki-query/SKILL.md:107
+    quote: If the vault cannot answer, name the missing evidence and stop.
+    quote_sha256: 404232373c350e2eed9612821cf79d0f7714ebd0015a7787eb3f638052e8f8a8
+    source_revision: github.com/AgriciDaniel/claude-obsidian @ main 2e545563172f97f02ecaaaab376ceea1246a0583 (2026-10-22), git clone --depth 1,
+      retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: co/skills/wiki-query/SKILL.md:33
+    quote: read `wiki/hot.md` and `wiki/index.md`, then verify the directly
+    quote_sha256: 5f8ff55cf78ab7729ddfd687126d07cdb0cfa23ab46fb1e34f1e812e23ebcc4f
+    source_revision: github.com/AgriciDaniel/claude-obsidian @ main 2e545563172f97f02ecaaaab376ceea1246a0583 (2026-10-22), git clone --depth 1,
+      retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: co/skills/wiki-query/SKILL.md:110
+    quote: This skill never creates a note, updates an index, logs a query, refreshes a
+    quote_sha256: a38f49495e43a3f728c14d78581454f945e881f5c05f5bc7f32ef9296e286595
+    source_revision: github.com/AgriciDaniel/claude-obsidian @ main 2e545563172f97f02ecaaaab376ceea1246a0583 (2026-10-22), git clone --depth 1,
+      retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  depends_on: []
+  dive_corrections: '2026-11-02 (Stage 2, ws58 source 3): read from disk; see research/deep-dives/ws58-jev-20261102/wiki3-dive.md.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/internal-kb-rag.md, handoffs/active/dashboard-architecture-restructure.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'
+- id: intake-2620
+  arxiv_id: null
+  url: https://github.com/eugeniughelbur/obsidian-second-brain
+  source_type: repo
+  title: 'obsidian-second-brain: multi-agent skill suite for an Obsidian vault (health audit, quote-verified contradictions, freshness lint)'
+  categories:
+  - knowledge_management
+  - agent_architecture
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-11-02'
+  authors:
+  - eugeniughelbur
+  key_claims:
+  - '`/obsidian-reconcile` resolves them automatically'
+  - A contradiction a model reports but cannot quote is dropped, never acted on.
+  - scan Key Decisions sections and reference/concept notes
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-268
+  credibility_score: null
+  contradicting_evidence: []
+  referenced_arxiv_ids: []
+  notes: MIT. Contradictions found by LLM subagents; deterministic vault_health.py for orphans/duplicates.
+  verification: dive-verified
+  handoffs_updated:
+  - vidya-belief-substrate-program.md
+  handoffs_created: []
+  source_revision: github.com/eugeniughelbur/obsidian-second-brain @ main f79c64f3f03ee25ec1660c8a30ebe7f4f8e044ff (2026-10-28), git clone --depth
+    1, retrieved 2026-11-02
+  reader_should_conclude: Cite for the quote-verified contradiction gate (an unquotable contradiction is dropped); its auto-resolve and AI-first
+    notes work against human transparency.
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: osb/README.md:117 obsidian-second-brain f79c64f MIT
+    quote: '`/obsidian-reconcile` resolves them automatically'
+    quote_sha256: 0484b752113cb1e66a7ce59b4cc77cd7437547300c11e0bf03200df91f5493e0
+    source_revision: github.com/eugeniughelbur/obsidian-second-brain @ main f79c64f3f03ee25ec1660c8a30ebe7f4f8e044ff (2026-10-28), git clone --depth
+      1, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: osb/scripts/verify_quotes.py:6
+    quote: 'A contradiction a model reports but cannot quote is
+
+      dropped, never acted on.'
+    quote_sha256: 909b8ee0faf4e1fc9aab29e2f0b61cd054a5de88093a1fa6bf848a6699f4dd71
+    source_revision: github.com/eugeniughelbur/obsidian-second-brain @ main f79c64f3f03ee25ec1660c8a30ebe7f4f8e044ff (2026-10-28), git clone --depth
+      1, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: osb/commands/obsidian-health.md:29
+    quote: scan Key Decisions sections and reference/concept notes
+    quote_sha256: eeec06009c6a3881d888e2525c69efb95f0e9fd92504a695cecfaeb99c5ab0ee
+    source_revision: github.com/eugeniughelbur/obsidian-second-brain @ main f79c64f3f03ee25ec1660c8a30ebe7f4f8e044ff (2026-10-28), git clone --depth
+      1, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  depends_on: []
+  dive_corrections: '2026-11-02 (Stage 2, ws58 source 3): read from disk; see research/deep-dives/ws58-jev-20261102/wiki3-dive.md.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/vidya-belief-substrate-program.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'
+- id: intake-2621
+  arxiv_id: null
+  url: https://theaioperator.io/p/i-rebuilt-karpathys-llm-wiki-heres
+  source_type: blog
+  title: I rebuilt Karpathy's LLM wiki (The AI Operator)
+  categories:
+  - knowledge_management
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2620
+  verdict: worth_investigating
+  ingested_date: '2026-11-02'
+  authors:
+  - The AI Operator
+  key_claims:
+  - 'This works for the first 50 to 100 sources. Past that, three failure modes compound: claims go stale, contradictions accumulate faster than
+    you resolve them, and the cross-reference graph becomes too dense to navigate manually.'
+  - Three small bugs, but together they meant the command designed to make my vault smarter was making it dumber on its first run.
+  - Every scheduled agent in this rebuild now logs its changes to a daily diff note and waits 24 hours before any change becomes permanent.
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-268
+  credibility_score: null
+  contradicting_evidence: []
+  referenced_arxiv_ids: []
+  notes: Dive-surfaced from intake-2620 (Stage-2b wave 1).
+  verification: dive-verified
+  handoffs_updated:
+  - internal-kb-rag.md
+  handoffs_created: []
+  source_revision: theaioperator.io/p/i-rebuilt-karpathys-llm-wiki-heres curled to disk, retrieved 2026-11-02
+  reader_should_conclude: Cite as a practitioner report on where an append-only LLM wiki breaks; not measured evidence.
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: 'section: Why a conceptual blueprint is not a working second brain'
+    quote: 'This works for the first 50 to 100 sources. Past that, three failure modes compound: claims go stale, contradictions accumulate faster
+      than you resolve them, and the cross-reference graph becomes too dense to navigate manually.'
+    quote_sha256: 192a93f0828b96114ed8384d5d69e032d4905540871170c6e3c784bef229acee
+    source_revision: theaioperator.io/p/i-rebuilt-karpathys-llm-wiki-heres curled to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: 'section: What I got wrong'
+    quote: "Three small bugs, but together they meant the command designed to make my vault smarter \nwas making it dumber on its first run."
+    quote_sha256: 876563f3d3f34f4b94b884b1a3a009785dec40414d94631037e18cf44fb101de
+    source_revision: theaioperator.io/p/i-rebuilt-karpathys-llm-wiki-heres curled to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: 'section: What I got wrong'
+    quote: "Every scheduled agent in this rebuild now logs its changes \nto a daily diff note and waits 24 hours before any change becomes permanent."
+    quote_sha256: 48c3194387e76cc6e691f852fe3ffbc82ec7fe6c7e26803d38098ea987d89afc
+    source_revision: theaioperator.io/p/i-rebuilt-karpathys-llm-wiki-heres curled to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  depends_on: []
+  dive_corrections: '2026-11-02 (Stage 2, ws58 source 3): read from disk; see research/deep-dives/ws58-jev-20261102/wiki3-dive.md.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/internal-kb-rag.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'

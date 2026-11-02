@@ -1,0 +1,259 @@
+{
+ "tag": "29P",
+ "arm": "P",
+ "pid": 1795237,
+ "port": 8197,
+ "bin_dir": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin",
+ "binary_sha256": "802a3e0c7bcfcb23c661dd879ec6b12d76048a4525ac8a2aa3b336f561bfa6f4",
+ "libggml_hip_sha256": "23d39c91a82fad0a83743829dd59a10df91bfe0c4a933f0cce693fc7a831beb4",
+ "expected_commit": "c72ec82f5",
+ "expected_build": "10419",
+ "props_build_info": "b10419-c72ec82f5",
+ "props": {
+  "build_info": "b10419-c72ec82f5",
+  "modalities": {
+   "audio": false,
+   "video": false,
+   "vision": false
+  },
+  "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+  "ok": true,
+  "port": 8197,
+  "problems": [],
+  "speculative_n_max_props": 3,
+  "speculative_types_props": "none",
+  "summary": "OK: build_info=b10419-c72ec82f5 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+  "total_slots": 4
+ },
+ "load_s": 10,
+ "cpuset": "72-79",
+ "membind": "3",
+ "cmdline": [
+  "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/llama-server",
+  "-m",
+  "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+  "--host",
+  "127.0.0.1",
+  "--port",
+  "8197",
+  "-np",
+  "4",
+  "-c",
+  "393216",
+  "-t",
+  "8",
+  "-ub",
+  "2048",
+  "--flash-attn",
+  "on",
+  "--jinja",
+  "-ctk",
+  "q8_0",
+  "-ctv",
+  "q8_0",
+  "--kv-unified",
+  "--no-mmap",
+  "-ngl",
+  "all",
+  "--cache-ram",
+  "65536",
+  "--chat-template-file",
+  "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+  "-md",
+  "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+  "-ngld",
+  "99",
+  "--spec-type",
+  "draft-dflash",
+  "--spec-draft-n-max",
+  "7",
+  "--device",
+  "ROCm0",
+  "--slot-save-path",
+  "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/slots",
+  "--device-draft",
+  "ROCm0"
+ ],
+ "device_evidence": {
+  "argv_device": [
+   "ROCm0"
+  ],
+  "argv_ngl": [
+   "all"
+  ],
+  "log": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-29P.server.log",
+  "min_vram_bytes": 1000000000,
+  "n_startup_log_device_lines": 0,
+  "ok": true,
+  "pid": 1795237,
+  "pid_in_kfd": true,
+  "pid_vram_bytes": 54515687424,
+  "startup_log_device_lines": [],
+  "summary": "OK: pid 1795237 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']"
+ },
+ "startup_log_device_lines": [],
+ "runtime_maps_ok": true,
+ "mapped_libs": [
+  "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/libggml-base.so.0.16.0",
+  "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/libggml-cpu.so.0.16.0",
+  "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/libggml-hip.so.0.16.0",
+  "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/libggml.so.0.16.0",
+  "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/libllama-common.so.0.0.10419",
+  "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/libllama-server-impl.so",
+  "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/libllama.so.0.0.10419",
+  "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/libmtmd.so.0.0.10419"
+ ],
+ "omp_lib": [
+  "/usr/lib/llvm-20/lib/libomp.so.5"
+ ],
+ "affinity_pre": {
+  "affinity_groups": {
+   "0-191": 1,
+   "72": 1,
+   "72-79": 194,
+   "73": 1,
+   "74": 1,
+   "75": 1,
+   "76": 1,
+   "77": 1,
+   "78": 1,
+   "79": 1
+  },
+  "compute_pool_seen": true,
+  "cpuset": "72-79",
+  "main_thread": {
+   "comm": "llama-server",
+   "cpus": "72",
+   "tid": 1795237
+  },
+  "n_threads": 203,
+  "ok": true,
+  "pid": 1795237,
+  "pinned_inside_cpuset": 8,
+  "pinned_single_cpu_threads": [
+   {
+    "cpu": 72,
+    "tid": 1795237
+   },
+   {
+    "cpu": 73,
+    "tid": 1797073
+   },
+   {
+    "cpu": 74,
+    "tid": 1797074
+   },
+   {
+    "cpu": 75,
+    "tid": 1797075
+   },
+   {
+    "cpu": 76,
+    "tid": 1797076
+   },
+   {
+    "cpu": 77,
+    "tid": 1797077
+   },
+   {
+    "cpu": 78,
+    "tid": 1797078
+   },
+   {
+    "cpu": 79,
+    "tid": 1797079
+   }
+  ],
+  "problems": [],
+  "runtime_threads_outside": [
+   {
+    "comm": "llama-server",
+    "cpus": "0-191",
+    "tid": 1795343,
+    "wchan_seen": [
+     "kfd_wait_on_events"
+    ],
+    "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+   }
+  ],
+  "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [1795343 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+  "threads_arg": 8,
+  "unexplained_threads_outside": []
+ },
+ "affinity_post": {
+  "affinity_groups": {
+   "0-191": 1,
+   "72": 1,
+   "72-79": 194,
+   "73": 1,
+   "74": 1,
+   "75": 1,
+   "76": 1,
+   "77": 1,
+   "78": 1,
+   "79": 1
+  },
+  "compute_pool_seen": true,
+  "cpuset": "72-79",
+  "main_thread": {
+   "comm": "llama-server",
+   "cpus": "72",
+   "tid": 1795237
+  },
+  "n_threads": 203,
+  "ok": true,
+  "pid": 1795237,
+  "pinned_inside_cpuset": 8,
+  "pinned_single_cpu_threads": [
+   {
+    "cpu": 72,
+    "tid": 1795237
+   },
+   {
+    "cpu": 73,
+    "tid": 1797073
+   },
+   {
+    "cpu": 74,
+    "tid": 1797074
+   },
+   {
+    "cpu": 75,
+    "tid": 1797075
+   },
+   {
+    "cpu": 76,
+    "tid": 1797076
+   },
+   {
+    "cpu": 77,
+    "tid": 1797077
+   },
+   {
+    "cpu": 78,
+    "tid": 1797078
+   },
+   {
+    "cpu": 79,
+    "tid": 1797079
+   }
+  ],
+  "problems": [],
+  "runtime_threads_outside": [
+   {
+    "comm": "llama-server",
+    "cpus": "0-191",
+    "tid": 1795343,
+    "wchan_seen": [
+     "kfd_wait_on_events"
+    ],
+    "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+   }
+  ],
+  "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [1795343 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+  "threads_arg": 8,
+  "unexplained_threads_outside": []
+ },
+ "log": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-29P.server.log",
+ "started_epoch": 1793472303
+}
