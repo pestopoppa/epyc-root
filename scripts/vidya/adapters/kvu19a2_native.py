@@ -7,8 +7,10 @@ observations remain in the native result and emit no numeric measurement.
 from __future__ import annotations
 
 import json
+import dataclasses
 import math
 import os
+import re
 import struct
 import sys
 from datetime import datetime, timezone
@@ -96,6 +98,22 @@ def record_run(output_dir: Path, *, run_id: str, producer: str, observations: li
             raw = raw_path.read_bytes()
             if not raw or len(raw) % 4 or sum(math.isnan(x[0]) for x in struct.iter_unpack("<f", raw)) != obs["nan_elements"]:
                 raise ns.CaptureError("raw F32 NaN count mismatch")
+            if "applicability" in obs:
+                scope = obs["applicability"]
+                log_path = Path(obs.get("log_path", ""))
+                samples = obs.get("samples", [])
+                if (not isinstance(scope, dict) or set(scope) != {"backend", "device"}
+                        or scope.get("backend") != "gpu" or not isinstance(scope.get("device"), str)
+                        or not re.fullmatch(r"gfx[0-9a-f]+", scope["device"])
+                        or not log_path.is_absolute() or not log_path.is_file()
+                        or ns.file_sha256(log_path) != obs.get("log_sha256")
+                        or not re.search(r"Device 0:.*?\b" + re.escape(scope["device"]) + r"\b", log_path.read_text())
+                        or obs.get("mapping_sample_present") is not True
+                        or obs["hip_sha256"] not in obs["mapped_ggml"].values()
+                        or not isinstance(samples, list)
+                        or not any(s.get("kfd") is True and ns.finite(s.get("vram_bytes"))
+                                   and s["vram_bytes"] > 0 for s in samples if isinstance(s, dict))):
+                    raise ns.CaptureError("GPU applicability lacks source log, mapped HIP, or in-window residency")
         elif not ns.text(obs.get("missing_reason")) or obs.get("nan_elements") is not None:
             raise ns.CaptureError("missing observation requires reason and no numeric value")
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -136,9 +154,13 @@ def project(native: Any):
     row = native["row"]
     if problems := row_problems(row):
         raise ProjectionError("invalid producer row: " + "; ".join(problems))
-    return ns.to_claim_tuple(row, source_kind=SOURCE_KIND,
-                             locator=f"kvu19a2:{row['run_id']}:{row['extra']['index']}",
-                             sidecar_path=native.get("sidecar_path", ""))
+    claim = ns.to_claim_tuple(row, source_kind=SOURCE_KIND,
+                              locator=f"kvu19a2:{row['run_id']}:{row['extra']['index']}",
+                              sidecar_path=native.get("sidecar_path", ""))
+    scope = row["extra"].get("applicability")
+    if scope is not None:
+        claim = dataclasses.replace(claim, applicability=scope)
+    return claim
 
 
 def native_rows(sidecar: Path):
