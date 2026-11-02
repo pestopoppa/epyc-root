@@ -29,7 +29,7 @@ def load_tokens(item, fixture_root):
     return ids
 
 def run_segment(plan_path, output_dir, fixture_root, arm, transport, budget_s,
-                minimum_cell_s, request_timeout_s, clock=time.monotonic):
+                minimum_cell_s, request_timeout_s, clock=time.monotonic, stop_requested=lambda: False):
     """Return 0 if all selected arm cells finished, 75 if partial, 1 if uncertain.
 
     transport(prompt_ids, timeout_s) returns {content: str, timings: dict};
@@ -50,12 +50,12 @@ def run_segment(plan_path, output_dir, fixture_root, arm, transport, budget_s,
     for item_id, a in state['unstarted']:
         if a != arm:
             continue
-        if deadline - clock() < minimum_cell_s:
+        if stop_requested() or deadline - clock() < minimum_cell_s:
             return 75
         item = items[item_id]
         # Validate before recording a start or making any request.
         tokens = load_tokens(item, fixture_root)
-        if deadline - clock() < minimum_cell_s:
+        if stop_requested() or deadline - clock() < minimum_cell_s:
             return 75
         ledger.start(output_dir, plan, pin, item_id, arm)
         try:

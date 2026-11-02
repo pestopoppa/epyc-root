@@ -419,6 +419,7 @@
       <span>high</span><i class="gsw prioramp" style="background:linear-gradient(90deg,#ffe14a,#c0b055,#8c9a95,#5a8fc0,#5468d8)"></i><span>low</span>
       <span><i class="gsw ring" style="border-color:#6e7681"></i>none</span>
       <span><i class="gsw ring" style="border-color:#8b949e;border-style:dashed"></i>dashed = in handoffs/blocked/</span>
+      <span><svg width="16" height="16" aria-label="pie"><path d="M8,8 L15,8 A7,7 0 1 1 8,1 Z" fill="#8b949e"/></svg> pie: filled = remaining, cut-out slice = done fraction</span>
       <span class="muted">size &prop; open tasks &middot; fill = owning index (blended when a handoff links across domains) &middot; hover to reveal its links</span>
     </div>
     <p class="gnote muted" id="graph-note"></p>
@@ -1333,6 +1334,10 @@ async function loadGraph(){
     patternUnits:"userSpaceOnUse",width:4,height:4,patternTransform:"rotate(45)"});
   pat.appendChild(svgEl("rect",{x:0,y:0,width:1.7,height:4,fill:"#0d1117","fill-opacity":0.8}));
   defs.appendChild(pat); svg.appendChild(defs);
+  // fully-ticked handoffs (open==0 with closed>0) are complete: hide node + edges
+  if(g.nodes){ const gone=new Set(g.nodes.filter(n=>n.open===0&&(n.closed||0)>0).map(n=>n.id));
+    if(gone.size){ g=Object.assign({},g,{nodes:g.nodes.filter(n=>!gone.has(n.id)),
+      edges:(g.edges||[]).filter(e=>!gone.has(e.from)&&!gone.has(e.to))}); } }
   if(!g.nodes||!g.nodes.length){
     setBadge("#graph-badge","stale");
     $("#graph-note").textContent = g.observation_notice || "no producer reported";
@@ -1482,11 +1487,22 @@ async function loadGraph(){
       stroke:RING(n.priority),"stroke-width":2.6});
     // Ring colour = priority. Dashed = file sits in handoffs/blocked/ (waiting, not stalled).
     if(n.state==="blocked") halo.setAttribute("stroke-dasharray","4 2.5");
-    gNode.appendChild(halo);
     const c=svgEl("g",{class:"node","data-readiness":n.readiness||""});
     const disc=svgEl("circle",{cx:it.x,cy:it.y,r:it.r,fill:it.fill});
+    // progress pie (inverted): solid disc = remaining work; the DONE fraction is a cut-out
+    // (empty) wedge from 12 o'clock clockwise. Fresh = full disc, nearly done = thin sliver.
+    const pTot=(n.open||0)+(n.closed||0), pFrac=pTot?(n.closed||0)/pTot:0;
     if(n.readiness==="no_open") disc.setAttribute("fill-opacity",0.3);
+    if(pFrac>0.001){
+      disc.setAttribute("fill","none");
+      if(pFrac<0.999){ const a=2*Math.PI*pFrac, sx=it.x+it.r*Math.sin(a), sy=it.y-it.r*Math.cos(a);
+        const rem=svgEl("path",{d:`M${it.x},${it.y} L${sx},${sy} A${it.r},${it.r} 0 ${pFrac<0.5?1:0} 1 ${it.x},${it.y-it.r} Z`,
+          fill:it.fill,class:"pie-remaining"});
+        if(n.readiness==="no_open") rem.setAttribute("fill-opacity",0.3);
+        c.appendChild(rem); }
+    }
     c.appendChild(disc);
+    c.appendChild(halo);   // ring INSIDE the node group so .dimmed fades every part
     if(n.readiness==="blocked")
       c.appendChild(svgEl("circle",{cx:it.x,cy:it.y,r:it.r,fill:"url(#gate-hatch)",
         "pointer-events":"none"}));
@@ -1538,7 +1554,7 @@ async function loadGraph(){
       tip.innerHTML =
         `<span class="tid">${n.id} · ${n.domain}</span><br><b>${n.track}</b>`
         + (n.next_action?`<div class="tna">${n.next_action}</div>`:"")
-        + `<div class="tmeta">${n.open} open · ${n.closed} closed`
+        + `<div class="tmeta">${n.closed}/${(n.open||0)+(n.closed||0)} done · ${n.open} open · ${n.closed} closed`
         + (n.blocked?` · ${n.blocked} blocked`:"")
         + (n.readiness?`<br>readiness: <b>${n.readiness}</b>`
             + ((n.blocked_by&&n.blocked_by.length)?` on ${n.blocked_by.join(", ")}`:""):"")

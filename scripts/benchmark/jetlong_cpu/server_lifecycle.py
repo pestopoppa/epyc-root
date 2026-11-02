@@ -80,7 +80,8 @@ def _cleanup(child, term_s, kill_s):
 
 def run_owned(*, command, env, base_url, plan_path, fixture_root, output_dir,
               arm, budget_s, minimum_cell_s, request_timeout_s, startup_s=30,
-              term_s=5, kill_s=5, n_predict=128, log_path, runtime_check=None):
+              term_s=5, kill_s=5, n_predict=128, log_path, runtime_check=None,
+              stop_file=None):
     """Start exactly one direct child, run one arm, and always reap that child.
 
     Never use against an existing endpoint: caller owns port admission. Startup
@@ -96,6 +97,9 @@ def run_owned(*, command, env, base_url, plan_path, fixture_root, output_dir,
         raise ValueError('budget does not cover startup and cleanup')
     if not env.get('LD_LIBRARY_PATH'):
         raise ValueError('an isolated library path is required')
+    stop_requested = lambda: stop_file is not None and Path(stop_file).exists()
+    if stop_requested():
+        return 75
     path = Path(log_path)
     path.parent.mkdir(parents=True, exist_ok=True)
     deadline = time.monotonic() + budget_s
@@ -130,6 +134,8 @@ def run_owned(*, command, env, base_url, plan_path, fixture_root, output_dir,
                     raise LaunchError('owned server exited during startup')
                 if runtime_check is not None:
                     runtime_check(child.pid)
+                if stop_requested():
+                    return 75
                 remaining = deadline - time.monotonic() - term_s - kill_s
                 if remaining < minimum_cell_s:
                     return 75
@@ -144,7 +150,8 @@ def run_owned(*, command, env, base_url, plan_path, fixture_root, output_dir,
                     return result
                 return runner.run_segment(plan_path, output_dir, fixture_root, arm,
                     transport,
-                    remaining, minimum_cell_s, request_timeout_s)
+                    remaining, minimum_cell_s, request_timeout_s,
+                    stop_requested=stop_requested)
             finally:
                 _cleanup(child, term_s, kill_s)
     finally:

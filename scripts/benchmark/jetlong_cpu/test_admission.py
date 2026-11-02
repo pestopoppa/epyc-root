@@ -1,5 +1,5 @@
 import unittest
-from admission import AdmissionError, validate
+from admission import AdmissionError, validate, parse_cpus
 
 
 class AdmissionTests(unittest.TestCase):
@@ -8,6 +8,12 @@ class AdmissionTests(unittest.TestCase):
                     'FILLER_CPUS':'0-95', 'FILLER_STOPFILE':'/tmp/no-such-jetlong-stop'}
         self.kw = dict(now=1000, minimum_cell_s=600, startup_s=100,
                        cleanup_s=50, result_path='/tmp/RESULT.json')
+
+    def test_cpu_ranges_reject_malformed_reversed_and_overlap(self):
+        self.assertEqual(parse_cpus('0-2,4,6-7'), frozenset({0, 1, 2, 4, 6, 7}))
+        for value in ('', ',', '1,,2', '1-', '-1', '4-2', '1-3,3', '01', '1--2', '0-9999999'):
+            with self.subTest(value=value), self.assertRaises(AdmissionError):
+                parse_cpus(value)
 
     def test_regular_and_dry_run_are_separate(self):
         self.assertEqual(validate(self.env, **self.kw)['budget_s'], 900)
@@ -24,5 +30,7 @@ class AdmissionTests(unittest.TestCase):
             with self.assertRaises(AdmissionError): validate(bad, **self.kw)
         with self.assertRaises(AdmissionError):
             validate(self.env, **dict(self.kw, minimum_cell_s=800))
+        with self.assertRaises(AdmissionError):
+            validate(dict(self.env, FILLER_DRYRUN='true'), **self.kw)
 
 if __name__ == '__main__': unittest.main()

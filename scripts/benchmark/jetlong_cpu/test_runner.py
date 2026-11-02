@@ -58,6 +58,22 @@ class RunnerTests(unittest.TestCase):
                 self.assertEqual(runner.run_segment(plan,root/'out',root,'J',transport,10,5,5),0)
         finally:
             server.shutdown(); server.server_close(); thread.join()
+    def test_stop_before_and_after_fixture_validation(self):
+        for stop_on in (1, 2):
+            with self.subTest(stop_on=stop_on), tempfile.TemporaryDirectory() as d:
+                root, plan = self.setup_plan(d)
+                checks, sent = [], []
+                def stopped():
+                    checks.append(True)
+                    return len(checks) >= stop_on
+                def transport(*args):
+                    sent.append(args)
+                    raise AssertionError('stop must prevent request')
+                self.assertEqual(runner.run_segment(plan, root/'out', root, 'J', transport,
+                    10, 5, 5, stop_requested=stopped), 75)
+                p, pin = ledger.initialize(root/'out', plan)
+                self.assertEqual(len(ledger.inventory(root/'out', p, pin)['unstarted']), 2)
+                self.assertFalse(sent)
     def test_mutated_fixture_rejected_before_start(self):
         with tempfile.TemporaryDirectory() as d:
             root,plan=self.setup_plan(d); (root/'tokens.json').write_text('[]')

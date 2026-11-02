@@ -175,3 +175,7 @@ The one-time pre-grant SHA-256 of the 22,018,326,528-byte Bolt GGUF completed: 9
 ## 10:23Z — Integrate CPU request markers with scheduler collector
 
 Integrated the scratch scheduler collector and request-owner marker in /mnt/raid0/llm/tmp/akagg/cpu-observe-v8; four model-free integration tests pass, including fake perf with a real inert owned child, callback failure and cleanup, malformed marker and missing raw file. Receipt remains unproven pending real scheduler coverage/loss, trustworthy request binding and native producer integration. CH-27 v7 native dry-run was refused by its model census tripwire; native read_census reads GGUF metadata and tensor descriptors, so bounded metadata-only preflight is being prepared. Correction to the 10:21 progress entry: complete-v2.py returning incomplete under FILLER_DRYRUN does not itself cause qualification failure; rowflow may accept rc75 when a new attributed dry-run result exists. The unresolved requirements are correct distinct dry-run result publication and cleanup, plus the separate r5/r6 result-root mismatch. No row was published.
+
+## 10:26Z — Investigated CH-26b failed-row report and dispatched independent C3 lock, CH-27 recipe, and CH-26b residency fixes
+
+Investigated CH-26b: the reported initial dry-run failure was already fixed by the whole-host successor, whose completed floor remains inadmissible because placement and contention were unproven. Bounded investigations are preparing fixes for that evidence gap, C3 lock re-entry, and CH-27 recipe mismatch.
