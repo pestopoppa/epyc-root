@@ -31,3 +31,7 @@ Consumed the five-task replay fixture manifest and BEP-5 scope audit. The curren
 ## 09:23Z — Integrate BEP-2 metrics design
 
 Reviewed and integrated docs/design/bep2-metrics-proposal.md, preserving missing-data unevaluability and the handoff’s distinct harden and retire outcomes. Linked the proposal from the handoff; boundary overlaps and latency aggregation need resolution before the experiment. Published the prior two lane commits through serialized_push.py after its previous wrapup reported failure; push verification reported origin/main carries HEAD. Observer census passed after restoring the sparse-checkout ratifier. No inference row or result was created.
+
+## 09:25Z — Advance J8 runnable prerequisites
+
+Consumed row-next.txt: J8 requires typed-patch replay, request-scoped parse/apply metrics, complete paired coverage and a defined gate before its row can support the requested verdict. Delegated a scratch-only replay implementation and bounded checks of repair authorization and overlapping decision thresholds; completion events are registered. No inference was launched or row published. The previous metrics-plan wrapup reported a push failure; the lane is now synchronized with origin/main and contains that plan.
