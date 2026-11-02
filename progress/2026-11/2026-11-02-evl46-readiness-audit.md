@@ -63,6 +63,20 @@ judicious review. The edit preserves existing task text and history. [no-belief:
   receipt does not prove child affinity or independent grant issuance. Research `b2dc50a86`
   adds bounded buffered SSE transport; 10 fake-upstream broker tests passed, with actual
   OpenCode compatibility and timing still unverified. [no-belief: software controls]
+- Rowflow `evl46-opencode-fake-20261102`: exact-entry smoke PASS, state grantable; real pinned
+  OpenCode against fake upstream made three streaming calls, read a public file, could not read
+  the host canary and exported its session. The synthetic config unexpectedly advertised shell,
+  write and other tools despite its read-only intent; catalog enforcement stays open. No model
+  inference or production isolation claim. [no-belief: synthetic control]
+- Rowflow `evl46-crm-reader-b8-tests-20261102` is grantable after its isolated smoke passed five
+  reader tests. Correction: its CPU-lock source pin is truncated, so that smoke is not current
+  reader acceptance; b8 was withdrawn. Corrected successor `evl46-crm-reader-a656-tests-20261102`
+  passed six smoke controls and is grantable. Neither row is a live inference claim.
+  [no-belief: software controls]
+- Rowflow `evl46-opencode-policy-20261102` smoke passed with explicit `permission` settings:
+  only `read` advertised, injected `bash` rejected, workspace read and session export passed.
+  Its grader-path refusal is a permission result rather than an OS syscall proof. The row is
+  grantable and waits for allocator execution. [no-belief: synthetic control]
 - Added `docs/reference/tu-hr1-tool-render-audit-20261102.md`: source and runtime census;
   sampled local model endpoints were unavailable, so actual live model/template evidence and
   TU-HR-1 remain open. [no-belief: source and operational review]

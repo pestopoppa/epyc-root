@@ -59,6 +59,25 @@ fixed client-tool profile; 24 tests passed. It is not yet an OpenCode transport 
 host-side `/chat` tool isolation. [no-belief: software and fixture controls]
 Successor `b2dc50a86` adds a bounded buffered SSE bridge tested with a fake client and upstream
 (10 broker tests); it does not establish actual OpenCode compatibility or token timing. [no-belief: software controls]
+Rowflow `evl46-opencode-fake-20261102` is **grantable** after a separate-path exact-entry smoke.
+That smoke ran pinned OpenCode 1.18.31 against a fake upstream: three streamed requests, a
+successful public-file read, denied grader-path read, intact host canary and full session export.
+The supposedly read-only synthetic config nevertheless advertised ten tools including shell and
+write: do not interpret the smoke as catalog restriction or live-model isolation. Scheduled result
+is `RESULT.json` under `/mnt/raid0/llm/tmp/evl46-opencode-row-20261102/`; report the actual
+diagnostic and all failures after allocator execution. [no-belief: synthetic control]
+Rowflow `evl46-crm-reader-b8-tests-20261102` is also **grantable** after a separate-path smoke
+(five reader controls). It exercises synthetic refusal/provider/source checks, not a live belief
+claim. **Correction:** its CPU-lock source pin is truncated; the passing synthetic smoke did not
+exercise that pin. Its ready manifest was withdrawn and it is no longer grantable; corrected
+successor `evl46-crm-reader-a656-tests-20261102` passed six smoke controls and is grantable.
+The allocator owns grants; no session-issued grant is implied.
+[no-belief: software controls]
+Rowflow `evl46-opencode-policy-20261102` is grantable after a fake-upstream smoke: explicit
+OpenCode `permission` settings advertised only `read`; injected `bash` was unavailable, and
+the workspace read and session export succeeded. The grader-path refusal observed there was a
+permission-layer result, not an OS-denial proof. Pinning and validating the allowed schema and
+the actual scheduled result remain. [no-belief: synthetic control]
 
 [TU-HR-1 source/runtime census](../../docs/reference/tu-hr1-tool-render-audit-20261102.md)
 records the configured model/template groups and source forwarding paths, and distinguishes
