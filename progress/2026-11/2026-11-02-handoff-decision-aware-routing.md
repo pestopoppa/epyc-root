@@ -27,3 +27,7 @@ Consumed dataset-scan and prototype-qa. The available July reward replay is pre-
 ## 01:05Z — Integrate fixed-reward dataset and identity implementation reviews
 
 Consumed dataset-scan and prototype-qa. The available July reward replay is pre-E18 and lacks prompt descriptors; the episodic schema has no established stable task-ID join to that replay, and historical objective truncation prevents assuming identity from objective text. E18 wall-clock reward is already ratified; remaining work is provenance-preserving data assembly and fixed-reward training. Identity prototype is not integrated: scorer still uses descriptors and checkpoints omit role identities. Added data and integration constraints to the durable preparation note. Dispatched bounded metadata-only join-audit, identity integration draft, and controlled-sweep preparation. No inference run or row published.
+
+## 01:07Z — Integrate controlled-sweep and join-auditor preparation
+
+Consumed sweep-precise and join-prep. A fixture-tested aggregate-only task-ID coverage auditor exists in scratch, but no real audit has run and it does not establish E18 provenance or an episodic-memory join. The real_suite_v1/EvalTower combination is a candidate controlled workload and grader; preference propagation, actual selector telemetry, clean-window execution and source belief wiring remain before a valid sweep. Recorded the constraints in the design note. Dispatched bounded sweep patch, auditor review and exact baseline/snapshot provenance preparation; no row published or inference run.
