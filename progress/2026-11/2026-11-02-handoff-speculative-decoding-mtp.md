@@ -151,3 +151,7 @@ Prepared a prospective SR-7 comparison on Qwen3.6-35B with composed and non-cont
 ## 10:36Z — Prepare SR-7 sealed runtime launch
 
 Added an SR-7 direct-child launch seam that checks the declared executable and non-weight library digests and admission before launch; all 21 preparation tests pass. It does not authenticate the seal, verify loaded linkage or model identity, prove grant ownership, stop in-flight work, or drain descendants. No inference row or result is claimed.
+
+## 10:38Z — Reject incomplete G3 layer coverage
+
+The model-free G3 classifier now requires the full zero-based layer-ID set, instead of accepting an arbitrary set of the correct size; four bounded tests pass. Sparse or differently numbered layers remain unknown. The independent v10 audit found missing actual spec indices and layer identity, graph replay bypass of dispatch logging, and unproven cross-thread correlation; the source repair is delegated. No G3 inference or verdict is claimed. GitNexus impact was unavailable on the unindexed lane.
