@@ -23,3 +23,7 @@ Recovered the filing and tokenizer draft publication using serialized_push.py af
 ## 09:18Z — Publish KVU quarter partial result
 
 Restored the quarter-run filing and native partial archive after the lane sparse-checkout and untracked-artifact guard prevented the prior wrap. Run ended rc=75 disk-floor with only the starting anchor complete and unified incomplete; comparison remains UNKNOWN. No inference was run.
+
+## 09:21Z — Confirm KVU quarter filing publication
+
+The previous wrap failed during push after committing. The dispatcher refreshed the lane, and origin/main already contains equivalent quarter filing and native archive in commit 444c53c50. The rc=75 incomplete target comparison remains UNKNOWN. GPU repair remains pending. No inference was launched.
