@@ -67,18 +67,36 @@ class VerifiedPost:
         if (type(deadline) not in (int, float) or not math.isfinite(deadline)
                 or not isinstance(stop_file, Path) or not callable(admission_check)):
             raise ValueError('deadline, stop path and grant checker required')
-        self.transport = LoopbackCompletion(port, timeout_s, max_response_bytes)
         self.deadline, self.stop_file, self.admission_check = deadline, stop_file, admission_check
         self.timeout_s = timeout_s
+        self._next_admission_check = 0.0
+        self._admission_ok = False
+        self.transport = LoopbackCompletion(port, timeout_s, max_response_bytes,
+            continue_check=self._continue_request)
+
+    def _continue_request(self):
+        # STOP/deadline are checked on every transport poll. A full ownership
+        # audit is expensive, so it runs at most once per second in flight.
+        if os.path.lexists(self.stop_file) or time.time() >= self.deadline:
+            return False
+        now = time.monotonic()
+        if now >= self._next_admission_check:
+            try:
+                self._admission_ok = self.admission_check() is True
+            except Exception:
+                self._admission_ok = False
+            self._next_admission_check = now + 1.0
+        return self._admission_ok
 
     def __call__(self, server, payload):
         if not isinstance(server, ReadyServer) or not isinstance(server.evidence, dict):
             raise ValueError('verified server evidence required')
-        if self.admission_check() is not True or self.stop_file.exists():
+        if self.admission_check() is not True or os.path.lexists(self.stop_file):
             raise ValueError('admission revoked or stop requested')
         if time.time() + self.timeout_s >= self.deadline:
             raise ValueError('insufficient request time remaining')
         verify_owned_loopback_listener(server.pid, server.evidence.get('starttime_ticks'), self.transport.port)
-        if self.admission_check() is not True or self.stop_file.exists():
+        if self.admission_check() is not True or os.path.lexists(self.stop_file):
             raise ValueError('admission revoked or stop requested')
+        self._next_admission_check = 0.0
         return self.transport(server, payload)

@@ -36,7 +36,7 @@ def inspect_maps(maps, build_root):
         if not Path(path).name.startswith(_PREFIXES):
             continue
         if path not in expected:
-            raise ValueError('unexpected kernel mapping')
+            raise ValueError('unexpected kernel mapping: ' + path)
         try:
             major, minor = (int(x, 16) for x in parts[3].split(':'))
             inode = int(parts[4])

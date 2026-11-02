@@ -15,7 +15,7 @@ from verified_post import VerifiedPost
 
 def capture_guarded_block(*, output, block, sampler, sampler_sha256, admission,
                           spawn, verify_ready_and_identity, port, timeout_s,
-                          max_response_bytes):
+                          max_response_bytes, drain=None):
     """Capture one block with one common keeper check and scoped session drain.
 
     spawn must return a session leader created by spawn_session and clean up on
@@ -33,4 +33,4 @@ def capture_guarded_block(*, output, block, sampler, sampler_sha256, admission,
     return execute_block(output=output, block=block, sampler=sampler,
                          sampler_sha256=sampler_sha256, admission_check=admission,
                          spawn=spawn, verify_ready_and_identity=verify_ready_and_identity,
-                         post=post, drain=drain_session)
+                         post=post, drain=drain if drain is not None else drain_session)
