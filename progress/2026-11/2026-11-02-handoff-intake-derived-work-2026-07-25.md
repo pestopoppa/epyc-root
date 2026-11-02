@@ -43,3 +43,7 @@ Consumed ID-9 runner and launcher completion results and ID-4 real-corpus result
 ## 03:36Z — Preserve ID-9 prepared pilot inputs and advance row integration.
 
 Preserved ID-9 pilot inputs in data/experiments/id9-behavior-pilot and verified all ten manifest SHA-256 hashes. The 15-question AIME-II replay is historically evaluated, not a pristine unseen benchmark; six donor behaviors are manually curated. Dispatched runner/launcher integration fixes, concrete GPU spec preparation and an ID-4 retrieval-only pilot. No compute launched or row published.
+
+## 03:39Z — Preserve ID-4 corpus provenance and advance CPU and GPU preparation.
+
+Preserved the ID-4 snapshot manifest and readiness limitations in data/experiments/id4-distiller-corpus; verified the readiness document digest against the manifest. Raw snapshot and journals remain in the session corpus directory. The corpus does not prove question-level independence or supply correctness oracles, so it cannot support a quality verdict. Dispatched retrieval-only CPU preparation, ID-9 integration repair and model identity preparation. No compute was launched or row published.
