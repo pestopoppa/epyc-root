@@ -37,13 +37,20 @@ establish order, completeness or independent correctness of structured results.
 `hs4_file_scoring.py` supplies a narrow precondition: require one compact,
 canonical JSON object in the declared lookup, inventory or reconciliation schema,
 then call the unchanged native scorer with `exact_match` and `normalize=False`.
+`score_pinned` loads only regular non-symlink source bytes with SHA-256
+`01cf5a675a1f107120ae6b69c1b9f9ee22783052d15239925d86d0d013755fce`;
+the digest does not attest the interpreter or its imports.
 An actual invocation of APP blob `269a8669d5f261b7355e8bb11774a1410d0efbca`
 passed positive, wrong-answer and extra-line controls for each of the three
 families. This establishes those controls, not full evaluator validation.
 `hs4_file_suite.py` prepares six development and twelve acceptance synthetic
-inputs with separate host-only oracle files. The acceptance split is not sealed
-merely by creation: its owner must seal and protect it before tuning; separate
-directories are not isolation. No model or live trial was run.
+inputs with separate host-only oracle files. `seal_suite` binds their bytes,
+prompts, oracle digests and scorer pin, sets trees read-only and returns a seal
+digest that must be held independently and supplied to `verify_seal` before
+each use. `chmod` is reversible by the owner: this is tamper-evident custody
+and accidental-write protection, not immutable storage or an isolation proof.
+The acceptance split must be protected from the agent and tuning before use.
+No model or live trial was run.
 
 The APP request schema at that source uses `/chat` with `prompt`, `force_mode`,
 `force_role`, `allow_delegation`, `session_id` and `task_root`; `task_root` is

@@ -7,11 +7,42 @@ No isolation, inference or measurement authority is established here.
 from __future__ import annotations
 
 import json
+import hashlib
+import os
 import re
+import stat
+import types
+from pathlib import Path
 from collections.abc import Callable
 from typing import Any
 
 _NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9._/-]{0,127}\Z")
+NATIVE_SCORER_SHA256 = "01cf5a675a1f107120ae6b69c1b9f9ee22783052d15239925d86d0d013755fce"
+
+
+def load_native_scorer(path: Path) -> Callable[[str, str, str, dict[str, Any]], bool]:
+    """Load exactly the reviewed scorer bytes, refusing symlinks and changed source.
+
+    Execution happens in the trusted grader process. The digest pins this source,
+    not its interpreter, imported modules, host or operating-system isolation.
+    """
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+    try:
+        if not stat.S_ISREG(os.fstat(fd).st_mode):
+            raise ValueError("native scorer must be a regular file")
+        with os.fdopen(fd, "rb", closefd=False) as source:
+            raw = source.read(2_000_001)
+    finally:
+        os.close(fd)
+    if len(raw) > 2_000_000 or hashlib.sha256(raw).hexdigest() != NATIVE_SCORER_SHA256:
+        raise ValueError("native scorer source digest mismatch")
+    module = types.ModuleType("hs4_pinned_native_debug_scorer")
+    module.__file__ = str(path)
+    exec(compile(raw, str(path), "exec"), module.__dict__)
+    result = getattr(module, "score_answer", None)
+    if not callable(result):
+        raise ValueError("pinned native scorer entry point absent")
+    return result
 
 
 def canonical(value: Any) -> str:
@@ -77,3 +108,8 @@ def score(kind: str, answer: str, expected: str,
     if type(result) is not bool:
         raise TypeError("native scorer returned a non-boolean")
     return result
+
+
+def score_pinned(kind: str, answer: str, expected: str, scorer_path: Path) -> bool:
+    """Trusted-grader entry: bind native code bytes before any score is issued."""
+    return score(kind, answer, expected, load_native_scorer(scorer_path))
