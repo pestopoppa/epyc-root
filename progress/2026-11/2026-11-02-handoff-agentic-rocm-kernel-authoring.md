@@ -107,3 +107,7 @@ Consumed the C5-8 roster review: the existing discovery-only patch passed 13 tes
 ## 00:53Z — Consume upstream RPUCG state review and prepare schema correction
 
 Consumed the pinned SimpleTES RPUCG state report and recorded exact source digests and the checkpoint/partial-hook caveats in artifacts/agentic-rocm/rpucg-snapshot-review-20261102.md. Dispatched separate bounded work to repair the snapshot schema with tests and identify an authenticated producer boundary; completion events registered. No selector A/B, row publication or compute run is claimed.
+
+## 00:55Z — Preserve reviewed C5-8 draft and advance pending controller work
+
+Recorded the independently tested discovery-only C5-8 patch and its precise limits in artifacts/agentic-rocm/c5-8-roster-review-20261102.md; neither executable controllers nor the planner-memory mapping are claimed. The RPUCG schema patch is currently being edited and is excluded from this commit. Assigned bounded reviews of the existing C5-12 draft and recurring wrap-up publication race, with completion events registered. Capture, zero-profiler, counter and selector implementation events remain pending. No row was published or compute run.
