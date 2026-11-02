@@ -4,7 +4,7 @@
       "blocked": 59,
       "handoffs": 59,
       "oldest_advance": "2026-07-29",
-      "open": 1040
+      "open": 1039
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -201,7 +201,7 @@
     },
     "autokernel-champion-aggregate.md": {
       "blocked": 1,
-      "closed": 85,
+      "closed": 86,
       "guarded": 0,
       "last_advanced": "2026-11-02",
       "open": 37,
@@ -213,7 +213,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 123
+      "total": 124
     },
     "autokernel-concurrent-target-coordination.md": {
       "blocked": 0,
@@ -569,10 +569,10 @@
     },
     "conversation-stack.md": {
       "blocked": 42,
-      "closed": 73,
+      "closed": 74,
       "guarded": 0,
       "last_advanced": "2026-11-01",
-      "open": 35,
+      "open": 34,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2523,7 +2523,7 @@
       "blocked": 1,
       "closed": 56,
       "guarded": 0,
-      "last_advanced": "2026-11-01",
+      "last_advanced": "2026-11-02",
       "open": 35,
       "owner_index": "inference-research-index.md",
       "prune": {
