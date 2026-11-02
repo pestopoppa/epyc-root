@@ -59,3 +59,11 @@ Consumed the GPU trace review: the unapplied patch at `docs/evidence/ernie-image
 ### Qwen row and GPU trace readiness
 
 Consumed Qwen control and trace-build preparation. The Qwen diagnostic row now reserves provisional 192 GiB and retains affinity, elapsed generation and process peak RSS; the initial 896² request has a provisional two-hour admission guard, with later guards based on prior completed durations. Neither RAM nor time is a measured 896² bound. An independent launcher review is underway before publication. GPU trace build recipe `/mnt/raid0/llm/tmp/ernie-fa-ab-20261102/trace-build-recipe.json` pins sd.cpp `f3a7fe957d1e615d8766084f000dc3fabf8d7775`, ggml `404fcb9d7c96989569e68c9e7881ee3465a05c50`, trace patch and the previously dirty HIP FP8 guard; no source tree was modified and no build or inference was run. Build needs keeper scheduling and selected-operation attribution. Independent reviews have event registrations. [no-belief: preparation only]
+
+## 07:46Z — Publish matched Qwen diagnostic and review GPU trace attribution
+
+### Qwen comparison row published
+
+Published `ernie-qwen-pip03-cpu-20261102` with `publish_row.py`: CPU any-quarter, 192 GiB provisional reservation, 7500 s minimum window, 17580 s requested window; keeper qualification is pending. Inputs were hashed outside grant (59-file manifest digest `d45112904c7f69c3b015006af03d55bf8ec38c0873258ef20838ad43a116f93d`). Four prospective Qwen captures match retrospective ERNIE prompts but Qwen CFG 1 ignores the submitted negative prompt; prior ERNIE GPU vs Qwen CPU timing is not comparable, human review remains UNKNOWN, and this is diagnostic capture only. Independent review corrected admission to meet the first-exposure guard and checked the isolated qualification path. No inference run or quality verdict.
+
+The GPU review prepared an alternate source-attributed ERNIE DiT attention graph trace patch (`docs/evidence/ernie-image-evaluation-20261102/gpu/trace-ernie-dit-selection.patch`, SHA-256 `9db46fc2e9d66aac10725a30681466d12f64c958bdc7aeac64e76d0fa6765d4a`) replacing the generic candidate; it is uncompiled and proves graph choice only if validated, not executed kernel. Source/build preparation continues; no GPU row published. [no-belief: preparation and row publication only]
