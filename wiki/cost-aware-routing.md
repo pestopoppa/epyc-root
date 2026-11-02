@@ -480,7 +480,7 @@ such, not a new measurement.
 ### Source References (2026-08-25 effort-ladder extension)
 
 - [reasoning-effort-levels.md](../handoffs/active/context-and-token-economy.md#track-reasoning-effort-levels) — E-7 amendment (template_sha in the stamp), the CT-2 cross-handoff finding, the 2026-08-23 ledger-era correction and validator enforcement.
-- [qwen-chat-template-evaluation.md](../handoffs/active/qwen-chat-template-evaluation.md) — CT-2 calibration-void inventory (4 expensive / 5 moderate / 2 cheap), CT-5c 16K result and truncation decomposition, CT-E7/CT-E7b live-path re-stamps at template `1443ea9ab4bb`.
+- [qwen-chat-template-evaluation.md](../handoffs/active/repl-turn-efficiency.md#track-qwen-chat-template-evaluation) — CT-2 calibration-void inventory (4 expensive / 5 moderate / 2 cheap), CT-5c 16K result and truncation decomposition, CT-E7/CT-E7b live-path re-stamps at template `1443ea9ab4bb`.
 - [progress 2026-08-23.md](../progress/2026-08/2026-08-23.md) — CT-E7b master-registry propagation, era-enforcement follow-up (instrument_eras `kernel_name`, `2746c652`, `7fe84d9c`).
 - [qwen38-27b-replace-qwen36.md](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — the served-Unsloth-template digest row (9,993 B / `12827f24b742`) the stamps are bound to.
 

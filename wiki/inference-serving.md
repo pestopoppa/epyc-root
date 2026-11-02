@@ -930,7 +930,7 @@ Sources: `handoffs/active/shape-keyed-contention-gating.md`,
 ## Compiled Update — 2026-08-22: four lifecycle defects from one pilot deployment — all the same shape
 
 Sources: `handoffs/active/mi210-serving-program.md` (Q38-T6),
-`handoffs/active/qwen-chat-template-evaluation.md` (CT-DEPLOY),
+`handoffs/active/repl-turn-efficiency.md` (CT-DEPLOY),
 `progress/2026-08/2026-08-22-research-intake.md`.
 
 Deploying one launcher flag surfaced four independent lifecycle defects, every one a variant of
@@ -961,7 +961,7 @@ landed 2026-08-22 after the fixes.
 ## Compiled Update — 2026-08-22: four lifecycle defects from one pilot deployment — all the same shape
 
 Sources: `handoffs/active/mi210-serving-program.md` (Q38-T6),
-`handoffs/active/qwen-chat-template-evaluation.md` (CT-DEPLOY),
+`handoffs/active/repl-turn-efficiency.md` (CT-DEPLOY),
 `progress/2026-08/2026-08-22-research-intake.md`.
 
 Deploying one launcher flag surfaced four independent lifecycle defects, every one a variant of
@@ -2425,7 +2425,7 @@ hook filed before the first result (SC46). Remaining on operator sequence: Q38-T
 ### Source References
 
 - [`handoffs/active/mi210-serving-program.md`](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — Q38-T4 ✅ closure with the mode-artifact diagnosis
-- [`handoffs/active/qwen-chat-template-evaluation.md`](../handoffs/active/qwen-chat-template-evaluation.md) — CT-1 A/B launch + SC46 wiring
+- [`handoffs/active/repl-turn-efficiency.md`](../handoffs/active/repl-turn-efficiency.md#track-qwen-chat-template-evaluation) — CT-1 A/B launch + SC46 wiring
 - [`progress/2026-08/2026-08-21-operator.md`](../progress/2026-08/2026-08-21-operator.md), [`progress/2026-08/2026-08-21-research-intake.md`](../progress/2026-08/2026-08-21-research-intake.md)
 ## Compiled Update — 2026-08-22: the KV-migration path is live, but its "VERIFIED" state proves transport, not reuse — and on the hybrid frontdoor only strict continuations reuse a restored cache
 
@@ -2627,7 +2627,7 @@ Decision basis = production behavior over ~18 h (2026-08-22 13:55Z → 2026-08-2
 - [`qwen38-27b-replace-qwen36.md`](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — Q38-T6 closure (`96498c3d`): fallback chain, help/docstring corrections, liveness-veto fix, recovery path
 - [`dynamic-stack-concurrency.md`](../handoffs/active/dynamic-stack-concurrency.md) — K4 (`-ub 8192` inert), the G4 scope correction + H20/H21 live reads (with timestamps), the `98061c6b` migration-state fix, the #25592 v10-candidate row, the strict-extension trace
 - [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — the in-band `[ERROR: ...]` fail-open closure (502 / terminal SSE `error` / REPL pre-check)
-- [`qwen-chat-template-evaluation.md`](../handoffs/active/qwen-chat-template-evaluation.md) — CT-9 decision lines with the calibration-only window evidence, CT-10/CT-11 follow-ups (template decision compiled in [Chat Templates](chat-templates.md))
+- [`qwen-chat-template-evaluation.md`](../handoffs/active/repl-turn-efficiency.md#track-qwen-chat-template-evaluation) — CT-9 decision lines with the calibration-only window evidence, CT-10/CT-11 follow-ups (template decision compiled in [Chat Templates](chat-templates.md))
 - [`progress/2026-08/2026-08-23.md`](../progress/2026-08/2026-08-23.md) — the full CT-9 evidence bundle and the tier-1 backlog-pass context
 
 ---

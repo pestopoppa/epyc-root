@@ -2941,7 +2941,7 @@ not a record at all.
 - [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md)
   — SC46 wired (commit `24ab3090`), the SC45/SC47/SC48/SC49 pre-run filings, and the EVL-47 row's
   standing SC19 next action.
-- [`handoffs/active/qwen-chat-template-evaluation.md`](../handoffs/active/qwen-chat-template-evaluation.md)
+- [`handoffs/active/repl-turn-efficiency.md`](../handoffs/active/repl-turn-efficiency.md#track-qwen-chat-template-evaluation)
   — CT-8, the consumer task the SC46 adapter serves.
 - [`handoffs/active/knowledge-pipelines.md`](../handoffs/active/knowledge-pipelines.md) — the C1/C2/C7 record
   corrections, the K1–K3 code gaps, and the 943-file live-index staleness flag (measured 2026-08-21).

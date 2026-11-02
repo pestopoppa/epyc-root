@@ -527,7 +527,7 @@ Tick waypoints here + one-line progress entry per session; on full completion de
 **Created**: 2026-10-21 (via research intake, operator-approved 2026-10-21 plan intake-backdoor-cvec-20261020)
 **Scratch**: `/mnt/raid0/llm/tmp/model-artifact-integrity/`
 **Categories**: local_inference, agent_architecture, tool_implementation
-**Related**: [model-exec-containment.md](stack-lifecycle-program.md#track-model-exec-containment) (runtime side) · [qwen-chat-template-evaluation.md](qwen-chat-template-evaluation.md) (template CHOICE and CT-12; this handoff owns template INTEGRITY) · [model-stack-update-pipeline-audit.md](stack-lifecycle-program.md#track-model-stack-update-pipeline-audit) (registry consistency)
+**Related**: [model-exec-containment.md](stack-lifecycle-program.md#track-model-exec-containment) (runtime side) · [qwen-chat-template-evaluation.md](repl-turn-efficiency.md#track-qwen-chat-template-evaluation) (template CHOICE and CT-12; this handoff owns template INTEGRITY) · [model-stack-update-pipeline-audit.md](stack-lifecycle-program.md#track-model-stack-update-pipeline-audit) (registry consistency)
 
 #### Objective
 
@@ -697,7 +697,7 @@ banner (cheap) and `stack_log_banner.write_launch_banner` records the digest so 
 **Created**: 2026-10-21 (via research intake, operator-approved 2026-10-21 plan intake-backdoor-cvec-20261020)
 **Scratch**: `/mnt/raid0/llm/tmp/model-exec-containment/`
 **Categories**: agent_architecture, tool_implementation, local_inference
-**Related**: [model-artifact-integrity.md](stack-lifecycle-program.md#track-model-artifact-integrity) (artifact side) · [qwen-chat-template-evaluation.md](qwen-chat-template-evaluation.md) (CT-12: special-token injection, the input-side sibling — not duplicated here) · [agentic-serving-harness-fixes.md](agentic-serving-harness-fixes.md) (UFH14-A6: Landlock for harness experiments, not production) · [repl-session-memory-maturity.md](repl-session-memory-maturity.md) (D-RI-CONTAIN: the opt-in contained CPython lane for REPL *cells*, no network/secrets; this handoff owns the tool-subprocess path, credential reach and the audit log, and its env/no-network helpers are offered to D-RI-CONTAIN rather than built twice)
+**Related**: [model-artifact-integrity.md](stack-lifecycle-program.md#track-model-artifact-integrity) (artifact side) · [qwen-chat-template-evaluation.md](repl-turn-efficiency.md#track-qwen-chat-template-evaluation) (CT-12: special-token injection, the input-side sibling — not duplicated here) · [agentic-serving-harness-fixes.md](agentic-serving-harness-fixes.md) (UFH14-A6: Landlock for harness experiments, not production) · [repl-session-memory-maturity.md](repl-session-memory-maturity.md) (D-RI-CONTAIN: the opt-in contained CPython lane for REPL *cells*, no network/secrets; this handoff owns the tool-subprocess path, credential reach and the audit log, and its env/no-network helpers are offered to D-RI-CONTAIN rather than built twice)
 
 #### Objective
 

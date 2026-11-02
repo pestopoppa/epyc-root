@@ -8,7 +8,6 @@
   "RTG-57": 0.8,
   "INF-22": 0.7,
   "INF-73": 0.7,
-  "RTG-54": 0.65,
   "INF-06": 0.62,
   "INF-81": 0.6,
   "INF-48": 0.55,
@@ -145,7 +144,8 @@
   "INF-22#mi210-big-model-and-acceleration-roadmap": 0.45,
   "INF-22#qwen38-27b-replace-qwen36": 0.75,
   "INF-02#autokernel-restart-and-strip": 0.6,
-  "UFH-08#opencode-shell-integration": 0.15
+  "UFH-08#opencode-shell-integration": 0.15,
+  "EVL-37#qwen-chat-template-evaluation": 0.65
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
@@ -272,7 +272,7 @@
    "before": "INF-65:CH-30 -"
   },
   {
-   "row": "RTG-54",
+   "row": "EVL-37",
    "tok": "CT-12.5",
    "kind": "N",
    "cls": "N",
@@ -1341,7 +1341,7 @@
    "before": ""
   },
   {
-   "row": "RTG-54",
+   "row": "EVL-37",
    "tok": "CT-21",
    "kind": "N",
    "cls": "N",
@@ -1355,7 +1355,7 @@
    "before": ""
   },
   {
-   "row": "RTG-54",
+   "row": "EVL-37",
    "tok": "CT-12.6",
    "kind": "N",
    "cls": "N",
@@ -1369,7 +1369,7 @@
    "before": ""
   },
   {
-   "row": "RTG-54",
+   "row": "EVL-37",
    "tok": "CT-14",
    "kind": "N",
    "cls": "N",

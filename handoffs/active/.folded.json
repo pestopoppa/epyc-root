@@ -229,6 +229,10 @@
    "target": "eval-tower-program.md",
    "track": "prompt-construction-determinism"
   },
+  "qwen-chat-template-evaluation.md": {
+   "target": "repl-turn-efficiency.md",
+   "track": "qwen-chat-template-evaluation"
+  },
   "qwen-mtp-llamacpp-port.md": {
    "target": "model-evaluation-queue.md",
    "track": "qwen-mtp-llamacpp-port"
@@ -570,6 +574,10 @@
   "RTG-43": {
    "target": "RTG-36",
    "track": "wp12-fleet-layer-design"
+  },
+  "RTG-54": {
+   "target": "EVL-37",
+   "track": "qwen-chat-template-evaluation"
   },
   "RTG-59": {
    "target": "RTG-36",
