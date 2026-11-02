@@ -1,0 +1,7 @@
+# G8 full-position comparison candidate
+
+`v10-g8-compare.patch` applies to v10 `ffc1bac82eeca6f9099e1ccd9ba49703c460a115`. With `LLAMA_G8_COMPARE_ALL` set, it clones the target sampler before the ordinary deterministic verification loop. It compares every draft token to its target sample at the corresponding already-computed batch row and advances the clone using the actual draft token, preserving the teacher-forced draft prefix. Begin/end and per-position records permit detection of incomplete trace groups. The original sampler is never passed to this diagnostic pass.
+
+The intended measurement uses greedy sampling, one slot and one draft implementation. Match counts at each position use the number of *observed draft tokens at that position* as denominator; these are teacher-forced draft-prefix comparisons, not independent samples on prefixes the target would necessarily generate. Report accepted tokens per verification step separately; neither field establishes throughput. Stochastic sampling, grammar paths, serial verification, incomplete records, or unknown correlation are outside this candidate's established scope. A runtime output identity control with trace disabled versus enabled and independently checked count reconciliation are required before interpreting results.
+
+The patch passed `git diff --check` and reverse-application checking in a detached v10 worktree. It is source-only until the isolated HIP build, marker checks, runtime controls and MI210 residency proof succeed. It has not measured agreement.
