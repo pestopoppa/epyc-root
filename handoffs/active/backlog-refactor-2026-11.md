@@ -45,7 +45,7 @@ this handoff, do not push; two consecutive reds on the same fold → stop T1 and
 
 ## T2 — per-track gate tooling (1b) and dashboard fixes
 
-- [ ] **BRF-T2-1** [non-inference] `index_state.py`: per-track gates (readiness per track inside a folded handoff). Done when: tests cover a two-track folded handoff with one gated track. Zero inference.
+- [x] **BRF-T2-1** [non-inference] `index_state.py`: per-track gates (readiness per track inside a folded handoff). Done when: tests cover a two-track folded handoff with one gated track. Zero inference. `3e2b99bb5` — marker `<!-- gate: <row-id|task-id>,… | none -->`; tests `tests/test_index_state_track_gates.py`. [no-belief: tooling]
 - [x] **BRF-T2-2** [non-inference] `handoff_parser`: `folded` lifecycle from the banner; roll-up boxes excluded from `count_tasks`. Done when: parser tests for both pass. ✅ 2026-11-02 `6ce0647ef` [no-belief: tooling]
 - [x] **BRF-T2-3** [non-inference] `server._parse_activity_log*`: moved-box pairing, fold-commit trailer exclusion, `moved`
   field; `build_handoff_timeline`: roll-up exclusion, one-time `refactor_markers` annotation, historical
@@ -87,7 +87,7 @@ The 16 other packages stay provisional until owner-reviewed pilot results exist.
 ## T6 — staged lint enforcement (D6)
 
 - [ ] **BRF-T6-1** Bind `task_lint.py migrate` in the fold commit gate and `task_lint.py publish` in rowflow publish.
-- [ ] **BRF-T6-2** [non-inference] Add `task_lint.py` to `index_state.py --check` as warn-only.
+- [x] **BRF-T6-2** [non-inference] Add `task_lint.py` to `index_state.py --check` as warn-only. `3e2b99bb5` — TASK-LINT column on stderr, exit code untouched. [no-belief: tooling]
 - [ ] **BRF-T6-3** [non-inference] Make the lint blocking in `--check` and in wrap-up once BRF-T7-1 is ticked. Done when: `--check` exits non-zero on an untagged lint failure (test).
 
 ## T7 — 1b folds (63 → 29)
