@@ -187,3 +187,7 @@ Prepared the sealed three-window SR-6 plan, 45 rendered/tokenized prompts, bound
 ## 11:11Z — Qualify and publish SR-6 window 1
 
 SR-6 window 1 `sr6-qwen36-width-w1-20261102` passed the publish_row four-CPU smoke (one unit, rc75 partial-native-incomplete) and was published for CPU scheduling. The row is one of three predeclared windows; no performance or registry conclusion follows from smoke. Result path: `/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr6-qwen36-width-w1-20261102/RESULT.json`.
+
+## 11:17Z — Qualify SR-6 window 2 and advance G3 instrumentation
+
+Published `sr6-qwen36-width-w2-20261102` after the four-CPU smoke passed (one unit, rc75 partial-native-incomplete). W2 and W1 use the same scratch and authoritative exposure root with separate server evidence directories; whole-host claims exclude concurrent writers. W2's result is `/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr6-qwen36-width-w1-20261102/sr6-qwen36-width-w2-20261102/RESULT.json`; it is one window of three and authorizes no registry change. G3: added an unbuilt v10 source patch for invocation correlation and four passing source-contract tests; host-thread propagation and runtime completeness remain unverified, so dispatches without correlation remain UNKNOWN. CAFE-4 remains open; a syntax-checked oracle-memory guard was made in a pre-existing dirty candidate file and is not part of this commit.
