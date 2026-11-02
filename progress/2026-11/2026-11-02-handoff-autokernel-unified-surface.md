@@ -211,3 +211,7 @@ The prior preparation result events have not yet arrived. Dispatched bounded rea
 ## 01:02Z — Resolve lane merge and restore publication
 
 Resolved lane divergence: preserved pre-existing modified generated index files in named stash autokernel lane preexisting generated index changes, committed the staged prior progress entry as 73ffe445e, then merged origin/main successfully. The stash remains available and was not applied over newer generated index state. Consumed the CPU floor harness review: matched_process_v2 requires 24–256 independent pairs, while current native floor admission lacks host-state/coexistence binding and the current CPU recipe remains unresolved. Dispatched readiness checks for existing candidate and calibration preparation, with events registered. No row published or compute run.
+
+## 01:04Z — Implement candidate row prerequisites
+
+Consumed all three readiness reviews: the candidate lacks a verified build launcher and HIP binary; the existing CSV inspector does not bind capture provenance; the CPU floor lacks host-state binding and an identified current frame. Restored the relevant tracked engineering and script directories to this sparse lane. Dispatched bounded implementation of a candidate CPU build launcher and GPU capture receipt validator, plus collection of exact v10 build configuration; result events registered. No row published, build or inference run. Previous boundary reached main at eca45265664f394a2529e1691b914c08e9f4d361.
