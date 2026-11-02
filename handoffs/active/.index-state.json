@@ -201,7 +201,7 @@
     },
     "autokernel-champion-aggregate.md": {
       "blocked": 1,
-      "closed": 110,
+      "closed": 111,
       "guarded": 0,
       "last_advanced": "2026-11-02",
       "open": 35,
@@ -213,7 +213,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 146
+      "total": 147
     },
     "autokernel-concurrent-target-coordination.md": {
       "blocked": 0,
