@@ -3939,7 +3939,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T01:00:21Z",
+  "generated_at": "2026-11-02T01:02:34Z",
   "nodes": [
     {
       "age_days": 95,
@@ -8439,14 +8439,14 @@
       "track": "handoff index and backlog graph"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 20,
+      "closed": 22,
       "domain": "routing-and-optimization",
       "handoff": "dashboard-architecture-restructure.md",
       "id": "RTG-47",
-      "last_advanced": "2026-11-01",
+      "last_advanced": "2026-11-02",
       "next_action": "Re-eyeball the tap's live ACTIVE/streaming token counters under real traffic; Phase 1b awaits operator parity",
       "open": 12,
       "priority": 0.2486,
