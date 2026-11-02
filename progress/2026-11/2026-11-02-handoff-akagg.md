@@ -255,3 +255,7 @@ Filed CH26 ABI r1 rc75 inconclusive due to partial execution and known verificat
 ## 11:38Z — Implemented reproducible C2 decision-source prerequisite check.
 
 CH32 group C source checker establishes that unchanged C2 decision code references three decision types absent from both C5 and C1 and introduced by intervening upstream commits; replay matched the retained JSON. Equivalent source context or adaptation is required, but no minimum full-commit chain or runtime compatibility is claimed. The C6 successor fixes were prepared separately, while the published predecessor remains queued and unqualified.
+
+## 11:40Z — Built and validated source and retained-output checker narrowing CH31 rowexact dispatch.
+
+CH31 source localization on pinned C5 and eight retained paired logs: node_13 output shape implies ne11=4, straddling rowexact threshold N=0 versus N=4. IQK is attempted first; the fallback can bypass tinyBLAS for generic vec-dot under source guards. Input types, contiguity, actual dispatch and equal input tensors were not recorded, so neither isolated-op causality nor Q38FN behavior is established. C6 successor GPU execution timing remains unproved; synthetic lifecycle collection likewise cannot establish host coverage. Previously filed CH26 r2 receipt and pass remain valid as functional-only evidence.
