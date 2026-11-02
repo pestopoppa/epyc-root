@@ -461,11 +461,14 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
         "launcher": {"path": launcher, "sha256": sha256(launcher)}, "engine": {"path": eng, "sha256": sha256(eng)},
         "result_path": result_path, "result_format": fmt, "decision_rule": spec["decision_rule"],
         "handoff_task": spec["handoff_task"], "estimate_s": est, "min_window_s": minwin, "window_s": window,
-        "gib": int(spec.get("ram_gib") or 48), "ports": o["ports"], "priority_rank": rank,
+        "gib": int(spec.get("ram_gib") or 48), "ports": sorted(set(o["ports"]) | {int(x) for x in (spec.get("ports") or [])}),
+        "priority_rank": rank,
         "scratch_root": scratch, "keep": keep, "stop_file": o["stop"], "workdir": o["workdir"],
         "dryrun_timeout_s": int(spec.get("dryrun_timeout_s") or (1500 if lane == "gpu" else 900)),
         "published_at": now_iso(), "published_from": source or "spec",
     }
+    if spec.get("total_units") is not None:
+        row["total_units"] = int(spec["total_units"])
     if spec.get("admission_class") is not None:
         row["admission_class"] = spec["admission_class"]
     if snap:
@@ -751,7 +754,7 @@ def _fits(c, free, ram, gpu_grant_open):
     return opts
 
 
-def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), quiet_ok=True):
+def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), quiet_ok=True, held_ports=(), drain_prev=None):
     """PURE. One snapshot -> assignments. free: free regions; cands: [{id, kind: grant|dryrun, lane, rank, lane_count, gib,
     bench, options: [frozenset], shape?, since? (epoch the row became runnable), window_s? (how long it would hold)}];
     ram_gib: MemAvailable now; grant_ends: end epochs of the running grants; quiet_ok: quiet-host rows allowed now (window knob).
@@ -761,12 +764,15 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
     DRAIN (never preempt): the top quiet-host row, or the top multi-quarter/host row that has waited DRAIN_AFTER_S, that
     cannot be placed now sets T = the latest end among the running grants; only rows that END before T are backfilled, so
     nothing idles while the host drains and nothing delays T; at T its whole shape is free and it is placed first.
+    PORTS (ws58 2026-11-02): a candidate whose cand["ports"] meet held_ports (running grants) or a port placed this tick
+    waits; two rows declaring the same port are never co-scheduled.
     Returns (assigned [(cand, option)], idle {region: reason}, pending); plan.last_drain = (cand, T) or None."""
     now = time.time() if now is None else now
     pending = sorted(cands, key=lambda c: (c["lane_count"], float(c["rank"]), 0 if c["kind"] == "grant" else 1, c["id"]))
     if not quiet_ok:
         pending = [c for c in pending if c.get("shape") != "quiet-host"]
     free, ram, out = set(free), float(ram_gib), []
+    ports = {int(x) for x in held_ports}
     drain, T = None, None
     for c in pending:
         big = any(len([r for r in o if r in QUARTERS]) >= 2 for o in c["options"])
@@ -775,16 +781,26 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
             if not _fits(c, free, ram, gpu_grant_open):
                 later = [float(e) for e in grant_ends if float(e) > now]
                 drain, T = c, (max(later) if later else now + DRAIN_UNKNOWN_S)
+                prev = (drain_prev or {}).get(c["id"])
+                if prev:   # ws58 2026-11-02: a drain's T never moves later (11:28Z akx-auto10 slid 11:53 -> 12:00)
+                    T = min(T, float(prev))
                 if T - now > DRAIN_MAX_WAIT_S:   # ws58 hotfix 2026-11-01: never hold the host empty for hours
                     drain, T = None, None
             break
     plan.last_drain = (drain, T) if drain else None
+    need_r = set().union(*drain["options"]) if drain is not None else set()
+    if drain is not None:  # best fit: the longest backfill that still ends by T goes first, so the gap is packed
+        dur = lambda c: float(c.get("estimate_s") or c.get("window_s") or 0)  # noqa: E731
+        pending = [drain] + sorted([c for c in pending if c is not drain], key=lambda c: (now + dur(c) > T, -dur(c)))
     while pending:
         placed = None
         for c in pending:
-            if drain is not None and c is not drain and now + float(c.get("estimate_s") or c.get("window_s") or 0) > T:
-                continue  # backfill only with rows that end before T
+            late = drain is not None and c is not drain and now + float(c.get("estimate_s") or c.get("window_s") or 0) > T
             opts = _fits(c, free, ram, gpu_grant_open)
+            if late:   # a row ending after T may only take regions the drain row does not need (T bounds backfill, never kills)
+                opts = [o for o in opts if not (o & need_r)]
+            if ports & {int(x) for x in (c.get("ports") or [])}:
+                continue  # its port is held by a running grant: it waits
             if not opts:
                 continue
             # prefer the smallest option, then the one other pending rows want least (keeps their alternatives open)
@@ -796,6 +812,7 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
             break
         c, o = placed
         out.append(placed); free -= o; ram -= float(c.get("gib") or 0); pending.remove(c)
+        ports |= {int(x) for x in (c.get("ports") or [])}
     idle = {}
     for r in sorted(free):
         want = [c for c in pending if any(r in o for o in c["options"])]
@@ -805,8 +822,11 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
         c = want[0]; why = []
         if drain is not None:
             why.append(f"draining for {drain.get('shape', 'host')} {drain['id']} until {dt.datetime.fromtimestamp(T, dt.timezone.utc):%H:%MZ}")
+        clash = ports & {int(x) for x in (c.get("ports") or [])}
+        if clash:
+            why.append(f"port {','.join(map(str, sorted(clash)))} held by a running grant; waits")
         for o in c["options"]:
-            if r in o:
+            if r in o and not clash:
                 miss = o - free
                 if miss:
                     why.append(f"needs {','.join(sorted(o))}: {','.join(sorted(miss))} busy")
@@ -1204,6 +1224,10 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
            "ended": head1(ended) or None, "warning": warning, "dryrun_log": os.path.join(dd, "launcher.out"), "elapsed_s": int(time.time() - t0)}
     if verdict == "WAIT":
         return verdict, reason
+    # ws58 2026-11-02: a smoke that finished the WHOLE job (complete marker, or units reached the declared total) is done
+    if verdict == "PASS" and (os.path.exists(os.path.join(dd, "complete"))
+                              or (d.get("total_units") and rec["units"] >= int(d["total_units"]))):
+        rec["job_complete"] = True
     if verdict == "PASS":
         atomic_json(pass_path(flags, rid), {"id": rid, "passed_at": now_iso(), "launcher_sha256": lsha, **rec})
         for fp in fail_paths(flags, rid):
@@ -1443,9 +1467,15 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         window = int(d["window_s"])
         cands.append({"id": rid, "kind": kind, "lane": d["lane"], "rank": float(d.get("priority_rank") or 100), "lane_count": counts[d["lane"]],
                       "gib": int(d.get("gib") or 0), "bench": bench, "options": opts, "shape": shape_of(d), "window_s": window,
-                      "since": iso_epoch(since)})
+                      "since": iso_epoch(since), "ports": list(d.get("ports") or [])})
+    dfile = os.path.join(flags, "drain_state.json")
+    drain_prev = {k: v for k, v in (load_json(dfile) or {}).items() if k in allrows}
+    held_ports = {int(p) for g in grants for p in ((allrows.get(g["id"]) or {}).get("ports") or [])}
     ends = [iso_epoch(g["end"]) for g in grants if g.get("end")]
-    assigned, idle, pending = plan(free, cands, mem_available_gib(), gpu_open, grant_ends=[e for e in ends if e], quiet_ok=quiet_ok_now(flags))
+    assigned, idle, pending = plan(free, cands, mem_available_gib(), gpu_open, grant_ends=[e for e in ends if e], quiet_ok=quiet_ok_now(flags),
+                                    held_ports=held_ports, drain_prev=drain_prev)
+    if not dry:
+        atomic_json(dfile, {plan.last_drain[0]["id"]: plan.last_drain[1]} if plan.last_drain else {})
     if plan.last_drain:
         dc, T = plan.last_drain
         log(f"DRAIN {dc['id']} ({dc.get('shape')}) until {dt.datetime.fromtimestamp(T, dt.timezone.utc):%Y-%m-%dT%H:%MZ}: new rows only if they end before then")

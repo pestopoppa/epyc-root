@@ -25,6 +25,7 @@ import datetime as dt
 import glob
 import os
 import re
+import shutil
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -38,6 +39,7 @@ SPEC_KEYS = ("id", "owner", "lane", "regions", "result_path", "result_format", "
              "notes", "row", "snapshot", "admission_class", "dryrun_native_result")
 REPO = os.environ.get("ROWFLOW_REPO", "/workspace")
 SMOKE_TIMEOUT_S = 300
+MIN_ESTIMATE_S = 300  # ws58 2026-11-02: a shorter job runs in the owner's turn, not as a row
 DERIVABLE = ("lane", "scratch_root", "keep", "kind")
 _UNIT_RE = re.compile(r"(?:no unit in|before writing a unit to) (\S+) \(")
 
@@ -215,6 +217,34 @@ def run_gpu_queue(flags):
     return n
 
 
+def file_if_complete(flags, rid, row):
+    """ws58 2026-11-02: a smoke that COMPLETED the whole job is the run. Its result already sits where the row writes it
+    (a dryrun_native result is copied there); grants/<id>.ended + .complete are written as a granted run leaves them, so
+    the row is done (status: grants/<id>.complete) and is never granted."""
+    p = rf.load_json(rf.pass_path(flags, rid)) or {}
+    if not p.get("job_complete"):
+        return False
+    src = p.get("result_path")
+    if src and src != row["result_path"] and os.path.exists(src):
+        os.makedirs(os.path.dirname(row["result_path"]), exist_ok=True)
+        shutil.copyfile(src, row["result_path"])
+    g = os.path.join(flags, "grants")
+    os.makedirs(g, exist_ok=True)
+    dd = rf.dry_dir(flags, rid)
+    for term in ("ended", "complete"):
+        src = os.path.join(dd, term)
+        txt = open(src).read() if os.path.exists(src) else (f"rc=0 reason=complete-in-smoke time={rf.now_iso()}\n" if term == "ended"
+                                                             else f"complete time={rf.now_iso()} id={rid} via=smoke\n")
+        with open(os.path.join(g, f"{rid}.{term}"), "w") as f:
+            f.write(txt)
+    try:
+        os.remove(rf.ready_path(flags, rid))
+    except OSError:
+        pass
+    print(f"job completed inside the smoke: no compute row needed; file the result now ({rid}: {row['result_path']})")
+    return True
+
+
 def publish_smoked(spec, flags, source):
     """Publish, then THE dry run in the owner's turn (rowflow.dryrun_run writes PASS.json or the FAIL memo); a GPU row
     whose GPU is busy is QUEUED for the next GPU gap instead (QUEUED is not a failure; returns None)."""
@@ -232,6 +262,8 @@ def publish_smoked(spec, flags, source):
     v, msg = run_smoke(flags, rid, regions, smoke_s)
     if v == "PASS":
         print(f"SMOKE PASS {rid} on {regions}: {msg}")
+        if file_if_complete(flags, rid, row):
+            return None
         return row
     t = "\n".join(rf.tail(os.path.join(rf.dry_dir(flags, rid), "launcher.out"), 30))
     raise rf.Refused(f"smoke {v} for {rid} on {regions}: {msg}\nlauncher_out_tail:\n{t}\nFIX: fix the launcher/spec now, in "
@@ -308,6 +340,7 @@ def main(argv=None):
         rf.need(spec, f"{a.spec} is not a JSON object")
         if a.migrate:
             spec = rf.spec_from_legacy(spec, a.flags)
+        rf.need(spec.get("estimate_s") is None or int(spec["estimate_s"]) >= MIN_ESTIMATE_S, "under 5 min: run it in your turn, not as a row")
         check_handoff(spec)
         for note in lint(spec):
             print(f"LINT {note}")
