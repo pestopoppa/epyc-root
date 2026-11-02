@@ -131,3 +131,7 @@ GPU pre-grant seal, CPU request integration and private C5 plan are in progress;
 ## 10:00Z — Integrate prepared inference candidates
 
 Model seal and request capture integrations have not produced completion records; no row or measurement claimed.
+
+## 10:01Z — Implement retained-trace boundary admission
+
+Retained-trace boundary admission checker is being prepared alongside GPU model seal, CPU capture and CH-27 preflight. No measurement or row claimed.
