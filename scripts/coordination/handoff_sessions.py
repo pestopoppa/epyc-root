@@ -206,8 +206,10 @@ runs under "Own inference tasks to publish as rows" and your handoff's rank amon
 
 1. Write a spec JSON (id, owner, launcher, lane cpu|gpu, result_path, result_format, decision_rule, estimate_s,
    handoff_task, priority_rank, kind=compute) and publish it: `python3 scripts/coordination/rowflow/publish_row.py <spec.json>`.
-   **Fetch/prepare inputs yourself before publish_row**: a row whose launcher only downloads or copies data is refused
-   (`kind: fetch|prepare` or a launcher that just fetches) - that work is session preparation, not a compute row.
+   **Verify/prepare inputs ONCE before publishing, never inside the grant** (operator 23:55Z "DO BETTER"): publish_row
+   refuses a launcher, or any script it runs, that hashes model weights (`sha256sum` over *.gguf / FULL-MODEL.sha256) or
+   does single-core prep (tokenize, download, copy) - do that in your own turn, then publish; fetch-only rows
+   (`kind: fetch|prepare`) are refused for the same reason.
 2. The keeper dry-runs/qualifies the row and grants it (`grants/<id>`); you NEVER arm, grant, qualify or run compute.
 3. `grants/<id>.ended|.complete` appears -> the dispatcher resumes you with rc, end line, result_path, decision_rule.
 4. YOU file the verdict: read `result_path`, apply `decision_rule`, tick the handoff with evidence (rc, result path,
