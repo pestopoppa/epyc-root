@@ -87,3 +87,7 @@ Decided SW-3: retain existing lower-only n_max, which bitwise-sensitive callers 
 ## 10:10Z — Decide SW-3 and CAFE-1 and advance SR-6
 
 The SW-3 and CAFE-1 boxes were ticked on the preceding wrap-up attempt; regenerated the derived handoff rollup required after those ticks. SR-6 and NG5 work remains as recorded in the preceding entry.
+
+## 10:12Z — Decide SW-3 and CAFE-1 and advance SR-6
+
+Regenerated the derived handoff indexes after merging concurrent updates; SW-3 and CAFE-1 decisions are in the prior entry.
