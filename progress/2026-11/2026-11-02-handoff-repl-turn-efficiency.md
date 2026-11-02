@@ -38,3 +38,9 @@ Consumed omega-review-20261102-result.json. Omega successor must not be publishe
 ## 01:49Z — Preserve observer script across sparse merges
 
 - Added the tracked observer registry target to this worktree sparse patterns so origin/main fast-forwards do not remove it before the commit hook. Earlier attempted wrap-up entries in this file retain the Omega and RUS findings.
+
+## 01:53Z — Advance independent measurement preparation after parked qualifications
+
+- The prior wrap-up completed and pushed `3618805ecfd0ef72f0d14b63596a06b92798368a` with empty cherry. Both `handoff-rte-pfx2` and `handoff-s4-omega-isolated-pilot` now have three qualification failures and are parked; do not retry or evade the park. Requested bounded failure analysis for both, recorded by event `park-review4`.
+- RUS successor cannot be published until an attempt-scoped qualification result and model preflight/source seals exist. Delegated repair and offline tests; dispatcher event `rus-fix4`. Strategy ablation remains without a live producer and evidence custody; delegated one bounded preparation component, event `strategy4`. No inference or row publication this turn.
+- The frontdoor READY row belongs to codex-ni and was erroneously republished from the already parked RTE-LOG-1 lineage. It requires owner/keeper withdrawal; this session must not edit another owner's manifest or retry the lineage. Existing unrelated untracked files were left untouched.
