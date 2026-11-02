@@ -79,3 +79,11 @@ Repeated non-fast-forward push failures trace to a gap between wrapup.py merging
 ## 00:44Z — Advance keeper claim compatibility, RPUCG selector and native counter producer
 
 No completion reports existed at this boundary for the previously assigned MLA, MoE, counter-seam or wrap-up race work. Dispatched independent bounded work on keeper compatibility of the governed capture claim, a license-aware selection-only RPUCG adapter for future prospective snapshots, and identification or implementation of a native paired counter producer. Registered their completion events. No GPU run, row publication, target-repository modification or completed task is claimed.
+
+## 00:45Z — Prepare zero-profiler, capture request and controller panel inference rows
+
+Dispatched three bounded inference-preparation jobs: exact C5-6 matched null-arm runner/config and decision rule, governed k228/k175 capture request templates with explicit missing inputs, and fresh source availability for every fixed eight-arm controller. Registered completion events. Earlier capture claim, native producer, model-surface and selector work remains assigned. No inference launched, compute row published, or task checkbox completed.
+
+## 00:46Z — Recover unpublished inference-preparation boundary
+
+The preceding wrap-up created commit 536573f996c5 but failed to push; this attempt carries it forward. No completion reports were present for the three newly assigned row preparations or the capture-claim, RPUCG-selector and native-counter producer jobs. Their completion events remain registered; no GPU run or row was published.
