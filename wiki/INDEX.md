@@ -1,5 +1,43 @@
 # Project Wiki — Knowledge Index
 
+<!-- kt4:summaries:begin -->
+## Current state per page (generated)
+
+_One line per page from its Summary section; regenerate with `render_wiki.py index`. History lives in each page's Compile Log._
+
+- [Agent Architecture](agent-architecture.md) — The EPYC orchestrator is a pydantic_graph-based multi-agent system running on a single AMD EPYC 9655 (192 threads, **4 NUMA nodes** — NPS4 since the 2026-04-24 reboot; corrected 2026-07-30 from "2 NUMA nodes") with llama.cpp as the inference backend.
+- [Autonomous Research](autonomous-research.md) — Autonomous research in the EPYC context refers to systems that can propose, execute, evaluate, and learn from optimization experiments without human intervention.
+- [Benchmark Methodology](benchmark-methodology.md) — The project uses a purpose-built 8-suite (expanded to 23-suite) benchmarking framework to evaluate models for specific roles in the multi-model orchestrator.
+- [Chat Templates — Per-Model Turn Markers and Routing Endpoints](chat-templates.md) — Production chat templates are part of the model-serving contract: the selected endpoint, client-side wrapping, server-side Jinja behavior, and per-model reasoning kwargs must agree.
+- [Context Extension](context-extension.md) — Context extension research addresses the fundamental question: how do you process sequences longer than a model's training context?
+- [Context Management](context-management.md) — Context management is the most research-dense area in the EPYC knowledge base, driven by a fundamental constraint: CPU inference on the EPYC 9655 makes every context token expensive.
+- [Cost-Aware Routing](cost-aware-routing.md) — Cost-aware routing in the EPYC stack addresses a fundamental pathology of reasoning LLMs: they allocate compute inversely to problem difficulty.
+- [Document Processing](document-processing.md) — Document processing in the EPYC orchestrator currently uses a binary routing pipeline by default: born-digital PDFs go through `pdftotext -layout` (fast, ~100ms/page, no structure) while scanned/image PDFs route to LightOnOCR-2-1B (slow, ~1-3s/page on GPU, high accuracy).
+- [Formal Verification](formal-verification.md) — Formal verification research for the EPYC stack centers on deploying a two-tier Lean 4 proving pipeline using local models.
+- [Hardware Optimization](hardware-optimization.md) — The entire project is built around the AMD EPYC 9655 "Turin" processor: 96 physical cores (192 threads), 1.13 TB DDR5-5600 ECC across 12 memory channels (~460 GB/s theoretical bandwidth), and true 512-bit AVX-512 (not Intel's double-pumped variant).
+- [Inference Serving](inference-serving.md) — The production inference serving stack runs 9+ llama-server instances plus 2-4 auxiliary services, organized into HOT/WARM/COLD memory tiers on a single AMD EPYC 9655 machine with 1.13 TB RAM.
+- [Knowledge Management](knowledge-management.md) — Knowledge management in EPYC encompasses two complementary architectures: **internal KB-RAG** (ColBERT-based retrieval over the project's markdown knowledge bases) and **structured-DB alternatives** (SQL-based extraction-and-reasoning for long-document aggregation, tracked separately under `rag-a...
+- [KV Cache Optimization](kv-cache.md) — KV cache is the dominant memory bottleneck for CPU inference on our EPYC 9655 stack.
+- [LLM Prompting](llm-prompting.md) — Prompting research relevant to the EPYC stack divides into two sharply different domains.
+- [Local Inference](local-inference.md) — The project runs all production inference locally through llama-server (from a custom llama.cpp fork) serving GGUF-quantized models on the EPYC 9655 CPU, using 1.13 TB of DDR5 RAM.
+- [Mechanistic Interpretability](mechanistic-interpretability.md) — Mechanistic interpretability is the subfield concerned with reverse-engineering the internal computations of large language models — not just describing what they output, but isolating the specific representations and circuits that produce that behavior.
+- [Memory-Augmented Systems](memory-augmented.md) — Memory-augmented systems are the learning infrastructure that allows the EPYC orchestrator to improve across requests and sessions.
+- [MoE Optimization](moe-optimization.md) — Mixture-of-Experts models are central to our EPYC 9655 inference stack.
+- [Multimodal](multimodal.md) — The EPYC multimodal pipeline spans four modalities: speech-to-text (production), vision (code-complete), text-to-speech (blocked), and unified multimodal (downloaded/untested).
+- [Quantization](quantization.md) — Quantization is the foundation of our entire EPYC 9655 inference stack.
+- [RAG Alternatives](rag-alternatives.md) — Embedding-based retrieval (ColBERT/late-interaction or dense bi-encoder) is the dominant architecture for knowledge-base QA at EPYC's scale (≤10K markdown documents per the wiki/handoffs/research corpora).
+- [Reasoning Compression](reasoning-compression.md) — Reasoning traces are the dominant token cost on the architect lanes, and every lever that reduces them is a (model, quant, template) property, never a stack default.
+- [Reinforcement Learning](reinforcement-learning.md) — Reinforcement learning in the EPYC context spans two distinct domains: (1) RL as a training methodology for the LLMs that EPYC serves, and (2) RL-inspired mechanisms within the orchestrator itself (MemRL Q-value learning, routing model training).
+- [Routing Intelligence](routing-intelligence.md) — Routing intelligence is the subsystem that decides which model role handles each incoming request on the EPYC 9655.
+- [Safety](safety.md) — Safety in the current EPYC stack is mostly about agentic trust boundaries: what external text may influence, which generated findings are allowed to become action items, and how review tools suppress false positives.
+- [Search & Retrieval](search-retrieval.md) — The EPYC stack uses ColBERT-based multi-vector retrieval for both codebase search and document search, with a separate BGE-large single-vector system for routing memory (MemRL episodic store).
+- [Speculative Decoding](speculative-decoding.md) — Speculative decoding accelerates autoregressive inference by drafting multiple candidate tokens cheaply, then verifying them against the target model in a single batch.
+- [SSM Hybrid Architectures](ssm-hybrid.md) — Hybrid State Space Model (SSM) architectures -- specifically Qwen3.5's combination of Delta Net recurrent layers with standard attention layers -- present fundamental challenges for the EPYC inference stack.
+- [Tool Implementation](tool-implementation.md) — Tool implementation in the EPYC orchestrator spans two dimensions: the REPL tools that coding agents use during task execution (file operations, grep, tests, shell commands), and meta-tooling that provides codebase intelligence to improve those agents' effectiveness.
+- [Training & Distillation](training-distillation.md) — Training and distillation research for the EPYC stack focuses on three pillars: (1) improving worker model quality through contrastive training techniques like ACT, (2) compressing reasoning output through self-distillation methods like OPSDC, and (3) the SkillBank experience distillation system...
+
+<!-- kt4:summaries:end -->
+
 **Source backlog review — 2026-10-07**: all 112 originally pending sources and two later sources were reviewed and synthesized into 17 existing articles. The update preserves source-versus-live boundaries, withdrawn historical attributions, proposal/approval state and the experimental hybrid Jet-Long invalidation. The [review inventory](../artifacts/wiki-compilation-20261007/README.md) binds coverage and custody; root advances the shared manifest only after checks.
 
 Updated articles: [Agent Architecture](agent-architecture.md), [Autonomous Research](autonomous-research.md), [Benchmark Methodology](benchmark-methodology.md), [Context Management](context-management.md), [Hardware Optimization](hardware-optimization.md), [Inference Serving](inference-serving.md), [Knowledge Management](knowledge-management.md), [Local Inference](local-inference.md), [Memory Augmented](memory-augmented.md), [Moe Optimization](moe-optimization.md), [Multimodal](multimodal.md), [Quantization](quantization.md), [Routing Intelligence](routing-intelligence.md), [Safety](safety.md), [Search Retrieval](search-retrieval.md), [Speculative Decoding](speculative-decoding.md), [Tool Implementation](tool-implementation.md).

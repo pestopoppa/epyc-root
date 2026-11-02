@@ -124,7 +124,7 @@ if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 
-from dashboard import campaign_status, handoff_parser, kernel_progression, loop_status, panels
+from dashboard import campaign_status, handoff_parser, kernel_progression, knowledge, loop_spec, loop_status, panels
 
 
 REPO = Path(__file__).resolve().parents[1]
@@ -164,6 +164,12 @@ GPU_WINDOW_HTML = _STATIC / "gpu-window.html"
 
 
 LOOP_HTML = _STATIC / "loop.html"
+
+
+LOOP_SPEC_HTML = _STATIC / "loop-spec.html"
+
+
+KNOWLEDGE_HTML = _STATIC / "knowledge.html"
 
 
 AMD_AI_LAB_DIR = _STATIC / "amd-ai-lab"
@@ -1339,6 +1345,86 @@ def benchmark_artifacts_payload() -> dict:
     return data
 
 
+
+# --------------------------------------------------------------------------- #
+# JEV-5 phase A: typed loop specs  (/loop-spec)
+# --------------------------------------------------------------------------- #
+def loop_spec_payload() -> dict:
+    """Every ``epyc.loop_spec.v1`` spec, validated, with a Mermaid diagram per machine."""
+    specs, problems = loop_spec.read_specs()
+    valid = [s for s in specs if not s.get("_errors")]
+    revised = [_parse_semantic_timestamp(s.get("spec_revised")) for s in valid]
+    revised = [t for t in revised if t is not None]
+    if not specs and not problems:
+        obs = panels.absent(panels.source("loop_spec"),
+                            f"no *.loop.json under {loop_spec.SPEC_DIR}")
+    elif problems and not valid:
+        obs = panels.Observation(artifact_present=True, timestamp=None, source=None,
+                                 populated=None, detail="; ".join(p["error"] for p in problems)[:500])
+    else:
+        obs = panels.Observation(artifact_present=True, timestamp=min(revised) if revised else None,
+                                 source="spec_revised", populated=bool(valid),
+                                 detail=("; ".join(p["path"] + ": " + p["error"] for p in problems)[:500]
+                                         or None))
+    return {"schema": "epyc.loop_spec.payload.v1", "specs": specs, "problems": problems,
+            "schema_path": str((loop_spec.SPEC_DIR / "loop-spec.schema.json").relative_to(REPO)),
+            "_freshness": _panel_envelope("loop_spec", obs)}
+
+
+def _subject_health(panel: str, data: dict) -> tuple[int, dict]:
+    env = data.get("_freshness") or {}
+    verdict, reasons = panels.panel_verdict(env)
+    ok = verdict == "ok"
+    return (200 if ok else 503), {"panel": panel, "status": verdict, "reasons": reasons,
+                                  "freshness": env, "global_health": "/api/health"}
+
+
+def loop_spec_health() -> tuple[int, dict]:
+    """``/api/loop_spec/health`` — is the diagram still a valid, current spec?"""
+    return _subject_health("loop_spec", loop_spec_payload())
+
+
+# --------------------------------------------------------------------------- #
+# KT-3: read-only claim browser  (/knowledge)
+# --------------------------------------------------------------------------- #
+def knowledge_payload() -> dict:
+    """Summary + compact claim index over the canonical vidya ledger (read-only)."""
+    idx, err, path = knowledge.index()
+    if idx is None:
+        detail = err or f"no belief ledger at {path}"
+        obs = (panels.Observation(artifact_present=True, timestamp=None, source=None,
+                                  populated=None, detail=detail, evidence=str(path))
+               if err else panels.Observation(artifact_present=False, detail=detail, evidence=str(path)))
+        return {"ledger": str(path), "error": detail, "claims": None, "counts": None,
+                "_freshness": _panel_envelope("knowledge", obs)}
+    obs = panels.Observation(
+        artifact_present=True, timestamp=_parse_semantic_timestamp(idx["last_created_at"]),
+        source="pubinfo.created_at", populated=bool(idx["rows"]), evidence=str(path),
+        watermark=str(idx["last_seq"]),
+        detail=(f"{idx['malformed_lines']} malformed ledger line(s) skipped"
+                if idx["malformed_lines"] else None))
+    return {"ledger": str(path), "counts": idx["counts"], "n_claims": len(idx["rows"]),
+            "last_seq": idx["last_seq"], "last_created_at": idx["last_created_at"],
+            "claims": idx["rows"], "_freshness": _panel_envelope("knowledge", obs)}
+
+
+def knowledge_health() -> tuple[int, dict]:
+    """``/api/knowledge/health`` — is the browser showing a current ledger?"""
+    data = knowledge_payload()
+    data = {"_freshness": data["_freshness"]}
+    return _subject_health("knowledge", data)
+
+
+def knowledge_claim_payload(claim_id: str) -> tuple[int, dict]:
+    """``(status, chain)`` for one claim: claim -> evidence -> run -> commit."""
+    idx, err, path = knowledge.index()
+    if idx is None:
+        return 404, {"error": err or f"no belief ledger at {path}", "id": claim_id}
+    detail = knowledge.claim_detail(idx, claim_id or "")
+    if detail is None:
+        return 404, {"error": "claim not found", "id": claim_id}
+    return 200, detail
+
 _DASHBOARDS_TTL_S = 15.0
 
 
@@ -1599,6 +1685,9 @@ def panel_envelopes() -> dict:
         "dashboards": lambda: dashboards_payload()["_freshness"],
         "autokernel_loop": lambda: loop_status.snapshot()[1],
         "kernel_progression": lambda: kernel_progression.snapshot()[1],
+        "loop_spec": lambda: loop_spec_payload()["_freshness"],
+        "knowledge": lambda: knowledge_payload()["_freshness"],
+        "knowledge_claim": lambda: panels.live(),
     }
     out: dict = {}
     for name in panels.PANELS:
@@ -2004,6 +2093,8 @@ HTML_ROUTES = {
     "/loop": LOOP_HTML,
     "/bus": BUS_HTML,
     "/benchmarks": BENCHMARKS_HTML,
+    "/loop-spec": LOOP_SPEC_HTML,
+    "/knowledge": KNOWLEDGE_HTML,
     "/amd-ai-lab": AMD_AI_LAB_HTML,
 }
 
@@ -2035,6 +2126,8 @@ API_ROUTES = {
     "/api/outcome": outcome_payload,
     "/api/gpu_window": gpu_window_payload,
     "/api/benchmark_artifacts": benchmark_artifacts_payload,
+    "/api/loop_spec": loop_spec_payload,
+    "/api/knowledge": knowledge_payload,
     "/api/dashboards": dashboards_payload,
     "/api/health": health_payload,
 }
@@ -2042,6 +2135,7 @@ API_ROUTES = {
 
 API_ROUTES_WITH_STATUS = {
     "/api/handoff_detail": detail_payload,
+    "/api/knowledge_claim": knowledge_claim_payload,
 }
 
 
@@ -2049,6 +2143,8 @@ PANEL_HEALTH_ROUTES = {
     "/api/loop/progression/health": progression_health,
     "/api/diagnostic-overrides/health": diagnostic_overrides_health,
     "/api/loop/health": loop_data_health,
+    "/api/loop_spec/health": loop_spec_health,
+    "/api/knowledge/health": knowledge_health,
 }
 
 

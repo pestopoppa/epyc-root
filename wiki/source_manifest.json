@@ -5,27 +5,27 @@
     "handoff-blocked": 2,
     "handoff-completed": 221,
     "progress": 1146,
-    "research": 271
+    "research": 275
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-01T15:52:43Z",
   "last_touch": {
     "advanced": {
-      "added": 0,
-      "changed": 3,
+      "added": 4,
+      "changed": 0,
       "removed": 0
     },
-    "at": "2026-11-02T00:23:49Z",
+    "at": "2026-11-02T00:32:20Z",
     "scope_paths": [
-      "research/deep-dives/intake-digests/2026-11-02-ids-26*",
+      "research/deep-dives/intake-digests/2026-11-02-ids-2617-2621.md",
       "research/deep-dives/ws58-jev-20261102/*"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-02T00:23:49Z",
+  "scan_time": "2026-11-02T00:32:20Z",
   "schema_version": 1,
-  "source_set_hash": "08f55802dd332d3896a07ce0203039c2225b5dbd30c1fa17067f4586d256b15d",
+  "source_set_hash": "384dd37600dc8320077c3d6fb98c8cf9b37b1ab8f586e648c70cd7d9f196f125",
   "sources": [
     {
       "content_hash": "79865b0c101f4b6a9b14665950a430467345202b33986b3ba348bc3df428170a",
@@ -4620,6 +4620,14 @@
       "type": "research"
     },
     {
+      "content_hash": "8f9858f7411ea6089c2548a4de3261e495636bb2ffd1418bdd68c1cb21a809b4",
+      "modified": "2026-11-02T00:32:05Z",
+      "path": "research/deep-dives/intake-digests/2026-11-02-ids-2617-2621.md",
+      "size": 11953,
+      "title": "Intake dive digest \u2014 2026-11-02, intake-2617#record .. intake-2621#record",
+      "type": "research"
+    },
+    {
       "content_hash": "c733c629d076f15c3c6ceea4ec87b9d5f0031a2d87028a7b9eeba55574535c28",
       "modified": "2026-11-01T15:45:21Z",
       "path": "research/deep-dives/intake-trio-202604-references.md",
@@ -5381,7 +5389,7 @@
     },
     {
       "content_hash": "cd12069f647df56d60a06178a76be79aa04b9d8547b0e7cc1d1b69a6a6d0e9f9",
-      "modified": "2026-11-02T00:22:57Z",
+      "modified": "2026-11-02T00:29:27Z",
       "path": "research/deep-dives/ws58-jev-20261102/agent-loop-gui-survey.md",
       "size": 6488,
       "title": "Loop-flow GUI survey (ws58-jev, 2026-11-02)",
@@ -5389,7 +5397,7 @@
     },
     {
       "content_hash": "f662c6eb8544ca223aacbdd110ff9a01292a8afb25316f110576bb7d945d464a",
-      "modified": "2026-11-02T00:22:57Z",
+      "modified": "2026-11-02T00:29:27Z",
       "path": "research/deep-dives/ws58-jev-20261102/intake-2604-jev-harness-engineering.md",
       "size": 18240,
       "title": "Stage-2 dive: Archive228/jev-harness-engineering (Jev + Harness Engineering)",
@@ -5397,15 +5405,23 @@
     },
     {
       "content_hash": "0de438c66d56c3bb0158b2019d58a761e9d6eb19b4cb9ef33b3588e53a83d1e2",
-      "modified": "2026-11-02T00:22:57Z",
+      "modified": "2026-11-02T00:29:27Z",
       "path": "research/deep-dives/ws58-jev-20261102/intake-2615-superagent-essay.md",
       "size": 8272,
       "title": "Essay dive (2026-11-02)",
       "type": "research"
     },
     {
+      "content_hash": "d2e595728529d3294d6e45edd0871eaa759ad6350156a2ec78f5b578862c951a",
+      "modified": "2026-11-02T00:31:41Z",
+      "path": "research/deep-dives/ws58-jev-20261102/knowledge-transparency.md",
+      "size": 7335,
+      "title": "Knowledge transparency: wiki, belief kernel, episodic memory (ws58 intake, source 3)",
+      "type": "research"
+    },
+    {
       "content_hash": "4c041a69c133ce75d089aa752fbcb5662ac7a39a59c6089554d51b6bf2abc950",
-      "modified": "2026-11-02T00:22:57Z",
+      "modified": "2026-11-02T00:29:27Z",
       "path": "research/deep-dives/ws58-jev-20261102/selective-prediction-wave1-dives.md",
       "size": 10836,
       "title": "Stage-2b lit dives: selective classification / conformal abstention (ws58-jev)",
@@ -5413,10 +5429,26 @@
     },
     {
       "content_hash": "5d3fcfb1b895f8e6ccd2f86730b83effb99560242947d1e031d1df97ec7b9c74",
-      "modified": "2026-11-02T00:22:57Z",
+      "modified": "2026-11-02T00:29:27Z",
       "path": "research/deep-dives/ws58-jev-20261102/wave2-dives.md",
       "size": 5933,
       "title": "Wave-2 dives: Foreman + LangChain/Jev blog",
+      "type": "research"
+    },
+    {
+      "content_hash": "9e677e9b80421a945583e7e5f4e73010c97b0e5b2828569f082ef4fbf27f6da8",
+      "modified": "2026-11-02T00:30:19Z",
+      "path": "research/deep-dives/ws58-jev-20261102/wiki3-dive.md",
+      "size": 12925,
+      "title": "wiki3 dive: LLM Wiki / second-brain (2026-11-02)",
+      "type": "research"
+    },
+    {
+      "content_hash": "dd1674741438964b55b9d134de5ea54a7293c8abc778d1cb8a49b44f8b526c61",
+      "modified": "2026-11-02T00:30:12Z",
+      "path": "research/deep-dives/ws58-jev-20261102/wiki3b-dive.md",
+      "size": 2293,
+      "title": "wiki3b dive",
       "type": "research"
     },
     {
@@ -16596,7 +16628,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 2071,
+  "total_new": 2075,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

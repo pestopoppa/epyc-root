@@ -9940,7 +9940,7 @@
     intake:
     - intake-144 (Contextual Memory Virtualization)
     - intake-267 (ByteRover agent-native memory)
-  notes: 'Conceptual essay behind the LLM wiki pattern. Our research-intake skill is essentially an implementation of this — structured YAML index with cross-references, maintained by LLM. The "compilation vs retrieval" framing validates our approach: we compile research into persistent handoffs rather than re-discovering context per session. The linting concept (contradiction detection, orphan pages, stale claims) could enhance our intake validation. DEEP-DIVE: epyc-root IS an LLM wiki. Lint operation is the highest-value gap. Three-layer architecture validates our governance split. Patterns upstreamed to root-archetype.
+  notes: 'RE-ENCOUNTER 2026-11-02 (ws58 source 3): re-read raw from disk; the raw/ wiki/ output/ layout and ''using only wiki/'' come from intake-2617, not this gist; lint implementations compared in intake-2619/2620; transparency plan in research/deep-dives/ws58-jev-20261102/knowledge-transparency.md. Conceptual essay behind the LLM wiki pattern. Our research-intake skill is essentially an implementation of this — structured YAML index with cross-references, maintained by LLM. The "compilation vs retrieval" framing validates our approach: we compile research into persistent handoffs rather than re-discovering context per session. The linting concept (contradiction detection, orphan pages, stale claims) could enhance our intake validation. DEEP-DIVE: epyc-root IS an LLM wiki. Lint operation is the highest-value gap. Three-layer architecture validates our governance split. Patterns upstreamed to root-archetype.
 
     '
   claim_anchors:
@@ -10033,7 +10033,7 @@
     intake:
     - intake-268 (Karpathy LLM Wiki concept)
     - intake-269 (nvk/llm-wiki)
-  notes: 'Uses GGUF models via node-llama-cpp for local search — directly on our stack. The hybrid BM25+vector+LLM reranking pipeline is a well-engineered retrieval architecture. Natural markdown chunking approach could inform context-folding segment boundary detection. RRF fusion for combining search signals is a proven technique applicable if we build retrieval into the orchestrator for long-context knowledge lookup. DEEP-DIVE: Deploy as MCP server for epyc-root semantic search. Break-point scoring formula (baseScore * (1-(d/w)^2*0.7)) extractable for context-folding. 2GB models run on CPU, no GPU impact. 359-file corpus is exact target.
+  notes: 'RE-ENCOUNTER 2026-11-02 (ws58 source 3): named by the Karpathy gist as the next step once index-first navigation stops scaling. Uses GGUF models via node-llama-cpp for local search — directly on our stack. The hybrid BM25+vector+LLM reranking pipeline is a well-engineered retrieval architecture. Natural markdown chunking approach could inform context-folding segment boundary detection. RRF fusion for combining search signals is a proven technique applicable if we build retrieval into the orchestrator for long-context knowledge lookup. DEEP-DIVE: Deploy as MCP server for epyc-root semantic search. Break-point scoring formula (baseScore * (1-(d/w)^2*0.7)) extractable for context-folding. 2GB models run on CPU, no GPU impact. 359-file corpus is exact target.
 
     '
   claim_anchors:
@@ -375589,7 +375589,11 @@
     read from disk (see intake-1472 re-encounter). Read FULL: the English article; PARTIAL: jev-harness-lab policy*.json, policy.py, run.py replay;
     NOT read in detail: verification/jev-live-2026-09-20/*, other-language editions. License MIT.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - churn-pipeline.md
+  - autopilot-continuous-optimization.md
+  - autokernel-research-loop.md
+  - dashboard-architecture-restructure.md
   handoffs_created: []
   source_revision: github.com/Archive228/jev-harness-engineering @ main 5d8670b6918003379e6d03a200fecf9d2cc9a2c3 (2026-09-25), git clone --depth
     1, retrieved 2026-11-02
@@ -375761,10 +375765,9 @@
     prediction literature); wave 2: intake-2613 (thruwire/foreman), intake-2614 (LangChain blog, vendor-partner, not independent). Dive-surfaced
     sources declined (wave cap 2 reached): typesafe-ai/skills, typesafe-sdk-python, browser-use/jev-ultrafast, docs.typesafe.ai/patterns/* — reopen
     if a local typed-judgment build needs vendor reference code.'
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-3 task lines JEV-1..JEV-6 and SA-1..SA-4 are prepared in research/deep-dives/ws58-jev-20261102/README.md and await operator approval
-    of the plan before any handoff write (2026-11-02).
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/churn-pipeline.md, handoffs/active/autopilot-continuous-optimization.md, handoffs/active/autokernel-research-loop.md, handoffs/active/dashboard-architecture-restructure.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'
 - id: intake-2605
   arxiv_id: '1705.08500'
   url: https://arxiv.org/abs/1705.08500
@@ -375804,7 +375807,8 @@
     the two thresholds of a typed judgment from held-out real outcomes and replaying saved inputs. Calibration labels must be real outcomes; decisions
     within one episode are not exchangeable.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - churn-pipeline.md
   handoffs_created: []
   source_revision: arXiv:1705.08500v2 HTML (arxiv.org/html/1705.08500v2) curled to disk, read from disk, retrieved 2026-11-02
   reader_should_conclude: Cite for how to set abstention thresholds with a stated risk or coverage target; not evidence about any agent harness.
@@ -375835,10 +375839,9 @@
     verified_by: research-intake/stage2
   depends_on: []
   dive_corrections: '2026-11-02 (Stage-2b wave 1): all quotes verified as exact substrings of the on-disk HTML text; no claim overturned.'
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-3 task lines JEV-1..JEV-6 and SA-1..SA-4 are prepared in research/deep-dives/ws58-jev-20261102/README.md and await operator approval
-    of the plan before any handoff write (2026-11-02).
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/churn-pipeline.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'
 - id: intake-2606
   arxiv_id: '2307.01928'
   url: https://arxiv.org/abs/2307.01928
@@ -375909,10 +375912,9 @@
     verified_by: research-intake/stage2
   depends_on: []
   dive_corrections: '2026-11-02 (Stage-2b wave 1): all quotes verified as exact substrings of the on-disk HTML text; no claim overturned.'
-  integration_disposition: monitor
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage-3 task lines JEV-1..JEV-6 and SA-1..SA-4 are prepared in research/deep-dives/ws58-jev-20261102/README.md and await operator approval
-    of the plan before any handoff write (2026-11-02).
+  - 'Stage 4 2026-11-02: Supports the JEV-6 threshold rule as background; no task cites it directly.'
 - id: intake-2607
   arxiv_id: '2107.11277'
   url: https://arxiv.org/abs/2107.11277
@@ -375989,10 +375991,9 @@
     verified_by: research-intake/stage2
   depends_on: []
   dive_corrections: '2026-11-02 (Stage-2b wave 1): all quotes verified as exact substrings of the on-disk HTML text; no claim overturned.'
-  integration_disposition: monitor
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage-3 task lines JEV-1..JEV-6 and SA-1..SA-4 are prepared in research/deep-dives/ws58-jev-20261102/README.md and await operator approval
-    of the plan before any handoff write (2026-11-02).
+  - 'Stage 4 2026-11-02: Survey background for the JEV-6 two-threshold rule; no task cites it directly.'
 - id: intake-2608
   arxiv_id: '2306.10193'
   url: https://arxiv.org/abs/2306.10193
@@ -376035,7 +376036,8 @@
     the two thresholds of a typed judgment from held-out real outcomes and replaying saved inputs. Calibration labels must be real outcomes; decisions
     within one episode are not exchangeable.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - churn-pipeline.md
   handoffs_created: []
   source_revision: arXiv:2306.10193v2 HTML (arxiv.org/html/2306.10193v2) curled to disk, read from disk, retrieved 2026-11-02
   reader_should_conclude: Cite for how to set abstention thresholds with a stated risk or coverage target; not evidence about any agent harness.
@@ -376066,10 +376068,9 @@
     verified_by: research-intake/stage2
   depends_on: []
   dive_corrections: '2026-11-02 (Stage-2b wave 1): all quotes verified as exact substrings of the on-disk HTML text; no claim overturned.'
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-3 task lines JEV-1..JEV-6 and SA-1..SA-4 are prepared in research/deep-dives/ws58-jev-20261102/README.md and await operator approval
-    of the plan before any handoff write (2026-11-02).
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/churn-pipeline.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'
 - id: intake-2609
   arxiv_id: null
   url: https://github.com/apache/burr
@@ -376108,7 +376109,8 @@
   notes: GUI literature expansion 2026-11-02. Apache-2.0. Tracking UI is a standalone app, not embeddable in the stdlib hub; adopt the snapshot-plus-parent-pointer
     data model only.
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - dashboard-architecture-restructure.md
   handoffs_created: []
   source_revision: github.com/apache/burr @ main 0512d8a02178545c8b7e94c46258ca9401d936e0, git clone --depth 1, retrieved 2026-11-02
   reader_should_conclude: Cite as the data-model precedent for a replay stepper; do not adopt the UI.
@@ -376130,10 +376132,9 @@
     verified_by: research-intake/stage2
   depends_on: []
   dive_corrections: '2026-11-02: only application.py lines 855-860, 2019-2024, 2080-2084 read for anchors; UI source tree listed, not read.'
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-3 task lines JEV-1..JEV-6 and SA-1..SA-4 are prepared in research/deep-dives/ws58-jev-20261102/README.md and await operator approval
-    of the plan before any handoff write (2026-11-02).
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/dashboard-architecture-restructure.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'
 - id: intake-2610
   arxiv_id: null
   url: https://github.com/xyflow/xyflow
@@ -376324,10 +376325,9 @@
     verified_by: research-intake/stage2
   depends_on: []
   dive_corrections: '2026-11-02 (Stage-2b wave 2): README and docs/what-foreman-proves.md read from disk.'
-  integration_disposition: monitor
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage-3 task lines JEV-1..JEV-6 and SA-1..SA-4 are prepared in research/deep-dives/ws58-jev-20261102/README.md and await operator approval
-    of the plan before any handoff write (2026-11-02).
+  - 'Stage 4 2026-11-02: Second design precedent for JEV-1/JEV-3 (errors are not scores); no distinct task.'
 - id: intake-2614
   arxiv_id: null
   url: https://www.langchain.com/blog/building-a-harness-with-jev
@@ -376395,10 +376395,9 @@
     verified_by: research-intake/stage2
   depends_on: []
   dive_corrections: '2026-11-02 (Stage-2b wave 2): read from disk; multipliers are vendor restatements.'
-  integration_disposition: monitor
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage-3 task lines JEV-1..JEV-6 and SA-1..SA-4 are prepared in research/deep-dives/ws58-jev-20261102/README.md and await operator approval
-    of the plan before any handoff write (2026-11-02).
+  - 'Stage 4 2026-11-02: Vendor-partner restatement; no task.'
 - id: intake-2615
   arxiv_id: null
   url: https://x.com/DeepSeekHarness/status/2116857257245987236
@@ -376451,7 +376450,8 @@
   notes: Essay companion of intake-2603 (the prototype repo); distinct source. Chinese original not located in bounded searches 2026-11-02 (unverified-in-stage1,
     not evidence of nonexistence); English machine translation read in full. The prototype README says it is not identical to the essay's implementation.
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - churn-pipeline.md
   handoffs_created: []
   source_revision: X Article linked from x.com/DeepSeekHarness/status/2116857257245987236 (English machine translation of the 2026-10-31 Chinese essay) via api.fxtwitter.com, saved
     to disk, retrieved 2026-11-02
@@ -376532,10 +376532,9 @@
   depends_on: []
   dive_corrections: '2026-11-02 (Stage 2): all operator-summary claims confirmed against the full translated essay; caveats added. Stage-2b wave
     1: intake-2616 (Anthropic managed-agents). Declined (wave budget): deepseek.com/harness pages, prototype docs 000/007 (repo already intake-2603).'
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-3 task lines JEV-1..JEV-6 and SA-1..SA-4 are prepared in research/deep-dives/ws58-jev-20261102/README.md and await operator approval
-    of the plan before any handoff write (2026-11-02).
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/churn-pipeline.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'
 - id: intake-2616
   arxiv_id: null
   url: https://www.anthropic.com/research/managed-agents
@@ -376593,7 +376592,419 @@
     verified_by: research-intake/stage2
   depends_on: []
   dive_corrections: '2026-11-02 (Stage-2b wave 1 for intake-2615): read from disk.'
-  integration_disposition: monitor
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage-3 task lines JEV-1..JEV-6 and SA-1..SA-4 are prepared in research/deep-dives/ws58-jev-20261102/README.md and await operator approval
-    of the plan before any handoff write (2026-11-02).
+  - 'Stage 4 2026-11-02: Vendor measurement of bootstrap cost supporting SA-1 context; no distinct task.'
+- id: intake-2617
+  arxiv_id: null
+  url: https://x.com/imryven/status/2115046979659055476
+  source_type: blog
+  title: Claude Code + Obsidian second brain walkthrough (Ryven X Article)
+  categories:
+  - knowledge_management
+  - agent_architecture
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-11-02'
+  authors:
+  - Ryven (imryven)
+  key_claims:
+  - Using only wiki/, what are the three best arguments I've collected about [topic]?
+  - If the wiki doesn't cover part of it, say so.
+  - Anthropic's documentation says plainly that CLAUDE.md is context, not enforced configuration.
+  - Check raw/ for files not yet ingested.
+  - List pages that contradict each other, pages with no links, ideas that appear in several places but have no page, and claims with no source
+    in raw/.
+  - Anthropic's own advice is to move multi-step procedures out of CLAUDE.md and into skills
+  - Four ways this breaks (and the fix)
+  - I have not run this walkthrough end to end
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-268
+  credibility_score: null
+  contradicting_evidence: []
+  referenced_arxiv_ids: []
+  notes: Article dated 2026-10-27. Layout raw/ wiki/ output/ and 'using only wiki/' come from this article, not from the gist (intake-268).
+  verification: dive-verified
+  handoffs_updated:
+  - dev-harness-trace-mining.md
+  handoffs_created: []
+  source_revision: X Article linked from https://x.com/imryven/status/2115046979659055476 via api.fxtwitter.com, saved to disk, retrieved 2026-11-02
+  reader_should_conclude: Cite as an untested how-to (the author says it was not run end to end); useful for the query and lint prompt shapes
+    only.
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: tw.txt:63 fxtwitter article 2115042274614599680
+    quote: Using only wiki/, what are the three best arguments I've collected about [topic]?
+    quote_sha256: 6d770ab580512c3ead709b1d53e06d6ebc9100081a55f9a07495fd54deb98a37
+    source_revision: X Article linked from https://x.com/imryven/status/2115046979659055476 via api.fxtwitter.com, saved to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: tw.txt:63
+    quote: If the wiki doesn't cover part of it, say so.
+    quote_sha256: 65cf90353c88e8a428ce9fbb1ab582b839bc3f92719ae1c2ff992eed8e116a75
+    source_revision: X Article linked from https://x.com/imryven/status/2115046979659055476 via api.fxtwitter.com, saved to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: tw.txt:109
+    quote: Anthropic's documentation says plainly that CLAUDE.md is context, not enforced configuration.
+    quote_sha256: 99e35a29b3d19cfe8c85363ae222457d634bf11b69b23ba51fd0d54dcdc6d2ed
+    source_revision: X Article linked from https://x.com/imryven/status/2115046979659055476 via api.fxtwitter.com, saved to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: tw.txt:94
+    quote: Check raw/ for files not yet ingested.
+    quote_sha256: 70a8f76e2a8a968de4748db971bc45246b9a9adeb184c8d1c565c8eb91c706e5
+    source_revision: X Article linked from https://x.com/imryven/status/2115046979659055476 via api.fxtwitter.com, saved to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: tw.txt:101
+    quote: List pages that contradict each other, pages with no links, ideas that appear in several places but have no page, and claims with no
+      source in raw/.
+    quote_sha256: 069df1ff55dad8b565ce8841511313cef8697fd98ad52d2664f0ebf2016e6584
+    source_revision: X Article linked from https://x.com/imryven/status/2115046979659055476 via api.fxtwitter.com, saved to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: tw.txt:75
+    quote: Anthropic's own advice is to move multi-step procedures out of CLAUDE.md and into skills
+    quote_sha256: 984205c008dac966219906b4203fd111ec59ef4539a9a9197217ba8075325cd0
+    source_revision: X Article linked from https://x.com/imryven/status/2115046979659055476 via api.fxtwitter.com, saved to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: heading-and-hash
+    locator: tw.txt:103
+    quote: Four ways this breaks (and the fix)
+    quote_sha256: 3aa7aad7ade8ef77373d789b5a8214668ef5e1f5e319c50f585ddd4fcb9a2986
+    source_revision: X Article linked from https://x.com/imryven/status/2115046979659055476 via api.fxtwitter.com, saved to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 7
+    kind: heading-and-hash
+    locator: tw.txt:132
+    quote: I have not run this walkthrough end to end
+    quote_sha256: e4d3b398cc1ec852cd59c80634e85ee61b0214bcdc613d5233b82edef6bb9702
+    source_revision: X Article linked from https://x.com/imryven/status/2115046979659055476 via api.fxtwitter.com, saved to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  depends_on: []
+  dive_corrections: '2026-11-02 (Stage 2, ws58 source 3): read from disk; see research/deep-dives/ws58-jev-20261102/wiki3-dive.md.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/dev-harness-trace-mining.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'
+- id: intake-2618
+  arxiv_id: null
+  url: https://www.noze.it/en/insights/llm-wiki/
+  source_type: blog
+  title: LLM Wiki (noze.it insight summary of the Karpathy gist)
+  categories:
+  - knowledge_management
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-02'
+  authors:
+  - noze.it
+  key_claims:
+  - The model, Andrej Karpathy writes in a gist published on 4 April 2026, “rediscovers knowledge from scratch on every question. There’s no accumulation.”
+  - a new document arrives, the LLM reads it and updates 10-15 related wiki pages
+  - lint (periodic passes that surface contradictions, orphan links and gaps)
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-268
+  credibility_score: null
+  contradicting_evidence: []
+  referenced_arxiv_ids: []
+  notes: Secondary restatement of intake-268; not corroboration.
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: www.noze.it/en/insights/llm-wiki/ (dated 2026-04-28) curled to disk, retrieved 2026-11-02
+  reader_should_conclude: Secondary summary; cite intake-268 instead.
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: noze.txt:12 fetched 2026-11-02; page dated 28 Apr 2026
+    quote: The model, Andrej Karpathy writes in a gist published on 4 April 2026, “rediscovers knowledge from scratch on every question. There’s
+      no accumulation.”
+    quote_sha256: 468544936b0553d9011fa1b01fe7ce5ec93c82962a003212491aad278bc815f0
+    source_revision: www.noze.it/en/insights/llm-wiki/ (dated 2026-04-28) curled to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: noze.txt:18
+    quote: a new document arrives, the LLM reads it and updates 10-15 related wiki pages
+    quote_sha256: 605df3757bdd21664e672e05db36f812107dfd19bd85dbbc65ffdc68d7007a1b
+    source_revision: www.noze.it/en/insights/llm-wiki/ (dated 2026-04-28) curled to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: noze.txt:18
+    quote: lint (periodic passes that surface contradictions, orphan links and gaps)
+    quote_sha256: 662c0a5ebc3cbb5280a5280a1971d771580f84b081684d49f688785d789b4e3d
+    source_revision: www.noze.it/en/insights/llm-wiki/ (dated 2026-04-28) curled to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  depends_on: []
+  dive_corrections: '2026-11-02 (Stage 2, ws58 source 3): read from disk; see research/deep-dives/ws58-jev-20261102/wiki3-dive.md.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Stage 4 2026-11-02: Secondary summary of intake-268; no task.'
+- id: intake-2619
+  arxiv_id: null
+  url: https://github.com/AgriciDaniel/claude-obsidian
+  source_type: repo
+  title: 'claude-obsidian: Claude Code plugin for an Obsidian LLM wiki (ingest/query/save/lint, provenance ledgers)'
+  categories:
+  - knowledge_management
+  - agent_architecture
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-11-02'
+  authors:
+  - AgriciDaniel
+  key_claims:
+  - do not claim that it performed semantic, stylistic, or prose-level contradiction analysis
+  - It reports such categories as dead or ambiguous links, orphan pages, required
+  - Assessment is `accepted`, `provisional`, `contested`, `unsupported`, or
+  - If the vault cannot answer, name the missing evidence and stop.
+  - read `wiki/hot.md` and `wiki/index.md`, then verify the directly
+  - This skill never creates a note, updates an index, logs a query, refreshes a
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-268
+  credibility_score: null
+  contradicting_evidence: []
+  referenced_arxiv_ids: []
+  notes: MIT. Lint is a read-only parser; repair is a separate hashed transaction.
+  verification: dive-verified
+  handoffs_updated:
+  - internal-kb-rag.md
+  - dashboard-architecture-restructure.md
+  handoffs_created: []
+  source_revision: github.com/AgriciDaniel/claude-obsidian @ main 2e545563172f97f02ecaaaab376ceea1246a0583 (2026-10-22), git clone --depth 1,
+    retrieved 2026-11-02
+  reader_should_conclude: Cite for a deterministic lint (links, orphans, ledger contracts) that explicitly does not claim semantic contradiction
+    detection, and for source/claim ledgers with independence keys.
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: co/skills/wiki-lint/SKILL.md:50 claude-obsidian 2e54556 MIT
+    quote: 'do not claim that it performed
+
+      semantic, stylistic, or prose-level contradiction analysis'
+    quote_sha256: c16c526bcae55809b7488a3f8c06c63d4e571c92e329bec4fc5ee65a720fa624
+    source_revision: github.com/AgriciDaniel/claude-obsidian @ main 2e545563172f97f02ecaaaab376ceea1246a0583 (2026-10-22), git clone --depth 1,
+      retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: co/skills/wiki-lint/SKILL.md:47
+    quote: It reports such categories as dead or ambiguous links, orphan pages, required
+    quote_sha256: adcaeed984856bf88e855d75a2207054e32e8649f34aebfd605d9bbaee614af8
+    source_revision: github.com/AgriciDaniel/claude-obsidian @ main 2e545563172f97f02ecaaaab376ceea1246a0583 (2026-10-22), git clone --depth 1,
+      retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: co/skills/wiki/references/provenance.md:42
+    quote: Assessment is `accepted`, `provisional`, `contested`, `unsupported`, or
+    quote_sha256: d1bc8ed44f20c0e6540b485bc22b7b3d775e2826baa5e858355880fd58d83bc3
+    source_revision: github.com/AgriciDaniel/claude-obsidian @ main 2e545563172f97f02ecaaaab376ceea1246a0583 (2026-10-22), git clone --depth 1,
+      retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: co/skills/wiki-query/SKILL.md:107
+    quote: If the vault cannot answer, name the missing evidence and stop.
+    quote_sha256: 404232373c350e2eed9612821cf79d0f7714ebd0015a7787eb3f638052e8f8a8
+    source_revision: github.com/AgriciDaniel/claude-obsidian @ main 2e545563172f97f02ecaaaab376ceea1246a0583 (2026-10-22), git clone --depth 1,
+      retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: co/skills/wiki-query/SKILL.md:33
+    quote: read `wiki/hot.md` and `wiki/index.md`, then verify the directly
+    quote_sha256: 5f8ff55cf78ab7729ddfd687126d07cdb0cfa23ab46fb1e34f1e812e23ebcc4f
+    source_revision: github.com/AgriciDaniel/claude-obsidian @ main 2e545563172f97f02ecaaaab376ceea1246a0583 (2026-10-22), git clone --depth 1,
+      retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: co/skills/wiki-query/SKILL.md:110
+    quote: This skill never creates a note, updates an index, logs a query, refreshes a
+    quote_sha256: a38f49495e43a3f728c14d78581454f945e881f5c05f5bc7f32ef9296e286595
+    source_revision: github.com/AgriciDaniel/claude-obsidian @ main 2e545563172f97f02ecaaaab376ceea1246a0583 (2026-10-22), git clone --depth 1,
+      retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  depends_on: []
+  dive_corrections: '2026-11-02 (Stage 2, ws58 source 3): read from disk; see research/deep-dives/ws58-jev-20261102/wiki3-dive.md.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/internal-kb-rag.md, handoffs/active/dashboard-architecture-restructure.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'
+- id: intake-2620
+  arxiv_id: null
+  url: https://github.com/eugeniughelbur/obsidian-second-brain
+  source_type: repo
+  title: 'obsidian-second-brain: multi-agent skill suite for an Obsidian vault (health audit, quote-verified contradictions, freshness lint)'
+  categories:
+  - knowledge_management
+  - agent_architecture
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-11-02'
+  authors:
+  - eugeniughelbur
+  key_claims:
+  - '`/obsidian-reconcile` resolves them automatically'
+  - A contradiction a model reports but cannot quote is dropped, never acted on.
+  - scan Key Decisions sections and reference/concept notes
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-268
+  credibility_score: null
+  contradicting_evidence: []
+  referenced_arxiv_ids: []
+  notes: MIT. Contradictions found by LLM subagents; deterministic vault_health.py for orphans/duplicates.
+  verification: dive-verified
+  handoffs_updated:
+  - vidya-belief-substrate-program.md
+  handoffs_created: []
+  source_revision: github.com/eugeniughelbur/obsidian-second-brain @ main f79c64f3f03ee25ec1660c8a30ebe7f4f8e044ff (2026-10-28), git clone --depth
+    1, retrieved 2026-11-02
+  reader_should_conclude: Cite for the quote-verified contradiction gate (an unquotable contradiction is dropped); its auto-resolve and AI-first
+    notes work against human transparency.
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: osb/README.md:117 obsidian-second-brain f79c64f MIT
+    quote: '`/obsidian-reconcile` resolves them automatically'
+    quote_sha256: 0484b752113cb1e66a7ce59b4cc77cd7437547300c11e0bf03200df91f5493e0
+    source_revision: github.com/eugeniughelbur/obsidian-second-brain @ main f79c64f3f03ee25ec1660c8a30ebe7f4f8e044ff (2026-10-28), git clone --depth
+      1, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: osb/scripts/verify_quotes.py:6
+    quote: 'A contradiction a model reports but cannot quote is
+
+      dropped, never acted on.'
+    quote_sha256: 909b8ee0faf4e1fc9aab29e2f0b61cd054a5de88093a1fa6bf848a6699f4dd71
+    source_revision: github.com/eugeniughelbur/obsidian-second-brain @ main f79c64f3f03ee25ec1660c8a30ebe7f4f8e044ff (2026-10-28), git clone --depth
+      1, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: osb/commands/obsidian-health.md:29
+    quote: scan Key Decisions sections and reference/concept notes
+    quote_sha256: eeec06009c6a3881d888e2525c69efb95f0e9fd92504a695cecfaeb99c5ab0ee
+    source_revision: github.com/eugeniughelbur/obsidian-second-brain @ main f79c64f3f03ee25ec1660c8a30ebe7f4f8e044ff (2026-10-28), git clone --depth
+      1, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  depends_on: []
+  dive_corrections: '2026-11-02 (Stage 2, ws58 source 3): read from disk; see research/deep-dives/ws58-jev-20261102/wiki3-dive.md.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/vidya-belief-substrate-program.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'
+- id: intake-2621
+  arxiv_id: null
+  url: https://theaioperator.io/p/i-rebuilt-karpathys-llm-wiki-heres
+  source_type: blog
+  title: I rebuilt Karpathy's LLM wiki (The AI Operator)
+  categories:
+  - knowledge_management
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2620
+  verdict: worth_investigating
+  ingested_date: '2026-11-02'
+  authors:
+  - The AI Operator
+  key_claims:
+  - 'This works for the first 50 to 100 sources. Past that, three failure modes compound: claims go stale, contradictions accumulate faster than
+    you resolve them, and the cross-reference graph becomes too dense to navigate manually.'
+  - Three small bugs, but together they meant the command designed to make my vault smarter was making it dumber on its first run.
+  - Every scheduled agent in this rebuild now logs its changes to a daily diff note and waits 24 hours before any change becomes permanent.
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-268
+  credibility_score: null
+  contradicting_evidence: []
+  referenced_arxiv_ids: []
+  notes: Dive-surfaced from intake-2620 (Stage-2b wave 1).
+  verification: dive-verified
+  handoffs_updated:
+  - internal-kb-rag.md
+  handoffs_created: []
+  source_revision: theaioperator.io/p/i-rebuilt-karpathys-llm-wiki-heres curled to disk, retrieved 2026-11-02
+  reader_should_conclude: Cite as a practitioner report on where an append-only LLM wiki breaks; not measured evidence.
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: 'section: Why a conceptual blueprint is not a working second brain'
+    quote: 'This works for the first 50 to 100 sources. Past that, three failure modes compound: claims go stale, contradictions accumulate faster
+      than you resolve them, and the cross-reference graph becomes too dense to navigate manually.'
+    quote_sha256: 192a93f0828b96114ed8384d5d69e032d4905540871170c6e3c784bef229acee
+    source_revision: theaioperator.io/p/i-rebuilt-karpathys-llm-wiki-heres curled to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: 'section: What I got wrong'
+    quote: "Three small bugs, but together they meant the command designed to make my vault smarter \nwas making it dumber on its first run."
+    quote_sha256: 876563f3d3f34f4b94b884b1a3a009785dec40414d94631037e18cf44fb101de
+    source_revision: theaioperator.io/p/i-rebuilt-karpathys-llm-wiki-heres curled to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: 'section: What I got wrong'
+    quote: "Every scheduled agent in this rebuild now logs its changes \nto a daily diff note and waits 24 hours before any change becomes permanent."
+    quote_sha256: 48c3194387e76cc6e691f852fe3ffbc82ec7fe6c7e26803d38098ea987d89afc
+    source_revision: theaioperator.io/p/i-rebuilt-karpathys-llm-wiki-heres curled to disk, retrieved 2026-11-02
+    verified_by: research-intake/stage2
+  depends_on: []
+  dive_corrections: '2026-11-02 (Stage 2, ws58 source 3): read from disk; see research/deep-dives/ws58-jev-20261102/wiki3-dive.md.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/internal-kb-rag.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'

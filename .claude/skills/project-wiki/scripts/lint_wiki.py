@@ -58,7 +58,8 @@ def _get_lint_config(config: dict) -> dict:
         "enabled_passes": lint.get("enabled_passes", [
             "orphan_handoffs", "stale_entries", "contradictory_status",
             "unactioned_intake", "missing_cross_refs", "wiki_article_structure",
-            "wiki_link_targets",
+            "wiki_link_targets", "wiki_orphans", "unsourced_bullets",
+            "conflicted_citations", "contradictions",
         ]),
     }
 
@@ -490,10 +491,118 @@ def check_wiki_link_targets(wiki_dir: Path) -> list[Issue]:
     return issues
 
 
+# ---------------------------------------------------------------- KT-1 passes
+
+_INTAKE_CITE = re.compile(r"intake-\d+")
+_PATH_CITE = re.compile(r"\]\([^)]+\)|`[^`\s]*/[^`\s]*`|\b[0-9a-f]{7,40}\b")
+
+
+def check_wiki_orphans(wiki_dir: Path) -> list[Issue]:
+    """Wiki pages with no inbound link from another page and absent from INDEX.md."""
+    pages = {p.name for p in wiki_dir.glob("*.md")} - ADMIN_WIKI_FILES
+    linked: set[str] = set()
+    for p in wiki_dir.glob("*.md"):
+        for link in _extract_md_links(p.read_text(encoding="utf-8", errors="ignore")):
+            target = Path(link.split("#", 1)[0]).name
+            if target and target != p.name:
+                linked.add(target)
+    return [(WARNING, f"wiki/{n}", "orphan page: no inbound wiki link and not in INDEX.md")
+            for n in sorted(pages - linked)]
+
+
+def check_unsourced_bullets(wiki_dir: Path) -> list[Issue]:
+    """Bullets in `## Compiled Update` sections citing neither an intake entry, a path/link nor a SHA.
+
+    A bullet whose section carries a non-empty Source References/Sources sub-list is only
+    section-sourced (INFO: provenance exists but is not bound to the bullet). A bullet in a section
+    with no source list at all is a WARNING. `### Open questions` / `### Related` are exempt.
+    """
+    issues: list[Issue] = []
+    for p in sorted(wiki_dir.glob("*.md")):
+        if p.name in ADMIN_WIKI_FILES:
+            continue
+        sections: list[tuple[list[tuple[int, str]], bool]] = []
+        cur: list[tuple[int, str]] | None = None
+        has_src = in_src = exempt = False
+        for n, line in enumerate(p.read_text(encoding="utf-8", errors="ignore").splitlines(), 1):
+            # KT-4 pages keep their updates demoted to `### Compiled Update` under `## Compile Log`
+            if line.startswith("## ") or line.startswith("### Compiled Update"):
+                if cur is not None:
+                    sections.append((cur, has_src))
+                cur = [] if line.lstrip("#").startswith(" Compiled Update") else None
+                has_src = in_src = exempt = False
+                continue
+            if cur is None:
+                continue
+            if line.startswith(("### ", "#### ")):
+                low = line.lower()
+                in_src = "source" in low or "reference" in low
+                exempt = any(k in low for k in ("open question", "related"))
+                continue
+            stripped = line.lstrip()
+            if stripped[:2] not in ("- ", "* "):
+                continue
+            cited = bool(_INTAKE_CITE.search(line) or _PATH_CITE.search(line))
+            if in_src:
+                has_src = has_src or cited
+            elif not exempt and not cited:
+                cur.append((n, stripped))
+        if cur is not None:
+            sections.append((cur, has_src))
+        for bullets, sourced in sections:
+            for n, text in bullets:
+                issues.append((INFO if sourced else WARNING, f"wiki/{p.name}:{n}",
+                               ("section-sourced bullet: " if sourced else "unsourced bullet: ")
+                               + text[:80]))
+    return issues
+
+
+def check_conflicted_citations(wiki_dir: Path, as_of: str | None = None) -> list[Issue]:
+    """Run `vidya cite-check` over the wiki and report blocking citations (conflicted/refuted/dangling).
+
+    Uses the CLI rather than re-implementing it, so the lint and the gate cannot disagree.
+    """
+    import json as _json
+    import subprocess
+
+    as_of = as_of or datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    cli = ROOT / "scripts" / "vidya" / "cli.py"
+    try:
+        out = subprocess.run([sys.executable, str(cli), "--json", "cite-check", "--as-of", as_of,
+                              str(wiki_dir)], capture_output=True, text=True, timeout=300, cwd=ROOT)
+        data = _json.loads(out.stdout)
+    except Exception as exc:  # noqa: BLE001 -- an unavailable gate is reported, never silently passed
+        return [(WARNING, "wiki/", f"cite-check unavailable: {exc}")]
+    return [(ERROR if v["status"] in ("conflicted", "overturned") else WARNING, v["path"],
+             f"intake-{v['entry']} citation is {v['status']}")
+            for v in data.get("verdicts", []) if v["status"] in ("conflicted", "overturned", "dangling")]
+
+
+def check_contradictions(queue: Path | None = None) -> list[Issue]:
+    """Pending KT-2 contradiction pairs (quote-hashed, operator-adjudicated, never auto-resolved)."""
+    import json as _json
+
+    queue = queue or ROOT / "data" / "vidya" / "contradiction_queue.jsonl"
+    if not queue.exists():
+        return []
+    rows = [_json.loads(ln) for ln in queue.read_text().splitlines() if ln.strip()]
+    return [(WARNING, f"{r['a']['path']}:{r['a']['line']}",
+             f"contradicts {r['b']['path']}:{r['b']['line']} ({r['id']}, pending adjudication)")
+            for r in rows if r.get("status") == "pending"]
+
+
 def main() -> int:
+    import argparse
+    import json as _json
+
+    ap = argparse.ArgumentParser(description="Lint the project knowledge base")
+    ap.add_argument("--json", action="store_true", help="emit a JSON report instead of text")
+    ap.add_argument("--json-out", help="also write the JSON report to this path")
+    ap.add_argument("--only", help="comma-separated pass names to run (default: wiki.yaml)")
+    args = ap.parse_args()
     config = load_wiki_config()
     lint_cfg = _get_lint_config(config)
-    enabled = set(lint_cfg["enabled_passes"])
+    enabled = set(args.only.split(",")) if args.only else set(lint_cfg["enabled_passes"])
 
     active_dir = ROOT / "handoffs" / "active"
     completed_dir = ROOT / "handoffs" / "completed"
@@ -554,6 +663,35 @@ def main() -> int:
         all_issues.extend(issues)
         pass_names.append(("Wiki link targets", issues))
 
+    # KT-1 passes
+    for key, label, fn in (
+        ("wiki_orphans", "Wiki orphan pages", lambda: check_wiki_orphans(wiki_dir)),
+        ("unsourced_bullets", "Unsourced bullets", lambda: check_unsourced_bullets(wiki_dir)),
+        ("conflicted_citations", "Conflicted citations", lambda: check_conflicted_citations(wiki_dir)),
+        ("contradictions", "Contradictions", check_contradictions),
+    ):
+        if key in enabled:
+            issues = fn()
+            all_issues.extend(issues)
+            pass_names.append((label, issues))
+
+    total_errors = sum(1 for i in all_issues if i[0] == ERROR)
+    report = {
+        "schema": "epyc.wiki/lint_report/v1",
+        "generated_at": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "summary": {"errors": total_errors,
+                    "warnings": sum(1 for i in all_issues if i[0] == WARNING)},
+        "passes": {name: {"count": len(iss), "issues": [
+            {"severity": sv, "target": t, "message": m} for sv, t, m in iss]}
+            for name, iss in pass_names},
+    }
+    if args.json_out:
+        Path(args.json_out).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.json_out).write_text(_json.dumps(report, indent=2) + "\n")
+    if args.json:
+        print(_json.dumps(report, indent=2))
+        return 1 if total_errors else 0
+
     # Print report
     print("=" * 70)
     print("  Knowledge Base Lint Report")
@@ -566,8 +704,12 @@ def main() -> int:
         print(f"### {pass_name}: {len(errors)} errors, {len(warnings)} warnings")
         if not issues:
             print("  (clean)")
+        infos = sum(1 for i in issues if i[0] == INFO)
         for severity, target, msg in issues:
-            print(f"  [{severity}] {target}: {msg}")
+            if severity != INFO:
+                print(f"  [{severity}] {target}: {msg}")
+        if infos:
+            print(f"  ({infos} INFO items; see --json)")
         print()
 
     # Summary

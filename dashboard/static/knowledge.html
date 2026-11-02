@@ -1,0 +1,39 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EPYC — Knowledge</title>
+<style>body{background:#0d1117;color:#c9d1d9;font:14px system-ui;margin:24px;max-width:1400px}a{color:#60a5fa;cursor:pointer}input,select{background:#161b22;color:#c9d1d9;border:1px solid #30363d;padding:7px}input{width:380px}table{border-collapse:collapse;width:100%;margin-top:10px}th,td{padding:6px 8px;border-bottom:1px solid #30363d;text-align:left;vertical-align:top}th{color:#8b949e}code{font-size:12px;color:#e6edf3;word-break:break-all}.note{color:#f0c088;background:#2b1d12;padding:10px}.err{color:#fca5a5;background:#3b1212;padding:10px}.fresh{color:#8b949e;font-size:12px}.wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}@media(max-width:900px){.wrap{grid-template-columns:1fr}body{margin:16px}input{width:100%}}#detail{background:#161b22;border:1px solid #30363d;padding:12px;position:sticky;top:8px;max-height:92vh;overflow:auto}.step{border-left:3px solid #30363d;padding:4px 10px;margin:10px 0}.step h4{margin:2px 0;color:#8b949e;font-size:12px;text-transform:uppercase;letter-spacing:.05em}.neg{color:#fca5a5}.pos{color:#86efac}.chip{display:inline-block;padding:1px 6px;border-radius:8px;font-size:11px;background:#30363d}</style>
+<h1>Knowledge</h1>
+<!-- RTG-47: the ONE shared nav, rendered from dashboard/registry.json. -->
+<nav id="epyc-nav"></nav>
+<script defer src="/nav.js"></script>
+<p class="note">Read-only claim browser over the vidya belief ledger: <b>claim → evidence → run → commit</b>. Grades are the ones the adapters recorded; nothing is graded here. A commit is shown only when a frame records one — otherwise “not recorded”, never inferred. Data: <a href="/api/knowledge">/api/knowledge</a> · probe <a href="/api/knowledge/health">/api/knowledge/health</a>.</p>
+<div id="fresh" class="fresh">Loading ledger…</div>
+<p><input id=q placeholder="Filter claim text or id"> <select id=kind><option value="">all source kinds</option></select> <select id=flt><option value="">all</option><option value="r">retracted</option><option value="o">opposed</option><option value="c">corrected</option></select> <span id=n class=fresh></span></p>
+<div class=wrap><div><table><thead><tr><th>Claim</th><th>Kind</th><th>Q</th><th>±</th></tr></thead><tbody id=rows></tbody></table></div><div id=detail class=fresh>Select a claim.</div></div>
+<script>
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let claims=[];const LIMIT=300;
+function render(){const q=document.querySelector('#q').value.toLowerCase(),k=document.querySelector('#kind').value,fl=document.querySelector('#flt').value;
+ const shown=claims.filter(c=>(!k||c.k===k)&&(!fl||c[fl]>0)&&(!q||(c.id+' '+c.t).toLowerCase().includes(q)));
+ document.querySelector('#n').textContent=`${shown.length} match${shown.length>LIMIT?` (first ${LIMIT} shown)`:''}`;
+ document.querySelector('#rows').innerHTML=shown.slice(0,LIMIT).map(c=>`<tr><td><a data-id="${esc(c.id)}">${esc(c.t)||'<i>no text</i>'}</a><br><code class=fresh>${esc(c.id)}</code>${c.r?' <span class="chip neg">retracted</span>':''}${c.c?' <span class=chip>corrected</span>':''}</td><td>${esc(c.k||'—')}</td><td>${esc(c.q||'—')}</td><td><span class=pos>+${c.s}</span> <span class=neg>−${c.o}</span></td></tr>`).join('')||'<tr><td colspan=4>No matching claims</td></tr>';}
+function kv(o){return o?`<code>${esc(JSON.stringify(o,null,1))}</code>`:'—'}
+async function show(id){const el=document.querySelector('#detail');el.textContent='Loading…';
+ const r=await fetch('/api/knowledge_claim?id='+encodeURIComponent(id));const d=await r.json();
+ if(!r.ok){el.innerHTML=`<p class=err>${esc(d.error)}</p>`;return}
+ const run=d.run?.assertion||{};
+ el.innerHTML=`<div class=step><h4>Claim</h4><b>${esc(d.text)}</b><br><code>${esc(d.claim_id)}</code><br><span class=fresh>proposed ${esc(d.proposed?.created_at)} by ${esc(d.proposed?.actor)} · seq ${esc(d.proposed?.seq)} · scope ${esc(d.proposed?.authority_scope)}</span>
+ ${d.retractions.length?`<p class=neg>Retracted evidence: ${d.retractions.map(x=>esc(x.reason)).join('<br>')}</p>`:''}
+ ${d.depends_on.length?`<p>Depends on: ${d.depends_on.map(x=>`<code>${esc(x.depends_on_entry)}</code>`).join(', ')}</p>`:''}</div>
+ <div class=step><h4>Evidence (${d.evidence.length})</h4>${d.evidence.map(e=>{const a=e.assertion;return `<p><span class="${e.direction==='supports'?'pos':'neg'}">${esc(e.direction)}</span> · grade ${esc(a.grade?.Q)}/${esc(a.grade?.T)} · ${esc(a.category||'')} ${a.metric?`· ${esc(a.metric)} = ${esc(a.value)} ${esc(a.unit||'')} (${esc(a.metric_direction||'')}, reps ${esc(a.reps)})`:''}<br><code>${esc(a.evidence_id)}</code><br><span class=fresh>${esc(e.created_at)} · ${esc(e.method)}${(e.provenance?.grade_reasons||[]).length?' · '+esc(e.provenance.grade_reasons.join('; ')):''}</span></p>`}).join('')||'<p class=neg>No evidence frame recorded for this claim.</p>'}</div>
+ <div class=step><h4>Run / source</h4>${d.run?`<b>${esc(run.title||run.source_kind)}</b><br>kind <code>${esc(run.source_kind)}</code> · observed ${esc(run.revision_observed)}<br>locator <code>${esc(run.locator)}</code><details><summary>full source frame</summary>${kv(run)}</details>`:'<p class=neg>Source frame not in this ledger.</p>'}</div>
+ <div class=step><h4>Commit</h4>${d.commits.length?d.commits.map(c=>`<code>${esc(c.value)}</code> <span class=fresh>(${esc(c.field)})</span>`).join('<br>'):'<span class=fresh>not recorded on any frame of this claim</span>'}</div>
+ ${d.corrections.length?`<div class=step><h4>Corrections (${d.corrections.length})</h4>${d.corrections.map(c=>`<p><span class=fresh>${esc(c.created_at)} ${esc(c.entry_id)}</span><br>${esc(c.text)}</p>`).join('')}</div>`:''}`;}
+document.querySelector('#rows').onclick=e=>{const a=e.target.closest('a[data-id]');if(a){show(a.dataset.id);history.replaceState(null,'','#'+encodeURIComponent(a.dataset.id))}};
+for(const s of ['#q','#kind','#flt'])document.querySelector(s).oninput=render;
+fetch('/api/knowledge').then(r=>r.json()).then(d=>{const f=d._freshness||{};
+ document.querySelector('#fresh').textContent=`ledger ${d.ledger} · freshness ${f.staleness_class||f.reporting||'?'} · newest frame ${d.last_created_at||'—'} · seq ${d.last_seq??'—'}${f.detail?' · '+f.detail:''}`;
+ if(!d.claims){document.querySelector('#rows').innerHTML=`<tr><td colspan=4 class=err>${esc(d.error)} — ${esc(f.absence_means||'')}</td></tr>`;return}
+ claims=d.claims;const kinds=[...new Set(claims.map(c=>c.k).filter(Boolean))].sort();
+ document.querySelector('#kind').insertAdjacentHTML('beforeend',kinds.map(k=>`<option>${esc(k)}</option>`).join(''));render();
+ if(location.hash)show(decodeURIComponent(location.hash.slice(1)));
+}).catch(e=>document.querySelector('#fresh').textContent='Ledger unavailable: '+e);
+</script>
