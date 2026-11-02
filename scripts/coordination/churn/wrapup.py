@@ -38,6 +38,8 @@ BELIEF_RX = re.compile(r"^(cc|clm_[A-Za-z0-9_-]+|no-belief: \S.*)$")
 LANES_DIR = "/mnt/raid0/llm/worktrees/mains"
 FLAGS_DEFAULT = "/mnt/raid0/llm/tmp/compute-flags"
 PUSH_RETRIES, PUSH_SLEEP_S = 5, 20
+PUSH_LOCK_WAIT_S = 900  # serialized_push --wait: queue up to 15 min on the push lock (ws58)
+LOCK_WAITS = 3  # extra lock-held rounds if --wait itself timed out
 OPEN_BOX_RX = re.compile(r"^\s*- \[ \] ")
 
 
@@ -81,6 +83,8 @@ def validate(rec: dict) -> None:
         raise WrapupError("paths must be lane-relative strings")
     if not str(rec["message"]).strip():
         raise WrapupError("empty commit message")
+    if not str(rec.get("box") or "").strip():
+        log("validate", "WARNING: no `box` - every turn names the box id it advances (ws58)")
     if not isinstance(rec.get("trailers", []), list):
         raise WrapupError("trailers must be a list of lines")
 
@@ -169,22 +173,31 @@ def append_progress(lane: str, rel: str, slug: str, task_text: str, body: str, n
 
 # ------------------------------------------------------- 5/7. external steps (patchable in tests)
 def run_push(lane: str, slug: str) -> tuple[int, str]:
-    r = subprocess.run([sys.executable, os.path.join(lane, "scripts/coordination/serialized_push.py"), "--agent",
-                        f"handoff-{slug}", "--repo", lane, "--fetch", "--push"], capture_output=True, text=True, timeout=900)
+    sp = os.path.join(os.path.dirname(_HERE), "serialized_push.py")  # installed next to wrapup (has --wait); lane copy may be stale
+    if not os.path.isfile(sp):
+        sp = os.path.join(lane, "scripts/coordination/serialized_push.py")
+    r = subprocess.run([sys.executable, sp, "--agent",
+                        f"handoff-{slug}", "--repo", lane, "--fetch", "--push", "--wait", str(PUSH_LOCK_WAIT_S)],
+                       capture_output=True, text=True, timeout=PUSH_LOCK_WAIT_S + 900)
     return r.returncode, r.stdout + r.stderr
 
 
 def push_with_retry(lane: str, slug: str) -> None:
-    for n in range(1, PUSH_RETRIES + 1):
+    """Lock-held waits have their own budget and never consume a rejection retry (ws58: yarn/mtp exhausted
+    5 tries on lock contention and failed `rc=4 ... NOT published`)."""
+    rejections = waits = 0
+    while True:
         rc, out = run_push(lane, slug)
         if rc == 0:
             return
-        if "lock-held" in out and n < PUSH_RETRIES:
-            log("push", f"lock held, retry {n}/{PUSH_RETRIES} in {PUSH_SLEEP_S}s")
+        if "lock-held" in out and waits < LOCK_WAITS:
+            waits += 1
+            log("push", f"lock held, wait {waits}/{LOCK_WAITS} in {PUSH_SLEEP_S}s")
             time.sleep(PUSH_SLEEP_S)
             continue
-        if n < PUSH_RETRIES:  # rejected because origin/main advanced: re-merge (generated files take origin), retry
-            log("push", f"rc={rc}, re-merging origin/main, retry {n}/{PUSH_RETRIES}: {merge_main(lane)}")
+        rejections += 1
+        if rejections < PUSH_RETRIES:  # rejected because origin/main advanced: re-merge (generated files take origin), retry
+            log("push", f"rc={rc}, re-merging origin/main, retry {rejections}/{PUSH_RETRIES}: {merge_main(lane)}")
             continue
         raise WrapupError(f"serialized_push rc={rc}: {out.strip().splitlines()[-1] if out.strip() else 'no output'}")
 
@@ -214,6 +227,15 @@ def write_report(flags: str, slug: str, rec: dict) -> str:
         json.dump(rec, fh, indent=1, ensure_ascii=False)
     os.replace(tmp, p)
     return p
+
+
+def append_step(flags: str, slug: str, step: dict) -> None:
+    """One line per landed turn (ws58): the hub counts steps since the last tick from this ledger."""
+    try:
+        with open(os.path.join(flags, "handoff-sessions", slug, "steps.jsonl"), "a", encoding="utf-8") as fh:
+            fh.write(json.dumps(step, ensure_ascii=False) + "\n")
+    except OSError as exc:
+        log("steps", f"could not append steps.jsonl: {exc}")
 
 
 # ------------------------------------------------------------------------ main
@@ -246,8 +268,9 @@ def run(rec: dict, lane: str, flags: str, dry_run: bool) -> int:
     if left:
         raise WrapupError(f"cherry origin/main not empty after push: {left.splitlines()[0]}")
     log("cherry", "empty")
-    out = dict(rec, wrapped=True, wrapped_sha=sha, wrapped_at=_now().strftime("%Y-%m-%dT%H:%M:%SZ"))
+    out = dict(rec, box=rec.get("box"), step_sha=sha, wrapped=True, wrapped_sha=sha, wrapped_at=_now().strftime("%Y-%m-%dT%H:%M:%SZ"))
     log("report", write_report(flags, slug, out))
+    append_step(flags, slug, {"at": out["wrapped_at"], "box": out["box"], "step_sha": sha, "ticks": len(rec["ticks"])})
     print(f"WRAPPED {sha}", flush=True)
     return 0
 
@@ -279,7 +302,7 @@ def _failure_report(rec, flags: str, dry_run: bool, exc: BaseException) -> None:
     nxt = rec.get("next") if rec.get("next") in ("non-inference", "inference", "blocked", "done") else "non-inference"
     if nxt == "done":  # a completion that did not land is not done; the session must retry the wrap-up
         nxt = "non-inference"
-    out = {k: rec[k] for k in ("slug", "state", "task_text", "blocked_by", "rows_published") if k in rec}
+    out = {k: rec[k] for k in ("slug", "state", "task_text", "box", "blocked_by", "rows_published") if k in rec}
     out.update(next=nxt, wrapped=False, failure=f"{type(exc).__name__}: {exc}",
                failed_at=_now().strftime("%Y-%m-%dT%H:%M:%SZ"))
     try:

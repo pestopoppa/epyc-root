@@ -29,6 +29,10 @@ pruning, already-banked cells, manifest identities, and actual weights.
 Before any placement row can be published, the owner must build a protocol-complete
 execution plan and launcher. In particular:
 
+The [A0–A4 preparation](gpu-serving-e5-a0-a4-preparation.md) spells out the
+arm definitions and the unresolved recipe, anchor and runner inputs; it is not
+a runnable grid.
+
 1. Make the C1b policy explicit and correct per instance; preserve any defect
    replication as a separately labelled control, not a corrected-placement cell.
 2. Drop caches and record cache state before every placement arm, pair cold and warm

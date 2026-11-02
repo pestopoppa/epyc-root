@@ -912,6 +912,7 @@ on measurement, D3 approved and shipped.** Detail in each entry.
       `str(promoted)` — a **path, not a timestamp** (`loop/pool.py:372`) — and build time
       (CMakeCache 06:01 vs libs 08:29 vs run start 09:37) is exactly what diagnosed run 18 by hand.
       Make `built_at` a real timestamp as part of this.
+      **Prepared source patch:** [build-completion timestamp patch](../../docs/reports/autokernel-r18b-build-timing/README.md), tested on research `3ab4ffbf1f436ceb4a8918d0ce2984c0567b0095` (46 model-free tests). It has not been integrated into research and does not resolve the historical binary identity or −9.5% mechanism.
 - [ ] **R18-C — record the champion branch's per-commit inflation where a reader of that branch
       will find it.** 36 commit messages claiming **+171.7% compounded / +101.8% summed** against a
       measured block effect of **+8.524%**. Commit messages are immutable, so the correction has to
@@ -2261,7 +2262,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         verifies four distinct invocation PIDs, serialized unit and sample vectors; the original writer fails on the
         missing field. This closes only the unit-metadata gap: no measurement rerun, floor recalibration, new warrant,
         grade, or performance conclusion. [Evidence](../../artifacts/compute/refactor-r23-67-aa-noise-floor-unit-20261030.json)
-          - [ ] **R23-68 — record the autokernel-loop pytest baseline and the `TMPDIR` prerequisite**:
+          - [x] **R23-68 — record the autokernel-loop pytest baseline and the `TMPDIR` prerequisite** ([historical baseline and host prerequisite](../../docs/reference/autokernel-loop-pytest-baseline-2026-09-14.md)): ✅ 2026-11-02 [no-belief: historical test record without new measurements]
         `pytest scripts/kernel_rnd/autokernel/loop -q` at `origin/main` `7ea556f4` reads **176 failed / 201
         errors / 2509 passed**, the remainder environmental on this host (HTTP-child fixtures, live-store and
         port-bound tests, the `test_campaign_footprint.py` / `test_program_md.py` set) with

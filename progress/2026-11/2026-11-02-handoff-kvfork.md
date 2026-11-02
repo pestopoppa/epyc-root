@@ -59,3 +59,11 @@ KPF-27e's existing source audit establishes the specified P1 field mapping and g
 ## 10:39Z — Land KPF-27e interface mapping
 
 KPF-27e field mapping and checkpoint_at dispatch are complete per existing source evidence. The generated handoff index conflict against current main was resolved and regenerated in merge commit 92096dcd8. KPF-27d still owns live shadow measurements.
+
+## 10:56Z — Prepare KPF-20 and KPF-17.4d rows
+
+Prepared KPF-20 v3 with a pinned isolated scratch source and committed-source member-call scan, and KPF-17.4d build v2 with source provenance, content binding and cooperative build stop. Neither has a smoke PASS. All four CPU quarters were held by filler-inf70-cls-rect-live-20261101, so current smokes could not acquire a quarter; retry only once an appropriate quarter is available. KPF-31's two smoke attempts failed on the q0 region lock, and a partial source scan does not establish a GitNexus impact. GPU KPF-17a smoke was refused because the GPU was busy.
+
+## 11:01Z — Repair and preserve KPF row preparations
+
+KPF-20 v3 isolates and hash-binds its retained checkout and rejects untracked files. KPF-17.4d build v2 now validates exact host compiler provenance, CMake option equality and cooperative process stopping; six tests pass. Neither row has a smoke PASS: all four CPU quarters were held by the INF-70 workload at inspection. The earlier commit was stopped by a non-collectable test, now fixed.

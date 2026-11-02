@@ -47,3 +47,19 @@ Corrected the draft document-search request patch: reject missing parsed documen
 ## 10:47Z — Prepare the REPL-EMB-2.8a real-session capture activation package
 
 Prepared the operator/API-owner package for a bounded real spill trace session, including process identity, capture shutdown, separate exact-original custody and digest-verified export acceptance. APP source already provides v2 spill tap and real_trace resolver; existing offline retrieval writer refuses online trace facts. Real capture, write-side integration and the handoff boxes remain open. GitNexus index creation was refused by the CPU admission guard; no source symbol was edited. [no-belief: operational preparation only]
+
+## 10:49Z — Implement trace export and prepare capture and shadow integration candidates
+
+Implemented owner-only originals manifest and exclusive private real-trace export utility; synthetic v2 controls passed export, no-overwrite, permission and changed-corpus refusals. Prepared standalone first-open shadow attribution with four passing tests, an unapplied native coverage hook candidate with three controls, and an unapplied default-off document-search request opt-in with four controls. These are source candidates, not actual traces, online results, deployed APP changes or a passing planning canary. Real-session activation and separately protected original query/corpus custody require operator and API-owner decisions; 2.8 additionally requires >=75 real traces. GitNexus could not index this lane due CPU admission refusal. [no-belief: synthetic controls and draft integration only]
+
+## 10:51Z — Harden scoped trace export and prepare native facts and integration candidates
+
+Hardened real-trace export to validate a single v2 session, reject malformed records, and use one snapshot for both passes; synthetic success and malformed/mixed/empty refusals passed. Added an unregistered prospective trace-fact observation projector with three passing controls, preserving producer-declared source identity and unknown original custody. Prepared unapplied bundle-search and shadow bridge candidates, each with four passing synthetic controls; shadow avoids HIGH-impact ContextBundle.get. Real capture, APP integration, online arms and sink, a passing planning canary and eligible inference input remain outstanding. [no-belief: synthetic controls and unapplied candidates only]
+
+## 10:53Z — Implement prospective shadow sink and explicit trace fact ingestion
+
+Added explicit-file ingestion of validated prospective trace facts with closed-shape event and producer-declared identity retained in ledger; custody remains unknown. Added an exclusive hash-chained prospective online shadow sink, with unknown no-open and counterfactual hidden-arm outcomes; added its belief source row and wiring task. Hardened exporter against symlinked originals and shared output directories. Seven focused tests pass; broader agent run 101 passed, one external-fixture test deselected. Synthetic controls only: no real session, shadow runtime, inference row, or planning canary. [no-belief: source controls only]
+
+## 10:56Z — Validate shadow streams and add trace selection provenance
+
+Added strict finalized shadow-stream validation (chain, source pin, state transitions, counts and rederived overlaps) and a negative trace-facts planning canary that confirms unscoped evidence is omitted; five focused tests pass. Added a single-session v2 trace selector with source digest and selection receipt; synthetic mixed-session selection and malformed input controls pass. G-S remains open: original private-copy wrapper rc2 is not converted into an exit-zero result by a later postcheck. No real session, inference row or positive planning canary is claimed. [no-belief: synthetic controls only]

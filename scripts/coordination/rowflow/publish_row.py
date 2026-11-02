@@ -33,7 +33,7 @@ RESULT_FILE = {"json": "RESULT.json", "jsonl": "results.jsonl"}
 RESULT_NAMES = ("RESULT.json", "RESULT.jsonl", "results.jsonl", "results.json")
 SPEC_KEYS = ("id", "owner", "lane", "regions", "result_path", "result_format", "decision_rule", "estimate_s", "handoff_task",
              "priority_rank", "scratch_root", "keep", "dryrun_timeout_s", "min_window_s", "lineage", "lineage_reset", "supersedes",
-             "notes", "row", "snapshot", "admission_class", "dryrun_whole_host", "dryrun_native_result")
+             "notes", "row", "snapshot", "admission_class", "dryrun_native_result")
 REPO = os.environ.get("ROWFLOW_REPO", "/workspace")
 SMOKE_TIMEOUT_S = 300
 DERIVABLE = ("lane", "scratch_root", "keep", "kind")
@@ -151,12 +151,43 @@ def smoke_regions(lane, regions, flags):
     return f"{lo}-{lo + 3}"
 
 
+def retire_old_verdicts(flags, rid):
+    """ws58 2026-11-02: a publish is a FRESH smoke. An old FAIL memo (or PASS) must never stand in for this smoke's result
+    (codex-ni-s18: a 00:07Z FAIL was re-reported at 10:4xZ), so earlier verdicts move to dryrun/<id>/superseded/<ts>/."""
+    dd = rf.dry_dir(flags, rid)
+    old = rf.fail_paths(flags, rid) + ([rf.pass_path(flags, rid)] if os.path.exists(rf.pass_path(flags, rid)) else [])
+    if not old:
+        return
+    dst = os.path.join(dd, "superseded", dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%S%fZ"))
+    os.makedirs(dst, exist_ok=True)
+    for p in old:
+        os.replace(p, os.path.join(dst, os.path.basename(p)))
+
+
+def unpublished_path(flags, rid): return os.path.join(rf.dry_dir(flags, rid), "unpublished.json")
+
+
+def unpublish(flags, rid):
+    """ws58 2026-11-02: ready/<id>.json exists only for a smoke PASS. A refused/failed smoke moves the manifest to
+    dryrun/<id>/unpublished.json (kept for --repair), so nothing outside the owner's turn sees an unsmoked row."""
+    rp = rf.ready_path(flags, rid)
+    if os.path.exists(rp):
+        os.makedirs(rf.dry_dir(flags, rid), exist_ok=True)
+        os.replace(rp, unpublished_path(flags, rid))
+
+
 def publish_smoked(spec, flags, source):
     """Publish, then THE dry run in the owner's turn (rowflow.dryrun_run writes PASS.json or the FAIL memo)."""
     regions = smoke_regions(spec.get("lane"), spec.get("regions") or "mi210_0,184-191", flags)
     row = rf.publish(spec, flags, source=source)
     rid = row["id"]
-    v, msg = rf.dryrun_run(flags, rid, regions, one_quarter=True, smoke_s=int(spec.get("smoke_timeout_s") or SMOKE_TIMEOUT_S))
+    retire_old_verdicts(flags, rid)
+    v, msg = "FAIL", "smoke did not run"
+    try:
+        v, msg = rf.dryrun_run(flags, rid, regions, one_quarter=True, smoke_s=int(spec.get("smoke_timeout_s") or SMOKE_TIMEOUT_S))
+    finally:
+        if v != "PASS":
+            unpublish(flags, rid)
     if v == "PASS":
         print(f"SMOKE PASS {rid} on {regions}: {msg}")
         return row
@@ -177,8 +208,8 @@ def results_written_during(fail, rundir):
 
 def repair(rid, flags):
     """Returns (rc, message). rc 0 = republished; 3 = unknown failure class (nothing changed)."""
-    row = rf.load_json(rf.ready_path(flags, rid))
-    rf.need(row and row.get("schema") == rf.SCHEMA, f"no epyc.row.v3 row at ready/{rid}.json")
+    row = rf.load_json(rf.ready_path(flags, rid)) or rf.load_json(unpublished_path(flags, rid))
+    rf.need(row and row.get("schema") == rf.SCHEMA, f"no epyc.row.v3 row at ready/{rid}.json or dryrun/{rid}/unpublished.json")
     fails = rf.fail_paths(flags, rid)
     rf.need(fails, f"no FAIL record under dryrun/{rid}/; nothing to repair")
     fail = rf.load_json(fails[-1]) or {}

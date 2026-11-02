@@ -9,8 +9,8 @@ import sys
 
 ROOT = Path('/mnt/raid0/llm/tmp/inf75-quantizer-7cdd7c97-20261102')
 COMMIT = '7cdd7c97bed538a85c3b75331b6cdb369e5b2adc'
-REQUIRED = ('source.tar', 'compiler.sha256', 'gcc-version.txt', 'gxx-version.txt',
-            'cmake-version.txt', 'configure.log', 'build.log', 'linkage.log',
+REQUIRED = ('source.tar', 'tree-manifest.json', 'source-provenance.json', 'output/compiler.sha256', 'output/gcc-version.txt', 'output/gxx-version.txt',
+            'output/cmake-version.txt', 'output/configure.log', 'output/build.log', 'output/linkage.log',
             'build/CMakeCache.txt', 'build/compile_commands.json', 'build/bin/llama-quantize')
 
 
@@ -24,6 +24,12 @@ def valid(record, root=ROOT):
         if (not run.is_absolute() or run.resolve(strict=True) != run or
                 run.parent != (root / 'runs').resolve(strict=True)):
             return False
+        from prepare import ARCHIVE_SHA, MANIFEST_SHA
+        from check_source import check
+        check(run)
+        cache = (run/'build/CMakeCache.txt').read_text()
+        if f'CMAKE_HOME_DIRECTORY:INTERNAL={run}/src\n' not in cache:
+            return False
         files = record['files']
         if not isinstance(files, dict) or not all(str(run / name) in files for name in REQUIRED):
             return False
@@ -36,6 +42,13 @@ def valid(record, root=ROOT):
             if (not path.is_absolute() or path.resolve(strict=True) != path or
                     not path.is_relative_to(run)):
                 return False
+            # Protected source was fully verified before publication; never
+            # re-read its archive/tree under a compute grant.
+            pinned = {'source.tar': ARCHIVE_SHA, 'tree-manifest.json': MANIFEST_SHA}
+            if path.parent == run and path.name in pinned:
+                if expected != pinned[path.name]:
+                    return False
+                continue
             h = hashlib.sha256()
             with path.open('rb') as f:
                 for chunk in iter(lambda: f.read(1024 * 1024), b''):
@@ -48,7 +61,7 @@ def valid(record, root=ROOT):
         if any(not p.is_absolute() or p.resolve(strict=True) != p or not p.is_file()
                for p in compilers):
             return False
-        lines = (run / 'compiler.sha256').read_text().splitlines()
+        lines = (run / 'output/compiler.sha256').read_text().splitlines()
         expected_lines = []
         for compiler in compilers:
             h = hashlib.sha256()

@@ -107,3 +107,11 @@ Corrected the P2-5e/f dependency: P1-3 completed in August, OP-19 retired the E8
 ## 10:46Z — Assess E5 and Stage-2 implementation readiness
 
 E5 wrapper preparation could not proceed to source edits because GitNexus cannot resolve the unindexed lane and the prior re-index was refused by CPU admission. INF-07 retains the corrected-placement grid and excludes banked Gemma reruns and W3. P4 has isolated root prototypes but the task requires orchestrator integration and measured candidate policies; no live seeding or implementation change was made. Existing gold_binding.py modification was preserved.
+
+## 11:00Z — Prepare GPU-ZOS native build and E5 placement design
+
+Prepared isolated C5 plus six-feature-path native HIP release/debug store-build row with pinned source inputs and process-group cleanup controls; source verification and cleanup probes passed. The publisher smoke was started for codex-ni-gpu-zos22-c5-native-20261102 but had not returned at the boundary: neither smoke PASS nor row readiness is claimed. PASS and FAIL-1 events are registered for resumption. E5 A0–A4 design records exact node policies and unresolved runner, anchor, recipe and arm inputs; no E5 inference ran.
+
+## 11:02Z — Checked prerequisites for the GPU-ZOS-2.3 gate; its audited candidate is disqualified and the qualifying GPU-ZOS-2.2 native build row is still in dry run. No inference row published.
+
+GPU-ZOS-2.3 remains gated on the independently built and qualified GPU-ZOS-2.2 candidate; `codex-ni-gpu-zos22-c5-native-20261102` was reported in dry run at dispatch. P1-2 is owned by INF-07; P2-5 duty-cycle measurement needs representative AutoPilot operation. No measurement verdict or task completion.

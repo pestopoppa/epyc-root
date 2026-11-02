@@ -32,6 +32,5 @@
     "attempts/*/results.jsonl"
   ],
   "result_format": "jsonl",
-  "dryrun_whole_host": true,
   "dryrun_timeout_s": 900
 }

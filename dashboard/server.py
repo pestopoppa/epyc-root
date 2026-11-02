@@ -2102,9 +2102,48 @@ def _read_graph_contract() -> tuple:
     return present, data
 
 
+HANDOFF_SESSIONS_DIR = os.environ.get("EPYC_HANDOFF_SESSIONS_DIR", "/mnt/raid0/llm/tmp/compute-flags/handoff-sessions")
+
+
+def handoff_step_counts(sessions_dir: str = HANDOFF_SESSIONS_DIR) -> dict:
+    """{handoff basename: landed turns since that handoff's last tick} from each session's steps.jsonl (written by
+    wrapup.py, ws58). A session with no ledger yet counts its report.json: one wrapped turn without ticks = 1."""
+    try:
+        with open(sessions_dir.rstrip("/") + ".json", encoding="utf-8") as fh:
+            reg = json.load(fh).get("sessions", {})
+    except (OSError, ValueError, AttributeError):
+        return {}
+    out = {}
+    for slug, e in (reg.items() if isinstance(reg, dict) else ()):
+        if not isinstance(e, dict) or not e.get("handoff"):
+            continue
+        d, n = os.path.join(sessions_dir, slug), None
+        try:
+            with open(os.path.join(d, "steps.jsonl"), encoding="utf-8") as fh:
+                n = 0
+                for line in fh:
+                    try:
+                        n = 0 if int(json.loads(line).get("ticks") or 0) > 0 else n + 1
+                    except (ValueError, TypeError, AttributeError):
+                        continue
+        except OSError:
+            try:
+                with open(os.path.join(d, "report.json"), encoding="utf-8") as fh:
+                    r = json.load(fh)
+                n = 1 if r.get("wrapped") and not r.get("ticks") else 0
+            except (OSError, ValueError, AttributeError):
+                continue
+        out[os.path.basename(str(e["handoff"]))] = n
+    return out
+
+
 def graph_payload() -> dict:
     """Read the index graph artifact, tolerating absence/corruption."""
     present, data = _read_graph_contract()
+    steps = handoff_step_counts()
+    for node in data.get("nodes") or ():
+        if isinstance(node, dict) and node.get("handoff") in steps:
+            node["steps_since_tick"] = steps[node["handoff"]]
     data["_freshness"] = _panel_envelope(
         "handoff_graph", _graph_observation(data, artifact_present=present))
     return data

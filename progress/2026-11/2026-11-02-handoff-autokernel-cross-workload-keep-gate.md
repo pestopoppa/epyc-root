@@ -83,3 +83,19 @@ Extracted the prepared 7cdd7c97 source archive outside any grant into /mnt/raid0
 ## 10:45Z — Prepare source verification and diagnose W5s enrollment failures
 
 Reviewed parked W5s r7 failures: all three ended during enrollment without a native unit; the isolated candidate bundle still needs independent review, and no parked row or lineage was altered. Prepared a staged-source verifier, JSON-manifest mutation fixtures, and quantizer job patch in /mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/; review found an interface/schema mismatch which is being corrected before integration. No build, inference, or row publication.
+
+## 10:48Z — Implement staged-source verifier and review W5s repair candidate
+
+Added staged-source manifest verifier and focused mutation tests (10 quantizer-build tests passed). Independent review found that the proposed build-job patch would compile a mutable tree while recording an archive hash without proving the two are equivalent, so that unsafe patch was removed and the build row was not published. Independent W5s review found the candidate bound to the parked r7 ID, grant and output root; a separately scoped diagnostic requires a new packet preserving custody and the whole-host window. No new inference, census or build claim.
+
+## 10:57Z — Prepare protected quantizer build and bounded smoke
+
+Prepared independent full and smoke quantizer source snapshots from pinned commit 7cdd7c97; verified archive and extracted manifest before grant and protected snapshot paths from ordinary same-user writes (root is trusted). Added separate controlled compiler-unit smoke with isolated diagnostic result and completion refusal; 16 focused tests pass. The publisher attempted inf75-quantizer-7cdd7c97-20261102 but its smoke failed before a native unit when q0 was held; a subsequent single region-state read showed all four CPU quarters held by filler-inf70-cls-rect-live-20261101. No PASS or full build claimed. A delegated scratch prototype compile ran directly outside publish_row despite the compute rule, exited rc0, and is diagnostic only; no further direct compile authorized. Fresh W5s diagnostic packet staged under /mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/w5-diagnostic-20261102, offline tests passed, but its whole-host guard conflicts with the publisher four-CPU smoke and deployed rowflow compatibility remains unresolved; r7 remains parked.
+
+## 11:00Z — Add classifier controls for P1d
+
+Added synthetic classifier regression controls for comment-only T0, Q8 dispatch outcomes including both W5 possibilities, unchanged/unset knob values, and incomplete evidence refusal. Four new and nine existing screen tests pass. These fixtures are not workload census, native execution or completion of AKX-P1d. Quantizer smoke remains unqualified: one region-state observation found q0–q3 held by filler-inf70-cls-rect-live-20261101; no second attempt was made. W5s remains parked and its fresh diagnostic must preserve actual native evidence and whole-host admission.
+
+## 11:03Z — Repair and republish the AKX-P1c quantizer build prerequisite after the smoke region-lock conflict
+
+AKX-P1c: republished inf75-quantizer-7cdd7c97-20261102 using the updated rowflow engine; its four-CPU smoke passed (one native unit, rc=75 partial-native-incomplete). The full build result, historical model reconstruction, coverage builds and workload replay remain pending. The updated engine skips CPU region-lock reacquisition in smoke; no production kernel or workload result was changed.
