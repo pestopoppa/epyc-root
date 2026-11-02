@@ -277,7 +277,7 @@ class LayoutTests(unittest.TestCase):
 class ProgressPieContract(unittest.TestCase):
     def test_pie_wedge_and_tooltip_in_page(self):
         html = (Path(__file__).resolve().parent.parent / "dashboard/static/handoffs.html").read_text()
-        for needle in ("pie-remaining", "pFrac", "done \u00b7", "cut-out slice = done fraction"):
+        for needle in ("pie-remaining", "pFrac", "done \u00b7", "faint slice = done fraction"):
             self.assertIn(needle.replace("\\u00b7", "\u00b7"), html)
 
     def test_every_node_part_is_inside_the_faded_group(self):

@@ -83,3 +83,7 @@ Extracted the prepared 7cdd7c97 source archive outside any grant into /mnt/raid0
 ## 10:45Z — Prepare source verification and diagnose W5s enrollment failures
 
 Reviewed parked W5s r7 failures: all three ended during enrollment without a native unit; the isolated candidate bundle still needs independent review, and no parked row or lineage was altered. Prepared a staged-source verifier, JSON-manifest mutation fixtures, and quantizer job patch in /mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/; review found an interface/schema mismatch which is being corrected before integration. No build, inference, or row publication.
+
+## 10:48Z — Implement staged-source verifier and review W5s repair candidate
+
+Added staged-source manifest verifier and focused mutation tests (10 quantizer-build tests passed). Independent review found that the proposed build-job patch would compile a mutable tree while recording an archive hash without proving the two are equivalent, so that unsafe patch was removed and the build row was not published. Independent W5s review found the candidate bound to the parked r7 ID, grant and output root; a separately scoped diagnostic requires a new packet preserving custody and the whole-host window. No new inference, census or build claim.

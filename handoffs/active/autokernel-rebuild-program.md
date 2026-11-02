@@ -2261,7 +2261,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         verifies four distinct invocation PIDs, serialized unit and sample vectors; the original writer fails on the
         missing field. This closes only the unit-metadata gap: no measurement rerun, floor recalibration, new warrant,
         grade, or performance conclusion. [Evidence](../../artifacts/compute/refactor-r23-67-aa-noise-floor-unit-20261030.json)
-          - [ ] **R23-68 — record the autokernel-loop pytest baseline and the `TMPDIR` prerequisite**:
+          - [x] **R23-68 — record the autokernel-loop pytest baseline and the `TMPDIR` prerequisite** ([historical baseline and host prerequisite](../../docs/reference/autokernel-loop-pytest-baseline-2026-09-14.md)): ✅ 2026-11-02 [no-belief: historical test record without new measurements]
         `pytest scripts/kernel_rnd/autokernel/loop -q` at `origin/main` `7ea556f4` reads **176 failed / 201
         errors / 2509 passed**, the remainder environmental on this host (HTTP-child fixtures, live-store and
         port-bound tests, the `test_campaign_footprint.py` / `test_program_md.py` set) with
