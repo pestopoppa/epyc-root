@@ -57,3 +57,10 @@ Consumed omega-review-20261102-result.json. Omega successor must not be publishe
 - Consumed `strategy5.json`: the scratch schedule auditor passed three offline tests and finds the 16-question, three-arm rotation uses its six permutations 3, 3, 3, 3, 2 and 2 times (48 planned calls); report this imbalance in the prospective protocol. It establishes neither custody nor measurement warrant. Live runner, independently protected custody, tokenizer witness, adapter and protocol remain. Delegated bounded producer and custody preparation, with dispatcher events `strategy6` and `strategy-custody6`.
 - Delegated model-free timeout repair design for parked PFX, event `pfx-offline6`; no retry or re-admission while parked. GPU RUS successor remains subject to keeper qualification.
 - Prior wrap-up pushed `3d6fd6b0d866e631c2cfcafc002d36331f103841` with empty cherry. No inference or publication this turn.
+
+## 01:57Z — Review strategy intent and capture custody prototypes
+
+- Consumed `strategy6.json`: digest-bound offline call-intent compiler passed three synthetic tests covering pairing, answer leakage, tampering and invalid orders. It does not run inference or convey grant authority.
+- Consumed `strategy-custody6.json`: external-anchor capture byte-binding prototype passed four offline tests for tampering, identity mismatch, symlink/path traversal and wrong binder hash. It verifies bytes only; independent trusted anchors, protected capture root, plan completeness, scorer, server/model identity and grant provenance still require real integration. The referenced lane binder is untracked and was not adopted or modified.
+- Delegated integration and a prospective protocol draft with events `strategy-integration7` and `strategy-protocol7`; no threshold or measurement warrant is invented. Delegated model-free Omega logging repair, event `omega-offline7`, without retrying its parked lineage.
+- Prior wrap-up pushed `d531c6320c2d22c4d770ba79cc6b7226aa815a5c`, cherry empty. No inference or row publication this turn.
