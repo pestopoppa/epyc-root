@@ -2255,7 +2255,7 @@ def _checkpoint_path_problem(path: str, agent: str, progress_path: str) -> str |
     if path.startswith("progress/") and path != progress_path:
         return f"progress path {path!r} is not {agent}'s receipt-bound shard"
     protected_exact = {"handoffs/active/master-handoff-index.md",
-                       "handoffs/active/inference-batch-loop.md",
+                       "handoffs/active/eval-tower-program.md",
                        "handoffs/active/.index-state.json",
                        "handoffs/active/.index-graph.json",
                        "data/handoff_timeline.json", "wiki/source_manifest.json"}

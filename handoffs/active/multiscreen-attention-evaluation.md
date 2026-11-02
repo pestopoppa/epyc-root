@@ -575,7 +575,7 @@ See also the fifth GDN branch-map row in
       three-length result is not mistaken for a clean *sweep*.
 
       **Owner:** this handoff — chosen over
-      [eval-tower-verification.md](eval-tower-verification.md) because eval-tower's subject is the
+      [eval-tower-verification.md](eval-tower-program.md) because eval-tower's subject is the
       verification *tower* (confidence/logprob passthrough, calibration, ECE/AUC, judge validity,
       rubrics) and its rows are `EV-N` infrastructure items, whereas this is an architecture-hazard
       probe on a hybrid attention stack — the exact subject this handoff surveys, and it sits directly

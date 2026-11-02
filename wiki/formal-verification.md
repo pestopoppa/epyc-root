@@ -515,7 +515,7 @@ Three conclusions must remain separate. Build success shows that the artifact co
 ### Source References
 
 - [Formal artifact reproducibility trigger record](../handoffs/archived/formal-artifact-reproducibility.md)
-- [Eval Tower verification](../handoffs/active/eval-tower-verification.md)
+- [Eval Tower verification](../handoffs/active/eval-tower-program.md)
 - [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md)
 - [Reviewer typed artifacts](../handoffs/active/reviewer-typed-artifacts.md)
 

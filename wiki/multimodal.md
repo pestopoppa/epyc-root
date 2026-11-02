@@ -1420,7 +1420,7 @@ Parent-model provenance remains a dependency for license, tokenizer, image proce
 ### Source References
 
 - [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline)
-- [Eval Tower verification](../handoffs/active/eval-tower-verification.md)
+- [Eval Tower verification](../handoffs/active/eval-tower-program.md)
 - [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md)
 - [Session research-intake progress](../progress/2026-09/2026-09-25.md)
 
@@ -1437,7 +1437,7 @@ LensVLM remains a monitor record and carries no active checkbox or index action.
 ### Source References
 
 - [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — MM-LENS trigger and staged execution.
-- [Eval Tower verification](../handoffs/active/eval-tower-verification.md) — minimum research-screen controls.
+- [Eval Tower verification](../handoffs/active/eval-tower-program.md) — minimum research-screen controls.
 - [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — prospective Lens receipt trigger.
 - [Research-intake Stage 3 progress](../progress/2026-09/2026-09-25.md) — action-distillation disposition.
 

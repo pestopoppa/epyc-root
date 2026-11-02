@@ -374,7 +374,7 @@ DAR-6.5 unconditional J14 A/B pass
 | RI-10 scored collection packet | Request planner now supports dataset-backed expected-answer rows, answer-key JSONL output, and self-leak filtering. Generated a balanced scored canary packet: `60` requests, `30` enforce / `30` shadow, `20` per canary role, answer key separated from payloads, and no nontrivial expected-answer leakage. | `epyc-orchestrator` `8455af52`; `orchestration/reports/ri10_canary_scored_request_plan_20260705T151725Z.{json,payloads.jsonl,answer_key.jsonl}`; `uv run pytest tests/unit/test_ri10_canary_request_plan.py -q` -> `7 passed`; `ruff` passed |
 | RI-10 scored response scorer | Response scorer joins quiet-window response JSONL to the answer key, extracts common response shapes, scores deterministic answer equivalence, and summarizes accuracy/token-F1 by role and enforce/shadow arm. | `epyc-orchestrator` `92ab4de7`; `scripts/analysis/ri10_canary_score_responses.py`; `uv run pytest tests/unit/test_ri10_canary_score_responses.py tests/unit/test_ri10_canary_request_plan.py -q` -> `11 passed`; focused `ruff` and `py_compile` passed |
 | RI-10 scored response result | Quiet-window scored response artifacts are complete: `60` rows, `60` scored, `0` missing; enforce and shadow exact accuracy tie at `3/30` each, with only a tiny token-F1 enforce delta. This closes the "unscored" blocker and replaces it with "no enforce factuality lift." | `orchestration/reports/ri10_canary_scored_summary_20260705T185001Z.{json,md}`; `orchestration/reports/ri10_canary_scored_rows_20260705T185001Z.jsonl` |
-| G12 role-tier recalibration | AA-Omniscience frontdoor/worker/architect evidence completed; deterministic 4-class scoring accepted for role-tier recalibration; measured tier multipliers landed in orchestrator. Mode/canary/enforce decisions remain RI-10+ gates. | [bulk-inference-campaign](bulk-inference-campaign.md) |
+| G12 role-tier recalibration | AA-Omniscience frontdoor/worker/architect evidence completed; deterministic 4-class scoring accepted for role-tier recalibration; measured tier multipliers landed in orchestrator. Mode/canary/enforce decisions remain RI-10+ gates. | [bulk-inference-campaign](eval-tower-program.md#track-bulk-inference-campaign) |
 | Research intake | AA-Omniscience, STOP, Qwen-Scope SAE caveats, BaRP/Conductor context captured. | [completed ledger](../completed/routing-intelligence-completed-through-2026-05-28.md) |
 | RI-21, RI-22, RI-23 (+RI-23a, RI-23b), 2026-09-28/29 | Escalation map ends at `architect_general`; the review gate parses on the 27B; thinking-on roles speak chat-completions (OP-69 (a), live). | [completed ledger § 2026-09-29](../completed/routing-intelligence-completed-through-2026-05-28.md) |
 
@@ -413,7 +413,7 @@ one would fork an already-unfinished program.
 ## Reporting Instructions
 
 - Update [`routing-and-optimization-index.md`](routing-and-optimization-index.md) P6 after RI-10/11/12 status changes.
-- Update [`bulk-inference-campaign.md`](bulk-inference-campaign.md) if AR-3/J-package traffic is used to collect RI samples.
+- Update [`bulk-inference-campaign.md`](eval-tower-program.md#track-bulk-inference-campaign) if AR-3/J-package traffic is used to collect RI samples.
 - If a new injection-risk classifier is opened, add it here as RI-13 and cross-link DAR-6/J14.
 - If a stack/model change changes role throughput or cost, update q-scorer baselines and note the dependency in the routing index.
 

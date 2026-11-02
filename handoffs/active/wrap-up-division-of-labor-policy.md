@@ -257,7 +257,7 @@ generated-artifact hashes, validation results, wiki manifest/watermark, and leas
 
 ## Compute-blocker intake and graded window contract
 
-`handoffs/active/inference-batch-loop.md` is **not** the generic intake surface. It is a v7-era,
+`handoffs/active/eval-tower-program.md` is **not** the generic intake surface. It is a v7-era,
 single-writer execution campaign whose manifest and ledger are owned by `/loop`; its boxes must not
 be mutated by Auditor. This plan leaves that authority intact.
 

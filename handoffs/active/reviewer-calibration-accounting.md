@@ -4,7 +4,7 @@
 **Created**: 2026-07-16 (Architect→Reviewer control-plane series; see index)
 **Categories**: benchmark_methodology, agent_architecture
 **Index**: [`reviewer-control-plane-index.md`](reviewer-control-plane-index.md)
-**Related**: [`evidence-plane-ledger-and-sequential-verdicts.md`](evidence-plane-ledger-and-sequential-verdicts.md) (ledger conventions), [`eval-tower-verification.md`](eval-tower-verification.md) (EV-tier ECE/AUC — REUSE, do not duplicate), [`reviewer-model-ablations.md`](reviewer-model-ablations.md) (H5 consumes this instrument)
+**Related**: [`evidence-plane-ledger-and-sequential-verdicts.md`](evidence-plane-ledger-and-sequential-verdicts.md) (ledger conventions), [`eval-tower-verification.md`](eval-tower-program.md) (EV-tier ECE/AUC — REUSE, do not duplicate), [`reviewer-model-ablations.md`](reviewer-model-ablations.md) (H5 consumes this instrument)
 **Gate**: starts after H1 TM-8 coverage + H3 shadow decisions flowing.
 **Repo**: `epyc-orchestrator` (ledger/scripts) + `epyc-root` (MEASUREMENT amendment draft)
 

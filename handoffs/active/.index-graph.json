@@ -345,7 +345,7 @@
     {
       "from": "RTG-58",
       "kind": "dep",
-      "to": "RTG-27"
+      "to": "EVL-14"
     },
     {
       "from": "RTG-58",
@@ -412,12 +412,6 @@
     {
       "from": "EVL-02",
       "kind": "ref",
-      "to": "EVL-42",
-      "weight": 2
-    },
-    {
-      "from": "EVL-02",
-      "kind": "ref",
       "to": "EVL-44",
       "weight": 2
     },
@@ -426,12 +420,6 @@
       "kind": "ref",
       "to": "INF-23",
       "weight": 2
-    },
-    {
-      "from": "EVL-02",
-      "kind": "ref",
-      "to": "INF-24",
-      "weight": 5
     },
     {
       "from": "EVL-02",
@@ -488,124 +476,10 @@
       "weight": 2
     },
     {
-      "from": "EVL-07",
-      "kind": "ref",
-      "to": "EVL-14",
-      "weight": 12
-    },
-    {
-      "from": "EVL-07",
-      "kind": "ref",
-      "to": "EVL-16",
-      "weight": 4
-    },
-    {
-      "from": "EVL-07",
-      "kind": "ref",
-      "to": "INF-07",
-      "weight": 2
-    },
-    {
-      "from": "EVL-07",
-      "kind": "ref",
-      "to": "INF-56",
-      "weight": 4
-    },
-    {
-      "from": "EVL-07",
-      "kind": "ref",
-      "to": "PIP-01",
-      "weight": 2
-    },
-    {
-      "from": "EVL-07",
-      "kind": "ref",
-      "to": "PIP-05",
-      "weight": 2
-    },
-    {
-      "from": "EVL-07",
-      "kind": "ref",
-      "to": "RTG-02",
-      "weight": 20
-    },
-    {
-      "from": "EVL-07",
-      "kind": "ref",
-      "to": "RTG-04",
-      "weight": 2
-    },
-    {
-      "from": "EVL-07",
-      "kind": "ref",
-      "to": "RTG-08",
-      "weight": 2
-    },
-    {
-      "from": "EVL-07",
-      "kind": "ref",
-      "to": "RTG-09",
-      "weight": 8
-    },
-    {
-      "from": "EVL-07",
-      "kind": "ref",
-      "to": "RTG-10",
-      "weight": 2
-    },
-    {
-      "from": "EVL-07",
-      "kind": "ref",
-      "to": "RTG-14",
-      "weight": 4
-    },
-    {
-      "from": "EVL-07",
-      "kind": "ref",
-      "to": "RTG-30",
-      "weight": 11
-    },
-    {
-      "from": "EVL-07",
-      "kind": "ref",
-      "to": "RTG-33",
-      "weight": 2
-    },
-    {
-      "from": "EVL-07",
-      "kind": "ref",
-      "to": "RTG-42",
-      "weight": 10
-    },
-    {
-      "from": "EVL-07",
-      "kind": "ref",
-      "to": "RTG-45",
-      "weight": 4
-    },
-    {
-      "from": "EVL-07",
-      "kind": "ref",
-      "to": "UFH-03",
-      "weight": 2
-    },
-    {
-      "from": "EVL-07",
-      "kind": "ref",
-      "to": "UFH-05",
-      "weight": 7
-    },
-    {
       "from": "EVL-08",
       "kind": "ref",
       "to": "EVL-14",
-      "weight": 6
-    },
-    {
-      "from": "EVL-08",
-      "kind": "ref",
-      "to": "EVL-42",
-      "weight": 10
+      "weight": 4
     },
     {
       "from": "EVL-10",
@@ -620,75 +494,27 @@
       "weight": 3
     },
     {
-      "from": "EVL-11",
-      "kind": "ref",
-      "to": "INF-24",
-      "weight": 2
-    },
-    {
-      "from": "EVL-12",
-      "kind": "ref",
-      "to": "EVL-13",
-      "weight": 2
-    },
-    {
-      "from": "EVL-12",
-      "kind": "ref",
-      "to": "EVL-14",
-      "weight": 6
-    },
-    {
-      "from": "EVL-12",
-      "kind": "ref",
-      "to": "INF-24",
-      "weight": 2
-    },
-    {
-      "from": "EVL-13",
-      "kind": "ref",
-      "to": "EVL-14",
-      "weight": 8
-    },
-    {
-      "from": "EVL-13",
-      "kind": "ref",
-      "to": "INF-24",
-      "weight": 3
-    },
-    {
-      "from": "EVL-13",
-      "kind": "ref",
-      "to": "RTG-42",
-      "weight": 2
-    },
-    {
       "from": "EVL-14",
       "kind": "ref",
-      "to": "EVL-07",
-      "weight": 6
-    },
-    {
-      "from": "EVL-14",
-      "kind": "ref",
-      "to": "EVL-12",
+      "to": "EVL-16",
       "weight": 4
     },
     {
       "from": "EVL-14",
       "kind": "ref",
-      "to": "EVL-13",
-      "weight": 2
-    },
-    {
-      "from": "EVL-14",
-      "kind": "ref",
       "to": "EVL-29",
-      "weight": 2
+      "weight": 6
     },
     {
       "from": "EVL-14",
       "kind": "ref",
       "to": "EVL-46",
+      "weight": 2
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
+      "to": "EVL-47",
       "weight": 2
     },
     {
@@ -701,7 +527,13 @@
       "from": "EVL-14",
       "kind": "ref",
       "to": "INF-07",
-      "weight": 1
+      "weight": 3
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
+      "to": "INF-26",
+      "weight": 2
     },
     {
       "from": "EVL-14",
@@ -712,20 +544,62 @@
     {
       "from": "EVL-14",
       "kind": "ref",
+      "to": "INF-56",
+      "weight": 4
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
+      "to": "PIP-01",
+      "weight": 2
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
+      "to": "PIP-05",
+      "weight": 2
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
       "to": "REV-03",
-      "weight": 3
+      "weight": 4
     },
     {
       "from": "EVL-14",
       "kind": "ref",
       "to": "RTG-02",
-      "weight": 5
+      "weight": 26
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
+      "to": "RTG-04",
+      "weight": 2
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
+      "to": "RTG-08",
+      "weight": 2
     },
     {
       "from": "EVL-14",
       "kind": "ref",
       "to": "RTG-09",
-      "weight": 3
+      "weight": 11
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
+      "to": "RTG-10",
+      "weight": 2
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
+      "to": "RTG-14",
+      "weight": 4
     },
     {
       "from": "EVL-14",
@@ -736,14 +610,50 @@
     {
       "from": "EVL-14",
       "kind": "ref",
-      "to": "UFH-03",
+      "to": "RTG-30",
+      "weight": 11
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
+      "to": "RTG-33",
       "weight": 2
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
+      "to": "RTG-42",
+      "weight": 13
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
+      "to": "RTG-45",
+      "weight": 4
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
+      "to": "RTG-54",
+      "weight": 3
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
+      "to": "UFH-03",
+      "weight": 4
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
+      "to": "UFH-05",
+      "weight": 9
     },
     {
       "from": "EVL-15",
       "kind": "ref",
       "to": "EVL-14",
-      "weight": 2
+      "weight": 1
     },
     {
       "from": "EVL-15",
@@ -755,12 +665,6 @@
       "from": "EVL-15",
       "kind": "ref",
       "to": "RTG-02",
-      "weight": 2
-    },
-    {
-      "from": "EVL-16",
-      "kind": "ref",
-      "to": "EVL-07",
       "weight": 2
     },
     {
@@ -833,19 +737,13 @@
       "from": "EVL-29",
       "kind": "ref",
       "to": "EVL-14",
-      "weight": 6
+      "weight": 3
     },
     {
       "from": "EVL-29",
       "kind": "ref",
       "to": "EVL-37",
       "weight": 10
-    },
-    {
-      "from": "EVL-29",
-      "kind": "ref",
-      "to": "EVL-42",
-      "weight": 3
     },
     {
       "from": "EVL-29",
@@ -950,12 +848,6 @@
       "weight": 3
     },
     {
-      "from": "EVL-33",
-      "kind": "ref",
-      "to": "EVL-07",
-      "weight": 2
-    },
-    {
       "from": "EVL-36",
       "kind": "ref",
       "to": "EVL-37",
@@ -1032,18 +924,6 @@
       "kind": "ref",
       "to": "EVL-37",
       "weight": 2
-    },
-    {
-      "from": "EVL-42",
-      "kind": "ref",
-      "to": "EVL-29",
-      "weight": 4
-    },
-    {
-      "from": "EVL-42",
-      "kind": "ref",
-      "to": "EVL-47",
-      "weight": 1
     },
     {
       "from": "EVL-43",
@@ -1157,7 +1037,7 @@
       "from": "EVL-46",
       "kind": "ref",
       "to": "EVL-14",
-      "weight": 2
+      "weight": 1
     },
     {
       "from": "EVL-46",
@@ -1378,12 +1258,6 @@
     {
       "from": "INF-07",
       "kind": "ref",
-      "to": "EVL-07",
-      "weight": 2
-    },
-    {
-      "from": "INF-07",
-      "kind": "ref",
       "to": "INF-23",
       "weight": 4
     },
@@ -1530,18 +1404,6 @@
       "kind": "ref",
       "to": "RTG-42",
       "weight": 6
-    },
-    {
-      "from": "INF-24",
-      "kind": "ref",
-      "to": "EVL-13",
-      "weight": 4
-    },
-    {
-      "from": "INF-24",
-      "kind": "ref",
-      "to": "INF-26",
-      "weight": 2
     },
     {
       "from": "INF-26",
@@ -1703,7 +1565,7 @@
       "from": "INF-42",
       "kind": "ref",
       "to": "EVL-14",
-      "weight": 2
+      "weight": 1
     },
     {
       "from": "INF-42",
@@ -1853,7 +1715,7 @@
       "from": "INF-50",
       "kind": "ref",
       "to": "EVL-14",
-      "weight": 2
+      "weight": 1
     },
     {
       "from": "INF-50",
@@ -1896,12 +1758,6 @@
       "kind": "ref",
       "to": "INF-80",
       "weight": 2
-    },
-    {
-      "from": "INF-56",
-      "kind": "ref",
-      "to": "EVL-07",
-      "weight": 1
     },
     {
       "from": "INF-59",
@@ -2489,7 +2345,7 @@
       "from": "REV-03",
       "kind": "ref",
       "to": "EVL-14",
-      "weight": 4
+      "weight": 1
     },
     {
       "from": "REV-03",
@@ -2543,7 +2399,7 @@
       "from": "RTG-02",
       "kind": "ref",
       "to": "EVL-14",
-      "weight": 4
+      "weight": 2
     },
     {
       "from": "RTG-02",
@@ -2560,20 +2416,8 @@
     {
       "from": "RTG-04",
       "kind": "ref",
-      "to": "EVL-07",
-      "weight": 2
-    },
-    {
-      "from": "RTG-04",
-      "kind": "ref",
       "to": "RTG-05",
       "weight": 2
-    },
-    {
-      "from": "RTG-05",
-      "kind": "ref",
-      "to": "EVL-07",
-      "weight": 4
     },
     {
       "from": "RTG-05",
@@ -2656,14 +2500,8 @@
     {
       "from": "RTG-09",
       "kind": "ref",
-      "to": "EVL-07",
-      "weight": 3
-    },
-    {
-      "from": "RTG-09",
-      "kind": "ref",
       "to": "EVL-14",
-      "weight": 3
+      "weight": 4
     },
     {
       "from": "RTG-09",
@@ -2688,12 +2526,6 @@
       "kind": "ref",
       "to": "RTG-41",
       "weight": 4
-    },
-    {
-      "from": "RTG-10",
-      "kind": "ref",
-      "to": "EVL-07",
-      "weight": 2
     },
     {
       "from": "RTG-10",
@@ -2753,12 +2585,6 @@
       "from": "RTG-13",
       "kind": "ref",
       "to": "RTG-02",
-      "weight": 2
-    },
-    {
-      "from": "RTG-14",
-      "kind": "ref",
-      "to": "EVL-07",
       "weight": 2
     },
     {
@@ -2954,18 +2780,6 @@
       "weight": 2
     },
     {
-      "from": "RTG-27",
-      "kind": "ref",
-      "to": "RTG-54",
-      "weight": 3
-    },
-    {
-      "from": "RTG-30",
-      "kind": "ref",
-      "to": "EVL-07",
-      "weight": 3
-    },
-    {
       "from": "RTG-30",
       "kind": "ref",
       "to": "RTG-14",
@@ -3004,19 +2818,7 @@
     {
       "from": "RTG-35",
       "kind": "ref",
-      "to": "EVL-07",
-      "weight": 2
-    },
-    {
-      "from": "RTG-35",
-      "kind": "ref",
       "to": "RTG-07",
-      "weight": 2
-    },
-    {
-      "from": "RTG-36",
-      "kind": "ref",
-      "to": "EVL-07",
       "weight": 2
     },
     {
@@ -3185,7 +2987,7 @@
       "from": "RTG-55",
       "kind": "ref",
       "to": "EVL-14",
-      "weight": 2
+      "weight": 1
     },
     {
       "from": "RTG-55",
@@ -3270,12 +3072,6 @@
       "kind": "ref",
       "to": "INF-65",
       "weight": 4
-    },
-    {
-      "from": "RTG-58",
-      "kind": "ref",
-      "to": "RTG-27",
-      "weight": 2
     },
     {
       "from": "RTG-58",
@@ -3494,7 +3290,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T20:12:09Z",
+  "generated_at": "2026-11-02T20:15:09Z",
   "nodes": [
     {
       "age_days": 95,
@@ -3521,7 +3317,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 139,
+      "priority_rank": 131,
       "readiness": "ready",
       "state": "active",
       "track": "agent file prose compression"
@@ -3691,7 +3487,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 100,
+      "priority_rank": 96,
       "readiness": "ready",
       "state": "active",
       "track": "autopilot decision plane audit 2026 07 22"
@@ -3723,40 +3519,10 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 77,
+      "priority_rank": 73,
       "readiness": "blocked",
       "state": "active",
       "track": "autopilot sequential allocation"
-    },
-    {
-      "age_days": 27,
-      "blocked": 1,
-      "blocked_by": [],
-      "closed": 7,
-      "dispatchable": 3,
-      "domain": "research-evaluation",
-      "guarded": 0,
-      "handoff": "bulk-inference-campaign.md",
-      "id": "EVL-07",
-      "last_advanced": "2026-10-06",
-      "next_action": "Source-review remaining model-free campaign contracts; retain K-LCM-1 inference gate",
-      "open": 4,
-      "priority": 0.3006,
-      "priority_basis": {
-        "basis": "T2 non-inference best open item (N): RCP-W1 \u2014 Reference-lineup relaunch + preflight: `orchestrator_stack.py` relaunch under thr",
-        "blocker": "",
-        "campaign": 0,
-        "file_rank": 122,
-        "source": "file",
-        "tier": 2,
-        "tier_name": "T2 non-inference, unblocked",
-        "unblocks": 0,
-        "unblocks_rows": []
-      },
-      "priority_rank": 116,
-      "readiness": "ready",
-      "state": "active",
-      "track": "bulk inference campaign"
     },
     {
       "age_days": 1,
@@ -3821,108 +3587,18 @@
       "track": "episodic memory integrity"
     },
     {
-      "age_days": 12,
-      "blocked": 0,
+      "age_days": null,
+      "blocked": 8,
       "blocked_by": [],
-      "closed": 6,
-      "dispatchable": 3,
+      "closed": 213,
+      "dispatchable": 67,
       "domain": "research-evaluation",
-      "guarded": 0,
-      "handoff": "eval-benchmark-cost-reduction.md",
-      "id": "EVL-11",
-      "last_advanced": "2026-10-21",
-      "next_action": "BLOCKED: needs Harbor adapter + TB Core baseline (agent-world-env-synthesis) before MR/TB filter applies",
-      "open": 3,
-      "priority": 0.1214,
-      "priority_basis": {
-        "basis": "T7 non-inference best open item (N): BLOCKED: needs Harbor adapter + TB Core baseline (agent-world-env-synthesis) before MR/TB ",
-        "blocker": "external: upstream PR / artifact / disk reclaim",
-        "campaign": 0,
-        "file_rank": 153,
-        "source": "file",
-        "tier": 7,
-        "tier_name": "T7 held / blocked",
-        "unblocks": 0,
-        "unblocks_rows": []
-      },
-      "priority_rank": 146,
-      "readiness": "ready",
-      "state": "active",
-      "track": "eval benchmark cost reduction"
-    },
-    {
-      "age_days": 2,
-      "blocked": 0,
-      "blocked_by": [],
-      "closed": 45,
-      "dispatchable": 2,
-      "domain": "research-evaluation",
-      "guarded": 0,
-      "handoff": "eval-tower-architecture-audit-2026-07-20.md",
-      "id": "EVL-12",
-      "last_advanced": "2026-10-31",
-      "next_action": "E1 ARCH-1 \u2014 finish splitting the eval_tower god-module: extract the concurrency ladder, one import bootstrap, rubric-parsing sidecar",
-      "open": 2,
-      "priority": 0.6532,
-      "priority_basis": {
-        "basis": "T6 inference-ready best open item (I): E5 [agent] remaining LOWs sweep \u2014 ET-8 watchdog=0 fail-fast; ET-15 suite-health freshness ",
-        "blocker": "",
-        "campaign": 0,
-        "file_rank": 61,
-        "source": "file",
-        "tier": 6,
-        "tier_name": "T6 inference routine",
-        "unblocks": 0,
-        "unblocks_rows": []
-      },
-      "priority_rank": 59,
-      "readiness": "ready",
-      "state": "active",
-      "track": "eval tower architecture audit 2026 07 20"
-    },
-    {
-      "age_days": 40,
-      "blocked": 0,
-      "blocked_by": [],
-      "closed": 29,
-      "dispatchable": 2,
-      "domain": "research-evaluation",
-      "guarded": 0,
-      "handoff": "eval-tower-loop-robustness-audit-2026-07-20.md",
-      "id": "EVL-13",
-      "last_advanced": "2026-09-23",
-      "next_action": "H2.v8 \u2014 remeasure the contention matrix under frozen v8 (inference-gated)",
-      "open": 2,
-      "priority": 0.341,
-      "priority_basis": {
-        "basis": "T2 non-inference best open item (N): Cluster E \u2014 scoring \u2192 tracked as EV-CONF in [eval-tower-verification.md](eval-tower-verifi",
-        "blocker": "",
-        "campaign": 0,
-        "file_rank": 115,
-        "source": "file",
-        "tier": 2,
-        "tier_name": "T2 non-inference, unblocked",
-        "unblocks": 0,
-        "unblocks_rows": []
-      },
-      "priority_rank": 111,
-      "readiness": "ready",
-      "state": "active",
-      "track": "eval tower loop robustness audit 2026 07 20"
-    },
-    {
-      "age_days": 2,
-      "blocked": 6,
-      "blocked_by": [],
-      "closed": 74,
-      "dispatchable": 27,
-      "domain": "research-evaluation",
-      "guarded": 0,
-      "handoff": "eval-tower-verification.md",
+      "guarded": 1,
+      "handoff": "eval-tower-program.md",
       "id": "EVL-14",
-      "last_advanced": "2026-10-31",
+      "last_advanced": null,
       "next_action": "Retain EV-PROTO and live calibration acceptance",
-      "open": 33,
+      "open": 76,
       "priority": 0.5376,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): EV-4 \u2014 Complete the decision-grade HE-R+ calibration baseline through the inference-batch ",
@@ -3932,13 +3608,105 @@
         "source": "file",
         "tier": 6,
         "tier_name": "T6 inference routine",
-        "unblocks": 0,
+        "unblocks": 2,
         "unblocks_rows": []
       },
-      "priority_rank": 78,
+      "priority_rank": 74,
       "readiness": "ready",
       "state": "active",
-      "track": "eval tower verification"
+      "track": "eval tower verification",
+      "tracks": [
+        {
+          "blocked_by": [],
+          "dispatchable": 27,
+          "gates": null,
+          "line": 0,
+          "name": "(untracked)",
+          "open": 33,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 3,
+          "gates": [],
+          "line": 1106,
+          "name": "bulk-inference-campaign",
+          "open": 4,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 3,
+          "gates": [],
+          "line": 1762,
+          "name": "eval-benchmark-cost-reduction",
+          "open": 3,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 2,
+          "gates": [],
+          "line": 1863,
+          "name": "eval-tower-architecture-audit-2026-07-20",
+          "open": 2,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 2,
+          "gates": [],
+          "line": 2252,
+          "name": "eval-tower-loop-robustness-audit-2026-07-20",
+          "open": 2,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 1,
+          "gates": [],
+          "line": 2452,
+          "name": "fable5-window2-findings-01-optimizer-integrity",
+          "open": 1,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 9,
+          "gates": [],
+          "line": 2521,
+          "name": "inference-batch-loop",
+          "open": 11,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 2,
+          "gates": [],
+          "line": 2790,
+          "name": "prompt-construction-determinism",
+          "open": 2,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 4,
+          "gates": [],
+          "line": 2914,
+          "name": "re4-protocol-redesign",
+          "open": 4,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 14,
+          "gates": [],
+          "line": 3079,
+          "name": "scoring-infra-standardization",
+          "open": 14,
+          "readiness": "ready"
+        }
+      ]
     },
     {
       "age_days": 2,
@@ -3965,7 +3733,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 135,
+      "priority_rank": 127,
       "readiness": "ready",
       "state": "active",
       "track": "evidence plane instrument repair"
@@ -3995,40 +3763,10 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 112,
+      "priority_rank": 106,
       "readiness": "ready",
       "state": "active",
       "track": "evidence plane ledger and sequential verdict"
-    },
-    {
-      "age_days": 96,
-      "blocked": 0,
-      "blocked_by": [],
-      "closed": 1,
-      "dispatchable": 1,
-      "domain": "research-evaluation",
-      "guarded": 0,
-      "handoff": "fable5-window2-findings-01-optimizer-integrity.md",
-      "id": "EVL-19",
-      "last_advanced": "2026-07-29",
-      "next_action": "R2-current \u2014 Accrue a current-era trusted per-question ledger for a reproducible \u226540-item core selection; do not reuse the July-3 set",
-      "open": 1,
-      "priority": 0.3295,
-      "priority_basis": {
-        "basis": "T2 non-inference best open item (N): R2-current \u2014 accrue a current-era, trusted per-question ledger sufficient for a reproducib",
-        "blocker": "",
-        "campaign": 0,
-        "file_rank": 117,
-        "source": "file",
-        "tier": 2,
-        "tier_name": "T2 non-inference, unblocked",
-        "unblocks": 0,
-        "unblocks_rows": []
-      },
-      "priority_rank": 113,
-      "readiness": "ready",
-      "state": "active",
-      "track": "fable5 window2 findings 01 optimizer integri"
     },
     {
       "age_days": 4,
@@ -4055,7 +3793,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 101,
+      "priority_rank": 97,
       "readiness": "ready",
       "state": "active",
       "track": "fable5 window2 findings 02 heterogeneous gpu"
@@ -4085,7 +3823,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 147,
+      "priority_rank": 138,
       "readiness": "ready",
       "state": "active",
       "track": "fable5 window2 findings 03 portfolio and mas"
@@ -4115,7 +3853,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 117,
+      "priority_rank": 109,
       "readiness": "ready",
       "state": "active",
       "track": "frontier f2 self running lab"
@@ -4145,7 +3883,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 114,
+      "priority_rank": 107,
       "readiness": "ready",
       "state": "active",
       "track": "frontier f3 data flywheel"
@@ -4175,7 +3913,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 148,
+      "priority_rank": 139,
       "readiness": "ready",
       "state": "active",
       "track": "frontier f4 continuity backup"
@@ -4205,7 +3943,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 102,
+      "priority_rank": 98,
       "readiness": "ready",
       "state": "active",
       "track": "frontier f6 upstream publication"
@@ -4235,7 +3973,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 60,
+      "priority_rank": 57,
       "readiness": "ready",
       "state": "active",
       "track": "intake derived work 2026 07 25"
@@ -4265,7 +4003,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 118,
+      "priority_rank": 110,
       "readiness": "ready",
       "state": "active",
       "track": "integration test coverage"
@@ -4295,7 +4033,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 149,
+      "priority_rank": 140,
       "readiness": "ready",
       "state": "active",
       "track": "mathsmith hc formalizer eval"
@@ -4325,7 +4063,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 52,
+      "priority_rank": 51,
       "readiness": "ready",
       "state": "active",
       "track": "per request reasoning budget"
@@ -4359,36 +4097,6 @@
       "readiness": "ready",
       "state": "active",
       "track": "rao redel substrate spike"
-    },
-    {
-      "age_days": 96,
-      "blocked": 0,
-      "blocked_by": [],
-      "closed": 3,
-      "dispatchable": 4,
-      "domain": "research-evaluation",
-      "guarded": 0,
-      "handoff": "re4-protocol-redesign.md",
-      "id": "EVL-35",
-      "last_advanced": "2026-07-29",
-      "next_action": "RE-4.2 \u2014 Run the non-saturation probe in an operator quiet window: frontdoor-only, two-phase, R=4096, 30 rows; gate accuracy in (10%,90%)",
-      "open": 4,
-      "priority": 0.6416,
-      "priority_basis": {
-        "basis": "T6 inference-ready best open item (I): RE-4.4 \u2014 reasoning-budget ladder (follow-on curve; the reasoning-compression signal): re-r",
-        "blocker": "",
-        "campaign": 0,
-        "file_rank": 63,
-        "source": "file",
-        "tier": 6,
-        "tier_name": "T6 inference routine",
-        "unblocks": 0,
-        "unblocks_rows": []
-      },
-      "priority_rank": 61,
-      "readiness": "ready",
-      "state": "active",
-      "track": "re4 protocol redesign"
     },
     {
       "age_days": 12,
@@ -4478,7 +4186,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 127,
+      "priority_rank": 119,
       "readiness": "ready",
       "state": "active",
       "track": "repo readiness scorer"
@@ -4508,40 +4216,10 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 68,
+      "priority_rank": 64,
       "readiness": "ready",
       "state": "active",
       "track": "rlm contested claims self evaluation"
-    },
-    {
-      "age_days": 3,
-      "blocked": 0,
-      "blocked_by": [],
-      "closed": 28,
-      "dispatchable": 14,
-      "domain": "research-evaluation",
-      "guarded": 0,
-      "handoff": "scoring-infra-standardization.md",
-      "id": "EVL-42",
-      "last_advanced": "2026-10-30",
-      "next_action": "Wire future EVL42 pin-scan reports prospectively; then refresh the separate LCB contamination window",
-      "open": 14,
-      "priority": 0.3873,
-      "priority_basis": {
-        "basis": "T2 non-inference best open item (N): 2a-iii-followon. Bound process/thread COUNT via cgroup v2 `pids.max` \u2014 the correct mechani",
-        "blocker": "",
-        "campaign": 0,
-        "file_rank": 107,
-        "source": "file",
-        "tier": 2,
-        "tier_name": "T2 non-inference, unblocked",
-        "unblocks": 0,
-        "unblocks_rows": []
-      },
-      "priority_rank": 103,
-      "readiness": "ready",
-      "state": "active",
-      "track": "scoring infra standardization"
     },
     {
       "age_days": 96,
@@ -4568,7 +4246,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 150,
+      "priority_rank": 141,
       "readiness": "ready",
       "state": "active",
       "track": "sliders local validation"
@@ -4598,7 +4276,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 97,
+      "priority_rank": 93,
       "readiness": "ready",
       "state": "active",
       "track": "stale open audit 2026 07 18"
@@ -4735,7 +4413,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 140,
+      "priority_rank": 132,
       "readiness": "blocked",
       "state": "active",
       "track": "reboot gated inventory and staging"
@@ -4797,7 +4475,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 62,
+      "priority_rank": 58,
       "readiness": "ready",
       "state": "active",
       "track": "agent collab rnd harness"
@@ -4830,7 +4508,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 136,
+      "priority_rank": 128,
       "readiness": "blocked",
       "state": "active",
       "track": "agentic rocm kernel authoring"
@@ -4939,7 +4617,7 @@
           "RTG-07"
         ]
       },
-      "priority_rank": 53,
+      "priority_rank": 52,
       "readiness": "ready",
       "state": "active",
       "track": "batched decode measurement"
@@ -4969,7 +4647,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 119,
+      "priority_rank": 111,
       "readiness": "ready",
       "state": "active",
       "track": "cpu prefill compute large models"
@@ -4999,7 +4677,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 69,
+      "priority_rank": 65,
       "readiness": "ready",
       "state": "active",
       "track": "engram conditional memory"
@@ -5029,7 +4707,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 63,
+      "priority_rank": 59,
       "readiness": "ready",
       "state": "active",
       "track": "gemma challenge kernel techniques v7"
@@ -5059,7 +4737,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 64,
+      "priority_rank": 60,
       "readiness": "ready",
       "state": "active",
       "track": "gpu acceleration path"
@@ -5125,36 +4803,6 @@
       "track": "heterogeneous slot fabric residency"
     },
     {
-      "age_days": 4,
-      "blocked": 1,
-      "blocked_by": [],
-      "closed": 17,
-      "dispatchable": 9,
-      "domain": "inference-research",
-      "guarded": 1,
-      "handoff": "inference-batch-loop.md",
-      "id": "INF-24",
-      "last_advanced": "2026-10-29",
-      "next_action": "P0 RCP prologue \u2014 RCP-W1 relaunch + preflight, RCP-W2 ledger materialize, RCP-W3 calibration smoke; gated OP-6a/6b + stack-restart approval",
-      "open": 11,
-      "priority": 0.7168,
-      "priority_basis": {
-        "basis": "T6 inference-ready best open item (I): RE-4 protocol repair \u2014 redesign LongCoT-Mini execution so models may do bounded reasoning ",
-        "blocker": "",
-        "campaign": 0,
-        "file_rank": 50,
-        "source": "file",
-        "tier": 6,
-        "tier_name": "T6 inference routine",
-        "unblocks": 0,
-        "unblocks_rows": []
-      },
-      "priority_rank": 48,
-      "readiness": "ready",
-      "state": "active",
-      "track": "inference batch loop"
-    },
-    {
       "age_days": 6,
       "blocked": 0,
       "blocked_by": [],
@@ -5209,7 +4857,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 129,
+      "priority_rank": 121,
       "readiness": "ready",
       "state": "active",
       "track": "laguna s21 cpu port"
@@ -5239,7 +4887,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 130,
+      "priority_rank": 122,
       "readiness": "ready",
       "state": "active",
       "track": "large moe expert parallelism"
@@ -5278,7 +4926,7 @@
           "UFH-14"
         ]
       },
-      "priority_rank": 98,
+      "priority_rank": 94,
       "readiness": "ready",
       "state": "active",
       "track": "llama cpp dsa contribution"
@@ -5310,7 +4958,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 70,
+      "priority_rank": 66,
       "readiness": "blocked",
       "state": "active",
       "track": "log linear gated deltanet readiness"
@@ -5343,7 +4991,7 @@
           "INF-72"
         ]
       },
-      "priority_rank": 91,
+      "priority_rank": 87,
       "readiness": "ready",
       "state": "active",
       "track": "mi210 big model and acceleration roadmap"
@@ -5376,7 +5024,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 141,
+      "priority_rank": 133,
       "readiness": "blocked",
       "state": "active",
       "track": "mi210 q8 dequant gemv roofline"
@@ -5406,7 +5054,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 104,
+      "priority_rank": 99,
       "readiness": "ready",
       "state": "active",
       "track": "moe spec cpu spec dec integration"
@@ -5436,7 +5084,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 79,
+      "priority_rank": 75,
       "readiness": "ready",
       "state": "active",
       "track": "multiscreen attention evaluation"
@@ -5528,7 +5176,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 151,
+      "priority_rank": 142,
       "readiness": "ready",
       "state": "active",
       "track": "numa topology cutover resume"
@@ -5603,7 +5251,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 131,
+      "priority_rank": 123,
       "readiness": "ready",
       "state": "active",
       "track": "sarathi serve cpu evaluation"
@@ -5674,7 +5322,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 85,
+      "priority_rank": 81,
       "readiness": "ready",
       "state": "active",
       "track": "streaming llm baseline"
@@ -5734,7 +5382,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 71,
+      "priority_rank": 67,
       "readiness": "ready",
       "state": "active",
       "track": "triattention kv selection"
@@ -5764,7 +5412,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 105,
+      "priority_rank": 100,
       "readiness": "ready",
       "state": "active",
       "track": "v9 kernel per request speculative params"
@@ -5860,7 +5508,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 54,
+      "priority_rank": 53,
       "readiness": "blocked",
       "state": "active",
       "track": "model evaluation queue (INF-60-gated)"
@@ -5946,7 +5594,7 @@
           "UFH-12"
         ]
       },
-      "priority_rank": 88,
+      "priority_rank": 84,
       "readiness": "ready",
       "state": "active",
       "track": "autokernel restart-loop fix"
@@ -6067,7 +5715,7 @@
           "INF-81"
         ]
       },
-      "priority_rank": 87,
+      "priority_rank": 83,
       "readiness": "ready",
       "state": "active",
       "track": "cpu fused decoder blocks"
@@ -6138,7 +5786,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 89,
+      "priority_rank": 85,
       "readiness": "blocked",
       "state": "active",
       "track": "moe routing locality tap"
@@ -6276,7 +5924,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 80,
+      "priority_rank": 76,
       "readiness": "blocked",
       "state": "active",
       "track": "model evaluation queue (EVL-08-gated)"
@@ -6317,7 +5965,7 @@
           "UFH-14"
         ]
       },
-      "priority_rank": 67,
+      "priority_rank": 63,
       "readiness": "blocked",
       "state": "active",
       "track": "deepseek v41 flash evaluation"
@@ -6361,7 +6009,7 @@
       "track": "autokernel orchestrator actor backend"
     },
     {
-      "age_days": null,
+      "age_days": 0,
       "blocked": 42,
       "blocked_by": [],
       "closed": 119,
@@ -6370,7 +6018,7 @@
       "guarded": 0,
       "handoff": "speech-and-multimodal.md",
       "id": "INF-79",
-      "last_advanced": null,
+      "last_advanced": "2026-11-02",
       "next_action": "Qualify the repaired STT5 offline scorer, retain filed WER, then finish STT3 acceptance and STT7 predictions",
       "open": 86,
       "priority": 0.948,
@@ -6532,7 +6180,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 50,
+      "priority_rank": 49,
       "readiness": "ready",
       "state": "active",
       "track": "document parser table bench"
@@ -6562,7 +6210,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 65,
+      "priority_rank": 61,
       "readiness": "ready",
       "state": "active",
       "track": "internal kb rag"
@@ -6592,7 +6240,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 72,
+      "priority_rank": 68,
       "readiness": "ready",
       "state": "active",
       "track": "opendataloader pipeline integration"
@@ -6626,7 +6274,7 @@
           "REV-07"
         ]
       },
-      "priority_rank": 152,
+      "priority_rank": 143,
       "readiness": "blocked",
       "state": "active",
       "track": "glm52 reviewer capability gates"
@@ -6656,7 +6304,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 106,
+      "priority_rank": 101,
       "readiness": "ready",
       "state": "active",
       "track": "reviewer calibration accounting"
@@ -6688,7 +6336,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 120,
+      "priority_rank": 112,
       "readiness": "blocked",
       "state": "active",
       "track": "reviewer escalation and human gate policy"
@@ -6718,7 +6366,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 107,
+      "priority_rank": 102,
       "readiness": "ready",
       "state": "active",
       "track": "reviewer latency and sampling budget"
@@ -6750,7 +6398,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 73,
+      "priority_rank": 69,
       "readiness": "blocked",
       "state": "active",
       "track": "reviewer model ablations"
@@ -6780,7 +6428,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 153,
+      "priority_rank": 144,
       "readiness": "ready",
       "state": "active",
       "track": "reviewer typed artifacts"
@@ -6810,7 +6458,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 66,
+      "priority_rank": 62,
       "readiness": "ready",
       "state": "active",
       "track": "agent world env synthesis"
@@ -6843,7 +6491,7 @@
           "RTG-55"
         ]
       },
-      "priority_rank": 55,
+      "priority_rank": 54,
       "readiness": "ready",
       "state": "active",
       "track": "autopilot continuous optimization"
@@ -6873,7 +6521,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 121,
+      "priority_rank": 113,
       "readiness": "ready",
       "state": "active",
       "track": "autopilot dashboard fidelity audit 2026 07 2"
@@ -6903,7 +6551,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 81,
+      "priority_rank": 77,
       "readiness": "ready",
       "state": "active",
       "track": "batched edit parallel apply"
@@ -6933,7 +6581,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 82,
+      "priority_rank": 78,
       "readiness": "ready",
       "state": "active",
       "track": "bep dcp falsification harness"
@@ -6963,7 +6611,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 122,
+      "priority_rank": 114,
       "readiness": "ready",
       "state": "active",
       "track": "capability registry and promotion"
@@ -6995,7 +6643,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 123,
+      "priority_rank": 115,
       "readiness": "blocked",
       "state": "active",
       "track": "contention model device and load axes rider"
@@ -7025,7 +6673,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 83,
+      "priority_rank": 79,
       "readiness": "ready",
       "state": "active",
       "track": "context folding progressive"
@@ -7064,7 +6712,7 @@
           "UFH-15"
         ]
       },
-      "priority_rank": 142,
+      "priority_rank": 134,
       "readiness": "ready",
       "state": "active",
       "track": "decision aware routing"
@@ -7124,7 +6772,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 94,
+      "priority_rank": 90,
       "readiness": "ready",
       "state": "active",
       "track": "dynamic stack concurrency"
@@ -7154,7 +6802,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 128,
+      "priority_rank": 120,
       "readiness": "ready",
       "state": "active",
       "track": "evidence plane event sourcing and narrative"
@@ -7184,7 +6832,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 74,
+      "priority_rank": 70,
       "readiness": "ready",
       "state": "active",
       "track": "internal interaction lifecycle"
@@ -7214,7 +6862,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 56,
+      "priority_rank": 55,
       "readiness": "ready",
       "state": "active",
       "track": "learned routing controller"
@@ -7244,7 +6892,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 84,
+      "priority_rank": 80,
       "readiness": "ready",
       "state": "active",
       "track": "loops and dashboards audit 2026 07 05"
@@ -7274,7 +6922,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 160,
+      "priority_rank": 151,
       "readiness": "ready",
       "state": "active",
       "track": "model capability descriptors"
@@ -7316,7 +6964,7 @@
           "UFH-14"
         ]
       },
-      "priority_rank": 96,
+      "priority_rank": 92,
       "readiness": "ready",
       "state": "active",
       "track": "model stack single source update pipeline"
@@ -7346,7 +6994,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 132,
+      "priority_rank": 124,
       "readiness": "ready",
       "state": "active",
       "track": "model stack update pipeline audit"
@@ -7376,7 +7024,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 58,
+      "priority_rank": 56,
       "readiness": "ready",
       "state": "active",
       "track": "multi file coding completion capability"
@@ -7436,7 +7084,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 108,
+      "priority_rank": 103,
       "readiness": "ready",
       "state": "active",
       "track": "objective task rate goodput"
@@ -7466,43 +7114,10 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 154,
+      "priority_rank": 145,
       "readiness": "ready",
       "state": "active",
       "track": "orchestration robustness audit 2026 07 11"
-    },
-    {
-      "age_days": 73,
-      "blocked": 0,
-      "blocked_by": [],
-      "closed": 3,
-      "dispatchable": 2,
-      "domain": "routing-and-optimization",
-      "guarded": 0,
-      "handoff": "prompt-construction-determinism.md",
-      "id": "RTG-27",
-      "last_advanced": "2026-08-21",
-      "next_action": "D3 \u2014 Run the P-BENCH canonical sampling-quality cert (`bench_canonical.sh`) in a clean window to certify items #1\u20133",
-      "open": 2,
-      "priority": 0.6647,
-      "priority_basis": {
-        "basis": "T6 inference-ready best open item (I): D3 \u2014 manual canonical bench (sampling quality cert) *(clean window; certifies #1\u20133)*. Gree",
-        "blocker": "",
-        "campaign": 0,
-        "file_rank": 59,
-        "source": "file",
-        "tier": 6,
-        "tier_name": "T6 inference routine",
-        "unblocks": 2,
-        "unblocks_rows": [
-          "INF-81",
-          "RTG-58"
-        ]
-      },
-      "priority_rank": 57,
-      "readiness": "ready",
-      "state": "active",
-      "track": "prompt construction determinism"
     },
     {
       "age_days": 1,
@@ -7529,7 +7144,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 75,
+      "priority_rank": 71,
       "readiness": "ready",
       "state": "active",
       "track": "reasoning effort levels"
@@ -7559,7 +7174,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 155,
+      "priority_rank": 146,
       "readiness": "ready",
       "state": "active",
       "track": "retrain routing models"
@@ -7591,7 +7206,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 137,
+      "priority_rank": 129,
       "readiness": "blocked",
       "state": "active",
       "track": "routing intelligence"
@@ -7621,7 +7236,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 156,
+      "priority_rank": 147,
       "readiness": "ready",
       "state": "active",
       "track": "scaffold autopilot cost lever deployment"
@@ -7651,7 +7266,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 157,
+      "priority_rank": 148,
       "readiness": "ready",
       "state": "active",
       "track": "searxng search backend"
@@ -7686,7 +7301,7 @@
           "RTG-52"
         ]
       },
-      "priority_rank": 49,
+      "priority_rank": 48,
       "readiness": "ready",
       "state": "active",
       "track": "session bus thin dispatcher"
@@ -7716,7 +7331,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 138,
+      "priority_rank": 130,
       "readiness": "ready",
       "state": "active",
       "track": "shape keyed contention gating"
@@ -7758,7 +7373,7 @@
           "UFH-14"
         ]
       },
-      "priority_rank": 143,
+      "priority_rank": 135,
       "readiness": "ready",
       "state": "active",
       "track": "stack change governance pipeline"
@@ -7788,7 +7403,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 124,
+      "priority_rank": 116,
       "readiness": "ready",
       "state": "active",
       "track": "standardized stack update pipeline finalizat"
@@ -7818,7 +7433,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 158,
+      "priority_rank": 149,
       "readiness": "ready",
       "state": "active",
       "track": "tri role coordinator architecture"
@@ -7880,7 +7495,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 92,
+      "priority_rank": 88,
       "readiness": "ready",
       "state": "active",
       "track": "within role placement state machine"
@@ -7910,7 +7525,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 86,
+      "priority_rank": 82,
       "readiness": "ready",
       "state": "active",
       "track": "wp12 fleet layer design"
@@ -7940,7 +7555,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 133,
+      "priority_rank": 125,
       "readiness": "ready",
       "state": "active",
       "track": "x mas text routing"
@@ -7972,7 +7587,7 @@
           "EVL-49"
         ]
       },
-      "priority_rank": 134,
+      "priority_rank": 126,
       "readiness": "ready",
       "state": "active",
       "track": "handoff index and backlog graph"
@@ -8002,7 +7617,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 125,
+      "priority_rank": 117,
       "readiness": "ready",
       "state": "active",
       "track": "dashboard architecture restructure"
@@ -8038,7 +7653,7 @@
           "RTG-52"
         ]
       },
-      "priority_rank": 109,
+      "priority_rank": 104,
       "readiness": "blocked",
       "state": "active",
       "track": "coordinator role failure modes"
@@ -8071,7 +7686,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 99,
+      "priority_rank": 95,
       "readiness": "blocked",
       "state": "active",
       "track": "fleet fanout measurement"
@@ -8104,7 +7719,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 126,
+      "priority_rank": 118,
       "readiness": "blocked",
       "state": "active",
       "track": "wrap up division of labor policy"
@@ -8137,7 +7752,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 110,
+      "priority_rank": 105,
       "readiness": "blocked",
       "state": "active",
       "track": "loop owned fleet implementation"
@@ -8199,7 +7814,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 159,
+      "priority_rank": 150,
       "readiness": "blocked",
       "state": "active",
       "track": "promptforge mutation safety"
@@ -8286,8 +7901,8 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [
+        "EVL-14",
         "INF-65",
-        "RTG-27",
         "RTG-57"
       ],
       "closed": 123,
@@ -8343,7 +7958,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 90,
+      "priority_rank": 86,
       "readiness": "ready",
       "state": "active",
       "track": "model artifact integrity"
@@ -8373,7 +7988,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 95,
+      "priority_rank": 91,
       "readiness": "ready",
       "state": "active",
       "track": "loop state offraid backup"
@@ -8424,7 +8039,7 @@
         "source": "heuristic",
         "unblocks": 0
       },
-      "priority_rank": 160,
+      "priority_rank": 151,
       "readiness": "ready",
       "state": "active",
       "track": "churn pipeline"
@@ -8433,7 +8048,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 13,
+      "closed": 14,
       "dispatchable": 12,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -8448,7 +8063,7 @@
         "source": "heuristic",
         "unblocks": 0
       },
-      "priority_rank": 160,
+      "priority_rank": 151,
       "readiness": "ready",
       "state": "active",
       "track": "backlog refactor 2026-11"
@@ -8518,7 +8133,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 115,
+      "priority_rank": 108,
       "readiness": "ready",
       "state": "active",
       "track": "memento block reasoning compression"
@@ -8548,7 +8163,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 51,
+      "priority_rank": 50,
       "readiness": "ready",
       "state": "active",
       "track": "reasoning compression"
@@ -8642,7 +8257,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 144,
+      "priority_rank": 136,
       "readiness": "ready",
       "state": "active",
       "track": "AMD AI Lab website publication"
@@ -8707,7 +8322,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 145,
+      "priority_rank": 137,
       "readiness": "ready",
       "state": "active",
       "track": "thesis experiment (ACTIVE 2026-10-29)"
@@ -8774,7 +8389,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 76,
+      "priority_rank": 72,
       "readiness": "blocked",
       "state": "active",
       "track": "OpenCode shell integration"
@@ -8804,7 +8419,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 93,
+      "priority_rank": 89,
       "readiness": "ready",
       "state": "active",
       "track": "model exec containment"
@@ -8815,11 +8430,19 @@
     "campaign_tiers": 25,
     "file_generated_at": "2026-11-01T08:07Z",
     "file_rows_unused": [
+      "EVL-07",
+      "EVL-11",
+      "EVL-12",
+      "EVL-13",
+      "EVL-19",
       "EVL-32",
+      "EVL-35",
+      "EVL-42",
       "EVL-45",
       "INF-04",
       "INF-12",
       "INF-19",
+      "INF-24",
       "INF-30",
       "INF-41",
       "INF-46",
@@ -8827,6 +8450,7 @@
       "INF-53",
       "PIP-03",
       "RTG-18",
+      "RTG-27",
       "RTG-39",
       "UFH-04"
     ],
@@ -8838,7 +8462,7 @@
     "order": "per node, priority_basis.source says which won. file/override: the operator's ordering method (tier + rank in backlog-priority.json). heuristic: has open work > CURRENT-CAMPAIGN.md membership (2 newest block, 1 older) > rows transitively gated via dep edges > ready before blocked; heuristic rows sit below file rows",
     "priority": "0.0 lowest .. 1.0 highest, mid-rank percentile; priority_rank 1 = highest",
     "sources": {
-      "file": 159,
+      "file": 150,
       "heuristic": 2,
       "override": 1
     },
@@ -8856,7 +8480,7 @@
   "readiness_counts": {
     "blocked": 40,
     "no_open": 0,
-    "ready": 122
+    "ready": 113
   },
   "readiness_values": {
     "blocked": "open work, but at least one `dep` target still has open > 0",

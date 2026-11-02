@@ -221,7 +221,7 @@ The typed-decision plane measured 11.98x (native id-only) at 15/16 agreement on 
 - [ ] **HS-TD-3 — Context selection as a typed decision.** Choose among candidate files/snippets (closed set) instead of heuristic assembly; deterministic assembly; confidence logged. Acceptance: task-quality A/B vs current assembly on a frozen workload.
 - HS-TD-4 (prepared-action envelope and `decision_receipt.v1`) ✅ 2026-09-26 — orch `b19ff1d1`; closed row in the [completed sibling](../completed/harness-selection-completed-through-2026-09-27.md).
 
-**HS-TD-4 consumers:** HS-TD-1/2/3 produce shadow decisions through the envelope; URE-2/2a/3 consume its validation, fallback, timing, and outcome fields; TD-23/24/25 and CJ-15/16 use the receipt for comparable typed-decision evidence; Vidya adapters project the native receipt without granting it authority. Empirical consumers follow the [minimum viable research execution contract](eval-tower-verification.md#minimum-viable-research-execution-contract); HS-TD-4 remains the single implementation owner.
+**HS-TD-4 consumers:** HS-TD-1/2/3 produce shadow decisions through the envelope; URE-2/2a/3 consume its validation, fallback, timing, and outcome fields; TD-23/24/25 and CJ-15/16 use the receipt for comparable typed-decision evidence; Vidya adapters project the native receipt without granting it authority. Empirical consumers follow the [minimum viable research execution contract](eval-tower-program.md#minimum-viable-research-execution-contract); HS-TD-4 remains the single implementation owner.
 
 ## Research Intake Update — 2026-09-26 (orchestrator prior-art: harness front doors)
 

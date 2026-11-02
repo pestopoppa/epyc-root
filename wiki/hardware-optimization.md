@@ -1539,7 +1539,7 @@ completed 40-cell grid or a license to resume.
 
 ### Source References (2026-08-13 A7 partial grid)
 
-- [`inference-batch-loop.md`](../handoffs/active/inference-batch-loop.md) — campaign state and
+- [`inference-batch-loop.md`](../handoffs/active/eval-tower-program.md#track-inference-batch-loop) — campaign state and
   single-writer execution contract.
 - [`progress/2026-08/2026-08-13-mainA.md`](../progress/2026-08/2026-08-13-mainA.md) — grant,
   invocation, per-group result, stop receipt, and cleanup proof.

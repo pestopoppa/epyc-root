@@ -8,6 +8,10 @@
    "target": "model-evaluation-queue.md",
    "track": null
   },
+  "bulk-inference-campaign.md": {
+   "target": "eval-tower-program.md",
+   "track": "bulk-inference-campaign"
+  },
   "conversation-stack.md": {
    "target": "speech-and-multimodal.md",
    "track": null
@@ -20,9 +24,33 @@
    "target": "model-evaluation-queue.md",
    "track": "ernie-image-turbo-evaluation"
   },
+  "eval-benchmark-cost-reduction.md": {
+   "target": "eval-tower-program.md",
+   "track": "eval-benchmark-cost-reduction"
+  },
+  "eval-tower-architecture-audit-2026-07-20.md": {
+   "target": "eval-tower-program.md",
+   "track": "eval-tower-architecture-audit-2026-07-20"
+  },
+  "eval-tower-loop-robustness-audit-2026-07-20.md": {
+   "target": "eval-tower-program.md",
+   "track": "eval-tower-loop-robustness-audit-2026-07-20"
+  },
+  "eval-tower-verification.md": {
+   "target": "eval-tower-program.md",
+   "track": null
+  },
+  "fable5-window2-findings-01-optimizer-integrity.md": {
+   "target": "eval-tower-program.md",
+   "track": "fable5-window2-findings-01-optimizer-integrity"
+  },
   "gpu-cot-scaffold-sidecar.md": {
    "target": "model-evaluation-queue.md",
    "track": "gpu-cot-scaffold-sidecar"
+  },
+  "inference-batch-loop.md": {
+   "target": "eval-tower-program.md",
+   "track": "inference-batch-loop"
   },
   "lightning-attention-port.md": {
    "target": "model-evaluation-queue.md",
@@ -45,9 +73,21 @@
    "target": "speech-and-multimodal.md",
    "track": "multimodal-pipeline"
   },
+  "prompt-construction-determinism.md": {
+   "target": "eval-tower-program.md",
+   "track": "prompt-construction-determinism"
+  },
   "qwen-mtp-llamacpp-port.md": {
    "target": "model-evaluation-queue.md",
    "track": "qwen-mtp-llamacpp-port"
+  },
+  "re4-protocol-redesign.md": {
+   "target": "eval-tower-program.md",
+   "track": "re4-protocol-redesign"
+  },
+  "scoring-infra-standardization.md": {
+   "target": "eval-tower-program.md",
+   "track": "scoring-infra-standardization"
   },
   "strand-rust-coder-rustevo2-verification.md": {
    "target": "model-evaluation-queue.md",
@@ -68,9 +108,37 @@
   }
  },
  "ids": {
+  "EVL-07": {
+   "target": "EVL-14",
+   "track": "bulk-inference-campaign"
+  },
+  "EVL-11": {
+   "target": "EVL-14",
+   "track": "eval-benchmark-cost-reduction"
+  },
+  "EVL-12": {
+   "target": "EVL-14",
+   "track": "eval-tower-architecture-audit-2026-07-20"
+  },
+  "EVL-13": {
+   "target": "EVL-14",
+   "track": "eval-tower-loop-robustness-audit-2026-07-20"
+  },
+  "EVL-19": {
+   "target": "EVL-14",
+   "track": "fable5-window2-findings-01-optimizer-integrity"
+  },
   "EVL-32": {
    "target": "EVL-02",
    "track": "minimax-h3-video-generation-evaluation"
+  },
+  "EVL-35": {
+   "target": "EVL-14",
+   "track": "re4-protocol-redesign"
+  },
+  "EVL-42": {
+   "target": "EVL-14",
+   "track": "scoring-infra-standardization"
   },
   "EVL-45": {
    "target": "EVL-02",
@@ -87,6 +155,10 @@
   "INF-19": {
    "target": "EVL-02",
    "track": "gpu-cot-scaffold-sidecar"
+  },
+  "INF-24": {
+   "target": "EVL-14",
+   "track": "inference-batch-loop"
   },
   "INF-30": {
    "target": "EVL-02",
@@ -117,6 +189,10 @@
    "track": null,
    "retired": "D4 2026-11-02",
    "checklist": "docs/guides/agent-workflows/stack-change-checklist.md"
+  },
+  "RTG-27": {
+   "target": "EVL-14",
+   "track": "prompt-construction-determinism"
   },
   "RTG-39": {
    "target": "handoffs/completed/swarm-dataset-distillation.md",

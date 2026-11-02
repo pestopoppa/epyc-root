@@ -2126,7 +2126,7 @@ post-approval round, so the rest of the plan was authored without their findings
   must flip a checkbox, not narrate.
 
 [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) §Note on attribution;
-[`scoring-infra-standardization.md`](../handoffs/active/scoring-infra-standardization.md) §2a-iv
+[`scoring-infra-standardization.md`](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization) §2a-iv
 
 ### Source References
 
@@ -2136,7 +2136,7 @@ post-approval round, so the rest of the plan was authored without their findings
 - [`research/deep-dives/ernie-image-turbo-dit-text-to-image.md`](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md) — the other 2 repoints; a pre-deployment assessment whose premises production later falsified
 - [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — weight-map-over-config verification rule
 - [`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) — near-identical-title dedup hazard; cite by arXiv ID
-- [`scoring-infra-standardization.md`](../handoffs/active/scoring-infra-standardization.md) — prose-to-checkbox conversion during the same pass
+- [`scoring-infra-standardization.md`](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization) — prose-to-checkbox conversion during the same pass
 ## Compiled Update — 2026-08-09: a citation graph nobody had measured was 23.5% broken, and the ranking derived from it was wrong
 
 > **Review flag (project-wiki writer-evidence policy):** model-compiled; the index defect and its repair were measured directly against `research/intake_index.yaml` before and after migration on 2026-08-09.
@@ -3529,7 +3529,7 @@ benchmark recreation available for claims that later require it.
 ### Source References
 
 - [Research-intake Stage 3 action distillation](../.claude/skills/research-intake/references/stage3-action-distillation.md) — normative workflow.
-- [Eval Tower verification](../handoffs/active/eval-tower-verification.md) — canonical minimum execution contract and consumer map.
+- [Eval Tower verification](../handoffs/active/eval-tower-program.md) — canonical minimum execution contract and consumer map.
 - [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — shared receipt and trigger-specific profiles.
 - [Typed decision plane](../handoffs/active/typed-decision-plane.md) — worked compression from paper-specific tasks to one shared screen.
 - [Research-intake Stage 3 progress](../progress/2026-09/2026-09-25.md) — applied reconciliation and validation record.

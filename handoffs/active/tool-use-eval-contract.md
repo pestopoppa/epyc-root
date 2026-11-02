@@ -483,7 +483,7 @@ Run during the deploy window, AFTER `reload orchestrator` (with `AUTOPILOT_TOOL_
 **Created**: 2026-06-03 (from review: "have the autopilot trials been using tools at all?")
 **Priority**: MEDIUM
 **Categories**: evaluation, tool-use, autopilot
-**Related**: [eval-tower-verification.md](eval-tower-verification.md) (T0 sentinel harness this extends)
+**Related**: [eval-tower-verification.md](eval-tower-program.md) (T0 sentinel harness this extends)
 
 ## Current State (read this first)
 

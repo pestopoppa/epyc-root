@@ -3,7 +3,7 @@
 **Status**: stub
 **Created**: 2026-09-07 (research intake, operator-approved plan; successor of ../completed/meta-harness-optimization.md whose active pointer was retired 2026-08-23)
 **Categories**: meta_harness, autopilot, safety
-**Related**: [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) (RTG-02) · [eval-tower-verification.md](eval-tower-verification.md) (EVL-14) · [agent-collab-rnd-harness.md](agent-collab-rnd-harness.md)
+**Related**: [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) (RTG-02) · [eval-tower-verification.md](eval-tower-program.md) (EVL-14) · [agent-collab-rnd-harness.md](agent-collab-rnd-harness.md)
 
 ## Objective
 

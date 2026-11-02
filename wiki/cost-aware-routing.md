@@ -289,7 +289,7 @@ DAR-4 (planned) replaces per-action Q-value tables with a bilinear scorer: `Q(pr
 
 Package I in the bulk inference campaign consolidates the decision-aware routing validation tasks: I1 (DAR-3 SPO+ exploration with sustained traffic for counterfactual data), I2 (DAR-4 bilinear scorer A/B test against per-action Q-tables), and I3 (EV-5 ThinkPRM-1.5B for T2 process verification). I1 is highest priority as it generates the counterfactual data needed for all downstream decision-aware training.
 
-> Source: [bulk-inference-campaign.md](/workspace/handoffs/active/bulk-inference-campaign.md) Package I
+> Source: [bulk-inference-campaign.md](/workspace/handoffs/active/eval-tower-program.md#track-bulk-inference-campaign) Package I
 
 ## 2026-07-05 Update — CoT Scaffold Falsified in Both Regimes; Verifier/Selector Is the Forward Path
 
@@ -516,7 +516,7 @@ such, not a new measurement.
 - [intake-134](https://arxiv.org/abs/2505.16552) CoLaR -- Latent reasoning embeddings; 2-5x chain reduction; speculative decoding incompatibility
 - [intake-276](https://arxiv.org/abs/2604.00025) Brevity constraints -- Explicit word limits outperform vague conciseness instructions
 - [Decision-Aware Routing](/workspace/handoffs/active/decision-aware-routing.md) -- DAR-1 regret analysis (96% uniform Q-values), DAR-2 contrastive Q-score, DAR-3 SPO+ formulation, DAR-4 bilinear model-feature scorer
-- [Bulk Inference Campaign](/workspace/handoffs/active/bulk-inference-campaign.md) -- Package B validated findings: difficulty signal has no predictive spread at 0.15/0.35, risk signal counterintuitively anti-correlated with escalation (n=16 high too small), tool A/B compression slightly net-positive (+4pp), WS-3 routing bug fixed; Package I consolidates DAR-3/4 + EV-5 validation
+- [Bulk Inference Campaign](/workspace/handoffs/active/eval-tower-program.md#track-bulk-inference-campaign) -- Package B validated findings: difficulty signal has no predictive spread at 0.15/0.35, risk signal counterintuitively anti-correlated with escalation (n=16 high too small), tool A/B compression slightly net-positive (+4pp), WS-3 routing bug fixed; Package I consolidates DAR-3/4 + EV-5 validation
 - [Model Stack Update Pipeline Audit](../handoffs/active/model-stack-update-pipeline-audit.md) -- stack-prior consumer contract for q_scorer/seeding cost priors, degraded fallback policy, and data-only model-swap guard.
 - [AVB Offline Reward Stack](../research/deep-dives/2026-06-20-avb-offline-reward-stack.md) -- tiny CPU reference-grounded MSE answer-quality regressor as an OFFLINE quality-oracle label source; binary q_reward ladder + disabled ClaudeAsJudge gap (code-verified); NEXT-A2/A3 verifier debiasing anchor; paraphrase-blindness risk; self-reported metrics are observations only. [intake-706], [intake-716], [intake-717], [intake-719]
 - [OptiLLM & Test-Time-Compute Techniques](../research/deep-dives/optillm-test-time-techniques.md) -- method-selection axis home (P21.B, GATED/not-built); OpenRouter Fusion typed-judge schema + model-discretionary invocation + recursion-depth bounding as `n`-free portable ideas; OptiLLM as self-hostable MoA analogue; `n`-degraded panel caveat. [intake-601], [intake-712], [intake-714]
@@ -574,10 +574,10 @@ Sources: [PB-QCOST-1 results](../docs/design/pb-qcost-1-results-20261023.md)
 
 **Confidence: verified** for the source fix and its regression coverage; no new measurement, threshold or reload.
 
-- **Cost-aware scoring no longer reads quality from non-live records.** `_baseline_quality_by_role()` (orchestrator `0815be05`) filters to `deployment_status == live_stack` before either structured quality or model-filename fallback. The compiled artifact had a benchmark-only record with quality_for_role 0.852 / overall 0.8387; the higher-is-better direction, 0.75 reference and quality-gap formula are unchanged. GitNexus rated upstream impact HIGH (9 nodes, 3 direct callers); 102 q_scorer/q_reward tests pass. ([source](../handoffs/active/scoring-infra-standardization.md))
+- **Cost-aware scoring no longer reads quality from non-live records.** `_baseline_quality_by_role()` (orchestrator `0815be05`) filters to `deployment_status == live_stack` before either structured quality or model-filename fallback. The compiled artifact had a benchmark-only record with quality_for_role 0.852 / overall 0.8387; the higher-is-better direction, 0.75 reference and quality-gap formula are unchanged. GitNexus rated upstream impact HIGH (9 nodes, 3 direct callers); 102 q_scorer/q_reward tests pass. ([source](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization))
 - **The N-way contention metric now names its event.** `contention_nway_non_allow_count` counts N-way checks returning non-ALLOW whether or not the pairwise result changed, and is no longer divided by the unrelated admitted count; the old key remains a deprecated alias. Admission decisions are unchanged. ([source](../handoffs/active/autopilot-continuous-optimization.md))
 
-Sources: [scoring-infra-standardization](../handoffs/active/scoring-infra-standardization.md) · [autopilot-continuous-optimization](../handoffs/active/autopilot-continuous-optimization.md) · [2026-10-30 progress](../progress/2026-10/2026-10-30.md)
+Sources: [scoring-infra-standardization](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization) · [autopilot-continuous-optimization](../handoffs/active/autopilot-continuous-optimization.md) · [2026-10-30 progress](../progress/2026-10/2026-10-30.md)
 
 ### Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
 

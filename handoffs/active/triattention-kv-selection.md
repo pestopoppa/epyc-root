@@ -11,7 +11,7 @@
 ## 2026-07-26 Staleness Review
 
 S8 remains explicitly scheduled in the
-[bulk-inference campaign](bulk-inference-campaign.md), and S9/S3 remain
+[bulk-inference campaign](eval-tower-program.md#track-bulk-inference-campaign), and S9/S3 remain
 dependent on S8 evidence. No profile sweep or auto-trigger decision was
 completed by this review, so all open task states remain unchanged.
 

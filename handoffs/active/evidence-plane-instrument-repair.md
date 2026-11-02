@@ -70,7 +70,7 @@ Current blockers before any next decision point:
 **Created**: 2026-06-12
 **Priority**: NOW/HIGH — live damage: the t775 baseline ratchet is failing ~half of honest trials today
 **Spec**: [fable5-findings-01-impl-plan.md](../completed/fable5-findings-01-impl-plan.md) Phase 0 + Phase 2 (exact sites/changes/acceptance per item) and [fable5-findings-01-measurement-and-integrity.md](../completed/fable5-findings-01-measurement-and-integrity.md) §3 (defect evidence) — read before claiming any waypoint
-**Related**: [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) · [eval-tower-verification.md](eval-tower-verification.md) (EV-4 calibration waits on this) · [../../MEASUREMENT.md](../../MEASUREMENT.md) §P-QUAL-T1/P-QUAL-PROMO (the instrument card this work realizes) · [../../repos/epyc-orchestrator/orchestration/instrument_eras.yaml](../../repos/epyc-orchestrator/orchestration/instrument_eras.yaml) — append era E4 when the repaired instrument lands · downstream: [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md)
+**Related**: [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) · [eval-tower-verification.md](eval-tower-program.md) (EV-4 calibration waits on this) · [../../MEASUREMENT.md](../../MEASUREMENT.md) §P-QUAL-T1/P-QUAL-PROMO (the instrument card this work realizes) · [../../repos/epyc-orchestrator/orchestration/instrument_eras.yaml](../../repos/epyc-orchestrator/orchestration/instrument_eras.yaml) — append era E4 when the repaired instrument lands · downstream: [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md)
 
 ## Why
 

@@ -56,8 +56,8 @@ The original BEP-2 read-loop blocker is remediated by the default-off `force_mod
 - [delegation-context-preassembly.md](delegation-context-preassembly.md)
 - [batched-edit-parallel-apply.md](batched-edit-parallel-apply.md)
 - [multi-file-coding-completion-capability.md](multi-file-coding-completion-capability.md)
-- [bulk-inference-campaign.md](bulk-inference-campaign.md)
+- [bulk-inference-campaign.md](eval-tower-program.md#track-bulk-inference-campaign)
 
 ## Reporting Instructions
 
-For DCP-6, update this handoff, [delegation-context-preassembly.md](delegation-context-preassembly.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), and the progress log with the replay/inference commands, metrics, and decision. For J8, explicitly state whether the run is provenance-only and whether it changes any production recommendation.
+For DCP-6, update this handoff, [delegation-context-preassembly.md](delegation-context-preassembly.md), [bulk-inference-campaign.md](eval-tower-program.md#track-bulk-inference-campaign), and the progress log with the replay/inference commands, metrics, and decision. For J8, explicitly state whether the run is provenance-only and whether it changes any production recommendation.

@@ -31,7 +31,6 @@
   "INF-43": 0.45,
   "INF-54": 0.45,
   "INF-62": 0.45,
-  "INF-24": 0.4,
   "INF-72": 0.4,
   "INF-79": 0.4,
   "INF-80": 0.4,
@@ -50,7 +49,6 @@
   "RTG-02": 0.35,
   "RTG-11": 0.35,
   "RTG-15": 0.35,
-  "RTG-27": 0.35,
   "RTG-56": 0.35,
   "RTG-59": 0.35,
   "INF-02": 0.3,
@@ -62,12 +60,9 @@
   "INF-58": 0.3,
   "EVL-03": 0.3,
   "EVL-05": 0.3,
-  "EVL-12": 0.3,
   "EVL-20": 0.3,
   "EVL-27": 0.3,
   "EVL-29": 0.3,
-  "EVL-35": 0.3,
-  "EVL-42": 0.3,
   "EVL-52": 0.3,
   "REV-03": 0.3,
   "REV-06": 0.3,
@@ -80,9 +75,7 @@
   "INF-13": 0.25,
   "INF-33": 0.25,
   "INF-56": 0.25,
-  "EVL-13": 0.25,
   "EVL-16": 0.25,
-  "EVL-19": 0.25,
   "EVL-25": 0.25,
   "EVL-34": 0.25,
   "EVL-36": 0.25,
@@ -99,7 +92,6 @@
   "EVL-46": 0.25,
   "INF-09": 0.2,
   "EVL-04": 0.2,
-  "EVL-07": 0.2,
   "EVL-14": 0.2,
   "EVL-24": 0.2,
   "EVL-30": 0.2,
@@ -136,7 +128,16 @@
   "RTG-45": 0.1,
   "EVL-41": 0.1,
   "RTG-17": 0.05,
-  "INF-79#multimodal-pipeline": 0.4
+  "INF-79#multimodal-pipeline": 0.4,
+  "EVL-14#bulk-inference-campaign": 0.2,
+  "EVL-14#eval-benchmark-cost-reduction": 0.2,
+  "EVL-14#eval-tower-architecture-audit-2026-07-20": 0.3,
+  "EVL-14#eval-tower-loop-robustness-audit-2026-07-20": 0.25,
+  "EVL-14#fable5-window2-findings-01-optimizer-integrity": 0.25,
+  "EVL-14#inference-batch-loop": 0.4,
+  "EVL-14#prompt-construction-determinism": 0.35,
+  "EVL-14#re4-protocol-redesign": 0.3,
+  "EVL-14#scoring-infra-standardization": 0.3
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
@@ -148,7 +149,6 @@
   "RTG-40": "PARKED/FROZEN by operator (UFH-13 parked until 2nd MI210 + swapped-stack autopilot)",
   "RTG-17": "PARKED/FROZEN by operator (UFH-13 parked until 2nd MI210 + swapped-stack autopilot)",
   "INF-63": "external: upstream PR / artifact / disk reclaim",
-  "EVL-11": "external: upstream PR / artifact / disk reclaim",
   "RTG-33": "external: upstream PR / artifact / disk reclaim",
   "INF-37": "operator decision or approval pending",
   "EVL-01": "operator decision or approval pending",
@@ -167,7 +167,8 @@
   "EVL-49": "operator decision or approval pending",
   "REV-09": "operator decision or approval pending",
   "RTG-32": "operator decision or approval pending",
-  "INF-45": "operator stack bring-up event (stack is DOWN)"
+  "INF-45": "operator stack bring-up event (stack is DOWN)",
+  "EVL-14#eval-benchmark-cost-reduction": "external: upstream PR / artifact / disk reclaim"
  },
  "park": {
   "INF-06": "MMQ",
@@ -2516,6 +2517,12 @@
    {
     "track": "multimodal-pipeline",
     "next_action": "Run S-18 paired 60-item CPU cohort; project/canary via VB-SERVING-DF2"
+   }
+  ],
+  "RTG-58>EVL-14": [
+   {
+    "track": "prompt-construction-determinism",
+    "next_action": "D3 — Run the P-BENCH canonical sampling-quality cert (`bench_canonical.sh`) in a clean window to certify items #1–3"
    }
   ]
  }
