@@ -39,3 +39,11 @@ KPF-40 completed: checked the v11 FA audit, C5 hybrid split and upstream #29510 
 ## 10:15Z — Land KPF-40 pre-check and resolve lane merge
 
 Preserved the completed KPF-40 pre-check across the origin/main update and resolved the generated index conflict. KPF-04 waits for KPF-18; KPF-17.4 CPU evidence already exists and its outstanding work is GPU adjudication. The LB2.1 real-row check awaits a migrated V2 session.
+
+## 10:18Z — Record delegate-wave trunk-first disposition
+
+Closed KPF-21 using its explicit record-as-not-wired disposition: orchestrator origin/main 488b31c96c6c148768508b3dcaefcb6c4c297664 has the scout path but delegate waves still call llm_call without the trunk-prefill/checkpoint_at hook. No live behavior claimed. KPF-17a and KPF-31 await keeper dry runs; KPF-17.4d(a) was already filed and (b) needs image-specific controls.
+
+## 10:21Z — Complete KPF-21 trunk-first disposition
+
+KPF-21 source evidence and its completed checkbox were retained after the initial index freshness check failed; refresh the generated index before landing. KPF-18-S1 follow-up depends on group-3 localization, and KPF-26.1h awaits actual KEEP_ON-window traffic. Corrected the belief source table to match the 52 WORKING-ALLOWED manual classifications.
