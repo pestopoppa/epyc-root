@@ -139,3 +139,11 @@ VKQ3 diagnostic guard accepts the four exact CPU smoke shapes selected by publis
 ## 10:21Z — Added a last-moment grant check hook before VKQ3 atomic result publication.
 
 VKQ3 atomic result publisher now accepts a pre-publication check after fsync and before linking the result; eight offline completion tests pass, including revocation leaving the result invisible. The launcher must actually wire the hook and retain signal handling. Engine source review also found dry-run grants live in FILLER_GRANTS_DIR and dynamic sibling imports outside the launcher snapshot will be missing; launcher integration must address both. No row was published or inference run.
+
+## 10:23Z — Integrated VKQ3 rowflow worker grant and publication checks with offline tests.
+
+VKQ3 rowflow worker draft selects the engine grant directory for full and native dry-run modes, uses contained worker supervision, keeps signal handling through publication and invokes the final grant check before exposing the result. Nine offline tests pass, including four-CPU native dry-run, grant revocation and path binding cases. The preflight/bundle and actual engine/chroot remain unverified; metadata checks do not prove immutable model bytes or source provenance. No row was published or inference run.
+
+## 10:24Z — Added monotonic start and end evidence to VKQ3 diagnostic supervisor and receipt.
+
+VKQ3 diagnostic supervisor now records monotonic supervision start and child-reap end; the receipt carries both and elapsed total. Pre-cancelled and legacy or injected attempts retain null endpoints; no phase timings are inferred. Twenty-five offline supervisor, receipt and worker tests pass. Launcher and real engine integration remain unverified; no inference or tokenizer execution ran.
