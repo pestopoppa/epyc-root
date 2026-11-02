@@ -23,3 +23,7 @@ KPF-17a CPU row kvfork17a-cpu-20261102 is published and needs keeper dry run. GP
 ## 09:57Z — Repair KPF-17a GPU qualification and prepare remaining controls
 
 KPF-17a GPU qualification failed: five result units were produced but sampled VRAM peaked at 13,131,776 bytes; the failure also reported orphan PIDs 1279599 and 1279600. Launcher diagnosis and repair are delegated, as are P3 index preparation and KPF-17.4d(b) control preparation; their completion files are registered. No GPU result is accepted. CPU row kvfork17a-cpu-20261102 still needs qualification.
+
+## 09:59Z — Prepare KPF-17a GPU residency qualification repair
+
+The KPF-17a GPU qualification failure is being repaired by placing an existing supported large case first and exposing its real live allocation to the keeper residency sample; the original failure remains unqualified. The two reported orphan PIDs no longer exist. P3 experimental worktree is at c72ec82f5417bb2937310326120f149b665e8400; its index is absent and a keeper build-role preparation is in progress. KPF-17.4d(b) control preparation continues. Completion reports are registered for the dispatcher.
