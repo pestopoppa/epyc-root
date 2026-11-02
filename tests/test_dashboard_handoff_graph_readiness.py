@@ -150,8 +150,8 @@ class ExecutedReadinessTests(unittest.TestCase):
         self.assertIsNone(by["ready"]["opacity"])
         self.assertEqual(by["no_open"]["opacity"], "0.3")
         legend = " ".join(out["legend"])
-        self.assertIn("blocked", legend)
-        self.assertIn("(1)", legend)          # counts are the producer's tally
+        self.assertIn("dep-blocked", legend)
+        self.assertIn("1 dep-blocked", legend)          # counts are the producer's tally
 
     def test_mutation_v1_graph_renders_no_hatch_and_says_why(self):
         g = self._graph()

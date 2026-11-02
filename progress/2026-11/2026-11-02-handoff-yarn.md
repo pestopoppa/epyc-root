@@ -83,3 +83,11 @@ Integrated an isolated captured-PID CPU thread affinity observer; 36 offline tes
 ## 10:32Z — Land CPU affinity observer after upstream merge
 
 The affinity observer passed the 36-test offline suite; concurrent upstream changes were merged before push retry. No inference or scientific result.
+
+## 10:34Z — Add A2 input packet verification
+
+Integrated A2 source/input packet digest and containment verification; two offline tests pass for tampering and traversal. Existing historical packet contains 34 verified inputs. This is not a runnable launcher or scientific control; GPU lifecycle, residency, source/binary proof, booking and qualification remain. DCA semantic review and CPU affinity enforcement preparation are underway. No inference or row publication.
+
+## 10:35Z — Land A2 packet verifier after upstream merge
+
+The two offline A2 packet verification tests passed. Concurrent upstream changes were merged before retrying the serialized push; no inference or scientific result.

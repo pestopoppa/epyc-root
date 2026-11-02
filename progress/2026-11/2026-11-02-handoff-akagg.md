@@ -191,3 +191,11 @@ The Nemo prospective marker capture cannot restore absent historical token bound
 ## 10:31Z — Reviewed C3 successor custody blocker and CH-26b replacement evidence
 
 C3 inherited-lock successor remains unpublishable: its profiler and join hash model weights during grant. A model-free custody prototype avoids runtime weight reads but is not yet integrated or contract-validated. CH-26b successor evidence remains inconclusive pending placement and contention proof. Independent bounded fixes are being prepared.
+
+## 10:33Z — Prepare complete C3 pre-grant model identity receipt
+
+C3 draft custody receipt covers Bolt only; the L target and draft and smoke model are also referenced. Started a separate pre-grant seal for all four paths, with completion and failure events registered. It is not yet bound to a successor and no row was published.
+
+## 10:36Z — Implement C3 pre-grant receipt coverage check
+
+Prepared /mnt/raid0/llm/tmp/akagg/c3-custody-check/check_coverage.py to reject missing or malformed model-custody entries without opening weights. Six model-free tests pass, including alias deduplication, a missing role, wrong schema or assurance, bad digest and bad signature. Integration and a completed seal remain prerequisites to a publishable successor.
