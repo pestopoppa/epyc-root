@@ -35,3 +35,7 @@ The prospective v2 trace coverage producer and registered ingest adapter passed 
 ## 10:33Z — REPL trace coverage producer and strict ingest
 
 The prospective v2 trace coverage producer and registered ingest adapter passed 14 deterministic capture, malformed-input and tamper tests. The synthetic producer-to-registry canary ingested one observation but planning context returned no_applicable_claims: producer-declared applicability is missing. No APP hook, passing planning canary or genuine session is claimed. An online-shadow draft passed three controls but is not integrated or a measurement. [no-belief: deterministic controls only]
+
+## 10:36Z — Document search request opt-in draft
+
+Prepared a draft request opt-in patch for REPL-EMB-4.2, requiring explicit REPL mode and a parsed document and refusing context bundle combination. This draft is not integrated or deployed; its compatibility and bundle-aware read path remain under review. [no-belief: draft only]
