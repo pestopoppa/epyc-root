@@ -52,6 +52,8 @@ validation requires the applicable compute authorization.
   during-decode residency and sequencer/native qualification remain open.
 - Root `c213320c1` plus `eb496d66b`: P3 in-decode slot sampling and sequencer/fake-lifecycle
   end-to-end control, 21 tests passed. Native qualification and existing wrapper guard remain open.
+- Root `d0e29043a` / `412972b3a`: tracked wrapper now routes P3 to the isolated successor;
+  independent repository-root runner/guard suite passed 29 tests. Native qualification remains open.
 - KVU-16a source/receipt reconciliation found an idle-slot argv mismatch; the sampled load does
   not justify a registry update or a runtime peak. The exact checklist is in the evidence directory.
 - Research `b1d7e1f77`: registry-rendered KVU-16a load-only producer, six fake-runtime controls;

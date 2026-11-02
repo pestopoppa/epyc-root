@@ -514,14 +514,21 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
       - [x] **KVU-16h P3 slot separate-server successor** — `a1a26d6da` preserves the slot P3
         L0/L3/L0 protocol with separately launched and warmed drafted/no-draft arms and no
         request-level speculation override. Twelve fake-server/lifecycle controls pass. Pre-decode
-        occupancy matching is not a during-decode residency proof; sequencer integration and
-        native qualification remain open and the old wrapper stays guarded.
+        occupancy matching was not a during-decode residency proof at that checkpoint; later
+        sampling/integration are recorded below, while native qualification remains open.
         ✅ 2026-11-02 [no-belief: source and fake-server controls]
       - [x] **KVU-16h P3 decode sampling and sequencer fixture** — `eb496d66b` records per-slot
         occupancy during identified active decoding with temporal, not response-ID, association;
         `2eea11287` and `c213320c1` exercise two-arm supervision and the sequencer through fake
-        lifecycles. Twenty-one offline tests pass. The existing wrapper guard stays in place until
-        native qualification and production integration; no historical timing comparison follows.
+        lifecycles. Twenty-one offline tests pass. At that checkpoint the wrapper guard stayed in place;
+        later source integration is recorded below. No historical timing comparison follows.
+        ✅ 2026-11-02 [no-belief: source and fake-server controls]
+      - [x] **KVU-16h P3 tracked wrapper integration** — `d0e29043a` routes the tracked GPU-slot
+        wrapper and sequencer to the separate-lifecycle P3 successor rather than starting the old
+        drafted server. It removes the draft-device alias from the no-draft argv and imports the
+        tracked report path. Independent repository-root checks pass 29 runner/guard tests, including
+        the cwd-portability fix `412972b3a`. Real device/model qualification and remaining named
+        runner coverage remain open; no inference result is implied.
         ✅ 2026-11-02 [no-belief: source and fake-server controls]
       - *(2026-11-02, P3 lifecycle row.)* `handoff-kvu16h-p3-lifecycle-20261102` ended rc=1 before the full job: its region-lock CLI checksum no longer matched. No full result or occupancy comparison exists; verdict **inconclusive**. The prior native control ran two separate server lifetimes but used eight host CPUs, so it does not meet the required four-CPU smoke contract. [Preserved control and launcher logs](../../progress/evidence/kvu16h-p3-result-20261102/qualification.json). The full runner and global coverage remain open. [no-belief: incomplete run and qualification only]
       - *(2026-11-01, DF2 E2E inventory.)* The [dated source snapshot](../../artifacts/compute/kvu16h-df2-inventory-20261101/README.md) has a separate no-draft benchmark process and no request-level speculative override in the inspected client path. Server-stop completion, other copies and runtime behavior remain unproven; this is not a global guard. [no-belief: offline source inspection only]
