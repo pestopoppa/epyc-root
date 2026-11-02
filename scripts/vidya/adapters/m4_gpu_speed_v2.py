@@ -62,8 +62,10 @@ def parse_grant(raw: bytes, identity: dict, *, qualification: bool) -> tuple[flo
                 raise ValueError("unexpected fixture fields")
             if fields["schema"] != "epyc.rowflow.dryrun-grant.v1" or fields["kind"] != "rowflow-dryrun" or fields["id"] != identity["id"]:
                 raise ValueError("fixture identity mismatch")
-        elif set(fields) != required:
+        elif set(fields) not in (required, required | {"holds"}):
             raise ValueError("unexpected live grant fields")
+        if "holds" in fields and "gpu-quiet" not in fields["holds"].split(","):
+            raise ValueError("grant does not hold GPU quiet")
         if len(parts) != len(fields) or fields["regions"] != identity["regions"]:
             raise ValueError("duplicate or wrong grant region")
         start = datetime.strptime(fields["start"], "%Y-%m-%dT%H:%MZ").replace(tzinfo=timezone.utc).timestamp()
