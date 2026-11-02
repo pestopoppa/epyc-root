@@ -1,0 +1,7 @@
+rc=0 time=2026-11-02T01:11:13Z reason=complete
+job_id=h-df2-11-controlled-q2-r2-20261102
+owner=h-df2
+step=job-run
+estimated_wall_s=1200
+started=2026-11-02T01:11:04Z
+regions=0-23

@@ -93,3 +93,9 @@ measured recurrence rather than on anecdote. Measurement only; hook and policy e
 - Hosted annotators are not used on our data (typed-decision ruling); labels come from the operator.
 - harness-improvement-loop.md excludes the shell surface from its mutation loop, which is why this measurement
   work has its own owner.
+
+## Memory index readability from intake-2617/2619 (ws58 intake 2026-11-02; operator approved "Approve, go to Stage 4", D9 acknowledged for scripts/coordination)
+
+Plan: [knowledge-transparency.md](../../research/deep-dives/ws58-jev-20261102/knowledge-transparency.md). **Order (operator, 2026-11-02):** (1) SA-1 + JEV-1; (2) SA-2, SA-3, JEV-3; (3) JEV-5 phase A, KT-1, KT-3; (4) the rest (JEV-2, JEV-4, JEV-6, SA-4, KT-2, KT-4, KT-5). JEV-5 phases B/C only after the operator has used phase A.
+
+- [ ] **KT-5** [S] Split the Claude memory `MEMORY.md` index into category index files under the load limit, and include memory and progress files in the KT-3 map's search by reusing the kb-search index (DHM-5 measures the always-on cost). Note 2026-11-02: proposal at `/mnt/raid0/llm/tmp/ws58-kt5-memory-split-proposal.md`; ws58 applies the memory split. The kb-search indexer config is not in any of our repos, so the search half needs its owner located. removes: the truncated-on-load single index and grep-only access to memory files.

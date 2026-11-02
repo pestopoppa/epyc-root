@@ -1,0 +1,137 @@
+import copy
+import hashlib
+import json
+import tempfile
+import unittest
+from pathlib import Path
+from arm_order import validate_arm_order
+
+RETAINED = Path('/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab')
+
+EXPECTED_BINS = {'P': '/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/llama-server', 'C': '/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/llama-server'}
+
+
+class OrderControls(unittest.TestCase):
+    def setUp(self):
+        manifest_path = Path(__file__).with_name('RETAINED-READSET.json')
+        manifest_bytes = manifest_path.read_bytes()
+        self.assertEqual(hashlib.sha256(manifest_bytes).hexdigest(), '2b81bdcf77608d0a951e61c50a4840d4e68d898b80f38068d9e276429860225e')
+        for name, expected in json.loads(manifest_bytes).items():
+            self.assertEqual(hashlib.sha256((RETAINED / name).read_bytes()).hexdigest(), expected)
+        fixtures = Path(__file__).with_name('retained-control-fixtures')
+        fixtures.mkdir(exist_ok=True)
+        self.run = Path(tempfile.mkdtemp(prefix='control-', dir=fixtures))
+        self.data = json.loads((RETAINED / 'result.json').read_text())
+        self.log = (RETAINED / 'ab_arms.log').read_text()
+        (self.run / 'ab_arms.log').write_text(self.log)
+        for arm in self.data['arms']:
+            name = f"arm-{arm['tag']}.meta.json"
+            (self.run / name).write_bytes((RETAINED / name).read_bytes())
+
+    def reject(self):
+        with self.assertRaises(ValueError):
+            validate_arm_order(self.data, self.run, EXPECTED_BINS)
+
+    def test_actual_retained_lexical_serialization_passes_provenance(self):
+        tags = [arm['tag'] for arm in self.data['arms']]
+        expected = [f'{i}{"P" if i % 2 else "C"}' for i in range(1, 31)]
+        self.assertNotEqual(tags, expected)  # Original wrapper's actual failing predicate.
+        proof = validate_arm_order(self.data, self.run, EXPECTED_BINS)
+        self.assertEqual(proof['tags_in_execution_order'], expected)
+
+    def test_result_serialization_permutation_is_not_execution(self):
+        self.data['arms'].reverse()
+        self.assertEqual(len(validate_arm_order(self.data, self.run, EXPECTED_BINS)['tags_in_execution_order']), 30)
+
+    def test_swapped_execution_refused_even_with_complete_ordinals(self):
+        lines = self.log.splitlines()
+        i = next(i for i, line in enumerate(lines) if 'arm 1P: launching' in line)
+        j = next(i for i, line in enumerate(lines) if 'arm 2C: launching' in line)
+        lines[i], lines[j] = lines[j], lines[i]
+        (self.run / 'ab_arms.log').write_text('\n'.join(lines))
+        self.reject()
+
+    def test_duplicate_tag(self):
+        self.data['arms'][1] = copy.deepcopy(self.data['arms'][0])
+        self.reject()
+
+    def test_missing_tag(self):
+        self.data['arms'].pop()
+        self.reject()
+
+    def test_wrong_ordinal_label(self):
+        self.data['arms'][0]['tag'] = '10P'
+        self.reject()
+
+    def test_aggregate_metadata_tamper(self):
+        self.data['arms'][0]['meta']['pid'] += 1
+        self.reject()
+
+    def test_disk_metadata_tamper(self):
+        path = self.run / 'arm-1P.meta.json'
+        data = json.loads(path.read_text()); data['pid'] += 1
+        path.write_text(json.dumps(data)); self.reject()
+
+    def test_consistent_metadata_but_wrong_binary(self):
+        arm = self.data['arms'][0]
+        arm['meta']['bin_dir'] = '/wrong/bin'
+        arm['meta']['cmdline'][0] = '/wrong/bin/llama-server'
+        (self.run / f"arm-{arm['tag']}.meta.json").write_text(json.dumps(arm['meta']))
+        self.reject()
+
+    def test_death_pid_mismatch(self):
+        (self.run / 'ab_arms.log').write_text(self.log.replace('server PID 1410645 verified dead', 'server PID 1 verified dead'))
+        self.reject()
+
+    def test_duplicate_launch(self):
+        launch = next(line for line in self.log.splitlines() if 'arm 1P: launching' in line)
+        (self.run / 'ab_arms.log').write_text(self.log + launch + '\n')
+        self.reject()
+
+    def test_missing_completion(self):
+        (self.run / 'ab_arms.log').write_text('\n'.join(line for line in self.log.splitlines() if 'arm 30C done (' not in line))
+        self.reject()
+
+    def test_lexically_sorted_log_refused(self):
+        events = [line for line in self.log.splitlines() if ': launching ' in line or ' verified dead' in line or ' done (' in line]
+        (self.run / 'ab_arms.log').write_text('\n'.join(sorted(events, key=lambda line: line.split(' arm ')[1].split()[0])))
+        self.reject()
+
+    def test_epoch_reversal_with_matching_metadata(self):
+        arm = next(arm for arm in self.data['arms'] if arm['tag'] == '2C')
+        arm['meta']['started_epoch'] = 0
+        (self.run / 'arm-2C.meta.json').write_text(json.dumps(arm['meta']))
+        self.reject()
+
+    def test_wrong_probe_binding(self):
+        self.data['arms'][0]['probe_file'] = 'arm-1P.probe.json'
+        self.reject()
+
+    def change_build(self, letters):
+        log = self.log
+        for arm in self.data['arms']:
+            tag = arm['tag']
+            old_binary = arm['meta']['cmdline'][0]
+            binary = EXPECTED_BINS[letters[tag[-1]]]
+            arm['meta']['bin_dir'] = str(Path(binary).parent)
+            arm['meta']['cmdline'][0] = binary
+            (self.run / f'arm-{tag}.meta.json').write_text(json.dumps(arm['meta']))
+            log = log.replace(f'arm {tag}: launching {old_binary}', f'arm {tag}: launching {binary}')
+        (self.run / 'ab_arms.log').write_text(log)
+
+    def test_log_and_metadata_consistent_swapped_builds_refused(self):
+        self.change_build({'P': 'C', 'C': 'P'})
+        self.reject()
+
+    def test_log_and_metadata_consistent_same_build_refused(self):
+        self.change_build({'P': 'P', 'C': 'P'})
+        self.reject()
+
+    def test_no_new_grading(self):
+        self.data['verdict']['PASS'] = False
+        validate_arm_order(self.data, self.run, EXPECTED_BINS)  # Validator proves order only.
+        self.assertFalse(self.data['verdict']['PASS'])
+
+
+if __name__ == '__main__':
+    unittest.main(verbosity=2)

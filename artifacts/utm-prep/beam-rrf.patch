@@ -1,0 +1,208 @@
+diff --git a/scripts/benchmark/beam_memory_retrievers.py b/scripts/benchmark/beam_memory_retrievers.py
+--- a/scripts/benchmark/beam_memory_retrievers.py
++++ b/scripts/benchmark/beam_memory_retrievers.py
+@@ -38,6 +38,7 @@
+ import os
+ import re
+ import shutil
++import sqlite3
+ import tempfile
+ import weakref
+ from collections import Counter
+@@ -199,8 +200,99 @@
+                                                 top_k=top_k)]
+ 
+ 
++class TraceHybridPairChunkRetriever(TracePairChunkRetriever):
++    """Opt-in RRF over the same private pair chunks. Provider is caller-owned.
++
++    Provider exposes ``identity`` (model, index, similarity, normalization) and
++    ``build(conversation_id, rows)`` / ``search(question, conversation_id,
++    limit)``. Build rows contain the actual event id, line and text. Search
++    returns ranked {id, source_line} mappings, never invented identifiers.
++    """
++
++    name = "trace_hybrid_rrf60"
++
++    def __init__(self, chunks_by_conversation, *, vector_provider, candidate_depth,
++                 **kwargs):
++        if not isinstance(candidate_depth, int) or isinstance(candidate_depth, bool) or candidate_depth < 1:
++            raise ValueError("candidate_depth must be a positive integer")
++        identity = getattr(vector_provider, "identity", None)
++        if not isinstance(identity, Mapping) or any(not identity.get(k) for k in
++                ("model", "index", "similarity", "normalization", "tie_break")):
++            raise ValueError("provider must declare model, index, similarity, normalization and tie_break")
++        if not callable(getattr(vector_provider, "build", None)) or not callable(getattr(vector_provider, "search", None)):
++            raise ValueError("provider must implement build and search")
++        self.provider = vector_provider
++        self.candidate_depth = candidate_depth
++        self.provenance = {"retriever": self.name, "rrf_k": 60,
++                           "candidate_depth": candidate_depth, "vector": dict(identity)}
++        super().__init__(chunks_by_conversation, **kwargs)
++        # Navigation currently mishandles URI metacharacters; reject before any lookup.
++        if any(ch in str(self.db_path) for ch in "?#"):
++            raise TraceRetrieverUnavailable("trace navigation cannot safely use ? or # in DB path")
++        # Read all IDs from the actual private trace store, scoped to the current run.
++        conn = sqlite3.connect(self.db_path.resolve().as_uri() + "?mode=ro", uri=True)
++        try:
++            rows = conn.execute("SELECT id, source_line, session_id FROM event WHERE source=? ORDER BY session_id, source_line, id",
++                                (TRACE_SOURCE,)).fetchall()
++        finally:
++            conn.close()
++        self._indexed = {str(cid): {} for cid in self._chunks}
++        for event_id, line, cid in rows:
++            cid = str(cid)
++            if cid not in self._indexed or not isinstance(line, int) or not 0 <= line < len(self._chunks[cid]):
++                raise TraceRetrieverUnavailable("invalid private trace event coordinates")
++            self._indexed[cid][event_id] = line
++        for cid, chunks in self._chunks.items():
++            if len(self._indexed[str(cid)]) != len(chunks):
++                raise TraceRetrieverUnavailable("private trace index does not match pair chunks")
++            vector_provider.build(str(cid), [{"id": event_id, "source_line": line,
++                                             "text": chunks[line]}
++                                            for event_id, line in self._indexed[str(cid)].items()])
++
++    def search(self, question: str, *, conversation_id: str, top_k: int) -> list[int]:
++        from tulving_trace_retriever import fts_query
++
++        cid = str(conversation_id)
++        if cid not in self._indexed:
++            raise KeyError(conversation_id)
++        if top_k <= 0:
++            return []
++        if top_k > self.candidate_depth:
++            raise ValueError("top_k must not exceed candidate_depth")
++        candidates = self.provider.search(question, cid, self.candidate_depth)
++        if not isinstance(candidates, (list, tuple)) or len(candidates) > self.candidate_depth:
++            raise TraceRetrieverUnavailable("invalid vector candidate list")
++        ids = []
++        for candidate in candidates:
++            if not isinstance(candidate, Mapping):
++                raise TraceRetrieverUnavailable("invalid vector candidate")
++            event_id, line = candidate.get("id"), candidate.get("source_line")
++            if isinstance(event_id, bool) or not isinstance(event_id, int) or event_id in ids:
++                raise TraceRetrieverUnavailable("invalid or duplicate vector candidate id")
++            if isinstance(line, bool) or not isinstance(line, int) or self._indexed[cid].get(event_id) != line:
++                raise TraceRetrieverUnavailable("vector candidate not in conversation or line mismatch")
++            ids.append(event_id)
++        rows = self._navigation.get_records(ids, db_path=self.db_path)
++        if len(rows) != len(ids):
++            raise TraceRetrieverUnavailable("vector candidate missing from private trace store")
++        for row, event_id in zip(rows, ids):
++            if row["id"] != event_id or row["source"] != TRACE_SOURCE or str(row["session_id"]) != cid or row["source_line"] != self._indexed[cid][event_id]:
++                raise TraceRetrieverUnavailable("vector candidate private-store mismatch")
++        query = fts_query(question)
++        if query:
++            # Search each list at candidate_depth; trim only after fusion.
++            fused = self._navigation.search_records(
++                query, db_path=self.db_path, limit=self.candidate_depth,
++                order="relevance", source=TRACE_SOURCE, session_id=cid,
++                vector_rows=rows, rrf_k=60)
++        else:
++            # An empty lexical query still retains the vector arm.
++            fused = self._navigation.rrf_fuse([rows], k=60, limit=self.candidate_depth)
++        return sorted(int(row["source_line"]) for row in fused[:top_k])
++
++
+ __all__ = [
+     "CHUNKING", "BM25_RETRIEVER", "TRACE_RETRIEVER", "TRACE_SOURCE",
+     "render_message", "pair_chunks", "BM25PairChunkRetriever",
+-    "TracePairChunkRetriever", "TraceRetrieverUnavailable",
++    "TracePairChunkRetriever", "TraceHybridPairChunkRetriever", "TraceRetrieverUnavailable",
+ ]
+diff --git a/scripts/benchmark/test_beam_hybrid_patch.py b/scripts/benchmark/test_beam_hybrid_patch.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/benchmark/test_beam_hybrid_patch.py
+@@ -0,0 +1,91 @@
++import os
++from pathlib import Path
++
++import pytest
++from beam_memory_retrievers import TraceHybridPairChunkRetriever, TraceRetrieverUnavailable
++
++
++class Provider:
++    identity = {'model':'fake-v1', 'index':'fixture-v1', 'similarity':'cosine', 'normalization':'unit', 'tie_break':'source_line_ascending'}
++    def __init__(self):
++        self.built = {}
++        self.answer = []
++    def build(self, cid, rows):
++        self.built[cid] = rows
++    def search(self, question, cid, limit):
++        if isinstance(self.answer, Exception):
++            raise self.answer
++        return self.answer
++
++
++@pytest.fixture
++def app_root():
++    path = os.environ.get("EPYC_ORCHESTRATOR_ROOT")
++    if not path:
++        pytest.skip("set EPYC_ORCHESTRATOR_ROOT to a pinned orchestrator checkout")
++    root = Path(path).resolve()
++    if not (root / "src/trace/navigation.py").is_file():
++        pytest.fail("EPYC_ORCHESTRATOR_ROOT has no trace navigation")
++    return root
++
++
++@pytest.fixture
++def fixture(tmp_path, app_root):
++    p = Provider()
++    r = TraceHybridPairChunkRetriever({'a':['alpha apple','beta banana','gamma grape'], 'b':['other']},
++        vector_provider=p, candidate_depth=3, db_dir=tmp_path,
++        orchestrator_root=app_root)
++    return r, p
++
++
++def test_overlap_vector_only_and_empty_query(fixture):
++    r,p=fixture
++    rows=p.built['a']
++    p.answer=[{'id':rows[2]['id'],'source_line':2}, {'id':rows[0]['id'],'source_line':0}]
++    assert r.search('alpha',conversation_id='a',top_k=1) == [0]
++    assert r.search('alpha',conversation_id='a',top_k=2) == [0,2]
++    assert r.search('?',conversation_id='a',top_k=1) == [2]
++    assert r.search('alpha',conversation_id='a',top_k=0) == []
++
++
++def test_reject_bad_or_foreign_candidates(fixture):
++    r,p=fixture
++    row=p.built['a'][0]; foreign=p.built['b'][0]
++    cases=[[{'id':foreign['id'],'source_line':0}],
++           [{'id':row['id'],'source_line':1}],
++           [{'id':row['id'],'source_line':0}]*2,
++           [{'id':999999,'source_line':0}], [{'id':True,'source_line':0}]]
++    for candidates in cases:
++        p.answer=candidates
++        with pytest.raises(TraceRetrieverUnavailable):
++            r.search('alpha', conversation_id='a', top_k=2)
++    p.answer=RuntimeError('provider failure')
++    with pytest.raises(RuntimeError,match='provider failure'):
++        r.search('alpha', conversation_id='a', top_k=2)
++
++
++def test_identity_and_empty_data(tmp_path, app_root):
++    p=Provider(); p.identity={}
++    with pytest.raises(ValueError,match='provider must declare'):
++        TraceHybridPairChunkRetriever({},vector_provider=p,candidate_depth=1,db_dir=tmp_path)
++    p=Provider()
++    r=TraceHybridPairChunkRetriever({'a':[]},vector_provider=p,candidate_depth=1,db_dir=tmp_path,
++        orchestrator_root=app_root)
++    assert r.search('?',conversation_id='a',top_k=1)==[]
++
++
++def test_budget_uri_and_stable_ties(tmp_path, app_root):
++    unusual = tmp_path / "db space"
++    p = Provider()
++    r = TraceHybridPairChunkRetriever({'a':['same one', 'same two', 'same three', 'same four']},
++        vector_provider=p, candidate_depth=3, db_dir=unusual, orchestrator_root=app_root)
++    for unsafe in ("db ?", "db #"):
++        with pytest.raises(TraceRetrieverUnavailable, match="cannot safely"):
++            TraceHybridPairChunkRetriever({'a':['text']}, vector_provider=Provider(),
++                candidate_depth=3, db_dir=tmp_path / unsafe, orchestrator_root=app_root)
++    assert [row['source_line'] for row in p.built['a']] == [0, 1, 2, 3]
++    # Equal-score vector ranks use the provider's declared ascending-line tiebreak.
++    p.answer = [{'id':row['id'], 'source_line':row['source_line']} for row in p.built['a'][:3]]
++    assert r.search('?', conversation_id='a', top_k=2) == [0, 1]
++    with pytest.raises(ValueError, match='top_k must not exceed'):
++        r.search('same', conversation_id='a', top_k=4)

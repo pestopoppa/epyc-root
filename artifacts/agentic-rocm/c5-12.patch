@@ -1,0 +1,91 @@
+diff --git a/scripts/kernel_rnd/autokernel/controller/c512_diversity.py b/scripts/kernel_rnd/autokernel/controller/c512_diversity.py
+new file mode 100644
+index 000000000..881d0c7fa
+--- /dev/null
++++ b/scripts/kernel_rnd/autokernel/controller/c512_diversity.py
+@@ -0,0 +1,44 @@
++"""Deterministic three-of-five selection over *predictions*, not results.
++
++Selection is a planning aid only. It does not evaluate a kernel or alter the
++correctness, integrity, profiling, or promotion gates.
++"""
++from math import isfinite
++from numbers import Real
++from collections.abc import Mapping, Sequence
++
++
++def select_three(proposals: Sequence[Mapping]) -> list[dict]:
++    """Pick innovation, optimistic bound, then conservative bound, without replacement.
++
++    Each proposal supplies a unique string ``id``, and finite numeric
++    ``innovation``, ``predicted_min`` and ``predicted_max`` scores. Higher is
++    better for all three; scores and bounds are estimates on one common scale.
++    Lexicographic id resolves ties independently of input ordering.
++    """
++    if len(proposals) != 5:
++        raise ValueError("exactly five proposals are required")
++    remaining = []
++    seen = set()
++    for item in proposals:
++        if not isinstance(item, Mapping):
++            raise ValueError("proposal must be a mapping")
++        key = item.get('id')
++        if not isinstance(key, str) or not key.strip() or key in seen:
++            raise ValueError("proposal ids must be unique nonempty strings")
++        seen.add(key)
++        for field in ('innovation', 'predicted_min', 'predicted_max'):
++            v = item.get(field)
++            if isinstance(v, bool) or not isinstance(v, Real) or not isfinite(v):
++                raise ValueError(f"{field} must be finite numeric")
++        if item['predicted_min'] > item['predicted_max']:
++            raise ValueError("predicted bounds are reversed")
++        remaining.append(item)
++    result = []
++    for reason, field in (('innovation', 'innovation'),
++                          ('highest_max', 'predicted_max'),
++                          ('highest_min', 'predicted_min')):
++        chosen = min(remaining, key=lambda item: (-item[field], item['id']))
++        result.append({'id': chosen['id'], 'reason': reason})
++        remaining.remove(chosen)
++    return result
+diff --git a/scripts/kernel_rnd/autokernel/controller/test_c512_diversity.py b/scripts/kernel_rnd/autokernel/controller/test_c512_diversity.py
+new file mode 100644
+index 000000000..22cfbd146
+--- /dev/null
++++ b/scripts/kernel_rnd/autokernel/controller/test_c512_diversity.py
+@@ -0,0 +1,35 @@
++import unittest
++from c512_diversity import select_three
++
++
++class TestSelection(unittest.TestCase):
++    def setUp(self):
++        self.proposals = [dict(id=k, innovation=i, predicted_min=lo, predicted_max=hi)
++                          for k, i, lo, hi in [('a', 9, 8, 10), ('b', 8, 7, 11),
++                                               ('c', 7, 9, 9), ('d', 6, 6, 8),
++                                               ('e', 5, 5, 7)]]
++
++    def test_without_replacement_and_order(self):
++        self.assertEqual(select_three(self.proposals), [
++            {'id': 'a', 'reason': 'innovation'},
++            {'id': 'b', 'reason': 'highest_max'},
++            {'id': 'c', 'reason': 'highest_min'}])
++
++    def test_ties_are_order_independent(self):
++        rows = [dict(id=k, innovation=1, predicted_min=1, predicted_max=1)
++                for k in 'edcba']
++        self.assertEqual(select_three(rows), select_three(rows[::-1]))
++        self.assertEqual([r['id'] for r in select_three(rows)], list('abc'))
++
++    def test_invalid_inputs_fail_closed(self):
++        for invalid in (self.proposals[:4], self.proposals + self.proposals[:1],
++                        self.proposals[:4] + [self.proposals[0]],
++                        [dict(self.proposals[0], innovation=float('nan'))] + self.proposals[1:],
++                        [dict(self.proposals[0], predicted_min=11)] + self.proposals[1:],
++                        [dict(self.proposals[0], innovation=True)] + self.proposals[1:]):
++            with self.subTest(invalid=invalid), self.assertRaises(ValueError):
++                select_three(invalid)
++
++
++if __name__ == '__main__':
++    unittest.main()

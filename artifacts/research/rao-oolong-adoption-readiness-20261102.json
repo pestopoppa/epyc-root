@@ -1,0 +1,60 @@
+{
+  "schema": "epyc.oolong_adoption_readiness.v1",
+  "scope": "offline source inspection; no inference or qualification",
+  "status": "ADAPTER_EXISTS_DEPTH_BRIDGE_NOT_PREPARED",
+  "evidence": [
+    {
+      "path": "handoffs/active/rao-redel-substrate-spike.md",
+      "finding": "OOL-1 requirements and adapter implementation recorded; open adoption line still has superseded source/licence wording"
+    },
+    {
+      "path": "/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/oolong_adapter.py",
+      "finding": "labels-blind context access, pinned upstream scorer, context-clustered summaries and thinking on/off direct-client run_arm exist; run_arm is not a native depth-0/depth-1 ReDel bridge"
+    },
+    {
+      "path": "/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/dataset_adapters.py",
+      "finding": "no oolong registration found by literal search"
+    },
+    {
+      "path": "handoffs/completed/long-context-eval-datasets.md",
+      "finding": "existing five suites cover single-step tasks; Oolong counting/aggregation adds an instrument relevant to the depth question"
+    },
+    {
+      "path": "artifacts/compute/ni-yarnagg-final-20261031/README.md",
+      "finding": "existing 141-pair YaRN study includes original 120 Oolong items; NOT-FAIL is not recursion, equivalence or adoption evidence; duplicate GPU study explicitly superseded"
+    },
+    {
+      "path": "scripts/vidya/adapters/oolong.py",
+      "finding": "write-side projection is restricted to thinking_on/thinking_off arms; do not relabel depth arms or widen registry without a native capture design"
+    }
+  ],
+  "bounded_next_task": {
+    "id": "OOL-DEPTH-BRIDGE-PREP",
+    "kind": "offline lane preparation",
+    "objective": "Build an Oolong-to-native depth pilot fixture bridge using the existing adapter, with zero model requests",
+    "deliverables": [
+      "Import pinned adapter context_text/build_messages/scorer; never copy labelled column into prompts",
+      "Freeze context and question IDs, source revision, source-row and prompt hashes in both depth arms; store depth separately from thinking arm",
+      "Add synthetic native response/event fixtures proving depth-0 has no child and depth-1 is capped at 1; preserve unknown cells rather than scoring them wrong",
+      "Declare matched context-clustered paired analysis and simulate detectable 10-25 percentage-point effects across candidate context counts; do not count 25 correlated questions as 25 independent contexts",
+      "Keep thinking setting, model, prompt bytes, aggregate output-credit budget and scorer identical across depth arms; record native delegation separately from correctness",
+      "Specify producer-side belief emission for the new depth dimension through existing measurement ladder and validate planning-context canary before calling it wired"
+    ],
+    "acceptance": [
+      "offline fixtures reject labelled-only rows, changed source/prompt identity, unmatched pair and malformed or missing terminal event",
+      "same pinned upstream scorer and original context grouping retained",
+      "no READY, launcher, booking, qualification, grant or inference publication"
+    ],
+    "inference_row_publishable": false,
+    "reason": "No source-bound native depth bridge, frozen sample/power plan, or new-depth capture contract was located in the inspected OOL-1 implementation; existing YaRN arms answer another question"
+  },
+  "validation": {
+    "command": "python3 -m pytest -q tests/vidya/test_oolong_adapter.py",
+    "result": "15 passed; P1-A 4 tuples, 0 violations"
+  },
+  "caveats": [
+    "Research shared checkout inspected read-only; no claim it is an approved execution source",
+    "gitnexus status reported Repository not indexed; no code or indexed symbols edited",
+    "This artifact is preparation, not a measurement or adoption result"
+  ]
+}

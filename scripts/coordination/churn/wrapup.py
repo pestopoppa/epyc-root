@@ -10,6 +10,10 @@ flip ticks (`✅ <date> [belief: ...]`, SESSION_LIFECYCLE "Two axioms") -> index
 pathspec commit with trailers -> serialized_push.py --repo <lane> (retry while lock-held) -> cherry empty ->
 report.json (+wrapped_sha, wrapped_at) -> `WRAPPED <sha>` as the LAST stdout line. --dry-run prints the plan and
 writes nothing. Stdlib only.
+
+Invoked as a script, the work runs in a detached child (own session, log under
+<flags>/handoff-sessions/<slug>/wrapup-*.log) that the caller follows; killing the caller
+does not kill the wrap-up or orphan the push lock (main_detached).
 """
 from __future__ import annotations
 
@@ -175,6 +179,10 @@ def push_with_retry(lane: str, slug: str) -> None:
 
 # --------------------------------------------------------------------- 6. commit
 def commit(lane: str, pathspec: list[str], message: str, trailers: list[str]) -> str:
+    junk = [l[3:] for l in _git(lane, "status", "--porcelain", "--untracked-files=all", "--", "artifacts/").stdout.splitlines() if l.startswith("??")]
+    if junk:
+        raise WrapupError(f"untracked scratch under artifacts/ in the lane ({len(junk)} file(s), e.g. {junk[0]}): scratch belongs in "
+                          f"/mnt/raid0/llm/tmp/<slug>/ - move or delete it, then wrap up (disk incident 2026-11-02)")
     _ok(_git(lane, "add", "--", *pathspec), "git add")
     if not _git(lane, "diff", "--cached", "--quiet").returncode:
         raise WrapupError("nothing staged under the pathspec")
@@ -258,5 +266,52 @@ def main(argv=None) -> int:
         return 1
 
 
+def main_detached(argv=None) -> int:
+    """Run the wrap-up in its OWN session, then follow it.
+
+    Why (D9, 2026-11-01): handoff-codex-gen ran this inside a Codex exec tool call
+    with yield_time_ms=10000. The wrap-up outlived the yield, the model ended its turn,
+    and `codex exec` exiting tore down the still-running command — twice (23:16:49Z,
+    23:44:12Z), each time ~1s after serialized_push had taken the push lock, so the
+    lock was orphaned and the commit never landed. Detached with start_new_session,
+    the real work survives whatever kills its caller's process group; the caller
+    merely stops watching. The dispatcher (`wrapped()` in handoff_sessions.py) lands
+    a clean lane's unlanded commit if nobody is left to read `WRAPPED <sha>`.
+    """
+    argv = sys.argv[1:] if argv is None else list(argv)
+    if os.environ.get("WRAPUP_INNER") == "1" or "--dry-run" in argv or "-h" in argv or "--help" in argv:
+        return main(argv)
+    ap = argparse.ArgumentParser(add_help=False)
+    ap.add_argument("--json")
+    ap.add_argument("--flags", default=FLAGS_DEFAULT)
+    a, _ = ap.parse_known_args(argv)
+    try:
+        slug = json.load(open(a.json, encoding="utf-8")).get("slug") or "unknown"
+        d = os.path.join(a.flags, "handoff-sessions", str(slug))
+        os.makedirs(d, exist_ok=True)
+    except (OSError, ValueError, TypeError, AttributeError):
+        return main(argv)  # let the normal path report the bad input
+    logp = os.path.join(d, f"wrapup-{_now().strftime('%Y%m%dT%H%M%SZ')}-{os.getpid()}.log")
+    with open(logp, "w", encoding="utf-8") as fh:
+        child = subprocess.Popen([sys.executable, os.path.abspath(__file__), *argv], stdin=subprocess.DEVNULL,
+                                 stdout=fh, stderr=subprocess.STDOUT, start_new_session=True,
+                                 env=dict(os.environ, WRAPUP_INNER="1"))
+    log("detached", f"pid={child.pid} log={logp} (keeps running if this call is killed)")
+    with open(logp, encoding="utf-8") as rd:
+        while True:
+            line = rd.readline()
+            if line:
+                sys.stdout.write(line)
+                sys.stdout.flush()
+                continue
+            if child.poll() is not None:
+                rest = rd.read()
+                if rest:
+                    sys.stdout.write(rest)
+                    sys.stdout.flush()
+                return child.returncode
+            time.sleep(0.2)
+
+
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main_detached())
