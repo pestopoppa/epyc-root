@@ -15,3 +15,7 @@ Prepared /mnt/raid0/llm/tmp/eval-tower-ev14a-prep/run_ev14a_fresh.py from the st
 ## 03:37Z — Prepare EV-14a baseline pin and inference row launchers
 
 Corrected the prepared EV-14a worker so the recorded baseline pin timestamp is taken when the pin is made, rather than after the calibration run. Python syntax compilation passes. Prepared-worker path: /mnt/raid0/llm/tmp/eval-tower-ev14a-prep/run_ev14a_fresh.py. Dispatched bounded preparation of an EV-14a launcher and readiness checks, an EV-4b launcher and no-draft checks, and a patch for the probe slot parsing bug; their output files are registered as dispatcher events. The earlier preparation reports were not present at this boundary. No inference launched or row published.
+
+## 03:38Z — Harden EV-14a prepared worker against incomplete repeats
+
+Hardened /mnt/raid0/llm/tmp/eval-tower-ev14a-prep/run_ev14a_fresh.py to refuse any run without exactly three repeat records or with empty/inconsistent suite sets across repeats. Python syntax compilation passed. This does not replace checking the expected suite inventory, serving readiness, or the rowflow launcher. Previously registered launcher and probe preparation outputs are not yet available. No inference launched or row published.
