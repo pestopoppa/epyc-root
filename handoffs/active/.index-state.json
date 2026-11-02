@@ -4,7 +4,7 @@
       "blocked": 59,
       "handoffs": 58,
       "oldest_advance": "2026-07-29",
-      "open": 1038
+      "open": 1035
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -16,7 +16,7 @@
       "blocked": 15,
       "handoffs": 40,
       "oldest_advance": "2026-07-29",
-      "open": 703
+      "open": 704
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -201,10 +201,10 @@
     },
     "autokernel-champion-aggregate.md": {
       "blocked": 1,
-      "closed": 86,
+      "closed": 87,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 37,
+      "open": 36,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -265,10 +265,10 @@
     },
     "autokernel-rebuild-program.md": {
       "blocked": 1,
-      "closed": 164,
+      "closed": 165,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 44,
+      "open": 43,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -585,10 +585,10 @@
     },
     "cpu-decode-roofline-program.md": {
       "blocked": 0,
-      "closed": 107,
+      "closed": 108,
       "guarded": 0,
-      "last_advanced": "2026-11-01",
-      "open": 60,
+      "last_advanced": "2026-11-02",
+      "open": 59,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2748,7 +2748,7 @@
       "closed": 336,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 381,
+      "open": 382,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2757,7 +2757,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 721
+      "total": 722
     },
     "within-role-placement-state-machine.md": {
       "blocked": 1,

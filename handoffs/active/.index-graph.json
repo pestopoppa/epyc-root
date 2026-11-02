@@ -3757,7 +3757,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T11:08:06Z",
+  "generated_at": "2026-11-02T11:19:04Z",
   "nodes": [
     {
       "age_days": 95,
@@ -4853,14 +4853,14 @@
       "blocked": 4,
       "blocked_by": [],
       "closed": 336,
-      "dispatchable": 381,
+      "dispatchable": 382,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-02",
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
-      "open": 385,
+      "open": 386,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -6426,15 +6426,15 @@
         "INF-62",
         "INF-64"
       ],
-      "closed": 86,
-      "dispatchable": 37,
+      "closed": 87,
+      "dispatchable": 36,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-champion-aggregate.md",
       "id": "INF-65",
       "last_advanced": "2026-11-02",
       "next_action": "Qualify C6 serving gates and resolve baseline GPU properties; assemble the CAS review package without updating champion",
-      "open": 38,
+      "open": 37,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -6469,15 +6469,15 @@
         "INF-64",
         "INF-65"
       ],
-      "closed": 164,
-      "dispatchable": 44,
+      "closed": 165,
+      "dispatchable": 43,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-rebuild-program.md",
       "id": "INF-66",
       "last_advanced": "2026-11-02",
       "next_action": "Resolve R18-A host CUID identity differences under the unchanged rule; continue R23-62",
-      "open": 45,
+      "open": 44,
       "priority": 0.9017,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LBH-2.1 \u2014 re-run the INF-70 llama-bench units whose protocol could not be resolved or was ",
@@ -6540,20 +6540,20 @@
       "track": "cpu fused decoder blocks"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [
         "INF-67"
       ],
-      "closed": 107,
-      "dispatchable": 60,
+      "closed": 108,
+      "dispatchable": 59,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "cpu-decode-roofline-program.md",
       "id": "INF-70",
-      "last_advanced": "2026-11-01",
+      "last_advanced": "2026-11-02",
       "next_action": "CLS-RECT-1, then G2-CONC on coherence_gate; XFER-3 paired task eval (uniform IQ4_XS); XFER-4b allowlist prefill A/B + task eval",
-      "open": 60,
+      "open": 59,
       "priority": 0.9191,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): G2-CONC \u2014 BLOCKING PROMOTION GATE. Must run on the PROMOTION CANDIDATE BINARY, not on an a",
