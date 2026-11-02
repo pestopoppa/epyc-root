@@ -6,3 +6,10 @@
 - GUI: spec-first loop JSON, hub Mermaid viewer, replay stepper, threshold-only round-trip edits.
 - Stage-3 task lines JEV-1..6 and SA-1..4 prepared in `research/deep-dives/ws58-jev-20261102/README.md`; NOT applied — awaiting operator plan approval.
 - [belief: cc]
+
+## Source 3 (same session): LLM wiki / Obsidian second brain → operator transparency
+
+- Ingested intake-2617..2621 (all dive-verified; intake-2621 via Stage-2b wave 1); re-encounter notes on intake-268 (Karpathy gist) and intake-270 (qmd).
+- Finding: our claim layer (quote-hashed anchors, vidya CONFLICTED verdicts, cite-check) is stronger than the pattern; our human readability is weaker (append-only compiled pages, no hub page for wiki/ledger, lint lacks wiki orphans/unsourced/conflicted-citation passes, no walkable claim→commit chain, MEMORY.md truncated).
+- Build path KT-1..KT-5 prepared in `research/deep-dives/ws58-jev-20261102/knowledge-transparency.md`; one shared hub renderer can serve loop design (JEV-5) and knowledge inspection (KT-3). NOT applied — awaiting operator approval.
+- [belief: cc]

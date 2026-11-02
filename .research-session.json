@@ -11,7 +11,12 @@
     "https://github.com/Archive228/jev-harness-engineering",
     "https://x.com/ArchiveExplorer/status/2103590048230695408",
     "https://docs.typesafe.ai/",
-    "https://x.com/DeepSeekHarness/status/2116857257245987236"
+    "https://x.com/DeepSeekHarness/status/2116857257245987236",
+    "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f",
+    "https://x.com/imryven/status/2115046979659055476",
+    "https://www.noze.it/en/insights/llm-wiki/",
+    "https://github.com/AgriciDaniel/claude-obsidian",
+    "https://github.com/eugeniughelbur/obsidian-second-brain"
   ],
   "entries_processed": [
     "intake-2604",
@@ -26,16 +31,23 @@
     "intake-2613",
     "intake-2614",
     "intake-2615",
-    "intake-2616"
+    "intake-2616",
+    "intake-2617",
+    "intake-2618",
+    "intake-2619",
+    "intake-2620",
+    "intake-2621"
   ],
-  "next_intake_id": 2617,
+  "next_intake_id": 2622,
   "expansion_cap": 10,
   "expansion_count": 8,
   "expansion_refused": [],
   "dedup_reencounters": [
     "intake-1472",
     "intake-146",
-    "intake-2603"
+    "intake-2603",
+    "intake-268",
+    "intake-270"
   ],
   "operator_preapproval": "2026-11-02: accept all recommended dives and literature expansions, up to two Stage-2b waves; Stage-3 handoff changes prepared only.",
   "stage2b_wave_cap": 2,
@@ -46,6 +58,9 @@
     ],
     "superagent": [
       "wave1: intake-2616"
+    ],
+    "llm-wiki": [
+      "wave1: intake-2621"
     ]
   },
   "steering_ledger": [
@@ -72,9 +87,20 @@
       "disposition": "planned",
       "plan_ref": "SA-1..SA-4",
       "reason": "Super-agent mapping and slot-thrash finding in README Q1b"
+    },
+    {
+      "seq": 4,
+      "stage": 1,
+      "verbatim": "how do we make our wiki, belief kernel and episodic memories interpretable and transparent to a human operator?",
+      "disposition": "planned",
+      "plan_ref": "KT-1..KT-5",
+      "reason": "knowledge-transparency.md"
     }
   ],
-  "stage3_plan_draft": "research/deep-dives/ws58-jev-20261102/README.md",
+  "stage3_plan_draft": [
+    "research/deep-dives/ws58-jev-20261102/README.md",
+    "research/deep-dives/ws58-jev-20261102/knowledge-transparency.md"
+  ],
   "stage3_filing": null,
   "prior_sessions": [
     {
