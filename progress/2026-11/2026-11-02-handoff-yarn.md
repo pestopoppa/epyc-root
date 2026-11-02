@@ -99,3 +99,7 @@ Integrated exact grant CPU affinity before exec, CPU allocation propagation from
 ## 10:37Z — Land Jet-Long affinity enforcement after upstream merge
 
 The prototype affinity integration passed 38 offline tests. Merged concurrent upstream changes before serialized push retry; no inference or scientific result.
+
+## 10:39Z — Add DCA source packet verifier
+
+Integrated DCA source packet structural verifier with three passing offline tests. It checks prepared source identities, parent audit, shared-file round trips, and archive digest against the supplied metadata; it is not independently authenticated or proof of a build. A2 owned-client transport passes fake-server tests but stopping the client does not prove server cancellation. No inference or row publication.
