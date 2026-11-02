@@ -15,7 +15,7 @@ from claim_tuple import ClaimTuple, ProjectionError, register
 
 ADAPTER_ID = 'vidya.adapters.yarn_e1_mem_phase/v1'
 AUTHORITY = 'measurement'
-TRUSTED_SOURCE_SHA256 = 'e525ec11d35a294120191f9385bdeb9a5353336ea3513ddba571231b0d4c74b5'
+TRUSTED_SOURCE_SHA256 = '328450b09e5c0ed60f1ecfa2527fa1e86b40c0505aabbfbb9a0122bade763ab7'
 RUN_ID = 'codex-gpu-serving-yarn-e1-a0-low-20261102'
 MODEL_SHA256 = 'a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348'
 IMAGE_COMMIT = '9a3f1392a74d22f50e093791d14ea207a6170368'
@@ -86,6 +86,12 @@ def native_rows(path):
                 raise ValueError('phase window or request mismatch')
             calls = [json.loads(line) for line in calls_path.read_text().splitlines() if line.strip()]
             calls = [x for x in calls if x.get('stage') == phase]
+            needles = [x for x in calls if x.get('kind') == 'needle']
+            local = [x for x in calls if x.get('kind') == 'local']
+            if (len(calls) != 6 or len(needles) != 5 or len(local) != 1
+                    or {x.get('q_index') for x in needles} != set(range(5))
+                    or any(x.get('http_ok') is not True for x in calls)):
+                raise ValueError('incomplete, duplicated or failed stage requests')
             stamp = lambda x: datetime.fromisoformat(x['at'].replace('Z', '+00:00')).timestamp()
             if len(calls) != a['requests'] or min(stamp(x) - float((x.get('timings') or {}).get('wall_s') or 0) for x in calls) != start or max(stamp(x) for x in calls) != end:
                 raise ValueError('phase window not reproduced from request records')

@@ -8,6 +8,9 @@ resource limits. The adapter copies four hash-pinned orchestrator containment
 sources into the container and routes harness commands and file operations
 through `exec_sandbox` there. It removes each owned container at the end of the
 trial, with an additional cleanup on wrapper exit.
+In a row, the container also inherits the allocated `FILLER_CPUS` cpuset and
+is set to auto-remove at exit; its lifetime is bounded by `FILLER_DEADLINE`
+(and at most one hour). These controls do not replace real-image qualification.
 
 Requirements: a local Docker image with a writable `/testbed` for UID/GID
 `65534:65534`, `bash`, `timeout`, and `python3`; no image-declared volumes; and

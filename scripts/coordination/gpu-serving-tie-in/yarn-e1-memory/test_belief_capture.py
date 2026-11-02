@@ -21,7 +21,7 @@ class CaptureTest(unittest.TestCase):
         (self.d/'runtime-proof.json').write_text(json.dumps({'pid':123}))
         kfd = self.d/'kfd.jsonl'; kfd.write_text(json.dumps({'t': 2.5, 'pid_vram_gib': 2.0, 'kfd_pids': [123]}) + '\n')
         shim = self.d/'hipmalloc.jsonl'; shim.write_text('trace')
-        calls = self.d/'calls.jsonl'; calls.write_text('calls')
+        calls = self.d/'calls.jsonl'; calls.write_text(''.join(json.dumps({'stage': stage, 'kind': kind, 'q_index': q, 'http_ok': True}) + '\n' for stage in ('128k','240k') for kind, q in ([('needle', i) for i in range(5)] + [('local', None)])))
         self.a={'kfd':str(kfd),'shim':str(shim),'native_calls':str(calls),'stages':{s:{'own_kfd_peak_gib':2.0,'start':2,'end':3,'requests':6} for s in ('128k','240k')}}
         (self.d/'phase-attribution.json').write_text(json.dumps(self.a))
         self.old = os.environ.get('FILLER_ID'); os.environ['FILLER_ID']='test-run'
@@ -47,6 +47,14 @@ class CaptureTest(unittest.TestCase):
         (self.d/'kfd.jsonl').write_text(json.dumps({'t': 8, 'pid_vram_gib': 2, 'kfd_pids': [123]}) + '\n')
         with self.assertRaises(ValueError): capture.emit(self.d, self.a)
         (self.d/'kfd.jsonl').write_text(json.dumps({'t': 2.5, 'pid_vram_gib': 2, 'kfd_pids': [124]}) + '\n')
+        with self.assertRaises(ValueError): capture.emit(self.d, self.a)
+    def test_failed_or_duplicate_calls_refuse(self):
+        p = self.d/'calls.jsonl'; rows = [json.loads(x) for x in p.read_text().splitlines()]
+        rows[1]['q_index'] = 0
+        p.write_text(''.join(json.dumps(x)+'\n' for x in rows))
+        with self.assertRaises(ValueError): capture.emit(self.d, self.a)
+        rows[1]['q_index'] = 1; rows[2]['http_ok'] = False
+        p.write_text(''.join(json.dumps(x)+'\n' for x in rows))
         with self.assertRaises(ValueError): capture.emit(self.d, self.a)
     def test_wrong_pid_refuses(self):
         (self.d/'runtime-proof.json').write_text(json.dumps({'pid':124}))

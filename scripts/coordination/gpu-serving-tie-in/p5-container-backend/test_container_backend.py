@@ -11,11 +11,17 @@ class InspectionTests(unittest.TestCase):
                      'HostConfig': {'NetworkMode': 'none', 'Privileged': False,
                                     'CapDrop': ['ALL'], 'SecurityOpt': ['no-new-privileges'],
                                     'PidsLimit': 128, 'Memory': 8589934592,
-                                    'NanoCpus': 4000000000},
+                                    'NanoCpus': 4000000000, 'AutoRemove': True},
                      'Mounts': [], 'State': {'Running': True}}
 
     def test_safe_inspection(self):
         verify_inspection(self.good, self.image)
+
+    def test_row_cpu_binding_is_required_when_requested(self):
+        self.good['HostConfig']['CpusetCpus'] = '0-3'
+        verify_inspection(self.good, self.image, '0-3')
+        with self.assertRaises(Refused):
+            verify_inspection(self.good, self.image, '4-7')
 
     def test_refuses_escape_or_missing_limits(self):
         changes = [('Image', 'wrong'), ('Mounts', [{'Source': '/'}]),
@@ -27,7 +33,8 @@ class InspectionTests(unittest.TestCase):
         for key, val in [('NetworkMode', 'host'), ('Privileged', True), ('CapDrop', []),
                          ('CapAdd', ['SYS_ADMIN']), ('SecurityOpt', ['no-new-privileges', 'seccomp=unconfined']),
                          ('Binds', ['/etc:/host']), ('Devices', ['/dev/kfd']), ('PidMode', 'host'),
-                         ('IpcMode', 'host'), ('Memory', 0), ('NanoCpus', 0), ('PidsLimit', 0)]:
+                         ('IpcMode', 'host'), ('Memory', 0), ('NanoCpus', 0), ('PidsLimit', 0),
+                         ('AutoRemove', False)]:
             bad = copy.deepcopy(self.good); bad['HostConfig'][key] = val
             with self.subTest(key=key), self.assertRaises(Refused):
                 verify_inspection(bad, self.image)

@@ -35,7 +35,7 @@ class YarnPhaseTests(unittest.TestCase):
         (self.d / 'kfd.jsonl').write_text(json.dumps({'t': 2.5, 'pid_vram_gib': 2.0, 'kfd_pids': [123]}) + '\n')
         (self.d / 'hip.jsonl').write_text('trace')
         at = datetime.fromtimestamp(3, timezone.utc).isoformat()
-        calls = [{'stage': s, 'at': at, 'timings': {'wall_s': 1}} for s in ('128k', '240k') for _ in range(6)]
+        calls = [{'stage': s, 'at': at, 'timings': {'wall_s': 1}, 'kind': kind, 'q_index': q, 'http_ok': True} for s in ('128k', '240k') for kind, q in ([('needle', i) for i in range(5)] + [('local', None)])]
         (self.d / 'calls.jsonl').write_text(''.join(json.dumps(x) + '\n' for x in calls))
         self.a = {'kfd': str(self.d / 'kfd.jsonl'), 'shim': str(self.d / 'hip.jsonl'),
                   'native_calls': str(self.d / 'calls.jsonl'), 'stages': {

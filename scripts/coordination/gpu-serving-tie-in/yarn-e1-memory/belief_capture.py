@@ -28,6 +28,7 @@ def emit(d, attribution):
     if any(not p.is_file() or not p.resolve().is_relative_to(d.resolve()) for p in (kfd, shim, calls)):
         raise ValueError('missing or out-of-run native trace')
     samples = [json.loads(line) for line in kfd.read_text().splitlines() if line.strip()]
+    native_calls = [json.loads(line) for line in calls.read_text().splitlines() if line.strip()]
     # Native artifact locators are relative to this retained run directory.
     # Absolute scratch paths would be invalid after keeper reclamation.
     locator = lambda p: p.resolve().relative_to(d.resolve()).as_posix()
@@ -37,6 +38,14 @@ def emit(d, attribution):
         value = a.get('own_kfd_peak_gib')
         if type(value) not in (int, float) or not math.isfinite(value) or value <= 0 or a.get('requests', 0) < 6:
             raise ValueError('missing phase samples')
+        stage_calls = [x for x in native_calls if x.get('stage') == stage]
+        needles = [x for x in stage_calls if x.get('kind') == 'needle']
+        local = [x for x in stage_calls if x.get('kind') == 'local']
+        if (len(stage_calls) != 6 or len(needles) != 5 or len(local) != 1
+                or {x.get('q_index') for x in needles} != set(range(5))
+                or any(x.get('http_ok') is not True for x in stage_calls)
+                or a.get('requests') != len(stage_calls)):
+            raise ValueError('incomplete, duplicated or failed stage requests')
         if not (a['start'] <= a['end'] and a['start'] >= launch['at']):
             raise ValueError('phase outside process lifetime')
         inside = [x for x in samples if a['start'] <= x['t'] <= a['end'] and x.get('pid_vram_gib') is not None and proof['pid'] in x.get('kfd_pids', [])]

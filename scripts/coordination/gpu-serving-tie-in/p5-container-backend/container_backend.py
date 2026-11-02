@@ -12,11 +12,13 @@ import base64
 import hashlib
 import io
 import json
+import os
 import shlex
 import tarfile
 from pathlib import Path, PurePosixPath
 import re
 import subprocess
+import time
 
 _IMAGE_ID = re.compile(r"sha256:[0-9a-f]{64}\Z")
 _CONTAINER_ID = re.compile(r"[0-9a-f]{64}\Z")
@@ -36,7 +38,7 @@ def _call(argv: list[str], *, timeout: int = 30) -> str:
     return p.stdout.strip()
 
 
-def verify_inspection(obj: dict, image_id: str) -> None:
+def verify_inspection(obj: dict, image_id: str, cpus: str | None = None) -> None:
     """Fail closed on inspected runtime properties before executing any model code."""
     cfg, host = obj.get("Config") or {}, obj.get("HostConfig") or {}
     security = host.get("SecurityOpt") or []
@@ -48,8 +50,10 @@ def verify_inspection(obj: dict, image_id: str) -> None:
             or host.get("CapAdd") or any("unconfined" in x for x in security)
             or host.get("SecurityOpt") is None or host.get("Devices")
             or host.get("Binds") or obj.get("Mounts")
+            or host.get("AutoRemove") is not True
             or host.get("PidsLimit", 0) != 128 or host.get("Memory", 0) != 8589934592
             or host.get("NanoCpus", 0) != 4000000000
+            or (cpus is not None and host.get("CpusetCpus") != cpus)
             or not obj.get("State", {}).get("Running")):
         raise Refused("created container failed security inspection")
 
@@ -141,10 +145,24 @@ class IsolatedContainer:
         image_env = (image[0].get("Config") or {}).get("Env") or []
         if any(re.search(r"(?:TOKEN|SECRET|PASSWORD|CREDENTIAL|API_KEY)", entry.partition("=")[0], re.I) for entry in image_env):
             raise Refused("image declares a potentially sensitive environment variable")
-        ident = _call([self.docker, "create", "--network=none", "--user=65534:65534",
+        cpus = os.environ.get('FILLER_CPUS')
+        if cpus is not None and not re.fullmatch(r'[0-9]+(?:-[0-9]+)?(?:,[0-9]+(?:-[0-9]+)?)*', cpus):
+            raise Refused('invalid allocated CPU list')
+        cpu_args = ['--cpuset-cpus', cpus] if cpus else []
+        # The bounded qualification row needs a cleanup backstop even if its
+        # host-side process is killed before its context manager can run.
+        ttl = 3600
+        if cpus:
+            try:
+                ttl = min(ttl, int(float(os.environ['FILLER_DEADLINE']) - time.time()))
+            except (KeyError, ValueError, OverflowError) as exc:
+                raise Refused('row deadline required for owned-container cleanup') from exc
+            if ttl < 10:
+                raise Refused('insufficient row time for container cleanup')
+        ident = _call([self.docker, "create", "--rm", "--network=none", "--user=65534:65534",
                        "--cap-drop=ALL", "--security-opt=no-new-privileges", "--pids-limit=128",
-                       "--memory=8g", "--cpus=4", "--entrypoint=/bin/sh", self.image_id,
-                       "-c", "while :; do sleep 3600; done"])
+                       "--memory=8g", "--cpus=4", *cpu_args, "--entrypoint=/bin/sh", self.image_id,
+                       "-c", f"exec timeout {ttl}s sh -c 'while :; do sleep 60; done'"])
         if not _CONTAINER_ID.fullmatch(ident):
             raise Refused("Docker returned invalid container ID")
         self.container = ident
@@ -157,7 +175,7 @@ class IsolatedContainer:
             details = json.loads(_call([self.docker, "inspect", ident]))
             if len(details) != 1 or details[0].get("Id") != ident:
                 raise Refused("container identity mismatch")
-            verify_inspection(details[0], self.image_id)
+            verify_inspection(details[0], self.image_id, cpus)
             self.env = contained_env(self.harness, ident, self.docker)
             code, _ = self.env.run("test -d /testbed && test -w /testbed && test ! -w /opt && test ! -w /opt/p5_sandbox && test ! -w /opt/p5_sandbox/src && test ! -w /opt/p5_sandbox/src/repl_environment && test ! -w /opt/p5_sandbox/run.py && test ! -w /opt/p5_sandbox/file.py", 10)
             if code:
