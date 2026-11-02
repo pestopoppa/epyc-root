@@ -62,6 +62,8 @@ class _Fixture(unittest.TestCase):
         self.calls = []
         self._lane = patch.object(hs, "ensure_lane", lambda slug, repo=None: (self.repo, "fast-forwarded"))
         self._lane.start()
+        self._disk = patch.object(hs, "free_gib", lambda path="/": 999.0)  # the real disk may be below the floor
+        self._disk.start()
         self._cwd = patch.object(hs, "project_cwd", lambda e, repo=None: self.repo)  # the fixture repo is not a git clone
         self._cwd.start()
 
@@ -71,6 +73,7 @@ class _Fixture(unittest.TestCase):
 
     def tearDown(self):
         self._lane.stop()
+        self._disk.stop()
         self._cwd.stop()
         self.td.cleanup()
 

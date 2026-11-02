@@ -91,3 +91,23 @@ Reviewed untracked EffiBench run_python.py: pinned patch digest and synthetic co
 ## 00:51Z — Record EffiBench false-success defect and prepare fixes
 
 Independent review found upstream evaluate_solution.py can return success with zero matching tasks. The untracked EffiBench wrapper also lacks merge and 306-denominator checks, and its git diff hash excludes untracked checkout files; it remains unvalidated and uncommitted. Delegated bounded fixes and offline tests, plus GPQA manifest and launcher preparation; completion events are registered. No inference or row publication. Prior commit 07c3fe4b0f3e was not pushed because serialized_push failed after its lock retry; include it in this retry.
+
+## 00:52Z — Record GPQA per-item output hazard
+
+GPQA runner inspection found one-item manifests cannot safely share per_question.jsonl: v7_quality_gate_runner.py rejects same-suite IDs not in the current manifest and rewrites the output, so previous records can be moved to rejected JSONL. A stop-aware launcher must retain separate per-item outputs and validate consolidation. The native runner supports validated resume and flush but has no FILLER_STOPFILE/deadline handling. No row was published or inference run. Prior wrap-up succeeded at 2bc26c7d4f2a3c3a97bc23edbb4b2dcaa42c3784. Two small offline fixes are delegated with completion events registered.
+
+## 00:53Z — File pinned GPQA item-manifest preparation
+
+Filed gpqa_split_manifest.py, an offline preparer pinned to the full GPQA-CoT source digest. Against the actual manifest it emitted 198 single-item manifests that reconstructed the source in order; altered input and an existing output directory were rejected, and compilation passed. This is preparation only: current arms, stop/deadline handling, distinct output files, validated consolidation and residency proof remain needed before publication. No inference or row published. Prior wrap-up commit 0af727f3bae0 failed serialized push; this wrap-up retries it.
+
+## 00:54Z — Record GPQA preparation review and continue launcher work
+
+Independent review confirmed gpqa_split_manifest.py preserves source order and runner schema. A failed write can leave a partial newly created destination: discard it and retry in a new directory. The splitter is offline preparation, not a runnable row. Prior serialized push failed after lock retry; efc04ea5123f and its predecessors remain local and are included in this retry. Delegated bounded EffiBench wrapper and GPU launcher work with completion events registered. No inference or row publication.
+
+## 00:56Z — Diagnose serialized push failures
+
+The serialized push failure was diagnosed from the full tool output: origin/main advanced after the lane merge, so git rejected a non-fast-forward update; the helper reported nine unpushed commits and two commits behind. No force push was attempted. Wrap-up merges current origin before retry. Delegated independent offline EffiBench review and GPQA launcher design; completion events registered. No inference or row publication.
+
+## 00:57Z — File experimental EffiBench wrapper and GPQA launcher design
+
+Filed the reviewed GPQA launcher design and experimental EffiBench Python wrapper with offline tests. Five synthetic tests pass; wrapper guards reject empty or incomplete evaluator outputs and check generation, merge and evaluation shapes. These tests do not exercise the full upstream 306-item pipeline; caller-supplied content hashes do not authenticate acceptance-gate provenance, and timing/ranking remain unvalidated. GPQA remains a design, not a runnable row. Both handoff tasks remain open. No inference or new measurement. Prior non-fast-forward push failures left commits unpublished; wrap-up retries against current origin.

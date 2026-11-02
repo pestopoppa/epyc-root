@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "epyc.loop_spec.v1",
+  "title": "EPYC typed loop spec",
+  "description": "A machine-readable description of an agent/automation loop: its state machines, transitions, named stop/park reasons and the thresholds they use. Every threshold names the code constant it mirrors so tests/test_loop_spec.py can prove the spec has not drifted from the code. Validated by dashboard/loop_spec.py (stdlib, no jsonschema dependency).",
+  "type": "object",
+  "required": ["schema", "loop_id", "title", "canonical_doc", "spec_revised", "machines", "thresholds", "stop_reasons"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": "epyc.loop_spec.v1"},
+    "loop_id": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+    "title": {"type": "string"},
+    "canonical_doc": {"type": "string", "description": "repo-relative path of the prose definition the spec is derived from"},
+    "spec_revised": {"type": "string", "format": "date-time", "description": "when the spec was last re-derived from code; the hub freshness timestamp"},
+    "summary": {"type": "string"},
+    "machines": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "actor", "code", "initial", "states", "transitions"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+          "title": {"type": "string"},
+          "actor": {"type": "string", "description": "the process that drives this machine"},
+          "cadence": {"type": "string"},
+          "code": {"type": "array", "items": {"type": "string"}, "description": "file[:symbol] anchors"},
+          "initial": {"type": "string"},
+          "states": {
+            "type": "array", "minItems": 1,
+            "items": {
+              "type": "object", "required": ["id", "meaning"], "additionalProperties": false,
+              "properties": {
+                "id": {"type": "string"},
+                "meaning": {"type": "string"},
+                "terminal": {"type": "boolean"},
+                "kind": {"enum": ["work", "wait", "stop", "park", "pause", "yield", "fail", "done", "alert"]}
+              }
+            }
+          },
+          "transitions": {
+            "type": "array",
+            "items": {
+              "type": "object", "required": ["from", "to", "on"], "additionalProperties": false,
+              "properties": {
+                "from": {"type": "string"},
+                "to": {"type": "string"},
+                "on": {"type": "string", "description": "trigger / guard in one phrase"},
+                "log": {"type": "string", "description": "the log token emitted, if any"},
+                "reason": {"type": "string", "description": "stop_reasons[].id this transition records"},
+                "thresholds": {"type": "array", "items": {"type": "string"}}
+              }
+            }
+          }
+        }
+      }
+    },
+    "thresholds": {
+      "type": "array",
+      "items": {
+        "type": "object", "required": ["id", "value", "unit", "source"], "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string"},
+          "value": {"type": ["number", "string", "boolean"]},
+          "unit": {"type": "string"},
+          "source": {"type": "string", "description": "repo-relative file:CONSTANT the value mirrors; 'registry:<key>' for runtime knobs"},
+          "meaning": {"type": "string"}
+        }
+      }
+    },
+    "stop_reasons": {
+      "type": "array",
+      "items": {
+        "type": "object", "required": ["id", "kind", "machine", "condition"], "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "pattern": "^[A-Z][A-Z0-9-]*$"},
+          "kind": {"enum": ["stop", "park", "pause", "yield", "fail", "wait", "refuse", "alert"]},
+          "machine": {"type": "string"},
+          "condition": {"type": "string"},
+          "artifact": {"type": "string"},
+          "clears_when": {"type": "string"},
+          "thresholds": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    }
+  }
+}
