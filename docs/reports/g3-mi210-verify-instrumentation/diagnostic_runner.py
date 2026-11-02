@@ -2,6 +2,7 @@
 """Bounded one-server diagnostic capture; no scientific verdict is generated."""
 import argparse, datetime, hashlib, json, os, pathlib, signal, subprocess, sys, threading, time, urllib.request
 from residency_evidence import analyze_residency
+from build_receipt_v4 import bind_v4_receipt
 
 
 def gpu_sample():
@@ -31,19 +32,35 @@ def read_samples(path):
         return [], repr(exc)
 
 
+def resolve_build_binding(config):
+    """Bind configured server/backend to a complete content-checked V4 result.
+
+    This checks artifact identity only: grant ownership and live GPU residency
+    are independent requirements. No model weights are hashed here.
+    """
+    record = json.loads(pathlib.Path(config['build_result']).read_text())
+    bound = bind_v4_receipt(record, config['build_root'])
+    server = pathlib.Path(config['server']).resolve(strict=True)
+    backend = pathlib.Path(config['backend']).resolve(strict=True)
+    artifacts = bound['artifacts']
+    if str(server) != artifacts['server']['path']:
+        raise ValueError('server is not the bound build artifact')
+    if str(backend) != artifacts['hip']['path']:
+        raise ValueError('backend is not the bound HIP artifact')
+    if config['backend_sha256'] != artifacts['hip']['sha256']:
+        raise ValueError('configured backend digest differs from build receipt')
+    build = server.parent.parent
+    return bound, server, backend, build
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('config', type=pathlib.Path)
     a = ap.parse_args()
     c = json.loads(a.config.read_text())
     out = pathlib.Path(c['output']); out.mkdir(parents=True, exist_ok=False)
-    receipt = pathlib.Path(c['build_receipt']).resolve()
-    if not (receipt / 'BUILD_COMPLETE').is_file(): raise ValueError('incomplete build receipt')
-    subprocess.run(['sha256sum', '-c', str(receipt / 'artifacts.sha256')], check=True, stdout=(out / 'artifact-check.txt').open('w'))
-    subprocess.run(['sha256sum', '-c', str(receipt / 'source.patch.sha256')], check=True, stdout=(out / 'patch-check.txt').open('w'))
-    server = pathlib.Path(c['server']).resolve()
-    build = pathlib.Path((receipt / 'build-path').read_text().strip()).resolve()
-    if build not in server.parents or str(server) not in (receipt / 'artifacts.sha256').read_text(): raise ValueError('server is not the receipt build artifact')
+    bound, server, backend, build = resolve_build_binding(c)
+    (out / 'build-binding.json').write_text(json.dumps(bound, indent=2) + '\n')
     preflight = pathlib.Path(c['model_preflight']).resolve()
     if digest(preflight) != c['model_preflight_sha256']: raise ValueError('model preflight digest mismatch')
     model_info = json.loads(preflight.read_text())['model']
@@ -52,8 +69,6 @@ def main():
     actual = dict(dev=st.st_dev, ino=st.st_ino, size=st.st_size, mtime_ns=st.st_mtime_ns, ctime_ns=st.st_ctime_ns)
     if str(model) != model_info['path'] or actual != model_info['stat'] or c['model_sha256'] != model_info['sha256']: raise ValueError('model preflight stat or hash identity mismatch')
     # Fixed marker must be specified after source review; it must occur in a built backend.
-    backend = pathlib.Path(c['backend']).resolve()
-    if build not in backend.parents or str(backend) not in (receipt / 'artifacts.sha256').read_text(): raise ValueError('backend not in receipt')
     if c['trace_marker'].encode() not in backend.read_bytes(): raise ValueError('trace marker missing')
     if not c['trace_marker']: raise ValueError('empty trace marker')
     if not c['requests']: raise ValueError('empty request list')

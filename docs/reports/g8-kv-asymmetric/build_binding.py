@@ -7,6 +7,7 @@ STOP/drain, and the exact request/trace protocol.
 """
 import hashlib
 import json
+import re
 from pathlib import Path
 
 SOURCE = 'ffc1bac82eeca6f9099e1ccd9ba49703c460a115'
@@ -33,7 +34,7 @@ def bind_receipt(receipt):
     try:
         run = Path(receipt['run']).resolve(strict=True)
         build = run / 'build'
-        required = {'server': build / 'bin/llama-server', 'server_impl': build / 'bin/libllama-server-impl.so',
+        required = {'server': build / 'bin/llama-server', 'server_impl': build / 'bin/libllama-server-impl.so', 'common': build / 'bin/libllama-common.so',
                     'hip': build / 'bin/libggml-hip.so', 'llama': build / 'bin/libllama.so',
                     'patch': run / 'receipt/source.patch', 'linkage': run / 'receipt/linkage.log',
                     'cache': build / 'CMakeCache.txt'}
@@ -52,11 +53,14 @@ def bind_receipt(receipt):
             bound[name] = {'path': str(p), 'sha256': actual}
         if bound['patch']['sha256'] != PATCH:
             raise BindingError('patch digest mismatch')
-        if b'G8_COMPARE_BEGIN' not in Path(bound['server_impl']['path']).read_bytes():
+        if b'G8_COMPARE_BEGIN' not in Path(bound['common']['path']).read_bytes():
             raise BindingError('trace marker missing from implementation')
         linkage = Path(bound['linkage']['path']).read_text(encoding='utf-8')
         if not linkage.strip() or 'not found' in linkage.lower():
             raise BindingError('linkage evidence missing or failed')
+        matches = re.findall(r'^\s*OK\s+libllama-common\.so(?:\.[^\s]+)?\s+->\s+(\S+)\s*$', linkage, re.M)
+        if len(matches) != 1 or Path(matches[0]).resolve(strict=True) != Path(bound['common']['path']):
+            raise BindingError('linked common library does not match marker-bearing artifact')
         return {'status': 'BUILD_BOUND', 'run': str(run), 'source_commit': SOURCE, 'patch_sha256': PATCH,
                 'artifacts': bound, 'scope': 'artifact identity only; no live residency or admission'}
     except (KeyError, OSError, TypeError, UnicodeError) as exc:

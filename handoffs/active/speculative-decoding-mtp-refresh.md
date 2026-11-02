@@ -403,6 +403,9 @@ _Via `/research-intake` Stage-2; see [`intake-derived-work-2026-07-25.md`](intak
       systems contribution is precisely the part our PCIe4 link erodes. This row is how we get its
       algorithmic content for free. [intake-1282#record]
 
+  - 2026-11-02: `g8-v10-hip-build-20261102` ended rc1 with no native RESULT; build reached 452/452, but proof searched the server implementation for `G8_COMPARE_BEGIN` while the linked `libllama-common.so` carries it. Filed as a build-proof harness failure. [Retained build and filing evidence](../../docs/reports/g8-kv-asymmetric/failed-build-20261102/verdict.json). No inference, residency or agreement conclusion; G8 remains open. [no-belief: failed operational run]
+  - 2026-11-02: published corrected CPU build row `g8-v10-hip-build-r2-20261102` after its four-CPU smoke passed (one unit; clean STOP rc75). Its proof binds `G8_COMPARE_BEGIN` to the receipt-hashed common library resolved by server linkage. Full build and G8 inference remain pending; no agreement result. [no-belief: row preparation only]
+
 ## Research Intake Update — 2026-10-06 (Copy-Spec Evaluation)
 
 - [x] **COPYSPEC-P1 — copy/prompt-lookup speculation re-evaluation, phase 1+2 full-host window.** Script `/mnt/raid0/llm/tmp/copy-spec-eval-20261006/phase1.sh`; survey `SURVEY.md` there. Arms P / ngram-mod(n-min 4)+MTP / ngram-only / P2. Measure acceptance rate, mean draft length, and throughput on production CPU server. Done when all arms complete on a canonical production-shaped prompt set and the results are recorded with run digests and timestamps. ✅ 2026-10-06
