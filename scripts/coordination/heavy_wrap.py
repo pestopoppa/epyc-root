@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """heavy_wrap.py — the single designated heavy-wrap executor (RTG-51).
 
-Owning handoff: handoffs/active/wrap-up-division-of-labor-policy.md, "Heavy-wrap
+Owning handoff: handoffs/active/loop-owned-fleet-implementation.md, "Heavy-wrap
 contract". A heavy wrap begins ONLY from a typed `wrapup-request` issued by
 Coordinator (request_id, reason, synchronization mode, exact accepted receipt
 ids or cutoff timestamp). Receipts arriving after the cut belong to the next

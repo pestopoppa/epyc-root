@@ -26,7 +26,7 @@
     },
     "routing-and-optimization-index.md": {
       "blocked": 16,
-      "handoffs": 32,
+      "handoffs": 30,
       "oldest_advance": "2026-07-29",
       "open": 672
     },
@@ -362,7 +362,7 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 30,
+      "closed": 31,
       "guarded": 0,
       "last_advanced": "2026-11-02",
       "open": 12,
@@ -374,7 +374,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 42
+      "total": 43
     },
     "batched-edit-parallel-apply.md": {
       "blocked": 0,
@@ -604,7 +604,7 @@
       "blocked": 0,
       "closed": 246,
       "guarded": 0,
-      "last_advanced": null,
+      "last_advanced": "2026-11-02",
       "open": 77,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -1108,22 +1108,6 @@
         }
       ]
     },
-    "fleet-fanout-measurement.md": {
-      "blocked": 0,
-      "closed": 4,
-      "guarded": 0,
-      "last_advanced": "2026-10-31",
-      "open": 5,
-      "owner_index": "routing-and-optimization-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "RTG-49",
-      "state": "active",
-      "total": 9
-    },
     "frontier-f6-upstream-publication.md": {
       "blocked": 0,
       "closed": 1,
@@ -1504,10 +1488,10 @@
     },
     "loop-owned-fleet-implementation.md": {
       "blocked": 0,
-      "closed": 53,
+      "closed": 77,
       "guarded": 0,
       "last_advanced": "2026-10-31",
-      "open": 9,
+      "open": 22,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1516,7 +1500,45 @@
       },
       "row_id": "RTG-52",
       "state": "active",
-      "total": 62
+      "total": 99,
+      "tracks": [
+        {
+          "blocked": 0,
+          "closed": 53,
+          "gates": null,
+          "guarded": 0,
+          "line": 0,
+          "markers": 0,
+          "name": "(untracked)",
+          "open": 9
+        },
+        {
+          "blocked": 0,
+          "closed": 4,
+          "gates": [
+            "RTG-34",
+            "RTG-48"
+          ],
+          "guarded": 0,
+          "line": 657,
+          "markers": 1,
+          "name": "fleet-fanout-measurement",
+          "open": 5
+        },
+        {
+          "blocked": 0,
+          "closed": 20,
+          "gates": [
+            "RTG-34",
+            "RTG-48"
+          ],
+          "guarded": 0,
+          "line": 845,
+          "markers": 1,
+          "name": "wrap-up-division-of-labor-policy",
+          "open": 8
+        }
+      ]
     },
     "loops-and-dashboards-audit-2026-07-05.md": {
       "blocked": 0,
@@ -2514,22 +2536,6 @@
       "state": "active",
       "total": 754
     },
-    "wrap-up-division-of-labor-policy.md": {
-      "blocked": 0,
-      "closed": 20,
-      "guarded": 0,
-      "last_advanced": "2026-10-07",
-      "open": 8,
-      "owner_index": "routing-and-optimization-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "RTG-51",
-      "state": "active",
-      "total": 28
-    },
     "x-mas-text-routing.md": {
       "blocked": 0,
       "closed": 2,
@@ -3360,30 +3366,6 @@
       "next_action": "R-7 \u2014 Assign a successor to retired namespace owner mainD; then reconcile the C49 references",
       "track": "coordinator role failure modes"
     },
-    "RTG-49": {
-      "deps": [
-        "RTG-34",
-        "RTG-48"
-      ],
-      "handoff": "fleet-fanout-measurement.md",
-      "id": "RTG-49",
-      "index": "routing-and-optimization-index.md",
-      "line": 37,
-      "next_action": "FM-7 journal delegation accounting + FM-8 subagent types/dispatch hook (parallel), then FM-9 doctrine diff; FM-2 Stage 1 after",
-      "track": "fleet fanout measurement"
-    },
-    "RTG-51": {
-      "deps": [
-        "RTG-34",
-        "RTG-48"
-      ],
-      "handoff": "wrap-up-division-of-labor-policy.md",
-      "id": "RTG-51",
-      "index": "routing-and-optimization-index.md",
-      "line": 38,
-      "next_action": "Reconcile the Phase-5 instruction migration matrix and prepare protected policy signoff; retain the real Auditor canary",
-      "track": "wrap up division of labor policy"
-    },
     "RTG-52": {
       "deps": [
         "RTG-34",
@@ -3392,7 +3374,7 @@
       "handoff": "loop-owned-fleet-implementation.md",
       "id": "RTG-52",
       "index": "routing-and-optimization-index.md",
-      "line": 39,
+      "line": 37,
       "next_action": "P4-1 \u2014 adjudicate the 7-day role-shrink gate; then P5-1 hook-surface trust-boundary analysis and P5-2 NL-only fixture",
       "track": "loop owned fleet implementation"
     },
@@ -3403,7 +3385,7 @@
       "handoff": "promptforge-mutation-safety-contract.md",
       "id": "RTG-55",
       "index": "routing-and-optimization-index.md",
-      "line": 40,
+      "line": 38,
       "next_action": "MHS-3d \u2014 operator runs the v10 episodic re-pin RATIFY (run_v10_episodic_repin_ratify_20260917.sh); then MHS-12",
       "track": "promptforge mutation safety"
     },
@@ -3412,7 +3394,7 @@
       "handoff": "typed-decision-plane.md",
       "id": "RTG-56",
       "index": "routing-and-optimization-index.md",
-      "line": 41,
+      "line": 39,
       "next_action": "Run fresh three-arm shadow at the inference owner\u2019s boundary; retain inference gates",
       "track": "typed decision plane"
     },
@@ -3424,7 +3406,7 @@
       "handoff": "kv-unified-stack-rollout.md",
       "id": "RTG-57",
       "index": "routing-and-optimization-index.md",
-      "line": 42,
+      "line": 40,
       "next_action": "Follow the 2026-11-02 execution contract: reconcile capacity evidence and prepare remaining candidate gates; preserve HPR exposure",
       "track": "kv unified stack rollout"
     },
@@ -3437,7 +3419,7 @@
       "handoff": "kv-prefix-fork-and-paged-attention.md",
       "id": "RTG-58",
       "index": "routing-and-optimization-index.md",
-      "line": 43,
+      "line": 41,
       "next_action": "Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort",
       "track": "kv prefix fork and paged attention"
     },
@@ -3446,7 +3428,7 @@
       "handoff": "backlog-refactor-2026-11.md",
       "id": "RTG-63",
       "index": "routing-and-optimization-index.md",
-      "line": 44,
+      "line": 42,
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
       "track": "backlog refactor 2026-11"
     },

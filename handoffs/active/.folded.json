@@ -120,6 +120,10 @@
    "target": "mi210-serving-program.md",
    "track": "fable5-window2-findings-05c-mi210-lever-category-matrix"
   },
+  "fleet-fanout-measurement.md": {
+   "target": "loop-owned-fleet-implementation.md",
+   "track": "fleet-fanout-measurement"
+  },
   "frontier-f2-self-running-lab.md": {
    "target": "frontier-lab-automation.md",
    "track": "frontier-f2-self-running-lab"
@@ -389,6 +393,10 @@
   "wp12-fleet-layer-design.md": {
    "target": "stack-lifecycle-program.md",
    "track": "wp12-fleet-layer-design"
+  },
+  "wrap-up-division-of-labor-policy.md": {
+   "target": "loop-owned-fleet-implementation.md",
+   "track": "wrap-up-division-of-labor-policy"
   }
  },
  "ids": {
@@ -682,6 +690,14 @@
   "RTG-47": {
    "target": "RTG-34",
    "track": "dashboard-architecture-restructure"
+  },
+  "RTG-49": {
+   "target": "RTG-52",
+   "track": "fleet-fanout-measurement"
+  },
+  "RTG-51": {
+   "target": "RTG-52",
+   "track": "wrap-up-division-of-labor-policy"
   },
   "RTG-54": {
    "target": "EVL-37",

@@ -1255,7 +1255,7 @@ by this compilation; the existing implementation task remains open.
 
 ### Source References (September 8 end-to-end qualification)
 
-- [Wrap-up division-of-labor handoff](../handoffs/active/wrap-up-division-of-labor-policy.md) — reported reproductions and outstanding task.
+- [Wrap-up division-of-labor handoff](../handoffs/active/loop-owned-fleet-implementation.md#track-wrap-up-division-of-labor-policy) — reported reproductions and outstanding task.
 
 ## Compiled Update — 2026-09-08 (incremental): screening became the dispatch path's first-class citizen — AIR-12/13/14 land the premise contract, fan-out waste has a measured band not a point, and the heavy-wrap receipt stops destroying the manifest it must preserve
 
@@ -1430,7 +1430,7 @@ compiled on [Knowledge Management](knowledge-management.md)).
 - [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — the AIR-11
   censuses and verdict (2026-09-07), the AIR-12/13/14 landings with `945c8820`, and the WS-1..4 rows
   with their C39/C49 preconditions and intake anchors.
-- [`fleet-fanout-measurement.md`](../handoffs/active/fleet-fanout-measurement.md) — the FM-5/FM-6
+- [`fleet-fanout-measurement.md`](../handoffs/active/loop-owned-fleet-implementation.md#track-fleet-fanout-measurement) — the FM-5/FM-6
   result section: the v2 schema, the bucket table, the band bounds and their evidence split, the
   FM-6 reconnection requirement, and the corpus reproducibility caveat.
 - [`progress/2026-09/2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md)
@@ -2139,7 +2139,7 @@ phase exceeding 2× its estimate stops the plan, so that it "must never become t
 - [`loop-owned-fleet-implementation.md`](../handoffs/active/loop-owned-fleet-implementation.md) —
   ratified decisions D0–D9, the 15 invariants, Phase 0–4 task state, the 2026-08-16 implementation
   record and pilot table, and open defect PD-1.
-- [`wrap-up-division-of-labor-policy.md`](../handoffs/active/wrap-up-division-of-labor-policy.md) —
+- [`wrap-up-division-of-labor-policy.md`](../handoffs/active/loop-owned-fleet-implementation.md#track-wrap-up-division-of-labor-policy) —
   the authority table, the per-packet-audit vs heavy-wrap split, the Phase-1 singleton repairs
   (hook writers, wiki manifest/watermark, operation-token lease), and the REVISED 2026-08-16
   identity-is-not-session correction.
@@ -2210,7 +2210,7 @@ instruction acknowledgments, and canaries are not. Rollout therefore remains `of
 
 ### Source References (2026-08-13 RTG-51 implementation)
 
-- [`wrap-up-division-of-labor-policy.md`](../handoffs/active/wrap-up-division-of-labor-policy.md) —
+- [`wrap-up-division-of-labor-policy.md`](../handoffs/active/loop-owned-fleet-implementation.md#track-wrap-up-division-of-labor-policy) —
   authority table, state machine, implementation phases, acceptance matrix, and live gaps.
 - [`session-bus-task-flow.html`](../docs/coordination/session-bus-task-flow.html) — visual lifecycle,
   failure loops, authority boundaries, implementation evidence, and deployment status.
@@ -4303,7 +4303,7 @@ actually fanned out from one that worked serially and reported otherwise. Kimi's
 (intake-1106, arXiv:2602.02276v2) independently names that exact failure mode "serial collapse" — but
 the paper defines the term once and never measures it; no rate, no threshold, no detector. The name is
 citable, the measurement is not — that detector is the open work in
-[`fleet-fanout-measurement.md`](../handoffs/active/fleet-fanout-measurement.md). Separately, a
+[`fleet-fanout-measurement.md`](../handoffs/active/loop-owned-fleet-implementation.md#track-fleet-fanout-measurement). Separately, a
 controlled scaling study (intake-1107#record, arXiv:2512.08296) finds
 returns from adding agents go structurally negative once a single agent already clears roughly 45%
 accuracy on a task, though that specific threshold turned out on dive to be a ratio of a
@@ -4334,14 +4334,14 @@ success/failure oracle to do it: its induction pipeline is deliberately outcome-
 specification for a per-subagent timing collector (declared/started/completed agent counts, parallel
 utilization, workflow depth) built from real transcript timestamps rather than the simulated,
 duration-as-input design that sank the rest of that entry. Both are now filed as open tasks in
-[`fleet-fanout-measurement.md`](../handoffs/active/fleet-fanout-measurement.md) rather than adopted
+[`fleet-fanout-measurement.md`](../handoffs/active/loop-owned-fleet-implementation.md#track-fleet-fanout-measurement) rather than adopted
 sight-unseen — the round's own overturn rate is the argument for filing them as measurement work first.
 
 ### Source References
 
 - [Session Bus + Thin Coordinator](../handoffs/active/coordination-and-churn-pipeline.md) — the pre-existing, independently-discovered "working serially" open item this round's findings attach to
 - [Coordinator role — failure modes and refactor](../handoffs/active/coordinator-role-failure-modes-and-refactor.md) — F-15 fan-out doctrine entry, R-17/R-23 thread-attribution premise
-- [Fleet Fan-Out Measurement](../handoffs/active/fleet-fanout-measurement.md) — new stub filed this round to own the collector and grading work
+- [Fleet Fan-Out Measurement](../handoffs/active/loop-owned-fleet-implementation.md#track-fleet-fanout-measurement) — new stub filed this round to own the collector and grading work
 - [Decomposition-to-Batch Mapping](../handoffs/completed/decomposition-to-batch-mapping.md) — new stub, operator-originated hypothesis with no external source backing
 - [REPL Turn Efficiency](../handoffs/active/repl-turn-efficiency.md) — context-knee and width-taper findings folded into the S4 gate
 - `research/intake_index.yaml` intake-1105 through intake-1127 — full dive records, claim anchors, and per-claim corrections for every figure cited above
@@ -4465,7 +4465,7 @@ The first corpus run over 2,428 workflows / 4,727 subagents found **52 workflows
 
 ### Source References (2026-08-25)
 
-- [`fleet-fanout-measurement.md`](../handoffs/active/fleet-fanout-measurement.md) — FM-1 row tick, corpus numbers, FM-2/FM-3/FM-4 follow-ons
+- [`fleet-fanout-measurement.md`](../handoffs/active/loop-owned-fleet-implementation.md#track-fleet-fanout-measurement) — FM-1 row tick, corpus numbers, FM-2/FM-3/FM-4 follow-ons
 - [`progress/2026-08/2026-08-25-unattributed.md`](../progress/2026-08/2026-08-25-unattributed.md) — the session that verified the FM-1 artifacts post-restore
 
 ## Compiled Update — 2026-08-30: a check fed an input it cannot answer from is not a failing check, it is an absent one
@@ -4736,7 +4736,7 @@ it — and what the clause adds is a **diagnosis order**: when a fan-out looks e
 measure the share of subagents whose output was never used, and only then consider the number of
 subagents. Narrowing width to control cost is treating the cheap term. Our own instance of the
 measurement is FM-5 (discarded-work accounting) in
-[`fleet-fanout-measurement.md`](../handoffs/active/fleet-fanout-measurement.md).
+[`fleet-fanout-measurement.md`](../handoffs/active/loop-owned-fleet-implementation.md#track-fleet-fanout-measurement).
 
 **Sources**
 - [intake-1304#record](https://arxiv.org/abs/2604.03071) *Automatic Textbook Formalization*, credibility
@@ -4749,7 +4749,7 @@ measurement is FM-5 (discarded-work accounting) in
   ratified width, and the ablation caveats.
 - [intake-1306#record](https://arxiv.org/abs/2601.03298) — the single-agent serial arm and its actual
   bottleneck.
-- [`fleet-fanout-measurement.md`](../handoffs/active/fleet-fanout-measurement.md) — FM-5, FM-6.
+- [`fleet-fanout-measurement.md`](../handoffs/active/loop-owned-fleet-implementation.md#track-fleet-fanout-measurement) — FM-5, FM-6.
 - [`2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md) — the wave
   record and the ratification (`fb755192`).
 ## Compiled Update — 2026-09-03: an agent loop is designed in pseudocode first — every rejection needs a visible destination, and budgets must not share a counter
@@ -5589,7 +5589,7 @@ Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) ·
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
 - Planner/critic read-only allowlist is default-off; six focused controls passed. Host failure behavior was simulated and no live enablement or general security claim follows; root 9414032c. [Source](../handoffs/active/agent-collab-rnd-harness.md)
-- Delegation accounting instrumentation is filed; FM-8/9 and large-read/advisor/local-worker changes are conditional proposed work, with no measured trigger outcome asserted here. [Source](../handoffs/active/fleet-fanout-measurement.md)
+- Delegation accounting instrumentation is filed; FM-8/9 and large-read/advisor/local-worker changes are conditional proposed work, with no measured trigger outcome asserted here. [Source](../handoffs/active/loop-owned-fleet-implementation.md#track-fleet-fanout-measurement)
 - HIL15b v2 source and frozen-receipt fixtures are published; qualification uses a noncohort control. The 20-task x 3 replay live cohort, empirical difficulty band and parent acceptance remain open; no adaptive redraw or efficacy is claimed. [Source](../handoffs/active/harness-improvement-loop.md)
 
 ## Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)

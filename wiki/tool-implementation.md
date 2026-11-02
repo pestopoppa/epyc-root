@@ -452,7 +452,7 @@ The 2026-09-16 governance-tooling work shares one theme. `index_state.py --check
 - **The hub now serves a read-only origin/main view.** The lane was 141 commits behind origin/main, so pushed progress never appeared on :8100. `/mnt/raid0/llm/views/epyc-root-main` is a standalone `--reference` clone, never a linked worktree, detached at origin/main and carrying the marker `.epyc-view-readonly`. `refresh_hub_view.sh` refuses (exit 3) any tree that is unmarked, not a git top-level, or a linked worktree. It then fetches, runs `update-index --refresh`, and runs `checkout --detach --force`. Refreshing the stat info first means only a real content change moves `dashboard/*.py` mtimes, so the stale-source check restarts the hub on a code change and never on a handoff-only refresh. The supervisor runs its **own** sibling copy of the refresher every 180 s, because the refresher overwrites the view's files while bash may still be reading a running script. Tests: `test_hub_view_refresh.sh` 42/42, `test_hub_manifest_launch.sh` 38/38. [sub-hubview](../progress/2026-09/2026-09-16-sub-hubview.md), [handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph)
 - **Supervision must run inside the container; the 2026-08-24 cron line would not have.** Everything runs in the devcontainer `epyc-root`, which has private `/tmp` and no cron. The 2026-08-24 host crontab line would have taken a host `/tmp` lock the container daemon cannot see, and started a hub under a host uid that container sessions cannot signal. The joint OP-9 + FW-3 package therefore uses `docker exec … epyc-root`. It also records that `fleet_watch.sh` had been **dead for about 29 days**: its last log write was 2026-08-18T12:54:29Z, with no "stopping" line, matching the container restart. `--once` cannot serve as the restart primitive because it raises nothing; the bare launch can, because its `flock` sits in the bind-mounted `logs/`. The operator approved this on 2026-09-16 via `install_supervision_cron_20260916.sh`: `--fleet-watch-only` can be installed now, and `--all` only after the canonical relaunch. Pass 2 relaunched the supervisor canonically (pid 820799, launching the hub from the manifest). [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md), [handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph), [progress 2026-09-16](../progress/2026-09/2026-09-16.md)
 - **A hub manifest change that named a stopped store was reverted (`e7bfc62b` → `0329ab10`).** Its premise was wrong: v12 had been stopped, and aku12a is the live store. [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
-- **Fan-out measurement: citation form fixed; no new data.** FM-6's reconnection rule now cites intake-1299#05. The measured figures are unchanged: orphan rate 35.0%, and measured width 928 against a declared 1,187 (−21.8%). [fleet-fanout-measurement](../handoffs/active/fleet-fanout-measurement.md)
+- **Fan-out measurement: citation form fixed; no new data.** FM-6's reconnection rule now cites intake-1299#05. The measured figures are unchanged: orphan rate 35.0%, and measured width 928 against a declared 1,187 (−21.8%). [fleet-fanout-measurement](../handoffs/active/loop-owned-fleet-implementation.md#track-fleet-fanout-measurement)
 
 ### Open questions
 
@@ -467,7 +467,7 @@ The 2026-09-16 governance-tooling work shares one theme. `index_state.py --check
 - [docs/guides/agent-workflows/handoff-index-authoring.md](../docs/guides/agent-workflows/handoff-index-authoring.md): the `Repoint-Reason:` convention and the measured promote-or-inline rule.
 - [handoffs/active/coordination-and-churn-pipeline.md](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph): RTG-46 ticks, the layout sub-box, the joint OP-9 + FW-3 package, and dashboard fix A.
 - [handoffs/active/coordination-and-churn-pipeline.md](../handoffs/active/coordination-and-churn-pipeline.md): FW-3, `fleet_watch.sh` dead for about 29 days, and why `--once` cannot restart it.
-- [handoffs/active/fleet-fanout-measurement.md](../handoffs/active/fleet-fanout-measurement.md): FM-6 citation form, with figures unchanged.
+- [handoffs/active/loop-owned-fleet-implementation.md](../handoffs/active/loop-owned-fleet-implementation.md#track-fleet-fanout-measurement): FM-6 citation form, with figures unchanged.
 - [progress/2026-09/2026-09-16-sub-closure-fix.md](../progress/2026-09/2026-09-16-sub-closure-fix.md): reopened phantoms, the tool rewrite and the strict-sweep triage.
 - [progress/2026-09/2026-09-16-sub-closure-audit.md](../progress/2026-09/2026-09-16-sub-closure-audit.md): the audit's scope, class table, triage counts and the cite-check result.
 - [progress/2026-09/2026-09-16-sub-rtg46.md](../progress/2026-09/2026-09-16-sub-rtg46.md): readiness rendering, re-point capture, the row-size distribution and layout metrics.
@@ -1157,12 +1157,12 @@ gates a *second-stage*, fleet-specific taxonomy induction, not the first useful 
 
 Both tools are cited on the strength of author-reported metrics only; neither has been run against our
 own corpus yet. The work is filed, not adopted — see the [Fleet Fan-Out
-Measurement](../handoffs/active/fleet-fanout-measurement.md) stub's FM-2 task for the planned pilot.
+Measurement](../handoffs/active/loop-owned-fleet-implementation.md#track-fleet-fanout-measurement) stub's FM-2 task for the planned pilot.
 
 ### Source References
 
 - `research/intake_index.yaml` intake-1110#record (MAST) and intake-1127 (AdaMAST) — full dive records, including the mid-dive retraction of the "success/failure oracle required" finding
-- [Fleet Fan-Out Measurement](../handoffs/active/fleet-fanout-measurement.md) — FM-2, the planned pilot run
+- [Fleet Fan-Out Measurement](../handoffs/active/loop-owned-fleet-implementation.md#track-fleet-fanout-measurement) — FM-2, the planned pilot run
 - [Coordinator role — failure modes and refactor](../handoffs/active/coordinator-role-failure-modes-and-refactor.md) — R-24, the cross-walk of MAST's 14 modes against our own hand-built failure ledger
 - [`progress/2026-08/2026-08-13-research-intake.md`](../progress/2026-08/2026-08-13-research-intake.md) — session record
 

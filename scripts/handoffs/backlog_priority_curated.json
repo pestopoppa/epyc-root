@@ -63,7 +63,6 @@
   "RTG-07": 0.2,
   "RTG-23": 0.2,
   "RTG-48": 0.2,
-  "RTG-51": 0.2,
   "RTG-52": 0.2,
   "INF-76": 0.15,
   "RTG-04": 0.15,
@@ -71,7 +70,6 @@
   "RTG-08": 0.15,
   "RTG-13": 0.15,
   "RTG-16": 0.15,
-  "RTG-49": 0.15,
   "INF-44": 0.1,
   "INF-49": 0.1,
   "RTG-50": 0.1,
@@ -147,7 +145,9 @@
   "INF-45#within-role-placement-state-machine": 0.25,
   "RTG-34#churn-pipeline": 0.2,
   "RTG-34#dashboard-architecture-restructure": 0.2,
-  "RTG-34#handoff-index-and-backlog-graph": 0.2
+  "RTG-34#handoff-index-and-backlog-graph": 0.2,
+  "RTG-52#fleet-fanout-measurement": 0.15,
+  "RTG-52#wrap-up-division-of-labor-policy": 0.2
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",

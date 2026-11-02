@@ -2,7 +2,7 @@
 """rtg51_rollout.py — the RTG-51 rollout gates (off | shadow | enforce) and the
 shadow-mode receipt validator.
 
-Owning handoff: handoffs/active/wrap-up-division-of-labor-policy.md, "Rollout
+Owning handoff: handoffs/active/loop-owned-fleet-implementation.md, "Rollout
 and rollback": start `off`, then `shadow`, then `enforce`. Shadow mode records
 and validates the new receipts while legacy behavior remains available; it
 NEVER rejects legacy behavior. Every validation result is written as a

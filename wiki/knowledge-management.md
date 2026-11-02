@@ -380,7 +380,7 @@ commit message.
   likewise. Both were re-verified rather than assumed — `test_heavy_wrap.py` 14/14 with the e2e case run
   20/20 times, and 14/14 + 20/20 for RTG-51. The recurrence check in the project's own *Act, Don't Defer*
   rule exists for exactly this shape.
-  ([wrap-up-division-of-labor-policy](../handoffs/active/wrap-up-division-of-labor-policy.md);
+  ([wrap-up-division-of-labor-policy](../handoffs/active/loop-owned-fleet-implementation.md#track-wrap-up-division-of-labor-policy);
   [2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md))
 - **The wrap-up e2e failure was a TEST defect, not a code one — and the distinction was load-bearing.** The
   assertion hard-coded the fixture day `2026-08-23` while `step_6_freshness` stamps the progress shard with
@@ -388,7 +388,7 @@ commit message.
   `progress/*/*-{AGENT}.md`. The earlier diagnosis had located the defect "upstream of `step_7_compile_wiki`"
   and had been proven twice on a pristine HEAD — correct that it reproduced, wrong about what it was.
   A reproduction on a clean checkout establishes that a failure is real, never that the *subject* is at fault.
-  ([wrap-up-division-of-labor-policy](../handoffs/active/wrap-up-division-of-labor-policy.md))
+  ([wrap-up-division-of-labor-policy](../handoffs/active/loop-owned-fleet-implementation.md#track-wrap-up-division-of-labor-policy))
 - **Two new belief-kernel sources filed on the write side, at the moment the producers were built.** Both
   are read-side adapter tasks against producers that already emit deterministic JSON:
   **VB-MFVBS-1** for the verify-before-stop measurement (orch `scripts/analysis/mf_vbs1_verify_before_stop.py`,
@@ -432,7 +432,7 @@ commit message.
 
 ### Source References (2026-09-24 wrap-up compile)
 
-- [wrap-up-division-of-labor-policy.md](../handoffs/active/wrap-up-division-of-labor-policy.md) — the heavy-wrap
+- [wrap-up-division-of-labor-policy.md](../handoffs/active/loop-owned-fleet-implementation.md#track-wrap-up-division-of-labor-policy) — the heavy-wrap
   e2e defect, its true cause and the re-verification.
 - [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — VB-MFVBS-1 and
   VB-EVALDISC-1 source rows and their cautions.
@@ -2784,7 +2784,7 @@ alone would have converted a wrong ownership claim into a dangling one.
 
 - `scripts/handoffs/index_state.py` — `prune_signal()`, the blocker taxonomy, and the measured incident record; `tests/test_index_state_prune.py` (17 cases, mutation-paired)
 - `agents/commands/wrap-up.md` Step 3 — the replacement selection command, stated as a screen rather than a verdict
-- [Wrap-up division of labor](../handoffs/active/wrap-up-division-of-labor-policy.md) — the wrap-up routine this governs
+- [Wrap-up division of labor](../handoffs/active/loop-owned-fleet-implementation.md#track-wrap-up-division-of-labor-policy) — the wrap-up routine this governs
 - [`progress/2026-08/2026-08-18-research-intake.md`](../progress/2026-08/2026-08-18-research-intake.md) — session record, including the three archives and what each open item routed to
 
 ## Compiled Update — 2026-08-22: the publication generator scrubs by rewriting, contains protocol evidence to its own row, and demotes what it cannot re-derive to paraphrase
@@ -3937,7 +3937,7 @@ The [RTG-51 Phase-4 command contract](../artifacts/ni08/rtg51-phase4-command-sou
 
 MAIN also accepted the [edited-file Git-root reference hook](../artifacts/ni08/lr12-reference-hook-source-20261007/README.md): five original real-subprocess controls verify lane-relative references against the edited file's own checkout. An empty hosted token queue is an existence fixture, not evidence about the live bus. New [mocked workflow and pin-checker source acceptance](../docs/reference/ni08-non-inference-continuation.md) brings the NI08 scoped tally to129 (72existing task flips +57completed children). The whole [backlog](../handoffs/active/engineering-hygiene-backlog.md) remains under source-level adjudication; failed captures and external owner/policy gates stay open.
 
-Source references: [heavy-wrap handoff](../handoffs/active/wrap-up-division-of-labor-policy.md), [belief-source program](../handoffs/active/vidya-belief-substrate-program.md), [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md), [non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md), [progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md).
+Source references: [heavy-wrap handoff](../handoffs/active/loop-owned-fleet-implementation.md#track-wrap-up-division-of-labor-policy), [belief-source program](../handoffs/active/vidya-belief-substrate-program.md), [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md), [non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md), [progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md).
 
 
 ### Bounded source completion and human close-policy signature — 2026-10-07

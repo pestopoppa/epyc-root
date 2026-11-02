@@ -1,5 +1,7 @@
 # Loop-Owned Fleet — implementation
 
+> **Fold destination** (BRF-T1-F19, BRF-T1-1, route 1a, 2026-11-02): absorbs 2 handoff(s) as `## Track:` sections at the end of this file (`fleet-fanout-measurement.md`, `wrap-up-division-of-labor-policy.md`). The body above the first track is the former `loop-owned-fleet-implementation.md`.
+
 **Status**: ACTIVE — implementation not yet started; plan ratified, all decisions signed.
 **Created**: 2026-08-15
 **Priority**: P1 — restructures the coordinator-agent + mains architecture whose failure record is
@@ -651,3 +653,739 @@ binding. Master-index OP-19 row amended to say so.
 ## Newly executable bounded source proposal
 
 - [ ] **RTG52-D9-SOURCE — integrate reviewed target-selection and exact assignment-stdin source controls after the exact D9 acknowledgement.** Private tip `33df263031234d78272baafd096ef1dee5c946fb`, full six-file footprint: `headless_audit.py`, `session_bus_coordinator.py`, `worker_runner.py`, and coordination tests `test_fleet_gate.py`, `test_headless_audit.py`, `test_worker_runner.py`. Strict supported grammar abstains on ambiguity/negation; task text is sent as bounded exact UTF-8 JSON stdin without clipping. Fake captured-child cleanup is bounded and refuses unconfirmed exit. Native proof is VB-RTG52-D9-CONFORMANCE, not semantic/assignment correctness authority. Protected merge remains operator-gated by D9; no host activation or dispatch. Previously accepted hygiene ancestor is not new RTG52 work.
+
+## Track: fleet-fanout-measurement
+<!-- gate: RTG-34, RTG-48 -->
+
+> Folded from `handoffs/active/fleet-fanout-measurement.md` @ `b1bf3f3f7ade` on 2026-11-02 (BRF-T1-F19, route 1a, operator D1/D5; retired row RTG-49 → RTG-52). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+
+### Fleet Fan-Out Measurement — per-subagent timing collector + failure grading
+
+**Status**: active — FM-1 (2026-08-23), FM-5 and FM-6 (2026-09-07) landed; FM-2/FM-3/FM-4 open. ✅ 2026-09-15
+**Created**: 2026-08-13 (via `/research-intake` Stage 3, operator-approved plan; source round intake-1105…intake-1127, PARL/Kimi-agent-swarm sweep)
+**Parent index**: [routing-and-optimization-index.md](routing-and-optimization-index.md)
+**Categories**: swarm_techniques, agent_architecture, benchmark_methodology, autonomous_research
+
+#### Objective
+
+Our fan-out doctrine (`agents/shared/OPERATING_CONSTRAINTS.md` → *Parallel Subagent Fan-Out*) mandates
+3–5 concurrent subagents unconditionally, with no completion feedback and no way to distinguish a main
+that actually fanned out from one that worked serially and reported otherwise. The open item at
+`session-bus-thin-dispatcher.md:2685` names this gap directly: *"nothing on this plane distinguishes a
+main that dispatched five concurrent subagents from one that did the same work on its own thread — so
+the only detector is the operator saying so, which is how it ran unchallenged to 1,070 open backlog
+items."* `coordinator-role-failure-modes-and-refactor.md` F-15's `Recur: 0` currently rests on that same
+self-report evidence.
+
+This stub owns the measurement side: turn the assertion into a number, using data already on disk.
+
+#### Research Context
+
+| Intake ID | Title | Relevance | Verdict |
+|-----------|-------|-----------|---------|
+| intake-1106 | Kimi K2.5: Visual Agentic Intelligence (arxiv:2602.02276) | high | worth_investigating — names "serial collapse", supplies no instrumentation |
+| intake-1111#record | OrchBench (arxiv:2607.25656) | high | dive-overturned — requires per-node durations as INPUT, but Appendix D-I's real-side metric definitions (declared/started/completed agents, parallel utilization, workflow depth) are a ready spec |
+| intake-1109 | Single-Agent vs MAS at Equal Token Budgets (arxiv:2604.02460) | high | dive-verified — Appendix B four-bucket breadth-vs-synthesis diagnostic |
+| intake-1127 | AdaMAST (arxiv:2607.16387) | high | dive-verified, adopt_component — Apache-2.0 trace grader, no success/failure oracle required |
+| intake-1110#00 | MAST (arxiv:2503.13657) | medium | dive-overturned — 14-mode taxonomy, FC1/FC3 transfer to our topology, FC2 largely does not |
+
+Related existing work (do NOT duplicate):
+- [`session-bus-thin-dispatcher.md`](coordination-and-churn-pipeline.md) — owns the C36 substrate this collector builds on: per-backend transcript mechanics (Codex `thread_source`, Claude subagents in-process via `claude agents --json`), and the standing rule that **CPU delta is an invalid proxy** for subagent activity.
+- [`coordinator-role-failure-modes-and-refactor.md`](coordinator-role-failure-modes-and-refactor.md) — F-15 (fan-out doctrine), R-17/R-23 (thread-attribution premise), the F-series failure ledger this stub's grading output would cross-walk against.
+- [`repl-turn-efficiency.md`](repl-turn-efficiency.md) — S4 Omega A/B, the metric this collector's data would feed.
+
+#### Corpus, verified on disk 2026-08-13
+
+- **Claude Code**: ~1,843 JSONL under `~/.claude/projects/-workspace/<session>/` (1,611 in `subagents/`, 232 session files). Fields: `agentId`, `parentUuid`, `isSidechain`, `uuid`, `timestamp`, `sessionId`, `promptId`, `message`, `toolUseResult`.
+- **Codex**: ~4,422 rollout files under `~/.codex/sessions/YYYY/MM/DD/`. First record `session_meta` carries `payload.source.subagent.thread_spawn.{parent_thread_id, depth, agent_role}`; every record timestamped.
+- `scripts/coordination/tmux_adapter.py:1376-1441` already opens both formats and parses the subagent structure — currently only for a boolean liveness check, discarding the timing.
+
+#### Tasks
+
+- [x] **FM-1 — Per-subagent timing collector.** ✅ 2026-08-23 — `scripts/coordination/fanout_timing.py`
+  (collect-claude / collect-codex / merge, schema `fanout_timing.v1`), tests in
+  `tests/coordination/test_fanout_timing.py` (14 passed), corpus run in
+  `data/fanout_timing/` (2428 workflows, 4727 subagents; 52 workflows with >=2 overlapping
+  subagents holding 3847 subagents; mean depth 1.38, max 4; 54 workflows joined to queue.jsonl).
+  Extract per-subagent start/finish timestamps from Claude Code and Codex transcripts into a durable record. Spec: OrchBench Appendix D-I real-side metric
+  definitions — Declared/Started/Completed Agents, Parallel Utilization (`Σ subagent active time ÷ (max
+  overlapping subagents × total workflow span)`), Workflow Depth. Do NOT infer edges by keyword-matching
+  between subagent outputs (OrchBench's own weak proxy for this) — our Task/SendMessage records carry
+  real parent→child edges; use those. Output should be joinable against `queue.jsonl` task IDs for a
+  fleet-level view.
+- [x] **FM-5 — Per-subagent OUTCOME accounting (intake-1304; 2026-09-07).** ✅ 2026-09-07 — see the RESULT block below the FM-6 row; read the bounds before quoting any number. Extend the FM-1
+  collector with an outcome bucket per subagent — `produced-and-used` / `produced-and-discarded` /
+  `no-output` / `blocked` / `aborted` — and a token total per bucket, over the existing
+  `data/fanout_timing/` corpus (2428 workflows, 4727 subagents). **Target metric: the share of
+  fan-out tokens spent on subagents whose work was never used.** Comparator, from the only published
+  per-outcome accounting of a large agent swarm: 80.2% of tokens went to non-merged runs and 51.6%
+  to Aborted alone, and that paper's own remediation list projects a 3–10× cost reduction from
+  fixing orchestration without better models. **This is a strictly WEAKER oracle than FM-4 and does
+  NOT block on it** — "was the output used" is derivable from the parent's subsequent tool calls and
+  git diff, and needs no task-success verdict. That is the whole reason to do it first.
+- [x] **FM-6 — Reconnection requirement (intake-1299#05; 2026-09-07).** ✅ 2026-09-07 — orphan rate 35.0%; declared width 1,187 -> measured 928 (-21.8%). A fan-out record counts only if
+  each subagent's output is linked to a backlog row or an artifact path; unlinked output is reported
+  as `orphan` and excluded from the measured fan-out width. Adapted from Prove2Me's rule that work
+  which does not reconnect to the mission decomposition earns no credit at all. Note the direct
+  bearing on this handoff's own premise: an orphan-blind width count cannot distinguish a main that
+  dispatched five subagents usefully from one that dispatched five and used none.
+
+##### FM-5 / FM-6 RESULT — 2026-09-07, and the bounds are part of the result
+
+`scripts/coordination/fanout_timing.py` at schema `fanout_timing.v2` (a strict superset of v1;
+v1 rows are counted as `schema_v1_no_outcome` and never folded into a bucket). Tests:
+`tests/coordination/test_fanout_timing.py`, 14 -> 58, every positive paired with a mutation that
+removes exactly the signal under test. Corpus: `data/fanout_timing/*.v2.jsonl` +
+`outcome-report.v2.json`, **4,278 subagents over 14,004 workflows**.
+
+| bucket | n | share of known | share of tokens |
+|---|---|---|---|
+| produced-and-used | 2,265 | 60.0% | 13.5% |
+| produced-and-discarded | 1,281 | 33.9% | 79.7% |
+| no-output | 122 | 3.2% | ~0% |
+| aborted | 109 | 2.9% | 6.8% |
+| blocked | 0 | 0.0% | 0.0% |
+| *unknown* | *501* | *excluded* | *excluded* |
+
+**HEADLINE — BANDS, NOT POINTS. Revised 2026-09-07 by SC62.** A point estimate here is a
+different and stronger claim than the one that was made, so the projection into the belief kernel
+(`scripts/vidya/adapters/fanout_outcome.py`) refuses to yield a scalar at all: `.point`, `float()`
+and `int()` on the value raise. Over the **3,777 subagents whose outcome is known**:
+
+| quantity | band |
+|---|---|
+| head-count waste | **40.0% – 95.5%** |
+| token waste (`total` basis) | **86.5% – 99.7%** |
+| token waste (`new` basis) | **83.8% – 99.6%** |
+| blocked share | **>= 0.0%, NO upper bound** |
+| unclassifiable | **exactly 501** (census, held out of every denominator) |
+
+**The two ends rest on different EVIDENCE, not different confidence** — this is not a confidence
+interval and must never be rendered as one. Low end: 2,265 `produced-and-used`, an upper bound on
+usefulness because 2,094 of those verdicts are `parent-reference` substring hits (evidence the
+parent *saw* the output, not that it *used* it). High end: 171 `git-landed`, the only proven floor.
+
+**The familiar 86.5% is the LOW END of one band, never the finding.** On the proven-floor reading
+the token ceiling is **99.7%**, because those 171 subagents account for just 2.85B of 1,110.7B
+tokens. Anything citing a single number off this measurement is citing something we did not measure.
+
+**Why the two units disagree by 46 points, which is itself the finding:** discarded subagents are
+the token-heavy ones. Cost does not track head count here, so a width-based cost argument measures
+the wrong thing — which is exactly what the ratified discarded-work clause says.
+
+**Bounds you must carry when citing this:**
+- **`produced-and-used` is an UPPER bound.** 2,094 of its 2,265 verdicts rest on `parent-reference`
+  (a substring hit in a later parent record), which over-fires for a subagent citing a hot path.
+  The **strict floor of PROVEN reuse is `git-landed` = 171 = 4.5% of known subagents.** So
+  head-count waste is the band **40.0% – 95.5%**, and the token bands are above.
+- **`blocked` = 0 is a floor, not a finding.** Neither transcript format carries a blocked marker;
+  only a narrow API-error tail is detectable. A subagent that reported a blocker in prose is
+  sitting in `produced-and-discarded`.
+- **Token totals are provider-cumulative and skewed** (Codex p50 1.27 M, p90 1.68 B): the token
+  share is a statement about a handful of very long threads. The head-count figure is not.
+- **501 `unknown`** (all Codex, parent rollout exceeded the 512 MB reuse-index cap) are reported
+  separately and folded into nothing. They hold 0.1% of tokens.
+- **Codex `written_paths` is a lower bound** (only `apply_patch` headers parsed), so the 38.0%
+  Codex orphan rate is an upper bound.
+- **The corpus is NOT reproducible.** Claude transcripts have been pruned since the v1 snapshot
+  (1,546 -> 1,078 subagents) and the Codex corpus grew (2,344 -> 13,942 workflows). The v2 artifacts
+  are committed *because* of this: a measurement whose corpus no longer exists is unfalsifiable.
+
+**Comparator, for context only:** the external swarm reported 80.2% of tokens to non-merged runs
+and 51.6% to aborted alone. **Our aborted share is 6.8% — an order of magnitude lower — and our
+loss is concentrated in DISCARDED, not aborted.** Different failure, different remedy: their fix is
+crash-loop repair, ours would be reconnection.
+
+**Do NOT read this wave as an argument to narrow the 3–5 fan-out width.** The evidence points the
+other way: in the one study that varied workers-per-task (1/3/5, intake-1305), the 3- and 5-worker
+arms beat 1 worker on **both** wall-clock and token cost at matched completion, and the central
+coordination tier was only ~11% of compute. The cost driver these sources identify is discarded
+work, not width — which is what FM-5 measures.
+
+- [ ] **FM-2 — AdaMAST fixed-catalog grading pilot.** Stage 1 (now): `adamast judge --taxonomy
+  adamast/core/mast.json` over a stratified sample of Codex rollouts and Claude transcripts, one LLM
+  call per trace, no oracle required — the pipeline is deliberately outcome-blind
+  (`outcome_blind_trace()` strips `outcome`/`final_gate_status` before the judge ever sees a trace).
+  Two small enablers first: (a) a `base_url` passthrough in `providers.py` (`SUPPORTED_PROVIDERS =
+  ("openai","anthropic","google","bedrock")`, client constructed with no kwargs) to point the judge at
+  a local endpoint, ~5 lines; (b) a normalizer emitting the 4-field canonical schema
+  (`problem_id, task, raw_trajectory, metadata`) from Claude JSONL, carrying `agentId`/`isSidechain`/
+  `parentUuid` in `metadata`; Codex is detected natively but `thread_spawn` metadata is silently
+  dropped upstream and should be preserved the same way. Stage 2 (after FM-4/oracle work, separately
+  scoped): `adamast generate` to induce a fleet-specific taxonomy — the paper's own evidence (induced
+  vocabulary κ=0.682 vs a hand-crafted comparator at κ=0.516 on TRAIL, and mean pairwise Jaccard 0.14
+  across six domains for independently induced taxonomies) argues an imported 7-framework taxonomy
+  should not be expected to fit our traces as well as one induced on them. Do not trust the repo's
+  built-in agreement gate (four personas of one model, Fleiss κ, no human) as validation; build a small
+  human-graded set if a faithfulness number is ever needed.
+- [ ] **FM-3 — Breadth-vs-synthesis diagnostic.** Apply the four-bucket split from intake-1109 Appendix
+  B (fan-out-right/single-right, single-right/fan-out-wrong, both-right, both-wrong) to FM-1's output
+  once paired serial/fan-out task pairs exist, to answer: does fan-out win by surfacing more candidates,
+  or lose at the integration/synthesis step?
+- [ ] **FM-4 — Success/failure oracle.** Blocking prerequisite for FM-2 Stage 2 and for any accuracy-side
+  A/B. Derive a machine-readable per-session verdict (task exit status, gate result, git outcome) —
+  neither corpus carries one today.
+
+- [x] **FM-7 — Delegation accounting over Claude Code journals (zero inference; intake-2535, intake-2541).** Extend `scripts/coordination/fanout_timing.py` with a `delegation_accounting` report: per main session and per subagent, usage by field (input, cache_creation, cache_read, output), subagent model and effort, first-request input tokens (fixed overhead), final-report output tokens, and every Read `toolUseResult.file` (numLines, startLine, totalLines, chars). Frozen sha256 manifest of `~/.claude/projects/-workspace/**/*.jsonl` at a stated cutoff; all sessions in the denominator, unparsable files counted. Decision rule fixed now: A = Σ(chars/4 of main-thread full reads of files >350 lines × requests remaining in that session) ÷ Σ(main-thread input + cache_creation + cache_read tokens); A ≥ 10% in both the pre- and post-2026-10-15 windows fires M1 in Notes, A < 3% in both closes it, otherwise re-measure in 30 days. Acceptance: tests with paired mutations, the report artifact path, the A value per window, the decision line, and a belief tick (extend `scripts/vidya/adapters/fanout_outcome.py` or `[no-belief: <reason>]`). ✅ 2026-10-31 — commit `8a1ca9227`; test `tests/coordination/test_delegation_accounting.py` (34 paired-mutation tests; FM-5/FM-6 `report` byte-identical vs origin/main); artifact `data/fanout_timing/delegation_accounting_report.v1.json` + rows `delegation_accounting.v1.jsonl` over manifest `delegation_manifest.v1.json` (5,829 files, 13.43 GB, cutoff 2026-10-31T13:03:52Z, all sha256-verified, 0 unparsable lines). **A pre-2026-10-15 = 1.57%, post = 0.007% → decision: M1 declined** (both < 3%; compaction-bounded 0.10% / 0.007%; Bash-inclusive proxy 2.28% / 0.80%, also both < 3%). M2 trigger: higher-tier re-dispatch 0.37% of cheap dispatches over the last 30 days (5/1,343; Codex 1/788) → does not fire. Codex covered: A not computable (no structured read event); proxy, overhead, tier spend in the report. [belief: cc]
+- [ ] **FM-8 — Declarative project subagent types and a main-thread dispatch audit hook (intake-2540, intake-2537, intake-2538).** Add `.claude/agents/explorer.md` (haiku, effort low, tools Read/Grep/Glob, omitClaudeMd true, maxTurns 8, returns only `path:start-end — reason` lines, max 20), `.claude/agents/runner.md` (sonnet, effort medium, Bash/Read/Grep, keeps CLAUDE.md, returns one block per command: command, exit status, pass/fail counts, key error excerpt) and `.claude/agents/clerk.md` (haiku, effort low, docs/logs/handoff text); add `scripts/hooks/check_agent_dispatch.py` on PreToolUse `Agent|Task`, main thread only (no `agent_id`), WARN mode (exit 0, stderr note, JSONL line to `logs/agent_dispatch_audit.jsonl` with hook sha) for a dispatch with no `model` that is not a project type, and for a `fork` given a cheaper `model`. Acceptance: fixture tests with paired mutations (incl. malformed input allows and logs), `/agents` lists the three types, one live dispatch of each type with its model confirmed in `/tasks`, settings diff reviewed.
+- [ ] **FM-9 — Apply the delegation-contract amendment (intake-2535 Stage-3 plan).** **Scope extended by operator 2026-10-31:** once FM-7 verdicts are in, the policy change must also cover Codex worker sessions (agent:2-4), including their sub-delegation and model/effort routing, the Codex delegation contract in `OPERATING_CONSTRAINTS.md` → *Codex Delegation & Long-Horizon Throughput*, and token accounting. FM-7 must therefore also measure Codex session logs where they exist on disk. Apply the approved `agents/README.md` Model Routing diff (subagent types, Haiku-points rule, effort-before-tier escalation, when a cheaper tier pays, four-field brief, per-command and evidence-only return contracts, path:start-end edit input, main+subagent+total accounting); hand the approved `agents/shared/OPERATING_CONSTRAINTS.md` hunk to the operator as one ratify-script command (human-only path). Acceptance: README diff landed, agents_reference_guard and agents_schema_guard pass, `scripts/vidya/cli.py cite-check` exits 0 on the edited files, ratify command delivered and its receipt recorded once the operator runs it.
+#### Notes
+
+Corpus counts above supersede any earlier figure of "4,087 Claude transcripts" circulating from the
+research-intake round that produced this stub (`intake-1110#record` dive_corrections) — that figure was
+overstated ~2.2×.
+
+##### Delegation triggers from the Portal/shunt intake (2026-10-31)
+
+- **M1 — main-thread large-Read redirect.** Fires when FM-7's A ≥ 10% in both windows. Then add a `PreToolUse` `Read` hook gated on missing `agent_id` that blocks full reads (no offset/limit) of files over 350 lines and points the main thread at the `explorer` subagent. Then run a four-arm A/B on a frozen task set from our own repos: raw read, explorer pointers, Spotify-style summary, and goal-conditioned line filter (SWE-Pruner shape). Score task outcome, main/subagent/total tokens and re-read rate. Build cost: about one day for the hook and fixtures, plus the A/B in metered Claude tokens. Closed as declined if A < 3% in both windows. **Declined 2026-10-31 by FM-7** (A = 1.57% / 0.007%).
+- **M2 — Opus advisor for cheap-tier subagents** (`advisorModel: opus`; subagents inherit it). Fires when FM-7 shows cheap-tier subagents re-dispatched at a higher tier in ≥ 15% of dispatches over 30 days. First measure the consult rate on 20 dispatches; build only if consults are > 0. Our Opus 5.5 main accepts only Opus 5+ or Fable advisors. **FM-7 2026-10-31: not fired** (0.37% over 30 days).
+- **M3 — local-stack read worker.** Fires when M1 fires and the explorer A/B shows pointers at least as accurate as raw reads. Then price serving delegated reads from the local worker via the orchestrator MCP (`harness-selection-and-integration.md` HS-4 P6 exports read_range/grep/code_search there). Real constraints: inference windows on the shared host, and CPU decode latency per call. Build cost: a script wrapper plus an MCP timeout setting (HS-17).
+- **FM-8 enforce mode.** Switch the dispatch hook from warn to deny once 14 days of `logs/agent_dispatch_audit.jsonl` show zero false positives on reviewed lines.
+
+## Track: wrap-up-division-of-labor-policy
+<!-- gate: RTG-34, RTG-48 -->
+
+> Folded from `handoffs/active/wrap-up-division-of-labor-policy.md` @ `b1bf3f3f7ade` on 2026-11-02 (BRF-T1-F19, route 1a, operator D1/D5; retired row RTG-51 → RTG-52). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+
+### Wrap-up division of labor — actionable implementation plan
+
+**Status**: ACTIVE — Phases 0–2 and the Phase-3 planner core are pushed on `lane/auditor`; rollout remains off pending compute/wrap integration, protected policy review, and canaries
+**Created**: 2026-08-13
+**Last refined**: 2026-08-13
+**Priority**: P1 — task-boundary durability, fleet documentation consistency, and compute-blocker
+visibility currently depend on contradictory procedures.
+**Owner**: `coordinator-agent` (lifecycle and integration owner)
+**Reviewer**: `auditor`
+**Owning index**: [`routing-and-optimization-index.md`](routing-and-optimization-index.md), `RTG-51`
+**Related work**: `RTG-48` coordinator failure modes; `RTG-34` session-bus dispatcher
+**Rollout state**: `off`; no current worker behavior changes merely because this plan exists.
+
+#### Decision and outcome
+
+The operator's role split is decided and is not reopened here:
+
+- Worker mains perform a lightweight, durable **log checkpoint** at every completed or genuinely
+  blocked task boundary. They do not run the fleet's heavy wrap-up.
+- Coordinator validates checkpoint receipts, integrates accepted lane commits, controls context
+  transitions, and relays fleet-wide wrap triggers. It wraps only its own coordination surfaces.
+- The **auditor IDENTITY** owns review and the heavy wrap. Since P3-7 there is no interactive
+  auditor SESSION: the reviewer function runs as **per-packet headless invocations**, one per
+  completion (P2-7). Per-packet audit and the fleet-wide heavy wrap are therefore two different
+  transactions — see *Heavy wrap* below — and only the latter takes the single-writer lease.
+- Inference alone judges live resource compatibility (graded `compute-window` events) and owns
+  the physical-claim lease vocabulary; the daemon executes compute-window grants deterministically
+  against `compute_policy.yaml` (D4 as amended 2026-08-15/16; BUS_PROTOCOL rule 11 as amended
+  2026-08-16). Coordinator prioritizes eligible work; neither Coordinator nor Auditor manufactures
+  hardware state.
+
+This plan replaces the original planning stub. The audit found that its direction was sound but its
+mechanics were not executable: a worker commit was not visible across lanes, blocked work had no
+typed receipt, the proposed batch index is a single-writer execution campaign, per-agent progress
+logs were rejected by the live currency checker, hooks wrote derived index state after worker
+commits, and the long-lived wrap lease could be reclaimed by a second same-role process. Current
+structural checks pass despite those defects, so each contract below has a negative control.
+
+#### Vocabulary
+
+- **Task boundary**: the worker completed its task, or progress now requires a named other owner,
+  operator decision, resource grant, or external event.
+- **Promptly movable blocker**: the worker has authority and resources to clear it now, within the
+  current work unit, without waiting for another owner, grant, decision, or event. This is not a
+  task boundary; the worker keeps working.
+- **Non-movable blocker**: the worker has exhausted in-scope preparation and can name the owner or
+  event that must occur, the evidence, and the exact resume action.
+- **Log checkpoint**: the worker-owned transaction that records, validates, commits, pushes, and
+  emits a typed receipt for one task boundary.
+- **Heavy wrap**: the transaction that reconciles an immutable receipt cut, files follow-ups,
+  compacts handoffs, regenerates indices, compiles documentation, and publishes once. It is owned
+  by the auditor IDENTITY and executed by a **single headless invocation holding the wrap lease** —
+  NOT by an interactive session, and NOT once per completion. Regenerating indices or compiling the
+  wiki per packet would be wrong and expensive; batching is the point of the immutable cut.
+- **Per-packet audit**: the P2-7 headless invocation that consumes one completion's pointer packet
+  and emits a verdict. It is read-only with respect to indices, the wiki, and `main`. Many of these
+  occur between heavy wraps.
+- **Major checkpoint**: a completed phase or campaign whose integrated state should be reflected in
+  fleet indices and the wiki. It does not mean every task boundary.
+- **Related work**: the same artifacts, premises, or investigation remain load-bearing.
+- **Disjoint work**: productive work needs a fresh context and would not reuse the checkpointed
+  task's reasoning.
+
+#### Authority and write ownership
+
+| Surface or decision | Sole authority | Other roles |
+|---|---|---|
+| Task artifacts, source task checkbox, newly discovered source tasks | Originating worker | Coordinator/Auditor verify read-only |
+| `progress/YYYY-MM/YYYY-MM-DD-<agent>.md` | Named agent | Receipt validator verifies committed copy |
+| Lane commit and lane push | Originating worker | Coordinator verifies remote reachability |
+| Receipt acceptance, lane-integration order, `/clear`, follow-on dispatch | Coordinator | Worker reports facts; Auditor may audit |
+| Audit verdict and audit follow-up rows | Auditor | Worker retains ownership of source completion state |
+| Handoff compaction, domain-index mutation, generated index state, wiki compile | One heavy-wrap writer | Auditor subagents may inspect/propose read-only |
+| Compute window grade, compatibility, physical claim, safe drain | Inference | Coordinator ranks only Inference-eligible candidates; the daemon grants windows per `compute_policy.yaml` (D4) |
+| Cross-lane promotion to `main` | Coordinator integration path | Auditor supplies the reviewed/published packet |
+
+Workers must not mutate domain indices, master generated blocks, wiki manifests, or `main` during a
+log checkpoint. Auditor must not flip a worker-owned checkbox or absorb uncommitted state from
+another lane. Coordinator must not reconstruct an absent worker checkpoint. Derived files have one
+writer and are regenerated only inside the heavy-wrap lease.
+
+The current top-level trust rule forbids handoff and index mutations by subagents without explicit
+operator approval. The proposed narrow exception authorizes exactly one designated wrap executor per
+Coordinator request and lease; it does not authorize parallel mutation.
+
+> **REVISED 2026-08-16 — the interim rule became unsatisfiable and had to be replaced, not merely
+> reworded.** This paragraph previously read: *"Until the protected amendment in Phase 5 is
+> ratified, Auditor main is the heavy-wrap writer and subagents are read-only."* **P3-7 retired the
+> interactive auditor session**, so that sentence has no subject — taken literally the document was
+> left with NO designated heavy-wrap writer, which is worse than an outdated one because it fails
+> silently. Corrected interim rule: **the heavy-wrap writer is the single headless invocation that
+> holds the wrap lease, writing under the auditor identity.** The read-only constraint survives
+> unchanged and now binds every invocation that does NOT hold the lease, which includes every
+> per-packet P2-7 audit.
+>
+> **Identity is not session, and the distinction is load-bearing.** Supplied verbatim by the RTG-52
+> Loop-Owned Fleet session, which owns this mechanism:
+>
+> > Since P3-7 (2026-08-16) the `auditor` roster row is `role: service` with no tmux
+> > endpoint and no `worktree:` key: no pane can be spawned, probed or nudged under
+> > that id. The reviewer function runs as per-packet headless invocations of
+> > `scripts/coordination/headless_audit.py`. The IDENTITY is deliberately NOT
+> > retired — `worker_runner.py` addresses every audit packet to `auditor` and
+> > `headless_audit.py` writes its own outbox under that id, and
+> > `session_bus.py::_check_routing_intent` raises `BusError` on an assignee or
+> > routing target whose roster role is `retired`. Tombstoning it would break the
+> > P2-7 audit path.
+>
+> Any future edit that "cleans up" the retired session by retiring the identity will break audit
+> routing at that raise.
+>
+> **The test this tier must keep passing: does it still work with no interactive auditor?** Every
+> remaining `Auditor` in this document should be read as the identity, executing headlessly. Where
+> a row below says Auditor *subagents* may inspect or propose, that now describes invocations under
+> the identity rather than children of a session.
+
+#### Lifecycle state machine
+
+| Current state | Event | Required action | Next state |
+|---|---|---|---|
+| `WORKING` | Promptly movable blocker | Clear it or finish remaining preparation; emit no boundary receipt. | `WORKING` |
+| `WORKING` | Task completed | Run a log checkpoint with `outcome=completed`. | `CHECKPOINTING` |
+| `WORKING` | Non-movable blocker | Name owner/event and resume action; checkpoint with `outcome=blocked`. | `CHECKPOINTING` |
+| `CHECKPOINTING` | Validation, commit, push, or receipt fails | Preserve the completed prefix and retry idempotently; refuse clear/close. | `CHECKPOINT_FAILED` |
+| `CHECKPOINT_FAILED` | Missing suffix succeeds | Coordinator validates the pushed receipt. | `CHECKPOINT_RECEIVED` |
+| `CHECKPOINT_RECEIVED` | Schema, remote, ownership, or evidence fails | Quarantine receipt with typed reasons; do not audit or integrate. | `REJECTED` |
+| `CHECKPOINT_RECEIVED` | Validation succeeds | Emit one immutable `audit-request` for exact SHA/evidence packet. | `AUDIT_PENDING` |
+| `AUDIT_PENDING` | `accept` or `accept-with-followups` | Coordinator integrates exact reviewed commit; Auditor owns any follow-up rows. | `DURABLE_BOUNDARY` |
+| `AUDIT_PENDING` | `needs-rework` | Coordinator converts findings to ordinary owned backlog work; do not integrate. | `REWORK` |
+| `AUDIT_PENDING` | `blocked-evidence` | Request only the named missing evidence; do not integrate. | `EVIDENCE_BLOCKED` |
+| `DURABLE_BOUNDARY` | Related work ready | Keep context and continue; heavy wrap is asynchronous. | `WORKING` |
+| `DURABLE_BOUNDARY` | Disjoint work ready | Coordinator sends `/clear` alone, confirms it landed, then sends a self-contained brief. | `CLEARING` then `WORKING` |
+| `DURABLE_BOUNDARY` | Alternate work exists behind a blocker | Route blocker to its owner and dispatch alternate work by related/disjoint rule. | `WORKING` |
+| `DURABLE_BOUNDARY` | Worker reports genuinely dry | Coordinator rechecks the queue, then dispatches or sends close. | `WORKING` or `CLOSED` |
+| `DURABLE_BOUNDARY` | `major_checkpoint=true` | Coordinator creates one deduplicated heavy-wrap request with a fixed cut. | Worker stays `WORKING`; wrap becomes `REQUESTED` |
+| Any active state | Clear/close requested before a valid receipt | Refuse it and safely finish the checkpoint. | Unchanged |
+
+A worker may continue related safe work after its pushed checkpoint while audit/integration is
+pending, but no disjoint `/clear`, close, promotion, or completed-state claim is authorized until the
+receipt reaches `DURABLE_BOUNDARY`. A worker never decides fleet-wide dryness and never idles on a compute grant. It reports a durable
+blocker, then drains the bus and takes the next compatible task. A normal `/clear` requires a valid
+checkpoint receipt plus a disjoint next task; it does **not** wait for heavy wrap. Pre-reboot is the
+only standing synchronous heavy-wrap barrier.
+
+#### Worker log-checkpoint contract
+
+The implementation is one command/skill backed by one testable program, not a prose checklist:
+
+- `.claude/skills/log/SKILL.md`
+- `scripts/coordination/worker_checkpoint.py`
+- `tests/coordination/test_worker_checkpoint.py`
+
+For a stable `boundary_id`, it performs this exact order:
+
+1. Verify private-lane identity and resolve the source task by task text, not a stale line number.
+2. Update only worker-owned task state: completed tasks flip the exact box and append
+   `✅ YYYY-MM-DD`; blockers remain open and gain a distinct task with an exact resume action.
+3. Append the boundary result to `progress/YYYY-MM/YYYY-MM-DD-<agent>.md`.
+4. Run ownership, checkbox-sync, scoped diff, and task-specific validation gates.
+5. Commit only explicit owned pathspecs. `git add -A`, peer shards, and unrelated dirty files are
+   forbidden.
+6. Push `lane/<agent>` without promoting it.
+7. Emit the typed receipt containing the pushed SHA. No receipt exists before a successful push.
+
+Retries return the existing receipt or execute only the missing suffix. They must not duplicate a
+progress entry, task row, commit, or bus message. A no-op is valid only when the same `boundary_id`,
+commit, and receipt already validate. Failure leaves a machine-readable checkpoint state and never
+claims durability.
+
+##### Boundary receipt
+
+Add a typed `task-checkpoint` bus kind. It does not replace the existing `task-complete` audit event:
+the checkpoint references that event, or the Coordinator synthesizes it exactly once after accepting
+a completed receipt.
+
+Required common fields:
+
+```yaml
+boundary_id: <agent>:<task_id>:<stable-boundary-sequence>
+outcome: completed | blocked | partial
+boundary_reason: task-boundary | pre-reboot
+task_id: <durable id>
+task_text: <resolved checkbox text>
+spec_ref: <handoff path plus stable task anchor>
+agent: mainA | mainB | mainC | mainD | auditor | coordinator-agent | inference
+branch: lane/<agent>
+commit_sha: <40-hex pushed commit>
+pushed_ref: refs/remotes/origin/lane/<agent>
+progress_path: progress/YYYY-MM/YYYY-MM-DD-<agent>.md
+handoff_paths: [<owned paths>]
+checkbox_flips: [<before/after task identity>]
+new_tasks: [<task identity and owner>]
+validation: [{command: <argv>, exit_code: 0, evidence_ref: <ref>}]
+next_context: related | disjoint | dry | pre-reboot
+major_checkpoint: true | false
+completed_at: <UTC RFC3339>
+```
+
+`outcome=blocked` additionally requires:
+
+```yaml
+blocker_class: dependency | operator-decision | external-event | compute
+blocked_on: <specific condition>
+blocking_owner_or_event: <named owner or event>
+evidence_refs: [<durable refs>]
+alternatives_exhausted: [<attempted in-scope alternatives>]
+resume_action: <first executable action after unblock>
+compute_request: <typed request or null>
+```
+
+`outcome=partial` is legal only for `boundary_reason=pre-reboot`. It never flips the completion box
+and requires the same evidence and exact resume action as a blocker.
+
+Coordinator accepts a receipt only if its author matches the roster/lane, the SHA is reachable from
+the stated remote ref, the commit contains the named per-agent progress shard and handoff changes,
+and all paths are owned by that worker. A local-only SHA, unsuffixed progress file, peer progress
+shard, forged author, or post-commit log edit fails closed.
+
+An accepted receipt produces one `audit-request`. Auditor responds with a typed `audit-verdict`
+containing `checkpoint_id`, exact audited SHA, verdict (`accept`, `accept-with-followups`,
+`needs-rework`, or `blocked-evidence`), evidence references, findings, and follow-up task IDs.
+Coordinator integrates only the first two verdicts. Auditor never directs a worker; rework and
+follow-ups return through Coordinator as ordinary owned tasks.
+
+#### Heavy-wrap contract
+
+A heavy wrap begins only from a typed `wrapup-request` issued by Coordinator. Valid reasons are:
+
+- explicit operator request;
+- an accepted major-checkpoint receipt;
+- a pre-reboot barrier;
+- an Auditor `wrapup-due` proposal that Coordinator accepts.
+
+The request carries `request_id`, reason, synchronization mode, and the exact accepted receipt IDs
+or cutoff timestamp. Receipts arriving after the cut belong to the next wrap. “Auditor cadence” means
+Auditor may propose that a wrap is due; it does not authorize an untracked autonomous mutation.
+
+After Coordinator has integrated every eligible lane checkpoint in the cut, the designated writer
+acquires one operation-token lease and performs the ordered transaction:
+
+1. Sync from the integrated `origin/main` commit named in the request.
+2. Reconcile every included receipt and record every explicit exclusion.
+3. File Auditor-owned follow-ups; never rewrite worker-owned completion state.
+4. Compact/prune handoffs and update each owning domain index.
+5. Regenerate timeline/index state and run structural and ownership checks.
+6. Run remaining documentation and freshness work.
+7. Compile the wiki as the **last documentation-content mutation**.
+8. Commit exact paths, push the Auditor lane, and hand the reviewed packet to Coordinator promotion.
+9. Verify promoted `main`, then emit `wrapup-complete` and release the lease in a trap.
+
+The wiki is not literally the final shell command: commit, push, promotion, verification, receipt,
+and lease release follow it. A failed asynchronous wrap remains queued and does not stop workers. A
+failed synchronized pre-reboot wrap keeps the barrier closed.
+
+`wrapup-complete` names the request and included receipts, exclusions, source and promoted SHAs,
+generated-artifact hashes, validation results, wiki manifest/watermark, and lease operation ID.
+
+#### Compute-blocker intake and graded window contract
+
+`handoffs/active/eval-tower-program.md` is **not** the generic intake surface. It is a v7-era,
+single-writer execution campaign whose manifest and ledger are owned by `/loop`; its boxes must not
+be mutated by Auditor. This plan leaves that authority intact.
+
+The source of truth for compute-ready work is the accepted `task-checkpoint` receipt, its typed
+compute request, and Inference's append-only intake dispositions. Coordinator forwards a
+`compute-blocker`; Inference alone moves it through
+`submitted -> admitted|duplicate|needs-info|rejected -> ready -> planned -> granted|denied -> running -> terminal`.
+A daemon builds a reconstructible, read-only projection of admitted/ready records at
+`coordination/session-bus/compute_ready.json`; no human or worker edits the generated candidate
+block. The existing `coordination/backfill/ready_hint.txt` becomes a pointer derived from that
+projection, not a second truth source. Proposed implementation:
+
+- `scripts/coordination/compute_ready.py`
+- `coordination/session-bus/compute_ready.json`
+- `tests/coordination/test_compute_ready.py`
+- schema and relay changes in the existing session-bus files
+
+Each candidate carries task/spec identity, source receipt, minimum window grade, CPU bandwidth
+class, GPU/device/VRAM requirements, model and weight identity, estimated load/occupancy/duration,
+contention and pausability class, operator gates, expiry, and graph-derived live downstream tasks.
+
+Each disposition carries a stable `blocker_id`, source checkpoint, reason code, and prior-event ID;
+status changes are new events, never in-place edits. Auditor verifies coverage during heavy wrap but
+does not admit or status the intake. Only Inference emits a typed `compute-window` event:
+
+```yaml
+grade: small-model-only | load-then-keep-hot | full-idle
+eligible_devices: [<device/region>]
+cpu_bandwidth_class: <class>
+gpu_vram_available: <bytes plus observation refs>
+resident_model: <identity or null>
+load_allowed: true | false
+starts_at: <UTC RFC3339>
+expires_at: <UTC RFC3339>
+time_budget_seconds: <integer>
+safe_drain_at: <condition/time>
+observation_refs: [<multi-sample evidence>]
+```
+
+A window grade is a compatibility label, not a total ordering; explicit budgets decide fit. A window
+announcement is advisory and never substitutes for the existing typed resource lease.
+Inference filters candidates for live compatibility and owns execute/lease choice. Coordinator then
+ranks the eligible set deterministically by:
+
+1. explicit operator `must-run` override, if any;
+2. number of currently live downstream tasks made fire-ready, derived from a pinned
+   `.index-graph.json` hash;
+3. direct handoffs unlocked, then transitive open dependants;
+4. production priority class;
+5. exact window fit, grouping same-weight work for `load-then-keep-hot`;
+6. oldest accepted checkpoint;
+7. stable blocker ID.
+
+The dispatch contains only the selected finite batch, its rank evidence, window ID, and lease path.
+Unknown grades, expired windows, missing evidence, incompatible weights, or unleased execution fail
+closed. Inference may skip a higher-ranked candidate only with a typed incompatibility reason for the
+current window; Coordinator may not override fit, and Inference may not rewrite leverage or priority.
+
+#### Implementation sequence
+
+Each phase has an independent commit and must leave the current workflow usable. Safety repairs land
+before role cutover.
+
+##### Phase 0 — publish the contract
+
+- [x] Audit current lifecycle, bus, progress, hook, batch, role, and lease contracts. ✅ 2026-08-13
+- [x] Replace the stub with this authority table, state machine, typed protocols, migration matrix,
+      rollout gates, and acceptance suite. ✅ 2026-08-13
+- [x] Correct ownership to `RTG-51`; remove the stale `d7b83ddf` dependency (already in
+      `origin/main`). ✅ 2026-08-13
+- [x] Publish a standalone implementation-audit flowchart covering Coordinator, mainA–D,
+      Auditor, Inference, failure loops, authority boundaries, and deployment gaps. ✅ 2026-08-13
+
+##### Phase 1 — repair foundations before changing behavior
+
+- [x] Change `progress_log_currency()` to validate receipt-bound per-agent progress evidence. ✅ 2026-08-13 (`20640d55`)
+  Keep unsuffixed logs for historical reads only. Add negative controls for local-only SHA, peer
+  shard, post-receipt edit, and no-boundary state.
+- [x] **Autonomous writers:** remove `index_state.py` writes from post-commit/merge/checkout hook ✅ 2026-08-13 (`60187101`)
+- [x] **Step-3 prune selection no longer keys on `open == 0`** ✅ 2026-08-18 (`428c7bb6`). That read
+  the ABSENCE OF OPEN CHECKBOXES as the PRESENCE OF COMPLETION — the same category error as using
+  mtime for `last_advanced`. Measured across the 15 handoffs then reporting `open == 0`: **13 were
+  false positives** (compatibility pointers, work stated in prose and never checkboxed, prompts and
+  notes-only references that never carried tasks, and handoffs whose remaining boxes are
+  guarded/blocked). `scan_handoff` now also reads the status region and the structural open-work
+  markers, emitting `prune: {candidate, blocker, evidence}` — conservative by construction, every
+  rejection naming its blocker and quoting the evidence line. `agents/commands/wrap-up.md` Step 3
+  documents the replacement selection command and states it is a **screen, not a verdict**.
+  17 tests; the screen is proven non-vacuous by a real-world positive control.
+      bodies; make `install_timeline_hook.sh` upgrade its marked block; prove a worker handoff commit
+      leaves `.index-state.json`, `.index-graph.json`, and master generated content unchanged.
+- [x] **Wiki hook:** ensure ordinary post-commit retrieval refresh cannot mutate ✅ 2026-08-13 (`60187101`)
+      `wiki/source_manifest.json` or the wrap watermark; give retrieval its own cursor if needed.
+- [x] **Lease:** replace roster/PID reclaim with an opaque per-operation token in a mode-0600 token ✅ 2026-08-13 (`8ff5162c`)
+      file, store its hash in the lock, require the token for normal release, and audit explicit
+      force-release. A second same-roster process without the token must be refused.
+
+Phase gate: focused progress, hook, lease, and concurrent-wrap suites pass, including a negative
+control that would have admitted the previous same-role lease collision.
+
+##### Phase 2 — implement checkpoint and receipt in shadow mode
+
+- [x] Add the log skill, checkpoint program, typed schema, relay/fold validation, and idempotence
+      journal. ✅ 2026-08-13 (`82c1c5b4`)
+- [x] Preserve the existing completed-task audit flow without duplicate `audit-request` synthesis. ✅ 2026-08-13 (`82c1c5b4`)
+- [x] Add Coordinator validation for remote reachability, path ownership, exact task identity, and
+      committed progress evidence. ✅ 2026-08-13 (`82c1c5b4`)
+- [x] Shadow-record complete, blocked, and pre-reboot boundaries without rejecting legacy behavior.
+      ✅ 2026-08-23 — `scripts/coordination/rtg51_rollout.py` + `coordination/session-bus/rtg51_rollout.yaml`
+      (`worker_checkpoint_receipts: off|shadow|enforce`). Shadow validates every receipt class
+      (complete, blocked, partial/pre-reboot), writes each result as a finding-shaped observation on
+      the bus, and never rejects; enforce refuses defects; `RTG51_SHADOW_MODE=1` forces the canary
+      grade. `tests/coordination/test_rtg51_rollout.py` pins shadow-records/never-rejects and
+      enforce-refuses.
+
+Phase gate: two workers can checkpoint concurrently without sweeping peer hunks; failed validation,
+commit, or push cannot produce an accepted receipt; a repeated `boundary_id` produces no duplicate.
+
+##### Phase 3 — implement compute-ready projection and admission
+
+- [x] Implement and test the pure, deterministic compute-ready projection/ranking core without
+      creating a live intake or dispatch path. ✅ 2026-08-13 (`7623e37c`)
+- [x] Add compute request/window schemas, the reconstructible projection, graph-derived leverage,
+      stable ranking, and focused bus dispatch. ✅ 2026-08-23 — `compute-window` and
+      `compute-blocker` kinds in `session_bus.schema.json` (blocker lifecycle as append-only
+      disposition events, never in-place edits; only `inference` authors windows/dispositions),
+      `scripts/coordination/compute_ready_daemon.py` rebuilding `coordination/session-bus/compute_ready.json`
+      via the landed planner core (cross-validates each forward against its accepted receipt;
+      self-hash + deterministic-replay `check`). Daemon integration tests appended to
+      `tests/coordination/test_compute_ready.py`.
+- [ ] Encode the authority split in Coordinator and Inference role files.
+- [ ] Leave `inference-batch-loop.md`, its manifest, and its `/loop` single-writer protocol
+      unchanged except for an explanatory cross-reference if useful.
+
+Phase gate: small-model, keep-hot, full-idle, expired, wrong-weight, insufficient-VRAM, and missing
+lease cases are deterministic; only Inference can declare compatibility or grant a claim.
+
+##### Phase 4 — make heavy wrap atomic and receipt-driven
+
+- [x] Update `agents/commands/wrap-up.md` for request ID, immutable receipt cut, one designated
+      writer, operation-token lease, ordered mutations, Coordinator promotion handoff, and completion
+      receipt. ✅ 2026-10-07 — MAIN source-only review; conditional typed transaction contract now explicit. Protected Phase-5 ratification and actual Auditor canary remain open; no runtime activation.
+- [x] Fix the deterministic `test_full_wrap_transaction_end_to_end` failure (filed 2026-09-08
+      wrap-up). The heavy-wrap e2e fails at its progress-shard assertion (`progress/2026-08/
+      2026-08-23-auditor.md` missing after the run) on a PRISTINE HEAD checkout — proven twice
+      independently (a scratch `git archive` run and a stash-run of the same test), so it is not
+      environment or this session's manifest fix. The defect is upstream of `step_7_compile_wiki`:
+      the run completes all earlier steps yet never writes the auditor's daily shard that step 6
+      asserts.
+      ✅ Fixed by `40034bf1` (2026-09-16, KB-WM-4), never ticked: a TEST defect, not a code one — the
+      assertion hard-coded the fixture day `2026-08-23` while `step_6_freshness` stamps the shard with
+      the wall clock; the test now globs `progress/*/*-{AGENT}.md`. Re-verified 2026-09-24:
+      `test_heavy_wrap.py` 14/14, the e2e case 20/20 repeated runs, fixture fully under `tmp_path`.
+- [x] Update concurrent-wrap tests: two same-roster executors contend, only one mutates, crash ✅ 2026-08-13 (`8ff5162c`)
+      residue remains held, wrong tokens cannot release, and all worktrees share the common-git-dir
+      lease.
+- [x] Add receipt inclusion/exclusion and post-cut deferral tests. ✅ 2026-08-23 —
+      `tests/coordination/test_heavy_wrap.py` pins pure `reconcile_receipts` (exact-id set,
+      cutoff mode, `post-cut-deferral` for receipts after the cut, duplicates, wrong-kind,
+      absent named ids) plus the executor-level lease tests (two same-roster executors with
+      distinct operation tokens contend and only one mutates; wrong token cannot release;
+      crash residue stays held until a named displacement; dry-run mutates nothing).
+
+Phase gate: one real Auditor canary consumes two concurrent worker receipts and promotes one complete,
+reproducible wrap packet with no lost generated contribution.
+
+##### Phase 5 — migrate standing policy as a protected package
+
+- [ ] Reconcile every superseded instruction in the migration matrix below. Keep protected policy in
+      a separate reviewable commit; do not change `human_only_paths.yaml` or its pin.
+- [ ] Present the `CLAUDE.md`/`AGENTS.md` and `agents/shared/*` amendment for operator signoff. The
+      subagent exception, if retained, must be narrow: one designated writer, one request, one lease.
+- [ ] After merge, Coordinator sends each live session a correlated instruction-refresh nudge naming
+      the merged SHA and exact files. Each agent rereads its common and role files and acknowledges
+      from its own outbox before enforcement.
+- [ ] Restart the session-bus daemon at its owner's boundary and prove process start time is newer
+      than every changed runtime file.
+
+##### Phase 6 — canary, enforce, and retire the old path
+
+- [x] Add rollout modes: `worker_checkpoint_receipts: off|shadow|enforce`,
+      `auditor_full_wrap: off|shadow|enforce`, and `compute_window_plan: off|observe|enforce`.
+      ✅ 2026-08-23 — `coordination/session-bus/rtg51_rollout.yaml` is policy-as-data;
+      `scripts/coordination/rtg51_rollout.py` loads it (env override `RTG51_SHADOW_MODE=1` for
+      canary runs) and gates the checkpoint receipts, the heavy wrap (`off` refuses a real run,
+      `shadow` forces dry-run + finding observations, `enforce` runs the ordered transaction),
+      and the compute plan. Default is `off`: no live behavior changes merely because the plan
+      exists.
+- [ ] Canary one completed boundary, one non-compute blocker, one compute blocker, two concurrent
+      workers, one Auditor wrap, and one simulated pre-reboot barrier.
+- [ ] Move to enforcement only after complete, blocked, and pre-reboot cases each pass three
+      consecutive real/simulated boundaries with no manual repair and every live role acknowledges
+      the new instructions.
+
+#### Policy migration matrix
+
+| Surface | Superseded behavior | Required replacement | Gate |
+|---|---|---|---|
+| `coordination/session-bus/tasks/MAIN-GOALS.md` | Worker behavior does not name the checkpoint transaction | Require checkpoint receipt at every terminal boundary | Phase 5 |
+| `coordination/session-bus/tasks/STANDING-MAIN-RULES.md` | Workers full-wrap at major checkpoints; progress path is unsuffixed | Workers checkpoint; per-agent shard; Coordinator triggers heavy wrap | Phase 5 |
+| `coordination/session-bus/tasks/post-reboot-session.md` §6 | Each main writes its own wrap-up | Per-worker pushed receipt plus one synchronized fleet wrap | Phase 5 |
+| Current mainA–D briefs | Explicit worker `/wrap-up` instructions | Regenerate briefs after common policy lands | Instruction ack |
+| `agents/shared/SESSION_LIFECYCLE.md` | Disjoint task and major checkpoint require worker full wrap | Every terminal boundary checkpoints; disjoint then clears; heavy wrap async except reboot | Operator signoff |
+| `agents/shared/OPERATING_CONSTRAINTS.md` | Phase-boundary/full-wrap and generic fan-out language conflict with one writer | Separate read-only fan-out from designated mutation | Operator signoff |
+| `agents/commands/wrap-up.md` | Manual-only/narrow audit trigger; wiki not literally last; PID-style lease usage | Coordinator request, immutable cut, one writer, wiki last content mutation, token lease | Phase 4 |
+| `agents/auditor-main.md` | Full wrap after every audit pass | Audit checkpoint per pass; heavy wrap only from typed request | Phase 5 |
+| `agents/coordinator-agent.md` | May tell a main/subagent to wrap without receipt cut | Validate/integrate receipts and issue deduplicated request | Phase 5 |
+| `agents/inference-main.md` | Resource selection exists but graded-window division is implicit | Inference owns grade/compatibility/claim; Coordinator owns ranking | Phase 3/5 |
+| `CLAUDE.md` / generated `AGENTS.md` | Subagent handoff/index writes forbidden | Preserve prohibition or ratify narrow designated-writer exception | Operator signoff |
+| `session_bus_coordinator.py` | Checks only unsuffixed progress file | Verify committed per-agent shard from accepted receipt | Phase 1 |
+| Timeline hooks | Regenerate index state after any handoff commit | Timeline-only hook; derived index regeneration inside heavy wrap | Phase 1 |
+
+#### End-to-end acceptance matrix
+
+| Scenario | Required result |
+|---|---|
+| Completed task, related follow-on | Pushed checkpoint accepted; context retained; no heavy-wrap wait |
+| Completed task, disjoint follow-on | Pushed checkpoint accepted; `/clear` delivered alone; brief follows confirmation |
+| Movable blocker | Worker continues; no terminal blocker receipt |
+| Non-movable blocker | Typed evidence/resume action accepted; blocker routed; worker receives other work |
+| Compute blocker | Candidate appears in generated compute-ready projection, never directly in `/loop` ledger |
+| Failed validation/commit/push | No accepted receipt, clear, close, or success claim |
+| Duplicate boundary | Same receipt returned; no duplicate docs, commit, or message |
+| Peer or unrelated dirty hunk | Excluded from pathspec; checkpoint either succeeds safely or refuses |
+| Major checkpoint | Exactly one asynchronous wrap request for an immutable cut |
+| Concurrent Auditor executors | One enters; all others are refused without the operation token |
+| Receipt after wrap cutoff | Deferred explicitly to next wrap |
+| Graded compute window | Only compatible, leased tasks dispatched in deterministic order |
+| Pre-reboot | Every roster receipt and Inference drain validates; one synchronous heavy wrap; then ready |
+
+Required validation includes the worker/checkpoint tests, full session-bus schema/relay/fold suite,
+progress-currency tests, hook installer/non-writer tests, serialized-push and concurrent-wrap tests,
+compute-grade/ranking tests, agent-file validators, `index_state.py --check`, claim grammar, README
+freshness, and wiki manifest/lint checks. Passing the current legacy suite alone is not acceptance.
+
+#### Rollout and rollback
+
+Start `off`, then `shadow`, then `enforce`. Shadow mode records and validates the new receipts while
+legacy behavior remains available. Enforcement is fleet-wide only after the protected policy package,
+live daemon reload proof, and instruction acknowledgments land.
+
+Immediately return the affected flag to `shadow` or `off` if a compliant worker gets a false progress
+defect, two heavy-wrap writers enter, a worker changes a generated/index/wiki surface, a pushed
+receipt cannot be reconstructed, a source receipt is omitted, a wrong compute grade admits a task,
+promotion loses prior state, or any live role has not acknowledged the instruction SHA.
+
+Rollback never deletes receipts or force-pushes. Pause new heavy wraps, let workers keep checkpointing
+their lanes, inspect the lease, force-release only proven residue with an audit reason, and regenerate
+derived state from authoritative handoffs under one valid lease. Keep independent safety fixes
+(per-agent progress support, autonomous-writer removal, and lease hardening) unless their own tests
+fail.
+
+#### Pre-reboot barrier
+
+1. Coordinator announces a cut and stops dispatching work that cannot reach a safe drain point.
+2. Every worker finishes or safely stops its unit, pushes a checkpoint with
+   `next_context=pre-reboot`, and names the resume action for incomplete work.
+3. Inference drains active work and records/releases physical claims under its own contract.
+4. Coordinator validates the roster receipts, integrates the cut, and checkpoints its coordination
+   surfaces.
+5. Coordinator issues one synchronized `wrapup-request` with the complete cut.
+6. Auditor performs and publishes the heavy wrap.
+7. Coordinator validates `wrapup-complete` and roster coverage. Only then is reboot readiness true.
+
+A missing/unpushed worker receipt, unreleased claim, failed promotion, missing wiki watermark, or
+failed heavy wrap keeps the barrier closed.
+
+#### Immediate next action
+
+Finish the open integration seams in this order:
+
+1. connect typed compute blocker/intake/window events and the pushed planner core to the bus under
+   Inference-owned compatibility and lease authority;
+2. implement the receipt-cut heavy-wrap executor and completion receipt on the hardened lease;
+3. shadow the complete, blocked, pre-reboot, compute, and immutable-cut paths;
+4. present the protected Phase-5 instruction package for operator approval, then canary before
+   enforcement.
+
+The current implementation and its remaining gaps are rendered in
+[`docs/coordination/session-bus-task-flow.html`](../../docs/coordination/session-bus-task-flow.html).
+The only operator-only action is approval/merge of the protected Phase 5 policy package and any
+narrow subagent-writer exception.

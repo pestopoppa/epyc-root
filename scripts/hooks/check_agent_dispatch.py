@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """PreToolUse hook (matcher ``Agent|Task``): audit main-thread subagent dispatches.
 
-FM-8 (handoffs/active/fleet-fanout-measurement.md). WARN MODE ONLY: this hook
+FM-8 (handoffs/active/loop-owned-fleet-implementation.md). WARN MODE ONLY: this hook
 always exits 0. It never blocks a dispatch, including on malformed input or an
 internal error. Enforce mode is a later, separate operator decision.
 
