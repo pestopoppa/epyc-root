@@ -1,0 +1,394 @@
+{
+ "schema": "brf-d7-decisions.v1",
+ "decided_at": "2026-11-02T18:55Z",
+ "decided_by": "operator (AskUserQuestion, ws58 session)",
+ "basis": "accepted every recommended option for folds 1-8 (batch 1)",
+ "decisions": [
+  {
+   "choice": "speech-and-multimodal#1",
+   "task_id": "CS-12",
+   "manifest_id": "d7dab497b758",
+   "fold": 1,
+   "dest": "speech-and-multimodal.md",
+   "question": "CS-12: prepare and sign the stack change putting whisper + qwentts on the second MI210 beside 35B-A3B?",
+   "chosen": "A",
+   "chosen_text": "Prepare now, sign when the card is in service",
+   "gated": [
+    "d7dab497b758"
+   ]
+  },
+  {
+   "choice": "speech-and-multimodal#2",
+   "task_id": "CS-27",
+   "manifest_id": "4e64fde40d3d",
+   "fold": 1,
+   "dest": "speech-and-multimodal.md",
+   "question": "CS-27: enable a persona voice under the voice-cloning guardrail?",
+   "chosen": "B",
+   "chosen_text": "Keep default deny",
+   "gated": [
+    "4e64fde40d3d"
+   ]
+  },
+  {
+   "choice": "speech-and-multimodal#3",
+   "task_id": "CS-41",
+   "manifest_id": "5bcf7d9ec4ec",
+   "fold": 1,
+   "dest": "speech-and-multimodal.md",
+   "question": "CS-41: move to model-decided LOCAL answers after CS-24?",
+   "chosen": "A",
+   "chosen_text": "Proceed when CS-24 meets the operator-set precision/recall target",
+   "gated": [
+    "5bcf7d9ec4ec"
+   ]
+  },
+  {
+   "choice": "eval-tower-program#1",
+   "task_id": null,
+   "manifest_id": "a3b9213737aa",
+   "fold": 2,
+   "dest": "eval-tower-program.md",
+   "question": "EV-11 re-baseline: ratify the implemented closed-bin ECE (EV-11b) so `screen_paired_arms` can become decision-gating via a codified recipe?",
+   "chosen": "A",
+   "chosen_text": "Ratify closed-bin ECE for EV-11",
+   "gated": [
+    "a3b9213737aa"
+   ]
+  },
+  {
+   "choice": "eval-tower-program#2",
+   "task_id": null,
+   "manifest_id": "0b33d447bc6c",
+   "fold": 2,
+   "dest": "eval-tower-program.md",
+   "question": "Cluster E: approve the interim neutralisation (ECE/AUC observation-only) so constant 0.0 stops inflating the rlvr tier score?",
+   "chosen": "A",
+   "chosen_text": "Approve interim neutralisation (sign off if scoring weights are touched)",
+   "gated": [
+    "0b33d447bc6c"
+   ]
+  },
+  {
+   "choice": "eval-tower-program#3",
+   "task_id": null,
+   "manifest_id": "ccf4635e2175",
+   "fold": 2,
+   "dest": "eval-tower-program.md",
+   "question": "Adopt a judge anchor rule: every judge-scored gating metric is paired with a judge-independent verifier and the gap is reported (intake-875)?",
+   "chosen": "A",
+   "chosen_text": "Adopt",
+   "gated": [
+    "ccf4635e2175"
+   ]
+  },
+  {
+   "choice": "eval-tower-program#4",
+   "task_id": null,
+   "manifest_id": "56a745685590",
+   "fold": 2,
+   "dest": "eval-tower-program.md",
+   "question": "Run the dual-judge offline audit (clean vs bias-augmented rubric, gap per judge config; intake-874)?",
+   "chosen": "A",
+   "chosen_text": "Run it",
+   "gated": [
+    "56a745685590"
+   ]
+  },
+  {
+   "choice": "eval-tower-program#5",
+   "task_id": null,
+   "manifest_id": "05740a5bbc21",
+   "fold": 2,
+   "dest": "eval-tower-program.md",
+   "question": "Extend the bias-robustness probe set with the four CHERRL bias families plus an exploitability axis (intake-874)?",
+   "chosen": "A",
+   "chosen_text": "Extend",
+   "gated": [
+    "05740a5bbc21"
+   ]
+  },
+  {
+   "choice": "eval-tower-program#6",
+   "task_id": null,
+   "manifest_id": "25b1e5dbea70",
+   "fold": 2,
+   "dest": "eval-tower-program.md",
+   "question": "Split (scope, do not delete) the cross-family judge claim at the top of eval-tower-verification.md (intake-875/1168)?",
+   "chosen": "A",
+   "chosen_text": "Scope the claim to the failure mode it holds for",
+   "gated": [
+    "25b1e5dbea70"
+   ]
+  },
+  {
+   "choice": "eval-tower-program#7",
+   "task_id": "EV-14b",
+   "manifest_id": "3b54b3699cee",
+   "fold": 2,
+   "dest": "eval-tower-program.md",
+   "question": "EV-14b: should the measured band BLOCK (record sub-band deltas as `unresolved`)?",
+   "chosen": "A",
+   "chosen_text": "Give the gate the third state (`unresolved`)",
+   "gated": [
+    "3b54b3699cee"
+   ]
+  },
+  {
+   "choice": "eval-tower-program#8",
+   "task_id": null,
+   "manifest_id": "12c46ff2e68b",
+   "fold": 2,
+   "dest": "eval-tower-program.md",
+   "question": "B7 scorer-semantics sign-off for EV-4 (textual multiple-choice label handling changed scoring semantics).",
+   "chosen": "A",
+   "chosen_text": "Sign off and re-run EV-4",
+   "gated": [
+    "12c46ff2e68b"
+   ]
+  },
+  {
+   "choice": "eval-tower-program#9",
+   "task_id": null,
+   "manifest_id": "a8b6d1f2a115",
+   "fold": 2,
+   "dest": "eval-tower-program.md",
+   "question": "Eval-tower pool registration for LCB-hard / BCB-hard / SWE-oracle once they prove discriminative.",
+   "chosen": "B",
+   "chosen_text": "Supplementary pool",
+   "gated": [
+    "a8b6d1f2a115"
+   ]
+  },
+  {
+   "choice": "engineering-hygiene-backlog#1",
+   "task_id": null,
+   "manifest_id": "b5445199e975",
+   "fold": 3,
+   "dest": "engineering-hygiene-backlog.md",
+   "question": "Backup W2: choose the off-host target for `backup_critical.sh`.",
+   "chosen": "A",
+   "chosen_text": "Configure an off-host target",
+   "gated": [
+    "b5445199e975"
+   ]
+  },
+  {
+   "choice": "engineering-hygiene-backlog#2",
+   "task_id": "LOOP-46",
+   "manifest_id": "a6ab3df6978d",
+   "fold": 3,
+   "dest": "engineering-hygiene-backlog.md",
+   "question": "LOOP-46: sign off the D9 hook edit (judge the commit it guards, not the shared clone)?",
+   "chosen": "A",
+   "chosen_text": "Sign off",
+   "gated": [
+    "a6ab3df6978d"
+   ]
+  },
+  {
+   "choice": "engineering-hygiene-backlog#3",
+   "task_id": "LOOP-50",
+   "manifest_id": "e00730df34ba",
+   "fold": 3,
+   "dest": "engineering-hygiene-backlog.md",
+   "question": "LOOP-50: sign off wiring the tick/deletion science gate as blocking in pre-commit.extras?",
+   "chosen": "A",
+   "chosen_text": "Sign off (blocking)",
+   "gated": [
+    "e00730df34ba"
+   ]
+  },
+  {
+   "choice": "engineering-hygiene-backlog#4",
+   "task_id": "LOOP-53",
+   "manifest_id": "ff748d37fa1b",
+   "fold": 3,
+   "dest": "engineering-hygiene-backlog.md",
+   "question": "LOOP-53: implement the `EPYC_ALLOW_SCRATCH_DELETE` override (logged) or remove it from the message?",
+   "chosen": "A",
+   "chosen_text": "Implement the logged override",
+   "gated": [
+    "ff748d37fa1b"
+   ]
+  },
+  {
+   "choice": "engineering-hygiene-backlog#5",
+   "task_id": "NIB2-94",
+   "manifest_id": "c25e11233421",
+   "fold": 3,
+   "dest": "engineering-hygiene-backlog.md",
+   "question": "NIB2-94: rotate the HF token that sat in a curl argv (readable in `ps`) for ~68 minutes on 2026-10-20?",
+   "chosen": "A",
+   "chosen_text": "Rotate the token",
+   "gated": [
+    "c25e11233421"
+   ]
+  },
+  {
+   "choice": "engineering-hygiene-backlog#6",
+   "task_id": "NIB2-97",
+   "manifest_id": "0308fb5f4d6a",
+   "fold": 3,
+   "dest": "engineering-hygiene-backlog.md",
+   "question": "NIB2-97 (b): D9-ack the `scripts/hooks/earlyoom_audit.sh` /proc snapshot (hook-file edit)?",
+   "chosen": "A",
+   "chosen_text": "Acknowledge",
+   "gated": [
+    "0308fb5f4d6a"
+   ]
+  },
+  {
+   "choice": "engineering-hygiene-backlog#7",
+   "task_id": "NIB2-89",
+   "manifest_id": "c726738c619e",
+   "fold": 3,
+   "dest": "engineering-hygiene-backlog.md",
+   "question": "NIB2-89: D9-ack landing the H-4 self-restart generalisation under scripts/coordination/** (no runtime effect while bus_supervisor stays DOWN)?",
+   "chosen": "A",
+   "chosen_text": "Acknowledge and land dormant",
+   "gated": [
+    "c726738c619e"
+   ]
+  },
+  {
+   "choice": "engineering-hygiene-backlog#8",
+   "task_id": null,
+   "manifest_id": "8ef5527bb58e",
+   "fold": 3,
+   "dest": "engineering-hygiene-backlog.md",
+   "question": "Operator review of `refactor/containment-scanner` (safety boundary for INC-20260823): merge or reject?",
+   "chosen": "A",
+   "chosen_text": "Merge after reading CONTAINMENT-SCANNER-CHANGES-FOR-REVIEW.md",
+   "gated": [
+    "8ef5527bb58e"
+   ]
+  },
+  {
+   "choice": "engineering-hygiene-backlog#9",
+   "task_id": "C5-05",
+   "manifest_id": "71f2858d4bb0",
+   "fold": 3,
+   "dest": "engineering-hygiene-backlog.md",
+   "question": "C5-05: delete the `campaign.py` CLI cluster (~20k LOC), a fourth plane outside the three approved?",
+   "chosen": "A",
+   "chosen_text": "Approve the deletion",
+   "gated": [
+    "71f2858d4bb0"
+   ]
+  },
+  {
+   "choice": "stack-lifecycle-program#1",
+   "task_id": "SEC-ART-POST",
+   "manifest_id": "e57f9d4596c1",
+   "fold": 4,
+   "dest": "stack-lifecycle-program.md",
+   "question": "SEC-ART-POST-b.1: sign the review of the `epyc-qwen3x-v2` chat template (no tool-result SYSTEM WARNING injection; research `6df1516a6`)?",
+   "chosen": "A",
+   "chosen_text": "Sign; publish via `template_store publish` and roll out to frontdoor + architect_critic at the next stack change",
+   "gated": [
+    "e57f9d4596c1"
+   ]
+  },
+  {
+   "choice": "stack-lifecycle-program#2",
+   "task_id": null,
+   "manifest_id": "709a9eaca520",
+   "fold": 4,
+   "dest": "stack-lifecycle-program.md",
+   "question": "Wire the compile-blocking strict known-gap for null `ctx_model_max` in `_descriptor_gaps`?",
+   "chosen": "A",
+   "chosen_text": "Enable after native `ctx_max` is populated for every launcher-path model",
+   "gated": [
+    "709a9eaca520"
+   ]
+  },
+  {
+   "choice": "quantization-and-low-bit#1",
+   "task_id": "EXL3-10",
+   "manifest_id": "a99c7dc5c3d5",
+   "fold": 5,
+   "dest": "quantization-and-low-bit.md",
+   "question": "EXL3-10: promotion of an EXL3 candidate is a separate final operator decision.",
+   "chosen": "A",
+   "chosen_text": "Decide on the complete package when EXL3-10 delivers it",
+   "gated": [
+    "a99c7dc5c3d5"
+   ]
+  },
+  {
+   "choice": "quantization-and-low-bit#2",
+   "task_id": null,
+   "manifest_id": "4d45952678bb",
+   "fold": 5,
+   "dest": "quantization-and-low-bit.md",
+   "question": "Approve a bounded trellis measurement (IQ4_KT vs Q4_K_M, IQ2_KT vs IQ2_XXS, IQ3_KT)?",
+   "chosen": "A",
+   "chosen_text": "Bench inside ik_llama.cpp as a scratch instrument",
+   "gated": [
+    "4d45952678bb",
+    "608087035ff4",
+    "f35a5ee4eacc"
+   ]
+  },
+  {
+   "choice": "context-and-token-economy#1",
+   "task_id": null,
+   "manifest_id": "685e8563a9bc",
+   "fold": 6,
+   "dest": "context-and-token-economy.md",
+   "question": "Push/PR the sub-decision-taxonomy feature branch (RAO/ReDel substrate spike)?",
+   "chosen": "A",
+   "chosen_text": "Push and open a PR",
+   "gated": [
+    "685e8563a9bc"
+   ]
+  },
+  {
+   "choice": "context-and-token-economy#2",
+   "task_id": "TB-6-ROUTER",
+   "manifest_id": "9417d9bec026",
+   "fold": 6,
+   "dest": "context-and-token-economy.md",
+   "question": "TB-6-ROUTER: wire the np x budget surface into the router (gated on the GPU joining the orchestration stack)?",
+   "chosen": "A",
+   "chosen_text": "Re-check the precondition against the current stack and activate if a GPU role serves",
+   "gated": [
+    "9417d9bec026"
+   ]
+  },
+  {
+   "choice": "benchmark-suites#1",
+   "task_id": "CJ-GATE.",
+   "manifest_id": "11610a051c36",
+   "fold": 7,
+   "dest": "benchmark-suites.md",
+   "question": "CJ-GATE: which candidate suites to adopt, decided separately as a ranking prior and as an eval-tower row?",
+   "chosen": "A",
+   "chosen_text": "Decide per suite once CJ-1..CJ-4 report corpus size, execution requirement and measured discrimination",
+   "gated": [
+    "11610a051c36"
+   ]
+  },
+  {
+   "choice": "knowledge-pipelines#1",
+   "task_id": null,
+   "manifest_id": "cc97e3aa548f",
+   "fold": 8,
+   "dest": "knowledge-pipelines.md",
+   "question": "SLIDERS: the KB-RAG K7 precondition fired; run the Phase 0 falsification of the DB+SQL alternative now or keep parked?",
+   "chosen": "A",
+   "chosen_text": "Run Phase 0 now",
+   "gated": [
+    "cc97e3aa548f"
+   ]
+  }
+ ],
+ "operator_actions": [
+  "NIB2-94: rotate the HF token (operator-only)",
+  "Backup W2: name the off-host target for backup_critical.sh"
+ ],
+ "extra": {
+  "EXP-01": "proxy futility screen on Qwen3.6-35B-A3B (lane-rule waiver for this pilot only); port qwen4exp to ik scratch + requantize Q38FN from Q8_0 only if the screen passes"
+ }
+}
