@@ -96,7 +96,8 @@ time.sleep(60)
     def test_sequencer_real_child_runs_p3_coordinator_against_fake_servers(self):
         # Exercise the sequencer's real child launch and the actual P3 coordinator.
         # The child substitutes the fake server/transport fixture, never a model.
-        child_code = ("import json,sys; from test_p3_isolated import P3IsolatedTests; "
+        child_code = ("import json,sys; sys.path.insert(0,sys.argv[2]); "
+                      "from test_p3_isolated import P3IsolatedTests; "
                       "rc,result=P3IsolatedTests().run_pair(); "
                       "open(sys.argv[1], 'w').write(json.dumps(result)); "
                       "raise SystemExit(rc)")
@@ -106,7 +107,7 @@ time.sleep(60)
             run = {'items': []}
             seq.STOP['flag'] = False
             def fake_argv(arm, label, budget, dry):
-                return [sys.executable, '-B', '-c', child_code, str(root / (arm + '.json'))]
+                return [sys.executable, '-B', '-c', child_code, str(root / (arm + '.json')), str(HERE)]
             with patch.object(seq, 'ARGS', args, create=True), \
                  patch.object(seq, 'gpu_clear', return_value={'kfd_holders': {}}), \
                  patch.object(seq, 'p3_argv', side_effect=fake_argv):
