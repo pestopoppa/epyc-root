@@ -95,3 +95,7 @@ Independent review found upstream evaluate_solution.py can return success with z
 ## 00:52Z — Record GPQA per-item output hazard
 
 GPQA runner inspection found one-item manifests cannot safely share per_question.jsonl: v7_quality_gate_runner.py rejects same-suite IDs not in the current manifest and rewrites the output, so previous records can be moved to rejected JSONL. A stop-aware launcher must retain separate per-item outputs and validate consolidation. The native runner supports validated resume and flush but has no FILLER_STOPFILE/deadline handling. No row was published or inference run. Prior wrap-up succeeded at 2bc26c7d4f2a3c3a97bc23edbb4b2dcaa42c3784. Two small offline fixes are delegated with completion events registered.
+
+## 00:53Z — File pinned GPQA item-manifest preparation
+
+Filed gpqa_split_manifest.py, an offline preparer pinned to the full GPQA-CoT source digest. Against the actual manifest it emitted 198 single-item manifests that reconstructed the source in order; altered input and an existing output directory were rejected, and compilation passed. This is preparation only: current arms, stop/deadline handling, distinct output files, validated consolidation and residency proof remain needed before publication. No inference or row published. Prior wrap-up commit 0af727f3bae0 failed serialized push; this wrap-up retries it.
