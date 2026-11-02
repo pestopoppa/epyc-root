@@ -78,6 +78,10 @@ def preflight(key, command, env, model, np, prompt):
     required = ("OMP_PROC_BIND", "OMP_PLACES", "OMP_WAIT_POLICY", "OMP_DYNAMIC", "KMP_BLOCKTIME", "LD_LIBRARY_PATH")
     if any(k not in cell["environment"] for k in required):
         raise ProjectionError("execution environment is not fully bound")
+    sensitive = ("LD_", "GGML_", "LLAMA_", "HSA_", "HIP_", "ROCR_", "OMP_", "KMP_")
+    for name, value in env.items():
+        if name.startswith(sensitive) and value and cell['environment'].get(name) != value:
+            raise ProjectionError(f"unbound runtime override: {name}")
     # Verify all inputs before launch, including model and runtime libraries.
     for entry in cell.get("files", {}).values():
         with Path(entry["path"]).open("rb") as fh:
@@ -92,11 +96,12 @@ def preflight(key, command, env, model, np, prompt):
     if command.count('-m') != 1 or command.index('-m') + 1 >= len(command) or command[command.index('-m') + 1] != cell['model']:
         raise ProjectionError("command model differs from plan")
     if cell['arm'] == 'BASELINE':
-        if '--prefill-order' in command or '--prefill-contend-cap' in command:
+        if any(token == flag or token.startswith(flag + '=') for token in command for flag in ('--prefill-order', '--prefill-contend-cap')):
             raise ProjectionError("baseline unexpectedly enables M4")
     elif cell['arm'] == 'CANDIDATE':
         for flag, value in (('--prefill-order', 'srpf'), ('--prefill-contend-cap', '512')):
-            if command.count(flag) != 1 or command.index(flag) + 1 >= len(command) or command[command.index(flag) + 1] != value:
+            if (any(token.startswith(flag + '=') for token in command) or command.count(flag) != 1
+                    or command.index(flag) + 1 >= len(command) or command[command.index(flag) + 1] != value):
                 raise ProjectionError("candidate treatment differs from plan")
     else:
         raise ProjectionError("invalid arm")

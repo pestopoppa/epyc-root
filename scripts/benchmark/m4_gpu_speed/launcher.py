@@ -12,6 +12,8 @@ import write_capture
 def main():
     # Read-only plan binding and authoritative grant check precede containment.
     env = dict(os.environ)
+    if any(env.get(k) for k in ('PYTHONPATH', 'PYTHONHOME', 'PYTHONSTARTUP', 'PYTHONINSPECT')):
+        raise RuntimeError('unbound Python execution override')
     trust = write_capture.enrolled()
     plan = trust.plan()
     key = env['M4_PLAN_CELL']
@@ -25,7 +27,7 @@ def main():
     if trust.capture_root != output and trust.capture_root not in output.parents:
         raise RuntimeError('watch output outside approved capture root')
     grant = Path(write_capture.enrollment.GRANTS_DIR) / (cell['grant']['id'] + '.grant')
-    command = [sys.executable, '-B', str(Path(__file__).with_name('server_np_sweep.py')), *sys.argv[1:]]
+    command = [sys.executable, '-s', '-B', str(Path(__file__).with_name('server_np_sweep.py')), *sys.argv[1:]]
     return watch.run(command, grant, env['FILLER_STOPFILE'], write_capture.enrollment.HOLD_DIR,
                      int(env['FILLER_DEADLINE']), output, env=env)
 

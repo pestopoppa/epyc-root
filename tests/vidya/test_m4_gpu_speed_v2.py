@@ -136,6 +136,8 @@ def test_write_side_preflight_and_emission(tmp_path, monkeypatch):
     assert validate_capture(output, trust)[2] == 20.0
     with pytest.raises(ProjectionError):
         write_capture.preflight('c', command, {**env, 'LLAMA_ARG_PREFILL_ORDER':'srpf'}, Path(cell['model']), 2, Path(cell['files']['prompt']['path']))
+    with pytest.raises(ProjectionError, match='unbound runtime override'):
+        write_capture.preflight('c', command, {**env, 'LD_PRELOAD':'/tmp/evil.so'}, Path(cell['model']), 2, Path(cell['files']['prompt']['path']))
     with pytest.raises(FileExistsError):
         write_capture.write(trust=trust, cell=bound, key='c', row=row, requests_path=Path(doc['requests_path']),
                             output_path=output, process=doc['process'], mapped=doc['mapped_ggml'], cleanup=doc['cleanup'], grant_bytes=grant_bytes, env=env)
@@ -146,6 +148,12 @@ def test_write_side_preflight_and_emission(tmp_path, monkeypatch):
     (grantdir / 'grant-1.grant').unlink()
     with pytest.raises(ProjectionError, match='actual grant refusal'):
         write_capture.grant_proof(bound, env)
+    bad_command = command + ['--prefill-order=srpf']
+    plan['cells']['c']['argv'] = bad_command
+    original.plan_path.write_text(json.dumps(plan))
+    monkeypatch.setattr(enrollment, 'PLAN_SHA256', digest(original.plan_path.read_bytes()))
+    with pytest.raises(ProjectionError, match='candidate treatment'):
+        write_capture.preflight('c', bad_command, env, Path(cell['model']), 2, Path(cell['files']['prompt']['path']))
 
 
 def test_unenrolled_source_refuses_before_launch(monkeypatch):
@@ -170,7 +178,8 @@ def test_unfinished_or_interrupted_guardian_refuses(tmp_path, receipt):
         validate_capture(path, trust)
 
 
-def test_actual_launcher_guarded_help_without_model(tmp_path, monkeypatch):
+@pytest.mark.parametrize("cutoff", [False, True])
+def test_actual_launcher_guarded_help_without_model(tmp_path, monkeypatch, cutoff):
     import os
     sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts/benchmark/m4_gpu_speed'))
     sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts/benchmark/m4_cpu_ownership'))
@@ -202,7 +211,57 @@ def test_actual_launcher_guarded_help_without_model(tmp_path, monkeypatch):
               'M4_DELEGATED_CGROUP_PARENT':'/sys/fs/cgroup','M4_OUTER_OWNER_PID':str(os.getpid()),
               'M4_OUTER_OWNER_BIRTH':str(m4_cgroup_guard.birth(os.getpid()))}
     for name,value in values.items(): monkeypatch.setenv(name,value)
-    monkeypatch.setattr(sys, 'argv', ['launcher.py','--help'])
-    assert launcher.main() == 0
+    if cutoff:
+        import threading
+        fifo = tmp_path / 'blocked-prompt'
+        os.mkfifo(fifo)
+        def cut():
+            deadline = time.monotonic() + 5
+            while not (watch_dir/'supervisor.json').exists() and time.monotonic() < deadline:
+                time.sleep(0.01)
+            time.sleep(0.25)
+            (tmp_path/'STOP').touch()
+        thread = threading.Thread(target=cut); thread.start()
+        monkeypatch.setattr(sys, 'argv', ['launcher.py','--skip-clean-check','--model',f'fake={tmp_path / "model"}',
+                                         '--llama-server','/bin/true','--question-pool',str(fifo)])
+        assert launcher.main() == 124
+        thread.join(timeout=5)
+        assert json.loads((watch_dir/'watch-result.json').read_text())['reason'] == 'STOP'
+    else:
+        monkeypatch.setattr(sys, 'argv', ['launcher.py','--help'])
+        assert launcher.main() == 0
     assert json.loads((watch_dir/'watch-result.json').read_text())['containment_empty'] is True
     assert not list(path.parent.glob('capture-v2*'))
+
+
+def test_native_request_batch_fake_http_and_partial_records(tmp_path):
+    import importlib.util
+    import threading
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    source = Path(__file__).resolve().parents[2] / 'scripts/benchmark/m4_gpu_speed/server_np_sweep.py'
+    spec = importlib.util.spec_from_file_location('m4_native_fixture', source)
+    native = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = native
+    spec.loader.exec_module(native)
+    class Handler(BaseHTTPRequestHandler):
+        def log_message(self, *args): pass
+        def do_POST(self):
+            content = json.loads(self.rfile.read(int(self.headers['Content-Length'])))
+            if content['prompt'] == 'bad':
+                self.send_response(503); self.end_headers(); return
+            payload = json.dumps({'timings': {'predicted_n':10, 'predicted_ms':1000, 'prompt_n':5}}).encode()
+            self.send_response(200); self.send_header('Content-Length', str(len(payload))); self.end_headers(); self.wfile.write(payload)
+    server = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
+    thread = threading.Thread(target=server.serve_forever); thread.start()
+    try:
+        prompts = [native.PromptSpec('a', 'fake', 1, 'good'), native.PromptSpec('b', 'fake', 1, 'bad')]
+        model = native.ModelSpec('fake', tmp_path/'fake')
+        results, _ = native.run_prompt_batch(port=server.server_port, model=model, np_level=2, prompts=prompts,
+                                              n_predict=10, request_timeout_s=2, requests_path=tmp_path/'raw.jsonl')
+        raw = [json.loads(line) for line in (tmp_path/'raw.jsonl').read_text().splitlines()]
+        assert len(raw) == 2 and sum(r['success'] for r in raw) == 1
+        assert {r['http_status'] for r in raw} == {200, 503}
+        assert sorted(x['request_index'] for x in raw) == [0, 1]
+        assert [x.success for x in results] == [True, False]
+    finally:
+        server.shutdown(); server.server_close(); thread.join(timeout=5)
