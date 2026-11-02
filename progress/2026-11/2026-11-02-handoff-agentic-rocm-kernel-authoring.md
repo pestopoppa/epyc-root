@@ -71,3 +71,7 @@ Consumed rpucg-identity.done and reviewed the revision to artifacts/agentic-rocm
 ## 00:42Z — Diagnose non-fast-forward publication failures and recover pending lane commits
 
 Diagnosed repeated publication failures: after the start-of-turn merge, origin/main advanced before serialized push, which correctly refused a non-fast-forward update. The lane still carries the reviewed selector and identity-binding drafts; this wrap-up retries merging and publishing them. No MLA, MoE or counter-seam completion marker was present and no inference row was published.
+
+## 00:43Z — Prepare lock-safe publication race remedy
+
+Repeated non-fast-forward push failures trace to a gap between wrapup.py merging origin/main and serialized_push.py acquiring its push lock; another session can publish in that window. Requested a bounded review and candidate patch for a lock-safe remedy without modifying the shared coordination scripts or keeper. Capture and counter-seam completion events remain outstanding; no new row was published. This wrap-up retries publication of the pending lane commits.
