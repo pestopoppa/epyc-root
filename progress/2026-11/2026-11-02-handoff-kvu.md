@@ -159,3 +159,7 @@ Delegated bounded VKQ3 calibration and KVU-15b row preparation; KVU-16h-runner i
 ## 10:29Z — Integrate VKQ3 model-free grant-to-native-result test and investigate cache-credit record availability
 
 VKQ3 model-free integration passed: synthetic grant through guard, supervisor and fake tokenizer produces an isolated qualification result and receipt; it does not establish real keeper execution or target feasibility. KVU-15b has no adequate organic record sample identified; archival discovery continues.
+
+## 10:31Z — Bind diagnostic bundle to supplied source hashes and test qualification input isolation
+
+VKQ3 draft bundle preflight requires an exact supplied SHA-256 pin set and hashes copied bytes; three offline tests pass. The model-free integration test now asserts that the tokenizer receives the short qualification input. These tests do not establish pin authority, runtime integrity, safe concurrent scratch ancestry, atomic manifest consumption, real keeper execution, or target feasibility; the draft is not publishable.
