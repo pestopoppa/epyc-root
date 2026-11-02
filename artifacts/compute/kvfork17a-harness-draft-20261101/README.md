@@ -10,11 +10,12 @@ trunk case).
 
 The harness treats the first `n_shared` occupied KV cells as shared by every
 sequence, then assigns private runs and leaves free cells masked. It includes
-independently derived layout and causal-visibility invariants. The draft also compares each shared case with a run that reveals masked cells;
-a difference is required. This is only a mask-sensitivity control, not proof
-that masked values cannot affect the output. All checks remain unexecuted;
-add independent masked-value perturbation controls before using them as proof. Each
-listing row records `shared=`. The harness emits explicit unsupported rows;
+independently derived layout and causal-visibility invariants. Each shared case also perturbs K/V cells invisible to every query and requires
+bit-identical finite output, then replaces visible V and requires an output
+change. Zero selected or unchanged encoded rows fail. A separate run reveals
+masked cells and requires sensitivity. This covers globally invisible cells;
+it does not isolate cells hidden from one query but visible to another. All
+controls remain unbuilt and unexecuted. Each listing row records `shared=`. The harness emits explicit unsupported rows;
 those are evaluated against a backend-specific expected-case manifest.
 
 `expected_cpu.json` declares all 111 cases supported. `expected_rocm0.json`

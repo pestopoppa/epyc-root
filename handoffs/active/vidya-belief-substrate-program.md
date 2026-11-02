@@ -2663,6 +2663,8 @@ The 2026-10-31 Research `0e4321f24bae29355333fcf2cb712a41ce080e2f` E1 runner cop
 
 - [ ] **VB-KVU-PF-CHAT-TRACE-WIRE** — capture the prospective KPF-18.3 chat attribution raw events and identities at write time; project only complete attested observations via existing `ClaimTuple.grade()`, refuse missing/tampered/mismatched inputs, preserve unknowns and pass the real planning-context canary before calling it wired. No new grading rule or historical backfill.
 
+  - KPF-17a prospective FA exactness: project the per-case CPU/GPU native JSONL with source, binary/library, arm, mask and residency warrant; retain incomplete and unsupported cases, validate the producer and planning-context canary before calling it wired. Use the shared grade; no retrospective warrant or new ladder.
+
 - [ ] **VB-KVU-PF — write side + projection for RTG-58's measurement records** (CLAUDE.md *Belief Kernel*). Producers:
   [`kv-prefix-fork-and-paged-attention.md`](kv-prefix-fork-and-paged-attention.md) KPF-18 (fork-vs-fresh equivalence + TTFT),
   KPF-26 (trunk-first dispatch), KPF-33 (sequence-affine allocation), KPF-42 (`kv_rows` A/B vs KVU-19b), KPF-53 (cascade).
