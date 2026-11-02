@@ -453,9 +453,7 @@ def ensure_lane(slug: str, repo=None) -> tuple[str, str]:
         if r.returncode:
             raise RuntimeError(f"sparse checkout of {d} failed: {(r.stderr or r.stdout).strip()[:300]}")
         return d, "created"
-    if not os.path.exists(os.path.join(repo, ".git", "worktrees", os.path.basename(d), "info", "sparse-checkout")) and \
-            not _git(d, "config", "--get", "core.sparseCheckout").stdout.strip() == "true":
-        sparse_lane(d)  # an old full lane: drop artifacts/ from its working tree (tracked files only; scratch stays visible)
+    sparse_lane(d)  # idempotent; re-applies LANE_EXCLUDE/LANE_KEEP to old lanes (tracked files only; scratch stays visible)
     if _git(d, "merge", "--ff-only", "origin/main").returncode == 0:
         return d, "fast-forwarded"
     if _git(d, "merge", "--no-edit", "origin/main").returncode == 0:
@@ -465,13 +463,16 @@ def ensure_lane(slug: str, repo=None) -> tuple[str, str]:
 
 
 LANE_EXCLUDE = ("artifacts/",)      # ~800 MB of every full checkout; sessions never need it in the lane
-DISK_FLOOR_GIB = 170                # no new lane below this much free space
+# ...except the operator ratifier scripts: the observer-census pre-commit hook checks registry rows against the
+# working tree, so a lane without them fails EVERY wrap-up commit (ws58 2026-11-02: 131 failed wrap-ups -> NOOP turns).
+LANE_KEEP = ("artifacts/operator/*.sh",)
+DISK_FLOOR_GIB = 160                # no new lane below this much free space
 
 
 def sparse_lane(d):
     """Non-cone sparse checkout: everything except LANE_EXCLUDE."""
     _git(d, "sparse-checkout", "init", "--no-cone")
-    _git(d, "sparse-checkout", "set", "--no-cone", "/*", *[f"!/{x}" for x in LANE_EXCLUDE])
+    _git(d, "sparse-checkout", "set", "--no-cone", "/*", *[f"!/{x}" for x in LANE_EXCLUDE], *[f"/{x}" for x in LANE_KEEP])
 
 
 def free_gib(path="/mnt/raid0/llm") -> float:
@@ -967,6 +968,7 @@ IDLE_REPORT_COOLDOWN_S = 30 * 60  # a session that itself said IDLE: <reason> is
 MIN_RESUME_GAP_S = 10 * 60        # budget emergency 22:45Z: at most one non-filing resume per session per 10 min
 AWAIT_EXPIRY_S = 30 * 60            # a no-op turn parks a session for this long at most (03:29Z deadlock: 0 live, 45 parked)
 STUCK_AFTER = 3                     # consecutive no-effect turns -> stuck: run-end / new external events only
+RESUME_STALL_S = 30 * 60            # RESUME-STALL: queued events but no RESUME for this long
 WATCHDOG_MIN_STARTS = 3             # SA-2: alarm when this many starts in an hour produced no ready row
 AUTO_START_COOLDOWN_S = 30 * 60     # SA-1: a handoff is not restarted within this long of its last end/start
 MAX_STARTS_PER_HOUR = 10            # SA-1: global auto-start cap
@@ -1003,7 +1005,7 @@ def context_size(session_id, engine="codex"):
     return last
 
 
-def start_watchdog(flags, st, now):
+def start_watchdog(flags, st, now, sessions=None):
     """SA-2: zero-token counters over the last hour - AUTO-STARTs and DONEs (dispatcher state) vs ready rows produced
     (dryrun/*/PASS.json mtime). Starts without any effect -> AUTO-START-NO-EFFECT alarm (once per hour)."""
     starts = [t for t in (st.get("starts") or []) if now - t < 3600]
@@ -1015,6 +1017,13 @@ def start_watchdog(flags, st, now):
         log(flags, f"AUTO-START-NO-EFFECT {len(starts)} auto-start(s) and {len(dones)} done(s) in the last hour produced 0 ready rows (dry-run PASS); "
                    f"the starts are not converting - check the real-row gate and the briefs")
         st["watchdog_alarm"] = now
+    sess = (sessions or {}).values()
+    last = max([_parse(e.get("last_resume") or "") for e in sess] or [0])
+    refused = any(now - _parse(e.get("unwrapped_logged") or "") < RESUME_STALL_S for e in sess)
+    if (st.get("queue") or refused) and now - last >= RESUME_STALL_S and now - st.get("resume_stall_alarm", 0) >= RESUME_STALL_S:
+        log(flags, f"RESUME-STALL 0 RESUME events in the last {RESUME_STALL_S // 60} min while {len(st.get('queue') or [])} event(s) are queued"
+                   f"{' and UNWRAPPED is refusing resumes' if refused else ''} - check the dispatcher gates (cap, cooldown, unwrapped lanes)")
+        st["resume_stall_alarm"] = now
     return st["watchdog"]
 
 
@@ -1056,35 +1065,6 @@ def dead_push_lock(flags, st, now):
             st.setdefault("push_lock_report", {})[p] = now
 
 
-TYPED_SHADOW_PORT = 8102          # worker_fast; the shadow runs only while this server answers (zero cost otherwise)
-
-
-def typed_shadow(flags, slug, e, state, st, now, repo=None):
-    """JEV-3 (shadow only, approved intake ws58-jev-20261102): a typed label beside work_state's heuristic, logged as
-    TYPED-SHADOW; never drives behaviour. Skipped (no model call, no subprocess) unless worker_fast is listening."""
-    probe = st.setdefault("typed_probe", {"at": 0, "up": False})
-    if now - probe["at"] > 300:
-        import socket
-        try:
-            with socket.create_connection(("127.0.0.1", TYPED_SHADOW_PORT), timeout=0.3):
-                probe.update(at=now, up=True)
-        except OSError:
-            probe.update(at=now, up=False)
-    if not probe["up"]:
-        return
-    try:
-        sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "churn"))
-        import typed_shadow as ts
-        b = open(os.path.join(flags, f"BACKLOG-handoff-{slug}.md")).read() if os.path.exists(os.path.join(flags, f"BACKLOG-handoff-{slug}.md")) else ""
-        sh = ts.classify_work_state(b, open_tasks(e.get("handoff", ""), repo))
-        label = sh["label"].value if sh.get("label") is not None else None
-        reason = sh["stop_reason"].value if sh.get("stop_reason") is not None else None
-        log(flags, f"TYPED-SHADOW {slug}: heuristic={state} typed={label} reason={reason} source={sh['source']}"
-                   + ("" if label is None or label == state else " DISAGREE"))
-    except Exception as ex:  # shadow never breaks the dispatcher
-        log(flags, f"TYPED-SHADOW {slug}: unavailable ({ex!r})")
-
-
 def is_generalist(e) -> bool:
     return bool(e.get("generalist")) or not e.get("handoff")
 
@@ -1116,24 +1096,13 @@ def work_state(flags, slug, e, repo=None) -> tuple[str, str]:
         if adv or nf or ntasks:
             return "continue", f"codex-gen backlog: {len(adv)} row fix(es), {len(nf)} filing(s), {ntasks} small task(s)"
         return "pause", "codex-gen backlog empty (resumed when backlog_gen adds an eligible item or an event arrives)"
-    adv = ADV_RX.findall(b)
-    waiting = re.findall(r"^- \[(?:qualified-armed|running)\] \S+ rank=\S+ \*\*([^*]+)\*\*", b, re.M)
-    ni = b.split("## Non-inference", 1)[1] if "## Non-inference" in b else ""
-    ni = ni.split("\n## ", 1)[0]
-    ntasks = len([l for l in ni.splitlines() if l.startswith("- [")])
-    own = len(OWN_TASK_RX.findall(b))
-    open_boxes = open_tasks(e.get("handoff", ""), repo)
-    if adv:
-        return "continue", f"{len(adv)} advanceable row(s) (blocked/needs-launcher/needs-qualification)"
-    if own:
-        return "continue", f"{own} own inference task(s) to publish as rows"
-    if ntasks:
-        return "continue", f"{ntasks} non-inference task(s) in the backlog"
-    if waiting:
-        return "pause", "waiting on row(s) " + ", ".join(waiting[:6]) + " (queued/running)"
-    if open_boxes:
-        return "continue", f"{open_boxes} open box(es) in the handoff, none waiting on a row"
-    return "done", "nothing open and no rows waiting"
+    # JEV-3 replace: typed judgment (worker_fast); the regex classifier answers only when typed is unavailable
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "churn"))
+    import typed_classify as tc
+    d = tc.decide_work_state(b, open_tasks(e.get("handoff", ""), repo))
+    if d["source"] != "typed":   # regex fallback: the incumbent's own reason text, unchanged
+        return d["label"].value, d["detail"]
+    return d["label"].value, f"typed: {d['stop_reason'].value} [worker_fast]"
 
 
 # ---------------------------------------------------------------- dispatcher
@@ -1341,8 +1310,6 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             continue
         ws, why = work_state(flags, slug, e, repo)
         e["_work"] = (ws, why)
-        if not is_generalist(e):
-            typed_shadow(flags, slug, e, ws, st, now, repo)
         if ws == "done":
             e["status"], e["done_at"] = "done", now_iso()
             kill_window(slug)
@@ -1373,7 +1340,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             return ""
     inventory_alarm(flags, st, bdata, now)
     dead_push_lock(flags, st, now)
-    start_watchdog(flags, st, now)
+    start_watchdog(flags, st, now, S)
     reap_lanes(flags, reg, repo)
     paused = _parse(reg.get("paused_until") or "") > now
     live = sum(1 for e in S.values() if alive(e.get("pid")))  # suspended sessions (waiting on a running row) have no pid
@@ -1511,9 +1478,8 @@ def wrapped(e, cache=None) -> bool:
             ahead = subprocess.run(["git", "-C", cwd, "cherry", "origin/main"], capture_output=True, text=True, timeout=60).stdout
         except (OSError, subprocess.TimeoutExpired):
             return False
-        if dirty and not e.get("dirty_wrap_resume"):
-            e["dirty_wrap_resume"] = now_iso()  # a dirty lane gets ONE wrap-up resume (its prompt ends with wrapup.py); then refused
-            return True
+        if dirty:
+            return True  # the resume's prompt ends with wrapup.py, which is how a dirty lane gets clean; the stuck rule caps churn
         if not dirty and "+" in ahead:
             if land_lane(cwd):  # ws58 23:46Z: a clean lane's unlanded commit is landed here instead of refusing forever
                 ahead = ""

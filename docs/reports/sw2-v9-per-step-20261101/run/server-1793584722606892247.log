@@ -1,0 +1,298 @@
+warning: no usable GPU found, --gpu-layers option will be ignored
+warning: one possible reason is that llama.cpp was compiled without GPU support
+warning: consult docs/build.md for compilation instructions
+0.00.001.438 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.001.747 W srv  llama_server: -----------------
+0.00.001.749 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.001.749 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.001.749 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.001.749 W srv  llama_server: -----------------
+0.00.002.927 I srv    load_model: loading model '/mnt/raid0/llm/models/sw2-stories15m-pinned-20261031/target.gguf'
+0.00.065.366 W llama_context: n_ctx_seq (2048) > n_ctx_train (256) -- possible training context overflow
+0.00.079.018 W load: bad special token: 'tokenizer.ggml.seperator_token_id' = 4294967295, using default id -1
+0.00.079.020 W load: bad special token: 'tokenizer.ggml.padding_token_id' = 4294967295, using default id -1
+0.00.088.463 W llama_context: n_ctx_seq (2048) > n_ctx_train (128) -- possible training context overflow
+0.00.089.921 W srv    load_model: the slot context (2048) exceeds the training context of the model (256) - capping
+0.00.093.209 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 256, kv_unified = 'false'
+0.00.095.161 W srv    load_model: LLAMA_TRACE = 1
+0.00.096.709 I srv  llama_server: model loaded
+0.00.096.716 I srv  llama_server: listening on http://127.0.0.1:47949
+0.00.209.171 I slot get_availabl: id  0 | task -1 | selected slot by id (0)
+0.00.209.209 I slot launch_slot_: id  0 | task 0 | processing task, is_child = 0
+0.00.217.715 I slot   operator(): id  0 | task 0 | accepted  0/ 7 draft tokens
+0.00.222.375 I slot   operator(): id  0 | task 0 | accepted  0/ 7 draft tokens
+0.00.227.020 I slot   operator(): id  0 | task 0 | accepted  4/ 7 draft tokens
+0.00.231.695 I slot   operator(): id  0 | task 0 | accepted  2/ 7 draft tokens
+0.00.236.404 I slot   operator(): id  0 | task 0 | accepted  5/ 7 draft tokens
+0.00.241.165 I slot   operator(): id  0 | task 0 | accepted  2/ 7 draft tokens
+0.00.245.913 I slot   operator(): id  0 | task 0 | accepted  0/ 7 draft tokens
+0.00.250.641 I slot   operator(): id  0 | task 0 | accepted  1/ 7 draft tokens
+0.00.255.402 I slot   operator(): id  0 | task 0 | accepted  4/ 7 draft tokens
+0.00.260.141 I slot   operator(): id  0 | task 0 | accepted  1/ 7 draft tokens
+0.00.264.935 I slot   operator(): id  0 | task 0 | accepted  2/ 7 draft tokens
+0.00.269.760 I slot   operator(): id  0 | task 0 | accepted  2/ 7 draft tokens
+0.00.274.600 I slot   operator(): id  0 | task 0 | accepted  1/ 7 draft tokens
+0.00.279.430 I slot   operator(): id  0 | task 0 | accepted  0/ 7 draft tokens
+0.00.284.279 I slot   operator(): id  0 | task 0 | accepted  0/ 7 draft tokens
+0.00.289.281 I slot   operator(): id  0 | task 0 | accepted  6/ 7 draft tokens
+0.00.294.232 I slot   operator(): id  0 | task 0 | accepted  0/ 7 draft tokens
+0.00.299.278 I slot   operator(): id  0 | task 0 | accepted  3/ 7 draft tokens
+0.00.304.322 I slot   operator(): id  0 | task 0 | accepted  1/ 7 draft tokens
+0.00.309.388 I slot   operator(): id  0 | task 0 | accepted  1/ 7 draft tokens
+0.00.314.436 I slot   operator(): id  0 | task 0 | accepted  0/ 7 draft tokens
+0.00.319.498 I slot   operator(): id  0 | task 0 | accepted  0/ 7 draft tokens
+0.00.324.616 I slot   operator(): id  0 | task 0 | accepted  3/ 7 draft tokens
+0.00.329.677 I slot   operator(): id  0 | task 0 | accepted  1/ 7 draft tokens
+0.00.334.770 I slot   operator(): id  0 | task 0 | accepted  1/ 7 draft tokens
+0.00.339.899 I slot   operator(): id  0 | task 0 | accepted  0/ 7 draft tokens
+0.00.345.065 I slot   operator(): id  0 | task 0 | accepted  0/ 7 draft tokens
+0.00.350.197 I slot   operator(): id  0 | task 0 | accepted  0/ 7 draft tokens
+0.00.355.405 I slot   operator(): id  0 | task 0 | accepted  3/ 7 draft tokens
+0.00.360.558 I slot   operator(): id  0 | task 0 | accepted  1/ 7 draft tokens
+0.00.365.747 I slot   operator(): id  0 | task 0 | accepted  1/ 7 draft tokens
+0.00.370.920 I slot   operator(): id  0 | task 0 | accepted  0/ 7 draft tokens
+0.00.376.079 I slot   operator(): id  0 | task 0 | accepted  0/ 7 draft tokens
+0.00.381.339 I slot   operator(): id  0 | task 0 | accepted  3/ 7 draft tokens
+0.00.386.588 I slot   operator(): id  0 | task 0 | accepted  1/ 7 draft tokens
+0.00.391.862 I slot   operator(): id  0 | task 0 | accepted  1/ 7 draft tokens
+0.00.397.110 I slot   operator(): id  0 | task 0 | accepted  0/ 7 draft tokens
+0.00.402.371 I slot   operator(): id  0 | task 0 | accepted  0/ 7 draft tokens
+0.00.407.727 I slot   operator(): id  0 | task 0 | accepted  3/ 7 draft tokens
+0.00.413.076 I slot   operator(): id  0 | task 0 | accepted  1/ 7 draft tokens
+0.00.418.434 I slot   operator(): id  0 | task 0 | accepted  1/ 7 draft tokens
+0.00.423.780 I slot   operator(): id  0 | task 0 | accepted  0/ 7 draft tokens
+0.00.429.272 I slot   operator(): id  0 | task 0 | accepted  6/ 7 draft tokens
+0.00.434.672 I slot   operator(): id  0 | task 0 | accepted  0/ 7 draft tokens
+0.00.440.255 I slot   operator(): id  0 | task 0 | accepted  7/ 7 draft tokens
+0.00.445.738 I slot   operator(): id  0 | task 0 | accepted  0/ 7 draft tokens
+0.00.451.253 I slot   operator(): id  0 | task 0 | accepted  1/ 7 draft tokens
+0.00.456.767 I slot   operator(): id  0 | task 0 | accepted  1/ 7 draft tokens
+0.00.462.490 I slot   operator(): id  0 | task 0 | accepted  5/ 7 draft tokens
+0.00.465.320 I slot   operator(): id  0 | task 0 | accepted  2/ 2 draft tokens
+0.00.465.335 I slot print_timing: id  0 | task 0 | prompt eval time =       2.90 ms /    10 tokens (    0.29 ms per token,  3451.85 tokens per second)
+0.00.465.337 I slot print_timing: id  0 | task 0 |        eval time =     253.20 ms /   128 tokens (    1.98 ms per token,   505.53 tokens per second)
+0.00.465.338 I slot print_timing: id  0 | task 0 |       total time =     256.10 ms /   138 tokens
+0.00.465.344 I slot print_timing: id  0 | task 0 |    graphs reused =         48
+0.00.465.348 I slot print_timing: id  0 | task 0 | draft acceptance = 0.22319 (   77 accepted /   345 generated), mean len =  2.54
+0.00.465.409 I slot      release: id  0 | task 0 | stop processing: n_tokens = 137, truncated = 0
+0.00.468.503 I slot get_availabl: id  0 | task -1 | selected slot by id (0)
+0.00.469.416 I slot launch_slot_: id  0 | task 52 | processing task, is_child = 0
+0.00.473.716 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.475.468 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.477.220 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.478.951 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.480.650 I slot   operator(): id  0 | task 52 | accepted  0/ 1 draft tokens
+0.00.482.398 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.484.115 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.485.821 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.487.533 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.489.270 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.490.986 I slot   operator(): id  0 | task 52 | accepted  0/ 1 draft tokens
+0.00.492.715 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.494.447 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.496.209 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.497.940 I slot   operator(): id  0 | task 52 | accepted  0/ 1 draft tokens
+0.00.499.676 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.501.418 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.503.160 I slot   operator(): id  0 | task 52 | accepted  0/ 1 draft tokens
+0.00.504.919 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.506.694 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.508.472 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.510.250 I slot   operator(): id  0 | task 52 | accepted  0/ 1 draft tokens
+0.00.512.034 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.513.820 I slot   operator(): id  0 | task 52 | accepted  0/ 1 draft tokens
+0.00.515.616 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.517.409 I slot   operator(): id  0 | task 52 | accepted  0/ 1 draft tokens
+0.00.519.194 I slot   operator(): id  0 | task 52 | accepted  0/ 1 draft tokens
+0.00.520.999 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.522.817 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.524.629 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.526.446 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.528.242 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.530.039 I slot   operator(): id  0 | task 52 | accepted  0/ 1 draft tokens
+0.00.531.867 I slot   operator(): id  0 | task 52 | accepted  0/ 1 draft tokens
+0.00.533.696 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.535.535 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.537.400 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.539.252 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.541.133 I slot   operator(): id  0 | task 52 | accepted  0/ 1 draft tokens
+0.00.542.964 I slot   operator(): id  0 | task 52 | accepted  0/ 1 draft tokens
+0.00.544.796 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.546.649 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.548.517 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.550.392 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.552.276 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.554.140 I slot   operator(): id  0 | task 52 | accepted  0/ 1 draft tokens
+0.00.556.013 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.557.883 I slot   operator(): id  0 | task 52 | accepted  0/ 1 draft tokens
+0.00.559.809 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.561.728 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.563.621 I slot   operator(): id  0 | task 52 | accepted  0/ 1 draft tokens
+0.00.565.542 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.567.440 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.569.332 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.571.288 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.573.205 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.575.192 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.577.109 I slot   operator(): id  0 | task 52 | accepted  0/ 1 draft tokens
+0.00.579.037 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.581.026 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.582.979 I slot   operator(): id  0 | task 52 | accepted  0/ 1 draft tokens
+0.00.584.924 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.586.864 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.588.810 I slot   operator(): id  0 | task 52 | accepted  0/ 1 draft tokens
+0.00.590.784 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.592.751 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.594.694 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.596.648 I slot   operator(): id  0 | task 52 | accepted  0/ 1 draft tokens
+0.00.598.626 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.600.599 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.602.561 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.604.554 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.606.542 I slot   operator(): id  0 | task 52 | accepted  1/ 1 draft tokens
+0.00.606.554 I slot print_timing: id  0 | task 52 | prompt eval time =       2.35 ms /    10 tokens (    0.23 ms per token,  4257.13 tokens per second)
+0.00.606.555 I slot print_timing: id  0 | task 52 |        eval time =     134.78 ms /   128 tokens (    1.05 ms per token,   949.72 tokens per second)
+0.00.606.556 I slot print_timing: id  0 | task 52 |       total time =     137.12 ms /   138 tokens
+0.00.606.557 I slot print_timing: id  0 | task 52 |    graphs reused =        120
+0.00.606.560 I slot print_timing: id  0 | task 52 | draft acceptance = 0.73973 (   54 accepted /    73 generated), mean len =  1.74
+0.00.606.584 I slot      release: id  0 | task 52 | stop processing: n_tokens = 137, truncated = 0
+0.00.610.052 I slot get_availabl: id  0 | task -1 | selected slot by id (0)
+0.00.610.454 I slot launch_slot_: id  0 | task 127 | processing task, is_child = 0
+0.00.615.380 I slot   operator(): id  0 | task 127 | accepted  0/ 2 draft tokens
+0.00.617.657 I slot   operator(): id  0 | task 127 | accepted  2/ 2 draft tokens
+0.00.619.889 I slot   operator(): id  0 | task 127 | accepted  0/ 2 draft tokens
+0.00.622.162 I slot   operator(): id  0 | task 127 | accepted  1/ 2 draft tokens
+0.00.624.464 I slot   operator(): id  0 | task 127 | accepted  2/ 2 draft tokens
+0.00.626.695 I slot   operator(): id  0 | task 127 | accepted  0/ 2 draft tokens
+0.00.628.964 I slot   operator(): id  0 | task 127 | accepted  2/ 2 draft tokens
+0.00.631.212 I slot   operator(): id  0 | task 127 | accepted  0/ 2 draft tokens
+0.00.633.541 I slot   operator(): id  0 | task 127 | accepted  2/ 2 draft tokens
+0.00.635.812 I slot   operator(): id  0 | task 127 | accepted  1/ 2 draft tokens
+0.00.638.069 I slot   operator(): id  0 | task 127 | accepted  2/ 2 draft tokens
+0.00.640.365 I slot   operator(): id  0 | task 127 | accepted  2/ 2 draft tokens
+0.00.642.651 I slot   operator(): id  0 | task 127 | accepted  1/ 2 draft tokens
+0.00.644.934 I slot   operator(): id  0 | task 127 | accepted  0/ 2 draft tokens
+0.00.647.256 I slot   operator(): id  0 | task 127 | accepted  1/ 2 draft tokens
+0.00.649.602 I slot   operator(): id  0 | task 127 | accepted  2/ 2 draft tokens
+0.00.651.904 I slot   operator(): id  0 | task 127 | accepted  0/ 2 draft tokens
+0.00.654.233 I slot   operator(): id  0 | task 127 | accepted  1/ 2 draft tokens
+0.00.656.531 I slot   operator(): id  0 | task 127 | accepted  1/ 2 draft tokens
+0.00.658.870 I slot   operator(): id  0 | task 127 | accepted  0/ 2 draft tokens
+0.00.661.183 I slot   operator(): id  0 | task 127 | accepted  0/ 2 draft tokens
+0.00.663.531 I slot   operator(): id  0 | task 127 | accepted  1/ 2 draft tokens
+0.00.665.854 I slot   operator(): id  0 | task 127 | accepted  0/ 2 draft tokens
+0.00.668.193 I slot   operator(): id  0 | task 127 | accepted  0/ 2 draft tokens
+0.00.670.550 I slot   operator(): id  0 | task 127 | accepted  2/ 2 draft tokens
+0.00.672.902 I slot   operator(): id  0 | task 127 | accepted  0/ 2 draft tokens
+0.00.675.271 I slot   operator(): id  0 | task 127 | accepted  0/ 2 draft tokens
+0.00.677.663 I slot   operator(): id  0 | task 127 | accepted  2/ 2 draft tokens
+0.00.680.075 I slot   operator(): id  0 | task 127 | accepted  1/ 2 draft tokens
+0.00.682.478 I slot   operator(): id  0 | task 127 | accepted  0/ 2 draft tokens
+0.00.684.851 I slot   operator(): id  0 | task 127 | accepted  0/ 2 draft tokens
+0.00.687.257 I slot   operator(): id  0 | task 127 | accepted  2/ 2 draft tokens
+0.00.689.654 I slot   operator(): id  0 | task 127 | accepted  0/ 2 draft tokens
+0.00.692.099 I slot   operator(): id  0 | task 127 | accepted  1/ 2 draft tokens
+0.00.694.552 I slot   operator(): id  0 | task 127 | accepted  2/ 2 draft tokens
+0.00.696.992 I slot   operator(): id  0 | task 127 | accepted  1/ 2 draft tokens
+0.00.699.464 I slot   operator(): id  0 | task 127 | accepted  2/ 2 draft tokens
+0.00.701.918 I slot   operator(): id  0 | task 127 | accepted  1/ 2 draft tokens
+0.00.704.379 I slot   operator(): id  0 | task 127 | accepted  1/ 2 draft tokens
+0.00.706.854 I slot   operator(): id  0 | task 127 | accepted  0/ 2 draft tokens
+0.00.709.324 I slot   operator(): id  0 | task 127 | accepted  0/ 2 draft tokens
+0.00.711.828 I slot   operator(): id  0 | task 127 | accepted  2/ 2 draft tokens
+0.00.714.305 I slot   operator(): id  0 | task 127 | accepted  1/ 2 draft tokens
+0.00.716.800 I slot   operator(): id  0 | task 127 | accepted  0/ 2 draft tokens
+0.00.719.304 I slot   operator(): id  0 | task 127 | accepted  0/ 2 draft tokens
+0.00.721.869 I slot   operator(): id  0 | task 127 | accepted  2/ 2 draft tokens
+0.00.724.450 I slot   operator(): id  0 | task 127 | accepted  2/ 2 draft tokens
+0.00.727.033 I slot   operator(): id  0 | task 127 | accepted  2/ 2 draft tokens
+0.00.729.551 I slot   operator(): id  0 | task 127 | accepted  1/ 2 draft tokens
+0.00.732.065 I slot   operator(): id  0 | task 127 | accepted  0/ 2 draft tokens
+0.00.734.580 I slot   operator(): id  0 | task 127 | accepted  0/ 2 draft tokens
+0.00.737.163 I slot   operator(): id  0 | task 127 | accepted  2/ 2 draft tokens
+0.00.739.730 I slot   operator(): id  0 | task 127 | accepted  1/ 2 draft tokens
+0.00.742.290 I slot   operator(): id  0 | task 127 | accepted  0/ 2 draft tokens
+0.00.744.875 I slot   operator(): id  0 | task 127 | accepted  2/ 2 draft tokens
+0.00.747.422 I slot   operator(): id  0 | task 127 | accepted  0/ 2 draft tokens
+0.00.749.973 I slot   operator(): id  0 | task 127 | accepted  2/ 2 draft tokens
+0.00.752.590 I slot   operator(): id  0 | task 127 | accepted  2/ 2 draft tokens
+0.00.755.217 I slot   operator(): id  0 | task 127 | accepted  2/ 2 draft tokens
+0.00.757.821 I slot   operator(): id  0 | task 127 | accepted  0/ 2 draft tokens
+0.00.760.409 I slot   operator(): id  0 | task 127 | accepted  0/ 2 draft tokens
+0.00.773.648 I slot   operator(): id  0 | task 127 | accepted  1/ 2 draft tokens
+0.00.776.291 I slot   operator(): id  0 | task 127 | accepted  2/ 2 draft tokens
+0.00.778.919 I slot   operator(): id  0 | task 127 | accepted  0/ 2 draft tokens
+0.00.781.554 I slot   operator(): id  0 | task 127 | accepted  2/ 2 draft tokens
+0.00.781.565 I slot print_timing: id  0 | task 127 | prompt eval time =       2.41 ms /    10 tokens (    0.24 ms per token,  4152.82 tokens per second)
+0.00.781.567 I slot print_timing: id  0 | task 127 |        eval time =     168.69 ms /   128 tokens (    1.32 ms per token,   758.80 tokens per second)
+0.00.781.567 I slot print_timing: id  0 | task 127 |       total time =     171.10 ms /   138 tokens
+0.00.781.568 I slot print_timing: id  0 | task 127 |    graphs reused =        184
+0.00.781.572 I slot print_timing: id  0 | task 127 | draft acceptance = 0.47692 (   62 accepted /   130 generated), mean len =  1.95
+0.00.781.603 I slot      release: id  0 | task 127 | stop processing: n_tokens = 137, truncated = 0
+0.00.784.488 I slot get_availabl: id  0 | task -1 | selected slot by id (0)
+0.00.784.947 I slot launch_slot_: id  0 | task 194 | processing task, is_child = 0
+0.00.792.268 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.00.797.037 I slot   operator(): id  0 | task 194 | accepted  7/ 7 draft tokens
+0.00.801.746 I slot   operator(): id  0 | task 194 | accepted  2/ 7 draft tokens
+0.00.806.554 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.00.811.396 I slot   operator(): id  0 | task 194 | accepted  2/ 7 draft tokens
+0.00.816.204 I slot   operator(): id  0 | task 194 | accepted  1/ 7 draft tokens
+0.00.820.965 I slot   operator(): id  0 | task 194 | accepted  2/ 7 draft tokens
+0.00.825.723 I slot   operator(): id  0 | task 194 | accepted  1/ 7 draft tokens
+0.00.830.582 I slot   operator(): id  0 | task 194 | accepted  1/ 7 draft tokens
+0.00.835.395 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.00.840.206 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.00.845.042 I slot   operator(): id  0 | task 194 | accepted  1/ 7 draft tokens
+0.00.849.926 I slot   operator(): id  0 | task 194 | accepted  1/ 7 draft tokens
+0.00.855.026 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.00.860.333 I slot   operator(): id  0 | task 194 | accepted  1/ 7 draft tokens
+0.00.865.711 I slot   operator(): id  0 | task 194 | accepted  4/ 7 draft tokens
+0.00.870.693 I slot   operator(): id  0 | task 194 | accepted  2/ 7 draft tokens
+0.00.875.641 I slot   operator(): id  0 | task 194 | accepted  3/ 7 draft tokens
+0.00.880.641 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.00.885.640 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.00.890.771 I slot   operator(): id  0 | task 194 | accepted  1/ 7 draft tokens
+0.00.895.789 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.00.900.849 I slot   operator(): id  0 | task 194 | accepted  3/ 7 draft tokens
+0.00.905.913 I slot   operator(): id  0 | task 194 | accepted  1/ 7 draft tokens
+0.00.911.014 I slot   operator(): id  0 | task 194 | accepted  2/ 7 draft tokens
+0.00.916.128 I slot   operator(): id  0 | task 194 | accepted  3/ 7 draft tokens
+0.00.921.240 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.00.926.328 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.00.931.530 I slot   operator(): id  0 | task 194 | accepted  4/ 7 draft tokens
+0.00.936.860 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.00.942.261 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.00.947.523 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.00.952.968 I slot   operator(): id  0 | task 194 | accepted  4/ 7 draft tokens
+0.00.958.293 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.00.963.607 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.00.968.914 I slot   operator(): id  0 | task 194 | accepted  2/ 7 draft tokens
+0.00.974.310 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.00.979.821 I slot   operator(): id  0 | task 194 | accepted  3/ 7 draft tokens
+0.00.985.294 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.00.990.719 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.00.996.357 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.01.002.052 I slot   operator(): id  0 | task 194 | accepted  1/ 7 draft tokens
+0.01.007.664 I slot   operator(): id  0 | task 194 | accepted  1/ 7 draft tokens
+0.01.013.150 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.01.018.628 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.01.024.074 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.01.029.498 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.01.034.947 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.01.040.426 I slot   operator(): id  0 | task 194 | accepted  1/ 7 draft tokens
+0.01.045.927 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.01.051.388 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.01.056.960 I slot   operator(): id  0 | task 194 | accepted  4/ 7 draft tokens
+0.01.062.472 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.01.067.988 I slot   operator(): id  0 | task 194 | accepted  0/ 7 draft tokens
+0.01.073.500 I slot   operator(): id  0 | task 194 | accepted  1/ 7 draft tokens
+0.01.079.119 I slot   operator(): id  0 | task 194 | accepted  3/ 7 draft tokens
+0.01.084.707 I slot   operator(): id  0 | task 194 | accepted  2/ 7 draft tokens
+0.01.089.568 I slot   operator(): id  0 | task 194 | accepted  5/ 5 draft tokens
+0.01.089.584 I slot print_timing: id  0 | task 194 | prompt eval time =       2.29 ms /     9 tokens (    0.25 ms per token,  3930.13 tokens per second)
+0.01.089.586 I slot print_timing: id  0 | task 194 |        eval time =     302.33 ms /   128 tokens (    2.36 ms per token,   423.38 tokens per second)
+0.01.089.586 I slot print_timing: id  0 | task 194 |       total time =     304.62 ms /   137 tokens
+0.01.089.587 I slot print_timing: id  0 | task 194 |    graphs reused =        240
+0.01.089.591 I slot print_timing: id  0 | task 194 | draft acceptance = 0.17079 (   69 accepted /   404 generated), mean len =  2.19
+0.01.089.622 I slot      release: id  0 | task 194 | stop processing: n_tokens = 136, truncated = 0
+0.01.091.709 I srv    operator(): operator(): cleaning up before exit...

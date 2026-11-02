@@ -137,19 +137,24 @@ def repair(rid, flags):
     reason = str(fail.get("reason") or "")
     spec = {k: row[k] for k in SPEC_KEYS if row.get(k) is not None}
     spec.update(launcher=row["launcher"]["path"], ram_gib=row.get("gib"))
+    # JEV-3 replace: the FAIL class is the typed judgment (worker_fast); the regex classifier answers only when typed is unavailable
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "churn"))
+    import typed_classify as tc  # noqa: E402
+    d = tc.decide_fail(fail)
+    cls = d["label"]
+    print(f"FAIL-CLASS {cls.value} source={d['source']}" + (f" (typed unavailable: {d['unavailable'][:200]})" if d["unavailable"] else ""), file=sys.stderr)
     m = _UNIT_RE.search(reason)
-    if m:
-        rp = m.group(1)
+    rp = m.group(1) if m else None
+    if cls == tc.FailClass.result_dir_path and rp:
         found = results_written_during(fail, os.path.dirname(rp.split("*")[0]))
-        if found:
-            spec["result_path"], spec["result_format"] = found, rf.guess_format(found)
-        elif is_marker(rp):
-            if spec.get("result_format") == "text-lines":
-                spec.pop("result_format")  # the extension guess for a marker, not a declaration: lint refuses or rewrites
-        else:
-            return 3, f"UNKNOWN-FAILURE-CLASS {reason}"
-    elif not re.search(r"spec\.(%s) missing" % "|".join(DERIVABLE), reason):
-        return 3, f"UNKNOWN-FAILURE-CLASS {reason}"
+        if not found:
+            return 3, f"UNKNOWN-FAILURE-CLASS result_dir_path but nothing was written during the run: {reason}"
+        spec["result_path"], spec["result_format"] = found, rf.guess_format(found)
+    elif cls == tc.FailClass.marker_result_path and rp:
+        if spec.get("result_format") == "text-lines":
+            spec.pop("result_format")  # the extension guess for a marker, not a declaration: lint refuses or rewrites
+    elif cls != tc.FailClass.derivable_field_missing:
+        return 3, f"UNKNOWN-FAILURE-CLASS {reason}" if d["source"] != "typed" else f"UNKNOWN-FAILURE-CLASS (typed {cls.value}) {reason}"
     for note in lint(spec):
         print(f"LINT {note}")
     new = rf.publish(spec, flags, source=f"repair:{fails[-1]}")

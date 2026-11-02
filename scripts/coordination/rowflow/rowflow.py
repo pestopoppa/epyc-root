@@ -1440,6 +1440,8 @@ def underused(flags, holders, log, seen, sample=None, now=None, vram=None):
         if not span or now - span[0]["ts"] < UNDERUSED_S:
             continue
         s0 = span[0]
+        if r == GPU and list(holders.values()).count(rid) > 1:
+            continue  # quiet-host/host-sized row: gpu-quiet is held for silence, its quarters carry the usage check
         if r == GPU:
             vals = [s.get("vram") for s in span if s.get("vram") is not None]
             pct = 100.0 if not vals else (100.0 if max(vals) >= 64 << 20 else 0.0)

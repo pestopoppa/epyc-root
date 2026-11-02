@@ -211,3 +211,19 @@ The prior preparation result events have not yet arrived. Dispatched bounded rea
 ## 01:02Z — Resolve lane merge and restore publication
 
 Resolved lane divergence: preserved pre-existing modified generated index files in named stash autokernel lane preexisting generated index changes, committed the staged prior progress entry as 73ffe445e, then merged origin/main successfully. The stash remains available and was not applied over newer generated index state. Consumed the CPU floor harness review: matched_process_v2 requires 24–256 independent pairs, while current native floor admission lacks host-state/coexistence binding and the current CPU recipe remains unresolved. Dispatched readiness checks for existing candidate and calibration preparation, with events registered. No row published or compute run.
+
+## 01:04Z — Implement candidate row prerequisites
+
+Consumed all three readiness reviews: the candidate lacks a verified build launcher and HIP binary; the existing CSV inspector does not bind capture provenance; the CPU floor lacks host-state binding and an identified current frame. Restored the relevant tracked engineering and script directories to this sparse lane. Dispatched bounded implementation of a candidate CPU build launcher and GPU capture receipt validator, plus collection of exact v10 build configuration; result events registered. No row published, build or inference run. Previous boundary reached main at eca45265664f394a2529e1691b914c08e9f4d361.
+
+## 01:05Z — Advance candidate build prerequisites
+
+The registered implementation results have not appeared. Dispatched narrow candidate source preflight and capture receipt implementations plus v10 HIP build evidence, with result events registered. Previous wrapup committed 84645f577afe but its push failed; this boundary retries publication. No row published, inference or build run.
+
+## 03:33Z — Record v10 GPU build configuration evidence
+
+Inspected the production GPU store symlink, its provenance and adjacent CMake cache; recorded the cache and provenance digests, relevant HIP and CPU settings, compiler paths and the known RUNPATH caveat in artifacts/engineering/autokernel-quantize-reciprocal-20261102/v10-hip-build-evidence.md. This narrows candidate build preparation but does not prove a new binary or reconstruct all original tool versions and arguments. Previous wrapup committed aba0656fee27 but failed serialized push; this boundary retries publication. No build, inference, or row publication.
+
+## 03:34Z — Record v10 GPU build configuration evidence
+
+Inspected the production GPU store symlink, its provenance and adjacent CMake cache; recorded the cache and provenance digests, relevant HIP and CPU settings, compiler paths and the known RUNPATH caveat in docs/design/autokernel-v10-hip-build-evidence-20261102.md. This narrows candidate build preparation but does not prove a new binary or reconstruct all original tool versions and arguments. Previous wrapup committed aba0656fee27 but failed serialized push; this boundary retries publication. No build, inference, or row publication.

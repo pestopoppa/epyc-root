@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
-"""JEV-3: SHADOW typed judgment beside two heuristic classifiers. Never changes behaviour.
+"""JEV-3 (REPLACE, operator 2026-11-02): typed judgment is the churn classifier; the regex classifiers are the fallback.
 
-Shadowed classifiers (both stay authoritative; this module only computes a second, typed label next to them):
-  (a) publish_row.repair()'s dry-run FAIL class detection (rowflow/publish_row.py: _UNIT_RE / is_marker /
-      results_written_during / DERIVABLE) -> FailClass
+Two decisions go through here:
+  (a) publish_row.repair()'s dry-run FAIL class -> FailClass            (decide_fail)
   (b) handoff_sessions.work_state()'s continue|pause|done read of a BACKLOG-handoff-<slug>.md -> WorkState + StopReason
+                                                                        (decide_work_state)
 
-Typed path (NATIVE mode, local llama-server, no orchestrator API): epyc-orchestrator ``src.typed_decisions``
-``run_typed_decisions_native(LLMPrimitives(mock_mode=False, server_urls=get_config().server_urls), state=..., questions=
-[Question(kind=choice, options=<enum>)], role=TYPED_SHADOW_ROLE)`` -> DecisionResult.decisions[0].value. Needs the
-orchestrator venv (/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python3): pydantic etc. are not on the system python.
+Typed path (NATIVE mode, local llama-server worker_fast :8102, no orchestrator API): epyc-orchestrator
+``src.typed_decisions.run_typed_decisions_native`` with one CHOICE question per enum. Needs the orchestrator venv
+(/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python3) when typed_decisions is not importable here.
 
-Contract: when typed_decisions cannot be imported, has no live backend, or fails at runtime, the result is
-``source="unavailable"`` with ``label=None`` and the exception text in ``detail`` -- NEVER a guessed label.
-Activation (letting the typed label drive anything) needs a separate gate; this module has no write side.
+Jev principle: asked-but-unavailable is its own state. classify_* returns ``source="unavailable"``, ``label=None`` (never
+a guess) when typed_decisions cannot be imported, the server does not answer, or the answer is out of enum. decide_*
+answers with the typed label when one was given (including ``unknown``) and falls back to the regex classifier ONLY
+when the typed side was unavailable, recording ``source="regex-fallback"`` and the unavailable detail.
 
 CLI (read-only):
-  typed_shadow.py replay [--flags DIR]      heuristic vs typed over dryrun/*/FAIL-*.json, diff table + counts
-  typed_shadow.py fail <FAIL.json>          one record, both labels as JSON
-  typed_shadow.py work-state <BACKLOG.md> [--open-boxes N]
+  typed_classify.py replay [--flags DIR]    typed answered vs unavailable over dryrun/*/FAIL-*.json
+  typed_classify.py fail <FAIL.json>        the decision for one record, as JSON
+  typed_classify.py work-state <BACKLOG.md> [--open-boxes N]
 """
 from __future__ import annotations
 
@@ -33,8 +33,9 @@ import traceback
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _COORD = os.path.dirname(_HERE)
-ORCH_ROOT = os.environ.get("TYPED_SHADOW_ORCH_ROOT", "/mnt/raid0/llm/epyc-orchestrator")
-ROLE = os.environ.get("TYPED_SHADOW_ROLE", "worker_fast")   # registry role the one-token shadow read is charged to
+ORCH_ROOT = os.environ.get("TYPED_CLASSIFY_ORCH_ROOT", "/mnt/raid0/llm/epyc-orchestrator")
+ROLE = os.environ.get("TYPED_CLASSIFY_ROLE", "worker_fast")   # registry role the one-token read is charged to
+PORT = int(os.environ.get("TYPED_CLASSIFY_PORT", "8102"))     # worker_fast; not listening -> unavailable, zero cost
 DEFAULT_FLAGS = os.environ.get("ROWFLOW_FLAGS", "/mnt/raid0/llm/tmp/compute-flags")
 STATE_MAX_CHARS = 2400
 TAIL_LINES = 12
@@ -83,7 +84,7 @@ STOP_DESCRIPTIONS = {
 }
 
 
-# ------------------------------------------------------------------ heuristics (read-only re-run of the incumbents)
+# ------------------------------------------------------------------ regex classifiers (the fallback)
 def _publish_row():
     sys.path.insert(0, os.path.join(_COORD, "rowflow"))
     import publish_row  # noqa: E402
@@ -133,15 +134,15 @@ def heuristic_work_state(backlog_text: str, open_boxes: int) -> tuple[WorkState,
     ntasks = len([l for l in ni.splitlines() if l.startswith("- [")])
     own = len(own_rx.findall(b))
     if adv:
-        return WorkState.continue_, StopReason.has_fix_tasks, f"{len(adv)} advanceable row(s)"
+        return WorkState.continue_, StopReason.has_fix_tasks, f"{len(adv)} advanceable row(s) (blocked/needs-launcher/needs-qualification)"
     if own:
-        return WorkState.continue_, StopReason.has_own_inference_tasks, f"{own} own inference task(s)"
+        return WorkState.continue_, StopReason.has_own_inference_tasks, f"{own} own inference task(s) to publish as rows"
     if ntasks:
-        return WorkState.continue_, StopReason.has_small_tasks, f"{ntasks} non-inference task(s)"
+        return WorkState.continue_, StopReason.has_small_tasks, f"{ntasks} non-inference task(s) in the backlog"
     if waiting:
-        return WorkState.pause, StopReason.waiting_on_own_rows, "waiting on " + ", ".join(waiting[:6])
+        return WorkState.pause, StopReason.waiting_on_own_rows, "waiting on row(s) " + ", ".join(waiting[:6]) + " (queued/running)"
     if open_boxes:
-        return WorkState.continue_, StopReason.backlog_empty, f"{open_boxes} open box(es), backlog empty"
+        return WorkState.continue_, StopReason.backlog_empty, f"{open_boxes} open box(es) in the handoff, none waiting on a row"
     return WorkState.done, StopReason.no_open_boxes, "nothing open and no rows waiting"
 
 
@@ -190,19 +191,29 @@ def _typed_importable() -> bool:
         return False
 
 
+def _require_listening() -> None:
+    """Zero-cost unavailability: no import, no subprocess, no model call unless worker_fast accepts a TCP connect."""
+    import socket
+    try:
+        socket.create_connection(("127.0.0.1", PORT), timeout=0.3).close()
+    except OSError as exc:
+        raise ConnectionError(f"{ROLE} :{PORT} not listening ({exc})")
+
+
 def _typed_answers(catalogue: list[dict], state: str) -> dict:
     """{qid: {"value", "probabilities", "confidence"}} from ONE native constrained read. Raises on failure.
     catalogue items: {"id", "text", "options": [str], "descriptions": [str]}. Tests patch this seam.
     rowflow.py needs python>=3.12 while typed_decisions lives in the 3.11 orchestrator venv, so when the package is not
-    importable here the read runs in a ``TYPED_SHADOW_PYTHON`` subprocess (this same file, `_typed-worker`, JSON over pipes)."""
+    importable here the read runs in a ``TYPED_CLASSIFY_PYTHON`` subprocess (this same file, `_typed-worker`, JSON over pipes)."""
+    _require_listening()
     if _typed_importable():
         return _typed_in_process(catalogue, state)
-    py = os.environ.get("TYPED_SHADOW_PYTHON", os.path.join(ORCH_ROOT, ".venv", "bin", "python3"))
+    py = os.environ.get("TYPED_CLASSIFY_PYTHON", os.path.join(ORCH_ROOT, ".venv", "bin", "python3"))
     if not os.path.isfile(py) or os.path.realpath(py) == os.path.realpath(sys.executable):
         raise ImportError(f"src.typed_decisions not importable from {sys.executable} and no separate interpreter at {py}")
     proc = subprocess.run([py, "-I", os.path.abspath(__file__), "_typed-worker"], input=json.dumps({"catalogue": catalogue, "state": state}),
-                          capture_output=True, text=True, timeout=float(os.environ.get("TYPED_SHADOW_TIMEOUT_S", "180")),
-                          env={**os.environ, "TYPED_SHADOW_ORCH_ROOT": ORCH_ROOT, "TYPED_SHADOW_ROLE": ROLE})
+                          capture_output=True, text=True, timeout=float(os.environ.get("TYPED_CLASSIFY_TIMEOUT_S", "180")),
+                          env={**os.environ, "TYPED_CLASSIFY_ORCH_ROOT": ORCH_ROOT, "TYPED_CLASSIFY_ROLE": ROLE, "TYPED_CLASSIFY_PORT": str(PORT)})
     try:
         reply = json.loads(proc.stdout.strip().splitlines()[-1]) if proc.stdout.strip() else {}
     except ValueError:
@@ -254,10 +265,7 @@ def classify_fail(fail_record: dict) -> dict:
 
 
 def classify_work_state(backlog_text: str, open_boxes: int) -> dict:
-    """Typed continue|pause|done + StopReason beside work_state(). Both labels are returned; nothing is written.
-    {"label": WorkState|None, "stop_reason": StopReason|None, "source", "detail", "heuristic": {label, stop_reason, detail}}"""
-    h_label, h_reason, h_detail = heuristic_work_state(backlog_text, open_boxes)
-    out = {"heuristic": {"label": h_label, "stop_reason": h_reason, "detail": h_detail}}
+    """Typed continue|pause|done + StopReason. {"label": WorkState|None, "stop_reason": StopReason|None, "source", "detail"}."""
     state = f"open checkboxes in the handoff: {int(open_boxes)}\nBACKLOG file:\n{(backlog_text or '')[:STATE_MAX_CHARS]}"
     cat = [{"id": "work_state", "text": "Should the session continue working, pause until its rows end, or is it done?",
             "options": [e.value for e in WorkState],
@@ -269,12 +277,29 @@ def classify_work_state(backlog_text: str, open_boxes: int) -> dict:
         label = _to_enum(WorkState, ans["work_state"]["value"])
         reason = _to_enum(StopReason, ans["stop_reason"]["value"])
     except Exception as exc:  # noqa: BLE001
-        out.update(_unavailable(exc), stop_reason=None)
-        return out
-    out.update(label=label, stop_reason=reason, source="typed",
-               detail=json.dumps({k: {"probabilities": v["probabilities"], "confidence": v["confidence"]} for k, v in ans.items()},
-                                 default=str))
-    return out
+        return dict(_unavailable(exc), stop_reason=None)
+    return {"label": label, "stop_reason": reason, "source": "typed",
+            "detail": json.dumps({k: {"probabilities": v["probabilities"], "confidence": v["confidence"]} for k, v in ans.items()},
+                                 default=str)}
+
+
+# ------------------------------------------------------------------ decisions (typed first; regex only when unavailable)
+def decide_fail(fail_record: dict) -> dict:
+    """{"label": FailClass, "source": "typed"|"regex-fallback", "detail", "unavailable": detail|None}."""
+    t = classify_fail(fail_record)
+    if t["source"] == "typed":
+        return dict(t, unavailable=None)
+    label, detail = heuristic_fail(fail_record)
+    return {"label": label, "source": "regex-fallback", "detail": detail, "unavailable": t["detail"]}
+
+
+def decide_work_state(backlog_text: str, open_boxes: int) -> dict:
+    """{"label": WorkState, "stop_reason": StopReason, "source": "typed"|"regex-fallback", "detail", "unavailable"}."""
+    t = classify_work_state(backlog_text, open_boxes)
+    if t["source"] == "typed":
+        return dict(t, unavailable=None)
+    label, reason, detail = heuristic_work_state(backlog_text, open_boxes)
+    return {"label": label, "stop_reason": reason, "source": "regex-fallback", "detail": detail, "unavailable": t["detail"]}
 
 
 # ------------------------------------------------------------------ replay (regression check, read-only)
@@ -289,39 +314,31 @@ def _fail_files(flags_dir: str) -> list[str]:
 
 
 def replay(flags_dir: str = DEFAULT_FLAGS) -> list[dict]:
-    """[{row, file, heuristic_label, heuristic_detail, typed_label, typed_source, typed_detail, agree}] over dryrun/*/FAIL-*.json.
-    agree is True/False, or None when the typed side is unavailable. Reads only."""
+    """[{row, file, label, source, detail, unavailable}] over dryrun/*/FAIL-*.json via decide_fail. Reads only."""
     rows = []
     for p in _fail_files(flags_dir):
+        row = os.path.basename(os.path.dirname(p))
         try:
             with open(p) as f:
                 rec = json.load(f)
         except (OSError, ValueError) as exc:
-            rows.append({"row": os.path.basename(os.path.dirname(p)), "file": p, "heuristic_label": None, "typed_label": None,
-                         "typed_source": "unavailable", "agree": None, "heuristic_detail": f"unreadable: {exc}", "typed_detail": ""})
+            rows.append({"row": row, "file": p, "label": None, "source": "unreadable", "detail": str(exc), "unavailable": None})
             continue
-        hl, hd = heuristic_fail(rec)
-        t = classify_fail(rec)
-        tl = t["label"]
-        rows.append({"row": os.path.basename(os.path.dirname(p)), "file": p, "heuristic_label": hl.value, "heuristic_detail": hd,
-                     "typed_label": tl.value if tl else None, "typed_source": t["source"], "typed_detail": t["detail"],
-                     "agree": (tl == hl) if tl is not None else None})
+        d = decide_fail(rec)
+        rows.append({"row": row, "file": p, "label": d["label"].value, "source": d["source"], "detail": d["detail"],
+                     "unavailable": d["unavailable"]})
     return rows
 
 
 def format_table(rows: list[dict]) -> str:
-    agree = sum(1 for r in rows if r["agree"] is True)
-    disagree = sum(1 for r in rows if r["agree"] is False)
-    unavail = sum(1 for r in rows if r["agree"] is None)
-    lines = [f"{'row':<44} {'heuristic':<24} {'typed':<24} agree"]
-    for r in rows:
-        lines.append(f"{r['row'][:44]:<44} {str(r['heuristic_label']):<24} {str(r['typed_label']):<24} "
-                     f"{'yes' if r['agree'] else ('n/a' if r['agree'] is None else 'NO')}")
-    lines.append(f"records={len(rows)} agree={agree} disagree={disagree} typed_unavailable={unavail}")
-    if unavail and rows:
-        first = next((r for r in rows if r["agree"] is None), None)
-        if first:
-            lines.append(f"typed unavailable because: {first['typed_detail'][:300]}")
+    answered = sum(1 for r in rows if r["source"] == "typed")
+    unavail = sum(1 for r in rows if r["source"] == "regex-fallback")
+    lines = [f"{'row':<44} {'label':<24} source"]
+    lines += [f"{r['row'][:44]:<44} {str(r['label']):<24} {r['source']}" for r in rows]
+    lines.append(f"records={len(rows)} typed_answered={answered} typed_unavailable={unavail}")
+    first = next((r for r in rows if r["unavailable"]), None)
+    if first:
+        lines.append(f"typed unavailable because: {first['unavailable'][:300]}")
     return "\n".join(lines)
 
 
@@ -350,12 +367,11 @@ def main(argv=None) -> int:
     if a.cmd == "fail":
         with open(a.path) as fh:
             rec = json.load(fh)
-        hl, hd = heuristic_fail(rec)
-        print(json.dumps({"heuristic": {"label": hl, "detail": hd}, "typed": classify_fail(rec)}, indent=1, default=_json_default))
+        print(json.dumps(decide_fail(rec), indent=1, default=_json_default))
         return 0
     with open(a.path) as fh:
         txt = fh.read()
-    print(json.dumps(classify_work_state(txt, a.open_boxes), indent=1, default=_json_default))
+    print(json.dumps(decide_work_state(txt, a.open_boxes), indent=1, default=_json_default))
     return 0
 
 

@@ -1,0 +1,236 @@
+5a9c3ef8c000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server mapped=1 active=0 N1=1 kernelpagesize_kB=4
+5a9c3ef8d000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server mapped=1 active=0 N2=1 kernelpagesize_kB=4
+5a9c3ef8e000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server mapped=1 active=0 N3=1 kernelpagesize_kB=4
+5a9c3ef8f000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server anon=1 dirty=1 active=0 N2=1 kernelpagesize_kB=4
+5a9c3ef90000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server anon=1 dirty=1 active=0 N3=1 kernelpagesize_kB=4
+5a9c62d10000 interleave:0-3 heap anon=638 dirty=638 active=0 N0=160 N1=159 N2=160 N3=159 kernelpagesize_kB=4
+5a9c62f9f000 interleave:0-3 heap anon=11 dirty=11 active=0 N0=3 N1=3 N2=2 N3=3 kernelpagesize_kB=4
+5a9c62faa000 interleave:0-3 heap anon=36 dirty=36 active=0 N0=9 N1=9 N2=9 N3=9 kernelpagesize_kB=4
+5a9c62fce000 interleave:0-3 heap anon=6 dirty=6 active=0 N0=1 N1=1 N2=2 N3=2 kernelpagesize_kB=4
+5a9c62fd4000 interleave:0-3 heap anon=77 dirty=77 active=0 N0=20 N1=19 N2=19 N3=19 kernelpagesize_kB=4
+5a9c63021000 interleave:0-3 heap anon=67 dirty=67 active=0 N0=16 N1=17 N2=17 N3=17 kernelpagesize_kB=4
+5a9c63064000 interleave:0-3 heap anon=358 dirty=358 active=0 N0=90 N1=90 N2=89 N3=89 kernelpagesize_kB=4
+5a9c631ca000 interleave:0-3 heap anon=969 dirty=969 active=0 N0=141 N1=141 N2=545 N3=142 kernelpagesize_kB=4
+5a9c63593000 interleave:0-3 heap anon=1431 dirty=1431 active=0 N0=75 N1=75 N2=695 N3=586 kernelpagesize_kB=4
+5a9c63b2a000 interleave:0-3 heap anon=969 dirty=969 active=0 N0=53 N1=565 N2=297 N3=54 kernelpagesize_kB=4
+5a9c63ef3000 interleave:0-3 heap anon=669 dirty=669 active=0 N2=269 N3=400 kernelpagesize_kB=4
+5a9c64190000 interleave:0-3 heap anon=969 dirty=969 active=0 N0=215 N1=214 N2=214 N3=326 kernelpagesize_kB=4
+5a9c64559000 interleave:0-3 heap anon=9673 dirty=9673 active=0 N0=2162 N1=2163 N2=3186 N3=2162 kernelpagesize_kB=4
+5a9c66b22000 interleave:0-3 heap anon=36 dirty=36 active=0 N0=9 N1=9 N2=9 N3=9 kernelpagesize_kB=4
+5a9c66b46000 interleave:0-3 heap anon=2513 dirty=2513 active=0 N0=756 N1=244 N2=757 N3=756 kernelpagesize_kB=4
+5a9c67517000 interleave:0-3 heap anon=67 dirty=67 active=0 N0=17 N1=17 N2=16 N3=17 kernelpagesize_kB=4
+5a9c6755a000 interleave:0-3 heap anon=34 dirty=34 active=0 N0=8 N1=8 N2=9 N3=9 kernelpagesize_kB=4
+5a9c6757c000 interleave:0-3 heap anon=74 dirty=74 active=0 N0=19 N1=19 N2=18 N3=18 kernelpagesize_kB=4
+5a9c675c6000 interleave:0-3 heap anon=4169 dirty=4169 active=0 N0=2194 N1=658 N2=659 N3=658 kernelpagesize_kB=4
+5a9c6860f000 interleave:0-3 heap anon=67 dirty=67 active=0 N0=17 N1=17 N2=16 N3=17 kernelpagesize_kB=4
+5a9c68652000 interleave:0-3 heap anon=34 dirty=34 active=0 N0=8 N1=8 N2=9 N3=9 kernelpagesize_kB=4
+5a9c68674000 interleave:0-3 heap anon=74 dirty=74 active=0 N0=19 N1=19 N2=18 N3=18 kernelpagesize_kB=4
+5a9c686be000 interleave:0-3 heap anon=1 dirty=1 active=0 N2=1 kernelpagesize_kB=4
+5a9c686bf000 interleave:0-3 heap anon=68 dirty=68 active=0 N0=17 N1=17 N2=17 N3=17 kernelpagesize_kB=4
+5a9c68709000 interleave:0-3 heap anon=719 dirty=719 active=0 N0=177 N1=1 N3=541 kernelpagesize_kB=4
+5a9c6d590000 interleave:0-3 heap anon=969 dirty=969 active=0 N0=243 N1=242 N2=242 N3=242 kernelpagesize_kB=4
+5a9c6d959000 interleave:0-3 heap anon=3329 dirty=3329 active=0 N0=832 N1=833 N2=832 N3=832 kernelpagesize_kB=4
+5a9c6e65a000 interleave:0-3 heap anon=1 dirty=1 active=0 N2=1 kernelpagesize_kB=4
+5a9c6e67e000 interleave:0-3 heap anon=48 dirty=48 active=0 N0=12 N1=12 N2=12 N3=12 kernelpagesize_kB=4
+5a9c6e6ae000 interleave:0-3 heap anon=3887 dirty=3887 active=0 N0=852 N1=1329 N2=853 N3=853 kernelpagesize_kB=4
+5a9c6f5dd000 interleave:0-3 heap anon=977 dirty=977 active=0 N0=229 N1=271 N2=241 N3=236 kernelpagesize_kB=4
+717c694b7000 interleave:0-3 anon=4 dirty=4 active=0 N0=1 N1=1 N2=1 N3=1 kernelpagesize_kB=4
+717ccc022000 interleave:0-3
+717cd0000000 interleave:0-3 anon=6 dirty=6 N0=2 N1=2 N2=1 N3=1 kernelpagesize_kB=4
+717cd0022000 interleave:0-3
+717cd4000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N2=1 kernelpagesize_kB=4
+717cd4022000 interleave:0-3
+717cd8e81000 interleave:0-3 anon=8457 dirty=8457 active=0 N0=5826 N1=1731 N2=608 N3=292 kernelpagesize_kB=4
+717d3a0ea000 interleave:0-3 anon=244 dirty=244 active=47 N0=62 N1=60 N2=57 N3=65 kernelpagesize_kB=4
+717d3fbdd000 interleave:0-3 anon=853 dirty=853 active=336 N0=208 N1=184 N2=143 N3=318 kernelpagesize_kB=4
+717d5fffe000 interleave:0-3 anon=1 dirty=1 active=0 N3=1 kernelpagesize_kB=4
+717d60000000 interleave:0-3 anon=131071 dirty=131071 active=0 N0=32768 N1=31566 N2=33970 N3=32767 kernelpagesize_kB=4
+717d7ffff000 interleave:0-3 anon=4 dirty=4 active=0 N0=1 N1=1 N2=1 N3=1 kernelpagesize_kB=4
+717d80022000 interleave:0-3
+717d84000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N2=1 kernelpagesize_kB=4
+717d84022000 interleave:0-3
+717d88000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N3=2 kernelpagesize_kB=4
+717d88022000 interleave:0-3
+717d8c000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N3=1 kernelpagesize_kB=4
+717d8c022000 interleave:0-3
+717d90000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N3=2 kernelpagesize_kB=4
+717d90022000 interleave:0-3
+717d94000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N3=2 kernelpagesize_kB=4
+717d94022000 interleave:0-3
+717d98000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N3=2 kernelpagesize_kB=4
+717d98022000 interleave:0-3
+717d9dadc000 interleave:0-3 anon=8457 dirty=8457 active=0 N0=3779 N1=2242 N2=2242 N3=194 kernelpagesize_kB=4
+717d9fbe5000 interleave:0-3 anon=696 dirty=696 active=0 N0=174 N3=522 kernelpagesize_kB=4
+717dbcc1f000 interleave:0-3 anon=1 dirty=1 active=0 N3=1 kernelpagesize_kB=4
+717dbcc20000 interleave:0-3 anon=3659 dirty=3659 active=0 N0=904 N1=63 N2=63 N3=2629 kernelpagesize_kB=4
+717ddec75000 interleave:0-3 anon=2 dirty=2 active=0 N3=2 kernelpagesize_kB=4
+717e417c0000 interleave:0-3 anon=321599 dirty=321599 active=0 N0=80400 N3=241199 kernelpagesize_kB=4
+717e8ffff000 interleave:0-3 anon=4 dirty=4 active=0 N0=1 N3=3 kernelpagesize_kB=4
+717e90022000 interleave:0-3
+717e94000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N3=2 kernelpagesize_kB=4
+717e94022000 interleave:0-3
+717e98000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N3=1 kernelpagesize_kB=4
+717e98022000 interleave:0-3
+717e9c7fc000 interleave:0-3 anon=36 dirty=36 active=0 N0=9 N3=27 kernelpagesize_kB=4
+717e9dfff000 interleave:0-3 anon=1 dirty=1 active=0 N3=1 kernelpagesize_kB=4
+717e9e000000 interleave:0-3 anon=696319 dirty=696319 active=0 N0=174080 N1=139491 N2=11455 N3=371293 kernelpagesize_kB=4
+717f47fff000 interleave:0-3 anon=4 dirty=4 active=0 N0=1 N1=1 N3=2 kernelpagesize_kB=4
+717f48022000 interleave:0-3
+717f4c000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N3=1 kernelpagesize_kB=4
+717f4c022000 interleave:0-3
+717f50000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N3=1 kernelpagesize_kB=4
+717f50022000 interleave:0-3
+717f54000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N3=1 kernelpagesize_kB=4
+717f54022000 interleave:0-3
+717f58000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N3=1 kernelpagesize_kB=4
+717f58022000 interleave:0-3
+717f5c000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N3=1 kernelpagesize_kB=4
+717f5c022000 interleave:0-3
+717f60000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N3=1 kernelpagesize_kB=4
+717f60022000 interleave:0-3
+717f64000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N3=1 kernelpagesize_kB=4
+717f64022000 interleave:0-3
+717f68000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N3=1 kernelpagesize_kB=4
+717f68022000 interleave:0-3
+717f6c000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N3=1 kernelpagesize_kB=4
+717f6c022000 interleave:0-3
+717f70000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N2=1 kernelpagesize_kB=4
+717f70022000 interleave:0-3
+717f74084000 interleave:0-3 anon=84 dirty=84 active=0 N0=21 N3=63 kernelpagesize_kB=4
+717f7788b000 interleave:0-3 anon=1 dirty=1 N3=1 kernelpagesize_kB=4
+717f7788c000 interleave:0-3 anon=9226099 dirty=9226099 N0=2306525 N1=2306525 N2=986372 N3=3626677 kernelpagesize_kB=4
+718843fff000 interleave:0-3 anon=2 dirty=2 N0=1 N3=1 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3 anon=2 dirty=2 active=0 N1=1 N2=1 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3
+[redacted-long-digit-run] interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N2=1 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3
+71884c000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N2=1 kernelpagesize_kB=4
+71884c022000 interleave:0-3
+7188507f1000 interleave:0-3 anon=180 dirty=180 active=0 N0=45 N3=135 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N3=1 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3
+71885c000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N2=1 kernelpagesize_kB=4
+71885c022000 interleave:0-3
+[redacted-long-digit-run] interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N2=1 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3
+[redacted-long-digit-run] interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N2=1 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3
+[redacted-long-digit-run] interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N2=1 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3
+71886c000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N2=1 kernelpagesize_kB=4
+71886c022000 interleave:0-3
+[redacted-long-digit-run] interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N2=1 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3
+[redacted-long-digit-run] interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N2=1 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3
+[redacted-long-digit-run] interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N2=1 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3
+71887c000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N2=1 kernelpagesize_kB=4
+71887c022000 interleave:0-3
+[redacted-long-digit-run] interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N2=1 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3
+7188847f9000 interleave:0-3 anon=84 dirty=84 active=0 N0=21 N3=63 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N2=1 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3
+71888c4fa000 interleave:0-3 anon=48 dirty=48 active=0 N0=12 N3=36 kernelpagesize_kB=4
+71888e4fe000 interleave:0-3 anon=773 dirty=773 active=0 N0=577 N1=1 N2=1 N3=194 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3
+[redacted-long-digit-run] interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N2=1 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3
+[redacted-long-digit-run] interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N2=1 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3
+71889c000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N2=1 kernelpagesize_kB=4
+71889c022000 interleave:0-3
+7188a0000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N2=1 kernelpagesize_kB=4
+7188a0022000 interleave:0-3
+7188a4000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N2=1 kernelpagesize_kB=4
+7188a4022000 interleave:0-3
+7188a8000000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N2=1 kernelpagesize_kB=4
+7188a8022000 interleave:0-3
+7188ac59b000 interleave:0-3 anon=12 dirty=12 active=0 N0=3 N3=9 kernelpagesize_kB=4
+7188acd9c000 interleave:0-3 anon=16914 dirty=16914 active=0 N0=15621 N3=1293 kernelpagesize_kB=4
+7188b0fae000 interleave:0-3 anon=1836 dirty=1836 active=2 N0=459 N1=457 N2=455 N3=465 kernelpagesize_kB=4
+718903fe8000 interleave:0-3 anon=288 dirty=288 active=0 N0=72 N1=72 N2=70 N3=74 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3 anon=22 dirty=22 active=0 N0=6 N1=6 N2=5 N3=5 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3
+7189145fb000 interleave:0-3 anon=58 dirty=58 active=0 N0=15 N1=15 N2=14 N3=14 kernelpagesize_kB=4
+718916e00000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0 mapped=20 active=0 N0=6 N3=14 kernelpagesize_kB=4
+718916e14000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0 mapped=236 active=0 N0=50 N1=35 N2=20 N3=131 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0 mapped=32 active=0 N0=7 N1=7 N2=12 N3=6 kernelpagesize_kB=4
+7189170b0000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0 anon=2 dirty=2 active=0 N0=1 N1=1 kernelpagesize_kB=4
+7189170b2000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0 anon=1 dirty=1 active=0 N2=1 kernelpagesize_kB=4
+7189170b3000 interleave:0-3 anon=130 dirty=130 active=0 N0=32 N1=32 N2=32 N3=34 kernelpagesize_kB=4
+71891721e000 interleave:0-3 file=/usr/lib/x86_64-linux-gnu/libm.so.6 mapped=17 mapmax=149 active=0 N0=16 N2=1 kernelpagesize_kB=4
+71891722f000 interleave:0-3 file=/usr/lib/x86_64-linux-gnu/libm.so.6 mapped=80 mapmax=149 active=0 N0=80 kernelpagesize_kB=4
+7189172ba000 interleave:0-3 file=/usr/lib/x86_64-linux-gnu/libm.so.6 mapped=38 mapmax=49 active=0 N0=20 N1=5 N2=1 N3=12 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3 file=/usr/lib/x86_64-linux-gnu/libm.so.6 anon=1 dirty=1 active=0 N2=1 kernelpagesize_kB=4
+71891732a000 interleave:0-3 file=/usr/lib/x86_64-linux-gnu/libm.so.6 anon=1 dirty=1 active=0 N3=1 kernelpagesize_kB=4
+71891732b000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0 mapped=20 active=0 N0=5 N1=1 N2=9 N3=5 kernelpagesize_kB=4
+71891733f000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0 mapped=123 active=0 N0=19 N1=32 N2=36 N3=36 kernelpagesize_kB=4
+7189173da000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0 mapped=22 active=0 N0=4 N1=3 N2=10 N3=5 kernelpagesize_kB=4
+7189173fc000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0 anon=2 dirty=2 active=0 N1=1 N2=1 kernelpagesize_kB=4
+7189173fe000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0 anon=2 dirty=2 active=0 N0=1 N3=1 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303 mapped=155 active=0 N0=38 N1=39 N2=39 N3=39 kernelpagesize_kB=4
+71891749b000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303 mapped=352 active=0 N0=116 N1=104 N2=67 N3=65 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303 mapped=63 active=0 N0=35 N1=10 N2=9 N3=9 kernelpagesize_kB=4
+7189177a4000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303 anon=13 dirty=13 active=0 N0=3 N1=3 N2=3 N3=4 kernelpagesize_kB=4
+7189177b1000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303 anon=5 dirty=5 active=0 N0=2 N1=1 N2=1 N3=1 kernelpagesize_kB=4
+7189177b6000 interleave:0-3 anon=1 dirty=1 active=0 N2=1 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303 mapped=165 active=0 N0=30 N1=135 kernelpagesize_kB=4
+7189178a5000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303 mapped=656 active=0 N0=172 N1=235 N2=167 N3=82 kernelpagesize_kB=4
+718917bd4000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303 mapped=169 active=0 N0=102 N1=3 N2=42 N3=22 kernelpagesize_kB=4
+718917c7d000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303 anon=8 dirty=8 active=0 N0=2 N1=2 N2=2 N3=2 kernelpagesize_kB=4
+718917c85000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303 anon=5 dirty=5 active=0 N0=2 N1=1 N2=1 N3=1 kernelpagesize_kB=4
+718917c8a000 interleave:0-3 anon=2 dirty=2 active=0 N0=1 N1=1 kernelpagesize_kB=4
+718917d1c000 interleave:0-3 anon=18 dirty=18 active=0 N0=4 N1=4 N2=5 N3=5 kernelpagesize_kB=4
+718917d30000 interleave:0-3 file=/usr/lib/x86_64-linux-gnu/libc.so.6 mapped=40 mapmax=201 active=0 N0=39 N2=1 kernelpagesize_kB=4
+718917d58000 interleave:0-3 file=/usr/lib/x86_64-linux-gnu/libc.so.6 mapped=376 mapmax=224 active=0 N0=374 N2=2 kernelpagesize_kB=4
+718917ef1000 interleave:0-3 file=/usr/lib/x86_64-linux-gnu/libc.so.6 mapped=47 mapmax=223 active=0 N0=47 kernelpagesize_kB=4
+718917f60000 interleave:0-3 file=/usr/lib/x86_64-linux-gnu/libc.so.6 anon=4 dirty=4 active=0 N0=1 N1=1 N2=1 N3=1 kernelpagesize_kB=4
+718917f64000 interleave:0-3 file=/usr/lib/x86_64-linux-gnu/libc.so.6 anon=2 dirty=2 active=0 N0=1 N3=1 kernelpagesize_kB=4
+718917f66000 interleave:0-3 anon=5 dirty=5 active=0 N0=1 N2=3 N3=1 kernelpagesize_kB=4
+718917f73000 interleave:0-3 file=/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.34 mapped=162 mapmax=39 active=0 N0=106 N3=56 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3 file=/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.34 mapped=208 mapmax=39 active=0 N0=79 N1=1 N3=128 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3 file=/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.34 mapped=48 mapmax=39 active=0 N0=9 N3=39 kernelpagesize_kB=4
+7189181ea000 interleave:0-3 file=/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.34 anon=15 dirty=15 active=0 N0=4 N1=3 N2=4 N3=4 kernelpagesize_kB=4
+7189181f9000 interleave:0-3 file=/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.34 anon=3 dirty=3 active=0 N1=1 N2=1 N3=1 kernelpagesize_kB=4
+7189181fc000 interleave:0-3 anon=3 dirty=3 active=0 N0=1 N1=1 N2=1 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-server-impl.so mapped=127 active=0 N0=33 N1=1 N2=62 N3=31 kernelpagesize_kB=4
+71891827f000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-server-impl.so mapped=444 active=0 N0=124 N1=20 N2=204 N3=96 kernelpagesize_kB=4
+7189184db000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-server-impl.so mapped=117 active=0 N0=36 N1=5 N2=52 N3=24 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-server-impl.so anon=5 dirty=5 active=0 N0=2 N1=1 N2=1 N3=1 kernelpagesize_kB=4
+71891880e000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-server-impl.so anon=4 dirty=4 active=0 N0=1 N1=1 N2=1 N3=1 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3 anon=2 dirty=2 active=0 N2=1 N3=1 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3 file=/usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0 mapped=11 active=0 N3=11 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3 file=/usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0 mapped=46 active=0 N0=2 N2=7 N3=37 kernelpagesize_kB=4
+71891885e000 interleave:0-3 file=/usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0 mapped=12 active=0 N3=12 kernelpagesize_kB=4
+71891886c000 interleave:0-3 file=/usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0 anon=1 dirty=1 active=0 N2=1 kernelpagesize_kB=4
+71891886d000 interleave:0-3 file=/usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0 anon=1 dirty=1 active=0 N3=1 kernelpagesize_kB=4
+71891886e000 interleave:0-3 anon=2 dirty=2 active=0 N2=1 N3=1 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml.so.0.16.0 mapped=3 active=0 N0=1 N1=1 N3=1 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml.so.0.16.0 mapped=7 active=0 N0=2 N2=4 N3=1 kernelpagesize_kB=4
+71891887a000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml.so.0.16.0
+71891887c000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml.so.0.16.0 anon=1 dirty=1 active=0 N3=1 kernelpagesize_kB=4
+71891887d000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml.so.0.16.0 anon=1 dirty=1 active=0 N0=1 kernelpagesize_kB=4
+71891887e000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libmtmd.so.0.0.10303 mapped=24 active=0 N0=6 N1=1 N2=11 N3=6 kernelpagesize_kB=4
+[redacted-long-digit-run] interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libmtmd.so.0.0.10303 mapped=90 active=0 N0=28 N2=42 N3=20 kernelpagesize_kB=4
+71891899b000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libmtmd.so.0.0.10303 mapped=16 active=0 N0=12 N2=3 N3=1 kernelpagesize_kB=4
+7189189c2000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libmtmd.so.0.0.10303 anon=2 dirty=2 active=0 N0=1 N3=1 kernelpagesize_kB=4
+7189189c4000 interleave:0-3 file=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libmtmd.so.0.0.10303 anon=2 dirty=2 active=0 N1=1 N2=1 kernelpagesize_kB=4
+7189189c6000 interleave:0-3 anon=2 dirty=2 active=0 N2=1 N3=1 kernelpagesize_kB=4
+7189189c8000 interleave:0-3 file=/usr/lib/x86_64-linux-gnu/libgcc_s.so.1 mapped=4 mapmax=101 active=0 N0=4 kernelpagesize_kB=4
+7189189cc000 interleave:0-3 file=/usr/lib/x86_64-linux-gnu/libgcc_s.so.1 mapped=31 mapmax=101 active=0 N0=30 N3=1 kernelpagesize_kB=4
+7189189ef000 interleave:0-3 file=/usr/lib/x86_64-linux-gnu/libgcc_s.so.1 mapped=4 mapmax=101 active=0 N0=4 kernelpagesize_kB=4
+7189189f3000 interleave:0-3 file=/usr/lib/x86_64-linux-gnu/libgcc_s.so.1 anon=1 dirty=1 active=0 N2=1 kernelpagesize_kB=4
+7189189f4000 interleave:0-3 file=/usr/lib/x86_64-linux-gnu/libgcc_s.so.1 anon=1 dirty=1 active=0 N3=1 kernelpagesize_kB=4
+7189189f9000 interleave:0-3 anon=2 dirty=2 active=0 N1=1 N2=1 kernelpagesize_kB=4
+7189189fb000 interleave:0-3
+7189189fd000 interleave:0-3
+7189189ff000 interleave:0-3
+718918a01000 interleave:0-3 file=/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 mapped=1 mapmax=201 active=0 N0=1 kernelpagesize_kB=4
+718918a02000 interleave:0-3 file=/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 mapped=46 mapmax=203 active=0 N0=45 N3=1 kernelpagesize_kB=4
+718918a30000 interleave:0-3 file=/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 mapped=14 mapmax=201 active=0 N0=14 kernelpagesize_kB=4
+718918a3e000 interleave:0-3 file=/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 anon=2 dirty=2 active=0 N1=1 N2=1 kernelpagesize_kB=4
+718918a40000 interleave:0-3 file=/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 anon=1 dirty=1 active=0 N3=1 kernelpagesize_kB=4
+718918a41000 interleave:0-3 anon=1 dirty=1 active=0 N1=1 kernelpagesize_kB=4
+7ffcb5e3f000 interleave:0-3 stack anon=27 dirty=27 active=0 N0=7 N1=7 N2=7 N3=6 kernelpagesize_kB=4

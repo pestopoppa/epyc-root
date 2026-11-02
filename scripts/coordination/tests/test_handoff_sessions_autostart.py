@@ -750,6 +750,20 @@ class SA23Tests(_DSHBase):
         hs.start_watchdog(self.flags, st2, hs.time.time())
         self.assertNotIn("watchdog_alarm", st2, "a produced ready row is an effect: no alarm")
 
+    def test_resume_stall_watchdog(self):
+        now = hs.time.time()
+        old = hs.dt_iso(now - 7200) if hasattr(hs, "dt_iso") else hs._dt.datetime.fromtimestamp(now - 7200, hs._dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        S = {"alpha": {"last_resume": old}}
+        hs.start_watchdog(self.flags, {}, now, S)
+        self.assertNotIn("RESUME-STALL", self.log_text(), "nothing queued: no alarm")
+        st = {"queue": [{"slug": "alpha"}]}
+        hs.start_watchdog(self.flags, st, now, S)
+        hs.start_watchdog(self.flags, st, now + 60, S)
+        self.assertEqual(self.log_text().count("RESUME-STALL"), 1, "rate-limited")
+        st2 = {"queue": [{"slug": "alpha"}]}
+        hs.start_watchdog(self.flags, st2, now, {"alpha": {"last_resume": hs.now_iso()}})
+        self.assertNotIn("resume_stall_alarm", st2, "a recent RESUME: no alarm")
+
 
 class LaneDiskTests(_DSHBase):
     def test_disk_gate_blocks_new_lanes(self):
@@ -758,7 +772,7 @@ class LaneDiskTests(_DSHBase):
         with patch.object(hs, "free_gib", lambda path="/": 150.0):
             reg, _ = self.dispatch()
         self.assertEqual([k for k in reg["sessions"] if k != "codex-gen"], [])
-        self.assertIn("AUTO-START-THROTTLED disk: 150 GiB free < 170; no new lanes", self.log_text())
+        self.assertIn("AUTO-START-THROTTLED disk: 150 GiB free < 160; no new lanes", self.log_text())
 
     def test_sparse_lane_excludes_artifacts_and_reap_removes_clean_landed_lane(self):
         import subprocess, tempfile
@@ -809,8 +823,8 @@ class WrappedGateTests(_DSHBase):
             subprocess.run(["git", "-C", d, "remote", "add", "origin", d], check=True); subprocess.run(["git", "-C", d, "fetch", "-q", "origin"], check=True)
             _w(os.path.join(d, "f.txt"), "2")  # dirty tracked edit
             e = {"session_id": "t", "last_end": "x", "cwd": d}
-            self.assertTrue(hs.wrapped(e), "one wrap-up resume for a dirty lane")
-            self.assertFalse(hs.wrapped(e), "then refused until it wraps")
+            self.assertTrue(hs.wrapped(e), "a dirty lane is resumed (its prompt ends with wrapup.py)")
+            self.assertTrue(hs.wrapped(e), "and is not refused afterwards; the stuck rule caps churn")
         e = {"last_wrapup": None}
         hs.log_unwrapped(self.flags, "s", e); hs.log_unwrapped(self.flags, "s", e)
         self.assertEqual(self.log_text().count("UNWRAPPED s:"), 1)
