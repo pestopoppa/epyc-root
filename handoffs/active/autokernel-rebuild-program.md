@@ -1988,47 +1988,34 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         **generalises the ak-rebuild FOLD-2 vacuous-pass guard**.
         The operator's *no kernel research until a FULLY consolidated champion* condition is **satisfied**;
         **loop relaunch remains a separate operator go** and is deliberately not scheduled here.
-      - [ ] **R23-62 — THE CHAMPION DIVERGENCE: 2.1857x TODAY AGAINST 1.7151x STANDING, AND ONLY THE
-        CHAMPION ARM MOVED. Transferred from INF-70 on an operator ruling, 2026-09-08 — owned here now.**
-        **The gap:** plain ratio **2.1857x** measured 2026-09-08 against the campaign's standing **1.7151x**.
+      - [ ] **R23-62 — champion divergence: correct the historical comparison and resolve the remaining question.**
+        **Correction 2026-11-02:** the old **1.7151×** is the window-3 paired per-prompt ratio for
+        champion-3 `9c4f73e29` versus pristine, while **12.366 t/s is pristine from window 1**. The
+        window-3 table reports **20.589** and **12.018 t/s** respectively. The prior ~21.21 t/s was
+        a synthetic multiplication of the window-3 ratio by the window-1 pristine value, not an
+        observed champion arm. The claimed +3.2% pristine / ~+31% champion asymmetry therefore
+        does not follow. The old producer disclaimed its absolutes: GPU activity changed during the
+        plain phase, while SYNC-16 separately overlapped SMT siblings; the report warns its paired
+        interval understates uncertainty. The old **1.7151×** and later **2.1857×** remain historical
+        ratios with distinct source/build, recipe, instrument and window conditions; neither identifies
+        the cause of their difference. Source report and raw window-3 evidence are preserved in
+        [`docs/design/inf70-r2362-evidence-20261102/`](../../docs/design/inf70-r2362-evidence-20261102/).
 
-        **Why it is a real question and not a harness offset — the asymmetry:**
+        The proposed later-harness shim-OFF measurement has already been partially collected:
+        `S30_CP` was **27.3826 t/s** (one process, five arms), and six order-balanced process-launch
+        pairs yielded OFF **26.8604** and ON **27.8726 t/s**, with THP readback verified in both
+        directions. This historical experimental serving-surface observation is higher-better; the
+        paired test was designed for direction, not effect magnitude. It cannot establish what share
+        of the old ratio difference the shim caused. See research `1780fa7b`,
+        `data/inf70-retest1-2026-09-08/{CHAMPION-LAUNCH-TABLE,THP-DECISION-RESULT}.md`.
 
-        | arm | today (2026-09-08) | standing | delta |
-        |---|---:|---:|---:|
-        | pristine plain | **12.762** | 12.366 | **+3.2%** |
-        | champion plain | **27.893** | ~21.21 | **~+31%** |
-
-        A **pure harness offset moves BOTH arms**. **Pristine reproduces; the champion does not.** That
-        asymmetry is the whole reason this is open.
-
-        **Ruled out — each measured, not argued:**
-        - **contention** — restricting the launch table to **quiet-host-only** *widens* the spread slightly
-          (sd **5.081%**, n=7);
-        - **linear within-block drift** — slope **+0.03%/slot**, R^2 **0.004**, span **+0.28%** over 12 slots;
-        - **NUMA placement** — constant to the digit (0.0-0.1% deviation);
-        - **the 12:05Z orchestrator-API stop** — operator-ruled idle **and** empirically confirmed: the host
-          sampler runs flat at **47.89-48.26 busy cores** across it, with **no discontinuity**.
-
-        **Partially explained, not fully.** All **nine** launches in the spread table were **shim OFF** —
-        the now-retired high-variance configuration (sd **5.081%**, range **12.55%**). Adoption of the shim
-        **plausibly explains much of the instability and possibly part of the level shift**. It is
-        **explicitly NOT asserted to explain all of it**, and that qualifier travels with the number.
-
-        **Two conditions differ at once** between the standing figure and today's: **shim state AND
-        harness/window**. That is exactly why this **narrows without closing**.
-
-        **The closer — and it is cheap now that precision is affordable.** Measure the champion under
-        **today's** harness with the shim **OFF**, at **launch** granularity, and compare against today's
-        shim-ON figure. **One controlled step that isolates the shim from the harness.** Sizing at the
-        shim-OFF sd: **~12 launches for +/-3%, ~0.76 h**. If the shim explains the **level shift** as well
-        as the variance, this closes; if not, the residue is **harness/window**. **Queued after R23-58 and
-        the floor recalibration (R23-61).**
-
-        Evidence: `data/inf70-retest1-2026-09-08/CHAMPION-DIVERGENCE.md` and
-        `data/inf70-retest1-2026-09-08/CHAMPION-LAUNCH-TABLE.md` in `epyc-inference-research` at commit
-        `1780fa7b` (on main as `56ef1404`) (branch `inf70/evidence-2026-09-08`).
-        **Cross-ref R23-57, which stays OPEN on this basis.**
+        **Next:** replay the preserved old raw rows and audit arm order, contention and estimand;
+        predeclare a test only if it can distinguish a remaining hypothesis. A new shim contrast
+        alone cannot identify the cause of a historical cross-window, cross-build ratio difference.
+        The original uniform IQ4_XS artifact was removed 2026-10-20; a UD substitution changes the
+        estimand. Post-BIOS `campaign_postbios.sh` measured shim-ON MTP only, not this plain contrast.
+        A new run requires a valid host-health preflight, claimed footprint, model and binary/DSO
+        identities, codified recipe and a predeclared stopping rule. **R23-57 remains open.**
       - [ ] **R23-57 — CHAMPION LAUNCH-TO-LAUNCH INSTABILITY: ~12% spread on an IDENTICAL configuration, and
         it moves ONLY the champion arm. UNEXPLAINED — no headline may be quoted from one session.**
         Measured by INF-70, 2026-09-08, across four of today's sessions on the **same** champion configuration:
@@ -2042,12 +2029,13 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
 
         | control / derived | today | standing | delta |
         |---|---|---|---|
-        | pristine | **12.637** | 12.366 | **+2.2%** |
-        | champion | **27.383** | ~21.21 | **+29.1%** |
+        | pristine | **12.637** | 12.018 (window 3) | historical cross-window observation only |
+        | champion | **27.383** | 20.589 (window 3) | historical cross-window observation only |
         | champion / pristine ratio | **2.167x** | **1.7151x** | — |
 
-        **Not a harness artefact.** A hot-vs-cold harness offset (measured **+4.36%**) would move **both** arms;
-        only the champion moved, and the pristine control reproduced to within +2.2%. The mechanism is unknown.
+        **The historical cross-window comparison cannot establish the mechanism.** The former claim that
+        only the champion moved combined values from different old windows and disregarded the old
+        producer's absolute-rate contention caveat; see the R23-62 correction above. The mechanism is unknown.
         Two consequences, both binding:
         - **Headline admissibility**: a final champion headline requires **>=N independent launches with a
           session-unit CI**, never one tight session. N is set with the between-session sd (2.793%, R23-55),
