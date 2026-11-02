@@ -147,10 +147,11 @@ _LINK = re.compile(r"\(([A-Za-z0-9._/-]+\.md)\)")
 #
 # A ref that is an index row id gates on that row's handoff having dispatchable work (the same test
 # a `Deps` cell uses); otherwise it is a TASK id and gates until every box carrying `**<id>**` is
-# ticked. A section ends at the next `#`/`##` heading. A handoff with NO gate marker is legacy and
+# ticked. A section ends at the next `#`/`##` heading outside a code fence. A handoff with NO gate marker is legacy and
 # takes exactly the pre-track code path — `## Track:` headings alone change nothing.
 _TRACK_HEAD = re.compile(r"^##\s+Track:\s*(.+?)\s*#*\s*$")
 _SECTION_END = re.compile(r"^#{1,2}\s")
+_FENCE = re.compile(r"^\s*(```+|~~~+)")
 _GATE_MARK = re.compile(r"^\s*<!--\s*gate:\s*(.*?)\s*-->\s*$")
 _TASK_ID = re.compile(r"^\*\*([A-Za-z0-9][A-Za-z0-9._-]*)\*\*")
 UNTRACKED = "(untracked)"
@@ -369,8 +370,18 @@ def scan_tracks(path: Path) -> list[dict]:
         lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
     except OSError:
         return []
-    sections, cur = [], None
+    sections, cur, fence = [], None, None
     for i, line in enumerate(lines, 1):
+        # Fenced code is never structure: a `# comment` line inside ``` would otherwise end the
+        # track and silently drop every later box of that track into `(untracked)` (measured on
+        # the first route-1a fold: all of multimodal-pipeline's boxes, via a bash comment).
+        f = _FENCE.match(line)
+        if f:
+            mark = f.group(1)[0]
+            fence = mark if fence is None else (None if fence == mark else fence)
+            continue
+        if fence is not None:
+            continue
         m = _TRACK_HEAD.match(line)
         if m or _SECTION_END.match(line):
             if cur:

@@ -156,6 +156,19 @@ class ScanTracks(unittest.TestCase):
         self.assertEqual(got, {"alpha": "blocked", "beta": "ready", index_state.UNTRACKED: "blocked"})
         self.assertEqual(node["readiness"], "ready")
 
+    def test_fenced_hash_line_does_not_end_track(self):
+        fenced = FOLDED.replace(
+            "- [ ] **BETA-2**",
+            "```bash\n# run the beta smoke\n## not a heading either\n```\n\n- [ ] **BETA-2**")
+        by = {t["name"]: t for t in index_state.scan_handoff(self._write(fenced))["tracks"]}
+        self.assertEqual(by["beta"]["open"], 2)
+        self.assertEqual(by[index_state.UNTRACKED]["open"], 1)
+        # mutation: the same `#` line OUTSIDE a fence is a real heading and does end the track
+        unfenced = fenced.replace("```bash\n", "").replace("```\n\n- [ ] **BETA-2**", "\n- [ ] **BETA-2**")
+        by = {t["name"]: t for t in index_state.scan_handoff(self._write(unfenced))["tracks"]}
+        self.assertEqual(by["beta"]["open"], 1)
+        self.assertEqual(by[index_state.UNTRACKED]["open"], 2)
+
     def test_track_headings_without_marker_are_legacy(self):
         legacy = FOLDED.replace("<!-- gate: GATE-ROW -->\n", "").replace("<!-- gate: none -->\n", "")
         p = self._write(legacy)
