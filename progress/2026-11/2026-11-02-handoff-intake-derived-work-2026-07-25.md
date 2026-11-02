@@ -31,3 +31,7 @@ Consumed both registered preparation results. Preserved ID-4 native paired-arm c
 ## 01:41Z — Consume ID-4 and ID-9 preparation results and advance runnable experiments.
 
 Consumed both registered preparation results. Preserved ID-4 native paired-arm comparison plan in docs/design/knowledge-distiller-comparison-preparation.md and linked it from the handoff; a real corpus, family split, multiquery harness and held-out comparison remain. ID-9 has prepared disjoint AIME-I donor/AIME-II replay inputs and an offline-validated 150-request plan in the session preparation directory; this is historically evaluated AIME-II, not a pristine unseen suite. Dispatched bounded ID-9 runner and grant-aware launcher plus ID-4 corpus work; registered completion events. No inference or compute row was launched or published.
+
+## 01:42Z — Consume ID-4 and ID-9 preparation results and advance runnable experiments.
+
+Consumed both registered preparation results. Preserved ID-4 native paired-arm comparison plan in docs/design/knowledge-distiller-comparison-preparation.md and linked it from the handoff; a real corpus, family split, multiquery harness and held-out comparison remain. ID-9 has prepared disjoint AIME-I donor/AIME-II replay inputs and an offline-validated 150-request plan in the session preparation directory; this is historically evaluated AIME-II, not a pristine unseen suite. Dispatched bounded ID-9 runner and grant-aware launcher plus ID-4 corpus work; registered completion events. No inference or compute row was launched or published.
