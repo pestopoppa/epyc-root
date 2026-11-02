@@ -64,6 +64,8 @@ validation requires the applicable compute authorization.
   variability on both cases with mask skipping disabled and baseline 5/5 identical. Matched native
   inputs and in-window GPU witnesses were retained. Scoped observations ingest privately; a live-loop
   planning canary, production quality and promotion remain unestablished.
+- Barrier-fix diagnostic `7a8a2d8fa`: both original and proposed-fix arms remained variable across
+  five runs in each of two cases; the fix did not restore repeatability and was not promoted.
 
 All implementation branches are prospective source work. No inference or production service change
 was performed. The parent handoff boxes remain open until their complete acceptance criteria are met.

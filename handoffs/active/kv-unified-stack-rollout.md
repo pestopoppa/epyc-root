@@ -837,6 +837,14 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
         `88af22831fda196b7995bda933769fa3f4720d25253720712bed90f3b6e21c91`. Twenty scoped native
         NaN-count rows ingested privately; a fixture-freshness planning check is not the live-loop
         canary. This is model-free repeatability, not a quality, speed or promotion result. [belief: cc]
+      - *(2026-11-02, barrier-fix diagnostic.)* A source review suggested a producer warp exits before
+        a workgroup barrier. Experimental fix `18d030309a57071c32ffd0db42994ae473d2722a` moves
+        that exit after the barrier. In the predeclared model-free A/B, both old candidate and fix
+        produced five distinct output hashes in each of the two cases, with matching input bytes and
+        20/20 mapping and in-window GPU residency witnesses. Thus this change did **not** restore
+        repeatability; the synchronization hypothesis is not established as the cause. Research
+        `7a8a2d8fa` preserves source/build receipts, 20 raw outputs and `RESULT.md`. The fix is an
+        experimental diagnostic only; do not fold or promote it on this result. [belief: cc]
       - *(2026-11-01, binding draft defect.)* Independent review found unreadable directories may be silently omitted and FIFO inspection can block. The draft now propagates traversal errors and rejects FIFOs with nonblocking opens; five offline tests pass. Mutable paths and build-entry custody still prevent using it as an input attestation. [no-belief: offline source review only]
       - *(2026-11-01, ELF inventory defect.)* The inventory may silently omit unreadable subtrees; The draft now propagates traversal errors; five offline tests pass. It still cannot attest source, expected ELF coverage or runtime linkage. [no-belief: offline source review only]
       - *(2026-11-01, ELF inventory draft.)* The [offline component](../../artifacts/compute/kvu19a2-elf-inventory-20261101/README.md) passed four synthetic tests; it cannot establish source identity, expected binary completeness or runtime linkage. A build producer remains open. [no-belief: synthetic tests only]
