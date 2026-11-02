@@ -382,12 +382,15 @@ in a prose block below:
   `native-pending:<VB-task>`.
 
 Design and the result-tick definition: `docs/design/committed-conclusions-belief-capture-2026-10-25.md` §7.
-The checker `scripts/handoffs/belief_capture_check.py` (VB-TICK-CONTRACT) runs advisory once it
-lands. Until then, list your added ticks that carry no marker and give each result tick one:
+The checker `scripts/handoffs/belief_capture_check.py` is BLOCKING in `scripts/hooks/pre-commit.extras`
+(LOOP-50, operator sign-off 2026-11-02). Every new tick needs one of the three tags on its item, and every
+dropped open box needs a re-add, `[moved: <path>]` or `[declined: <who> <YYYY-MM-DD> <reason>]`. A fold
+that moves boxes verbatim passes. The refusal names each line and the tag it needs. To preview the
+lane's committed half before you commit:
 
 ```bash
 # From inside YOUR lane worktree; same scoping as the flip-count gate.
-git diff "$(git merge-base main HEAD)"..HEAD -- handoffs/ | grep -E '^\+\s*[-*] \[[xX]\]' | grep -vE '\[(no-)?belief: [^]]+\]'
+python3 scripts/handoffs/belief_capture_check.py --range "$(git merge-base main HEAD)..HEAD" --no-receipts --report
 ```
 
 Report the count of result ticks as cited / cc / declined in the wrap-up output. A
