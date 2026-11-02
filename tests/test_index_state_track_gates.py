@@ -101,6 +101,27 @@ class DeriveReadinessTracks(unittest.TestCase):
         self.assertEqual((blocked["readiness"], blocked["blocked_by"]), ("blocked", ["BRF-T2-1"]))
         self.assertEqual(run(0)["readiness"], "ready")    # mutation: tick the task
 
+    def test_gate_on_track_ref(self):
+        """BRF-T7-1: `<ROW>#<track>` gates on that one track, even inside the same node (route 1b folds a
+        handoff and the handoff it gated into one file; a row-level self-gate would deadlock)."""
+        def run(gate_track_open):
+            nodes = [{"id": "FOLD", "open": 3, "dispatchable": 3,
+                      "tracks": [track("upstream", [], gate_track_open), track("downstream", ["FOLD#upstream"], 2)]},
+                     {"id": "OTHER", "open": 1, "dispatchable": 1, "tracks": [track("x", ["FOLD#downstream"], 1)]}]
+            index_state.derive_readiness(nodes, [])
+            return {t["name"]: (t["readiness"], t["blocked_by"]) for n in nodes for t in n["tracks"]}
+        r = run(1)
+        self.assertEqual(r["downstream"], ("blocked", ["FOLD#upstream"]))
+        self.assertEqual(r["x"], ("blocked", ["FOLD#downstream"]))   # a track ref across nodes
+        r = run(0)                                                    # mutation: the upstream track drains
+        self.assertEqual(r["downstream"], ("ready", []))
+        self.assertEqual(r["upstream"], ("no_open", []))
+
+    def test_unknown_track_ref_is_skipped_not_blocking(self):
+        nodes = [{"id": "FOLD", "open": 1, "dispatchable": 1, "tracks": [track("alpha", ["FOLD#nope"], 1)]}]
+        index_state.derive_readiness(nodes, [], {})
+        self.assertEqual(nodes[0]["readiness"], "ready")
+
     def test_unknown_gate_ref_is_skipped_not_blocking(self):
         nodes = [{"id": "FOLD", "open": 1, "tracks": [track("alpha", ["NOPE-9"], 1)]}]
         index_state.derive_readiness(nodes, [], {})
@@ -209,6 +230,18 @@ class CheckAndLint(unittest.TestCase):
         st["handoffs"][sorted(st["handoffs"])[0]]["tracks"][0]["gates"] = [row, "ZZ-TASK-1"]
         self.assertEqual(self._bad_gates(st), [])                     # mutation: drop the typo
         st, _ = self._state([], markers=2)
+        self.assertEqual(len(self._bad_gates(st)), 1)
+
+    def test_track_ref_checked_and_not_a_task(self):
+        st, row = self._state(None)
+        host = st["rows"][row]["handoff"]
+        name = sorted(st["handoffs"])[0]
+        st["handoffs"][host]["tracks"] = list(st["handoffs"][host]["tracks"]) + [{"name": "beta", "line": 9, "gates": [], "markers": 1}]
+        st["handoffs"][name]["tracks"][0]["gates"] = [f"{row}#beta"]
+        self.assertEqual(self._bad_gates(st), [])
+        self.assertTrue(index_state.is_track_ref(f"{row}#beta", st["rows"]))
+        self.assertFalse(index_state.is_track_ref("NOPE-9#beta", st["rows"]))
+        st["handoffs"][name]["tracks"][0]["gates"] = [f"{row}#no-such-track"]   # mutation: unknown track
         self.assertEqual(len(self._bad_gates(st)), 1)
 
     def test_task_lint_column_is_advisory(self):

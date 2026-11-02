@@ -96,11 +96,14 @@ exactly one marker inside its section, conventionally the line under the heading
 ```
 
 Each ref is an index **row id** (gates while that row's handoff has dispatchable work, the same test
-as a `Deps` cell) or a **task id** (gates until every box headed `**<id>**` is ticked); `<!-- gate: none -->`
-declares the track ungated. `index_state.py` then derives `readiness` per track: a marked track is
+as a `Deps` cell), a **track ref** `<ROW>#<track>` (gates while that one `## Track:` of a track-gated
+handoff has dispatchable work — route 1b uses it when a handoff and the handoff it gated land in the same
+file, where the row id would gate the file on itself) or a **task id** (gates until every box headed
+`**<id>**` is ticked); `<!-- gate: none -->` declares the track ungated. `index_state.py` then derives `readiness` per track: a marked track is
 blocked only by its own gates, an unmarked track and boxes outside every track inherit the row's
 `Deps`, and the node is `ready` if any track is ready. A handoff with no marker at all is computed
-exactly as before. `--check` reports `BAD GATE` for an unknown ref or a second marker in one track.
+exactly as before. `--check` reports `BAD GATE` for an unknown ref, a track ref whose row has no such track,
+or a second marker in one track.
 
 ## What this replaces, and why
 

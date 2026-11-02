@@ -146,8 +146,10 @@ _LINK = re.compile(r"\(([A-Za-z0-9._/-]+\.md)\)")
 #     <!-- gate: none -->                   explicitly ungated
 #
 # A ref that is an index row id gates on that row's handoff having dispatchable work (the same test
-# a `Deps` cell uses); otherwise it is a TASK id and gates until every box carrying `**<id>**` is
-# ticked. A section ends at the next `#`/`##` heading outside a code fence. A handoff with NO gate marker is legacy and
+# a `Deps` cell uses); a `<ROW>#<track>` ref gates on that ONE track of a track-gated handoff having
+# dispatchable work (route 1b, BRF-T7-1: when a handoff that gated another is folded into the same
+# file, the gate names its track instead of the merged row, which would gate the file on itself);
+# otherwise it is a TASK id and gates until every box carrying `**<id>**` is ticked. A section ends at the next `#`/`##` heading outside a code fence. A handoff with NO gate marker is legacy and
 # takes exactly the pre-track code path — `## Track:` headings alone change nothing.
 _TRACK_HEAD = re.compile(r"^##\s+Track:\s*(.+?)\s*#*\s*$")
 _SECTION_END = re.compile(r"^#{1,2}\s")
@@ -356,6 +358,12 @@ def parse_gate_refs(raw: str) -> list[str]:
     """`"INF-65, BRF-T2-1"` -> `["INF-65", "BRF-T2-1"]`; `"none"` / empty -> `[]`."""
     refs = [r.strip().strip("`") for r in raw.replace(";", ",").split(",")]
     return [r for r in refs if r and r.lower() != "none"]
+
+
+def is_track_ref(ref: str, rows) -> bool:
+    """`<ROW>#<track>` with a known row id: a per-track gate ref (BRF-T7-1), never a task id."""
+    rid, sep, name = ref.partition("#")
+    return bool(sep and name) and rid in rows
 
 
 def scan_tracks(path: Path) -> list[dict]:
@@ -567,7 +575,7 @@ def collect() -> dict:
     # Per-track gates: resolve the TASK-id refs (anything that is not a row id). Only present when
     # some handoff is track-gated, so a legacy tree's state file is byte-identical.
     task_refs = {g for st in handoffs.values() for t in st.get("tracks", ())
-                 for g in (t["gates"] or ()) if g not in out["rows"]}
+                 for g in (t["gates"] or ()) if g not in out["rows"] and not is_track_ref(g, out["rows"])}
     if any("tracks" in st for st in handoffs.values()):
         out["gate_tasks"] = task_box_states(task_refs)
     return out
@@ -640,8 +648,9 @@ def derive_readiness(nodes: list[dict], edges: list[dict],
 
     PER-TRACK GATES (BRF-T2-1). A node carrying `tracks` (a track-gated folded handoff, see
     `scan_tracks`) is decided per track instead: a track with a `<!-- gate: … -->` marker is
-    blocked ONLY by its own gates (a row id gates while that row has dispatchable work; a task id
-    gates while any box with that id is unticked — `task_states`); a track without a marker, and
+    blocked ONLY by its own gates (a row id gates while that row has dispatchable work; a
+    `<ROW>#<track>` ref gates while that one track of a track-gated node has dispatchable work; a
+    task id gates while any box with that id is unticked — `task_states`); a track without a marker, and
     the `(untracked)` boxes, inherit the row's `dep` gates exactly as above. The row's own `Deps`
     therefore do not gate a track that declared its gates. Node level is derived from the tracks:
     `ready` if ANY track is ready, else `blocked` if any is blocked, else `no_open`; `blocked_by`
@@ -662,9 +671,14 @@ def derive_readiness(nodes: list[dict], edges: list[dict],
 
     task_states = task_states or {}
 
+    track_open = {f"{n['id']}#{t['name']}": t.get("dispatchable", t.get("open", 0))
+                  for n in nodes for t in (n.get("tracks") or ())}
+
     def gate_open(ref: str) -> bool | None:
         if ref in open_by_id:
             return open_by_id[ref] > 0
+        if ref in track_open:              # `<ROW>#<track>`: that one track has dispatchable work
+            return track_open[ref] > 0
         if ref in task_states:
             return task_states[ref].get("open", 0) > 0
         return None                        # unknown ref — BAD GATE owns it; never gate on a typo
@@ -1062,6 +1076,13 @@ def check(state: dict) -> list[str]:
                 errs.append(f"BAD GATE: {h} track '{t['name']}' (line {t['line']}) has "
                             f"{t['markers']} gate markers — exactly one per track")
             for g in t.get("gates") or ():
+                if is_track_ref(g, state["rows"]):
+                    rid, _, name = g.partition("#")
+                    host = state["handoffs"].get(state["rows"][rid].get("handoff") or "", {})
+                    if not any(x["name"] == name for x in host.get("tracks", ())):
+                        errs.append(f"BAD GATE: {h} track '{t['name']}' (line {t['line']}) gates on "
+                                    f"{g}: row {rid}'s handoff has no gated track '{name}'")
+                    continue
                 if g not in state["rows"] and g not in gate_tasks:
                     errs.append(f"BAD GATE: {h} track '{t['name']}' (line {t['line']}) gates on "
                                 f"unknown id {g} (neither an index row nor a task box)")
