@@ -46,8 +46,10 @@ this handoff, do not push; two consecutive reds on the same fold → stop T1 and
   Per fold, add a box `BRF-T1-<n> fold <sources> → <target>` here before starting it and tick it in the fold
   commit itself. Non-dispatchable parent.
 - [ ] **BRF-T1-MEQ** [non-inference] Split the model-evaluation queue into 3 gate-homogeneous files (D2), through the atomic gate.
-- [ ] **BRF-T1-RET** Retire `swarm` and `model-stack-change-standardization-audit` (D4): move to
+  - 2026-11-02 partial: `9d63885bd` consolidated the 14 queue files into 3 (`model-evaluation-queue.md` EVL-02, plus INF-61 and INF-76 tracks); 206 tasks before/after, readiness-neutral. Residual: the 39 carved boxes from 18 files (`fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ), 7 of whose sources are batch-1 folds; they move after batch 1 lands.
+- [x] **BRF-T1-RET** Retire `swarm` and `model-stack-change-standardization-audit` (D4): move to
   `archived/`, retire IDs with `Repoint-Reason:` trailers and `.folded.json` entries.
+  - 2026-11-02: done in `530a884f7` (RTG-18/RTG-39 rows removed, ledgers in `completed/`, `.folded.json` ids, checklist extracted to `docs/guides/agent-workflows/stack-change-checklist.md`; index 176->174 at apply, 0 tasks lost) [no-belief: tooling]
 
 ## T2 — per-track gate tooling (1b) and dashboard fixes
 
