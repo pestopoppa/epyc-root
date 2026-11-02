@@ -59,3 +59,15 @@ def test_source_tamper_does_not_break_legacy(roots):
  old,new,oc,nc=roots;legacy=make_capture(oc,old,'legacy');fresh=make_capture(nc,new,'worker_general',('all','0-95',96));(new/'dispatch.py').write_text('tampered')
  with pytest.raises(ProjectionError,match='producer seal changed'):reader.native_rows(fresh)
  assert reader.project(reader.native_rows(legacy)[0]).value==1.0
+
+def test_owned_successor_requires_separate_helper_seal(roots,tmp_path,monkeypatch):
+ _,old,_,_=roots
+ owned=(tmp_path/'owned-producer').resolve();shutil.copytree(FIXTURE,owned)
+ output=(tmp_path/'owned-output').resolve();helper=tmp_path/'owned.py';helper.write_text('fixture owned helper')
+ monkeypatch.setattr(reader,'OWNED_ROOT',owned);monkeypatch.setattr(reader,'OWNED_CAPTURE_ROOT',output)
+ monkeypatch.setattr(reader,'OWNED_SEALS',{n:hashlib.sha256((owned/n).read_bytes()).hexdigest() for n in NAMES})
+ monkeypatch.setattr(reader,'OWNED_HELPER',helper);monkeypatch.setattr(reader,'OWNED_HELPER_SHA256',hashlib.sha256(helper.read_bytes()).hexdigest())
+ p=make_capture(output,owned,'worker_general',('all','0-95',96))
+ assert reader.project(reader.native_rows(p)[0]).value==1.0
+ helper.write_text('changed')
+ with pytest.raises(ProjectionError,match='owned helper seal changed'):reader.native_rows(p)

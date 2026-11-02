@@ -108,7 +108,7 @@ def _project(native: Any, config: SourceConfig) -> ClaimTuple:
         raise ProjectionError('planned model does not match captured scope')
     def arg(flag):
         return argv[argv.index(flag)+1] if flag in argv and argv.index(flag)+1<len(argv) else None
-    if config.producer_root == TOPOLOGY_ROOT:
+    if config.producer_root in (TOPOLOGY_ROOT, OWNED_ROOT):
         recipe = native['recipe']
         scenario = recipe.get('scenario_config') if isinstance(recipe,dict) else None
         if not isinstance(scenario,dict): raise ProjectionError('topology scenario missing')
@@ -159,6 +159,18 @@ TOPOLOGY_ROOT = Path('/mnt/raid0/llm/tmp/refactor-01a16fc3/m4-full-fold-ready-20
 TOPOLOGY_CAPTURE_ROOT = TOPOLOGY_ROOT / 'output'
 TOPOLOGY_SEALS = {'dispatch.py': '29431e53b973be9a9392a450a66394aea7075cd57137a8f442ff522a2c21155f', 'capture.py': '701168d58ef67bdc1e130cff9a0fa0f8576516df9fe743bcdaf0794501965479', 'native/k35_stack_context_matrix_runner.py': '056bb6a0743dc52ccc063db2ecdb8bc1be554306fa6d37e664eaba00878fee89', 'native/compare_v9_promotion_arms.py': '83e1ea40499cbca531849af454209d45011b55bc2684c841a09068a15c3fd94e'}
 
+# Identity-safe successor is independently sealed; old roots remain readable.
+OWNED_ROOT = Path(__file__).resolve().parents[2] / 'benchmark/m4_cpu_producer'
+OWNED_CAPTURE_ROOT = Path('/mnt/raid0/llm/m4-cpu-owned-captures')
+OWNED_SEALS = {
+    'dispatch.py': '14544f7c39cca71ca8a9757f47bd1cf459a595594f6611ae7840780d4e8e92c9',
+    'capture.py': '701168d58ef67bdc1e130cff9a0fa0f8576516df9fe743bcdaf0794501965479',
+    'native/k35_stack_context_matrix_runner.py': '641701b11025584033e405f9f04d64123fe4d642bcc4be85c1c7ff1962c02a8f',
+    'native/compare_v9_promotion_arms.py': '83e1ea40499cbca531849af454209d45011b55bc2684c841a09068a15c3fd94e',
+}
+OWNED_HELPER = Path(__file__).resolve().parents[2] / 'benchmark/m4_cpu_ownership/owned.py'
+OWNED_HELPER_SHA256 = '8ad8d956c5c60c7cd52aee3e02625381afa85681aeeae5e6b361ad44101f7ff7'
+
 def _verify_trusted(root, capture_root, seals):
     for name, digest in seals.items():
         try:
@@ -177,13 +189,20 @@ def _trusted_config_for(path):
         raise ProjectionError('parent traversal in capture path')
     requested = Path(os.path.abspath(path))
     resolved = Path(path).resolve()
-    old_match = CAPTURE_ROOT in resolved.parents
-    new_match = TOPOLOGY_CAPTURE_ROOT in resolved.parents
-    if (CAPTURE_ROOT in requested.parents, TOPOLOGY_CAPTURE_ROOT in requested.parents) != (old_match,new_match):
+    roots = (CAPTURE_ROOT, TOPOLOGY_CAPTURE_ROOT, OWNED_CAPTURE_ROOT)
+    matches = tuple(root in resolved.parents for root in roots)
+    if tuple(root in requested.parents for root in roots) != matches:
         raise ProjectionError('capture path crosses trusted root boundary')
-    if old_match == new_match:
+    if sum(matches) != 1:
         raise ProjectionError('capture root unknown or ambiguous')
-    if new_match:
+    if matches[2]:
+        try:
+            if _sha(OWNED_HELPER.read_bytes()) != OWNED_HELPER_SHA256:
+                raise ProjectionError('owned helper seal changed')
+        except OSError as exc:
+            raise ProjectionError('owned helper unavailable') from exc
+        return _verify_trusted(OWNED_ROOT, OWNED_CAPTURE_ROOT, OWNED_SEALS)
+    if matches[1]:
         return _verify_trusted(TOPOLOGY_ROOT, TOPOLOGY_CAPTURE_ROOT, TOPOLOGY_SEALS)
     return _trusted_config()
 
