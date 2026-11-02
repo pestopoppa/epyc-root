@@ -79,3 +79,7 @@ Reviewed /mnt/raid0/llm/tmp/akagg/cpu-verifier-candidate/collector.py: the candi
 ## 09:43Z — Implement pre-grant model custody and CPU collector identity controls
 
 C3 R15 lock candidate passed six synthetic tests; pre-grant model custody with fail-closed mutation detection is being implemented before resealing. CPU collector passed seven and structural verifier nine synthetic controls; cross-sample identity and protocol-bound cadence are being integrated. Neither is yet an admissible row.
+
+## 09:44Z — Implement private store and trusted request marker controls
+
+CH-27 private immutable input stage passed six controls; native private store reconstruction and path rebinding are in progress. CPU observation validator passed 13 controls and its collector seven; trusted request markers and process identities are being integrated. Neither is a valid calibration row yet.
