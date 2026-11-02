@@ -95,3 +95,7 @@ Delegated a bounded R23-68 documentation preparation; its scratch result will tr
 ## 10:31Z — Prepare R23-68 historical loop test baseline documentation
 
 Delegated a bounded R23-68 documentation preparation; its scratch result will trigger the next turn. R23-3 and R23-4 are already published and each awaits keeper qualification. The R18-A independent comparison remains parked after three failed qualifications. No inference was run.
+
+## 10:33Z — Record the historical AutoKernel loop pytest baseline and TMPDIR prerequisite
+
+R23-68: recorded the historical 2026-09-14 AutoKernel loop pytest baseline at research revision 7ea556f4 (176 failed, 201 errors, 2509 passed) and the host-specific TMPDIR prerequisite in docs/reference/autokernel-loop-pytest-baseline-2026-09-14.md, linked from the handoff. This records the contemporaneous report and does not claim a current test result. R23-3 and R23-4 are already published and await qualification; their prepared successor is not substituted for an active row.

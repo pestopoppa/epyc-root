@@ -4,7 +4,7 @@
       "blocked": 59,
       "handoffs": 59,
       "oldest_advance": "2026-07-29",
-      "open": 1035
+      "open": 1034
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -265,10 +265,10 @@
     },
     "autokernel-rebuild-program.md": {
       "blocked": 1,
-      "closed": 163,
+      "closed": 164,
       "guarded": 0,
       "last_advanced": "2026-11-01",
-      "open": 45,
+      "open": 44,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2203,7 +2203,7 @@
       "blocked": 2,
       "closed": 29,
       "guarded": 0,
-      "last_advanced": "2026-11-01",
+      "last_advanced": "2026-11-02",
       "open": 20,
       "owner_index": "user-facing-harness-index.md",
       "prune": {

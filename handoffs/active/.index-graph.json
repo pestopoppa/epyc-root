@@ -3945,7 +3945,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T10:33:32Z",
+  "generated_at": "2026-11-02T10:40:20Z",
   "nodes": [
     {
       "age_days": 95,
@@ -6531,13 +6531,13 @@
         "INF-64",
         "INF-65"
       ],
-      "closed": 163,
+      "closed": 164,
       "domain": "inference-research",
       "handoff": "autokernel-rebuild-program.md",
       "id": "INF-66",
       "last_advanced": "2026-11-01",
       "next_action": "Resolve R18-A host CUID identity differences under the unchanged rule; continue R23-62",
-      "open": 45,
+      "open": 44,
       "priority": 0.9017,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LBH-2.1 \u2014 re-run the INF-70 llama-bench units whose protocol could not be resolved or was ",
@@ -9126,7 +9126,7 @@
       "track": "AMD AI Lab website publication"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 2,
       "blocked_by": [
         "EVL-37",
@@ -9138,7 +9138,7 @@
       "domain": "user-facing-harness",
       "handoff": "repl-embedding-retrieval.md",
       "id": "UFH-12",
-      "last_advanced": "2026-11-01",
+      "last_advanced": "2026-11-02",
       "next_action": "REPL-EMB-2.8b trace write side, then 2.9-2.12 package gates; UFH-12-PROD-ADOPT is a separate decision",
       "open": 20,
       "priority": 0.9653,
