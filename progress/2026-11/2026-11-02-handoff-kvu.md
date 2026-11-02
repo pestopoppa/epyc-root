@@ -87,3 +87,7 @@ Independent review found the candidate VKQ3 guard rejects real arming because ro
 ## 10:01Z — Repair VKQ3 grant validation against keeper serializers
 
 Repaired the uninstalled VKQ3 guard draft to accept real-arm mode when FILLER_DRYRUN is absent, require the synthetic keeper schema/id/kind in dry runs, verify grant window and CPU shape, and reject revoked or changed grants. Six offline tests pass against actual keeper serializers, including quarter q0 mapping, full mode, identity, stop and deadline. The guard is not integrated with process custody or a launcher and is not a publishable row. The reported origin/main merge conflict did not reproduce; the merge completed. [no-belief: offline grant-guard tests only]
+
+## 10:03Z — Investigated VKQ3 calibration and scoped independent runner and cache-credit work; delegated bounded supervisor fix for integration.
+
+VKQ3 calibration: bounded supervisor review delegated; output is awaited in /mnt/raid0/llm/tmp/kvu/vkq3-agent-result.txt. KVU-15b requires organic traffic: current serving log has one credited call against the required 200 in two windows. KVU-16h remains open because dedicated server lifecycles and verified cleanup span multiple runners. No inference was run.
