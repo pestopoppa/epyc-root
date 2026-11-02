@@ -17,6 +17,9 @@ validation requires the applicable compute authorization.
   tests passed. No occupancy or throughput result was produced.
 - Research `1160ec9d1`: prospective native-gauge capture and fail-closed occupancy analysis;
   100 offline tests passed. Stock server has no required unique-cell gauge.
+- Experimental llama fork `cdf1532b9`: one-stream physical unique-cell gauge implemented;
+  CPU build and model-free shared-cell tests passed. A no-model router could not expose metrics;
+  loaded endpoint and candidate integration remain open.
 - Orchestrator through `f3d98dfd`: isolated owner, selection and drain-state foundation for
   KVU-5; 14 tests passed. No live preemption or retry is enabled.
 - Research `bda6ad1cf`: sealed FA-4b response-integrity replay accounted for 2,400 responses;
@@ -25,6 +28,8 @@ validation requires the applicable compute authorization.
   tests; native producer and acceptance remain open.
 - Root Q38-T7 guarded successor refuses mixed drafted/no-draft A/B phases; three offline tests
   passed. Historical direct invocation and dedicated independent lifecycles remain unprotected.
+- Root isolated Q38 coordinator and captured-child supervisor passed 14 fake HTTP/process tests;
+  native identity and descendant verifiers and production qualification remain open.
 - KVU-16a source/receipt reconciliation found an idle-slot argv mismatch; the sampled load does
   not justify a registry update or a runtime peak. The exact checklist is in the evidence directory.
 - A model-free KVU-19a-2 GPU smoke ran under an exclusive GPU and CPU-region claim, with one
