@@ -58,9 +58,11 @@ def audit(plan_path: Path, expected_sha256: str, run_root: Path) -> dict:
             for item in expected:
                 if not isinstance(item, dict) or not isinstance(item.get('id'), str) or not item['id'] or not isinstance(item.get('prompt_sha256'), str) or len(item['prompt_sha256']) != 64:
                     raise ValueError('invalid expected question')
+                if not isinstance(item.get('expected'), str) or not item['expected'].strip():
+                    raise ValueError('expected answer missing')
                 if item['id'] in required:
                     raise ValueError('duplicate expected question')
-                required[item['id']] = item['prompt_sha256']
+                required[item['id']] = (item['prompt_sha256'], item['expected'].strip())
             for arm in ('baseline', 'candidate'):
                 directory = (root / role / arm / suite).resolve(strict=True)
                 if root not in directory.parents:
@@ -92,7 +94,7 @@ def audit(plan_path: Path, expected_sha256: str, run_root: Path) -> dict:
                         raise ValueError('effective request mismatch')
                     prompt = row.get('prompt')
                     fingerprint = row.get('prompt_fingerprint')
-                    if not isinstance(prompt, str) or not isinstance(fingerprint, dict) or digest(prompt.encode()) != fingerprint.get('sha256') or fingerprint['sha256'] != required[qid]:
+                    if not isinstance(prompt, str) or not isinstance(fingerprint, dict) or digest(prompt.encode()) != fingerprint.get('sha256') or fingerprint['sha256'] != required[qid][0] or row.get('expected') != required[qid][1]:
                         raise ValueError('question prompt differs from pinned plan')
                     finish = row.get('finish_reason')
                     if not isinstance(finish, str) or not finish or (finish == 'length') != row['truncated']:
