@@ -55,3 +55,7 @@ Registered ID-9 paired replay as a prospective source and added VB-ID9-BEHAVIOR-
 ## 04:13Z — Register prospective ID-9 measurement wiring and advance row preparation.
 
 Registered ID-9 paired replay as a prospective source and added VB-ID9-BEHAVIOR-WIRE before any decision use; the source remains unwired and no historical warrant is asserted. Dispatched bounded ID-9 integration, GPU spec and ID-4 retrieval-pilot preparation with completion events. No inference was launched or row published. Regenerated handoff index state and graph after the first check detected stale generated metadata.
+
+## 04:16Z — Consume GPU code and draft and CPU pilot preparation results.
+
+Consumed GPU draft, GPU offline integration and CPU retrieval-pilot results. Added a draft ID-9 row-preparation.json bound to the preserved pilot inputs and existing local model/kernel paths; its model SHA remains unpinned and it is not a publishable row. GPU code review, concrete config/spec and CPU query review remain delegated. The CPU lexical pilot is diagnostic and cannot establish quality or adoption. No inference, qualification or row publication occurred.
