@@ -15,7 +15,7 @@ writer, reader, runner and watcher. Never substitute producer-supplied seals.
 The calibration plan schema is `epyc.m4.gpu.aa.execution.v1` with
 `intent=descriptive_only`, `native_plan_sha256`, absolute `result_path`, `row`
 (`id`, `regions=mi210_0,184-191`, `stopfile`, `min_window_s`, `port`,
-`dryrun_native_result=true`) and ordered
+`dryrun_native_result=true`, `cgroup_parent`) and ordered
 `cells`. Each cell has unique `id` and `native_cell`, `arm` A1 or A2, integer
 `pair`, and the fully bound `sweep` settings enforced by `validate_plans`.
 Each pair is adjacent, contains one A1 and one A2, and must have the same V2
@@ -40,7 +40,7 @@ The V2 source must use an equally independent qualification binding. Real and
 qualification plan paths and STOP files must never alias.
 
 After the existing rowflow's qualified publication and a coordinated grant,
-`launch_gpu_aa.py` hands off to run15 with exclusive GPU + physical q3 claim.
+`launch_gpu_aa.py` hands off to run15 with exclusive GPU and the full physical q3 claim (72–95); the job remains pinned to 184–191.
 Each run is contained through the shared watcher and the strict V2 reader must
 validate its completed guardian receipt before reduction. Failure, grant change,
 STOP/HOLD or incomplete output never produce a successful result. The completion

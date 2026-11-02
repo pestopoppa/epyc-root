@@ -24,7 +24,7 @@ ENGINE = ROOT / 'scripts/coordination/rowflow/filler_run15.sh'
 def launch_spec(aa, native, trust):
     pairs = run.validate_plans(aa, native)
     row = aa.get('row')
-    if not isinstance(row, dict) or set(row) != {'id', 'regions', 'stopfile', 'min_window_s', 'port', 'dryrun_native_result'}:
+    if not isinstance(row, dict) or set(row) != {'id', 'regions', 'stopfile', 'min_window_s', 'port', 'dryrun_native_result', 'cgroup_parent'}:
         raise ValueError('reviewed row binding required')
     rid = row['id']
     if not isinstance(rid, str) or not rid or any(c not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_' for c in rid):
@@ -41,6 +41,11 @@ def launch_spec(aa, native, trust):
     if any(cell['grant'] != {'id': rid, 'regions': row['regions'], 'stopfile': str(stop)}
            or entry['sweep']['port_base'] != row['port'] for entry,cell in pairs):
         raise ValueError('row, native plan and port differ')
+    cgroup = Path(row['cgroup_parent'])
+    if (not cgroup.is_absolute() or cgroup.resolve(strict=True) != cgroup
+            or (cgroup != Path('/sys/fs/cgroup') and Path('/sys/fs/cgroup') not in cgroup.parents)
+            or not (cgroup/'cgroup.controllers').is_file()):
+        raise ValueError('delegated cgroup parent unavailable')
     if row['dryrun_native_result'] is not True:
         raise ValueError('rowflow must use a unique dryrun native result')
     result = Path(aa.get('result_path', ''))
@@ -50,7 +55,7 @@ def launch_spec(aa, native, trust):
     cmd = shlex.join([sys.executable, '-B', str(HERE/'run_gpu_aa.py')])
     verify = shlex.join([sys.executable, '-B', str(HERE/'launch_gpu_aa.py'), '--verify-result'])
     return ['bash', str(ENGINE), '--id', rid, '--class', 'gpu', '--gpu-quiet', 'exclusive',
-            '--claim-cpus', '184-191', '--role', 'bench', '--min-window', str(row['min_window_s']),
+            '--claim-cpus', '72-95', '--role', 'bench', '--min-window', str(row['min_window_s']),
             '--stop', str(stop), '--port', str(row['port']), '--workdir', str(ROOT),
             '--cmd', cmd, '--complete-cmd', verify]
 
@@ -109,10 +114,14 @@ def spec_digest(spec):
     return hashlib.sha256(json.dumps(spec, separators=(',', ':'), ensure_ascii=False).encode()).hexdigest()
 
 
-def render_launcher(spec):
+def render_launcher(spec, cgroup_parent):
     """A static rowflow-readable engine invocation, checked against real enrollment."""
     checker = shlex.join([sys.executable, '-B', str(Path(__file__).resolve()), '--check-launcher', spec_digest(spec)])
-    return '#!/bin/bash\nset -euo pipefail\n' + checker + '\nexec ' + shlex.join(spec) + '\n'
+    return ('#!/bin/bash\nset -euo pipefail\n'
+            'export M4_OUTER_OWNER_PID=$$\n'
+            "export M4_OUTER_OWNER_BIRTH=$(sed 's/.*) //' /proc/$$/stat | awk '{print $20}')\n"
+            'export M4_DELEGATED_CGROUP_PARENT=' + shlex.quote(cgroup_parent) + '\n'
+            + checker + '\nexec ' + shlex.join(spec) + '\n')
 
 
 def main():
@@ -136,7 +145,7 @@ def main():
         output = Path(sys.argv[2])
         if not output.is_absolute(): raise ValueError('absolute launcher path required')
         with output.open('x') as fh:
-            fh.write(render_launcher(spec)); fh.flush(); os.fsync(fh.fileno())
+            fh.write(render_launcher(spec, aa['row']['cgroup_parent'])); fh.flush(); os.fsync(fh.fileno())
         output.chmod(0o750)
         return 0
     if len(sys.argv) != 1:

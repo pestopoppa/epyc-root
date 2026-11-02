@@ -442,3 +442,29 @@ def test_raw_request_or_response_tampering_is_rejected(tmp_path, field):
     path.write_text(json.dumps(doc))
     with pytest.raises(ProjectionError):
         validate_capture(path, trust)
+
+
+def test_qualification_real_device_path_and_fixture_separation(tmp_path):
+    import importlib.util
+    from types import SimpleNamespace
+    source = Path(__file__).resolve().parents[2] / 'scripts/benchmark/m4_gpu_speed/server_np_sweep.py'
+    spec = importlib.util.spec_from_file_location('m4_qual_device_fixture', source)
+    native = importlib.util.module_from_spec(spec); sys.modules[spec.name] = native; spec.loader.exec_module(native)
+    root=tmp_path/'capture'; root.mkdir()
+    fixture_kfd=root/'kfd'; fixture_kfd.mkdir()
+    fixture_maps=root/'maps';fixture_maps.write_text('fixture')
+    fixture_dev=root/'device';fixture_dev.write_text('100')
+    qual=SimpleNamespace(qualification_only=True,capture_root=root)
+    live=SimpleNamespace(qualification_only=False,capture_root=root)
+    cell={'fixture_kfd_root':str(fixture_kfd),'fixture_maps_path':str(fixture_maps),'device_vram_path':str(fixture_dev)}
+    assert native.residency_paths(qual,cell)==(fixture_kfd,fixture_maps,fixture_dev)
+    with pytest.raises(RuntimeError, match='live synthetic'):
+        native.residency_paths(live,cell)
+    with pytest.raises(RuntimeError, match='partial'):
+        native.residency_paths(qual,{k:v for k,v in cell.items() if k!='fixture_maps_path'})
+    with pytest.raises(RuntimeError, match='non-sysfs'):
+        native.residency_paths(qual,{'device_vram_path':str(fixture_dev)})
+    sysfs=Path('/sys/class/drm/card2/device/mem_info_vram_used')
+    if sysfs.exists():
+        assert native.residency_paths(qual,{'device_vram_path':str(sysfs)}) == (Path('/sys/class/kfd/kfd/proc'),None,sysfs)
+        assert native.residency_paths(live,{'device_vram_path':str(sysfs)}) == (Path('/sys/class/kfd/kfd/proc'),None,sysfs)

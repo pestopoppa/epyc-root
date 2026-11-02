@@ -795,6 +795,31 @@ def write_jsonl(path: Path, row: dict[str, Any]) -> None:
         fh.write(json.dumps(row, sort_keys=True) + "\n")
 
 
+def residency_paths(trust, plan_cell):
+    """Qualification may use sealed synthetic fixtures or actual GPU sysfs.
+
+    Both qualification modes remain non-projectable. Live plans can only use
+    the actual process KFD directory, actual /proc maps, and sysfs device file.
+    """
+    device = Path(plan_cell.get('device_vram_path', ''))
+    if not device.is_absolute():
+        raise RuntimeError('planned device VRAM path missing')
+    fixture_keys = {'fixture_kfd_root', 'fixture_maps_path'}
+    present = fixture_keys & plan_cell.keys()
+    if present:
+        if not trust.qualification_only or present != fixture_keys:
+            raise RuntimeError('partial or live synthetic hardware refused')
+        def fixture_path(name):
+            path = Path(plan_cell[name]).resolve(strict=True)
+            if trust.capture_root not in path.parents:
+                raise RuntimeError('fixture path outside independently bound capture root')
+            return path
+        return fixture_path('fixture_kfd_root'), fixture_path('fixture_maps_path'), fixture_path('device_vram_path')
+    if Path('/sys') not in device.resolve(strict=True).parents:
+        raise RuntimeError('non-sysfs device path refused')
+    return Path('/sys/class/kfd/kfd/proc'), None, device
+
+
 def run_cell(
     *,
     model: ModelSpec,
@@ -840,25 +865,7 @@ def run_cell(
     trust, plan_cell, grant_bytes = write_capture.preflight(key, command, actual_env, model.path.resolve(), np_level, args.question_pool.resolve())
     if not plan_cell.get('kfd_vram_file') or '/' in plan_cell['kfd_vram_file']:
         raise RuntimeError('planned device-specific KFD VRAM file missing')
-    device_vram_path = Path(plan_cell.get('device_vram_path', ''))
-    if not device_vram_path.is_absolute():
-        raise RuntimeError('planned device VRAM path missing')
-    fixture_keys = {'fixture_kfd_root', 'fixture_maps_path'}
-    if trust.qualification_only:
-        # Explicit code-owned fixture only; these rows can never project a ClaimTuple.
-        def fixture_path(name):
-            path = Path(plan_cell[name]).resolve(strict=True)
-            if trust.capture_root not in path.parents:
-                raise RuntimeError('fixture path outside independently bound capture root')
-            return path
-        kfd_root = fixture_path('fixture_kfd_root')
-        fixture_maps = fixture_path('fixture_maps_path')
-        device_vram_path = fixture_path('device_vram_path')
-    else:
-        if fixture_keys & plan_cell.keys() or Path('/sys') not in device_vram_path.resolve().parents:
-            raise RuntimeError('synthetic hardware or non-sysfs device path refused')
-        kfd_root = Path('/sys/class/kfd/kfd/proc')
-        fixture_maps = None
+    kfd_root, fixture_maps, device_vram_path = residency_paths(trust, plan_cell)
     proc: subprocess.Popen[str] | None = None
     row = None
     process = None

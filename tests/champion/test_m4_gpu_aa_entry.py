@@ -116,14 +116,14 @@ def test_launcher_binds_actual_row_and_fails_changed_grant(tmp_path, monkeypatch
     spec=importlib.util.spec_from_file_location('aa_launch',ROOT/'scripts/champion/m4/launch_gpu_aa.py')
     launch=importlib.util.module_from_spec(spec); spec.loader.exec_module(launch)
     aa,native=fixture(); cap=tmp_path/'capture'; cap.mkdir(); stop=tmp_path/'STOP'
-    row={'id':'m4-aa','regions':'mi210_0,184-191','stopfile':str(stop),'min_window_s':3600,'port':18070,'dryrun_native_result':True}
+    row={'id':'m4-aa','regions':'mi210_0,184-191','stopfile':str(stop),'min_window_s':3600,'port':18070,'dryrun_native_result':True,'cgroup_parent':'/sys/fs/cgroup'}
     aa.update(row=row,result_path=str(cap/'result.json'))
     for cell in native['cells'].values():
         cell['grant']={'id':row['id'],'regions':row['regions'],'stopfile':str(stop)}
     trust=types.SimpleNamespace(capture_root=cap)
     args=launch.launch_spec(aa,native,trust)
     assert args[args.index('--gpu-quiet')+1]=='exclusive'
-    assert args[args.index('--claim-cpus')+1]=='184-191'
+    assert args[args.index('--claim-cpus')+1]=='72-95'
     assert args[args.index('--port')+1]=='18070'
     native['cells']['y']['grant']['id']='other'
     with pytest.raises(ValueError):
@@ -211,14 +211,14 @@ def test_generated_launcher_is_rowflow_parseable(tmp_path, monkeypatch):
     spec=importlib.util.spec_from_file_location('aa_launch_parse',ROOT/'scripts/champion/m4/launch_gpu_aa.py')
     launch=importlib.util.module_from_spec(spec); spec.loader.exec_module(launch)
     aa,native=fixture(); cap=tmp_path/'capture'; cap.mkdir(); stop=tmp_path/'STOP'
-    row={'id':'m4-aa','regions':'mi210_0,184-191','stopfile':str(stop),'min_window_s':3600,'port':18070,'dryrun_native_result':True}
+    row={'id':'m4-aa','regions':'mi210_0,184-191','stopfile':str(stop),'min_window_s':3600,'port':18070,'dryrun_native_result':True,'cgroup_parent':'/sys/fs/cgroup'}
     aa.update(row=row,result_path=str(cap/'result.json'))
     for cell in native['cells'].values(): cell['grant']={'id':row['id'],'regions':row['regions'],'stopfile':str(stop)}
     command=launch.launch_spec(aa,native,types.SimpleNamespace(capture_root=cap))
-    shell=tmp_path/'launch.sh'; shell.write_text(launch.render_launcher(command))
+    shell=tmp_path/'launch.sh'; shell.write_text(launch.render_launcher(command, '/sys/fs/cgroup'))
     sys.path.insert(0,str(ROOT/'scripts/coordination/rowflow'))
     import rowflow
     parsed=rowflow.parse_launcher(str(shell))
     assert parsed['id']=='m4-aa' and parsed['class']=='gpu'
-    assert parsed['min_window']==3600 and parsed['claim_cpus']=='184-191'
+    assert parsed['min_window']==3600 and parsed['claim_cpus']=='72-95'
     assert parsed['gpu_quiet']=='exclusive' and parsed['complete_cmd'] and parsed['cmd']
