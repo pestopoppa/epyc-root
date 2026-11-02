@@ -99,3 +99,7 @@ Added synthetic classifier regression controls for comment-only T0, Q8 dispatch 
 ## 11:03Z — Repair and republish the AKX-P1c quantizer build prerequisite after the smoke region-lock conflict
 
 AKX-P1c: republished inf75-quantizer-7cdd7c97-20261102 using the updated rowflow engine; its four-CPU smoke passed (one native unit, rc=75 partial-native-incomplete). The full build result, historical model reconstruction, coverage builds and workload replay remain pending. The updated engine skips CPU region-lock reacquisition in smoke; no production kernel or workload result was changed.
+
+## 11:05Z — Attempt AKX-P1c coverage row preparation; required indexing was refused by CPU admission
+
+AKX-P1c: the quantizer prerequisite remains qualified and armed. Coverage build preparation cannot safely publish the disabled build_coverage.sh prototype: source preparation, deadline enforcement, recipe parity and linkage safeguards require work. GitNexus reports this lane unindexed and scripts/gitnexus-analyze.sh was refused by CPU admission, so the required impact check could not be performed. The historical IQ4_XS-uniform model is absent; reconstruction of approximately 98.4 GB would cross the stated 150 GiB free-space floor (about 154 GiB free at inspection). No new row or coverage result was produced. W5s r7 remains parked under its three-failure rule; AKX-P4a was already complete. AKX-P1b needs a separate reviewed CPU/HIP recipe; the P1c prototype is not reusable. P3a/b require changes in the research repository outside the authorized lane.
