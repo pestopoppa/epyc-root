@@ -127,3 +127,7 @@ Prepared GPU custody code and synthetic controls; pre-grant model seal is being 
 ## 09:59Z — Integrate inference launch preparation
 
 GPU pre-grant seal, CPU request integration and private C5 plan are in progress; no measurement or row claimed.
+
+## 10:00Z — Integrate prepared inference candidates
+
+Model seal and request capture integrations have not produced completion records; no row or measurement claimed.
