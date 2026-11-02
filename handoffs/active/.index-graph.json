@@ -140,17 +140,12 @@
     {
       "from": "INF-67",
       "kind": "dep",
-      "to": "INF-10"
+      "to": "-"
     },
     {
       "from": "INF-70",
       "kind": "dep",
       "to": "INF-67"
-    },
-    {
-      "from": "INF-70",
-      "kind": "dep",
-      "to": "INF-10"
     },
     {
       "from": "INF-72",
@@ -376,16 +371,6 @@
       "from": "UFH-08",
       "kind": "dep",
       "to": "UFH-01"
-    },
-    {
-      "from": "UFH-10",
-      "kind": "dep",
-      "to": "RTG-56"
-    },
-    {
-      "from": "UFH-10",
-      "kind": "dep",
-      "to": "RTG-33"
     },
     {
       "from": "UFH-12",
@@ -1103,12 +1088,6 @@
     {
       "from": "EVL-44",
       "kind": "ref",
-      "to": "INF-10",
-      "weight": 1
-    },
-    {
-      "from": "EVL-44",
-      "kind": "ref",
       "to": "INF-16",
       "weight": 1
     },
@@ -1319,12 +1298,6 @@
     {
       "from": "INF-03",
       "kind": "ref",
-      "to": "INF-10",
-      "weight": 2
-    },
-    {
-      "from": "INF-03",
-      "kind": "ref",
       "to": "INF-18",
       "weight": 2
     },
@@ -1445,12 +1418,6 @@
     {
       "from": "INF-07",
       "kind": "ref",
-      "to": "INF-10",
-      "weight": 2
-    },
-    {
-      "from": "INF-07",
-      "kind": "ref",
       "to": "INF-23",
       "weight": 4
     },
@@ -1475,12 +1442,6 @@
     {
       "from": "INF-09",
       "kind": "ref",
-      "to": "INF-10",
-      "weight": 4
-    },
-    {
-      "from": "INF-09",
-      "kind": "ref",
       "to": "INF-31",
       "weight": 2
     },
@@ -1489,42 +1450,6 @@
       "kind": "ref",
       "to": "INF-34",
       "weight": 2
-    },
-    {
-      "from": "INF-10",
-      "kind": "ref",
-      "to": "EVL-44",
-      "weight": 2
-    },
-    {
-      "from": "INF-10",
-      "kind": "ref",
-      "to": "INF-05",
-      "weight": 4
-    },
-    {
-      "from": "INF-10",
-      "kind": "ref",
-      "to": "INF-07",
-      "weight": 2
-    },
-    {
-      "from": "INF-10",
-      "kind": "ref",
-      "to": "INF-18",
-      "weight": 7
-    },
-    {
-      "from": "INF-10",
-      "kind": "ref",
-      "to": "INF-29",
-      "weight": 4
-    },
-    {
-      "from": "INF-10",
-      "kind": "ref",
-      "to": "INF-31",
-      "weight": 3
     },
     {
       "from": "INF-13",
@@ -1709,12 +1634,6 @@
     {
       "from": "INF-30",
       "kind": "ref",
-      "to": "EVL-09",
-      "weight": 1
-    },
-    {
-      "from": "INF-30",
-      "kind": "ref",
       "to": "EVL-14",
       "weight": 2
     },
@@ -1745,12 +1664,6 @@
     {
       "from": "INF-31",
       "kind": "ref",
-      "to": "INF-10",
-      "weight": 3
-    },
-    {
-      "from": "INF-31",
-      "kind": "ref",
       "to": "INF-42",
       "weight": 2
     },
@@ -1777,12 +1690,6 @@
       "kind": "ref",
       "to": "REV-02",
       "weight": 2
-    },
-    {
-      "from": "INF-33",
-      "kind": "ref",
-      "to": "EVL-09",
-      "weight": 1
     },
     {
       "from": "INF-33",
@@ -1855,12 +1762,6 @@
       "kind": "ref",
       "to": "INF-72",
       "weight": 2
-    },
-    {
-      "from": "INF-40",
-      "kind": "ref",
-      "to": "INF-10",
-      "weight": 4
     },
     {
       "from": "INF-40",
@@ -2117,12 +2018,6 @@
     {
       "from": "INF-52",
       "kind": "ref",
-      "to": "EVL-09",
-      "weight": 1
-    },
-    {
-      "from": "INF-52",
-      "kind": "ref",
       "to": "INF-05",
       "weight": 2
     },
@@ -2297,12 +2192,6 @@
     {
       "from": "INF-67",
       "kind": "ref",
-      "to": "INF-10",
-      "weight": 2
-    },
-    {
-      "from": "INF-67",
-      "kind": "ref",
       "to": "INF-70",
       "weight": 2
     },
@@ -2316,12 +2205,6 @@
       "from": "INF-70",
       "kind": "ref",
       "to": "INF-07",
-      "weight": 2
-    },
-    {
-      "from": "INF-70",
-      "kind": "ref",
-      "to": "INF-10",
       "weight": 2
     },
     {
@@ -3095,12 +2978,6 @@
     {
       "from": "RTG-17",
       "kind": "ref",
-      "to": "EVL-09",
-      "weight": 1
-    },
-    {
-      "from": "RTG-17",
-      "kind": "ref",
       "to": "RTG-29",
       "weight": 2
     },
@@ -3249,18 +3126,6 @@
       "weight": 1
     },
     {
-      "from": "RTG-22",
-      "kind": "ref",
-      "to": "UFH-09",
-      "weight": 2
-    },
-    {
-      "from": "RTG-23",
-      "kind": "ref",
-      "to": "EVL-09",
-      "weight": 1
-    },
-    {
       "from": "RTG-23",
       "kind": "ref",
       "to": "EVL-15",
@@ -3373,12 +3238,6 @@
       "kind": "ref",
       "to": "EVL-07",
       "weight": 2
-    },
-    {
-      "from": "RTG-36",
-      "kind": "ref",
-      "to": "EVL-09",
-      "weight": 1
     },
     {
       "from": "RTG-36",
@@ -3843,48 +3702,6 @@
       "weight": 2
     },
     {
-      "from": "UFH-09",
-      "kind": "ref",
-      "to": "EVL-46",
-      "weight": 2
-    },
-    {
-      "from": "UFH-09",
-      "kind": "ref",
-      "to": "EVL-47",
-      "weight": 4
-    },
-    {
-      "from": "UFH-09",
-      "kind": "ref",
-      "to": "INF-76",
-      "weight": 2
-    },
-    {
-      "from": "UFH-09",
-      "kind": "ref",
-      "to": "RTG-56",
-      "weight": 2
-    },
-    {
-      "from": "UFH-09",
-      "kind": "ref",
-      "to": "UFH-01",
-      "weight": 2
-    },
-    {
-      "from": "UFH-10",
-      "kind": "ref",
-      "to": "RTG-33",
-      "weight": 2
-    },
-    {
-      "from": "UFH-10",
-      "kind": "ref",
-      "to": "RTG-56",
-      "weight": 2
-    },
-    {
       "from": "UFH-12",
       "kind": "ref",
       "to": "UFH-13",
@@ -3945,7 +3762,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T10:33:32Z",
+  "generated_at": "2026-11-02T10:37:28Z",
   "nodes": [
     {
       "age_days": 95,
@@ -4118,28 +3935,6 @@
       "readiness": "ready",
       "state": "active",
       "track": "canonical judge suite revamp"
-    },
-    {
-      "age_days": null,
-      "blocked": 0,
-      "blocked_by": [],
-      "closed": 0,
-      "domain": "research-evaluation",
-      "handoff": "design-backlog-triage-2026-07-23.md",
-      "id": "EVL-09",
-      "last_advanced": null,
-      "next_action": "REFERENCE SNAPSHOT, not a task list \u2014 cite it; dispatchable work lives in eval-tower-verification.md and autopilot-control-plane-integration",
-      "open": 0,
-      "priority": 0.0,
-      "priority_basis": {
-        "campaign": 0,
-        "source": "heuristic",
-        "unblocks": 0
-      },
-      "priority_rank": 173,
-      "readiness": "no_open",
-      "state": "active",
-      "track": "design backlog triage 2026 07 23"
     },
     {
       "age_days": 2,
@@ -5334,28 +5129,6 @@
       "readiness": "ready",
       "state": "active",
       "track": "cpu prefill compute large models"
-    },
-    {
-      "age_days": 46,
-      "blocked": 0,
-      "blocked_by": [],
-      "closed": 2,
-      "domain": "inference-research",
-      "handoff": "cpu-shape-specialized-gemv-decode.md",
-      "id": "INF-10",
-      "last_advanced": "2026-09-17",
-      "next_action": "Receipts-only holder for the CPU gemv axis; live re-ranking is INF-70 \u2014 reopen only on the CPU18/CPU26 or intake re-surface triggers",
-      "open": 0,
-      "priority": 0.0,
-      "priority_basis": {
-        "campaign": 0,
-        "source": "heuristic",
-        "unblocks": 7
-      },
-      "priority_rank": 173,
-      "readiness": "no_open",
-      "state": "active",
-      "track": "cpu shape specialized gemv decode"
     },
     {
       "age_days": 4,
@@ -9051,53 +8824,6 @@
       "track": "harness improvement loop"
     },
     {
-      "age_days": 26,
-      "blocked": 0,
-      "blocked_by": [],
-      "closed": 4,
-      "domain": "user-facing-harness",
-      "handoff": "fuzzy-workflow-authoring-gui.md",
-      "id": "UFH-09",
-      "last_advanced": "2026-10-07",
-      "next_action": "Complete FW-4 executor refuse-without-hook integration with VB-FW-1 before GUI-authored measurement runs",
-      "open": 0,
-      "priority": 0.0,
-      "priority_basis": {
-        "campaign": 0,
-        "source": "heuristic",
-        "unblocks": 0
-      },
-      "priority_rank": 173,
-      "readiness": "no_open",
-      "state": "active",
-      "track": "fuzzy workflow authoring gui"
-    },
-    {
-      "age_days": null,
-      "blocked": 0,
-      "blocked_by": [
-        "RTG-33",
-        "RTG-56"
-      ],
-      "closed": 0,
-      "domain": "user-facing-harness",
-      "handoff": "browser-agent-surface.md",
-      "id": "UFH-10",
-      "last_advanced": null,
-      "next_action": "Dormant \u2014 revisit when a workflow needs interactive browsing; mechanism advances via RTG-56 TD-12..15",
-      "open": 0,
-      "priority": 0.0,
-      "priority_basis": {
-        "campaign": 0,
-        "source": "heuristic",
-        "unblocks": 0
-      },
-      "priority_rank": 173,
-      "readiness": "no_open",
-      "state": "active",
-      "track": "browser agent surface"
-    },
-    {
       "age_days": 38,
       "blocked": 0,
       "blocked_by": [],
@@ -9126,7 +8852,7 @@
       "track": "AMD AI Lab website publication"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 2,
       "blocked_by": [
         "EVL-37",
@@ -9138,7 +8864,7 @@
       "domain": "user-facing-harness",
       "handoff": "repl-embedding-retrieval.md",
       "id": "UFH-12",
-      "last_advanced": "2026-11-01",
+      "last_advanced": "2026-11-02",
       "next_action": "REPL-EMB-2.8b trace write side, then 2.9-2.12 package gates; UFH-12-PROD-ADOPT is a separate decision",
       "open": 20,
       "priority": 0.9653,
@@ -9293,7 +9019,7 @@
     "priority": "0.0 lowest .. 1.0 highest, mid-rank percentile; priority_rank 1 = highest",
     "sources": {
       "file": 172,
-      "heuristic": 6,
+      "heuristic": 2,
       "override": 1
     },
     "tiers": {
@@ -9309,7 +9035,7 @@
   },
   "readiness_counts": {
     "blocked": 41,
-    "no_open": 5,
+    "no_open": 1,
     "ready": 133
   },
   "readiness_values": {

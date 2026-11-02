@@ -74,7 +74,7 @@ bandwidth that is a 10–20 ms token (50–100 t/s) before speculation, and we m
 **Related**:
 - [`cpu-fused-decoder-blocks.md`](cpu-fused-decoder-blocks.md) (INF-67) — the fused decoder's design
   record and phase checklist; Axis A here is its live viability task list
-- [`cpu-shape-specialized-gemv-decode.md`](cpu-shape-specialized-gemv-decode.md) (INF-10) — the refuted
+- [`cpu-shape-specialized-gemv-decode.md`](../completed/cpu-shape-specialized-gemv-decode.md) (INF-10) — the refuted
   fusion arms and the `GGML_PERF`/symbol profile it prescribed (B1 here satisfies it)
 - [`batched-decode-measurement.md`](batched-decode-measurement.md) and
   `epyc-inference-research/scripts/lib/canonical_recipe.py` — the canonical prefix, flags and OMP stack

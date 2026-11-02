@@ -475,7 +475,7 @@ Canonical sources (always verify status in these files first):
   an oversight, the call belongs behind `_should_escalate` like its four siblings. Surfaced
   2026-09-17 while writing the FW-1 loop-block sketch — the block made it visible because it forces
   every gate and every rejection destination to be named
-  ([`fuzzy-workflow-authoring-gui.md`](fuzzy-workflow-authoring-gui.md) § FW-1 sketch, finding F-1).
+  ([`fuzzy-workflow-authoring-gui.md`](../completed/fuzzy-workflow-authoring-gui.md) § FW-1 sketch, finding F-1).
   **Not fixed here: it changes graph control flow on a path evals traverse, so it wants its own
   before/after test and the owning session's judgement on which reading is right.** Zero inference
   to verify (unit tests with a fake backend); zero compute.
