@@ -107,3 +107,7 @@ Integrated DCA source packet structural verifier with three passing offline test
 ## 10:42Z — Add bounded A2 server cancellation prototype
 
 Integrated the A2 owned-client and captured-server cancellation prototype with bounded 32 MiB input, redirect rejection, unknown interrupted outcomes and explicit direct-child cleanup. Seven offline tests pass with ResourceWarning treated as an error. Ownership remains caller-supplied and descendant cleanup remains unproved; native entry is not enabled and no inference row was published.
+
+## 10:44Z — Inspect A2 GPU row preparation and assess Jet-Long ubatch implementation impact
+
+A2 is the 27B GPU control, not the generated CPU label. The existing /mnt/raid0/llm/tmp/yarn/a2/launcher.DRAFT.sh exits 6 deliberately; its spec lacks a qualified keeper lifecycle, source-bound build, companion window, timing and cleanup, so no row was published. JETLONG-PROTO-INWINDOW-UB targets llama_context::decode, previously assessed CRITICAL (79 upstream symbols, 12 flows); root GitNexus reports not indexed and the target llama.cpp index is ambiguous. No kernel change or measurement made. Resume with source-bound A2 launcher and a valid target impact assessment; retain proof and harness tasks.
