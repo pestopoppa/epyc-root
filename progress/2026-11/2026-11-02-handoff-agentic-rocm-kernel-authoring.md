@@ -87,3 +87,7 @@ Dispatched three bounded inference-preparation jobs: exact C5-6 matched null-arm
 ## 00:46Z — Recover unpublished inference-preparation boundary
 
 The preceding wrap-up created commit 536573f996c5 but failed to push; this attempt carries it forward. No completion reports were present for the three newly assigned row preparations or the capture-claim, RPUCG-selector and native-counter producer jobs. Their completion events remain registered; no GPU run or row was published.
+
+## 00:47Z — Review interrupted in-run counter evidence prototype
+
+Inspected the interrupted C5-7 scratch prototype in artifacts/agentic-rocm/.c57-work. It adds a parent-owned counter provider inside a claimed measurement window after workload and anchor identities are available, while passing provider evidence to the existing gate; the scratch test file has no corresponding changes. Requested an independent C6/trust-boundary review and focused mock-provider tests before preserving or applying any patch. No native profiler producer, GPU run, or inference row is claimed. Other row-preparation completion events remain outstanding.
