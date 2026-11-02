@@ -27,6 +27,18 @@ class LiveScratchGuards(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             self.assertIn('KVU-16h', result.stderr)
 
+    def test_p3_v1_and_slot_helpers_refuse_direct_calls(self):
+        slot = Path('/mnt/raid0/llm/tmp/gpu-slot-ak-20261004')
+        code = ("import sys;sys.path.insert(0,sys.argv[1]);"
+                "m=__import__(sys.argv[2]);getattr(m,sys.argv[3])(*([None]*int(sys.argv[4])))")
+        cases = [(ROOT, 'p3_kvu_probe', 'phase_a1', 1), (ROOT, 'p3_kvu_probe', 'measure_level', 7),
+                 (slot, 'p3_kvu_probe_slot', 'measure_level', 8)]
+        for folder, module, name, count in cases:
+            result = subprocess.run([sys.executable, '-B', '-c', code, str(folder), module, name, str(count)],
+                                    capture_output=True, text=True, check=False, timeout=5)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn('KVU-16h', result.stderr)
+
     def test_x0_probe_refuses_before_output_or_request(self):
         with tempfile.TemporaryDirectory() as tmp:
             out = Path(tmp) / 'must-not-exist'
