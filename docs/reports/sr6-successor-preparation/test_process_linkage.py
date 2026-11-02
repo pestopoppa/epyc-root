@@ -22,6 +22,15 @@ class ProcessLinkageTest(unittest.TestCase):
     def test_exact_mappings_and_multiple_segments(self):
         self.assertEqual(inspect_maps('\n'.join(self.lines + self.lines[:1]), self.root), sorted(_LIBS))
 
+    def test_server_mtmd_mapping_must_be_pinned_and_local(self):
+        name = 'bin/libmtmd.so.0.0.10303'
+        self.assertIn(name, _LIBS)
+        mtmd = next(line for line in self.lines if line.endswith(name))
+        with self.assertRaises(ValueError):
+            inspect_maps('\n'.join(line for line in self.lines if line != mtmd), self.root)
+        with self.assertRaisesRegex(ValueError, '/foreign/bin/libmtmd'):
+            inspect_maps('\n'.join(self.lines + [mtmd.replace(str(self.root), '/foreign')]), self.root)
+
     def test_missing_replaced_deleted_or_foreign_refused(self):
         with self.assertRaises(ValueError): inspect_maps('\n'.join(self.lines[1:]), self.root)
         with self.assertRaises(ValueError): inspect_maps('\n'.join(self.lines + [self.lines[0] + ' (deleted)']), self.root)

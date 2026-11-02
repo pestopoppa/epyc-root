@@ -15,7 +15,7 @@ from worker import HEX, build_schedule
 
 def capture_window(*, packet, packet_sha256, window, output, keeper_args,
                    spawn, verify_ready_and_identity, port, timeout_s,
-                   max_response_bytes):
+                   max_response_bytes, drain=None):
     """Validate all three partitions, capture exactly one sealed window once.
 
     The exclusive marker makes an interrupted window non-resumable here.
@@ -35,7 +35,7 @@ def capture_window(*, packet, packet_sha256, window, output, keeper_args,
     if not isinstance(output, Path) or output.is_symlink() or not output.is_dir():
         raise ValueError('real authoritative output directory required')
     required = {'env', 'row_id', 'grant_path', 'stop_path', 'guard_sha256'}
-    if not isinstance(keeper_args, dict) or set(keeper_args) != required:
+    if not isinstance(keeper_args, dict) or set(keeper_args) not in (required, required | {'guard_path'}):
         raise ValueError('bound keeper inputs required')
     if not callable(spawn) or not callable(verify_ready_and_identity):
         raise ValueError('lifecycle adapters required')
@@ -50,7 +50,8 @@ def capture_window(*, packet, packet_sha256, window, output, keeper_args,
         result = capture_keeper_block(**keeper_args, output=output, block=block,
             sampler=packet['sampler'], sampler_sha256=schedule['sampler_sha256'],
             spawn=spawn, verify_ready_and_identity=verify_ready_and_identity,
-            port=port, timeout_s=timeout_s, max_response_bytes=max_response_bytes)
+            port=port, timeout_s=timeout_s, max_response_bytes=max_response_bytes,
+            drain=drain)
         if not isinstance(result, dict) or result.get('state') != 'CAPTURED_ONLY':
             raise ValueError('block not captured; window abandoned')
     return {'state': 'CAPTURED_ONLY', 'window': window, 'blocks': len(selected),

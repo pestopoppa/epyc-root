@@ -28,6 +28,7 @@ class TestPlan(unittest.TestCase):
         self.assertEqual(plan['state'], 'NOT_RUN')
         self.assertEqual({block['arm_order'][0] for block in plan['blocks']}, {'composed3','composed4','mtp3','mtp4','mtp4_repeat'})
         self.assertTrue(all(len(set(block['arm_order'])) == 5 for block in plan['blocks']))
+        self.assertTrue(all(isinstance(block['arm_order'], list) for block in plan['blocks']))
     def test_repetition_occurrences(self):
         self.assertEqual(repetition([1,2,3,4,5,1,2,3,4,5])['numerator'], 1)
     def test_duplicate_seed_fails(self):

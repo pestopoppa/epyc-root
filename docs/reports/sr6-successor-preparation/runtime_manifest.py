@@ -17,6 +17,7 @@ HEX = re.compile(r'[0-9a-f]{64}\Z')
 REQUIRED = frozenset({
     'bin/llama-server', 'bin/libllama-server-impl.so',
     'bin/libllama.so.0.0.10303', 'bin/libllama-common.so.0.0.10303',
+    'bin/libmtmd.so.0.0.10303',
     'bin/libggml.so.0.16.0', 'bin/libggml-base.so.0.16.0',
     'bin/libggml-cpu.so.0.16.0',
 })
@@ -41,7 +42,7 @@ def _read_regular(path, limit):
 
 
 def verify_runtime_manifest(build_root, manifest_sha256):
-    """Compare seven named v10 server artifacts to a pinned SHA256SUMS file."""
+    """Compare eight named v10 server artifacts to a pinned SHA256SUMS file."""
     if not isinstance(build_root, Path) or not build_root.is_absolute() or build_root.is_symlink() or not build_root.is_dir():
         raise ValueError('absolute real build root required')
     if not isinstance(manifest_sha256, str) or not HEX.fullmatch(manifest_sha256):

@@ -179,3 +179,7 @@ Independent v10 source review found that candidate v2 decodes and rewinds the sa
 ## 10:55Z — Correct COPYSPEC sweep corpus attribution and advance SR-6 runner controls
 
 Corrected the COPYSPEC trimmed sweep corpus and class-specific acceptance attribution against its retained summary; repeated-5-gram fractions remain unknown. SR-6 preparation adds runtime manifest, process linkage, readiness and lifecycle seams; 105 model-free tests pass. No runnable row or inference result: in-flight STOP, descendant containment, sealed workload/exposure history, model identity and sampler pins remain to be integrated and proved.
+
+## 11:09Z — Prepare SR-6 first-window row and repair smoke linkage guard
+
+Prepared the sealed three-window SR-6 plan, 45 rendered/tokenized prompts, bounded exposure screen, model preflight and row launcher. Implemented in-flight STOP, constrained captured-PID containment, runtime/placement witnesses and scheduler integration; 125 model-free tests pass. First smoke failed on a mapped-library allowlist; added manifest-pinned libmtmd. Second publisher smoke returned WAIT before execution because the host was below its 150 GiB disk floor (143 GiB available). The repaired row is not smoke-qualified; retry its saved spec when space clears. July three-prompt history is unavailable, so disjointness and registry authority remain unproved.

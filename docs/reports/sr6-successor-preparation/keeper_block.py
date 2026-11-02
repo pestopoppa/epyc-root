@@ -14,14 +14,15 @@ from keeper_admission import KeeperAdmission
 def capture_keeper_block(*, env, row_id, grant_path, stop_path, guard_sha256,
                          output, block, sampler, sampler_sha256, spawn,
                          verify_ready_and_identity, port, timeout_s,
-                         max_response_bytes):
+                         max_response_bytes, drain=None, guard_path=None):
     """Capture one block only after the bound keeper and bench claims pass.
 
     The same admission object is passed to the guarded block, whose existing
     lifecycle and request path recheck it at their own boundaries. A successful
     return is capture only, not a measurement or an authorization verdict.
     """
-    claim = FullHostBenchClaim(row_id, guard_sha256)
+    claim = (FullHostBenchClaim(row_id, guard_sha256) if guard_path is None else
+             FullHostBenchClaim(row_id, guard_sha256, guard_path))
     admission = KeeperAdmission(env=env, row_id=row_id, grant_path=grant_path,
                                 stop_path=stop_path, ownership_check=claim)
     if admission() is not True:
@@ -29,4 +30,4 @@ def capture_keeper_block(*, env, row_id, grant_path, stop_path, guard_sha256,
     return capture_guarded_block(output=output, block=block, sampler=sampler,
         sampler_sha256=sampler_sha256, admission=admission, spawn=spawn,
         verify_ready_and_identity=verify_ready_and_identity, port=port,
-        timeout_s=timeout_s, max_response_bytes=max_response_bytes)
+        timeout_s=timeout_s, max_response_bytes=max_response_bytes, drain=drain)

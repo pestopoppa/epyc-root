@@ -107,7 +107,7 @@ def build_schedule(packet):
             # Repeat arm is independently served too. Rotation across five
             # positions prevents repeatedly privileging one arm's position.
             offset = (wi * len(blocks) + bi) % len(ARMS)
-            order = ARMS[offset:] + ARMS[:offset]
+            order = list(ARMS[offset:] + ARMS[:offset])
             schedule.append({'window': wid, 'block': bi, 'arm_order': order, 'prompts': prepared})
         if any(class_counts[category] < 5 for category in ('code', 'rag', 'prose')):
             raise ValueError('each window requires at least five prompts per class')

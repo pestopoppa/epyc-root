@@ -42,5 +42,64 @@ class SessionDrainTest(unittest.TestCase):
         proc.wait.assert_called_once_with(timeout=0)
 
 
+class ContainedSessionTest(unittest.TestCase):
+    def test_setsid_child_cannot_migrate_and_is_drained(self):
+        import os
+        import tempfile
+        import sys
+        from session_drain import spawn_contained_session, drain_contained_session
+        code = """import os,time
+r,w=os.pipe()
+pid=os.fork()
+if pid==0:
+ os.close(r)
+ os.setsid()
+ try:
+  open('/sys/fs/cgroup/cgroup.procs','w').write(str(os.getpid()))
+  result=b'ESCAPED'
+ except PermissionError:
+  result=b'DENIED'
+ import ctypes,signal
+ class Args(ctypes.Structure):
+  _fields_=[(x,ctypes.c_uint64) for x in ('flags','pidfd','child_tid','parent_tid','exit_signal','stack','stack_size','tls','set_tid','set_tid_size','cgroup')]
+ libc=ctypes.CDLL(None,use_errno=True)
+ fd=os.open('/sys/fs/cgroup',os.O_RDONLY|os.O_DIRECTORY)
+ args=Args();args.flags=0x200000000;args.exit_signal=signal.SIGCHLD;args.cgroup=fd
+ child=libc.syscall(435,ctypes.byref(args),ctypes.sizeof(args))
+ if child==0: os._exit(0)
+ if child>0: os.waitpid(child,0)
+ if child!=-1 or ctypes.get_errno()!=38: result=b'CLONE_ESCAPE'
+ os.close(fd)
+ os.write(1,result+b'\\n')
+ os.write(w,b'x')
+ time.sleep(60)
+else:
+ os.close(w)
+ os.read(r,1)
+"""
+        process = None
+        with tempfile.TemporaryFile() as out, tempfile.TemporaryFile() as err:
+            try:
+                process = spawn_contained_session([sys.executable, '-c', code], stdout=out,
+                    stderr=err, env=dict(os.environ), cwd='/tmp')
+                process.wait(timeout=5)
+                out.seek(0)
+                self.assertEqual(out.read().strip(), b'DENIED')
+                group = process._sr6_cgroup
+                self.assertGreaterEqual(len((group / 'cgroup.procs').read_text().splitlines()), 1)
+                drain_contained_session(process, grace_seconds=1)
+                self.assertFalse(group.exists())
+                process = None
+            finally:
+                if process is not None:
+                    drain_contained_session(process, grace_seconds=1)
+
+    def test_rejects_untrusted_output_descriptor(self):
+        from session_drain import spawn_contained_session
+        with self.assertRaises(DrainError):
+            spawn_contained_session(['/bin/true'], stdout=1, stderr=subprocess.DEVNULL,
+                                    env={}, cwd='/tmp')
+
+
 if __name__ == '__main__':
     unittest.main()

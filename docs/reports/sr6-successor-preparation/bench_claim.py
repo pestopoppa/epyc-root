@@ -76,14 +76,17 @@ def _admit(g, row_id):
 
 class FullHostBenchClaim:
     """Recheck q0-q3 GLOBAL+bench and exclusive gpu-quiet ancestor flocks."""
-    def __init__(self, row_id, guard_sha256):
+    def __init__(self, row_id, guard_sha256, guard_path=None):
         if not isinstance(row_id, str) or not _ID.fullmatch(row_id) or not isinstance(guard_sha256, str) or not _HEX.fullmatch(guard_sha256):
             raise ValueError('row id and sealed guard digest required')
+        if guard_path is not None and (not isinstance(guard_path, Path) or not guard_path.is_absolute()):
+            raise ValueError('absolute guard path required')
         self.row_id, self.guard_sha256 = row_id, guard_sha256
+        self.guard_path = guard_path if guard_path is not None else _GUARD
 
     def __call__(self):
         try:
-            fd = os.open(_GUARD, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
+            fd = os.open(self.guard_path, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
             with os.fdopen(fd, 'rb') as stream:
                 raw = stream.read(131073)
             if len(raw) > 131072 or hashlib.sha256(raw).hexdigest() != self.guard_sha256:
