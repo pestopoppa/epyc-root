@@ -19,3 +19,7 @@ Consumed report.json: preparation boundary c983558a0b18 was wrapped at 00:12Z. T
 ## 00:19Z — File v3 scorer and partial Voxtral results
 
 Ultra prior filing receipt exists; duplicate dispatcher event requires no second verdict. Filed v3 scorer inconclusive with 16 score cells and validation failures retained; settings selection UNKNOWN. Filed Voxtral rc75 disk-floor inconclusive with 10 rc0 reaped result chunks, 11 exposures including one without a result. Before receipts, both full packets were copied and source-hash verified: v3 custody inventory 1f46e0f101adba2fdf8d3d55ad9cbcf1f121e6fa518a0e52a14043b6f78b8f1a; Voxtral inventory 9b1b19c26d4e4fd8f1513a91f939f11a600f30dac841f63fc330ea99dc3ee9e1. No test verdict or promotion; parent task stays open. Delegated no-redraw Voxtral successor, HIP build repair and Ultra fault diagnosis.
+
+## 00:21Z — Reconcile stale scorer qualification and advance remaining speech rows
+
+The scorer dry-run PASS at 00:13Z precedes its 00:15Z ended run, already filed inconclusive with receipt after custody; it is not a new grantable result. PIDs 1906994 and 1906997 from the dry-run warning were absent on one later ps check; no signal sent. Prior score/Voxtral filing wrapped and reached origin/main at a8d38d8c45b91bda458edb38845be36b99b7267c. Bounded Voxtral exposure, Crisp HIP and Ultra-fault audits are dispatched with completion events. No new row published.

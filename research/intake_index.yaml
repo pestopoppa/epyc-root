@@ -375589,7 +375589,11 @@
     read from disk (see intake-1472 re-encounter). Read FULL: the English article; PARTIAL: jev-harness-lab policy*.json, policy.py, run.py replay;
     NOT read in detail: verification/jev-live-2026-09-20/*, other-language editions. License MIT.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - churn-pipeline.md
+  - autopilot-continuous-optimization.md
+  - autokernel-research-loop.md
+  - dashboard-architecture-restructure.md
   handoffs_created: []
   source_revision: github.com/Archive228/jev-harness-engineering @ main 5d8670b6918003379e6d03a200fecf9d2cc9a2c3 (2026-09-25), git clone --depth
     1, retrieved 2026-11-02
@@ -375761,10 +375765,9 @@
     prediction literature); wave 2: intake-2613 (thruwire/foreman), intake-2614 (LangChain blog, vendor-partner, not independent). Dive-surfaced
     sources declined (wave cap 2 reached): typesafe-ai/skills, typesafe-sdk-python, browser-use/jev-ultrafast, docs.typesafe.ai/patterns/* — reopen
     if a local typed-judgment build needs vendor reference code.'
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-3 task lines JEV-1..JEV-6 and SA-1..SA-4 are prepared in research/deep-dives/ws58-jev-20261102/README.md and await operator approval
-    of the plan before any handoff write (2026-11-02).
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/churn-pipeline.md, handoffs/active/autopilot-continuous-optimization.md, handoffs/active/autokernel-research-loop.md, handoffs/active/dashboard-architecture-restructure.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'
 - id: intake-2605
   arxiv_id: '1705.08500'
   url: https://arxiv.org/abs/1705.08500
@@ -375804,7 +375807,8 @@
     the two thresholds of a typed judgment from held-out real outcomes and replaying saved inputs. Calibration labels must be real outcomes; decisions
     within one episode are not exchangeable.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - churn-pipeline.md
   handoffs_created: []
   source_revision: arXiv:1705.08500v2 HTML (arxiv.org/html/1705.08500v2) curled to disk, read from disk, retrieved 2026-11-02
   reader_should_conclude: Cite for how to set abstention thresholds with a stated risk or coverage target; not evidence about any agent harness.
@@ -375835,10 +375839,9 @@
     verified_by: research-intake/stage2
   depends_on: []
   dive_corrections: '2026-11-02 (Stage-2b wave 1): all quotes verified as exact substrings of the on-disk HTML text; no claim overturned.'
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-3 task lines JEV-1..JEV-6 and SA-1..SA-4 are prepared in research/deep-dives/ws58-jev-20261102/README.md and await operator approval
-    of the plan before any handoff write (2026-11-02).
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/churn-pipeline.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'
 - id: intake-2606
   arxiv_id: '2307.01928'
   url: https://arxiv.org/abs/2307.01928
@@ -375909,10 +375912,9 @@
     verified_by: research-intake/stage2
   depends_on: []
   dive_corrections: '2026-11-02 (Stage-2b wave 1): all quotes verified as exact substrings of the on-disk HTML text; no claim overturned.'
-  integration_disposition: monitor
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage-3 task lines JEV-1..JEV-6 and SA-1..SA-4 are prepared in research/deep-dives/ws58-jev-20261102/README.md and await operator approval
-    of the plan before any handoff write (2026-11-02).
+  - 'Stage 4 2026-11-02: Supports the JEV-6 threshold rule as background; no task cites it directly.'
 - id: intake-2607
   arxiv_id: '2107.11277'
   url: https://arxiv.org/abs/2107.11277
@@ -375989,10 +375991,9 @@
     verified_by: research-intake/stage2
   depends_on: []
   dive_corrections: '2026-11-02 (Stage-2b wave 1): all quotes verified as exact substrings of the on-disk HTML text; no claim overturned.'
-  integration_disposition: monitor
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage-3 task lines JEV-1..JEV-6 and SA-1..SA-4 are prepared in research/deep-dives/ws58-jev-20261102/README.md and await operator approval
-    of the plan before any handoff write (2026-11-02).
+  - 'Stage 4 2026-11-02: Survey background for the JEV-6 two-threshold rule; no task cites it directly.'
 - id: intake-2608
   arxiv_id: '2306.10193'
   url: https://arxiv.org/abs/2306.10193
@@ -376035,7 +376036,8 @@
     the two thresholds of a typed judgment from held-out real outcomes and replaying saved inputs. Calibration labels must be real outcomes; decisions
     within one episode are not exchangeable.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - churn-pipeline.md
   handoffs_created: []
   source_revision: arXiv:2306.10193v2 HTML (arxiv.org/html/2306.10193v2) curled to disk, read from disk, retrieved 2026-11-02
   reader_should_conclude: Cite for how to set abstention thresholds with a stated risk or coverage target; not evidence about any agent harness.
@@ -376066,10 +376068,9 @@
     verified_by: research-intake/stage2
   depends_on: []
   dive_corrections: '2026-11-02 (Stage-2b wave 1): all quotes verified as exact substrings of the on-disk HTML text; no claim overturned.'
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-3 task lines JEV-1..JEV-6 and SA-1..SA-4 are prepared in research/deep-dives/ws58-jev-20261102/README.md and await operator approval
-    of the plan before any handoff write (2026-11-02).
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/churn-pipeline.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'
 - id: intake-2609
   arxiv_id: null
   url: https://github.com/apache/burr
@@ -376108,7 +376109,8 @@
   notes: GUI literature expansion 2026-11-02. Apache-2.0. Tracking UI is a standalone app, not embeddable in the stdlib hub; adopt the snapshot-plus-parent-pointer
     data model only.
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - dashboard-architecture-restructure.md
   handoffs_created: []
   source_revision: github.com/apache/burr @ main 0512d8a02178545c8b7e94c46258ca9401d936e0, git clone --depth 1, retrieved 2026-11-02
   reader_should_conclude: Cite as the data-model precedent for a replay stepper; do not adopt the UI.
@@ -376130,10 +376132,9 @@
     verified_by: research-intake/stage2
   depends_on: []
   dive_corrections: '2026-11-02: only application.py lines 855-860, 2019-2024, 2080-2084 read for anchors; UI source tree listed, not read.'
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-3 task lines JEV-1..JEV-6 and SA-1..SA-4 are prepared in research/deep-dives/ws58-jev-20261102/README.md and await operator approval
-    of the plan before any handoff write (2026-11-02).
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/dashboard-architecture-restructure.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'
 - id: intake-2610
   arxiv_id: null
   url: https://github.com/xyflow/xyflow
@@ -376324,10 +376325,9 @@
     verified_by: research-intake/stage2
   depends_on: []
   dive_corrections: '2026-11-02 (Stage-2b wave 2): README and docs/what-foreman-proves.md read from disk.'
-  integration_disposition: monitor
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage-3 task lines JEV-1..JEV-6 and SA-1..SA-4 are prepared in research/deep-dives/ws58-jev-20261102/README.md and await operator approval
-    of the plan before any handoff write (2026-11-02).
+  - 'Stage 4 2026-11-02: Second design precedent for JEV-1/JEV-3 (errors are not scores); no distinct task.'
 - id: intake-2614
   arxiv_id: null
   url: https://www.langchain.com/blog/building-a-harness-with-jev
@@ -376395,10 +376395,9 @@
     verified_by: research-intake/stage2
   depends_on: []
   dive_corrections: '2026-11-02 (Stage-2b wave 2): read from disk; multipliers are vendor restatements.'
-  integration_disposition: monitor
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage-3 task lines JEV-1..JEV-6 and SA-1..SA-4 are prepared in research/deep-dives/ws58-jev-20261102/README.md and await operator approval
-    of the plan before any handoff write (2026-11-02).
+  - 'Stage 4 2026-11-02: Vendor-partner restatement; no task.'
 - id: intake-2615
   arxiv_id: null
   url: https://x.com/DeepSeekHarness/status/2116857257245987236
@@ -376451,7 +376450,8 @@
   notes: Essay companion of intake-2603 (the prototype repo); distinct source. Chinese original not located in bounded searches 2026-11-02 (unverified-in-stage1,
     not evidence of nonexistence); English machine translation read in full. The prototype README says it is not identical to the essay's implementation.
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - churn-pipeline.md
   handoffs_created: []
   source_revision: X Article linked from x.com/DeepSeekHarness/status/2116857257245987236 (English machine translation of the 2026-10-31 Chinese essay) via api.fxtwitter.com, saved
     to disk, retrieved 2026-11-02
@@ -376532,10 +376532,9 @@
   depends_on: []
   dive_corrections: '2026-11-02 (Stage 2): all operator-summary claims confirmed against the full translated essay; caveats added. Stage-2b wave
     1: intake-2616 (Anthropic managed-agents). Declined (wave budget): deepseek.com/harness pages, prototype docs 000/007 (repo already intake-2603).'
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-3 task lines JEV-1..JEV-6 and SA-1..SA-4 are prepared in research/deep-dives/ws58-jev-20261102/README.md and await operator approval
-    of the plan before any handoff write (2026-11-02).
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/churn-pipeline.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'
 - id: intake-2616
   arxiv_id: null
   url: https://www.anthropic.com/research/managed-agents
@@ -376593,10 +376592,9 @@
     verified_by: research-intake/stage2
   depends_on: []
   dive_corrections: '2026-11-02 (Stage-2b wave 1 for intake-2615): read from disk.'
-  integration_disposition: monitor
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage-3 task lines JEV-1..JEV-6 and SA-1..SA-4 are prepared in research/deep-dives/ws58-jev-20261102/README.md and await operator approval
-    of the plan before any handoff write (2026-11-02).
+  - 'Stage 4 2026-11-02: Vendor measurement of bootstrap cost supporting SA-1 context; no distinct task.'
 - id: intake-2617
   arxiv_id: null
   url: https://x.com/imryven/status/2115046979659055476
@@ -376635,7 +376633,8 @@
   referenced_arxiv_ids: []
   notes: Article dated 2026-10-27. Layout raw/ wiki/ output/ and 'using only wiki/' come from this article, not from the gist (intake-268).
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - dev-harness-trace-mining.md
   handoffs_created: []
   source_revision: X Article linked from https://x.com/imryven/status/2115046979659055476 via api.fxtwitter.com, saved to disk, retrieved 2026-11-02
   reader_should_conclude: Cite as an untested how-to (the author says it was not run end to end); useful for the query and lint prompt shapes
@@ -376701,10 +376700,9 @@
     verified_by: research-intake/stage2
   depends_on: []
   dive_corrections: '2026-11-02 (Stage 2, ws58 source 3): read from disk; see research/deep-dives/ws58-jev-20261102/wiki3-dive.md.'
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-3 transparency task lines KT-1..KT-5 are prepared in research/deep-dives/ws58-jev-20261102/knowledge-transparency.md and await operator
-    approval of the plan before any handoff write (2026-11-02).
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/dev-harness-trace-mining.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'
 - id: intake-2618
   arxiv_id: null
   url: https://www.noze.it/en/insights/llm-wiki/
@@ -376767,10 +376765,9 @@
     verified_by: research-intake/stage2
   depends_on: []
   dive_corrections: '2026-11-02 (Stage 2, ws58 source 3): read from disk; see research/deep-dives/ws58-jev-20261102/wiki3-dive.md.'
-  integration_disposition: monitor
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage-3 transparency task lines KT-1..KT-5 are prepared in research/deep-dives/ws58-jev-20261102/knowledge-transparency.md and await operator
-    approval of the plan before any handoff write (2026-11-02).
+  - 'Stage 4 2026-11-02: Secondary summary of intake-268; no task.'
 - id: intake-2619
   arxiv_id: null
   url: https://github.com/AgriciDaniel/claude-obsidian
@@ -376806,7 +376803,9 @@
   referenced_arxiv_ids: []
   notes: MIT. Lint is a read-only parser; repair is a separate hashed transaction.
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - internal-kb-rag.md
+  - dashboard-architecture-restructure.md
   handoffs_created: []
   source_revision: github.com/AgriciDaniel/claude-obsidian @ main 2e545563172f97f02ecaaaab376ceea1246a0583 (2026-10-22), git clone --depth 1,
     retrieved 2026-11-02
@@ -376866,10 +376865,9 @@
     verified_by: research-intake/stage2
   depends_on: []
   dive_corrections: '2026-11-02 (Stage 2, ws58 source 3): read from disk; see research/deep-dives/ws58-jev-20261102/wiki3-dive.md.'
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-3 transparency task lines KT-1..KT-5 are prepared in research/deep-dives/ws58-jev-20261102/knowledge-transparency.md and await operator
-    approval of the plan before any handoff write (2026-11-02).
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/internal-kb-rag.md, handoffs/active/dashboard-architecture-restructure.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'
 - id: intake-2620
   arxiv_id: null
   url: https://github.com/eugeniughelbur/obsidian-second-brain
@@ -376902,7 +376900,8 @@
   referenced_arxiv_ids: []
   notes: MIT. Contradictions found by LLM subagents; deterministic vault_health.py for orphans/duplicates.
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - vidya-belief-substrate-program.md
   handoffs_created: []
   source_revision: github.com/eugeniughelbur/obsidian-second-brain @ main f79c64f3f03ee25ec1660c8a30ebe7f4f8e044ff (2026-10-28), git clone --depth
     1, retrieved 2026-11-02
@@ -376938,10 +376937,9 @@
     verified_by: research-intake/stage2
   depends_on: []
   dive_corrections: '2026-11-02 (Stage 2, ws58 source 3): read from disk; see research/deep-dives/ws58-jev-20261102/wiki3-dive.md.'
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-3 transparency task lines KT-1..KT-5 are prepared in research/deep-dives/ws58-jev-20261102/knowledge-transparency.md and await operator
-    approval of the plan before any handoff write (2026-11-02).
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/vidya-belief-substrate-program.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'
 - id: intake-2621
   arxiv_id: null
   url: https://theaioperator.io/p/i-rebuilt-karpathys-llm-wiki-heres
@@ -376976,7 +376974,8 @@
   referenced_arxiv_ids: []
   notes: Dive-surfaced from intake-2620 (Stage-2b wave 1).
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - internal-kb-rag.md
   handoffs_created: []
   source_revision: theaioperator.io/p/i-rebuilt-karpathys-llm-wiki-heres curled to disk, retrieved 2026-11-02
   reader_should_conclude: Cite as a practitioner report on where an append-only LLM wiki breaks; not measured evidence.
@@ -377006,7 +377005,6 @@
     verified_by: research-intake/stage2
   depends_on: []
   dive_corrections: '2026-11-02 (Stage 2, ws58 source 3): read from disk; see research/deep-dives/ws58-jev-20261102/wiki3-dive.md.'
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-3 transparency task lines KT-1..KT-5 are prepared in research/deep-dives/ws58-jev-20261102/knowledge-transparency.md and await operator
-    approval of the plan before any handoff write (2026-11-02).
+  - 'Stage 4 2026-11-02: task lines filed in handoffs/active/internal-kb-rag.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'

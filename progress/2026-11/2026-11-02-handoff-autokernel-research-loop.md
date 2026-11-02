@@ -103,3 +103,115 @@ Kernel store cpu-20260921-ffc1bac82/PROVENANCE.md identifies the v10 build and S
 ## 00:57Z — Prepare calibration model-binding change
 
 Prior wrap-up succeeded at 84da91844e317cb6550feb6381e90dcecf04ae04. Delegated a reviewable lane-only patch for live_controls pre-grant model identity, a row-preparation gap checklist, and calibration belief-write wiring check. Existing source calls _sha256_file(MODEL) in _write_declaration and _validate_resume_existing; any fix must preserve binding and tamper protection while moving weight hashing outside the grant. Registered output events; no inference or row publication. Research GitNexus impact queries were invoked for both functions; no impact result returned during this turn, so source edits remain gated.
+
+## 00:58Z — Check campaign row readiness and register fault rehearsal assessment
+
+Parallel readiness checks confirm AK-V27-PERF is authority hardening, not a compute run; AK-WM-2b requires the still-unavailable real matched archive; and the end-to-end package task lacks a bound T2-green champion and validated release inputs. The offline package fixture cannot satisfy the empirical task. The handoff identifies DS41 CPU decode as current under INF-77, so do not assume historic AK6.5 prerequisites still describe current state without checking receipts. Previously identified calibration launch blockers remain: pre-grant model identity binding and safe deadline/resume handling. Registered rehearsal-current-20261102.txt as a dispatcher wake event for a bounded assessment of the fourth inference task. No row was published or compute launched; no box was closed.
+
+## 01:00Z — Define campaign rehearsal and calibration prerequisites
+
+Consumed rehearsal-current-20261102.txt: the existing ak-fault-rehearsal-20260812-r2 3/3 private host-process receipt expressly carries no campaign authority. A valid real campaign rehearsal needs a named current campaign, safe injection points, exact owned-process and claim handling, immutable launcher inputs, and machine-verifiable recovery and tamper receipts with a decision rule. Delegated bounded implementation plans for that rehearsal, pre-grant calibration model binding, and block-safe deadline/resume; registered their output paths as dispatcher events. No row was published, inference launched, or checkbox closed.
+
+## 01:02Z — Resolve lane merge and review fault rehearsal design
+
+Consumed rehearsal-plan-20261102.txt. The existing fault_rehearsal.py exercises private Python children and fake-device claims, while release closeout cannot launch a real campaign. A real DS41 rehearsal needs an isolated, bound campaign manifest, deterministic campaign-journal crash/restart, exact-owned process and claim evidence, private-copy tamper refusal, and independently validated per-leg receipts. CPU claims do not provide unilateral preemption: a cooperative keeper stop must not be reported as real preemption. No runnable row or empirical pass is established. Recovered the preceding wrap-up: its commit hook failed because the sparse checkout excluded the tracked observer ratifier; restored that exact tracked file locally, passed the observer census, committed the previously staged progress as ed04c4abd, and merged origin/main without unmerged files. No checkbox closed.
+
+## 01:03Z — Identify multi-row gate candidate and repair wrap-up checkout
+
+Identified an eligible non-row-exact multi-row CPU candidate for AK-PORT-LB1.1: experimental IQK flash-attention port V11-102 commit 540578f55 on champion 49550eda5, recorded in autokernel-all-devices-all-dimensions.md near lines 698-743 as N=1 versus N=5 NOT_ROW_EXACT. Existing kernel oracle/correctness results are not per-position model-logit gate evidence; the capture and real candidate gate integration remain. Delegated exact integration mapping, PM12 operational ceiling evidence, and HR3 post-change store discovery, with output events registered. The preceding wrap-up failed its observer check again because merging reapplied the sparse checkout and removed the tracked ratifier. Added that exact tracked path to the lane sparse-checkout patterns rather than changing the registry or trust-boundary artifact; git ls-files now marks it present. The prior progress entry remains staged and is included by this wrap-up. No compute launched, row published, or handoff box closed.
+
+## 01:04Z — Review LB1 candidate and PM12 operational receipt prerequisites
+
+Consumed LB candidate and PM12 reports. The IQK CPU FLASH_ATTN_EXT candidate 540578f551c5e6d9a0d8e693fdb05b2a324fcd27 was recut from champion 49550eda5, not frozen v10; its historical N=5 vs N=1 op result is NOT_ROW_EXACT and passes its existing oracle, but this is not model-logit evidence or promotion readiness. LB1 needs aligned full-vocabulary logits, dispatch evidence, authenticated binaries and a scoped blocking route without relaxing existing gates. Current research origin/main lesson_native accepts cap provenance only for CONTROL- IDs, so operational submission fails closed UNKNOWN. A real cap needs authenticated same-frame work/hardware evidence and bound baseline timing, with verifier replay and producer bytes captured. Delegated bounded candidate capture and operational cap verifier implementation preparation plus read-only HR3 store join, registered their output events. No compute or publication, no checkbox closed.
+
+## 01:05Z — Prepare candidate validator and repair recurring wrap-up failure
+
+Dispatched bounded lane-only implementation preparation for an aligned full-vocabulary LB1 capture validator and a calibration pre-grant model-binding change, plus a read-only Q38FN post-change trial join; registered completion events. Prior wrap-up failed because the dispatcher reset this lane sparse-checkout to exclude artifacts, removing the tracked operator ratifier required by the observer contract. Re-added that exact tracked path to the sparse-checkout for this boundary; no registry or operator artifact content was altered. The prior progress entry remains staged and will be included in this wrap-up. No inference or compute row published and no box ticked.
+
+## 01:05Z — Recover wrap-up from untracked validator scratch
+
+The preceding wrap-up rejected two untracked validator drafts under artifacts/. Moved those drafts to /mnt/raid0/llm/tmp/autokernel-lb-validator/ and instructed the preparer to continue there; the prior appended progress remains in the worktree and is included in this boundary. No row published or checkbox completed.
+
+## 01:06Z — Review capture validator and post-change campaign join
+
+Consumed HR3, LB validator and calibration model binding reports. In the real Q38FN sample three of four actor trial IDs match experiment rows with ordinals, but all matching token counters are null (hosted codex); the fourth is not yet mapped, store closure is unproven, and the canary remains open. Reviewed the standalone LB capture precheck: it is not authenticated provenance, dispatch proof or gate integration; requested same-N enforcement, explicit executable/DSO digest identity and adversarial tests. Current research origin/main centralizes model hashing in _expected_declaration and the GitNexus index is stale; precomputed hashes with stat are insufficient to bind executed bytes. Requested a private-temp fs-verity capability check and further implementation preparation, and registered outputs. Prior wrap-up d41d63580677e045aada7d8de76adaffdae82d99 succeeded and was pushed. No inference, row publication or checkbox completion.
+
+## 01:07Z — Evaluate model immutability and logit precheck
+
+Consumed all three completed reports. A disposable-file FS_IOC_ENABLE_VERITY probe on the model filesystem returned ENOTSUP; the cause is unknown and no model bytes were changed. LB1 draft v2 now pins equal batched N and executable/DSO digest fields and has eight model-free passing tests, but authentic producer identity, actual capture and gate wiring remain; requested independent audit and concrete native capture path. Fourth Q38FN actor trial ID 10d2af943d7af236aa90a9f3f29ef566 appears only in four actor metrics in searched campaign files and neither of two inspected stores; this is an unmatched group, not evidence of its cause. Delegated safe disposable-file checks of alternative immutable model binding; registered all three completion events. No inference, published row or completed handoff box.
+
+## 01:08Z — Advance sealed model binding for calibration
+
+Consumed cal-immutable-alt.txt: a tiny sealed memfd accepted all four immutability seals, rejected later writes and survived disposable /proc/self/fd reads through taskset/numactl; this does not prove actual llama-bench or keeper compatibility. The model is approximately 379 MiB and a point-in-time memory reading is not an admission or reservation. The hard remaining issue is transferring an authenticated pre-prepared sealed descriptor across publication into the separately started keeper grant, preserving source/model/recipe binding and safe resume without model hashing in the grant. Dispatched a bounded model-free descriptor transfer proof, existing rowflow compatibility analysis and deadline/resume implementation preparation; registered all three events. No model data read, copied or run, no row published and no checkbox completed.
+
+## 01:10Z — Prepare descriptor transfer and native logits prototypes
+
+Prepared bounded model-free prototype work for authenticated sealed-descriptor transfer, a native full-vocabulary per-position logits capture harness, and an independent audit of the existing LB1 capture precheck. Completion files are registered for the dispatcher. All inference candidates remain dependent on real campaign inputs or safe calibration setup; no row published and no handoff box closed.
+
+## 01:11Z — Evaluate sealed descriptor transfer prototype
+
+Consumed memfd-proof-ready.txt: a disposable SCM_RIGHTS socketpair transfers a fully sealed memfd, validates kernel sender credentials and seals, rejects writes, and survives pass_fds into /bin/cat; three tests include wrong sender and unsealed refusal. This is model-free, parent-authorized only, and does not establish keeper lifecycle, per-grant authority, anti-replay, real benchmark execution or measurement comparability. Delegated disposable nonce/replay tests, keeper lifecycle review and measurement-protocol assessment; registered their outputs. No model read or inference run, no row published, no checkbox completed.
+
+## 01:12Z — Review sealed descriptor grant nonce demonstration
+
+Consumed memfd-nonce-proof.txt: the disposable receiver binds a one-use 256-bit nonce to a configured grant ID and kernel credentials and verifies all four seals; eight model-free tests pass, including replay, cross-grant, wrong-peer and unsealed refusal. Its grant identity and peer tuple are assumed out-of-band and replay state is process-local, so it does not supply an authenticated durable authority, actual model digest binding, holder lifecycle, keeper integration or a publishable calibration row. Delegated bounded concrete keeper lifecycle, native logits capture and calibration stop/resume reviews; registered output events. No model run, row publication or completed checkbox.
+
+## 01:13Z — Resolve prepared model descriptor lifecycle
+
+Consumed fd-row-bridge-final.txt. In the inspected rowflow path no existing pre-grant descriptor-holder API is established: rowflow and qualifier start new bash processes without pass_fds, filler owns its own setsid group only, and research origin/main microbench.Popen also closes descriptors by default. An external holder is not covered by existing row cleanup; a secure proposal needs explicit ownership, resource, expiration and teardown, authenticated grant identity and source binding, plus a reviewed actual microbench pass_fds path. Delegated a safe small-file search for an existing fs-verity-capable writable filesystem, preparation of the microbench descriptor patch and native logits harness. No weights, inference, grant or keeper modified; no row published or checkbox completed.
+
+## 01:13Z — Recover lifecycle assessment publication
+
+The prior wrap-up created commit 533362e84fa2 with the descriptor lifecycle assessment but serialized_push returned rc=4 without publishing it. This boundary retries publication through the standard wrapper; pending preparation and registered completion events remain as recorded.
+
+## 01:14Z — Advance native logits capture and model descriptor changes
+
+Consumed three reports. Candidate examples/rowexact/rowexact.cpp already captures full-vocabulary aligned single and batched logits and the CPU backend exposes an IQK FA process counter, but current program emits aggregates and does not bind candidate authority, actual ubatch or dispatch witness to the capture. Requested a focused model-free source prototype. Reviewed proposed opt-in sealed model FD forwarding in research microbench: current Popen closes it, and the current GitNexus index is stale so impact remains unknown; requested a patch and focused disposable tests for review without modifying research. Disposable fs-verity probes returned ENOTSUP on the model ext4 filesystem and ENOTTY on surveyed overlay/tmpfs mounts; this is scoped to tested roots. Requested other immutable options. No model execution, row publication, or box completion.
+
+## 01:16Z — Review native capture prototype and immutable object options
+
+Consumed lb-native-code-ready.txt and cal-immutable-other.txt. A temporary candidate-based C++ prototype emits full-vocabulary vectors for switch-off single/batch and switch-on batch with requested tokens and process-wide IQK counter deltas; it is uncompiled and unrun, does not prove actual ubatch or authenticated source/build/model identity, and is not wired to any gate. Independent review requested. The bounded mount inventory identified no immediately usable alternative immutable model object; a disposable Linux read lease broke on a competing writer and is not a sealed-content substitute. Requested actual temporary microbench descriptor patch/tests and grant-authority prototype; registered all output events. No model inference or published row and no checkbox completed.
+
+## 01:17Z — Complete calibration and capture prototype preparation
+
+The requested inference items still have no valid publishable inputs: the archive replay depends on real matched campaign evidence and the calibration launcher needs immutable pre-grant model identity and safe stop/resume; existing package and fault fixtures do not meet their empirical tasks. Inspected the prepared work locations: a native capture draft and partial descriptor patch/receiver are present without completion reports. Delegated completion and disposable focused tests of the descriptor patch and receiver, plus independent review of the native capture draft, with dispatcher completion events registered. No inference run, row published, or handoff box completed.
+
+## 01:21Z — Correct native logits audit findings
+
+Consumed the independent LB1 audit and model-free descriptor receiver report. The capture draft is NOT gate-ready: its process-global IQK counter and requested n_ubatch do not prove actual multi-row FA execution; candidate nonfinite logits are incorrectly classified as oracle_unavailable; the emitted shape differs from the validator; authority, bounded allocation and output handling are incomplete. Delegated correction of draft-local defects and a separate true per-dispatch dimensional witness design. The temporary descriptor receiver passed eight disposable tests but depends on trusted external digest-to-FD authority and has no durable replay or keeper integration; requested completion of the microbench forwarding draft. Registered three completion events. Previous boundary 0649a033efc0981e4710874fe5d24c1349095fde was pushed. No inference run, row published or checkbox completed.
+
+## 01:22Z — Review corrected native capture draft
+
+Consumed lb-native-fixed-v3.txt: the temporary source now distinguishes nonfinite candidate from nonfinite reference, explicitly synchronizes before sampling the counter, checks numeric parsing and bounds the three logit matrices to 64 MiB. It intentionally emits no capture and returns oracle_unavailable because it lacks authenticated actual-ubatch evidence; the draft has not been compiled or run and cannot qualify a row. Delegated independent source review, model-free atomic output/error tests and descriptor patch review; registered all completion events. No inference, row publication or completed box.
+
+## 01:22Z — Recover native capture review publication
+
+The preceding wrap-up committed native capture review as dceef26ea0e7 but serialized_push returned rc=4 without publishing; retrying through the standard wrapper. Registered follow-up work remains unchanged.
+
+## 01:23Z — Address capture and descriptor review defects
+
+Consumed all three reports. The disposable Python atomic-output prototype passed 10 tests but is not the native emitter; a post-rename directory fsync failure may leave new output visible despite failure. Native v3 still needs prefix synchronization before the counter baseline, strict rejection of overflow at EOF, a defensible memory envelope, authenticated actual multirow evidence and atomic output; its emitter is disabled and must remain so. The temporary microbench FD draft passed four disposable tests but lacks demonstrated close/run race safety, sandbox/exception cleanup coverage, trusted digest-to-FD authority and actual campaign integration. Delegated targeted draft fixes, focused tests and C++ atomic writer preparation; completion events registered. No inference or row published; no checkbox completed.
+
+## 01:25Z — Review capture and descriptor safety fixes
+
+Consumed lb-cpp-v4 and fd-v4-tests. The uncompiled temporary capture draft synchronizes prefix work before the counter baseline and parses whole unsigned decimal tokens with overflow rejection; its 64 MiB figure is a nominal matrix estimate, not a whole-process memory limit, and its emitter stays disabled without authenticated actual multirow witness. The temporary microbench draft serializes close against bind/verify/Popen and passed seven disposable tests, including concurrent close and sandbox refusal. Model digest-to-FD authority, real keeper/benchmark integration, correct caller lifetime and current GitNexus impact remain unproved. Delegated independent race audit, actual dispatch witness preparation and parser review; registered their output events. No inference or row publication; no checkbox completed.
+
+## 01:26Z — Bound native capture token parsing
+
+Consumed lb-parser-review.txt: prefix synchronization now precedes counter baseline, but the process-wide count still does not prove actual multirow FA. The draft rejects integer overflow and extra tokens, yet whitespace extraction can allocate an arbitrarily long word before checking length and permits up to one million tokens before enforcing pre+N. Delegated bounded streaming tokenization with immediate count enforcement, a temporary per-dispatch actual-ubatch witness patch, and follow-through on descriptor safety tests; registered output events. Capture output remains disabled, the draft has not been built or executed, and no inference or row was published.
+
+## 01:27Z — Review bounded parser and dispatch witness drafts
+
+Consumed lb-parser-v5, lb-witness-patch and fd-v5-ready. The uncompiled temporary parser uses a fixed ten-byte token buffer and rejects excess tokens before pushing; independent review requested. The diagnostic candidate patch counts successful IQK FA operators whose actual q width exceeds one, but cannot associate a hit with target decode, graph or positions and must not be accepted as a gate witness; requested target-bound fail-closed implementation. The temporary FD draft refuses ambiguous --model=, compact -m and -- spellings and passed seven disposable tests, but the real benchmark grammar and model authority remain unverified; requested an independent parser comparison. Registered output events. No model execution, published row or checkbox completion.
+
+## 01:28Z — Fix reviewed argv authority and parser resource gaps
+
+Consumed parser audit, FD argv audit and witness binding report. The fixed-size parser still reads an unbounded whitespace stream, so requested a streaming byte ceiling on the same input stream. FD argv review is NO-GO: the prefix blacklist refuses canonical -mmp yet accepts -hf and underscore-normalized --hf_repo, which the inspected llama-bench sources can use to append additional models. Requested a strict approved recipe schema and adversarial tests, preserving independent FD-content authority as a separate requirement. The diagnostic witness cannot bind decode/actual ubatch identity through scheduler and CPU workers; its acceptance seam deliberately returns false. Requested concrete bounded provenance design. No actual model, inference, grant or source-tree changed; no row or checkbox completed.
+
+## 01:29Z — Review capture provenance and input byte cap
+
+Consumed decode-to-worker design and parser byte-budget report. The proposed witness requires actual copied ubatch identities, scheduler split metadata, safe propagation to CPU worker parameters and a verified q-row-to-position map, with unknown paths failing oracle_unavailable; no current implementation or gate pass exists. The temporary parser counts bytes on its already-open stream with a finite pre+N-derived budget and keeps output disabled, but is uncompiled and untested and input bytes are not authenticated. Delegated first fail-closed actual-ubatch capture patch preparation, parser cap review and descriptor argv correction review; registered completion events. No model inference, row publication or checkbox completed.
+
+## 01:30Z — Review capture input byte budget
+
+Consumed lb-parser-cap-review.txt. The temporary parser byte-budget arithmetic is correct on source inspection and rejects byte budget+1, but ifstream can read ahead, the next EOF read can block, and the budget bounds extracted characters rather than physical I/O. Input identity, exact byte count and immutable opened descriptor remain unauthenticated; no compile/test was performed. Delegated capture input authority preparation, FD argv schema correction, and actual-ubatch witness first patch; registered events. No inference run, row published or box completed.

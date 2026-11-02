@@ -140,7 +140,7 @@ class UnwrappedGateTests(_Fixture):
         e = reg["sessions"][self.slug]
         self.assertEqual(e["pending_event"]["rid"], "yarn-1")
         self.assertEqual(e["status"], "suspended")
-        self.assertIn("UNWRAPPED yarn: refusing resume; last_wrapup=deadbeef1", self.log_text())
+        self.assertIn("UNWRAPPED yarn: refusing resume for new work; last_wrapup=deadbeef1", self.log_text())
         # once the wrap-up lands, the queued event is served
         with patch.object(hs, "landed", return_value=True):
             reg, st = self.dispatch()
@@ -174,7 +174,7 @@ class WrappedParsingTests(_Fixture):
         # CAF-1 no-op guard: this turn committed nothing and published no row -> NOT resumed until an event arrives
         self.assertEqual(e["status"], "suspended")
         self.assertTrue(e["await_event"])
-        self.assertIn("NOOP yarn: turn changed nothing", self.log_text())
+        self.assertIn("NOOP yarn: turn completed nothing", self.log_text())
         self.assertEqual(self.calls, [])
         self.assertIn("OPEN yarn: 1 advanceable row(s)", self.log_text())
         ld.assert_any_call("83c110265331")

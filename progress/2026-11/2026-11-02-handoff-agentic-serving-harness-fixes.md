@@ -123,3 +123,79 @@ Consumed b4c-runner-result.txt. No row published: core_v2_calibrate.py can hold 
 ## 00:51Z — Integrate provider and prefix treatment preparation
 
 Consumed B1c, B4b and B4d preparation results. Correction to prior entry: the historical temporary B4 runbook is missing, but docs/design/ufh14-b4cd-ab-runbook-reconstructed-20261101.md is available. B4b needs trusted builder-origin split metadata and a default-off orchestrator feature, preserving structured requests and flag-off bytes; an untrusted in-band marker must not gain system authority. B4d needs a default-off treatment at all three identified CoT sites with off-byte identity and tail/layout tests; its abandoned RAG path must not be re-enabled to manufacture the experiment. Neither can be run as an untreated A/B. B1c has a prepared opt-in profile; local /props on 8074 and 8083 refused connection, so live derived values and a Codex call remain unverified. A6a was checked against the current handoff and is already complete; stale backlog listing must not trigger a duplicate probe. Delegated B6d and B1e reviews; their result events are registered. GPU remediation remains outstanding. No rows published or boxes completed.
+
+## 00:52Z — Resolve B6d status and prepare implementation patches
+
+Consumed B6d and B1e results. B6d is already marked complete with orchestrator origin/main implementation d0059590fc1eb8e42ef290c4bfc9fb81783dfc91 and tests; stale backlog listing must not cause duplicate work. B1e remains open: no provisional primitive exists and the historical design note was purged. Selection must occur on explicit max-turn exhaustion before output schema validation, choose the last schema-valid provisional, and preserve valid FINAL and cancellation/error paths with request-local isolation. Delegated concrete implementation and test patches for B1e, B4b and B4d in lane-local temporary copies; registered result events for integration and review. No rows published or boxes completed.
+
+## 00:53Z — Record B4d high-impact edit stop
+
+Consumed B4d patch result: no patch or source change made. GitNexus impact _execute_turn in orchestrator reported HIGH, with 12 direct dependants, 2 affected processes and 3 affected modules. The index is stale (indexed 84f6f6f versus observed source 9e138e3); refresh and reassess in an authorized orchestrator worktree before editing, and observe the required HIGH-impact stop and warning. B1e and B4b patch results and GPU packet remediation remain registered as future events. No inference row was published and no handoff box completed.
+
+## 00:54Z — Record B4d high-impact edit stop
+
+Consumed B4d patch result: no patch or source change made. GitNexus impact _execute_turn in orchestrator reported HIGH, with 12 direct dependants, 2 affected processes and 3 affected modules. The index is stale (indexed 84f6f6f versus observed source 9e138e3); refresh and reassess in an authorized orchestrator worktree before editing, and observe the required HIGH-impact stop and warning. B1e and B4b patch results and GPU packet remediation remain registered as future events. No inference row was published and no handoff box completed.
+
+## 00:55Z — Recover lane publication and review remaining work
+
+Continued recovery of unpublished lane commits after serialized pushes lost a race against origin/main. Merged latest origin/main and attempted to acquire the serialized push lease so a fetch, merge and push can run under one lock; the live ws58-docs push held it and acquisition refused without waiting. The standard wrap-up will retry its push. B1e and B4b treatment patch results and GPU remediation remain registered; delegated bounded current-state reviews for DEPLOY-EC and LB6, with result events registered. B4d remains stopped on the HIGH-impact GitNexus result recorded in the preceding boundary. No row published and no box completed.
+
+## 00:56Z — File deployed primitives prefix fingerprint and assess recorder
+
+Verified existing serving_calls record 8ea7850dcc574d48906b851a9f11bac2: 2026-10-05 08:02:45Z, primitives source, port 8083, dispatched=true, outcome=ok, success=true, prefix_fp.c2048=a70471db32f3b899. This satisfies DEPLOY-EC-2d; 2c and the parent remain open. LB6 remains open: a read-only health response sampled one worker at orch b0f8613d, which predates c7f3c8ff; zero serving records in the one-hour window ending 00:55Z means the required real-traffic ratio is not measurable. Per-worker provenance, approved API reload at the inference-owner boundary and an hour of real dispatched traffic remain needed. No live reload or inference was performed.
+
+## 00:57Z — Recover index gate and prepare GPU row
+
+The preceding wrap-up resolved DEPLOY-EC-2d and inserted fingerprint evidence, but failed the index_state --check before commit. The handoff changes remain pending in the lane and must be carried into this wrap-up. Started a bounded diagnosis of the index check and a canonical A3A-F2 GPU packet repair; registered result events. Previously registered B1e and B4b patches remain pending. No row published in this boundary.
+
+## 00:59Z — Capture full handoff index failure
+
+Consumed index-fix-result.txt: the advisory warning displayed by wrapup is nonblocking and masks the actual index error. The previous checker session output was no longer available, so started one captured check writing index-check-output.txt and index-check-complete.txt; registered the latter as a dispatcher event. The DEPLOY-EC-2d tick and evidence remain uncommitted in the lane and must be included only after the index gate is repaired. GPU and patch preparations remain outstanding. No row published.
+
+## 01:00Z — Prepare completed chat proof and recover handoff checks
+
+The observer commit hook was repaired by restoring its tracked operator ratifier missing from this sparse checkout; observer census passes. Pending DEPLOY-EC-2d evidence remains uncommitted until the captured full index check completes and its actual failure is fixed. Started targeted index diagnosis and preparation of an independent keeper row for the open completed /chat proof; registered their result events. Earlier GPU and B1e/B4b treatment patch preparations remain pending. No inference row published in this boundary.
+
+## 01:01Z — Prepare completed chat proof and recover handoff checks
+
+The observer commit hook was repaired by restoring its tracked operator ratifier missing from this sparse checkout; observer census passes. Pending DEPLOY-EC-2d evidence remains uncommitted until the captured full index check completes and its actual failure is fixed. Started targeted index diagnosis and preparation of an independent keeper row for the open completed /chat proof; registered their result events. Earlier GPU and B1e/B4b treatment patch preparations remain pending. No inference row published in this boundary.
+
+## 01:02Z — Consume index diagnosis and prepare B1g evaluation
+
+Consumed index-cause2.txt: the index check serially scans git history for roughly 187 handoffs and its citation phase may take several minutes; buffered output alone is not evidence of a hang. Handoff files are present despite sparse checkout; the observer-hook omission was a separate issue. The captured full check has not yet emitted its registered completion event, so its actual gate failure remains unclassified; DEPLOY-EC-2d evidence remains uncommitted in the lane. Delegated independent UFH14-B1g evaluation row preparation and registered its result event; prior GPU, B4b/B1e patch and completed-chat row results remain pending. No row published.
+
+## 01:03Z — Prepare B1g forced-answer evaluation packet
+
+Consumed B1g row preparation. The feature computes its 0.65 trigger from the budget remaining at graph start, and without a valid deadline the on arm never triggers. A defensible paired evaluation requires per-worker flag attestation and rollback, actual per-request forced-turn exposure, fixed paired cases, deadlines and per-suite rescue/regression denominators with infra and scoring failures retained; no valid row has yet been published. Delegated construction of the concrete packet and registered its result. The prior wrap-up committed d7783b1070cc but its push failed as origin/main advanced; this wrap retries publication. DEPLOY-EC-2d handoff evidence remains pending the captured index gate result.
+
+## 01:05Z — Resolve F2 warmup prerequisite
+
+Confirmed F2 prerequisite F1 is already complete: its four slot-specific warmups produced cache_n=56,794 for each member of the all-four-warm group. The existing F2 packet still requires canonical engine migration and pre-grant model verification; its repair is already delegated, and the preparer was sent the confirmed warmup. The captured index-check completion and other registered packet/patch events remain outstanding; the DEPLOY-EC-2d evidence is still uncommitted pending that gate. No inference row published in this boundary.
+
+## 01:06Z — Publish F2 prerequisite recovery
+
+Recovered the preceding F2 progress commit 24d19fc76532 after its push raced origin/main: acquired the serialized push lease, fetched and merged under the lease, and published merge 51c682a8fa7d; serialized push reported cherry empty. The F2 packet, paired evaluations and captured index check remain registered for dispatcher events. DEPLOY-EC-2d evidence remains pending in the lane until its index gate is resolved. No row published.
+
+## 01:07Z — Prepare independent B4c paired evaluation
+
+Delegated construction of an independent B4c paired evaluation packet, with fixed cases, per-worker flag attestation, rollback, quality/cache correlation and rowflow integration; the parked RTE-LOG-1 lineage must not be retried. Registered its result event. F2 packet remediation, B1g packet, B4b and B1e patches, completed-chat row, and captured index check have registered outstanding result events. No inference row was published in this boundary.
+
+## 01:08Z — Prepare independent B4c paired evaluation
+
+Delegated construction of an independent B4c paired evaluation packet, with fixed cases, per-worker flag attestation, rollback, quality/cache correlation and rowflow integration; the parked RTE-LOG-1 lineage must not be retried. Registered its result event. F2 packet remediation, B1g packet, B4b and B1e patches, completed-chat row, and captured index check have registered outstanding result events. No inference row was published in this boundary.
+
+## 01:10Z — Verify F2 model identities before publication
+
+Started a single pre-publication full SHA-256 verification of the F2 canonical 27B and DFlash2 weights against the packet-pinned size and digest. The verifier records device, inode, size, mtime and ctime before/after each read, fails closed on changed inputs or hash mismatch, and atomically writes f2-model-verified.json with explicit per-model and overall status. Registered that receipt as a dispatcher event and informed the packet preparer to reuse it rather than hashing inside a grant. No model inference or row publication occurred. F2 engine migration and the other registered preparation results remain pending; DEPLOY-EC-2d evidence remains in the lane pending index-gate recovery.
+
+## 01:10Z — Verify F2 model identities before publication
+
+Started a single pre-publication full SHA-256 verification of the F2 canonical 27B and DFlash2 weights against the packet-pinned size and digest. The verifier records device, inode, size, mtime and ctime before/after each read, fails closed on changed inputs or hash mismatch, and atomically writes f2-model-verified.json with explicit per-model and overall status. Registered that receipt as a dispatcher event and informed the packet preparer to reuse it rather than hashing inside a grant. No model inference or row publication occurred. F2 engine migration and the other registered preparation results remain pending; DEPLOY-EC-2d evidence remains in the lane pending index-gate recovery.
+
+## 01:12Z — Add F2 preverified model receipt guard
+
+Prepared /mnt/raid0/llm/tmp/compute-flags/handoff-sessions/agentic-serving-harness-fixes/f2_receipt_guard.py for the successor F2 packet. It fails closed unless the preverification receipt has exactly the two pinned paths and expected sizes/digests, successful stable reads, and matching current device, inode, size, mtime and ctime; it does not read or hash weights in the grant. Python compilation and model-free controls passed: valid receipt accepted, changed input and duplicate entries refused, missing receipt refused. Sent the preparer its path for incorporation and source sealing. This is packet preparation, not a published row or an inference result. The verification receipt and remaining registered work are pending.
+
+## 01:14Z — Prepare F2 canonical runner successor
+
+Prepared isolated successor /mnt/raid0/llm/tmp/ufh14-a3af2-rowflow15-20261102 from the original F2 packet after original SOURCES.sha256 verified. Repointed launcher to canonical filler_run15, replaced model and edge hashing in the official job with f2_receipt_guard.py, disabled legacy smoke until separately verified smoke-model identity is available, and regenerated the packet source manifest. Python compile, bash syntax, and successor source-manifest checks passed. The required prepublication weight receipt has not arrived and is not installed; dry-run/result-path compatibility and revised launcher review remain outstanding. No inference was run and no row was published. The GPU preparer was directed to review the successor rather than duplicate it. The DEPLOY-EC-2d handoff change remains pending its index gate.
