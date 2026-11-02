@@ -179,3 +179,7 @@ Integrated the scratch scheduler collector and request-owner marker in /mnt/raid
 ## 10:26Z — Investigated CH-26b failed-row report and dispatched independent C3 lock, CH-27 recipe, and CH-26b residency fixes
 
 Investigated CH-26b: the reported initial dry-run failure was already fixed by the whole-host successor, whose completed floor remains inadmissible because placement and contention were unproven. Bounded investigations are preparing fixes for that evidence gap, C3 lock re-entry, and CH-27 recipe mismatch.
+
+## 10:27Z — Reviewed C3 successor custody blocker and CH-26b replacement evidence
+
+C3 inherited-lock successor remains unpublishable: its profiler and join hash model weights during grant. A model-free custody prototype avoids runtime weight reads but is not yet integrated or contract-validated. CH-26b successor evidence remains inconclusive pending placement and contention proof. Independent bounded fixes are being prepared.
