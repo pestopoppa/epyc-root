@@ -98,7 +98,7 @@ Default-OFF, env-gated fusion (`GGML_GEMV_FUSION_GATE_UP`, `GGML_GEMV_FUSION_QKV
 **gate+up fusion −2.11%, QKV fusion +0.25%, both −0.57%** (verified window **−1.33%**). Correctness clean
 (PPL 5.5410 identical across 4/4 arms). Mechanism: removing ~50 of ~590 barriers/token does not move
 tg128 wall-clock; the +2.6% precedent was the DeltaNet native-fused `wqkv` cluster, a *different*
-mechanism. Both boxes closed `[x]` in `handoffs/active/cpu-shape-specialized-gemv-decode.md`; evidence
+mechanism. Both boxes closed `[x]` in `handoffs/completed/cpu-shape-specialized-gemv-decode.md`; evidence
 `epyc-inference-research/data/gemv-fusion-2026-08-25/` with `SHA256SUMS`. Handoff conclusion: *"No further
 barrier-fusion work is justified on this target."*
 

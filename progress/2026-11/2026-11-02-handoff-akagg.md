@@ -79,3 +79,155 @@ Reviewed /mnt/raid0/llm/tmp/akagg/cpu-verifier-candidate/collector.py: the candi
 ## 09:43Z — Implement pre-grant model custody and CPU collector identity controls
 
 C3 R15 lock candidate passed six synthetic tests; pre-grant model custody with fail-closed mutation detection is being implemented before resealing. CPU collector passed seven and structural verifier nine synthetic controls; cross-sample identity and protocol-bound cadence are being integrated. Neither is yet an admissible row.
+
+## 09:44Z — Implement private store and trusted request marker controls
+
+CH-27 private immutable input stage passed six controls; native private store reconstruction and path rebinding are in progress. CPU observation validator passed 13 controls and its collector seven; trusted request markers and process identities are being integrated. Neither is a valid calibration row yet.
+
+## 09:45Z — Implement owning launcher and request marker capture
+
+Implemented marker-binding validator candidate with 18 synthetic controls plus seven collector controls; the separate caller-supplied marker is not yet authenticated. Owning pidfd/request capture implementation is in progress; no CPU floor or publication claimed.
+
+## 09:46Z — Prepare CPU request capture and C3 model custody
+
+CPU pidfd-bound request capture, C3 pre-grant model custody and CH-27 private-store reconstruction remain in implementation. No calibration row or measurement claimed.
+
+## 09:49Z — Prepare C3 and CPU calibration launchers
+
+C3 model custody, CPU owning request capture and CH-27 store reconstruction are being integrated; no measurement or successor row claimed.
+
+## 09:50Z — Complete inference launcher preparation
+
+GPU model custody, CPU request capture and CH-27 isolated store remain in implementation; no row published.
+
+## 09:51Z — Prepare NEMO boundary admission and calibration launchers
+
+Preparing a boundary-source checker for retained NEMO traces while CPU and GPU launcher integration proceeds; no inference or row published.
+
+## 09:52Z — Complete inference preparation
+
+C3 custody and CPU request-capture candidates remain under implementation; no ready successor meets the measurement and publication requirements.
+
+## 09:53Z — Prepare inference successors
+
+CPU request identity, GPU model custody and CH-27 campaign candidates are in implementation. No row or measured result claimed.
+
+## 09:55Z — Prepare inference successors
+
+CPU observation, GPU custody and CH-27 private campaign implementation are in progress; no result or row claimed.
+
+## 09:56Z — Complete successor launcher repairs
+
+C3 packet custody, CPU owning launcher and CH-27 private store integration delegated; no row or result claimed.
+
+## 09:58Z — Integrate CPU request capture and private calibration plan
+
+Prepared GPU custody code and synthetic controls; pre-grant model seal is being completed. Integrating the CPU owner with request capture and implementing a fresh-C5 private calibration preflight. No row or measurement claimed.
+
+## 09:59Z — Integrate inference launch preparation
+
+GPU pre-grant seal, CPU request integration and private C5 plan are in progress; no measurement or row claimed.
+
+## 10:00Z — Integrate prepared inference candidates
+
+Model seal and request capture integrations have not produced completion records; no row or measurement claimed.
+
+## 10:01Z — Implement retained-trace boundary admission
+
+Retained-trace boundary admission checker is being prepared alongside GPU model seal, CPU capture and CH-27 preflight. No measurement or row claimed.
+
+## 10:03Z — Investigate C3 GPU lock re-entry, CH-26b CPU residency evidence and CH-27 private campaign custody
+
+Investigated pending inference repairs: C3 r4 self-contends on inherited FD9 and its successor must verify the exact engine path and current engine digest; a scratch repair is in progress. CH-26b r2 is already filed inconclusive: native CPU residency logic reports placement and contention unproven, and the retained census exceeded its 2048 bound, so an identical rerun cannot qualify the floor. CH-27 private campaign preparation still has unsealed prompt manifests and shared store, worker and history paths; its native re-anchor planner also requires a behind state. No compute run or new row was published. Scratch findings: /mnt/raid0/llm/tmp/akagg/cpu-fix-report.json.
+
+## 10:06Z — Validate C3 FD9 successor and stage native-validated CH-27 long-context manifest
+
+C3 successor scratch candidate now passes seven FD9/provenance tests and both R13/R15 host-route fixtures; seals and proof of engine bytes at start remain. Report /mnt/raid0/llm/tmp/akagg/c3-tests-report.json. Staged the long-context prompt manifest outside the original mutable campaign using native FrozenPromptManifest validation against the sealed surface digest; positive, existing-destination, wrong-path and wrong-digest controls passed. Receipt and staging script: /mnt/raid0/llm/tmp/akagg/ch27-isolation/staged-longctx-manifest and stage_longctx_manifest.py. The private campaign still needs rebinding and admission, and no row or floor is claimed. CPU observer scratch controls retain unproven placement and contention; see /mnt/raid0/llm/tmp/akagg/cpu-observer-report.json.
+
+## 10:08Z — Harden CH-27 long-context manifest input custody
+
+Hardened /mnt/raid0/llm/tmp/akagg/ch27-isolation/stage_longctx_manifest.py to verify the original sealed long-context surface SHA-256 9f9094237428a06c806cb924c84e729af1a254c4e8dbdd0139cb7f6d009bcd81 before accepting its prompt digest. Native prompt parsing plus positive, existing-destination, source-path and altered-surface controls pass. Private campaign path rebinding and native admission remain in progress; no inference row was published. C3 engine identity and successor sealing are being prepared in separate scratch candidates.
+
+## 10:09Z — Test CH-27 sealed prompt staging negative cases
+
+Added and ran four repeatable model-free tests for CH-27 long-context manifest staging: original manifest accepted; existing destination, altered sealed surface, symlink and tampered prompt manifest are refused. The tampered manifest test invokes the native FrozenPromptManifest parser, which detects its digest mismatch. Test: /mnt/raid0/llm/tmp/akagg/ch27-isolation/test_stage_longctx_manifest.py. No campaign rebooking, inference or floor claim.
+
+## 10:12Z — Harden atomic publication of CH-27 staged manifest
+
+CH-27 long-context staging now uses Linux renameat2 RENAME_NOREPLACE, so a concurrently created destination cannot be overwritten between its initial check and publication. Five model-free tests pass, including an existing empty destination at the atomic publish boundary; source /mnt/raid0/llm/tmp/akagg/ch27-isolation/stage_longctx_manifest.py. Consumed NEMO and CH-26b reports: synthetic NEMO correlation remains UNKNOWN without a real graph trace; CPU scheduler event counting works with privileges but clean-window admission requires complete acquisition and loss/identity controls. No inference row was published.
+
+## 10:14Z — Rebind CH-27 inputs through native campaign resolver
+
+The native campaign resolver reproduced the sealed CH-27 original and generated a ready-schema private rebound using verified staged recipe and source inputs; four positive and tamper/symlink/destination tests pass. Its measurement digest changes from 441f2ce339efa5e19ddb311e9c7f2219eb0ec196297ea89d078780db10923a6f to 3f6ec7a69ae8bd7f14e085902c997d7f9dc9e732ccc47bb9b9cdad5267ffe36a because paths enter identity, so registry lookup and native CLI admission must use the rebound identity. Candidate and report: /mnt/raid0/llm/tmp/akagg/ch27-resolved-v4 and /mnt/raid0/llm/tmp/akagg/ch27-finish-v4-report.json. Worker, history and remaining isolation remain open. No calibration or row published.
+
+## 10:17Z — Repair CPU observer child cleanup across process creation
+
+In scratch /mnt/raid0/llm/tmp/akagg/cpu-collector-v5/request_owner.py, defer handled signals while Popen creates the owned process, then deliver the pending interruption after capturing the process so cleanup can reap it. Eight lifecycle tests pass, including SIGTERM injected between child creation and Popen return and original callback, cutoff, unavailable-pidfd, existing-timer and exit controls. This is a prototype: descendant tracking, SIGKILL, native request binding, scheduler coverage, loss and contention evidence remain unresolved and no measurement is claimed. C3 review /mnt/raid0/llm/tmp/akagg/c3-review-v5.json: maintained host fixtures and source seals pass; obsolete fixture fails and grant-time model hashing still prevents successor publication.
+
+## 10:20Z — Prepare C3 pre-grant model identity
+
+Started one-time pre-grant SHA-256 of the C3 B Bolt GGUF using /mnt/raid0/llm/tmp/akagg/model-seal-v6/seal.py. It writes an atomic receipt and success/failure done.json; no digest is claimed until that file reports success. Runtime design labels its separate stat continuity honestly as not runtime byte verification. Successor consumer integration, launcher and CH-27 private admission are in preparation; no inference or row publication.
+
+## 10:21Z — Seal C3 Bolt model before grant and repair successor lifecycle
+
+The one-time pre-grant SHA-256 of the 22,018,326,528-byte Bolt GGUF completed: 91d63363e782c8a3d5f4be42816eba8e0d42dd2530bd07a7d0d2dc440599af75. Receipt /mnt/raid0/llm/tmp/akagg/model-seal-v6/receipt.json records pregrant digest plus stat continuity, explicitly not runtime byte verification; current file identity check passed without rehashing. C3 successor review found the producer writes to r6 but the result publisher only accepts r5, and the dry-run completion checker refuses even a completed dry-run. Both require correction before publication. No inference or profile result.
+
+## 10:23Z — Integrate CPU request markers with scheduler collector
+
+Integrated the scratch scheduler collector and request-owner marker in /mnt/raid0/llm/tmp/akagg/cpu-observe-v8; four model-free integration tests pass, including fake perf with a real inert owned child, callback failure and cleanup, malformed marker and missing raw file. Receipt remains unproven pending real scheduler coverage/loss, trustworthy request binding and native producer integration. CH-27 v7 native dry-run was refused by its model census tripwire; native read_census reads GGUF metadata and tensor descriptors, so bounded metadata-only preflight is being prepared. Correction to the 10:21 progress entry: complete-v2.py returning incomplete under FILLER_DRYRUN does not itself cause qualification failure; rowflow may accept rc75 when a new attributed dry-run result exists. The unresolved requirements are correct distinct dry-run result publication and cleanup, plus the separate r5/r6 result-root mismatch. No row was published.
+
+## 10:26Z — Investigated CH-26b failed-row report and dispatched independent C3 lock, CH-27 recipe, and CH-26b residency fixes
+
+Investigated CH-26b: the reported initial dry-run failure was already fixed by the whole-host successor, whose completed floor remains inadmissible because placement and contention were unproven. Bounded investigations are preparing fixes for that evidence gap, C3 lock re-entry, and CH-27 recipe mismatch.
+
+## 10:27Z — Reviewed C3 successor custody blocker and CH-26b replacement evidence
+
+C3 inherited-lock successor remains unpublishable: its profiler and join hash model weights during grant. A model-free custody prototype avoids runtime weight reads but is not yet integrated or contract-validated. CH-26b successor evidence remains inconclusive pending placement and contention proof. Independent bounded fixes are being prepared.
+
+## 10:29Z — Review Nemo boundary capture feasibility and C3 successor custody
+
+The Nemo prospective marker capture cannot restore absent historical token boundaries; the historical resegmentation criterion remains open. C3 successor custody, CH-27 admission and CH-26b residency investigations are in progress.
+
+## 10:31Z — Reviewed C3 successor custody blocker and CH-26b replacement evidence
+
+C3 inherited-lock successor remains unpublishable: its profiler and join hash model weights during grant. A model-free custody prototype avoids runtime weight reads but is not yet integrated or contract-validated. CH-26b successor evidence remains inconclusive pending placement and contention proof. Independent bounded fixes are being prepared.
+
+## 10:33Z — Prepare complete C3 pre-grant model identity receipt
+
+C3 draft custody receipt covers Bolt only; the L target and draft and smoke model are also referenced. Started a separate pre-grant seal for all four paths, with completion and failure events registered. It is not yet bound to a successor and no row was published.
+
+## 10:36Z — Implement C3 pre-grant receipt coverage check
+
+Prepared /mnt/raid0/llm/tmp/akagg/c3-custody-check/check_coverage.py to reject missing or malformed model-custody entries without opening weights. Six model-free tests pass, including alias deduplication, a missing role, wrong schema or assurance, bad digest and bad signature. Integration and a completed seal remain prerequisites to a publishable successor.
+
+## 10:38Z — Adapt C3 canonical engine-path regression to successor draft
+
+Applied the C3 canonical-path producer regression to an isolated successor copy at /mnt/raid0/llm/tmp/akagg/c3-canonical-v9 and adapted it to the current verifier, which does not export the older constant; 5 model-free tests pass. The copy still points its manifests to v8 and is not sealed or publishable. CH-26b identical reruns cannot prove residency because its native observer unconditionally reports it unproven; CH-27 private scratch floors fail native registry admission.
+
+## 10:39Z — Add recipe-derived model custody coverage validation
+
+Extended /mnt/raid0/llm/tmp/akagg/c3-custody-check/check_coverage.py to derive target and draft model paths from each recipe argv and reject missing, ambiguous, relative, or malformed model arguments. Twelve model-free controls pass. C3 successor binding, CH-26b observer and CH-27 atomic publication fixes are delegated; no row or performance claim.
+
+## 10:41Z — Review C3 r9 model receipt coverage against actual production recipe
+
+C3 r9 production recipe names only the Bolt model; its existing pre-grant receipt covers that path (metadata coverage check; not runtime-byte proof). The broader L/smoke seal previously started is not required by that B-only recipe unless other launch paths use those models. Identified final_image in the r9 recipe pointing to READY-PROPOSAL.json while the native producer and verifier use FINAL-IMAGE.json; independent review and correction are in progress. CH-27 two-floor scratch staging and CH-26 sampled observer remain proof-only.
+
+## 10:43Z — Harden C3 receipt coverage checker and review CH-26 trace proposal
+
+Reviewed CH-26 trace design: nine synthetic controls reject missing/lost event streams and invalid markers but intentionally return unproven; live collection and attribution are still needed. C3 receipt coverage checker now rejects an empty recipe set and relative extra paths; 13 model-free tests pass. A prior concern that GPU smoke must necessarily use four CPUs was premature: publish_row preserves the GPU row regions; R15 derivation remains under review.
+
+## 10:44Z — Check current C3 Bolt model identity against pre-grant seal
+
+C3 r9 Bolt model currently matches the existing receipt by device/inode/size/mtime/ctime via model_custody.identity; the receipt digest is 91d63363e782c8a3d5f4be42816eba8e0d42dd2530bd07a7d0d2dc440599af75. This is pre-grant hash plus metadata continuity, not a runtime-byte verification. Native publication remains pending the analysis pin, recipe pointer, and smoke-path repairs. CH-26 marker and CH-27 readback results remain model-free.
+
+## 10:46Z — Detect stale C3 successor qualification bindings
+
+Added scratch check_active_binding.py with two passing model-free tests to check the named C3 active runtime closure for missing, symlinked or stale predecessor paths. Against r9 it correctly rejects smoke-job.sh and cutoff-job.sh, both still hard-coded to r4; these paths were sent for repair. The CH-27 integration plan identifies a proposed durable campaign and native admission and atomic publication prerequisites; it does not prove real admission or authorize a row.
+
+## 11:00Z — Repair C3 r9 launch, evidence, analysis pins and raw trace retention; attempt publication
+
+Integrated C3 r9 analysis-pin and launch-path repairs, corrected and source-checked warm-request rate evidence, retained the exact six native raw inputs in the kept results tree with integrity and disk-reserve checks, and passed 24 model-free integration tests plus the host-route fixture. publish_row.py refused before publication because the GPU was busy. Region-lock also showed all CPU quarters held; registered the identified GPU dry-run and CPU-run end events, without intervening. No row published or smoke result claimed. CH-27 private dry plan and one-time model verification are in progress.
+
+## 11:13Z — Publish C3 inherited-lock successor after four-CPU diagnostic smoke
+
+Integrated R15 inherited-lock repair, current engine binding, four-CPU diagnostic smoke, native raw-readset retention and quarantined C3 belief schema. `publish_row.py` passed smoke for `akagg-c3-native-bolt-r9-20261102`: one real warm unit, rc75 partial-native-incomplete, no scored result. Published GPU successor points to `/mnt/raid0/llm/tmp/akagg/c3-canonical-v9/RESULT.json`; production profile verdict remains pending. Registered the prospective C3 source and strict-reader task under the existing Vidya profile wiring program.

@@ -1,0 +1,44 @@
+--- a/scripts/benchmark/k35_stack_context_matrix_runner.py
++++ b/scripts/benchmark/k35_stack_context_matrix_runner.py
+@@ -423,2 +423,2 @@
+-            "Current coder alias on the shared Qwen3.6-27B GPU server; launch MTP "
+-            "but disable it request-locally with speculative.n_max=0."
++            "Coder alias on a separately launched Qwen3.6-27B GPU server with "
++            "drafting disabled for the entire server lifetime."
+@@ -477 +477 @@
+-        description="DeepSeek V4 Flash Q8 plus DSpark sidecar, disabled per request.",
++        description="DeepSeek V4 Flash Q8 on a dedicated server with drafting disabled.",
+@@ -537 +537 @@
+-        description="DeepSeek V4 Flash IQ3_XXS plus DSpark sidecar, disabled per request.",
++        description="DeepSeek V4 Flash IQ3_XXS on a dedicated server with drafting disabled.",
+@@ -665,0 +666,15 @@
++def dedicated_no_draft(scenario: Scenario) -> Scenario:
++    """Give request-no-spec cells their own server without draft state."""
++    if scenario.request_spec_n_max != 0:
++        return scenario
++    # Unknown extras may re-enable drafting after the canonical arguments.
++    # Admit only the two combinations used by the checked-in no-spec cells.
++    if scenario.extra_args not in ((), ("-b", "512", "--no-repack", "--no-warmup")):
++        raise ValueError("unreviewed extra arguments for dedicated no-draft server")
++    return dataclasses.replace(
++        scenario, request_spec_n_max=None, draft_model=None, spec_type="none",
++        spec_draft_n_max=None, spec_draft_threads=None, spec_draft_device=None,
++        spec_draft_ngl=None,
++    )
++
++
+@@ -673,0 +689 @@
++    scenario = dedicated_no_draft(scenario)
+@@ -997 +1013 @@
+-    if scenario.request_spec_n_max is not None:
++    if scenario.request_spec_n_max not in (None, 0):
+@@ -1249,0 +1266,9 @@
++    if scenario.request_spec_n_max == 0:
++        # The caller may bypass build_plan and supply an arbitrary server argv.
++        # Reconstruct the exact safe command before any file or process starts.
++        canonical = build_server_argv(
++            scenario, binary=args.binary, port=cell["port"],
++            nominal_context=cell["nominal_context"], max_tokens=args.max_tokens,
++        )
++        if cell["server_argv"] != canonical:
++            raise ValueError("prebuilt no-draft server command differs from the dedicated command")

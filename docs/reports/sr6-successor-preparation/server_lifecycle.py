@@ -24,7 +24,7 @@ class ReadyServer:
 
 
 def with_server(*, arm, admission_check, spawn, verify_ready_and_identity,
-                run, grace_seconds=10):
+                run, grace_seconds=10, drain=None):
     """Run callback once with a fresh handle, then terminate and reap it.
 
     `admission_check` must return the literal True before `spawn` is called.
@@ -38,6 +38,8 @@ def with_server(*, arm, admission_check, spawn, verify_ready_and_identity,
         raise LifecycleError('unknown arm')
     if not all(callable(f) for f in (admission_check, spawn, verify_ready_and_identity, run)):
         raise LifecycleError('missing adapter')
+    if drain is not None and not callable(drain):
+        raise LifecycleError('invalid drain adapter')
     if type(grace_seconds) not in (int, float) or not (0 < grace_seconds <= 60):
         raise LifecycleError('invalid cleanup timeout')
     if admission_check() is not True:
@@ -58,7 +60,7 @@ def with_server(*, arm, admission_check, spawn, verify_ready_and_identity,
             raise LifecycleError('server exited after verification')
         return run(ReadyServer(pid=pid, arm=arm, evidence=evidence))
     finally:
-        drain_owned_child(process, grace_seconds)
+        (drain or drain_owned_child)(process, grace_seconds)
 
 
 def drain_owned_child(process, grace_seconds):

@@ -11,7 +11,14 @@ publish   LINT the spec, then rowflow.publish derives the rest. The lint rewrite
           under the SAME id (a spec change makes the keeper re-dry-run it; the keeper starts that run, not this tool).
           Known: (1) "no unit in <p>" / "before writing a unit to <p>" where <p> is a completion marker or a results file
           (RESULT.json|results.jsonl) was written in its run dir during the run; (2) a publish refusal naming a
-          lint-derivable field. Anything else: exit 3 `UNKNOWN-FAILURE-CLASS <reason>` and nothing changes."""
+          lint-derivable field. Anything else: exit 3 `UNKNOWN-FAILURE-CLASS <reason>` and nothing changes.
+
+Ownership (operator 2026-11-02): handoff_task must name an existing handoffs/active/<file>.md (`file.md:ROW` or
+`file.md`); the row belongs to that HANDOFF and its PASS/FAIL/run-end events reach that handoff's session.
+Smoke = THE dry run (operator 2026-11-02): the launcher runs HERE, in the owner's turn, on 4 cpus no quiet-host grant
+(GPU rows: on their own regions, VRAM residency checked; never refused for busy resources), for
+smoke_timeout_s (300). PASS (a first unit in result_path, clean stop) writes dryrun/<id>/PASS.json: ready at once. FAIL
+writes the FAIL memo and prints launcher_out_tail; the allocator grants only PASSed rows."""
 import argparse
 import datetime as dt
 import os
@@ -26,7 +33,9 @@ RESULT_FILE = {"json": "RESULT.json", "jsonl": "results.jsonl"}
 RESULT_NAMES = ("RESULT.json", "RESULT.jsonl", "results.jsonl", "results.json")
 SPEC_KEYS = ("id", "owner", "lane", "regions", "result_path", "result_format", "decision_rule", "estimate_s", "handoff_task",
              "priority_rank", "scratch_root", "keep", "dryrun_timeout_s", "min_window_s", "lineage", "lineage_reset", "supersedes",
-             "notes", "row", "snapshot", "admission_class", "dryrun_whole_host", "dryrun_native_result")
+             "notes", "row", "snapshot", "admission_class", "dryrun_native_result")
+REPO = os.environ.get("ROWFLOW_REPO", "/workspace")
+SMOKE_TIMEOUT_S = 300
 DERIVABLE = ("lane", "scratch_root", "keep", "kind")
 _UNIT_RE = re.compile(r"(?:no unit in|before writing a unit to) (\S+) \(")
 
@@ -117,6 +126,72 @@ def lint(spec):
     return notes
 
 
+def check_handoff(spec, repo=None):
+    """The row belongs to a handoff: handoff_task must name an existing handoffs/active/<file>.md."""
+    ht = str(spec.get("handoff_task") or "").strip()
+    f = os.path.basename(ht.split(":", 1)[0])
+    rf.need(f.endswith(".md") and os.path.isfile(os.path.join(repo or REPO, "handoffs", "active", f)),
+            f"handoff_task {ht!r} names no handoffs/active/<file>.md; write \"handoff_task\": \"<file>.md:<ROW-ID>\" (or "
+            f"\"<file>.md\") for the handoff whose task this row serves - the row belongs to that handoff, and its "
+            f"dry-run FAIL/PASS and run-end reach that handoff's session (FILLERS, session pids and engines are not owners)")
+
+
+def smoke_regions(lane, regions, flags):
+    """Where the smoke runs (operator 2026-11-02: a dry run is minimal and is never held up by inference work): GPU rows
+    on their own regions, CPU rows on 4 cpus of the least-busy quarter. No lock, no refusal, nothing booked."""
+    if lane == "gpu":
+        return regions
+    rl = rf.rl_status()
+    qs = sorted(rf.QUARTERS, key=lambda q: rl.get(q, ("free",))[0] != "free")
+    lo = int(qs[0][1]) * 24
+    return f"{lo}-{lo + 3}"
+
+
+def retire_old_verdicts(flags, rid):
+    """ws58 2026-11-02: a publish is a FRESH smoke. An old FAIL memo (or PASS) must never stand in for this smoke's result
+    (codex-ni-s18: a 00:07Z FAIL was re-reported at 10:4xZ), so earlier verdicts move to dryrun/<id>/superseded/<ts>/."""
+    dd = rf.dry_dir(flags, rid)
+    old = rf.fail_paths(flags, rid) + ([rf.pass_path(flags, rid)] if os.path.exists(rf.pass_path(flags, rid)) else [])
+    if not old:
+        return
+    dst = os.path.join(dd, "superseded", dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%S%fZ"))
+    os.makedirs(dst, exist_ok=True)
+    for p in old:
+        os.replace(p, os.path.join(dst, os.path.basename(p)))
+
+
+def unpublished_path(flags, rid): return os.path.join(rf.dry_dir(flags, rid), "unpublished.json")
+
+
+def unpublish(flags, rid):
+    """ws58 2026-11-02: ready/<id>.json exists only for a smoke PASS. A refused/failed smoke moves the manifest to
+    dryrun/<id>/unpublished.json (kept for --repair), so nothing outside the owner's turn sees an unsmoked row."""
+    rp = rf.ready_path(flags, rid)
+    if os.path.exists(rp):
+        os.makedirs(rf.dry_dir(flags, rid), exist_ok=True)
+        os.replace(rp, unpublished_path(flags, rid))
+
+
+def publish_smoked(spec, flags, source):
+    """Publish, then THE dry run in the owner's turn (rowflow.dryrun_run writes PASS.json or the FAIL memo)."""
+    regions = smoke_regions(spec.get("lane"), spec.get("regions") or "mi210_0,184-191", flags)
+    row = rf.publish(spec, flags, source=source)
+    rid = row["id"]
+    retire_old_verdicts(flags, rid)
+    v, msg = "FAIL", "smoke did not run"
+    try:
+        v, msg = rf.dryrun_run(flags, rid, regions, one_quarter=True, smoke_s=int(spec.get("smoke_timeout_s") or SMOKE_TIMEOUT_S))
+    finally:
+        if v != "PASS":
+            unpublish(flags, rid)
+    if v == "PASS":
+        print(f"SMOKE PASS {rid} on {regions}: {msg}")
+        return row
+    t = "\n".join(rf.tail(os.path.join(rf.dry_dir(flags, rid), "launcher.out"), 30))
+    raise rf.Refused(f"smoke {v} for {rid} on {regions}: {msg}\nlauncher_out_tail:\n{t}\nFIX: fix the launcher/spec now, in "
+                     f"this turn, then re-run publish_row.py on the same spec (the row is not granted until a smoke PASSes)")
+
+
 def results_written_during(fail, rundir):
     """The newest RESULT.json|results.jsonl in rundir whose mtime falls inside the failed dry run, else None."""
     try:
@@ -129,8 +204,8 @@ def results_written_during(fail, rundir):
 
 def repair(rid, flags):
     """Returns (rc, message). rc 0 = republished; 3 = unknown failure class (nothing changed)."""
-    row = rf.load_json(rf.ready_path(flags, rid))
-    rf.need(row and row.get("schema") == rf.SCHEMA, f"no epyc.row.v3 row at ready/{rid}.json")
+    row = rf.load_json(rf.ready_path(flags, rid)) or rf.load_json(unpublished_path(flags, rid))
+    rf.need(row and row.get("schema") == rf.SCHEMA, f"no epyc.row.v3 row at ready/{rid}.json or dryrun/{rid}/unpublished.json")
     fails = rf.fail_paths(flags, rid)
     rf.need(fails, f"no FAIL record under dryrun/{rid}/; nothing to repair")
     fail = rf.load_json(fails[-1]) or {}
@@ -180,9 +255,10 @@ def main(argv=None):
         rf.need(spec, f"{a.spec} is not a JSON object")
         if a.migrate:
             spec = rf.spec_from_legacy(spec, a.flags)
+        check_handoff(spec)
         for note in lint(spec):
             print(f"LINT {note}")
-        print(rf.published_line(rf.publish(spec, a.flags, source=os.path.abspath(a.spec)), a.flags))
+        print(rf.published_line(publish_smoked(spec, a.flags, os.path.abspath(a.spec)), a.flags))
         return 0
     except rf.Refused as e:
         print(f"REFUSED: {e}")

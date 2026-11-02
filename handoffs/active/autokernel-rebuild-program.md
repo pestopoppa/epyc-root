@@ -912,6 +912,7 @@ on measurement, D3 approved and shipped.** Detail in each entry.
       `str(promoted)` — a **path, not a timestamp** (`loop/pool.py:372`) — and build time
       (CMakeCache 06:01 vs libs 08:29 vs run start 09:37) is exactly what diagnosed run 18 by hand.
       Make `built_at` a real timestamp as part of this.
+      **Prepared source patch:** [build-completion timestamp patch](../../docs/reports/autokernel-r18b-build-timing/README.md), tested on research `3ab4ffbf1f436ceb4a8918d0ce2984c0567b0095` (46 model-free tests). It has not been integrated into research and does not resolve the historical binary identity or −9.5% mechanism.
 - [ ] **R18-C — record the champion branch's per-commit inflation where a reader of that branch
       will find it.** 36 commit messages claiming **+171.7% compounded / +101.8% summed** against a
       measured block effect of **+8.524%**. Commit messages are immutable, so the correction has to
@@ -1292,7 +1293,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       uncalibrated/refuse. Land at the run-23 boundary, never mid-run.
       *Folded into R23-11 (2026-09-01 D1–D6 ruling); flips with it.* **✅ 2026-09-02 — R23-11 IS `[x]`,
       so this flips with it. Ticked at the 2026-09-08 wrap-up reconciliation; the resolution predates it.**
-- [ ] **R23-9 — DFlash2 standalone llama-bench smoke (2 min GPU) + 27B confirm-surface A/A
+- [x] **R23-9 — DFlash2 standalone llama-bench smoke (2 min GPU) + 27B confirm-surface A/A ✅ 2026-11-02 [belief: cc]
       calibration window (~5–6 h) — OPERATOR-GATED, next boundary.** Frozen v9 carries the dflash
       arch (verified in `0db32c06e`), so the 2 GB rung is loadable by both arms; the smoke decides
       D5, the A/A window is D6's only real device cost.
@@ -1301,6 +1302,8 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       (review-token gated) → apply re-anchored seeds (R23-12, staged copies) → rocprof dispatch
       sanity (R23-13) → DFlash2 smoke → 27B A/A on dec-b4+dec-b8 (keyed calibration artifacts) →
       readiness package.
+  **R23-9 historical evidence (2026-09-02).** The standalone DFlash2 smoke ran and failed (rc=1), as recorded in [the contemporaneous progress report](../../progress/2026-09/2026-09-02-ak-rebuild-20260828.md) and R23-16; its failure settled the standalone-screen choice and is not a successful load. Both 27B calibration records exist in `/mnt/raid0/llm/autokernel/loop-memory/calibration/`, name anchor `732389d6d9d08338fe2ad2457bf8f44205914a7f`, and contain SETTLED, PREHEATED and POST_BUILD conditions with 20 pairs and 40/40 resident invocations each: `dec-b4.Qwen3.8-27B-Q8_0.json` recorded 10:03:15Z, SHA-256 `00bbb95aa851b9cde1d8361bd4a9749fda5cb7115a820344eb0805a14427496f`; `dec-b8.Qwen3.8-27B-Q8_0.json` recorded 11:49:11Z, SHA-256 `4fe6ee83b176ae7d1c0d169fbb3b561b65bf08d07b60f57ef9ba2b2402c1f9cf`. Research commit `078d9c3c030c0ac3f29cbdb8a261ae30c09a12e2`, an ancestor of research `origin/main`, independently records the two keyed floors; the later handoff's run-27 entry records the dec-b8 confirm gate. This closes the historical boundary work only; it does not establish present-day floor validity or a new measurement warrant.
+
 - [x] **R23-14 — boundary driver drafted, reviewed, armed** ✅ 2026-09-01 —
       `boundary_20260901.sh` + helper (research side branch `8634f0c7`), modeled on the 20260831
       trio (state-file resume, fail-closed refusals, PID-verified stop). **Review fix
@@ -2261,7 +2264,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         verifies four distinct invocation PIDs, serialized unit and sample vectors; the original writer fails on the
         missing field. This closes only the unit-metadata gap: no measurement rerun, floor recalibration, new warrant,
         grade, or performance conclusion. [Evidence](../../artifacts/compute/refactor-r23-67-aa-noise-floor-unit-20261030.json)
-          - [ ] **R23-68 — record the autokernel-loop pytest baseline and the `TMPDIR` prerequisite**:
+          - [x] **R23-68 — record the autokernel-loop pytest baseline and the `TMPDIR` prerequisite** ([historical baseline and host prerequisite](../../docs/reference/autokernel-loop-pytest-baseline-2026-09-14.md)): ✅ 2026-11-02 [no-belief: historical test record without new measurements]
         `pytest scripts/kernel_rnd/autokernel/loop -q` at `origin/main` `7ea556f4` reads **176 failed / 201
         errors / 2509 passed**, the remainder environmental on this host (HTTP-child fixtures, live-store and
         port-bound tests, the `test_campaign_footprint.py` / `test_program_md.py` set) with

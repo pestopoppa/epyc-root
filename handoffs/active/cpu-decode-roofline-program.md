@@ -74,7 +74,7 @@ bandwidth that is a 10–20 ms token (50–100 t/s) before speculation, and we m
 **Related**:
 - [`cpu-fused-decoder-blocks.md`](cpu-fused-decoder-blocks.md) (INF-67) — the fused decoder's design
   record and phase checklist; Axis A here is its live viability task list
-- [`cpu-shape-specialized-gemv-decode.md`](cpu-shape-specialized-gemv-decode.md) (INF-10) — the refuted
+- [`cpu-shape-specialized-gemv-decode.md`](../completed/cpu-shape-specialized-gemv-decode.md) (INF-10) — the refuted
   fusion arms and the `GGML_PERF`/symbol profile it prescribed (B1 here satisfies it)
 - [`batched-decode-measurement.md`](batched-decode-measurement.md) and
   `epyc-inference-research/scripts/lib/canonical_recipe.py` — the canonical prefix, flags and OMP stack
@@ -4992,9 +4992,10 @@ the shared tree stale, which is exactly why the stronger claim must not be assum
         - `coherence_gate` exists on research main 95157ad7, and the tier-2 judge is TD-30 in `typed-decision-plane.md`.
         - Durable copies of the patches and the audit: `artifacts/gpu-block-27b-20261004/analysis/`.
       - 2026-11-01: harness1 rectification source published in root `db31f6fb34935aa1b4da274cf29741c921024969`, merged to both root branches at `d4bd73380e96f62fc65e17aec010f089b773b284`. Response token IDs are requested and recorded, with validated tokenization fallback, absent/malformed IDs retained as NO-TOKEN-IDS, conservative placeholder refusal and a strict 256-token ceiling. The original classifier v1 decision body is byte-identical; 30 focused tests passed under the native bounded CPU supervisor. Durable proof: `artifacts/engineering/cls-rect-harness-20261101/`. Inference was notified before commit. No inference or live arm ran; first live `token_source=response` and E-GATE evidence remain outstanding. Both CLS-RECT-1 and CLS-RECT-1a stay open. The CLS1 era draft remains in TD-30e's human-only, operator-signed ratification package. [no-belief: source and tests only; no new inference or historical regrading]
-      - [ ] **CLS-RECT-1a — apply patch 04 to the INF-70 harness1 client (owner: workspace-ec).** [too-big: source landed; live real-token arm belongs to inference owner] (filed 2026-10-04,
+      - [x] **CLS-RECT-1a — apply patch 04 to the INF-70 harness1 client (owner: workspace-ec).** [too-big: source landed; live real-token arm belongs to inference owner] (filed 2026-10-04, ✅ 2026-11-02 [belief: cc]
         workspace-ec; RECTIFY §4, operator-approved.)
         - 2026-11-01: live source-validation row `inf70-cls-rect-live-20261101` published for keeper qualification; launcher, specification and review notes are in `artifacts/compute/inf70-cls-rect-live-20261101/`. Result: `/mnt/raid0/llm/tmp/inf70-cls-rect-live-20261101/results/CLS-RECT-1a.jsonl`. File the verdict only after the row ends: require first live row `token_source=response`, nonempty real token IDs and `inf70-classify.v1.1`; preserve failure or fallback as such. No live result yet. [no-belief: row preparation and publication only]
+        - 2026-11-02: first row `mbpp_0391` recorded `token_source=response`, 112 real generated IDs and `inf70-classify.v1.1`, satisfying the live source check. Row ended rc=75 (`disk-floor`), with 20/24 prompts and five HTTP errors; this is not a complete arm or a coherence/throughput claim. Preserved result and end record: `docs/evidence/inf70-cls-rect-result-20261102/`. [belief: cc]
         - **The fake-id fix:** `scripts/inf70/harness1/client.py` requests `return_tokens` + `verbose` to get real
           ids, falls back to `/tokenize`, and never fabricates an id. `classify.py` becomes `inf70-classify.v1.1`; its
           v1 rules stay byte-identical, and it refuses synthetic ids and n > 256.

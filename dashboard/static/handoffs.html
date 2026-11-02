@@ -260,13 +260,21 @@
 
   section.graph .glegend{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin:2px 0 8px;font-size:12px;color:var(--muted)}
   section.graph .gsw{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:5px;vertical-align:-1px}
-  section.graph .gsw.prioramp{width:84px;height:10px;border-radius:3px;margin:0 4px}
-  section.graph .gsw.ring{background:transparent;border:2.5px solid;border-radius:50%}
   section.graph .gsw.dot{border-radius:50%}
-  section.graph .gsw.hatch{border-radius:50%;background:repeating-linear-gradient(45deg,#8b949e 0 2px,#0d1117 2px 4px)}
-  section.graph .gsw.faded{border-radius:50%;background:#8b949e;opacity:.3}
-  section.graph .gsw.dash{background:transparent;border:1.6px dashed #f0f6fc;border-radius:50%}
-  section.graph .gsep{color:var(--line,#2a2f3a)}
+  section.graph #graph-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:6px 16px;align-items:start;
+    padding:6px 10px;border:1px solid var(--border,#30363d);border-radius:6px;font-size:12px;line-height:1.3}
+  section.graph .lgrp .lt{display:block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;color:var(--muted)}
+  section.graph .lgrp .lb{display:flex;flex-direction:column;gap:2px;color:var(--text,inherit)}
+  section.graph .lgrp.lidx .lb{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  section.graph .lgrp.lnode .lb{flex-direction:column}
+  section.graph .lgrp.lcounts{grid-column:1/-1}
+  section.graph .li{display:flex;align-items:center;gap:6px;min-width:0}
+  section.graph .lsw{flex:none;overflow:visible;display:inline-block;max-width:46px;max-height:16px;width:auto;height:16px;background:none;border:0}
+  section.graph .lsw[width="46"]{width:46px}
+  section.graph .lsw[width="18"]{width:16px}
+  section.graph .lsw[width="14"],section.graph .lsw[width="12"]{width:14px;height:14px}
+  section.graph .lsw g,section.graph .lsw path.q{stroke:var(--bg,#0d1117);stroke-width:.6}
+  section.graph .lcnt{color:var(--muted)}
   section.graph .gnote{font-size:12px;margin:0 0 8px;max-width:88ch}
   section.graph .gwrap{position:relative}
   section.graph .gzoom{position:absolute;top:8px;right:10px;z-index:20;display:flex;gap:6px;
@@ -276,17 +284,47 @@
   section.graph .gzoom button:hover{border-color:#58a6ff}
   section.graph svg{touch-action:none}
   section.graph svg.grabbing{cursor:grabbing}
-  section.graph svg{width:100%;height:auto;display:block;background:rgba(0,0,0,.12);border:1px solid var(--line,#2a2f3a);border-radius:6px}
-  section.graph .gtip{position:absolute;z-index:30;pointer-events:none;max-width:340px;
-    background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:8px 10px;
-    box-shadow:0 6px 22px rgba(0,0,0,.55);font-size:12px;line-height:1.45}
+  section.graph svg:not(.lsw){width:100%;height:auto;display:block;background:rgba(0,0,0,.12);border:1px solid var(--line,#2a2f3a);border-radius:6px}
+  section.graph .gtipbox{position:absolute;right:10px;bottom:10px;z-index:25;width:280px;max-width:calc(100% - 20px);
+    box-sizing:border-box;background:var(--panel,#161b22);background:color-mix(in srgb,var(--panel,#161b22) 88%,transparent);
+    border:1px solid var(--border,#30363d);border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+  section.graph .gtipbox.collapsed .gtip{display:none}
+  section.graph .gtipbox .gtip-x{position:absolute;top:2px;right:4px;z-index:1;background:none;border:0;color:var(--muted);
+    cursor:pointer;font-size:14px;line-height:1;padding:2px 4px}
+  section.graph .gtip{box-sizing:border-box;max-height:220px;overflow:auto;padding:8px 22px 8px 10px;
+    font-size:12px;line-height:1.45}
+  section.graph .gtip.hint{color:var(--muted)}
   section.graph .gtip b{font-size:12px}
   section.graph .gtip .tid{font:11px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
   section.graph .gtip .tna{margin-top:5px;color:#c9d1d9}
   section.graph .gtip .tmeta{margin-top:5px;color:var(--muted)}
   section.graph .node{cursor:pointer}
-  section.graph .dimmed{opacity:.08}
+  section.graph .dimmed{opacity:.15}
+  section.graph line.hl-up{stroke:#f0883e;stroke-width:2.2}
+  section.graph line.hl-down{stroke:#58a6ff;stroke-width:2.2}
+  section.graph .node.hl-up circle:first-child{stroke:#f0883e;stroke-width:3}
+  section.graph .node.hl-down circle:first-child{stroke:#58a6ff;stroke-width:3}
   section.graph .domlabel{font-size:11px;fill:var(--muted);text-anchor:middle;letter-spacing:.04em}
+/* pipeline section (scoped) */
+#pipeline-sec{--bg:#fff;--fg:#1f2328;--mut:#59636e;--line:#d1d9e0;--card:#f6f8fa;--det-f:#dbeafe;--det-s:#1d4ed8;--ai-f:#ffedd5;--ai-s:#c2410c;--bad:#b91c1c;--ok:#15803d;--warn:#a16207;--hi:#fef9c3;color:var(--fg)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #pipeline-sec{--bg:#0d1117;--fg:#c9d1d9;--mut:#8b949e;--line:#30363d;--card:#161b22;--det-f:#10264a;--det-s:#60a5fa;--ai-f:#3a1d0a;--ai-s:#fb923c;--bad:#fca5a5;--ok:#4ade80;--warn:#facc15;--hi:#3b3512}}
+:root[data-theme="dark"] #pipeline-sec{--bg:#0d1117;--fg:#c9d1d9;--mut:#8b949e;--line:#30363d;--card:#161b22;--det-f:#10264a;--det-s:#60a5fa;--ai-f:#3a1d0a;--ai-s:#fb923c;--bad:#fca5a5;--ok:#4ade80;--warn:#facc15;--hi:#3b3512}
+#pipeline-sec{background:transparent;margin:12px 0}
+#pipeline-sec a{color:var(--det-s)}#pipeline-sec h2{border-bottom:1px solid var(--line);padding-bottom:4px;margin-top:26px}
+#pipeline-sec table{border-collapse:collapse;width:100%;margin:8px 0}#pipeline-sec th,#pipeline-sec td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}#pipeline-sec th{color:var(--mut)}
+#pipeline-sec code{font-size:12px}#pipeline-sec .note,#pipeline-sec .err,#pipeline-sec .fresh{color:var(--mut);font-size:12px}#pipeline-sec .err{color:var(--bad);font-size:14px;padding:8px;border:1px solid var(--bad)}
+#pipeline-sec .tag{display:inline-block;font-size:10px;font-weight:700;padding:0 5px;margin-right:4px;border:1px solid}
+#pipeline-sec .tag.DET{color:var(--det-s);background:var(--det-f);border-color:var(--det-s);border-radius:0}
+#pipeline-sec .tag.AI{color:var(--ai-s);background:var(--ai-f);border-color:var(--ai-s);border-radius:9px}
+#pipeline-sec .chip{display:inline-block;padding:1px 7px;border-radius:8px;font-size:11px;background:var(--card);border:1px solid var(--line)}
+#pipeline-sec tr.hl td{background:var(--hi)}#pipeline-sec svg{width:100%;height:auto;background:var(--card);border:1px solid var(--line)}
+#pipeline-sec svg text{fill:var(--fg);font:12px system-ui,sans-serif}#pipeline-sec svg .sub{fill:var(--mut);font-size:10px}#pipeline-sec svg .cnt{font-weight:700;font-size:15px}
+#pipeline-sec svg .det{fill:var(--det-f);stroke:var(--det-s);stroke-width:1.6}#pipeline-sec svg .ai{fill:var(--ai-f);stroke:var(--ai-s);stroke-width:1.6;stroke-dasharray:5 3}
+#pipeline-sec svg .edge{stroke:var(--mut);stroke-width:1.3;fill:none}#pipeline-sec svg .edge.dash{stroke-dasharray:4 3}#pipeline-sec svg .grp{fill:none;stroke:var(--line);stroke-dasharray:3 4}
+#pipeline-sec svg .badge{font-size:9px;font-weight:700}#pipeline-sec svg .bd-DET{fill:var(--det-s)}#pipeline-sec svg .bd-AI{fill:var(--ai-s)}
+#pipeline-sec .legend{display:flex;gap:18px;align-items:center;margin:6px 0;flex-wrap:wrap}#pipeline-sec .sw{display:inline-block;width:26px;height:14px;vertical-align:middle;margin-right:5px}
+#pipeline-sec .sw.d{background:var(--det-f);border:2px solid var(--det-s)}#pipeline-sec .sw.a{background:var(--ai-f);border:2px dashed var(--ai-s);border-radius:8px}
+#pipeline-sec .regions{display:flex;gap:8px;flex-wrap:wrap}#pipeline-sec .reg{border:1px solid var(--line);padding:6px 10px;min-width:150px;background:var(--card)}#pipeline-sec .reg.busy{border-color:var(--ai-s)}#pipeline-sec .reg.free{border-color:var(--ok)}
 </style>
 </head>
 <body>
@@ -384,13 +422,6 @@
       <span class="badge" id="graph-badge" style="text-transform:none;font-weight:400;margin-left:8px"><span class="dot"></span><span>graph</span></span>
     </h2>
     <div class="glegend" id="graph-legend"></div>
-    <div class="glegend">
-      <span class="muted">ring = priority (tooltip: source, tier T1 unblocked non-inference &rarr; T7 held):</span>
-      <span>high</span><i class="gsw prioramp" style="background:linear-gradient(90deg,#ffe14a,#c0b055,#8c9a95,#5a8fc0,#5468d8)"></i><span>low</span>
-      <span><i class="gsw ring" style="border-color:#6e7681"></i>none</span>
-      <span><i class="gsw ring" style="border-color:#8b949e;border-style:dashed"></i>dashed = in handoffs/blocked/</span>
-      <span class="muted">size &prop; open tasks &middot; fill = owning index (blended when a handoff links across domains) &middot; hover to reveal its links</span>
-    </div>
     <p class="gnote muted" id="graph-note"></p>
     <div class="gwrap">
       <div class="gzoom">
@@ -400,9 +431,96 @@
         <span class="muted">ctrl/⌘+scroll to zoom · drag to pan · double-click to fit</span>
       </div>
       <svg id="graph-svg" viewBox="0 0 1200 780" role="img" aria-label="handoff reference graph"></svg>
-      <div id="graph-tip" class="gtip" hidden></div>
+      <div class="gtipbox" id="graph-tipbox"><button class="gtip-x" id="gtip-x" title="collapse / expand info panel" aria-label="toggle info panel">&minus;</button>
+      <div id="graph-tip" class="gtip hint">Hover a node: handoff, progress, blocker class, activity, priority, next action and dependency counts appear here.</div></div>
     </div>
   </section>
+<section id="pipeline-sec"><h2>Pipeline: compute loop and session loop</h2>
+<p class="note">Live count at each node. Read-only. Data: <a href="/api/pipeline">/api/pipeline</a> · probe <a href="/api/pipeline/health">/api/pipeline/health</a> · refreshes every 30 s.</p>
+<div id="fresh" class="fresh">Loading…</div><div id="out"></div>
+<script>
+(function(){
+const pesc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// Flowchart spec. o = owner: DET (code decides) | AI (an LLM session does the work). c = key into counts().
+const NODES=[
+ {id:'A',o:'DET',x:20,y:60,w:230,h:70,t:['a. take next handoff','in priority order'],s:'backlog-priority.json -> slot',c:'queued'},
+ {id:'B1',o:'AI',x:320,y:90,w:230,h:56,t:['non-inference task','fan out to subagents'],c:'working'},
+ {id:'B4',o:'AI',x:590,y:90,w:230,h:56,t:['tick boxes as results land','file results'],c:'filing'},
+ {id:'B2',o:'AI',x:320,y:170,w:230,h:56,t:['inference task: write launcher,','publish_row, make ready'],c:'making-ready'},
+ {id:'B3',o:'DET',x:590,y:170,w:230,h:56,t:['publish_row checks +','dry run -> PASS'],c:'dryrun'},
+ {id:'C',o:'DET',x:290,y:290,w:300,h:56,t:['each interval, per session whose turn ended:','dispatcher decides'],s:'code, not an agent: PAUSE | NUDGE | CLOSE'},
+ {id:'PA',o:'DET',x:620,y:290,w:140,h:56,t:['PAUSE'],s:'only readied rows block',c:'paused'},
+ {id:'NU',o:'DET',x:780,y:290,w:140,h:56,t:['NUDGE'],s:'go on, next step',c:'nudged'},
+ {id:'CL',o:'DET',x:940,y:290,w:140,h:56,t:['CLOSE: done?','archive + retire'],s:'slot -> next handoff',c:'done'},
+ {id:'K1',o:'DET',x:20,y:440,w:170,h:56,t:['free regions'],s:'q0..q3, gpu-quiet',c:'free_regions'},
+ {id:'K2',o:'DET',x:235,y:440,w:170,h:56,t:['match ready rows'],s:'dry run PASS',c:'ready'},
+ {id:'K3',o:'DET',x:450,y:440,w:170,h:56,t:['grant'],s:'regions + window',c:'running'},
+ {id:'K4',o:'DET',x:665,y:440,w:170,h:56,t:['run'],s:'launcher in region',c:'running'},
+ {id:'K5',o:'DET',x:880,y:440,w:170,h:56,t:['result filed'],s:'last 24 h',c:'filed_24h'},
+];
+const EDGES=[
+ ['M250,95 H290','','->'],['M440,250 V290','','->'],['M850,290 V250','dash','->'],
+ ['M690,346 V385','',''],['M1010,346 V385','',''],['M135,385 H1010','',''],['M135,385 V130','','->'],
+ ['M590,318 H620','dash',''],['M550,318 H620','dash',''],['M605,226 V400 H320 V440','dash','->'],
+ ['M1050,468 H1100 V118 H820','dash','->'],['M190,468 H235','','->'],['M405,468 H450','','->'],['M620,468 H665','','->'],['M835,468 H880','','->'],
+ ['M550,118 H590','dash','->'],['M435,146 V170','dash','->'],['M550,198 H590','','->'],['M560,290 V272 H1010 V290','','->']
+];
+function counts(d){
+ const sc=d.step_counts||{},c=(d.compute||{}).counts||{};
+ return {queued:d.queued_total,working:sc.working,'making-ready':sc['making-ready'],paused:sc.paused,nudged:sc.nudged,done:sc.done,
+  free_regions:c.free_regions,ready:c.ready,running:c.running,filed_24h:c.filed_24h,filing:null,
+  dryrun:c.ready==null?null:`${c.ready} ok / ${c['dryrun-pending']||0} wait / ${c['dryrun-fail']||0} fail`};
+}
+function flow(d){
+ const cn=counts(d);
+ let s='<svg viewBox="0 0 1120 530" role="img" aria-label="Pipeline flowchart"><defs><marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--mut)"/></marker></defs>';
+ s+='<text x="20" y="28" style="font-weight:700">SESSION LOOP</text><text x="300" y="42" class="sub">b. session works through its handoff tasks in order</text><rect class="grp" x="290" y="50" width="800" height="200"/>';
+ s+='<text x="20" y="425" style="font-weight:700">COMPUTE LOOP (deterministic keeper)</text>';
+ for(const e of EDGES)s+=`<path class="edge ${e[1]}" d="${e[0]}" ${e[2]?'marker-end="url(#ar)"':''}/>`;
+ for(const n of NODES){
+  const ai=n.o==='AI',cx=n.x+n.w/2,v=n.c?cn[n.c]:undefined;
+  s+=ai?`<rect class="ai" x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="22"/>`:`<rect class="det" x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}"/>`;
+  s+=`<text class="badge bd-${n.o}" x="${n.x+(ai?16:6)}" y="${n.y+11}">${n.o==='AI'?'AI':'DET'}</text>`;
+  const ty=n.y+(n.t.length>1?22:26);
+  n.t.forEach((l,i)=>s+=`<text x="${cx}" y="${ty+i*14}" text-anchor="middle">${pesc(l)}</text>`);
+  if(n.s)s+=`<text class="sub" x="${cx}" y="${n.y+n.h-6}" text-anchor="middle">${pesc(n.s)}</text>`;
+  if(n.c)s+=`<text class="cnt" x="${n.x+n.w-(ai?18:8)}" y="${n.y+15}" text-anchor="end">${v==null?'-':pesc(v)}</text>`;
+ }
+ return s+'</svg>';
+}
+const tag=o=>`<span class="tag ${o}" title="${o==='DET'?'deterministic: code decides':'AI-powered: an LLM session does the work'}">${o}</span>`;
+const fmtT=t=>t?pesc(String(t).replace('T',' ').replace('Z',' UTC')):'-';
+function render(d){
+ if(!d.present)return `<p class=err>${pesc(d.error||'registry unreadable')} - ${pesc((d._freshness||{}).absence_means||'')}</p>`;
+ const lab=d.step_labels||{},own=d.step_owner||{};
+ let h=`<h3>Flowchart</h3><div class="legend"><span><span class="sw d"></span>${tag('DET')} deterministic: code (keeper, allocator, grant, dry-run harness, publish_row checks, dispatcher pause/nudge/close, priority order)</span><span><span class="sw a"></span>${tag('AI')} AI-powered: an LLM session (working tasks, subagents, launchers, making rows ready, ticking, filing)</span></div>`+flow(d);
+ const ov=d.overview||{};
+ if(ov.present){
+  const cl=ov.class_labels||{},cc=ov.class_counts||{};
+  h+=`<h3>Handoffs by what blocks them <span class=chip>${ov.handoffs.length} active</span></h3><p class=note>Derived from the hub's index graph (<a href="/api/handoff_graph">/api/handoff_graph</a>) plus rowflow state (ready/, dry run PASS, grants). Click a handoff for its detail.</p><div class="regions">${Object.keys(cl).map(k=>`<div class="reg"><span class="tag ${cl[k].owner}">${cl[k].owner}</span><b>${cc[k]??0}</b> ${pesc(k)}<br><span class=note>${pesc(cl[k].label)}</span></div>`).join('')}</div>`;
+  for(const k of Object.keys(cl)){const hs=ov.handoffs.filter(x=>x.class===k);if(!hs.length||k==='done')continue;
+   h+=`<details><summary><span class="tag ${cl[k].owner}">${cl[k].owner}</span>${pesc(k)} (${hs.length})</summary><p>${hs.map(x=>`<a class=chip href="/api/handoff_detail?id=${encodeURIComponent(x.id)}" target=_blank rel=noopener title="${x.open} open task(s), ${x.readied_rows} readied row(s)">${pesc(x.handoff.replace(/\.md$/,''))}</a>`).join(' ')}</p></details>`;}
+ }else h+=`<p class=err>index graph unavailable: no handoff overview (handoffs/active/.index-graph.json)</p>`;
+ h+=`<h3>Sessions <span class="chip">${d.live} live / max ${pesc(d.max_live)}</span></h3><table><tr><th>slot</th><th>handoff</th><th>engine</th><th>step</th><th>detail</th><th>blocked by</th><th>last turn end</th></tr>`;
+ for(const s of d.sessions)h+=`<tr class="hl"><td>${s.slot??'-'}</td><td><code>${pesc(s.slug)}</code><br><span class=note>${pesc(s.task||'')}</span></td><td>${pesc(s.engine)}</td><td>${tag(s.owner)}<b>${pesc(s.step)}</b><br><span class=note>${pesc(lab[s.step]||'')}</span></td><td class=note>${pesc(s.detail)}</td><td>${(s.blocked_by||[]).map(b=>`<code>${pesc(b.id)}</code> <span class=chip>${pesc(b.state)}</span>`).join('<br>')||'-'}</td><td>${fmtT(s.last_end)}</td></tr>`;
+ if(!d.sessions.length)h+='<tr><td colspan=7>no live or paused sessions</td></tr>';
+ h+=`</table><p class=note>step counts: ${Object.entries(d.step_counts).map(([k,v])=>`${tag(own[k])}${pesc(k)} ${v}`).join(' · ')}</p>`;
+ h+=`<h3>Next ${d.queued_next.length} queued handoffs <span class="chip">${d.queued_total} queued in all</span></h3><table><tr><th>#</th><th>handoff</th><th>rank</th><th>last turn end</th></tr>${d.queued_next.map((q,i)=>`<tr><td>${i+1}</td><td><code>${pesc(q.slug)}</code></td><td>${pesc(q.rank)}</td><td>${fmtT(q.last_end)}</td></tr>`).join('')}</table>`;
+ const c=d.compute;
+ h+=`<h3>Compute regions</h3><div class="regions">${c.regions.map(r=>`<div class="reg ${r.label==='idle-held'?'free':r.state}"><b>${pesc(r.region)}</b> ${pesc(r.label)}<br>${r.state==='busy'?`phase <b>${pesc(r.phase)}</b> · cpu ${r.cpu_pct==null?'-':r.cpu_pct.toFixed(1)+'%'}<br><code>${pesc(r.row||'')}</code>`:`cpu ${r.cpu_pct==null?'-':r.cpu_pct.toFixed(1)+'%'}`}</div>`).join('')}</div><p class=note>keeper snapshot ${fmtT(c.snapshot&&c.snapshot.ts)}${c.snapshot_age_s!=null?' ('+Math.round(c.snapshot_age_s)+' s old)':''}</p>`;
+ h+=`<h3>Rows not yet running</h3><table><tr><th>row</th><th>state</th></tr>${d.ready_rows.map(r=>`<tr><td><code>${pesc(r.id)}</code></td><td><span class=chip>${pesc(r.state)}</span></td></tr>`).join('')||'<tr><td colspan=2>none</td></tr>'}</table>`;
+ return h;
+}
+async function load(){
+ const out=document.querySelector('#pipeline-sec #out');let d;
+ try{d=await (await fetch('/api/pipeline')).json()}catch(e){out.innerHTML=`<p class=err>/api/pipeline unreachable: ${pesc(e)}</p>`;return}
+ const f=d._freshness||{};
+ document.querySelector('#pipeline-sec #fresh').textContent=`freshness: ${f.staleness_class||f.reporting||'?'} · source ${f.source||'-'} · age ${f.age_s!=null?Math.round(f.age_s)+' s':'-'}${f.detail?' · '+f.detail:''} · loaded ${new Date().toLocaleTimeString()}`;
+ out.innerHTML=render(d);
+}
+load();setInterval(load,30000);
+})();
+</script></section>
 </main>
 
 <div class="modal" id="modal" aria-hidden="true">
@@ -1200,6 +1318,17 @@ async function loadGraph(){
   try{ g = await getJSON("/api/handoff_graph"); }
   catch(e){ setBadge("#graph-badge","stale"); return; }
   const svg=$("#graph-svg"), tip=$("#graph-tip");
+  { const bx=$("#graph-tipbox"), xb=$("#gtip-x"); if(xb&&bx) xb.onclick=()=>{ const c=bx.classList.toggle("collapsed"); xb.textContent=c?"+":"\u2212"; }; }
+  // Pipeline overlay: per-handoff blocker class + live activity from /api/pipeline (same nodes, no second graph).
+  const PIPE={};
+  try{ const pd=await getJSON("/api/pipeline");
+    for(const h of ((pd.overview&&pd.overview.handoffs)||[])) PIPE[h.key]=h; }catch(e){}
+  const PCLS={"non-inference":["#1d9bf0","square","non-inference work remaining"],
+    "needs-ready":["#f0883e","tri","inference not yet readied"],
+    "readied-waiting":["#a371f7","diamond","readied inference, waiting only for compute"],
+    "done":["#3fb950","circle","done / no open tasks"]};
+  const PACT={working:["#ffd33d","none","working now (live session)"],paused:["#a371f7","5 3","paused: waiting on readied rows"],
+    queued:["#8b949e","1.5 3","queued: no slot yet"],idle:null};
   while(svg.firstChild) svg.removeChild(svg.firstChild);
   // Hatch for readiness "blocked": dark stripes OVER the domain fill, so the
   // owning-index colour still reads through (a replacement colour would not).
@@ -1207,6 +1336,10 @@ async function loadGraph(){
     patternUnits:"userSpaceOnUse",width:4,height:4,patternTransform:"rotate(45)"});
   pat.appendChild(svgEl("rect",{x:0,y:0,width:1.7,height:4,fill:"#0d1117","fill-opacity":0.8}));
   defs.appendChild(pat); svg.appendChild(defs);
+  // fully-ticked handoffs (open==0 with closed>0) are complete: hide node + edges
+  if(g.nodes){ const gone=new Set(g.nodes.filter(n=>n.open===0&&(n.closed||0)>0).map(n=>n.id));
+    if(gone.size){ g=Object.assign({},g,{nodes:g.nodes.filter(n=>!gone.has(n.id)),
+      edges:(g.edges||[]).filter(e=>!gone.has(e.from)&&!gone.has(e.to))}); } }
   if(!g.nodes||!g.nodes.length){
     setBadge("#graph-badge","stale");
     $("#graph-note").textContent = g.observation_notice || "no producer reported";
@@ -1215,38 +1348,39 @@ async function loadGraph(){
   const edges=g.edges||[];
   const refs=edges.filter(e=>e.kind!=="dep"), deps=edges.filter(e=>e.kind==="dep");
   $("#graph-note").textContent =
-    `${g.nodes.length} handoffs under ${Object.keys(IDX_COLOR).length} core indices · `
-    + `${refs.length} reference links (one handoff's markdown cites another) · `
-    + `${deps.length} declared dependenc${deps.length===1?"y":"ies"} (hand-authored Deps). `
-    + `A reference is NOT a dependency claim. Links are hidden until you hover a node.`
-    + ` Active and blocked work only — completed and archived handoffs are not plotted.`;
+    `${refs.length} references (a handoff's markdown cites another; not a dependency claim) · `
+    + `${deps.length} declared dependenc${deps.length===1?"y":"ies"}. Links show on hover. Active and blocked work only.`;
 
-  // ---- domain colour key
+  // ---- legend: grouped, compact; swatches are inline SVG that mirror the node rendering
   const doms=Object.keys(IDX_COLOR).filter(d=>g.nodes.some(n=>n.domain===d));
   const key=$("#graph-legend"); key.innerHTML="";
-  doms.forEach(d=>{ const sp=document.createElement("span");
-    sp.innerHTML=`<i class="gsw dot" style="background:${IDX_COLOR[d]}"></i>${d}`;
-    key.appendChild(sp); });
-  // ---- readiness key: values + counts come from the producer, never recomputed here
+  const GR="#8b949e", sv=(w,h,inner)=>`<svg class="lsw" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true">${inner}</svg>`;
+  const item=(sw,txt)=>`<span class="li">${sw}<span>${txt}</span></span>`;
+  const grp=(title,body,cls)=>{ const d=document.createElement("div"); d.className="lgrp"+(cls?" "+cls:"");
+    d.innerHTML=`<b class="lt">${title}</b><div class="lb">${body}</div>`; key.appendChild(d); };
+  const glyphSvg={square:'<rect x="3" y="3" width="8" height="8"/>',tri:'<polygon points="7,2 12.5,12 1.5,12"/>',
+    diamond:'<polygon points="7,1.5 12.5,7 7,12.5 1.5,7"/>',circle:'<circle cx="7" cy="7" r="4.5"/>'};
+  const pie=`<circle cx="9" cy="9" r="7" fill="${GR}" fill-opacity=".25" stroke="${GR}" stroke-width=".8" stroke-dasharray="2 2"/><path d="M9,9 L16,9 A7,7 0 1 1 9,2 Z" fill="${GR}"/>`;
+  grp("Node",
+    item(sv(18,18,pie),"pie = remaining (solid); faint slice = done fraction")
+    +item(sv(46,18,[[6,3.4+1.9*1],[20,3.4+1.9*2],[38,3.4+1.9*5]].map(([x,r])=>`<circle cx="${x}" cy="9" r="${Math.min(8,r)}" fill="${GR}"/>`).join("")),"size = open tasks")
+    ,"lnode");
+  grp("Fill = owning index",doms.map(d=>item(sv(12,12,`<circle cx="6" cy="6" r="5" fill="${IDX_COLOR[d]}"/>`),d)).join(""),"lidx");
+  grp("Blocker glyph",Object.keys(PCLS).filter(k=>k!=="done").map(k=>
+    item(sv(14,14,`<g fill="${PCLS[k][0]}">${glyphSvg[PCLS[k][1]]}</g>`),PCLS[k][2])).join(""));
+  const ring=(c,dash,w)=>sv(18,18,`<circle cx="9" cy="9" r="6.5" fill="none" stroke="${c}" stroke-width="${w||1.8}"${dash?` stroke-dasharray="${dash}"`:""}/>`);
+  grp("Activity ring",Object.keys(PACT).filter(k=>PACT[k]).map(k=>
+    item(ring(PACT[k][0],PACT[k][1]==="none"?"":PACT[k][1],k==="working"?2.6:1.8),PACT[k][2]+(k==="working"?" + engine badge":""))).join("")
+    +item(ring(GR,"4 2.5",2),"file in handoffs/blocked/"));
   const hasReadiness = g.nodes.some(n=>typeof n.readiness==="string");
-  const sep=document.createElement("span"); sep.className="gsep"; sep.textContent="|";
-  key.appendChild(sep);
-  if(hasReadiness){
-    const rc=g.readiness_counts||{};
-    for(const r in READINESS_STYLE){ const sp=document.createElement("span");
-      sp.className="gready"; sp.dataset.readiness=r;
-      if(g.readiness_values&&g.readiness_values[r]) sp.title=g.readiness_values[r];
-      sp.innerHTML=`<i class="gsw ${READINESS_STYLE[r].sw}"></i>${READINESS_STYLE[r].label}`
-        + (rc[r]!==undefined?` (${rc[r]})`:"");
-      key.appendChild(sp); }
-  } else {
-    const sp=document.createElement("span");
-    sp.textContent=`readiness not in this graph (schema ${g.schema||"unknown"}; needs index_graph.v2)`;
-    key.appendChild(sp);
-  }
-  const sd=document.createElement("span");
-  sd.innerHTML=`<i class="gsw dash"></i>file sits in handoffs/blocked/`;
-  key.appendChild(sd);
+  let cnt;
+  if(hasReadiness){ const rc=g.readiness_counts||{};
+    cnt=`${g.nodes.length} handoffs &middot; ${rc.ready??0} ready &middot; ${rc.blocked??0} dep-blocked`
+      +(rc.no_open?` &middot; ${rc.no_open} no open work`:"")
+      +` &middot; hatched = dep-blocked &middot; hover a node to see its dependency web &middot; priority is in the info panel`;
+  } else cnt=`readiness not in this graph (schema ${g.schema||"unknown"}; needs index_graph.v2)`;
+  const rv=g.readiness_values||{}, rvTip=Object.keys(rv).map(k=>`${k}: ${rv[k]}`).join(" | ").replace(/"/g,"&quot;");
+  grp("Counts",`<span class="lcnt" title="${rvTip}">${cnt}</span>`,"lcounts");
 
   // ---- neighbour map (reference edges, undirected for colour + hover)
   const nbr={};
@@ -1346,49 +1480,89 @@ async function loadGraph(){
     // ring took ~50% of a mean disc's area, so the liveness colour swamped the
     // domain fill and every band read amber regardless of ownership.
     const halo=svgEl("circle",{cx:it.x,cy:it.y,r:it.r+1.8,fill:"none",
-      stroke:RING(n.priority),"stroke-width":2.6});
-    // Ring colour = priority. Dashed = file sits in handoffs/blocked/ (waiting, not stalled).
+      stroke:n.state==="blocked"?"#8b949e":"none","stroke-width":2});
+    // Priority is tooltip-only; a ring means activity. Dashed = file sits in handoffs/blocked/.
     if(n.state==="blocked") halo.setAttribute("stroke-dasharray","4 2.5");
-    gNode.appendChild(halo);
     const c=svgEl("g",{class:"node","data-readiness":n.readiness||""});
     const disc=svgEl("circle",{cx:it.x,cy:it.y,r:it.r,fill:it.fill});
+    // progress pie (inverted): solid disc = remaining work; the DONE fraction is a faint (.25)
+    // wedge from 12 o'clock clockwise. Fresh = full disc, nearly done = thin sliver.
+    const pTot=(n.open||0)+(n.closed||0), pFrac=pTot?(n.closed||0)/pTot:0;
     if(n.readiness==="no_open") disc.setAttribute("fill-opacity",0.3);
+    if(pFrac>0.001){
+      disc.setAttribute("fill-opacity",0.25);   // done slice: same fill, low opacity; disc stays the full hit area
+      if(pFrac<0.999){ const a=2*Math.PI*pFrac, sx=it.x+it.r*Math.sin(a), sy=it.y-it.r*Math.cos(a);
+        const rem=svgEl("path",{d:`M${it.x},${it.y} L${sx},${sy} A${it.r},${it.r} 0 ${pFrac<0.5?1:0} 1 ${it.x},${it.y-it.r} Z`,
+          fill:it.fill,class:"pie-remaining"});
+        if(n.readiness==="no_open") rem.setAttribute("fill-opacity",0.3);
+        c.appendChild(rem); }
+    }
     c.appendChild(disc);
+    c.appendChild(halo);   // ring INSIDE the node group so .dimmed fades every part
     if(n.readiness==="blocked")
       c.appendChild(svgEl("circle",{cx:it.x,cy:it.y,r:it.r,fill:"url(#gate-hatch)",
         "pointer-events":"none"}));
+    const pi=PIPE[`handoffs/${n.state||"active"}/${n.handoff}`];
+    if(pi){
+      const cl=PCLS[pi.class], mx=it.x+it.r*0.85, my=it.y-it.r*0.85, q=3.6;
+      if(cl){ let m;
+        if(cl[1]==="square") m=svgEl("rect",{x:mx-q,y:my-q,width:2*q,height:2*q});
+        else if(cl[1]==="tri") m=svgEl("polygon",{points:`${mx},${my-q-1} ${mx+q+1},${my+q} ${mx-q-1},${my+q}`});
+        else if(cl[1]==="diamond") m=svgEl("polygon",{points:`${mx},${my-q-1} ${mx+q+1},${my} ${mx},${my+q+1} ${mx-q-1},${my}`});
+        else m=svgEl("circle",{cx:mx,cy:my,r:q});
+        m.setAttribute("fill",cl[0]); m.setAttribute("stroke","#0d1117"); m.setAttribute("stroke-width",0.8);
+        c.appendChild(m); }
+      const ac=PACT[pi.activity];
+      if(ac){ const rg=svgEl("circle",{cx:it.x,cy:it.y,r:it.r+5.5,fill:"none",stroke:ac[0],
+          "stroke-width":pi.activity==="working"?2.4:1.6,"pointer-events":"none"});
+        if(ac[1]!=="none") rg.setAttribute("stroke-dasharray",ac[1]);
+        c.appendChild(rg);
+        if(pi.activity==="working"){ const t=svgEl("text",{x:it.x,y:it.y+it.r+15,"text-anchor":"middle",
+            "font-size":8,"font-weight":700,fill:"#ffd33d","pointer-events":"none"});
+          t.textContent=(pi.engine||"?")+(pi.slot?` #${pi.slot}`:""); c.appendChild(t); } }
+    }
     c.addEventListener("mouseenter",()=>{
-      const keep=new Set([n.id,...(nbr[n.id]||[])]);
-      for(const k in circles) circles[k].classList.toggle("dimmed",!keep.has(k));
+      // Dependency web. Edge {from,to,kind:"dep"}: `from` depends on `to`, so `to` BLOCKS `from`.
+      // upstream = transitive blockers (follow from->to); downstream = transitively blocked (to->from).
+      const walk=(dir)=>{ const seen=new Set(), st=[n.id];
+        while(st.length){ const x=st.pop();
+          for(const l of lines){ if(!l.isDep) continue;
+            const a=dir==="up"?l.from:l.to, b=dir==="up"?l.to:l.from;
+            if(a===x&&!seen.has(b)&&b!==n.id){ seen.add(b); st.push(b); } } }
+        return seen; };
+      const up=walk("up"), down=walk("down");
+      for(const k in circles){
+        const cl=circles[k].classList;
+        cl.remove("dimmed","hl-up","hl-down");
+        if(k===n.id) continue;
+        if(up.has(k)) cl.add("hl-up"); else if(down.has(k)) cl.add("hl-down"); else cl.add("dimmed");
+      }
       lines.forEach(l=>{
-        const on = l.from===n.id||l.to===n.id;
-        l.ln.setAttribute("stroke-opacity", on?(l.isDep?1:0.6):0);   // hover focus: hide the rest
+        const ln=l.ln; ln.classList.remove("hl-up","hl-down");
+        let on=0;
+        if(l.isDep){
+          if((l.from===n.id||up.has(l.from))&&up.has(l.to)){ ln.classList.add("hl-up"); on=1; }
+          else if((l.to===n.id||down.has(l.to))&&down.has(l.from)){ ln.classList.add("hl-down"); on=1; }
+        }
+        ln.setAttribute("stroke-opacity", on?1:(l.isDep?0.15:0));
       });
-      const linked=[...(nbr[n.id]||[])];
+      tip.classList.remove("hint");
       tip.innerHTML =
-        `<span class="tid">${n.id} · ${n.domain}</span><br><b>${n.track}</b>`
-        + (n.next_action?`<div class="tna">${n.next_action}</div>`:"")
-        + `<div class="tmeta">${n.open} open · ${n.closed} closed`
-        + (n.blocked?` · ${n.blocked} blocked`:"")
-        + (n.readiness?`<br>readiness: <b>${n.readiness}</b>`
-            + ((n.blocked_by&&n.blocked_by.length)?` on ${n.blocked_by.join(", ")}`:""):"")
+        `<span class="tid">${n.id} &middot; ${n.domain}</span><br><b>${n.track}</b>`
+        + `<div class="tmeta">${n.closed}/${(n.open||0)+(n.closed||0)} done`
+        + (n.readiness?` · ${n.readiness}${(n.blocked_by&&n.blocked_by.length)?" on "+n.blocked_by.join(", "):""}`:"")
+        + (pi?` &middot; blocker: <b>${pi.class}</b> &middot; ${pi.activity}${pi.engine?" ("+pi.engine+")":""}`:"")
         + (typeof n.priority==="number"?prioTip(n,g.nodes.length):"")
-        + `<br>liveness: last advanced ${n.last_advanced||"never"}`
-        + (n.age_days!=null?` (${n.age_days}d ago)`:"")
-        + `<br>${linked.length} linked handoff${linked.length===1?"":"s"}`
-        + (linked.length?`: ${linked.slice(0,12).join(", ")}${linked.length>12?"…":""}`:"")
-        + `</div>`;
-      tip.hidden=false;
-    });
-    c.addEventListener("mousemove",ev=>{
-      const b=svg.getBoundingClientRect();
-      tip.style.left=Math.max(0,Math.min(ev.clientX-b.left+14, b.width-352))+"px";
-      tip.style.top=(ev.clientY-b.top+14)+"px";
+        + (typeof n.steps_since_tick==="number"?` &middot; ${n.steps_since_tick} steps since last tick`:"")
+        + `<br>upstream ${up.size} &middot; downstream ${down.size}</div>`
+        + (n.next_action?`<div class="tna">${n.next_action}</div>`:"");
     });
     c.addEventListener("mouseleave",()=>{
-      tip.hidden=true;
-      for(const k in circles) circles[k].classList.remove("dimmed");
-      lines.forEach(l=>l.ln.setAttribute("stroke-opacity", l.isDep?DEP_REST:0));
+      tip.classList.add("hint");
+      tip.textContent="Hover a node: handoff, progress, blocker class, activity, priority, next action and dependency counts appear here.";
+      for(const k in circles) circles[k].classList.remove("dimmed","hl-up","hl-down");
+      lines.forEach(l=>{ l.ln.classList.remove("hl-up","hl-down");
+        l.ln.setAttribute("stroke-opacity", l.isDep?DEP_REST:0); });
     });
     c.addEventListener("click",()=>{ if(n.handoff) loadDetail(n.handoff.replace(/\.md$/,"")); });
     gNode.appendChild(c); circles[n.id]=c;

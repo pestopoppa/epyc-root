@@ -1,0 +1,7 @@
+{
+  "path": "/mnt/raid0/llm/kernels/builds/cpu-20261004-9a3f1392a/bin/libggml-cpu.so.0.16.0",
+  "sha256": "d3b7cbda675a4eb5a684b77547cf3a1fefcab1a005edd73a5fe81c51fe55a471",
+  "symbol": "GGML_FA_VKQ_F16",
+  "present": true,
+  "scope": "content check only; linkage and run residency require separate proof"
+}

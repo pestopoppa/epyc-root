@@ -31,6 +31,7 @@ GET /api/bus                 roster, per-agent liveness, inbox depth, operator t
 GET /api/queue               folded work queue (latest row per task_id) + invariant alarms
 GET /api/outcome             the autopilot outcome contract (+ freshness), if exported
 GET /api/gpu_window          the G1 watchdog's executor-status file (+ freshness envelope)
+GET /api/pipeline            pipeline page data: flowchart counts, sessions by step, compute regions
 GET /api/health              the FOLD over ``dashboard/panels.py``: every panel's
                              freshness envelope + watchdog, plus one status that
                              names the worst panel and why
@@ -124,7 +125,7 @@ if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 
-from dashboard import campaign_status, handoff_parser, kernel_progression, knowledge, loop_spec, loop_status, panels
+from dashboard import campaign_status, handoff_parser, kernel_progression, knowledge, loop_spec, loop_status, panels, pipeline_status
 
 
 REPO = Path(__file__).resolve().parents[1]
@@ -1385,6 +1386,30 @@ def loop_spec_health() -> tuple[int, dict]:
 
 
 # --------------------------------------------------------------------------- #
+# Pipeline page: compute loop + session loop, who is in which step  (/pipeline)
+# --------------------------------------------------------------------------- #
+def pipeline_payload() -> dict:
+    """Read-only fold over the dispatcher registry, turn reports, grants and keeper log."""
+    graph = graph_payload()      # the EXISTING index graph (/api/handoff_graph); no second graph is built
+    data = pipeline_status.build_payload(graph=graph)
+    if not data.get("present"):
+        obs = panels.absent(panels.source("pipeline"), data.get("error", "registry unreadable"))
+    else:
+        obs = panels.Observation(
+            artifact_present=True,
+            timestamp=_parse_semantic_timestamp(data.get("dispatcher_last_pass")),
+            source="dispatcher.last_pass", populated=bool(data.get("sessions")),
+            detail=None)
+    data["_freshness"] = _panel_envelope("pipeline", obs)
+    return data
+
+
+def pipeline_health() -> tuple[int, dict]:
+    """``/api/pipeline/health`` - is the pipeline view still true (dispatcher passing)?"""
+    return _subject_health("pipeline", pipeline_payload())
+
+
+# --------------------------------------------------------------------------- #
 # KT-3: read-only claim browser  (/knowledge)
 # --------------------------------------------------------------------------- #
 def knowledge_payload() -> dict:
@@ -1686,6 +1711,7 @@ def panel_envelopes() -> dict:
         "autokernel_loop": lambda: loop_status.snapshot()[1],
         "kernel_progression": lambda: kernel_progression.snapshot()[1],
         "loop_spec": lambda: loop_spec_payload()["_freshness"],
+        "pipeline": lambda: pipeline_payload()["_freshness"],
         "knowledge": lambda: knowledge_payload()["_freshness"],
         "knowledge_claim": lambda: panels.live(),
     }
@@ -2076,9 +2102,48 @@ def _read_graph_contract() -> tuple:
     return present, data
 
 
+HANDOFF_SESSIONS_DIR = os.environ.get("EPYC_HANDOFF_SESSIONS_DIR", "/mnt/raid0/llm/tmp/compute-flags/handoff-sessions")
+
+
+def handoff_step_counts(sessions_dir: str = HANDOFF_SESSIONS_DIR) -> dict:
+    """{handoff basename: landed turns since that handoff's last tick} from each session's steps.jsonl (written by
+    wrapup.py, ws58). A session with no ledger yet counts its report.json: one wrapped turn without ticks = 1."""
+    try:
+        with open(sessions_dir.rstrip("/") + ".json", encoding="utf-8") as fh:
+            reg = json.load(fh).get("sessions", {})
+    except (OSError, ValueError, AttributeError):
+        return {}
+    out = {}
+    for slug, e in (reg.items() if isinstance(reg, dict) else ()):
+        if not isinstance(e, dict) or not e.get("handoff"):
+            continue
+        d, n = os.path.join(sessions_dir, slug), None
+        try:
+            with open(os.path.join(d, "steps.jsonl"), encoding="utf-8") as fh:
+                n = 0
+                for line in fh:
+                    try:
+                        n = 0 if int(json.loads(line).get("ticks") or 0) > 0 else n + 1
+                    except (ValueError, TypeError, AttributeError):
+                        continue
+        except OSError:
+            try:
+                with open(os.path.join(d, "report.json"), encoding="utf-8") as fh:
+                    r = json.load(fh)
+                n = 1 if r.get("wrapped") and not r.get("ticks") else 0
+            except (OSError, ValueError, AttributeError):
+                continue
+        out[os.path.basename(str(e["handoff"]))] = n
+    return out
+
+
 def graph_payload() -> dict:
     """Read the index graph artifact, tolerating absence/corruption."""
     present, data = _read_graph_contract()
+    steps = handoff_step_counts()
+    for node in data.get("nodes") or ():
+        if isinstance(node, dict) and node.get("handoff") in steps:
+            node["steps_since_tick"] = steps[node["handoff"]]
     data["_freshness"] = _panel_envelope(
         "handoff_graph", _graph_observation(data, artifact_present=present))
     return data
@@ -2127,6 +2192,7 @@ API_ROUTES = {
     "/api/gpu_window": gpu_window_payload,
     "/api/benchmark_artifacts": benchmark_artifacts_payload,
     "/api/loop_spec": loop_spec_payload,
+    "/api/pipeline": pipeline_payload,
     "/api/knowledge": knowledge_payload,
     "/api/dashboards": dashboards_payload,
     "/api/health": health_payload,
@@ -2144,6 +2210,7 @@ PANEL_HEALTH_ROUTES = {
     "/api/diagnostic-overrides/health": diagnostic_overrides_health,
     "/api/loop/health": loop_data_health,
     "/api/loop_spec/health": loop_spec_health,
+    "/api/pipeline/health": pipeline_health,
     "/api/knowledge/health": knowledge_health,
 }
 

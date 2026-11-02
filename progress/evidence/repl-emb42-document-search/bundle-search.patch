@@ -1,0 +1,55 @@
+--- a/src/repl_document.py
++++ b/src/repl_document.py
+@@ -274,22 +274,26 @@
+ 
+         if not isinstance(query, str) or not query.strip():
+             raise ValueError("search_sections: query must be a non-empty string")
+-        # peek without a file switches to bundle.page(), so document offsets do
+-        # not name its source or pass through its pull accounting. Refuse rather
+-        # than return unreadable or unaccounted pointers.
+-        if self.context_bundle is not None:
+-            raise ValueError("document search unavailable with a context bundle")
+         parts = [f"{'#' * s.level} {s.title}\n{s.content}\n" for s in self.document_context.sections]
+         # to_searchable_text joins each per-section trailing newline with a
+         # separator newline. The caller may prepend a question/injection note.
+         text = "\n".join(parts)
+-        if not text or not self.context.endswith(text):
++        bundle = self.context_bundle
++        bundle_section = None
++        if bundle is not None:
++            # The caller explicitly supplied the exact searchable document as a
++            # bundle section. Never charge an unrelated bundle for document reads.
++            matches = [s.name for s in bundle.sections if s.kind == "text" and s.text == text]
++            if not text or len(matches) != 1:
++                raise ValueError("bundle must contain exactly one exact document text section")
++            bundle_section = matches[0]
++        elif not text or not self.context.endswith(text):
+             raise ValueError("document text does not match the context suffix")
+         if self._document_search_index is None or self._document_search_index_text != text:
+             sections = [SimpleNamespace(name=str(i + 1), text=part) for i, part in enumerate(parts)]
+             self._document_search_index = ContextSearchIndex(sections)
+             self._document_search_index_text = text
+-        base = len(self.context) - len(text)
++        base = 0 if bundle is not None else len(self.context) - len(text)
+         starts = []
+         pos = base
+         for part in parts:
+@@ -305,9 +309,15 @@
+             section = int(hit["section"])
+             start = starts[section - 1] + hit["start"]
+             end = starts[section - 1] + hit["end"]
+-            results.append({**hit, "section": section, "start": start, "end": end,
+-                            "line": self.context.count("\n", 0, start) + 1,
+-                            "source": "context", "read": "peek"})
++            source_text = text if bundle is not None else self.context
++            result = {**hit, "section": section, "start": start, "end": end,
++                      "line": source_text.count("\n", 0, start) + 1}
++            if bundle is not None:
++                result.update(source="context_bundle", bundle_section=bundle_section,
++                              read="context.get")
++            else:
++                result.update(source="context", read="peek")
++            results.append(result)
+         self._exploration_calls += 1
+         self._exploration_log.add_event("search_sections", {"query": query}, results)
+         return results

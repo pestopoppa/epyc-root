@@ -27,6 +27,9 @@ class RepairTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.fx = Fixture()
+        os.makedirs(os.path.join(cls.fx.root, "repo", "handoffs", "active"), exist_ok=True)
+        open(os.path.join(cls.fx.root, "repo", "handoffs", "active", "test.md"), "w").close()
+        pr.REPO = os.path.join(cls.fx.root, "repo")
 
     @classmethod
     def tearDownClass(cls):
@@ -52,17 +55,43 @@ class RepairTests(unittest.TestCase):
         sp = os.path.join(d, "spec.json")
         rf.atomic_json(sp, fx.spec(rid, d, result_path=os.path.join(d, "out", "COMPLETE.json"), result_format="json"))
         rc, out = run([sp, "--flags", fx.flags])
-        self.assertEqual(rc, 0, out)
+        self.assertEqual(rc, 2, out)  # the job writes results.jsonl, not RESULT.json: the smoke FAILs in the owner's turn
         self.assertIn("LINT result_path=", out)
-        self.assertIn("PUBLISHED " + rid, out)
-        self.assertEqual(rf.rows(fx.flags)[rid]["result_path"], os.path.join(d, "out", "RESULT.json"))
+        self.assertIn("smoke FAIL for " + rid, out)
+        self.assertNotIn(rid, rf.rows(fx.flags))  # ws58: ready/<id>.json survives only a smoke PASS
+        self.assertEqual(rf.load_json(pr.unpublished_path(fx.flags, rid))["result_path"], os.path.join(d, "out", "RESULT.json"))
+
+    def test_01b_handoff_task_must_name_an_active_handoff_and_smoke_is_the_dry_run(self):
+        fx = self.fx
+        rid = "t-owner-20261102"
+        d = fx.job(rid)
+        sp = os.path.join(d, "spec.json")
+        rf.atomic_json(sp, fx.spec(rid, d, handoff_task="FILLERS"))
+        rc, out = run([sp, "--flags", fx.flags])
+        self.assertEqual(rc, 2, out)
+        self.assertIn("<file>.md:<ROW-ID>", out)
+        self.assertNotIn(rid, rf.rows(fx.flags))
+        rf.atomic_json(sp, fx.spec(rid, d))
+        rc, out = run([sp, "--flags", fx.flags])
+        self.assertEqual(rc, 0, out)
+        self.assertIn("SMOKE PASS", out)
+        self.assertEqual(rf.status(fx.flags, rid)["state"], "grantable", "a smoke PASS readies the row at once")
+        self.assertEqual([g for g in os.listdir(os.path.join(fx.flags, "grants")) if rid in g], [], "no dry-run grant")
+        bad = "t-crash-20261102"
+        d2 = fx.job(bad, "crash")
+        rf.atomic_json(sp, fx.spec(bad, d2))
+        rc, out = run([sp, "--flags", fx.flags])
+        self.assertEqual(rc, 2, out)
+        self.assertIn("launcher_out_tail", out)
+        self.assertNotIn(bad, rf.rows(fx.flags))  # ws58: a failed smoke leaves no ready/ manifest
+        self.assertTrue(rf.fail_paths(fx.flags, bad))
 
     def test_02_class1_fail_is_repaired_and_republished(self):
         fx = self.fx
         rid = "t-repair-20261101"
         d = fx.job(rid)  # writes out/results.jsonl, exits 0 after 10 units
         marker = os.path.join(d, "out", "run.complete")
-        rf.publish(fx.spec(rid, d, result_path=marker, dryrun_timeout_s=60, admission_class="diagnostic", dryrun_whole_host=True), fx.flags)  # pre-lint row, as legacy rows were
+        rf.publish(fx.spec(rid, d, result_path=marker, dryrun_timeout_s=60, admission_class="diagnostic"), fx.flags)  # pre-lint row, as legacy rows were
         v, msg = rf.dryrun_run(fx.flags, rid, "0-23")
         self.assertEqual(v, "FAIL", msg)
         self.assertIn("before writing a unit to " + marker, msg)
@@ -74,7 +103,6 @@ class RepairTests(unittest.TestCase):
         self.assertEqual(row["result_path"], os.path.join(d, "out", "results.jsonl"))
         self.assertEqual(row["result_format"], "jsonl")
         self.assertEqual(row["admission_class"], "diagnostic")
-        self.assertIs(row["dryrun_whole_host"], True)
         self.assertEqual(row["launcher"]["sha256"], rf.sha256(os.path.join(d, "launch.sh")))
         self.assertTrue(row["published_from"].startswith("repair:"))
         self.assertNotEqual(rf.row_sha(fx.flags, rid), old_sha)
@@ -94,7 +122,7 @@ class RepairTests(unittest.TestCase):
         self.assertEqual(rf.row_sha(fx.flags, rid), old_sha)
         self.assertEqual(rf.status(fx.flags, rid)["state"], "failed")
         # a row with no FAIL record is refused, not "repaired"
-        rc, out = run(["--repair", "t-lint-20261101", "--flags", fx.flags])
+        rc, out = run(["--repair", "t-owner-20261102", "--flags", fx.flags])
         self.assertEqual(rc, 2, out)
 
 

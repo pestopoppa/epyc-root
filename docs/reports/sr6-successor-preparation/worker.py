@@ -11,6 +11,7 @@ import argparse
 import hashlib
 import json
 import re
+from collections import Counter
 from pathlib import Path
 
 ARMS = ('composed3', 'composed4', 'mtp3', 'mtp4', 'mtp4_repeat')
@@ -74,6 +75,7 @@ def build_schedule(packet):
         blocks = window.get('blocks')
         if not isinstance(blocks, list) or len(blocks) < 4:
             raise ValueError('at least four blocks per window needed for rotated arm order')
+        class_counts = Counter()
         for bi, block in enumerate(blocks):
             prompts = block.get('prompts') if isinstance(block, dict) else None
             if not isinstance(prompts, list) or not prompts:
@@ -98,14 +100,17 @@ def build_schedule(packet):
                 if metric['denominator'] == 0:
                     raise ValueError('rendered prompt too short for repetition metric')
                 ids.add(ident); seeds.add(seed); raw_hashes.add(raw_sha); rendered_hashes.add(rendered_sha)
+                class_counts[category] += 1
                 prepared.append({'id': ident, 'class': category, 'seed': seed, 'prompt_sha256': raw_sha,
                                  'rendered_sha256': rendered_sha, 'rendered_tokens_sha256': digest_bytes(canonical(tokens)),
                                  'repeated_5gram': metric, 'rendered': rendered})
             # Repeat arm is independently served too. Rotation across five
             # positions prevents repeatedly privileging one arm's position.
             offset = (wi * len(blocks) + bi) % len(ARMS)
-            order = ARMS[offset:] + ARMS[:offset]
+            order = list(ARMS[offset:] + ARMS[:offset])
             schedule.append({'window': wid, 'block': bi, 'arm_order': order, 'prompts': prepared})
+        if any(class_counts[category] < 5 for category in ('code', 'rag', 'prose')):
+            raise ValueError('each window requires at least five prompts per class')
     classes = {p['class'] for b in schedule for p in b['prompts']}
     if classes != {'code', 'rag', 'prose'}:
         raise ValueError('code, rag and prose classes all required')
