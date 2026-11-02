@@ -1,0 +1,7 @@
+--- probe_decode_x0.py.before
++++ probe_decode_x0.py.after
+@@ -59,0 +60,2 @@
++    if body.get("speculative.n_max") == 0:
++        raise RuntimeError("KVU-16h: no-draft requests require a separate server")
+@@ -135,0 +138 @@
++    ap.error("KVU-16h: probe requires separate drafted and no-draft servers")
