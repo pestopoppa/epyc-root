@@ -24,6 +24,8 @@
 - [x] **M4-SOURCE-SCOPE-PREFLIGHT** — added independently pinned physical-role scope resolution and descriptive A/A reduction; omission and mismatch controls pass. ✅ 2026-11-02 [no-belief: model-free engineering validation]
 - [x] **M4-QUALITY-CAPTURE-AUDIT** — added a plan-bound per-question consistency auditor with incomplete/error handling; synthetic mutation controls pass. ✅ 2026-11-02 [no-belief: model-free engineering validation]
 - [x] **M4-OWNERSHIP-GUARD** — added pidfd/cgroup owner-loss containment; real cgroup tests cover watcher/owner/guardian failure and unrelated-process survival. ✅ 2026-11-02 [no-belief: engineering controls, no measurement]
+- [x] **M4-GPU-SYNTHETIC-ENTRY** — the final-source keeper dry run exercised native V2 capture, cutoff and guardian cleanup under separately acquired q3/GPU locks. ✅ 2026-11-02 [no-belief: fake HTTP and synthetic device; launcher qualification only]
+- [x] **M4-CPU-LEASE-SURVIVAL** — actual inherited-flock test confirmed a killed lease owner cannot release the held lock before the guardian drains its owned cgroup. ✅ 2026-11-02 [no-belief: model-free lock and cleanup control]
 - [ ] **M4-GPU-SPEED-CAPTURE** — implement and qualify the independently bound GPU native writer, reader and actual launcher; tracked by `VB-INF22-M4-GPU-SPEED-WRITE`.
 - [ ] **M4-CPU-QUALITY-CONTAINMENT** — complete current-role CPU/quality source binding and qualify owner-loss-safe execution and evidence checks.
 - [ ] **M4-CURRENT-ROLE-BINDING** — resolve changed source pins into current physical-server recipes and verify model/image and policy bindings before the fold run.
