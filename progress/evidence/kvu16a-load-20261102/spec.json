@@ -22,7 +22,10 @@
     "run-*/**",
     "launch.sh",
     "*.py",
-    "linkage-*.txt"
+    "linkage-*.txt",
+    "region-lock",
+    "REGION-LOCK-INPUTS.sha256",
+    "REGION-LOCK-PYTHON-ALLOW.txt"
   ],
   "dryrun_native_result": true
 }

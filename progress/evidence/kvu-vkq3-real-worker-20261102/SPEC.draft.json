@@ -24,6 +24,11 @@
     "launcher/**/*.py",
     "launcher/**/*.sh",
     "launcher/**/*.sha256",
-    "launcher/**/server.log"
+    "launcher/**/server.log",
+    "launcher/SOURCE-SHA256SUMS",
+    "launcher/REGION-LOCK-INPUTS.sha256",
+    "launcher/REGION-LOCK-PYTHON-ALLOW.txt",
+    "launcher/region-lock",
+    "kvu-vkq3-guard-review-20261102/guard.py"
   ]
 }

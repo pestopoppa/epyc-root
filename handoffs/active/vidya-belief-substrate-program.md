@@ -2428,6 +2428,7 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
     (line 341, still naming the old 196608 shape and no producer) has replacement text PREPARED in
     `/mnt/raid0/llm/tmp/wrapup-ec-maskskip/INDEX_ROWS.md`, for the owning session to apply. First step for the
     adapter: copy the runner's `results/` tree durably (tmp is scratch).
+- [ ] **VB-KVU19A2-REPRO — wire the prospective D=512/576 tile nondeterminism repro.** Preserve source-pair hashes and exact build/toolchain identity, native repeated case outputs and hashes, GPU residency, grant and verified cleanup at write time. The existing source-pair receipt proves only source reconstruction; it is not a historical binary or nondeterminism result. Reuse the FA-maskskip source family and `claim_tuple.grade()`; strict projection and a real planning-context canary remain open. [no-belief: prospective source and task]
 - [ ] **VB-FA-MASKSKIP — write side for the KVU-19a masked-block-skip measurements** (filed 2026-10-03, workspace-ec;
   CLAUDE.md *Belief Kernel — wiring new sources*). New producers:
   - the FA kernel micro-bench and exactness harness (`/mnt/raid0/llm/tmp/fa-maskskip-20261003/harness/`, driven by

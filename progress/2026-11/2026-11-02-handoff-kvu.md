@@ -203,3 +203,7 @@ Prepared a source-hash-bound K35 patch that refuses request-local n_max=0 before
 ## 11:00Z — Prepare VKQ3 native-input receipt and two-arm row, repair four-CPU smoke claim, prepare KVU-16a load row
 
 VKQ3 independent prompt preflight verified the catalog and counted 70,814 native target tokens; a bounded exposure audit and binary knob/linkage checks were recorded. The first smoke failed before model launch on a whole-host region claim; corrected launcher uses granted CPUs and the second smoke is running. No PASS or target result is claimed. KVU-16a load-only row preparation verified model inputs and passed four offline tests, but its publication was refused because the GPU was busy. The new load source is enrolled for future belief capture.
+
+## 11:08Z — Fix native smoke path and prove captured server owns its listener; prepare K35 dedicated no-draft lifecycle and KVU-19a source pair
+
+The corrected VKQ3 second smoke requested only q0 but failed after waiting for the real region lock; a current snapshot showed all quarters held by INF70, so the remaining lineage retry must not run until release. Fixed the keeper nested native-result path and per-attempt scratch, added a captured-PID loopback ownership check, and passed 18 offline tests. K35 dedicated no-draft patch passes five offline tests but is not installed. KVU-19a-2 source pair was materialized and its one-file difference verified; no build or GPU run occurred. GPU load-row publication was refused while GPU busy.

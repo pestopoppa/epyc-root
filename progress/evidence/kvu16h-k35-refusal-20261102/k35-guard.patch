@@ -1,51 +1,44 @@
-diff --git a/scripts/benchmark/k35_stack_context_matrix_runner.py b/scripts/benchmark/k35_stack_context_matrix_runner.py
-index 0773bb6fc..ed3f20aa3 100644
 --- a/scripts/benchmark/k35_stack_context_matrix_runner.py
 +++ b/scripts/benchmark/k35_stack_context_matrix_runner.py
-@@ -663,6 +663,20 @@ def server_context(scenario: Scenario, nominal_context: int, max_tokens: int) ->
-     return capped
- 
- 
-+def refuse_request_disabled_draft(scenario: Scenario) -> None:
-+    """Disallow request-local draft disablement pending dedicated lifecycle support.
+@@ -423,2 +423,2 @@
+-            "Current coder alias on the shared Qwen3.6-27B GPU server; launch MTP "
+-            "but disable it request-locally with speculative.n_max=0."
++            "Coder alias on a separately launched Qwen3.6-27B GPU server with "
++            "drafting disabled for the entire server lifetime."
+@@ -477 +477 @@
+-        description="DeepSeek V4 Flash Q8 plus DSpark sidecar, disabled per request.",
++        description="DeepSeek V4 Flash Q8 on a dedicated server with drafting disabled.",
+@@ -537 +537 @@
+-        description="DeepSeek V4 Flash IQ3_XXS plus DSpark sidecar, disabled per request.",
++        description="DeepSeek V4 Flash IQ3_XXS on a dedicated server with drafting disabled.",
+@@ -665,0 +666,15 @@
++def dedicated_no_draft(scenario: Scenario) -> Scenario:
++    """Give request-no-spec cells their own server without draft state."""
++    if scenario.request_spec_n_max != 0:
++        return scenario
++    # Unknown extras may re-enable drafting after the canonical arguments.
++    # Admit only the two combinations used by the checked-in no-spec cells.
++    if scenario.extra_args not in ((), ("-b", "512", "--no-repack", "--no-warmup")):
++        raise ValueError("unreviewed extra arguments for dedicated no-draft server")
++    return dataclasses.replace(
++        scenario, request_spec_n_max=None, draft_model=None, spec_type="none",
++        spec_draft_n_max=None, spec_draft_threads=None, spec_draft_device=None,
++        spec_draft_ngl=None,
++    )
 +
-+    This deliberately refuses every n_max=0 request: parsing only selected
-+    server flags cannot prove an arbitrary prebuilt argv has no draft path.
-+    A truly no-draft server should omit the request-local override.
-+    """
++
+@@ -673,0 +689 @@
++    scenario = dedicated_no_draft(scenario)
+@@ -997 +1013 @@
+-    if scenario.request_spec_n_max is not None:
++    if scenario.request_spec_n_max not in (None, 0):
+@@ -1249,0 +1266,9 @@
 +    if scenario.request_spec_n_max == 0:
-+        raise ValueError(
-+            "request-local no-draft is unsupported; use a separately launched "
-+            "no-draft scenario without speculative.n_max=0"
++        # The caller may bypass build_plan and supply an arbitrary server argv.
++        # Reconstruct the exact safe command before any file or process starts.
++        canonical = build_server_argv(
++            scenario, binary=args.binary, port=cell["port"],
++            nominal_context=cell["nominal_context"], max_tokens=args.max_tokens,
 +        )
-+
-+
- def build_server_argv(
-     scenario: Scenario,
-     *,
-@@ -671,6 +685,7 @@ def build_server_argv(
-     nominal_context: int,
-     max_tokens: int,
- ) -> list[str]:
-+    refuse_request_disabled_draft(scenario)
-     ctx = server_context(scenario, nominal_context, max_tokens)
-     argv = [
-         *runtime_env_prefix(binary),
-@@ -972,6 +987,7 @@ def build_chat_request_body(
-     *,
-     max_tokens: int,
- ) -> dict[str, Any]:
-+    refuse_request_disabled_draft(scenario)
-     if scenario.request_endpoint == "completion":
-         body = {
-             "prompt": prompt,
-@@ -1247,6 +1263,9 @@ def build_plan(args: argparse.Namespace) -> dict[str, Any]:
- 
- def run_cell(cell: dict[str, Any], args: argparse.Namespace, output_dir: Path) -> dict[str, Any]:
-     scenario = scenario_by_name(cell["scenario"])
-+    # Check before creating files, collecting hardware state, or launching any
-+    # supplied argv. A caller may bypass build_server_argv entirely.
-+    refuse_request_disabled_draft(scenario)
-     rep = int(cell.get("rep", 1))
-     cell_dir = output_dir / "runs" / f"{scenario.name}_ctx{cell['nominal_context']}_rep{rep}"
-     cell_dir.mkdir(parents=True, exist_ok=True)
++        if cell["server_argv"] != canonical:
++            raise ValueError("prebuilt no-draft server command differs from the dedicated command")

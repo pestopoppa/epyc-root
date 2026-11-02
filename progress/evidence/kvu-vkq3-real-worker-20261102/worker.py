@@ -2,6 +2,7 @@
 """One genuine >64k architect replay per VKQ arm; no transcript in native receipts."""
 import hashlib,importlib.util,json,os,pathlib,signal,socket,subprocess,sys,tempfile,threading,time,urllib.request
 import mode_guard
+import port_ownership
 from exposure_ledger import PairedExposure
 import input_receipt
 D=pathlib.Path(__file__).resolve().parent;K=pathlib.Path('/mnt/raid0/llm/kernels/builds/cpu-20261004-9a3f1392a/bin')
@@ -63,6 +64,39 @@ def atom(p,o):
   os.link(n,p)
  finally:os.unlink(n)
 def emit(event):mode_guard.emit(D/'events.jsonl',event)
+def open_native_attempt(drydir,result):
+ """Open the keeper's unique attempt without following path symlinks."""
+ drydir=pathlib.Path(drydir);result=pathlib.Path(result)
+ if not drydir.is_absolute() or not result.is_absolute() or '..' in drydir.parts or '..' in result.parts:raise ValueError('invalid native attempt path')
+ try:rel=result.relative_to(drydir)
+ except ValueError as e:raise ValueError('invalid native attempt path') from e
+ if len(rel.parts)!=3 or rel.parts[0]!='native-attempts' or not rel.parts[1].startswith('attempt-') or len(rel.parts[1])<=len('attempt-') or rel.parts[2]!='native-result.json':raise ValueError('invalid native attempt path')
+ flags=os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW
+ fd=os.open('/',flags)
+ try:
+  for component in (*drydir.parts[1:],*rel.parts[:2]):
+   newfd=os.open(component,flags,dir_fd=fd);os.close(fd);fd=newfd
+  try:os.stat('native-result.json',dir_fd=fd,follow_symlinks=False)
+  except FileNotFoundError:pass
+  else:raise ValueError('smoke result already exists')
+  resultfd=fd;fd=-1;return resultfd
+ except OSError as e:raise ValueError('invalid native attempt path') from e
+ finally:
+  if fd!=-1:os.close(fd)
+
+def publish_native(drydir,result,record):
+ """Atomically publish inside the verified attempt directory, without overwrite."""
+ fd=open_native_attempt(drydir,result);temp='.native-'+os.urandom(16).hex()
+ try:
+  outfd=os.open(temp,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600,dir_fd=fd)
+  try:
+   with os.fdopen(outfd,'w') as out:
+    json.dump(record,out,sort_keys=True);out.write('\n');out.flush();os.fsync(out.fileno())
+   os.link(temp,'native-result.json',src_dir_fd=fd,dst_dir_fd=fd,follow_symlinks=False)
+   os.fsync(fd)
+  finally:os.unlink(temp,dir_fd=fd)
+ finally:os.close(fd)
+
 def grant_context(env, plan):
  """Validate a real grant or keeper smoke and isolate its output path."""
  dry=env.get('FILLER_DRYRUN','0')=='1'
@@ -71,9 +105,9 @@ def grant_context(env, plan):
  if dry:
   drydir=pathlib.Path(env['FILLER_DRYRUN_DIR'])
   result=pathlib.Path(env['FILLER_DRYRUN_RESULT_PATH'])
-  if not drydir.is_absolute() or not result.is_absolute() or os.path.realpath(grants)!=os.path.realpath(drydir/'grants') or result.parent.resolve()!=drydir.resolve():raise ValueError('invalid smoke output or grant directory')
-  if result.exists() or result.is_symlink():raise ValueError('smoke result already exists')
-  out=drydir/'vkq3-control'
+  if not drydir.is_absolute() or not result.is_absolute() or '..' in drydir.parts or '..' in result.parts or os.path.realpath(grants)!=os.path.realpath(drydir/'grants'):raise ValueError('invalid smoke output or grant directory')
+  attemptfd=open_native_attempt(drydir,result);os.close(attemptfd)
+  out=result.parent/'vkq3-control'
  else:
   result=None;out=D/'run'
   if env.get('FILLER_DRYRUN','0')!='0':raise ValueError('invalid dry-run flag')
@@ -140,6 +174,8 @@ def main():
     time.sleep(.2)
    if stopping():partial('interrupted startup');return 75
    if not ready:atom(out/(name+'.failure.json'),{'reason':'server_not_ready','rc':p.poll()});continue
+   if p.poll() is not None or not port_ownership.owns_loopback_listener(p.pid,int(birth),port):
+    raise RuntimeError('captured server does not own the loopback listener')
    payload={'prompt':prompt,**plan['request']};payload['n_predict']=16 if mode=='qualification' else payload['n_predict']
    if mode=='full':
     if paired_exposure is None:
@@ -172,7 +208,7 @@ def main():
   control={'kind':'qualification_control','http_status':a['http_status'],'target_exposed':False,'draft_n':a['draft_n'],'draft_n_accepted':a['draft_n_accepted'],'acceptance':a['acceptance'],'token_count':len(a['tokens']),'plan_sha256':sha(D/'PLAN.json'),'full_model_catalog_sha256':full_catalog_digest,'source_sha256':sha(D/'SOURCE-SHA256SUMS'),'grant_sha256':hashlib.sha256(grant).hexdigest()}
   atom(out/'QUALIFICATION.json',control)
   if stopping():raise RuntimeError('grant lost before native result publication')
-  atom(native_result,control)
+  publish_native(os.environ['FILLER_DRYRUN_DIR'],native_result,control)
   return 0
  a=outputs.get('hybrid');b=outputs.get('legacy');div=None
  if a and b and a['acceptance'] is not None and b['acceptance'] is not None and a['tokens'] is not None and b['tokens'] is not None:

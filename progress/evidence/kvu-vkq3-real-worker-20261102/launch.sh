@@ -5,7 +5,7 @@ ID=handoff-kvu-vkq3-mtp-bound-20261102
 cd "$D"
 case ${1:-} in
  --job)
-  [ "$(sha256sum SOURCE-SHA256SUMS | cut -d' ' -f1)" = "4a8955a9aa6c139f892c9b58236fc3f98711df642747623d4d5210e8450828ef" ] || exit 64
+  [ "$(sha256sum SOURCE-SHA256SUMS | cut -d' ' -f1)" = "2ed990e1f624decc76d99573e759107d016c5e5ee60abe34d06a4d26a9b69f87" ] || exit 64
   sha256sum -c --quiet SOURCE-SHA256SUMS
   sha256sum -c --quiet RUNTIME-CODE.sha256
   [ "$(sha256sum /mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh | cut -d' ' -f1)" = "57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33" ] || exit 64
