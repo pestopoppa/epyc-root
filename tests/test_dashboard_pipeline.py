@@ -126,7 +126,7 @@ class Wiring(unittest.TestCase):
     def test_no_separate_page_or_registry_entry(self):
         reg = json.loads((Path(server.REPO) / "dashboard" / "registry.json").read_text())
         self.assertEqual([x for x in reg["dashboards"] if x["id"] == "pipeline"], [])
-        self.assertFalse((Path(server.REPO) / "dashboard" / "static" / "handoffs.html").exists())
+        self.assertFalse((Path(server.REPO) / "dashboard" / "static" / "pipeline.html").exists())
 
     def test_region_cpus_and_phase(self):
         self.assertEqual(ps.region_cpus("q1")[:2], [24, 25])

@@ -427,12 +427,33 @@ def build_payload(flags: Path | None = None, now: float | None = None, graph: di
         counts[s["step"]] += 1
     counts["queued"] = len(queued)
     disp = reg.get("dispatcher") or {}
+    overview = classify_handoffs(graph, compute["rows"])
+    by_sess: dict[str, dict] = {}
+    for it in queued + sessions:                 # sessions last: a live/paused entry outranks a queued one
+        if it.get("handoff"):
+            by_sess[it["handoff"]] = it
+    for h in overview.get("handoffs", []):
+        h["key"] = f"handoffs/{h['id']}.md"
+        s_ = by_sess.get(h["key"])
+        st = s_["step"] if s_ else None
+        if s_ and s_["live"] and st in ("working", "making-ready", "nudged"):
+            act = "working"
+        elif st == "paused" or (not s_ and h["class"] == "readied-waiting") or (s_ and st != "queued" and h["class"] == "readied-waiting"):
+            act = "paused"
+        elif st == "queued":
+            act = "queued"
+        else:
+            act = "idle"
+        h["activity"] = act
+        h["engine"] = s_["engine"] if s_ else None
+        h["step"] = st
+        h["slot"] = s_.get("slot") if s_ else None
     return {"schema": SCHEMA, "present": True, "generated_at": now,
             "max_live": reg.get("max_live"), "live": sum(1 for s in sessions if s["live"]),
             "dispatcher": disp, "dispatcher_last_pass": disp.get("last_pass"),
             "step_labels": STEPS, "step_owner": STEP_OWNER, "step_counts": counts,
             "sessions": sessions, "queued_next": queued[:10], "queued_total": len(queued),
-            "overview": classify_handoffs(graph, compute["rows"]),
+            "overview": overview,
             "compute": {k: v for k, v in compute.items() if k != "rows"},
             "ready_rows": sorted((r for r in compute["rows"].values() if r["state"] != "running"),
                                  key=lambda r: r["id"])[:30]}
