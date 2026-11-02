@@ -1469,6 +1469,13 @@ here: none of the RTG-57 ids remain undefined. The owner named in these texts (w
   - :8070 only if long jobs are routed there.
   - :8086 only if its `-np` rises.
   - Never :8080, :8180 or :8074 (`-np 1`, nothing to gain).
+  - *(2026-11-02 source inventory.)* Current launch manifest declares all six BGE ports with the
+    explicitly allowed alternative `-c 2048 -np 4`, retaining split KV and the 512-token slot window;
+    launcher tests cover it. `:8086` remains np1; `:8070` is split np4, and the registered
+    stage-one long-context ingest role aliases :8083, while stage-two review can escalate to :8070.
+    Whether :8070 receives long jobs remains unproven. No relevant port had a visible listener at inspection,
+    so these are configuration/source facts, not live-argv proofs. Before rolling another role,
+    verify current routing and live shape; do not duplicate the embedder fix. [no-belief: source inventory]
 - [ ] **KVU-12 — np × ctx on CPU (TB-6 successor, Flash-Next) only if needed.** The operator skipped C2 at 17:25Z
   because the GPU matrix showed no unified-KV throughput cost. Reopen only if a CPU role shows qualitatively
   different relative behaviour.
