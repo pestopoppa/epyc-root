@@ -7,12 +7,16 @@ import pytest
 
 ROOT = Path(__file__).parents[2]
 sys.path.insert(0, str(ROOT / 'scripts/champion/m4'))
-sys.modules.setdefault('write_capture', types.ModuleType('write_capture'))
+_saved = {k: sys.modules.get(k) for k in ('write_capture','m4_gpu_speed_v2')}
+sys.modules['write_capture'] = types.ModuleType('write_capture')
 v2 = types.ModuleType('m4_gpu_speed_v2')
 v2.validate_capture = lambda *args, **kwargs: None
-sys.modules.setdefault('m4_gpu_speed_v2', v2)
+sys.modules['m4_gpu_speed_v2'] = v2
 spec = importlib.util.spec_from_file_location('aa_entry', ROOT/'scripts/champion/m4/run_gpu_aa.py')
 mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+for _key, _value in _saved.items():
+    if _value is None: sys.modules.pop(_key, None)
+    else: sys.modules[_key] = _value
 
 
 def fixture():
@@ -107,8 +111,8 @@ def test_entry_orchestrates_validated_native_pairs(tmp_path, monkeypatch):
     assert result['pairs'][0]['a2_over_a1']==1 and result['gate_authorized'] is False
 
 
-def test_launcher_binds_actual_row_and_fails_changed_grant(tmp_path):
-    sys.modules['run_gpu_aa'] = mod
+def test_launcher_binds_actual_row_and_fails_changed_grant(tmp_path, monkeypatch):
+    monkeypatch.setitem(sys.modules, 'run_gpu_aa', mod)
     spec=importlib.util.spec_from_file_location('aa_launch',ROOT/'scripts/champion/m4/launch_gpu_aa.py')
     launch=importlib.util.module_from_spec(spec); spec.loader.exec_module(launch)
     aa,native=fixture(); cap=tmp_path/'capture'; cap.mkdir(); stop=tmp_path/'STOP'
@@ -126,8 +130,8 @@ def test_launcher_binds_actual_row_and_fails_changed_grant(tmp_path):
         launch.launch_spec(aa,native,trust)
 
 
-def test_default_launcher_enrollment_refuses():
-    sys.modules['run_gpu_aa'] = mod
+def test_default_launcher_enrollment_refuses(monkeypatch):
+    monkeypatch.setitem(sys.modules, 'run_gpu_aa', mod)
     spec=importlib.util.spec_from_file_location('aa_launch',ROOT/'scripts/champion/m4/launch_gpu_aa.py')
     launch=importlib.util.module_from_spec(spec); spec.loader.exec_module(launch)
     with pytest.raises(RuntimeError, match='not configured'):
