@@ -15,3 +15,7 @@ P4-1 preparation: stock and FF weights in the old task were deleted; P3-5 owns r
 ## 09:54Z — Prepare P3-4 native-MTP versus DFlash2 serving measurement design
 
 P3-4 design preparation commissioned against the serving handoff and measurement constitution, including paired serving metrics and launch-bound mode-switch costs. This is a design task; the champion promotion decision and operator grant precede compute.
+
+## 09:55Z — Review and land P4-1 typed-knob implementation contract
+
+Prepared the P4-1 implementation contract against orchestrator 9e138e3a, including feature gating, tenant-specific measured ceilings, typed seed and 5xx tests. Independent review added the solo-resident restriction and an independently verified artifact-attestation requirement; current target source must be re-reviewed and deleted stock/FF tenants cannot be seeded as live. The implementation remains open pending work in the orchestrator lane and replacement measured tenant policies.
