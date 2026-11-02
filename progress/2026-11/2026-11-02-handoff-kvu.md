@@ -167,3 +167,7 @@ VKQ3 draft bundle preflight requires an exact supplied SHA-256 pin set and hashe
 ## 10:33Z — Verify model-free VKQ3 qualification executes from the prepared module bundle
 
 An isolated Python process ran the model-free qualification lifecycle from the prepared VKQ3 bundle; assertions bind imported draft modules, guard and wrapper to that bundle. One offline test passed. Pins are local test fixtures; trusted provenance, real keeper execution, runtime integrity and target feasibility remain unproven.
+
+## 10:34Z — Harden draft bundle verification and reconcile KVU-16a evidence
+
+VKQ3 draft adds atomic manifest publication and a separate pinned-file verifier; nine offline tests pass. The verifier is unwired and does not establish trusted provenance, protected custody or controlled imports. KVU-16a old package is stale, and the current derived ubatch-512 value is not the historical ubatch-2048 measurement; recorded the distinction in the handoff.
