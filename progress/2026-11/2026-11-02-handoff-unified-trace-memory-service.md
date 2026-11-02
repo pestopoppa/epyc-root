@@ -19,3 +19,7 @@ Further preparation completed: the catalog gate runner is scripts/harness/hs4_p0
 ## 00:18Z — Prepare reviewable memory service implementation artifacts
 
 Consumed LB2, catalog and RRF preparation. Projector raw source coordinates are not unique per event; a projection JSONL path/line key is idempotent within a projection run while preserving raw provenance and cannot claim cross-run dedupe. UTM-B1 has one documented historical passing task, calc-add-fix; its MCP-disabled baseline does not establish the required matched catalog-growth comparison. The RRF arm needs real SQLite identity and session/source validation for vector candidates; the existing trace arm remains FTS-only. Dispatched lane-only reviewable patch artifacts for LB2 ingestion and the separate BEAM hybrid arm, plus isolated catalog candidate preparation. Completion events are registered. No corpus ingestion, inference or row publication; next review and test artifacts, then prepare an honest runnable row when prerequisites permit.
+
+## 00:18Z — Record trace event source impact
+
+UTM-LB2.2 source editing stopped: GitNexus reports HIGH impact for orchestrator EventSource (71 upstream nodes, 17 direct); its index is stale and requires a fresh impact assessment before any change. No orchestrator source was edited. BEAM RRF impact was reported MEDIUM (37 upstream nodes, one direct import); its separate opt-in artifact and the catalog candidate remain under preparation. Previous wrapup push lost a race with origin/main; merged the new tip for this retry.
