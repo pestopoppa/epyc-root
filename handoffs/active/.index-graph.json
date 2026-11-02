@@ -3619,7 +3619,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T19:15:25Z",
+  "generated_at": "2026-11-02T19:16:51Z",
   "nodes": [
     {
       "age_days": 95,
@@ -6389,14 +6389,14 @@
         "INF-73"
       ],
       "closed": 27,
-      "dispatchable": 11,
+      "dispatchable": 13,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-cross-workload-keep-gate.md",
       "id": "INF-75",
       "last_advanced": "2026-11-02",
       "next_action": "AKX-P0d \u2014 run the W1\u2013W6 base census on the current champion-of-record under stage claims, then AKX-P1b replay 732389d6",
-      "open": 11,
+      "open": 13,
       "priority": 0.9711,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep inf75-c5-native-abi-canary-q2: harness fix",
