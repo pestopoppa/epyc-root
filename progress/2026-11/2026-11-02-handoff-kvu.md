@@ -67,3 +67,7 @@ Preserved a syntax-checked, uninstalled VKQ3 supervisor draft with bounded input
 ## 09:52Z — Test VKQ3 draft supervisor failure and cleanup paths
 
 Ten fake-child tests pass for the VKQ3 draft supervisor, including short stdin, output limits, cancellation, timeout, selector failure and direct-child reaping. These do not establish descendant custody, parent-death containment, pinned runtime identity or grant integration; the diagnostic remains unpublishable. No model or tokenizer inference was run. [no-belief: offline fake-child tests only]
+
+## 09:55Z — Advance VKQ3 grant and containment integration
+
+VKQ3 grant, identity and parent-death integration is in progress in scratch; it has no full success receipt and is not row-ready. KVU-16h still needs separate real server lifecycles; the existing guard drafts are insufficient. No inference was run. [no-belief: implementation in progress]
