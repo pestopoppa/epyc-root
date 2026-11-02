@@ -83,3 +83,7 @@ C3 R15 lock candidate passed six synthetic tests; pre-grant model custody with f
 ## 09:44Z — Implement private store and trusted request marker controls
 
 CH-27 private immutable input stage passed six controls; native private store reconstruction and path rebinding are in progress. CPU observation validator passed 13 controls and its collector seven; trusted request markers and process identities are being integrated. Neither is a valid calibration row yet.
+
+## 09:45Z — Implement owning launcher and request marker capture
+
+Implemented marker-binding validator candidate with 18 synthetic controls plus seven collector controls; the separate caller-supplied marker is not yet authenticated. Owning pidfd/request capture implementation is in progress; no CPU floor or publication claimed.
