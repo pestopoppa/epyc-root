@@ -47,3 +47,7 @@ Consumed the push-race review. wrapup merges before committing, but serialized_p
 ## 00:21Z — Record refused impact analysis for wrapup repair
 
 Consumed the wrapup race repair result: GitNexus reports the lane unindexed, and scripts/gitnexus-analyze.sh exited 64 because cross-role global region locks are not enabled and CPU admission was refused. Required upstream impact analysis is therefore unavailable; no shared script was edited or tested. Do not bypass admission or claim this race is fixed. The independently dispatched CPU screen preregistration and host-state contract remain registered as awaiting events. No compute row was published or launched.
+
+## 00:26Z — Advance inference candidates and promotion evidence preparation
+
+Re-resolved dispatcher task text: the per-surface Bundle task is already checked with source evidence in P2; known-good/null runtime config classification remains dependent on OP-AKU-U3 statistical rule selection; the listed CPU/GPU arm line is implementation, not a compute run; and the named GDN prepass is conditional on a dispatch-proven neutral A/B. Separately dispatched bounded preparation of the actual open GPU quantize reciprocal gate, CPU A/A floor and Goodhart PROMOTE source contract, with registered output events. The CPU floor preparation must retain matched-pair, host-state and executable identity gates; the GPU candidate must establish content-based binary freshness before publication. No row was published or compute run in this boundary.
