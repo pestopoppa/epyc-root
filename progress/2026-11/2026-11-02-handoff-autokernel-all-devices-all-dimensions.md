@@ -75,3 +75,7 @@ Created scratch-only successor full_job.py replacing the in-job edge reader with
 ## 10:39Z — Test floor input identity substitutions
 
 Ran synthetic tamper controls against the scratch prepared-model identity validator: a symlink substituted for the model, mutated model metadata and a changed identity record were all refused. Test: /mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/input-packet-draft/test_validate_edges.py. This is not a full-model digest or proof of immutability and does not qualify the floor packet.
+
+## 10:41Z — Prototype floor lock owner discovery
+
+Implemented scratch-only bounded ancestor locator and model-free process-chain control. It locates a live owner using expected script path/digest and interpreter inode, checks original device_held FD9, and refuses incorrect source digest. Paths /mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/cpu-device-prototype/{find_owner.py,test_find_owner.py}. Current source bytes and argv do not attest script bytes already loaded; TOCTOU, production path binding, scheduler, quiet/region witness and STOP integration remain unresolved. No floor, row or production witness claimed.

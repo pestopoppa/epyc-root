@@ -4,6 +4,7 @@
 Input records are a proposed interchange contract, not evidence that an
 instrumented binary exists. Caller independently proves source/binary identity,
 HIP residency and complete backend event delivery. Unknown is never a no-VEC.
+Layer IDs must be zero-based contiguous indices; other mappings remain unknown.
 """
 from collections import Counter
 
@@ -49,7 +50,7 @@ def classify(records, *, expected_attention_layers):
         layers = [e.get('layer') for e in events]
         valid = (valid and len(events) == expected_attention_layers and
                  all(type(x) is int and x >= 0 for x in layers) and
-                 len(set(layers)) == expected_attention_layers and
+                 set(layers) == set(range(expected_attention_layers)) and
                  all(e.get('kernel') in ('VEC', 'TILE', 'MMA_F16', 'WMMA_F16') and
                      type(e.get('q_len')) is int and e['q_len'] > 0 and
                      e.get('kv_type') in ('Q8_0', 'Q4_0') for e in events))
