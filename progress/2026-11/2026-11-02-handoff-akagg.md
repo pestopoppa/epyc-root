@@ -211,3 +211,7 @@ Extended /mnt/raid0/llm/tmp/akagg/c3-custody-check/check_coverage.py to derive t
 ## 10:41Z — Review C3 r9 model receipt coverage against actual production recipe
 
 C3 r9 production recipe names only the Bolt model; its existing pre-grant receipt covers that path (metadata coverage check; not runtime-byte proof). The broader L/smoke seal previously started is not required by that B-only recipe unless other launch paths use those models. Identified final_image in the r9 recipe pointing to READY-PROPOSAL.json while the native producer and verifier use FINAL-IMAGE.json; independent review and correction are in progress. CH-27 two-floor scratch staging and CH-26 sampled observer remain proof-only.
+
+## 10:43Z — Harden C3 receipt coverage checker and review CH-26 trace proposal
+
+Reviewed CH-26 trace design: nine synthetic controls reject missing/lost event streams and invalid markers but intentionally return unproven; live collection and attribution are still needed. C3 receipt coverage checker now rejects an empty recipe set and relative extra paths; 13 model-free tests pass. A prior concern that GPU smoke must necessarily use four CPUs was premature: publish_row preserves the GPU row regions; R15 derivation remains under review.
