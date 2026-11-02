@@ -27,3 +27,7 @@ AK-Q38FN-64K-FLOOR is folded into the bounded CH-27 calibration; OP-AK-HOLD stil
 ## 10:18Z — Prepare model-free floor successor controls
 
 Prepared independent model-free work for the CH-27a startup and tamper controls, the AKX-ALL-8 incremental observation, and the combined GPU reservation semantics. No inference, qualification, or floor claimed. Prior wrap-up push failed; this wrap-up retries delivery of the lane commits.
+
+## 10:19Z — Prepare CPU floor dual-lock witness
+
+The v3 CPU class reserves GPU quiet without a GPU residency check but does not acquire the separate device flock; the old floor protocol requires both. Dispatched bounded model-free admission, lock lifecycle and observer ancestry controls to establish a safe successor. No row, inference or floor claimed.
