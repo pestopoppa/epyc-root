@@ -143,3 +143,7 @@ Prepared an opt-in v10 flash-attention dispatch trace patch against the exact so
 ## 10:33Z — Prepare G3 correlated-dispatch classification
 
 Added a model-free proposed G3 classifier with three bounded tests, including incomplete invocations and invalid correlation. It does not establish actual event delivery, source or loaded-binary identity, or HIP residency; the current instrumentation does not emit correlated records and no row or G3 result is claimed.
+
+## 10:34Z — Draft the retargeted SR-7 comparison
+
+Prepared a prospective SR-7 comparison on Qwen3.6-35B with composed and non-context controls across widths and three independently granted windows, plus a draft paired analysis rule. The design is not sealed or published; actual runtime inputs, fresh audited prompts, admission, lifecycle and native analysis remain required. No inference result or historical 122B explanation is claimed.

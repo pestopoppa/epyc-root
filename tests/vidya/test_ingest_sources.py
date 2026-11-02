@@ -327,6 +327,7 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         "m4-cpu-recipe-speed",
         "df2-row-exact-akx",  # synthetic producer to actual registry and planning context: test_df2_native_integration.py
         "ufh12-gs-coverage",  # synthetic producer, registry and planning canary: test_ufh12_gs_coverage.py
+        "repl-trace-coverage",  # synthetic producer, strict adapter and CLI: test_repl_trace_ingest.py
         # Actual accepted writer -> strict reader/CLI ledger custody: tests/test_hg5_request_event_reader.py.
         "hg5-request-event",
         # Strict re-derivation, refusals and grading on fixture trees: test_autokernel_width_dimension.py
