@@ -28,3 +28,9 @@ helper does not provide end-to-end 5xx handling.
 Applying a candidate, rollback, seeding, runtime feature gating,
 and actual policy integration are outside this prototype. The model-free synthetic unit tests exercise the isolated contract; owner review
 and integration validation are still required.
+
+`trial_sequence.py` is a separate default-disabled synthetic sequencing seam.
+It requires an explicit, complete ordered set of callbacks, preserves classified
+responses, and stops at the first failure. It neither connects those callbacks
+to production nor authorizes promotion; integration must enforce the same guard
+for every actual operation and revalidate policy immediately before actuation.
