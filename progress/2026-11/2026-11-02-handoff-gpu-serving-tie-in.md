@@ -83,3 +83,23 @@ The isolated sequence guard requires explicit ordered operations, stops before l
 ## 10:33Z — Prepare the P5 scorer binding to include regression-test expectations.
 
 P5 input binding currently records FAIL_TO_PASS but does not bind PASS_TO_PASS, leaving regression expectations mutable. A bounded binder correction and tests were delegated; completion triggers the registered review event. P2 stress duty cycle remains unmeasured: the 33 historical AutoPilot journal entries are trial events rather than continuous stress intervals. No inference, restart or live changes.
+
+## 10:35Z — Assess E5 readiness, GPU leak promotion and P4 implementation ownership
+
+Parallel source reviews: P1-2 is dependent on the corrected-placement remeasurement owned by INF-07; existing manifests and harness do not establish the per-cell cache, live placement, warm/cold and replication requirements, and banked Gemma evidence is insufficient for automatic acceptance. GPU-LEAK-1 fix is in the experimental champion while production remains v10; promotion is the kernel owner’s gated work and v10 guards remain necessary. P4-1 inert implementation is located in the orchestrator repository; live seeding also requires the P3-5 arms and measured ceilings. Review notes: /mnt/raid0/llm/tmp/gpu-serving-tie-in/{e5,leak,stage2}-result.txt. No inference or production changes. Pre-existing gold_binding.py modification was left untouched.
+
+## 10:36Z — Prepare E5 placement, gold scorer controls and replacement tenant decision
+
+Dispatched bounded independent preparation of corrected-placement E5, known-gold scorer controls, and replacement tenant options. Results and patches are stored under /mnt/raid0/llm/tmp/gpu-serving-tie-in and registered for resumption. No inference or production changes. Existing uncommitted gold_binding.py was preserved.
+
+## 10:38Z — Review E5 placement and gold binding controls
+
+Reviewed the static E5 manifest auditor: 10 of 20 in-scope Qwen manifests and 4 of 8 Gemma manifests have multi-node CPU sets with no memory policy; P-BENCH-PLACEMENT-1 rejects those cells. The audit is static and establishes no runtime placement or cache state. Reviewed a PASS_TO_PASS fixture update for the uncommitted gold-binding change: 14 model-free controls passed in a scratch copy, without scorer validation. Lane code changes require GitNexus impact analysis; the index is unavailable and scripts/gitnexus-analyze.sh was refused by CPU admission. Existing P3-5 arm-selection package already covers the operator decision.
+
+## 10:40Z — Document corrected E5 placement readiness
+
+Reviewed and prepared the static E5 placement readiness document: 10 of 20 in-scope Qwen manifests and 4 of 8 Gemma manifests have multi-node CPU sets with no memory policy. Preserved INF-07 ownership, the banked-Gemma do-not-rerun requirement and the distinction between static manifests and runtime evidence. P1-2 remains open. Prior wrapup commit was created but serialized push failed; exact Git rejection was suppressed by wrapup output.
+
+## 10:43Z — Correct shed duty-cycle dependency and review GPU gate readiness
+
+Corrected the P2-5e/f dependency: P1-3 completed in August, OP-19 retired the E8 signature chain, and representative stress evidence still requires a justified historical window or a separately authorized future restart and representative window. The threshold and duty-cycle tasks remain open. GPU-ZOS-2.3 cannot use the relinked C5 successor while its genuine store-build prerequisite is reopened. Prior serialized-push failure did not retain the underlying Git error.
