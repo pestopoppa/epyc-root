@@ -79,3 +79,7 @@ Reviewed the unpublished VKQ3 grant guard against filler_run15.sh: it accepts an
 ## 09:58Z — Bind VKQ3 guard repair to keeper grant contract
 
 The VKQ3 grant repair is being implemented against the keeper serializer: the fixed row ID is bound by grant filename, while regions, start and end are parsed from the grant; the full CPU shape and quarter-sized qualification must be validated independently. No new row or inference result exists. [no-belief: implementation in progress]
+
+## 10:00Z — Review VKQ3 guard against actual rowflow modes
+
+Independent review found the candidate VKQ3 guard rejects real arming because rowflow removes FILLER_DRYRUN, and rejects valid diagnostic and correctness admission classes. It is not publishable; the mode and serializer checks require repair and integration tests. No inference was run. [no-belief: source contract review only]
