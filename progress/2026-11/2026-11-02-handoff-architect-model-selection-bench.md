@@ -11,3 +11,7 @@ Reconstructed upstream EffiBench-X at 21b6668a49a342c843e679cc5ed16081064a5768 a
 ## 00:25Z — Publish reconstructed EffiBench-X preparation after origin advanced
 
 Merged the concurrent origin/main update after serialized push rejected the earlier attempt; retrying publication of the EffiBench-X preparation commit.
+
+## 00:27Z — Recover publication of EffiBench-X preparation
+
+Recovered the previous wrap-up publication failure: merged concurrent origin/main changes and serialized-pushed the EffiBench-X preparation and recovery commits, ending at 3308d47c6fcb. The prior registered current-model GPU, EffiBench-X, calculator and ThinkingCap preparation results have not yet appeared; no prepared inference row was available to publish in this turn.
