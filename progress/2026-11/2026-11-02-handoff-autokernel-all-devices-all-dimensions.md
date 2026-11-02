@@ -35,3 +35,7 @@ The v3 CPU class reserves GPU quiet without a GPU residency check but does not a
 ## 10:21Z — Test AKX floor incremental observation
 
 Applied the existing incremental-observation patch to a scratch copy of R4 serving.py and compiled it. A model-free test executed the patched actual arm-loop body: a successful synthetic measurement wrote one process-unit JSON record, while a subsequent failed measurement propagated its exception and wrote no additional record. This does not prove keeper admission, native measurement, or a floor. Independent controls for flock lifecycle, unit admission and the quiet dry-run discrepancy are in progress.
+
+## 10:23Z — Verify floor observation rowflow format
+
+Ran a model-free check against actual scripts/coordination/rowflow/rowflow.py count_units: one complete candidate process-observation JSONL record counts as one unit, and a truncated following record does not increase the count. Scratch test: /mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/observation-control/check_rowflow_units.py. This proves format compatibility only; native measurement, lock witness, cleanup and full floor remain unqualified.
