@@ -2446,7 +2446,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T21:58:49Z",
+  "generated_at": "2026-11-02T22:02:07Z",
   "nodes": [
     {
       "age_days": 0,
@@ -6498,14 +6498,14 @@
         "UFH-01"
       ],
       "closed": 29,
-      "dispatchable": 20,
+      "dispatchable": 21,
       "domain": "user-facing-harness",
       "guarded": 0,
       "handoff": "repl-embedding-retrieval.md",
       "id": "UFH-12",
       "last_advanced": "2026-11-02",
       "next_action": "REPL-EMB-2.8b trace write side, then 2.9-2.12 package gates; UFH-12-PROD-ADOPT is a separate decision",
-      "open": 22,
+      "open": 23,
       "priority": 0.9653,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep UFH12-REQUESTB-FULL-PRIVATE-APPLY-1: harness fix (ws58)",

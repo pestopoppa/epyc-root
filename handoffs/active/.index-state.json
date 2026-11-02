@@ -34,7 +34,7 @@
       "blocked": 15,
       "handoffs": 5,
       "oldest_advance": "2026-10-03",
-      "open": 91
+      "open": 92
     }
   },
   "duplicates": {},
@@ -2001,7 +2001,7 @@
       "closed": 29,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 20,
+      "open": 21,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2010,7 +2010,7 @@
       },
       "row_id": "UFH-12",
       "state": "active",
-      "total": 51
+      "total": 52
     },
     "repl-session-memory-maturity.md": {
       "blocked": 0,
