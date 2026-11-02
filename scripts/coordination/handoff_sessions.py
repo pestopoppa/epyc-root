@@ -97,7 +97,8 @@ REPORT_LINE = (
     "handoffs/completed/, delete its index row, run `python3 scripts/handoffs/index_state.py --check` (exit 0), then land. "
     "The dispatcher retires you only once the file is gone from handoffs/active/ on origin/main.\n"
     "LAST INSTRUCTION: work through this handoff's tasks in priority order (non-inference: do it; inference: make it ready = "
-    "launcher + publish_row.py + dry-run PASS) and end the turn only at a task boundary. Your wrap-up JSON (-> report.json) "
+    "launcher + publish_row.py, whose smoke IS the dry run on 4 CPUs and the only compute you run yourself - it must PASS; "
+    "long benchmark runs go through rows) and end the turn only at a task boundary. Your wrap-up JSON (-> report.json) "
     "MUST carry `next`: \"non-inference\" | \"inference\" | \"blocked\" | \"done\" (the handoff's next task) and, when next is "
     "\"blocked\", `blocked_by`: [<row ids>] - every remaining task waits on those rows and each is already readied (dry-run "
     "PASS, armed, granted or running). You are resumed at once unless next=blocked on readied rows (then when one ends or FAILs "
@@ -216,7 +217,7 @@ this brief and on disk/origin/main — you may have no transcript of earlier tur
 
 ## Row lifecycle (you drive every step yourself)
 **The loop (operator 2026-11-02).** Work this handoff's tasks in order: fan out subagents for the code, prep and analysis
-tasks; make every inference task ready (launcher, then `publish_row.py`, then the dry run); tick boxes as results land. Your BACKLOG file is
+tasks; make every inference task ready (launcher, then `publish_row.py`, whose built-in smoke IS the dry run on 4 CPUs and must PASS); tick boxes as results land. Your BACKLOG file is
 context (rows, open boxes, your handoff's rank), not an order.
 
 1. Write a spec JSON (id, owner, launcher, lane cpu|gpu, result_path, result_format, decision_rule, estimate_s,
@@ -225,7 +226,8 @@ context (rows, open boxes, your handoff's rank), not an order.
    refuses a launcher, or any script it runs, that hashes model weights (`sha256sum` over *.gguf / FULL-MODEL.sha256) or
    does single-core prep (tokenize, download, copy) - do that in your own turn, then publish; fetch-only rows
    (`kind: fetch|prepare`) are refused for the same reason.
-2. The keeper dry-runs/qualifies the row and grants it (`grants/<id>`); you NEVER arm, grant, qualify or run compute.
+2. Running `publish_row.py` is part of YOUR job: its smoke is THE dry run (4 CPUs, inside your turn) and is the ONLY compute
+   you run yourself. Long benchmark runs go through rows: the keeper grants it (`grants/<id>`); you never arm or grant.
 3. `grants/<id>.ended|.complete` appears -> the dispatcher resumes you with rc, end line, result_path, decision_rule.
 4. YOU file the verdict: read `result_path`, apply `decision_rule`, tick the handoff with evidence (rc, result path,
    numbers). No filing subagent exists; nobody files for you. Then `touch {flags}/filing-done/<id>.FILED`: that
@@ -256,7 +258,8 @@ context (rows, open boxes, your handoff's rank), not an order.
   row that is not ready gets you resumed to make it ready. You are resumed when one of them ends or FAILs its dry run.
 
 ## Hard rules
-- Never arm, grant, qualify, kill or launch compute; never edit grants, the keeper, gates or another session's READY
+- Run `publish_row.py` (its 4-CPU smoke is the only compute you run yourself); never arm, grant, kill or launch long
+  benchmark compute outside a row; never edit grants, the keeper, gates or another session's READY
   manifest. Never pkill/pgrep by name; kill only PIDs you captured.
 - Git: work ONLY in your lane worktree; never commit in {ROOT}; never `git add -A`/`git add .`; pathspec-limited commits
   only; push only through serialized_push.py (lane -> main). Never `git worktree prune`, never `git gc`.
