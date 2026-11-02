@@ -111,3 +111,7 @@ SR-6 schedule preparation now refuses fewer than five prompts per class per wind
 ## 10:21Z — Connect SR-6 exposure inventory to block admission
 
 The model-free SR-6 block controller now scans native exposure records and rejects reuse of planned prompts across windows or blocks; malformed inventories fail closed. All 59 preparation tests passed. The root must still be proven authoritative with concurrent writers excluded; admission, real server lifecycle and residency remain unproved, and no inference row or result is claimed.
+
+## 10:23Z — Prepare native request transport and inspect SR-6 runtime inputs
+
+Added bounded loopback completion transports for the SR-6 and SR-7 preparation; 62 SR-6 tests and 9 SR-7 tests passed, including a truncated response refusal. Runtime discovery identifies the v10 binary path and model/template pointers, but the effective launcher, sampler, linkage and model identity remain unsealed. The old launcher hashes weights inside the grant and cannot be reused. No row or inference result is claimed.
