@@ -361,6 +361,7 @@ _Via `/research-intake` Stage-2; see [`intake-derived-work-2026-07-25.md`](intak
       **Gate:** if that reading holds under one instrumented run, **quantized-KV speculative decoding
       is bandwidth-positive on our MI210 only at `draft_max = 1`** — which would reframe every
       quantized-KV spec-dec result we hold or plan.
+  - 2026-11-02: published CPU build row `g3-v10-hip-build-20261102` (four-CPU publisher smoke PASS); it builds an isolated v10-based experimental HIP candidate with [V3 verify/layer/dispatch instrumentation](../../docs/reports/g3-mi210-verify-instrumentation/v10-invocation-layer-v3.md). Trace mode disables graph replay. Full build, binary marker/linkage proof, runtime correlation controls, MI210 residency and the G3 inference remain pending; the build is not a kernel-selection or performance result. The source-derived expected-layer preflight is [retained](../../docs/reports/g3-mi210-verify-instrumentation/qwen35-layer-manifest.json). [no-belief: row preparation only]
 - [ ] **B5 (B, blocked on G3) — re-measure the spec-dec × quantized-KV risk row properly.** The
       existing first-party datapoint (spec decode + q8_0/q4_0 KV on Coder-32B, `kv-cache-quantization.md`
       risk R9) logged **t/s only** — no acceptance rate and no named correctness instrument — so it is
