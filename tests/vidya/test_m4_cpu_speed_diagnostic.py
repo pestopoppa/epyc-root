@@ -39,3 +39,9 @@ def test_diagnostic_plan_tampering_refused(tmp_path):
     cfg,native,plan=fixture(tmp_path);plan['status']='DRAFT_NOT_FOR_EXECUTION'
     (tmp_path/'comparison-plan.json').write_text(json.dumps(plan))
     with pytest.raises(ProjectionError):reader._verify_diagnostic(native,cfg)
+
+@pytest.mark.parametrize('token',['GGML_UNBOUND=1','LLAMA_ARG_CTX_SIZE=42','LD_PRELOAD=/tmp/x'])
+def test_unbound_environment_refused(token):
+    argv=['env','GGML_IQK=1','GGML_FA_SPLIT_KV=0',token,'llama-server']
+    with pytest.raises(ProjectionError,match='unbound native environment'):
+        reader._verify_recipe_env(argv,{'GGML_FA_SPLIT_KV':'0'})
