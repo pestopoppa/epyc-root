@@ -241,7 +241,10 @@ class Server:
         self.rec["vram_before"] = C.vram_now()
         self.rec["foreign_gpu_procs_before"] = C.foreign_gpu_procs()
         self.sampler = C.VramSampler(LOGS / f"{self.name}.vram.jsonl", period=1.0).start()
-        self.proc = C.start_own(launch(self.argv), self.log, env=child_env())
+        # Install death containment in the child before exec; it retains the captured PID.
+        guarded = [sys.executable, "-B", str(Path(__file__).with_name("p3_pdeath_exec.py")),
+                   str(os.getpid()), *launch(self.argv)]
+        self.proc = C.start_own(guarded, self.log, env=child_env())
         self.rec["pid"] = self.proc.pid
         (OUT / "server.pid").write_text(f"{self.proc.pid}\n")  # lets slot_run reap it if this driver is SIGKILLed
         self.rec["load_s"] = C.wait_healthy(self.base, self.proc, timeout=900)
