@@ -48,10 +48,10 @@ Rowflow `evl46-crm-fullentry-fixture-20261102` is grantable after its exact-entr
 scheduled qualification will use the real provider claim, private CRM/Slack and a scripted
 HTTP endpoint, with no model. Its result cannot satisfy the live pair. The model launcher and
 separate post-run content-hash row are still being prepared. [no-belief: fixture controls]
-ROOT `4f609b459` + `bb252dbc6` + `bf9dbd64c` add a strict original-journal reader and
-partial-arm refusal controls. It is intentionally not CLI-registered and emits no claim until
-provider-owned grant and source authority are verified; three refusal tests passed. A versioned
-lock-provider receipt is in development. [no-belief: software controls]
+ROOT `4f609b459` + `bb252dbc6` + `bf9dbd64c` began a strict original-journal reader and
+partial-arm refusal controls; three refusal tests passed. Later candidate `88d41e517` registers
+the scoped producer-reported observation described below, without asserting grant authority,
+loaded code or model applicability. [no-belief: software controls]
 APP `1e02f2e2` adds an opt-in full-quarter CPU provider open/close receipt around the existing
 flock context, including copied grant and `/proc/locks` witness; its three targeted tests passed
 in the combined checkout. It does not by itself prove child affinity, scheduler issuance or
@@ -80,6 +80,11 @@ withdrawn for a new projection/canary source snapshot; successor
 `evl46-crm-reader-dc-tests-20261102` refused its smoke on a missing adapter identifier and
 was not published. Repair is in progress. The allocator owns grants; no session-issued grant
 is implied.
+[no-belief: software controls]
+Corrected reader `evl46-crm-reader-64-tests-20261102` passed seven source-bound synthetic
+smoke controls and is grantable; b5 was withdrawn. Candidate ROOT `88d41e517` projects only
+a producer-reported observation, refuses fixture captures as live, and omits unverified model
+and backend applicability. The mocked-custody canary is a control, not proof of live wiring.
 [no-belief: software controls]
 Rowflow `evl46-opencode-policy-20261102` passed a fake-upstream smoke: explicit
 OpenCode `permission` settings advertised only `read`; injected `bash` was unavailable, and

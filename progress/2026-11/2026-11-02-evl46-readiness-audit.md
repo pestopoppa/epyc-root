@@ -81,6 +81,10 @@ judicious review. The edit preserves existing task text and history. [no-belief:
   only `read` advertised, injected `bash` rejected, workspace read and session export passed.
   Its grader-path refusal is a permission result rather than an OS syscall proof. The row is
   grantable and waits for allocator execution. [no-belief: synthetic control]
+- Candidate ROOT `88d41e517` projects a bounded producer-reported CRM observation without
+  assigning unverified model/backend applicability. Row `evl46-crm-reader-64-tests-20261102`
+  passed seven synthetic smoke controls and is grantable; b5 was withdrawn. Live reader canary
+  and authority remain unproved. [no-belief: software controls]
 - The fake and policy rows' redundant scheduled repeats were withdrawn; their full smoke
   receipts remain. `evl46-opencode-schema-20261102` passed its own smoke with the pinned
   read-tool schema and broker refusal of injected `bash`, and is grantable. [no-belief: synthetic control]
