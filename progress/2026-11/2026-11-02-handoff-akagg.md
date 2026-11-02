@@ -243,3 +243,7 @@ C3 r9 ended rc=75 (disk-floor) at 11:17:23Z without RESULT.json; filed inconclus
 ## 11:29Z — Published corrected owned-child perf mmap ABI diagnostic with four-unit smoke PASS.
 
 Published akagg-ch26b-mmap-abi-r2-20261102 after independent raw-sample identity, cleanup and evidence access fixes; smoke rc0 on CPUs 0–3, four units, 19 model-free tests passed. The r1 result must remain inconclusive. Neither diagnostic establishes a DS41 floor or host-wide coverage.
+
+## 11:33Z — Created and validated pinned-source D7 codec quantizer dependency check for CH32 group D.
+
+CH-32 group D: pinned-source checker verifies D7 narrows the D4 codec quantization exclusion while retaining D4 encoder, depthwise and codec-quantizer exemptions absent from C5; conversion also requires the LFM3 audio surface. Reproduced JSON byte for byte. This is source evidence, not a minimal commit-chain or runtime/build claim; the census remains open. CH26 observer synthetic reconstruction passed 20 tests but cannot establish coverage. CH27 native floor ownership remains blocked by old writers that ignore the proposed lock.
