@@ -55,3 +55,11 @@ Consumed GPU model provenance and linkage contracts. Registry pins base Qwen3.8-
 ## 00:41Z — Integrate GPU artifact pins and HIP residency checks
 
 Consumed GPU identity, HIP maps and local head-digest reports. The locally selected DFlash2 head hashes to 7f1c9a31a6ed40044c69f6508b50fd63b87abd8e1fb7fe4290303df549153751; the closest identified upstream same-name GGUF has a different size and SHA, so upstream identity remains unknown and must not be asserted. The HIP mapping snippet passed offline syntax and symlink checks; ldd alone does not prove HIP residency. Dispatched bounded integrated launcher, source-lineage and rowflow-spec work with registered result files. No inference run or row published.
+
+## 00:42Z — Prepare keeper lifecycle and completion predicate for GPQA row
+
+Consumed the GPU rowflow spec draft: proposed descriptive single-arm GPQA-CoT n198 seed42 cap8192 with six-hour estimate, no comparative conclusion. Current launcher lacks canonical filler lifecycle, row-specific dry-run versus actual output, and complete predicate, so was not published. Dispatched bounded keeper wrapper, incremental result/completion validation and booking-window checks; registered their result files. Prior integrated launcher and head-origin checks remain registered.
+
+## 00:43Z — Resolve generated inference inventory and prepare EffiBench integration
+
+Reviewed generated inference tasks: Phase 1 CPU is an aggregate with A2 already run and additional GPQA CPU skipped by operator; Phase 2 scorer needs OD-1 and OD-2; L-Q4P requires a concrete Laguna CPU role proposal. The historical GPU GPQA launcher uses the retired kernel path and incompatible protocol; retargeted arms need a rowflow-native runner and defined comparison before publication. No row was published and no inference was run. EffiBench durable integration preparation is delegated; awaiting its completion report for review. GitNexus index was absent and its wrapper was denied CPU admission.
