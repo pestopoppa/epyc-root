@@ -79,3 +79,9 @@ The supplied dispatcher inventory predates published row `ernie-qwen-pip03-cpu-2
 ### Typography review workflow
 
 Consumed the typography preparation result: `/mnt/raid0/llm/tmp/ernie-typography-human-review-20261102/review.html` and `reviews-template.csv` enumerate all 40 retained originals with prompts, requested text and hashes; review fields are blank and no human verdict is asserted. An independent check and durable-copy task is registered; preserve native PNGs at `/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/` through review. The limited capture cannot validate official 0.9655. GPU and content-filter preparation remain delegated; no inference, new row or checklist completion. [no-belief: preparation only]
+
+## 07:51Z — Integrate verified typography review tools and GPU build review
+
+### Typography review tools and GPU trace prerequisites
+
+The verified `docs/evidence/ernie-image-evaluation-20261102/typography/review.html` and `reviews-template.csv` cover 40 original images; the reviewer fields are blank. Their links require the compute host and the original retained scratch PNGs; no human verdict is asserted. GPU review identified that the current worker is hardcoded to the historical uninstrumented binary: before publishing a GPU run it must bind a source-proven instrumented build and request-scoped trace, retaining UNKNOWN when ambiguous. A bounded keeper-compatible preparation is assigned with its event registered. No build, inference or additional row this turn. [no-belief: preparation only]
