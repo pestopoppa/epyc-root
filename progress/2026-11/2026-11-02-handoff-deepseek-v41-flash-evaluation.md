@@ -11,3 +11,7 @@ Previous wrap-up failed index_state --check before committing. Retained its C4b,
 ## 08:14Z — Repair DS41 wrap-up observer census and advance evidence
 
 The prior commit was blocked by the observer census because sparse checkout omitted the tracked operator ratifier it references. Restored the exact HEAD blob to the lane checkout; observer census now passes. Retained the handoff and progress updates from the failed wraps. Dispatched bounded searches for the C4b patches and C33 results and a review of C66 test triage; registered their output events. No measurement row is publishable without those inputs.
+
+## 09:23Z — Triage existing DS41-W5d.1 qualification failure
+
+Found existing codex3-owned DS41-W5d.1 row, so did not publish a duplicate. Its 2026-11-01 failed qualification recorded a missing research linkage-check script; that same symlink path exists now. Recorded the limited historical evidence in the handoff; did not run qualification. Dispatched C4b patch recovery, C33 store inspection and a proposed C27 code/test patch, with event files registered.
