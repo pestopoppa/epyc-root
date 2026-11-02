@@ -507,6 +507,9 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            _files("belief_measurements.jsonl", "*/belief_measurements.jsonl"),
            note="OCC-1 run dirs (`run_occ1.py report` sidecars); VOID/pre-hook runs decline",
            task="SC85"),
+    Source("ak-r18-symbols", "autokernel_r18_symbols", _files("terminal.json", "*/terminal.json"),
+           note="Prospective guarded independent CPU/HIP symbol comparison capture; partial and historical runs decline",
+           task="VB-AK-R18-INDEPENDENT-SYMBOL-FINDINGS"),
     Source("ak-width-dimension", "autokernel_width_dimension",
            _files("width_dimension.json", "*/width_dimension.json"),
            note="AKX-ALL-27 HIP width-invariance dimension records (`width_dimension.json` beside "

@@ -369,6 +369,8 @@ class Target:
     knob_families: tuple[str, ...] = ()
     stack_regime: str = ""
     scope: str = "model"
+    build_sha: str = ""
+    build_surface: str = ""
 
     @property
     def is_lineup(self) -> bool:
@@ -377,6 +379,8 @@ class Target:
     @property
     def key(self) -> tuple[str, ...]:
         """Identity of this target inside one answer (several roles may share one model)."""
+        if self.scope == "build":
+            return ("build", self.build_sha, self.build_surface)
         if self.is_lineup:
             return ("lineup", self.stack_regime)
         return (self.model_file, self.backend, self.role)
@@ -389,6 +393,13 @@ class Target:
         families = _target_families(raw)
         role = str(raw.get("role") or "").strip()
         regime = str(raw.get("stack_regime") or "").strip()
+        if str(raw.get("scope") or "").strip().lower() == "build":
+            head = str(raw.get("build_sha") or "").strip().lower()
+            surface = str(raw.get("surface") or "").strip()
+            if not re.fullmatch(r"[0-9a-f]{40}", head) or surface not in ("autokernel-r18-symbols", "autokernel-r18-symbols-synthetic"):
+                raise ValueError("build target requires full source commit and R18 symbol surface")
+            return cls(model_file="", quant="", backend="", device="", scope="build",
+                       build_sha=head, build_surface=surface, label=str(raw.get("label") or ""))
         if str(raw.get("scope") or "").strip().lower() == "lineup":
             # The lineup target (belief redesign §12.3): AutoPilot's lineup-wide knobs, matched
             # only by stack_regime. No model, so no target/sibling/host tier can reach it.
@@ -430,6 +441,8 @@ class Target:
                    stack_regime=regime, **values)
 
     def as_dict(self) -> dict[str, Any]:
+        if self.scope == "build":
+            return {"scope": "build", "build_sha": self.build_sha, "surface": self.build_surface, "label": self.label}
         return {"model_file": self.model_file, "quant": self.quant, "backend": self.backend,
                 "device": self.device, "context_tokens": self.context_tokens,
                 "label": self.label, "model_sha256": self.model_sha256, "recipe": self.recipe,
@@ -582,6 +595,10 @@ def lineup_matches(scope: Mapping[str, Any], target: Target) -> bool:
 
 
 def tier_of(scope: Mapping[str, Any], target: Target) -> str | None:
+    if target.scope == "build":
+        return "target" if (isinstance(scope, Mapping) and scope.get("surface") == target.build_surface
+                            and scope.get("build_sha") == target.build_sha
+                            and not scope.get("model_file") and not scope.get("model_sha256")) else None
     if target.is_lineup:
         return "lineup" if lineup_matches(scope, target) else None
     if applicability_matches(scope, target):
