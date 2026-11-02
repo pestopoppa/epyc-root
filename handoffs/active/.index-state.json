@@ -13,10 +13,10 @@
       "open": 74
     },
     "research-evaluation-index.md": {
-      "blocked": 16,
-      "handoffs": 12,
-      "oldest_advance": "2026-10-21",
-      "open": 762
+      "blocked": 18,
+      "handoffs": 11,
+      "oldest_advance": "2026-10-24",
+      "open": 776
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -25,10 +25,10 @@
       "open": 26
     },
     "routing-and-optimization-index.md": {
-      "blocked": 16,
-      "handoffs": 21,
+      "blocked": 14,
+      "handoffs": 20,
       "oldest_advance": "2026-07-29",
-      "open": 677
+      "open": 663
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -82,7 +82,7 @@
       "blocked": 0,
       "closed": 113,
       "guarded": 0,
-      "last_advanced": "2026-11-01",
+      "last_advanced": "2026-11-02",
       "open": 36,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -501,7 +501,7 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 35,
+      "closed": 36,
       "guarded": 0,
       "last_advanced": "2026-11-02",
       "open": 12,
@@ -513,7 +513,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 47
+      "total": 48
     },
     "benchmark-suites.md": {
       "blocked": 0,
@@ -964,22 +964,6 @@
       "row_id": "INF-13",
       "state": "active",
       "total": 31
-    },
-    "episodic-memory-integrity.md": {
-      "blocked": 0,
-      "closed": 56,
-      "guarded": 0,
-      "last_advanced": "2026-10-31",
-      "open": 16,
-      "owner_index": "research-evaluation-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "EVL-10",
-      "state": "active",
-      "total": 72
     },
     "eval-tower-program.md": {
       "blocked": 8,
@@ -1599,6 +1583,54 @@
         }
       ]
     },
+    "memory-program.md": {
+      "blocked": 2,
+      "closed": 108,
+      "guarded": 0,
+      "last_advanced": "2026-11-02",
+      "open": 45,
+      "owner_index": "research-evaluation-index.md",
+      "prune": {
+        "blocker": "open-tasks",
+        "candidate": false,
+        "evidence": null
+      },
+      "row_id": "EVL-10",
+      "state": "active",
+      "total": 155,
+      "tracks": [
+        {
+          "blocked": 0,
+          "closed": 56,
+          "gates": null,
+          "guarded": 0,
+          "line": 0,
+          "markers": 0,
+          "name": "(untracked)",
+          "open": 16
+        },
+        {
+          "blocked": 0,
+          "closed": 14,
+          "gates": [],
+          "guarded": 0,
+          "line": 871,
+          "markers": 1,
+          "name": "repl-session-memory-maturity",
+          "open": 15
+        },
+        {
+          "blocked": 2,
+          "closed": 38,
+          "gates": [],
+          "guarded": 0,
+          "line": 1325,
+          "markers": 1,
+          "name": "unified-trace-memory-service",
+          "open": 14
+        }
+      ]
+    },
     "mi210-serving-program.md": {
       "blocked": 2,
       "closed": 180,
@@ -2037,22 +2069,6 @@
       "state": "active",
       "total": 52
     },
-    "repl-session-memory-maturity.md": {
-      "blocked": 0,
-      "closed": 14,
-      "guarded": 0,
-      "last_advanced": "2026-10-21",
-      "open": 15,
-      "owner_index": "research-evaluation-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "EVL-36",
-      "state": "active",
-      "total": 29
-    },
     "repl-turn-efficiency.md": {
       "blocked": 0,
       "closed": 63,
@@ -2467,22 +2483,6 @@
       "state": "active",
       "total": 55
     },
-    "unified-trace-memory-service.md": {
-      "blocked": 2,
-      "closed": 38,
-      "guarded": 0,
-      "last_advanced": "2026-10-29",
-      "open": 14,
-      "owner_index": "routing-and-optimization-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "RTG-41",
-      "state": "active",
-      "total": 54
-    },
     "vidya-belief-substrate-program.md": {
       "blocked": 4,
       "closed": 336,
@@ -2565,7 +2565,7 @@
     },
     "EVL-10": {
       "deps": [],
-      "handoff": "episodic-memory-integrity.md",
+      "handoff": "memory-program.md",
       "id": "EVL-10",
       "index": "research-evaluation-index.md",
       "line": 16,
@@ -2599,21 +2599,12 @@
       "next_action": "Re-open ID-3/AP-21 on corrected trial support; dispatch accepted retrospective proposals through their application owners",
       "track": "intake derived work 2026 07 25"
     },
-    "EVL-36": {
-      "deps": [],
-      "handoff": "repl-session-memory-maturity.md",
-      "id": "EVL-36",
-      "index": "research-evaluation-index.md",
-      "line": 20,
-      "next_action": "D-f1 live lease validation at its inference-owner boundary",
-      "track": "repl session memory maturity"
-    },
     "EVL-37": {
       "deps": [],
       "handoff": "repl-turn-efficiency.md",
       "id": "EVL-37",
       "index": "research-evaluation-index.md",
-      "line": 21,
+      "line": 20,
       "next_action": "Obtain S4-T1 live seeding proof at its inference-owner boundary; ingest the first granted real Omega capture via VB-S4-OMEGA-FIRST-AB",
       "track": "repl turn efficiency"
     },
@@ -2622,7 +2613,7 @@
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "index": "research-evaluation-index.md",
-      "line": 22,
+      "line": 21,
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
       "track": "vidya belief substrate program"
     },
@@ -2635,18 +2626,18 @@
       "handoff": "reboot-gated-inventory-and-staging.md",
       "id": "EVL-49",
       "index": "research-evaluation-index.md",
-      "line": 23,
+      "line": 22,
       "next_action": "S-05 \u2014 capture current pool/placement and actual owner window; retain accepted saved-E1 source capture",
       "track": "reboot gated inventory and staging"
     },
     "EVL-52": {
       "deps": [
-        "RTG-41"
+        "EVL-10"
       ],
       "handoff": "dev-harness-trace-mining.md",
       "id": "EVL-52",
       "index": "research-evaluation-index.md",
-      "line": 24,
+      "line": 23,
       "next_action": "DHM-4 operator labels (30-item pilot, private); DHM-5.2 paired turn-1 probe (Codex subagent, opencode); DHM-8 hook proposal",
       "track": "dev harness trace mining"
     },
@@ -3171,21 +3162,12 @@
       "next_action": "TR-4.1 \u2014 Compose role with model selection in routing.py; frozen until the DAR-regret and per-question-vector gates reopen routing",
       "track": "tri role coordinator architecture"
     },
-    "RTG-41": {
-      "deps": [],
-      "handoff": "unified-trace-memory-service.md",
-      "id": "RTG-41",
-      "index": "routing-and-optimization-index.md",
-      "line": 26,
-      "next_action": "UTM-LB2.2 ingest projector events; UTM-B1 catalog-growth; UTM-B2 pairing",
-      "track": "unified trace memory service"
-    },
     "RTG-45": {
       "deps": [],
       "handoff": "x-mas-text-routing.md",
       "id": "RTG-45",
       "index": "routing-and-optimization-index.md",
-      "line": 27,
+      "line": 26,
       "next_action": "Monitor post-enable X-MAS telemetry for domain/latency regressions or guard bypasses; rollback is `xmas_routing.mode: off` + API reload",
       "track": "x mas text routing"
     },
@@ -3196,7 +3178,7 @@
       "handoff": "coordinator-role-failure-modes-and-refactor.md",
       "id": "RTG-48",
       "index": "routing-and-optimization-index.md",
-      "line": 28,
+      "line": 27,
       "next_action": "R-7 \u2014 Assign a successor to retired namespace owner mainD; then reconcile the C49 references",
       "track": "coordinator role failure modes"
     },
@@ -3208,7 +3190,7 @@
       "handoff": "loop-owned-fleet-implementation.md",
       "id": "RTG-52",
       "index": "routing-and-optimization-index.md",
-      "line": 29,
+      "line": 28,
       "next_action": "P4-1 \u2014 adjudicate the 7-day role-shrink gate; then P5-1 hook-surface trust-boundary analysis and P5-2 NL-only fixture",
       "track": "loop owned fleet implementation"
     },
@@ -3217,7 +3199,7 @@
       "handoff": "typed-decision-plane.md",
       "id": "RTG-56",
       "index": "routing-and-optimization-index.md",
-      "line": 30,
+      "line": 29,
       "next_action": "Run fresh three-arm shadow at the inference owner\u2019s boundary; retain inference gates",
       "track": "typed decision plane"
     },
@@ -3229,7 +3211,7 @@
       "handoff": "kv-unified-stack-rollout.md",
       "id": "RTG-57",
       "index": "routing-and-optimization-index.md",
-      "line": 31,
+      "line": 30,
       "next_action": "Follow the 2026-11-02 execution contract: reconcile capacity evidence and prepare remaining candidate gates; preserve HPR exposure",
       "track": "kv unified stack rollout"
     },
@@ -3242,7 +3224,7 @@
       "handoff": "kv-prefix-fork-and-paged-attention.md",
       "id": "RTG-58",
       "index": "routing-and-optimization-index.md",
-      "line": 32,
+      "line": 31,
       "next_action": "Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort",
       "track": "kv prefix fork and paged attention"
     },
@@ -3251,7 +3233,7 @@
       "handoff": "backlog-refactor-2026-11.md",
       "id": "RTG-63",
       "index": "routing-and-optimization-index.md",
-      "line": 33,
+      "line": 32,
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
       "track": "backlog refactor 2026-11"
     },

@@ -260,7 +260,7 @@ routing classifier's own training labels, and skill-bank effectiveness.
     - **REJECTED ALTERNATIVE — partition by writer path**, on five counts. (1) It *preserves* the
       defect and makes it a permanent schema fact, so every downstream model must stay
       partition-aware forever. (2) It costs corpus: a live (interactive-shaped) query would lose
-      reach to 29,081 rows that [`episodic-memory-integrity.md`](episodic-memory-integrity.md)
+      reach to 29,081 rows that [`episodic-memory-integrity.md`](memory-program.md)
       showed carry real decision signal (macro failure 0.1964 vs 0.2518 random / 0.1790 oracle =
       76% of achievable headroom, permutation p = 0.0025). (3) The de-confounding it buys is not
       established — the same file attacked the writer-path confound directly and the signal survived
@@ -351,7 +351,7 @@ got 0.726, which was refuted. The follow-up audit then established that EPD-1 an
 smaller than stated (see the strikethroughs above): `outcome` feeds nothing live, and the cost-penalty
 conflation reaches ~4.3% of labels. **The defect that actually mattered was EPD-3's cousin — the
 FAISS/id_map desync**, which corrupted vector resolution store-wide from 2026-07-05 and is now fixed
-and repaired. See [`episodic-memory-integrity.md`](episodic-memory-integrity.md). EP-5 (re-run) should
+and repaired. See [`episodic-memory-integrity.md`](memory-program.md). EP-5 (re-run) should
 wait for the reseed there, not for a label fix. Cross-reference: this may be a second mechanical contributor to the five-null
 learned-routing streak alongside the constant-reward bug fixed 2026-07-21 (master-index N16).
 

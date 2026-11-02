@@ -677,7 +677,7 @@ the instrument-repair handoff.
 
 ### Source References (2026-08-25 memory + evidence)
 
-- [`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) — the
+- [`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — the
   UTM-V1..V6 scoping (2026-08-07) with the append-only envelope, actor-vs-subject proposer, and the
   no-memory control arm in the UTM-V6 matrix.
 - [`evidence-plane-instrument-repair.md`](../handoffs/active/autopilot-program.md#track-evidence-plane-instrument-repair) —
@@ -1063,7 +1063,7 @@ retrieval injection must be **budget-conditional** — inject nothing once the
 untruncated history fits the window — and capped as a fraction of remaining
 budget rather than a fixed k. Detail in
 [Memory-Augmented Systems](memory-augmented.md).
-[`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) §UTM-M6–M8;
+[`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) §UTM-M6–M8;
 [`engram-conditional-memory.md`](../handoffs/active/engram-conditional-memory.md) §budget-conditional rider
 
 ### Two hygiene rules this batch forced
@@ -1082,7 +1082,7 @@ budget rather than a fixed k. Detail in
 
 - [`context-folding-progressive.md`](../handoffs/active/context-and-token-economy.md) — mandatory masking anchor; the four pieces of agent-initiated compaction; the unreported archive-query ablation; non-termination counter; ARC-AGI-3 provenance downgrade; the title-collision dedup hazard
 - [`tool-output-compression.md`](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) — verbatim-log vs summarize-and-compact A/B design; total-vs-peak token instrumentation; the truncation audit (episodic store vs REPL journal) and the file-capable vs context-only `peek`/`grep` split
-- [`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) — 128K context-budget competition and its budget-conditional injection consequences
+- [`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — 128K context-budget competition and its budget-conditional injection consequences
 - [`engram-conditional-memory.md`](../handoffs/active/engram-conditional-memory.md) — k as a fraction of remaining window budget rather than a fixed integer
 
 ## Compiled Update — 2026-08-18: optical compaction is shipping, and more context is not monotonically better

@@ -96,7 +96,7 @@ Sources: [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-works
 - **Native-harness OTel (UTM-LB4.1).** One `claude -p` session (CLI 2.1.308) with content toggles off: `tool_decision` and `tool_result` carry ids, success and sizes but no arguments. No event carries `agent_id` or a parent id; a sub-agent shares the parent's `session.id` and is marked only by `query_source = agent:builtin:general-purpose` on `api_request` and `assistant_response`. Gap: tool events carry no `query_source`, so a sub-agent's tool call is indistinguishable from a parent call except via the `tool_use_id` join to the transcript JSONL. OTel-only fields: `ttft_ms`, per-request and tool `duration_ms`, `tool_decision` source / classifier_verdict.
 - **Non-inference campaign (codex-ni-01a16d6b).** S4-T1.SRC (turns copied into `RoleResult`, orch `7c0f2929`) and M-26 (`distill_skillbank` escalation count wired from native `action_type`, orch `96dc99c9`, fake-record tests only) are accepted at source scope; the first 22+1 test claim was retracted because it ran in the shared checkout rather than the private snapshot. Both parents stay open for live inference proof. The handoff-graph UI fixes (non-scaling dep edges, daily open-box stock chart, priority-gradient rings) are shipped; BACKLOG-PRIORITY (a tiered total order) is prepared.
 
-Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md), [unified-trace-memory-service](../handoffs/active/unified-trace-memory-service.md), [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md), [handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph), [episodic-memory-integrity](../handoffs/active/episodic-memory-integrity.md), [repl-turn-efficiency](../handoffs/active/repl-turn-efficiency.md), [ni08 continuation](../docs/reference/ni08-non-inference-continuation.md), [codex-ni checkpoint](../progress/2026-10/2026-10-24-codex-ni-checkpoint.md), [coordination](../progress/2026-10/2026-10-24-codex-ni-01a16d6b-coordination.md), [m26-fix](../progress/2026-10/2026-10-24-codex-ni-m26-fix.md), [s4-turns](../progress/2026-10/2026-10-24-codex-ni-s4-turns.md), [codex-ni-vidya](../progress/2026-10/2026-10-24-codex-ni-vidya.md), [wave1 ingest](../progress/2026-10/2026-10-24-codex-ni-wave1-native-ingest.md), [daily log](../progress/2026-10/2026-10-24.md)
+Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md), [unified-trace-memory-service](../handoffs/active/memory-program.md#track-unified-trace-memory-service), [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md), [handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph), [episodic-memory-integrity](../handoffs/active/memory-program.md), [repl-turn-efficiency](../handoffs/active/repl-turn-efficiency.md), [ni08 continuation](../docs/reference/ni08-non-inference-continuation.md), [codex-ni checkpoint](../progress/2026-10/2026-10-24-codex-ni-checkpoint.md), [coordination](../progress/2026-10/2026-10-24-codex-ni-01a16d6b-coordination.md), [m26-fix](../progress/2026-10/2026-10-24-codex-ni-m26-fix.md), [s4-turns](../progress/2026-10/2026-10-24-codex-ni-s4-turns.md), [codex-ni-vidya](../progress/2026-10/2026-10-24-codex-ni-vidya.md), [wave1 ingest](../progress/2026-10/2026-10-24-codex-ni-wave1-native-ingest.md), [daily log](../progress/2026-10/2026-10-24.md)
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): producer write-side wiring for six sources, a gitnexus index receipt, and host-housekeeping closures
 
@@ -144,7 +144,7 @@ Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substr
 - [progress/2026-10/2026-10-22-producer-belief-emits.md](../progress/2026-10/2026-10-22-producer-belief-emits.md) — producer emits, protocol_id bug, YaRN field mismatches
 - [progress/2026-10/2026-10-22-final-producer-emits.md](../progress/2026-10/2026-10-22-final-producer-emits.md) — YaRN, EV-19, RUS-2 emit decisions
 - [progress/2026-10/2026-10-22-vb-akrsg-akx-ingest.md](../progress/2026-10/2026-10-22-vb-akrsg-akx-ingest.md) — first live ingests and findings
-- [handoffs/active/unified-trace-memory-service.md](../handoffs/active/unified-trace-memory-service.md) — backup coverage, projector, OTel fields
+- [handoffs/active/memory-program.md](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — backup coverage, projector, OTel fields
 - [progress/2026-10/2026-10-22-workspace-f8.md](../progress/2026-10/2026-10-22-workspace-f8.md) — KPF read-side void, drop-counter lesson
 - [progress/2026-10/2026-10-22-bark-p1p2p4p6-code.md](../progress/2026-10/2026-10-22-bark-p1p2p4p6-code.md) — speech adapters
 
@@ -177,7 +177,7 @@ Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substr
 
 ### Source References (2026-10-22 sweep 7)
 
-- [handoffs/active/unified-trace-memory-service.md](../handoffs/active/unified-trace-memory-service.md)
+- [handoffs/active/memory-program.md](../handoffs/active/memory-program.md#track-unified-trace-memory-service)
 - [handoffs/active/frontier-lab-automation.md](../handoffs/active/frontier-lab-automation.md#track-frontier-f3-data-flywheel)
 - [handoffs/active/vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md)
 - [handoffs/active/dev-harness-trace-mining.md](../handoffs/active/dev-harness-trace-mining.md)
@@ -1870,7 +1870,7 @@ Source files keep their existing writers; the new layer at `epyc-orchestrator/sr
 
 **Live ingest (2026-05-06)**: 3477 events ingested (2214 agent_audit + 1260 progress + 3 autopilot source_unavailable markers) in <1s; idempotent re-ingest skipped 3477/3477. CLI: `python -m src.trace.cli {ingest,query,stats}` with date-range, session_id, trial_id, role, category, status, source filters + FTS5 text search.
 
-Sources: [`handoffs/active/unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md), `epyc-orchestrator/src/trace/`.
+Sources: [`handoffs/active/memory-program.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service), `epyc-orchestrator/src/trace/`.
 ## Autopilot dashboard data-source rule (2026-05-28)
 
 The `GEPA + Pareto Frontier` dashboard panel should be journal-backed, not state-cache-backed. The append-only `orchestration/autopilot_journal.jsonl` is the durable per-trial source that remains useful when autopilot is stopped; `autopilot_state.json` is operational state and can contain a stale `pareto_archive` cache if a writer path saves an older in-memory state after the archive write. The dashboard now reconstructs the current-session frontier and hypervolume from journal rows at or after `autopilot_fleet_started_at`, filters `bug_corrupted_by` rows, and falls back to `autopilot_state.json` only when journal data is unavailable.

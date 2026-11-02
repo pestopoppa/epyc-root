@@ -1478,7 +1478,7 @@ section of this page.
 - [`eval-tower-verification.md`](../handoffs/active/eval-tower-program.md) — EVL-14 EV-14d (draw completeness) and EV-14e (the baseline pin), reusing the EV-14c revision pin.
 - [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) — RTG-02: the mutually blocking era fences (boxes at `:1727` and `:1780`).
 - [`autopilot-sequential-allocation.md`](../handoffs/active/autopilot-sequential-allocation.md) — EVL-04 SEQ-B2, finding F2: the stop-time counterfactual record.
-- [`episodic-memory-integrity.md`](../handoffs/active/episodic-memory-integrity.md) — EVL-10 M-12e: the Tulving subset, bin basis, and tau coverage.
+- [`episodic-memory-integrity.md`](../handoffs/active/memory-program.md) — EVL-10 M-12e: the Tulving subset, bin basis, and tau coverage.
 - [`progress/2026-09/2026-09-14-noninf-backlog.md`](../progress/2026-09/2026-09-14-noninf-backlog.md) — the zero-inference sweep's session record for all six.
 - `epyc-orchestrator` `fb16d860` (RTG-23), `250a5d13` (ETR-2/3, 26 tests), `4555677e` (EV-14d/e, 28 tests), `d03218fc` (era fences, 23 tests), `4c220b11` (SEQ-B2, 17 tests); `epyc-inference-research` `dcb769c1` (Tulving scorer v2).
 - `intake-408#record` — the Tulving benchmark's shipped artifacts, which is where the Simple Recall subset definition was settled by counting.
@@ -2693,7 +2693,7 @@ raw-source recovery.
 ### Source References
 
 - [Tool-Use Eval Contract](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract) — TU-DTAP-1 same-harness protocol and typed failure attribution
-- [Unified Trace / Memory Service](../handoffs/active/unified-trace-memory-service.md) — UTM-V6 lifecycle and no-memory control matrix
+- [Unified Trace / Memory Service](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — UTM-V6 lifecycle and no-memory control matrix
 - [RLM Contested Claims](../handoffs/active/benchmark-suites.md#track-rlm-contested-claims-self-evaluation) — clean direct-context versus REPL control
 - Intakes 1007, 1008/1015, 1012, and 1021 in [the research index](../research/intake_index.yaml) — reproduced package failure, invalid memory controls, Pokee caveats, and DTAP contract
 ## Compiled Update — 2026-08-03 (third): a validator is only as good as the thing it actually ran
@@ -7134,7 +7134,7 @@ Evaluation archive completeness, offline SFT eligibility and off-policy RL eligi
 - [Tool-use evaluation](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract) — TU-TM-1 accepted implementation and TU-MH-1 filed work.
 - [Evaluation tower](../handoffs/active/eval-tower-program.md#research-intake-update--2026-10-04) — archive completeness and reconnect cost.
 - [Memento compression](../handoffs/active/context-and-token-economy.md#track-memento-block-reasoning-compression) — S2-CGE-1 SFT contract.
-- [Unified trace memory](../handoffs/active/unified-trace-memory-service.md#evaluation-capture-versus-rl-eligibility--2026-10-04) — distinct consumer eligibility.
+- [Unified trace memory](../handoffs/active/memory-program.md#evaluation-capture-versus-rl-eligibility--2026-10-04) — distinct consumer eligibility.
 
 The TD-30 coherence judge library and localhost typed endpoint are implemented and the endpoint was deployed by API reload. Calibration, champion-sidecar backend integration, consumer migration and instrument-era ratification remain open. The historical chat-client classifier near-no-op does not certify the new judge: implementation and endpoint availability establish neither calibrated quality nor a new accepted coherence instrument era.
 
@@ -7382,7 +7382,7 @@ Sources: [week outcomes](../docs/reference/inference-outcomes-week-2026-10-18-to
 
 - **Classify every harvested row as capability, performance, reject, correctness-only or invalid,** and treat source, PF and build rows as non-results. The 10-22..10-25 harvest covered 138 grant rows: 11 conclusions were missing from their owning box and were persisted, and the rest were already recorded. ([2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md); [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) projectability notes; [2026-10-26 log](../progress/2026-10/2026-10-26-workspace-58.md))
 - **A process-CV cap voids a baseline even when the ratio stands.** DS41-W5d's MMID ratio is tight (1.783x, CI 1.778-1.789, CV 0.15-0.18%), but its absolute tg128 baseline is INVALID_NOISY: CV 11.87% against a 4.0% cap, drifting 11.75 -> 16.65 t/s across processes with the first process lowest. Check warm-up and page-cache residency before re-running. ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-W5d.1; [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
-- **An all-`no_answer` tally is vacuous, not a null.** s5-dripreview1 scored 0/90 with `bad_final` in every cell, every reply 33 tokens, and no replies retained. The fix: retain raw replies, and void a cell when `no_answer` exceeds a predeclared share (suggest 20%). ([repl-session-memory-maturity](../handoffs/active/repl-session-memory-maturity.md) D-RI-PREVIEW-1.1; [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
+- **An all-`no_answer` tally is vacuous, not a null.** s5-dripreview1 scored 0/90 with `bad_final` in every cell, every reply 33 tokens, and no replies retained. The fix: retain raw replies, and void a cell when `no_answer` exceeds a predeclared share (suggest 20%). ([repl-session-memory-maturity](../handoffs/active/memory-program.md#track-repl-session-memory-maturity) D-RI-PREVIEW-1.1; [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
 - **Re-check a FAIL's detector before reading it as a regression.** The G2-CONC A4 FAIL was a degeneracy-detector false positive; it is kept on record, and the corrected re-run passed. ([autokernel-champion-aggregate](../handoffs/active/autokernel-champion-aggregate.md); [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
 - **Exact-set controls can fail on synthetic stress.** FA4's nan-stage case membership differs systematically between ON and OFF (4/228 vs 6/228, intersection 2), so the band comparison has no verdict until the control is redefined (V11-FA-4a). ([kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.md); [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
 - **Capture launch evidence from the ancestor wrapper.** Under Yama `ptrace_scope=1`, `/proc` environ/fd reads of non-ancestor processes return EACCES; that killed HSF PROFILE-3 and FA4 attempt 2. Record EACCES as unavailable evidence, and never change the host setting. ([HSF-5.P findings](../docs/design/hsf-5p-host-kv-mirror-findings-20261027.md); [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) VB-V11FA rebinds)
@@ -7390,7 +7390,7 @@ Sources: [week outcomes](../docs/reference/inference-outcomes-week-2026-10-18-to
 - **Launch DRY_RUN gate and scheduling lessons.** New rows must pass `dryrun_check.py` (root `1159847b9`). Check every guard script, not only `admission_guard.sh`, before moving a row between quarters (a pinned `guard.sh` gave rc70 and about 40 idle minutes). Phases under about 240 s belong in the standing CPU 24,25 preflight. Use `date -u` for timestamps, never a guess. ([2026-10-26 log](../progress/2026-10/2026-10-26-workspace-58.md); [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
 - **Label artifacts by what they hold.** The arm-P2 VERDICT.md is titled "q38fn-armP-ppl" but carries the P2 content, and the ufh14-lb7 verdict reads UNATTRIBUTED in one place and NOT_REPRODUCED in another; both are flagged, not reconciled. ([arm-P2 VERDICT](../docs/reference/agent-config/recipes/q38fn-armP2-20261024/VERDICT.md); [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
 
-Sources: [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md), [2026-10-26 log](../progress/2026-10/2026-10-26-workspace-58.md), [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md), [repl-session-memory-maturity](../handoffs/active/repl-session-memory-maturity.md), [kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.md), [HSF-5.P findings](../docs/design/hsf-5p-host-kv-mirror-findings-20261027.md)
+Sources: [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md), [2026-10-26 log](../progress/2026-10/2026-10-26-workspace-58.md), [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md), [repl-session-memory-maturity](../handoffs/active/memory-program.md#track-repl-session-memory-maturity), [kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.md), [HSF-5.P findings](../docs/design/hsf-5p-host-kv-mirror-findings-20261027.md)
 
 ## Compiled Update — 2026-10-27 (operator full wrap-up, Codex NI, cutoff 14:56:35Z)
 

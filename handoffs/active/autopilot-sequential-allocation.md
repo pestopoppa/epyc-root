@@ -10,7 +10,7 @@ clean re-run (SEQ-3b).
 **Priority**: HIGH — this determines whether the benchmark-Autopilot program was ever tested
 **Categories**: benchmark_methodology, autonomous_research, routing_intelligence
 **Parent index**: [research-evaluation-index.md](research-evaluation-index.md)
-**Related**: [episodic-memory-integrity.md](episodic-memory-integrity.md) (separate store — the reseed
+**Related**: [episodic-memory-integrity.md](memory-program.md) (separate store — the reseed
 did not touch the journal)
 
 ## The finding

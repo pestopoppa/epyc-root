@@ -175,7 +175,7 @@ Three retrieval gaps recorded on this page closed on 2026-09-16:
   - Filter-only callers now pass recency explicitly.
   - No recorded result used the old ordering
     ([sub-trace-bm25](../progress/2026-09/2026-09-16-sub-trace-bm25.md),
-    [UTM handoff](../handoffs/active/unified-trace-memory-service.md)).
+    [UTM handoff](../handoffs/active/memory-program.md#track-unified-trace-memory-service)).
 - **Memory-eval retrieval arms are lexical and self-ranking.**
   - Tulving `retrieved` indexes one trace `Event` per chapter in a private store, searches through
     `navigation.search_records`, and re-ranks every match by bm25 itself. That is why the ordering
@@ -197,7 +197,7 @@ Three retrieval gaps recorded on this page closed on 2026-09-16:
 
 - [internal-kb-rag](../handoffs/active/knowledge-pipelines.md): the H2 instrument and C7 fix
 - [colbert-reranker-web-research](../handoffs/active/knowledge-pipelines.md#track-colbert-reranker-web-research): PREFIX-1 verification and the live index stamp
-- [unified-trace-memory-service](../handoffs/active/unified-trace-memory-service.md): the trace bm25 fix note
+- [unified-trace-memory-service](../handoffs/active/memory-program.md#track-unified-trace-memory-service): the trace bm25 fix note
 - [conversational-memory-eval-instrument](../handoffs/completed/conversational-memory-eval-instrument.md): the Tulving retrieved arm and BEAM rag/trace arms
 - [2026-09-16-sub-tooling](../progress/2026-09/2026-09-16-sub-tooling.md): H2, C7 and PREFIX-1 implementation detail
 - [2026-09-16-sub-trace-bm25](../progress/2026-09/2026-09-16-sub-trace-bm25.md): bug reproduction, fix and caller audit
@@ -848,7 +848,7 @@ genuine **embedding column** — the BGE servers already resident on `:8090-8095
 are the available substrate. Recording this because "we already have search"
 (meaning FTS5) is the kind of statement that silently converts a similarity
 requirement into a keyword one.
-[`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) §UTM-M2
+[`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) §UTM-M2
 
 ### Treat an embedder substitution as a first-class experimental change
 
@@ -872,7 +872,7 @@ candidate, because opening it as one would fork an already-unfinished program
 ### Source References
 
 - [`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md) — the struck PyLate/PLAID-only premise; three GGUF repos and the seven-quant/reference-script surface; the v8 conversion + graph-builder support chain; the English-vs-multilingual counterweight; K-eval re-scope; corrected grep-count reading
-- [`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) — FTS5 is lexical; the embedding column the experience layer needs; BGE servers on `:8090-8095`
+- [`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — FTS5 is lexical; the embedding column the experience layer needs; BGE servers on `:8090-8095`
 - [`engram-conditional-memory.md`](../handoffs/active/engram-conditional-memory.md) — the replication that failed at the retriever after an embedder swap; k-ablation decay
 - [`routing-intelligence.md`](../handoffs/active/routing-intelligence.md) — the prompt-router encoder filed as a `monitor_only` comparator
 
@@ -1610,7 +1610,7 @@ Sources: [UFH-12](../handoffs/active/repl-embedding-retrieval.md) · [Codex full
 - **Real run:** plan on live dirs rc0 and apply on a COPY rc0 with rows-in = rows-out and cosine >= 0.99999; R3 postcheck covers 64,514 episodic + 1,428 strategy rows with minimum consumer-path cosine 1.0. Plan-observed-stable on 65,942 rows (quiescence not proven). Production adoption remains separate.
 - **Reranker A/B:** LateOn vs GTE on web_research sentinel queries stays gated on AR-3 Package D data; a duplicate box was closed.
 
-Sources: [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md); [colbert-reranker-web-research](../handoffs/active/knowledge-pipelines.md#track-colbert-reranker-web-research); [episodic-memory-integrity](../handoffs/active/episodic-memory-integrity.md).
+Sources: [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md); [colbert-reranker-web-research](../handoffs/active/knowledge-pipelines.md#track-colbert-reranker-web-research); [episodic-memory-integrity](../handoffs/active/memory-program.md).
 
 ## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 

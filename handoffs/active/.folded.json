@@ -104,6 +104,10 @@
    "target": "numa-placement-and-contention.md",
    "track": "dynamic-stack-concurrency"
   },
+  "episodic-memory-integrity.md": {
+   "target": "memory-program.md",
+   "track": null
+  },
   "ernie-image-turbo-evaluation.md": {
    "target": "model-evaluation-queue.md",
    "track": "ernie-image-turbo-evaluation"
@@ -365,6 +369,10 @@
    "target": "engineering-hygiene-backlog.md",
    "track": "refactoring-multirepo-2026-10"
   },
+  "repl-session-memory-maturity.md": {
+   "target": "memory-program.md",
+   "track": "repl-session-memory-maturity"
+  },
   "repo-readiness-scorer.md": {
    "target": "engineering-hygiene-backlog.md",
    "track": "repo-readiness-scorer"
@@ -445,6 +453,10 @@
   "triattention-kv-selection.md": {
    "target": "attention-matching-kv-compaction.md",
    "track": "triattention-kv-selection"
+  },
+  "unified-trace-memory-service.md": {
+   "target": "memory-program.md",
+   "track": "unified-trace-memory-service"
   },
   "v9-kernel-per-request-speculative-params.md": {
    "target": "fable5-window2-findings-03-portfolio-and-master-queue.md",
@@ -543,6 +555,10 @@
   "EVL-35": {
    "target": "EVL-14",
    "track": "re4-protocol-redesign"
+  },
+  "EVL-36": {
+   "target": "EVL-10",
+   "track": "repl-session-memory-maturity"
   },
   "EVL-38": {
    "target": "RTG-22",
@@ -794,6 +810,10 @@
    "target": "handoffs/completed/swarm-dataset-distillation.md",
    "track": null,
    "retired": "D4 2026-11-02"
+  },
+  "RTG-41": {
+   "target": "EVL-10",
+   "track": "unified-trace-memory-service"
   },
   "RTG-42": {
    "target": "INF-45",
