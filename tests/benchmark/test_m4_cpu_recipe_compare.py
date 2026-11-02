@@ -96,7 +96,7 @@ def test_qualification_runs_owned_fixture_and_stops_cleanly(tmp_path,monkeypatch
     try: assert q.qualification(a,row)==75
     finally:worker.join(timeout=12)
     assert json.loads(result.read_text())['measurement'] is False
-    assert json.loads((dd/'m4-recipe-qualification-watch/watch-result.json').read_text())['containment_empty'] is True
+    assert json.loads((attempt/'watch/watch-result.json').read_text())['containment_empty'] is True
 
 def test_qualification_worker_refuses_real_environment(monkeypatch):
     spec=importlib.util.spec_from_file_location('m4_recipe_qual_reject',ROOT/'scripts/benchmark/m4_cpu_recipe_entry.py')

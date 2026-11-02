@@ -71,8 +71,12 @@ def qualification(a, row: str) -> int:
         raise ValueError('qualification grant or control path mismatch')
     cpus=os.environ['FILLER_CPUS']
     entry._grant(a.grant,cpus,a.deadline,allow_dryrun=True,expected_row_id=row)
-    output=dd/'m4-recipe-qualification-watch';output.mkdir()
-    plan=dd/'m4-recipe-qualification-plan.json'
+    result=Path(os.environ['FILLER_DRYRUN_RESULT_PATH'])
+    if (result.name != 'native-result.json' or result.parent.parent != dd/'native-attempts'
+            or not result.parent.name.startswith('attempt-') or result.parent.resolve(strict=True) != result.parent):
+        raise ValueError('invalid qualification attempt path')
+    output=result.parent/'watch';output.mkdir()
+    plan=result.parent/'fixture-plan.json'
     payload={'schema':'epyc.m4.cpu_entry_fixture.v1','mode':'fixture','row_id':row,
              'region':cpus,'fixture':str(Path(__file__).resolve()),'fixture_sha256':_sha(Path(__file__))}
     with plan.open('x') as f: json.dump(payload,f,sort_keys=True)
