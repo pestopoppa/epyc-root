@@ -107,3 +107,23 @@ Consumed omega-review-20261102-result.json. Omega successor must not be publishe
 - Consumed `strategy13.json`: scratch HTTP transport now uses the full remaining absolute deadline rather than a fixed one-second header/read timeout; stop/deadline closes an attached socket and preserves partial failure records. Eleven offline transport/seam tests passed, including mocked blocked headers. No live prefill latency or inference claim; the producer, trusted grant/server identity, custody, scorer and adapter are still required before publication.
 - Prior wrap-up commit `083306db260fc81c3f40c6bb1ca22e9c106e66df` initially failed concurrent non-fast-forward pushes. Merged the latest origin/main and successfully serialized-pushed through `699d8fd452af`; cherry was empty. The licensed RLM source packet is now durable, but the third arm/runner remain open.
 - Delegated bounded producer, scorer and native ClaimTuple adapter integration (`strategy14`, `scorer14`, `adapter14` events); no inference or row publication. Preserved unrelated width-guidance diff for separate review.
+
+## 09:31Z — Dispatch bounded investigations for parked frontdoor reconciliation and publishable inference work
+
+Dispatched independent investigations of the erroneously republished parked RTE-LOG-1 frontdoor row, strategy/prefix measurement readiness, and S4 Omega measurement readiness. Registered completion reports as dispatcher events. Existing parked lineages remain stopped; no grant or compute launched.
+
+## 09:31Z — Dispatch bounded investigations for parked frontdoor reconciliation and publishable inference work
+
+Dispatched independent investigations of the erroneously republished parked RTE-LOG-1 frontdoor row, strategy/prefix measurement readiness, and S4 Omega measurement readiness. Registered completion reports as dispatcher events. Existing parked lineages remain stopped; no grant or compute launched.
+
+## 09:33Z — Integrate parked-lineage investigation reports
+
+Reviewed frontdoor and S4 Omega investigations: frontdoor READY manifest is an erroneous republication of parked RTE-LOG-1; allocator-safe withdrawal is assigned to owner/keeper, with no new grant or retry. S4 Omega is parked after three failures; last qualification had zero units, no run-phase result, and a logger output failure. Strategy and prefix measurement investigations found no runnable independent row yet. Delegated owner routing and independent preparation; completion reports registered as dispatcher events. No measurement verdict or acceptance is claimed.
+
+## 09:33Z — Integrate parked-lineage investigation reports
+
+Reviewed frontdoor and S4 Omega investigations: frontdoor READY manifest is an erroneous republication of parked RTE-LOG-1; allocator-safe withdrawal is assigned to owner/keeper, with no new grant or retry. S4 Omega is parked after three failures; last qualification had zero units, no run-phase result, and a logger output failure. Strategy and prefix measurement investigations found no runnable independent row yet. Delegated owner routing and independent preparation; completion reports registered as dispatcher events. No measurement verdict or acceptance is claimed.
+
+## 09:35Z — Land prior progress and prepare remaining independent work
+
+Landed prior investigation progress after resolving concurrent origin/main push races by acquiring the serialized push lock across fetch, merge and push. Strategy ablation remains unpublishable pending trusted runner, grant/server custody and attested belief producer. Dispatched independent width and prompt preparation; completion events registered. No parked lineage retried and no measurement result claimed.
