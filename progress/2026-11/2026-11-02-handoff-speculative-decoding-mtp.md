@@ -183,3 +183,7 @@ Corrected the COPYSPEC trimmed sweep corpus and class-specific acceptance attrib
 ## 11:09Z — Prepare SR-6 first-window row and repair smoke linkage guard
 
 Prepared the sealed three-window SR-6 plan, 45 rendered/tokenized prompts, bounded exposure screen, model preflight and row launcher. Implemented in-flight STOP, constrained captured-PID containment, runtime/placement witnesses and scheduler integration; 125 model-free tests pass. First smoke failed on a mapped-library allowlist; added manifest-pinned libmtmd. Second publisher smoke returned WAIT before execution because the host was below its 150 GiB disk floor (143 GiB available). The repaired row is not smoke-qualified; retry its saved spec when space clears. July three-prompt history is unavailable, so disjointness and registry authority remain unproved.
+
+## 11:11Z — Qualify and publish SR-6 window 1
+
+SR-6 window 1 `sr6-qwen36-width-w1-20261102` passed the publish_row four-CPU smoke (one unit, rc75 partial-native-incomplete) and was published for CPU scheduling. The row is one of three predeclared windows; no performance or registry conclusion follows from smoke. Result path: `/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr6-qwen36-width-w1-20261102/RESULT.json`.
