@@ -72,3 +72,9 @@ MISSING /mnt/raid0/llm/tmp/codex-ni-20261027-pf1-native-ready	PF1 ready dir cite
 KEEP /mnt/raid0/llm/tmp/codex-ni-kbrag-g11-parity-r2-20261030	92M	2165	RPL-KB G11 R2 native records + stored embeddings (G11 disagreement analysis input)
 KEEP /mnt/raid0/llm/tmp/codex-ni-kbrag-g13-truncskip-20261030	-	-	RPL-KB G13 truncation sweep packet
 KEEP /mnt/raid0/llm/tmp/codex-c6-*-20261102	-	-	RPL-C6 retained diagnostic captures (10 dirs; unchanged-predicate re-reads only)
+
+# T3 additions, second pass (ws58, 2026-11-02, BRF-T3-2 continuation): inputs read by the C6 / EXP-06 / LID1 / RT-6 / CAP-06 replays.
+KEEP /mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030	-	57932	EXP-07 CS-26.LID1 arm (b): Nemotron 3.5 auto-mode tags (raw-r0-auto.json); KEEP marker created 2026-11-02
+KEEP /mnt/raid0/llm/tmp/codex3-pip-exposure-recheck-20261101	46M	-	EXP-06 PIP02-PHASEC-CUSTODY v8 exposure snapshot (last readable record; /mnt/micron campaign roots not visible in the 2026-11-02 session namespace)
+KEEP /mnt/raid0/llm/tmp/codex3-cs26-lid1-20261030	-	-	EXP-07 CS-26.LID1 frozen crop manifest (9,150 cases) + v2 packet
+KEEP /mnt/raid0/llm/tmp/roi-prep-20261023/INF-72-RT1/results	742M	-	CAP-01 RT-6 raw Q38FN routing traces (27 hash-verified shards); protected by the parent /mnt/raid0/llm/tmp/roi-prep-20261023/KEEP; no marker added inside the trace tree
