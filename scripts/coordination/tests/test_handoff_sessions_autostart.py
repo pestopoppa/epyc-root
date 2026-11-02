@@ -910,3 +910,39 @@ class DeadlockTests(_DSHBase):
         _w(os.path.join(self.flags, "grants", "row-a.ended"), "rc=0\n")
         reg, st = self.dispatch()
         self.assertIsNone(reg["sessions"]["alpha"].get("dirty_wrap_resume"))
+
+
+class IdleComputeUnparkTests(_DSHBase):
+    def _old(self, minutes):
+        return hs._dt.datetime.fromtimestamp(hs.time.time() - minutes * 60, hs._dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    def test_stuck_expires_after_await_expiry(self):
+        # 08:22-09:18Z deadlock: `stuck` never expired (only a run-end cleared it) and cands=0 means no run-end ever comes
+        old = self._old(31)
+        self.session(stuck="3 no-op turns", noop_turns=3, last_end=old, last_resume=old)
+        hs.save(hs.reg_path(self.flags), self.reg)
+        with patch.object(hs, "keeper_cands", return_value=4):  # compute busy: only the expiry can resume it
+            self.dispatch()
+        self.assertTrue(any("FINISH ALL READY ITEMS" in c["prompt"] for c in self.calls), "stuck session resumed after expiry")
+
+    def test_idle_compute_ignores_every_park(self):
+        now = hs.now_iso()
+        self.session(stuck="3 no-op turns", noop_turns=3, await_event=True, last_end=now, last_resume=now,
+                     idle_reported="nothing to do")
+        self.reg["sessions"]["alpha"]["yield"] = True
+        hs.save(hs.reg_path(self.flags), self.reg)
+        with patch.object(hs, "keeper_cands", return_value=5):  # compute has candidates: parks hold
+            self.dispatch()
+        self.assertEqual([c for c in self.calls if "FINISH ALL READY ITEMS" in c["prompt"]], [])
+        with patch.object(hs, "keeper_cands", return_value=0):  # live==0 and cands==0: idle compute outranks the parks
+            reg, _ = self.dispatch()
+        self.assertTrue(any("FINISH ALL READY ITEMS" in c["prompt"] for c in self.calls))
+        self.assertIsNone(reg["sessions"]["alpha"]["stuck"])
+        self.assertIn("IDLE-COMPUTE", self.log_text())
+
+    def test_keeper_cands_parses_last_snapshot(self):
+        p = os.path.join(self.flags, "k.log")
+        _w(p, "2026-11-02T09:17:21Z SNAPSHOT free=q0 busy=- cands=3 assigned=0\nnoise\n"
+              "2026-11-02T09:19:21Z SNAPSHOT free=gpu-quiet,q0 busy=- cands=0 assigned=0 lanes cpu=0 gpu=0\n")
+        self.assertEqual(hs.keeper_cands(p), 0)
+        self.assertIsNone(hs.keeper_cands(p + ".missing"))
