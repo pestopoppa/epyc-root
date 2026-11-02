@@ -99,3 +99,7 @@ Published the decisions and regenerated indexes after merging concurrent main up
 ## 10:16Z — Prepare SR-6 exposure inventory reader
 
 Added a fail-closed native exposure-record inventory reader and five focused tests; all 55 SR-6 preparation tests passed. The caller must establish an authoritative root and exclude concurrent writers; the reader is not wired into a runnable row and no inference result or registry change is claimed. SW-2 and the legacy native-window recovery item in the dispatcher state are already resolved in the handoff. SR-7 preparation was delegated; its report and patch are registered for the next boundary.
+
+## 10:18Z — Prepare SR-7 proposer statistics parsing
+
+Reviewed the model-free parser for per-proposer trace statistics and response-counter reconciliation; two bounded test cases with negative controls passed. It does not establish fresh server lifecycle, runtime provenance, corpus, control or a decision rule and is not a published row or inference result. SR-6, SR-7 and NG5 follow-up components are delegated with scratch reports and patches registered for review.
