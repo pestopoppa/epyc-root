@@ -95,3 +95,7 @@ Regenerated the derived handoff indexes after merging concurrent updates; SW-3 a
 ## 10:13Z — Decide SW-3 and CAFE-1 and advance SR-6
 
 Published the decisions and regenerated indexes after merging concurrent main updates.
+
+## 10:16Z — Prepare SR-6 exposure inventory reader
+
+Added a fail-closed native exposure-record inventory reader and five focused tests; all 55 SR-6 preparation tests passed. The caller must establish an authoritative root and exclude concurrent writers; the reader is not wired into a runnable row and no inference result or registry change is claimed. SW-2 and the legacy native-window recovery item in the dispatcher state are already resolved in the handoff. SR-7 preparation was delegated; its report and patch are registered for the next boundary.
