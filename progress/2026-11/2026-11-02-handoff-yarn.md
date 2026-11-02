@@ -15,3 +15,7 @@ Consumed Jet-Long CPU preparation: /mnt/raid0/llm/tmp/yarn/jetlong-cpu/INPUT-PLA
 ## 10:07Z — Prepare Jet-Long CPU fixture and resumable runner
 
 Advanced JETLONG-LONGCTX-RUN: a bounded runner integration and exact-token fixture generator are under preparation, with outcome files registered; one-time model content hash started outside grant and its output registered. The existing offline resume ledger preserves interrupted attempts as unknown; it is not a runnable row. YARN-E1-PROOF adoption is under review. No inference was launched or published.
+
+## 10:08Z — Preserve Jet-Long bounded runner and ledger
+
+Integrated the offline bounded one-arm Jet-Long runner prototype and durable attempt ledger in scripts/benchmark/jetlong_cpu. Six offline tests pass, including fake HTTP, deadline, timeout, unknown and tampered fixture controls. This is not yet a runnable inference row: managed launcher, scoring, sealed fixtures, provenance and keeper qualification remain. Independent implementations for launcher, scoring and fixtures are underway with registered outcome files. No inference or scientific verdict.
