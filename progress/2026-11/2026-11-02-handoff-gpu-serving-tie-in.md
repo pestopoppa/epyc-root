@@ -95,3 +95,7 @@ Dispatched bounded independent preparation of corrected-placement E5, known-gold
 ## 10:38Z — Review E5 placement and gold binding controls
 
 Reviewed the static E5 manifest auditor: 10 of 20 in-scope Qwen manifests and 4 of 8 Gemma manifests have multi-node CPU sets with no memory policy; P-BENCH-PLACEMENT-1 rejects those cells. The audit is static and establishes no runtime placement or cache state. Reviewed a PASS_TO_PASS fixture update for the uncommitted gold-binding change: 14 model-free controls passed in a scratch copy, without scorer validation. Lane code changes require GitNexus impact analysis; the index is unavailable and scripts/gitnexus-analyze.sh was refused by CPU admission. Existing P3-5 arm-selection package already covers the operator decision.
+
+## 10:40Z — Document corrected E5 placement readiness
+
+Reviewed and prepared the static E5 placement readiness document: 10 of 20 in-scope Qwen manifests and 4 of 8 Gemma manifests have multi-node CPU sets with no memory policy. Preserved INF-07 ownership, the banked-Gemma do-not-rerun requirement and the distinction between static manifests and runtime evidence. P1-2 remains open. Prior wrapup commit was created but serialized push failed; exact Git rejection was suppressed by wrapup output.
