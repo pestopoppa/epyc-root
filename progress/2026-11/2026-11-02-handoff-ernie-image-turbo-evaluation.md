@@ -41,3 +41,9 @@ Consumed GPU implementation review: `/mnt/raid0/llm/tmp/ernie-fa-ab-20261102/` c
 ### GPU diagnostic and Qwen capture preparation
 
 Consumed GPU implementation review: `/mnt/raid0/llm/tmp/ernie-fa-ab-20261102/` contains a syntax-checked v15 launcher and worker draft. Its source receipt and native capture still need review, and requested flash attention is not proof of the selected graph operation; fallback must be observed before a causal interpretation. An independent bounded GPU review is underway. Qwen candidate audit fixed a dry-run failure that previously could count an invalid PNG as a native unit. Model digest completion receipt remains missing; an independent custody review is underway. No inference, qualification or publication occurred. The prior wrap-up successfully published `cf110dff4875fe23ab90c90cb5a9a2b0cb009016`, including both durable review packets. [no-belief: preparation only]
+
+## 07:43Z — Consume Qwen model digest and GPU diagnostic review
+
+### ERNIE comparison input custody
+
+Consumed the Qwen input digest receipt: 59 files, manifest `/mnt/raid0/llm/tmp/ernie-qwen-pip03-20261102/MODEL-SHA256SUMS`, manifest SHA-256 `d45112904c7f69c3b015006af03d55bf8ec38c0873258ef20838ad43a116f93d`. Runtime metadata and preparation-time server/source digests are recorded in the adjacent `runtime-custody.json`; 896² memory and timing are unmeasured. Independent launcher completion and resource review are underway with registered event files. GPU review repaired dry-run isolation, grant directory handling, incomplete exit status and source-file digest manifest; selected graph operation remains UNKNOWN, so an operation-trace preparation was assigned. No rows published and no inference run. [no-belief: preparation only]
