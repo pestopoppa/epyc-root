@@ -1,5 +1,7 @@
 import datetime as dt
+import os
 from pathlib import Path
+import signal
 import tempfile
 import unittest
 
@@ -40,5 +42,18 @@ class BridgeTests(unittest.TestCase):
         self.env.update(FILLER_DRYRUN='1', FILLER_CPUS='0-23')
         self.path.write_text(self.path.read_text().replace('regions=0-95','regions=0-23').rstrip() + ' schema=epyc.rowflow.dryrun-grant.v1 id=sample kind=rowflow-dryrun\n')
         self.assertEqual(run_guarded_attempt(**self.args(),worker=lambda **kw:kw['mode']),'qualification')
+
+    def test_signal_cancels_and_restores_handlers_even_on_exception(self):
+        old_int = signal.getsignal(signal.SIGINT)
+        old_term = signal.getsignal(signal.SIGTERM)
+        def worker(**kw):
+            os.kill(os.getpid(), signal.SIGTERM)
+            self.assertTrue(kw['stopped']())
+            self.assertFalse(kw['grant_valid']())
+            raise RuntimeError('deliberate failure')
+        with self.assertRaisesRegex(RuntimeError, 'deliberate failure'):
+            run_guarded_attempt(**self.args(), worker=worker)
+        self.assertEqual(signal.getsignal(signal.SIGINT), old_int)
+        self.assertEqual(signal.getsignal(signal.SIGTERM), old_term)
 
 if __name__ == '__main__': unittest.main()

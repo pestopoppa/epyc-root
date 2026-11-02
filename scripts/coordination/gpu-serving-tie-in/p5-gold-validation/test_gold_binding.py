@@ -86,6 +86,31 @@ class GoldBindingTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             binding.check(self.args)
 
+    def test_contradictory_optional_native_status_is_refused(self):
+        for key, value in (("submitted_ids", []), ("submitted_instances", 0),
+                           ("empty_patch_ids", ["repo-1"]), ("empty_patch_instances", 1),
+                           ("incomplete_ids", ["repo-1"]), ("incomplete_instances", 1)):
+            with self.subTest(field=key):
+                report = dict(self.report, **{key: value})
+                self.write_json("report.json", report)
+                with self.assertRaises(ValueError):
+                    binding.check(self.args)
+
+    def test_consistent_optional_native_status_is_accepted(self):
+        self.report.update(submitted_ids=["repo-1"], submitted_instances=1,
+                           empty_patch_ids=[], empty_patch_instances=0,
+                           incomplete_ids=[])
+        self.write_json("report.json", self.report)
+        self.assertEqual(binding.check(self.args)["status"], "REPORT_COVERAGE_MATCH")
+
+    def test_boolean_counts_are_refused(self):
+        for key, value in (("total_instances", True), ("error_instances", False),
+                           ("submitted_instances", True), ("empty_patch_instances", False)):
+            with self.subTest(field=key):
+                self.write_json("report.json", dict(self.report, **{key: value}))
+                with self.assertRaises(ValueError):
+                    binding.check(self.args)
+
     def test_missing_fail_to_pass_is_refused(self):
         self.dataset[0]["FAIL_TO_PASS"] = "[]"
         self.write_json("dataset.json", self.dataset)
