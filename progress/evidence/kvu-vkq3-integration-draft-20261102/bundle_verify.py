@@ -63,6 +63,9 @@ def verify_bundle(root, trusted_pins):
         raise ValueError('trusted pins must exactly cover the bundle')
     rootfd = os.open(root, _DIRECTORY)
     try:
+        directories = ('launcher', 'kvu-vkq3-guard-review-20261102')
+        if set(os.listdir(rootfd)) != set(directories) | {'bundle-manifest.json'}:
+            raise ValueError('unexpected or missing bundle root entries')
         _, raw = _read_regular(rootfd, 'bundle-manifest.json', limit=65536)
         try:
             manifest = json.loads(raw, object_pairs_hook=_unique_pairs)
@@ -73,9 +76,12 @@ def verify_bundle(root, trusted_pins):
                 not isinstance(manifest['files'], dict) or
                 manifest['files'] != trusted_pins):
             raise ValueError('manifest does not match trusted pins')
-        for directory in ('launcher', 'kvu-vkq3-guard-review-20261102'):
+        for directory in directories:
             dfd = os.open(directory, _DIRECTORY, dir_fd=rootfd)
             try:
+                expected = {n.split('/')[1] for n in _NAMES if n.startswith(directory + '/')}
+                if set(os.listdir(dfd)) != expected:
+                    raise ValueError('unexpected or missing bundle directory entries: ' + directory)
                 for rel in sorted(n for n in _NAMES if n.startswith(directory + '/')):
                     actual, _ = _read_regular(dfd, rel.split('/')[1])
                     if not hmac.compare_digest(actual, trusted_pins[rel]):

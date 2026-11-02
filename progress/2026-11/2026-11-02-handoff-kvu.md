@@ -175,3 +175,7 @@ VKQ3 draft adds atomic manifest publication and a separate pinned-file verifier;
 ## 10:36Z — Merge origin/main and apply VKQ3 execution-boundary review to ongoing implementation
 
 Merged current origin/main into the lane after the prior serialized push failed. VKQ3 review identified that verification must precede imports in a trusted bootstrap and that point-in-time hashes alone cannot protect later execution; bounded implementation and verifier work are underway.
+
+## 10:38Z — Reject unpinned imports from the VKQ3 draft bundle
+
+The draft bundle verifier now rejects unexpected root and subdirectory entries including unpinned Python modules and bytecode; six verifier tests pass. The separate bootstrap remains deny-only and the tokenizer worker does not measure target MTP acceptance, so neither is a publishable calibration.

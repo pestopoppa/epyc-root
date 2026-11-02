@@ -67,6 +67,29 @@ class BundleVerifyTests(unittest.TestCase):
         with self.assertRaises(OSError):
             bv.verify_bundle(self.root, self.pins)
 
+    def test_unpinned_entries_and_bytecode_are_rejected(self):
+        for rel in ('extra.py', 'launcher/extra.py', 'launcher/__pycache__',
+                    'kvu-vkq3-guard-review-20261102/guard.pyc'):
+            with self.subTest(rel=rel):
+                extra = self.root / rel
+                if rel.endswith('__pycache__'):
+                    extra.mkdir()
+                    (extra / 'worker_draft.cpython-311.pyc').write_bytes(b'bytecode')
+                else:
+                    extra.write_bytes(b'unpinned')
+                with self.assertRaisesRegex(ValueError, 'unexpected or missing bundle'):
+                    bv.verify_bundle(self.root, self.pins)
+                if extra.is_dir():
+                    (extra / 'worker_draft.cpython-311.pyc').unlink()
+                    extra.rmdir()
+                else:
+                    extra.unlink()
+
+    def test_missing_member_is_rejected(self):
+        (self.root / 'launcher/worker_draft.py').unlink()
+        with self.assertRaisesRegex(ValueError, 'unexpected or missing bundle'):
+            bv.verify_bundle(self.root, self.pins)
+
 
 if __name__ == '__main__':
     unittest.main()
