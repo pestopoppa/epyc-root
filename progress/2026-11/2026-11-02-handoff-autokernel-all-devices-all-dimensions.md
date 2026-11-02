@@ -19,3 +19,11 @@ Continued integrating the model-free AKX-ALL-8 floor successor under /mnt/raid0/
 ## 10:15Z — Prepare independent inference row specifications
 
 Dispatched bounded preparations for AK-Q38FN-64K-FLOOR, AKX-ALL-3, and AKX-AUTO-10; completion paths registered for subsequent integration. AKX-ALL-8 successor still requires an equivalent combined GPU reservation/lock witness and an actual incremental measurement record; no floor or qualification claimed.
+
+## 10:16Z — Prepare safe CH-27 floor successor
+
+AK-Q38FN-64K-FLOOR is folded into the bounded CH-27 calibration; OP-AK-HOLD still prohibits its dry-run or booking. The successor requires verified private campaign custody and safe paired floor publication. Bounded investigations dispatched for that repair, AKX-ALL-8 reservation semantics and AKX-ALL-29.5a trust-boundary requirements; no inference or row publication.
+
+## 10:18Z — Prepare model-free floor successor controls
+
+Prepared independent model-free work for the CH-27a startup and tamper controls, the AKX-ALL-8 incremental observation, and the combined GPU reservation semantics. No inference, qualification, or floor claimed. Prior wrap-up push failed; this wrap-up retries delivery of the lane commits.
