@@ -43,3 +43,7 @@ Consumed three preparation reports. Full GPQA-CoT pin questions_gpqa_diamond_cot
 ## 00:36Z — Review current-model GPQA launcher and prepare keeper-safe fixes
 
 Consumed GPU draft and audit. The current-arm draft pins Qwen3.8-27B Q8/DFlash2 max7 and GPQA-CoT n198 seed42 cap8192, and bash -n passes. It is not publishable yet: the one rocm-smi snapshot is before inference, output is not keeper-row scoped, the spec is not a rowflow spec and lifecycle/grant handling requires review. Dispatched independent bounded work for overlapping PID-keyed residency evidence, real keeper row/lifecycle contract, and runner CLI/context audit. No inference or qualification was performed.
+
+## 00:37Z — Integrate GPU residency evidence and validate model provenance
+
+Consumed the GPQA sampler result: a mock-tested draft records timestamps, ROCm output and captured-server PID presence; it has not been exercised during inference. Dispatched bounded integration with inference-window timestamps and fail-closed residency handling, plus checks of production GPU linkage verifier usage and target/drafter provenance. Keeper and runner review results remain registered. No row published or inference run.
