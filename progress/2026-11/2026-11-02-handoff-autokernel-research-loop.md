@@ -131,3 +131,7 @@ Dispatched bounded lane-only implementation preparation for an aligned full-voca
 ## 01:05Z — Recover wrap-up from untracked validator scratch
 
 The preceding wrap-up rejected two untracked validator drafts under artifacts/. Moved those drafts to /mnt/raid0/llm/tmp/autokernel-lb-validator/ and instructed the preparer to continue there; the prior appended progress remains in the worktree and is included in this boundary. No row published or checkbox completed.
+
+## 01:06Z — Review capture validator and post-change campaign join
+
+Consumed HR3, LB validator and calibration model binding reports. In the real Q38FN sample three of four actor trial IDs match experiment rows with ordinals, but all matching token counters are null (hosted codex); the fourth is not yet mapped, store closure is unproven, and the canary remains open. Reviewed the standalone LB capture precheck: it is not authenticated provenance, dispatch proof or gate integration; requested same-N enforcement, explicit executable/DSO digest identity and adversarial tests. Current research origin/main centralizes model hashing in _expected_declaration and the GitNexus index is stale; precomputed hashes with stat are insufficient to bind executed bytes. Requested a private-temp fs-verity capability check and further implementation preparation, and registered outputs. Prior wrap-up d41d63580677e045aada7d8de76adaffdae82d99 succeeded and was pushed. No inference, row publication or checkbox completion.
