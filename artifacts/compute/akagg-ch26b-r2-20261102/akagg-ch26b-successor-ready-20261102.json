@@ -1,0 +1,29 @@
+{
+  "dryrun_whole_host": true,
+  "failed_count_observed": 1,
+  "failed_dryrun_timestamp": "2026-11-01T22:43:16Z",
+  "id": "akagg-ch26b-1017-c2-r2-20261101",
+  "keeper_allocation_static": "q0,q1,q2,q3,gpu-quiet; one_quarter=false",
+  "launcher_sha256": "a62ce1c8d8b824b4b8ea072f597f5f59aeaa5e1b64d12d39f8af3de269f0e219",
+  "limits": [
+    "No model/keeper run, qualification, or publication; owner review and publish only.",
+    "Predecessor stays FAILED and its unchanged fail memo is guarded; any predecessor reactivation refuses successor.",
+    "Original 600 GiB, t48, 0-95, GPU quiet, 24/5 protocol unchanged."
+  ],
+  "lineage": "akagg-ch26b-1017-c2",
+  "predecessor_failed_rc": 3,
+  "schema": "epyc.akagg.ch26b.successor-ready.v1",
+  "source_gate_sha256": "63edfd66d5fb7f8cb7e41e68423676b8fc3fbaa0a1859e26e4568c9ec41754af",
+  "source_manifest_sha256": "42f389156ec358c525f6b5520a00d0da26fff566f25cb1e47054728bb015d635",
+  "spec": "/mnt/raid0/llm/tmp/akagg-ch26b-r2-20261101/spec.DRAFT.json",
+  "spec_sha256": "6b0a8c742a591c59dd45792d1b67112ea6dc5dbfabc8f4854cfbc64283d3e395",
+  "supersedes": "akagg-ch26b-1017-c2-20261101",
+  "tests": [
+    "bash -n launcher.sh job.sh",
+    "python3 -m py_compile guard_predecessor.py run.py",
+    "sha256sum -c INPUT.sha256",
+    "predecessor guard synthetic active/changed negative controls",
+    "actual predecessor guard read-only passed",
+    "static installed rowflow dryrun_shape"
+  ]
+}

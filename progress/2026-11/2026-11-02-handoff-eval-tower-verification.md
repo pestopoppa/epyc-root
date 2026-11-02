@@ -7,3 +7,7 @@ Recovered an interrupted prior wrap-up: the lane had an unowned stale index lock
 ## 01:26Z — Reconcile confidence evidence before publishing calibration row
 
 Checked the prepared-output event paths: EV-CONF-2 probe row, EV-14a row wrapper, and root capture patch were not yet available at this boundary. Current root resolve_spec_state already fails closed for a missing segment declaration (commit 4fe472257); the remaining specific gap is upstream confidence_probe.py converting a missing per-slot speculative field to false before emitting that declaration. Historical EV-4c calibration remains suspended. No inference launched or row published.
+
+## 03:36Z — Prepare isolated EV-14a calibration worker
+
+Prepared /mnt/raid0/llm/tmp/eval-tower-ev14a-prep/run_ev14a_fresh.py from the staged EV-14a driver, requiring explicit output directory, calibration ID, trial base and pin ID; it refuses existing output directories and returns failure for moved pin, empty suites or refused bands. Python syntax compilation passes. This is preparation, not a publishable row: role/pool readiness, complete expected suite validation, rowflow launcher, unique IDs and decision-grade contract remain to be integrated. Registered bounded ThinkPRM, EV-15c and ETV-T2 implementation assessments. No inference launched or row published. GitNexus status reports this lane unindexed and impact query could not disambiguate its repository; no repository code was edited by this boundary.

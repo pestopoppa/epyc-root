@@ -1,0 +1,8 @@
+{
+  "result": "PASS",
+  "test": "test_identity.py",
+  "test_sha256": "00d8ebff93777e249f5b6d5bd9109a4757b495eafea59e34dbcccaaf96c3695e",
+  "command": "PYTHONPATH=/mnt/raid0/llm/tmp/akagg-ch27-c5-single-window-20261101/research-source/scripts/kernel_rnd:/mnt/raid0/llm/tmp/akagg-ch27-c5-single-window-20261101/research-source:/mnt/raid0/llm/epyc-orchestrator /mnt/raid0/llm/epyc-inference-research/.venv/bin/python -m pytest -q -s /mnt/raid0/llm/tmp/akagg-ch27-registry-proof-20261101/test_identity.py",
+  "proof": "synthetic private/shared canonical launches differ in execution digest but share recipe hash and matched frame; FloorRegistry lookup accepts synthetic matching entry and rejects differing frame and epoch",
+  "limits": "entries and record loading monkeypatched; no actual registry write, no sealed real floor validation, no CH-27 specific model or campaign input, no inference; pinned longctx serving floor_registry checked by sha256 against imported modules; fixtures imported from current research tests"
+}
