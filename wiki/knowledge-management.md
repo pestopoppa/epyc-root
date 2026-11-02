@@ -3468,7 +3468,7 @@ practices follow, all applied here:
 - [`handoffs/active/within-role-placement-state-machine.md`](../handoffs/active/within-role-placement-state-machine.md)
   — the handoff that owns the two real tasks, annotated with the retirement evidence and
   deliberately left un-ticked.
-- [`handoffs/active/design-backlog-triage-2026-07-23.md`](../handoffs/active/design-backlog-triage-2026-07-23.md)
+- [`handoffs/completed/design-backlog-triage-2026-07-23.md`](../handoffs/completed/design-backlog-triage-2026-07-23.md)
   — the misfiled row's target: a zero-checkbox reference snapshot, still live, still cited.
 - [`handoffs/archived/wp9-wp10-lineup-event-prep.md`](../handoffs/archived/wp9-wp10-lineup-event-prep.md)
   — the archived procedure, carrying its expired premises in the archival banner.

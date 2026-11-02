@@ -15,7 +15,7 @@
 
 ## 2026-07-26 Staleness Review
 
-The [design-backlog triage](design-backlog-triage-2026-07-23.md) still records
+The [design-backlog triage](../completed/design-backlog-triage-2026-07-23.md) still records
 no satisfied checkpoint, upstream-inference, or training-capacity activation
 gate for this cluster. Keep the tracker monitoring-only and open a separate
 implementation handoff only when one of the OR-gates below has evidence.

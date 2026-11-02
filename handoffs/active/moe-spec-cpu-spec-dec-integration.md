@@ -98,7 +98,7 @@ Re-flagged 2026-04-27 after peer-review pass #2 noted that "all software paths e
 **Workstream**: Inference Acceleration → CPU Optimization
 **Parent index**: [`inference-research-index.md`](inference-research-index.md), [`inference-research-index.md`](inference-research-index.md)
 **Related**:
-- [`cpu-shape-specialized-gemv-decode.md`](cpu-shape-specialized-gemv-decode.md) — research note that surfaced this technique (Session 2026-04-27)
+- [`cpu-shape-specialized-gemv-decode.md`](../completed/cpu-shape-specialized-gemv-decode.md) — research note that surfaced this technique (Session 2026-04-27)
 - [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md) (CPU15) — compacted disposition gate; MoE-Spec only needs CPU15 coordination if `GGML_EP_*` is explicitly re-enabled after CPU15-REVAL
 - [`research/intake_index.yaml`](../../research/intake_index.yaml) — intake entry to be added (forthcoming)
 

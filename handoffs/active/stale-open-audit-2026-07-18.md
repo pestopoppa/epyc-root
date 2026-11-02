@@ -33,7 +33,7 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
 
 | Handoff | Open | Live | Verdict | Recommendation |
 |---|---:|---:|---|---|
-| [cpu-shape-specialized-gemv-decode](cpu-shape-specialized-gemv-decode.md) | 38 | 2 | MIXED | re-anchor — kernel LANDED 2026-04-24, SIMD Phase 0–5 deprioritized; box only the 2 live graph-fusion tasks |
+| [cpu-shape-specialized-gemv-decode](../completed/cpu-shape-specialized-gemv-decode.md) | 38 | 2 | MIXED | re-anchor — kernel LANDED 2026-04-24, SIMD Phase 0–5 deprioritized; box only the 2 live graph-fusion tasks |
 | [gemma-challenge-kernel-techniques-v7](gemma-challenge-kernel-techniques-v7.md) | 9 | 6 | LIVE | keep — split K28 out (owned in mi210 roadmap); correctly NOT board-flagged |
 | [llamacpp-v6-consolidation](../archived/llamacpp-v6-consolidation.md) | 6 | 1 | SUPERSEDED | close → completed (v6 cutover shipped 2026-06-26); re-anchor 5 items to v7 |
 | [llama-cpp-dsa-contribution](llama-cpp-dsa-contribution.md) | 4 | 4 | **LIVE** | **add `Lifecycle: live` override** — board over-flags it "superseded" (only the *original* objective was); D2/D3 re-anchored + live. GLM-5.2 box co-owned by glm51-reap |
