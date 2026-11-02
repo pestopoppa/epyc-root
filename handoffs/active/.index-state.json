@@ -28,7 +28,7 @@
       "blocked": 17,
       "handoffs": 54,
       "oldest_advance": "2026-07-29",
-      "open": 658
+      "open": 657
     },
     "user-facing-harness-index.md": {
       "blocked": 17,
@@ -1353,10 +1353,10 @@
     },
     "kv-prefix-fork-and-paged-attention.md": {
       "blocked": 1,
-      "closed": 96,
+      "closed": 97,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 58,
+      "open": 57,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
