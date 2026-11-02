@@ -297,6 +297,7 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
     12.75 GiB KV pool ≈ 38.03 GiB (`evidence/vram_during_reload.log`). Land the measured value in the research master
     with its evidence pointer through the stack-change pipeline (registry value, DRAFT-SEL-1 `check_lean` reads it),
     and recompile. Done when `check` passes and the lean carries 38.03 with an evidence path.
+    Identity: model Qwen3.8-27B-Q8_0 + DFlash2-Q8_0 drafter, build gpu-20260921-ffc1bac82 (kernels/production/gpu), harness the KVU-16a shape-matched load producer (np4, pool 393216, ub512, q8 KV, `--no-cache-idle-slots`), metric sampled own-PID VRAM minus observed target KV (GiB, lower is better; a sampled maximum, not a lifetime peak), rule: report non-KV GiB for the registry shape, no registry change from this row, region mi210_0 + cpus 184-191, est: provisional 1800 s, pilot: bounded to one load plus two post-health samples. Stop rule: stop-on-answer (the own-PID VRAM sample pair is the answer); futility-only stop on a load fault or VRAM below 1 GiB (no GPU residency).
     - **2026-11-02 dispatch correction:** the fixed 38.03 target above refers to the older ubatch-2048
       measurement. Reconcile current ubatch-512 evidence and package first as specified in the execution
       contract; matching numbers alone do not establish matching shapes or a runtime peak.
@@ -310,13 +311,7 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
       controls pass. Real load validation and source-side belief capture (`VB-KVU-16A-LOAD`) remain
       open; a sampled maximum is not a proven lifetime peak. ✅ 2026-11-02
       [no-belief: prospective producer and fake-runtime controls]
-    - *(2026-11-02 wrap-up.)* Pinned load-only packet `/mnt/raid0/llm/worktrees/kvu16a-plan-20261102/PACKET.md`
-      is **unpublished and unarmed**. Its fake-server keeper smoke returned without a target load,
-      but the publisher refused qualification because it requires actual GPU-residency evidence.
-      The keeper dry-run bypasses region locks; the fake test did not touch GPU. Do not infer a
-      scheduled row or a measurement. Next owner: qualify a real, exclusive, load-only entry,
-      reconcile current source/registry and adapter pins, then publish under the existing scheduler
-      and peer ordering. Preserve the failed smoke; no generation request was made.
+    - *(2026-11-02 wrap-up.)* The first fake-server keeper smoke never touched the GPU; the v2 row (`rtg57-kvu16a-shape-load-20261102-v2`) now runs the real producer in its smoke. No measurement is claimed from the fake run.
     - *(2026-11-02, shape-matched load row.)* `handoff-kvu-16a-load-20261102` rc=0: production-store GPU, np4, pool 393216, ubatch 512, Q8 KV; two post-health own-PID HIP/KFD samples and verified cleanup. Maximum sampled own VRAM was 47.812553 GiB; observed target KV was 12.75 GiB, leaving 35.062553 GiB. [Native result and samples](../../progress/evidence/kvu16a-load-result-20261102/result.json). Registry reconciliation, production-shape review and stack-change validation remain; this row does not complete the box. [no-belief: native load result; registry application pending]
     - *(Annotation, workspace-ec, 2026-10-04.)* **PACKAGED, VALID, awaiting the operator's signature** in
       STACKCHG-HYGIENE-20261003 (`/mnt/raid0/llm/tmp/stack-change-hygiene-20261003/PACKAGE.md`; `--validate-only`
