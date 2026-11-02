@@ -163,3 +163,7 @@ Compared recursion, output cap, timeout, root tool exposure, termination, and tu
 ## 11:27Z — File override diagnostic and correct budget comparison scope
 
 Filed override row inconclusive after real-phase rc=1 and HTTP 429; drained with no survivors, no diagnostic or normal-routing acceptance established. Restored the RLM budget comparison checkbox to open: the source comparison was documented, but its explicit handoff checkpoint also requires a designed and validated policy decision.
+
+## 11:29Z — Integrate RLM budget source comparison
+
+Integrated the independent source comparison with the existing pinned-source report. The source comparison is complete; the checkbox remains open for its explicitly recorded policy decision and validation. Strategy row publication still requires trusted producer and capture integration. Independent critical-path work is in progress.
