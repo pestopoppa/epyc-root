@@ -63,3 +63,7 @@ The uninstalled P3/X0 coordinator now validates canonical payloads before server
 ## 09:49Z — Preserve VKQ3 tokenizer supervision draft
 
 Preserved a syntax-checked, uninstalled VKQ3 supervisor draft with bounded input and output, cancellation, timeout and direct-child cleanup paths. It has no verified descendant custody, parent-death containment, live grant integration or pinned model/tokenizer identities; it cannot run as a diagnostic row. No inference was run. [no-belief: source and syntax review only]
+
+## 09:52Z — Test VKQ3 draft supervisor failure and cleanup paths
+
+Ten fake-child tests pass for the VKQ3 draft supervisor, including short stdin, output limits, cancellation, timeout, selector failure and direct-child reaping. These do not establish descendant custody, parent-death containment, pinned runtime identity or grant integration; the diagnostic remains unpublishable. No model or tokenizer inference was run. [no-belief: offline fake-child tests only]
