@@ -6401,13 +6401,13 @@
         "INF-06",
         "INF-50"
       ],
-      "closed": 40,
+      "closed": 41,
       "domain": "inference-research",
       "handoff": "dflash2-block-drafter-experimental-build.md",
       "id": "INF-62",
       "last_advanced": "2026-11-01",
       "next_action": "DF2 open rows (DF2-DRAFTER-CAPABILITY, DF2-11/12/13/15/16/20, DF2-LB1); Qwopus items CANCELLED 2026-10-27",
-      "open": 21,
+      "open": 20,
       "priority": 0.9538,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-df2-byte-capture-ready-20261027: harness fix",

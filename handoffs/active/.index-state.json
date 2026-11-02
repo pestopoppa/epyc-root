@@ -4,7 +4,7 @@
       "blocked": 59,
       "handoffs": 59,
       "oldest_advance": "2026-07-29",
-      "open": 1042
+      "open": 1041
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -777,10 +777,10 @@
     },
     "dflash2-block-drafter-experimental-build.md": {
       "blocked": 0,
-      "closed": 40,
+      "closed": 41,
       "guarded": 0,
       "last_advanced": "2026-11-01",
-      "open": 21,
+      "open": 20,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
