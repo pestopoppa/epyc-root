@@ -28,13 +28,14 @@ def setup_capture(tmp_path):
         files[name] = {"path": str(path), "sha256": digest(path.read_bytes())}
     requests = capture / "requests.jsonl"
     rows = [{"success": True, "http_status": 200, "error": "", "request_index": i,
-             "stream_id": i, "predicted_tokens": 10, "predicted_ms": 1000} for i in range(2)]
+             "stream_id": i, "predicted_tokens": 10, "predicted_ms": 1000, "request_sha256": str(i)*64,
+             "response": {"stop":True, "timings":{"predicted_n":10,"predicted_ms":1000}}} for i in range(2)]
     requests.write_text("".join(json.dumps(x) + "\n" for x in rows))
     expected = {"role": "architect_critic", "arm": "CANDIDATE", "source_commit": "a" * 40,
                 "model": str(tmp_path / "model"), "recipe": {"flags": "srpf"}, "argv": ["llama-server"],
                 "environment": {}, "device": "mi210_0", "np": 2, "files": {k: files[k] for k in ("binary", "model", "prompt")},
                 "ggml": {str(tmp_path / "libggml.so"): files["libggml.so"]["sha256"]},
-                "grant": {"id": "grant-1", "regions": "mi210_0,184-191", "stopfile": str(tmp_path / "STOP")}, "request_count": 2, "vram_limit_bytes": 100}
+                "grant": {"id": "grant-1", "regions": "mi210_0,184-191", "stopfile": str(tmp_path / "STOP")}, "request_count": 2, "request_sha256": ['0'*64,'1'*64], "vram_limit_bytes": 100}
     watcher = capture / 'watch-result.json'
     watcher.write_text(json.dumps({'status':'closed','reason':'none','rc':0,'containment_empty':True}))
     expected['watch_result_path'] = str(watcher)
@@ -249,7 +250,7 @@ def test_native_request_batch_fake_http_and_partial_records(tmp_path):
             content = json.loads(self.rfile.read(int(self.headers['Content-Length'])))
             if content['prompt'] == 'bad':
                 self.send_response(503); self.end_headers(); return
-            payload = json.dumps({'timings': {'predicted_n':10, 'predicted_ms':1000, 'prompt_n':5}}).encode()
+            payload = json.dumps({'stop': True, 'timings': {'predicted_n':10, 'predicted_ms':1000, 'prompt_n':5}}).encode()
             self.send_response(200); self.send_header('Content-Length', str(len(payload))); self.end_headers(); self.wfile.write(payload)
     server = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
     thread = threading.Thread(target=server.serve_forever); thread.start()
@@ -283,6 +284,7 @@ def test_native_cell_fake_http_kfd_and_partial_fail_closed(tmp_path, monkeypatch
     plan = json.loads(original.plan_path.read_text()); cell = plan['cells']['c']
     device_vram = tmp_path/'device-vram'; device_vram.write_text('20')
     cell['kfd_vram_file'] = 'vram_0'; cell['device_vram_path'] = str(device_vram)
+    cell['request_sha256'] = [digest(json.dumps({'prompt': p, 'n_predict': 10, 'temperature': 0.0, 'cache_prompt': False, 'stream': False}).encode()) for p in ('good','bad')]
     original.plan_path.write_text(json.dumps(plan))
     trust = Trust(original.capture_root, original.plan_path, digest(original.plan_path.read_bytes()), original.sources)
     now = datetime.now(timezone.utc)
@@ -299,7 +301,7 @@ def test_native_cell_fake_http_kfd_and_partial_fail_closed(tmp_path, monkeypatch
             time.sleep(1.15)
             if partial and content['prompt'] == 'bad':
                 self.send_response(503); self.end_headers(); return
-            payload = json.dumps({'timings': {'predicted_n':10, 'predicted_ms':1000, 'prompt_n':5}}).encode()
+            payload = json.dumps({'stop': True, 'timings': {'predicted_n':10, 'predicted_ms':1000, 'prompt_n':5}}).encode()
             self.send_response(200); self.send_header('Content-Length', str(len(payload))); self.end_headers(); self.wfile.write(payload)
     server = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
     thread = threading.Thread(target=server.serve_forever); thread.start()
@@ -385,3 +387,18 @@ def test_rowflow_fixture_grant_is_separate_from_live():
         parse_grant(raw.replace(b'id=unit', b'id=other'), identity, qualification=True)
     with pytest.raises(ProjectionError):
         parse_grant(raw + b' id=unit', identity, qualification=True)
+
+
+@pytest.mark.parametrize('field', ['request', 'timing', 'stop'])
+def test_raw_request_or_response_tampering_is_rejected(tmp_path, field):
+    path, trust, doc = setup_capture(tmp_path)
+    requests = Path(doc['requests_path'])
+    rows = [json.loads(x) for x in requests.read_text().splitlines()]
+    if field == 'request': rows[0]['request_sha256'] = 'f' * 64
+    elif field == 'timing': rows[0]['response']['timings']['predicted_ms'] = 42
+    else: rows[0]['response']['stop'] = False
+    requests.write_text(''.join(json.dumps(row)+'\n' for row in rows))
+    doc['requests_sha256'] = digest(requests.read_bytes())
+    path.write_text(json.dumps(doc))
+    with pytest.raises(ProjectionError):
+        validate_capture(path, trust)

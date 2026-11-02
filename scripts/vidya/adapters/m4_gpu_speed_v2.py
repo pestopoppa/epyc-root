@@ -200,6 +200,10 @@ def validate_capture(path: str | Path, trust: Trust, *, require_guardian: bool =
         raise ProjectionError("invalid request records") from exc
     if type(expected.get("request_count")) is not int or len(requests) != expected["request_count"] or not requests:
         raise ProjectionError("incomplete request denominator")
+    planned_requests = expected.get("request_sha256")
+    if (not isinstance(planned_requests, list) or len(planned_requests) != expected["request_count"]
+            or any(not isinstance(h, str) or len(h) != 64 for h in planned_requests)):
+        raise ProjectionError("planned request payload hashes missing")
     streams: dict[int, list[float]] = {}
     indices = set()
     for item in requests:
@@ -210,7 +214,16 @@ def validate_capture(path: str | Path, trust: Trust, *, require_guardian: bool =
                 or item["predicted_tokens"] <= 0 or type(item.get("predicted_ms")) not in (int, float)
                 or not math.isfinite(item["predicted_ms"]) or item["predicted_ms"] <= 0):
             raise ProjectionError("invalid or incomplete request")
-        indices.add(item["request_index"])
+        index = item["request_index"]
+        if not 0 <= index < len(planned_requests) or item.get("request_sha256") != planned_requests[index]:
+            raise ProjectionError("actual request payload differs from plan")
+        response = item.get("response")
+        timings = response.get("timings") if isinstance(response, dict) else None
+        if (not isinstance(timings, dict) or response.get("stop") is not True
+                or timings.get("predicted_n") != item["predicted_tokens"]
+                or timings.get("predicted_ms") != item["predicted_ms"]):
+            raise ProjectionError("raw response timing or completion mismatch")
+        indices.add(index)
         counts = streams.setdefault(item["stream_id"], [0, 0.0])
         counts[0] += item["predicted_tokens"]
         counts[1] += item["predicted_ms"] / 1000

@@ -109,6 +109,8 @@ class RequestResult:
     stream_id: int = -1
     http_status: int | None = None
     error: str = ""
+    request_sha256: str = ""
+    response: dict[str, Any] | None = None
 
 
 def utc_now() -> str:
@@ -517,6 +519,7 @@ def send_completion(
         "cache_prompt": False,
         "stream": False,
     }
+    request_sha256 = hashlib.sha256(json.dumps(payload).encode("utf-8")).hexdigest()
     start = time.perf_counter()
     try:
         status, data = http_json(
@@ -541,6 +544,7 @@ def send_completion(
             predicted_ms=float(timings.get("predicted_ms") or 0.0),
             http_status=status,
             error="" if status == 200 else f"HTTP {status}",
+            request_sha256=request_sha256, response=data,
         )
     except urllib.error.HTTPError as exc:
         latency_ms = (time.perf_counter() - start) * 1000.0
@@ -556,7 +560,7 @@ def send_completion(
             prompt_tokens=0,
             predicted_tps=0.0,
             http_status=exc.code,
-            error=f"HTTP {exc.code}",
+            error=f"HTTP {exc.code}", request_sha256=request_sha256,
         )
     except Exception as exc:
         latency_ms = (time.perf_counter() - start) * 1000.0
@@ -571,7 +575,7 @@ def send_completion(
             predicted_tokens=0,
             prompt_tokens=0,
             predicted_tps=0.0,
-            error=str(exc),
+            error=str(exc), request_sha256=request_sha256,
         )
 
 
