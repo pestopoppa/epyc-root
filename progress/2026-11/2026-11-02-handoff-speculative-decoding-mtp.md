@@ -31,3 +31,11 @@ SW-2 tick was applied in the previous wrap attempt, which stopped at index fresh
 ## 09:26Z — Retain SR-6 successor design and paired-analysis prototype
 
 Preserved SR-6 fresh multi-window composed and non-context-control comparison design and fail-closed paired-analysis prototype. Seven synthetic tests passed. It is preparation only: worker, launcher, pinned runtime and sampler, exposure audit, rendered-token repetition analysis and decision rule remain before publication. SW-2 was previously closed for scoped private-v9 behavior in 4db136723da0; the legacy blocked INF-50 predecessor and stderr task were already superseded/completed.
+
+## 09:30Z — Reconcile stale dispatch guidance and next inference preparation
+
+Reconciled the dispatcher state against the handoff: the blocked INF-50 native-window predecessor is explicitly superseded by the completed native-margin successor; do not republish. The query-stderr contract and full 3,072-path/five-target diagnostic are already complete, as is SW-2. NG5 is a provenance audit. SR-6's existing one-window, greedy, draft-mtp-only run and exposed prompts cannot be republished as its successor; the retained design still needs a fresh four-arm worker, launcher, provenance pins, prompt/seed partitions, repetition metrics and predeclared decision rule. Updated the handoff entry point to reflect the current work. No row published or new measurement claimed. GitNexus status reported this worktree is not indexed; this change is documentation only.
+
+## 09:31Z — Reconcile stale dispatch guidance and next inference preparation
+
+Reconciled the dispatcher state against the handoff: the blocked INF-50 native-window predecessor is explicitly superseded by the completed native-margin successor; do not republish. The query-stderr contract and full 3,072-path/five-target diagnostic are already complete, as is SW-2. NG5 is a provenance audit. SR-6's existing one-window, greedy, draft-mtp-only run and exposed prompts cannot be republished as its successor; the retained design still needs a fresh four-arm worker, launcher, provenance pins, prompt/seed partitions, repetition metrics and predeclared decision rule. Updated the handoff entry point to reflect the current work. No row published or new measurement claimed. GitNexus status reported this worktree is not indexed; this change is documentation only.
