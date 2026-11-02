@@ -55,3 +55,11 @@ Synced lane; checked scratch snapshot and prospective receipt implementations, w
 ## 01:18Z — Review prospective capture and preference sweep preparation
 
 Synced lane; checked scratch snapshot and prospective receipt implementations, which require focused safety and integrity review before any private data or measurement use. Preference propagation is also under focused review. Registered three bounded review events. The published task-ID auditor is fixture-tested but no real data scan, inference or compute row has occurred.
+
+## 01:21Z — Implement private routing audit input snapshot preparation
+
+Consumed snapshot and writer reviews. Added scripts/analysis/dar_snapshot_inputs.py with private permissions, stable-file checks, baseline-role validation, source/config manifest and digest verification; eight fixture tests pass. This is preparation, not a real snapshot: capture is non-atomic, caller-provided config is not attested, hashes depend on a trusted manifest and read-only permissions are reversible. Writer review found six defects; correction is dispatched. Sweep driver and independent snapshot review are in preparation. No private source captured, inference run or row published.
+
+## 01:21Z — Implement private routing audit input snapshot preparation
+
+Consumed snapshot and writer reviews. Added scripts/analysis/dar_snapshot_inputs.py with private permissions, stable-file checks, baseline-role validation, source/config manifest and digest verification; eight fixture tests pass. This is preparation, not a real snapshot: capture is non-atomic, caller-provided config is not attested, hashes depend on a trusted manifest and read-only permissions are reversible. Writer review found six defects; correction is dispatched. Sweep driver and independent snapshot review are in preparation. No private source captured, inference run or row published.
