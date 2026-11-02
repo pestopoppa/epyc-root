@@ -155,3 +155,7 @@ Added and ran four repeatable model-free tests for CH-27 long-context manifest s
 ## 10:12Z — Harden atomic publication of CH-27 staged manifest
 
 CH-27 long-context staging now uses Linux renameat2 RENAME_NOREPLACE, so a concurrently created destination cannot be overwritten between its initial check and publication. Five model-free tests pass, including an existing empty destination at the atomic publish boundary; source /mnt/raid0/llm/tmp/akagg/ch27-isolation/stage_longctx_manifest.py. Consumed NEMO and CH-26b reports: synthetic NEMO correlation remains UNKNOWN without a real graph trace; CPU scheduler event counting works with privileges but clean-window admission requires complete acquisition and loss/identity controls. No inference row was published.
+
+## 10:14Z — Rebind CH-27 inputs through native campaign resolver
+
+The native campaign resolver reproduced the sealed CH-27 original and generated a ready-schema private rebound using verified staged recipe and source inputs; four positive and tamper/symlink/destination tests pass. Its measurement digest changes from 441f2ce339efa5e19ddb311e9c7f2219eb0ec196297ea89d078780db10923a6f to 3f6ec7a69ae8bd7f14e085902c997d7f9dc9e732ccc47bb9b9cdad5267ffe36a because paths enter identity, so registry lookup and native CLI admission must use the rebound identity. Candidate and report: /mnt/raid0/llm/tmp/akagg/ch27-resolved-v4 and /mnt/raid0/llm/tmp/akagg/ch27-finish-v4-report.json. Worker, history and remaining isolation remain open. No calibration or row published.
