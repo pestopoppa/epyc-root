@@ -1,0 +1,97 @@
+# Backlog refactor 2026-11 — final plan (operator-approved 2026-11-02)
+
+This is the FINAL plan: proposal v7 (below, verbatim) plus the operator's decisions. Execution is
+tracked in [`handoffs/active/backlog-refactor-2026-11.md`](../../../handoffs/active/backlog-refactor-2026-11.md).
+No fold has been executed at plan-landing time.
+
+## Decisions (operator, 2026-11-02)
+
+- D1: route 1a now (readiness-neutral folds, 175→63), then 1b (per-track gates in `index_state.py`, then fold to 29);
+- D2: the model-evaluation queue as 3 gate-homogeneous files now, merged into 1 after 1b;
+- D3: replays and deterministic tails start now as analyses (ticks wait for proven coverage), then the 4 bounded pilots (EXP-01, EXP-04 riding a granted quiet window, EXP-09, CAP-04), with zero-inference folds in parallel; the 16 other packages stay provisional until owner-reviewed pilot results;
+- D4: retire `swarm` and `model-stack-change-standardization-audit`;
+- D5: retire old index IDs with `Repoint-Reason:` trailers and a `.folded.json` redirect map;
+- D6: staged lint enforcement (binding at fold commits and rowflow publish now; warn-only in `--check`; blocking in `--check` and wrap-up after the sweep);
+- D7: the 158 pending operator choices are delivered as per-handoff packages, in fold order, via the decision tool.
+
+The measurement-sufficiency principle is ratified project-wide (`ba1bb9703`, `4ffa29969`).
+
+## Files in this directory
+
+| File | What |
+|---|---|
+| `backlog-refactor-manifest-20261102.json.gz` | Task manifest (8,095 tasks, apply-time block). **Stored gzip** (5.8 MB raw → 0.66 MB). `zcat` to read. |
+| `task-readiness-refinements-20261102.json.gz` | Per-task readiness refinements. **Stored gzip** (1.4 MB raw). |
+| `backlog-experiment-manifest-20261102.json` | 20 packages + 4 pilots with `sufficiency` blocks, `remaining_cells_sufficiency`. |
+| `backlog-refactor-plan-20261102.json` | Fold plan (sources → targets, routes 1a/1b). |
+| `task-readiness-stats-20261102.json` | Audit stats. |
+| `backlog-refactor-reconciliation*.json` | Apply-time reconciliation vs `origin/main` (incl. RTG-58 wrap-up). |
+| `evidence-keep-20261102.txt` | Evidence paths that folds must keep. |
+| `dryrun-report-20261102.json`, `dryrun-dashboard-20261102.json` | Dry-run records (see below). |
+| `task_audit_v2.py` | Audit generator, provenance only (hardcodes its scratch worktree path). |
+| `reviews/` | Provenance: RTG-58 sufficiency case study, review of operator comments, second-pass audit, readiness audit, proposed sufficiency diffs, human-only sufficiency proposals. |
+
+The lint ships as `scripts/handoffs/task_lint.py` (v2; `report` / `migrate` / `publish`) on top of
+`scripts/handoffs/task_lint_core.py` (v1 regexes and block parser); tests:
+`scripts/handoffs/tests/test_task_lint.py` (21 checks; runs under `python3` or `pytest`).
+
+## Dry-run summary (scratch trees not committed)
+
+The dry-run scratch (`/mnt/raid0/llm/tmp/ws58-csh/dryrun/`, ~156 KB, plus a scratch worktree) applied three
+representative folds at `4ffa29969` as a local-only commit: `index_state.py` rc 0 (174 nodes, 627 edges,
+78 dep edges; 132 ready, 41 blocked, 1 no-open), `--check` rc 0 (0 problems, advisory warnings only),
+readiness diff empty; two handoffs moved to `completed/`, `model-evaluation-queue.md` created. Dashboard
+in-process smoke: `/api/handoff_board` active 179 → 178, completed 225 → 227; `/api/handoff_graph`
+175 → 174 nodes, dep edges unchanged in count, ready 133 → 132; timeline rebuilt rc 0; `/api/queue`
+unchanged; `/api/pipeline` not exercised (next dry run points `EPYC_COMPUTE_FLAGS` at a scratch copy).
+`stale_next_action.py` flagged pre-existing rows (MHS, RTG-58, UFH-07) unrelated to the folds.
+Dashboard test baseline: 132 passed, 4 pre-existing `/amd-ai-lab` nav failures.
+
+---
+
+# Active handoff backlog — refactor proposal v7 (2026-11-02)
+
+**Status**: PROPOSAL v7, read-only on main (proposed diffs are files, not commits). Supersedes `-v6.md` … `-v1.md` (all kept). Audit baseline stays pinned at `3ac825873dfb`; **apply-time state is reconciled against `origin/main` `fd06fb064`** (§B). New companions: `rtg58-sufficiency-case-study-20261102.md`, `proposed-diffs-sufficiency-20261102.md`, `backlog-refactor-reconciliation-rtg58-20261102.json`, `dryrun/dashboard-dryrun.json`, `dash_dryrun.py`; regenerated: experiment manifest (sufficiency blocks), task manifest (apply-time block, 8,095 tasks), `task_lint_v2.py` + tests (21/21).
+
+## A. Measurement sufficiency — non-negotiable and structural
+
+**A.1 Case study (RTG-58 / KPF-64)** — `rtg58-sufficiency-case-study-20261102.md`. Question: does cache-enabled KV reuse hold at 72 threads and beat the FB (cache-off) configuration? Planned: two full 230-request runs (≈ 4–5 h each). Ran: F24 complete (230/230, 90.99 % cached), FB72 stopped at 49 (0 % vs 71.47 % cached on paired identities), F72 stopped at 20 matched pairs (34.55 % vs 34.51 % vs 0 %). Readout: paired cached-token share against the already-complete arm; error estimate: a predeclared ± 5 pp four-family resampling band with ≥ 20 pairs, all families, drift ≤ 2 % (monitor v2, deterministic pairing, snapshot before signalling). Stop: operator-directed, monitor-fired at the boundary; recorded as `KPF-64-F72-STOP-OBS [belief: cc]`. Valid because the effects (0.04 pp and 34–71 pp) were orders of magnitude inside/outside the band, pairing removed the dominant variance, the rule was predeclared and the result was labelled operational. Formal gates respected: the full-cohort F–FB gate stays open, no timing claim (co-tenancy, layouts), the band is "not a formal CI or gate" (OP-ABSEQ undecided), evidence committed with hashes. **Takeaway**: complete one arm, pair the rest against it, predeclare band + minimum coverage + looks, stop on answer or futility, label it operational, keep the gate open.
+
+**A.2 Structural** —
+(a) **Sufficiency block on every package and pilot** (24 blocks: 20 packages + 4 pilots; manifest `sufficiency`): question · expected effect vs noise/sample error · checkpoints (after each bounded unit, paired against the completed control first) · stop-on-answer (permitted for exploratory/decision-support cells; **NOT permitted for the gate verdict** on the 5 gate-class packages EXP-02 floors, EXP-03 correctness, EXP-05 E5 R1–R4, EXP-10 P-REV-1, EXP-11 baseline) · stop-on-futility (always permitted) · formal-gate caveat (gate-class = futility-only until OP-ABSEQ / OP-PQP / OP-ALPHAWIN are decided).
+(b) **Lint**: `task_lint_v2.py` field `s` — an inference box must state its stop rule; `migrate` treats an untagged `s` failure as hard, `publish` refuses it. Tests 21/21 (3 new). Template field proposed in the authoring guide.
+(c) **Proposed diffs** (`proposed-diffs-sufficiency-20261102.md`) — reconciled against `origin/main` commit `4ffa29969` (another ws58 agent), which already landed the research-intake SKILL sufficiency block, the scheduling SKILL rule (no stop rule ⇒ not READY), the authoring guide `Stop rule:` field, the `measurement-sufficiency.md` futility-only paragraph **with the OP-ABSEQ / OP-PQP / OP-ALPHAWIN citations**, the wiki entry and the case-study copy. Still missing and kept as proposals: the Stage-4 `task_lint_v2.py migrate` step in the intake skill, and the lint field `s` itself (code, audit dir only).
+(d) **The 25 remaining cell-groups** (manifest `remaining_cells_sufficiency`): **14 reducible** by a short pilot plus a preliminary error estimate (EXP-01 speed pairs, EXP-04 crossover screen, EXP-05 adjudication-defined cells, EXP-06 eligible pages, EXP-07 new arms, EXP-08, EXP-09, EXP-12, CAP-02 HIL-16b staging, CAP-03, CAP-04, CAP-05, CAP-06 threshold arms, CAP-07 ×2, CAP-08 per instrument); **11 not reducible** (EXP-01 quality pass — gate needs the full paired set; EXP-02 three floors — n ≥ 24; EXP-03 parity — every role/slot, though a mismatch stops early as a scoped counterexample; EXP-10 anchor capture; EXP-11 already-minimal paired replay; CAP-01 capture; CAP-06 CS-49 live).
+
+## B. Reconciliation with RTG-58's wrap-up (`origin/main` `fd06fb064`)
+
+Seven commits since the pin (`4c40e5419` … `fd06fb064`), all RTG-58/measurement-sufficiency; handoff files changed: **one** — `kv-prefix-fork-and-paged-attention.md` (+18 lines, 1 flip in the wrap-up) — plus the generated `.index-state/.index-graph.json` and the master rollup (routing open 672 → 673). Task-by-task against the pinned manifest (`backlog-refactor-reconciliation-rtg58-20261102.json`): **0 pinned boxes ticked since the pin**, **5 new closed boxes** (KPF-18-ITEM1-GPU-OBS, KPF-18-ITEM2-CPU-OBS, KPF-64-F-SUCCESSOR-OBS, KPF-64-FB72-PARTIAL-OBS, KPF-64-F72-STOP-OBS), **1 new open box** (KPF-62-G3-OUTCOME-CONTINUATION, `:131`, non-inference), 0 boxes missing/changed, no dependency moved. Conflict with the plan: none structural — the file is a source of the `kv-cache-program.md` fold (route 1a group "RTG-58"); the 5 closed boxes stay in the completed ledger, the new open box migrates with current text under `## Track: kv-prefix-fork-and-paged-attention` and is scored at apply time; the KPF replay coverage statement (§5 of v6) already excluded F72-class fresh captures and is unchanged. **Not re-pinned**: baseline kept, manifest updated by apply-time reconciliation (8,089 → 8,095 tasks, `apply_time_reconciliation` block). **Gate check**: the per-fold identity count (source + target vs manifest) would differ by 6 for this file set → the fold is refused until the reconciliation record is attached; `index_state.py --check` separately sees the open-count change. The gate catches it.
+
+## C. Handoff dashboard (hub :8100) impact review
+
+Surfaces that depend on handoff paths, row IDs, index membership, box counts or dates (`dashboard/server.py`, `handoff_parser.py`, `static/handoffs.html`, `scripts/handoffs/build_handoff_timeline.py`):
+
+| surface | keyed by | what a fold / split / ID retirement / decomposition does | required change |
+|---|---|---|---|
+| Board (kanban columns active/blocked/completed/archived, card `id = <state>/<stem>`, counts, progress bar, recency chip) | directory + file stem; `count_tasks` over every `- [ ]/[x]` incl. nested; `activity` from `file_activity` else `updated` | `git mv` of a folded source to `completed/` puts a card with only its closed ledger in the **Completed** column (dry run: completed 225 → 227) — reads as two handoffs finished; the target card's `total` jumps (+2/+19); a split source loses the carved boxes (eval-tower 107 → 105); a decomposition adds children and keeps the parent → **double count unless roll-ups are excluded** | `handoff_parser.parse_lifecycle`: recognise the `> **Folded into …` banner as lifecycle `folded` (own column or chip, not Completed); `count_tasks`: skip boxes tagged `[roll-up]`; board tests for both |
+| Graph (nodes = index rows, dep edges, readiness badges) | `.index-graph.json` row ids | nodes vanish/merge per fold, new nodes per queue file (dry run: 175 → 174 nodes, RTG-05/INF-62 gone, EVL-53 added, ready 133 → 132); ID retirement removes nodes outright | none in code (generated); `.folded.json` consumer in the page: a retired id in a bookmark/`?id=` resolves to the new row |
+| Timeline (`series`, `tasks_weekly`, `daily_flow`, `file_activity`, `next_action_repoints`) | `git log -M -p` over `handoffs/`; task identity by text (`_task_key`), **completion dated by in-file `✅`** (`:21`), renames followed (`-M`, `rename from/to`); repoints by row id from index diffs + `Repoint-Reason:` trailers | **continuity holds across `git mv`** (rename-aware, text-keyed; dry run rebuilt rc 0 with `file_activity` and 2 `next_action_repoints` from the trailers); moved open boxes are not re-dated (no `✅`); decomposition children appear as new tasks on their first commit day → `tasks_weekly` jumps | one-time annotation record in `data/handoff_timeline.json` (`refactor_markers`: date, commit, boxes moved/added) rendered as a vertical marker on the flow chart; roll-ups excluded from `tasks_weekly` |
+| Activity (`activity_today`, `activity_window` 1d/7d/30d, the 7-day net headline) | `git log -p`: every added `+- [ ]` = box added, every added `+- [x]` = box checked | **a fold is counted as new work and new completions**: dry run moved 23 open boxes → `boxes_added` 113 → 136 and `boxes_checked` 145 → 160 (nested closed children travelling with their parents) — the 7-day net would show a spurious surge, and the 626 decompositions would show +1,900 "added" | `_parse_activity_log*`: pair a removed `-- [ ]` with an added `+- [ ]` of identical normalised text within the same commit (rename-aware) and count it as *moved*, not added; skip commits whose message carries `Fold:` / `Refactor-Migration:` trailers from the net; add `moved` to the payload and a chart annotation; tests |
+| Handoff detail modal (`/api/handoff_detail?id=active/<stem>`) | file path | old ids 404 after a fold; split sources show fewer boxes | `.folded.json` lookup → 301-style redirect to the target card with the `## Track:` anchor |
+| Queue / ready badges (`/api/queue`, `_fold_queue` latest row per task_id) | `compute-flags` rows: `handoff_task: handoffs/active/<file>.md:<ID>` | rows for a folded file point at a path that is now in `completed/` → badge dangles | rowflow spec rewrite in the fold commit (dry run: 4 specs); queue resolver falls back through `.folded.json` |
+| Activity rings / sessions (bus page) | `handoff-sessions.json` slug → `handoff` path | slug keeps its name; path re-pointed in the fold commit (dry run) | none beyond the commit; test that every registry `handoff` resolves |
+| Pipeline section (`/api/pipeline`, `dashboard/pipeline_status.py` — present at the pin and on main: 60ec225af, 549eb583d, 0fd8250f8; the per-handoff ready/running badges, flowchart counts, sessions-by-step, compute regions) | `classify_handoffs(graph, rows)` keys each handoff by `handoffs/<state>/<file>` from the **index-graph nodes** (`n['handoff']`); `_rows()` reads `compute-flags/ready/<id>.json` `handoff_task` paths (`…/<file>.md:<ID>`) and grants; rows without a path link through `handoff-sessions.json` `sessions[slug].handoff` / `row_ids` / `auto_start.rows`; the session rings come from `handoff-sessions/<slug>/report.json` and the `handoff-sessions.log` last line per slug (`step_of`) | a fold removes the source node from the graph → its handoff disappears from `classify_handoffs` and its `readied_rows`/`ready_rows`/`running_rows` counts are **orphaned** until the rowflow `handoff_task` prefix is rewritten to the target file (dry run: 4 df2 specs); the target's class is recomputed from the union (a `needs-ready` source joining a `readied-waiting` target changes the target's class); a slug whose `handoff` still names the old path falls out of the step/ring view; ID retirement is invisible here (keyed by file, not row id); decomposition children raise `open` per handoff (roll-ups must not count) | fold commit rewrites `handoff_task` prefixes and `sessions[slug].handoff` in the same change window (already in §5 steps 5–7 of v2); `_rows._handoff_of` and `build_payload` resolve a stale path through `.folded.json`; `classify_handoffs` excludes `[roll-up]` boxes via the graph's `dispatchable`; test: every ready/running row's `handoff` resolves to a graph node after a fold |
+
+Dashboard tests baseline on `/workspace` (`tests/test_dashboard_*.py`, `test_handoff_parser.py`, `test_handoff_timeline.py`, `test_dashboard_activity.py`): **132 passed, 4 pre-existing failures**, all in `test_dashboard_nav.py` for the `/amd-ai-lab` route (registry ↔ served-page bidirectionality, shared nav); unrelated to handoffs. **Dry-run smoke (three folds, scratch worktree, local-only commit, API functions called in-process against the scratch tree — no live hub touched)**: `/api/pipeline` was not exercised in this pass (its inputs live in `/mnt/raid0/llm/tmp/compute-flags`, which the dry run only copied to scratch) — the next dry run points `EPYC_COMPUTE_FLAGS` at the scratch copy and asserts that every ready/running row and every session slug resolves to a node of the folded graph; `/api/handoff_board` active 179 → 178, completed 225 → 227; `/api/handoff_graph` 175 → 174 nodes, 78 dep edges unchanged in count after re-pointing, ready 133 → 132, graph status unchanged; `/api/handoff_timeline` rebuilt rc 0 (before: stale artifact with `error`; after: full keys incl. `file_activity`, `next_action_repoints`); `/api/queue` unchanged. The empty status chip on `autopilot-continuous-optimization` is pre-existing (no `**Status**` header), not a fold effect.
+
+**Required changes (code + tests + data migration)**: (1) `handoff_parser`: `folded` lifecycle from the banner; `[roll-up]` exclusion from `count_tasks`; (2) `server._parse_activity_log*`: moved-box pairing + fold-commit trailer exclusion + `moved` field; (3) `build_handoff_timeline`: roll-up exclusion, `refactor_markers` emitted from fold commits (one-time annotation), carry per-handoff historical counts across the rename into the target's series (sum of source + target per week, labelled); (4) `handoffs.html`: render the marker and the `moved` counter, resolve `?id=` and detail ids through `/api/handoff_graph`'s `.folded.json` map; (5) `queue_payload`/rowflow resolver and `pipeline_status._handoff_of`/`build_payload`: `.folded.json` fallback for stale `handoff_task` paths and `sessions[slug].handoff`, roll-up exclusion in `classify_handoffs`; (6) tests: parser lifecycle/roll-up, activity pairing, timeline markers, detail redirect, graph node continuity; (7) data migration: regenerate `data/handoff_timeline.json` in each fold commit (it already is a generated artifact), write the marker record once at the first fold.
+
+**Per-fold gate addition**: the dashboard tests pass with the four `/amd-ai-lab` nav failures listed as known-pre-existing; and a smoke check against the folded scratch tree — `GET /`, `/api/handoff_board`, `/api/handoff_graph`, `/api/pipeline` (with `EPYC_COMPUTE_FLAGS` pointed at the scratch copy of `compute-flags`), `/api/queue`, `/api/handoff_timeline` — with expected counts stated in the fold's reconciliation record (board columns, graph nodes/edges/ready, moved-box count, queue rows, pipeline class counts and zero orphaned `handoff_task` rows / session slugs), run either on a scratch hub on a spare port or in-process (`dash_dryrun.py` pattern).
+
+## D. Per-fold gate (consolidated)
+
+`index_state.py` rc 0 ∧ `--check` rc 0 ∧ readiness diff ∅ ∧ zero lost tasks vs manifest after **apply-time reconciliation** (ticked-since-pin never migrated as open nor scheduled; new boxes migrate with current text) ∧ `task_lint_v2.py migrate` (fields a/d/f/h/**s** tagged or passing) ∧ dashboard tests (known failures listed) ∧ dashboard smoke counts ∧ reconciliation + smoke records attached to the commit.
+
+## E. Plan status and decisions
+
+The plan holds: one handoff changed since the pin and it reconciles cleanly; no fold target, dependency or package is invalidated; the RTG-58 result strengthens EXP-02/EXP-04-style pairing-first designs. Decisions unchanged from v6: D1, D2, D4, D5 ready; D3 amended (replays as analysis starts, pilots next, route-1a folds in parallel); D6 amended (lint `s` field included; dashboard tests + smoke in the gate); D7 with **158** pending choices.

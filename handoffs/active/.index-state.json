@@ -26,9 +26,9 @@
     },
     "routing-and-optimization-index.md": {
       "blocked": 17,
-      "handoffs": 54,
+      "handoffs": 55,
       "oldest_advance": "2026-07-29",
-      "open": 673
+      "open": 695
     },
     "user-facing-harness-index.md": {
       "blocked": 17,
@@ -390,6 +390,22 @@
       "row_id": "EVL-04",
       "state": "active",
       "total": 26
+    },
+    "backlog-refactor-2026-11.md": {
+      "blocked": 0,
+      "closed": 1,
+      "guarded": 0,
+      "last_advanced": "2026-11-02",
+      "open": 22,
+      "owner_index": "routing-and-optimization-index.md",
+      "prune": {
+        "blocker": "open-tasks",
+        "candidate": false,
+        "evidence": null
+      },
+      "row_id": "RTG-63",
+      "state": "active",
+      "total": 23
     },
     "batched-decode-measurement.md": {
       "blocked": 1,
@@ -4413,6 +4429,15 @@
       "line": 66,
       "next_action": "SA-1 (merge into sticky-slot change: ready-row admission, start cooldown) then SA-2/SA-3/JEV-3",
       "track": "churn pipeline"
+    },
+    "RTG-63": {
+      "deps": [],
+      "handoff": "backlog-refactor-2026-11.md",
+      "id": "RTG-63",
+      "index": "routing-and-optimization-index.md",
+      "line": 67,
+      "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
+      "track": "backlog refactor 2026-11"
     },
     "UFH-01": {
       "deps": [
