@@ -209,6 +209,10 @@ def run_gpu_queue(flags):
             os.replace(up, rf.ready_path(flags, rid))
         try:
             v, msg = run_smoke(flags, rid, qd.get("regions") or "mi210_0,184-191", int(qd.get("smoke_s") or SMOKE_TIMEOUT_S))
+            if v == "PASS":
+                row = rf.load_json(rf.ready_path(flags, rid))
+                rf.need(row is not None, f"queued smoke {rid} lost its ready manifest")
+                file_if_complete(flags, rid, row)
         except Exception as e:  # noqa: BLE001 - one smoke never stops the batch
             v, msg = "FAIL", f"{type(e).__name__}: {e}"
         print(f"GPU-SMOKE {v} {rid}: {msg}")
@@ -224,23 +228,35 @@ def file_if_complete(flags, rid, row):
     p = rf.load_json(rf.pass_path(flags, rid)) or {}
     if not p.get("job_complete"):
         return False
-    src = p.get("result_path")
-    if src and src != row["result_path"] and os.path.exists(src):
-        os.makedirs(os.path.dirname(row["result_path"]), exist_ok=True)
-        shutil.copyfile(src, row["result_path"])
-    g = os.path.join(flags, "grants")
-    os.makedirs(g, exist_ok=True)
-    dd = rf.dry_dir(flags, rid)
-    for term in ("ended", "complete"):
-        src = os.path.join(dd, term)
-        txt = open(src).read() if os.path.exists(src) else (f"rc=0 reason=complete-in-smoke time={rf.now_iso()}\n" if term == "ended"
-                                                             else f"complete time={rf.now_iso()} id={rid} via=smoke\n")
-        with open(os.path.join(g, f"{rid}.{term}"), "w") as f:
-            f.write(txt)
+    # Preserve the exact published manifest before removing it from READY. The
+    # filer needs its rule and result path even when the entire job ran in the
+    # owner smoke. Do not reconstruct those fields after the run.
     try:
+        rf.need(row.get("schema") == rf.SCHEMA and row.get("id") == rid, "completed smoke row identity mismatch")
+        rf.atomic_json(os.path.join(rf.dry_dir(flags, rid), "completed-manifest.json"), row)
+        src = p.get("result_path")
+        rf.need(src and os.path.isfile(src), "completed-smoke native result is missing")
+        if src != row["result_path"]:
+            os.makedirs(os.path.dirname(row["result_path"]), exist_ok=True)
+            shutil.copyfile(src, row["result_path"])
+        g = os.path.join(flags, "grants")
+        os.makedirs(g, exist_ok=True)
+        dd = rf.dry_dir(flags, rid)
+        for term in ("ended", "complete"):
+            src = os.path.join(dd, term)
+            txt = open(src).read() if os.path.exists(src) else (f"rc=0 reason=complete-in-smoke time={rf.now_iso()}\n" if term == "ended"
+                                                                 else f"complete time={rf.now_iso()} id={rid} via=smoke\n")
+            dest = os.path.join(g, f"{rid}.{term}")
+            tmp = dest + ".tmp"
+            with open(tmp, "w") as f:
+                f.write(txt)
+            os.replace(tmp, dest)
         os.remove(rf.ready_path(flags, rid))
-    except OSError:
-        pass
+    except Exception:
+        # Any failure after completed work must not leave it grantable again.
+        # Preserve READY in the existing non-ready repair location, then raise.
+        unpublish(flags, rid)
+        raise
     print(f"job completed inside the smoke: no compute row needed; file the result now ({rid}: {row['result_path']})")
     return True
 

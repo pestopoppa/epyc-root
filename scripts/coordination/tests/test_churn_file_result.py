@@ -5,6 +5,7 @@ Temp flags dir only; never touches live compute-flags or a real handoff. Stdlib 
 Run: python3 -W ignore -m unittest scripts.coordination.tests.test_churn_file_result
 """
 import io
+import builtins
 import json
 import os
 import sys
@@ -12,13 +13,15 @@ import tempfile
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
+from unittest.mock import patch
 
 _COORD = Path(__file__).resolve().parents[1]
-for p in (str(_COORD), str(_COORD / "churn")):
+for p in (str(_COORD), str(_COORD / "churn"), str(_COORD / "rowflow")):
     if p not in sys.path:
         sys.path.insert(0, p)
 
 import file_result as fr  # noqa: E402
+import publish_row as publisher  # noqa: E402
 
 HANDOFF = "# H\n\n- [ ] **ROW-1** tune the thing\n- [ ] **ROW-2** other\n"
 
@@ -63,6 +66,127 @@ class Base(unittest.TestCase):
 
 
 class TestFileResult(Base):
+    def test_completed_smoke_identity_mismatch_unpublishes(self):
+        self.row("ROW-1", "rc == 0", {"ok": True})
+        ready = Path(self.flags, "ready", "ROW-1.json")
+        row = json.loads(ready.read_text()); row["id"] = "OTHER"
+        dry = Path(self.flags, "dryrun", "ROW-1"); dry.mkdir(parents=True)
+        (dry / "PASS.json").write_text(json.dumps({"id": "ROW-1", "job_complete": True}))
+        with self.assertRaises(publisher.rf.Refused):
+            publisher.file_if_complete(self.flags, "ROW-1", row)
+        self.assertFalse(ready.exists())
+        self.assertTrue((dry / "unpublished.json").exists())
+        self.assertFalse(Path(self.flags, "grants", "ROW-1.complete").exists())
+
+    def test_missing_completed_smoke_result_never_leaves_ready(self):
+        self.row("ROW-1", "rc == 0", {"ok": True})
+        ready = Path(self.flags, "ready", "ROW-1.json")
+        row = json.loads(ready.read_text())
+        dry = Path(self.flags, "dryrun", "ROW-1"); dry.mkdir(parents=True)
+        (dry / "PASS.json").write_text(json.dumps({"id": "ROW-1", "job_complete": True,
+                                                  "result_path": str(dry / "missing.json")}))
+        with self.assertRaises(publisher.rf.Refused):
+            publisher.file_if_complete(self.flags, "ROW-1", row)
+        self.assertFalse(ready.exists())
+        self.assertEqual(json.loads((dry / "unpublished.json").read_text()), row)
+        self.assertFalse(Path(self.flags, "grants", "ROW-1.complete").exists())
+
+    def test_post_completion_copy_or_terminal_failure_never_leaves_ready(self):
+        for rid, fail_at in (("ROW-COPY", "copy"), ("ROW-TERM", "terminal")):
+            with self.subTest(fail_at=fail_at):
+                self.row(rid, "rc == 0", {"ok": True})
+                ready = Path(self.flags, "ready", rid + ".json")
+                row = json.loads(ready.read_text())
+                dry = Path(self.flags, "dryrun", rid); dry.mkdir(parents=True)
+                native = dry / "native.json"; native.write_text('{"ok": true}')
+                (dry / "PASS.json").write_text(json.dumps({"id": rid, "job_complete": True,
+                                                          "result_path": str(native)}))
+                Path(self.flags, "grants", rid + ".ended").unlink()
+                if fail_at == "copy":
+                    failure = patch.object(publisher.shutil, "copyfile", side_effect=OSError("copy failed"))
+                else:
+                    real_open = builtins.open
+                    def fail_complete(path, *args, **kwargs):
+                        if str(path).endswith(rid + ".complete.tmp"):
+                            raise OSError("terminal write failed")
+                        return real_open(path, *args, **kwargs)
+                    failure = patch("builtins.open", side_effect=fail_complete)
+                with failure, self.assertRaises(OSError):
+                    publisher.file_if_complete(self.flags, rid, row)
+                self.assertFalse(ready.exists())
+                self.assertEqual(json.loads((dry / "unpublished.json").read_text()), row)
+                self.assertTrue((dry / "completed-manifest.json").exists())
+                self.assertFalse(Path(self.flags, "grants", rid + ".complete").exists())
+
+    def test_archive_failure_unpublishes_without_creating_terminal_grants(self):
+        self.row("ROW-1", "rc == 0", {"ok": True})
+        ready = Path(self.flags, "ready", "ROW-1.json")
+        row = json.loads(ready.read_text())
+        dry = Path(self.flags, "dryrun", "ROW-1"); dry.mkdir(parents=True)
+        (dry / "PASS.json").write_text(json.dumps({"id": "ROW-1", "job_complete": True}))
+        Path(self.flags, "grants", "ROW-1.ended").unlink()
+        with patch.object(publisher.rf, "atomic_json", side_effect=OSError("disk full")):
+            with self.assertRaises(OSError):
+                publisher.file_if_complete(self.flags, "ROW-1", row)
+        self.assertFalse(ready.exists())
+        self.assertEqual(json.loads((dry / "unpublished.json").read_text()), row)
+        self.assertFalse(Path(self.flags, "grants", "ROW-1.complete").exists())
+
+    def test_queued_smoke_completion_archives_and_cannot_be_regranted(self):
+        self.row("ROW-1", "rc == 0", {"ok": True})
+        ready = Path(self.flags, "ready", "ROW-1.json")
+        row = json.loads(ready.read_text())
+        row.update(launcher={"sha256": "a" * 64}, engine={"sha256": "b" * 64})
+        ready.write_text(json.dumps(row))
+        dry = Path(self.flags, "dryrun", "ROW-1"); dry.mkdir(parents=True)
+        (dry / "GPU-SMOKE-QUEUED.json").write_text(json.dumps({"regions": "mi210_0,184-191"}))
+        (dry / "PASS.json").write_text(json.dumps({"id": "ROW-1", "job_complete": True,
+            "launcher_sha256": "a" * 64, "engine_sha256": "b" * 64,
+            "result_format": "json", "result_path": row["result_path"]}))
+        with patch.object(publisher, "run_smoke", return_value=("PASS", "complete")):
+            self.assertEqual(publisher.run_gpu_queue(self.flags), 1)
+        self.assertFalse(ready.exists())
+        self.assertFalse((dry / "GPU-SMOKE-QUEUED.json").exists())
+        self.assertEqual(json.loads((dry / "completed-manifest.json").read_text()), row)
+        self.assertEqual(self.run_main("ROW-1")[0], 0)
+
+    def test_completed_smoke_archives_manifest_and_files_without_ready(self):
+        self.row("ROW-1", "rc == 0", {"ok": True})
+        ready = Path(self.flags, "ready", "ROW-1.json")
+        row = json.loads(ready.read_text())
+        row.update(launcher={"sha256": "a" * 64}, engine={"sha256": "b" * 64})
+        ready.write_text(json.dumps(row))
+        dry = Path(self.flags, "dryrun", "ROW-1"); dry.mkdir(parents=True)
+        (dry / "PASS.json").write_text(json.dumps({"id": "ROW-1", "job_complete": True,
+            "launcher_sha256": "a" * 64, "engine_sha256": "b" * 64,
+            "result_format": "json", "result_path": row["result_path"]}))
+        self.assertTrue(publisher.file_if_complete(self.flags, "ROW-1", row))
+        self.assertFalse(ready.exists())
+        self.assertEqual(json.loads((dry / "completed-manifest.json").read_text()), row)
+        code, _, err = self.run_main("ROW-1")
+        self.assertEqual(code, 0, err)
+        self.assertEqual(self.verdict("ROW-1")["row_verdict"], "pass")
+        self.assertEqual(self.verdict("ROW-1")["manifest"], str(dry / "completed-manifest.json"))
+        self.assertTrue(self.filed("ROW-1"))
+
+    def test_completed_manifest_fallback_refuses_unmatched_or_nonterminal_receipts(self):
+        self.row("ROW-1", "rc == 0", {"ok": True})
+        ready = Path(self.flags, "ready", "ROW-1.json")
+        row = json.loads(ready.read_text()); ready.unlink()
+        row.update(launcher={"sha256": "a" * 64}, engine={"sha256": "b" * 64})
+        dry = Path(self.flags, "dryrun", "ROW-1"); dry.mkdir(parents=True)
+        (dry / "completed-manifest.json").write_text(json.dumps(row))
+        receipt = {"id": "ROW-1", "job_complete": True, "launcher_sha256": "a" * 64,
+                   "engine_sha256": "b" * 64, "result_format": "json"}
+        (dry / "PASS.json").write_text(json.dumps(receipt))
+        self.assertEqual(self.run_main("ROW-1")[0], 2)  # .ended alone is not enough
+        Path(self.flags, "grants", "ROW-1.complete").write_text("complete\n")
+        for mutation in ({"job_complete": False}, {"id": "OTHER"}, {"launcher_sha256": "c" * 64},
+                         {"engine_sha256": "c" * 64}, {"result_format": "jsonl"}):
+            (dry / "PASS.json").write_text(json.dumps(dict(receipt, **mutation)))
+            self.assertEqual(self.run_main("ROW-1")[0], 2, mutation)
+            self.assertFalse(self.filed("ROW-1"))
+
     def test_numeric_pass(self):
         self.row("ROW-1", "tps_delta >= +2% and ppl_delta <= 0.1%", {"tps_delta": 3.5, "ppl_delta": 0.05})
         code, out, _ = self.run_main("ROW-1")

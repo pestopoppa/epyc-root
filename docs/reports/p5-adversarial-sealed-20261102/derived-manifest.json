@@ -1,0 +1,52 @@
+{
+ "decision_rule": "PASS only when pinned SWE image and pinned sandbox produce EACCES for AF_INET and AF_UNIX sockets, unshare, ptrace and io_uring; deny foreign process environment, reject traversal and symlink escapes, allow the local read/write positive control, expose no host socket or model path, protect sandbox source and remove the owned container. This is a bounded single-image adversarial check, not full isolation or scorer validation.",
+ "dryrun_native_result": true,
+ "dryrun_timeout_s": 900,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "c92186364f4de478541c98411a5024171f25adadc9fa70c44926798bfc97d42f"
+ },
+ "estimate_s": 600,
+ "gib": 12,
+ "handoff_task": "gpu-serving-tie-in-program.md:P5-1",
+ "id": "codex-gpu-serving-p5-adversarial-sealed-r2-20261102",
+ "keep": [
+  "*.py",
+  "*.sh",
+  "*.json",
+  "SOURCE.sha256",
+  "RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-adversarial-sealed-r2/launch.sh",
+  "sha256": "97baae26fc6e60b51b8a019ac8b7f1363160360f9e46b3eaa7e69a3452e8900a"
+ },
+ "lineage": "codex-gpu-serving-p5-adversarial",
+ "min_window_s": 600,
+ "owner": "handoff-gpu-serving-tie-in",
+ "ports": [],
+ "priority_rank": 76.0,
+ "published_at": null,
+ "published_from": "derived-from-current-spec-original-manifest-unavailable",
+ "recovery": {
+  "current_spec_path": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-adversarial-sealed-r2/spec.json",
+  "current_spec_sha256": "b17aa6f7290a2df0144d627367704cd01bef04766b29bd79c0ebc167c04f8ab9",
+  "kind": "derived-not-original",
+  "limitations": "Reconstructed from the current spec and matched smoke receipt; original manifest and publication timestamp unavailable.",
+  "original_manifest_available": false,
+  "result_matches_smoke_copy_sha256": "ce382e6911dd54cafac9e50b7960d32f67d2721c194f545240b8dc7b45565316",
+  "smoke_receipt_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/codex-gpu-serving-p5-adversarial-sealed-r2-20261102/PASS.json",
+  "smoke_receipt_sha256": "d15666361d68e8094df0e934c25f4ca89e1d9a9ed69f810df13e64ebda6ad025"
+ },
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-adversarial-sealed-r2/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-adversarial-sealed-r2",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-adversarial-sealed-r2/STOP",
+ "supersedes": "codex-gpu-serving-p5-adversarial-20261102",
+ "window_s": 1020,
+ "workdir": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-adversarial-sealed-r2"
+}

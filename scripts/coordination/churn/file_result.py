@@ -121,6 +121,28 @@ def load_manifest(flags, rid):
         if os.path.isfile(p):
             with open(p) as fh:
                 return p, json.load(fh)
+    # A complete-in-smoke row is deliberately removed from READY. Accept its
+    # archived manifest only with the matching completed-smoke receipt and
+    # terminal grant, never an unpublished/failed qualification manifest.
+    archive = os.path.join(flags, "dryrun", rid, "completed-manifest.json")
+    receipt = os.path.join(flags, "dryrun", rid, "PASS.json")
+    complete = os.path.join(flags, "grants", rid + ".complete")
+    try:
+        with open(archive) as fh:
+            m = json.load(fh)
+        with open(receipt) as fh:
+            p = json.load(fh)
+        if (os.path.isfile(complete) and isinstance(m, dict) and isinstance(p, dict)
+                and m.get("schema") == "epyc.row.v3" and m.get("id") == rid
+                and p.get("id") == rid and p.get("job_complete") is True
+                and re.fullmatch(r"[0-9a-f]{64}", str(p.get("launcher_sha256") or ""))
+                and re.fullmatch(r"[0-9a-f]{64}", str(p.get("engine_sha256") or ""))
+                and (m.get("launcher") or {}).get("sha256") == p["launcher_sha256"]
+                and (m.get("engine") or {}).get("sha256") == p["engine_sha256"]
+                and m.get("result_format") == p.get("result_format")):
+            return archive, m
+    except (OSError, ValueError, TypeError, AttributeError):
+        pass
     return None, None
 
 
@@ -189,7 +211,7 @@ def main(argv=None):
     rid, flags = a.row_id, a.flags
     mp, m = load_manifest(flags, rid)
     if not m:
-        print(f"ERROR {rid}: no manifest in {flags}/ready/ or ready/*/", file=sys.stderr); return 2
+        print(f"ERROR {rid}: no manifest in {flags}/ready/ or eligible completed-smoke archive", file=sys.stderr); return 2
     ep, rc, endline = load_end(flags, rid)
     if ep is None:
         print(f"ERROR {rid}: no grants/{rid}.ended|.complete in {flags}", file=sys.stderr); return 2

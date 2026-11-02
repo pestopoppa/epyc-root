@@ -1,0 +1,198 @@
+{
+  "baseline_image": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5",
+  "baseline_tree_sha256": "9cfeb71312c15358be94d4c6ca5ba30506ae856f083e64fb11a05740381ed31b",
+  "builds": {
+    "debug": {
+      "build": "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-debug",
+      "cache_sha256": "ae30be1c3c60f9f5fa82d7f66beb9ad37212af3df14da42ab685d27885474ed4",
+      "object_count": 606,
+      "sample_object": "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-debug/ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/gated_delta_net.cu.o",
+      "sample_object_sha256": "8c1ab00537d534b81aabbd1acd44a2149549522969f1231ccbbac92dcd3acdb5"
+    },
+    "release": {
+      "build": "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-release",
+      "cache_sha256": "19d9c9c1a868b80378daa6cf9dc0ed2ce666b74f1f4e7e608ee5960f2be5fee9",
+      "object_count": 606,
+      "sample_object": "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-release/ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/gated_delta_net.cu.o",
+      "sample_object_sha256": "5c90232c6ad7a21ed549f5bc85b3eeb289fc1bba9f9770a9b9599a0f214fff44"
+    }
+  },
+  "checks": {
+    "all_pass": false,
+    "debug.debug_timings": {
+      "expected": "ON",
+      "pass": true,
+      "value": "ON"
+    },
+    "debug.knob": {
+      "baseline_has": false,
+      "baseline_sha256": "c28cebeb1df4046b9f69f07378cf105ba23d64500b1a1f80de0364400667622e",
+      "candidate_has": true,
+      "candidate_sha256": "3e862df33612e237c4a115a3ce248bf93693667fa5ceb5ee07ea82964e2c4ae3",
+      "pass": true
+    },
+    "debug.linkage": {
+      "argv": [
+        "/workspace/repos/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh",
+        "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-debug/bin/llama-server",
+        "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-debug"
+      ],
+      "cwd": null,
+      "elapsed_s": 0.328,
+      "log": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/zos22-successor/logs/full/debug.linkage.log",
+      "log_sha256": "d6cb2b5d35187b5e09e929fb2bf3f1b867f3d0b50cf7f8dc4deda5110fd6a12f",
+      "pass": true,
+      "rc": 0
+    },
+    "debug.recipe": {
+      "diff": {},
+      "pass": true
+    },
+    "debug.unchanged_libraries": {
+      "diff": {
+        "libggml-base.so.0.16.0": {
+          "base": "1c21cf133f35877a9d59c9d82bca08932bff8f29a77b30a8bb109a573eaf8a8c",
+          "candidate": "7568cbbf55bd59f1213837381c58e35d9087e25ded42496e76b7daa1db915b9d"
+        },
+        "libggml-hip.so.0.16.0": {
+          "base": "23d39c91a82fad0a83743829dd59a10df91bfe0c4a933f0cce693fc7a831beb4",
+          "candidate": "840cec5ba79809acdc1521b66c117489a5fa6b0eab9d95e8d20a715e107b6435"
+        }
+      },
+      "files": {
+        "libggml-base.so.0.16.0": "7568cbbf55bd59f1213837381c58e35d9087e25ded42496e76b7daa1db915b9d",
+        "libggml-cpu.so.0.16.0": "e2fb59ee4d34fd5cb726f89f4039cdc7c28dd01d7b9e9c217b01db086d6d605e",
+        "libggml-hip.so.0.16.0": "840cec5ba79809acdc1521b66c117489a5fa6b0eab9d95e8d20a715e107b6435",
+        "libggml.so.0.16.0": "bb7e5a7a33787ddce1133d414d0f7d86f06dfb512d7f38a5e2e43b4aabe98b3a",
+        "libllama.so.0.0.10419": "d4975083d1ae78c70a8c18017e9149a94a6abe917035ac72fe30b8e0757ee01e"
+      },
+      "pass": false
+    },
+    "greedy_fast_ctest": {
+      "argv": [
+        "ctest",
+        "--test-dir",
+        "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-release",
+        "-R",
+        "^test-sampling-greedy-fast$",
+        "--no-tests=error",
+        "--output-on-failure",
+        "--verbose"
+      ],
+      "cwd": null,
+      "elapsed_s": 0.326,
+      "log": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/zos22-successor/logs/full/greedy-fast.ctest.log",
+      "log_sha256": "5c90f8339f7e1aeb3291a754bb1be199f67fcd42d3a94ec2616a6b0bc1800646",
+      "pass": false,
+      "rc": 0,
+      "test_seen": false
+    },
+    "release.debug_timings": {
+      "expected": "OFF",
+      "pass": true,
+      "value": "OFF"
+    },
+    "release.knob": {
+      "baseline_has": false,
+      "baseline_sha256": "c28cebeb1df4046b9f69f07378cf105ba23d64500b1a1f80de0364400667622e",
+      "candidate_has": true,
+      "candidate_sha256": "aaaab39254a7ff21d0c3d987bd0ea3076b3e36bc3786584417f6b4aa0a6d79ae",
+      "pass": true
+    },
+    "release.linkage": {
+      "argv": [
+        "/workspace/repos/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh",
+        "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-release/bin/llama-server",
+        "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-release"
+      ],
+      "cwd": null,
+      "elapsed_s": 0.323,
+      "log": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/zos22-successor/logs/full/release.linkage.log",
+      "log_sha256": "48eecc5aefb6802159ee9efd32b21261c6da6ddfa53c348eec507b32b5b2a04e",
+      "pass": true,
+      "rc": 0
+    },
+    "release.recipe": {
+      "diff": {},
+      "pass": true
+    },
+    "release.unchanged_libraries": {
+      "diff": {
+        "libggml-base.so.0.16.0": {
+          "base": "1c21cf133f35877a9d59c9d82bca08932bff8f29a77b30a8bb109a573eaf8a8c",
+          "candidate": "7568cbbf55bd59f1213837381c58e35d9087e25ded42496e76b7daa1db915b9d"
+        },
+        "libggml-hip.so.0.16.0": {
+          "base": "23d39c91a82fad0a83743829dd59a10df91bfe0c4a933f0cce693fc7a831beb4",
+          "candidate": "b4a0cc6ebd2db6bb63aa4a4bb475ea47795a10ff4911f28936175c2aa305166b"
+        }
+      },
+      "files": {
+        "libggml-base.so.0.16.0": "7568cbbf55bd59f1213837381c58e35d9087e25ded42496e76b7daa1db915b9d",
+        "libggml-cpu.so.0.16.0": "e2fb59ee4d34fd5cb726f89f4039cdc7c28dd01d7b9e9c217b01db086d6d605e",
+        "libggml-hip.so.0.16.0": "b4a0cc6ebd2db6bb63aa4a4bb475ea47795a10ff4911f28936175c2aa305166b",
+        "libggml.so.0.16.0": "bb7e5a7a33787ddce1133d414d0f7d86f06dfb512d7f38a5e2e43b4aabe98b3a",
+        "libllama.so.0.0.10419": "d4975083d1ae78c70a8c18017e9149a94a6abe917035ac72fe30b8e0757ee01e"
+      },
+      "pass": false
+    }
+  },
+  "cpus": "24-47",
+  "failure": "one or more native store build acceptance checks failed",
+  "files": {
+    "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-debug/CMakeCache.txt": "ae30be1c3c60f9f5fa82d7f66beb9ad37212af3df14da42ab685d27885474ed4",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-debug/bin/libggml-base.so.0.16.0": "7568cbbf55bd59f1213837381c58e35d9087e25ded42496e76b7daa1db915b9d",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-debug/bin/libggml-cpu.so.0.16.0": "e2fb59ee4d34fd5cb726f89f4039cdc7c28dd01d7b9e9c217b01db086d6d605e",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-debug/bin/libggml-hip.so.0.16.0": "840cec5ba79809acdc1521b66c117489a5fa6b0eab9d95e8d20a715e107b6435",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-debug/bin/libggml.so.0.16.0": "bb7e5a7a33787ddce1133d414d0f7d86f06dfb512d7f38a5e2e43b4aabe98b3a",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-debug/bin/libllama-server-impl.so": "3e862df33612e237c4a115a3ce248bf93693667fa5ceb5ee07ea82964e2c4ae3",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-debug/bin/libllama.so.0.0.10419": "d4975083d1ae78c70a8c18017e9149a94a6abe917035ac72fe30b8e0757ee01e",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-debug/bin/llama-server": "802a3e0c7bcfcb23c661dd879ec6b12d76048a4525ac8a2aa3b336f561bfa6f4",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-debug/compile_commands.json": "505071a55fbbb7e47a70dfc6ff5c19efa5873ddc86abd8eb864366945ea30409",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-release/CMakeCache.txt": "19d9c9c1a868b80378daa6cf9dc0ed2ce666b74f1f4e7e608ee5960f2be5fee9",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-release/bin/libggml-base.so.0.16.0": "7568cbbf55bd59f1213837381c58e35d9087e25ded42496e76b7daa1db915b9d",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-release/bin/libggml-cpu.so.0.16.0": "e2fb59ee4d34fd5cb726f89f4039cdc7c28dd01d7b9e9c217b01db086d6d605e",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-release/bin/libggml-hip.so.0.16.0": "b4a0cc6ebd2db6bb63aa4a4bb475ea47795a10ff4911f28936175c2aa305166b",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-release/bin/libggml.so.0.16.0": "bb7e5a7a33787ddce1133d414d0f7d86f06dfb512d7f38a5e2e43b4aabe98b3a",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-release/bin/libllama-server-impl.so": "aaaab39254a7ff21d0c3d987bd0ea3076b3e36bc3786584417f6b4aa0a6d79ae",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-release/bin/libllama.so.0.0.10419": "d4975083d1ae78c70a8c18017e9149a94a6abe917035ac72fe30b8e0757ee01e",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-release/bin/llama-server": "802a3e0c7bcfcb23c661dd879ec6b12d76048a4525ac8a2aa3b336f561bfa6f4",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-release/compile_commands.json": "d886398a8292ecebdfa66fe16536a4f1f4976028c4493e735f558785ea850b80",
+    "/mnt/raid0/llm/tmp/gpu-serving-tie-in/zos22-successor/logs/full/debug.build.log": "be53b34aeab16f65403ef528c9515f6dde31426bb661009e34d183ad427ecc62",
+    "/mnt/raid0/llm/tmp/gpu-serving-tie-in/zos22-successor/logs/full/debug.configure.log": "4de708fe2ab8f315c12f3501809e711400595dc47ee23fecb94a77d9ff98ea74",
+    "/mnt/raid0/llm/tmp/gpu-serving-tie-in/zos22-successor/logs/full/debug.linkage.log": "d6cb2b5d35187b5e09e929fb2bf3f1b867f3d0b50cf7f8dc4deda5110fd6a12f",
+    "/mnt/raid0/llm/tmp/gpu-serving-tie-in/zos22-successor/logs/full/greedy-fast.ctest.log": "5c90f8339f7e1aeb3291a754bb1be199f67fcd42d3a94ec2616a6b0bc1800646",
+    "/mnt/raid0/llm/tmp/gpu-serving-tie-in/zos22-successor/logs/full/release.build.log": "80bf1780301b79f4b51976e59b3e646be81f1513108bc48a14599112a545fd12",
+    "/mnt/raid0/llm/tmp/gpu-serving-tie-in/zos22-successor/logs/full/release.configure.log": "2953f5530ee1a647fafa542cfcf59ac687b59be19eec0d7deeee17674b0b42f2",
+    "/mnt/raid0/llm/tmp/gpu-serving-tie-in/zos22-successor/logs/full/release.linkage.log": "48eecc5aefb6802159ee9efd32b21261c6da6ddfa53c348eec507b32b5b2a04e"
+  },
+  "finished_at": "2026-11-02T11:28:36.934544+00:00",
+  "id": "codex-gpu-serving-zos22-native-r2-20261102",
+  "jobs": 24,
+  "mode": "full",
+  "schema": "epyc.gpu_zos22.native_build.v1",
+  "source": {
+    "at": "2026-11-02T10:57:22.537238+00:00",
+    "base_commit": "c72ec82f5417bb2937310326120f149b665e8400",
+    "feature_commit": "de708780b958eff481fd3a137704efb03ca7d495",
+    "feature_paths": [
+      "common/sampling.cpp",
+      "common/sampling.h",
+      "tests/CMakeLists.txt",
+      "tests/test-sampling-greedy-fast.cpp",
+      "tools/server/CMakeLists.txt",
+      "tools/server/server-context.cpp"
+    ],
+    "generated_ui_files": 142,
+    "schema": "epyc.gpu_zos22.source_verified.v1",
+    "source_content_manifest_sha256": "cff8775d6216a8610776aded10795d3b358e8231ff24bf5270e83fd44fee942d",
+    "source_pins_sha256": "187e7a953e151f208859cc93f7353d6ba7e43189fe58dc18f47b333184aea4dc",
+    "source_tree": "C5 full tree + six feature blobs + pinned generated UI tree equality PASS",
+    "tracked_tree_files": 3324,
+    "ui_index_sha256": "49820780c8c94185db3567abf40c67cff5c53d37839f934222726be5118f0394",
+    "ui_manifest_sha256": "98c05d2ac6bd378ee20209824428919d2e96808185d6615195641d45b860089d",
+    "ui_tree_sha256": "9777bec7dc33fe2986de16cee6a9fa3c0e5e7232e721e3c163686bb69acbe884"
+  },
+  "started_at": "2026-11-02T11:24:52.002445+00:00",
+  "status": "failed"
+}
