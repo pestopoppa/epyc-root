@@ -50,6 +50,8 @@ validation requires the applicable compute authorization.
   file is unchanged and dedicated lifecycles remain open.
 - Root `a1a26d6da`: P3 slot L0/L3/L0 separate-server successor, 12 fake-server controls passed;
   during-decode residency and sequencer/native qualification remain open.
+- Root `c213320c1` plus `eb496d66b`: P3 in-decode slot sampling and sequencer/fake-lifecycle
+  end-to-end control, 21 tests passed. Native qualification and existing wrapper guard remain open.
 - KVU-16a source/receipt reconciliation found an idle-slot argv mismatch; the sampled load does
   not justify a registry update or a runtime peak. The exact checklist is in the evidence directory.
 - Research `b1d7e1f77`: registry-rendered KVU-16a load-only producer, six fake-runtime controls;

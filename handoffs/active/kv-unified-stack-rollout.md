@@ -517,6 +517,12 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
         occupancy matching is not a during-decode residency proof; sequencer integration and
         native qualification remain open and the old wrapper stays guarded.
         ✅ 2026-11-02 [no-belief: source and fake-server controls]
+      - [x] **KVU-16h P3 decode sampling and sequencer fixture** — `eb496d66b` records per-slot
+        occupancy during identified active decoding with temporal, not response-ID, association;
+        `2eea11287` and `c213320c1` exercise two-arm supervision and the sequencer through fake
+        lifecycles. Twenty-one offline tests pass. The existing wrapper guard stays in place until
+        native qualification and production integration; no historical timing comparison follows.
+        ✅ 2026-11-02 [no-belief: source and fake-server controls]
       - *(2026-11-02, P3 lifecycle row.)* `handoff-kvu16h-p3-lifecycle-20261102` ended rc=1 before the full job: its region-lock CLI checksum no longer matched. No full result or occupancy comparison exists; verdict **inconclusive**. The prior native control ran two separate server lifetimes but used eight host CPUs, so it does not meet the required four-CPU smoke contract. [Preserved control and launcher logs](../../progress/evidence/kvu16h-p3-result-20261102/qualification.json). The full runner and global coverage remain open. [no-belief: incomplete run and qualification only]
       - *(2026-11-01, DF2 E2E inventory.)* The [dated source snapshot](../../artifacts/compute/kvu16h-df2-inventory-20261101/README.md) has a separate no-draft benchmark process and no request-level speculative override in the inspected client path. Server-stop completion, other copies and runtime behavior remain unproven; this is not a global guard. [no-belief: offline source inspection only]
       - *(2026-11-01, P3/X0 occupancy draft.)* The [uninstalled coordinator](../../artifacts/compute/kvu16h-v2-x0-lifecycle-20261101/README.md) now rejects missing or mismatched occupancy comparison witnesses across arms; eight fake-runtime tests pass. Actual occupancy evidence, process supervision and runtime integration remain open. [no-belief: offline fake-runtime verification only]
