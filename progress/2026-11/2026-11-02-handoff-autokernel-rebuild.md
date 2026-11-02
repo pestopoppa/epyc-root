@@ -11,3 +11,7 @@ R18-D input preparation: the original DeepSeek R1 Distill Qwen 1.5B Q4_K_M is pr
 ## 09:53Z — Identify historical R23-3 probe source
 
 R23-3 source recovery: research commit 36eb50e6c600649b3a6920b530245361440fe3cd identifies the unmodified qwen38-mtp upstream probe.py at commit 431bf8a821. The original /mnt/raid0/llm/tmp/probe.py is absent; recover the pinned upstream source before preparing the GPU row. The historical n8 control is not a DFlash measurement.
+
+## 09:56Z — Recover pinned historical serving probe and prepare calibration inputs
+
+Recovered the unmodified qwen38-mtp probe.py from upstream commit 431bf8a821d49e6ac919febc7a91fb2434318110 to /mnt/raid0/llm/tmp/autokernel-rebuild/r23probe/probe.py; SHA-256 d9ea0c9fb10435937c774d4b182a6b5ac8481837e8b3d1aa23738eeb178dfd5f. Research commit 36eb50e6c600649b3a6920b530245361440fe3cd retains genuine DFlash and MTP client measurements, 61.1 and 46.8 tok/s medians, three prompts x three runs, and explicitly marks the 9.7 result as a control. R23-3/R23-6 same-arm two-instrument calibration remains open; no new measurement claimed. For R18-D, production GPU llama-bench SHA-256 9b8109dd02ff71fd03d6f63a810165284ebf13fc840bb1903b7387c259d347a5 matches the v10 build SHA256SUMS and PROVENANCE.md binds the build to ffc1bac82. The --autokernel-harden symbol is in its implementation library, not the thin executable. Delegated scratch preparation for R18-D and R23-4; completion events registered under awaiting. No inference run or row published.
