@@ -19,3 +19,11 @@ Corrected the prepared EV-14a worker so the recorded baseline pin timestamp is t
 ## 03:38Z — Harden EV-14a prepared worker against incomplete repeats
 
 Hardened /mnt/raid0/llm/tmp/eval-tower-ev14a-prep/run_ev14a_fresh.py to refuse any run without exactly three repeat records or with empty/inconsistent suite sets across repeats. Python syntax compilation passed. This does not replace checking the expected suite inventory, serving readiness, or the rowflow launcher. Previously registered launcher and probe preparation outputs are not yet available. No inference launched or row published.
+
+## 04:10Z — Prepare fail-closed EV-CONF-2 slot declaration patch
+
+Prepared reviewable artifacts/audit/evconf2-slot-declaration-20261102/confidence_probe.patch against the orchestrator confidence probe. The candidate preserves unknown for missing, null, malformed and empty slot declarations; any explicit true remains on; the spec-off arm rejects unknown. Seven offline serving_identity cases pass, candidate compiles, and git apply --check --unidiff-zero succeeds against the current orchestrator tree. This is a proposed cross-repo patch, not an applied fix: orchestrator owner integration and full tests are still needed before EV-CONF-2/EV-4b relies on it. No inference launched or row published.
+
+## 04:10Z — Prepare fail-closed EV-CONF-2 slot declaration patch
+
+Prepared reviewable /mnt/raid0/llm/tmp/eval-tower-ev14a-prep/confidence_probe.patch against the orchestrator confidence probe. The candidate preserves unknown for missing, null, malformed and empty slot declarations; any explicit true remains on; the spec-off arm rejects unknown. Seven offline serving_identity cases pass, candidate compiles, and git apply --check succeeds against the current orchestrator tree. This is a proposed cross-repo patch, not an applied fix: orchestrator owner integration and full tests are still needed before EV-CONF-2/EV-4b relies on it. No inference launched or row published.
