@@ -159,3 +159,7 @@ The model-free G3 classifier now requires the full zero-based layer-ID set, inst
 ## 10:40Z — Prepare SR-6 bench claim verification
 
 Added a sampled full-host bench claim verifier using hash-pinned guard primitives to check the four quadrant GLOBAL and bench write flocks, exclusive GPU quiet write flock, common live ancestor and bench attribution. Six bounded tests and all 89 SR-6 preparation tests passed. It does not prove grant authority or uninterrupted ownership and was not exercised under a live keeper grant; no runnable row or inference verdict is claimed.
+
+## 10:41Z — Connect SR-6 keeper checks and prepare G3 graph control
+
+Connected the sampled bench claim to keeper admission and guarded SR-6 capture; 92 preparation tests passed. Prepared an opt-in exact-v10 G3 patch that disables graph replay and graph-dependent optimization during tracing; source patch dry-run passed, but no build or runtime behavior is proved. The CAFE-4 candidate passed syntax and structural controls but still needs independent source review and native state-specific fault validation. No inference row or verdict is claimed.
