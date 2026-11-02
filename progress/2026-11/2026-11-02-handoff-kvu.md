@@ -211,3 +211,7 @@ The corrected VKQ3 second smoke requested only q0 but failed after waiting for t
 ## 11:29Z — Publish the KVU-19a-2 experimental source-pair build row after four-CPU configuration smoke
 
 Published handoff-kvu-kvu19a2-build-20261102: four-CPU smoke PASS, one native unit, rc=0; the smoke configured the two source arms and did not build them or test GPU nondeterminism. The preflight binds the source pair and actual chroot toolchain; the node-owned snapshot is reaper-compatible but same-UID mutation is not ruled out. CPU-FA-VKQ-3 is parked after its third failed qualification, before target launch; no retry. Lane-only fixes cover startup cleanup and HTTP-200 completion (24 offline tests). K35 runner and fixture patches pass 10 guard and 34 fixture tests but are uninstalled. KVU-16a GPU smoke is separately in progress; do not infer PASS.
+
+## 11:31Z — Published KVU-16a GPU load measurement row after successful smoke
+
+KVU-16a: published `handoff-kvu-16a-load-20261102`; publisher lint passed and the four-CPU GPU smoke completed rc=0 on mi210_0,184-187 at 2026-11-02T11:28:56Z. The full result will be `/mnt/raid0/llm/tmp/kvu16a-load-20261102/result.json`; smoke is not a VRAM measurement verdict. Full-run identity and shape must be reviewed before applying the result. The KVU-19a-2 build row is also published; actual build and GPU nondeterminism results remain pending. CPU-FA-VKQ-3 remains parked after three failed qualifications. The K35 runner patch remains uninstalled and needs native-server validation.
