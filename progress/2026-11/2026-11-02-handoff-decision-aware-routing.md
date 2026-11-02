@@ -19,3 +19,31 @@ Recovered the previous failed wrap-up: sparse checkout excluded tracked artifact
 ## 01:04Z — Integrate DAR-5 prototype and cache-affinity findings
 
 Consumed both requested reports. DAR-5.2 scratch prototype passed four focused tests, including finite-difference gradients; it is not integrated or evidence of benefit. Cache affinity needs verified per-server candidate-time information and careful reward attribution; current reward already includes prefill duration. Preserved implementation constraints in docs/design/decision-aware-routing-preparation-20261102.md, and dispatched bounded dataset, sweep harness and prototype follow-ups. No inference run or row published. Previous wrap-up commit 7482668560c1 failed serialized push and remains to be published by this wrap-up.
+
+## 01:05Z — Integrate fixed-reward dataset and identity implementation reviews
+
+Consumed dataset-scan and prototype-qa. The available July reward replay is pre-E18 and lacks prompt descriptors; the episodic schema has no established stable task-ID join to that replay, and historical objective truncation prevents assuming identity from objective text. E18 wall-clock reward is already ratified; remaining work is provenance-preserving data assembly and fixed-reward training. Identity prototype is not integrated: scorer still uses descriptors and checkpoints omit role identities. Added data and integration constraints to the durable preparation note. Dispatched bounded metadata-only join-audit, identity integration draft, and controlled-sweep preparation. No inference run or row published.
+
+## 01:05Z — Integrate fixed-reward dataset and identity implementation reviews
+
+Consumed dataset-scan and prototype-qa. The available July reward replay is pre-E18 and lacks prompt descriptors; the episodic schema has no established stable task-ID join to that replay, and historical objective truncation prevents assuming identity from objective text. E18 wall-clock reward is already ratified; remaining work is provenance-preserving data assembly and fixed-reward training. Identity prototype is not integrated: scorer still uses descriptors and checkpoints omit role identities. Added data and integration constraints to the durable preparation note. Dispatched bounded metadata-only join-audit, identity integration draft, and controlled-sweep preparation. No inference run or row published.
+
+## 01:07Z — Integrate controlled-sweep and join-auditor preparation
+
+Consumed sweep-precise and join-prep. A fixture-tested aggregate-only task-ID coverage auditor exists in scratch, but no real audit has run and it does not establish E18 provenance or an episodic-memory join. The real_suite_v1/EvalTower combination is a candidate controlled workload and grader; preference propagation, actual selector telemetry, clean-window execution and source belief wiring remain before a valid sweep. Recorded the constraints in the design note. Dispatched bounded sweep patch, auditor review and exact baseline/snapshot provenance preparation; no row published or inference run.
+
+## 01:09Z — Implement aggregate task-ID join coverage auditor
+
+Added scripts/analysis/dar_join_coverage.py and six fixture tests for candidate progress/reward task-ID coverage. The auditor emits aggregate counts only and does not certify E18 scorer provenance, episodic-memory joins, stream order, training suitability or model performance. Independent review identified large numeric and truncated gzip error cases; fixed both and documented the stream-order limitation. Six unit tests pass. Added the prospective source-table entry and VB-DAR-JOIN-COVERAGE-WIRE task before real measurement. No real data scan, inference or compute row was run or published. Input-prep identified the E18 baseline artifact; immutable progress and properly provenanced reward replay still need preparation.
+
+## 01:12Z — Prepare E18 baseline input and recover auditor wrap-up
+
+Prepared pinned E18 duration-baseline bytes from orchestrator 60bfc4c43b601f758700565c5fcfab537e31df5e at /mnt/raid0/llm/tmp/decision-aware-routing/baseline-prep; SHA-256 b489647a4c8cdcf93886116f4f36c908d4ffbf4c86296a55c9268041e6dcaf09, ten roles with finite positive p50 and p90. This is configuration input, not runtime or reward provenance. Previous auditor wrap-up failed index_state --check; diagnosis dispatched. Reviewed source-hook plan and confirmed sweep scratch is not an implemented patch. Auditor remains fixture-tested; no real audit, inference or published row.
+
+## 01:14Z — Regenerate index and publish aggregate routing coverage auditor
+
+Consumed index-repair diagnosis and regenerated handoff state, graph and master rollup after adding VB-DAR-JOIN-COVERAGE-WIRE; research-evaluation open count is 694. The aggregate task-ID coverage auditor and six fixture tests are ready for publication; it does not certify reward provenance or training eligibility. Dispatched bounded writer, sweep plumbing and private snapshot preparation drafts. No real data audit, inference or row published.
+
+## 01:16Z — Publish routing coverage auditor and advance prospective capture
+
+Recovered the prior failed publication: serialized_push.py published 11 lane commits through 1bb56aa76dc5 to origin/main, including aggregate auditor 2ff97f3b95b1 and its source-table and wiring task. The prior index_state check passed. Started bounded prospective native receipt, preference propagation, and private snapshot preparation drafts, each with a dispatcher event. No real audit, inference or row published.
