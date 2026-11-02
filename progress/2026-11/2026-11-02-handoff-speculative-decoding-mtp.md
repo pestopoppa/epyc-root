@@ -55,3 +55,7 @@ Advanced SR-6 with a model-free four-arm plus repeat schedule planner, scoped su
 ## 09:36Z — Prepare SR-6 planning and NG5 provenance audit
 
 Published the preparation after merging concurrent origin/main updates; the initial wrap-up push was rejected as non-fast-forward. No row published.
+
+## 09:38Z — Advance SR-6 capture and trace ngram corpus
+
+Prepared model-free SR-6 native request and durable per-arm exposure capture primitives, a proposed three-window statistical rule and calculator, and a scoped SHA-256 exclusion inventory for the 15 raw prompts from the prior diagnostic. All 29 preparation tests pass. These do not supply full exposure history, an admitted worker, server lifecycle, runtime provenance/residency, interrupted-block enforcement, or a reviewed and sealed predeclared rule; no inference row is publishable yet. Traced COPYSPEC-P1 to 85 raw prompts with original result IDs; repeated-5-gram fraction remains unrecorded in the examined packet, and the earlier 6–17% applies to another corpus. No new measurement or row published.
