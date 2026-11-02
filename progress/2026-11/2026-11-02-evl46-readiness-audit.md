@@ -57,6 +57,10 @@ judicious review. The edit preserves existing task text and history. [no-belief:
   its full scheduled run is a scripted-endpoint service/claim qualification, not model evidence.
   The live pair and separately scheduled post-run model hash remain in preparation.
   [no-belief: fixture controls]
+- `evl46-crm-live-source-tests-20261102` is published, needs-dryrun. Model-integrity preflight
+  is prepared but unexecuted; rowflow explicitly refused weight hashing inside a granted row.
+  Scheduler owner was asked for a claimed preflight opening; no lint bypass or live row.
+  [no-belief: operational state]
 - ROOT `4f609b459` + `bb252dbc6` + `bf9dbd64c` add a fail-closed pair receipt reader;
   three tamper/fixture/aborted controls passed under q2. It is not CLI-registered and emits no
   claim without provider/source authority. A lock-provider receipt is being built. Research

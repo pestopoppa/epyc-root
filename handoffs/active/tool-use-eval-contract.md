@@ -48,6 +48,11 @@ Rowflow `evl46-crm-fullentry-fixture-20261102` is grantable after its exact-entr
 scheduled qualification will use the real provider claim, private CRM/Slack and a scripted
 HTTP endpoint, with no model. Its result cannot satisfy the live pair. The model launcher and
 separate post-run content-hash row are still being prepared. [no-belief: fixture controls]
+Row `evl46-crm-live-source-tests-20261102` is published with state **needs-dryrun**. Its
+model-integrity preflight is prepared at `/mnt/raid0/llm/tmp/evl46-live-preflight-20261102/`
+but unexecuted: rowflow refuses weight hashing inside a grant, and the scheduler owner has
+been asked for a short claimed preflight opening. Do not claim a live model row is ready.
+[no-belief: operational state]
 ROOT `4f609b459` + `bb252dbc6` + `bf9dbd64c` began a strict original-journal reader and
 partial-arm refusal controls; three refusal tests passed. Later candidate `88d41e517` registers
 the scoped producer-reported observation described below, without asserting grant authority,
