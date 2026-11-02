@@ -101,3 +101,16 @@ Plan: [README.md](../../research/deep-dives/ws58-jev-20261102/README.md). **Orde
 - [ ] **Row estimate_s vastly overstated**: fix estimator.
 - [ ] **Per-row UNDERUSED is only logged**: act on it.
 - [ ] **OBS-CHURN-UP** `churn_up.sh` liveness probes (pidfile+argv, exact-path argv over /proc) are registered `unadopted` in `observer_registry.json`: adopt `observer_guard.sh` three-valued state (measured / absent / blind).
+
+## Stop-everything, disk reclaim and runbook (2026-11-02 afternoon, ws58)
+
+- [x] **Backlog-churn runbook; keeper v12 in git; `churn_up.sh` `--stop` `--status` `--dry-run`** ✅ 2026-11-02 ROOT `27b94990f` [no-belief: tooling]
+- [x] **Disk fixes: reaper idle 1 day; standalone `disk_janitor.sh` (reap 30 min, trash sweep hourly); SCRATCH-COPY detection in dispatcher; scratch cleanup on retire** ✅ 2026-11-02 ROOT `c1068744f` [no-belief: tooling]
+- [ ] **Verify the disk janitor** (started 14:05Z pid 190444): FREE trend >= 1 day, `.trash` nothing older than about 25 h, no SCRATCH-COPY outstanding.
+- [ ] **3 half-cleaned worktrees**: `vgpr-compiler-ab-20260915`, `fix-pii-hook-numeric-json-20261021`, `noninf-20260924/inf41/epyc-orchestrator`.
+- [ ] **Dirty/unlanded trees under `tmp/` and `autokernel/` never processed** by the reclaim.
+- [ ] **Dangling references to deleted data**: `artifacts/compute/codex3-*` cite `data/stt-cs8-public-20261030`; `memento-block-reasoning-compression.md` cites openmementos; about 10 files cite `backups/episodic-leak-20260917` (`ratify_v10_episodic_repin_20260917*`, `promptforge-mutation-safety-contract.md`, `wiki/safety.md`, orchestrator `purge_eval_leak_memories_20260917.*`).
+- [ ] **rowflow test `test_complete_in_smoke_is_filed_not_queued` fails on main.**
+- [ ] **Pipeline restart is operator-gated** (all grants revoked to `tmp/ws58-csh/revoked-grants-20261102/`; dispatcher, keepers, watchdogs, filler_run13 launchers stopped).
+- [ ] **Registry graveyard row for Qwen2.5-Coder-32B-Instruct-Q4_K_M** (operator deleted the file): commit was blocked by the orchestrator pre-commit contention-matrix freshness hook (matrix stale, cannot refresh with the stack stopped). Patch at `tmp/ws58-csh/registry-graveyard-q4km-20261102.patch`. Also `server_mode.qwen25_coder_32b_q4km` still resolves to the deleted file; needs a stack-change deprecation.
+- [ ] **Fable backlog-refactor audit** in progress; output `tmp/ws58-csh/backlog-refactor-proposal-20261102.md`.
