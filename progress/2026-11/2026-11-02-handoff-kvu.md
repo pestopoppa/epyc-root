@@ -95,3 +95,7 @@ VKQ3 calibration: bounded supervisor review delegated; output is awaited in /mnt
 ## 10:05Z — Corrected VKQ3 diagnostic receipt parsing to the native tokenizer --ids format and tested offline.
 
 VKQ3 diagnostic receipt draft now parses the native bracketed comma-separated --ids output rather than whitespace-separated IDs. Five receipt and ten supervisor offline tests pass; source confirms the output format. No tokenizer binary provenance, integrated worker, keeper qualification, or target result is asserted. Worker and provenance preparation are delegated, with scratch-preserved outputs registered for integration.
+
+## 10:06Z — Integrated VKQ3 offline worker seam connecting supervised tokenization to private receipts.
+
+VKQ3 worker draft composes bounded supervision and private receipt creation, propagates mode and deadline, and refuses success after grant loss; four offline tests pass. Grant and deadline inputs remain injected rather than authoritative; actual containment, provenance, rowflow wiring, qualification and target inference remain unverified. Independent worker review, grant integration and provenance investigation are registered for follow-up.
