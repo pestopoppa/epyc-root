@@ -15,3 +15,9 @@ Implemented byte-custody verification for independently pinned evidence manifest
 ## 10:16Z — AKX-P1c — replay sync17-fix2
 
 The evidence adapter now checks that the sealed source patch is exactly the deterministic diff between trusted full parent and candidate commits; a correctly hashed wrong patch is rejected. Sixteen focused tests pass. This verifies source diff custody only, not coverage or execution. The exact historical quantizer build still requires a keeper-ready launcher. The 98,392,912,256-byte reconstruction would put the currently shared filesystem below its 150-GiB floor; source shards remain unverified. P1c remains open; no compute or row publication.
+
+## 10:22Z — Harden the staged quantizer build receipt completion check
+
+## AKX-P1c build preparation
+
+Hardened the staged historical quantizer build completion check to require the recorded source, toolchain, build, linkage and binary artifacts under the run directory and recompute their SHA-256 digests; missing, fabricated and modified artifacts refuse. Two completion fixtures and two partial gcov extraction tests pass. This is build preparation only: compiler identity, source-to-binary provenance, runtime coverage and replay remain unproved; no row was published or compute run. W5s r7 remains parked after three failures; the shared first failure was an enrollment class/window mismatch, with whole-host admission also unresolved.
