@@ -1506,7 +1506,7 @@ one observation payload. SC19 stays open until that shape emits and round-trips 
 
 - [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — SC19
   producer state, locator trap, and first-tuple closure condition.
-- [`shape-keyed-contention-gating.md`](../handoffs/active/shape-keyed-contention-gating.md) — local
+- [`shape-keyed-contention-gating.md`](../handoffs/active/numa-placement-and-contention.md#track-shape-keyed-contention-gating) — local
   GateDecision echo landing.
 - [`progress/2026-08/2026-08-13-mainB.md`](../progress/2026-08/2026-08-13-mainB.md) and
   [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — producer
@@ -3479,7 +3479,7 @@ practices follow, all applied here:
 - [`progress/2026-09/2026-09-08-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md)
   — § *"Operator-queue triage: OP-45 retired as stale, OP-44 deleted as MISFILED"*, with the
   premise-by-premise table and the named defect.
-- [`handoffs/active/within-role-placement-state-machine.md`](../handoffs/active/within-role-placement-state-machine.md)
+- [`handoffs/active/numa-placement-and-contention.md`](../handoffs/active/numa-placement-and-contention.md#track-within-role-placement-state-machine)
   — the handoff that owns the two real tasks, annotated with the retirement evidence and
   deliberately left un-ticked.
 - [`handoffs/completed/design-backlog-triage-2026-07-23.md`](../handoffs/completed/design-backlog-triage-2026-07-23.md)

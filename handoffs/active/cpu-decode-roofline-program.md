@@ -76,7 +76,7 @@ bandwidth that is a 10–20 ms token (50–100 t/s) before speculation, and we m
   record and phase checklist; Axis A here is its live viability task list
 - [`cpu-shape-specialized-gemv-decode.md`](../completed/cpu-shape-specialized-gemv-decode.md) (INF-10) — the refuted
   fusion arms and the `GGML_PERF`/symbol profile it prescribed (B1 here satisfies it)
-- [`batched-decode-measurement.md`](batched-decode-measurement.md) and
+- [`batched-decode-measurement.md`](numa-placement-and-contention.md#track-batched-decode-measurement) and
   `epyc-inference-research/scripts/lib/canonical_recipe.py` — the canonical prefix, flags and OMP stack
 - [`../completed/qwen4exp-uniform-iq4xs-baseline-control.md`](../completed/qwen4exp-uniform-iq4xs-baseline-control.md)
   (INF-68, ratified OP-32) — the artifact rule, the required comparison baseline, the +15.2% quant-mix result
@@ -258,7 +258,7 @@ at 153 GB/s in the configuration that serves.
       `vm.zone_reclaim_mode=1` rejected (system-wide); BIOS NPS1 → C8 reboot session (C0-c decides). **The orchestrator launch-path half is production-plane work and its ACTIVATION is NOT
       INF-70's** — an experimental-kernel session had no business enabling it on a live stack (scope creep,
       corrected 2026-09-03 on operator challenge). The merged-but-inert activation step is now filed where its
-      owner will see it: [`numa-placement-defect-20260730.md`](numa-placement-defect-20260730.md) → *The permanent
+      owner will see it: [`numa-placement-defect-20260730.md`](numa-placement-and-contention.md#track-numa-placement-defect-20260730) → *The permanent
       fix is MERGED and awaiting activation by the stack owner*. **INF-70's own half — the forcing eviction in the
       measurement recipe — is DONE and is what every number in this campaign depends on.** Operator "proceed"
       2026-09-03; agent `c7-finish`, report `/mnt/raid0/llm/tmp/inf70/agents/c7-finish/REPORT.md`. Memory:
@@ -272,7 +272,7 @@ at 153 GB/s in the configuration that serves.
       not an interleaved measurement. (b) **Audit the live production servers** (read-only: `numastat -p` on
       each `llama-server` pid in the orchestrator stack) and hand the owning session the list of skewed ones
       for an eviction + restart at their boundary — this is almost certainly the mechanism behind
-      [`numa-placement-defect-20260730.md`](numa-placement-defect-20260730.md) and the "frontdoor at 46% of
+      [`numa-placement-defect-20260730.md`](numa-placement-and-contention.md#track-numa-placement-defect-20260730) and the "frontdoor at 46% of
       canonical" drift. **(b) audited 2026-09-02 11:49Z (read-only):** no CPU `llama-server` is live at all —
       the orchestrator API answers on :8000 with no CPU model resident, so the fix belongs in the launch path
       before the next stack start, not in a restart. The two long-lived model processes found: `sd-server`

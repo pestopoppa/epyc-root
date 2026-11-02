@@ -177,7 +177,7 @@ The realistic CPU-feasible escalation is option 1 (Trinity-style sep-CMA-ES). Op
 
 **Cross-task interactions**:
 - BT aggregation module **lives at `src/bradley_terry.py`** (moved from scripts/autopilot/ during DAR-6 scaffolding) and is shared with autopilot P17 (selection step) and [`swarm-dataset-distillation.md`](../completed/swarm-dataset-distillation.md) Phase 3 (training-data filtering). One implementation, three consumers.
-- Concurrent-serve infrastructure dependency is [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) — verify Phase B observability is sufficient to detect 2-of-N inference-thread contention before relying on this mode. (Phase B was already complete per dynamic-stack-concurrency.md status — no new dependency.)
+- Concurrent-serve infrastructure dependency is [`dynamic-stack-concurrency.md`](numa-placement-and-contention.md#track-dynamic-stack-concurrency) — verify Phase B observability is sufficient to detect 2-of-N inference-thread contention before relying on this mode. (Phase B was already complete per dynamic-stack-concurrency.md status — no new dependency.)
 - Injection-risk classifier may not exist yet; if not, that's a prerequisite task that should be raised in [`routing-intelligence.md`](routing-intelligence.md) as a new RI-phase, not buried inside DAR-6.
 - **Default-off safety**: `dispatch_swarm_fanout` requires no aggregator by default; if called without one, returns all N completions and the caller picks. This is deliberate — the most faithful Fortytwo-style aggregator (peer-judged pairwise) needs N*(N-1) extra inference calls and is exactly the cost the DAR-6.5 A/B is designed to measure. Picking a default would prejudge the experiment.
 

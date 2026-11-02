@@ -2,7 +2,7 @@
 
 Status: **not runnable; not manifests; no inference performed**. This is a
 design for the W1 (`qwen36_q8_0`) and W4 (`qwen3_next_80b`) groups named by
-`handoffs/active/batched-decode-measurement.md`. It applies the ratified A0–A4
+`handoffs/active/numa-placement-and-contention.md`. It applies the ratified A0–A4
 definitions in Research `docs/protocols/numa-placement-measurement-protocol.md`.
 The A7 files are inputs for model/prompt identity and recipe comparison only; they
 do not define this successor grid.

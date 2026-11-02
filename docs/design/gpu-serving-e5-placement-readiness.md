@@ -1,7 +1,7 @@
 # E5 corrected-placement readiness — static manifest review
 
 2026-11-02. The remeasurement and grid are owned by
-[RE-MEASURE E5 Stage-B](../../handoffs/active/batched-decode-measurement.md); this is
+[RE-MEASURE E5 Stage-B](../../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement); this is
 preparation, not a second execution or a measurement verdict. P1-2 in the GPU serving
 handoff depends on that work. The authoritative scope excludes the W3 dense control.
 

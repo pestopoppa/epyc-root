@@ -24,6 +24,10 @@
    "target": "agent-collab-rnd-harness.md",
    "track": "autokernel-restart-and-strip"
   },
+  "batched-decode-measurement.md": {
+   "target": "numa-placement-and-contention.md",
+   "track": "batched-decode-measurement"
+  },
   "bulk-inference-campaign.md": {
    "target": "eval-tower-program.md",
    "track": "bulk-inference-campaign"
@@ -67,6 +71,10 @@
   "document-parser-table-bench.md": {
    "target": "knowledge-pipelines.md",
    "track": "document-parser-table-bench"
+  },
+  "dynamic-stack-concurrency.md": {
+   "target": "numa-placement-and-contention.md",
+   "track": "dynamic-stack-concurrency"
   },
   "ernie-image-turbo-evaluation.md": {
    "target": "model-evaluation-queue.md",
@@ -225,6 +233,14 @@
    "target": "engineering-hygiene-backlog.md",
    "track": null
   },
+  "numa-placement-defect-20260730.md": {
+   "target": "numa-placement-and-contention.md",
+   "track": "numa-placement-defect-20260730"
+  },
+  "numa-topology-cutover-resume-20260730.md": {
+   "target": "numa-placement-and-contention.md",
+   "track": null
+  },
   "opencode-shell-integration.md": {
    "target": "harness-improvement-loop.md",
    "track": "opencode-shell-integration"
@@ -289,6 +305,10 @@
    "target": "knowledge-pipelines.md",
    "track": "searxng-search-backend"
   },
+  "shape-keyed-contention-gating.md": {
+   "target": "numa-placement-and-contention.md",
+   "track": "shape-keyed-contention-gating"
+  },
   "sliders-local-validation.md": {
    "target": "knowledge-pipelines.md",
    "track": "sliders-local-validation"
@@ -345,6 +365,10 @@
   "v9-kernel-per-request-speculative-params.md": {
    "target": "fable5-window2-findings-03-portfolio-and-master-queue.md",
    "track": "v9-kernel-per-request-speculative-params"
+  },
+  "within-role-placement-state-machine.md": {
+   "target": "numa-placement-and-contention.md",
+   "track": "within-role-placement-state-machine"
   },
   "wp12-fleet-layer-design.md": {
    "target": "stack-lifecycle-program.md",
@@ -452,6 +476,10 @@
    "target": "EVL-02",
    "track": "angelslim-techniques-evaluation"
   },
+  "INF-07": {
+   "target": "INF-45",
+   "track": "batched-decode-measurement"
+  },
   "INF-09": {
    "target": "INF-49",
    "track": "cpu-prefill-compute-large-models"
@@ -503,6 +531,10 @@
   "INF-42": {
    "target": "INF-05",
    "track": "multiscreen-attention-evaluation"
+  },
+  "INF-43": {
+   "target": "INF-45",
+   "track": "numa-placement-defect-20260730"
   },
   "INF-46": {
    "target": "EVL-02",
@@ -572,6 +604,10 @@
    "target": "RTG-08",
    "track": "delegation-context-preassembly"
   },
+  "RTG-11": {
+   "target": "INF-45",
+   "track": "dynamic-stack-concurrency"
+  },
   "RTG-18": {
    "target": "handoffs/completed/model-stack-change-standardization-audit.md",
    "track": null,
@@ -602,6 +638,10 @@
    "target": "PIP-04",
    "track": "searxng-search-backend"
   },
+  "RTG-35": {
+   "target": "INF-45",
+   "track": "shape-keyed-contention-gating"
+  },
   "RTG-38": {
    "target": "RTG-36",
    "track": "standardized-stack-update-pipeline-finalization"
@@ -610,6 +650,10 @@
    "target": "handoffs/completed/swarm-dataset-distillation.md",
    "track": null,
    "retired": "D4 2026-11-02"
+  },
+  "RTG-42": {
+   "target": "INF-45",
+   "track": "within-role-placement-state-machine"
   },
   "RTG-43": {
    "target": "RTG-36",

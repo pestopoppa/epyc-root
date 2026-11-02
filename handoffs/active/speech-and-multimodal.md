@@ -1057,7 +1057,7 @@ The offline scorer used a bounded guard: 5.44 seconds, sampled peak 77.6 MB, no 
 > | Qwen3-VL-4B Q8_0 | 29/42 |
 >
 > Raw `/mnt/raid0/llm/tmp/vlquality_results.json`; harness `/mnt/raid0/llm/tmp/vlquality.py`.
-> Full context in [`numa-topology-cutover-resume-20260730.md`](numa-topology-cutover-resume-20260730.md)
+> Full context in [`numa-topology-cutover-resume-20260730.md`](numa-placement-and-contention.md)
 > §"UPDATE 2026-07-31 — vision models evaluated".
 >
 > **The M-1 evidence does not survive.** The `+10pp` was ONE discordant question and that
@@ -1272,7 +1272,7 @@ PyTorch: Talker + CodePredictor + Decoder, ~0.9× real-time at 48 CPU threads).~
 
 Path C is retained as a fallback, not the recommendation. The real remaining gap is **wiring**:
 `start_tts()` was never added to `orchestrator_stack.py` (port 9002 reserved) — tracked as P0 in
-[`numa-topology-cutover-resume-20260730.md`](numa-topology-cutover-resume-20260730.md) §Speech.
+[`numa-topology-cutover-resume-20260730.md`](numa-placement-and-contention.md) §Speech.
 Do not rebuild the C++ accelerator — its source is lost and it never worked.
 
 ##### Speech tasks — opened 2026-07-31

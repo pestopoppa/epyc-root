@@ -22,7 +22,6 @@
   "UFH-12": 0.5,
   "RTG-22": 0.5,
   "INF-23": 0.45,
-  "INF-43": 0.45,
   "INF-62": 0.45,
   "INF-72": 0.4,
   "INF-79": 0.4,
@@ -30,14 +29,12 @@
   "EVL-08": 0.4,
   "RTG-34": 0.4,
   "UFH-08": 0.4,
-  "INF-07": 0.35,
   "INF-31": 0.35,
   "INF-61": 0.35,
   "EVL-02": 0.35,
   "EVL-10": 0.35,
   "EVL-50": 0.35,
   "RTG-02": 0.35,
-  "RTG-11": 0.35,
   "RTG-15": 0.35,
   "RTG-56": 0.35,
   "INF-02": 0.3,
@@ -60,7 +57,6 @@
   "EVL-36": 0.25,
   "REV-07": 0.25,
   "RTG-14": 0.25,
-  "RTG-42": 0.25,
   "EVL-04": 0.2,
   "EVL-14": 0.2,
   "RTG-03": 0.2,
@@ -145,7 +141,11 @@
   "INF-05#streaming-llm-baseline": 0.1,
   "INF-05#triattention-kv-selection": 0.25,
   "INF-49#cpu-prefill-compute-large-models": 0.2,
-  "INF-49#large-moe-expert-parallelism": 0.1
+  "INF-49#large-moe-expert-parallelism": 0.1,
+  "INF-45#batched-decode-measurement": 0.35,
+  "INF-45#dynamic-stack-concurrency": 0.35,
+  "INF-45#numa-placement-defect-20260730": 0.45,
+  "INF-45#within-role-placement-state-machine": 0.25
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
@@ -162,7 +162,6 @@
   "EVL-21": "operator decision or approval pending",
   "RTG-24": "operator decision or approval pending",
   "RTG-29": "operator decision or approval pending",
-  "RTG-35": "operator decision or approval pending",
   "RTG-36": "operator decision or approval pending",
   "RTG-46": "operator decision or approval pending",
   "RTG-55": "operator decision or approval pending",
@@ -187,7 +186,12 @@
   "EVL-21#cpu-fused-decoder-blocks": "",
   "EVL-21#laguna-s21-cpu-port": "",
   "EVL-21#moe-spec-cpu-spec-dec-integration": "",
-  "EVL-21#v9-kernel-per-request-speculative-params": ""
+  "EVL-21#v9-kernel-per-request-speculative-params": "",
+  "INF-45#batched-decode-measurement": "",
+  "INF-45#dynamic-stack-concurrency": "",
+  "INF-45#numa-placement-defect-20260730": "",
+  "INF-45#shape-keyed-contention-gating": "operator decision or approval pending",
+  "INF-45#within-role-placement-state-machine": ""
  },
  "park": {
   "INF-06": "MMQ",
@@ -2600,6 +2604,18 @@
    {
     "track": "autokernel-restart-and-strip",
     "next_action": "Complete per-file reference/entrypoint/HOLD manifest before individually safe deletion and footprint changes"
+   }
+  ],
+  "EVL-49>INF-45": [
+   {
+    "track": "batched-decode-measurement",
+    "next_action": "E5 — the never-measured NUMA×batch 2D sweep; needs a post-promotion quiet window"
+   }
+  ],
+  "RTG-07>INF-45": [
+   {
+    "track": "batched-decode-measurement",
+    "next_action": "E5 — the never-measured NUMA×batch 2D sweep; needs a post-promotion quiet window"
    }
   ]
  }

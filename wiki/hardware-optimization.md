@@ -1120,7 +1120,7 @@ orders build/oracle/A–B/commit within that process; it does not serialize fore
 - [September 8 CPU audit](../progress/2026-09/2026-09-08-inf70-audit.md) — arm-level replication, unresolved effects and hot-harness timing.
 - [September 8 rebuild report](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md) — foreign-load loss, completed fold and nonempty evidence guards.
 - [Unified-surface design audit](../handoffs/active/autokernel-unified-surface-program.md) — serialized-tail scope and conditional partition/coexistence proposals.
-- [Batched decode](../handoffs/active/batched-decode-measurement.md) and [NUMA placement](../handoffs/active/numa-placement-defect-20260730.md) — sub-floor claims qualified separately from operational mechanisms.
+- [Batched decode](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement) and [NUMA placement](../handoffs/active/numa-placement-and-contention.md#track-numa-placement-defect-20260730) — sub-floor claims qualified separately from operational mechanisms.
 - [Fused decoder](../handoffs/active/fable5-window2-findings-03-portfolio-and-master-queue.md#track-cpu-fused-decoder-blocks), [prefill](../handoffs/active/sarathi-serve-cpu-evaluation.md#track-cpu-prefill-compute-large-models), and [shape-specialized decode](../handoffs/completed/cpu-shape-specialized-gemv-decode.md) — superseded opportunity framing and prior branch dispositions.
 
 ## Compiled Update — 2026-09-08: AutoKernel becomes the unified CPU+GPU surface, and the rebuild lane's three operator complaints are fixed in code
@@ -1599,12 +1599,12 @@ does not convert discovery records into promotion authority.
 ### `placement_policy` was fail-CLOSED but not fail-LOUD, and the same audit found a second, worse fail-open nearby
 
 A NUMA placement-policy row believed stale by a day was actually still live: the alias map and `_coerce` raise for `BURST_PREFER_SPLIT` had already landed, but the row's real gap — whether a caller supplying a bad policy value fails *loudly* — had never been tested. Gutting the error to a bare `ValueError("bad placement policy")` left all 19 pre-existing tests passing, proving fail-CLOSED and fail-LOUD are separate properties that must be tested separately. Now pinned by 16 collected tests with 11 mutations, all counted as failures. The same pass found a **second, independently worse** fail-open nearby: the `stack_numa` import sat inside a bare `except Exception`, so any breakage in that import would silently resolve **every role** to `SOLO_PREFER_FULL` — a fleet-wide topology fallback with no signal that it had fired.
-[`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-topology-cutover-resume-20260730.md) §P1-1
+[`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-placement-and-contention.md) §P1-1
 
 ### A delete-candidate scheduler was adjudicated DO NOT DELETE — two of its three delete-justifying claims were false
 
 `quarter_scheduler.py` was flagged as a 403-line delete candidate on the claim of zero runtime importers and only two test-only references. Re-auditing found the "zero runtime importers" claim true, but the "two test-only references" claim missed **four more**, three of which are **live production code** with a purpose-built API for this scheduler (`round_robin.py`, `concurrency_aware.py`, `stack_migration.py`) — deleting it would have orphaned them. The "factually wrong about the machine" framing was also refuted: `QUARTER_TOPOLOGY` is identical to the live `stack_numa` constants, so the quarters are **unused since W1, not wrong** — a different disposition than the row assumed. General lesson: a delete-candidate's claims are exactly the kind of finding that must be re-verified against the current tree before acting, not inherited from whoever filed the row.
-[`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-topology-cutover-resume-20260730.md) §P1-9
+[`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-placement-and-contention.md) §P1-9
 
 ### OP-11 resolved (decline): the occupancy question it was blocking didn't need a new instrument
 
@@ -1615,7 +1615,7 @@ The operator-gated OP-11 approval (a seeded synthetic-shape kernel-diagnostic pr
 
 ### Source References (2026-08-12, NUMA fail-open audit and OP-11 resolution)
 
-- [`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-topology-cutover-resume-20260730.md) — the `placement_policy` fail-loud gap and its 16/11 mutation pin, the fleet-wide `stack_numa` bare-except fail-open, and the `quarter_scheduler.py` DO-NOT-DELETE adjudication.
+- [`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-placement-and-contention.md) — the `placement_policy` fail-loud gap and its 16/11 mutation pin, the fleet-wide `stack_numa` bare-except fail-open, and the `quarter_scheduler.py` DO-NOT-DELETE adjudication.
 - [`rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) — the OP-11 decline rationale, the IQ2_XXS occupancy measurement (65 dispatches, 8 waves/SIMD), and the rocprof-v1 SQ-counter-zero caveat.
 
 ## Compiled Update — 2026-08-12 (kernel-lever pass): four falsified ceilings, one falsified proxy, and a synthetic optimum that inverts on the real kernel
@@ -1945,7 +1945,7 @@ Two consequences already banked:
 - [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — the mis-stamped instrument row, the live profiler re-verification, and the omniperf dependency gap
 - [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) — gfx90a counter taxonomy, rocprofv2 path, per-block collection limits
 - [`research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md`](../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md) §Freshness addendum — the TileLang/gfx90a contradiction, the agent-method taxonomy cross-check, and the CK/rocWMMA under-weighting
-- [`handoffs/active/batched-decode-measurement.md`](../handoffs/active/batched-decode-measurement.md) §C4 — quarters retired, so the "status-quo production shape" label moves off C1 and onto C3
+- [`handoffs/active/numa-placement-and-contention.md`](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement) §C4 — quarters retired, so the "status-quo production shape" label moves off C1 and onto C3
 - [`handoffs/active/mi210-serving-program.md`](../handoffs/active/mi210-serving-program.md) §P2-5l — the `NUMA_NODE0`/`NUMA_NODE1` deletion and the quarter-naming decline
 - `epyc-orchestrator/orchestration/stack_topology.yaml`, `scripts/server/stack_numa.py`, `scripts/server/realized_fleet.py` — read directly for the realized shape and the mode classifier
 
@@ -2181,7 +2181,7 @@ gate a keep / revert / deploy / promote decision.
   rung measured: `T=4` **79.7 vs 52.9**, `T=8` **105.1 vs 81.0**, `T=16` **131.0 vs 108.4**,
   `T=32` **145.9 vs 143.8** aggregate tok/s. The 2026-07-24 comparison was not `T`-matched
   and its full/half arms carried the straddling-cpuset handicap. Observation-grade.
-  [numa-placement-defect-20260730](../handoffs/active/numa-placement-defect-20260730.md)
+  [numa-placement-defect-20260730](../handoffs/active/numa-placement-and-contention.md#track-numa-placement-defect-20260730)
 
 - **RETRACTED: "the dense-27B 1×big shape question is resolved — NODE0-local half beats
   full-machine+interleave, and the April 2026 cache-locality finding reproduces."** The
@@ -2272,7 +2272,7 @@ device-local placement question is **unmeasured** and is labelled as such below.
   model registries record `reasoning: 'off'` — the runs were not on the production recipe.
   The capture fail-close **detects** that, it does not **prevent** it; without
   `--reasoning off` a W2 run fails closed again at ~41/43.
-  [batched-decode-measurement](../handoffs/active/batched-decode-measurement.md)
+  [batched-decode-measurement](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement)
 
 - **A decision-grade CPU anchor did land for the A4 optimized-serving shape, and it is
   proposal-only.** FG-4b run `fg4b-a4-cpu-optimized-server-20260729T110152Z`:
@@ -2304,7 +2304,7 @@ device-local placement question is **unmeasured** and is labelled as such below.
   node-1 ground truth, lineage-not-locality placement authority, P2-5j sweep sequencing,
   FG-4b decision-grade re-anchor, the never-measured shed trade and the non-existent 122B
   quadrant number.
-- [batched-decode-measurement.md](../handoffs/active/batched-decode-measurement.md) — E5
+- [batched-decode-measurement.md](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement) — E5
   wave status (W0 only; W1-W4 blocked), offline-score provenance, W2 Gemma quality
   invalidity, W4 raw-fallback demotion, Stage-B prune plan hash.
 - [progress 2026-07-29](../progress/2026-07/2026-07-29.md) — the topology-correction arc
@@ -2322,17 +2322,17 @@ The E5 NUMA×batch sweep (design frozen 2026-07-23) executed its W0 non-decision
   T=8 105.1 vs 81.0; T=16 131.0 vs 108.4; T=32 145.9 vs 143.8 tok/s — observation-grade,
   `P-BENCH-PLACEMENT-1` registry entry STAGED not applied). See
   [Compiled Update — 2026-07-30](#compiled-update--2026-07-30-numa-placement-defect-the-e5-quarters-vs-full-verdict-is-retracted)
-  and [numa-placement-defect-20260730](../handoffs/active/numa-placement-defect-20260730.md).
+  and [numa-placement-defect-20260730](../handoffs/active/numa-placement-and-contention.md#track-numa-placement-defect-20260730).
   Original text retained below for the record:
 
-- ~~**E5 W0 scout: 69/69 cells clean, and "one big batched server vs quarter-batched servers" resolves to quarters-win, universally, at scout scale.**~~ All four model groups (`qwen36_q8_0` 35B-A3B frontdoor, `gemma4-26B-A4B` worker, `qwen36_27b_q8` dense-27B control, `qwen3_next_80b` ingest) completed. ~~**C3 (4×quarters) is aggregate-throughput-optimal for every model**~~ (RETRACTED 2026-07-30): qwen36 2028 tasks/hr @np4, gemma 5076 @np8 (1.78× the interleaved full at iso-total=32), dense-27B 1415 @np2, 80B 2520 @np4. This directly answers E5's pre-registered R1 "crossover" question at scout resolution: no model shows a big-instance win at any measured K. [batched-decode-measurement](../handoffs/active/batched-decode-measurement.md), [progress 2026-07-24](../progress/2026-07/2026-07-24.md)
+- ~~**E5 W0 scout: 69/69 cells clean, and "one big batched server vs quarter-batched servers" resolves to quarters-win, universally, at scout scale.**~~ All four model groups (`qwen36_q8_0` 35B-A3B frontdoor, `gemma4-26B-A4B` worker, `qwen36_27b_q8` dense-27B control, `qwen3_next_80b` ingest) completed. ~~**C3 (4×quarters) is aggregate-throughput-optimal for every model**~~ (RETRACTED 2026-07-30): qwen36 2028 tasks/hr @np4, gemma 5076 @np8 (1.78× the interleaved full at iso-total=32), dense-27B 1415 @np2, 80B 2520 @np4. This directly answers E5's pre-registered R1 "crossover" question at scout resolution: no model shows a big-instance win at any measured K. [batched-decode-measurement](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement), [progress 2026-07-24](../progress/2026-07/2026-07-24.md)
 
 - **⚠ SUSPENDED 2026-07-30 (same defective grid).** Both "half" arms in this bullet are the
   straddling `0-47,96-143` / `48-95,144-191` cpusets with no `numactl` policy, so the C1b-vs-C1
   comparison is between two handicapped shapes and its direction is not trustworthy. Treat as
   hypothesis pending re-measurement under `P-BENCH-PLACEMENT-1`.
 
-- **The 2×half whole-machine provisioning candidate (C1b) is confirmed MODEL-DEPENDENT, not universally negative.** For the 35B-A3B MoE frontdoor model, C1b loses to the single-half C1 (1198 vs 1610 tasks/hr) — reproducing the 2026-05-26 dual-half negative result (co-run ≈0.5×, memory-channel contention) on the current v7 kernel. But **C1b wins for the dense 27B control (1009 vs 849) and the 80B SSM-hybrid ingest arm (2013 vs 1700)** — the opposite direction. This falsifies the assumption that the dual-half penalty generalizes: it is specific to the small-active-MoE shape, and dense/large models profit from the second NUMA-local half. This is new information the single 2026-05-26 measurement (frontdoor-shaped model only) could not have shown. [batched-decode-measurement](../handoffs/active/batched-decode-measurement.md)
+- **The 2×half whole-machine provisioning candidate (C1b) is confirmed MODEL-DEPENDENT, not universally negative.** For the 35B-A3B MoE frontdoor model, C1b loses to the single-half C1 (1198 vs 1610 tasks/hr) — reproducing the 2026-05-26 dual-half negative result (co-run ≈0.5×, memory-channel contention) on the current v7 kernel. But **C1b wins for the dense 27B control (1009 vs 849) and the 80B SSM-hybrid ingest arm (2013 vs 1700)** — the opposite direction. This falsifies the assumption that the dual-half penalty generalizes: it is specific to the small-active-MoE shape, and dense/large models profit from the second NUMA-local half. This is new information the single 2026-05-26 measurement (frontdoor-shaped model only) could not have shown. [batched-decode-measurement](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement)
 
 - **⚠ RETRACTED 2026-07-30 — the dense-27B shape question is RE-OPENED, not resolved.** The
   arm labelled "NODE0-local half" was never node-local: `0-47,96-143` straddles `node0`+`node1`
@@ -2348,7 +2348,7 @@ The E5 NUMA×batch sweep (design frozen 2026-07-23) executed its W0 non-decision
   full-machine+interleave instance, at both low and high concurrency. Scout pair-answer: half0
   751/814 tasks/hr (K=1/K=8) vs full-machine+interleave 574/611 — the April 2026 cache-locality
   finding reproduces for the dense-27B control on v7. Stage-B for the dense arm now adopts half0
-  as its C1 anchor."~~ [batched-decode-measurement](../handoffs/active/batched-decode-measurement.md), [numa-placement-defect-20260730](../handoffs/active/numa-placement-defect-20260730.md)
+  as its C1 anchor."~~ [batched-decode-measurement](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement), [numa-placement-defect-20260730](../handoffs/active/numa-placement-and-contention.md#track-numa-placement-defect-20260730)
 
 - **Cross-architecture np×context throughput surface (GPU-only, all three architect candidates): batching is fundamentally architecture-dependent, and the earlier "don't batch long-context" rule was over-generalized from a single outlier arm.** Extending the initial 122B-IQ2-only np×context sweep to the 27B-dense (A3) and 35B-A3B (A4) candidates, each at its own max-opt MTP depth (see [Speculative Decoding](speculative-decoding.md)): peak aggregate decode t/s ranks **A4 (small-active MoE) ≫ A3 (dense) > A1 (large-active IQ2 MoE)** at every batched operating point (e.g. at a 2k-token budget: 243@np32 / 153@np16 / 103@np32). **A1 is the sole outlier**, with both a universal np=2 dip AND a long-context batching collapse (net-negative at a 32k-token budget: np4=45.7 < np1=52.0 t/s); A3 and A4 both batch robustly (2.2–3.4×) at every measured budget up to 32k. The np=2 dip and the long-context collapse are therefore **A1-specific** (confounded across IQ2 quant / MTP-depth-2 / large-active-param count), not generic properties of MoE or of long context as first reported. Mechanism: dense models batch well via weight-reuse amortization (read weights once, apply across np tokens); MoE's fewer-active-params advantage only pays off at high np where expert reuse kicks in — exactly where A4 climbs to np=32 and A3 plateaus around np=8. Router rule, now per-architecture rather than universal: A1 never batch past np=8 (never np=2; np=1 at ≥32k budget); A3 batch all budgets, sweet spot np=8; A4 batch aggressively at all budgets up to np=32+. Binding constraint throughout is memory **bandwidth**, not VRAM capacity — KV read per decode step scales with context×active-slots and MoE requests scatter across experts, so aggregate throughput can drop as concurrency rises at large context even with plenty of VRAM headroom. [reasoning-effort-levels](../handoffs/active/context-and-token-economy.md#track-reasoning-effort-levels) §TB-6-exec, [progress 2026-07-23](../progress/2026-07/2026-07-23.md)
 
@@ -2360,7 +2360,7 @@ The E5 NUMA×batch sweep (design frozen 2026-07-23) executed its W0 non-decision
 
 ### Source References (2026-07-24)
 
-- [batched-decode-measurement.md](../handoffs/active/batched-decode-measurement.md) — E5 sweep design, harness (`server_numa_np_sweep.py`, 121-cell pre-registered grid), W0 scout execution + results across all four model groups.
+- [batched-decode-measurement.md](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement) — E5 sweep design, harness (`server_numa_np_sweep.py`, 121-cell pre-registered grid), W0 scout execution + results across all four model groups.
 - [reasoning-effort-levels.md](../handoffs/active/context-and-token-economy.md#track-reasoning-effort-levels) §TB-6-exec — the cross-candidate np×context throughput surface (A1/A3/A4), architecture-dependence findings, per-arm router rules.
 - [progress 2026-07-23](../progress/2026-07/2026-07-23.md), [progress 2026-07-24](../progress/2026-07/2026-07-24.md) — W0 execution log, instrument-chain fixes (think-truncation → production chat template, GPU-coexistence mode), overnight A2/RP-5 run.
 ## Compiled Update — 2026-07-20
@@ -2374,7 +2374,7 @@ New CPU-prefill and GPU-kernel evidence sharpens the roofline picture: **CPU dec
 - **CPU prefill ≠ CPU decode roofline (verified).** Decode is DRAM-BW-bound (Qwen3.6-27B Q8 @96t = 0.17 IPC, 96.6% cycles memory-stalled); prefill is `M>1` GEMM, compute-bound. PC-0 confirmed positive: 122B architect Q4 `p8192` ≈ 108–122 t/s at 0.92–1.47 IPC, and prompt/prefill dominates wall-clock in the targeted large/long-context regimes (GLM-5.2 patch review 81% prompt-wall, ingest 31K 75.1%). ([cpu-prefill-compute-large-models](../handoffs/active/sarathi-serve-cpu-evaluation.md#track-cpu-prefill-compute-large-models))
 - **The CPU-prefill hot path is OpenMP barriers, not math.** Symbolized profiling (PC-3/PC-4j) attributes 38–44% of prefill to `GOMP_barrier`/`__kmpc_barrier` (libomp spin/pause), ~22% to MoE `mul_mat_id`, and only ~1–2% each to GDN/SSM/RMS. The first landed lever is a **default-off CPU `CONCAT` dim0 row-partition** (`GGML_CPU_CONCAT_DIM0_ROWS=1`, experimental commit `93d945885`) targeting the `conv_input` CONCAT barrier in shared `build_conv_state()`: measured `pp8192` **+3.2% to +9.1%** single-seq and batched `pl=2` prompt **+22% to +54%**, cutting the target CONCAT barrier sum ~99%. It was **not part of frozen v7**; it is now carried default-off in frozen v8, with no default-on claim (one decode-only row regressed −5.8%). ([cpu-prefill-compute-large-models](../handoffs/active/sarathi-serve-cpu-evaluation.md#track-cpu-prefill-compute-large-models), [progress 2026-07-20](../progress/2026-07/2026-07-20.md))
 - **GPU raw-speed frontier is structurally exhausted** (single-stream dense-Q8 at the +37% ceiling; occupancy rewrites + compact-LDS falsified; stream-K already the live Q8 MMQ path). K28 GDN long-prefill is now a measured no-go: direct attribution found 15.40% / 14.65% / 12.18% GDN share at 2K/8K/32K and only 11.55% / 10.99% / 9.14% optimistic 4×-op full-model ceilings. The declining ceiling fails its higher-EV admission bar, so no fused prototype is warranted. ([mi210-big-model-and-acceleration-roadmap](../handoffs/active/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap), [K28 closeout](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md))
-- **E5 NUMA×batch is the never-measured 2D cross** (specced, post-promotion, runs last): batching amortizes per-token weight reads and may shift CPU decode from BW-bound to compute-bound, flipping the NUMA-locality advantage at high `-np` K — the crossover sets the slot-fabric grid shape. ([batched-decode-measurement](../handoffs/active/batched-decode-measurement.md))
+- **E5 NUMA×batch is the never-measured 2D cross** (specced, post-promotion, runs last): batching amortizes per-token weight reads and may shift CPU decode from BW-bound to compute-bound, flipping the NUMA-locality advantage at high `-np` K — the crossover sets the slot-fabric grid shape. ([batched-decode-measurement](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement))
 
 ### Open Questions (2026-07-20)
 
@@ -2389,7 +2389,7 @@ New CPU-prefill and GPU-kernel evidence sharpens the roofline picture: **CPU dec
 - [v7-promotion.md](../handoffs/completed/v7-promotion.md) / [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md) — banked runtime-gated-off wins + readiness gate audit.
 - [mi210-big-model-and-acceleration-roadmap.md](../handoffs/active/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) — GPU raw-speed frontier exhausted; residency/teleport is the live frontier.
 - [k28-fused-chunked-gdn-kernel-research.md](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md) + [progress 2026-07-20-k28](../progress/2026-07/2026-07-20-k28-fused-gdn-kernel-research.md) — GDN serial-dependency finding + measured no-go closeout.
-- [batched-decode-measurement.md](../handoffs/active/batched-decode-measurement.md) — E5 NUMA×batch 2D sweep spec.
+- [batched-decode-measurement.md](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement) — E5 NUMA×batch 2D sweep spec.
 ## Summary
 
 The entire project is built around the AMD EPYC 9655 "Turin" processor: 96 physical cores (192 threads), 1.13 TB DDR5-5600 ECC across 12 memory channels (~460 GB/s theoretical bandwidth), and true 512-bit AVX-512 (not Intel's double-pumped variant). The storage layer is a 2x Solidigm P44 Pro 2TB NVMe RAID0 array delivering 12.5 GB/s sequential reads, enabling a 280 GB model to be mmap'd in about 22 seconds.
@@ -2545,7 +2545,7 @@ The system's 1.13 TB RAM enables a HOT/WARM/COLD three-tier memory architecture.
 - **One DSA forward-pass implementation is a multi-model-for-1 hardware unlock**. DeepSeek-V3.2 (671B-class MoE), GLM-5.1-555B-A14B, and now GLM-5.2 (754B GLM-MoE-DSA, MIT, 1M context — intake-699) all share the identical DSA indexer + KV-cache infrastructure. The instant PR #21149 stabilizes — with or without our contribution — the entire GLM-5.x family unblocks on the 1.13 TB EPYC the same week. For GLM-5.2 the gating constraint is the DSA forward pass, *not* storage: the unsloth UD-IQ2 dynamic quant (~238 GB) already fits the raid0 free space. This converts the earlier "2-models-for-1" framing into "multi-model-for-1" and makes the unblocked-RAM-budget the binding question, not the missing weights. [llama-cpp-dsa-contribution.md, glm51-reap-cpu-evaluation.md]
 - **A CPU image-generation role is deployed (`sd_server` / Qwen-Image-2.1 via Diffusers, port 8190) — the EPYC stack is no longer LLM-only**. This corrects the standing "no GPU, no image role" assumption: image generation runs on CPU today, independent of any GPU acquisition. The practical hardware implication is that the HOT/WARM/COLD RAM budget and NUMA-pinning discipline now also govern a diffusion workload, and a future on-prem diffusion-RL fine-tune (e.g. UniRL Flow-DPPO) would be gated only by "no training GPU", not by the absence of an image model to tune. ERNIE-Image-Turbo via stable-diffusion.cpp is retained for rollback. [gpu-acceleration-path.md, intake-709]
 - **Single-instance batched decode (CPU14) has still never been measured to claim grade; the first scout points to `-np 8` as the candidate operating point but with severe tail-latency cost**. A non-decision-grade scout (host uptime >1 week, `numa_balancing=0`, so `decision_grade=false`) showed Qwen3.6-35B-A3B Q8_0 peaking at `-np 8` (≈1816 tasks/h, +41% aggregate vs `-np 1`) while p95 latency rose ~3.8×; the dense Qwen3.6-27B Q8 control scaled *more strongly* through `-np 8`. `-np 16` regressed on both. The durable P-BENCH-3 harness (`server_np_sweep.py`) and E2 eval-driver A/B coordinator (`e2_eval_driver_ab.py`) are staged in the clean-window manifest, fail closed under host-health warnings, and verify server PIDs are dead post-run — but a reboot/quiesce window is still required before any keep/kill claim. Pitfall recorded: MoE batching is weaker than dense (distinct tokens hit distinct experts → expert-weight traffic grows with batch), so a dense control is mandatory and the 9.6× rep-1 TTFT amplification under concurrent prefill must be reported separately from steady-state per-stream decode. [batched-decode-measurement.md, fable5-findings-06-kernel-and-concurrency.md]
-- **The eval-batch activation window now has claim-grade smoke/rollback evidence, but the default path is still unchanged.** Root `f755dbc4` added the stdlib handoff dashboard hub/timeline builder/tests, orchestrator `132c595d` finalized `handoff_dashboard` service/link and env propagation, and the `status=smoke_passed_rolled_back` activation window launched `eval_batch_frontdoor` on port `18070`, attested `eval_batch_serving=true` on API workers, passed smoke (`ok`), hit the expected tap port, then rolled back and stopped the frontdoor. Representative quality/reliability/throughput telemetry remains the next gate before any default EvalTower path change. [progress 2026-07-05](../progress/2026-07/2026-07-05.md), [batched-decode-measurement.md](../handoffs/active/batched-decode-measurement.md)
+- **The eval-batch activation window now has claim-grade smoke/rollback evidence, but the default path is still unchanged.** Root `f755dbc4` added the stdlib handoff dashboard hub/timeline builder/tests, orchestrator `132c595d` finalized `handoff_dashboard` service/link and env propagation, and the `status=smoke_passed_rolled_back` activation window launched `eval_batch_frontdoor` on port `18070`, attested `eval_batch_serving=true` on API workers, passed smoke (`ok`), hit the expected tap port, then rolled back and stopped the frontdoor. Representative quality/reliability/throughput telemetry remains the next gate before any default EvalTower path change. [progress 2026-07-05](../progress/2026-07/2026-07-05.md), [batched-decode-measurement.md](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement)
 - **UniRL (Tencent Hunyuan) is a DGX-gated watch-item, not_applicable on CPU-only EPYC (2026-06-20)**. UniRL is a multi-GPU RL post-training framework (Ray DevicePool + FSDP + Transfer-Queue weight sync) for diffusion/AR/multimodal generators — training code only, no inference/serving path, and no benchmark numbers in its README (all observations, never decision-gating). It cannot run on the CPU-only stack: the blocker is the absence of a *training* GPU. Two forward-looking transfer hooks were flagged-not-dismissed: (a) its diffusion-RL algorithm Flow-DPPO could one day fine-tune the deployed `sd_server` image role, and (b) its LLM-targeted token-level trust-region variants (CPPO/DRPO; arXiv 2606.10968 / 2606.09821) could seed a future on-prem LLM RL track — neither exists today (current "learned" tracks are supervised routing classifiers, not policy-gradient RL). Confidence: external/DGX-gated. [gpu-acceleration-path.md, intake-709]
 ## 2026-06-13 Update — What Is Actually Exhausted
 
@@ -2615,7 +2615,7 @@ Sources: [Fable 5 kernel and concurrency](../handoffs/completed/fable5-findings-
 - [Progress 2026-03-21](/workspace/progress/2026-03/2026-03-21.md) -- Comprehensive spec param sweep (1,290 measurements), corrected registry values
 - [GPU Acceleration Path](/workspace/handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path) -- DGX Spark analysis, consumer GPU benchmarks, hybrid MoE offloading survey, KV cache split strategies; 2026-04-23 adds Lucebox + Hazy megakernel research; 2026-06-20 records the deployed CPU image-gen role (sd_server / ERNIE-Image-Turbo via stable-diffusion.cpp) and the UniRL DGX-gated watch-item (intake-709)
 - [llama.cpp DSA Contribution](/workspace/handoffs/active/llama-cpp-dsa-contribution.md) -- PR #21149 tracking, DSA forward-pass-unimplemented (dense-MLA fallback) finding, three contribution sub-tracks (smoke test / PP sparse path / AVX-512BW Lightning Indexer), multi-model-for-1 unlock (V3.2 + GLM-5.1 + GLM-5.2)
-- [Batched-Decode Measurement (E1/E2/E3)](/workspace/handoffs/active/batched-decode-measurement.md) -- CPU14 single-instance `-np` sweep harness, eval-driver A/B coordinator, non-decision-grade scout (`-np 8` candidate, p95 tail cost, MoE-vs-dense batching pitfall), clean-window manifest wiring
+- [Batched-Decode Measurement (E1/E2/E3)](/workspace/handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement) -- CPU14 single-instance `-np` sweep harness, eval-driver A/B coordinator, non-decision-grade scout (`-np 8` candidate, p95 tail cost, MoE-vs-dense batching pitfall), clean-window manifest wiring
 - [CPU Shape-Specialized GEMV Decode](/workspace/handoffs/completed/cpu-shape-specialized-gemv-decode.md) -- new 2026-04-23 handoff stub for Zen 5 AVX-512 M=1 GEMV microkernel investigation; 4-phase plan with falsification gates
 - [Deep Dive: Lucebox Hub](/workspace/research/deep-dives/lucebox-hub-consumer-gpu-dflash.md) -- consumer-RTX-3090 DFlash GGUF port + DeltaNet-hybrid megakernel; resolves intake-158's "no llama.cpp / no GGUF" blocker on GPU side
 - [Deep Dive: Hazy Research Megakernel](/workspace/research/deep-dives/hazy-megakernel-llm-inference.md) -- single-dispatch kernel methodology; 78% H100 memory bandwidth vs ~50% for vLLM/SGLang; foundational for any future GPU engine we build
@@ -5051,7 +5051,7 @@ Two tooling fixes shipped in the same pass: the marker-polarity fix chose **REFU
 - [`rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) — G6 inversion, #1156 closed/reattributed, Z10 static read, G10 import gate, Z14 #1163 filing, the hard `flash-linear-attention>=0.5.2` pin
 - [`mi210-big-model-and-acceleration-roadmap.md`](../handoffs/active/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) — the one-assert GDN-2 delta, #26001's K==1 constraint (re-verified against frozen v9), G15 with the MIN_BLOCKS_PER_SM trap and the ≥8% gate, B5 stacking warning, B3's 512-token gate insufficiency
 - [`k28-fused-chunked-gdn-kernel-research.md`](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md) — the #24561/#26001 correction (closed-unmerged-but-exists, occupancy floor, fp-numerics caveat, ~6–9% realistic prefill)
-- [`shape-keyed-contention-gating.md`](../handoffs/active/shape-keyed-contention-gating.md) — the OP-21 overlap re-bench receipt (`op21-overlap-rebench-20260823T0855Z`), the REFUSE marker-polarity decision, the matrix-truncation fix
+- [`shape-keyed-contention-gating.md`](../handoffs/active/numa-placement-and-contention.md#track-shape-keyed-contention-gating) — the OP-21 overlap re-bench receipt (`op21-overlap-rebench-20260823T0855Z`), the REFUSE marker-polarity decision, the matrix-truncation fix
 
 ## Compiled Update — 2026-08-25: NUMA cutover gate P0-1 closed — the 30-breaking-test premise had drifted
 
@@ -5072,8 +5072,8 @@ with reload gated on the inference-owning session.
 
 ### Source References (2026-08-25)
 
-- [`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-topology-cutover-resume-20260730.md) — P0-1 row tick with the fixture-fix evidence and the E8-guard residual
-- [`numa-placement-defect-20260730.md`](../handoffs/active/numa-placement-defect-20260730.md) — the D1/T1 diagnosis and the 30-failure citation origin
+- [`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-placement-and-contention.md) — P0-1 row tick with the fixture-fix evidence and the E8-guard residual
+- [`numa-placement-defect-20260730.md`](../handoffs/active/numa-placement-and-contention.md#track-numa-placement-defect-20260730) — the D1/T1 diagnosis and the 30-failure citation origin
 
 ## Compiled Update — 2026-08-27: a correct NUMA argv is not proof of achieved placement
 
@@ -5106,7 +5106,7 @@ claim; the next performance-bearing run must prove achieved locality before admi
 ### Source References (2026-08-27)
 
 - [`multiscreen-attention-evaluation.md`](../handoffs/active/attention-matching-kv-compaction.md#track-multiscreen-attention-evaluation) — G1 recipe, recovery checkpoint, live count, lock ownership and recall/timing boundary.
-- [`numa-placement-defect-20260730.md`](../handoffs/active/numa-placement-defect-20260730.md) — T5 locality-gate contract and the live multi-node `--no-mmap` placement witness.
+- [`numa-placement-defect-20260730.md`](../handoffs/active/numa-placement-and-contention.md#track-numa-placement-defect-20260730) — T5 locality-gate contract and the live multi-node `--no-mmap` placement witness.
 - [`progress/2026-08/2026-08-27-codex-inf42-takeover.md`](../progress/2026-08/2026-08-27-codex-inf42-takeover.md) — PID identities, checkpoint provenance, 163-record validation and OpenCode ownership reconciliation.
 
 ---
@@ -6970,7 +6970,7 @@ A retained-trace analyzer reproduced the earlier motif diagnostic within 0.2%: 9
 - [AutoKernel rebuild handoff](../handoffs/active/autokernel-rebuild-program.md)
 - [R18-A comparison and CUID witnesses](../artifacts/compute/r18a-r4-20261102/README.md)
 - [R23-62 estimand and contention audit](../docs/design/inf70-r2362-evidence-20261102/AUDIT.md)
-- [E5 batched-decode placement evidence](../handoffs/active/batched-decode-measurement.md)
+- [E5 batched-decode placement evidence](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement)
 - [MI210 lever matrix correction](../handoffs/active/mi210-serving-program.md#track-fable5-window2-findings-05c-mi210-lever-category-matrix)
 - [MI210 Q8 GEMV correction](../handoffs/active/mi210-q8-dequant-gemv-roofline.md)
 - [CH-31 paired diagnostic](../artifacts/compute/akagg-ch31-rowexact-pair-result-20261101/)

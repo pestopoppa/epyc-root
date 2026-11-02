@@ -514,7 +514,7 @@ sibling-only `--cpu-list 160-183` maps to no region and cannot be claimed. Rules
   (`agents/shared/OPERATING_CONSTRAINTS.md` § Inference and Benchmarks, *Your own subagents are load*); this incident is
   its guest-side complement.
 - the lock layer must fold SMT siblings into their physical core's region instead of dropping them: filed as
-  REGION-SIBLING-1 in `handoffs/active/shape-keyed-contention-gating.md`.
+  REGION-SIBLING-1 in `handoffs/active/numa-placement-and-contention.md`.
 
 **Recurrence, same day (2026-10-04, later).** The briefs now required `region-lock`, and the mechanism still let
 workspace-ec's own subagents into held CPU windows: **three more preemptions**, by a KPF smoke run, a DCA perplexity run

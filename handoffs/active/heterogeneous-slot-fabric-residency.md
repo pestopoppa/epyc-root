@@ -16,14 +16,14 @@
 
 
 **Status (2026-07-20): DESIGN — GATED (post-v7-promotion). Provisioning + lane decisions PENDING
-[E5](batched-decode-measurement.md) (NUMA×batch sweep).** No production/stack change proposed here —
+[E5](numa-placement-and-contention.md#track-batched-decode-measurement) (NUMA×batch sweep).** No production/stack change proposed here —
 this is the target-architecture design distilled from the 2026-07-20 strategic discussion. Nothing is
 built until v7 is promoted, the E5 sweep lands, and the operator authorizes.
 
 **Scratch**: `/mnt/raid0/llm/tmp/codex-ni-20261027-hsf5p-repair-c5/`, `/mnt/raid0/llm/tmp/codex-ni-20261027-hsf-determinism-job/`, `/mnt/raid0/llm/tmp/codex-ni-20261027-hsf-restore-source-audit/`, `/mnt/raid0/llm/tmp/codex-ni-20261027-hsf-profile5/` · worktrees: none
 
 **This is the GPU / heterogeneous EXTENSION of the *already-live* CPU placement fabric**
-([within-role-placement-state-machine.md](within-role-placement-state-machine.md)) — it **reuses and
+([within-role-placement-state-machine.md](numa-placement-and-contention.md#track-within-role-placement-state-machine)) — it **reuses and
 generalizes** that machinery, it does **not** reinvent it. Read that handoff first.
 
 **Full decision ledger** (13 decisions + corrections + reframes):
@@ -173,9 +173,9 @@ before any carve is minted.
   - 2026-11-02 operator decision: Add a length threshold derived from the PF1 crossover (decisions-batch2-4-20261102.json)
 
 ## Key files / cross-links
-- Parent (reuse): `src/backends/concurrency_aware.py` (`ConcurrencyAwareBackend`), `ContentionGate`, `scripts/server/stack_numa.py` (`NUMA_CONFIG`), the KV-migration transaction (WP-3/WP-4), `src/metrics/migration_counters.py` — all in [within-role-placement-state-machine.md](within-role-placement-state-machine.md).
+- Parent (reuse): `src/backends/concurrency_aware.py` (`ConcurrencyAwareBackend`), `ContentionGate`, `scripts/server/stack_numa.py` (`NUMA_CONFIG`), the KV-migration transaction (WP-3/WP-4), `src/metrics/migration_counters.py` — all in [within-role-placement-state-machine.md](numa-placement-and-contention.md#track-within-role-placement-state-machine).
 - Lifecycle: `epyc-orchestrator/scripts/server/orchestrator_stack.py` (Layer-2 actuator home).
-- Parameterizing input: [batched-decode-measurement.md](batched-decode-measurement.md) **E5**.
+- Parameterizing input: [batched-decode-measurement.md](numa-placement-and-contention.md#track-batched-decode-measurement) **E5**.
 - Related: [mi210-big-model-and-acceleration-roadmap.md](mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) (teleport AXA / residency ladder), [architect-model-selection-bench.md](model-evaluation-queue.md) (GPU-only-architect deployment cost), [inference-research-index.md](inference-research-index.md) (dispatch).
 
 ## Reporting

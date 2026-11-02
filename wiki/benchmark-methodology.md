@@ -2331,7 +2331,7 @@ offline, not a model gap — here the "gap" was 19 silently-empty rows inside on
 
 ### Source References (2026-08-18)
 
-- [`batched-decode-measurement.md`](../handoffs/active/batched-decode-measurement.md) — the
+- [`batched-decode-measurement.md`](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement) — the
   partially-banked annotation: banked gemma dir, the aborted `223703Z` sibling, the operator
   exclusion, the 24-manifest remaining scope, and the archived launcher with its two fixes.
 - [`reboot-gated-inventory-and-staging.md`](../handoffs/active/reboot-gated-inventory-and-staging.md)
@@ -2628,8 +2628,8 @@ That assertion catches all four rows at ingest and generalises to every substrin
 
 ### Source References (2026-08-12)
 
-- [`handoffs/active/batched-decode-measurement.md`](../handoffs/active/batched-decode-measurement.md) — era-repair Blocks A/B, the A6 window replay, the absence-inference census, and the unrecorded `reasoning` witness
-- [`handoffs/active/numa-placement-defect-20260730.md`](../handoffs/active/numa-placement-defect-20260730.md) — T4 requests-per-stream analysis, T8 enforcement points, T11 audit outcome
+- [`handoffs/active/numa-placement-and-contention.md`](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement) — era-repair Blocks A/B, the A6 window replay, the absence-inference census, and the unrecorded `reasoning` witness
+- [`handoffs/active/numa-placement-and-contention.md`](../handoffs/active/numa-placement-and-contention.md#track-numa-placement-defect-20260730) — T4 requests-per-stream analysis, T8 enforcement points, T11 audit outcome
 - [`handoffs/active/autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) — the debugbench oracle row that commissioned the audit
 - [`artifacts/audit/debugbench-oracle-vacuity-20260812.md`](../artifacts/audit/debugbench-oracle-vacuity-20260812.md) — the vacuity proof, corpus figures, and the pool-generation guard
 - [`docs/reviews/t11-wrong-artefact-audit-20260811.md`](../docs/reviews/t11-wrong-artefact-audit-20260811.md) — per-role resolution and the false-positive families
@@ -3056,7 +3056,7 @@ because neither campaign has produced one.
   mid-sentence, against a clean llama-server log. The capture fail-close **detects**,
   it does not **prevent**; without `--reasoning off` a W2 run fails closed again at
   ~41/43.
-  [batched-decode-measurement](../handoffs/active/batched-decode-measurement.md)
+  [batched-decode-measurement](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement)
 
 - **Decision-grade and deployable are different states, and the record now says which
   it means.** The FG-4b A4 CPU re-anchor is `decision_grade=true` *and*
@@ -3097,7 +3097,7 @@ because neither campaign has produced one.
   — E8 status of record (numeric 16/16/0 complete; quality T1-only; nothing applied or
   published), the instrument-repair chain, the ineligible-evidence discipline, the
   BigCodeBench execution-collision finding, and the open sub-gates.
-- [batched-decode-measurement.md](../handoffs/active/batched-decode-measurement.md) — E5
+- [batched-decode-measurement.md](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement) — E5
   scout-vs-Stage-B grading, the artifact-republication rules for a grade change, and the
   Gemma capture invalidity.
 - [gpu-serving-tie-in-program.md](../handoffs/active/mi210-serving-program.md) — the
@@ -3294,7 +3294,7 @@ Two model-role selection benches (architect and reviewer) and the eval-tower cal
 - **Reviewer model-role ablation (H5) on the decision-grade C-CRAB P-REV-1 corpus: model-as-judge patch-review is near-random, and no arm cleanly wins.** GLM-5.2-IQ2 FAILS admission (FA 41.7%, FR 25.0%, **AUC 0.509 ≈ random**); the A0 objective-verifier floor is perfect by construction (FA/FR 0.0%). A3 122B-IQ2 lowers false-accepts (FA 12.5%) but over-rejects (FR 58.3%); A1 122B-Q4 self-review fails both sides (FA 45.8/FR 41.7); fast small arms are no better (Qwen3.6-27B AUC 0.503, Qwable IQ4 AUC 0.438; a Qwen+Qwable scaffold is best-shaped at AUC 0.659 but FR still too high). Family-preference is a *weak* measured covariate (−0.9..+3.5pp). ([reviewer-model-ablations](../handoffs/active/reviewer-model-ablations.md))
 - **Eval-tower must track ECE + AUC, not just accuracy** (SWE-RM: two verifiers with identical accuracy produced opposite RL outcomes). EV-11 `math_verify` scorer flip landed and EV-11a fixed nested-boxed-LaTeX truncation. EV-11b surfaced a real binning divergence: the inline `_aggregate` ECE (top bin half-open, drops `confidence==1.0` failures) vs the canonical `stat_tests.expected_calibration_error` (top bin closed) differ 0.15–0.40 on binary-confidence math suites — recommendation is to adopt the canonical definition, era-label the metric shift, and bundle it with a fresh operator-gated re-baseline (EV-11c). ([eval-tower-verification](../handoffs/active/eval-tower-program.md))
 - **Instrument saturation is a standing, dated hazard.** Production review suites sit in the 90–94% band and cannot resolve the top-2 stack models (a small MoE appears tied with a much larger dense model of the same family) — the exact failure the DRACO ">90% → reject / non-discriminative" rule guards against, observed on a *deploy-gating* comparison, motivating a harder frontier eval tier. ([eval-tower-verification](../handoffs/active/eval-tower-program.md))
-- **The model-probe scoreboard codifies observation-grade discipline:** one glance-able row per model/quant (pp/tg/quality/role-ready/artifact), all single-config small-n = OBSERVATION per MEASUREMENT.md, append-a-row rule, and blocked candidates are not speed-reran without a named quality/loader/protocol fix. P-BENCH-3 batched-decode runs fail-closed (`decision_grade=false`) on host-health warnings and index by model+quant, never by role. ([model-probe-scoreboard](../docs/reference/model-probe-scoreboard.md), [batched-decode-measurement](../handoffs/active/batched-decode-measurement.md))
+- **The model-probe scoreboard codifies observation-grade discipline:** one glance-able row per model/quant (pp/tg/quality/role-ready/artifact), all single-config small-n = OBSERVATION per MEASUREMENT.md, append-a-row rule, and blocked candidates are not speed-reran without a named quality/loader/protocol fix. P-BENCH-3 batched-decode runs fail-closed (`decision_grade=false`) on host-health warnings and index by model+quant, never by role. ([model-probe-scoreboard](../docs/reference/model-probe-scoreboard.md), [batched-decode-measurement](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement))
 
 ### Open Questions (2026-07-20)
 
@@ -3308,7 +3308,7 @@ Two model-role selection benches (architect and reviewer) and the eval-tower cal
 - [reviewer-model-ablations.md](../handoffs/active/reviewer-model-ablations.md) — registry-driven reviewer tournament; model-as-judge near-random on hard negatives.
 - [eval-tower-verification.md](../handoffs/active/eval-tower-program.md) — ECE/AUC calibration, math_verify, saturation hazard.
 - [model-probe-scoreboard.md](../docs/reference/model-probe-scoreboard.md) — living observation-grade scoreboard + stop-list.
-- [batched-decode-measurement.md](../handoffs/active/batched-decode-measurement.md) — P-BENCH-3 fail-closed host-health discipline.
+- [batched-decode-measurement.md](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement) — P-BENCH-3 fail-closed host-health discipline.
 - intake-862 `2604.07035` — deployment-aware multi-objective evaluation + the Qwen3-30B-A3B=0.226 harness-artifact caution.
 ## Summary
 
@@ -3364,7 +3364,7 @@ Benchmark hardening in December 2025 addressed ceiling effects where top models 
 
 - **The real-suite v1 clean-window n=50 run now has usable results — superseding the 2026-07-06 hard negative.** The 2026-07-07 run of `run_real_suite_v1_evaltower_window.py --apply --confirm-clean-window --n 50` completed at `orchestration/reports/real_suite_v1_eval_20260707T013009Z/` with `35/50` correct (`quality_0_3=2.10`, reliability `0.94`), median request speed `32.606 t/s`, aggregate `29.462 t/s`, wall `1178.696s`, and `3` request errors (`1` no-such-group, `2` timed out). This supersedes the 2026-07-06 `0/50` hard negative (which failed on backend-unavailable). The artifact is a usable real-suite ledger for method triage and baseline comparison, but W3 acceptance remains open pending follow-up on AP-16 instruction-token bloat (`93.0%` instruction-token ratio) and how this ledger feeds promotion/regret views. Sources: [frontier-f1-real-task-corpus.md](../handoffs/completed/frontier-f1-real-task-corpus.md), [progress 2026-07-07](../progress/2026-07/2026-07-07.md).
 
-- **E1 dense-control P-BENCH-3 sweep completed as useful-but-not-pristine evidence.** The `qwen36_27b_q8` sweep at `-np 1,2,4,8,16` with `GGML_IQK=1` completed `43/43` cells with `0` errors. Tasks/hour scaled `20.11 → 124.62`, aggregate predicted t/s `1.07 → 6.81`, and p95 latency rose `240.9s → 674.0s`. The MI210 server remained live, so the run used `--skip-clean-check --allow-host-health-warning` and is classified as **useful dense-control evidence, not pristine host-exclusive decision evidence**. The corrected run (with `GGML_IQK=1`) replaced an aborted attempt that missed the IQK env. Sources: [batched-decode-measurement.md](../handoffs/active/batched-decode-measurement.md), [progress 2026-07-07](../progress/2026-07/2026-07-07.md).
+- **E1 dense-control P-BENCH-3 sweep completed as useful-but-not-pristine evidence.** The `qwen36_27b_q8` sweep at `-np 1,2,4,8,16` with `GGML_IQK=1` completed `43/43` cells with `0` errors. Tasks/hour scaled `20.11 → 124.62`, aggregate predicted t/s `1.07 → 6.81`, and p95 latency rose `240.9s → 674.0s`. The MI210 server remained live, so the run used `--skip-clean-check --allow-host-health-warning` and is classified as **useful dense-control evidence, not pristine host-exclusive decision evidence**. The corrected run (with `GGML_IQK=1`) replaced an aborted attempt that missed the IQK env. Sources: [batched-decode-measurement.md](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement), [progress 2026-07-07](../progress/2026-07/2026-07-07.md).
 
 - **The method discipline used for harness mutations is now explicit in the checkpoint record.** MH-9's bounded `new_file` support was accepted only after narrow Ruff and pytest verification on the touched files, and the live preflight still remained a separate P1.5 gate that exited `wait_for_boundary` rather than being conflated with code correctness. That is a useful distinction for benchmark methodology: a green code mutation does not imply runtime readiness, and the test bundle should say exactly which layer it proves. Sources: [meta-harness-optimization.md](../handoffs/completed/meta-harness-optimization.md), [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/orchestration-robustness-audit-2026-07-11.md), [progress 2026-07-11.md](../progress/2026-07/2026-07-11.md).
 
@@ -4576,7 +4576,7 @@ exhaustion, at a fraction of the cost, and it re-does only what fails.
 **Source references**
 - `progress/2026-08/2026-08-12.md` — all five constants and all four faces, with measurements
 - `handoffs/active/architect-model-selection-bench.md` — the `-fa`, quant and token-count findings
-- `handoffs/active/shape-keyed-contention-gating.md` — host-health provenance and the timeout-laundering fix
+- `handoffs/active/numa-placement-and-contention.md` — host-health provenance and the timeout-laundering fix
 
 ## Compiled Update — 2026-08-18: two external checks on what a static suite can settle
 
@@ -4939,7 +4939,7 @@ The `or baseline_tps` fallback that let NIB2-57 persist is closed: full reader a
 
 ### Source References (2026-08-23 evening)
 
-- [`shape-keyed-contention-gating.md`](../handoffs/active/shape-keyed-contention-gating.md) — the OP-21 overlap re-bench receipt (`op21-overlap-rebench-20260823T0855Z`), the cv-threshold discipline, the falsified 1.89, the REFUSE marker-polarity fix, the matrix-truncation fix
+- [`shape-keyed-contention-gating.md`](../handoffs/active/numa-placement-and-contention.md#track-shape-keyed-contention-gating) — the OP-21 overlap re-bench receipt (`op21-overlap-rebench-20260823T0855Z`), the cv-threshold discipline, the falsified 1.89, the REFUSE marker-polarity fix, the matrix-truncation fix
 - [`standardized-stack-update-pipeline-finalization.md`](../handoffs/active/stack-lifecycle-program.md#track-standardized-stack-update-pipeline-finalization) — SS-BENCH-GATE-b closure (`bench_core_claim.py`), SS-BENCH-GATE-c residual, the pre-existing test_runtime_flag_spec failures
 - [`non-inference-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md) — OBS-3/4/5/7 closures with their three-state semantics, OBS-3a/NIB2-58b follow-ups, NIB2-57a reader audit, NIB2-58a verify_ggml_linkage wiring (16 build classes)
 - [`scoring-infra-standardization.md`](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization) — the loader projection question and the projection-contract test

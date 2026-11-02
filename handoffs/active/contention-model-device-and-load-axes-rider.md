@@ -1,7 +1,7 @@
 # RIDER — Contention model: the device, batching and context axes
 
-**Rides on:** [`shape-keyed-contention-gating.md`](shape-keyed-contention-gating.md) (Parts A/B/C) and
-W8 in [`numa-topology-cutover-resume-20260730.md`](numa-topology-cutover-resume-20260730.md).
+**Rides on:** [`shape-keyed-contention-gating.md`](numa-placement-and-contention.md#track-shape-keyed-contention-gating) (Parts A/B/C) and
+W8 in [`numa-topology-cutover-resume-20260730.md`](numa-placement-and-contention.md).
 **Status:** DESIGN — audit + open questions. No code. Written 2026-08-01 while W1 was landing,
 so that when execution starts it is execution, not design.
 **Why a rider:** the parent plan is sound and largely built. This does not replace it. It records
@@ -71,7 +71,7 @@ roles² × shapes² × np ∈ {1,2,4,8,16,32} × L-buckets
 ```
 
 Even the 2D NUMA×batch cross alone — waypoint **E5** in
-[`batched-decode-measurement.md`](batched-decode-measurement.md) — is described there as *"the
+[`batched-decode-measurement.md`](numa-placement-and-contention.md#track-batched-decode-measurement) — is described there as *"the
 never-measured 2D cross"*, is gated on a post-promotion quiet window, and has not run. The two
 axes have only ever been measured **separately**: NUMA-split built the pinning map, `-np` alone is
 E1 (`qwen36_q8_0` ladder `np=1,2,4,8,16` complete 2026-07-06).
@@ -211,7 +211,7 @@ the correct placement would otherwise have been rejected at import as infinite o
       Stage-B sweep and a 69-cell W0 scout both RAN (2026-07-29/30) and were then **SUSPENDED
       2026-07-30 pending re-measurement** — they swept placement shapes through wiring that the
       canonical bench recipe beats, so every absolute throughput value in them is withdrawn. See
-      the suspension notice at the head of [`batched-decode-measurement.md`](batched-decode-measurement.md).
+      the suspension notice at the head of [`batched-decode-measurement.md`](numa-placement-and-contention.md#track-batched-decode-measurement).
       So the real question is not "run E5 first?" but "does the interference model need E5's
       RE-measurement first?", and the answer inherits E5's own queue position (it runs LAST,
       after inference-batch-loop and architect-model-selection-bench). Artifacts 1 and 2 need

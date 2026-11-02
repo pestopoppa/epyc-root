@@ -1214,7 +1214,7 @@ and combining that with fail-silent optionality produces an outage nobody detect
 
 - [`multimodal-pipeline.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — the ✅ TTS-unblocked banner, Path E vs Path C, and the S-1..S-11 speech task block (S-7 bf16 projector, S-9 `start_tts()` wiring, S-10 whisper-vs-Qwen3-ASR decision)
 - [`../handoffs/archived/qwen3-tts-voice-synthesis.md`](../handoffs/archived/qwen3-tts-voice-synthesis.md) — the archived `Phase 4 BLOCKED` record, now carrying a resolution pointer; retained as historical ledger, explicitly not resurrected
-- [`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-topology-cutover-resume-20260730.md) — §Speech (the whisper false-negative correction, the `start_tts()` gap, the lost accelerator source) and the scoped temperature ruling that governs the in-flight production-temperature re-runs
+- [`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-placement-and-contention.md) — §Speech (the whisper false-negative correction, the `start_tts()` gap, the lost accelerator source) and the scoped temperature ruling that governs the in-flight production-temperature re-runs
 - [`progress/2026-07/2026-07-31.md`](../progress/2026-07/2026-07-31.md) — full session record: measurements, the FP8 guard diff, the ASR failure signature, and the two operational incidents
 - [`master-handoff-index.md`](../handoffs/active/master-handoff-index.md) — rows **N27** (speech) and **N28** (speculative decoding is launch-fixed)
 

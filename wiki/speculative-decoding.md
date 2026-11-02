@@ -851,8 +851,8 @@ Two consequences must not be conflated, because the sources are explicit that th
 - **Retracting the speedup does not retract the recipe.** The composed `ngram-mod,draft-mtp` lane remains production by standing operator decision, carried for its repetitive-context upside at an accepted **≈ −1.6%** ordinary-text cost — not because of the 2.80×.
 
 This page's 2026-07-16 subsection below still reports the pre-retraction `ngram-mod` speed signals (+18.9% on repetitive JSON, +50.6% on Gemma-4 with reasoning off) with only a quality caveat. **Read those numbers through this retraction**: they share the repeated-prompt exposure, and the corrected reading is the three-distinct-prompt one. The single source of truth for the deployed recipe is the `speculative_decoding_policy` block at the top of `epyc-inference-research/orchestration/model_registry.yaml` — link to it, do not restate it (this paragraph included).
-([`numa-placement-defect-20260730.md`](../handoffs/active/numa-placement-defect-20260730.md),
-[`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-topology-cutover-resume-20260730.md))
+([`numa-placement-defect-20260730.md`](../handoffs/active/numa-placement-and-contention.md#track-numa-placement-defect-20260730),
+[`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-placement-and-contention.md))
 
 ### Still not measured
 
@@ -868,8 +868,8 @@ an open experiment. The wiki should not infer a preference between its old sidec
 - [`v9-kernel-per-request-speculative-params.md`](../handoffs/active/fable5-window2-findings-03-portfolio-and-master-queue.md#track-v9-kernel-per-request-speculative-params) — the one-field surface, its clamp/reset/slot-isolation contract, and the unexposed-field list.
 - [`deepseek-v4-flash-0731-dspark.md`](../handoffs/completed/deepseek-v4-flash-0731-dspark.md) — DSpark Q8 and IQ3_XXS acceptance/throughput pairs, and the retired matched sidecar comparison.
 - [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the DFlash lineup-gate certification numbers in their promotion context.
-- [`numa-placement-defect-20260730.md`](../handoffs/active/numa-placement-defect-20260730.md) — the `ngram-mod` 2.80× retraction, its self-copy mechanism, and the corrected three-distinct-prompt figures.
-- [`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-topology-cutover-resume-20260730.md) — the cancelled P2-5 fold-into-production instruction and the recipe-survives-the-retraction distinction.
+- [`numa-placement-defect-20260730.md`](../handoffs/active/numa-placement-and-contention.md#track-numa-placement-defect-20260730) — the `ngram-mod` 2.80× retraction, its self-copy mechanism, and the corrected three-distinct-prompt figures.
+- [`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-placement-and-contention.md) — the cancelled P2-5 fold-into-production instruction and the recipe-survives-the-retraction distinction.
 
 ## Compiled Update — 2026-08-11
 

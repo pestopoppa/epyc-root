@@ -132,7 +132,7 @@ On completing a row: delete it here, update owning handoff + domain index, appen
 **Parent index**: [`inference-research-index.md`](inference-research-index.md) (row INF-67; the kernel-tree commit tags historically said INF-64)
 **Related**:
 - [`cpu-shape-specialized-gemv-decode.md`](../completed/cpu-shape-specialized-gemv-decode.md) (INF-10) — the direct predecessor: same diagnosis (barrier/op-count-bound, not BW), 4 fusion arms REFUTED, the +2.6% DeltaNet-native-fused-wqkv precedent this project scales up
-- [`batched-decode-measurement.md`](batched-decode-measurement.md) — the NUMA×placement canonical recipe (interleave+no-mmap), the same family's reference numbers
+- [`batched-decode-measurement.md`](numa-placement-and-contention.md#track-batched-decode-measurement) — the NUMA×placement canonical recipe (interleave+no-mmap), the same family's reference numbers
 - [`autokernel-research-loop.md`](autokernel-research-loop.md) — the GPU megakernel/persistent-kernel literature (L4 lever) this project is the CPU analogue of
 - `handoffs/active/master-handoff-index.md` — the router
 

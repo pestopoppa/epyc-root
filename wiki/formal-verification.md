@@ -141,7 +141,7 @@ Add to the two fail-open screens a third:
 ### Sources
 
 - `progress/2026-08/2026-08-01.md` — W1 cutover session, three instances with measured blast radius
-- `handoffs/active/numa-topology-cutover-resume-20260730.md` — NEW section, 2026-08-01
+- `handoffs/active/numa-placement-and-contention.md` — NEW section, 2026-08-01
 - epyc-orchestrator `a517793c` — all three remedies plus `stale_role_fact_table`
 - `/mnt/raid0/llm/tmp/launcher-refactor-proof/` — byte-equality snapshot proving the extraction changed no value
 
@@ -227,7 +227,7 @@ inconsistently applied technique, not a missing one — which makes the fix smal
 
 ### Sources
 
-- `handoffs/active/numa-topology-cutover-resume-20260730.md` (W6, W7) — 2026-07-31
+- `handoffs/active/numa-placement-and-contention.md` (W6, W7) — 2026-07-31
 - `progress/2026-07/2026-07-31.md` — session 18:00–20:00Z, measured reproductions
 - `/mnt/raid0/llm/tmp/guard-audit/` — six runnable proof scripts (`prove_failopen.py`, `prove2-5.py`)
 - epyc-root `13383c49` — repair of the torn `MEASUREMENT.md` bullet whose verification passed
