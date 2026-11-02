@@ -115,3 +115,7 @@ Recorded the independently tested discovery-only C5-8 patch and its precise limi
 ## 00:56Z — Consume C5-12 selector review and advance integration
 
 Consumed the C5-12 selector review and documented the 3/3 isolated tests, unsourced deterministic tie policy, missing common-score and production integration, and correct source comparison in artifacts/agentic-rocm/c5-12-selector-review-20261102.md. C5-12 remains open. Dispatched bounded controller integration work and registered its completion event. No inference row published or compute run.
+
+## 00:57Z — Advance fixed feedback-ablation prerequisite for controller rows
+
+Assigned a bounded C5-11 task to identify a real enumerated task subset and draft the matched three-feedback-arm protocol needed by the controller comparison; registered its completion event. The RPUCG snapshot patch has uncommitted in-progress changes and was excluded from this boundary. Existing row prerequisites remain unresolved; no row was published and no compute run.
