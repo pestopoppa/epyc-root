@@ -38,8 +38,14 @@ def run(cmd, grant, stop, hold, deadline, out, env=None):
         (out/'containment.json').write_text(json.dumps({'path':str(cg),'state':'owned'})+'\n')
         # Guardian stays outside the workload cgroup and watches both this
         # watcher and the original outer owner by birth-checked pidfds.
-        guardian,guardian_fd,done_fd=m4_cgroup_guard.start(cg,int(e['M4_OUTER_OWNER_PID']),int(e['M4_OUTER_OWNER_BIRTH']))
-        (out/'guardian.json').write_text(json.dumps({'pid':guardian.pid,'birth':m4_cgroup_guard.birth(guardian.pid)})+'\n')
+        lease_fds=tuple(int(v) for v in e.get('M4_LEASE_FDS','').split(',') if v)
+        guardian,guardian_fd,done_fd=m4_cgroup_guard.start(cg,int(e['M4_OUTER_OWNER_PID']),int(e['M4_OUTER_OWNER_BIRTH']),lease_fds)
+        guardian_birth=m4_cgroup_guard.birth(guardian.pid)
+        (out/'guardian.json').write_text(json.dumps({'pid':guardian.pid,'birth':guardian_birth})+'\n')
+        if e.get('M4_GUARDIAN_NOTIFY_FD'):
+            notify_fd=int(e['M4_GUARDIAN_NOTIFY_FD'])
+            os.write(notify_fd, f'{guardian.pid} {guardian_birth} {cg}\n'.encode())
+            os.close(notify_fd)
         if guard(): raise RuntimeError('guardian or admission lost before spawn')
         e['M4_OWNED_CGROUP']=str(cg)
         e['M4_SERVER_PID_REGISTRY']=str(registry)

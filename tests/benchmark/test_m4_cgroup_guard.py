@@ -144,3 +144,42 @@ def test_real_watcher_success_disarms_only_after_empty(tmp_path):
     recorded = json.loads((out/'watch-result.json').read_text())
     assert recorded['status'] == 'closed' and recorded['containment_empty'] is True
     assert not Path(json.loads((out/'containment.json').read_text())['path']).exists()
+
+
+def test_inherited_flock_survives_lease_owner_and_watcher_death_until_drain(tmp_path):
+    import fcntl
+    import json
+    import select
+    cg = Path('/sys/fs/cgroup') / ('m4-private-' + uuid.uuid4().hex); cg.mkdir(mode=0o700)
+    lock = tmp_path/'lease.lock';lock.touch()
+    ready = tmp_path/'ready.json'
+    script=tmp_path/'lease.py'
+    script.write_text('''import fcntl,json,os,subprocess,sys,time\nfrom pathlib import Path\nimport m4_cgroup_guard as g\nf=open(sys.argv[1],'r+');fcntl.flock(f,fcntl.LOCK_EX)\nc=subprocess.Popen([sys.executable,'-c','import time;time.sleep(60)'],start_new_session=True)\nPath(sys.argv[2],'cgroup.procs').write_text(str(c.pid))\np,fd,done=g.start(Path(sys.argv[2]),os.getppid(),g.birth(os.getppid()),(f.fileno(),))\nPath(sys.argv[3]).write_text(json.dumps({'guardian':p.pid,'birth':g.birth(p.pid),'child':c.pid}))\ntime.sleep(60)\n''')
+    owner=subprocess.Popen([sys.executable,str(script),str(lock),str(cg),str(ready)],env=dict(os.environ,PYTHONPATH=str(MODULE.parent)))
+    guardian_fd=None;child_fd=None
+    try:
+        end=time.monotonic()+5
+        while time.monotonic()<end and not ready.exists():
+            if owner.poll() is not None: raise AssertionError('lease fixture exited early')
+            time.sleep(.02)
+        record=json.loads(ready.read_text())
+        guardian_fd=os.pidfd_open(record['guardian']); child_fd=os.pidfd_open(record['child'])
+        # Freeze the guardian, then kill the captured lease owner. The guardian
+        # must independently retain the same flock before it has drained.
+        signal.pidfd_send_signal(guardian_fd,signal.SIGSTOP)
+        owner.kill();owner.wait(timeout=5)
+        with lock.open('r+') as contender:
+            with pytest.raises(BlockingIOError): fcntl.flock(contender,fcntl.LOCK_EX|fcntl.LOCK_NB)
+            signal.pidfd_send_signal(guardian_fd,signal.SIGCONT)
+            assert select.select([child_fd],[],[],10)[0]
+            assert select.select([guardian_fd],[],[],10)[0]
+            assert guard._empty(cg)
+            fcntl.flock(contender,fcntl.LOCK_EX|fcntl.LOCK_NB)
+    finally:
+        if guardian_fd is not None:
+            try: signal.pidfd_send_signal(guardian_fd,signal.SIGCONT)
+            except ProcessLookupError: pass
+            os.close(guardian_fd)
+        if child_fd is not None: os.close(child_fd)
+        if owner.poll() is None: owner.kill();owner.wait(timeout=5)
+        if cg.exists(): guard.drain(cg);cg.rmdir()

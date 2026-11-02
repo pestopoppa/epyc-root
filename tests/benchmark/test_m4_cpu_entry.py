@@ -36,7 +36,7 @@ def test_real_entry_fixture_success(tmp_path):
     args, output, marker, *_ = setup_entry(tmp_path)
     result=subprocess.run(args,capture_output=True,text=True,timeout=15)
     assert result.returncode == 0, result.stderr
-    assert marker.exists() and json.loads((output/'FIXTURE-COMPLETE.json').read_text())['measurement'] is False
+    assert marker.exists() and json.loads((output/'FIXTURE-COMPLETE.json').read_text())['fixture_only'] is True
     assert json.loads((output/'watch-result.json').read_text())['containment_empty'] is True
 
 

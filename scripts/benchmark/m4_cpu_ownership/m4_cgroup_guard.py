@@ -68,6 +68,20 @@ def drain(path: Path, deadline_s: float = 10) -> None:
         time.sleep(0.02)
 
 
+def drain_or_hold(path: Path) -> None:
+    """Retain inherited leases until the kernel proves the group empty."""
+    warned = False
+    while True:
+        try:
+            drain(path)
+            return
+        except (OSError, RuntimeError) as exc:
+            if not warned:
+                print(f'M4 guardian retains lease while drain fails: {exc}', file=sys.stderr, flush=True)
+                warned = True
+            time.sleep(1)
+
+
 def guard(cgroup: Path, watcher: int, watcher_birth: int, owner: int, owner_birth: int,
           ready_fd: int, done_fd: int) -> int:
     path = _cgroup(cgroup)
@@ -84,14 +98,14 @@ def guard(cgroup: Path, watcher: int, watcher_birth: int, owner: int, owner_birt
         while True:
             events = select.select([watcher_fd, owner_fd, done_fd], [], [], 0.2)[0]
             if watcher_fd in events or owner_fd in events:
-                drain(path)
+                drain_or_hold(path)
                 return 0
             if done_fd in events:
                 # EOF is watcher loss, never a success signal.
                 command = os.read(done_fd, 1)
                 if command == b'D' and _empty(path):
                     return 0
-                drain(path)
+                drain_or_hold(path)
                 return 0 if command != b'D' else 2
     finally:
         if ready_fd >= 0:
@@ -101,7 +115,7 @@ def guard(cgroup: Path, watcher: int, watcher_birth: int, owner: int, owner_birt
         os.close(owner_fd)
 
 
-def start(cgroup: Path, owner_pid: int, owner_birth: int) -> tuple[subprocess.Popen, int, int]:
+def start(cgroup: Path, owner_pid: int, owner_birth: int, lease_fds: tuple[int, ...] = ()) -> tuple[subprocess.Popen, int, int]:
     """Start a separately surviving guard; returns (process, pidfd, done pipe)."""
     ready_r, ready_w = os.pipe2(os.O_CLOEXEC)
     done_r, done_w = os.pipe2(os.O_CLOEXEC)
@@ -112,7 +126,7 @@ def start(cgroup: Path, owner_pid: int, owner_birth: int) -> tuple[subprocess.Po
             '--cgroup', str(cgroup), '--watcher', str(watcher_pid), '--watcher-birth', str(birth(watcher_pid)),
             '--owner', str(owner_pid), '--owner-birth', str(owner_birth),
             '--ready-fd', str(ready_w), '--done-fd', str(done_r)],
-            pass_fds=(ready_w, done_r), start_new_session=True)
+            pass_fds=(ready_w, done_r, *lease_fds), start_new_session=True)
         os.close(ready_w); ready_w = -1
         os.close(done_r); done_r = -1
         fd = os.pidfd_open(proc.pid)

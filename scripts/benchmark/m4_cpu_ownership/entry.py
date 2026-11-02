@@ -7,12 +7,16 @@ workload. It does not accept the retired job or a model-bearing command.
 from __future__ import annotations
 
 import argparse
+import fcntl
 from datetime import datetime, timezone
 import hashlib
 import json
 import os
 from pathlib import Path
 import sys
+import subprocess
+import shutil
+import native_authorization
 import time
 import watch
 
@@ -60,16 +64,21 @@ def main() -> int:
     try:
         if _sha(a.plan) != a.plan_sha256:
             raise ValueError('plan digest mismatch')
+        if a.owner_pid != os.getppid() or watch.m4_cgroup_guard.birth(a.owner_pid) != a.owner_birth:
+            raise ValueError('outer owner must be the actual birth-verified parent')
         plan = json.loads(a.plan.read_bytes())
-        if plan.get('schema') != 'epyc.m4.cpu_entry_fixture.v1' or plan.get('mode') not in ('fixture', 'native-check'):
+        if not isinstance(plan, dict):
+            raise ValueError('plan must be an object')
+        mode = plan.get('mode')
+        expected_schema = 'epyc.m4.cpu_entry_plan.v1' if mode == 'owned-execute' else 'epyc.m4.cpu_entry_fixture.v1'
+        if plan.get('schema') != expected_schema or mode not in ('fixture', 'native-check', 'owned-execute'):
             raise ValueError('real M4 CPU execution remains disabled pending binding')
-        mode = plan['mode']
         if mode == 'fixture':
             fixture = Path(plan['fixture']).resolve(strict=True)
             if not fixture.is_file() or _sha(fixture) != plan['fixture_sha256']:
                 raise ValueError('fixture source changed')
             command = [sys.executable, '-B', str(fixture)]
-        else:
+        elif mode == 'native-check':
             # The exact registered topology producer runs *without* --execute;
             # this validates its real source and full plan but cannot load models.
             for name, digest in NATIVE_SEALS.items():
@@ -91,6 +100,8 @@ def main() -> int:
                        '--out', str(a.output/'native-out')]
             if plan.get('role'):
                 command.extend(['--role', plan['role']])
+        else:
+            command = None  # resolved only after canonical grant and enrollment
         if not isinstance(plan.get('region'), str) or not plan['region']:
             raise ValueError('region missing')
         if not a.output.is_dir() or any(a.output.iterdir()):
@@ -99,20 +110,88 @@ def main() -> int:
         if a.stop.exists() or any(a.hold.glob('HOLD_*')):
             raise ValueError('STOP or HOLD before entry')
         grant_hash = _sha(a.grant)
+        if mode == 'owned-execute':
+            # Existing native producer binds to this canonical grant and row ID.
+            filler_id = 'refactor-01a16fc3-m4-cpu-speed-all-20261027'
+            canonical_grant = Path('/mnt/raid0/llm/tmp/compute-flags/grants') / (filler_id + '.grant')
+            if a.grant != canonical_grant or plan['region'] != '0-95':
+                raise ValueError('native execution requires canonical full-host grant')
+            if sorted(os.sched_getaffinity(0)) != list(range(96)):
+                raise ValueError('native execution requires exact full-host affinity')
+            # Require the exact open lease descriptions, not stale lock-file text.
+            # The guardian inherits these FDs before any workload is released.
+            lease_fds = [int(x) for x in os.environ.get('M4_LEASE_FDS','').split(',') if x]
+            lock_names = {f'cpu_region.GLOBAL.q{i}.lock' for i in range(4)} | {'gpu_quiet.lock'}
+            found = {}
+            for fd in lease_fds:
+                path = Path(os.readlink(f'/proc/self/fd/{fd}'))
+                name = path.name
+                if path.parent == Path('/mnt/raid0/llm/tmp') and name in lock_names:
+                    if name in found: raise ValueError('ambiguous inherited lease FD')
+                    found[name] = fd
+            if set(found) != lock_names:
+                raise ValueError('inherited cross-role/GPU lease descriptors missing')
+            for name,fd in found.items():
+                target = os.stat(Path('/mnt/raid0/llm/tmp')/name)
+                held = os.fstat(fd)
+                if (target.st_dev,target.st_ino) != (held.st_dev,held.st_ino):
+                    raise ValueError('lease descriptor inode changed')
+            for name,fd in found.items():
+                fcntl.flock(fd, (fcntl.LOCK_SH if name == 'gpu_quiet.lock' else fcntl.LOCK_EX) | fcntl.LOCK_NB)
+            resource = plan['resource']
+            minimum = resource['min_remaining_s']; output_bytes = resource['estimated_output_bytes']
+            max_ram = resource['max_ram_bytes']; reserve = resource['memory_reserve_bytes']
+            if any(type(v) is not int for v in (minimum,output_bytes,max_ram,reserve)) or minimum < 300 or output_bytes < 0 or max_ram <= 0 or reserve < 0:
+                raise ValueError('resource envelope incomplete')
+            if a.deadline - time.time() < minimum:
+                raise ValueError('insufficient remaining grant window')
+            mem = dict(line.split(':',1) for line in Path('/proc/meminfo').read_text().splitlines() if ':' in line)
+            available = int(mem['MemAvailable'].split()[0]) * 1024
+            if available < max_ram + reserve:
+                raise ValueError('insufficient available RAM')
+            if shutil.disk_usage('/mnt/raid0/llm').free - output_bytes < 150 * 1024**3:
+                raise ValueError('insufficient free-after-estimate disk')
+            producer = Path(__file__).resolve().parent.parent/'m4_cpu_producer'
+            output = Path(plan['capture_output'])
+            if not output.is_absolute() or '..' in output.parts or output.exists():
+                raise ValueError('native capture output is not fresh')
+            # Only a reviewed/deployed reader may grant source enrollment.
+            sys.path.insert(0, str(Path(__file__).resolve().parents[2]/'vidya'))
+            from adapters import m4_cpu_speed as reader
+            config = reader._trusted_config_for(output/'model-000/process-captures/future.json')
+            if config.producer_root != producer:
+                raise ValueError('deployed reader does not enroll this producer')
+            champion = subprocess.check_output(['git','-C','/mnt/raid0/llm/llama.cpp','rev-parse',
+                'refs/heads/ak/champion/llama-cpp-ffc1bac82eec'], text=True).strip()
+            bound = native_authorization.verify(plan, current_champion=champion, enrolled=True)
+            command = [sys.executable, '-B', str(producer/'dispatch.py'), '--scope', str(bound['scope']),
+                       '--plan', str(bound['native_plan']), '--baseline-image', str(bound['images']['baseline']),
+                       '--candidate-image', str(bound['images']['candidate']), '--out', str(output),
+                       '--role', bound['role'], '--execute']
         env = dict(os.environ, M4_DELEGATED_CGROUP_PARENT='/sys/fs/cgroup',
                    M4_OUTER_OWNER_PID=str(a.owner_pid), M4_OUTER_OWNER_BIRTH=str(a.owner_birth))
+        if mode == 'owned-execute':
+            env.update(FILLER_ID=filler_id, FILLER_STOPFILE=str(a.stop), FILLER_DEADLINE=str(int(a.deadline)), M4_SPEED_WRITER_WIRED='1')
         rc = watch.run(command, a.grant, a.stop, a.hold,
                        a.deadline, a.output, env)
+        if mode == 'owned-execute':
+            config = reader._trusted_config_for(output/'model-000/process-captures/future.json')
+            if config.producer_root != producer:
+                raise ValueError('deployed reader changed after work')
+            champion = subprocess.check_output(['git','-C','/mnt/raid0/llm/llama.cpp','rev-parse',
+                'refs/heads/ak/champion/llama-cpp-ffc1bac82eec'], text=True).strip()
+            native_authorization.verify(plan, current_champion=champion, enrolled=True)
         _grant(a.grant, plan['region'], a.deadline)
         if _sha(a.grant) != grant_hash or a.stop.exists() or any(a.hold.glob('HOLD_*')):
             raise ValueError('final grant, STOP or HOLD check failed')
         if rc != 0:
             raise ValueError(f'workload incomplete: {rc}')
-        with (a.output / 'FIXTURE-COMPLETE.json').open('x') as f:
-            json.dump({'schema': 'epyc.m4.cpu_entry_fixture_complete.v1', 'plan_sha256': a.plan_sha256,
-                       'mode': mode, 'measurement': False}, f)
+        name = 'NATIVE-CAPTURE-COMPLETE.json' if mode == 'owned-execute' else 'FIXTURE-COMPLETE.json'
+        with (a.output / name).open('x') as f:
+            json.dump({'schema': 'epyc.m4.cpu_entry_complete.v1', 'plan_sha256': a.plan_sha256,
+                       'mode': mode, 'fixture_only': mode != 'owned-execute', 'gate_verdict': None}, f)
         return 0
-    except (OSError, ValueError, KeyError, TypeError, RuntimeError) as exc:
+    except (OSError, ValueError, KeyError, TypeError, RuntimeError, ImportError, subprocess.CalledProcessError) as exc:
         print(f'REFUSED: {exc}', file=sys.stderr)
         return 2
 
