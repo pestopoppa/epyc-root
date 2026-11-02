@@ -95,3 +95,7 @@ Prepared independent full and smoke quantizer source snapshots from pinned commi
 ## 11:00Z — Add classifier controls for P1d
 
 Added synthetic classifier regression controls for comment-only T0, Q8 dispatch outcomes including both W5 possibilities, unchanged/unset knob values, and incomplete evidence refusal. Four new and nine existing screen tests pass. These fixtures are not workload census, native execution or completion of AKX-P1d. Quantizer smoke remains unqualified: one region-state observation found q0–q3 held by filler-inf70-cls-rect-live-20261101; no second attempt was made. W5s remains parked and its fresh diagnostic must preserve actual native evidence and whole-host admission.
+
+## 11:03Z — Repair and republish the AKX-P1c quantizer build prerequisite after the smoke region-lock conflict
+
+AKX-P1c: republished inf75-quantizer-7cdd7c97-20261102 using the updated rowflow engine; its four-CPU smoke passed (one native unit, rc=75 partial-native-incomplete). The full build result, historical model reconstruction, coverage builds and workload replay remain pending. The updated engine skips CPU region-lock reacquisition in smoke; no production kernel or workload result was changed.
