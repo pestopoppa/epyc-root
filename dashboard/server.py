@@ -168,7 +168,6 @@ LOOP_HTML = _STATIC / "loop.html"
 
 
 LOOP_SPEC_HTML = _STATIC / "loop-spec.html"
-PIPELINE_HTML = _STATIC / "pipeline.html"
 
 
 KNOWLEDGE_HTML = _STATIC / "knowledge.html"
@@ -2121,7 +2120,6 @@ HTML_ROUTES = {
     "/bus": BUS_HTML,
     "/benchmarks": BENCHMARKS_HTML,
     "/loop-spec": LOOP_SPEC_HTML,
-    "/pipeline": PIPELINE_HTML,
     "/knowledge": KNOWLEDGE_HTML,
     "/amd-ai-lab": AMD_AI_LAB_HTML,
 }

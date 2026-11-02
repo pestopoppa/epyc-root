@@ -119,19 +119,23 @@ class Wiring(unittest.TestCase):
         self.assertEqual(src.route, "/api/pipeline")
         self.assertEqual(src.health_route, "/api/pipeline/health")
         self.assertTrue(src.absence_means and src.warn_s and src.stale_s)
-        self.assertIn("/pipeline", server.HTML_ROUTES)
+        self.assertNotIn("/pipeline", server.HTML_ROUTES)
         self.assertIn("/api/pipeline", server.API_ROUTES)
         self.assertIn("/api/pipeline/health", server.PANEL_HEALTH_ROUTES)
 
-    def test_registry_entry(self):
+    def test_no_separate_page_or_registry_entry(self):
         reg = json.loads((Path(server.REPO) / "dashboard" / "registry.json").read_text())
-        e = [x for x in reg["dashboards"] if x["id"] == "pipeline"]
-        self.assertEqual(len(e), 1)
-        self.assertEqual((e[0]["path"], e[0]["health_path"]), ("/pipeline", "/api/pipeline/health"))
+        self.assertEqual([x for x in reg["dashboards"] if x["id"] == "pipeline"], [])
+        self.assertFalse((Path(server.REPO) / "dashboard" / "static" / "handoffs.html").exists())
+
+    def test_region_cpus_and_phase(self):
+        self.assertEqual(ps.region_cpus("q1")[:2], [24, 25])
+        self.assertIn(120, ps.region_cpus("q1"))
+        self.assertEqual(ps.region_cpus("gpu-quiet"), list(range(184, 192)))
 
     def test_page_marks_det_and_ai_with_legend(self):
-        html = (Path(server.REPO) / "dashboard" / "static" / "pipeline.html").read_text()
-        for needle in ("handoff_detail", "class_counts", "DET", "AI-powered", "deterministic", "setInterval(load,30000)", "/api/pipeline"):
+        html = (Path(server.REPO) / "dashboard" / "static" / "handoffs.html").read_text()
+        for needle in ("handoff_detail", "class_counts", "DET", "AI-powered", "deterministic", "setInterval(load,30000)", "pipeline-sec", "/api/pipeline"):
             self.assertIn(needle, html)
         self.assertGreaterEqual(html.count("o:'AI'"), 3)
         self.assertGreaterEqual(html.count("o:'DET'"), 8)

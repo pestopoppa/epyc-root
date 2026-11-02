@@ -184,7 +184,7 @@ def _rows(flags: Path) -> dict[str, dict]:
             txt = p.read_text().strip()
             for part in txt.replace("\n", " ").split():
                 k, _, v = part.partition("=")
-                if k in ("regions", "start", "end", "holds"):
+                if k in ("regions", "start", "end", "holds", "kind"):
                     info[k] = v
             info["granted_at"] = p.stat().st_mtime
         except OSError:
@@ -238,6 +238,47 @@ def keeper_snapshot(flags: Path) -> dict | None:
     return None
 
 
+IDLE_PCT = 5.0
+_PREV_SAMPLE: list = [None]
+
+
+def region_cpus(region: str) -> list[int]:
+    if region == "gpu-quiet":
+        return list(range(184, 192))
+    q = int(region[1:])
+    return list(range(q * 24, q * 24 + 24)) + list(range(q * 24 + 96, q * 24 + 120))
+
+
+def _cpu_sample() -> dict:
+    out = {}
+    try:
+        with open("/proc/stat") as fh:
+            for l in fh:
+                if l.startswith("cpu") and l[3].isdigit():
+                    f = l.split(); v = [int(x) for x in f[1:9]]
+                    out[int(f[0][3:])] = (sum(v) - v[3] - v[4], sum(v))
+    except (OSError, ValueError, IndexError):
+        pass
+    return out
+
+
+def region_cpu_pct() -> dict:
+    """busy %% per region over the interval since the previous call (first call: a 0.25 s window)."""
+    s1 = _cpu_sample()
+    s0 = _PREV_SAMPLE[0]
+    if s0 is None or sum(t for _, t in s1.values()) - sum(t for _, t in s0.values()) <= 0:
+        time.sleep(0.25)
+        s0, s1 = s1, _cpu_sample()
+    _PREV_SAMPLE[0] = s1
+    out = {}
+    for r in REGIONS:
+        cs = region_cpus(r)
+        b = sum(s1.get(c, (0, 0))[0] - s0.get(c, (0, 0))[0] for c in cs)
+        t = sum(s1.get(c, (0, 0))[1] - s0.get(c, (0, 0))[1] for c in cs)
+        out[r] = round(100.0 * b / t, 1) if t > 0 else None
+    return out
+
+
 def compute_payload(flags: Path, now: float) -> dict:
     rows = _rows(flags)
     snap = keeper_snapshot(flags)
@@ -247,8 +288,18 @@ def compute_payload(flags: Path, now: float) -> dict:
             for h in (r.get("holds") or "").split(","):
                 if h in REGIONS:
                     busy.setdefault(h, r["id"])
-    regions = [{"region": r, "state": "busy" if r in busy else "free", "row": busy.get(r)}
-               for r in REGIONS]
+    cpu = region_cpu_pct()
+    regions = []
+    for r in REGIONS:
+        row = busy.get(r)
+        info = rows.get(row) if row else None
+        phase = None
+        if row:
+            phase = "dry-run" if (info or {}).get("kind") == "rowflow-dryrun" else "running"
+        pct = cpu.get(r)
+        label = "free" if not row else ("idle-held" if pct is not None and pct < IDLE_PCT else phase)
+        regions.append({"region": r, "state": "busy" if row else "free", "row": row,
+                        "phase": phase, "cpu_pct": pct, "label": label})
     counts = {"ready": 0, "running": 0, "dryrun-fail": 0, "dryrun-pending": 0}
     for r in rows.values():
         counts[r["state"]] = counts.get(r["state"], 0) + 1
