@@ -17,6 +17,8 @@ validation requires the applicable compute authorization.
   tests passed. No occupancy or throughput result was produced.
 - Research `bda6ad1cf`: sealed FA-4b response-integrity replay accounted for 2,400 responses;
   the earlier one-of-four equivalence result is unchanged. Three focused tests passed.
+- Research `db970501e`: prospective FA-4a matched-input finite/stress control with two offline
+  tests; native producer and acceptance remain open.
 - Root Q38-T7 guarded successor refuses mixed drafted/no-draft A/B phases; three offline tests
   passed. Historical direct invocation and dedicated independent lifecycles remain unprotected.
 - KVU-16a source/receipt reconciliation found an idle-slot argv mismatch; the sampled load does
