@@ -854,3 +854,29 @@ class StuckTests(_DSHBase):
         with patch.object(hs, "landed_ticks", lambda sha, repo=None: 2), patch.object(hs, "landed", return_value=True):
             self.assertIn("2 landed tick(s)", hs.turn_effect(self.flags, "alpha", {"last_wrapup": "abc1234", "last_resume": hs.now_iso()}))
         self.assertEqual(hs.turn_effect(self.flags, "alpha", {"last_wrapup": None, "last_resume": "2099-01-01T00:00:00Z"}), "", "a commit alone is not an effect")
+
+
+class LandBeforeParkTests(_DSHBase):
+    def test_noop_warning_text_and_dispatcher_lands_unlanded_ticks(self):
+        import subprocess, tempfile
+        e = {"handoff": "handoffs/active/alpha.md", "noop_turns": 2}
+        self.assertIn("WARNING: your last 2 turn(s) landed nothing", hs.continue_prompt("alpha", e, self.flags, "x"))
+        self.assertNotIn("WARNING", hs.continue_prompt("alpha", dict(e, noop_turns=0), self.flags, "x"))
+        # a clean lane with an unlanded commit that ticks a box: land_lane pushes it and the ticks count as the turn's effect
+        origin = tempfile.mkdtemp(); subprocess.run(["git", "init", "-q", "--bare", "-b", "main", origin], check=True)
+        lane = tempfile.mkdtemp()
+        g = lambda *a: subprocess.run(["git", "-C", lane, "-c", "user.email=t@t", "-c", "user.name=t", *a], check=True, capture_output=True)
+        subprocess.run(["git", "-C", lane, "init", "-q", "-b", "main"], check=True)
+        _w(os.path.join(lane, "handoffs/active/a.md"), "- [ ] A\n"); g("add", "."); g("commit", "-q", "-m", "base")
+        g("remote", "add", "origin", origin); g("push", "-q", "origin", "main"); g("fetch", "-q", "origin")
+        _w(os.path.join(lane, "handoffs/active/a.md"), "- [x] A ✅\n"); g("add", "."); g("commit", "-q", "-m", "tick A")
+        real_run = subprocess.run
+        def fake_push(cmd, **kw):
+            if "serialized_push.py" in " ".join(map(str, cmd)):
+                return real_run(["git", "-C", lane, "push", "-q", "origin", "HEAD:main"], capture_output=True)
+            return real_run(cmd, **kw)
+        with patch.object(hs.subprocess, "run", side_effect=fake_push), patch.object(hs, "ROOT", lane):
+            landed = hs.land_lane(lane)
+        self.assertEqual(len(landed), 1)
+        self.assertEqual(hs.landed_ticks(landed[0], repo=lane), 1)
+        self.assertEqual(hs.land_lane(lane), [], "nothing left to land")

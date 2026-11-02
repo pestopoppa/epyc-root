@@ -362,7 +362,10 @@ LAST line (add `IDLE: <reason>` after it when nothing unblockable is left)."""
 
 
 def continue_prompt(slug, e, flags, why="", delta=""):
-    return f"""[{VERSION}] continue: FINISH ALL READY ITEMS IN THIS ONE TURN (budget rule 22:45Z: one resume per session per
+    warn = ("" if int(e.get("noop_turns", 0)) < STUCK_AFTER - 1 else
+            f"WARNING: your last {e.get('noop_turns')} turn(s) landed nothing. THIS turn must land a tick, publish a row or file a result "
+            f"(wrapup.py / publish_row.py / file_result.py) or you will be parked as STUCK until a run-end arrives. ")
+    return f"""[{VERSION}] {warn}continue: FINISH ALL READY ITEMS IN THIS ONE TURN (budget rule 22:45Z: one resume per session per
 {MIN_RESUME_GAP_S // 60} min; a one-item turn wastes the whole context re-read). Your handoff {e.get('handoff') or 'codex-gen backlog'}
 still has open work ({why}); fan every independent item out to sub-agents now and land them all before wrapping up.
 Rows queued or running are no reason to stop: a session pauses ONLY when nothing is open except items waiting on its own running rows. {FANOUT_LINE}
@@ -1224,6 +1227,14 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 e["dirty_wrap_resume"] = None
             e["last_report"] = {k: rep.get(k) for k in ("state", "wrapped_sha", "question", "rows_published")} if rep else None
             effect = turn_effect(flags, slug, e, rep)
+            if not effect:  # unlanded progress in a clean lane is landed HERE at zero token cost, then counted
+                landed_now = land_lane(e.get("cwd") or "")
+                if landed_now:
+                    n = sum(landed_ticks(x) for x in landed_now)
+                    e["last_wrapup"] = e.get("last_wrapup") or landed_now[-1]
+                    log(flags, f"LANDED-BY-DISPATCHER {slug}: {len(landed_now)} commit(s) from a clean lane, {n} tick(s)")
+                    if n:
+                        effect = f"{n} tick(s) landed by the dispatcher"
             if not effect:  # no landed tick, no row, no filing: pure spend
                 e["noop_turns"], e["await_event"] = int(e.get("noop_turns", 0)) + 1, True
                 log(flags, f"NOOP {slug}: turn completed nothing (no landed tick, no row published, no filing) [{e['noop_turns']}/{STUCK_AFTER}]")
@@ -1447,6 +1458,31 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
     return reg, st
 
 
+def land_lane(cwd):
+    """Land a CLEAN lane's unlanded commits (fetch, rebase onto origin/main, serialized_push --agent dispatcher).
+    Returns the list of shas that were unlanded before (now landed) or [] when nothing was landed."""
+    if not cwd or not os.path.isdir(cwd):
+        return []
+    try:
+        dirty = subprocess.run(["git", "-C", cwd, "status", "--porcelain", "--untracked-files=no"], capture_output=True, text=True, timeout=60).stdout.strip()
+        ahead = [l[2:].strip() for l in subprocess.run(["git", "-C", cwd, "cherry", "origin/main"], capture_output=True, text=True, timeout=60).stdout.splitlines() if l.startswith("+")]
+        if dirty or not ahead:
+            return []
+        subprocess.run(["git", "-C", cwd, "fetch", "-q", "origin"], timeout=120)
+        if subprocess.run(["git", "-C", cwd, "rebase", "-q", "origin/main"], timeout=120).returncode != 0:
+            subprocess.run(["git", "-C", cwd, "rebase", "--abort"], timeout=60)
+            return []
+        subprocess.run([sys.executable, os.path.join(ROOT, "scripts/coordination/serialized_push.py"), "--agent", "dispatcher",
+                        "--repo", cwd, "--fetch", "--push"], capture_output=True, timeout=600)
+        still = subprocess.run(["git", "-C", cwd, "cherry", "origin/main"], capture_output=True, text=True, timeout=60).stdout
+        if "+" in still:
+            return []
+        head = subprocess.run(["git", "-C", cwd, "rev-parse", "HEAD"], capture_output=True, text=True, timeout=60).stdout.strip()
+        return [head] if head else []
+    except (OSError, subprocess.TimeoutExpired):
+        return []
+
+
 def log_unwrapped(flags, slug, e):
     """UNWRAPPED is logged at most once per 10 min per session (1293 lines in an hour were log spam, not information)."""
     if time.time() - _parse(e.get("unwrapped_logged") or "") > 600:
@@ -1477,18 +1513,8 @@ def wrapped(e, cache=None) -> bool:
             e["dirty_wrap_resume"] = now_iso()  # a dirty lane gets ONE wrap-up resume (its prompt ends with wrapup.py); then refused
             return True
         if not dirty and "+" in ahead:
-            # ws58 23:46Z: an unlanded commit in a clean lane (its push died, e.g. a dead push lock) is landed HERE,
-            # deterministically, instead of refusing the session forever (codex-gen sat UNWRAPPED for 30 min).
-            try:
-                subprocess.run(["git", "-C", cwd, "fetch", "-q", "origin"], timeout=120)
-                if subprocess.run(["git", "-C", cwd, "rebase", "-q", "origin/main"], timeout=120).returncode != 0:
-                    subprocess.run(["git", "-C", cwd, "rebase", "--abort"], timeout=60)
-                    return False
-                subprocess.run(["python3", os.path.join(ROOT, "scripts/coordination/serialized_push.py"), "--agent", "dispatcher",
-                                "--repo", cwd, "--fetch", "--push"], capture_output=True, timeout=600)
-                ahead = subprocess.run(["git", "-C", cwd, "cherry", "origin/main"], capture_output=True, text=True, timeout=60).stdout
-            except (OSError, subprocess.TimeoutExpired):
-                return False
+            if land_lane(cwd):  # ws58 23:46Z: a clean lane's unlanded commit is landed here instead of refusing forever
+                ahead = ""
         return not dirty and "+" not in ahead
     if cache is None:
         cache = {}
