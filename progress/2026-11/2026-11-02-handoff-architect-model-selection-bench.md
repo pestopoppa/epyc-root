@@ -35,3 +35,7 @@ Consumed current GPU configuration and EffiBench test dependency reports. Curren
 ## 00:33Z — Record EffiBench regression validation and recover publication
 
 Consumed EffiBench regression result: all eight previously authored tests passed against the reconstructed pinned upstream checkout in 6.16 seconds; this is not a rerun of the canonical-solutions gate. Recorded it in the pinned patch bundle. Recovered and serialized-pushed the previous progress commits after concurrent main updates. Dispatched bounded checks for the dataset revision, GPQA question/protocol pins and effective DFlash2 setting, with file-triggered results.
+
+## 00:34Z — Pin current GPQA and EffiBench inputs
+
+Consumed three preparation reports. Full GPQA-CoT pin questions_gpqa_diamond_cot.json SHA-256 14e807dd11736b022f337466efc0fb5c95bf6e521a4514a09d0f25916524ecee, historical protocol n198 seed42 cap8192 repeat1. Current Qwen3.8-27B DFlash2 registry and selected server use draft max 7; the separate experiment recipe value 8 is not the serving setting. EffiBench dataset revision 49babbec95f0897d5f06276aaf274f9f1dcd036b contains 20 test Parquet shards; data was not yet materialized. Dispatched bounded dataset preparation, GPU launcher/row draft and placement audit; registered completion files.
