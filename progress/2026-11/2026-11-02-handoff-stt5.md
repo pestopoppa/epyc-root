@@ -35,3 +35,11 @@ CS-5 and CS-6 are reference harness and run-plan preparation, not runnable infer
 ## 03:47Z — Prepare speech row successor and restore wrap-up check
 
 Previous wrap-up failed at observer census because the sparse lane omitted tracked artifacts/operator/ratify_e8_autopilot_quality_fence_20260726.sh; restored that tracked hook input and observer census passes. CS-52 source investigation confirms the handoff requires owner-window footprint measurements before choosing a CPU pool cap; no production edits or compute. CS8 successor implementation and CS-6 run-plan preparation were delegated into scratch; completion events registered. Ultra prior report is still pending. No new row was published. [no-belief: operational investigation]
+
+## 03:47Z — Prepare speech row successor and restore wrap-up check
+
+Previous wrap-up failed at observer census because the sparse lane omitted tracked artifacts/operator/ratify_e8_autopilot_quality_fence_20260726.sh; restored that tracked hook input and observer census passes. CS-52 source investigation confirms the handoff requires owner-window footprint measurements before choosing a CPU pool cap; no production edits or compute. CS8 successor implementation and CS-6 run-plan preparation were delegated into scratch; completion events registered. Ultra prior report is still pending. No new row was published. [no-belief: operational investigation]
+
+## 03:48Z — Review speech bench plan and build successor
+
+Consumed CS6 plan and CS8 build draft. CS6 has an ordered run list, measurands, exit criteria and explicitly provisional booking ranges; independent review requested before integration. CS8 journal passed three model-free tests but remains unpublishable due to STOP race, child drain, source/launcher seals and cutover; bounded implementations dispatched in scratch. Completion event files registered. Prior wrap-up push failed and subsequent commit failed because merge reapplied sparse patterns; lane sparse configuration now includes the tracked observer hook input, and observer census passes. No compute or row published. [no-belief: preparation and operational checks]
