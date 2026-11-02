@@ -183,3 +183,7 @@ Consumed the independent LB1 audit and model-free descriptor receiver report. Th
 ## 01:22Z — Review corrected native capture draft
 
 Consumed lb-native-fixed-v3.txt: the temporary source now distinguishes nonfinite candidate from nonfinite reference, explicitly synchronizes before sampling the counter, checks numeric parsing and bounds the three logit matrices to 64 MiB. It intentionally emits no capture and returns oracle_unavailable because it lacks authenticated actual-ubatch evidence; the draft has not been compiled or run and cannot qualify a row. Delegated independent source review, model-free atomic output/error tests and descriptor patch review; registered all completion events. No inference, row publication or completed box.
+
+## 01:22Z — Recover native capture review publication
+
+The preceding wrap-up committed native capture review as dceef26ea0e7 but serialized_push returned rc=4 without publishing; retrying through the standard wrapper. Registered follow-up work remains unchanged.
