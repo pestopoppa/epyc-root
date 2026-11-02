@@ -47,3 +47,7 @@ Consumed GPU draft and audit. The current-arm draft pins Qwen3.8-27B Q8/DFlash2 
 ## 00:37Z — Integrate GPU residency evidence and validate model provenance
 
 Consumed the GPQA sampler result: a mock-tested draft records timestamps, ROCm output and captured-server PID presence; it has not been exercised during inference. Dispatched bounded integration with inference-window timestamps and fail-closed residency handling, plus checks of production GPU linkage verifier usage and target/drafter provenance. Keeper and runner review results remain registered. No row published or inference run.
+
+## 00:39Z — Close GPU model identity and dynamic HIP evidence gaps
+
+Consumed GPU model provenance and linkage contracts. Registry pins base Qwen3.8-27B Q8 SHA-256 a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348 and revision 4ca720788d1e01f1bff70c033e0d0028fd02e502; v10 store server SHA-256 2b49713f0e3c022132393bf302dab954a1e2c1974b91c28d01ce2d192abdfa7b matches manifest. DFlash2 head has no registry SHA or revision identified. Linkage verifier checks ldd-visible libraries, not dynamically loaded HIP; live process maps and in-window residency remain required. Dispatched bounded head identity, HIP maps and pin-check work. No row or inference published.
