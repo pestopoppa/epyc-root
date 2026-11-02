@@ -39,3 +39,7 @@ Consumed the push-race review. wrapup merges before committing, but serialized_p
 ## 00:19Z — Resolve wrapup publication race
 
 Consumed the push-race review. wrapup merges before committing, but serialized_push fetches later under the push lock; a concurrent main advance can reject the push, and current retries only recognize lock-held. Pre-acquiring the push lock deadlocks wrapup against its own push; dispatcher recovery can land commits but cannot produce the required report. Dispatched a bounded impact-gated fix with non-fast-forward retry and focused deterministic tests in this lane; awaiting event registered. The separate CPU screen preregistration and host-state contract remain in progress. No compute was launched or row published.
+
+## 00:19Z — Resolve wrapup publication race
+
+Consumed the push-race review. wrapup merges before committing, but serialized_push fetches later under the push lock; a concurrent main advance can reject the push, and current retries only recognize lock-held. Pre-acquiring the push lock deadlocks wrapup against its own push; dispatcher recovery can land commits but cannot produce the required report. Dispatched a bounded impact-gated fix with non-fast-forward retry and focused deterministic tests in this lane; awaiting event registered. The separate CPU screen preregistration and host-state contract remain in progress. No compute was launched or row published.
