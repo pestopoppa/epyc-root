@@ -973,7 +973,7 @@ dim 96. This is a **projection, not a measurement.** Two conditions on any adopt
 
 ### Compute-gated (G) — filed, not run; both compute planes were held by other sessions this wave
 
-- [ ] **G11 — ONNX INT8-vs-fp32 parity fixture.** 200 real KB chunk texts, both roles, `model.onnx`
+- [x] **G11 — ONNX INT8-vs-fp32 parity fixture.** ✅ 2026-11-02 (ws58 BRF-T3-2; result: **INT8 gate NOT met**). Top-1 is 59/70 for both FP32–INT8 pairs, and the recomputed MaxSim reproduces the stored top-1 exactly. In the 11 disagreements, the INT8 pick sits at FP32 rank 2 nine times, rank 3 once and rank 6 once. These are near-ties: the median FP32 relative top-2 margin is 0.00072 against 0.0070 for agreeing queries. Fidelity only; PREFIX-3 and adoption are not covered. [belief: cc] Evidence: `docs/design/backlog-refactor-2026-11/t3-evidence/kb-g11-disagreement-20261102.json` over `/mnt/raid0/llm/tmp/codex-ni-kbrag-g11-parity-r2-20261030/results` (KEEP). 200 real KB chunk texts, both roles, `model.onnx`
       vs `model_int8.onnx`; report per-token cosine distribution, max abs Δ, and **MaxSim top-1
       agreement** — the decision-relevant metric. Fold in the **mirror-vs-upstream-root** arm: same
       texts, same ORT process / EP / thread config, compared by cosine and max abs Δ and **never by

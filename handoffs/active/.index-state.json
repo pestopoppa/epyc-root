@@ -10,7 +10,7 @@
       "blocked": 1,
       "handoffs": 5,
       "oldest_advance": "2026-09-24",
-      "open": 70
+      "open": 69
     },
     "research-evaluation-index.md": {
       "blocked": 15,
@@ -28,7 +28,7 @@
       "blocked": 17,
       "handoffs": 55,
       "oldest_advance": "2026-07-29",
-      "open": 695
+      "open": 694
     },
     "user-facing-harness-index.md": {
       "blocked": 17,
@@ -393,10 +393,10 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 1,
+      "closed": 2,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 22,
+      "open": 21,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1337,10 +1337,10 @@
     },
     "internal-kb-rag.md": {
       "blocked": 0,
-      "closed": 43,
+      "closed": 44,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 21,
+      "open": 20,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
         "blocker": "open-tasks",

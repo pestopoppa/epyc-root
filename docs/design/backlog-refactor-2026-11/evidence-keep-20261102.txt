@@ -67,3 +67,8 @@ MISSING /mnt/raid0/llm/tmp/codex-ni-20261027-pf1-native-ready	PF1 ready dir cite
 
 # Journal shards: both autopilot_journal*.jsonl live under /mnt/raid0/llm/epyc-orchestrator/orchestration/, which carries a shared parent marker; a parent KEEP protects children only for reapers that walk ancestors (scratch_cleanup.py does; reap_idle_lanes.py reads no KEEP at all) — check the particular reaper before relying on it, and keep the per-file .epyc-keep entries above.
 # git worktree KEEP (none required: no package depends on a worktree).
+
+# T3 additions (ws58, 2026-11-02, BRF-T3-1): replay evidence cited by t3-cells.json that was not listed above. KEEP markers are created by the owning sessions.
+KEEP /mnt/raid0/llm/tmp/codex-ni-kbrag-g11-parity-r2-20261030	92M	2165	RPL-KB G11 R2 native records + stored embeddings (G11 disagreement analysis input)
+KEEP /mnt/raid0/llm/tmp/codex-ni-kbrag-g13-truncskip-20261030	-	-	RPL-KB G13 truncation sweep packet
+KEEP /mnt/raid0/llm/tmp/codex-c6-*-20261102	-	-	RPL-C6 retained diagnostic captures (10 dirs; unchanged-predicate re-reads only)

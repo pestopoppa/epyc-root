@@ -859,6 +859,7 @@ primary artefact.
       *(Amended 2026-07-30: the re-run must conform to **`P-BENCH-PLACEMENT-1`**, now ratified,
       and its grid must use the **new 1-full + 2-half shapes** — the old quarter arms no longer
       exist. **27 of 31 cells** still outstanding.)*
+  - **2026-11-02 BRF-T3 (ws58):** adjudication input for the regeneration list. Of the 8 banked Gemma A7 cells, 4 are DEMONSTRATED-INVALID (C1b) and 4 are UNRESOLVED (C1); none is VALID. The box stays open. [belief: cc] `docs/design/backlog-refactor-2026-11/t3-evidence/e5-adjudication-20261102.json`
 - [x] **T4 — Fix the E5 batch drain (D5)** so the high-`T` rungs actually saturate: more prompts,
       or a closed-loop arrival process holding occupancy at `T`. Without this the `T ≥ 16` rungs
       remain uninterpretable even on corrected placement.

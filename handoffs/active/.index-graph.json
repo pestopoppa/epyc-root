@@ -3769,7 +3769,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T18:05:37Z",
+  "generated_at": "2026-11-02T18:25:27Z",
   "nodes": [
     {
       "age_days": 95,
@@ -7030,15 +7030,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 43,
-      "dispatchable": 21,
+      "closed": 44,
+      "dispatchable": 20,
       "domain": "pipeline-integration",
       "guarded": 0,
       "handoff": "internal-kb-rag.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-02",
       "next_action": "Source-review remaining K2/web contracts and independent dependency consumers",
-      "open": 21,
+      "open": 20,
       "priority": 0.6185,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G13 \u2014 doc-truncation recall sweep. recall@10 on the K7 70-case pool at `_DOC_MAX_TOKENS`",
@@ -8978,15 +8978,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 1,
-      "dispatchable": 22,
+      "closed": 2,
+      "dispatchable": 21,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "backlog-refactor-2026-11.md",
       "id": "RTG-63",
       "last_advanced": "2026-11-02",
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
-      "open": 22,
+      "open": 21,
       "priority": 0.0,
       "priority_basis": {
         "campaign": 0,

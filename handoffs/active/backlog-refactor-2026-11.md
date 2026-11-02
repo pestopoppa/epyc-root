@@ -53,11 +53,12 @@ this handoff, do not push; two consecutive reds on the same fold → stop T1 and
 
 ## T3 — replays and deterministic tails (analyses now; D3)
 
-- [ ] **BRF-T3-1** [non-inference] Enumerate replay / deterministic-tail cells from `backlog-experiment-manifest-20261102.json`
+- [x] **BRF-T3-1** ✅ 2026-11-02 (ws58): 19 cells enumerated. They cover 5 replay candidates (as 7 cells), EXL3, the E5 adjudication and 10 other tails. The worklist is `docs/design/backlog-refactor-2026-11/t3-cells.json`, and 3 evidence paths were KEEP-listed in `evidence-keep-20261102.txt` → T3 additions. [no-belief: worklist enumeration] [non-inference] Enumerate replay / deterministic-tail cells from `backlog-experiment-manifest-20261102.json`
   into a scratch worklist with their retained inputs. Done when: the worklist is committed under `docs/design/backlog-refactor-2026-11/`. Zero inference.
 - [ ] **BRF-T3-2** [non-inference] Run the zero-inference analyses over retained data; record results as OBSERVATIONs. Ticks on the source
   boxes wait for proven coverage of the cell. Stop rule: a cell without retained inputs covering it is
   marked uncovered and left open, never ticked.
+  - 2026-11-02 partial (ws58): this pass ran the E5 adjudication (VALID 0 / INVALID 4 / UNRESOLVED 4), the KB G11 disagreement analysis (ticked G11) and the STT Nemotron re-read. No scorer or parser fix was needed. Not yet run: C6 consumer re-read, RPL-AP analyses (code builds), EXP-06 custody, LID1, CAP-01 Q38FN replay, CAP-06 threshold replay. See `progress/2026-11/2026-11-02-ws58-brf-t3.md`. [belief: cc]
 
 ## T4 — the 4 bounded pilots (D3)
 
