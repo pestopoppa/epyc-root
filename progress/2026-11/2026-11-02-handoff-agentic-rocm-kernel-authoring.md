@@ -31,3 +31,7 @@ At this boundary, no registered k228/k175 capture, controller null-arm, C5-7 in-
 ## 00:30Z — Review partial C5-12 selection patch and prepare eight-arm panel contract correction
 
 Reviewed the draft C5-12 patch: it implements deterministic three-of-five selection with input validation and fixture tests, but it is standalone and does not implement the required two-tier model split, findings document, or traceback-only versus resampling comparison; its completion marker is absent and the task remains open. No inference prerequisites have produced a completion marker or a publishable row. Dispatched an independent S3-INF03-01 contract patch to make whole-agent interpretation and the no-authoring baseline explicit while preserving the existing greedy-control trigger. No compute launched.
+
+## 00:31Z — Review and preserve S3-INF03-01 campaign-contract patch
+
+Consumed panel-contract.done and reviewed artifacts/agentic-rocm/s3-panel-contract.patch. The patch states that the eight-arm panel compares whole agents, its starting-state control has no actor or greedy search, and greedy fixed-actor selection is a separate triggered study. Independently confirmed git apply --check passes against the inspected research tree. Preserved the patch in this lane; S3-INF03-01 remains open because the research contract itself has not been modified. No GPU work or new performance claim.
