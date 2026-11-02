@@ -53,6 +53,10 @@ judicious review. The edit preserves existing task text and history. [no-belief:
   arms; a scripted pair reached the real services and native judge with suffix delivery. The
   integrated DTAP suite passed 177 tests under q2 from a protected checkout. Physical-grant
   authority, reader canary and live row remain open. [no-belief: fixture controls]
+- Rowflow `evl46-crm-fullentry-fixture-20261102` passed exact-entry smoke and is grantable;
+  its full scheduled run is a scripted-endpoint service/claim qualification, not model evidence.
+  The live pair and separately scheduled post-run model hash remain in preparation.
+  [no-belief: fixture controls]
 - ROOT `4f609b459` + `bb252dbc6` + `bf9dbd64c` add a fail-closed pair receipt reader;
   three tamper/fixture/aborted controls passed under q2. It is not CLI-registered and emits no
   claim without provider/source authority. A lock-provider receipt is being built. Research
@@ -77,6 +81,9 @@ judicious review. The edit preserves existing task text and history. [no-belief:
   only `read` advertised, injected `bash` rejected, workspace read and session export passed.
   Its grader-path refusal is a permission result rather than an OS syscall proof. The row is
   grantable and waits for allocator execution. [no-belief: synthetic control]
+- The fake and policy rows' redundant scheduled repeats were withdrawn; their full smoke
+  receipts remain. `evl46-opencode-schema-20261102` passed its own smoke with the pinned
+  read-tool schema and broker refusal of injected `bash`, and is grantable. [no-belief: synthetic control]
 - Added `docs/reference/tu-hr1-tool-render-audit-20261102.md`: source and runtime census;
   sampled local model endpoints were unavailable, so actual live model/template evidence and
   TU-HR-1 remain open. [no-belief: source and operational review]

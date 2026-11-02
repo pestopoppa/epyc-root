@@ -44,6 +44,10 @@ plus explicitly unattempted second arm. A scripted-endpoint pair exercised the p
 native judge and tool-suffix delivery with no model. The integrated candidate passed all 177 DTAP
 tests from a protected checkout under q2. Actual grant authority, reader/canary and live row remain
 open. [no-belief: software and fixture controls]
+Rowflow `evl46-crm-fullentry-fixture-20261102` is grantable after its exact-entry smoke; the
+scheduled qualification will use the real provider claim, private CRM/Slack and a scripted
+HTTP endpoint, with no model. Its result cannot satisfy the live pair. The model launcher and
+separate post-run content-hash row are still being prepared. [no-belief: fixture controls]
 ROOT `4f609b459` + `bb252dbc6` + `bf9dbd64c` add a strict original-journal reader and
 partial-arm refusal controls. It is intentionally not CLI-registered and emits no claim until
 provider-owned grant and source authority are verified; three refusal tests passed. A versioned
@@ -59,25 +63,31 @@ fixed client-tool profile; 24 tests passed. It is not yet an OpenCode transport 
 host-side `/chat` tool isolation. [no-belief: software and fixture controls]
 Successor `b2dc50a86` adds a bounded buffered SSE bridge tested with a fake client and upstream
 (10 broker tests); it does not establish actual OpenCode compatibility or token timing. [no-belief: software controls]
-Rowflow `evl46-opencode-fake-20261102` is **grantable** after a separate-path exact-entry smoke.
+Rowflow `evl46-opencode-fake-20261102` passed a separate-path exact-entry smoke.
 That smoke ran pinned OpenCode 1.18.31 against a fake upstream: three streamed requests, a
 successful public-file read, denied grader-path read, intact host canary and full session export.
 The supposedly read-only synthetic config nevertheless advertised ten tools including shell and
 write: do not interpret the smoke as catalog restriction or live-model isolation. Scheduled result
 is `RESULT.json` under `/mnt/raid0/llm/tmp/evl46-opencode-row-20261102/`; report the actual
-diagnostic and all failures after allocator execution. [no-belief: synthetic control]
+diagnostic and all failures. Its redundant scheduled repeat was withdrawn after the smoke; the
+smoke receipt remains. [no-belief: synthetic control]
 Rowflow `evl46-crm-reader-b8-tests-20261102` is also **grantable** after a separate-path smoke
 (five reader controls). It exercises synthetic refusal/provider/source checks, not a live belief
 claim. **Correction:** its CPU-lock source pin is truncated; the passing synthetic smoke did not
 exercise that pin. Its ready manifest was withdrawn and it is no longer grantable; corrected
-successor `evl46-crm-reader-a656-tests-20261102` passed six smoke controls and is grantable.
-The allocator owns grants; no session-issued grant is implied.
+successor `evl46-crm-reader-a656-tests-20261102` passed six smoke controls but was subsequently
+withdrawn for a new projection/canary source snapshot; successor
+`evl46-crm-reader-dc-tests-20261102` refused its smoke on a missing adapter identifier and
+was not published. Repair is in progress. The allocator owns grants; no session-issued grant
+is implied.
 [no-belief: software controls]
-Rowflow `evl46-opencode-policy-20261102` is grantable after a fake-upstream smoke: explicit
+Rowflow `evl46-opencode-policy-20261102` passed a fake-upstream smoke: explicit
 OpenCode `permission` settings advertised only `read`; injected `bash` was unavailable, and
 the workspace read and session export succeeded. The grader-path refusal observed there was a
-permission-layer result, not an OS-denial proof. Pinning and validating the allowed schema and
-the actual scheduled result remain. [no-belief: synthetic control]
+permission-layer result, not an OS-denial proof. Its redundant repeat was withdrawn with the
+smoke retained. Successor `evl46-opencode-schema-20261102` passed its separate smoke with a
+pinned read-tool schema and broker refusal of injected `bash`; it is grantable for allocator
+execution. [no-belief: synthetic control]
 
 [TU-HR-1 source/runtime census](../../docs/reference/tu-hr1-tool-render-audit-20261102.md)
 records the configured model/template groups and source forwarding paths, and distinguishes
