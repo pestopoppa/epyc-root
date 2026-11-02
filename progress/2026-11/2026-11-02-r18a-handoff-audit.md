@@ -20,3 +20,7 @@ The r4 real-lane smoke passed at 13:04:39Z. The row is RUNNING under grant `regi
 ## R18-A r4 complete comparison
 
 The independent r4 full result completed rc 0, non-partial, and the unchanged three-surface comparator passed: CPU 590/590, HIP host 1,332/1,332, gfx90a 6,141/6,141 names, all with zero added or removed; 135/135 code objects were recorded. The native comparison, full result, replay witness, before/after input digests, source and build provenance are retained in [the custody packet](../../artifacts/compute/r18a-r4-20261102/README.md). Comparison and candidate/anchor hashes were checked, as were the 141 replay witnesses against the manifest. The code flip and its validation, and producer-side belief capture and canary, remain open. [no-belief: native finding retained pending producer-side capture]
+
+## R18-A completion
+
+The full r4 comparison passed with zero differences in CPU (590), HIP host (1,332) and gfx90a device (6,141) exported symbols; all 141 recipe-derived HIP CUID witnesses were retained. Independent review confirmed the limited symbol-set claim. Root evidence packet `artifacts/compute/r18a-r4-20261102/` is on origin/main. Research `99d68f3e25f7268859ad9f4da0c2161fe53c872d` (merge `f4e0b529d0da`) sets the v10 predicate true while preserving historical recipe values; 306 targeted tests passed. The separate producer-authored belief adapter/canary remains open; no historical tuple was invented. [belief: cc]

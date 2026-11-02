@@ -4,7 +4,7 @@
       "blocked": 59,
       "handoffs": 58,
       "oldest_advance": "2026-07-29",
-      "open": 1032
+      "open": 1029
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -265,10 +265,10 @@
     },
     "autokernel-rebuild-program.md": {
       "blocked": 1,
-      "closed": 165,
+      "closed": 168,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 43,
+      "open": 40,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -3652,7 +3652,7 @@
       "id": "INF-66",
       "index": "inference-research-index.md",
       "line": 22,
-      "next_action": "Repair and qualify the parked R18-A successor under the unchanged identity rule; continue R23-62",
+      "next_action": "Investigate R23-62 champion divergence under its recorded controls",
       "track": "autokernel teardown and rebuild"
     },
     "INF-67": {

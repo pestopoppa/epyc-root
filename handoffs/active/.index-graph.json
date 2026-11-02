@@ -3769,7 +3769,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T13:07:52Z",
+  "generated_at": "2026-11-02T13:18:41Z",
   "nodes": [
     {
       "age_days": 95,
@@ -6481,15 +6481,15 @@
         "INF-64",
         "INF-65"
       ],
-      "closed": 165,
-      "dispatchable": 43,
+      "closed": 168,
+      "dispatchable": 40,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-rebuild-program.md",
       "id": "INF-66",
       "last_advanced": "2026-11-02",
-      "next_action": "Repair and qualify the parked R18-A successor under the unchanged identity rule; continue R23-62",
-      "open": 44,
+      "next_action": "Investigate R23-62 champion divergence under its recorded controls",
+      "open": 41,
       "priority": 0.9017,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LBH-2.1 \u2014 re-run the INF-70 llama-bench units whose protocol could not be resolved or was ",
