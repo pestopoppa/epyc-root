@@ -4,3 +4,7 @@ da9f6413a094308b798f2ba3bba32826eabba71c02f576763a4d9c859f6791c4  x0_shape_b_v2.
 f98abca573502a6ebb55a9013cc5aaa1509849d615578e4bc20831003502bb55  /mnt/raid0/llm/tmp/x0-27b-quants/p3_kvu_probe_v2.py
 7499276ae80be657a4f893d6c0bea7ed5dc81880ceb96354ef3e87b86d86b5f5  /mnt/raid0/llm/tmp/x0-27b-quants/probe_decode_x0.py
 fd12bbf61cf07c64e08df3a965e8de2827934246570b7fa12ff047bb7baf051d  /mnt/raid0/llm/tmp/x0-27b-quants/x0_shape_b_v2.py
+f49cd7f779c9bb509827b791c906621f5caef9ccc802ed851623532818fb2f37  p3_kvu_probe.py (before direct-call guard)
+b1d7bd064f4f1e6e558d3908312ef28ac1088a493e521668180e24d2f668f86d  p3_kvu_probe_slot.py (before direct-call guard)
+a9b0691e80dee3ed227ea58a557791187b7f9e51ae33bcc0dd4ee2f72fba2302  /mnt/raid0/llm/tmp/x0-27b-quants/p3_kvu_probe.py
+164a0aebfa29bf185329a28b3ed943243f3370a78402b7cd7eb89aec1c2c4b33  /mnt/raid0/llm/tmp/gpu-slot-ak-20261004/p3_kvu_probe_slot.py
