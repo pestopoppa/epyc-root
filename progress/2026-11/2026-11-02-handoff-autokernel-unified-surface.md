@@ -219,3 +219,11 @@ Consumed all three readiness reviews: the candidate lacks a verified build launc
 ## 01:05Z — Advance candidate build prerequisites
 
 The registered implementation results have not appeared. Dispatched narrow candidate source preflight and capture receipt implementations plus v10 HIP build evidence, with result events registered. Previous wrapup committed 84645f577afe but its push failed; this boundary retries publication. No row published, inference or build run.
+
+## 03:33Z — Record v10 GPU build configuration evidence
+
+Inspected the production GPU store symlink, its provenance and adjacent CMake cache; recorded the cache and provenance digests, relevant HIP and CPU settings, compiler paths and the known RUNPATH caveat in artifacts/engineering/autokernel-quantize-reciprocal-20261102/v10-hip-build-evidence.md. This narrows candidate build preparation but does not prove a new binary or reconstruct all original tool versions and arguments. Previous wrapup committed aba0656fee27 but failed serialized push; this boundary retries publication. No build, inference, or row publication.
+
+## 03:34Z — Record v10 GPU build configuration evidence
+
+Inspected the production GPU store symlink, its provenance and adjacent CMake cache; recorded the cache and provenance digests, relevant HIP and CPU settings, compiler paths and the known RUNPATH caveat in docs/design/autokernel-v10-hip-build-evidence-20261102.md. This narrows candidate build preparation but does not prove a new binary or reconstruct all original tool versions and arguments. Previous wrapup committed aba0656fee27 but failed serialized push; this boundary retries publication. No build, inference, or row publication.
