@@ -131,3 +131,7 @@ GPQA coordinator prototype and tests remain in /mnt/raid0/llm/tmp/architect-gpqa
 ## 03:33Z — Repair sparse checkout observer census and advance GPQA
 
 The previous commit hook failure was a sparse-checkout omission, not a stale registry: the referenced operator ratifier exists unchanged in HEAD with the skip-worktree bit set. Restored that tracked file locally with git restore --ignore-skip-worktree-bits; observer census now passes with 26 registered observers. No ratifier was executed or amended. Delegated separate scratch-only GPQA process cleanup and manifest/scorer binding fixes with completion events registered. No inference or row published.
+
+## 09:19Z — Advance GPQA cancellation and manifest validation
+
+Previous wrap-up published e91536b74cc481b2f7e5b0c690881c78231d6665. The CPU Phase 1 aggregate is historical/completed, Phase 2 requires OD-1/OD-2, and the current GPU cohort still needs a valid launcher. Delegated narrowly scoped scratch-only fixes for GPQA cancellation and independently pinned manifest binding; completion events registered. No inference or row published.
