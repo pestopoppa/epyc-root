@@ -61,7 +61,6 @@
   "REV-07": 0.25,
   "RTG-14": 0.25,
   "RTG-42": 0.25,
-  "INF-09": 0.2,
   "EVL-04": 0.2,
   "EVL-14": 0.2,
   "RTG-03": 0.2,
@@ -78,7 +77,6 @@
   "RTG-13": 0.15,
   "RTG-16": 0.15,
   "RTG-49": 0.15,
-  "INF-29": 0.1,
   "INF-44": 0.1,
   "INF-49": 0.1,
   "RTG-50": 0.1,
@@ -145,7 +143,9 @@
   "EVL-37#qwen-chat-template-evaluation": 0.65,
   "INF-05#multiscreen-attention-evaluation": 0.15,
   "INF-05#streaming-llm-baseline": 0.1,
-  "INF-05#triattention-kv-selection": 0.25
+  "INF-05#triattention-kv-selection": 0.25,
+  "INF-49#cpu-prefill-compute-large-models": 0.2,
+  "INF-49#large-moe-expert-parallelism": 0.1
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",

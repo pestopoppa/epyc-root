@@ -52,6 +52,10 @@
    "target": "fable5-window2-findings-03-portfolio-and-master-queue.md",
    "track": "cpu-fused-decoder-blocks"
   },
+  "cpu-prefill-compute-large-models.md": {
+   "target": "sarathi-serve-cpu-evaluation.md",
+   "track": "cpu-prefill-compute-large-models"
+  },
   "delegation-context-preassembly.md": {
    "target": "context-and-token-economy.md",
    "track": "delegation-context-preassembly"
@@ -147,6 +151,10 @@
   "laguna-s21-cpu-port.md": {
    "target": "fable5-window2-findings-03-portfolio-and-master-queue.md",
    "track": "laguna-s21-cpu-port"
+  },
+  "large-moe-expert-parallelism.md": {
+   "target": "sarathi-serve-cpu-evaluation.md",
+   "track": "large-moe-expert-parallelism"
   },
   "lightning-attention-port.md": {
    "target": "model-evaluation-queue.md",
@@ -444,6 +452,10 @@
    "target": "EVL-02",
    "track": "angelslim-techniques-evaluation"
   },
+  "INF-09": {
+   "target": "INF-49",
+   "track": "cpu-prefill-compute-large-models"
+  },
   "INF-12": {
    "target": "EVL-02",
    "track": "delta-mem-reproduction"
@@ -467,6 +479,10 @@
   "INF-28": {
    "target": "EVL-21",
    "track": "laguna-s21-cpu-port"
+  },
+  "INF-29": {
+   "target": "INF-49",
+   "track": "large-moe-expert-parallelism"
   },
   "INF-30": {
    "target": "EVL-02",

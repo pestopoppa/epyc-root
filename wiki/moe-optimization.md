@@ -398,7 +398,7 @@ A roadmap line describing the 122B UD-IQ2_M as "measured viable, fully GPU-resid
 ### Source References (2026-08-12)
 
 - [`llamacpp-v6-consolidation.md`](../handoffs/archived/llamacpp-v6-consolidation.md) — the `--moe-n-expert` DROP verdict, the `--override-kv` equivalence, and the retained era-stamped throughput table.
-- [`large-moe-expert-parallelism.md`](../handoffs/active/large-moe-expert-parallelism.md) — the CPU15 expert-parallelism disposition this sits inside.
+- [`large-moe-expert-parallelism.md`](../handoffs/active/sarathi-serve-cpu-evaluation.md#track-large-moe-expert-parallelism) — the CPU15 expert-parallelism disposition this sits inside.
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the argsort equivalence derivation and the AXA-1 roadmap-drift correction.
 
 ## Compiled Update — 2026-07-20
@@ -478,7 +478,7 @@ The 2026-07-02 refresh surfaces five threads that sharpen the MoE picture. (1) A
 
 ### DeepSeek-V4-Flash GGUF Heterogeneous MoE Quant Reference (2026-05-28)
 
-- **DeepSeek-V4-Flash GGUF is a concrete asymmetric MoE quantization reference, now with a first (provisionally-failing) CPU throughput datapoint.** The antirez GGUF card packages a 284B-parameter `deepseek4` MoE with per-tensor-role precision: routed experts at very low precision, shared/attention/output tensors at higher precision, and router tensors preserved in F16. The Q2 and Q4 variants are reported at 80.8 GiB and 153.3 GiB on disk, respectively, which fit the EPYC host. As of the 2026-05-30 Strategy-B port attempt, the Q4 variant measured 8-11 t/s canonical CPU decode (provisional FAIL vs an 18 t/s floor that needs V4-arch-aware recalibration — see the 2026-07-02 refinding above). Still a transferable heterogeneous-MoE quant recipe; the `deepseek4` arch is a structural rewrite into ik_llama's older API, not a hand-merge. Sources: [large-moe-expert-parallelism.md](../handoffs/active/large-moe-expert-parallelism.md), [deepseek-v4-flash-cpu-port.md](../handoffs/completed/deepseek-v4-flash-cpu-port.md).
+- **DeepSeek-V4-Flash GGUF is a concrete asymmetric MoE quantization reference, now with a first (provisionally-failing) CPU throughput datapoint.** The antirez GGUF card packages a 284B-parameter `deepseek4` MoE with per-tensor-role precision: routed experts at very low precision, shared/attention/output tensors at higher precision, and router tensors preserved in F16. The Q2 and Q4 variants are reported at 80.8 GiB and 153.3 GiB on disk, respectively, which fit the EPYC host. As of the 2026-05-30 Strategy-B port attempt, the Q4 variant measured 8-11 t/s canonical CPU decode (provisional FAIL vs an 18 t/s floor that needs V4-arch-aware recalibration — see the 2026-07-02 refinding above). Still a transferable heterogeneous-MoE quant recipe; the `deepseek4` arch is a structural rewrite into ik_llama's older API, not a hand-merge. Sources: [large-moe-expert-parallelism.md](../handoffs/active/sarathi-serve-cpu-evaluation.md#track-large-moe-expert-parallelism), [deepseek-v4-flash-cpu-port.md](../handoffs/completed/deepseek-v4-flash-cpu-port.md).
 
 ### REAP Core Technique
 
@@ -589,7 +589,7 @@ The fundamental issue: ggml's threadpool is fixed-size per process, so it can't 
 
 The IPC machinery (`ep_dispatcher` 0.73 μs RTT, env-var bootstrap, NUMA pinning, drone mode, lazy shard) is **complete and correct**. The 13 commits constituting Phase 3.2 deliver a deployable EP capability for medium-MoE. For REAP-246B-class, treat closure as provisional pending CPU24 attribution rather than "bandwidth-saturation-closed."
 
-[CPU15 handoff](../handoffs/active/large-moe-expert-parallelism.md), [progress 2026-04-25](../progress/2026-04/2026-04-25.md)
+[CPU15 handoff](../handoffs/active/sarathi-serve-cpu-evaluation.md#track-large-moe-expert-parallelism), [progress 2026-04-25](../progress/2026-04/2026-04-25.md)
 
 ### MoE Serving and Offloading Research
 
@@ -603,13 +603,13 @@ The IPC machinery (`ep_dispatcher` 0.73 μs RTT, env-var bootstrap, NUMA pinning
 
 ### Large-MoE as primary CPU target (2026-04-26 reframe)
 
-Per [`large-moe-expert-parallelism.md`](../handoffs/active/large-moe-expert-parallelism.md). The single-instance vs concurrent gap on Coder-30B-A3B Q4_K_M is 2.13×: single-instance NPS4 best is 48.81 t/s vs concurrent 48×4t aggregate ~104 t/s. REAP-246B single-instance is 5.94 t/s and has no viable concurrent serving path due to NUMA memory contention.
+Per [`large-moe-expert-parallelism.md`](../handoffs/active/sarathi-serve-cpu-evaluation.md#track-large-moe-expert-parallelism). The single-instance vs concurrent gap on Coder-30B-A3B Q4_K_M is 2.13×: single-instance NPS4 best is 48.81 t/s vs concurrent 48×4t aggregate ~104 t/s. REAP-246B single-instance is 5.94 t/s and has no viable concurrent serving path due to NUMA memory contention.
 
 Strategic reframe: shift the CPU-optimization target from 30B-class models (where concurrent NUMA-4-way already wins) to ≥100B sparse MoE where total params fit RAM but only a fraction are activated per token. Expert parallelism (EP) exploits the 4-way NUMA + 12-CCD topology to convert aggregate bandwidth to single-stream throughput — turning an aggregate-only win into a per-stream win.
 
 ### Inter-process EP Phase 3 results — honest baselines (2026-04-26)
 
-Per [`large-moe-expert-parallelism.md`](../handoffs/active/large-moe-expert-parallelism.md). 13 commits on `feature/cpu-ep-inter-process` during the 2026-04-26 session, with honest `--mmap 0` canonical baselines that supersede the earlier warmed-baseline artifact (which had inflated Qwen3.6-35B-A3B to +100%):
+Per [`large-moe-expert-parallelism.md`](../handoffs/active/sarathi-serve-cpu-evaluation.md#track-large-moe-expert-parallelism). 13 commits on `feature/cpu-ep-inter-process` during the 2026-04-26 session, with honest `--mmap 0` canonical baselines that supersede the earlier warmed-baseline artifact (which had inflated Qwen3.6-35B-A3B to +100%):
 
 | Model | Class | Honest baseline | EP best | Δ |
 |-------|-------|-----------------|---------|---|
@@ -654,7 +654,7 @@ Both Phase 0 are diagnostic — measure prediction accuracy / threshold curves, 
 
 ### Per-CCD / per-process expert sharding variants (Phase 1+)
 
-Per [`large-moe-expert-parallelism.md`](../handoffs/active/large-moe-expert-parallelism.md). Two variants tracked under the EP umbrella:
+Per [`large-moe-expert-parallelism.md`](../handoffs/active/sarathi-serve-cpu-evaluation.md#track-large-moe-expert-parallelism). Two variants tracked under the EP umbrella:
 
 - **Variant 1 — intra-process per-CCD**: reuses the CPU1 substrate (NPS4 + GGML_NUMA_WEIGHTS=1). Expert weights reorganized per-CCD so each CCD's threads pull from L3-local expert ranges. Composes with existing single-instance bandwidth wins.
 
@@ -745,7 +745,7 @@ Per [`large-moe-expert-parallelism.md`](../handoffs/active/large-moe-expert-para
 - [Large-MoE EP Handoff (completed, Kimi addendum)](../handoffs/completed/large-moe-expert-parallelism-completed-through-2026-05-28.md) -- Kimi-K2 deferral row + 2026-06-20 K2.7-Code specifics (footprints, MoonViT unsupported, storage pre-gate)
 - [intake-449] OpenAI Privacy Filter (huggingface.co/openai/privacy-filter) -- 2026-04-23: **aggressive small-MoE sparsity reference**. 128 experts with top-4 routing in a 1.5B-total / **50M-active (3.3%)** bidirectional encoder — ~2.6× sparser than our Qwen3.5/3.6-35B-A3B (8.6% active). 96% F1 on PII-Masking-300k. Not for deployment (PII task is off-roadmap), but design reference if `project_learned_routing_controller` upgrades from dense MLP to MoE router. [Deep-dive](../research/deep-dives/openai-privacy-filter-pii-preprocessor.md)
 - [intake-467] MegaBlocks (arXiv:2211.15841, Stanford/MosaicML, MLSys 2023) -- 2026-04-26: foundational dropless-MoE via block-sparse grouped GEMM with **blocked-CSR-COO + transpose-indices** encoding. Eliminates capacity-factor padding/dropping. Anchors CPU18 backlog item: port the **indexing scheme** (not the GPU kernel) into CPU2's AVX-512BW Q8_0 expert-GEMM path for padding-free CPU MoE expert dispatch. Compounds with already-shipped CPU2 +31.8% (1t) / +1-3% (12-96t) wins.
-- [intake-470] Tutel (arXiv:2206.03382, Microsoft Research, MLSys 2023) -- 2026-04-26: **2DH (two-dimensional hierarchical) all-to-all** aggregates intra-node small-message expert dispatches first, then inter-node exchange. Adaptive parallelism on a unified parameter layout. Anchors CPU19 backlog item: port 2DH to CPU15 inter-process EP shared-memory ring for the 4-NUMA-node × 12-CCD topology. Target: reduce ~96 sync points/token to ~24, addressing measured REAP-246B (-53%) and MiniMax-M2.7 (-23%) regressions on >150B MoE while attribution remains open. Phase 3.4 candidate in [`large-moe-expert-parallelism.md`](../handoffs/active/large-moe-expert-parallelism.md).
+- [intake-470] Tutel (arXiv:2206.03382, Microsoft Research, MLSys 2023) -- 2026-04-26: **2DH (two-dimensional hierarchical) all-to-all** aggregates intra-node small-message expert dispatches first, then inter-node exchange. Adaptive parallelism on a unified parameter layout. Anchors CPU19 backlog item: port 2DH to CPU15 inter-process EP shared-memory ring for the 4-NUMA-node × 12-CCD topology. Target: reduce ~96 sync points/token to ~24, addressing measured REAP-246B (-53%) and MiniMax-M2.7 (-23%) regressions on >150B MoE while attribution remains open. Phase 3.4 candidate in [`large-moe-expert-parallelism.md`](../handoffs/active/sarathi-serve-cpu-evaluation.md#track-large-moe-expert-parallelism).
 - [intake-471] Expert Choice Routing (arXiv:2202.09368, Google, NeurIPS 2022) -- 2026-04-26: **filed not_applicable**. Inverts dispatch (experts pick top-k tokens vs token picks top-k experts) for perfect load balance with no auxiliary loss. Three independent reasons: (1) training-time choice — our stack does no pre-training; (2) all production MoEs ship token-choice routers, cannot retrofit without retraining; (3) load-imbalance is largely absent on single-user CPU decode. Filed as literature reference only.
 
 ## 2026-05-04 Update — Probe B closes 122B-A10B + REAP-246B arch classes; opposite verdicts

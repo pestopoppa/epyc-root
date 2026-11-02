@@ -672,7 +672,7 @@ The quantization landscape in llama.cpp is evolving. The mainstream path is gger
 
 **Port path.** User authorized 2026-05-28: experimental branch `feature/deepseek4-port` off ik_llama production tree with explicit dual quality + throughput merge gates ([`deepseek-v4-flash-cpu-port.md`](../handoffs/completed/deepseek-v4-flash-cpu-port.md)) — 20-prompt × 5-category quality set with per-prompt MAD ≤ 0.05 nats + ≥ 15/20 token-1 exact-match; throughput floors Q4 ≥ 18 t/s solo, Q2 ≥ 35 t/s solo on canonical NPS4 stack.
 
-Sources: `research/intake_index.yaml` intake-637 + APEX/MxMoE cross-refs · [`handoffs/completed/deepseek-v4-flash-cpu-port.md`](../handoffs/completed/deepseek-v4-flash-cpu-port.md) · [`handoffs/active/large-moe-expert-parallelism.md` §2026-05-28](../handoffs/active/large-moe-expert-parallelism.md) · `progress/2026-05/2026-05-28.md` §research-intake-batch.
+Sources: `research/intake_index.yaml` intake-637 + APEX/MxMoE cross-refs · [`handoffs/completed/deepseek-v4-flash-cpu-port.md`](../handoffs/completed/deepseek-v4-flash-cpu-port.md) · [`handoffs/active/sarathi-serve-cpu-evaluation.md` §2026-05-28](../handoffs/active/sarathi-serve-cpu-evaluation.md#track-large-moe-expert-parallelism) · `progress/2026-05/2026-05-28.md` §research-intake-batch.
 
 ### New (2026-07-21, iqk acceleration silently skipped IQ-quant tensors)
 
