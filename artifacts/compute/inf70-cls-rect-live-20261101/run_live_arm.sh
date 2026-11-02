@@ -57,9 +57,9 @@ done
   for sidecar in "$MODEL_DIR"/*.sha256; do [[ -f "$sidecar" ]] && cat "$sidecar"; done
   echo "model_sha256_check=$(tr '\n' ';' < "$D/evidence/model-sha256.txt")"
   echo "port=$PORT"
-  echo "taskset=0-95"
+  echo "taskset=${FILLER_CPUS:?missing allocated CPUs}"
   echo "numa=interleave=all"
-  echo "threads=48"
+  echo "threads=${FILLER_THREADS:?missing allocated thread count}"
   echo "start_utc=$(date -u +%FT%TZ)"
   env | sort | rg '^(GGML_|OMP_|FILLER_)' || true
 } > "$D/evidence/launch.txt"
@@ -67,8 +67,8 @@ done
 env LD_LIBRARY_PATH="$BIN" \
   OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active OMP_DYNAMIC=false \
   GGML_IQK=1 GGML_FA_SPLIT_KV=0 \
-  taskset -c 0-95 numactl --interleave=all "$SERVER" \
-    --no-webui -np 1 -c 8192 -t 48 --no-mmap -lv 4 \
+  taskset -c "${FILLER_CPUS:?missing allocated CPUs}" numactl --interleave=all "$SERVER" \
+    --no-webui -np 1 -c 8192 -t "${FILLER_THREADS:?missing allocated thread count}" --no-mmap -lv 4 \
     --host 127.0.0.1 --port "$PORT" -m "$MODEL" \
     -fa on -ctk f16 -ctv f16 \
     > "$D/evidence/server.log" 2>&1 &
