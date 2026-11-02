@@ -24,6 +24,9 @@ import publish_row as pub
 def parent_claim():
     raw=Path(f'/proc/{os.getppid()}/cmdline').read_bytes().split(b'\0')
     args=[x.decode(errors='replace') for x in raw if x]
+    env=Path(f'/proc/{os.getppid()}/environ').read_bytes().split(b'\0')
+    if b'FILLER_DRYRUN=1' in env or b'FILLER_SMOKE=1' in env:
+        raise RuntimeError('outer region-lock cannot be in no-lock qualification mode')
     if ('src.runtime.region_lock_cli' not in ' '.join(args) or '--cpu-list' not in args
             or args[args.index('--cpu-list')+1] != '72-95' or '--gpu-quiet' not in args
             or args[args.index('--gpu-quiet')+1] != 'exclusive'):
