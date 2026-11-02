@@ -107,9 +107,11 @@ predeclared verdict is PARTIAL_REREAD and G3_STANDS; see [the arbiter verdict](.
   (`attn_one`/`attn_rows`: "the key head's query heads the lines of one m16 tile"; "the tile is read and widened once
   per round rather than once per row"). In llama.cpp the CUDA MMA kernel already packs GQA (`ncols2`, `fattn.cu:113-150`),
   so the port is "ncols2 GQA packing on the gfx90a MFMA path at D=256", not new design.
-- **Expected effect.** FA bytes fall to q8 once (2.85 GB, 1.7 ms floor at 80k). With G3, that is up to −20…−28% of the
-  80k step (+25…+39% tok/s at 80k), as a ceiling. TensorFold measured 101.9 → 180.4 tok/s decode after a 64k prompt on
-  an RTX 5090 (bf16 KV 96.9 → 221.1).
+- **Expected effect.** Potentially improve tile fill and compute efficiency and alter K/V traffic. The arbiter does not
+  establish a step-time saving for this change (the earlier −20…−28% / +25…+39% tok/s ceiling assumed the 6× re-read,
+  which the arbiter measured at R ≈ 1.73); measure it after G3 and G2. TensorFold's RTX 5090 result (101.9 → 180.4
+  tok/s decode after a 64k prompt; bf16 KV 96.9 → 221.1) is a separate hardware and workload observation, not a
+  prediction for this champion.
 - **Falsifier.** After G2 and G3 have landed, FA at 1×80k is within 1.5× of its q8 single-read floor: nothing is left.
   Or the packed tile needs more than 64 KiB of LDS at D=256 and occupancy collapses.
 - **Correctness.** It changes the reduction order, so it is not bit-exact against the incumbent. It must be
