@@ -271,3 +271,7 @@ CH31 opt-in C5 dispatch instrumentation patch, comparator and controls are retai
 ## 11:51Z — Filed C6 full architecture candidate gate rc0 and closed its explicit dependent META tasks.
 
 META C6 built image 729599d69 completed full test-llama-archs seed 1234 rc0: 432 rows, 535 OK/329 SKIP cells, 118 MI210 NMSE OK, zero failed/unexpected cells; all 144 Meta roundtrips remain SKIP. 82 same-owned-PID positive HIP/KFD VRAM samples during the job and normal-path successful cleanup meet the declared process-level gate; they do not demonstrate per-row sample overlap or an independent external drain audit. Current KFD topology maps ID 57300 to MI210 but was observed after the run. Retained exact source, logs, residency, image/manifest and independent review under /mnt/raid0/llm/tmp/akagg/meta-c6-r1-retained. Exceptional forced-cleanup defect remains on failure path; no promotion claim. Row filed pass.
+
+## 11:54Z — Implemented and validated the pinned group C converter registry prerequisite check.
+
+CH32 group C: replayable pinned-source check establishes C1 and C2 use hparams guessing and loader registration absent from C5 and introduced upstream at 6e62ba538478202094edc6c100c782719e310aa3. Equivalent behavior is needed for unchanged converter source, but full-commit minimality, conversion success and runtime compatibility are unproved. CH31 short fixture publication was refused by the publisher because the honest estimate was under five minutes; no direct compute was run. A full patched C5 CPU build and runtime fixture are being prepared.
