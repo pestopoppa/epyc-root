@@ -1,6 +1,7 @@
 import json
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 from capture_once import capture_once
 
@@ -40,5 +41,9 @@ class CaptureOnceTest(unittest.TestCase):
         self.args['launch'] = lambda: self.fail('launched')
         with self.assertRaises(ValueError): capture_once(**self.args)
         self.assertEqual(list(self.root.iterdir()), [])
+    def test_directory_sync_failure_prevents_launch(self):
+        self.args['launch'] = lambda: self.fail('launched')
+        with patch('capture_once.os.fsync', side_effect=[None, OSError('directory sync failed')]):
+            with self.assertRaises(OSError): capture_once(**self.args)
 
 if __name__ == '__main__': unittest.main()

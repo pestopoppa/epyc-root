@@ -183,3 +183,7 @@ Investigated CH-26b: the reported initial dry-run failure was already fixed by t
 ## 10:27Z — Reviewed C3 successor custody blocker and CH-26b replacement evidence
 
 C3 inherited-lock successor remains unpublishable: its profiler and join hash model weights during grant. A model-free custody prototype avoids runtime weight reads but is not yet integrated or contract-validated. CH-26b successor evidence remains inconclusive pending placement and contention proof. Independent bounded fixes are being prepared.
+
+## 10:29Z — Review Nemo boundary capture feasibility and C3 successor custody
+
+The Nemo prospective marker capture cannot restore absent historical token boundaries; the historical resegmentation criterion remains open. C3 successor custody, CH-27 admission and CH-26b residency investigations are in progress.

@@ -45,6 +45,14 @@ class LifecycleTests(unittest.TestCase):
         def fail(_): raise ValueError('request failed')
         with self.assertRaises(ValueError): execute(p, run=fail)
         self.assertEqual(p.calls, ['terminate', 'wait'])
+    def test_supplied_drain_runs_after_callback_failure(self):
+        p = FakeProcess(); drained = []
+        def fail(_): raise ValueError('request failed')
+        with self.assertRaises(ValueError):
+            with_server(arm='mtp3', admission_check=lambda: True, spawn=lambda arm: p,
+                        verify_ready_and_identity=lambda *_: {'ready': True}, run=fail,
+                        drain=lambda child, grace: drained.append((child, grace)))
+        self.assertEqual(drained, [(p, 10)])
     def test_escalation_uses_captured_handle(self):
         p = FakeProcess(deadline=True); execute(p)
         self.assertEqual(p.calls, ['terminate', 'wait', 'kill', 'wait'])

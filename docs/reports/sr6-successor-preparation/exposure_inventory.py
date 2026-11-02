@@ -48,10 +48,12 @@ def inventory(root):
                 or not HEX.fullmatch(exposure['rendered_sha256'])
                 or not isinstance(exposure.get('server_record_sha256'), str)
                 or not HEX.fullmatch(exposure['server_record_sha256'])
-                or not isinstance(exposure.get('request'), dict)):
+                or not isinstance(exposure.get('request'), dict)
+                or not isinstance(exposure['request'].get('prompt'), str)
+                or digest(exposure['request']['prompt'].encode('utf-8')) != exposure['rendered_sha256']):
             raise ValueError('invalid exposure')
         attempt = {'window': window, 'block': block, 'prompt_id': prompt, 'arm': arm,
-                   'exposure': True, 'response': 'missing'}
+                   'rendered_sha256': exposure['rendered_sha256'], 'exposure': True, 'response': 'missing'}
         if 'response' in bucket:
             response, _ = bucket['response']
             if (response.get('schema') != 'sr6.response.v1'

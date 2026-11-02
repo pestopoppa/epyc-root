@@ -22,6 +22,11 @@ def _write_once(path, data):
         out.write(data)
         out.flush()
         os.fsync(out.fileno())
+    directory = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
+    try:
+        os.fsync(directory)
+    finally:
+        os.close(directory)
 
 
 def _json(value):

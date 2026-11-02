@@ -1,3 +1,4 @@
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -19,6 +20,7 @@ class TestExposureInventory(unittest.TestCase):
         self.assertEqual(inventory(self.root), [])
         self.capture(lambda _: (200, b'{"content":"x"}'))
         self.assertEqual(inventory(self.root)[0]['response'], 'complete')
+        self.assertEqual(inventory(self.root)[0]['rendered_sha256'], digest(b'hello'))
     def test_interrupted_and_http_failure(self):
         self.capture(lambda _: (503, b'busy'))
         response = next(self.root.glob('*.response.json'))
@@ -31,6 +33,14 @@ class TestExposureInventory(unittest.TestCase):
         exposure.write_bytes(exposure.read_bytes() + b' ')
         with self.assertRaises(ValueError): inventory(self.root)
         exposure.unlink()
+        with self.assertRaises(ValueError): inventory(self.root)
+    def test_exposure_hash_must_match_request_even_without_response(self):
+        self.capture(lambda _: (200, b'ok'))
+        next(self.root.glob('*.response.json')).unlink()
+        exposure = next(self.root.glob('*.exposure.json'))
+        record = json.loads(exposure.read_text())
+        record['request']['prompt'] = 'tampered'
+        exposure.write_text(json.dumps(record))
         with self.assertRaises(ValueError): inventory(self.root)
     def test_link_refused(self):
         (self.root / 'x.exposure.json').symlink_to('/dev/null')

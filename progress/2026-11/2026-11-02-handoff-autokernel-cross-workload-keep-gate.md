@@ -39,3 +39,9 @@ Added a fail-closed zero-context changed-line extractor, with review fixes for h
 ## AKX-P1c source coordinates
 
 Hardened the partial changed-line extractor against unsafe paths, malformed or repeated Git index records, and orphan or repeated no-newline markers. Five model-free tests pass. Coordinates remain unverified preparation, not a footprint or workload witness.
+
+## 10:29Z — Prepare a complete cache comparison for P1c build recipe review
+
+## AKX-P1c build recipe preparation
+
+Added a model-free typed CMake cache comparison that reports all additions, removals, type and value differences, including internal entries; malformed and duplicate entries refuse. Three focused tests pass. This is an unverified comparison only, not proof of build provenance or recipe parity; the coverage build remains disabled pending review and admitted workload capture.
