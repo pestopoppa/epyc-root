@@ -25,14 +25,25 @@ file-task families. A nearby APP scorer at orchestrator `868275acb64ef3d490ecac6
 `269a8669d5f261b7355e8bb11774a1410d0efbca`) has an `exact_match` mode, but
 extracts tagged/boxed answers or the last line, normalizes case and punctuation,
 accepts numeric tolerance/word forms, and has quote/colon fallbacks. It is not
-yet demonstrated to implement the intended whole-answer semantics for file
-lookup, inventory aggregation and reconciliation; no scorer is selected here.
+an appropriate whole-answer scorer for file lookup, inventory aggregation and
+reconciliation without an additional format gate.
 On 2026-11-02, a direct no-inference invocation of that exact Git blob returned
 `True` for both `alpha.csv` and `other.csv\nalpha.csv` against `alpha.csv`, and
 for `other: 2` against `2`. Thus its normal extraction does not enforce an exact
 whole-answer contract; using it without a separately declared answer format
 would accept additional wrong lines. A `2, 3` self-match passed, but does not
 establish order, completeness or independent correctness of structured results.
+
+`hs4_file_scoring.py` supplies a narrow precondition: require one compact,
+canonical JSON object in the declared lookup, inventory or reconciliation schema,
+then call the unchanged native scorer with `exact_match` and `normalize=False`.
+An actual invocation of APP blob `269a8669d5f261b7355e8bb11774a1410d0efbca`
+passed positive, wrong-answer and extra-line controls for each of the three
+families. This establishes those controls, not full evaluator validation.
+`hs4_file_suite.py` prepares six development and twelve acceptance synthetic
+inputs with separate host-only oracle files. The acceptance split is not sealed
+merely by creation: its owner must seal and protect it before tuning; separate
+directories are not isolation. No model or live trial was run.
 
 The APP request schema at that source uses `/chat` with `prompt`, `force_mode`,
 `force_role`, `allow_delegation`, `session_id` and `task_root`; `task_root` is
@@ -43,8 +54,8 @@ cross-request REPL-global restoration but does not itself prove memory or
 escalation are disabled: those conditions still need deployment-bound proof.
 
 Before real execution, integrate the existing P0.4 OpenCode config/version and
-SC86 capture, implement a `/chat` transport and complete session evidence,
-predeclare and validate the task-specific unchanged scorer, and prove a real
+SC86 capture, qualify the `/chat` transport and complete session evidence,
+predeclare and validate the task-specific scorer controls, and prove a real
 OS-level agent/grader boundary with the owner of scoring 2a-iv. Mock transports,
 separate directories and task_root alone are not that proof. Coordinate the
 inference window and resource claim with its owner before any live run.
