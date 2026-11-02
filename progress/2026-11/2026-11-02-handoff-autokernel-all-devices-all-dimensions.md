@@ -59,3 +59,7 @@ Ran scratch-only model-free integration of the CPU device-flock prototype with o
 ## 10:33Z — Harden floor device-lock prototype
 
 Implemented scratch-only lock_exec.py using no-follow open, regular-file and inode checks before/after nonblocking exclusive flock, and an inheritable FD9 without truncating the lock file. Model-free controls passed descriptor inheritance, payload preservation, refusal of symlink/missing/directory/contended paths, propagation of child failure and release. Prototype and tests: /mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/cpu-device-prototype/. This accepts a caller path and is not a production launcher: bind the exact canonical lock, authenticate the parent and continuously witness lock and grant before use. No floor or qualification claimed.
+
+## 10:34Z — Verify floor lock through native process chain
+
+Model-free scratch test demonstrated original device_held detects a live locked grandparent across two child processes that close inherited descriptors and refuses the unlocked intermediate; test /mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/cpu-device-prototype/test_nested_ancestor.py. Inspection also found R4 full_job.py edge() hashes model-weight edges in the granted job; successor must prepare and bind input verification before publication. Process identity, canonical lock, region/quiet claim and STOP integration remain unqualified.
