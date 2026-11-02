@@ -79,3 +79,11 @@ Ran synthetic tamper controls against the scratch prepared-model identity valida
 ## 10:41Z — Prototype floor lock owner discovery
 
 Implemented scratch-only bounded ancestor locator and model-free process-chain control. It locates a live owner using expected script path/digest and interpreter inode, checks original device_held FD9, and refuses incorrect source digest. Paths /mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/cpu-device-prototype/{find_owner.py,test_find_owner.py}. Current source bytes and argv do not attest script bytes already loaded; TOCTOU, production path binding, scheduler, quiet/region witness and STOP integration remain unresolved. No floor, row or production witness claimed.
+
+## 10:43Z — Prepare production-shaped floor successor and inspect GPU candidate gate prerequisites
+
+Delegated bounded preparation of the AKX-ALL-8 floor successor and AKX-ALL-29.5a guard-band gate; scratch reports are registered for resumption. AKX-ALL-29.2a implementation is already recorded, but its parent remains open pending scheduler-owned candidate timing evidence. No measurement, floor, or gate verdict claimed.
+
+## 10:45Z — Prepare CPU floor and GPU claim measurement rows
+
+Delegated independent row preparation for AKX-ALL-8, AK-Q38FN-64K-FLOOR and AKX-ALL-3. The scheduler derives quiet-host for CPU class with exclusive GPU quiet and all four quarters; the separate device-flock witness and full native reader remain required for the AKX-ALL-8 successor. Awaiting scratch reports; no row published or measurement claimed.

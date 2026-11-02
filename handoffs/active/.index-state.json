@@ -28,7 +28,7 @@
       "blocked": 17,
       "handoffs": 54,
       "oldest_advance": "2026-07-29",
-      "open": 657
+      "open": 660
     },
     "user-facing-harness-index.md": {
       "blocked": 17,
@@ -489,10 +489,10 @@
     },
     "churn-pipeline.md": {
       "blocked": 0,
-      "closed": 17,
+      "closed": 23,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 8,
+      "open": 11,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -501,7 +501,7 @@
       },
       "row_id": "RTG-62",
       "state": "active",
-      "total": 25
+      "total": 34
     },
     "colbert-reranker-web-research.md": {
       "blocked": 1,

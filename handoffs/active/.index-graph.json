@@ -1534,7 +1534,7 @@
       "from": "INF-22",
       "kind": "ref",
       "to": "RTG-02",
-      "weight": 3
+      "weight": 4
     },
     {
       "from": "INF-23",
@@ -3757,7 +3757,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T10:44:03Z",
+  "generated_at": "2026-11-02T10:46:26Z",
   "nodes": [
     {
       "age_days": 95,
@@ -8618,13 +8618,13 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 17,
+      "closed": 23,
       "domain": "routing-and-optimization",
       "handoff": "churn-pipeline.md",
       "id": "RTG-62",
       "last_advanced": "2026-11-02",
       "next_action": "SA-1 (merge into sticky-slot change: ready-row admission, start cooldown) then SA-2/SA-3/JEV-3",
-      "open": 8,
+      "open": 11,
       "priority": 0.0,
       "priority_basis": {
         "campaign": 0,
