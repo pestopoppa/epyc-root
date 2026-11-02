@@ -27,3 +27,7 @@ Consumed commit-guard-findings.txt: the observer census rejected a valid registr
 ## 09:22Z — Prepare replay and staged acceptance implementation
 
 Consumed the five-task replay fixture manifest and BEP-5 scope audit. The current edit transaction mutates the live tree with rollback and optional verification; the general staged review, scope/base preconditions and whole-repo acceptance gate remain open. Dispatched a scratch-only typed PatchSet replay implementation plus BEP-5 and metrics designs in separate lane files, with completion events registered. No inference row is decision-ready or was published. The preceding wrapup failed its observer hook after sparse-checkout exclusion recurred; re-included its tracked ratifier and reran the observer census successfully (26 registered).
+
+## 09:23Z — Integrate BEP-2 metrics design
+
+Reviewed and integrated docs/design/bep2-metrics-proposal.md, preserving missing-data unevaluability and the handoff’s distinct harden and retire outcomes. Linked the proposal from the handoff; boundary overlaps and latency aggregation need resolution before the experiment. Published the prior two lane commits through serialized_push.py after its previous wrapup reported failure; push verification reported origin/main carries HEAD. Observer census passed after restoring the sparse-checkout ratifier. No inference row or result was created.
