@@ -19,3 +19,7 @@ P3-4 design preparation commissioned against the serving handoff and measurement
 ## 09:55Z — Review and land P4-1 typed-knob implementation contract
 
 Prepared the P4-1 implementation contract against orchestrator 9e138e3a, including feature gating, tenant-specific measured ceilings, typed seed and 5xx tests. Independent review added the solo-resident restriction and an independently verified artifact-attestation requirement; current target source must be re-reviewed and deleted stock/FF tenants cannot be seeded as live. The implementation remains open pending work in the orchestrator lane and replacement measured tenant policies.
+
+## 09:58Z — Prepare P3-4 serving comparison measurement design
+
+Delegated a native-MTP versus DFlash2 serving A/B design with measurement-constitution review, pinned candidate identities, duty-mix and launch-bound mode-switch costs. Registered its completion event for owner review. This is preparation only; no compute or promotion is authorized by it.
