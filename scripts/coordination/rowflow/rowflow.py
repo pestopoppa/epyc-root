@@ -25,18 +25,10 @@ KEEPER SIDE (deterministic, no LLM): the keeper is the qualifier.
                               snapshot per tick (region-lock, open grants' holds=, live dry runs); dry runs and grants are
                               assigned together from it (starved lane first, then priority_rank, a grantable row before a
                               dry run; a region is never handed twice; any-cpu-quarter is resolved only here); it arms the
-                              poller, admits through grant_ok_launcher (the one parser), WRITES the grant, spawns the dry
-                              runs. Self-healing every tick: HEAL stale-grant / HEAL conflict (re-assigned) / CONFLICT,
+                              poller, admits through grant_ok_launcher (the one parser), WRITES the grant. Self-healing every tick: HEAL stale-grant / HEAL conflict (re-assigned) / CONFLICT,
                               IDLE-WHY <region>: <reason>, UNDERUSED (<5 % of a held quarter for 10 min -> owner fix task,
-                              never killed), ALERT on the 3rd repeat (ws58-keeper-alerts.jsonl). A multi-quarter row is
-                              dry-run on ONE quarter (FILLER_DRYRUN_ONE_QUARTER) unless the spec says dryrun_whole_host.
-    dryrun-run <id> --regions THE dry run: the exact launcher, through its engine, under the real region-lock on the real
-                              lane, with a real short grants/<id>.grant. PASS only when the first unit of measured output
-                              lands in result_path in the filer's format AND the job then exits or stops cleanly on the
-                              stop file (rc 0/75). GPU rows must also show VRAM in use. Records
-                              compute-flags/dryrun/<id>/PASS.json {launcher_sha256, result_path, units, vram...} or
-                              FAIL-<n>.json {reason, launcher.out tail}. A FAIL is the owner's one fix task; it is not
-                              retried until the launcher changes (sha). 3 FAILs in a lineage -> parked + escalation note.
+                              never killed), ALERT on the 3rd repeat (ws58-keeper-alerts.jsonl).
+    (the dry run is publish_row.py's smoke: rowflow.dryrun_run in the owner's turn; no CLI, no grant)
     status <id>               needs-dryrun | dryrun-running | failed | parked | stale | grantable | armed | running | done
 
 Nothing here writes FILLERS.md, nonces, receipts or breakers. Removed with this flow: epyc.ready.v2 manifests,
@@ -734,46 +726,12 @@ def row_shape(d):
     return opts, (gq == "exclusive" or o.get("role") == "bench")
 
 
-def dryrun_shape(d, opts, flags=None):
-    """A dry run never holds more than it needs: a row booking several quarters is dry-run on ONE quarter (the engine
-    claims the grant's cpus under FILLER_DRYRUN_ONE_QUARTER=1) unless the spec says dryrun_whole_host. Only the INSTALLED
-    engine honours that env (a private engine copy, or a wrapper that re-execs its own engine, cannot be constrained), so
-    any other engine keeps its whole shape and waits until all of it is free."""
-    eng = d.get("engine", {}).get("path") if isinstance(d.get("engine"), dict) else None
-    installed = os.path.join(flags or FLAGS, "bin", "rowflow", CANONICAL_ENGINE)
-    constrainable = not (eng and os.path.realpath(eng) != os.path.realpath(installed))
-    shape = shape_of(d)
-    fits_quarter = int(d.get("gib") or 0) <= QUARTER_RAM_GIB
-    # by shape: quarter -> one quarter; multi-quarter/host -> one quarter only when constrainable AND the model fits a
-    # quarter's RAM, else the real shape (the reservation is capped to first unit + dryrun_timeout_s by dryrun_run);
-    # quiet-host -> correctness-only on one quarter (the dry run proves plumbing, not timing; gpu-quiet is not needed)
-    # operator rule 2026-11-02: a dry run NEVER holds the whole host. A cpu option (no GPU) always narrows to ONE quarter,
-    # whatever the engine, RAM or dryrun_whole_host; a launcher that hard-codes its own cpu list is its own problem
-    # (noted in the FAIL memo). GPU-bearing options keep the previous rule (gpu-quiet only, as before).
-    gpu_legacy = shape != "quiet-host" and (d.get("dryrun_whole_host") or not constrainable or (shape != "quarter" and not fits_quarter))
-    out = []
-    for o in opts:
-        qs = sorted(q for q in o if q in QUARTERS)
-        if len(qs) <= 1 or (gpu_legacy and GPU in o):
-            if o not in out:
-                out.append(o)
-            continue
-        if shape == "quiet-host":
-            o = frozenset(q for q in o if q != GPU)
-        keep = {GPU} if GPU in o else set()
-        for q in (["q3"] if GPU in o else qs):
-            fs = frozenset(keep | {q})
-            if fs not in out:
-                out.append(fs)
-    return out, any(len([q for q in o if q in QUARTERS]) > 1 and not (gpu_legacy and GPU in o) for o in opts)
-
-
-def grant_regions(d, option, one_quarter):
+def grant_regions(d, option):
     """The regions= string of a grant for `option`: the row's own regions when concrete, else the chosen quarter."""
     regs = str(d.get("regions") or "")
     if "mi210" in regs:
         return regs
-    if regs == "any-cpu-quarter" or regs.startswith("any-of") or one_quarter:
+    if regs == "any-cpu-quarter" or regs.startswith("any-of"):
         qs = sorted(q for q in option if q in QUARTERS)
         return cpu_list(qs[0]) if qs else regs
     return regs
@@ -1099,8 +1057,11 @@ def new_dryrun_native_result_path(dd):
     return os.path.join(attempt, "native-result.json")
 
 
-def dryrun_run(flags, rid, regions, one_quarter=False):
-    """The dry run on the regions the allocator assigned. Returns (verdict, message). verdict in PASS | FAIL | WAIT."""
+def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
+    """The dry run on the regions the allocator assigned. Returns (verdict, message). verdict in PASS | FAIL | WAIT.
+    Operator 2026-11-02: this is publish_row's pre-publish smoke, run in the owner's turn on 4 cpus (timeout smoke_s,
+    FILLER_SMOKE=1 / FILLER_SMOKE_UNITS=1 for launchers that can shrink their unit count). Its admission token lives in
+    the row's private dryrun dir, never in grants/: nothing is scheduled around a dry run."""
     allrows = rows(flags)
     d = allrows.get(rid)
     need(d, "no v3 row")
@@ -1109,19 +1070,13 @@ def dryrun_run(flags, rid, regions, one_quarter=False):
         return "WAIT", f"state {st}; nothing to do"
     dd = dry_dir(flags, rid)
     os.makedirs(os.path.join(dd, "state"), exist_ok=True)
-    need(regions, "dryrun-run needs --regions (the allocator assigns them from its snapshot)")
-    G = os.path.join(flags, "grants")
+    G = os.path.join(dd, "grants")
+    os.makedirs(G, exist_ok=True)
     grant = os.path.join(G, rid + ".grant")
-    if os.path.exists(grant):
-        return "WAIT", "grant already open"
     holds = quarters_of(regions) | ({GPU} if "mi210" in regions else set())
-    rl = rl_status()
-    taken = [r for r in holds if rl.get(r, ("free",))[0] != "free"] + [g["id"] for g in open_grants(flags) if g["holds"] & holds]
-    if taken:
-        return "WAIT", f"regions {regions} taken since the snapshot: {taken}"
     lp = d["launcher"]["path"]
     lsha = sha256(lp)
-    timeout = int(d.get("dryrun_timeout_s") or 900)
+    timeout = int(smoke_s or d.get("dryrun_timeout_s") or 900)
     window = max(int(d["min_window_s"]) + 300, timeout + STOP_GRACE_S + 300)
     start = dt.datetime.now(dt.timezone.utc).replace(second=0, microsecond=0) - dt.timedelta(minutes=1)
     end = start + dt.timedelta(seconds=window)
@@ -1137,7 +1092,7 @@ def dryrun_run(flags, rid, regions, one_quarter=False):
                FILLER_FLAGS_DIR=flags, FILLER_GRANTS_DIR=G,
                FILLER_POLL="5", FILLER_OWNER=str(d["owner"]), FILLER_EST_WALL_S=str(d["estimate_s"]),
                FILLER_DRYRUN_ONE_QUARTER="1" if one_quarter else "0",
-               WS58_REGIONS=ws58_cpus(regions))  # ws58 2026-11-01: launchers written for the v8 keeper read it
+               WS58_REGIONS=ws58_cpus(regions), **({"FILLER_SMOKE": "1", "FILLER_SMOKE_UNITS": "1"} if smoke_s else {}))  # ws58 2026-11-01: launchers written for the v8 keeper read it
     if d.get("dryrun_native_result"):
         env["FILLER_DRYRUN_RESULT_PATH"] = result_path
     with open(grant, "w") as f:
@@ -1156,8 +1111,6 @@ def dryrun_run(flags, rid, regions, one_quarter=False):
     verdict, reason = None, None
     lout = os.path.join(dd, "launcher.out")
     out_lines0 = len(tail(lout, 10**6))
-    cpu0 = cpu_sample()
-    hold_cpus = [c for q in holds if q in QUARTERS for lo in [int(q[1]) * 24] for c in list(range(lo, lo + 24)) + list(range(lo + 96, lo + 120))]
     try:
         while True:
             time.sleep(5)
@@ -1173,12 +1126,6 @@ def dryrun_run(flags, rid, regions, one_quarter=False):
                                            f"{','.join(sorted(holds))}: whole-host claim; cannot dry-run on one quarter (constrain "
                                            "--claim-cpus / the job's own claim, or set dryrun_whole_host: true in the spec)")
                 break
-            if first_unit_at is None and hold_cpus and not gpu and time.time() - t0 > 300:
-                pct = busy_pct(cpu0, cpu_sample(), hold_cpus)
-                if pct < UNDERUSED_PCT:
-                    verdict, reason = "FAIL", (f"single-threaded preflight: job used {pct:.1f}% of its {len(hold_cpus)} claimed cpus for "
-                                               f"{int(time.time() - t0)}s with no unit (a quarter row must use the quarter: shrink its regions or fix the launcher)")
-                    break
             units = count_units(result_path, result_format, d.get("workdir"))
             new_units = units - units0
             if new_units > 0 and first_unit_at is None:
@@ -1358,16 +1305,6 @@ def write_grant(flags, rid, regions, holds, window_s):
     return line.strip()
 
 
-def spawn_dryrun(flags, rid, regions, one_quarter, keeper_log):
-    dd = dry_dir(flags, rid)
-    os.makedirs(dd, exist_ok=True)
-    q = shlex.quote
-    cmd = (f"r=$(python3 -I {q(os.path.abspath(__file__))} --flags {q(flags)} dryrun-run {q(rid)} --regions {q(regions)}"
-           f"{' --one-quarter' if one_quarter else ''} 2>>{q(os.path.join(dd, 'keeper.err'))}); "
-           f"echo \"$(date -u +%FT%TZ) DRYRUN-RESULT $r\" >> {q(keeper_log)}")
-    subprocess.Popen(["bash", "-c", cmd], cwd=flags, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
-
-
 # ---------------------------------------------------------------- invariants (self-healing, every tick)
 def state_dir(flags):
     p = os.path.join(flags, "ws58-keeper-state", "allocator")
@@ -1487,15 +1424,12 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     free = set(REGIONS) - busy
     gpu_open = any(GPU in g["holds"] for g in grants)
     counts = lane_counts(flags, allrows)
-    cands, shapes = [], {}
+    cands = []
     for rid, d in allrows.items():
         st = status(flags, rid, allrows)["state"]
-        if st in ("grantable", "armed"):
-            kind = "grant"
-        elif st in ("needs-dryrun", "stale"):
-            kind = "dryrun"
-        else:
-            continue
+        if st not in ("grantable", "armed"):
+            continue  # operator 2026-11-02: the dry run is publish_row's smoke; only PASSed rows are granted
+        kind = "grant"
         # ws58 2026-11-01: a row flagged UNDERUSED is never granted again until its owner republishes it (a single-core
         # prep step inside a quarter/host grant idles compute; kvu-vkq3 took the whole host to run llama-tokenize).
         uu = os.path.join(flags, "dryrun", rid, "UNDERUSED.json")
@@ -1503,12 +1437,8 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         if os.path.exists(uu) and os.path.exists(mf) and os.path.getmtime(uu) >= os.path.getmtime(mf):
             continue
         opts, bench = row_shape(d)
-        one_q = False
-        if kind == "dryrun":
-            opts, one_q = dryrun_shape(d, opts, flags)
-        shapes[rid] = (opts, one_q)
-        since = (load_json(pass_path(flags, rid)) or {}).get("passed_at") if kind == "grant" else d.get("published_at")
-        window = int(d["window_s"]) if kind == "grant" else max(int(d["min_window_s"]) + 300, int(d.get("dryrun_timeout_s") or 900) + STOP_GRACE_S + 300)
+        since = (load_json(pass_path(flags, rid)) or {}).get("passed_at")
+        window = int(d["window_s"])
         cands.append({"id": rid, "kind": kind, "lane": d["lane"], "rank": float(d.get("priority_rank") or 100), "lane_count": counts[d["lane"]],
                       "gib": int(d.get("gib") or 0), "bench": bench, "options": opts, "shape": shape_of(d), "window_s": window,
                       "since": iso_epoch(since)})
@@ -1522,13 +1452,9 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     out = []
     for c, opt in assigned:
         rid, d = c["id"], allrows[c["id"]]
-        regions = grant_regions(d, opt, shapes[rid][1])
+        regions = grant_regions(d, opt)
         if dry:
             log(f"PLAN {c['kind']} {rid} regions={regions} holds={','.join(sorted(opt))} lane={c['lane']} rank={c['rank']:g}"); continue
-        if c["kind"] == "dryrun":
-            spawn_dryrun(flags, rid, regions, shapes[rid][1], keeper_log)
-            log(f"DRYRUN-START {rid} regions={regions} holds={','.join(sorted(opt))}{' one-quarter' if shapes[rid][1] else ''}")
-            out.append(("dryrun", rid, regions)); continue
         try:  # one row's failure never aborts the tick (22:33Z: an import error after ROW-ARM left q0 ungranted for 3 ticks)
             a = load_json(armed_path(flags, rid))
             if not (a and alive(a.get("pid"))):
@@ -1567,7 +1493,6 @@ def main(argv=None):
     s = sub.add_parser("publish"); s.add_argument("spec"); s.add_argument("--migrate", action="store_true", help="spec is a legacy ready/<id>.json manifest")
     s = sub.add_parser("status"); s.add_argument("id"); s.add_argument("--json", action="store_true")
     sub.add_parser("list")
-    s = sub.add_parser("dryrun-run"); s.add_argument("id"); s.add_argument("--regions", required=True); s.add_argument("--one-quarter", action="store_true")
     s = sub.add_parser("allocate", help="ONE snapshot per tick: heal, assign dry runs + grants together, write grants, log IDLE-WHY/UNDERUSED")
     s.add_argument("--log", help="keeper log the detached dry runs append DRYRUN-RESULT to (default <flags>/ws58-calendar-keeper.log)")
     s.add_argument("--plan", action="store_true", help="snapshot + plan only; change nothing")
@@ -1590,10 +1515,6 @@ def main(argv=None):
                 st = status(a.flags, rid, allrows)
                 print(f"{st['state']:15} {allrows[rid]['lane']:3} rank={allrows[rid].get('priority_rank')} {rid}  {st.get('reason', '')[:100]}")
             return 0
-        if a.cmd == "dryrun-run":
-            v, msg = dryrun_run(a.flags, a.id, a.regions, a.one_quarter)
-            print(f"{v}\t{a.id}\t{msg}")
-            return {"PASS": 0, "WAIT": 1}.get(v, 2)
         if a.cmd == "allocate":
             allocate(a.flags, a.log, dry=a.plan)
             return 0

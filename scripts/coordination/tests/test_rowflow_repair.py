@@ -27,6 +27,9 @@ class RepairTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.fx = Fixture()
+        os.makedirs(os.path.join(cls.fx.root, "repo", "handoffs", "active"), exist_ok=True)
+        open(os.path.join(cls.fx.root, "repo", "handoffs", "active", "test.md"), "w").close()
+        pr.REPO = os.path.join(cls.fx.root, "repo")
 
     @classmethod
     def tearDownClass(cls):
@@ -52,10 +55,34 @@ class RepairTests(unittest.TestCase):
         sp = os.path.join(d, "spec.json")
         rf.atomic_json(sp, fx.spec(rid, d, result_path=os.path.join(d, "out", "COMPLETE.json"), result_format="json"))
         rc, out = run([sp, "--flags", fx.flags])
-        self.assertEqual(rc, 0, out)
+        self.assertEqual(rc, 2, out)  # the job writes results.jsonl, not RESULT.json: the smoke FAILs in the owner's turn
         self.assertIn("LINT result_path=", out)
-        self.assertIn("PUBLISHED " + rid, out)
+        self.assertIn("smoke FAIL for " + rid, out)
         self.assertEqual(rf.rows(fx.flags)[rid]["result_path"], os.path.join(d, "out", "RESULT.json"))
+
+    def test_01b_handoff_task_must_name_an_active_handoff_and_smoke_is_the_dry_run(self):
+        fx = self.fx
+        rid = "t-owner-20261102"
+        d = fx.job(rid)
+        sp = os.path.join(d, "spec.json")
+        rf.atomic_json(sp, fx.spec(rid, d, handoff_task="FILLERS"))
+        rc, out = run([sp, "--flags", fx.flags])
+        self.assertEqual(rc, 2, out)
+        self.assertIn("<file>.md:<ROW-ID>", out)
+        self.assertNotIn(rid, rf.rows(fx.flags))
+        rf.atomic_json(sp, fx.spec(rid, d))
+        rc, out = run([sp, "--flags", fx.flags])
+        self.assertEqual(rc, 0, out)
+        self.assertIn("SMOKE PASS", out)
+        self.assertEqual(rf.status(fx.flags, rid)["state"], "grantable", "a smoke PASS readies the row at once")
+        self.assertEqual([g for g in os.listdir(os.path.join(fx.flags, "grants")) if rid in g], [], "no dry-run grant")
+        bad = "t-crash-20261102"
+        d2 = fx.job(bad, "crash")
+        rf.atomic_json(sp, fx.spec(bad, d2))
+        rc, out = run([sp, "--flags", fx.flags])
+        self.assertEqual(rc, 2, out)
+        self.assertIn("launcher_out_tail", out)
+        self.assertEqual(rf.status(fx.flags, bad)["state"], "failed")
 
     def test_02_class1_fail_is_repaired_and_republished(self):
         fx = self.fx
@@ -94,7 +121,7 @@ class RepairTests(unittest.TestCase):
         self.assertEqual(rf.row_sha(fx.flags, rid), old_sha)
         self.assertEqual(rf.status(fx.flags, rid)["state"], "failed")
         # a row with no FAIL record is refused, not "repaired"
-        rc, out = run(["--repair", "t-lint-20261101", "--flags", fx.flags])
+        rc, out = run(["--repair", "t-owner-20261102", "--flags", fx.flags])
         self.assertEqual(rc, 2, out)
 
 

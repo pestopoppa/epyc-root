@@ -32,7 +32,7 @@ STEPS = {
     "making-ready": "making inference rows ready",
     "paused": "paused: blocked only by readied rows",
     "nudged": "nudged: go on with the next step",
-    "done": "done: close, take next handoff",
+    "done": "done: handoff archived on origin/main, session retired, slot -> next handoff",
 }
 
 

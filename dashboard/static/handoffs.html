@@ -449,7 +449,7 @@ const NODES=[
  {id:'C',o:'DET',x:290,y:290,w:300,h:56,t:['each interval, per session whose turn ended:','dispatcher decides'],s:'code, not an agent: PAUSE | NUDGE | CLOSE'},
  {id:'PA',o:'DET',x:620,y:290,w:140,h:56,t:['PAUSE'],s:'only readied rows block',c:'paused'},
  {id:'NU',o:'DET',x:780,y:290,w:140,h:56,t:['NUDGE'],s:'go on, next step',c:'nudged'},
- {id:'CL',o:'DET',x:940,y:290,w:140,h:56,t:['CLOSE'],s:'done: take next',c:'done'},
+ {id:'CL',o:'DET',x:940,y:290,w:140,h:56,t:['CLOSE: done?','archive + retire'],s:'slot -> next handoff',c:'done'},
  {id:'K1',o:'DET',x:20,y:440,w:170,h:56,t:['free regions'],s:'q0..q3, gpu-quiet',c:'free_regions'},
  {id:'K2',o:'DET',x:235,y:440,w:170,h:56,t:['match ready rows'],s:'dry run PASS',c:'ready'},
  {id:'K3',o:'DET',x:450,y:440,w:170,h:56,t:['grant'],s:'regions + window',c:'running'},
@@ -461,7 +461,7 @@ const EDGES=[
  ['M690,346 V385','',''],['M1010,346 V385','',''],['M135,385 H1010','',''],['M135,385 V130','','->'],
  ['M590,318 H620','dash',''],['M550,318 H620','dash',''],['M605,226 V400 H320 V440','dash','->'],
  ['M1050,468 H1100 V118 H820','dash','->'],['M190,468 H235','','->'],['M405,468 H450','','->'],['M620,468 H665','','->'],['M835,468 H880','','->'],
- ['M550,118 H590','dash','->'],['M435,146 V170','dash','->'],['M550,198 H590','','->']
+ ['M550,118 H590','dash','->'],['M435,146 V170','dash','->'],['M550,198 H590','','->'],['M560,290 V272 H1010 V290','','->']
 ];
 function counts(d){
  const sc=d.step_counts||{},c=(d.compute||{}).counts||{};
