@@ -1,10 +1,19 @@
 import unittest
+import os
+import sys
+import tempfile
+import time
+from pathlib import Path
 from worker_draft import run_attempt
 
 
 class WorkerDraftTest(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+
     def args(self):
-        return dict(mode='full', attempt_id='a', root='/unused', argv=['fake'],
+        return dict(mode='full', attempt_id='a', root=self.tmp.name, argv=['fake'],
                     input_bytes=b'abc', env={}, deadline_monotonic=20.,
                     cleanup_margin_s=2., grant_valid=lambda: True,
                     stopped=lambda: False, now=lambda: 10.)
@@ -44,6 +53,31 @@ class WorkerDraftTest(unittest.TestCase):
         status = run_attempt(**args, supervise_fn=supervisor,
                              write_fn=lambda root, ident, mode, result, **kw: result['status'])
         self.assertEqual(status, 'cancelled')
+
+    def test_bad_custody_refuses_before_child_launch(self):
+        args = self.args()
+        args['attempt_id'] = '../bad'
+        with self.assertRaises(ValueError):
+            run_attempt(**args, supervise_fn=lambda *a, **k: self.fail('child launched'))
+        args = self.args()
+        os.chmod(self.tmp.name, 0o755)
+        with self.assertRaises(ValueError):
+            run_attempt(**args, supervise_fn=lambda *a, **k: self.fail('child launched'))
+        os.chmod(self.tmp.name, 0o700)
+        Path(self.tmp.name, 'full-a').mkdir()
+        with self.assertRaises(FileExistsError):
+            run_attempt(**args, supervise_fn=lambda *a, **k: self.fail('child launched'))
+
+    def test_real_fake_child_writes_native_result(self):
+        import json
+        args = self.args()
+        args.update(argv=[sys.executable, '-c', 'import sys; sys.stdin.buffer.read(); print("[1, 2, 30]")'],
+                    env=dict(os.environ), deadline_monotonic=time.monotonic()+10,
+                    now=time.monotonic)
+        directory = run_attempt(**args)
+        data = json.loads((directory / 'result.json').read_text())
+        self.assertEqual((data['status'], data['validated_token_count']), ('completed', 3))
+        self.assertTrue((directory / 'complete.json').exists())
 
 
 if __name__ == '__main__':

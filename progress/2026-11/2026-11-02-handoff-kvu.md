@@ -99,3 +99,11 @@ VKQ3 diagnostic receipt draft now parses the native bracketed comma-separated --
 ## 10:06Z — Integrated VKQ3 offline worker seam connecting supervised tokenization to private receipts.
 
 VKQ3 worker draft composes bounded supervision and private receipt creation, propagates mode and deadline, and refuses success after grant loss; four offline tests pass. Grant and deadline inputs remain injected rather than authoritative; actual containment, provenance, rowflow wiring, qualification and target inference remain unverified. Independent worker review, grant integration and provenance investigation are registered for follow-up.
+
+## 10:08Z — Integrated VKQ3 worker custody review and prior-runtime identity verification.
+
+VKQ3 worker now checks attempt identity and private receipt custody before starting the child; six offline tests pass, including a harmless subprocess through the real supervisor and receipt writer. Runtime identity helper checks the tokenizer and five libraries against the previously committed calibration catalog; three offline tests pass. These checks do not establish source-build attestation, runtime loader residency, or race-free execution binding. The grant bridge and launcher remain to be integrated; no row is publishable and no inference ran.
+
+## 10:09Z — Connected VKQ3 diagnostic worker to the existing grant guard in an offline bridge.
+
+VKQ3 grant bridge draft derives worker mode and deadline from the existing grant guard and tests grant revocation, invalid CPU shape and dry-run mode; three offline tests pass. The bridge is not a launcher: signal routing, process-tree containment, authoritative engine integration and runtime identity binding remain. Review found rowflow can count unit.jsonl before the separate completion marker: the launcher must validate the receipt then atomically publish a separate result file. No inference ran and no row was published.

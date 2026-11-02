@@ -5,6 +5,10 @@ model and executable identities, parent-death containment and CPU environment.
 This draft does not establish any of those properties and must not be scheduled.
 """
 import math
+import os
+from pathlib import Path
+import re
+import stat
 import time
 
 from supervisor import supervise
@@ -19,8 +23,16 @@ def run_attempt(*, mode, attempt_id, root, argv, input_bytes, env, deadline_mono
     The deadline and predicates are caller-supplied and untrusted: no row may
     use this draft until its engine's authoritative grant adapter is implemented.
     """
-    if mode not in ('qualification', 'full'):
-        raise ValueError('invalid mode')
+    if mode not in ('qualification', 'full') or not isinstance(attempt_id, str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_-]{0,79}', attempt_id):
+        raise ValueError('invalid mode or attempt identity')
+    # Detect unusable receipt custody before starting the child. The receipt
+    # writer still creates the attempt exclusively and handles races.
+    root_path = Path(root)
+    root_stat = root_path.lstat()
+    if not stat.S_ISDIR(root_stat.st_mode) or root_stat.st_uid != os.geteuid() or stat.S_IMODE(root_stat.st_mode) & 0o077:
+        raise ValueError('root must be a private owned directory')
+    if os.path.lexists(root_path / (mode + '-' + attempt_id)):
+        raise FileExistsError('attempt already exists')
     if not isinstance(input_bytes, bytes) or not argv:
         raise ValueError('invalid child input or argv')
     if not math.isfinite(deadline_monotonic) or not math.isfinite(cleanup_margin_s) or cleanup_margin_s <= 0:
