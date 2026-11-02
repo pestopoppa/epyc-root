@@ -9,7 +9,9 @@ from __future__ import annotations
 
 import json
 import os
+import signal
 import subprocess
+import time
 from pathlib import Path
 from typing import Any
 from urllib.request import Request, urlopen
@@ -19,6 +21,84 @@ from scripts.harness.hs4_file_adapters import opencode_session, repl_response
 
 def _require_live_isolation() -> None:
     raise RuntimeError("live agent/grader isolation is not implemented or verified")
+
+
+def _identity(pid: int) -> tuple[str, int, int] | None:
+    try:
+        fields = Path(f"/proc/{pid}/stat").read_text().rsplit(") ", 1)[1].split()
+        return fields[0], int(fields[1]), int(fields[19])
+    except (OSError, ValueError, IndexError):
+        return None
+
+
+def _children(root: int, captured: dict[int, int]) -> None:
+    """Capture descendants by parent PID and birth time, never by name."""
+    nodes: dict[int, tuple[str, int, int]] = {}
+    for entry in Path("/proc").iterdir():
+        if entry.name.isdecimal():
+            pid = int(entry.name)
+            record = _identity(pid)
+            if record:
+                nodes[pid] = record
+    frontier = [root]
+    while frontier:
+        parent = frontier.pop()
+        for pid, (_, ppid, birth) in nodes.items():
+            if ppid == parent and pid not in captured:
+                captured[pid] = birth
+                frontier.append(pid)
+
+
+def _signal_owned(pid: int, birth: int, sig: int) -> None:
+    current = _identity(pid)
+    if current is not None and current[2] == birth and current[0] != "Z":
+        try:
+            os.kill(pid, sig)
+        except ProcessLookupError:
+            pass
+
+
+def _terminate_owned_tree(pid: int, birth: int | None) -> dict[str, Any]:
+    """Stop, capture and drain the observed descendants of this exact child.
+
+    A process that escaped before capture cannot be proven absent by a /proc
+    ancestry scan. Report only captured identities; a stronger containment
+    mechanism remains required before enabling live runs.
+    """
+    if birth is None:
+        return {"captured": [], "remaining": None, "scope": "identity unavailable"}
+    captured = {pid: birth}
+    _signal_owned(pid, birth, signal.SIGSTOP)
+    for _ in range(4):
+        before = len(captured)
+        for parent, start in list(captured.items()):
+            record = _identity(parent)
+            if record is not None and record[2] == start:
+                _children(parent, captured)
+        for child, start in captured.items():
+            _signal_owned(child, start, signal.SIGSTOP)
+        if len(captured) == before:
+            break
+    for child, start in reversed(list(captured.items())):
+        _signal_owned(child, start, signal.SIGTERM)
+        _signal_owned(child, start, signal.SIGCONT)
+    deadline = time.monotonic() + 1
+    while time.monotonic() < deadline:
+        if all((record := _identity(child)) is None or record[0] == "Z" or record[2] != start
+               for child, start in captured.items()):
+            break
+        time.sleep(0.02)
+    for child, start in reversed(list(captured.items())):
+        _signal_owned(child, start, signal.SIGKILL)
+    deadline = time.monotonic() + 1
+    while time.monotonic() < deadline:
+        remaining = [child for child, start in captured.items()
+                     if (record := _identity(child)) is not None and record[0] != "Z" and record[2] == start]
+        if not remaining:
+            break
+        time.sleep(0.02)
+    return {"captured": [{"pid": child, "start_ticks": start} for child, start in captured.items()],
+            "remaining": remaining, "scope": "captured descendants; escaped processes unknown"}
 
 
 def run_repl(url: str, body: dict[str, Any], *, timeout_s: float) -> dict[str, Any]:
@@ -47,19 +127,21 @@ def _process(argv: list[str], *, cwd: Path, env: dict[str, str], stdin: str,
     proc = subprocess.Popen(argv, cwd=cwd, env=env, stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                             text=True, start_new_session=True)
-    try:
-        # PID and start ticks identify this exact child, not just an executable name.
-        tail = Path(f"/proc/{proc.pid}/stat").read_text().rsplit(") ", 1)[1].split()
-        start_ticks = int(tail[19])
-    except (OSError, IndexError, ValueError):
-        start_ticks = None
+    identity = _identity(proc.pid)
+    start_ticks = identity[2] if identity else None
     try:
         stdout, stderr = proc.communicate(stdin, timeout=timeout_s)
     except subprocess.TimeoutExpired:
-        proc.kill()  # Only the child PID captured above; descendant cleanup is not claimed.
-        stdout, stderr = proc.communicate()
+        drain = _terminate_owned_tree(proc.pid, start_ticks)
+        try:
+            stdout, stderr = proc.communicate(timeout=2)
+        except subprocess.TimeoutExpired:
+            # Escaped or unidentifiable pipe holder: preserve an explicit failure.
+            return {"pid": proc.pid, "start_ticks": start_ticks, "returncode": proc.returncode,
+                    "stdout": None, "stderr": None, "timed_out": True, "drain": drain,
+                    "error": "pipe_holders_not_drained"}
         return {"pid": proc.pid, "start_ticks": start_ticks, "returncode": proc.returncode,
-                "stdout": stdout, "stderr": stderr, "timed_out": True}
+                "stdout": stdout, "stderr": stderr, "timed_out": True, "drain": drain}
     return {"pid": proc.pid, "start_ticks": start_ticks, "returncode": proc.returncode,
             "stdout": stdout, "stderr": stderr, "timed_out": False}
 

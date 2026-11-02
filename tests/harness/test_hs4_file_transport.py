@@ -1,5 +1,7 @@
 import io
 import json
+import os
+import sys
 
 import pytest
 
@@ -51,3 +53,35 @@ def test_opencode_transport_retains_run_and_export_without_shell(monkeypatch, tm
     assert calls[0][1]["stdin"] == "task" and calls[0][1]["env"]["OPENCODE_CONFIG"] == str(config)
     assert out["run"]["pid"] == 123 and out["run"]["start_ticks"] == 99
     assert out["observation"]["session"] == session and out["observation"]["events"] == events
+
+
+def test_timeout_drains_captured_direct_child_and_descendant(tmp_path):
+    source = (
+        "import subprocess,sys,time; "
+        "c=subprocess.Popen([sys.executable,'-c','import time; time.sleep(30)']); "
+        "print(c.pid,flush=True); time.sleep(30)"
+    )
+    result = transport._process([sys.executable, "-c", source], cwd=tmp_path,
+                                env=dict(os.environ), stdin="", timeout_s=0.3)
+    assert result["timed_out"] is True
+    assert result["drain"]["remaining"] == []
+    child_pid = int(result["stdout"].strip())
+    captured = {item["pid"] for item in result["drain"]["captured"]}
+    assert {result["pid"], child_pid} <= captured
+    for pid in captured:
+        record = transport._identity(pid)
+        assert record is None or record[0] == "Z"
+
+
+def test_signal_refuses_pid_reuse_and_dead_process(monkeypatch):
+    sent = []
+    monkeypatch.setattr(transport.os, "kill", lambda pid, sig: sent.append((pid, sig)))
+    monkeypatch.setattr(transport, "_identity", lambda _pid: ("S", 1, 8))
+    transport._signal_owned(123, 7, 15)
+    assert sent == []
+    monkeypatch.setattr(transport, "_identity", lambda _pid: ("Z", 1, 7))
+    transport._signal_owned(123, 7, 15)
+    assert sent == []
+    monkeypatch.setattr(transport, "_identity", lambda _pid: ("S", 1, 7))
+    transport._signal_owned(123, 7, 15)
+    assert sent == [(123, 15)]

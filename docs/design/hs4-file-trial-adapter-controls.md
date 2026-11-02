@@ -12,9 +12,11 @@ promise complete tool arguments and outputs; that field remains unknown.
 `hs4_file_transport.py` prepares the corresponding HTTP and OpenCode subprocess
 paths, but **always refuses before I/O** because no accepted live isolation
 verifier has been wired. Its mock controls exercise request/response and process
-identity capture only. Before enabling it, the owner must additionally prove
-that STOP/timeout drains all descendants; the present timeout handler kills and
-reaps only the captured direct child and makes no descendant-cleanup claim.
+identity capture only. On timeout it freezes and records the direct child and
+observed descendants by PID and birth time, sends TERM then KILL to those exact
+identities, and reports survivors. A captured-child test passed, but ancestry
+does not find descendants that escaped before capture; before enabling live
+trials the owner must prove containment and complete descendant drainage.
 
 The existing P0.4 scorer is the fixture-specific `check_fixture` running
 `test_calc.sh` after a code edit, not a final-answer scorer for the three new
@@ -25,6 +27,20 @@ extracts tagged/boxed answers or the last line, normalizes case and punctuation,
 accepts numeric tolerance/word forms, and has quote/colon fallbacks. It is not
 yet demonstrated to implement the intended whole-answer semantics for file
 lookup, inventory aggregation and reconciliation; no scorer is selected here.
+On 2026-11-02, a direct no-inference invocation of that exact Git blob returned
+`True` for both `alpha.csv` and `other.csv\nalpha.csv` against `alpha.csv`, and
+for `other: 2` against `2`. Thus its normal extraction does not enforce an exact
+whole-answer contract; using it without a separately declared answer format
+would accept additional wrong lines. A `2, 3` self-match passed, but does not
+establish order, completeness or independent correctness of structured results.
+
+The APP request schema at that source uses `/chat` with `prompt`, `force_mode`,
+`force_role`, `allow_delegation`, `session_id` and `task_root`; `task_root` is
+restricted below the llm root or `/tmp` and scopes file tools, not the server's
+OS identity or hidden grader access. Default `edit_mode=none` prohibits writes;
+the three planned tasks are read-only. A distinct `session_id` avoids explicit
+cross-request REPL-global restoration but does not itself prove memory or
+escalation are disabled: those conditions still need deployment-bound proof.
 
 Before real execution, integrate the existing P0.4 OpenCode config/version and
 SC86 capture, implement a `/chat` transport and complete session evidence,
