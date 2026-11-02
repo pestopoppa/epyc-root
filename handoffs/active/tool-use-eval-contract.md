@@ -18,6 +18,13 @@ scorer smoke passed. This host refused actual namespace setup (`RTM_NEWADDR` / `
 permission failures), so no real access-denial acceptance, hidden-test secrecy or TU-GR-1 /
 2a-iv completion is claimed. [no-belief: source and fixture controls]
 
+Research successor `39480fa8f` adds opt-in Docker confinement using a pinned local image and an
+explicit CPU set within caller affinity. Under a q0 claim, the actual scorer path denied a
+host-only file and network access, honored CPUs 0–1, and verified owned-container cleanup on
+normal and timeout paths (9 tests). The caller must still hold the region claim; the container
+uses a different interpreter and test bytes remain visible to candidate code. This does not
+close the agent/grader isolation matrix or establish hidden-test secrecy. [belief: cc]
+
 [TU-HR-1 source/runtime census](../../docs/reference/tu-hr1-tool-render-audit-20261102.md)
 records the configured model/template groups and source forwarding paths, and distinguishes
 them from live identity. Sampled model endpoints were unreachable in the observer's namespace;

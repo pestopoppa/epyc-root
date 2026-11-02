@@ -27,6 +27,10 @@ judicious review. The edit preserves existing task text and history. [no-belief:
   bubblewrap isolation, fail-closed when setup fails; six controls and scorer smoke passed.
   Actual namespace setup refused on this host. Hidden tests are still visible in the candidate
   program. Neither isolation acceptance nor TU-GR-1 is complete. [no-belief: source controls]
+- Research successor `39480fa8f` adds pinned-image Docker mode and caller-affinity-bounded CPU
+  sets. Under a q0 claim the real scorer path denied a host file and network, used the expected
+  CPU set and cleaned its own container on completion and timeout; nine tests passed. Different
+  interpreter and visible embedded tests prevent a full grader-isolation claim. [belief: cc]
 - Added `docs/reference/tu-hr1-tool-render-audit-20261102.md`: source and runtime census;
   sampled local model endpoints were unavailable, so actual live model/template evidence and
   TU-HR-1 remain open. [no-belief: source and operational review]
