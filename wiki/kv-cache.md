@@ -1571,3 +1571,23 @@ barrier change did not eliminate the variation. These results establish neither 
 nor a quality, performance or promotion decision. Sources: [RTG-57 handoff](../handoffs/active/kv-unified-stack-rollout.md),
 [session progress](../progress/2026-11/2026-11-02-rtg57-readiness-audit.md), and
 [preserved GPU diagnostic](https://github.com/pestopoppa/epyc-inference-research/tree/7a8a2d8fa/artifacts/kvu19a2-sync-build-20261102).
+
+## RTG-58 fork and shared-trunk observations — 2026-11-02
+
+The CPU KPF-17a paired comparison matched all 86 original and 111 extended cases, including 25 shared-trunk cases, bit-for-bit between the pre-skip and C5 images. Its ROCm clauses remain open. On 35B CPU item 2, all 16 fork-versus-own comparisons were fully identical; all 32 A/A controls matched tokens, with 30 fully identical.
+
+On the integrated 27B/DFlash2 GPU item 1, all 32 requested forks were witnessed. Six of 32 draft-on fork-versus-fresh comparisons matched all generated tokens, and six of 32 fresh A/B controls did so. The different-slot controls and co-tenancy do not resolve the cause; neither the GPU observation nor the CPU subsets complete the P1 parent gate.
+
+### Source references
+
+- [RTG-58 handoff and CPU shared-trunk comparison](../handoffs/active/kv-prefix-fork-and-paged-attention.md)
+- [35B CPU item-2 native record](../artifacts/compute/rtg58-p1-cpu-item2-20261102/)
+- [27B/DFlash2 GPU item-1 evidence](../artifacts/compute/rtg58-p1-gpu-item1-20261102/README.md)
+
+## KVU evidence reconciliation — 2026-11-02
+
+- **KVU-19a-2:** A source-bound 20-run HIP diagnostic reproduced five distinct candidate outputs per case, versus identical baseline repetitions, with no NaNs. A follow-on barrier-exit move did not restore repeatability. This is a model-free diagnostic, not a serving verdict.
+- **FA-4b:** All 2,400 accepted responses contained zero JSON nonfinites and zero garbage; that does not prove finite logits or change the one-of-four equivalence result.
+- **KVU-12.5:** The earlier full-host `SPLIT_BETTER` verdict was rejected because it used 96 rather than the required 24 threads and omitted a wave-range term. The later quarter-run comparison remains incomplete; its verdict is unknown. See the handoff for the distinct historical measurements.
+
+Sources: [KV unified rollout and evidence](../handoffs/active/kv-unified-stack-rollout.md), [KVU-19a trace analysis](../progress/2026-11/2026-11-02-handoff-kvu.md), [KVU-16a load reconciliation](../progress/evidence/kvu16a-load-result-20261102/RECONCILIATION.md).

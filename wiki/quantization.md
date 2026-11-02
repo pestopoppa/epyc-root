@@ -1217,3 +1217,15 @@ Sources: [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-e
 - intake-2490#record (HermiHg Qwen3.8-27B-DFlash2 Q2_K_S-MIX): The same artifact intake-1256#record cited against a Q2_K floor, but the repo was rebuilt on 2026-08-25 and the evidence quoted then (dummy imatrix, file size, sha) no longer matches. Worth investigating.
 - intake-2492#record (Comprehensive evaluation of MXFP4/NVFP4 quantization): Resolves the not-read item in intake-2488#record: the only independent rotation-gain check is a single-model (LLaMA-3.2-1B) PPL study whose v1 conclusion contradicted its own table, so the result is a weak directional signal. Worth investigating.
 - intake-2493#record (AMXFP4): Corrects the Stage-1 framing: asymmetry means two per-sign FP8 E5M2 scales per group (no zero-point), and the "beats MXFP4" headline is against an E5M2-scaled MXFP4, not OCP E8M0. Worth investigating.
+
+
+## Compiled update — 2026-11-02: EXL3 and IQ4_XS attribution corrections
+
+- **EXL3 real fixtures:** On three partial device fixtures, the exact canonical GEMV comparison passed, then the MFMA prefill comparison exceeded its declared tolerance. Each binary returned rc1 and the sealed overall verifier failed. The discrepancy was previously attributed to GEMV; its cause and full G3/G4 coverage remain unestablished.
+- **IQ4_XS repack:** The INF-70 node trace identified errors in IQ4_XS → Q8_K_R16 repacking when nrc_y ≥ 32 and npt ≥ 16. The source exclusion was absent from the stale binary under test. This finding does not establish a per-type cause or authorize enabling the separately excluded IQ2/IQ3 paths.
+
+### Source references
+
+- [EXL3 CPU and MI210 handoff](../handoffs/active/exl3-cpu-mi210-implementation.md)
+- [IQK i-quant handoff](../handoffs/active/iqk-iquant-enablement.md)
+- [INF-70 node-trace and stale-binary audit](../progress/2026-09/2026-09-03-inf70-audit.md)

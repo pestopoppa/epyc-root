@@ -6949,3 +6949,30 @@ The R11 successor was subsequently withdrawn before qualification because the ex
 ## NeMo graph-motif diagnostic reproduction — 2026-11-01
 
 A retained-trace analyzer reproduced the earlier motif diagnostic within 0.2%: 94 B graphs accounted for 20.5266 ms busy, while 158 L graphs accounted for 32.9083 ms busy. This is a correctness-only reproduction, not a performance decision: token-edge alignment remains UNKNOWN and the boundary criterion stays open. ([champion handoff](../handoffs/active/autokernel-champion-aggregate.md); [workspace progress](../progress/2026-11/2026-11-01-workspace-58.md); [prior provenance](../docs/reference/autokernel/nemo-gpu-prof-reseg-20261031/PROVENANCE.json))
+
+
+## Compiled update — 2026-11-02: v10 symbol replay and historical comparison correction
+
+- **R18-A:** Replaying the 141 recorded CUIDs reproduced the v10 exported symbol sets: CPU 590, HIP host 1,332, and gfx90a device 6,141 names, each with zero additions or removals. Four focused suites passed 306 tests. This is exported symbol-set identity under the recorded replay, not binary or runtime equivalence. The predicate is now enabled; producer belief wiring remains separate.
+- **R23-62:** The earlier claim that only the champion moved combined a window-3 paired ratio with a window-1 pristine throughput. Window 3 actually recorded 20.589 and 12.018 tok/s, and the producer warned that GPU activity compromised absolute rates. Recomputing both historical ratios as ratios of mean launch rates gives 1.71275 and 2.18567, so estimator choice alone does not explain the gap. These observations do not establish its cause.
+
+- **A7/E5 placement custody:** The banked Gemma C1b cells used straddling half-machine CPU sets with `numactl_policy=none` and showed shared pages across N0–N3. The four full-machine cells show expected affinity, but inspected artifacts do not independently prove runtime memory policy or per-cell cache drops. The eight `decision_grade=true` labels alone do not establish corrected-placement compliance. The remaining Qwen manifest inventory contains 20 files, not the earlier stated 24; files are not independent replicated arms.
+- **Q4_K GPU candidate:** The earlier ~43% projected improvement is not supported by the matched diagnostic. The correctness-passing branchless candidate remains diagnostic-only pending its clean governed replay.
+
+- **MI210 Q8:** Q8_0 GEMV is int8-native; the measured Q8 gap should be investigated through achieved bandwidth and occupancy rather than assumed per-element floating-point dequantization. The earlier async weight-prefetch +3.3% headline was not reproduced by the governed replay (+0.936%, below its 2% floor).
+
+- **CH-31 small-model rowexact diagnostic:** With matched four-sequence rotations, route 0 showed 993–1008 differing nodes out of 1,127 with first difference at F32 MUL_MAT, whereas route 4 showed zero differing nodes; argmax matched throughout and 260 nodes per row were skipped. The rotations reused inputs, so this is diagnostic evidence, not causality, Q38FN performance, or a promotion verdict.
+
+- **C6 Q4 diagnostics:** The isolated Q4_0 and Q4_K MMVQ corrections each passed their original same-input case. Their combined candidate still failed 25 Q4_K MUL_MAT cases (1,120 passed, 326 unsupported); MUL_MAT_ID passed 815 and FLASH_ATTN_EXT passed 2,978, with unsupported cases separate. The remaining sampled Q4_K failure selected MMQ on both C6 and the combined candidate; an additional MMQ fix was built but not GPU-tested. This does not pass the full GPU suite or establish a promotion.
+
+### Source references
+
+- [AutoKernel rebuild handoff](../handoffs/active/autokernel-rebuild-program.md)
+- [R18-A comparison and CUID witnesses](../artifacts/compute/r18a-r4-20261102/README.md)
+- [R23-62 estimand and contention audit](../docs/design/inf70-r2362-evidence-20261102/AUDIT.md)
+- [E5 batched-decode placement evidence](../handoffs/active/batched-decode-measurement.md)
+- [MI210 lever matrix correction](../handoffs/active/fable5-window2-findings-05c-mi210-lever-category-matrix.md)
+- [MI210 Q8 GEMV correction](../handoffs/active/mi210-q8-dequant-gemv-roofline.md)
+- [CH-31 paired diagnostic](../artifacts/compute/akagg-ch31-rowexact-pair-result-20261101/)
+- [C6 Q4 diagnostics](../artifacts/compute/inf65-c6-diagnostic-20261102/COMBINED-SUMMARY.json)
+- [Champion aggregate handoff](../handoffs/active/autokernel-champion-aggregate.md)
