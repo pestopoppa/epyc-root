@@ -99,3 +99,7 @@ C3 model custody, CPU owning request capture and CH-27 store reconstruction are 
 ## 09:50Z — Complete inference launcher preparation
 
 GPU model custody, CPU request capture and CH-27 isolated store remain in implementation; no row published.
+
+## 09:51Z — Prepare NEMO boundary admission and calibration launchers
+
+Preparing a boundary-source checker for retained NEMO traces while CPU and GPU launcher integration proceeds; no inference or row published.
