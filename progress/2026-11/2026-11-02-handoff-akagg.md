@@ -251,3 +251,7 @@ CH-32 group D: pinned-source checker verifies D7 narrows the D4 codec quantizati
 ## 11:36Z — Filed original diagnostic inconclusive and corrected owned-child ABI diagnostic pass after independently retaining and checking raw evidence.
 
 Filed CH26 ABI r1 rc75 inconclusive due to partial execution and known verification defects; preserved result and root-only rings at /mnt/raid0/llm/tmp/akagg/ch26-r1-retained. Filed r2 rc0 functional ABI pass after independently verifying four child-scoped raw samples, identities, loss counters and enabled/running times; retained raw evidence at /mnt/raid0/llm/tmp/akagg/ch26-r2-retained. Cleanup precedes the r2 result, but separate OS wait receipts were not retained. Neither result establishes DS41 floor, placement, host coverage, contention or losslessness. Submitted META C6 F1 row; smoke is queued, not passed. Independent review found residency-to-test-row and timeout-cleanup limitations requiring resolution before the result can close the gate.
+
+## 11:38Z — Implemented reproducible C2 decision-source prerequisite check.
+
+CH32 group C source checker establishes that unchanged C2 decision code references three decision types absent from both C5 and C1 and introduced by intervening upstream commits; replay matched the retained JSON. Equivalent source context or adaptation is required, but no minimum full-commit chain or runtime compatibility is claimed. The C6 successor fixes were prepared separately, while the published predecessor remains queued and unqualified.
