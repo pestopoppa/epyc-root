@@ -508,6 +508,11 @@ failure caught in amber.
         `/mnt/raid0/llm/data/eval/` with a verified digest; (6) identical retrieval budget and
         identical chunking for the control and the arm under test; (7) prompt-match all arms,
         including the closed-book instruction.
+    - 2026-11-02 staged-input check: `/mnt/raid0/llm/data/eval/beam/data/100K-00000-of-00001.parquet`
+      hashes to `c0519be25907005ba873c927c50877471d550873039d96c041554d0075a78ace`, matching
+      the staged `PROVENANCE.txt` for revision `3205395e897e7318c7b094ef4e6047b9b82dbb03`.
+      This verifies the file now; it is not a receipt that the 2026-09-18 runs checked its digest
+      or satisfied the other checklist items. [belief: cc]
   - [ ] **M-12d — external reference curves, used as floors and sanity checks, never as targets.**
         (a) Tulving: the authors' shipped 12-arm results at
         `/mnt/raid0/llm/data/eval/tulving_episodic/episodic-memory-benchmark/epbench/data/result_lenient_all_book_200.csv`
@@ -590,6 +595,15 @@ failure caught in amber.
 - [x] **M-23 — SkillBank A/B readout spec (supersedes the pooled-mean go/no-go of `handoffs/completed/skillbank-distillation.md` section 19; AK-PM-4 step (c) is re-pointed by its owner; M-12 itself stays the episodic A/B).** Zero inference; the run is gated on M-11a populating a bank and on the DAR-1 regret gate (`retrain-routing-models.md:126`). The cell is role plus model pin as served (frontdoor, worker, coder, architect). Report skill-on minus skill-off per cell with a task-level bootstrap 95% CI and the share of negative role-domain cells, never one pooled delta (`intake-2190#00`, `intake-2190#03`, `intake-2190#10`); declare the minimum detectable difference at the run n before the run (run-local declaration, not a standing rule) and do not rank arms whose CIs overlap (`intake-2181#01`); promotion is per-role non-regression, not mean > 0. Report adoption beside accuracy, defined as the share of injected skills whose title is echoed or visibly applied in the routed role's trace (titles, not ids, are in the prompt, `skill_retriever.py:230-236 @5d4ad2c0`), detector derived from the skill's own rule or title and fixed before the run; adoption is a separate failure axis from correctness (`intake-2169#04`); the SkillLearnBench tool-call metric is not comparable (`intake-2180#03`). Log per-request skill_ids joined to the served role and model pin. Teacher-side solve rate or skill-quality scores are never the gate; the student-side matched A/B is (`intake-2170#03`); any LLM-judged skill-text score is advisory (`intake-2181#03`, `intake-2190#07`). Report every headline delta under both intention-to-treat and per-protocol parse handling and re-score stored outputs with a second independent scorer before a scorer-dependent delta is acted on (`intake-2171#04`, `intake-2171#06`). Prior: the sign of skill benefit is a distribution (`intake-2169#08`, `intake-2190#00`), so borrow none from either paper. When the A/B reports, compare the entry format with Harness^2's (cue, adopted tree, EXPERIENCE.md, domain-scoped index; `intake-1995#02`). ✅ 2026-10-20
   M-29 clauses apply (see "M-29 readout clauses (filed 2026-10-21)" below the M-23 sub-items).
   - [ ] **VB-SKILLBANK-AB-WRITE producer call (owed, filed 2026-10-21):** [too-big: missing native request logs, adoption and role/model cell contract require owner integration] the M-23 A/B runner calls `scripts/vidya/adapters/skillbank_ab.write_belief_measurements(out_dir, run_id=..., producer=..., request_log_path=..., cells=[...])` once per run, one cell per role x model pin, before its first arm runs; carrier and reader landed in root `7335da327`.
+
+    - 2026-11-02 execution-order correction: the carrier's current `write_belief_measurements`
+      requires positive scored counts, adoption and a hash of the completed request log. It
+      cannot truthfully be called before the first arm. Before any arm, freeze the protocol,
+      suite, cells, detector, scorer and MDD in the run manifest and open the native request log;
+      after all arms and scoring finish, finalize that log and call the writer once with the
+      resulting cells. Do not invent completed measurements or change the log after hashing it.
+      The M-23 served-task runner has not been found; offline retrieval replay is not that runner.
+      This corrects the call timing above; the producer integration remains open. [belief: cc]
 
   **M-29 readout clauses (filed 2026-10-21; additions to M-23, whose own text is unchanged).** All descriptive or report-only; none is a gate.
   (1) Per role-model cell print the paired transition counts c (failed skill-off, passed skill-on) and b (passed skill-off, failed skill-on) with an exact two-sided McNemar p on the discordant pairs beside the net delta and the negative-cell share, and report b even when the net is positive (intake-1321#record); promotion stays per-role non-regression.

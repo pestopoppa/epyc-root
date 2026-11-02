@@ -183,3 +183,19 @@ Delegated construction of an independent B4c paired evaluation packet, with fixe
 ## 01:08Z — Prepare independent B4c paired evaluation
 
 Delegated construction of an independent B4c paired evaluation packet, with fixed cases, per-worker flag attestation, rollback, quality/cache correlation and rowflow integration; the parked RTE-LOG-1 lineage must not be retried. Registered its result event. F2 packet remediation, B1g packet, B4b and B1e patches, completed-chat row, and captured index check have registered outstanding result events. No inference row was published in this boundary.
+
+## 01:10Z — Verify F2 model identities before publication
+
+Started a single pre-publication full SHA-256 verification of the F2 canonical 27B and DFlash2 weights against the packet-pinned size and digest. The verifier records device, inode, size, mtime and ctime before/after each read, fails closed on changed inputs or hash mismatch, and atomically writes f2-model-verified.json with explicit per-model and overall status. Registered that receipt as a dispatcher event and informed the packet preparer to reuse it rather than hashing inside a grant. No model inference or row publication occurred. F2 engine migration and the other registered preparation results remain pending; DEPLOY-EC-2d evidence remains in the lane pending index-gate recovery.
+
+## 01:10Z — Verify F2 model identities before publication
+
+Started a single pre-publication full SHA-256 verification of the F2 canonical 27B and DFlash2 weights against the packet-pinned size and digest. The verifier records device, inode, size, mtime and ctime before/after each read, fails closed on changed inputs or hash mismatch, and atomically writes f2-model-verified.json with explicit per-model and overall status. Registered that receipt as a dispatcher event and informed the packet preparer to reuse it rather than hashing inside a grant. No model inference or row publication occurred. F2 engine migration and the other registered preparation results remain pending; DEPLOY-EC-2d evidence remains in the lane pending index-gate recovery.
+
+## 01:12Z — Add F2 preverified model receipt guard
+
+Prepared /mnt/raid0/llm/tmp/compute-flags/handoff-sessions/agentic-serving-harness-fixes/f2_receipt_guard.py for the successor F2 packet. It fails closed unless the preverification receipt has exactly the two pinned paths and expected sizes/digests, successful stable reads, and matching current device, inode, size, mtime and ctime; it does not read or hash weights in the grant. Python compilation and model-free controls passed: valid receipt accepted, changed input and duplicate entries refused, missing receipt refused. Sent the preparer its path for incorporation and source sealing. This is packet preparation, not a published row or an inference result. The verification receipt and remaining registered work are pending.
+
+## 01:14Z — Prepare F2 canonical runner successor
+
+Prepared isolated successor /mnt/raid0/llm/tmp/ufh14-a3af2-rowflow15-20261102 from the original F2 packet after original SOURCES.sha256 verified. Repointed launcher to canonical filler_run15, replaced model and edge hashing in the official job with f2_receipt_guard.py, disabled legacy smoke until separately verified smoke-model identity is available, and regenerated the packet source manifest. Python compile, bash syntax, and successor source-manifest checks passed. The required prepublication weight receipt has not arrived and is not installed; dry-run/result-path compatibility and revised launcher review remain outstanding. No inference was run and no row was published. The GPU preparer was directed to review the successor rather than duplicate it. The DEPLOY-EC-2d handoff change remains pending its index gate.

@@ -205,6 +205,16 @@ loads `6,701` candidate-level items across HE-R/HE-R+/MBPP-R/MBPP-R+ with
 
 ### EV-4: Calibration baseline (needs inference)
 
+**2026-11-01 reconciliation:** EV-4c subsequently superseded the original EV-4b
+calibration attempt, but the [2026-09-16 ledger caveat](../../coordination/inference-batch/ledger.jsonl)
+suspends its ECE/AUROC as decision-grade evidence because speculative decoding
+contaminated token probabilities. The contamination size is unmeasured; accuracy
+remains usable. EV-11c is already terminal, so waiting for it to finish is stale.
+A replacement calibration run needs a verified uncontaminated confidence source,
+current serving and topology attestation, and a fresh eligible run contract; do
+not reuse the old manifest's v9 topology without revalidation. EV-PROTO's alternate
+execution modes are not required for that replacement. [belief: cc]
+
 - [ ] **EV-4** — Complete the decision-grade HE-R+ calibration baseline through the inference-batch loop after v7 contention-matrix recertification. *(accuracy leg DONE; calibration axes pending the EV-4b rerun below)*
 - [x] Run current eval tower on Scoring Verifiers HE-R+ benchmark ✅ 2026-07-21 — two-phase run on the E7 instrument (frontdoor @ certified concurrency 3, worker_general `--allow-serial`): **accuracy BANKED** frontdoor 0.7085 (820/820), worker_general 0.6572 (814/820; unscored rows excluded per REL-1); dataset_sha256 `87eaabbd…` identical across arms; ledger `DONE_MARGINAL_OBS` per the entry's own authored marginal fork.
 - [x] Diagnose the calibration-axes outcome ✅ 2026-07-21 — ECE 0.0/AUROC None/Spearman 1.0 = degenerate BY DESIGN: EV-CONF suppressed `n_probs` for `code_execution`-scored questions and all scoring_verifiers items are code-execution-scored; also means the ranking metrics (Top-1/Bottom-1/ρ/MAE) were structurally unmeasurable with binary confidence. Operator decided **ESC-7-EXT Option A** same day: code_execution now captures generation-logprob geomean confidence (test verdict stays the label; landed in orchestrator).

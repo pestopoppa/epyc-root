@@ -123,3 +123,11 @@ The reviewed full 306-item synthetic fixture passed all eight offline tests. It 
 ## 00:59Z — File reviewed EffiBench cohort fixture
 
 The reviewed full 306-item synthetic fixture passed all eight offline tests. It does not establish upstream execution, provenance, timing or model performance. The GPQA prototype and tests were moved to /mnt/raid0/llm/tmp/architect-gpqa-prep-20261102/ because they are incomplete; its report identifies missing manifest binding, current-arm fingerprints, residency, context and in-flight cutoff tests. Wrap-up retry follows its untracked-scratch refusal. No row published.
+
+## 01:00Z — Review GPQA coordinator prototype
+
+GPQA coordinator prototype and tests remain in /mnt/raid0/llm/tmp/architect-gpqa-prep-20261102/ and are not a runnable row. Review identified stop/deadline race to success, surviving descendants after group-leader exit, killpg process-exit races, and TERM grace exceeding deadline; in-flight cancellation is untested. Consolidation trusts caller questions/runner hash and model-supplied boolean score without independently binding the pinned manifest or canonical scorer, and can replace an existing output. Three tests cover only early stop/immediate exit and incomplete cohorts. Fix and validate before filing or publishing. No inference. Prior EffiBench fixture wrap-up published dd7e6a8d70c7efce959cffc15792f6de51079d5f.
+
+## 03:33Z — Repair sparse checkout observer census and advance GPQA
+
+The previous commit hook failure was a sparse-checkout omission, not a stale registry: the referenced operator ratifier exists unchanged in HEAD with the skip-worktree bit set. Restored that tracked file locally with git restore --ignore-skip-worktree-bits; observer census now passes with 26 registered observers. No ratifier was executed or amended. Delegated separate scratch-only GPQA process cleanup and manifest/scorer binding fixes with completion events registered. No inference or row published.

@@ -1,0 +1,6 @@
+{
+  "attempt_id": "f460c80e19124f1e9699bba2f690f74a",
+  "reason": "need 150 GiB floor + BF16-sized output upper bound + 4 GiB reserve",
+  "scientific_measurement": false,
+  "status": "FAIL"
+}
