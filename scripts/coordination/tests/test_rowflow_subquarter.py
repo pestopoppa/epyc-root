@@ -130,8 +130,29 @@ class GpuHostThreads(unittest.TestCase):
         d = tempfile.mkdtemp()
         os.makedirs(os.path.join(d, "grants"))
         line = rf.write_grant(d, "r", "mi210_0,184-191", {rf.GPU} | T(184), 600)
-        self.assertTrue(line.endswith("cpus=184-191"), line)
+        # explicit-cpu regions: cpus= would repeat them, so the grant keeps exactly regions/start/end/holds
+        self.assertEqual(sorted(kv.split("=", 1)[0] for kv in line.split()), ["end", "holds", "regions", "start"], line)
         self.assertIn("holds=gpu-quiet,t184", line)
+        line = rf.write_grant(d, "r", "mi210_0,q0", {rf.GPU, "q0"}, 600)
+        self.assertTrue(line.endswith("cpus=0-23,96-111"), line)   # a quarter token expands: cpus= carries the list
+
+    def test_gpu_row_with_reviewed_legacy_engine_books_q3_and_gpu(self):
+        # inf22 M4 A/A (ws58 2026-11-02): PREDECLARATION holds q3; its reviewed pre-GRANT_CPUS engine locks
+        # --claim-cpus 72-95, so the allocator books q3 + gpu-quiet for regions mi210_0,184-191
+        import tempfile
+        d = tempfile.mkdtemp()
+        eng = os.path.join(d, "filler_run15.sh")
+        open(eng, "w").write("#!/bin/bash\n# legacy engine without the marker\n")
+        lp = os.path.join(d, "launch.sh")
+        open(lp, "w").write(f"#!/bin/bash\nexec bash {eng} --id r --class gpu --gpu-quiet exclusive --claim-cpus 72-95 "
+                            f"--role bench --min-window 1800 --stop {d}/STOP --cmd /bin/true --complete-cmd /bin/true\n")
+        row = {"id": "r", "regions": "mi210_0,184-191", "launcher": {"path": lp}, "lane": "gpu", "gib": 64}
+        opts, _ = rf.row_shape(row)
+        self.assertEqual(len(opts), 1)
+        self.assertIn("q3", opts[0]); self.assertIn(rf.GPU, opts[0])
+        open(eng, "a").write("# GRANT_CPUS\n")   # a GRANT_CPUS engine books only the declared host threads
+        opts, _ = rf.row_shape(row)
+        self.assertNotIn("q3", opts[0]); self.assertIn(rf.GPU, opts[0]); self.assertIn("t184", opts[0])
 
 class FarDrain(unittest.TestCase):
     def test_far_T_still_drains_and_backfills(self):

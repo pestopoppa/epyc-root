@@ -24,6 +24,7 @@ def _run():
     ok &= t('own_block strips descendants', 'P-1.a' not in L.own_block(parent))
     # v4 regressions
     ok &= t('deliverable validation: scorer build is non-inference despite t/s mention', L.exec_type("- [ ] build the FAIL_TO_PASS scorer; report t/s in the log")[0] == 'non-inference')
+    ok &= t('deliverable validation: an A/A pair is inference (ws58 2026-11-02)', L.exec_type("- [ ] **M4-X** same-frame A/A at np4/65536 on the MI210")[0] == 'inference')
     ok &= t('deliverable validation: run X against our local endpoint is inference', L.exec_type("- [ ] Run EvalPerf against our local endpoint")[0] == 'inference')
     ok &= t('issued authorization is not operator-decision class', L.score2("- [ ] compare one backend against the incumbent on a sealed workload (operator ruling Q1, 2026-09-29: local models only)")['class'] != 'operator-decision')
     ok &= t('standing constraint recognised', L.decision_kind("- [ ] re-calibrate floors. OPERATOR HOLD 2026-10-24: DO NOT LAUNCH AUTOKERNEL") == 'standing-constraint')

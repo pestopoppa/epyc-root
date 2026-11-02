@@ -28,7 +28,7 @@ NONINF_DELIV = re.compile(r'\b(scorer|grader|parser|adapter|writer|reader|hook|s
                           r'port(?:ing)?\b(?!.{0,20}\b(?:bench|measure))|land|merge|commit|rename|delete|document|write-?up|read-?only|zero[- ]inference|'
                           r'no inference|offline|replay (?:of|over) (?:retained|banked|stored|saved)|re-?segment|re-?score|re-?judge|'
                           r'disagreement analysis|reconcil|audit\b|census|lint|register|ingest|emit .{0,30}rows)\b', re.I)
-INF_DELIV = re.compile(r'\b(measure|re-?measure|calibrat|floor|sweep|A/B|ABA|bake-?off|compare .{0,40}\b(?:model|quant|arm|backend)|'
+INF_DELIV = re.compile(r'\b(measure|re-?measure|calibrat|floor|sweep|A/B|A/A|ABA|bake-?off|compare .{0,40}\b(?:model|quant|arm|backend)|'
                        r'run (?:the |a |an )?(?:\w+ )?(?:suite|bench|eval|campaign|arm|cohort|screen|smoke|pilot|window|row)|'
                        r'llama-bench|decode .{0,20}t/s|tg128|pp512|generation comparison|recording run|collect .{0,30}(?:responses|transcripts|completions)|'
                        r'run \w[\w-]* against (?:our|the) (?:local )?(?:endpoint|server|model)|benchmark .{0,30}(?:endpoint|model))\b', re.I)

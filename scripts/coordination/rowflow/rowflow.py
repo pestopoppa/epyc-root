@@ -1603,6 +1603,11 @@ def write_grant(flags, rid, regions, holds, window_s):
     start = dt.datetime.now(dt.timezone.utc).replace(second=0, microsecond=0) - dt.timedelta(minutes=1)
     end = start + dt.timedelta(seconds=int(window_s))
     cpus = grant_cpus(regions)   # ws58 2026-11-02: the exact cpu list (a GRANT_CPUS engine locks + pins a GPU grant to it)
+    # Written only when it adds something: for regions that already spell explicit cpus (mi210_0,184-191) the engine's
+    # fallback (cpus= else regions) gives the same list, and sealed jobs that parse their grant strictly (inf22 M4:
+    # exactly regions/start/end/holds) keep working.
+    if cpus == ws58_cpus(regions):
+        cpus = ""
     line = (f"regions={regions} start={start:%Y-%m-%dT%H:%MZ} end={end:%Y-%m-%dT%H:%MZ} holds={','.join(compress(holds))}"
             + (f" cpus={cpus}" if cpus else "") + "\n")
     p = os.path.join(flags, "grants", rid + ".grant")
