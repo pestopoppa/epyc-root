@@ -147,3 +147,7 @@ Consumed cal-immutable-alt.txt: a tiny sealed memfd accepted all four immutabili
 ## 01:10Z — Prepare descriptor transfer and native logits prototypes
 
 Prepared bounded model-free prototype work for authenticated sealed-descriptor transfer, a native full-vocabulary per-position logits capture harness, and an independent audit of the existing LB1 capture precheck. Completion files are registered for the dispatcher. All inference candidates remain dependent on real campaign inputs or safe calibration setup; no row published and no handoff box closed.
+
+## 01:11Z — Evaluate sealed descriptor transfer prototype
+
+Consumed memfd-proof-ready.txt: a disposable SCM_RIGHTS socketpair transfers a fully sealed memfd, validates kernel sender credentials and seals, rejects writes, and survives pass_fds into /bin/cat; three tests include wrong sender and unsealed refusal. This is model-free, parent-authorized only, and does not establish keeper lifecycle, per-grant authority, anti-replay, real benchmark execution or measurement comparability. Delegated disposable nonce/replay tests, keeper lifecycle review and measurement-protocol assessment; registered their outputs. No model read or inference run, no row published, no checkbox completed.
