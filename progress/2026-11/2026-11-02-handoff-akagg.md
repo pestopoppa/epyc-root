@@ -31,3 +31,7 @@ C3 r5 model-free test_host_r15.py passed rc0 HOST_ROUTE_PASS through sudo/chroot
 ## 09:17Z — File C3 inherited-claim host-route fixture
 
 C3 r5 model-free test_host_r15.py passed rc0 HOST_ROUTE_PASS through sudo/chroot/setpriv, using an overridden fixture engine and held fixture lock; three inherited proofs were asserted. This does not validate the deployed engine or qualify a profiling row. C3 successor model-identity repair and CH-27 private campaign preparation remain delegated; CH-26b r2 is with keeper dry-run. The prior wrapper applied the tick and passed index validation but its commit failed the observer hook; retry preserves the existing tick.
+
+## 09:27Z — File CH-26b C2 calibration result with residency limitation
+
+Filed akagg-ch26b-1017-c2-r2-20261101 inconclusive, rc0: 24 A/A pairs, 48 full ok units, matched_process_v2, comparison-size 5; estimated floor 3.016% with descriptive 95% interval 1.94675–4.95%. Native residency says contention and CPU placement unproven (0/48 proven), so no decision floor is claimed; full floor evidence copied before FILED receipt and compact summary/units retained in docs. C3 fs-verity scratch fixture reported ENOTSUP on ext4; CH-27 independent registration and native plan failure behavior need safe handling. NEMO prospective capture requires event correlation and clock alignment validation.
