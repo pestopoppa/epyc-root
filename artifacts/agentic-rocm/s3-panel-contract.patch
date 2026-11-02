@@ -1,0 +1,25 @@
+--- a/scripts/kernel_rnd/autokernel/controller/ARENA_INTEGRATION.md
++++ b/scripts/kernel_rnd/autokernel/controller/ARENA_INTEGRATION.md
+@@ -40,6 +40,22 @@
+ 6. Xe-Forge; and
+ 7. GEAK-v1; and
+ 8. ARGUS.
++
++This panel compares whole agents on tasks, not isolated search strategies: each
++authoring arm brings its own actor/editor and controller. The starting-state
++baseline has no actor and does not implement a greedy search policy. Differences
++in the panel therefore do not isolate parent selection from the other agent
++components.
++
++Do not add a greedy hill-climber with an existing actor to this fixed historical
++panel. A separate fixed-actor search-policy control is activated only when the
++shared selector replay finds a material held-out policy difference, or an
++already-running AutoKernel campaign can reuse frozen actors, proposals,
++evaluator and budgets without new generation infrastructure. If activated,
++compare greedy incumbent selection with the proposed fork policy under the
++matched model, prompt, context, task, seed and budget contract in the
++`S3-INF03-AIDE-1` trigger record; this is a new study, not an additional arm
++of the historical panel.
+ 
+ ARGUS is unavailable, not omitted. EvoEngineer is now source-admitted and
+ executable through the same parent-worker broker, controller sandbox, and

@@ -808,6 +808,32 @@ Origin: on 10-25 the operator called out the same "the loops are wired" conclusi
 two weeks. Only 1 of 10-24's result ticks had reached the ledger, although 10 had native adapters
 (`docs/reference/loop-planning-inputs-audit-2026-10-25.md`).
 
+## Typed judgments and stops (ws58 intake, 2026-11-02)
+
+A decision a loop takes from a model (park, resume, done, failure class) follows one shape. This
+replaces regex-over-prose classifiers and free-text halt heuristics.
+
+- **Typed output:** the judge returns probabilities over a closed option set plus a confidence, never prose.
+- **Two thresholds:** act above the upper one, stop below the lower one, and between them escalate.
+  Calibrate on real outcomes (never the judge's own output), one decision per episode, with a held-out
+  split, and pin the model version the thresholds were tuned on (intake-2604#record, intake-2605#record, intake-2606#record, intake-2607#record, intake-2608#record).
+- **"Unavailable" is not "answered":** a timeout, exception or missing judge is its own state, never a
+  default score. `q_judge.py` mapping a timeout to `SCORE: 1` is the counter-example (latent, judge off by default).
+- **A worker's claim is never a result:** re-extract and verify it. Unverified items are listed with provenance.
+- **Diagnostics come from a registry:** the planner names a registered id, not free text (intake-2604#record).
+- **Every stop has a named reason:** an exhaustive StopReason enum, never a counter or free-text halt.
+- **Replay:** keep the inputs of each decision so changed thresholds or rules can be replayed against them.
+
+## One long-lived worker per task (slot-thrash, 2026-11-01)
+
+- A task gets **one long-lived worker**; events for it pass through in code, with no router call and no new session (intake-2615#record, intake-2616#record).
+- A **fresh session starts only on a ready row.** A handoff with open tasks but no ready row does not
+  qualify, and a just-finished handoff is not re-admitted without a cooldown.
+- **Watch for unproductive loops:** many starts with no effect is a stop condition, not liveness.
+
+Origin: on 2026-11-01/02, 61 of 63 `AUTO-START` lines in `handoff-sessions.log` carried `rows=-`
+(44 in about 43 minutes); `auto_start()` refilled every freed slot with a fresh bootstrap.
+
 ## Related
 
 - [`handoffs/active/autokernel-rebuild-program.md`](../../../handoffs/active/autokernel-rebuild-program.md) — the program this convention came out of, with the five verified causes.

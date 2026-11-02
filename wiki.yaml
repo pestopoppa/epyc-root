@@ -53,6 +53,12 @@ lint:
     # moving a handoff between them is invisible to it — 151 wiki links rotted
     # that way on 2026-08-16 with every pass green.
     - wiki_link_targets
+    # KT-1 (ws58, 2026-11-02): orphan pages, unsourced Compiled Update bullets,
+    # cite-check CONFLICTED/refuted citations, pending KT-2 contradiction pairs.
+    - wiki_orphans
+    - unsourced_bullets
+    - conflicted_citations
+    - contradictions
 
 # Compile configuration (consumed by project-wiki skill compile operation)
 compile:

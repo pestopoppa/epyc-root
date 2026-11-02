@@ -334,6 +334,25 @@ fleet models.** No inference runs without the standing region claim; no at-scale
 
 ### CJ-6 — IFBench (execution-verified precise instruction following; NEW 2026-08-15, intake-1147)
 
+**Preparation evidence (2026-11-02):** The prepared `allenai/IFBench` source is pinned at
+`1c40f0c10d9b5c5c2f10a175a28007ebb64f7f4d`. The selected root `data/IFBench_test.jsonl`
+is 421,499 bytes, SHA-256 `d2ada7da94a38cfe406351614c4e686846ed2da6d1b339db95fa5ead19554a4a`;
+its acquisition report records 300 unique prompts, 344 constraints and 58 IDs. The prepared
+source tree occupies 2.1M; its Python environment (35M) and preseeded NLTK data (52M) are
+separate runtime costs. The complete preparation capsule occupies 142M including a 42M cache.
+These are allocation readings, not download-size estimates. The pinned sample output in this
+prepared capsule joins 300/300 prompts; the older 290/300 warning below is not evidence about
+this pinned sample. The selected root corpus and the upstream duplicate under `ifbench/data/`
+have different hashes and sizes; the root file is the run input.
+
+The offline scorer control recorded a kernel network denial and synthetic strict/loose results;
+the 0.6B smoke was engineering-only. The 27B cohort and paired comparison remain unrun.
+Pinned preparation records and control evidence: [`PLAN.json`](../../artifacts/compute/codex3-ifbench-prep-20261031/PLAN.json),
+[`SNAPSHOT.sha256`](../../artifacts/compute/codex3-ifbench-prep-20261031/SNAPSHOT.sha256),
+and [`OFFLINE-CONTROL.log`](../../artifacts/compute/codex3-ifbench-prep-20261031/OFFLINE-CONTROL.log).
+The prepared scratch copy is not durable corpus storage; preserve its input closure when publishing
+a new owner-controlled row. [no-belief: preparation only]
+
 Same five-step block as CJ-1…CJ-4. **Feeds CJ-GATE; does not bypass it** — adoption as a ranking prior
 and registration as an eval-tower row remain two separate operator decisions.
 

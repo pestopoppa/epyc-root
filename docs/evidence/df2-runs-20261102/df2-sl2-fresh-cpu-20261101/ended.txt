@@ -1,0 +1,7 @@
+rc=0 time=2026-11-01T23:44:24Z reason=complete
+job_id=df2-sl2-fresh-cpu-20261101
+owner=h-df2
+step=job-run
+estimated_wall_s=1200
+started=2026-11-01T23:43:21Z
+regions=0-23
