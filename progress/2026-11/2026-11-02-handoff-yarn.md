@@ -19,3 +19,7 @@ Advanced JETLONG-LONGCTX-RUN: a bounded runner integration and exact-token fixtu
 ## 10:08Z — Preserve Jet-Long bounded runner and ledger
 
 Integrated the offline bounded one-arm Jet-Long runner prototype and durable attempt ledger in scripts/benchmark/jetlong_cpu. Six offline tests pass, including fake HTTP, deadline, timeout, unknown and tampered fixture controls. This is not yet a runnable inference row: managed launcher, scoring, sealed fixtures, provenance and keeper qualification remain. Independent implementations for launcher, scoring and fixtures are underway with registered outcome files. No inference or scientific verdict.
+
+## 10:08Z — Land Jet-Long bounded runner after upstream merge
+
+The bounded runner and ledger commit was prepared and its six offline tests passed. The first serialized push encountered an upstream non-fast-forward; the upstream change was merged before retry. No inference or quality result.
