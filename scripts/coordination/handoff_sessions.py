@@ -465,7 +465,7 @@ def ensure_lane(slug: str, repo=None) -> tuple[str, str]:
 
 
 LANE_EXCLUDE = ("artifacts/",)      # ~800 MB of every full checkout; sessions never need it in the lane
-DISK_FLOOR_GIB = 170                # no new lane below this much free space
+DISK_FLOOR_GIB = 160                # no new lane below this much free space
 
 
 def sparse_lane(d):
@@ -967,6 +967,7 @@ IDLE_REPORT_COOLDOWN_S = 30 * 60  # a session that itself said IDLE: <reason> is
 MIN_RESUME_GAP_S = 10 * 60        # budget emergency 22:45Z: at most one non-filing resume per session per 10 min
 AWAIT_EXPIRY_S = 30 * 60            # a no-op turn parks a session for this long at most (03:29Z deadlock: 0 live, 45 parked)
 STUCK_AFTER = 3                     # consecutive no-effect turns -> stuck: run-end / new external events only
+RESUME_STALL_S = 30 * 60            # RESUME-STALL: queued events but no RESUME for this long
 WATCHDOG_MIN_STARTS = 3             # SA-2: alarm when this many starts in an hour produced no ready row
 AUTO_START_COOLDOWN_S = 30 * 60     # SA-1: a handoff is not restarted within this long of its last end/start
 MAX_STARTS_PER_HOUR = 10            # SA-1: global auto-start cap
@@ -1003,7 +1004,7 @@ def context_size(session_id, engine="codex"):
     return last
 
 
-def start_watchdog(flags, st, now):
+def start_watchdog(flags, st, now, sessions=None):
     """SA-2: zero-token counters over the last hour - AUTO-STARTs and DONEs (dispatcher state) vs ready rows produced
     (dryrun/*/PASS.json mtime). Starts without any effect -> AUTO-START-NO-EFFECT alarm (once per hour)."""
     starts = [t for t in (st.get("starts") or []) if now - t < 3600]
@@ -1015,6 +1016,13 @@ def start_watchdog(flags, st, now):
         log(flags, f"AUTO-START-NO-EFFECT {len(starts)} auto-start(s) and {len(dones)} done(s) in the last hour produced 0 ready rows (dry-run PASS); "
                    f"the starts are not converting - check the real-row gate and the briefs")
         st["watchdog_alarm"] = now
+    sess = (sessions or {}).values()
+    last = max([_parse(e.get("last_resume") or "") for e in sess] or [0])
+    refused = any(now - _parse(e.get("unwrapped_logged") or "") < RESUME_STALL_S for e in sess)
+    if (st.get("queue") or refused) and now - last >= RESUME_STALL_S and now - st.get("resume_stall_alarm", 0) >= RESUME_STALL_S:
+        log(flags, f"RESUME-STALL 0 RESUME events in the last {RESUME_STALL_S // 60} min while {len(st.get('queue') or [])} event(s) are queued"
+                   f"{' and UNWRAPPED is refusing resumes' if refused else ''} - check the dispatcher gates (cap, cooldown, unwrapped lanes)")
+        st["resume_stall_alarm"] = now
     return st["watchdog"]
 
 
@@ -1373,7 +1381,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             return ""
     inventory_alarm(flags, st, bdata, now)
     dead_push_lock(flags, st, now)
-    start_watchdog(flags, st, now)
+    start_watchdog(flags, st, now, S)
     reap_lanes(flags, reg, repo)
     paused = _parse(reg.get("paused_until") or "") > now
     live = sum(1 for e in S.values() if alive(e.get("pid")))  # suspended sessions (waiting on a running row) have no pid
