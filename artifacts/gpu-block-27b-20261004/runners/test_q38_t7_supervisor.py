@@ -4,6 +4,7 @@ import hashlib
 import os
 from pathlib import Path
 import sys
+import subprocess
 import tempfile
 import time
 import unittest
@@ -124,6 +125,18 @@ class SupervisorTest(unittest.TestCase):
         self.assertTrue(sentinel.exists())
         self.assertTrue(self.sup.stop_and_drain(handle))
         self.assertEqual(handle.process.returncode, -9)
+
+    def test_cleanup_leaves_unrelated_captured_test_process_alive(self):
+        peer = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(60)'])
+        try:
+            handle = self.sup.spawn('nodraft', self.recipes['nodraft'])
+            self.handles.append(handle)
+            self.assertTrue(self.sup.stop_and_drain(handle))
+            self.assertIsNone(peer.poll())
+        finally:
+            if peer.poll() is None:
+                peer.terminate()
+                peer.wait(timeout=2)
 
 
 if __name__ == '__main__':

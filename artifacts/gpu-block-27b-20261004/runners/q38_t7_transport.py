@@ -63,9 +63,12 @@ class NativeTokenizerAttestor:
         self.supervisor, self.tokenizer_sha256 = supervisor, tokenizer_sha256
         self.model_tokenizer_verifier, self.timeout = model_tokenizer_verifier, timeout
         self.opener = build_opener(_NoRedirect())
+        self.stop = lambda: False
 
     def __call__(self, handle, text):
         import re
+        if _stopping(self.stop):
+            raise ValueError('STOP before tokenizer request')
         if not isinstance(text, str) or not isinstance(self.tokenizer_sha256, str) or not re.fullmatch(r'[0-9a-f]{64}', self.tokenizer_sha256):
             raise ValueError('text and pinned tokenizer digest required')
         base = _bound_url(self.supervisor, handle)
@@ -87,6 +90,8 @@ class NativeTokenizerAttestor:
             if response.status != 200:
                 raise ValueError('native tokenizer request failed')
             raw = response.read(16 * 1024 * 1024 + 1)
+        if _stopping(self.stop):
+            raise ValueError('STOP during tokenizer request')
         if len(raw) > 16 * 1024 * 1024:
             raise ValueError('tokenizer response exceeds limit')
         data = json.loads(raw)
@@ -112,6 +117,10 @@ class OwnedHttpTransport:
         self.tokenizer = NativeTokenizerAttestor(supervisor, tokenizer_sha256, model_tokenizer_verifier)
         self.transport = HttpTransport(lambda h: _bound_url(supervisor, h), self.tokenizer, timeout=timeout)
 
+    def bind_stop(self, callback):
+        self.transport.stop = callback
+        self.tokenizer.stop = callback
+
     def send(self, handle, body):
         before = _bound_url(self.supervisor, handle)
         response = self.transport.send(handle, body)
@@ -123,6 +132,13 @@ class OwnedHttpTransport:
             # coordinator will fail closed on this typed error.
             response['error'] = f'ownership verification failed: {type(exc).__name__}: {exc}'
         return response
+
+
+def _stopping(callback):
+    try:
+        return bool(callback())
+    except Exception:
+        return True
 
 
 def parse_sse(raw: bytes) -> dict:
@@ -179,17 +195,23 @@ class HttpTransport:
         self.base_url, self.tokenize = base_url, tokenize
         self.timeout, self.max_response_bytes = timeout, max_response_bytes
         self.opener = build_opener(_NoRedirect())
+        self.stop = lambda: False
 
     def send(self, handle, body):
         base = _local_url(self.base_url(handle))
         payload = json.dumps(body, sort_keys=True, separators=(',', ':'),
                              ensure_ascii=False, allow_nan=False).encode()
+        if _stopping(self.stop):
+            raise ValueError('STOP before HTTP dispatch')
         request = Request(base + '/v1/chat/completions', data=payload,
                           headers={'Content-Type': 'application/json'})
-        t0 = time.monotonic(); ttfb = None; ttft = None; chunks = []; event_lines = []
+        t0 = time.monotonic(); ttfb = None; ttft = None; chunks = []; event_lines = []; stopped = False
         with self.opener.open(request, timeout=self.timeout) as response:
             total = 0
             while True:
+                if _stopping(self.stop):
+                    stopped = True
+                    break
                 chunk = response.readline() if body.get('stream') else response.read(65536)
                 if not chunk:
                     break
@@ -217,6 +239,13 @@ class HttpTransport:
                         event_lines = []
             raw = b''.join(chunks)
             result = {'http_status': response.status, 'wall_s': time.monotonic() - t0}
+        if stopped or _stopping(self.stop):
+            import base64
+            result.update(error='STOP during HTTP response', response_partial=True,
+                          raw_partial_base64=base64.b64encode(raw).decode(),
+                          raw_partial_sha256=hashlib.sha256(raw).hexdigest(),
+                          ttfb_s=ttfb, ttft_s=ttft)
+            return result
         if body.get('stream'):
             raw_hash = hashlib.sha256(raw).hexdigest()
             try:

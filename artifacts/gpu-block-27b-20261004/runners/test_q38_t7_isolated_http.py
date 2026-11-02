@@ -93,9 +93,9 @@ class HttpTransport:
 
 class Journal:
     def __init__(self): self.events = []
-    def before_request(self, arm, kind, digest):
+    def before_request(self, arm, pair_key, kind, digest):
         self.events.append(('before', arm, kind, digest)); return True
-    def after_response(self, arm, kind, response):
+    def after_response(self, arm, pair_key, kind, response):
         self.events.append(('after', arm, kind)); return True
 
 
@@ -162,7 +162,7 @@ class ManagedHttpTest(unittest.TestCase):
         server.handle['process'].terminate()
         server.handle['process'].wait(timeout=5)
         with self.assertRaisesRegex(runtime.RuntimeFailure, 'identity no longer verified'):
-            self.rt.request(server, {'prompt': 'x'}, 'measure')
+            self.rt.request(server, {'prompt': 'x'}, 'measure', 'test')
         self.assertEqual(self.transport.sent, [])
         self.assertEqual(self.journal.events, [])
         self.assertTrue(self.rt.stop(server))

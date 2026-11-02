@@ -16,7 +16,7 @@ class FakeRuntime:
     def start(self, arm, recipe): return arm
     def verify(self, server, arm, recipe): assert server == arm
     def stop(self, server): return True
-    def request(self, server, body, kind):
+    def request(self, server, body, kind, pair_key):
         self.sent.append((server, kind, copy.deepcopy(body)))
         timings = {'cache_n': 10, 'prompt_n': 10, 'predicted_n': 20,
                    'predicted_per_second': 5, 'draft_n': 10, 'draft_n_accepted': 5}
@@ -158,8 +158,8 @@ class PayloadTest(unittest.TestCase):
 
     def test_incomplete_stream_stops_before_the_next_arm(self):
         class Broken(FakeRuntime):
-            def request(self, server, body, kind):
-                response = super().request(server, body, kind)
+            def request(self, server, body, kind, pair_key):
+                response = super().request(server, body, kind, pair_key)
                 if body.get('stream'):
                     response['stream_complete'] = False
                 return response

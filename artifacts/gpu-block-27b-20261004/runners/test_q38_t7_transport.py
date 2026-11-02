@@ -70,6 +70,21 @@ class TransportTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             client.send(None, {})
 
+    def test_stop_between_stream_reads_retains_partial_bytes(self):
+        client = transport.HttpTransport(lambda _: self.base, self.proof)
+        calls = []
+        def stop():
+            calls.append(1)
+            return len(calls) >= 3
+        client.stop = stop
+        result = client.send(None, {'messages': [{'role': 'user', 'content': 'x'}], 'stream': True})
+        self.assertTrue(result['response_partial'])
+        self.assertIn('STOP', result['error'])
+        import base64
+        raw = base64.b64decode(result['raw_partial_base64'])
+        self.assertTrue(raw)
+        self.assertEqual(hashlib.sha256(raw).hexdigest(), result['raw_partial_sha256'])
+
 
 if __name__ == '__main__':
     unittest.main()
