@@ -1,0 +1,1 @@
+Fresh attempt for KVU-12.5 after disk-floor termination of handoff-kvu12-5-quarter-20261101. Prior target and control are preserved; this attempt starts all arms and three anchors anew. Same prospectively declared rule. Run only after keeper qualification and a suitable grant; current free disk is transient. No compute has been run in this directory.

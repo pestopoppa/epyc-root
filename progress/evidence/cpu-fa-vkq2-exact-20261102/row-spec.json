@@ -1,0 +1,26 @@
+{
+  "id": "handoff-kvu-cpu-fa-vkq2-exact-20261102",
+  "owner": "handoff-kv-unified-stack-rollout",
+  "launcher": "/mnt/raid0/llm/tmp/kvu/cpu-fa-vkq2-exact-20261102/launcher.sh",
+  "lane": "cpu",
+  "regions": "q0,q1,q2,q3",
+  "scratch_root": "/mnt/raid0/llm/tmp/kvu/cpu-fa-vkq2-exact-20261102",
+  "result_path": "/mnt/raid0/llm/tmp/kvu/cpu-fa-vkq2-exact-20261102/RESULT.json",
+  "result_format": "json",
+  "estimate_s": 14400,
+  "min_window_s": 14400,
+  "dryrun_timeout_s": 300,
+  "dryrun_native_result": true,
+  "handoff_task": "kv-unified-stack-rollout.md:CPU-FA-VKQ-2",
+  "decision_rule": "20 fresh processes; depth16384/65536; 5 per arm per depth; alternating HYBRID default versus GGML_FA_VKQ_F16=1 in exact C5 CPU binary; 48 threads on whole host. Higher tok/s better. Per-depth effect=100*(median(hybrid)/median(legacy)-1); floor=max(2 percent, hybrid range/median percent, legacy range/median percent). Record delta and noise, no production or MTP verdict.",
+  "keep": [
+    "RESULT.json",
+    "prepared.json",
+    "*.py",
+    "*.sh",
+    "row-spec.json",
+    "run/**"
+  ],
+  "notes": "UNPUBLISHED PREPARED DRAFT; native qualification not run. Full store manifest and all3 weight shard SHA256 verification must finish OUTSIDE grant through prepare.py. Existing C5 build independently contains HYBRID/F16 knob. No 086 or VKQ3 result reuse. Full20 launches; deterministic native llama-bench depth input; no transcript/dataset preparation. 100GiB peak estimate; 104GiB MemAvailable entry. Per-cell hard cap1800s; row4h bound conservative/unmeasured; interrupt yields no full verdict.",
+  "kind": "compute"
+}

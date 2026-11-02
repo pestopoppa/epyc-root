@@ -1,0 +1,22 @@
+{
+  "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf": {
+    "identity": {
+      "st_dev": 2431,
+      "st_ino": 96242023,
+      "st_size": 37801097504,
+      "st_mtime_ns": 1782411254270412235,
+      "st_ctime_ns": 1782411254270412235
+    },
+    "sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131"
+  },
+  "/mnt/raid0/llm/models/Qwen2.5-0.5B-Instruct-f16.gguf": {
+    "identity": {
+      "st_dev": 2431,
+      "st_ino": 96241097,
+      "st_size": 994156864,
+      "st_mtime_ns": 1768262463103052353,
+      "st_ctime_ns": 1769627064381075183
+    },
+    "sha256": "f1ad9d1174ce6ab47b584d522634c47e411b75bffdffd9a4e106e21e882392e5"
+  }
+}
