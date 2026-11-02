@@ -43,3 +43,7 @@ Prepared pinned E18 duration-baseline bytes from orchestrator 60bfc4c43b601f7587
 ## 01:14Z — Regenerate index and publish aggregate routing coverage auditor
 
 Consumed index-repair diagnosis and regenerated handoff state, graph and master rollup after adding VB-DAR-JOIN-COVERAGE-WIRE; research-evaluation open count is 694. The aggregate task-ID coverage auditor and six fixture tests are ready for publication; it does not certify reward provenance or training eligibility. Dispatched bounded writer, sweep plumbing and private snapshot preparation drafts. No real data audit, inference or row published.
+
+## 01:16Z — Publish routing coverage auditor and advance prospective capture
+
+Recovered the prior failed publication: serialized_push.py published 11 lane commits through 1bb56aa76dc5 to origin/main, including aggregate auditor 2ff97f3b95b1 and its source-table and wiring task. The prior index_state check passed. Started bounded prospective native receipt, preference propagation, and private snapshot preparation drafts, each with a dispatcher event. No real audit, inference or row published.
