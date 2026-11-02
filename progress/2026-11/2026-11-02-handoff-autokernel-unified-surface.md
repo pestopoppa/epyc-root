@@ -87,3 +87,7 @@ The prior delegated CPU floor and GPU quantize prep did not leave completed resu
 ## 00:31Z — Review CPU observer and candidate measurement readiness
 
 The prior delegated CPU floor and GPU quantize prep did not leave completed result files; no runnable row or verified candidate executable was available for publication. An experimental untracked CPU observer exists in the lane, but it is not integrated into the research floor reader and cannot qualify a measurement. Dispatched bounded review and focused non-compute tests of that helper, plus quantize build identity and canonical CPU recipe/build-frame checks; output events are registered. The Goodhart task remains open despite its published proposed contract. No compute was launched and no row published.
+
+## 00:31Z — Review CPU observer and candidate measurement readiness
+
+The prior delegated CPU floor and GPU quantize prep did not leave completed result files; no runnable row or verified candidate executable was available for publication. An experimental untracked CPU observer exists in the lane, but it is not integrated into the research floor reader and cannot qualify a measurement. Dispatched bounded review and focused non-compute tests of that helper, plus quantize build identity and canonical CPU recipe/build-frame checks; output events are registered. The Goodhart task remains open despite its published proposed contract. No compute was launched and no row published.
