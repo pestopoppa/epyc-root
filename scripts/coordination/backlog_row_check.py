@@ -189,6 +189,10 @@ def search_key(text: str) -> str:
     return " ".join(re.sub(r"[*`]", "", text).split()).casefold()
 
 
+# A task box may sit on a `-`/`*`/`+` bullet or a numbered item (`1. [x]`, `2) [ ]`).
+_BULLET = r"(?:[-*+]|\d+[.)]) "
+
+
 def _boxes(path: Path) -> list[tuple[int, str, str, str]]:
     """(lineno, state, body, enclosing-heading) for every checkbox in the file."""
     out, head = [], ""
@@ -196,14 +200,14 @@ def _boxes(path: Path) -> list[tuple[int, str, str, str]]:
         if line.startswith("#"):
             head = line.strip("# ").strip()
         s = line.lstrip()
-        m = re.match(r"- \[([ xX])\]\s*(.*)", s)
+        m = re.match(rf"{_BULLET}\[([ xX])\]\s*(.*)", s)
         if m:
             out.append((i, m.group(1).strip().lower(), m.group(2), head))
     return out
 
 
-_BOX = re.compile(r"^\s*- \[( |x)\] ")
-_OPEN_BOX = re.compile(r"^\s*- \[ \] ")
+_BOX = re.compile(rf"^\s*{_BULLET}\[( |x)\] ")
+_OPEN_BOX = re.compile(rf"^\s*{_BULLET}\[ \] ")
 # A BANNER is the corpus's one guard form that speaks for boxes other than its own:
 # a blockquote. Every real banner in handoffs/active is `> **⚠ …`. Requiring the
 # blockquote is what separates a guard from PROSE ABOUT a guard — see C41.
@@ -745,7 +749,7 @@ def box_at(path: Path, lineno: int) -> Optional[tuple[int, str, str, str]]:
         return None
     line = lines[lineno - 1]
     s = line.lstrip()
-    m = re.match(r"- \[([ xX])\]\s*(.*)", s)
+    m = re.match(rf"{_BULLET}\[([ xX])\]\s*(.*)", s)
     if not m:
         return None
     head = ""
