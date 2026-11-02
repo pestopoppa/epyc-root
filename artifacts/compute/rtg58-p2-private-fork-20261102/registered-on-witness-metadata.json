@@ -1,0 +1,44 @@
+{
+  "api_pid": 3904481,
+  "api_setup": "private_api.py injects private port 18976 facts matching server argv; CROSS_ROLE_DISJOINT_PLACEMENT=1; PREFIX_INDEX=1; PREFIX_INDEX_FORK=1; PREFIX_INDEX_LPM=1; PREFIX_INDEX_LPM_MAX_SKIPS=1; PREFIX_INDEX_TRUNK_MIN_TOKENS=1024",
+  "candidate_commit": "8952a0f693fb923918157eb25117641b74766230",
+  "claimed_cores": "72-79",
+  "classification": "ungranted synthetic API diagnostic; no gate verdict",
+  "file_sha256": {
+    "long-registered-on-request.json": "963f6a49149cb638fae05c6309e732a05d535de8306f81c1088934799662fcd1",
+    "long-registered-on-response.json": "cbaf0a2628284fc91290d3ce1c13735ba8fb98bf0af1b3e9e46899c2b4c8512a",
+    "long-registered-on-slots.jsonl": "9b5f06d708e5e8fd1f0dc823d490c55b8ba367bd8e12bb081d63932ec2e1a3ed",
+    "observe-long.py": "030f926ef6fba4d0b37cc855c2acdf43695897eda5b79f3533a5be7814e28571",
+    "private_api.py": "6963b335b5bb41648af508abdef1bcb29e54fab003d4262c908aa74ddc081cd9",
+    "trace/dc2db031f41f088fe121e9c82ac37c3277a83cce6a27df269f6ed2a80785466a.json": "817b0ffce178ea96cf45c7ae4b7489155273901d84d4c1c207713ad67d80762e"
+  },
+  "limitations": [
+    "no canonical grant",
+    "synthetic scope and root",
+    "sample gaps",
+    "no independent matched decision windows",
+    "no native belief row"
+  ],
+  "model": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+  "observation": {
+    "first_positive_sample_unix": 1793627077.9234269,
+    "pool_gate": true,
+    "positive_fork_samples": 15,
+    "sample_count": 51,
+    "sample_errors": 22,
+    "scouts_completed": 2,
+    "scouts_launched": 2,
+    "witness": {
+      "n_fork_tokens": 3555,
+      "slot": 2,
+      "src_kind": "checkpoint",
+      "src_slot": 3,
+      "task": 58
+    }
+  },
+  "orchestrator_commit": "868275acb64ef3d490ecac6952518ae187fe74d3",
+  "scope": "HS-19a fixture under synthetic deeply nested root; system message 4559 chars and 3400 actual server tokenizer tokens",
+  "server_pid": 3902647,
+  "server_setup": "-np 4 -c 98304 -t 8 --device none --kv-unified --no-cache-idle-slots --slot-fork-min-tokens 1024",
+  "written_unix": 1793627130.8676922
+}
