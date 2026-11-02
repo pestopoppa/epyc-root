@@ -1369,7 +1369,7 @@
     },
     "kv-unified-stack-rollout.md": {
       "blocked": 0,
-      "closed": 90,
+      "closed": 93,
       "guarded": 0,
       "last_advanced": "2026-11-02",
       "open": 52,
@@ -1381,7 +1381,7 @@
       },
       "row_id": "RTG-57",
       "state": "active",
-      "total": 142
+      "total": 145
     },
     "laguna-s21-cpu-port.md": {
       "blocked": 0,
