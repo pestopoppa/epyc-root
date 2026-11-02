@@ -87,3 +87,7 @@ CH-27 private immutable input stage passed six controls; native private store re
 ## 09:45Z — Implement owning launcher and request marker capture
 
 Implemented marker-binding validator candidate with 18 synthetic controls plus seven collector controls; the separate caller-supplied marker is not yet authenticated. Owning pidfd/request capture implementation is in progress; no CPU floor or publication claimed.
+
+## 09:46Z — Prepare CPU request capture and C3 model custody
+
+CPU pidfd-bound request capture, C3 pre-grant model custody and CH-27 private-store reconstruction remain in implementation. No calibration row or measurement claimed.
