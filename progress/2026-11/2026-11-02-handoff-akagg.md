@@ -263,3 +263,7 @@ CH31 source localization on pinned C5 and eight retained paired logs: node_13 ou
 ## 11:43Z — Implemented fail-closed synthetic capture binding for scheduler, task lifetime and IRQ source identities.
 
 CH26 observer synthetic capture binding now checks scheduler, lifecycle, owner, target and IRQ placeholder identity/window consistency, with 17 model-free tests passing; implementation and result are in /mnt/raid0/llm/tmp/akagg/ch26-observer-next and /mnt/raid0/llm/tmp/akagg/ch26-binding-result.txt. Supplied inputs are unauthenticated and all output remains unproven: no host coverage, interference or DS41 noise-floor claim. META C6 synthetic CSV validator similarly cannot authenticate PID from profiler CSV. CH31 instrumentation preparation continues independently.
+
+## 11:49Z — Prepared and independently reviewed metadata-only C5 dispatch instrumentation and refusal comparator.
+
+CH31 opt-in C5 dispatch instrumentation patch, comparator and controls are retained under docs/reference/autokernel/ch31-rowexact-source-20261102/instrumentation. Pinned C5 patch apply-check and synthetic tests pass. Independent review caught potential weight-alias capture and vacuous equality; revised candidate disables all tensor-byte reads and the comparator refuses to claim input equality. Additional barriers, source/identity and scratch custody still need bounded runtime and provenance validation before publication. CH26 live capture and C6 profiler custody preparation remain unproven; no noise floor or GPU gate result.
