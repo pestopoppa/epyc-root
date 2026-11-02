@@ -1,0 +1,20 @@
+# REPL trace capture activation package
+
+**Status:** draft for operator and API-session owner; no activation, reload or capture is authorized by this document. Scope: REPL-EMB-2.8a/2.8b. The capture code is present in orchestrator source; this package does not establish that the running API contains it. The prospective coverage writer and its planning-context canary are separate unfinished integration work.
+
+## Decision and scope
+
+Authorize a bounded real REPL session with `EPYC_REPL_TRACE_CAPTURE=1`, and authorize custody of the exact original query and spill content needed to join that session's records. The capture log itself contains hashes and spans, not raw text. The originals are necessary for a scoreable export and have different sensitivity and access requirements; choose their custodian, protected location, access policy and retention period before the session. Do not enable capture until those choices and the API owner's reload boundary are agreed. Restrict the activation window and trace directory to that session; disable capture and reload at the same owner's next boundary. This changes runtime configuration and requires the operator package described in the handoff.
+
+## Execution at the API owner's boundary
+
+1. Verify the API deployment source contains the v2 spill search/open tap and the resolver/export code from orchestrator commits `24c87ea8e588dcfde9d843ca3e3d4fbe4b3f3b66` and `4df95b4c8ff1e8ac47c4a86cd27a461702bc345f`, or their descendants. Record running process identity and deployed revision; a source checkout alone does not prove the running process is current.
+2. Arrange an access-restricted, session-specific `EPYC_REPL_TRACE_DIR` outside the lane, and configure `EPYC_REPL_TRACE_CAPTURE=1` in the actual API process environment. The API owner performs the API-only reload using `orchestrator_stack.py reload orchestrator`; verify the new process environment and identity without printing unrelated environment variables. Do not reload the full stack or interrupt another session's inference.
+3. During ordinary real use, retain the authorized exact query and spill content separately. A qualifying event requires a registered spill, a grep search with hits and a later overlapping peek of the same content in the same session. Capture entry points suppress runtime errors, so a successful request alone does not establish that records were written. Save the native log and a record of how the qualified session was selected; do not fabricate, replay or backfill events.
+4. Restore the original capture configuration at the API owner's next boundary, reload the API only, and verify the new process has capture disabled. Preserve the scoped native log and separately protected originals under the agreed retention policy.
+
+## Acceptance and handoff
+
+Use `src.repl_environment.trace_capture.load_real_trace_rows` with a query-digest resolver returning the exact original query and a session resolver returning `{'bundle': <id>, 'sections': {<original path>: <exact content>}}`. Use `write_real_trace_queries` on the scoped v2 log to export the harness input. It verifies query and content digests, refuses unknown custody, and converts opened character spans to inclusive line gold. Mixed legacy v1 and v2 rows cannot be silently discarded; preserve the full source and the selection provenance when scoping the export. The evaluation freeze must recheck the source digest against the actual bundle.
+
+REPL-EMB-2.8a/2.8b remain open until an actual session's eligible records load as `real_trace` in the 2.2 harness and the required trace write-side integration is complete. One captured session does not satisfy REPL-EMB-2.8: its frozen rerun needs at least 75 real trace rows and the existing n, margin and confidence conditions. Standalone synthetic coverage or a passed unit test is not a real-session trace, retrieval-quality result, or proof of a wired planning loop.
