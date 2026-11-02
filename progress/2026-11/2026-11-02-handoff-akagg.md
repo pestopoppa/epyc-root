@@ -259,3 +259,7 @@ CH32 group C source checker establishes that unchanged C2 decision code referenc
 ## 11:40Z — Built and validated source and retained-output checker narrowing CH31 rowexact dispatch.
 
 CH31 source localization on pinned C5 and eight retained paired logs: node_13 output shape implies ne11=4, straddling rowexact threshold N=0 versus N=4. IQK is attempted first; the fallback can bypass tinyBLAS for generic vec-dot under source guards. Input types, contiguity, actual dispatch and equal input tensors were not recorded, so neither isolated-op causality nor Q38FN behavior is established. C6 successor GPU execution timing remains unproved; synthetic lifecycle collection likewise cannot establish host coverage. Previously filed CH26 r2 receipt and pass remain valid as functional-only evidence.
+
+## 11:43Z — Implemented fail-closed synthetic capture binding for scheduler, task lifetime and IRQ source identities.
+
+CH26 observer synthetic capture binding now checks scheduler, lifecycle, owner, target and IRQ placeholder identity/window consistency, with 17 model-free tests passing; implementation and result are in /mnt/raid0/llm/tmp/akagg/ch26-observer-next and /mnt/raid0/llm/tmp/akagg/ch26-binding-result.txt. Supplied inputs are unauthenticated and all output remains unproven: no host coverage, interference or DS41 noise-floor claim. META C6 synthetic CSV validator similarly cannot authenticate PID from profiler CSV. CH31 instrumentation preparation continues independently.
