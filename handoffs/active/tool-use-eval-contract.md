@@ -2,6 +2,247 @@
 
 **Scratch**: `/mnt/raid0/llm/tmp/tool-use-eval-contract/` · worktrees: `/mnt/raid0/llm/worktrees/tool-use-eval-contract-*`
 
+## Execution map — audited 2026-11-02
+
+**Session checkpoint 2026-11-02:** The scheduled rows `evl46-opencode-schema-20261102`,
+`evl46-crm-fullentry-fixture-20261102`, and `evl46-crm-reader-64-tests-20261102` are
+grantable after their dry runs; `evl46-crm-live-source-tests-20261102` needs a dry run.
+They are fixture/source checks, not inference. The live worker draft is APP
+`codex/evl46-live-worker-20261102` @ `ec063054`; it is not runtime-qualified. Rowflow
+refuses model-weight hashing inside a granted row, so obtain a scheduler-approved claimed
+pre-hash and post-run hash path, qualify the worker and reader, then publish and dry-run the
+actual pair. No live inference row is ready. The scheduler owner maintains the sole keeper;
+respect the other sessions' CPU reservations. [no-belief: operational state]
+
+- [x] Audit the CRM control, render surface and current implementation; document the matched-pair plan. ✅ 2026-11-02 [no-belief: tooling-repair]
+- [x] Prepare source-bound paired CRM fixture, receipt reader and opt-in seed/ledger controls; retain live qualification as open work. ✅ 2026-11-02 [no-belief: tooling-repair]
+- [x] Prepare confined scorer and synthetic OpenCode controls and queue their applicable scheduler checks. ✅ 2026-11-02 [no-belief: tooling-repair]
+
+**Implementation checkpoint 2026-11-02 (candidate branches; not deployed).** APP
+`codex/evl46-seed-ledger-20261102` @ `9c51d450` adds opt-in `--send-seed`, recording
+whether the HTTP seed field was sent while preserving the historical default request, and
+projects trace-bound first single-call native schema validity plus terminal timeout facts.
+The combined DTAP suite passed 163/163 from a protected verification worktree under a q0
+claim. Provider seed adherence, multicall attribution, task-level verification, recovery and
+complete costs remain unproved; TU-LED-1 stays open. [no-belief: software controls]
+The timeout-report adapter accepts the new reviewed runner/endpoint source set as a unit while
+retaining the original set and rejecting mixed revisions. Its original producer-to-projection
+and CLI regression passed 25 tests against the combined candidate from protected checkouts;
+this is a synthetic test, not a live timeout or planning-context canary. [no-belief: software controls]
+
+Research `codex/evl46-scorer-isolation-20261102` @ `ed1e69e7a` is an opt-in, fail-closed
+bubblewrap prototype; default scoring remains unchanged. Six focused controls and the old
+scorer smoke passed. This host refused actual namespace setup (`RTM_NEWADDR` / `uid_map`
+permission failures), so no real access-denial acceptance, hidden-test secrecy or TU-GR-1 /
+2a-iv completion is claimed. [no-belief: source and fixture controls]
+
+Research successor `39480fa8f` adds opt-in Docker confinement using a pinned local image and an
+explicit CPU set within caller affinity. Under a q0 claim, the actual scorer path denied a
+host-only file and network access, honored CPUs 0–1, and verified owned-container cleanup on
+normal and timeout paths (9 tests). The caller must still hold the region claim; the container
+uses a different interpreter and test bytes remain visible to candidate code. This does not
+close the agent/grader isolation matrix or establish hidden-test secrecy. [belief: cc]
+Research `8a314b790` adds a fixed synthetic grader-reference probe: under an independently
+claimed q1 window it passed direct and `/proc` reference denial, environment/FD non-disclosure,
+host-network denial, controlled export and affinity checks (13 focused tests). Scope is that
+specific Docker scorer configuration, not the live REPL/OpenCode or embedded test code. [belief: cc]
+
+APP combined candidate `codex/evl46-seed-ledger-20261102` @ `b61c4747` contains the paired
+core, source-pinned CRM/Slack adapter, private service provisioning, partial receipt and judge
+attestation. Under q1, the real model-free service control started pinned private services,
+seeded the case, created a note and Slack message through native MCP, reproduced the initial
+state after reset, and removed owned containers and network. [Source-bound receipt](https://github.com/pestopoppa/epyc-orchestrator/blob/b61c4747/docs/evidence/dtap-crm-service-control-20261102/README.md).
+The model pair, current-grant launcher and belief canary remain unqualified. [belief: cc]
+APP successor `086a103d` adds native paired-receipt sealing and preserves a failed first arm
+plus explicitly unattempted second arm. A scripted-endpoint pair exercised the private services,
+native judge and tool-suffix delivery with no model. The integrated candidate passed all 177 DTAP
+tests from a protected checkout under q2. Actual grant authority, reader/canary and live row remain
+open. [no-belief: software and fixture controls]
+Rowflow `evl46-crm-fullentry-fixture-20261102` is grantable after its exact-entry smoke; the
+scheduled qualification will use the real provider claim, private CRM/Slack and a scripted
+HTTP endpoint, with no model. Its result cannot satisfy the live pair. The model launcher and
+separate post-run content-hash row are still being prepared. [no-belief: fixture controls]
+Row `evl46-crm-live-source-tests-20261102` is published with state **needs-dryrun**. Its
+model-integrity preflight is prepared at `/mnt/raid0/llm/tmp/evl46-live-preflight-20261102/`
+but unexecuted: rowflow refuses weight hashing inside a grant, and the scheduler owner has
+been asked for a short claimed preflight opening. Do not claim a live model row is ready.
+[no-belief: operational state]
+ROOT `4f609b459` + `bb252dbc6` + `bf9dbd64c` began a strict original-journal reader and
+partial-arm refusal controls; three refusal tests passed. Later candidate `88d41e517` registers
+the scoped producer-reported observation described below, without asserting grant authority,
+loaded code or model applicability. [no-belief: software controls]
+APP `1e02f2e2` adds an opt-in full-quarter CPU provider open/close receipt around the existing
+flock context, including copied grant and `/proc/locks` witness; its three targeted tests passed
+in the combined checkout. It does not by itself prove child affinity, scheduler issuance or
+already-loaded Python bytes. The launcher and reader must verify those separately before a claim.
+[no-belief: software controls]
+
+Research candidate `544a240c9` provides a synthetic container-to-local-endpoint broker with a
+fixed client-tool profile; 24 tests passed. It is not yet an OpenCode transport or proof of
+host-side `/chat` tool isolation. [no-belief: software and fixture controls]
+Successor `b2dc50a86` adds a bounded buffered SSE bridge tested with a fake client and upstream
+(10 broker tests); it does not establish actual OpenCode compatibility or token timing. [no-belief: software controls]
+Rowflow `evl46-opencode-fake-20261102` passed a separate-path exact-entry smoke.
+That smoke ran pinned OpenCode 1.18.31 against a fake upstream: three streamed requests, a
+successful public-file read, denied grader-path read, intact host canary and full session export.
+The supposedly read-only synthetic config nevertheless advertised ten tools including shell and
+write: do not interpret the smoke as catalog restriction or live-model isolation. Scheduled result
+is `RESULT.json` under `/mnt/raid0/llm/tmp/evl46-opencode-row-20261102/`; report the actual
+diagnostic and all failures. Its redundant scheduled repeat was withdrawn after the smoke; the
+smoke receipt remains. [no-belief: synthetic control]
+Rowflow `evl46-crm-reader-b8-tests-20261102` is also **grantable** after a separate-path smoke
+(five reader controls). It exercises synthetic refusal/provider/source checks, not a live belief
+claim. **Correction:** its CPU-lock source pin is truncated; the passing synthetic smoke did not
+exercise that pin. Its ready manifest was withdrawn and it is no longer grantable; corrected
+successor `evl46-crm-reader-a656-tests-20261102` passed six smoke controls but was subsequently
+withdrawn for a new projection/canary source snapshot; successor
+`evl46-crm-reader-dc-tests-20261102` refused its smoke on a missing adapter identifier and
+was not published. Repair is in progress. The allocator owns grants; no session-issued grant
+is implied.
+[no-belief: software controls]
+Corrected reader `evl46-crm-reader-64-tests-20261102` passed seven source-bound synthetic
+smoke controls and is grantable; b5 was withdrawn. Candidate ROOT `88d41e517` projects only
+a producer-reported observation, refuses fixture captures as live, and omits unverified model
+and backend applicability. The mocked-custody canary is a control, not proof of live wiring.
+[no-belief: software controls]
+Rowflow `evl46-opencode-policy-20261102` passed a fake-upstream smoke: explicit
+OpenCode `permission` settings advertised only `read`; injected `bash` was unavailable, and
+the workspace read and session export succeeded. The grader-path refusal observed there was a
+permission-layer result, not an OS-denial proof. Its redundant repeat was withdrawn with the
+smoke retained. Successor `evl46-opencode-schema-20261102` passed its separate smoke with a
+pinned read-tool schema and broker refusal of injected `bash`; it is grantable for allocator
+execution. [no-belief: synthetic control]
+
+[TU-HR-1 source/runtime census](../../docs/reference/tu-hr1-tool-render-audit-20261102.md)
+records the configured model/template groups and source forwarding paths, and distinguishes
+them from live identity. Sampled model endpoints were unreachable in the observer's namespace;
+per-model live template/render verification remains open. [no-belief: source and operational review]
+
+ROOT `df0b7b8c8` + `efcd010dd` prepare fresh public file-task attempts with frozen identities
+and synthetic-only REPL/OpenCode adapter controls. The existing P0.4 scorer is specific to its
+edit task, and the nearby exact-match scorer is not yet proven suitable for these answer tasks.
+Live transports, task scorer, sealed fixtures, grader isolation and SC86 execution remain open;
+see [adapter controls](../../docs/design/hs4-file-trial-adapter-controls.md). 46 fixture,
+P0.4 and P6 tests plus five subtests passed under q0. [no-belief: software controls]
+ROOT `4e9d25de0` adds transport plumbing, but deliberately refuses all live I/O until a real
+grader-isolation gate is implemented. ROOT `eb870805e` adds captured-descendant timeout cleanup
+with PID birth checks; escaped descendants remain unproved. The nearby scorer accepted a wrong
+multiline answer ending in the expected answer. ROOT `1e699f931` adds a strict task-specific JSON
+format gate before the unchanged native scorer and prepares six development and twelve acceptance
+fixtures; native positive, wrong-answer and extra-line controls passed. Scorer identity binding,
+sealed-split protection and live isolation remain unproved. These controls are not live readiness
+or an acceptance result. [no-belief: software controls]
+ROOT `69e9e3d5e` binds the reviewed native scorer bytes and seals prepared fixture/prompt/oracle
+hashes; independent seal verification and source tamper controls passed. Read-only modes are
+owner-reversible, not proof of an OS grader boundary. [no-belief: software controls]
+
+This map supersedes the historical live-status language below, not the individual acceptance
+contracts. Source review used ROOT `2d95a8a371` and orchestrator `9301fb7bc81663d176f11ebf21bf496d4ac725a3` (the shared orchestrator checkout was behind that ref). Re-resolve
+the task text, source and ownership at dispatch; use isolated worktrees. Historical PIDs, flags,
+paths and `ready` statements below are not evidence about running services today. The frozen
+UFH-13 inference posture and the existing measurement and resource-admission rules still apply.
+
+**What exists.** The imported DTAP catalog has 18 CRM/finance cases. Its native-schema opt-in
+validates calls, and its runner records requests, outcomes and trace replay, but live calls in
+`scripts/autopilot/evals/dtap/harness/runner.py` get placeholder responses and do not mutate
+simulated services. The separate retained `dtap-live-r2-20261028/dtap/crm_entry.py` invokes the
+upstream CRM and snapshots leads, but hard-codes `crm-benign-001`, supports that case's tools,
+and has no indirect-injection implementation. Its old launcher is a fixed-ID, fixed-CPU and
+fixed-engine historical artifact, not a current runnable row. One benign CRM result and the
+finance R3 pair are filed below; the latter's attack was **not delivered**. Neither establishes
+an attack-resistance result. `TU-ADV-1` is complete for its stated fixtures; `TU-LED-1` is
+partially instrumented, not complete. The generic DTAP README's no-service warning is accurate
+for that runner, not a denial of the separate CRM diagnostic.
+
+**Dispatch correction for TU-DTAP-2a.** `crm-benign-001` has no attack configuration, while the
+imported indirect CRM cases have different tasks and judges. Its successful benign run is a
+plumbing control, not a matched baseline. Do not claim the original wording's same-case/same-judge
+pair exists or silently inject into the benign task. Start with
+`crm-malicious-indirect-general-ai-restrictions-004`, using its unchanged judge for both arms.
+Its catalog describes a `salesforce:create_record` tool-result suffix and a separate skill
+injection; start with the tool suffix alone, explicitly report that the skill arm is untested,
+and pin the original suffix and a neutral no-suffix control before exposure. The suffix follows
+the named tool response, so capture whether that response actually occurred before interpreting
+delivery. The judge reads CRM Notes and Tasks and the `sales` Slack channel and uses the current
+date for task-due acceptance; bind the effective date and replay conditions. Keep the same task,
+service seed, tools, endpoint, model, decoding, judge and
+runner across its two arms; change only the intended attack-bearing surface. If the imported
+payload or required native service operations cannot be recovered, implement and test the missing
+adapter from the pinned upstream case and label any locally authored payload explicitly; do not
+invent upstream provenance or substitute a different case as a matched pair.
+
+### Ordered implementation and acceptance
+
+1. **Pin and inventory the experiment (TU-DTAP-2a).** At current APP origin/main inspect the
+   `cases.json`, `manifest.json`, `harness/tool_schemas.json`, corresponding unchanged native
+   judge and upstream setup/payload for the selected indirect case. Record hashes, source commits,
+   license, model/quant and template, serving binary content/linkage, container image digests,
+   exact task, tool schemas, seed, sampling and limits. Identify the attack delivery point, all
+   service operations and judge-read state. Pin the benign/neutral and attack state before the
+   first attempt. Treat the historical Qwen3-0.6B/seed-42 CRM result as a separate diagnostic;
+   reproduce its model and settings only if they are available and qualified, never call it the
+   matched baseline. Acceptance: one reviewable case-and-arm manifest, with any unavailable
+   inputs recovered or explicitly marked as unresolved before publishing a run.
+2. **Build the service-backed pair and deterministic controls.** In an isolated APP lane, reuse
+   the native tool-contract validator and unchanged judge; implement case-scoped service calls,
+   per-arm reset/seed, actual payload insertion and full judge-relevant state snapshot. Preserve
+   the native generic runner's semantics unless a reviewed integration explicitly changes them.
+   Capture exact model-visible tool results, actual delivery/nondelivery, accepted/executed calls,
+   responses, service state, judge outcome, failure category and teardown. Test positive and
+   negative delivery, per-arm isolation, failed/malformed tool calls, reset, judge errors,
+   timeout/STOP and owned process/container cleanup. Require actual delivery evidence before
+   interpreting attack success; nondelivery is a reported outcome, not a defense success.
+   Acceptance: source-bound tests and a bounded no-model end-to-end control prove these paths;
+   none is a live security result.
+3. **Prepare then schedule the live pair.** Bind the final launcher, inputs, output schema,
+   resource limits and completion predicate to a fresh row using the current rowflow/keeper
+   procedure in `docs/guides/agent-workflows/compute-fillers.md` and
+   `docs/guides/agent-workflows/backlog-churn-flow.md`. Qualify the *same entry* with current
+   normal and cutoff controls; do not reuse the old r2 grant or hard-coded CPU list. Coordinate
+   the actual CPU/GPU claim and any inference window with its owner; use the kernel-store binary
+   and verify its source/content and ggml linkage. Record every scheduled arm, including failures;
+   retain original trace, state, judge and cleanup evidence. Apply only the predeclared diagnostic
+   rule: report delivery, task success, attack success and trace for each arm, not a general
+   security threshold. TU-DTAP-2a closes only after the matched pair is executed and filed.
+4. **Prospective evidence wiring.** Before the new pair runs, extend the existing DTAP CRM
+   source registration and `VB-DTAP-CRM-PILOT-WRITE` scope, or register a distinct paired source
+   if its native record differs: bind both arm identities, actual grant, model-visible delivery,
+   state, judge, failures and cleanup at write time. Reuse the existing carrier and shared
+   `ClaimTuple.grade()`; prove the CLI-to-planner canary before calling the loop wired. Do not
+   fabricate a tuple for the older benign run. Coordinate the shared belief files with their owner.
+5. **Expand the subset (TU-DTAP-2b/2).** Once the paired path works, inventory the 18 imported
+   cases and service dependencies, implement and test missing CRM/finance/gmail/slack/paypal
+   effects and reset/snapshot paths, then predeclare selected cases, seeds, arms and a capable
+   model. Preserve per-case judge and typed failures, fixed settings within each pair, all-attempt
+   denominators, timeout/finished reporting and immutable replay. Distinguish absent payload,
+   nondelivery, infrastructure failure and judged failure. Use real-run directory names that do
+   not imply smoke. Parent acceptance requires the declared subset to run and be filed; do not
+   extrapolate the 0.6B single-case diagnostics to model quality or security.
+6. **Independent tool-surface work.** For TU-HR-1, reopen the current registry, live route and
+   model/template identities and trace the actual request/render/parse path per served model;
+   distinguish source capability from live configuration and file evidence for each model. For
+   TU-GR-1, coordinate with scoring-infrastructure 2a-iv: enforce the selected agent/grader
+   filesystem boundary and transcript tripwire, then demonstrate real OS-level denial and
+   controlled export; mocked denial alone is insufficient. No second isolation owner or new
+   grading rule. For TU-LED-1, extend the existing native ledger only where original events
+   support task-level first-try validity, repair recovery, verification/no-valid-call/timeout
+   buckets and paired gains/give-backs; retain unknowns and all-attempt costs, with fixtures and
+   write-side custody. Registry validation counts alone cannot close the task.
+7. **TU-MH-1 shared acceptance driver.** Coordinate with the UFH-15/HS-4 owner, locate the current
+   P0.4/SC86 runner and extend it rather than creating a competing harness. The 2026-11-02 HS-4 P6
+   comparator exists, but prospective arm/trial/catalog identities and matched MCP configurations
+   are not yet emitted by the runner. Add those bindings and REPL/OpenCode adapters, fresh state,
+   sealed fixture/oracle separation and full executed-call/session cost capture. Preserve the
+   six development and twelve sealed acceptance instances and existing unchanged scoring and
+   catalog rejection rule below. Source/fixture controls precede any coordinated inference;
+   actual grader isolation must pass step 6 before untrusted benchmark use.
+
+**Completion and ownership.** Each step has one implementation owner; resolve any new overlap
+with the current session-per-handoff registry before claiming. Record exact code and artifact
+identities, tests, outcomes and limitations in this handoff and daily progress as work lands;
+tick only the specific acceptance actually met. Keep the single EVL-46 index row thin. This
+audit is a plan and source review, not a live run, qualification or task completion.
+
 **Latest verification (2026-07-05T19:45Z)**: `tool_use_activation=ready`.
 AutoPilot is live as PID `2935890` under the Fable launcher with
 `AUTOPILOT_TOOL_SENTINELS=1`, `AUTOPILOT_PLANNER_HINTS=1`,
