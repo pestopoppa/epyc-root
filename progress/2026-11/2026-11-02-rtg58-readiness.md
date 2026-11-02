@@ -1,0 +1,3 @@
+# 2026-11-02 — RTG-58 readiness reconciliation
+
+Reviewed the KV prefix-fork handoff against root origin/main `a62f535e812599d9a08172bc0dd5aa2d8659b6ef`, the current orchestrator source, and retained KPF results. Added current-state dispatch contracts for P1–P5 and the chunk-KV, family replay and recurrent-state work; reconciled completed source versus outstanding gates, identified conflicting acceptance clauses without amending them, and replaced the invalid KPF-64 full-cohort assumption and KPF-60 measured-bytes assertion. Historical observations and all checkbox states remain intact. The 2026-11-02 inference stop and revoked grants remain binding. No model inference, production mutation or measurement-policy amendment was performed.
