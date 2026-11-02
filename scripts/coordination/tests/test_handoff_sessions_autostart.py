@@ -708,3 +708,32 @@ class SA1Tests(AutoStartFixture):
         reg, _ = self.dispatch()
         self.assertNotIn("zed", reg["sessions"])
         self.assertIn("global cap", self.log_text())
+
+
+class SA23Tests(_DSHBase):
+    def test_related_ids_in_run_end_and_no_effect_watchdog(self):
+        self.session()
+        _w(os.path.join(self.flags, "ready", "row-a.json"), json.dumps({"schema": "epyc.row.v3", "id": "row-a", "owner": "o", "lane": "cpu",
+                                                                       "handoff_task": "handoffs/active/alpha.md:INF-9", "lineage": "row"}))
+        _w(os.path.join(self.flags, "dryrun", "row-a", "FAIL-1.json"), json.dumps({"reason": "old fail"}))
+        _w(os.path.join(self.flags, "grants", "row-a.ended"), "rc=0\n")
+        reg, st = self.dispatch()
+        p = self.calls[0]["prompt"]
+        self.assertIn("Related: row=row-a", p)
+        self.assertIn("handoff_task=handoffs/active/alpha.md:INF-9", p)
+        self.assertIn("prior_fail=", p)
+        self.assertNotIn("look in", p, "no cold re-read hint")
+        ev = reg["sessions"]["alpha"]["pending_event"]
+        self.assertEqual(ev["related"]["handoff_task"], "handoffs/active/alpha.md:INF-9")
+        self.assertTrue(ev["related"]["prior_fail"].endswith("FAIL-1.json"))
+        # SA-2: 3 starts in the hour, no PASS produced -> one alarm per hour
+        st = {"starts": [hs.time.time() - 100] * 3}
+        w = hs.start_watchdog(self.flags, st, hs.time.time())
+        self.assertEqual((w["starts_h"], w["ready_rows_h"]), (3, 0))
+        self.assertIn("AUTO-START-NO-EFFECT 3 auto-start(s)", self.log_text())
+        hs.start_watchdog(self.flags, st, hs.time.time() + 60)
+        self.assertEqual(self.log_text().count("AUTO-START-NO-EFFECT"), 1)
+        _w(os.path.join(self.flags, "dryrun", "row-b", "PASS.json"), "{}")
+        st2 = {"starts": [hs.time.time()] * 5}
+        hs.start_watchdog(self.flags, st2, hs.time.time())
+        self.assertNotIn("watchdog_alarm", st2, "a produced ready row is an effect: no alarm")
