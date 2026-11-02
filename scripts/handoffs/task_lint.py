@@ -40,6 +40,15 @@ PENDING = re.compile(r'(operator|owner)[^.\n]{0,40}\b(to decide|must decide|deci
 EST = re.compile(r'\best(?:imate)?[:\s]\s*(provisional|~?\d+)', re.I)
 SUFF = re.compile(r'\bstop(?:[- ]rule|[- ]on[- ]answer|[- ]on[- ]futility|/continue)\b|\bsufficiency\b|\bfutility\b|\bstop contract\b', re.I)
 PILOT = re.compile(r'\bpilot\b.{0,80}\b(bounded|n\s?=\s?\d+|\d+\s?(?:items|rows|prompts|min|h)\b)', re.I)
+# An href is an address, not prose: `[text](benchmark-suites.md)` must not make a box "inference" because the
+# URL says "bench" (BRF-T1-1 fold 7, ws58 2026-11-02). Classification reads the link TEXT only; the dangling-path
+# check (field f) still reads the full text, hrefs included.
+HREF = re.compile(r'\]\((?:[^()\s]|\([^()\s]*\))*\)')
+AUTOLINK = re.compile(r'<(?:https?|file)://[^>\s]+>|\bhttps?://[^\s)>\]]+')
+
+def prose(text):
+    """Box text with markdown link targets and bare URLs removed (link text kept)."""
+    return AUTOLINK.sub('', HREF.sub(']', text))
 
 def own_block(text):
     """The box's OWN text: its first line plus continuation lines, EXCLUDING nested checkbox descendants and their
@@ -78,9 +87,12 @@ def decision_kind(text):
     return None
 
 def score2(text, children=0):
-    text = own_block(text)
+    full = own_block(text)
+    text = prose(full)                      # every classification below reads prose, never an href
     cls, basis = exec_type(text)
     _, f, dang, miss, pre = L1.score(text, children)
+    _, f_full, dang, _, _ = L1.score(full, children)   # field f (dangling / retired paths) keeps reading hrefs
+    f['e'], f['f'] = f_full['e'], f_full['f']   # size (e) is not classification either: measured on the full block
     dk = decision_kind(text)
     f['h'] = dk == 'pending-choice'
     if cls == 'operator-decision' and dk != 'pending-choice':   # an issued ruling is not a decision box: classify by the work it names

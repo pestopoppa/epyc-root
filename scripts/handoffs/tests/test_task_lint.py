@@ -36,6 +36,15 @@ def _run():
     ok &= t('non-inference task never fails s', 's' not in L.score2("- [ ] wire the scorer into run.py")['fails'])
     ok &= t('numeric child refused', L.score2("- [ ] **DF2-12.1.3** do part three")['numeric_child'])
     ok &= t('roll-up detected', L.score2("- [ ] **R-1** [roll-up] non-dispatchable parent")['rollup'])
+    # ws58 2026-11-02 (BRF-T1-1 fold 7): an href is not prose — repointing a link must never change the verdict
+    w4 = ("- [ ] **W4 — promotion workflow + first cohort** (recurring, ~half day/month): monthly pass — promote rows when wired."
+          " First cohort: `edit_transaction_auto_routing` (A2 rollout contract prepared in [`multi-file-coding-completion-capability.md`]({})).")
+    a = L.score2(w4.format('multi-file-coding-completion-capability.md'))
+    b = L.score2(w4.format('benchmark-suites.md#track-multi-file-coding-completion-capability'))
+    ok &= t('href text does not classify the box', (a['class'], a['fails']) == (b['class'], b['fails']) and b['class'] != 'inference')
+    ok &= t('mutation: the same words in prose do classify', L.score2(w4.format('x.md') + " Then benchmark the model endpoint with llama-bench.")['class'] == 'inference')
+    ok &= t('field f still reads hrefs (retired scratch path)', 'f' in L.score2("- [ ] wire the scorer, see [log](/mnt/raid0/llm/tmp/wt-old/run.log)")['fails'])
+    ok &= t('prose keeps link text, drops target', L.prose("see [`a.md`](bench/b.md#x) and https://bench.example/x") == "see [`a.md`] and ")
     print('ALL PASS' if ok else 'SOME FAILED'); return ok
 
 
