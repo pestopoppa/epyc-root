@@ -42,6 +42,10 @@ validation requires the applicable compute authorization.
   base/candidate process each; it is not a repeatability result. Prospective belief capture is
   filed as `VB-KVU19A2-WIRE`; the original smoke remains a committed conclusion only. The native
   writer and reader have synthetic positive/refusal controls; a real planning canary remains open.
+- A later coordinated model-free 20-run diagnostic on retained binaries found baseline output identical
+  5/5 and candidate output distinct 5/5 for each of two cases; matched input hashes and own-PID GPU
+  residency were recorded. Original source-to-build binding is unknown, so source causality is not
+  established. Raw evidence is on research `b8ded61ef`; no production change follows.
 
 All implementation branches are prospective source work. No inference or production service change
 was performed. The parent handoff boxes remain open until their complete acceptance criteria are met.

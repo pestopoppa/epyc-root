@@ -783,6 +783,14 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
         remains incomplete, and the backend logged an additional load warning. Research evidence
         `artifacts/kvu19a2-smoke-20261102/result.json` SHA-256 `2c5fff863c3228ed3c62b6cbcbf0703ec80a079d0675e3820943d6b44585905c`;
         prospective write-side capture is `VB-KVU19A2-WIRE`. [belief: cc]
+      - *(2026-11-02, repeated retained-binary diagnostic.)* Research `b8ded61ef` preserves 20 native
+        runs across two cases, five fresh processes per arm/case. Actual Q/K/V/mask byte hashes match;
+        all runs have own-PID in-window KFD/VRAM and mapped ggml evidence. Baseline output was bit-identical
+        5/5 in each case; candidate produced five distinct output hashes in each. The original
+        source-to-build binding is unproven, so this is binary reproducibility only, not source attribution,
+        timing, a production defect, or a promotion verdict. Result SHA-256
+        `56038798a67cc1b34060a81592369bde040628d0c1635dc99f4dfd4286b44afc`.
+        Prospective native sidecars were emitted; ingestion and planning canary remain separate. [belief: cc]
       - *(2026-11-01, binding draft defect.)* Independent review found unreadable directories may be silently omitted and FIFO inspection can block. The draft now propagates traversal errors and rejects FIFOs with nonblocking opens; five offline tests pass. Mutable paths and build-entry custody still prevent using it as an input attestation. [no-belief: offline source review only]
       - *(2026-11-01, ELF inventory defect.)* The inventory may silently omit unreadable subtrees; The draft now propagates traversal errors; five offline tests pass. It still cannot attest source, expected ELF coverage or runtime linkage. [no-belief: offline source review only]
       - *(2026-11-01, ELF inventory draft.)* The [offline component](../../artifacts/compute/kvu19a2-elf-inventory-20261101/README.md) passed four synthetic tests; it cannot establish source identity, expected binary completeness or runtime linkage. A build producer remains open. [no-belief: synthetic tests only]
