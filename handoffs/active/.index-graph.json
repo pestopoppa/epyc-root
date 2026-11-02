@@ -3769,7 +3769,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T13:50:56Z",
+  "generated_at": "2026-11-02T13:53:44Z",
   "nodes": [
     {
       "age_days": 95,
@@ -4865,14 +4865,14 @@
       "blocked": 4,
       "blocked_by": [],
       "closed": 336,
-      "dispatchable": 405,
+      "dispatchable": 408,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-02",
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
-      "open": 409,
+      "open": 412,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -5385,15 +5385,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 85,
-      "dispatchable": 32,
+      "closed": 92,
+      "dispatchable": 37,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "gpu-serving-tie-in-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-02",
-      "next_action": "Resolve GPU-ZOS-2.3 extension analysis contract; bind per-role recipes/resources for M4 and PB-QCOST-1",
-      "open": 32,
+      "next_action": "Implement M4 fold-gate capture, current role bindings and qualified CPU/GPU execution; see audited execution route",
+      "open": 37,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
