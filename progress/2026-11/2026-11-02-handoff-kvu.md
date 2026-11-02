@@ -59,3 +59,7 @@ Prepared an uninstalled P3/X0 coordinator draft that hashes request payloads bef
 ## 09:47Z — Harden runner payload evidence and prepare VKQ3 diagnostic receipts
 
 The uninstalled P3/X0 coordinator now validates canonical payloads before server startup and snapshots adapter responses and occupancy; twelve offline tests pass. A separate VKQ3 draft isolates qualification and full attempt receipts, rejects invalid completion and records bounded stdout identity without raw output; four offline tests pass. Its token output grammar is unverified and the draft is not integrated with the tokenizer, grant or process custody. No inference was run. [no-belief: isolated offline draft tests only]
+
+## 09:49Z — Preserve VKQ3 tokenizer supervision draft
+
+Preserved a syntax-checked, uninstalled VKQ3 supervisor draft with bounded input and output, cancellation, timeout and direct-child cleanup paths. It has no verified descendant custody, parent-death containment, live grant integration or pinned model/tokenizer identities; it cannot run as a diagnostic row. No inference was run. [no-belief: source and syntax review only]
