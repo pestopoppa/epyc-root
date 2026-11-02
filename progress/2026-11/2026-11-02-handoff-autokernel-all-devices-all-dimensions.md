@@ -51,3 +51,7 @@ A model-free isolated test exercised the original R4 inherited_cpu_claim.device_
 ## 10:29Z — Prototype CPU child device lock
 
 Built a scratch-only CPU child device-flock wrapper and ran model-free controls with an isolated temporary lock: the exec child inherited held fd 9, a competing lock refused before child exec, nonzero child status propagated, and lock was available after exit. Script and control are under /mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/cpu-device-prototype/. This is not a qualified launcher: canonical inode/path hardening, authenticated ancestor observation, scheduler reservation, STOP semantics and full native floor remain outstanding.
+
+## 10:31Z — Verify CPU floor lock ancestry
+
+Ran scratch-only model-free integration of the CPU device-flock prototype with original R4 `inherited_cpu_claim.device_held`: a descendant with inherited FDs disabled observed the actual live parent holding the matching FD9, and a stale parent birth was refused. Script: /mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/cpu-device-prototype/test_ancestor.py. This does not authenticate the wrapper, prove region/quiet claims or scheduler accounting, or qualify a floor.
