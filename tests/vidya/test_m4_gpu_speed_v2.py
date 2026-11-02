@@ -51,7 +51,7 @@ def setup_capture(tmp_path):
                 "requests_path": str(requests), "requests_sha256": digest(requests.read_bytes()),
                 "aggregate_decode_tps": 20.0, "measurement_id": "m4_gpu_fixture", "date": "2026-11-02"})
     receipt = capture / 'grant.txt'
-    receipt.write_text('regions=mi210_0,184-191 start=1970-01-01T00:00Z end=1970-01-01T00:01Z')
+    receipt.write_text('regions=mi210_0,184-191 start=1970-01-01T00:00Z end=1970-01-01T00:01Z holds=gpu-quiet,q3')
     doc['grant_receipt_path'] = str(receipt)
     doc['grant_receipt_sha256'] = digest(receipt.read_bytes())
     path = capture / "capture.json"
@@ -123,7 +123,7 @@ def test_write_side_preflight_and_emission(tmp_path, monkeypatch):
     start = (now - timedelta(minutes=1)).strftime('%Y-%m-%dT%H:%MZ')
     end_dt = (now + timedelta(minutes=3)).replace(second=0, microsecond=0)
     grantdir = tmp_path / 'grants'; grantdir.mkdir()
-    (grantdir / 'grant-1.grant').write_text(f'regions=mi210_0,184-191 start={start} end={end_dt.strftime("%Y-%m-%dT%H:%MZ")}')
+    (grantdir / 'grant-1.grant').write_text(f'regions=mi210_0,184-191 start={start} end={end_dt.strftime("%Y-%m-%dT%H:%MZ")} holds=gpu-quiet,q3')
     env.update({'FILLER_ID':'grant-1', 'FILLER_NEEDGPU':'1', 'FILLER_END':str(int(end_dt.timestamp())),
                 'FILLER_DEADLINE':str(int(end_dt.timestamp())-1), 'FILLER_STOPFILE':str(tmp_path / 'STOP')})
     monkeypatch.setattr(enrollment, 'GRANTS_DIR', str(grantdir))
@@ -207,7 +207,7 @@ def test_actual_launcher_guarded_help_without_model(tmp_path, monkeypatch, cutof
     start = (now - timedelta(minutes=1)).strftime('%Y-%m-%dT%H:%MZ')
     end_dt = (now + timedelta(minutes=3)).replace(second=0, microsecond=0)
     grant_dir = tmp_path / 'grants'; grant_dir.mkdir()
-    (grant_dir / 'grant-1.grant').write_text(f'regions=mi210_0,184-191 start={start} end={end_dt.strftime("%Y-%m-%dT%H:%MZ")}')
+    (grant_dir / 'grant-1.grant').write_text(f'regions=mi210_0,184-191 start={start} end={end_dt.strftime("%Y-%m-%dT%H:%MZ")} holds=gpu-quiet,q3')
     root = Path(__file__).resolve().parents[2]
     needed = [root/'scripts/benchmark/m4_gpu_speed'/x for x in ('launcher.py','server_np_sweep.py','write_capture.py')]
     needed += [root/'scripts/vidya/adapters/m4_gpu_speed_v2.py']
@@ -380,7 +380,7 @@ def test_qualification_only_never_projects(tmp_path):
     fixture_trust = Trust(trusted.capture_root, trusted.plan_path, trusted.plan_sha256, trusted.sources, qualification_only=True)
     doc = json.loads(path.read_text())
     receipt = Path(doc['grant_receipt_path'])
-    receipt.write_text(receipt.read_text() + ' holds=gpu-quiet,q3 schema=epyc.rowflow.dryrun-grant.v1 id=grant-1 kind=rowflow-dryrun')
+    receipt.write_text(receipt.read_text() + ' schema=epyc.rowflow.dryrun-grant.v1 id=grant-1 kind=rowflow-dryrun')
     doc['grant_receipt_sha256'] = digest(receipt.read_bytes())
     path.write_text(json.dumps(doc))
     assert validate_capture(path, fixture_trust)[2] == 20
