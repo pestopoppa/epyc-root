@@ -1,0 +1,40 @@
+{
+  "arm": "qwen3.8-27b",
+  "suite": "aime25",
+  "id": "aime25_2025-I-1",
+  "tier": "3",
+  "capture_schema_version": "v7_quality_gate_capture.v4",
+  "runner_source_sha256": "79721927e95293d070aba294bf422a24b1182dde07310d461d9e3ddaf6c84b0e",
+  "rep": 0,
+  "seed": 42,
+  "expected": "70",
+  "extracted": "70",
+  "correct": true,
+  "empty_response": false,
+  "finish_reason": "stop",
+  "truncated": false,
+  "completion_tokens": 978,
+  "prompt_tokens": 90,
+  "decode_tok_s": 57.41,
+  "request_error": "",
+  "prompt": "Find the sum of all integer bases $b>9$ for which $17_{b}$ is a divisor of $97_{b}$.\n\nThis is an AIME problem. The answer is an integer between 0 and 999. Reason step by step, then give your final answer on its own last line in the form: ANSWER: <integer>",
+  "prompt_fingerprint": {
+    "chars": 255,
+    "utf8_bytes": 255,
+    "sha256": "a5a331553647b673bda89ac691938c45a61e1c7b077bdf7d850282335047d867"
+  },
+  "response_fingerprint": {
+    "chars": 2072,
+    "utf8_bytes": 2072,
+    "sha256": "1111c589df19bd04a01f4ebe2d0904105e572a0769d2dbd1a35e3049e49afbf9"
+  },
+  "reasoning": "",
+  "reasoning_fingerprint": {
+    "chars": 0,
+    "utf8_bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "reasoning_chars": 0,
+  "empty_content_with_reasoning": false,
+  "response": "To find the sum of all integer bases $b > 9$ for which $17_b$ is a divisor of $97_b$, we first express the numbers in base 10.\n\nThe number $17_b$ in base $b$ is given by:\n$$ 17_b = 1 \\cdot b^1 + 7 \\cdot b^0 = b + 7 $$\n\nThe number $97_b$ in base $b$ is given by:\n$$ 97_b = 9 \\cdot b^1 + 7 \\cdot b^0 = 9b + 7 $$\n\nThe condition that $17_b$ is a divisor of $97_b$ means that $b+7$ divides $9b+7$. In mathematical notation, this is:\n$$ b + 7 \\mid 9b + 7 $$\n\nLet $d = b + 7$. Then $b = d - 7$.\nSubstituting $b$ in the expression $9b + 7$:\n$$ 9b + 7 = 9(d - 7) + 7 = 9d - 63 + 7 = 9d - 56 $$\n\nSo, the condition becomes:\n$$ d \\mid 9d - 56 $$\n\nSince $d$ clearly divides $9d$, for $d$ to divide $9d - 56$, it must also divide the remainder, which is $-56$. Therefore:\n$$ d \\mid -56 $$\nThis implies that $d$ must be a divisor of $56$.\n\nWe are given that $b$ is an integer base with $b > 9$.\nSince $d = b + 7$, we have:\n$$ d = b + 7 > 9 + 7 = 16 $$\nSo, we are looking for positive divisors $d$ of $56$ such that $d > 16$.\n\nLet's list the positive divisors of $56$.\nThe prime factorization of $56$ is $2^3 \\cdot 7$.\nThe divisors are:\n$1, 2, 4, 7, 8, 14, 28, 56$.\n\nNow, we filter these divisors for the condition $d > 16$:\n- $1 \\ngtr 16$\n- $2 \\ngtr 16$\n- $4 \\ngtr 16$\n- $7 \\ngtr 16$\n- $8 \\ngtr 16$\n- $14 \\ngtr 16$\n- $28 > 16$ (Valid)\n- $56 > 16$ (Valid)\n\nSo, the possible values for $d$ are $28$ and $56$.\n\nNow we find the corresponding values for $b$ using $b = d - 7$:\n1. If $d = 28$, then $b = 28 - 7 = 21$.\n2. If $d = 56$, then $b = 56 - 7 = 49$.\n\nWe must verify that these bases satisfy the original condition $b > 9$.\n- $21 > 9$ is true.\n- $49 > 9$ is true.\n\nLet's double-check the divisibility for each case.\nCase 1: $b = 21$.\n$17_{21} = 21 + 7 = 28$.\n$97_{21} = 9(21) + 7 = 189 + 7 = 196$.\n$196 / 28 = 7$. So, $28$ divides $196$. This works.\n\nCase 2: $b = 49$.\n$17_{49} = 49 + 7 = 56$.\n$97_{49} = 9(49) + 7 = 441 + 7 = 448$.\n$448 / 56 = 8$. So, $56$ divides $448$. This works.\n\nThe valid integer bases are $21$ and $49$.\nThe sum of these bases is:\n$$ 21 + 49 = 70 $$\n\nANSWER: 70"
+}

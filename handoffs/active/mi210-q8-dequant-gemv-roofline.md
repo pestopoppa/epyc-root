@@ -181,6 +181,11 @@ The following original ranking and experiment sequence are historical; the updat
   (`progress/2026-07/2026-07-05-mi210-capability-kernel-rnd.md:23-24`), and the IQ2-vs-Q4 paired eval returned Δ0.0pp,
   McNemar p=1.000 (`progress/2026-07/2026-07-05-mi210-residency-and-cot-reframe.md:12`). Certified by read-certification (`auditor`).
 - [ ] SoA-repack lever (only if coalescing measured poor - currently deemed healthy)
+  - **2026-11-02 source check:** the historical healthy disposition is recorded in
+    `progress/2026-07/2026-07-03-mi210-qwen36-27b-speed-campaign.md:124`; a numeric coalescing
+    counter receipt was not located in checked-in documentation. The October S7 planar-layout seed
+    is source-only, not new evidence of poor coalescing. The repack condition is not established;
+    keep it conditional and do not treat the historical assessment as a newly verified counter result.
 - [x] Generic stream-K K-splitting for Q8-MMQ aggregate is already present and therefore not a new
   lever ✅ 2026-08-11 — the current CDNA MMQ path is persistent stream-K, and the governed WGM
   experiment exercised that exact launch. Retain only a distinctly justified higher-persistent-grid
@@ -302,6 +307,18 @@ The following original ranking and experiment sequence are historical; the updat
     v_perm_b32 only if AK-QL-7 shows the retained 4-trip loop costs more than the regained waves.
   - [ ] **Re-run the decode attribution under governance** once RVP-C2-11's `--gen-tokens` patch
     lands, so the 16.42% decode figure carries a durable receipt instead of a non-governed probe.
+    **Prerequisite correction 2026-11-02:** the generation flag landed under RVP-C4-4, not
+    RVP-C2-11: research `c38bf49a` / main `1527ea49`. RVP-C4-4a also captured a governed
+    122B decode trace (receipt SHA-256 `c7f3f5a243310021e022715b403fe0668b47145440bda00ee43ac6d84e14bed3`),
+    but the aggregate MMV figure is not this task's IQ2_XXS-specialized 16.42% attribution.
+    The 122B is now retired and must not be rerun; select an eligible current IQ target under
+    the 2026-10-28 retarget. Separately, the Omniperf seeded-op fallback requires a binary
+    containing `--suite-seed` and `--repeat-suite`: frozen v10 source contains both, introduced
+    by `f744cc220e722d1bda93783959471d44f8e118b0` after v9, but the old in-tree HIP test binary
+    lacks them. OP-11 declined the distinct `AK_SENS_V1` experimental producer, not these generic
+    CLI flags. Build an identity-bound test binary from a fresh experimental v10-based tree, then
+    check the fallback's own preflight and the applicable measurement authorization before a run.
+    Do not assert this task complete from aggregate data.
     The Omniperf 2.0.1 / `rocprof` v1 fallback is now durable in research, but its first governed run
     correctly failed compatibility before profiling: clean frozen-v9 `test-backend-ops` at
     `0db32c06` does not implement `--suite-seed` or `--repeat-suite`. The failed receipt retains the
@@ -373,6 +390,8 @@ The following original ranking and experiment sequence are historical; the updat
 
 - [ ] **INF37-MOE-Q8-FUSION — Qualify and implement a correctness-gated multi-token MoE GLU fusion slice for the existing Qwen3.6-35B Q8 MTP recipe.** PROPOSED, not build/run/deployment approval. This is independent of INF37-IQ-2's IQ-residency trigger. Main's read-only qualification found the model has separate Q8 gate/up expert tensors (41 of each), the canonical recipe uses MTP width four, and frozen v10's source still rejects multi-token MUL_MAT_ID fusion; this does not prove the running binary's route or benefit. Start an isolated experimental candidate from current production, never modify/build the frozen tree. Review upstream #27621 and AMD garbage-output report #28113; locate the exact fixing patch or implement and fixture-test a minimal gfx90a correction—closed issue status is not fix provenance. Keep scope to GLU: preserve v10's CPU-only top-k guard and do not bundle the unrelated top-k optimization. Bind source, patch, model/tensor metadata, rendered canonical recipe, compiler, actual binary/library digests and runtime fusion eligibility; inspect actual launch/verification widths rather than infer them from draft-n-max. Compare candidate fusion-on versus candidate fusion-off and fresh production on identical held-out inputs: operator differential tests including expert selection, verify widths and nonfinite/repeated-garbage cases, logits/decoded-output correctness against the measured local floor, then a bounded paired MTP end-to-end latency/throughput and acceptance screen. Charge failures and retain all outputs. Stop on any correctness failure, ineligible runtime path or no improvement beyond local paired uncertainty; report negative/inconclusive rather than widening into a kernel campaign. Render the existing `qwen3.6-35b-a3b-q8-gpu-mtp.json` recipe, do not hand-retype it. Prospective write-side capture under VB-RI-OPS-WIRE precedes any measured run, with existing ClaimTuple grading; normal campaign/resource and separate production-promotion gates remain intact. [Qualification, counter-coverage and limits](../../docs/reviews/research-intake-earlier-applications-20261004.md); record discussion: intake-1420#record.
   - **2026-11-02 provenance review, no build or run:** [issue #28113](https://github.com/ggml-org/llama.cpp/issues/28113) initially attributed repeated punctuation on gfx1151/ROCm 7.14 to the multi-token fusion guard, but its reporter subsequently reported that isolated #27621 worked, could no longer reproduce the issue after a ROCm update, and suspected local tuning interactions. The issue identifies no confirmed upstream fix or gfx90a result; referenced fork commits are not proof of either. The exact correction/fixture gate remains open. Upstream `41ef91f7c8046087cdfbb276b79bff311ecf1c6d` changes GLU, MMVQ, top-k and tests, so a GLU-only slice requires selective review, not wholesale application. VB-RI-OPS-WIRE remains open, so no decision-bearing run is ready to publish.
+  - **Capture preparation:** `scripts/vidya/adapters/speech_ggml_optest.py` is a possible existing measurement projection scaffold, not an INF37 producer: its current profile lacks actual verify widths, three-arm MTP pairing and correctness-floor/raw-output bindings. The eventual experiment finalizer must write those fields and failed/ineligible attempts before a strict projection through the existing grader; a reader-only extension cannot satisfy the write-side gate. Select the native runner and its owner before implementing the finalizer; no runner or capture is claimed ready here.
+  - **GLU slice source map, 2026-11-02 (read-only):** v10 already matches MoE GLU graphs but rejects multi-token quantized fusion in `ggml_cuda_should_fuse_mul_mat_vec_q`; its `mmvq.cu` multi-token `has_ids` branch calls a dedicated MoE kernel without fusion arguments. The upstream GLU slice requires a bounded shape gate plus passing fusion through that launcher and implementing gate accumulation/reduction and the GLU epilogue in that kernel. Preserve v10's top-k guard and exclude the upstream top-k files and logits-alias changes. Frozen v10's matcher admits SWIGLU/GEGLU/SWIGLU_OAI, not upstream's clamp variant; do not assume clamp support. This is a source map, not a tested patch or proof of gfx90a correctness.
 
 ### Research intake 2026-10-22 — Locals + Beacon (intake-2386..2460)
 

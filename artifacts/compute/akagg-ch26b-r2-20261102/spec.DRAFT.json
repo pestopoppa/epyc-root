@@ -1,0 +1,33 @@
+{
+  "decision_rule": "Full scientific result only if input/full/calibrate-summary.json exists and 24 independent A/A pairs (48 valid launches) are completed on source 49550eda5 using matched_process_v2, 5 comparison pairs, pinned 1017 model and recipe; report floor_pct and interval; dryrun units excluded. Otherwise partial, no floor.",
+  "dryrun_timeout_s": 1200,
+  "dryrun_whole_host": true,
+  "estimate_s": 9000,
+  "handoff_task": "handoffs/active/autokernel-champion-aggregate.md:CH-26b",
+  "id": "akagg-ch26b-1017-c2-r2-20261101",
+  "keep": [
+    "**/*.json",
+    "**/*.jsonl",
+    "**/*.md",
+    "**/*.txt",
+    "**/*.csv",
+    "**/*.tsv",
+    "**/*.sh",
+    "**/*.py",
+    "**/*.sha256",
+    "INPUT.sha256",
+    "measured.jsonl"
+  ],
+  "lane": "cpu",
+  "launcher": "/mnt/raid0/llm/tmp/akagg-ch26b-r2-20261101/launcher.sh",
+  "lineage": "akagg-ch26b-1017-c2",
+  "notes": "Successor of preserved rc3 dryrun: book full host and GPU-quiet for dryrun; no change to 24-pair original measurement protocol.",
+  "owner": "handoff-akagg",
+  "priority_rank": 20,
+  "ram_gib": 600,
+  "regions": "0-95",
+  "result_format": "jsonl",
+  "result_path": "/mnt/raid0/llm/tmp/akagg-ch26b-r2-20261101/measured.jsonl",
+  "scratch_root": "/mnt/raid0/llm/tmp/akagg-ch26b-r2-20261101",
+  "supersedes": "akagg-ch26b-1017-c2-20261101"
+}
