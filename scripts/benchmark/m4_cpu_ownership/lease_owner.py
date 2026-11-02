@@ -23,7 +23,9 @@ import m4_cgroup_guard as guard
 LOCK_ROOT = Path('/mnt/raid0/llm/tmp')
 
 
-def lease_fds() -> tuple[int, ...]:
+def lease_fds(gpu_quiet: str = "shared") -> tuple[int, ...]:
+    if gpu_quiet not in ('shared', 'exclusive'):
+        raise ValueError('invalid GPU-quiet lease mode')
     expected = {f'cpu_region.GLOBAL.q{i}.lock' for i in range(4)} | {'gpu_quiet.lock'}
     found = {}
     for name in os.listdir('/proc/self/fd'):
@@ -37,7 +39,8 @@ def lease_fds() -> tuple[int, ...]:
     if set(found) != expected:
         raise RuntimeError('cross-role or GPU-quiet lease descriptor missing')
     for name,fd in found.items():
-        fcntl.flock(fd, (fcntl.LOCK_SH if name == 'gpu_quiet.lock' else fcntl.LOCK_EX) | fcntl.LOCK_NB)
+        operation = fcntl.LOCK_SH if name == 'gpu_quiet.lock' and gpu_quiet == 'shared' else fcntl.LOCK_EX
+        fcntl.flock(fd, operation | fcntl.LOCK_NB)
     return tuple(found[name] for name in sorted(found))
 
 
@@ -46,6 +49,7 @@ def main() -> int:
     parser.add_argument('--caller-pid',type=int,required=True)
     parser.add_argument('--caller-birth',type=int,required=True)
     parser.add_argument('--timeout',type=float,default=0)
+    parser.add_argument('--gpu-quiet', choices=('shared', 'exclusive'), default='shared')
     parser.add_argument('command',nargs=argparse.REMAINDER)
     args=parser.parse_args()
     command=args.command[1:] if args.command and args.command[0]=='--' else args.command
@@ -60,15 +64,15 @@ def main() -> int:
         sys.path.insert(0,'/workspace/repos/epyc-orchestrator')
         from src.runtime.gpu_quiet_lock import gpu_quiet_then_regions
         def caller_gone(): return bool(select.select([caller_fd],[],[],0)[0])
-        with gpu_quiet_then_regions('bench', {'q0','q1','q2','q3'},gpu_quiet='shared',
+        with gpu_quiet_then_regions('bench', {'q0','q1','q2','q3'},gpu_quiet=args.gpu_quiet,
                                    timeout_s=args.timeout,request_tag='inf22-m4-cpu',cancel_check=caller_gone):
             try:
                 if caller_gone(): raise RuntimeError('caller exited before lease admission')
-                fds=lease_fds()
+                fds=lease_fds(args.gpu_quiet)
                 os.sched_setaffinity(0,set(range(96)))
                 command=[s.replace('{owner_pid}',str(os.getpid())).replace('{owner_birth}',str(guard.birth(os.getpid()))) for s in command]
                 notice_r,notice_w=os.pipe2(os.O_CLOEXEC)
-                env=dict(os.environ,M4_LEASE_FDS=','.join(str(fd) for fd in fds),M4_GUARDIAN_NOTIFY_FD=str(notice_w))
+                env=dict(os.environ,M4_LEASE_FDS=','.join(str(fd) for fd in fds),M4_GUARDIAN_NOTIFY_FD=str(notice_w),M4_GPU_QUIET_MODE=args.gpu_quiet)
                 proc=subprocess.Popen(command,env=env,pass_fds=(*fds,notice_w))
                 os.close(notice_w); notice_w=None
                 proc_fd=os.pidfd_open(proc.pid)
