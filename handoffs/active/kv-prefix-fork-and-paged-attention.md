@@ -119,6 +119,8 @@ coordination rules remain binding.
 
 - **2026-11-02 five-arm GPU source diagnostic:** the prospective same-content comparison is INVALID: only 1/2 required busy-source fork witnesses was present. The idle same-prefix filler won the fork-source tie, so the apparent 256/256 match cannot support a fork verdict. The witnessed unrelated-filler arm diverged at token 149/256; no-fork/repeat matched 256/256. A future layout probe changes the filler final token to require the busy source and captures physical layout and batch membership. [Native record, raw rows, linkage and residency](../../artifacts/compute/rtg58-source-diagnostic-20261102/). Co-tenant observation, not a timing or parent-gate verdict. [belief: cc]
 
+- **2026-11-02 P3 target/draft smoke:** scoped candidate `2c45b372c` passed a two-context 0.6B draft-simple positive/control: unscoped draft rows were refused, while target-only capture retained 23 actual verify rows and no prestart rows. The native sidecar was ingested through the existing shared adapter (Judged). [Evidence](../../artifacts/compute/rtg58-p3-target-scope-20261102/). This small-model smoke is not the organic two-window P3 gate. [belief: cc]
+
 ## P1 dispatch corrections — 2026-11-02
 
 This section is the current dispatch interpretation of P1. The earlier 2026-11-02 stop and revocation are historical: the operator subsequently directed this session to schedule and launch all RTG-58 runs immediately. Old grants remain revoked; use current CPU/GPU/RAM claims and coordinate with other sessions. Preserve predeclared measurement rules and distinguish correctness observations from timing gates.
