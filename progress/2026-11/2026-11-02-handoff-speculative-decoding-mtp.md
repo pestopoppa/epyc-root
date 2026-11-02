@@ -123,3 +123,7 @@ Added bounded loopback completion transports for the SR-6 and SR-7 preparation; 
 ## 10:24Z — Integrate request guards and prior corpus exclusions
 
 Added SR-6 guarded loopback request preparation and SR-7 one-request capture preparation, with 64 and 13 model-free tests respectively. Both remain adapter seams requiring authoritative admission, process and runtime controls. The COPYSPEC-P1 exclusion inventory captures 85 recorded prompts plus 25 conservative source variants; it identifies one conflicting candidate but is not a complete exposure history. No inference row or verdict is claimed.
+
+## 10:25Z — Prepare admission and owned-process lifecycle controls
+
+Added SR-6 grant-window admission seam and session cleanup preparation, and SR-7 direct-child lifecycle preparation. The 72 SR-6 and 17 SR-7 model-free tests passed. Live region ownership, escaped descendants, in-flight STOP, server identity and residency remain unproved; these components do not authorize a runnable row or inference verdict.
