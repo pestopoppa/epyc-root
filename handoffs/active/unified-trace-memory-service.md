@@ -9,7 +9,7 @@
 **Effort**: ~1–2 inference-free days end-to-end (minimal version: read-only query layer over existing logs)
 **Depends on**: nothing — read-only over already-persisted logs. Optional incremental ingest is additive.
 
-> **Fable 5 review (2026-06-12)**: this service is the designated substrate for two new programs: [frontier-f1-real-task-corpus.md](../completed/frontier-f1-real-task-corpus.md) task_record capture (W2) and coordination with the per-question eval ledger schema in [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md) — align event schemas before implementing EXM-1.
+> **Fable 5 review (2026-06-12)**: this service is the designated substrate for two new programs: [frontier-f1-real-task-corpus.md](../completed/frontier-f1-real-task-corpus.md) task_record capture (W2) and coordination with the per-question eval ledger schema in [evidence-plane-ledger-and-sequential-verdicts.md](autopilot-program.md#track-evidence-plane-ledger-and-sequential-verdicts) — align event schemas before implementing EXM-1.
 
 ## Objective
 
@@ -249,7 +249,7 @@ Operator-approved clarification from [P3 operational integration](../../research
 
 ## Cross-References
 
-- **Autopilot memory** (peer, distinct concern): [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) § Memory Architecture (episodic store + skill bank + strategy store).
+- **Autopilot memory** (peer, distinct concern): [`autopilot-continuous-optimization.md`](autopilot-program.md) § Memory Architecture (episodic store + skill bank + strategy store).
 - **Hermes conversation logs** (peer, distinct concern): [`hermes-outer-shell.md`](../completed/hermes-outer-shell.md) § Two-Layer Memory Architecture.
 - **Existing audit infra**: `scripts/utils/agent_log.sh` (writer) + `scripts/utils/agent_log_analyze.sh` (current analysis CLI — narrower scope than the unified service).
 - **Routing & optimization index**: `routing-and-optimization-index.md` § Cross-Cutting Concerns 5 ("Conversation Logs Feed All Three") — the unified service operationalizes that cross-cutting concern.

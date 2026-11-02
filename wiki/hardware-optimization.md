@@ -6185,7 +6185,7 @@ recorded for the broker design are:
 
 - [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md) —
   U4-SEQ *Off-the-shelf admission check — CLOSED*: patterns (i)–(x) and cpuset/resctrl options A–E.
-- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) —
+- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) —
   AP-63(b): the lane-arbiter precondition re-pointed at OP-41 after the queue check.
 - [`cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md) — CLOSE-8:
   admission control, not screening, as the MEAS-6 remedy.

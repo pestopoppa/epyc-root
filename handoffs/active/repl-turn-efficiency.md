@@ -113,7 +113,7 @@ Do not implement a daemon unless at least one of these conditions is met during 
 - [meta-harness-optimization.md](../completed/meta-harness-optimization.md)
 - [routing-and-optimization-index.md](routing-and-optimization-index.md)
 - [research-evaluation-index.md](research-evaluation-index.md)
-- [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md)
+- [autopilot-continuous-optimization.md](autopilot-program.md)
 
 ## Reporting Instructions
 

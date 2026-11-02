@@ -53,7 +53,7 @@ For EPYC specifically, these findings validate a clear strategy: continue using 
 
 ### CoT-Scaffold Injection: transplanted reasoning is a COST lever, not a capability transplant (2026-07-06) — ⚠️ COMPILE-FLAGGED FOR HUMAN REVIEW
 
-> **Review flag (project-wiki writer-evidence policy):** model-compiled from the GPU CoT-scaffold study close-out; **not adopted until human or measured review**. Every accuracy/token number is an **OBSERVATION** (single MI210, single-sample seed 42, n=10–48 cells, no protocol-id per MEASUREMENT.md). Sources: [GPU CoT-scaffold sidecar (full arc)](../handoffs/active/model-evaluation-queue.md#track-gpu-cot-scaffold-sidecar), [scaffold autopilot cost-lever deployment (DESIGN)](../handoffs/active/scaffold-autopilot-cost-lever-deployment.md), [progress 2026-07-06 CoT study complete](../progress/2026-07/2026-07-06-cot-study-complete.md).
+> **Review flag (project-wiki writer-evidence policy):** model-compiled from the GPU CoT-scaffold study close-out; **not adopted until human or measured review**. Every accuracy/token number is an **OBSERVATION** (single MI210, single-sample seed 42, n=10–48 cells, no protocol-id per MEASUREMENT.md). Sources: [GPU CoT-scaffold sidecar (full arc)](../handoffs/active/model-evaluation-queue.md#track-gpu-cot-scaffold-sidecar), [scaffold autopilot cost-lever deployment (DESIGN)](../handoffs/active/autopilot-program.md#track-scaffold-autopilot-cost-lever-deployment), [progress 2026-07-06 CoT study complete](../progress/2026-07/2026-07-06-cot-study-complete.md).
 
 The completed study asked whether a small, fast reasoner's chain-of-thought, **injected into a larger worker's prompt** (as an assistant-prefix continuation or a context-advisory plan), raises the worker's answer quality more per token than the worker's own thinking. The result cleanly separates three distinct claims:
 
@@ -129,7 +129,7 @@ The completed study asked whether a small, fast reasoner's chain-of-thought, **i
 - [intake-226](https://arxiv.org/abs/2408.08631) Persona Double-Edged Sword -- Role-playing degrades 7/12 datasets for Llama3
 - [intake-240](https://arxiv.org/abs/2507.19457) GEPA -- Genetic-Pareto prompt evolution, 35x fewer rollouts, outperforms MIPROv2 by 10%+
 - [GPU CoT-Scaffold Sidecar (full arc)](../handoffs/active/model-evaluation-queue.md#track-gpu-cot-scaffold-sidecar) -- G1/G2/verifier/dense-generalization arc; single-shot capability-transplant falsified both regimes; scaffold = 20–50× CPU-token cost lever; quality headroom-conditional; format-native-slot injection required cross-family; distilled>vanilla generator; verifier/selector marginal (systematic-not-stochastic errors)
-- [Scaffold Autopilot Cost-Lever Deployment (DESIGN)](../handoffs/active/scaffold-autopilot-cost-lever-deployment.md) -- episodic-memory-gated deployment of the scaffold as a `capability_registry` cost lever inside autopilot's 4D Pareto (quality/speed/−cost/reliability); blended GPU+CPU cost accounting; NOT implemented
+- [Scaffold Autopilot Cost-Lever Deployment (DESIGN)](../handoffs/active/autopilot-program.md#track-scaffold-autopilot-cost-lever-deployment) -- episodic-memory-gated deployment of the scaffold as a `capability_registry` cost lever inside autopilot's 4D Pareto (quality/speed/−cost/reliability); blended GPU+CPU cost accounting; NOT implemented
 - [Progress 2026-07-06 — CoT study complete](../progress/2026-07/2026-07-06-cot-study-complete.md) -- three-arch × three-lever close-out (GPQA scaffold quality +25pp/−0/no-op table; verifier 3-bench marginal; deployment implication)
 - [Reasoning that Travels (arXiv:2605.28913)](https://arxiv.org/abs/2605.28913) -- transplanted reasoning is a capability amplifier not substitute; success tracks the receiver's latent capability (the literature match for the scaffold headroom-conditionality)
 - [GenRM / GenPRM verifier literature](https://arxiv.org/abs/2408.15240) -- generative verifier best-of-N (GenRM 2408.15240; GenPRM 2504.00891 — a 1.5B PRM beats GPT-4o as a judge); the "reasoner does its own task" mode, marginal on our systematic-error workloads
@@ -150,7 +150,7 @@ host — the compile does not have to run against the deployment target.
 Correspondingly, **BootstrapFewShot\*** is marked **superseded** for 2026-era
 instruct models, and **MIPROv2** buys only **+2.6** on Qwen3-8B while
 **regressing** on AIME/LiveBench.
-[`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) §AP-29c
+[`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) §AP-29c
 
 ### The standing cost line for any prompt-program compilation
 
@@ -199,11 +199,11 @@ the **cheapest adequate local model** on judge prompts of this shape rather than
 escalating to a frontier call. This does **not** generalize to every gate — where
 an admission test is genuinely load-bearing the budget argument reverses, so the
 plateau finding is scoped to the gate it was measured on.
-[`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) §AP-29a
+[`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) §AP-29a
 
 ### Source References
 
-- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) — AP-29c (GEPA-class optimizer of record; cross-model transfer; MIPROv2/BootstrapFewShot superseded) and AP-29a (judge-accuracy plateau and the cheapest-adequate-judge rule)
+- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) — AP-29c (GEPA-class optimizer of record; cross-model transfer; MIPROv2/BootstrapFewShot superseded) and AP-29a (judge-accuracy plateau and the cheapest-adequate-judge rule)
 - [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — HS-11 compile cost line; HS-8/HS-9 policy-as-document reductions, the open-weight interpretation gap, and the replay-eligible adherence metrics
 - [`swarm-dataset-distillation.md`](../handoffs/completed/swarm-dataset-distillation.md) — the ~2pp objective vs ~38pp teacher-prompting decomposition
 - [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — session record of the dive that produced the prompting-over-objective correction

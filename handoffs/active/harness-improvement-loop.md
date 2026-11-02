@@ -6,7 +6,7 @@
 **Created**: 2026-09-16 (operator question during HS-4: "if we want an agent loop for improving the user-facing harness, would it need to be folded into autopilot?")
 **Categories**: agent_architecture, autopilot, context_management
 **Related (up)**: [`harness-selection-and-integration.md`](harness-selection-and-integration.md) (HS-4 decision: thin off-the-shelf shell, Hermes-style features built **inside the orchestrator** and exposed as MCP tools / API behaviour)
-**Related (substrate)**: [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md), [`promptforge-mutation-safety-contract.md`](promptforge-mutation-safety-contract.md), [`objective-task-rate-goodput.md`](objective-task-rate-goodput.md), [`episodic-memory-integrity.md`](episodic-memory-integrity.md) (M-12 memory instruments)
+**Related (substrate)**: [`autopilot-continuous-optimization.md`](autopilot-program.md), [`promptforge-mutation-safety-contract.md`](promptforge-mutation-safety-contract.md), [`objective-task-rate-goodput.md`](autopilot-program.md#track-objective-task-rate-goodput), [`episodic-memory-integrity.md`](episodic-memory-integrity.md) (M-12 memory instruments)
 **Design inputs**: `docs/design/hs4-harness-decision-package-20260916.md`, `docs/design/hs4-shell-and-orchestrator-features-20260916.md` (feature map §3, landed 2026-09-16)
 
 ## Why this exists

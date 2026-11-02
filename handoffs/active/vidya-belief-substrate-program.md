@@ -22,7 +22,7 @@ Operator priority: an integrated solution that works, not novelty.
 
 ## Relationship & constraints (read before any task)
 
-- **Rides, never rivals**: [`evidence-plane-ledger-and-sequential-verdicts.md`](evidence-plane-ledger-and-sequential-verdicts.md)
+- **Rides, never rivals**: [`evidence-plane-ledger-and-sequential-verdicts.md`](autopilot-program.md#track-evidence-plane-ledger-and-sequential-verdicts)
   conventions (per-question row shape, supersession folding, era discipline) and the
   `autokernel/journal.py` patterns (fsync-per-event, pure rebuild, `RETRIEVAL_SUPERSEDED`,
   view-consistency checks) are the house style this program extends to the research/wiki domain.
@@ -55,7 +55,7 @@ Operator priority: an integrated solution that works, not novelty.
 - Intake entries with paste-ready extracts: `research/intake_index.yaml` intake-1031..1067
   (notably 1063 = byte-exact L1 checkpoint spec; 1062 = proof-standard definitions; 1064 =
   certificate field map; 1035 = judge-discipline rules)
-- Existing machinery to ride: `handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md`,
+- Existing machinery to ride: `handoffs/active/autopilot-program.md`,
   `repos/epyc-inference-research/scripts/kernel_rnd/autokernel/journal.py`, `dashboard/freshness.py`
 
 ## Completed Scope

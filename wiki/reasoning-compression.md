@@ -55,7 +55,7 @@ The TALE-EP evaluation designed on 2026-08-23 has run for the first time. It use
 
 - [per-request-reasoning-budget.md](../handoffs/active/context-and-token-economy.md#track-per-request-reasoning-budget): the GPU run table, the rule application, the defects and their fix, the re-run box, and the pre-run harness gaps that were closed.
 - [2026-09-17-sub-scorer-fix.md](../progress/2026-09/2026-09-17-sub-scorer-fix.md): the root causes, the refreshed pool composition at n=400, and the TrimR loader note.
-- [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md): the stale-pool history behind the vacuous livecodebench cell.
+- [autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md): the stale-pool history behind the vacuous livecodebench cell.
 
 ## Compiled Update — 2026-08-23 (evening): the template axis is now ENFORCED, and the kernel-era field was stale
 

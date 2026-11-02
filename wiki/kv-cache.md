@@ -678,7 +678,7 @@ quantising both moderately. On a VRAM-constrained card the memory-optimal *safe*
 the config that produces garbage at 32K on pure-attention models — so the saving is gated on
 architecture, not on willingness to trade quality.
 
-_Sources: `progress/2026-08/2026-08-03.md`; `handoffs/active/autopilot-continuous-optimization.md`;
+_Sources: `progress/2026-08/2026-08-03.md`; `handoffs/active/autopilot-program.md`;
 `handoffs/completed/kv-cache-quantization.md`; live probes of `:8070`/`:8080`/`:8083` on
 production-consolidated-v8._
 

@@ -96,7 +96,7 @@ The Scoring Verifiers benchmark (intake-367, COLM 2025) establishes a 4-metric e
 
 AP-27 in the autopilot continuous optimization handoff formalizes the eval tower tiers (T0/T1/T2) as RLVR verification functions with deterministic reward signals per tier. The implementation plan is now fully specified in the eval-tower-verification handoff (EV-1 through EV-7). EV-7 depends on all preceding phases plus Ouro P7 results, and will export eval environments for actual RL model training when DGX Spark becomes available. The three metrics (quality + ECE + AUC) form the minimal signal for RLVR reward design.
 
-> Source: [autopilot-continuous-optimization.md](/workspace/handoffs/active/autopilot-continuous-optimization.md) AP-27; [eval-tower-verification.md](/workspace/handoffs/active/eval-tower-program.md) EV-7
+> Source: [autopilot-continuous-optimization.md](/workspace/handoffs/active/autopilot-program.md) AP-27; [eval-tower-verification.md](/workspace/handoffs/active/eval-tower-program.md) EV-7
 
 ## Updates — 2026-04-28
 
@@ -160,7 +160,7 @@ For routing-architecture adoption (tri-role axis, DAR phase plan extension, desi
 - [Reasoning Compression handoff](/workspace/handoffs/active/context-and-token-economy.md#track-reasoning-compression) -- OPSDC self-distillation using reverse KL
 - [ColBERT-Zero integration](/workspace/handoffs/completed/colbert-zero-research-integration.md) -- MemRL distillation design inspired by ColBERT-Zero 3-stage pipeline
 - [Eval Tower Verification](/workspace/handoffs/active/eval-tower-program.md) -- ECE/AUC calibration metrics, ThinkPRM process verification, Aletheia scale-dependent RLVR recipes, Scoring Verifiers protocol, cross-family verification constraint
-- [Autopilot Continuous Optimization](/workspace/handoffs/active/autopilot-continuous-optimization.md) -- AP-27 RLVR formalization pointing to eval-tower-verification.md EV-1--EV-7
+- [Autopilot Continuous Optimization](/workspace/handoffs/active/autopilot-program.md) -- AP-27 RLVR formalization pointing to eval-tower-verification.md EV-1--EV-7
 - [intake-709](https://arxiv.org/abs/2606.09821) UniRL (Tencent Hunyuan) -- unified RL post-training framework (Flow-DPPO / DRPO / CPPO) across diffusion/AR/multimodal; multi-GPU training-only, not_applicable on CPU EPYC; CPPO/DRPO are the LLM-targeted variants for a future DGX LLM-RL track (companion arxiv:2606.11025, 2606.10968)
 
 ## Evolution Strategies at LLM scale cluster + Hoy 2026 evaluation protocol (2026-05-19)

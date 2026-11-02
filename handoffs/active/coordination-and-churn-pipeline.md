@@ -3355,7 +3355,7 @@ Plan: [README.md](../../research/deep-dives/ws58-jev-20261102/README.md). **Orde
 **Priority**: LOW-MEDIUM — operator-framed as debt prevention, "doesn't block any work"; do at seams, never ahead of campaign work
 **Owner**: unclaimed
 **Parent index**: [routing-and-optimization-index.md](routing-and-optimization-index.md)
-**Related**: [autopilot-dashboard-fidelity-audit-2026-07-22.md](autopilot-dashboard-fidelity-audit-2026-07-22.md) (RTG-03 — data-truth defects; this handoff is information-architecture, NOT a substitute for its C1/H1/H2 fixes) · [loops-and-dashboards-audit-2026-07-05.md](loops-and-dashboards-audit-2026-07-05.md) (RTG-16) · [benchmark-results-dashboard.md](../completed/benchmark-results-dashboard-completed-through-2026-08-23.md) (EVL-06 — the working precedent for the contract pattern) · OP-9 (hub supervisor restart, master index)
+**Related**: [autopilot-dashboard-fidelity-audit-2026-07-22.md](autopilot-program.md#track-autopilot-dashboard-fidelity-audit-2026-07-22) (RTG-03 — data-truth defects; this handoff is information-architecture, NOT a substitute for its C1/H1/H2 fixes) · [loops-and-dashboards-audit-2026-07-05.md](autopilot-program.md#track-loops-and-dashboards-audit-2026-07-05) (RTG-16) · [benchmark-results-dashboard.md](../completed/benchmark-results-dashboard-completed-through-2026-08-23.md) (EVL-06 — the working precedent for the contract pattern) · OP-9 (hub supervisor restart, master index)
 
 #### Commission (operator, 2026-08-10, paraphrased)
 
@@ -3798,7 +3798,7 @@ Machine harness 25→48→59→81 checks, 0 fail (independently rerun); 4 quiet 
 #### Non-goals
 
 - **Not a data-fidelity fix.** The per-worker env fragmentation, inverted-topology defect, and
-  H1/H2 blind spots stay owned by [autopilot-dashboard-fidelity-audit-2026-07-22.md](autopilot-dashboard-fidelity-audit-2026-07-22.md).
+  H1/H2 blind spots stay owned by [autopilot-dashboard-fidelity-audit-2026-07-22.md](autopilot-program.md#track-autopilot-dashboard-fidelity-audit-2026-07-22).
 - **No merge of the two panel-registry codebases** (both tested; harmonize the wire vocabulary only).
 - **No new inference, no benchmark reruns, no stack restarts** — pure view-plane work; deploys at
   operator-approved boundaries (`orchestrator_stack.py reload` for the hub; API restart for CORS).

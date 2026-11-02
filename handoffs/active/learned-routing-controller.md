@@ -8,7 +8,7 @@
 the EPD-1b backfill), then EPD-3. Open follow-ups: LRC-1 (autopilot data as MLP training data), LRC-2 (the inert
 `ORCHESTRATOR_FRONTDOOR_VERIFIER_GATE=1`); LRC-TD-1 was folded into `typed-decision-plane.md` TD-11 on 2026-09-29. Completed history is linked from *Completed Scope*.
 **Priority**: ACTIVE for rollout decision of the repaired BGE+MLP fast path; FROZEN for expansion. Do not promote logit/hidden-state/GraphRouter-style expansion until the fable5 routing-freeze gates clear.
-**Related**: [routing-intelligence.md](routing-intelligence.md), [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md), [retrain-routing-models.md](retrain-routing-models.md), [decision-aware-routing.md](decision-aware-routing.md), SkillBank (completed handoff)
+**Related**: [routing-intelligence.md](routing-intelligence.md), [autopilot-continuous-optimization.md](autopilot-program.md), [retrain-routing-models.md](retrain-routing-models.md), [decision-aware-routing.md](decision-aware-routing.md), SkillBank (completed handoff)
 **Rollback**: Set `ORCHESTRATOR_ROUTING_CLASSIFIER=0` (default). Zero schema/API/data changes. (With weights missing, flag-ON is already functionally equivalent to fallback — but the flag should be reconciled with reality.)
 
 ---

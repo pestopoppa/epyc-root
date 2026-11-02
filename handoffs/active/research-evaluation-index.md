@@ -11,13 +11,10 @@
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
 | EVL-02 | model evaluation queue | [model-evaluation-queue.md](model-evaluation-queue.md) | Rank the queue by lane fit; next: AMSB-C390-1 Coder390 vs 27B same-harness A/B, then the EffiBench-X adoption decision | — |
-| EVL-03 | autopilot decision plane audit 2026 07 22 | [autopilot-decision-plane-audit-2026-07-22.md](autopilot-decision-plane-audit-2026-07-22.md) | EV-CONF-2 — build an answer-span/salient-token confidence source, then re-baseline math AUROC before any math-domain use | — |
 | EVL-04 | autopilot sequential allocation | [autopilot-sequential-allocation.md](autopilot-sequential-allocation.md) | After RTG-02 prospective capture, run both sealed Shinka variants without derived menus or counterfactual outcomes | RTG-02 |
 | EVL-08 | canonical judge suite revamp | [benchmark-suites.md](benchmark-suites.md) | Coordinate CJ-13 live agreement/cost acceptance with its MI210 owner; retain CJ-16's separate cascade evaluation | — |
 | EVL-10 | episodic memory integrity | [episodic-memory-integrity.md](episodic-memory-integrity.md) | Run M-12i model-free diagnostic replay after full-CPU bench release under an exclusive claim; keep M-12f metric construction separate | — |
 | EVL-14 | eval tower verification | [eval-tower-program.md](eval-tower-program.md) | Retain EV-PROTO and live calibration acceptance | — |
-| EVL-15 | evidence plane instrument repair | [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) | W5 — Promote core_v2 once the operator rules on the E4/core autopilot_quality era row; then collect alarm-free W6 audit evidence | — |
-| EVL-16 | evidence plane ledger and sequential verdict | [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md) | W8b — Continue live W8 candidate attempts; confirm a keepable replayable candidate, then collect sequential and promotion-eval evidence | — |
 | EVL-21 | fable5 window2 findings 03 portfolio and mas | [fable5-window2-findings-03-portfolio-and-master-queue.md](fable5-window2-findings-03-portfolio-and-master-queue.md) | G1 · Ratify P-GPU-1 (operator; measurement trust boundary — human-amendment-only). findings-02 §5 | — |
 | EVL-27 | frontier f6 upstream publication | [frontier-f6-upstream-publication.md](frontier-f6-upstream-publication.md) | W1 — Build the D2 CPU sparse prompt-processing path per llama-cpp-dsa-contribution.md (D1 superseded by #23346); profile, then PR | — |
 | EVL-29 | intake derived work 2026 07 25 | [frontier-lab-automation.md](frontier-lab-automation.md) | Re-open ID-3/AP-21 on corrected trial support; dispatch accepted retrospective proposals through their application owners | — |

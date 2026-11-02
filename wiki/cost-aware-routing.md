@@ -132,7 +132,7 @@ Fable 5 identified a cost blind spot in the live AutoPilot objective: `quality`,
 
 The first implementation deliberately stopped short of flipping live dominance. `task_rate_qph`, `goodput_qph`, and `tokens_per_solved_task` are now journaled as shadow telemetry, and historical replay over 656 rows parsed cleanly. The proof gate did not pass: only 1 of 5 legacy canonical T1 frontier points fell off under `task_rate_3d_v1`, and raw task-rate admitted a zero-quality high-rate point. Live Pareto dominance stays on the existing vector until the evidence-plane restart, core/version boundary, and quality-eligible replay prevent that failure mode.
 
-Sources: [Fable 5 objective design](../handoffs/completed/fable5-findings-05-objective-design.md), [objective-task-rate-goodput.md](../handoffs/active/objective-task-rate-goodput.md).
+Sources: [Fable 5 objective design](../handoffs/completed/fable5-findings-05-objective-design.md), [objective-task-rate-goodput.md](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput).
 
 ## 2026-06-13 Update — Stack-Prior Cost Contract
 
@@ -224,7 +224,7 @@ Sources: [Frontier F7 — Economic Ledger](../handoffs/completed/frontier-f7-eco
 
 - **DAR-1 replay remains the gate for any expansion beyond the current local cost-aware policy.** The Q-scorer still has the predict-then-optimize pathology, so learned routing is frozen until regret replay and per-question vectors justify a broader rollout. Sources: [decision-aware-routing.md](../handoffs/active/decision-aware-routing.md), [fable5-findings-02-impl-plan.md](../handoffs/completed/fable5-findings-02-impl-plan.md).
 - **The practical CPU-feasible path is still decision-aware losses plus runtime cost weights.** Trinity anchors the black-box ES class, while BaRP/LLM Bandit-style knobs reinforce the idea that the local design surface is in decision shaping, not end-to-end router training. Sources: [decision-aware-routing.md](../handoffs/active/decision-aware-routing.md), [model-capability-descriptors.md](../handoffs/active/model-capability-descriptors.md).
-- **Shadow telemetry now covers task-rate and goodput, but it is not yet a live objective.** The Fable 5 objective change tracks solved-task throughput, not just token throughput, yet the old Pareto vector remains authoritative until evidence-plane replay proves the new one. Sources: [objective-task-rate-goodput.md](../handoffs/active/objective-task-rate-goodput.md), [fable5-findings-05-objective-design.md](../handoffs/completed/fable5-findings-05-objective-design.md).
+- **Shadow telemetry now covers task-rate and goodput, but it is not yet a live objective.** The Fable 5 objective change tracks solved-task throughput, not just token throughput, yet the old Pareto vector remains authoritative until evidence-plane replay proves the new one. Sources: [objective-task-rate-goodput.md](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput), [fable5-findings-05-objective-design.md](../handoffs/completed/fable5-findings-05-objective-design.md).
 
 ## Open Questions
 
@@ -504,7 +504,7 @@ such, not a new measurement.
 - [FlowSteer Concise Reasoning](../research/deep-dives/flowsteer-concise-reasoning.md) -- SEAL linear baseline compatibility, Qwen3.5 hybrid SSM blocker, FlowSteer MLP infeasibility
 - [CoLaR Latent Compression](../research/deep-dives/colar-latent-compression.md) -- Latent compression trade-offs, not-actionable assessment
 - [Reasoning Compression handoff](../handoffs/active/context-and-token-economy.md#track-reasoning-compression) -- OPSDC analysis, 3-tier approach taxonomy, TrimR/Omega evaluation results, all action items
-- [Autopilot Continuous Optimization handoff](../handoffs/active/autopilot-continuous-optimization.md) -- 4D Pareto archive, species-based optimization, GEPA integration, safety gates
+- [Autopilot Continuous Optimization handoff](../handoffs/active/autopilot-program.md) -- 4D Pareto archive, species-based optimization, GEPA integration, safety gates
 - [intake-110#04](https://arxiv.org/abs/2603.05433) OPSDC -- 57-59% compression at accuracy parity (+0.0 to +3.3pp); difficulty adaptation is emergent; length-ratio routing signal. **The v1 abstract's "+9-16 points" was revised away by the authors** (their Appendix D: the base model was mis-scored by a boxed-only grader) — do not cite an accuracy uplift from this entry
 - [intake-125](https://arxiv.org/abs/2602.01982) S3-CoT -- Self-sampled activation steering; progressive curriculum; VL-D in residual stream
 - [intake-126](https://arxiv.org/abs/2602.05539) FlowSteer -- Nonlinear activation steering; SEAL linear baseline; +6% accuracy at 14.5% reduction
@@ -575,9 +575,9 @@ Sources: [PB-QCOST-1 results](../docs/design/pb-qcost-1-results-20261023.md)
 **Confidence: verified** for the source fix and its regression coverage; no new measurement, threshold or reload.
 
 - **Cost-aware scoring no longer reads quality from non-live records.** `_baseline_quality_by_role()` (orchestrator `0815be05`) filters to `deployment_status == live_stack` before either structured quality or model-filename fallback. The compiled artifact had a benchmark-only record with quality_for_role 0.852 / overall 0.8387; the higher-is-better direction, 0.75 reference and quality-gap formula are unchanged. GitNexus rated upstream impact HIGH (9 nodes, 3 direct callers); 102 q_scorer/q_reward tests pass. ([source](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization))
-- **The N-way contention metric now names its event.** `contention_nway_non_allow_count` counts N-way checks returning non-ALLOW whether or not the pairwise result changed, and is no longer divided by the unrelated admitted count; the old key remains a deprecated alias. Admission decisions are unchanged. ([source](../handoffs/active/autopilot-continuous-optimization.md))
+- **The N-way contention metric now names its event.** `contention_nway_non_allow_count` counts N-way checks returning non-ALLOW whether or not the pairwise result changed, and is no longer divided by the unrelated admitted count; the old key remains a deprecated alias. Admission decisions are unchanged. ([source](../handoffs/active/autopilot-program.md))
 
-Sources: [scoring-infra-standardization](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization) · [autopilot-continuous-optimization](../handoffs/active/autopilot-continuous-optimization.md) · [2026-10-30 progress](../progress/2026-10/2026-10-30.md)
+Sources: [scoring-infra-standardization](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization) · [autopilot-continuous-optimization](../handoffs/active/autopilot-program.md) · [2026-10-30 progress](../progress/2026-10/2026-10-30.md)
 
 ### Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
 

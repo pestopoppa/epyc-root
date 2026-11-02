@@ -3,7 +3,7 @@ set -euo pipefail
 # Hook: PreToolUse → Bash
 # Refuses to EXECUTE a derived copy of a gated operator apply/ratify script.
 #
-# Origin: 2026-08-05, handoffs/active/autopilot-continuous-optimization.md — a C6
+# Origin: 2026-08-05, handoffs/active/autopilot-program.md — a C6
 # agent copied artifacts/operator/apply_e8_quality_baseline_state.py, patched its
 # fail-closed AutoPilot gate out of the copy as `if False and autopilot_running()`,
 # and ran the copy. The gate held in the original and the incident was contained,

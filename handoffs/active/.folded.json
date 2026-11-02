@@ -24,9 +24,29 @@
    "target": "agent-collab-rnd-harness.md",
    "track": "autokernel-restart-and-strip"
   },
+  "autopilot-continuous-optimization.md": {
+   "target": "autopilot-program.md",
+   "track": null
+  },
+  "autopilot-dashboard-fidelity-audit-2026-07-22.md": {
+   "target": "autopilot-program.md",
+   "track": "autopilot-dashboard-fidelity-audit-2026-07-22"
+  },
+  "autopilot-decision-plane-audit-2026-07-22.md": {
+   "target": "autopilot-program.md",
+   "track": "autopilot-decision-plane-audit-2026-07-22"
+  },
   "batched-decode-measurement.md": {
    "target": "numa-placement-and-contention.md",
    "track": "batched-decode-measurement"
+  },
+  "batched-edit-parallel-apply.md": {
+   "target": "autopilot-program.md",
+   "track": "batched-edit-parallel-apply"
+  },
+  "bep-dcp-falsification-harness.md": {
+   "target": "autopilot-program.md",
+   "track": "bep-dcp-falsification-harness"
   },
   "bulk-inference-campaign.md": {
    "target": "eval-tower-program.md",
@@ -103,6 +123,18 @@
   "eval-tower-verification.md": {
    "target": "eval-tower-program.md",
    "track": null
+  },
+  "evidence-plane-event-sourcing-and-narrative.md": {
+   "target": "autopilot-program.md",
+   "track": "evidence-plane-event-sourcing-and-narrative"
+  },
+  "evidence-plane-instrument-repair.md": {
+   "target": "autopilot-program.md",
+   "track": "evidence-plane-instrument-repair"
+  },
+  "evidence-plane-ledger-and-sequential-verdicts.md": {
+   "target": "autopilot-program.md",
+   "track": "evidence-plane-ledger-and-sequential-verdicts"
   },
   "exl3-cpu-mi210-implementation.md": {
    "target": "quantization-and-low-bit.md",
@@ -188,6 +220,10 @@
    "target": "engineering-hygiene-backlog.md",
    "track": "loop-state-offraid-backup"
   },
+  "loops-and-dashboards-audit-2026-07-05.md": {
+   "target": "autopilot-program.md",
+   "track": "loops-and-dashboards-audit-2026-07-05"
+  },
   "mathsmith-hc-formalizer-eval.md": {
    "target": "benchmark-suites.md",
    "track": "mathsmith-hc-formalizer-eval"
@@ -257,6 +293,10 @@
    "target": "numa-placement-and-contention.md",
    "track": null
   },
+  "objective-task-rate-goodput.md": {
+   "target": "autopilot-program.md",
+   "track": "objective-task-rate-goodput"
+  },
   "opencode-shell-integration.md": {
    "target": "harness-improvement-loop.md",
    "track": "opencode-shell-integration"
@@ -264,6 +304,10 @@
   "opendataloader-pipeline-integration.md": {
    "target": "knowledge-pipelines.md",
    "track": "opendataloader-pipeline-integration"
+  },
+  "orchestration-robustness-audit-2026-07-11.md": {
+   "target": "autopilot-program.md",
+   "track": "orchestration-robustness-audit-2026-07-11"
   },
   "per-request-reasoning-budget.md": {
    "target": "context-and-token-economy.md",
@@ -312,6 +356,10 @@
   "rlm-contested-claims-self-evaluation.md": {
    "target": "benchmark-suites.md",
    "track": "rlm-contested-claims-self-evaluation"
+  },
+  "scaffold-autopilot-cost-lever-deployment.md": {
+   "target": "autopilot-program.md",
+   "track": "scaffold-autopilot-cost-lever-deployment"
   },
   "scoring-infra-standardization.md": {
    "target": "eval-tower-program.md",
@@ -404,6 +452,10 @@
    "target": "EVL-29",
    "track": "agent-file-prose-compression"
   },
+  "EVL-03": {
+   "target": "RTG-02",
+   "track": "autopilot-decision-plane-audit-2026-07-22"
+  },
   "EVL-07": {
    "target": "EVL-14",
    "track": "bulk-inference-campaign"
@@ -419,6 +471,14 @@
   "EVL-13": {
    "target": "EVL-14",
    "track": "eval-tower-loop-robustness-audit-2026-07-20"
+  },
+  "EVL-15": {
+   "target": "RTG-02",
+   "track": "evidence-plane-instrument-repair"
+  },
+  "EVL-16": {
+   "target": "RTG-02",
+   "track": "evidence-plane-ledger-and-sequential-verdicts"
   },
   "EVL-19": {
    "target": "EVL-14",
@@ -620,6 +680,18 @@
    "target": "EVL-08",
    "track": "agent-world-env-synthesis"
   },
+  "RTG-03": {
+   "target": "RTG-02",
+   "track": "autopilot-dashboard-fidelity-audit-2026-07-22"
+  },
+  "RTG-04": {
+   "target": "RTG-02",
+   "track": "batched-edit-parallel-apply"
+  },
+  "RTG-05": {
+   "target": "RTG-02",
+   "track": "bep-dcp-falsification-harness"
+  },
   "RTG-06": {
    "target": "RTG-36",
    "track": "capability-registry-and-promotion"
@@ -631,6 +703,14 @@
   "RTG-11": {
    "target": "INF-45",
    "track": "dynamic-stack-concurrency"
+  },
+  "RTG-13": {
+   "target": "RTG-02",
+   "track": "evidence-plane-event-sourcing-and-narrative"
+  },
+  "RTG-16": {
+   "target": "RTG-02",
+   "track": "loops-and-dashboards-audit-2026-07-05"
   },
   "RTG-18": {
    "target": "handoffs/completed/model-stack-change-standardization-audit.md",
@@ -650,6 +730,14 @@
    "target": "EVL-08",
    "track": "multi-file-coding-completion-capability"
   },
+  "RTG-23": {
+   "target": "RTG-02",
+   "track": "objective-task-rate-goodput"
+  },
+  "RTG-24": {
+   "target": "RTG-02",
+   "track": "orchestration-robustness-audit-2026-07-11"
+  },
   "RTG-27": {
    "target": "EVL-14",
    "track": "prompt-construction-determinism"
@@ -657,6 +745,10 @@
   "RTG-28": {
    "target": "RTG-08",
    "track": "reasoning-effort-levels"
+  },
+  "RTG-32": {
+   "target": "RTG-02",
+   "track": "scaffold-autopilot-cost-lever-deployment"
   },
   "RTG-33": {
    "target": "PIP-04",

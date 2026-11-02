@@ -622,7 +622,7 @@ schema is owned by the consuming A/B) has two concrete references worth lifting 
 
 ### Source References (2026-08-25 edit-format + memory-surface)
 
-- [`batched-edit-parallel-apply.md`](../handoffs/active/batched-edit-parallel-apply.md) — BEP-6
+- [`batched-edit-parallel-apply.md`](../handoffs/active/autopilot-program.md#track-batched-edit-parallel-apply) — BEP-6
   (hashline granularity overturn, the two leniency details) and BEP-7 (aider pairing rule, Cursor
   line-number tension, the +2.97 pp / 3.75 pp magnitudes).
 - [`tool-output-compression.md`](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) — the 2026-07-29
@@ -680,7 +680,7 @@ the instrument-repair handoff.
 - [`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) — the
   UTM-V1..V6 scoping (2026-08-07) with the append-only envelope, actor-vs-subject proposer, and the
   no-memory control arm in the UTM-V6 matrix.
-- [`evidence-plane-instrument-repair.md`](../handoffs/active/evidence-plane-instrument-repair.md) —
+- [`evidence-plane-instrument-repair.md`](../handoffs/active/autopilot-program.md#track-evidence-plane-instrument-repair) —
   the 2026-08-21 intake-1279#record log-retention finding, the covered-window negative, and the
   `empty_generation` detector's active status.
 - [`intake-1279#record`](../research/intake_index.yaml) — the retention-gap record with the
@@ -947,7 +947,7 @@ The Repo Prompt deep dive (intake-605) surfaced a context philosophy this page h
 - **CPU lens (the load-bearing reframe).** RP's 60k default is GPT-5 Pro's *cloud* paste ceiling. On our BW-bound CPU regime the underlying principle — never spend a token that doesn't earn its place — is *sharper*, not weaker: every unearned context token is DRAM bandwidth paid at decode, and a bloated bundle's prefill is pure latency. Budget-bounded pre-assembly for delegation is plausibly a double win (less prefill latency + less context contamination → better quality).
 - **Where it lands.** The *assemble* side is missing from production. New handoff [`delegation-context-preassembly.md`](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) (DCP-1..6) scopes it for *delegation* specifically — package a bundle when handing a sub-task to worker/coder, instead of each role rediscovering from scratch. Must share segment-importance heuristics with folding (this page's evict side). The closed-source GUI is not deployable, but the feature set is a spec to mine — the open-source-only rule governs *deploy*, not *analyze* (see `feedback_feature_mine_closed_source_competitors`).
 
-**Sources**: [intake-605](https://repoprompt.com/) Repo Prompt — Context Builder + CodeMaps (feature-mined via official blog + open-source `w-winter/dot314` MCP wrapper source) · cross-ref [intake-330] code-review-graph (~8.2× AST token reduction), [intake-151] GitNexus, [intake-295] fff.nvim · [delegation-context-preassembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) · [batched-edit-parallel-apply](../handoffs/active/batched-edit-parallel-apply.md) · intake_index.yaml intake-605 `deep_dive`
+**Sources**: [intake-605](https://repoprompt.com/) Repo Prompt — Context Builder + CodeMaps (feature-mined via official blog + open-source `w-winter/dot314` MCP wrapper source) · cross-ref [intake-330] code-review-graph (~8.2× AST token reduction), [intake-151] GitNexus, [intake-295] fff.nvim · [delegation-context-preassembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) · [batched-edit-parallel-apply](../handoffs/active/autopilot-program.md#track-batched-edit-parallel-apply) · intake_index.yaml intake-605 `deep_dive`
 
 ### Consult context packaging reuses DCP (2026-05-31)
 

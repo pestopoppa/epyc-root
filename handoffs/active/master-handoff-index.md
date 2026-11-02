@@ -67,7 +67,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-58 | Ratify the forward-port rule into CLAUDE.md § Experimental Kernel Workflow (INC-20260925): one feature per forward-port commit; split a bundled commit before reverting it; a feature's test travels with it | [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) → V6R-4b | 2026-09-25 |
 | OP-59 | opencode store: (a) global snapshot:false (per-call configs already carry it; global would disable TUI undo; recommend per-call only), (b) retention policy for opencode.db (10.8 GB live + 10.9 GB WAL; VACUUM cannot shrink it; recommend ageing out headless actor sessions) | [autokernel-orchestrator-actor-backend.md](autokernel-orchestrator-actor-backend.md) → OAB-15 | 2026-09-25 |
 | OP-57 | Choose the actual contact address/URL and confirm launch readiness; dedicated existing email recommended. [Options, tradeoffs, copy and retained screenshots](../../artifacts/operator/decisions/WEB1-contact-publication-20261007/README.md). Default remains unpublished. | [amd-ai-lab-website-publication.md](engineering-hygiene-backlog.md#track-amd-ai-lab-website-publication) WEB-1 | 2026-09-25 |
-| OP-1 | P0.1–P0.3 sign-off bundle | [orchestration-robustness-audit-2026-07-11.md](orchestration-robustness-audit-2026-07-11.md) | 2026-07-11 |
+| OP-1 | P0.1–P0.3 sign-off bundle | [autopilot-program.md](autopilot-program.md#track-orchestration-robustness-audit-2026-07-11) | 2026-07-11 |
 | OP-5 | Reviewer control-plane decision bundle (P-REV-1 amendment) | [reviewer-control-plane-index.md](reviewer-control-plane-index.md) | 2026-07-16 |
 | OP-6 | Consolidated quiet window — reviewer-plane baselines on the v8 reference lineup | [reviewer-control-plane-index.md](reviewer-control-plane-index.md) | 2026-07-17 |
 | OP-26 | ParEval CPU/HIP trials — flagged tier-1 at Hawkeye Stage-2b close but never reached the approved plan: run, file, or decline | [research-intake session record, `git show c927e943:.research-session.json`] | 2026-08-21 |
@@ -142,9 +142,9 @@ nobody is moving.
 |--------|----------|------|---------|----------------|
 | inference-research | 32 | 1033 | 59 | 2026-07-29 |
 | pipeline-integration | 1 | 74 | 3 | 2026-11-02 |
-| research-evaluation | 16 | 773 | 16 | 2026-07-29 |
+| research-evaluation | 13 | 766 | 16 | 2026-09-15 |
 | reviewer-control-plane | 6 | 26 | 12 | 2026-07-29 |
-| routing-and-optimization | 30 | 672 | 16 | 2026-07-29 |
+| routing-and-optimization | 22 | 679 | 16 | 2026-07-29 |
 | user-facing-harness | 5 | 92 | 15 | 2026-10-03 |
 <!-- END GENERATED index_state -->
 

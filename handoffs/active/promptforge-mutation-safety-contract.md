@@ -3,7 +3,7 @@
 **Status**: stub
 **Created**: 2026-09-07 (research intake, operator-approved plan; successor of ../completed/meta-harness-optimization.md whose active pointer was retired 2026-08-23)
 **Categories**: meta_harness, autopilot, safety
-**Related**: [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) (RTG-02) · [eval-tower-verification.md](eval-tower-program.md) (EVL-14) · [agent-collab-rnd-harness.md](agent-collab-rnd-harness.md)
+**Related**: [autopilot-continuous-optimization.md](autopilot-program.md) (RTG-02) · [eval-tower-verification.md](eval-tower-program.md) (EVL-14) · [agent-collab-rnd-harness.md](agent-collab-rnd-harness.md)
 
 ## Objective
 
@@ -141,7 +141,7 @@ so this is a **new active stub, not a reopen**.
       mutation-type risk weight. `intake-1323#record` (dive actionable D4; the 2026-09-07 wording
       "every catastrophic regression came from an override" was refuted by MHS-5).
       Orchestrator `4f28e6c3` is on branch `sub/autopilot-safety-20260916`, pending merge. Zero compute. Consumer: AP-52 in
-      [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md).
+      [autopilot-continuous-optimization.md](autopilot-program.md).
       **IMPLEMENTED 2026-09-16, NOT YET ON MAIN — flip on merge** (`sub-autopilot-safety`, orchestrator `8219d8e8`, branch `sub/autopilot-safety-20260916`, unmerged): `MUTATION_EFFECT_RISK`
       (inert 0.05 < constrain 0.25 < expand 0.50 < replace 0.90 < unknown 1.0 < unsafe ∞), carried as
       `effect_risk` on both `CodeMutation` and `PromptMutation`. Prompt text is now classified too

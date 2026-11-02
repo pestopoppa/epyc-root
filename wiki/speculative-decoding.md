@@ -509,7 +509,7 @@ at this compile (superseded: folded and validated — see the late section above
   - Populate the values from verify-batch logits on llama.cpp-experimental for v11. This is never patched into v10.
   - First test whether a per-request `"speculative.n_max": 0` on the live v10 server gives fully populated probs.
 
-  ([autopilot-decision-plane-audit](../handoffs/active/autopilot-decision-plane-audit-2026-07-22.md), intake-1521#record)
+  ([autopilot-decision-plane-audit](../handoffs/active/autopilot-program.md#track-autopilot-decision-plane-audit-2026-07-22), intake-1521#record)
 
 ### Open questions
 
@@ -524,7 +524,7 @@ at this compile (superseded: folded and validated — see the late section above
 - [dflash2-block-drafter-experimental-build.md](../handoffs/active/dflash2-block-drafter-experimental-build.md) — DF2-11..13, DF2-6b-bis near-tie classification, DF2-QWOPUS note.
 - [speculative-decoding-mtp-refresh.md](../handoffs/active/speculative-decoding-mtp-refresh.md) — the 2026-07-29 causal correction and the target-precision missing control.
 - [laguna-s21-cpu-port.md](../handoffs/active/fable5-window2-findings-03-portfolio-and-master-queue.md#track-laguna-s21-cpu-port) — dated correction to "roots in TARGET-side quant noise".
-- [autopilot-decision-plane-audit-2026-07-22.md](../handoffs/active/autopilot-decision-plane-audit-2026-07-22.md) — EV-CONF-3 and the `n_max: 0` probe.
+- [autopilot-decision-plane-audit-2026-07-22.md](../handoffs/active/autopilot-program.md#track-autopilot-decision-plane-audit-2026-07-22) — EV-CONF-3 and the `n_max: 0` probe.
 - [2026-09-23-intake-jev-exl3.md](../progress/2026-09/2026-09-23-intake-jev-exl3.md) — the DFlash record correction.
 - intake-1505#00/#02/#05/#06/#07, intake-1512#00/#02, intake-1513#04 — dive-verified external priors.
 

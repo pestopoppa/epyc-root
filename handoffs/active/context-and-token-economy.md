@@ -224,7 +224,7 @@ _Via `/research-intake` Stage-2 2026-07-29 (intake-913…932 batch): ACM (intake
   ([intake-1024](../../research/intake_index.yaml), dive-verified 2026-08-09): global
   `max_related_cards 3`; improve `ancestor_k 3` / `sibling_k 3`; crossover `2` / `2`; debug
   `max_related_cards 8`. Cross-links AP-ME-1 in
-  [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) — the planner-context
+  [autopilot-continuous-optimization.md](autopilot-program.md) — the planner-context
   half of the same idea. Offline-first: measure current per-operator context size before changing it.
 
 ## Research Intake Update — 2026-09-14 (intake-1346…1366)
@@ -262,7 +262,7 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
 **Categories**: context_management, agent_architecture, routing_intelligence, tool_implementation
 **Source**: intake-605 (Repo Prompt — Context Builder + CodeMaps); cross-ref intake-330 (code-review-graph), intake-151 (GitNexus), intake-295 (fff.nvim)
 **Owning index**: [`routing-and-optimization-index.md`](routing-and-optimization-index.md) RTG-10
-**DCP-6 falsification-harness status**: [`bep-dcp-falsification-harness.md`](bep-dcp-falsification-harness.md) (offline replay closed 2026-06-12; DCP-6a code landed; server reload/deploy attestation primitive landed 2026-06-18 in `epyc-orchestrator` `756c96b`; 2026-06-19 launch-code provenance check is satisfied but broad running-state attestation remains caveated; `29b9ba3` provides the host-quiet A/B runner; first live A/B artifact landed in `56a72f6` and argues against promotion on latency).
+**DCP-6 falsification-harness status**: [`bep-dcp-falsification-harness.md`](autopilot-program.md#track-bep-dcp-falsification-harness) (offline replay closed 2026-06-12; DCP-6a code landed; server reload/deploy attestation primitive landed 2026-06-18 in `epyc-orchestrator` `756c96b`; 2026-06-19 launch-code provenance check is satisfied but broad running-state attestation remains caveated; `29b9ba3` provides the host-quiet A/B runner; first live A/B artifact landed in `56a72f6` and argues against promotion on latency).
 
 #### Objective
 
