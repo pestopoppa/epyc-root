@@ -1,0 +1,91 @@
+# Stage-2 dive: Archive228/jev-harness-engineering (Jev + Harness Engineering)
+
+Date of dive: 2026-11-02. Repo HEAD `5d8670b6918003379e6d03a200fecf9d2cc9a2c3` (sha7 `5d8670b`), single shallow commit, author "Archive", 2026-09-25 21:25 +0300. License: MIT, "Copyright (c) 2026 Archive228" (`LICENSE`). Repo has 892 files; third-party vendored code (OpenCode MIT, Hermes MIT, Codex Apache-2.0) is declared in `THIRD-PARTY-NOTICES.md` under a `terminal-agent/` tree.
+
+## Reachability
+- X post https://x.com/ArchiveExplorer/status/2103590048230695408: REACHABLE (curl 200, 762 KB SPA shell). Syndication API 200 and fxtwitter API 200 (full JSON). The post body is only a link to X Article (ArchiveExplorer X Article), titled "Jev + Harness Engineering: Build an Agent You Can Inspect and Control", created 2026-09-25T20:58:44Z, author handle ArchiveExplorer (display name "Archive"). The article text is a shortened edition of the repo's `jev-engineering.en (article)` (same preview "28 correct decisions out of 28 across two labelled sets"). Saved: `net/fxtwitter.json`, `net/syndication.json`.
+- Jev docs: https://typesafe.ai/docs = 404 (Framer page not found); https://docs.typesafe.ai = REACHABLE (200, Mintlify). Sub-pages fetched to disk: /confidence, /primitives/choice, /primitives/score, /models, /model-jaggedness/jev-1.13, /api (all 200). Verified from disk (not WebFetch digest).
+
+## Docs cross-checks (from disk, `net/*.txt`)
+- Confidence formula in docs: `(p_max - 1/n) / (1 - 1/n)`, algebraically identical to `(n*p_max - 1)/(n-1)`. The repo's own `source-check.md` says the docs page "does not publish the exact formula"; the docs now do ("How confidence is calculated"), so the article's formula claim is supported by vendor docs as of 2026-11-02.
+- /models: Jev 1.13 and 1.14 both listed; "$42 / $0.042" per Btok / per Mtok; "64k per-request / 32k per-question"; "Output tokens are free". **Jev 1.14 is newest, available from October 14, 2026** (after the article), so pinned `jev-1.13.0` is no longer the newest and all thresholds/accuracy numbers are tied to a superseded model.
+- /primitives/choice: "A Choice question accepts up to 255 options". /api schema: Score criteria maxItems 10 (grep also showed minItems 1 on an items array; the 2-level minimum is asserted by article and source-check but not confirmed in schema text by me).
+
+## Claim verdicts
+Locator is `file:line @ sha7`. All quotes machine-verified as substrings of the cited line; sha256 over the UTF-8 quote string (tools/q.py).
+
+| # | Verdict | Locator | Verbatim quote | sha256(quote) |
+|---|---|---|---|---|
+| 1a Choice<=255, Score 2-10 | CONFIRMED | jev-engineering.en (article):61 @ 5d8670b | "no more than 255 options in a Choice, and between two and ten levels in a Score" | `19639c82f4808e64e192c159c1aa4b78615be4722708a7913c6c2f547e448bcb` |
+| 1b Choice probs+confidence | CONFIRMED | jev-engineering.en (article):92 @ 5d8670b | "`probabilities` gives the distribution across options, and `confidence` shows how concentrated that distribution is" | `4dcd58be6596fc7f2f250418feb3738409a967bcc2b41843b0c523d225e43167` |
+| 1c Noul single prob | CONFIRMED | jev-engineering.en (article):150 @ 5d8670b | "The `noul` field holds a number from 0 to 1, the probability of "yes"" | `4e583766e272039e3ec3a628bdd32368d656b7374685322dfd597ad6b5d357e1` |
+| 1d independent | CONFIRMED | jev-engineering.en (article):164 @ 5d8670b | "Inside such a request the questions are evaluated independently." | `2c3100ccc65224a4a664b386c336924d91b58569917260bfdb263ebdebdcffa6` |
+| 2a price | CONFIRMED | jev-engineering.en (article):17 @ 5d8670b | "$0.042 per million input tokens with output unmetered" | `7d36c7b8882995f751ed62e550a32fe7c7e625f05b24e56cc9aa4356c4948905` |
+| 2b pin | CONFIRMED | jev-engineering.en (article):55 @ 5d8670b | "This article pins `jev-1.13.0`" | `a57dd0fe7aa12bfbf37dad37ae66684baa40e31de801515594ddff22116c2ae7` |
+| 2c limits | CONFIRMED | jev-engineering.en (article):61 @ 5d8670b | "64k tokens for the whole request and 32k for `state` together with the longest question" | `eca35c1841352242433a38dcde480cc2ff00b3d56a3dc1bac230c51b35f98401` |
+| 3a formula | CONFIRMED | jev-engineering.en (article):96 @ 5d8670b | "for `n` options the documentation reduces it to `(n × p_max − 1) / (n − 1)`" | `08bb07b559da7fb91dc253854ead5a0fce9513ee5f965283f27ee153afe06860` |
+| 3b wording versioned w/ threshold | PARTIAL | jev-engineering.en (article):905 @ 5d8670b | "Pin the model version whenever a threshold is tuned against it." | `0610ccce1bf3d3d5c3fe52c5a628ff540cde30b1b45212b22fc767a1e1905cee` |
+| 4a statuses | CONFIRMED | jev-engineering.en (article):366 @ 5d8670b | "`unverified`: confirmation is missing; the check was never run, or the result belongs to older code." | `a5daf43fd52eaaff49eb922731db735d5efd64fb8144e6ce97950abc809827c4` |
+| 4b provenance | CONFIRMED | jev-engineering.en (article):372 @ 5d8670b | "A check result needs a source: check ID, command, exit code, output, timestamp and project snapshot." | `bcd7e0fb786168a0e6e69d61b1da2d1cf8f215310f31618e075332847b7779ff` |
+| 4c claim never promoted | CONFIRMED | jev-engineering.en (article):368 @ 5d8670b | "It never becomes a test result." | `85561fe960da9be1e2762eb56d2f849b85a388d848ded8681f98dfbfac455383` |
+| 4d Noul annotates | CONFIRMED | jev-engineering.en (article):416 @ 5d8670b | "it never promotes a mandatory criterion to `passed`" | `f917e3c3d5f6be084518d1a744dee9c0ba80da12fbba7d9a3d150b351bc136d3` |
+| 5 registry selector | CONFIRMED | jev-engineering.en (article):500 @ 5d8670b | "Text from the model is never executed as shell." | `4a74e4b8a13ffeaf6c3f963a05e61c3fe4c2944c41c1cd6334021dd4d47b4c8f` |
+| 6a named policy/stop reasons | CONFIRMED | jev-engineering.en (article):526 @ 5d8670b | "run a mandatory check, obtain an extra observation, hand a failure to the worker, complete under the contract, or stop for review" | `33e76b36a8993801d9030613ef9e47f053a6bc6f127a5fef81e5060e20d2ca28` |
+| 6b API error never confirms | CONFIRMED | jev-engineering.en (article):534 @ 5d8670b | "an API error never confirms readiness" | `c89639a7d9685735a2e15b156f25dfabc6a5c19c36289c3eec45b142c9d5a3b7` |
+| 6c limits 2 repairs/300s | CONFIRMED | jev-engineering.en (article):604 @ 5d8670b | "The policy allows up to two repairs and 300 seconds for the whole loop." | `02114b6facc378b25fb019630af8350e9aa35868c652ffe1691b16e17ae248a1` |
+| 6d Codex CLI worker | CONFIRMED | jev-engineering.en (article):568 @ 5d8670b | "For the worker we use the Codex CLI." | `af28cf79c4ea3cb51ebd09a0cdbe9cd0b1bad9490a41274ab1fb496fcc90ca2b` |
+| 7a 3 defects 2 complete | CONFIRMED | jev-engineering.en (article):690 @ 5d8670b | "**two automatic completions and one stop**, with no false `complete`" | `f5157e9e896d8189755143b3df4e106930661959d8a19361eed4d594885550cd` |
+| 7b stop 0.52<0.60 | CONFIRMED | jev-engineering.en (article):684 @ 5d8670b | "`confidence=0.52` fell below the recorded threshold of `0.60`" | `1bf89ccbf19caf84a670f68f233f98ae07b3803f2472628075329a1d18f1554f` |
+| 7c D2 0.77/0.70 | CONFIRMED | jev-engineering.en (article):700 @ 5d8670b | "D2 0.85 at `confidence` 0.77, D2 0.80 at 0.70, and D2 0.68 at 0.52" | `7532daa53ef6e7a4f81d9bbb31505a59af29d52327bc5543910e80854dbc43da` |
+| 8a 28/28 x2 | CONFIRMED | jev-engineering.en (article):788 @ 5d8670b | "That one also returned 28 correct answers out of 28" | `64a1b79576c66a33bbf7a1bd407bf6fccc4344206772627bc4df659b720a0d74` |
+| 8b not calibration | CONFIRMED | jev-engineering.en (article):792 @ 5d8670b | "they establish nothing about reliability on your traffic, the quality of calibration" | `d5bdb3ac298dcf26813857a2ab1fd4a41ae20fdcb0b4ef283435e45144fe6dc0` |
+| 8c 83 checks | CONFIRMED | jev-engineering.en (article):673 @ 5d8670b | "The suite holds 83 checks in total" | `5da5e344866eb256d424608d217bf8eb74f6352166df83a37c01507ac888a288` |
+| 9 replay | CONFIRMED | jev-engineering.en (article):729 @ 5d8670b | "Replay reads the saved inputs and answers, recomputes the policy actions, and calls no models" | `3509c9fddebc1c26415ef86378d27122de7576fe4772072a4072809ef8a7e57b` |
+| 10a low conf=no opinion | PARTIAL | jev-engineering.en (article):721 @ 5d8670b | "decide in advance what happens on an unconfident choice" | `8fa464965c219e56b9662eabb602414fe845a3c7237074c04861b6b674e5f11f` |
+| 10b asked/not asked/unavailable | PARTIAL | jev-engineering.en (article):534 @ 5d8670b | "If the mandatory Choice is unavailable, invalid or not confident enough, stop with a reason." | `4de7e31fa627c9026969509eb6d6d6eb0368e4c7421149b6905f302ec4335968` |
+| 10c two thresholds | PARTIAL (in code, not stated as principle) | policy-codex.json:3 @ 5d8670b | ""scope_threshold": 0.8," | `d6150631a3c4c3d371511164a66bc61200594cea84e7cb6aed4393090006fbb0` |
+| 10d narrow questions | CONFIRMED | jev-engineering.en (article):810 @ 5d8670b | "So keep questions of meaning narrow, and leave exact arithmetic and invariants to code." | `d0ed3e7d25fc2c6b9ef912317985d3adda1ba489d271b5fae185ff2d1d306777` |
+
+### Verdict notes (non-CONFIRMED and nuance)
+- 3b PARTIAL: the article never says question wording is versioned together with its threshold. Nearest: checklist item 9 (pin model version when tuning a threshold), "the code and the inputs were frozen in a manifest before the first call" (L677), and a contract hash for check freshness (L445). Wording-versioning is the operator summary's gloss.
+- 6c nuance: article says 300 s and 2 repairs; `policy-codex.json` matches (max_seconds 300, max_iterations 2, max_checks 10, max_jev_calls 10, worker_timeout 105 vs article's "90 seconds" per attempt). Default `policy.json` is 120 s and `policy-live.json` 240 s, so 300 s is the Codex-live policy only.
+- 7 nuance: seeded defects = interface-only, backend-only, both. Completions: interface D2 conf 0.77 (p=0.85), both D2 conf 0.70 (p=0.80); stop: backend, D2 p=0.68 conf 0.52 (D1 0.26); (3x0.68-1)/2=0.52 checks. The stop was recovered by hand with `--selector all` (repaired, 0 extra Jev calls). The `fixed` selector had repaired 3/3 earlier, so "no advantage for Jev is established" (L690) - the operator summary omits this.
+- 8a: two sets each 28/28 over 18 requests (10 ticket Choice + 10 Noul + 8 diagnostic); authored by the same person. Score excluded from accuracy figures (L794). "83" is the harness unit-test count, not the C1/C2/D1/D2 registry.
+- 10a PARTIAL: "low confidence = no opinion" is not stated; article says decide in advance what happens on an unconfident choice, and code returns `no_supported_diagnostic`. Vendor docs (/confidence) have an "I don't know is a useful signal" section - likely origin.
+- 10b PARTIAL: structurally present (`scope_annotation_error` for unavailable optional Noul L418; `router_asked` + `router_answer` in policy context; mandatory-Choice failure stops) but not phrased as asked / not asked / unavailable.
+- 10c PARTIAL: policy has two thresholds (`scope_threshold` 0.8 for shadow Noul, `min_choice_confidence` 0.6 for Choice router). The article's actual lesson: confidence is a function of p_max, so a 0.60 gate over 3 options equals p_max>=0.73 (L100, L852). "Category probability + confidence needs two thresholds" is not in the source.
+
+## (a) Re-implementation details
+- Request: `POST https://api.typesafe.ai/v1/systemone`, Bearer auth; body `{model, state(str|obj|array), questions{id:{type,instructions,criteria}}}`; response `{model, answers{id:...}, usage{input_tokens,output_tokens}}`; errors 401/422/429/529 (429/529 need delay). Question ids are not seen by the model. Choice answer `{choice, probabilities, confidence}`; Score `{score(expected level), legend, probabilities{"0".."k"}, confidence}`; Noul `{noul}`. No seed/temperature (L692): repeat 10x before choosing a threshold; vendor 15-repeat stdev ~0.01.
+- Policy (`jev-harness-lab/policy.py`) actions `check | worker | ask_router | complete | stop`. Stop reasons: `time_limit`, `invalid_acceptance_report`, `check_limit`, `evidence_requires_review`, `diagnostic_tool_error`, `iteration_limit`, `jev_call_limit`, `no_supported_diagnostic`. Complete reason `acceptance_contract_satisfied`. Other reasons: `mandatory_acceptance`, `fixed_diagnostic`/`all_diagnostic`, `repair_observed_failure`, `choose_optional_diagnostic`, `jev_selected_diagnostic`. Rule order: time -> report schema validity -> all passed => complete -> missing fresh mandatory check => run -> any unverified => stop for review -> diagnostic tool error => stop -> selector fixed/all -> diagnostics done => worker (iteration cap) -> ask router -> router must return D1/D2 with confidence >= `min_choice_confidence` else stop. Worker/adapter failures add further stop reasons in run.py (no change, nonzero exit, invalid output, timeout).
+- Policy file fields (validated exactly): `scope_threshold`(0.8), `min_choice_confidence`(0.6), `max_iterations`(2), `max_checks`(10), `max_jev_calls`(10), `max_seconds`(120/240/300 by file), `command_timeout`(10), `api_timeout`(20), `worker_timeout`(90/105).
+- Evidence report (`evidence.build_report`): `{snapshot, criteria:[{criterion, requirement, check_id, status(passed|failed|unverified), reason, scope_noul, scope_supported, record}], all_passed, scope_warning}`. Reasons: `no_fresh_execution`, `check_timed_out`, `nonzero_exit`, `check_tool_error`, `fresh_zero_exit_known_contract`. Check record: `check_id, snapshot, snapshot_after, exit_code, stdout` (+ command, timestamp). Exit 0 pass / 1 assertion fail / 2 tool error. Freshness = snapshot before == after == current, and contract hash unchanged (snapshot taken twice to prove the check did not mutate the project).
+- Registry `checks.json`: kinds `mandatory` (C1->R1, C2->R2) and `diagnostic` (D1, D2) with scope strings. Router Choice options = diagnostics + `none_suitable`; `none_suitable` => `stop_for_review`, unknown id => `stop_invalid_answer`.
+- Replay: `run.py replay --run DIR --policy P` reads `events.jsonl` (each event = `context` + recorded `decision`), re-runs pure `decide()`, exits 2 with `status: diverged` at first differing event, else `matched`; no counterfactual rollout. Lesson: policy is a pure function of a logged context.
+- Worker protocol: stdin JSON `{task, project, feedback, iteration}`, stdout `{"claim": "..."}`; sandbox `workspace-write`, web off, verifies only `app.py` changed; API key never reaches worker; worker tokens logged apart from Jev usage; a stalled worker (claim, no file change) => stop.
+- Eval recipe: Fixed vs All vs Jev-Choice on identical prepared reports; labels withheld; final acceptance by a separate process with queries never shown to the worker. The 10-point pre-flight list (L895-906) is reusable. Demo mode stamps model `SYNTHETIC-DEMO-NOT-JEV` so fixtures cannot pass as measurements.
+
+## (b) Dive-surfaced sources (URLs actually seen in repo / docs)
+| URL | What it would settle |
+|---|---|
+| https://docs.typesafe.ai/confidence (read) | Per-type confidence formulas incl. Score; Score gating. |
+| https://docs.typesafe.ai/model-jaggedness/jev-1.13 (read) | Vendor-listed failure modes; check its 1.14 counterpart. |
+| https://docs.typesafe.ai/models (read) | Jev 1.14 (2026-10-14) delta; whether `jev-1.13.0` stays served. |
+| https://docs.typesafe.ai/api, /api/errors | Limits, retry semantics for 429/529. |
+| https://docs.typesafe.ai/patterns/fan-out, /patterns/composite-scoring, /cookbooks/rerank_typesafe, /cookbooks/autoresearch_feature_discovery | Fan-out of independent questions; composing narrow Noul in code; reranking; training a classical model on Jev probabilities. |
+| https://github.com/typesafe-ai/skills ; typesafe-sdk-python ; system-one-adapter-python | Vendor reference code (MIT); the adapter offers a same-budget comparison vs an ordinary LLM, the baseline this article lacks. |
+| https://www.langchain.com/blog/building-a-harness-with-jev ; https://docs.langchain.com/oss/python/integrations/providers/typesafe | Independent integration (TypeSafeClassifier, ModelRouterMiddleware, AutoModeMiddleware). |
+| https://github.com/thruwire/foreman (+ docs/what-foreman-proves.md) | Worker/supervisor architecture with nine Noul judgements; candid proof limits. |
+| https://github.com/browser-use/jev-ultrafast | Jev for browser action selection. |
+| https://developers.openai.com/codex/noninteractive | `codex exec` semantics for the worker adapter. |
+| https://console.typesafe.ai/playground, /keys | Hands-on test of question types. |
+| Repo-internal: `jev-harness-lab/live-eval-method.md`, `challenge-method.md`, `verification/jev-live-2026-09-20/*`, `VALIDATION.md` | Raw saved requests/responses behind 28/28 and the 0.52 stop (not opened in detail beyond VALIDATION/README). |
+
+## (c) Adversarial note
+- Anonymous author ("Archive228" / "ArchiveExplorer"); no affiliation stated. Promotional toward Jev but with unusual self-limiting honesty (no Jev advantage established; fixed order 3/3 beat Jev 2/3; single-run thresholds not to be trusted). One-day experiment on a product that "came out of stealth on 15 September". Vendor facts (price, limits, formula) are docs-verified above; everything else is author-measured.
+- Tiny n: 3 defect cases x 1 run; two 28-decision sets authored by the same person; "no false complete" over 3 attempts; the 9 offline scenarios use a deterministic demo worker and cannot show selector value. No seed/temperature; Jev 1.14 shipped 2026-10-14.
+- The toy task (2 requirements, 4 checks, ~30-line app) needs no model; article admits it. The only model-dependent event was one stop at 0.52.
+- Repo hygiene: README says "repository is private for now" yet cloned publicly; several edition files (v2, jev-focus, RU) risk drift; we read `.en.md` at this SHA.
+- `source-check.md` vs article disagree on whether the confidence formula is published; resolved in the article's favour by current docs.
+- Operator-summary items not found as such: 3b, 10c, 10a/10b phrasing.
+- Relevance: model-agnostic patterns (evidence status triple with snapshot-hash freshness, claim vs result separation, registry-only action selection, pure-function policy + replay, Choice escape option, threshold on p_max) are portable; Jev itself is a closed hosted API (open-source-only policy applies to anything we would serve).
