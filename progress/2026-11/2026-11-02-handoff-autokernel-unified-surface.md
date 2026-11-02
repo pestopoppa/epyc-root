@@ -79,3 +79,19 @@ Consumed Goodhart preparation and reviewed the new implementation contract again
 ## 00:29Z — Record Goodhart promotion implementation contract
 
 Consumed Goodhart preparation and reviewed the new implementation contract against the task and reported source paths. It proposes retaining original keep-time bench effect identity, validating the keep-by-surface LOO matrix, counting unique keeps whose omission is at least as fast as the full bundle, and exposing evidence in the promotion record. It includes synthetic examples and proposed fixture tests; incomplete-evidence behavior is explicitly a proposal for owner review, not a new grading rule. No research source was edited, no tests or compute were run, and S3-AKU-13 remains open. GPU quantize and CPU floor preparation events remain registered.
+
+## 00:30Z — Review CPU observer and candidate measurement readiness
+
+The prior delegated CPU floor and GPU quantize prep did not leave completed result files; no runnable row or verified candidate executable was available for publication. An experimental untracked CPU observer exists in the lane, but it is not integrated into the research floor reader and cannot qualify a measurement. Dispatched bounded review and focused non-compute tests of that helper, plus quantize build identity and canonical CPU recipe/build-frame checks; output events are registered. The Goodhart task remains open despite its published proposed contract. No compute was launched and no row published.
+
+## 00:31Z — Review CPU observer and candidate measurement readiness
+
+The prior delegated CPU floor and GPU quantize prep did not leave completed result files; no runnable row or verified candidate executable was available for publication. An experimental untracked CPU observer exists in the lane, but it is not integrated into the research floor reader and cannot qualify a measurement. Dispatched bounded review and focused non-compute tests of that helper, plus quantize build identity and canonical CPU recipe/build-frame checks; output events are registered. The Goodhart task remains open despite its published proposed contract. No compute was launched and no row published.
+
+## 00:31Z — Review CPU observer and candidate measurement readiness
+
+The prior delegated CPU floor and GPU quantize prep did not leave completed result files; no runnable row or verified candidate executable was available for publication. An experimental untracked CPU observer exists in the lane, but it is not integrated into the research floor reader and cannot qualify a measurement. Dispatched bounded review and focused non-compute tests of that helper, plus quantize build identity and canonical CPU recipe/build-frame checks; output events are registered. The Goodhart task remains open despite its published proposed contract. No compute was launched and no row published.
+
+## 00:32Z — Review CPU observer and candidate measurement readiness
+
+The prior delegated CPU floor and GPU quantize prep did not leave completed result files; no runnable row or verified candidate executable was available for publication. An experimental untracked CPU observer exists in the lane, but it is not integrated into the research floor reader and cannot qualify a measurement. Dispatched bounded review and focused non-compute tests of that helper, plus quantize build identity and canonical CPU recipe/build-frame checks; output events are registered. The Goodhart task remains open despite its published proposed contract. No compute was launched and no row published.
