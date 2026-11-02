@@ -47,3 +47,9 @@ Consumed GPU implementation review: `/mnt/raid0/llm/tmp/ernie-fa-ab-20261102/` c
 ### ERNIE comparison input custody
 
 Consumed the Qwen input digest receipt: 59 files, manifest `/mnt/raid0/llm/tmp/ernie-qwen-pip03-20261102/MODEL-SHA256SUMS`, manifest SHA-256 `d45112904c7f69c3b015006af03d55bf8ec38c0873258ef20838ad43a116f93d`. Runtime metadata and preparation-time server/source digests are recorded in the adjacent `runtime-custody.json`; 896² memory and timing are unmeasured. Independent launcher completion and resource review are underway with registered event files. GPU review repaired dry-run isolation, grant directory handling, incomplete exit status and source-file digest manifest; selected graph operation remains UNKNOWN, so an operation-trace preparation was assigned. No rows published and no inference run. [no-belief: preparation only]
+
+## 07:45Z — Consume GPU trace and Qwen runtime reviews
+
+### Attention trace and Qwen admission preparation
+
+Consumed the GPU trace review: the unapplied patch at `docs/evidence/ernie-image-evaluation-20261102/gpu/trace-graph-selection.patch` passes `git apply --check` against sd.cpp `f3a7fe957d1e615d8766084f000dc3fabf8d7775`; it records graph selection, not actual kernel execution, and shared-helper logs need ERNIE DiT attribution. Experimental source/build preparation is assigned. Qwen runtime review found the default 48 GiB reservation unsupported by measurement and recommended provisional 192 GiB; 896² peak RSS and runtime remain unmeasured. A 300 s exposure start margin can leave interrupted fixed prompts UNKNOWN. A bounded owner is correcting admission and deadline handling, with completion registered. No inference, qualification or row publication. [no-belief: preparation only]
