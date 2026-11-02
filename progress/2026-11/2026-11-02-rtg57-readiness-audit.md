@@ -55,6 +55,10 @@ validation requires the applicable compute authorization.
   5/5 and candidate output distinct 5/5 for each of two cases; matched input hashes and own-PID GPU
   residency were recorded. Original source-to-build binding is unknown, so source causality is not
   established. Raw evidence is on research `b8ded61ef`; no production change follows.
+- A second 20-run GPU repeat on root-owned source-pair builds (`f8878bf14`) reproduced candidate
+  variability on both cases with mask skipping disabled and baseline 5/5 identical. Matched native
+  inputs and in-window GPU witnesses were retained. Scoped observations ingest privately; a live-loop
+  planning canary, production quality and promotion remain unestablished.
 
 All implementation branches are prospective source work. No inference or production service change
 was performed. The parent handoff boxes remain open until their complete acceptance criteria are met.

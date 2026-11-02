@@ -811,6 +811,18 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
         infer kernel causality from the retained pair. Private sidecar ingestion yielded 60 frames
         from 20 rows, but device applicability was not authored and the planning canary remains open.
         [belief: cc]
+      - *(2026-11-02, source-bound repeat.)* Research `f8878bf14` retains the complete 20-run native
+        record, output and source/build receipts. Source `a0d0ae238e714aaab04e973ef4b5a4b7c9917744`
+        was materialized as a root-owned read-only baseline and one-file candidate patch
+        `4147d2b65bbb416fdee1bf004d5447238933524bf3c087a69dcf6bbeca73b235`; the same pinned
+        container toolchain built both. With `GGML_CUDA_FA_MASK_SKIP=0`, matched input bytes and
+        20/20 own-PID KFD/VRAM/mapping witnesses, baseline was bit-identical 5/5 in each case and
+        candidate had five distinct outputs in each. Candidate variation covered 16,384/32,768
+        elements (max spread 0.00176584) and 4,096/16,384 (0.000479918); no output NaNs. Privileged
+        root and transitive toolchain remain outside the custody guarantee. Result SHA-256
+        `88af22831fda196b7995bda933769fa3f4720d25253720712bed90f3b6e21c91`. Twenty scoped native
+        NaN-count rows ingested privately; a fixture-freshness planning check is not the live-loop
+        canary. This is model-free repeatability, not a quality, speed or promotion result. [belief: cc]
       - *(2026-11-01, binding draft defect.)* Independent review found unreadable directories may be silently omitted and FIFO inspection can block. The draft now propagates traversal errors and rejects FIFOs with nonblocking opens; five offline tests pass. Mutable paths and build-entry custody still prevent using it as an input attestation. [no-belief: offline source review only]
       - *(2026-11-01, ELF inventory defect.)* The inventory may silently omit unreadable subtrees; The draft now propagates traversal errors; five offline tests pass. It still cannot attest source, expected ELF coverage or runtime linkage. [no-belief: offline source review only]
       - *(2026-11-01, ELF inventory draft.)* The [offline component](../../artifacts/compute/kvu19a2-elf-inventory-20261101/README.md) passed four synthetic tests; it cannot establish source identity, expected binary completeness or runtime linkage. A build producer remains open. [no-belief: synthetic tests only]
