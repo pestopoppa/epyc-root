@@ -99,3 +99,7 @@ Delegated a bounded R23-68 documentation preparation; its scratch result will tr
 ## 10:33Z — Record the historical AutoKernel loop pytest baseline and TMPDIR prerequisite
 
 R23-68: recorded the historical 2026-09-14 AutoKernel loop pytest baseline at research revision 7ea556f4 (176 failed, 201 errors, 2509 passed) and the host-specific TMPDIR prerequisite in docs/reference/autokernel-loop-pytest-baseline-2026-09-14.md, linked from the handoff. This records the contemporaneous report and does not claim a current test result. R23-3 and R23-4 are already published and await qualification; their prepared successor is not substituted for an active row.
+
+## 10:43Z — Complete R23-68 historical baseline record and review R18-B timing evidence
+
+R23-68 is recorded in docs/reference/autokernel-loop-pytest-baseline-2026-09-14.md with a historical-only label and host TMPDIR prerequisite. R18-B remains open: scratch build-timing patch applicability is shown only against research local HEAD 99301fa149af86a6f9743d2b0405c9234ba39586, 229 commits behind its origin/main; pool.py captures the timestamp during provenance construction, after build completion. The historical binary identity and mechanism remain unproven.
