@@ -63,3 +63,7 @@ Running the existing Research footprint producer on the pinned real source range
 ## AKX-P1c footprint conservatism
 
 Extended the staged Research footprint patch so unproven knob defaults make the static footprint opaque rather than potentially excusing a workload. The isolated footprint and surface suites pass 224 tests. The real P1c range retains SCALE_SPLIT ON, SOLO_YIELD_ROWCOL ON and TINY_SOLO_CLAMP OFF while exposing 16 unknown-default reasons; it is not ready to screen as INERT. The patch applies cleanly to Research but remains unapplied there under this lane-only session.
+
+## 10:38Z — Investigate parked W5s census repair and prepare independent replay and control work
+
+Investigated the parked W5s r7 lineage: three failed qualifications remain parked, with no reset or compute. Dispatched bounded source-custody repair, sync17-fix2 readiness, and control preparation; their scratch result paths are registered for continuation. AKX-P4a was already completed.
