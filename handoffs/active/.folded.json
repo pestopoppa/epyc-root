@@ -40,6 +40,10 @@
    "target": "stack-lifecycle-program.md",
    "track": "capability-registry-and-promotion"
   },
+  "churn-pipeline.md": {
+   "target": "coordination-and-churn-pipeline.md",
+   "track": "churn-pipeline"
+  },
   "colbert-reranker-web-research.md": {
    "target": "knowledge-pipelines.md",
    "track": "colbert-reranker-web-research"
@@ -59,6 +63,10 @@
   "cpu-prefill-compute-large-models.md": {
    "target": "sarathi-serve-cpu-evaluation.md",
    "track": "cpu-prefill-compute-large-models"
+  },
+  "dashboard-architecture-restructure.md": {
+   "target": "coordination-and-churn-pipeline.md",
+   "track": "dashboard-architecture-restructure"
   },
   "delegation-context-preassembly.md": {
    "target": "context-and-token-economy.md",
@@ -135,6 +143,10 @@
   "gpu-serving-tie-in-program.md": {
    "target": "mi210-serving-program.md",
    "track": null
+  },
+  "handoff-index-and-backlog-graph.md": {
+   "target": "coordination-and-churn-pipeline.md",
+   "track": "handoff-index-and-backlog-graph"
   },
   "inference-batch-loop.md": {
    "target": "eval-tower-program.md",
@@ -304,6 +316,10 @@
   "searxng-search-backend.md": {
    "target": "knowledge-pipelines.md",
    "track": "searxng-search-backend"
+  },
+  "session-bus-thin-dispatcher.md": {
+   "target": "coordination-and-churn-pipeline.md",
+   "track": null
   },
   "shape-keyed-contention-gating.md": {
    "target": "numa-placement-and-contention.md",
@@ -659,6 +675,14 @@
    "target": "RTG-36",
    "track": "wp12-fleet-layer-design"
   },
+  "RTG-46": {
+   "target": "RTG-34",
+   "track": "handoff-index-and-backlog-graph"
+  },
+  "RTG-47": {
+   "target": "RTG-34",
+   "track": "dashboard-architecture-restructure"
+  },
   "RTG-54": {
    "target": "EVL-37",
    "track": "qwen-chat-template-evaluation"
@@ -674,6 +698,10 @@
   "RTG-61": {
    "target": "RTG-22",
    "track": "refactoring-multirepo-2026-10"
+  },
+  "RTG-62": {
+   "target": "RTG-34",
+   "track": "churn-pipeline"
   },
   "UFH-03": {
    "target": "RTG-08",

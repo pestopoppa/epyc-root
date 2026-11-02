@@ -131,7 +131,7 @@ task-completes (`msg-20260813T175934Z-35-mainD` and siblings), because it does n
 existing. Two honest limits, both load-bearing: it does **not** shorten a gap in which no boundary
 occurred, and it does **not route** — sibling **F-34(a)** (completed main work never reaching the
 `auditor`) is untouched by it. Implementation lives at
-[`session-bus-thin-dispatcher.md`](session-bus-thin-dispatcher.md) → `WS-1`. `intake-1331#record`.
+[`session-bus-thin-dispatcher.md`](coordination-and-churn-pipeline.md) → `WS-1`. `intake-1331#record`.
 
 ### Still pending verification
 
@@ -372,7 +372,7 @@ it is untracked, so it does not survive the session that wrote it.
 **Cross-pointer (2026-09-07).** The mechanism that closes RC-4's *"between turns nothing runs"* is now
 settled — a Stop `asyncRewake` hook that exits 2 to wake an idle main, replacing doorbell keystroke
 injection. Implementation, and the four facts that must ride with it, live at
-[`session-bus-thin-dispatcher.md`](session-bus-thin-dispatcher.md) → `WS-4`. `intake-1325#record`.
+[`session-bus-thin-dispatcher.md`](coordination-and-churn-pipeline.md) → `WS-4`. `intake-1325#record`.
 
 ### RC-5 — Execution work lands in the coordinator's tree unreviewed and uncommitted
 
@@ -846,7 +846,7 @@ unknown.
 - `coordination/session-bus/tasks/BACKLOG-DISPATCH-QUEUE.md:90-92` — the rule F-22 violated, in the
   coordinator's own file. **Note its internal contradiction: `:100` says the opposite of `:90`**
   (*"line numbers are the anchor"*) and should be reconciled.
-- `handoffs/active/session-bus-thin-dispatcher.md` (RTG-34) — the C-series; C49 and C50 remain open
+- `handoffs/active/coordination-and-churn-pipeline.md` (RTG-34) — the C-series; C49 and C50 remain open
   and are the daemon-side counterparts of RC-2 and RC-7.
 
 ---

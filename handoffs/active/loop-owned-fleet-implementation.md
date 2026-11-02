@@ -318,7 +318,7 @@ Gate: one full day of backlog churn with zero machine pane-IO for workers.
       schemas / retrieval / coordination) becomes computable. **Do not attempt post-hoc
       classification of transcripts**: a 32-author team with full trace-shim control published no
       share number because their meter recorded totals, not purposes. Lands beside OBS-11's channel
-      work in [`session-bus-thin-dispatcher.md`](session-bus-thin-dispatcher.md) — it is the same
+      work in [`session-bus-thin-dispatcher.md`](coordination-and-churn-pipeline.md) — it is the same
       write-side surface — and is cross-referenced from
       [`delegation-context-preassembly.md`](context-and-token-economy.md#track-delegation-context-preassembly) (DCP-9b depends on it;
       blocks the coordination-share half). `intake-1333#01`. Zero compute.

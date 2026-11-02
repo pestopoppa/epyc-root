@@ -4,7 +4,7 @@
 Runs under the orchestrator venv (matching compile_inference_batch.py) because
 that is the interpreter carrying jsonschema; the system python3 does not.
 
-Owning handoff: handoffs/active/session-bus-thin-dispatcher.md
+Owning handoff: handoffs/active/coordination-and-churn-pipeline.md
 Contract:       coordination/session-bus/BUS_PROTOCOL.md
 
 Verbs

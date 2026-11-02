@@ -245,7 +245,7 @@ records `transferred_from` in the registry.
 Moved to the runbook: [`backlog-churn-runbook.md`](backlog-churn-runbook.md) (component inventory, preconditions,
 `churn_up.sh` spin-up / `--dry-run` / `--status` / `--stop`, measured verification, audit checklist, open defects).
 
-## AI-free mechanization (CAF, 2026-11-01; `handoffs/active/churn-pipeline.md`)
+## AI-free mechanization (CAF, 2026-11-01; `handoffs/active/coordination-and-churn-pipeline.md`)
 
 **Mechanized wrap-up (CAF-2, 2026-11-01).** A session ends a task by writing the turn record (`{slug, state, task_text,
 ticks: [text], progress_md, paths, belief, message, question, rows_published, trailers?}`) and running

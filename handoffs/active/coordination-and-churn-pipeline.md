@@ -1,5 +1,7 @@
 # Session Bus + Thin Coordinator — N-main-thread control structure
 
+> **Fold destination** (BRF-T1-F18, BRF-T1-1, route 1a, 2026-11-02): renamed from `session-bus-thin-dispatcher.md`; absorbs 3 handoff(s) as `## Track:` sections at the end of this file (`churn-pipeline.md`, `dashboard-architecture-restructure.md`, `handoff-index-and-backlog-graph.md`). The body above the first track is the former `session-bus-thin-dispatcher.md`.
+
 **Status**: DESIGN-RATIFIED (operator, 2026-07-27, plan-mode Q&A ×2) — build-ready; M1 skeleton is verbatim below. **Nomenclature revised 2026-07-27** (operator) — see §Nomenclature.
 **Created**: 2026-07-27
 **Scratch**: `/mnt/raid0/llm/tmp/codex-ni-ap-legacy-status-wrap-20261030/` — existing reusable ROOT lane; retain the lane and foreign work.
@@ -1903,7 +1905,7 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     `--exit-nonzero-if-unhealthy` (default exit stays 0, so no existing reader changes) precisely so
     a scheduler can act on it. **Recommendation:** the cron form already documented for the same
     problem one level up in
-    [`handoff-index-and-backlog-graph.md`](handoff-index-and-backlog-graph.md) — `*/5 * * * *
+    [`handoff-index-and-backlog-graph.md`](coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph) — `*/5 * * * *
     session_bus_coordinator.py status --exit-nonzero-if-unhealthy || bus_supervisor.sh once` —
     idempotent, self-exiting when a daemon is already running, no new daemon to supervise.
     Host-level change → operator's call. **Note this is the same unwatched-supervisor defect as the
@@ -2951,7 +2953,7 @@ from that seat.
     `--once` cannot serve as the restart primitive, because it is a diagnostic that raises nothing. The bare
     launch can, because its `flock` sits in the bind-mounted `logs/` directory. The cron line
     (`docker exec -d … setsid -f …/fleet_watch.sh`, every 5 minutes) is in the **joint OP-9 + FW-3 package**
-    in [`handoff-index-and-backlog-graph.md`](handoff-index-and-backlog-graph.md), next to OP-9. The
+    in [`handoff-index-and-backlog-graph.md`](coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph), next to OP-9. The
     operator's ruling there closes this row.
 - [x] **WT-1 — the five `.orphan-20260812T1035Z` backup checkouts could write into the LIVE lanes.**
       ✅ 2026-08-12 — neutralised, non-destructively. Each backup dir's `.git` file still held the
@@ -3218,3 +3220,1044 @@ on this host, and no row above depends on it. `intake-1333#record`, `intake-1113
 The old install decision's premise is stale. `core.hooksPath` selects `/workspace/.git/hooks`; its executable `pre-push` chains `scripts/hooks/pre_push_serialization_guard.sh` and Git LFS, and records the operator-approved Phase-0 installation on 2026-08-12. The guard source's statement that it does not install itself describes the separate installation step, not the current hook state. Do not request installation approval again or duplicate the local guard.
 
 This verifies local installation only. A client-side hook can be bypassed and does not supply server-side structural enforcement; no new server-side implementation or inference result is claimed. Original task text and checkbox are preserved as audit identity, with this source recheck governing its still-needed premise.
+
+## Track: churn-pipeline
+<!-- gate: none -->
+
+> Folded from `handoffs/active/churn-pipeline.md` @ `b1bf3f3f7ade` on 2026-11-02 (BRF-T1-F18, route 1a, operator D1/D5; retired row RTG-62 → RTG-34). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+
+### Churn pipeline — dispatcher, backlogs, rows (ws58, opened 2026-11-01)
+
+**Row**: RTG-62 · **Index**: routing-and-optimization-index.md · **Owner**: ws58 (calendar owner) · **Scratch**:
+`/mnt/raid0/llm/tmp/compute-flags/` (runtime), `/mnt/raid0/llm/tmp/ws58-*` (scratch; reclaim at wrap-up)
+
+The backlog-churn pipeline: `scripts/coordination/handoff_sessions.py` (dispatcher), `backlog_gen.py`, `rowflow/`,
+`churn/`, `GOAL-codex-gen.md`. Canonical flow: `docs/guides/agent-workflows/backlog-churn-flow.md`. This is NOT the
+session bus (`session-bus-thin-dispatcher.md`, RTG-34): operator guardrail 2026-11-01 — keep this handoff small.
+
+**Deletion-first (operator guardrail, 2026-11-01).** Every item must REMOVE more than it adds (code paths, files, prompt
+text, states, agent steps). Before building an item, its line here says what it deletes or replaces; an item that only
+adds is merged into `handoff_sessions.py` / `rowflow.py` or dropped. No new daemons, buses, registries or lock types.
+Net line count of `handoff_sessions.py`, `backlog_gen.py`, `rowflow/`, `churn/` and the number of running pipeline
+processes are reported at each wrap-up and must go down or stay flat.
+
+#### Dispatcher reliability from intake-2603 (dsh-superagent prototype; operator approved "All four" + DSH-5, 2026-11-01)
+
+_Filed from `research/deep-dives/intake-2603-dsh-superagent-prototype.md` (`intake-2603#record`). Adopt the patterns,
+not the component. Operator acknowledged the `scripts/coordination/**` code merge under ratified D9 (2026-11-01).
+Owner: the `handoff_sessions.py` dispatcher (ws58). Zero compute._
+
+- [x] **DSH-2** ✅ 2026-11-01 ROOT `7259bbdc8` [no-belief: dispatcher conformance; no measurement] [S] Run-end events are acked by receipt, not by turn end: keep pending_event until filing-done/<id>.FILED exists; re-queue it when a turn ends without the receipt (cap 3, then operator-escalations/); backlog_gen shows ended-unfiled rows as "needs filing", not done. Acceptance: fixture test with a crashed end_prompt turn re-delivers the event once and files once. [unblocks: owner-filed results] [no-belief: dispatcher reliability; no measurement]
+- [x] **DSH-1** ✅ 2026-11-01 ROOT `7259bbdc8` [no-belief: dispatcher conformance; no measurement] [M] Structured turn report: each session writes compute-flags/handoff-sessions/<slug>/report.json {state: progress|ready|blocked|failed|idle|dropped, wrapped_sha, question, rows_published} at its wrap-up; the dispatcher reads it first and falls back to the WRAPPED/IDLE regex for one transition week. Acceptance: pause-rule fixtures pass on report.json alone; transfer prompt includes the last report. [no-belief: dispatcher contract; no measurement]
+- [x] **DSH-3** ✅ 2026-11-01 ROOT `7259bbdc8` [no-belief: dispatcher conformance; no measurement] [S] Transient-failure retry: a turn that ends rc!=0 with a 408/5xx/connection-reset error line (not a usage limit) and no WRAPPED is resumed with "go on" up to 3x with backoff 2/4/8 min, then marked failed in the backlog; PUSH_PROMPT only when a WRAPPED sha exists but has not landed. Acceptance: fixture tests for each branch. [no-belief: dispatcher reliability; no measurement]
+- [x] **DSH-4** ✅ 2026-11-01 ROOT `7259bbdc8` [no-belief: dispatcher conformance; no measurement] [S] Reserve one dispatch slot above max_live for run-end filing resumes, so a finished row's owner is never queued behind auto-start. Acceptance: fixture with max_live live sessions still dispatches a run-end event. [no-belief: dispatcher scheduling; no measurement]
+- [x] **DSH-5** ✅ 2026-11-01 ROOT `7259bbdc8` [no-belief: dispatcher conformance; no measurement] [S] Add a fifth "loop block must show" item to docs/guides/agent-workflows/agent-loop-design.md: how the loop learns each actor's terminal state (a structured record, never free-text parsing) and when an input counts as consumed (ack by durable receipt, redelivered at most N times). Cite actors.py _has_answer/resume.py, controller_io.py extract_action_with_repair/autopilot.py _recover_from_in_flight_trial as conforming examples, and handoff_sessions.py as the DSH-1/2 counterexample. [no-belief: doc rule; no measurement]
+
+#### Churn AI-free mechanization (2026-11-01; operator approved CAF-1..7 with the D9 acknowledgement)
+
+_Source: `research/deep-dives/churn-ai-free-audit-20261101.md` §3 (turn count drives cost; bookkeeping = 23% of
+handoff-session spend). Deletion-first: each line names what it deletes before anything is built. ONE schema for the
+turn record: `compute-flags/handoff-sessions/<slug>/report.json` = the wrapup JSON (DSH-1 and CAF-2 are the same file):
+`{"slug", "state": "progress|ready|blocked|failed|idle|dropped", "task_text", "ticks": [text], "progress_md", "paths": [],
+"belief": "cc|clm_<id>|no-belief: <reason>", "message", "question", "rows_published": [], "wrapped_sha"}` — the agent
+writes everything but `wrapped_sha`; `wrapup.py` fills it after the push._
+
+- [x] **CAF-1 — no-poll resume.** ✅ 2026-11-01 ROOT `72632c80d` [no-belief: dispatcher conformance; no measurement]
+  Deletes: the brief's "do not poll"/"non-blocking code while waiting" prose and every in-turn wait (monitor_wait,
+  13.9% of spend). `handoff_sessions.py` resumes a session on its grant end, its dry-run result
+  (`dryrun/<id>/PASS.json|FAIL-n.json`) or a file registered under `handoff-sessions/<slug>/awaiting/`. Plus the no-op
+  guard: a turn with no commit, no row, no filing is not resumed until a new event (`NOOP` log). Evidence: audit §3.
+- [x] **CAF-6 — run-end dedupe.** ✅ 2026-11-01 ROOT `72632c80d` [no-belief: dispatcher conformance; no measurement]
+  Deletes: the duplicate `.ended`+`.complete` delivery (`DEDUPE` log; 2 RUN-END lines for stt5-v3-tc-rebind-r1 at 21:49Z).
+- [x] **CAF-2 — `scripts/coordination/churn/wrapup.py`.** ✅ 2026-11-01 ROOT `9e10d1186` [no-belief: tooling; no measurement] Deletes: the brief's six-step manual wrap-up prose (progress,
+  tick, index check, pathspec commit, serialized_push, cherry) and the agent turns that perform it (wrapup_mech 6.4%);
+  the WRAPPED-line regex becomes the one-week fallback only. JSON (schema above) in → progress append, tick-by-text,
+  `index_state.py --check`, pathspec commit in the lane with trailers, `serialized_push.py --repo <lane>`, cherry empty,
+  `report.json` written with `wrapped_sha`, prints `WRAPPED <sha>`. Deps: none.
+- [x] **CAF-3 — resume delta.** ✅ 2026-11-01 ROOT `bcd7653b1` [no-belief: tooling; no measurement] Deletes: "re-read the handoff and BACKLOG" from every prompt and the re-read turns
+  (read_brief 22%); `backlog_gen` emits a per-slug state delta (rows: state/rc/result_path; next task text; own inference
+  tasks) that the resume prompt carries. Deps: none.
+- [x] **CAF-4 — `publish_row.py --repair` + spec lint.** ✅ 2026-11-01 ROOT `f080425df` [no-belief: tooling; no measurement] Deletes: the session turn after a dry-run FAIL of the two known
+  classes (result_path → completion marker; derivable spec fields) and the keeper→agent→republish loop for them
+  (republish 1.5% + spec_fix 5.2%); the lint stops them at publish time. Deps: none.
+- [x] **CAF-5 — `scripts/coordination/churn/file_result.py`.** ✅ 2026-11-01 ROOT `9e10d1186` [no-belief: tooling; no measurement] Deletes: the agent filing turn for rows whose
+  `decision_rule` is numeric (filing_verdict 1.7%) and the end_prompt's "YOU file the verdict" prose for them; the
+  dispatcher files such rows itself and touches `.FILED`; non-numeric rules take the agent's `{verdict, rationale}` JSON.
+  Deps: CAF-2.
+- [x] **CAF-7 — codex-gen routing.** ✅ 2026-11-01 ROOT `f080425df` [no-belief: tooling; no measurement] Deletes: codex-gen's bookkeeping tasks (regenerate/commit/push, republish) — they
+  call CAF-2/4/5 directly; `GOAL-codex-gen.md` (and its git copy in `scripts/coordination/churn/`) loses the manual steps.
+  Deps: CAF-2, CAF-4.
+
+#### Open at 2026-11-01 wrap-up (ws58)
+
+- [x] **Land the MIN_RESUME_GAP_S fix** ✅ 2026-11-02 superseded by dispatcher rewrite ROOT `9612fb48d` [no-belief: tooling]
+- [x] **Inventory-target dispatcher change** ✅ 2026-11-02 replaced by operator-loop dispatcher (next = non-inference/inference/blocked/done; yield/cooldown/stuck/park/inventory gates deleted) ROOT `9612fb48d` [no-belief: tooling]
+- [ ] **CAF burn measurement**: tokens per completed task before/after CAF-1..7 via `churn/tokens_per_task.py`.
+- [ ] **Net line count must go down**: `handoff_sessions.py`, `backlog_gen.py`, `rowflow/`, `churn/` grew this day; find deletions (guardrail unmet).
+- [x] **Hotfixes landed** ✅ 2026-11-01 ROOT `139d9cf7a` `ddf791068` `0fec383f5` `a57b57239` [no-belief: tooling-repair; no measurement]
+- [x] **Keeper v11 single allocator** ✅ 2026-11-01 ROOT `1a9186e11` [no-belief: build/landing]
+- [x] **churn_up.sh persistence runbook** ✅ 2026-11-01 ROOT `d095b4a4d` [no-belief: build/landing]
+
+#### Typed decisions and Super-agent patterns from intake-2604/2615 (ws58 intake 2026-11-02; operator approved "Approve, go to Stage 4", D9 acknowledged for scripts/coordination)
+
+Plan: [README.md](../../research/deep-dives/ws58-jev-20261102/README.md). **Order (operator, 2026-11-02):** (1) SA-1 + JEV-1; (2) SA-2, SA-3, JEV-3; (3) JEV-5 phase A, KT-1, KT-3; (4) the rest (JEV-2, JEV-4, JEV-6, SA-4, KT-2, KT-4, KT-5). JEV-5 phases B/C only after the operator has used phase A.
+
+- [ ] **SA-1** [S] Merged into the in-progress sticky-slot change (`54c23474e`, `sticky()`/auto-start gate in `handoff_sessions.py`): auto-start admits only a handoff with a ready row or an operator pin, adds a per-slug start cooldown and a global starts/hour cap, logs `AUTO-START-THROTTLED`; fixtures for rows=[] and just-done. Evidence: 61/63 AUTO-STARTs with `rows=-` on 2026-11-01/02 (intake-2615#record). removes: fresh-session bootstrap per freed slot, the done-then-restart loop, `restarted_from_done` re-admission without a ready row.
+- [ ] **SA-2** [S] Zero-token watchdog inside the existing keeper pass (no new daemon): count AUTO-START/DONE per hour against ready rows unclaimed and alarm on starts over cap with no effect. removes: operator log-grepping to spot thrash.
+- [ ] **SA-3** [S] Run-end and awaited events carry related ids (row, run, handoff) into the resume `delta()`, so a resumed worker gets a chain-of-recall delta (intake-2615#record). removes: the worker's cold re-read of handoff and row files on each resume.
+- [ ] **JEV-3** [M] REPLACE the regex failure classifier (`rowflow/publish_row.py:82-104`, `UNKNOWN-FAILURE-CLASS`) and `handoff_sessions.work_state` regexes with the local native `src/typed_decisions/` path (TD-29: 18/18) returning a named label plus named park/stop reasons; replay of saved `dryrun/*/FAIL-*.json` is a regression check only, no new accuracy study (intake-2604#record). removes: `_UNIT_RE`/`ADV_RX`/`OWN_TASK_RX` regex classification, the UNKNOWN-FAILURE-CLASS fall-through, unnamed MAX_FAILS parking.
+- [x] **SA-4** ✅ 2026-11-02 ROOT `1579bd509` [no-belief: doc rule; no measurement] [S] `docs/guides/agent-workflows/agent-loop-design.md`: a long-lived worker per task with code pass-through of its thread's events; fresh start only on a ready row; a watch for unproductive loops (intake-2615#record). removes: per-event fresh-session dispatch as an accepted loop shape.
+- [x] **JEV-6** ✅ 2026-11-02 ROOT `1579bd509` [no-belief: doc rule; no measurement] [S] `docs/guides/agent-workflows/agent-loop-design.md`: typed judgments carry label probabilities and a confidence with two thresholds set from held-out real outcomes; unavailable is never an answer; a worker claim is never a result (intake-2604#record, intake-2605#record, intake-2608#record). removes: free-text agent decisions as an accepted loop shape.
+
+#### 2026-11-02 wrap-up (ws58)
+
+- [x] **Owner carries row through dry run** ✅ 2026-11-02 ROOT `549eb58` (supersedes `1f054f2c4`) [no-belief: tooling]
+- [x] **Sparse lanes keep artifacts/operator/*.sh** ✅ ROOT `ac7e2e1fc` [no-belief: tooling]
+- [x] **wrapup.py resolves generated-index conflicts; report.json on every exit** ✅ ROOT `c9eb9e2b8` `005a7fbf5` [no-belief: tooling]
+- [x] **Hub pipeline section / backlog graph** ✅ ROOT `28b23bf37` `1c869a310` `60ec225af` `100cb18ba` `8fe3693e9` `4693451cb` [no-belief: dashboard]
+- [ ] **JEV-3 deferred**: replace commit `7b2b40b42` kept, uncalled; 1.5B native replay unusable (constant answers, confidence 1.0), `/mnt/raid0/llm/tmp/ws58-csh/jev3-replay-1p5b-20261102.json`.
+- [ ] **Measure row publication** after the 10:41Z fixes.
+- [ ] **Sessions over-prepare instead of publishing**: find and cut.
+- [ ] **Dashboard readied-waiting count is 0**: row/handoff linking bug.
+- [ ] **RTG-18 graph checkbox-parse bug**: graph shows open=0, file has 12 open boxes.
+- [x] **Turn-end rules, light worker persist, central index_regen.py; box id per turn, steps-since-tick, push lock 15 min** ✅ 2026-11-02 ROOT `30b2ed75c` `262de5c98` [no-belief: tooling]
+- [x] **Dry runs take no lock; publish smoke never refuses for busy; smoke disk floor 20 GiB; GPU smokes queue between GPU jobs; tiny rows unscheduled, port exclusivity, drain T + backfill; dry-run harness reaps process group** ✅ 2026-11-02 ROOT `d4f22dccd` `fc4e4352f` `6e0f27d5c` `59c2beb79` `70e5666b1` `d9838cf37` [no-belief: tooling]
+- [x] **Dispatcher scratch quota (SCRATCH-OVER)** ✅ 2026-11-02 ROOT `5b34a2409` [no-belief: tooling]
+- [x] **Dashboard row badges, legend/info panel, open-count parser fixes, engram boxes** ✅ 2026-11-02 ROOT `23791d952` `6f1f97b43` `da51eb293` `2c360a3ee` [no-belief: dashboard]
+- [ ] **Sub-quarter packing**: packing agent was stopped; unfixed.
+- [ ] **Rows published with a non-inference payload as compute rows** (e.g. gitnexus analyze held all 96 cores).
+- [ ] **Row estimate_s vastly overstated**: fix estimator.
+- [ ] **Per-row UNDERUSED is only logged**: act on it.
+- [ ] **OBS-CHURN-UP** `churn_up.sh` liveness probes (pidfile+argv, exact-path argv over /proc) are registered `unadopted` in `observer_registry.json`: adopt `observer_guard.sh` three-valued state (measured / absent / blind).
+
+#### Stop-everything, disk reclaim and runbook (2026-11-02 afternoon, ws58)
+
+- [x] **Backlog-churn runbook; keeper v12 in git; `churn_up.sh` `--stop` `--status` `--dry-run`** ✅ 2026-11-02 ROOT `27b94990f` [no-belief: tooling]
+- [x] **Disk fixes: reaper idle 1 day; standalone `disk_janitor.sh` (reap 30 min, trash sweep hourly); SCRATCH-COPY detection in dispatcher; scratch cleanup on retire** ✅ 2026-11-02 ROOT `c1068744f` [no-belief: tooling]
+- [ ] **Verify the disk janitor** (started 14:05Z pid 190444): FREE trend >= 1 day, `.trash` nothing older than about 25 h, no SCRATCH-COPY outstanding.
+- [ ] **3 half-cleaned worktrees**: `vgpr-compiler-ab-20260915`, `fix-pii-hook-numeric-json-20261021`, `noninf-20260924/inf41/epyc-orchestrator`.
+- [ ] **Dirty/unlanded trees under `tmp/` and `autokernel/` never processed** by the reclaim.
+- [ ] **Dangling references to deleted data**: `artifacts/compute/codex3-*` cite `data/stt-cs8-public-20261030`; `memento-block-reasoning-compression.md` cites openmementos; about 10 files cite `backups/episodic-leak-20260917` (`ratify_v10_episodic_repin_20260917*`, `promptforge-mutation-safety-contract.md`, `wiki/safety.md`, orchestrator `purge_eval_leak_memories_20260917.*`).
+- [ ] **rowflow test `test_complete_in_smoke_is_filed_not_queued` fails on main.**
+- [ ] **Pipeline restart is operator-gated** (all grants revoked to `tmp/ws58-csh/revoked-grants-20261102/`; dispatcher, keepers, watchdogs, filler_run13 launchers stopped).
+- [ ] **Registry graveyard row for Qwen2.5-Coder-32B-Instruct-Q4_K_M** (operator deleted the file): commit was blocked by the orchestrator pre-commit contention-matrix freshness hook (matrix stale, cannot refresh with the stack stopped). Patch at `tmp/ws58-csh/registry-graveyard-q4km-20261102.patch`. Also `server_mode.qwen25_coder_32b_q4km` still resolves to the deleted file; needs a stack-change deprecation.
+- [ ] **Fable backlog-refactor audit** in progress; output `tmp/ws58-csh/backlog-refactor-proposal-20261102.md`.
+
+## Track: dashboard-architecture-restructure
+<!-- gate: none -->
+
+> Folded from `handoffs/active/dashboard-architecture-restructure.md` @ `b1bf3f3f7ade` on 2026-11-02 (BRF-T1-F18, route 1a, operator D1/D5; retired row RTG-47 → RTG-34). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+
+### Dashboard Architecture Restructure — audit + action plan
+
+**Status**: active — audit complete 2026-08-10; **decisions ratified 2026-08-10 (see below); Phase 0 + Phase 1a buildout in progress**
+**Created**: 2026-08-10
+**Priority**: LOW-MEDIUM — operator-framed as debt prevention, "doesn't block any work"; do at seams, never ahead of campaign work
+**Owner**: unclaimed
+**Parent index**: [routing-and-optimization-index.md](routing-and-optimization-index.md)
+**Related**: [autopilot-dashboard-fidelity-audit-2026-07-22.md](autopilot-dashboard-fidelity-audit-2026-07-22.md) (RTG-03 — data-truth defects; this handoff is information-architecture, NOT a substitute for its C1/H1/H2 fixes) · [loops-and-dashboards-audit-2026-07-05.md](loops-and-dashboards-audit-2026-07-05.md) (RTG-16) · [benchmark-results-dashboard.md](../completed/benchmark-results-dashboard-completed-through-2026-08-23.md) (EVL-06 — the working precedent for the contract pattern) · OP-9 (hub supervisor restart, master index)
+
+#### Commission (operator, 2026-08-10, paraphrased)
+
+1. The autopilot dashboard (:8000/dashboard) is **two distinct things** glued together: a global
+   live view of hardware usage + active inference on the machine (regardless of what drives it),
+   and the autopilot loop's planning/governance/optimization results. Split them.
+2. Inter-dashboard links are inconsistent/invisible — reaching AutoKernel often requires routing
+   through the handoff board. Fix the navigation debt.
+3. Answer the ownership question: should individual repos own dashboards? Should epyc-root own
+   all of them? Only the server? What are best practices?
+
+---
+
+#### Part 1 — Audit
+
+##### 1.1 Inventory (every dashboard surface, 2026-08-10)
+
+| Surface | URL | Page code owner | Server process | Data source |
+|---|---|---|---|---|
+| Handoff kanban | `:8100/` | epyc-root `dashboard/static/handoffs.html` | stdlib hub (`dashboard/server.py`) | live `handoffs/` scan + git-derived `data/handoff_timeline.json` |
+| AutoKernel (Kernel-R&D) | `:8100/kernel` | epyc-root (page) | stdlib hub | producer contract: epyc-inference-research → `/mnt/raid0/llm/autokernel/surface/kernel_dashboard.json` |
+| Session bus | `:8100/bus` | epyc-root | stdlib hub | `coordination/session-bus/` files |
+| Benchmark artifacts | `:8100/benchmarks` | epyc-root (page + offline builders) | stdlib hub | `data/benchmark_artifact_inventory.json` (built from research `artifacts/`) |
+| Orchestrator dashboard (monolith) | `:8000/dashboard` | epyc-orchestrator `src/api/routes/dashboard.html` | FastAPI, uvicorn ×6 workers | mixed: `/proc`+`ps` scans, tap event files, autopilot journal/state files, per-worker in-process state |
+| Health folds | `:8100/api/health`, `:8000/dashboard/api/health` | each server | — | panel registries (see 1.4) |
+
+Not in scope: x-scheduler `:8300` (personal app, not project), `:11235` gunicorn (containerized
+service, no project dashboard), mkdocs `site/` (static docs, not a dashboard).
+
+Sizes: orchestrator `dashboard.py` **7,855 lines** + `dashboard.html` **7,649 lines** (one page);
+hub: `server.py` 1,640 + `panels.py` 1,054 + four pages totalling ~1,824 lines.
+
+##### 1.2 Finding — the :8000 monolith mixes THREE concerns, not two
+
+Panel census of `dashboard.html` + its 38 `/dashboard/*` routes:
+
+**(a) Machine / live-inference monitor — global, driver-agnostic** (the operator's "global
+monitoring engine"): topology + NUMA badge + topology strip/flow, region locks + device
+occupancy, contention gate, live inference tap (+ raw/structured tap streams), process status,
+node detail (`/api/node/{port}`), `llama_fleet_ids`. Routes: `topology`, `topology_activity`,
+`region_locks`, `contention`, `inference_tap`, `process_status`, `node/{port}`,
+`llama_fleet_ids`, `snapshot`, `events/{raw,structured,inference}_tap`, `events/multiplex`,
+`events/stream`.
+
+**(b) Autopilot loop — process-specific planning/governance/optimization**: phase banner +
+**pause/resume control buttons**, autopilot log tail, trial progress bar, GEPA + Pareto frontier +
+hypervolume, insight graph, optimization brief, outcome KPIs, planner tap. Routes:
+`autopilot_control`, `autopilot_progress`, `autopilot_snapshot`, `pareto`, `gepa`,
+`insight_graph`, `optimization_brief`, `events/autopilot_log`, `events/planner_tap`.
+
+**(c) Orchestrator serving telemetry**: routing decisions (last-200 distribution), recent
+outcomes / completed tasks, repo readiness queue, task detail routes.
+
+The operator's split instinct is confirmed; (c) is the refinement — serving telemetry is "active
+inference on the machine" in the operator's own framing, so it travels with (a), except
+repo-readiness which is an autopilot advisory queue and travels with (b).
+
+##### 1.3 Finding — navigation is per-page hand-rolled and has drifted
+
+Link matrix (✓ = link present in the page header):
+
+| From \ To | handoffs | kernel | bus | benchmarks | :8000 dashboard |
+|---|---|---|---|---|---|
+| `:8100/` (handoffs) | — | ✓ | ✓ | ✓ | ✓ |
+| `:8100/kernel` | ✓ | — | ✗ | ✗ | ✓ |
+| `:8100/bus` | ✓ | ✓ | — | ✗ | ✗ |
+| `:8100/benchmarks` | ✓ | ✓ | ✗ | — | ✗ |
+| `:8000/dashboard` | ✓ (11px header link) | ✗ | ✗ | ✗ | — |
+
+- Only the handoff board has a complete nav — hence "you must route through the handoff
+  dashboard to reach Autokernel". From :8000, kernel is a two-hop trip.
+- **Root cause: there is no shared nav component or machine-readable directory of dashboards.**
+  Every page hand-copies a `<nav>`; they were written at different times and drifted.
+- Defect: `:8000` `dashboard.html:941` ships `href="/"` for the handoffs link and JS-rewrites it
+  to `:8100` (`:943`); with JS disabled/failed the link silently points at the orchestrator's own
+  root. Cross-server URLs are re-derived ad hoc in at least 3 places
+  (`dashboard.html:943`, `static/handoffs.html:281→744`, `static/kernel.html:117`).
+
+##### 1.4 Finding — the documented ownership boundary is a *transport* rule, and its premise has eroded
+
+The rule on record (`dashboard/README.md`, memory 2026-07-04): *"needs the orchestrator's live
+in-process state or SSE inference taps → orchestrator serves it; artifact/file-backed &
+project-wide → hub."* Two problems:
+
+1. **It governs which process serves bytes, not what shares a page.** Anything needing any
+   orchestrator state landed on the single :8000 page — that is exactly how the monolith accreted.
+2. **The premise is now largely false.** Per the 2026-07-22 fidelity audit: `/topology` and
+   `/region_locks` builders are **`/proc`/`ps` scans, verified network-free**; the taps tail
+   **rotating event files**; autopilot panels read **journal/state files**. What is genuinely
+   in-process (per-worker contention counters, breaker state) is per-worker-fragmented — i.e.
+   the fidelity audit's own finding is that the genuinely-in-process data is the part that
+   should not be trusted as served today. The transport rule no longer explains where things are.
+
+Corollary worth naming: under AutoPilot, the API restarts every ~20–25 min per trial — the
+machine monitor's delivery path blinks precisely when the machine is busiest (the
+`snapshotTransportWatchdog` exists to paper over this). A *global* monitor whose data plane
+lives inside the most-restarted process on the host is an architecture smell, not just an IA one.
+
+##### 1.5 Finding — duplicated view-plane infrastructure (two registries, two freshness grammars)
+
+Both servers independently grew an AK6-style panel→producer registry + freshness envelope:
+hub `dashboard/panels.py` (11 panels; `fresh/aging/stale/missing` + `reporting`/`content`/
+watchdog/`absence_means`) vs orchestrator `dashboard_panels.py` + `dashboard_freshness.py`
+(14 panels; `fresh/aging/stale/dead`, gating-vs-informational). Same idea, divergent
+vocabularies and semantics. Both are tested; premature code-merge is not proposed — but every
+new dashboard today must choose one of two grammars, and the two health folds cannot be read
+uniformly.
+
+##### 1.6 Finding — lifecycle inversion (context for the ownership answer)
+
+The hub's code is epyc-root's, but its lifecycle is managed from the orchestrator repo
+(`orchestrator_stack.py start_handoff_dashboard()`), with epyc-root's `hub_supervisor.sh` as a
+second, independent watchdog (OP-9: nothing restarts the supervisor itself). Two supervisors in
+two repos for one service. Works, but is exactly the kind of cross-repo debt this plan should
+rationalize, not multiply.
+
+---
+
+#### Part 2 — The ownership question (decision D1 input)
+
+Best-practice frame (the Grafana/exporter pattern, which this project already independently
+reinvented with AutoKernel): separate three planes —
+
+- **Data plane** — producers/exporters publishing *versioned contracts* (JSON files, HTTP APIs,
+  SSE). Lives **with the subsystem it observes** — that repo is authoritative for what the
+  numbers mean, and the exporter versions with the code it measures.
+- **View plane** — pages that render contracts. Cross-cutting by nature (shared nav, one look,
+  one freshness grammar, one directory) → belongs to the **governance repo (epyc-root hub)**.
+- **Directory/nav plane** — a machine-readable registry of what dashboards exist. One owner:
+  the hub.
+
+Answers to the operator's questions, directly:
+
+- **Should individual repos own dashboards?** They should own **data contracts, not pages.**
+  The AutoKernel split is the proof it works here: producer (research repo) exports a schema'd
+  JSON after fsync; hub renders it; the seam is tested; the hub never imports producer code.
+  The counter-proof is also on record: the one repo that owns a full page (orchestrator) grew a
+  7.6k-line HTML monolith with a hand-rolled one-link nav.
+- **Should epyc-root own all of them?** epyc-root should own the **view plane** (pages, nav
+  registry, freshness grammar, hub process) — not the data plane. Absorbing producers into
+  epyc-root would put schema authority in the wrong repo and re-create the coupling in reverse.
+- **"Maybe only the server is owned by epyc-root?"** Close — the precise cut is: **epyc-root
+  owns the server *and every page and the registry*; each repo owns its data endpoints and
+  export contracts.** A page served from :8100 fetches :8000 JSON/SSE directly from the browser
+  (CORS allowlist on the orchestrator API — one middleware line). No proxying, hub stays
+  stdlib, processes stay independent; if :8000 is down its panels go honestly dead under the
+  AK6 grammar instead of the page vanishing.
+- **Known cost, stated honestly**: page (epyc-root) and API (orchestrator) can skew across
+  deploys. Mitigations already exist and become policy: the seam discipline from
+  `dashboard/README.md` (never import producer code; hub-derived fields underscored; seam
+  tests), `/dashboard/api/version`, additive-only API evolution.
+
+#### Part 3 — Decision package — **RATIFIED 2026-08-10 (operator, in-session)**
+
+> **Ratified decisions**:
+> - **D1 = C2** (full view-plane consolidation). Operator first picked C1, then upgraded to C2 when
+>   the parallel-buildout constraint (below) made it strictly cleaner: C1's "slim the monolith in
+>   place" step would surgically edit the live page, while C2 never touches it — both new pages
+>   (`/machine` + `/autopilot`) are built fresh on the hub and the old page is deleted wholesale at
+>   deprecation. Operator: *"goal set: refactor the entire dashboard serving architecture."*
+> - **D2 as recommended**: routing decisions + recent outcomes → `/machine`; repo-readiness →
+>   autopilot page.
+> - **D3 deferred**: `/machine` rides :8000 APIs; standalone machine exporter only if blink-out
+>   evidence accumulates post-C2.
+> - **Parallel-buildout constraint (operator, verbatim intent)**: the operator currently depends on
+>   :8000/dashboard for live views. Build new pages IN PARALLEL; the old page stays fully intact
+>   and live until the operator declares deprecation, then it is removed wholesale.
+> - **Restart policy**: API reloads allowed freely when quiet — verify nothing is in flight first
+>   (inference tap + bus + `ps` for the codex instrumentation-baseline session, 2026-08-10) and use
+>   `orchestrator_stack.py reload orchestrator` (API-only, never the stack).
+> - **New-page discipline**: hub pages stay stdlib/no-CDN (the old page's jsdelivr KaTeX/marked/
+>   highlight.js dependencies are NOT carried over; the new pages hand-render like the hub does).
+
+##### D1 — target ownership/topology (pick one)
+
+| Option | Shape | Gains | Costs / risks |
+|---|---|---|---|
+| A. Status-quo + nav fix only | Shared nav registry on all 5 pages; no split | Kills the navigation debt in ~1 session | Monolith and mixed concerns remain |
+| B. Split in place | A + orchestrator serves two pages (`/dashboard/machine`, `/dashboard/autopilot`) | Concept split lands cheaply; no CORS, no cross-repo page moves | Two view planes stay in two repos; nav/grammar drift risk persists; global monitor still dies with the API |
+| **C1. Hub owns the global page; process pages stay put (RECOMMENDED)** | A + **new hub page `:8100/machine`** renders concern (a)+(c) from existing :8000 APIs (CORS); **:8000/dashboard slims to concern (b) only** | Lands the operator's split exactly on the global-vs-process line; global monitor owned by the neutral repo; no porting of the SSE-heavy autopilot panels; monolith shrinks materially | CORS + cross-origin EventSource (low, LAN HTTP); page/API skew (mitigated §Part 2); ~7.6k-line HTML still hosts the autopilot page until/unless C2 |
+| C2. Full hub view plane | C1 + autopilot page also moves to hub; :8000 serves data only | One view plane, one owner, maximal | Large migration of pareto/insight-graph/SSE panels for mostly-aesthetic gain; not justified today |
+
+**Recommendation: C1**, explicitly leaving C2 as a later option. Rationale: a *process-specific*
+page owned by the process's repo is defensible under the plane model; a *global* page owned by
+one client process is not — C1 fixes only what is actually wrong.
+
+##### D2 — where does serving telemetry (concern (c)) live?
+
+Recommendation: routing decisions + recent outcomes + task detail → `/machine` ("active
+inference on the machine" per the operator's own definition); repo-readiness → autopilot page
+(it is an autopilot advisory queue). Alternative: a third `/serving` page — rejected as page
+proliferation without an audience.
+
+##### D3 — machine-monitor data-plane independence (Phase 2, defer-able)
+
+The `/machine` page initially rides :8000 APIs. Later options: (i) accept the coupling;
+(ii) small standalone machine-state exporter (or hub-side `/proc` reader — the builders are
+already network-free) so machine visibility survives the ~20-25 min per-trial API restarts;
+taps stay :8000-owned (they observe the orchestrator's own traffic and *should* die with it,
+honestly labeled). Recommendation: **defer decision until C1 has run for a while**; revisit with
+observed blink-out evidence. Do not build ahead of evidence.
+
+#### Part 4 — Action plan
+
+##### Phase 0 — nav + directory (no restructuring; independent of D1) — **COMPLETE 2026-08-10**
+
+- [x] `dashboard/registry.json` (moved out of `static/` — it is read+embedded, not served as-is)
+      — SSOT list of dashboard surfaces: `id`, `title`, `port`, `path`, `owner_repo`,
+      `health_path`, `blurb`; 7 entries. Served as `/api/dashboards` by the hub with per-unique-
+      `(port, health_path)` loopback transport probes (ThreadPoolExecutor, 1.5s timeout, 15s TTL
+      cache), `PanelSource("dashboards")` registered, probes deliberately NOT folded into
+      `/api/health` (a down :8000 must not restart-loop the hub). ✅ 2026-08-10
+- [x] Shared nav include (`dashboard/static/nav.js` + generated `/nav.js` asset with the registry
+      inlined — served via a new `ASSET_ROUTES` table, outside the panel-registry universe like
+      `HTML_ROUTES`, noted in README): adopted by all four hub pages **and** `:8000/dashboard`
+      (cross-origin `<script>` bootstrap — script tags are CORS-exempt, so the nav needed no CORS).
+      ✅ 2026-08-10
+- [x] `:8000` `dashboard.html` hub link replaced by the shared-nav bootstrap with an onerror
+      fallback that recreates the plain handoffs link — the page never loses its one exit if the
+      hub is down; per-page `:8000`/`:8100` URL derivation deleted from kernel/handoffs pages.
+      ✅ 2026-08-10
+- [x] Hub root directory strip (`#dash-directory`): every registered dashboard + probe badge
+      (green/red dot, latency tooltip), 30s refresh, explicit error row on fetch failure.
+      ✅ 2026-08-10
+- [x] Drift guard `tests/test_dashboard_nav.py` (277 lines): registry schema, bidirectional
+      HTML_ROUTES↔registry check, every page carries `#epyc-nav` + `/nav.js`, retired
+      `autopilot-link` pattern banned, `/nav.js` asset carries the registry. Full hub suite green
+      under system python3.13 AND uv/3.14: **175 passed + 91 subtests**. ✅ 2026-08-10
+
+##### Phase 1a — parallel buildout on the hub (ratified shape: C2; old page untouched) — **DEPLOYED 2026-08-10**
+
+- [x] New hub page `:8100/machine` (1,018 lines) — topology (ROGUE/expected derivation, NUMA
+      provenance-disagreement banner, "slots ? = unknown-not-zero" honesty), region
+      locks/occupancy (lease-held-not-decoding chips), contention, live inference tap (SSE +
+      dedup + poll fallback), process status, routing decisions (per D2), recent outcomes.
+      Primary feed = `/dashboard/events/stream` snapshot frames w/ poll fallback; stale
+      thresholds adapt to OBSERVED frame cadence (flat 12s would flap against the ~10s
+      /slots-bound frames); snapshot fetch budget 15s (measured 9.8s). Harness-tested against
+      live payloads + ~20 degraded variants; EventSources self-heal onto CORS activation
+      without a refresh. ✅ 2026-08-10
+- [x] Orchestrator: `src/api/dashboard_cors.py` — pure-ASGI, path-scoped
+      (`/dashboard/api/`+`/dashboard/events/` only), hub-origin regex `:8100`, GET+POST+preflight,
+      credentials NEVER (strips the global CORSMiddleware's unconditional
+      `allow-credentials: true`, which paired with our ACAO would have made a credentialed
+      grant), outermost so the inner global CORS can't 400 the hub preflight. 29 tests + 93
+      adjacent green; **activated by API reload 2026-08-10 and wire-verified** (preflight 204,
+      ACAO on GET+SSE, non-dashboard paths + foreign origins closed). ✅ 2026-08-10
+- [x] New hub page `:8100/autopilot` (1,541 lines) — phase/control (5-state loop posture;
+      "stopped (declared)" renders stale-heartbeat blockers dim-not-alarmed), log + planner-tap
+      SSE, trial progress, Pareto (4-D objective axes from payload, quality × task-rate scatter,
+      trial-indexed hypervolume), GEPA, outcome KPIs (BOTH all-time and 120-trial-window scopes
+      — they disagree sharply and rendering one would mislead), optimization brief, simplified
+      insight graph (labeled v1), repo readiness. Endpoint shapes all verified live. ✅ 2026-08-10
+- [x] Registry + nav entries for both new pages; hub `/api/health` unchanged (probes stay out
+      of the fold; verified live post-deploy: fold still `absent`-by-kernel as before).
+      ✅ 2026-08-10
+- [x] The OLD `:8000/dashboard` page: untouched except the additive shared-nav include
+      (verified serving, 394KB, after the reload). ✅ 2026-08-10
+
+**Deploy record (2026-08-10)**: hub reloaded via `orchestrator_stack.py reload handoff_dashboard`
+(PID 962033); orchestrator API reloaded via `reload orchestrator` (PID 964903) after quiet checks
+(no bench processes, 0 active tap requests, 0 established :8000 connections, 0 in-flight tasks;
+the one busy `ingest_long_context` slot was direct-to-llama traffic, unaffected). All 7 registry
+probes green. **Operator eyeball pass DONE 2026-08-10** — three fixes landed + redeployed same
+day: (1) stale greying removed on both pages (readable content + bold amber/red "no data" pill
+instead), (2) machine topology regrouped substrate (CPU/GPU) → role-family cards, model named
+once, partition instances labeled with REAL shapes (full/half0/half1 from `by_role` — role
+suffixes still say `.qN` while instances are halves), embedder clones collapsed, (3) region-locks
+table re-axised to instance shapes with quarters demoted to tooltips (`spanLabel()`), raw region
+axis kept as fallback only. Verified: node --check, machine render harness 25/25, nav suite
+18+51 subtests, both pages 200.
+
+**Eyeball round 2 — DONE 2026-08-10** (progress/2026-08/2026-08-10.md has the detail): topology
+nodes now carry **`substrate: gpu|cpu`** derived from process evidence (llama binary path; services
+via /proc argv0 + HIP-runtime maps + model-label hint; never role lists — architect_general is a
+GPU role and nothing in its name says so). Machine page: GPU cards purple (#a855f7) with GPU chips,
+GPU-occupancy section in the locks panel, device occupancy aggregated to instance shapes, inference
+tap rebuilt as legacy-style structured request cards (raw tail → collapsed details), task cards
+click-through to a detail modal (`/dashboard/api/task/{id}` + live task SSE; 200-with-empty renders
+"task no longer retained"). sd-server verified genuinely CPU-built (no HIP libs mapped, no
+/dev/kfd) — unmarked is correct. Harness extended 25→48 checks, all green.
+**Eyeball rounds 3–4 — DONE 2026-08-10** (fix 6–9 + data plane; detail in
+progress/2026-08/2026-08-10.md): tap cards = the outcomes `.ocard` component with the legacy
+state ladder ported branch-for-branch (verbatim strings incl. "streaming"/"prefill/decode
+pending"; precedence + 20s lock-frame freshness gate pinned by tests); completed requests leave
+the tap and MERGE into Recent outcomes (task_id+role identity: sub-rows on matching cards,
+standalone tap-chipped cards otherwise, both windows deduped); **`slot_progress` added to the tap
+data plane** (llama /slots `n_prompt_tokens[_processed]`/`n_decoded`, fresh-sample-only,
+complete-requests-never-attach — first live check caught a same-port completed request wearing
+the running request's counters — shared-port ⇒ `ambiguous`), rendered as Claude-Code-style
+`↑ 48.4k/48.7k tok` / `↓ 334 tok · 40.0 tps` counters (tilde + "(port)" when ambiguous, chars
+fallback); locks-table "holding" column → **slots used/total** (join role+shape→node→port→
+`display_activity`; `?`-contribution and `≥` aggregates, lock truth demoted to cells/tooltips);
+GPU occupancy slots-primary; panel order tap → decisions/outcomes/process → topology →
+locks/contention; topology compacted; standing per-instance `tps` field (trailing avg, labeled).
+Machine harness 25→48→59→81 checks, 0 fail (independently rerun); 4 quiet API reloads total.
+- [x] Tap SSE stream bypassed the slot_progress funnel — operator caught a 32,851-token prefill
+      rendering no ↑ counter: the stream ran its own parse+enrich while only the (unwatched) poll
+      endpoint attached progress. Stream now uses `_structured_tap_requests_for_dashboard` (one
+      assembly path, also gaining offwindow-holder recovery). ✅ 2026-08-10
+- [x] Page retention overlay (fix 10): live-observed slot_progress retained per request
+      (max-merge, sticky ambiguity, direction-dependent ↓ source — slot mid-run, final timings at
+      completion), so completed cards show `↑ N tok` and a fresh-gap frame cannot wipe a shown
+      counter; SSE gained server-epoch `now`. Harness 81→88, 0 fail. ✅ 2026-08-10
+- [ ] Re-eyeball the tap's ACTIVE/streaming card path + live ↑/↓ counters once inference actually
+      runs (`slot_progress` verified attaching live on poll + now on SSE; full live render still
+      unobserved by a human).
+- [x] Data plane (small): tap writer records terminal `n_prompt_tokens` per request so completed
+      requests carry TRUE prompt tokens even when never observed mid-run (today: chars fallback).
+      ✅ 2026-09-17 (orchestrator `75e68b0b`, hub render root `see this commit`): `InferenceResult.prompt_tokens`
+      threaded from the three llama_server sites that already had the value; `None` when the server did not
+      report, **never estimated**. The tap stamps `prompt_tokens_source="server_terminal"` alongside the count
+      and the card renders `↑ N tok` only for that source — the chars fallback still renders as `prompt Nc`, so
+      an estimate and a measurement are no longer indistinguishable. Follows the existing direction-dependent
+      source rule (terminal count wins over a retained mid-run total, clears ambiguity). 7 tests.
+- [x] Data plane (small): manifest-declared substrate for non-running `expected-stack-server`
+      nodes (no process evidence exists for them; today they fall to the page heuristic).
+      ✅ 2026-09-17 (same commits): substrate comes from the manifest declaration (ROCm0 → gpu; a master row
+      with the device omitted → cpu; an **unknown role declares nothing** rather than guessing), and every node
+      carries `substrate_source` = `process` | `role-kind` | `manifest` (+ `substrate_declared_by`) so observed
+      and declared cannot be confused; declared nodes get their own chip and title. Embedder roles have no
+      master row, so the manifest declares nothing for them and they stay on the heuristic — an honest unknown,
+      not a fabricated declaration. 4 tests.
+
+##### Phase 2 additions from buildout findings (rows, not yet started)
+
+- [x] **Trimmed machine-frame endpoint**: the snapshot document is ~3.9 MB/frame (`live_frame.lifecycle` ≈ 2 MB, duplicated under `region_locks.live_frame`) — ~8 MB/s per open tab at nominal 2 Hz. A slim frame for `/machine` is a data-plane change (belongs with the D3 revisit). ✅ 2026-10-31 — APP implements `ec6f81769020d695b046895d654e36a39595ac81`; ROOT implements `8318ce329242afe3293ba930bda0c7540114a148`; tests `tests/unit/test_dashboard_machine_frame.py` (APP) and `tests/test_dashboard_machine_frame.py` (ROOT); Git proof `artifacts/audit/machine-frame-transport-20261031/README.md` in both repos. [no-belief: source implementation and native regression controls]
+      ✅ 2026-10-31 — Implemented in epyc-orchestrator `ec6f81769020d695b046895d654e36a39595ac81`
+      and epyc-root `8318ce329242afe3293ba930bda0c7540114a148`. Opt-in `?view=machine` uses the
+      existing JSON/SSE routes and both hub callers request it. Only the equal
+      `region_locks.live_frame` alias is removed; canonical full `live_frame`, lifecycle data, all IDs
+      and UNKNOWN freshness remain, while divergent aliases retain type and signed-zero checks. An
+      iterative JSON walk handles the native 650-level recursion case. Default legacy full-frame bytes
+      remain stable. Final controls: 143 API + 15 page controls pass; lint 0. The make-gate candidate
+      and pristine ShellCheck warning outputs are byte-identical; this is not a full-green claim.
+      Fixture-only frame bytes: 47,524→24,580 local and 91,652→46,835 host; no live payload, bandwidth,
+      producer-work or deployment result is claimed. Normal full publication hooks and exact PII plus
+      serialized-push checks passed in both repos; leases were released. Evidence in both repos:
+      `artifacts/audit/machine-frame-transport-20261031/README.md`. [no-belief: source implementation and native regression controls]
+- [ ] **/slots fan-out answered 0/19 during buildout** — machine-state truth issue (RTG-03
+      territory), surfaced loudly by the new page rather than rendered as zeros; confirm against
+      RTG-03's manifest/realized work before treating as a page-side bug. [too-big: requires RTG-03 owner to reconcile historical manifest and realized machine state]
+
+##### Phase 1b — deprecation (operator-triggered, after new-page parity is confirmed)
+
+- [ ] Operator runs old + new in parallel and confirms `/machine` + `/autopilot` cover the
+      live-view usage.
+- [ ] `:8000/dashboard` becomes a redirect to `:8100/autopilot`; `dashboard.html` (7,649 lines)
+      deleted wholesale. **All `/dashboard/api/*` + `/dashboard/events/*` data routes stay** —
+      :8000 becomes data-plane-only.
+- [ ] Registry entry for the legacy page removed; `dashboard/README.md` ownership boundary [too-big: operator parity confirmation and legacy redirect precede registry removal]
+      rewritten to the plane rule (with Phase 3's codification).
+- [ ] Orchestrator `dashboard_panels.py` survives as the DATA-plane registry (it guards
+      endpoints/producers, not page rendering) — nothing drops out of the fold.
+
+##### Phase 2 — hardening (per D3; do only with evidence)
+
+- [ ] Machine-truth derivation: realized-state (manifest/`/proc`)-first for `stack_numa_mode` /
+      `expected` flags — **owned by RTG-03 C1 fix**; this plan only inherits it onto the right
+      page. No duplicate work here.
+- [ ] (If D3 = exporter) standalone machine-state exporter or hub-side reader; taps remain :8000.
+- [ ] Freshness-grammar harmonization at the seam: one envelope vocabulary
+      (hub's four-state + `reporting`/`content`) adopted by both registries' *wire format*;
+      internal code stays separate.
+
+##### Phase 3 — codify governance
+
+- [x] Write the plane rule into `dashboard/README.md` (+ one-line CLAUDE.md pointer):
+      *data contracts live with their subsystem; pages/nav/registry live with the hub; every new
+      dashboard = registry entry + health probe + freshness envelope; no unregistered pages.*
+      ✅ 2026-08-11 — `mainD`. **Half of this was already done before I touched it and I am not
+      claiming it:** the plane rule proper (data plane with the subsystem, view plane with the hub)
+      has been in `dashboard/README.md` since the RTG-47 ratification on 2026-08-10, after this row
+      was written. What was genuinely missing was the row's *checklist* form and the pointer.
+      `Adding a dashboard =` named only the registry row, so the **health probe** and **freshness
+      envelope** were requirements nothing stated; both are now spelled out with what each one buys
+      — a surface with no probe cannot be told *down* from *slow*, and absence must say what absence
+      MEANS or a silent panel is indistinguishable from a dead producer. "No unregistered pages" is
+      stated with its own history: it is how the 7.6k-line `:8000/dashboard` accreted.
+      Verified before documenting rather than asserted: all **7/7** registry entries do declare
+      `health_path`, and the envelope is real (37 `absence_means`/`warn_s` sites in
+      `dashboard/panels.py`). CLAUDE.md gains a four-line `## Dashboards` pointer — it had none.
+      `tests/test_dashboard_static_js.py` 4 passed.
+- [x] Rationalize supervision with OP-9's resolution: one documented lifecycle story for the hub
+      (managed service + watchdog roles stated once, in one repo's docs). ✅ 2026-09-17: OP-9 was resolved
+      as option B (a pinned host cron). The story is now `dashboard/README.md` → *Lifecycle and supervision*
+      (launch spec → managed service → watchdog daemon → pinned cron `once`). The BLOCKED note below is historical.
+      *BLOCKED, noted 2026-08-11 by `mainD`: this reads "with OP-9's **resolution**", and OP-9 —
+      "nothing restarts the supervisor itself" — is still an OPEN operator decision (a cron entry is
+      a host-level change). Writing the lifecycle story now would document a supervision model whose
+      top layer is undecided. **`backlog_row_check.py --ref` returns DISPATCHABLE for this row**,
+      because the dependency lives in prose rather than in a child box — the same screener blind
+      spot as an `OPERATOR:` prefix. Worth a generator signal.*
+- [ ] H1/H2 blind-spot panels (owned by RTG-03) get homes assigned post-split: breaker/fallback →
+      `/machine`; REL-1 eval error-rate → autopilot page. [too-big: multi-worker data contracts and cross-page feeds belong to RTG-03]
+- [x] **D-1 (HIGH) — the production-kernel panel is absence-tolerant, QUIETLY.** ✅ 2026-08-12 — FIXED by `inference`, verified by `mainC` **from the ref, not the working tree**. `origin/main`'s `kernel.html` now renders the unavailable branch as a `headline fail` reading **ATTESTATION UNAVAILABLE**, plus a `detail fail` sentence — *"Production identity is unasserted; do not infer freeze or checkout state."* That is the absence_means sentence the defect asked for, at the same visual weight as the healthy headline; the `muted` line is gone. **Cosmetic residual, not reopening:** `_production_kernel_summary` still returns `error: None` for a merely-absent file, so the third line falls back to a generic "attestation not found" rather than naming the path the way `_read_kernel_contract` synthesises one. The alarm is loud, which was the defect; the reason is still unnamed, which is a nicety. Filed 2026-08-12 by
+      `mainC` from the Kernel-R&D operational-truth audit
+      ([`artifacts/audit/kernel-rnd-dashboard-operational-truth-20260812.md`](../../artifacts/audit/kernel-rnd-dashboard-operational-truth-20260812.md)).
+      Drift itself is loud (`does not match attestation`, class `fail`, compared live against the
+      canonical checkout). But a MISSING attestation returns `error: None` from
+      `_production_kernel_summary`, and `static/kernel.html` renders that branch as a single `muted`
+      line — no reason, no `alarm`/`absent` class, no `absence_means`. **This is the incident-8 scar
+      one function away, unfixed**: `_read_kernel_contract` SYNTHESISES an explicit sentence when the
+      file is merely absent (`if err is None: shell["error"] = …`); `_production_kernel_summary`
+      passes `err` straight through. Fix = mirror that pattern, and render the unavailable branch
+      loudly. **Blocked only by sequencing**: `dashboard/server.py` is on auditor hold in
+      `merge/origin-reconcile-20260811`; apply after that merge lands.
+- [x] **D-2 (LOW) — the Kernel-R&D registry entry points at the TRANSPORT probe.** ✅ 2026-08-12 — FIXED by `inference` in `6188197f`, verified from the ref: `registry.json` `health_path` moved `/health` → `/api/kernel/health`, i.e. from the transport probe that stays green over a dead producer to a semantic data-health probe. Landed with 74 lines of server change and ~110 lines of tests. Same audit.
+      `registry.json` declares `"health_path": "/health"`, which `server.py` documents as answering
+      only "this process is serving" — so a dead AutoKernel producer leaves it green. The hub already
+      has the right instrument in `/api/health` (the three-valued fold over `panels.py`). The `/kernel`
+      PAGE is honest, so a human is not deceived; only an automated consumer of `registry.json` is.
+
+- [x] **D-3 / OBS-2 (MED) — `hub_supervisor.sh` cannot say "I cannot tell", and its stale-source ✅ 2026-11-01 — closure hygiene; implemented 2026-10-31 in ROOT@1b9130e930cc28af397fa8d2c82ac05f3445080a:`tests/test_hub_supervisor_observation.py`, `tests/hub_supervisor_contract.py` [closure: hygiene] [no-belief: implementation and software tests, no measurement claim]
+      check is wired to the one path that never runs.** Filed 2026-08-12 by the class-sweep
+      that followed the coordinator-daemon watchdog blindness. Two defects, one file:
+    - `health_ok()` is two-valued. A curl timeout, a removed `curl` binary, a hub moved off `:8100`
+      without `HUB_PORT`, and a genuinely dead hub are ONE value — and `cmd_loop` restarts on it, so
+      a mis-set port produces a permanent restart-into-port-conflict loop. Its neighbour in the same
+      file, `hub_source_is_newer`, is the model: a distinct `2` for every unknown, and
+      `check_hub_stale_source` explicitly reports rather than passes ("a check that cannot tell is
+      not a clean one"). Two functions, one file, opposite polarities.
+    - `check_hub_stale_source` is invoked **only** from `cmd_once`, never from `cmd_loop` — the
+      default and only long-running mode, whose healthy branch `continue`s straight past it. This is
+      the C42 bug `bus_supervisor.sh` already fixed and documented ("the tests passed because they
+      exercised the predicate and `check_once` directly and never the loop — verifying A consumer,
+      not THE consumer"), and `tests/test_hub_stale_source.sh` reproduces the same blind spot by
+      `eval`ing the two predicates and never the loop. The header meanwhile claims "when the
+      supervisor IS running, it now notices a stale hub instead of reporting it healthy", and
+      `usage()` claims "Never restarts a healthy hub" — which `cmd_once` has not done since the
+      stale-source port landed. Three comment sites assert properties the code lacks.
+    - Fix = adopt [`scripts/coordination/observer_guard.sh`](../../scripts/coordination/observer_guard.sh)
+      + the uniform `observe` entrypoint, and call the stale-source check from `cmd_loop`. Then flip
+      the row in [`scripts/coordination/observer_registry.json`](../../scripts/coordination/observer_registry.json)
+      to `contract: "v1"` and delete this line. **Not fixed in place by the sweep**: the hub
+      supervisor is a long-running script and editing a running `.sh` is its own incident class.
+      `tests/test_observer_contract.py` fails if this line is checked off or removed without the
+      registry row changing.
+
+#### Non-goals
+
+- **Not a data-fidelity fix.** The per-worker env fragmentation, inverted-topology defect, and
+  H1/H2 blind spots stay owned by [autopilot-dashboard-fidelity-audit-2026-07-22.md](autopilot-dashboard-fidelity-audit-2026-07-22.md).
+- **No merge of the two panel-registry codebases** (both tested; harmonize the wire vocabulary only).
+- **No new inference, no benchmark reruns, no stack restarts** — pure view-plane work; deploys at
+  operator-approved boundaries (`orchestrator_stack.py reload` for the hub; API restart for CORS).
+
+#### Reporting
+
+Flip checkboxes with inline `✅ YYYY-MM-DD` as phases land; record routes/registry schema in
+`progress/`. Delete the index row on completion.
+
+#### Loop and knowledge views from intake-2604/2609/2619 (ws58 intake 2026-11-02; operator approved "Approve, go to Stage 4", D9 acknowledged for scripts/coordination)
+
+Plan: [README.md](../../research/deep-dives/ws58-jev-20261102/README.md). **Order (operator, 2026-11-02):** (1) SA-1 + JEV-1; (2) SA-2, SA-3, JEV-3; (3) JEV-5 phase A, KT-1, KT-3; (4) the rest (JEV-2, JEV-4, JEV-6, SA-4, KT-2, KT-4, KT-5). JEV-5 phases B/C only after the operator has used phase A.
+
+- [x] **JEV-5 phase A** ✅ 2026-11-02 ROOT `445b5a0d9` (live: /loop-spec and /knowledge return 200 after the 01:01Z reload) [belief: cc] [M] Typed loop-spec JSON (states, transitions, stop reasons, thresholds) for the churn loop first; phase A = a registered hub page rendering it (vendored Mermaid or cockpit-style inline SVG) with registry entry, `/api/health` probe and freshness envelope. Phases B (replay stepper over saved journals/FAIL files) and C (threshold-only patch edits) only after the operator has used phase A (intake-2609#record). removes: hand-drawn flowcharts and log-grepping to follow a loop.
+- [ ] **JEV-5 phases B/C** [M] Replay stepper over saved journals/FAIL files (B), then threshold-only patch edits (C). Gate: only after the operator has used phase A (/loop-spec). removes: log-grepping to replay a loop run; hand-editing thresholds in code.
+- [x] **KT-3** ✅ 2026-11-02 ROOT `445b5a0d9` (live: /loop-spec and /knowledge return 200 after the 01:01Z reload) [belief: cc] [M] Knowledge hub page: store counts and freshness, KT-1 lint and conflict totals, and a claim browser (claim → tuple/grade → supporting and refuting frames → run → commit, cited-by reverse lookup, `vidya impact` preview); same renderer as JEV-5; registry + probe + freshness envelope. Plan: [knowledge-transparency.md](../../research/deep-dives/ws58-jev-20261102/knowledge-transparency.md). removes: reading `.vidya` ledger JSON and `vidya query` output by hand.
+- [ ] **DASH-FU-1** [S] 5 pre-existing dashboard test failures (the /amd-ai-lab nav/registry subtests and test_dashboard_progression hardlink), failing on clean origin/main too. removes: a standing red test set that masks new regressions.
+
+## Track: handoff-index-and-backlog-graph
+<!-- gate: none -->
+
+> Folded from `handoffs/active/handoff-index-and-backlog-graph.md` @ `b1bf3f3f7ade` on 2026-11-02 (BRF-T1-F18, route 1a, operator D1/D5; retired row RTG-46 → RTG-34). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+
+### Handoff Index Restructure + Backlog Graph — residuals
+
+**Status**: ACTIVE — the restructure and the dashboard graph LANDED 2026-08-10 (commits `b208d9ce`,
+`5827702c`, `6fe1983c`, `0bf45450`, `45774645`, `eb92b4c9`, `2dd88cf5`). This handoff exists for the
+residual decisions and polish, not the build. Full narrative: `progress/2026-08/2026-08-09.md`.
+**Created**: 2026-08-10
+**Priority**: P3 — nothing here blocks anyone
+**Parent index**: [routing-and-optimization-index.md](routing-and-optimization-index.md)
+
+#### What landed (context, not tasks)
+
+Indices went 2,260 → ~370 lines on a thin-row contract (`ID | Track | Handoff | Next action | Deps`),
+172/172 handoffs owned by exactly one index, liveness generated by
+`scripts/handoffs/index_state.py`, and a backlog graph embedded under the kanban on the :8100 hub.
+Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
+
+#### Open
+
+- [x] **Break the INF-06 ⇄ INF-64 dep cycle.** ✅ 2026-09-07 — found by running the readiness
+  computation over `.index-graph.json` for the first time. `inference-research-index.md:17` listed
+  INF-64 among INF-06's deps and `:18` listed INF-06 as INF-64's only dep, so under any readiness
+  rule **neither row could ever become ready**, while both rendered as ordinary dispatchable rows
+  everywhere. The back-edge was expressing RIDER-OF — `autokernel-restart-and-strip.md` says in its
+  own header "This is a rider on `autokernel-research-loop.md` … Owning index row: **INF-06**" — in a
+  column whose only semantic is BLOCKED-ON. Deleted; the relationship survives untouched as the
+  derived `ref` edge the graph builder already generates from the markdown link, so nothing was lost.
+- [x] **`index_state.py --check`: dep-graph cycle detection.** ✅ 2026-09-07 — `dep_cycles()`,
+  iterative DFS emitting one error per elementary cycle with the path as the message; unknown ids
+  are left to `BAD DEP` so one bad cell cannot produce two errors. 12 tests in
+  `tests/test_index_state_dep_cycles.py`, including each-cycle-reported-once, self-loops,
+  diamonds-are-not-cycles, and the real INF-06/INF-64 shape plus its fixed form. **Why this was
+  invisible before:** `BAD DEP` validates that a dep points at a *known* row, which every edge in a
+  cycle does — each individual edge is well-formed, and only the closure is broken.
+- [x] **Derive per-node `ready` / `blocked` in the graph builder** — ✅ 2026-09-16 (`sub-rtg46`;
+  branch `sub/rtg46-readiness-20260916` @ `ec7dfaf7`, integrated into root `main` by merge `e0a600a5` 2026-09-16; **hub deployed 2026-09-16**: `:8100` serves the read-only origin/main view `/mnt/raid0/llm/views/epyc-root-main`, per root `d66e125c` and orchestrator `3e967e27`).
+  Derivation landed in `457abd40` (`index_graph.v2`); the missing half was rendering, since
+  `dashboard/static/handoffs.html` never read `readiness`. Now: blocked = hatch over the domain
+  fill, `no_open` = faded, ready = solid; legend with the producer's `readiness_counts`; tooltip
+  names `blocked_by`. Nothing is computed in the page, and a v1 sidecar renders no hatch and says
+  so. Tests: `tests/test_dashboard_handoff_graph_readiness.py` (5 tests: structural, plus
+  `loadGraph` executed under node with a v1 mutation pair; verified to fail when the hatch is
+  removed). Live sidecar at tick time: 29 blocked / 135 ready / 9 no_open. Blocked ⟺ some `dep` target
+  still has `open > 0`. Bump the schema to `index_graph.v2` and render blocked nodes distinctly on
+  the `:8100` backlog graph. Do **not** add a hand-authored field: this is derived, exactly like
+  `open` and `last_advanced`. **Measured baseline 2026-09-07: 24 of 160 open rows gated, 136 ready,
+  10 with no open work**, over **42** `dep` edges across 170 nodes.
+  *(Edge count corrected 2026-09-07: this row first said 41. That figure was read off a
+  `.index-graph.json` stamped `generated_at: 2026-09-01` — a six-day-old sidecar — without
+  regenerating first. The gated/ready counts happened to survive the staleness; the edge count did
+  not. Regenerate before measuring off a generated artifact; `generated_at` exists to be checked.)*
+  **Priced honestly:** 85% of rows are already ready, so this
+  buys little dispatch discrimination on its own — its value is that it makes cycle-class defects
+  like the two rows above visible on the hub instead of requiring someone to run the computation by
+  hand. Adapted from Prove2Me's `open-leaves` endpoint (intake-1299#record), with the caveat that
+  their readiness is *free* from a decomposition invariant (a leaf has no children, therefore no
+  unsatisfied prerequisites) while ours must actually be computed.
+- [x] **Preserve the reason when a row's `Next action` is re-pointed.** ✅ 2026-09-16 (`sub-rtg46`;
+  branch `sub/rtg46-readiness-20260916` @ `a0700b2a`, integrated into root `main` by merge `e0a600a5` 2026-09-16). The check came back
+  negative: `build_handoff_timeline.py` tracked checkbox lines only and never index rows. It now pairs
+  removed/added rows per commit and emits `next_action_repoints` (id, date, commit, index, from, to,
+  reason, reason_source) into `data/handoff_timeline.json`. The reason comes from a
+  `Repoint-Reason: <ID>: <why>` commit-message line, or falls back to the commit subject; the
+  convention is documented in the authoring guide. Over real history: **370 re-points recovered,
+  all subject-sourced**. 4 tests in `tests/test_handoff_timeline.py`, with the negative case
+  mutation-checked. The cell is overwritten with
+  no trace, so *why the previous target was abandoned* is destroyed and the next session can re-walk
+  a rejected path at full price. First check whether `build_handoff_timeline.py` already captures
+  enough; if not, the `reason` belongs in the timeline sidecar — **never in the row**, because status
+  and history never go in a row (`docs/guides/agent-workflows/handoff-index-authoring.md`). Precedent:
+  Prove2Me requires a `reason` on every milestone re-link precisely so solvers avoid rejected paths,
+  and exposes the history publicly as its highest-signal governance artifact (intake-1299#record).
+- [x] **Derive an EPYC promote-vs-inline rule for backlog rows** — ✅ 2026-09-16 (`sub-rtg46`;
+  branch `sub/rtg46-readiness-20260916` @ `aed468bb`, integrated into root `main` by merge `e0a600a5` 2026-09-16). Now in
+  `docs/guides/agent-workflows/handoff-index-authoring.md` → *Promote or inline?*. Measured first
+  over 1,635 open top-level boxes: p50 3 / p90 11 / p99 32 lines. Bands: ≤ 11 inline; 12–31
+  ambiguous (136 rows, decided by named signals); ≥ 32 promote (18 rows in 11 handoffs). The
+  tie-break is re-derived as *promote when unsure*: an inline item has no graph node, so a wrong
+  inline fails silently. The rule also carries a failure-isolation criterion. Reproduce with
+  `scripts/handoffs/row_size_distribution.py`. Original row text: on the *shape* of intake-1309#record's
+  table: (i) a mechanical size metric, (ii) a named promotion-signal list for the ambiguous band,
+  (iii) an explicit tie-break under uncertainty, (iv) a failure-isolation criterion independent of
+  reuse. **Measure our own row-size distribution FIRST — do not import their 10/40 line constants.**
+  They are self-declared "tunable defaults", never measured, and derived from Lean proof lines.
+  More importantly **their tie-break inverts for us**: their default is *inline when unsure* because
+  an uploaded theorem is immutable while an inlined lemma can still be promoted later. Our rows are
+  freely editable and deletable, so that reasoning points the opposite way and the tie-break must be
+  re-derived rather than copied.
+
+- [x] **Decide whether `.index-state.json` / `.index-graph.json` should be git-ignored.**
+  ✅ 2026-08-11 — `mainD` (A19). **Ignored**, matching `data/handoff_timeline.json`, which is the
+  same class of artifact from the same producer at the same cadence; the two are no longer
+  inconsistent. Both sidecars are `git rm --cached`'d and listed in `.gitignore`.
+  The deciding argument was not diff noise, which is what this row weighed. It is that **four mains
+  share one clone**: every session that ran `index_state.py` rewrote a 137 KB + 114 KB pair it did
+  not author, so the four collided on a generated file and `index_state.py` had to be **restricted
+  to `mainC` alone** to stop it. A view of the indices must not be a source of merge conflict in
+  them. The "freshness is meaningful in review" argument survives intact and is better served where
+  it already lives: `--check` gates coverage/schema/freshness and must exit 0 before committing, and
+  it runs against the working tree — it never needed the file to be tracked. Verified after
+  untracking: both files still on disk, `index_state.py --check` → `0 problem(s)`. The hub already
+  declares absence as "index_state.py has never run in this checkout" and degrades to "no graph"
+  rather than failing (`dashboard/panels.py`, `absence_means`), so no consumer regressed.
+  **The `mainC`-only restriction on `index_state.py` can be lifted.**
+  Residual, deliberately not chased here: the `master-handoff-index.md` rollup block that
+  `index_state.py` also writes is still tracked and still shared, so it remains a (much smaller)
+  concurrent-edit surface — one block, not a 250 KB pair.
+- [x] **Cross-file duplicate-TASK detector (semantic, not exact-text).** ✅ 2026-08-24 —
+  `scripts/handoffs/duplicate_task_scan.py` (pure-stdlib, checkbox-row vs index-row comparison,
+  max(seq, dice, containment) on stopword-filtered tokens, two-channel candidate generation).
+  Validation against the C2 known pairs: **10/10 resolvable pairs re-detected (recall 1.00)** at
+  threshold 0.38; hand-classified precision 0.86 (55/64 pairs ≥0.60 are the same unit of work filed
+  twice). New finds beyond C2: DR-3 cluster (7 pairs: gpu-drafter-control-redesign ≡
+  mi210-big-model-acceleration-roadmap), reviewer-typed-artifacts ≡ security-review-skill,
+  glm51-reap ≡ glm52 gates, deepseek-v4-flash ≡ v9-kernel (V9-7 cutover; pair resolved and local
+  model testing closed 2026-08-26), autopilot P1 ≡
+  shape-keyed (marker polarity). The C2 pair list is re-homed below; the superseded dispatch queue
+  can be pruned. (Filed from bus triage 2026-08-16, msg-20260812T111252Z-20.)
+- [x] **`backlog_row_check.py`: mid-text owner declaration is a measured false negative.** ✅ 2026-08-24.
+  Reproduced
+  live 2026-08-16: `numa-topology-cutover-resume-20260730.md:189` screens DISPATCHABLE while its own
+  line 190 reads "**Owner: the stack owner (`inference`), NOT this lane.**" — `_OWNER_PREFIX` is
+  `.match()`-anchored to the body's first characters and `_OWNER_DISCLAIM` searches only the heading.
+  The narrowness is deliberate (21/1258 precision, documented at `:96-101`), so widen narrowly:
+  match a bolded `Owner:` lead-in at the start of ANY line of the row body, keep the
+  colon-within-60-chars constraint, and re-measure against the live corpus without regressing the
+  21/1258. ✅ 2026-08-24 — fixed in `scripts/coordination/backlog_row_check.py`
+  (`_OWNER_MIDTEXT` sentence-position anchor + immediate-colon, continuation-line scan). Result:
+  **26/1528 → 27/1528 owner-flagged; the +1 is exactly the repro
+  (`numa-topology-cutover-resume-20260730.md:189`), zero regressions, zero new false positives**,
+  all 71 tests in `tests/test_backlog_row_check.py` pass. Wider distances re-imported
+  "`Owner if opened:`" / "`Operator constraint:`" / "`Operator's stated prior:`" (measured false
+  positives), so the anchor is deliberately narrow. (Filed from bus triage 2026-08-16,
+  msg-20260813T181621Z-52.)
+- [x] **Populate `Deps` as real dependencies are established.** ✅ 2026-08-24 — 8 hand-verified edges
+  applied (verbatim-source-justified; direction-checked, pointers rejected): REV-05→UFH-01,
+  REV-01→INF-56, REV-04→REV-06, INF-33→INF-48, REV-02→INF-17, EVL-14→EVL-13, REV-07→REV-02,
+  RTG-39→EVL-45. Rejected as ambiguous/pointer-only: EVL-11→INF-24, RTG-02→EVL-04, INF-42→INF-52,
+  EVL-29→INF-54, RTG-22→RTG-02, RTG-38→RTG-36/EVL-44, UFH-04→EVL-44, RTG-09→RTG-30. Graph now
+  carries 25 dep edges; heuristic bulk-import remains rejected (direction ambiguity). 577 `ref` edges are derived from
+  markdown links; only 1 `dep` edge is hand-authored. A heuristic sweep found 253 candidates and was
+  rejected — the phrasing cannot disambiguate direction ("X gates Y" vs "gated by X"), so importing
+  them would draw authoritative arrows pointing the wrong way. Fill them in as work reveals them.
+- [ ] **Graph layout reads as a lattice.** At the spacing that makes nodes distinguishable, the grid
+  seed shows through. Loosening the relax convergence threshold would reintroduce irregularity at
+  some cost to the clean separation. Cosmetic; only worth doing if the regularity actually misleads.
+  - [x] **Seed de-latticed; visual verdict still open.** 2026-09-16 — `sub-rtg46-layout`, commit
+    `4cd106c2`, integrated by root merge `e0a600a5` 2026-09-16 (branch `sub/rtg46-readiness-20260916`). Packing extracted to a pure
+    `packBands()` in `dashboard/static/handoffs.html`: staggered seed + deterministic per-id jitter
+    (0.3 cell, FNV-1a, stable across refreshes) + push-only relax. Offline, live `.index-graph.json`
+    (173 nodes): row-aligned nodes 98% -> 6%, column-aligned 89% -> 0%, 0 halo overlaps both,
+    min halo gap 9.60 -> 9.57px, height 603 -> 669px. Proxy criterion (`LayoutTests` in
+    `tests/test_dashboard_handoff_graph_readiness.py`): near-neighbour alignment < 0.2 with a
+    zero-jitter mutation > 0.8, zero crowding below SEP, domains inside their band, deterministic.
+    **Parent stays open: "does it still read as a lattice" is a human look at :8100 (deployed 2026-09-16).**
+- [x] **OPERATOR: nothing restarts `hub_supervisor.sh` if it dies.** ✅ 2026-09-17 (resolved by OP-9 option B, host cron installed; see below) It was found dead on 2026-08-10
+  (recorded pid 543919 not running), which is why the hub sat on stale code unnoticed. Its own
+  docstring rules out a systemd unit ("host config is operator territory"); the documented alternative
+  is the cron form `*/2 * * * * hub_supervisor.sh once`, which is idempotent and self-exits when a
+  daemon is already running. Host-level change → operator's call.
+  - **OPERATOR RULING 2026-09-17 — OP-9 option B: the host cron runs a PINNED copy of
+    `hub_supervisor.sh`, never the mutable shared clone `/mnt/raid0/llm/epyc-root`.** Nor does it run
+    the hub view `/mnt/raid0/llm/views/epyc-root-main`, which is force-checked-out every 180 s. Built on
+    branch `sub/op-decisions-20260917` (`scripts/operator/install_supervision_cron_20260916.sh`):
+    - `--all` fetches origin in the shared clone (refs only) and resolves origin/main to a full sha
+      (`--pin-sha` overrides it). It then `git archive`s the supervisor's closure (`hub_supervisor.sh`,
+      `hub_launch_spec.py`, `refresh_hub_view.sh`) into
+      `/mnt/raid0/llm/ops/hub-supervisor/<sha>/scripts/dashboard/` inside the container. Each file is
+      checked byte-for-byte against the commit and stamped (`PINNED.txt`, `SHA256SUMS`). The pin is made
+      read-only and renamed into place atomically. A re-run reuses a pin only if it still verifies.
+    - The cron line is
+      `*/2 * * * * docker exec -u node -e EPYC_ROOT=/mnt/raid0/llm/epyc-root -e HUB_CANONICAL_ROOT=/mnt/raid0/llm/epyc-root -e HUB_LAUNCH_MANIFEST=/mnt/raid0/llm/epyc-orchestrator/orchestration/launch_manifest.yaml epyc-root /mnt/raid0/llm/ops/hub-supervisor/<sha>/scripts/dashboard/hub_supervisor.sh once >>/mnt/raid0/llm/epyc-root/logs/cron_supervision.log 2>&1 # epyc-op9-hub-supervisor`.
+      The supervisor's data locations (home, manifest) are explicit, and the hub source still comes
+      from the manifest.
+    - Single instance needed no code change. `once` and the daemon both `flock -n` the same
+      `/tmp/hub_supervisor_8100.lock` inside the container; the live daemon holds it on fd 9 (verified
+      read-only 2026-09-17), so each cron pass exits 0 with "another supervisor already holds".
+    - Test: `scripts/dashboard/tests/test_install_supervision_cron.sh` (40/40, fake docker/crontab).
+      The `fleet_watch` line is unchanged.
+  - [x] **Operator runs the pinned-copy host install (OP-9 option B)** ✅ 2026-09-17: the operator ran it. Verified: pin `/mnt/raid0/llm/ops/hub-supervisor/1b138d36bc35…` exists (read-only), and `logs/cron_supervision.log` shows "another supervisor already holds … exiting (idempotent)" at 12:16 and 12:18 with daemon pid 639194 alive. — on the HOST, after the branch
+    is on origin/main. Refresh the shared clone's refs first, or `origin/main` still serves the old,
+    unpinned installer: `docker exec -u node epyc-root git -C /mnt/raid0/llm/epyc-root fetch origin`.
+    Then run `bash <(git -C /mnt/raid0/llm/epyc-root show origin/main:scripts/operator/install_supervision_cron_20260916.sh) --all --dry-run`.
+    The output must show a `pin: <sha> -> /mnt/raid0/llm/ops/hub-supervisor/<sha>` line. If it does,
+    run the same command without `--dry-run`. The `<(…)` form needs bash or zsh; from fish, wrap it
+    in `bash -c '…'`. Verify:
+    - `crontab -l` has exactly one `# epyc-op9-hub-supervisor` line, and it names the pin;
+    - `docker exec -u node epyc-root cat /mnt/raid0/llm/ops/hub-supervisor/<sha>/PINNED.txt`
+      shows the sha;
+    - within 2 minutes, `logs/cron_supervision.log` shows "another supervisor already holds".
+    Then tick this box and the parent row.
+  - [x] **The "sat on stale code unnoticed" half is closed; the cron half is not.** ✅ 2026-08-11 —
+    `mainD`. `hub_supervisor.sh` now detects a hub serving code OLDER than `dashboard/` and restarts
+    it, ported from the bus supervisor's **C42**. `health_ok` only asks whether :8100 answers 200,
+    and a hub running twelve-hour-old code answers yes. This needs **no host change** — when the
+    supervisor IS running it now notices. Identity from the listening port (exact, never a name
+    pattern), fail-closed on every unknown, restart once per source version. 5 tests, predicate-only
+    so it never reaches `restart_hub`. Verified read-only against the live hub: reports **current**,
+    so no false positive on a healthy service.
+    **The parent row stays OPEN and unticked — the cron decision is untouched and still the
+    operator's.**
+  - [x] **Wrong-checkout launch incident (2026-08-21 → 2026-08-24) closed.** ✅ 2026-08-24 — the
+    :8100 hub had been launched 2026-08-21 from the scratch worktree
+    `dashboard-v26-telemetry-integrity-20260821` (`hub_supervisor.sh` started with EPYC_ROOT pointed
+    at the worktree), so `REPO`/`HANDOFF_DIR` resolved from `__file__` to that frozen `handoffs/`
+    copy — the board showed 2026-08-21 data while its badge read **fresh** (a live scan of its own
+    frozen checkout certifies itself), and the C42 stale-source check could not see it because it
+    compared against `${EPYC_ROOT}/dashboard`, the same frozen checkout. Restored: killed the
+    worktree-launched supervisor + hub, relaunched canonically from `/mnt/raid0/llm/epyc-root`;
+    board live again (170 active / 6 blocked / 181 completed / 103 archived). The `handoff_graph`
+    panel's "index_state.py has never run" absence was collateral of the same root cause. Record:
+    `progress/2026-08/2026-08-24.md`.
+  - [ ] **Cwd-guard hardening was attempted and REVERTED — do not reintroduce without a different
+    probe.** A `readlink -f /proc/<pid>/cwd` vs `$EPYC_ROOT` check added 2026-08-24 false-positived
+    in this containerized environment (a hub launched with `cd ${EPYC_ROOT}` resolved to a different
+    inode than the path — namespace artifact), producing a ~15 s restart loop. Reverted; the script
+    is byte-identical to pre-attempt. The wrong-checkout class therefore remains visible only via
+    the manual `/api/health` + board-mtime comparison. Options if it recurs: compare the hub's
+    serving evidence (`handoffs/` mtime deltas) instead of /proc.
+  - **SUPERSEDED 2026-09-16 by the joint OP-9 + FW-3 package below.** Its cron line is defective:
+    installed on the host as written, it would run outside the devcontainer.
+    **OPERATOR DECISION PACKAGE (2026-08-24, prepared — decision is yours):** the parent row above
+    (nothing restarts `hub_supervisor.sh` if it dies) still needs the cron ruling. Options:
+    **(a) cron `once` form (recommended)** — add `*/2 * * * * /mnt/raid0/llm/epyc-root/scripts/dashboard/hub_supervisor.sh once`
+    to the host crontab. `acquire_lock` is flock-based and self-exits when the daemon already runs,
+    so daemon + cron coexist safely; ~1 s/2 min CPU; the C42 stale-source check and wrong-checkout
+    restart also run in `once` mode, covering the whole supervision surface if the daemon dies.
+    Cost: one `crontab -e` line. **(b) Leave as-is** — zero host change; failure mode = the one
+    observed twice (dead supervisor → stale hub unnoticed). **(c) systemd unit** — more robust, but
+    the script's own docstring rules it out as host-config territory. **Recommendation: (a).** On
+    approval: add the crontab line, verify `hub_supervisor.sh once` exits 0 against the healthy hub,
+    tick the parent row.
+  - **JOINT OPERATOR DECISION PACKAGE — OP-9 (`hub_supervisor.sh`) + FW-3 (`fleet_watch.sh`), 2026-09-16
+    (`sub-harness`; prepared, the ruling is yours; one pass covers both).**
+    **Decision needed:** may we add supervision lines to the HOST crontab? This is host config, so it is operator-only.
+    **Facts, verified read-only 2026-09-16:**
+    1. **Both failure modes are live now.**
+       - `fleet_watch.sh` is **not running**. Its log (`logs/fleet_watch.log`) was last written
+         2026-08-18T12:54:29Z with no "stopping" line. That matches the devcontainer restart ("Up 4 weeks"):
+         the fleet has been unwatched for ~29 days, and nothing noticed.
+       - The canonical hub supervisor exited 2026-09-14T09:23:50Z.
+       - A replacement (pid 996612) was started 2026-09-15 **from lane worktree
+         `worktrees/mains/autokernel-unified-20260908` with `EPYC_ROOT` set to that lane**. The live hub
+         (pid 2070612) therefore serves the lane's checkout: cwd and PYTHONPATH are the lane. **CORRECTION
+         2026-09-16: that is INTENDED, not a misconfiguration.** Orchestrator `f5476148` (2026-09-09) sets
+         `launch_manifest.yaml` `handoff_dashboard` cwd/pythonpath to that lane, which carries 8+ dashboard
+         commits root main lacks. The actual defects: the supervisor ignored the manifest (it hard-coded
+         `cwd=EPYC_ROOT`), and deploy-sync wrote into a lane. Live drift: the hub runs with
+         `AUTOKERNEL_LOOP_STORE_ROOT=…/aku-glm53-continuous-20260915-v12`, but the manifest says
+         `…/aku12a-glm53-five-loop-store`, so a manifest-driven relaunch switches store.
+       - Deploy-sync has written origin/main dashboard files **into that lane's working tree**:
+         - The lane's own `logs/hub_supervisor.log` shows writes on 09-10, 09-11 and 09-14, and on
+           09-15T20:53Z (`README.md`, `registry.json`, `server.py`, `static/cockpit.html`). So lane-rooted
+           supervisors have run on and off since at least 09-10.
+         - The lane's `git status` shows ` M dashboard/{README.md,registry.json,server.py}` and
+           `?? dashboard/static/cockpit.html`.
+    2. **Everything runs inside the devcontainer `epyc-root`.** It has its own mount namespace, and its `/tmp`
+       and uv python are private. The only cron is the host's `cron.service`; the container has no `cron`
+       or `crontab`. The 08-24 line, installed as written, would run on the host:
+       - the host `/tmp` lock cannot see the container daemon's lock, so the "self-exits when the daemon
+         runs" guarantee does not hold;
+       - the venv python symlink dangles on the host, so a host `python3` hub would start under a host uid
+         that container sessions cannot signal.
+       **The command must enter the container with `docker exec`.**
+    3. **Is `hub_supervisor.sh once` a sound restart primitive? Yes, after the fixes below (code read).**
+       - It is idempotent through `flock` on `/tmp/hub_supervisor_8100.lock`, which is valid inside the
+         container.
+       - It never matches a process by name. It kills only the pid that owns `:8100` (`ss`, then `lsof`),
+         excludes `$$`, escalates SIGTERM→SIGKILL and verifies the death.
+       - The hub is launched with `9>&-`, so it never inherits the lock.
+       - **Four defects are fixed on branch `sub/harness-evidence-20260916`, commit `034dccbe`, reworked in
+         `31d95ad8`.** (i) is superseded: the supervisor now launches from the manifest (cwd/env/argv),
+         skips deploy-sync into a linked-worktree hub source, and refuses only a non-canonical `EPYC_ROOT`
+         (its home). Marker: `HUB_SUPERVISOR_MANIFEST_LAUNCH_V1`. Read-only check: `hub_supervisor.sh plan`.
+         (worktree `/mnt/raid0/llm/worktrees/sub-harness-epyc-root`; new test 10/10, existing supervisor
+         tests green, 147 dashboard pytest pass):
+         - (i) It now **refuses a linked-worktree `EPYC_ROOT`**, checked with `git --git-dir` vs
+           `--git-common-dir`. This is namespace-independent, unlike the reverted `/proc` probe; exit 3;
+           override `HUB_ALLOW_LINKED_WORKTREE=1`. Without this fix, a cron `once` meets the lane daemon's
+           lock, exits, and the wrong-root hub stays forever.
+         - (ii) A failed stale-source restart used to **abort the loop daemon under `set -e`**, leaving
+           the hub killed and unsupervised. That failure is now reported instead.
+         - (iii) A kill now needs **two failed `/health` probes**, 3 s apart.
+         - (iv) `once` now runs the same deploy-sync → stale-source sequence as `loop`.
+    4. **`fleet_watch.sh --once` is NOT a restart primitive.** It is a diagnostic that raises nothing.
+       The restart primitive is the bare daemon launch. Its `flock` on `logs/.fleet_watch.lock` is
+       bind-mounted and worktree-invariant, so a duplicate exits 3.
+    **Options:**
+    - **(a) Host crontab, entering the container (RECOMMENDED).**
+      - Pros: one `crontab -e` covers both daemons. It recovers within 2 or 5 minutes from a single death
+        **and** from a container restart (the failure that killed `fleet_watch` on 08-18). While the
+        container is down, `docker exec` just fails, harmlessly. Cost is about 1 s every 2 minutes; the
+        deploy-sync fetch stays rate-limited by its shared state file.
+      - Cons: a host change. It depends on the container keeping the name `epyc-root` (set in
+        `.devcontainer/devcontainer.json` `runArgs`) and on the host user being in the `docker` group.
+    - **(b) systemd user units on the host** (`Restart=always`, `ExecStart=docker exec -u node epyc-root …`
+      running the loop daemons).
+      - Pros: restarts in seconds and logs to the journal.
+      - Cons: more host config, including `loginctl enable-linger`. The unit's lifetime is tied to a
+        foreground `docker exec`. The scripts' docstrings already treat this as the heavier path.
+    - **(c) Devcontainer `postStartCommand` launching the tier.**
+      - Pros: no host change.
+      - Cons: covers container restarts only, not a single daemon's death. It needs a container rebuild,
+        and `devcontainer.json` currently carries another session's uncommitted edits.
+    - **(d) Leave as-is.**
+      - Pros: zero change.
+      - Cons: the observed cost continues — 29 days with no `fleet_watch`, and a hub serving a lane
+        checkout right now.
+    **Recommendation: (a),** installed only after `31d95ad8` is merged and the supervisor is relaunched
+    from the canonical home; otherwise cron's `once` defers to a daemon that ignores the manifest. Exact lines for the host user's crontab:
+    ```cron
+    # EPYC supervision tier (OP-9 / FW-3). Runs INSIDE the devcontainer; both targets are flock-idempotent.
+    */2 * * * * docker exec -u node epyc-root /mnt/raid0/llm/epyc-root/scripts/dashboard/hub_supervisor.sh once >>/mnt/raid0/llm/epyc-root/logs/cron_supervision.log 2>&1
+    */5 * * * * docker exec -d -u node -e PATH=/opt/rocm/bin:/usr/local/bin:/usr/bin:/bin epyc-root setsid -f /mnt/raid0/llm/epyc-root/scripts/coordination/fleet_watch.sh
+    ```
+    An optional third line gives the same coverage to the rest of the tier (reboot-gated row 4):
+    `*/2 * * * * docker exec -u node epyc-root /mnt/raid0/llm/epyc-root/scripts/coordination/bus_supervisor.sh once >>/mnt/raid0/llm/epyc-root/logs/cron_supervision.log 2>&1`.
+    **Sequence on approval (main session schedules the process steps; none were done here):**
+    1. Merge `034dccbe` + `31d95ad8`.
+    2. Coordinate with the `autokernel-unified-20260908` owner, then stop supervisor pid 996612.
+       The hub stays up, because it is setsid-detached.
+    3. Relaunch it canonically with `EPYC_ROOT` unset:
+       `nohup setsid -f /mnt/raid0/llm/epyc-root/scripts/dashboard/hub_supervisor.sh > /mnt/raid0/llm/epyc-root/logs/hub_supervisor.out 2>&1 &`.
+    4. ~~Move the hub to the canonical root~~ **Withdrawn 2026-09-16:** the lane hub is the manifest's
+       intent (`f5476148`). Do not move it. Resolve the loop-store env drift in the manifest instead.
+    5. Tell the lane owner that the dashboard files listed above were written into their tree by deploy-sync,
+       not by them, so they must not ride into a lane commit.
+    6. The operator installs the lines above.
+    7. Verify:
+       - `docker exec -u node epyc-root …/hub_supervisor.sh once; echo $?` → `0`, and the log says
+         "another supervisor already holds";
+       - `fleet_watch.log` shows a fresh "fleet_watch started" line within 5 minutes.
+    8. Tick this parent row and FW-3.
+  - **DASHBOARD FIX A — the hub serves a read-only origin/main VIEW (2026-09-16, `sub-hubview`;
+    operator-approved). DEPLOYED 2026-09-16** (root `87152356`, merged `d66e125c`; orchestrator `3e967e27`). This supersedes step 4 above for the hub source. The lane that
+    `f5476148` served (`autokernel-unified-20260908`) was 141 commits behind origin/main, so pushed
+    handoff progress never reached :8100. The lane has no commits that main lacks, only
+    uncommitted WIP, which the operator accepts will no longer be served.
+    - **View:** `/mnt/raid0/llm/views/epyc-root-main`. It is a standalone `--reference` clone, never a
+      linked worktree, detached at origin/main. It carries the marker `.epyc-view-readonly`, and
+      nobody else writes to it.
+    - **Refresher:** `scripts/dashboard/refresh_hub_view.sh` (flock, marker-gated). It runs `fetch`,
+      then `checkout --detach --force origin/main`. It regenerates the gitignored
+      `.index-state.json`, `.index-graph.json` and `data/handoff_timeline.json`, then reverts
+      index_state's edit to the tracked master index.
+    - **Supervisor:** `hub_supervisor.sh` runs the refresher every `HUB_VIEW_REFRESH_INTERVAL_S` (180s)
+      from both `loop` and `once`. It does so only when the manifest hub source is a marked,
+      non-linked view. Deploy-sync is skipped for a view. The marker `HUB_SUPERVISOR_MANIFEST_LAUNCH_V1`
+      is kept.
+    - **Restarts:** checkout rewrites only changed files, so the stale-source check restarts the hub
+      on a dashboard code change and never on a handoff-only refresh. Test:
+      `scripts/dashboard/tests/test_hub_view_refresh.sh`.
+    - **Manifest:** orchestrator branch `sub/hubview-orch-20260916` (on orchestrator main as `3e967e27`) changes `handoff_dashboard`
+      cwd/pythonpath to `{llm_root}/views/epyc-root-main`. The store env is unchanged:
+      `aku12a-glm53-five-loop-store` was re-verified live at 14:11, with no STOP.
+    - **Deploy sequence:** `progress/2026-09/2026-09-16-sub-hubview.md`.
+  - [x] **Timeline artifact lags lane-worktree commits.** ✅ 2026-08-24 — `install_timeline_hook.sh`
+    regen body now resolves the PRIMARY worktree (`git worktree list --porcelain` first entry;
+    verified lanes resolve to `/mnt/raid0/llm/epyc-root`, same inode as `/workspace`) instead of
+    regenerating in the checkout where the hook fired; re-installed in the shared `.git/hooks`
+    (one install covers every worktree of the repo, verified via `rev-parse --git-path hooks` from
+    lane mainA). Forced-regeneration test with cwd inside lane mainA landed the artifact in the
+    primary's `data/handoff_timeline.json`; zero lane-worktree contents touched. The git hooks
+    (`install_timeline_hook.sh`) regenerate `data/handoff_timeline.json` in the checkout where the
+    commit/merge happens; lane-worktree commits and the detached promotion merge never touch the
+    real repo's hooks, so the real-repo artifact goes stale (observed: last regen 2026-08-23 15:26
+    despite handoff commits 2026-08-24 06:48/10:34; manually regenerated, last_sha = HEAD).
+    Fix direction: make the hook resolve the canonical (primary) worktree via
+    `git rev-parse --git-common-dir` + `git worktree list` and regenerate there, then re-run
+    `install_timeline_hook.sh` in every checkout. Watch item until fixed: regenerate manually via
+    `scripts/handoffs/build_handoff_timeline.py`.
+  - [x] **Benchmark artifact inventory regeneration cadence is unowned.** ✅ 2026-08-24 — wired into
+    the same three git hooks as a second detached, **delta-guarded** block: regenerates
+    `data/benchmark_artifact_inventory.json` in the primary only when a research artifact is newer
+    than the artifact itself (~0.55 s build, pure-stdlib, no-op on the common path); verified
+    current→no-op, fresh probe→regenerates, idempotent re-install. The freshness envelope exists,
+    so a silent freeze is now impossible. `data/benchmark_artifact_inventory.json`
+    froze at 2026-07-29 (file mtime Aug 12) — the `:8100/benchmarks` page showed 26-day-old data
+    with no alarm stronger than "aging". Regenerated 2026-08-24 via
+    `scripts/dashboard/build_benchmark_artifact_inventory.py` (157 matched / 6 models, 1545
+    unmatched). Decide: schedule it (nightshift/cron), wire it into a post-commit hook like the
+    timeline, or document it as manual-run-on-demand; the panel's freshness envelope exists, so the
+    failure mode is visible once someone looks, not silent.
+
+#### Known duplicate pairs (C2-derived, re-homed 2026-08-24)
+
+Source: `BACKLOG-DISPATCH-QUEUE.md:1686-1699` (superseded file — may now be pruned). Resolved to
+current rows by TASK TEXT; the old queue's `file:line` anchors were ~60% rotted. Re-detected by
+`scripts/handoffs/duplicate_task_scan.py --validate` (recall 1.00 on resolvable pairs, 2026-08-24):
+
+| Duplicate pair | Score | Status |
+|---|---|---|
+| RE-2 ≡ EV-12 execution-free patch verifier | 1.000 | both live — coder_escalation pre-gate filed twice |
+| ID-7 ≡ scoring-infra ordered_subsequence | 0.875 | both live |
+| ID-29 ≡ gemma DFlash bench | 0.884 | both live |
+| ID-3 ≡ AP-21 gepa_ratio pin | 0.662 | both live |
+| ID-15 ≡ DavidAU header gate | 0.625 | both live |
+| ODL full-set re-baseline | 0.523 | both live (document-parser-table-bench vs opendataloader) |
+| iqk T2/T3 ≡ tq3 gates | 0.641 / 0.848 | both live (trellis gate filed in both) |
+| RE-3 ≡ EV-13 review-F1 suite | 0.600 | both live |
+| ID-8 ≡ EV-9 FrontierCS floor probe | 0.391 | both live (hardest reworded pair) |
+| 4 further C2 pairs | — | members closed/retired — not rediscoverable, closed history |
+
+#### Not filed, deliberately
+
+- **Curating the 133 dormant `Next action` cells.** They were seeded mechanically from each handoff's
+  first open box — honest but uncurated. The 39 live rows were hand-written; the rest improve as
+  sessions touch them. Filing 133 copy-edits as tasks would be busywork, and their staleness is a
+  backlog-hygiene question (are these handoffs still wanted?) rather than a wording one.
+
+- **Checkbox-level dependency edges** (considered and declined 2026-09-07, intake-1299#record). Prove2Me's
+  unit of work is the leaf, not the file, which is what makes its frontier meaningful; our `dep`
+  edges are handoff-to-handoff (170 files) while dispatch actually happens on ~1,528 checkbox rows,
+  so the granularities do not line up. Adding per-row deps is a schema change to the thin-row
+  contract, whose ratified rule is that a row carries "a pointer and a next step; **status, evidence
+  and history never go in a row**" — and a per-row dependency is closer to status than to pointer.
+  That is an operator decision about the contract, not a session's. Note the checkbox plane already
+  has a *separate* mechanism at that granularity: `backlog_row_check.py` blocks a task on the owning
+  handoff's own `## Dependency Graph` block (12 of 2,177 open boxes live). The two are complementary
+  and deliberately not merged.
+
+#### Reporting
+
+Any index edit: `python3 scripts/handoffs/index_state.py` then `--check` (must exit 0).
+Any edit to `dashboard/static/*.html`: `tests/test_dashboard_static_js.py` must pass — nothing else in
+the suite parses that file's JavaScript.
+
+#### Progress checklist
+
+- [x] Thin-row contract + single ownership + generated liveness ✅ 2026-08-10
+- [x] Backlog graph embedded under the kanban, scoped to active+blocked ✅ 2026-08-10
+- [x] JS parse guard (`tests/test_dashboard_static_js.py`) ✅ 2026-08-10
+- [x] `hermes-agent` → `user-facing-harness` rename ✅ 2026-08-10
+- [x] Repair 42 active-handoff links left pointing at the two retired inference indices ✅ 2026-08-10
+- [ ] Residual decisions above
+- [x] **Graph dep edges rendered as thick white bands** ✅ 2026-10-24 — 2-user-unit strokes scaled with the viewBox and zoom; now 1.2px non-scaling at 0.35 rest opacity (root 97268ec0f).
+- [x] **Daily open-box stock chart** ✅ 2026-10-24 — `daily_flow` (open stock net of rewording/removals, ticked, new, born-ticked, removed, closed-by-completion) as the primary trend chart (root 74be76b31).
+- [x] **Ring colour = priority gradient, liveness to tooltip** ✅ 2026-10-24 — derived priority in `index_state.py derive_priority` (root 214754d96).
+- [x] **BACKLOG-PRIORITY — land the operator-method total order (filed 2026-10-24, workspace-58).** The inference backlog is ranked with the inference-backlog-scheduling skill; unblocked non-inference first (those blocking inference highest); blockers inherit; tiers T1-T7. Ranking + wiring prepared (`/mnt/raid0/llm/tmp/ws58-backlog-priority-20261024/`, worktree `ws58-prio2-20261024`): tracked `handoffs/active/backlog-priority.json` + operator override file, generator moving to `scripts/handoffs/`. Land, then regenerate at each wrap-up. ✅ 2026-10-29 (audit: handoffs/active/backlog-priority.json + backlog-priority.override.json tracked; regenerated in a4250eaeb, f23d86c25, 36fa26ae9) [no-belief: audit-reconciliation]
+- [ ] **BACKLOG-PRIORITY-SKILL — operator idea (2026-10-24): if the ranking proves good, turn it into a skill built on inference-backlog-scheduling and tied into the coordinator-agent skill** (whole-backlog ordering, plus dispatch-now non-inference briefs for subagents). Decide after one week of use.

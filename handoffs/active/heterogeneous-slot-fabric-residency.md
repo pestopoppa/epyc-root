@@ -216,7 +216,7 @@ implement it independently:
 | Typed defer reasons | `src/scheduling/placement.py` `QueueReason` | `queue.jsonl` status enum |
 
 Consequences already acted on, tracked as R1/R3 in
-[session-bus-thin-dispatcher.md](session-bus-thin-dispatcher.md) §Rider:
+[session-bus-thin-dispatcher.md](coordination-and-churn-pipeline.md) §Rider:
 
 - **Axiom 1 forbids a second occupancy notion.** Benchmarks previously took no region lock at all
   while orchestrator dispatch did — three disjoint exclusion domains over the same cores. Closed

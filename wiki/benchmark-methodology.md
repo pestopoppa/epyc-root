@@ -4143,7 +4143,7 @@ change: the publish did **not** chmod the destination read-only (so the post-pub
 succeeds), and the seal was **already excluded from its own bundle hash** (so moving it changes no
 hash anywhere). Both were verified before the reorder, not after.
 
-_Sources: `handoffs/active/session-bus-thin-dispatcher.md`; `progress/2026-07/2026-07-29.md`;
+_Sources: `handoffs/active/coordination-and-churn-pipeline.md`; `progress/2026-07/2026-07-29.md`;
 epyc-orchestrator branch `tierc-10d-crash-window-durability` (`8cdf14f9`)._
 ## A saturated suite does not merely fail to separate models — it reads NULL and looks like evidence (2026-08-02)
 

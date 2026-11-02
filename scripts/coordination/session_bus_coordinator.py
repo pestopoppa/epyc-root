@@ -1,7 +1,7 @@
 #!/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python
 """session_bus_coordinator.py — the coordinator-daemon (M3: read-only advisory).
 
-Owning handoff: handoffs/active/session-bus-thin-dispatcher.md
+Owning handoff: handoffs/active/coordination-and-churn-pipeline.md
 Contract:       coordination/session-bus/BUS_PROTOCOL.md
 
 WHAT THIS IS. The deterministic, always-on tier of the coordinator. It ticks,

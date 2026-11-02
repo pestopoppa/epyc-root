@@ -1,7 +1,7 @@
 #!/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python
 """backlog_row_check.py — screen a backlog row BEFORE dispatching or claiming it.
 
-Owning handoff: handoffs/active/session-bus-thin-dispatcher.md
+Owning handoff: handoffs/active/coordination-and-churn-pipeline.md
 Companion:      coordination/session-bus/tasks/BACKLOG-DISPATCH-QUEUE.md
 
 WHY THIS EXISTS. Two failure modes were measured on 2026-07-29 while working the

@@ -7,13 +7,13 @@
 
 ## Compiled Update — 2026-11-01 (churn pipeline rebuild, ws58 wrap-up)
 
-- **Pipeline rebuilt as RTG-62** (`handoffs/active/churn-pipeline.md`, [churn flow](../docs/guides/agent-workflows/backlog-churn-flow.md)). rowflow v3 makes the row owner write a launcher plus spec, with a robust dry run and the old gates removed (`d69c6cd4b`); launchers living in lanes are snapshotted into the row's scratch_root so the dry run and the real run execute identical bytes (`8b62499ef`). Keeper v11 is ONE allocator with one snapshot per tick; both grant writers retired (`1a9186e11`). `churn_up.sh` cold-starts the whole pipeline from git (`d095b4a4d`).
+- **Pipeline rebuilt as RTG-62** (`handoffs/active/coordination-and-churn-pipeline.md`, [churn flow](../docs/guides/agent-workflows/backlog-churn-flow.md)). rowflow v3 makes the row owner write a launcher plus spec, with a robust dry run and the old gates removed (`d69c6cd4b`); launchers living in lanes are snapshotted into the row's scratch_root so the dry run and the real run execute identical bytes (`8b62499ef`). Keeper v11 is ONE allocator with one snapshot per tick; both grant writers retired (`1a9186e11`). `churn_up.sh` cold-starts the whole pipeline from git (`d095b4a4d`).
 - **Reliability from intake-2603** (`intake-2603#record`): DSH-1..5 landed in the dispatcher (`7259bbdc8`): run-end events acked by receipt, structured `report.json`, transient-failure retry, a reserved filing slot, and a loop-design rule.
 - **AI-free audit** (`research/deep-dives/churn-ai-free-audit-20261101.md`): of 6.43 G handoff-session input tokens, roughly 23% was bookkeeping (monitor/wait, wrap-up mechanics, republish). CAF-1..7 replace those turns with scripts (no-poll resume, `churn/wrapup.py`, `churn/file_result.py`, resume delta, `publish_row --repair`, codex-gen routing). CAF burn effect is NOT yet measured. The headline metric is now tokens per completed task.
 - **Hotfix lessons**: an unbounded drain wait starved the queue (`DRAIN_MAX_WAIT_S` 1 h, backfill by estimate); a gpu-quiet claim on a quarter is quarter+GPU, not quiet-host; a row flagged UNDERUSED is not granted until its owner republishes; a 10-minute resume gap applied to every session throttled productive ones to zero (the fix, gap only after no-effect turns, was installed but not yet on origin/main at wrap time).
 - **Guardrail status**: the deletion-first rule was not met on 2026-11-01; line counts of the pipeline files rose.
 
-Sources: [churn-pipeline handoff](../handoffs/active/churn-pipeline.md) · [AI-free audit](../research/deep-dives/churn-ai-free-audit-20261101.md) · [dsh-superagent dive](../research/deep-dives/intake-2603-dsh-superagent-prototype.md) · [ws58 progress](../progress/2026-11/2026-11-01-workspace-58.md) · [churn-up progress](../progress/2026-11/2026-11-01-ws58-churn-up.md) · [rowflow progress](../progress/2026-11/2026-11-01-workspace-58-rowflow.md) · [churn flow](../docs/guides/agent-workflows/backlog-churn-flow.md)
+Sources: [churn-pipeline handoff](../handoffs/active/coordination-and-churn-pipeline.md#track-churn-pipeline) · [AI-free audit](../research/deep-dives/churn-ai-free-audit-20261101.md) · [dsh-superagent dive](../research/deep-dives/intake-2603-dsh-superagent-prototype.md) · [ws58 progress](../progress/2026-11/2026-11-01-workspace-58.md) · [churn-up progress](../progress/2026-11/2026-11-01-ws58-churn-up.md) · [rowflow progress](../progress/2026-11/2026-11-01-workspace-58-rowflow.md) · [churn flow](../docs/guides/agent-workflows/backlog-churn-flow.md)
 
 ## Compiled Update — 2026-11-01 (intake-2603): a ticket executor that refuses to read state from free text
 
@@ -1427,7 +1427,7 @@ compiled on [Knowledge Management](knowledge-management.md)).
 
 ### Source References (2026-09-08 fleet-coordination compile)
 
-- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — the AIR-11
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — the AIR-11
   censuses and verdict (2026-09-07), the AIR-12/13/14 landings with `945c8820`, and the WS-1..4 rows
   with their C39/C49 preconditions and intake anchors.
 - [`fleet-fanout-measurement.md`](../handoffs/active/fleet-fanout-measurement.md) — the FM-5/FM-6
@@ -1848,7 +1848,7 @@ only per-message reading produced:
   103-both-changed table, the merge policy, and the full bus-triage disposition list.
 - [`docs/reference/agent-config/INCIDENT_LOG.md`](../docs/reference/agent-config/INCIDENT_LOG.md) —
   `INC-20260816-git-clean-shared-clone`: both dated events, the forensic commits, and the rule fed.
-- [`handoff-index-and-backlog-graph.md`](../handoffs/active/handoff-index-and-backlog-graph.md) —
+- [`handoff-index-and-backlog-graph.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph) —
   the duplicate-task detector requirement with its 14-pair validation set, and the `_OWNER_PREFIX`
   false-negative with the measured precision constraint.
 - [`canonical-judge-suite-revamp.md`](../handoffs/active/benchmark-suites.md) — the
@@ -1933,7 +1933,7 @@ The sharpest statement of the boundary is the dispatcher ledger's, and it is a w
 guarantee gets *read*: `repos/epyc-orchestrator` and `repos/epyc-inference-research` are symlinks
 **out of** every lane worktree, so lane isolation covers `epyc-root` only — *"anyone reading 'mains
 are isolated' must read it as **epyc-root is isolated**"*
-([`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md)). Six further
+([`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md)). Six further
 surfaces stay shared, each with its own remedy rather than a per-lane copy:
 
 1. **The child repos' index and sequencer state** (DP-4, open, HIGH). A main sitting in its own
@@ -2155,7 +2155,7 @@ phase exceeding 2× its estimate stops the plan, so that it "must never become t
 - [`scripts/coordination/WORKTREE_MIGRATION.md`](../scripts/coordination/WORKTREE_MIGRATION.md) —
   the two-plane model, the measured index isolation, the promotion pattern, and the withdrawn
   `git worktree prune` rule.
-- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — the
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — the
   epyc-root-only scope of lane isolation, DP-4's shared child index and its 42-file cherry-pick
   contamination, WT-1's backup-pointer aliasing, the uninstalled `serialized_push` decision, and the
   header-versus-checkbox count discrepancy.
@@ -2240,7 +2240,7 @@ reloading the live control plane.
 
 ### Source References (2026-08-13 role-admission canary)
 
-- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — AIR-6 failed
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — AIR-6 failed
   canary evidence/retry gate and AIR-10 disposition.
 - [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — process,
   source, queue, and role-contract audit.
@@ -2272,7 +2272,7 @@ the rework contract without editing the control-plane implementation.
 
 - [`BUS_PROTOCOL.md`](../coordination/session-bus/BUS_PROTOCOL.md) — Rule-11 ownership and routing
   contract.
-- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — AIR-8
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — AIR-8
   independent audit and AIR-9 fail-closed repair task.
 - [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — negative
   probes, test result, and dependency blast radius.
@@ -2314,7 +2314,7 @@ checks.
 
 ### Source References (2026-08-13 dedicated roles)
 
-- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — AIR
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — AIR
   implementation checklist, rollout posture, and remaining canary gate.
 - [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — integrated
   implementation and verification record.
@@ -2376,7 +2376,7 @@ The retracted "4,602 pending picks" number (carried in corrected form in the pas
 
 - [`docs/reviews/coordinator-role-audit-20260812.md`](../docs/reviews/coordinator-role-audit-20260812.md) — the RC-1 falsification, the four-of-six rule audit, the evidentiary-bias finding, and the D1–D6 deletion proposals.
 - [`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordinator-role-failure-modes-and-refactor.md) — the 32-row failure ledger under review, its own corrections, and the bus-provenance count.
-- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — the C44–C50 defect arc, the stale-READY picker root cause, and the *Reporting Units* rule it produced.
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — the C44–C50 defect arc, the stale-READY picker root cause, and the *Reporting Units* rule it produced.
 - [`docs/reference/agent-config/INCIDENT_LOG.md`](../docs/reference/agent-config/INCIDENT_LOG.md) — compacting-read-as-idle, post-exit-VRAM-sample, and dispatch-by-line-number as canonical incidents.
 - [`reboot-gated-inventory-and-staging.md`](../handoffs/active/reboot-gated-inventory-and-staging.md) — the OP-16 status dispute and the two-consumer topology-gate disagreement.
 
@@ -2734,7 +2734,7 @@ polarity lesson. Milestone acceptance state is quoted as-is — several items ar
   code cannot draft decisions or merge. The bright line is that the daemon "never
   analyzes, reviews, or edits work products — queue/routing/watchdog only", because
   the moment it reviews, it is a second main.
-  [session-bus-thin-dispatcher](../handoffs/active/session-bus-thin-dispatcher.md)
+  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md)
 
 - **Single-writer ownership is structural, not conventional.** `queue.jsonl` and
   `inbox/*` belong to the daemon, `outbox/<agent>` to that agent, and token-queue
@@ -2743,7 +2743,7 @@ polarity lesson. Milestone acceptance state is quoted as-is — several items ar
   roster row plus four files. Authority is matched to the writer: mains reprioritize
   their own lane only, cross-main sequencing belongs to the coordinator-agent and the
   operator, and the daemon never sets priorities.
-  [session-bus-thin-dispatcher](../handoffs/active/session-bus-thin-dispatcher.md)
+  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md)
 
 - **Routing intent became a structural message field, after prose routing lost real
   findings.** `needs_routing_to` and `action_required` are now schema fields with
@@ -2755,7 +2755,7 @@ polarity lesson. Milestone acceptance state is quoted as-is — several items ar
   made *evident* rather than silent, via numbered fences with byte counts and a
   completion trailer. The machinery caught real traffic immediately, surfacing findings
   that no relay had yet delivered.
-  [session-bus-thin-dispatcher](../handoffs/active/session-bus-thin-dispatcher.md),
+  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md),
   [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
 
 - **The recurring defect class: a state that could not be determined was treated as a
@@ -2768,7 +2768,7 @@ polarity lesson. Milestone acceptance state is quoted as-is — several items ar
   ownership and unparseable rows all now refuse. The corollary warning is filed with the
   blocking item — do not "fix" an unreadable tmux by counting it as zero mains, because
   that hands out occupied slots.
-  [session-bus-thin-dispatcher](../handoffs/active/session-bus-thin-dispatcher.md),
+  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md),
   [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
 
 - **A merged fix and a running fix are different states, and only the process owner can
@@ -2778,7 +2778,7 @@ polarity lesson. Milestone acceptance state is quoted as-is — several items ar
   activation gap of the same shape is still open. Reachability is now **observed, not
   declared** — liveness is tested rather than read off roster metadata — and the policy
   is deliver-plus-warn, never refuse.
-  [session-bus-thin-dispatcher](../handoffs/active/session-bus-thin-dispatcher.md),
+  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md),
   [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
 
 - **The delivery plane can be entirely healthy while coordination fails at the last
@@ -2794,7 +2794,7 @@ polarity lesson. Milestone acceptance state is quoted as-is — several items ar
   through or which gate a campaign is parked behind — so a fresh coordinator correctly
   reports an empty queue while a campaign sits one command from resuming. The mechanism
   makes a coordinator addressable; the brief makes it useful.
-  [session-bus-thin-dispatcher](../handoffs/active/session-bus-thin-dispatcher.md),
+  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md),
   [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
 
 - **A test suite can be green because it cannot fail.** A standalone adapter suite shared
@@ -2820,7 +2820,7 @@ polarity lesson. Milestone acceptance state is quoted as-is — several items ar
   A nine-agent specification effort consumed ~919k tokens over ~43 minutes to produce a
   ~113k-character spec, which was rejected as disproportionate to the problem. The recorded
   process lesson is that a panel of that shape needs a fourth lens whose job is to *delete*.
-  [session-bus-thin-dispatcher](../handoffs/active/session-bus-thin-dispatcher.md)
+  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md)
 
 ### Open Questions (2026-07-29)
 
@@ -2843,7 +2843,7 @@ polarity lesson. Milestone acceptance state is quoted as-is — several items ar
 
 ### Source References (2026-07-29)
 
-- [session-bus-thin-dispatcher.md](../handoffs/active/session-bus-thin-dispatcher.md) — the
+- [session-bus-thin-dispatcher.md](../handoffs/active/coordination-and-churn-pipeline.md) — the
   daemon/agent nomenclature split and bright line, single-writer ownership, authority matrix,
   structural routing fields, milestone acceptance state, rider status, and the C-series ledger.
 - [progress 2026-07-29](../progress/2026-07/2026-07-29.md) — the polarity arc across four
@@ -2917,7 +2917,7 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 
 #### Source References
 
-- [Session Bus + Thin Coordinator](../handoffs/active/session-bus-thin-dispatcher.md) — M3
+- [Session Bus + Thin Coordinator](../handoffs/active/coordination-and-churn-pipeline.md) — M3
   decision-property acceptance, C7/C8 coverage, and guard self-idiom regression.
 - [Hermes/OpenGauss as Outer Shell](../handoffs/completed/hermes-outer-shell.md) — reference-client
   parser and payload contract regression.
@@ -3656,7 +3656,7 @@ C9) were all the same shape: a query that could not be answered was treated as a
 missing inbox → drain succeeded, unreadable pane → nudge confirmed, failed window list → zero mains
 live. "I could not determine X" must return unknown and refuse, never an empty set or a zero.
 
-_Sources: `handoffs/active/session-bus-thin-dispatcher.md` § M5 → C6, C9, C10–C15;
+_Sources: `handoffs/active/coordination-and-churn-pipeline.md` § M5 → C6, C9, C10–C15;
 `progress/2026-07/2026-07-28.md`; `scripts/coordination/tmux_adapter.py` (commits `8033f039`,
 `e0deeaf7`, `8cbe50c0`); `coordination/session-bus/tasks/bus-c6-verification-followup.md`._
 
@@ -3706,7 +3706,7 @@ fail. For each of the three: delete the echo → the predicate still passes (bad
 False → the test still passes (bad); run from the other path → the count changes (bad). Each was
 found by asking that question, not by reading the tests.
 
-_Sources: `handoffs/active/session-bus-thin-dispatcher.md` § M5 → C6, C9, C10, C14, C16, C19;
+_Sources: `handoffs/active/coordination-and-churn-pipeline.md` § M5 → C6, C9, C10, C14, C16, C19;
 `progress/2026-07/2026-07-28.md`; `progress/2026-07/2026-07-29.md`; commits `bf1adb94`, `536839d3`,
 `42884724`, `97955ac8`._
 
@@ -3825,7 +3825,7 @@ Corollaries recorded from the same arc:
   The wrong "fix" — treating an unreadable tmux as zero mains — hands out
   occupied slots.
 
-[`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) §C15/C17/C18/C20 and the post-reboot handover block
+[`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) §C15/C17/C18/C20 and the post-reboot handover block
 
 ### Model choice is not the lever for a protocol gap
 
@@ -3840,7 +3840,7 @@ confounds two axes.
 ### Source References
 
 - [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — HS-6 (six/seven-dimension decomposition, Harness Card), HS-7 (re-targetability as a standing criterion), HS-8/HS-9 (policy-as-document reductions; open-weight interpretation unestablished), HS-12 (both halves of the capability-vs-harness figure)
-- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — C18 liveness/observability polarity and the "warning needs a reader" second half; C20 fail-closed reboot dependency; C15 key-conflation hazard; C17 scope resolution
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — C18 liveness/observability polarity and the "warning needs a reader" second half; C20 fail-closed reboot dependency; C15 key-conflation hazard; C17 scope resolution
 - [`agent-world-env-synthesis.md`](../handoffs/active/benchmark-suites.md#track-agent-world-env-synthesis) — plan-executor divergence halt as a present-but-uninstructed mechanism; TaleSuite/Jericho as a public long-horizon eval
 - [`multi-file-coding-completion-capability.md`](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability) — protocol-gap diagnosis stands; artifact choice conditional on an authorized A/B
 - [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — the corrected capability-over-architecture decomposition; staged-files-ride-along attribution hazard
@@ -4115,7 +4115,7 @@ comparison keyed to *this process's last write*, not to a static disk/memory dif
 **Confidence: verified** — from a 38-item failure catalogue with per-item artifacts, an
 adversarial audit of that catalogue, and an eight-phase implementation whose claims were
 mutation-tested. Sources: `handoffs/active/coordinator-role-failure-modes-and-refactor.md`,
-`handoffs/active/session-bus-thin-dispatcher.md`,
+`handoffs/active/coordination-and-churn-pipeline.md`,
 `progress/2026-08/2026-08-12-refactor-session.md`, `progress/2026-08/2026-08-12-mainC.md`.
 
 ### The finding that reprices every "write it down better" fix
@@ -4243,7 +4243,7 @@ missing mechanism wearing a decision's clothes). The check that catches both is 
 
 - `handoffs/active/coordinator-role-failure-modes-and-refactor.md` — the catalogue, the
   adversarial audit, and the per-item closure evidence
-- `handoffs/active/session-bus-thin-dispatcher.md` — addressing, dispatch typing, worktree rider
+- `handoffs/active/coordination-and-churn-pipeline.md` — addressing, dispatch typing, worktree rider
 - `progress/2026-08/2026-08-12-refactor-session.md` — the eight-phase implementation record
 - `progress/2026-08/2026-08-12-mainC.md` — an independent lane's account of the shared-clone cost
 
@@ -4298,7 +4298,7 @@ that decomposition-by-role, rather than by context boundary, measurably shifts s
 coordination, none of which our rule encoded. **The operator ratified and applied the negative-condition
 amendment on 2026-08-13** (commit `541d5d4c`) — the rule now states when NOT to fan out, sourced to
 intake-1121, with width 3–5 unchanged. What remains open is the second half of the gap: (per
-`handoffs/active/session-bus-thin-dispatcher.md`'s own item) there is still no way to tell a main that
+`handoffs/active/coordination-and-churn-pipeline.md`'s own item) there is still no way to tell a main that
 actually fanned out from one that worked serially and reported otherwise. Kimi's PARL paper
 (intake-1106, arXiv:2602.02276v2) independently names that exact failure mode "serial collapse" — but
 the paper defines the term once and never measures it; no rate, no threshold, no detector. The name is
@@ -4339,7 +4339,7 @@ sight-unseen — the round's own overturn rate is the argument for filing them a
 
 ### Source References
 
-- [Session Bus + Thin Coordinator](../handoffs/active/session-bus-thin-dispatcher.md) — the pre-existing, independently-discovered "working serially" open item this round's findings attach to
+- [Session Bus + Thin Coordinator](../handoffs/active/coordination-and-churn-pipeline.md) — the pre-existing, independently-discovered "working serially" open item this round's findings attach to
 - [Coordinator role — failure modes and refactor](../handoffs/active/coordinator-role-failure-modes-and-refactor.md) — F-15 fan-out doctrine entry, R-17/R-23 thread-attribution premise
 - [Fleet Fan-Out Measurement](../handoffs/active/fleet-fanout-measurement.md) — new stub filed this round to own the collector and grading work
 - [Decomposition-to-Batch Mapping](../handoffs/completed/decomposition-to-batch-mapping.md) — new stub, operator-originated hypothesis with no external source backing
@@ -5532,7 +5532,7 @@ Sources: [WS58 16:20Z close](../progress/2026-10/2026-10-27-workspace-58.md); [C
 - **Parallel parser dispatch:** twenty PIP-02 ODL replacement shards request up to twelve workers (two distinct CPUs and a sidecar port each) with a 96 GiB RSS guard and owned-subtree cleanup; a control drained in 29.92 s. This proves launcher entry and cleanup, not twelve-worker throughput.
 - **PROFILE-6 stayed unrun:** free space fell below the 150 GiB floor and the native profiler has no verified aggregate write cap, so no smoke reservation was qualified.
 
-Sources: [parallel dispatch and env repair](../progress/2026-10/2026-10-29-codex3-parallel-dispatch-and-env.md); [PROFILE-6 capacity checkpoint](../progress/2026-10/2026-10-29-codex3-hsf-profile6-capacity.md); [session-bus-thin-dispatcher](../handoffs/active/session-bus-thin-dispatcher.md).
+Sources: [parallel dispatch and env repair](../progress/2026-10/2026-10-29-codex3-parallel-dispatch-and-env.md); [PROFILE-6 capacity checkpoint](../progress/2026-10/2026-10-29-codex3-hsf-profile6-capacity.md); [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md).
 
 ## Compiled Update — 2026-10-30 (operator wiki sweep, workspace-58): worktree disk emergency and agent-side repairs
 
@@ -5581,7 +5581,7 @@ Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) ·
 **Confidence: scoped to cited native records and source controls.**
 
 - PromptForge source now isolates mutation work and screens added evaluation-identity reads and force-role removal; static limits remain and live activation is not shown. TOC source implements default-off A/B history and trajectory fields; no A/B result follows. ([mutation contract](../handoffs/active/promptforge-mutation-safety-contract.md); [tool compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression); [REPL replay](../handoffs/active/repl-turn-efficiency.md))
-- The session-bus source binds spawn notices to a specific usable generation; missing/conflicting legacy evidence stays unknown. A successful local control is not a live delivery claim. ([session bus](../handoffs/active/session-bus-thin-dispatcher.md); [loop fleet](../handoffs/active/loop-owned-fleet-implementation.md); [fleet backlog](../handoffs/active/engineering-hygiene-backlog.md))
+- The session-bus source binds spawn notices to a specific usable generation; missing/conflicting legacy evidence stays unknown. A successful local control is not a live delivery claim. ([session bus](../handoffs/active/coordination-and-churn-pipeline.md); [loop fleet](../handoffs/active/loop-owned-fleet-implementation.md); [fleet backlog](../handoffs/active/engineering-hygiene-backlog.md))
 
 
 ## Compiled Update — 2026-11-01 (source-delta review)
@@ -5596,9 +5596,9 @@ Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) ·
 
 **Confidence: verified source records; most items are software/model-free controls or failed-run filings, not measurement verdicts. Proposed work is labelled as such.**
 
-- OBS-1: `bus_supervisor.sh` folds heartbeat PID identity with an independent proc-argv observation into `present|absent|unobservable` (exit 0/1/3); unknown or disagreeing observations suppress both corrective signal and launch (hosted run 41279642985, 38 passed). The same battery caught and fixed the identical partial-blindness action in `backfill_supervisor.sh`. [progress](../progress/2026-11/2026-11-01-codex-ni-01a16d6b.md), [session bus](../handoffs/active/session-bus-thin-dispatcher.md)
+- OBS-1: `bus_supervisor.sh` folds heartbeat PID identity with an independent proc-argv observation into `present|absent|unobservable` (exit 0/1/3); unknown or disagreeing observations suppress both corrective signal and launch (hosted run 41279642985, 38 passed). The same battery caught and fixed the identical partial-blindness action in `backfill_supervisor.sh`. [progress](../progress/2026-11/2026-11-01-codex-ni-01a16d6b.md), [session bus](../handoffs/active/coordination-and-churn-pipeline.md)
 - DP-3 (stale-source check by mtime) is superseded by H-4: the daemon compares its startup-captured committed coordination tree with current HEAD. WS-1: the coordinator's non-peek drain reads worker-checkpoint journals independently of bus delivery and needs an explicit terminal disposition to suppress a notice (36 controls, including the scan-cap starvation case). [progress](../progress/2026-11/2026-11-01.md)
-- D-3/OBS-2 hub_supervisor "cannot tell" was implemented 10-31 (ROOT `1b9130e9`); the 11-01 tick is hygiene closure. [dashboard](../handoffs/active/dashboard-architecture-restructure.md)
+- D-3/OBS-2 hub_supervisor "cannot tell" was implemented 10-31 (ROOT `1b9130e9`); the 11-01 tick is hygiene closure. [dashboard](../handoffs/active/coordination-and-churn-pipeline.md#track-dashboard-architecture-restructure)
 - SSU-F11: the registry `recipe:` block was decorative; it now reaches launch env construction, shape/thread mismatches refuse, and `--recipe-process ROLE=PID` compares declared vs actual env/threads (83 + 31 controls). No live attestation. [model-stack pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline)
 - The D1-D4 HARD qualification gate is live (LOOP-51): at swap 0 of 23 READY rows were qualified, so new grants stopped until rows migrate to `epyc.ready.v2` (LOOP-52). LOOP-53: the scratch-delete hook advertises an `EPYC_ALLOW_SCRATCH_DELETE` override it never reads. [non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md), [codex-ni](../progress/2026-11/2026-11-01-codex-ni.md)
 - CI: main was red since 10-27 (vidya `usage-provenance` fixture) and is repaired with no tests disabled; 730 merged stale branches deleted (LOOP-55), 43 pre-existing test failures remain (LOOP-57). [refactoring](../handoffs/active/engineering-hygiene-backlog.md#track-refactoring-multirepo-2026-10), [codex-refactor](../progress/2026-11/2026-11-01-codex-refactor-01a16fc3.md)

@@ -62,7 +62,6 @@
   "RTG-03": 0.2,
   "RTG-07": 0.2,
   "RTG-23": 0.2,
-  "RTG-47": 0.2,
   "RTG-48": 0.2,
   "RTG-51": 0.2,
   "RTG-52": 0.2,
@@ -145,7 +144,10 @@
   "INF-45#batched-decode-measurement": 0.35,
   "INF-45#dynamic-stack-concurrency": 0.35,
   "INF-45#numa-placement-defect-20260730": 0.45,
-  "INF-45#within-role-placement-state-machine": 0.25
+  "INF-45#within-role-placement-state-machine": 0.25,
+  "RTG-34#churn-pipeline": 0.2,
+  "RTG-34#dashboard-architecture-restructure": 0.2,
+  "RTG-34#handoff-index-and-backlog-graph": 0.2
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
@@ -163,7 +165,6 @@
   "RTG-24": "operator decision or approval pending",
   "RTG-29": "operator decision or approval pending",
   "RTG-36": "operator decision or approval pending",
-  "RTG-46": "operator decision or approval pending",
   "RTG-55": "operator decision or approval pending",
   "EVL-49": "operator decision or approval pending",
   "REV-09": "operator decision or approval pending",
@@ -191,7 +192,8 @@
   "INF-45#dynamic-stack-concurrency": "",
   "INF-45#numa-placement-defect-20260730": "",
   "INF-45#shape-keyed-contention-gating": "operator decision or approval pending",
-  "INF-45#within-role-placement-state-machine": ""
+  "INF-45#within-role-placement-state-machine": "",
+  "RTG-34#handoff-index-and-backlog-graph": "operator decision or approval pending"
  },
  "park": {
   "INF-06": "MMQ",
@@ -2616,6 +2618,12 @@
    {
     "track": "batched-decode-measurement",
     "next_action": "E5 — the never-measured NUMA×batch 2D sweep; needs a post-promotion quiet window"
+   }
+  ],
+  "EVL-49>RTG-34": [
+   {
+    "track": "handoff-index-and-backlog-graph",
+    "next_action": "Human visual verdict on the :8100 graph lattice layout (4cd106c2 deployed); OP-9 hub_supervisor relaunch pending"
    }
   ]
  }

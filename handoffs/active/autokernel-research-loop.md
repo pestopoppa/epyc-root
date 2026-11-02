@@ -1300,7 +1300,7 @@ Known exposure to clear before AK1 hashes anything:
   ✅ 2026-08-10 — both cited design records are included in the AutoKernel closure pathspec rather
   than left as unowned filesystem state.
   `agent-session-control-surface.md` is cited by
-  [`session-bus-thin-dispatcher.md`](session-bus-thin-dispatcher.md) and
+  [`session-bus-thin-dispatcher.md`](coordination-and-churn-pipeline.md) and
   `repl-s4-omega-multipaper-arm-20260729.md` is likewise cited from a tracked handoff, yet neither is
   in git. **A citation to an untracked file is indistinguishable from a citation to a tracked one
   until someone clones the repo and it resolves to nothing** — which is the general form of the defect

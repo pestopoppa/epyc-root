@@ -1,7 +1,7 @@
 #!/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python
 """seed_queue.py — propose real backlog work onto the session bus.
 
-Owning handoff: handoffs/active/session-bus-thin-dispatcher.md
+Owning handoff: handoffs/active/coordination-and-churn-pipeline.md
 
 WHY THIS IS BOUNDED AND NOT A BULK IMPORT. There are ~983 open checkboxes across
 171 active handoffs. Dumping them would make the M3 advisory-accuracy comparison
