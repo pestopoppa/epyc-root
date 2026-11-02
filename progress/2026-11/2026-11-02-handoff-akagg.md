@@ -143,3 +143,7 @@ Investigated pending inference repairs: C3 r4 self-contends on inherited FD9 and
 ## 10:06Z — Validate C3 FD9 successor and stage native-validated CH-27 long-context manifest
 
 C3 successor scratch candidate now passes seven FD9/provenance tests and both R13/R15 host-route fixtures; seals and proof of engine bytes at start remain. Report /mnt/raid0/llm/tmp/akagg/c3-tests-report.json. Staged the long-context prompt manifest outside the original mutable campaign using native FrozenPromptManifest validation against the sealed surface digest; positive, existing-destination, wrong-path and wrong-digest controls passed. Receipt and staging script: /mnt/raid0/llm/tmp/akagg/ch27-isolation/staged-longctx-manifest and stage_longctx_manifest.py. The private campaign still needs rebinding and admission, and no row or floor is claimed. CPU observer scratch controls retain unproven placement and contention; see /mnt/raid0/llm/tmp/akagg/cpu-observer-report.json.
+
+## 10:08Z — Harden CH-27 long-context manifest input custody
+
+Hardened /mnt/raid0/llm/tmp/akagg/ch27-isolation/stage_longctx_manifest.py to verify the original sealed long-context surface SHA-256 9f9094237428a06c806cb924c84e729af1a254c4e8dbdd0139cb7f6d009bcd81 before accepting its prompt digest. Native prompt parsing plus positive, existing-destination, source-path and altered-surface controls pass. Private campaign path rebinding and native admission remain in progress; no inference row was published. C3 engine identity and successor sealing are being prepared in separate scratch candidates.
