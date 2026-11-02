@@ -163,8 +163,12 @@ def main() -> int:
                 held = os.fstat(fd)
                 if (target.st_dev,target.st_ino) != (held.st_dev,held.st_ino):
                     raise ValueError('lease descriptor inode changed')
+            quiet_mode = plan.get('gpu_quiet')
+            if quiet_mode not in ('shared', 'exclusive') or os.environ.get('M4_GPU_QUIET_MODE') != quiet_mode:
+                raise ValueError('GPU-quiet lease mode differs from bound plan')
             for name,fd in found.items():
-                fcntl.flock(fd, (fcntl.LOCK_SH if name == 'gpu_quiet.lock' else fcntl.LOCK_EX) | fcntl.LOCK_NB)
+                operation = fcntl.LOCK_SH if name == 'gpu_quiet.lock' and quiet_mode == 'shared' else fcntl.LOCK_EX
+                fcntl.flock(fd, operation | fcntl.LOCK_NB)
             resource = plan['resource']
             minimum = resource['min_remaining_s']; output_bytes = resource['estimated_output_bytes']
             max_ram = resource['max_ram_bytes']; reserve = resource['memory_reserve_bytes']
