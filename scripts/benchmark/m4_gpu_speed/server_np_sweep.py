@@ -843,6 +843,22 @@ def run_cell(
     device_vram_path = Path(plan_cell.get('device_vram_path', ''))
     if not device_vram_path.is_absolute():
         raise RuntimeError('planned device VRAM path missing')
+    fixture_keys = {'fixture_kfd_root', 'fixture_maps_path'}
+    if trust.qualification_only:
+        # Explicit code-owned fixture only; these rows can never project a ClaimTuple.
+        def fixture_path(name):
+            path = Path(plan_cell[name]).resolve(strict=True)
+            if trust.capture_root not in path.parents:
+                raise RuntimeError('fixture path outside independently bound capture root')
+            return path
+        kfd_root = fixture_path('fixture_kfd_root')
+        fixture_maps = fixture_path('fixture_maps_path')
+        device_vram_path = fixture_path('device_vram_path')
+    else:
+        if fixture_keys & plan_cell.keys() or Path('/sys') not in device_vram_path.resolve().parents:
+            raise RuntimeError('synthetic hardware or non-sysfs device path refused')
+        kfd_root = Path('/sys/class/kfd/kfd/proc')
+        fixture_maps = None
     proc: subprocess.Popen[str] | None = None
     row = None
     process = None
@@ -856,7 +872,8 @@ def run_cell(
         owner = subprocess.run(['ss', '-ltnp', f'sport = :{port}'], capture_output=True, text=True, check=True)
         if f'pid={proc.pid},' not in owner.stdout:
             raise RuntimeError('health port is not owned by the captured server PID')
-        maps = Path(f"/proc/{proc.pid}/maps").read_text().splitlines()
+        maps_path = fixture_maps if fixture_maps is not None else Path(f"/proc/{proc.pid}/maps")
+        maps = maps_path.read_text().splitlines()
         ggml = [line for line in maps if "libggml" in line]
         prefix = str(args.llama_server.resolve().parent) + "/"
         if not ggml or any(not line.split()[-1].startswith(prefix) for line in ggml):
@@ -869,7 +886,7 @@ def run_cell(
         if mapped != plan_cell.get('ggml'):
             raise RuntimeError('mapped ggml differs from enrolled image')
         (output_dir / f"ggml-maps-{cell_index}.txt").write_text("\n".join(ggml) + "\n")
-        kfd = Path('/sys/class/kfd/kfd/proc')
+        kfd = kfd_root
         vram_limit = plan_cell['vram_limit_bytes']
         own_vram = int((kfd / str(proc.pid) / plan_cell['kfd_vram_file']).read_text())
         device_vram = int(device_vram_path.read_text())
@@ -897,7 +914,7 @@ def run_cell(
             raise RuntimeError('reviewed own-process VRAM ceiling missing')
         def sample_residency() -> None:
             while not sample_stop.is_set():
-                kfd = Path('/sys/class/kfd/kfd/proc')
+                kfd = kfd_root
                 try:
                     own = int((kfd / str(proc.pid) / plan_cell['kfd_vram_file']).read_text())
                     device = int(device_vram_path.read_text())

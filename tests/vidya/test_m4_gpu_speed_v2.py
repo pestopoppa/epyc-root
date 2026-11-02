@@ -293,15 +293,20 @@ def test_native_cell_fake_http_kfd_and_partial_fail_closed(tmp_path, monkeypatch
     native = importlib.util.module_from_spec(spec); sys.modules[spec.name] = native; spec.loader.exec_module(native)
     _, original, doc = setup_capture(tmp_path)
     plan = json.loads(original.plan_path.read_text()); cell = plan['cells']['c']
-    device_vram = tmp_path/'device-vram'; device_vram.write_text('20')
+    device_vram = original.capture_root/'device-vram'; device_vram.write_text('20')
+    kfd = original.capture_root/'kfd'; (kfd/'123').mkdir(parents=True)
+    (kfd/'123'/'vram_0').write_text('10')
+    maps_file = original.capture_root/'fixture-maps'
+    maps_file.write_text('0-1 r-xp 0 00:00 0 ' + str(tmp_path/'libggml.so'))
     cell['kfd_vram_file'] = 'vram_0'; cell['device_vram_path'] = str(device_vram)
+    cell['fixture_kfd_root'] = str(kfd); cell['fixture_maps_path'] = str(maps_file)
     cell['request_sha256'] = [digest(json.dumps({'prompt': p, 'n_predict': 10, 'temperature': 0.0, 'cache_prompt': False, 'stream': False}).encode()) for p in ('good','bad')]
     original.plan_path.write_text(json.dumps(plan))
-    trust = Trust(original.capture_root, original.plan_path, digest(original.plan_path.read_bytes()), original.sources)
+    trust = Trust(original.capture_root, original.plan_path, digest(original.plan_path.read_bytes()), original.sources, qualification_only=True)
     now = datetime.now(timezone.utc)
     start = (now-timedelta(minutes=1)).strftime('%Y-%m-%dT%H:%MZ')
     end = (now+timedelta(minutes=3)).strftime('%Y-%m-%dT%H:%MZ')
-    grant = f'regions=mi210_0,184-191 start={start} end={end}'.encode()
+    grant = f'regions=mi210_0,184-191 start={start} end={end} holds=q3,mi210_0 schema=epyc.rowflow.dryrun-grant.v1 id=grant-1 kind=rowflow-dryrun'.encode()
     monkeypatch.setenv('M4_PLAN_CELL', 'c')
     monkeypatch.setattr(write_capture, 'preflight', lambda *args: (trust, cell, grant))
     monkeypatch.setattr(write_capture, 'grant_proof', lambda *args: grant)
@@ -343,6 +348,13 @@ def test_native_cell_fake_http_kfd_and_partial_fail_closed(tmp_path, monkeypatch
         warmup_n_predict=4, request_timeout=3, measure_ttft=False, n_predict=10, question_pool=tmp_path/'prompt')
     prompts = [native.PromptSpec('a','fake',1,'good'), native.PromptSpec('b','fake',1,'bad')]
     try:
+        if not partial:
+            live_trust = Trust(trust.capture_root, trust.plan_path, trust.plan_sha256, trust.sources)
+            monkeypatch.setattr(write_capture, 'preflight', lambda *args: (live_trust, cell, grant))
+            with pytest.raises(RuntimeError, match='synthetic hardware'):
+                native.run_cell(model=native.ModelSpec('fake',tmp_path/'model'), np_level=2, prompts=prompts,
+                                args=args, output_dir=out, cell_index=0)
+            monkeypatch.setattr(write_capture, 'preflight', lambda *args: (trust, cell, grant))
         if partial:
             with pytest.raises(ProjectionError, match='invalid or incomplete request'):
                 native.run_cell(model=native.ModelSpec('fake',tmp_path/'model'), np_level=2, prompts=prompts,
