@@ -120,6 +120,15 @@ def preflight(key, command, env, model, np, prompt):
         raise ProjectionError("command inputs differ from sealed files")
     if command.count('-m') != 1 or command.index('-m') + 1 >= len(command) or command[command.index('-m') + 1] != cell['model']:
         raise ProjectionError("command model differs from plan")
+    # Any auxiliary model passed to the native server needs its own plan seal.
+    sealed_paths = {item['path'] for item in cell['files'].values()}
+    for i, token in enumerate(command):
+        for flag in ('-md', '--model-draft', '--mmproj', '--draft-model'):
+            if token == flag:
+                if i + 1 >= len(command) or command[i + 1] not in sealed_paths:
+                    raise ProjectionError('auxiliary model is not sealed')
+            elif token.startswith(flag + '=') and token[len(flag) + 1:] not in sealed_paths:
+                raise ProjectionError('auxiliary model is not sealed')
     if cell['arm'] == 'BASELINE':
         if any(token == flag or token.startswith(flag + '=') for token in command for flag in ('--prefill-order', '--prefill-contend-cap')):
             raise ProjectionError("baseline unexpectedly enables M4")

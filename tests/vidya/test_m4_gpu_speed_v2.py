@@ -170,6 +170,12 @@ def test_write_side_preflight_and_emission(tmp_path, monkeypatch):
     monkeypatch.setattr(enrollment, 'PLAN_SHA256', digest(original.plan_path.read_bytes()))
     with pytest.raises(ProjectionError, match='candidate treatment'):
         write_capture.preflight('c', bad_command, env, Path(cell['model']), 2, Path(cell['files']['prompt']['path']))
+    bad_draft = command + ['-md', '/tmp/unsealed-draft']
+    plan['cells']['c']['argv'] = bad_draft
+    original.plan_path.write_text(json.dumps(plan))
+    monkeypatch.setattr(enrollment, 'PLAN_SHA256', digest(original.plan_path.read_bytes()))
+    with pytest.raises(ProjectionError, match='auxiliary model'):
+        write_capture.preflight('c', bad_draft, env, Path(cell['model']), 2, Path(cell['files']['prompt']['path']))
 
 
 def test_unenrolled_source_refuses_before_launch(monkeypatch):
