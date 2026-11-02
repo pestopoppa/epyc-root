@@ -23,6 +23,15 @@ An older KVU-19a-2 evidence inventory had differing hashes but lacked enough bin
 The measurement-sufficiency guide makes the decision the unit of planning: reuse valid evidence first, specify useful interim looks and safe resumption, and stop once the operational question is answered. A resource grant ending is not a scientific completion criterion; fixed gate rules remain authoritative. Sources: [measurement sufficiency](../docs/guides/agent-workflows/measurement-sufficiency.md), [compute fillers](../docs/guides/agent-workflows/compute-fillers.md), [RTG-58 progress](../progress/2026-11/2026-11-02-rtg58-readiness.md).
 
 A source replay corrected the R23-62 window-3 historical comparison to 12.0184 t/s pristine and 20.5891 t/s champion, with mean paired ratio 1.7151 over 60 prompt pairs. The earlier 12.366 t/s pristine figure belonged to window 1; cross-window build, recipe and contention differences prevent causal attribution. A proposed 36-core-equivalent floor for a separate 48-thread run is an unratified proposal, not an established protocol. Sources: [R23-62 audit](../progress/2026-11/2026-11-02-r2362-audit.md), [accounting decision](../docs/design/inf70-r2362-evidence-20261102/ACCOUNTING-DECISION.md), [proposed 48-thread accounting](../docs/design/inf70-r2362-evidence-20261102/PROPOSED-48-ACCOUNTING.md).
+## Compiled Update — 2026-11-02 (ws58): measurement sufficiency — stop when the scoped question is answered
+
+- **Every measurement declares a stop contract before launch**: the question/decision, expected effect versus sample-size error, checkpoints, stop-on-answer and stop-on-futility rules, and the valid evidence it reuses first. Incremental records are saved so a stop loses nothing; runs never go to completion for their own sake.
+- **Caveat**: formal-gate cells (promotion/ratification) stay **futility-only** at interim looks until the operator decides OP-ABSEQ / OP-PQP / OP-ALPHAWIN — an interim look can kill a gate cell, never pass it.
+- **Case**: RTG-58 replaced two planned 4–5 h comparisons with one long and two short runs and got an unambiguous answer.
+
+### Source References (2026-11-02 ws58)
+- [measurement-sufficiency.md](../docs/guides/agent-workflows/measurement-sufficiency.md) — canonical guide
+- [rtg58-case-study-20261102.md](../docs/reference/measurement-sufficiency/rtg58-case-study-20261102.md) — RTG-58 case (commits `a9f44ef56`, `fd06fb064`)
 
 ## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
 

@@ -22,6 +22,10 @@ Distinguish these outcomes in the record:
 
 Report the number and selection of units, dependence and relevant differences between arms. A completed-first subset can be biased; similarly sized prompts need not have identical histories. Avoid extrapolating a whole workload from an unrepresentative subset. If the protocol fixes sample size or coverage, a post-hoc stop may save resources but leaves that gate incomplete unless the protocol explicitly permits the verdict.
 
+## Formal-gate cells: futility-only interim looks
+
+Until the operator decides OP-ABSEQ / OP-PQP / OP-ALPHAWIN, a formal-gate cell (promotion or ratification evidence) may stop early **only for futility**. An interim look may never declare a gate pass; stop-on-answer applies to operational and diagnostic questions. Worked case: [RTG-58 case study](../../reference/measurement-sufficiency/rtg58-case-study-20261102.md) (two planned 4–5 h runs became one long and two short runs with an unambiguous answer).
+
 ## Compact run declaration
 
 `Question/decision: … | evidence already usable: … | units/strata/control: … | minimum coverage: … | looks/method/threshold: … | stop/continue/inconclusive: … | cap: … | records and safe resume: … | gate or diagnostic: …`
