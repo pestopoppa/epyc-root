@@ -136,6 +136,25 @@ _ROW_ID = re.compile(r"^\|\s*([A-Z]{3}-\d+)\s*\|")
 _SPLIT = re.compile(r"(?<!\\)\|")
 _LINK = re.compile(r"\(([A-Za-z0-9._/-]+\.md)\)")
 
+# PER-TRACK GATES (BRF-T2-1, backlog refactor 2026-11, route 1b).
+#
+# A folded handoff carries one `## Track: <name>` section per source handoff. A track declares its
+# own gates with ONE HTML comment inside its section (conventionally the line after the heading):
+#
+#     ## Track: kv-prefix-fork-and-paged-attention
+#     <!-- gate: INF-65, BRF-T2-1 -->      row ids and/or task ids, comma-separated
+#     <!-- gate: none -->                   explicitly ungated
+#
+# A ref that is an index row id gates on that row's handoff having dispatchable work (the same test
+# a `Deps` cell uses); otherwise it is a TASK id and gates until every box carrying `**<id>**` is
+# ticked. A section ends at the next `#`/`##` heading. A handoff with NO gate marker is legacy and
+# takes exactly the pre-track code path — `## Track:` headings alone change nothing.
+_TRACK_HEAD = re.compile(r"^##\s+Track:\s*(.+?)\s*#*\s*$")
+_SECTION_END = re.compile(r"^#{1,2}\s")
+_GATE_MARK = re.compile(r"^\s*<!--\s*gate:\s*(.*?)\s*-->\s*$")
+_TASK_ID = re.compile(r"^\*\*([A-Za-z0-9][A-Za-z0-9._-]*)\*\*")
+UNTRACKED = "(untracked)"
+
 
 def handoff_paths() -> dict[str, Path]:
     """`{filename: path}` for every live handoff — `active/` **and** `blocked/`.
@@ -332,24 +351,128 @@ def prune_signal(path: Path, boxes: dict) -> dict:
     return {"candidate": True, "blocker": None, "evidence": None}
 
 
+def parse_gate_refs(raw: str) -> list[str]:
+    """`"INF-65, BRF-T2-1"` -> `["INF-65", "BRF-T2-1"]`; `"none"` / empty -> `[]`."""
+    refs = [r.strip().strip("`") for r in raw.replace(";", ",").split(",")]
+    return [r for r in refs if r and r.lower() != "none"]
+
+
+def scan_tracks(path: Path) -> list[dict]:
+    """`## Track:` sections of a handoff, ONLY when at least one carries a gate marker.
+
+    Returns `[]` for every legacy handoff (no marker anywhere) — the caller then takes the
+    untouched pre-track path. Each section: `{name, line, end, gates}` where `gates` is the
+    parsed ref list, or `None` for a section without a marker (it inherits the row's Deps).
+    `markers` counts the gate comments found in the section (more than one is a --check error).
+    """
+    try:
+        lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+    except OSError:
+        return []
+    sections, cur = [], None
+    for i, line in enumerate(lines, 1):
+        m = _TRACK_HEAD.match(line)
+        if m or _SECTION_END.match(line):
+            if cur:
+                cur["end"] = i - 1
+                sections.append(cur)
+            cur = {"name": m.group(1), "line": i, "end": None, "gates": None, "markers": 0} if m else None
+            continue
+        g = _GATE_MARK.match(line)
+        if g and cur is not None:
+            cur["markers"] += 1
+            if cur["gates"] is None:
+                cur["gates"] = parse_gate_refs(g.group(1))
+    if cur:
+        cur["end"] = len(lines)
+        sections.append(cur)
+    if not any(sec["gates"] is not None for sec in sections):
+        return []
+    return sections
+
+
 def scan_handoff(path: Path) -> dict:
-    """Box counts for one handoff, classified so non-tasks do not inflate `open`."""
+    """Box counts for one handoff, classified so non-tasks do not inflate `open`.
+
+    A track-gated handoff (see `scan_tracks`) additionally gets `tracks`: the same four counts per
+    `## Track:` section, plus an `(untracked)` pseudo-track for boxes outside every track (it
+    inherits the row's Deps). Legacy handoffs get no `tracks` key at all, so their state is
+    byte-identical to the pre-track output.
+    """
+    sections = scan_tracks(path)
+    per: dict[str, dict] = {}
+
+    def bucket(lineno: int) -> dict:
+        sec = next((t for t in sections if t["line"] < lineno <= t["end"]), None)
+        key = sec["name"] if sec else UNTRACKED
+        if key not in per:
+            per[key] = {"name": key, "line": sec["line"] if sec else 0,
+                        "gates": sec["gates"] if sec else None,
+                        "markers": sec["markers"] if sec else 0,
+                        "open": 0, "closed": 0, "guarded": 0, "blocked": 0}
+        return per[key]
+
     open_n = closed_n = guarded_n = blocked_n = 0
     for lineno, state, body, head in brc._boxes(path):
+        b = bucket(lineno) if sections else None
         if state == "x":
             closed_n += 1
+            if b is not None:
+                b["closed"] += 1
             continue
         code, reasons = brc.classify(path, lineno, state, body, head)
         # classify() is advisory: 0 == dispatchable, non-zero == refuse with a reason.
         if code == 0:
             open_n += 1
+            kind = "open"
         elif any("DO-NOT-DISPATCH" in r or "reusable checklist" in r for r in reasons):
             guarded_n += 1
+            kind = "guarded"
         else:
             blocked_n += 1
-    return {"open": open_n, "closed": closed_n,
-            "guarded": guarded_n, "blocked": blocked_n,
-            "total": open_n + closed_n + guarded_n + blocked_n}
+            kind = "blocked"
+        if b is not None:
+            b[kind] += 1
+    out = {"open": open_n, "closed": closed_n,
+           "guarded": guarded_n, "blocked": blocked_n,
+           "total": open_n + closed_n + guarded_n + blocked_n}
+    if sections:
+        for sec in sections:                     # declared tracks appear even when empty
+            if sec["name"] not in per:
+                per[sec["name"]] = {"name": sec["name"], "line": sec["line"], "gates": sec["gates"],
+                                    "markers": sec["markers"],
+                                    "open": 0, "closed": 0, "guarded": 0, "blocked": 0}
+        out["tracks"] = sorted(per.values(), key=lambda t: t["line"])
+    return out
+
+
+def task_box_states(refs: set[str]) -> dict[str, dict]:
+    """`{task_id: {"open": n, "closed": n, "where": [...]}}` for the referenced task ids.
+
+    Live handoffs first; a ref not found there is looked up in `completed/` and `archived/` (a
+    gate on a task whose handoff has since been completed must resolve, not dangle). Ids that are
+    found nowhere are absent from the result — `--check` reports them as BAD GATE.
+    """
+    out: dict[str, dict] = {}
+    if not refs:
+        return out
+
+    def scan(paths, wanted: set[str]) -> None:
+        for p in paths:
+            for lineno, state, body, _head in brc._boxes(p):
+                m = _TASK_ID.match(body.strip())
+                if not m or m.group(1) not in wanted:
+                    continue
+                rec = out.setdefault(m.group(1), {"open": 0, "closed": 0, "where": []})
+                rec["closed" if state == "x" else "open"] += 1
+                rec["where"].append(f"{p.relative_to(REPO_ROOT)}:{lineno}")
+
+    scan(handoff_paths().values(), set(refs))
+    missing = set(refs) - set(out)
+    if missing:
+        scan([p for d in ("completed", "archived") for p in sorted((ACTIVE.parent / d).glob("*.md"))],
+             missing)
+    return out
 
 
 def parse_index_rows(index: Path) -> list[dict]:
@@ -425,11 +548,18 @@ def collect() -> dict:
     for r in rows:
         id_sites.setdefault(r["id"], []).append(f"{r['index']}:{r['line']}")
 
-    return {"schema": "index_state.v1", "handoffs": handoffs,
-            "domains": dict(domains),
-            "rows": {r["id"]: r for r in rows},
-            "row_id_collisions": {i: s for i, s in id_sites.items() if len(s) > 1},
-            "duplicates": {h: [r["index"] for r in v] for h, v in dupes.items() if len(v) > 1}}
+    out = {"schema": "index_state.v1", "handoffs": handoffs,
+           "domains": dict(domains),
+           "rows": {r["id"]: r for r in rows},
+           "row_id_collisions": {i: s for i, s in id_sites.items() if len(s) > 1},
+           "duplicates": {h: [r["index"] for r in v] for h, v in dupes.items() if len(v) > 1}}
+    # Per-track gates: resolve the TASK-id refs (anything that is not a row id). Only present when
+    # some handoff is track-gated, so a legacy tree's state file is byte-identical.
+    task_refs = {g for st in handoffs.values() for t in st.get("tracks", ())
+                 for g in (t["gates"] or ()) if g not in out["rows"]}
+    if any("tracks" in st for st in handoffs.values()):
+        out["gate_tasks"] = task_box_states(task_refs)
+    return out
 
 
 def render_block(state: dict) -> str:
@@ -461,7 +591,8 @@ def write_block(state: dict) -> bool:
     return False
 
 
-def derive_readiness(nodes: list[dict], edges: list[dict]) -> dict[str, int]:
+def derive_readiness(nodes: list[dict], edges: list[dict],
+                     task_states: dict[str, dict] | None = None) -> dict[str, int]:
     """Stamp `readiness` + `blocked_by` on every node IN PLACE; return the tally.
 
     THE RULE, and only this rule: a node is **blocked** iff at least one of its `dep` edge
@@ -495,6 +626,17 @@ def derive_readiness(nodes: list[dict], edges: list[dict]) -> dict[str, int]:
     comes out `blocked`, which is the honest answer (none of them can ever become ready).
     `dep_cycles()` in `--check` is what names the cycle as a defect; this function only reports
     the consequence.
+
+    PER-TRACK GATES (BRF-T2-1). A node carrying `tracks` (a track-gated folded handoff, see
+    `scan_tracks`) is decided per track instead: a track with a `<!-- gate: … -->` marker is
+    blocked ONLY by its own gates (a row id gates while that row has dispatchable work; a task id
+    gates while any box with that id is unticked — `task_states`); a track without a marker, and
+    the `(untracked)` boxes, inherit the row's `dep` gates exactly as above. The row's own `Deps`
+    therefore do not gate a track that declared its gates. Node level is derived from the tracks:
+    `ready` if ANY track is ready, else `blocked` if any is blocked, else `no_open`; `blocked_by`
+    is the union over blocked tracks when the node is blocked, `[]` otherwise. Each track gets its
+    own `readiness` + `blocked_by`. Unknown gate refs are skipped (BAD GATE in `--check` owns
+    them), mirroring unknown dep ids. Nodes without `tracks` take the legacy path unchanged.
     """
     open_by_id = {n["id"]: n.get("dispatchable", n.get("open", 0)) for n in nodes}
     gates: dict[str, set[str]] = {}
@@ -507,9 +649,45 @@ def derive_readiness(nodes: list[dict], edges: list[dict]) -> dict[str, int]:
         if target_open > 0:
             gates.setdefault(e["from"], set()).add(e["to"])
 
+    task_states = task_states or {}
+
+    def gate_open(ref: str) -> bool | None:
+        if ref in open_by_id:
+            return open_by_id[ref] > 0
+        if ref in task_states:
+            return task_states[ref].get("open", 0) > 0
+        return None                        # unknown ref — BAD GATE owns it; never gate on a typo
+
     counts = {"ready": 0, "blocked": 0, "no_open": 0}
     for n in nodes:
         blockers = sorted(gates.get(n["id"], ()))
+        if n.get("tracks"):
+            union: set[str] = set()
+            for t in n["tracks"]:
+                if t.get("gates") is None:
+                    tb = blockers
+                else:
+                    tb = sorted(g for g in t["gates"] if gate_open(g))
+                t["blocked_by"] = tb
+                if t.get("dispatchable", t.get("open", 0)) == 0:
+                    t["readiness"] = "no_open"
+                elif tb:
+                    t["readiness"] = "blocked"
+                    union.update(tb)
+                else:
+                    t["readiness"] = "ready"
+            kinds = {t["readiness"] for t in n["tracks"]}
+            if n.get("dispatchable", n.get("open", 0)) == 0:
+                n["readiness"] = "no_open"
+            elif "ready" in kinds:
+                n["readiness"] = "ready"
+            elif "blocked" in kinds:
+                n["readiness"] = "blocked"
+            else:
+                n["readiness"] = "no_open"
+            n["blocked_by"] = sorted(union) if n["readiness"] == "blocked" else []
+            counts[n["readiness"]] += 1
+            continue
         n["blocked_by"] = blockers
         if n.get("dispatchable", n.get("open", 0)) == 0:
             n["readiness"] = "no_open"
@@ -735,6 +913,12 @@ def build_graph(state: dict) -> dict:
             "last_advanced": la,
             "age_days": age,
         })
+        if st.get("tracks"):
+            # Per-track view of a track-gated (folded) handoff; legacy nodes carry no key.
+            nodes[-1]["tracks"] = [{
+                "name": t["name"], "line": t["line"], "gates": t["gates"],
+                "open": t["open"] + t["guarded"] + t["blocked"], "dispatchable": t["open"],
+            } for t in st["tracks"]]
         for dep in r["deps"]:
             edges.append({"from": rid, "to": dep, "kind": "dep"})
 
@@ -759,7 +943,7 @@ def build_graph(state: dict) -> dict:
     for (src, dst), weight in sorted(seen.items()):
         edges.append({"from": src, "to": dst, "kind": "ref", "weight": weight})
 
-    readiness = derive_readiness(nodes, edges)
+    readiness = derive_readiness(nodes, edges, state.get("gate_tasks"))
     try:
         campaign_text = (ACTIVE / "CURRENT-CAMPAIGN.md").read_text(encoding="utf-8", errors="replace")
     except OSError:
@@ -857,6 +1041,19 @@ def check(state: dict) -> list[str]:
 
     for h, idxs in sorted(state["duplicates"].items()):
         errs.append(f"DUPLICATE: {h} has rows in {len(idxs)} indices: {', '.join(sorted(set(idxs)))}")
+
+    # Per-track gate markers (BRF-T2-1): a ref that is neither a row id nor a known task id would
+    # silently ungate its track, exactly like a dangling Deps id — same severity as BAD DEP.
+    gate_tasks = state.get("gate_tasks", {})
+    for h, st in sorted(state["handoffs"].items()):
+        for t in st.get("tracks", ()):
+            if t.get("markers", 0) > 1:
+                errs.append(f"BAD GATE: {h} track '{t['name']}' (line {t['line']}) has "
+                            f"{t['markers']} gate markers — exactly one per track")
+            for g in t.get("gates") or ():
+                if g not in state["rows"] and g not in gate_tasks:
+                    errs.append(f"BAD GATE: {h} track '{t['name']}' (line {t['line']}) gates on "
+                                f"unknown id {g} (neither an index row nor a task box)")
 
     orphans = sorted(h for h, st in state["handoffs"].items() if not st["owner_index"])
     for h in orphans:
@@ -1129,12 +1326,55 @@ def citation_check() -> list[str]:
             + (out.stdout or out.stderr).rstrip()]
 
 
+def task_lint_column(state: dict) -> list[str]:
+    """Warn-only `task_lint` column for `--check` (BRF-T6-2, D6 stage 1).
+
+    Runs `scripts/handoffs/task_lint.py` in REPORT mode over every live handoff and returns one
+    line per handoff that has failing open boxes: `fail/open` plus the per-field failure counts.
+    D6 stages enforcement: binding at fold commits and rowflow publish now, WARN-ONLY here, and
+    blocking in `--check` only after the 1b sweep (BRF-T6-3). So this function never contributes
+    to `errs` and never raises — a crash in the lint degrades to one advisory line.
+    """
+    try:
+        spec = importlib.util.spec_from_file_location(
+            "task_lint", REPO_ROOT / "scripts" / "handoffs" / "task_lint.py")
+        tl = importlib.util.module_from_spec(spec)
+        sys.path.insert(0, str(REPO_ROOT / "scripts" / "handoffs"))
+        try:
+            spec.loader.exec_module(tl)
+        finally:
+            sys.path.pop(0)
+        rows, tot_open, tot_fail = [], 0, 0
+        for name, path in sorted(handoff_paths().items()):
+            n_open = n_fail = 0
+            fields: dict[str, int] = defaultdict(int)
+            for _ln, txt, ch in tl.boxes(str(path)):
+                n_open += 1
+                r = tl.score2(txt, ch)
+                if r["fails"]:
+                    n_fail += 1
+                    for f in r["fails"]:
+                        fields[f] += 1
+            tot_open += n_open
+            tot_fail += n_fail
+            if n_fail:
+                cols = " ".join(f"{k}={v}" for k, v in sorted(fields.items()))
+                rows.append(f"  {n_fail:>4}/{n_open:<4} {cols:<28} {name}")
+        head = (f"TASK-LINT (warn-only, D6 — never affects the exit code): {tot_fail}/{tot_open} open "
+                f"boxes fail `task_lint.py report` across {len(rows)} handoff(s); fail/open, fields:")
+        return [head] + rows
+    except Exception as exc:  # noqa: BLE001 — advisory column must never break --check
+        return [f"TASK-LINT (warn-only): lint unavailable ({type(exc).__name__}: {exc})"]
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--check", action="store_true",
                     help="verify coverage/schema/freshness; write nothing; non-zero on failure")
     ap.add_argument("--summary", action="store_true", help="print the domain rollup and exit")
     ap.add_argument("--json", action="store_true", help="dump full state to stdout")
+    ap.add_argument("--no-task-lint", action="store_true",
+                    help="--check: skip the warn-only task_lint column (it never affects the exit code)")
     args = ap.parse_args(argv)
 
     state = collect()
@@ -1162,6 +1402,9 @@ def main(argv: list[str] | None = None) -> int:
             print(e)
         for w in scratch_warnings(state):
             print(w)
+        if not args.no_task_lint:
+            for line in task_lint_column(state):
+                print(line, file=sys.stderr)
         print(f"\n{len(errs)} problem(s)")
         return 1 if errs else 0
 
