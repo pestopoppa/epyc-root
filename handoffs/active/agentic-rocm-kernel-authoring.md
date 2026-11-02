@@ -819,7 +819,7 @@ section costs **zero GPU and zero local inference**.
   - **What is already reusable (inventory, operator steering: "what could be repurposed of our current
     design").** AutoPilot already runs a two-role draft + critique planner with a **binding** critic —
     that is `explore` + `critique` in place, and it is the half that usually costs most to build.
-    [`architect-model-selection-bench.md`](architect-model-selection-bench.md) already selects a model
+    [`architect-model-selection-bench.md`](model-evaluation-queue.md) already selects a model
     per role, but on **quality**, never on throughput — the per-role choice machinery exists and its
     objective is the missing piece. AgentKernelArena's `@register_agent` adapter pattern (Decision
     Snapshot item 2) is the substrate for registering the arms. So the increment is roles 3 and 4 plus

@@ -90,7 +90,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-15 | Approve or decline one experimental commit for the Q4_K branchless scale/min decoder before a clean governed replay | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) INF-37 | 2026-08-11 |
 | OP-17 | Amend frozen-v9 attestation with llama ggml `0.16.0`, or retain an intentionally unverified complete-kernel-set fold | [autokernel-research-loop.md](autokernel-research-loop.md) AK6 dashboard residual | 2026-08-12 |
 | OP-25 | After C5-3 produces a live gfx90a correctness run, choose whether to leave SOL scoring disabled or port measured gfx90a constants for k215 only. Recommendation: k215-only if scoring is needed; never present the four >100×-headroom seeds as speed-of-light objectives | [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) C5 | 2026-08-16 |
-| OP-29 | Scope decision: is video generation a product need? Gates the 165 GB MiniMax-H3 Ref2VA + 10Eros-Max download (volume at 92%, 291 GB free) | [minimax-h3-video-generation-evaluation.md](minimax-h3-video-generation-evaluation.md) EVL-32 | 2026-08-30 |
+| OP-29 | Scope decision: is video generation a product need? Gates the 165 GB MiniMax-H3 Ref2VA + 10Eros-Max download (volume at 92%, 291 GB free) | [model-evaluation-queue.md](model-evaluation-queue.md#track-minimax-h3-video-generation-evaluation) EVL-02 | 2026-08-30 |
 | OP-83 | DHM-4: label the 30-item pilot (the private pilot set), then run dhm4_pilot_check.py; the other 70 only if it prints PROCEED_TO_70. | [dev-harness-trace-mining.md](dev-harness-trace-mining.md) DHM-4 | 2026-10-22 |
 | OP-AK-HOLD | AutoKernel launch hold (operator, 2026-10-24: "DO NOT LAUNCH AUTOKERNEL"). Tell workspace-58 directly when AK may launch; until then CH-27 Q38FN floors and AK-Q38FN-64K-FLOOR are not armed, booked or dry-run. | [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) CH-27 | 2026-10-24 |
 | OP-C4-CAS | Approve the champion C4 CAS (cdb4d8c77 = C3 + GPU-LEAK-1c): all gates PASS, incl. the quiet c4-gate-e re-run at 21:06Z (pp +0.58% floor 2.12%, tg −0.00% floor 2.00%, identity 15/15). Recipe `/mnt/raid0/llm/tmp/ch28-fold-20261023/PLAN.md` §3. C5 (gates complete) follows. | [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) CH-30 | 2026-10-24 |
@@ -140,12 +140,12 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 58 | 1036 | 59 | 2026-07-29 |
-| pipeline-integration | 5 | 69 | 1 | 2026-09-24 |
-| research-evaluation | 40 | 737 | 15 | 2026-07-29 |
+| inference-research | 51 | 1015 | 57 | 2026-07-29 |
+| pipeline-integration | 4 | 63 | 1 | 2026-10-31 |
+| research-evaluation | 38 | 770 | 19 | 2026-07-29 |
 | reviewer-control-plane | 6 | 26 | 12 | 2026-07-29 |
 | routing-and-optimization | 55 | 685 | 17 | 2026-07-29 |
-| user-facing-harness | 12 | 121 | 17 | 2026-08-12 |
+| user-facing-harness | 11 | 115 | 15 | 2026-08-12 |
 <!-- END GENERATED index_state -->
 
 ## Reporting

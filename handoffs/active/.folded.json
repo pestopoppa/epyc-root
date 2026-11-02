@@ -1,0 +1,98 @@
+{
+ "files": {
+  "angelslim-techniques-evaluation.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "angelslim-techniques-evaluation"
+  },
+  "architect-model-selection-bench.md": {
+   "target": "model-evaluation-queue.md",
+   "track": null
+  },
+  "delta-mem-reproduction.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "delta-mem-reproduction"
+  },
+  "ernie-image-turbo-evaluation.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "ernie-image-turbo-evaluation"
+  },
+  "gpu-cot-scaffold-sidecar.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "gpu-cot-scaffold-sidecar"
+  },
+  "lightning-attention-port.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "lightning-attention-port"
+  },
+  "minddr-deep-research-mode.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "minddr-deep-research-mode"
+  },
+  "minimax-h3-video-generation-evaluation.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "minimax-h3-video-generation-evaluation"
+  },
+  "qwen-mtp-llamacpp-port.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "qwen-mtp-llamacpp-port"
+  },
+  "strand-rust-coder-rustevo2-verification.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "strand-rust-coder-rustevo2-verification"
+  },
+  "summary-token-attention-readiness.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "summary-token-attention-readiness"
+  },
+  "tidar-one-pass-variant-b.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "tidar-one-pass-variant-b"
+  }
+ },
+ "ids": {
+  "EVL-32": {
+   "target": "EVL-02",
+   "track": "minimax-h3-video-generation-evaluation"
+  },
+  "EVL-45": {
+   "target": "EVL-02",
+   "track": "strand-rust-coder-rustevo2-verification"
+  },
+  "INF-04": {
+   "target": "EVL-02",
+   "track": "angelslim-techniques-evaluation"
+  },
+  "INF-12": {
+   "target": "EVL-02",
+   "track": "delta-mem-reproduction"
+  },
+  "INF-19": {
+   "target": "EVL-02",
+   "track": "gpu-cot-scaffold-sidecar"
+  },
+  "INF-30": {
+   "target": "EVL-02",
+   "track": "lightning-attention-port"
+  },
+  "INF-46": {
+   "target": "EVL-02",
+   "track": "qwen-mtp-llamacpp-port"
+  },
+  "INF-52": {
+   "target": "EVL-02",
+   "track": "summary-token-attention-readiness"
+  },
+  "INF-53": {
+   "target": "EVL-02",
+   "track": "tidar-one-pass-variant-b"
+  },
+  "PIP-03": {
+   "target": "EVL-02",
+   "track": "ernie-image-turbo-evaluation"
+  },
+  "UFH-04": {
+   "target": "EVL-02",
+   "track": "minddr-deep-research-mode"
+  }
+ }
+}

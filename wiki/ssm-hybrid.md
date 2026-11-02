@@ -73,7 +73,7 @@ registry, stack, or production process changes on architectural promise alone.
 
 ### Source References
 
-- [Architect Model Comparison Benchmark](../handoffs/active/architect-model-selection-bench.md) — WG-LFM-1 matched Q4/Q8/Gemma decision contract
+- [Architect Model Comparison Benchmark](../handoffs/active/model-evaluation-queue.md) — WG-LFM-1 matched Q4/Q8/Gemma decision contract
 - Intake 1006 in [the research index](../research/intake_index.yaml) — launch article, mandatory reasoning, and benchmark caveats
 - Intake 1014 in [the research index](../research/intake_index.yaml) — base model/config/license and frozen-v8 static support
 - Intake 1019 in [the research index](../research/intake_index.yaml) — pinned official GGUF revision and artifact/template inspection
@@ -269,7 +269,7 @@ GLA kernel partitions heads across threads. Ring-mini has H=16 heads. On EPYC 96
 
 L4 inference smoke decode requires user approval per `feedback_no_concurrent_inference.md` AND a quiet inference window on EPYC.
 
-Sources: [lightning-attention-port.md L2/L3 findings](../handoffs/active/lightning-attention-port.md), [progress/2026-04/2026-04-30.md PM section](../progress/2026-04/2026-04-30.md)
+Sources: [lightning-attention-port.md L2/L3 findings](../handoffs/active/model-evaluation-queue.md#track-lightning-attention-port), [progress/2026-04/2026-04-30.md PM section](../progress/2026-04/2026-04-30.md)
 
 ## Updates — 2026-04-29 (PM)
 
@@ -279,11 +279,11 @@ Ant Group Ling-Linear-2.0 family (intake-503, arxiv:2510.19338): Ring-mini-linea
 
 Ring-mini at 957M active is genuinely Q-scorer / drafter territory. A working port unlocks a candidate small drafter for spec-dec experiments — architecture mismatch with Qwen-GDN target (Ring uses Lightning Attention; Qwen uses Gated DeltaNet) is a research question, not a default-yes, but the size + reasoning quality combination is unusual.
 
-Tracked at [`lightning-attention-port.md`](../handoffs/active/lightning-attention-port.md) — phases L1 scoping → L2 GGUF converter (~50 LOC) → L3 model variant (~150 LOC, derive `llm_build_ring_linear` from `llm_build_delta_net_base`, mirror `llm_build_kimi_linear` template) → L4 test (gated on inference approval) → L5 optional dedicated `GGML_OP_LIGHTNING_ATTN` op exploiting constant `g` for prefill speedup.
+Tracked at [`lightning-attention-port.md`](../handoffs/active/model-evaluation-queue.md#track-lightning-attention-port) — phases L1 scoping → L2 GGUF converter (~50 LOC) → L3 model variant (~150 LOC, derive `llm_build_ring_linear` from `llm_build_delta_net_base`, mirror `llm_build_kimi_linear` template) → L4 test (gated on inference approval) → L5 optional dedicated `GGML_OP_LIGHTNING_ATTN` op exploiting constant `g` for prefill speedup.
 
 - [intake-503](https://arxiv.org/abs/2510.19338) Every Attention Matters — Ling-Linear-2.0 hybrid (M=4 / M=7) with Lightning Attention, FP8 LingHe kernels, MTP layers retained from Ling 2.0; open weights for Ring-mini (16B/957M-active) + Ring-flash (104B/6.1B-active)
 - [Ling-Linear / Lightning Attention deep-dive](../research/deep-dives/ling-linear-lightning-attention-hybrid.md) — corrected effort estimate after GLA-op audit
-- [Lightning Attention port handoff](../handoffs/active/lightning-attention-port.md) — active port via existing GLA op, L1-L5 phases
+- [Lightning Attention port handoff](../handoffs/active/model-evaluation-queue.md#track-lightning-attention-port) — active port via existing GLA op, L1-L5 phases
 
 ## Lightning Attention port — L1 scoping COMPLETE, GO verdict (2026-04-30)
 
@@ -346,7 +346,7 @@ Ring-mini-linear-2.0 (16B/957M-active) opens **drafter territory** — 957M acti
 
 - [intake-503](https://arxiv.org/abs/2510.19338) Every Attention Matters — Ling-Linear-2.0 (full architecture details)
 - [`research/deep-dives/ling-linear-lightning-attention-hybrid.md`](../research/deep-dives/ling-linear-lightning-attention-hybrid.md) — corrected effort estimate after GLA-op audit
-- [`handoffs/active/lightning-attention-port.md`](../handoffs/active/lightning-attention-port.md) — L1 scoping COMPLETE block + L2/L3 cleared
+- [`handoffs/active/lightning-attention-port.md`](../handoffs/active/model-evaluation-queue.md#track-lightning-attention-port) — L1 scoping COMPLETE block + L2/L3 cleared
 - HF source verification: https://huggingface.co/inclusionAI/Ring-mini-linear-2.0/raw/main/{config.json,modeling_bailing_moe_linear_v2.py,configuration_bailing_moe_linear_v2.py}
 - GLA reference call site: `src/models/rwkv6-base.cpp:137` (qrwkv branch)
 
@@ -480,7 +480,7 @@ The branch map had one data point on the state-size axis (log-linear's 15×). GD
 
 ### Source References (2026-08-23 evening)
 
-- [`lightning-attention-port.md`](../handoffs/active/lightning-attention-port.md) — the SALA reattribution (Simple GLA, constant-decay), the zero-new-operators table, Z9/G18/B8, the #27018 pointer and the standing declines
+- [`lightning-attention-port.md`](../handoffs/active/model-evaluation-queue.md#track-lightning-attention-port) — the SALA reattribution (Simple GLA, constant-decay), the zero-new-operators table, Z9/G18/B8, the #27018 pointer and the standing declines
 - [`log-linear-gated-deltanet-readiness.md`](../handoffs/active/log-linear-gated-deltanet-readiness.md) — Gates 4/5 addendum, the GDN-2 1.0×-state axis (with log-linear 15× and PGDN ~0.8% beside it), the B9 decline cross-reference
 - [`multiscreen-attention-evaluation.md`](../handoffs/active/multiscreen-attention-evaluation.md) — the CoT-SFT amnesia hazard (arXiv 2606.11052), the G1 S-NIAH-2 probe protocol and gate, the efficient-attention counter-argument (arXiv 2606.15378)
 - [`mi210-big-model-and-acceleration-roadmap.md`](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md) — the one-assert GDN-2 ggml delta and #26001's K==1 constraint (cross-listed with [Hardware Optimization](hardware-optimization.md))
@@ -556,7 +556,7 @@ Chunked-GDN numerical failures are reported in the 2048–8192-token band, **~8�
 
 - [`log-linear-gated-deltanet-readiness.md`](../handoffs/active/log-linear-gated-deltanet-readiness.md) — the 2026-08-12 gate firing and state-size inversion, the 2026-08-22 Gates 4/5 addendum and runnability blockers
 - The page's own 2026-08-12 `### RETRACTED` section — the live sections above are reconciled to it, not to the original claim
-- [`lightning-attention-port.md`](../handoffs/active/lightning-attention-port.md) — the GLA-path context (Ring-mini / SALA) that the corrected Summary's "matmul-rich parallel form" claims must be read against
+- [`lightning-attention-port.md`](../handoffs/active/model-evaluation-queue.md#track-lightning-attention-port) — the GLA-path context (Ring-mini / SALA) that the corrected Summary's "matmul-rich parallel form" claims must be read against
 
 ## Compiled Update — 2026-09-03: G1 closes the #27442 cross-backend question — NOT reproducible on our frozen v9 CPU path
 

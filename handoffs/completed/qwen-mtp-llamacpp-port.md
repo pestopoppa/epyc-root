@@ -1,5 +1,9 @@
 # Qwen MTP llama.cpp Port (PR #22673 + #22400)
 
+> **Folded into [`model-evaluation-queue.md`](../active/model-evaluation-queue.md#track-qwen-mtp-llamacpp-port) on 2026-11-02 @ `8827db1c6c80`** (BRF-T1-MEQ, operator D2). Open sections moved there under `## Track: qwen-mtp-llamacpp-port`; this file keeps the
+> closed ledger and background. Historical citations `handoffs/active/qwen-mtp-llamacpp-port.md:<line>` resolve at `8827db1c6c80`.
+
+
 **Status**: ACTIVE/GATED — the native Qwen MTP surface already exists on fresh v8 experimental; historical v5 cherry-pick evidence is preserved below but is not a resume path. P6b remains operator-gated; P7 is optional.
 
 ## ✅ Upgrade verified (2026-06-22) — fresh upstream build runs Qwen dense MTP on CPU
@@ -82,14 +86,7 @@ Our fork's speculative subsystem is an **older API generation** than PR #22673's
 
 ## Remaining tasks
 
-- [x] **P1** Reconcile `common/speculative.{cpp,h}`: merge upstream's `DRAFT_MTP` state machine INTO our version, keeping our EAGLE3 scaffold + tree/DySpec + ngram + suffix paths intact. This is the keystone — most other files follow once the type/enum + state class exist. ✅ 2026-07-11
-- [x] **P2** `common/arg.cpp`: extend `--spec-type` enum to include `draft-mtp` (alongside our existing `none|mtp|ngram-*|suffix`); add `--spec-draft-n-max`. Note our fork already has a `mtp` spec-type (gemma4 external) — disambiguate `mtp` (gemma4 external assistant head) vs `draft-mtp` (in-GGUF NEXTN self-draft) or unify. ✅ 2026-07-11
-- [x] **P3** `include/llama.h` + `src/llama-context.cpp` + `src/llama-cparams.h`: add the MTP context type + decode/logits MTP APIs; reconcile with our context lifecycle. ✅ 2026-07-11
-- [x] **P4** `src/models/qwen35.cpp` / `qwen35moe.cpp` + `src/llama-arch.*` + `conversion/qwen.py`: the Qwen MTP graph (nextn layer) + metadata loader. ✅ 2026-07-11
-- [x] **P5** Resolve the remaining backend/test/doc files to compile; `cmake -B build && cmake --build build -j$(nproc)` (CPU: `-DGGML_CUDA=OFF`). ✅ 2026-07-11
-- [x] **P6a** Verify help surface: `llama-server --help` / `llama-speculative --help` show `--spec-type draft-mtp` + `--spec-draft-n-max`. ✅ 2026-07-11
-- [ ] **P6b** Operator-gated fresh-v8-experimental model-load + gate bench on `unsloth/Qwen3.6-35B-A3B-MTP-GGUF`, with matched Q4 no-spec vs Q4-MTP artifacts; then the parent T3/T4 benches.
-- [ ] **P7 (optional): FR-Spec draft LM-head vocab-trim** (intake-740), only after P6b and only from the fresh v8 experimental surface. Build an EPYC-workload-matched frequency map, retain byte-exact temp-0 validation, and measure end-to-end before adopting; historical #22673/EAGLE3 reconciliation assumptions do not apply.
+> Open section moved to [`model-evaluation-queue.md`](../active/model-evaluation-queue.md#track-qwen-mtp-llamacpp-port) (BRF-T1-MEQ).
 
 ## Constraints
 - **Historical experimental repo note.** At this checkpoint, `verify_llama_cpp.sh` enforced `production-consolidated-v5`; that is now superseded by the v6 cutover and the 2026-07-20 `production-consolidated-v7` promotion. Do not promote or resume from this old branch; start any renewed Qwen-MTP work from current production into `llama.cpp-experimental`.

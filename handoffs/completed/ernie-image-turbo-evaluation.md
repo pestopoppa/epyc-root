@@ -1,5 +1,9 @@
 # ERNIE-Image-Turbo Evaluation
 
+> **Folded into [`model-evaluation-queue.md`](../active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) on 2026-11-02 @ `8827db1c6c80`** (BRF-T1-MEQ, operator D2). Open sections moved there under `## Track: ernie-image-turbo-evaluation`; this file keeps the
+> closed ledger and background. Historical citations `handoffs/active/ernie-image-turbo-evaluation.md:<line>` resolve at `8827db1c6c80`.
+
+
 **Status**: UPDATED 2026-09-24 — Qwen-Image-2.1 is the production backend; ERNIE retained on disk for rollback and comparison
 **Created**: 2026-05-06 (via research intake)
 **Updated**: 2026-09-24 (Qwen-Image-2.1 production cutover)
@@ -130,97 +134,7 @@ enhancer**. This does **NOT** validate ERNIE's own 0.9655: both sides are vendor
 
 ## Progress checklist
 
-- [x] Acquire the requested Qwen-Image-2.1 Diffusers weights for comparison ✅ 2026-09-23 — complete public bundle at
-      `/mnt/raid0/llm/models/diffusion/qwen-image-2.1/` (33,115,613,408 bytes; all text-encoder and transformer
-      shards plus VAE present). Acquisition is not a generation benchmark; no Qwen-vs-ERNIE outputs or comparative
-      claims are recorded yet.
-- [x] Switch the production `image_generate` backend to Qwen-Image-2.1, preserving the API and keeping ERNIE for rollback ✅ 2026-09-24 — CPU-only Diffusers service is healthy on port 8190; no generation-quality claim is made.
-- [ ] Run a matched-prompt Qwen-Image-2.1 vs ERNIE generation comparison and record prompt, settings, outputs,
-      and admissibility before drawing quality or speed conclusions.
-- [x] Production functional on CPU via sd-server Q8 + conv-direct; Q4 rejected (text corruption) ✅
-- [x] **File the missing intake row and close the `intake-528` mis-citation** ✅ 2026-07-29 — the deployed
-      `image_generate` model had NO index row for its entire deployed life, while this handoff (4 places)
-      and the deep dive (2) cited `intake-528`, which is "Effort Engine (bucketMul)". Created `intake-937`
-      (`already_integrated`, dive-verified) and repointed all 6 references with inline dated correction
-      notes. A *missing* entry is loud; a *wrongly-pointed* one is silent — every reader who checked the
-      citation was reassured, and it survived until a Z-Image dive grepped the index instead of trusting
-      the handoff. Cross-ref citations are now worth a periodic sweep, not just a per-entry check.
-- [x] Record the LongText-Bench resolution in the deep dive (§ benchmark positioning) ✅ 2026-07-29 — harmonized ranking,
-      identical splits, EN/ZH-mean aggregation, ERNIE +4.4 over Z-Image-Turbo even w/o prompt enhancer; and
-      that ERNIE's own 0.9655 remains vendor-self-reported (see the 2026-07-29 section above)
-- [ ] Run content-filter audit live with --execute (harness ready in orchestrator ed6f65f5) and review outputs
-- [ ] Run 20-prompt local LongTextBench-style EN/ZH typography spot-check to validate 0.9655 self-report
-- [ ] GPU/MI210 rebench of the 8-step distilled DiT via ROCm/HIP path (operator-approved, measure-not-extrapolate)
-  - **Build ready 2026-09-16 (sub-gpu-prep; run still open):** sd.cpp worktree
-    `/mnt/raid0/llm/worktrees/sub-gpu-prep-stable-diffusion.cpp` (`sub/gpu-prep-20260916` @ `a54f50c`, base `90e87bc`),
-    build `build-rocm-gpuprep-20260916` (shared ggml, HIP gfx90a, ROCm 6.2; sd-server sha256 `5335caad…4862`),
-    carrying the ggml FP8 guard and a ROCm f32 fix on ERNIE `to_out.0`/`linear_fc2` (`SD_ERNIE_ROCM_F32=0` disables it
-    for A/B). `verify_ggml_linkage.sh` PASS (all four ggml libs inside the build dir). Runner recipe (port 18190,
-    768–1024² × 8 steps × 3 repeats, fix on/off, blank-PNG metric, VRAM sampled during the run):
-    `RUNNER_RECIPE.md` in the worktree. Prod `build/` and `build-hip/` untouched.
-  - **RUN 2026-09-16, 14:21–14:30Z (sub-gpu-runner; collected by sub-gpu-collect).** Result: **the f32 fix is
-    REFUTED**, by the recipe's own rule ("B still blank at 1024²"). Box NOT ticked: there is no valid 1024² GPU
-    number.
-    - **Evidence.** Research main `cf05eefc`, `data/ernie-rocm-rebench-20260916/`. PNG sha256s are in
-      `requests.jsonl`; the images themselves are not committed.
-    - **Admissibility.**
-      - 23/23 requests returned HTTP 200.
-      - The server pid was listed in KFD in every sample of every request.
-      - The log shows `found 1 ROCm devices` / MI210, and params load with `RAM 0.00MB`.
-      - Peak VRAM: 25.5 GiB with the patch ON, 19.0 GiB with it OFF.
-      - Peak KFD count 1. The linkage receipt PASSes.
-      - sclk dipped to 1295 MHz.
-    - **Results.** 8 steps, seed 2026072732, n=3 per cell. Every cell was bit-identical across its reps, so
-      the spread is zero.
-
-      | shape | patch ON gen s | patch OFF gen s | output |
-      |---|---|---|---|
-      | 768² | 16.3 | — | good |
-      | 896² | 23.0 | 20.3 | good |
-      | 960² | 26.9 | — | good (visually checked) |
-      | 1024² | 30.2 | 26.5 | **uniform white** (mean 255, sd 0, 33 KB), ON and OFF |
-      | 832×1248 | 30.4 | — | **uniform white** |
-
-    - **Reading.**
-      - The patch does not fix the ≥1024² white output, and it costs about 13% (896²: 23.0 vs 20.3 s).
-      - 960² is now non-blank with the patch ON, where the 2026-07-19 build was blank at ≥960². Patch OFF was
-        not run at 960², so that change cannot be attributed to the patch.
-      - Per the recipe, no headline speedup is computed.
-    - **Belief kernel.** No write hook; covered by VB-GPU-RUNNER.
-  - **Recipe §5 follow-ups A/B, 2026-09-17, 02:30–02:55Z (sub-s5-topup chain8; sd.cpp `f3a7fe95`, build
-    `build-rocm-variants-20260916`, sd-server sha `d33cbe6f…`, RUNNER_RECIPE §8). Result: NO variant FIXES.**
-    Box NOT ticked: there is still no valid 1024² GPU number.
-    - **Evidence.** Research main `ca8c63d6`, `data/gpu-mi210/ernie-image-turbo-hip-variants-20260917/`
-      (`verdict.json`, `requests.jsonl`; PNGs not committed).
-    - **Admissibility.**
-      - 55/55 requests returned HTTP 200, with the same prompt and seed as `cf05eefc`.
-      - All 5 servers were resident, and each knob echo matched its variant.
-      - Each teardown was a SIGTERM on the driver's own PID, confirmed dead.
-      - Prod CPU sd-server pid 910274 was untouched and is still alive.
-    - **Pre-registered verdict.** FIX requires 1024² and 832×1248 non-blank on every rep, AND 768–960² good.
-
-      | variant | 1024² + 832×1248 non-blank | 768–960² guard | verdict | 896² gen s vs off (19.44) |
-      |---|---|---|---|---|
-      | off (`F32=0`) | 0/6 | 768 ✓, 896 ✓×3, **960 blank ×3** | BASELINE (defect reproduced) | — |
-      | f32 (narrow, default) | 0/6 | not run | DOES-NOT-FIX | — |
-      | wide | 0/6 | 768 ✓, 896 ✓, 960 blank | DOES-NOT-FIX | 27.66 (**1.42×**) |
-      | outscale (1/16) | 0/6 | 768 ✓, 896 ✓, 960 blank | DOES-NOT-FIX | 19.70 (**1.01×**) |
-      | wide+outscale | 0/6 | 768 ✓, 896 ✓, 960 blank | DOES-NOT-FIX | 1 rep 27.89 (≈1.43×, not the 3-rep cost cell) |
-
-    - **Reading.**
-      - The missing cell, patch-OFF 960², is blank. With the same seed and prompt, the 2026-09-16 narrow-ON
-        960² was good. So the narrow f32 patch moved the blank threshold from 960² to 1024², a cross-build
-        comparison on the same default code path.
-      - Neither the wider f32 set nor the out-proj scale extends that shift. Both are blank at 960² again.
-      - The white output at ≥1024² is not fixed by any precision change on the DiT linears.
-      - Recipe §5 is exhausted. The next hypothesis has to lie outside those linears, for example the VAE decode
-        or the attention/FA path at the larger sequence length. It needs a new build plus prep, not a re-run.
-    - **Belief kernel.** No write hook; covered by VB-GPU-RUNNER.
-  - [ ] **ERNIE-ROCM-NEXT — prepare the next ≥1024² white-output hypothesis outside the DiT linears** (VAE
-        decode, or the attention/FA path at the larger sequence length): a new sd.cpp build and a
-        pre-registered A/B, zero-inference prep first. The run waits for the operator to lift the 2026-09-17
-        GPU hold. Filed 2026-09-17 from recipe §5 being exhausted (`2026-09-16-sub-s5-topup.md`).
-- [ ] Re-litigate FLUX.1-schnell alternative if bilingual long-form in-image text not needed by product
+> Open section moved to [`model-evaluation-queue.md`](../active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) (BRF-T1-MEQ).
 
 ### 2026-10-31 ERNIE typography preparation
 

@@ -2029,7 +2029,7 @@ The generalized rule — never assert "absent" or "identical" from one encoding,
 one key, or one file listing — is the same one that governs architecture
 verification: read the artifact that would have to contain the thing.
 [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) §Open Question 1 (corrected);
-[`ernie-image-turbo-evaluation.md`](../handoffs/active/ernie-image-turbo-evaluation.md) §2026-07-29 corrections
+[`ernie-image-turbo-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) §2026-07-29 corrections
 
 ### Verify architecture from the weight map, not the declaration
 
@@ -2132,7 +2132,7 @@ post-approval round, so the rest of the plan was authored without their findings
 
 - [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — batch outcome (24 entries, 19 dives, 9 overturned), the per-entry overturn table, records corrected, the skill amendment, and the attribution note
 - [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — the five-month-stale capability assertion and its live mis-scoping effect
-- [`ernie-image-turbo-evaluation.md`](../handoffs/active/ernie-image-turbo-evaluation.md) — struck "stale backend" premise; the cross-reference defect and its 2026-07-29 resolution (`intake-937`, 4 of the 6 repoints, 3 needing rewording rather than an ID swap)
+- [`ernie-image-turbo-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) — struck "stale backend" premise; the cross-reference defect and its 2026-07-29 resolution (`intake-937`, 4 of the 6 repoints, 3 needing rewording rather than an ID swap)
 - [`research/deep-dives/ernie-image-turbo-dit-text-to-image.md`](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md) — the other 2 repoints; a pre-deployment assessment whose premises production later falsified
 - [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — weight-map-over-config verification rule
 - [`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) — near-identical-title dedup hazard; cite by arXiv ID

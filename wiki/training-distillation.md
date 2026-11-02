@@ -118,7 +118,7 @@ The 2026-07-02 cross-model LoRA-transfer / hypernetwork-adapter cluster (intake-
 
 ### New (2026-05-27, swarm-as-dataset-generator gate)
 
-- **Swarm-as-dataset-generator is gated on an external artifact, not accepted from the founder claim.** The Fortytwo-derived dataset-distillation handoff is deliberately stubbed until Strand-Rust-Coder-14B independently clears RustEvo2. A strong or qualified result promotes the pipeline; weak/no-go keeps the idea parked. This prevents spending weeks on fan-out, pairwise ranking, and fine-tuning based only on marketing evidence. Sources: [swarm-dataset-distillation.md](../handoffs/active/swarm-dataset-distillation.md), [strand-rust-coder-rustevo2-verification.md](../handoffs/active/strand-rust-coder-rustevo2-verification.md).
+- **Swarm-as-dataset-generator is gated on an external artifact, not accepted from the founder claim.** The Fortytwo-derived dataset-distillation handoff is deliberately stubbed until Strand-Rust-Coder-14B independently clears RustEvo2. A strong or qualified result promotes the pipeline; weak/no-go keeps the idea parked. This prevents spending weeks on fan-out, pairwise ranking, and fine-tuning based only on marketing evidence. Sources: [swarm-dataset-distillation.md](../handoffs/active/swarm-dataset-distillation.md), [strand-rust-coder-rustevo2-verification.md](../handoffs/active/model-evaluation-queue.md#track-strand-rust-coder-rustevo2-verification).
 - **If promoted, the pipeline reuses existing EPYC infrastructure rather than inventing a separate swarm stack.** Candidate generation should reuse the bulk-inference campaign fan-out, ranking should reuse the autopilot Bradley-Terry machinery, and evaluation must use a held-out domain suite that the BT judge never sees. Fine-tuning remains GPU-gated; EPYC's CPU role is generation, ranking, verification, and deployment of a quantized specialist. Source: [swarm-dataset-distillation.md](../handoffs/active/swarm-dataset-distillation.md).
 
 ### New (2026-04-22, DD4)
@@ -203,7 +203,7 @@ The 2026-07-02 cross-model LoRA-transfer / hypernetwork-adapter cluster (intake-
 - [Simula Synthetic Data Generation deep dive](/workspace/research/deep-dives/simula-synthetic-data-generation.md) -- intake-410, TMLR 2026, reasoning-driven seedless framework, double-critic rejection sampling, calibrated Elo complexity scoring, taxonomy-based coverage (1.72 vs 0.83), mechanism design principles (no silver bullet, quality>quantity, complexity requires calibration), student-teacher saturation bounds
 - [Ch.16 Calibration & Risk Control](/mnt/raid0/llm/epyc-orchestrator/docs/chapters/16-calibration-and-risk-control.md) -- Skill effectiveness scoring integration with confidence calibration
 - [Swarm-as-Dataset-Generator handoff](../handoffs/active/swarm-dataset-distillation.md) -- gated narrow-domain SFT distillation pipeline using bulk fan-out plus Bradley-Terry ranking
-- [Strand-Rust-Coder RustEvo2 verification](../handoffs/active/strand-rust-coder-rustevo2-verification.md) -- gate benchmark for the Fortytwo public artifact before dataset-distillation promotion
+- [Strand-Rust-Coder RustEvo2 verification](../handoffs/active/model-evaluation-queue.md#track-strand-rust-coder-rustevo2-verification) -- gate benchmark for the Fortytwo public artifact before dataset-distillation promotion
 - [Doc-to-LoRA Prototype (completed)](../handoffs/completed/08-doc-to-lora-prototype.md) -- Finding 1 (llama.cpp LoRA hot-swap IMPLEMENTED, verified), Finding 7 (zero orchestrator LoRA wiring, verified), reopen-trigger (GPU + REPL-uncovered need), and the 2026-06-20 Code2LoRA addendum
 - [intake-707 Code2LoRA](../research/intake_index.yaml) (arXiv:2606.06492) -- hypernetwork-generated repo-specific LoRA adapters; net-new vs DocToLoRA = Evo/GRU per-diff variant + RepoPeftBench (604 repos, static+evolution). Hypernetwork training GPU-gated; external preprint, credibility 1
 - [AVB Offline Reward Stack deep dive](../research/deep-dives/2026-06-20-avb-offline-reward-stack.md) -- tiny CPU-trainable pointwise MSE reward-model recipe (intake-706/716/717/719): 22-66M sentence-transformer, meanmax pool, freeze-then-unfreeze-last-3 + differential LRs, contrastive/confound augmentation, paraphrase-blindness caveat. Practitioner self-reported observations only
@@ -317,7 +317,7 @@ topology descends from the MTP lineage, not from a plain-stock conversion. Two i
 (a silent-drop exclusion path, and a broadcasting bug that attempted a 112 TiB allocation on a
 non-single-block chunk) were found and fixed on this first real execution, with 3 new regression
 tests. Observation-grade only; authorizes no model/role/lineup action on its own.
-[`architect-model-selection-bench.md`](../handoffs/active/architect-model-selection-bench.md) §zero-inference weight-delta geometry, [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) §Weight-delta geometry probe EXECUTED
+[`architect-model-selection-bench.md`](../handoffs/active/model-evaluation-queue.md) §zero-inference weight-delta geometry, [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) §Weight-delta geometry probe EXECUTED
 
 ### Reconstruct the baseline before crediting any fine-tune delta
 
@@ -335,7 +335,7 @@ relative to a baseline you can independently locate.
 - [`swarm-dataset-distillation.md`](../handoffs/blocked/swarm-dataset-distillation.md) — the inverted premise (Table 6 ~2pp objective vs Table 7 ~38pp prompting); same-task retention vs OOD transfer; the UNSIZED flag; the three importable data-construction levers
 - [`gpu-acceleration-path.md`](../handoffs/active/gpu-acceleration-path.md) — the reverse-KL / on-policy-distillation negative recorded as a weight-space guardrail
 - [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — HS-5: the weight-space RL training half declined on missing control endpoints and a hard vLLM dependency
-- [`architect-model-selection-bench.md`](../handoffs/active/architect-model-selection-bench.md) — byte-level LoRA merge structure and the zero-delta tensor set as free noise-floor instrumentation; the EXECUTED weight-delta geometry probe (~3,150× signal/noise separation, `cos(L)` vs scale-confounded `p(L)`, ThinkingCap's MTP-lineage tensor topology)
+- [`architect-model-selection-bench.md`](../handoffs/active/model-evaluation-queue.md) — byte-level LoRA merge structure and the zero-delta tensor set as free noise-floor instrumentation; the EXECUTED weight-delta geometry probe (~3,150× signal/noise separation, `cos(L)` vs scale-confounded `p(L)`, ThinkingCap's MTP-lineage tensor topology)
 - [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — the vendor-baseline reconstruction that killed a published uplift claim
 
 ## Compiled Update — 2026-10-29: PAW compiled-specialist feasibility and abstention observations

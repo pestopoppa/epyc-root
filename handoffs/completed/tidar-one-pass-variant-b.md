@@ -1,5 +1,9 @@
 # TiDAR-Pattern One-Pass Draft+Verify (Variant B)
 
+> **Folded into [`model-evaluation-queue.md`](../active/model-evaluation-queue.md#track-tidar-one-pass-variant-b) on 2026-11-02 @ `8827db1c6c80`** (BRF-T1-MEQ, operator D2). Open sections moved there under `## Track: tidar-one-pass-variant-b`; this file keeps the
+> closed ledger and background. Historical citations `handoffs/active/tidar-one-pass-variant-b.md:<line>` resolve at `8827db1c6c80`.
+
+
 **Status**: SPEC'D, not started (from the Fable 5 architecture review)
 **Created**: 2026-06-12
 **Priority**: GATED — on a Q4_K_M-quantizable TiDAR-class checkpoint existing (quality risk under Q4 is unmeasured); rank 4 in the findings-06 table: highest-ceiling, highest-variance kernel work remaining
@@ -19,10 +23,7 @@ priority queue. ggml-op effort: 5–10 days (FlexAttention-equivalent mask).
 
 ## Waypoints
 
-- [x] **W1 — static mask-complexity analysis** (~1 day, no inference, ungated): TiDAR-pattern vs Linear-SS mask ggml-op complexity per deep-dive §10.4.2/§10.5 step 1 — read the antirez fork + intake-635 minimal reimpl for the mask trick, Nemotron paper §4.2 for the Linear-SS shape. Acceptance: written comparison; if comparable, Variant B is strictly cheaper than Variant A long-term on CPU. ✅ 2026-07-22
-- [ ] **W2 — checkpoint gate + Q4 quality validation** (bench-only when gate fires): watch for a Q4_K_M-quantizable TiDAR-class checkpoint (none exists today — deep-dive §10.4.3 calls this question dormant until then); on release, quantize and measure the quality delta (TiDAR-8B showed 6–9% HumanEval/MBPP loss at BF16; the gap may widen under Q4). Acceptance: go/no-go quality verdict recorded with eval protocol.
-- [ ] **W3 — ggml-op implementation** (5–10 days, gated on W2 go): unified causal+bidirectional mask single-forward draft+verify path in the experimental fork (per `feedback_experimental_repo`). Acceptance: correctness vs reference AR output; acceptance-rate instrumentation in place.
-- [ ] **W4 — canonical bench + decision memo** (~1 day): end-to-end decode vs AR baseline per the canonical protocol; synthesize into the Variant A vs B memo per deep-dive §10.5 step 4. Acceptance: claim filed per MEASUREMENT.md grammar; promote/park decision recorded.
+> Open section moved to [`model-evaluation-queue.md`](../active/model-evaluation-queue.md#track-tidar-one-pass-variant-b) (BRF-T1-MEQ).
 
 ## Gates & pitfalls
 

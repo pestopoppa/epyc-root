@@ -724,4 +724,4 @@ Sources: [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harn
 
 **Confidence: scoped to cited records and source controls.**
 
-- The CT-12.4 reconstructed seven golden cases are persisted with lineage; seven replayed, while a mutated template failed all seven. These fixture controls are not a new live-template comparison. ([chat-template evaluation](../handoffs/active/qwen-chat-template-evaluation.md); [Qwen MTP](../handoffs/active/qwen-mtp-llamacpp-port.md); [stack governance](../handoffs/active/stack-change-governance-pipeline.md))
+- The CT-12.4 reconstructed seven golden cases are persisted with lineage; seven replayed, while a mutated template failed all seven. These fixture controls are not a new live-template comparison. ([chat-template evaluation](../handoffs/active/qwen-chat-template-evaluation.md); [Qwen MTP](../handoffs/active/model-evaluation-queue.md#track-qwen-mtp-llamacpp-port); [stack governance](../handoffs/active/stack-change-governance-pipeline.md))

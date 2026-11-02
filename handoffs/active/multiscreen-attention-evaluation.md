@@ -145,12 +145,12 @@ Hierarchical pruning of attention scores, sub-quadratic. Older but more mature. 
 ### 5. Priority Ranking for EPYC CPU Inference (REVISED 2026-04-29 PM)
 
 1. **DSA (DeepSeek V3.2 + GLM-5.1)** — **TOP PRIORITY (active)**. PR #21149 by fairydreaming is an active draft with CPU/CUDA/Vulkan backends working. Tracked in [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md) with three contribution sub-tracks (D1 smoke test, D2 prompt-processing follow-on PR, D3 AVX-512BW indexer). 2-models-for-1 leverage.
-2. **Lightning Attention (Ant Group Ring-mini/flash-linear-2.0)** — **v1 PORT COMPLETE; ROLE DECISION ACTIVE**. Tracked in [`lightning-attention-port.md`](lightning-attention-port.md). Existing `GGML_OP_GATED_LINEAR_ATTN` path reached coherent Ring-mini Q4_K_M decode; live work is production role selection and profile-gated follow-up, not another port.
+2. **Lightning Attention (Ant Group Ring-mini/flash-linear-2.0)** — **v1 PORT COMPLETE; ROLE DECISION ACTIVE**. Tracked in [`lightning-attention-port.md`](model-evaluation-queue.md#track-lightning-attention-port). Existing `GGML_OP_GATED_LINEAR_ATTN` path reached coherent Ring-mini Q4_K_M decode; live work is production role selection and profile-gated follow-up, not another port.
 3. **Diff Attn V2** — Highest priority among "awaiting pretrained" mechanisms. Standard ops, FlashAttention-compatible, no custom kernels. When pretrained models ship, GGUF conversion should work with minor ggml additions. KV cache and speculation compatible.
 4. **MiMo-V2-Flash** — Already supported in upstream llama.cpp (PR #18328 merged Dec 2025). Sizing-blocked (309B/15B-active estimates ~10 t/s on EPYC, below deployment threshold), but MTP-as-drafter pattern is independently transferable. Track PR #22493 (V2.5) — if it ships smaller, becomes immediately deployable.
 5. **MoBA** — Llama-8B-1M-MoBA exists now. Block-sparse structure could be implemented in ggml. Standard KV layout preserved. Test GGUF conversion of existing model.
 6. **IHA/MEA/KHA** (from existing stub) — FlashAttention-compatible variants that preserve standard inference stack.
-7. **Summary-Token cluster (KSA + GSA)** — Readiness tracker only. [`summary-token-attention-readiness.md`](summary-token-attention-readiness.md). All require CPT; gated on checkpoint release or GPU acquisition.
+7. **Summary-Token cluster (KSA + GSA)** — Readiness tracker only. [`summary-token-attention-readiness.md`](model-evaluation-queue.md#track-summary-token-attention-readiness). All require CPT; gated on checkpoint release or GPU acquisition.
 8. **NSA** — Monitor only for CPU. GPU-aligned design; wait for CPU-friendly derivative.
 9. **Multiscreen** — Monitor only. No artifacts, no reproductions, too early.
 
@@ -243,7 +243,7 @@ No sub-quadratic attention mechanism has a llama.cpp implementation today, but *
 
 ### New Related Research
 
-- **[intake-502] "Kwai Summary Attention Technical Report"** (arxiv:2604.24432, Kuaishou OneRec team, submitted 2026-04-27 — full extraction via local LightOnOCR pipeline 2026-04-29) → **READINESS TRACKER**: [`summary-token-attention-readiness.md`](summary-token-attention-readiness.md) (joint with intake-507 GSA)
+- **[intake-502] "Kwai Summary Attention Technical Report"** (arxiv:2604.24432, Kuaishou OneRec team, submitted 2026-04-27 — full extraction via local LightOnOCR pipeline 2026-04-29) → **READINESS TRACKER**: [`summary-token-attention-readiness.md`](model-evaluation-queue.md#track-summary-token-attention-readiness) (joint with intake-507 GSA)
   - Relevance: Architectural sub-quadratic attention in the Section-1 cluster (NSA / MoBA / Diff Attn V2 / Multiscreen / Log-Linear GDN). "Intermediate path" between Full attention (linear KV, quadratic compute) and minimal-KV linear-attention (constant state): maintains linear KV growth but compresses historical context into learnable summary tokens at chunk size k=8. Complexity O(n/k).
   - Key technique: Summary tokens injected at chunk boundaries; summary tokens see only their own chunk; text tokens see local **Sliding Chunk Attention** (SCA — chunk-aligned, distinct from token-level SWA) plus distant summary tokens. Hybrid-KSA = 3:1 KSA-to-Full layer ratio. Decode KV cache uses contiguous-tensor layout (Current Chunk + Sliding Chunk Text + Summary Token Buffer) avoiding gather/concat in hot path.
   - **Open-source training scripts released**: [github.com/Kuaishou-OneRec/KSA](https://github.com/Kuaishou-OneRec/KSA). No model checkpoints yet.
@@ -269,7 +269,7 @@ No sub-quadratic attention mechanism has a llama.cpp implementation today, but *
 
 ### Same-day expansion (2026-04-29) — 3 sibling papers ingested via Tier 1 reference-chasing from intake-502
 
-- **[intake-503] "Every Attention Matters: An Efficient Hybrid Architecture for Long-Context Reasoning"** (arxiv:2510.19338, Ling Team / Ant Group, October 2025) → **v1 PORT COMPLETE; ROLE DECISION ACTIVE** tracked in [`lightning-attention-port.md`](lightning-attention-port.md) (completed details preserved in its completed ledger)
+- **[intake-503] "Every Attention Matters: An Efficient Hybrid Architecture for Long-Context Reasoning"** (arxiv:2510.19338, Ling Team / Ant Group, October 2025) → **v1 PORT COMPLETE; ROLE DECISION ACTIVE** tracked in [`lightning-attention-port.md`](model-evaluation-queue.md#track-lightning-attention-port) (completed details preserved in its completed ledger)
   - Relevance: **HIGH**. Hybrid Lightning-Attention + softmax architecture with empirically-tuned linear:softmax ratios (M=4 for 16B Ring-mini, M=7 for 104B Ring-flash). Direct competitor framing to KSA's hybrid-KSA. Open weights on HuggingFace + open-source FP8 LingHe kernels.
   - Key claim: ~1/10 inference cost vs 32B dense; AIME-25 86.51% / GPQA-D 74.49% (Ring-flash). Training efficiency +50% via FP8 LingHe.
   - Caveats: pure linear attention underperforms on recall-heavy tasks (authors acknowledge); BF16 KV-state precision drift requires FP32 accumulation in recurrent path — non-trivial in our quantized KV path; performance brittle to decay-coefficient choice; **NO RULER/NIAH/LongBench results published** — long-context claims rest on indirect reasoning benchmarks.
@@ -297,7 +297,7 @@ No sub-quadratic attention mechanism has a llama.cpp implementation today, but *
 
 ### Late-day expansion (2026-04-29 PM) — Gist Sparse Attention (closest KSA sibling)
 
-- **[intake-507] "Forget, Then Recall: Learnable Compression and Selective Unfolding via Gist Sparse Attention"** (arxiv:2604.20920, Mao / Li / Fox — Stanford, April 2026) → **READINESS TRACKER**: [`summary-token-attention-readiness.md`](summary-token-attention-readiness.md) (joint with intake-502 KSA)
+- **[intake-507] "Forget, Then Recall: Learnable Compression and Selective Unfolding via Gist Sparse Attention"** (arxiv:2604.20920, Mao / Li / Fox — Stanford, April 2026) → **READINESS TRACKER**: [`summary-token-attention-readiness.md`](model-evaluation-queue.md#track-summary-token-attention-readiness) (joint with intake-502 KSA)
   - Position: same April-2026 gist-token cluster as KSA (intake-502), but distinct mechanism. Where KSA keeps **all** summary tokens visible to text, GSA hard-selects **top-k chunks** and "unfolds" them to restore the raw KV pairs alongside the gists. Unselected chunks are entirely invisible — a sharper compression/fidelity trade-off.
   - Hierarchical variant **H-GSA** (gist-of-gist) achieves **log-linear decode complexity** — the only mechanism in this cluster that scales naturally to 1M+ context on EPYC's 1.1 TB RAM headroom.
   - Reported wins at high compression: LongBench at 32× → GSA 44.07 vs ActivationBeacon 38.30 (+5.77). RAG with KV-cache reuse on Llama3.2-1B at 8× → GSA 48.07 vs KVLink 41.20 (+6.87). 8× finetuned: GSA on some HotpotQA tasks **surpasses Full-FT** (selective unfolding as inductive bias filtering distractors).
@@ -453,7 +453,7 @@ Three things make this unusually strong as a counter-argument, and one weakens i
 **Consequence, recorded so it is not re-derived:** the "swap the dense minority for a sparse minority"
 direction is **argued against by the closest available literature, including its own proponents'
 lab** — before any throughput question is even reached. That ordering matters: `B8` in
-[lightning-attention-port.md](lightning-attention-port.md) is gated on numerical correctness, and this
+[lightning-attention-port.md](model-evaluation-queue.md#track-lightning-attention-port) is gated on numerical correctness, and this
 row says that even a clean correctness result does not make the architectural swap attractive.
 See also the fifth GDN branch-map row in
 [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md).

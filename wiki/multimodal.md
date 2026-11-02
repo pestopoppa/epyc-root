@@ -555,7 +555,7 @@ frontdoor.
 ### Sources (2026-09-24 wrap-up)
 
 - [Qwen image production cutover progress](../progress/2026-09/2026-09-24-qwen-image-production-cutover.md) — implementation, runtime verification, cleanup and test results.
-- [ERNIE image evaluation handoff](../handoffs/active/ernie-image-turbo-evaluation.md) — current production decision and the still-open matched comparison.
+- [ERNIE image evaluation handoff](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) — current production decision and the still-open matched comparison.
 - [Pipeline chapter](../repos/epyc-orchestrator/docs/chapters/05-data-processing-pipelines.md) — current service architecture and compatibility contract.
 
 ## Compiled Update — 2026-09-23: Qwen-Image-2.1 weights were staged for an ERNIE comparison, and the vision role was clarified
@@ -571,7 +571,7 @@ frontdoor.
 
 ### Sources
 - [2026-09-23.md](../progress/2026-09/2026-09-23.md) — the download record and the vision-role clarification.
-- [ernie-image-turbo-evaluation.md](../handoffs/active/ernie-image-turbo-evaluation.md) — the comparison target and its MI210 defect record.
+- [ernie-image-turbo-evaluation.md](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) — the comparison target and its MI210 defect record.
 - `epyc-orchestrator` `orchestration/stack_topology.yaml` (`worker_vision`, `:8086`) — the served vision reader.
 
 ## Compiled Update — 2026-09-17: the ROCm f32 fix does not clear the MI210 ≥1024² white-image defect, and the local vision-reader inventory
@@ -598,13 +598,13 @@ which vision readers can actually run locally.
   across its reps. Generation times with the patch ON: 768² 16.3 s, 896² 23.0 s, 960² 26.9 s (good),
   1024² 30.2 s (white), 832×1248 30.4 s (white). 1024² with the patch OFF took 26.5 s and was also white.
   At 896² the patch costs about 13% (23.0 vs 20.3 s). Evidence: research `cf05eefc`.
-  [ernie-image-turbo-evaluation](../handoffs/active/ernie-image-turbo-evaluation.md)
+  [ernie-image-turbo-evaluation](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation)
 - **Run 2, the recipe §5 variants (2026-09-17, 02:30–02:55Z, build `build-rocm-variants-20260916`)**: 55/55
   requests returned HTTP 200 with the same prompt and seed. None of the variants passed the pre-registered
   FIX rule (1024² and 832×1248 non-blank on every rep, and 768–960² good). Results for 1024² plus
   832×1248: 0/6 non-blank for off, narrow f32, wide, outscale and wide+outscale alike. Patch-OFF was blank
   at 960² in all 3 reps. Cost at 896² against off (19.44 s): wide 1.42×, outscale 1.01×. Evidence: research
-  `ca8c63d6` (`verdict.json`). [ernie-image-turbo-evaluation](../handoffs/active/ernie-image-turbo-evaluation.md)
+  `ca8c63d6` (`verdict.json`). [ernie-image-turbo-evaluation](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation)
 - **Recipe §5 is used up.** Neither the wide set nor outscale keeps the narrow patch's 960² gain: both are
   blank at 960² again. Per the recipe, no headline GPU speedup is computed. Neither run has a belief-kernel
   write hook; VB-GPU-RUNNER covers both.
@@ -612,7 +612,7 @@ which vision readers can actually run locally.
   hypothesis must lie outside that family (VAE decode, or the attention/FA path at the larger sequence length),
   and it needs a new sd.cpp build plus a pre-registered A/B after zero-inference prep. The run waits for the
   operator to lift the 2026-09-17 GPU hold.
-  [ernie-image-turbo-evaluation](../handoffs/active/ernie-image-turbo-evaluation.md)
+  [ernie-image-turbo-evaluation](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation)
 - **Local vision-reader inventory (2026-09-16, zero inference).**
   - Qwen3-VL-30B-A3B Q4_K_M + F16 `qwen3vl_merger` mmproj is the served `worker_vision` reader. It runs on
     champion `ef81196d5` (`PROJECTOR_TYPE_QWEN3VL`, `tools/mtmd/models/qwen3vl.cpp`), and the libmtmd
@@ -639,7 +639,7 @@ which vision readers can actually run locally.
 - The 960² change is attributed only across builds, because the Run 1 build never ran patch-OFF at 960².
 
 ### Sources
-- [ernie-image-turbo-evaluation.md](../handoffs/active/ernie-image-turbo-evaluation.md) — both MI210 run blocks: build, admissibility, result tables and reading.
+- [ernie-image-turbo-evaluation.md](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) — both MI210 run blocks: build, admissibility, result tables and reading.
 - [2026-09-16-sub-occ1.md](../progress/2026-09/2026-09-16-sub-occ1.md) — the local vision-reader candidate table and the Qwen3-VL token-cost arithmetic.
 - [ernie-image-turbo-dit-text-to-image.md](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md) — the re-pointed Hermes link (link change only).
 - [optical-context-compression.md](../handoffs/completed/optical-context-compression.md) — confirms the served Qwen3-VL reader's GPU fit (about 21 GB) on the champion.
@@ -927,7 +927,7 @@ Items 1 and 2 are strongly coupled: if Sakana ships weights AND the codec stack 
 
 **Relevance to EPYC stack**: candidate for image generation in the multimodal pipeline (alongside Qwen3-VL for vision-understanding and faster-whisper for ASR). DiT inference on CPU is bandwidth-bound; quantized variants would need to land first to be production-viable on the EPYC 9655 host.
 
-Sources: [research/deep-dives/ernie-image-turbo-dit-text-to-image.md](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md), [handoffs/active/ernie-image-turbo-evaluation.md](../handoffs/active/ernie-image-turbo-evaluation.md).
+Sources: [research/deep-dives/ernie-image-turbo-dit-text-to-image.md](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md), [handoffs/active/ernie-image-turbo-evaluation.md](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation).
 
 ## Multimodal pipeline (Vision + TTS + ASR) handoff
 
@@ -961,7 +961,7 @@ Stack integration mirrors the document_formalizer (OCR) pattern: `start_sd_serve
 - **ggml CPU backend is at the kernel ceiling on Zen 5 stock**: `-march=native` already emits AVX-512BW + VNNI (387 explicit `vpdpbusd`/`vpdpwssd` instructions in the binary). Further sampler win on CPU requires either porting our llama.cpp fork's AVX-512BW 8x8 Q8 kernel (estimate +10-20%, multi-day work) or waiting for GPU.
 - **Hermes plugin path survived backend swap unchanged**: thin-interface discipline paid off — `ImageGenerator.generate(request) → result` interface was preserved across the ComfyUI → sd-server transition. Plugin code, Hermes tool registry, and dispatcher mapping all unchanged.
 
-Sources: [progress/2026-05-07.md](../progress/2026-05/2026-05-07.md), [handoffs/active/ernie-image-turbo-evaluation.md](../handoffs/active/ernie-image-turbo-evaluation.md), [research/deep-dives/ernie-image-turbo-dit-text-to-image.md](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md).
+Sources: [progress/2026-05-07.md](../progress/2026-05/2026-05-07.md), [handoffs/active/ernie-image-turbo-evaluation.md](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation), [research/deep-dives/ernie-image-turbo-dit-text-to-image.md](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md).
 
 ## Marlin-2B — video captioning + temporal grounding at 2B (NemoStation, 2026-05-20)
 
@@ -1023,7 +1023,7 @@ This resolves **comparability only**. It does **not** validate the 0.9655 figure
 both sides are vendor self-reports, and the 20-prompt local EN/ZH typography
 spot-check remains the only instrument that can settle validity. That open
 question therefore survives the dive rather than being closed by it.
-[`ernie-image-turbo-evaluation.md`](../handoffs/active/ernie-image-turbo-evaluation.md) §2026-07-29 corrections, §Remaining Operational Question 2
+[`ernie-image-turbo-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) §2026-07-29 corrections, §Remaining Operational Question 2
 
 ### Consequence: the alternative is a latency candidate, decoupled from quality
 
@@ -1074,7 +1074,7 @@ must be **mitigation-matched** — here, the family member whose guard is
 Vulkan-only at our pin. Generalization: a control differing from the subject in
 *the very dimension under test* is not a control.
 [`gpu-acceleration-path.md`](../handoffs/active/gpu-acceleration-path.md) §Control-probe note;
-[`ernie-image-turbo-evaluation.md`](../handoffs/active/ernie-image-turbo-evaluation.md) §2026-07-29 corrections
+[`ernie-image-turbo-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) §2026-07-29 corrections
 
 ### A pre-deployment assessment ages badly in specific, predictable ways
 
@@ -1113,7 +1113,7 @@ either direction.
 
 ### Source References
 
-- [`ernie-image-turbo-evaluation.md`](../handoffs/active/ernie-image-turbo-evaluation.md) — struck stale-backend premise (header present at the pinned commit, deployed binary built from it); LongText-Bench harmonization and the surviving validity question; withdrawal of the confounded control; the 2026-07-29 intake-row filing
+- [`ernie-image-turbo-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) — struck stale-backend premise (header present at the pinned commit, deployed binary built from it); LongText-Bench harmonization and the surviving validity question; withdrawal of the confounded control; the 2026-07-29 intake-row filing
 - [`research/deep-dives/ernie-image-turbo-dit-text-to-image.md`](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md) — the pre-deployment assessment itself: the backend premise, the CPU latency forecast, the retired hardware extrapolation, the quantization-damage hypothesis, and the unresolved VAE identity
 - [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — the six folded corrections and the vendor-default-resolution sting (the GPU defect blanks the first resolution the vendor recommends)
 - [`multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) — Z-Image-Turbo scoped as a latency-only candidate; the distill-patch LoRA conversion mechanism and its untested assumptions
@@ -1390,7 +1390,7 @@ no number recorded here for it.
 
 **Confidence: mixed** — model/architecture facts and deployment arithmetic are card/community-record facts from the EVL-32 session (`upstream-published` for model-card claims, `verified` for the disk math as arithmetic); **nothing has been downloaded, built, or run** — no H3 artifact exists on this host.
 
-MiniMax-H3 is the first video-generation candidate on this page, and its pipeline precedent is ERNIE-Image-Turbo rather than any llama.cpp role: an omni-modal diffusion model (text/image/video/audio in → video + native 32 kHz stereo audio out) served via SGLang/vLLM/diffusers/ComfyUI, out-of-band from the llama.cpp kernel tree [handoff](../handoffs/active/minimax-h3-video-generation-evaluation.md). The architecture is a **33B dense** H3-Omni-Transformer (~13B in cacheable AdaLN branches, inference-prunable to ~20B) with a Qwen3-VL-**32B dense** encoder — a sibling family of, not the same variant as, the deployed Qwen3-VL-30B-A3B MoE vision role [progress](../progress/2026-08/2026-08-30-opencode.md). Two task-specialized checkpoints share the architecture: FL2VA (0/1/2 reference images) and Ref2VA (≤9 images, ≤3 videos, ≤3 audio clips, ≤12 files, 2–15 s each), which strictly supersets FL2VA's input modes. Output is 4–15 s at 24 FPS, 32 kHz stereo audio, 21:9–9:16; 768p is the local default and 2K exists only via the API-only H3-Regenerate-2K path [handoff].
+MiniMax-H3 is the first video-generation candidate on this page, and its pipeline precedent is ERNIE-Image-Turbo rather than any llama.cpp role: an omni-modal diffusion model (text/image/video/audio in → video + native 32 kHz stereo audio out) served via SGLang/vLLM/diffusers/ComfyUI, out-of-band from the llama.cpp kernel tree [handoff](../handoffs/active/model-evaluation-queue.md#track-minimax-h3-video-generation-evaluation). The architecture is a **33B dense** H3-Omni-Transformer (~13B in cacheable AdaLN branches, inference-prunable to ~20B) with a Qwen3-VL-**32B dense** encoder — a sibling family of, not the same variant as, the deployed Qwen3-VL-30B-A3B MoE vision role [progress](../progress/2026-08/2026-08-30-opencode.md). Two task-specialized checkpoints share the architecture: FL2VA (0/1/2 reference images) and Ref2VA (≤9 images, ≤3 videos, ≤3 audio clips, ≤12 files, 2–15 s each), which strictly supersets FL2VA's input modes. Output is 4–15 s at 24 FPS, 32 kHz stereo audio, 21:9–9:16; 768p is the local default and 2K exists only via the API-only H3-Regenerate-2K path [handoff].
 
 The deployment path under consideration is **Ref2VA base (~144 GB) + TenStrip/10Eros-Max beta4 INT8 convrot transformer (21 GB) as a transformer-only drop-in ≈ 165 GB total** [handoff]. Disk math from 2026-08-30 says it fits but barely: the single 3.7 TB RAID (`/dev/md127`) backing `/workspace` + `/mnt/raid0/llm` had 291 GB free (92% used), so 165 GB would leave ~126 GB (~95.5% full) — and the handoff requires headroom to be re-verified immediately before any download [handoff][progress]. The first gate is therefore **not technical but a scope decision**: video generation has no identified product demand, and "interesting model" alone is not a reason to consume 165 GB on a 92%-full volume; the handoff is explicitly closeable on a no [handoff].
 
@@ -1406,7 +1406,7 @@ Key findings:
 
 ### Source References (2026-08-30)
 
-- [`minimax-h3-video-generation-evaluation.md`](../handoffs/active/minimax-h3-video-generation-evaluation.md) — the EVL-32 record: model facts, community quantization landscape, NSFW-capability evidence, the Ref2VA + beta4 INT8 deployment path, the 2026-08-30 disk math, and the open-question list with the scope decision as first gate.
+- [`minimax-h3-video-generation-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-minimax-h3-video-generation-evaluation) — the EVL-32 record: model facts, community quantization landscape, NSFW-capability evidence, the Ref2VA + beta4 INT8 deployment path, the 2026-08-30 disk math, and the open-question list with the scope decision as first gate.
 - [`progress/2026-08/2026-08-30.md`](../progress/2026-08/2026-08-30-opencode.md) — the session record: EVL-32 creation, the Qwen3-VL-32B-dense vs 30B-A3B-MoE family note, the disk math, and the `index_state.py --check` green.
 
 ## Compiled Update — 2026-09-25: LensVLM Selective Visual Expansion
@@ -1576,11 +1576,11 @@ Sources: [multimodal-pipeline handoff](../handoffs/active/multimodal-pipeline.md
 
 **Confidence: verified** for preparation controls only; **no verdict** on image quality, STT accuracy or HIP parity.
 
-- **ERNIE-Image typography slice is READY, not run.** A 20-prompt EN/ZH slice (896 and 1024 px) is staged for later human review under PIP-03; a real 512x512 engineering control and STOP/drain qualified the host path, but the GPU was busy at preflight and no target capture exists. Enhancer-on and product filtering are UNKNOWN, and a local slice cannot establish the official benchmark or a matched-Qwen comparison. ([ernie-image-turbo-evaluation](../handoffs/active/ernie-image-turbo-evaluation.md); [READY snapshot](../artifacts/compute/codex3-ernie-pareval-ready-20261031/SNAPSHOT.sha256))
+- **ERNIE-Image typography slice is READY, not run.** A 20-prompt EN/ZH slice (896 and 1024 px) is staged for later human review under PIP-03; a real 512x512 engineering control and STOP/drain qualified the host path, but the GPU was busy at preflight and no target capture exists. Enhancer-on and product filtering are UNKNOWN, and a local slice cannot establish the official benchmark or a matched-Qwen comparison. ([ernie-image-turbo-evaluation](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation); [READY snapshot](../artifacts/compute/codex3-ernie-pareval-ready-20261031/SNAPSHOT.sha256))
 - **Speech validation packets pass entry controls, unscored.** Voxtral (4,096-context, 480/960 ms routes), Ultra Q8/F32 and transcribe Nemotron (R0/R3/R6/R13) passed real normal-entry and STOP controls; an independent HF reference and native F32/Q8 matched decoded-step IDs and durations on JFK (46 steps) and a synthetic tone (5), with the raw frontend keeping one extra masked HF frame. Nemotron R1 is outside the trained context menu; full FLEURS is unexposed and HIP compiler-object success is not GPU correctness. ([speech prep](../artifacts/compute/codex3-speech-prep-20261031/README.md))
 - **LID1 and STT3 remain plans.** Five full-public-FLEURS CPU LID packets are READY-WAIT with no corpus scored, and the joint STT3 plan was frozen before cohort ASR. ([speech LID preparation](../progress/2026-10/2026-10-30-codex3-speech-lid-preparation.md))
 
-Sources: [ernie-image-turbo-evaluation](../handoffs/active/ernie-image-turbo-evaluation.md) · [speech prep checkpoint](../progress/2026-10/2026-10-31-codex3-speech-prep-checkpoint.md) · [LID preparation](../progress/2026-10/2026-10-30-codex3-speech-lid-preparation.md)
+Sources: [ernie-image-turbo-evaluation](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) · [speech prep checkpoint](../progress/2026-10/2026-10-31-codex3-speech-prep-checkpoint.md) · [LID preparation](../progress/2026-10/2026-10-30-codex3-speech-lid-preparation.md)
 
 ### Compiled Update — 2026-10-31 (S-18 runtime-only READY checkpoint)
 
@@ -1597,7 +1597,7 @@ Sources: [S-18 READY capsule](../artifacts/compute/codex-ni-s18-qwenvl-cpu-r1-20
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
 - LEX2 dev selection: 100 clips by 15 cells, 1,500 native successes; local alpha 1 casefolded keyword F=.701754 vs alpha-zero .574803. This is lexical reference agreement, not WER; 35 selected rows carry P-STT-1 flags. The 755-row heldout plan is not READY and no heldout inference, score or quality decision exists. Earlier CS-22 A1 had 178 completed cases and zero Q8-F32 WER delta on tested repeated contexts, but rejected required context 1 and failed original acceptance; the 28,805 s silence soak is not real-traffic latency. [Source](../handoffs/active/conversation-stack.md)
-- Ernie typography diagnostic captured 40/40 images from 20 English/Chinese prompts at two resolutions; official score, enhancer, filter and human review remain unknown, so no quality verdict. [Source](../handoffs/active/ernie-image-turbo-evaluation.md)
+- Ernie typography diagnostic captured 40/40 images from 20 English/Chinese prompts at two resolutions; official score, enhancer, filter and human review remain unknown, so no quality verdict. [Source](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation)
 
 ## Compiled Update — 2026-11-01 (10-31 intake deep dives, workspace-58)
 

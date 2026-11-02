@@ -536,7 +536,7 @@ The field is evolving rapidly around closed-form approaches that replace heurist
 - Can Memento-style models be created via LoRA fine-tuning on OpenMementos with GGUF-quantized base models, or does quantization degrade the implicit KV information channel?
 - At what compression ratio does AM compaction subsume selection? The handoff estimates 20x+ but the crossover depends on model architecture and context length
 - Does the L4c true NNLS attention scoring (deferred -- requires graph modification to retain attention weights during inference) offer meaningful quality improvement over L4b K-norm approximation?
-- Does Still's amortized-synthesis quality (RULER wins over KV-Distill) survive the CPU compute-overhead-vs-quality trade vs the deployed Expected-Attention compactor, and can the per-layer Perceiver run cheaply enough on EPYC during decode? Untestable until code/weights release for a served family (Qwen/Gemma) -- tracked as a GPU-CPT-gated watch item in [`summary-token-attention-readiness.md`](../handoffs/active/summary-token-attention-readiness.md)
+- Does Still's amortized-synthesis quality (RULER wins over KV-Distill) survive the CPU compute-overhead-vs-quality trade vs the deployed Expected-Attention compactor, and can the per-layer Perceiver run cheaply enough on EPYC during decode? Untestable until code/weights release for a served family (Qwen/Gemma) -- tracked as a GPU-CPT-gated watch item in [`summary-token-attention-readiness.md`](../handoffs/active/model-evaluation-queue.md#track-summary-token-attention-readiness)
 
 ## Updates — 2026-04-29 (PM)
 
@@ -550,7 +550,7 @@ Three architectural sub-quadratic-attention papers ingested in same-day batch (i
 
 **Mechanism comparison axis**: KSA = persistent summaries, soft compression, larger active context per query. GSA = hard top-k + unfolding, sharp compression, smaller active context. DSA = learned indexer for top-k, integrated rather than retrofit. KSA / GSA / DSA all REQUIRE pretraining or CPT — no retrofit path for our existing Qwen production stack. Compares against our deployed retrofit methods (Attention Matching compaction intake-351, Expected Attention selection intake-288) — the retrofit-vs-integrated trade-off becomes a research question worth testing once any of the architectural mechanisms ships in llama.cpp.
 
-**Tracked at**: [`summary-token-attention-readiness.md`](../handoffs/active/summary-token-attention-readiness.md) (joint KSA + GSA readiness stub) and [`llama-cpp-dsa-contribution.md`](../handoffs/active/llama-cpp-dsa-contribution.md) (active PR #21149 tracker with three contribution sub-tracks).
+**Tracked at**: [`summary-token-attention-readiness.md`](../handoffs/active/model-evaluation-queue.md#track-summary-token-attention-readiness) (joint KSA + GSA readiness stub) and [`llama-cpp-dsa-contribution.md`](../handoffs/active/llama-cpp-dsa-contribution.md) (active PR #21149 tracker with three contribution sub-tracks).
 
 **DSA fork-side status update (historical 2026-06-20; superseded by the 2026-07-17 closeout)**: pre-fix source had `LLM_ARCH_GLM_DSA` loading tensors and falling back to **dense MLA** (no Lightning Indexer, no sparse flash-attention path), so the blocker really was the DSA path, not storage. Experimental-v7 `3dee86a5a` now routes GLM through `llama_kv_cache_dsa` and the DeepSeek32 DSA graph. The remaining open work is sparse-compute profiling and quality, not cache/runtime wiring. [DSA handoff](../handoffs/active/llama-cpp-dsa-contribution.md)
 

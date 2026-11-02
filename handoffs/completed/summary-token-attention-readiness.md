@@ -1,5 +1,9 @@
 # Summary-Token Attention Readiness Tracker — KSA + GSA Cluster
 
+> **Folded into [`model-evaluation-queue.md`](../active/model-evaluation-queue.md#track-summary-token-attention-readiness) on 2026-11-02 @ `8827db1c6c80`** (BRF-T1-MEQ, operator D2). Open sections moved there under `## Track: summary-token-attention-readiness`; this file keeps the
+> closed ledger and background. Historical citations `handoffs/active/summary-token-attention-readiness.md:<line>` resolve at `8827db1c6c80`.
+
+
 **Status**: REFRESHED 2026-05-28 — monitoring-only readiness tracker; no implementation until a gate fires
 **Created**: 2026-04-29 (via research-intake of intake-502 KSA + intake-507 GSA)
 **Updated**: 2026-07-26 (activation gates reviewed; no gate fired)
@@ -72,12 +76,7 @@ Track activation conditions for the **summary-token / gist-token cluster** of ar
 
 ## Gate Criteria (any one triggers activation)
 
-All gating is OR-logic: ANY of these fires → activate the implementation plan below.
-
-- [ ] **Gate A** — Pretrained checkpoint of a model we serve (Qwen2.5/3.5/3.6 family, or any base we already deploy) released with KSA-style summary tokens OR GSA-style gist tokens
-- [ ] **Gate B** — Community llama.cpp PR adding general support for: (i) dynamic top-k chunk masking + raw-KV restoration (covers GSA), or (ii) chunk-aligned summary KV cache layout (covers KSA)
-- [ ] **Gate C** — GPU acquisition that lets us run our own CPT (covers KSA's three-stage recipe AND GSA's Stage-1-only recipe). Cross-ref `project_dgx_spark_target` memory.
-- [ ] **Gate D** — Major-lab next-generation model adopts summary-token attention as default architecture (e.g., Qwen 4 with KSA, DeepSeek-V5 with summary tokens). Triggers automatic engagement when GGUF support lands.
+> Open section moved to [`model-evaluation-queue.md`](../active/model-evaluation-queue.md#track-summary-token-attention-readiness) (BRF-T1-MEQ).
 
 ## Monitoring Targets
 

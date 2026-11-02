@@ -11,7 +11,7 @@
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
 | EVL-01 | agent file prose compression | [agent-file-prose-compression.md](agent-file-prose-compression.md) | AFC-P5.E3 — run the n=30 compliance campaign. READY but HELD (operator: "I will tell | — |
-| EVL-02 | architect model selection bench | [architect-model-selection-bench.md](architect-model-selection-bench.md) | Decide :596 EffiBench-X adoption once the 2607.01211 ingest lands; gpqa_diamond_cot arm per ROI rule | — |
+| EVL-02 | model evaluation queue | [model-evaluation-queue.md](model-evaluation-queue.md) | Rank the queue by lane fit; next: AMSB-C390-1 Coder390 vs 27B same-harness A/B, then the EffiBench-X adoption decision | — |
 | EVL-03 | autopilot decision plane audit 2026 07 22 | [autopilot-decision-plane-audit-2026-07-22.md](autopilot-decision-plane-audit-2026-07-22.md) | EV-CONF-2 — build an answer-span/salient-token confidence source, then re-baseline math AUROC before any math-domain use | — |
 | EVL-04 | autopilot sequential allocation | [autopilot-sequential-allocation.md](autopilot-sequential-allocation.md) | After RTG-02 prospective capture, run both sealed Shinka variants without derived menus or counterfactual outcomes | RTG-02 |
 | EVL-07 | bulk inference campaign | [bulk-inference-campaign.md](bulk-inference-campaign.md) | Source-review remaining model-free campaign contracts; retain K-LCM-1 inference gate | — |
@@ -33,7 +33,6 @@
 | EVL-29 | intake derived work 2026 07 25 | [intake-derived-work-2026-07-25.md](intake-derived-work-2026-07-25.md) | Re-open ID-3/AP-21 on corrected trial support; dispatch accepted retrospective proposals through their application owners | — |
 | EVL-30 | integration test coverage | [integration-test-coverage.md](integration-test-coverage.md) | Recorded red-baseline classification; pick targeted API/parser regression slice as risk warrants | — |
 | EVL-31 | mathsmith hc formalizer eval | [mathsmith-hc-formalizer-eval.md](mathsmith-hc-formalizer-eval.md) | Resolve approval-gated artifact acquisition/conversion, then run the zero-question contract probe | — |
-| EVL-32 | minimax h3 video generation eval | [minimax-h3-video-generation-evaluation.md](minimax-h3-video-generation-evaluation.md) | OPERATOR scope decision: is video gen a product need? If yes, download Ref2VA + 10Eros beta4 INT8 (~165 GB) | — |
 | EVL-33 | per request reasoning budget | [per-request-reasoning-budget.md](per-request-reasoning-budget.md) | PRB-T4-RERUN — GPU re-run of TALE-EP on the refreshed pool (4 suites, n=400); then Step 3 budget=0 think-scaffold fix | — |
 | EVL-34 | rao redel substrate spike | [rao-redel-substrate-spike.md](rao-redel-substrate-spike.md) | Run a naturally-delegating workload A/B (HotpotQA/DeepDive or small base model) before Step 3 escalation | — |
 | EVL-35 | re4 protocol redesign | [re4-protocol-redesign.md](re4-protocol-redesign.md) | RE-4.2 — Run the non-saturation probe in an operator quiet window: frontdoor-only, two-phase, R=4096, 30 rows; gate accuracy in (10%,90%) | — |
@@ -44,7 +43,6 @@
 | EVL-42 | scoring infra standardization | [scoring-infra-standardization.md](scoring-infra-standardization.md) | Wire future EVL42 pin-scan reports prospectively; then refresh the separate LCB contamination window | — |
 | EVL-43 | sliders local validation | [sliders-local-validation.md](sliders-local-validation.md) | Operator decision: KB-RAG K7 precondition fired — evaluate SLIDERS DB+SQL alternative (Phase 0 falsification) now, or keep parked? | — |
 | EVL-44 | stale open audit 2026 07 18 | [stale-open-audit-2026-07-18.md](stale-open-audit-2026-07-18.md) | Recast x-mas-text-routing to telemetry-watch; internal-kb-rag stays active (KB-WM-6, KB-GS-1..4 open since 09-17) | — |
-| EVL-45 | strand rust coder rustevo2 verification | [strand-rust-coder-rustevo2-verification.md](strand-rust-coder-rustevo2-verification.md) | Phase B single-instance RustEvo2 bench (USER APPROVAL REQUIRED) - Strand, Qwen2.5-Coder-14B base, gemma4 worker, sequential | — |
 | EVL-46 | tool use eval contract | [tool-use-eval-contract.md](tool-use-eval-contract.md) | Integrate matched CRM pair and service controls; finish tool audit, ledger, grader isolation and shared harness acceptance | — |
 | EVL-47 | vidya belief substrate program | [vidya-belief-substrate-program.md](vidya-belief-substrate-program.md) | VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt | — |
 | EVL-48 | fable5 window2 findings 05c mi210 lever cate | [fable5-window2-findings-05c-mi210-lever-category-matrix.md](fable5-window2-findings-05c-mi210-lever-category-matrix.md) | L2 — quantize_q8_1 requant kill (L14 done: 4b6434a9, DEAD) | — |

@@ -1,5 +1,7 @@
 # PAW Compiled Specialists — compile-once fuzzy functions on the local stack
 
+> Model-evaluation queue file (BRF-T1-MEQ, operator D2): the group gated on EVL-08 (row INF-76). It merges into [model-evaluation-queue.md](model-evaluation-queue.md) at BRF-T7-MEQ.
+
 **Status**: stub
 **Created**: 2026-09-17 (via research intake, operator-approved 2026-09-17)
 **Scratch**: `/mnt/raid0/llm/tmp/codex3-paw-hsf-t1-20261030`, `/mnt/raid0/llm/tmp/codex3-paw-standard-r2-20261030`

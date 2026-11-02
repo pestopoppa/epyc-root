@@ -1,5 +1,7 @@
 # GPU Candidates surface — add Qwen3.8-27B as the new stock-27B arm
 
+> Model-evaluation queue file (BRF-T1-MEQ, operator D2): the group gated on INF-60 (row INF-61). It merges into [model-evaluation-queue.md](model-evaluation-queue.md) at BRF-T7-MEQ.
+
 **Status**: ACTIVE — SWE rung complete; best-configuration refreshes remain (2026-08-20). The devcontainer blocker cleared; both protocols are
 now scored and in the artifact. **Agentic SWE-40 = 21/40 (52.5%)** — re-run after fixing the harness
 tool-call parser (`3bf16c3f`), superseding the provisional 15/40. **Oracle SWE-40 = 20/40 (50.0%)** vs

@@ -1,5 +1,9 @@
 # Strand-Rust-Coder-14B — RustEvo2 Independent Verification
 
+> **Folded into [`model-evaluation-queue.md`](../active/model-evaluation-queue.md#track-strand-rust-coder-rustevo2-verification) on 2026-11-02 @ `8827db1c6c80`** (BRF-T1-MEQ, operator D2). Open sections moved there under `## Track: strand-rust-coder-rustevo2-verification`; this file keeps the
+> closed ledger and background. Historical citations `handoffs/active/strand-rust-coder-rustevo2-verification.md:<line>` resolve at `8827db1c6c80`.
+
+
 **Status**: NEW 2026-05-27 — actionable as soon as approved for launch (single standalone bench)
 **Created**: 2026-05-27 (from research-intake of Fortytwo Network)
 **Categories**: benchmark_methodology, training_distillation, local_inference
@@ -253,8 +257,4 @@ Note whether **Qwen2.5-Coder-14B-Instruct itself** outperforms our gemma4-26B-A4
 
 ## Progress checklist
 
-- [x] Phase A acquisition + sanity (A-1 GGUF, A-2 benchmark/leaderboard, A-3 baselines, A-4 static harness) ✅
-- [x] Rust toolchain + Python venv host prereqs installed ✅
-- [ ] Phase B single-instance RustEvo2 bench (USER APPROVAL REQUIRED) - Strand, Qwen2.5-Coder-14B base, gemma4 worker, sequential
-- [ ] Phase C score table + decision matrix disposition; report base-model number to isolate fine-tune delta
-- [ ] Push GO/NO-GO disposition into intake-616 and flip swarm-dataset-distillation status if GO
+> Open section moved to [`model-evaluation-queue.md`](../active/model-evaluation-queue.md#track-strand-rust-coder-rustevo2-verification) (BRF-T1-MEQ).

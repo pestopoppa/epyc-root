@@ -1,16 +1,10 @@
 # MindDR Deep Research Mode
 
-**Status**: REFRESHED 2026-07-29 — Phase 1 scaffold landed; MD-9 A/B is the live gate; Phase 2 hardware is present but its training-runtime preflight is blocked; Phase 3 conditional
-**Created**: 2026-04-22 (split from `routing-intelligence.md` per deep-dive integration pass)
-**Updated**: 2026-05-28 (executor gate clarified after MD-1..MD-8 landed)
-**Categories**: agent_architecture, routing_intelligence, training_distillation
-**Priority**: MEDIUM (Phase 1 zero-infra; Phase 2/3 deferred)
-**Depends on**: `routing-intelligence.md` (classifier infrastructure), `eval-tower-verification.md` EV-9 (multi-dimensional rubric)
-**Sibling (same gate, lighter weight)**: [`gpu-cot-scaffold-sidecar.md`](../completed/gpu-cot-scaffold-sidecar.md) — its **G1** ("does an injected CoT scaffold beat a code worker's own thinking, per token?") is **MD-9 one weight down**. Both live in the **reasoning-economics cluster** (`research-evaluation-index.md`) and must share the EV-9 DRACO/MindDR scoring contract + token-normalization, not re-derive them.
+> **Folded into [`model-evaluation-queue.md`](../active/model-evaluation-queue.md#track-minddr-deep-research-mode) on 2026-11-02 @ `8827db1c6c80`** (BRF-T1-MEQ, operator D2). Open sections moved there under `## Track: minddr-deep-research-mode`; this file keeps the
+> closed ledger and background. Historical citations `handoffs/active/minddr-deep-research-mode.md:<line>` resolve at `8827db1c6c80`.
 
-> **🔔 Reopen-trigger FIRED (Phase 2) — 2026-07-18 stale-open audit.** The hardware-acquisition wait is cleared: the DGX-Spark path is dead and the **MI210 is present (2026-07-02)**. The 2026-07-29 preflight found no pinned gfx90a training runtime, so the viability smoke remains blocked on provisioning plus a quiet-window lease. (MD-9 A/B remains the live Phase-1 gate, still inference-window-gated.) See [`stale-open-audit-2026-07-18.md`](stale-open-audit-2026-07-18.md).
 
-- [ ] Phase-2: run a gfx90a (MI210) training-viability smoke now that the hardware gate flipped (was DGX-blocked) — **BLOCKED 2026-07-29**: GPU is idle and visible, but both project uv environments lack `torch`, `transformers`, `accelerate`, `trl`, `peft`, and `datasets`; requires a pinned gfx90a-compatible training environment, not an ad-hoc install. **Countermanded until E5 Stage-B releases the host:** a Python ROCm trainer is currently invisible to E5's process/SMT-affinity gates and could silently contaminate its decision-grade CPU cells.
+> Open section moved to [`model-evaluation-queue.md`](../active/model-evaluation-queue.md#track-minddr-deep-research-mode) (BRF-T1-MEQ).
 
 ## 2026-05-28 Audit Reset — Executor Start Here
 
@@ -165,44 +159,18 @@ Before committing to Phase 2 training recipe, run WebSearch for "MindDeepResearc
 
 ## Research Intake Update — 2026-07-08: PaperBench Source-Fidelity (rec-006)
 
-**Source**: PaperBench (intake-794)
-
-**Key finding**: PaperBench benchmarks model ability to understand and reproduce research papers. Methodology may be transferable to our deep-research pipeline for validating that our agent-generated research artifacts are faithful to source material.
-
-**Applicability to EPYC**: Our MindDR pipeline produces synthesized reports from multi-agent research. PaperBench-style validation could serve as a quality gate for the ReportSynthesisNode, ensuring the final report is faithful to the collected evidence. Particularly relevant for Phase 2 RL training where citation-grounded reward shaping is critical.
-
-**Action**: Monitor PaperBench development; evaluate as a source-fidelity validation gate for our deep-research reports.
-
-- [x] **MD-PB-1** — evaluate PaperBench methodology for source-fidelity validation of deep-research reports ✅ 2026-07-22
-- [ ] **MD-PB-2** — consider integrating PaperBench-style evaluation into MD-9 A/B test rubric
+> Open section moved to [`model-evaluation-queue.md`](../active/model-evaluation-queue.md#track-minddr-deep-research-mode) (BRF-T1-MEQ).
 
 ## Progress checklist
 
-- [x] MD-1..MD-8 Phase 1 scaffold (flag, classifier, prompts, pydantic_graph, rubric, sentinel suite - DONE 2026-04-22) ✅
-- [ ] MD-9 A/B test sentinel suite with deep_research_mode 0/1 (>=+5pp gate, INFERENCE-GATED)
-- [ ] Request-dispatcher 1-line wiring (feature_flag && is_research_like -> run_minddr) once MD-9 passes [too-big: prerequisite MD-9 is an incomplete inference-gated handoff experiment]
-- [x] EV-9 multi-dimensional rubric scoring (handed to eval-tower; needed for non-structural MD-9) ✅ 2026-10-29 (audit: eval-tower-verification.md:295-310 EV-9 all 4 tasks [x] (orchestrator 9db36fcb, rubric_scoring.py exists); exit criterion "MD-9 A/B can produce multi-dimensional scores" met) [no-belief: audit-reconciliation]
-- [ ] Phase 2 MD-10..MD-13 four-stage RL (GPU-gated, deferred)
-- [ ] Phase 3 MD-14 architect role refactor (conditional on durable >=5pp uplift)
+> Open section moved to [`model-evaluation-queue.md`](../active/model-evaluation-queue.md#track-minddr-deep-research-mode) (BRF-T1-MEQ).
 
 ## Research Intake Update — 2026-07-11
 
 ### New Related Research
-- **[intake-810] "RubricEM: Meta-RL with Rubric-guided Policy Decomposition beyond Verifiable Rewards"** (arxiv:2605.10899; Google Cloud AI + UIUC)
-  - Relevance: same **four-stage Plan→Research→Review→Answer** scaffold this handoff uses, but treats **rubrics as the shared interface** structuring policy execution, judge feedback, AND agent memory (a reusable **rubric bank**) — not just a final-answer scorer. Directly informs MD-9 non-structural scoring + the EV-9 rubric contract.
-  - Adoptable now (zero-training, Phase-1 style): rubric-as-interface framing + stage-specific reward decomposition + reflection/rubric-bank memory. **Not** adoptable: the RL core (SS-GRPO + reflection meta-policy training) needs GPU training infra we lack — aligns with this handoff's Phase-2 MD-10..13 being GPU-gated/deferred.
-  - Reported (OBSERVATION-grade): RubricEM-8B long-form avg 55.5 (beats DR Tulu-8B 53.6, approaches OpenAI Deep Research 59.9 at far fewer params); short-form OOD avg 73.5. Heavy overlap with already-indexed MindDR (intake-438).
-- [ ] Operator-review candidate (deep-dive 2026-07-11 SHARPENED): **PRIMARY (prompt-level, genuinely new):** rubric-as-**execution**-interface — PlanningNode emits a prospective `<rubrics>` block; DeepSearch loop does per-step `<state_evaluation>` vs rubric; add a **Review stage** (`<rubric_review>` mapping evidence→criteria before ReportSynthesis) — the *sole* scaffold delta vs our 3-node pipeline — plus a Review-stage rubric-adherence EV-9 dimension. **Note:** stage-decomposed *scoring* is already in EV-9 (`rubric_scoring.py`); only SS-GRPO's per-stage credit-assignment is new and it's **RL/GPU-gated (OUT — duplicates MD-10..13)**. **EXPERIMENTAL (adopt cautiously):** a heuristic kb-search rubric bank over `src/trace` — but the paper's own Fig-6 ablation attributes the transfer gain to the *trained* meta-policy and shows an untrained model doesn't benefit, so treat as a falsifiable experiment, not a free win.
+
+> Open section moved to [`model-evaluation-queue.md`](../active/model-evaluation-queue.md#track-minddr-deep-research-mode) (BRF-T1-MEQ).
 
 ## Research Intake Update — 2026-07-21 (Search-time contamination — the "reliable anchors" need demoting)
 
-- **[intake-877] "Search-Time Contamination in Deep Research Agents"** (arxiv:2606.05241; Tongyi Lab/Alibaba + NTU)
-  - Relevance: defines a validity defect that **no part of the MEASUREMENT.md tuple currently captures** — retrieval-environment provenance. An agent searching the live web at inference time can retrieve the benchmark's own metadata, question text, or ground-truth answer instead of reasoning. Three severity tiers: Benchmark Metadata Leakage → Question-Context Leakage → Explicit Answer Leakage.
-  - Reported: up to **4 percentage points** of inflation across six public benchmarks; per-agent leakage rates spanning ~0-78% depending on the retrieval stack (so exposure is a property of the *search backend*, not only the benchmark).
-  - **Our exposure, assessed concretely — better than feared on MD-8, worse elsewhere:**
-    - **MD-8 sentinel is largely NOT exposed.** Its 20 prompts are EPYC-authored *style imitations* of BrowseComp/WideSearch, not verbatim public items, and are graded by an EV-9 rubric with no published answer key. Question-context and answer leakage are therefore mostly inapplicable. It does run live (all 20 executed through SearxNG), which makes those numbers non-reproducible over time — a real but *different* validity problem, fixed by the same transparent-trajectory recommendation.
-    - **MD-9's external anchors ARE affected.** This handoff designates BrowseComp 45.7 / WideSearch 46.5 / xbench-DS 75.0 as "the reliable anchors" for the adoption case, against a **+5pp promotion gate**. Up-to-4pp of such published numbers can be contamination — comparable in size to our own gate. Those anchors should be demoted from "reliable" to observation-grade.
-  - Caveats: preprint, not peer-reviewed; the benchmark set is clinical/medical-heavy so generalization to BrowseComp/GAIA-style open-web benchmarks is asserted rather than demonstrated; "up to 4%" is an upper bound, not a mean; the lead affiliation also produces one of the benchmarked agents (though it is the primary contaminated subject, so the bias does not flatter them).
-
-- [x] **MD-9 external-anchor demotion:** BrowseComp/WideSearch/xbench-DS are now explicitly observation-grade, not reliable adoption anchors; their possible search-time contamination is comparable to the +5pp promotion margin. The local MD-8 sentinel remains a distinct non-verbatim, trajectory-auditable evaluation surface. ✅ 2026-07-29
-- [ ] Operator-review candidate: capture search trajectories (query, URL, snippet) on deep-research eval runs so question-context / answer leakage can be audited post hoc — our SearxNG JSON path already returns `engines[]`/`score`, making this nearly free. [intake-877]
+> Open section moved to [`model-evaluation-queue.md`](../active/model-evaluation-queue.md#track-minddr-deep-research-mode) (BRF-T1-MEQ).

@@ -979,9 +979,9 @@ Two May 2026 papers bracketing the design space for attaching trained persistent
 
 **Easiest llama.cpp integration path**: **M.3 KV Extension** (4.2M params) needs zero custom GGML ops — just prepend learned K/V vectors to the cache at decode start. Estimated **~3 engineer-weeks** for a first prototype against gemma4 worker_general. δ-mem path is ~5-6 weeks but shares kernel scaffolding with the active `log-linear-gated-deltanet-readiness.md` handoff (delta-rule primitive is shared with DeltaNet).
 
-**Spike ladder** at [`delta-mem-reproduction.md`](../handoffs/active/delta-mem-reproduction.md): Phase 1 (3 days) reproduce released δ-mem Qwen3-4B adapter on EPYC; Phase 2 (3 weeks) ship M.3 KV-Extension adapter for gemma4 wired into B1 User Modeling data path; Phase 3 (6 weeks) full δ-mem GGML port + cross-session persistent bank combined with M.4-style Hebbian for long-lag retention.
+**Spike ladder** at [`delta-mem-reproduction.md`](../handoffs/active/model-evaluation-queue.md#track-delta-mem-reproduction): Phase 1 (3 days) reproduce released δ-mem Qwen3-4B adapter on EPYC; Phase 2 (3 weeks) ship M.3 KV-Extension adapter for gemma4 wired into B1 User Modeling data path; Phase 3 (6 weeks) full δ-mem GGML port + cross-session persistent bank combined with M.4-style Hebbian for long-lag retention.
 
-**Sources**: [intake-539](https://arxiv.org/abs/2605.12357) δ-mem · [intake-568](https://arxiv.org/abs/2603.16413) Six-topology comparative study · [Deep-dive](../research/deep-dives/2026-05-19-frozen-memory-cluster.md) · [Reproduction spike](../handoffs/active/delta-mem-reproduction.md)
+**Sources**: [intake-539](https://arxiv.org/abs/2605.12357) δ-mem · [intake-568](https://arxiv.org/abs/2603.16413) Six-topology comparative study · [Deep-dive](../research/deep-dives/2026-05-19-frozen-memory-cluster.md) · [Reproduction spike](../handoffs/active/model-evaluation-queue.md#track-delta-mem-reproduction)
 
 ### Phase 1 reproduction result (2026-05-20, EPYC CPU)
 
@@ -1461,16 +1461,16 @@ Sources: [episodic-memory-integrity](../handoffs/active/episodic-memory-integrit
 - **Graph snapshots are now bounded.** Orchestrator `0151a3db` makes `save_graph_snapshot` keep the newest 100 run IDs and 100 rows per retained run (configurable, positive-integer validated), pruning oversized legacy history on the next write inside the existing fenced transaction; 23 tests cover ties, cross-session scope, stale-fence refusal and rollback. Checkpoints and results are untouched; D-f3a stays open until live API volume is confirmed with D-f1. ([repl-session-memory-maturity](../handoffs/active/repl-session-memory-maturity.md))
 - **Context-folding quality monitor survives restarts.** `CompactionQualityMonitor` is serialized into the LangGraph checkpoint projection (orchestrator `30aa952e`) and restored from plain checkpoint data; a durable SQLite test reopens a fresh saver and restores the values (153 focused tests). Existing feature flags are unchanged. ([2026-10-30 progress](../progress/2026-10/2026-10-30.md))
 - **Pointer-only cross-session resume is a monitored variant, not a plan.** Mainplane-style resume (one sentence plus the old log path) differs from our summary-plus-findings resume and our session search being unreachable from the REPL; trigger to file an arm is D-c1 numbers plus TOC-MP-4 showing pointer-only recall at least matching summary+pointer. No result exists for either. ([repl-session-memory-maturity](../handoffs/active/repl-session-memory-maturity.md))
-- **DeltaMem R13 is a partial native attempt.** The first repaired GPU run stopped at its deadline with 16/500 base source rows (eventqa 11/16, 0.6875 recall, F1 0.813) and no DeltaMem rows, so there is no Gate 2 comparison. ([delta-mem-reproduction](../handoffs/active/delta-mem-reproduction.md))
+- **DeltaMem R13 is a partial native attempt.** The first repaired GPU run stopped at its deadline with 16/500 base source rows (eventqa 11/16, 0.6875 recall, F1 0.813) and no DeltaMem rows, so there is no Gate 2 comparison. ([delta-mem-reproduction](../handoffs/active/model-evaluation-queue.md#track-delta-mem-reproduction))
 
-Sources: [repl-session-memory-maturity](../handoffs/active/repl-session-memory-maturity.md) · [delta-mem-reproduction](../handoffs/active/delta-mem-reproduction.md) · [episodic-memory-integrity](../handoffs/active/episodic-memory-integrity.md) · [2026-10-30 progress](../progress/2026-10/2026-10-30.md)
+Sources: [repl-session-memory-maturity](../handoffs/active/repl-session-memory-maturity.md) · [delta-mem-reproduction](../handoffs/active/model-evaluation-queue.md#track-delta-mem-reproduction) · [episodic-memory-integrity](../handoffs/active/episodic-memory-integrity.md) · [2026-10-30 progress](../progress/2026-10/2026-10-30.md)
 
 
 ## Compiled Update — 2026-11-01 (source-delta review)
 
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
-- A renewed 75-second GPU native smoke exercised one retrieval question and writer with cleanup; it is launcher qualification only, not the full INF-12 quality outcome. [Source](../handoffs/active/delta-mem-reproduction.md)
+- A renewed 75-second GPU native smoke exercised one retrieval question and writer with cleanup; it is launcher qualification only, not the full INF-12 quality outcome. [Source](../handoffs/active/model-evaluation-queue.md#track-delta-mem-reproduction)
 - Explicit probe tags suppress immediate and replay episodic scoring; one literal matching row had 8,641 updates but historical request provenance is unknown. External rewards are outside this filter. Recall is seed/import/explicit-write scoped, not automatic live exploration learning; M-20 efficacy remains open. [Source](../handoffs/active/episodic-memory-integrity.md)
 
 ## Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)

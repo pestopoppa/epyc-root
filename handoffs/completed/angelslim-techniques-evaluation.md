@@ -1,5 +1,9 @@
 # AngelSlim Techniques Evaluation — Sub-2-Bit Quantization + Reasoning Speculative-Exit
 
+> **Folded into [`model-evaluation-queue.md`](../active/model-evaluation-queue.md#track-angelslim-techniques-evaluation) on 2026-11-02 @ `8827db1c6c80`** (BRF-T1-MEQ, operator D2). Open sections moved there under `## Track: angelslim-techniques-evaluation`; this file keeps the
+> closed ledger and background. Historical citations `handoffs/active/angelslim-techniques-evaluation.md:<line>` resolve at `8827db1c6c80`.
+
+
 **Status**: stub
 **Created**: 2026-05-21 (via research intake)
 **Categories**: quantization, hardware_optimization, speculative_decoding, context_management
@@ -70,11 +74,7 @@ This stub exists because the user explicitly framed Hy-MT2 itself as "useful spe
 
 ## Progress checklist
 
-- [ ] BLOCKED: reopen when llama.cpp PR #22836 (**STQ1_0 / Sherry ternary kernel** — *not* "AngleSlim
-      kernels"; there is no such PR, see the 2026-08-12 gate check) merges **and** an x86 vec_dot exists
-      **and** QAT checkpoints of a base we run exist
-- [x] Gate re-checked against GitHub, and the row's own premise corrected ✅ 2026-08-12 — see
-      [§ Gate check — 2026-08-12](#gate-check--2026-08-12)
+> Open section moved to [`model-evaluation-queue.md`](../active/model-evaluation-queue.md#track-angelslim-techniques-evaluation) (BRF-T1-MEQ).
 
 ## Gate check — 2026-08-12
 
@@ -103,10 +103,8 @@ the same "ARM-only, x86 falls back to scalar" fact so the two do not re-derive i
 ## Research Intake Update — 2026-07-11
 
 ### New Related Research
-- **[intake-806] "Hy3 — Tencent 295B/21B-active MoE"** (HF `tencent/Hy3`, Apache-2.0)
-  - Relevance: the Hy3 model card references **Tencent AngelSlim** for its FP8 variant (`Hy3-FP8`) and compression toolchain — a concrete, current production model exercising the same AngelSlim path this stub tracks. Confirms AngelSlim is being applied to flagship-scale MoE, not just the Hy-MT2 MT family already noted here.
-  - Delta from current approach: adds a large-MoE FP8 datapoint to the AngelSlim evaluation surface; watch whether AngelSlim FP8/sub-2-bit recipes for `hy_v3` land alongside the community GGUF port ([intake-808], `hy3-mtp` fork). See [[speculative-decoding-mtp-refresh]] for the Hy3 MTP/GGUF thread.
-- [ ] When evaluating AngelSlim compression, include the Hy3-FP8 flagship-MoE case as a test vector (operator-gated).
+
+> Open section moved to [`model-evaluation-queue.md`](../active/model-evaluation-queue.md#track-angelslim-techniques-evaluation) (BRF-T1-MEQ).
 
 ## Research Intake Update — 2026-07-16
 
@@ -118,5 +116,5 @@ the same "ARM-only, x86 falls back to scalar" fact so the two do not re-derive i
 - **[intake-828/829] BitNet + BitNet b1.58** (arxiv:2310.11453 / 2402.17764) — the foundational ternary references, now indexed; they underpin the Sherry / Tequila QAT track this stub evaluates (both are train-from-scratch QAT, the same gating limitation documented above).
 
 ### Task update
-- [x] Watch-item resolved (2026-07-11 update): AngelSlim's official Hy3 GGUF (intake-824) shipped **vanilla IQ1_M/Q4_K_M for hy_v3, not Sherry/STQ1_0** — no new sub-2-bit AngelSlim recipe for a base we run; Sherry adoption remains QAT-gated as documented. ✅ 2026-07-16
-- [ ] Operator-review candidate: the official IQ1_M (~90 GB, fits the ~680 GB free-disk budget) is an authoritative GGUF path if the deferred, operator-gated Hy3 architect-candidacy bench is ever run — see [[speculative-decoding-mtp-refresh]].
+
+> Open section moved to [`model-evaluation-queue.md`](../active/model-evaluation-queue.md#track-angelslim-techniques-evaluation) (BRF-T1-MEQ).

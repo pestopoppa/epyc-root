@@ -51,7 +51,7 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
 | [glm51-reap-cpu-evaluation](glm51-reap-cpu-evaluation.md) | 11 | 9 | LIVE | keep — real work; true blocker = operator-approved GLM inference runs |
 | [colbert-reranker-web-research](colbert-reranker-web-research.md) | 10 | 2 | PARKED | re-anchor — close S5 request-path NO-GO; keep inference-gated LateOn/DenseOn latency+A/B |
 | [internal-kb-rag](internal-kb-rag.md) | 8 | 0 | LANDED | re-anchor — K1–K7 CERTIFIED 2026-06-13; keep only deferred K8 + optional Hy-MT2 |
-| [minddr-deep-research-mode](minddr-deep-research-mode.md) | 8 | 2 | LIVE | keep — MD-9 A/B inference-gated. **Reactivate note**: Phase-2 hardware gate flipped (DGX→MI210 present) |
+| [minddr-deep-research-mode](model-evaluation-queue.md#track-minddr-deep-research-mode) | 8 | 2 | LIVE | keep — MD-9 A/B inference-gated. **Reactivate note**: Phase-2 hardware gate flipped (DGX→MI210 present) |
 | [x-mas-text-routing](x-mas-text-routing.md) | 1 | 1 | LANDED | re-anchor — enforce enabled (`d4a6c927`); convert to standing telemetry-watch |
 
 ### Batch C — stack / infra

@@ -1,5 +1,9 @@
 # Lightning Attention Port to llama.cpp
 
+> **Folded into [`model-evaluation-queue.md`](../active/model-evaluation-queue.md#track-lightning-attention-port) on 2026-11-02 @ `8827db1c6c80`** (BRF-T1-MEQ, operator D2). Open sections moved there under `## Track: lightning-attention-port`; this file keeps the
+> closed ledger and background. Historical citations `handoffs/active/lightning-attention-port.md:<line>` resolve at `8827db1c6c80`.
+
+
 **Status**: COMPACTED 2026-05-28 - v1 Ring-mini port complete; active only for production-suitability decisions.
 **Created**: 2026-04-29
 **Updated**: 2026-07-26
@@ -29,23 +33,7 @@ Do not restart the Lightning Attention port. The historical ledger preserves the
 
 ## Outstanding Tasks
 
-- [x] **LQ-1 role decision**: **parked architecture reference** (owner: Inference
-  Acceleration / this handoff) ✅ 2026-07-29. This is a production-role decision,
-  not a claim that the port or model is broken. The Q4 artifact remains on disk and
-  current v8 production/experimental sources retain the `bailingmoe` architecture,
-  but it is Tier C, cold, and unpinned; no active stack configuration selects it.
-  The last complete quality review is historical (2026-05-04) and scored 59/90
-  (65.6%), with 7 empty responses and a regression when the output budget was
-  enlarged. The Qwen drafter route is already a hard no-go (different tokenizer
-  and impossible acceptance/throughput math); neither a current q-scorer/routing
-  comparison nor a compatible Ring-flash target exists. Do not assign it a live
-  role from the AIME spot check or old review alone. Reopen only with (a) a
-  specified same-tokenizer Ring-flash candidate, or (b) an owned, current-era
-  q-scorer/routing A/B against the incumbent; either condition then starts LQ-2
-  or LQ-3 respectively.
-- [ ] **LQ-2 broader quality eval**: if keeping a math/reasoning role, run a focused AIME/MATH/GPQA-style bundle with `reasoning_budget=0`, exact prompt templates, and explicit safety exclusions.
-- [ ] **LQ-3 Ring-flash drafter check**: only if a compatible Ring-flash target is available. Measure acceptance-adjusted throughput; raw Ring-mini t/s is not enough.
-- [ ] **LQ-4 profile-gated L5 decision**: only profile after LQ-1/2/3 gives a reason to keep the model. Promote a dedicated op only when the profile proves a material bottleneck.
+> Open section moved to [`model-evaluation-queue.md`](../active/model-evaluation-queue.md#track-lightning-attention-port) (BRF-T1-MEQ).
 
 ## Dependency Forks
 
@@ -121,46 +109,4 @@ writing any new arch handler.
 
 ### Tasks
 
-- [x] **Z9 (Z, prerequisite for G18) — write the ~30-line pure-PyTorch constant-decay simple-GLA <!-- evidence-integrity: Research `d2d485598807f8fe5ab9badbfe539e3857ff1f51`; artifact: artifacts/compute/refactor-evidence-corrections-20261031/19/public-oracle-tests-final.log; hygiene, not quota -->
-      recurrence** to stand in for the `fla` Triton call, **so that an HF CPU numerical oracle exists
-      at all**. ✅ 2026-10-29 — Research `d2d485598807` ships `scripts/benchmark/sala_cpu_oracle.py`:
-      float32 CPU recurrence, original ALiBi slopes, initial/final state, native chunk/fused interfaces,
-      packed independent sequences and hash-pinned local HF import with `GenerationMixin` compatibility.
-      All11 controls pass, including an independently expanded causal sum at0/1/7/63/64/65/129 tokens,
-      split continuation, packed state isolation, native original SALA short/chunk masked attention,
-      original1/3/7/32-head slopes, source mismatch and import cleanup. No weights or pretrained model
-      inference ran; no GPU Triton numerical equivalence or GGUF parity is claimed. [Usage/source pins](https://github.com/pestopoppa/epyc-inference-research/blob/d2d485598807/docs/reference/sala-cpu-oracle.md),
-      [native control evidence](../../artifacts/compute/codex3-relocatable-and-sala-z9-20261029.json).
-      G18 retains its original3-prompt ×32-token, under8192-token, token-identical gate and remains open.
-      [no-belief: CPU reference implementation and native-interface code tests; no inference result]
-- [ ] **G18 (G, prerequisite `Z9`) — SALA correctness-first port + CPU parity smoke.** On
-      `llama.cpp-experimental` branched from the current production tip (**never v9**). Greedy
-      (`temp 0`, fixed seed), **3 prompts × 32 tokens, every prompt under `sparse_config.dense_len` =
-      8192** so both sides run the sparse layers dense and the comparison is not confounded by the one
-      primitive we do not have. GGUF output vs the `Z9` HF CPU oracle.
-      **Gate:** **token-identical output on all 3 prompts.** Anything less is not a parity result and
-      must not be reported as one.
-      **Owner:** this handoff. Both compute planes were held by other sessions through this wave —
-      **filed, not run.**
-- [ ] **B8 (B, blocked on `G18`) — the three things that all presuppose numerical correctness.**
-      None may start before G18 passes; each is listed with the handoff that would own it if it does.
-      **(a) Throughput.** Decode and prefill t/s for SALA Q4_K_M on EPYC at 4K / 32K / 128K against the
-      production frontdoor, and on MI210 HIP. Owner if opened:
-      [multiscreen-attention-evaluation.md](multiscreen-attention-evaluation.md).
-      **(b) NoLiMa adjudication.** The paper's Table 3 reports 128K = 23.86; an unmerged NoLiMa
-      leaderboard PR submitted by an account whose handle matches a SALA co-author reports **40.9** for
-      the same model on the same benchmark, and lists an *effective length of 4K* for a model marketed
-      at 1M. Neither source ships raw files, so this is only resolvable by running it. Owner if opened:
-      [eval-tower-verification.md](eval-tower-verification.md).
-      **(c) An InfLLM-V2 block-sparse ggml op.** **Justified only if (a) shows the dense fallback makes
-      prefill the binding constraint above ~32K.** Owner if opened: this handoff. Note the standing
-      decline on porting `infllmv2_cuda_impl` to HIP — sm80 CUDA only, zero hip/rocm hits, and upstream
-      llama.cpp closed the SALA support request `not_planned`; **re-surface only if SGLang PR #30360's
-      AMD ROCm CI leg goes green**, which is the leading indicator for this hardware.
-      Adopting SALA as a production model is a separate standing **decline**: 9B dense against our
-      35B-A3B, no evidence it wins on any axis we serve, and no reproduced number from anyone in six
-      months.
-
-  <!-- task-evidence-integrity:start Z9 -->
-  - Evidence metadata (hygiene, not new quota): Research `d2d485598807f8fe5ab9badbfe539e3857ff1f51`; [original test/artifact](../../artifacts/compute/refactor-evidence-corrections-20261031/19/public-oracle-tests-final.log). Full Z9 primitive exists with native HF import and11 original numerical/interface controls; this is not G18 model/GGUF parity. No tests rerun or historical redating.
-  <!-- task-evidence-integrity:end Z9 -->
+> Open section moved to [`model-evaluation-queue.md`](../active/model-evaluation-queue.md#track-lightning-attention-port) (BRF-T1-MEQ).

@@ -1,4 +1,14 @@
-# Architect Model Comparison Benchmark
+# Model Evaluation Queue
+
+**Status**: ACTIVE — the model-evaluation queue (backlog refactor 2026-11, BRF-T1-MEQ, operator D2): every candidate-model trial, bake-off and new-quant trial. Route 1a keeps it as 3 gate-homogeneous files; they merge into this file at BRF-T7-MEQ once per-track gates (route 1b) carry the gated groups.
+**Created**: 2026-11-02 (anchor: the former `architect-model-selection-bench.md`, row EVL-02)
+**Parent index**: [research-evaluation-index.md](research-evaluation-index.md)
+
+> Queue files: this one (ungated group, row EVL-02) · [gpu-candidates-surface-qwen38-update.md](gpu-candidates-surface-qwen38-update.md) (gated on INF-60, row INF-61) · [paw-compiled-specialists.md](paw-compiled-specialists.md) (gated on EVL-08, row INF-76).
+> The part below down to the first `## Track:` is the former architect-model-selection-bench handoff; it inherits the
+> row's Deps. Each `## Track:` section is a folded handoff; its `<!-- gate: -->` marker reproduces the former row's Deps.
+
+## Architect Model Comparison Benchmark
 
 **Scratch**: `/mnt/raid0/llm/tmp/codex-ni-wg-lfmi-cpu2b-20261030/`, `/mnt/raid0/llm/tmp/codex-ni-qwen36-iq3xxs-candidate-20261030/` (retained historical native evidence; Qwen READY withdrawn by operator, no current keeper claim).
 
@@ -867,3 +877,388 @@ non-reasoning by design. Incumbent is unchanged: `worker_general` = `gemma-4-26B
 Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026-10-31-ws58.md`, sha256 `043e502133cae214175ea3f2a395f575e6ca13b9f3ee058525ed020264ab5012`; relayed by the ws58 coordinator; budget approved: about 13 MI210-hours for the drafter pilot, 6-9 engineer-weeks for the race checker, the 95.5 GB ThinkingCap download; D1 confirmed: in-weights calculator declined, GPU reason recorded on intake-2550/2574; D2 approved: scratch upstream builds are measurement instruments only). Trigger records below are prose with no checkbox until a reviewed session confirms their condition.
 
 - [ ] **AMS-TCAP-1 — A/B a thinking-on effort mode for architect_general with ThinkingCap-Qwen3.8-Flash-Next (intake-2567#record, intake-2572#record, intake-2577#record).** Thinking is off for every Flash-Next role today because the base model fell into degenerate think loops (this handoff, prep finding 4; registry reasoning_policy_observation: reasoning auto gave 0/4 final answers). A finetune that shortens thinking is therefore a candidate higher-effort mode, not a curiosity. Download the bottlecapai ThinkingCap IQ4_XS GGUF (95.5 GB; one download at a time, disk checked first) and run three arms on llama-server with the qwen38-flash-next-cpu-mtp recipe: A base UD-IQ4_XS thinking off (production), B base thinking on, C ThinkingCap thinking on, plus C2 = ThinkingCap trunk with our shared-Q8_0 MTP head versus its embedded head. Frozen 40-60 prompt set (architect planning and critique, AIME-style reasoning, about 15 tau2-style agentic turns), at least 4 seeds, paired by prompt; record accuracy, thinking and answer tokens, the degenerate-loop and truncation rate, MTP alpha, and llama-bench pp/tg in one alternating window. Decision rule: propose a thinking-on effort mode (an operator-signed stack change) only if arm C beats arm A on the reasoning family with a paired 95% lower bound above 0, has degenerate or truncated thinking on at most 1% of requests, uses at most 60% of arm B's median thinking tokens, and keeps alpha within 0.03 of base; otherwise record the null and keep thinking off.
+
+## Track: angelslim-techniques-evaluation
+<!-- gate: none -->
+
+> Moved from `handoffs/active/angelslim-techniques-evaluation.md` @ `8827db1c6c80` (BRF-T1-MEQ, operator D2); former row INF-04. Sections without open boxes (background, closed ledger) stay in [`../completed/angelslim-techniques-evaluation.md`](../completed/angelslim-techniques-evaluation.md).
+
+#### Progress checklist
+
+- [ ] BLOCKED: reopen when llama.cpp PR #22836 (**STQ1_0 / Sherry ternary kernel** — *not* "AngleSlim
+      kernels"; there is no such PR, see the 2026-08-12 gate check) merges **and** an x86 vec_dot exists
+      **and** QAT checkpoints of a base we run exist
+- [x] Gate re-checked against GitHub, and the row's own premise corrected ✅ 2026-08-12 — see
+      [§ Gate check — 2026-08-12](#gate-check--2026-08-12)
+
+##### New Related Research
+- **[intake-806] "Hy3 — Tencent 295B/21B-active MoE"** (HF `tencent/Hy3`, Apache-2.0)
+  - Relevance: the Hy3 model card references **Tencent AngelSlim** for its FP8 variant (`Hy3-FP8`) and compression toolchain — a concrete, current production model exercising the same AngelSlim path this stub tracks. Confirms AngelSlim is being applied to flagship-scale MoE, not just the Hy-MT2 MT family already noted here.
+  - Delta from current approach: adds a large-MoE FP8 datapoint to the AngelSlim evaluation surface; watch whether AngelSlim FP8/sub-2-bit recipes for `hy_v3` land alongside the community GGUF port ([intake-808], `hy3-mtp` fork). See [[speculative-decoding-mtp-refresh]] for the Hy3 MTP/GGUF thread.
+- [ ] When evaluating AngelSlim compression, include the Hy3-FP8 flagship-MoE case as a test vector (operator-gated).
+
+##### Task update
+- [x] Watch-item resolved (2026-07-11 update): AngelSlim's official Hy3 GGUF (intake-824) shipped **vanilla IQ1_M/Q4_K_M for hy_v3, not Sherry/STQ1_0** — no new sub-2-bit AngelSlim recipe for a base we run; Sherry adoption remains QAT-gated as documented. ✅ 2026-07-16
+- [ ] Operator-review candidate: the official IQ1_M (~90 GB, fits the ~680 GB free-disk budget) is an authoritative GGUF path if the deferred, operator-gated Hy3 architect-candidacy bench is ever run — see [[speculative-decoding-mtp-refresh]].
+
+## Track: delta-mem-reproduction
+<!-- gate: none -->
+
+> Moved from `handoffs/active/delta-mem-reproduction.md` @ `8827db1c6c80` (BRF-T1-MEQ, operator D2); former row INF-12. Sections without open boxes (background, closed ledger) stay in [`../completed/delta-mem-reproduction.md`](../completed/delta-mem-reproduction.md).
+
+#### Progress checklist
+
+- [x] Phase 1 Gate 1 (adapter loads) + Gate 4 (CPU tractable, 5% overhead) PASS ✅
+- [x] Gate 3 LoCoMo N=5 smoke (1.65x, directional); magnitude inconclusive ✅
+- [ ] Gate 2 MemoryAgentBench accuracy reproduction - GPU-only (CPU-infeasible)
+  - 2026-11-01 v3 draft: `codex-ni-inf12-gate2-triton36-v3-20261101` retains the complete 22-source/two-arm official matrix (3,671 records per arm) and the original ±20% of 1.31× decision. Draft manifest SHA-256 `2cb7347069c7e862a6ea1c753d424d5a40728e29196c1efee7d2d938c3fac029`; source/test inventory in `/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/REVIEW.json`. Host controls bind the separate actual 67,283 and 258,333-token native events and STOP/drain path. No installed v3 owner route, real fixture receipt, full matrix or accuracy verdict; Gate 2 stays open. [no-belief: source preparation only]
+  - 2026-11-01 audit (separate attempts; diagnostic only, no tick): R13 attempt `20261031T210259Z-128495` ran during `Accurate_Retrieval/eventqa_131072/base` and ended `rc=75` at 21:30:31Z after a 1,800s grant began 21:02:59Z. `STATE.json` records `work_started=true`; `job.log` records `stop_reason=work-deadline`, child rc143 and direct-child reap, but descendants were not censused. No attempt-local native JSON/JSONL is retained and the number of completed official items cannot be attributed to this attempt. Its archived terminal is `compute-flags/grants-archive-ws58/codex-ni-inf12-gate2-triton36-r13-20261030.ended.keeper-1793482232`; do not synthesize a current `.ended` or assign the shared output tree to this attempt. This is distinct from attempt `20261101T003829Z-2260396` (00:38:29Z), whose 444-line shared JSONL line count also does not establish completed official records. Preserve both identities/exposures. Any continuation uses a fresh ID after owner boundary and verifies pins and every resumable output row/hash before reuse; denominator remains 3,671 official records per arm (7,342 total). No Gate 2 score or verdict. [no-belief: attempt audit and partial evidence only; no complete measurement tuple] [Durable evidence](../../artifacts/compute/ni-inf12-yarn-prep-20261101/README.md).
+  - 2026-10-30 14:38 UTC (R13 T1 repair): actual normal launcher emitted diagnostic admission and `START` at 14:38:33Z; native `Accurate_Retrieval/eventqa_131072/base` began at 14:38:56Z under the 14:38–15:08Z grant. This is a started native attempt, not a full-result summary or Gate 2 verdict. The original population and recipe are unchanged; full-context repair and Gate 2 remain open; no checkbox tick. Current launcher evidence: `/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-inf12-gate2-triton36-r13-20261030.launcher.out`. Earlier pending/ghost status in the R13 owner draft is superseded by these later events. [no-belief: started attempt only; no completed full-task result]
+  - 2026-10-28 (ws58 results filing, diagnostic, no tick): `codex-ni-inf12-gate2-triton36-r6-20261028` (GPU, pin `809e93f2`) PARTIAL rc 75 at 23:22:32Z (`work-deadline`, child reaped, STATE `partial`, 1635 s wall; launched 22:55:15Z, first question 22:55:35Z). `Accurate_Retrieval/eventqa_131072/base` completed 16 records (record_index 0-15, contiguous, 16/16 resume-integrity hashes valid, one run_fingerprint `5536036d`); delta arm not started. Interim sample-weighted metrics over those 16 only: exact_match 0.6875 (11/16), substring_EM 0.6875, eventqa_recall 0.6875, F1 0.8135, rougeL_F1 0.8284, ~97 s/question (1554 s query time). Comparison with the r4 partial (scratch `codex-ni-inf12-g2-20261028/outputs/full-results-5e65*`, pin `5e6515c4`, same source/arm): 68 records, EM 0.8088, F1 0.8791, ~97 s/question; r6's 16 records are the same questions as r4's first 16 (record_index 0-15) with byte-identical outputs on 16/16, so the EM gap (0.6875 vs 0.8088) is a question-mix effect of n=16 vs n=68, not a regression, and the per-question rate matches. Resume: r6 should resume at record 16 in a next window with no code change (launch.sh/job.sh sha256 unchanged from the READY row, no STOP file, same pin and run_fingerprint, evaluator verifies identity and integrity of every existing row before continuing); this is by code inspection and a validation of the on-disk rows, not an observed resumption, and r4/r5 outputs cannot be resumed by r6 (different pin). Keeper: `REARM-SKIP codex-ni-inf12-gate2-triton36-r6-20261028: no unambiguous ws58-launcher*.out in /mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261028-r6` at 23:23:43Z; no REARM-OK for this id, so the next window is not armed until the owner supplies one. Diagnostic only (predeclared rule: raw metrics, no threshold); Gate 2 remains open. [belief: cc]
+    - [x] ~~INF-12 Gate 2 r6: re-arm the resumable successor window (owner `codex-ni-01a16d6b`) so the keeper emits REARM-OK, and continue eventqa_131072 base from record 16, then the delta arm and the remaining sources.~~ (closed 2026-10-29 audit: SUPERSEDED → r6 successor re-arm replaced by r8 window (codex-ni-inf12-gate2-triton36-r8-20261029 ran, delta-mem-reproduction.md:240) and r8 re-estimate box :241)
+  - 2026-10-29 (ws58 results filing batch B, diagnostic, no tick): `codex-ni-inf12-gate2-triton36-r8-20261029` (GPU mi210_0 + 184-191, new pin `eb329bb4`, run_fingerprint `9722cd61`) first window PARTIAL rc 75 at 01:48:32Z (`work-deadline`, child reaped, STATE `partial`, 1,657 s wall). Units: about 16 of 500 `Accurate_Retrieval/eventqa_131072/base` records in that window, inferred from cumulative query time (16 → 1,555 s, 17 → 1,652 s); the population is 3,671 per arm, 7,342 for both. r8 is a fresh resume namespace: it re-ran record_index 0-15 with outputs byte-identical to r6 on 16/16, so the r6 re-arm box above is superseded by r8 rather than resumed. The row has kept running in later 30-min windows under the same pin: 11 more windows started 01:55-06:58Z, 10 ended rc75/partial at `work-deadline` and the 06:58Z window was still running at filing. At the filing read (~07:05Z) the file held 179 contiguous records, interim base-arm EM 138/179, F1 0.8485, ~98 s/question. The delta arm has not started. Diagnostic only (predeclared rule: raw source-level and sample-weighted metrics, no threshold); Gate 2 stays open. [belief: cc]
+    - [ ] **INF-12 Gate 2 r8 feasibility re-estimate (filed 2026-10-29, ws58 filer B):** at the measured ~98 s/question on eventqa_131072 (~16 questions per 30-min GPU window), the FILLERS row's "~8 h total" cannot cover 7,342 questions; this source's base arm alone is ~13.6 GPU-h. Re-estimate per source from measured s/question, then book longer GPU windows or narrow the population by an owner decision recorded here. Done when the row carries a measured-rate ETA.
+      - 2026-11-02 planning evidence: R13 base-arm single-question generation observations are 35.085 s for `eventqa_65536` and 376.593 s for `eventqa_full`; the latter is a conservative admission observation, not a universal source rate. The independently documented `eventqa_131072` base rate is ~98 s/question, giving ~13.6 GPU-h for its 500 questions before window overhead. These are not measured rates for the other sources or the Delta arm, so a full-matrix measured-rate ETA remains unknown. Evidence: `/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/inf12/RATE-EVIDENCE-v3.json`; prepared v3 successor remains a proposal pending owner route and real qualification, as detailed in `/mnt/raid0/llm/tmp/codex-ni-native-successors-20261101/REVIEW.md`. Do not publish that proposal as ready. [no-belief: partial calibration observations, not a full feasibility estimate]
+- [x] Gate 2 runtime/readiness preparation: pinned Triton 3.6 actual-entry smoke, 2 real questions per arm, rc 0 and writers complete; diagnostic only, full population and verdict remain open. [no-belief: smoke-only readiness evidence; no full Gate 2 measurement tuple]
+- [ ] Gate 3 magnitude: wider LoCoMo eval (25-50 samples) - GPU-realistic
+  - 2026-11-02 preparation: the existing `deltamem/eval/locomo_delta.py` supports GPU and the 5-conversation × 5-question scope, but deletes its progress JSONL at startup and writes final JSON only after both arms; it has no safe interrupted-run resume. Use an isolated output namespace and first publish a bounded GPU compatibility/rate diagnostic with pinned inputs and an explicit diagnostic rule. The 25-question paired result cannot establish the full-test magnitude. Launcher, protocol and rowflow requirements are being prepared independently; no GPU row or accuracy result exists yet. [no-belief: source inspection and planning only]
+- [ ] Phase 2: M.3 KV-Extension prototype on gemma4 worker_general, A/B vs SQLite B1
+- [ ] Phase 3: full delta-mem GGML op + cross-session persistent bank (gated on Phase 2)
+
+**2026-10-30 GPU partial, original R13:** The first repaired normal GPU run stopped at its work deadline (rc 75) on `Accurate_Retrieval/eventqa_131072/base`. The native file observed afterward contains 16/500 base source rows (16/3,671 per-arm pinned population), eventqa recall and exact match 11/16 (0.6875), mean F1 0.8134858197. No DeltaMem rows were present in the observed file. The 16-row file mtime predates the original stop, but the snapshot was taken after a separate rearm started in the shared namespace; exact boundary completeness and unknown cases are not independently established. Direct child was reaped; descendants were not censused. This is partial coverage, with no Gate 2 comparison or closure. See [native audit](../../artifacts/inf12-r13-original-audit-20261030.json) and [filing record](../../progress/2026-10/2026-10-30-codex3-inf12-r13-original.md). [belief: cc]
+
+
+## Track: ernie-image-turbo-evaluation
+<!-- gate: none -->
+
+> Moved from `handoffs/active/ernie-image-turbo-evaluation.md` @ `8827db1c6c80` (BRF-T1-MEQ, operator D2); former row PIP-03. Sections without open boxes (background, closed ledger) stay in [`../completed/ernie-image-turbo-evaluation.md`](../completed/ernie-image-turbo-evaluation.md).
+
+#### Progress checklist
+
+- [x] Acquire the requested Qwen-Image-2.1 Diffusers weights for comparison ✅ 2026-09-23 — complete public bundle at
+      `/mnt/raid0/llm/models/diffusion/qwen-image-2.1/` (33,115,613,408 bytes; all text-encoder and transformer
+      shards plus VAE present). Acquisition is not a generation benchmark; no Qwen-vs-ERNIE outputs or comparative
+      claims are recorded yet.
+- [x] Switch the production `image_generate` backend to Qwen-Image-2.1, preserving the API and keeping ERNIE for rollback ✅ 2026-09-24 — CPU-only Diffusers service is healthy on port 8190; no generation-quality claim is made.
+- [ ] Run a matched-prompt Qwen-Image-2.1 vs ERNIE generation comparison and record prompt, settings, outputs,
+      and admissibility before drawing quality or speed conclusions.
+- [x] Production functional on CPU via sd-server Q8 + conv-direct; Q4 rejected (text corruption) ✅
+- [x] **File the missing intake row and close the `intake-528` mis-citation** ✅ 2026-07-29 — the deployed
+      `image_generate` model had NO index row for its entire deployed life, while this handoff (4 places)
+      and the deep dive (2) cited `intake-528`, which is "Effort Engine (bucketMul)". Created `intake-937`
+      (`already_integrated`, dive-verified) and repointed all 6 references with inline dated correction
+      notes. A *missing* entry is loud; a *wrongly-pointed* one is silent — every reader who checked the
+      citation was reassured, and it survived until a Z-Image dive grepped the index instead of trusting
+      the handoff. Cross-ref citations are now worth a periodic sweep, not just a per-entry check.
+- [x] Record the LongText-Bench resolution in the deep dive (§ benchmark positioning) ✅ 2026-07-29 — harmonized ranking,
+      identical splits, EN/ZH-mean aggregation, ERNIE +4.4 over Z-Image-Turbo even w/o prompt enhancer; and
+      that ERNIE's own 0.9655 remains vendor-self-reported (see the 2026-07-29 section above)
+- [ ] Run content-filter audit live with --execute (harness ready in orchestrator ed6f65f5) and review outputs
+- [ ] Run 20-prompt local LongTextBench-style EN/ZH typography spot-check to validate 0.9655 self-report
+- [ ] GPU/MI210 rebench of the 8-step distilled DiT via ROCm/HIP path (operator-approved, measure-not-extrapolate)
+  - **Build ready 2026-09-16 (sub-gpu-prep; run still open):** sd.cpp worktree
+    `/mnt/raid0/llm/worktrees/sub-gpu-prep-stable-diffusion.cpp` (`sub/gpu-prep-20260916` @ `a54f50c`, base `90e87bc`),
+    build `build-rocm-gpuprep-20260916` (shared ggml, HIP gfx90a, ROCm 6.2; sd-server sha256 `5335caad…4862`),
+    carrying the ggml FP8 guard and a ROCm f32 fix on ERNIE `to_out.0`/`linear_fc2` (`SD_ERNIE_ROCM_F32=0` disables it
+    for A/B). `verify_ggml_linkage.sh` PASS (all four ggml libs inside the build dir). Runner recipe (port 18190,
+    768–1024² × 8 steps × 3 repeats, fix on/off, blank-PNG metric, VRAM sampled during the run):
+    `RUNNER_RECIPE.md` in the worktree. Prod `build/` and `build-hip/` untouched.
+  - **RUN 2026-09-16, 14:21–14:30Z (sub-gpu-runner; collected by sub-gpu-collect).** Result: **the f32 fix is
+    REFUTED**, by the recipe's own rule ("B still blank at 1024²"). Box NOT ticked: there is no valid 1024² GPU
+    number.
+    - **Evidence.** Research main `cf05eefc`, `data/ernie-rocm-rebench-20260916/`. PNG sha256s are in
+      `requests.jsonl`; the images themselves are not committed.
+    - **Admissibility.**
+      - 23/23 requests returned HTTP 200.
+      - The server pid was listed in KFD in every sample of every request.
+      - The log shows `found 1 ROCm devices` / MI210, and params load with `RAM 0.00MB`.
+      - Peak VRAM: 25.5 GiB with the patch ON, 19.0 GiB with it OFF.
+      - Peak KFD count 1. The linkage receipt PASSes.
+      - sclk dipped to 1295 MHz.
+    - **Results.** 8 steps, seed 2026072732, n=3 per cell. Every cell was bit-identical across its reps, so
+      the spread is zero.
+
+      | shape | patch ON gen s | patch OFF gen s | output |
+      |---|---|---|---|
+      | 768² | 16.3 | — | good |
+      | 896² | 23.0 | 20.3 | good |
+      | 960² | 26.9 | — | good (visually checked) |
+      | 1024² | 30.2 | 26.5 | **uniform white** (mean 255, sd 0, 33 KB), ON and OFF |
+      | 832×1248 | 30.4 | — | **uniform white** |
+
+    - **Reading.**
+      - The patch does not fix the ≥1024² white output, and it costs about 13% (896²: 23.0 vs 20.3 s).
+      - 960² is now non-blank with the patch ON, where the 2026-07-19 build was blank at ≥960². Patch OFF was
+        not run at 960², so that change cannot be attributed to the patch.
+      - Per the recipe, no headline speedup is computed.
+    - **Belief kernel.** No write hook; covered by VB-GPU-RUNNER.
+  - **Recipe §5 follow-ups A/B, 2026-09-17, 02:30–02:55Z (sub-s5-topup chain8; sd.cpp `f3a7fe95`, build
+    `build-rocm-variants-20260916`, sd-server sha `d33cbe6f…`, RUNNER_RECIPE §8). Result: NO variant FIXES.**
+    Box NOT ticked: there is still no valid 1024² GPU number.
+    - **Evidence.** Research main `ca8c63d6`, `data/gpu-mi210/ernie-image-turbo-hip-variants-20260917/`
+      (`verdict.json`, `requests.jsonl`; PNGs not committed).
+    - **Admissibility.**
+      - 55/55 requests returned HTTP 200, with the same prompt and seed as `cf05eefc`.
+      - All 5 servers were resident, and each knob echo matched its variant.
+      - Each teardown was a SIGTERM on the driver's own PID, confirmed dead.
+      - Prod CPU sd-server pid 910274 was untouched and is still alive.
+    - **Pre-registered verdict.** FIX requires 1024² and 832×1248 non-blank on every rep, AND 768–960² good.
+
+      | variant | 1024² + 832×1248 non-blank | 768–960² guard | verdict | 896² gen s vs off (19.44) |
+      |---|---|---|---|---|
+      | off (`F32=0`) | 0/6 | 768 ✓, 896 ✓×3, **960 blank ×3** | BASELINE (defect reproduced) | — |
+      | f32 (narrow, default) | 0/6 | not run | DOES-NOT-FIX | — |
+      | wide | 0/6 | 768 ✓, 896 ✓, 960 blank | DOES-NOT-FIX | 27.66 (**1.42×**) |
+      | outscale (1/16) | 0/6 | 768 ✓, 896 ✓, 960 blank | DOES-NOT-FIX | 19.70 (**1.01×**) |
+      | wide+outscale | 0/6 | 768 ✓, 896 ✓, 960 blank | DOES-NOT-FIX | 1 rep 27.89 (≈1.43×, not the 3-rep cost cell) |
+
+    - **Reading.**
+      - The missing cell, patch-OFF 960², is blank. With the same seed and prompt, the 2026-09-16 narrow-ON
+        960² was good. So the narrow f32 patch moved the blank threshold from 960² to 1024², a cross-build
+        comparison on the same default code path.
+      - Neither the wider f32 set nor the out-proj scale extends that shift. Both are blank at 960² again.
+      - The white output at ≥1024² is not fixed by any precision change on the DiT linears.
+      - Recipe §5 is exhausted. The next hypothesis has to lie outside those linears, for example the VAE decode
+        or the attention/FA path at the larger sequence length. It needs a new build plus prep, not a re-run.
+    - **Belief kernel.** No write hook; covered by VB-GPU-RUNNER.
+  - [ ] **ERNIE-ROCM-NEXT — prepare the next ≥1024² white-output hypothesis outside the DiT linears** (VAE
+        decode, or the attention/FA path at the larger sequence length): a new sd.cpp build and a
+        pre-registered A/B, zero-inference prep first. The run waits for the operator to lift the 2026-09-17
+        GPU hold. Filed 2026-09-17 from recipe §5 being exhausted (`2026-09-16-sub-s5-topup.md`).
+- [ ] Re-litigate FLUX.1-schnell alternative if bilingual long-form in-image text not needed by product
+
+## Track: gpu-cot-scaffold-sidecar
+<!-- gate: none -->
+
+> Moved from `handoffs/active/gpu-cot-scaffold-sidecar.md` @ `8827db1c6c80` (BRF-T1-MEQ, operator D2); former row INF-19. Sections without open boxes (background, closed ledger) stay in [`../completed/gpu-cot-scaffold-sidecar.md`](../completed/gpu-cot-scaffold-sidecar.md).
+
+#### G3 — Scaffold-generator A/B: FF + TC vs Qwable (+ the pending standalone control) — first post-campaign GPU experiment
+
+_Reuses the built harness (`/mnt/raid0/llm/tmp/cot-g1/`, SCAFFOLD-PREFIX mode) and the validated conditional deploy rule (reasoning-bound task + receiver latent capability). GPQA-48-class scale, single MI210 sidecar — small. Run `g3-gpqa-20260728T070247Z-manual2` and its v3 matched-control successor are terminal OBSERVATIONS; G3-0 through G3-3a and the G3-3 saved-output replay are complete. The default remains no deployment decision: a future decision instrument is separate. No role, lineup, registry, or deployment action is implied._
+
+- [x] **G3 prerequisite — exact Qwable IQ4_XS artifact restored and verified** ✅ 2026-07-28 — `Qwable-v1.IQ4_XS.gguf` is present at the pinned HF revision `f35ea1502056a2886dd88fb8a29272f8f3c9c3a5`, `18,939,313,056` bytes, SHA-256 `3921bb8f1fc26ddd80ee97d0f48ccf507bd1dab04dbe4fc475e2eae65a05f460`. Durable restore receipt: `/mnt/raid0/llm/tmp/cot-g1/g3_20260728/restore_qwable_iq4xs.log`. This restores the fixed control artifact only; it does not execute G3.
+- [x] **G3-0 — Qwable-standalone GPQA control** ✅ 2026-07-28 — terminal arm `40/48` (`83.33%`), `214,234` generator tokens; frozen-scorer replay exactly matches all stored item judgments. This completes the standalone arm, but does not resolve relay vs amplification because the bundle has no matched Qwable-prefix receiver arm.
+- [x] **G3-1 — FF-non-MTP as generator** ✅ 2026-07-28 — terminal prefix arm `41/48` (`85.42%`), `311,346` generator + `11,932` receiver = `323,278` total tokens (`1.509x` Qwable-standalone tokens); frozen-scorer replay exactly matches.
+- [x] **G3-2 — TC as generator** ✅ 2026-07-28 — terminal prefix arm `43/48` (`89.58%`), `207,610` generator + `8,983` receiver = `216,593` total tokens (`1.011x` Qwable-standalone tokens); frozen-scorer replay exactly matches. This is the highest point estimate in this screen, not a selection verdict.
+- [x] **G3-3 — deterministic saved-output replay and observation closeout.** ✅ 2026-07-29.
+  Frozen-scorer replay had zero mismatches across all 5 x 48 saved outputs: receiver-nothink
+  `25/48`, Qwable standalone `40/48`, Qwable-prefix `42/48`, FF-prefix `41/48`, and TC-prefix
+  `43/48`. Generator differences are statistically null. Qwable-prefix used `32,768` context versus
+  `16,384` for the other prefix arms, so it cannot support a causal generator ranking; FF is
+  dominated by Qwable-prefix on accuracy, tokens, and compute, while TC is only +1 against it at
+  3.25x compute with a null paired delta. This closes deterministic analysis only. **No deployment,
+  lineup, registry, or generator-selection rule changes.**
+- [ ] **G3-4 — future decision instrument (separate from G3-3).** Select and run a decision-grade,
+  context-matched generator/receiver instrument only if a concrete deployment decision is proposed.
+  Do not regenerate or continue deterministic analysis of the sealed G3 artifacts.
+- [x] **G3-3a — matched-control + stop-reason repair** ✅ 2026-07-28 — v3 preserved the sealed 48-item input/scorer and imported the valid v2 rows without regeneration: receiver-nothink `25/48` (all 48 imported), Qwable-prefix `42/48` (5 imported + 43 fresh). The previous context failure is durably prevented: full rendered-prefix preflight found worst case `16,444 + 4,096 = 20,540` tokens and selected the bounded `32,768` context. Raw responses retain llama-server `stop_type` (`eos`/`word`/`limit`); teardown and `COMPLETE` are present. Artifact: `/mnt/raid0/llm/tmp/cot-g1/g3_20260728/successors/g3-gpqa-20260728T070247Z-manual2-controls-v3/` (`prepared.json` SHA-256 `508242ea57bf6b7505626215a110cd8fabf11ef6c217834a971f1af5dcf1a25c`, raw attempts `9af5d10764901394ab7c7167e6bfe5e357eac90b1d31e3a5467eafa838fff8bb`).
+
+## Track: lightning-attention-port
+<!-- gate: none -->
+
+> Moved from `handoffs/active/lightning-attention-port.md` @ `8827db1c6c80` (BRF-T1-MEQ, operator D2); former row INF-30. Sections without open boxes (background, closed ledger) stay in [`../completed/lightning-attention-port.md`](../completed/lightning-attention-port.md).
+
+#### Outstanding Tasks
+
+- [x] **LQ-1 role decision**: **parked architecture reference** (owner: Inference
+  Acceleration / this handoff) ✅ 2026-07-29. This is a production-role decision,
+  not a claim that the port or model is broken. The Q4 artifact remains on disk and
+  current v8 production/experimental sources retain the `bailingmoe` architecture,
+  but it is Tier C, cold, and unpinned; no active stack configuration selects it.
+  The last complete quality review is historical (2026-05-04) and scored 59/90
+  (65.6%), with 7 empty responses and a regression when the output budget was
+  enlarged. The Qwen drafter route is already a hard no-go (different tokenizer
+  and impossible acceptance/throughput math); neither a current q-scorer/routing
+  comparison nor a compatible Ring-flash target exists. Do not assign it a live
+  role from the AIME spot check or old review alone. Reopen only with (a) a
+  specified same-tokenizer Ring-flash candidate, or (b) an owned, current-era
+  q-scorer/routing A/B against the incumbent; either condition then starts LQ-2
+  or LQ-3 respectively.
+- [ ] **LQ-2 broader quality eval**: if keeping a math/reasoning role, run a focused AIME/MATH/GPQA-style bundle with `reasoning_budget=0`, exact prompt templates, and explicit safety exclusions.
+- [ ] **LQ-3 Ring-flash drafter check**: only if a compatible Ring-flash target is available. Measure acceptance-adjusted throughput; raw Ring-mini t/s is not enough.
+- [ ] **LQ-4 profile-gated L5 decision**: only profile after LQ-1/2/3 gives a reason to keep the model. Promote a dedicated op only when the profile proves a material bottleneck.
+
+##### Tasks
+
+- [x] **Z9 (Z, prerequisite for G18) — write the ~30-line pure-PyTorch constant-decay simple-GLA <!-- evidence-integrity: Research `d2d485598807f8fe5ab9badbfe539e3857ff1f51`; artifact: artifacts/compute/refactor-evidence-corrections-20261031/19/public-oracle-tests-final.log; hygiene, not quota -->
+      recurrence** to stand in for the `fla` Triton call, **so that an HF CPU numerical oracle exists
+      at all**. ✅ 2026-10-29 — Research `d2d485598807` ships `scripts/benchmark/sala_cpu_oracle.py`:
+      float32 CPU recurrence, original ALiBi slopes, initial/final state, native chunk/fused interfaces,
+      packed independent sequences and hash-pinned local HF import with `GenerationMixin` compatibility.
+      All11 controls pass, including an independently expanded causal sum at0/1/7/63/64/65/129 tokens,
+      split continuation, packed state isolation, native original SALA short/chunk masked attention,
+      original1/3/7/32-head slopes, source mismatch and import cleanup. No weights or pretrained model
+      inference ran; no GPU Triton numerical equivalence or GGUF parity is claimed. [Usage/source pins](https://github.com/pestopoppa/epyc-inference-research/blob/d2d485598807/docs/reference/sala-cpu-oracle.md),
+      [native control evidence](../../artifacts/compute/codex3-relocatable-and-sala-z9-20261029.json).
+      G18 retains its original3-prompt ×32-token, under8192-token, token-identical gate and remains open.
+      [no-belief: CPU reference implementation and native-interface code tests; no inference result]
+- [ ] **G18 (G, prerequisite `Z9`) — SALA correctness-first port + CPU parity smoke.** On
+      `llama.cpp-experimental` branched from the current production tip (**never v9**). Greedy
+      (`temp 0`, fixed seed), **3 prompts × 32 tokens, every prompt under `sparse_config.dense_len` =
+      8192** so both sides run the sparse layers dense and the comparison is not confounded by the one
+      primitive we do not have. GGUF output vs the `Z9` HF CPU oracle.
+      **Gate:** **token-identical output on all 3 prompts.** Anything less is not a parity result and
+      must not be reported as one.
+      **Owner:** this handoff. Both compute planes were held by other sessions through this wave —
+      **filed, not run.**
+- [ ] **B8 (B, blocked on `G18`) — the three things that all presuppose numerical correctness.**
+      None may start before G18 passes; each is listed with the handoff that would own it if it does.
+      **(a) Throughput.** Decode and prefill t/s for SALA Q4_K_M on EPYC at 4K / 32K / 128K against the
+      production frontdoor, and on MI210 HIP. Owner if opened:
+      [multiscreen-attention-evaluation.md](multiscreen-attention-evaluation.md).
+      **(b) NoLiMa adjudication.** The paper's Table 3 reports 128K = 23.86; an unmerged NoLiMa
+      leaderboard PR submitted by an account whose handle matches a SALA co-author reports **40.9** for
+      the same model on the same benchmark, and lists an *effective length of 4K* for a model marketed
+      at 1M. Neither source ships raw files, so this is only resolvable by running it. Owner if opened:
+      [eval-tower-verification.md](eval-tower-verification.md).
+      **(c) An InfLLM-V2 block-sparse ggml op.** **Justified only if (a) shows the dense fallback makes
+      prefill the binding constraint above ~32K.** Owner if opened: this handoff. Note the standing
+      decline on porting `infllmv2_cuda_impl` to HIP — sm80 CUDA only, zero hip/rocm hits, and upstream
+      llama.cpp closed the SALA support request `not_planned`; **re-surface only if SGLang PR #30360's
+      AMD ROCm CI leg goes green**, which is the leading indicator for this hardware.
+      Adopting SALA as a production model is a separate standing **decline**: 9B dense against our
+      35B-A3B, no evidence it wins on any axis we serve, and no reproduced number from anyone in six
+      months.
+
+  <!-- task-evidence-integrity:start Z9 -->
+  - Evidence metadata (hygiene, not new quota): Research `d2d485598807f8fe5ab9badbfe539e3857ff1f51`; [original test/artifact](../../artifacts/compute/refactor-evidence-corrections-20261031/19/public-oracle-tests-final.log). Full Z9 primitive exists with native HF import and11 original numerical/interface controls; this is not G18 model/GGUF parity. No tests rerun or historical redating.
+  <!-- task-evidence-integrity:end Z9 -->
+
+## Track: minddr-deep-research-mode
+<!-- gate: none -->
+
+> Moved from `handoffs/active/minddr-deep-research-mode.md` @ `8827db1c6c80` (BRF-T1-MEQ, operator D2); former row UFH-04. Sections without open boxes (background, closed ledger) stay in [`../completed/minddr-deep-research-mode.md`](../completed/minddr-deep-research-mode.md).
+
+### MindDR Deep Research Mode
+
+**Status**: REFRESHED 2026-07-29 — Phase 1 scaffold landed; MD-9 A/B is the live gate; Phase 2 hardware is present but its training-runtime preflight is blocked; Phase 3 conditional
+**Created**: 2026-04-22 (split from `routing-intelligence.md` per deep-dive integration pass)
+**Updated**: 2026-05-28 (executor gate clarified after MD-1..MD-8 landed)
+**Categories**: agent_architecture, routing_intelligence, training_distillation
+**Priority**: MEDIUM (Phase 1 zero-infra; Phase 2/3 deferred)
+**Depends on**: `routing-intelligence.md` (classifier infrastructure), `eval-tower-verification.md` EV-9 (multi-dimensional rubric)
+**Sibling (same gate, lighter weight)**: [`gpu-cot-scaffold-sidecar.md`](../completed/gpu-cot-scaffold-sidecar.md) — its **G1** ("does an injected CoT scaffold beat a code worker's own thinking, per token?") is **MD-9 one weight down**. Both live in the **reasoning-economics cluster** (`research-evaluation-index.md`) and must share the EV-9 DRACO/MindDR scoring contract + token-normalization, not re-derive them.
+
+> **🔔 Reopen-trigger FIRED (Phase 2) — 2026-07-18 stale-open audit.** The hardware-acquisition wait is cleared: the DGX-Spark path is dead and the **MI210 is present (2026-07-02)**. The 2026-07-29 preflight found no pinned gfx90a training runtime, so the viability smoke remains blocked on provisioning plus a quiet-window lease. (MD-9 A/B remains the live Phase-1 gate, still inference-window-gated.) See [`stale-open-audit-2026-07-18.md`](stale-open-audit-2026-07-18.md).
+
+- [ ] Phase-2: run a gfx90a (MI210) training-viability smoke now that the hardware gate flipped (was DGX-blocked) — **BLOCKED 2026-07-29**: GPU is idle and visible, but both project uv environments lack `torch`, `transformers`, `accelerate`, `trl`, `peft`, and `datasets`; requires a pinned gfx90a-compatible training environment, not an ad-hoc install. **Countermanded until E5 Stage-B releases the host:** a Python ROCm trainer is currently invisible to E5's process/SMT-affinity gates and could silently contaminate its decision-grade CPU cells.
+
+#### Research Intake Update — 2026-07-08: PaperBench Source-Fidelity (rec-006)
+
+**Source**: PaperBench (intake-794)
+
+**Key finding**: PaperBench benchmarks model ability to understand and reproduce research papers. Methodology may be transferable to our deep-research pipeline for validating that our agent-generated research artifacts are faithful to source material.
+
+**Applicability to EPYC**: Our MindDR pipeline produces synthesized reports from multi-agent research. PaperBench-style validation could serve as a quality gate for the ReportSynthesisNode, ensuring the final report is faithful to the collected evidence. Particularly relevant for Phase 2 RL training where citation-grounded reward shaping is critical.
+
+**Action**: Monitor PaperBench development; evaluate as a source-fidelity validation gate for our deep-research reports.
+
+- [x] **MD-PB-1** — evaluate PaperBench methodology for source-fidelity validation of deep-research reports ✅ 2026-07-22
+- [ ] **MD-PB-2** — consider integrating PaperBench-style evaluation into MD-9 A/B test rubric
+
+#### Progress checklist
+
+- [x] MD-1..MD-8 Phase 1 scaffold (flag, classifier, prompts, pydantic_graph, rubric, sentinel suite - DONE 2026-04-22) ✅
+- [ ] MD-9 A/B test sentinel suite with deep_research_mode 0/1 (>=+5pp gate, INFERENCE-GATED)
+- [ ] Request-dispatcher 1-line wiring (feature_flag && is_research_like -> run_minddr) once MD-9 passes [too-big: prerequisite MD-9 is an incomplete inference-gated handoff experiment]
+- [x] EV-9 multi-dimensional rubric scoring (handed to eval-tower; needed for non-structural MD-9) ✅ 2026-10-29 (audit: eval-tower-verification.md:295-310 EV-9 all 4 tasks [x] (orchestrator 9db36fcb, rubric_scoring.py exists); exit criterion "MD-9 A/B can produce multi-dimensional scores" met) [no-belief: audit-reconciliation]
+- [ ] Phase 2 MD-10..MD-13 four-stage RL (GPU-gated, deferred)
+- [ ] Phase 3 MD-14 architect role refactor (conditional on durable >=5pp uplift)
+
+##### New Related Research
+- **[intake-810] "RubricEM: Meta-RL with Rubric-guided Policy Decomposition beyond Verifiable Rewards"** (arxiv:2605.10899; Google Cloud AI + UIUC)
+  - Relevance: same **four-stage Plan→Research→Review→Answer** scaffold this handoff uses, but treats **rubrics as the shared interface** structuring policy execution, judge feedback, AND agent memory (a reusable **rubric bank**) — not just a final-answer scorer. Directly informs MD-9 non-structural scoring + the EV-9 rubric contract.
+  - Adoptable now (zero-training, Phase-1 style): rubric-as-interface framing + stage-specific reward decomposition + reflection/rubric-bank memory. **Not** adoptable: the RL core (SS-GRPO + reflection meta-policy training) needs GPU training infra we lack — aligns with this handoff's Phase-2 MD-10..13 being GPU-gated/deferred.
+  - Reported (OBSERVATION-grade): RubricEM-8B long-form avg 55.5 (beats DR Tulu-8B 53.6, approaches OpenAI Deep Research 59.9 at far fewer params); short-form OOD avg 73.5. Heavy overlap with already-indexed MindDR (intake-438).
+- [ ] Operator-review candidate (deep-dive 2026-07-11 SHARPENED): **PRIMARY (prompt-level, genuinely new):** rubric-as-**execution**-interface — PlanningNode emits a prospective `<rubrics>` block; DeepSearch loop does per-step `<state_evaluation>` vs rubric; add a **Review stage** (`<rubric_review>` mapping evidence→criteria before ReportSynthesis) — the *sole* scaffold delta vs our 3-node pipeline — plus a Review-stage rubric-adherence EV-9 dimension. **Note:** stage-decomposed *scoring* is already in EV-9 (`rubric_scoring.py`); only SS-GRPO's per-stage credit-assignment is new and it's **RL/GPU-gated (OUT — duplicates MD-10..13)**. **EXPERIMENTAL (adopt cautiously):** a heuristic kb-search rubric bank over `src/trace` — but the paper's own Fig-6 ablation attributes the transfer gain to the *trained* meta-policy and shows an untrained model doesn't benefit, so treat as a falsifiable experiment, not a free win.
+
+#### Research Intake Update — 2026-07-21 (Search-time contamination — the "reliable anchors" need demoting)
+
+- **[intake-877] "Search-Time Contamination in Deep Research Agents"** (arxiv:2606.05241; Tongyi Lab/Alibaba + NTU)
+  - Relevance: defines a validity defect that **no part of the MEASUREMENT.md tuple currently captures** — retrieval-environment provenance. An agent searching the live web at inference time can retrieve the benchmark's own metadata, question text, or ground-truth answer instead of reasoning. Three severity tiers: Benchmark Metadata Leakage → Question-Context Leakage → Explicit Answer Leakage.
+  - Reported: up to **4 percentage points** of inflation across six public benchmarks; per-agent leakage rates spanning ~0-78% depending on the retrieval stack (so exposure is a property of the *search backend*, not only the benchmark).
+  - **Our exposure, assessed concretely — better than feared on MD-8, worse elsewhere:**
+    - **MD-8 sentinel is largely NOT exposed.** Its 20 prompts are EPYC-authored *style imitations* of BrowseComp/WideSearch, not verbatim public items, and are graded by an EV-9 rubric with no published answer key. Question-context and answer leakage are therefore mostly inapplicable. It does run live (all 20 executed through SearxNG), which makes those numbers non-reproducible over time — a real but *different* validity problem, fixed by the same transparent-trajectory recommendation.
+    - **MD-9's external anchors ARE affected.** This handoff designates BrowseComp 45.7 / WideSearch 46.5 / xbench-DS 75.0 as "the reliable anchors" for the adoption case, against a **+5pp promotion gate**. Up-to-4pp of such published numbers can be contamination — comparable in size to our own gate. Those anchors should be demoted from "reliable" to observation-grade.
+  - Caveats: preprint, not peer-reviewed; the benchmark set is clinical/medical-heavy so generalization to BrowseComp/GAIA-style open-web benchmarks is asserted rather than demonstrated; "up to 4%" is an upper bound, not a mean; the lead affiliation also produces one of the benchmarked agents (though it is the primary contaminated subject, so the bias does not flatter them).
+
+- [x] **MD-9 external-anchor demotion:** BrowseComp/WideSearch/xbench-DS are now explicitly observation-grade, not reliable adoption anchors; their possible search-time contamination is comparable to the +5pp promotion margin. The local MD-8 sentinel remains a distinct non-verbatim, trajectory-auditable evaluation surface. ✅ 2026-07-29
+- [ ] Operator-review candidate: capture search trajectories (query, URL, snippet) on deep-research eval runs so question-context / answer leakage can be audited post hoc — our SearxNG JSON path already returns `engines[]`/`score`, making this nearly free. [intake-877]
+
+## Track: minimax-h3-video-generation-evaluation
+<!-- gate: none -->
+
+> Moved from `handoffs/active/minimax-h3-video-generation-evaluation.md` @ `8827db1c6c80` (BRF-T1-MEQ, operator D2); former row EVL-32. Sections without open boxes (background, closed ledger) stay in [`../completed/minimax-h3-video-generation-evaluation.md`](../completed/minimax-h3-video-generation-evaluation.md).
+
+#### Open questions / next steps
+
+- [ ] **Scope decision (operator)**: is video generation a product need at all? If not, close this
+      handoff — the download is 165 GB on a 92%-full volume, so "interesting model" alone is not a reason.
+- [ ] If scope approved: re-check disk headroom, then download `model_index.json` + `Ref2VA/*` + the
+      beta4 INT8 transformer (~165 GB total)
+- [ ] Serve on the MI210 stack via SGLang or ComfyUI (reference deployment is 4×GPU ulysses-degree 4 —
+      confirm single-MI210 feasibility with the INT8 transformer before committing; ~2.4 GB/K GPU not
+      transferable from the SGLang cookbook without measurement)
+- [ ] 768p quality smoke on a small prompt set (T2VA + FL2VA + Ref2VA cases from the model card's
+      reproducible scripts); record wall-clock, VRAM, failures
+- [ ] Content-filter audit of local output (hosted moderation does NOT apply locally)
+- [ ] File the research-intake row when adoption is decided (none exists yet — created directly at
+      intake, mirroring intake-937 for ERNIE; verdict will be `new_opportunity` or `already_integrated`)
+- [ ] License compliance note for any production use: US/EU/UK/KR are Excluded Territories — use there
+      requires the MiniMax application; guardrail-bypass via uncensored LoRAs is an AUP #5 breach
+      (governance note only; does not gate the capability evaluation)
+
+## Track: qwen-mtp-llamacpp-port
+<!-- gate: none -->
+
+> Moved from `handoffs/active/qwen-mtp-llamacpp-port.md` @ `8827db1c6c80` (BRF-T1-MEQ, operator D2); former row INF-46. Sections without open boxes (background, closed ledger) stay in [`../completed/qwen-mtp-llamacpp-port.md`](../completed/qwen-mtp-llamacpp-port.md).
+
+#### Remaining tasks
+
+- [x] **P1** Reconcile `common/speculative.{cpp,h}`: merge upstream's `DRAFT_MTP` state machine INTO our version, keeping our EAGLE3 scaffold + tree/DySpec + ngram + suffix paths intact. This is the keystone — most other files follow once the type/enum + state class exist. ✅ 2026-07-11
+- [x] **P2** `common/arg.cpp`: extend `--spec-type` enum to include `draft-mtp` (alongside our existing `none|mtp|ngram-*|suffix`); add `--spec-draft-n-max`. Note our fork already has a `mtp` spec-type (gemma4 external) — disambiguate `mtp` (gemma4 external assistant head) vs `draft-mtp` (in-GGUF NEXTN self-draft) or unify. ✅ 2026-07-11
+- [x] **P3** `include/llama.h` + `src/llama-context.cpp` + `src/llama-cparams.h`: add the MTP context type + decode/logits MTP APIs; reconcile with our context lifecycle. ✅ 2026-07-11
+- [x] **P4** `src/models/qwen35.cpp` / `qwen35moe.cpp` + `src/llama-arch.*` + `conversion/qwen.py`: the Qwen MTP graph (nextn layer) + metadata loader. ✅ 2026-07-11
+- [x] **P5** Resolve the remaining backend/test/doc files to compile; `cmake -B build && cmake --build build -j$(nproc)` (CPU: `-DGGML_CUDA=OFF`). ✅ 2026-07-11
+- [x] **P6a** Verify help surface: `llama-server --help` / `llama-speculative --help` show `--spec-type draft-mtp` + `--spec-draft-n-max`. ✅ 2026-07-11
+- [ ] **P6b** Operator-gated fresh-v8-experimental model-load + gate bench on `unsloth/Qwen3.6-35B-A3B-MTP-GGUF`, with matched Q4 no-spec vs Q4-MTP artifacts; then the parent T3/T4 benches.
+- [ ] **P7 (optional): FR-Spec draft LM-head vocab-trim** (intake-740), only after P6b and only from the fresh v8 experimental surface. Build an EPYC-workload-matched frequency map, retain byte-exact temp-0 validation, and measure end-to-end before adopting; historical #22673/EAGLE3 reconciliation assumptions do not apply.
+
+## Track: strand-rust-coder-rustevo2-verification
+<!-- gate: none -->
+
+> Moved from `handoffs/active/strand-rust-coder-rustevo2-verification.md` @ `8827db1c6c80` (BRF-T1-MEQ, operator D2); former row EVL-45. Sections without open boxes (background, closed ledger) stay in [`../completed/strand-rust-coder-rustevo2-verification.md`](../completed/strand-rust-coder-rustevo2-verification.md).
+
+#### Progress checklist
+
+- [x] Phase A acquisition + sanity (A-1 GGUF, A-2 benchmark/leaderboard, A-3 baselines, A-4 static harness) ✅
+- [x] Rust toolchain + Python venv host prereqs installed ✅
+- [ ] Phase B single-instance RustEvo2 bench (USER APPROVAL REQUIRED) - Strand, Qwen2.5-Coder-14B base, gemma4 worker, sequential
+- [ ] Phase C score table + decision matrix disposition; report base-model number to isolate fine-tune delta
+- [ ] Push GO/NO-GO disposition into intake-616 and flip swarm-dataset-distillation status if GO
+
+## Track: summary-token-attention-readiness
+<!-- gate: none -->
+
+> Moved from `handoffs/active/summary-token-attention-readiness.md` @ `8827db1c6c80` (BRF-T1-MEQ, operator D2); former row INF-52. Sections without open boxes (background, closed ledger) stay in [`../completed/summary-token-attention-readiness.md`](../completed/summary-token-attention-readiness.md).
+
+#### Gate Criteria (any one triggers activation)
+
+All gating is OR-logic: ANY of these fires → activate the implementation plan below.
+
+- [ ] **Gate A** — Pretrained checkpoint of a model we serve (Qwen2.5/3.5/3.6 family, or any base we already deploy) released with KSA-style summary tokens OR GSA-style gist tokens
+- [ ] **Gate B** — Community llama.cpp PR adding general support for: (i) dynamic top-k chunk masking + raw-KV restoration (covers GSA), or (ii) chunk-aligned summary KV cache layout (covers KSA)
+- [ ] **Gate C** — GPU acquisition that lets us run our own CPT (covers KSA's three-stage recipe AND GSA's Stage-1-only recipe). Cross-ref `project_dgx_spark_target` memory.
+- [ ] **Gate D** — Major-lab next-generation model adopts summary-token attention as default architecture (e.g., Qwen 4 with KSA, DeepSeek-V5 with summary tokens). Triggers automatic engagement when GGUF support lands.
+
+## Track: tidar-one-pass-variant-b
+<!-- gate: none -->
+
+> Moved from `handoffs/active/tidar-one-pass-variant-b.md` @ `8827db1c6c80` (BRF-T1-MEQ, operator D2); former row INF-53. Sections without open boxes (background, closed ledger) stay in [`../completed/tidar-one-pass-variant-b.md`](../completed/tidar-one-pass-variant-b.md).
+
+#### Waypoints
+
+- [x] **W1 — static mask-complexity analysis** (~1 day, no inference, ungated): TiDAR-pattern vs Linear-SS mask ggml-op complexity per deep-dive §10.4.2/§10.5 step 1 — read the antirez fork + intake-635 minimal reimpl for the mask trick, Nemotron paper §4.2 for the Linear-SS shape. Acceptance: written comparison; if comparable, Variant B is strictly cheaper than Variant A long-term on CPU. ✅ 2026-07-22
+- [ ] **W2 — checkpoint gate + Q4 quality validation** (bench-only when gate fires): watch for a Q4_K_M-quantizable TiDAR-class checkpoint (none exists today — deep-dive §10.4.3 calls this question dormant until then); on release, quantize and measure the quality delta (TiDAR-8B showed 6–9% HumanEval/MBPP loss at BF16; the gap may widen under Q4). Acceptance: go/no-go quality verdict recorded with eval protocol.
+- [ ] **W3 — ggml-op implementation** (5–10 days, gated on W2 go): unified causal+bidirectional mask single-forward draft+verify path in the experimental fork (per `feedback_experimental_repo`). Acceptance: correctness vs reference AR output; acceptance-rate instrumentation in place.
+- [ ] **W4 — canonical bench + decision memo** (~1 day): end-to-end decode vs AR baseline per the canonical protocol; synthesize into the Variant A vs B memo per deep-dive §10.5 step 4. Acceptance: claim filed per MEASUREMENT.md grammar; promote/park decision recorded.

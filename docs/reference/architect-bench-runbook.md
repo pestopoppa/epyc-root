@@ -7,7 +7,7 @@ justify the switch?
 
 **Status.** Adopted 2026-07-20, distilled from the first full run (Qwen3.5-122B-IQ2 vs Qwen3.6-27B-dense
 vs Qwen3.6-35B-A3B). That run's evidence + verdicts live in
-[`../../handoffs/active/architect-model-selection-bench.md`](../../handoffs/active/architect-model-selection-bench.md)
+[`../../handoffs/active/architect-model-selection-bench.md`](../../handoffs/active/model-evaluation-queue.md)
 and [`architect-model-selection-2026-07-20.md`](architect-model-selection-2026-07-20.md). This runbook is
 the *process*; those are the *instance*. Numbers quoted here are illustrative from that run — re-measure,
 never inherit.
@@ -385,7 +385,7 @@ is self-describing. Era-stamp; append, never overwrite historical numbers (MEASU
 
 ---
 
-*Cross-refs:* [`architect-model-selection-bench.md`](../../handoffs/active/architect-model-selection-bench.md)
+*Cross-refs:* [`architect-model-selection-bench.md`](../../handoffs/active/model-evaluation-queue.md)
 (the live instance) · [`architect-model-selection-2026-07-20.md`](architect-model-selection-2026-07-20.md)
 (evidence/decision-tree) · [`reasoning-effort-levels.md`](../../handoffs/active/reasoning-effort-levels.md)
 (the effort ladder) · `MEASUREMENT.md` (instrument constitution).

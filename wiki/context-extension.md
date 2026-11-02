@@ -347,7 +347,7 @@ Sources: [YaRN context-extension handoff](../handoffs/active/yarn-context-extens
 
 - YaRN r1 was refused at admission (`rc=6`, missing dry-run/launcher/job/manifest fields) with no native work. Private r2 is model-free prep: exact max N19 = 498,965 tokens, 52 source hashes pinned, launch refuses before v14 without a manifest-bound booking. No GPU result. [yarn](../handoffs/active/yarn-context-extension-research.md), [progress](../progress/2026-11/2026-11-01-codex-ni-inf12-yarne1-repair-luna.md)
 - OOLONG S0 v35 (rc=70, `DRYRUN_REFUSED: malformed claimed_cpus`) and S1 v31 (rc=75, admission lost before cutoff) are admission-class FAILED-RUNs with zero new pairs; denominators and sealed cells are preserved. The CPU-claim path must be requalified before continuation.
-- INF12 R13 attempt `20261031T210259Z-128495` ended rc=75 at the work deadline during `eventqa_131072/base`; completed items cannot be attributed, and it is distinct from attempt `20261101T003829Z-2260396`. [delta-mem](../handoffs/active/delta-mem-reproduction.md)
+- INF12 R13 attempt `20261031T210259Z-128495` ended rc=75 at the work deadline during `eventqa_131072/base`; completed items cannot be attributed, and it is distinct from attempt `20261101T003829Z-2260396`. [delta-mem](../handoffs/active/model-evaluation-queue.md#track-delta-mem-reproduction)
 
 ## Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
 

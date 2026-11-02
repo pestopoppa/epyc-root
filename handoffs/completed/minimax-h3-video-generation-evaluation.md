@@ -1,5 +1,9 @@
 # MiniMax-H3 Video Generation Evaluation
 
+> **Folded into [`model-evaluation-queue.md`](../active/model-evaluation-queue.md#track-minimax-h3-video-generation-evaluation) on 2026-11-02 @ `8827db1c6c80`** (BRF-T1-MEQ, operator D2). Open sections moved there under `## Track: minimax-h3-video-generation-evaluation`; this file keeps the
+> closed ledger and background. Historical citations `handoffs/active/minimax-h3-video-generation-evaluation.md:<line>` resolve at `8827db1c6c80`.
+
+
 **Status**: OPEN — created 2026-08-30 from operator session research (no intake row yet; see Task 7)
 **Created**: 2026-08-30
 **Updated**: 2026-08-30
@@ -65,21 +69,7 @@ the grafted portions per the author).
 
 ## Open questions / next steps
 
-- [ ] **Scope decision (operator)**: is video generation a product need at all? If not, close this
-      handoff — the download is 165 GB on a 92%-full volume, so "interesting model" alone is not a reason.
-- [ ] If scope approved: re-check disk headroom, then download `model_index.json` + `Ref2VA/*` + the
-      beta4 INT8 transformer (~165 GB total)
-- [ ] Serve on the MI210 stack via SGLang or ComfyUI (reference deployment is 4×GPU ulysses-degree 4 —
-      confirm single-MI210 feasibility with the INT8 transformer before committing; ~2.4 GB/K GPU not
-      transferable from the SGLang cookbook without measurement)
-- [ ] 768p quality smoke on a small prompt set (T2VA + FL2VA + Ref2VA cases from the model card's
-      reproducible scripts); record wall-clock, VRAM, failures
-- [ ] Content-filter audit of local output (hosted moderation does NOT apply locally)
-- [ ] File the research-intake row when adoption is decided (none exists yet — created directly at
-      intake, mirroring intake-937 for ERNIE; verdict will be `new_opportunity` or `already_integrated`)
-- [ ] License compliance note for any production use: US/EU/UK/KR are Excluded Territories — use there
-      requires the MiniMax application; guardrail-bypass via uncensored LoRAs is an AUP #5 breach
-      (governance note only; does not gate the capability evaluation)
+> Open section moved to [`model-evaluation-queue.md`](../active/model-evaluation-queue.md#track-minimax-h3-video-generation-evaluation) (BRF-T1-MEQ).
 
 ## Files
 
