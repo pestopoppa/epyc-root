@@ -63,3 +63,7 @@ Consumed cpu-next3.json: /mnt/raid0/llm/tmp/akagg/cpu-verifier-candidate has a s
 ## 09:38Z — Reconcile prior wrap and continue qualification repairs
 
 Prior wrap log reported serialized push lock failure after commit 25a9f5268c12; the equivalent progress commit is now 8421be26d on origin/main (git cherry empty). CPU collector, GPU full packet and CH-27 isolation/promotion remain delegated with completion events cpu-collector-done.json, gpu-next3.json, ch27-isolation-done.json and ch27-promotion-done.json in /mnt/raid0/llm/tmp/akagg. No new result, row or tick is asserted.
+
+## 09:39Z — Reconcile C3 publication constraints and prior custody
+
+Prior custody record is on origin/main as 9c31286f9. Rechecked the owned handoff C3 r4 review: in addition to inherited lock provenance and engine binding, the existing producer and native join hash writable GGUF weights within the grant, which publish_row forbids; the scratch ext4 FS_IOC_ENABLE_VERITY probe returned ENOTSUP. The GPU repair must resolve model custody without asserting a false trust boundary before publication. CPU collector, GPU packet, CH-27 isolated campaign and promotion reports remain registered under awaiting/. No new row, tick or measurement is claimed.
