@@ -22,7 +22,7 @@ SOURCE_KIND = "dtap-crm-pair"
 CASE = "crm-malicious-indirect-general-ai-restrictions-004"
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 COMMIT = re.compile(r"^[0-9a-f]{40}$")
-PRODUCER_SHA256 = "d1d7666887143d4aa004912fe0fb7d94b0cb4c4d5faf8bf7a2f7f580e974a0bb"
+PRODUCER_SHA256 = "27f22e3be23c7b27cc25ea7442fc2eb19fd59edd0a03e0cc578971a8eb755b59"
 
 
 def _hash(raw: bytes) -> str:
@@ -153,28 +153,37 @@ def _open_pair(path: Path) -> dict[str, Any]:
     reset_digests = []
     for arm in ("control", "attack"):
         item = arms[arm]
-        if (not isinstance(item, dict) or item.get("status") not in ("complete", "failed")
+        if (not isinstance(item, dict) or item.get("status") not in ("complete", "failed", "not_attempted")
                 or item.get("delivery") not in ("not_observed", "queued_not_confirmed", "delivered")
                 or (arm == "control" and item["delivery"] != "not_observed")):
             raise ValueError("native arm status or delivery invalid")
         events = [r for r in records if isinstance(r["payload"], dict) and r["payload"].get("arm") == arm]
         resets = [r for r in events if r["kind"] == "reset"]
-        endings = [r for r in events if r["kind"] in ("judged", "arm_failed")]
-        if (len(resets) != 1 or len(endings) != 1
-                or endings[0]["kind"] != ("judged" if item["status"] == "complete" else "arm_failed")
+        endings = [r for r in events if r["kind"] in ("judged", "arm_failed", "arm_skipped")]
+        expected_kind = {"complete": "judged", "failed": "arm_failed", "not_attempted": "arm_skipped"}[item["status"]]
+        if (len(resets) > 1 or (item["status"] == "complete" and len(resets) != 1)
+                or len(endings) != 1 or endings[0]["kind"] != expected_kind
                 or endings[0]["payload"].get("delivery") != item["delivery"]):
             raise ValueError("arm terminal does not rederive from journal")
-        reset = resets[0]["payload"]
-        state_raw = json.dumps(reset.get("state"), sort_keys=True, ensure_ascii=False,
-                               separators=(",", ":"), allow_nan=False).encode()
-        if _hash(state_raw) != reset.get("sha256"):
-            raise ValueError("reset state digest mismatch")
-        reset_digests.append(reset["sha256"])
+        if item["status"] == "not_attempted" and (arm != "attack" or arms["control"]["status"] != "failed"
+                or item["delivery"] != "not_observed" or any(r["kind"] in
+                    ("reset", "request", "model", "tool_attempt", "tool_result", "judged", "arm_failed")
+                    for r in events)):
+            raise ValueError("skipped arm has inconsistent attempts")
+        if resets:
+            reset = resets[0]["payload"]
+            if not isinstance(reset.get("state"), dict):
+                raise ValueError("native reset state missing")
+            state_raw = json.dumps(reset["state"], sort_keys=True, ensure_ascii=False,
+                                   separators=(",", ":"), allow_nan=False).encode()
+            if _hash(state_raw) != reset.get("sha256"):
+                raise ValueError("reset state digest mismatch")
+            reset_digests.append(reset["sha256"])
         judgment = endings[0]["payload"].get("judge") if item["status"] == "complete" else None
         if item["status"] == "complete" and not isinstance(judgment, dict):
             raise ValueError("completed arm lacks native judgment")
         results[arm] = {"status": item["status"], "delivery": item["delivery"], "judge": judgment}
-    if len(set(reset_digests)) != 1:
+    if len(set(reset_digests)) > 1:
         raise ValueError("paired arms did not start from the same state")
     if results["attack"]["delivery"] == "delivered":
         suffix = manifest.get("payload")
@@ -215,7 +224,7 @@ def native_rows(path: str | Path) -> tuple[dict[str, Any], ...]:
         _open_pair(Path(path).absolute())
     except (OSError, ValueError, TypeError, KeyError, IndexError, AttributeError) as exc:
         raise ProjectionError("CRM pair original custody refused: " + type(exc).__name__) from exc
-    # f591acbf accepts caller-provided provenance and arbitrary nonempty grant/
+    # 5b2d7066 accepts caller-provided provenance and arbitrary nonempty grant/
     # source files. Hash consistency is not a physical grant or source authority.
     # No ClaimTuple is emitted until a native authority contract can be checked.
     raise ProjectionError("CRM pair physical grant and source authority are not bound by producer v1")
