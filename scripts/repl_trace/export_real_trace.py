@@ -12,6 +12,7 @@ import json
 import os
 import stat
 import sys
+import tempfile
 from pathlib import Path
 
 
@@ -31,21 +32,40 @@ def main() -> int:
     ):
         parser.error('originals must contain exactly queries and sessions mappings')
     sys.path.insert(0, str(args.app_root.resolve()))
-    from src.repl_environment.trace_capture import load_real_trace_rows, write_real_trace_queries
+    from src.repl_environment.trace_capture import load_real_trace_rows, pii_scan, write_real_trace_queries
+
+    if not args.trace.is_file():
+        parser.error('trace must be one scoped native JSONL file')
+    raw = args.trace.read_bytes()
+    records = []
+    for number, line in enumerate(raw.splitlines(), 1):
+        try:
+            record = json.loads(line)
+        except (ValueError, UnicodeDecodeError) as exc:
+            raise ValueError(f'invalid JSON in trace at line {number}') from exc
+        if not isinstance(record, dict) or pii_scan(record) or record.get('v') != 2:
+            raise ValueError(f'invalid or non-v2 trace record at line {number}')
+        records.append(record)
+    if not records or len({record['session'] for record in records}) != 1:
+        raise ValueError('trace must contain exactly one v2 session')
 
     query = data['queries'].get
     bundle = data['sessions'].get
-    rows = load_real_trace_rows(args.trace, query, bundle)
-    if not rows or not any(row.get('gold') and row.get('opened') for row in rows):
-        raise ValueError('no opened, scoreable real-trace row in scoped input')
-    # Exclusive owner-only creation prevents overwriting another export and limits exposure.
-    fd = os.open(args.output, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-    os.close(fd)
-    try:
-        count = write_real_trace_queries(args.output, args.trace, text_resolver=query, bundle_resolver=bundle)
-    except BaseException:
-        args.output.unlink(missing_ok=True)
-        raise
+    # Both passes read exactly the validated bytes, not a changing native log.
+    with tempfile.TemporaryDirectory(prefix='repl-trace-export-') as temporary:
+        snapshot = Path(temporary) / 'trace.jsonl'
+        snapshot.write_bytes(raw)
+        rows = load_real_trace_rows(snapshot, query, bundle)
+        if not rows or not any(row.get('gold') and row.get('opened') for row in rows):
+            raise ValueError('no opened, scoreable real-trace row in scoped input')
+        # Exclusive owner-only creation prevents overwriting another export.
+        fd = os.open(args.output, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        os.close(fd)
+        try:
+            count = write_real_trace_queries(args.output, snapshot, text_resolver=query, bundle_resolver=bundle)
+        except BaseException:
+            args.output.unlink(missing_ok=True)
+            raise
     print(f'exported {count} rows; freeze must verify corpus custody')
     return 0
 
