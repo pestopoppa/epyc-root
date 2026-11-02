@@ -1547,3 +1547,8 @@ Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-
 ### Run 2026-10-22, IDs 2494–2510 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2494-2510.md)
 
 - intake-2498#record (Gemma quantized KV cache corruption bug (iqk FA)): Root cause verified from code: in compute_helper_q the Q8_0 per-block-repack branch broke out of the whole KV loop at the first block whose first cell in the last row was not +0.0. Adopt-patterns; handoff autokernel-all-devices.
+
+
+### KV-row experimental reference (2026-11-02)
+
+A C5-derived opt-in reference gathers planned KV rows before flash attention. A model-free two-slice, 256-padded-row MI210 check matched an independent dense-softmax calculation; the run also recorded GPU residency. This verifies that reference case only: the fused row-aware kernels, serving-graph integration and performance gate remain open. [Run evidence](../artifacts/engineering/kpf41-model-free-20261102/) and [RTG-58](../handoffs/active/kv-prefix-fork-and-paged-attention.md).
