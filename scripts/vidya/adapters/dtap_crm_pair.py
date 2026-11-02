@@ -11,6 +11,7 @@ import json
 import os
 import re
 import stat
+import subprocess
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -22,7 +23,20 @@ SOURCE_KIND = "dtap-crm-pair"
 CASE = "crm-malicious-indirect-general-ai-restrictions-004"
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 COMMIT = re.compile(r"^[0-9a-f]{40}$")
-PRODUCER_SHA256 = "27f22e3be23c7b27cc25ea7442fc2eb19fd59edd0a03e0cc578971a8eb755b59"
+PRODUCER_SHA256 = "723108477c7ea1fb86bc28b5a1b0c9e0f7e1447e75771dc28b8ca704e61aa2eb"
+PROVIDER_SHA256 = "43595426ec4a447c06e192ba533b01384674a6217a5005be9980d337974dd961"
+LOCK_SHA256 = "24a4a377fe5050e0f34514294e7d14bcc94db4c99fe89b91881ece56c"
+RECEIPT_SHA256 = "cee7fc7f4ab8dc7fe756b3720c6ee126f8f8b9708de5c62ca74ac18fed290801"
+LOCK_ROOT = Path("/mnt/raid0/llm/tmp")
+GRANT_ROOT = Path("/mnt/raid0/llm/tmp/compute-flags/grants")
+DTAP = "scripts/autopilot/evals/dtap/"
+SOURCE_FILES = tuple(DTAP + p for p in (
+    "harness/crm_pair_capture.py", "harness/crm_pair_seal.py", "harness/crm_pair.py",
+    "harness/crm_receipt.py", "harness/crm_services.py", "harness/crm_provision.py",
+    "harness/crm_source_manifest.py", "harness/runner.py", "harness/endpoint.py",
+    "harness/tool_contract.py", "harness/tool_schemas.json", "harness/judge_guard.py",
+    "cases.json", "manifest.json", "judges/crm-malicious-indirect-general-ai-restrictions-004/judge.py",
+)) + ("src/runtime/region_claim_receipt.py", "src/runtime/region_lock_cli.py", "src/runtime/cpu_region_lock.py")
 
 
 def _hash(raw: bytes) -> str:
@@ -89,6 +103,129 @@ def _journal(raw: bytes) -> list[dict[str, Any]]:
     if records[0]["kind"] != "start" or records[-1]["kind"] != "terminal":
         raise ValueError("journal is not terminal")
     return records
+
+
+def _cpu_set(text: str) -> set[int]:
+    if not isinstance(text, str) or not text:
+        raise ValueError("CPU list missing")
+    result: set[int] = set()
+    for part in text.split(","):
+        if not re.fullmatch(r"\d+(?:-\d+)?", part):
+            raise ValueError("invalid CPU list")
+        lo, _, hi = part.partition("-")
+        start, end = int(lo), int(hi or lo)
+        if end < start or end > 191:
+            raise ValueError("CPU range invalid")
+        result.update(range(start, end + 1))
+    return result
+
+
+def _claim(seal: dict[str, Any], grant_raw: bytes, provenance: dict[str, Any]) -> dict[str, Any]:
+    """Reopen provider receipts; the stored /proc/locks rows remain provider-reported."""
+    pins = {"provider_sha256": PROVIDER_SHA256, "lock_sha256": LOCK_SHA256,
+            "receipt_sha256": RECEIPT_SHA256, "expected_lock_root": str(LOCK_ROOT)}
+    if seal.get("claim_pins") != pins:
+        raise ValueError("provider pins differ from reviewed production sources")
+    raw = {}
+    for name in ("claim_open", "claim_close"):
+        path, expected = seal.get(name + "_path"), seal.get(name + "_sha256")
+        if not isinstance(path, str) or not Path(path).is_absolute() or not SHA256.fullmatch(str(expected or "")):
+            raise ValueError("provider receipt locator missing")
+        raw[name] = _read(Path(path), 1024 * 1024)
+        if _hash(raw[name]) != expected:
+            raise ValueError("provider receipt digest mismatch")
+    opened, closed = _json(raw["claim_open"]), _json(raw["claim_close"])
+    if (opened.get("schema") != "region-lock-claim.v1" or opened.get("phase") != "open"
+            or opened.get("provider") != "region-lock" or closed.get("schema") != "region-lock-claim.v1"
+            or closed.get("phase") != "close" or opened.get("lock_root") != str(LOCK_ROOT)):
+        raise ValueError("provider identity or production lock root mismatch")
+    if (not re.fullmatch(r"[0-9a-f]{32}", str(opened.get("claim_id", "")))
+            or any(type(opened.get(k)) is not int or opened[k] <= 0 for k in ("provider_pid", "provider_pid_starttime"))
+            or any(opened.get(k) != closed.get(k) for k in ("claim_id", "provider_pid", "provider_pid_starttime"))
+            or type(closed.get("child_rc")) is not int
+            or closed.get("open_path") != seal["claim_open_path"]
+            or closed.get("open_sha256") != _hash(raw["claim_open"])):
+        raise ValueError("provider open/close identity mismatch")
+    for field, expected in (("provider", PROVIDER_SHA256), ("lock", LOCK_SHA256), ("receipt", RECEIPT_SHA256)):
+        path = opened.get(field + "_source_path")
+        if (opened.get(field + "_source_sha256") != expected or not isinstance(path, str)
+                or not Path(path).is_absolute() or _hash(_read(Path(path))) != expected):
+            raise ValueError("provider source bytes differ from reviewed pin")
+    grant_id = provenance["grant_id"]
+    if (not re.fullmatch(r"[A-Za-z0-9_-]+", grant_id)
+            or opened.get("grant_id") != grant_id
+            or opened.get("grant_path") != str(GRANT_ROOT / (grant_id + ".grant"))
+            or opened.get("grant_copy_path") != seal["grant_receipt_path"]
+            or opened.get("grant_sha256") != _hash(grant_raw)):
+        raise ValueError("grant path, ID or captured bytes differ")
+    fields = {}
+    for entry in grant_raw.decode().split():
+        key, sep, val = entry.partition("=")
+        if not sep or not val or key in fields:
+            raise ValueError("grant bytes malformed")
+        fields[key] = val
+    regions = opened.get("regions")
+    if (not isinstance(regions, list) or not regions or len(set(regions)) != len(regions)
+            or any(x not in ("q0", "q1", "q2", "q3") for x in regions)):
+        raise ValueError("provider region list malformed")
+    cpus = {cpu for region in regions for cpu in range(int(region[1]) * 24, (int(region[1]) + 1) * 24)}
+    if (_cpu_set(opened.get("cpu_list")) != cpus or _cpu_set(fields.get("regions")) != cpus
+            or fields.get("start") != opened.get("grant_start") or fields.get("end") != opened.get("grant_end")):
+        raise ValueError("grant and claimed CPU scope differ")
+    proof = opened.get("flock_proof")
+    if not isinstance(proof, list) or len(proof) != len(regions) or {p.get("region") for p in proof if isinstance(p, dict)} != set(regions):
+        raise ValueError("provider flock records incomplete")
+    for item in proof:
+        if item.get("path") != str(LOCK_ROOT / f"cpu_region.GLOBAL.{item['region']}.lock"):
+            raise ValueError("provider flock path mismatch")
+        parts = str(item.get("proc_locks_row", "")).split()
+        try:
+            major, minor, inode = parts[5].split(":")
+            if (parts[1:4] != ["FLOCK", "ADVISORY", "WRITE"] or int(parts[4]) != opened["provider_pid"]
+                    or (int(major, 16), int(minor, 16), int(inode)) !=
+                    (item["device_major"], item["device_minor"], item["inode"])):
+                raise ValueError("provider flock record inconsistent")
+        except (IndexError, TypeError, ValueError, KeyError) as exc:
+            raise ValueError("provider flock record invalid") from exc
+    began, ended = _time(seal["capture_start_utc"]), _time(seal["terminal_utc"])
+    if not (_time(fields["start"]) <= _time(opened["opened_utc"]) <= began <= ended
+            <= _time(closed["closed_utc"]) <= _time(seal["sealed_utc"])
+            and ended <= _time(fields["end"])):
+        raise ValueError("capture is outside declared claim or grant window")
+    return {"claim_id": opened["claim_id"], "regions": regions, "grant_id": grant_id,
+            "provider_pid": opened["provider_pid"], "child_rc": closed["child_rc"],
+            "scope": "provider-reported flock witness; issuer and loaded-bytecode identity unverified"}
+
+
+def _source(manifest_raw: bytes, provenance: dict[str, Any], seal: dict[str, Any]) -> dict[str, Any]:
+    """Independently re-read Git blobs and source files; loaded code remains unknown."""
+    data = _json(manifest_raw)
+    if (not isinstance(data, dict) or data.get("schema") != "dtap.crm_source_manifest.v1"
+            or data.get("source_commit") != provenance["source_commit"]):
+        raise ValueError("source manifest schema or commit mismatch")
+    files = data.get("files")
+    root = data.get("repo_path")
+    if (not isinstance(files, dict) or set(files) != set(SOURCE_FILES)
+            or not isinstance(root, str) or not Path(root).is_absolute()):
+        raise ValueError("source manifest membership or repo missing")
+    mapping = json.dumps(files, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode()
+    if _hash(mapping) != data.get("source_tree_sha256") or data["source_tree_sha256"] != provenance["source_tree_sha256"]:
+        raise ValueError("source manifest tree digest mismatch")
+    repo = Path(root)
+    for name in SOURCE_FILES:
+        digest = files[name]
+        if not SHA256.fullmatch(str(digest or "")) or _hash(_read(repo / name)) != digest:
+            raise ValueError("original source file differs from manifest")
+        result = subprocess.run(["git", "-C", str(repo), "show", f'{provenance["source_commit"]}:{name}'],
+                                check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=30)
+        if _hash(result.stdout) != digest:
+            raise ValueError("source bytes differ from declared Git commit")
+    if files[DTAP + "harness/crm_pair_capture.py"] != PRODUCER_SHA256:
+        raise ValueError("capture producer differs from reviewed source")
+    if _hash(_read(Path(seal["producer_path"]))) != files[DTAP + "harness/crm_pair_capture.py"]:
+        raise ValueError("captured producer differs from source manifest")
+    return {"source_commit": provenance["source_commit"], "source_tree_sha256": data["source_tree_sha256"],
+            "scope": "working files and Git blobs only; loaded bytecode and runtime identity unverified"}
 
 
 def _open_pair(path: Path) -> dict[str, Any]:
@@ -221,10 +358,13 @@ def _open_pair(path: Path) -> dict[str, Any]:
 
 def native_rows(path: str | Path) -> tuple[dict[str, Any], ...]:
     try:
-        _open_pair(Path(path).absolute())
-    except (OSError, ValueError, TypeError, KeyError, IndexError, AttributeError) as exc:
+        native = _open_pair(Path(path).absolute())
+        seal = native["seal"]
+        _claim(seal, _read(Path(seal["grant_receipt_path"])), seal["provenance"])
+        _source(_read(Path(seal["source_manifest_path"])), seal["provenance"], seal)
+    except (OSError, ValueError, TypeError, KeyError, IndexError, AttributeError, subprocess.SubprocessError) as exc:
         raise ProjectionError("CRM pair original custody refused: " + type(exc).__name__) from exc
-    # 5b2d7066 accepts caller-provided provenance and arbitrary nonempty grant/
-    # source files. Hash consistency is not a physical grant or source authority.
-    # No ClaimTuple is emitted until a native authority contract can be checked.
-    raise ProjectionError("CRM pair physical grant and source authority are not bound by producer v1")
+    # A provider record is not proof of loaded bytecode, scheduler issuer, or
+    # source tree identity. No tuple is emitted until the missing source boundary
+    # is native and independently checked.
+    raise ProjectionError("CRM pair source and scheduler authority not independently bound")
