@@ -665,9 +665,9 @@
     },
     "dashboard-architecture-restructure.md": {
       "blocked": 0,
-      "closed": 20,
+      "closed": 22,
       "guarded": 0,
-      "last_advanced": "2026-11-01",
+      "last_advanced": "2026-11-02",
       "open": 12,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -677,7 +677,7 @@
       },
       "row_id": "RTG-47",
       "state": "active",
-      "total": 32
+      "total": 34
     },
     "decision-aware-routing.md": {
       "blocked": 1,
