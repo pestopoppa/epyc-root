@@ -1330,7 +1330,9 @@ def admit(flags, rid, d, pid, regions, window_s):
         sys.path.insert(0, here)
     import grant_ok_launcher as gate
     cls = "gpu" if "mi210" in regions else ("whole-host" if regions == "0-95" else "block-correctness")
-    a = _ap.Namespace(row=rid, pid=int(pid), window_s=int(window_s), regions=regions, reserve=None, derived_class=cls, fillers="/dev/null", proc="/proc")
+    # ws58 23:56Z: a cpu job with --gpu-quiet holds the GPU through the allocator's holds=, not a mi210 token in regions=
+    a = _ap.Namespace(row=rid, pid=int(pid), window_s=int(window_s), regions=regions,
+                      reserve=("gpu-quiet" if "mi210" not in regions else None), derived_class=cls, fillers="/dev/null", proc="/proc")
     try:
         return True, gate.check(a)
     except gate.Refuse as r:
