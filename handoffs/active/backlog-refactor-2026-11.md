@@ -68,6 +68,7 @@ this handoff, do not push; two consecutive reds on the same fold → stop T1 and
   boxes wait for proven coverage of the cell. Stop rule: a cell without retained inputs covering it is
   marked uncovered and left open, never ticked.
   - 2026-11-02 partial (ws58): this pass ran the E5 adjudication (VALID 0 / INVALID 4 / UNRESOLVED 4), the KB G11 disagreement analysis (ticked G11) and the STT Nemotron re-read. No scorer or parser fix was needed. Not yet run: C6 consumer re-read, RPL-AP analyses (code builds), EXP-06 custody, LID1, CAP-01 Q38FN replay, CAP-06 threshold replay. See `progress/2026-11/2026-11-02-ws58-brf-t3.md`. [belief: cc]
+  - 2026-11-02 RPL-AP (ws58): the analysis code was built and run (orchestrator `95d663e5`). P17.BT-5a is INCONCLUSIVE (insufficient coverage: 8 hinted trials of 87 pairs). AP-ME-1's offline baseline is measured: a 30-card shared STM, median 1,970 tokens. Neither box is ticked; each has a dated residual. See OBS-6 and OBS-7 in the progress file. [belief: cc]
 
 ## T4 — the 4 bounded pilots (D3)
 

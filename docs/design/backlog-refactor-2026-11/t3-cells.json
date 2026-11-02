@@ -67,7 +67,7 @@
    "consumer": "P17.BT-5a (autopilot-continuous-optimization.md:639); AP-ME-1 (:45)",
    "can_cover": "the ANALYSIS clauses of those boxes",
    "cannot_cover": "AP-DGM-PROV / SEQ-SHINKA counterfactual replay; the code build each box also asks for",
-   "t3_2_status": "NOT RUN: both consumers are code builds (synthesizer, per-operator budgets) whose analysis needs the built consumer - code work for the owner",
+   "t3_2_status": "RUN 2026-11-02 (orchestrator 95d663e5 feedback_synthesizer.py + operator_context_baseline.py): P17.BT-5a INCONCLUSIVE_INSUFFICIENT_COVERAGE (8 hinted of 87 pairs; need 20, 8 per arm); AP-ME-1 offline baseline measured, budget change + post-change comparison remain; no tick",
    "tick": false},
   {"id": "RPL-EXL3", "class": "retained-historical-conclusions",
    "evidence": ["root git d735d5d2deae8fcfeb26b13346cf2be3b65c8cf1:artifacts/cpu-window2-20261004/step1_exl3_full/ (9 files)", "/mnt/raid0/llm/epyc-inference-research/artifacts/exl3-cpu-dispatch-20260926 (KEEP)"],
