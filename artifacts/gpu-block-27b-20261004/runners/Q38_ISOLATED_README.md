@@ -16,11 +16,18 @@ matching body hashes, correct arm modes, refusal on mismatched mode or cache
 evidence, and cleanup of its captured children. This exercises coordination,
 not production serving or inference.
 
-There is deliberately no production CLI or concrete production supervisor,
-transport or durable journal. Before target use, implement and qualify those
+`q38_t7_supervisor.py` owns a captured subprocess using its PID, birth time and
+pidfd. It builds separate recipes, checks pinned binary/model/draft digests,
+rejects draft options and inherited llama/draft variables in the common recipe,
+signals only its captured child, and requires a caller-supplied descendant-drain
+verifier before reporting cleanup. The fake-HTTP test exercises this owner;
+unverified cleanup remains sticky.
+
+There is deliberately no production CLI, native-verifier implementation,
+production transport or durable journal. Before target use, implement and qualify those
 against the host's child/descendant ownership, process and socket identity,
 recipe/binary/model/library binding, STOP and drain, durable no-redraw exposure,
-native cache receipts and rowflow contracts. `Runtime`'s injected supervisor
+native cache receipts and rowflow contracts. `Runtime`'s injected verifiers
 and journal must prove these facts; a URL, mode string, fake-process test or
 boolean supplied without such a proof is not qualification. Phase C, native
 scoring and the remaining runners are outside this slice. KVU-16h-runner stays
