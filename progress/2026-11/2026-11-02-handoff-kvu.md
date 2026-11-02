@@ -191,3 +191,7 @@ The real VKQ3 worker draft has been located; it still tokenizes in-grant. Separa
 ## 10:43Z — Apply real VKQ3 worker review to receipt, native output and exposure-custody implementation
 
 Review of the real two-arm VKQ3 draft found in-grant tokenization, hardcoded grants, no native dry-run result, local-only exposure custody and incomplete runtime inputs. Receipt, grant/result and exposure components are being implemented separately; no row is publishable yet.
+
+## 10:45Z — Review real worker grant and receipt integration for keeper smoke
+
+The two-arm VKQ3 worker still hardcodes whole-host grants and source-local outputs; the existing tokenizer-only grant bridge is not a drop-in. Input receipt, grant/result and exposure components remain under implementation and require integration before a four-CPU keeper smoke.
