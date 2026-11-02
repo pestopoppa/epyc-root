@@ -143,3 +143,7 @@ Completed a controlled S0 reproducer: the retained guard returned 32 lock-lost r
 ## 11:34Z — Integrated completed CPU candidate build and continued Jet-Long row preparation.
 
 - JETLONG-LONGCTX-RUN correction: the 11:32 report of an incomplete build was premature; the experimental CPU build completed with `build.exit=0` and a llama-server binary at 11:32:05 UTC. Source archive SHA check passed; CPU-only CMake configuration recorded. Source receipt and runnable publisher launcher are being prepared. YARN-E1-PROOF live host preflight remains unverified; historical-log offline tests do not establish it.
+
+## 11:35Z — Investigate Jet-Long and DCA runnable row prerequisites
+
+- JETLONG-LONGCTX-RUN: existing candidate build and draft runner are not yet a publishable row. Native coordinator refuses until fixture framing, source-bound runtime, bounded booking, process cleanup and keeper integration are established. No inference or row publication occurred. YARN-DCA-E1 also remains a draft pending composed and validated source, memory shape and launcher qualification; scratch assessment: `/mnt/raid0/llm/tmp/yarn/DCA-E1-ROW-READINESS-20261102.md`. Existing A2 row `yarn-e1-a2-gpu-20261102-v1` was not duplicated. JETLONG-PROTO-INWINDOW-UB remains subject to the previously documented CRITICAL impact stop.
