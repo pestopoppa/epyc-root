@@ -2009,13 +2009,21 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         of the old ratio difference the shim caused. See research `1780fa7b`,
         `data/inf70-retest1-2026-09-08/{CHAMPION-LAUNCH-TABLE,THP-DECISION-RESULT}.md`.
 
-        **Next:** replay the preserved old raw rows and audit arm order, contention and estimand;
-        predeclare a test only if it can distinguish a remaining hypothesis. A new shim contrast
-        alone cannot identify the cause of a historical cross-window, cross-build ratio difference.
-        The original uniform IQ4_XS artifact was removed 2026-10-20; a UD substitution changes the
-        estimand. Post-BIOS `campaign_postbios.sh` measured shim-ON MTP only, not this plain contrast.
-        A new run requires a valid host-health preflight, claimed footprint, model and binary/DSO
-        identities, codified recipe and a predeclared stopping rule. **R23-57 remains open.**
+        **Replay complete:** the old ratio averages per-prompt ratios, while the later ratio divides
+        mean launch rates. Recomputing both as ratios of mean launch rates yields **1.71275** and
+        **2.18567**, so estimator choice alone does not explain the gap. In the old plain window the
+        GPU lane appeared in **17/17 samples of pristine round 1**, and **0** in every champion-3
+        arm; rotation did not assure equal exposure. Observational replay, not a causal attribution:
+        [estimand and contention audit](../../docs/design/inf70-r2362-evidence-20261102/AUDIT.md).
+
+        **Next:** preflight a codified 12-pair same-window comparison of champion-3 build 10241
+        against the 10303 instrument, shim OFF on both, using the retained UD artifact and explicit
+        champion-control knob state. This tests a present-day build/instrument hypothesis only; it
+        cannot reconstruct the historical gap or recover the removed uniform artifact. First verify
+        binary/DSO identities and output parity, recipe expressiveness, arm readbacks, host-health
+        preflight and resource claims; predeclare a materiality boundary and stopping rule. The
+        existing serving launcher defaults shim ON and its applicability is unproven. Post-BIOS
+        `campaign_postbios.sh` was shim-ON MTP only. **R23-57 remains open.**
       - [ ] **R23-57 — CHAMPION LAUNCH-TO-LAUNCH INSTABILITY: ~12% spread on an IDENTICAL configuration, and
         it moves ONLY the champion arm. UNEXPLAINED — no headline may be quoted from one session.**
         Measured by INF-70, 2026-09-08, across four of today's sessions on the **same** champion configuration:
