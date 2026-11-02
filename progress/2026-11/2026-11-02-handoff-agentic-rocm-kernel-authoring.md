@@ -95,3 +95,7 @@ Inspected the interrupted C5-7 scratch prototype in artifacts/agentic-rocm/.c57-
 ## 00:49Z — Assess four inference-row prerequisites and document concrete capture and controller gaps
 
 Assessed the matched eight-arm panel, zero-profiler null arm, k228 and k175 capture readiness. None has a publishable governed launcher: the panel needs missing licensed implementations and a fixed feedback protocol; the null arm needs an explicit tested feedback mode and matched protocol; both captures need matching real-model hooks, clean pinned source and bound inventories. The capture provider already owns CPU/GPU claims, which the row launcher must reconcile. Recorded actionable prerequisites in artifacts/agentic-rocm/row-readiness-20261102.md. No row was published or compute run.
+
+## 00:51Z — Review RPUCG snapshot admission and advance controller prerequisites
+
+Reviewed the prospective RPUCG snapshot patch and recorded its provenance and completeness limitations in artifacts/agentic-rocm/rpucg-snapshot-review-20261102.md. A synthetic fixture with one chain visit and zero total expansions was admitted; upstream initialization and state transitions must be checked before judging that combination invalid. Dispatched bounded work on the zero-profiler mode, C5-7 counter integration and C5-8 roster, with completion events registered. No governed inference row was published and no compute was run.
