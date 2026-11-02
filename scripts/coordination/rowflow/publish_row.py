@@ -42,7 +42,7 @@ RESULT_NAMES = ("RESULT.json", "RESULT.jsonl", "results.jsonl", "results.json")
 SPEC_KEYS = ("id", "owner", "lane", "regions", "result_path", "result_format", "decision_rule", "estimate_s", "handoff_task",
              "priority_rank", "scratch_root", "keep", "dryrun_timeout_s", "min_window_s", "lineage", "lineage_reset", "supersedes",
              "notes", "row", "snapshot", "admission_class", "dryrun_native_result")
-REPO = os.environ.get("ROWFLOW_REPO", "/workspace")
+REPO = os.environ.get("ROWFLOW_REPO", "/mnt/raid0/llm/views/epyc-root-main")  # tracks origin/main; /workspace is a stale detached checkout
 SMOKE_TIMEOUT_S = 300
 MIN_ESTIMATE_S = 300  # ws58 2026-11-02: a shorter job runs in the owner's turn, not as a row
 DERIVABLE = ("lane", "scratch_root", "keep", "kind")
@@ -281,6 +281,12 @@ def file_if_complete(flags, rid, row):
     the row is done (status: grants/<id>.complete) and is never granted."""
     p = rf.load_json(rf.pass_path(flags, rid)) or {}
     if not p.get("job_complete"):
+        return False
+    # Operator 2026-11-02: never file a row complete because its SMOKE passed. Re-checked here (a PASS.json may predate
+    # the check): the launcher must have no FILLER_SMOKE/FILLER_DRYRUN branch and the full-job predicate must hold.
+    ok, why = rf.smoke_completion_check(row)
+    if not ok:
+        print(f"smoke passed but the row is NOT complete ({rid}): {why}; it stays a row")
         return False
     # Preserve the exact published manifest before removing it from READY. The
     # filer needs its rule and result path even when the entire job ran in the

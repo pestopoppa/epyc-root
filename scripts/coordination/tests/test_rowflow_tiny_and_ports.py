@@ -20,20 +20,34 @@ class TinyRowTests(unittest.TestCase):
         os.makedirs(os.path.join(self.flags, "ready"))
         self.rid = "tiny1"
         self.res = os.path.join(self.flags, "out", "RESULT.json")
+        self.pkt = os.path.join(self.flags, "pkt")
+        os.makedirs(self.pkt)
 
-    def _smoke(self, complete):
+    def _launcher(self, body="", complete_cmd=None):
+        """A row launcher: optional pre-engine body, then the filler_run15.sh engine line (never executed here)."""
+        lp = os.path.join(self.pkt, "launcher.sh")
+        cc = complete_cmd or f"test -s {self.res}"
+        with open(lp, "w") as f:
+            f.write("#!/bin/bash\nset -euo pipefail\n" + body +
+                    f"exec /bin/bash /nonexistent/filler_run15.sh --id {self.rid} --class cpu --min-window 600 "
+                    f"--cmd '/bin/true' --complete-cmd '{cc}' --stop {self.pkt}/STOP --workdir {self.pkt}\n")
+        return lp
+
+    def _smoke(self, complete, launcher=None, write_result=True):
         rid, res = self.rid, self.res
+        lp = launcher or self._launcher()
 
         def publish(spec, flags, source=None):
-            row = {"id": rid, "result_path": res}
+            row = {"schema": rf.SCHEMA, "id": rid, "result_path": res, "launcher": {"path": lp}, "workdir": self.pkt}
             rf.atomic_json(rf.ready_path(flags, rid), row)
             return row
 
         def dry(flags, rid_, regions, one_quarter=False, smoke_s=None):
             dd = rf.dry_dir(flags, rid_)
             os.makedirs(dd, exist_ok=True)
-            os.makedirs(os.path.dirname(res), exist_ok=True)
-            open(res, "w").write("{}")
+            if write_result:
+                os.makedirs(os.path.dirname(res), exist_ok=True)
+                open(res, "w").write("{}")
             open(os.path.join(dd, "ended"), "w").write("rc=0 reason=complete\n")
             rf.atomic_json(rf.pass_path(flags, rid_), {"id": rid_, "result_path": res, "job_complete": complete})
             return "PASS", "1 unit(s)"
@@ -41,7 +55,15 @@ class TinyRowTests(unittest.TestCase):
                 mock.patch.object(rf, "dryrun_run", dry):
             return pr.publish_smoked({"lane": "cpu"}, self.flags, "t")
 
+    def _assert_not_filed(self, out):
+        self.assertIsNotNone(out)
+        g = os.path.join(self.flags, "grants")
+        self.assertFalse(os.path.exists(os.path.join(g, self.rid + ".complete")))
+        self.assertFalse(os.path.exists(os.path.join(g, self.rid + ".ended")))
+        self.assertTrue(os.path.exists(rf.ready_path(self.flags, self.rid)))
+
     def test_complete_in_smoke_is_filed_not_queued(self):
+        # a launcher with NO smoke branch whose full-job --complete-cmd holds on the job's own result: the smoke was the job
         self.assertIsNone(self._smoke(True))
         g = os.path.join(self.flags, "grants")
         self.assertTrue(os.path.exists(os.path.join(g, self.rid + ".complete")))
@@ -52,6 +74,34 @@ class TinyRowTests(unittest.TestCase):
     def test_partial_smoke_stays_a_row(self):
         self.assertIsNotNone(self._smoke(False))
         self.assertFalse(os.path.exists(os.path.join(self.flags, "grants", self.rid + ".complete")))
+
+    def test_filler_smoke_branch_in_launcher_never_filed_complete(self):
+        # regression (akxall8 v5, 2026-11-02): a 10 s FILLER_SMOKE run was filed as the 4 h job
+        lp = self._launcher(body='if [[ ${FILLER_SMOKE:-0} == 1 ]]; then echo smoke; fi\n')
+        self._assert_not_filed(self._smoke(True, launcher=lp))
+
+    def test_filler_dryrun_branch_in_complete_cmd_script_never_filed_complete(self):
+        cd = os.path.join(self.pkt, "complete_dispatch.sh")
+        with open(cd, "w") as f:
+            f.write("#!/bin/bash\nif [[ ${FILLER_DRYRUN:-0} == 1 ]]; then exit 0; fi\nexit 1\n")
+        lp = self._launcher(complete_cmd=f"/bin/bash {cd}")
+        self._assert_not_filed(self._smoke(True, launcher=lp))
+
+    def test_full_job_predicate_unsatisfied_never_filed_complete(self):
+        # no smoke branch, but the full-job artifact the --complete-cmd reads is absent
+        self._assert_not_filed(self._smoke(True, write_result=False))
+
+    def test_check_scrubs_smoke_env_before_rerunning_predicate(self):
+        # the predicate detects the smoke variable without naming it (naming it would itself be a smoke branch)
+        lp = self._launcher(complete_cmd='! env | grep -q "^FILLER_[S]MOKE="')
+        with mock.patch.dict(os.environ, {"FILLER_SMOKE": "1"}):
+            ok, why = rf.smoke_completion_check({"launcher": {"path": lp}})
+        self.assertTrue(ok, why)
+
+    def test_dryrun_native_result_never_filed_complete(self):
+        ok, why = rf.smoke_completion_check({"launcher": {"path": self._launcher()}, "dryrun_native_result": True})
+        self.assertFalse(ok)
+        self.assertIn("dryrun_native_result", why)
 
     def test_short_estimate_refused(self):
         spec = os.path.join(self.flags, "s.json")

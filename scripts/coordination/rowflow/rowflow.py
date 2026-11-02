@@ -1278,6 +1278,62 @@ def new_dryrun_native_result_path(dd):
     return os.path.join(attempt, "native-result.json")
 
 
+SMOKE_BRANCH_RE = re.compile(r"\bFILLER_(?:SMOKE|DRYRUN)\w*")
+SMOKE_SCAN_MAX_BYTES = 2 << 20
+
+
+def smoke_branch_files(d):
+    """The row's own launcher and every regular file its engine line runs (--cmd / --complete-cmd tokens) that names
+    FILLER_SMOKE* or FILLER_DRYRUN*: a job that branches on them does something else under a smoke than in its grant.
+    The engine itself (which honours them by design) is not scanned. An unreadable launcher counts as branching."""
+    lp = d["launcher"]["path"]
+    try:
+        o = parse_launcher(lp)
+    except (Refused, OSError, StopIteration, ValueError) as e:
+        return [f"{lp} (unparsable: {e})"]
+    eng = os.path.realpath(o["engine"])
+    hits, seen = [], set()
+    for f in [lp] + [x for x in referenced_paths({"cmd": o["cmd"], "complete_cmd": o["complete_cmd"]}) if os.path.isfile(x)]:
+        rp = os.path.realpath(f)
+        if rp in seen or rp == eng:
+            continue
+        seen.add(rp)
+        try:
+            if os.path.getsize(rp) > SMOKE_SCAN_MAX_BYTES:
+                hits.append(f"{f} (too large to scan)")
+                continue
+            txt = open(rp, errors="replace").read()
+        except OSError as e:
+            hits.append(f"{f} (unreadable: {e})")
+            continue
+        if SMOKE_BRANCH_RE.search(txt):
+            hits.append(f)
+    return hits
+
+
+def smoke_completion_check(d):
+    """Operator 2026-11-02 (ws58): a smoke/dry-run PASS may file a row COMPLETE only when (1) the launcher has no smoke
+    branch (no FILLER_SMOKE*/FILLER_DRYRUN* in it or in the files its --cmd/--complete-cmd run), (2) the result is not a
+    dry-run-native isolated result, and (3) the engine's --complete-cmd, re-run in --workdir with every FILLER_SMOKE*/
+    FILLER_DRYRUN* variable removed, passes on the artifacts the full job writes. Returns (ok, reason)."""
+    if d.get("dryrun_native_result"):
+        return False, "dryrun_native_result: the smoke wrote an isolated per-attempt result, not the full job's artifacts"
+    hits = smoke_branch_files(d)
+    if hits:
+        return False, "launcher branches on FILLER_SMOKE/FILLER_DRYRUN (" + ", ".join(hits[:4]) + "): a smoke is not the job"
+    o = parse_launcher(d["launcher"]["path"])
+    env = {k: v for k, v in os.environ.items() if not SMOKE_BRANCH_RE.fullmatch(k)}
+    wd = o.get("workdir") or d.get("workdir") or "/"
+    try:
+        r = subprocess.run(["bash", "-c", o["complete_cmd"]], cwd=wd, env=env, stdout=subprocess.DEVNULL,
+                           stderr=subprocess.DEVNULL, timeout=120)
+    except (OSError, subprocess.TimeoutExpired) as e:
+        return False, f"full-job --complete-cmd could not run outside the smoke: {e}"
+    if r.returncode != 0:
+        return False, f"full-job --complete-cmd rc={r.returncode} outside the smoke: the full job's artifacts do not satisfy it"
+    return True, "no smoke branch; full-job --complete-cmd passes on the job's own artifacts"
+
+
 def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
     """The dry run on the regions the allocator assigned. Returns (verdict, message). verdict in PASS | FAIL | WAIT.
     Operator 2026-11-02: this is publish_row's pre-publish smoke, run in the owner's turn on 4 cpus (timeout smoke_s,
@@ -1443,10 +1499,16 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
            "ended": head1(ended) or None, "warning": warning, "dryrun_log": os.path.join(dd, "launcher.out"), "elapsed_s": int(time.time() - t0)}
     if verdict == "WAIT":
         return verdict, reason
-    # ws58 2026-11-02: a smoke that finished the WHOLE job (complete marker, or units reached the declared total) is done
+    # ws58 2026-11-02: a smoke that finished the WHOLE job (complete marker, or units reached the declared total) is done,
+    # but only when the smoke WAS the job: no smoke branch, and the full-job completion predicate holds (smoke_completion_check)
     if verdict == "PASS" and (os.path.exists(os.path.join(dd, "complete"))
                               or (d.get("total_units") and rec["units"] >= int(d["total_units"]))):
-        rec["job_complete"] = True
+        ok, why = smoke_completion_check(d)
+        rec["job_complete"] = ok
+        rec["job_complete_reason"] = why
+        if not ok:
+            with open(os.path.join(dd, "launcher.out"), "a") as lo:
+                lo.write(f"==== smoke completion NOT filed: {why}\n")
     if verdict == "PASS":
         atomic_json(pass_path(flags, rid), {"id": rid, "passed_at": now_iso(), "launcher_sha256": lsha, **rec})
         for fp in fail_paths(flags, rid):
