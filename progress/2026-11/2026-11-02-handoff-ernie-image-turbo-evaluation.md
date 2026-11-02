@@ -29,3 +29,15 @@ Prepared `docs/evidence/ernie-image-evaluation-20261102/typography/` with all 40
 ### ERNIE image evaluation: row preparation
 
 The Qwen diagnostic launcher and worker are prepared in `/mnt/raid0/llm/tmp/ernie-qwen-pip03-20261102/`; input weight digest and an independent readiness audit are pending event receipts, so the row is not published. The GPU flash-attention A/B needs a v15 worker and proof of selected operation because requested flash may fall back; preparation is assigned with an event receipt. The typography and matched review packets are included in this commit under `docs/evidence/ernie-image-evaluation-20261102/`. Earlier wrap-up attempts failed the observer census because sparse checkout excluded a tracked ratifier; the lane sparse rules now include that exact file and the census passes. [no-belief: preparation only]
+
+## 07:41Z — Review GPU attention diagnostic preparation
+
+### GPU diagnostic and Qwen capture preparation
+
+Consumed GPU implementation review: `/mnt/raid0/llm/tmp/ernie-fa-ab-20261102/` contains a syntax-checked v15 launcher and worker draft. Its source receipt and native capture still need review, and requested flash attention is not proof of the selected graph operation; fallback must be observed before a causal interpretation. An independent bounded GPU review is underway. Qwen candidate audit fixed a dry-run failure that previously could count an invalid PNG as a native unit. Model digest completion receipt remains missing; an independent custody review is underway. No inference, qualification or publication occurred. The prior wrap-up successfully published `cf110dff4875fe23ab90c90cb5a9a2b0cb009016`, including both durable review packets. [no-belief: preparation only]
+
+## 07:41Z — Review GPU attention diagnostic preparation
+
+### GPU diagnostic and Qwen capture preparation
+
+Consumed GPU implementation review: `/mnt/raid0/llm/tmp/ernie-fa-ab-20261102/` contains a syntax-checked v15 launcher and worker draft. Its source receipt and native capture still need review, and requested flash attention is not proof of the selected graph operation; fallback must be observed before a causal interpretation. An independent bounded GPU review is underway. Qwen candidate audit fixed a dry-run failure that previously could count an invalid PNG as a native unit. Model digest completion receipt remains missing; an independent custody review is underway. No inference, qualification or publication occurred. The prior wrap-up successfully published `cf110dff4875fe23ab90c90cb5a9a2b0cb009016`, including both durable review packets. [no-belief: preparation only]
