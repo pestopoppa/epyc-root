@@ -227,3 +227,7 @@ Added scratch check_active_binding.py with two passing model-free tests to check
 ## 11:00Z — Repair C3 r9 launch, evidence, analysis pins and raw trace retention; attempt publication
 
 Integrated C3 r9 analysis-pin and launch-path repairs, corrected and source-checked warm-request rate evidence, retained the exact six native raw inputs in the kept results tree with integrity and disk-reserve checks, and passed 24 model-free integration tests plus the host-route fixture. publish_row.py refused before publication because the GPU was busy. Region-lock also showed all CPU quarters held; registered the identified GPU dry-run and CPU-run end events, without intervening. No row published or smoke result claimed. CH-27 private dry plan and one-time model verification are in progress.
+
+## 11:13Z — Publish C3 inherited-lock successor after four-CPU diagnostic smoke
+
+Integrated R15 inherited-lock repair, current engine binding, four-CPU diagnostic smoke, native raw-readset retention and quarantined C3 belief schema. `publish_row.py` passed smoke for `akagg-c3-native-bolt-r9-20261102`: one real warm unit, rc75 partial-native-incomplete, no scored result. Published GPU successor points to `/mnt/raid0/llm/tmp/akagg/c3-canonical-v9/RESULT.json`; production profile verdict remains pending. Registered the prospective C3 source and strict-reader task under the existing Vidya profile wiring program.
