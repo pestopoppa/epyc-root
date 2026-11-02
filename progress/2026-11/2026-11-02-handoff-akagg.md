@@ -223,3 +223,7 @@ C3 r9 Bolt model currently matches the existing receipt by device/inode/size/mti
 ## 10:46Z — Detect stale C3 successor qualification bindings
 
 Added scratch check_active_binding.py with two passing model-free tests to check the named C3 active runtime closure for missing, symlinked or stale predecessor paths. Against r9 it correctly rejects smoke-job.sh and cutoff-job.sh, both still hard-coded to r4; these paths were sent for repair. The CH-27 integration plan identifies a proposed durable campaign and native admission and atomic publication prerequisites; it does not prove real admission or authorize a row.
+
+## 11:00Z — Repair C3 r9 launch, evidence, analysis pins and raw trace retention; attempt publication
+
+Integrated C3 r9 analysis-pin and launch-path repairs, corrected and source-checked warm-request rate evidence, retained the exact six native raw inputs in the kept results tree with integrity and disk-reserve checks, and passed 24 model-free integration tests plus the host-route fixture. publish_row.py refused before publication because the GPU was busy. Region-lock also showed all CPU quarters held; registered the identified GPU dry-run and CPU-run end events, without intervening. No row published or smoke result claimed. CH-27 private dry plan and one-time model verification are in progress.

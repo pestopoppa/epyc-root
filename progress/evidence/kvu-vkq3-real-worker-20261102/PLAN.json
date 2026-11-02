@@ -1,0 +1,41 @@
+{
+  "schema": "vkq3.independent-calibration.predecl.v1",
+  "task": "CPU-FA-VKQ-3",
+  "source_catalog_sha256": "4ddd140a9a9d294228d25d040dfc7e6e6d02e0b72a7289b895e5beb0baf0b8bc",
+  "context_metadata_sha256": "70e715c07792e009a4c76c7be292074b1bab686294562c98998dd89e4679c546",
+  "context": {
+    "session": "codex-06",
+    "turn": 34,
+    "sha256": "be82b737c800252d7c267f56a61ddeefad47f46f2dab4c55746d09b8954d2333",
+    "selection_tokenizer_count": 70814
+  },
+  "context_scope": "New independently predeclared diagnostic; does not replace or conclude interrupted original.",
+  "arms": [
+    {
+      "id": "hybrid",
+      "GGML_FA_VKQ_F16": null
+    },
+    {
+      "id": "legacy",
+      "GGML_FA_VKQ_F16": "1"
+    }
+  ],
+  "request": {
+    "temperature": 0,
+    "top_k": 1,
+    "seed": 42,
+    "n_predict": 128,
+    "cache_prompt": false,
+    "return_tokens": true
+  },
+  "mtp": {
+    "spec_type": "draft-mtp",
+    "draft_n_max": 4,
+    "cache_k": "f16",
+    "cache_v": "f16"
+  },
+  "decision": "Compare positive native drafted/accepted counts and first token divergence only after both arms completed. Missing data UNKNOWN. Original experiment remains interrupted; preserve every exposure, no redraw.",
+  "timing_note": "Actual >64k MTP prefill and full target are untested. 18,940-token old probe took 352.4s on different setup; extrapolation cannot establish 70,014-token wall feasibility.",
+  "id": "handoff-kvu-vkq3-mtp-bound-20261102",
+  "n_ctx": 131072
+}

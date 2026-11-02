@@ -199,3 +199,7 @@ The two-arm VKQ3 worker still hardcodes whole-host grants and source-local outpu
 ## 10:46Z — Harden K35 no-draft refusal against extra arguments and prebuilt launch commands
 
 Prepared a source-hash-bound K35 patch that refuses request-local n_max=0 before launch or request construction, including prebuilt argv; three offline tests pass. This is an uninstalled patch, not the dedicated server lifecycle or global runner protection required by KVU-16h.
+
+## 11:00Z — Prepare VKQ3 native-input receipt and two-arm row, repair four-CPU smoke claim, prepare KVU-16a load row
+
+VKQ3 independent prompt preflight verified the catalog and counted 70,814 native target tokens; a bounded exposure audit and binary knob/linkage checks were recorded. The first smoke failed before model launch on a whole-host region claim; corrected launcher uses granted CPUs and the second smoke is running. No PASS or target result is claimed. KVU-16a load-only row preparation verified model inputs and passed four offline tests, but its publication was refused because the GPU was busy. The new load source is enrolled for future belief capture.
