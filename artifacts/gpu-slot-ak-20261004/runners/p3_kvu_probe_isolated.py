@@ -141,6 +141,8 @@ def resident(base: str) -> dict:
     s = slots(base)
     per = {x["id"]: int(x.get("n_prompt_tokens") or 0) for x in s}
     return {"per_slot": per, "sum": sum(per.values()), "busy": [x["id"] for x in s if x.get("is_processing")],
+            "tasks": {x["id"]: x.get("id_task") for x in s},
+            "decoded": {x["id"]: (x.get("next_token") or {}).get("n_decoded") for x in s},
             "frac_pool": round(sum(per.values()) / POOL, 4)}
 
 
@@ -184,11 +186,16 @@ class SlotPoller:
 
     def summary(self) -> dict:
         ok = [s for s in self.samples if "sum" in s]
-        during = [s for s in ok if s["busy"]] or ok
-        sums = [s["sum"] for s in during]
-        return {"n_samples": len(ok), "n_during_busy": len([s for s in ok if s["busy"]]),
-                "resident_min": min(sums) if sums else None, "resident_max": max(sums) if sums else None,
-                "per_slot_at_max": max(during, key=lambda s: s["sum"])["per_slot"] if during else None}
+        during = [s for s in ok if 0 in s["busy"] and
+                  type(s.get("decoded", {}).get(0)) is int and s["decoded"][0] > 0]
+        ids = {s.get("tasks", {}).get(0) for s in during}
+        ids.discard(None)
+        slot_ids = set.intersection(*(set(s["per_slot"]) for s in during)) if during else set()
+        return {"n_samples": len(ok), "n_during_decode": len(during),
+                "task_ids": sorted(ids),
+                "task_ids_complete": all(type(s.get("tasks", {}).get(0)) is int for s in during),
+                "per_slot_min": {k: min(s["per_slot"][k] for s in during) for k in slot_ids},
+                "per_slot_max": {k: max(s["per_slot"][k] for s in during) for k in slot_ids}}
 
 
 def chat(base: str, msg: str, slot: int, max_tokens: int, extra: dict | None = None) -> dict:
@@ -272,6 +279,12 @@ class Server:
 # ------------------------------------------------------------------ phase A1
 def measure_level(srv: Server, P: str, p_tok: int, level: str, fill: int, rows: list, out: Path, rec: dict) -> None:
     for i, (variant, extra) in enumerate(((ACTIVE_VARIANT, None), (ACTIVE_VARIANT, None))):
+        before = resident(srv.base)
+        if before["busy"]:
+            raise RuntimeError("server has active work before measurement")
+        previous_task = before["tasks"].get(0)
+        if type(previous_task) is not int:
+            raise RuntimeError("previous slot task identity unavailable")
         with SlotPoller(srv.base) as poll:
             r = chat(srv.base, P, 0, GEN, extra)
         draft_n = r.get("draft_n")
@@ -281,6 +294,20 @@ def measure_level(srv: Server, P: str, p_tok: int, level: str, fill: int, rows: 
             raise RuntimeError("no-draft measurement reported draft tokens")
         row = {"level": level, "fill_tokens": fill, "variant": variant, "rep": i + 1, **r,
                "kv_resident": poll.summary()}
+        observed = row["kv_resident"]
+        ids, minima, maxima = observed["task_ids"], observed["per_slot_min"], observed["per_slot_max"]
+        if observed["n_during_decode"] < 2 or not observed["task_ids_complete"] or len(ids) != 1:
+            raise RuntimeError("need two decode samples for one identified task")
+        if previous_task is not None and ids[0] == previous_task:
+            raise RuntimeError("decode task identity did not advance")
+        if minima.get(0, 0) < 0.95 * p_tok:
+            raise RuntimeError("measurement prefix not resident during decode")
+        neighbours = (1, 2, 3) if level == "L3" else ()
+        if any(minima.get(k, 0) < 0.9 * NB_TOK for k in neighbours):
+            raise RuntimeError("neighbour not resident during decode")
+        if any(maxima.get(k) != 0 for k in (1, 2, 3) if k not in neighbours):
+            raise RuntimeError("unexpected neighbour resident or unobserved during decode")
+        row["task_binding"] = "slot-0 temporal correlation; response has no native task ID"
         row["decode_only"] = (r.get("prompt_n") or 0) < 64 and (r.get("cache_n") or 0) > 0.95 * p_tok
         if not row["decode_only"]:
             raise RuntimeError("measurement was not decode-only")
@@ -401,6 +428,8 @@ def phase_a1_single(a) -> int:
 def phase_a1(a) -> int:
     """Run each variant on its own server, with its own prefix and parked slots."""
     global OUT, LOGS, SLOTDIR, ACTIVE_VARIANT, SHARED_NONCE
+    if a.park_mode != "prefill":
+        raise ValueError("isolated A1 requires observable prefilled neighbour slots")
     root = OUT
     SHARED_NONCE = uuid.uuid4().hex[:12]
     captures = []
@@ -426,14 +455,23 @@ def phase_a1(a) -> int:
             raise RuntimeError("measurement prefixes differ")
         if len(left["rows"]) != 6 or len(right["rows"]) != 6:
             raise RuntimeError("incomplete variant rows")
+        differences = []
         for arow, brow in zip(left["rows"], right["rows"]):
             if (arow["level"], arow["rep"]) != (brow["level"], brow["rep"]):
                 raise RuntimeError("variant row ordering differs")
-            av, bv = arow["fill_tokens"], brow["fill_tokens"]
-            if not av or not bv or abs(av - bv) > 0.05 * max(av, bv):
-                raise RuntimeError("variant occupancy differs by more than 5%")
+            slots = (0, 1, 2, 3) if arow["level"] == "L3" else (0,)
+            for slot in slots:
+                av = arow["kv_resident"]["per_slot_min"].get(str(slot), 0)
+                bv = brow["kv_resident"]["per_slot_min"].get(str(slot), 0)
+                if not av or not bv:
+                    raise RuntimeError("during-decode slot occupancy missing")
+                differences.append({"level": arow["level"], "rep": arow["rep"], "slot": slot,
+                                    "drafted": av, "nodraft": bv,
+                                    "relative_difference": abs(av - bv) / max(av, bv)})
         C.write_json(root / "a1.json", {**left, "rows": [r for c in captures for r in c["rows"]],
-                                       "variant_runs": captures, "dedicated_server_per_variant": True})
+                                       "variant_runs": captures, "dedicated_server_per_variant": True,
+                                       "occupancy_differences": differences,
+                                       "occupancy_reference": "Separate P3 replay specified 5%; reference only, not a pass rule for this successor"})
         return 0
     except Exception as exc:
         C.write_json(root / "a1.json", {"status": "failed", "rows": [], "variant_runs": captures,
@@ -611,7 +649,7 @@ def main() -> int:
     ap.add_argument("--phase", default="a1", choices=["all", "a1", "b"])
     ap.add_argument("--port", type=int, default=18183)
     ap.add_argument("--out-dir", type=Path, required=True, help="per-arm results dir (results/<ts>/p3v2/<label>)")
-    ap.add_argument("--park-mode", default="restore", choices=["restore", "prefill"])
+    ap.add_argument("--park-mode", default="prefill", choices=["prefill"])
     ap.add_argument("--budget-min", type=float, default=34)
     ap.add_argument("--b-npp-list", default=None)
     ap.add_argument("--keep-slot-file", action="store_true")
