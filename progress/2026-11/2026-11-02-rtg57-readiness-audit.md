@@ -38,6 +38,8 @@ validation requires the applicable compute authorization.
   passed. Historical direct invocation and dedicated independent lifecycles remain unprotected.
 - Root isolated Q38 coordinator and captured-child supervisor passed 14 fake HTTP/process tests;
   native identity and descendant verifiers and production qualification remain open.
+- Root `26ebcaee4`: owned Q38 stream/tokenizer integration and historical comparator labelling;
+  30 fake-server tests pass. Native model/mode and cgroup attestation remain open.
 - KVU-16a source/receipt reconciliation found an idle-slot argv mismatch; the sampled load does
   not justify a registry update or a runtime peak. The exact checklist is in the evidence directory.
 - A model-free KVU-19a-2 GPU smoke ran under an exclusive GPU and CPU-region claim, with one

@@ -78,6 +78,10 @@ Nothing was deleted: the siblings are the evidence record for every gate this pr
     as 60 frames with zero refused. Their original capture lacks authored device applicability;
     planning-context visibility is not established and scope must not be backfilled. A future
     producer must author verified device scope before a real canary. [no-belief: private ingest checkpoint]
+  - 2026-11-02 prospective scope repair: the writer now requires source-log architecture, mapped HIP
+    and in-window KFD/VRAM before emitting GPU applicability; a synthetic planning collection test
+    sees the scoped claim. The original 20 rows remain unscoped; a fresh original-run scoped capture
+    and real planning canary remain open. [no-belief: prospective source and synthetic controls]
 
 - [ ] **VB-KVU-126-OCCUPANCY — prospectively capture KVU-12.6 occupancy observations.** Bind actual
   gauge records and sampling windows, frozen plan and wave/request identities, native build/model and
