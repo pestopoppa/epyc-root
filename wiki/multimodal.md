@@ -1501,7 +1501,7 @@ On the vision side, the multimodal-pipeline handoff records an owned trigger for
 - [Conversation stack](../handoffs/active/speech-and-multimodal.md) — turn-taking evidence program, CS-45..49, durable triggers.
 - [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — embedder-upgrade screen trigger and the empty-collection observation.
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — conversation-stack write-side extension.
-- [Non-inference backlog](../handoffs/active/non-inference-backlog.md) — unrelated current-state context only.
+- [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md) — unrelated current-state context only.
 
 ## Compiled Update — 2026-10-21: turn-end synthetic results, the speech threadpool fold (qwentts passed, whisper missed its target), and corpus lessons
 

@@ -2,7 +2,7 @@
 """Deterministic repo-readiness scorer for the EPYC repo map.
 
 The rubric is adapted from the Factory-style model captured in
-handoffs/active/repo-readiness-scorer.md:
+handoffs/active/engineering-hygiene-backlog.md:
 
 - five maturity levels;
 - nine technical pillars;

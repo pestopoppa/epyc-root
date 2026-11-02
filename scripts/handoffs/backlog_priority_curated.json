@@ -94,7 +94,6 @@
   "EVL-04": 0.2,
   "EVL-14": 0.2,
   "EVL-24": 0.2,
-  "EVL-30": 0.2,
   "RTG-03": 0.2,
   "RTG-06": 0.2,
   "RTG-07": 0.2,
@@ -108,7 +107,6 @@
   "PIP-02": 0.2,
   "INF-42": 0.15,
   "INF-76": 0.15,
-  "EVL-38": 0.15,
   "RTG-04": 0.15,
   "RTG-05": 0.15,
   "RTG-08": 0.15,
@@ -137,7 +135,13 @@
   "EVL-14#inference-batch-loop": 0.4,
   "EVL-14#prompt-construction-determinism": 0.35,
   "EVL-14#re4-protocol-redesign": 0.3,
-  "EVL-14#scoring-infra-standardization": 0.3
+  "EVL-14#scoring-infra-standardization": 0.3,
+  "RTG-22#amd-ai-lab-website-publication": 0.2,
+  "RTG-22#frontier-f4-continuity-backup": 0.2,
+  "RTG-22#integration-test-coverage": 0.2,
+  "RTG-22#loop-state-offraid-backup": 0.2,
+  "RTG-22#refactoring-multirepo-2026-10": 0.2,
+  "RTG-22#repo-readiness-scorer": 0.15
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
@@ -154,7 +158,6 @@
   "EVL-01": "operator decision or approval pending",
   "EVL-15": "operator decision or approval pending",
   "EVL-21": "operator decision or approval pending",
-  "EVL-26": "operator decision or approval pending",
   "EVL-31": "operator decision or approval pending",
   "EVL-43": "operator decision or approval pending",
   "RTG-24": "operator decision or approval pending",
@@ -163,12 +166,13 @@
   "RTG-36": "operator decision or approval pending",
   "RTG-46": "operator decision or approval pending",
   "RTG-55": "operator decision or approval pending",
-  "UFH-11": "operator decision or approval pending",
   "EVL-49": "operator decision or approval pending",
   "REV-09": "operator decision or approval pending",
   "RTG-32": "operator decision or approval pending",
   "INF-45": "operator stack bring-up event (stack is DOWN)",
-  "EVL-14#eval-benchmark-cost-reduction": "external: upstream PR / artifact / disk reclaim"
+  "EVL-14#eval-benchmark-cost-reduction": "external: upstream PR / artifact / disk reclaim",
+  "RTG-22#amd-ai-lab-website-publication": "operator decision or approval pending",
+  "RTG-22#frontier-f4-continuity-backup": "operator decision or approval pending"
  },
  "park": {
   "INF-06": "MMQ",
@@ -2403,7 +2407,7 @@
   },
   {
    "filler": "refactor-b2-producer-e-q2-20261027",
-   "row": "RTG-61",
+   "row": "RTG-22",
    "map": "handoff refactoring-multirepo-2026-10.md",
    "owner": "codex-refactor-01a16fc3",
    "blocker": "harness fix",

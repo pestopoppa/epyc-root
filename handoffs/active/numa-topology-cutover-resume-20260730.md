@@ -1615,7 +1615,7 @@ ADDENDUM 2 and converts the loose conclusions in those appends into task lines.
       [`docs/reference/kernel-freeze-runbook.md`](../../docs/reference/kernel-freeze-runbook.md).
 
 Repo hygiene surfaced by this window is filed as **NIB2-60..63** in
-[`non-inference-backlog.md`](non-inference-backlog.md) — not acted on here because a stack start
+[`non-inference-backlog.md`](engineering-hygiene-backlog.md) — not acted on here because a stack start
 was in flight and several items touch the shared clone.
 
 ### Discovered 2026-08-12 while working P1-3 / P1-5 / P1-10 (`mainD`)

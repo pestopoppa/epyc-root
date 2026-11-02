@@ -1296,7 +1296,7 @@ M-20..M-22, LRC-1/LRC-2, and TD-28.
 - [Episodic memory integrity](../handoffs/active/episodic-memory-integrity.md) — M-12k, M-20..M-22.
 - [Learned routing controller](../handoffs/active/learned-routing-controller.md) — LRC-1, LRC-2; 64,396 live routing rows.
 - [Typed decision plane](../handoffs/active/typed-decision-plane.md) — TD-10, TD-1d.0, TD-28.
-- [Non-inference backlog](../handoffs/active/non-inference-backlog.md) — NIB2-78c (veto no-op re-verified).
+- [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-78c (veto no-op re-verified).
 
 **Confidence:** verified against code at `744cf697` and live process state on 2026-09-26; the latency and
 quality effects are unmeasured.

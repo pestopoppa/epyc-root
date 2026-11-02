@@ -1,5 +1,9 @@
 {
  "files": {
+  "amd-ai-lab-website-publication.md": {
+   "target": "engineering-hygiene-backlog.md",
+   "track": "amd-ai-lab-website-publication"
+  },
   "angelslim-techniques-evaluation.md": {
    "target": "model-evaluation-queue.md",
    "track": "angelslim-techniques-evaluation"
@@ -44,6 +48,10 @@
    "target": "eval-tower-program.md",
    "track": "fable5-window2-findings-01-optimizer-integrity"
   },
+  "frontier-f4-continuity-backup.md": {
+   "target": "engineering-hygiene-backlog.md",
+   "track": "frontier-f4-continuity-backup"
+  },
   "gpu-cot-scaffold-sidecar.md": {
    "target": "model-evaluation-queue.md",
    "track": "gpu-cot-scaffold-sidecar"
@@ -52,9 +60,17 @@
    "target": "eval-tower-program.md",
    "track": "inference-batch-loop"
   },
+  "integration-test-coverage.md": {
+   "target": "engineering-hygiene-backlog.md",
+   "track": "integration-test-coverage"
+  },
   "lightning-attention-port.md": {
    "target": "model-evaluation-queue.md",
    "track": "lightning-attention-port"
+  },
+  "loop-state-offraid-backup.md": {
+   "target": "engineering-hygiene-backlog.md",
+   "track": "loop-state-offraid-backup"
   },
   "minddr-deep-research-mode.md": {
    "target": "model-evaluation-queue.md",
@@ -73,6 +89,10 @@
    "target": "speech-and-multimodal.md",
    "track": "multimodal-pipeline"
   },
+  "non-inference-backlog.md": {
+   "target": "engineering-hygiene-backlog.md",
+   "track": null
+  },
   "prompt-construction-determinism.md": {
    "target": "eval-tower-program.md",
    "track": "prompt-construction-determinism"
@@ -84,6 +104,14 @@
   "re4-protocol-redesign.md": {
    "target": "eval-tower-program.md",
    "track": "re4-protocol-redesign"
+  },
+  "refactoring-multirepo-2026-10.md": {
+   "target": "engineering-hygiene-backlog.md",
+   "track": "refactoring-multirepo-2026-10"
+  },
+  "repo-readiness-scorer.md": {
+   "target": "engineering-hygiene-backlog.md",
+   "track": "repo-readiness-scorer"
   },
   "scoring-infra-standardization.md": {
    "target": "eval-tower-program.md",
@@ -128,6 +156,14 @@
    "target": "EVL-14",
    "track": "fable5-window2-findings-01-optimizer-integrity"
   },
+  "EVL-26": {
+   "target": "RTG-22",
+   "track": "frontier-f4-continuity-backup"
+  },
+  "EVL-30": {
+   "target": "RTG-22",
+   "track": "integration-test-coverage"
+  },
   "EVL-32": {
    "target": "EVL-02",
    "track": "minimax-h3-video-generation-evaluation"
@@ -135,6 +171,10 @@
   "EVL-35": {
    "target": "EVL-14",
    "track": "re4-protocol-redesign"
+  },
+  "EVL-38": {
+   "target": "RTG-22",
+   "track": "repo-readiness-scorer"
   },
   "EVL-42": {
    "target": "EVL-14",
@@ -199,9 +239,21 @@
    "track": null,
    "retired": "D4 2026-11-02"
   },
+  "RTG-60": {
+   "target": "RTG-22",
+   "track": "loop-state-offraid-backup"
+  },
+  "RTG-61": {
+   "target": "RTG-22",
+   "track": "refactoring-multirepo-2026-10"
+  },
   "UFH-04": {
    "target": "EVL-02",
    "track": "minddr-deep-research-mode"
+  },
+  "UFH-11": {
+   "target": "RTG-22",
+   "track": "amd-ai-lab-website-publication"
   }
  }
 }

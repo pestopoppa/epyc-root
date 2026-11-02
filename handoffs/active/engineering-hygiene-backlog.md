@@ -1,5 +1,7 @@
 # Non-Inference Backlog — Round 2 (2026-05-19 audit refresh)
 
+> **Fold destination** (BRF-T1-F3, BRF-T1-1, route 1a, 2026-11-02): renamed from `non-inference-backlog.md`; absorbs 6 handoff(s) as `## Track:` sections at the end of this file (`amd-ai-lab-website-publication.md`, `frontier-f4-continuity-backup.md`, `integration-test-coverage.md`, `loop-state-offraid-backup.md`, `refactoring-multirepo-2026-10.md`, `repo-readiness-scorer.md`). The body above the first track is the former `non-inference-backlog.md`.
+
 **Status**: ACTIVE — rolling zero-inference backlog; closed items live in § Completed Scope. Round-2 baseline open: NIB2-18 (gated on DS-E1 evidence), NIB2-46 (gated on NIB2-32).
 
 **Scratch**: `/mnt/raid0/llm/worktrees/codex-ni-*`, `/mnt/raid0/llm/worktrees/codex-ni05-*`, `/mnt/raid0/llm/worktrees/codex-ni06-*`, `/mnt/raid0/llm/worktrees/codex-ni07-*`; integration lane: `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards. Plain custody and review roots: `/mnt/raid0/llm/tmp/codex-ni06-main-20261006/`, `/mnt/raid0/llm/tmp/codex-ni30-custody-20261006/`, `/mnt/raid0/llm/tmp/ni07-29-ci-recipe-20261006/`, `/mnt/raid0/llm/tmp/ni07-34-pii-header-preparation-20261006/`, `/mnt/raid0/llm/tmp/ni07-32-root-keep-20261006/`, `/mnt/raid0/llm/tmp/ni07-32-custody-20261006/`. Additional NI08 custody and review roots: `/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/`, `/mnt/raid0/llm/tmp/ni08-inf50-projection-finish-20261007/`, `/mnt/raid0/llm/tmp/ni08-audit-next-20261007/`; generated native product lane `/mnt/raid0/llm/worktrees/ni08-inf50-native-writer-product-20261007/`. Further own recipe and original publication custody: `/mnt/raid0/llm/worktrees/ni08-c26-native-recipe-20261007/`, `/mnt/raid0/llm/tmp/c106-root-wrap-publish-*`, `/mnt/raid0/llm/tmp/threeview-narrow-validation-*`, `/mnt/raid0/llm/tmp/intake175-narrow-validation-*`. WS58 current roots: `/mnt/raid0/llm/tmp/codex-ni-20261027-orch-registration-recovery-v2/`, `/mnt/raid0/llm/tmp/codex-ni-20261027-t1-launch-gate/`. · `/mnt/raid0/llm/tmp/refactor-01a16fc3/nib98-atomic/` (published proposal and unadopted owner packet; keep) · `/mnt/raid0/llm/tmp/refactor-01a16fc3/nib98-review-fixes-20261027/` (published unadopted test proposal and unapplied owner patches; keep) · `/mnt/raid0/llm/tmp/refactor-01a16fc3/nib98-loader-inventory-ready/` (held canary, evidence and proposals; keep)
@@ -1128,3 +1130,1329 @@ The preserved v1 correctly classified the instantaneous blackout but only checke
 
 - [x] **WORKTREE-EXTERNAL-COMMON — let the removal gate resolve Git-verified external common directories while preserving every removal predicate.** ✅ 2026-11-01 — implementation `92385a1d1161b5709be446f74bd918f21bf7a076`; [25 native regression controls](../../artifacts/engineering/worktree-common-gate-20261101/README.md); [actual cleanup review](../../artifacts/engineering/worktree-common-gate-20261101/cleanup-review.json) committed in `7689295c5018b214c3393224d58b7c0d0cd8baee`. [belief: cc]
   - The old basename assumption rejected a registered linked checkout whose non-bare Git common directory was named `private.git`. The resolver now verifies the candidate through Git and the common-directory inode; `_find` registration, main/canonical protection, cleanliness, landed history, keep/evidence, process/reference and idle checks remain intact. Real external non-bare and bare fixtures cover removal and refusals. The published native gate refreshed the genuine stale tracking ref, waited out an exited process reference, then removed only the authorized temporary publication checkout. Its path is absent and the reusable fixture, common directory, branch refs and protected DAR/R10 files remain. Removed allocation was 299,618,304 bytes (0.279 GiB); shared filesystem free space rose by 296,321,024 bytes (0.276 GiB), an observation affected by concurrent activity. No force, prune, manual admin deletion or process kill. This required cleanup repair is outside WORK-codex3-code.md and is not counted among this checkpoint's two queue closures. [belief: cc]
+
+## Track: amd-ai-lab-website-publication
+<!-- gate: none -->
+
+> Folded from `handoffs/active/amd-ai-lab-website-publication.md` @ `ea07eb9ad4ae` on 2026-11-02 (BRF-T1-F3, route 1a, operator D1/D5; retired row UFH-11 → RTG-22). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+
+### AMD AI Lab website publication
+
+**Status:** active — private source and dashboard preview published; public launch awaits the operator's review and contact destination.
+**Owner index:** [user-facing-harness-index.md](user-facing-harness-index.md) (UFH-11).
+
+#### Start here
+
+- Source: private `epyc-web` at `/workspace/repos/epyc-web`, `main` `4602416`.
+- Review preview: dashboard hub `/amd-ai-lab/`, root snapshot `dashboard/static/amd-ai-lab/`, source commit recorded in `PUBLICATION.md`.
+- Source-of-truth for measurement selection: `epyc-web/EDITORIAL.md`; page data: `epyc-web/data/catalog.json`.
+- Production kernel is frozen `ffc1bac82` (`production-consolidated-v10`). Do not change it for site work.
+
+#### Completed scope
+
+- [x] Publish the private `epyc-web` source repo and registered dashboard preview. ✅ 2026-09-25 — latest site source `4602416`, root snapshot merged to `main` `a07408f2`.
+- [x] Build a compact dark AMD catalog with model workspaces, source links, and configuration details. ✅ 2026-09-25 — seven cards, hardware grouping, search and filters.
+- [x] Show explicit weight quantization and measured performance matrices on every card. ✅ 2026-09-25 — unmeasured cells remain labeled; speech uses thread × workload rather than LLM context.
+- [x] Audit best current results and add Qwen3.8-Flash-Next. ✅ 2026-09-25 — frozen-v10 quality: MMLU-Pro 151/200 and GPQA 127/195 on UD-IQ4_XS; older 52.661 tok/s predecessor run identified separately.
+- [x] Validate the site and dashboard publication. ✅ 2026-09-25 — Chromium desktop/mobile suite passes all seven workspaces; live dashboard checks confirmed Flash-Next and source evidence.
+
+#### Next actions
+
+- [ ] **WEB-1 — operator publication choice:** provide the contact destination (email, booking link, or contact page) and confirm the reviewed page is ready for public GitHub Pages launch. Recommendation: use a dedicated contact email unless a booking flow already exists. This choice is needed to make the services section actionable and to fix the public launch point.
+- [ ] **WEB-2 — publish the reviewed snapshot:** configure GitHub Pages for the private `epyc-web` repo under the available plan, verify its public URL, connect the GoDaddy domain, then check HTTPS, links, responsive layout, and that no private research paths or credentials are exposed.
+- [ ] **WEB-3 — refresh evidence when measured:** if a frozen-kernel Flash-Next UD-IQ4_XS CPU np × context throughput sweep is produced, replace the card's unmeasured grid with its source-backed cells. The September 24 sweep was explicitly skipped by the operator; this task does not authorize running it.
+
+#### Operator decision package
+
+[Contact choices, exact source, reviewable copy and retained desktop/mobile screenshots](../../artifacts/operator/decisions/WEB1-contact-publication-20261007/README.md). The screenshots are dated September 25; the pinned source remains the content authority. Contact destination and launch readiness remain separate operator inputs; no completion or publication is claimed.
+
+#### Measurement limits
+
+The Qwen3.6 GPU 112.676 and 310.958 tok/s maxima were measured on predecessor `ef81196d5`, not frozen v10. Its current card uses the best located frozen-v10 cells, 104.8 tok/s per request and 229.6 tok/s wall aggregate at different operating points. Flash-Next's 52.661 tok/s post-BIOS study likewise used `ef81196d5` and IQ4_XS-uniform weights; the served model uses UD-IQ4_XS. Do not present either predecessor result as frozen-v10 throughput.
+
+## Track: frontier-f4-continuity-backup
+<!-- gate: none -->
+
+> Folded from `handoffs/active/frontier-f4-continuity-backup.md` @ `ea07eb9ad4ae` on 2026-11-02 (BRF-T1-F3, route 1a, operator D1/D5; retired row EVL-26 → RTG-22). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+
+### Frontier F4 — Continuity: Backup the Evidence Base
+
+**Status**: IN PROGRESS — W1 inventory/policy landed 2026-06-12; W2 snapshot job tooling + W3 validation/restore tooling landed 2026-06-14; latest-snapshot age/restore preflight landed 2026-06-21; first real backup remains blocked on a real off-RAID/off-host target
+**Created**: 2026-06-12
+**Priority**: HIGH — this-month, existential ROI at trivial effort
+**Spec**: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md) §F4 — read before claiming
+**Related**: MEASUREMENT.md §5 dump-list note (consolidate 1.2GB superseded blobs first); the ATTESTATION artifact in [fable5-findings-04-impl-plan.md](../completed/fable5-findings-04-impl-plan.md) §B (backup-age + unpushed-commit checks)
+
+#### Why
+
+The entire evidence base — journals, state, registries, intake index, deep-dives,
+episodic/strategy DBs, agent memory — lives on a single raid0 (striping, zero
+redundancy) on a single host. GGUFs are re-downloadable; the lab's memory is not.
+No backup policy exists anywhere in governance. The total irreplaceable set is
+<2GB, so the fix is half-days of work against an existential failure mode.
+
+#### Waypoints
+
+- [x] **W1 — inventory + policy** (half day): `scripts/backup/MANIFEST.yaml` with tiered list (T0 irreplaceable / T1 regenerable-expensive / T2 excluded models). Audit git coverage + unpushed branches (`v5 push pending` known); add unpushed-commit alert to ATTESTATION. Acceptance: manifest enumerates every T0 path per spec §F4-W1. Implementation: manifest plus `scripts/backup/audit_git_state.sh` alert hook for future ATTESTATION.
+- [x] **W2a — target discovery/report packet**: `continuity_backup.py discover-targets` inspects explicit candidate roots or locally mounted filesystem roots, runs the same failure-domain checks as snapshot creation, writes a machine-readable report, and emits the exact backup + latest-restore-check commands when a usable target exists. ✅ 2026-07-06
+- [ ] **W2 — the job** (half day): `scripts/backup/backup_critical.sh` — restic preferred (dedupe+encryption, open-source) or snapshot-copy fallback. Targets: root SSD (different failure domain) + one off-host target (operator picks). Nightly via nightshift scheduler or systemd timer. Acceptance: nightly run produces a verifiable snapshot of all T0 paths. **Tooling landed 2026-06-14, real run still blocked**: `backup_critical.sh` now creates a `verify_restore.sh`-compatible T0 snapshot layout and performs SQLite `.backup` copies, but refuses same-device and overlayfs targets. `/workspace` and `/mnt/raid0/llm` are both `/dev/md127`, no off-host target is configured, and `/tmp`/container overlayfs is explicitly rejected. Do not accept a fake same-array backup.
+- [ ] **W3 — restore proof** (half day + quarterly): `scripts/backup/verify_restore.sh` — restore to temp dir, checksum-compare, parse-validate JSON/YAML/SQLite. Add backup-age check to ATTESTATION. Acceptance: one full restore cycle passes; check wired into attestation. **Tooling landed 2026-06-14**: `9eb3f45` adds manifest validation plus restore wrappers; `0a56b81` fixes restore checksum semantics to compare restored bytes against the snapshot, not mutable live sources. **Preflight landed 2026-06-21**: `scripts/backup/check_latest_backup.sh` wraps `continuity_backup.py check-latest` so attestation/nightshift can fail closed when no timestamped snapshot exists, when the newest snapshot exceeds `--max-age-days`, or when restore verification fails. Still unchecked until a real T0 snapshot from an approved backup target passes end-to-end.
+
+#### Gates & pitfalls
+
+- Live SQLite (episodic.db is written continuously) must go through the `sqlite3 .backup` API or stop-copy — naive `cp` produces torn copies.
+- A backup that has never been restored is a hypothesis, not a backup — W3 is not optional.
+- Audit unpushed branches before trusting "it's in git" coverage; pushed history needs no file backup, unpushed does.
+- Do NOT back up the 1.2GB superseded embedding blobs flagged in the reconciliation dump-list — consolidate those first.
+- Off-host target must be open-source/self-hosted (external HDD / another box / MinIO) — no cloud SaaS.
+
+#### Reporting
+
+On completion of each waypoint: tick here, one-line progress entry, update master index row. Move to `completed/` after W3's first quarterly verify passes.
+
+#### Checkpoints
+
+- 2026-06-12 W1: created `scripts/backup/MANIFEST.yaml` and `scripts/backup/audit_git_state.sh`. Validation: YAML parse succeeded; scoped `git diff --check` clean; audit hook intentionally exits 1 with current alerts (dirty worktrees plus unpushed/no-upstream branches, including `epyc-root` `main` ahead of `origin/main` by 16 before this commit). Environment probe: `df/findmnt` shows `/workspace` and `/mnt/raid0/llm` are the same `/dev/md127` RAID0; `restic`/`borg`/`rclone` are not installed.
+- 2026-06-14 W3 tooling: `9eb3f45` added `scripts/backup/continuity_backup.py`, `scripts/backup/validate_backup_manifest.sh`, and `scripts/backup/verify_restore.sh`; `0a56b81` corrected restore validation to checksum the snapshot file against the restored copy and added `tests/backup/test_continuity_backup.py`. Validation: `python3 -m py_compile scripts/backup/continuity_backup.py tests/backup/test_continuity_backup.py`; `uv run --with pytest --with pyyaml pytest -q tests/backup/test_continuity_backup.py tests/publication/test_generate_public_results.py` -> 7 passed; `uv run --with ruff ruff check ...` passed; `bash -n` wrappers passed; `bash scripts/backup/validate_backup_manifest.sh scripts/backup/MANIFEST.yaml` returned validation ok with expected missing-pattern warnings. W2 remains blocked on a real off-host/off-array target; W3 remains open until a full restore from a real snapshot passes.
+- 2026-06-14 W2 guarded snapshot job: added `scripts/backup/backup_critical.sh` and `continuity_backup.py create-snapshot`. The job expands selected manifest tiers into `snapshot_root/<repo-name>/...`, writes `SNAPSHOT.json`, uses SQLite `.backup` for live database suffixes, and refuses targets that share source storage devices, sit inside source repos, or are Docker overlayfs. Validation: `python3 -m py_compile scripts/backup/continuity_backup.py tests/backup/test_continuity_backup.py`; `bash -n scripts/backup/backup_critical.sh scripts/backup/validate_backup_manifest.sh scripts/backup/verify_restore.sh`; `uv run --with pytest --with pyyaml pytest -q tests/backup/test_continuity_backup.py` -> 3 passed; `uv run --with ruff ruff check ...` passed; `bash scripts/backup/validate_backup_manifest.sh scripts/backup/MANIFEST.yaml` returned validation ok with expected missing-pattern warnings; live same-device probe to `/tmp/epyc-f4-same-device-check` refused overlayfs as expected. W2 remains unchecked until the job succeeds against a real off-array/off-host target and can be scheduled.
+- 2026-06-21 W3 preflight hook: added `continuity_backup.py check-latest` and `scripts/backup/check_latest_backup.sh`. The command discovers the newest timestamped snapshot under a target root by `SNAPSHOT.json`, runs the normal restore verification on it, enforces `--max-age-days`, and writes an optional JSON report. Validation: `python3 -m py_compile scripts/backup/continuity_backup.py tests/backup/test_continuity_backup.py`; `bash -n scripts/backup/backup_critical.sh scripts/backup/validate_backup_manifest.sh scripts/backup/verify_restore.sh scripts/backup/check_latest_backup.sh`; `uv run --with ruff ruff check scripts/backup/continuity_backup.py tests/backup/test_continuity_backup.py`; `uv run --with pytest --with pyyaml pytest -q tests/backup/test_continuity_backup.py` -> 7 passed; `bash scripts/backup/validate_backup_manifest.sh scripts/backup/MANIFEST.yaml` returned validation ok with expected missing-pattern warnings; no-snapshot CLI smoke failed closed. This does not satisfy W2/W3 by itself because no approved off-array/off-host target has produced a real snapshot.
+- 2026-06-27 target recheck: manifest validation still passes
+  (`files_matched=170240`, expected missing-pattern warnings only), but no
+  acceptable real target is currently writable. `/mnt/raid0/llm` and
+  `/workspace` remain `/dev/md127`; `/opt/AMD` is a different ext4 device
+  (`/dev/sda2`) but is mounted read-only; `/dev/sdb1` and `/dev/nvme0n1` are
+  visible but unmounted with no filesystem shown by `lsblk`. Do not claim W2
+  or W3 from a same-array, overlayfs, tmpfs, or read-only target. Next valid
+  action is to mount/provide an operator-approved writable off-array/off-host
+  target, then run `scripts/backup/backup_critical.sh` followed by
+  `scripts/backup/verify_restore.sh`.
+- 2026-07-06 preflight/reporting lane: added `continuity_backup.py preflight-target`
+  for dry target checks that report `target_exists`, `target_is_dir`,
+  `target_writable`, selected tiers/repos, and machine-readable failure reasons
+  without creating a snapshot. Validation: `python3 -m py_compile
+  scripts/backup/continuity_backup.py tests/backup/test_continuity_backup.py`;
+  `uv run --with pytest --with pyyaml pytest -q tests/backup/test_continuity_backup.py`
+  -> `10 passed`; `uv run --with ruff ruff check scripts/backup/continuity_backup.py
+  tests/backup/test_continuity_backup.py` passed. W2/W3 remain blocked until an
+  operator-approved off-array/off-host target is mounted and a real snapshot
+  can be created and restored.
+- 2026-07-06 target discovery lane: added `continuity_backup.py discover-targets`
+  for read-only enumeration of explicit candidates and mounted filesystem roots.
+  The command reuses the preflight/failure-domain logic, writes a JSON report
+  with per-candidate errors and `usable_count`, and prints the exact
+  `backup_critical.sh` / `check_latest_backup.sh` commands once a target passes.
+  Validation: `python3 -m py_compile scripts/backup/continuity_backup.py
+  tests/backup/test_continuity_backup.py`; `uv run --with pytest --with pyyaml
+  pytest -q tests/backup/test_continuity_backup.py` -> `12 passed`; `uv run
+  --with ruff ruff check scripts/backup/continuity_backup.py
+  tests/backup/test_continuity_backup.py` passed. Live discovery through
+  `uv run --with pyyaml python scripts/backup/continuity_backup.py
+  discover-targets --include-mounted-roots --max-candidates 16 --report-json
+  /tmp/epyc-f4-discover-targets.json` found `9` mounted candidates and
+  `usable_count=0`: RAID0-backed paths share `/dev/md127`, `/` is overlayfs and
+  not writable, and `/opt/AMD`/`/opt/rocm` are different storage but read-only
+  in the container. W2/W3 still require an operator-approved writable off-array
+  or off-host target.
+- 2026-08-23 EVL-26 W2/W3 attempt — target rejected by operator, run cancelled:
+  restic 0.18.0 was installed via apt under the dispatch's install-only network
+  allowance, but before an approved target existed — the install is a host-level
+  action taken in error and is flagged for the operator (it remains installed
+  and usable once an operator-approved target exists). `backup_critical.sh`
+  gained a `--backend restic` mode (default): continuity snapshot first (live
+  SQLite via the `sqlite3 .backup` API — restic never touches live sources, so
+  no torn copies), then `restic init` (probed via `restic cat config`) +
+  `restic backup --json --tag f4-t0` of the snapshot dir + `restic check`;
+  `--backend snapshot` fallback preserved; `bash -n` clean; 12/12 unit tests
+  pass. MANIFEST.yaml T0 DB patterns fixed: `repl_memory/**/*.db|.sqlite`
+  matched nothing (live DBs now live under `orchestration/repl_memory/`, incl.
+  continuously-written `sessions/episodic.db` ~539MB) →
+  `orchestration/repl_memory/**/*.db|.sqlite`; `.faiss` remains T1;
+  files_matched 95813→95888; T0 now measures **8.21 GiB / 10,311 files** (the
+  handoff's "<2GB" estimate is stale). **W2/W3 remain UNCHECKED**: no backup
+  ran; the task-stated target `/mnt/bigdisk` (`/dev/sdb1`) was rejected by the
+  operator ("do not touch anything outside /mnt/raid0/llm"), the mount was
+  unmounted and removed, and per operator directive the next target must be
+  **named by the operator**. No backup data or password file exists anywhere
+  outside the repos. Next valid action: operator names an off-array/off-host
+  target, then run `scripts/backup/backup_critical.sh --backend restic`
+  followed by `scripts/backup/verify_restore.sh`.
+
+## Track: integration-test-coverage
+<!-- gate: none -->
+
+> Folded from `handoffs/active/integration-test-coverage.md` @ `ea07eb9ad4ae` on 2026-11-02 (BRF-T1-F3, route 1a, operator D1/D5; retired row EVL-30 → RTG-22). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+
+### Integration Test Coverage - Remaining Gaps
+
+**Status**: COMPACTED 2026-05-28 - active coverage backlog only; Phases 1-4 are preserved in the completed ledger.
+**Created**: 2026-04-13
+**Updated**: 2026-07-26
+**Priority**: MEDIUM
+**Scratch**: `/mnt/raid0/llm/tmp/codex-ni06-main-20261006/`; scoped source-review artifacts only.
+**Primary repo**: `/mnt/raid0/llm/epyc-orchestrator`
+**Parent index**: [master-handoff-index.md](master-handoff-index.md)
+**Completed ledger**: [integration-test-coverage-phases-1-4-completed-through-2026-05-28.md](../completed/integration-test-coverage-phases-1-4-completed-through-2026-05-28.md)
+
+#### 2026-07-26 Staleness Review
+
+This remains an active, risk-triggered backlog. The
+[research and evaluation index](research-evaluation-index.md) still routes
+narrow integration-test slices here, but no new production-risk slice was
+selected by this documentation review. Keep the queue focused and do not turn
+freshness maintenance into blanket coverage work.
+
+#### Executor Start Here
+
+The integration scaffolding and earlier coverage tranches are historical. Do not chase blanket 100% coverage. Pick one focused slice that closes a real production risk, add or update tests, then record the command, test count, and coverage delta here.
+
+#### Outstanding Task Queue
+
+| Work item | When to pick | Validation |
+|---|---|---|
+| Focused seeding/orchestrator coverage tranche | Non-inference code session | Run the exact focused pytest target or coverage command for the touched package. |
+| Real LLM parsing paths | User-approved inference window | Add integration cases using production model outputs; mark as integration/inference-gated. |
+| Backend health, KV migration, and slot paths | llama-server test fixture available | Use isolated dev ports with startup, teardown, and stale-process checks. |
+| API route regressions | No inference needed if dependency overrides suffice | Use FastAPI/httpx test client with dependency overrides. |
+
+#### Rules For New Tests
+
+> **⚠ THESE BOXES ARE UNCHECKED BY DESIGN — DO NOT DISPATCH OR FLIP THEM.**
+> These are **standing rules for writing tests**, not tasks. Every `- [ ]` below is a step to be executed *whenever a new test is written*, so it has no completion
+> state outside one. Flipping any of them asserts that a repeating procedure is permanently
+> done, and the next test author inherits a checklist that reads as already-executed — so the step
+> silently stops being run.
+>
+> Noted 2026-07-29 by `auditor` during a sweep of `handoffs/active/` prompted by the automated
+> backlog sweep classifying steps like these as dispatchable `none`-lane work. Row `:38` of this section is in the queue's runner-up bench. `Keep mocked integration tests separate from real inference tests` has no completion state — it is policy.
+
+
+- [ ] Keep mocked integration tests separate from real inference tests.
+- [ ] Label inference-backed tests so normal CI can skip them.
+- [ ] Include port selection, startup, teardown, and stale-process checks for live-server fixtures.
+- [ ] Avoid broad fixture rewrites unless a current failing test proves the fixture contract is wrong.
+- [ ] Before adding code, run `git -C /mnt/raid0/llm/epyc-orchestrator status --short` and inspect the current test layout.
+
+#### Dependency Forks
+
+| Finding | Next action |
+|---|---|
+| Existing unit tests already cover the branch | Do not add duplicate coverage; record the existing test target and close that slice. |
+| Branch requires real model output | Move it to the inference-gated slice and do not block normal CI. |
+| Live server dependency is required | Create or reuse an isolated fixture; never touch production ports. |
+| Coverage gain is small but branch is high-risk | Keep the test if it captures a production failure mode; record risk rationale, not just percentage delta. |
+
+#### Completed Scope
+
+| Scope | Result | Ledger |
+|---|---|---|
+| Orchestrator refactoring coverage Phases 1-4 | Historical coverage tranches completed and preserved; extracted module unit coverage averaged 88% after the refactor audit. | [completed ledger](../completed/integration-test-coverage-phases-1-4-completed-through-2026-05-28.md) |
+| Historical module/gap tables | Preserved for provenance, but not the active queue. | [completed ledger](../completed/integration-test-coverage-phases-1-4-completed-through-2026-05-28.md) |
+
+#### Key Files
+
+- `/mnt/raid0/llm/epyc-orchestrator/tests/`
+- `/mnt/raid0/llm/epyc-orchestrator/src/`
+- `/mnt/raid0/llm/epyc-orchestrator/scripts/server/orchestrator_stack.py`
+- `/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/`
+
+#### Reporting Instructions
+
+After each coverage slice, update this file with the changed test files, command output summary, test count, coverage delta if measured, and any skipped inference gates. Update [master-handoff-index.md](master-handoff-index.md) only when priority, blocker state, or active scope changes.
+
+##### Follow-ups from the 2026-09-14 zero-inference sweep
+
+These are real tasks (not standing rules) and are dispatchable; they landed here because no other active
+handoff owns the shared red-test baseline.
+
+- [ ] **Record the `epyc-orchestrator` `origin/main` red-test baseline so sessions stop reading it as their own
+      breakage** — `pytest tests/unit` at `35b05fde` is **29 failed / 12,667 passed**, with named members in
+      `test_infra_failed_disposition.py`, `test_offline_reward_pairwise_holdout_expansion_plan.py`,
+      `test_e8_quality_baseline_reseed.py` (9), the `safety_gate|era|baseline|calibrat` selection (20), the
+      dashboard/journal/planner sweep (5), plus two reproduced on a clean detached worktree
+      (`test_legacy_source_change_after_preflight_blocks_scorer_replay`,
+      `test_generation_tail_replaces_only_target_response_and_sidecar_bytes`) that no dispatch had claimed as
+      pre-existing (found 2026-09-14, noninf sweep). [too-big: current full unit-suite baseline needs broad run and result triage; handoff session owns it]
+  - [x] Repair collection of `test_repl_thinking_budget.py` by qualifying its sibling test and plugin imports. ✅ 2026-11-01 orchestrator `a7818b43`: focused file 55 passed; full-suite baseline remains open. [no-belief: test collection repair]
+- [x] **Give `test_recent_eval_qids_excludes_only_rows_inside_recency_window` a frozen or relative clock** — it
+      fails with the calendar because its hardcoded `2026-07-01T00:00:00Z` row is 75 days old against the
+      test's own 60-day window (`tests/unit/test_autopilot_actions.py:1332`) (found 2026-09-14, noninf sweep). ✅ 2026-10-07 — MAIN verified [published relative-clock source](../../artifacts/ni08/evl30-relative-clock-source-20261007/README.md); no whole-suite claim.
+
+## Track: loop-state-offraid-backup
+<!-- gate: none -->
+
+> Folded from `handoffs/active/loop-state-offraid-backup.md` @ `ea07eb9ad4ae` on 2026-11-02 (BRF-T1-F3, route 1a, operator D1/D5; retired row RTG-60 → RTG-22). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+
+### Loop-state off-RAID0 backup: AutoKernel / AutoPilot / belief-kernel planning state
+
+**Status**: OPEN, ready to dispatch. **Owner: the operator's filesystem agent** (host crontab + `/home/daniele/filesystem-agent/scripts/`). workspace-58 does not implement the host job.
+**Created**: 2026-10-25 by workspace-58. Operator decision: "Nightly off-RAID0 backup (Recommended)", plus "this needs to be done by my filesystem agent".
+**Parent index**: [routing-and-optimization-index.md](routing-and-optimization-index.md)
+**Scratch**: none. The job writes only to its backup targets.
+**Evidence**:
+- `docs/reference/loop-planning-inputs-audit-2026-10-25.md`: the loops' planning inputs and their durability.
+- `docs/reference/tmp-loss-reconcile-2026-10-25.md`: the reclaim losses and why backups could not restore them.
+
+#### Why
+The AutoKernel and AutoPilot loops plan from state that is **single-copy on md127 (RAID0) with no backup**. The existing NIB2-92 job (`backup-claude-sessions.sh`, crontab `0 4 * * *`, local `/mnt/raid0/llm/claude-backups` keep 3, mirror on `/mnt/micron` = `/dev/nvme1n1p1`) covers only Claude and Codex transcripts and memory, plus the opencode DBs. Losing this state means losing the experimental history and seeded hypotheses the loops build on. md127 is also 94% full.
+
+#### Scope: back up exactly these (about 0.5 GiB total; sizes as of 2026-10-25)
+| What | Path | Size | Notes |
+|---|---|---|---|
+| Belief ledger and reader state | `/mnt/raid0/llm/state/vidya/` (ledger.jsonl, ledger.jsonl.sync.json, loop-known-good/, loop-memo/, reads.jsonl) | about 45 MB | The canonical ledger, which is in no git repo. Copy while no ingest holds `ledger.jsonl.lock`, or copy under that lock. |
+| AK live stores | `/mnt/raid0/llm/autokernel/campaigns/*/store*/{experiments.db,inbox/,accumulator-bundle.json,journal*,resume-claims.sqlite3}` | about 330 MB for the live set: q38fn `store-b0ba1d427` 317 MB, ds41-1017 `store/`, 27b `store/` | **Copy SQLite with `sqlite3 <db> ".backup <dst>"`**, or an equivalent online-backup API; never a plain `cp` of a live DB. The large historical DS41 DBs (4.3 GB and 1.1 GB) are a separate decision; see box 3. |
+| AK loop memory | `/mnt/raid0/llm/autokernel/loop-memory/{experiments.db,inbox/}` | about 10 MB | Shared history plus 25 inbox seeds. |
+| AK campaign input bundles | `/mnt/raid0/llm/autokernel/campaigns/*/inputs*/` | about 3 MB | Small JSON bundles. |
+| AutoPilot state | `/mnt/raid0/llm/epyc-orchestrator/orchestration/{autopilot_state.json,autopilot_journal*.jsonl,autopilot_checkpoints/,repl_memory/strategies/,operator_hypotheses.yaml,operator_hypothesis_resolutions.jsonl}` | about 42 MB | The journal shards are gitignored and no checkpoint contains them. `strategies.db` must also be copied with `.backup`. |
+
+Out of scope: `/mnt/raid0/llm/tmp/**`, models, builds, worktrees, and anything already in git.
+
+#### Tasks
+- [ ] **BK-1** Write the job script in the filesystem agent's script dir, next to `backup-claude-sessions.sh`. It snapshots the scope above into a dated directory under `/mnt/micron/<loop-state-backups>/YYYYMMDD/`, which is off md127. Requirements:
+  - SQLite DBs via online `.backup`; the ledger copied consistently.
+  - A `SHA256SUMS` manifest written per snapshot.
+  - Retention: keep 7 dailies and 4 weeklies.
+  - Exits non-zero on any failure, with `LAST_STATUS` written the way NIB2-92 does it.
+- [ ] **BK-2** Install it in the host crontab, offset from NIB2-92's 04:00 (for example 04:30), logging to a file next to `claude-backups/backup.log`.
+- [ ] **BK-3** Decide the large historical AK DBs (`ak-ds41-cpu-decode-20260923/store/experiments.db` 4.3 GB, `store-b0ba1d427` 1.1 GB): weekly-only, or one-time cold copy. Record the choice here.
+- [ ] **BK-4** Restore test. Restore the latest snapshot into a scratch dir, run `sha256sum -c`, and check:
+  - `sqlite3 <db> "pragma integrity_check"` on every DB;
+  - `python3 /workspace/scripts/vidya/cli.py --ledger <restored ledger> verify` reports chain_ok.
+  Record the output here.
+- [ ] **BK-5** Alarm on failure. A failed or missing nightly snapshot must be visible: the hub health probe, or the same channel NIB2-92 uses.
+
+#### Done when
+BK-1..5 are ticked, two consecutive nightly snapshots exist with valid manifests, and the restore test passed.
+
+## Track: refactoring-multirepo-2026-10
+<!-- gate: none -->
+
+> Folded from `handoffs/active/refactoring-multirepo-2026-10.md` @ `ea07eb9ad4ae` on 2026-11-02 (BRF-T1-F3, route 1a, operator D1/D5; retired row RTG-61 → RTG-22). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+
+### Handoff: Refactoring — orchestrator, autopilot and AutoKernel (multi-repo debt program)
+
+**Status**: ACTIVE — operator resumed implementation 2026-10-24 after an independent handoff audit; review and finish existing branches before integration
+**Created**: 2026-10-07
+**Updated**: 2026-10-30
+**Priority**: High
+**Scope**: epyc-orchestrator (`src/`, `scripts/`, `tests/`, `scripts/autopilot/`, `src/autopilot_core/`);
+epyc-inference-research `scripts/kernel_rnd/autokernel/`; epyc-root `scripts/hooks/` (guard bugs found on the way)
+**Estimated effort**: 382 findings → 26 packages (12 in wave 1, 14 in wave 2); deletion size is a planning estimate, subject to current per-file reachability and retention contracts
+**Scratch**: `/mnt/raid0/llm/tmp/refactor-01a16fc3/`. Use one reusable checkout per active lane. Retired task and wrap checkout paths below are historical evidence locators; their source states, commits and retained outputs are preserved in the cleanup receipts, rather than live launch inputs.
+
+**Current working priority (operator, 2026-10-31)**: repair or reopen the 21 unsupported ticks with implementing commits and Git evidence, preserve task text and original completion dates, wrap up per task, then resume the S-first code queue. Prior-work cleanup is hygiene and receives no new-code quota credit. CI restoration is evidenced below.
+
+- [x] ✅ 2026-10-31 **CI-20261031-GREEN — Restore ROOT tests.yml and research actor native wire gate to green on main.** Evidence: ROOT `561e6ae9`, `34a955f9`, `c78940ada`, `6309ecb0`; research `f115236f`; [Git evidence](../../artifacts/ci/restore-tests-20261031.json); [ROOT green](https://github.com/pestopoppa/epyc-root/actions/runs/41200383604), [research green](https://github.com/pestopoppa/epyc-inference-research/actions/runs/41196682393). [no-belief: CI execution/source validation; no inference result] Operator priority2026-10-31: fix ROOT numpy/S4 producer checkout-and-environment/pin-registry defects without disabling tests; add `tests-${{ github.ref }}` concurrency with cancel-in-progress, main-only push and retained pull_request. Add research PyYAML and main-only push. Done only with successful main run URLs for both workflows, published source evidence on this line, and delivery of the URLs to ws58.
+  - Follow-up after the 2026-11-01 regression: root fixture repair commit `7a20f8fecf894c4559a3aa7b2a700bb3c15cfa8b`; [ROOT tests.yml green](https://github.com/pestopoppa/epyc-root/actions/runs/41270047542). Research actor-wire test repair commit `28e66916a1fee988315ea3633f5e276e3ecb10c2` is contained in current main; [research actor native wire gate green](https://github.com/pestopoppa/epyc-inference-research/actions/runs/41270088587). Both workflows passed on main; no tests were disabled. [belief: cc]
+
+Each active lane reuses its checkout and scratch area. Remove each worktree through `scripts/system/worktree_gate.py` when its task lands. Cold dirty and unlanded drafts were archived before abandoning their materialized checkouts; this does not accept, merge or close the underlying packages. Locked or running source views remain intact. Historical checkpoint paths and process IDs below describe their recorded date, not present-day launch instructions.
+
+**Start here:** the [Pending work](#pending-work) checklist is the queue; §Branches says what each pushed
+branch holds and how to merge it; per-finding evidence is in `research/refactor-audit-2026-10/findings-*.md`.
+
+**Owner review boundary (2026-10-26):** root `bb6410b1fa76553ab8d2d26dad5ee9816fb1ee5d` was
+privately published, but was not accepted or merged by workspace-58. Owner review at 12:45/13:25
+requires per-line checkbox evidence, removal of this branch's generated index artifacts/counts,
+and confirmation of one index owner. The correction below does not claim owner acceptance.
+The owner verified those fixes in private `d3cba7b6` at 16:40, but still withheld merge: this
+branch must withdraw its wiki page/manifest contribution and retain the runbook's live executor
+offender until the cleanup source merges. Findings stay in the research record for the next sweep.
+That prior review-withhold is superseded for the root wrap-up: `fcdc09c08a807491531dc0527942244a638bd957`
+was accepted and merged by the owning main as `d369b3798` on 2026-10-26 at 16:44 UTC. The earlier
+review history above is retained as chronology.
+
+**Current next action (2026-10-27):** P3 is accepted and published on its private `codex/*` branch;
+the original integration candidate remains privately validated. O8's CI fixture-isolation and
+guard-tripwire work now has scoped preflight evidence, but no complete baseline JUnit/native grade,
+accepted baseline dataset, full candidate run, or publication. The 08:29:09–08:29:17 UTC native
+admission passed three safe cases with a conformant `Judged/Located` shared grade, normal
+completion, matching custody, zero guard violations, and the corrected editable `851` v4 inventory.
+It does not validate the full baseline. The subsequent V6 full baseline started at 08:42:16 UTC and
+was stopped after the tripwire refused four test-originated connections to configured backend ports
+(first 8070) from `TestHealthEndpoint::test_health_returns_ok`; the owned process group was dead by
+08:43:10 and official exit was 143. No JUnit/native grade or accepted counts/dataset resulted.
+Fix the API health fixture with a fake backend that preserves health semantics and the tripwire,
+then rerun the relevant guarded API integration and scoped baseline proof before another full
+baseline. Tool bootstrap is complete, but its standalone checks are not project gates. Only after a
+valid complete baseline capture should the dataset be derived, followed by full candidate native
+validation and required gates/coverage. O8 remains unchecked. Checkpoint details and evidence paths:
+[2026-10-27 CI checkpoint](../../progress/2026-10/2026-10-27-refactor-ci-checkpoint-01a16fc3.md).
+Codex NI owns the production `embedder.py` fix; this session's scope is test guard/tripwire only.
+Keep the four protected P5 files unchanged. Only private `codex/*` publication is in scope; no
+main promotion.
+
+Origin: cloud refactor-audit session (claude.ai/code session_01C4SLLAQhop8AA9rJJusAYj), run in an ephemeral
+4-CPU container on fresh clones, never on the host. Evidence, data and tooling:
+[`research/refactor-audit-2026-10/`](../../research/refactor-audit-2026-10/README.md). Bug report:
+[`BUG-REPORT-autopilot-autokernel.md`](../../research/refactor-audit-2026-10/BUG-REPORT-autopilot-autokernel.md).
+
+> **Review-branch registration:** owning main corrected this handoff's row to **RTG-61** in
+> `routing-and-optimization-index.md`. Native review of current main `a876d3c9` found RTG-60 already
+> reserved for `loop-state-offraid-backup.md`; that canonical row must remain intact at merge. The old
+> private RTG-60 refactoring row was a collision, not canonical ownership. Shared/canonical files remain
+> untouched; workspace-58's publication boundary still applies. Source wiring is filed prospectively on
+> this branch as VB-REFACTOR-CONFORMANCE, not as an optional applicability decision.
+
+##### Current package state (2026-10-26)
+
+- **Integration:** reviewed and published private candidate `851955112b8ba8c2911a7684469551afa1541623`
+  on `refactor/orchestrator-integration-01a16fc3`, validated relative to immutable base `84f6f6f1`.
+  The expanded union passed 2,897/2,905 (8 skipped), four coverage floors are 100%, 32 NI63 pins
+  and four P5 preservation proofs pass. The formatter correction establishes zero introduced
+  failures within accepted scope. RESUME-4 records this private candidate only; no main promotion.
+- **O8 CI:** B1-tested pre-fixture local-only merge `753e0287a1ae6b06f2a5c91269899ff8cc8452b5` has parents
+  `713edf671614e69f67028100c08cc8f08b02d52f` and integration `851955112b8ba8c2911a7684469551afa1541623`.
+  The focused check passed 13 tests. Official q1 B1 attempt 1 failed before collection because
+  custody hashing followed public-carrier directory symlinks; no tests ran in that attempt.
+  The helper's corrected symlink metadata proof passed. B1 attempt 2 actually collected 20,646
+  baseline tests plus an error for an unregistered `slow` marker; candidate collection did not run.
+  After the external harness correction, strict collection passed: baseline 20,658 total/20,645
+  selected, candidate 20,666 total/20,653 selected; 0 removed and 8 intended additions, with the
+  same 13 exclusions on both sides. This is collection parity, not a full-suite result.
+  Full baseline comparison, native capture and coverage remain incomplete; O8 stays unchecked.
+  B2 baseline then completed at 13:13:11 UTC with 31 failed, 20,517 passed, 85 skipped, 19 xfailed
+  and 6 passed subtest events in 2,146.45 s. Its 20,643 parent cases plus 9 module-skip case nodes
+  give 20,652 JUnit testcase nodes; header 20,658 also counts the 6 subtest events. Native
+  conformance is NULL on an unnamed collection-skip case; shared grading failed without JSON.
+  Sixteen ignored runtime paths leaked in the baseline checkout, while tracked custody for all
+  three repositories and the source harness matched. No candidate full run occurred and no
+  accepted known-failure set is established. Original log/JUnit/native receipts remain at
+  `/mnt/raid0/llm/tmp/refactor-01a16fc3/ci/b2-baseline-first-native/`.
+- **P3:** reviewed private source `fb5db1a0a24b92172643bb670c77a4343a508c96` is published on
+  `codex/refactor-autopilot-actions-01a16fc3`, remote-exact verified with a clean worktree. It combines
+  checkpoint `bbccaaef` and integration `851955112`. The original 34-file run was 817 passed, 1 skipped,
+  3 failed; the expanded 90-file run was 1,917 passed, 2 skipped, 11 failed (600 s).
+  Targeted legacy-adapter/double repairs then passed the final 12-file selection: 402 passed,
+  1 skipped in 39.49 s, with compile, P5/W3e preservation, diff/hash and no-new-Ruff proofs.
+  Raw Ruff exit 1 is preserved: 16 inherited E701 findings in `tests/unit/test_mutation_diagnostics.py`.
+  The official q1 closure at 12:04:57–12:05:05 UTC returned 0: all three formatter targets have equal
+  ASTs before/after, format-check 3 passed, non-target bytes are unchanged, and no-new-Ruff,
+  protected-file, diff and source-custody proofs pass. The owning main accepted P3 for this private
+  branch only. These successive selections do not establish a current all-1,930-pass aggregate.
+- **Next:** repair CI report compatibility and runtime isolation, then rerun baseline under a new
+  reviewed calendar admission. The root metadata correction needs no compute row per the owner's
+  12:45 instruction; it remains subject to owning-main review before commit/push.
+
+The native read observed the 1.35 GB `question_pool.jsonl`; its exact consumer is unproven. No fixture patch was
+applied, and an EvalTower-constructor causal claim is not supported. The CI host audit established
+that a dashboard restart test polls live slots and creates host logs. A reviewed owned-dashboard
+test fixture was applied after B1 (+26/−10); its validation is pending, with production application
+logic unchanged. The source evidence chronology is in
+the [Oct 26 checkpoint](../../progress/2026-10/2026-10-26-refactor-next-packages-checkpoint-01a16fc3.md).
+
+Evidence and the formatter-scope adjudication are recorded in
+[`integration-validation-review-2026-10-26.md`](../../research/refactor-audit-2026-10/integration-validation-review-2026-10-26.md).
+Root attempts `829152` and `831298` ended before admission. The later bare queued wrapper `881101`
+and its exact region child `881104` were cancelled for calendar integration and both verified dead;
+its actual terminal exit 143 is preserved, with no gates run. The root row is not armed. All new
+checks require the calendar owner's live grant and official filler launcher on literal q1 CPUs
+24–47, 8 GiB, with affinity proof; a bare region claim is insufficient. The separate root request
+is 600 s, minimum useful 300 s. Future pushes target `codex/*` only; this root's publication
+destination is `codex/refactor-handoff-audit-01a16fc3`, leaving its old review remote unchanged.
+
+#### Pending work
+
+Historical implementation checkboxes below mean committed on the named branch, not reviewed or merged.
+New completion records name their validation and integration state explicitly. A finding ID in a commit
+subject establishes association only; WIP, skipped, tested, reviewed and merged are distinct states.
+
+##### Resumed execution (2026-10-24, session 01a16fc3)
+
+- [x] RESUME-1: audit pushed branches and current upstream state; identify unsafe pruning assumptions, rollback failure-path gap, test isolation prerequisite and integration conflicts. Evidence: [audit checkpoint](../../progress/2026-10/2026-10-24-refactor-audit-01a16fc3.md). ✅ 2026-10-24 Evidence: root `d3418c6b7:progress/2026-10/2026-10-24-refactor-audit-01a16fc3.md`. [belief: cc]
+- [x] RESUME-2: review hermetic-tests + test-hazards and isolate A6-M1 trace/ledger writes in fixtures. Orchestrator `87540dae`, checkpoint `5e392a3c`, pushed to `refactor/test-isolation-reviewed-01a16fc3`: 189 runtime/trace tests pass + 1 intentional skip; 7 E8 wrapper cases pass; all 3 new regressions fail safely on parent. Original hazard modules reviewed; unmerged. ✅ 2026-10-24 Evidence: root `d3418c6b7:progress/2026-10/2026-10-24-refactor-resume-01a16fc3.md`. [belief: cc]
+- [x] RESUME-3: finish and review C1-05 rollback error handling and behavioral regressions for nonzero exit, timeout, spawn error, wrong HEAD and successful rollback. Research `62c68ad99`, checkpoint `1b58b115c`, pushed to `refactor/autokernel-rollback-reviewed-01a16fc3`: 13 regressions pass (5 fail on WIP), targeted loop set 401 pass + 23 subtests. Reviewed, unmerged under launch/re-pin hold. ✅ 2026-10-24 Evidence: root `d3418c6b7:progress/2026-10/2026-10-24-refactor-resume-01a16fc3.md`. [belief: cc]
+- [x] RESUME-4: review and validate the combined orchestrator candidate in a private worktree against immutable base `84f6f6f15f713d21098dbad2b153d32f8cc13624`. Candidate `851955112b8ba8c2911a7684469551afa1541623` on `refactor/orchestrator-integration-01a16fc3` passed reviewed AST, focused tests, Ruff/format scope, compile/diff, 32 NI63 pin, and four-file P5 preservation proofs; expanded union: 2,897 passed, 8 skipped, 0 failed/2,905, all four coverage floors 100%. Formatter correction proves zero introduced failures within accepted scope. Private candidate only; no main promotion/deployment. [belief: cc] Evidence: [`integration-validation-review-2026-10-26.md`](../../research/refactor-audit-2026-10/integration-validation-review-2026-10-26.md). ✅ 2026-10-26 Review record: root `bb6410b1:research/refactor-audit-2026-10/integration-validation-review-2026-10-26.md`.
+- [x] RESUME-4a: independently review O3 and integrate the accepted isolation harness into its private branch. Orchestrator `d843eb9c` fixes concurrent registry-load backoff (12 attempts before, 1 after); `07829696` scopes alias stress to its actual guarantee; checkpoint `6558beb7` pushed to `refactor/config-reviewed-01a16fc3`. O3 selection 548 pass/4 skip, alias targets 524 pass, all 7 changed source pins verified. Reviewed, unmerged. ✅ 2026-10-24 Evidence: root `d3418c6b7:progress/2026-10/2026-10-24-refactor-resume-01a16fc3.md`. [belief: cc]
+- [x] RESUME-4b: independently review O1 stage 1 and fix pre-first-chunk streaming disconnect handling. Orchestrator `a1c69593`, checkpoint `142bb5df`, pushed to `refactor/request-reviewed-01a16fc3`: 1,011 targeted tests pass/3 skip; blocked initial generation fails to observe cancellation on parent and passes after fix. Accepted isolation is included; no changed route lies in ni63's pin closure. Reviewed, unmerged. ✅ 2026-10-24 Evidence: root `d3418c6b7:progress/2026-10/2026-10-24-refactor-resume-01a16fc3.md`. [belief: cc]
+- [x] RESUME-4c: independently review P2 decision semantics and snapshot migration. Orchestrator `4069b8ee`, checkpoint `db17808e`, pushed to `refactor/autopilot-gate-reviewed-01a16fc3`: 1,018 tests pass/1 skip; 18 snapshot controls pass; B2-02/B2-03 fail on parent. Pre-P2 snapshots refuse bounded authority; a current-format rebuild matches full replay. Review complete; integration held because existing reconstruction is CRITICAL and verified-snapshot replay HIGH. No evaluator-era files changed. ✅ 2026-10-24 Evidence: root `d3418c6b7:progress/2026-10/2026-10-24-refactor-resume-01a16fc3.md`. [belief: cc]
+- [ ] RESUME-5: repair CI infrastructure early; keep K4's post-prune size ratchet after K3. Reconcile baseline collection/failure identities rather than accepting aggregate counts.
+  - [x] **B2-PRODUCER-E-NEXT-01a16fc3:** prepared and delivered the q2 candidate/baseline comparison packet; source-bound two-core preflight passed, NEXT receipt `f7e9e236-f6d5-4034-a609-7bf03f181ee1`. No official comparison was run; compare the known baseline failures individually. Parent work remains open. ✅ 2026-10-27 [no-belief: packet preparation]
+  - *(2026-10-27 21:35Z, ws58 results filing, B2 producer E.)* `refactor-b2-producer-e-q2-20261027` ended rc1 at 19:04:07Z by design of its comparison: candidate `411 passed, 4 warnings in 49.03s` (candidate-research.status 0, cleanup-integrity 0, model-free violation count 0); baseline `2 failed, 394 passed` (baseline-research.status 1; the two known historical failures, a containment case and `test_python_hook_flags_out_of_root_writes_and_not_in_root_ones` on EXDEV `os.rename` to `/var/tmp`). Terminal rc1 is the baseline's, comparison only, no zero-failure claim. Results `/mnt/raid0/llm/tmp/refactor-01a16fc3/b2-cpu-ready-1728/results/run-20261027T190217308687691/`. Not a merge; B2 producer E stays open. [no-belief: model-free test comparison, no measurement]
+  - *(2026-10-28, scoped re-derivation.)* A private fail-closed comparator matched all 396 baseline test identities to passing candidate cases and found 15 additional passing candidate cases. The baseline has 394 passes and the same two historical containment/EXDEV failures; the original row named those categories, while their exact test identities and signatures were established from the prior and current logs. Fixtures reject missing/duplicate tests, changed failure signatures, candidate failures and custody/guard changes. This is a scoped comparison, not a clean baseline, full B2 result or merge. Evidence: `/mnt/raid0/llm/tmp/refactor-01a16fc3/b2-producer-e-comparison-20261028/actual-comparison.log`. [belief: cc]
+- [ ] RESUME-6: reconcile current INF64 retained-module manifest and live belief-source contracts before each deletion stage; include retained `campaign.py` and dynamic/cross-repo consumers as closure roots.
+- [ ] RESUME-7: fix the separate mixed-alias cold-import cycle. Randomized 16 aliases fail when imported concurrently at orchestrator baseline `84f6f6f1` and O3; same-alias 24-thread races and canonical identity tests pass. Original mixed test is at orchestrator `5886e5ae:tests/unit/test_inference_lock_concurrent_import.py`; existing O3 tests do not establish cross-module cold-import safety.
+- [x] RESUME-8: repair NI07 capture's declared-output environment contract and replace expired cloud-only package prompts with validated host inputs, CPU claims, isolated baseline trees and explicit cheapest-capable model/effort. Root source `a976770b8`, closeout `8e66dd96b`, integrated here as `152a2991b`; node syntax/smoke and capture regression pass, capture regression fails on parent. ✅ 2026-10-24 Evidence: root `e031c422f:progress/2026-10/2026-10-24-root-integration-01a16fc3.md`. [belief: cc]
+
+At resumption, the independent audit found 55/382 findings with associated commits (including two WIP findings),
+327 without commits, and 52 unverified C4–C6 findings. These are inventory counts, not accepted fixes.
+The explicit AutoKernel launch hold, deliberate owner-controlled re-pinning, operator-timed P5 merge,
+containment-scanner operator review and production-kernel freezes remain in force. Execution stays
+near two concurrent agents, using the cheapest capable available model/effort per dispatch.
+
+##### Resumed execution checkpoint (2026-10-25)
+
+The operator approved isolated candidate work for the exact A5-18 protected-launcher cleanup and
+for O4 HIGH/CRITICAL REPL findings A4-03/A4-04/A4-06/A4-07. These approvals cover candidate
+patches only; they do not authorize a main push, merge, deployment, or production activation.
+
+P1 is accepted and pushed at source `36e1bc55aa40f35965a941e81fdc593a22abd520` on
+`refactor/autopilot-loop-reviewed-01a16fc3`. The aggregate and all nine focused file hashes match the run-start, run-end,
+and checkpoint snapshots; 19 focused and 561 broad tests passed (one skip), with ruff and diff checks
+passing. The worker's original `validation.status` says `FAIL` because its hash-comparison ordering
+was wrong; the independent unchanged-file proof is the acceptance evidence. No test was rerun for this
+root checkpoint. The P1(rest) item is complete; RESUME-4 combined-tree validation is still separate.
+
+O6 rest (A5-11, A5-23, A5-18, A5-02, A5-21) is accepted and pushed at `6efa56265b68f402af736a1c1a2ee3df447849c1` on `refactor/scripts-cleanup-reviewed-01a16fc3`. The 190 launcher tests and 395 coverage tests pass, including all four 100% floors (331/331, 151/151, 508/508, 579/579); five NI63 controls pass with 32/32 blob and SHA proof. The three scorer failures were a test-fixture `sys.modules` patch/restore leak, fixed without a production-code defect. Four source-pin changes match the exact approved launcher bytes; baseline 5 passes, HEAD `094cbc5b` and main `84` match, and the other 28 pins are unchanged. The original seeding worktree is unchanged. O6 candidate acceptance does not authorize integration, deployment, or activation. O4 candidate patches and caller audit are frozen and accepted:
+557 tests passed, eight parent regression negative controls failed as expected, and strict offline
+drift, ruff, compile, diff and frozen-snapshot checks passed. Its source-only closeout is pushed as
+`acfd5f8ca3837c568fc3c944ffb242b29823f3fa` on reviewed branch `refactor/repl-correctness-01a16fc3`; this does not
+authorize main integration or deployment. K2 fixes C4-08, C4-16, and C3-02 are accepted and pushed on `refactor/autokernel-k2-guards-01a16fc3` at `68724da5ba093cf3cec3909a81491932002dd4ce`; C4-05 remains incomplete, so K2 stays open. Detailed state and evidence paths are in
+`research/refactor-audit-2026-10/resume-state-01a16fc3.json`.
+
+##### Superseded package checkpoint (2026-10-25)
+
+This entire section is an as-of-2026-10-25 snapshot. Its integration and runner statuses were
+superseded by the Oct 26 state above; do not use its captured PIDs as current.
+
+Everything in this dated snapshot is historical; for current integration, O8, P3 and runner states,
+use the Oct 26 package state above.
+
+The private integration candidate at `3ee8eea2ab514e8fac4c15c839d4ad1644e0ba38` completed an expanded 111-file union: 2,897 passed, 8 skipped, 0 failed of 2,905 collected; all four source coverage floors are 100%, with no checkout-write warnings. The initial 93-file failure was traced to fixture bytes changing during `_run_loop_inner`; two regression tests now preserve the historical W3e fixture while also detecting future overwrites. The 18-case initial rerun and both added regression tests pass. New-file/changed-hunk style fixes are applied, but final AST, style, focused-suite, 32-pin and P5 frozen-file proof is still running as captured PID 2010953. Its durable evidence is under `/mnt/raid0/llm/tmp/refactor-01a16fc3/orchestrator-integration/` (`final-proof.pid`, `final-proof-runner.log`, `final-proof.sh`; terminal status/done artifacts are not present yet). Until that proof completes and is reviewed, integration is not accepted or pushed. Known baseline debt is 18 Ruff findings and 133 formatter paths; the first integration attempt's checkout-write warnings were eliminated by private pre-import environments for the tool-audit/seen-host file and Ruff cache.
+
+O8 is a frozen, uncommitted draft in `/mnt/raid0/llm/worktrees/refactor-01a16fc3-ci`, branch `refactor/orchestrator-ci-01a16fc3`, based on `3ee8eea2`. It prepares PR/manual CI, the shared native carrier and grade, exact nonsecret context/output/JUnit custody, a single test entrypoint, baseline comparators, strict pytest/server-marker handling, NI63's 32-source current-provenance closure, and pip/UV dev-dependency parity. Original preparation PID 2085542 was cancelled by its owner before the comparator fix and verified dead. Replacement PID 2093707 is the current single detached preparation request, waiting behind the q0–q3 build claim; authoritative pointers are `precheck-run2.pid`, `precheck-run2.process-check.txt`, and `region-lock-run2.log` under `/mnt/raid0/llm/tmp/refactor-01a16fc3/ci/`. No tests, lint, lock/sync, native receipt or CI validation are accepted, and no source commit or push exists. The checkpoint snapshot is `/mnt/raid0/llm/tmp/refactor-01a16fc3/ci/checkpoint/`; its manifest prose still describes the original PID, so use the run2 PID/status pointers for live state.
+
+P3 is a frozen, uncommitted draft in `/mnt/raid0/llm/worktrees/refactor-01a16fc3-autopilot-actions`, branch `refactor/autopilot-actions-01a16fc3`, based on `3ee8eea2`. The prepared changes cover managed-stack PID/environment access without `pgrep`, finite validators, refusal-before-side-effects, journal context/events and supersession/caching, provider IO/lifecycle, dead-resume/API cleanup, shard reading, and a neutral core baseline-pin helper. Successor `/root/autopilot_actions_finish` completed the authorized B3-04 optional loaded-journal injection with separate all-era ceiling semantics and added invariance/reset/teardown tests, then froze the draft. W3e fixture bytes match base and `git diff --check` passes. No tests have run; P3 remains unvalidated and uncommitted, with no approval missing. The refreshed 34-file suite is queued in phase `queued-source-frozen`; its stable authoritative manifest is `/mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-actions/current-run.json`, which points to the source/test snapshot, runner, PID file, log, status and completion flag. Use that manifest for current liveness and runner details; prior wrapper PID 2077838 and child PID 2077840 remain cancelled-before-admission history in `focused-p3-20261025/cancelled-before-admission.txt`. Observed 2026-10-25 08:53:07 UTC. Graph coverage is unknown after the index error. No source acceptance, commit or push exists.
+
+The current next action is to finish and review the integration proof, then validate O8 CI and P3 against the accepted integration SHA. The O8, P3, and RESUME-4 completion boxes remain unchecked; no per-finding completion is claimed. Existing AutoKernel launch/main-merge holds, the P5 single-era boundary and protected serving/kernel rules remain in force. P3 is frozen with a 34-file suite queued; its stable current-run manifest is `/mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-actions/current-run.json`, observed 2026-10-25 08:53:07 UTC. No tests have run and no source is accepted. The earlier P3 wrapper PID 2077838 and child PID 2077840 are cancelled history, as recorded in `focused-p3-20261025/cancelled-before-admission.txt`. My root-gates wrapper PID 2096522 and child PID 2096526 were cancelled before region admission and verified dead at 2026-10-25 08:52:45 UTC; no token was acquired. Root documentation gates remain pending; use `/mnt/raid0/llm/tmp/refactor-01a16fc3/next-packages-checkpoint/root-gates.pid` and `root-gates.status` as the stable runner-state pointers. The captured state is recorded in `research/refactor-audit-2026-10/resume-state-01a16fc3.json`.
+
+##### Done
+
+- [x] Audit inventory and artifacts filed for 17 units/382 findings; C4-C6 remained unverified in the historical audit. This records artifact filing, not completion of the findings. Evidence: root `83419070d:research/refactor-audit-2026-10/README.md`. [no-belief: not-a-result] ✅ 2026-10-24
+- [ ] Hermetic orchestrator harness: the historical plan reported 20,815 off-host collections on `refactor/hermetic-tests`; no independently reviewed raw receipt for that historical count is cited here. Current isolation review is RESUME-2; branch association alone does not complete this item.
+- [ ] Containment-scanner bypass/degraded-mode fixes on `refactor/containment-scanner`: historical implementation association only; owner safety review remains open below, so this item is not complete.
+- [x] Operator decisions on evaluator regime, AutoKernel prune, CI and scope recorded. Evidence: root `83419070d:research/refactor-audit-2026-10/OPERATOR-DECISIONS.md`. [no-belief: not-a-result] ✅ 2026-10-24
+- [x] Bug report, findings, metrics and package definitions filed; no implementation completion follows from publication. Evidence: root `83419070d:research/refactor-audit-2026-10/README.md`. [no-belief: not-a-result] ✅ 2026-10-24
+
+##### Review and merge what is already pushed
+
+- [ ] Operator review of `refactor/containment-scanner` (safety boundary for INC-20260823); read `scripts/hooks/CONTAINMENT-SCANNER-CHANGES-FOR-REVIEW.md` on the branch, then merge or reject
+- [ ] Merge `refactor/hermetic-tests` into epyc-orchestrator main (every orchestrator branch contains it)
+- [ ] Adversarial review, then merge, of `refactor/config-registry` (O3)
+- [ ] Adversarial review, then merge, of `refactor/request-path` (O1 stage 1)
+- [ ] Adversarial review, then merge, of `refactor/test-hazards` (O7 partial; its 3 commits have no test report: run the suites first)
+- [ ] Adversarial review, then merge, of `refactor/autopilot-gate` (P2; B2-03 changes what is admitted to learning: review as a decision-semantics change)
+- [ ] Adversarial review, then merge, of `refactor/autopilot-loop` (P1 stage 1, test harness)
+- [ ] Adversarial review, then merge, of `refactor/scripts-cleanup` (O6; finish the A5-11 WIP commit and run the suites for the A5-01/A6-19/A5-05 deletions first)
+- [ ] Merge `refactor/autokernel-loop-bugs` only after the AutoKernel launch hold lifts, with a deliberate re-pin (workspace-58); finish the C1-05 WIP first (regression test + loop suite)
+- [ ] Delete the superseded `claude/vigilant-thompson-shpyh0` branches in epyc-root and epyc-orchestrator (operator)
+- [x] Publish this review branch's RTG-60 registration and VB-REFACTOR-CONFORMANCE filing through the root owner boundary; no shared index file was edited during package work. ✅ 2026-10-29 (audit: RTG-61 row exists in routing-and-optimization-index.md:65 (owning main corrected RTG-60->RTG-61, d3cba7b64) and VB-REFACTOR-CONFORMANCE row filed at vidya-belief-substrate-program.md:82) [no-belief: audit-reconciliation]
+
+##### Wave 1: bugs, hazards, ruled deletions
+
+- [x] O1 (part): reviewed private stage-1 request-path candidate, including the initial-stream cancellation repair, at orchestrator `a1c69593`/`142bb5df`; 1,011 targeted checks pass/3 skip, with parent regression negative control. This is candidate review, not main integration or a blanket completion of associated findings. Evidence: root `d3418c6b7:progress/2026-10/2026-10-24-refactor-resume-01a16fc3.md`. [belief: cc] ✅ 2026-10-24
+- [ ] O1 (rest): [A2-02, A2-M1, A2-M2, A2-03, A2-05, A2-11, A2-16]
+- [x] O3: reviewed private config/registry candidate at orchestrator `d843eb9c`/`07829696`/`6558beb7`; 548 targeted checks pass/4 skip, 524 alias-target checks pass and all 7 changed source pins match. Scope is this reviewed candidate; mixed-alias safety remains RESUME-7. Evidence: root `d3418c6b7:progress/2026-10/2026-10-24-refactor-resume-01a16fc3.md`. [belief: cc] ✅ 2026-10-24
+- [x] O4 (reviewed scope): A4-03/A4-04/A4-06/A4-07 only, accepted private source `acfd5f8ca3837c568fc3c944ffb242b29823f3fa`; 557 checks pass, eight parent negative controls fail as expected, strict drift/Ruff/compile/diff/frozen proof passes. Evidence: root `09d3c70b5:progress/2026-10/2026-10-25-repl-validation-01a16fc3.md`. [belief: cc] ✅ 2026-10-25
+- [ ] O4 (historical associations): A4-01/A4-02/A4-14/A4-M3 were listed against `refactor/repl-correctness`; this line has no reviewed per-finding closure receipt and remains open rather than inheriting the four-item review above.
+- [ ] O5: Dashboard request-path cost and silent-empty panels [A1-04, A1-08, A1-13, A1-11, A1-21]
+- [ ] O6 (part): historical source associations on `refactor/scripts-cleanup` [A5-M1, A5-06, A5-07, A5-04, A5-12, A5-22, A5-M2, A5-01, A6-19, A5-05]; no reviewed closure receipt for the entire listed scope, and no test report for A5-01/A6-19/A5-05. Association is not completion.
+- [x] O6 (rest): [A5-11, A5-23, A5-18, A5-02, A5-21]; accepted source `6efa56265b68f402af736a1c1a2ee3df447849c1` on `refactor/scripts-cleanup-reviewed-01a16fc3`; 190 launcher + 395 coverage tests pass, four 100% floors pass, five NI63 controls pass with 32/32 blob/SHA proof; exact approved four launcher-byte pins and remaining 28 unchanged. No integration/deployment authorization. ✅ 2026-10-25 Evidence: root `e8748d8ec:progress/2026-10/2026-10-25-cleanup-validation-01a16fc3.md`. [belief: cc]
+- [ ] O7 (part): historical hazards/hygiene associations on `refactor/test-hazards` [A6-01, A6-02, A6-09]; no reviewed test report for these three findings. RESUME-2's narrower isolation review does not supply their missing closure.
+- [ ] O7 (rest): [A6-M1, A6-03, A6-12, A6-11, A6-17]; A6-13 belongs to O8 only.
+- [ ] P1 (part): historical main-loop associations on `refactor/autopilot-loop` [B1-03, B5-02, B5-08, B1-15]; this row lacks its own reviewed per-finding closure receipt and does not inherit P1(rest)'s narrower result.
+- [x] P1 (rest): [B1-01, B1-M1, B1-M2, B1-04, B1-08, B1-09, B1-14, B1-13]; accepted source `36e1bc55` on `refactor/autopilot-loop-reviewed-01a16fc3`, hashes unchanged across the full candidate and 19 focused/561 broad tests pass (1 skip). Worker status-file failure was an ordering defect; see resume-state proof. ✅ 2026-10-25 Evidence: root `09d3c70b5:progress/2026-10/2026-10-25-loop-acceptance-closeout.md`. [belief: cc]
+- [x] P2: Autopilot safety gate and autopilot_core on `refactor/autopilot-gate` [B2-02, B2-03, B2-09, B2-11, B2-20, B2-17, B5-01, B5-M1, B5-M2, B5-16, B5-09, B5-13, B5-12] (B2-11 skipped: upstream already split SafetyGate.check; B2-17 no change, per the verifier) ✅ 2026-10-24 Reviewed private candidate only; evidence: root `d3418c6b7:progress/2026-10/2026-10-24-refactor-resume-01a16fc3.md`, orchestrator `4069b8ee`/`db17808e`. [belief: cc]
+- [x] P3: Autopilot actions, config applicator, controller IO, planner, journal [B3-01, B3-02, B3-03, B3-05, B1-17, B3-06, B3-07, B3-08, B3-12, B3-M1, B3-04, B3-23, B4-01, B3-15, B3-16, B3-M2]; reviewed private source `fb5db1a0a24b92172643bb670c77a4343a508c96` published and remote-verified on `codex/refactor-autopilot-actions-01a16fc3`, clean worktree. Final 12-file functional selection 402 passed/1 skipped in 39.49 s; official three-file formatter closure passed AST equality, format/compile, non-target bytes, no-new-Ruff, P5/W3e, diff and source custody. Earlier 34/90-file failures retained; no current all-1,930-pass claim or main/deployment acceptance. [belief: cc] Evidence: [Oct 26 source/proof record](../../progress/2026-10/2026-10-26-refactor-next-packages-checkpoint-01a16fc3.md). ✅ 2026-10-26 Source warrant: orchestrator `fb5db1a0:docs/refactoring/2026-10-26-p3-reviewed-checkpoint.md`.
+- [ ] P4: Autopilot satellites: one-shot scripts, dead modules, small bugs [B4-03, B4-02, B4-19, B4-20, B4-13, B2-16, B4-16, B4-12, B4-06, B4-08, B4-09, B4-15, B4-M1, B4-M2, B4-04, B4-05]
+- [ ] K1: AutoKernel live-loop bugs and red tests; remaining [C1-24, C2-06]; C1-05 tested/reviewed on `refactor/autokernel-rollback-reviewed-01a16fc3`, held unmerged (RESUME-3).
+
+  - [x] **C1-15 — fingerprint the existing served-shape oracle.** ✅ 2026-10-30 research main `e32ad4e4d4c1d405cf96ae5996e2f090f75ede71`: changing/deleting that source changes the rules fingerprint and permits retry only for harness-oracle refusal; numerical correctness refusals remain rejected. Red/green actual fingerprint/resume regression plus273 relevant tests pass. Existing oracle logic, thresholds and trust policy are unchanged. [no-belief: source and fixture conformance]
+  - [x] **C1-14 — stop hiding programming errors as incomplete answers.** ✅ 2026-10-30 research `49ce3dc4b9b28cc9c95c6d02c43ec8aa60c13051`, preserved on main `0e715dd65b3743adda55ada4618311b36b5f3a04`: only typed ProviderTransient is recoverable; ActorStopped and unexpected context/runtime errors escape without extra actor turns. Actual parser/schema/treatment controls and195 tests plus20 subtests pass; one unrelated baseline whole-file occurrence assertion is being repaired separately. No provider fallback or grading change. [no-belief: source and deterministic actor controls]
+  - [x] **CPU_REPACK fingerprint coverage — include the existing module/probe pair.** ✅ 2026-10-30 research main `0e715dd65b3743adda55ada4618311b36b5f3a04` preserves candidate `fd2546a105e244841f5653aae94078ba0c95ee33`. Actual lazy gate dispatch and module/probe source edits now invalidate only cached harness refusal, retaining correctness rejection.81 tests/two subtests pass, one existing sparse-data check skipped. Oracle/probe/tolerance bytes are unchanged; no current noise-helper campaign caller was located, so that unrelated helper was excluded. [no-belief: source and refusal/resume conformance]
+
+- [x] K1 / C1-06: emit scope-gap artifacts only on episode/content changes; observe failures remain retryable and nonfatal, with one console line per failure episode. Research `c0247b0689109b1426ef3db5045e116f6bd17191`;69 controls include actual atomic publisher/recovery. ✅ 2026-10-30 [no-belief: source and fixture repair; no measurement verdict]
+- [x] K1 / C1-M2: make synthetic GPU unit fixtures explicitly MOCK_ONLY with the existing untested-seat override; real version/seat negatives still refuse. Research `a39561d471dd1dbc1622d5653214927db3b482c0` and `48a8265dbe6048251538d32ba87d0752eb6be13f`;100 GPU/seat controls pass. ✅ 2026-10-30 [no-belief: test fixtures; no serving qualification]
+- [x] K1 / C5-08: journal validators catch their typed data refusals; unexpected implementation/import faults propagate without being relabeled corrupt data. Research `d38e17983e6754fd704c3c5380d87b0cb0bd7ec8`;158 tests and15 subtests, including fresh-child missing dependencies. ✅ 2026-10-30 [no-belief: source fault classification; live ledger untouched]
+- [x] K1 / C5-16: HostOps build jobs respect available CPU affinity and the existing64 cap. Research `5ffa9260f86c011f09b58121f6a687ddee1d9afd`;282 tests/143 subtests. ✅ 2026-10-30 [no-belief: source capacity repair; no compiler or inference run]
+- [x] K1 / C6-05: host-independent build argument fixtures preserve real oversubscription negatives; frozen branch/tag assertion resolves canonical branch identity. Research `d929cf86836beb37a72bbfc816ea065670f81d22` and `c9084a09359350e898c8f8eaab77ad53274c1186`;294 related passes plus22 branch tests/60 subtests. Historical-log skip and the independently reproduced process-cleanup defect are not counted as passing tests. ✅ 2026-10-30 [no-belief: fixture/assertion repairs; production freeze unchanged]
+- [x] K1 / C6-03: reconcile the stale missing-`tmp_path` finding against actual source: `037e072e6b` fixed the exact helper call on2026-10-07; pinned research `928f98682` passes the full named source-build-preparation module. Six-module verification reports81pass/4 failures in other modules; one is archive-only missing Git metadata and three fixture regressions are separately assigned. This is verification of an existing fix, not a new implementation. ✅ 2026-10-30 [no-belief: source/test reconciliation]
+- [ ] K2: AutoKernel evaluator/execution integrity package remains open; C4-05 remains incomplete.
+- [x] K2 / C4-10: writer, resume and terminal evaluation share the same fixed declaration inputs; omitted or mutated model identity, envelopes, limits and transition fields refuse. Research main `595e4e62d1422c08892f93e3785c6dd6bb6c25f5`;36 baseline omissions reproduced,47 tests/102subtests pass. Writer bytes and exact existing legacy resume bridge preserved; unrelated baseline InstrumentSelection test explicitly excluded, tiny fixture models only. ✅ 2026-10-30 [no-belief: declaration-validation source repair; no historical regrading]
+- [x] C6-04 and caller-fixture follow-on: synthetic matched-serving actors use the existing explicit MOCK_ONLY override, and runtime tests select the unique completed runtime record separately from actor-admitted metadata. Original kept/qualitative/default/recipe assertions and production gate remain unchanged. Research main `bff70b10f92c91d3993dd2a2ebf6367609e6355c` includes `ab71bfbca8a5f1cb6da61855e9130e4a5efdcef4`; all86 cases in the six requested modules plus78 unchanged actor-wire tests have terminal PASS receipts across bounded batches. ✅ 2026-10-30 [no-belief: source test-fixture repair; no native measurement verdict]
+- [x] C4-09 / Worktree runner: reserve the unreaped session leader, pump pipes without reaping it, and verify the whole owned group before attesting cleanup; TERM-ignoring descendants receive KILL even after leader exit. Research main `928f98682cb1395a5e4d73b824e25236d5da12dd` contains `da9f8b39fa78798b90ce034e5887f4f419440a87`. Final38 focused controls and immutable native five-second observation windows pass; prior315-test/262-subtest full suite passed before the final exception-only close fix. Later full retries were resource-interrupted, not passing full-suite claims. ✅ 2026-10-30 [no-belief: source process-ownership repair, no model execution]
+- [x] C4-09 / T0 provider runner: reserve ownership and verify the group before recording capture; preserve separate text channels, encoding/newlines, environment/cwd, sandbox and distinct TERM/KILL grace periods. Research main `92fdeccc95d6d4c3e6ce21d152faf8cb7703f649` includes `0a827fa1baac5c1ce5b0ef2059754f97297f51c3`.242 public/default controls,179 worktree controls, two native sandbox controls and immutable native five-second post-return proof pass. The reproduced original live descendant no longer survives return; unknown inspection raises infrastructure refusal. ✅ 2026-10-30 [no-belief: process-ownership source repair]
+- [x] C4-06 / chain qualification: declare explicitly MOCK_ONLY DSO fixtures in the recorded execution chain, preserving strict production attestation. Research main `c61214e813dcc6330e91dc4c93ab9e3f240c4dff` includes `84ae8120c4fa727de8c237ad60a801dee4d019cb`;122 chain cases and six strict DSO controls pass. Missing inventory makes zero recorded calls; mutation prevents reuse/admissible paired blocks; recorded fixtures never imply native residency. ✅ 2026-10-30 [no-belief: test-fixture qualification]
+- [x] Capacity preparation: replace one owned byte-identical private model copy with an R9 hardlink, and reversibly omit identical tracked artifact copies from11 owned landed views. Git data/refs/code/operator artifacts/runtime pins and all staged/unstaged/untracked bytes are preserved; locked runtime/unlanded/peer roots excluded. Receipts under `/mnt/raid0/llm/tmp/refactor-01a16fc3/storage-sparse-recovery*-20261030.json` and the Parakeet R9 receipt. This is allocated-copy reduction, not an attributable shared-volume free-space delta. ✅ 2026-10-30 [no-belief: operational data custody and resource preparation]
+- [x] K2 / C4-06: bind freshly executed microbench receipts to declared DSO target/content identities; historical unknown receipts remain readable but cannot qualify a fresh execution. Research main `5bbfd6ab25a640ec8ed406e0d3a804cddf468db8` includes reviewed `6a93613bc`;625 tests/144 subtests pass. This attests declared files, not runtime HIP residency. ✅ 2026-10-30 [no-belief: source execution-attestation repair; no new benchmark warrant]
+  - [x] K2 finding C4-08: resolved-path, fail-closed production-tree containment; source commit `208a053e29daf5bd11019e733f768b4173887021`. ✅ 2026-10-25 Evidence: root `e8748d8ec:progress/2026-10/2026-10-25-k2-guards-01a16fc3.md`. [belief: cc]
+  - [x] K2 finding C4-16: exact Fraction ceiling independent of Decimal context; source commit `091abbbe7dc9b346bab888569434eb68445ae8e5`. ✅ 2026-10-25 Evidence: root `e8748d8ec:progress/2026-10/2026-10-25-k2-guards-01a16fc3.md`. [belief: cc]
+  - [x] K2 finding C3-02: package import avoids shadowing stdlib `resource`; source commit `68724da5ba093cf3cec3909a81491932002dd4ce`. ✅ 2026-10-25 Evidence: root `e8748d8ec:progress/2026-10/2026-10-25-k2-guards-01a16fc3.md`. [belief: cc]
+
+##### Wave 2: decision-dependent and structural
+
+- [ ] P5: Autopilot evaluator: ONE batched era event (operator decision 2026-10-24) [B5-03, B2-01, B2-M1, B2-M2, B2-10, B5-06, B5-07, B2-19, B2-04, B2-05, B2-06, B2-07, B2-08, B2-14, B2-15, B2-18, B2-12, B2-13, B5-14, B3-09]
+- [ ] K3: AutoKernel prune of the three approved planes, after fresh closure and retained-contract checks [C2-01, C1-04, C2-03, C2-05, C2-08, C2-12, C2-M2, C2-13, C3-03, C3-01, C3-M1, C3-13, C3-14, C3-18, C5-03, C5-15, C4-01, C4-02, C4-03, C4-11, C5-13, C5-12, C6-09, C5-06, C6-08, C2-09, C5-07, C2-M1]; C4-01's old deletion advice is superseded by INF64's retained manifest.
+- [ ] K4: AutoKernel regrowth guard and CI repair (operator decision 2026-10-24) [C2-04, C5-02, C3-05, C1-02, C1-M3, C5-01, C6-01, C5-14, C6-13, C3-11, C2-02, C6-16]
+- [ ] O8: Orchestrator CI, honest gates, and the ni63 pin design (operator decision 2026-10-24) [A6-04, B1-M3, B5-10, B5-17, A6-13]
+- [ ] D1: Decompose the autopilot loop (_run_loop_inner) behind the P1 safety net [B1-02, B1-05, B1-12, B1-10, B1-06, B1-07, B1-11, B1-16, B1-18, B1-19]
+- [ ] D2: API layer: openai_compat and /chat de-duplication [A1-05, A1-06, A1-15, A1-19, A1-20, A1-12, A1-10, A1-14, A1-16, A1-18, A1-09, A1-07]
+- [ ] D3 (part): historical inference-hot-path association [A2-12]; no reviewed closure receipt is cited here, so it remains open.
+- [ ] D3 (rest): [A2-22, A2-06, A2-09, A2-07, A2-08, A2-10, A2-14, A2-15, A2-17, A2-18, A2-19, A2-20, A2-21]
+- [ ] D4: AutoKernel run.main decomposition [C1-03, C1-M1, C1-01, C1-08, C1-10, C1-11, C1-12, C1-13, C1-16, C1-17, C1-18, C1-19, C1-20, C1-21, C1-23, C1-09, C1-07, C2-14, C2-15, C2-16]
+- [ ] D5: Config / registry / runtime consolidation [A3-03, A3-10, A3-11, A3-12, A3-13, A3-14, A3-17, A3-18, A3-20, A3-21, A3-22, A3-23, A3-24, A3-25]
+- [ ] D6: REPL / tools consolidation [A4-09, A4-12, A4-10, A4-17, A4-05, A4-11, A4-13, A4-15, A4-16, A4-18, A4-19, A4-20, A4-21, A4-22, A4-23, A4-M2]
+- [ ] D7: Orchestrator scripts structure (src<->scripts layering, sys.path, duplicated helpers) [A5-03, A5-08, A5-09, A5-13, A5-14, A5-15, A5-20, A5-24, A5-25, A5-M3]
+- [ ] D8: Orchestrator test-suite consolidation [A6-10, A6-05, A6-06, A6-07, A6-08, A6-14, A6-15, A6-16, A6-20, B5-18]
+- [ ] D9: Autopilot remaining structure (actions, planner, journal, reports) [B3-10, B3-11, B3-13, B3-14, B3-17, B3-18, B3-19, B3-20, B3-21, B3-22, B3-24, B3-25, B4-07, B4-10, B4-11, B4-14, B4-17, B4-18, B5-04, B5-05, B5-11, B5-15]
+- [ ] D10: AutoKernel remaining structure (controller, evaluator, execution, schemas, tests) [C3-04, C3-06, C3-07, C3-08, C3-09, C3-10, C3-12, C3-15, C3-16, C3-17, C3-19, C3-20, C3-21, C3-22, C3-M2, C4-04, C4-07, C4-09, C4-12, C4-13, C4-14, C4-15, C4-17, C4-18, C5-09, C5-10, C5-11, C6-02, C6-06, C6-10, C6-11, C6-12, C6-14, C6-15, C6-18, C2-07, C2-10, C2-11]
+
+##### Deferred, each with its blocker
+
+- [ ] A5-10, A5-16, A5-17, A5-19: restructure `scripts/server/orchestrator_stack.py`. Blocked: a live path on the host (workspace-58, 2026-10-24); run when that file is quiet
+- [ ] C5-05: delete the `campaign.py` CLI cluster (~20k LOC). Blocked: needs an operator decision (it is a fourth plane, not among the three approved)
+- [ ] C6-17: Arena retirement is outside the approved three-plane prune; preserve its existing belief-source producer/consumer contracts unless the operator authorizes a separate retirement package. Continue other packages meanwhile.
+- [ ] Re-enable the AutoKernel guards workflow in GitHub after K4 lands (operator click)
+
+##### Follow-ups found during the audit (not tied to a single package)
+
+- [x] Reconcile C4-01 against `artifacts/ni08/inf64-source-reachability-review-20261007/completed-manifest.md`: current strip guidance already retains all 19 candidates. Do not follow the old proposal to delete Apex/compiler modules or preserve only three evaluator modules. ✅ 2026-10-31 — reconciliation against ROOT evidence `f219064bace51b7db01a713e90bf5e7d9ec2a0f2`; artifact `artifacts/ni08/inf64-source-reachability-review-20261007/MAIN-completed-manifest-review.json` verifies 19 retain / 0 remove. Current strip guidance preserves all 19; no new engineering or deletion authority. [belief: cc]
+- [x] ✅ 2026-10-31 Re-pin `scripts/server/orchestrator_stack.py` in the ni63 `SOURCE_PINS`: resolved through O8's record-not-assert design, preserving historical source tuples and fixed workload/capacity pins. Evidence: orch `d094546ea86d08bfcc18407529c6c7ae0672c525`; `tests/unit/test_ni63_current_source_clone.py`; `/mnt/raid0/llm/tmp/refactor-01a16fc3/ni63-current-source-20261031/QUALIFICATION.json` (17 pass). [no-belief: current-source fixture repair; O8 CI parent remains open]
+- [x] Refresh `scripts/harness/strategy_projection_report_capture.py` `TRUSTED_APP_SOURCES`: 6 of 11 pins already stale at base (incl. `tier_specs.py`), so the tool refuses (found by O3) ✅ 2026-10-31 [no-belief: source epoch correction and synthetic integrity controls; no live measurement] <!-- implementation: ROOT 8cfbac4cec8074cde9768c33ec26c6cf49293aa4; tests: tests/vidya/test_strategy_projection_report.py + tests/vidya/test_producer_pins.py; artifact: artifacts/vidya/strategy-source-epoch-20261031/EVIDENCE.json -->
+- [x] Move `process_pattern_kill_scan.py`, `operator_apply_copy_scan.py` and `pytest_worker_scan.py` to `shell_scan.lex()`: they still use the old strip functions and share the escape/heredoc blind spots the containment scanner had ✅ 2026-10-31 — ROOT `c5c87541f32ce16fdb7b8464038739a8bdc0105d`; `scripts/hooks/tests/test_shell_scan_migration_parity.py` plus actual hook controls, 129 PASS / 0 skipped; durable proof `artifacts/engineering/ni-shell-scan-migration-20261031/lane-validation-receipt.json`. Existing `segments()` callers and refusal thresholds remain compatible; pytest comment-only false positive corrected. [no-belief: deterministic scanner correctness controls; no measurement]
+- [x] Containment scanner coverage for `restic restore --target`, `borg extract/delete/prune`, `rclone copyto/moveto/mkdir` (changes `--dump-rules`; regenerate the opencode config in the same change) ✅ 2026-10-31 — implementation ROOT `0f344f4c900347d93281af2db3a9cfd990830b4b`; `scripts/hooks/tests/test_filesystem_containment.py`; durable proof `artifacts/engineering/ni-containment-verbs-20261031/REPORT.txt` (75 tests/57 subtests, 28 project parity checks, seven baseline/candidate controls). Project config regenerated byte-identically; global config untouched. [no-belief: deterministic command-parser containment controls; no measurement]
+- [x] `.claude/skills/project-wiki/scripts/check_readme_freshness.py` hard-codes `/mnt/raid0/llm/<repo>`: off the host it reports all three READMEs as missing. Resolve repos relative to its own checkout or accept `--root` — ✅ 2026-10-29 root `511f1ee616839817c00e905c0e83283a58437267`: checkout-relative discovery and `--root`, explicit repo entries take precedence; six native temporary-layout controls pass, warning-only behavior retained. [no-belief: portable utility repair]
+- [ ] `scripts/vidya/adapters/README.md` cites `test_vb_ap53_reproposal_rate.py (12)`; the file had 14 tests at base (found by P1). Owner: vidya-belief-substrate-program
+- [ ] VB-REFACTOR-CONFORMANCE: implement prospective native capture/projector wiring for controlled regression verdicts. Source row and task are filed on this review branch; manual source audits remain dependency findings and past diagnostic runs are not backfilled.
+
+
+#### Problem
+
+The operator asked for a review of the heavily built codebases for best practice, documentation,
+modularity, compute performance, ease of resolving bugs, clean and effective tests, and code-size bloat.
+The trees grew at roughly 10:1 insertions to deletions. epyc-orchestrator is ~862k lines of Python (src 201k, scripts 274k,
+tests 358k) and grew another ~90k in the 17 days from 2026-10-07 to 2026-10-24. AutoKernel is ~490k lines
+(282k source, 209k tests): it was rebuilt to a 3,450-LOC loop budget and regrew +278k net in August and +185k in
+September, and its own regrowth guard sits 37x over budget (95,260 code lines vs 2,560). The worst hotspots are
+single functions of 2,902 lines (`autopilot.py` `_run_loop_inner`, cyclomatic complexity 324), 5,518
+(`loop/run.py` `main`, complexity 1,166) and 1,006 (`openai_chat_completions`). Neither repo had working CI:
+the orchestrator has none, and the AutoKernel guards workflow was disabled by hand on 2026-09-10 after 168
+red runs (its test steps never ran even before that).
+
+#### Test baselines and coverage
+
+| Suite | Where | Result | Notes |
+|---|---|---|---|
+| epyc-orchestrator, full | container, origin/main + `refactor/hermetic-tests`, 2026-10-24 | 20,815 collected; **20,496 passed, 127 failed, 21 errors** (63 min, `-n 2`) | Before `refactor/hermetic-tests` the conftest could not even be imported off the production host. Failing ids: `data/orch_baseline_failing_ids.txt` |
+| AutoKernel, full | container, 2026-10-07 | **10,576 passed, 476 failed, 87 errors** (23 min, `-n 3`) | ~58% host-dependent (root uid, CPUs < 32/64, /mnt/raid0); the rest is real rot nobody saw because CI was off. `release/test_t3*` cannot be collected at any standard checkout path |
+| epyc-root `scripts/hooks/tests` | container | 313 passed with the scanner fixes (296 at base); same 11 failed / 25 errors on both sides | |
+| CI | GitHub | orchestrator: none; AutoKernel: `disabled_manually` since 2026-09-10 | |
+
+Per-file coverage is not mapped here: the suite is too large for a source-to-test table. Coverage gaps that
+block a refactor are named inside each package (e.g. B1-03/B5-02: only 9 tests drove the real autopilot
+loop; 11+ tests pinned its source TEXT; 28 AutoKernel test files grep `run.py` source).
+
+#### Operator decisions (2026-10-24, [`OPERATOR-DECISIONS.md`](../../research/refactor-audit-2026-10/OPERATOR-DECISIONS.md))
+
+1. **Evaluator regime**: batch every change to `eval_tower.py`, `rubric_scoring.py`,
+   `src/autopilot_core/tier_specs.py` and `orchestration/eval_registry.yaml` into ONE era event (package P5),
+   together with an AST-normalized evaluator fingerprint, so later comment, format and pure-refactor edits stop
+   splitting the AP-55 regime. Merging P5 is the single regime break; the operator picks the time.
+2. **AutoKernel prune**: delete all three unreachable planes (the unified/standalone control plane rejected on
+   2026-09-09; the `discovery_*`/`gpu_source_*` stack; `release/`), staying current with main and re-proving
+   reachability from the live entry points at the current origin/main HEAD before every stage.
+3. **CI**: add orchestrator CI (pull_request + workflow_dispatch only) and repair the AutoKernel workflow
+   (the operator re-enables it in GitHub).
+4. **Scope**: full program, paced at about 2 concurrent agents. The account has no extra-usage credits, so the
+   work spans several 5-hour usage windows.
+
+Standing inputs: hermetic tests approved (2026-10-07); keep an eye on bloat (2026-10-07); kernel (llama.cpp)
+defects go to the champion fold as CH-xx recommendations, never as production patches (relayed operator rule,
+2026-10-24); workspace-58's live-path and file boundaries (§Coordination).
+
+#### Branches (all pushed 2026-10-24; rebased on origin/main unless noted; NONE reviewed by a second agent yet)
+
+| Repo | Branch | Commits | Contents | Merge notes |
+|---|---|---|---|---|
+| epyc-root | `refactor/containment-scanner` | 3 | scanner bypass fixes; degraded-mode regression fix (main since 84b0de13 lets `sudo mount` through with no scanner); behaviour-change note | **Operator review required** (safety boundary for INC-20260823); see `scripts/hooks/CONTAINMENT-SCANNER-CHANGES-FOR-REVIEW.md` on the branch |
+| epyc-root | `refactor/refactoring-plan` | this | this handoff, the bug report, all evidence | docs only |
+| epyc-orchestrator | `refactor/hermetic-tests` | 1 | conftest stub kernel store + host-RAM fallback (no-ops on the host), `ORCHESTRATOR_PATHS_KERNEL_ROOT`, ni63 pin refresh | **merge first**; every orchestrator branch below contains it |
+| epyc-orchestrator | `refactor/request-path` | 9 | O1 stage 1: per-request state on the shared LLMPrimitives (A1-02/A2-01/A1-M2), model/REPL calls off the event loop (A1-01), per-request cancellation (A1-M1), no_web context (A4-M1), shared backend build (A2-04), region-lock release (A2-13), skill ids (A1-17) | production request path: review carefully; stage 2 (A2-02…A2-16) not started |
+| epyc-orchestrator | `refactor/config-registry` | 14 | O3: stack-priors parse cache (A3-01/A1-03), fail-closed compile (A3-02), Settings factories (A3-07), topology-cache poison (A3-08), shadow thread (A3-09), env-override and crash fixes (A3-M1, A3-04, A3-06), OCR timeout (A3-15), registry-cache lock (A3-05), shim race (A3-16/A4-08), env.sh root (A3-M2), registry backoff (A3-19) | rebased with ni63 pin conflicts resolved (upstream fixture kept; pins of files this branch changes refreshed) |
+| epyc-orchestrator | `refactor/scripts-cleanup-reviewed-01a16fc3` | accepted candidate | O6 rest source `6efa56265b68f402af736a1c1a2ee3df447849c1`; 190 launcher + 395 coverage pass, all four 100% floors and five NI63 controls pass; 32/32 blob/SHA proof; approved four pin changes exact, other 28 unchanged | Accepted source only; combined-tree validation remains under RESUME-4; no merge/deploy |
+| epyc-orchestrator | `refactor/test-hazards` | 4 | O7: fence tests no longer aim destructive payloads at the REAL wiki (A6-01), checkout-write leak guard (A6-02), tmp_path not fixed /mnt/raid0 dirs (A6-09) | no test report (interrupted) |
+| epyc-orchestrator | `refactor/test-isolation-reviewed-01a16fc3` | reviewed | Includes hermetic/test-hazards plus fixture-only A6-M1 trace/ledger isolation | Pushed `5e392a3c`; 189 runtime/trace tests + 7 E8 wrappers pass, 1 intentional skip; reviewed, unmerged |
+| epyc-orchestrator | `refactor/config-reviewed-01a16fc3` | reviewed | Includes O3 + accepted isolation, concurrent registry-backoff fix and scoped alias-import stress | Pushed `6558beb7`; 548 O3 tests + 524 alias targets pass, 4 skips; mixed-alias cycle is RESUME-7 |
+| epyc-orchestrator | `refactor/request-reviewed-01a16fc3` | reviewed | Includes O1 stage 1 + accepted isolation and cancellation during initial streaming generation | Pushed `142bb5df`; 1,011 tests pass, 3 skips; reviewed, unmerged |
+| epyc-orchestrator | `refactor/autopilot-gate-reviewed-01a16fc3` | reviewed | Includes P2 + accepted isolation and real-fixture pre-P2 snapshot migration controls/runbook | Pushed `db17808e`; 1,018 tests pass/1 skip; HIGH/CRITICAL integration review and owner-boundary snapshot rebuild required |
+| epyc-orchestrator | `refactor/autopilot-loop` | 6 | P1 stage 1 (safety net): the real loop driven by a harness instead of source-text slicing (B1-03/B5-02), shared frontier-admission predicate (B5-08), hook containment (B1-15) | Initial P1 stage-1 branch; reviewed rest is on `refactor/autopilot-loop-reviewed-01a16fc3` |
+| epyc-orchestrator | `refactor/autopilot-loop-reviewed-01a16fc3` | reviewed | P1 rest B1-01/B1-M1/B1-M2/B1-04/B1-08/B1-09/B1-14/B1-13; source `36e1bc55aa40f35965a941e81fdc593a22abd520` | Accepted, unmerged; RESUME-4 combined validation remains |
+| epyc-orchestrator | `refactor/autopilot-gate` | 15 | P2: safety-gate seq upgrade (B2-02), one-sided MAD (B2-03, **changes what is admitted to learning**), refusal codes (B2-09), validator/replay (B2-20), hypervolume memo + fold + off-loop dashboard (B5-01), bounded snapshot replay (B5-M1), cluster identity (B5-M2), era guard (B5-16), dead modules (B5-09), `__init__` (B5-13), drop counts (B5-12) | B2-03 is a decision-semantics change: review it as such |
+| epyc-inference-research | `refactor/autokernel-loop-bugs` | 1 | **WIP**: `run._git` checks git's exit status; failed rollback aborts the run (C1-05) | **do not merge to main**: AutoKernel launches are under an operator hold; workspace-58 merges it with a deliberate re-pin when the hold lifts |
+| epyc-inference-research | `refactor/autokernel-rollback-reviewed-01a16fc3` | 3 | Completes C1-05: includes WIP, catches rollback timeout/spawn errors, behavioral regressions and checkpoint | Reviewed; 401 targeted loop tests + 23 subtests pass. Pushed at `1b58b115c`; hold/re-pin applies, no launch or merge |
+| epyc-orchestrator | `refactor/orchestrator-integration-01a16fc3` | reviewed private candidate | Combined orchestrator candidate | `851955112b8ba8c2911a7684469551afa1541623`; validated relative to immutable base `84f6f6f1`; no main promotion/deployment |
+| epyc-orchestrator | `refactor/orchestrator-ci-01a16fc3` | B1-tested pre-fixture local merge | O8 CI, central pytest gates and NI63 provenance closure | `753e0287` contains `713edf671` + `851955112`; focused 13 pass; strict collection baseline 20,658/20,645 selected vs candidate 20,666/20,653, 0 removed/8 added/13 identical exclusions; post-B1 owned fixture validation pending; full suite/native/coverage open; future `codex/*` only |
+| epyc-orchestrator | `codex/refactor-autopilot-actions-01a16fc3` | reviewed private candidate, published | P3: actions, config applicator, controller IO, planner, journal and baseline-pin helper | `fb5db1a0a24b92172643bb670c77a4343a508c96`, remote-exact verified, clean worktree; final 12-file 402 pass/1 skip and three-file formatting/protected/source-custody closure pass; prior failures retained, no main/deploy |
+| all three | `claude/vigilant-thompson-shpyh0` | — | superseded by the `refactor/*` branches above | ignore / delete |
+
+Merge order (orchestrator): reviewed hermetic harness + test-hazards/A6-M1 isolation →
+`refactor/config-registry` → `refactor/request-path` → `refactor/autopilot-gate` →
+`refactor/autopilot-loop` → completed `refactor/scripts-cleanup`.
+The branches carry patch-equivalent copies of the hermetic commit, not one shared commit identity.
+Known integration conflicts: gate/loop `autopilot.py` (retain cluster identity and the admission helper),
+config/cleanup ni63 registry-loader pin, and hazards/cleanup conftest plus the deleted E8 test.
+Each branch rebased cleanly on origin/main on 2026-10-24; later upstream commits may need another rebase. Nothing
+merged to orchestrator main is served until the shared clone is synced (operator approval).
+
+#### Issue inventory (summary; every finding with evidence, verifier notes and proposal is in the findings files)
+
+| Unit | Findings | Sev ≥ 4 | Bloat est. (LOC) | Biggest problems |
+|---|---|---|---|---|
+| A1 API layer | 23 | 6 | 1,100 | blocking model/REPL calls on the uvicorn loop; shared per-request state; 1,006-line openai handler, 2 near-identical /chat/stream impls; per-request YAML and ps parsing in the dashboard |
+| A2 inference hot path | 24 | 6 | 2,300 | per-request state on a shared LLMPrimitives reroutes requests under concurrency; read-timeout truncation reported as success; quadratic early-stop; 4 drifted llama_server lanes; 12 copies of the escalation chain |
+| A3 config/registry/runtime | 27 | 3 | 2,700 | config declared 4 times; fail-open stack-priors compile; reset_config cannot refresh; poisoned caches |
+| A4 REPL/tools/top level | 26 | 1 | 3,000 | production read_file swapped for an unchecked builtin; REPL web tools bypass role permissions and no_web; 4 parallel tool stacks |
+| A5 orchestrator scripts | 28 | 2 | 45,000 | the retired E8 chain (32.6k incl. tests); a forked scripts/lib; 71 src→scripts imports; 196 sys.path hacks; name-pattern kills |
+| A6 orchestrator tests | 20 | 2 | 5,200 | not hermetic; destructive payloads aimed at the real wiki; no CI; 89 assertion-free tests; ~50 source-text tests |
+| B1 autopilot loop | 22 | 3 | 300 (+~9k movable) | 2,902-line `_run_loop_inner`; plain `save_state()` clobbers an operator pause (H4 class); 8 copies of the halt latch |
+| B2 eval + safety gate | 22 | 1 | 1,250 | parse-failure telemetry zeroed on every T1/T2 trial; two-sided MAD admits regressions as improvements; per-question registry re-parse |
+| B3 actions/planner/journal | 27 | 0 | 1,500 | pgrep name-pattern process picks; NaN passes bounds checks; journal deep-copied per trial |
+| B4 satellites | 22 | 0 | 7,400 | applied one-shot ratifiers and era-pinned collectors still in tree; vendored judges unprotected |
+| B5 autopilot_core + tests | 20 | 3 | 1,450 | exponential hypervolume per replayed trial (3.6-5.7 s, twice per trial); evaluator fingerprint hashes raw bytes |
+| C1 AK loop core | 27 | 5 | 26,600 | 5,518-line `run.main`; `_git` ignores exit status; CI off |
+| C2 AK loop periphery | 18 | 2 | 72,000 | the rejected unified/standalone plane (~61k incl. tests) still imported through 5 thin bridges |
+| C3 AK controller | 24 | 1 | 37,000 | unreachable discovery_*/gpu_source_* stack; v9 digests pinned for "v10"; stdlib `resource` shadowed |
+| C4 AK evaluator/execution (UNVERIFIED) | 18 | 3 | 5,700 | non-inferiority e-value labelled IMPROVEMENT; attestation never hashes the libggml DSOs |
+| C5 AK release + top level (UNVERIFIED) | 16 | 7 | 65,000 | dormant release/ plane; guard counts only loop/; journal validator turns ImportError into "invalid payload" |
+| C6 AK tests (UNVERIFIED) | 18 | 5 | 9,400 | CI cannot reach its test steps; 38 tests broken by a helper change; jobs=32 fixture vs CPU count |
+
+(Bloat estimates overlap between C units; the approved three-plane prune is ~150k LOC including tests.)
+
+#### Wave 1: bugs, hazards, ruled deletions (packages in [`packages/wave1.json`](../../research/refactor-audit-2026-10/packages/wave1.json))
+
+| Pkg | Theme | State 2026-10-24 |
+|---|---|---|
+| O1 | request path: concurrency, event loop, failure semantics | stage 1 done (9/9, on `refactor/request-path`); stage 2 (A2-02, A2-M1, A2-M2, A2-03, A2-05, A2-11, A2-16) not started |
+| O3 | config/registry/runtime correctness + stack-priors cache | done (`refactor/config-registry`) |
+| O4 | REPL/tools permission bypasses and structured-mode defects | accepted on `refactor/repl-correctness-01a16fc3` at `acfd5f8c`; 557 tests pass and eight parent negative controls fail as expected; offline drift, ruff, compile, diff and snapshot gates pass |
+| O5 | dashboard request-path cost | not started |
+| O6 | scripts bugs + ruled deletions | rest accepted at `6efa56265b68f402af736a1c1a2ee3df447849c1`; launcher/coverage suites and four floors pass; integration remains separate |
+| O7 | test-suite hazards | A6-01, A6-02, A6-09 committed; A6-M1, A6-03, A6-12, A6-13, A6-11, A6-17 not started |
+| P1 | autopilot loop: safety net, then loop bugs | stage 1 and P1 rest accepted at `36e1bc55aa40f35965a941e81fdc593a22abd520`; combined-tree validation remains separate |
+| P2 | safety gate + autopilot_core | done (B2-11 skipped: upstream already split `check()`; B2-17 no change per verifier) |
+| P3 | actions, config applicator, controller IO, planner, journal (B3-01 pgrep) | not started |
+| P4 | autopilot satellites bloat (one-shot ratifiers, era-pinned family, dead modules) | not started |
+| K1 | AutoKernel live-loop bugs and red tests | C1-05 WIP only |
+| K2 | AutoKernel evaluator/execution integrity (C4-05 remains) | C4-08/C4-16/C3-02 accepted at `68724da5ba093cf3cec3909a81491932002dd4ce`; package incomplete |
+
+#### Wave 2: decision-dependent and structural ([`packages/wave2.json`](../../research/refactor-audit-2026-10/packages/wave2.json))
+
+| Pkg | Theme | Depends on |
+|---|---|---|
+| P5 | **evaluator: ONE batched era event**: B5-03 fingerprint normalization FIRST, then B2-01, B2-M1, B2-M2, B2-10, B5-06, B5-07, B2-19, perf B2-04/05/06, refactors B2-07/08/14/15/18/12/13, B5-14, B3-09; commit subjects prefixed `evaluator-era:` | P2 merged |
+| K3 | **AutoKernel three-plane prune**, staged by approved plane; rebase on origin/main and re-prove closure before EVERY stage, including retained campaign CLI and dynamic/cross-repo roots; honor INF64's per-file retention manifest and live belief-source contracts; Arena is excluded | K1; operator hold lifted for merge |
+| K4 | Repair CI infrastructure early (independent steps, yaml dependency, honest collection floors); set the all-package size ratchet only after the approved prune | ratchet depends on K3; infrastructure does not |
+| O8 | orchestrator CI (PR + manual only; hermetic suite minus a reviewed host-only list with reasons), honest `make gates` (format-check only changed files; 1,471 files fail a whole-tree check), ni63 pin design (record hashes for provenance instead of asserting a past commit's bytes; the pin is already red on main for `orchestrator_stack.py`) | merge reviewed integration candidate `851955112` into `refactor/orchestrator-ci-01a16fc3`, then validate package |
+| D1 | autopilot `_run_loop_inner` decomposition (B1-02 staged seams) | P1 merged |
+| D2 | API: openai_compat and /chat de-duplication | O1 merged |
+| D3 | inference hot path: llama_server lanes, `_execute_turn`, escalation chain | O1 merged |
+| D4 | AutoKernel `run.main` decomposition (behavioural tests first; evidence identities hash whole files: C1-M1) | K1, K3 merged |
+| D5 | config/registry/runtime consolidation (region-lock: bug fixes only) | O3 merged |
+| D6 | REPL/tools consolidation | O4 merged |
+| D7 | orchestrator scripts structure (no `orchestrator_stack.py` restructuring) | O6 merged |
+| D8 | orchestrator test-suite consolidation | last |
+| D9 | autopilot remaining structure | P1, P3, P4 merged |
+| D10 | AutoKernel remaining structure | K1, K2, K3 merged |
+
+Deferred, not in any package ([`packages/deferred.json`](../../research/refactor-audit-2026-10/packages/deferred.json)):
+A5-10, A5-16, A5-17, A5-19 restructure `scripts/server/orchestrator_stack.py`, a live path on the host (workspace-58,
+2026-10-24); their proposals in `findings-orchestrator-core.md` are ready to run when that file is quiet.
+C5-05 (delete the `campaign.py` CLI cluster, ~20k LOC) is a fourth plane the operator did not approve.
+C1-22 disappears with the unified plane.
+
+#### How to resume
+
+1. `python3 research/refactor-audit-2026-10/packages/mkpkg.py research/refactor-audit-2026-10/packages/wave1.json <scratch>/pkg`
+   regenerates the per-package briefs (same for `wave2.json`).
+2. `research/refactor-audit-2026-10/packages/impl_workflow_w2.js` is the implementer/reviewer prompt contract
+   (one worktree per package, re-verify at HEAD, failing test first for bugs, one commit per finding, adversarial
+   review of the diff). Point its paths at the new scratch dir.
+3. Start each package from its pushed `refactor/*` branch (or from origin/main for unstarted packages), rebased on
+   origin/main. Commit subjects identify related work; inspect explicit WIP/skip/test/review/merge state before
+   treating a finding as complete. Status per finding:
+   `research/refactor-audit-2026-10/data/finding-status.json`.
+4. Every package needs its adversarial review before merge; none has had one.
+
+#### Coordination (workspace-58, 2026-10-24)
+
+- Push only `refactor/<topic>` branches with an explicit refspec, rebased on origin/main; never main.
+- Live paths on the host: no structural refactor of `scripts/server/orchestrator_stack.py`, `scripts/region-lock`,
+  `src/runtime/*region_lock*`, `scripts/gitnexus-analyze.sh` (bug fixes only), and those keep their paths and
+  CLIs. Never the llama.cpp trees. `scripts/benchmark/` and `scripts/kernel_rnd/autokernel/` are pinned by SHA by
+  running jobs: merge with a deliberate re-pin.
+- Do not hand-edit the index files, `.index-state.json`/`.index-graph.json`, `backlog-priority.json`,
+  `wiki/source_manifest.json`, `progress/*-workspace-58.md`, `INCIDENT_LOG.md`, or the handoffs workspace-58 listed.
+
+#### Success criteria
+
+1. Every finding is either implemented with a regression or characterization test, or recorded as skipped with
+   a reason (already fixed, does not reproduce, unsafe).
+2. The orchestrator suite collects and runs off the host, and no package adds a failure to the baseline set
+   (`data/orch_baseline_failing_ids.txt`).
+3. AutoKernel source shrinks by roughly the approved ~150k LOC, the live-loop and decision-arithmetic suites stay
+   green, and the regrowth guard is a satisfiable ratchet that CI runs.
+4. Orchestrator CI runs on pull requests; the AutoKernel workflow can go green when re-enabled.
+5. No function in the touched hotspots stays above ~300 lines without a recorded reason.
+
+#### Notes
+
+- **The evaluator files are booby-trapped**: any byte change to the four fingerprinted files splits the AP-55
+  regime (B5-03). Until P5 lands, do not reformat or edit them, including blanket `ruff format`.
+- **ni63 source pins**: `tests/fixtures/ni63_capacity_child/source_clone.py` byte-pins ~30 production files to
+  a past commit. Any change to a pinned file must refresh its (blob sha1, sha256). The pin for
+  `scripts/server/orchestrator_stack.py` is already stale on main, so those 4 tests fail there too. O8 fixes the design.
+- **Guards found broken on the way** (epyc-root, `refactor/containment-scanner`): the filesystem-containment
+  scanner allowed writes outside the roots when a redirect followed the destination (`cp secret /outside
+  2>/dev/null`), checked the branch instead of the path in `git worktree add`, and missed shell structure; and
+  since 84b0de13 its degraded mode allows `sudo mount`. Also: `scripts/harness/strategy_projection_report_capture.py`
+  `TRUSTED_APP_SOURCES` has 6 of 11 pins stale at base (reported by O3).
+- **Unverified units**: C4, C5, C6 findings were never adversarially verified; the packages re-verify them first.
+- **Not filed (explicit decline)**: `scripts/hooks/tests/test_harness_guard_parity.py::test_generator_check_exits_zero`
+  fails identically on main in the container; it compares against the host's generated opencode config, so it
+  says nothing about this work.
+- **Usage pacing**: 6 concurrent agents exhausted a 5-hour window in about 55 minutes on 2026-10-24 (extra usage
+  rejected: `out_of_credits`); 2 concurrent agents is the sustainable rate.
+
+##### Native packet preparation checkpoint — 2026-10-27 22:55 UTC
+
+- [x] **HIL-CHECKPOINT-NATIVE-PREP** — source-bound one-unit/three-slot canary and separate20-unit pilot prepared with immutable slot evidence, runtime-receipt resume refusal and captured detached-child cleanup. Full fake-server entries and all six quarter alternatives passed scoped26–27 PF, normal admission and validator0/0. Old pilot excluded; no model execution, band or quality claim. See [packet record](../../progress/2026-10/2026-10-27-native-repair-packets-2255.md). ✅ 2026-10-27 [no-belief: preparation and synthetic fixtures only]
+- [x] **M4-HOL-V2-NATIVE-PREP** — fix harness prematurely stopping its own long-prefill server; full fakeHTTP phaseA/B fixture, STOP/failure/deadline/cleanup, source-bound PF and normal admission passed0/0. Claude armed GPUv2 PID1707428; native rerun outcome pending, parentM4 open. ✅ 2026-10-27 [no-belief: preparation and synthetic fixtures only]
+- [x] **M4-OFF-NATIVE-READOUT** — reviewed all7 prompt hashes and21 native responses, exact content+reasoning identity against both C5 controls,0mismatch/0nondeterminism/0incomplete. Native run complete in~146s; correctness observation only. Preserve original protocol/co-tenant limits; no wholeM4, speed or promotion claim. ✅ 2026-10-27 [belief: cc]
+
+##### Dispatch checkpoint — 2026-10-27
+
+- [x] **M4-CURRENT-C5-OFF-PAIR-PREP** — four-load current-C5/M4 OFF packet prepared against the ratified paired0.9–1.1 rule; full fakeHTTP/lifecycle/guard fixtures, source-bound PF/admit/validator0/0 passed. GPU7800/min6000s, source e56b292276b33a93b450bb0e82bf7d7e2eaa36d362676eaf0e8a3480efa64023; no actual C2 result or parent completion. Existing family extension and OPEN reader/canary task filed. ✅ 2026-10-27 [no-belief: preparation and synthetic fixtures only]
+- [x] **ATT-CANARY-V2-PREP** — repaired bundled libpciaccess loader path, live grant/STOP/HOLD/deadline guard and captured process-group cleanup. Actual CPU-only loader controls plus model-free lifecycle fixtures and current source-bound PF/admit/validator0/0 passed; GPU900/min600s. No GPU trace, MFMA count or efficiency claim. ✅ 2026-10-27 [no-belief: preparation and synthetic fixtures only]
+- [x] **HSF5P-RESTORE-R11-DIAGNOSTIC** — the repaired-C5 scheduled run completed `rc0`; three save/erase/restore/continuation checks each reported matching 4,116-token counts and equal saved/read byte counts (740,054,204; 938,916,368; 938,916,368). The own server was reaped and an independent native-output/cleanup reader passed. This is one diagnostic run, with no timing, quality or promotion verdict. Evidence: `/mnt/raid0/llm/tmp/hsf5p-r11-repair-20261028/runs-official/` and the keeper launcher log. ✅ 2026-10-28 [belief: cc]
+- [x] **ATT-INSTRUCTION-STREAM-DIAGNOSTIC** — a bounded real gfx90a probe produced raw SE0/SE4 ATT data and its native kernel exited `rc0`; the wrapper refused `rc1` at strict decoding. Offline GPU-denied decoding of the two streams from that single run found 32 ordered repetitions of the eight static MFMA instructions. Both decoders reported zero waves, so per-wave completeness and trace loss remain unknown. This narrow instruction-stream observation is not the decoded-wave canary, an efficiency claim or a READY result. Evidence: `/mnt/raid0/llm/tmp/att-decoded-r5-prep-20261028/checked-se0.log` and `checked-se4.log` in the same directory. ✅ 2026-10-28 [belief: cc]
+- [x] **HIL-HEAVY-PILOT-PREP** — full20-task/60-slot cohort prepared at24threads with3600/min1800s and four mutually exclusive quarter placements. Native two-unit/six-slot fixture, resume/no-redraw and detached-child cleanup, all scopedPF/admit/validator0/0 passed; one task rather than four independent studies. Existing HIL producer family, no quality/band result. ✅ 2026-10-27 [no-belief: preparation and synthetic fixtures only]
+- [x] **LB49-SCOPED-AUTHORIZATION-RECORDED** — operator approved the exact pinned experimental port, including shared parser CRITICAL43 and all six pinned input hunks; private experimental source/build/tests only. Production/deployment/promotion remain excluded. Expanded actual graph qualification and build preparation continue under owner compute; this is not a risk downgrade or completed port. ✅ 2026-10-27 [no-belief: operator authorization, no measurement]
+
+##### CPU layout source enrollment checkpoint — 2026-10-28
+
+- [x] **CPU-LAYOUT-SOURCE-ENROLLMENT** — register the YaRN CPU shard and CL3 quarter profile layouts with open strict-reader/planning tasks, and record the repaired M4 v2 producer scope. This is source enrollment and failure documentation, not validated launcher readiness. YaRN s2 was granted before this extension publication; its timing is disclosed without retrospective warrant. See [checkpoint](../../progress/2026-10/2026-10-28-launcher-repair-and-enrollment.md). ✅ 2026-10-28 [no-belief: source enrollment and maintenance only]
+- [x] **RUN13-M4-NATIVE-REPAIR** — repaired deadline descendant cleanup; actual engine failure fixtures, actual same-entry host preflight, stable engine seal and fresh source-bound M4 row are complete and handed to Claude; owner armed row PID 2427508 at 01:13. The parent M4/C2 native result remains pending; preserve the old false COMPLETE and all native partial evidence. ✅ 2026-10-28 [no-belief: launcher implementation, synthetic controls, and no-model preflight; no native M4 result]
+
+##### Validated run13 engine and HIL discovery enrollment — 2026-10-28
+
+- [x] **RUN13-ENGINE-REPAIR-VALIDATED** — versioned engine passes actual complete-job PASS/FAIL, load failures, STOP/HOLD, watcher/engine deadlines, stale marker and zero-incomplete fixtures; child-exit and between-load TERM regressions pass and owned descendants drain. Engine SHA256 `fbcf07ca57b4c6d938151e2c3269191edb19241a35a0d2057bf7e8b0d85a171a`, exact logs in [checkpoint](../../progress/2026-10/2026-10-28-launcher-repair-and-enrollment.md). Per-consumer real-entry PF/admission remain mandatory; this does not complete M4. ✅ 2026-10-28 [no-belief: launcher implementation and synthetic failure controls]
+- [x] **HIL15-DISCOVERY-SOURCE-ENROLLED** — register the fixed 60-task discovery assessment and OPEN strict-reader/planning task before new measurement. Gold/novelty/no-redraw/native fake-entry/selection controls pass; actual host prerequisites pass without model load. Four distinct 15-case shard rows now have nine validated placement variants; seven alternative placements remain unvalidated. The validated variant receipts are recorded separately; the cohort outcome remains open. ✅ 2026-10-28 [no-belief: prospective enrollment and synthetic controls]
+
+
+##### Qualified launcher preparation and HIL shard delivery — 2026-10-28
+
+- [x] **UFH14-SERVING-TRACE-QUALIFICATION** — source-qualified serving-call integrity LB6 launcher preparation is complete on orchestrator main `6b25fe9acf1bc8b8a9c2908c4d918483f5811c14`. The 106-case suite plus six fake-entry cases passed; source-bound PF used nonce `ae1b7fc54bb7a9d71ac789f97670c9800a47008f5036d868`, followed by normal admission and validator 0/0. PF was scoped to CPUs 26–27 while the row claims 0–23; normal placement remains a live-entry check. Packet: `/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-serving-calls-ready/`; 106-case test log `prep/20261028T005856Z-2374852/command.log`, six fake-entry test log `prep/20261028T010837Z-2427965/command.log`, PF receipt `dryrun/ae1b7fc54bb7a9d71ac789f97670c9800a47008f5036d868/pass.json`, and final admission/validator log `prep/20261028T011823Z-2481749/command.log`. Preparation only; no actual model/server result is claimed. ✅ 2026-10-28 [no-belief: source implementation and model-free validation only]
+- [x] **HIL15-DISCOVERY-SHARD-DELIVERY** — four distinct 15-case shard rows passed source-bound PF/admission/validator checks, with nine validated placement variants and seven alternatives unvalidated. Shards s0/s1/s2 were delivered to Claude and armed; s3 is held at the M4 SMT-sibling timing boundary. The native-readiness placement record is `/mnt/raid0/llm/tmp/refactor-01a16fc3/hil15-decision-cohort-ready/PLACEMENT-CHECKPOINT.json`. This records preparation and owner handoff only: no shard outcomes or HIL cohort result. ✅ 2026-10-28 [no-belief: packet preparation and delivery; no HIL result]
+
+- [x] **HIL15-SHARED-VENV-INCIDENT-ATTRIBUTION** — root cause attribution is filed: the authorized M4 CPU scope helper capture at `scope-check/20261028T015457Z-2658028/` ran `scope.sh --backend cpu`; its `command.log` reports building `epyc-orchestrator`, uninstalling one package, and installing one package into the shared editable environment. Helper PID `2658028` is not an installer PID. HIL s1 retains six completed slots, with 39 unstarted; replay 02-2 overlap effect remains undetermined. Preserve original evidence; no redraw and no no-impact claim. The owner has prohibited further shared orchestrator-venv writes and requires private environments; private-runtime v5 continuation was separately preflighted/armed. See [incident checkpoint](../../progress/2026-10/2026-10-28-codex-ni-01a16d6b-hil-venv-incident.md) and [publication audit correction](../../progress/2026-10/2026-10-28-codex-refactor-01a16fc3-hil-venv-publication-audit.md). ✅ 2026-10-28 [no-belief: incident attribution and runtime repair only; no HIL outcome]
+
+- [x] **M4-C1-NATIVE-READOUT** — file the reviewed HOL-v2 mechanism PASS (512 B/A0.9990076596;2048 B/A0.9975592176;12 valid collision rows) with original source/rule hash checks and the full unobserved NI co-tenancy disclosure. The earlier harness-truncated attempt is superseded; current-C5 OFF paired C2 and the parent M4 gate remain separate. See [checkpoint](../../progress/2026-10/2026-10-28-launcher-repair-and-enrollment.md). ✅ 2026-10-28 [belief: cc]
+
+- [x] **M4-GPU-QUALITY-SOURCE-ENROLLMENT** — enroll the prospective role-paired GPU quality source and open its strict-reader/planning task. Native GPU quality and the parent fold gate remain unmeasured; source enrollment does not make the launcher ready. ✅ 2026-10-28 [no-belief: prospective source enrollment only]
+
+- [x] **M4-GPU-QUALITY-R12-RESULT** — the paired architect Qwen3.8-27B GPU quality gate completed `rc=0` on 2026-10-28 with both arms using concurrency four. MMLU-Pro: 118/200 versus 118/200; GPQA: 117/195 versus 115/195. Both candidate scores meet the predeclared baseline-minus-five-percentage-point tolerance; all 790 rows have zero recorded errors and truncations. Actual GPU residency, four concurrent slots per cell, matching prompt identities and captured-server cleanup were independently checked. Native artifacts and comparisons: `/mnt/raid0/llm/tmp/codex-m4-gpu-quality-r12-native/output/`. Embedded measurement and attestation hashes verify; ledger ingestion is not claimed. This is the quality gate only, not a parent-fold, speed or promotion result. ✅ 2026-10-28 [belief: cc]
+
+- [x] **M4-RECUT-C3-DIAGNOSTIC-RESULT** — the source-bound run13 r2 diagnostic completed `rc=0` at 19:07 UTC with native verdict **FAIL**. All seven champion identities were deterministic; the candidate matched both passes on five identities but differed on pass 2 for both pair4k identities. Independent checks validated all 28 successful 96-token records and recomputed their token/text hashes; the two requested-slot client intervals overlapped in both passes and arms. This proves client overlap, not simultaneous server-slot residency; C1/C2 and promotion were outside this diagnostic. The original run12 attempt failed `rc6` before model load and is superseded for this result. Evidence: `/mnt/raid0/llm/tmp/codex-m4-c3-original-r2-20261028/attempts/run-20261028T185919367038969/`. ✅ 2026-10-28 [belief: cc]
+- **Diagnostic-instruction violation:** r2's inherited `make-record.py` created `PRELOAD_WARRANT.json` in the completed diagnostic attempt despite the operator's prohibition on diagnostic receipts/seals. Preserve the file as evidence, do not treat it as a diagnostic receipt or rely on it for the finding; the follow-up removes this writer.
+- [x] **M4-RECUT-C3-PAIR-DIVERGENCE** — investigate the two pair4k pass-2 divergences and measure both server admission orders on both images. The controlled-order diagnostic completed `rc=0` on 2026-10-28: within each order, all three repetitions matched between images, while 0→2 and 2→0 differed starting at token index 2 for both slots on both images. Independent audit verified all 24 raw completions and hashes, all 12 client overlaps, native server admission ordering, GPU residency and server teardown. This is an order-associated observation in this run, not a proven mechanism or a promotion decision. Evidence: `/mnt/raid0/llm/tmp/codex-m4-order-diag-20261028/attempts/run-20261028T192253258894951/ORDER-DIAGNOSTIC.json`. ✅ 2026-10-28 [belief: cc]
+- [x] **M4-C3-ORDER-CONTROLLED-DIAGNOSTIC** — the controlled successor completed rc0 under the MI210 grant. Its C3 condition passed: all seven champion identities were deterministic across both passes and both candidate-off passes matched; pair4k logs recorded 0→2 admission in each pass of each arm with overlapping client request intervals. Overall native verdict is INCOMPLETE because C1/C2 were not measured. Client overlap and observed admission order do not prove simultaneous server-slot residency, and this does not authorize a full M4 or production/fold gate. The original C3 failure remains preserved above. Evidence: `/mnt/raid0/llm/tmp/codex-m4-c3-order-controlled-20261028/COMPLETE` points to the retained `VERDICT.json` (SHA-256 `784cca3dd1ba7701cc418bbb62f183ed1df960d49594698307757c9226506f2c`); controlled amendment `PREDECLARATION.md` SHA-256 `fb939843ebb42d9eeb7b7bd7af0dcd9033354a36a09a83ceee5e169bff88b213`. The completed manifest names an older scratch log reader; retain that reader and the byte-identical copy in this run directory. ✅ 2026-10-29 [no-belief: diagnostic source enrollment is prospective; no measurement tuple]
+- [ ] **M4-RECUT-ORDER-ROOT-CAUSE** — trace the observed admission-order sensitivity in the SRPF-off path and determine what further controlled evidence is needed to explain it; preserve the two-image result and avoid attributing a kernel cause without proof.
+- [x] **M4-ORDER-SPEC-CONTRAST** — the C5 diagnostic completed `rc=0` at 19:53 UTC. Across three repetitions per condition, both requested slots changed with 0→2 versus 2→0 when DFlash was on; with DFlash off, slot 0 stayed identical and slot 2 still changed. The two configurations also differed beyond speculative decoding, including draft memory. A separate raw-record check verified all 24 responses, hashes, 12 client overlaps, recorded server admission orders, GPU residency and cleanup. This shows the order-associated difference can appear without DFlash for slot 2; it is not a causal mechanism, general performance or promotion claim. Evidence: `/mnt/raid0/llm/tmp/codex-m4-order-spec-diag-20261028/attempts/run-20261028T194522838332151/ORDER-DIAGNOSTIC.json`. ✅ 2026-10-28 [belief: cc]
+- [x] **M4-ORDER-DIAGNOSTIC-READY** — prepare the controlled-arrival-order follow-up across C5 and M4-off. The final same-launcher real GPU smoke ran 146 seconds, completed four ordered 0→2 pairs, and verified GPU residency and cleanup; a separate cutoff returned `rc75` with verified cleanup. The keeper queued it at 19:17 UTC with zero refusals. Manifest: `/mnt/raid0/llm/tmp/compute-flags/ready/armed/codex-m4-order-diag-20261028.json`. The scheduled reverse-order and paired-image comparison remain unmeasured. ✅ 2026-10-28 [no-belief: diagnostic smoke and launcher preparation only]
+
+- [x] **LB49-DIAGNOSTIC-PUBLISH-GATE** — remove the self-imposed requirement that the already-pushed diagnostic source registration be an ancestor of `origin/main`. The replacement publisher verifies the actual remote branch, registration commit and exact source/task contents while retaining real-smoke, model, retention and collision checks. Its bounded watcher is running; LB49 itself still requires a real free-quarter smoke and has not been published READY. ✅ 2026-10-28 [no-belief: publisher repair only; no measurement]
+- [x] **LB49-DS41-PAIRED-DIAGNOSTIC** — the repaired launcher completed `rc0` on 2026-10-28 under a real q0 grant. Both matched private CPU build arms loaded canonical DS41 after separate 739 GiB admissions and returned successfully to the same short prompt. Both answered Paris, but their raw output text differed; no parity conclusion follows. Independent checks matched both log hashes and the final result hash, verified both child PIDs had exited, and confirmed the result is non-partial and diagnostic-only. This is a narrow operational observation, not an attention-sink, route-coverage, quality, performance or promotion result. Native output is referenced by `/mnt/raid0/llm/tmp/lb49-r11-source-draft-20261028/COMPLETE.json`. ✅ 2026-10-28 [belief: cc]
+
+- [x] **M4-CPU-CALIBRATION-SOURCE-ENROLLMENT** — enroll prospective architect CPU load and warmup memory samples and open their strict-reader/planning task. This is preparation only; no model execution or resource peak claim. ✅ 2026-10-28 [no-belief: prospective source enrollment only]
+
+- [x] **M4-WORKER-CALIBRATION-SOURCE-ENROLLMENT** — enroll prospective worker/frontdoor CPU load and warmup samples and open their strict-reader/planning task. Preparation only; no model execution or peak claim. ✅ 2026-10-28 [no-belief: prospective source enrollment only]
+
+- [x] **M4-VISION-CALIBRATION-SOURCE-ENROLLMENT** — enroll prospective vision CPU load and warmup samples and open their strict-reader/planning task. Preparation only; no model execution or peak claim. ✅ 2026-10-28 [no-belief: prospective source enrollment only]
+
+- [x] K3 / C6-07: isolate T3 test fixtures in private temporary checkout roots; preserve actual authority/refusal boundaries and historical fixture bytes. Research main `1f1fc348e6dec11fd4c90cdaf3b6972c226af74c` includes reviewed `e9c1a3ac`;384 host controls plus124 related tests pass. Collection of1009 release tests succeeds in Git and exported source without touching live operator fixtures. Runtime default-root positives remain explicitly host-dependent. ✅ 2026-10-30 [no-belief: fixture isolation and source regressions]
+
+- [x] D10 / C5-04: share fixed T0 constructors, production pins and consecutive A/A arithmetic without importing the campaign driver from four actual runtime callers. Research main `3a4e4e8123a0221c38d8fd26fd2a1319b075d6ac` includes reviewed `6b3977394209e3332968e6f3e6da3a885c48d1d8`;376 qualified tests/247 subtests pass, with13 independently reproduced baseline failures excluded. Postmerge68 tests/112 subtests and value equivalence pass. Legacy entry points and all policy/pin values retained; three new leaves enter source fingerprints. Bare loop.run already avoided campaign before this change. ✅ 2026-10-30 [no-belief: source dependency extraction and deterministic controls]
+- [x] HIL15 S2 resource-admission repair: preserve original45=17accepted/1immutableunknown/27unexposed; place new native outputs on Micron while real source/launcher/state/log scratch stays RAID. RAID metadata has a sampled128MiB cap and independent150GiB floor+.125GiB margin; native output retains its full1GiB sampled cap,64GiB RSS budget and unchanged cohort/protocol. Existing arm/validator/T1/grant controls pass all four quarters; actual same outer launcher normal31.264s/active-cutoff68.389s, partial100-token witness and captured-tree drain pass. `codex-hil15-s2-micron-v8-20261030` accepted by normal keeper05:36:16 on0–23, PID2214155, zero validator refusals. This closes launcher preparation only; original collection/measurement remains open. Evidence `/mnt/raid0/llm/tmp/hil15-s2-split-storage-v8-20261030/READY-PUBLISHED.json`. ✅ 2026-10-30 [no-belief: operational resource repair and native launcher qualification]
+
+- [x] HIL15 S0 resource-admission repair: split actual RAID launcher/state/log metadata from full1GiB native output on Micron, preserving original45=32accepted/3immutableunknown/10unexposed. Existing arm/full validator/T1/grant controls pass all four quarters with actual RAID disk; same outer launcher normal16.341s rc0 and witnessed active cutoff26.323s rc75/partial/drain pass. Normal keeper accepted `codex-hil15-s0-micron-v9-20261030`05:48:37 on0–23, PID2281641, zero refusals. Native capture remains pending; no original measurement closure. Evidence `/mnt/raid0/llm/tmp/hil15-s0-split-storage-v9-20261030/READY-PUBLISHED.json`. ✅ 2026-10-30 [no-belief: operational admission and native launcher qualification]
+
+
+#### Disk-emergency checkout cleanup — 2026-10-30
+
+- [x] Archive or abandon owned cold source drafts and gate-remove 82 RAID worktrees plus 12 RAM views. At least 56.06 GiB of attributed RAID allocation was reclaimed; RAM, unmeasured removals and other sessions' df gains are excluded. The assigned 60-tree list now has only the active peer-owned QB2 registration remaining. INF22 is a four-file compatibility directory, with both retained peer manifests matching, rather than a Git checkout. Verified source refs and Micron archives preserve unique code and evidence; refactor packages are not accepted by this cleanup. Protected ongoing root/HIL/census views remain intact. [Proof](../../artifacts/compute/refactor-worktree-cleanup-20261030.json). ✅ 2026-10-30 [no-belief: operational checkout cleanup]
+
+
+**T1 repair checkpoint (2026-10-30):**
+
+- [x] Publish S0 v10 and S2 r11 with private T1 bypasses and same-final-hash real normal/active-cutoff smokes; original accepted/unknown/unexposed ledgers are preserved. Normal keeper reports both READY-WAIT for a free quarter. Revoke the ghost M4 booking through the own runner terminal lifecycle after proving its PID was a recycled kernel thread; no signals or native work occurred. S1/S3 exhausted cohorts were not replayed. [Proof](../../artifacts/compute/refactor-t1-repair-20261030.json). ✅ 2026-10-30 [no-belief: launcher repair and scheduling lifecycle; no cohort outcome claim]
+
+- [x] **HIL15-S0-V11-READY-QUALIFICATION** — qualify and publish `codex-hil15-s0-micron-v11-20261030` after withdrawing the failed v10 READY and draining only its captured poller tree. The original v10 rc1 and its four immutable outputs were filed by C3 at root `b0c403d7` and remain preserved. Source-bound revalidation preserves the original45 denominator: 32 prior accepted + four immutable replay-verified outcomes (1 True, 3 False) = 36 known; 3 original unknown remain immutable; only six original unexposed unit14/15 slots are scheduled, with 42 known/3 unknown as the exhaustion target. The diagnostic packet is READY; its real same-final-bundle normal smoke exited0 and active-cutoff smoke exited75 after owned descendants drained. The post-unit fixture exercises the prior four read-only and validates the cutoff/partial path. This is launcher qualification only: no new cohort outcome, efficacy/native grade, or parent discovery completion. Evidence: `/mnt/raid0/llm/tmp/hil15-s0-no-sidecar-v11-20261030/{READY-PROPOSAL.json,SMOKE-EVIDENCE.json,FAILED-V10-POLLER-DRAIN.json,FAILED-V10-READY-WITHDRAWN-20261030.json}`; published READY: `/mnt/raid0/llm/tmp/compute-flags/ready/codex-hil15-s0-micron-v11-20261030.json`. ✅ 2026-10-30 [no-belief: launcher qualification and scheduler lifecycle only; no cohort outcome claim]
+
+
+**Source/build wrap checkpoint (2026-10-30):**
+
+- [x] Land repo-owned A6 sandbox isolation source and pre-exposure writer as research `276d75fab`; normal native read-denial proof and six focused controls accepted, with held draft/uncut request limits explicit. Publish a separately qualified, frozen-source C5 CPU build READY packet for the recipe successor. Source and build preparation only; broader refactor, A6 standing rule and AKX-ALL-8 measurement parent remain open. [Proof](../../artifacts/compute/refactor-a6-source-build-ready-20261030.json). ✅ 2026-10-30 [belief: cc]
+
+
+**Refactor HIL S2 inner-admission repair (2026-10-30):**
+
+- [x] Qualify and publish `codex-hil15-s2-r12-inner-t1-20261030` as the successor to withdrawn r11. ✅ 2026-10-30 [no-belief: launcher qualification only] Original45 slots remain18 accepted,2 immutable unknown and25 unexposed; no redraw or full native completion. The final source/engine bundle passed normal native replay and active decode cutoff at100tokens, rc75/partial with all owned descendants drained, plus actual no-argument entry and private inner controls. Source-bound job admission remains; only obsolete inner/outer T1 receipts are bypassed in the private diagnostic engine. Micron native output and8MiB RAID metadata budgets remain. HIL S0 and HILb8 live inputs were untouched. [Evidence](../../artifacts/compute/refactor-hils2-and-source-guards-20261030.json).
+
+## Track: repo-readiness-scorer
+<!-- gate: none -->
+
+> Folded from `handoffs/active/repo-readiness-scorer.md` @ `ea07eb9ad4ae` on 2026-11-02 (BRF-T1-F3, route 1a, operator D1/D5; retired row EVL-38 → RTG-22). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+
+### Repo-Readiness Scorer (Agent-Readiness Model)
+
+**Status**: v1 deterministic scorer landed 2026-06-13; deterministic remediation queue export, advisory Markdown rendering, passive AutoPilot pickup JSON, root no-inference candidate eval gate, dashboard summary, and default-off AutoPilot planner advisory bridge are live. Current 2026-07-06 artifacts show `epyc-root`, `epyc-orchestrator`, and `epyc-inference-research` at Autonomous/L5; `epyc-llama` remains Standardized/L3 with six blocking L4 workflow-surface gaps. The passive pickup artifact remains planning context only (`mode=advisory_only`, `authority_gate=false`) and is not an acceptance gate, promotion gate, or substitute for a true self-optimization loop. Future launches through `scripts/autopilot/start_fable_authority_daemon.py` inject the newest passive pickup unless `AUTOPILOT_REPO_READINESS_PICKUP` is explicitly set.
+**Created**: 2026-06-03 (via research intake → factory.ai deep-dive)
+**Categories**: benchmark_methodology, autonomous_research, knowledge_management
+
+#### Objective
+
+Build a CPU-only scorer that rates each of our repos against an "agent-readiness" maturity model (adapted from Factory's Agent Readiness Model), so we can (a) quantify how amenable our codebase is to autonomous agents, (b) track it over time, and (c) feed failing criteria into the autopilot as a remediation queue. We have **no equivalent** today.
+
+#### Research Context
+
+| Intake ID | Title | Relevance | Verdict |
+|-----------|-------|-----------|---------|
+| intake-657 | Factory.ai docs (Agent Readiness Model / `/readiness-report`) | high | adopt_patterns |
+
+Full mining → [`research/factory-ai-harvest-2026-06-03.md`](../../research/factory-ai-harvest-2026-06-03.md) (Part 3E + verbatim rubric).
+
+#### The model (adapted from Factory)
+
+**5 levels**, unlock the next by passing **80% of the prior level's criteria**:
+1. **Functional** — runs, manual setup, little automated validation (README, linter, type checker, unit tests)
+2. **Documented** — process written down (AGENTS.md/CLAUDE.md, devcontainer, pre-commit hooks, branch protection)
+3. **Standardized** — processes enforced via automation (integration tests, secret scanning, tracing, metrics)
+4. **Optimized** — fast feedback + data-driven improvement (fast CI, deploy frequency, flaky-test detection)
+5. **Autonomous** — self-improving with orchestration
+
+**9 technical pillars**: Style & Validation · Build System · Testing · Documentation · Dev Environment · Debugging & Observability · Security · Task Discovery · Product & Experimentation.
+
+**Scoring**: fractional `n / sub-apps` (repository-scope criteria evaluated once; application-scope per sub-app). Our 4 sub-apps = epyc-root, epyc-orchestrator, epyc-inference-research, epyc-llama.
+
+#### Open Questions
+
+- Factory does **not** publish the full per-criterion list (only the 5 levels, 9 pillars, 80% rule, scoring format, one example) — so we authored a v1 criteria catalog: one concrete deterministic criterion per pillar per level (45 total).
+- Where do we already score *high* (Task Discovery = handoff-index + kb-search; Product&Experimentation = autopilot Pareto archive; Observability = `logs/agent_audit.log` + `unified-trace-memory-service.md`) vs *low*? A first pass may mostly confirm strengths.
+- Should detectors be pure shell/python file-presence + config-parse checks (cheap, deterministic) or LLM-judged (richer, noisier)? **Decision for v1**: deterministic only per `feedback_observe_before_diagnosing`; a pass means an artifact exists, not that quality is certified.
+- Integration target: a `/readiness-fix`-analog autopilot remediation queue, or a passive dashboard alongside the tier-segregated Pareto dashboard? **Answered for passive consumption**: `--output-remediation-json` exports a deterministic remediation queue; `--output-autopilot-remediation-json` emits a passive AutoPilot pickup artifact with explicit non-authority metadata; the dashboard reads the latest report/queue; and the Fable authority launcher now wires the newest pickup into the planner prompt on future restarts. Any authority-bearing remediation workflow remains a separate protocol.
+
+#### Current Artifacts
+
+- Scorer: `/mnt/raid0/llm/epyc-root/scripts/validate/repo_readiness_scorer.py`
+- Tests: `/mnt/raid0/llm/epyc-root/tests/validate/test_repo_readiness_scorer.py`
+- JSON report: `/mnt/raid0/llm/epyc-root/data/repo_readiness/repo_readiness_2026-07-06.json`
+- Markdown report: `/mnt/raid0/llm/epyc-root/progress/2026-07/repo-readiness-2026-07-06.md`
+- Remediation queue export: `scripts/validate/repo_readiness_scorer.py --output-remediation-json <path>` (landed in root `7e6b3ee18864f1d86e8b5ce4651449a5fd7c8ee2`)
+- Current remediation queue JSON: `/mnt/raid0/llm/epyc-root/data/repo_readiness/repo_readiness_remediation_queue_2026-07-06.json`
+- Current remediation queue Markdown: `/mnt/raid0/llm/epyc-root/progress/2026-07/repo-readiness-remediation-2026-07-06.md`
+- Current passive AutoPilot pickup JSON: `/mnt/raid0/llm/epyc-root/data/repo_readiness/repo_readiness_autopilot_pickup_2026-07-06.json`
+
+2026-06-13 first-run summary:
+
+- Portfolio level: **Documented (L2)**.
+- `epyc-root`: Optimized (L4), next gate Autonomous.
+- `epyc-orchestrator`: Documented (L2), next gate Standardized.
+- `epyc-inference-research`: Documented (L2), next gate Standardized.
+- `epyc-llama`: Documented (L2), next gate Standardized.
+- Lowest portfolio criteria: L3 security automation and standardized dev environment; L4 generated docs, health automation, prioritized task discovery, and security audit; L5 agent doc loop, auto eval gates, autonomous security review, self-optimizing loop.
+
+Validation:
+
+- `python3 -m py_compile scripts/validate/repo_readiness_scorer.py tests/validate/test_repo_readiness_scorer.py`
+- `uv run --with pytest pytest -q tests/validate/test_repo_readiness_scorer.py` -> 3 passed.
+
+2026-06-14 remediation-export update:
+
+- Root commit `7e6b3ee18864f1d86e8b5ce4651449a5fd7c8ee2` added deterministic remediation queues via `--output-remediation-json`.
+- Changed files: `/workspace/scripts/validate/repo_readiness_scorer.py` and `/workspace/tests/validate/test_repo_readiness_scorer.py`.
+- Validation from the implementation sidecar: `python3 -m py_compile scripts/validate/repo_readiness_scorer.py tests/validate/test_repo_readiness_scorer.py`; `uv run --with pytest pytest -q tests/validate/test_repo_readiness_scorer.py` -> 5 passed.
+- Remaining integration work: feed the exported queue into AutoPilot remediation planning or a passive dashboard without letting the scorer become a decision gate without a protocol.
+
+2026-06-20 advisory-queue rendering update:
+
+- Added `--output-remediation-md` plus `--remediation-md-limit` to render the deterministic queue as a Markdown pickup artifact while keeping JSON complete.
+- Generated refreshed artifacts: `data/repo_readiness/repo_readiness_2026-06-20.json`, `progress/2026-06/repo-readiness-2026-06-20.md`, `data/repo_readiness/repo_readiness_remediation_queue_2026-06-20.json`, and `progress/2026-06/repo-readiness-remediation-2026-06-20.md`.
+- Current queue: 49 open items; top P0 blockers include `epyc-inference-research` L3 style/test/task/dev-env/security gaps, `epyc-llama` L3 task/dev-env/security/experiment gaps, and `epyc-root` L5 auto-eval/self-optimizing-loop gaps. Markdown output is explicitly advisory and not an AutoPilot authority gate.
+- Validation: GitNexus LOW on `score_repositories`, `build_remediation_queue`, and `render_markdown`; `python3 -m py_compile scripts/validate/repo_readiness_scorer.py tests/validate/test_repo_readiness_scorer.py`; `uv run --with pytest pytest -q tests/validate/test_repo_readiness_scorer.py` -> 7 passed; JSON and diff checks passed.
+
+2026-06-21 passive AutoPilot pickup update:
+
+- Added `--output-autopilot-remediation-json` plus `--autopilot-remediation-limit` to render the deterministic remediation queue as a passive planner-context artifact.
+- Generated refreshed artifacts: `data/repo_readiness/repo_readiness_2026-06-21.json`, `progress/2026-06/repo-readiness-2026-06-21.md`, `data/repo_readiness/repo_readiness_remediation_queue_2026-06-21.json`, `progress/2026-06/repo-readiness-remediation-2026-06-21.md`, and `data/repo_readiness/repo_readiness_autopilot_pickup_2026-06-21.json`.
+- Current pickup JSON carries `mode=advisory_only`, `authority_gate=false`, `source_item_count=49`, and the top 12 candidate items with required preflight rules (`review owning handoff`, GitNexus impact, generated/runtime artifact discipline, rerun scorer). This feeds planning only; it does not mutate AutoPilot or create a decision gate.
+- Validation: GitNexus LOW on `build_remediation_queue`, `render_remediation_markdown`, `score_repositories`, and `main`; `python3 -m py_compile scripts/validate/repo_readiness_scorer.py tests/validate/test_repo_readiness_scorer.py`; `uv run --with pytest pytest -q tests/validate/test_repo_readiness_scorer.py` -> 9 passed; generated pickup JSON inspected with `jq` for passive-mode/non-authority fields.
+
+2026-06-27 portability update:
+
+- Root `19e1ac84` removes hardcoded canonical repo roots from the default scorer map.
+- Default repo discovery now derives root from the script location, supports `/workspace/repos/<name>` fallbacks, keeps `/mnt/raid0/llm/...` as canonical fallback, and accepts explicit env overrides: `EPYC_ROOT_REPO`, `EPYC_ORCHESTRATOR_REPO`, `EPYC_INFERENCE_RESEARCH_REPO`, and `EPYC_LLAMA_REPO`.
+- This is offline-only scorer hygiene; it does not change scoring criteria, remediation priorities, or AutoPilot authority.
+- Validation: GitNexus LOW on implementation symbols per sidecar; main-thread verification `python3 -m py_compile scripts/validate/repo_readiness_scorer.py tests/validate/test_repo_readiness_scorer.py`; `uv run --with pytest pytest -q tests/validate/test_repo_readiness_scorer.py` -> 10 passed; `uv run --with ruff ruff check scripts/validate/repo_readiness_scorer.py tests/validate/test_repo_readiness_scorer.py` passed.
+
+2026-06-27 research Standardized-gate update:
+
+- `epyc-inference-research` commit `bfa785c` adds a top-level `Makefile`,
+  `scripts/setup.sh`, and `.github/dependabot.yml`.
+- The Makefile exposes green `lint` and `test` smoke targets over the
+  maintained X-MAS function-axis table tooling instead of the legacy whole
+  `scripts/` tree, which still has historical Ruff/pytest debt.
+- `scripts/setup.sh` standardizes local setup through `uv sync --all-extras`;
+  Dependabot adds weekly Python dependency security automation.
+- A one-repo scorer run now reports `epyc-inference-research` as
+  **Standardized (L3)** with L3 pass rate `88.9%`; the remaining L3 blocker is
+  `L3.machine_task_index`.
+- Validation: `make lint`; `make test`; `bash -n scripts/setup.sh`;
+  `repo_readiness_scorer.py --repo epyc-inference-research=/mnt/raid0/llm/epyc-inference-research`.
+
+2026-06-27 research machine-task-index update:
+
+- `epyc-inference-research` commit `7d778e0` adds
+  `handoffs/active/master-handoff-index.md` as a research-scoped machine task
+  index.
+- The index includes a prioritized task list, dependency graph, cross-cutting
+  concerns, reporting instructions, and key file locations. It explicitly
+  avoids claiming authority over production flips, which remain governed from
+  root/orchestrator handoffs.
+- A one-repo scorer run reported `epyc-inference-research` L3 at `100.0%`;
+  the next gate was L4 Optimized with pass rate `55.6%`.
+- Validation: `git diff --check -- handoffs/active/master-handoff-index.md`;
+  research `make lint`; research `make test`;
+  `repo_readiness_scorer.py --repo epyc-inference-research=/mnt/raid0/llm/epyc-inference-research`.
+
+2026-06-27 research health-automation update:
+
+- `epyc-inference-research` commit `2b6b97f` adds
+  `scripts/session/health_check.sh` and exposes it as `make health`.
+- The health check is no-inference: it verifies required repo paths, `uv`
+  availability, maintained Python entrypoints, and dry-runs AA-Omniscience plus
+  clean-window manifest generation into `/tmp`.
+- A one-repo scorer run now reports `epyc-inference-research` L4 at `66.7%`;
+  `L4.health_automation` passes.
+- Remaining L4 blockers are `L4.generated_docs`, `L4.analysis_reports`, and
+  `L4.security_audit`. These should be implemented only as real workflow
+  surfaces, not placeholders.
+- Validation: GitNexus impact for research `Makefile` LOW
+  (`impactedCount=0`); research `make health`; research `make lint`; research
+  `make test`; `repo_readiness_scorer.py --repo epyc-inference-research=/mnt/raid0/llm/epyc-inference-research`.
+
+2026-06-27 research generated-docs update:
+
+- `epyc-inference-research` commit `935a8ea` adds
+  `scripts/docs/generate_docs_index.py`, `scripts/docs/test_generate_docs_index.py`,
+  `make docs`, `make docs-check`, and the generated
+  `docs/reference/GENERATED_DOCS_INDEX.md` artifact.
+- The generated-docs lane is deterministic and no-inference: `--check` fails when
+  the committed index is stale.
+- A one-repo scorer run now reports `L4.generated_docs` as passing for
+  `epyc-inference-research`.
+- Remaining L4 blockers are `L4.analysis_reports` and `L4.security_audit`.
+- Validation: research `uv run --with ruff ruff check
+  scripts/docs/generate_docs_index.py scripts/docs/test_generate_docs_index.py`;
+  `uv run --with pytest pytest -q scripts/docs/test_generate_docs_index.py`;
+  `make docs-check`; `make lint`; `make test`; and the root one-repo readiness
+  scorer for `epyc-inference-research`.
+
+2026-06-27 research analysis-reports update:
+
+- `epyc-inference-research` commit `f347809` adds
+  `scripts/analysis/generate_analysis_reports_index.py`,
+  `scripts/analysis/test_generate_analysis_reports_index.py`, `make analysis`,
+  `make analysis-check`, and the generated
+  `docs/reference/ANALYSIS_REPORTS_INDEX.md` artifact.
+- The analysis-reports lane is deterministic and no-inference: it indexes
+  existing Markdown/JSON analysis/report/summary artifacts and `--check` fails
+  when the committed index is stale.
+- A one-repo scorer run now reports `epyc-inference-research` as Optimized (L4)
+  with L4 pass rate `88.9%`; `L4.analysis_reports` passes.
+- Remaining L4 blocker is `L4.security_audit`.
+- Validation: research `uv run --with ruff ruff check
+  scripts/analysis/generate_analysis_reports_index.py
+  scripts/analysis/test_generate_analysis_reports_index.py`; `uv run --with
+  pytest --with pyyaml pytest -q
+  scripts/analysis/test_generate_analysis_reports_index.py`; `make
+  analysis-check`; `make lint`; `make test`; and the root one-repo readiness
+  scorer for `epyc-inference-research`.
+
+2026-06-27 research security-audit update:
+
+- `epyc-root` commit `f077b197` teaches the deterministic scorer to count
+  concrete `scripts/security/**` audit surfaces for `L4.security_audit`.
+- `epyc-inference-research` commit `7638f0b` adds
+  `scripts/security/audit_repository.py`,
+  `scripts/security/test_audit_repository.py`, and `make security-check`.
+- The audit is no-inference and scans tracked files only. It fails on
+  secret-like tracked filenames, high-confidence credential literals in
+  source/config/doc surfaces, and unexpected large tracked artifacts outside
+  known benchmark result/image paths.
+- A one-repo scorer run now reports `epyc-inference-research` as Optimized (L4)
+  with L4 pass rate `100.0%`; the next gate is L5 Autonomous.
+- Validation: research `python3 -m py_compile
+  scripts/security/audit_repository.py
+  scripts/security/test_audit_repository.py`; `uv run --with pytest pytest -q
+  scripts/security/test_audit_repository.py`; `make security-check`; `uv run
+  --with ruff ruff check scripts/security/audit_repository.py
+  scripts/security/test_audit_repository.py`; `make lint`; `make test`; and the
+  root one-repo readiness scorer for `epyc-inference-research`.
+
+2026-06-28 orchestrator setup-gate update:
+
+- `epyc-orchestrator` commit `c1cac72e` adds a top-level `scripts/setup.sh`
+  entrypoint that delegates to the existing `scripts/setup/bootstrap.sh`.
+- The bootstrap prerequisite check now accepts `uv`, `pip3`, or `pip` for the
+  Python package manager prerequisite, matching the existing install path that
+  already prefers `uv sync`.
+- A one-repo scorer run now reports `epyc-orchestrator` as Standardized (L3)
+  with L3 pass rate `88.9%`; the next gate is L4 Optimized.
+- Remaining orchestrator blockers include `L3.security_automation` and L4
+  workflow surfaces (`L4.generated_docs`, `L4.health_automation`,
+  `L4.security_audit`, `L4.prioritized_tasks`). These should be implemented as
+  real maintained surfaces rather than placeholders.
+- Validation: GitNexus impact for `scripts/setup.sh`,
+  `scripts/setup/bootstrap.sh`, and `check_prerequisites` returned UNKNOWN
+  targets with `impactedCount=0`; `bash -n scripts/setup.sh
+  scripts/setup/bootstrap.sh`; `./scripts/setup.sh --check-only`; and the root
+  one-repo readiness scorer for
+  `epyc-orchestrator=/mnt/raid0/llm/epyc-orchestrator`.
+
+2026-06-28 default-off AutoPilot advisory bridge:
+
+- `epyc-orchestrator` adds a default-off planner prompt section for passive
+  repo-readiness pickup artifacts.
+- The bridge is inert unless `AUTOPILOT_REPO_READINESS_PICKUP` points to a JSON
+  artifact. It accepts only `mode=advisory_only` with `authority_gate=false` and
+  otherwise renders an ignored/unavailable message.
+- The rendered section is planner context only: it explicitly does not override
+  owning handoffs, GitNexus impact checks, measurement gates, or scorer reruns.
+- This closes the first safe live-consumption protocol for the passive pickup
+  artifact without making repo-readiness a controller authority or acceptance
+  gate. Existing running AutoPilot processes will not see it until a future
+  restart with the env var set.
+- Validation: GitNexus impact for `CONTROLLER_PROMPT_TEMPLATE` and
+  `_run_loop_inner` returned LOW; `uv run pytest
+  tests/unit/test_autopilot_actions.py tests/unit/test_autopilot_system_card.py
+  -q` -> 82 passed; `uv run ruff check scripts/autopilot/autopilot.py
+  tests/unit/test_autopilot_actions.py`; `python3 -m py_compile
+  scripts/autopilot/autopilot.py tests/unit/test_autopilot_actions.py`.
+
+2026-06-28 orchestrator security automation/audit update:
+
+- `epyc-orchestrator` adds `.github/dependabot.yml` for weekly `uv` and
+  GitHub Actions dependency updates, closing the deterministic
+  `L3.security_automation` criterion with a real supply-chain automation
+  surface.
+- `epyc-orchestrator` adds `scripts/security/audit_repository.py`,
+  `scripts/security/test_audit_repository.py`, and `make security-check`.
+  The audit is no-inference and scans tracked files only. It fails on
+  secret-like tracked filenames, high-confidence credential literals in
+  source/config/doc/test surfaces, and unexpected large tracked artifacts
+  outside known benchmark/report/repl-memory paths. The only secret-literal
+  allowlist is the existing credential-redaction fixture test.
+- A one-repo scorer run now reports `epyc-orchestrator` with
+  `L3.security_automation=true`, `L4.security_audit=true`, and L3 pass rate
+  `100.0%`. Remaining L4 blockers are `L4.generated_docs`,
+  `L4.health_automation`, and `L4.prioritized_tasks`.
+- Validation: GitNexus impact for the new security/dependabot targets returned
+  UNKNOWN with `impactedCount=0`; `python3 -m py_compile
+  scripts/security/audit_repository.py scripts/security/test_audit_repository.py`;
+  `uv run --with pytest pytest -q scripts/security/test_audit_repository.py`
+  -> 4 passed; `uv run --with ruff ruff check
+  scripts/security/audit_repository.py scripts/security/test_audit_repository.py`;
+  `make security-check`; `git diff --check` on the touched paths; and the root
+  one-repo readiness scorer for
+  `epyc-orchestrator=/mnt/raid0/llm/epyc-orchestrator`.
+
+2026-06-28 orchestrator L4 closeout:
+
+- `epyc-orchestrator` adds deterministic generated-docs, health, and local task
+  coordination surfaces:
+  `scripts/docs/generate_docs_index.py`,
+  `scripts/docs/test_generate_docs_index.py`,
+  `docs/reference/GENERATED_DOCS_INDEX.md`,
+  `scripts/session/health_check.sh`, and
+  `handoffs/active/master-handoff-index.md`.
+- The generated-docs lane indexes committed `docs/**/*.md` files and supports
+  `--check`; Makefile targets now expose `docs`, `docs-check`, and `health`.
+- The session health lane is no-inference: it checks core repo artifacts,
+  py-compiles stack/phase/security health entrypoints, and runs the tracked-file
+  security audit.
+- The local handoff index is explicitly subordinate to the root master index and
+  carries prioritized tasks, dependencies, cross-cutting concerns, reporting
+  rules, and key files for orchestrator-only work.
+- A one-repo scorer run now reports `L4.generated_docs=true`,
+  `L4.health_automation=true`, `L4.prioritized_tasks=true`, and the only
+  remaining failed orchestrator criterion as `L5.autonomous_security_review`.
+- Validation: GitNexus impact for existing `Makefile` returned LOW; new-target
+  GitNexus checks for docs/health/index paths returned UNKNOWN with
+  `impactedCount=0`; `python3 -m py_compile` for docs/security scripts and
+  tests; `uv run --with pytest pytest -q scripts/docs/test_generate_docs_index.py`
+  -> 2 passed; `uv run --with ruff ruff check
+  scripts/docs/generate_docs_index.py scripts/docs/test_generate_docs_index.py`;
+  `make health`; `make security-check`; `make docs-check`; `git diff --check`;
+  and the root one-repo readiness scorer for `epyc-orchestrator`.
+
+2026-06-28 orchestrator autonomous-security-review closeout:
+
+- `epyc-orchestrator` commit `4b27fd5d` adds an orchestrator-scoped
+  security-review skill and slash command:
+  `.claude/skills/security-review/SKILL.md`,
+  `.claude/skills/security-review/agents/openai.yaml`, and
+  `.claude/commands/security-review.md`.
+- The skill is exploit-path gated and specific to orchestrator attack
+  surfaces: API/OpenAI-compatible routes, AutoPilot/controller paths,
+  StrategyStore and runtime state, tool/REPL/MCP execution, stack launch/config
+  surfaces, generated artifacts, dependencies, and shell/CI changes.
+- A one-repo scorer run now reports `epyc-orchestrator` as **Autonomous (L5)**
+  with all level rates at `1.0`, including
+  `L5.autonomous_security_review=true`.
+- Validation: new-file GitNexus impact checks returned UNKNOWN with
+  `impactedCount=0`; skill frontmatter and `agents/openai.yaml` parsed with
+  PyYAML; path-scoped `git diff --check` passed; and the root one-repo
+  readiness scorer for `epyc-orchestrator` reported no failed criteria.
+
+2026-06-28 portfolio artifact refresh:
+
+- Regenerated the full four-repo readiness report, remediation queue, advisory
+  Markdown queue, and passive AutoPilot pickup artifact after the orchestrator
+  L5 and research L4 closeouts.
+- Current portfolio level is **Optimized (L4)** with L5 as the next gate.
+  Repo levels: `epyc-orchestrator` Autonomous/L5, `epyc-root` Optimized/L4,
+  `epyc-inference-research` Optimized/L4, and `epyc-llama` Standardized/L3.
+- A follow-up detector refinement recognized llama-native evidence already
+  present in the fork: `docs/ops/**` and bench scripts now count for
+  experiment surfaces, `flake.nix`/`CMakePresets.json` count for standardized
+  dev environment, and sanitizer workflows count as security automation. This
+  removed false-positive llama blockers without editing the llama repo.
+- The deterministic remediation queue now has `24` open items, down from the
+  stale `49`-item 2026-06-21 pickup. The remaining blocking candidates are
+  L5 autonomy surfaces for research/root plus the true `epyc-llama` task-index
+  gap on the path to L4. The passive pickup remains `mode=advisory_only` and
+  `authority_gate=false`.
+- Validation: GitNexus impact was LOW for `score_repositories`,
+  `build_remediation_queue`, and `build_criteria`; the generic `main` lookup
+  was ambiguous but no code edit was made. `repo_readiness_scorer.py`
+  regenerated the artifacts without errors, focused tests passed, and generated
+  JSON was inspected with `jq` for portfolio level, queue count, and
+  non-authority pickup fields.
+
+2026-06-28 research L5 and llama task-index update:
+
+- `epyc-inference-research` commits `8cef3d4`, `817ccdf`, `8ffdc51`, and
+  `7c4929c` close the remaining deterministic L5 readiness surfaces with real
+  no-inference workflow entrypoints:
+  - `.claude/skills/security-review/SKILL.md` and
+    `.claude/commands/security-review.md` add an exploit-path-gated,
+    research-specific security review surface.
+  - `scripts/autopilot/candidate_eval_gate.py` plus `make autopilot-gate`
+    chains docs, analysis, security, health, and focused tests as a fail-closed
+    candidate gate.
+  - `scripts/halo/closed_loop_observation_surface.py` and
+    `scripts/halo/convert_tap_to_otel.py` convert benchmark/log/report JSONL
+    into deterministic closed-loop observation envelopes.
+  - `scripts/session/emergency_cleanup.sh` adds a dry-run-first stale-PID
+    cleanup surface, and `scripts/session/health_check.sh` now syntax/smoke
+    checks the new L5 surfaces.
+- Validation: research `make autopilot-gate` passed end-to-end
+  (`docs-check`, `analysis-check`, `security-check`, `health`, and `17`
+  focused tests); focused `py_compile`, `ruff`, `pytest`, `bash -n`, and
+  `git diff --check` passed on the touched surfaces. A one-repo readiness
+  scorer run reports `epyc-inference-research` as **Autonomous (L5)** with
+  L1-L5 all `100.0%`.
+- `epyc-llama` commits `cc29b7a6a` and `4412872ca` add a docs-only readiness
+  index plus detector-visible `handoffs/active/master-handoff-index.md`.
+  A one-repo scorer run now reports `epyc-llama` L3 at `100.0%` and
+  `L4.prioritized_tasks=true`; remaining llama next-gate blockers are the real
+  L4 workflow surfaces (`incremental_validation`, `generated_docs`,
+  `health_automation`, `analysis_reports`, `security_audit`, and
+  `replay_analysis`).
+
+2026-07-03 artifact refresh:
+
+- Regenerated the four-repo readiness report, remediation queue, advisory
+  Markdown queue, and passive AutoPilot pickup artifact after the research L5
+  closeout, root candidate-gate closeout, and current repo-state updates.
+- Added `scripts/validate/candidate_eval_gate.sh` as the root no-inference
+  candidate gate. It bundles root validator syntax checks, agent governance
+  validators, CLAUDE.md matrix validation, registry operating-point validation,
+  the held-out PII fixture eval, a temp repo-readiness regeneration, and focused
+  scorer tests. Wiki/source-manifest drift is intentionally opt-in via
+  `--strict-doc-drift` until the wiki refresh lane is clean.
+- Refined the root L5 detector so the candidate gate satisfies
+  `L5.auto_eval_gates`. A parallel audit rejected crediting passive
+  repo-readiness pickup artifacts as `L5.self_optimizing_loop`; the scorer test
+  now pins that guardrail, and the passive pickup remains advisory planning
+  context only.
+- Current portfolio level is now **Autonomous (L5)**: `epyc-root`,
+  `epyc-orchestrator`, and `epyc-inference-research` are Autonomous/L5;
+  `epyc-llama` is Standardized/L3 with L4 pass rate `33.3%`.
+- The deterministic remediation queue is down to `13` open items. The stale
+  root `L5.auto_eval_gates` row is gone; remaining rows are the true root
+  `L5.self_optimizing_loop` gap plus `epyc-llama` L4/L5 workflow surfaces.
+- Attempted to refresh the stale `epyc-llama` GitNexus index before editing
+  llama readiness docs; the rebuild repeatedly timed out on large backend
+  translation units and then crashed in the Node/NAPI parser. Do not edit the
+  llama fork until its GitNexus index is repaired, likely by narrowing
+  `.gitnexusignore` for parser-hostile generated/backend files and rebuilding.
+- Validation: GitNexus impact was LOW for `build_criteria` and
+  `score_repositories`; the generic `main` lookup was ambiguous but max LOW.
+  `scripts/validate/candidate_eval_gate.sh` passed, the focused scorer tests
+  passed, Ruff passed for the touched scorer/test files, and
+  `repo_readiness_scorer.py` regenerated all durable artifacts without errors.
+
+#### Notes
+
+- Anti-false-positive discipline (shared across Factory's review/scoring features): a criterion passes only on a concrete, verifiable check — mirrors our eval-tower verifier philosophy.
+- Cross-refs: `eval-tower-verification.md` (rubric discipline), `autopilot-continuous-optimization.md` (remediation loop), `claude-md-accounting` skill (governance coverage = a Documentation-pillar input), CLAUDE.md repo-map.
+
+#### Progress checklist
+
+- [x] v1 deterministic scorer + tests landed ✅
+- [x] remediation queue / advisory MD / passive AutoPilot pickup / candidate-eval-gate / default-off advisory bridge live ✅
+- [x] epyc-root, epyc-orchestrator, epyc-inference-research all at Autonomous/L5 ✅
+- [x] Repair file-level readiness-evidence regression. ✅ 2026-07-28 — recursive detector
+  surfaces now expand to concrete non-ignored files; empty directories no longer pass as evidence.
+  Root `0c276023`; 14 passed.
+- [x] Close remaining root L5.self_optimizing_loop gap (13-item queue) ✅ 2026-08-25 — root detector refined to credit the vidya belief-substrate loop; queue 13 → 6 (all remaining items are frozen epyc-llama L5 surfaces); see the 2026-08-25 closeout below.
+- [ ] Bring epyc-llama Standardized/L3 -> L4 (incremental_validation, generated_docs, health_automation, analysis_reports, security_audit, replay_analysis)
+- [x] Add the root candidate gate to a periodic path (nightshift health or CI) so a red gate is observed within days, not weeks — the 2026-08-03 PII allowlist/fixture drift kept `candidate_eval_gate.sh` red ~22 days unobserved (derived 2026-08-25 from the EVL-38 closeout; owner: mainA) ✅ 2026-10-07
+  MAIN accepted bounded source/evidence: [review](../../artifacts/ni08/evl38-periodic-gate-20261007/README.md).
+- [x] Repair stale epyc-llama GitNexus index (narrow .gitnexusignore) before editing llama readiness docs ✅ 2026-07-22 (scoped serving-layer index, see below)
+
+##### 2026-08-25 root self-optimizing-loop closeout (EVL-38)
+
+- Refined the root L5 detector so the vidya belief-substrate loop surfaces
+  satisfy `L5.self_optimizing_loop`: the scorer now credits
+  `scripts/vidya/fold.py`, `scripts/vidya/citation_gate.py`,
+  `scripts/vidya/correction_queue.py`, `scripts/vidya/r1_search.py`, and
+  `scripts/vidya/live_eval.py` — the ledger → graded fold → citation gate →
+  correction queue → re-fold feedback loop plus the R1 counterexample-search
+  and PR2 live-ledger evaluation loops. The passive pickup artifact remains
+  rejected as optimization evidence; the guardrail test is unchanged.
+- Regenerated the full four-repo artifact set for 2026-08-25:
+  `data/repo_readiness/repo_readiness_2026-08-25.json`,
+  `data/repo_readiness/repo_readiness_remediation_queue_2026-08-25.json`,
+  `data/repo_readiness/repo_readiness_autopilot_pickup_2026-08-25.json`,
+  `progress/2026-08/repo-readiness-2026-08-25.md`, and
+  `progress/2026-08/repo-readiness-remediation-2026-08-25.md`.
+- `epyc-root` `L5.self_optimizing_loop` is now `passed: true` with five
+  concrete vidya evidence paths; the queue drops 13 → 6 items, all of them
+  frozen `epyc-llama` L5 surfaces (the 6 L4 llama items listed under "Bring
+  epyc-llama Standardized/L3 -> L4" now pass on repo state — the llama tree
+  gained real surfaces since 2026-07-06, not via this change).
+- Validation: GitNexus impact `build_criteria` LOW (3 callers, all in-file);
+  `py_compile` clean; `uv run --with pytest pytest -q
+  tests/validate/test_repo_readiness_scorer.py` → 15 passed (incl. the new
+  positive control `test_root_vidya_loop_surface_counts_as_self_optimizing_loop`
+  and the untouched negative pin that passive pickup ≠ optimization); Ruff
+  findings are all pre-existing; `git diff --check` clean.
+- Pre-existing defect surfaced (NOT caused by the closeout) **and RESOLVED 2026-08-25 (mainA, operator-directed)**: the root candidate gate `scripts/validate/candidate_eval_gate.sh` had exited 1 since ~2026-08-03 — `pii_fixture_eval` 39/40, because commit `8eeaf6c3` (2026-08-03) allowlisted `AKIAIOSFODNN7EXAMPLE` in `KNOWN_PLACEHOLDERS` in `scripts/hooks/pii_precommit.sh` after the 2026-07-29 fixture. Resolution = fixture-evolution event: fixture case 1 now pins the placeholder policy (`expected_match=false`, allowlist cited) and two boundary cases were added (one-char-off lookalike blocks; placeholder + real-key on one line blocks). `pii_fixture_eval` 42/42; `candidate_eval_gate.sh` exit 0 — the gate is green for the first time since 08-03.
+
+##### epyc-llama GitNexus index — diagnostic (2026-07-22 non-inference sweep)
+- [x] epyc-llama GitNexus index (413): a bare re-index thrashes — the killers are DENSE sub-512KB files (`src/llama-arch.cpp`, `iqk_gemm_floats.cpp`@48KB, `llama-vocab.cpp`, `unicode-data.cpp`, `tools/mtmd/`), NOT the >512KB GPU TUs (gitnexus auto-skips those, so narrowing the ignore to big files can't win). RECOMMENDATION: one scoped serving-layer index (`src/`+`common/`+`tools/`, exclude ALL of `ggml/` + the dense offenders) at a quiet low-contention window via `scripts/gitnexus-analyze.sh`; if it still thrashes, leave epyc-llama unindexed and score readiness by git shortlog/tests/CHANGELOG — it's a frozen tree, low value. A partial `.gitnexusignore` (28 patterns) is staged uncommitted in `/mnt/raid0/llm/llama.cpp/.gitnexusignore`. ✅ 2026-07-22
+  - **RESOLVED 2026-07-22**: scoped serving-layer index SUCCEEDED. Excluded the ENTIRE `ggml/` subtree + the dense `src/` offenders (`llama-arch.cpp`, `llama-vocab.cpp`, `unicode-data.cpp`, `tools/mtmd/`) via `.gitnexusignore`; **`gitnexus analyze` completed** (`Repository indexed successfully`, 26,723 nodes / 61,246 edges / 680 clusters), down from 48 fatal worker-timeouts to 3 (only `src/llama-graph.cpp` etc. retired — index still complete). **Reads clean, no segfault**: `gitnexus impact llama_decode --repo llama.cpp` → risk CRITICAL/79 (was signal-11). NOTE: the gitnexus repo name is **`llama.cpp`** (not `epyc-llama`). The working `.gitnexusignore` is uncommitted in `/mnt/raid0/llm/llama.cpp` (frozen tree — not committed); re-apply it (add `ggml/` + the dense-src excludes) before any future re-index. Line 412 (L4 readiness surfaces) is now unblocked.
+
+- [x] **EVL38-REFERENCE-PORTABILITY-SOURCE — resolve the twelve actual scheduled-gate reference failures without waiving validation.** Accepted run37561593874 exits at reference validation: moved relative governance links, project-root absolute references, frozen-kernel agent-overlay references, and runtime/historical scratch links need accurate source resolution or documentation correction. Preserve fail-closed validation and dated evidence; no guessed files, host-path shim or blanket exclusions. MAIN reviews each correction before hosted proof. ✅ 2026-10-07 — Checklist reconciliation after [MAIN exact published source/original1/1 acceptance](../../artifacts/ni08/evl38-reference-conformance-20261007/README.md), ROOT04cc51bc4. Fifteen document corrections, original37572099379/90Git+5generated/109unchangedZIP, no waiver. Earlier tally113 counted only the separate native companion; this owning source task was inadvertently left unchecked. Broader scheduled-candidate/readiness parents remain open.
+
+2026-10-07 EVL38-REFERENCE-PORTABILITY-SOURCE review: MAIN approved the nine-file local documentation proposal`db4e339cecd3edd6e36050a02641c992292e7c45` for hosted verification. The newly scoped VB-EVL38-REFERENCE-CONFORMANCE now binds the actual complete reference-validator case; periodic whole-candidate capture remains separate. It replaces stale/moved/absolute reference text with accurate tracked targets and dates nonretained scratch evidence. No validator waiver, source-path shim, frozen-kernel edit, measurement-policy amendment or new grader. The source checkbox remains open until actual hosted validation and integration.

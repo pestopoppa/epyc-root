@@ -39,7 +39,7 @@ Operational repairs are scoped accordingly: qualified C6 r3, raw A2 v13, AKX flo
 - **A code change can break a derived pin.** `stack_priors.yaml` pins the hash of `orchestrator_stack.py`, so changing that file fails the guard until `stack_change_pipeline.py update` reruns. Rebuild in the same landing.
 - **Running the pipeline check from a lane worktree** reports `runtime_attestation` failed for the live :8000 API ("unmanaged listener"). A lane worktree has no state file, so this is a location artifact, not a registry fault.
 
-Sources: [non-inference-backlog](../handoffs/active/non-inference-backlog.md) (NIB2-102), [2026-10-24-3c4ca599](../progress/2026-10/2026-10-24-3c4ca599.md)
+Sources: [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) (NIB2-102), [2026-10-24-3c4ca599](../progress/2026-10/2026-10-24-3c4ca599.md)
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 10): serving floors move into the master registry, the Q38FN long-context floor is unregistered, and the AK serving shakedown passes
 
@@ -651,7 +651,7 @@ Disk is the other constraint. The 2026-10-20 reclaim deleted the stock and Fable
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — section W, DS41-W1..W8.
 - [DS41 1017 swap progress note](../progress/2026-10/2026-10-20-ds41-1017-swap.md) — rulings, the token-in-argv fix and deferrals with named blockers.
 - [GPU serving tie-in program](../handoffs/active/gpu-serving-tie-in-program.md) — P3-5 and the deleted tenants.
-- [Non-inference backlog](../handoffs/active/non-inference-backlog.md) — NIB2-92 and NIB2-93.
+- [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-92 and NIB2-93.
 - [Retire IQ4_XS-uniform progress note](../progress/2026-10/2026-10-20-retire-iq4xs-uniform.md) — the other artifact retired the same day.
 
 ## Compiled Update — 2026-10-21 (sweep 5): the DS41-1017 cutover, with W5 ppl and the ABA timing table

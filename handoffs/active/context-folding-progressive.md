@@ -67,11 +67,11 @@ Reopen criteria: only promote new context-folding code if clean live telemetry s
 - `/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/`
 - [tool-output-compression.md](tool-output-compression.md)
 - [routing-intelligence.md](routing-intelligence.md)
-- [non-inference-backlog.md](non-inference-backlog.md)
+- [non-inference-backlog.md](engineering-hygiene-backlog.md)
 
 ## Reporting Instructions
 
-After any CF task, update this active handoff with command, dataset/log source, metric direction, result, and the fork decision. Update [routing-and-optimization-index.md](routing-and-optimization-index.md), [research-evaluation-index.md](research-evaluation-index.md), and [non-inference-backlog.md](non-inference-backlog.md) if task ownership or priority changes.
+After any CF task, update this active handoff with command, dataset/log source, metric direction, result, and the fork decision. Update [routing-and-optimization-index.md](routing-and-optimization-index.md), [research-evaluation-index.md](research-evaluation-index.md), and [non-inference-backlog.md](engineering-hygiene-backlog.md) if task ownership or priority changes.
 
 ## Research Intake Update — 2026-07-21 (Seven-policy bake-off — and a corrected reading of it)
 

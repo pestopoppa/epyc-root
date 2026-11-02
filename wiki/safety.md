@@ -25,7 +25,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
 
 - **SEC-ART-POST-b ticked: the four `template_diff_reviewed` entries (frontdoor, worker_vision, architect_critic, architect_general) are operator-signed** (receipt root `522f7fd33`, ratified 13:58Z). A follow-up, NIB2-103, notes that research `data/template_reviews` lacks a README/SHA256SUMS.
 
-Sources: [model-artifact-integrity](../handoffs/active/model-artifact-integrity.md) (SEC-ART-POST-b) · [non-inference-backlog](../handoffs/active/non-inference-backlog.md) (NIB2-103) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
+Sources: [model-artifact-integrity](../handoffs/active/model-artifact-integrity.md) (SEC-ART-POST-b) · [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) (NIB2-103) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 22, 3c4ca599 delta): model artifact pins are enforced at start, and exec containment awaits a live tool call
 
@@ -43,7 +43,7 @@ Sources: [model-artifact-integrity](../handoffs/active/model-artifact-integrity.
 - **SEC-ART-1.1: all 16 lineup roles pinned, 0 exempt.** Research `7b157602` pins `draft_qwen25` and `draft_qwen3_coder_0_75b` (community uploaders, size-matched to the HF LFS entry, 5 sequential metadata reads, no downloads) and fixes a duplicate YAML key that broke strict loading. Orchestrator `26d0d033` makes a missing lineup pin an ERROR by default (opt-out `REGISTRY_ARTIFACT_PINS_STRICT=0`). Merge order matters: research first, then orchestrator, or `start` recompiles without the drafter pins and the strict default refuses. Runtime `pins_strict` stays false until the SEC-ART-2 registration creates the launcher fingerprint ledger.
 - **Secrets hygiene.** `/mnt/raid0/llm/hf-cache/token` was mode 664 and is now 600 (contents never read); the named `cache/huggingface/token` no longer exists, and an HF-header temp file remains mode 644 pending chmod or delete. Token rotation is an operator decision.
 
-Sources: [model-artifact-integrity](../handoffs/active/model-artifact-integrity.md), [non-inference-backlog](../handoffs/active/non-inference-backlog.md).
+Sources: [model-artifact-integrity](../handoffs/active/model-artifact-integrity.md), [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md).
 
 ## Compiled Update — 2026-10-23 (wrap-up sweep 17, workspace-f8): lineup GGUF fingerprints are registered, and the launch-time check waits on the lean-registry pins
 
@@ -105,7 +105,7 @@ OpenCode event duty likewise remains inactive until a reviewed runtime handover.
 - [Grader isolation specification](../docs/design/tu-grader-isolation-boundary.md) — real OS denial acceptance.
 - [Terminal timeout](../docs/reference/repl-terminal-timeout-state.md) and [KEEP protection](../docs/reference/declared-scratch-root-keep.md) — exact source scopes.
 - [Prospective host receipts](../docs/reference/host-supervision-activation-receipts.md) and [event-duty handover](../docs/guides/agent-workflows/opencode-event-duty-handover.md) — activation and recovery limits.
-- [Non-inference backlog](../handoffs/active/non-inference-backlog.md) — current host installation and retained operator boundaries.
+- [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md) — current host installation and retained operator boundaries.
 
 ### Incremental clarification — 2026-10-07: scanner coverage and enforcement require their own authority
 
@@ -120,7 +120,7 @@ HG-9's detection/repair split is an accepted source-backed topology option with 
 - [KEEP protection](../docs/reference/declared-scratch-root-keep.md)
 - [Prospective host receipts](../docs/reference/host-supervision-activation-receipts.md)
 - [event-duty handover](../docs/guides/agent-workflows/opencode-event-duty-handover.md)
-- [Non-inference backlog](../handoffs/active/non-inference-backlog.md)
+- [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md)
 - [Credential decision](../docs/reference/credential-fixture-hook-decision.md)
 - [header recognition](../docs/reference/staged-ed25519-header-check.md)
 - [Escalation owner](../handoffs/active/reviewer-escalation-and-human-gate-policy.md)
@@ -337,7 +337,7 @@ Safety here has a second face beyond trust boundaries around external text: the 
 ### New (2026-08-25, the agent-security eval fixture is in-tree — and a PII gate failed red for 22 days)
 
 - **Agent-security evaluation now has a disposable, deterministic, attack-surface-disjoint fixture in the tree.** TU-DTAP-1 imported an 18-case reviewed Apache-2.0 subset of DecodingTrust-Agent (finance + crm, all 5 injection families, 3 threat classes) into a stdlib-only local runner (`scripts/autopilot/evals/dtap/`, pinned upstream commit `e0323a521…`, LICENSE/README SHA-256s match intake-1021). Judges are fully deterministic state checks — 0 of 6,682 upstream configs use LLM checks, byte-identical 18/18 after transcription with per-file SHA-256. Failure attribution is the exact 8-set `model|parser|tool|endpoint|harness|judge|infrastructure|overflow`; traces are immutable SHA-256-chained with tamper/reorder/drop detection; repeated seeds + Wilson CIs; 66/66 tests with zero inference. **The load-bearing safety property is that attack payloads are fixed and target-disjoint — the harness contains no attack optimization**, so a measured robustness number cannot be confused with attack-search success (matched-target DTAP-RED results are an attack-search upper bound, not a general robustness score). Paired benign/direct/indirect arms give the negative-control axis this project otherwise lacks for agent security, and no upstream setup script was ever run on the host. TU-DTAP-2 (open, inference-gated) adds simulated-service environment effects (finance/gmail/slack/salesforce/paypal shims) so indirect-injection arms exercise environment state, not only tool calls. Sources: [tool-use-eval-contract.md](../handoffs/active/tool-use-eval-contract.md), [progress 2026-08-25-mainA-evl46](../progress/2026-08/2026-08-25-mainA-evl46.md).
-- **A secret-scanning allowlist and its eval fixture drifted apart, and the gate that would have caught it was red for 22 days unobserved.** The root candidate gate (`scripts/validate/candidate_eval_gate.sh`) has exited 1 since ~2026-08-03: `pii_fixture_eval` 39/40 because commit `8eeaf6c3` (2026-08-03) added `AKIAIOSFODNN7EXAMPLE` to `KNOWN_PLACEHOLDERS` in `scripts/hooks/pii_precommit.sh`, postdating the 2026-07-29 fixture. The failure was first observed during the 2026-08-25 L5 readiness closeout (EVL-38), verified to reproduce on HEAD before being reported, and deliberately left to the PII-hook owning session rather than fixed inside the readiness task. The general rule this extends the page's privacy-hygiene material with: **an allowlist edit is a fixture-evolution event — scanner, allowlist, and eval fixture must version together, and a gate that nobody's periodic path runs is a gate that can stay red for weeks.** Sources: [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md) (2026-08-25 closeout), [progress 2026-08-25-mainA-evl38](../progress/2026-08/2026-08-25-mainA-evl38.md).
+- **A secret-scanning allowlist and its eval fixture drifted apart, and the gate that would have caught it was red for 22 days unobserved.** The root candidate gate (`scripts/validate/candidate_eval_gate.sh`) has exited 1 since ~2026-08-03: `pii_fixture_eval` 39/40 because commit `8eeaf6c3` (2026-08-03) added `AKIAIOSFODNN7EXAMPLE` to `KNOWN_PLACEHOLDERS` in `scripts/hooks/pii_precommit.sh`, postdating the 2026-07-29 fixture. The failure was first observed during the 2026-08-25 L5 readiness closeout (EVL-38), verified to reproduce on HEAD before being reported, and deliberately left to the PII-hook owning session rather than fixed inside the readiness task. The general rule this extends the page's privacy-hygiene material with: **an allowlist edit is a fixture-evolution event — scanner, allowlist, and eval fixture must version together, and a gate that nobody's periodic path runs is a gate that can stay red for weeks.** Sources: [repo-readiness-scorer.md](../handoffs/active/engineering-hygiene-backlog.md#track-repo-readiness-scorer) (2026-08-25 closeout), [progress 2026-08-25-mainA-evl38](../progress/2026-08/2026-08-25-mainA-evl38.md).
 
 ### New (2026-09-14, noninf sweep — PromptForge mutation safety: a validator that wrote the file it was validating)
 
@@ -390,7 +390,7 @@ This is the 2026-08-16 *promotion-gate integrity* question asked one layer lower
 - [SafetyGate / RLVR-export provenance audit 2026-07-22](../handoffs/completed/safetygate-rlvr-provenance-audit-2026-07-22.md) — F3 absence-vs-zero for `ece`/`auroc`, the fail-closed `confidence_is_real` gate, and the confirmed-sound list.
 - [Eval-tower verification](../handoffs/active/eval-tower-program.md) — EV-14f known-null corpus as the cheapest exposure measurement for warrant blindness.
 - [Tool-Use Eval Contract](../handoffs/active/tool-use-eval-contract.md) — TU-DTAP-1 done: the in-tree deterministic DTAP subset, typed outcomes, target-disjoint attack payloads; TU-DTAP-2 (live-model + simulated-service env effects) open.
-- [Repo-readiness scorer](../handoffs/active/repo-readiness-scorer.md) — the 2026-08-25 L5 closeout and the surfaced PII-gate failure with its HEAD-reproduced attribution.
+- [Repo-readiness scorer](../handoffs/active/engineering-hygiene-backlog.md#track-repo-readiness-scorer) — the 2026-08-25 L5 closeout and the surfaced PII-gate failure with its HEAD-reproduced attribution.
 - [PromptForge mutation safety contract](../handoffs/active/promptforge-mutation-safety-contract.md) — RTG-55: MHS-1 (typed effect enum) and MHS-2 (compile-time inertness) closed 2026-09-14; MHS-3–MHS-6 open.
 - [Progress 2026-09-14 (noninf backlog)](../progress/2026-09/2026-09-14-noninf-backlog.md) — the session record for the static screen, the grandfathering rule and the prompt/denylist drift guard.
 - `epyc-orchestrator` commits `7d4b40a8` (static safety screen + `MutationEffect`) and `c27eec6c` (MH-9 prompt realigned to the denylist, shape example shipped as a screened constant), read against `origin/main` `35b05fde`. [confidence: verified — code-read + 100 unit tests]
@@ -498,7 +498,7 @@ Sources: [Qwen chat template evaluation](../handoffs/active/qwen-chat-template-e
 - **Hook false positive fixed.** The PII `account_number` rule (12-19 digits) blocked llama-bench `model_n_params` values in any repo. After the operator D9 ack, `n_params` joined the self-describing keys; fixture eval is FA 0/23, FR 0/32 (was FR 1/32).
 - **Memory telemetry for the next OOM.** A 30 s sampler (`mem_sampler.py`, 4 tests) was written because the earlyoom incident left no memory sample on disk; it is not running until the host cron starts it.
 
-Sources: [Model artifact integrity](../handoffs/active/model-artifact-integrity.md), [Model exec containment](../handoffs/active/model-exec-containment.md), [Non-inference backlog](../handoffs/active/non-inference-backlog.md), [Progress 3c4ca599](../progress/2026-10/2026-10-23-3c4ca599.md)
+Sources: [Model artifact integrity](../handoffs/active/model-artifact-integrity.md), [Model exec containment](../handoffs/active/model-exec-containment.md), [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md), [Progress 3c4ca599](../progress/2026-10/2026-10-23-3c4ca599.md)
 
 ## Compiled Update — 2026-10-29: PromptForge mutation-safety items reconciled
 

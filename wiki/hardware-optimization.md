@@ -6585,7 +6585,7 @@ The [AutoKernel owner report](../handoffs/active/autokernel-unified-surface-prog
 
 ### Capacity and runtime claims stay within their evidence windows — 2026-10-07
 
-The requested read-only capacity route identified a 13 GB target plus margin, but this checkpoint selected no removal and records no recovered space or new capacity sample. Retain the native originals, refusal journals, KEEP markers, source/index backups and all candidate scratch; no scratch apply, prune, archive or deletion was selected. Cite earlier bounded capacity samples only for their own recorded windows. [Active capacity/source task](../handoffs/active/non-inference-backlog.md) · [retained capacity custody](../artifacts/ni08/sparse-capacity-second-request-20261007/README.md).
+The requested read-only capacity route identified a 13 GB target plus margin, but this checkpoint selected no removal and records no recovered space or new capacity sample. Retain the native originals, refusal journals, KEEP markers, source/index backups and all candidate scratch; no scratch apply, prune, archive or deletion was selected. Cite earlier bounded capacity samples only for their own recorded windows. [Active capacity/source task](../handoffs/active/engineering-hygiene-backlog.md) · [retained capacity custody](../artifacts/ni08/sparse-capacity-second-request-20261007/README.md).
 
 The C26 46/46 result is a mocked source/control observation, not a physical serving, floor/cadence, inference, or performance result. The mixed runtime parent remains open with its owner. No production kernel or long-lived process action follows from this source checkpoint. [C26 accepted boundary](../artifacts/ni08/c26-current-source-acceptance-20261007/README.md) · [DS41 parent](../handoffs/active/deepseek-v41-flash-evaluation.md).
 
@@ -6608,7 +6608,7 @@ The NI08 owner recovered duplicated checkout payloads through ten reversible spa
 
 The parallel AutoKernel owner preserved its original full11-failure result, then recorded149 affected controls passing at the corrected entrypoint/source140 candidate. Its fresh combined run remains pending in the checkpoint; no CPU activation, GPU installation or production action follows from source preparation or focused controls.
 
-Sources: [NI08 capacity acceptance](../artifacts/ni08/own-source-capacity-recovery-20261007/README.md), [current non-inference queue](../handoffs/active/non-inference-backlog.md), [AutoKernel owner checkpoint](../handoffs/active/autokernel-unified-surface-program.md), [dated progress](../progress/2026-10/2026-10-07.md).
+Sources: [NI08 capacity acceptance](../artifacts/ni08/own-source-capacity-recovery-20261007/README.md), [current non-inference queue](../handoffs/active/engineering-hygiene-backlog.md), [AutoKernel owner checkpoint](../handoffs/active/autokernel-unified-surface-program.md), [dated progress](../progress/2026-10/2026-10-07.md).
 
 
 ## Dated capacity and peer CPU activation — 2026-10-08
@@ -6661,7 +6661,7 @@ Sources: [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-
   - **Replay.** A replay of the 30 recorded PASS op-unit verdicts left 28 complete, 0 that would fail, and 2 not replayable because their archived captures are missing. No recorded verdict changed, and 2207 tests pass.
 - **Shell-gate SIGPIPE false negative.** Under `set -o pipefail`, a `producer | grep -q` gate can read a successful match as a failure: `grep -q` exits on the first match, the producer takes SIGPIPE (141), and pipefail reports the 141. It recurred in the CH-21 script. A warn-only staged-blob checker was accepted (run `39617059382`, 11/11 controls). The safe forms are `grep -c` into a variable, or `grep ... > /dev/null` without `-q`.
 
-Sources: [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md), [Progress nemotron-bolt](../progress/2026-10/2026-10-21-nemotron-bolt.md), [Progress workspace-58](../progress/2026-10/2026-10-21-workspace-58.md), [Progress 3c4ca599](../progress/2026-10/2026-10-21-3c4ca599.md), [AutoKernel all devices](../handoffs/active/autokernel-all-devices-all-dimensions.md), [Progress ak-opsuite-failclosed](../progress/2026-10/2026-10-21-ak-opsuite-failclosed.md), [Non-inference backlog](../handoffs/active/non-inference-backlog.md)
+Sources: [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md), [Progress nemotron-bolt](../progress/2026-10/2026-10-21-nemotron-bolt.md), [Progress workspace-58](../progress/2026-10/2026-10-21-workspace-58.md), [Progress 3c4ca599](../progress/2026-10/2026-10-21-3c4ca599.md), [AutoKernel all devices](../handoffs/active/autokernel-all-devices-all-dimensions.md), [Progress ak-opsuite-failclosed](../progress/2026-10/2026-10-21-ak-opsuite-failclosed.md), [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md)
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 8, workspace-f8 delta over sweep 7)
 

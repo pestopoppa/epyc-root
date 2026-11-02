@@ -232,7 +232,7 @@ inference ran, and the production `kuzu_db` files were only copied, never opened
     - Upstream kuzu was archived on 2025-10-10.
   - **What remains.** NIB2-78c, a single-owner graph process, applies only if the layer is revived.
   - [sub-nib2-7879](../progress/2026-09/2026-09-17-sub-nib2-7879.md),
-    [non-inference-backlog](../handoffs/active/non-inference-backlog.md)
+    [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md)
 - **The v10 episodic re-pin is RATIFIED (root `810a6a82`), which closes MHS-3d.**
   `multitier_v10_20260810/checkpoint_meta.json` now pins the purged files. `memory_count` went from 63925 to
   63921, and `checkpoint_sha256` from `a604276f` to `3b457d98`. The eval-leak cleanup is therefore complete on
@@ -244,7 +244,7 @@ inference ran, and the production `kuzu_db` files were only copied, never opened
 - [sub-df3-etr](../progress/2026-09/2026-09-17-sub-df3-etr.md): D-f3 defect, design and tests.
 - [repl-session-memory-maturity](../handoffs/active/repl-session-memory-maturity.md): D-f3 tick and D-f3a.
 - [sub-nib2-7879](../progress/2026-09/2026-09-17-sub-nib2-7879.md): kuzu dependents, lock behaviour, decision package.
-- [non-inference-backlog](../handoffs/active/non-inference-backlog.md): NIB2-78/78a/78b/78c.
+- [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md): NIB2-78/78a/78b/78c.
 - [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): the v10 ratification and OP-KUZU ruling.
 - [ratify_v10_episodic_repin_20260917.json](../artifacts/operator/ratify_v10_episodic_repin_20260917.json): the ratification record.
 
@@ -267,7 +267,7 @@ inference ran, and the production `kuzu_db` files were only copied, never opened
   declared, so every start falls back to `TwoPhaseRetriever`, and the failure-graph and hypothesis-graph
   stores (`model_registry.yaml:212-217`) are inert. Any past reading that credits graph-enhanced retrieval
   describes code that did not run. The decision is filed as NIB2-78.
-  [non-inference-backlog](../handoffs/active/non-inference-backlog.md)
+  [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md)
 
 - **Session state needed a cross-process lease with fencing, not a mutex (D-f, orchestrator `0d6d1dd2`).**
   uvicorn runs 6 API workers. Two `/chat` turns for one session on different workers restored the same
@@ -300,7 +300,7 @@ inference ran, and the production `kuzu_db` files were only copied, never opened
 - [sub-episodic-leak](../progress/2026-09/2026-09-17-sub-episodic-leak.md)
 - [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
 - [promptforge-mutation-safety-contract](../handoffs/active/promptforge-mutation-safety-contract.md)
-- [non-inference-backlog](../handoffs/active/non-inference-backlog.md)
+- [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md)
 
 ## Compiled Update — 2026-09-17: M-12 is run-ready except for the GPU window, Hermes memory is complementary in data but competing in mechanism, and a budget primitive ticked in July never existed
 

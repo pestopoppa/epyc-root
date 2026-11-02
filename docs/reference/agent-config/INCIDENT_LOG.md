@@ -287,7 +287,7 @@ supervises, not its own script. The generalised supervision loop that would also
 a registry `runtime:` field plus `observer_census.py --live` — remains open as NIB2-81 remedy (b),
 out of scope here. Rule fed: runtime-plane daemons execute from canon only (CLAUDE.md § Working-tree
 identity; `scripts/coordination/WORKTREE_MIGRATION.md` § The two planes;
-`handoffs/active/non-inference-backlog.md` NIB2-81/NIB2-81a).
+`handoffs/active/engineering-hygiene-backlog.md` NIB2-81/NIB2-81a).
 
 ## INC-20260925-parallel-repack-lost-in-bundled-revert
 The OpenMP tensor-repack parallelization (52ddd3200, 2025-12-21, 1.5-2.5x CPU model-load speedup;

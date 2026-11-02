@@ -30,7 +30,7 @@ REVISION lines). **The calendar's input is the prioritized backlog
 and the derived plan is the tracked file `coordination/compute-calendar/CALENDAR-PLAN.md` (§3 step
 0). The rows themselves live in the domain indices, e.g. `handoffs/active/inference-research-index.md`
 (routed from `handoffs/active/master-handoff-index.md`); non-compute work is
-`handoffs/active/non-inference-backlog.md`. Posture: `handoffs/active/CURRENT-CAMPAIGN.md`.
+`handoffs/active/engineering-hygiene-backlog.md`. Posture: `handoffs/active/CURRENT-CAMPAIGN.md`.
 
 ## 1. The model: bins, items, classes
 

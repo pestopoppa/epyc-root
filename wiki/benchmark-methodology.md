@@ -246,7 +246,7 @@ general rules drawn from them are design guidance and are **inferred**.
 Sources: [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-program.md) (M4.2 / M4.2a, PB-QCOST-1
 confirm and confirm-R), [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md)
 (KPF-18-S1.7g, KPF-19.1a side finding), [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding-mtp-refresh.md)
-(SPEC-RNG.1.2 scope note), [non-inference-backlog](../handoffs/active/non-inference-backlog.md) (LINT-SIGPIPE-STRINGS-GREP-Q,
+(SPEC-RNG.1.2 scope note), [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) (LINT-SIGPIPE-STRINGS-GREP-Q,
 LINT-PIPEFAIL-EARLY-EXIT), [workspace-f8 progress 2026-10-24](../progress/2026-10/2026-10-24-workspace-f8.md).
 ## Compiled Update — 2026-10-24 (wrap-up sweep 21, workspace-58 delta): a degeneracy detector false positive, and an unrecoverable cross-protocol delta
 
@@ -443,7 +443,7 @@ The analyst workflow also separates correctness jobs from timing windows and req
 - [task-rate source review](../docs/reference/rtg23-handoff-identity-and-cache-source-20261007.md)
 - [Reviewer accounting](../handoffs/active/reviewer-calibration-accounting.md)
 - [Benchmark analyst workflow](../docs/guides/agent-workflows/benchmark-analyst.md)
-- [`non-inference-backlog.md`](../handoffs/active/non-inference-backlog.md), [`refactoring-multirepo-2026-10.md`](../handoffs/active/refactoring-multirepo-2026-10.md), [`2026-10-28-codex-ni-checkpoint-0020.md`](../progress/2026-10/2026-10-28-codex-ni-checkpoint-0020.md), [`2026-10-28-workspace-58.md`](../progress/2026-10/2026-10-28-workspace-58.md) — 2026-10-28 overnight incidents and evidence boundaries
+- [`non-inference-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md), [`refactoring-multirepo-2026-10.md`](../handoffs/active/engineering-hygiene-backlog.md#track-refactoring-multirepo-2026-10), [`2026-10-28-codex-ni-checkpoint-0020.md`](../progress/2026-10/2026-10-28-codex-ni-checkpoint-0020.md), [`2026-10-28-workspace-58.md`](../progress/2026-10/2026-10-28-workspace-58.md) — 2026-10-28 overnight incidents and evidence boundaries
 
 ## Compiled Update — 2026-09-25: publication must preserve the metric, era, and evidence boundary
 
@@ -612,8 +612,8 @@ Details are in [agent-architecture](agent-architecture.md) (the per-call row) an
 
 - **ETR-1 ruled: `task_failed` rows score 0 inside the quality denominator; infra and scoring failures stay excluded.** `eval_tower.py:5129` filtered the denominator with `not r.error`, so an agent/config-caused failure and a platform-caused failure were treated **identically** — both simply left the denominator, and the distinction survived only into telemetry and `reliability`. The consequence that made it a ruling: a config that fails often could score higher than one that answers everything. Code: orchestrator `44d0d4a0` + `927380a5` — the aggregate now carries `quality_denominator_policy` and `task_failed_count`, and EV-11 per-role accuracy uses the same helper. Era row **E17** plus the MEASUREMENT.md §5 clause ship in `scripts/operator/ratify_trust_boundary_and_etr1_20260923.sh`, which only the operator runs. ([eval-tower-loop-robustness-audit-2026-07-20](../handoffs/active/eval-tower-program.md#track-eval-tower-loop-robustness-audit-2026-07-20) ETR-1, [2026-09-23 progress](../progress/2026-09/2026-09-23.md))
 - **A permissive default made the cross-family judge check vacuous at its only production call site.** eval_tower passed a **role** name (e.g. `architect_general`) as `verifier_model`; no `VERIFICATION_FAMILIES` pattern matches a role; the family resolved unknown; the permissive default then returned True for every generator. The `llm_judge` path had no family check at all. Fix (orchestrator `21cb7756`, 39 tests): roles resolve to served models via the lean registry, an unknown family **fails closed** as `unverified`, gpt-oss/glm/kimi/nemotron/minimax patterns added, the rubric-judge path **gates** and the `llm_judge` path **labels** each row (`judge_independence`, `judge_independence_counts`) rather than refusing. **The label is the finding**: with an all-Qwen lineup, every `llm_judge` row now reads `same_family`. A check that cannot fail is not a check, and the honest remedy here was to make the condition visible rather than to block the only judges we have. ([eval-tower-verification](../handoffs/active/eval-tower-program.md) EV-6b)
-- **A scorer that shells to bare `python3` scores False without saying why.** `scripts/benchmark/debug_scorer.py` ran code tasks with `python3` from PATH, so outside the venv every pandas-dependent task silently scored False — the same shape as OBS-12. Both code-execution sites now use `sys.executable`, with an AST guard test (orchestrator `46e79e27`). ([non-inference-backlog](../handoffs/active/non-inference-backlog.md) NIB2-74)
-- **Skipped tests are not coverage, and retiring them is a deliberate act.** The 12 E8 unit tests whose sealed staging bundles had left the host were `skipif`-skipped. Operator ruled RETIRE (per OP-19): 24 bundle-dependent tests removed, 28 skips → 0, the remaining 386 pass (orchestrator `5fa290be`). The alternative readings — restore the bundles or rebuild equivalent fixtures — were rejected by the owning campaign rather than left implicit. ([non-inference-backlog](../handoffs/active/non-inference-backlog.md) NIB2-75)
+- **A scorer that shells to bare `python3` scores False without saying why.** `scripts/benchmark/debug_scorer.py` ran code tasks with `python3` from PATH, so outside the venv every pandas-dependent task silently scored False — the same shape as OBS-12. Both code-execution sites now use `sys.executable`, with an AST guard test (orchestrator `46e79e27`). ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NIB2-74)
+- **Skipped tests are not coverage, and retiring them is a deliberate act.** The 12 E8 unit tests whose sealed staging bundles had left the host were `skipif`-skipped. Operator ruled RETIRE (per OP-19): 24 bundle-dependent tests removed, 28 skips → 0, the remaining 386 pass (orchestrator `5fa290be`). The alternative readings — restore the bundles or rebuild equivalent fixtures — were rejected by the owning campaign rather than left implicit. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NIB2-75)
 - **An A/A calibration phase is measuring the floor, not wasting time.** The AutoKernel loop opens with 48 matched A/A launches (~2 h, each reloading 519 GB) to measure **relaunch dispersion** — the noise every candidate pays, because a new binary is a new process. Removing it would mean keeping weights in RAM via mmap, which changes NUMA placement and therefore changes what is measured. ([2026-09-23 main-dsv41](../progress/2026-09/2026-09-23-main-dsv41.md))
 - **CJ-1d retained the full pinned 198-question set after measuring the actual tradeoff.** The canonical plan estimates at most 5.3 MI210 GPU-hours per model; n=198 gives a ±5.5-point CI at 81% versus ±7.7 points at n=100, while paired sign-test power for a 7-point gap at 18% discordance is only 0.59 even at n=198. The former 2026-08-25 progress link and its n=50/host-throughput rationale were not traceable to a surviving source and conflict with the completed full-set plan, so they are retired. ([canonical-judge-suite-revamp](../handoffs/active/canonical-judge-suite-revamp.md) CJ-1d)
 
@@ -627,7 +627,7 @@ Details are in [agent-architecture](agent-architecture.md) (the per-call row) an
 
 - [eval-tower-loop-robustness-audit-2026-07-20.md](../handoffs/active/eval-tower-program.md#track-eval-tower-loop-robustness-audit-2026-07-20) — ETR-1 ruling, code anchors and the pending amendment.
 - [eval-tower-verification.md](../handoffs/active/eval-tower-program.md) — EV-6b: the vacuous call site and the label-vs-gate fix.
-- [non-inference-backlog.md](../handoffs/active/non-inference-backlog.md) — NIB2-74 (`sys.executable`), NIB2-75 (E8 test retirement).
+- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-74 (`sys.executable`), NIB2-75 (E8 test retirement).
 - [2026-09-23.md](../progress/2026-09/2026-09-23.md) — the non-inference ROI batch: what landed where, and the pending ratify script.
 - [2026-09-23-main-dsv41.md](../progress/2026-09/2026-09-23-main-dsv41.md) — calibration as a measured relaunch-dispersion floor.
 - [canonical-judge-suite-revamp](../handoffs/active/canonical-judge-suite-revamp.md) — CJ-1d's full 198-item plan, cost estimate and power calculation.
@@ -638,8 +638,8 @@ Details are in [agent-architecture](agent-architecture.md) (the per-call row) an
 
 ### Key findings
 
-- **NIB2-59 / ETR-1 is RATIFIED, not merely coded.** The prior entry's open question — "awaiting the operator's `--apply`" — is resolved: the operator explicitly ruled that the digest (`agents/shared/MEASUREMENT_POLICY.md`) is inside the measurement trust boundary, closing the contradiction between `MEASUREMENT_POLICY.md`'s "human-PR-reviewed amendments" clause and `MEASUREMENT.md`'s boundary membership, which had previously omitted the digest itself. The prepared script ran: the MEASUREMENT.md §5 clause and CHANGELOG entry landed at epyc-root `c6657ab0` (era boundary `2026-09-23T21:37:09Z`), era `E17-eval-task-failed-scores-zero-quality` landed at epyc-orchestrator `0c9d57b6`, and the ratification itself is recorded at epyc-root `e57923a6`. The applying session did so at the operator's explicit written direction over remote control — the trust boundary stayed human-amendment-only; the agent executed a decision it did not make. ([non-inference-backlog](../handoffs/active/non-inference-backlog.md) NIB2-59)
-- **NIB2-73b closed: a lean-registry recompile the row called for had already happened, under a different name.** The K4 `stack_change_pipeline update` (epyc-orchestrator `3c6721ef`) regenerated descriptors/priors/summary together and left the registry content-fresh against master. The "descriptor drift" the row worried about turned out to be **symlink path spelling only**, not a state divergence — worth checking before treating any descriptor mismatch as evidence of drift. The check's remaining 4 errors are the `architect_critic` / `qwen38_flash_next_ud_iq4xs_local` known gaps: no critic-suite quality run has ever been made on that model (`58b115ed` deliberately excluded general-suite mmlu_pro/gpqa from `quality_score`), so this is a real, inference-gated gap rather than a registry defect. ([non-inference-backlog](../handoffs/active/non-inference-backlog.md) NIB2-73b)
+- **NIB2-59 / ETR-1 is RATIFIED, not merely coded.** The prior entry's open question — "awaiting the operator's `--apply`" — is resolved: the operator explicitly ruled that the digest (`agents/shared/MEASUREMENT_POLICY.md`) is inside the measurement trust boundary, closing the contradiction between `MEASUREMENT_POLICY.md`'s "human-PR-reviewed amendments" clause and `MEASUREMENT.md`'s boundary membership, which had previously omitted the digest itself. The prepared script ran: the MEASUREMENT.md §5 clause and CHANGELOG entry landed at epyc-root `c6657ab0` (era boundary `2026-09-23T21:37:09Z`), era `E17-eval-task-failed-scores-zero-quality` landed at epyc-orchestrator `0c9d57b6`, and the ratification itself is recorded at epyc-root `e57923a6`. The applying session did so at the operator's explicit written direction over remote control — the trust boundary stayed human-amendment-only; the agent executed a decision it did not make. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NIB2-59)
+- **NIB2-73b closed: a lean-registry recompile the row called for had already happened, under a different name.** The K4 `stack_change_pipeline update` (epyc-orchestrator `3c6721ef`) regenerated descriptors/priors/summary together and left the registry content-fresh against master. The "descriptor drift" the row worried about turned out to be **symlink path spelling only**, not a state divergence — worth checking before treating any descriptor mismatch as evidence of drift. The check's remaining 4 errors are the `architect_critic` / `qwen38_flash_next_ud_iq4xs_local` known gaps: no critic-suite quality run has ever been made on that model (`58b115ed` deliberately excluded general-suite mmlu_pro/gpqa from `quality_score`), so this is a real, inference-gated gap rather than a registry defect. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NIB2-73b)
 
 ### Open questions
 
@@ -647,7 +647,7 @@ Details are in [agent-architecture](agent-architecture.md) (the per-call row) an
 
 ### Source References (2026-09-23, ratification and registry closure)
 
-- [non-inference-backlog.md](../handoffs/active/non-inference-backlog.md) — NIB2-59 (ratified) and NIB2-73b (closed).
+- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-59 (ratified) and NIB2-73b (closed).
 - MEASUREMENT.md §5 and its CHANGELOG block — the ETR-1 amendment as ratified.
 - epyc-root commits `c6657ab0`, `e57923a6`; epyc-orchestrator commits `0c9d57b6`, `3c6721ef`.
 
@@ -993,7 +993,7 @@ Three eval-consumer disciplines arrive from the same intake batch: a redundancy 
 
   [sub-lease-etr4](../progress/2026-09/2026-09-17-sub-lease-etr4.md),
   [eval-tower-loop-robustness-audit-2026-07-20](../handoffs/active/eval-tower-program.md#track-eval-tower-loop-robustness-audit-2026-07-20),
-  [non-inference-backlog](../handoffs/active/non-inference-backlog.md)
+  [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md)
 
 ## Compiled Update — 2026-09-17 (later): a harness-null-pool result is evidence about the SPREAD, and a promotion verdict must record the rule it used
 
@@ -2036,7 +2036,7 @@ counterexample search and `live_eval.py` PR2 live-ledger evaluation). Two method
 
 - [`handoffs/active/tool-use-eval-contract.md`](../handoffs/active/tool-use-eval-contract.md) — TU-DTAP-1 completion row (pin SHAs, 18-case composition, typed-outcome set, target-disjoint rule, DTAP-RED upper-bound framing) and the TU-DTAP-2 follow-up.
 - [`progress/2026-08/2026-08-25-mainA-evl46.md`](../progress/2026-08/2026-08-25-mainA-evl46.md) — session record: 66/66 tests, the dry-run CI matrix (0/5 vs 5/5 with non-overlapping CIs), boundaries honored.
-- [`handoffs/active/repo-readiness-scorer.md`](../handoffs/active/repo-readiness-scorer.md) — the 2026-08-25 L5 closeout section (vidya evidence paths, 13→6 queue, guardrail test, PII-gate surfacing with `8eeaf6c3` attribution).
+- [`handoffs/active/engineering-hygiene-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md#track-repo-readiness-scorer) — the 2026-08-25 L5 closeout section (vidya evidence paths, 13→6 queue, guardrail test, PII-gate surfacing with `8eeaf6c3` attribution).
 - [`progress/2026-08/2026-08-25-mainA-evl38.md`](../progress/2026-08/2026-08-25-mainA-evl38.md) — validation record: 15 passed, pre-existing-only Ruff findings, candidate-gate failure reproduced on HEAD.
 
 ## Compiled Update — 2026-08-23: the research `debug_scorer` divergence closed by delegation — B7 shim + era stamp
@@ -2242,7 +2242,7 @@ Two methodology points generalize past this incident:
   — D6 (the original gate) and D6a (this correction).
 - [`handoffs/active/eval-tower-program.md`](../handoffs/active/eval-tower-program.md) L149
   — the plumbing that makes `completion_probabilities_geomean` the stack's real confidence source.
-- [`handoffs/active/non-inference-backlog.md`](../handoffs/active/non-inference-backlog.md) OBS-11 /
+- [`handoffs/active/engineering-hygiene-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md) OBS-11 /
   OBS-12 — the venv wipe, its detector, and the open skill-interpreter sweep.
 - [`progress/2026-08/2026-08-19-defect-triage.md`](../progress/2026-08/2026-08-19-defect-triage.md)
   — full session record, including the two explicit declines.
@@ -3470,9 +3470,9 @@ Benchmark hardening in December 2025 addressed ceiling effects where top models 
 - **Sibling-directory `.md` references inside artifact-bundle READMEs need the agents_reference_guard hook to resolve relative-to-file-dir, not just relative-to-PROJECT_DIR**. Discovered when CPU21 Phase 2.1 README's reference to `decision.md` (sibling file in same dir) was rejected by the hook because it resolved to `$PROJECT_DIR/decision.md` (doesn't exist) instead of `$DIR/decision.md` (exists). Hook fix landed in commit `12b1e27`: try the file's own directory first, then fall back to `$PROJECT_DIR`. Strictly additive — anything that resolved before still resolves. [scripts/hooks/agents_reference_guard.sh]
 
 **2026-10-28 delta (workspace-58 overnight wrap):**
-- **A tool run inside a measurement scope can mutate the shared environment.** An M4 prep `scope.sh --backend cpu` (`uv run`) reinstalled editable `epyc-orchestrator` into the shared venv at 01:54:57Z and killed HIL15 s1; attribution rests on the capture `command.log` ([refactor campaign](../handoffs/active/refactoring-multirepo-2026-10.md)).
+- **A tool run inside a measurement scope can mutate the shared environment.** An M4 prep `scope.sh --backend cpu` (`uv run`) reinstalled editable `epyc-orchestrator` into the shared venv at 01:54:57Z and killed HIL15 s1; attribution rests on the capture `command.log` ([refactor campaign](../handoffs/active/engineering-hygiene-backlog.md#track-refactoring-multirepo-2026-10)).
 - **Co-tenancy does not void a correctness verdict.** A 42 s CT21 preflight on revoked CPUs 76,77 beside the YaRN s3 correctness run drew an owner ruling of no invalidation; timing runs are not covered by that ruling ([workspace-58 progress](../progress/2026-10/2026-10-28-workspace-58.md)).
-- **Source seals can be withdrawn on review.** W1 seal `692b244` was withdrawn for a 132-vs-128 prompt-guard mismatch and a `COMPLETE` marker written before child cleanup; the M4 paired GPU quality row was repaired (unset `ORCH`, malformed region, under-minimum grant duration) before being ARMED ([non-inference backlog](../handoffs/active/non-inference-backlog.md)).
+- **Source seals can be withdrawn on review.** W1 seal `692b244` was withdrawn for a 132-vs-128 prompt-guard mismatch and a `COMPLETE` marker written before child cleanup; the M4 paired GPU quality row was repaired (unset `ORCH`, malformed region, under-minimum grant duration) before being ARMED ([non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md)).
 - **A partial-evidence run keeps its own limits.** INF-75 W5s captured geometry but full-facet acceptance is withheld (UTC-only containment, stale W3-v5 eviction receipt); the R2 ABI canary has only 2 of 7 proof samples strictly inside the API windows, so it supports the narrow ABI/residency claim only ([checkpoint 0020](../progress/2026-10/2026-10-28-codex-ni-checkpoint-0020.md)).
 - **Identical bytes are not identical provenance** (three read-038.bin originals), and scratch-reclaim selection reports allocated GB, not freed space ([scratch audit](../docs/drafts/scratch-reclaim-audit-20261027.md)).
 - **Idle compute after a failure wave** (04:30-07:50Z) traced to no active calendar owner and no auto-refill watcher; NI-IDLE-REFILL-WATCHER is filed.
@@ -3533,7 +3533,7 @@ Pre-generated datasets are available on Figshare (MIT license). Integration into
 
 > Source: [intake-408#record](/workspace/research/intake_index.yaml) -- arXiv 2501.13121, ICLR 2025; [decision-aware-routing.md](/workspace/handoffs/active/decision-aware-routing.md) -- routing intelligence data; [research-evaluation-index.md](/workspace/handoffs/active/research-evaluation-index.md) P3b -- integration plan
 
-> Source: [Integration Test Coverage](/workspace/handoffs/active/integration-test-coverage.md) -- intake-369, Terminal-Bench 2.0 methodology patterns, outcome-driven verification, container-per-test, three-property test design
+> Source: [Integration Test Coverage](/workspace/handoffs/active/engineering-hygiene-backlog.md#track-integration-test-coverage) -- intake-369, Terminal-Bench 2.0 methodology patterns, outcome-driven verification, container-per-test, three-property test design
 ## Math-Verify Integration for Math Benchmarks
 
 Math-Verify (HuggingFace, Apache-2.0) provides robust symbolic math comparison that addresses a critical scoring gap: current binary exact-match scoring underestimates model capability by approximately 66% on math questions (Math-Verify accuracy 0.1328 vs lm-eval-harness 0.0802 on MATH dataset). This underestimation affects routing decisions and model selection.
@@ -3554,7 +3554,7 @@ A complementary tool, MathQ-Verify (arxiv:2505.13903), verifies question quality
 - **Per-question outcome vectors are the next benchmark primitive.** The ledger branch derives stable question IDs and journals compact per-question outcomes so replay can use paired tests instead of aggregate-only comparisons. The branch is restart-bundle-ready, but the live journal still has 0 vector-bearing trials, so sequential verdicts remain gated on collecting history rather than theory alone. Source: [evidence-plane-ledger-and-sequential-verdicts.md](../handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md).
 - **Goodput is a valid concern, but not yet a live objective.** The replayable `task_rate_qph`, `goodput_qph`, and `tokens_per_solved_task` fields landed as shadow telemetry. The live Pareto vector did not flip because the replay only dropped 1 of 5 legacy frontier points under the proposed policy and raw task-rate admitted a zero-quality high-rate frontier candidate. Source: [objective-task-rate-goodput.md](../handoffs/active/objective-task-rate-goodput.md).
 - **Publication-grade benchmark claims now require protocol, reps, date, and attestation.** The public-methodology draft uses the CPU frontdoor example where an apparent +17% improvement collapses to +1.6% under canonical controls, with the exact April 26 rows tied to named log artifacts and the older April 24 Q8 microkernel rows held to paraphrase-only unless raw repack logs are found or remeasured. Treat historical numbers without protocol IDs as observations or priors, not decision gates. Source: [canonical CPU benchmarking draft](../docs/publication/canonical-cpu-benchmarking-methodology-draft.md).
-- **Repo-readiness scoring is deterministic evidence, not a qualitative review.** The first v1 scorer run rates the portfolio as Documented (L2), with root at Optimized (L4) and the three child repos at Documented (L2). This is useful as a backlog generator because criteria pass only on concrete artifact checks, but it does not certify artifact quality. Source: [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md).
+- **Repo-readiness scoring is deterministic evidence, not a qualitative review.** The first v1 scorer run rates the portfolio as Documented (L2), with root at Optimized (L4) and the three child repos at Documented (L2). This is useful as a backlog generator because criteria pass only on concrete artifact checks, but it does not certify artifact quality. Source: [repo-readiness-scorer.md](../handoffs/active/engineering-hygiene-backlog.md#track-repo-readiness-scorer).
 ## Open Questions
 
 - Claude-as-Judge integration with graded quality scores (0-3) combined with cost penalty is implemented but disabled. Enabling it would provide richer signal than binary pass/fail + cost but adds API cost.
@@ -3603,7 +3603,7 @@ A complementary tool, MathQ-Verify (arxiv:2505.13903), verifies question quality
 - [SpecExec Verification Profile](/mnt/raid0/llm/epyc-inference-research/docs/experiments/specexec-verification-profile.md) -- Batch verification latency curves, draft model cost profiling, large-K linear results
 - [NUMA Orchestrator Deployment](/workspace/handoffs/completed/numa-orchestrator-deployment.md) -- Comprehensive spec sweep (1,290 measurements), coder quant decision matrix
 - [Progress 2026-03-21](/workspace/progress/2026-03/2026-03-21.md) -- Sweep results correcting inflated registry values
-- [Integration Test Coverage](/workspace/handoffs/active/integration-test-coverage.md) -- 61 integration tests (graph execution, node-level, observability, API endpoints), mock LLM + real REPL design pattern, `GraphRunContext` factory fixture
+- [Integration Test Coverage](/workspace/handoffs/active/engineering-hygiene-backlog.md#track-integration-test-coverage) -- 61 integration tests (graph execution, node-level, observability, API endpoints), mock LLM + real REPL design pattern, `GraphRunContext` factory fixture
 - [Progress 2026-04-14 Sessions 7-20](/workspace/progress/2026-04/2026-04-14.md) -- Coverage tranches A-L bringing all 10 seeding modules + eval_log_format to 100%, specialist routing to 78%/76%, enforced slice held at 100%
 - [Bulk Inference Campaign](/workspace/handoffs/active/eval-tower-program.md#track-bulk-inference-campaign) -- Packages B-E results (RI-9, TrimR, difficulty, Omega, tool A/B, CF 2a-2c, TALE), post-AR-3 analysis framework
 - [Eval Tower Verification](/workspace/handoffs/active/eval-tower-program.md) -- Scoring Verifiers 4-metric protocol, reasoning model dominance, SWE-RM calibration gap, ThinkPRM process verification, cross-family verification constraint
@@ -4941,7 +4941,7 @@ The `or baseline_tps` fallback that let NIB2-57 persist is closed: full reader a
 
 - [`shape-keyed-contention-gating.md`](../handoffs/active/shape-keyed-contention-gating.md) — the OP-21 overlap re-bench receipt (`op21-overlap-rebench-20260823T0855Z`), the cv-threshold discipline, the falsified 1.89, the REFUSE marker-polarity fix, the matrix-truncation fix
 - [`standardized-stack-update-pipeline-finalization.md`](../handoffs/active/standardized-stack-update-pipeline-finalization.md) — SS-BENCH-GATE-b closure (`bench_core_claim.py`), SS-BENCH-GATE-c residual, the pre-existing test_runtime_flag_spec failures
-- [`non-inference-backlog.md`](../handoffs/active/non-inference-backlog.md) — OBS-3/4/5/7 closures with their three-state semantics, OBS-3a/NIB2-58b follow-ups, NIB2-57a reader audit, NIB2-58a verify_ggml_linkage wiring (16 build classes)
+- [`non-inference-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md) — OBS-3/4/5/7 closures with their three-state semantics, OBS-3a/NIB2-58b follow-ups, NIB2-57a reader audit, NIB2-58a verify_ggml_linkage wiring (16 build classes)
 - [`scoring-infra-standardization.md`](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization) — the loader projection question and the projection-contract test
 - [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — the in-band `[ERROR: ...]` → 502/SSE fail-closed route fix (cross-listed with [Inference Serving](inference-serving.md))
 
@@ -6779,7 +6779,7 @@ The shape generalises past this one repo:
 
 ### Source References (2026-09-15, non-CPU-inference ROI dispatch)
 
-- [`non-inference-backlog.md`](../handoffs/active/non-inference-backlog.md) — NIB2-73/73a/73c/73d (closed),
+- [`non-inference-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-73/73a/73c/73d (closed),
   NIB2-73e/73f (open), HYG-3.
 - [`2026-09-15-noninf-roi-dispatch.md`](../progress/2026-09/2026-09-15-noninf-roi-dispatch.md) — the
   session record, including the compiled-vs-master registry regression the strict gate caught.
@@ -6952,7 +6952,7 @@ are complete; any selector-effect claim now requires prospective capture during 
 
 ### Source References
 
-- [non-inference-backlog.md](../handoffs/active/non-inference-backlog.md) — HYG-4 (checker fix), NIB2-86 (hollow gates; filed as NIB2-80), NIB2-87 (research venv lacks pytest; filed as NIB2-81).
+- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — HYG-4 (checker fix), NIB2-86 (hollow gates; filed as NIB2-80), NIB2-87 (research venv lacks pytest; filed as NIB2-81).
 - [mi210-big-model-and-acceleration-roadmap.md](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md) — PF1-pre (runner retired in place).
 - [2026-09-26 orch-design progress](../progress/2026-09/2026-09-26-orch-design.md) — § Final.
 - epyc-root `scripts/validate/check_ratification_receipts.py`, `scripts/validate/ratification_receipt_exemptions.json`.
@@ -6975,7 +6975,7 @@ are complete; any selector-effect claim now requires prospective capture during 
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C57, DS41-C59 acceptance (floor recalibration and regime labels), keep 2 and the compounded bench.
 - [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md) — the CH-6 correction.
 - [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — MMQ-reaching shapes; AK-MMQ-H10, H10a, H10b.
-- [Non-inference backlog](../handoffs/active/non-inference-backlog.md) — NIB2-85.
+- [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-85.
 - [2026-09-27 ak-ds41-main progress](../progress/2026-09/2026-09-27-ak-ds41-main.md) — the spin/sleep table.
 
 
@@ -7097,7 +7097,7 @@ which is n=1 per arm on one CPU profile. That is not a production-profile number
 - [2026-09-30 ak-ds41-main progress](../progress/2026-09/2026-09-30-ak-ds41-main.md) — the floor contaminated by the owner's own tests.
 - [Prefill/decode share review](../docs/reviews/prefill-share-20261003.md) — the log-derived method.
 - [Routing intelligence](../handoffs/active/routing-intelligence.md) — RI-18 pre-registration and stopping rule.
-- [Non-inference backlog](../handoffs/active/non-inference-backlog.md) — NIB2-91.
+- [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-91.
 - [Canonical judge suite revamp](../handoffs/active/canonical-judge-suite-revamp.md) — CJ-17 renumbering.
 
 ## Incremental update — 2026-10-06: UFH14 harness measurements and evidence limits
@@ -7356,7 +7356,7 @@ Sources: [YaRN context extension research](../handoffs/active/yarn-context-exten
 - **Reusable deterministic fold gate** (research `62c2e09da`, 12 unit tests): offline cpu PASS (3 same / 9 explained / 1 explained-ui / 1 expected) and gpu PASS; of 135 gfx objects, 89 identical and 46 differ only in a non-kernel helper. The -j64 reproducibility build (DS41-C46) matched on all 303 objects except the web-UI bundle.
 - **Dirty trees are refused by the gate.** `yg_tree_clean` and a judge-job pin check refuse a dirty source tree; its self-test passes 10/10 (the old files failed 6).
 
-Sources: [Progress 3c4ca599 2026-10-24](../progress/2026-10/2026-10-24-3c4ca599.md), [Progress 3c4ca599 2026-10-23](../progress/2026-10/2026-10-23-3c4ca599.md), [C3 fold prep](../progress/2026-10/2026-10-23-c3-fold-prep.md), [Non-inference backlog](../handoffs/active/non-inference-backlog.md)
+Sources: [Progress 3c4ca599 2026-10-24](../progress/2026-10/2026-10-24-3c4ca599.md), [Progress 3c4ca599 2026-10-23](../progress/2026-10/2026-10-23-3c4ca599.md), [C3 fold prep](../progress/2026-10/2026-10-23-c3-fold-prep.md), [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md)
 
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 23, workspace-f8): pair inside one window when the host drifts
@@ -7434,7 +7434,7 @@ Sources: [periodic progress](../progress/2026-10/2026-10-27-periodic-wrap-1620.m
 
 **Confidence: verified** (operations record and owner rulings; no new measurement).
 
-- **A session crash takes grant writers and the keeper with it.** About 11:25Z an external termination killed the YaRN jobs, both grant writers and keeper v2. The stale grants and `.wsq-granted` markers then blocked every quarter, and the keeper re-queued rows into the next day's queue, which no running writer read. Recovery means retiring the stale grants and markers, re-queuing live-pid rows into the ACTIVE day and restarting the writer. YaRN s0-s3 restarted from zero (about 1 h lost). Keeper v3 now queues into the active day (now minus 5h52m). Process supervision is still open (LOOP-12). ([workspace-58 10-28](../progress/2026-10/2026-10-28-workspace-58.md); [non-inference-backlog](../handoffs/active/non-inference-backlog.md))
+- **A session crash takes grant writers and the keeper with it.** About 11:25Z an external termination killed the YaRN jobs, both grant writers and keeper v2. The stale grants and `.wsq-granted` markers then blocked every quarter, and the keeper re-queued rows into the next day's queue, which no running writer read. Recovery means retiring the stale grants and markers, re-queuing live-pid rows into the ACTIVE day and restarting the writer. YaRN s0-s3 restarted from zero (about 1 h lost). Keeper v3 now queues into the active day (now minus 5h52m). Process supervision is still open (LOOP-12). ([workspace-58 10-28](../progress/2026-10/2026-10-28-workspace-58.md); [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md))
 - **A GPU row must check every CPU quarter it names** (keeper v4; the writer itself still does not, LOOP-10). An HSF grant overlapping q3 had to be retired, and FA4 briefly ran on CPUs 184-191 by mistake. Its 2 min of timing is untrusted.
 - **Arming refuses rather than guesses:** there is no 1 GB default output estimate, the dryrun notes keys are filled from the manifest, a malformed row is restored byte-exact, and private model copies (nlink=1, >=500 MB, same name and size as a file under `models/`) are refused (owner ruling R9: no weights in scratch). Codex checkpoints list the remaining private copies for operator deletion. ([refactor inference-prep r11](../progress/2026-10/2026-10-28-codex-refactor-inference-prep-r11.md); [UFH14/FA4 prep](../progress/2026-10/2026-10-28-codex-refactor-ufh14-fa4-prep.md))
 - **There are no smoke exemptions (R3).** A real same-launcher smoke comes before READY. Several Codex packets (HIL15 s1-s3, HIL-16b, LB4.9, KPF64) stayed un-READY only because every CPU quarter was held by correctness grants, and R4/R6/R7 now allow prep, SMT siblings and GPU smoke beside correctness grants. ([HIL15 boundary](../progress/2026-10/2026-10-28-codex-refactor-hil15-boundary.md); [HIL16 resume](../progress/2026-10/2026-10-28-codex-refactor-hil16-resume.md))

@@ -278,7 +278,7 @@ doc = {
   "state": {"agents/shared/OPERATING_CONSTRAINTS.md": {"sha256_before": oc_pre, "sha256_after": oc_post}},
   "consolidated_receipt": consolidated_rel,
   "tracking": {"operator_queue": "handoffs/active/master-handoff-index.md OP-63",
-               "handoff_task": "handoffs/active/non-inference-backlog.md HYG-5"},
+               "handoff_task": "handoffs/active/engineering-hygiene-backlog.md HYG-5"},
   "applied_by": script_rel,
 }
 with open(os.path.join(root, receipt_rel), "x", encoding="utf-8") as fh:
