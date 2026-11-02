@@ -71,3 +71,7 @@ Consumed port-gate-next.txt: LB1 source commit f8df555cf76a718f11bcabc8588fc1d8a
 ## 00:47Z — Review LB1 multi-row capture design
 
 Reviewed and filed the LB1 capture design: it requires three position-aligned incumbent N=1, incumbent N>1 and candidate N>1 arms; full-vocabulary logits and actual multi-row forward evidence; route-specific blocking integration; and negative fixtures before hardware. Source inspection confirms the existing verify-width note at research f8df555cf. The design is not an implementation or correctness result; no eligible candidate, capture harness or empirical run is claimed. GitNexus lane index is unavailable and impact query returned repository ambiguity, so no source edit was attempted. Previous progress commit 95a194c68470 did not publish due serialized push failure and must accompany this wrap-up.
+
+## 00:48Z — Apply LB1 capture design review
+
+Applied independent route review to the LB1 capture design: every failed verdict blocks keep; absence of a qualifying margin is unavailable; CPU and GPU need their own blocking integration paths; candidate source must contain LB1; and both CPU and GPU correctness runs are required without a quiet-window requirement. git diff --check passed. This remains a design, with no source integration or correctness claim. Previous commit 7bd099e194c6 was not published when serialized push failed; this wrap-up includes it.

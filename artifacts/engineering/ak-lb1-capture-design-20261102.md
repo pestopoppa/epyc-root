@@ -33,13 +33,19 @@ accept it only after proving it returns complete per-position logits and the act
 
 ## Gate and failure behavior
 
-At the loop seam, attach this check only to the first admitted, non-bit-exact multi-row candidate,
-after its route and changed-source identity are resolved. Pass the three matrices to
-`check_noise_relative_tolerance` as a blocking pre-keep route reference, conjoined with existing
-operator, route-witness, identity, and whole-model gates. Keep current exact gates for N=1 and all
+Bind the candidate to research source containing the LB1 implementation; the cited commit is
+already an ancestor of local research main. Attach this check only to the first admitted,
+non-bit-exact multi-row candidate, after its route and changed-source identity are resolved. Pass
+the three matrices to `check_noise_relative_tolerance` as a blocking pre-keep check, conjoined with
+existing operator, route-witness, identity, and whole-model gates. The existing `route_references`
+seam is CPU-path-specific; identify and wire the corresponding blocking path for both CPU and GPU,
+rather than assuming a CPU reference runs for GPU candidates. Any verdict with `passed == false`
+blocks keep, including `reference_comparison` verdicts; the verdict name alone does not signal pass.
+Keep current exact gates for N=1 and all
 other surfaces. Missing carrier/arm, stale or mismatched identity, duplicate/missing positions,
 wrong N, incompatible vocabulary or shapes, fewer than eight positions, or invalid incumbent
-reference => `oracle_unavailable` and candidate cannot be kept. Non-finite candidate logits or a
+reference, or no position reaching the incumbent top-2 margin threshold => `oracle_unavailable`
+and candidate cannot be kept. Non-finite candidate logits or a
 failed comparison => reject. Do not substitute a single arm, interpolate rows, or relax limits.
 The source default is max aggregation, ratio 1.5, and greedy-flip margin threshold
 `max(0.25, 2 * floor)`; zero floor requires bit-exactness.
@@ -60,7 +66,8 @@ Implement a pure parser/validator stage and fixtures that prove:
 5. Serialization round-trip preserves exact position keys, full logits and manifest digests.
 
 Only after these pass should a harness prove the true N-wide path on a small fixture/model, then bind
-the first eligible candidate and schedule GPU/CPU correctness. No hardware run is schedulable until
+the first eligible candidate and schedule correctness runs on both GPU and CPU; the handoff requires
+no quiet window. No hardware run is schedulable until
 candidate identity, carrier, and actual verify-width evidence exist.
 
 ## Source anchors
