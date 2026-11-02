@@ -23,6 +23,7 @@
 set -euo pipefail
 
 SLOT=/mnt/raid0/llm/tmp/gpu-slot-ak-20261004
+RUNNERS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 BIN=/mnt/raid0/llm/kernels/builds/gpu-20261004-c7f5ac9ad/bin
 LINK=/workspace/repos/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh
 CLAIM_MOD=/workspace/repos/epyc-inference-research/scripts/kernel_rnd/autokernel/resource/device_claim.py
@@ -46,9 +47,6 @@ while [ $# -gt 0 ]; do
   shift
 done
 [ -n "$MODE" ] || { echo "need --dry-run or --execute" >&2; exit 64; }
-case ",$ORDER," in
-  *,p3,*) echo "REFUSING KVU-16h: P3 needs separate drafted and no-draft server lifecycles" >&2; exit 65 ;;
-esac
 [ "$PORT" != 8083 ] || { echo "REFUSING: scratch port only (8083 is production)" >&2; exit 64; }
 export GPU_SLOT_BIN="$BIN"   # slot_common.BIN default for every child
 LDP="$BIN:/opt/rocm/lib"
@@ -103,13 +101,13 @@ preflight() {  # $1 = dir for linkage output. Every check runs read-only and rep
            /mnt/raid0/llm/tmp/x0-27b-quants/results/p3/a1.json \
            /mnt/raid0/llm/tmp/gpu-block-27b-20261003/results/kvu16b/20261004T032520Z/report.json \
            /sys/class/kfd/kfd/proc /sys/class/drm/card2/device/mem_info_vram_used \
-           "$SLOT"/{slot_common.py,lib_gpublock_slot.py,kvu16b_residency_slot.py,kvu16b_arm.py,p3_kvu_probe_slot.py,slot_run.py,slot_claim.py,slot_report.py}; do
+           "$RUNNERS"/{slot_common.py,lib_gpublock_slot.py,kvu16b_residency_slot.py,kvu16b_arm.py,p3_kvu_probe_isolated.py,p3_draft_guard.py,p3_parent_death.py,p3_pdeath_exec.py,slot_run.py,slot_claim.py,slot_report.py}; do
     [ -e "$f" ] || { echo "  MISSING $f"; bad=1; }
   done
   [ $bad = 0 ] && echo "  all paths present (binary, models, template, argv sources, contexts, references, sysfs, scripts)"
   # production argv: source + shape invariants (refuse on drift; never guess)
   if ! "${PY[@]}" - <<EOF
-import sys; sys.path.insert(0, "$SLOT"); import slot_common as C
+import sys; sys.path.insert(0, "$RUNNERS"); import slot_common as C
 s = C.source_argv(); p = C.validate_prod_argv(s["argv"])
 print(f"  prod argv source: {s['source']}; sha256 {s['sha256'][:16]}; X0 cross-check: {s.get('cross_check_x0_argv_8083')}")
 for x in p: print("  PROD ARGV DRIFT:", x)
@@ -119,7 +117,7 @@ EOF
   # VRAM free + no KFD holder
   local v used total holders
   v=$("${PY[@]}" -c "
-import sys; sys.path.insert(0,'$SLOT'); import slot_common as C
+import sys; sys.path.insert(0,'$RUNNERS'); import slot_common as C
 s=C.vram_now(); f=C.foreign_gpu_procs()
 print(round(s.get('used_b',-1)/2**30,2), round(s.get('total_b',0)/2**30,1), ' '.join(f'{p}:{x[\"name\"]}:{round(x[\"vram_b\"]/2**30,1)}GiB' for p,x in f.items()) or '-')")
   read -r used total holders <<<"$v"
@@ -152,10 +150,10 @@ if [ "$MODE" = dry ]; then
   say "DRY RUN (nothing is started, nothing is sent)"
   pf=0; preflight "$SLOT/dryrun" || pf=$?
   if [ $pf = 0 ]; then say "preflight would PASS now"; else say "preflight would REFUSE now (expected while workspace-ec holds the GPU)"; fi
-  "${PY[@]}" "$SLOT/slot_run.py" --dry-run --results "$SLOT/results/<UTC-ts>" --port "$PORT" --budget-min "$BUDGET" \
+  "${PY[@]}" "$RUNNERS/slot_run.py" --dry-run --results "$SLOT/results/<UTC-ts>" --port "$PORT" --budget-min "$BUDGET" \
       --order "$ORDER" --kvu-cap-min "$CAP" --p3-pairs "$PAIRS" --p3-phase "$P3PHASE" --bin-dir "$BIN"
-  echo "  [execute] ${PY[*]} $SLOT/slot_claim.py --results-dir $SLOT/results/<UTC-ts> --purpose '...' --max-hold-s $(( ${BUDGET%.*} * 60 + 1800 )) -- \\"
-  echo "            ${PY[*]} $SLOT/slot_run.py --results $SLOT/results/<UTC-ts> --port $PORT --budget-min $BUDGET --order $ORDER ..."
+  echo "  [execute] ${PY[*]} $RUNNERS/slot_claim.py --results-dir $SLOT/results/<UTC-ts> --purpose '...' --max-hold-s $(( ${BUDGET%.*} * 60 + 1800 )) -- \\"
+  echo "            ${PY[*]} $RUNNERS/slot_run.py --results $SLOT/results/<UTC-ts> --port $PORT --budget-min $BUDGET --order $ORDER ..."
   say "DRY RUN complete - nothing was started (preflight rc $pf)"
   exit 0
 fi
@@ -166,9 +164,9 @@ LOG="$R/slot.log"
 { preflight "$R"; } > >(tee -a "$LOG") 2>&1 || { say "PREFLIGHT FAILED - not starting anything (see $LOG)" | tee -a "$LOG"; exit 2; }
 say "results $R; budget $BUDGET min; order $ORDER" | tee -a "$LOG"
 rc=0
-run_own "${PY[@]}" "$SLOT/slot_claim.py" --results-dir "$R" --max-hold-s "$(( ${BUDGET%.*} * 60 + 1800 ))" \
+run_own "${PY[@]}" "$RUNNERS/slot_claim.py" --results-dir "$R" --max-hold-s "$(( ${BUDGET%.*} * 60 + 1800 ))" \
     --purpose "gpu-slot-ak-20261004: KVU-16b replay (skip on/off, b512) + P3v2 on gpu-20261004-c7f5ac9ad, scratch :$PORT" -- \
-    "${PY[@]}" "$SLOT/slot_run.py" --results "$R" --port "$PORT" --budget-min "$BUDGET" --order "$ORDER" \
+    "${PY[@]}" "$RUNNERS/slot_run.py" --results "$R" --port "$PORT" --budget-min "$BUDGET" --order "$ORDER" \
     --kvu-cap-min "$CAP" --p3-pairs "$PAIRS" --p3-phase "$P3PHASE" --bin-dir "$BIN" > >(tee -a "$LOG") 2>&1 || rc=$?
 [ $rc -eq 75 ] && { say "mi210_0 device claim held by someone else - nothing started" | tee -a "$LOG"; exit 75; }
 say "DONE rc=$rc  report: $R/report.md" | tee -a "$LOG"

@@ -165,7 +165,10 @@ def kvu_argv(label: str, cap_min: float, dry: bool) -> list[str]:
 
 
 def p3_argv(arm: str, label: str, budget_min: float, dry: bool) -> list[str]:
-    raise RuntimeError("KVU-16h: P3 requires separate drafted and no-draft server lifecycles")
+    return _p3_isolated_argv(arm, label, budget_min, dry)
+
+
+def _p3_isolated_argv(arm: str, label: str, budget_min: float, dry: bool) -> list[str]:
     a = PY + [str(HERE / "p3_kvu_probe_isolated.py"), "--arm", arm, "--bin-dir", str(C.BIN), "--port", str(ARGS.port),
               "--out-dir", str(ARGS.results / "p3v2" / label), "--phase", ARGS.p3_phase,
               "--budget-min", f"{budget_min:.1f}"]
@@ -235,8 +238,6 @@ def main() -> int:
     ap.add_argument("--bin-dir", default=None)
     ap.add_argument("--dry-run", action="store_true")
     ARGS = ap.parse_args()
-    if "p3" in ARGS.order.split(","):
-        ap.error("KVU-16h: P3 requires separate drafted and no-draft server lifecycles")
     if ARGS.port == 8083:
         raise SystemExit("REFUSING: scratch port only")
     if ARGS.bin_dir:
@@ -266,6 +267,9 @@ def main() -> int:
         for kind, x in items:
             if kind == "kvu":
                 subprocess.run(kvu_argv(x, ARGS.kvu_cap_min, True), check=False)
+            else:
+                for arm in ("on", "off"):
+                    print("  [p3 isolated] " + " ".join(p3_argv(arm, f"pair{x}_{arm}", ARGS.budget_min, True)))
         subprocess.run(PY + [str(HERE / "kvu16b_residency_slot.py"), "--dry-run", "--base",
                              f"http://127.0.0.1:{ARGS.port}"], check=False)
         print(f"  [report] {' '.join(PY)} {HERE / 'slot_report.py'} {ARGS.results}  -> {ARGS.results}/report.md")

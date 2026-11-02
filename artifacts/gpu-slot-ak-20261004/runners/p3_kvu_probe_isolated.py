@@ -107,6 +107,9 @@ def child_env() -> dict:
 # ------------------------------------------------------------------ argv
 def server_argv(port: int) -> tuple[list[str], list[str]]:
     a, notes, src = C.build_server_argv(port, 2048, 2048, SLOTDIR, extra=["--metrics", "--no-cache-idle-slots"])
+    problems = C.validate_prod_argv(src["argv"])
+    if problems:
+        raise RuntimeError("invalid production argv source: " + "; ".join(problems))
     notes = [f"argv source {src['source']} sha256 {src['sha256'][:16]}"] + notes + \
         ["(--no-cache-idle-slots keeps idle neighbours resident: P3 protocol)"]
     return a, notes
@@ -629,8 +632,8 @@ def dry(a) -> int:
         print(f"  [{ARM} A1] cmd: " + " ".join(launch(argv)) + f"  > {LOGS}/a1.server.log")
         print(f"  [{ARM} A1] P: '[p3v2 meas fixed]' + C2+C4[:~{MEAS_TOK} tok] (source ~{int(len(meas) / CPT_EST)} tok)"
               f" + TASK, id_slot 0; neighbours ~{NB_TOK} tok from C1,C3,C5,C6,C7 ({len(pool)} chars)")
-        print(f"  [{ARM} A1] plan: sequential dedicated drafted and no-draft servers, each warmup -> prime P -> L0_base -> nb1 prefill+save -> nb2,nb3 restore -> L3 (~355k)"
-              " -> erase 1-3 -> L0_after; per level drafted,nodraft,drafted,nodraft x 512 tok temp0")
+        print(f"  [{ARM} A1] plan: sequential dedicated drafted and no-draft servers, each warmup -> prime P -> L0_base -> prefill nb1,nb2,nb3 -> L3 (~355k)"
+              " -> erase 1-3 -> L0_after; two requests per level x 512 tok temp0")
     if a.phase in ("all", "b"):
         if a.b_npp_list:
             npps, why = b_plan(a)

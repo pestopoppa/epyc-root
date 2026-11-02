@@ -118,6 +118,31 @@ time.sleep(60)
                 self.assertEqual(len(result['rows']), 12)
                 self.assertEqual(len(result['variant_runs']), 2)
                 self.assertTrue(all(r['server']['teardown']['verified_dead'] for r in result['variant_runs']))
+                report_dir = root / 'p3v2' / ('pair1_' + arm)
+                report_dir.mkdir(parents=True)
+                (report_dir / 'a1.json').write_text(json.dumps(result))
+            report = subprocess.run([sys.executable, '-B', str(HERE / 'slot_report.py'), str(root)],
+                                    text=True, capture_output=True)
+            self.assertEqual(report.returncode, 0, report.stderr)
+            self.assertIn('P3v2 A1', (root / 'report.md').read_text())
+
+    def test_command_builder_passes_real_successor_arguments(self):
+        import p3_kvu_probe_isolated as p3
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            args = SimpleNamespace(results=root, port=18183, p3_phase='a1', p3_npp_list='16384')
+            with patch.object(seq, 'ARGS', args, create=True), patch.object(seq.C, 'BIN', root / 'bin'):
+                command = seq._p3_isolated_argv('on', 'pair1_on', 42.5, True)
+            self.assertEqual(Path(command[2]), HERE / 'p3_kvu_probe_isolated.py')
+            with patch.object(sys, 'argv', command[2:]), patch.object(p3, 'dry', return_value=0) as dry, \
+                 patch.object(p3.C, 'BIN', root / 'bin'), patch.object(p3, 'OUT'), \
+                 patch.object(p3, 'LOGS'), patch.object(p3, 'SLOTDIR'), patch.object(p3, 'ARM'):
+                self.assertEqual(p3.main(), 0)
+            parsed = dry.call_args.args[0]
+            self.assertEqual((parsed.arm, parsed.port, parsed.phase, parsed.park_mode), ('on', 18183, 'a1', 'prefill'))
+            self.assertEqual(parsed.out_dir, root / 'p3v2' / 'pair1_on')
+            self.assertEqual(parsed.budget_min, 42.5)
+            self.assertEqual(parsed.b_npp_list, '16384')
 
     def test_double_lifecycle_estimate_and_timeout(self):
         self.assertEqual(seq.P3_EST, {'on': 30.0, 'off': 33.0})

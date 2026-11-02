@@ -29,35 +29,24 @@ class EntryGuardsTest(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             self.assertIn('KVU-16h', result.stderr)
 
-    def test_gpu_slot_wrapper_refuses_p3_before_preflight(self):
+    def test_gpu_slot_wrapper_uses_tracked_dedicated_runners(self):
         wrapper = HERE / 'gpu_slot_ak.sh'
-        for options in (['--dry-run'], ['--execute', '--order', 'p3'],
-                        ['--execute', '--order', 'kvu_on_b512,p3,kvu_on_b2048']):
-            result = subprocess.run(['bash', str(wrapper), *options], text=True,
-                                    capture_output=True, check=False)
-            self.assertEqual(result.returncode, 65)
-            self.assertIn('KVU-16h', result.stderr)
-            self.assertNotIn('PREFLIGHT', result.stdout)
+        source = wrapper.read_text()
+        self.assertIn('p3_kvu_probe_isolated.py', source)
+        self.assertIn('"$RUNNERS/slot_claim.py"', source)
+        self.assertIn('"$RUNNERS/slot_run.py"', source)
         self.assertEqual(subprocess.run(['bash', '-n', str(wrapper)], check=False).returncode, 0)
 
-    def test_slot_sequencer_refuses_before_creating_results(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            output = Path(tmp) / 'never-created'
-            for options in ([], ['--order', 'p3'], ['--order', 'kvu_on_b512,p3', '--dry-run']):
-                result = subprocess.run([sys.executable, '-B', str(HERE / 'slot_run.py'),
-                                         '--results', str(output), *options], text=True,
-                                        capture_output=True, check=False)
-                self.assertEqual(result.returncode, 2, result.stderr)
-                self.assertIn('KVU-16h', result.stderr)
-                self.assertFalse(output.exists())
-
-    def test_p3_command_helper_refuses_direct_use(self):
-        code = ("import sys; sys.path.insert(0, sys.argv[1]); import slot_run; "
-                "slot_run.p3_argv('on','x',1,False)")
+    def test_p3_sequencer_dry_plan_targets_isolated_driver(self):
+        code = ("import sys,types; sys.path.insert(0, sys.argv[1]); import slot_run as s; "
+                "s.subprocess.run=lambda cmd,**kw: types.SimpleNamespace(returncode=0); "
+                "sys.argv=['slot_run','--results','/tmp/not-created','--order','p3','--p3-pairs','1','--dry-run']; "
+                "assert s.main()==0")
         result = subprocess.run([sys.executable, '-B', '-c', code, str(HERE)], text=True,
                                 capture_output=True, check=False)
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn('KVU-16h', result.stderr)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('p3_kvu_probe_isolated.py', result.stdout)
+        self.assertNotIn('p3_kvu_probe_slot.py', result.stdout)
 
     def test_non_p3_dry_plan_remains_available_without_p3_child(self):
         code = ("import sys,types; sys.path.insert(0, sys.argv[1]); import slot_run as s; "
