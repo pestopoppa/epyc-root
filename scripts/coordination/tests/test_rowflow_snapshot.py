@@ -183,3 +183,15 @@ class SnapshotTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+
+def test_underused_skips_gpu_quiet_of_whole_host_row(tmp_path):
+    import importlib.util, os
+    spec = importlib.util.spec_from_file_location("rf_uu", os.path.join(os.path.dirname(__file__), "..", "rowflow", "rowflow.py"))
+    rf = importlib.util.module_from_spec(spec); spec.loader.exec_module(rf)
+    holders = {"gpu-quiet": "r", "q0": "r"}
+    busy = {c: (0, 0) for c in range(192)}
+    for t in (0, 700):
+        busy = {c: (t * 100 if c < 24 else 0, t * 100) for c in range(192)}
+        out = rf.underused(str(tmp_path), holders, lambda m: None, set(), sample=busy, now=1000 + t, vram=0)
+    assert all(r != "gpu-quiet" for r, _, _ in out)
