@@ -51,3 +51,7 @@ Consumed /mnt/raid0/llm/tmp/autokernel-rebuild/r18d-v10-candidate-ready.txt. The
 ## 10:13Z — Bind prefill successor inputs to verified closure
 
 Completed scratch review of /mnt/raid0/llm/tmp/autokernel-rebuild/r18d-v10-candidate; /mnt/raid0/llm/tmp/autokernel-rebuild/r18d-reviewed.txt records the exact checks. Candidate precondition now verifies all private v10 closure hashes, HIP link, and pre-grant model file identity/digest; three model-free witness tests and syntax/precondition checks pass. This does not prove actual GPU execution. The candidate remains unpublished while original row is active.
+
+## 10:14Z — Prepare one-factor sweep timing successor
+
+Prepared separate unpublished /mnt/raid0/llm/tmp/autokernel-rebuild/r23sweep-v10-revised successor with bounded delayed acceptance log capture, per-attempt result files and a deterministic descriptive adjacent-baseline comparison; ten model-free tests plus syntax and precondition checks pass. Full report /mnt/raid0/llm/tmp/autokernel-rebuild/r23sweep-successor-ready.txt. Window correlation is not response-ID proof and original active row was not changed. Await its dry-run/result boundary before deciding whether to publish a successor.
