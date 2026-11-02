@@ -123,3 +123,7 @@ VKQ3 diagnostic drafts now use one receipt-validated atomic publisher, retaining
 ## 10:16Z — Prepared synthetic diagnostic input and implemented direct-child parent-death adapter.
 
 Prepared VKQ3 synthetic input at /mnt/raid0/llm/tmp/kvu/diagnostic-input/synthetic-full.txt: 4,550,000 bytes, SHA-256 e354df7f35d62a98716b1d0c37ddf1dbedc3ce69f9722286d8f8f19c865d5417, matching its committed generator contract. Added direct-child Linux parent-death adapter; three offline tests pass including a real parent SIGKILL and child exit via pidfd. It is not wired to a row and does not prove descendant cleanup, interpreter provenance or actual engine behavior. No inference or tokenizer execution ran.
+
+## 10:17Z — Added private sanitized stderr custody to VKQ3 diagnostic receipts.
+
+VKQ3 diagnostic receipt now durably records a bounded private category-only stderr excerpt and labels interrupted or overflow captures as potentially incomplete rather than claiming a true stream tail. Twenty offline receipt, worker and publication tests pass. Launcher, runtime binding and full engine integration remain unverified; no inference ran and no row was published.

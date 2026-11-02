@@ -61,6 +61,32 @@ class ReceiptTests(unittest.TestCase):
         data = json.loads((path / 'result.json').read_text())
         self.assertEqual((data['status'], data['validated_token_count']), ('completed', 0))
 
+    def test_stderr_tail_is_bounded_private_and_sanitized(self):
+        stderr = b'old-secret\n' * 2000 + b'WARNING /home/user/private-prompt\x1b[31m ERROR\n'
+        path = self.write(result(stderr=stderr))
+        tail = (path / 'stderr-sanitized-tail.txt').read_bytes()
+        data = json.loads((path / 'result.json').read_text())
+        self.assertLessEqual(len(tail.splitlines()), 32)
+        self.assertIn(b'error warning', tail)
+        self.assertNotIn(b'private', tail)
+        self.assertNotIn(b'old-secret', tail)
+        self.assertNotIn(b'\x1b', tail)
+        self.assertEqual(data['stderr_captured_bytes'], len(stderr))
+        self.assertEqual(data['stderr_tail_scope'], 'fully_drained_capture')
+        self.assertEqual((path / 'stderr-sanitized-tail.txt').stat().st_mode & 0o777, 0o600)
+
+    def test_interrupted_capture_cannot_claim_complete_tail(self):
+        path = self.write(result(status='output_overflow', stderr=b'error sensitive'))
+        data = json.loads((path / 'result.json').read_text())
+        self.assertEqual(data['stderr_tail_scope'], 'captured_prefix_may_be_incomplete')
+        self.assertEqual((path / 'stderr-sanitized-tail.txt').read_bytes(), b'[redacted] error\n')
+
+    def test_unbounded_or_invalid_stderr_is_rejected_before_attempt(self):
+        for value in ('text', b'a' * 65537):
+            with self.assertRaises(ValueError):
+                self.write(result(stderr=value))
+            self.assertFalse((self.root / 'full-a').exists())
+
     def test_interrupted_write_has_no_marker_and_retains_partial(self):
         real = receipts._durable_file
         def fail(directory, name, data):
