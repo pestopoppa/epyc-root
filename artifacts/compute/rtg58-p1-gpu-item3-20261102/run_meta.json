@@ -1,0 +1,59 @@
+{
+ "args": {
+  "cmd": "item3",
+  "fork_bin": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf18-integrated-gpu-20261102/bin/llama-server",
+  "champion_bin": "/mnt/raid0/llm/kernels/builds/gpu-20260929-90c12df42/bin/llama-server",
+  "fork_bin_prefill_budget": null,
+  "prefill_budget_args": "--prefill-budget-decoding 256",
+  "argv_file": "/mnt/raid0/llm/tmp/overnight-20261020/argv.8083-gate.txt",
+  "argv_out": "/mnt/raid0/llm/tmp/kpf-p1-20261004/kpf18/argv.8083-gate.txt",
+  "launch_prefix": "taskset -c 184-191",
+  "port": 18971,
+  "fork_min": 1024,
+  "prompt_set": "/mnt/raid0/llm/tmp/overnight-20261020/kpf18-run/prompt_set.jsonl",
+  "build_prompt_set": false,
+  "corpus": "/mnt/raid0/llm/tmp/ds41-c95/contexts/C*/prompt.inline.txt",
+  "out": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf18-integrated-gpu-20261102/run",
+  "window_id": "rtg58-integrated-gpu-20261102",
+  "gpu_window_id": "rtg58-integrated-gpu-20261102",
+  "dry_run": false,
+  "n_predict": 256,
+  "n_probs": 20,
+  "trigger_tokens": 32,
+  "item7_n_predict": 256,
+  "item1_groups": null,
+  "item2_groups": null,
+  "item3_groups": "3",
+  "item4_groups": null,
+  "item5_groups": null,
+  "item6_groups": null,
+  "item3_suffix": 0,
+  "item4_suffix": 1,
+  "budget_min": 75.0,
+  "vram_ceiling_gib": 62.5,
+  "vram_free_max_gib": 2.0,
+  "load_timeout_s": 900,
+  "card": "/sys/class/drm/card2/device",
+  "allow_shape_drift": false,
+  "no_device_claim": "exclusive gpu-quiet held by launcher",
+  "cpu": false
+ },
+ "items": [
+  3
+ ],
+ "estimate_s": 600.5124596631815,
+ "started": "2026-11-02T13:13:04Z",
+ "notes": [
+  "--fork-bin /mnt/raid0/llm/tmp/kv-prefix-fork/kpf18-integrated-gpu-20261102/bin/llama-server (bin dir /mnt/raid0/llm/tmp/kv-prefix-fork/kpf18-integrated-gpu-20261102/bin; LD_LIBRARY_PATH /mnt/raid0/llm/tmp/kv-prefix-fork/kpf18-integrated-gpu-20261102/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib)",
+  "card /sys/class/drm/card2/device: VRAM used 0.01 GiB of 63.98; KFD processes holding VRAM now: 0",
+  "VRAM sampler: KFD sysfs per-pid at 1 Hz + rocm-smi (rocm-smi --showmeminfo vram --json) every 5 s",
+  "GPU window file: {\"file\": \"/mnt/raid0/llm/tmp/gpu-window/mi210.json\", \"exists\": true, \"holder\": \"production\", \"parked_ports\": [], \"parked_roles\": [], \"expected_end\": null, \"preempt_requested_at\": null}",
+  "device claim mi210_0 (advisory read): state free, holder -",
+  "prompt set /mnt/raid0/llm/tmp/overnight-20261020/kpf18-run/prompt_set.jsonl sha256 dc37cdf1c407956d83d7b7354f4e48964306228793fc9095add945a17f2994de: 32 pairs"
+ ],
+ "device_claim": "exclusive gpu-quiet held by launcher",
+ "region_lock": {
+  "KPF18_NO_REGION_LOCK": null,
+  "KPF18_CPU_LIST": "184-191"
+ }
+}

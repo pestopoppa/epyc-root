@@ -103,6 +103,8 @@ coordination rules remain binding.
 - [x] **KPF-17-PARTIAL-CPU — run the busy-source partial-restore regression on the integrated candidate.** 2026-11-02: Qwen3.5-0.8B Q8, candidate `8952a0f69`: `n_rs_seq=0/8` passed, source and restored logits matched A/A floor 0, stale-state mutation detected; original tests 1–5 passed. [Evidence](../../artifacts/compute/rtg58-p1-cpu-20261102/RESULT.json). Other KPF-17 clauses remain open. [belief: cc]
 - **Live 2026-11-02 13:15Z:** 27B+DFlash2 KPF-18 item-3 group-3 on GPU, 35B P1 item-1 on q0, and KPF-64 successor F on q2. These are running observations, not verdicts; check current process and receipt before relying on this snapshot. The 35B CPU and GPU correctness work overlap; no clean timing claim.
 
+- [x] **KPF-18-ITEM3-INTEGRATED-OBS — run source-invariance on the integrated 27B+DFlash2 candidate.** 2026-11-02: child forked 32,000 checkpoint tokens; fork-vs-no-fork source matched 149/256 tokens, no-fork/repeat matched 256/256 bit-identical. One direct-claim, co-tenant diagnostic observation; it does not establish cause or close item3. [Original record and controls](../../artifacts/compute/rtg58-p1-gpu-item3-20261102/). Native sidecar ingested `kpf-52b4e94e657c36c37013ad9a6d4b495b`; layout/batch-matched investigation in progress. [belief: cc]
+
 ## P1 dispatch corrections — 2026-11-02
 
 This section is the current dispatch interpretation of P1. The earlier 2026-11-02 stop and revocation are historical: the operator subsequently directed this session to schedule and launch all RTG-58 runs immediately. Old grants remain revoked; use current CPU/GPU/RAM claims and coordinate with other sessions. Preserve predeclared measurement rules and distinguish correctness observations from timing gates.
