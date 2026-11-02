@@ -270,7 +270,7 @@ outside both projects.
 
 ### Source References (2026-09-14 discovery instrument)
 
-- [`delegation-context-preassembly.md`](../handoffs/active/delegation-context-preassembly.md) — DCP-10 arms and scorer-wrapping rules, DCP-10a/b/c, the GitNexus-neighbourhood design note.
+- [`delegation-context-preassembly.md`](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) — DCP-10 arms and scorer-wrapping rules, DCP-10a/b/c, the GitNexus-neighbourhood design note.
 - [`progress/2026-09/2026-09-14-research-intake.md`](../progress/2026-09/2026-09-14-research-intake.md) — instrument selection (ContextBench primary, Loc-Bench secondary) and the C/C++ whitelist commit.
 - intake-1366#03 and intake-1366#04 — zero-decode scoring contract, scorer divergences and gold-data defects.
 - intake-1366#record — why ContextBench is the primary instrument and its C++ / budget-cap scope limits.
@@ -1393,7 +1393,7 @@ Two measured facts motivate it:
 ### Source References
 
 - [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — UFH-12 plan, D1/D2, phases 0-5.
-- [Tool output compression](../handoffs/active/tool-output-compression.md) — TOC-SP-3 and the `spill_pointer_follows` trajectory field.
+- [Tool output compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) — TOC-SP-3 and the `spill_pointer_follows` trajectory field.
 - [REPL turn efficiency](../handoffs/active/repl-turn-efficiency.md) — the S4 tool gate and its D2 waiver for retrieval.
 - [KV cache](kv-cache.md) — the embedder 256-token slot defect.
 
@@ -1564,9 +1564,9 @@ Operationally the intake bound three tasks to the owner handoff: REPL-EMB-2.5 (i
 - REPL-EMB-2.2 run result (frozen at launch, 2026-10-20): primary deciding set n = 346, lexical baseline grep recall@5 0.538 (bm25 0.451); the registered kill rule FAILED on the registered arms (e.g. hybrid-BGE-large 0.480, diff -0.058). The box was ticked at close-out after the rule was applied and the operator decision recorded. ([repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md), 2026-10-20)
 - Operator ruling 2026-10-20 (verbatim in the handoff): keep the BM25 hybrid; the adopted configuration is BM25 + EG2 @256 fused with `rrf_fuse`, the measured arm (recall@5 0.676); grep stays the baseline, not a fusion leg. FP16 is the stored-vector format only; EG2 inference stays BF16. Package open item N-4 (extra grep-fused arm) is NOT NEEDED. It ships with v11 together with the stack change and store migration, never piecemeal. ([stack-change package](../docs/design/eg2-embedder-adoption-stack-change-package.md); [progress 2026-10-20](../progress/2026-10/2026-10-20.md))
 - A post-freeze, non-deciding supplementary grep+EG2 arm, rebuilt approximately from cached top-10 rankings (under-reads the real BM25 hybrid by 0.017 pooled), read pooled recall@5 0.682, +0.145 vs grep, CI [0.101, 0.191]; it does not change the registered verdict. ([progress 2026-10-20](../progress/2026-10/2026-10-20.md))
-- TOC-SP-3 (not run): a verified-quote receipt for the spill worker summary, sharing one failing-log set with REPL-EMB-3.1/3.2. ([tool-output-compression](../handoffs/active/tool-output-compression.md))
+- TOC-SP-3 (not run): a verified-quote receipt for the spill worker summary, sharing one failing-log set with REPL-EMB-3.1/3.2. ([tool-output-compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression))
 
-Sources: [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md); [eg2 package](../docs/design/eg2-embedder-adoption-stack-change-package.md); [progress 2026-10-20](../progress/2026-10/2026-10-20.md); [tool-output-compression](../handoffs/active/tool-output-compression.md).
+Sources: [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md); [eg2 package](../docs/design/eg2-embedder-adoption-stack-change-package.md); [progress 2026-10-20](../progress/2026-10/2026-10-20.md); [tool-output-compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression).
 
 ## Compiled Update — 2026-10-21 (sweep 5): the dead corpus-retrieval path is switched off
 

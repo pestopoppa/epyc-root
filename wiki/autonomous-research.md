@@ -2521,7 +2521,7 @@ A convergent wave of research in April 2026 brought four significant upgrades to
 - [tool-use-eval-contract.md](../handoffs/active/tool-use-eval-contract.md) -- StrategyStore tool-use hints and sentinel-lane contract now reach the planner prompt before action choice after orchestrator `4b9e1fd0`
 - [progress 2026-07-05](../progress/2026-07/2026-07-05.md) -- 2026-07-05 harness repairs, exact FAISS health, and live PID/trial state
 - [meta-harness-optimization.md](../handoffs/completed/meta-harness-optimization.md) -- execution trace feedback (+15pts ablation), code mutation search space with allowlist + ast.parse safety, GEPA as search algorithm
-- [reasoning-compression.md](../handoffs/active/reasoning-compression.md) -- OPSDC difficulty adaptation as potential autopilot routing signal
+- [reasoning-compression.md](../handoffs/active/context-and-token-economy.md#track-reasoning-compression) -- OPSDC difficulty adaptation as potential autopilot routing signal
 - [intake-108](https://arxiv.org/abs/2603.08127) EvoScientist -- Evolution Manager, knowledge distillation, three agent pipeline (new_opportunity, high relevance)
 - [intake-131](https://arxiv.org/abs/2503.18102) AgentRxiv -- collaborative autonomous research, shared preprint server, 13.7% MATH-500 improvement (worth_investigating)
 - [intake-132](https://arxiv.org/abs/2503.21248) ResearchBench -- LLM scientific discovery benchmark, inspiration retrieval task decomposition (worth_investigating)
@@ -2709,7 +2709,7 @@ The intake-607 cluster (10 commits, 192 unit tests) merged into `epyc-orchestrat
 | Module | Purpose | Owning handoff |
 |---|---|---|
 | `src/trace/harness_schema.py` + `src/trace/store.py` | **Shared event schema** — single source of truth for HLE/BSV/URE/EXM record families. Extends the existing T1-T6 store. Owned by [`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md). | unified-trace-memory-service |
-| `src/context_discovery.py` + `src/context_assembly.py` | DCP-1/2/3 — ColGREP-backed candidate discovery, ast-codemap (pure-stdlib signature skeleton; no GitNexus runtime dep), end-to-end budget-bounded ContextBundle assembly. | [`delegation-context-preassembly.md`](../handoffs/active/delegation-context-preassembly.md) |
+| `src/context_discovery.py` + `src/context_assembly.py` | DCP-1/2/3 — ColGREP-backed candidate discovery, ast-codemap (pure-stdlib signature skeleton; no GitNexus runtime dep), end-to-end budget-bounded ContextBundle assembly. | [`delegation-context-preassembly.md`](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) |
 | `src/batch_edit.py` + `src/batch_edit_parse.py` + `src/batch_edit_runner.py` | BEP-1 + BEP-4 — typed PatchSet schema with base hashes + cross-file dependency metadata; parser + `BATCH_EDIT_INSTRUCTIONS` rider; pure deterministic applier; sandbox→apply→verify runner. | [`batched-edit-parallel-apply.md`](../handoffs/active/batched-edit-parallel-apply.md) |
 | `src/behavior_signature.py` + `src/mutation_ledger.py` | BSV-1/2/3 — per-archive-member behavior signature (final answer + route path + tool sequence + escalation path + latency/token buckets + harness metrics + oracle-adequacy version); differential-testing scaffolding; mutation-dependency ledger for conflict-aware acceptance. | [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) |
 | `src/uncertainty_shadow.py` + `orchestration/repl_memory/hybrid_router.py` (URE-1 hook) | URE-1 wired — shadow logging of routing-uncertainty records at the `hybrid_router._record_decision_meta` chokepoint, behind `ORCHESTRATOR_URE_UNCERTAINTY_SHADOW_LOG` (default OFF, exception-safe). Calibrates before any enforcement role. | [`decision-aware-routing.md`](../handoffs/active/decision-aware-routing.md) |
@@ -2736,7 +2736,7 @@ Before this cluster, autopilot's Pareto archive optimized `quality × speed × �
 
 - `epyc-orchestrator` merge `15350fe` (10 squashed commits from former branch `intake607-harness-impl`)
 - [`handoffs/active/unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) — owns the shared schema
-- [`handoffs/active/delegation-context-preassembly.md`](../handoffs/active/delegation-context-preassembly.md) — DCP-1/2/3 implementation status + DCP-4/6 next
+- [`handoffs/active/context-and-token-economy.md`](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) — DCP-1/2/3 implementation status + DCP-4/6 next
 - [`handoffs/active/batched-edit-parallel-apply.md`](../handoffs/active/batched-edit-parallel-apply.md) — BEP-1/4 implementation status + BEP-2/3/5 next
 - [`handoffs/active/autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) — BSV-1/2/3 + HLE-4
 - [`handoffs/active/decision-aware-routing.md`](../handoffs/active/decision-aware-routing.md) — URE-1 wired

@@ -550,7 +550,7 @@ CT-1, CT-1b, CT-E7 and CT-E7b all scored mmlu_pro through the shared pool with `
 
 - [qwen-chat-template-evaluation.md](../handoffs/active/qwen-chat-template-evaluation.md): the CAVEAT 2026-09-17 block, with the re-score table and the list of what still holds.
 - [2026-09-17-sub-scorer-fix.md](../progress/2026-09/2026-09-17-sub-scorer-fix.md): the scorer root cause, the consumers, and the affected-results table.
-- [per-request-reasoning-budget.md](../handoffs/active/per-request-reasoning-budget.md): the PRB-T4 mmlu_pro crash that exposed the A–H limit.
+- [per-request-reasoning-budget.md](../handoffs/active/context-and-token-economy.md#track-per-request-reasoning-budget): the PRB-T4 mmlu_pro crash that exposed the A–H limit.
 
 ---
 
@@ -693,7 +693,7 @@ The adoption decision was made on **production behavior, not new benchmarks**: t
 #### Source References (2026-08-23 evening)
 
 - [`qwen-chat-template-evaluation.md`](../handoffs/active/qwen-chat-template-evaluation.md) — CT-E7b propagation with the voided rows and superseding stamps, CT-9 decision lines and evidence record, CT-10/CT-11
-- [`reasoning-effort-levels.md`](../handoffs/active/reasoning-effort-levels.md) — the E-7 validator extension (`0e801e68`, template_sha enforced) and the `active_kernel_era` v8→v9 correction (cross-listed with [Reasoning Compression](reasoning-compression.md))
+- [`reasoning-effort-levels.md`](../handoffs/active/context-and-token-economy.md#track-reasoning-effort-levels) — the E-7 validator extension (`0e801e68`, template_sha enforced) and the `active_kernel_era` v8→v9 correction (cross-listed with [Reasoning Compression](reasoning-compression.md))
 - [`progress/2026-08/2026-08-23.md`](../progress/2026-08/2026-08-23.md) — the full CT-9 evidence bundle (read-only production sweep)
 
 ### Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)

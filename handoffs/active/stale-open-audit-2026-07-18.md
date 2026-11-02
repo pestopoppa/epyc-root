@@ -60,7 +60,7 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
 |---|---:|---:|---|---|
 | [model-stack-single-source-update-pipeline](stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) | 7 | 0 | PARKED | re-anchor as the authoritative consumer-SSoT contract; reconcile the stale X-MAS default-off box (enforce already enabled) |
 | [standardized-stack-update-pipeline-finalization](stack-lifecycle-program.md#track-standardized-stack-update-pipeline-finalization) | 3 | 0 | **DUPLICATE** | consolidate/close into `stack-change-governance-pipeline`; core landed |
-| [per-request-reasoning-budget](per-request-reasoning-budget.md) | 4 | 4 | LIVE | keep — llama.cpp implementation genuinely pending (inference window + experimental branch) |
+| [per-request-reasoning-budget](context-and-token-economy.md#track-per-request-reasoning-budget) | 4 | 4 | LIVE | keep — llama.cpp implementation genuinely pending (inference window + experimental branch) |
 | [unified-trace-memory-service](unified-trace-memory-service.md) | 3 | 0 | PARKED | split — close landed T1–T6 nav parent; keep T7 (Hermes-daily-use gate, unfired) + consolidation parked |
 | [frontier-f2-self-running-lab](frontier-f2-self-running-lab.md) | 2 | 2 | LIVE | keep — W3 accumulating now (real quiet-window batches producing verdicts), W4 sequenced |
 | [sliders-local-validation](sliders-local-validation.md) | 8 | 0 | PARKED | **reactivate signal** — KB-RAG K7 reopen precondition FIRED 2026-06-13; surface to operator (still needs explicit ask; else keep parked, LOW/speculative) |

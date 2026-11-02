@@ -823,7 +823,7 @@ Operator-approved Stage-3 amendment (plan sha256 2edfb0662f61e1254e7dc5e2b21888e
 - DPF-W4-SWE-SW5 (intake-2337): Abstract and body disagree on the cause of the three losses (version mismatch vs scope mismatch); only linkerd is shown to involve version values.
 - DPF-W4-SWE-SW6 (intake-2337): Verifier validity: tests are derived by an LLM from the requirement document with a fixed test-engineer prompt; the text read reports no human validation of the verifiers.
 - DPF-W4-TIDE-TD4 (intake-2338): Post-hoc operation without re-execution: metrics computed from recorded interaction logs of other labs.
-- DPF-W4-TIDE-TD5 (intake-2338): Name collision: handoffs/active/reasoning-compression.md refers to a "TIDE post-mortem" for an unrelated early-exit project.
+- DPF-W4-TIDE-TD5 (intake-2338): Name collision: handoffs/active/context-and-token-economy.md refers to a "TIDE post-mortem" for an unrelated early-exit project.
 - DPF-W4-TIDE-TD6 (intake-2338): Evidence quality: games and web environments, difficulty confound in loop pools, horizon-dependent AUV, no intervals.
 
 ### M18 — SkillBank follow-on arms waiting on a populated bank or a net-negative cell

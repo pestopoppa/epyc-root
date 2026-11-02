@@ -1989,7 +1989,7 @@ The model is systematically **overconfident on wrong short answers** (e.g. `529`
 - `research/intake_index.yaml` intake-601..604 (committed `27e86f0`)
 - `epyc-orchestrator` branch `feat/p21a-deepconf` (`d894fd5` module+flag, `3f4eaee` runner+adapter+tests) — default-OFF, not merged
 - [`handoffs/active/routing-and-optimization-index.md`](../handoffs/active/routing-and-optimization-index.md) P21 (A1 done / A2 negative / A3 do-not-proceed)
-- [`handoffs/active/per-request-reasoning-budget.md`](../handoffs/active/per-request-reasoning-budget.md), [`handoffs/active/routing-intelligence.md`](../handoffs/active/routing-intelligence.md) — research-intake updates
+- [`handoffs/active/context-and-token-economy.md`](../handoffs/active/context-and-token-economy.md#track-per-request-reasoning-budget), [`handoffs/active/routing-intelligence.md`](../handoffs/active/routing-intelligence.md) — research-intake updates
 ## 2026-05-25 — Within-role full↔quarter placement is unmodeled (architectural gap)
 
 `ConcurrencyAwareBackend` (`epyc-orchestrator/src/backends/concurrency_aware.py`) and `ContentionGate` (`src/scheduling/contention_gate.py`) admit and place requests by lock availability + NUMA disjointness, but they do NOT model the within-role full↔quarter cpuset overlap relation. For each role with `full + N quarters` deployed, the dispatcher tries full first (via non-blocking try-acquire), then falls through to NUMA-disjoint quarters first, overlapping quarters last. The `same_role` matrix verdict in `orchestration/contention_matrix.yaml` is a single `allow / block / n/a` value with no instance-pair granularity — it was measured for quarters-only co-placement, not full+quarter.
@@ -3085,7 +3085,7 @@ Sources: [serving-harness fixes](../handoffs/active/agentic-serving-harness-fixe
 **Confidence: verified source records; most items are software/model-free controls or failed-run filings, not measurement verdicts. Proposed work is labelled as such.**
 
 - DF2-12.1 np4 parity: a frozen 304-completion manifest (frontdoor draft-MTP np4/nmax4, architect DFlash2 np4/nmax7) is prepared but unissued; the rollback-test rc1 was a test-oracle defect (see speculative-decoding). The frozen-v10 vocabulary preflight counted 261 tokens per salted prompt and the launcher refuses `UNREADY` until native `/apply-template` and `/tokenize` proofs exist. [progress](../progress/2026-11/2026-11-01.md)
-- TB-5 makes `max_tokens`/`reasoning_budget` a per-request routing output (explicit caller values win; 55 tests); CS-16 adds a structured display payload and short spoken profile; P6.5 retired `/api/kernel*`. [reasoning-effort](../handoffs/active/reasoning-effort-levels.md), [progress](../progress/2026-11/2026-11-01-codex-ni-01a16d6b.md)
+- TB-5 makes `max_tokens`/`reasoning_budget` a per-request routing output (explicit caller values win; 55 tests); CS-16 adds a structured display payload and short spoken profile; P6.5 retired `/api/kernel*`. [reasoning-effort](../handoffs/active/context-and-token-economy.md#track-reasoning-effort-levels), [progress](../progress/2026-11/2026-11-01-codex-ni-01a16d6b.md)
 - LOOP-8: launcher verbosity dropped from `-lv 4` to 3 on four launchers (two logs held 4.23 GiB), keeping YaRN proof lines. [non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md)
 - TD-23.D1 prep: LiquidAI d1-2B-GGUF Q8_0 and BF16 acquired and hash-verified; qualification, parity and quality not run.
 

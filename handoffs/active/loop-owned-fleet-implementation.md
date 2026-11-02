@@ -320,7 +320,7 @@ Gate: one full day of backlog churn with zero machine pane-IO for workers.
       share number because their meter recorded totals, not purposes. Lands beside OBS-11's channel
       work in [`session-bus-thin-dispatcher.md`](session-bus-thin-dispatcher.md) — it is the same
       write-side surface — and is cross-referenced from
-      [`delegation-context-preassembly.md`](delegation-context-preassembly.md) (DCP-9b depends on it;
+      [`delegation-context-preassembly.md`](context-and-token-economy.md#track-delegation-context-preassembly) (DCP-9b depends on it;
       blocks the coordination-share half). `intake-1333#01`. Zero compute.
 
 ## Metrics (targets) and kill criteria

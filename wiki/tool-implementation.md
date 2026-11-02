@@ -88,7 +88,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
 
 - [handoffs/active/harness-improvement-loop.md](../handoffs/active/harness-improvement-loop.md) — HIL-LB1 scoring and decision, HIL-LB1a
 - [progress/2026-10/2026-10-22-hil17-lb1-writes.md](../progress/2026-10/2026-10-22-hil17-lb1-writes.md) — LB1a labelling result
-- [handoffs/active/tool-output-compression.md](../handoffs/active/tool-output-compression.md) — TOC-WRITER producers, TOC-SP-LB1
+- [handoffs/active/context-and-token-economy.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) — TOC-WRITER producers, TOC-SP-LB1
 - [progress/2026-10/2026-10-22-a1-orch-code.md](../progress/2026-10/2026-10-22-a1-orch-code.md) — compaction-is-not-invalidation finding
 - [handoffs/active/agentic-serving-harness-fixes.md](../handoffs/active/agentic-serving-harness-fixes.md) — parse events, serving_calls, grammar, LB1/LB4.1/LB9
 - [progress/2026-10/2026-10-22-workspace-f8.md](../progress/2026-10/2026-10-22-workspace-f8.md) — Locals packet D and locals-a results
@@ -138,7 +138,7 @@ The [max_tokens decision package](../docs/design/hs-od-4-max-tokens-decision-pre
 ### Source References (2026-10-22 sweep 7)
 
 - [handoffs/active/agentic-serving-harness-fixes.md](../handoffs/active/agentic-serving-harness-fixes.md)
-- [handoffs/active/tool-output-compression.md](../handoffs/active/tool-output-compression.md)
+- [handoffs/active/context-and-token-economy.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression)
 - [progress/2026-10/2026-10-22-rte-toc-writers.md](../progress/2026-10/2026-10-22-rte-toc-writers.md)
 - [handoffs/active/repl-turn-efficiency.md](../handoffs/active/repl-turn-efficiency.md)
 
@@ -212,7 +212,7 @@ the premise check.
 - [agent-loop-design.md](../docs/guides/agent-workflows/agent-loop-design.md): *Tool-output caching*.
 - [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-orchestrator-actor-backend.md): *Techniques learned in the opencode seat* §3 (key, placement,
   premise check).
-- [tool-output-compression.md](../handoffs/active/tool-output-compression.md): TOC-RD-1b.
+- [tool-output-compression.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression): TOC-RD-1b.
 
 ## Compiled Update — 2026-09-19: one call for the tool and its arguments — the operation × conditional-target pattern (TD-12..TD-15)
 
@@ -491,9 +491,9 @@ A 2026-04-17 deep dive (intake-398) investigated Magika, Google's AI-powered con
 
 ### New Findings (2026-07-16 — harness cooperation is now part of the tool-surface contract)
 
-- **Tool-output compression still lives at the orchestrator boundary, but its end-to-end value now depends on the harness not competing with its own compaction layer.** The new harness-selection index makes the boundary explicit: candidate user-facing harnesses can run their own prompt-cache, compaction, and subagent-spawn logic, which can partially negate Orch-side tool-output compression unless they defer. That is an implementation concern because it changes how much of the compression win survives to the model. Sources: [tool-output-compression.md](../handoffs/active/tool-output-compression.md), [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md), [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md), [progress 2026-07-16](../progress/2026-07/2026-07-16.md).
+- **Tool-output compression still lives at the orchestrator boundary, but its end-to-end value now depends on the harness not competing with its own compaction layer.** The new harness-selection index makes the boundary explicit: candidate user-facing harnesses can run their own prompt-cache, compaction, and subagent-spawn logic, which can partially negate Orch-side tool-output compression unless they defer. That is an implementation concern because it changes how much of the compression win survives to the model. Sources: [tool-output-compression.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression), [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md), [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md), [progress 2026-07-16](../progress/2026-07/2026-07-16.md).
 
-- **The MCP wrapper makes compression a reusable tool surface, not just a hook-side experiment.** Phase 4 now has a direct MCP-tool wrapper path for compression, which means the implementation can be consumed by tool-aware harnesses as a first-class tool rather than only as a shell hook. That keeps the compression path compatible with an open harness that defers to the Orch's policy layer. Sources: [tool-output-compression.md](../handoffs/active/tool-output-compression.md), [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md).
+- **The MCP wrapper makes compression a reusable tool surface, not just a hook-side experiment.** Phase 4 now has a direct MCP-tool wrapper path for compression, which means the implementation can be consumed by tool-aware harnesses as a first-class tool rather than only as a shell hook. That keeps the compression path compatible with an open harness that defers to the Orch's policy layer. Sources: [tool-output-compression.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression), [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md).
 
 ## Key Findings
 
@@ -544,7 +544,7 @@ A 2026-04-17 deep dive (intake-398) investigated Magika, Google's AI-powered con
 
 ### New (2026-06-22, context-assembler + stack-change guard tooling cross-refs)
 
-- **Two governance/assembly tools advanced.** The DCP context-assembler (`src/context_assembly.py`: budget-bounded iterative file discovery → AST codemap → token verify → slicing, with injectable ColGREP + file-reader backends) reached its first live A/B and recorded `hold` on a latency regression; see [context-management.md](context-management.md). The stack-change guard validator now enforces 27 rules across 13 consumer surfaces via the canonical `stack_change_pipeline.py check --run-promotion-gate` (174 tests pass, no waivers); see [knowledge-management.md](knowledge-management.md). Both are inference-free. Sources: [delegation-context-preassembly.md](../handoffs/active/delegation-context-preassembly.md), [model-stack-single-source-update-pipeline.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline), [standardized-stack-update-pipeline-finalization.md](../handoffs/active/stack-lifecycle-program.md#track-standardized-stack-update-pipeline-finalization).
+- **Two governance/assembly tools advanced.** The DCP context-assembler (`src/context_assembly.py`: budget-bounded iterative file discovery → AST codemap → token verify → slicing, with injectable ColGREP + file-reader backends) reached its first live A/B and recorded `hold` on a latency regression; see [context-management.md](context-management.md). The stack-change guard validator now enforces 27 rules across 13 consumer surfaces via the canonical `stack_change_pipeline.py check --run-promotion-gate` (174 tests pass, no waivers); see [knowledge-management.md](knowledge-management.md). Both are inference-free. Sources: [delegation-context-preassembly.md](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly), [model-stack-single-source-update-pipeline.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline), [standardized-stack-update-pipeline-finalization.md](../handoffs/active/stack-lifecycle-program.md#track-standardized-stack-update-pipeline-finalization).
 
 - **Session closeout is now codified as a local Codex skill.** The `/workspace/.claude/commands/wrap-up.md` routine has a Codex skill mirror at `/home/node/.codex/skills/wrap-up`: update progress reports, handoffs, handoff indices, relevant docs, README freshness warnings, wiki compilation, agent log, and per-repo local commits, then report hashes for manual push. The project command remains the source of truth when present; the skill makes "wrap up", "checkpoint", and `/wrap-up` phrasing durable across Codex sessions. [progress 2026-05-27](../progress/2026-05/2026-05-27.md)
 - **GitNexus remains the required pre-edit blast-radius tool, but markdown/log/progress targets are usually not indexed symbols.** During the 2026-05-27 wrap-up, `gitnexus impact` on documentation targets returned `UNKNOWN` / `0 impacted`; that is expected for unindexed prose surfaces. For code changes, high/critical impact still requires explicit warning and scoping before edits. [progress 2026-05-27](../progress/2026-05/2026-05-27.md)
@@ -660,9 +660,9 @@ per-request*.
 
 - [`tool-use-eval-contract.md`](../handoffs/active/tool-use-eval-contract.md) — TU-TC-1 fix detail and TU-TC-1a residual, TU-LED-1 ledger.
 - [`multi-file-coding-completion-capability.md`](../handoffs/active/multi-file-coding-completion-capability.md) — MF-FIN-1 fix, MF-VBS-1, MF-NDG-1, MF-RR-1.
-- [`tool-output-compression.md`](../handoffs/active/tool-output-compression.md) — TOC-SP-1 and TOC-RD-1 fixes, TOC-RD-1a hook gaps.
-- [`delegation-context-preassembly.md`](../handoffs/active/delegation-context-preassembly.md) — DCP-13 hand-off fixes, DCP-13a/b residuals, DCP-10a.
-- [`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) — CF-RX-1.
+- [`tool-output-compression.md`](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) — TOC-SP-1 and TOC-RD-1 fixes, TOC-RD-1a hook gaps.
+- [`delegation-context-preassembly.md`](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) — DCP-13 hand-off fixes, DCP-13a/b residuals, DCP-10a.
+- [`context-folding-progressive.md`](../handoffs/active/context-and-token-economy.md) — CF-RX-1.
 - [`progress/2026-09/2026-09-14-research-intake.md`](../progress/2026-09/2026-09-14-research-intake.md) — the nine commits, merged branch and test totals.
 - intake-1351#record — the failure taxonomy (verify-before-stop, announced actions, malformed calls) and the two defects its code audit found.
 - intake-1362#04 — stock failure base rates: 110/248 stop-after-unexecuted-edit, 0/1,798 malformed-call rejections.
@@ -748,7 +748,7 @@ Key capabilities: async Playwright-based crawling with browser pool management, 
 
 - **Security review is now a dedicated tool surface, not just an implied code-review habit.** The new skill scaffold runs STRIDE, OWASP, and supply-chain checks, but only records findings after exploit-path validation succeeds. Sources: [security-review-skill.md](../handoffs/completed/security-review-skill.md).
 - **External-source quarantine is now enforced in tooling, not just policy prose.** The intake/rendering path now wraps source-derived synthesis in `SOURCE-QUARANTINE` blocks with provenance metadata and a warn-mode validator. Source: [frontier-f5-intake-injection-hardening.md](../handoffs/completed/frontier-f5-intake-injection-hardening.md).
-- **Token-compression middleware now extends the existing tool-output pipeline.** The downstream MCP wrapper/compressor path landed as a token-reduction layer on top of the current tool registry rather than a behavior change, so the implementation principle remains "compress outputs before they enter context." Source: [tool-output-compression.md](../handoffs/active/tool-output-compression.md).
+- **Token-compression middleware now extends the existing tool-output pipeline.** The downstream MCP wrapper/compressor path landed as a token-reduction layer on top of the current tool registry rather than a behavior change, so the implementation principle remains "compress outputs before they enter context." Source: [tool-output-compression.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression).
 
 ## Open Questions
 
@@ -778,7 +778,7 @@ Key capabilities: async Playwright-based crawling with browser pool management, 
 - [GitNexus codebase intelligence](../research/deep-dives/gitnexus-codebase-intelligence.md) -- 8-phase indexing pipeline, 7 MCP tools, hybrid search (BM25+semantic+RRF), Leiden clustering, confidence-scored edges, process-grouped results
 - [GitNexus orchestrator integration](../research/deep-dives/gitnexus-orchestrator-integration.md) -- 5 integration options ranked by ROI, context injection > tool calling insight, re-indexing strategy, KuzuDB direct query path
 - [corpus-augmented-prompt-lookup-revalidation.md](../handoffs/completed/corpus-augmented-prompt-lookup-revalidation.md) -- 2026-07-03 A10 registry-loading repair, role-level corpus gate, structured evidence logging, and offline health-probe result for the local code corpus
-- [tool-output-compression.md](../handoffs/active/tool-output-compression.md) -- 7-handler output compression (60-90% savings), feature-flagged, layered before spill mechanism
+- [tool-output-compression.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) -- 7-handler output compression (60-90% savings), feature-flagged, layered before spill mechanism
 - [repl-turn-efficiency.md](../handoffs/active/repl-turn-efficiency.md) -- frecency file discovery, combined operations, contextual suggestions for REPL efficiency
 - [intake-269](https://github.com/nvk/llm-wiki) nvk/llm-wiki -- Claude Code plugin for LLM-compiled knowledge bases (adopt_patterns, high relevance)
 - [intake-277](https://github.com/NousResearch/hermes-agent/pull/5100) Hermes Agent PR#5100 LLM Wiki Skill -- Karpathy pattern for structured knowledge compilation (already_integrated)
@@ -1744,7 +1744,7 @@ The [prospective native source companion](../handoffs/active/vidya-belief-substr
 
 [UFH05's finite actor source package](../artifacts/ni08/ufh05-finite-runner-source-20261007/README.md) preserves the exact primary source/device seams and actor AST without applying the patch or executing weights/native imports. The source child is complete; runtime and belief-substrate native wiring remain open. [EVL24 prospective tasks](../handoffs/active/frontier-f2-self-running-lab.md) now bind the selected-verdict denominator inflation correction before capture: distinct valid logged runs are required while existing stages, thresholds and risk/gold/operator policy remain unchanged. No hosted acceptance or live promotion warrant is claimed for this preparation.
 
-Source references: [SCG owner](../handoffs/active/stack-lifecycle-program.md), [PIP02 owner](../handoffs/active/document-parser-table-bench.md), [UFH05 owner](../handoffs/active/reasoning-compression.md), [prospective consumers](../handoffs/active/vidya-belief-substrate-program.md).
+Source references: [SCG owner](../handoffs/active/stack-lifecycle-program.md), [PIP02 owner](../handoffs/active/document-parser-table-bench.md), [UFH05 owner](../handoffs/active/context-and-token-economy.md#track-reasoning-compression), [prospective consumers](../handoffs/active/vidya-belief-substrate-program.md).
 
 
 ### Distinct logged runs and original journal carry — 2026-10-07
@@ -1759,7 +1759,7 @@ Source references: [SCG owner](../handoffs/active/stack-lifecycle-program.md), [
 
 ### Prospective request-budget and pointer lexical controls — 2026-10-07
 
-The [tool-output owner](../handoffs/active/tool-output-compression.md) and [ROCm verification owner](../handoffs/active/rocm-verify-profile-backend.md) prospectively enroll TOC-SP-4 and RVP-C6-26-C-POINTER-SOURCE with their existing-CI companions. The reviewed proposals retain whole15 mocked-worker and whole9 lexical controls respectively; all four checkboxes remain open in this published checkpoint. Enrollment is not native/source acceptance, quote quality, arbitrary memoization absence, GPU timing or parent completion. The [belief source program](../handoffs/active/vidya-belief-substrate-program.md) records their prospective original-custody requirements.
+The [tool-output owner](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) and [ROCm verification owner](../handoffs/active/rocm-verify-profile-backend.md) prospectively enroll TOC-SP-4 and RVP-C6-26-C-POINTER-SOURCE with their existing-CI companions. The reviewed proposals retain whole15 mocked-worker and whole9 lexical controls respectively; all four checkboxes remain open in this published checkpoint. Enrollment is not native/source acceptance, quote quality, arbitrary memoization absence, GPU timing or parent completion. The [belief source program](../handoffs/active/vidya-belief-substrate-program.md) records their prospective original-custody requirements.
 
 The pointer attempt subsequently exposed a real quoted-string false positive (original37617279801 FALSE8/9). The source repair uses a pointer-only literal/comment mask with stronger negatives and retained active-key positives; it remains proposed until fresh frozen native evidence is independently accepted. The earlier failed original is preserved. DS41-C104 future-writer source likewise propagates the existing decisive comparison flag; historical store records and the native decision predicate remain separate.
 
@@ -1791,7 +1791,7 @@ Source references: [authored contract](../docs/design/experience-distillation-da
 
 ## 2026-10-07 — UFH source checkpoint and dated campaign evidence
 
-The UFH12 spill-summary change makes the 4,000-character request limit include labels, bounded prior summary, and at least one character from the new tail. Acceptance is tied to the published exact-source APP product and original mocked-worker control, with typed custody projected through the existing CI carrier and shared grade. This is a source/API boundary result, not a finding that generated summaries are correct or evidence-complete; TOC-SP-3 and inference/runtime/deployment gates remain separate. [Source handoff](../handoffs/active/tool-output-compression.md#prospective-bounded-spill-summary-request-correction--2026-10-07) · [Original acceptance record](../artifacts/ni08/ufh12-spill-summary-source-acceptance-20261007/README.md).
+The UFH12 spill-summary change makes the 4,000-character request limit include labels, bounded prior summary, and at least one character from the new tail. Acceptance is tied to the published exact-source APP product and original mocked-worker control, with typed custody projected through the existing CI carrier and shared grade. This is a source/API boundary result, not a finding that generated summaries are correct or evidence-complete; TOC-SP-3 and inference/runtime/deployment gates remain separate. [Source handoff](../handoffs/active/context-and-token-economy.md#prospective-bounded-spill-summary-request-correction--2026-10-07) · [Original acceptance record](../artifacts/ni08/ufh12-spill-summary-source-acceptance-20261007/README.md).
 
 ### Bounded CI source controls and remaining runtime boundary — 2026-10-07
 
@@ -1914,7 +1914,7 @@ The versioned pre-commit extras call a staged-blob checker for producer pipeline
 - **Trajectory-artifact writer** now calls `toc_ab.write_belief_measurements` at finalize (orchestrator `e9cf0949`), so tool-output-compression A/B runs will leave claim tuples; the first-party verbatim-log vs summarize A/B (frontdoor Qwen3.6-35B-A3B, architect Qwen3.8-Flash-Next) must report wall-clock and a log-growth/grep-latency curve.
 - **Launch env:** KVU-13a stops inherited `LLAMA_ARG_*` altering managed recipes.
 
-Sources: [tool-use-eval-contract](../handoffs/active/tool-use-eval-contract.md); [tool-output-compression](../handoffs/active/tool-output-compression.md); [parallel dispatch and env repair](../progress/2026-10/2026-10-29-codex3-parallel-dispatch-and-env.md).
+Sources: [tool-use-eval-contract](../handoffs/active/tool-use-eval-contract.md); [tool-output-compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression); [parallel dispatch and env repair](../progress/2026-10/2026-10-29-codex3-parallel-dispatch-and-env.md).
 
 ## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 

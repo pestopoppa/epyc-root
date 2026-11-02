@@ -5,7 +5,7 @@
 **Updated**: 2026-05-28 (executor gate clarified; no integration before KB-RAG K7)
 **Priority**: LOW (speculative — does NOT block any production work)
 **Categories**: rag_alternatives, knowledge_management, context_management
-**Related**: [`internal-kb-rag.md`](internal-kb-rag.md), [`context-folding-progressive.md`](context-folding-progressive.md), [`research-evaluation-index.md`](research-evaluation-index.md)
+**Related**: [`internal-kb-rag.md`](internal-kb-rag.md), [`context-folding-progressive.md`](context-and-token-economy.md), [`research-evaluation-index.md`](research-evaluation-index.md)
 **Source paper**: SLIDERS (arxiv:2604.22294, Stanford OVAL/Genie group, Joshi/Shethia/Dao/Lam, submitted 2026-04-24)
 **Source code**: `github.com/stanford-oval/sliders` (MIT, also on PyPI as `sliders-genie`)
 

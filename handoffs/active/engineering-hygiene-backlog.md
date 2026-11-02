@@ -60,7 +60,7 @@ This is the "what can I pick up right now with no inference available?" list. It
 
 Items surfaced by the 8 research deep dives landed 2026-04-22 (`/workspace/research/deep-dives/{lighton, qwen35-omni, stop-learnable, diversity-collapse, onevl, agent-world, minddr, intake-trio}.md`). Each entry maps to a specific deep-dive action item and a target handoff.
 
-- [ ] **NIB2-46**: STOP Phase 0 instrumentation in llama.cpp (DD3, intake-437). ~1d code; non-inference (hook-level). Reserve unused token, add orchestrator hook for hidden-state fetch at prefix position. **Gated on NIB2-32** difficulty-signal re-validation producing a live verdict. → [`reasoning-compression.md`](reasoning-compression.md) Action 10a.
+- [ ] **NIB2-46**: STOP Phase 0 instrumentation in llama.cpp (DD3, intake-437). ~1d code; non-inference (hook-level). Reserve unused token, add orchestrator hook for hidden-state fetch at prefix position. **Gated on NIB2-32** difficulty-signal re-validation producing a live verdict. → [`reasoning-compression.md`](context-and-token-economy.md#track-reasoning-compression) Action 10a.
 
 ---
 
@@ -760,7 +760,7 @@ MAIN published [the concrete A/B package](../../artifacts/operator/decisions/LR8
 2026-10-07 checkpoint: K11 requested-repeat summary source and original30/30 accepted; exact Research publication and original failure limits are in the NI08 continuation. ET13 prospective routing source and native tasks are enrolled before capture. Source review, actual original-custody acceptance and live/runtime gates remain distinct; the whole backlog is not exhausted.
 
 
-2026-10-07 newly available non-inference scopes: [TOC-SP-4](tool-output-compression.md) closes the spill-summary zero-tail/oversized-request source bug through whole15 mocked-worker controls; [RVP-C6-26-C-POINTER-SOURCE](rocm-verify-profile-backend.md) closes the named C-style pointer lexical gap through whole9 controls. Actual source/VB tasks are enrolled before capture and remain unchecked. Discovery finite-score source/native remains next alongside these; their runtime/inference/quote/GPU/content-memo parents remain distinct. No additional completion is counted at enrollment.
+2026-10-07 newly available non-inference scopes: [TOC-SP-4](context-and-token-economy.md#track-tool-output-compression) closes the spill-summary zero-tail/oversized-request source bug through whole15 mocked-worker controls; [RVP-C6-26-C-POINTER-SOURCE](rocm-verify-profile-backend.md) closes the named C-style pointer lexical gap through whole9 controls. Actual source/VB tasks are enrolled before capture and remain unchecked. Discovery finite-score source/native remains next alongside these; their runtime/inference/quote/GPU/content-memo parents remain distinct. No additional completion is counted at enrollment.
 
 2026-10-07 guarded sparse capacity: MAIN filed immutable original operational receipts and completed VB-NI08-SPARSE-CAPACITY-CUSTODY; [bounded source custody](../../artifacts/ni08/sparse-capacity-custody-20261007/README.md), not a native/measurement grade or future admission guarantee. NI08=165 scoped completions (103 existing flips +62 children); remaining source tasks continue.
 

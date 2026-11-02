@@ -1,7 +1,7 @@
 # Conditional depth expected-value gate
 
 Implementation contract for the open numeric-gate task in
-[RAO + ReDel substrate spike](../../handoffs/active/rao-redel-substrate-spike.md).
+[RAO + ReDel substrate spike](../../handoffs/active/context-and-token-economy.md#track-rao-redel-substrate-spike).
 This document specifies a prospective, default-off orchestrator policy; it does
 not enable a runtime policy or establish a measured threshold.
 

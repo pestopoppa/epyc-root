@@ -28,7 +28,7 @@ The original BEP-2 read-loop blocker is remediated by the default-off `force_mod
 | DCP-6a code is landed but the launch marker predates `2e2e0d3` | Reload at a clean boundary; do not mutate loaded-code provenance or inference measurements mid-run. |
 | Launch marker includes `2e2e0d3` but running-state attestation is caveated | Fix/restart into a clean attested state before treating J7 as production-grade evidence. |
 | DCP-6a code is deployed and running-state attestation is clean | Proceed to host-quiet inference gate. |
-| DCP-6 inference improves success/top-up metrics within token budget | Promote DCP pre-assembly according to [delegation-context-preassembly.md](delegation-context-preassembly.md). |
+| DCP-6 inference improves success/top-up metrics within token budget | Promote DCP pre-assembly according to [delegation-context-preassembly.md](context-and-token-economy.md#track-delegation-context-preassembly). |
 | DCP-6 inference is neutral or regressive | Keep DCP advisory/default-off and document the failure mode. |
 | J8 A/B is not needed | Leave J8 as optional provenance; do not spend host-quiet time. |
 | J8 is run and batch-edit loses to edit transaction | Close BEP batch mode as superseded; keep edit transaction as the product path. |
@@ -53,11 +53,11 @@ The original BEP-2 read-loop blocker is remediated by the default-off `force_mod
 - `/mnt/raid0/llm/epyc-orchestrator/src/repl_environment/task_root.py`
 - `/mnt/raid0/llm/epyc-orchestrator/src/context_discovery.py`
 - `/mnt/raid0/llm/epyc-orchestrator/scripts/benchmark/bep_ab.py`
-- [delegation-context-preassembly.md](delegation-context-preassembly.md)
+- [delegation-context-preassembly.md](context-and-token-economy.md#track-delegation-context-preassembly)
 - [batched-edit-parallel-apply.md](batched-edit-parallel-apply.md)
 - [multi-file-coding-completion-capability.md](multi-file-coding-completion-capability.md)
 - [bulk-inference-campaign.md](eval-tower-program.md#track-bulk-inference-campaign)
 
 ## Reporting Instructions
 
-For DCP-6, update this handoff, [delegation-context-preassembly.md](delegation-context-preassembly.md), [bulk-inference-campaign.md](eval-tower-program.md#track-bulk-inference-campaign), and the progress log with the replay/inference commands, metrics, and decision. For J8, explicitly state whether the run is provenance-only and whether it changes any production recommendation.
+For DCP-6, update this handoff, [delegation-context-preassembly.md](context-and-token-economy.md#track-delegation-context-preassembly), [bulk-inference-campaign.md](eval-tower-program.md#track-bulk-inference-campaign), and the progress log with the replay/inference commands, metrics, and decision. For J8, explicitly state whether the run is provenance-only and whether it changes any production recommendation.

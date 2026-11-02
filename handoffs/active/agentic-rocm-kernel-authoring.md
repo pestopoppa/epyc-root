@@ -783,7 +783,7 @@ section costs **zero GPU and zero local inference**.
   and PROPOSE prompt fixed; sweep only the planner's effort knob. Measure **search** outcomes, not
   answer quality: count of novel non-duplicate hypotheses, count of explicit "this is already
   optimized" terminations, and how many proposals survive the pre-filter.
-  - **Why this is not already covered.** [`reasoning-effort-levels.md`](reasoning-effort-levels.md) is
+  - **Why this is not already covered.** [`reasoning-effort-levels.md`](context-and-token-economy.md#track-reasoning-effort-levels) is
     a **stub**, and its entire measured evidence (the A4 / GPQA-Diamond ladder, +32.0 pp at 4.0×
     tokens) is about *answer accuracy on a fixed question*. Nothing in it measures whether more effort
     makes an agent keep looking. That is a different dependent variable.

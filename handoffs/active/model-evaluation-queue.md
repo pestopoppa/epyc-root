@@ -224,7 +224,7 @@ Q8 for the quality bench unless throughput is being measured, then use the produ
   - [x] GPU arms A1/A3/A4 × **`olympiadbench_numeric`** (n=150 paired) ✅ 2026-07-22 — **⚠ SATURATES (A1 89.3/A3 88.0/A4 89.3, all p≥0.77), NOT the harder tier intended** (adapter filter flaw; see R4). Highest-powered null of the bench.
   - [x] **Build a genuinely-harder discriminator** (derived R4) ✅ 2026-07-22 — `olympiadbench_hard` suite (155 Expression/Tuple/set items, the complement of the numeric suite) + **`math_symbolic` sympy-backed scorer** (validated 155/155 self-match, 0 perturbation-FP, 0 LaTeX-variant asymmetry). Research `ef286939`.
   - [x] **Pilot `olympiadbench_hard` (A1 n≈24)** ✅ 2026-07-22 — **IT DISCRIMINATES: A1 50.0% overall / 76.9% among finished vs the 89% numeric-suite saturation.** But **46% truncate at 16384** → the overall score is budget-confounded (finished-vs-truncated swing ≈57pp). See R5.
-  - [x] **Full `olympiadbench_hard` 3-arm run (budget 32768, np=1+MTP)** ✅ 2026-07-23 — **NULL, well-powered on a non-saturated suite** (A1 68.4 / A3 69.0 / A4 64.5, all pairwise p ≥ 0.19; see R6). Config determined by probe first (np=1+MTP); `extract_boxed` bug fixed (A1 +11pp recovered). This was *the* measurement that could have broken the parity tie — it didn't. Surfaced: IQ2 termination defect + the token-budget/concurrency threads → [reasoning-effort-levels.md](reasoning-effort-levels.md).
+  - [x] **Full `olympiadbench_hard` 3-arm run (budget 32768, np=1+MTP)** ✅ 2026-07-23 — **NULL, well-powered on a non-saturated suite** (A1 68.4 / A3 69.0 / A4 64.5, all pairwise p ≥ 0.19; see R6). Config determined by probe first (np=1+MTP); `extract_boxed` bug fixed (A1 +11pp recovered). This was *the* measurement that could have broken the parity tie — it didn't. Surfaced: IQ2 termination defect + the token-budget/concurrency threads → [reasoning-effort-levels.md](context-and-token-economy.md#track-reasoning-effort-levels).
   - [ ] GPU arms A1/A3/A4 × **`gpqa_diamond_cot`** full n=198 — *primary* CoT measure (deferred behind OlympiadBench; n=50 slice done in R2)
   - [x] MMLU-Pro control re-run under hardened protocol (sidecar's n=50 predates it) ✅ 2026-08-12 — all three GPU arms completed on the same pinned 150-row manifest; see the prep result and panel above.
   - [x] **A2 (CPU, 122B UD-Q4_K_M) — RUN EXECUTED overnight 2026-07-23/24 ✅** (fenced production recipe `--repeat-penalty 1.1 --repeat-last-n 256`, port 18073, 25.8 tok/s, pinned-set replay, GPU-session build-hip coexistence documented): **aime25 COMPLETE 23/30 (76.7%)**; **olympiad_hard: 94 full-pair items (~72% running)** + remainder FILTERED per operator ROI call to the 17 A1-IQ2-failure items in the unanswered range (c=0 assumption on untested A1-correct items can only OVERSTATE the IQ2 penalty → conservative one-sided H1 bound); **gpqa_cot SKIPPED per operator** (power math: 185 pairs → MDE ~6-7pp; +198 → ~4pp; neither sees 1-2pp; AXA-1 knowledge Δ0.0pp n=212 already covers the knowledge axis) — staged + idempotently resumable (`runs_cpu_a2/`, runner resumes on (id,seed)). Live read: A2-Q4 tracking at-or-above A1-IQ2 band. Artifacts: `artifacts/architect-bench-gpu-20260720/runs_cpu_a2/`.
@@ -298,7 +298,7 @@ Paired: **−33.3pp, McNemar b=1 c=17, p=1.0e-04**, at **5.9× output tokens**.
 - On the **25 items where thinking terminated**: ON 96.0% vs OFF 92.0% → **+4.0pp, b=1 c=0, p=1.00 (n.s.)**. The eye-catching "96%" is **selection bias**, not a thinking win.
 - On the **23 items where it never terminated**: think-off still scored **73.9%**, so these are *not* merely the impossible questions — thinking loops preferentially on the harder ones, i.e. exactly where reasoning was supposed to help.
 
-**Actionable lever (untested):** llama-server exposes `--reasoning-budget N` (>0) plus `--reasoning-budget-message`, which force-closes the think block so the model *must* emit an answer. That converts the 48% total losses into (short-thought) answers and is the obvious next experiment — it belongs to [`reasoning-effort-levels.md`](reasoning-effort-levels.md) E-6.
+**Actionable lever (untested):** llama-server exposes `--reasoning-budget N` (>0) plus `--reasoning-budget-message`, which force-closes the think block so the model *must* emit an answer. That converts the 48% total losses into (short-thought) answers and is the obvious next experiment — it belongs to [`reasoning-effort-levels.md`](context-and-token-economy.md#track-reasoning-effort-levels) E-6.
 
 **Do not generalize this to the architect yet** — A1 (122B-A10B IQ2) is a different model and is measuring now. "Frontdoor should not think" ≠ "architect should not think".
 
@@ -361,7 +361,7 @@ All four ablation arms, n=50 pinned items, `max_tokens=16384`, `--reasoning-budg
 - **A4:** terminated on 25/50. There: ON 96.0% vs OFF 92.0% (**+4.0pp, b=1 c=0, p=1.00, n.s.**).
 - On the *non*-terminating items, think-off still scored **66.7%** (A1) and **76.0%** (A4) — so these are **not** simply the impossible questions; the loop preferentially eats items the model could otherwise answer.
 
-So when thinking terminates it is roughly **quality-neutral** on this suite (both n.s., opposite signs); the entire measured loss is the non-termination tail. The **severity is strongly per-model** (18% vs 50%), which is direct evidence for the per-model calibration invariant in [`reasoning-effort-levels.md`](reasoning-effort-levels.md).
+So when thinking terminates it is roughly **quality-neutral** on this suite (both n.s., opposite signs); the entire measured loss is the non-termination tail. The **severity is strongly per-model** (18% vs 50%), which is direct evidence for the per-model calibration invariant in [`reasoning-effort-levels.md`](context-and-token-economy.md#track-reasoning-effort-levels).
 
 **This does NOT close the "our models should reason" question — it re-points it.** The +32pp win (R2a) came from **CoT in `content` via the prompt**, which is *already* how these arms run and is a different axis from `enable_thinking`. The native `<think>` channel, as configured today, is a liability for both models. The open lever is `--reasoning-budget N` (>0) + `--reasoning-budget-message`, which force-closes the think block so the model must answer — untested, and the single highest-value follow-up (E-6).
 
@@ -475,7 +475,7 @@ Phase-2 tool-use (the architect's real job).
    from a truncated tail; A1's looping-truncated items had the correct answer in earlier complete `\boxed{}`.
    Fix (last *complete* boxed) recovered **21/40** truncated items → A1 **57.4% → 68.4%**, 0 regressions.
 
-### 122B-A10B termination defect — MODEL-specific, NOT quant-specific (the real caveat on the 122B architect) → see [reasoning-effort-levels.md § MODEL-specific repetition-penalty fence](reasoning-effort-levels.md)
+### 122B-A10B termination defect — MODEL-specific, NOT quant-specific (the real caveat on the 122B architect) → see [reasoning-effort-levels.md § MODEL-specific repetition-penalty fence](context-and-token-economy.md#track-reasoning-effort-levels)
 The **Qwen3.5-122B-A10B loops on `\boxed{answer}` to the token cap at BOTH quants** — IQ2 (25% of items) AND
 Q4 (A2/CPU, confirmed 2026-07-23: identical `\boxed{}` loop on the same item). The Q8 arms (27B-dense,
 35B-A3B) do NOT loop (0–1%). **⇒ the defect tracks the MODEL, not the quant — the "IQ2 EOS-damage"
@@ -501,7 +501,7 @@ problems induce very long reasoning), and truncation ≈ wrong (2/11 truncated c
 on `max_tokens ≥ 32768`** — at 16384 the arms would be partly ranked on reasoning *concision*, a confound.
 This is now the single outstanding measurement that could break the reasoning-parity tie (R1–R4 all null).
 It also surfaced a **stack-wide finding — `max_tokens` is a silent quality lever** — documented as a study
-in [`reasoning-effort-levels.md § Token-budget study`](reasoning-effort-levels.md) (operator-flagged).
+in [`reasoning-effort-levels.md § Token-budget study`](context-and-token-economy.md#track-reasoning-effort-levels) (operator-flagged).
 
 ## Dependency graph
 `Prep (AIME adapter)` ∥ `Gate1 v7-promotion` → `Gate2 inference-batch-loop` → `Gate3 operator quiet window`

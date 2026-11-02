@@ -232,7 +232,7 @@ The NI08 checkpoint records 168 completed scoped tasks (105 existing-task closur
 ### Source References
 
 - [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md) — current scoped total and the accepted/prospective boundaries.
-- [Delegation context preassembly](../handoffs/active/delegation-context-preassembly.md) — DCP2 exact source acceptance and parent gates.
+- [Delegation context preassembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) — DCP2 exact source acceptance and parent gates.
 - [ROCm verification backend](../handoffs/active/rocm-verify-profile-backend.md) — C-pointer source acceptance and retained original failure.
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — prospective C106 and generated-writer companions.
 - [NI08 daily progress](../progress/2026-10/2026-10-07.md) — dated source/publication and acceptance limits.
@@ -2061,7 +2061,7 @@ and evidence: [Speculative Decoding](speculative-decoding.md).
 Two distinct hazards surfaced in one batch. First, a paper from the same week
 carries a **near-identical title** to one of the anchors, so anyone re-fetching
 by title lands on the wrong document — cite the arXiv ID.
-[`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) §Dedup hazard.
+[`context-folding-progressive.md`](../handoffs/active/context-and-token-economy.md) §Dedup hazard.
 Second, a handoff *and* its deep dive both cite an intake ID as their subject's
 entry, and that ID belongs to an entirely different entry; **no row for the
 actual subject exists at all**. A citation that resolves to *something* is not a
@@ -2135,7 +2135,7 @@ post-approval round, so the rest of the plan was authored without their findings
 - [`ernie-image-turbo-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) — struck "stale backend" premise; the cross-reference defect and its 2026-07-29 resolution (`intake-937`, 4 of the 6 repoints, 3 needing rewording rather than an ID swap)
 - [`research/deep-dives/ernie-image-turbo-dit-text-to-image.md`](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md) — the other 2 repoints; a pre-deployment assessment whose premises production later falsified
 - [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — weight-map-over-config verification rule
-- [`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) — near-identical-title dedup hazard; cite by arXiv ID
+- [`context-folding-progressive.md`](../handoffs/active/context-and-token-economy.md) — near-identical-title dedup hazard; cite by arXiv ID
 - [`scoring-infra-standardization.md`](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization) — prose-to-checkbox conversion during the same pass
 ## Compiled Update — 2026-08-09: a citation graph nobody had measured was 23.5% broken, and the ranking derived from it was wrong
 
@@ -3990,7 +3990,7 @@ No whole handoff became complete at this checkpoint; pruning, archival and compa
 
 ### Six bounded closures and Stage-2 catalog scope — 2026-10-07
 
-[NI08](../docs/reference/ni08-non-inference-continuation.md) reaches159 bounded completed scopes:98 existing tasks and61 scoped children. Six closures since the10:25 checkpoint comprise the single W6 diagnostic-carry task, EVL24's source/native pair, INF54's already-present source wiring and ET13's source/native pair. They do not establish completion of their broader runtime parents or exhaustion of the23-card source audit. The [discovery score source task](../handoffs/active/delegation-context-preassembly.md) is prospectively enrolled and remains unchecked; other pending proposals gain no acceptance at this checkpoint.
+[NI08](../docs/reference/ni08-non-inference-continuation.md) reaches159 bounded completed scopes:98 existing tasks and61 scoped children. Six closures since the10:25 checkpoint comprise the single W6 diagnostic-carry task, EVL24's source/native pair, INF54's already-present source wiring and ET13's source/native pair. They do not establish completion of their broader runtime parents or exhaustion of the23-card source audit. The [discovery score source task](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) is prospectively enrolled and remains unchecked; other pending proposals gain no acceptance at this checkpoint.
 
 The peer's [Stage-2 memory/embedding intake report](../progress/2026-10/2026-10-07-intake-memory-embedding-stage2.md) catalogs14 retained primary sources, intake-1963#record through intake-1976#record, plus four secondary leads awaiting selection. Its memory, EmbeddingGemma2 and VibeMemBench assessments retain source/release/review limitations; no model execution, accepted quality score, semantic maintenance closure or Stage-3 adoption is established. The reviewed recommendation custody preserves distinct outcomes rather than combining them into a new approved action. This paragraph catalogs the existing report, not a new intake claim or decision.
 
@@ -4059,7 +4059,7 @@ Source references: [RTG-39 source/publication](../artifacts/ni08/rtg39-source-co
 
 ## 2026-10-07 — UFH source checkpoint and dated campaign evidence
 
-UFH12's existing spill-summary context-budget companion now has accepted original and product evidence: the exact two-file APP product was published, and the original 15-case mocked-worker/spill-control run passed with MAIN-accepted typed source/result/fixture custody through the existing CI projection and shared grader. This establishes the bounded request-size/source-conformance contract only. It does not establish summary correctness, quote fidelity, evidence retention, inference, runtime behavior, performance, or deployment; the two earlier NULL captures remain NULL. [Source handoff](../handoffs/active/tool-output-compression.md#prospective-bounded-spill-summary-request-correction--2026-10-07) · [Vidya companion](../handoffs/active/vidya-belief-substrate-program.md) · [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md).
+UFH12's existing spill-summary context-budget companion now has accepted original and product evidence: the exact two-file APP product was published, and the original 15-case mocked-worker/spill-control run passed with MAIN-accepted typed source/result/fixture custody through the existing CI projection and shared grader. This establishes the bounded request-size/source-conformance contract only. It does not establish summary correctness, quote fidelity, evidence retention, inference, runtime behavior, performance, or deployment; the two earlier NULL captures remain NULL. [Source handoff](../handoffs/active/context-and-token-economy.md#prospective-bounded-spill-summary-request-correction--2026-10-07) · [Vidya companion](../handoffs/active/vidya-belief-substrate-program.md) · [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md).
 
 ### Prospective source controls — 2026-10-07 FULL review
 
@@ -4270,7 +4270,7 @@ Sources: [Vidya belief substrate program](../handoffs/active/vidya-belief-substr
 - **Backlog hygiene:** the 2026-10-29 audit closed duplicate/superseded boxes (colbert A/B duplicate, DAR-3, UTM-P1b) with the target line cited; two duplicate 122B obligations (DR-3, DR-3e) were retired under the standing operator directive and counted as administrative retirements, not delivered tasks.
 - **Open:** planning-context canaries for new native record families (PROFILE-6 trace, TOC A/B) remain unproved; none is called wired.
 
-Sources: [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md); [tool-output-compression](../handoffs/active/tool-output-compression.md); [delivered routing and scoring progress](../progress/2026-10/2026-10-29-codex3-delivered-routing-and-scoring.md); [colbert-reranker-web-research](../handoffs/active/colbert-reranker-web-research.md).
+Sources: [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md); [tool-output-compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression); [delivered routing and scoring progress](../progress/2026-10/2026-10-29-codex3-delivered-routing-and-scoring.md); [colbert-reranker-web-research](../handoffs/active/colbert-reranker-web-research.md).
 
 ## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 
@@ -4305,7 +4305,7 @@ Sources: [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md) · [tick
 **Confidence: scoped to cited native records and source controls.**
 
 - A frozen qd-v1 census of 35,280 rows found 46.040% over the 256-token cap and 51.274% model-input-token retention; this is recipe replay, not proof of the historical tokenizer, qd-v2, retrieval quality or G13 adoption. ([RAG](../handoffs/active/internal-kb-rag.md))
-- Prospective source enrollment preserves native identity, unknowns and original write-side warrant; synthetic adapters or canaries do not prove live wiring, and previously unrecorded warrant is not invented. Existing grades remain shared. ([belief program](../handoffs/active/vidya-belief-substrate-program.md); [REPL retrieval](../handoffs/active/repl-embedding-retrieval.md); [tool compression](../handoffs/active/tool-output-compression.md))
+- Prospective source enrollment preserves native identity, unknowns and original write-side warrant; synthetic adapters or canaries do not prove live wiring, and previously unrecorded warrant is not invented. Existing grades remain shared. ([belief program](../handoffs/active/vidya-belief-substrate-program.md); [REPL retrieval](../handoffs/active/repl-embedding-retrieval.md); [tool compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression))
 
 
 ## Compiled Update — 2026-11-01 (source-delta review)

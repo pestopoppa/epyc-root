@@ -402,7 +402,7 @@ if [ "$DRY_RUN" -eq 0 ]; then
     echo '  "operator_executed": true,'
     echo '  "corrected_finding": "the true master (research repo) was swapped 2026-08-20 by b376dadd (local, unpushed); the gap was the recompile chain, and the earlier never-swapped finding had audited the compiled lean view",'
     echo '  "evidence": ["epyc-root handoffs/active/qwen38-27b-replace-qwen36.md (Q38-T1..T3 + 2026-08-21 correction)",'
-    echo '               "epyc-root handoffs/active/per-request-reasoning-budget.md (PRB-T1)",'
+    echo '               "epyc-root handoffs/active/context-and-token-economy.md (PRB-T1)",'
     echo '               "epyc-inference-research b376dadd; epyc-orchestrator 1cff5162"],'
     echo '  "files": {'
     echo "    \"master_model_registry.yaml\": \"$(sha256sum "$MASTER" | cut -d' ' -f1)\","

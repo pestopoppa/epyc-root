@@ -157,7 +157,7 @@ For routing-architecture adoption (tri-role axis, DAR phase plan extension, desi
 - [Ch.16 Calibration & Risk Control](/mnt/raid0/llm/epyc-orchestrator/docs/chapters/16-calibration-and-risk-control.md) -- Conformal risk gate, budget controls, skill effectiveness scoring
 - [PostTrainBench + ACT deep dive](/workspace/research/deep-dives/agent-training-posttrainbench-act.md) -- GRPO usage in ACT training pipeline
 - [Goedel-Code-Prover analysis](/workspace/research/deep-dives/goedel-code-prover-analysis.md) -- Hybrid GRPO + SFT training for proof search
-- [Reasoning Compression handoff](/workspace/handoffs/active/reasoning-compression.md) -- OPSDC self-distillation using reverse KL
+- [Reasoning Compression handoff](/workspace/handoffs/active/context-and-token-economy.md#track-reasoning-compression) -- OPSDC self-distillation using reverse KL
 - [ColBERT-Zero integration](/workspace/handoffs/completed/colbert-zero-research-integration.md) -- MemRL distillation design inspired by ColBERT-Zero 3-stage pipeline
 - [Eval Tower Verification](/workspace/handoffs/active/eval-tower-program.md) -- ECE/AUC calibration metrics, ThinkPRM process verification, Aletheia scale-dependent RLVR recipes, Scoring Verifiers protocol, cross-family verification constraint
 - [Autopilot Continuous Optimization](/workspace/handoffs/active/autopilot-continuous-optimization.md) -- AP-27 RLVR formalization pointing to eval-tower-verification.md EV-1--EV-7

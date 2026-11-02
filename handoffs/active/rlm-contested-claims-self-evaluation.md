@@ -8,7 +8,7 @@ D-c1 on real traffic.
 **Categories**: agent_architecture, context_management, benchmark_methodology
 **Parent index**: [research-evaluation-index.md](research-evaluation-index.md)
 **Related**:
-- [rao-redel-substrate-spike.md](rao-redel-substrate-spike.md) — holds the depth caveat as a
+- [rao-redel-substrate-spike.md](context-and-token-economy.md#track-rao-redel-substrate-spike) — holds the depth caveat as a
   load-bearing constraint (§ "Wang reproduction caveat"). **Cross-reference only** — that handoff is
   under a 2026-07-14 FUND-OR-CLOSE audit note; do not append tasks to it. E4 writes to it only once
   first-party evidence exists.

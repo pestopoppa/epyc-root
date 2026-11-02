@@ -13,10 +13,10 @@
       "open": 63
     },
     "research-evaluation-index.md": {
-      "blocked": 20,
-      "handoffs": 28,
+      "blocked": 19,
+      "handoffs": 26,
       "oldest_advance": "2026-07-29",
-      "open": 777
+      "open": 765
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -25,16 +25,16 @@
       "open": 26
     },
     "routing-and-optimization-index.md": {
-      "blocked": 17,
-      "handoffs": 44,
+      "blocked": 18,
+      "handoffs": 42,
       "oldest_advance": "2026-07-29",
-      "open": 693
+      "open": 723
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
-      "handoffs": 9,
-      "oldest_advance": "2026-08-12",
-      "open": 108
+      "handoffs": 6,
+      "oldest_advance": "2026-10-03",
+      "open": 90
     }
   },
   "duplicates": {},
@@ -346,7 +346,7 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 17,
+      "closed": 18,
       "guarded": 0,
       "last_advanced": "2026-11-02",
       "open": 12,
@@ -358,7 +358,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 29
+      "total": 30
     },
     "batched-decode-measurement.md": {
       "blocked": 1,
@@ -472,12 +472,12 @@
       "state": "active",
       "total": 9
     },
-    "context-folding-progressive.md": {
-      "blocked": 0,
-      "closed": 17,
+    "context-and-token-economy.md": {
+      "blocked": 4,
+      "closed": 143,
       "guarded": 0,
-      "last_advanced": "2026-11-01",
-      "open": 16,
+      "last_advanced": null,
+      "open": 70,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -486,7 +486,89 @@
       },
       "row_id": "RTG-08",
       "state": "active",
-      "total": 33
+      "total": 217,
+      "tracks": [
+        {
+          "blocked": 0,
+          "closed": 17,
+          "gates": null,
+          "guarded": 0,
+          "line": 0,
+          "markers": 0,
+          "name": "(untracked)",
+          "open": 16
+        },
+        {
+          "blocked": 0,
+          "closed": 18,
+          "gates": [],
+          "guarded": 0,
+          "line": 250,
+          "markers": 1,
+          "name": "delegation-context-preassembly",
+          "open": 12
+        },
+        {
+          "blocked": 0,
+          "closed": 3,
+          "gates": [],
+          "guarded": 0,
+          "line": 447,
+          "markers": 1,
+          "name": "memento-block-reasoning-compression",
+          "open": 5
+        },
+        {
+          "blocked": 0,
+          "closed": 7,
+          "gates": [],
+          "guarded": 0,
+          "line": 720,
+          "markers": 1,
+          "name": "per-request-reasoning-budget",
+          "open": 6
+        },
+        {
+          "blocked": 1,
+          "closed": 10,
+          "gates": [],
+          "guarded": 0,
+          "line": 1215,
+          "markers": 1,
+          "name": "rao-redel-substrate-spike",
+          "open": 6
+        },
+        {
+          "blocked": 0,
+          "closed": 29,
+          "gates": [],
+          "guarded": 0,
+          "line": 1752,
+          "markers": 1,
+          "name": "reasoning-compression",
+          "open": 6
+        },
+        {
+          "blocked": 3,
+          "closed": 11,
+          "gates": [],
+          "guarded": 0,
+          "line": 2514,
+          "markers": 1,
+          "name": "reasoning-effort-levels",
+          "open": 12
+        },
+        {
+          "blocked": 0,
+          "closed": 48,
+          "gates": [],
+          "guarded": 0,
+          "line": 2941,
+          "markers": 1,
+          "name": "tool-output-compression",
+          "open": 7
+        }
+      ]
     },
     "coordinator-role-failure-modes-and-refactor.md": {
       "blocked": 0,
@@ -599,22 +681,6 @@
       "row_id": "INF-77",
       "state": "active",
       "total": 243
-    },
-    "delegation-context-preassembly.md": {
-      "blocked": 0,
-      "closed": 18,
-      "guarded": 0,
-      "last_advanced": "2026-11-01",
-      "open": 12,
-      "owner_index": "routing-and-optimization-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "RTG-10",
-      "state": "active",
-      "total": 30
     },
     "dev-harness-trace-mining.md": {
       "blocked": 0,
@@ -1430,22 +1496,6 @@
       "state": "active",
       "total": 21
     },
-    "memento-block-reasoning-compression.md": {
-      "blocked": 0,
-      "closed": 3,
-      "guarded": 0,
-      "last_advanced": "2026-08-12",
-      "open": 5,
-      "owner_index": "user-facing-harness-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "UFH-03",
-      "state": "active",
-      "total": 8
-    },
     "mi210-big-model-and-acceleration-roadmap.md": {
       "blocked": 0,
       "closed": 18,
@@ -1824,22 +1874,6 @@
       "state": "active",
       "total": 11
     },
-    "per-request-reasoning-budget.md": {
-      "blocked": 0,
-      "closed": 7,
-      "guarded": 0,
-      "last_advanced": "2026-10-31",
-      "open": 6,
-      "owner_index": "research-evaluation-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "EVL-33",
-      "state": "active",
-      "total": 13
-    },
     "promptforge-mutation-safety-contract.md": {
       "blocked": 0,
       "closed": 22,
@@ -1860,7 +1894,7 @@
       "blocked": 1,
       "closed": 64,
       "guarded": 0,
-      "last_advanced": null,
+      "last_advanced": "2026-11-02",
       "open": 43,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -1935,54 +1969,6 @@
       "row_id": "INF-60",
       "state": "active",
       "total": 33
-    },
-    "rao-redel-substrate-spike.md": {
-      "blocked": 1,
-      "closed": 10,
-      "guarded": 0,
-      "last_advanced": "2026-10-30",
-      "open": 6,
-      "owner_index": "research-evaluation-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "EVL-34",
-      "state": "active",
-      "total": 17
-    },
-    "reasoning-compression.md": {
-      "blocked": 0,
-      "closed": 29,
-      "guarded": 0,
-      "last_advanced": "2026-10-29",
-      "open": 6,
-      "owner_index": "user-facing-harness-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "UFH-05",
-      "state": "active",
-      "total": 35
-    },
-    "reasoning-effort-levels.md": {
-      "blocked": 3,
-      "closed": 11,
-      "guarded": 0,
-      "last_advanced": "2026-11-01",
-      "open": 12,
-      "owner_index": "routing-and-optimization-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "RTG-28",
-      "state": "active",
-      "total": 26
     },
     "reboot-gated-inventory-and-staging.md": {
       "blocked": 0,
@@ -2488,22 +2474,6 @@
       "state": "active",
       "total": 11
     },
-    "tool-output-compression.md": {
-      "blocked": 0,
-      "closed": 48,
-      "guarded": 0,
-      "last_advanced": "2026-11-01",
-      "open": 7,
-      "owner_index": "user-facing-harness-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "UFH-07",
-      "state": "active",
-      "total": 55
-    },
     "tool-use-eval-contract.md": {
       "blocked": 0,
       "closed": 23,
@@ -2829,30 +2799,12 @@
       "next_action": "Resolve approval-gated artifact acquisition/conversion, then run the zero-question contract probe",
       "track": "mathsmith hc formalizer eval"
     },
-    "EVL-33": {
-      "deps": [],
-      "handoff": "per-request-reasoning-budget.md",
-      "id": "EVL-33",
-      "index": "research-evaluation-index.md",
-      "line": 29,
-      "next_action": "PRB-T4-RERUN \u2014 GPU re-run of TALE-EP on the refreshed pool (4 suites, n=400); then Step 3 budget=0 think-scaffold fix",
-      "track": "per request reasoning budget"
-    },
-    "EVL-34": {
-      "deps": [],
-      "handoff": "rao-redel-substrate-spike.md",
-      "id": "EVL-34",
-      "index": "research-evaluation-index.md",
-      "line": 30,
-      "next_action": "Run a naturally-delegating workload A/B (HotpotQA/DeepDive or small base model) before Step 3 escalation",
-      "track": "rao redel substrate spike"
-    },
     "EVL-36": {
       "deps": [],
       "handoff": "repl-session-memory-maturity.md",
       "id": "EVL-36",
       "index": "research-evaluation-index.md",
-      "line": 31,
+      "line": 29,
       "next_action": "D-f1 live lease validation at its inference-owner boundary",
       "track": "repl session memory maturity"
     },
@@ -2861,7 +2813,7 @@
       "handoff": "repl-turn-efficiency.md",
       "id": "EVL-37",
       "index": "research-evaluation-index.md",
-      "line": 32,
+      "line": 30,
       "next_action": "Obtain S4-T1 live seeding proof at its inference-owner boundary; ingest the first granted real Omega capture via VB-S4-OMEGA-FIRST-AB",
       "track": "repl turn efficiency"
     },
@@ -2870,7 +2822,7 @@
       "handoff": "rlm-contested-claims-self-evaluation.md",
       "id": "EVL-39",
       "index": "research-evaluation-index.md",
-      "line": 33,
+      "line": 31,
       "next_action": "E1 \u2014 measure Base vs Depth-1 on synthetic NIAH with the E1a strict+lenient scorer; report latency and tokens separately",
       "track": "rlm contested claims self evaluation"
     },
@@ -2879,7 +2831,7 @@
       "handoff": "sliders-local-validation.md",
       "id": "EVL-43",
       "index": "research-evaluation-index.md",
-      "line": 34,
+      "line": 32,
       "next_action": "Operator decision: KB-RAG K7 precondition fired \u2014 evaluate SLIDERS DB+SQL alternative (Phase 0 falsification) now, or keep parked?",
       "track": "sliders local validation"
     },
@@ -2888,7 +2840,7 @@
       "handoff": "stale-open-audit-2026-07-18.md",
       "id": "EVL-44",
       "index": "research-evaluation-index.md",
-      "line": 35,
+      "line": 33,
       "next_action": "Recast x-mas-text-routing to telemetry-watch; internal-kb-rag stays active (KB-WM-6, KB-GS-1..4 open since 09-17)",
       "track": "stale open audit 2026 07 18"
     },
@@ -2897,7 +2849,7 @@
       "handoff": "tool-use-eval-contract.md",
       "id": "EVL-46",
       "index": "research-evaluation-index.md",
-      "line": 36,
+      "line": 34,
       "next_action": "Integrate matched CRM pair and service controls; finish tool audit, ledger, grader isolation and shared harness acceptance",
       "track": "tool use eval contract"
     },
@@ -2906,7 +2858,7 @@
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "index": "research-evaluation-index.md",
-      "line": 37,
+      "line": 35,
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
       "track": "vidya belief substrate program"
     },
@@ -2915,7 +2867,7 @@
       "handoff": "fable5-window2-findings-05c-mi210-lever-category-matrix.md",
       "id": "EVL-48",
       "index": "research-evaluation-index.md",
-      "line": 38,
+      "line": 36,
       "next_action": "L2 \u2014 quantize_q8_1 requant kill (L14 done: 4b6434a9, DEAD)",
       "track": "fable5 window2 findings 05c mi210 lever cate"
     },
@@ -2928,7 +2880,7 @@
       "handoff": "reboot-gated-inventory-and-staging.md",
       "id": "EVL-49",
       "index": "research-evaluation-index.md",
-      "line": 39,
+      "line": 37,
       "next_action": "S-05 \u2014 capture current pool/placement and actual owner window; retain accepted saved-E1 source capture",
       "track": "reboot gated inventory and staging"
     },
@@ -2939,7 +2891,7 @@
       "handoff": "dev-harness-trace-mining.md",
       "id": "EVL-52",
       "index": "research-evaluation-index.md",
-      "line": 40,
+      "line": 38,
       "next_action": "DHM-4 operator labels (30-item pilot, private); DHM-5.2 paired turn-1 probe (Codex subagent, opencode); DHM-8 hook proposal",
       "track": "dev harness trace mining"
     },
@@ -3584,7 +3536,7 @@
     },
     "RTG-08": {
       "deps": [],
-      "handoff": "context-folding-progressive.md",
+      "handoff": "context-and-token-economy.md",
       "id": "RTG-08",
       "index": "routing-and-optimization-index.md",
       "line": 19,
@@ -3600,21 +3552,12 @@
       "next_action": "Hold until autopilot trains on the swapped stack AND UFH-13 re-opens (2026-09-29); then unfreeze DAR-LAT, DAR-SPLIT-1 first",
       "track": "decision aware routing"
     },
-    "RTG-10": {
-      "deps": [],
-      "handoff": "delegation-context-preassembly.md",
-      "id": "RTG-10",
-      "index": "routing-and-optimization-index.md",
-      "line": 21,
-      "next_action": "Resolve DCP-9b purpose-label writer and DCP-10 discovery-arm prerequisites",
-      "track": "delegation context preassembly"
-    },
     "RTG-11": {
       "deps": [],
       "handoff": "dynamic-stack-concurrency.md",
       "id": "RTG-11",
       "index": "routing-and-optimization-index.md",
-      "line": 22,
+      "line": 21,
       "next_action": "G4 \u2014 measure the post-restore prompt-reuse rate on the hybrid frontdoor (slot save/restore, upstream #25913); K4a master-registry drift",
       "track": "dynamic stack concurrency"
     },
@@ -3623,7 +3566,7 @@
       "handoff": "evidence-plane-event-sourcing-and-narrative.md",
       "id": "RTG-13",
       "index": "routing-and-optimization-index.md",
-      "line": 23,
+      "line": 22,
       "next_action": "W3 \u2014 after the first automatic segment snapshot (trial 1999\u21922000), demonstrate bounded startup cost on the next AutoPilot restart",
       "track": "evidence plane event sourcing and narrative"
     },
@@ -3632,7 +3575,7 @@
       "handoff": "internal-interaction-lifecycle.md",
       "id": "RTG-14",
       "index": "routing-and-optimization-index.md",
-      "line": 24,
+      "line": 23,
       "next_action": "P3-3 \u2014 run consult_gate_probe on T2/T3 hard slices: always-consult vs targeted gate on quality, tasks/hour, false skips",
       "track": "internal interaction lifecycle"
     },
@@ -3641,7 +3584,7 @@
       "handoff": "learned-routing-controller.md",
       "id": "RTG-15",
       "index": "routing-and-optimization-index.md",
-      "line": 25,
+      "line": 24,
       "next_action": "EP-5 \u2014 re-run the outcome-label probe on rows updated after 24b43990 (or after the EPD-1b backfill); then EPD-3",
       "track": "learned routing controller"
     },
@@ -3650,7 +3593,7 @@
       "handoff": "loops-and-dashboards-audit-2026-07-05.md",
       "id": "RTG-16",
       "index": "routing-and-optimization-index.md",
-      "line": 26,
+      "line": 25,
       "next_action": "De-saturate real_suite_v1 to MDE < 0.15 before OP-1 (instability root-caused 2026-09-24; needs a larger eval run \u2014 inference)",
       "track": "loops and dashboards audit 2026 07 05"
     },
@@ -3659,7 +3602,7 @@
       "handoff": "model-capability-descriptors.md",
       "id": "RTG-17",
       "index": "routing-and-optimization-index.md",
-      "line": 27,
+      "line": 26,
       "next_action": "W5 \u2014 GATED tail: unified cascade (Phase 3) (2\u20133 weeks IF ever opened): one calibrated bilinear P(success \\| task_features, model_descriptor\u2026",
       "track": "model capability descriptors"
     },
@@ -3668,7 +3611,7 @@
       "handoff": "multi-file-coding-completion-capability.md",
       "id": "RTG-21",
       "index": "routing-and-optimization-index.md",
-      "line": 28,
+      "line": 27,
       "next_action": "MF-NDG-1 / MF-RR-1 \u2014 preserve extraction and completion metadata before rate checks",
       "track": "multi file coding completion capability"
     },
@@ -3677,7 +3620,7 @@
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
       "index": "routing-and-optimization-index.md",
-      "line": 29,
+      "line": 28,
       "next_action": "Land LOOP-10..12, disk LOOP-21..25 and LOOP-26/27 (no blocking Qs unattended, filing alarm); review NIB2-98; prove NIB2-102.b",
       "track": "non inference backlog"
     },
@@ -3686,7 +3629,7 @@
       "handoff": "objective-task-rate-goodput.md",
       "id": "RTG-23",
       "index": "routing-and-optimization-index.md",
-      "line": 30,
+      "line": 29,
       "next_action": "W3e \u2014 merge sub/autopilot-safety, then add an objective policy whose TierSpec drops neg_cost (3-D ref point, era stamp, fence)",
       "track": "objective task rate goodput"
     },
@@ -3695,25 +3638,16 @@
       "handoff": "orchestration-robustness-audit-2026-07-11.md",
       "id": "RTG-24",
       "index": "routing-and-optimization-index.md",
-      "line": 31,
+      "line": 30,
       "next_action": "P0.1 operator run/pause decision on autopilot candidate species",
       "track": "orchestration robustness audit 2026 07 11"
-    },
-    "RTG-28": {
-      "deps": [],
-      "handoff": "reasoning-effort-levels.md",
-      "id": "RTG-28",
-      "index": "routing-and-optimization-index.md",
-      "line": 32,
-      "next_action": "TB-1 \u2014 per-model budget curve on a truncation-inducing suite",
-      "track": "reasoning effort levels"
     },
     "RTG-29": {
       "deps": [],
       "handoff": "retrain-routing-models.md",
       "id": "RTG-29",
       "index": "routing-and-optimization-index.md",
-      "line": 33,
+      "line": 31,
       "next_action": "Operator decision: run a --keep-enabled bracket to actually enable live routing",
       "track": "retrain routing models"
     },
@@ -3724,7 +3658,7 @@
       "handoff": "routing-intelligence.md",
       "id": "RTG-30",
       "index": "routing-and-optimization-index.md",
-      "line": 34,
+      "line": 32,
       "next_action": "RI-18c: verify review_gate/review_verdict null on a COMPLETED live /chat in a DS41 open window; RI-19 use_memrl off; RI-24",
       "track": "routing intelligence"
     },
@@ -3733,7 +3667,7 @@
       "handoff": "scaffold-autopilot-cost-lever-deployment.md",
       "id": "RTG-32",
       "index": "routing-and-optimization-index.md",
-      "line": 35,
+      "line": 33,
       "next_action": "T0.1 \u2014 Verify AutoPilot is down (no autopilot.py, no journal activity) and get operator go-ahead for the capability-registry row",
       "track": "scaffold autopilot cost lever deployment"
     },
@@ -3742,7 +3676,7 @@
       "handoff": "searxng-search-backend.md",
       "id": "RTG-33",
       "index": "routing-and-optimization-index.md",
-      "line": 36,
+      "line": 34,
       "next_action": "SX-5/SX-6 wait on AR-3; meanwhile relabel intake-365 (Firecrawl) superseded by intake-372, matching intake-364",
       "track": "searxng search backend"
     },
@@ -3751,7 +3685,7 @@
       "handoff": "session-bus-thin-dispatcher.md",
       "id": "RTG-34",
       "index": "routing-and-optimization-index.md",
-      "line": 37,
+      "line": 35,
       "next_action": "AIR-6 \u2014 deploy exact guarded source and require ordinary-work refusal; then resume live canaries",
       "track": "session bus thin dispatcher"
     },
@@ -3760,7 +3694,7 @@
       "handoff": "shape-keyed-contention-gating.md",
       "id": "RTG-35",
       "index": "routing-and-optimization-index.md",
-      "line": 38,
+      "line": 36,
       "next_action": "REGION-SIBLING-1: merge fix/region-lock-smt-siblings-ec 4ae008a8 after operator approval (OP-77); then the q* nomenclature review",
       "track": "shape keyed contention gating"
     },
@@ -3769,7 +3703,7 @@
       "handoff": "stack-lifecycle-program.md",
       "id": "RTG-36",
       "index": "routing-and-optimization-index.md",
-      "line": 39,
+      "line": 37,
       "next_action": "OP-72 sign STACKCHG-HYGIENE, then SCG-PRIORS-WARM-b + DRAFT-SEL-2b; SCG-FASTPATH; SCG-TEST-ORDER",
       "track": "stack change governance pipeline"
     },
@@ -3778,7 +3712,7 @@
       "handoff": "tri-role-coordinator-architecture.md",
       "id": "RTG-40",
       "index": "routing-and-optimization-index.md",
-      "line": 40,
+      "line": 38,
       "next_action": "TR-4.1 \u2014 Compose role with model selection in routing.py; frozen until the DAR-regret and per-question-vector gates reopen routing",
       "track": "tri role coordinator architecture"
     },
@@ -3787,7 +3721,7 @@
       "handoff": "unified-trace-memory-service.md",
       "id": "RTG-41",
       "index": "routing-and-optimization-index.md",
-      "line": 41,
+      "line": 39,
       "next_action": "UTM-LB2.2 ingest projector events; UTM-B1 catalog-growth; UTM-B2 pairing",
       "track": "unified trace memory service"
     },
@@ -3796,7 +3730,7 @@
       "handoff": "within-role-placement-state-machine.md",
       "id": "RTG-42",
       "index": "routing-and-optimization-index.md",
-      "line": 42,
+      "line": 40,
       "next_action": "WP-8 \u2014 teach compute_max_safe_concurrency the largest-dimension rule for quarters-only eval fan-out (WP-6/WP-7 await the operator)",
       "track": "within role placement state machine"
     },
@@ -3805,7 +3739,7 @@
       "handoff": "x-mas-text-routing.md",
       "id": "RTG-45",
       "index": "routing-and-optimization-index.md",
-      "line": 43,
+      "line": 41,
       "next_action": "Monitor post-enable X-MAS telemetry for domain/latency regressions or guard bypasses; rollback is `xmas_routing.mode: off` + API reload",
       "track": "x mas text routing"
     },
@@ -3814,7 +3748,7 @@
       "handoff": "handoff-index-and-backlog-graph.md",
       "id": "RTG-46",
       "index": "routing-and-optimization-index.md",
-      "line": 44,
+      "line": 42,
       "next_action": "Human visual verdict on the :8100 graph lattice layout (4cd106c2 deployed); OP-9 hub_supervisor relaunch pending",
       "track": "handoff index and backlog graph"
     },
@@ -3823,7 +3757,7 @@
       "handoff": "dashboard-architecture-restructure.md",
       "id": "RTG-47",
       "index": "routing-and-optimization-index.md",
-      "line": 45,
+      "line": 43,
       "next_action": "Re-eyeball the tap's live ACTIVE/streaming token counters under real traffic; Phase 1b awaits operator parity",
       "track": "dashboard architecture restructure"
     },
@@ -3834,7 +3768,7 @@
       "handoff": "coordinator-role-failure-modes-and-refactor.md",
       "id": "RTG-48",
       "index": "routing-and-optimization-index.md",
-      "line": 46,
+      "line": 44,
       "next_action": "R-7 \u2014 Assign a successor to retired namespace owner mainD; then reconcile the C49 references",
       "track": "coordinator role failure modes"
     },
@@ -3846,7 +3780,7 @@
       "handoff": "fleet-fanout-measurement.md",
       "id": "RTG-49",
       "index": "routing-and-optimization-index.md",
-      "line": 47,
+      "line": 45,
       "next_action": "FM-7 journal delegation accounting + FM-8 subagent types/dispatch hook (parallel), then FM-9 doctrine diff; FM-2 Stage 1 after",
       "track": "fleet fanout measurement"
     },
@@ -3858,7 +3792,7 @@
       "handoff": "wrap-up-division-of-labor-policy.md",
       "id": "RTG-51",
       "index": "routing-and-optimization-index.md",
-      "line": 48,
+      "line": 46,
       "next_action": "Reconcile the Phase-5 instruction migration matrix and prepare protected policy signoff; retain the real Auditor canary",
       "track": "wrap up division of labor policy"
     },
@@ -3870,7 +3804,7 @@
       "handoff": "loop-owned-fleet-implementation.md",
       "id": "RTG-52",
       "index": "routing-and-optimization-index.md",
-      "line": 49,
+      "line": 47,
       "next_action": "P4-1 \u2014 adjudicate the 7-day role-shrink gate; then P5-1 hook-surface trust-boundary analysis and P5-2 NL-only fixture",
       "track": "loop owned fleet implementation"
     },
@@ -3879,7 +3813,7 @@
       "handoff": "qwen-chat-template-evaluation.md",
       "id": "RTG-54",
       "index": "routing-and-optimization-index.md",
-      "line": 50,
+      "line": 48,
       "next_action": "Prepare CT-12.3d deployed orchestrator escaped-cost check; review CT-21 scorer cause and prospective measurement",
       "track": "qwen chat template evaluation"
     },
@@ -3890,7 +3824,7 @@
       "handoff": "promptforge-mutation-safety-contract.md",
       "id": "RTG-55",
       "index": "routing-and-optimization-index.md",
-      "line": 51,
+      "line": 49,
       "next_action": "MHS-3d \u2014 operator runs the v10 episodic re-pin RATIFY (run_v10_episodic_repin_ratify_20260917.sh); then MHS-12",
       "track": "promptforge mutation safety"
     },
@@ -3899,7 +3833,7 @@
       "handoff": "typed-decision-plane.md",
       "id": "RTG-56",
       "index": "routing-and-optimization-index.md",
-      "line": 52,
+      "line": 50,
       "next_action": "Run fresh three-arm shadow at the inference owner\u2019s boundary; retain inference gates",
       "track": "typed decision plane"
     },
@@ -3911,7 +3845,7 @@
       "handoff": "kv-unified-stack-rollout.md",
       "id": "RTG-57",
       "index": "routing-and-optimization-index.md",
-      "line": 53,
+      "line": 51,
       "next_action": "Follow the 2026-11-02 execution contract: reconcile capacity evidence and prepare remaining candidate gates; preserve HPR exposure",
       "track": "kv unified stack rollout"
     },
@@ -3924,7 +3858,7 @@
       "handoff": "kv-prefix-fork-and-paged-attention.md",
       "id": "RTG-58",
       "index": "routing-and-optimization-index.md",
-      "line": 54,
+      "line": 52,
       "next_action": "Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort",
       "track": "kv prefix fork and paged attention"
     },
@@ -3933,7 +3867,7 @@
       "handoff": "churn-pipeline.md",
       "id": "RTG-62",
       "index": "routing-and-optimization-index.md",
-      "line": 55,
+      "line": 53,
       "next_action": "SA-1 (merge into sticky-slot change: ready-row admission, start cooldown) then SA-2/SA-3/JEV-3",
       "track": "churn pipeline"
     },
@@ -3942,7 +3876,7 @@
       "handoff": "backlog-refactor-2026-11.md",
       "id": "RTG-63",
       "index": "routing-and-optimization-index.md",
-      "line": 56,
+      "line": 54,
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
       "track": "backlog refactor 2026-11"
     },
@@ -3957,33 +3891,6 @@
       "next_action": "Resolve HS-OD-4 token contract; prepare P6 shared tools and HS-19d.P0 source audits",
       "track": "harness selection and integration"
     },
-    "UFH-03": {
-      "deps": [],
-      "handoff": "memento-block-reasoning-compression.md",
-      "id": "UFH-03",
-      "index": "user-facing-harness-index.md",
-      "line": 21,
-      "next_action": "S2 Stage-1 format-learning smoke on Qwen3-0.6B (fill compliance/compression/MATH-500 table)",
-      "track": "memento block reasoning compression"
-    },
-    "UFH-05": {
-      "deps": [],
-      "handoff": "reasoning-compression.md",
-      "id": "UFH-05",
-      "index": "user-facing-harness-index.md",
-      "line": 22,
-      "next_action": "Bind the published finite actor source to a reviewed native recipe; keep model execution with its owner",
-      "track": "reasoning compression"
-    },
-    "UFH-07": {
-      "deps": [],
-      "handoff": "tool-output-compression.md",
-      "id": "UFH-07",
-      "index": "user-facing-harness-index.md",
-      "line": 23,
-      "next_action": "TOC-MP-1 pointer-reachability test (zero inference), then TOC-MP-2/3 A/B design text",
-      "track": "tool output compression"
-    },
     "UFH-08": {
       "deps": [
         "UFH-01"
@@ -3991,13 +3898,13 @@
       "handoff": "harness-improvement-loop.md",
       "id": "UFH-08",
       "index": "user-facing-harness-index.md",
-      "line": 24,
+      "line": 21,
       "next_action": "Validate HIL-15b failure recordings for HIL-16; run the four-family cohort for HIL-18 without pooling incompatible cohorts",
       "track": "harness improvement loop"
     },
     "UFH-12": {
       "deps": [
-        "UFH-07",
+        "RTG-08",
         "INF-78",
         "EVL-37",
         "UFH-01"
@@ -4005,7 +3912,7 @@
       "handoff": "repl-embedding-retrieval.md",
       "id": "UFH-12",
       "index": "user-facing-harness-index.md",
-      "line": 25,
+      "line": 22,
       "next_action": "REPL-EMB-2.8b trace write side, then 2.9-2.12 package gates; UFH-12-PROD-ADOPT is a separate decision",
       "track": "repl embedding retrieval"
     },

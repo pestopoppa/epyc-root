@@ -172,7 +172,7 @@ The practical path for EPYC is layered: YaRN for the 256K-to-1M extension case (
 - [ReSum Context Summarization](../research/deep-dives/resum-context-summarization.md) -- Diminishing returns at 128K, compaction timing for extended windows
 - [Context-Folding / FoldGRPO](../research/deep-dives/context-folding-foldgrpo.md) -- 32K beats 327K finding demonstrates that compression can outperform raw extension
 - [yarn-context-extension-research handoff](../handoffs/active/yarn-context-extension-research.md) -- YaRN CLI flags, model support, open research questions
-- [memento-block-reasoning-compression handoff](../handoffs/active/memento-block-reasoning-compression.md) -- Block masking feasibility in llama.cpp, SFT training design, composability analysis
+- [memento-block-reasoning-compression handoff](../handoffs/active/context-and-token-economy.md#track-memento-block-reasoning-compression) -- Block masking feasibility in llama.cpp, SFT training design, composability analysis
 - [intake-153](https://arxiv.org/abs/2512.24601) Recursive Language Models -- Theoretical foundation; EPYC implements ~80% of RLM architecture
 - [intake-154](https://arxiv.org/abs/2510.11967) Context-Folding -- Branch/fold call stack; sub-linear context growth
 - [intake-155](https://arxiv.org/abs/2510.24699) AgentFold -- Two-level proactive folding; 92% context reduction; sub-linear growth
@@ -276,7 +276,7 @@ Sources: [YaRN context-extension research](../handoffs/active/yarn-context-exten
   - **Validation.** A blind 50-item labelling sheet waits for operator labels. Results are relative to the pinned local judge and never comparable to published figures.
 - **V11-100, the YaRN K-shift pure-rotation fix** (`experimental/yarn-kshift-fix-20261021` @ `b67a5b9bc`), folds into the consolidation after the C2 CAS (CH-23). Its test travels with the commit. The native-window non-regression gate (YaRN must not regress inside the native window) remains a hard gate on the champion.
 
-Sources: [YaRN context extension research](../handoffs/active/yarn-context-extension-research.md), [RAO/ReDel substrate spike](../handoffs/active/rao-redel-substrate-spike.md), [Progress dpf-sample-yarn](../progress/2026-10/2026-10-21-dpf-sample-yarn.md), [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md), [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md)
+Sources: [YaRN context extension research](../handoffs/active/yarn-context-extension-research.md), [RAO/ReDel substrate spike](../handoffs/active/context-and-token-economy.md#track-rao-redel-substrate-spike), [Progress dpf-sample-yarn](../progress/2026-10/2026-10-21-dpf-sample-yarn.md), [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md), [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md)
 
 ## Compiled Update — 2026-10-26 (wrap-up, workspace-58)
 

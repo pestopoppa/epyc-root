@@ -20,9 +20,17 @@
    "target": "stack-lifecycle-program.md",
    "track": "capability-registry-and-promotion"
   },
+  "context-folding-progressive.md": {
+   "target": "context-and-token-economy.md",
+   "track": null
+  },
   "conversation-stack.md": {
    "target": "speech-and-multimodal.md",
    "track": null
+  },
+  "delegation-context-preassembly.md": {
+   "target": "context-and-token-economy.md",
+   "track": "delegation-context-preassembly"
   },
   "delta-mem-reproduction.md": {
    "target": "model-evaluation-queue.md",
@@ -84,6 +92,10 @@
    "target": "engineering-hygiene-backlog.md",
    "track": "loop-state-offraid-backup"
   },
+  "memento-block-reasoning-compression.md": {
+   "target": "context-and-token-economy.md",
+   "track": "memento-block-reasoning-compression"
+  },
   "minddr-deep-research-mode.md": {
    "target": "model-evaluation-queue.md",
    "track": "minddr-deep-research-mode"
@@ -121,6 +133,10 @@
    "target": "engineering-hygiene-backlog.md",
    "track": null
   },
+  "per-request-reasoning-budget.md": {
+   "target": "context-and-token-economy.md",
+   "track": "per-request-reasoning-budget"
+  },
   "prompt-construction-determinism.md": {
    "target": "eval-tower-program.md",
    "track": "prompt-construction-determinism"
@@ -129,9 +145,21 @@
    "target": "model-evaluation-queue.md",
    "track": "qwen-mtp-llamacpp-port"
   },
+  "rao-redel-substrate-spike.md": {
+   "target": "context-and-token-economy.md",
+   "track": "rao-redel-substrate-spike"
+  },
   "re4-protocol-redesign.md": {
    "target": "eval-tower-program.md",
    "track": "re4-protocol-redesign"
+  },
+  "reasoning-compression.md": {
+   "target": "context-and-token-economy.md",
+   "track": "reasoning-compression"
+  },
+  "reasoning-effort-levels.md": {
+   "target": "context-and-token-economy.md",
+   "track": "reasoning-effort-levels"
   },
   "refactoring-multirepo-2026-10.md": {
    "target": "engineering-hygiene-backlog.md",
@@ -169,6 +197,10 @@
   "tidar-one-pass-variant-b.md": {
    "target": "model-evaluation-queue.md",
    "track": "tidar-one-pass-variant-b"
+  },
+  "tool-output-compression.md": {
+   "target": "context-and-token-economy.md",
+   "track": "tool-output-compression"
   },
   "tq3-quantization-evaluation.md": {
    "target": "quantization-and-low-bit.md",
@@ -211,6 +243,14 @@
   "EVL-32": {
    "target": "EVL-02",
    "track": "minimax-h3-video-generation-evaluation"
+  },
+  "EVL-33": {
+   "target": "RTG-08",
+   "track": "per-request-reasoning-budget"
+  },
+  "EVL-34": {
+   "target": "RTG-08",
+   "track": "rao-redel-substrate-spike"
   },
   "EVL-35": {
    "target": "EVL-14",
@@ -280,6 +320,10 @@
    "target": "RTG-36",
    "track": "capability-registry-and-promotion"
   },
+  "RTG-10": {
+   "target": "RTG-08",
+   "track": "delegation-context-preassembly"
+  },
   "RTG-18": {
    "target": "handoffs/completed/model-stack-change-standardization-audit.md",
    "track": null,
@@ -297,6 +341,10 @@
   "RTG-27": {
    "target": "EVL-14",
    "track": "prompt-construction-determinism"
+  },
+  "RTG-28": {
+   "target": "RTG-08",
+   "track": "reasoning-effort-levels"
   },
   "RTG-38": {
    "target": "RTG-36",
@@ -323,9 +371,21 @@
    "target": "RTG-22",
    "track": "refactoring-multirepo-2026-10"
   },
+  "UFH-03": {
+   "target": "RTG-08",
+   "track": "memento-block-reasoning-compression"
+  },
   "UFH-04": {
    "target": "EVL-02",
    "track": "minddr-deep-research-mode"
+  },
+  "UFH-05": {
+   "target": "RTG-08",
+   "track": "reasoning-compression"
+  },
+  "UFH-07": {
+   "target": "RTG-08",
+   "track": "tool-output-compression"
   },
   "UFH-11": {
    "target": "RTG-22",

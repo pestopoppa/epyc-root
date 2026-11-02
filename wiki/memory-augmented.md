@@ -615,11 +615,11 @@ MEASUREMENT.md trust-boundary ask; M-12a/M-12b satisfy its intent and **UTM-M9 m
   2026-09-07 update: UTM-B1..B4, the one-consumer correction, and the UTM-M9 operator-gate note.
 - [`master-handoff-index.md`](../handoffs/active/master-handoff-index.md) — OP-42 (queued):
   instrument admission and the single inference window, M-12a before M-12b.
-- [`memento-block-reasoning-compression.md`](../handoffs/active/memento-block-reasoning-compression.md)
+- [`memento-block-reasoning-compression.md`](../handoffs/active/context-and-token-economy.md#track-memento-block-reasoning-compression)
   — the 2026-09-07 sawtooth correction (`intake-1315#04`).
 - [`repl-session-memory-maturity.md`](../handoffs/active/repl-session-memory-maturity.md) — D-h/D-i:
   the shape-capture-before-digest boundary and the kernel-to-context channel enumeration.
-- [`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) — the BEAM
+- [`context-folding-progressive.md`](../handoffs/active/context-and-token-economy.md) — the BEAM
   Table 8 CF-3c corroboration row.
 
 ## Compiled Update — 2026-08-08: memory operations need provenance, calibrated verification, and a no-memory control
@@ -723,7 +723,7 @@ this page's ownership is the store schema they depend on.
 
 ### Source References (2026-08-25)
 
-- [`rao-redel-substrate-spike.md`](../handoffs/active/rao-redel-substrate-spike.md) — the 5-sub-decision taxonomy step-3 pre-work (files, LoC, 29 tests, polarity caveat), the Step 1/2 substrate results (depth-0 on every natural sample; forced-delegation arm-A truncation finding), the SkyRL rollout-tree accounting scope with its minimal data contract and review requirement, and the OOLONG adoption consideration.
+- [`rao-redel-substrate-spike.md`](../handoffs/active/context-and-token-economy.md#track-rao-redel-substrate-spike) — the 5-sub-decision taxonomy step-3 pre-work (files, LoC, 29 tests, polarity caveat), the Step 1/2 substrate results (depth-0 on every natural sample; forced-delegation arm-A truncation finding), the SkyRL rollout-tree accounting scope with its minimal data contract and review requirement, and the OOLONG adoption consideration.
 - [`2026-05-19-rao-rlm-cluster.md`](../research/deep-dives/2026-05-19-rao-rlm-cluster.md) — the cluster source: intake-548's 5-sub-decision taxonomy and stopping-decision gap, intake-547#01's model-dependent depth direction, and the RAO/ReDel substrate framing.
 - [`meta-harness-optimization.md`](../handoffs/completed/meta-harness-optimization.md) — the RLM-pattern coverage baseline (≈80%, R1–R6) that the taxonomy work extends and the Tier-3 in-house fallback the spike arbitrates.
 - [intake-868](https://github.com/volcengine/verl) in [`research/intake_index.yaml`](../research/intake_index.yaml) — SkyRL `examples/train/rlm`: the parent/child rollout-tree accounting model (rollout_id / parent / depth / child_index) adopted as the accounting shape; `intake-547#01` for the depth direction-of-effect.
@@ -732,7 +732,7 @@ this page's ownership is the store schema they depend on.
 ## Source References
 
 - [Unified Trace / Memory Service](../handoffs/active/unified-trace-memory-service.md) — UTM-V1…V6 shadow schema, verifier, distiller, credit, and lifecycle matrix
-- [Context-Folding](../handoffs/active/context-folding-progressive.md) — CF-AM-1 matched parallel-gist versus folding/raw-evidence comparison
+- [Context-Folding](../handoffs/active/context-and-token-economy.md) — CF-AM-1 matched parallel-gist versus folding/raw-evidence comparison
 - [REPL Session Memory](../handoffs/active/repl-session-memory-maturity.md) — durable session ownership and uncertain-side-effect recovery requirements
 - Intakes 1008/1015, 1017/1018, and 1022/1023 in [the research index](../research/intake_index.yaml) — Cognitive Workspace, ActiveMem, VerMem, Mem0, and Memory-R1 claim ledgers
 
@@ -917,7 +917,7 @@ The connection between memory and the autopilot is especially significant. Befor
 - [EvoScientist deep dive](../research/deep-dives/evoscientist-multi-agent-evolution.md) -- Evolution Manager's three knowledge distillation channels, strategy store motivation, ablation evidence (-45.83 gap without evolution)
 - [Paperclip & AgentRxiv deep dive](../research/deep-dives/agent-architectures-paperclip-agentrxiv.md) -- retrieval-augmented iteration (AgentRxiv: plateau without retrieval, continued improvement with N=5), knowledge accumulation protocol
 - [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md) -- strategy store implementation, Evolution Manager species, species retrieval integration
-- [context-folding-progressive.md](../handoffs/active/context-folding-progressive.md) -- multi-tier condensation, compaction quality evaluation methodology, RL-trained compaction roadmap
+- [context-folding-progressive.md](../handoffs/active/context-and-token-economy.md) -- multi-tier condensation, compaction quality evaluation methodology, RL-trained compaction roadmap
 - Hermes Agent: [pinned session search](https://github.com/NousResearch/hermes-agent/blob/369cc6b07f26f4454f56555f1001ea9eb7d8d948/tools/session_search_tool.py#L1-L12) uses database retrieval without LLM calls; [memory snapshots](https://github.com/NousResearch/hermes-agent/blob/369cc6b07f26f4454f56555f1001ea9eb7d8d948/tools/memory_tool.py#L1-L12) enter the prompt at session start. The corrected intake-117#record replaces the earlier FTS5-plus-LLM-summarization description; periodic mutation is not an established outcome benefit.
 - [intake-140](https://github.com/martian-engineering/lossless-claw) Lossless Claw -- DAG-based hierarchical summarization, immutable store + active context, deterministic three-level compaction (worth_investigating)
 - [intake-141](https://arxiv.org/abs/2602.22402) CMV -- DAG-based context versioning with snapshot/branch/trim, three-pass structurally lossless trimming (worth_investigating)
@@ -935,7 +935,7 @@ The connection between memory and the autopilot is especially significant. Befor
 - [intake-715](https://arxiv.org/abs/2605.22721) DecentMem ("Self-Evolving Multi-Agent Systems via Decentralized Memory") -- decentralized per-agent dual-pool memory (exploitation + exploration) with online LLM-judge reweighting + claimed O(log T) regret bound; only the dual-pool structure transfers to the autopilot strategy_store, the per-stage judge-reweighting conflicts with AP-27 + the P17.BT-4 KILL; no released code, cloud-favorable small backbones on frameworks we don't run (adopt_patterns)
 - [progress 2026-07-05](../progress/2026-07/2026-07-05.md) -- exact episodic FAISS health (`526,729/526,729`, `100.0%` overlap, `0` missing/stale IDs) and current AutoPilot live state after the Fable restart
 - [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md) -- current-state banner for the live AutoPilot PID, W8 blocker, and exact FAISS diagnostic summary
-- [rao-redel-substrate-spike.md](../handoffs/active/rao-redel-substrate-spike.md) -- the episodic store's 5-sub-decision labelling axis (landed 2026-05-19, column/index/backfill/29 tests, zero producers per the 2026-08-03 audit) and the SkyRL rollout-tree accounting design (scoped 2026-07-29, independent review required, no code change)
+- [rao-redel-substrate-spike.md](../handoffs/active/context-and-token-economy.md#track-rao-redel-substrate-spike) -- the episodic store's 5-sub-decision labelling axis (landed 2026-05-19, column/index/backfill/29 tests, zero producers per the 2026-08-03 audit) and the SkyRL rollout-tree accounting design (scoped 2026-07-29, independent review required, no code change)
 - [2026-05-19-rao-rlm-cluster.md](../research/deep-dives/2026-05-19-rao-rlm-cluster.md) -- the intake-548 stopping-decision gap / 5-sub-decision taxonomy, the intake-547#01 model-dependent depth caveat, ReDel substrate viability
 - [learned-routing-controller.md](../handoffs/active/learned-routing-controller.md) -- RTG-15 EPD-3: the canonical `MemoryRecord.embedding_text()` with no live callers, the three drifted production writers, the corpus-pinned golden plus delegation guard (EPD-3-R2/R3), and the inference-gated `priority` drop (EPD-3-R1). Landed as `epyc-orchestrator` `9096a600`
 - [progress/2026-09/2026-09-14-noninf-backlog.md](../progress/2026-09/2026-09-14-noninf-backlog.md) -- the noninf sweep: the per-writer embedding-drift table, the M-12e Tulving re-score attribution split (subset-only 0.5755 / bin-only 0.5402 / both 0.5684), and the CAS-validity counts (37/45 partial, 30/45 with <2 ground-truth items)
@@ -1391,7 +1391,7 @@ The filed consequence is a monitor, not a checkbox. Trigger: Track B Phase 0b is
 ### Source References (2026-10-20 memory delta)
 
 - [Engram conditional memory](../handoffs/active/engram-conditional-memory.md) — COUNT intake update and the Track B arm trigger.
-- [Delegation context pre-assembly](../handoffs/active/delegation-context-preassembly.md) — VibeMemBench note: dive the released harness before adopting a coding-agent memory comparison.
+- [Delegation context pre-assembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) — VibeMemBench note: dive the released harness before adopting a coding-agent memory comparison.
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — write-side rules any future memory measurement must follow.
 
 ## Compiled Update — 2026-10-21 (sweep 3): memory-lesson revision, SkillBank readout and CL-Bench instrument specs

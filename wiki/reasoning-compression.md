@@ -34,7 +34,7 @@ The TALE-EP evaluation designed on 2026-08-23 has run for the first time. It use
   - **livecodebench:** TALE saved −18.6% and static saved −27.9%, with accuracy vacuous on both arms.
   - **Rule outcome.** ADOPT fails: only math clears ≥30% net at ≥−1 pp. ADOPT_STATIC_INSTEAD fails: static loses badly on olympiadbench. DECLINE fails: the worst suite is −1.0 pp and the mean net reduction is 34.6%. The rule's next step is n=400 per suite.
 
-  ([per-request-reasoning-budget](../handoffs/active/per-request-reasoning-budget.md))
+  ([per-request-reasoning-budget](../handoffs/active/context-and-token-economy.md#track-per-request-reasoning-budget))
 - **The three defects were in shared plumbing, not in TALE's scoring.**
   - mmlu_pro never ran. The A–J gold met an A–H scorer with an empty config (2,053 I/J rows).
   - livecodebench's 100% comes from the stale live pool's `substring 'def '` oracle.
@@ -42,9 +42,9 @@ The TALE-EP evaluation designed on 2026-08-23 has run for the first time. It use
   - Fixes (research `52595b9b`, orchestrator `f0015306`, branch only): `choice_labels`, a refusal of substring oracles on code rows, seeded source-stratified sampling (`--sample-seed`), an oracle preflight that exits 2, three-valued scoring, and a refreshed re-run pool (sha256 `3c3b498a…`).
   - The belief kernel ingested 24 rows for math and olympiadbench only. Those rows now carry VB-PRB-T4-CAVEAT.
 
-  ([per-request-reasoning-budget](../handoffs/active/per-request-reasoning-budget.md), [sub-scorer-fix](../progress/2026-09/2026-09-17-sub-scorer-fix.md), [Benchmark Methodology](benchmark-methodology.md))
+  ([per-request-reasoning-budget](../handoffs/active/context-and-token-economy.md#track-per-request-reasoning-budget), [sub-scorer-fix](../progress/2026-09/2026-09-17-sub-scorer-fix.md), [Benchmark Methodology](benchmark-methodology.md))
 - **The TrimR 2026-04-09 "Math (GSM8K)" number used the same first-n loader.** It was already labelled GSM8K, so it needs no caveat, and `eval_trimr.py` now uses the stratified sampler. ([sub-scorer-fix](../progress/2026-09/2026-09-17-sub-scorer-fix.md))
-- **Still not a replication of the paper.** GSM8K appears, but on a different model, so the run neither confirms nor refutes `intake-1215#record`'s published numbers. ([per-request-reasoning-budget](../handoffs/active/per-request-reasoning-budget.md))
+- **Still not a replication of the paper.** GSM8K appears, but on a different model, so the run neither confirms nor refutes `intake-1215#record`'s published numbers. ([per-request-reasoning-budget](../handoffs/active/context-and-token-economy.md#track-per-request-reasoning-budget))
 
 ### Open questions
 
@@ -53,7 +53,7 @@ The TALE-EP evaluation designed on 2026-08-23 has run for the first time. It use
 
 ### Sources
 
-- [per-request-reasoning-budget.md](../handoffs/active/per-request-reasoning-budget.md): the GPU run table, the rule application, the defects and their fix, the re-run box, and the pre-run harness gaps that were closed.
+- [per-request-reasoning-budget.md](../handoffs/active/context-and-token-economy.md#track-per-request-reasoning-budget): the GPU run table, the rule application, the defects and their fix, the re-run box, and the pre-run harness gaps that were closed.
 - [2026-09-17-sub-scorer-fix.md](../progress/2026-09/2026-09-17-sub-scorer-fix.md): the root causes, the refreshed pool composition at n=400, and the TrimR loader note.
 - [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md): the stale-pool history behind the vacuous livecodebench cell.
 
@@ -76,7 +76,7 @@ The template-axis amendment (2026-08-21/22) was practiced at CT-E7 but not yet e
 
 ### Source References (2026-08-23 evening additions)
 
-- [reasoning-effort-levels.md](../handoffs/active/reasoning-effort-levels.md) — the E-7 validator extension (`0e801e68`), the `active_kernel_era` v8→v9 correction (`7fe84d9c`), the era cross-check (`2746c652`), the template-axis amendment now enforced
+- [reasoning-effort-levels.md](../handoffs/active/context-and-token-economy.md#track-reasoning-effort-levels) — the E-7 validator extension (`0e801e68`), the `active_kernel_era` v8→v9 correction (`7fe84d9c`), the era cross-check (`2746c652`), the template-axis amendment now enforced
 - [progress/2026-08/2026-08-23.md](../progress/2026-08/2026-08-23.md) — the E-7 validator session (extension + era correction + structural enforcement) and the CT-E7b propagation
 
 ## Compiled Update — 2026-08-23: the per-request budget path is one field wide, TALE-EP is the unblock, and effort calibration is now template-stamped
@@ -124,9 +124,9 @@ The per-request budget path's root cause was traced 2026-04-17: on **hybrid SSM+
 
 ## Source References
 
-- [reasoning-compression.md](../handoffs/active/reasoning-compression.md) — TALE-EP Tier-1 rung + caveats (RC-T1/T2/T3), the OPSDC 2026-08-10 parity correction, the 2026-07-25 Tier-0/BCI rungs and the 2026-07-28 looped-transformer lineage (compiled elsewhere; see the page-top pointer)
-- [reasoning-effort-levels.md](../handoffs/active/reasoning-effort-levels.md) — the per-model calibration invariant, the no-bare-`max_tokens`-cap design constraint, the §Token-budget study (compiled on the sibling pages), and the E-7 template-axis amendment with the CT-E7 template-stamped recalibration
-- [per-request-reasoning-budget.md](../handoffs/active/per-request-reasoning-budget.md) — the hybrid-SSM budget=0 root cause and fix candidates, PRB-T1 (`--jinja` obsolete + residual inert default), PRB-T2/PRB-T4 (TALE-EP evaluation design and decision rule), PRB-T3 (top-level `reasoning_effort` dropped, `chat_template_kwargs` the only route), the stop-signal abstraction, the DeepConf-offline negative
+- [reasoning-compression.md](../handoffs/active/context-and-token-economy.md#track-reasoning-compression) — TALE-EP Tier-1 rung + caveats (RC-T1/T2/T3), the OPSDC 2026-08-10 parity correction, the 2026-07-25 Tier-0/BCI rungs and the 2026-07-28 looped-transformer lineage (compiled elsewhere; see the page-top pointer)
+- [reasoning-effort-levels.md](../handoffs/active/context-and-token-economy.md#track-reasoning-effort-levels) — the per-model calibration invariant, the no-bare-`max_tokens`-cap design constraint, the §Token-budget study (compiled on the sibling pages), and the E-7 template-axis amendment with the CT-E7 template-stamped recalibration
+- [per-request-reasoning-budget.md](../handoffs/active/context-and-token-economy.md#track-per-request-reasoning-budget) — the hybrid-SSM budget=0 root cause and fix candidates, PRB-T1 (`--jinja` obsolete + residual inert default), PRB-T2/PRB-T4 (TALE-EP evaluation design and decision rule), PRB-T3 (top-level `reasoning_effort` dropped, `chat_template_kwargs` the only route), the stop-signal abstraction, the DeepConf-offline negative
 - [qwen-chat-template-evaluation.md](../handoffs/active/qwen-chat-template-evaluation.md) — CT-E7 (first template-stamped recalibration) and the CT-series context for the template axis
 - [progress/2026-08/2026-08-21-research-intake.md](../progress/2026-08/2026-08-21-research-intake.md) — the chat-template intake round (commit `612fbd99`, 12 closed tasks) that produced RC-T1/T2, PRB-T1/T2/T3, and the E-7 amendment
 - [progress/2026-08/2026-08-22-research-intake.md](../progress/2026-08/2026-08-22-research-intake.md) — the CT-E7 terse-pilot recalibration with template `1443ea9ab4bb` in the stamp
@@ -144,7 +144,7 @@ A [source-bound public Markdown replay](../artifacts/ni08/td30f-public-replay-20
 - **Closed as OBSOLETE by audit:** RP-4 (per-model penalty policy) and RP-5 (clean Q4-vs-IQ2 parity with fence) were 122B-specific, and that lane was retired 2026-09-22/23. The SEAL control-vector experiment for Qwen3-32B closed because the GGUF was deleted 2026-10-20. These are lane closures, not negative results; the repetition-penalty fence findings above remain as recorded.
 - **Summarizer quality closed by reference:** context-folding Phase 2a found 30B-A3B the minimum viable summarizer (3.0/3.0).
 
-Sources: [reasoning-compression handoff](../handoffs/active/reasoning-compression.md); [reasoning-effort-levels handoff](../handoffs/active/reasoning-effort-levels.md); [tool-output-compression handoff](../handoffs/active/tool-output-compression.md)
+Sources: [reasoning-compression handoff](../handoffs/active/context-and-token-economy.md#track-reasoning-compression); [reasoning-effort-levels handoff](../handoffs/active/context-and-token-economy.md#track-reasoning-effort-levels); [tool-output-compression handoff](../handoffs/active/context-and-token-economy.md#track-tool-output-compression)
 
 ## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 
@@ -152,9 +152,9 @@ Sources: [reasoning-compression handoff](../handoffs/active/reasoning-compressio
 
 - **A legitimate structured repetition can be cut by the streaming repetition guard.** One CPU `llm_call` asking for 24 identical JSON objects with no schema/grammar was stopped after 100 chunks mid-object four, leaving invalid JSON. Relabeling 649 historical JSON-shaped tap rows gave 575 code-inferred constrained call sites, 74 unrecoverable, and 16 apparent last-chunk cuts among the inferred class (unproven, since request flags were not recorded). This is one controlled case, not a prevalence estimate; the plan is a strict per-request opt-out with the default unchanged. ([source](../progress/2026-10/2026-10-29.md))
 - **The per-request thinking budget is wired but off.** `repl_thinking_budget` (`6ed745fa`) emits existing template fields only for positive budgets and keeps legacy cache keys for off/unset/zero. No enablement, rescore or measured improvement. ([source](../handoffs/active/agentic-serving-harness-fixes.md))
-- **PRB-T4 is prepared, not run.** Native normal/STOP controls and diagnostic writer fixtures are retained; valid capped responses are known and scored under original logic, missing usage and interrupted transport are UNKNOWN. ([source](../handoffs/active/per-request-reasoning-budget.md))
+- **PRB-T4 is prepared, not run.** Native normal/STOP controls and diagnostic writer fixtures are retained; valid capped responses are known and scored under original logic, missing usage and interrupted transport are UNKNOWN. ([source](../handoffs/active/context-and-token-economy.md#track-per-request-reasoning-budget))
 
-Sources: [2026-10-29 progress](../progress/2026-10/2026-10-29.md) · [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md) · [per-request-reasoning-budget](../handoffs/active/per-request-reasoning-budget.md)
+Sources: [2026-10-29 progress](../progress/2026-10/2026-10-29.md) · [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md) · [per-request-reasoning-budget](../handoffs/active/context-and-token-economy.md#track-per-request-reasoning-budget)
 
 ## Compiled Update — 2026-11-01 (10-31 intake deep dives, workspace-58)
 

@@ -132,7 +132,7 @@ them.
 | L4 | **`olympiadbench_numeric`** | *(weak)* harder-tier | 100–150 | ⚠ its clean-numeric filter selects the *easy-answer* subset → also saturates (~89%). Use L5 for a real ceiling-breaker. |
 | L5 | **`olympiadbench_hard`** | **the real non-saturated discriminator** | 155 | Expression/Tuple/set items (`math_symbolic` sympy scorer). 64–69% for frontier-ish models — genuine headroom. Needs budget ≥ 32768 (some models loop/ramble longer). |
 | A | **thinking ablation** (`--reasoning on/off`) | is the native `<think>` channel worth it? | 50 | see §6 |
-| B | **effort / `--reasoning-budget`** | can native thinking be made safe/cheap? | 50 | see §6; ref [`reasoning-effort-levels.md`](../../handoffs/active/reasoning-effort-levels.md) |
+| B | **effort / `--reasoning-budget`** | can native thinking be made safe/cheap? | 50 | see §6; ref [`reasoning-effort-levels.md`](../../handoffs/active/context-and-token-economy.md#track-reasoning-effort-levels) |
 | P2a | **HumanEval** | validation rung for the code-execution scorer | 164 | canonical solutions must pass before an arm result is trusted; saturated on the prior three-arm read, so it is not a selector |
 | P2b | **LCB-hard** | contest-algorithmics discriminator | 53 | cached historical window is contamination-suspect; use the newer-window refresh before making a new decision-grade comparison |
 | P2c | **BCB-hard** | library/API regression discriminator | 90 oracle-eligible | use as a regression/deployment screen, not a family-ranking proxy when it is non-discriminating |
@@ -387,5 +387,5 @@ is self-describing. Era-stamp; append, never overwrite historical numbers (MEASU
 
 *Cross-refs:* [`architect-model-selection-bench.md`](../../handoffs/active/model-evaluation-queue.md)
 (the live instance) · [`architect-model-selection-2026-07-20.md`](architect-model-selection-2026-07-20.md)
-(evidence/decision-tree) · [`reasoning-effort-levels.md`](../../handoffs/active/reasoning-effort-levels.md)
+(evidence/decision-tree) · [`reasoning-effort-levels.md`](../../handoffs/active/context-and-token-economy.md#track-reasoning-effort-levels)
 (the effort ladder) · `MEASUREMENT.md` (instrument constitution).

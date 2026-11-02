@@ -113,7 +113,7 @@ reached the queue: KTransformers runtime declined for now; MI210 port investigat
 OP-TOC-RD-1A (DECIDED 2026-10-06, choice 1B: both credential fixtures stay scanned) and OP-80 (DECIDED 2026-10-07:
 wire `check_cpu_fa_real_mask_identity` into `run.py`) were pruned from the queue at the 2026-10-22 operator `/wrap-up`.
 OP-73 (APPLIED 2026-10-06, option 2A host activation) was pruned from the queue at the 2026-10-23 operator /wrap-up. Recorded in [non-inference-backlog.md](engineering-hygiene-backlog.md) → LR-6a.
-Recorded in [tool-output-compression.md](tool-output-compression.md) → TOC-RD-1a and
+Recorded in [tool-output-compression.md](context-and-token-economy.md#track-tool-output-compression) → TOC-RD-1a and
 [autokernel-all-devices-all-dimensions.md](autokernel-all-devices-all-dimensions.md) → AKX-ALL-11 (OP80 settled).
 OP-SEC-ART-POST-b (APPLIED 2026-10-24, operator ratify, root receipt `522f7fd33`) was pruned from the queue at the 2026-10-24 operator /wrap-up. Recorded in [model-artifact-integrity.md](stack-lifecycle-program.md#track-model-artifact-integrity) → SEC-ART-POST-b.
 OP-CTXCKPT-RERUN (APPLIED, operator re-ran the ratify script, root receipt `b5934d982`) was pruned from the queue at the 2026-10-25 operator /wrap-up. Recorded in [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) → KPF-64.4.
@@ -142,10 +142,10 @@ nobody is moving.
 |--------|----------|------|---------|----------------|
 | inference-research | 47 | 1009 | 56 | 2026-07-29 |
 | pipeline-integration | 4 | 63 | 1 | 2026-10-31 |
-| research-evaluation | 28 | 777 | 20 | 2026-07-29 |
+| research-evaluation | 26 | 765 | 19 | 2026-07-29 |
 | reviewer-control-plane | 6 | 26 | 12 | 2026-07-29 |
-| routing-and-optimization | 44 | 693 | 17 | 2026-07-29 |
-| user-facing-harness | 9 | 108 | 15 | 2026-08-12 |
+| routing-and-optimization | 42 | 723 | 18 | 2026-07-29 |
+| user-facing-harness | 6 | 90 | 15 | 2026-10-03 |
 <!-- END GENERATED index_state -->
 
 ## Reporting
