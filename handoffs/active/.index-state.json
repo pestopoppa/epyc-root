@@ -4,7 +4,7 @@
       "blocked": 59,
       "handoffs": 58,
       "oldest_advance": "2026-07-29",
-      "open": 1029
+      "open": 1034
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -16,7 +16,7 @@
       "blocked": 15,
       "handoffs": 40,
       "oldest_advance": "2026-07-29",
-      "open": 726
+      "open": 733
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -1177,10 +1177,10 @@
     },
     "gpu-serving-tie-in-program.md": {
       "blocked": 0,
-      "closed": 85,
+      "closed": 92,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 32,
+      "open": 37,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1189,7 +1189,7 @@
       },
       "row_id": "INF-22",
       "state": "active",
-      "total": 117
+      "total": 129
     },
     "handoff-index-and-backlog-graph.md": {
       "blocked": 0,
@@ -1369,7 +1369,7 @@
     },
     "kv-unified-stack-rollout.md": {
       "blocked": 0,
-      "closed": 80,
+      "closed": 104,
       "guarded": 0,
       "last_advanced": "2026-11-01",
       "open": 52,
@@ -1381,7 +1381,7 @@
       },
       "row_id": "RTG-57",
       "state": "active",
-      "total": 132
+      "total": 156
     },
     "laguna-s21-cpu-port.md": {
       "blocked": 0,
@@ -2633,9 +2633,9 @@
     },
     "tool-use-eval-contract.md": {
       "blocked": 0,
-      "closed": 20,
+      "closed": 23,
       "guarded": 0,
-      "last_advanced": "2026-11-01",
+      "last_advanced": "2026-11-02",
       "open": 7,
       "owner_index": "research-evaluation-index.md",
       "prune": {
@@ -2645,7 +2645,7 @@
       },
       "row_id": "EVL-46",
       "state": "active",
-      "total": 27
+      "total": 30
     },
     "tq3-quantization-evaluation.md": {
       "blocked": 1,
@@ -2748,7 +2748,7 @@
       "closed": 336,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 405,
+      "open": 412,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2757,7 +2757,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 745
+      "total": 752
     },
     "within-role-placement-state-machine.md": {
       "blocked": 1,
@@ -3165,7 +3165,7 @@
       "id": "EVL-46",
       "index": "research-evaluation-index.md",
       "line": 48,
-      "next_action": "Source-review remaining deterministic tool contracts; retain live DTAP and scoring 2a-iv isolation gates",
+      "next_action": "Integrate matched CRM pair and service controls; finish tool audit, ledger, grader isolation and shared harness acceptance",
       "track": "tool use eval contract"
     },
     "EVL-47": {
@@ -3331,7 +3331,7 @@
       "id": "INF-22",
       "index": "inference-research-index.md",
       "line": 38,
-      "next_action": "Resolve GPU-ZOS-2.3 extension analysis contract; bind per-role recipes/resources for M4 and PB-QCOST-1",
+      "next_action": "Implement M4 fold-gate capture, current role bindings and qualified CPU/GPU execution; see audited execution route",
       "track": "gpu serving tie in program"
     },
     "INF-23": {
@@ -4362,7 +4362,7 @@
       "id": "RTG-57",
       "index": "routing-and-optimization-index.md",
       "line": 62,
-      "next_action": "KVU-16f-1: re-derive :8083 KQ-mask term for -b 512; HPR-b 64k holdout re-run after Codex HPR-B-SIM-FIX-2",
+      "next_action": "Follow the 2026-11-02 execution contract: reconcile capacity evidence and prepare remaining candidate gates; preserve HPR exposure",
       "track": "kv unified stack rollout"
     },
     "RTG-58": {

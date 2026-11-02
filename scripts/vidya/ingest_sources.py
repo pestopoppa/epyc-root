@@ -101,10 +101,10 @@ def _np_ctx_kvu_units(path: Path) -> list[Path]:
     """A directory holding ``summary.jsonl`` or ``requests.jsonl`` is one unit, else its children that do are; a
     named ``requests.jsonl`` file is its own unit."""
     if path.is_file():
-        return [path] if path.name == "requests.jsonl" else []
+        return [path] if path.name in ("requests.jsonl", "belief_measurements.jsonl") else []
     if not path.is_dir():
         return []
-    held = lambda p: (p / "summary.jsonl").is_file() or (p / "requests.jsonl").is_file()  # noqa: E731
+    held = lambda p: (p / "summary.jsonl").is_file() or (p / "requests.jsonl").is_file() or (p / "belief_measurements.jsonl").is_file()  # noqa: E731
     if held(path):
         return [path]
     return sorted(p for p in path.iterdir() if p.is_dir() and held(p))
@@ -428,6 +428,14 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="V11-086 FP32-oracle rerun pass fraction per arm (value = passed/total of the same row), scorer "
                 "clause verdicts verbatim, OBSERVATION only",
            task="VB-V11-ORACLE-WRITE"),
+    Source("kvu16a-sampled-load", "kvu16a_native",
+           _files("kvu16a_sampled_load.beliefs.jsonl", "*/kvu16a_sampled_load.beliefs.jsonl"),
+           note="Prospective original-run sampled healthy load, not a peak; unknown coverage does not project",
+           task="VB-KVU-16A-LOAD"),
+    Source("kvu19a2-native", "kvu19a2_native",
+           _files("kvu19a2_native.beliefs.jsonl", "*/kvu19a2_native.beliefs.jsonl"),
+           note="Prospective per-launch GPU FA output NaN counts; original pre-hook observations do not project",
+           task="VB-KVU19A2-NATIVE-WRITE"),
     Source("repl-embedder-parity", "repl_embedder_parity",
            _files("repl_embedder_parity.beliefs.jsonl", "*/repl_embedder_parity.beliefs.jsonl"),
            note="EmbeddingGemma-2 vector-parity gate (REPL-EMB-2.5/2.6): per gated lane cos_min / cos_mean / "

@@ -4,28 +4,28 @@
     "handoff-active": 180,
     "handoff-blocked": 2,
     "handoff-completed": 221,
-    "progress": 1147,
+    "progress": 1148,
     "research": 275
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-01T15:52:43Z",
   "last_touch": {
     "advanced": {
-      "added": 2,
-      "changed": 0,
+      "added": 1,
+      "changed": 1,
       "removed": 0
     },
-    "at": "2026-11-02T13:51:58Z",
+    "at": "2026-11-02T13:54:14Z",
     "scope_paths": [
-      "docs/design/inf70-r2362-evidence-20261102/AUDIT.md",
-      "progress/2026-11/2026-11-02-r18a-handoff-audit.md"
+      "handoffs/active/gpu-serving-tie-in-program.md",
+      "progress/2026-11/2026-11-02-inf22-m4-readiness.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-02T13:51:58Z",
+  "scan_time": "2026-11-02T13:54:14Z",
   "schema_version": 1,
-  "source_set_hash": "02524685c7a4f271cf163c3a083989f0acdbe95a5a58a3bff7c462cc0ecfadd5",
+  "source_set_hash": "cbd8b48f72e1b05a5cc8f95a583876f597d6470811a1e27e2ddbd3959f00c474",
   "sources": [
     {
       "content_hash": "79865b0c101f4b6a9b14665950a430467345202b33986b3ba348bc3df428170a",
@@ -604,10 +604,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4783cae24cde3b36643761c6434d247449a800237329ebd2087978a19b70e2a8",
-      "modified": "2026-11-01T15:45:21Z",
+      "content_hash": "9ffdb68ff3c8a5ed63066e233bc13f9d3b85b68d2298a1f038b6ee08716cfd95",
+      "modified": "2026-11-02T13:53:04Z",
       "path": "handoffs/active/gpu-serving-tie-in-program.md",
-      "size": 204073,
+      "size": 218159,
       "title": "GPU Serving Tie-In Program \u2014 one fabric, two devices",
       "type": "handoff-active"
     },
@@ -14588,6 +14588,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "b0404ef1edec4e8a9e087ff4d17f9babcf5834f24c34e5221447c87f019010ef",
+      "modified": "2026-11-02T13:53:04Z",
+      "path": "progress/2026-11/2026-11-02-inf22-m4-readiness.md",
+      "size": 6816,
+      "title": "INF-22 M4 execution-readiness audit \u2014 2026-11-02",
+      "type": "progress"
+    },
+    {
       "content_hash": "0611036e0501c51b0340cb805e6f727d81c3181e437f0e53d9811e0752f4bdee",
       "modified": "2026-11-02T13:17:10Z",
       "path": "progress/2026-11/2026-11-02-r18a-handoff-audit.md",
@@ -16644,7 +16652,7 @@
       "type": "handoff-active"
     }
   ],
-  "total_new": 2077,
+  "total_new": 2078,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
