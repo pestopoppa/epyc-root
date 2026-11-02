@@ -62,8 +62,8 @@ writes everything but `wrapped_sha`; `wrapup.py` fills it after the push._
 
 ## Open at 2026-11-01 wrap-up (ws58)
 
-- [ ] **Land the MIN_RESUME_GAP_S fix** (gap only after no-effect turns): installed in compute-flags/bin, not on origin/main; owner of `handoff_sessions.py` commits it.
-- [ ] **Inventory-target dispatcher change**: in progress, owned by another agent.
+- [x] **Land the MIN_RESUME_GAP_S fix** ✅ 2026-11-02 superseded by dispatcher rewrite ROOT `9612fb48d` [no-belief: tooling]
+- [x] **Inventory-target dispatcher change** ✅ 2026-11-02 replaced by operator-loop dispatcher (next = non-inference/inference/blocked/done; yield/cooldown/stuck/park/inventory gates deleted) ROOT `9612fb48d` [no-belief: tooling]
 - [ ] **CAF burn measurement**: tokens per completed task before/after CAF-1..7 via `churn/tokens_per_task.py`.
 - [ ] **Net line count must go down**: `handoff_sessions.py`, `backlog_gen.py`, `rowflow/`, `churn/` grew this day; find deletions (guardrail unmet).
 - [x] **Hotfixes landed** ✅ 2026-11-01 ROOT `139d9cf7a` `ddf791068` `0fec383f5` `a57b57239` [no-belief: tooling-repair; no measurement]
@@ -80,3 +80,15 @@ Plan: [README.md](../../research/deep-dives/ws58-jev-20261102/README.md). **Orde
 - [ ] **JEV-3** [M] REPLACE the regex failure classifier (`rowflow/publish_row.py:82-104`, `UNKNOWN-FAILURE-CLASS`) and `handoff_sessions.work_state` regexes with the local native `src/typed_decisions/` path (TD-29: 18/18) returning a named label plus named park/stop reasons; replay of saved `dryrun/*/FAIL-*.json` is a regression check only, no new accuracy study (intake-2604#record). removes: `_UNIT_RE`/`ADV_RX`/`OWN_TASK_RX` regex classification, the UNKNOWN-FAILURE-CLASS fall-through, unnamed MAX_FAILS parking.
 - [x] **SA-4** ✅ 2026-11-02 ROOT `1579bd509` [no-belief: doc rule; no measurement] [S] `docs/guides/agent-workflows/agent-loop-design.md`: a long-lived worker per task with code pass-through of its thread's events; fresh start only on a ready row; a watch for unproductive loops (intake-2615#record). removes: per-event fresh-session dispatch as an accepted loop shape.
 - [x] **JEV-6** ✅ 2026-11-02 ROOT `1579bd509` [no-belief: doc rule; no measurement] [S] `docs/guides/agent-workflows/agent-loop-design.md`: typed judgments carry label probabilities and a confidence with two thresholds set from held-out real outcomes; unavailable is never an answer; a worker claim is never a result (intake-2604#record, intake-2605#record, intake-2608#record). removes: free-text agent decisions as an accepted loop shape.
+
+## 2026-11-02 wrap-up (ws58)
+
+- [x] **Owner carries row through dry run** ✅ 2026-11-02 ROOT `549eb58` (supersedes `1f054f2c4`) [no-belief: tooling]
+- [x] **Sparse lanes keep artifacts/operator/*.sh** ✅ ROOT `ac7e2e1fc` [no-belief: tooling]
+- [x] **wrapup.py resolves generated-index conflicts; report.json on every exit** ✅ ROOT `c9eb9e2b8` `005a7fbf5` [no-belief: tooling]
+- [x] **Hub pipeline section / backlog graph** ✅ ROOT `28b23bf37` `1c869a310` `60ec225af` `100cb18ba` `8fe3693e9` `4693451cb` [no-belief: dashboard]
+- [ ] **JEV-3 deferred**: replace commit `7b2b40b42` kept, uncalled; 1.5B native replay unusable (constant answers, confidence 1.0), `/mnt/raid0/llm/tmp/ws58-csh/jev3-replay-1p5b-20261102.json`.
+- [ ] **Measure row publication** after the 10:41Z fixes.
+- [ ] **Sessions over-prepare instead of publishing**: find and cut.
+- [ ] **Dashboard readied-waiting count is 0**: row/handoff linking bug.
+- [ ] **RTG-18 graph checkbox-parse bug**: graph shows open=0, file has 12 open boxes.

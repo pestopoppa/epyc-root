@@ -75,3 +75,7 @@ W5s r7 remains parked after three qualification failures; commissioned bounded r
 ## 10:41Z — Prepare INF-75 quantizer source outside the compute grant
 
 Prepared git archive of quantizer source commit 7cdd7c97bed538a85c3b75331b6cdb369e5b2adc outside the grant at /mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/quantizer-source/source.tar, SHA-256 cc9c5831b6622dd2fbc5aa85387c70b998af100276e1cd6c0dac3174bbfadff6. Job integration and validation remain; no row published. GitNexus re-index was refused by CPU admission. Previous wrap failed when the lane ceased to be a git worktree during push.
+
+## 10:43Z — Stage and inventory INF-75 quantizer source tree before grant
+
+Extracted the prepared 7cdd7c97 source archive outside any grant into /mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/quantizer-source/src and recorded a 3,651-entry file, directory, mode and symlink inventory in tree-manifest.json, SHA-256 0fa8259e744e4db07ca4e7efbf78e85806ddb50acde135981f05ba0ca31205b0. The existing build job still needs to verify and consume this tree; no row published or replay claimed. The last wrap push failed when its lane disappeared.
