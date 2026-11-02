@@ -102,8 +102,10 @@ def validate(scope, plan, scenarios):
                 raise ValueError(f"{path}: {arm} scenario missing or names different model")
             vision_roles={'vision_escalation','worker_vision'}
             full_roles={'architect_general','frontdoor','toolrunner','worker','worker_explore','worker_general','worker_math','worker_summarize'}
-            expected_topology=('0,1','0-47,96-143',48) if role in vision_roles else ('all','0-95',96) if role in full_roles else None
-            if type(scenario.threads) is not int or scenario.threads <= 0 or scenario.n_gpu_layers != 0 or scenario.request_endpoint not in ('chat','completion') or (scenario.numa_nodes,scenario.cpu_affinity,scenario.threads) != expected_topology:
+            topology = (scenario.numa_nodes, scenario.cpu_affinity)
+            valid_topology = ((role in vision_roles and topology == ('0,1', '0-47,96-143') and scenario.threads == 48)
+                              or (role in full_roles and topology == ('all', '0-95') and type(scenario.threads) is int and 1 <= scenario.threads <= 96))
+            if not valid_topology or scenario.n_gpu_layers != 0 or scenario.request_endpoint not in ('chat','completion'):
                 raise ValueError(f"{path}: invalid CPU recipe dimensions")
             if recipe_digest(scenario) != recipe["recipe_sha256"]:
                 raise ValueError(f"{path}: {arm} recipe seal mismatch")
@@ -123,6 +125,47 @@ def validate(scope, plan, scenarios):
     if set(by_model) != models:
         raise ValueError(f"scope coverage mismatch missing={sorted(models-set(by_model))} extra={sorted(set(by_model)-models)}")
     return by_model
+
+
+def validate_execution_evidence(plan):
+    """Refuse unreviewed scope and recipe inputs; this is not a performance grade.
+
+    Each attestation is separately sealed by the admission plan and must bind the
+    actual role, arm, source, scenario and underlying evidence bytes. Review of
+    whether those records establish a best recipe remains an explicit human/agent
+    review and is not inferred from a configured registry file.
+    """
+    if plan.get('status') != 'REVIEWED_READY':
+        raise ValueError('draft or unreviewed CPU plan cannot execute')
+    commits = {'baseline':'c72ec82f5417bb2937310326120f149b665e8400',
+               'candidate':'bc441f1a261766d11bfeff21668a1031c4dbf8cd'}
+    entries = plan.get('models')
+    if not isinstance(entries, list) or not entries:
+        raise ValueError('reviewed CPU plan has no models')
+    for entry in entries:
+        for arm in ('baseline', 'candidate'):
+            recipe = entry[arm]
+            path = Path(recipe['best_evidence'])
+            evidence = json.loads(path.read_bytes())
+            expected = {'schema':'epyc.m4.cpu.best_recipe_evidence.v1',
+                        'status':'REVIEWED_BEST', 'role':entry['role'], 'arm':arm,
+                        'model_path':entry['model_path'], 'source_commit':commits[arm],
+                        'recipe_sha256':recipe['recipe_sha256']}
+            if any(evidence.get(key) != value for key,value in expected.items()):
+                raise ValueError(f"{entry['role']}: {arm} evidence is not the reviewed best recipe")
+            if not isinstance(evidence.get('reviewer'), str) or not evidence['reviewer'].strip():
+                raise ValueError('best-recipe reviewer missing')
+            if not isinstance(evidence.get('rationale'), str) or not evidence['rationale'].strip():
+                raise ValueError('best-recipe rationale missing')
+            basis = evidence.get('basis')
+            if not isinstance(basis, list) or not basis:
+                raise ValueError('best-recipe evidence basis missing')
+            for item in basis:
+                source = Path(item['path'])
+                if not source.is_absolute() or '..' in source.parts or not source.is_file():
+                    raise ValueError('best-recipe evidence basis path invalid')
+                if hashlib.sha256(source.read_bytes()).hexdigest() != item['sha256']:
+                    raise ValueError('best-recipe evidence basis changed')
 
 
 def main():
@@ -150,6 +193,9 @@ def main():
     if not args.execute:
         print(json.dumps({"model_count":len(models), "models": sorted(models), "n_per_arm":5, "metric_direction":"higher_is_better", "gray_floor":comparator.FAIL_RATIO}))
         return 0
+    # Draft plan validation above is useful without execution; no model is read
+    # before independently reviewed, per-arm best-recipe attestations exist.
+    validate_execution_evidence(plan)
     expected_id = "refactor-01a16fc3-m4-cpu-speed-all-20261027"
     if os.environ.get("FILLER_ID") != expected_id or not Path("/mnt/raid0/llm/tmp/compute-flags/grants", expected_id + ".grant").is_file():
         raise ValueError("no canonical admitted outer grant")

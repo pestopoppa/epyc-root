@@ -110,3 +110,16 @@ def test_strict_reader_verifies_recipe_environment():
         _verify_recipe_env([v for v in argv if v != 'GGML_FA_SPLIT_KV=0'], expected)
     with pytest.raises(ProjectionError):
         _verify_recipe_env(argv + ['GGML_NOHUGEPAGE_PROCESS=1'], expected)
+
+
+@pytest.mark.parametrize('key,value', [('GGML_FA_TUNING', '1'), ('LLAMA_ARG_SEED', '7'), ('LD_PRELOAD', '/tmp/evil.so'), ('GGML_IQK', '0')])
+def test_unbound_inherited_environment_refuses(monkeypatch, key, value):
+    monkeypatch.setenv(key, value)
+    with pytest.raises(ValueError, match='unbound inherited'):
+        native.runtime_env_prefix(Path('/tmp/bin/llama-server'), {'GGML_FA_SPLIT_KV':'0'})
+
+
+def test_bound_recipe_env_overrides_inherited_value(monkeypatch):
+    monkeypatch.setenv('GGML_FA_SPLIT_KV', '1')
+    argv = native.runtime_env_prefix(Path('/tmp/bin/llama-server'), {'GGML_FA_SPLIT_KV':'0'})
+    assert 'GGML_FA_SPLIT_KV=0' in argv
