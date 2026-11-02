@@ -44,6 +44,10 @@
    "target": "speech-and-multimodal.md",
    "track": null
   },
+  "cpu-fused-decoder-blocks.md": {
+   "target": "fable5-window2-findings-03-portfolio-and-master-queue.md",
+   "track": "cpu-fused-decoder-blocks"
+  },
   "delegation-context-preassembly.md": {
    "target": "context-and-token-economy.md",
    "track": "delegation-context-preassembly"
@@ -120,6 +124,10 @@
    "target": "quantization-and-low-bit.md",
    "track": "iqk-iquant-enablement"
   },
+  "laguna-s21-cpu-port.md": {
+   "target": "fable5-window2-findings-03-portfolio-and-master-queue.md",
+   "track": "laguna-s21-cpu-port"
+  },
   "lightning-attention-port.md": {
    "target": "model-evaluation-queue.md",
    "track": "lightning-attention-port"
@@ -164,6 +172,10 @@
   "model-stack-update-pipeline-audit.md": {
    "target": "stack-lifecycle-program.md",
    "track": "model-stack-update-pipeline-audit"
+  },
+  "moe-spec-cpu-spec-dec-integration.md": {
+   "target": "fable5-window2-findings-03-portfolio-and-master-queue.md",
+   "track": "moe-spec-cpu-spec-dec-integration"
   },
   "multi-file-coding-completion-capability.md": {
    "target": "benchmark-suites.md",
@@ -273,6 +285,10 @@
   "tq3-quantization-evaluation.md": {
    "target": "quantization-and-low-bit.md",
    "track": "tq3-quantization-evaluation"
+  },
+  "v9-kernel-per-request-speculative-params.md": {
+   "target": "fable5-window2-findings-03-portfolio-and-master-queue.md",
+   "track": "v9-kernel-per-request-speculative-params"
   },
   "wp12-fleet-layer-design.md": {
    "target": "stack-lifecycle-program.md",
@@ -388,9 +404,17 @@
    "target": "INF-80",
    "track": "iqk-iquant-enablement"
   },
+  "INF-28": {
+   "target": "EVL-21",
+   "track": "laguna-s21-cpu-port"
+  },
   "INF-30": {
    "target": "EVL-02",
    "track": "lightning-attention-port"
+  },
+  "INF-40": {
+   "target": "EVL-21",
+   "track": "moe-spec-cpu-spec-dec-integration"
   },
   "INF-41": {
    "target": "INF-79",
@@ -411,6 +435,14 @@
   "INF-54": {
    "target": "INF-80",
    "track": "tq3-quantization-evaluation"
+  },
+  "INF-58": {
+   "target": "EVL-21",
+   "track": "v9-kernel-per-request-speculative-params"
+  },
+  "INF-67": {
+   "target": "EVL-21",
+   "track": "cpu-fused-decoder-blocks"
   },
   "PIP-01": {
    "target": "PIP-04",

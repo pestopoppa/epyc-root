@@ -2,9 +2,9 @@
   "domains": {
     "inference-research-index.md": {
       "blocked": 56,
-      "handoffs": 47,
+      "handoffs": 43,
       "oldest_advance": "2026-07-29",
-      "open": 1008
+      "open": 998
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -16,7 +16,7 @@
       "blocked": 18,
       "handoffs": 18,
       "oldest_advance": "2026-07-29",
-      "open": 769
+      "open": 779
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -314,7 +314,7 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 21,
+      "closed": 22,
       "guarded": 0,
       "last_advanced": "2026-11-02",
       "open": 12,
@@ -326,7 +326,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 33
+      "total": 34
     },
     "batched-decode-measurement.md": {
       "blocked": 1,
@@ -615,22 +615,6 @@
       "row_id": "INF-70",
       "state": "active",
       "total": 167
-    },
-    "cpu-fused-decoder-blocks.md": {
-      "blocked": 0,
-      "closed": 11,
-      "guarded": 0,
-      "last_advanced": "2026-10-29",
-      "open": 3,
-      "owner_index": "inference-research-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "INF-67",
-      "state": "active",
-      "total": 14
     },
     "cpu-prefill-compute-large-models.md": {
       "blocked": 0,
@@ -1048,10 +1032,10 @@
     },
     "fable5-window2-findings-03-portfolio-and-master-queue.md": {
       "blocked": 0,
-      "closed": 8,
+      "closed": 41,
       "guarded": 0,
       "last_advanced": "2026-10-29",
-      "open": 10,
+      "open": 20,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1060,7 +1044,59 @@
       },
       "row_id": "EVL-21",
       "state": "active",
-      "total": 18
+      "total": 61,
+      "tracks": [
+        {
+          "blocked": 0,
+          "closed": 8,
+          "gates": null,
+          "guarded": 0,
+          "line": 0,
+          "markers": 0,
+          "name": "(untracked)",
+          "open": 10
+        },
+        {
+          "blocked": 0,
+          "closed": 11,
+          "gates": [],
+          "guarded": 0,
+          "line": 120,
+          "markers": 1,
+          "name": "cpu-fused-decoder-blocks",
+          "open": 3
+        },
+        {
+          "blocked": 0,
+          "closed": 11,
+          "gates": [],
+          "guarded": 0,
+          "line": 447,
+          "markers": 1,
+          "name": "laguna-s21-cpu-port",
+          "open": 1
+        },
+        {
+          "blocked": 0,
+          "closed": 4,
+          "gates": [],
+          "guarded": 0,
+          "line": 586,
+          "markers": 1,
+          "name": "moe-spec-cpu-spec-dec-integration",
+          "open": 5
+        },
+        {
+          "blocked": 0,
+          "closed": 7,
+          "gates": [],
+          "guarded": 0,
+          "line": 1139,
+          "markers": 1,
+          "name": "v9-kernel-per-request-speculative-params",
+          "open": 1
+        }
+      ]
     },
     "fable5-window2-findings-05c-mi210-lever-category-matrix.md": {
       "blocked": 0,
@@ -1114,7 +1150,7 @@
       "blocked": 0,
       "closed": 75,
       "guarded": 0,
-      "last_advanced": null,
+      "last_advanced": "2026-11-02",
       "open": 29,
       "owner_index": "research-evaluation-index.md",
       "prune": {
@@ -1448,22 +1484,6 @@
       "state": "active",
       "total": 156
     },
-    "laguna-s21-cpu-port.md": {
-      "blocked": 0,
-      "closed": 11,
-      "guarded": 0,
-      "last_advanced": "2026-07-30",
-      "open": 1,
-      "owner_index": "inference-research-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "INF-28",
-      "state": "active",
-      "total": 12
-    },
     "large-moe-expert-parallelism.md": {
       "blocked": 1,
       "closed": 2,
@@ -1761,22 +1781,6 @@
       "row_id": "INF-72",
       "state": "active",
       "total": 14
-    },
-    "moe-spec-cpu-spec-dec-integration.md": {
-      "blocked": 0,
-      "closed": 4,
-      "guarded": 0,
-      "last_advanced": "2026-09-17",
-      "open": 5,
-      "owner_index": "inference-research-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "INF-40",
-      "state": "active",
-      "total": 9
     },
     "multiscreen-attention-evaluation.md": {
       "blocked": 0,
@@ -2506,22 +2510,6 @@
       "state": "active",
       "total": 54
     },
-    "v9-kernel-per-request-speculative-params.md": {
-      "blocked": 0,
-      "closed": 7,
-      "guarded": 0,
-      "last_advanced": "2026-08-11",
-      "open": 1,
-      "owner_index": "inference-research-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "INF-58",
-      "state": "active",
-      "total": 8
-    },
     "vidya-belief-substrate-program.md": {
       "blocked": 4,
       "closed": 336,
@@ -2841,7 +2829,7 @@
       "handoff": "engram-conditional-memory.md",
       "id": "INF-13",
       "index": "inference-research-index.md",
-      "line": 26,
+      "line": 25,
       "next_action": "Make k budget-conditional rather than fixed (intake-936 rider)",
       "track": "engram conditional memory"
     },
@@ -2850,7 +2838,7 @@
       "handoff": "gemma-challenge-kernel-techniques-v7.md",
       "id": "INF-16",
       "index": "inference-research-index.md",
-      "line": 27,
+      "line": 26,
       "next_action": "K10 \u2014 on a quiesced host, confirm the nodes[0] collision via stderr keylog, then re-eval Lever A and decide land/drop",
       "track": "gemma challenge kernel techniques v7"
     },
@@ -2859,7 +2847,7 @@
       "handoff": "gpu-acceleration-path.md",
       "id": "INF-18",
       "index": "inference-research-index.md",
-      "line": 34,
+      "line": 33,
       "next_action": "Explain the bidirectional-only mechanism before this becomes a placement input",
       "track": "gpu acceleration path"
     },
@@ -2868,7 +2856,7 @@
       "handoff": "gpu-serving-tie-in-program.md",
       "id": "INF-22",
       "index": "inference-research-index.md",
-      "line": 35,
+      "line": 34,
       "next_action": "Implement M4 fold-gate capture, current role bindings and qualified CPU/GPU execution; see audited execution route",
       "track": "gpu serving tie in program"
     },
@@ -2877,25 +2865,16 @@
       "handoff": "heterogeneous-slot-fabric-residency.md",
       "id": "INF-23",
       "index": "inference-research-index.md",
-      "line": 36,
+      "line": 35,
       "next_action": "HSF-5.P: re-run microbench (-lv 4, G4 amendment) on GPU after v11-086-cpu ~10-25 00:00Z",
       "track": "heterogeneous slot fabric residency"
-    },
-    "INF-28": {
-      "deps": [],
-      "handoff": "laguna-s21-cpu-port.md",
-      "id": "INF-28",
-      "index": "inference-research-index.md",
-      "line": 37,
-      "next_action": "L-9P \u2014 conditional CPU throughput/config discovery. The prepared",
-      "track": "laguna s21 cpu port"
     },
     "INF-29": {
       "deps": [],
       "handoff": "large-moe-expert-parallelism.md",
       "id": "INF-29",
       "index": "inference-research-index.md",
-      "line": 38,
+      "line": 36,
       "next_action": "CPU15-REVAL \u2014 Fresh canonical matrix if reopening: before enabling EP anywhere, run:",
       "track": "large moe expert parallelism"
     },
@@ -2904,7 +2883,7 @@
       "handoff": "llama-cpp-dsa-contribution.md",
       "id": "INF-31",
       "index": "inference-research-index.md",
-      "line": 39,
+      "line": 37,
       "next_action": "D4 residual \u2014 pin the faulty `dequantize_V_bf16` line and file upstream (D4 done: c49a37c4)",
       "track": "llama cpp dsa contribution"
     },
@@ -2915,7 +2894,7 @@
       "handoff": "log-linear-gated-deltanet-readiness.md",
       "id": "INF-33",
       "index": "inference-research-index.md",
-      "line": 40,
+      "line": 38,
       "next_action": "Wire hattention_recurrent() into HGatedDeltaNetAttention.forward and confirm it reproduces chunk-path logits on CPU",
       "track": "log linear gated deltanet readiness"
     },
@@ -2924,7 +2903,7 @@
       "handoff": "mi210-big-model-and-acceleration-roadmap.md",
       "id": "INF-34",
       "index": "inference-research-index.md",
-      "line": 41,
+      "line": 39,
       "next_action": "PF1 \u2014 measure the CPU-vs-MI210 prefill crossover on the served Qwen3.8-Flash-Next UD-IQ4_XS (DR-3e retired 2026-10-28, 122B deprecated)",
       "track": "mi210 big model and acceleration roadmap"
     },
@@ -2936,25 +2915,16 @@
       "handoff": "mi210-q8-dequant-gemv-roofline.md",
       "id": "INF-37",
       "index": "inference-research-index.md",
-      "line": 42,
+      "line": 40,
       "next_action": "Resolve Q4/IQ2 approvals; scope INF37-MOE-Q8-FUSION's experimental GLU correctness slice",
       "track": "mi210 q8 dequant gemv roofline"
-    },
-    "INF-40": {
-      "deps": [],
-      "handoff": "moe-spec-cpu-spec-dec-integration.md",
-      "id": "INF-40",
-      "index": "inference-research-index.md",
-      "line": 43,
-      "next_action": "After the AutoKernel window: 5-rep moe_spec_budget sweep on qwen4exp + champion ef81196d5 (future architect_critic), MTP n-max\u22653",
-      "track": "moe spec cpu spec dec integration"
     },
     "INF-42": {
       "deps": [],
       "handoff": "multiscreen-attention-evaluation.md",
       "id": "INF-42",
       "index": "inference-research-index.md",
-      "line": 44,
+      "line": 41,
       "next_action": "G1 closed (100% recall to 128K, q8 = f16); pick the next multiscreen row or archive the handoff",
       "track": "multiscreen attention evaluation"
     },
@@ -2963,7 +2933,7 @@
       "handoff": "numa-placement-defect-20260730.md",
       "id": "INF-43",
       "index": "inference-research-index.md",
-      "line": 45,
+      "line": 42,
       "next_action": "T3 \u2014 Re-run the 27 confounded E5 cells on declared 1-full + 2-half placement, incl. 0-95 --interleave=all, per P-BENCH-PLACEMENT-1",
       "track": "numa placement defect"
     },
@@ -2974,7 +2944,7 @@
       "handoff": "numa-prefill-decode-disaggregation.md",
       "id": "INF-44",
       "index": "inference-research-index.md",
-      "line": 46,
+      "line": 43,
       "next_action": "Blocked on INF-34 PF1 (CPU-vs-MI210 prefill crossover); then run NPD-1 or close the GPU-prefill branch",
       "track": "numa prefill decode disaggregation"
     },
@@ -2983,7 +2953,7 @@
       "handoff": "numa-topology-cutover-resume-20260730.md",
       "id": "INF-45",
       "index": "inference-research-index.md",
-      "line": 47,
+      "line": 44,
       "next_action": "P0-3 \u2014 cold-start the stack, re-bench the contention matrix, commit + push all three repos",
       "track": "numa topology cutover resume"
     },
@@ -2994,7 +2964,7 @@
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
       "index": "inference-research-index.md",
-      "line": 48,
+      "line": 45,
       "next_action": "Repair audited C6 carriers, wire oracle/Ghost boundary",
       "track": "rocm verify profile backend"
     },
@@ -3003,7 +2973,7 @@
       "handoff": "sarathi-serve-cpu-evaluation.md",
       "id": "INF-49",
       "index": "inference-research-index.md",
-      "line": 49,
+      "line": 46,
       "next_action": "Re-evaluate Sarathi-Serve chunked-prefill for the eval-batch serving class (the multi-tenant trigger fired by batched-decode E2)",
       "track": "sarathi serve cpu evaluation"
     },
@@ -3012,7 +2982,7 @@
       "handoff": "speculative-decoding-mtp-refresh.md",
       "id": "INF-50",
       "index": "inference-research-index.md",
-      "line": 50,
+      "line": 47,
       "next_action": "Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold",
       "track": "speculative decoding mtp refresh"
     },
@@ -3021,7 +2991,7 @@
       "handoff": "streaming-llm-baseline.md",
       "id": "INF-51",
       "index": "inference-research-index.md",
-      "line": 51,
+      "line": 48,
       "next_action": "Run 4-axis inference sweep: 3 workloads (retrieval/reasoning/dialogue) x 3 budgets (25/50/75%) x 2 models",
       "track": "streaming llm baseline"
     },
@@ -3030,18 +3000,9 @@
       "handoff": "triattention-kv-selection.md",
       "id": "INF-56",
       "index": "inference-research-index.md",
-      "line": 52,
+      "line": 49,
       "next_action": "S8 \u2014 Sweep keep_ratio and layer_weights per production role; persist quality/speed/cost/reliability Pareto profiles",
       "track": "triattention kv selection"
-    },
-    "INF-58": {
-      "deps": [],
-      "handoff": "v9-kernel-per-request-speculative-params.md",
-      "id": "INF-58",
-      "index": "inference-research-index.md",
-      "line": 53,
-      "next_action": "Implement and prospectively ratify the sealed resident promotion fast path with fresh-server fallback",
-      "track": "v9 kernel per request speculative params"
     },
     "INF-59": {
       "deps": [
@@ -3050,7 +3011,7 @@
       "handoff": "yarn-context-extension-research.md",
       "id": "INF-59",
       "index": "inference-research-index.md",
-      "line": 54,
+      "line": 50,
       "next_action": "Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power",
       "track": "yarn context extension research"
     },
@@ -3059,7 +3020,7 @@
       "handoff": "qwen38-27b-replace-qwen36.md",
       "id": "INF-60",
       "index": "inference-research-index.md",
-      "line": 55,
+      "line": 51,
       "next_action": "Q38-T7b closed; run Q38-T7a passive log read, then VB-SERVING-DF2; Q38-T10.1 gate after",
       "track": "model refresh"
     },
@@ -3070,7 +3031,7 @@
       "handoff": "gpu-candidates-surface-qwen38-update.md",
       "id": "INF-61",
       "index": "inference-research-index.md",
-      "line": 56,
+      "line": 52,
       "next_action": "Run a same-window n-max 4 vs 8 ABA at np\u22652 before shipping the re-collected grid; then depth-sweep A4, A3, A1, FF and Laguna",
       "track": "model evaluation queue (INF-60-gated)"
     },
@@ -3082,7 +3043,7 @@
       "handoff": "dflash2-block-drafter-experimental-build.md",
       "id": "INF-62",
       "index": "inference-research-index.md",
-      "line": 25,
+      "line": 24,
       "next_action": "DF2 open rows (DF2-DRAFTER-CAPABILITY, DF2-11/12/13/15/16/20, DF2-LB1); Qwopus items CANCELLED 2026-10-27",
       "track": "dflash2 block drafter experimental build"
     },
@@ -3121,23 +3082,14 @@
       "next_action": "Investigate R23-62 champion divergence under its recorded controls",
       "track": "autokernel teardown and rebuild"
     },
-    "INF-67": {
-      "deps": [],
-      "handoff": "cpu-fused-decoder-blocks.md",
-      "id": "INF-67",
-      "index": "inference-research-index.md",
-      "line": 24,
-      "next_action": "FD-DIV-1b persists on C5: locate and fix the fused-yarn divergence in the champion; FD-OFF-PROD closes at V11-106",
-      "track": "cpu fused decoder blocks"
-    },
     "INF-70": {
       "deps": [
-        "INF-67"
+        "EVL-21"
       ],
       "handoff": "cpu-decode-roofline-program.md",
       "id": "INF-70",
       "index": "inference-research-index.md",
-      "line": 28,
+      "line": 27,
       "next_action": "CLS-RECT-1, then G2-CONC on coherence_gate; XFER-3 paired task eval (uniform IQ4_XS); XFER-4b allowlist prefill A/B + task eval",
       "track": "cpu decode roofline program"
     },
@@ -3149,7 +3101,7 @@
       "handoff": "moe-routing-tap-and-locality-measurement.md",
       "id": "INF-72",
       "index": "inference-research-index.md",
-      "line": 29,
+      "line": 28,
       "next_action": "RT-1 (Q38FN) + RT-9 (Q36) traced/analysed, RT-5 gate not met; RT-10 DS41 tap hook (C++), then RT-6/7 on DS41",
       "track": "moe routing locality tap"
     },
@@ -3162,7 +3114,7 @@
       "handoff": "autokernel-unified-surface-program.md",
       "id": "INF-73",
       "index": "inference-research-index.md",
-      "line": 57,
+      "line": 53,
       "next_action": "LIVE GPU leg (serving-owner grant, ws58)",
       "track": "autokernel unified surface"
     },
@@ -3173,7 +3125,7 @@
       "handoff": "autokernel-concurrent-target-coordination.md",
       "id": "INF-74",
       "index": "inference-research-index.md",
-      "line": 58,
+      "line": 54,
       "next_action": "Land INF-74-CGROUP-ROOT (root-owned cgroup delegation, Codex script), add escape tests, re-run gate; cutover rejected until then",
       "track": "autokernel concurrent targets"
     },
@@ -3186,7 +3138,7 @@
       "handoff": "autokernel-cross-workload-keep-gate.md",
       "id": "INF-75",
       "index": "inference-research-index.md",
-      "line": 59,
+      "line": 55,
       "next_action": "AKX-P0d \u2014 run the W1\u2013W6 base census on the current champion-of-record under stage claims, then AKX-P1b replay 732389d6",
       "track": "autokernel cross-workload keep gate"
     },
@@ -3197,7 +3149,7 @@
       "handoff": "paw-compiled-specialists.md",
       "id": "INF-76",
       "index": "inference-research-index.md",
-      "line": 61,
+      "line": 57,
       "next_action": "PAW-2 \u2014 self-hosted compile spike (intake-1481 server + intake-1478 weights); then PAW-5 candidates list",
       "track": "model evaluation queue (EVL-08-gated)"
     },
@@ -3209,7 +3161,7 @@
       "handoff": "deepseek-v41-flash-evaluation.md",
       "id": "INF-77",
       "index": "inference-research-index.md",
-      "line": 30,
+      "line": 29,
       "next_action": "W5 closed INVALID; W5d baseline+MMID 10-24 ~10:00Z, C46 j64 repro 10-23 q2; rest held for AK kernel work; W8d ram_admit",
       "track": "deepseek v41 flash evaluation"
     },
@@ -3224,7 +3176,7 @@
       "handoff": "autokernel-orchestrator-actor-backend.md",
       "id": "INF-78",
       "index": "inference-research-index.md",
-      "line": 31,
+      "line": 30,
       "next_action": "OAB-30 stub e2e (incl. keep\u2192continuation); OAB-34 16384 output-cap hit rate per role",
       "track": "autokernel orchestrator actor backend"
     },
@@ -3233,7 +3185,7 @@
       "handoff": "speech-and-multimodal.md",
       "id": "INF-79",
       "index": "inference-research-index.md",
-      "line": 32,
+      "line": 31,
       "next_action": "Qualify the repaired STT5 offline scorer, retain filed WER, then finish STT3 acceptance and STT7 predictions",
       "track": "conversation stack (speech)"
     },
@@ -3242,7 +3194,7 @@
       "handoff": "quantization-and-low-bit.md",
       "id": "INF-80",
       "index": "inference-research-index.md",
-      "line": 33,
+      "line": 32,
       "next_action": "EXL3-6c5a: emit epyc.exl3.measurement.v1 rows (10-04 copy + research data/exl3-6c5-quality), ingest, tick; 6c5b p1 margin",
       "track": "exl3 cpu mi210 implementation"
     },
@@ -3258,7 +3210,7 @@
       "handoff": "autokernel-all-devices-all-dimensions.md",
       "id": "INF-81",
       "index": "inference-research-index.md",
-      "line": 60,
+      "line": 56,
       "next_action": "AKX-ALL-30b: write G3-first order + G1/G2 re-rank (R=1.73) into the seed draft; AKX-ALL-LB3.2 re-run via akxlb32 v2",
       "track": "autokernel all devices all dimensions"
     },

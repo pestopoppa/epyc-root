@@ -12,7 +12,6 @@
   "RTG-54": 0.65,
   "INF-06": 0.62,
   "INF-64": 0.6,
-  "INF-67": 0.6,
   "INF-81": 0.6,
   "INF-48": 0.55,
   "INF-50": 0.55,
@@ -51,8 +50,6 @@
   "INF-16": 0.3,
   "INF-18": 0.3,
   "INF-20": 0.3,
-  "INF-40": 0.3,
-  "INF-58": 0.3,
   "EVL-03": 0.3,
   "EVL-05": 0.3,
   "EVL-20": 0.3,
@@ -91,7 +88,6 @@
   "RTG-16": 0.15,
   "RTG-49": 0.15,
   "UFH-15": 0.15,
-  "INF-28": 0.1,
   "INF-29": 0.1,
   "INF-44": 0.1,
   "INF-49": 0.1,
@@ -145,7 +141,11 @@
   "EVL-29#agent-file-prose-compression": 0.2,
   "EVL-29#frontier-f2-self-running-lab": 0.2,
   "EVL-29#frontier-f3-data-flywheel": 0.25,
-  "EVL-29#stale-open-audit-2026-07-18": 0.35
+  "EVL-29#stale-open-audit-2026-07-18": 0.35,
+  "EVL-21#cpu-fused-decoder-blocks": 0.6,
+  "EVL-21#laguna-s21-cpu-port": 0.1,
+  "EVL-21#moe-spec-cpu-spec-dec-integration": 0.3,
+  "EVL-21#v9-kernel-per-request-speculative-params": 0.3
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
@@ -183,7 +183,11 @@
   "EVL-08#mathsmith-hc-formalizer-eval": "operator decision or approval pending",
   "PIP-04#searxng-search-backend": "external: upstream PR / artifact / disk reclaim",
   "PIP-04#sliders-local-validation": "operator decision or approval pending",
-  "EVL-29#agent-file-prose-compression": "operator decision or approval pending"
+  "EVL-29#agent-file-prose-compression": "operator decision or approval pending",
+  "EVL-21#cpu-fused-decoder-blocks": "",
+  "EVL-21#laguna-s21-cpu-port": "",
+  "EVL-21#moe-spec-cpu-spec-dec-integration": "",
+  "EVL-21#v9-kernel-per-request-speculative-params": ""
  },
  "park": {
   "INF-06": "MMQ",
@@ -900,7 +904,7 @@
    "before": ""
   },
   {
-   "row": "INF-67",
+   "row": "EVL-21",
    "tok": "FD-DIV-1b",
    "kind": "I",
    "cls": "live",
@@ -915,7 +919,7 @@
    "done": "fd-div-1b-asan row COMPLETE (coordinator fixing the row)"
   },
   {
-   "row": "INF-67",
+   "row": "EVL-21",
    "tok": "FD-DIV-1b",
    "kind": "N",
    "cls": "N",
@@ -1938,7 +1942,7 @@
    "filler": "",
    "before": "",
    "size": "no run",
-   "row": "INF-67",
+   "row": "EVL-21",
    "tok": "FD-DIV-2",
    "kind": "I",
    "cls": "hold",
@@ -2554,6 +2558,12 @@
    {
     "track": "tool-output-compression",
     "next_action": "TOC-MP-1 pointer-reachability test (zero inference), then TOC-MP-2/3 A/B design text"
+   }
+  ],
+  "INF-70>EVL-21": [
+   {
+    "track": "cpu-fused-decoder-blocks",
+    "next_action": "FD-DIV-1b persists on C5: locate and fix the fused-yarn divergence in the champion; FD-OFF-PROD closes at V11-106"
    }
   ]
  }

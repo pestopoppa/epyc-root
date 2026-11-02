@@ -4521,7 +4521,7 @@ instrument, so speed does not weaken the proof boundary.
 ### Source References (2026-08-11)
 
 - [`kernel-promotion-resident-fast-path.md`](https://github.com/pestopoppa/epyc-inference-research/blob/main/docs/design/kernel-promotion-resident-fast-path.md) — measured overhead audit, memory-fit proof, resident schedule and fallback rules.
-- [`v9-kernel-per-request-speculative-params.md`](../handoffs/active/v9-kernel-per-request-speculative-params.md) — V9-8 implementation/ratification task and request-local speculation contract.
+- [`v9-kernel-per-request-speculative-params.md`](../handoffs/active/fable5-window2-findings-03-portfolio-and-master-queue.md#track-v9-kernel-per-request-speculative-params) — V9-8 implementation/ratification task and request-local speculation contract.
 - [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — v9 qualification context and durable-design checkpoint.
 
 ## Tuning constants are CALL-SHAPE specific, not machine constants (2026-08-12)

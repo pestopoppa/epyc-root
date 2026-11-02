@@ -1055,7 +1055,7 @@ Two smaller records. The TQ3 monitor list gained a LittleBit / LittleBit-2 entry
 ### Source References (2026-10-22 wrap-up sweep 12)
 
 - [handoffs/active/quantization-and-low-bit.md](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement) — NEW-10 evening note
-- [handoffs/active/cpu-fused-decoder-blocks.md](../handoffs/active/cpu-fused-decoder-blocks.md) — FD-DIV-1 chain, FD-DIV-1a
+- [handoffs/active/fable5-window2-findings-03-portfolio-and-master-queue.md](../handoffs/active/fable5-window2-findings-03-portfolio-and-master-queue.md#track-cpu-fused-decoder-blocks) — FD-DIV-1 chain, FD-DIV-1a
 - [handoffs/active/quantization-and-low-bit.md](../handoffs/active/quantization-and-low-bit.md) — EXL3-EAR1 acceptance
 - [handoffs/active/autokernel-champion-aggregate.md](../handoffs/active/autokernel-champion-aggregate.md) — CH-24
 - [progress/2026-10/2026-10-22-workspace-58.md](../progress/2026-10/2026-10-22-workspace-58.md) — sections 17.1 and 17.7

@@ -72,7 +72,7 @@ bandwidth that is a 10–20 ms token (50–100 t/s) before speculation, and we m
 **Workstream**: Inference Acceleration
 **Parent index**: [`inference-research-index.md`](inference-research-index.md) (row INF-70)
 **Related**:
-- [`cpu-fused-decoder-blocks.md`](cpu-fused-decoder-blocks.md) (INF-67) — the fused decoder's design
+- [`cpu-fused-decoder-blocks.md`](fable5-window2-findings-03-portfolio-and-master-queue.md#track-cpu-fused-decoder-blocks) (INF-67) — the fused decoder's design
   record and phase checklist; Axis A here is its live viability task list
 - [`cpu-shape-specialized-gemv-decode.md`](../completed/cpu-shape-specialized-gemv-decode.md) (INF-10) — the refuted
   fusion arms and the `GGML_PERF`/symbol profile it prescribed (B1 here satisfies it)

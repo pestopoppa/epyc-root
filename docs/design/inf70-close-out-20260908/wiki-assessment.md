@@ -73,7 +73,7 @@ manifest), `C` = changed (content hash differs).
 | 1 | C | handoff-active | `handoffs/active/autokernel-unified-surface-program.md` | `hardware_optimization` | `benchmark_methodology` (per-surface floors carry their conditions; LOO/re-baseline receipts), `agent_architecture` (resource broker, one-monitoring-session) |
 | 2 | C | handoff-active | `handoffs/active/batched-decode-measurement.md` | `hardware_optimization` | `inference_serving`, `benchmark_methodology` |
 | 3 | C | handoff-active | `handoffs/active/cpu-decode-roofline-program.md` | `hardware_optimization` | `benchmark_methodology` (champion/floor/harness), `quantization` (Q4_K gating) |
-| 4 | C | handoff-active | `handoffs/active/cpu-fused-decoder-blocks.md` | `hardware_optimization` | — |
+| 4 | C | handoff-active | `handoffs/active/fable5-window2-findings-03-portfolio-and-master-queue.md` | `hardware_optimization` | — |
 | 5 | C | handoff-active | `handoffs/active/cpu-prefill-compute-large-models.md` | `hardware_optimization` | `inference_serving` |
 | 6 | C | handoff-active | `handoffs/completed/cpu-shape-specialized-gemv-decode.md` | `hardware_optimization` | `quantization` |
 | 7 | C | handoff-active | `handoffs/active/numa-placement-defect-20260730.md` | `hardware_optimization` | `inference_serving` |
