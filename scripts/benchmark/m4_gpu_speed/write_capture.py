@@ -112,7 +112,9 @@ def preflight(key, command, env, model, np, prompt):
             raise ProjectionError("preflight file seal mismatch")
     if not {"binary", "model", "prompt"}.issubset(cell.get("files", {})) or not cell.get("ggml"):
         raise ProjectionError("plan lacks required files or libraries")
-    if (not command or command[0] != cell['files']['binary']['path']
+    if (len(command) < 7 or command[:5] != ['numactl', '--interleave=all', '--', 'taskset', '-c']
+            or command[5] != ','.join(str(cpu) for cpu in sorted(os.sched_getaffinity(0)))
+            or command[6] != cell['files']['binary']['path']
             or cell['model'] != cell['files']['model']['path'] or str(prompt) != cell['files']['prompt']['path']):
         raise ProjectionError("command inputs differ from sealed files")
     if command.count('-m') != 1 or command.index('-m') + 1 >= len(command) or command[command.index('-m') + 1] != cell['model']:

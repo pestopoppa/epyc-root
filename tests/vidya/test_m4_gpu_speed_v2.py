@@ -103,9 +103,20 @@ def test_write_side_preflight_and_emission(tmp_path, monkeypatch):
     path, original, doc = setup_capture(tmp_path)
     plan = json.loads(original.plan_path.read_text())
     cell = plan['cells']['c']
-    command = [cell['files']['binary']['path'], '-m', cell['model'], '--prefill-order', 'srpf', '--prefill-contend-cap', '512']
+    import importlib.util
+    native_path = Path(__file__).resolve().parents[2]/'scripts/benchmark/m4_gpu_speed/server_np_sweep.py'
+    native_spec = importlib.util.spec_from_file_location('m4_command_fixture', native_path)
+    native = importlib.util.module_from_spec(native_spec); sys.modules[native_spec.name] = native
+    native_spec.loader.exec_module(native)
+    command = native.build_server_command(binary=Path(cell['files']['binary']['path']),
+        model=native.ModelSpec('fixture',Path(cell['model'])), port=18070, np_level=2, threads=2,
+        context_size=65536, ubatch_size=512, kv_type='q8_0', flash_attn=True, jinja=True, mlock=False,
+        extra_args=['--prefill-order','srpf','--prefill-contend-cap','512'])
     env = {'OMP_PROC_BIND':'spread', 'OMP_PLACES':'cores', 'OMP_WAIT_POLICY':'active', 'OMP_DYNAMIC':'false',
            'KMP_BLOCKTIME':'10', 'LD_LIBRARY_PATH':'/tmp/image'}
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts/benchmark/m4_cpu_ownership'))
+    import owned
+    assert owned.resolve_argv(command)[0] == '/usr/bin/numactl'
     cell['argv'], cell['environment'] = command, env
     original.plan_path.write_text(json.dumps(plan))
     now = datetime.now(timezone.utc)

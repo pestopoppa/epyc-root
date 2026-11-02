@@ -444,6 +444,10 @@ def build_server_command(
     cmd = [
         "numactl",
         "--interleave=all",
+        "--",
+        "taskset",
+        "-c",
+        ",".join(str(cpu) for cpu in sorted(os.sched_getaffinity(0))),
         str(binary),
         "-m",
         str(model.path),
