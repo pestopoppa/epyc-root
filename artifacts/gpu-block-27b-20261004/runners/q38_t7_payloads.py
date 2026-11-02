@@ -10,6 +10,8 @@ from __future__ import annotations
 import collections
 import hashlib
 import json
+import math
+import re
 from dataclasses import dataclass
 
 import degeneracy as detector
@@ -30,20 +32,21 @@ class FrozenContext:
 class Plan:
     pairs: tuple[Pair, ...]
     metadata: dict
+    tokenizer_sha256: str
     sha256: str
 
 
-def _plan_hash(pairs: tuple[Pair, ...], metadata: dict) -> str:
+def _plan_hash(pairs: tuple[Pair, ...], metadata: dict, tokenizer_sha256: str) -> str:
     items = [{'key': p.key, 'body': p.body, 'warm_body': p.warm_body,
               'min_cached_tokens': p.min_cached_tokens, 'arms': p.arms,
               'nodraft_body': p.nodraft_body} for p in pairs]
-    payload = json.dumps({'pairs': items, 'metadata': metadata}, sort_keys=True,
+    payload = json.dumps({'pairs': items, 'metadata': metadata, 'tokenizer_sha256': tokenizer_sha256}, sort_keys=True,
                          separators=(',', ':'), ensure_ascii=False, allow_nan=False).encode()
     return hashlib.sha256(payload).hexdigest()
 
 
 def build_plan(prompts: list[dict], contexts: list[FrozenContext], *, gen: int = 1500,
-               gen_nodraft: int = 500) -> Plan:
+               gen_nodraft: int = 500, tokenizer_sha256: str) -> Plan:
     """Build original A and B bodies with separately warmed B arms.
 
     Each target's final B repetition has the original no-draft generation cap;
@@ -53,6 +56,8 @@ def build_plan(prompts: list[dict], contexts: list[FrozenContext], *, gen: int =
     if (not prompts or not contexts or type(gen) is not int or gen <= 0
             or type(gen_nodraft) is not int or gen_nodraft <= 0):
         raise ValueError('nonempty workload and positive generation limits required')
+    if not isinstance(tokenizer_sha256, str) or re.fullmatch(r'[0-9a-f]{64}', tokenizer_sha256) is None:
+        raise ValueError('pinned tokenizer SHA-256 required')
     pairs, metadata, ids = [], {}, set()
     for prompt in prompts:
         if (not isinstance(prompt, dict) or not isinstance(prompt.get('id'), str)
@@ -97,7 +102,7 @@ def build_plan(prompts: list[dict], contexts: list[FrozenContext], *, gen: int =
         metadata[key] = {'phase': 'B', 'type': 'needle', 'target': context.target,
                          'expected': facts}
     frozen = tuple(pairs)
-    return Plan(frozen, metadata, _plan_hash(frozen, metadata))
+    return Plan(frozen, metadata, tokenizer_sha256, _plan_hash(frozen, metadata, tokenizer_sha256))
 
 
 def _body_hash(body: dict) -> str:
@@ -105,7 +110,8 @@ def _body_hash(body: dict) -> str:
                                      ensure_ascii=False, allow_nan=False).encode()).hexdigest()
 
 
-def _result(response: dict, *, stream: bool) -> tuple[str, str, str | None, list[int]]:
+def _result(response: dict, *, stream: bool, tokenizer_sha256: str,
+            require_tokens: bool) -> tuple[str, str, str | None, list[int]]:
     if not isinstance(response, dict) or response.get('http_status') != 200 or response.get('error'):
         raise ValueError('missing or failed native response')
     if stream:
@@ -119,12 +125,24 @@ def _result(response: dict, *, stream: bool) -> tuple[str, str, str | None, list
         if not isinstance(message, dict):
             raise ValueError('missing native message')
         content, reasoning, finish = message.get('content'), '', choices[0].get('finish_reason')
-    tokens = response.get('token_ids')
+    tokens = response.get('token_ids', [] if not require_tokens else None)
     if (not isinstance(content, str) or not isinstance(reasoning, str)
             or not isinstance(tokens, list) or any(type(token) is not int for token in tokens)):
         raise ValueError('missing text, reasoning or tokenizer evidence')
-    if (content or reasoning) and not tokens:
+    if require_tokens and (content or reasoning) and not tokens:
         raise ValueError('nonempty text has no tokenizer evidence')
+    if require_tokens:
+        proof = response.get('tokenizer_provenance')
+        text = reasoning + '\n' + content if stream else content
+        text_digest = hashlib.sha256(text.encode()).hexdigest()
+        if (not isinstance(proof, dict) or proof.get('method') != 'retokenized_text'
+                or proof.get('text_sha256') != text_digest
+                or proof.get('tokenizer_sha256') != tokenizer_sha256):
+            raise ValueError('tokenizer provenance missing or mismatched')
+        if stream and (response.get('stream_complete') is not True
+                       or not isinstance(response.get('raw_stream_sha256'), str)
+                       or re.fullmatch(r'[0-9a-f]{64}', response['raw_stream_sha256']) is None):
+            raise ValueError('stream custody incomplete')
     if finish is not None and not isinstance(finish, str):
         raise ValueError('invalid finish reason')
     return content, reasoning, finish, tokens
@@ -139,7 +157,7 @@ def score(plan: Plan, run: dict, ground_truth: dict[str, dict]) -> dict:
     """
     unknown = lambda why: {'status': 'UNKNOWN', 'reason': why, 'protocol': 'independent-warm-v1'}
     try:
-        if _plan_hash(plan.pairs, plan.metadata) != plan.sha256:
+        if _plan_hash(plan.pairs, plan.metadata, plan.tokenizer_sha256) != plan.sha256:
             return unknown('frozen plan was modified')
     except (TypeError, ValueError):
         return unknown('invalid frozen plan')
@@ -165,7 +183,9 @@ def score(plan: Plan, run: dict, ground_truth: dict[str, dict]) -> dict:
                 if record.get('body_sha256') != _body_hash(body):
                     raise ValueError('measured body hash mismatch')
                 response = record['response']
-                content, reasoning, finish, toks = _result(response, stream=meta.get('type') == 'decode')
+                content, reasoning, finish, toks = _result(
+                    response, stream=meta.get('type') == 'decode', tokenizer_sha256=plan.tokenizer_sha256,
+                    require_tokens=meta.get('type') != 'needle')
                 timings = response.get('timings')
                 if not isinstance(timings, dict):
                     raise ValueError('native timings missing')
