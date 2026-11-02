@@ -9,6 +9,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import subprocess
+import sys
 from pathlib import Path
 
 import yaml
@@ -18,10 +20,20 @@ def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def resolve(orch: Path, scope: dict, prior: dict, registry: dict) -> dict:
+def resolve(orch: Path, scope: dict, prior: dict, registry: dict, independently_derived_scope: dict) -> dict:
     errors: list[str] = []
     rows: list[dict] = []
     roots = orch.resolve()
+    required = {'registry', 'descriptors', 'stack_manifest', 'stack_numa',
+                'launch_manifest', 'stack_topology', 'orchestrator_stack',
+                'stack_paths', 'stack_runtime'}
+    if set(prior.get('source_artifacts', {})) != required:
+        errors.append('required source artifact set incomplete or unexpected')
+    for backend in ('cpu', 'gpu'):
+        actual = scope.get(backend)
+        expected = independently_derived_scope.get(backend)
+        if not isinstance(actual, list) or not isinstance(expected, list) or actual != expected:
+            errors.append(f'{backend}: scope differs from independently derived scope')
     for name, pin in prior.get('source_artifacts', {}).items():
         try:
             path = (roots / pin['path']).resolve(strict=True)
@@ -91,6 +103,7 @@ def main() -> int:
     parser.add_argument('--orchestrator', type=Path, required=True)
     parser.add_argument('--cpu-scope', type=Path, required=True)
     parser.add_argument('--gpu-scope', type=Path, required=True)
+    parser.add_argument('--checker-sha256', required=True, help='independently reviewed kernel_freeze_scope.py digest')
     args = parser.parse_args()
     orch = args.orchestrator
     try:
@@ -99,9 +112,15 @@ def main() -> int:
         if set(cpu) != {'cpu'} or set(gpu) != {'gpu'}:
             raise ValueError('scope must have exactly its expected backend')
         p = orch / 'orchestration'
+        checker = orch / 'scripts/validate/kernel_freeze_scope.py'
+        if sha(checker) != args.checker_sha256:
+            raise ValueError('independent scope checker digest mismatch')
+        derived = json.loads(subprocess.check_output(
+            [sys.executable, str(checker), '--priors', str(p/'derived/stack_priors.yaml'), '--json'],
+            cwd=orch, text=True))
         result = resolve(orch, {**cpu, **gpu}, yaml.safe_load((p/'derived/stack_priors.yaml').read_text()),
-                         yaml.safe_load((p/'model_registry.yaml').read_text()))
-    except (OSError, ValueError, TypeError, yaml.YAMLError, json.JSONDecodeError) as exc:
+                         yaml.safe_load((p/'model_registry.yaml').read_text()), derived)
+    except (OSError, ValueError, TypeError, yaml.YAMLError, json.JSONDecodeError, subprocess.CalledProcessError) as exc:
         result = {'schema': 'epyc.m4.scope_binding_candidate.v1', 'status': 'REFUSED',
                   'errors': [str(exc)], 'roles': []}
     print(json.dumps(result, sort_keys=True, indent=2, default=str))
