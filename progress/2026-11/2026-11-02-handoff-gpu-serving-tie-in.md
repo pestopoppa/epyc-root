@@ -31,3 +31,7 @@ Prepared a P3-4 native-MTP versus DFlash2 serving comparison proposal with commo
 ## 10:04Z — Prepare P3-5 replacement-arm decision package
 
 Prepared the P3-5 operator package: recommend Qwen3.8-27B versus the previously specified A4 sequential control; alternatives restore the deleted historical stock/FF pair or measure only the Qwen3.8 baseline. Operator selection remains outstanding. Verify artifacts and recipe, measure new ceiling rows and use the proper orchestrator worktree before configuration changes; no activation or inference follows from the package.
+
+## 10:07Z — Run P5 known-gold binding helper controls
+
+Ran the nine model-free tests for the existing P5 gold-binding helper: all passed. Documented their scope and limitation: the synthetic controls validate binding/report coverage only, not gold-patch execution or the still-unbound P5 scorer. GPU-PLT-1 preparation lacks pinned custom code, isolated runtime, frozen corpora and its four-arm harness; it is not ready to publish.
