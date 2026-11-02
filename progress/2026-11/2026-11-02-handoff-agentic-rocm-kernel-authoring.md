@@ -99,3 +99,7 @@ Assessed the matched eight-arm panel, zero-profiler null arm, k228 and k175 capt
 ## 00:51Z — Review RPUCG snapshot admission and advance controller prerequisites
 
 Reviewed the prospective RPUCG snapshot patch and recorded its provenance and completeness limitations in artifacts/agentic-rocm/rpucg-snapshot-review-20261102.md. A synthetic fixture with one chain visit and zero total expansions was admitted; upstream initialization and state transitions must be checked before judging that combination invalid. Dispatched bounded work on the zero-profiler mode, C5-7 counter integration and C5-8 roster, with completion events registered. No governed inference row was published and no compute was run.
+
+## 00:52Z — Review controller roster draft and identify RPUCG policy state mismatch
+
+Consumed the C5-8 roster review: the existing discovery-only patch passed 13 tests and 2 subtests but does not implement controller loops or planner-memory mapping, so C5-8 remains open. RPUCG upstream review identified a concrete schema mismatch: the policy stores per-chain per-node visits and per-chain expansion counts, while the prospective snapshot draft collapses those dimensions. Updated the review and corrected the earlier speculative arithmetic observation; no policy-state equality is inferred. Dispatched bounded work on the schema review, roster mapping and capture hook discovery; completion events registered. No inference row published or compute run.
