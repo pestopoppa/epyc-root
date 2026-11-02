@@ -1596,7 +1596,7 @@
       "from": "INF-22",
       "kind": "ref",
       "to": "INF-07",
-      "weight": 8
+      "weight": 9
     },
     {
       "from": "INF-22",
@@ -1614,7 +1614,7 @@
       "from": "INF-22",
       "kind": "ref",
       "to": "RTG-02",
-      "weight": 2
+      "weight": 3
     },
     {
       "from": "INF-23",
@@ -3945,7 +3945,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T10:21:55Z",
+  "generated_at": "2026-11-02T10:26:30Z",
   "nodes": [
     {
       "age_days": 95,
@@ -5501,13 +5501,13 @@
       "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 84,
+      "closed": 85,
       "domain": "inference-research",
       "handoff": "gpu-serving-tie-in-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-01",
       "next_action": "Resolve GPU-ZOS-2.3 extension analysis contract; bind per-role recipes/resources for M4 and PB-QCOST-1",
-      "open": 33,
+      "open": 32,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
