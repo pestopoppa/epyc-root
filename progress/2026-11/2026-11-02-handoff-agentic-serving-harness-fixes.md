@@ -175,3 +175,7 @@ Confirmed F2 prerequisite F1 is already complete: its four slot-specific warmups
 ## 01:06Z — Publish F2 prerequisite recovery
 
 Recovered the preceding F2 progress commit 24d19fc76532 after its push raced origin/main: acquired the serialized push lease, fetched and merged under the lease, and published merge 51c682a8fa7d; serialized push reported cherry empty. The F2 packet, paired evaluations and captured index check remain registered for dispatcher events. DEPLOY-EC-2d evidence remains pending in the lane until its index gate is resolved. No row published.
+
+## 01:07Z — Prepare independent B4c paired evaluation
+
+Delegated construction of an independent B4c paired evaluation packet, with fixed cases, per-worker flag attestation, rollback, quality/cache correlation and rowflow integration; the parked RTE-LOG-1 lineage must not be retried. Registered its result event. F2 packet remediation, B1g packet, B4b and B1e patches, completed-chat row, and captured index check have registered outstanding result events. No inference row was published in this boundary.
