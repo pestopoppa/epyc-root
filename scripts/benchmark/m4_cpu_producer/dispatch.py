@@ -196,7 +196,11 @@ def main():
     # Draft plan validation above is useful without execution; no model is read
     # before independently reviewed, per-arm best-recipe attestations exist.
     validate_execution_evidence(plan)
-    expected_id = "refactor-01a16fc3-m4-cpu-speed-all-20261027"
+    expected_id = plan.get('row_id')
+    if (not isinstance(expected_id, str) or not expected_id or len(expected_id) > 128
+            or not all(c in 'abcdefghijklmnopqrstuvwxyz0123456789_-' for c in expected_id)
+            or not expected_id[0].isalnum()):
+        raise ValueError('invalid native plan row identity')
     if os.environ.get("FILLER_ID") != expected_id or not Path("/mnt/raid0/llm/tmp/compute-flags/grants", expected_id + ".grant").is_file():
         raise ValueError("no canonical admitted outer grant")
     # Independent authorization controls are checked by the enclosing same-entry job.

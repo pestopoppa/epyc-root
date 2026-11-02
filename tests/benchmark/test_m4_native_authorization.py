@@ -16,7 +16,7 @@ def packet(tmp):
     history=tmp/'history';history.write_text('do not repeat history')
     scope=tmp/'scope';scope.write_text(json.dumps({'cpu':[{'role':'worker_general','model_path':str(model)}]}))
     recipe={'best_evidence':str(evidence),'best_evidence_sha256':h(evidence),'scenario_config':{'draft_model':None},'draft_model_sha256':''}
-    native=tmp/'native';native.write_text(json.dumps({'models':[{'role':'worker_general','model_path':str(model),'model_sha256':h(model),'additional_model_inputs':[],'baseline':recipe,'candidate':recipe}]}))
+    native=tmp/'native';native.write_text(json.dumps({'row_id':'m4-test','models':[{'role':'worker_general','model_path':str(model),'model_sha256':h(model),'additional_model_inputs':[],'baseline':recipe,'candidate':recipe}]}))
     binding=tmp/'binding';binding.write_text(json.dumps({'status':'SOURCE_BOUND_ONLY','errors':[],'roles':[{'backend':'cpu','role':'worker_general','model_path':str(model)}]}))
     images={}
     for arm in ('baseline','candidate'):
@@ -25,7 +25,7 @@ def packet(tmp):
         seals={'bin/llama-server':h(binary),'bin/libggml-cpu.so':h(lib)}
         manifest=tmp/(arm+'-manifest');manifest.write_text(json.dumps({'source_commit':auth.CHAMPION if arm=='baseline' else auth.CANDIDATE,'files':seals}))
         images[arm]={'root':str(root),'files':seals,'build_manifest':str(manifest),'build_manifest_sha256':h(manifest)}
-    return {'baseline_commit':auth.CHAMPION,'candidate_commit':auth.CANDIDATE,'role':'worker_general',
+    return {'row_id':'m4-test','baseline_commit':auth.CHAMPION,'candidate_commit':auth.CANDIDATE,'role':'worker_general',
             'scope':str(scope),'scope_sha256':h(scope),'native_plan':str(native),'native_plan_sha256':h(native),
             'binding':str(binding),'binding_sha256':h(binding),'images':images,
             'canary':{'context':str(context),'context_sha256':h(context),'context_witness':'historical conclusion',

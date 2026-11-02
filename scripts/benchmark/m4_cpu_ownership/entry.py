@@ -11,6 +11,7 @@ import fcntl
 from datetime import datetime, timezone
 import hashlib
 import json
+import re
 import os
 from pathlib import Path
 import sys
@@ -37,16 +38,28 @@ def _time(value: str) -> float:
     return datetime.strptime(value, '%Y-%m-%dT%H:%MZ').replace(tzinfo=timezone.utc).timestamp()
 
 
-def _grant(path: Path, expected_region: str, deadline: float) -> None:
+def _row_id(value: object) -> str:
+    if not isinstance(value, str) or not re.fullmatch(r'[a-z0-9][a-z0-9_-]{0,127}', value):
+        raise ValueError('invalid bound row identity')
+    return value
+
+
+def _grant(path: Path, expected_region: str, deadline: float, *, require_host_holds: bool = False) -> None:
     fields = path.read_text().split()
-    if len(fields) != 3:
-        raise ValueError('grant must contain exactly three fields')
     pieces = [field.split('=', 1) for field in fields]
-    if any(len(pair) != 2 for pair in pieces):
-        raise ValueError('malformed grant')
+    if any(len(pair) != 2 for pair in pieces) or len({pair[0] for pair in pieces}) != len(pieces):
+        raise ValueError('malformed or duplicate grant fields')
     values = dict(pieces)
-    if set(values) != {'regions', 'start', 'end'} or len(values) != 3:
-        raise ValueError('invalid grant fields')
+    keys = set(values)
+    required = {'regions', 'start', 'end'}
+    if require_host_holds:
+        if keys != required | {'holds'}:
+            raise ValueError('live v3 grant must include host and GPU holds')
+        holds = values['holds'].split(',')
+        if len(holds) != 5 or set(holds) != {'q0', 'q1', 'q2', 'q3', 'gpu-quiet'}:
+            raise ValueError('full host and GPU-quiet holds required')
+    elif keys not in (required, required | {'holds'}):
+        raise ValueError('invalid fixture grant fields')
     start, end = _time(values['start']), _time(values['end'])
     if values['regions'] != expected_region or not start <= time.time() < deadline <= end:
         raise ValueError('grant region or interval mismatch')
@@ -106,16 +119,22 @@ def main() -> int:
             raise ValueError('region missing')
         if not a.output.is_dir() or any(a.output.iterdir()):
             raise ValueError('output must be a fresh empty directory')
-        _grant(a.grant, plan['region'], a.deadline)
-        if a.stop.exists() or any(a.hold.glob('HOLD_*')):
+        _grant(a.grant, plan['region'], a.deadline, require_host_holds=(mode == 'owned-execute'))
+        if not a.hold.is_dir() or a.stop.exists() or any(a.hold.glob('HOLD_*')):
             raise ValueError('STOP or HOLD before entry')
         grant_hash = _sha(a.grant)
         if mode == 'owned-execute':
-            # Existing native producer binds to this canonical grant and row ID.
-            filler_id = 'refactor-01a16fc3-m4-cpu-speed-all-20261027'
+            # The independently sealed entry and native plan bind one fresh
+            # queue row; an environment variable alone cannot select authority.
+            filler_id = _row_id(plan.get('row_id'))
             canonical_grant = Path('/mnt/raid0/llm/tmp/compute-flags/grants') / (filler_id + '.grant')
-            if a.grant != canonical_grant or plan['region'] != '0-95':
-                raise ValueError('native execution requires canonical full-host grant')
+            if (a.grant != canonical_grant or plan['region'] != '0-95'
+                    or os.environ.get('FILLER_ID') != filler_id):
+                raise ValueError('native execution requires its bound canonical full-host grant')
+            if (not isinstance(plan.get('stopfile'), str) or Path(plan['stopfile']) != a.stop
+                    or os.environ.get('FILLER_STOPFILE') != str(a.stop)
+                    or a.hold != Path('/mnt/raid0/llm/tmp/compute-flags')):
+                raise ValueError('native STOP/HOLD path differs from bound row')
             if sorted(os.sched_getaffinity(0)) != list(range(96)):
                 raise ValueError('native execution requires exact full-host affinity')
             # Require the exact open lease descriptions, not stale lock-file text.
@@ -181,8 +200,8 @@ def main() -> int:
             champion = subprocess.check_output(['git','-C','/mnt/raid0/llm/llama.cpp','rev-parse',
                 'refs/heads/ak/champion/llama-cpp-ffc1bac82eec'], text=True).strip()
             native_authorization.verify(plan, current_champion=champion, enrolled=True)
-        _grant(a.grant, plan['region'], a.deadline)
-        if _sha(a.grant) != grant_hash or a.stop.exists() or any(a.hold.glob('HOLD_*')):
+        _grant(a.grant, plan['region'], a.deadline, require_host_holds=(mode == 'owned-execute'))
+        if _sha(a.grant) != grant_hash or not a.hold.is_dir() or a.stop.exists() or any(a.hold.glob('HOLD_*')):
             raise ValueError('final grant, STOP or HOLD check failed')
         if rc != 0:
             raise ValueError(f'workload incomplete: {rc}')
