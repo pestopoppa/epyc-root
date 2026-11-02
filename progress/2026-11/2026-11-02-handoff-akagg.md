@@ -11,3 +11,11 @@ CH-26b predecessor rc3 was caused by a quarter-host dry-run allocation; the publ
 ## 03:41Z — Review CH-26b successor and advance C3 and CH-27a blocker investigations
 
 C3 successor draft passed model-free host sudo/chroot/setpriv FD9 route and manifest/syntax checks; publication remains unsafe because profiler hashes GGUF weights inside the grant and engine and fixture pins are not complete. CH-27 custody repair and commit-hook failure diagnosis delegated; event-triggered reports registered. Previous wrap-up passed index check but commit hook rejected; diagnostic running. No new row or measurement claimed.
+
+## 03:43Z — Record source-boundary and campaign custody findings
+
+Consumed the C3 and CH-27 investigation reports: C3 r5 host FD9 path passes model-free but profiler and native join both hash GGUF in the grant; safe content binding and engine seal remain before publication. CH-27 shared store cannot be exclusively claimed with its watchdog lock because reanchor bypasses it; SQLite WAL copying is not a coherent snapshot, and native registry records pin durable paths and hashes. NEMO original captures lack independent token or graph-launch events. Delegated bounded repairs and registered report-file events. No new measurement or row claimed.
+
+## 03:45Z — Record source-boundary and campaign custody findings
+
+Consumed the C3 and CH-27 investigation reports: C3 r5 host FD9 path passes model-free but profiler and native join both hash GGUF in the grant; safe content binding and engine seal remain before publication. CH-27 shared store cannot be exclusively claimed with its watchdog lock because reanchor bypasses it; SQLite WAL copying is not a coherent snapshot, and native registry records pin durable paths and hashes. NEMO original captures lack independent token or graph-launch events. Delegated bounded repairs and registered report-file events. No new measurement or row claimed.
