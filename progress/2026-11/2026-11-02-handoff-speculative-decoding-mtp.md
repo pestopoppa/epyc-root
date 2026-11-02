@@ -203,3 +203,7 @@ The previously filed W1 and W2 native attempts stopped at the region-lock checks
 ## 11:29Z — Annotate ngram claims with available corpus and repetition provenance
 
 Advanced NG5 by adding adjacent corpus and repeated-5-gram provenance for the retracted claims and explicitly marking missing provenance for corrected and other observations. NG5 remains open: the registry and full index coverage still need correction. SR-6 has three previously published windows; SR-7's candidate launcher is not ready and no new inference row was published. GitNexus reindex was refused by CPU admission; no code symbols were edited. git diff --check passed.
+
+## 11:37Z — Publish three controlled SR-7 proposer-mix windows
+
+Published sr7-qwen36-proposer-w1-20261102, sr7-qwen36-proposer-w2-20261102 and sr7-qwen36-proposer-w3-20261102; each passed the four-CPU small-model non-science smoke. The first W1 attempt refused a smoke deadline mismatch; the corrected launcher passed. Three predeclared 15-prompt partitions compare composed and MTP-only widths 2/4/6 on fresh servers with raw proposer counters and bounded evidence capture. Shared inputs and exposure markers are under /mnt/raid0/llm/tmp/speculative-decoding-mtp/sr7-next-20261102; the scoped exposure review cannot establish historical disjointness. The 39-test SR-7 suite and git diff --check passed. All measurements and the three-window decision are pending; no registry or historical 122B conclusion.
