@@ -180,9 +180,15 @@ class P3IsolatedTests(unittest.TestCase):
         self.assertNotIn("speculative.n_max", received[0][1])
         self.assertNotIn("speculative", received[0][1])
 
+    def test_rejects_drifted_production_argv_before_launch(self):
+        with patch.object(p.C, 'build_server_argv', return_value=(['server'], [], {'source': 'fake', 'sha256': '0'*64, 'argv': ['server']})), \
+             patch.object(p.C, 'validate_prod_argv', return_value=['model drift']):
+            with self.assertRaisesRegex(RuntimeError, 'model drift'):
+                p.server_argv(18183)
+
     def test_no_draft_arguments_removed(self):
         import p3_draft_guard as guard
-        self.assertEqual(guard.dedicated_no_draft_argv(['server', '-m', 'target', '-md', 'draft', '--spec-type', 'draft-dflash']), ['server', '-m', 'target'])
+        self.assertEqual(guard.dedicated_no_draft_argv(['server', '-m', 'target', '-md', 'draft', '--spec-type', 'draft-dflash', '-devd', 'ROCm0']), ['server', '-m', 'target'])
 
 if __name__ == '__main__':
     unittest.main()
