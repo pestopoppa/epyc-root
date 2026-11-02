@@ -75,3 +75,7 @@ Reviewed and filed the LB1 capture design: it requires three position-aligned in
 ## 00:48Z — Apply LB1 capture design review
 
 Applied independent route review to the LB1 capture design: every failed verdict blocks keep; absence of a qualifying margin is unavailable; CPU and GPU need their own blocking integration paths; candidate source must contain LB1; and both CPU and GPU correctness runs are required without a quiet-window requirement. git diff --check passed. This remains a design, with no source integration or correctness claim. Previous commit 7bd099e194c6 was not published when serialized push failed; this wrap-up includes it.
+
+## 00:50Z — Publish accumulated lane commits and prepare campaign rows
+
+Recovered three failed wrap-up publications: acquired the serialized push lease, fetched and merged origin/main while holding it, then pushed through serialized_push; origin/main reached 18ed2a9c5d86 carrying commits 95a194c68470, 7bd099e194c6 and 04344d3d337f. Dispatched bounded preparation of fresh matched prefill, real fault rehearsal and end-to-end package campaign row inputs; registered each result file for dispatcher resumption. No compute launched, no row published, and no handoff task ticked.
