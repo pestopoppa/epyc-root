@@ -39,3 +39,7 @@ Applied the existing incremental-observation patch to a scratch copy of R4 servi
 ## 10:23Z — Verify floor observation rowflow format
 
 Ran a model-free check against actual scripts/coordination/rowflow/rowflow.py count_units: one complete candidate process-observation JSONL record counts as one unit, and a truncated following record does not increase the count. Scratch test: /mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/observation-control/check_rowflow_units.py. This proves format compatibility only; native measurement, lock witness, cleanup and full floor remain unqualified.
+
+## 10:26Z — Resolve GPU receipt source readiness
+
+For AKX-ALL-3, research origin/main 3ab4ffbf1 contains the GPU-only device plus gpu-quiet receipt implementation: `git log -S "def observe_gpu_quiet"` identifies 0cb215c31. The older named 4375b5aa commit itself is not an ancestor. A live receipt and concurrent CPU waiter remain unproven and the AK launch hold remains in force; no row or inference was launched.
