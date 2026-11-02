@@ -71,3 +71,7 @@ Integrated strict CPU-list and dry-run flag validation into draft keeper admissi
 ## 10:28Z — Prepare Jet-Long prompt-count evaluator
 
 Added offline evaluator for a proposed short numeric prompt preflight; it rejects missing or invalid counts, nonzero cache, truncation and token-count mismatch. Thirty-three prototype tests pass. The 2048-token probe does not establish 300K/524K prompt counts. Current publish_row.py immediately invokes a real dry-run in the caller, conflicting with the explicit no-compute/no-qualification instruction; no publisher was invoked. A2 and DCA GPU preparation and CPU entry work have registered outcome events.
+
+## 10:28Z — Land Jet-Long preflight evaluator after upstream merge
+
+The offline prompt-count evaluator and 33 passing prototype tests are ready; merged concurrent upstream changes for push retry. No inference or scientific result.
