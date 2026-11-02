@@ -71,3 +71,7 @@ Ten fake-child tests pass for the VKQ3 draft supervisor, including short stdin, 
 ## 09:55Z — Advance VKQ3 grant and containment integration
 
 VKQ3 grant, identity and parent-death integration is in progress in scratch; it has no full success receipt and is not row-ready. KVU-16h still needs separate real server lifecycles; the existing guard drafts are insufficient. No inference was run. [no-belief: implementation in progress]
+
+## 09:57Z — Review VKQ3 grant guard against keeper contract
+
+Reviewed the unpublished VKQ3 grant guard against filler_run15.sh: it accepts any nonempty grant and assumes 0-95 CPUs in qualification, but the keeper dry-runs a multi-quarter job on one quarter. Both must be fixed before integration or publication. Containment and runner work continue separately; no inference was run. [no-belief: source contract review only]
