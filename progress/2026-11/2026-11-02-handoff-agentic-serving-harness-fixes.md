@@ -139,3 +139,23 @@ Consumed B4d patch result: no patch or source change made. GitNexus impact _exec
 ## 00:55Z — Recover lane publication and review remaining work
 
 Continued recovery of unpublished lane commits after serialized pushes lost a race against origin/main. Merged latest origin/main and attempted to acquire the serialized push lease so a fetch, merge and push can run under one lock; the live ws58-docs push held it and acquisition refused without waiting. The standard wrap-up will retry its push. B1e and B4b treatment patch results and GPU remediation remain registered; delegated bounded current-state reviews for DEPLOY-EC and LB6, with result events registered. B4d remains stopped on the HIGH-impact GitNexus result recorded in the preceding boundary. No row published and no box completed.
+
+## 00:56Z — File deployed primitives prefix fingerprint and assess recorder
+
+Verified existing serving_calls record 8ea7850dcc574d48906b851a9f11bac2: 2026-10-05 08:02:45Z, primitives source, port 8083, dispatched=true, outcome=ok, success=true, prefix_fp.c2048=a70471db32f3b899. This satisfies DEPLOY-EC-2d; 2c and the parent remain open. LB6 remains open: a read-only health response sampled one worker at orch b0f8613d, which predates c7f3c8ff; zero serving records in the one-hour window ending 00:55Z means the required real-traffic ratio is not measurable. Per-worker provenance, approved API reload at the inference-owner boundary and an hour of real dispatched traffic remain needed. No live reload or inference was performed.
+
+## 00:57Z — Recover index gate and prepare GPU row
+
+The preceding wrap-up resolved DEPLOY-EC-2d and inserted fingerprint evidence, but failed the index_state --check before commit. The handoff changes remain pending in the lane and must be carried into this wrap-up. Started a bounded diagnosis of the index check and a canonical A3A-F2 GPU packet repair; registered result events. Previously registered B1e and B4b patches remain pending. No row published in this boundary.
+
+## 00:59Z — Capture full handoff index failure
+
+Consumed index-fix-result.txt: the advisory warning displayed by wrapup is nonblocking and masks the actual index error. The previous checker session output was no longer available, so started one captured check writing index-check-output.txt and index-check-complete.txt; registered the latter as a dispatcher event. The DEPLOY-EC-2d tick and evidence remain uncommitted in the lane and must be included only after the index gate is repaired. GPU and patch preparations remain outstanding. No row published.
+
+## 01:00Z — Prepare completed chat proof and recover handoff checks
+
+The observer commit hook was repaired by restoring its tracked operator ratifier missing from this sparse checkout; observer census passes. Pending DEPLOY-EC-2d evidence remains uncommitted until the captured full index check completes and its actual failure is fixed. Started targeted index diagnosis and preparation of an independent keeper row for the open completed /chat proof; registered their result events. Earlier GPU and B1e/B4b treatment patch preparations remain pending. No inference row published in this boundary.
+
+## 01:01Z — Prepare completed chat proof and recover handoff checks
+
+The observer commit hook was repaired by restoring its tracked operator ratifier missing from this sparse checkout; observer census passes. Pending DEPLOY-EC-2d evidence remains uncommitted until the captured full index check completes and its actual failure is fixed. Started targeted index diagnosis and preparation of an independent keeper row for the open completed /chat proof; registered their result events. Earlier GPU and B1e/B4b treatment patch preparations remain pending. No inference row published in this boundary.
