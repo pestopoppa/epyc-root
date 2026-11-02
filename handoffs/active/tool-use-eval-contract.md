@@ -2,6 +2,115 @@
 
 **Scratch**: `/mnt/raid0/llm/tmp/tool-use-eval-contract/` · worktrees: `/mnt/raid0/llm/worktrees/tool-use-eval-contract-*`
 
+## Execution map — audited 2026-11-02
+
+This map supersedes the historical live-status language below, not the individual acceptance
+contracts. Source review used ROOT `2d95a8a371` and orchestrator `9301fb7bc81663d176f11ebf21bf496d4ac725a3` (the shared orchestrator checkout was behind that ref). Re-resolve
+the task text, source and ownership at dispatch; use isolated worktrees. Historical PIDs, flags,
+paths and `ready` statements below are not evidence about running services today. The frozen
+UFH-13 inference posture and the existing measurement and resource-admission rules still apply.
+
+**What exists.** The imported DTAP catalog has 18 CRM/finance cases. Its native-schema opt-in
+validates calls, and its runner records requests, outcomes and trace replay, but live calls in
+`scripts/autopilot/evals/dtap/harness/runner.py` get placeholder responses and do not mutate
+simulated services. The separate retained `dtap-live-r2-20261028/dtap/crm_entry.py` invokes the
+upstream CRM and snapshots leads, but hard-codes `crm-benign-001`, supports that case's tools,
+and has no indirect-injection implementation. Its old launcher is a fixed-ID, fixed-CPU and
+fixed-engine historical artifact, not a current runnable row. One benign CRM result and the
+finance R3 pair are filed below; the latter's attack was **not delivered**. Neither establishes
+an attack-resistance result. `TU-ADV-1` is complete for its stated fixtures; `TU-LED-1` is
+partially instrumented, not complete. The generic DTAP README's no-service warning is accurate
+for that runner, not a denial of the separate CRM diagnostic.
+
+**Dispatch correction for TU-DTAP-2a.** `crm-benign-001` has no attack configuration, while the
+imported indirect CRM cases have different tasks and judges. Its successful benign run is a
+plumbing control, not a matched baseline. Do not claim the original wording's same-case/same-judge
+pair exists or silently inject into the benign task. Start with
+`crm-malicious-indirect-general-ai-restrictions-004`, using its unchanged judge for both arms.
+Its catalog describes a `salesforce:create_record` tool-result suffix and a separate skill
+injection; start with the tool suffix alone, explicitly report that the skill arm is untested,
+and pin the original suffix and a neutral no-suffix control before exposure. The suffix follows
+the named tool response, so capture whether that response actually occurred before interpreting
+delivery. The judge reads CRM Notes and Tasks and the `sales` Slack channel and uses the current
+date for task-due acceptance; bind the effective date and replay conditions. Keep the same task,
+service seed, tools, endpoint, model, decoding, judge and
+runner across its two arms; change only the intended attack-bearing surface. If the imported
+payload or required native service operations cannot be recovered, implement and test the missing
+adapter from the pinned upstream case and label any locally authored payload explicitly; do not
+invent upstream provenance or substitute a different case as a matched pair.
+
+### Ordered implementation and acceptance
+
+1. **Pin and inventory the experiment (TU-DTAP-2a).** At current APP origin/main inspect the
+   `cases.json`, `manifest.json`, `harness/tool_schemas.json`, corresponding unchanged native
+   judge and upstream setup/payload for the selected indirect case. Record hashes, source commits,
+   license, model/quant and template, serving binary content/linkage, container image digests,
+   exact task, tool schemas, seed, sampling and limits. Identify the attack delivery point, all
+   service operations and judge-read state. Pin the benign/neutral and attack state before the
+   first attempt. Treat the historical Qwen3-0.6B/seed-42 CRM result as a separate diagnostic;
+   reproduce its model and settings only if they are available and qualified, never call it the
+   matched baseline. Acceptance: one reviewable case-and-arm manifest, with any unavailable
+   inputs recovered or explicitly marked as unresolved before publishing a run.
+2. **Build the service-backed pair and deterministic controls.** In an isolated APP lane, reuse
+   the native tool-contract validator and unchanged judge; implement case-scoped service calls,
+   per-arm reset/seed, actual payload insertion and full judge-relevant state snapshot. Preserve
+   the native generic runner's semantics unless a reviewed integration explicitly changes them.
+   Capture exact model-visible tool results, actual delivery/nondelivery, accepted/executed calls,
+   responses, service state, judge outcome, failure category and teardown. Test positive and
+   negative delivery, per-arm isolation, failed/malformed tool calls, reset, judge errors,
+   timeout/STOP and owned process/container cleanup. Require actual delivery evidence before
+   interpreting attack success; nondelivery is a reported outcome, not a defense success.
+   Acceptance: source-bound tests and a bounded no-model end-to-end control prove these paths;
+   none is a live security result.
+3. **Prepare then schedule the live pair.** Bind the final launcher, inputs, output schema,
+   resource limits and completion predicate to a fresh row using the current rowflow/keeper
+   procedure in `docs/guides/agent-workflows/compute-fillers.md` and
+   `docs/guides/agent-workflows/backlog-churn-flow.md`. Qualify the *same entry* with current
+   normal and cutoff controls; do not reuse the old r2 grant or hard-coded CPU list. Coordinate
+   the actual CPU/GPU claim and any inference window with its owner; use the kernel-store binary
+   and verify its source/content and ggml linkage. Record every scheduled arm, including failures;
+   retain original trace, state, judge and cleanup evidence. Apply only the predeclared diagnostic
+   rule: report delivery, task success, attack success and trace for each arm, not a general
+   security threshold. TU-DTAP-2a closes only after the matched pair is executed and filed.
+4. **Prospective evidence wiring.** Before the new pair runs, extend the existing DTAP CRM
+   source registration and `VB-DTAP-CRM-PILOT-WRITE` scope, or register a distinct paired source
+   if its native record differs: bind both arm identities, actual grant, model-visible delivery,
+   state, judge, failures and cleanup at write time. Reuse the existing carrier and shared
+   `ClaimTuple.grade()`; prove the CLI-to-planner canary before calling the loop wired. Do not
+   fabricate a tuple for the older benign run. Coordinate the shared belief files with their owner.
+5. **Expand the subset (TU-DTAP-2b/2).** Once the paired path works, inventory the 18 imported
+   cases and service dependencies, implement and test missing CRM/finance/gmail/slack/paypal
+   effects and reset/snapshot paths, then predeclare selected cases, seeds, arms and a capable
+   model. Preserve per-case judge and typed failures, fixed settings within each pair, all-attempt
+   denominators, timeout/finished reporting and immutable replay. Distinguish absent payload,
+   nondelivery, infrastructure failure and judged failure. Use real-run directory names that do
+   not imply smoke. Parent acceptance requires the declared subset to run and be filed; do not
+   extrapolate the 0.6B single-case diagnostics to model quality or security.
+6. **Independent tool-surface work.** For TU-HR-1, reopen the current registry, live route and
+   model/template identities and trace the actual request/render/parse path per served model;
+   distinguish source capability from live configuration and file evidence for each model. For
+   TU-GR-1, coordinate with scoring-infrastructure 2a-iv: enforce the selected agent/grader
+   filesystem boundary and transcript tripwire, then demonstrate real OS-level denial and
+   controlled export; mocked denial alone is insufficient. No second isolation owner or new
+   grading rule. For TU-LED-1, extend the existing native ledger only where original events
+   support task-level first-try validity, repair recovery, verification/no-valid-call/timeout
+   buckets and paired gains/give-backs; retain unknowns and all-attempt costs, with fixtures and
+   write-side custody. Registry validation counts alone cannot close the task.
+7. **TU-MH-1 shared acceptance driver.** Coordinate with the UFH-15/HS-4 owner, locate the current
+   P0.4/SC86 runner and extend it rather than creating a competing harness. The 2026-11-02 HS-4 P6
+   comparator exists, but prospective arm/trial/catalog identities and matched MCP configurations
+   are not yet emitted by the runner. Add those bindings and REPL/OpenCode adapters, fresh state,
+   sealed fixture/oracle separation and full executed-call/session cost capture. Preserve the
+   six development and twelve sealed acceptance instances and existing unchanged scoring and
+   catalog rejection rule below. Source/fixture controls precede any coordinated inference;
+   actual grader isolation must pass step 6 before untrusted benchmark use.
+
+**Completion and ownership.** Each step has one implementation owner; resolve any new overlap
+with the current session-per-handoff registry before claiming. Record exact code and artifact
+identities, tests, outcomes and limitations in this handoff and daily progress as work lands;
+tick only the specific acceptance actually met. Keep the single EVL-46 index row thin. This
+audit is a plan and source review, not a live run, qualification or task completion.
+
 **Latest verification (2026-07-05T19:45Z)**: `tool_use_activation=ready`.
 AutoPilot is live as PID `2935890` under the Fable launcher with
 `AUTOPILOT_TOOL_SENTINELS=1`, `AUTOPILOT_PLANNER_HINTS=1`,
