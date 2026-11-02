@@ -33,3 +33,8 @@ found at least one passing canonical arm for 306 of 308; its timing was single-e
 and is not ladder-grade. The bundle is a reproducible source input: it does not implement
 the dataset selection, run an evaluation, or establish a model score. The research gate
 report contains the full method, mutation tests and limitations.
+
+On 2026-11-02, the eight existing acceptance regression tests were rerun against the
+reconstructed checkout in a disposable Python environment: **8 passed in 6.16 seconds**.
+The test copy only changed the historical checkout path. This verifies those regression
+cases; it does not rerun the canonical-solutions gate or replace a model-arm evaluation.
