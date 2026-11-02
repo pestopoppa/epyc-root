@@ -101,6 +101,11 @@ Nothing was deleted: the siblings are the evidence record for every gate this pr
   the result a sampled maximum, not a lifetime or runtime peak. Project via the existing measurement
   carrier and shared grade; no retrospective warrant or new ladder. Prove a planning-context canary.
   Research producer `artifacts/kvu16a_shape_load/`. [no-belief: prospective source-wiring task]
+  - 2026-11-02 source checkpoint: research `5d6b7138b` emits from qualified original samples;
+    root `459ede632` rederives the sampled value from native records through the shared carrier.
+    Three synthetic reader/tamper/unknown tests pass. Launcher `FILLER_*` fields are not an
+    independently authenticated grant; real-load and planning canary remain open.
+    [no-belief: source and synthetic controls]
 
 - [ ] **VB-S0-LOCK-REPRO-WIRE — prospectively capture S0 lock-guard reproduction observations.** At native creation bind the exact guard and authenticated CLI/interpreter, owner identity, private lock FD identities, syscall trace window, per-check outcomes and bracketing probes, and incomplete/refusal dispositions. Project using the existing diagnostic observation carrier and `claim_tuple.grade()`; no new grading ladder or retrospective measurement warrant. Prove the planning-context canary before calling the source wired. The 2026-11-02 pre-hook control is a committed conclusion only. [no-belief: prospective source-wiring task]
 
