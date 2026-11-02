@@ -1212,6 +1212,8 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 e["last_wrapup"] = rep["wrapped_sha"]
             elif m:
                 e["last_wrapup"] = m[-1]
+            if e.get("last_wrapup"):
+                e["dirty_wrap_resume"] = None
             e["last_report"] = {k: rep.get(k) for k in ("state", "wrapped_sha", "question", "rows_published")} if rep else None
             effect = turn_effect(flags, slug, e, rep)
             if not effect:  # no commit, no row, no filing: pure spend (codex-gen did 3 such turns in a minute, 2026-11-01)
@@ -1378,7 +1380,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             if not wrapped(e, lcache):  # 2026-11-01 ruling: no new work on an unwrapped session; keep the event
                 e["pending_event"] = ev
                 rest.append(ev)
-                log(flags, f"UNWRAPPED {ev['slug']}: refusing resume; last_wrapup={e.get('last_wrapup')}")
+                log_unwrapped(flags, ev["slug"], e)
                 continue
             if ev.get("kind") == "dryrun":
                 pr = dryrun_prompt(ev["slug"], e, flags, ev["rid"], ev["end"])
@@ -1408,7 +1410,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             if e.get("idle_reported") and now - _parse(e.get("last_end") or "") < IDLE_REPORT_COOLDOWN_S:
                 continue  # the session itself said IDLE: <reason>; re-asked after the cooldown
             if not wrapped(e, lcache):
-                log(flags, f"UNWRAPPED {slug}: refusing resume; last_wrapup={e.get('last_wrapup')}")
+                log_unwrapped(flags, slug, e)
                 continue
             fresh = bool(e.get("fresh_next")) or not e.get("session_id")
             _go(flags, slug, e, (brief_text(slug, e, flags) + "\n" if fresh else "") + continue_prompt(slug, e, flags, e["_work"][1], delta(slug)),
@@ -1427,6 +1429,13 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
     return reg, st
 
 
+def log_unwrapped(flags, slug, e):
+    """UNWRAPPED is logged at most once per 10 min per session (1293 lines in an hour were log spam, not information)."""
+    if time.time() - _parse(e.get("unwrapped_logged") or "") > 600:
+        e["unwrapped_logged"] = now_iso()
+        log(flags, f"UNWRAPPED {slug}: refusing resume for new work; last_wrapup={e.get('last_wrapup')} lane={e.get('cwd')}")
+
+
 def wrapped(e, cache=None) -> bool:
     """Gate for resuming a session with NEW work: its last `WRAPPED <sha>` must be on origin/main.
     A session that never ran a turn (no session_id, no last_end) has nothing to have wrapped and passes."""
@@ -1437,13 +1446,18 @@ def wrapped(e, cache=None) -> bool:
         # ws58 2026-11-01: a session that never printed WRAPPED but left nothing unlanded (clean lane, empty cherry) has
         # nothing to wrap; refusing it deadlocked codex-gen and others (104 UNWRAPPED refusals, no rows published).
         cwd = e.get("cwd") or ""
-        if not cwd.startswith(LANES_DIR + "/") or not os.path.isdir(cwd):
+        if not cwd.startswith(LANES_DIR + "/"):
             return False
+        if not os.path.isdir(cwd):
+            return True  # the lane was reaped: that only happens when it was clean and landed, so nothing is unwrapped
         try:
             dirty = subprocess.run(["git", "-C", cwd, "status", "--porcelain", "--untracked-files=no"], capture_output=True, text=True, timeout=60).stdout.strip()
             ahead = subprocess.run(["git", "-C", cwd, "cherry", "origin/main"], capture_output=True, text=True, timeout=60).stdout
         except (OSError, subprocess.TimeoutExpired):
             return False
+        if dirty and not e.get("dirty_wrap_resume"):
+            e["dirty_wrap_resume"] = now_iso()  # a dirty lane gets ONE wrap-up resume (its prompt ends with wrapup.py); then refused
+            return True
         if not dirty and "+" in ahead:
             # ws58 23:46Z: an unlanded commit in a clean lane (its push died, e.g. a dead push lock) is landed HERE,
             # deterministically, instead of refusing the session forever (codex-gen sat UNWRAPPED for 30 min).
