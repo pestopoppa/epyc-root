@@ -91,3 +91,7 @@ The SW-3 and CAFE-1 boxes were ticked on the preceding wrap-up attempt; regenera
 ## 10:12Z — Decide SW-3 and CAFE-1 and advance SR-6
 
 Regenerated the derived handoff indexes after merging concurrent updates; SW-3 and CAFE-1 decisions are in the prior entry.
+
+## 10:13Z — Decide SW-3 and CAFE-1 and advance SR-6
+
+Published the decisions and regenerated indexes after merging concurrent main updates.
