@@ -44,7 +44,7 @@ ROOT_INPUTS = (
     "scripts/vidya/canonical.py", "scripts/vidya/frames.py", "scripts/vidya/lattice.py",
     "scripts/vidya/measurement_record.py", "scripts/vidya/cli.py", "scripts/vidya/ingest_sources.py",
     "handoffs/active/vidya-belief-substrate-program.md",
-    "handoffs/active/stack-lifecycle-program.md",
+    "handoffs/active/standardized-stack-update-pipeline-finalization.md",
 )
 PACKAGES = json.loads((ROOT / "scripts/ci/s49_mtmd_probe_packages.json").read_text())
 PACKAGES = PACKAGES["versions"]

@@ -21163,7 +21163,7 @@
       "task": "VB-CI-CONFORMANCE"
     },
     "current_table_row_status": "actual ET13 task/source row is published and bound in the exact ROOT context; carrier registry remains the existing ci-fixture-conformance source",
-    "parent_task": "ET-13 honest routing buckets (E5 remaining LOWs sweep), handoffs/active/eval-tower-program.md",
+    "parent_task": "ET-13 honest routing buckets (E5 remaining LOWs sweep), handoffs/active/eval-tower-architecture-audit-2026-07-20.md",
     "source_table_context": "published ET13-ROUTING-SOURCE row in scripts/vidya/adapters/README.md at the bound ROOT commit",
     "vidya_task": "VB-ET13-ROUTING-CONFORMANCE"
   },
@@ -21250,7 +21250,7 @@
     {
       "git_blob": "5617fcc04ed2c41d6a312f500b746571b36726f7",
       "git_mode": "100644",
-      "path": "handoffs/active/eval-tower-program.md",
+      "path": "handoffs/active/eval-tower-architecture-audit-2026-07-20.md",
       "sha256": "b5d030d953666c7d66845819a661d28448e150c9cfcfd68b4d14794440e32bf6",
       "size_bytes": 83176
     }
@@ -21267,7 +21267,7 @@
     "scripts/vidya/lattice.py",
     "scripts/vidya/frames.py",
     "scripts/vidya/canonical.py",
-    "handoffs/active/eval-tower-program.md"
+    "handoffs/active/eval-tower-architecture-audit-2026-07-20.md"
   ],
   "runtime_data": [
     "orchestration/model_registry.yaml",

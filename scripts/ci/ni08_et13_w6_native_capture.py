@@ -8,7 +8,7 @@ W6_PIN = "ce48ed2c386c2f69d23ad87289e384d7942ee7a5"
 BASE_PIN = W6_PIN  # fresh candidate source remains descended from the reviewed W6 base
 SOURCE_PIN = "14a2c3a1469cd44a7f7a9017c7f3a44c361b1464"
 ROOT_PIN = "72a0d06a251667fe6dc1cdf05ab19313e03f9736"
-ROOT_CONTEXT_FILES = ["scripts/ci/native_conformance.py", "scripts/vidya/adapters/__init__.py", "scripts/vidya/adapters/ci_conformance.py", "scripts/vidya/claim_tuple.py", "scripts/vidya/ingest_sources.py", "scripts/vidya/adapters/README.md", "handoffs/active/vidya-belief-substrate-program.md", "tests/vidya/test_ci_conformance.py", "scripts/vidya/lattice.py", "scripts/vidya/frames.py", "scripts/vidya/canonical.py", "handoffs/active/eval-tower-program.md"]
+ROOT_CONTEXT_FILES = ["scripts/ci/native_conformance.py", "scripts/vidya/adapters/__init__.py", "scripts/vidya/adapters/ci_conformance.py", "scripts/vidya/claim_tuple.py", "scripts/vidya/ingest_sources.py", "scripts/vidya/adapters/README.md", "handoffs/active/vidya-belief-substrate-program.md", "tests/vidya/test_ci_conformance.py", "scripts/vidya/lattice.py", "scripts/vidya/frames.py", "scripts/vidya/canonical.py", "handoffs/active/eval-tower-architecture-audit-2026-07-20.md"]
 PY_PIN = "3.13.15"
 REQUIREMENT_SEEDS = ["httpx", "jsonschema", "math-verify", "pydantic", "pydantic-settings", "pytest", "pyyaml"]
 ENV = {"PYTEST_DISABLE_PLUGIN_AUTOLOAD":"1", "PYTHONDONTWRITEBYTECODE":"1", "PYTHONHASHSEED":"0",
@@ -227,7 +227,7 @@ def main():
         if cases.get('base_commit')!=BASE_PIN or cases.get('w6_commit')!=W6_PIN or cases.get('source_commit')!=SOURCE_PIN or len(cases['cases'])!=case_count: raise RuntimeError('case/source manifest pin/count mismatch')
         if cases.get('root_carrier')!=ROOT_PIN or cases.get('root_context_files')!=ROOT_CONTEXT_FILES: raise RuntimeError('ROOT context identity mismatch')
         binding=cases.get('prospective_source_binding',{})
-        if binding.get('vidya_task')!='VB-ET13-ROUTING-CONFORMANCE' or binding.get('parent_task')!='ET-13 honest routing buckets (E5 remaining LOWs sweep), handoffs/active/eval-tower-program.md': raise RuntimeError('ET13 owning task binding mismatch')
+        if binding.get('vidya_task')!='VB-ET13-ROUTING-CONFORMANCE' or binding.get('parent_task')!='ET-13 honest routing buckets (E5 remaining LOWs sweep), handoffs/active/eval-tower-architecture-audit-2026-07-20.md': raise RuntimeError('ET13 owning task binding mismatch')
         if binding.get('current_table_row_status')!='actual ET13 task/source row is published and bound in the exact ROOT context; carrier registry remains the existing ci-fixture-conformance source': raise RuntimeError('ET13 prospective source-table approval gate missing')
         if git(app,'rev-parse',BASE_PIN+'^{tree}')!=cases.get('base_tree') or subprocess.run(['git','-C',str(app),'merge-base','--is-ancestor',BASE_PIN,'HEAD']).returncode!=0: raise RuntimeError('tested APP is not descended from exact reviewed W6 source')
         if git(app,'rev-parse',SOURCE_PIN+'^{tree}')!=cases.get('source_tree') or subprocess.run(['git','-C',str(app),'merge-base','--is-ancestor',SOURCE_PIN,'HEAD']).returncode!=0: raise RuntimeError('tested APP is not descended from exact reviewed ET13 source')

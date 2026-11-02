@@ -34,7 +34,7 @@ ROOT_READS = (
     "scripts/vidya/measurement_record.py",
     "scripts/vidya/canonical.py", "scripts/vidya/frames.py", "scripts/vidya/lattice.py",
     "handoffs/active/vidya-belief-substrate-program.md",
-    "handoffs/active/stack-lifecycle-program.md",
+    "handoffs/active/standardized-stack-update-pipeline-finalization.md",
 )
 APP_READS = (
     "scripts/server/bench_core_claim.py", "scripts/server/fleet_markers.py",

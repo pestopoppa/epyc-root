@@ -15,7 +15,7 @@ TEST_PATH = 'scripts/benchmark/odl_bench/tests/test_odl_bench.py'
 TEST_AST_SHA256 = '41d6b0cbbd4827f25ff4627ba3ff0c55ee0a6ff04801b4af8099bfaa17998cd4'
 LITERAL_BRANCH = 'codex/ni08-pip02-selected-library-native-20261007'
 CONTEXT_READY = True
-CONTEXT_INPUTS = {'handoffs/active/knowledge-pipelines.md': '4500fd41aa58a727675558b95c0c1d3aa15ed3ab9e82a54ddf92ba5b86224bd7', 'handoffs/active/vidya-belief-substrate-program.md': 'de546445f616ad885f0427faf1861a30cabf43303fff707a5c97805abc1942b9', 'scripts/vidya/adapters/README.md': 'c90e06af010893b51e2c0ab1df3e391207240504c58837411d1cb244cf27bc87'}
+CONTEXT_INPUTS = {'handoffs/active/document-parser-table-bench.md': '4500fd41aa58a727675558b95c0c1d3aa15ed3ab9e82a54ddf92ba5b86224bd7', 'handoffs/active/vidya-belief-substrate-program.md': 'de546445f616ad885f0427faf1861a30cabf43303fff707a5c97805abc1942b9', 'scripts/vidya/adapters/README.md': 'c90e06af010893b51e2c0ab1df3e391207240504c58837411d1cb244cf27bc87'}
 CONTEXT_MARKER = 'VB-PIP02-SELECTED-LIBRARY-CONFORMANCE'
 ENVIRONMENT = {'PYTEST_DISABLE_PLUGIN_AUTOLOAD': '1', 'PYTEST_ADDOPTS': '', 'PYTEST_PLUGINS': '', 'PYTHONDONTWRITEBYTECODE': '1', 'PYTHONHASHSEED': '0', 'PYTHONUNBUFFERED': '1', 'ORCHESTRATOR_MOCK_MODE': '1', 'PYTHONNOUSERSITE': '1'}
 

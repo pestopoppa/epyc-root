@@ -26,11 +26,11 @@ TEST_PATH = 'tests/ci/test_pin_report_fixture.py'
 CHECKER_PATH = 'scripts/benchmark/check_pin_staleness.py'
 CHECKER_SHA256 = '2fc0680f070cc2f051bd8d74b66748a1c00e09f3d8d8f229ab46b9167152e666'
 CONTEXT_PIN = '1b2c0c0aa959e162d492ba367ce15b36074033eb'
-CONTEXT_INPUTS = {'handoffs/active/eval-tower-program.md': '371eff63c0bb4d27fb53e09644e6ec5a62afec4ac7420e1ffba67ddd902b8e90', 'handoffs/active/vidya-belief-substrate-program.md': 'de092d4d80028bbc04ffdcf131268d849b31fbc59e19052c4da5a4a3ca2cdba0', 'scripts/vidya/adapters/README.md': '0d672fc68ce2a8980f46277959a4d54b868e48afb465c745e7357f642fc3c840'}
+CONTEXT_INPUTS = {'handoffs/active/scoring-infra-standardization.md': '371eff63c0bb4d27fb53e09644e6ec5a62afec4ac7420e1ffba67ddd902b8e90', 'handoffs/active/vidya-belief-substrate-program.md': 'de092d4d80028bbc04ffdcf131268d849b31fbc59e19052c4da5a4a3ca2cdba0', 'scripts/vidya/adapters/README.md': '0d672fc68ce2a8980f46277959a4d54b868e48afb465c745e7357f642fc3c840'}
 REQUIREMENTS_SHA256 = 'e10bd23d53c73d76ae3fdd231dfd28b177d777e8107f6f56762299002711512a'
 TEST_AST_SHA256 = '50fa33618644c75a54e8d0d8ff425ded0d2c29ed4f52c07a034ff932bcce40d6'
 LITERAL_BRANCH = 'codex/ni08-evl42-report-native-20261007'
-CONTEXT_MARKERS = {'handoffs/active/eval-tower-program.md': ('SC-EVL42-PIN-REPORT-WIRING', 'VB-EVL42-PIN-REPORT-CONFORMANCE'), 'handoffs/active/vidya-belief-substrate-program.md': ('SC-EVL42-PIN-REPORT-WIRING', 'VB-EVL42-PIN-REPORT-CONFORMANCE'), 'scripts/vidya/adapters/README.md': ('SC-EVL42-PIN-REPORT-WIRING', 'VB-EVL42-PIN-REPORT-CONFORMANCE')}
+CONTEXT_MARKERS = {'handoffs/active/scoring-infra-standardization.md': ('SC-EVL42-PIN-REPORT-WIRING', 'VB-EVL42-PIN-REPORT-CONFORMANCE'), 'handoffs/active/vidya-belief-substrate-program.md': ('SC-EVL42-PIN-REPORT-WIRING', 'VB-EVL42-PIN-REPORT-CONFORMANCE'), 'scripts/vidya/adapters/README.md': ('SC-EVL42-PIN-REPORT-WIRING', 'VB-EVL42-PIN-REPORT-CONFORMANCE')}
 ENVIRONMENT = {'PYTEST_DISABLE_PLUGIN_AUTOLOAD': '1', 'PYTEST_ADDOPTS': '', 'PYTEST_PLUGINS': '', 'PYTHONDONTWRITEBYTECODE': '1', 'PYTHONHASHSEED': '0', 'PYTHONUNBUFFERED': '1'}
 
 def git(repo: Path, *args: str) -> str:
