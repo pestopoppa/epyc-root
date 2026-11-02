@@ -5,6 +5,8 @@ No protocol or grade is invented; `claim_tuple.grade` remains the sole grader.
 """
 from __future__ import annotations
 import hashlib
+import base64
+import binascii
 import json
 import math
 import os
@@ -36,6 +38,33 @@ def _canonical(value: Any) -> bytes:
 
 def _sha(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
+
+
+def _verify_bound_image_request(sample: dict, scenario: dict, capture_root: Path, prompt: str) -> None:
+    """Reopen the producer's exact request and verify its image bytes and prompt."""
+    expected = scenario.get('image_sha256')
+    if not isinstance(expected, str) or len(expected) != 64:
+        raise ProjectionError('vision image digest missing')
+    try:
+        path = Path(sample['request_path']).resolve(strict=True)
+        if capture_root not in path.parents:
+            raise ProjectionError('vision request outside capture root')
+        request = json.loads(path.read_bytes())
+        messages = request['messages']
+        if len(messages) != 1 or messages[0]['role'] != 'user':
+            raise ProjectionError('vision request messages changed')
+        content = messages[0]['content']
+        if not isinstance(content, list) or len(content) != 2 or content[0]['type'] != 'image_url' or content[1] != {'type': 'text', 'text': prompt}:
+            raise ProjectionError('vision request content changed')
+        url = content[0]['image_url']['url']
+        prefix, payload = url.split(',', 1)
+        if prefix not in ('data:image/png;base64', 'data:image/jpeg;base64', 'data:image/webp;base64'):
+            raise ProjectionError('unsupported image data URL')
+        image = base64.b64decode(payload, validate=True)
+        if _sha(image) != expected:
+            raise ProjectionError('vision request image digest mismatch')
+    except (OSError, KeyError, TypeError, ValueError, IndexError, binascii.Error) as exc:
+        raise ProjectionError(f'invalid bound vision request: {exc}') from exc
 
 
 def _native_rows(path: str | Path, config: SourceConfig) -> tuple[dict, ...]:
@@ -108,6 +137,17 @@ def _project(native: Any, config: SourceConfig) -> ClaimTuple:
         raise ProjectionError('planned model does not match captured scope')
     def arg(flag):
         return argv[argv.index(flag)+1] if flag in argv and argv.index(flag)+1<len(argv) else None
+    bound_recipe = native.get('recipe')
+    bound_scenario = bound_recipe.get('scenario_config') if isinstance(bound_recipe, dict) else None
+    if isinstance(bound_scenario, dict):
+        if (native.get('role') in ('worker_vision', 'vision_escalation')
+                and 'image_path' in bound_scenario and not bound_scenario['image_path']):
+            raise ProjectionError('vision scenario lacks a bound image')
+        bound_context = bound_scenario.get('server_context_size')
+        if bound_context is not None and (type(bound_context) is not int or arg('-c') != str(bound_context)):
+            raise ProjectionError('bound server context mismatch')
+        if bound_scenario.get('image_path') is not None:
+            _verify_bound_image_request(sample, bound_scenario, config.capture_root, prompt_path.read_text())
     if config.producer_root == TOPOLOGY_ROOT:
         recipe = native['recipe']
         scenario = recipe.get('scenario_config') if isinstance(recipe,dict) else None

@@ -27,6 +27,8 @@ from __future__ import annotations
 import argparse
 import dataclasses
 import hashlib
+import base64
+import mimetypes
 import json
 import os
 import re
@@ -123,7 +125,7 @@ class Scenario:
     n_gpu_layers: int
     kv_k: str
     kv_v: str
-    reasoning: str
+    reasoning: str | None
     prior_evidence: str
     parallel: int = 1
     jinja: bool = True
@@ -144,6 +146,8 @@ class Scenario:
     numa_nodes: str = "all"
     cpu_affinity: str | None = None
     server_context_size: int | None = None
+    image_path: str | None = None
+    image_sha256: str | None = None
 
 
 SCENARIOS: tuple[Scenario, ...] = (
@@ -713,10 +717,10 @@ def build_server_argv(
         argv.extend(["-ub", str(scenario.ubatch)])
     if scenario.jinja:
         argv.append("--jinja")
+    if scenario.reasoning is not None:
+        argv.extend(["--reasoning", scenario.reasoning])
     argv.extend(
         [
-            "--reasoning",
-            scenario.reasoning,
             "--device",
             scenario.device,
             "-ngl",
@@ -993,6 +997,10 @@ def build_chat_request_body(
     *,
     max_tokens: int,
 ) -> dict[str, Any]:
+    if scenario.image_path is not None and scenario.request_endpoint != "chat":
+        raise ValueError("image-bearing scenario requires chat endpoint")
+    if scenario.image_path is None and scenario.image_sha256 is not None:
+        raise ValueError("image digest without image")
     if scenario.request_endpoint == "completion":
         body = {
             "prompt": prompt,
@@ -1013,6 +1021,19 @@ def build_chat_request_body(
             "stream": False,
             "cache_prompt": False,
         }
+        if scenario.image_path is not None:
+            image = Path(scenario.image_path)
+            raw = image.read_bytes()
+            if hashlib.sha256(raw).hexdigest() != scenario.image_sha256:
+                raise ValueError("vision input differs from sealed image")
+            mime = mimetypes.guess_type(image.name)[0]
+            if mime not in ("image/png", "image/jpeg", "image/webp"):
+                raise ValueError("unsupported vision input media type")
+            data_url = f"data:{mime};base64," + base64.b64encode(raw).decode("ascii")
+            body["messages"][0]["content"] = [
+                {"type": "image_url", "image_url": {"url": data_url}},
+                {"type": "text", "text": prompt},
+            ]
         if scenario.enable_thinking is not None:
             body["chat_template_kwargs"] = {"enable_thinking": scenario.enable_thinking}
     if scenario.request_spec_n_max is not None:
