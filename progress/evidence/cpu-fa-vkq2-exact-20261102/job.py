@@ -39,7 +39,7 @@ def main():
  assert not guarded()
  cpus=os.environ['FILLER_CPUS'];threads=4 if smoke else 48
  if not smoke:assert set(range(96))<=os.sched_getaffinity(0)
- output=pathlib.Path(os.environ['FILLER_DRYRUN_DIR'])/'native-cells' if smoke else D/'run'
+ output=pathlib.Path(os.environ['FILLER_DRYRUN_RESULT_PATH']).parent/'native-cells' if smoke else D/'run'
  output.mkdir(parents=True,exist_ok=False)
  target=pathlib.Path(os.environ['FILLER_DRYRUN_RESULT_PATH']) if smoke else D/'RESULT.json'
  assert not target.exists()

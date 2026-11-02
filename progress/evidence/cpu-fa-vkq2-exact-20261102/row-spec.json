@@ -22,5 +22,6 @@
     "run/**"
   ],
   "notes": "UNPUBLISHED PREPARED DRAFT; native qualification not run. Full store manifest and all3 weight shard SHA256 verification must finish OUTSIDE grant through prepare.py. Existing C5 build independently contains HYBRID/F16 knob. No 086 or VKQ3 result reuse. Full20 launches; deterministic native llama-bench depth input; no transcript/dataset preparation. 100GiB peak estimate; 104GiB MemAvailable entry. Per-cell hard cap1800s; row4h bound conservative/unmeasured; interrupt yields no full verdict.",
-  "kind": "compute"
+  "kind": "compute",
+  "ram_gib": 128
 }
