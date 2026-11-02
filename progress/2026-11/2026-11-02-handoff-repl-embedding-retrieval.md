@@ -71,3 +71,7 @@ G-S live-directory read-only plan completed rc 0, unblocked; plan and receipt pr
 ## 11:12Z — Published the private-store G-S migration and parity row after its four-CPU smoke passed.
 
 REPL-EMB-2.11: published codex-ufh12-gs-private-v1-20261102; the four-CPU smoke passed with one partial native unit (rc 75). The full private-copy migration and parity verdict remains pending the granted run.
+
+## 11:14Z — Investigated the online-shadow run prerequisite and attempted the required code-impact indexing; CPU admission refused the index build.
+
+REPL-EMB-2.3: the existing shadow sink has no APP runtime hook, belief ingest, or planning canary; a live online-shadow run cannot yet be qualified. Attempted GitNexus indexing before implementing the belief wiring, but the wrapper returned exit 64: cross-role global region locks are not enabled and CPU admission was refused. No code was changed. REPL-EMB-2.8 separately requires at least 75 genuine traces and explicit original query/corpus retention authorization.
