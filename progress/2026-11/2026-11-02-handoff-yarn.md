@@ -139,3 +139,7 @@ Completed a controlled S0 reproducer: the retained guard returned 32 lock-lost r
 ## 11:32Z — Investigated the incomplete Jet-Long experimental build and assigned its repair and row preparation; evaluated CPU cutoff tests.
 
 - JETLONG-LONGCTX-RUN: the isolated build helper df preflight was corrected; a CPU build attempt reached 76% but exited without a binary or completion receipt. Source build repair and row preparation are underway. YARN-CPU-V3-HARNESS: 14 offline cutoff-policy tests passed, but the redirected 128K cohort cannot satisfy real CPU window acceptance and no matched pair or window-end result is claimed. DCA paired smoke was queued on the busy GPU in the previous boundary and is not yet declared ready.
+
+## 11:34Z — Integrated completed CPU candidate build and continued Jet-Long row preparation.
+
+- JETLONG-LONGCTX-RUN correction: the 11:32 report of an incomplete build was premature; the experimental CPU build completed with `build.exit=0` and a llama-server binary at 11:32:05 UTC. Source archive SHA check passed; CPU-only CMake configuration recorded. Source receipt and runnable publisher launcher are being prepared. YARN-E1-PROOF live host preflight remains unverified; historical-log offline tests do not establish it.
