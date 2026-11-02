@@ -75,3 +75,7 @@ Filed reviewed EffiBench-X preparation: four acceptance-gate patches match the c
 ## 00:46Z — Advance GPQA row and EffiBench and NUMA preparation
 
 Previous wrap-up succeeded at b6860b18feb98d5363dc571884dbc79a68ec87e3 and published the reviewed EffiBench and arithmetic artifacts. Delegated current-model GPQA row preparation, fail-closed EffiBench integration, and NUMA recipe investigation; completion events are registered. No new row published or inference run at this boundary.
+
+## 00:47Z — File scoped NUMA recipe integration analysis
+
+Reviewed RECIPE-NUMA-1 and filed artifacts/architect-model-selection-bench/region-recipe-integration.md. The research canonical recipe currently hardcodes a full-host prefix; a region-scoped implementation and validation remain necessary in epyc-inference-research. The architect single-region interleave result and concurrent-quarter node-local placement evidence concern different scopes, so neither establishes a universal memory policy. No inference or new measurement; checkbox remains open. Prior wrap-up commit 40fde83f5874 failed serialized push and is included in the retry.
