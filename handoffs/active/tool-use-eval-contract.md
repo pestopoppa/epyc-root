@@ -37,8 +37,10 @@ Live transports, task scorer, sealed fixtures, grader isolation and SC86 executi
 see [adapter controls](../../docs/design/hs4-file-trial-adapter-controls.md). 46 fixture,
 P0.4 and P6 tests plus five subtests passed under q0. [no-belief: software controls]
 ROOT `4e9d25de0` adds transport plumbing, but deliberately refuses all live I/O until a real
-grader-isolation gate is implemented; process-tree cleanup also remains necessary. This is not
-live readiness or an acceptance result. [no-belief: software controls]
+grader-isolation gate is implemented. ROOT `eb870805e` adds captured-descendant timeout cleanup
+with PID birth checks; escaped descendants remain unproved. The nearby scorer accepted a wrong
+multiline answer ending in the expected answer, so it cannot yet serve the stated whole-answer
+contract. These controls are not live readiness or an acceptance result. [no-belief: software controls]
 
 This map supersedes the historical live-status language below, not the individual acceptance
 contracts. Source review used ROOT `2d95a8a371` and orchestrator `9301fb7bc81663d176f11ebf21bf496d4ac725a3` (the shared orchestrator checkout was behind that ref). Re-resolve

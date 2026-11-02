@@ -41,3 +41,7 @@ judicious review. The edit preserves existing task text and history. [no-belief:
 - ROOT `4e9d25de0`: fail-closed `/chat` and OpenCode transport plumbing with 49 tests and five
   subtests; no live I/O is enabled until real isolation, and child-tree drainage is unfinished.
   [no-belief: software controls]
+- ROOT `eb870805e` adds captured-descendant timeout cleanup with PID/birth checks; 51 tests and
+  five subtests passed. Escaped descendants remain unknown. The nearby exact-match scorer
+  accepts wrong leading content before a correct final line and remains unqualified for the
+  whole-answer file tasks. [no-belief: software controls]
