@@ -103,3 +103,7 @@ Added a fail-closed native exposure-record inventory reader and five focused tes
 ## 10:18Z — Prepare SR-7 proposer statistics parsing
 
 Reviewed the model-free parser for per-proposer trace statistics and response-counter reconciliation; two bounded test cases with negative controls passed. It does not establish fresh server lifecycle, runtime provenance, corpus, control or a decision rule and is not a published row or inference result. SR-6, SR-7 and NG5 follow-up components are delegated with scratch reports and patches registered for review.
+
+## 10:19Z — Advance SR-6 and SR-7 preparation and trace NG5 corpus
+
+SR-6 schedule preparation now refuses fewer than five prompts per class per window; all 57 preparation tests passed. SR-7 gained an exact descriptive mix/rate decomposition with bounded controls, five total tests passing; it does not establish causation. The COPYSPEC-WIDTH trace identifies 65 code/RAG prompt records; rendered-token repetition fractions remain unrecorded in the examined temporary packet. None of these components is a runnable inference row or a performance verdict.
