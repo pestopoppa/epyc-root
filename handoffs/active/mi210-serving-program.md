@@ -2137,7 +2137,7 @@ op-offload arm at -ub 512 exceeds ~158 tok/s on this file. `intake-1810#01`.
       numa-prefill-decode-disaggregation.md reopen trigger. Bench-class: this authorizes no serving change.
   Full rigor controls (frozen manifest, per-cell raw outputs, holdout, denominator, region claim, freeze constraints, VB-PREFILL-XOVER first): `docs/research-intake/orch-prior-art-stage3-plan-20260926.md` P3-3.
   - [ ] **PF1-EXP04** [inference] Bounded pilot screen before the full PF1 matrix (backlog refactor 2026-11 EXP-04,
-        [`backlog-refactor-2026-11.md`](backlog-refactor-2026-11.md) BRF-T4-EXP04). Row `brf-exp04-pf1-crossover-pilot-20261102`,
+        [`backlog-refactor-2026-11.md`](backlog-refactor-2026-11.md) BRF-T4-EXP04). Row `brf-exp04-pf1-crossover-pilot-20261102-r2` (r1 smoke FAIL rc=3: bench_canonical rejects store binaries outside a git source-root; A0 now uses default discovery, GPU arms run llama-bench directly),
         launcher `/mnt/raid0/llm/tmp/brf-exp04/launch.sh` (engine `filler_run15.sh`, scratch_root `/mnt/raid0/llm/tmp/brf-exp04/`).
         Identity pinned in `IDENTITY.json`: Q38FN UD-IQ4_XS 3 shards by sha256; v10 kernel store `kernels/production/{cpu,gpu}`
         (ffc1bac82, 10303, linkage PASS) for ALL arms. Cells: L ∈ {2048, 8192} × {A0, A1 -ub 2048, A2 -ub 2048, A1-disabled}
