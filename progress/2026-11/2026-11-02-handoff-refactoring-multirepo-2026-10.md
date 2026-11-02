@@ -31,3 +31,15 @@ The first wrap-up rejected untracked artifacts/ scratch. The preceding entry’s
 ## 01:47Z — Preserve untested repair drafts and finish wrap-up
 
 The wrapper rejected untracked artifacts/ scratch; CI report patch and test plan moved to /mnt/raid0/llm/tmp/refactor-01a16fc3/ci-report-fix-20261102/, and RESUME-7 draft moved to /mnt/raid0/llm/tmp/refactor-01a16fc3/resume7-fix-20261102/. Both are untested proposals. The CI patch now passes git apply --check. Review and source-bound validation remain necessary. Sparse checkout omitted a tracked operator script required by the pre-commit observer census; restored the HEAD blob locally.
+
+## 01:48Z — Review mixed-alias candidate and prepare validation
+
+Consumed RESUME-7 source draft. The proposed 16-alias finder patch under /mnt/raid0/llm/tmp/refactor-01a16fc3/resume7-fix-20261102/ applies cleanly to a temporary Git index for orchestrator 488b31c96c6c148768508b3dcaefcb6c4c297664. Applicability does not establish correctness or fix the mixed-import cycle. Delegated adversarial module-lock review and a source-bound randomized fresh-process regression with baseline negative control; also delegated CI patch test preparation. Registered their outcome files for resumption. No compute launched and no row published by the owner. Restored the tracked operator ratifier omitted by the sparse checkout for the census gate.
+
+## 01:49Z — Retry wrap-up after sparse census restoration
+
+The first wrap-up fast-forward removed the sparse-skipped operator ratifier and the observer census blocked commit. Restored the exact HEAD blob and retried; the preceding entry records source preparation and pending reviews.
+
+## 01:49Z — Resolve sparse census input and record alias review
+
+Independent alias review found the draft restores __spec__ but leaves the shared canonical module __loader__ set to the alias loader; the mixed-cycle fix is unproven. Review JSON is /mnt/raid0/llm/tmp/compute-flags/handoff-sessions/refactoring-multirepo-2026-10/alias-review.json. Repeated wrap-up attempts hit the observer census when fast-forwarding removed a sparse-skipped tracked operator script; added that exact path to this lane sparse-checkout selection and census passes. Prior entries record the remaining preparation.
