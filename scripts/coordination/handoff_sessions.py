@@ -453,9 +453,7 @@ def ensure_lane(slug: str, repo=None) -> tuple[str, str]:
         if r.returncode:
             raise RuntimeError(f"sparse checkout of {d} failed: {(r.stderr or r.stdout).strip()[:300]}")
         return d, "created"
-    if not os.path.exists(os.path.join(repo, ".git", "worktrees", os.path.basename(d), "info", "sparse-checkout")) and \
-            not _git(d, "config", "--get", "core.sparseCheckout").stdout.strip() == "true":
-        sparse_lane(d)  # an old full lane: drop artifacts/ from its working tree (tracked files only; scratch stays visible)
+    sparse_lane(d)  # idempotent; re-applies LANE_EXCLUDE/LANE_KEEP to old lanes (tracked files only; scratch stays visible)
     if _git(d, "merge", "--ff-only", "origin/main").returncode == 0:
         return d, "fast-forwarded"
     if _git(d, "merge", "--no-edit", "origin/main").returncode == 0:
@@ -465,13 +463,16 @@ def ensure_lane(slug: str, repo=None) -> tuple[str, str]:
 
 
 LANE_EXCLUDE = ("artifacts/",)      # ~800 MB of every full checkout; sessions never need it in the lane
+# ...except the operator ratifier scripts: the observer-census pre-commit hook checks registry rows against the
+# working tree, so a lane without them fails EVERY wrap-up commit (ws58 2026-11-02: 131 failed wrap-ups -> NOOP turns).
+LANE_KEEP = ("artifacts/operator/*.sh",)
 DISK_FLOOR_GIB = 160                # no new lane below this much free space
 
 
 def sparse_lane(d):
     """Non-cone sparse checkout: everything except LANE_EXCLUDE."""
     _git(d, "sparse-checkout", "init", "--no-cone")
-    _git(d, "sparse-checkout", "set", "--no-cone", "/*", *[f"!/{x}" for x in LANE_EXCLUDE])
+    _git(d, "sparse-checkout", "set", "--no-cone", "/*", *[f"!/{x}" for x in LANE_EXCLUDE], *[f"/{x}" for x in LANE_KEEP])
 
 
 def free_gib(path="/mnt/raid0/llm") -> float:
