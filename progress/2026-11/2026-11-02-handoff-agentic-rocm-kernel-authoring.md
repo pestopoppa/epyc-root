@@ -111,3 +111,7 @@ Consumed the pinned SimpleTES RPUCG state report and recorded exact source diges
 ## 00:55Z — Preserve reviewed C5-8 draft and advance pending controller work
 
 Recorded the independently tested discovery-only C5-8 patch and its precise limits in artifacts/agentic-rocm/c5-8-roster-review-20261102.md; neither executable controllers nor the planner-memory mapping are claimed. The RPUCG schema patch is currently being edited and is excluded from this commit. Assigned bounded reviews of the existing C5-12 draft and recurring wrap-up publication race, with completion events registered. Capture, zero-profiler, counter and selector implementation events remain pending. No row was published or compute run.
+
+## 00:56Z — Consume C5-12 selector review and advance integration
+
+Consumed the C5-12 selector review and documented the 3/3 isolated tests, unsourced deterministic tie policy, missing common-score and production integration, and correct source comparison in artifacts/agentic-rocm/c5-12-selector-review-20261102.md. C5-12 remains open. Dispatched bounded controller integration work and registered its completion event. No inference row published or compute run.
