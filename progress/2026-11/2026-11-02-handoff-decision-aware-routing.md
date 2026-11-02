@@ -63,3 +63,7 @@ Consumed snapshot and writer reviews. Added scripts/analysis/dar_snapshot_inputs
 ## 01:21Z — Implement private routing audit input snapshot preparation
 
 Consumed snapshot and writer reviews. Added scripts/analysis/dar_snapshot_inputs.py with private permissions, stable-file checks, baseline-role validation, source/config manifest and digest verification; eight fixture tests pass. This is preparation, not a real snapshot: capture is non-atomic, caller-provided config is not attested, hashes depend on a trusted manifest and read-only permissions are reversible. Writer review found six defects; correction is dispatched. Sweep driver and independent snapshot review are in preparation. No private source captured, inference run or row published.
+
+## 01:22Z — Review prospective coverage writer and controlled sweep driver
+
+Consumed writer-fixed and sweep-driver reports. Corrected snapshot manifest cutoff wording: stability is checked at sampled points and capture is non-atomic, not proven stable throughout. Eight snapshot fixture tests pass. Writer fixes pass nine synthetic tests but custody, provenance, strict reader and real canary remain; no real data or inference run. Sweep fixture driver plans paired arms and preserves failures but has no live transport or grading and is not a runnable row. Registered custody, driver and preference-patch reviews.

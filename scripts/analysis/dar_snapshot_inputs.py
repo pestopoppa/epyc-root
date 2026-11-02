@@ -79,7 +79,7 @@ def snapshot(args):
             if signature(os.stat(path, follow_symlinks=False)) != signature(st): raise ValueError('configuration changed')
         put(root/'provenance'/'baseline.json', baseline); put(root/'provenance'/'scorer-config.json', provenance)
         put(root/'baseline-roles.json', derived)
-        manifest = {'schema':1, 'captured_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(), 'selection':{'directory':str(src),'glob':'*.jsonl','cutoff':'complete files stable throughout capture; no event-time cutoff','files':records}, 'artifacts':{'provenance/baseline.json':sha(baseline),'provenance/scorer-config.json':sha(provenance),'baseline-roles.json':sha(derived)}, 'limitations':'Configuration is supplied, not independently attested. Source is not an atomic filesystem snapshot.'}
+        manifest = {'schema':1, 'captured_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(), 'selection':{'directory':str(src),'glob':'*.jsonl','cutoff':'complete files unchanged at sampled checks through final source recheck; not atomic; no event-time cutoff','files':records}, 'artifacts':{'provenance/baseline.json':sha(baseline),'provenance/scorer-config.json':sha(provenance),'baseline-roles.json':sha(derived)}, 'limitations':'Configuration is supplied, not independently attested. Source is not an atomic filesystem snapshot.'}
         put(root/'manifest.json', (json.dumps(manifest, indent=2, sort_keys=True)+'\n').encode())
         # Read-only modes protect against accidental edits; the owner can reverse them.
         for directory, _, files in os.walk(root):
