@@ -693,6 +693,12 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
     does not cancel or release reservations, and does not survive process restart. Cross-worker
     ownership, a trusted native drain verifier, transport and safe idempotent requeue remain open.
     ✅ 2026-11-02 [no-belief: source and deterministic controls]
+  - *(2026-11-02 native prerequisite.)* Experimental llama fork
+    `codex/kvu5-task-erase-20261102` at `c3c983600` prepares optional server-incarnation and
+    expected-task checks on the slot owner loop; legacy erase stays unconditional. The first
+    model-free build was interrupted for an agreed GPU boundary and its tests have not passed yet.
+    The orchestrator still lacks a reliable pre-output native-task join and drain integration;
+    no live preemption is enabled. [no-belief: experimental source only]
 - [ ] **KVU-6 — cache-aware ordering on kvu servers** (audit #7 / T9).
   - [x] **KVU-6 admitted-ticket bypass accounting** — orchestrator `c1bd9953` snapshots each admitted
     ticket's observed bypass count alongside its wait, without changing selection; the existing flag-off
