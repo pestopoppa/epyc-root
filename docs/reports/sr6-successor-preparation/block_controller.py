@@ -8,7 +8,8 @@ only, not a valid scientific result. No adapter here starts a real server.
 """
 from pathlib import Path
 
-from block_guard import ARMS, classify
+from block_guard import ARMS
+from exposure_inventory import inventory
 from native_worker import HEX, SAFE_ID, canonical, capture_request, digest, exclusive_json
 from server_lifecycle import with_server
 
@@ -17,14 +18,14 @@ class BlockError(RuntimeError):
     pass
 
 
-def execute_block(*, output, block, sampler, sampler_sha256, attempts,
+def execute_block(*, output, block, sampler, sampler_sha256,
                   admission_check, spawn, verify_ready_and_identity, post):
     """Capture one planned block at most once under injected lifecycle adapters.
 
     Before any spawn, an exclusive, fsynced block-start marker makes any
     interrupted block non-resumable in this output directory. The caller must
     ensure this directory is the sole authoritative exposure root across all
-    windows and retries. Per-request exposure is also recorded before POST.
+    windows and retries, and that concurrent writers are excluded. Per-request exposure is also recorded before POST.
     """
     if not isinstance(output, Path) or not output.is_dir() or not isinstance(block, dict):
         raise BlockError('existing output directory and block required')
@@ -40,8 +41,12 @@ def execute_block(*, output, block, sampler, sampler_sha256, attempts,
     if (not isinstance(arms, list) or len(arms) != len(ARMS)
             or any(not isinstance(arm, str) for arm in arms) or set(arms) != ARMS):
         raise BlockError('invalid arm order')
-    if classify(ids, attempts) != 'FRESH':
-        raise BlockError('block already exposed, incomplete or inventory invalid')
+    try:
+        attempts = inventory(output)
+    except (OSError, ValueError) as exc:
+        raise BlockError('exposure inventory invalid') from exc
+    if any(attempt['prompt_id'] in ids for attempt in attempts):
+        raise BlockError('prompt already exposed in this inventory')
     if (not isinstance(sampler, dict) or not sampler or not isinstance(sampler_sha256, str)
             or not HEX.fullmatch(sampler_sha256)):
         raise BlockError('invalid sampler seal')
