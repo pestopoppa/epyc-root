@@ -127,3 +127,7 @@ Added SR-6 guarded loopback request preparation and SR-7 one-request capture pre
 ## 10:25Z — Prepare admission and owned-process lifecycle controls
 
 Added SR-6 grant-window admission seam and session cleanup preparation, and SR-7 direct-child lifecycle preparation. The 72 SR-6 and 17 SR-7 model-free tests passed. Live region ownership, escaped descendants, in-flight STOP, server identity and residency remain unproved; these components do not authorize a runnable row or inference verdict.
+
+## 10:28Z — Make SR-7 capture records durable before exposure
+
+SR-7 capture now synchronizes the parent directory after each exclusive record creation, and refuses to launch if that sync fails. All 18 preparation tests pass. The lane is unindexed so GitNexus impact is unavailable. This does not establish authoritative inventory, admission, or a runnable inference row. An SR-6 review also identified rendered-prompt reuse under a changed ID; the repair is delegated.
