@@ -27,3 +27,23 @@ Consumed CPU serving, CPU calibration and S3-AKU-13 reviews. The existing CPU se
 ## 00:13Z — Integrate CPU calibration and promotion reviews; prepare matched floor
 
 Consumed CPU serving, CPU calibration and S3-AKU-13 reviews. The existing CPU serving A/A shakedown used Qwen3-4B and is not the open canonical Qwen3.8 Flash-Next serving gate. CPU gating calibration needs at least 24 matched pairs with process unit, interval and host-state identity; the existing recalibration CLI lacks the complete required host-state/estimator contract. The CPU screen workload also needs authoritative resolution before a row can be published. Dispatched a bounded lane-owned wrapper implementation, canonical CPU input identification and screen design review; their output events are registered. Goodharted-keep count remains open: existing source LOO does not join keep-time effects or report the PROMOTE count. No compute was launched, row published, or checkbox ticked.
+
+## 00:17Z — Integrate calibration identity and prepare floor contracts
+
+Consumed CPU screen design, CPU identity and matched-floor wrapper reviews. The handoff identifies champion-of-record b0ba1d427 and the Qwen3.8 Flash-Next CPU serving target, but the historical campaign recipe/build is not yet proven to be the exact current gate instance. Existing matched calibration requires at least 24 pairs and reports a descriptive interval, but its sealed frame and reader do not enforce host-state/coexistence identity; no wrapper was added that would misrepresent this gap as solved. The CPU screen workload/metric/estimator is not specified in the current handoff. Dispatched a lane-owned proposed screen preregistration and host-state contract to make the source work concrete, plus a review of the repeated wrapup push race. Outputs are registered for dispatcher resumption. No compute launched, row published or task ticked.
+
+## 00:19Z — Resolve wrapup publication race
+
+Consumed the push-race review. wrapup merges before committing, but serialized_push fetches later under the push lock; a concurrent main advance can reject the push, and current retries only recognize lock-held. Pre-acquiring the push lock deadlocks wrapup against its own push; dispatcher recovery can land commits but cannot produce the required report. Dispatched a bounded impact-gated fix with non-fast-forward retry and focused deterministic tests in this lane; awaiting event registered. The separate CPU screen preregistration and host-state contract remain in progress. No compute was launched or row published.
+
+## 00:19Z — Resolve wrapup publication race
+
+Consumed the push-race review. wrapup merges before committing, but serialized_push fetches later under the push lock; a concurrent main advance can reject the push, and current retries only recognize lock-held. Pre-acquiring the push lock deadlocks wrapup against its own push; dispatcher recovery can land commits but cannot produce the required report. Dispatched a bounded impact-gated fix with non-fast-forward retry and focused deterministic tests in this lane; awaiting event registered. The separate CPU screen preregistration and host-state contract remain in progress. No compute was launched or row published.
+
+## 00:19Z — Resolve wrapup publication race
+
+Consumed the push-race review. wrapup merges before committing, but serialized_push fetches later under the push lock; a concurrent main advance can reject the push, and current retries only recognize lock-held. Pre-acquiring the push lock deadlocks wrapup against its own push; dispatcher recovery can land commits but cannot produce the required report. Dispatched a bounded impact-gated fix with non-fast-forward retry and focused deterministic tests in this lane; awaiting event registered. The separate CPU screen preregistration and host-state contract remain in progress. No compute was launched or row published.
+
+## 00:21Z — Record refused impact analysis for wrapup repair
+
+Consumed the wrapup race repair result: GitNexus reports the lane unindexed, and scripts/gitnexus-analyze.sh exited 64 because cross-role global region locks are not enabled and CPU admission was refused. Required upstream impact analysis is therefore unavailable; no shared script was edited or tested. Do not bypass admission or claim this race is fixed. The independently dispatched CPU screen preregistration and host-state contract remain registered as awaiting events. No compute row was published or launched.
