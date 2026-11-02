@@ -3757,7 +3757,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T12:28:13Z",
+  "generated_at": "2026-11-02T12:32:00Z",
   "nodes": [
     {
       "age_days": 95,
@@ -8778,7 +8778,7 @@
         "RTG-19",
         "RTG-36"
       ],
-      "closed": 88,
+      "closed": 90,
       "dispatchable": 52,
       "domain": "routing-and-optimization",
       "guarded": 0,
