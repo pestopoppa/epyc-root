@@ -6,7 +6,7 @@
 **Code lanes:** `lane/ak-rebuild-20260828` (epyc-root, this file) and a matching lane in
 **epyc-inference-research** for the loop itself.
 **Owning index row:** **INF-66** in [`inference-research-index.md`](inference-research-index.md).
-**Riders on:** [`autokernel-restart-and-strip.md`](autokernel-restart-and-strip.md) (INF-64),
+**Riders on:** [`autokernel-restart-and-strip.md`](agent-collab-rnd-harness.md#track-autokernel-restart-and-strip) (INF-64),
 [`autokernel-research-loop.md`](autokernel-research-loop.md) (INF-06),
 [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md) (INF-65).
 This page does not re-open their backlogs.

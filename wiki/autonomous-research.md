@@ -816,7 +816,7 @@ kernel keep, serving-quality result or campaign outcome.
 - **A store carries the champion-of-record, and the loop refuses to relabel a new tip as the old one.** Run 2 was refused: the shared store pinned run 1's COR `ad932bbd9` against the new anchor `ebb68dc55` ("supply `--cor-build` or `--resume-run`"). The rule the refusal encodes — *a campaign whose anchor moves with no keeps behind it needs a FRESH store, not a pinned one* — is the right default, because silently relabelling the tip would make every later comparison read against an identity that was never measured. Run 3 therefore uses a fresh store with the hypothesis inbox carried over (`state-run3/serial-run.pid` = 1953258); run 1 was archived as `store-run1-ad932bbd9`. ([2026-09-23 main-dsv41](../progress/2026-09/2026-09-23-main-dsv41.md), DS41-C13)
 - **Calibration is the loop's entry fee, and its cost is a property of what is being measured.** 48 matched A/A launches, roughly 2 h, each reloading 519 GB, measure **relaunch dispersion** — the noise every candidate pays, since a new binary is a new process. It is not reducible without keeping weights in RAM across launches, which would mean mmap, which changes NUMA placement and is therefore a *different measured condition*. Recorded explicitly as nothing to act on, so a future session does not "optimise" it into a comparability break. ([2026-09-23 main-dsv41](../progress/2026-09/2026-09-23-main-dsv41.md), DS41-C10)
 - **Hypotheses reach the planner through the inbox, not through the profile form.** Seeded as `store/inbox/30-ds41-seeded-hypotheses.md` (ranked: H2 requant ladder, H1b verify-marginal attribution, H3 rowexact-on-dense, H4 entropy-gated block, H1 demoted, H6, H7), each with its measured basis and a falsifier, re-read every iteration. The `opportunities.json` profile form stays unbound with placeholder digests — the inbox is the channel. Budget guidance carried with it: **decode is flat 24→96 threads**, so barrier and dispatch levers cannot pay on this model; point the campaign at the memory path. ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C5)
-- **AK-INST-2 audit: no second champion-drift pin, but a v10 folded-lineage defect.** Auditing every 40-hex / `*_COMMIT` equality in the discovery plane found no other pin of the `READY_CONTINUE_INSTRUMENT_COMMIT` shape (the rest are exact freeze/seal/vendor/replay identities or already ancestry checks; the review-pin at `discovery_deployment_factory.py:1516` stays exact by design and is re-pinned per freeze). It did surface a different defect: once `MEASUREMENT_COMMIT == PRODUCTION_COMMIT`, the rule "instrument parents == (production,)" became **unsatisfiable** in both `live_controls` preflight and `candidate_record.build_candidate_record`. Fixed by a shared `worktree.instrument_lineage_ok` that accepts the folded identity (research `714777e4`). A consolidation that merges two identities can invalidate a rule written when they were distinct. ([autokernel-restart-and-strip](../handoffs/active/autokernel-restart-and-strip.md) AK-INST-2)
+- **AK-INST-2 audit: no second champion-drift pin, but a v10 folded-lineage defect.** Auditing every 40-hex / `*_COMMIT` equality in the discovery plane found no other pin of the `READY_CONTINUE_INSTRUMENT_COMMIT` shape (the rest are exact freeze/seal/vendor/replay identities or already ancestry checks; the review-pin at `discovery_deployment_factory.py:1516` stays exact by design and is re-pinned per freeze). It did surface a different defect: once `MEASUREMENT_COMMIT == PRODUCTION_COMMIT`, the rule "instrument parents == (production,)" became **unsatisfiable** in both `live_controls` preflight and `candidate_record.build_candidate_record`. Fixed by a shared `worktree.instrument_lineage_ok` that accepts the folded identity (research `714777e4`). A consolidation that merges two identities can invalidate a rule written when they were distinct. ([autokernel-restart-and-strip](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip) AK-INST-2)
 
 ### Open questions
 
@@ -827,7 +827,7 @@ kernel keep, serving-quality result or campaign outcome.
 
 - [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C2b (launch), C2e, C5 (hypotheses and budget guidance), C10, C11, C13 (run 3).
 - [2026-09-23-main-dsv41.md](../progress/2026-09/2026-09-23-main-dsv41.md) — "AutoKernel campaign STARTED" and "campaign restarted as run 3" sections: identities, contract details, the COR refusal, the calibration rationale.
-- [autokernel-restart-and-strip.md](../handoffs/active/autokernel-restart-and-strip.md) — AK-INST-2 audit outcome and the v10 folded-lineage fix (research `714777e4`).
+- [autokernel-restart-and-strip.md](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip) — AK-INST-2 audit outcome and the v10 folded-lineage fix (research `714777e4`).
 
 ## Compiled Update — 2026-09-18: GLM AutoKernel watch stopped without semantic acceptance
 
@@ -1553,7 +1553,7 @@ recoverable (D14) and is not worth the device time. Run 18 was live at compile t
   [runs 12–16](../progress/2026-08/2026-08-29.md) — the run-by-run counters and defects D7–D14.
 - [Surface and CI half of the day](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — the
   CI-never-ran finding, the suite-floor guard, and the deploy-path correction.
-- [AutoKernel restart-and-strip rider](../handoffs/active/autokernel-restart-and-strip.md) — INF-64,
+- [AutoKernel restart-and-strip rider](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip) — INF-64,
   the predecessor campaign this rebuild replaces.
 - [Inference research index](../handoffs/active/inference-research-index.md) — row INF-66.
 
@@ -1622,7 +1622,7 @@ pipe, which independently produced a false "process gone" reading in the same in
 
 ### Source References (2026-08-27 AutoKernel audit and v28 launch)
 
-- [AutoKernel restart-loop fix rider](../handoffs/active/autokernel-restart-and-strip.md) — the four
+- [AutoKernel restart-loop fix rider](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip) — the four
   fixes, the v28 launch identities, the verified-dead module list, and the remaining disk-expiry task.
 - [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — the parent campaign
   handoff whose v3→v27 history is the zero-science record analysed here.
@@ -3522,7 +3522,7 @@ Closing one half and reporting the loop as available is a category error, not a 
 
 ### Source References (2026-08-28)
 
-- [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-restart-and-strip.md) — AK-INST-1, the v36 postmortem and the lineage fix
+- [`autokernel-restart-and-strip.md`](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip) — AK-INST-1, the v36 postmortem and the lineage fix
 - [`autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — CH-3's second cost, CH-10/CH-11, CH-7's premature closure, CH-13's two-carrier resolution
 - [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/dflash2-block-drafter-experimental-build.md) — the DF2 gates the champion carries
 - [`progress/2026-08/2026-08-28-champion-attest.md`](../progress/2026-08/2026-08-28-champion-attest.md) — the live bundle verification and the authority-boundary decision

@@ -2352,7 +2352,7 @@ to account for it.
 
 - [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/dflash2-block-drafter-experimental-build.md) — DF2-5 grid, DF2-6 per-prompt verdicts, the ngram retraction and DF2-6b-bis
 - [`autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — CH-5 gate closure and the champion the measurements were taken against
-- [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-restart-and-strip.md) — the route-capture instrument and its verbosity gate
+- [`autokernel-restart-and-strip.md`](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip) — the route-capture instrument and its verbosity gate
 
 
 ## Compiled Update — 2026-09-01 (incremental): MTP depth on datacenter silicon — n-max 8 wins where consumer cards lose

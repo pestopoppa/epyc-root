@@ -10,7 +10,6 @@
   "INF-73": 0.7,
   "RTG-54": 0.65,
   "INF-06": 0.62,
-  "INF-64": 0.6,
   "INF-81": 0.6,
   "INF-48": 0.55,
   "INF-50": 0.55,
@@ -145,7 +144,8 @@
   "INF-22#fable5-window2-findings-05c-mi210-lever-category-matrix": 0.4,
   "INF-22#gpu-acceleration-path": 0.3,
   "INF-22#mi210-big-model-and-acceleration-roadmap": 0.45,
-  "INF-22#qwen38-27b-replace-qwen36": 0.75
+  "INF-22#qwen38-27b-replace-qwen36": 0.75,
+  "INF-02#autokernel-restart-and-strip": 0.6
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
@@ -1018,7 +1018,7 @@
    "before": ""
   },
   {
-   "row": "INF-64",
+   "row": "INF-02",
    "tok": "Re-screen the 19",
    "kind": "N",
    "cls": "N",
@@ -2582,6 +2582,24 @@
    {
     "track": "qwen38-27b-replace-qwen36",
     "next_action": "Q38-T7b closed; run Q38-T7a passive log read, then VB-SERVING-DF2; Q38-T10.1 gate after"
+   }
+  ],
+  "INF-06>INF-02": [
+   {
+    "track": "autokernel-restart-and-strip",
+    "next_action": "Complete per-file reference/entrypoint/HOLD manifest before individually safe deletion and footprint changes"
+   }
+  ],
+  "INF-65>INF-02": [
+   {
+    "track": "autokernel-restart-and-strip",
+    "next_action": "Complete per-file reference/entrypoint/HOLD manifest before individually safe deletion and footprint changes"
+   }
+  ],
+  "INF-66>INF-02": [
+   {
+    "track": "autokernel-restart-and-strip",
+    "next_action": "Complete per-file reference/entrypoint/HOLD manifest before individually safe deletion and footprint changes"
    }
   ]
  }

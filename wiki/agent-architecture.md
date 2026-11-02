@@ -4825,7 +4825,7 @@ cheaper than the proof apparatus built to avoid it.
 - [`docs/guides/agent-workflows/agent-loop-design.md`](../docs/guides/agent-workflows/agent-loop-design.md)
   — the ratified convention, the reference loop block, the reproduction-over-proof cost argument with the
   90-second / 3,869-line comparison, and the A/A noise-floor measurement.
-- [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-restart-and-strip.md) — AK-VIS-1 and
+- [`autokernel-restart-and-strip.md`](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip) — AK-VIS-1 and
   AK-VIS-2 (2026-08-28): the `prior_authoring_refusals` status mismatch with its 22-vs-1 tally, and the
   `critic_revise` budget split.
 - [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — P4.1 (2026-08-28),
@@ -4870,7 +4870,7 @@ happens to sit on.
 - [`progress/2026-08/2026-08-28-champion-attest.md`](../progress/2026-08/2026-08-28-champion-attest.md) —
   "Served-tree drift — AK-DEPLOY-2 got worse than 'lagging'": the 45-behind/1-ahead measurement, the
   144-vs-465-line discrepancy, and the content-verification-then-backup resolution.
-- [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-restart-and-strip.md) — AK-DEPLOY-2,
+- [`autokernel-restart-and-strip.md`](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip) — AK-DEPLOY-2,
   filed open the same day, naming the AK-DEPLOY-1 provenance predicate as the existing pattern to extend.
 - [`autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — the
   cross-reference confirming AK-DEPLOY-2 as a live, separately-tracked item distinct from the champion
@@ -5722,7 +5722,7 @@ Sources: [DF2 corrected-proof record](../artifacts/coordination/df2-12-1-correct
 
 ## Compiled Update — 2026-11-01 (NI qualification preparation and wrap)
 
-The NI D1 legacy-conflict fix is published but awaits the keeper owner installation. INF-12 and SPEC-GRAM.3 native-qualifier successors remain source drafts without keeper receipts; the W5s row was withdrawn before qualification because its fixture omitted the full 4,096-token prefill. The AK-INST-3 audit found current instrument lineage but no qualifying scientific screen, while the old FA4 OFF build row is superseded by a completed build; their broader gates remain open. A source-only stack-priors proposal preserves WARM `live_stack` consumers while excluding non-default roles from seeding; the derived stack-change package remains unsigned. The long-CPU qualifier is an unreviewed draft. A trust-checker false positive on an archived Python docstring was corrected without changing protected boundary files or the archived source. ([NI progress](../progress/2026-11/2026-11-01-codex-ni.md); [checkpoint evidence](../artifacts/coordination/ni-post-a2-wrap-20261101/README.md); [AK-INST handoff](../handoffs/active/autokernel-restart-and-strip.md); [FA handoff](../handoffs/active/kv-unified-stack-rollout.md))
+The NI D1 legacy-conflict fix is published but awaits the keeper owner installation. INF-12 and SPEC-GRAM.3 native-qualifier successors remain source drafts without keeper receipts; the W5s row was withdrawn before qualification because its fixture omitted the full 4,096-token prefill. The AK-INST-3 audit found current instrument lineage but no qualifying scientific screen, while the old FA4 OFF build row is superseded by a completed build; their broader gates remain open. A source-only stack-priors proposal preserves WARM `live_stack` consumers while excluding non-default roles from seeding; the derived stack-change package remains unsigned. The long-CPU qualifier is an unreviewed draft. A trust-checker false positive on an archived Python docstring was corrected without changing protected boundary files or the archived source. ([NI progress](../progress/2026-11/2026-11-01-codex-ni.md); [checkpoint evidence](../artifacts/coordination/ni-post-a2-wrap-20261101/README.md); [AK-INST handoff](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip); [FA handoff](../handoffs/active/kv-unified-stack-rollout.md))
 
 ## Compiled Update — 2026-11-02 (ws58 intake: Jev harness engineering, Super-agent essay, loop GUI)
 

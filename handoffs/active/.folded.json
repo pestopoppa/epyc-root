@@ -20,6 +20,10 @@
    "target": "model-evaluation-queue.md",
    "track": null
   },
+  "autokernel-restart-and-strip.md": {
+   "target": "agent-collab-rnd-harness.md",
+   "track": "autokernel-restart-and-strip"
+  },
   "bulk-inference-campaign.md": {
    "target": "eval-tower-program.md",
    "track": "bulk-inference-campaign"
@@ -483,6 +487,10 @@
   "INF-60": {
    "target": "INF-22",
    "track": "qwen38-27b-replace-qwen36"
+  },
+  "INF-64": {
+   "target": "INF-02",
+   "track": "autokernel-restart-and-strip"
   },
   "INF-67": {
    "target": "EVL-21",

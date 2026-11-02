@@ -5172,7 +5172,7 @@ failure mode is bimodality, which a median hides — and flags any arm whose max
 ### Source References (2026-08-28)
 
 - [`autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — CH-6 settlement with both artifacts and the corrected re-run design
-- [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-restart-and-strip.md) — the AK-VIS findings and the vacuous-test record
+- [`autokernel-restart-and-strip.md`](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip) — the AK-VIS findings and the vacuous-test record
 - [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/dflash2-block-drafter-experimental-build.md) — the ngram exposure retraction (DF2-6b-bis)
 
 ## Compiled Update — 2026-08-30: EV-14a's first real band attempt — fail-closed refusal, corrected attribution, and the pinned reference that made it possible

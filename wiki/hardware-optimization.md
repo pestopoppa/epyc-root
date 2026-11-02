@@ -69,7 +69,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
 - **LB4.9 C5 graph read-only qualification** ended rc1 by design (HIGH/CRITICAL upstream-impact STOP); kept open. [handoff](../handoffs/active/autokernel-all-devices-all-dimensions.md)
 - **HARNESS-2 caller binding** passed (model-free: enforces object set, restores champion, rejects wrong set); no build-speed claim. [handoff](../handoffs/active/cpu-decode-roofline-program.md)
 - **RTG57 F32 VKQ:** C5 defaults to hybrid F16 VKQ; prospective T48/T96 HYBRID/F32 packets prepared and belief wiring canaried (synthetic, 99 tests passed); no run, no F32 adoption evidence. PF1 launchers prepared. [progress](../progress/2026-10/2026-10-27-rtg57-f32-prep.md), [roadmap](../handoffs/active/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap)
-- AK-DEPLOY-2: the hub now serves a read-only full-tree view at origin/main (verified 19:31Z). [handoff](../handoffs/active/autokernel-restart-and-strip.md)
+- AK-DEPLOY-2: the hub now serves a read-only full-tree view at origin/main (verified 19:31Z). [handoff](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip)
 
 ### Source References (2026-10-28 ws58 delta)
 - [champion aggregate](../handoffs/active/autokernel-champion-aggregate.md), [cross-workload keep gate](../handoffs/active/autokernel-cross-workload-keep-gate.md), [fused decoder blocks](../handoffs/active/fable5-window2-findings-03-portfolio-and-master-queue.md#track-cpu-fused-decoder-blocks)

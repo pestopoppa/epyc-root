@@ -487,7 +487,7 @@ DS41's champion of record on its own campaign lineage is `a1faab471e83`, with 4 
 | **CH-8** | AutoKernel's GPU builder omits `GGML_HIP_ROCWMMA_FATTN` |
 | **CH-14 / CH-16** | Manual-research loop runbook (start from `scripts/benchmark/serving_evidence_refresh_runbook.md`, research repo); correct the loop champion's inflated per-commit claims |
 | **FOLD-0 / V6R-1..3** | INF-70's residual fold items; v6-fork triage (DiffT-V2, KV context-shift, paged-attn) |
-| **not on this page** | `AK-INST-3`, `AK-INST-2`, `AK-DEPLOY-2` live in [`autokernel-restart-and-strip.md`](autokernel-restart-and-strip.md). |
+| **not on this page** | `AK-INST-3`, `AK-INST-2`, `AK-DEPLOY-2` live in [`autokernel-restart-and-strip.md`](agent-collab-rnd-harness.md#track-autokernel-restart-and-strip). |
 
 Closed work and superseded champion-state narration: § *Completed Scope*.
 
