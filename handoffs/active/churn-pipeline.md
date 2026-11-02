@@ -92,3 +92,11 @@ Plan: [README.md](../../research/deep-dives/ws58-jev-20261102/README.md). **Orde
 - [ ] **Sessions over-prepare instead of publishing**: find and cut.
 - [ ] **Dashboard readied-waiting count is 0**: row/handoff linking bug.
 - [ ] **RTG-18 graph checkbox-parse bug**: graph shows open=0, file has 12 open boxes.
+- [x] **Turn-end rules, light worker persist, central index_regen.py; box id per turn, steps-since-tick, push lock 15 min** ✅ 2026-11-02 ROOT `30b2ed75c` `262de5c98` [no-belief: tooling]
+- [x] **Dry runs take no lock; publish smoke never refuses for busy; smoke disk floor 20 GiB; GPU smokes queue between GPU jobs; tiny rows unscheduled, port exclusivity, drain T + backfill; dry-run harness reaps process group** ✅ 2026-11-02 ROOT `d4f22dccd` `fc4e4352f` `6e0f27d5c` `59c2beb79` `70e5666b1` `d9838cf37` [no-belief: tooling]
+- [x] **Dispatcher scratch quota (SCRATCH-OVER)** ✅ 2026-11-02 ROOT `5b34a2409` [no-belief: tooling]
+- [x] **Dashboard row badges, legend/info panel, open-count parser fixes, engram boxes** ✅ 2026-11-02 ROOT `23791d952` `6f1f97b43` `da51eb293` `2c360a3ee` [no-belief: dashboard]
+- [ ] **Sub-quarter packing**: packing agent was stopped; unfixed.
+- [ ] **Rows published with a non-inference payload as compute rows** (e.g. gitnexus analyze held all 96 cores).
+- [ ] **Row estimate_s vastly overstated**: fix estimator.
+- [ ] **Per-row UNDERUSED is only logged**: act on it.
