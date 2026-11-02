@@ -63,3 +63,7 @@ Consumed the GPU rowflow spec draft: proposed descriptive single-arm GPQA-CoT n1
 ## 00:43Z — Resolve generated inference inventory and prepare EffiBench integration
 
 Reviewed generated inference tasks: Phase 1 CPU is an aggregate with A2 already run and additional GPQA CPU skipped by operator; Phase 2 scorer needs OD-1 and OD-2; L-Q4P requires a concrete Laguna CPU role proposal. The historical GPU GPQA launcher uses the retired kernel path and incompatible protocol; retargeted arms need a rowflow-native runner and defined comparison before publication. No row was published and no inference was run. EffiBench durable integration preparation is delegated; awaiting its completion report for review. GitNexus index was absent and its wrapper was denied CPU admission.
+
+## 00:44Z — Advance retargeted GPU benchmark and EffiBench integration
+
+Prior wrap-up completed and reached origin as 7a8f1334d4142dc65967cc4f6a69d8ae695ee021. The GPQA current-model launcher, EffiBench-X acceptance-gated integration review, and arithmetic-tool integration brief are delegated with completion events registered. EffiBench preparation exists as untracked lane files pending review; no adoption tick or measurement claim is made. The arithmetic implementation is in epyc-orchestrator, outside the lane-only edit constraint. No row published or inference run at this boundary.
