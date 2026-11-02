@@ -1,0 +1,100 @@
+{
+  "C": {
+    "buildno": 10500,
+    "source": "729599d69871181d67af715a4c2f9162d5153a2e",
+    "store": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6"
+  },
+  "P": {
+    "buildno": 10419,
+    "source": "c72ec82f5417bb2937310326120f149b665e8400",
+    "store": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5"
+  },
+  "arm_order": "P C repeated15",
+  "c5_recipe_sha256": "854fcfdc1142f568dd4ba84dfff75a62709aff803f8a41690221d1f4f81aa4a9",
+  "external_source_pins": {
+    "/mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh": "57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33"
+  },
+  "full_gate_pass": null,
+  "models_partial_identity": [
+    {
+      "edge_bytes": 67108864,
+      "first_edge_sha256": "82496310a88af24bcecac133737e30ac723fb6346a3757aeae3620b3e74900fc",
+      "last_edge_sha256": "ff2d3c1de7bd6659549fdc83687f4e4a9e4514dede54121bce4a15b3c0b909ee",
+      "mtime_ns": 1786727071030792493,
+      "path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "role": "-m",
+      "size": 29047086048
+    },
+    {
+      "edge_bytes": 67108864,
+      "first_edge_sha256": "f3628003ac6423b17b8eaf7a89517b7193bfc8cbfefe53a7ad40e4ec8251fae0",
+      "last_edge_sha256": "8e4b1f51df1eb5287093f5d46970c495d75bd45c9ff92e8d7418c65bd38bb88f",
+      "mtime_ns": 1787172135435655139,
+      "path": "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+      "role": "-md",
+      "size": 2056414752
+    },
+    {
+      "mtime_ns": 1787403897152108556,
+      "path": "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+      "role": "--chat-template-file",
+      "size": 25808,
+      "whole_file_sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551"
+    }
+  ],
+  "original_flags": [
+    "-m",
+    "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "8197",
+    "-np",
+    "4",
+    "-c",
+    "393216",
+    "-t",
+    "8",
+    "-ub",
+    "2048",
+    "--flash-attn",
+    "on",
+    "--jinja",
+    "-ctk",
+    "q8_0",
+    "-ctv",
+    "q8_0",
+    "--kv-unified",
+    "--no-mmap",
+    "-ngl",
+    "all",
+    "--cache-ram",
+    "65536",
+    "--chat-template-file",
+    "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+    "-md",
+    "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+    "-ngld",
+    "99",
+    "--spec-type",
+    "draft-dflash",
+    "--spec-draft-n-max",
+    "7",
+    "--device",
+    "ROCm0",
+    "--slot-save-path",
+    "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/slots",
+    "--device-draft",
+    "ROCm0"
+  ],
+  "original_receipt": "/workspace/artifacts/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/server_args.bin",
+  "pairs": 15,
+  "probe_args": "--identity-tokens 256 --probs-tokens 64 --pp-items 300 --pp-reps 2 --tg-n 256 --tg-reps 2",
+  "schema": "c6.gpu27b_identity_protocol_prep.v1",
+  "source_pins": {
+    "original/ab_arms.sh": "327dbc84dd6068989264e0d1f3a00b40876fde27be70bbe48be19b139028c41c",
+    "original/ab_probe.py": "bd195fa6fe3575d50ef4e23a68dd5aad9e61f5201497118cf20abb646489182b",
+    "original/gpu_champion_ab.sh": "d638ee66ecb55d80896b48448adcec0cd5757d0d92cca53a0045a2148012361f",
+    "original/server_args.27b-dflash2-20261004.bin": "e13ea7d0a51f0d5f2cef05563b1cc8050929f9db0e26e8bcdbc85b186c5b00e9"
+  }
+}
