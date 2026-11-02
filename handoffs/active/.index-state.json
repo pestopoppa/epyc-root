@@ -16,7 +16,7 @@
       "blocked": 15,
       "handoffs": 41,
       "oldest_advance": "2026-07-29",
-      "open": 695
+      "open": 696
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -34,7 +34,7 @@
       "blocked": 17,
       "handoffs": 14,
       "oldest_advance": "2026-08-12",
-      "open": 123
+      "open": 122
     }
   },
   "duplicates": {},
@@ -1289,10 +1289,10 @@
     },
     "harness-selection-and-integration.md": {
       "blocked": 12,
-      "closed": 25,
+      "closed": 26,
       "guarded": 0,
       "last_advanced": "2026-10-29",
-      "open": 17,
+      "open": 16,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2812,7 +2812,7 @@
       "closed": 336,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 373,
+      "open": 374,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2821,7 +2821,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 713
+      "total": 714
     },
     "within-role-placement-state-machine.md": {
       "blocked": 1,
