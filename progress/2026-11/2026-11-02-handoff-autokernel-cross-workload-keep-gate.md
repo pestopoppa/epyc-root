@@ -11,3 +11,7 @@ Implemented a standalone normalized-evidence T0/T1 classifier prototype with nin
 ## 10:13Z — AKX-P1c — replay sync17-fix2
 
 Implemented byte-custody verification for independently pinned evidence manifests and a build-receipt checker; neither establishes source-to-binary provenance, runtime linkage, capture completeness or INERT eligibility. The coverage build helper remains disabled. Recorded the historical UD-to-IQ4_XS reconstruction command, exact quantizer source and shard digest records in the sealed replay plan; input bytes and regenerated output are not yet verified. Fifteen focused tests pass; no build, inference or row publication. P1c remains open.
+
+## 10:16Z — AKX-P1c — replay sync17-fix2
+
+The evidence adapter now checks that the sealed source patch is exactly the deterministic diff between trusted full parent and candidate commits; a correctly hashed wrong patch is rejected. Sixteen focused tests pass. This verifies source diff custody only, not coverage or execution. The exact historical quantizer build still requires a keeper-ready launcher. The 98,392,912,256-byte reconstruction would put the currently shared filesystem below its 150-GiB floor; source shards remain unverified. P1c remains open; no compute or row publication.

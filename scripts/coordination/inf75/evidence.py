@@ -11,7 +11,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
+import subprocess
 from pathlib import Path
 
 _HEX256 = re.compile(r"[0-9a-f]{64}\Z")
@@ -46,7 +48,7 @@ def _json(data: bytes) -> dict:
 
 
 def verify_bundle(manifest_path: Path, *, expected_manifest_sha256: str,
-                  expected_parent: str, expected_candidate: str) -> dict:
+                  expected_parent: str, expected_candidate: str, source_repo: Path) -> dict:
     """Return a byte-custody receipt, never an execution or classification claim."""
     if not isinstance(expected_manifest_sha256, str) or not _HEX256.fullmatch(expected_manifest_sha256):
         raise EvidenceError("trusted manifest digest required")
@@ -87,6 +89,22 @@ def verify_bundle(manifest_path: Path, *, expected_manifest_sha256: str,
         if hashlib.sha256(blob).hexdigest() != digest:
             raise EvidenceError(f"{role} digest mismatch")
         contents[role], digests[role] = blob, digest
+    env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
+    env.update(GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL="/dev/null",
+               GIT_NO_REPLACE_OBJECTS="1", LC_ALL="C")
+    cmd = ["git", "-C", str(source_repo), "-c", "core.abbrev=10",
+           "-c", "diff.algorithm=myers", "-c", "diff.indentHeuristic=true",
+           "-c", "core.attributesFile=/dev/null", "diff", "--no-ext-diff",
+           "--no-textconv", "--binary", "--no-renames", "--src-prefix=a/",
+           "--dst-prefix=b/", "--unified=3", "--no-color",
+           expected_parent + "^{commit}", expected_candidate + "^{commit}", "--"]
+    try:
+        diff = subprocess.run(cmd, env=env, check=True, stdout=subprocess.PIPE,
+                              stderr=subprocess.PIPE, timeout=60).stdout
+    except (OSError, subprocess.SubprocessError) as e:
+        raise EvidenceError("source commit comparison unavailable") from e
+    if not diff or diff != contents["source_patch"]:
+        raise EvidenceError("source patch differs from pinned commit diff")
     record = _json(contents["normalized"])
     try:
         if (record["footprint"]["sha256"] != digests["footprint"]
@@ -96,5 +114,5 @@ def verify_bundle(manifest_path: Path, *, expected_manifest_sha256: str,
     except (KeyError, TypeError) as e:
         raise EvidenceError("normalized evidence lacks required references") from e
     return {"schema": "epyc.inf75.byte_custody_receipt.v1", "status": "BYTE_BINDING_ONLY",
-            "manifest_sha256": expected_manifest_sha256, "parent": expected_parent,
+            "manifest_sha256": expected_manifest_sha256, "source_diff_verified": True, "parent": expected_parent,
             "candidate": expected_candidate, "digests": digests}
