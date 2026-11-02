@@ -510,6 +510,8 @@ def project(native: Any) -> ClaimTuple:
     present = _rows_present(row, sidecar)
     if row["schema"] == "epyc.kpf30.observation.v1":
         return _project_kpf30(row, sidecar, present)
+    if row.get("kpf_task") == "KPF-26":
+        return _project_kpf26(row, sidecar, present)
     if row["arm"] == OUTCOME_ARM:
         return _project_outcome(row, sidecar, present)
     if is_conformance(row):
@@ -566,6 +568,43 @@ def project(native: Any) -> ClaimTuple:
         },
         applicability=_applicability(row),
     )
+
+
+def _project_kpf26(row: dict, sidecar: Path, present: bool) -> ClaimTuple:
+    """Project native scout completion, never a performance or gate verdict."""
+    block = row.get("kpf26")
+    if not isinstance(block, dict) or any(type(block.get(k)) is not int or block[k] < 0
+                                          for k in ("tasks", "children", "completed")):
+        raise ProjectionError("KPF-26 native counts missing or invalid")
+    if block["tasks"] == 0 or block["children"] == 0 or block["completed"] > block["children"]:
+        raise ProjectionError("KPF-26 native counts inconsistent")
+    if present:
+        try:
+            tasks = [json.loads(line) for line in _rows_path(row, sidecar).read_text().splitlines() if line.strip()]
+            children = [c for task in tasks for c in task["children"]]
+            observed = {"tasks": len(tasks), "children": len(children),
+                        "completed": sum(c["status"] == "ok" for c in children)}
+        except (OSError, ValueError, TypeError, KeyError) as exc:
+            raise ProjectionError("invalid KPF-26 native task rows") from exc
+        if observed != block:
+            raise ProjectionError("KPF-26 counts disagree with attested native rows")
+    return ClaimTuple(
+        measurement_id="kpf26-" + hashlib.sha256(row["record_sha256"].encode()).hexdigest()[:32],
+        metric="kpf26_completed_scouts", value=block["completed"], unit="scouts",
+        date=row["end_utc"], category=row["category"], metric_direction="higher_better",
+        claim=(f"KPF-26 recorded {block['completed']} completed scouts of {block['children']} "
+               "in one serving window; no quality, performance or gate verdict"),
+        protocol_id="", reps=block["children"], reps_basis="scouts attempted in one window",
+        attestation_path=str(_rows_path(row, sidecar)), attestation_sha256=row.get("rows_sha256") or "",
+        attestation_locator=f"kpf26:{row['run_id']}:{row['arm']}:win={row['window_id']}",
+        attestation_present=present, attestation_verified=True if present else None, source_kind=SOURCE_KIND,
+        extra={"schema": row["schema"], "kpf26": block, "run_id": row["run_id"], "arm": row["arm"],
+               "window_id": row["window_id"], "binary_sha256": row["binary_sha256"],
+               "model_sha256": row.get("model_sha256"),
+               "prompt_set_sha256": row["prompt_set_sha256"], "start_utc": row.get("start_utc"),
+               "end_utc": row["end_utc"], "record_sha256": row["record_sha256"],
+               "ttft_ms": row.get("ttft_ms"), "unique_cells_peak": row.get("unique_cells_peak")},
+        applicability=_applicability(row))
 
 
 def _project_kpf30(row: dict, sidecar: Path, present: bool) -> ClaimTuple:
