@@ -135,3 +135,7 @@ Reviewed intake-537 prompt-arm preparation: vendored fast-rlm source and MIT lic
 ## 09:38Z — Integrate width, third-arm and Omega preparation reviews
 
 Reviewed width design: the existing uncommitted guide proposes a 3→2→1 experiment, but it does not establish that width actually tapers or that scheduling is implemented; the handoff remains open. The third-arm implementation awaits a resolvable GitNexus impact and coordinated producer/adapter support. Model-free Omega validation reproduced the logger configuration mismatch and confirmed that ORCHESTRATOR_PROGRESS_LOG_DIR directed to an isolated scratch path allows a real ProgressLogger flush; this does not qualify or authorize retry of the parked lineage. Delegated index recovery, further safe Omega preparation and prompt design; registered result events.
+
+## 09:39Z — Integrate index admission and Omega fix preparation
+
+Reviewed the GitNexus admission and Omega fix reports. The lane-specific index attempt was denied because cross-role region locks were unavailable; no guard was bypassed. The demonstrated Omega progress-log environment fix belongs in a fresh successor snapshot, with isolated directory setup, refreshed source seals and a model-free flush check; the parked snapshot was not modified or retried. Dispatched index-admission investigation and independent task and row preparation, with completion events registered.
