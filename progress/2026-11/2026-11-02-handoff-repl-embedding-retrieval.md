@@ -59,3 +59,7 @@ Hardened real-trace export to validate a single v2 session, reject malformed rec
 ## 10:53Z — Implement prospective shadow sink and explicit trace fact ingestion
 
 Added explicit-file ingestion of validated prospective trace facts with closed-shape event and producer-declared identity retained in ledger; custody remains unknown. Added an exclusive hash-chained prospective online shadow sink, with unknown no-open and counterfactual hidden-arm outcomes; added its belief source row and wiring task. Hardened exporter against symlinked originals and shared output directories. Seven focused tests pass; broader agent run 101 passed, one external-fixture test deselected. Synthetic controls only: no real session, shadow runtime, inference row, or planning canary. [no-belief: source controls only]
+
+## 10:56Z — Validate shadow streams and add trace selection provenance
+
+Added strict finalized shadow-stream validation (chain, source pin, state transitions, counts and rederived overlaps) and a negative trace-facts planning canary that confirms unscoped evidence is omitted; five focused tests pass. Added a single-session v2 trace selector with source digest and selection receipt; synthetic mixed-session selection and malformed input controls pass. G-S remains open: original private-copy wrapper rc2 is not converted into an exit-zero result by a later postcheck. No real session, inference row or positive planning canary is claimed. [no-belief: synthetic controls only]
