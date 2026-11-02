@@ -27,3 +27,7 @@ Restored the quarter-run filing and native partial archive after the lane sparse
 ## 09:21Z — Confirm KVU quarter filing publication
 
 The previous wrap failed during push after committing. The dispatcher refreshed the lane, and origin/main already contains equivalent quarter filing and native archive in commit 444c53c50. The rc=75 incomplete target comparison remains UNKNOWN. GPU repair remains pending. No inference was launched.
+
+## 09:26Z — Repair and republish GPU C5 replay qualification
+
+Repaired and republished handoff-kvu-16i-c5-replay-20261101. Its failed dry run was pre-inference: historical receipt was unavailable inside the chroot and rowflow engine pin was stale. Restored the exact SHA-bound receipt under the job root, updated protocol and runtime paths, bound the installed tracked 329a1a03e engine (dry-run resource claim change), resealed source catalog and atomically replaced launcher last. Source catalog checks and all 48 historical request body hashes/order pass offline. Keeper qualification remains pending; no inference or promotion claim.
