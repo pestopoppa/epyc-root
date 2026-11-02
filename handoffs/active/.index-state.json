@@ -32,7 +32,7 @@
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
-      "handoffs": 6,
+      "handoffs": 5,
       "oldest_advance": "2026-10-03",
       "open": 91
     }
@@ -44,7 +44,7 @@
       "blocked": 0,
       "closed": 25,
       "guarded": 0,
-      "last_advanced": "2026-10-31",
+      "last_advanced": "2026-11-02",
       "open": 9,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -320,7 +320,7 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 24,
+      "closed": 25,
       "guarded": 0,
       "last_advanced": "2026-11-02",
       "open": 12,
@@ -332,7 +332,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 36
+      "total": 37
     },
     "batched-decode-measurement.md": {
       "blocked": 1,
@@ -1254,10 +1254,10 @@
     },
     "harness-improvement-loop.md": {
       "blocked": 1,
-      "closed": 37,
+      "closed": 42,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 15,
+      "open": 16,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1266,7 +1266,31 @@
       },
       "row_id": "UFH-08",
       "state": "active",
-      "total": 53
+      "total": 59,
+      "tracks": [
+        {
+          "blocked": 1,
+          "closed": 37,
+          "gates": null,
+          "guarded": 0,
+          "line": 0,
+          "markers": 0,
+          "name": "(untracked)",
+          "open": 15
+        },
+        {
+          "blocked": 0,
+          "closed": 5,
+          "gates": [
+            "UFH-01"
+          ],
+          "guarded": 0,
+          "line": 653,
+          "markers": 1,
+          "name": "opencode-shell-integration",
+          "open": 1
+        }
+      ]
     },
     "harness-selection-and-integration.md": {
       "blocked": 12,
@@ -1865,22 +1889,6 @@
       "row_id": "RTG-23",
       "state": "active",
       "total": 23
-    },
-    "opencode-shell-integration.md": {
-      "blocked": 0,
-      "closed": 5,
-      "guarded": 0,
-      "last_advanced": "2026-10-29",
-      "open": 1,
-      "owner_index": "user-facing-harness-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "UFH-15",
-      "state": "active",
-      "total": 6
     },
     "orchestration-robustness-audit-2026-07-11.md": {
       "blocked": 0,
@@ -3610,7 +3618,7 @@
       "handoff": "harness-improvement-loop.md",
       "id": "UFH-08",
       "index": "user-facing-harness-index.md",
-      "line": 21,
+      "line": 20,
       "next_action": "Validate HIL-15b failure recordings for HIL-16; run the four-family cohort for HIL-18 without pooling incompatible cohorts",
       "track": "harness improvement loop"
     },
@@ -3624,7 +3632,7 @@
       "handoff": "repl-embedding-retrieval.md",
       "id": "UFH-12",
       "index": "user-facing-harness-index.md",
-      "line": 22,
+      "line": 21,
       "next_action": "REPL-EMB-2.8b trace write side, then 2.9-2.12 package gates; UFH-12-PROD-ADOPT is a separate decision",
       "track": "repl embedding retrieval"
     },
@@ -3648,17 +3656,6 @@
       "line": 18,
       "next_action": "Re-size failed UFH14-A4a treatment window from measured tok/s, then validate its sandboxed paired rerun",
       "track": "agentic serving harness fixes"
-    },
-    "UFH-15": {
-      "deps": [
-        "UFH-01"
-      ],
-      "handoff": "opencode-shell-integration.md",
-      "id": "UFH-15",
-      "index": "user-facing-harness-index.md",
-      "line": 20,
-      "next_action": "Validate remaining P0 override carry at the inference owner boundary; screen independent shell source follow-ons",
-      "track": "OpenCode shell integration"
     }
   },
   "schema": "index_state.v1"

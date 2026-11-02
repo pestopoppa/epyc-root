@@ -81,7 +81,6 @@
   "RTG-13": 0.15,
   "RTG-16": 0.15,
   "RTG-49": 0.15,
-  "UFH-15": 0.15,
   "INF-29": 0.1,
   "INF-44": 0.1,
   "INF-49": 0.1,
@@ -145,7 +144,8 @@
   "INF-22#gpu-acceleration-path": 0.3,
   "INF-22#mi210-big-model-and-acceleration-roadmap": 0.45,
   "INF-22#qwen38-27b-replace-qwen36": 0.75,
-  "INF-02#autokernel-restart-and-strip": 0.6
+  "INF-02#autokernel-restart-and-strip": 0.6,
+  "UFH-08#opencode-shell-integration": 0.15
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",

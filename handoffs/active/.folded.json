@@ -213,6 +213,10 @@
    "target": "engineering-hygiene-backlog.md",
    "track": null
   },
+  "opencode-shell-integration.md": {
+   "target": "harness-improvement-loop.md",
+   "track": "opencode-shell-integration"
+  },
   "opendataloader-pipeline-integration.md": {
    "target": "knowledge-pipelines.md",
    "track": "opendataloader-pipeline-integration"
@@ -598,6 +602,10 @@
   "UFH-11": {
    "target": "RTG-22",
    "track": "amd-ai-lab-website-publication"
+  },
+  "UFH-15": {
+   "target": "UFH-08",
+   "track": "opencode-shell-integration"
   },
   "UFH-16": {
    "target": "RTG-36",
