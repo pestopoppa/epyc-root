@@ -45,3 +45,9 @@ Hardened the partial changed-line extractor against unsafe paths, malformed or r
 ## AKX-P1c build recipe preparation
 
 Added a model-free typed CMake cache comparison that reports all additions, removals, type and value differences, including internal entries; malformed and duplicate entries refuse. Three focused tests pass. This is an unverified comparison only, not proof of build provenance or recipe parity; the coverage build remains disabled pending review and admitted workload capture.
+
+## 10:31Z — Bind historical INF-70 workload inputs for P1c replay preparation
+
+## AKX-P1c historical workload reference
+
+Captured the source-bound S20_FIX1 CPU workload configuration, prompt/client identities and historical arm controls as a machine-readable reference; the historical shim-off session is explicitly distinguished from the later adopted shim-on champion recipe. The source record is not a build, workload capture or replay witness, and the model digest remains unverified.
