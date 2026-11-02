@@ -43,3 +43,7 @@ Ran a model-free check against actual scripts/coordination/rowflow/rowflow.py co
 ## 10:26Z — Resolve GPU receipt source readiness
 
 For AKX-ALL-3, research origin/main 3ab4ffbf1 contains the GPU-only device plus gpu-quiet receipt implementation: `git log -S "def observe_gpu_quiet"` identifies 0cb215c31. The older named 4375b5aa commit itself is not an ancestor. A live receipt and concurrent CPU waiter remain unproven and the AK launch hold remains in force; no row or inference was launched.
+
+## 10:27Z — Test floor device-lock observer
+
+A model-free isolated test exercised the original R4 inherited_cpu_claim.device_held against a temporary lock: it accepted the held matching inode, refused missing/unlocked and replaced inode, and a separate contender failed while held and succeeded after release. Script: /mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/observation-control/check_device_witness.py. CPU-class ancestry integration, scheduler reservation, runtime and the floor remain unqualified.
