@@ -3769,7 +3769,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T12:53:46Z",
+  "generated_at": "2026-11-02T12:56:51Z",
   "nodes": [
     {
       "age_days": 95,
@@ -8835,7 +8835,7 @@
         "RTG-27",
         "RTG-57"
       ],
-      "closed": 109,
+      "closed": 112,
       "dispatchable": 56,
       "domain": "routing-and-optimization",
       "guarded": 0,
