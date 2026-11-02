@@ -101,3 +101,9 @@ Consumed omega-review-20261102-result.json. Omega successor must not be publishe
 - Consumed `width12.json`: proposed 3-to-2-to-1 controller-selected native-tool-call experiment is guidance only, and the source measured parallel tool calls in one context, not independent subagents. Scheduler implementation and validation remain open. Citation check was not complete; the guidance diff is preserved in scratch for review and not included in this commit.
 - Consumed `assemble12.json`: four offline integration tests passed, but the actual live producer, independent custody, scorer, adapter, tokenizer/protocol and qualification path are unfinished; one-second transport timeouts can reject normal prefill. Delegated a bounded transport repair, event `strategy13`. No inference or unsafe row publication.
 - Prior wrap-up published `1ec15a6a13e1151e782dfc4c72a3a43d84d15d23` with empty cherry.
+
+## 09:29Z — Review slow-prefill transport repair and publish RLM source packet
+
+- Consumed `strategy13.json`: scratch HTTP transport now uses the full remaining absolute deadline rather than a fixed one-second header/read timeout; stop/deadline closes an attached socket and preserves partial failure records. Eleven offline transport/seam tests passed, including mocked blocked headers. No live prefill latency or inference claim; the producer, trusted grant/server identity, custody, scorer and adapter are still required before publication.
+- Prior wrap-up commit `083306db260fc81c3f40c6bb1ca22e9c106e66df` initially failed concurrent non-fast-forward pushes. Merged the latest origin/main and successfully serialized-pushed through `699d8fd452af`; cherry was empty. The licensed RLM source packet is now durable, but the third arm/runner remain open.
+- Delegated bounded producer, scorer and native ClaimTuple adapter integration (`strategy14`, `scorer14`, `adapter14` events); no inference or row publication. Preserved unrelated width-guidance diff for separate review.
