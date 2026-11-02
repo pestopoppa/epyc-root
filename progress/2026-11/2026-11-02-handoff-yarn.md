@@ -111,3 +111,7 @@ Integrated the A2 owned-client and captured-server cancellation prototype with b
 ## 10:44Z — Inspect A2 GPU row preparation and assess Jet-Long ubatch implementation impact
 
 A2 is the 27B GPU control, not the generated CPU label. The existing /mnt/raid0/llm/tmp/yarn/a2/launcher.DRAFT.sh exits 6 deliberately; its spec lacks a qualified keeper lifecycle, source-bound build, companion window, timing and cleanup, so no row was published. JETLONG-PROTO-INWINDOW-UB targets llama_context::decode, previously assessed CRITICAL (79 upstream symbols, 12 flows); root GitNexus reports not indexed and the target llama.cpp index is ambiguous. No kernel change or measurement made. Resume with source-bound A2 launcher and a valid target impact assessment; retain proof and harness tasks.
+
+## 10:46Z — Prepare A2 GPU and Jet-Long CPU launchers and proof-helper adoption
+
+A2, Jet-Long CPU row, and E1 proof adoption are delegated with outputs registered under the yarn awaiting directory. A2 integration review found the ownership checker returns a record while the request wrapper requires literal True; the integration must adapt it explicitly and verify ownership around requests. Server-only reaping is not descendant-cleanup proof. No row or native result was claimed.
