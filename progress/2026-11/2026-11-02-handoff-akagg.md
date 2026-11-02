@@ -23,3 +23,11 @@ Consumed the C3 and CH-27 investigation reports: C3 r5 host FD9 path passes mode
 ## 03:47Z — Merge current main and continue C3 and CH-27 preparation
 
 Previous wrap-up committed source-boundary and custody findings at 677957bf2 but serialized push failed; merged current origin/main in lane, without conflicts. C3 model provenance, CH-27 private campaign and NEMO prospective capture delegated; report-file events registered. No measurement or new row claimed.
+
+## 04:49Z — File C3 inherited-claim host-route fixture
+
+C3 r5 model-free test_host_r15.py passed rc0 HOST_ROUTE_PASS through sudo/chroot/setpriv, using an overridden fixture engine and held fixture lock; three inherited proofs were asserted. This does not validate the deployed engine or qualify a profiling row. C3 successor model-identity repair and CH-27 private campaign preparation remain delegated; CH-26b r2 is with keeper dry-run.
+
+## 09:17Z — File C3 inherited-claim host-route fixture
+
+C3 r5 model-free test_host_r15.py passed rc0 HOST_ROUTE_PASS through sudo/chroot/setpriv, using an overridden fixture engine and held fixture lock; three inherited proofs were asserted. This does not validate the deployed engine or qualify a profiling row. C3 successor model-identity repair and CH-27 private campaign preparation remain delegated; CH-26b r2 is with keeper dry-run. The prior wrapper applied the tick and passed index validation but its commit failed the observer hook; retry preserves the existing tick.
