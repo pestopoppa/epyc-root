@@ -43,13 +43,13 @@ this handoff, do not push; two consecutive reds on the same fold → stop T1 and
 ## T2 — per-track gate tooling (1b) and dashboard fixes
 
 - [ ] **BRF-T2-1** [non-inference] `index_state.py`: per-track gates (readiness per track inside a folded handoff). Done when: tests cover a two-track folded handoff with one gated track. Zero inference.
-- [ ] **BRF-T2-2** [non-inference] `handoff_parser`: `folded` lifecycle from the banner; roll-up boxes excluded from `count_tasks`. Done when: parser tests for both pass.
-- [ ] **BRF-T2-3** [non-inference] `server._parse_activity_log*`: moved-box pairing, fold-commit trailer exclusion, `moved`
+- [x] **BRF-T2-2** [non-inference] `handoff_parser`: `folded` lifecycle from the banner; roll-up boxes excluded from `count_tasks`. Done when: parser tests for both pass. ✅ 2026-11-02 `6ce0647ef` [no-belief: tooling]
+- [x] **BRF-T2-3** [non-inference] `server._parse_activity_log*`: moved-box pairing, fold-commit trailer exclusion, `moved`
   field; `build_handoff_timeline`: roll-up exclusion, one-time `refactor_markers` annotation, historical
-  counts carried across renames; tests.
-- [ ] **BRF-T2-4** [non-inference] `.folded.json` resolution in detail (`handoffs.html ?id=`), graph, `queue_payload`/rowflow
+  counts carried across renames; tests. ✅ 2026-11-02 `6ce0647ef` [no-belief: tooling]
+- [x] **BRF-T2-4** [non-inference] `.folded.json` resolution in detail (`handoffs.html ?id=`), graph, `queue_payload`/rowflow
   and `pipeline_status._handoff_of`/`build_payload`; roll-up exclusion in `classify_handoffs`; test: every
-  ready/running row and session slug resolves to a graph node in a folded scratch tree. Done when: that test passes.
+  ready/running row and session slug resolves to a graph node in a folded scratch tree. Done when: that test passes. ✅ 2026-11-02 `6ce0647ef` [no-belief: tooling]
 
 ## T3 — replays and deterministic tails (analyses now; D3)
 
