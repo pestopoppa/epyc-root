@@ -965,6 +965,7 @@ OWN_TASK_RX = re.compile(r"^- \S+ L\d+ \[(cpu|gpu)\] ", re.M)
 IDLE_RX = re.compile(r"IDLE:\s*(.*)")
 IDLE_REPORT_COOLDOWN_S = 30 * 60  # a session that itself said IDLE: <reason> is re-asked after this long
 MIN_RESUME_GAP_S = 10 * 60        # budget emergency 22:45Z: at most one non-filing resume per session per 10 min
+AWAIT_EXPIRY_S = 30 * 60            # a no-op turn parks a session for this long at most (03:29Z deadlock: 0 live, 45 parked)
 STUCK_AFTER = 3                     # consecutive no-effect turns -> stuck: run-end / new external events only
 WATCHDOG_MIN_STARTS = 3             # SA-2: alarm when this many starts in an hour produced no ready row
 AUTO_START_COOLDOWN_S = 30 * 60     # SA-1: a handoff is not restarted within this long of its last end/start
@@ -1306,7 +1307,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 continue
             st.setdefault("queue", []).append({"slug": slug, "rid": rid, "end": p, "kind": kind,
                                                "related": {k: v for k, v in related_ids(flags, rid).items() if k in ("handoff_task", "lineage", "prior_fail", "manifest")}})
-            S[slug]["await_event"], S[slug]["noop_reason"] = False, None
+            S[slug]["await_event"], S[slug]["noop_reason"], S[slug]["dirty_wrap_resume"] = False, None, None
             if kind == "run-end":
                 S[slug]["stuck"] = None  # a run-end is the external event that unsticks a session
             log(flags, f"{'RUN-END' if kind == 'run-end' else 'DRYRUN-RESULT'} {rid} -> {slug}")
@@ -1324,7 +1325,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
         else:
             st.setdefault("queue", []).append({"slug": slug, "rid": f"awaiting-{len(fired)}", "end": fired[0]["registration"] + ".fired",
                                                "kind": "awaiting", "data": fired})
-        e["await_event"], e["noop_reason"] = False, None
+        e["await_event"], e["noop_reason"], e["dirty_wrap_resume"] = False, None, None
         log(flags, f"AWAITED {len(fired)} file(s) -> {slug}: " + ", ".join(str(d.get("path")) for d in fired)[:300])
     # 3. waits_on from the generated handoff backlog
     for slug, e in S.items():
@@ -1434,8 +1435,9 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 continue  # outranked: no new work; its slot goes to a higher-ranked handoff
             if e.get("stuck"):
                 continue  # 3 no-effect turns: only a run-end (or a new external event) resumes it
-            if e.get("await_event") and e.get("work_reason") == e.get("noop_reason"):
-                continue  # last turn was a no-op and nothing changed since: wait for an event, not another re-check
+            if e.get("await_event") and e.get("work_reason") == e.get("noop_reason") \
+                    and now - _parse(e.get("last_end") or "") < AWAIT_EXPIRY_S:
+                continue  # last turn was a no-op and nothing changed since: wait for an event (or 30 min), not another re-check
             if e.get("idle_reported") and now - _parse(e.get("last_end") or "") < IDLE_REPORT_COOLDOWN_S:
                 continue  # the session itself said IDLE: <reason>; re-asked after the cooldown
             if not wrapped(e, lcache):

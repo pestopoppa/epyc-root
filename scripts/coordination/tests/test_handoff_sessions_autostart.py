@@ -504,7 +504,7 @@ class CAF1Tests(_DSHBase):
         self.assertIn("Dry-run FAIL for your row `row-a`", self.calls[0]["prompt"])
         self.assertIn("fix the result_path", self.calls[0]["prompt"])
         # an awaited file: registered by the session, fires when it exists
-        e = self.session(await_event=True)  # last turn was a no-op: only an event may resume it
+        e = self.session(await_event=True, last_end=hs.now_iso())  # last turn was a no-op just now: only an event may resume it (for 30 min)
         e["noop_reason"] = hs.work_state(self.flags, "alpha", e, self.repo)[1]
         hs.save(hs.reg_path(self.flags), self.reg)
         self.calls.clear()
@@ -880,3 +880,19 @@ class LandBeforeParkTests(_DSHBase):
         self.assertEqual(len(landed), 1)
         self.assertEqual(hs.landed_ticks(landed[0], repo=lane), 1)
         self.assertEqual(hs.land_lane(lane), [], "nothing left to land")
+
+
+class DeadlockTests(_DSHBase):
+    def test_await_expires_and_event_rearms_dirty_lane_resume(self):
+        # a no-op session parked 31 min ago with open work is resumed again (await_event expired)
+        old = hs._dt.datetime.fromtimestamp(hs.time.time() - 31 * 60, hs._dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        e = self.session(await_event=True, noop_turns=1, last_end=old, last_resume=old)
+        e["noop_reason"] = hs.work_state(self.flags, "alpha", e, self.repo)[1]
+        hs.save(hs.reg_path(self.flags), self.reg)
+        reg, _ = self.dispatch()
+        self.assertTrue(any("FINISH ALL READY ITEMS" in c["prompt"] for c in self.calls), "parked no-op session resumed after 30 min")
+        # a queued event clears the dirty-lane one-shot so the owner can come back and wrap up
+        e = self.session(dirty_wrap_resume="2026-11-02T00:00:00Z")
+        _w(os.path.join(self.flags, "grants", "row-a.ended"), "rc=0\n")
+        reg, st = self.dispatch()
+        self.assertIsNone(reg["sessions"]["alpha"].get("dirty_wrap_resume"))
