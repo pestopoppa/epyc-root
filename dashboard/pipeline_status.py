@@ -339,6 +339,14 @@ def classify_handoffs(graph: dict | None, rows: dict) -> dict:
     for r in rows.values():
         if r["state"] in ("ready", "running") and r.get("handoff"):
             readied[r["handoff"]] = readied.get(r["handoff"], 0) + 1
+    nready: dict[str, int] = {}
+    nrun: dict[str, int] = {}
+    for r in rows.values():
+        if r.get("handoff"):
+            if r["state"] == "ready":
+                nready[r["handoff"]] = nready.get(r["handoff"], 0) + 1
+            elif r["state"] == "running":
+                nrun[r["handoff"]] = nrun.get(r["handoff"], 0) + 1
     by: dict[str, dict] = {}
     for n in nodes:
         if not isinstance(n, dict) or not n.get("handoff"):
@@ -346,7 +354,8 @@ def classify_handoffs(graph: dict | None, rows: dict) -> dict:
         state = n.get("state") or "active"
         key = f"handoffs/{state}/{n['handoff']}"
         h = by.setdefault(key, {"handoff": n["handoff"], "id": f"{state}/{str(n['handoff'])[:-3] if str(n['handoff']).endswith('.md') else n['handoff']}",
-                                "open": 0, "classes": set(), "readied_rows": readied.get(key, 0)})
+                                "open": 0, "classes": set(), "readied_rows": readied.get(key, 0),
+                                "ready_rows": nready.get(key, 0), "running_rows": nrun.get(key, 0)})
         tier = (n.get("priority_basis") or {}).get("tier")
         if not n.get("open"):
             continue

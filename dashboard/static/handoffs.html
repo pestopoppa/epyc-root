@@ -1371,7 +1371,9 @@ async function loadGraph(){
   const ring=(c,dash,w)=>sv(18,18,`<circle cx="9" cy="9" r="6.5" fill="none" stroke="${c}" stroke-width="${w||1.8}"${dash?` stroke-dasharray="${dash}"`:""}/>`);
   grp("Activity ring",Object.keys(PACT).filter(k=>PACT[k]).map(k=>
     item(ring(PACT[k][0],PACT[k][1]==="none"?"":PACT[k][1],k==="working"?2.6:1.8),PACT[k][2]+(k==="working"?" + engine badge":""))).join("")
-    +item(ring(GR,"4 2.5",2),"file in handoffs/blocked/"));
+    +item(ring(GR,"4 2.5",2),"file in handoffs/blocked/")
+    +item(sv(24,14,`<text x="1" y="11" font-size="10" font-weight="700" fill="#3fb950">\u25B6N</text>`),"N ready rows (dry run PASS) waiting for compute")
+    +item(sv(14,14,`<circle cx="7" cy="7" r="3.5" fill="#ffd33d"><animate attributeName="opacity" values="1;0.25;1" dur="1.4s" repeatCount="indefinite"/></circle>`),"row(s) running now"));
   const hasReadiness = g.nodes.some(n=>typeof n.readiness==="string");
   let cnt;
   if(hasReadiness){ const rc=g.readiness_counts||{};
@@ -1512,6 +1514,11 @@ async function loadGraph(){
         else m=svgEl("circle",{cx:mx,cy:my,r:q});
         m.setAttribute("fill",cl[0]); m.setAttribute("stroke","#0d1117"); m.setAttribute("stroke-width",0.8);
         c.appendChild(m); }
+      if(pi.ready_rows>0){ const t=svgEl("text",{x:it.x-it.r*0.85,y:it.y-it.r*0.85,"text-anchor":"end",
+          "font-size":9,"font-weight":700,fill:"#3fb950","pointer-events":"none"});
+        t.textContent="\u25B6"+pi.ready_rows; c.appendChild(t); }
+      if(pi.running_rows>0){ const d=svgEl("circle",{cx:it.x+it.r*0.85,cy:it.y+it.r*0.85,r:3.2,fill:"#ffd33d","pointer-events":"none"});
+        d.appendChild(svgEl("animate",{attributeName:"opacity",values:"1;0.25;1",dur:"1.4s",repeatCount:"indefinite"})); c.appendChild(d); }
       const ac=PACT[pi.activity];
       if(ac){ const rg=svgEl("circle",{cx:it.x,cy:it.y,r:it.r+5.5,fill:"none",stroke:ac[0],
           "stroke-width":pi.activity==="working"?2.4:1.6,"pointer-events":"none"});
@@ -1551,7 +1558,7 @@ async function loadGraph(){
         `<span class="tid">${n.id} &middot; ${n.domain}</span><br><b>${n.track}</b>`
         + `<div class="tmeta">${n.closed}/${(n.open||0)+(n.closed||0)} done`
         + (n.readiness?` · ${n.readiness}${(n.blocked_by&&n.blocked_by.length)?" on "+n.blocked_by.join(", "):""}`:"")
-        + (pi?` &middot; blocker: <b>${pi.class}</b> &middot; ${pi.activity}${pi.engine?" ("+pi.engine+")":""}`:"")
+        + (pi?` &middot; blocker: <b>${pi.class}</b> &middot; ${pi.activity}${pi.engine?" ("+pi.engine+")":""}`+(pi.ready_rows||pi.running_rows?` &middot; <b>${pi.ready_rows||0} ready rows, ${pi.running_rows||0} running</b>`:""):"")
         + (typeof n.priority==="number"?prioTip(n,g.nodes.length):"")
         + (typeof n.steps_since_tick==="number"?` &middot; ${n.steps_since_tick} steps since last tick`:"")
         + `<br>upstream ${up.size} &middot; downstream ${down.size}</div>`
