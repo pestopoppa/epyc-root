@@ -1,0 +1,7 @@
+rc=75 time=2026-11-02T11:08:05Z reason=disk-floor
+job_id=inf70-cls-rect-live-20261101
+owner=handoff-cpu-decode-roofline
+step=job-run
+estimated_wall_s=3600
+started=2026-11-02T10:03:25Z
+regions=0-95
