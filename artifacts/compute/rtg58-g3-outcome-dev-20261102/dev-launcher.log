@@ -1,0 +1,11 @@
+[region-lock] acquiring regions ['q3'] as role='bench' (timeout_s=60.0) …
+[region-lock] held ['q3'] after 0.0s wait; running: sudo nsenter -t 1 -m -- setpriv --reuid 1000 --regid 1000 --init-groups /mnt/raid0/llm/tmp/kv-prefix-fork/rtg58-g3-outcomes-run-20261102/run-dev.sh
+warning: no usable GPU found, --gpu-layers option will be ignored
+warning: one possible reason is that llama.cpp was compiled without GPU support
+warning: consult docs/build.md for compilation instructions
+0.00.170.771 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+[1/1] leval-meeting:8:1 all-inject r=1.000 mean KL=0.0000e+00 top1=1.0000 hits=0 (68185 ms)
+[1/1] leval-meeting:8:1 none       r=0.000 mean KL=1.9204e-01 top1=0.9104 hits=2 (3809 ms)
+[1/1] leval-meeting:8:1 kdev       r=0.273 mean KL=6.4863e-02 top1=0.9552 hits=2 (13117 ms)
+sanity (all-inject vs reference): max KL=0.000e+00 max NMSE=0.000e+00 top1 misses=0 -> bit-identical
+OK
