@@ -22,7 +22,7 @@ a follow-up, not a blind dot-product rewrite.
 
 The CPU **decode** roofline is exhausted (Qwen3.6-27B Q8 decode @96t = 0.17 IPC, **96.6% of
 cycles memory-stalled** — DRAM-bandwidth-bound, not ALU-bound; see
-[cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md)). That roofline
+[cpu-shape-specialized-gemv-decode.md](../completed/cpu-shape-specialized-gemv-decode.md)). That roofline
 does **NOT** bound **prefill**: prefill is `M>1` GEMM, compute-bound, with a far better
 compute:BW ratio, so SIMD/fusion levers that are dead-on-arrival for decode can actually
 fire during prefill. For **large models at long context** (GLM-5.2 754B, 122B architect,
@@ -463,7 +463,7 @@ operator-approved profile window.
 ## Cross-links / dependencies
 
 - Shares the operator-fusion machinery with the CPU **decode** barrier-fusion lever
-  ([cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md), ~~OP-2 #1 CPU lever~~).
+  ([cpu-shape-specialized-gemv-decode.md](../completed/cpu-shape-specialized-gemv-decode.md), ~~OP-2 #1 CPU lever~~).
   **Correction of fact 2026-09-08 (INF-70 audit): that decode sibling was MEASURED AND REFUTED
   2026-08-27** — gate+up −2.11%, qkv +0.25%, both −0.57%, all four **UNRESOLVED below the 3.21%
   cold-harness A/A p95 floor (MEAS-1/HARNESS-1)**, correctness passed; removing ~50 of ~590

@@ -25,7 +25,7 @@ completed governance history through 2026-06-19 is compacted under
 
 W4 remains active in the [routing and optimization
 index](routing-and-optimization-index.md) and
-[design-backlog triage](design-backlog-triage-2026-07-23.md). The v8
+[design-backlog triage](../completed/design-backlog-triage-2026-07-23.md). The v8
 registration repair (`epyc-orchestrator` `e923a40b`) is current evidence that
 generated priors and consumer probes must stay aligned; it does not complete
 the remaining high-risk consumer migration or waiver-hygiene work.

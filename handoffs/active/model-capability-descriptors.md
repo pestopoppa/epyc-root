@@ -11,7 +11,7 @@
 
 W1-W4 and the W5 planning/freshness work remain landed as summarized in the
 [master handoff index](master-handoff-index.md). The unified-cascade tail is
-still blocked by the [design-backlog triage](design-backlog-triage-2026-07-23.md)
+still blocked by the [design-backlog triage](../completed/design-backlog-triage-2026-07-23.md)
 gate: DAR regret is `0.00%`, below the required `>=5%`, and no operator
 authorization exists for a cascade rollout. Keep that tail gated.
 

@@ -869,7 +869,7 @@ existed. Same session, same shape as rule 3: an unmeasured quantity standing in 
 - **A parse failure is a scoring artifact, and the closed-set arm wins on it.** TD-4's free-form tool-argument arm failed 12/18 — parse/schema failures, not wrong values — against closed-set 18/18 exact (per-argument exact 66 vs 24). Score the failure classes separately or the number reads as a capability gap. ([typed-decision-plane](../handoffs/active/typed-decision-plane.md))
 - **Screening instruments are refused a belief-kernel carrier by design.** The cue sweep and bench reports were explicitly declined: the strict reader refuses them, and revisiting needs a ratified `P-TDP` protocol. ([typed-decision-plane](../handoffs/active/typed-decision-plane.md))
 - **Reviewer truncation was a latent scoring bias on the reward path; fixed 2026-09-17** (orchestrator `9a7181f2`). `ArchitectReviewService.condense_output()` replaces the 500-char prefix cut (`review_service.py`, feeding `all_approved` → memrl reward) with head 60% + tail 40% + an explicit elision marker (config `review_output_max_chars`, default 4000). Same commit deprecated (not removed) the dead `ChatRequest.tools` fields. ([scoring-infra-standardization](../handoffs/active/scoring-infra-standardization.md), [backlog churn](../progress/2026-09/2026-09-17-backlog-churn.md))
-- **The same write-side-before-first-run rule is now standing for GUI-authored workflows (VB-FW-1).** One ClaimTuple per run carries the workflow-document hash, executed node types, each fuzzy node's model pin and question catalogue, and per-gate outcomes with rejection destinations; confidence is recorded and never read by an edge. Filed at design time, not at first run. ([fuzzy-workflow-authoring-gui](../handoffs/active/fuzzy-workflow-authoring-gui.md), [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
+- **The same write-side-before-first-run rule is now standing for GUI-authored workflows (VB-FW-1).** One ClaimTuple per run carries the workflow-document hash, executed node types, each fuzzy node's model pin and question catalogue, and per-gate outcomes with rejection destinations; confidence is recorded and never read by an edge. Filed at design time, not at first run. ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md), [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
 
 ### Open questions
 
@@ -884,7 +884,7 @@ existed. Same session, same shape as rule 3: an unmeasured quantity standing in 
 - [2026-09-17-backlog-churn.md](../progress/2026-09/2026-09-17-backlog-churn.md) — the per-(pin, catalogue) calibration amendment.
 - [scoring-infra-standardization.md](../handoffs/active/scoring-infra-standardization.md) — reviewer truncation, deprecated `/chat` fields.
 - [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — VB-TDP-1 and VB-FW-1.
-- [fuzzy-workflow-authoring-gui.md](../handoffs/active/fuzzy-workflow-authoring-gui.md) — FW-1 L2 and the workflow ClaimTuple.
+- [fuzzy-workflow-authoring-gui.md](../handoffs/completed/fuzzy-workflow-authoring-gui.md) — FW-1 L2 and the workflow ClaimTuple.
 
 ## Compiled Update — 2026-09-17 (research-intake delta: judge redundancy, cost anchors, and citation snapshot discipline)
 
