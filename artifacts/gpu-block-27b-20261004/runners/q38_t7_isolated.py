@@ -135,14 +135,18 @@ def run_pairs(runtime: Runtime, recipes: dict, pairs: list[Pair]) -> dict:
                     response = runtime.request(server, json.loads(warm), 'warm')
                     records.append({'arm': arm, 'key': key, 'kind': 'warm', 'response': response,
                                     'body_sha256': hashlib.sha256(warm).hexdigest()})
-                    if not isinstance(response, dict) or response.get('http_status') != 200:
+                    if (not isinstance(response, dict) or response.get('http_status') != 200
+                            or response.get('error')):
                         raise InvalidRun('warm request failed')
                 if runtime.stopping():
                     raise InvalidRun('STOP before measured request')
                 response = runtime.request(server, json.loads(body), 'measure')
                 records.append({'arm': arm, 'key': key, 'kind': 'measure', 'response': response,
                                 'body_sha256': hashlib.sha256(body).hexdigest()})
-                if not isinstance(response, dict) or response.get('http_status') != 200:
+                if (not isinstance(response, dict) or response.get('http_status') != 200
+                        or response.get('error')
+                        or (json.loads(body).get('stream') is True
+                            and response.get('stream_complete') is not True)):
                     raise InvalidRun('measured request failed')
                 if threshold is not None:
                     timings = response.get('timings')
