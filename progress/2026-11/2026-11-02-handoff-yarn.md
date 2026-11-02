@@ -59,3 +59,7 @@ The corrected fixture preparation reports generation_validation_rc=0 for all 150
 ## 10:23Z — Honor Jet-Long stop before new work
 
 Integrated stop-file checks at keeper admission, server lifecycle and both sides of fixture loading so no new ledger attempt or request starts after a stop. Twenty-six offline tests pass. Descendant cleanup proposal was rejected because detached descendants and leader exit were not handled; in-flight cancellation also remains incomplete. Native entry remains disabled, with no inference or published row.
+
+## 10:25Z — Add Jet-Long build custody verifier
+
+Added an offline build custody packet verifier and tests; the combined Jet-Long prototype suite passes 30 tests. The verifier checks packet paths, hashes, source tree/archive, recorded build statuses and gitlinks, but cannot prove self-reported source-to-build custody. Fixture full reconstruction passed 150 arrays and checksum verification; the packet remains draft pending documented protocol and native prompt_n qualification. Controlled descendant cleanup is not yet sufficient for production. No inference or published row.
