@@ -1,7 +1,7 @@
 """Offline integration seam, not a launcher or a rowflow worker.
 
 A caller must independently bind the actual grant, deadline, synthetic inputs,
-model and executable identities, parent-death containment and CPU environment.
+model and executable identities, process-tree containment and CPU environment.
 This draft does not establish any of those properties and must not be scheduled.
 """
 import math
@@ -11,13 +11,13 @@ import re
 import stat
 import time
 
-from supervisor import supervise
+from contained_supervisor_draft import contained_supervise
 from receipts import write_attempt
 
 
 def run_attempt(*, mode, attempt_id, root, argv, input_bytes, env, deadline_monotonic,
                 cleanup_margin_s, grant_valid, stopped, now=time.monotonic,
-                supervise_fn=supervise, write_fn=write_attempt):
+                supervise_fn=contained_supervise, write_fn=write_attempt):
     """Connect injected grant checks, bounded child supervision and receipts.
 
     The deadline and predicates are caller-supplied and untrusted: no row may
