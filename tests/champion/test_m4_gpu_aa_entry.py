@@ -23,7 +23,7 @@ def fixture():
     sweep = {'question_pool':'/prompts', 'prompt_limit':8, 'prompt_seed':42, 'tier':1, 'threads':8,
              'context_size':65536, 'ubatch_size':512, 'kv_type':'q8_0', 'n_predict':256,
              'warmup_prompts':2, 'warmup_n_predict':32, 'startup_timeout':900, 'request_timeout':900,
-             'port_base':18070, 'extra_server_args':[]}
+             'port_base':18070, 'extra_server_args':[], 'no_mlock':True,'no_ttft':True,'allow_host_health_warning':True}
     cell = {'role':'critic','arm':'BASELINE','source_commit':'c5','model':'/model', 'recipe':{},
             'argv':['/bin/server','-m','/model'], 'environment':{},'device':'gpu0','np':4,
             'files':{'binary':{'path':'/bin/server','sha256':'a'},'model':{'path':'/model','sha256':'b'},'prompt':{'path':'/prompts','sha256':'c'}},
