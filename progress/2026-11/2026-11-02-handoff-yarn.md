@@ -67,3 +67,7 @@ Added an offline build custody packet verifier and tests; the combined Jet-Long 
 ## 10:26Z — Validate keeper CPU allocation and preserve fixture protocol
 
 Integrated strict CPU-list and dry-run flag validation into draft keeper admission; 31 offline tests pass. Preserved the fixture protocol draft with exact hashes and disclosed raw-token construction, shared-haystack seed overlap and unverified native prompt_n; it is not yet registered or authorized for inference. Native entry remains disabled. No inference or published row.
+
+## 10:28Z — Prepare Jet-Long prompt-count evaluator
+
+Added offline evaluator for a proposed short numeric prompt preflight; it rejects missing or invalid counts, nonzero cache, truncation and token-count mismatch. Thirty-three prototype tests pass. The 2048-token probe does not establish 300K/524K prompt counts. Current publish_row.py immediately invokes a real dry-run in the caller, conflicting with the explicit no-compute/no-qualification instruction; no publisher was invoked. A2 and DCA GPU preparation and CPU entry work have registered outcome events.
