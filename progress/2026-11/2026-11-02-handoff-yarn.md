@@ -43,3 +43,7 @@ Recorded the SHA-256 model identity outside a grant. Concurrent upstream changes
 ## 10:16Z — Integrate Jet-Long runtime provenance checks
 
 Integrated provenance checks into the CPU Jet-Long prototype: small artifact hashes are verified before launch and the captured server PID mappings are checked at startup and around requests. Fifteen offline tests pass. This does not prove source-to-build identity, model custody or descendant cleanup; the keeper coordinator still refuses native execution and no row was published. Independent preparation of those remaining steps is registered for follow-up.
+
+## 10:18Z — Implement Jet-Long draft keeper admission
+
+Integrated the deliberately disabled Jet-Long coordinator and keeper-envelope admission checks; all 20 offline tests pass. The coordinator validates deadline, allocation, stop-file and dry-run output envelope and atomically writes its result. Native entry remains refused pending in-flight stop handling, descendant cleanup, source/build and model custody, sealed fixtures, timing and keeper qualification. No inference or row published.
