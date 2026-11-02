@@ -657,13 +657,14 @@ KPF-22..24 and KPF-26 need P1 live.
   `CachingBackend.infer`/`_pin_slots_enabled` (`src/inference/prefix_cache.py`), `scout_stage.py` dispatch,
   `parallel_step_executor.compute_waves`, `typed_decisions/fanout_policy.py` and `routes/delegate.py`. Add grep for
   member-call paths. Report the risks.
-- [ ] **KPF-21: trunk-first fan-out.** Wherever N children share a trunk (scouting `scout_stage.py`, HS-19
+- [x] **KPF-21: trunk-first fan-out.** Wherever N children share a trunk (scouting `scout_stage.py`, HS-19 ✅ 2026-11-02 [belief: cc]
   scheduled dispatch, `parallel_step_executor` waves, `routes/delegate.py`), issue the trunk once: either the parent
   turn itself, or a prefill-only request with `max_tokens: 0` and `checkpoint_at: [len(trunk)]` once KPF-15 exists.
   Release the children after its prefill completes. This fixes the cold start #26204 measured, where built-in reuse
   found 0 cached tokens.
   - *(2026-10-20, operator session.)* Scout path done on `feat/rtg58-kpf21-25-20261020` (`6d631212`, `a572338d`, pushed, NOT merged to epyc-orchestrator main): `src/inference/trunk_prefill.py` sends one `max_tokens: 0` trunk request with `checkpoint_at` before the gate releases held siblings, behind `ORCHESTRATOR_PREFIX_INDEX` + `ORCHESTRATOR_PREFIX_INDEX_FORK` and `/props.slot_fork`; `tests/unit/test_kpf21_25_trunk.py` asserts `checkpoint_at` is sent before release. Not wired: `llm_call` delegate waves (no per-site payload hook). This box stays open until the branch is merged and the delegate-wave path is wired or recorded as not wired.
     - *(Correction 2026-10-21.)* The 'NOT merged' above is stale: `a572338d` is an ancestor of epyc-orchestrator `origin/main` (merge `73cabf8c`, 2026-10-20 19:42Z; verified with `git merge-base --is-ancestor a572338d origin/main`). The scout path is merged and stays flag-gated OFF (INDEX and FORK flags). What keeps this box open is only the `llm_call` delegate-wave wiring (or recording it as not wired); the enable path is KPF-26 / KPF-26.1 / KPF-27d.
+  - *(2026-11-02, source check.)* On orchestrator `origin/main` `488b31c96c6c148768508b3dcaefcb6c4c297664`, delegate waves remain **not wired** for trunk-first prefill: `routes/delegate.py` passes the primitives to `parallel_step_executor`, whose wave dispatch calls `llm_call` without a trunk-prefill or `checkpoint_at` hook. The scout path remains wired in `scout_stage.py`; enablement and live behavior remain the separate KPF-26/KPF-27d work. This records the explicit alternative closure for this box, not a claim that delegate waves benefit.
 - [ ] **KPF-22: LPM ordering in the admission queue.** Add a bounded longest-prefix-match bypass (at most one skip
   per waiter, FCFS no-starvation kept) using KVU-15c's `fp_history` match length.
   - **This is KVU-6's second bullet and INF-05 KV-3's lever.** Implement it here once. KVU-6's and KV-3's owners
