@@ -35,3 +35,7 @@ Reviewed the draft C5-12 patch: it implements deterministic three-of-five select
 ## 00:31Z — Review and preserve S3-INF03-01 campaign-contract patch
 
 Consumed panel-contract.done and reviewed artifacts/agentic-rocm/s3-panel-contract.patch. The patch states that the eight-arm panel compares whole agents, its starting-state control has no actor or greedy search, and greedy fixed-actor selection is a separate triggered study. Independently confirmed git apply --check passes against the inspected research tree. Preserved the patch in this lane; S3-INF03-01 remains open because the research contract itself has not been modified. No GPU work or new performance claim.
+
+## 00:33Z — Validate and preserve standalone C5-12 selection draft
+
+Reviewed and preserved artifacts/agentic-rocm/c5-12.patch, a standalone deterministic three-of-five proposal selector. git apply --check passes against the inspected research tree; an isolated application passes three focused unit tests (selection, tie handling, and invalid inputs). It is not integrated into a controller and does not implement the model split, findings digest, or prediction test, so C5-12 remains open. GitNexus impact could not resolve the new symbol because the lane is unindexed and repository selection is ambiguous; no target source was modified. No inference row was published.

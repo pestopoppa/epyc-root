@@ -1,0 +1,16 @@
+diff --git a/ggml/src/ggml-cuda/quantize.cu b/ggml/src/ggml-cuda/quantize.cu
+index af7fe105b6..b873ec480e 100644
+--- a/ggml/src/ggml-cuda/quantize.cu
++++ b/ggml/src/ggml-cuda/quantize.cu
+@@ -40,7 +40,10 @@ static __global__ void quantize_q8_1(
+     sum  = warp_reduce_sum<QK8_1>(sum);
+ 
+     const float  d = amax / 127.0f;
+-    const int8_t q = amax == 0.0f ? 0 : roundf(xi / d);
++    float id = iqs == 0 && amax != 0.0f ? 1.0f / d : 0.0f;
++    const int src_lane = (threadIdx.x % WARP_SIZE) & ~(QK8_1 - 1);
++    id = __shfl_sync(0xFFFFFFFF, id, src_lane, WARP_SIZE);
++    const int8_t q = roundf(xi * id);
+ 
+     y[ib].qs[iqs] = q;
+ 
