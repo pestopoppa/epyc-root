@@ -924,7 +924,14 @@ def cmd_corrections(args) -> int:
     for r in rows[:args.limit]:
         human.append(f"  {r.entry_id}  citations={r.citations}  claims={len(r.claim_ids)}"
                      + (f"  copies={r.copies}" if r.copies > 1 else ""))
-    _emit({"pending": len(rows), "rows": [r.as_dict() for r in rows]}, args.json, "\n".join(human))
+    # KT-2: quote-hashed contradiction pairs share this queue; they are listed, never resolved here.
+    from contradiction_gate import pending as pending_contradictions  # noqa: PLC0415
+    contra = pending_contradictions()
+    human.append(f"{len(contra)} pending contradiction(s) awaiting operator adjudication")
+    for c in contra[:args.limit]:
+        human.append(f"  {c['id']}  {c['a']['path']}:{c['a']['line']}  <>  {c['b']['path']}:{c['b']['line']}")
+    _emit({"pending": len(rows), "rows": [r.as_dict() for r in rows],
+           "contradictions": contra}, args.json, "\n".join(human))
     return 0
 
 

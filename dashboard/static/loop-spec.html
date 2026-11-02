@@ -1,0 +1,32 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EPYC — Loop spec</title>
+<style>body{background:#0d1117;color:#c9d1d9;font:14px system-ui;margin:24px;max-width:1300px}a{color:#60a5fa}h2{border-bottom:1px solid #30363d;padding-bottom:4px;margin-top:28px}table{border-collapse:collapse;width:100%;margin:10px 0}th,td{padding:6px 8px;border-bottom:1px solid #30363d;text-align:left;vertical-align:top}th{color:#8b949e}code{font-size:12px;color:#e6edf3}.note{color:#f0c088;background:#2b1d12;padding:10px}.err{color:#fca5a5;background:#3b1212;padding:10px}.fresh{color:#8b949e;font-size:12px}.chip{display:inline-block;padding:1px 6px;border-radius:8px;font-size:11px;background:#30363d}.k-fail,.k-park{background:#5a1e1e}.k-pause,.k-wait,.k-yield{background:#3b2f12}.k-done{background:#123b24}.k-alert,.k-refuse{background:#3b1d4a}.diagram{background:#161b22;border:1px solid #30363d;padding:12px;overflow-x:auto}pre.src{white-space:pre-wrap;font-size:11px}</style>
+<h1>Loop spec</h1>
+<!-- RTG-47: the ONE shared nav, rendered from dashboard/registry.json. -->
+<nav id="epyc-nav"></nav>
+<script defer src="/nav.js"></script>
+<p class="note">Typed loop specs (<code>epyc.loop_spec.v1</code>) derived from the loop's code; every threshold names the constant it mirrors and <code>tests/test_loop_spec.py</code> fails when the code moves. Read-only. Data: <a href="/api/loop_spec">/api/loop_spec</a> · probe <a href="/api/loop_spec/health">/api/loop_spec/health</a>.</p>
+<div id="fresh" class="fresh">Loading…</div><div id="out"></div>
+<script>
+(async()=>{
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let mermaid=null;
+try{mermaid=(await import('https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.esm.min.mjs')).default;mermaid.initialize({startOnLoad:false,theme:'dark',securityLevel:'strict'});}catch(e){mermaid=null}
+const out=document.querySelector('#out');
+let d;try{d=await (await fetch('/api/loop_spec')).json()}catch(e){out.innerHTML=`<p class=err>/api/loop_spec unreachable: ${esc(e)}</p>`;return}
+const f=d._freshness||{};
+document.querySelector('#fresh').textContent=`freshness: ${f.staleness_class||f.reporting||'?'} · source ${f.source||'—'} · age ${f.age_s!=null?Math.round(f.age_s/3600)+' h':'—'}${f.detail?' · '+f.detail:''}`;
+let html='';
+for(const p of d.problems||[])html+=`<p class=err>${esc(p.path)}: ${esc(p.error)} — not drawn.</p>`;
+if(!(d.specs||[]).length&&!(d.problems||[]).length)html+=`<p class=err>No loop spec found (${esc(f.absence_means||'')})</p>`;
+for(const s of d.specs||[]){if((s._errors||[]).length)continue;
+ html+=`<h2>${esc(s.title)} <span class=chip>${esc(s.loop_id)}</span></h2><p>${esc(s.summary)}</p><p class=fresh>spec <code>${esc(s._path)}</code> · canonical doc <code>${esc(s.canonical_doc)}</code> · revised ${esc(s.spec_revised)}</p>`;
+ for(const m of s.machines){
+  html+=`<h3>${esc(m.title)}</h3><p class=fresh>actor: ${esc(m.actor)} · cadence: ${esc(m.cadence||'—')} · code: ${m.code.map(c=>`<code>${esc(c)}</code>`).join(', ')}</p><div class=diagram data-src="${esc(m.mermaid)}"><pre class=src>${esc(m.mermaid)}</pre></div>`;
+  html+=`<details><summary>${m.states.length} states · ${m.transitions.length} transitions</summary><table><tr><th>state</th><th>kind</th><th>meaning</th></tr>${m.states.map(x=>`<tr><td><code>${esc(x.id)}</code></td><td><span class="chip k-${esc(x.kind)}">${esc(x.kind||'')}</span></td><td>${esc(x.meaning)}</td></tr>`).join('')}</table><table><tr><th>from → to</th><th>on</th><th>log</th><th>reason</th><th>thresholds</th></tr>${m.transitions.map(t=>`<tr><td><code>${esc(t.from)} → ${esc(t.to)}</code></td><td>${esc(t.on)}</td><td><code>${esc(t.log||'')}</code></td><td>${esc(t.reason||'')}</td><td>${esc((t.thresholds||[]).join(', '))}</td></tr>`).join('')}</table></details>`;}
+ html+=`<h3>Named stop / park reasons</h3><table><tr><th>reason</th><th>kind</th><th>machine</th><th>condition</th><th>artifact</th><th>clears when</th></tr>${s.stop_reasons.map(r=>`<tr><td><code>${esc(r.id)}</code></td><td><span class="chip k-${esc(r.kind)}">${esc(r.kind)}</span></td><td>${esc(r.machine)}</td><td>${esc(r.condition)}</td><td><code>${esc(r.artifact||'')}</code></td><td>${esc(r.clears_when||'')}</td></tr>`).join('')}</table>`;
+ html+=`<h3>Thresholds</h3><table><tr><th>id</th><th>value</th><th>unit</th><th>source (code-checked)</th><th>meaning</th></tr>${s.thresholds.map(t=>`<tr><td><code>${esc(t.id)}</code></td><td>${esc(t.value)}</td><td>${esc(t.unit)}</td><td><code>${esc(t.source)}</code></td><td>${esc(t.meaning||'')}</td></tr>`).join('')}</table>`;}
+out.innerHTML=html;
+if(mermaid){let i=0;for(const el of document.querySelectorAll('.diagram')){try{const {svg}=await mermaid.render('lsd'+(i++),el.dataset.src);el.innerHTML=svg}catch(e){el.insertAdjacentHTML('afterbegin',`<p class=err>diagram render failed: ${esc(e.message||e)}</p>`)}}}
+else for(const el of document.querySelectorAll('.diagram'))el.insertAdjacentHTML('afterbegin','<p class=fresh>Mermaid CDN unreachable — showing the diagram source.</p>');
+})();
+</script>

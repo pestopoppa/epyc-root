@@ -1,0 +1,48 @@
+{
+  "artifacts": [
+    {
+      "arm": "controlled-q2-k",
+      "attempt_id": "2ef733657cfc459191c544e87bdcdbc3",
+      "bytes": 705431072,
+      "command": [
+        "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/llama-quantize",
+        "/mnt/raid0/llm/models/dflash/df2-11-20261101/Qwen3.8-27B-DFlash2-BF16.gguf",
+        "/mnt/raid0/llm/tmp/h-df2-11-controlled-q2-r2-20261102/outputs/scheduled/Qwen3.8-27B-DFlash2-controlled-Q2_K.gguf.part",
+        "Q2_K",
+        "24"
+      ],
+      "current_attempt_id": "2ef733657cfc459191c544e87bdcdbc3",
+      "ended_unix": 1793581871.9776766,
+      "launch_id": "8943636ad4fb4c049e6cb4bf934d02c1",
+      "mapped_ggml_llama_paths": [
+        "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libggml-base.so.0.16.0",
+        "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libggml-cpu.so.0.16.0",
+        "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libggml.so.0.16.0",
+        "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libllama-common.so.0.0.10419",
+        "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libllama-quantize-impl.so",
+        "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libllama.so.0.0.10419"
+      ],
+      "path": "/mnt/raid0/llm/tmp/h-df2-11-controlled-q2-r2-20261102/outputs/scheduled/Qwen3.8-27B-DFlash2-controlled-Q2_K.gguf",
+      "provenance": {
+        "arm": "controlled-q2-k",
+        "build_commit": "c72ec82f5417bb2937310326120f149b665e8400",
+        "contract_sha256": "954397eb7620ecb8cb7cabcd87ce8a4b252f55da9cb4f377c1f54ff6ec3a021c",
+        "map_sha256": "bc569174dbfa08eed7a077401c4212d3e99f1d9de40aa79e9480237ecafb84be",
+        "source_sha256": "26af33a15b21475d668e4ee55639beea49932e7360b1144c6282721bcd127c14"
+      },
+      "quantizer_pid": 3576778,
+      "reused_verified_artifact": false,
+      "run_mode": "scheduled",
+      "scientific_measurement": false,
+      "sha256": "bbbcd5b66b571f438ff2018184648e37211a1d82c492d32834af2da2c7193755",
+      "started_unix": 1793581867.5406826,
+      "status": "QUANTIZED",
+      "verified_unix": 1793581872.512311
+    }
+  ],
+  "attempt_id": "2ef733657cfc459191c544e87bdcdbc3",
+  "df2_11_complete": false,
+  "launch_id": "8943636ad4fb4c049e6cb4bf934d02c1",
+  "scientific_measurement": false,
+  "status": "GENERATED"
+}

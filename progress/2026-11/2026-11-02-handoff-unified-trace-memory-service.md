@@ -31,3 +31,15 @@ Consumed LB2, RRF and catalog completion reports. LB2 source edits stopped: stal
 ## 00:21Z — Record independent prototype review findings
 
 Independent review found RRF prototype issues: silent top_k truncation, host-specific test paths, unsafe SQLite URI escaping and unspecified provider build ordering. Catalog prototype review found session_id is ignored, so the entire DB must be model-safe; comparison lacks capture/source identity binding and duplicate names collapse, and no real navigation or WAL behavior was tested. Both prototypes remain unaccepted and require fixes. LB2 alternative review found a module-local source string avoids editing the HIGH-impact EventSource but does not satisfy the explicit handoff requirement; validate timestamps before INSERT OR IGNORE and detect changed-content projection-line collisions. Review files are registered as events for the next task boundary. The prior push was rejected by a concurrent origin/main advance; merged and retrying.
+
+## 00:21Z — Address independent prototype reviews
+
+Consumed all three independent reviews. Requested RRF fixes for budget truncation, portable test paths, SQLite URI escaping and deterministic provider build order. Requested catalog fixes for ignored session_id privacy scope, empty/duplicate inventories, inventory identity binding and real synthetic navigation testing where safe. Requested an interim private projector importer using a module-local source name, validated timestamps and changed-content collision handling, without editing HIGH-impact EventSource. This interim path does not satisfy the explicit EventSource requirement; UTM-LB2.2 remains open. Each bounded job writes a dispatcher event; no compute or inference row was launched.
+
+## 00:22Z — Document catalog prototype privacy scope
+
+Reviewed and retained the catalog README privacy clarification: session_id is ignored and the whole selected database must be safe for the model. The README explicitly records outstanding catalog validation and SQLite limitations. Runtime fixes were not made: the lane is unindexed and the host denied GitNexus reindex CPU admission. The other bounded remediation jobs continue; previous wrapper push was rejected after origin/main advanced and the lane has been merged for retry.
+
+## 00:22Z — Preserve RRF review fixes
+
+Consumed RRF and catalog remediation results. RRF prototype now refuses top_k beyond candidate depth, uses configurable test checkout, deterministic provider build order and declared tie policy, and safe URI handling with explicit rejection of ?/# paths affected by existing trace navigation. Agent reports four synthetic tests and git apply --check passed; independent review is registered. It remains unwired and has no real vector provider or experimental provenance. Catalog runtime remediation remains pending because lane indexing was refused by host CPU admission; privacy documentation is already committed. An independent read-only trace URI assessment is registered. Interim LB2 work is separately awaiting its completion event. No inference or row publication.
