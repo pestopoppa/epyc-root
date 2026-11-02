@@ -79,3 +79,7 @@ The P4 validator and response classifier landed at 5d2fd6ceea8d258d93c226bef3db9
 ## 10:31Z — Implement and review an isolated default-disabled P4 trial sequence guard.
 
 The isolated sequence guard requires explicit ordered operations, stops before later callbacks on any non-success or exception and preserves response evidence. Fourteen model-free P4 tests pass; no production integration, control-plane operation, rollback or promotion is implemented. P4-1 remains open.
+
+## 10:33Z — Prepare the P5 scorer binding to include regression-test expectations.
+
+P5 input binding currently records FAIL_TO_PASS but does not bind PASS_TO_PASS, leaving regression expectations mutable. A bounded binder correction and tests were delegated; completion triggers the registered review event. P2 stress duty cycle remains unmeasured: the 33 historical AutoPilot journal entries are trial events rather than continuous stress intervals. No inference, restart or live changes.
