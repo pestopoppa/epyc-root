@@ -97,6 +97,25 @@ def publish_native(drydir,result,record):
   finally:os.unlink(temp,dir_fd=fd)
  finally:os.close(fd)
 
+def full_terminal(outputs):
+ """Decide completeness only from two successful native arm records."""
+ a=outputs.get('hybrid');b=outputs.get('legacy')
+ valid=bool(a and b and a.get('http_status')==200 and b.get('http_status')==200
+            and a.get('acceptance') is not None and b.get('acceptance') is not None
+            and a.get('tokens') is not None and b.get('tokens') is not None)
+ div=None
+ if valid:
+  aa=a['tokens'];bb=b['tokens']
+  div=next((i for i,(x,y) in enumerate(zip(aa,bb)) if x!=y),None)
+  if div is None and len(aa)!=len(bb):div=min(len(aa),len(bb))
+ state='complete_raw' if valid else 'incomplete_raw'
+ return {'partial':not valid,'state':state,'first_divergence_index':div,
+         'divergence_known':valid,'hybrid_http_status':a.get('http_status') if a else None,
+         'legacy_http_status':b.get('http_status') if b else None,
+         'hybrid_acceptance':a.get('acceptance') if a else None,
+         'legacy_acceptance':b.get('acceptance') if b else None,
+         'verdict':None,'control_no_mtp':False}
+
 def grant_context(env, plan):
  """Validate a real grant or keeper smoke and isolate its output path."""
  dry=env.get('FILLER_DRYRUN','0')=='1'
@@ -145,8 +164,14 @@ def main():
   if mode in ('full','qualification'):cmd=['numactl','--interleave=all',*cmd,'--no-mmap','--spec-draft-model',DRAFT,'--spec-draft-type-k','f16','--spec-draft-type-v','f16']
   env={'PATH':'/usr/bin:/bin','LD_LIBRARY_PATH':str(K),'OMP_NUM_THREADS':'1','HIP_VISIBLE_DEVICES':'-1','ROCR_VISIBLE_DEVICES':'-1'}
   if arm['GGML_FA_VKQ_F16']:env['GGML_FA_VKQ_F16']=arm['GGML_FA_VKQ_F16']
-  log=os.fdopen(os.open(out/(name+'.server.log'),os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600),'wb');launch_cmd=[sys.executable,'-B',str(D/'pdeath_exec.py'),str(os.getpid()),*cmd];p=subprocess.Popen(launch_cmd,stdout=log,stderr=subprocess.STDOUT,env=env);birth=pathlib.Path('/proc',str(p.pid),'stat').read_text().rsplit(') ',1)[1].split()[19]
-  atom(out/(name+'.server.json'),{'arm':name,
+  log=os.fdopen(os.open(out/(name+'.server.log'),os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600),'wb');launch_cmd=[sys.executable,'-B',str(D/'pdeath_exec.py'),str(os.getpid()),*cmd]
+  try:p=subprocess.Popen(launch_cmd,stdout=log,stderr=subprocess.STDOUT,env=env)
+  except BaseException:
+   log.close();raise
+  birth=None
+  try:
+   birth=pathlib.Path('/proc',str(p.pid),'stat').read_text().rsplit(') ',1)[1].split()[19]
+   atom(out/(name+'.server.json'),{'arm':name,
    'mode':mode,
    'argv':cmd,
    'launch_argv':launch_cmd,
@@ -164,7 +189,6 @@ def main():
    'draft_head_sha256':'5ff54097406a905cf3a724c709124ceb0e3e10235ee862298969e91c96fa96e6' if mode=='full' else None,
    'cpu_affinity':sorted(os.sched_getaffinity(0)),
    'started_epoch':time.time()})
-  try:
    url=f'http://127.0.0.1:{port}';ready=False;limit=time.monotonic()+1800
    while time.monotonic()<limit and p.poll() is None and not stopping():
     try:
@@ -197,11 +221,18 @@ def main():
    except Exception as e:atom(out/(name+'.failure.json'),{'reason':'bad_native_json','error':repr(e)});continue
    timings=body.get('timings') or {};draft=timings.get('draft_n');accepted=timings.get('draft_n_accepted');tokens=body.get('tokens');result={'arm':name,'http_status':state['http_status'],'native_response':body,'response_sha256':hashlib.sha256(state['raw'].encode()).hexdigest(),'draft_n':draft,'draft_n_accepted':accepted,'acceptance':mode_guard.native_acceptance(draft,accepted),'tokens':mode_guard.token_ids(tokens),'grant_sha256':hashlib.sha256(grant).hexdigest() if grant else None,'finished_epoch':time.time()};atom(out/(name+'.response.json'),result);outputs[name]=result
   finally:
-   if p.poll() is None:
-    p.send_signal(signal.SIGTERM)
-    try:p.wait(10)
-    except subprocess.TimeoutExpired:p.kill();p.wait()
-   log.close();atom(out/(name+'.drain.json'),{'pid':p.pid,'birth':birth,'returncode':p.returncode,'drained':p.poll() is not None,'server_log_sha256':sha(out/(name+'.server.log'))})
+   try:
+    if p.poll() is None:
+     try:p.send_signal(signal.SIGTERM)
+     except ProcessLookupError:pass
+     try:p.wait(10)
+     except subprocess.TimeoutExpired:
+      try:p.kill()
+      except ProcessLookupError:pass
+      p.wait(10)
+    if p.poll() is None:raise RuntimeError('captured server did not exit')
+   finally:log.close()
+   atom(out/(name+'.drain.json'),{'pid':p.pid,'birth':birth,'returncode':p.returncode,'drained':True,'server_log_sha256':sha(out/(name+'.server.log'))})
  if mode=='qualification':
   a=outputs.get('hybrid')
   if not a or a.get('http_status')!=200 or a.get('acceptance') is None or a.get('tokens') is None:raise RuntimeError('qualification control failed or native MTP counts/token IDs invalid')
@@ -210,9 +241,6 @@ def main():
   if stopping():raise RuntimeError('grant lost before native result publication')
   publish_native(os.environ['FILLER_DRYRUN_DIR'],native_result,control)
   return 0
- a=outputs.get('hybrid');b=outputs.get('legacy');div=None
- if a and b and a['acceptance'] is not None and b['acceptance'] is not None and a['tokens'] is not None and b['tokens'] is not None:
-  aa=a['tokens'];bb=b['tokens'];div=next((i for i,(x,y) in enumerate(zip(aa,bb)) if x!=y),None)
-  if div is None and len(aa)!=len(bb):div=min(len(aa),len(bb))
- state='complete_raw' if len(outputs)==2 else 'incomplete_raw';atom(out/'TERMINAL.json',{'partial':state!='complete_raw','state':state,'first_divergence_index':div,'divergence_known':bool(a and b and a['acceptance'] is not None and b['acceptance'] is not None and a['tokens'] is not None and b['tokens'] is not None),'hybrid_acceptance':a['acceptance'] if a else None,'legacy_acceptance':b['acceptance'] if b else None,'verdict':None,'control_no_mtp':False});emit({'kind':'target_terminal','state':state,'terminal_path':str(out/'TERMINAL.json')});return 0 if state=='complete_raw' else 1
+ terminal=full_terminal(outputs);state=terminal['state']
+ atom(out/'TERMINAL.json',terminal);emit({'kind':'target_terminal','state':state,'terminal_path':str(out/'TERMINAL.json')});return 0 if state=='complete_raw' else 1
 if __name__=='__main__':sys.exit(main())

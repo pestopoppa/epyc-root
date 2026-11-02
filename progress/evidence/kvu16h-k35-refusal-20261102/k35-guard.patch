@@ -29,10 +29,58 @@
 +
 @@ -673,0 +689 @@
 +    scenario = dedicated_no_draft(scenario)
-@@ -997 +1013 @@
+@@ -954 +970,32 @@
+-def wait_for_health(port: int, timeout_s: int) -> None:
++def process_birth(pid: int) -> int:
++    raw = Path(f"/proc/{pid}/stat").read_text(encoding="ascii")
++    return int(raw.rsplit(") ", 1)[1].split()[19])
++
++
++def owns_loopback_listener(pid: int, birth: int, port: int) -> bool:
++    """Prove this captured process holds the loopback listener, at this instant."""
++    proc = Path(f"/proc/{pid}")
++    if process_birth(pid) != birth:
++        return False
++    inodes = set()
++    for fd in (proc / "fd").iterdir():
++        try:
++            target = os.readlink(fd)
++        except FileNotFoundError:
++            continue
++        match = re.fullmatch(r"socket:\[(\d+)\]", target)
++        if match:
++            inodes.add(match.group(1))
++    local = f"0100007F:{port:04X}"
++    with (proc / "net" / "tcp").open(encoding="ascii") as tcp:
++        next(tcp, None)
++        for line in tcp:
++            fields = line.split()
++            if len(fields) < 10:
++                raise ValueError("malformed TCP table")
++            if fields[1].upper() == local and fields[3] == "0A" and fields[9] in inodes:
++                return process_birth(pid) == birth
++    return False
++
++
++def wait_for_health(port: int, timeout_s: int, proc: subprocess.Popen[str], birth: int) -> None:
+@@ -958,0 +1006,2 @@
++        if proc.poll() is not None:
++            raise RuntimeError("captured server exited before health")
+@@ -960,3 +1009,4 @@
+-            with urllib.request.urlopen(url, timeout=2) as response:
+-                if response.status == 200:
+-                    return
++            if owns_loopback_listener(proc.pid, birth, port):
++                with urllib.request.urlopen(url, timeout=2) as response:
++                    if response.status == 200 and owns_loopback_listener(proc.pid, birth, port):
++                        return
+@@ -966 +1016 @@
+-    raise TimeoutError(f"server on port {port} did not become healthy: {last_error}")
++    raise TimeoutError(f"captured server on port {port} did not become healthy: {last_error}")
+@@ -997 +1047 @@
 -    if scenario.request_spec_n_max is not None:
 +    if scenario.request_spec_n_max not in (None, 0):
-@@ -1249,0 +1266,9 @@
+@@ -1249,0 +1300,9 @@
 +    if scenario.request_spec_n_max == 0:
 +        # The caller may bypass build_plan and supply an arbitrary server argv.
 +        # Reconstruct the exact safe command before any file or process starts.
@@ -42,3 +90,55 @@
 +        )
 +        if cell["server_argv"] != canonical:
 +            raise ValueError("prebuilt no-draft server command differs from the dedicated command")
+@@ -1279 +1338,2 @@
+-        wait_for_health(cell["port"], args.startup_timeout)
++        birth = process_birth(proc.pid)
++        wait_for_health(cell["port"], args.startup_timeout, proc, birth)
+@@ -1286,0 +1347,2 @@
++        if proc.poll() is not None or not owns_loopback_listener(proc.pid, birth, cell["port"]):
++            raise RuntimeError("captured server no longer owns the listener")
+@@ -1304,0 +1367,2 @@
++        result["server_no_draft"] = scenario.request_spec_n_max == 0
++        result["server_birth_ticks"] = birth
+@@ -1317,4 +1381,20 @@
+-        if proc.poll() is None:
+-            memory_samples.append(collect_resident_memory_sample(proc.pid, "before_cleanup"))
+-        cleanup = terminate(proc)
+-        memory_samples.append(collect_post_cleanup_sample(proc.pid))
++        try:
++            try:
++                if proc.poll() is None:
++                    memory_samples.append(collect_resident_memory_sample(proc.pid, "before_cleanup"))
++            except Exception as exc:  # noqa: BLE001 - sampling failure must not strand the server
++                memory_samples.append({"phase": "before_cleanup", "sample_error": repr(exc)})
++        finally:
++            try:
++                cleanup = terminate(proc)
++            except Exception as exc:  # noqa: BLE001 - retain failed cleanup and stop the plan
++                cleanup = {"pid": proc.pid, "completed": False, "dead": False, "error": repr(exc)}
++        try:
++            memory_samples.append(collect_post_cleanup_sample(proc.pid))
++        except Exception as exc:  # noqa: BLE001 - preserve the cleanup verdict
++            memory_samples.append({"phase": "after_cleanup", "sample_error": repr(exc)})
++    sample_errors = [s for s in memory_samples if isinstance(s, dict) and "sample_error" in s]
++    if sample_errors:
++        result["inference_status"] = result.get("status")
++        result["status"] = "sampling_failed"
++        result["sampling_errors"] = sample_errors
+@@ -1409 +1489 @@
+-            "disabled_effective_cap": bool(disabled and disabled.get("effective_speculative_n_max") == 0),
++            "disabled_no_draft_server": bool(disabled and disabled.get("server_no_draft") is True),
+@@ -1411 +1491 @@
+-            "disabled_drafted_zero": bool(disabled and int(disabled.get("draft_n") or 0) == 0),
++            "disabled_drafted_zero": bool(disabled and type(disabled.get("draft_n")) is int and disabled["draft_n"] == 0),
+@@ -1573 +1653,7 @@
+-    results = [run_cell(cell, args, output_dir) for cell in plan["cells"]]
++    results = []
++    for cell in plan["cells"]:
++        result = run_cell(cell, args, output_dir)
++        results.append(result)
++        if not cleanup_proved_complete(result.get("cleanup")):
++            break  # Never launch another server when prior cleanup is unproven.
++    unrun_cells = len(plan["cells"]) - len(results)
+@@ -1594,0 +1681 @@
++        "unrun_cells": unrun_cells,
