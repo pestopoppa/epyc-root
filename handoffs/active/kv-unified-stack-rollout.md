@@ -1,13 +1,24 @@
 # Unified KV (`--kv-unified`) stack rollout and shared-pool serving
 
-**Status**: ACTIVE. The GPU-residency package (OP-54) is **applied and serving-proven** (2026-09-24 ~18:45–18:55Z,
-orch `0a564a1f`, research `75ee1b8e`): :8083 runs `-np 4 -c 196608 --kv-unified --spec-draft-n-max 4 -ub 2048
---cache-ram 65536`, STT/TTS run on CPU cores 0-23 / 24-39. The overflow branch and the gate fix are merged. What is
-left: the depth-4 production confirmation (KVU-1b / M-3b),
-the opencode limit (KVU-1a, operator), and the follow-ups below.
+**Status**: ACTIVE; source review and preparation only under the operator's 2026-11-02 stop. All previous
+compute grants were revoked and no inference may run until the operator changes that instruction. The OP-54
+configuration and serving proof below are **historical 2026-09-24 evidence**, not the current live argv. Later
+KVU-16 records a 393216-token pool and DFlash2; verify the actual process, effective configuration and binaries
+before any live-state claim. KVU-1b/M-3b were superseded by DFlash2 and must not be dispatched.
 **Scratch**: `/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r13-20261030/` (active READY/native evidence; retain), `/mnt/raid0/llm/tmp/codex-ni-20261027-fa4-sixkey-diagnostic/`, `/mnt/raid0/llm/tmp/codex-ni-20261027-fa4-attempt2-fix/`, `/mnt/raid0/llm/tmp/codex-ni-20261027-fa4-original-nan-audit/` · worktrees: none
+**2026-11-02 session custody:** retain `/mnt/raid0/llm/worktrees/kvu16a-plan-20261102/` (KEEP;
+unpublished load packet), `/mnt/raid0/llm/worktrees/rtg57-implementation-20261102/`,
+`/mnt/raid0/llm/worktrees/rtg57-kvu126-matrix-20261102/`,
+`/mnt/raid0/llm/worktrees/rtg57-fa4b-accounting-20261102/`, and
+`/mnt/raid0/llm/worktrees/codex-rtg57-q38-safe-20261102/`,
+`/mnt/raid0/llm/worktrees/kvu5-task-erase-20261102/`,
+`/mnt/raid0/llm/worktrees/codex-kvu11c-qwentts-20261102/`, and
+`/mnt/raid0/llm/tmp/rtg57-kvu126-unique-cells-20261102/` until their branches and evidence are
+integrated. The 2026-11-02 source/case archives and raw GPU results are preserved on the research
+branch; do not treat `/dev/shm` build outputs as durable.
 **Created**: 2026-09-24 (main-ak-seat, stack-configuration window)
-**Priority**: HIGH. :8083 caps every request at 98,304 tokens today, and that ceiling emptied DS41 run 8's planner reply.
+**Priority**: HIGH. The historical 98,304-token cap motivated the rollout; later pool changes supersede that
+number. Remaining work covers capacity truth, correct and efficient attention, and safe stack integration.
 **Categories**: inference_serving, kv_cache, orchestration, stack_lifecycle
 **Parent index**: [routing-and-optimization-index.md](routing-and-optimization-index.md) (row RTG-57)
 **Depends on**: RTG-19 (single-source stack pipeline; its SSU-F3 capacity accounting is done, 2026-09-23), RTG-36 (stack-change governance),
@@ -21,13 +32,81 @@ on KVU-1.
 
 ## Start here
 
-Live front as of 2026-10-24 (sections A and B are largely done; their history stays in place under Tasks):
+Use the **2026-11-02 execution contract** below before the historical task texts. A dated READY, armed,
+running, scheduled or live assertion elsewhere is a record of that time, not permission or evidence of
+current state. Re-resolve the task text, current source, peer ownership and latest receipts before dispatch.
+RTG-58 owns prefix-fork work and INF-65 owns the champion candidate; coordinate interfaces and evidence,
+not duplicate implementation. Sections A–E retain acceptance details and historical observations.
 
-1. **C — kernel candidate (v11, guarded)**: KVU-LB1.d always-F32 VKQ, V11-FA-4/-6, fold-c1-p3, CPU-FA-VKQ-2 (see section C).
-2. **D — measurement follow-ups**: HPR-b 64k holdout (`hpr-b-64k-holdout`, armed, resumable); KVU-16g-1 row-5c A/B;
-   KVU-19b-rework-c2-cal; **KVU-12.3b** (busy-subset re-check, trigger: stack back + >= 100 resumed turns at >= 3 busy slots).
-3. **E — speech residency** items as listed.
-4. The 2026-09-24 rationale, evidence and first-session record moved to the completed sibling (see Completed Scope).
+### Execution contract and implementation sequence — 2026-11-02
+
+**Boundary.** The stop applies to inference, including smoke tests and calls to a serving model; prior grants
+do not survive it. Prepare source, review artifacts and decisions without inference. Tests, builds and other
+compute require the applicable calendar authority; no production kernel or speech tree is modified. After
+the stop is lifted, obtain a new appropriate grant, recheck current claims and peer ownership, and bind each
+run to its actual source, binary, mapped libraries, model, argv, controls and observation window. A READY
+packet or a process name is not evidence of a completed or qualified run.
+
+1. **Capacity and stack accounting (KVU-1d, 16a, 16i).** Reconcile the current research master and generated
+   lean registry, stack package and :8083 production shape. The 2026-11-02 load receipt samples 47.812553 GiB
+   own VRAM less 12.75 GiB observed target KV = 35.062553 GiB; two post-health samples are not a proven
+   lifetime or runtime peak. Compare its actual argv, build, model, drafter and window against the recipe;
+   preserve the earlier 38.03 GiB historical value and the separate runtime-peak obligation. Rebuild the stale
+   hygiene package on current heads and validate its evidence and generated outputs. Record the outstanding
+   SSU-F3 claim-tuple work without inventing measurement warrant. Registry application and any operator
+   ratification follow their actual stack-change gates; do not silently overwrite a value from this sample.
+2. **Admission and serving integration (KVU-1a, 15b, 5, 6, 10, 14).** Check current source and serving records
+   before implementing. KVU-1a needs its explicitly designated operator action; 15b needs attributable real
+   cache-credit misses. For 5 define cancellation, request identity, idempotent requeue, priority and starvation
+   tests against the existing admission path. For 6 first reconcile RTG-58 KPF-22's bounded prefix ordering and
+   existing slot selection; verify same-ticket fairness and flag-off coverage and implement only missing clauses.
+   KVU-15b needs at least 200 credited calls across two windows. Roll out per current role inventory
+   through stack governance. KVU-14 opens only if G5 establishes its stated cross-session-eviction trigger.
+3. **Prefill scheduling (KVU-16g, 16h-runner, 16i-v11).** Audit the existing candidate and runner coverage;
+   give no-draft arms independent server lifetimes and verify each runner's actual argv. Repair the P3
+   region-lock identity mismatch and four-CPU qualification; the prior rc1 is inconclusive. Preserve the
+   declared OFF byte-identity and np4 TPOT tests and stack-package gates. Complete runtime capacity evidence
+   on the actual v11 candidate before selecting a runtime value or enabling flags.
+4. **GPU attention (KVU-19a-2, 19b, 22, V11-FA-3/4/5/6/8).** KVU-19a and 19b commit 1 are already folded;
+   the recorded commit-1 P3 result is complete and commit 2 was dropped. Reconcile candidate ancestry and
+   avoid rebuilding dropped work. For 19a-2 seal the source/build, verify mapped HIP libraries and repair the
+   capture qualification before repeating matched-input controls. For FA-4a predeclare the exact synthetic
+   input and nonfinite-outcome comparison; the 228-key diagnostic is not an equivalence verdict. For FA-4b
+   retain the scorer-profile repair and existing four-cell results, add explicit nonfinite/garbage counts and
+   predeclare a statistically adequate successor for the unresolved cells. Audit the current FA-3 code object
+   before repeating any historical arm. Carry #29510 as the specified comparison and #27870 through the
+   champion's candidate gates, coordinating INF-65: C5 already carries #27870 and has OFF 2978/2978 plus
+   df29 0/10 recorded; reconcile candidate identity instead of rerunning the old 640-case instruction.
+   Remeasure 19b's contended gap against a clean baseline before profiling. Draft upstream findings only from supported evidence;
+   posting requires explicit authorization.
+5. **CPU attention (CPU-FA-VKQ-2/3, KVU-LB1.d).** Reconcile the 16k/64k hybrid-versus-legacy packet's actual
+   publication and final-byte qualification: the committed row specification calls itself an unpublished
+   draft despite a later READY assertion; a live READY entry and a four-CPU smoke receipt exist, but do not
+   establish a full run. Verify final packet identity, interruption semantics and runtime estimate: 20 cells
+   with 1800-second caps can exceed the four-hour booking. Pin executable, libraries, model, and the F16/F32
+   override precedence.
+   VKQ-1 is superseded; send VKQ-2 results to the current candidate/carrier decision. For VKQ-3 preserve the
+   interrupted exposed prompt and UNKNOWN, repair and qualify the tokenizer/supervisor successor before any
+   new prospective work. LB1.d's T96 six-arm run is incomplete and its prior admission failed: qualify a
+   successor and source-side belief capture, compare actual role shapes, then choose a carrier only after the
+   separate correctness, performance and stack-change gates.
+6. **CPU context and checkpoint policy (KVU-12, 12.1, 12.3b, 12.4–12.6, HPR-B-SIM-FIX-2).** Keep the
+   original evidence and declared criteria. The November 2 np8 quarter run stopped at the disk floor; it is
+   UNKNOWN, not a comparison. Plan the approved quarter pair and the occupancy/length separation with bounded
+   resources and exposure accounting; declined 128k and pool-full cells remain declined. For 12.6 implement
+   48k/96k in both length and bank-mode producers, capture actual occupancy and resume depth, and predeclare
+   comparable cells and noise. Reconcile 12.4's proposed verdict before a rerun: the sum gap is within its
+   threshold but the per-stream gap is outside; the declared rule requires both outside for SPLIT_BETTER,
+   so the proposed NO_DIFFERENCE is not an equivalence claim. The old 12.5 SPLIT_BETTER was rejected because
+   it used the full host and omitted a wave-range term. For the 64k dense/coarse holdout retain five completed cells and the exposed interrupted sixth;
+   inspect native failure and design an explicitly predeclared continuation that never redraws exposed units.
+   Neither the old READY note nor a successful smoke completes the holdout. 12.3b is trigger-only until the
+   stated busy-traffic sample exists.
+7. **Speech and closure (KVU-11c, program gates).** Develop any qwentts thread flag in an experimental tree;
+   validate and promote only as a new speech-kernel version before removing the shim through the stack-change
+   path. Retain the operator's speech-placement decision and INF-79 ownership. Close each box only on its own
+   acceptance evidence or a documented supersession; preserve partials, failures and unknowns. Reconcile the
+   handoff, downstream references and generated index before archiving.
 
 
 ## Completed Scope
@@ -87,6 +166,9 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
     PID 3737649 minus 6.38 GiB KV, `vram_non_kv_drafter: dflash2`); the load-time peak was sampled at bring-up
     (43.49 GiB card-total, `qwen38-27b-replace-qwen36.md` Q38-T8). The 32.80 UNVALIDATED line is gone. Still open
     here: recording the reading through SSU-F3's claim tuple.
+  - **2026-11-02 dispatch correction:** the old 32.80 replacement instruction is historical. The current
+    16a accounting and its shape/claim reconciliation govern; do not substitute a historical value or
+    manufacture a measurement tuple for the current recipe.
 - [x] **KVU-1e — M-4: np4 aggregate under concurrent load, live.** ✅ 2026-09-24 — live :8083 (np4, kvu, depth
   4), fixed-length 1024-token generations (`ignore_eos`), 2 waves per level: aggregate 40.2 / 39.9 tok/s at
   concurrency 1, 71.4 / 67.8 at 2, 95.3 / 93.1 at 4; per-request median 40.5 / 40.2, 36.4 / 34.9, 27.6 / 26.1.
@@ -189,6 +271,12 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
     - 2026-10-03 (workspace-ec): the field half is done. Since orch 0f0bfa19, every serving record carries
       `kv_admission.cache_credited_tokens` and `cache_credit_source`, on the primitives and passthrough lanes. The
       count still waits for KVU-15c's live proof and then ≥ 200 credited calls.
+    - *(2026-11-02 record check.)* Current inspected `serving_calls.jsonl` has 195 records total,
+      14 for :8083: seven zero credit, six unknown credit, and one positive credit with cache count.
+      The latter is the already documented live-proof call (18,829 credited vs 22,178 cached), not
+      a representative window. A separate October 30 scratch log has 48 :8083 calls with credit fields
+      missing. This inspection does not establish completeness of all historical logs, and does not
+      meet the required 200 credited calls/two windows. Do not derive a miss rate from it. [belief: cc]
     - *(2026-10-21 triage)* open (no evidence found); agentic-serving-harness-fixes.md:522 says window records are not a baseline.
 - [x] **KVU-16 — :8083 KV-pool step 2: one stack change for `-c 393216`, a 262144 per-request cap, n-max 7** ✅ 2026-10-03 (workspace-ec) — LIVE. SIGNED 2026-10-03T11:50:52Z, RATIFY-STACKCHG-KVPOOL-20261003; research 412e8fc1, orch 09e91e1e + 841935ea, archive root 64d70d17 (`artifacts/operator/stack-change-kvpool-20261003/`; live evidence in `/mnt/raid0/llm/tmp/stack-change-kvpool-20261003/{apply,evidence}/`). Bring-up after workspace-89's "F12 done": `reload architect_critic` → PID 4052768 at 13:14:35Z, argv `-c 393216 … --spec-draft-n-max 7` (`evidence/argv_8083_live_post_relaunch.txt`); server log "slot context (393216) exceeds the training context (262144) - capping", `n_slots = 4, n_ctx_slot = 262144, kv_unified = 'true'`, no clamp-to-7 warning. Load-peak VRAM 50.78 GiB (`evidence/vram_during_reload.log`). API reload → PID 4054223; `context_limits` per_request 262144, kv_unified True, shared_pool True, pool_tokens 393216. Alias completion via :8000 `coder_escalation` correct with draft acceptance logged (`apply/completion.json`). `stack_change_pipeline check --run-promotion-gate` all ok incl. runtime_attestation (`apply/check-final.out`). The 4 × 90k concurrency probe is NOT a pass — see KVU-16b/16c; full-pool concurrent residency is UNPROVEN, not disproven. :8083 has been stopped for the INF-80 X0 window since 13:55Z (KVU-16e restores it).
   - Original scope:
@@ -209,6 +297,26 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
     12.75 GiB KV pool ≈ 38.03 GiB (`evidence/vram_during_reload.log`). Land the measured value in the research master
     with its evidence pointer through the stack-change pipeline (registry value, DRAFT-SEL-1 `check_lean` reads it),
     and recompile. Done when `check` passes and the lean carries 38.03 with an evidence path.
+    - **2026-11-02 dispatch correction:** the fixed 38.03 target above refers to the older ubatch-2048
+      measurement. Reconcile current ubatch-512 evidence and package first as specified in the execution
+      contract; matching numbers alone do not establish matching shapes or a runtime peak.
+    - [x] **KVU-16a source/receipt reconciliation** — The retained load argv omits the compiled registry's
+      `--no-cache-idle-slots`; shape equivalence and its memory effect are unproven. The old combined hygiene
+      patch fails against current research. [Receipt hashes and successor checklist](../../progress/evidence/kvu16a-load-result-20261102/RECONCILIATION.md).
+      This does not change a registry value or complete the parent. ✅ 2026-11-02 [no-belief: source and receipt reconciliation]
+    - [x] **KVU-16a shape-matched load producer preparation** — research `b1d7e1f77` renders the
+      pinned actual registry shape with only port/slot isolation, records own-process KFD samples,
+      effective argv/environment, identity and coverage gaps, and verifies cleanup. Six fake-runtime
+      controls pass. Real load validation and source-side belief capture (`VB-KVU-16A-LOAD`) remain
+      open; a sampled maximum is not a proven lifetime peak. ✅ 2026-11-02
+      [no-belief: prospective producer and fake-runtime controls]
+    - *(2026-11-02 wrap-up.)* Pinned load-only packet `/mnt/raid0/llm/worktrees/kvu16a-plan-20261102/PACKET.md`
+      is **unpublished and unarmed**. Its fake-server keeper smoke returned without a target load,
+      but the publisher refused qualification because it requires actual GPU-residency evidence.
+      The keeper dry-run bypasses region locks; the fake test did not touch GPU. Do not infer a
+      scheduled row or a measurement. Next owner: qualify a real, exclusive, load-only entry,
+      reconcile current source/registry and adapter pins, then publish under the existing scheduler
+      and peer ordering. Preserve the failed smoke; no generation request was made.
     - *(2026-11-02, shape-matched load row.)* `handoff-kvu-16a-load-20261102` rc=0: production-store GPU, np4, pool 393216, ubatch 512, Q8 KV; two post-health own-PID HIP/KFD samples and verified cleanup. Maximum sampled own VRAM was 47.812553 GiB; observed target KV was 12.75 GiB, leaving 35.062553 GiB. [Native result and samples](../../progress/evidence/kvu16a-load-result-20261102/result.json). Registry reconciliation, production-shape review and stack-change validation remain; this row does not complete the box. [no-belief: native load result; registry application pending]
     - *(Annotation, workspace-ec, 2026-10-04.)* **PACKAGED, VALID, awaiting the operator's signature** in
       STACKCHG-HYGIENE-20261003 (`/mnt/raid0/llm/tmp/stack-change-hygiene-20261003/PACKAGE.md`; `--validate-only`
@@ -396,6 +504,55 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
       (`p3_kvu_probe.sh`/`x0_common.py`, the KVU-16b replay, Q38-T7, `gpu_slot*.sh`), launch a dedicated server
       without `-md` for each no-draft arm. Done when no runner sends `n_max: 0` to a drafted server, with a check that
       refuses it.
+      - [x] **KVU-16h Q38-T7 guarded successor** — `q38_t7_safe.py` refuses mixed-server A/B phases before
+        importing the retained runner or contacting a server; phase C delegates. Three offline controls pass.
+        At that checkpoint the direct historical runner remained callable; the subsequent legacy guard
+        below closes that path. Dedicated lifecycles and warm-ups remain open.
+        ✅ 2026-11-02 [no-belief: non-inference guard controls]
+      - [x] **KVU-16h Q38-T7 isolated-arm runtime foundation** — the prospective coordinator and
+        captured-child supervisor launch independently warmed drafted/no-draft fake HTTP servers and
+        refuse missing identity or unverified drain; 14 offline tests pass. Native socket/library and
+        descendant verification, durable journal, rowflow, actual payload/scoring and real-server
+        qualification remain open. The historical result evidence is unchanged.
+        ✅ 2026-11-02 [no-belief: source and fake-server controls]
+      - [x] **KVU-16h Q38-T7 owned streaming and tokenizer integration** — prospective source through
+        `e218c6eba` binds streaming and `/tokenize` to the captured process, preserves raw events and
+        rejects missing, incomplete or mismatched token evidence; the old MTP comparator is labelled
+        historically non-comparable. Thirty fake-server tests pass. Native model/tokenizer and mode
+        attestation, exclusive cgroup, durable journal and real-server qualification remain open.
+        ✅ 2026-11-02 [no-belief: source and fake-server controls]
+      - [x] **KVU-16h Q38-T7 exposure journal and STOP handling** — source `d8296a198` journals exposure
+        before dispatch, refuses duplicate measured identities across restarts and preserves partial
+        streams on STOP; 37 offline controls pass, including concurrent reservation and process restart.
+        The no-redraw guarantee requires a single retained journal and model pin; STOP may wait for a
+        blocked read's timeout. Rowflow binding, native production attestation and qualification remain
+        open. ✅ 2026-11-02 [no-belief: source and fake-server controls]
+      - [x] **KVU-16h legacy unsafe-entry guards** — root `3159fda2d` refuses unsafe Q38 A/B and
+        GPU-slot P3 entrypoints before preflight or requests. Three inactive live scratch P3/X0
+        copies were guarded with exact before/after patches retained in
+        `artifacts/engineering/kvu16h-live-guards-20261102/`; 13 focused controls and 40 Q38 controls
+        pass. The separate historical shape-B file remains untouched because an armed row pins its
+        bytes. Dedicated lifecycle qualification and all runner coverage remain open.
+        ✅ 2026-11-02 [no-belief: source and deterministic controls]
+      - [x] **KVU-16h P3 slot separate-server successor** — `a1a26d6da` preserves the slot P3
+        L0/L3/L0 protocol with separately launched and warmed drafted/no-draft arms and no
+        request-level speculation override. Twelve fake-server/lifecycle controls pass. Pre-decode
+        occupancy matching was not a during-decode residency proof at that checkpoint; later
+        sampling/integration are recorded below, while native qualification remains open.
+        ✅ 2026-11-02 [no-belief: source and fake-server controls]
+      - [x] **KVU-16h P3 decode sampling and sequencer fixture** — `eb496d66b` records per-slot
+        occupancy during identified active decoding with temporal, not response-ID, association;
+        `2eea11287` and `c213320c1` exercise two-arm supervision and the sequencer through fake
+        lifecycles. Twenty-one offline tests pass. At that checkpoint the wrapper guard stayed in place;
+        later source integration is recorded below. No historical timing comparison follows.
+        ✅ 2026-11-02 [no-belief: source and fake-server controls]
+      - [x] **KVU-16h P3 tracked wrapper integration** — `d0e29043a` routes the tracked GPU-slot
+        wrapper and sequencer to the separate-lifecycle P3 successor rather than starting the old
+        drafted server. It removes the draft-device alias from the no-draft argv and imports the
+        tracked report path. Independent repository-root checks pass 29 runner/guard tests, including
+        the cwd-portability fix `412972b3a`. Real device/model qualification and remaining named
+        runner coverage remain open; no inference result is implied.
+        ✅ 2026-11-02 [no-belief: source and fake-server controls]
       - *(2026-11-02, P3 lifecycle row.)* `handoff-kvu16h-p3-lifecycle-20261102` ended rc=1 before the full job: its region-lock CLI checksum no longer matched. No full result or occupancy comparison exists; verdict **inconclusive**. The prior native control ran two separate server lifetimes but used eight host CPUs, so it does not meet the required four-CPU smoke contract. [Preserved control and launcher logs](../../progress/evidence/kvu16h-p3-result-20261102/qualification.json). The full runner and global coverage remain open. [no-belief: incomplete run and qualification only]
       - *(2026-11-01, DF2 E2E inventory.)* The [dated source snapshot](../../artifacts/compute/kvu16h-df2-inventory-20261101/README.md) has a separate no-draft benchmark process and no request-level speculative override in the inspected client path. Server-stop completion, other copies and runtime behavior remain unproven; this is not a global guard. [no-belief: offline source inspection only]
       - *(2026-11-01, P3/X0 occupancy draft.)* The [uninstalled coordinator](../../artifacts/compute/kvu16h-v2-x0-lifecycle-20261101/README.md) now rejects missing or mismatched occupancy comparison witnesses across arms; eight fake-runtime tests pass. Actual occupancy evidence, process supervision and runtime integration remain open. [no-belief: offline fake-runtime verification only]
@@ -546,7 +703,33 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
   - Needs a cancellable in-flight registry per URL and a request priority field, and it must preserve the FCFS
     no-starvation invariant.
   - This is the only way to turn the server's abort-all into one recompute without touching the kernel.
+  - [x] **KVU-5 isolated ownership and drain foundation** — orchestrator branch
+    `codex/rtg57-admission-20261102` through `f3d98dfd` implements in-process owner-bound attempt
+    selection, output-commit exclusion, preemption-count history and task/nonce-bound verified-drain
+    lifecycle; 14 deterministic/concurrent tests and Ruff pass. It is not connected to traffic,
+    does not cancel or release reservations, and does not survive process restart. Cross-worker
+    ownership, a trusted native drain verifier, transport and safe idempotent requeue remain open.
+    ✅ 2026-11-02 [no-belief: source and deterministic controls]
+  - *(2026-11-02 native prerequisite.)* Experimental llama fork
+    `codex/kvu5-task-erase-20261102` at `c3c983600` prepares optional server-incarnation and
+    expected-task checks on the slot owner loop; legacy erase stays unconditional. The first
+    initial model-free build was interrupted for an agreed GPU boundary; the later successful build
+    and guard test are recorded below.
+    The orchestrator still lacks a reliable pre-output native-task join and drain integration;
+    no live preemption is enabled. [no-belief: experimental source only]
+  - [x] **KVU-5 experimental conditional erase prerequisite** — llama fork
+    `codex/kvu5-task-erase-20261102` at `c3c983600` optionally compares the expected task and
+    server-incarnation token on the server task loop before erase; legacy unconditioned erase is
+    unchanged. The model-free guard test and isolated CPU server build pass. Endpoint behavior
+    with a real server, pre-output request-to-task binding and native drain/owner integration
+    remain open; this does not enable live preemption. ✅ 2026-11-02
+    [no-belief: experimental source/build and model-free controls]
 - [ ] **KVU-6 — cache-aware ordering on kvu servers** (audit #7 / T9).
+  - [x] **KVU-6 admitted-ticket bypass accounting** — orchestrator `c1bd9953` snapshots each admitted
+    ticket's observed bypass count alongside its wait, without changing selection; the existing flag-off
+    behavior remains. A threaded passer/waiter control and 21 focused tests pass, as does `make gates`.
+    This records admitted tickets only, not cancelled/expired ones, and does not close the parent.
+    ✅ 2026-11-02 [no-belief: source and deterministic test controls]
   - Stop pinning `id_slot` on unified servers: the server clears idle slots anyway, and the RAM tier is what
     keeps the prefix.
   - Add a bounded longest-prefix-match bypass to the admission queue (at most one skip per waiter).
@@ -676,6 +859,48 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
       *Not done / follow-ups*. Done when an upstream issue link is recorded here, or the repro shows it is not
       reproducible on the unpatched kernel.
       - *(2026-11-02, source-pair build.)* `handoff-kvu-kvu19a2-build-20261102` rc=0 built both baseline and candidate test-backend-ops and HIP libraries; their four recorded digests match copies under `/mnt/raid0/llm/tmp/kvu/kvu19a2-preserved-20261102/{base,candidate}/bin`. [Build result](../../progress/evidence/kvu19a2-build-result-20261102/result.json). The node-owned source snapshot remains mutable by the same UID; no GPU repeatability verdict exists. A separate capture-harness compilation smoke produced executable SHA-256 `6bb3b80930695241498cd7e1513ec903886dcb3a8a1301d5df13214d0ee64c8a`, preserved beside the libraries. Its declared rule excluded qualification as a full build, yet the publisher marked it complete; `file_result.py` could not find the manifest removed by the publisher; the original manifest and end record were staged for the same filing tool, and the result was filed inconclusive. No full-build claim is made. [no-belief: build and qualification only]
+      - *(2026-11-02, model-free GPU custody smoke.)* One FA case per base/candidate completed rc0 with
+        zero NaNs and observed own KFD and mapped ggml identities. Output hashes differ, but one process
+        per arm cannot establish repeatability or causality; VRAM was not sampled, source-build custody
+        remains incomplete, and the backend logged an additional load warning. Research evidence
+        `artifacts/kvu19a2-smoke-20261102/result.json` SHA-256 `2c5fff863c3228ed3c62b6cbcbf0703ec80a079d0675e3820943d6b44585905c`;
+        prospective write-side capture is `VB-KVU19A2-WIRE`. [belief: cc]
+      - *(2026-11-02, repeated retained-binary diagnostic.)* Research `b8ded61ef` preserves 20 native
+        runs across two cases, five fresh processes per arm/case. Actual Q/K/V/mask byte hashes match;
+        all runs have own-PID in-window KFD/VRAM and mapped ggml evidence. Baseline output was bit-identical
+        5/5 in each case; candidate produced five distinct output hashes in each. The original
+        source-to-build binding is unproven, so this is binary reproducibility only, not source attribution,
+        timing, a production defect, or a promotion verdict. Result SHA-256
+        `56038798a67cc1b34060a81592369bde040628d0c1635dc99f4dfd4286b44afc`.
+        Prospective native sidecars were emitted; ingestion and planning canary remain separate. [belief: cc]
+      - *(2026-11-02, binary-output localization.)* Reopening the 20 raw outputs found zero varying
+        baseline elements, versus 16,384/32,768 candidate elements in D576/512 (maximum spread
+        0.00117275) and 4,096/16,384 in D512 (maximum 0.000696108). The changed 512-float blocks
+        suggest a head/query pattern under the inspected source layout, but the source/build join is
+        unproven. Next: fresh source-bound builds and a predeclared matched-input localization; do not
+        infer kernel causality from the retained pair. Private sidecar ingestion yielded 60 frames
+        from 20 rows, but device applicability was not authored and the planning canary remains open.
+        [belief: cc]
+      - *(2026-11-02, source-bound repeat.)* Research `f8878bf14` retains the complete 20-run native
+        record, output and source/build receipts. Source `a0d0ae238e714aaab04e973ef4b5a4b7c9917744`
+        was materialized as a root-owned read-only baseline and one-file candidate patch
+        `4147d2b65bbb416fdee1bf004d5447238933524bf3c087a69dcf6bbeca73b235`; the same pinned
+        container toolchain built both. With `GGML_CUDA_FA_MASK_SKIP=0`, matched input bytes and
+        20/20 own-PID KFD/VRAM/mapping witnesses, baseline was bit-identical 5/5 in each case and
+        candidate had five distinct outputs in each. Candidate variation covered 16,384/32,768
+        elements (max spread 0.00176584) and 4,096/16,384 (0.000479918); no output NaNs. Privileged
+        root and transitive toolchain remain outside the custody guarantee. Result SHA-256
+        `88af22831fda196b7995bda933769fa3f4720d25253720712bed90f3b6e21c91`. Twenty scoped native
+        NaN-count rows ingested privately; a fixture-freshness planning check is not the live-loop
+        canary. This is model-free repeatability, not a quality, speed or promotion result. [belief: cc]
+      - *(2026-11-02, barrier-fix diagnostic.)* A source review suggested a producer warp exits before
+        a workgroup barrier. Experimental fix `18d030309a57071c32ffd0db42994ae473d2722a` moves
+        that exit after the barrier. In the predeclared model-free A/B, both old candidate and fix
+        produced five distinct output hashes in each of the two cases, with matching input bytes and
+        20/20 mapping and in-window GPU residency witnesses. Thus this change did **not** restore
+        repeatability; the synchronization hypothesis is not established as the cause. Research
+        `7a8a2d8fa` preserves source/build receipts, 20 raw outputs and `RESULT.md`. The fix is an
+        experimental diagnostic only; do not fold or promote it on this result. [belief: cc]
       - *(2026-11-01, binding draft defect.)* Independent review found unreadable directories may be silently omitted and FIFO inspection can block. The draft now propagates traversal errors and rejects FIFOs with nonblocking opens; five offline tests pass. Mutable paths and build-entry custody still prevent using it as an input attestation. [no-belief: offline source review only]
       - *(2026-11-01, ELF inventory defect.)* The inventory may silently omit unreadable subtrees; The draft now propagates traversal errors; five offline tests pass. It still cannot attest source, expected ELF coverage or runtime linkage. [no-belief: offline source review only]
       - *(2026-11-01, ELF inventory draft.)* The [offline component](../../artifacts/compute/kvu19a2-elf-inventory-20261101/README.md) passed four synthetic tests; it cannot establish source identity, expected binary completeness or runtime linkage. A build producer remains open. [no-belief: synthetic tests only]
@@ -1052,11 +1277,21 @@ here: none of the RTG-57 ids remain undefined. The owner named in these texts (w
     - **R10 qualification checkpoint (2026-10-30; V11-FA-4a and the full three-pair comparison remain open).** Fixed the task-local launch smoke-tag contract; 103 focused tests passed (log SHA-256 `cd675016c32230e9981205c7b4f7ad03356121e5844b74d31ee08cba6e3444f2`). The final-byte GPU smoke completed one real server_A `control_25c` HTTP 200 request, with writer/cleanup, 22 positive KFD/HIP samples and 21 positive VRAM samples; result `/mnt/micron/codex-ni-fa4-exact-set-r10-20261030/runs/20261030T082800Z-4141336/SMOKE-RESULT.json` SHA-256 `01da2e021bd09e85876fcc230c72a47a620407c32f6357f1b5118f743ab204c7`. It is a diagnostic lifecycle smoke, not 228-case coverage or a full comparison. Keeper's initial READY skip found absolute Micron paths in `keep`; corrected metadata now uses packet-relative globs and covers all source-manifest members. First normal launcher preflight refused before native work at RAID 161,192,865,792 B versus 161,195,491,328 B required; Micron passed. After the unchanged RAID floor cleared, the exact refused row/manifest were restored at 12:34Z; at 12:35:44Z the normal keeper accepted the READY schema but logged `READY-WAIT` because the assigned regions were not fittable; no launcher has been queued. Metadata estimate is 0.125 GiB; unchanged full native output cap is 1 GiB on Micron, with 151.125-GiB Micron admission reserve. [no-belief: bounded diagnostic smoke and admission only; no full comparison, equivalence, mechanism, performance or promotion claim]
     - 2026-10-29 (ws58 filer A): `fa4-bias-sensitivity-20261028` rc0 00:09:38Z (GPU mi210_0 + 72-95,184-191, 45 s, 30/30 stages: V-bias offsets 128/256/512/768/1024 x ON/OFF x 3 fresh-process repeats over the 8 original bias1024/diffuse geometry keys, original Q/K/mask seeds, only V changed). Predeclared rule: ungraded value-bias sensitivity, no timing/quality/causal/promotion verdict -> diagnostic observation. Each arm's output FNV64 is identical across its 3 repeats at every bias and key (0 of 80 cells unstable); ON and OFF outputs differ at every cell. Nonfinite onset: bias 128 and 256 give 0 nonfinite in both arms; at 512 only OFF goes nonfinite (r512/kv4096, F16 and Q8_0, 47,616 each); at 768 and 1024 both arms go nonfinite on partly different keys (ON: r512/kv4096 49,152 and r64/kv2048 6,144 per type at both biases; OFF: r512 at both KV sizes, plus r64/kv4096 at 1024). Meaning: the bias1024 exact-set membership difference is a deterministic, bias-dependent finite-range property of each path, not run-to-run noise; mechanism not established. Evidence `/mnt/raid0/llm/tmp/codex-fa4-bias-probe-20261028/RUN_COMPLETE.json` (raw logs under `attempts/`). [belief: cc]
       - [ ] **V11-FA-4a-fu1 (filed 2026-10-29):** use this map to choose the exact-set control and write it into the band predeclaration before re-running the V11-FA-1 bands: either a synthetic stress set at bias <= 256 (both arms 0 nonfinite) or bias1024 with nonfinite membership compared as a predeclared per-key set.
+        - [x] **V11-FA-4a prospective matched-input control** — research `db970501e` prepares a
+          bias-256 finite-set check and bias-1024 per-key nonfinite report with input SHA-256 bindings;
+          two offline tests cover missing, duplicate and tampered rows. The plan is a proposal, native
+          production and owner acceptance remain open, and existing numerical thresholds are unchanged.
+          ✅ 2026-11-02 [no-belief: prospective preparation and deterministic controls]
   - *(2026-10-30 original-event filing, FA4-R12; parent remains open.)* Exact-set R12 ended rc1 in exact_B when instrumentation tried /proc/2423529/exe after the child exited. The observed cleanup was partial (exact_B partial_cleanup=true); preserve the original partial state and do not infer or compare the 228-case arm. No numerical/kernel conclusion or completed comparison follows. [Audit](../../artifacts/compute/results-filing-20261030-1842.json) [belief: cc]
     - *(2026-10-30, reviewed R13 READY preparation; full comparison unrun.)* `fa4-c5-exact-set-r13-20261030` source seal `f716654c2e3beef82080b30b48ce38c55bf5e0482b9efbd9f40cf0196a980317` was published READY at 20:47:16.788Z and independently enrolled by the keeper. Actual positive launch completed in 90.1656 s, including full 228-case exact_B and A HTTP/A/B80 stages. Actual post-work cutoff exited 75 after the completed native writer, 58 own positive HIP/KFD/VRAM samples and the next native stage, with partial receipt and verified cleanup. External controller namespace fix SHA-256 `badafbe47190d805b647e0c20827fdb8ecc136823679738029a9a7900cb4f97c`; actual armed scan accepted canonical validator `7ddfaa6b65de45a37d5f90bb9a6d186a071756977fac91d71aced55c053cd30e` with 0 refusals. This qualifies launch/evidence/cutoff handling. Full three-pair/22-band/two-KV comparison remains unrun; R12 failure and historical numerical outcomes remain unchanged. Receipt: `/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r13-20261030/review-evidence/READY-PUBLICATION-RECEIPT.json`. [no-belief: operational qualification; no full scientific comparison]
     - *(2026-10-29, Codex refactor diagnostic.)* The scheduler-granted FA4 bias-sensitivity run completed rc0 with all 30 native stages and drained children. For each arm and bias, the denominator is eight geometries repeated three times, not 24 independent geometries. ON/OFF nonfinite cases were 0/24 and 0/24 at biases 128 and 256; 0/24 and 6/24 at 512; 12/24 and 12/24 at 768; and 12/24 and 18/24 at 1024. A separate reopening verified all 240 raw case keys and nonfinite counts, 30 raw-log SHA-256 bindings, 40 matched bias/geometry groups, matching FNV input identities within groups, stable Q/K/mask FNVs across bias levels, and own positive GPU-residency witnesses in every stage. FNV is not a cryptographic input identity. Native result `/mnt/raid0/llm/tmp/codex-fa4-bias-probe-20261028/RUN_COMPLETE.json` SHA-256 `cc96161018b085019fa4e8550170c619e11200f1ad929bbba0fc24d50f5bd921`. These synthetic diagnostics do not establish the mechanism, model quality, timing, or a promotion outcome; the parent exact-set decision and band run remain open. [belief: cc]
     - *(2026-10-29, Codex refactor prep.)* A prospective ungraded value-bias probe is READY for scheduler admission as `fa4-bias-sensitivity-20261028`, source `/mnt/raid0/llm/tmp/codex-fa4-bias-probe-20261028/`. It retains the eight original geometry keys and compares C5 ON/OFF at five value biases in three alternating fresh-process pairs, preserving Q/K/V/mask identities and raw finiteness results. The exact actual launcher passed real small-model lifecycle normal (rc0, 66.09 s) and forced cutoff (outer rc75, partial, 64.93 s), with own KFD/HIP/VRAM witnesses and children drained; these are launcher smokes, not FA4 sensitivity results. READY submission is not scheduler acceptance. V11-FA-4a remains open and no mechanism, quality, timing or promotion conclusion is established. Prospective capture enrollment: `VB-FA4-BIAS-WIRE`. [no-belief: diagnostic preparation only]
   - [ ] **V11-FA-4b — model-level rocWMMA ON/OFF quality A/B**: same two images, >=100 greedy prompts (-np 1, --cache-ram 0, n_predict 512, prod q8_0 KV + f16 variant, drafter OFF and ON) reporting token identity and first-divergence index, plus >=200 scored items (olympiad/math + coding) paired McNemar; agree = paired accuracy diff 95% CI within +/-2 pp and 0 non-finite/garbage.
+    - [x] **V11-FA-4b response-integrity accounting** — research `bda6ad1cf` revalidates sealed M1/M2
+      captures and reports per-arm/phase JSON nonfinite and existing DF2-9 garbage-text counts; all 2,400
+      accepted responses had zero of either. Missing or poisoned records refuse. This does not establish
+      finite logits or change the prior one-of-four equivalence result; the parent remains open.
+      ✅ 2026-11-02 [belief: cc]
     - [x] **V11-FA-4b source and admission preparation — freeze the two-image, four-config quality matrix and receive MAIN acceptance.** ✅ 2026-10-27 — research commit `1a71ba5b660c59f53119822468d7164b51cbd6de`; frozen matrix manifest SHA-256 `7cec33127e4162b89610d4e8b66eb362fb289e3fde1dadbc20e2834d36f13a51`; source manifest SHA-256 `eadfbb2c5b9fa06887b43470ff96fe9ba8ca6d9827a3b5198232ee36995b4832`. Eight source tests, five wrapper tests, row validation, same-entry model-free T1 and private normal admission passed. Temporary PF poller reaped. This closes preparation only; later quality slice 1 failed on `no_reference`, with no quality verdict. [no-belief: source and admission preparation only]
     - *(2026-10-27 12:30Z, ws58 results harvest.)* **Slice 1 (ON, q8_0, drafter off) FAILED 12:02:34Z, rc1, no quality verdict.** GPU quarter job `v11-fa4b-quality` started 11:33:09Z (cpus 184-191), served about 29 min on the C5 gpu image `gpu-20261024-c72ec82f5-c5` (5,962 positive during-run residency proofs, sampler error none), then `v11_fa4b_quality.py:269` raised `ValueError: scoring undecidable: no_reference` from `parse_response`. Meaning: a scoring-harness defect (a scored item reached the parser with no reference answer), not evidence about rocWMMA; the number of completed observations is not recorded (only one exec record and the proofs file exist; `slice-result.json` carries no count). Residency was proven, so the 29 min of GPU time is wasted but the harness failed closed. Evidence: `/mnt/raid0/llm/tmp/codex-ni-20261027-fa4-sixkey-diagnostic/model-quality-row-prep/OWNER-POLLER.log`, `out/slices/1793100720-ON-q8_0-off/slice-result.json`. Next: find which item lacks a reference (corpus manifest vs `quality_gpu_job.py` item list), fix and add a pre-flight that every item has a reference before the server is launched, then re-run slice 1 (new row). Box stays open. [no-belief: harness failure, no quality measurement]
     - **Supersedes the prior `Next: find which item lacks a reference` instruction:** item 100, `leetcode_find-the-index-of-the-first-occurrence-in-a-string`, has a native gold oracle (`expected=strStr` and two `entry_point_cases`). The false `no_reference` came from applying the research scorer's `test_cases` profile to the LiveCodeBench `entry_point_cases` profile; this is a scorer-profile mismatch, not a missing corpus reference.
@@ -1066,6 +1301,11 @@ here: none of the RTG-57 ids remain undefined. The owner named in these texts (w
     - *(2026-10-28 ~03:45Z, ws58, NI recorded-scorer diagnostic; checkpoint `09dacf490`.)* MAIN accepted the bounded diagnostic after `v11-fa4b-quality` ended rc0 at 03:01:18Z. The producer REPORT is DECIDABLE but `agreement_all_configs=false`: agreement across configs is FALSE and completion is not a quality-equivalence pass. 200 matched scored and 100 greedy pairs per config. C5 ON minus OFF, 95% paired interval: q8/off -0.5 pp [-2.5,+1.0], McNemar 1 vs 2, 37/100 token-identical; q8/on +1.0 pp [0,+2.5], 2 vs 0, 39/100; f16/off +1.5 pp [0,+3.5], 3 vs 0, 38/100; f16/on 0 pp [-2,+2], 2 vs 2, 29/100. Only f16/on met the predeclared +/-2 pp rule; intervals crossing the margin do not prove a difference beyond it. Length-capping was heavy: 102-105/200 scored and 98-99/100 greedy outputs per arm/config were truncated, scored unchanged. No timing, promotion or universal quality claim. Independent model-free replay (`/mnt/raid0/llm/tmp/codex-ni-20261028-fa4b-completion-audit/audit-venv.log`) validated retained response/identity links, the 100 M1 math records under their original seal, and exact analyzer report reproduction; the analyzer trusts sealed capture-time scorer booleans and does not re-execute generated code. Same-PID/birth HIP+KFD+positive-VRAM proofs for M1 and 12 M2 slices; per-task affinity masks and a unique HIP-to-PCI map were not independently reconstructable. A prior slice hit the 150 GiB disk guard and resumed; no failed request was omitted. The V11-FA-4b parent box stays open (owner decides exact task scope). Source: `/mnt/raid0/llm/tmp/codex-ni-20261027-fa4-sixkey-diagnostic/model-quality-row-prep/out-repair/REPORT.json`. [belief: cc]
     - 2026-10-28: paired ON-minus-OFF accuracy delta 95% CI within +/-2 pp AND 0 non-finite/garbage (predeclared, `PREDECLARATION-M2.md`) -> met in 1 of 4 cells (f16/draft-on 0.0 pp [-2.0,+2.0]); q8_0/off -0.5 pp [-2.5,+1.0], q8_0/on +1.0 pp [0.0,+2.5], f16/off +1.5 pp [0.0,+3.5] fail the margin; every McNemar p >= 0.25 (discordants 1-3 of 200), so no significant difference, but equivalence within 2 pp is NOT established -> correctness-only (rule unmet, parent stays open; the REPORT carries no explicit non-finite/garbage counter, only per-item undecidable=none). Caveat: 98-99/100 greedy and 102-105/200 scored outputs per arm/config hit the 512-token cap. Evidence: /mnt/raid0/llm/tmp/codex-ni-20261027-fa4-sixkey-diagnostic/model-quality-row-prep/out-repair/REPORT.json. [belief: cc]
       - [ ] **V11-FA-4b-fix2 (filed 2026-10-28):** the 200-pair n cannot resolve a +/-2 pp margin when length-capping hits half the items; decide with the owner between a larger paired n and an uncapped n_predict re-run of the 3 failing cells, and add an explicit non-finite/garbage counter to the analyzer REPORT so the second half of the rule is machine-checked.
+        - [x] **FA-4b prospective sample sensitivity** — research `ce5a407bc` simulates the existing
+          paired-bootstrap rule under the observed fixed discordance rates for 200/400/800/1600 pairs.
+          Results are sensitivity to those point estimates, not a power guarantee or an uncapped quality
+          result; three offline tests pass. The uncapped-vs-larger design and actual successor remain open.
+          ✅ 2026-11-02 [no-belief: planning simulation only]
   (filed 2026-10-04, workspace-ec, from the audit §4 "Can rocWMMA FA be carried in v11? Yes" and §5.3)
   - Restore `fattn-wmma-f16.{cu,cuh}`, the dispatch branch and the CMake/`hip.h` flags.
   - Keep the tile skip-list out, so the same binary carries TILE for the A/B.
@@ -1254,6 +1494,13 @@ here: none of the RTG-57 ids remain undefined. The owner named in these texts (w
   - :8070 only if long jobs are routed there.
   - :8086 only if its `-np` rises.
   - Never :8080, :8180 or :8074 (`-np 1`, nothing to gain).
+  - *(2026-11-02 source inventory.)* Current launch manifest declares all six BGE ports with the
+    explicitly allowed alternative `-c 2048 -np 4`, retaining split KV and the 512-token slot window;
+    launcher tests cover it. `:8086` remains np1; `:8070` is split np4, and the registered
+    stage-one long-context ingest role aliases :8083, while stage-two review can escalate to :8070.
+    Whether :8070 receives long jobs remains unproven. No relevant port had a visible listener at inspection,
+    so these are configuration/source facts, not live-argv proofs. Before rolling another role,
+    verify current routing and live shape; do not duplicate the embedder fix. [no-belief: source inventory]
 - [ ] **KVU-12 — np × ctx on CPU (TB-6 successor, Flash-Next) only if needed.** The operator skipped C2 at 17:25Z
   because the GPU matrix showed no unified-KV throughput cost. Reopen only if a CPU role shows qualitatively
   different relative behaviour.
@@ -1273,6 +1520,10 @@ here: none of the RTG-57 ids remain undefined. The owner named in these texts (w
     - *(2026-10-22, workspace-f8; redo ran 19:10Z-05:19Z, ended rc 125 = the s4 cap; `/mnt/raid0/llm/tmp/kvu12-redo-20261021/`.)* **s4 (unified np8 pool 1,048,576, L128k, depth live): rc 125, hit its 12,000 s cap (12,004 s), no result.** Bank block: `k6_bank_build_unified` done (4,944 s) and `k6_bank_mtpoff_np8_L64k` done (679 s); `k6_bank_np8_pool524288_and_poolfull` SKIPPED for time (needed 10,844 s, 4,227 s left). **np8 L64k unified-vs-split pair: CONFOUNDED, no verdict.** The unified cell (5,526 s) ran with `gpu_busy_frac` 0.4654 and a foreign KFD process (early GPU release, foreign GPU jobs); the split cell (5,090 s) ran at 0.0. Unequal GPU state across the pair, so the gap cannot be attributed to unified vs split. Box stays open.
   - [ ] **KVU-12.5 re-run — np8 L64k pair on a GPU-idle host (parts (b) s4 and (c) pool-full DECLINED 2026-10-22, see note).** (a) np8 L64k unified and split back to back under gpu-quiet, `gpu_busy_frac` 0.0 and zero foreign KFD pids on both (sampler as in the redo); (b) s4 with a cap of at least 14,000 s (the redo ran 12,004 s without finishing, so the 1.795 factor underestimated it) or drop s4 if the np8 pair is enough for the decision; (c) pool524288/poolfull bank cell (~10,844 s). Needed only if the np8 claim is still wanted; KVU-12.6 (the L32k -> L64k collapse) is the more useful np8 question.
     - [ ] **KVU-12.5 np8 A/B pair** (operator decision 2026-10-25 via decision tool): file a clean np8 L64k unified vs split pair on one CPU quarter, GPU idle on both arms; parts (b) and (c) stay declined. Originally marked complete 2026-10-27, reopened 2026-11-01 because the retained run used the full host, not a quarter; see the owner review below. Quarter successor estimate ~39,600 s; prior ~1–2 h estimate was unsupported.
+    - **2026-11-02 dispatch correction:** the 10-27 q3/24-thread description and proposed SPLIT_BETTER below
+      are superseded: the retained run used CPUs 0–95 / 96 threads and omitted a within-launch wave-range
+      term. The [owner review](../../artifacts/compute/kvu12-5-ratification-20261101/README.md) rejected that
+      verdict. The subsequent quarter run stopped incomplete; review exposed units before a successor.
       - *(2026-10-27, workspace-58 results harvest)* Verdict SPLIT_BETTER (PROPOSED until KVU-12 owner ratifies). Medians unified vs split: decode sum 10.49 vs 20.63 tok/s (-49.2%, threshold 25.0%), per stream 1.41 vs 2.54 (-44.5%, threshold 23.9%), TTFT +2.2% (threshold 3%); GPU idle both arms (busy 0.0, 0 foreign KFD); q3, -t 24, not comparable to the 10-21 redo. Artifact `/mnt/raid0/llm/tmp/cal-1025/kvu12-5-np8/VERDICT.json`.
     - *(2026-11-02, quarter successor result.)* `handoff-kvu12-5-quarter-20261101` ended rc=75 (`disk-floor`). The target start anchor completed, while the unified arm was partial and neither the split arm nor middle/end anchors produced terminal events. The qualification control is excluded. Verdict **UNKNOWN** under the predeclared completeness rule; no unified/split comparison or deployment claim. [Preserved native partial and end record](../../progress/evidence/kvu12-5-quarter-result-20261102/). The np8 A/B task remains open. [no-belief: incomplete target measurement]
     - [x] **KVU-12.5 quarter successor row published** ✅ 2026-11-01 — `handoff-kvu12-5-quarter-20261101` published to keeper for qualification, q3/24 threads with GPU quiet, three same-window anchors, 45,000 s estimated minimum. Source/region-lock seals and 16 offline tests pass; independent static review passed. No target-model control or measurement has run. [Spec and source](../../artifacts/compute/kvu12-5-quarter-prep-20261101/SPEC-DRAFT.json). [no-belief: publication and offline validation only]
@@ -1281,6 +1532,34 @@ here: none of the RTG-57 ids remain undefined. The owner named in these texts (w
     - *(2026-10-21, workspace-f8.)* Queued in the same window after the quiet/GPU boundary (s4 cap 12,000 s, then the bank block); the np8 L64k unified+split pair sits in the quiet part under the shared `np8L64k` argv ledger key. Bank block likely skipped on the time budget (31,418 s needed before it vs a ~34,000 s window).
   - *(2026-10-22, workspace-f8; EXPLICIT DECLINE + D4 overrun root cause.)* **Declined: the s4 re-run (unified np8 pool 1,048,576 L128k) and the 128k bank + poolfull cells (parts (b) and (c) above, and the original KVU-12.5 box).** Not filed because: these are CPU timing of the 35B frontdoor, which is moving to GPU, so no live decision needs them (the np8 L64k pair (a) stays open only if the np8 claim is still wanted). Root cause of the D4 overrun (workspace-58, `/mnt/raid0/llm/tmp/d4-why-20261022/REPORT.md`): the driver's estimate model was wrong (128k prefill ~65 tok/s measured vs 195 modelled; shared-batch decode 0.08-0.12 tok/s per stream), so k5_s4's 12,000 s cap was unreachable; GPU contention was REFUTED as the cause. The estimate model is fixed on research `f8/kvu12-arms` `8e532d23f` and re-costed: KVU-12.1 8k ~2.1 h on one quarter / 0.6 h full host; the 32k pair +3.5 h / 0.9 h.
   - [ ] **KVU-12.6 — explain the np8 L64k decode collapse** (26.71 → 10.18 tok/s sum, L32k → L64k, pool ~99% occupied): separate pool occupancy from np/L with an np8 L48k cell and an np4 equal-token cell, and account for per-stream resume-depth differences, before any np8 decode figure is quoted.
+    - [x] **KVU-12.6 prospective matrix lengths** — research `605fa94cc` supports explicit 48k/96k matrix
+      and bank cells while retaining existing default banks; invalid sizes and too-short retained token
+      files refuse. 92 offline tests pass. Actual occupancy, resume-depth observations, comparison and
+      producer capture remain open. ✅ 2026-11-02 [no-belief: source and deterministic test controls]
+    - [x] **KVU-12.6 prospective occupancy producer and analysis** — research branch
+      `codex/rtg57-kvu126-matrix-20261102` through `1160ec9d1` binds native gauge samples to the
+      overlap of all streams' decode windows and requires pinned comparison/row data; missing,
+      ambiguous or late samples refuse. 100 offline tests pass. Existing production binaries do
+      not expose the required unique-cell gauge; an experimental native implementation, actual
+      runs and a predeclared decision remain open. ✅ 2026-11-02 [no-belief: prospective code and fake-server controls]
+    - [x] **KVU-12.6 experimental native unique-cell gauge** — llama fork ref
+      `codex/rtg57-kvu126-unique-cells-20261102` @ `cdf1532b9`, based on production `ffc1bac82`,
+      counts occupied physical unified attention cells once and omits unsupported memory. CPU
+      server build and model-free native shared-cell/unsupported controls passed; producer and server
+      HELP/TYPE contracts match. A model-free router returned `/metrics` 400 because no model was
+      loaded, so real endpoint behavior, champion carry and target runs remain unverified.
+      ✅ 2026-11-02 [no-belief: experimental source/build and model-free controls]
+    - [x] **KVU-12.6 pre-run plan and evidence separation** — research `6dc3606f2` pins the four
+      geometries/two comparisons and separates the pre-run declaration from post-run evidence;
+      missing runtime identity refuses. 103 scoped tests pass. Native identity receipt production,
+      tolerance/noise rule, candidate qualification and actual measurements remain open.
+      ✅ 2026-11-02 [no-belief: prospective plan and deterministic controls]
+    - [x] **KVU-12.6 prospective build and process custody** — research `e12529f1d` records a fresh
+      build receipt and verifies the process birth, executable, model and mapped llama/ggml/mtmd
+      libraries around in-window occupancy samples. 111 offline/real-fake-process controls pass,
+      including mutation and missing custody. System libraries beyond that set are not covered;
+      real target gauge and decision-grade measurements remain unrun. ✅ 2026-11-02
+      [no-belief: prospective source, build and fake-process controls]
     - *(2026-11-01, matrix preflight.)* The independently reviewed [preflight](../../artifacts/compute/kvu12-6-producer-20261101/README.md) checks the pinned driver and six proposed nominal cells; five offline tests pass. It does not measure live occupancy or provide a runnable producer, and the comparison remains open. [no-belief: offline matrix validation only]
     - *(2026-11-01, prospective length preparation.)* The [source-bound patch draft](../../artifacts/compute/kvu12-6-prep-20261101/README.md) adds the missing 48k and 96k keys to the retained driver; neither is present in its existing length map. Nominal np8×48k and np4×96k do not alone establish equal actual occupancy or resume depth. Producer, native occupancy criteria, qualification and belief capture remain open; no row or measurement was made. [no-belief: offline source preparation only]
 - [ ] **KVU-12.1 — checkpoint-policy arms in the CPU np x ctx matrix.** On the frontdoor Qwen3.6-35B-A3B and the 27B add four hybrid-checkpoint arms to the KVU-12 matrix: dense (today: --checkpoint-min-step spacing plus n-4 / n-4-n_ubatch; record the positions actually materialized, since a chunk spanning several cadence boundaries materializes only its end), tail plus junction only (<=2 recurrent states per request via checkpoint_at on the fork build), fixed-interval with a cap on checkpoints per request, and a coarser grid whose resume is at most I tokens earlier than dense. Record per arm and per context length L: retained checkpoint count per sequence, bytes per checkpoint, resume prompt_n and cache_n, TTFT, and hit length against checkpoint spacing; baseline is the dense count at the current granularity; cite no external figure. Output sizes --ctx-checkpoints and --checkpoint-min-step and answers HYBRID-PREFIX-REUSE (b). Counts and prompt_n are correctness-class (build-role claim, no quiet host); TTFT and throughput wait for the scheduled exclusive window. Controls: frozen manifest = corpus manifest + bank_manifest sha256 + binary sha256; baseline = the dense arm on the same binary; raw per-request rows through the VB-KVU-CPU emitter; holdout = stride and cap chosen at L=32k and evaluated at 64k and 128k; denominator = every request including pool-full and errors; predeclared rule = an alternate arm replaces dense only if its resume prompt_n is within the dense arm's wave-to-wave spread at every L and its checkpoint bytes per sequence are lower at every L, else dense stays.
@@ -1342,6 +1621,11 @@ here: none of the RTG-57 ids remain undefined. The owner named in these texts (w
         - *(2026-10-24, ws58 wrap-up.)* Run `/mnt/raid0/llm/tmp/f8-launchers-20261024/hpr-b-64k-holdout/` ended VERDICT.json `INVALID_SIM_DISAGREES` (PREDECLARATION sha256 `56649c03…`): one cell, q36_35b|dense|ckpt|64k|w0 extend_1, has prompt_n sim 2818 vs log 2799 and cache_n sim 65314 vs log 65333 (the server reused 19 more tokens than the simulator predicted). Predeclared outcome: no decision, never re-graded. The holdout box stays open. Codex diagnosis `/mnt/raid0/llm/tmp/codex-ni-20261024-scheduling/tasks-from-ws58/HPR-B-SIM-DISAGREE-1-REPORT.md`: strong but not proven explanation is that the simulator omits the retained generated suffix (19 = 4 checkpoint gap + 15 retained generation); token IDs were not captured.
         - *(2026-10-28, codex-ni-01a16d6b; fixture setup recovery.)* The previously reviewed test-only environment fix was recovered after the October 26 publication refused rc79 on unrelated KPF adapter drift. Absent `EPYC_HPR_RESEARCH_WT` skips the HPR fixture class; configured invalid/empty paths fail explicitly; valid pinned producer helpers still run all five tests. Fresh controls passed (5/5 configured helper tests, expected absent/invalid/empty outcomes, 8 adjacent pure units). Source SHA-256 `cc0878a68dd979baf9793e995f16cbbe91edade6e2cc09da5fe1c193321d4bfb`; details in `progress/2026-10/2026-10-28-hpr-env-recovery.md`. Source branch is the candidate for owner integration; native contract, holdout and parent gates remain open. [no-belief: test setup repair; no native parity finding]
         - [ ] **HPR-B-SIM-FIX-2 (filed 2026-10-24, ws58 wrap-up):** simulator models retained generation + driver captures prompt token IDs + unit test reproducing 2799/65333; then a NEW predeclared 64k holdout re-run (Codex task, deadline 10-25 08:00Z).
+          - [x] **HPR R5 no-redraw guard** — research `b79bee067` preserves the six-cell exposure
+            ledger and refuses replay of exposed cells before starting a server; four offline tests
+            include reservation races and interruption. Request 116 remains UNKNOWN without saved
+            state. Guard installation/custody and any independently declared successor remain open.
+            ✅ 2026-11-02 [no-belief: source and deterministic controls]
           - *(2026-10-30, accepted R3 preparation)* Native admission smoke completed 21 requests in 94.009s; a separate set of 18 unit controls passed after a helper indentation-only repair. Keeper validation was 15:18:17Z. The full six-cell × 64K holdout remains open; this smoke establishes no native parity or timing result. Evidence: `/mnt/raid0/llm/tmp/codex-hpr-native-admission-r3-20261030/CLOSEOUT-SHARD.md`. [belief: cc — committed operational observation, not original measurement warrant]
           - [x] **HPR prospective 64k diagnostic READY** ✅ 2026-10-28 — `hpr-fix2-prospective64k-20261028` passed the actual launcher smoke under q2/48–49: 75.610 s, 40 real requests over 60.531 s, result writer and captured cleanup verified. Smoke is non-admitted two-CPU/512-context; the full 24-CPU/64k six-cell work remains open, with no historical regrade or timing/adoption warrant. [Evidence and limitations](../../progress/2026-10/2026-10-28-hpr-meta-ready.md). [belief: cc]
           - [x] **HPR-RAW-R2-AUDIT — harvest completed raw capture, without a policy verdict.** ✅ 2026-10-28. The fresh six-cell 64k dense/coarse successor is complete: existing sealed `holdout_full.cell_problems` replayed cleanly on all six cells; 36/36 requests report HTTP 200, no errors and complete prefix captures; all 42 cell/request self-hashes match the producer's `row_hash`. Existing `witness_problems` replayed cleanly across 36 request windows / 127,870 in-window samples for recorded 24-47 affinity and pinned store-bin library parent. Native `RAW-OBSERVATION.json` remains `RAW_OBSERVATION_UNVERIFIED`, `native_contract=UNVERIFIED`, `policy_verdict=null`. Original INVALID_SIM_DISAGREES evidence and both contamination disclosures remain applicable; no timing grading or native parity verdict was produced. Evidence and remaining scope: [bounded audit](../../progress/2026-10/2026-10-28-hpr-raw-capture-audit.md). The native holdout and parent gates stay open. [belief: cc]
@@ -1406,6 +1690,16 @@ here: none of the RTG-57 ids remain undefined. The owner named in these texts (w
   `get_nprocs()`, orch `scripts/voice/`) is the accepted stopgap (package revision 3 §4.2). Add a thread-count
   flag to qwentts.cpp on an `experimental` branch and promote it as the next speech kernel version; then drop the
   shim and `SHIM_NPROCS` from the launch manifest.
+  - [x] **KVU-11c experimental thread option** — qwentts fork `codex/kvu11c-threads-20261102`
+    at `aca7032` adds `tts-server --threads N`, keeps the old default when omitted and preserves
+    the public C ABI. CPU build, four model-free CLI controls, C ABI smoke and ggml linkage pass.
+    GPU validation, new-version promotion and the launcher shim removal remain open; the frozen
+    production speech tree was not changed. ✅ 2026-11-02 [no-belief: source/build controls]
+  - [x] **KVU-11c future launcher preparation** — orchestrator `codex/kvu11c-launch-prep-20261102`
+    at `39920459` adds an absent-by-default TTS-only selection that requires a pinned future binary
+    digest and thread-option marker before replacing the shim with `--threads`. Sixty-nine offline
+    launcher/environment tests pass; the current v1 manifest and live stack remain unchanged.
+    ✅ 2026-11-02 [no-belief: source and deterministic controls]
 
 ## Not filed here (explicit)
 - SSU-F3 structural capacity model (RS, draft KV, compute terms): RTG-19's SSU-F3 is done (2026-09-23,

@@ -1548,9 +1548,20 @@ Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-
 
 - intake-2498#record (Gemma quantized KV cache corruption bug (iqk FA)): Root cause verified from code: in compute_helper_q the Q8_0 per-block-repack branch broke out of the whole KV loop at the first block whose first cell in the last row was not +0.0. Adopt-patterns; handoff autokernel-all-devices.
 
-
 ### KV-row experimental reference (2026-11-02)
 
 A C5-derived opt-in reference gathers planned KV rows before flash attention. A model-free two-slice, 256-padded-row MI210 check matched an independent dense-softmax calculation; the run also recorded GPU residency. This verifies that reference case only: the fused row-aware kernels, serving-graph integration and performance gate remain open. [Run evidence](../artifacts/engineering/kpf41-model-free-20261102/) and [RTG-58](../handoffs/active/kv-prefix-fork-and-paged-attention.md).
 
 The subsequent opt-in gfx90a vector prototype gathers noncontiguous KV rows directly and matched the independent reference for a single-query F16 KV case on MI210. Its result is limited to that case; serving integration, additional types and shapes, and performance evaluation remain open. [Original run evidence](../artifacts/engineering/kpf41-direct-20261102/).
+## RTG-57 implementation checkpoint — 2026-11-02
+
+**Confidence: bounded engineering evidence.** A new experimental unified-attention gauge counts
+physical occupied KV cells once even when sequences share them; unsupported memory types omit the
+gauge. Its CPU build and model-free cell-accounting checks passed, but the endpoint has not been
+validated with a loaded model. The P3 runner now has separate drafted/no-draft lifecycle source and
+fake-server tests; native qualification is still open. A source-bound model-free gfx90a attention
+experiment found repeatable baseline outputs and variable candidate outputs in two cases; a proposed
+barrier change did not eliminate the variation. These results establish neither a production defect
+nor a quality, performance or promotion decision. Sources: [RTG-57 handoff](../handoffs/active/kv-unified-stack-rollout.md),
+[session progress](../progress/2026-11/2026-11-02-rtg57-readiness-audit.md), and
+[preserved GPU diagnostic](https://github.com/pestopoppa/epyc-inference-research/tree/7a8a2d8fa/artifacts/kvu19a2-sync-build-20261102).

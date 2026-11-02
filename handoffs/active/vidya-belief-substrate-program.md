@@ -72,6 +72,41 @@ Nothing was deleted: the siblings are the evidence record for every gate this pr
 
 ### Open work — start here
 
+- [ ] **VB-KVU19A2-WIRE — prospectively capture model-free GPU attention repeatability observations.** Bind native case/input and arm/repeat, source/build and mapped library identities, process birth, actual grant, in-window KFD and VRAM, native output and failures at creation; preserve missing custody as UNKNOWN. Project through the existing diagnostic carrier and `claim_tuple.grade()` and prove the planning-context canary. The 2026-11-02 one-pair smoke is pre-hook and does not establish repeatability or a historical measurement warrant. Producer: research `artifacts/kvu19a2-smoke-20261102/producer.py`. [no-belief: prospective source-wiring task]
+  - 2026-11-02 source checkpoint: research prospective writer and root `scripts/vidya/adapters/kvu19a2_native.py` bind producer and raw hashes, emit shared-carrier frames, and refuse a false F32 NaN count; missing observations emit no numeric tuple. Two synthetic controls pass. Actual producer deployment, full custody and a real planning-context canary remain open. The original smoke was pre-hook. [no-belief: source and synthetic projection controls]
+  - 2026-11-02 repeated diagnostic: 20 producer-authored sidecar rows ingested to a private ledger
+    as 60 frames with zero refused. Their original capture lacks authored device applicability;
+    planning-context visibility is not established and scope must not be backfilled. A future
+    producer must author verified device scope before a real canary. [no-belief: private ingest checkpoint]
+  - 2026-11-02 prospective scope repair: the writer now requires source-log architecture, mapped HIP
+    and in-window KFD/VRAM before emitting GPU applicability; a synthetic planning collection test
+    sees the scoped claim. The original 20 rows remain unscoped; a fresh original-run scoped capture
+    and real planning canary remain open. [no-belief: prospective source and synthetic controls]
+
+- [ ] **VB-KVU-126-OCCUPANCY — prospectively capture KVU-12.6 occupancy observations.** Bind actual
+  gauge records and sampling windows, frozen plan and wave/request identities, native build/model and
+  mapped DSO custody, resource claim and missing/error states at write time; project using the existing
+  KVU measurement family and shared grade. Do not substitute nominal tokens for physical occupancy or
+  invent historical warrant. Prove a planning-context canary before calling the source wired.
+  [no-belief: prospective source-wiring task]
+  - 2026-11-02 source checkpoint: research `ebe52f756` writes an original-run matched occupancy-gap
+    carrier, and root `2a3a5262e` projects it through the existing KVU adapter and shared grade. The
+    synthetic private-ledger planner canary passes and forged inputs refuse; actual target measurement
+    and a real-loop canary remain open. Raw occupied cells have no invented better direction.
+    [no-belief: prospective source and synthetic controls]
+
+- [ ] **VB-KVU-16A-LOAD — prospectively capture shape-matched load samples.** Bind original own-PID
+  sample sequence and phase/coverage gaps, effective registry-rendered argv/environment, model and
+  mapped library identities, resource claim and cleanup at native write; preserve unknowns and label
+  the result a sampled maximum, not a lifetime or runtime peak. Project via the existing measurement
+  carrier and shared grade; no retrospective warrant or new ladder. Prove a planning-context canary.
+  Research producer `artifacts/kvu16a_shape_load/`. [no-belief: prospective source-wiring task]
+  - 2026-11-02 source checkpoint: research `5d6b7138b` emits from qualified original samples;
+    root `459ede632` rederives the sampled value from native records through the shared carrier.
+    Three synthetic reader/tamper/unknown tests pass. Launcher `FILLER_*` fields are not an
+    independently authenticated grant; real-load and planning canary remain open.
+    [no-belief: source and synthetic controls]
+
 - [ ] **VB-S0-LOCK-REPRO-WIRE — prospectively capture S0 lock-guard reproduction observations.** At native creation bind the exact guard and authenticated CLI/interpreter, owner identity, private lock FD identities, syscall trace window, per-check outcomes and bracketing probes, and incomplete/refusal dispositions. Project using the existing diagnostic observation carrier and `claim_tuple.grade()`; no new grading ladder or retrospective measurement warrant. Prove the planning-context canary before calling the source wired. The 2026-11-02 pre-hook control is a committed conclusion only. [no-belief: prospective source-wiring task]
 
 - [ ] **VB-HS9-WIRE — prospectively capture and project HS-9 policy-interpreter probe runs.** The producer must bind original trusted trace and per-requirement outcomes including unknowns, errors and denominators to policy, corpus, simulator, evaluator, model and execution identities. Register a strict reader that refuses missing provenance and projects through the existing measurement carrier and `claim_tuple.grade()`; no new ladder or retrospective warrant. Demonstrate the planning-context canary before calling the loop wired. Owner: [HS-9](harness-selection-and-integration.md). [no-belief: prospective source-wiring task]
