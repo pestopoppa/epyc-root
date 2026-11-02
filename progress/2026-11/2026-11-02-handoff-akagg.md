@@ -203,3 +203,7 @@ Prepared /mnt/raid0/llm/tmp/akagg/c3-custody-check/check_coverage.py to reject m
 ## 10:38Z — Adapt C3 canonical engine-path regression to successor draft
 
 Applied the C3 canonical-path producer regression to an isolated successor copy at /mnt/raid0/llm/tmp/akagg/c3-canonical-v9 and adapted it to the current verifier, which does not export the older constant; 5 model-free tests pass. The copy still points its manifests to v8 and is not sealed or publishable. CH-26b identical reruns cannot prove residency because its native observer unconditionally reports it unproven; CH-27 private scratch floors fail native registry admission.
+
+## 10:39Z — Add recipe-derived model custody coverage validation
+
+Extended /mnt/raid0/llm/tmp/akagg/c3-custody-check/check_coverage.py to derive target and draft model paths from each recipe argv and reject missing, ambiguous, relative, or malformed model arguments. Twelve model-free controls pass. C3 successor binding, CH-26b observer and CH-27 atomic publication fixes are delegated; no row or performance claim.
