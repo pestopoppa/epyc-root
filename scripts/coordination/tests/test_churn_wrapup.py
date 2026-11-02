@@ -70,8 +70,7 @@ class WrapupTests(unittest.TestCase):
         p = os.path.join(self.tmp, "rec.json")
         json.dump(rec, open(p, "w"))
         out, err = io.StringIO(), io.StringIO()
-        with patch.object(wu, "run_push", fake_push), patch.object(wu, "run_index_check", lambda lane: (0, "ok")), \
-                patch.object(wu, "run_index_regen", lambda lane: (0, "")), patch.object(wu, "PUSH_SLEEP_S", 0), redirect_stdout(out), redirect_stderr(err):
+        with patch.object(wu, "run_push", fake_push), patch.object(wu, "PUSH_SLEEP_S", 0), redirect_stdout(out), redirect_stderr(err):
             rc = wu.main(["--json", p, "--lane", self.lane, "--flags", self.flags, *extra])
         return rc, out.getvalue(), err.getvalue()
 
@@ -123,14 +122,23 @@ class WrapupTests(unittest.TestCase):
         self.assertEqual(open(os.path.join(self.lane, gen)).read(), "origin\n")
         self.assertEqual(_git(self.lane, "cherry", "origin/main").strip(), "")
 
+    def test_light_persist_never_runs_index_state_nor_commits_generated(self):
+        """Ruling 2 (2026-11-02): no index_state.py, generated files dropped from the worker pathspec."""
+        self.assertFalse(hasattr(wu, "run_index_check") or hasattr(wu, "run_index_regen"))
+        gen = "handoffs/active/.index-state.json"
+        open(os.path.join(self.lane, gen), "w").write("worker-written\n")
+        rc, out, err = self._run(dict(self.rec, paths=["notes.md", gen]))
+        self.assertEqual(rc, 0, err + out)
+        self.assertNotIn("index_state", err + out)
+        self.assertNotIn(gen, _git(self.lane, "show", "--name-only", "--format=", "HEAD"))
+
     def test_failed_push_writes_report_with_next(self):
         rec = dict(self.rec, next="inference")
         p = os.path.join(self.tmp, "rec.json")
         json.dump(rec, open(p, "w"))
         out, err = io.StringIO(), io.StringIO()
         with patch.object(wu, "PUSH_RETRIES", 1), patch.object(wu, "run_push", lambda lane, slug: (4, "PUSH FAILED")), \
-                patch.object(wu, "run_index_check", lambda lane: (0, "ok")), \
-                patch.object(wu, "run_index_regen", lambda lane: (0, "")), redirect_stdout(out), redirect_stderr(err):
+                redirect_stdout(out), redirect_stderr(err):
             rc = wu.main(["--json", p, "--lane", self.lane, "--flags", self.flags])
         self.assertEqual(rc, 1)
         rep = json.load(open(os.path.join(self.flags, "handoff-sessions/demo/report.json")))

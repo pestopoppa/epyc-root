@@ -219,3 +219,7 @@ Reviewed CH-26 trace design: nine synthetic controls reject missing/lost event s
 ## 10:44Z — Check current C3 Bolt model identity against pre-grant seal
 
 C3 r9 Bolt model currently matches the existing receipt by device/inode/size/mtime/ctime via model_custody.identity; the receipt digest is 91d63363e782c8a3d5f4be42816eba8e0d42dd2530bd07a7d0d2dc440599af75. This is pre-grant hash plus metadata continuity, not a runtime-byte verification. Native publication remains pending the analysis pin, recipe pointer, and smoke-path repairs. CH-26 marker and CH-27 readback results remain model-free.
+
+## 10:46Z — Detect stale C3 successor qualification bindings
+
+Added scratch check_active_binding.py with two passing model-free tests to check the named C3 active runtime closure for missing, symlinked or stale predecessor paths. Against r9 it correctly rejects smoke-job.sh and cutoff-job.sh, both still hard-coded to r4; these paths were sent for repair. The CH-27 integration plan identifies a proposed durable campaign and native admission and atomic publication prerequisites; it does not prove real admission or authorize a row.
