@@ -71,3 +71,7 @@ Published the preparation after integrating concurrent origin/main updates. No r
 ## 09:40Z — Advance SR-6 capture and trace ngram corpus
 
 Published the preparation after integrating concurrent origin/main updates. No row published.
+
+## 09:43Z — Advance SR-6 lifecycle controls and trace T5 evidence
+
+Added model-free partial-block classifier and mocked captured-child lifecycle seam; neither proves authoritative exposure, real admission, residency, STOP or descendant-tree drain. Surveyed 15 traceable candidate prompts; wider exposure, prose coverage and rendered-token provenance remain unresolved, so they are not a holdout. Traced T5's retained 1024-token rerun: request text absent from examined packet; all three retained outputs are repetitions of benchmark, which does not establish prompt repetition or contamination. The 512-token predecessor was absent. NG5 remains open. All 43 bounded preparation tests pass; no inference run or row published.
