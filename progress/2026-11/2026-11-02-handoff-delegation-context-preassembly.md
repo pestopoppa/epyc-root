@@ -11,3 +11,7 @@ Recorded the DCP-12 calibration gap: the existing J7 runner alternates OFF/ON an
 ## 01:07Z — Record executable requirements for DCP-12 identical-arm calibration
 
 Recorded the DCP-12 calibration gap: the existing J7 runner alternates OFF/ON and has no fixed-prompt quality labels, so it does not measure identical-arm correctness flips. A calibration harness needs repeated matched configurations, predeclared labels, paired outcomes and the existing quiet-window admission contract before sizing the later comparison. Previous recovery wrap-up reached origin/main as 5f597759f4ad. No compute launched.
+
+## 03:34Z — Recover serialized push of DCP calibration preparation
+
+Recovered the prior serialized-push failure: serialized_push published the calibration preparation and verified origin/main carries the lane, including commit 0a9ea4f58e64. DCP-12 still requires a same-configuration repeated-run harness and predeclared correctness labels; no calibration result or row is available yet. GitNexus reports this worktree is not indexed, so no source edit was made.
