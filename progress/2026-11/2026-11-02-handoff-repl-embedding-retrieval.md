@@ -67,3 +67,7 @@ Added strict finalized shadow-stream validation (chain, source pin, state transi
 ## 11:07Z — Run the G-S live plan and start the private-rehearsal publication smoke
 
 G-S live-directory read-only plan completed rc 0, unblocked; plan and receipt preserved under docs/reports. Its non-quiescent scope does not prove atomicity or migration parity. Prepared separate verified private official and smoke inputs, pinned model/build and source, reviewed grant/STOP and result paths, and invoked publish_row for codex-ufh12-gs-private-v1-20261102; smoke was still running at boundary, so no PASS or ready-row claim is made. Awaiting registrations cover smoke PASS and first FAIL; next task is to inspect and fix its outcome. Added prospective live-plan belief wiring task. [belief: cc]
+
+## 11:12Z — Published the private-store G-S migration and parity row after its four-CPU smoke passed.
+
+REPL-EMB-2.11: published codex-ufh12-gs-private-v1-20261102; the four-CPU smoke passed with one partial native unit (rc 75). The full private-copy migration and parity verdict remains pending the granted run.
