@@ -155,3 +155,7 @@ Added an SR-7 direct-child launch seam that checks the declared executable and n
 ## 10:38Z — Reject incomplete G3 layer coverage
 
 The model-free G3 classifier now requires the full zero-based layer-ID set, instead of accepting an arbitrary set of the correct size; four bounded tests pass. Sparse or differently numbered layers remain unknown. The independent v10 audit found missing actual spec indices and layer identity, graph replay bypass of dispatch logging, and unproven cross-thread correlation; the source repair is delegated. No G3 inference or verdict is claimed. GitNexus impact was unavailable on the unindexed lane.
+
+## 10:40Z — Prepare SR-6 bench claim verification
+
+Added a sampled full-host bench claim verifier using hash-pinned guard primitives to check the four quadrant GLOBAL and bench write flocks, exclusive GPU quiet write flock, common live ancestor and bench attribution. Six bounded tests and all 89 SR-6 preparation tests passed. It does not prove grant authority or uninterrupted ownership and was not exercised under a live keeper grant; no runnable row or inference verdict is claimed.
