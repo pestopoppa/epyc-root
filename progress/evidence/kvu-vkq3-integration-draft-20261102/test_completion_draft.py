@@ -14,7 +14,8 @@ class CompletionTests(unittest.TestCase):
 
     def make(self, mode='full', **kwargs):
         result = dict(status='completed', cleanup=True, returncode=0, input_bytes_written=3,
-                      elapsed_s=0.1, stdout=b'[1, 2]\n', stderr=b'')
+                      elapsed_s=0.125, started_monotonic_s=1.0, ended_monotonic_s=1.125,
+                      stdout=b'[1, 2]\n', stderr=b'')
         result.update(kwargs)
         return write_attempt(self.root, 'test', mode, result, expected_input_bytes=3, ceiling_s=10)
 
@@ -39,6 +40,22 @@ class CompletionTests(unittest.TestCase):
     def test_full_zero_token_count_is_valid_native_result(self):
         full = self.make('full', stdout=b'[]\n')
         self.assertTrue(complete_diagnostic('full', 'test', full))
+
+    def test_success_requires_valid_observed_monotonic_timing(self):
+        for i, changes in enumerate(({'started_monotonic_s': None},
+                                     {'ended_monotonic_s': None},
+                                     {'started_monotonic_s': 2.0},
+                                     {'elapsed_s': 9.0},
+                                     {'started_monotonic_s': True})):
+            with self.subTest(changes=changes):
+                result = dict(status='completed', cleanup=True, returncode=0,
+                              input_bytes_written=3, elapsed_s=0.125,
+                              started_monotonic_s=1.0, ended_monotonic_s=1.125,
+                              stdout=b'[1]\n', stderr=b'')
+                result.update(changes)
+                path = write_attempt(self.root, str(i), 'full', result,
+                                     expected_input_bytes=3, ceiling_s=10)
+                self.assertFalse(complete_diagnostic('full', str(i), path))
 
     def test_partial_mismatch_and_wrong_marker_rejected(self):
         path = self.make()

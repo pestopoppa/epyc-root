@@ -1,5 +1,6 @@
 import datetime as dt
 import hashlib
+import json
 import os
 from pathlib import Path
 import signal
@@ -58,6 +59,25 @@ class Tests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, 'grant lost'):
                 rw.run(self.plan, self.env, now=lambda:10, wall=lambda:self.t, worker=worker, publish=publish)
             publish.assert_not_called()
+
+    def test_execution_receipt_is_durable_before_child_and_mode_isolated(self):
+        def worker(**kw):
+            p = self.root/'full-test.execution.json'
+            receipt = json.loads(p.read_text())
+            self.assertEqual(receipt['tokenizer_argv'], kw['argv'])
+            self.assertEqual(receipt['preflight_sha256'], self.plan['identity_sha256'])
+            self.assertIn('not attested', receipt['identity_scope'])
+            self.assertEqual(os.stat(p).st_mode & 0o777, 0o600)
+            raise RuntimeError('stop after receipt')
+        with self.assertRaisesRegex(RuntimeError, 'stop after receipt'):
+            rw.run(self.plan, self.env, now=lambda:10, wall=lambda:self.t, worker=worker)
+        with self.assertRaises(FileExistsError):
+            rw.run(self.plan, self.env, now=lambda:10, wall=lambda:self.t, worker=lambda **kw:self.fail('launched'))
+
+    def test_unsafe_receipt_root_refuses_child(self):
+        os.chmod(self.root, 0o755)
+        with self.assertRaisesRegex(ValueError, 'private owned'):
+            rw.run(self.plan, self.env, now=lambda:10, wall=lambda:self.t, worker=lambda **kw:self.fail('launched'))
 
     def test_replaced_input_rejected_before_launch(self):
         Path(self.plan['full_input']).write_bytes(b'changed')

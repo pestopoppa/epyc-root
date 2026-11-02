@@ -11,6 +11,7 @@ import os
 import re
 from pathlib import Path
 import signal
+import stat
 import sys
 import time
 
@@ -23,6 +24,34 @@ from contained_supervisor_draft import _WRAPPER
 def _stat(path):
     s = os.stat(path, follow_symlinks=False)
     return [s.st_dev, s.st_ino, s.st_size, s.st_mtime_ns, s.st_ctime_ns]
+
+
+def _write_execution_receipt(root, mode, attempt_id, argv, child_env, identities):
+    """Persist planned execution before launch; digests are preflight pins only."""
+    if not isinstance(attempt_id, str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_-]{0,79}', attempt_id):
+        raise ValueError('invalid attempt identity')
+    root = Path(root)
+    st = root.lstat()
+    if not stat.S_ISDIR(st.st_mode) or st.st_uid != os.geteuid() or stat.S_IMODE(st.st_mode) & 0o077:
+        raise ValueError('receipt root must be a private owned directory')
+    record = {'schema': 'vkq3-execution-plan-v1', 'mode': mode, 'attempt_id': attempt_id,
+              'tokenizer_argv': argv, 'child_env': child_env,
+              'wrapper_argv': [sys.executable, str(_WRAPPER), str(os.getpid()), *argv],
+              'identity_scope': 'preflight pins; runtime bytes and loader residency not attested',
+              'preflight_sha256': identities}
+    data = (json.dumps(record, sort_keys=True, separators=(',', ':'), allow_nan=False) + '\n').encode('ascii')
+    target = root / (mode + '-' + attempt_id + '.execution.json')
+    fd = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+    with os.fdopen(fd, 'wb') as out:
+        out.write(data)
+        out.flush()
+        os.fsync(out.fileno())
+    dfd = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        os.fsync(dfd)
+    finally:
+        os.close(dfd)
+    return target
 
 
 def _grant_dir(env, dry):
@@ -85,6 +114,9 @@ def run(plan, env, *, now=time.monotonic, wall=time.time, worker=run_attempt,
         child_env = {'PATH': '/usr/bin:/bin', 'LANG': 'C.UTF-8',
                      'HIP_VISIBLE_DEVICES': '-1', 'ROCR_VISIBLE_DEVICES': '-1',
                      'LD_LIBRARY_PATH': plan['library_path'], 'OMP_NUM_THREADS': '1'}
+        if guard.check():
+            raise RuntimeError('grant lost before execution receipt')
+        _write_execution_receipt(plan['receipt_root'], mode, plan['attempt_id'], argv, child_env, identities)
         directory = worker(mode=mode, attempt_id=plan['attempt_id'], root=plan['receipt_root'],
                            argv=argv, input_bytes=input_bytes, env=child_env,
                            deadline_monotonic=deadline, cleanup_margin_s=plan['cleanup_margin_s'],
