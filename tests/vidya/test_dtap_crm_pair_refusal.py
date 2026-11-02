@@ -10,7 +10,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts/vidya"))
 from adapters import dtap_crm_pair as adapter  # noqa: E402
-from claim_tuple import ProjectionError  # noqa: E402
+from claim_tuple import ProjectionError, grade  # noqa: E402
 
 
 def digest(raw):
@@ -190,3 +190,48 @@ def test_source_manifest_reopens_exact_files_and_git_blobs(tmp_path, monkeypatch
     (tmp_path / other).write_bytes(b"changed")
     with pytest.raises(ValueError, match="differs"):
         adapter._source(json.dumps(manifest).encode(), prov, seal)
+
+
+def test_mocked_custody_cli_to_planning_canary_is_synthetic_only(tmp_path, monkeypatch, capsys):
+    """Tests the registry/CLI/consumer path; does not prove native custody."""
+    from datetime import datetime, timezone
+    import cli
+    import loop_beliefs
+
+    class Sync:
+        def status(self, *args, **kwargs):
+            return {"fresh": True, "lag_entries": 0, "index_max_id": 1,
+                    "synced_max_id": 1, "last_sync": datetime.now(timezone.utc).isoformat()}
+
+        def sync(self, *args, **kwargs):
+            raise AssertionError("unexpected sync")
+
+    path = tmp_path / "synthetic-seal.json"
+    path.write_text("synthetic placeholder")
+    model_sha = "a" * 64
+    native = {"seal_path": str(path), "seal_sha256": "b" * 64,
+              "seal": {"terminal_utc": datetime.now(timezone.utc).isoformat(),
+                       "provenance": {"model_sha256": model_sha, "model_file": "synthetic-fixture.gguf",
+                                      "backend": "cpu", "source_commit": "c" * 40,
+                                      "source_tree_sha256": "d" * 64}},
+              "results": {"control": {"status": "complete", "delivery": "not_observed"},
+                          "attack": {"status": "complete", "delivery": "delivered"}}}
+    monkeypatch.setattr(adapter, "native_rows", lambda _path: (native,))
+    assert grade(adapter.project(native))[:2] == ("Judged", "Located")
+    ledger = tmp_path / "ledger.jsonl"
+    now = datetime.now(timezone.utc).isoformat()
+    assert cli.main(["--ledger", str(ledger), "--json", "ingest", "dtap-crm-pair",
+                     "--path", str(path), "--as-of", now]) == 0
+    report = json.loads(capsys.readouterr().out)
+    assert report["rows_projected"] == 1 and report["refused"] == 0
+    config = tmp_path / "alarm.yaml"
+    config.write_text(f"backend: file\nfile:\n  path: {tmp_path / 'alarm.jsonl'}\n")
+    output = loop_beliefs.prepare("test.dtap_crm", {"model_file": "synthetic-fixture.gguf",
+                                   "model_sha256": model_sha, "backend": "cpu"},
+                                  ledger=ledger, index_path=tmp_path / "index.yaml", as_of=now,
+                                  sync_module=Sync(), known_good=tmp_path / "known.json",
+                                  alarm_state=tmp_path / "alarm-state.json", alarm_config=config,
+                                  read_log=tmp_path / "reads.jsonl")
+    rows = [r for r in output.get("evidence", {}).get("claims", []) if r.get("source_kind") == adapter.SOURCE_KIND]
+    assert output["status"] == "ready" and len(rows) == 1
+    assert "UNKNOWN" in rows[0]["claim"]

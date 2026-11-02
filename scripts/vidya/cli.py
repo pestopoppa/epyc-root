@@ -571,6 +571,7 @@ _FILE_SOURCES = (
     "pip02-incremental-teds",
     "odl-unlimited-ocr-run",
     "dtap-timeout-report",
+    "dtap-crm-pair",
     "pii-staged-gate",
     "ci-fixture-conformance",
     "distillation-pool",

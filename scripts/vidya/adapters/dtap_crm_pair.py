@@ -16,7 +16,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from claim_tuple import ProjectionError
+from claim_tuple import ClaimTuple, ProjectionError, register
 
 SCHEMA = "dtap.crm_pair_receipt.v1"
 SOURCE_KIND = "dtap-crm-pair"
@@ -361,11 +361,44 @@ def native_rows(path: str | Path) -> tuple[dict[str, Any], ...]:
     try:
         native = _open_pair(Path(path).absolute())
         seal = native["seal"]
-        _claim(seal, _read(Path(seal["grant_receipt_path"])), seal["provenance"])
-        _source(_read(Path(seal["source_manifest_path"])), seal["provenance"], seal)
+        native["claim_scope"] = _claim(seal, _read(Path(seal["grant_receipt_path"])), seal["provenance"])
+        native["source_scope"] = _source(_read(Path(seal["source_manifest_path"])), seal["provenance"], seal)
     except (OSError, ValueError, TypeError, KeyError, IndexError, AttributeError, subprocess.SubprocessError) as exc:
         raise ProjectionError("CRM pair original custody refused: " + type(exc).__name__) from exc
-    # A provider record is not proof of loaded bytecode, scheduler issuer, or
-    # source tree identity. No tuple is emitted until the missing source boundary
-    # is native and independently checked.
-    raise ProjectionError("CRM pair source and scheduler authority not independently bound")
+    return (native,)
+
+
+@register(SOURCE_KIND)
+def project(native: dict[str, Any]) -> ClaimTuple:
+    """Project only the producer-reported pair completion, never its authority."""
+    reopened = native_rows(native["seal_path"])
+    if len(reopened) != 1 or reopened[0] != native:
+        raise ProjectionError("CRM pair changed since original reader pass")
+    seal = native["seal"]
+    provenance = seal["provenance"]
+    arms = native["results"]
+    count = sum(arms[arm]["status"] == "complete" for arm in ("control", "attack"))
+    scope = {"model_sha256": provenance["model_sha256"], "scope_basis": "native"}
+    if provenance.get("model_file"):
+        scope["model_file"] = provenance["model_file"]
+    if provenance.get("backend") in ("cpu", "gpu"):
+        scope["backend"] = provenance["backend"]
+    caveat = ("Producer-reported CRM diagnostic only; scheduler issuer, same-UID forgery resistance, "
+              "loaded code, actual model identity and physical-authority warrant are UNKNOWN. "
+              "No security efficacy, promotion or policy claim.")
+    return ClaimTuple(
+        measurement_id="dtap-crm-pair:" + native["seal_sha256"], metric="producer_reported_completed_arms",
+        value=count, unit="arms", date=seal["terminal_utc"], category="CANDIDATE",
+        metric_direction="higher_better", protocol_id="", reps=1,
+        reps_basis="one producer-reported pair; no population or independent replicate",
+        claim=f"Producer reports {count} completed arms in one CRM diagnostic. {caveat}",
+        attestation_locator="dtap-crm-pair:" + native["seal_sha256"],
+        attestation_sha256=native["seal_sha256"], source_kind=SOURCE_KIND,
+        applicability=scope,
+        observation={"outcome_native": "; ".join(
+            f"{arm}={arms[arm]['status']}/{arms[arm]['delivery']}" for arm in ("control", "attack"))},
+        extra={"seal_sha256": native["seal_sha256"], "source_commit": provenance["source_commit"],
+               "source_tree_sha256": provenance["source_tree_sha256"], "scope": caveat,
+               "skill_injection": "not_tested", "provider_flock_witness": "provider_reported",
+               "scheduler_issuer": "UNKNOWN", "loaded_code": "UNKNOWN", "physical_authority": "UNKNOWN"},
+    )
