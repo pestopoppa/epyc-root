@@ -913,7 +913,7 @@ on measurement, D3 approved and shipped.** Detail in each entry.
       `str(promoted)` — a **path, not a timestamp** (`loop/pool.py:372`) — and build time
       (CMakeCache 06:01 vs libs 08:29 vs run start 09:37) is exactly what diagnosed run 18 by hand.
       Make `built_at` a real timestamp as part of this.
-      **Prepared source patch:** [build-completion timestamp patch](../../docs/reports/autokernel-r18b-build-timing/README.md), tested on research `3ab4ffbf1f436ceb4a8918d0ce2984c0567b0095` (46 model-free tests). It has not been integrated into research and does not resolve the historical binary identity or −9.5% mechanism.
+      **Build-completion timestamp landed 2026-11-02:** research `5afd1ae089c3` records UTC build-command completion for fresh promotion builds; continuation builds record command completion separately and leave `built_at` null for reused directories. Focused model-free suite: 66 passed under a CPU-region claim. The additional champion suite had two watchdog-related failures, both reproduced on unmodified base `f4e0b529d` (25 passed, 4 subtests). This source repair does not establish artifact freshness or resolve the historical binary identity or −9.5% mechanism; R18-B remains open. [no-belief: source repair and test validation]
 - [ ] **R18-C — record the champion branch's per-commit inflation where a reader of that branch
       will find it.** 36 commit messages claiming **+171.7% compounded / +101.8% summed** against a
       measured block effect of **+8.524%**. Commit messages are immutable, so the correction has to
