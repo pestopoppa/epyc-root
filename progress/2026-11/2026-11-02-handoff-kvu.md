@@ -187,3 +187,7 @@ The earlier VKQ3 calibration worker launches both MTP arms and records divergenc
 ## 10:41Z — Coordinate real VKQ3 worker receipt adaptation and KVU measurement row preparation
 
 The real VKQ3 worker draft has been located; it still tokenizes in-grant. Separate work is assessing a bound preflight receipt and a shape-matched KVU-16a GPU measurement. The drafts are not qualified or published.
+
+## 10:43Z — Apply real VKQ3 worker review to receipt, native output and exposure-custody implementation
+
+Review of the real two-arm VKQ3 draft found in-grant tokenization, hardcoded grants, no native dry-run result, local-only exposure custody and incomplete runtime inputs. Receipt, grant/result and exposure components are being implemented separately; no row is publishable yet.
