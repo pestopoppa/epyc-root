@@ -147,3 +147,7 @@ VKQ3 rowflow worker draft selects the engine grant directory for full and native
 ## 10:24Z — Added monotonic start and end evidence to VKQ3 diagnostic supervisor and receipt.
 
 VKQ3 diagnostic supervisor now records monotonic supervision start and child-reap end; the receipt carries both and elapsed total. Pre-cancelled and legacy or injected attempts retain null endpoints; no phase timings are inferred. Twenty-five offline supervisor, receipt and worker tests pass. Launcher and real engine integration remain unverified; no inference or tokenizer execution ran.
+
+## 10:26Z — Added VKQ3 prelaunch execution identity receipt and validated successful timing evidence.
+
+VKQ3 worker draft writes a private fsynced mode-isolated prelaunch receipt recording tokenizer and wrapper argv, child environment and preflight digest pins; eleven offline worker tests pass. Completion predicate rejects completed receipts with absent, nonfinite, reversed or inconsistent monotonic endpoints; nine completion and six guarded-publication tests pass. Pins are not source-build attestation or runtime residency proof. Launcher bundle and engine integration remain open; no row was published or inference run.

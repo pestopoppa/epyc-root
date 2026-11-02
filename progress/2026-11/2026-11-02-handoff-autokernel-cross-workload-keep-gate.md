@@ -27,3 +27,9 @@ Hardened the staged historical quantizer build completion check to require the r
 ## AKX-P1c compiler custody
 
 The staged historical quantizer build now rechecks compiler bytes after compilation and its completion validator binds both compiler paths and hashes to the recorded manifest, refusing symlinked run and artifact paths. Four focused completion fixtures passed. This is preparation only: the build remains unrun, source-to-binary provenance and coverage replay are not established.
+
+## 10:26Z — Prepare and validate P1c changed-line coordinates
+
+## AKX-P1c source diff coordinates
+
+Added a fail-closed zero-context changed-line extractor, with review fixes for header identity, hunk geometry and LF-only splitting. Four tests pass; the pinned source range parses six files, 74 deleted and 423 added lines. Output remains PARTIAL_UNVERIFIED, not a semantic footprint, coverage witness or replay; the unreviewed coverage build remains disabled.
