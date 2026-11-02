@@ -67,3 +67,7 @@ Prior wrap log reported serialized push lock failure after commit 25a9f5268c12; 
 ## 09:39Z — Reconcile C3 publication constraints and prior custody
 
 Prior custody record is on origin/main as 9c31286f9. Rechecked the owned handoff C3 r4 review: in addition to inherited lock provenance and engine binding, the existing producer and native join hash writable GGUF weights within the grant, which publish_row forbids; the scratch ext4 FS_IOC_ENABLE_VERITY probe returned ENOTSUP. The GPU repair must resolve model custody without asserting a false trust boundary before publication. CPU collector, GPU packet, CH-27 isolated campaign and promotion reports remain registered under awaiting/. No new row, tick or measurement is claimed.
+
+## 09:41Z — Validate CPU collector candidate controls
+
+The prospective CPU request-phase collector is present in /mnt/raid0/llm/tmp/akagg/cpu-verifier-candidate/collector.py. Model-free test_collector.py passed 7/7 on 2026-11-02; the companion structural verifier previously passed 9/9. This is candidate instrumentation only: integration, independently reviewed protocol and owning verifier remain necessary before any quiet-host claim or successor row. GPU packet and CH-27 reports remain registered in awaiting/. No row, result or tick claimed.
