@@ -39,8 +39,11 @@ attestation. Under q1, the real model-free service control started pinned privat
 seeded the case, created a note and Slack message through native MCP, reproduced the initial
 state after reset, and removed owned containers and network. [Source-bound receipt](https://github.com/pestopoppa/epyc-orchestrator/blob/b61c4747/docs/evidence/dtap-crm-service-control-20261102/README.md).
 The model pair, current-grant launcher and belief canary remain unqualified. [belief: cc]
-The integrated APP candidate passed all 174 DTAP tests from a protected checkout under q0.
-[no-belief: software controls]
+APP successor `086a103d` adds native paired-receipt sealing and preserves a failed first arm
+plus explicitly unattempted second arm. A scripted-endpoint pair exercised the private services,
+native judge and tool-suffix delivery with no model. The integrated candidate passed all 177 DTAP
+tests from a protected checkout under q2. Actual grant authority, reader/canary and live row remain
+open. [no-belief: software and fixture controls]
 
 [TU-HR-1 source/runtime census](../../docs/reference/tu-hr1-tool-render-audit-20261102.md)
 records the configured model/template groups and source forwarding paths, and distinguishes

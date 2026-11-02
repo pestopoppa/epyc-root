@@ -49,6 +49,10 @@ judicious review. The edit preserves existing task text and history. [no-belief:
   and message, and owned-container/network cleanup; the receipt is in APP
   `docs/evidence/dtap-crm-service-control-20261102/`. Combined 174 DTAP tests passed from a
   protected checkout. No model or pair verdict. [belief: cc]
+- APP `086a103d` adds producer-side native receipt sealing with explicit failed/not-attempted
+  arms; a scripted pair reached the real services and native judge with suffix delivery. The
+  integrated DTAP suite passed 177 tests under q2 from a protected checkout. Physical-grant
+  authority, reader canary and live row remain open. [no-belief: fixture controls]
 - Added `docs/reference/tu-hr1-tool-render-audit-20261102.md`: source and runtime census;
   sampled local model endpoints were unavailable, so actual live model/template evidence and
   TU-HR-1 remain open. [no-belief: source and operational review]
