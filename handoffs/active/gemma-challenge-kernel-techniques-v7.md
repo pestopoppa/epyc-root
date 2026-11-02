@@ -367,7 +367,7 @@ v7_quality_gate_compare.py --baseline v6_baseline.json \
 
 ## Research Intake Update — 2026-07-16 (Bonsai-27B / upstream Q2_0 gap)
 
-From the 2026-07-16 research-intake deep-dive (intake-820/821/822, PrismML Bonsai-27B; details in [`tq3-quantization-evaluation.md`](tq3-quantization-evaluation.md) + `research/intake_index.yaml`):
+From the 2026-07-16 research-intake deep-dive (intake-820/821/822, PrismML Bonsai-27B; details in [`tq3-quantization-evaluation.md`](quantization-and-low-bit.md#track-tq3-quantization-evaluation) + `research/intake_index.yaml`):
 
 **Historical finding — the old v7-candidate was MISSING upstream `Q2_0`; superseded 2026-07-18.** llama.cpp added two sub-2-bit weight types, both authored by PrismML (`khosravipasha`) to run Bonsai: **`Q1_0`** (1-bit, PR #21273, merged **2026-04-06**) and **`Q2_0`** (ternary group-64, PR #24448 CPU merged **2026-07-07**, #25419 Metal; CUDA #25707 open). Verified enum state on 2026-07-16: both `production-consolidated-v6` and the old **`experimental-v7-candidate`** had `GGML_TYPE_Q1_0` (=41) but **NOT `GGML_TYPE_Q2_0`**. Q2_0 merged **11 days after** the v6 cutover (2026-06-26), so the stale candidate never inherited it. Same *stale-fork* class the governance rails warn about (the 2026-06-22 iqk near-miss). The refreshed promotion line `experimental-v7-refresh-20260716` restores `GGML_TYPE_Q2_0` (=42); current checked local/fork tip is `ed4091266`, so this is provenance for why the refresh was required, not an open promotion blocker.
 

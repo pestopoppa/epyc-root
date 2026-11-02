@@ -425,7 +425,7 @@ checkpoint), and by the paper's own ρ it sits at **4**, *between* the 3:1 and 6
 This **corroborates and does not replace** the m-a-p ratio-convention row already filed in the
 2026-08-21 section above: two papers, two conventions, one answer for us (ρ = 4, attention fraction
 1/4). Do not open a second row for it. The MA-exposure consequence of ρ = 4 is recorded in
-[tq3-quantization-evaluation.md](tq3-quantization-evaluation.md), which owns the KV-quantization axis.
+[tq3-quantization-evaluation.md](quantization-and-low-bit.md#track-tq3-quantization-evaluation), which owns the KV-quantization axis.
 
 ### GDN op-test coverage stops ~8–32× below the reported problem band (Z — recorded, feeds G16)
 

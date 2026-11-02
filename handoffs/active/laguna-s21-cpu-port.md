@@ -8,7 +8,7 @@
 **Source**: intake-879 (poolside launch blog) + intake-880 (GGUF model card) + Stage-2 deep-dive 2026-07-22
 **Parent index**: [`inference-research-index.md`](inference-research-index.md)
 **Related**:
-- [`iqk-iquant-enablement.md`](iqk-iquant-enablement.md) — Laguna UD-IQ2_M IQ-quant acceleration (already-coded branch; add Laguna as 5th beneficiary)
+- [`iqk-iquant-enablement.md`](quantization-and-low-bit.md#track-iqk-iquant-enablement) — Laguna UD-IQ2_M IQ-quant acceleration (already-coded branch; add Laguna as 5th beneficiary)
 - [`speculative-decoding-mtp-refresh.md`](speculative-decoding-mtp-refresh.md) — the DFlash draft-dflash spec path + accept-rate bench
 - [`deepseek-v4-flash-cpu-port.md`](../completed/deepseek-v4-flash-cpu-port.md) — the reusable experimental-branch new-arch CPU-port precedent (pattern, not coupling)
 - [`architect-model-selection-bench.md`](model-evaluation-queue.md) — Laguna as a candidate once served

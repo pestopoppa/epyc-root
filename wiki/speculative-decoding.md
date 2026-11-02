@@ -259,7 +259,7 @@ Future adaptive-width work must **measure Q38P-1's verify-window expert union be
 ### Source References (2026-09-26)
 
 - [DFlash2 experimental build](../handoffs/active/dflash2-block-drafter-experimental-build.md) — `DF2-EXL3`, GDN/GLM obligations, capacity controls, and LiLiCorr trigger.
-- [EXL3 CPU and MI210 implementation](../handoffs/active/exl3-cpu-mi210-implementation.md) — codec-only oracles, full-stack proposition boundaries, and c1/c8/c16 qualification.
+- [EXL3 CPU and MI210 implementation](../handoffs/active/quantization-and-low-bit.md) — codec-only oracles, full-stack proposition boundaries, and c1/c8/c16 qualification.
 - [EXL3 Stage-4 integration record](../progress/2026-09/2026-09-25.md) — applied research dispositions and validation record.
 - [EXL3 full-session wrap-up](../progress/2026-09/2026-09-26-inference.md) — research closure, validation, commit lineage, and implementation start point.
 

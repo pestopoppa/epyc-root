@@ -3838,7 +3838,7 @@ hundred ns after heavy nodes confirms; ~2.2 µs uniformly refutes.
 
       **Successor scope (2026-09-25):** the no-go above remains authoritative for that Qwen CPU operating point.
       It does not decide the broader MCG/dense/gfx90a/hybrid architecture program now owned by
-      [`exl3-cpu-mi210-implementation.md`](exl3-cpu-mi210-implementation.md) (`INF-80`). Do not reuse retired `INF-71`.
+      [`exl3-cpu-mi210-implementation.md`](quantization-and-low-bit.md) (`INF-80`). Do not reuse retired `INF-71`.
 
 ## Tasks filed 2026-09-23 — champion residency (VMA B)
 
@@ -3874,7 +3874,7 @@ _Run by ak-ds41-main in a DS41 pause window (`/mnt/raid0/llm/tmp/ds41-scope-2026
   chunks) 3.5244 vs 2.9925 = **+17.8%**. PPL is not the project gate here (memorised n-gram overlap, Q8_0 KLD floor
   0.022-0.027), but +17.8% is large enough that the paired per-item task eval must run before any stack-change
   proposal. Same window: EXL3 3.05 bpw is −3.4% PPL but −31% pp5 (INF-80 EXL3-6c5).
-- Pointer: the operator-allowed IQ\*_K/KS self-quant for this model ("exceptionally if justifiable", 2026-10-03/04) is INF-26 NEW-8 in [`iqk-iquant-enablement.md`](iqk-iquant-enablement.md); its justification bar is measured against XFER-3's uniform file.
+- Pointer: the operator-allowed IQ\*_K/KS self-quant for this model ("exceptionally if justifiable", 2026-10-03/04) is INF-26 NEW-8 in [`iqk-iquant-enablement.md`](quantization-and-low-bit.md#track-iqk-iquant-enablement); its justification bar is measured against XFER-3's uniform file.
 - [x] **XFER-4 — iqk IQ4_NL/MXFP4 allowlist: NOT folded.** ✅ 2026-10-03 — build `cpu-20261003-8c4b282ae-iqkallow` vs champion `90c12df42` on UD-IQ4_XS, 3 rounds, all launches valid (`/mnt/raid0/llm/tmp/iqk-allow-20261003/ab-runs/20261003T174700Z/`, log `/mnt/raid0/llm/tmp/iqk-allow-ab/run.log`): pp5 **−12.2%** [−16.9, −8.8], pp256 −3.9%, tg128 −3.2%, slower in 3/3 rounds on every metric; greedy output differs at token 45 on prompt 1. Mainline's `iq4_nl_8x8` repack path is better than routing these types into iqk. Consequence for INF-77 DS41-T8: MXFP4 experts stay on CPU_REPACK `mxfp4_8x8_q8_0`; iqk is not the fix.
 - [ ] **XFER-4b — iqk IQ4_NL/MXFP4 allowlist `8c4b282ae`: re-decide with a prefill A/B and a paired task-quality eval.**
   (filed 2026-10-04, ak-ds41-main) Held out of the 2026-10-04 all-keeps fold by operator decision (ledger:

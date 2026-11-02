@@ -5261,11 +5261,11 @@ under the governed path, it flows through the existing `autokernel_evaluation_ev
 still needs no new row — which is the wiring working as designed, not a gap.
 
 **Cross-reference (2026-10-03).** Low-bit GPU decode kernels as an AutoKernel GPU target are filed as **EXL3-LB1** in
-[`exl3-cpu-mi210-implementation.md`](exl3-cpu-mi210-implementation.md) (INF-80), sequenced after the EXL3-X0 pre-gate. Its first
+[`exl3-cpu-mi210-implementation.md`](quantization-and-low-bit.md) (INF-80), sequenced after the EXL3-X0 pre-gate. Its first
 measurement (rocprof roofline fraction of Q4_K vs Q8_0 MMVQ and small-M MMQ at 27B shapes, with VGPR/waves) is read against this
 section's occupancy-knee finding.
 
-**Seed #1 result (2026-10-04).** The first Fable seed (`akm-gfx90a-kq-mmvq-route-m5-8`, `/mnt/raid0/llm/tmp/lb1-profile-20261003/hypotheses-fable.md` H1) is a *routing* fix, not an unpack or occupancy fix: Q4_K/IQ4_XS at ne11 5–8 left MMVQ (9–15% of roofline) for MMQ. gemma-4-31B Q4_K_M pp8 +129%; 27B UD-Q4_K_M production-shape decode +37% (2k) / +15% (50k) on n = 1. A defect of this size sat in a dispatch threshold, not in a kernel body — the AutoKernel GPU lever set should include per-type dispatch cutovers (EXL3-LB1c), not only kernel rewrites. Record, confirmation and fold tasks: EXL3-LB1 / LB1b–d in [`exl3-cpu-mi210-implementation.md`](exl3-cpu-mi210-implementation.md).
+**Seed #1 result (2026-10-04).** The first Fable seed (`akm-gfx90a-kq-mmvq-route-m5-8`, `/mnt/raid0/llm/tmp/lb1-profile-20261003/hypotheses-fable.md` H1) is a *routing* fix, not an unpack or occupancy fix: Q4_K/IQ4_XS at ne11 5–8 left MMVQ (9–15% of roofline) for MMQ. gemma-4-31B Q4_K_M pp8 +129%; 27B UD-Q4_K_M production-shape decode +37% (2k) / +15% (50k) on n = 1. A defect of this size sat in a dispatch threshold, not in a kernel body — the AutoKernel GPU lever set should include per-type dispatch cutovers (EXL3-LB1c), not only kernel rewrites. Record, confirmation and fold tasks: EXL3-LB1 / LB1b–d in [`exl3-cpu-mi210-implementation.md`](quantization-and-low-bit.md).
 
 ## 23. Cross-run memory, and two corrections to our own G17 record (2026-08-21)
 

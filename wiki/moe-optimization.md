@@ -38,7 +38,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
 ## Compiled Update — 2026-10-28 (ws58 delta): RT-10 DS41 routing trace prepared, not run
 
 - RT-10 DS41 trace and RT-6/RT-7 analysis were **prepared with model-free verification only**: frozen C5 tool build `c72ec82f5` completed, two native CTests and selftest passed, and trace/analysis manifests are sealed in a private packet. No trace was collected and no locality claim follows. [handoff](../handoffs/active/moe-routing-tap-and-locality-measurement.md)
-- The iqk handoff records a prepared (not executed) one-repetition synthetic Q38FN decode profile comparison (C-L3-Q38FN-PROFILE-PREP); it does not reproduce the historical teacher-forced slowdown. [handoff](../handoffs/active/iqk-iquant-enablement.md)
+- The iqk handoff records a prepared (not executed) one-repetition synthetic Q38FN decode profile comparison (C-L3-Q38FN-PROFILE-PREP); it does not reproduce the historical teacher-forced slowdown. [handoff](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement)
 - INF-75 W5s census of `architect_general` counted target-only geometry (graphs 3/49/17; 1,224 primary tensors; MTP head excluded); acceptance withheld. [handoff](../handoffs/active/autokernel-cross-workload-keep-gate.md)
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): the routing-tap schema ticks on its FILE ONLY criterion
@@ -54,7 +54,7 @@ Sources: [moe-routing-tap-and-locality-measurement](../handoffs/active/moe-routi
 - **The coherence half was void, not failed.** The harness ran without the serving env, so the default-ON fused decode made even the UD file produce garbage (see the FD-DIV-2 note in hardware-optimization). A v2 coherence run with the recipe env and the speed A/B (pp256 >= +27%, pp5 >= +19%, tg128 >= -2.0%, INDICATIVE on one quarter) are queued.
 - **Routing skew on the frontdoor model (RT-9).** Qwen3.6-35B-A3B top-10% expert share is 0.50 / 0.42 / 0.46 (prefill; code / prose / reasoning) against a uniform 0.104, with 0 of 40 layers at >= 0.60, so the written decision rule (>= 0.60 on >= 2 workloads) is not met on that model. The DS41 arm (RT-10) keeps the box open.
 
-Sources: [IQK i-quant enablement](../handoffs/active/iqk-iquant-enablement.md), [MoE routing tap and locality measurement](../handoffs/active/moe-routing-tap-and-locality-measurement.md), [CPU fused decoder blocks](../handoffs/active/cpu-fused-decoder-blocks.md)
+Sources: [IQK i-quant enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement), [MoE routing tap and locality measurement](../handoffs/active/moe-routing-tap-and-locality-measurement.md), [CPU fused decoder blocks](../handoffs/active/cpu-fused-decoder-blocks.md)
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 7): the repacked MXFP4 expert GEMV now has a real correctness gate
 **Confidence: verified** for the gate run (named artifacts); **inferred** for the S1-S5 seed implications and W8b (not run).
@@ -848,9 +848,9 @@ Sources: [MoE routing tap and locality](../handoffs/active/moe-routing-tap-and-l
 **Confidence: verified** (microbench ratio, uncalibrated).
 
 - **DS41-W5d: the served MXFP4 CPU_REPACK MUL_MAT_ID is 1.783x slower per layer than Q4_K iqk MMID at N=512** (95% CI 1.778-1.789; >1 in 6/6 rounds against a 1.03 bar), so the PREMISE_STANDS. N=1024 gives 1.785, N=4096 gives 4.07, and the native MXFP4 arm gives 2.448x. MMID is about 50.6% of the pp512 wall, with an S5 ceiling of about 22.2%. The absolute 1017 baseline (pp512 103.55 t/s; tg128 15.22 t/s) is INVALID_NOISY, so no baseline is quotable until W5d.1 re-runs it quietly. ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md); [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md); `/mnt/raid0/llm/tmp/ds41-1017-baseline-mmid-20261023/out/RESULT.json`)
-- **Q38FN C-L3 arm P/P2 (expert gate/up IQ3_S -> IQ4_XS, everything else at its UD type): PPL GO, speed FAIL, no ship.** See [quantization](quantization.md). ([iqk-iquant-enablement](../handoffs/active/iqk-iquant-enablement.md); [arm-P2 recipe](../docs/reference/agent-config/recipes/q38fn-armP2-20261024/PREDECLARED.md))
+- **Q38FN C-L3 arm P/P2 (expert gate/up IQ3_S -> IQ4_XS, everything else at its UD type): PPL GO, speed FAIL, no ship.** See [quantization](quantization.md). ([iqk-iquant-enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement); [arm-P2 recipe](../docs/reference/agent-config/recipes/q38fn-armP2-20261024/PREDECLARED.md))
 
-Sources: [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md), [iqk-iquant-enablement](../handoffs/active/iqk-iquant-enablement.md), [arm-P2 recipe](../docs/reference/agent-config/recipes/q38fn-armP2-20261024/PREDECLARED.md), [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md)
+Sources: [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md), [iqk-iquant-enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement), [arm-P2 recipe](../docs/reference/agent-config/recipes/q38fn-armP2-20261024/PREDECLARED.md), [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md)
 
 ## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 

@@ -416,7 +416,7 @@ The StreamingLLM baseline — the cluster-wide gate that must precede prioritizi
 ### Key Findings (2026-07-20)
 
 - **StreamingLLM (attention-sink + sliding-window) is the easy-floor gate, and no simple KV cluster is admitted yet.** The scaffold landed in the fork (`632ce0f92`, default-off, via server context-shift `llama_memory_seq_rm`/`seq_add` + `--kv-streaming-sink/-window` + per-request fields) and was reconciled onto current v7 (`111bff89d`/`cf051d3e1`). The pre-v7 floor/admission sweep (Qwen3-1.7B Q8 CPU, 2026-07-20) ran a context-shift baseline + sink/window clusters `8:128`/`16:192`/`32:256`: all arms exited cleanly but **all failed the prompt-quality/final-marker floor**, and no streaming arm beat baseline speed (0.990–1.011×) → `admit_cluster=false`. This closes the "admit a simple KV cluster *now*?" question negatively; the full 4-axis research sweep (retrieval/reasoning/dialogue × 25/50/75% budget × 2 models) stays open. ([streaming-llm-baseline](../handoffs/active/streaming-llm-baseline.md))
-- **KV-quant monitor status:** Hadamard rotation (upstream PR #21038) landed and auto-enables when KV types are quantized — a free KV-quality improvement (custom `--kv-hadamard` removed as redundant). TurboQuant CPU KV kernels (PR #21089, TBQ3_0/TBQ4_0, ~5.2× compression) remain open/monitor; ChunkKV (arXiv:2502.00299, 12% retention, +26.5% throughput) is worth-investigating. TQ3_1S rejection stands (immature, VRAM-savings we don't need, MoE ghost-activation risk). ([tq3-quantization-evaluation](../handoffs/active/tq3-quantization-evaluation.md))
+- **KV-quant monitor status:** Hadamard rotation (upstream PR #21038) landed and auto-enables when KV types are quantized — a free KV-quality improvement (custom `--kv-hadamard` removed as redundant). TurboQuant CPU KV kernels (PR #21089, TBQ3_0/TBQ4_0, ~5.2× compression) remain open/monitor; ChunkKV (arXiv:2502.00299, 12% retention, +26.5% throughput) is worth-investigating. TQ3_1S rejection stands (immature, VRAM-savings we don't need, MoE ghost-activation risk). ([tq3-quantization-evaluation](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation))
 - **Where KV physically lives (MI210):** keeping KV in HBM alongside attention weights is ideal but VRAM-limited; PCIe4 (~64 GB/s) is 7–14× slower than EPYC DDR5, so per-token KV *streaming* is an anti-pattern. GDN-hybrid residents have **O(1) KV**, so long-context ingest is comfortably GPU-served (better than a dense model) and makes teleport KV-copy near-moot — the teleport v1 instead *re-prefills from transcript* to regenerate correct KV at the target quant (a copied KV is wrong under quant-asymmetric transport). **Correction 2026-09-24:** the orchestrator does *not* store that transcript today. On `/v1`, `x_session_id` is recorded only, and the session store has no messages table. So v1 teleport depends on client-resent history until the session-keyed conversation store (conversation-stack CS-15) lands. ([gpu-acceleration-path](../handoffs/active/gpu-acceleration-path.md), [heterogeneous-slot-fabric-residency](../handoffs/active/heterogeneous-slot-fabric-residency.md), [conversation-stack](../handoffs/active/speech-and-multimodal.md))
 
 ### Open Questions (2026-07-20)
@@ -428,7 +428,7 @@ The StreamingLLM baseline — the cluster-wide gate that must precede prioritizi
 ### Source References (2026-07-20)
 
 - [streaming-llm-baseline.md](../handoffs/active/streaming-llm-baseline.md) — cluster-wide floor gate, scaffold, negative pre-v7 admission sweep.
-- [tq3-quantization-evaluation.md](../handoffs/active/tq3-quantization-evaluation.md) — TurboQuant/ChunkKV/Hadamard KV-quant monitor list.
+- [tq3-quantization-evaluation.md](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) — TurboQuant/ChunkKV/Hadamard KV-quant monitor list.
 - [gpu-acceleration-path.md](../handoffs/active/gpu-acceleration-path.md) — MI210 KV CPU/GPU-split economics + PCIe anti-pattern.
 - [heterogeneous-slot-fabric-residency.md](../handoffs/active/heterogeneous-slot-fabric-residency.md) — O(1)-KV GDN residents + re-prefill teleport (KV-copy near-moot).
 
@@ -452,7 +452,7 @@ The field is evolving rapidly around closed-form approaches that replace heurist
 
 - **Upstream auto-enables Hadamard rotation**: llama.cpp v3 upstream PR #21038 (`744c0c731`) auto-enables identical Walsh-Hadamard rotation when KV types are quantized. The `--kv-hadamard` flag from our production branch is superseded. The upstream implementation may be more optimized, potentially reducing the +9% wall time overhead observed at 32K context with dequant during prefill. [v3 rebuild handoff](../handoffs/completed/llama-cpp-v3-upstream-rebuild.md)
 
-- **TurboQuant (TQ3) loses to Hadamard+q4_0 on CPU**: ikawrakow's full implementation on EPYC 9975 shows Hadamard+q4_0 at 1279 tok/s vs TQ3 at 573 tok/s -- 2.2x faster. Even with all four ecosystem fixes (norm correction, S=512 initial layers, fused dequant, 32-block format), TQ3 is slower on CPU due to codebook lookup overhead vs simple q4_0 dequant on AVX-512. TQ3 is on monitor-only status; revisit only if upstream merges natively with fused FA kernel. [TQ3 handoff](../handoffs/active/tq3-quantization-evaluation.md)
+- **TurboQuant (TQ3) loses to Hadamard+q4_0 on CPU**: ikawrakow's full implementation on EPYC 9975 shows Hadamard+q4_0 at 1279 tok/s vs TQ3 at 573 tok/s -- 2.2x faster. Even with all four ecosystem fixes (norm correction, S=512 initial layers, fused dequant, 32-block format), TQ3 is slower on CPU due to codebook lookup overhead vs simple q4_0 dequant on AVX-512. TQ3 is on monitor-only status; revisit only if upstream merges natively with fused FA kernel. [TQ3 handoff](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation)
 
 - **Hybrid buffer architecture is memory-negative**: The dual-cache design (kv_recent f16 + kv_old q4_0) allocates both at full context size, using MORE memory than a single f16 cache. The standard single-cache with quantized KV types is strictly better. Split attention (separate scoring for old and recent, concat, single softmax) works correctly at 5.2 t/s on 14.5K context but is unnecessary with the single-cache approach. Archived as research. [KV cache quantization handoff](../handoffs/completed/kv-cache-quantization.md)
 
@@ -572,7 +572,7 @@ Three architectural sub-quadratic-attention papers ingested in same-day batch (i
 - [TriAttention Handoff](../handoffs/active/triattention-kv-selection.md) -- KVPress scaffold, evaluation gates S1-S4, composability analysis with AM and Memento
 - [Memento Handoff](../handoffs/active/memento-block-reasoning-compression.md) -- Block masking feasibility confirmed, llama.cpp API mapping, LoRA training design, OpenMementos downloaded
 - [KV Cache Quantization Handoff](../handoffs/completed/kv-cache-quantization.md) -- Hadamard Phase 1 deployed, hybrid buffer archived, TurboQuant/PolarQuant/QJL abandoned, split attention working but unnecessary
-- [TQ3 Monitor Handoff](../handoffs/active/tq3-quantization-evaluation.md) -- TQ3_1S on monitor-only, PR #21038 Hadamard auto-rotation, PR #21089 CPU TurboQuant KV cache
+- [TQ3 Monitor Handoff](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) -- TQ3_1S on monitor-only, PR #21038 Hadamard auto-rotation, PR #21089 CPU TurboQuant KV cache
 - [intake-191](https://research.google/blog/turboquant-redefining-ai-efficiency-with-extreme-compression/) TurboQuant -- Extreme KV cache compression (3-4 bit with Hadamard)
 - [intake-192](https://arxiv.org/abs/2502.02617) PolarQuant -- Polar transformation for KV quantization
 - [intake-193](https://arxiv.org/abs/2406.03482) QJL -- 1-bit quantized JL transform for KV cache, zero overhead claim
@@ -760,7 +760,7 @@ memory-negative. PolarQuant's +0.229 PPL at 3.1 effective bits completes the set
 ### Source References
 
 - [`kv-cache-quantization.md`](../handoffs/completed/kv-cache-quantization.md) — the closed handoff: V-dequant root-cause table, Phase-0/1/3b/3c results, TQ3 model-size dependence and fair 32B retest, QJL SNR post-mortem, spec-decode validation, the 4-KV-head q4_0-K bug.
-- [`tq3-quantization-evaluation.md`](../handoffs/active/tq3-quantization-evaluation.md) — the verified PR #21089 closed-unmerged state (2026-08-21 re-check) that retires this page's 2026-07-20 monitor row.
+- [`tq3-quantization-evaluation.md`](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) — the verified PR #21089 closed-unmerged state (2026-08-21 re-check) that retires this page's 2026-07-20 monitor row.
 - [llama.cpp issue #20977](https://github.com/ggml-org/llama.cpp/issues/20977) — the upstream TurboQuant feature request the revisit criteria were pinned to (cited by the handoff).
 - [ik_llama.cpp issue #1509](https://github.com/ikawrakow/ik_llama.cpp/issues/1509) — ikawrakow's independent EPYC 9975 confirmation runs (Hadamard+q4_0 better quality AND 2.2× faster than TQ3), the external anchor for the abandonment.
 - [intake-193](https://arxiv.org/abs/2406.03482) QJL — the paper whose S=512 / recency-buffer requirements the SNR post-mortem quantifies against our S=256 implementation.
@@ -836,7 +836,7 @@ Two facts keep being conflated because both are called "grouping": (1) **granula
 ### Source References (2026-08-23 evening)
 
 - [`kv-cache-quantization.md`](../handoffs/completed/kv-cache-quantization.md) — the KIVI correction (all three load-bearing parts), the dual-cache capacity-vs-bandwidth reframing, the R9 warrant repair, the group-32/axis granularity correction
-- [`tq3-quantization-evaluation.md`](../handoffs/active/tq3-quantization-evaluation.md) — gates G2/G3/G4/G5 and B1/B2 with their named open/close criteria, H11 static read, the massive-activations deprioritisation record, the PR #21089 closed-unmerged re-verification
+- [`tq3-quantization-evaluation.md`](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) — gates G2/G3/G4/G5 and B1/B2 with their named open/close criteria, H11 static read, the massive-activations deprioritisation record, the PR #21089 closed-unmerged re-verification
 - [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — G3: quantized-KV spec-decode bandwidth-positive only at `draft_max = 1` on MI210 (see [Speculative Decoding](speculative-decoding.md))
 - [KIVI arXiv:2402.02750](https://arxiv.org/abs/2402.02750) / [RotateKV arXiv 2501.16383](https://arxiv.org/abs/2501.16383) / [arXiv 2606.09864](https://arxiv.org/abs/2606.09864) / [arXiv 2608.12149](https://arxiv.org/abs/2608.12149) — the corrected external evidence base
 
@@ -847,7 +847,7 @@ Two facts keep being conflated because both are called "grouping": (1) **granula
 independently by three separate Stage-2b dives. Every third-party figure is dive-verified against its
 primary source and is labelled as third-party. Under [MEASUREMENT.md](../MEASUREMENT.md) **no external
 number here gates a stack change**; each is a hypothesis, and the tests are filed on
-[`tq3-quantization-evaluation.md`](../handoffs/active/tq3-quantization-evaluation.md) and
+[`tq3-quantization-evaluation.md`](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) and
 [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md).
 
 ### The "primary quality gap" at `kv-cache-quantization.md:320` never existed — and it was wrong in three independent ways
@@ -1098,7 +1098,7 @@ point at, as untrusted content.
   establishing group-32-along-channels vs Group-64 and the opposite-axis reading rule; the 2026-08-23
   dual-cache reframe (`:71`) and the ~30% `q4_0 → f16` cast measurement it prices; the R9 warrant repair
   (`:1269`).
-- [`tq3-quantization-evaluation.md`](../handoffs/active/tq3-quantization-evaluation.md) — the gates the
+- [`tq3-quantization-evaluation.md`](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) — the gates the
   retirement leaves behind: G3 (multi-step generation eval against quantized KV), G5 (reproduce KIVI's
   Fig. 2 / Table 2 on our architecture), the `q4_0`-vs-`q4_1` asymmetric-quantizer A/B, and the H11
   read-only audit of what our KV write path does not carry.

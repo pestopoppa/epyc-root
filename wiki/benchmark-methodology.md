@@ -690,7 +690,7 @@ Details are in [agent-architecture](agent-architecture.md) (the per-call row) an
 
 - [p-kld-annex-proposals-20260923.md](../docs/research-intake/p-kld-annex-proposals-20260923.md) — the drafted annex wording, source-lineage table and per-section proposal map.
 - [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md) — R23-47 PREPARE-only pointer to the proposals.
-- [tq3-quantization-evaluation.md](../handoffs/active/tq3-quantization-evaluation.md) — the flip-counting amendment.
+- [tq3-quantization-evaluation.md](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) — the flip-counting amendment.
 - [autopilot-decision-plane-audit-2026-07-22.md](../handoffs/active/autopilot-decision-plane-audit-2026-07-22.md) — spec-OFF AUROC expectation and the `n_max: 0` probe.
 - [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C2b-gate, DS41-C2c, DS41-T3 provenance note.
 - [2026-09-23-main-dsv41.md](../progress/2026-09/2026-09-23-main-dsv41.md) — the instrument-class corrections.

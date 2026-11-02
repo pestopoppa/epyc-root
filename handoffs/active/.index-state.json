@@ -2,7 +2,7 @@
   "domains": {
     "inference-research-index.md": {
       "blocked": 56,
-      "handoffs": 49,
+      "handoffs": 47,
       "oldest_advance": "2026-07-29",
       "open": 1009
     },
@@ -346,7 +346,7 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 16,
+      "closed": 17,
       "guarded": 0,
       "last_advanced": "2026-11-02",
       "open": 12,
@@ -358,7 +358,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 28
+      "total": 29
     },
     "batched-decode-measurement.md": {
       "blocked": 1,
@@ -966,22 +966,6 @@
       "state": "active",
       "total": 14
     },
-    "exl3-cpu-mi210-implementation.md": {
-      "blocked": 0,
-      "closed": 21,
-      "guarded": 0,
-      "last_advanced": "2026-10-22",
-      "open": 22,
-      "owner_index": "inference-research-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "INF-80",
-      "state": "active",
-      "total": 43
-    },
     "fable5-window2-findings-02-heterogeneous-gpu.md": {
       "blocked": 2,
       "closed": 9,
@@ -1285,22 +1269,6 @@
       "row_id": "PIP-04",
       "state": "active",
       "total": 64
-    },
-    "iqk-iquant-enablement.md": {
-      "blocked": 0,
-      "closed": 25,
-      "guarded": 0,
-      "last_advanced": "2026-10-27",
-      "open": 6,
-      "owner_index": "inference-research-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "INF-26",
-      "state": "active",
-      "total": 31
     },
     "kv-prefix-fork-and-paged-attention.md": {
       "blocked": 1,
@@ -1888,6 +1856,54 @@
       "state": "active",
       "total": 24
     },
+    "quantization-and-low-bit.md": {
+      "blocked": 1,
+      "closed": 64,
+      "guarded": 0,
+      "last_advanced": null,
+      "open": 43,
+      "owner_index": "inference-research-index.md",
+      "prune": {
+        "blocker": "open-tasks",
+        "candidate": false,
+        "evidence": null
+      },
+      "row_id": "INF-80",
+      "state": "active",
+      "total": 108,
+      "tracks": [
+        {
+          "blocked": 0,
+          "closed": 21,
+          "gates": null,
+          "guarded": 0,
+          "line": 0,
+          "markers": 0,
+          "name": "(untracked)",
+          "open": 22
+        },
+        {
+          "blocked": 0,
+          "closed": 25,
+          "gates": [],
+          "guarded": 0,
+          "line": 203,
+          "markers": 1,
+          "name": "iqk-iquant-enablement",
+          "open": 6
+        },
+        {
+          "blocked": 1,
+          "closed": 18,
+          "gates": [],
+          "guarded": 0,
+          "line": 638,
+          "markers": 1,
+          "name": "tq3-quantization-evaluation",
+          "open": 15
+        }
+      ]
+    },
     "qwen-chat-template-evaluation.md": {
       "blocked": 0,
       "closed": 34,
@@ -2330,7 +2346,7 @@
       "blocked": 2,
       "closed": 120,
       "guarded": 9,
-      "last_advanced": null,
+      "last_advanced": "2026-11-02",
       "open": 29,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -2503,22 +2519,6 @@
       "row_id": "EVL-46",
       "state": "active",
       "total": 30
-    },
-    "tq3-quantization-evaluation.md": {
-      "blocked": 1,
-      "closed": 18,
-      "guarded": 0,
-      "last_advanced": "2026-10-22",
-      "open": 15,
-      "owner_index": "inference-research-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "INF-54",
-      "state": "active",
-      "total": 34
     },
     "tri-role-coordinator-architecture.md": {
       "blocked": 0,
@@ -3049,21 +3049,12 @@
       "next_action": "HSF-5.P: re-run microbench (-lv 4, G4 amendment) on GPU after v11-086-cpu ~10-25 00:00Z",
       "track": "heterogeneous slot fabric residency"
     },
-    "INF-26": {
-      "deps": [],
-      "handoff": "iqk-iquant-enablement.md",
-      "id": "INF-26",
-      "index": "inference-research-index.md",
-      "line": 37,
-      "next_action": "C-L3-Q38FN: profile why GSQ IQ3_XXS decode is 28% slower than UD-IQ4_XS, then a low-bit kernel branch; NEW-8 steps 0-1",
-      "track": "iqk iquant enablement"
-    },
     "INF-28": {
       "deps": [],
       "handoff": "laguna-s21-cpu-port.md",
       "id": "INF-28",
       "index": "inference-research-index.md",
-      "line": 38,
+      "line": 37,
       "next_action": "L-9P \u2014 conditional CPU throughput/config discovery. The prepared",
       "track": "laguna s21 cpu port"
     },
@@ -3072,7 +3063,7 @@
       "handoff": "large-moe-expert-parallelism.md",
       "id": "INF-29",
       "index": "inference-research-index.md",
-      "line": 39,
+      "line": 38,
       "next_action": "CPU15-REVAL \u2014 Fresh canonical matrix if reopening: before enabling EP anywhere, run:",
       "track": "large moe expert parallelism"
     },
@@ -3081,7 +3072,7 @@
       "handoff": "llama-cpp-dsa-contribution.md",
       "id": "INF-31",
       "index": "inference-research-index.md",
-      "line": 40,
+      "line": 39,
       "next_action": "D4 residual \u2014 pin the faulty `dequantize_V_bf16` line and file upstream (D4 done: c49a37c4)",
       "track": "llama cpp dsa contribution"
     },
@@ -3092,7 +3083,7 @@
       "handoff": "log-linear-gated-deltanet-readiness.md",
       "id": "INF-33",
       "index": "inference-research-index.md",
-      "line": 41,
+      "line": 40,
       "next_action": "Wire hattention_recurrent() into HGatedDeltaNetAttention.forward and confirm it reproduces chunk-path logits on CPU",
       "track": "log linear gated deltanet readiness"
     },
@@ -3101,7 +3092,7 @@
       "handoff": "mi210-big-model-and-acceleration-roadmap.md",
       "id": "INF-34",
       "index": "inference-research-index.md",
-      "line": 42,
+      "line": 41,
       "next_action": "PF1 \u2014 measure the CPU-vs-MI210 prefill crossover on the served Qwen3.8-Flash-Next UD-IQ4_XS (DR-3e retired 2026-10-28, 122B deprecated)",
       "track": "mi210 big model and acceleration roadmap"
     },
@@ -3113,7 +3104,7 @@
       "handoff": "mi210-q8-dequant-gemv-roofline.md",
       "id": "INF-37",
       "index": "inference-research-index.md",
-      "line": 43,
+      "line": 42,
       "next_action": "Resolve Q4/IQ2 approvals; scope INF37-MOE-Q8-FUSION's experimental GLU correctness slice",
       "track": "mi210 q8 dequant gemv roofline"
     },
@@ -3122,7 +3113,7 @@
       "handoff": "moe-spec-cpu-spec-dec-integration.md",
       "id": "INF-40",
       "index": "inference-research-index.md",
-      "line": 44,
+      "line": 43,
       "next_action": "After the AutoKernel window: 5-rep moe_spec_budget sweep on qwen4exp + champion ef81196d5 (future architect_critic), MTP n-max\u22653",
       "track": "moe spec cpu spec dec integration"
     },
@@ -3131,7 +3122,7 @@
       "handoff": "multiscreen-attention-evaluation.md",
       "id": "INF-42",
       "index": "inference-research-index.md",
-      "line": 45,
+      "line": 44,
       "next_action": "G1 closed (100% recall to 128K, q8 = f16); pick the next multiscreen row or archive the handoff",
       "track": "multiscreen attention evaluation"
     },
@@ -3140,7 +3131,7 @@
       "handoff": "numa-placement-defect-20260730.md",
       "id": "INF-43",
       "index": "inference-research-index.md",
-      "line": 46,
+      "line": 45,
       "next_action": "T3 \u2014 Re-run the 27 confounded E5 cells on declared 1-full + 2-half placement, incl. 0-95 --interleave=all, per P-BENCH-PLACEMENT-1",
       "track": "numa placement defect"
     },
@@ -3151,7 +3142,7 @@
       "handoff": "numa-prefill-decode-disaggregation.md",
       "id": "INF-44",
       "index": "inference-research-index.md",
-      "line": 47,
+      "line": 46,
       "next_action": "Blocked on INF-34 PF1 (CPU-vs-MI210 prefill crossover); then run NPD-1 or close the GPU-prefill branch",
       "track": "numa prefill decode disaggregation"
     },
@@ -3160,7 +3151,7 @@
       "handoff": "numa-topology-cutover-resume-20260730.md",
       "id": "INF-45",
       "index": "inference-research-index.md",
-      "line": 48,
+      "line": 47,
       "next_action": "P0-3 \u2014 cold-start the stack, re-bench the contention matrix, commit + push all three repos",
       "track": "numa topology cutover resume"
     },
@@ -3171,7 +3162,7 @@
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
       "index": "inference-research-index.md",
-      "line": 49,
+      "line": 48,
       "next_action": "Repair audited C6 carriers, wire oracle/Ghost boundary",
       "track": "rocm verify profile backend"
     },
@@ -3180,7 +3171,7 @@
       "handoff": "sarathi-serve-cpu-evaluation.md",
       "id": "INF-49",
       "index": "inference-research-index.md",
-      "line": 50,
+      "line": 49,
       "next_action": "Re-evaluate Sarathi-Serve chunked-prefill for the eval-batch serving class (the multi-tenant trigger fired by batched-decode E2)",
       "track": "sarathi serve cpu evaluation"
     },
@@ -3189,7 +3180,7 @@
       "handoff": "speculative-decoding-mtp-refresh.md",
       "id": "INF-50",
       "index": "inference-research-index.md",
-      "line": 51,
+      "line": 50,
       "next_action": "Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold",
       "track": "speculative decoding mtp refresh"
     },
@@ -3198,25 +3189,16 @@
       "handoff": "streaming-llm-baseline.md",
       "id": "INF-51",
       "index": "inference-research-index.md",
-      "line": 52,
+      "line": 51,
       "next_action": "Run 4-axis inference sweep: 3 workloads (retrieval/reasoning/dialogue) x 3 budgets (25/50/75%) x 2 models",
       "track": "streaming llm baseline"
-    },
-    "INF-54": {
-      "deps": [],
-      "handoff": "tq3-quantization-evaluation.md",
-      "id": "INF-54",
-      "index": "inference-research-index.md",
-      "line": 53,
-      "next_action": "Prototype faithful ChunkKV on a fresh llama.cpp-experimental tree",
-      "track": "tq3 quantization evaluation"
     },
     "INF-56": {
       "deps": [],
       "handoff": "triattention-kv-selection.md",
       "id": "INF-56",
       "index": "inference-research-index.md",
-      "line": 54,
+      "line": 52,
       "next_action": "S8 \u2014 Sweep keep_ratio and layer_weights per production role; persist quality/speed/cost/reliability Pareto profiles",
       "track": "triattention kv selection"
     },
@@ -3225,7 +3207,7 @@
       "handoff": "v9-kernel-per-request-speculative-params.md",
       "id": "INF-58",
       "index": "inference-research-index.md",
-      "line": 55,
+      "line": 53,
       "next_action": "Implement and prospectively ratify the sealed resident promotion fast path with fresh-server fallback",
       "track": "v9 kernel per request speculative params"
     },
@@ -3236,7 +3218,7 @@
       "handoff": "yarn-context-extension-research.md",
       "id": "INF-59",
       "index": "inference-research-index.md",
-      "line": 56,
+      "line": 54,
       "next_action": "Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power",
       "track": "yarn context extension research"
     },
@@ -3245,7 +3227,7 @@
       "handoff": "qwen38-27b-replace-qwen36.md",
       "id": "INF-60",
       "index": "inference-research-index.md",
-      "line": 57,
+      "line": 55,
       "next_action": "Q38-T7b closed; run Q38-T7a passive log read, then VB-SERVING-DF2; Q38-T10.1 gate after",
       "track": "model refresh"
     },
@@ -3256,7 +3238,7 @@
       "handoff": "gpu-candidates-surface-qwen38-update.md",
       "id": "INF-61",
       "index": "inference-research-index.md",
-      "line": 58,
+      "line": 56,
       "next_action": "Run a same-window n-max 4 vs 8 ABA at np\u22652 before shipping the re-collected grid; then depth-sweep A4, A3, A1, FF and Laguna",
       "track": "model evaluation queue (INF-60-gated)"
     },
@@ -3348,7 +3330,7 @@
       "handoff": "autokernel-unified-surface-program.md",
       "id": "INF-73",
       "index": "inference-research-index.md",
-      "line": 59,
+      "line": 57,
       "next_action": "LIVE GPU leg (serving-owner grant, ws58)",
       "track": "autokernel unified surface"
     },
@@ -3359,7 +3341,7 @@
       "handoff": "autokernel-concurrent-target-coordination.md",
       "id": "INF-74",
       "index": "inference-research-index.md",
-      "line": 60,
+      "line": 58,
       "next_action": "Land INF-74-CGROUP-ROOT (root-owned cgroup delegation, Codex script), add escape tests, re-run gate; cutover rejected until then",
       "track": "autokernel concurrent targets"
     },
@@ -3372,7 +3354,7 @@
       "handoff": "autokernel-cross-workload-keep-gate.md",
       "id": "INF-75",
       "index": "inference-research-index.md",
-      "line": 61,
+      "line": 59,
       "next_action": "AKX-P0d \u2014 run the W1\u2013W6 base census on the current champion-of-record under stage claims, then AKX-P1b replay 732389d6",
       "track": "autokernel cross-workload keep gate"
     },
@@ -3383,7 +3365,7 @@
       "handoff": "paw-compiled-specialists.md",
       "id": "INF-76",
       "index": "inference-research-index.md",
-      "line": 63,
+      "line": 61,
       "next_action": "PAW-2 \u2014 self-hosted compile spike (intake-1481 server + intake-1478 weights); then PAW-5 candidates list",
       "track": "model evaluation queue (EVL-08-gated)"
     },
@@ -3425,7 +3407,7 @@
     },
     "INF-80": {
       "deps": [],
-      "handoff": "exl3-cpu-mi210-implementation.md",
+      "handoff": "quantization-and-low-bit.md",
       "id": "INF-80",
       "index": "inference-research-index.md",
       "line": 33,
@@ -3444,7 +3426,7 @@
       "handoff": "autokernel-all-devices-all-dimensions.md",
       "id": "INF-81",
       "index": "inference-research-index.md",
-      "line": 62,
+      "line": 60,
       "next_action": "AKX-ALL-30b: write G3-first order + G1/G2 re-rank (R=1.73) into the seed draft; AKX-ALL-LB3.2 re-run via akxlb32 v2",
       "track": "autokernel all devices all dimensions"
     },

@@ -11,7 +11,6 @@
   "INF-73": 0.7,
   "RTG-54": 0.65,
   "INF-06": 0.62,
-  "INF-26": 0.6,
   "INF-64": 0.6,
   "INF-67": 0.6,
   "INF-81": 0.6,
@@ -29,7 +28,6 @@
   "INF-23": 0.45,
   "INF-34": 0.45,
   "INF-43": 0.45,
-  "INF-54": 0.45,
   "INF-62": 0.45,
   "INF-72": 0.4,
   "INF-79": 0.4,
@@ -141,7 +139,9 @@
   "RTG-36#model-stack-single-source-update-pipeline": 0.3,
   "RTG-36#model-stack-update-pipeline-audit": 0.1,
   "RTG-36#standardized-stack-update-pipeline-finalization": 0.2,
-  "RTG-36#wp12-fleet-layer-design": 0.1
+  "RTG-36#wp12-fleet-layer-design": 0.1,
+  "INF-80#iqk-iquant-enablement": 0.6,
+  "INF-80#tq3-quantization-evaluation": 0.45
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
@@ -404,7 +404,7 @@
    "before": ""
   },
   {
-   "row": "INF-26",
+   "row": "INF-80",
    "tok": "C-L3-Q38FN",
    "kind": "I",
    "cls": "routine",

@@ -2763,7 +2763,7 @@ Proposed as **prose only** — deliberately not written into `coordination/infer
 
 | item | needs inference? | disposition |
 |---|---|---|
-| iqk IQ-quant enablement (B1-B5) | **YES** — build + per-model coherence + `llama-bench` | **operator-assigned** to a dedicated kernel session; see [iqk-iquant-enablement.md](iqk-iquant-enablement.md). Do not duplicate — but if the loop reaches a quiet window first, coordinate rather than race. |
+| iqk IQ-quant enablement (B1-B5) | **YES** — build + per-model coherence + `llama-bench` | **operator-assigned** to a dedicated kernel session; see [iqk-iquant-enablement.md](quantization-and-low-bit.md#track-iqk-iquant-enablement). Do not duplicate — but if the loop reaches a quiet window first, coordinate rather than race. |
 | ContextRot rot-signature probe | **YES** — moderate, see below | genuine candidate entry, **optional** |
 | rot↔NA compaction telemetry | **NO** | orchestrator-side plumbing only (`pipeline_monitor/anomaly.py` detectors already exist; the inverted detector is already fixed in `3d452476`). **Does not belong in this loop.** |
 

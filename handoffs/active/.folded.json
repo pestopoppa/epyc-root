@@ -48,6 +48,10 @@
    "target": "eval-tower-program.md",
    "track": null
   },
+  "exl3-cpu-mi210-implementation.md": {
+   "target": "quantization-and-low-bit.md",
+   "track": null
+  },
   "fable5-window2-findings-01-optimizer-integrity.md": {
    "target": "eval-tower-program.md",
    "track": "fable5-window2-findings-01-optimizer-integrity"
@@ -67,6 +71,10 @@
   "integration-test-coverage.md": {
    "target": "engineering-hygiene-backlog.md",
    "track": "integration-test-coverage"
+  },
+  "iqk-iquant-enablement.md": {
+   "target": "quantization-and-low-bit.md",
+   "track": "iqk-iquant-enablement"
   },
   "lightning-attention-port.md": {
    "target": "model-evaluation-queue.md",
@@ -162,6 +170,10 @@
    "target": "model-evaluation-queue.md",
    "track": "tidar-one-pass-variant-b"
   },
+  "tq3-quantization-evaluation.md": {
+   "target": "quantization-and-low-bit.md",
+   "track": "tq3-quantization-evaluation"
+  },
   "wp12-fleet-layer-design.md": {
    "target": "stack-lifecycle-program.md",
    "track": "wp12-fleet-layer-design"
@@ -232,6 +244,10 @@
    "target": "EVL-14",
    "track": "inference-batch-loop"
   },
+  "INF-26": {
+   "target": "INF-80",
+   "track": "iqk-iquant-enablement"
+  },
   "INF-30": {
    "target": "EVL-02",
    "track": "lightning-attention-port"
@@ -251,6 +267,10 @@
   "INF-53": {
    "target": "EVL-02",
    "track": "tidar-one-pass-variant-b"
+  },
+  "INF-54": {
+   "target": "INF-80",
+   "track": "tq3-quantization-evaluation"
   },
   "PIP-03": {
    "target": "EVL-02",

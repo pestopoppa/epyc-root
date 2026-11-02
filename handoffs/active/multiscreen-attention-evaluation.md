@@ -545,7 +545,7 @@ See also the fifth GDN branch-map row in
       control plus the shortest length at which a drop appears** at `-ctk f16 -ctv f16`. If the drop
       survives f16 KV it is not a KV-quant artifact. This is a *control*; it is not a re-opening of the
       KV axis, which `G2`–`G5` in
-      [tq3-quantization-evaluation.md](tq3-quantization-evaluation.md) own.
+      [tq3-quantization-evaluation.md](quantization-and-low-bit.md#track-tq3-quantization-evaluation) own.
 
       **Gate — what opens it.** A recall score **materially below the same probe at short context**,
       made operational as: **≥ 10 percentage points below the 4K control at any of 32K / 64K / 128K,
