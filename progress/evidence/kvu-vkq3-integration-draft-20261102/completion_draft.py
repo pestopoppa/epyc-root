@@ -3,7 +3,6 @@ import json
 import os
 from pathlib import Path
 import sys
-import tempfile
 
 FAILURES = {'nonzero_exit', 'timeout', 'cancelled', 'output_overflow',
             'input_incomplete', 'invalid_completion', 'invalid_output'}
@@ -52,24 +51,29 @@ def publish_unit(mode, attempt_id, directory, destination):
     path. This helper assumes the receipt directory is owned by the worker and
     is not being modified concurrently; it is not a launcher or grant check.
     """
+    dest = Path(destination)
+    if not dest.is_absolute():
+        raise ValueError('result path must be absolute')
     if not complete_diagnostic(mode, attempt_id, directory):
         raise ValueError('receipt is not complete')
     payload = (Path(directory) / 'unit.jsonl').read_bytes()
-    dest = Path(destination)
-    fd, tmp = tempfile.mkstemp(prefix='.' + dest.name + '.', dir=dest.parent)
+    tmp = dest.parent / ('.' + dest.name + '.tmp')
+    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
     try:
         with os.fdopen(fd, 'wb') as out:
             out.write(payload)
             out.flush()
             os.fsync(out.fileno())
         os.link(tmp, dest, follow_symlinks=False)
+        os.unlink(tmp)
         dfd = os.open(dest.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
         try:
             os.fsync(dfd)
         finally:
             os.close(dfd)
-    finally:
-        os.unlink(tmp)
+    except BaseException:
+        # Preserve a partial as interruption evidence and prohibit retry in place.
+        raise
 
 
 if __name__ == '__main__':

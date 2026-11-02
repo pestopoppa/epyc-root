@@ -115,3 +115,7 @@ VKQ3 offline publication draft validates matching completion receipt before atom
 ## 10:12Z — Added cancellation signal handling to the VKQ3 grant bridge draft.
 
 VKQ3 grant bridge draft routes SIGINT and SIGTERM to the grant guard and restores prior handlers even on exception. Four offline tests pass, including a delivered SIGTERM. Handler coverage ends when the guarded attempt returns and does not yet cover subsequent publication; parent-death containment, runtime binding and real engine integration remain. No row published or inference run.
+
+## 10:14Z — Reconciled VKQ3 diagnostic result publication into one checked atomic writer.
+
+VKQ3 diagnostic drafts now use one receipt-validated atomic publisher, retaining exclusive partial files, and reject dry-run result paths that resolve to the full result path. Thirteen offline tests pass. Receipt custody assumes a private directory without concurrent mutation; runtime binding, process containment and actual engine integration remain open. No inference ran and no row was published.
