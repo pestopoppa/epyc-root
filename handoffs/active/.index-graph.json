@@ -3945,7 +3945,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T07:44:21Z",
+  "generated_at": "2026-11-02T07:54:26Z",
   "nodes": [
     {
       "age_days": 95,
@@ -6107,13 +6107,13 @@
       "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 55,
+      "closed": 56,
       "domain": "inference-research",
       "handoff": "speculative-decoding-mtp-refresh.md",
       "id": "INF-50",
       "last_advanced": "2026-11-01",
       "next_action": "Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold",
-      "open": 36,
+      "open": 35,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -8869,7 +8869,7 @@
       "track": "churn pipeline"
     },
     {
-      "age_days": 4,
+      "age_days": 0,
       "blocked": 12,
       "blocked_by": [
         "RTG-09"
@@ -8878,7 +8878,7 @@
       "domain": "user-facing-harness",
       "handoff": "harness-selection-and-integration.md",
       "id": "UFH-01",
-      "last_advanced": "2026-10-29",
+      "last_advanced": "2026-11-02",
       "next_action": "Resolve HS-OD-4 token contract; prepare P6 shared tools and HS-19d.P0 source audits",
       "open": 16,
       "priority": 0.9364,

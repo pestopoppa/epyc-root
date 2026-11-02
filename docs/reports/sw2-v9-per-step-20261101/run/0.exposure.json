@@ -1,0 +1,1 @@
+{"epoch": 1793584722.8185513, "request": {"cache_prompt": false, "id_slot": 0, "n_predict": 128, "prompt": "At sunrise the gardener opened the", "speculative.n_max": 7, "temperature": 0.0, "top_k": 1}, "request_sha256": "cc23d1203f4cbf3e232fdbc47ac70d6a808adff9fec6bbe38d17832967ce1329", "server_session": "1793584722606892247", "slot_requested": 0}

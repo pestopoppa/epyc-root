@@ -140,7 +140,7 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 59 | 1041 | 59 | 2026-07-29 |
+| inference-research | 59 | 1040 | 59 | 2026-07-29 |
 | pipeline-integration | 5 | 70 | 1 | 2026-09-24 |
 | research-evaluation | 41 | 696 | 15 | 2026-07-29 |
 | reviewer-control-plane | 6 | 26 | 12 | 2026-07-29 |
