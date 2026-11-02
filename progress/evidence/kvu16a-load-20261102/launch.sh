@@ -8,7 +8,7 @@ case ${1:-} in
   read -r runtime_pin _ < <(sha256sum "$D/runtime.sha256")
   read -r source_pin _ < <(sha256sum "$D/source.sha256")
   [ "$runtime_pin" = 3cb7242f993ab0347503f28e9bb28465bc3ea84019fd74f6d01c036f3ea28811 ] || exit 65
-  [ "$source_pin" = 5faf209e9e98db268229d7b4a2e9079c45b045bb55e5598c4d8b3c8a18f4103b ] || exit 65
+  [ "$source_pin" = 3e57b4e27c461b8daab8202ff8d4440995cb9c35fcfff4497c37620e3207b867 ] || exit 65
   sha256sum -c --quiet "$D/runtime.sha256"
   sha256sum -c --quiet "$D/source.sha256"
   /usr/bin/python3 -B "$D/identity.py" "$D/model-receipt.json" 42d05e6400e73d4618a84ec739bee0d00d62f3d4509f01b7534e38efbc74b078
