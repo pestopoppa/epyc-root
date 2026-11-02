@@ -131,3 +131,7 @@ Landed prior investigation progress after resolving concurrent origin/main push 
 ## 09:37Z — Integrate open-weight RLM prompt preparation
 
 Reviewed intake-537 prompt-arm preparation: vendored fast-rlm source and MIT license are pinned, but the existing rlm_slice draft does not implement the EPYC tool interface. The prompt copier and Vidya adapter hardcode two arms; an actual third arm needs coordinated producer, prompt snapshot, schedule and adapter changes. No inference or decode-saving claim follows. Delegated bounded third-arm preparation, width-diff review and Omega logger validation; registered completion events.
+
+## 09:38Z — Integrate width, third-arm and Omega preparation reviews
+
+Reviewed width design: the existing uncommitted guide proposes a 3→2→1 experiment, but it does not establish that width actually tapers or that scheduling is implemented; the handoff remains open. The third-arm implementation awaits a resolvable GitNexus impact and coordinated producer/adapter support. Model-free Omega validation reproduced the logger configuration mismatch and confirmed that ORCHESTRATOR_PROGRESS_LOG_DIR directed to an isolated scratch path allows a real ProgressLogger flush; this does not qualify or authorize retry of the parked lineage. Delegated index recovery, further safe Omega preparation and prompt design; registered result events.
