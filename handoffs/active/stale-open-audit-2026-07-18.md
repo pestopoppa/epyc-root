@@ -49,8 +49,8 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
 | [decision-aware-routing](decision-aware-routing.md) | 26 | 3 | PARKED | re-anchor — core FROZEN/closed in routing-truth-restoration W8; keep only Factory-ai/URE backlog |
 | [learned-routing-controller](learned-routing-controller.md) | 17 | 2 | MIXED | split — live BGE+MLP rollout decision vs FROZEN Phase 1.5+ expansion |
 | [glm51-reap-cpu-evaluation](glm51-reap-cpu-evaluation.md) | 11 | 9 | LIVE | keep — real work; true blocker = operator-approved GLM inference runs |
-| [colbert-reranker-web-research](colbert-reranker-web-research.md) | 10 | 2 | PARKED | re-anchor — close S5 request-path NO-GO; keep inference-gated LateOn/DenseOn latency+A/B |
-| [internal-kb-rag](internal-kb-rag.md) | 8 | 0 | LANDED | re-anchor — K1–K7 CERTIFIED 2026-06-13; keep only deferred K8 + optional Hy-MT2 |
+| [colbert-reranker-web-research](knowledge-pipelines.md#track-colbert-reranker-web-research) | 10 | 2 | PARKED | re-anchor — close S5 request-path NO-GO; keep inference-gated LateOn/DenseOn latency+A/B |
+| [internal-kb-rag](knowledge-pipelines.md) | 8 | 0 | LANDED | re-anchor — K1–K7 CERTIFIED 2026-06-13; keep only deferred K8 + optional Hy-MT2 |
 | [minddr-deep-research-mode](model-evaluation-queue.md#track-minddr-deep-research-mode) | 8 | 2 | LIVE | keep — MD-9 A/B inference-gated. **Reactivate note**: Phase-2 hardware gate flipped (DGX→MI210 present) |
 | [x-mas-text-routing](x-mas-text-routing.md) | 1 | 1 | LANDED | re-anchor — enforce enabled (`d4a6c927`); convert to standing telemetry-watch |
 
@@ -63,7 +63,7 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
 | [per-request-reasoning-budget](context-and-token-economy.md#track-per-request-reasoning-budget) | 4 | 4 | LIVE | keep — llama.cpp implementation genuinely pending (inference window + experimental branch) |
 | [unified-trace-memory-service](unified-trace-memory-service.md) | 3 | 0 | PARKED | split — close landed T1–T6 nav parent; keep T7 (Hermes-daily-use gate, unfired) + consolidation parked |
 | [frontier-f2-self-running-lab](frontier-f2-self-running-lab.md) | 2 | 2 | LIVE | keep — W3 accumulating now (real quiet-window batches producing verdicts), W4 sequenced |
-| [sliders-local-validation](sliders-local-validation.md) | 8 | 0 | PARKED | **reactivate signal** — KB-RAG K7 reopen precondition FIRED 2026-06-13; surface to operator (still needs explicit ask; else keep parked, LOW/speculative) |
+| [sliders-local-validation](knowledge-pipelines.md#track-sliders-local-validation) | 8 | 0 | PARKED | **reactivate signal** — KB-RAG K7 reopen precondition FIRED 2026-06-13; surface to operator (still needs explicit ask; else keep parked, LOW/speculative) |
 | [security-review-skill](../completed/security-review-skill.md) | 1 | 0 | PARKED | close — skill shipped + in production; keep CI-gate as a deferred backlog note |
 
 ## Cross-cutting findings

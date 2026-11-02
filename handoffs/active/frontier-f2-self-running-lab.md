@@ -6,7 +6,7 @@
 **Created**: 2026-06-12
 **Priority**: HIGH but GATED on N1–N4 instrument repair + N2 ledger; F5 injection policy is complete
 **Spec**: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md) §F2 — read it before claiming any waypoint
-**Related**: [fable5-findings-04-impl-plan.md](../completed/fable5-findings-04-impl-plan.md) (capability registry); [frontier-f5-intake-injection-hardening.md](../completed/frontier-f5-intake-injection-hardening.md) (injection policy, COMPLETE); [internal-kb-rag.md](internal-kb-rag.md) (kb-search context assembly); [delegation-context-preassembly.md](context-and-token-economy.md#track-delegation-context-preassembly) (DCP bundles)
+**Related**: [fable5-findings-04-impl-plan.md](../completed/fable5-findings-04-impl-plan.md) (capability registry); [frontier-f5-intake-injection-hardening.md](../completed/frontier-f5-intake-injection-hardening.md) (injection policy, COMPLETE); [internal-kb-rag.md](knowledge-pipelines.md) (kb-search context assembly); [delegation-context-preassembly.md](context-and-token-economy.md#track-delegation-context-preassembly) (DCP bundles)
 
 ## Why
 

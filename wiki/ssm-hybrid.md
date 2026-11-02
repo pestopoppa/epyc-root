@@ -360,7 +360,7 @@ The Liquid AI LFM2 family (intake-650 blog / 651 model card / 652 catalog / 653 
 - **NOT a spec-dec drafter**: its own 128K `lfm2` vocab is incompatible with every production target tokenizer (Qwen3.6, gemma4); spec-dec requires exact tokenizer match; all production spec-dec is self-speculation (gemma4 MTP / REAP+draft). Standalone-only.
 - **Deployment verdict**: no current production role has a gap a 1.5B-active edge model fills, so intake-651 was set to worth_investigating (not adopt_component). The 63.47 AA-Omniscience non-hallucination figure is a calibrated-**abstention** RL artifact (Accuracy 8.67, Index −24.70), not a knowledge win — though that calibrated-abstention behavior could suit a future router/triage role. **LFM2-ColBERT-350M** (late-interaction retriever) is a candidate vs GTE-ModernColBERT for `internal-kb-rag.md`, but is **PyLate/PLAID-only — NOT GGUF/llama.cpp/ONNX** (HF-only per Liquid docs).
 
-Sources: [`research/deep-dives/lfm2-lfm25-family-deep-dive.md`](../research/deep-dives/lfm2-lfm25-family-deep-dive.md), [`handoffs/active/multiscreen-attention-evaluation.md`](../handoffs/active/multiscreen-attention-evaluation.md), [`handoffs/active/internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md), intake-650/651/652/653.
+Sources: [`research/deep-dives/lfm2-lfm25-family-deep-dive.md`](../research/deep-dives/lfm2-lfm25-family-deep-dive.md), [`handoffs/active/multiscreen-attention-evaluation.md`](../handoffs/active/multiscreen-attention-evaluation.md), [`handoffs/active/knowledge-pipelines.md`](../handoffs/active/knowledge-pipelines.md), intake-650/651/652/653.
 
 ## Nemotron-3-Ultra-550B — first in-RAM Mamba2-hybrid MoE with a CPU path (2026-06-12)
 

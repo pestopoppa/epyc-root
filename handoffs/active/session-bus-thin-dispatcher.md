@@ -2513,7 +2513,7 @@ one-live-instance assumption. If that task gets its own handoff, move these five
   closed them. It re-selected them on 20 consecutive ticks. In the surviving advisory shard: **811
   `would-assign` records, 100% carrying a `task_id`, resolving to 15 distinct `(agent, task, lane)`
   picks over NINE distinct task rows, all nine from one file**
-  (`handoffs/active/opendataloader-pipeline-integration.md`), the top six repeating 104–105 times
+  (`handoffs/active/knowledge-pipelines.md`), the top six repeating 104–105 times
   each. **Fixing delivery does not fix selection** — a working courier now delivers wrong rows faster.
   - [x] **Establish whether the READY set is cached or re-derived per tick** ✅ 2026-08-12 — `mainD`.
     **CACHED, and nothing ever re-derived it.** Root cause is one line:

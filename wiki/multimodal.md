@@ -725,11 +725,11 @@ correction and the now-confirmed disappearance of the run artifact:
 
 ### Source References (2026-08-25 document-specialist arms)
 
-- [`document-parser-table-bench.md`](../handoffs/active/document-parser-table-bench.md) — the
+- [`document-parser-table-bench.md`](../handoffs/active/knowledge-pipelines.md#track-document-parser-table-bench) — the
   three-stage architecture and six official prompts, the void note on the 0.0/0.058333 figures,
   the full OmniDocBench instrument, the Phase A environment landing and the `llama-cpp-server`
   backend verification, and the Phase B/C operator gates.
-- [`opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md)
+- [`opendataloader-pipeline-integration.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration)
   — the Unlimited-OCR observation row with the corrected causal claim, the requantized
   `DEFAULT_MODEL` repoint, and the canonical A/B contract.
 - [`progress/2026-08/2026-08-13-mainD.md`](../progress/2026-08/2026-08-13-mainD.md) — the demo run
@@ -1570,7 +1570,7 @@ Sources: [conversation-stack handoff](../handoffs/active/speech-and-multimodal.m
 - **S-16 closed by audit:** Qwen3-VL-30B-A3B Q4_K_M is registered as `worker_vision`/`vision_escalation` (deployed 2026-07-31), replacing Qwen2.5-VL-7B in the research registry. This is a reconciliation of an already-deployed state, not a new measurement.
 - **PaddleOCR-VL-1.6 on CPU (PIP02 Phase B):** the llama-server vision path (GGUF + mmproj, `-ngl 0 -np 1`) completed two English table pages in 67.8 s and emitted HTML `<table>` markup; the bounded n=2 smoke says the harness works, not that the tables are faithful (dropped operators seen in page-2 equations). Scoring belongs to Phase C (see Document Processing).
 
-Sources: [multimodal-pipeline handoff](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline); [document-parser-table-bench handoff](../handoffs/active/document-parser-table-bench.md); [PIP02 partial TEDS report](../artifacts/compute/pip02-partial-teds-20261029/README.md)
+Sources: [multimodal-pipeline handoff](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline); [document-parser-table-bench handoff](../handoffs/active/knowledge-pipelines.md#track-document-parser-table-bench); [PIP02 partial TEDS report](../artifacts/compute/pip02-partial-teds-20261029/README.md)
 
 ## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 

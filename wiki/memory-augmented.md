@@ -805,7 +805,7 @@ The connection between memory and the autopilot is especially significant. Befor
 ### New Finding (2026-06-21) — Evidence-pruned reconstruction (MRAgent) is a second instance of the parked two-pass-retrieval pattern, not a new workstream
 
 - **MRAgent's "active reconstruction" is the same evidence-conditioned retrieval family already parked on the KB-RAG handoff, approached from the pruning side.** MRAgent (intake-698, arXiv:2606.06036, Ji/Li/Hooi) replaces static "retrieve-then-reason" with a Cue-Tag-Content associative memory graph traversed by interleaving LLM reasoning with retrieval — iteratively exploring and pruning retrieval paths on intermediate evidence rather than fetching a flat top-k. This is the same self-correcting two-pass pattern recorded from agent-oss (intake-610): "evidence incomplete → gap-query → re-retrieve at a lower threshold," but realized as path-pruning instead of re-retrieval. It is logged as a **comparative datapoint** against `internal-kb-rag.md`'s parked note, and stays **deferred-pending-a-consumer-that-emits-an-incompleteness-signal** — no new K-track, no plan delta.
-- **MRAgent's only transferable lever is token-cost discipline, not its accuracy headline.** Reported token consumption is ~118k vs 245k–3.3M for baselines, with LoCoMo/LongMemEval gains — but all numbers are **cloud-LLM-bound (Gemini-2.5-Flash / Claude-Sonnet-4.5) with NO CPU/local/quantized results**, and MRAgent actually **loses to Mem0 on LoCoMo multi-hop F1 (43.69 vs 45.17)**. Under EPYC's token-budget constraints, the reusable idea is evidence-pruned traversal's cost behavior; the accuracy figures are observations (per MEASUREMENT.md), never decision-gating. Routing note: do NOT attach this to `delta-mem-reproduction.md` (its open gates are GPU-bound accuracy reproduction, not retrieval token-cost). Sources: [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md) (2026-06-20 MRAgent RIU), [intake-698](https://arxiv.org/abs/2606.06036). `external (preprint, cloud-bound)`
+- **MRAgent's only transferable lever is token-cost discipline, not its accuracy headline.** Reported token consumption is ~118k vs 245k–3.3M for baselines, with LoCoMo/LongMemEval gains — but all numbers are **cloud-LLM-bound (Gemini-2.5-Flash / Claude-Sonnet-4.5) with NO CPU/local/quantized results**, and MRAgent actually **loses to Mem0 on LoCoMo multi-hop F1 (43.69 vs 45.17)**. Under EPYC's token-budget constraints, the reusable idea is evidence-pruned traversal's cost behavior; the accuracy figures are observations (per MEASUREMENT.md), never decision-gating. Routing note: do NOT attach this to `delta-mem-reproduction.md` (its open gates are GPU-bound accuracy reproduction, not retrieval token-cost). Sources: [internal-kb-rag.md](../handoffs/active/knowledge-pipelines.md) (2026-06-20 MRAgent RIU), [intake-698](https://arxiv.org/abs/2606.06036). `external (preprint, cloud-bound)`
 
 ### New Finding (2026-06-21) — DecentMem dual-pool structure transfers; its LLM-judge reweighting conflicts with autopilot policy
 
@@ -948,7 +948,7 @@ This update records two Flywheel patterns from intake-492 — the wikilink learn
 
 ### Flywheel wikilink learning-loop scorer pattern (intake-492, K8 deferred)
 
-Per [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) K8:
+Per [`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md) K8:
 
 - **Pattern**: auto-wikilink suggestion uses accept/reject feedback to update a graph-edge scorer over time. Scorer combines alias matching + co-occurrence statistics + graph topology + semantic context. Each accepted suggestion increments the edge weight; each rejected suggestion decrements. Over time the scorer learns the project's actual link conventions.
 - **Adapted use**: for `wiki/INDEX.md` compilation pipeline, weight cross-document links by validation feedback. When the linter or user rejects a cross-link suggestion, the scorer learns to suppress similar suggestions; when accepted, it learns to surface them.
@@ -964,7 +964,7 @@ Per [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) K8:
 
 ### Sources
 
-- [`handoffs/active/internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — K8 wikilink learning-loop scorer (deferred)
+- [`handoffs/active/knowledge-pipelines.md`](../handoffs/active/knowledge-pipelines.md) — K8 wikilink learning-loop scorer (deferred)
 - intake-492 (Flywheel) — wikilink scorer pattern + read-side `memory(action=brief)` assembler
 
 ## Frozen-backbone persistent memory cluster (2026-05-19)
@@ -1277,14 +1277,14 @@ invocations**, and the same paper's Table 2 has the **dense retriever winning**
 (90.0/86.0 vs 89.0/83.0). The transferable finding is **behavioural
 substitution**: it argues for retrieval *alongside* grep, not against an
 embedding index.
-[`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) §2026-07-29 dive corrections
+[`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md) §2026-07-29 dive corrections
 
 ### Source References
 
 - [`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) — UTM-M1..M10: store shape, additive layering over `src/trace/`, three-verb write API, the missing per-window instrument, 128K context-budget competition, and the ranking correction
 - [`engram-conditional-memory.md`](../handoffs/active/engram-conditional-memory.md) — utility-aware retrieval over the adopted schema; k-ablation and the replication that failed at the retriever; budget-conditional k
 - [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) — AP-29a write-gate budget and the judge-accuracy plateau; the CORE contrast
-- [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — corrected retriever reading (call counts, not scores)
+- [`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md) — corrected retriever reading (call counts, not scores)
 - [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — dive-outcome table incl. the duplicated-column defect in the ranking source
 
 

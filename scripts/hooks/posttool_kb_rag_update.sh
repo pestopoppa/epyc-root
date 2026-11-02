@@ -5,7 +5,7 @@ set -euo pipefail
 # then delegates to .claude/hooks/post_commit_kb_rag_update.sh which incrementally
 # refreshes the KB-RAG index for changed markdown files.
 #
-# Per handoffs/active/internal-kb-rag.md K5 + .claude/skills/kb-search/SKILL.md.
+# Per handoffs/active/knowledge-pipelines.md K5 + .claude/skills/kb-search/SKILL.md.
 #
 # Hook protocol: receives JSON on stdin with shape:
 #   {"tool_input": {"command": "..."}, "tool_response": {...}, ...}

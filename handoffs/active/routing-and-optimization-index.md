@@ -29,7 +29,6 @@
 | RTG-29 | retrain routing models | [retrain-routing-models.md](retrain-routing-models.md) | Operator decision: run a --keep-enabled bracket to actually enable live routing | — |
 | RTG-30 | routing intelligence | [routing-intelligence.md](routing-intelligence.md) | RI-18c: verify review_gate/review_verdict null on a COMPLETED live /chat in a DS41 open window; RI-19 use_memrl off; RI-24 | UFH-14 |
 | RTG-32 | scaffold autopilot cost lever deployment | [scaffold-autopilot-cost-lever-deployment.md](scaffold-autopilot-cost-lever-deployment.md) | T0.1 — Verify AutoPilot is down (no autopilot.py, no journal activity) and get operator go-ahead for the capability-registry row | — |
-| RTG-33 | searxng search backend | [searxng-search-backend.md](searxng-search-backend.md) | SX-5/SX-6 wait on AR-3; meanwhile relabel intake-365 (Firecrawl) superseded by intake-372, matching intake-364 | — |
 | RTG-34 | session bus thin dispatcher | [session-bus-thin-dispatcher.md](session-bus-thin-dispatcher.md) | AIR-6 — deploy exact guarded source and require ordinary-work refusal; then resume live canaries | — |
 | RTG-35 | shape keyed contention gating | [shape-keyed-contention-gating.md](shape-keyed-contention-gating.md) | REGION-SIBLING-1: merge fix/region-lock-smt-siblings-ec 4ae008a8 after operator approval (OP-77); then the q* nomenclature review | — |
 | RTG-36 | stack change governance pipeline | [stack-lifecycle-program.md](stack-lifecycle-program.md) | OP-72 sign STACKCHG-HYGIENE, then SCG-PRIORS-WARM-b + DRAFT-SEL-2b; SCG-FASTPATH; SCG-TEST-ORDER | — |

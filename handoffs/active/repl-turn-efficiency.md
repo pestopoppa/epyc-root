@@ -129,7 +129,7 @@ For each arm, report **Main Model Token Efficiency** as `mean(reward) / mean(mai
   - Context lives in a persistent Python REPL as a variable, never in the prompt — the same offloading model as our path.
   - **Prefix-cache warning worth noting:** the RLM scaffold re-appends the user query at the end of every turn rather than accumulating it, so successive turns share **no prefix**. Every turn is a cache miss on the query suffix — a real cost on bandwidth-bound CPU decode, and an argument against copying that scaffold shape verbatim.
 
-- [ ] Candidate: port the interval-F1 span scorer as an eval-tower scorer for evidence-grounded retrieval (also relevant to [internal-kb-rag.md](internal-kb-rag.md)). [intake-868]
+- [ ] Candidate: port the interval-F1 span scorer as an eval-tower scorer for evidence-grounded retrieval (also relevant to [internal-kb-rag.md](knowledge-pipelines.md)). [intake-868]
 
 ## Deep-Dive Correction — 2026-07-21 (The scorer port is WITHDRAWN; take the prompt instead)
 

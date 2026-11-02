@@ -28,6 +28,10 @@
    "target": "stack-lifecycle-program.md",
    "track": "capability-registry-and-promotion"
   },
+  "colbert-reranker-web-research.md": {
+   "target": "knowledge-pipelines.md",
+   "track": "colbert-reranker-web-research"
+  },
   "context-folding-progressive.md": {
    "target": "context-and-token-economy.md",
    "track": null
@@ -43,6 +47,10 @@
   "delta-mem-reproduction.md": {
    "target": "model-evaluation-queue.md",
    "track": "delta-mem-reproduction"
+  },
+  "document-parser-table-bench.md": {
+   "target": "knowledge-pipelines.md",
+   "track": "document-parser-table-bench"
   },
   "ernie-image-turbo-evaluation.md": {
    "target": "model-evaluation-queue.md",
@@ -87,6 +95,10 @@
   "integration-test-coverage.md": {
    "target": "engineering-hygiene-backlog.md",
    "track": "integration-test-coverage"
+  },
+  "internal-kb-rag.md": {
+   "target": "knowledge-pipelines.md",
+   "track": null
   },
   "iqk-iquant-enablement.md": {
    "target": "quantization-and-low-bit.md",
@@ -149,6 +161,10 @@
    "target": "engineering-hygiene-backlog.md",
    "track": null
   },
+  "opendataloader-pipeline-integration.md": {
+   "target": "knowledge-pipelines.md",
+   "track": "opendataloader-pipeline-integration"
+  },
   "per-request-reasoning-budget.md": {
    "target": "context-and-token-economy.md",
    "track": "per-request-reasoning-budget"
@@ -192,6 +208,14 @@
   "scoring-infra-standardization.md": {
    "target": "eval-tower-program.md",
    "track": "scoring-infra-standardization"
+  },
+  "searxng-search-backend.md": {
+   "target": "knowledge-pipelines.md",
+   "track": "searxng-search-backend"
+  },
+  "sliders-local-validation.md": {
+   "target": "knowledge-pipelines.md",
+   "track": "sliders-local-validation"
   },
   "stack-change-governance-pipeline.md": {
    "target": "stack-lifecycle-program.md",
@@ -296,6 +320,10 @@
    "target": "EVL-14",
    "track": "scoring-infra-standardization"
   },
+  "EVL-43": {
+   "target": "PIP-04",
+   "track": "sliders-local-validation"
+  },
   "EVL-45": {
    "target": "EVL-02",
    "track": "strand-rust-coder-rustevo2-verification"
@@ -348,9 +376,21 @@
    "target": "INF-80",
    "track": "tq3-quantization-evaluation"
   },
+  "PIP-01": {
+   "target": "PIP-04",
+   "track": "colbert-reranker-web-research"
+  },
+  "PIP-02": {
+   "target": "PIP-04",
+   "track": "document-parser-table-bench"
+  },
   "PIP-03": {
    "target": "EVL-02",
    "track": "ernie-image-turbo-evaluation"
+  },
+  "PIP-05": {
+   "target": "PIP-04",
+   "track": "opendataloader-pipeline-integration"
   },
   "RTG-01": {
    "target": "EVL-08",
@@ -389,6 +429,10 @@
   "RTG-28": {
    "target": "RTG-08",
    "track": "reasoning-effort-levels"
+  },
+  "RTG-33": {
+   "target": "PIP-04",
+   "track": "searxng-search-backend"
   },
   "RTG-38": {
    "target": "RTG-36",

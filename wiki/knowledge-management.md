@@ -447,7 +447,7 @@ commit message.
 
 - **The wiki source scanner no longer selects by filesystem mtime, and its watermark is shared.** OBS-13 and NIB2-68 were both closed on 2026-09-23 against `0ea91f3e` (which had landed 2026-09-08): `compile_sources.py` selects sources by **content hash against the tracked `wiki/source_manifest.json`**, never `st_mtime`, and `--touch` advances that tracked manifest. This removes the lane-worktree failure in which every file's mtime is the checkout time, so a lane scan reported the full-history backlog — measured at **919 phantom "new" sources on 2026-09-01 against a true delta of 2** — and a lane `--touch` would have written a watermark nobody else could see. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) OBS-13, NIB2-68)
 - **A landed fix whose box is never ticked reads as open work for three weeks.** Both boxes above described defects that had already been fixed; the closure on 2026-09-23 was bookkeeping, not engineering. The same session closed four other stale boxes (NI-IO, NIB2-81b, PAW-4, and the reaper item) the same way. The recurrence check in the operating constraints exists for exactly this: an item carried forward unchanged is evidence about the record, not about the work. ([2026-09-23 progress](../progress/2026-09/2026-09-23.md))
-- **KB-WM-5: one session file shared by every agent meant agents logged under each other's ids.** `scripts/utils/agent_log.sh`'s `AGENT_SESSION_FILE` put every writer's session id in the same `LOG_DIR` file, and `agent_session_end` deleted it for everyone. It is now sharded per `AGENT_ID` (`logs/.current_session.<id>`) with the legacy file left inert, plus a 4-test two-writer suite (epyc-root `c8dbb5d4`). Any audit trail spanning the fix boundary must treat pre-fix session attribution as unreliable when agents ran concurrently. ([internal-kb-rag](../handoffs/active/internal-kb-rag.md) KB-WM-5)
+- **KB-WM-5: one session file shared by every agent meant agents logged under each other's ids.** `scripts/utils/agent_log.sh`'s `AGENT_SESSION_FILE` put every writer's session id in the same `LOG_DIR` file, and `agent_session_end` deleted it for everyone. It is now sharded per `AGENT_ID` (`logs/.current_session.<id>`) with the legacy file left inert, plus a 4-test two-writer suite (epyc-root `c8dbb5d4`). Any audit trail spanning the fix boundary must treat pre-fix session attribution as unreliable when agents ran concurrently. ([internal-kb-rag](../handoffs/active/knowledge-pipelines.md) KB-WM-5)
 - **PAW-4: a record corrected in two fields kept misleading from the third.** The intake-811 blocker entry had `contradicting_evidence` and `notes` corrected on 2026-09-17, but `recommended_actions` still carried the stale 2026-07-11 "closed cloud compiler + no downloadable dataset" clause until 2026-09-23. Partial correction of a structured record is a distinct failure mode from an uncorrected one: the entry looks reviewed. ([paw-compiled-specialists](../handoffs/active/paw-compiled-specialists.md) PAW-4)
 - **A descriptor "drift" can be a spelling, not a change.** The K4 item declared `-ub 2048` (the effective value was already that) and recompiled the derived chain; the apparent descriptor drift turned out to be **symlink path spelling only**. Worth a check before treating a descriptor mismatch as a state divergence. ([2026-09-23 progress](../progress/2026-09/2026-09-23.md))
 
@@ -459,7 +459,7 @@ commit message.
 ### Source References (2026-09-23 evening wrap-up compile)
 
 - [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — OBS-13 and NIB2-68 closure notes against `0ea91f3e`.
-- [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md) — KB-WM-5 and the per-agent shard (epyc-root `c8dbb5d4`).
+- [internal-kb-rag.md](../handoffs/active/knowledge-pipelines.md) — KB-WM-5 and the per-agent shard (epyc-root `c8dbb5d4`).
 - [paw-compiled-specialists.md](../handoffs/active/paw-compiled-specialists.md) — PAW-4 record correction.
 - [2026-09-23.md](../progress/2026-09/2026-09-23.md) — the non-inference ROI batch: stale boxes closed, K4, and what remains open.
 
@@ -721,7 +721,7 @@ sub-lane logs.
       (4402 lines).
   - **Follow-ups.** KB-WM-5 (`logs/.current_session` is shared by every agent) and KB-WM-6 (graph freshness
     is unchecked; the recommendation keeps it provenance-only, with a `--check` warning).
-  - [internal-kb-rag](../handoffs/active/internal-kb-rag.md)
+  - [internal-kb-rag](../handoffs/active/knowledge-pipelines.md)
 - **OBS-12 is closed (root `afb9745c`).**
   - **Method.** `python3 -s` reproduces the interpreter left after a rebuild wipes `~/.local`.
   - **Silent config loss.** Under it, `compile_sources` silently ignored `wiki.yaml`, which dropped
@@ -744,7 +744,7 @@ sub-lane logs.
 - [sub-small-audits](../progress/2026-09/2026-09-17-sub-small-audits.md): OBS-12, KB-WM-3, VB-RUNNER-PATHS-2.
 - [sub-ap57b](../progress/2026-09/2026-09-17-sub-ap57b.md): the non-projection decision.
 - [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md): VB-AP53-RATE, SC83, SC87–89, VB-AK-LINEAGE, VB-RUNNER-PATHS-2/3.
-- [internal-kb-rag](../handoffs/active/internal-kb-rag.md): KB-WM-3/5/6.
+- [internal-kb-rag](../handoffs/active/knowledge-pipelines.md): KB-WM-3/5/6.
 - [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md): OBS-12/12a/12b.
 - [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): the landing audit and the `git cherry` rule.
 
@@ -937,13 +937,13 @@ index.
   never showed. Tests: 97/97 across five suites. **This supersedes** the 2026-08 recommendation
   lower on this page (fall back to the tracked manifest when `.last_compile` is absent and emit a
   `last_compile_source` field): that helper is deleted, not extended
-  ([internal-kb-rag](../handoffs/active/internal-kb-rag.md),
+  ([internal-kb-rag](../handoffs/active/knowledge-pipelines.md),
   [sub-kbwm4](../progress/2026-09/2026-09-16-sub-kbwm4.md)).
 - **OP-34 scoped `--touch`** (root `7cfc4846`, merged by `719ac638`). `--touch SCOPE` advances only
   the in-scope manifest entries and records `last_touch`. Out-of-scope deltas stay visible, and a
   scope that matches nothing exits 1. Bare `--touch` behaves as before. Both touches refuse to run
   without a tracked baseline ([sub-tooling](../progress/2026-09/2026-09-16-sub-tooling.md),
-  [internal-kb-rag](../handoffs/active/internal-kb-rag.md)).
+  [internal-kb-rag](../handoffs/active/knowledge-pipelines.md)).
 - **Evidence plane W3: segment snapshots are chained, and two fail-open defects are closed**
   (orchestrator `b7a61c02` + `06cf82dc`, merged `753343f5`). The fixes:
   - Prefix replay counted tail-only supersessions, which produced false `archive_prefix_drift`.
@@ -969,7 +969,7 @@ index.
 
 - [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md): SC75/VB-WIRE status, VB-GPU-PREP, the PRB-T4 caveat, VB-EVCONF2, VB-MHS, SC82–SC86, VB-NIAH-E1A
 - [vidya-pilot-spec](../docs/design/vidya-pilot-spec.md): one corroboration citation made precise (intake-1300#02)
-- [internal-kb-rag](../handoffs/active/internal-kb-rag.md): the KB-WM-1/2/4 closures, H2, C7
+- [internal-kb-rag](../handoffs/active/knowledge-pipelines.md): the KB-WM-1/2/4 closures, H2, C7
 - [evidence-plane-event-sourcing-and-narrative](../handoffs/active/evidence-plane-event-sourcing-and-narrative.md): W3 segment chaining and the scope fixes
 - [2026-09-16-sub-vidya-wire](../progress/2026-09/2026-09-16-sub-vidya-wire.md): the ingest dispatcher, dry-run counts, the SC renumbering, the prepared intake-1323 amendment
 - [2026-09-16-sub-own](../progress/2026-09/2026-09-16-sub-own.md): the MHS-5 correction as applied, the mis-anchor root cause, the VB-WIRE-2 harness promotion
@@ -1672,7 +1672,7 @@ A stalled 129-entry citation-correction backlog looked intractable only because 
 - [`docs/design/vidya-pilot-corpus.md`](../docs/design/vidya-pilot-corpus.md) — the `#record` citation-form fix and the intake-110#record superseded-claim correction (commit `a48e04ba`). *(Narrowed from a bare `intake-110` on 2026-08-12: this line discusses the record, it does not rely on the entry's claims, and the bare form inherits every defect of every claim in the entry — which is how it surfaced as `conflicted` once the correction queue drained.)*
 ## Internal KB-RAG Architecture (K1–K8 work items)
 
-Per [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md), the planned KB-RAG indexes the wiki + active handoffs + completed handoffs + research/deep-dives + progress logs + (cross-repo) `epyc-inference-research/docs/chapters` with heading-aware chunking. Storage: per-document `.npz` of token embeddings + SQLite catalog mapping `(chunk_id, file_path, line_range, heading_path, mtime, content_hash)`. Per-document files keep incremental rebuild cheap — only re-encode files whose `content_hash` changed since last index. Excluded by design: `handoffs/archived/*.md` (archived state is misleading by design and pollutes retrieval signal).
+Per [`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md), the planned KB-RAG indexes the wiki + active handoffs + completed handoffs + research/deep-dives + progress logs + (cross-repo) `epyc-inference-research/docs/chapters` with heading-aware chunking. Storage: per-document `.npz` of token embeddings + SQLite catalog mapping `(chunk_id, file_path, line_range, heading_path, mtime, content_hash)`. Per-document files keep incremental rebuild cheap — only re-encode files whose `content_hash` changed since last index. Excluded by design: `handoffs/archived/*.md` (archived state is misleading by design and pollutes retrieval signal).
 
 **Reused plumbing from `colbert-reranker-web-research.md`**: GTE-ModernColBERT-v1 ONNX model (already on disk at `/mnt/raid0/llm/models/gte-moderncolbert-v1-onnx/`), `onnxruntime` in the orchestrator venv, MaxSim + per-token 128-dim embeddings, EPYC latency measured 180 ms / 10-snippet rerank. The K1 task extracts the encode/MaxSim layer into a shared module that both web_research reranking and internal-KB RAG import — only indexer + storage + query-CLI differ. Sibling cross-references coordinate with `colbert-reranker-web-research.md` S5.
 
@@ -1771,14 +1771,14 @@ K1-K6 are no longer just architecture notes: the internal KB-RAG indexer/query p
 
 The seed result is calibration only. The decision pool is now a 70-case evidence-grounded suite: 50 HotpotQA-style and 20 LoCoMo-style cases, with JSON/count/evidence validation passed. The certification sweep is complete: 420 rows passed artifact checks, `recency_w0.3_s90` was the zero-miss candidate with recall@10 `0.6167`, and `recency_w0.1_s90_rerank_w0.3` had the best aggregate recall@10 `0.6298` while missing three all-evidence cases. Use the zero-miss candidate for safety-sensitive retrieval defaults unless a later certification explicitly trades that property away.
 
-Source: [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md).
+Source: [internal-kb-rag.md](../handoffs/active/knowledge-pipelines.md).
 ## Certified KB-RAG Consumer and Parked Two-Pass Retrieval (2026-06-13 / 2026-06-20)
 
 KB-RAG is no longer pre-deployment: K1–K7 are **CERTIFIED 2026-06-13** and shipped under `epyc-orchestrator/src/retrieval/` (additive `colbert_encoder.py`, `markdown_chunker.py`, `kb_rag.py`), plus a query CLI, the `post_commit_kb_rag_update.sh` hook, the `kb-search` Skill (the production Explore-subagent integration path — the MCP-tool variant was never needed), and unit tests. Beyond the certified single-pass MaxSim retrieval (with K9 cross-encoder rerank and K10 Gaussian recency as measured-but-conditional blends, and K11 FTS5 lexical landed default-off, measure-first), there is one **parked retrieval-policy idea** worth tracking so it is not re-discovered: a **self-correcting two-pass retrieval** pattern (from agent-oss, intake-610) — when a downstream consumer signals "evidence incomplete," emit gap-queries and re-retrieve at a lower MaxSim threshold before answering. It stays deferred behind a prerequisite that does not exist yet: a consumer (Explore subagent / orchestrator) that actually emits the incompleteness signal.
 
 A 2026-06-20 research intake added a **second independent instance** of that same family: **MRAgent** ([intake-698], "Memory is Reconstructed, Not Retrieved," arXiv:2606.06036) uses a Cue-Tag-Content associative graph with active reconstruction — LLM reasoning interleaved with retrieval, iteratively exploring the graph and *pruning* retrieval paths on intermediate evidence rather than fetching a flat top-k. It approaches the same evidence-conditioned problem from the pruning side, where agent-oss approaches it from the re-retrieval side. It is logged as a **comparative datapoint against the parked note, not a new workstream** — same deferral, no new K-track, no plan delta. Its numbers are observations, not decision-gating: token cost ~118k vs 245k–3.3M for baselines (the genuinely transferable idea, given our token-budget constraints, is the *token-cost discipline* of evidence-pruned traversal), but it is cloud-LLM-bound (Gemini-2.5-Flash / Claude-Sonnet-4.5) with no CPU/local results and it **loses to Mem0 on LoCoMo multi-hop F1 (43.69 vs 45.17)** — so the accuracy headline does not carry. Explicitly NOT routed to `delta-mem-reproduction` (whose open gates are GPU-bound accuracy reproduction, not retrieval token-cost).
 
-Source: [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md).
+Source: [internal-kb-rag.md](../handoffs/active/knowledge-pipelines.md).
 ## Governance Tooling Update (2026-06-13)
 
 The repo-readiness scorer makes knowledge-management maturity measurable. Its v1 deterministic criteria put the portfolio at Documented (L2), with root at Optimized (L4) and each child repo at Documented (L2). The useful output is the failing-criteria queue: standardized security automation, dev environment enforcement, generated docs, health automation, prioritized task discovery, and autonomous security review. Treat this as a governance backlog generator, not a subjective quality grade.
@@ -1786,7 +1786,7 @@ The repo-readiness scorer makes knowledge-management maturity measurable. Its v1
 Source: [repo-readiness-scorer.md](../handoffs/active/engineering-hygiene-backlog.md#track-repo-readiness-scorer).
 ## 2026-06-19 Update — K7 Certified, Wiki Compile Refreshed
 
-- **K7 is certified for a zero-miss retrieval candidate.** The full 70-case pool produced 420 valid rows; the aggregate winner has slightly higher recall@10, but the zero-miss candidate is the safer default for evidence-seeking workflows because it avoided all-evidence misses. Source: [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md).
+- **K7 is certified for a zero-miss retrieval candidate.** The full 70-case pool produced 420 valid rows; the aggregate winner has slightly higher recall@10, but the zero-miss candidate is the safer default for evidence-seeking workflows because it avoided all-evidence misses. Source: [internal-kb-rag.md](../handoffs/active/knowledge-pipelines.md).
 - **Wiki compilation remains a derived artifact pipeline with wrap-up discipline.** Active handoffs and indices should stay live-only while completed detail moves to completed/archived twins; the wiki is updated from those sources, not edited as the primary record. Source: [handoff-backlog-hygiene-audit.md](../handoffs/completed/handoff-backlog-hygiene-audit.md).
 - **Repo-readiness scoring is a backlog generator, not a quality certificate.** The deterministic scorer is useful because it turns governance gaps into concrete remediation work, but it does not certify the artifact quality behind those gaps. Source: [repo-readiness-scorer.md](../handoffs/active/engineering-hygiene-backlog.md#track-repo-readiness-scorer).
 ## 2026-06-20 Update — OKF Conventions Adopted, KB-RAG Consumer Certified
@@ -1833,9 +1833,9 @@ Two operator-directed `/research-intake` batches ran on 2026-07-02 and grew `res
 - [Routing Intelligence](routing-intelligence.md) — KB-RAG integration into Explore-agent routing (K6 work item)
 ## Source References
 
-- [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — ColBERT-based RAG architecture, K1–K8 work items, K7 Flywheel-template eval methodology, K8 deferred wikilink learning-loop scorer
-- [`sliders-local-validation.md`](../handoffs/active/sliders-local-validation.md) — Phase 0 falsification gate for SLIDERS local-LLM viability (does NOT block KB-RAG)
-- [`colbert-reranker-web-research.md`](../handoffs/active/colbert-reranker-web-research.md) — shared ONNX encoder (K1 coordinate), S5 LateOn drop-in candidate, S7 surprisal chunking proposal
+- [`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md) — ColBERT-based RAG architecture, K1–K8 work items, K7 Flywheel-template eval methodology, K8 deferred wikilink learning-loop scorer
+- [`sliders-local-validation.md`](../handoffs/active/knowledge-pipelines.md#track-sliders-local-validation) — Phase 0 falsification gate for SLIDERS local-LLM viability (does NOT block KB-RAG)
+- [`colbert-reranker-web-research.md`](../handoffs/active/knowledge-pipelines.md#track-colbert-reranker-web-research) — shared ONNX encoder (K1 coordinate), S5 LateOn drop-in candidate, S7 surprisal chunking proposal
 - [`handoff-backlog-hygiene-audit.md`](../handoffs/completed/handoff-backlog-hygiene-audit.md) — wrap-up-only active-tree pruning rule; outstanding-only index discipline and archive/dereference procedure
 - [`progress/2026-05/2026-05-28.md`](../progress/2026-05/2026-05-28.md) — active/completed twin compaction pilot, validator cleanup, and wrap-up compaction rule tightening
 - [`progress/2026-06/2026-06-15.md`](../progress/2026-06/2026-06-15.md) — wrap-up hygiene no-op decision plus later N11/N11a active/archive compaction after completed chronology started burying next actions
@@ -2028,7 +2028,7 @@ mis-scoping live work:
 The generalized rule — never assert "absent" or "identical" from one encoding,
 one key, or one file listing — is the same one that governs architecture
 verification: read the artifact that would have to contain the thing.
-[`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) §Open Question 1 (corrected);
+[`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md) §Open Question 1 (corrected);
 [`ernie-image-turbo-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) §2026-07-29 corrections
 
 ### Verify architecture from the weight map, not the declaration
@@ -2131,7 +2131,7 @@ post-approval round, so the rest of the plan was authored without their findings
 ### Source References
 
 - [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — batch outcome (24 entries, 19 dives, 9 overturned), the per-entry overturn table, records corrected, the skill amendment, and the attribution note
-- [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — the five-month-stale capability assertion and its live mis-scoping effect
+- [`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md) — the five-month-stale capability assertion and its live mis-scoping effect
 - [`ernie-image-turbo-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) — struck "stale backend" premise; the cross-reference defect and its 2026-07-29 resolution (`intake-937`, 4 of the 6 repoints, 3 needing rewording rather than an ID swap)
 - [`research/deep-dives/ernie-image-turbo-dit-text-to-image.md`](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md) — the other 2 repoints; a pre-deployment assessment whose premises production later falsified
 - [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — weight-map-over-config verification rule
@@ -2849,7 +2849,7 @@ as pool identity travels with a recall number.
 
 **Confidence: verified** — the SC46 wiring is read from commit `24ab3090` (adapter, reader, 16 tests,
 conformance green) and its handoff rows; the record corrections are read from the 2026-08-21
-Stage-2b updates in [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md), the latter
+Stage-2b updates in [`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md), the latter
 corrected again on 2026-08-22; the intake-wave findings are read from commit `9cb94047` and its
 progress record. Nothing below was re-derived on read — every figure was captured at write time by
 the cited source.
@@ -2943,7 +2943,7 @@ not a record at all.
   standing SC19 next action.
 - [`handoffs/active/qwen-chat-template-evaluation.md`](../handoffs/active/qwen-chat-template-evaluation.md)
   — CT-8, the consumer task the SC46 adapter serves.
-- [`handoffs/active/internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — the C1/C2/C7 record
+- [`handoffs/active/knowledge-pipelines.md`](../handoffs/active/knowledge-pipelines.md) — the C1/C2/C7 record
   corrections, the K1–K3 code gaps, and the 943-file live-index staleness flag (measured 2026-08-21).
 - [`progress/2026-08/2026-08-21-research-intake.md`](../progress/2026-08/2026-08-21-research-intake.md)
   — Stage-2b wave 2 (commit `9cb94047`): the five corrections, the C6-gate finding with the RVP-C6-20
@@ -2976,9 +2976,9 @@ The 2026-08-22 Stage-2b wave specified compute-gated measurements across three d
 
 ### Source References (2026-08-23 evening)
 
-- [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — K1/K2/K3 landing (`4e5e84c0`) with the mutation-test controls, C1/C2 record corrections, H4/H5/H6, H1's measured 40.5% truncation, H2's instrument trap, G11/G12/G13 and B6/B7 with their gates, the 943-file live-index staleness flag
+- [`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md) — K1/K2/K3 landing (`4e5e84c0`) with the mutation-test controls, C1/C2 record corrections, H4/H5/H6, H1's measured 40.5% truncation, H2's instrument trap, G11/G12/G13 and B6/B7 with their gates, the 943-file live-index staleness flag
 - [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — SC50 pre-run filing with the three source classes and the four tuple caveats
-- [`colbert-reranker-web-research.md`](../handoffs/active/colbert-reranker-web-research.md) — the mxbai 32M slot re-point and Table 13 correction (cross-listed with [Search & Retrieval](search-retrieval.md))
+- [`colbert-reranker-web-research.md`](../handoffs/active/knowledge-pipelines.md#track-colbert-reranker-web-research) — the mxbai 32M slot re-point and Table 13 correction (cross-listed with [Search & Retrieval](search-retrieval.md))
 - [`progress/2026-08/2026-08-23-research-intake.md`](../progress/2026-08/2026-08-23-research-intake.md) — the wave-2 record: ten of fifteen dives corrected our own records, the two live bugs fixed in-session
 
 ---
@@ -3857,7 +3857,7 @@ Sources: [JEV-aware handoff audit](../handoffs/completed/jev-aware-handoff-audit
 
 `index_state.py --check` now warns when the checkout's generated graph is missing, malformed or differs from the current `build_graph(state)` result, ignoring only its generation timestamp. The warning is advisory: existing coverage/schema hard failures keep their return codes, and the independent row screener retains silent absence. Generate state/graph together under the wrap-up lease before relying on freshness; this checks checkout integrity, not model quality or runtime liveness.
 
-The three NI06 source tasks used synthetic CI and original-custody review; their original accepted receipts were ingested through the existing verifier carrier/shared grader as observations. Catalog tokenizer identity also opens a prospective dependency-capture hook, with legacy absence remaining unknown and no historical tuple reconstruction. Sources: [NI06 progress](../progress/2026-10/2026-10-06-ni06-noninference.md), [internal KB handoff](../handoffs/active/internal-kb-rag.md), [belief source enrollment](../scripts/vidya/adapters/README.md).
+The three NI06 source tasks used synthetic CI and original-custody review; their original accepted receipts were ingested through the existing verifier carrier/shared grader as observations. Catalog tokenizer identity also opens a prospective dependency-capture hook, with legacy absence remaining unknown and no historical tuple reconstruction. Sources: [NI06 progress](../progress/2026-10/2026-10-06-ni06-noninference.md), [internal KB handoff](../handoffs/active/knowledge-pipelines.md), [belief source enrollment](../scripts/vidya/adapters/README.md).
 
 ### Intake re-verification final application — 2026-10-06
 
@@ -4270,7 +4270,7 @@ Sources: [Vidya belief substrate program](../handoffs/active/vidya-belief-substr
 - **Backlog hygiene:** the 2026-10-29 audit closed duplicate/superseded boxes (colbert A/B duplicate, DAR-3, UTM-P1b) with the target line cited; two duplicate 122B obligations (DR-3, DR-3e) were retired under the standing operator directive and counted as administrative retirements, not delivered tasks.
 - **Open:** planning-context canaries for new native record families (PROFILE-6 trace, TOC A/B) remain unproved; none is called wired.
 
-Sources: [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md); [tool-output-compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression); [delivered routing and scoring progress](../progress/2026-10/2026-10-29-codex3-delivered-routing-and-scoring.md); [colbert-reranker-web-research](../handoffs/active/colbert-reranker-web-research.md).
+Sources: [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md); [tool-output-compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression); [delivered routing and scoring progress](../progress/2026-10/2026-10-29-codex3-delivered-routing-and-scoring.md); [colbert-reranker-web-research](../handoffs/active/knowledge-pipelines.md#track-colbert-reranker-web-research).
 
 ## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 
@@ -4304,7 +4304,7 @@ Sources: [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md) · [tick
 
 **Confidence: scoped to cited native records and source controls.**
 
-- A frozen qd-v1 census of 35,280 rows found 46.040% over the 256-token cap and 51.274% model-input-token retention; this is recipe replay, not proof of the historical tokenizer, qd-v2, retrieval quality or G13 adoption. ([RAG](../handoffs/active/internal-kb-rag.md))
+- A frozen qd-v1 census of 35,280 rows found 46.040% over the 256-token cap and 51.274% model-input-token retention; this is recipe replay, not proof of the historical tokenizer, qd-v2, retrieval quality or G13 adoption. ([RAG](../handoffs/active/knowledge-pipelines.md))
 - Prospective source enrollment preserves native identity, unknowns and original write-side warrant; synthetic adapters or canaries do not prove live wiring, and previously unrecorded warrant is not invented. Existing grades remain shared. ([belief program](../handoffs/active/vidya-belief-substrate-program.md); [REPL retrieval](../handoffs/active/repl-embedding-retrieval.md); [tool compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression))
 
 

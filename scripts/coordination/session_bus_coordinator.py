@@ -1104,7 +1104,7 @@ _SPEC_BOX = re.compile(r"^\s*- \[( |x|X)\]\s*(.*)$")
 # the pointer decays with every commit.
 #
 # MEASURED, on the live queue and the real file, not hypothesised
-# (`handoffs/active/opendataloader-pipeline-integration.md`, eleven rows seeded
+# (`handoffs/active/knowledge-pipelines.md`, eleven rows seeded
 # 2026-07-27 against the file as of c942728e):
 #
 #     stored anchor   at SEED time (c942728e)          at HEAD 2026-08-12

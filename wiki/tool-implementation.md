@@ -742,7 +742,7 @@ Key capabilities: async Playwright-based crawling with browser pool management, 
 
 **Policy context**: Selected over Firecrawl (intake-364/365, 108K+ stars) due to the open-source-only infrastructure preference. Firecrawl's cloud-first SaaS model, credit-based pricing, and reduced self-hosted feature parity conflict with the project's self-hosted philosophy. Crawl4AI evaluation is gated on post-AR-3 web_research sentinel data: if WebFetch succeeds on >90% of pages, neither tool is needed short-term.
 
-> Source: [SearXNG Search Backend](/workspace/handoffs/active/searxng-search-backend.md) -- intake-364/365/372, Crawl4AI Docker deployment, MCP integration, open-source-only policy
+> Source: [SearXNG Search Backend](/workspace/handoffs/active/knowledge-pipelines.md#track-searxng-search-backend) -- intake-364/365/372, Crawl4AI Docker deployment, MCP integration, open-source-only policy
 
 ## 2026-06-15 Update — Tool Surfaces Became More Explicit
 
@@ -788,7 +788,7 @@ Key capabilities: async Playwright-based crawling with browser pool management, 
 - [intake-340](https://github.com/Kohei-Wada/taskdog) Taskdog -- task management with schedule optimization (not_applicable)
 - [Integration Test Coverage](/workspace/handoffs/active/engineering-hygiene-backlog.md#track-integration-test-coverage) -- 61 integration tests with real REPL + mock LLM pattern, GraphRunContext factory, risk-weighted coverage classification
 - [Progress 2026-04-14](/workspace/progress/2026-04/2026-04-14.md) -- Coverage tranches A-L (sessions 2-20), 100%-feasibility audit methodology, seeding control-plane characterization
-- [SearXNG Search Backend](/workspace/handoffs/active/searxng-search-backend.md) -- intake-372 Crawl4AI (self-hosted web crawler, Apache-2.0, Docker deployment, MCP integration path), intake-364/365 Firecrawl (deferred: cloud-first SaaS)
+- [SearXNG Search Backend](/workspace/handoffs/active/knowledge-pipelines.md#track-searxng-search-backend) -- intake-372 Crawl4AI (self-hosted web crawler, Apache-2.0, Docker deployment, MCP integration path), intake-364/365 Firecrawl (deferred: cloud-first SaaS)
 - [pi-agent-core deep-dive](../research/deep-dives/pi-agent-core-stateful-ts-runtime.md) -- 2026-04-26 (intake-473). `beforeToolCall` / `afterToolCall` hook surface with field-replace semantics and throw-isolation: composable middleware for tool-output post-processing without each layer knowing about the others. Maps to `tool-output-compression.md` Phase 3d (compression as middleware) and `handoffs/completed/meta-harness-optimization.md` (code-mutation safety gates). Per-tool `executionMode` override + batch-falls-back-to-sequential rule for mixing exclusive-access tools with concurrent ones. Terminate-unanimous-batch rule for clean early-exit semantics. Verdict: adopt_patterns.
 - [Magika deep dive](/workspace/research/deep-dives/magika-filetype-detection.md) -- intake-398; Google AI content-type detector (ICSE 2025, Apache 2.0); byte-embedding MLP architecture; 225 ms cold-start, 2.8 ms/file on EPYC; not_applicable — no pipeline stage requires generic filetype detection on EPYC's five-format corpus
 - [intake-705](https://openrouter.ai/docs/guides/features/server-tools/subagent) OpenRouter Subagent server tool -- provider-hosted nested-model delegation: configure-time worker pinning, stateless scoped task isolation, per-request execution cap, free-text returns (no schema). adopt_patterns; SaaS = external. Maps to the orchestrator's existing `chat_delegation.py` server-side delegate; remaining delta = cost-aware capable→cheaper-worker mode
@@ -976,7 +976,7 @@ Requires **all four** of: (1) internal pull from `internal-kb-rag.md` for guided
 
 - [`research/deep-dives/2026-05-27-understand-anything-vs-gitnexus.md`](../research/deep-dives/2026-05-27-understand-anything-vs-gitnexus.md) — full audit + adoption thesis vs four user statements
 - [`research/intake_index.yaml`](../research/intake_index.yaml) intake-625 — entry with deep_dive cross-link, refined verdict_justification, contradicting_evidence
-- [`handoffs/active/internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) Research Intake Deep-Dive — 2026-05-27 section — gated lift-not-fork shopping list for Patterns A+B
+- [`handoffs/active/knowledge-pipelines.md`](../handoffs/active/knowledge-pipelines.md) Research Intake Deep-Dive — 2026-05-27 section — gated lift-not-fork shopping list for Patterns A+B
 - [`handoffs/completed/meta-harness-optimization.md`](../handoffs/completed/meta-harness-optimization.md) Research Intake Update — 2026-05-27 — explicit do-not-lift record for the 9-agent decomposition
 
 ## Wrap-up and index-hygiene guardrails (2026-05-27)
@@ -1720,7 +1720,7 @@ The [pin-report source acceptance](../artifacts/ni08/evl42-report-success-accept
 
 The [completed INF64 manifest review](../artifacts/ni08/inf64-source-reachability-review-20261007/completed-manifest.md) checks64 unique Git blobs,145 incoming references, outgoing imports/dynamic entry/config/path/CLI/HOLD edges and bounded38-JSON reference screening. All19 candidate/test units remain retained. Paired tests, two data files and three guards do not confer removal authority; source reachability is separate from runtime reachability and the owner-controlled strip campaign.
 
-Two newly enrolled source fixes are still prospective: [K11](../handoffs/active/gemma-challenge-kernel-techniques-v7.md) requires all requested repeats with actual successful boolean task verdicts and refuses nonpositive repeats before launch; [PIP02](../handoffs/active/document-parser-table-bench.md) derives the launcher's library directory from the resolved selected experimental executable. Private source proposals and synthetic controls have been reviewed, but their final hosted captures and source acceptance remain open. No live model, kernel execution, table-quality or sampler warrant is claimed.
+Two newly enrolled source fixes are still prospective: [K11](../handoffs/active/gemma-challenge-kernel-techniques-v7.md) requires all requested repeats with actual successful boolean task verdicts and refuses nonpositive repeats before launch; [PIP02](../handoffs/active/knowledge-pipelines.md#track-document-parser-table-bench) derives the launcher's library directory from the resolved selected experimental executable. Private source proposals and synthetic controls have been reviewed, but their final hosted captures and source acceptance remain open. No live model, kernel execution, table-quality or sampler warrant is claimed.
 
 Source references: [W6 parent](../handoffs/active/objective-task-rate-goodput.md), [pin-report parent](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization), [INF64 parent](../handoffs/active/autokernel-restart-and-strip.md), [prospective belief tasks](../handoffs/active/vidya-belief-substrate-program.md), [source table](../scripts/vidya/adapters/README.md), [NI08 boundaries](../docs/reference/ni08-non-inference-continuation.md).
 
@@ -1744,7 +1744,7 @@ The [prospective native source companion](../handoffs/active/vidya-belief-substr
 
 [UFH05's finite actor source package](../artifacts/ni08/ufh05-finite-runner-source-20261007/README.md) preserves the exact primary source/device seams and actor AST without applying the patch or executing weights/native imports. The source child is complete; runtime and belief-substrate native wiring remain open. [EVL24 prospective tasks](../handoffs/active/frontier-f2-self-running-lab.md) now bind the selected-verdict denominator inflation correction before capture: distinct valid logged runs are required while existing stages, thresholds and risk/gold/operator policy remain unchanged. No hosted acceptance or live promotion warrant is claimed for this preparation.
 
-Source references: [SCG owner](../handoffs/active/stack-lifecycle-program.md), [PIP02 owner](../handoffs/active/document-parser-table-bench.md), [UFH05 owner](../handoffs/active/context-and-token-economy.md#track-reasoning-compression), [prospective consumers](../handoffs/active/vidya-belief-substrate-program.md).
+Source references: [SCG owner](../handoffs/active/stack-lifecycle-program.md), [PIP02 owner](../handoffs/active/knowledge-pipelines.md#track-document-parser-table-bench), [UFH05 owner](../handoffs/active/context-and-token-economy.md#track-reasoning-compression), [prospective consumers](../handoffs/active/vidya-belief-substrate-program.md).
 
 
 ### Distinct logged runs and original journal carry — 2026-10-07

@@ -915,7 +915,7 @@ runs**, same rule and same reason as SC49. Source row added to
 
   - **2026-10-30 G11 R2 preparation update:** The G11 R2 diagnostic packet qualified and was
     accepted by the live keeper as READY-WAIT. Its native record fields and scope limits are filed
-    in [`internal-kb-rag.md`](internal-kb-rag.md) and the existing source row above. The full
+    in [`internal-kb-rag.md`](knowledge-pipelines.md) and the existing source row above. The full
     200-chunk cohort has not run. The SC50 write/read projection work remains open; no adapter,
     ingest, emitted ClaimTuple, or planning-context canary is claimed. G11 remains fidelity only,
     with the existing measurement carrier and `claim_tuple.grade()`; no new ladder or retrospective

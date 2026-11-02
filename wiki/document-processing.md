@@ -52,7 +52,7 @@ read remains impossible.
 
 ### Source References (2026-08-18 lane-record corrections)
 
-- [`opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md)
+- [`opendataloader-pipeline-integration.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration)
   — the annotated quant-compliance row (requantized artifact, `DEFAULT_MODEL` repoint, the demo ran
   on it, SHA-256/tensor-audit still owed) and the run-detail annotation on the Unlimited-OCR status
   row.
@@ -140,7 +140,7 @@ warrant the original run never captured.
 
 ### Source References (2026-08-16 parser-evidence provenance)
 
-- [`handoffs/active/opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md)
+- [`handoffs/active/knowledge-pipelines.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration)
   — the ODL-011 completed row with the ICC/DCC run, the ODL-013 observation boundary, and the
   Unlimited-OCR correction and rerun contract
 - [`handoffs/completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md`](../handoffs/completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md)
@@ -175,7 +175,7 @@ evidence.
 
 ### Source References (2026-08-13 later parser evidence)
 
-- [`opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md)
+- [`opendataloader-pipeline-integration.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration)
   — corrected gates and exact rerun contracts.
 - [`progress/2026-08/2026-08-13-mainA.md`](../progress/2026-08/2026-08-13-mainA.md) and
   [`progress/2026-08/2026-08-13-mainB.md`](../progress/2026-08/2026-08-13-mainB.md) — producer and
@@ -210,7 +210,7 @@ unchanged until then. The matched parser report's `decision-grade fixture` wordi
 
 ### Source References (2026-08-13 ODL-013 audit)
 
-- [`opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md)
+- [`opendataloader-pipeline-integration.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration)
   — corrected decision gate, completed observation rows, and concrete durability/harness follow-ups.
 - [`progress/2026-08/2026-08-13-mainA.md`](../progress/2026-08/2026-08-13-mainA.md) and
   [`progress/2026-08/2026-08-13-mainB.md`](../progress/2026-08/2026-08-13-mainB.md) — producer-side
@@ -230,7 +230,7 @@ This also retires the old PaddleOCR table numbers as quality evidence: they came
 
 ### Source References (2026-08-13 audit)
 
-- [`opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md) — compact active gates and exact next work.
+- [`opendataloader-pipeline-integration.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration) — compact active gates and exact next work.
 - [`opendataloader-pipeline-integration-completed-through-2026-08-13.md`](../handoffs/completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md) — landed phases, corrections, and audit disposition.
 - [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — independent commits/tests/artifact audit.
 
@@ -264,7 +264,7 @@ The row read *"Clone opendataloader-bench, **add our pipeline as custom engine**
 
 ### Source References (2026-08-12)
 
-- [`handoffs/active/opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md) §Benchmark Suite Integration — the clone, the three corrections, and the name-collision filing
+- [`handoffs/active/knowledge-pipelines.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration) §Benchmark Suite Integration — the clone, the three corrections, and the name-collision filing
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the premise-by-premise verification and the compound-row finding
 - [`docs/guides/agent-workflows/verification-failure-catalogue.md`](../docs/guides/agent-workflows/verification-failure-catalogue.md) face 9 (*right key, wrong universe*) — the class the path collision belongs to
 
@@ -342,7 +342,7 @@ run); the guardrail against downloading them as model swaps was reinstated 2026-
 
 ### Source References (2026-08-25 PIP-05 + table-bench)
 
-- [`opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md)
+- [`opendataloader-pipeline-integration.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration)
   — the hardened-harness row (fail-closed extractors, engine pins, per-doc latencies, score-phase
   exit 3), the record-correction row closed, and the canonical A/B row still open behind the
   operator's stop order.
@@ -351,7 +351,7 @@ run); the guardrail against downloading them as model swaps was reinstated 2026-
   supersession-note edit, and the verified disappearance of the demo run dir.
 - [`progress/2026-08/2026-08-13-mainD.md`](../progress/2026-08/2026-08-13-mainD.md) — the superseded
   lane record itself, now carrying the 2026-08-25 correction blockquote.
-- [`document-parser-table-bench.md`](../handoffs/active/document-parser-table-bench.md) — the three
+- [`document-parser-table-bench.md`](../handoffs/active/knowledge-pipelines.md#track-document-parser-table-bench) — the three
   broken instruments, the full OmniDocBench acquisition (1,651/665), the Phase A landing and the
   `llama-cpp-server` backend verification, and the MinerU2.5-Pro/GLM-OCR architecture pre-check.
 - [`opendataloader-pipeline-integration-completed-through-2026-08-13.md`](../handoffs/completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md)
@@ -371,17 +371,17 @@ The Java 11+ runtime dependency is manageable through a sidecar pattern. The Pyt
 
 ### New (2026-07-17, PaddleOCR-VL producer/runtime path closed; table quality still open)
 
-- **PaddleOCR-VL-1.6 is now a real document-specialist candidate with a guarded benchmark producer, not just a model-card idea.** The MI210 smoke passed digit OCR (`7500`) and invoice/receipt extraction at about `484-490 t/s`, and `odl_bench run-model --engine paddleocr_vl_1_6` now consumes OmniDocBench GT page images, writes `<stem>.md` predictions, and scores them through the structural/table/reading-order harness. The first operational demo processed `18/18` pages with median decode `485.30 t/s`, median page latency `2918.78 ms`, text-block edit distance `0.343019`, and reading-order edit distance `0.337318`. Sources: [opendataloader-pipeline-integration.md](../handoffs/active/opendataloader-pipeline-integration.md), [progress 2026-07-17](../progress/2026-07/2026-07-17.md), [k35-optimized-stack-throughput-context-report-2026-07-17.md](../research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md).
-- **Prompt-only HTML-table recovery was negative, which means the remaining table gap is structural/post-processing, not just prompt wording.** The `html_tables` profile improved reading-order edit distance (`0.337318 -> 0.285753`) but still emitted zero HTML `<table>` tags, kept table TEDS at `0.0`, worsened text-block edit distance to `0.429062`, and slowed median page latency to `3245.60 ms`. This is useful because it rules out the cheap "just ask for HTML tables" fix. Sources: [opendataloader-pipeline-integration.md](../handoffs/active/opendataloader-pipeline-integration.md), [progress 2026-07-17](../progress/2026-07/2026-07-17.md), [k35-optimized-stack-throughput-context-report-2026-07-17.md](../research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md).
-- **A scorer-compatible pipe-table post-processing hook helps a little, but it does not close the table-quality problem.** Re-scoring the existing default PaddleOCR-VL predictions after converting aligned pipe rows into HTML tables improved table TEDS from `0.0` to `0.058333` and structure-only TEDS to `0.066667`, with essentially flat text-block edit distance. That is worth keeping as a compatibility fix, but it is not enough to treat PaddleOCR-VL as table-quality-clean. Sources: [opendataloader-pipeline-integration.md](../handoffs/active/opendataloader-pipeline-integration.md), [progress 2026-07-17](../progress/2026-07/2026-07-17.md), [k35-optimized-stack-throughput-context-report-2026-07-17.md](../research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md).
+- **PaddleOCR-VL-1.6 is now a real document-specialist candidate with a guarded benchmark producer, not just a model-card idea.** The MI210 smoke passed digit OCR (`7500`) and invoice/receipt extraction at about `484-490 t/s`, and `odl_bench run-model --engine paddleocr_vl_1_6` now consumes OmniDocBench GT page images, writes `<stem>.md` predictions, and scores them through the structural/table/reading-order harness. The first operational demo processed `18/18` pages with median decode `485.30 t/s`, median page latency `2918.78 ms`, text-block edit distance `0.343019`, and reading-order edit distance `0.337318`. Sources: [opendataloader-pipeline-integration.md](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration), [progress 2026-07-17](../progress/2026-07/2026-07-17.md), [k35-optimized-stack-throughput-context-report-2026-07-17.md](../research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md).
+- **Prompt-only HTML-table recovery was negative, which means the remaining table gap is structural/post-processing, not just prompt wording.** The `html_tables` profile improved reading-order edit distance (`0.337318 -> 0.285753`) but still emitted zero HTML `<table>` tags, kept table TEDS at `0.0`, worsened text-block edit distance to `0.429062`, and slowed median page latency to `3245.60 ms`. This is useful because it rules out the cheap "just ask for HTML tables" fix. Sources: [opendataloader-pipeline-integration.md](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration), [progress 2026-07-17](../progress/2026-07/2026-07-17.md), [k35-optimized-stack-throughput-context-report-2026-07-17.md](../research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md).
+- **A scorer-compatible pipe-table post-processing hook helps a little, but it does not close the table-quality problem.** Re-scoring the existing default PaddleOCR-VL predictions after converting aligned pipe rows into HTML tables improved table TEDS from `0.0` to `0.058333` and structure-only TEDS to `0.066667`, with essentially flat text-block edit distance. That is worth keeping as a compatibility fix, but it is not enough to treat PaddleOCR-VL as table-quality-clean. Sources: [opendataloader-pipeline-integration.md](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration), [progress 2026-07-17](../progress/2026-07/2026-07-17.md), [k35-optimized-stack-throughput-context-report-2026-07-17.md](../research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md).
 
 ### New (2026-07-06, ODL hybrid sidecar live checkpoint)
 
-- **The ODL hybrid path now has live sidecar evidence, but benchmark-backed routing policy remains open.** A sidecar implementation added `opendataloader_hybrid` as a named backend in the PDF fast-path probe. The probe checks `opendataloader_pdf` importability and `ORCHESTRATOR_ODL_HYBRID_URL` reachability before calling the hybrid extraction method, and records missing dependencies or unreachable sidecars as explicit `missing_dependency` failures instead of confusing them with extraction quality. A live run under `/mnt/raid0/llm/tmp/odl-hybrid-venv` started `opendataloader-pdf-hybrid` on `127.0.0.1:5002` and returned `27/27` successful parses on the structural manifest with median `1510.743 ms / 1.000`. This advances Phase 3 readiness without claiming the 200-PDF/table-heavy benchmark or a routing-policy flip. Sources: [OpenDataLoader pipeline integration handoff](../handoffs/active/opendataloader-pipeline-integration.md), [progress 2026-07-06](../progress/2026-07/2026-07-06.md).
+- **The ODL hybrid path now has live sidecar evidence, but benchmark-backed routing policy remains open.** A sidecar implementation added `opendataloader_hybrid` as a named backend in the PDF fast-path probe. The probe checks `opendataloader_pdf` importability and `ORCHESTRATOR_ODL_HYBRID_URL` reachability before calling the hybrid extraction method, and records missing dependencies or unreachable sidecars as explicit `missing_dependency` failures instead of confusing them with extraction quality. A live run under `/mnt/raid0/llm/tmp/odl-hybrid-venv` started `opendataloader-pdf-hybrid` on `127.0.0.1:5002` and returned `27/27` successful parses on the structural manifest with median `1510.743 ms / 1.000`. This advances Phase 3 readiness without claiming the 200-PDF/table-heavy benchmark or a routing-policy flip. Sources: [OpenDataLoader pipeline integration handoff](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration), [progress 2026-07-06](../progress/2026-07/2026-07-06.md).
 
 ### New (2026-06-22, OpenDataLoader pipeline Phase 2 landed; hybrid-table routing still open)
 
-- **ODL structured extraction is wired and Phase 2 is complete, but the hybrid-table path remains unbuilt (Phase 3 open).** Phase 1 wired ODL behind default-off adoption gates (`PDF_EXTRACTOR=opendataloader`, `ORCHESTRATOR_ODL_STRUCTURED=1`); Phase 2 (2026-06-21) landed the `ODLStructuredDocument` model, a structured-metadata injection scanner, heading-aware chunking, a table carrier (`TableRef`), figure-bbox replacement, and a default-off document-body warning policy (`ORCHESTRATOR_DOCUMENT_BODY_INJECTION_POLICY=warn`). Phase 3 (hybrid table sidecar/client, opendataloader-bench integration, three-way simple→hybrid→LightOnOCR routing) is still scoped, not built. Intake adds LiteParse (Rust, JVM-free, born-digital fast-path) as `adopt_component` and PaddleOCR-VL-1.6 GGUF benchmarking as deferred; adaptive-chunking (Ekimetrics) vs HOPE disagree on the cohesion signal and need a side-by-side eval. Source: [opendataloader-pipeline-integration.md](../handoffs/active/opendataloader-pipeline-integration.md).
+- **ODL structured extraction is wired and Phase 2 is complete, but the hybrid-table path remains unbuilt (Phase 3 open).** Phase 1 wired ODL behind default-off adoption gates (`PDF_EXTRACTOR=opendataloader`, `ORCHESTRATOR_ODL_STRUCTURED=1`); Phase 2 (2026-06-21) landed the `ODLStructuredDocument` model, a structured-metadata injection scanner, heading-aware chunking, a table carrier (`TableRef`), figure-bbox replacement, and a default-off document-body warning policy (`ORCHESTRATOR_DOCUMENT_BODY_INJECTION_POLICY=warn`). Phase 3 (hybrid table sidecar/client, opendataloader-bench integration, three-way simple→hybrid→LightOnOCR routing) is still scoped, not built. Intake adds LiteParse (Rust, JVM-free, born-digital fast-path) as `adopt_component` and PaddleOCR-VL-1.6 GGUF benchmarking as deferred; adaptive-chunking (Ekimetrics) vs HOPE disagree on the cohesion signal and need a side-by-side eval. Source: [opendataloader-pipeline-integration.md](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration).
 
 - Current pipeline has NO table extraction -- pdftotext mangles tables, LightOnOCR outputs bboxes but no structured table data [opendataloader-pdf-pipeline-integration.md]
 - OpenDataLoader local mode matches pdftotext latency (0.05s/page) while providing reading order (0.91), heading hierarchy, table detection, and figure bboxes [opendataloader-pdf-pipeline-integration.md]
@@ -421,7 +421,7 @@ The Java 11+ runtime dependency is manageable through a sidecar pattern. The Pyt
 ## Source References
 
 - [OpenDataLoader deep dive](/workspace/research/deep-dives/opendataloader-pdf-pipeline-integration.md) -- XY-Cut++ algorithm, benchmark results, four integration strategies, technical considerations
-- [OpenDataLoader pipeline integration handoff](/workspace/handoffs/active/opendataloader-pipeline-integration.md) -- Three-phase plan, work items, benchmark suite integration
+- [OpenDataLoader pipeline integration handoff](/workspace/handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration) -- Three-phase plan, work items, benchmark suite integration
 - [Progress 2026-07-17](/workspace/progress/2026-07/2026-07-17.md) -- PaddleOCR-VL producer proof, negative HTML-table prompt result, and post-processing rescore checkpoint
 - [K35 optimized stack throughput/context report](/workspace/research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md) -- Consolidated MiniCPM-o/PaddleOCR-VL document-specialist evidence and the current table-gap framing
 - [intake-161](https://github.com/opendataloader-project/opendataloader-pdf) OpenDataLoader PDF -- Initial intake evaluation
@@ -442,7 +442,7 @@ New module `epyc-orchestrator/src/models/odl_structured.py` defines a normalized
 
 `document_preprocessor.py` now consumes optional structured metadata from TaskIR or local ODL PDF extraction. It passes safe structured headings into chunking, forwards figure contexts into VL analysis, emits table summaries into enriched TaskIR, and suppresses unsafe ODL structured headings/figures/tables when `INJECTION_SCANNING` is enabled. The structured-metadata suppression remains separate from primary OCR text. Primary body text defaults to source behavior, while `ORCHESTRATOR_DOCUMENT_BODY_INJECTION_POLICY=warn` adds page-level injection warnings without mutating or blocking extracted body content.
 
-Sources: [`handoffs/active/opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md), `epyc-orchestrator/src/models/odl_structured.py`, `epyc-orchestrator/src/services/pdf_router.py`, `epyc-orchestrator/src/services/document_preprocessor.py`, `epyc-orchestrator/tests/unit/test_odl_structured.py`.
+Sources: [`handoffs/active/knowledge-pipelines.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration), `epyc-orchestrator/src/models/odl_structured.py`, `epyc-orchestrator/src/services/pdf_router.py`, `epyc-orchestrator/src/services/document_preprocessor.py`, `epyc-orchestrator/tests/unit/test_odl_structured.py`.
 
 ## LiteParse — JVM-free born-digital fast-path candidate (2026-05-29)
 
@@ -454,7 +454,7 @@ LiteParse (run-llama/LlamaIndex, Apache-2.0, intake-646 blog / intake-647 repo) 
 - **Maturity / credibility**: 6.8k★ / 425 forks / 600 commits / 46 releases, v2.0.3 @ 2026-05-28; real 3-OS CI + HF regression suite + LLM-judge eval framework. Speed claims (457pg/100 MB in 0.777 s; 5–100× small / ~3× large vs the prior Node version) are vendor self-reported and **speed-only — no independent accuracy benchmark** (NID/TEDS/OmniDocBench); its non-markdown output fails standard OCR benchmarks by construction, so a LiteParse-output-aware harness is required for head-to-head scoring.
 - **Gated next action**: bench LiteParse-local vs ODL-local vs pdftotext on the born-digital corpus (text fidelity, JVM-free cold-start + RSS, multi-column reading order) under the opendataloader-pipeline-integration handoff (P1b). Verdict: 647 = adopt_component (born-digital fast-path backend), 646 = worth_investigating.
 
-Sources: [`research/deep-dives/liteparse-document-parser-deep-dive.md`](../research/deep-dives/liteparse-document-parser-deep-dive.md), [`handoffs/active/opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md), [`handoffs/active/pipeline-integration-index.md`](../handoffs/active/pipeline-integration-index.md), intake-646/647.
+Sources: [`research/deep-dives/liteparse-document-parser-deep-dive.md`](../research/deep-dives/liteparse-document-parser-deep-dive.md), [`handoffs/active/knowledge-pipelines.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration), [`handoffs/active/pipeline-integration-index.md`](../handoffs/active/pipeline-integration-index.md), intake-646/647.
 
 ## neural-txt — cheap structured-NLP specialist, no consumer slot yet (2026-06-20)
 
@@ -464,7 +464,7 @@ neural-txt (AVB, intake-718) is a CPU-cheap **135M task-specialist LM paired wit
 - **Constrained-decoding is the transferable part**: the Outlines-style schema-constrained decoding harness (guarantee well-formed bullets / KG-triplet JSON without post-hoc parsing) is the engineering pattern worth remembering even though the 135M weights themselves have no slot — it is the same reliability lever as the privacy-parser/PII-span work tracked elsewhere in this handoff (intake-449/452), applied to extraction output rather than masking.
 - **Confidence: external — educational repo, no benchmarks.** All capability claims are observations (no decision-grade numbers); do not gate any pipeline change on neural-txt figures. Its reward-model reranking half (NeuralTxtReward / neuraltxt-reward-tiny) is folded into intake-719 / the AVB offline-reward digest, not duplicated here.
 
-Sources: [`handoffs/active/opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md) (Research Intake Update 2026-06-20), intake-718.
+Sources: [`handoffs/active/knowledge-pipelines.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration) (Research Intake Update 2026-06-20), intake-718.
 
 
 ### Prospective ODL native provenance — 2026-10-07
@@ -478,34 +478,34 @@ Sources: [`handoffs/active/opendataloader-pipeline-integration.md`](../handoffs/
 - **First common scoring snapshot is not a verdict.** ODL had 435/755 pages and 131/243 tables completed, available-output table-weighted TEDS 0.656652 and structure-only 0.799800 (higher better); Paddle had 1 completed page and zero scored tables, so the comparison is undefined. Missing/censored outputs are not scored zero. All decision cells stay null.
 - **Paddle arm is infrastructure-limited, not model-limited so far.** One group ended rc78 on disk-floor admission; another ended rc78 after 25 retained RPC responses but zero assembled pages because strict full-layout equality refused 15 saved layouts that differed only in the last decimals of 36 confidence scores (pixels and regions identical). An immutable repair preserves original scores. An ODL fresh shard ended rc75 at 7/25 pages with one unknown ordinal never redrawn.
 
-Sources: [document-parser-table-bench handoff](../handoffs/active/document-parser-table-bench.md); [PIP02 partial TEDS report](../artifacts/compute/pip02-partial-teds-20261029/README.md); [codex3 PIP02 S13 filing](../progress/2026-10/2026-10-29-codex3-pip02-s13-filing.md); [codex3 ended-attempt filing](../progress/2026-10/2026-10-29-codex3-ended-attempt-filing.md)
+Sources: [document-parser-table-bench handoff](../handoffs/active/knowledge-pipelines.md#track-document-parser-table-bench); [PIP02 partial TEDS report](../artifacts/compute/pip02-partial-teds-20261029/README.md); [codex3 PIP02 S13 filing](../progress/2026-10/2026-10-29-codex3-pip02-s13-filing.md); [codex3 ended-attempt filing](../progress/2026-10/2026-10-29-codex3-ended-attempt-filing.md)
 
 ## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** for per-shard collection and scoring bindings (original source, plan, GT and prediction hashes reopened); **no verdict** on parser selection: the 755-page fresh English cohort (243 GT tables) and the paired-parser gate remain open, and every score below is descriptive over a partial cohort.
 
-- **Paddle union reaches 359 verified pages / 84 GT tables.** Table TEDS 0.9284 and structure-only TEDS 0.9582 (higher is better) after the 2026-10-31 05:45 replay, up from 344/82 (TEDS 0.9275) earlier the same day and 251/78 on 10-30. The added pages are mostly zero-GT pages, so the mean barely moves; pages 0 and 34 were reassembled from authenticated original region responses with no model call, reproducing the original markdown byte for byte. These numbers come from few tables and are not a cohort comparison. ([document-parser-table-bench](../handoffs/active/document-parser-table-bench.md))
-- **ODL+Docling hybrid shard scores vary by an order of magnitude.** Table TEDS per fully collected 25-page shard: s09 0.842, s08 0.733, s05 0.555, s24 0.519, s16 0.244, s20 0.138 (47 tables), s21 0.078; partial shards s29 0.312 (13/25 pages) and s28 4/25 pages. The hybrid's low shards (s20/s21) are table-dense, so no pooled ODL mean should be quoted; a repeat scoring under the correct mutex reproduced s20/s21 per-table bytes. Raw all-ODL aggregates (0.524 / 0.664) include pages without verified source lineage and are descriptive only. ([document-parser-table-bench](../handoffs/active/document-parser-table-bench.md); [shard scores](../progress/2026-10/2026-10-30-codex3-pip-shard-scores.md))
+- **Paddle union reaches 359 verified pages / 84 GT tables.** Table TEDS 0.9284 and structure-only TEDS 0.9582 (higher is better) after the 2026-10-31 05:45 replay, up from 344/82 (TEDS 0.9275) earlier the same day and 251/78 on 10-30. The added pages are mostly zero-GT pages, so the mean barely moves; pages 0 and 34 were reassembled from authenticated original region responses with no model call, reproducing the original markdown byte for byte. These numbers come from few tables and are not a cohort comparison. ([document-parser-table-bench](../handoffs/active/knowledge-pipelines.md#track-document-parser-table-bench))
+- **ODL+Docling hybrid shard scores vary by an order of magnitude.** Table TEDS per fully collected 25-page shard: s09 0.842, s08 0.733, s05 0.555, s24 0.519, s16 0.244, s20 0.138 (47 tables), s21 0.078; partial shards s29 0.312 (13/25 pages) and s28 4/25 pages. The hybrid's low shards (s20/s21) are table-dense, so no pooled ODL mean should be quoted; a repeat scoring under the correct mutex reproduced s20/s21 per-table bytes. Raw all-ODL aggregates (0.524 / 0.664) include pages without verified source lineage and are descriptive only. ([document-parser-table-bench](../handoffs/active/knowledge-pipelines.md#track-document-parser-table-bench); [shard scores](../progress/2026-10/2026-10-30-codex3-pip-shard-scores.md))
 - **Collection, not quality, is the bottleneck.** Most of the 10-30 Paddle groups ended rc75 at the disk floor or on admission with zero attributable page finishes; seven original groups reported only region RPC counts (for example 10 matched HTTP 200 responses, 0 unmatched). Strict-lineage code (research `46244248728c`) now binds native finishes to pre-client sources, and the filed policy is that exposed-but-unfinished region starts stay UNKNOWN and are never redrawn.
 - **Paddle head recovery and R27-R35 successors are harness work, not results.** R27 head/pool0 were FAILED-RUN (class harness: pool identity guards hardcoded an older round); R28 hit a worker SIGSEGV (rc78) with 15/25 head pages complete. R29 recomputes layout as a real stage, replays five durable cached responses byte for byte with zero new network requests, and finished the head with 25/25 page journals (23/25 with strict original custody; pages 0 and 34 lacked strict custody until the later no-network reassembly noted above, which created a new finish rather than inferring a historical one). R30-R35 (pool tails) are READY packets with isolated five-response controls; none has a cohort result.
 - **Unlimited-OCR is prepared, unrun.** The 36 page/profile requests carry no CER/TEDS yet. ([Unlimited-OCR READY](../artifacts/compute/codex3-unlimited-ocr-ready-20261031/SHA256SUMS))
 
-Sources: [document-parser-table-bench](../handoffs/active/document-parser-table-bench.md) · [PIP shard scores](../progress/2026-10/2026-10-30-codex3-pip-shard-scores.md) · [R29 continuation](../progress/2026-10/2026-10-31-pip-r29-continuation.md) · [head recovery](../progress/2026-10/2026-10-31-pip-head-recovery-cs53.md) · [R29 collection audit](../artifacts/compute/codex3-pip-r29-c6-gpu-r2-20261031/SHA256SUMS)
+Sources: [document-parser-table-bench](../handoffs/active/knowledge-pipelines.md#track-document-parser-table-bench) · [PIP shard scores](../progress/2026-10/2026-10-30-codex3-pip-shard-scores.md) · [R29 continuation](../progress/2026-10/2026-10-31-pip-r29-continuation.md) · [head recovery](../progress/2026-10/2026-10-31-pip-head-recovery-cs53.md) · [R29 collection audit](../artifacts/compute/codex3-pip-r29-c6-gpu-r2-20261031/SHA256SUMS)
 
 
 ## Compiled Update — 2026-11-01 (source-delta review)
 
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
-- Paddle R32 ended partial; five exhausted groups record 61 complete pages, 13 unknown and one geometry error, with seven other completed groups; R35 ended rc75 with 36 complete, 9 missing and one pre-exposure refusal among 46 visited-page summaries. Retained/replayed entries prevent a net-new count; cause unresolved and no quality verdict. [Handoff](../handoffs/active/document-parser-table-bench.md) · [codex3 progress](../progress/2026-11/2026-11-01-codex3.md)
+- Paddle R32 ended partial; five exhausted groups record 61 complete pages, 13 unknown and one geometry error, with seven other completed groups; R35 ended rc75 with 36 complete, 9 missing and one pre-exposure refusal among 46 visited-page summaries. Retained/replayed entries prevent a net-new count; cause unresolved and no quality verdict. [Handoff](../handoffs/active/knowledge-pipelines.md#track-document-parser-table-bench) · [codex3 progress](../progress/2026-11/2026-11-01-codex3.md)
 
 ## Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)
 
 **Confidence: verified source records; most items are software/model-free controls or failed-run filings, not measurement verdicts. Proposed work is labelled as such.**
 
-- ODL-011: intrinsic chunk-quality scores (text edit distance, table TEDS, reading-order edit distance, speed) now sit beside `odl_bench` rows (Research `1421b578`, 62 model-free tests). Ekimetrics rows are informational diagnostics, not a quality verdict; the task stays open. [ODL](../handoffs/active/opendataloader-pipeline-integration.md)
+- ODL-011: intrinsic chunk-quality scores (text edit distance, table TEDS, reading-order edit distance, speed) now sit beside `odl_bench` rows (Research `1421b578`, 62 model-free tests). Ekimetrics rows are informational diagnostics, not a quality verdict; the task stays open. [ODL](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration)
 
 
 ## Phase C exposure custody — 2026-11-01
 
-For the approved 755-page English comparison, a retained-evidence inventory classified 690 pages as protected UNKNOWN and 65 as having no observed start. The latter are candidates for review, not automatically eligible for another exposure. The legacy shard lock does not itself prove that child processes have drained, so the approved full-cohort TEDS comparison remains open pending custody, rate and qualification evidence. ([Phase C handoff](../handoffs/active/document-parser-table-bench.md); [custody review](../artifacts/compute/codex3-pip-custody-review-20261101/ACTIONABILITY.md); [inventory tests](../artifacts/compute/codex3-pip-custody-review-20261101/TEST.log))
+For the approved 755-page English comparison, a retained-evidence inventory classified 690 pages as protected UNKNOWN and 65 as having no observed start. The latter are candidates for review, not automatically eligible for another exposure. The legacy shard lock does not itself prove that child processes have drained, so the approved full-cohort TEDS comparison remains open pending custody, rate and qualification evidence. ([Phase C handoff](../handoffs/active/knowledge-pipelines.md#track-document-parser-table-bench); [custody review](../artifacts/compute/codex3-pip-custody-review-20261101/ACTIONABILITY.md); [inventory tests](../artifacts/compute/codex3-pip-custody-review-20261101/TEST.log))

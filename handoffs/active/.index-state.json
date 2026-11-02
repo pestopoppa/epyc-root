@@ -7,16 +7,16 @@
       "open": 1009
     },
     "pipeline-integration-index.md": {
-      "blocked": 1,
-      "handoffs": 4,
-      "oldest_advance": "2026-10-31",
-      "open": 63
+      "blocked": 3,
+      "handoffs": 1,
+      "oldest_advance": "2026-11-02",
+      "open": 74
     },
     "research-evaluation-index.md": {
-      "blocked": 19,
-      "handoffs": 23,
+      "blocked": 18,
+      "handoffs": 22,
       "oldest_advance": "2026-07-29",
-      "open": 777
+      "open": 769
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -25,10 +25,10 @@
       "open": 26
     },
     "routing-and-optimization-index.md": {
-      "blocked": 18,
-      "handoffs": 40,
+      "blocked": 17,
+      "handoffs": 39,
       "oldest_advance": "2026-07-29",
-      "open": 711
+      "open": 708
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -330,7 +330,7 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 19,
+      "closed": 20,
       "guarded": 0,
       "last_advanced": "2026-11-02",
       "open": 12,
@@ -342,7 +342,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 31
+      "total": 32
     },
     "batched-decode-measurement.md": {
       "blocked": 1,
@@ -380,7 +380,7 @@
       "blocked": 0,
       "closed": 61,
       "guarded": 0,
-      "last_advanced": null,
+      "last_advanced": "2026-11-02",
       "open": 69,
       "owner_index": "research-evaluation-index.md",
       "prune": {
@@ -485,22 +485,6 @@
       "row_id": "RTG-62",
       "state": "active",
       "total": 53
-    },
-    "colbert-reranker-web-research.md": {
-      "blocked": 1,
-      "closed": 18,
-      "guarded": 0,
-      "last_advanced": "2026-11-01",
-      "open": 8,
-      "owner_index": "pipeline-integration-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "PIP-01",
-      "state": "active",
-      "total": 27
     },
     "contention-model-device-and-load-axes-rider.md": {
       "blocked": 0,
@@ -759,22 +743,6 @@
       "row_id": "INF-62",
       "state": "active",
       "total": 61
-    },
-    "document-parser-table-bench.md": {
-      "blocked": 0,
-      "closed": 9,
-      "guarded": 1,
-      "last_advanced": "2026-10-31",
-      "open": 18,
-      "owner_index": "pipeline-integration-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "PIP-02",
-      "state": "active",
-      "total": 28
     },
     "dynamic-stack-concurrency.md": {
       "blocked": 0,
@@ -1366,12 +1334,12 @@
       "state": "active",
       "total": 32
     },
-    "internal-kb-rag.md": {
-      "blocked": 0,
-      "closed": 44,
-      "guarded": 0,
+    "knowledge-pipelines.md": {
+      "blocked": 3,
+      "closed": 99,
+      "guarded": 1,
       "last_advanced": "2026-11-02",
-      "open": 20,
+      "open": 74,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1380,7 +1348,69 @@
       },
       "row_id": "PIP-04",
       "state": "active",
-      "total": 64
+      "total": 177,
+      "tracks": [
+        {
+          "blocked": 0,
+          "closed": 44,
+          "gates": null,
+          "guarded": 0,
+          "line": 0,
+          "markers": 0,
+          "name": "(untracked)",
+          "open": 20
+        },
+        {
+          "blocked": 1,
+          "closed": 18,
+          "gates": [],
+          "guarded": 0,
+          "line": 1103,
+          "markers": 1,
+          "name": "colbert-reranker-web-research",
+          "open": 8
+        },
+        {
+          "blocked": 0,
+          "closed": 9,
+          "gates": [],
+          "guarded": 1,
+          "line": 1850,
+          "markers": 1,
+          "name": "document-parser-table-bench",
+          "open": 18
+        },
+        {
+          "blocked": 0,
+          "closed": 9,
+          "gates": [],
+          "guarded": 0,
+          "line": 2466,
+          "markers": 1,
+          "name": "opendataloader-pipeline-integration",
+          "open": 17
+        },
+        {
+          "blocked": 1,
+          "closed": 19,
+          "gates": [],
+          "guarded": 0,
+          "line": 2574,
+          "markers": 1,
+          "name": "searxng-search-backend",
+          "open": 3
+        },
+        {
+          "blocked": 1,
+          "closed": 0,
+          "gates": [],
+          "guarded": 0,
+          "line": 2943,
+          "markers": 1,
+          "name": "sliders-local-validation",
+          "open": 8
+        }
+      ]
     },
     "kv-prefix-fork-and-paged-attention.md": {
       "blocked": 1,
@@ -1840,22 +1870,6 @@
       "state": "active",
       "total": 6
     },
-    "opendataloader-pipeline-integration.md": {
-      "blocked": 0,
-      "closed": 9,
-      "guarded": 0,
-      "last_advanced": "2026-11-01",
-      "open": 17,
-      "owner_index": "pipeline-integration-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "PIP-05",
-      "state": "active",
-      "total": 26
-    },
     "orchestration-robustness-audit-2026-07-11.md": {
       "blocked": 0,
       "closed": 47,
@@ -2208,22 +2222,6 @@
       "state": "active",
       "total": 16
     },
-    "searxng-search-backend.md": {
-      "blocked": 1,
-      "closed": 19,
-      "guarded": 0,
-      "last_advanced": "2026-07-29",
-      "open": 3,
-      "owner_index": "routing-and-optimization-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "RTG-33",
-      "state": "active",
-      "total": 23
-    },
     "session-bus-thin-dispatcher.md": {
       "blocked": 0,
       "closed": 170,
@@ -2255,22 +2253,6 @@
       "row_id": "RTG-35",
       "state": "active",
       "total": 26
-    },
-    "sliders-local-validation.md": {
-      "blocked": 1,
-      "closed": 0,
-      "guarded": 0,
-      "last_advanced": "2026-07-29",
-      "open": 8,
-      "owner_index": "research-evaluation-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "EVL-43",
-      "state": "active",
-      "total": 9
     },
     "speculative-decoding-mtp-refresh.md": {
       "blocked": 1,
@@ -2790,21 +2772,12 @@
       "next_action": "Obtain S4-T1 live seeding proof at its inference-owner boundary; ingest the first granted real Omega capture via VB-S4-OMEGA-FIRST-AB",
       "track": "repl turn efficiency"
     },
-    "EVL-43": {
-      "deps": [],
-      "handoff": "sliders-local-validation.md",
-      "id": "EVL-43",
-      "index": "research-evaluation-index.md",
-      "line": 30,
-      "next_action": "Operator decision: KB-RAG K7 precondition fired \u2014 evaluate SLIDERS DB+SQL alternative (Phase 0 falsification) now, or keep parked?",
-      "track": "sliders local validation"
-    },
     "EVL-44": {
       "deps": [],
       "handoff": "stale-open-audit-2026-07-18.md",
       "id": "EVL-44",
       "index": "research-evaluation-index.md",
-      "line": 31,
+      "line": 30,
       "next_action": "Recast x-mas-text-routing to telemetry-watch; internal-kb-rag stays active (KB-WM-6, KB-GS-1..4 open since 09-17)",
       "track": "stale open audit 2026 07 18"
     },
@@ -2813,7 +2786,7 @@
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "index": "research-evaluation-index.md",
-      "line": 32,
+      "line": 31,
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
       "track": "vidya belief substrate program"
     },
@@ -2822,7 +2795,7 @@
       "handoff": "fable5-window2-findings-05c-mi210-lever-category-matrix.md",
       "id": "EVL-48",
       "index": "research-evaluation-index.md",
-      "line": 33,
+      "line": 32,
       "next_action": "L2 \u2014 quantize_q8_1 requant kill (L14 done: 4b6434a9, DEAD)",
       "track": "fable5 window2 findings 05c mi210 lever cate"
     },
@@ -2835,7 +2808,7 @@
       "handoff": "reboot-gated-inventory-and-staging.md",
       "id": "EVL-49",
       "index": "research-evaluation-index.md",
-      "line": 34,
+      "line": 33,
       "next_action": "S-05 \u2014 capture current pool/placement and actual owner window; retain accepted saved-E1 source capture",
       "track": "reboot gated inventory and staging"
     },
@@ -2846,7 +2819,7 @@
       "handoff": "dev-harness-trace-mining.md",
       "id": "EVL-52",
       "index": "research-evaluation-index.md",
-      "line": 35,
+      "line": 34,
       "next_action": "DHM-4 operator labels (30-item pilot, private); DHM-5.2 paired turn-1 probe (Codex subagent, opencode); DHM-8 hook proposal",
       "track": "dev harness trace mining"
     },
@@ -3337,41 +3310,14 @@
       "next_action": "AKX-ALL-30b: write G3-first order + G1/G2 re-rank (R=1.73) into the seed draft; AKX-ALL-LB3.2 re-run via akxlb32 v2",
       "track": "autokernel all devices all dimensions"
     },
-    "PIP-01": {
-      "deps": [],
-      "handoff": "colbert-reranker-web-research.md",
-      "id": "PIP-01",
-      "index": "pipeline-integration-index.md",
-      "line": 13,
-      "next_action": "G14 \u2014 re-export Reason with pylate-onnx-export 1.7.0 (py3.10\u20133.12); investigate PREFIX-3 Reason numeric failures",
-      "track": "colbert reranker web research"
-    },
-    "PIP-02": {
-      "deps": [],
-      "handoff": "document-parser-table-bench.md",
-      "id": "PIP-02",
-      "index": "pipeline-integration-index.md",
-      "line": 14,
-      "next_action": "Repair PIP r30/r31 environment parity and r32 resume ownership; qualify fresh v2 rows before arming",
-      "track": "document parser table bench"
-    },
     "PIP-04": {
       "deps": [],
-      "handoff": "internal-kb-rag.md",
+      "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "index": "pipeline-integration-index.md",
-      "line": 15,
+      "line": 13,
       "next_action": "Source-review remaining K2/web contracts and independent dependency consumers",
       "track": "internal kb rag"
-    },
-    "PIP-05": {
-      "deps": [],
-      "handoff": "opendataloader-pipeline-integration.md",
-      "id": "PIP-05",
-      "index": "pipeline-integration-index.md",
-      "line": 16,
-      "next_action": "CPU subset DONE 2026-08-25; next: canonical-profile A/B rerun (gated on inference-stop order)",
-      "track": "opendataloader pipeline integration"
     },
     "REV-02": {
       "deps": [
@@ -3608,21 +3554,12 @@
       "next_action": "T0.1 \u2014 Verify AutoPilot is down (no autopilot.py, no journal activity) and get operator go-ahead for the capability-registry row",
       "track": "scaffold autopilot cost lever deployment"
     },
-    "RTG-33": {
-      "deps": [],
-      "handoff": "searxng-search-backend.md",
-      "id": "RTG-33",
-      "index": "routing-and-optimization-index.md",
-      "line": 32,
-      "next_action": "SX-5/SX-6 wait on AR-3; meanwhile relabel intake-365 (Firecrawl) superseded by intake-372, matching intake-364",
-      "track": "searxng search backend"
-    },
     "RTG-34": {
       "deps": [],
       "handoff": "session-bus-thin-dispatcher.md",
       "id": "RTG-34",
       "index": "routing-and-optimization-index.md",
-      "line": 33,
+      "line": 32,
       "next_action": "AIR-6 \u2014 deploy exact guarded source and require ordinary-work refusal; then resume live canaries",
       "track": "session bus thin dispatcher"
     },
@@ -3631,7 +3568,7 @@
       "handoff": "shape-keyed-contention-gating.md",
       "id": "RTG-35",
       "index": "routing-and-optimization-index.md",
-      "line": 34,
+      "line": 33,
       "next_action": "REGION-SIBLING-1: merge fix/region-lock-smt-siblings-ec 4ae008a8 after operator approval (OP-77); then the q* nomenclature review",
       "track": "shape keyed contention gating"
     },
@@ -3640,7 +3577,7 @@
       "handoff": "stack-lifecycle-program.md",
       "id": "RTG-36",
       "index": "routing-and-optimization-index.md",
-      "line": 35,
+      "line": 34,
       "next_action": "OP-72 sign STACKCHG-HYGIENE, then SCG-PRIORS-WARM-b + DRAFT-SEL-2b; SCG-FASTPATH; SCG-TEST-ORDER",
       "track": "stack change governance pipeline"
     },
@@ -3649,7 +3586,7 @@
       "handoff": "tri-role-coordinator-architecture.md",
       "id": "RTG-40",
       "index": "routing-and-optimization-index.md",
-      "line": 36,
+      "line": 35,
       "next_action": "TR-4.1 \u2014 Compose role with model selection in routing.py; frozen until the DAR-regret and per-question-vector gates reopen routing",
       "track": "tri role coordinator architecture"
     },
@@ -3658,7 +3595,7 @@
       "handoff": "unified-trace-memory-service.md",
       "id": "RTG-41",
       "index": "routing-and-optimization-index.md",
-      "line": 37,
+      "line": 36,
       "next_action": "UTM-LB2.2 ingest projector events; UTM-B1 catalog-growth; UTM-B2 pairing",
       "track": "unified trace memory service"
     },
@@ -3667,7 +3604,7 @@
       "handoff": "within-role-placement-state-machine.md",
       "id": "RTG-42",
       "index": "routing-and-optimization-index.md",
-      "line": 38,
+      "line": 37,
       "next_action": "WP-8 \u2014 teach compute_max_safe_concurrency the largest-dimension rule for quarters-only eval fan-out (WP-6/WP-7 await the operator)",
       "track": "within role placement state machine"
     },
@@ -3676,7 +3613,7 @@
       "handoff": "x-mas-text-routing.md",
       "id": "RTG-45",
       "index": "routing-and-optimization-index.md",
-      "line": 39,
+      "line": 38,
       "next_action": "Monitor post-enable X-MAS telemetry for domain/latency regressions or guard bypasses; rollback is `xmas_routing.mode: off` + API reload",
       "track": "x mas text routing"
     },
@@ -3685,7 +3622,7 @@
       "handoff": "handoff-index-and-backlog-graph.md",
       "id": "RTG-46",
       "index": "routing-and-optimization-index.md",
-      "line": 40,
+      "line": 39,
       "next_action": "Human visual verdict on the :8100 graph lattice layout (4cd106c2 deployed); OP-9 hub_supervisor relaunch pending",
       "track": "handoff index and backlog graph"
     },
@@ -3694,7 +3631,7 @@
       "handoff": "dashboard-architecture-restructure.md",
       "id": "RTG-47",
       "index": "routing-and-optimization-index.md",
-      "line": 41,
+      "line": 40,
       "next_action": "Re-eyeball the tap's live ACTIVE/streaming token counters under real traffic; Phase 1b awaits operator parity",
       "track": "dashboard architecture restructure"
     },
@@ -3705,7 +3642,7 @@
       "handoff": "coordinator-role-failure-modes-and-refactor.md",
       "id": "RTG-48",
       "index": "routing-and-optimization-index.md",
-      "line": 42,
+      "line": 41,
       "next_action": "R-7 \u2014 Assign a successor to retired namespace owner mainD; then reconcile the C49 references",
       "track": "coordinator role failure modes"
     },
@@ -3717,7 +3654,7 @@
       "handoff": "fleet-fanout-measurement.md",
       "id": "RTG-49",
       "index": "routing-and-optimization-index.md",
-      "line": 43,
+      "line": 42,
       "next_action": "FM-7 journal delegation accounting + FM-8 subagent types/dispatch hook (parallel), then FM-9 doctrine diff; FM-2 Stage 1 after",
       "track": "fleet fanout measurement"
     },
@@ -3729,7 +3666,7 @@
       "handoff": "wrap-up-division-of-labor-policy.md",
       "id": "RTG-51",
       "index": "routing-and-optimization-index.md",
-      "line": 44,
+      "line": 43,
       "next_action": "Reconcile the Phase-5 instruction migration matrix and prepare protected policy signoff; retain the real Auditor canary",
       "track": "wrap up division of labor policy"
     },
@@ -3741,7 +3678,7 @@
       "handoff": "loop-owned-fleet-implementation.md",
       "id": "RTG-52",
       "index": "routing-and-optimization-index.md",
-      "line": 45,
+      "line": 44,
       "next_action": "P4-1 \u2014 adjudicate the 7-day role-shrink gate; then P5-1 hook-surface trust-boundary analysis and P5-2 NL-only fixture",
       "track": "loop owned fleet implementation"
     },
@@ -3750,7 +3687,7 @@
       "handoff": "qwen-chat-template-evaluation.md",
       "id": "RTG-54",
       "index": "routing-and-optimization-index.md",
-      "line": 46,
+      "line": 45,
       "next_action": "Prepare CT-12.3d deployed orchestrator escaped-cost check; review CT-21 scorer cause and prospective measurement",
       "track": "qwen chat template evaluation"
     },
@@ -3761,7 +3698,7 @@
       "handoff": "promptforge-mutation-safety-contract.md",
       "id": "RTG-55",
       "index": "routing-and-optimization-index.md",
-      "line": 47,
+      "line": 46,
       "next_action": "MHS-3d \u2014 operator runs the v10 episodic re-pin RATIFY (run_v10_episodic_repin_ratify_20260917.sh); then MHS-12",
       "track": "promptforge mutation safety"
     },
@@ -3770,7 +3707,7 @@
       "handoff": "typed-decision-plane.md",
       "id": "RTG-56",
       "index": "routing-and-optimization-index.md",
-      "line": 48,
+      "line": 47,
       "next_action": "Run fresh three-arm shadow at the inference owner\u2019s boundary; retain inference gates",
       "track": "typed decision plane"
     },
@@ -3782,7 +3719,7 @@
       "handoff": "kv-unified-stack-rollout.md",
       "id": "RTG-57",
       "index": "routing-and-optimization-index.md",
-      "line": 49,
+      "line": 48,
       "next_action": "Follow the 2026-11-02 execution contract: reconcile capacity evidence and prepare remaining candidate gates; preserve HPR exposure",
       "track": "kv unified stack rollout"
     },
@@ -3795,7 +3732,7 @@
       "handoff": "kv-prefix-fork-and-paged-attention.md",
       "id": "RTG-58",
       "index": "routing-and-optimization-index.md",
-      "line": 50,
+      "line": 49,
       "next_action": "Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort",
       "track": "kv prefix fork and paged attention"
     },
@@ -3804,7 +3741,7 @@
       "handoff": "churn-pipeline.md",
       "id": "RTG-62",
       "index": "routing-and-optimization-index.md",
-      "line": 51,
+      "line": 50,
       "next_action": "SA-1 (merge into sticky-slot change: ready-row admission, start cooldown) then SA-2/SA-3/JEV-3",
       "track": "churn pipeline"
     },
@@ -3813,7 +3750,7 @@
       "handoff": "backlog-refactor-2026-11.md",
       "id": "RTG-63",
       "index": "routing-and-optimization-index.md",
-      "line": 52,
+      "line": 51,
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
       "track": "backlog refactor 2026-11"
     },

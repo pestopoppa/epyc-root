@@ -74,8 +74,6 @@
   "REV-07": 0.25,
   "RTG-14": 0.25,
   "RTG-42": 0.25,
-  "PIP-01": 0.25,
-  "PIP-05": 0.25,
   "INF-09": 0.2,
   "EVL-04": 0.2,
   "EVL-14": 0.2,
@@ -87,7 +85,6 @@
   "RTG-48": 0.2,
   "RTG-51": 0.2,
   "RTG-52": 0.2,
-  "PIP-02": 0.2,
   "INF-42": 0.15,
   "INF-76": 0.15,
   "RTG-04": 0.15,
@@ -142,7 +139,12 @@
   "EVL-08#mathsmith-hc-formalizer-eval": 0.2,
   "EVL-08#multi-file-coding-completion-capability": 0.25,
   "EVL-08#rlm-contested-claims-self-evaluation": 0.25,
-  "EVL-08#tool-use-eval-contract": 0.25
+  "EVL-08#tool-use-eval-contract": 0.25,
+  "PIP-04#colbert-reranker-web-research": 0.25,
+  "PIP-04#document-parser-table-bench": 0.2,
+  "PIP-04#opendataloader-pipeline-integration": 0.25,
+  "PIP-04#searxng-search-backend": 0.2,
+  "PIP-04#sliders-local-validation": 0.2
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
@@ -154,12 +156,10 @@
   "RTG-40": "PARKED/FROZEN by operator (UFH-13 parked until 2nd MI210 + swapped-stack autopilot)",
   "RTG-17": "PARKED/FROZEN by operator (UFH-13 parked until 2nd MI210 + swapped-stack autopilot)",
   "INF-63": "external: upstream PR / artifact / disk reclaim",
-  "RTG-33": "external: upstream PR / artifact / disk reclaim",
   "INF-37": "operator decision or approval pending",
   "EVL-01": "operator decision or approval pending",
   "EVL-15": "operator decision or approval pending",
   "EVL-21": "operator decision or approval pending",
-  "EVL-43": "operator decision or approval pending",
   "RTG-24": "operator decision or approval pending",
   "RTG-29": "operator decision or approval pending",
   "RTG-35": "operator decision or approval pending",
@@ -180,7 +180,9 @@
   "RTG-36#model-stack-update-pipeline-audit": "",
   "RTG-36#standardized-stack-update-pipeline-finalization": "",
   "RTG-36#wp12-fleet-layer-design": "",
-  "EVL-08#mathsmith-hc-formalizer-eval": "operator decision or approval pending"
+  "EVL-08#mathsmith-hc-formalizer-eval": "operator decision or approval pending",
+  "PIP-04#searxng-search-backend": "external: upstream PR / artifact / disk reclaim",
+  "PIP-04#sliders-local-validation": "operator decision or approval pending"
  },
  "park": {
   "INF-06": "MMQ",
