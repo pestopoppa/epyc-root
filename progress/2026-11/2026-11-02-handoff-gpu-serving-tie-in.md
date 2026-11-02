@@ -11,3 +11,7 @@ Corrected P1-2: the Stage-B throughput and placement rankings were withdrawn for
 ## 09:52Z — Prepare P4-1 typed-knob design against current policy
 
 P4-1 preparation: stock and FF weights in the old task were deleted; P3-5 owns replacement bake-off arms and new measured ceiling rows. A source-grounded typed-policy design is being prepared for review without activation. GPU-LEAK-1 remains open for the kernel owner's versioned promotion; CH-30 is in the experimental champion and the v10 guard remains necessary.
+
+## 09:54Z — Prepare P3-4 native-MTP versus DFlash2 serving measurement design
+
+P3-4 design preparation commissioned against the serving handoff and measurement constitution, including paired serving metrics and launch-bound mode-switch costs. This is a design task; the champion promotion decision and operator grant precede compute.
