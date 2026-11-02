@@ -71,3 +71,11 @@ Prior wrap-up completed and reached origin as 7a8f1334d4142dc65967cc4f6a69d8ae69
 ## 00:45Z — File reviewed EffiBench preparation and arithmetic integration brief
 
 Filed reviewed EffiBench-X preparation: four acceptance-gate patches match the canonical bundle; the exact 308 DATED IDs match the gate, with the two known exclusions yielding 306. Syntax, synthetic cohort and missing-item fail-closed checks passed. Adoption remains open: Python-only execution and harness connection are manual, dataset contents are unpinned, and timing is not ladder-grade. Filed a separate arithmetic-tool integration brief; implementation and worker routing remain open in epyc-orchestrator. No inference, new measurement, or row publication. The prior wrap-up commit 8fd0f258ede8 had a serialized-push failure and is included in the subsequent push.
+
+## 00:46Z — Advance GPQA row and EffiBench and NUMA preparation
+
+Previous wrap-up succeeded at b6860b18feb98d5363dc571884dbc79a68ec87e3 and published the reviewed EffiBench and arithmetic artifacts. Delegated current-model GPQA row preparation, fail-closed EffiBench integration, and NUMA recipe investigation; completion events are registered. No new row published or inference run at this boundary.
+
+## 00:47Z — File scoped NUMA recipe integration analysis
+
+Reviewed RECIPE-NUMA-1 and filed artifacts/architect-model-selection-bench/region-recipe-integration.md. The research canonical recipe currently hardcodes a full-host prefix; a region-scoped implementation and validation remain necessary in epyc-inference-research. The architect single-region interleave result and concurrent-quarter node-local placement evidence concern different scopes, so neither establishes a universal memory policy. No inference or new measurement; checkbox remains open. Prior wrap-up commit 40fde83f5874 failed serialized push and is included in the retry.
