@@ -123,3 +123,26 @@ def test_owned_entry_refuses_wrong_v3_grant_or_row_before_workload(tmp_path, def
         assert 'holds' in result.stderr
     else:
         assert 'bound canonical' in result.stderr
+
+
+def test_same_entry_accepts_rowflow_synthetic_grant_only_in_fixture_mode(tmp_path):
+    args, output, marker, grant, stop, hold = setup_entry(tmp_path)
+    plan_path = Path(args[args.index('--plan') + 1]); plan = json.loads(plan_path.read_text())
+    plan['row_id'] = 'm4-synthetic-test'
+    plan_path.write_text(json.dumps(plan)); args[args.index('--plan-sha256') + 1] = hashlib.sha256(plan_path.read_bytes()).hexdigest()
+    grant.write_text(grant.read_text() + ' holds=q1 schema=epyc.rowflow.dryrun-grant.v1 id=m4-synthetic-test kind=rowflow-dryrun')
+    env = dict(os.environ, FILLER_DRYRUN='1')
+    result = subprocess.run(args, env=env, capture_output=True, text=True, timeout=15)
+    assert result.returncode == 0, result.stderr
+    assert marker.exists() and json.loads((output/'FIXTURE-COMPLETE.json').read_text())['fixture_only'] is True
+
+
+def test_synthetic_rowflow_grant_refuses_without_dryrun_or_wrong_id(tmp_path):
+    args, output, marker, grant, stop, hold = setup_entry(tmp_path)
+    plan_path = Path(args[args.index('--plan') + 1]); plan = json.loads(plan_path.read_text())
+    plan['row_id'] = 'm4-synthetic-test'
+    plan_path.write_text(json.dumps(plan)); args[args.index('--plan-sha256') + 1] = hashlib.sha256(plan_path.read_bytes()).hexdigest()
+    grant.write_text(grant.read_text() + ' holds=q1 schema=epyc.rowflow.dryrun-grant.v1 id=other-row kind=rowflow-dryrun')
+    result = subprocess.run(args, env=dict(os.environ, FILLER_DRYRUN='1'), capture_output=True, text=True, timeout=15)
+    assert result.returncode == 2 and not marker.exists()
+    assert 'unbound synthetic' in result.stderr

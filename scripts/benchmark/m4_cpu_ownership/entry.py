@@ -44,7 +44,8 @@ def _row_id(value: object) -> str:
     return value
 
 
-def _grant(path: Path, expected_region: str, deadline: float, *, require_host_holds: bool = False) -> None:
+def _grant(path: Path, expected_region: str, deadline: float, *, require_host_holds: bool = False,
+           allow_dryrun: bool = False, expected_row_id: str | None = None) -> None:
     fields = path.read_text().split()
     pieces = [field.split('=', 1) for field in fields]
     if any(len(pair) != 2 for pair in pieces) or len({pair[0] for pair in pieces}) != len(pieces):
@@ -58,6 +59,12 @@ def _grant(path: Path, expected_region: str, deadline: float, *, require_host_ho
         holds = values['holds'].split(',')
         if len(holds) != 5 or set(holds) != {'q0', 'q1', 'q2', 'q3', 'gpu-quiet'}:
             raise ValueError('full host and GPU-quiet holds required')
+    elif keys == required | {'holds', 'schema', 'id', 'kind'}:
+        if (not allow_dryrun or os.environ.get('FILLER_DRYRUN') != '1'
+                or values['schema'] != 'epyc.rowflow.dryrun-grant.v1'
+                or values['kind'] != 'rowflow-dryrun'
+                or expected_row_id is None or values['id'] != _row_id(expected_row_id)):
+            raise ValueError('unbound synthetic rowflow grant')
     elif keys not in (required, required | {'holds'}):
         raise ValueError('invalid fixture grant fields')
     start, end = _time(values['start']), _time(values['end'])
@@ -119,7 +126,8 @@ def main() -> int:
             raise ValueError('region missing')
         if not a.output.is_dir() or any(a.output.iterdir()):
             raise ValueError('output must be a fresh empty directory')
-        _grant(a.grant, plan['region'], a.deadline, require_host_holds=(mode == 'owned-execute'))
+        _grant(a.grant, plan['region'], a.deadline, require_host_holds=(mode == 'owned-execute'),
+               allow_dryrun=(mode != 'owned-execute'), expected_row_id=plan.get('row_id'))
         if not a.hold.is_dir() or a.stop.exists() or any(a.hold.glob('HOLD_*')):
             raise ValueError('STOP or HOLD before entry')
         grant_hash = _sha(a.grant)
@@ -200,7 +208,8 @@ def main() -> int:
             champion = subprocess.check_output(['git','-C','/mnt/raid0/llm/llama.cpp','rev-parse',
                 'refs/heads/ak/champion/llama-cpp-ffc1bac82eec'], text=True).strip()
             native_authorization.verify(plan, current_champion=champion, enrolled=True)
-        _grant(a.grant, plan['region'], a.deadline, require_host_holds=(mode == 'owned-execute'))
+        _grant(a.grant, plan['region'], a.deadline, require_host_holds=(mode == 'owned-execute'),
+               allow_dryrun=(mode != 'owned-execute'), expected_row_id=plan.get('row_id'))
         if _sha(a.grant) != grant_hash or not a.hold.is_dir() or a.stop.exists() or any(a.hold.glob('HOLD_*')):
             raise ValueError('final grant, STOP or HOLD check failed')
         if rc != 0:
