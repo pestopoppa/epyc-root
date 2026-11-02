@@ -79,3 +79,7 @@ Applied independent route review to the LB1 capture design: every failed verdict
 ## 00:50Z — Publish accumulated lane commits and prepare campaign rows
 
 Recovered three failed wrap-up publications: acquired the serialized push lease, fetched and merged origin/main while holding it, then pushed through serialized_push; origin/main reached 18ed2a9c5d86 carrying commits 95a194c68470, 7bd099e194c6 and 04344d3d337f. Dispatched bounded preparation of fresh matched prefill, real fault rehearsal and end-to-end package campaign row inputs; registered each result file for dispatcher resumption. No compute launched, no row published, and no handoff task ticked.
+
+## 00:51Z — Prepare fresh matched prefill inputs
+
+Consumed pair-prep-v2: r44 preparation reused the r43 experiment ID and its control already executed, so neither r43 nor r44 is a fresh matched pair. The existing source preflight inspection found the point load/boost verdicts are diagnostic, while in-window frequency/power and concurrency remain to be bound and verified for a new run. Delegated fresh control and intervention input preparation and focused preflight verification; registered both result and candidate spec paths for wake-up. No row published or inference executed. Recovered prior wrap-up publication using serialized lease and pushed origin/main to 46dda6012cc6, including progress commit 16a88683e2ff.

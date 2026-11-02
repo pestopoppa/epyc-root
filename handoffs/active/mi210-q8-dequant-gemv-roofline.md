@@ -129,6 +129,8 @@ ik_llama.cpp via `fec061dea`; not introduced by us. Experimental branch only —
 
 ## Objective
 
+**Historical framing below is superseded:** the Q8_0 GEMV is int8-native, and the Q8 gap is an achieved-bandwidth/occupancy question, not per-element floating-point dequant. Use the updates and checklist above and below for current decisions.
+
 Raise **single-stream** GPU decode throughput for the qwen35/Q8 family toward the bandwidth roofline. Measured today: Q8 decode ~47% roofline (766 GB/s), fp16 ~62%, and rocprof attributes single-stream decode ~78% to `mul_mat_vec_q` (the Q8 weight GEMV) + 5.68% to `quantize_q8_1` (activation requant). Two gaps: **47→62% = Q8 dequant cost** (kernel-addressable); **62→100% = batch-1 latency wall** (memory-level-parallelism, harder). This handoff attacks both.
 
 ## Why this matters / transfer
@@ -138,6 +140,8 @@ Raise **single-stream** GPU decode throughput for the qwen35/Q8 family toward th
 - The dequant kernel also unlocks **sub-4-bit** viability (bytes/token axis, below).
 
 ## Levers, ranked (each ships with its decisive experiment)
+
+The following original ranking and experiment sequence are historical; the updates and current checklist supersede their Q8 premise and prioritization.
 
 ### Tier 1 — the dequant gap (47→62%, kernel-addressable, highest confidence)
 1. **Kill the `quantize_q8_1` activation-requant overhead** (measured 5.68% of decode). The GEMV requants activations to Q8_1 every step; investigate fusing it into the GEMV prologue or caching. *Experiment*: rocprof before/after; acceptance = quantize_q8_1 share → ~0, decode +5%.
@@ -170,7 +174,7 @@ Raise **single-stream** GPU decode throughput for the qwen35/Q8 family toward th
 ## Progress checklist
 
 - [x] nwarps 2->4 (+4.6%, committed 5dc116130) ✅
-- [x] async weight-prefetch raw.buffer.load.lds (+3.3%, committed 7c28056b7) ✅
+- [x] async weight-prefetch raw.buffer.load.lds (historical +3.3%, committed 7c28056b7; subsequent governed replay +0.936%, below the 2% floor, **NOT_REPRODUCED**; see Item A) ✅
 - [x] L3-MoE compact-LDS occupancy rewrite (BUILT + FALSIFIED, NO-GO) ✅
 - [x] L15 sub-4-bit: quantize 122B->IQ2 proxy + operator-gated IQ2-vs-Q8 bench ✅ **2026-07-29 — the "PENDING" predates the run.**
   Both halves landed 2026-07-05: 122B UD-IQ2_M GPU-resident at 43.7 t/s single / 148.7 agg @B32, PPL 5.02
@@ -368,6 +372,7 @@ Raise **single-stream** GPU decode throughput for the qwen35/Q8 family toward th
 ## Proposed non-IQ follow-through — 2026-10-04 earlier-intake retrospective
 
 - [ ] **INF37-MOE-Q8-FUSION — Qualify and implement a correctness-gated multi-token MoE GLU fusion slice for the existing Qwen3.6-35B Q8 MTP recipe.** PROPOSED, not build/run/deployment approval. This is independent of INF37-IQ-2's IQ-residency trigger. Main's read-only qualification found the model has separate Q8 gate/up expert tensors (41 of each), the canonical recipe uses MTP width four, and frozen v10's source still rejects multi-token MUL_MAT_ID fusion; this does not prove the running binary's route or benefit. Start an isolated experimental candidate from current production, never modify/build the frozen tree. Review upstream #27621 and AMD garbage-output report #28113; locate the exact fixing patch or implement and fixture-test a minimal gfx90a correction—closed issue status is not fix provenance. Keep scope to GLU: preserve v10's CPU-only top-k guard and do not bundle the unrelated top-k optimization. Bind source, patch, model/tensor metadata, rendered canonical recipe, compiler, actual binary/library digests and runtime fusion eligibility; inspect actual launch/verification widths rather than infer them from draft-n-max. Compare candidate fusion-on versus candidate fusion-off and fresh production on identical held-out inputs: operator differential tests including expert selection, verify widths and nonfinite/repeated-garbage cases, logits/decoded-output correctness against the measured local floor, then a bounded paired MTP end-to-end latency/throughput and acceptance screen. Charge failures and retain all outputs. Stop on any correctness failure, ineligible runtime path or no improvement beyond local paired uncertainty; report negative/inconclusive rather than widening into a kernel campaign. Render the existing `qwen3.6-35b-a3b-q8-gpu-mtp.json` recipe, do not hand-retype it. Prospective write-side capture under VB-RI-OPS-WIRE precedes any measured run, with existing ClaimTuple grading; normal campaign/resource and separate production-promotion gates remain intact. [Qualification, counter-coverage and limits](../../docs/reviews/research-intake-earlier-applications-20261004.md); record discussion: intake-1420#record.
+  - **2026-11-02 provenance review, no build or run:** [issue #28113](https://github.com/ggml-org/llama.cpp/issues/28113) initially attributed repeated punctuation on gfx1151/ROCm 7.14 to the multi-token fusion guard, but its reporter subsequently reported that isolated #27621 worked, could no longer reproduce the issue after a ROCm update, and suspected local tuning interactions. The issue identifies no confirmed upstream fix or gfx90a result; referenced fork commits are not proof of either. The exact correction/fixture gate remains open. Upstream `41ef91f7c8046087cdfbb276b79bff311ecf1c6d` changes GLU, MMVQ, top-k and tests, so a GLU-only slice requires selective review, not wholesale application. VB-RI-OPS-WIRE remains open, so no decision-bearing run is ready to publish.
 
 ### Research intake 2026-10-22 — Locals + Beacon (intake-2386..2460)
 
