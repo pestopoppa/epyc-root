@@ -53,3 +53,9 @@ Consumed the Qwen input digest receipt: 59 files, manifest `/mnt/raid0/llm/tmp/e
 ### Attention trace and Qwen admission preparation
 
 Consumed the GPU trace review: the unapplied patch at `docs/evidence/ernie-image-evaluation-20261102/gpu/trace-graph-selection.patch` passes `git apply --check` against sd.cpp `f3a7fe957d1e615d8766084f000dc3fabf8d7775`; it records graph selection, not actual kernel execution, and shared-helper logs need ERNIE DiT attribution. Experimental source/build preparation is assigned. Qwen runtime review found the default 48 GiB reservation unsupported by measurement and recommended provisional 192 GiB; 896² peak RSS and runtime remain unmeasured. A 300 s exposure start margin can leave interrupted fixed prompts UNKNOWN. A bounded owner is correcting admission and deadline handling, with completion registered. No inference, qualification or row publication. [no-belief: preparation only]
+
+## 07:45Z — Review Qwen resource controls and GPU trace recipe
+
+### Qwen row and GPU trace readiness
+
+Consumed Qwen control and trace-build preparation. The Qwen diagnostic row now reserves provisional 192 GiB and retains affinity, elapsed generation and process peak RSS; the initial 896² request has a provisional two-hour admission guard, with later guards based on prior completed durations. Neither RAM nor time is a measured 896² bound. An independent launcher review is underway before publication. GPU trace build recipe `/mnt/raid0/llm/tmp/ernie-fa-ab-20261102/trace-build-recipe.json` pins sd.cpp `f3a7fe957d1e615d8766084f000dc3fabf8d7775`, ggml `404fcb9d7c96989569e68c9e7881ee3465a05c50`, trace patch and the previously dirty HIP FP8 guard; no source tree was modified and no build or inference was run. Build needs keeper scheduling and selected-operation attribution. Independent reviews have event registrations. [no-belief: preparation only]
