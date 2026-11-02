@@ -31,6 +31,7 @@ GET /api/bus                 roster, per-agent liveness, inbox depth, operator t
 GET /api/queue               folded work queue (latest row per task_id) + invariant alarms
 GET /api/outcome             the autopilot outcome contract (+ freshness), if exported
 GET /api/gpu_window          the G1 watchdog's executor-status file (+ freshness envelope)
+GET /api/pipeline            pipeline page data: flowchart counts, sessions by step, compute regions
 GET /api/health              the FOLD over ``dashboard/panels.py``: every panel's
                              freshness envelope + watchdog, plus one status that
                              names the worst panel and why
@@ -124,7 +125,7 @@ if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 
-from dashboard import campaign_status, handoff_parser, kernel_progression, knowledge, loop_spec, loop_status, panels
+from dashboard import campaign_status, handoff_parser, kernel_progression, knowledge, loop_spec, loop_status, panels, pipeline_status
 
 
 REPO = Path(__file__).resolve().parents[1]
@@ -167,6 +168,7 @@ LOOP_HTML = _STATIC / "loop.html"
 
 
 LOOP_SPEC_HTML = _STATIC / "loop-spec.html"
+PIPELINE_HTML = _STATIC / "pipeline.html"
 
 
 KNOWLEDGE_HTML = _STATIC / "knowledge.html"
@@ -1385,6 +1387,30 @@ def loop_spec_health() -> tuple[int, dict]:
 
 
 # --------------------------------------------------------------------------- #
+# Pipeline page: compute loop + session loop, who is in which step  (/pipeline)
+# --------------------------------------------------------------------------- #
+def pipeline_payload() -> dict:
+    """Read-only fold over the dispatcher registry, turn reports, grants and keeper log."""
+    graph = graph_payload()      # the EXISTING index graph (/api/handoff_graph); no second graph is built
+    data = pipeline_status.build_payload(graph=graph)
+    if not data.get("present"):
+        obs = panels.absent(panels.source("pipeline"), data.get("error", "registry unreadable"))
+    else:
+        obs = panels.Observation(
+            artifact_present=True,
+            timestamp=_parse_semantic_timestamp(data.get("dispatcher_last_pass")),
+            source="dispatcher.last_pass", populated=bool(data.get("sessions")),
+            detail=None)
+    data["_freshness"] = _panel_envelope("pipeline", obs)
+    return data
+
+
+def pipeline_health() -> tuple[int, dict]:
+    """``/api/pipeline/health`` - is the pipeline view still true (dispatcher passing)?"""
+    return _subject_health("pipeline", pipeline_payload())
+
+
+# --------------------------------------------------------------------------- #
 # KT-3: read-only claim browser  (/knowledge)
 # --------------------------------------------------------------------------- #
 def knowledge_payload() -> dict:
@@ -1686,6 +1712,7 @@ def panel_envelopes() -> dict:
         "autokernel_loop": lambda: loop_status.snapshot()[1],
         "kernel_progression": lambda: kernel_progression.snapshot()[1],
         "loop_spec": lambda: loop_spec_payload()["_freshness"],
+        "pipeline": lambda: pipeline_payload()["_freshness"],
         "knowledge": lambda: knowledge_payload()["_freshness"],
         "knowledge_claim": lambda: panels.live(),
     }
@@ -2094,6 +2121,7 @@ HTML_ROUTES = {
     "/bus": BUS_HTML,
     "/benchmarks": BENCHMARKS_HTML,
     "/loop-spec": LOOP_SPEC_HTML,
+    "/pipeline": PIPELINE_HTML,
     "/knowledge": KNOWLEDGE_HTML,
     "/amd-ai-lab": AMD_AI_LAB_HTML,
 }
@@ -2127,6 +2155,7 @@ API_ROUTES = {
     "/api/gpu_window": gpu_window_payload,
     "/api/benchmark_artifacts": benchmark_artifacts_payload,
     "/api/loop_spec": loop_spec_payload,
+    "/api/pipeline": pipeline_payload,
     "/api/knowledge": knowledge_payload,
     "/api/dashboards": dashboards_payload,
     "/api/health": health_payload,
@@ -2144,6 +2173,7 @@ PANEL_HEALTH_ROUTES = {
     "/api/diagnostic-overrides/health": diagnostic_overrides_health,
     "/api/loop/health": loop_data_health,
     "/api/loop_spec/health": loop_spec_health,
+    "/api/pipeline/health": pipeline_health,
     "/api/knowledge/health": knowledge_health,
 }
 

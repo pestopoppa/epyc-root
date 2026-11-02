@@ -111,6 +111,15 @@
       "blurb": "JEV-5 phase A: typed loop specs (epyc.loop_spec.v1) drawn as state diagrams — the churn loop's row / allocator / session / backlog machines, named stop/park reasons and code-checked thresholds (data: /api/loop_spec; /api/loop_spec/health is the data probe)"
     },
     {
+      "id": "pipeline",
+      "title": "Pipeline",
+      "port": 8100,
+      "path": "/pipeline",
+      "owner_repo": "epyc-root",
+      "health_path": "/api/pipeline/health",
+      "blurb": "compute loop + handoff session loop as a flowchart marked DETERMINISTIC (code) vs AI-POWERED (agent), live count per node; which agent works which handoff, which step it is in, blocked rows, next queued handoffs, compute regions (data: /api/pipeline; /api/pipeline/health is the data probe)"
+    },
+    {
       "id": "knowledge",
       "title": "Knowledge",
       "port": 8100,

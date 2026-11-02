@@ -1,0 +1,108 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EPYC — Pipeline</title>
+<style>
+:root{--bg:#fff;--fg:#1f2328;--mut:#59636e;--line:#d1d9e0;--card:#f6f8fa;--det-f:#dbeafe;--det-s:#1d4ed8;--ai-f:#ffedd5;--ai-s:#c2410c;--bad:#b91c1c;--ok:#15803d;--warn:#a16207;--hi:#fef9c3}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1117;--fg:#c9d1d9;--mut:#8b949e;--line:#30363d;--card:#161b22;--det-f:#10264a;--det-s:#60a5fa;--ai-f:#3a1d0a;--ai-s:#fb923c;--bad:#fca5a5;--ok:#4ade80;--warn:#facc15;--hi:#3b3512}}
+:root[data-theme="dark"]{--bg:#0d1117;--fg:#c9d1d9;--mut:#8b949e;--line:#30363d;--card:#161b22;--det-f:#10264a;--det-s:#60a5fa;--ai-f:#3a1d0a;--ai-s:#fb923c;--bad:#fca5a5;--ok:#4ade80;--warn:#facc15;--hi:#3b3512}
+body{background:var(--bg);color:var(--fg);font:14px system-ui,sans-serif;margin:0 16px 32px;max-width:1240px}
+a{color:var(--det-s)}h2{border-bottom:1px solid var(--line);padding-bottom:4px;margin-top:26px}
+table{border-collapse:collapse;width:100%;margin:8px 0}th,td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:var(--mut)}
+code{font-size:12px}.note,.err,.fresh{color:var(--mut);font-size:12px}.err{color:var(--bad);font-size:14px;padding:8px;border:1px solid var(--bad)}
+.tag{display:inline-block;font-size:10px;font-weight:700;padding:0 5px;margin-right:4px;border:1px solid}
+.tag.DET{color:var(--det-s);background:var(--det-f);border-color:var(--det-s);border-radius:0}
+.tag.AI{color:var(--ai-s);background:var(--ai-f);border-color:var(--ai-s);border-radius:9px}
+.chip{display:inline-block;padding:1px 7px;border-radius:8px;font-size:11px;background:var(--card);border:1px solid var(--line)}
+tr.hl td{background:var(--hi)}svg{width:100%;height:auto;background:var(--card);border:1px solid var(--line)}
+svg text{fill:var(--fg);font:12px system-ui,sans-serif}svg .sub{fill:var(--mut);font-size:10px}svg .cnt{font-weight:700;font-size:15px}
+svg .det{fill:var(--det-f);stroke:var(--det-s);stroke-width:1.6}svg .ai{fill:var(--ai-f);stroke:var(--ai-s);stroke-width:1.6;stroke-dasharray:5 3}
+svg .edge{stroke:var(--mut);stroke-width:1.3;fill:none}svg .edge.dash{stroke-dasharray:4 3}svg .grp{fill:none;stroke:var(--line);stroke-dasharray:3 4}
+svg .badge{font-size:9px;font-weight:700}svg .bd-DET{fill:var(--det-s)}svg .bd-AI{fill:var(--ai-s)}
+.legend{display:flex;gap:18px;align-items:center;margin:6px 0;flex-wrap:wrap}.sw{display:inline-block;width:26px;height:14px;vertical-align:middle;margin-right:5px}
+.sw.d{background:var(--det-f);border:2px solid var(--det-s)}.sw.a{background:var(--ai-f);border:2px dashed var(--ai-s);border-radius:8px}
+.regions{display:flex;gap:8px;flex-wrap:wrap}.reg{border:1px solid var(--line);padding:6px 10px;min-width:150px;background:var(--card)}.reg.busy{border-color:var(--ai-s)}.reg.free{border-color:var(--ok)}
+</style>
+<h1>Pipeline</h1>
+<nav id="epyc-nav"></nav>
+<script defer src="/nav.js"></script>
+<p class="note">Compute loop and handoff session loop, with the live count at each node. Read-only. Data: <a href="/api/pipeline">/api/pipeline</a> · probe <a href="/api/pipeline/health">/api/pipeline/health</a> · refreshes every 30 s.</p>
+<div id="fresh" class="fresh">Loading…</div><div id="out"></div>
+<script>
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// Flowchart spec. o = owner: DET (code decides) | AI (an LLM session does the work). c = key into counts().
+const NODES=[
+ {id:'A',o:'DET',x:20,y:60,w:230,h:70,t:['a. take next handoff','in priority order'],s:'backlog-priority.json -> slot',c:'queued'},
+ {id:'B1',o:'AI',x:320,y:90,w:230,h:56,t:['non-inference task','fan out to subagents'],c:'working'},
+ {id:'B4',o:'AI',x:590,y:90,w:230,h:56,t:['tick boxes as results land','file results'],c:'filing'},
+ {id:'B2',o:'AI',x:320,y:170,w:230,h:56,t:['inference task: write launcher,','publish_row, make ready'],c:'making-ready'},
+ {id:'B3',o:'DET',x:590,y:170,w:230,h:56,t:['publish_row checks +','dry run -> PASS'],c:'dryrun'},
+ {id:'C',o:'DET',x:290,y:290,w:300,h:56,t:['each interval, per session whose turn ended:','dispatcher decides'],s:'code, not an agent: PAUSE | NUDGE | CLOSE'},
+ {id:'PA',o:'DET',x:620,y:290,w:140,h:56,t:['PAUSE'],s:'only readied rows block',c:'paused'},
+ {id:'NU',o:'DET',x:780,y:290,w:140,h:56,t:['NUDGE'],s:'go on, next step',c:'nudged'},
+ {id:'CL',o:'DET',x:940,y:290,w:140,h:56,t:['CLOSE'],s:'done: take next',c:'done'},
+ {id:'K1',o:'DET',x:20,y:440,w:170,h:56,t:['free regions'],s:'q0..q3, gpu-quiet',c:'free_regions'},
+ {id:'K2',o:'DET',x:235,y:440,w:170,h:56,t:['match ready rows'],s:'dry run PASS',c:'ready'},
+ {id:'K3',o:'DET',x:450,y:440,w:170,h:56,t:['grant'],s:'regions + window',c:'running'},
+ {id:'K4',o:'DET',x:665,y:440,w:170,h:56,t:['run'],s:'launcher in region',c:'running'},
+ {id:'K5',o:'DET',x:880,y:440,w:170,h:56,t:['result filed'],s:'last 24 h',c:'filed_24h'},
+];
+const EDGES=[
+ ['M250,95 H290','','->'],['M440,250 V290','','->'],['M850,290 V250','dash','->'],
+ ['M690,346 V385','',''],['M1010,346 V385','',''],['M135,385 H1010','',''],['M135,385 V130','','->'],
+ ['M590,318 H620','dash',''],['M550,318 H620','dash',''],['M605,226 V400 H320 V440','dash','->'],
+ ['M1050,468 H1100 V118 H820','dash','->'],['M190,468 H235','','->'],['M405,468 H450','','->'],['M620,468 H665','','->'],['M835,468 H880','','->'],
+ ['M550,118 H590','dash','->'],['M435,146 V170','dash','->'],['M550,198 H590','','->']
+];
+function counts(d){
+ const sc=d.step_counts||{},c=(d.compute||{}).counts||{};
+ return {queued:d.queued_total,working:sc.working,'making-ready':sc['making-ready'],paused:sc.paused,nudged:sc.nudged,done:sc.done,
+  free_regions:c.free_regions,ready:c.ready,running:c.running,filed_24h:c.filed_24h,filing:null,
+  dryrun:c.ready==null?null:`${c.ready} ok / ${c['dryrun-pending']||0} wait / ${c['dryrun-fail']||0} fail`};
+}
+function flow(d){
+ const cn=counts(d);
+ let s='<svg viewBox="0 0 1120 530" role="img" aria-label="Pipeline flowchart"><defs><marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--mut)"/></marker></defs>';
+ s+='<text x="20" y="28" style="font-weight:700">SESSION LOOP</text><text x="300" y="42" class="sub">b. session works through its handoff tasks in order</text><rect class="grp" x="290" y="50" width="800" height="200"/>';
+ s+='<text x="20" y="425" style="font-weight:700">COMPUTE LOOP (deterministic keeper)</text>';
+ for(const e of EDGES)s+=`<path class="edge ${e[1]}" d="${e[0]}" ${e[2]?'marker-end="url(#ar)"':''}/>`;
+ for(const n of NODES){
+  const ai=n.o==='AI',cx=n.x+n.w/2,v=n.c?cn[n.c]:undefined;
+  s+=ai?`<rect class="ai" x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="22"/>`:`<rect class="det" x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}"/>`;
+  s+=`<text class="badge bd-${n.o}" x="${n.x+(ai?16:6)}" y="${n.y+11}">${n.o==='AI'?'AI':'DET'}</text>`;
+  const ty=n.y+(n.t.length>1?22:26);
+  n.t.forEach((l,i)=>s+=`<text x="${cx}" y="${ty+i*14}" text-anchor="middle">${esc(l)}</text>`);
+  if(n.s)s+=`<text class="sub" x="${cx}" y="${n.y+n.h-6}" text-anchor="middle">${esc(n.s)}</text>`;
+  if(n.c)s+=`<text class="cnt" x="${n.x+n.w-(ai?18:8)}" y="${n.y+15}" text-anchor="end">${v==null?'-':esc(v)}</text>`;
+ }
+ return s+'</svg>';
+}
+const tag=o=>`<span class="tag ${o}" title="${o==='DET'?'deterministic: code decides':'AI-powered: an LLM session does the work'}">${o}</span>`;
+const fmtT=t=>t?esc(String(t).replace('T',' ').replace('Z',' UTC')):'-';
+function render(d){
+ if(!d.present)return `<p class=err>${esc(d.error||'registry unreadable')} - ${esc((d._freshness||{}).absence_means||'')}</p>`;
+ const lab=d.step_labels||{},own=d.step_owner||{};
+ let h=`<h2>Flowchart</h2><div class="legend"><span><span class="sw d"></span>${tag('DET')} deterministic: code (keeper, allocator, grant, dry-run harness, publish_row checks, dispatcher pause/nudge/close, priority order)</span><span><span class="sw a"></span>${tag('AI')} AI-powered: an LLM session (working tasks, subagents, launchers, making rows ready, ticking, filing)</span></div>`+flow(d);
+ const ov=d.overview||{};
+ if(ov.present){
+  const cl=ov.class_labels||{},cc=ov.class_counts||{};
+  h+=`<h2>Handoffs by what blocks them <span class=chip>${ov.handoffs.length} active</span></h2><p class=note>Derived from the hub's index graph (<a href="/api/handoff_graph">/api/handoff_graph</a>) plus rowflow state (ready/, dry run PASS, grants). Click a handoff for its detail.</p><div class="regions">${Object.keys(cl).map(k=>`<div class="reg"><span class="tag ${cl[k].owner}">${cl[k].owner}</span><b>${cc[k]??0}</b> ${esc(k)}<br><span class=note>${esc(cl[k].label)}</span></div>`).join('')}</div>`;
+  for(const k of Object.keys(cl)){const hs=ov.handoffs.filter(x=>x.class===k);if(!hs.length||k==='done')continue;
+   h+=`<details><summary><span class="tag ${cl[k].owner}">${cl[k].owner}</span>${esc(k)} (${hs.length})</summary><p>${hs.map(x=>`<a class=chip href="/api/handoff_detail?id=${encodeURIComponent(x.id)}" target=_blank rel=noopener title="${x.open} open task(s), ${x.readied_rows} readied row(s)">${esc(x.handoff.replace(/\.md$/,''))}</a>`).join(' ')}</p></details>`;}
+ }else h+=`<p class=err>index graph unavailable: no handoff overview (handoffs/active/.index-graph.json)</p>`;
+ h+=`<h2>Sessions <span class="chip">${d.live} live / max ${esc(d.max_live)}</span></h2><table><tr><th>slot</th><th>handoff</th><th>engine</th><th>step</th><th>detail</th><th>blocked by</th><th>last turn end</th></tr>`;
+ for(const s of d.sessions)h+=`<tr class="hl"><td>${s.slot??'-'}</td><td><code>${esc(s.slug)}</code><br><span class=note>${esc(s.task||'')}</span></td><td>${esc(s.engine)}</td><td>${tag(s.owner)}<b>${esc(s.step)}</b><br><span class=note>${esc(lab[s.step]||'')}</span></td><td class=note>${esc(s.detail)}</td><td>${(s.blocked_by||[]).map(b=>`<code>${esc(b.id)}</code> <span class=chip>${esc(b.state)}</span>`).join('<br>')||'-'}</td><td>${fmtT(s.last_end)}</td></tr>`;
+ if(!d.sessions.length)h+='<tr><td colspan=7>no live or paused sessions</td></tr>';
+ h+=`</table><p class=note>step counts: ${Object.entries(d.step_counts).map(([k,v])=>`${tag(own[k])}${esc(k)} ${v}`).join(' · ')}</p>`;
+ h+=`<h2>Next ${d.queued_next.length} queued handoffs <span class="chip">${d.queued_total} queued in all</span></h2><table><tr><th>#</th><th>handoff</th><th>rank</th><th>last turn end</th></tr>${d.queued_next.map((q,i)=>`<tr><td>${i+1}</td><td><code>${esc(q.slug)}</code></td><td>${esc(q.rank)}</td><td>${fmtT(q.last_end)}</td></tr>`).join('')}</table>`;
+ const c=d.compute;
+ h+=`<h2>Compute regions</h2><div class="regions">${c.regions.map(r=>`<div class="reg ${r.state}"><b>${esc(r.region)}</b> ${esc(r.state)}<br><code>${esc(r.row||'')}</code></div>`).join('')}</div><p class=note>keeper snapshot ${fmtT(c.snapshot&&c.snapshot.ts)}${c.snapshot_age_s!=null?' ('+Math.round(c.snapshot_age_s)+' s old)':''}</p>`;
+ h+=`<h2>Rows not yet running</h2><table><tr><th>row</th><th>state</th></tr>${d.ready_rows.map(r=>`<tr><td><code>${esc(r.id)}</code></td><td><span class=chip>${esc(r.state)}</span></td></tr>`).join('')||'<tr><td colspan=2>none</td></tr>'}</table>`;
+ return h;
+}
+async function load(){
+ const out=document.querySelector('#out');let d;
+ try{d=await (await fetch('/api/pipeline')).json()}catch(e){out.innerHTML=`<p class=err>/api/pipeline unreachable: ${esc(e)}</p>`;return}
+ const f=d._freshness||{};
+ document.querySelector('#fresh').textContent=`freshness: ${f.staleness_class||f.reporting||'?'} · source ${f.source||'-'} · age ${f.age_s!=null?Math.round(f.age_s)+' s':'-'}${f.detail?' · '+f.detail:''} · loaded ${new Date().toLocaleTimeString()}`;
+ out.innerHTML=render(d);
+}
+load();setInterval(load,30000);
+</script>
