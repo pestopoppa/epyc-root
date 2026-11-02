@@ -1,0 +1,149 @@
+--- /dev/null
++++ b/scripts/kernel_rnd/autokernel/controller/rpucg_snapshot.py
+@@ -0,0 +1,85 @@
++"""Admission checks for prospective nonpromotable selector snapshots.
++
++A valid record is not evidence of counterfactual performance or a live switch.
++The producer must retain the original bytes and their digest before selection.
++"""
++import hashlib
++import json
++import math
++import re
++
++SHA256 = re.compile(r'^[0-9a-f]{64}$')
++
++
++def validate_snapshot(raw, expected_sha256):
++    if not isinstance(raw, bytes) or not SHA256.fullmatch(expected_sha256):
++        raise ValueError('raw bytes and expected sha256 required')
++    if hashlib.sha256(raw).hexdigest() != expected_sha256:
++        raise ValueError('snapshot bytes do not match sealed digest')
++    def unique(pairs):
++        result = {}
++        for key, value in pairs:
++            if key in result:
++                raise ValueError('duplicate JSON key')
++            result[key] = value
++        return result
++    obj = json.loads(raw, object_pairs_hook=unique, parse_constant=lambda _: (_ for _ in ()).throw(ValueError('nonfinite JSON')))
++    if not isinstance(obj, dict) or obj.get('schema') != 'epyc.rpucg.snapshot.v1' or obj.get('promotable') is not False:
++        raise ValueError('wrong schema or promotability')
++    def nonempty(value):
++        return isinstance(value, str) and bool(value.strip())
++    for name in ('task_id', 'evaluator_id', 'recipe_id', 'tie_rule'):
++        if not nonempty(obj.get(name)):
++            raise ValueError('missing identity or tie rule: ' + name)
++    n = obj.get('inspiration_count')
++    if isinstance(n, bool) or not isinstance(n, int) or n < 1:
++        raise ValueError('invalid inspiration count')
++    rows = obj.get('candidates')
++    if not isinstance(rows, list) or not rows:
++        raise ValueError('no candidates')
++    by_id, orders = {}, set()
++    for row in rows:
++        if not isinstance(row, dict):
++            raise ValueError('invalid candidate')
++        cid, order, chain = row.get('id'), row.get('creation_order'), row.get('chain_id')
++        if not nonempty(cid) or cid in by_id or not nonempty(chain):
++            raise ValueError('invalid candidate identity or chain')
++        if isinstance(order, bool) or not isinstance(order, int) or order < 0 or order in orders:
++            raise ValueError('invalid creation order')
++        if not isinstance(row.get('source_sha256'), str) or not SHA256.fullmatch(row['source_sha256']):
++            raise ValueError('invalid source hash')
++        if not isinstance(row.get('correctness_passed'), bool):
++            raise ValueError('missing candidate correctness verdict')
++        parents = row.get('parent_ids')
++        if not isinstance(parents, list) or any(not nonempty(p) for p in parents) or len(set(parents)) != len(parents):
++            raise ValueError('invalid parent list')
++        by_id[cid] = row
++        orders.add(order)
++    for row in rows:
++        if any(p not in by_id or by_id[p]['creation_order'] >= row['creation_order'] for p in row['parent_ids']):
++            raise ValueError('parent missing or not earlier than child')
++    eligible, choice = obj.get('eligible_ids'), obj.get('incumbent_choice_ids')
++    if (not isinstance(eligible, list) or not eligible
++            or any(not nonempty(cid) for cid in eligible)
++            or len(set(eligible)) != len(eligible) or not set(eligible) <= set(by_id)):
++        raise ValueError('invalid eligible candidate pool')
++    for cid in eligible:
++        row = by_id[cid]
++        reward = row.get('normalized_reward')
++        if row['correctness_passed'] is not True:
++            raise ValueError('eligible candidate is not correctness admitted')
++        if isinstance(reward, bool) or not isinstance(reward, (float, int)) or not math.isfinite(reward):
++            raise ValueError('invalid eligible normalized reward')
++    if (not isinstance(choice, list) or len(choice) != n
++            or any(not nonempty(cid) for cid in choice)
++            or len(set(choice)) != len(choice) or not set(choice) <= set(eligible)):
++        raise ValueError('invalid incumbent choice')
++    visits, expansions = obj.get('visit_counts'), obj.get('total_expansions')
++    chains = {row['chain_id'] for row in rows}
++    if not isinstance(visits, dict) or set(visits) != chains:
++        raise ValueError('missing chain visits')
++    if any(isinstance(v, bool) or not isinstance(v, int) or v < 0 for v in visits.values()):
++        raise ValueError('invalid chain visits')
++    if isinstance(expansions, bool) or not isinstance(expansions, int) or expansions < 0:
++        raise ValueError('invalid expansion count')
++    return obj
+--- /dev/null
++++ b/scripts/kernel_rnd/autokernel/controller/test_rpucg_snapshot.py
+@@ -0,0 +1,58 @@
++import copy
++import hashlib
++import json
++import unittest
++from rpucg_snapshot import validate_snapshot
++
++
++def snapshot():
++    return {'schema':'epyc.rpucg.snapshot.v1', 'promotable':False,
++            'task_id':'task', 'evaluator_id':'eval', 'recipe_id':'recipe',
++            'tie_rule':'id', 'inspiration_count':1,
++            'candidates':[{'id':'a', 'source_sha256':'a'*64, 'creation_order':0,
++                'chain_id':'c', 'parent_ids':[], 'correctness_passed':True, 'normalized_reward':1},
++                {'id':'b', 'source_sha256':'b'*64, 'creation_order':1,
++                 'chain_id':'c', 'parent_ids':['a'], 'correctness_passed':True, 'normalized_reward':2}],
++            'eligible_ids':['a','b'], 'incumbent_choice_ids':['b'],
++            'visit_counts':{'c':1}, 'total_expansions':1}
++
++
++def admit(obj):
++    raw=json.dumps(obj).encode()
++    return validate_snapshot(raw,hashlib.sha256(raw).hexdigest())
++
++
++class TestAdmission(unittest.TestCase):
++    def test_valid(self):
++        self.assertEqual(admit(snapshot())['incumbent_choice_ids'], ['b'])
++    def test_failed_ineligible_ancestor_is_represented(self):
++        obj = snapshot()
++        obj['candidates'][0]['correctness_passed'] = False
++        del obj['candidates'][0]['normalized_reward']
++        obj['eligible_ids'] = ['b']
++        self.assertEqual(admit(obj)['candidates'][0]['correctness_passed'], False)
++
++    def test_failed_eligible_candidate_is_refused(self):
++        obj = snapshot()
++        obj['candidates'][0]['correctness_passed'] = False
++        with self.assertRaises(ValueError):
++            admit(obj)
++
++    def test_bad_digest_and_duplicate_keys(self):
++        with self.assertRaises(ValueError): validate_snapshot(b'{}', '0'*64)
++        raw=b'{"schema":1,"schema":2}'
++        with self.assertRaises(ValueError): validate_snapshot(raw,hashlib.sha256(raw).hexdigest())
++    def test_incomplete_and_invented_inputs_refused(self):
++        changes=[lambda x:x['candidates'][1].update(parent_ids=['absent']),
++                 lambda x:x['candidates'][0].update(parent_ids=['b']),
++                 lambda x:x.update(eligible_ids=['unknown']),
++                 lambda x:x.update(incumbent_choice_ids=['absent']),
++                 lambda x:x.update(visit_counts={}),
++                 lambda x:x['candidates'][0].update(correctness_passed=False),
++                 lambda x:x['candidates'][0].update(normalized_reward=float('nan')),
++                 lambda x:x.update(promotable=True)]
++        for change in changes:
++            obj=copy.deepcopy(snapshot()); change(obj)
++            with self.subTest(obj=obj), self.assertRaises(ValueError): admit(obj)
++
++if __name__ == '__main__': unittest.main()
