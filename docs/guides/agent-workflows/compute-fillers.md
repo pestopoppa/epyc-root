@@ -7,6 +7,8 @@ Early-ending compute blocks leave gaps. Registered **fillers** use them, without
 - How the calendar owner PACKS the queue onto the host (bins, derived classes, grant-writer invariants,
   the operator STATUS/ETA report, `queue_status.py`): project skill `.claude/skills/inference-backlog-scheduling/`.
 
+Plan long measurements and intermediate decisions using [measurement sufficiency](measurement-sufficiency.md); a grant end is a resource boundary, not a scientific completion criterion.
+
 ## Protocol
 
 1. A block that ends before its booked end writes `/mnt/raid0/llm/tmp/compute-flags/<block>_FREED`. The calendar owner (workspace-58) consumes it.
