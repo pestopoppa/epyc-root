@@ -71,3 +71,11 @@ Independent review found no defect within the isolated P4 prototype scope. Prior
 ## 10:26Z — Implement fail-closed P4 response classification and land the pending prototype and handoff work.
 
 Added an isolated response classifier that accepts only explicit integer 2xx without errors and preserves status, evidence and error; nine model-free P4 tests pass, including all 100–599 status codes. The prior P1-3 completion and P5 dataset equivalence remain in the handoff; index state is regenerated for the checkbox change. P4 orchestration integration, lifecycle enforcement, seeding and activation remain open.
+
+## 10:30Z — Prepare sticky failure handling for P4 trial sequences.
+
+The P4 validator and response classifier landed at 5d2fd6ceea8d258d93c226bef3db99dcbc6eddc7. A bounded isolated trial-sequence implementation is in progress; the registered completion event will resume review. P4 integration and activation remain open.
+
+## 10:31Z — Implement and review an isolated default-disabled P4 trial sequence guard.
+
+The isolated sequence guard requires explicit ordered operations, stops before later callbacks on any non-success or exception and preserves response evidence. Fourteen model-free P4 tests pass; no production integration, control-plane operation, rollback or promotion is implemented. P4-1 remains open.
