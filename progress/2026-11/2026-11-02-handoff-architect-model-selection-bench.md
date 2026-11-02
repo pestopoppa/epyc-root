@@ -31,3 +31,7 @@ Consumed current GPU configuration and EffiBench test dependency reports. Curren
 ## 00:31Z — Prepare current-model GPU row and EffiBench acceptance inputs
 
 Consumed current GPU configuration and EffiBench test dependency reports. Current Qwen3.8-27B Q8 and DFlash2 weights exist, but the old architect launcher uses a stale in-tree kernel and differs from current serving shape; recipe and registry disagree on draft max 8 versus 7. Delegated a production-store keeper-safe GPQA row draft, the eight existing regression tests in a disposable environment, and revision-pinned DATED dataset reconstruction with both exclusions. Registered all completion files; no inference launched or row published.
+
+## 00:33Z — Record EffiBench regression validation and recover publication
+
+Consumed EffiBench regression result: all eight previously authored tests passed against the reconstructed pinned upstream checkout in 6.16 seconds; this is not a rerun of the canonical-solutions gate. Recorded it in the pinned patch bundle. Recovered and serialized-pushed the previous progress commits after concurrent main updates. Dispatched bounded checks for the dataset revision, GPQA question/protocol pins and effective DFlash2 setting, with file-triggered results.
