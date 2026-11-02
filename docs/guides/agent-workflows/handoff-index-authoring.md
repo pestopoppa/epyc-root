@@ -44,6 +44,10 @@ Exactly one table shape, in every domain index:
    `handoffs/archived/<index>-history-through-YYYY-MM-DD.md` with a "historical ledger only" banner.
    Delete the row from the index; never strike it through in place.
 
+## Measurement tasks carry a stop rule
+
+A handoff checkbox that launches a measurement includes a `Stop rule:` field — question, expected effect versus sample-size error, checkpoints, stop-on-answer and stop-on-futility (formal-gate cells: futility-only). It lives in the handoff task, never in the index row. Canonical: [`measurement-sufficiency.md`](measurement-sufficiency.md).
+
 ## Promote or inline? (a checkbox vs its own handoff + row)
 
 Derived 2026-09-16 (RTG-46) on the *shape* of intake-1309#record's table, with **our own constants**.

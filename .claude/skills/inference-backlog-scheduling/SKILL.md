@@ -42,7 +42,7 @@ explicit lists such as `72-95`; whole host `0-95`; the MI210 (`mi210_0`) **with 
 same filesystem frees nothing until it is swept; see `references/disk-bin.md`, bought by raid0
 reaching 100 % and an ORCH ENOSPC on 10-27).
 
-**Items** are rows: `compute-flags/ready/<id>.json` (`epyc.row.v3`, new flow) or legacy FILLERS.md rows (18 columns; `validate_fillers.py`). What the packer reads:
+**Items** are rows: `compute-flags/ready/<id>.json` (`epyc.row.v3`, new flow) or legacy FILLERS.md rows (18 columns; `validate_fillers.py`). Every measurement row's task text carries a **stop rule** (question, checkpoints, stop-on-answer / stop-on-futility; formal-gate cells futility-only) per `docs/guides/agent-workflows/measurement-sufficiency.md`; a row without one is not READY. What the packer reads:
 
 | Field | Meaning for packing |
 |---|---|
