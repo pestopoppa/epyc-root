@@ -39,3 +39,7 @@ Ran the nine model-free tests for the existing P5 gold-binding helper: all passe
 ## 10:10Z — Repair P5 gold report consistency validation
 
 Found and reproduced a P5 helper defect: a report can mark a case resolved while also marking it incomplete or empty-patch and receive REPORT_COVERAGE_MATCH. Delegated a fail-closed repair with synthetic negative controls and registered its completion event. GitNexus impact is unavailable because the lane is unindexed and CPU admission denied indexing; direct source search found the helper's documented CLI and tests. The actual agentic scorer and known-gold controls remain unvalidated.
+
+## 10:12Z — Fix contradictory P5 gold-report coverage
+
+Fixed the P5 binding helper to reject submitted, empty-patch or incomplete fields that contradict its fully scoped bound cases, and reject boolean counters. Twelve model-free tests passed including contradictory-field controls. Independent review identified native subset reports with broader submitted or incomplete ID sets; the README now explicitly says these are refused rather than rewritten. This validates report consistency only, not the P5 scorer or a gold execution. GitNexus impact was unavailable because the lane is unindexed and CPU admission refused indexing.
