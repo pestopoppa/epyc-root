@@ -154,6 +154,27 @@ Chasing the *trellis* stub is what uncovered the IQ-quant defect above, but the 
 - [x] **T1 — Do B1-B5 above first.** ✅ 2026-07-26 — satisfied by the
   frozen v8 promotion; continue with T2 only under its separate gate.
 - [ ] **T2 — Gate trellis in `ik_llama.cpp`, not in our tree.** `/mnt/raid0/llm/ik_llama.cpp` is already on disk and is the reference implementation. Build it in a scratch dir purely as a measurement instrument and bench IQ4_KT vs Q4_K_M and IQ2_KT vs IQ2_XXS *there*. This answers the whole question without porting anything. Needs operator inference approval; it is a bench harness, not a second serving binary.
+  - [ ] **EXP01-PILOT — bounded EXP-01 pilot for T2/T3 (BRF-T4-EXP01, backlog-refactor 2026-11 manifest package EXP-01).**
+    Identity: Q38FN-lane GGUFs IQ4_KT, Q4_K_M, IQ2_KT, IQ2_XXS (sha256 pinned at publish) on the read-only
+    instrument `/mnt/raid0/llm/ik_llama.cpp` @ `c04881fc0f31dae5f8ec59c1d683889f0c9dfa11` (clean tracked state;
+    `build/ggml/src/libggml.so` sha256 `06d6cfac…8b74b` carries 21 `iq4_kt` strings; `build/bin/llama-bench` `58194ccf…af55`).
+    Control: Q4_K_M (speed A/A spread + the same 24 items for quality). Bounds: 2 pairs × 3 launches/arm interleaved
+    ABAB + 24 items × 2 quants; one CPU quarter, ≤90 min, hard stop at grant end.
+    Stop rule: planned look per launch from launch 2; stop-on-answer when the tg128 ratio band clears 1.00, stop-on-futility
+    when it lies wholly below 0.95; both are operational decisions, never a T3 gate result; the quality pass stays open.
+    Launcher prepared at `/mnt/raid0/llm/tmp/brf-exp01/launcher.sh` (engine `filler_run15.sh`, job `bin/job.sh`,
+    precondition `bin/precond.sh`, scratch_root `/mnt/raid0/llm/tmp/brf-exp01`). An end-to-end self-test on a non-identity
+    fixture (Qwen3-0.6B requantized to Q4_K_M/IQ4_KT by the instrument) passed validity, linkage, mechanism-selected,
+    looks, quality capture and summary. The fixture numbers are not EXP-01 evidence.
+    **BLOCKED (operator decision).** The manifest identity cannot run, for three reasons. (1) The instrument has no
+    `qwen4exp` arch, Q38FN's `general.architecture`; DS41's `deepseek41-dspark` is also absent, so no low-bit-lane model
+    loads. (2) No Q38FN Q4_K_M/IQ2_XXS/IQ*_KT GGUF exists, and there is no high-precision source (Q8_0 188 GB) on disk.
+    (3) That source plus four quants needs about 500 GB against 422 GB free. Decision: (a) waive the Q38FN-lane identity
+    for a proxy model that the instrument loads, such as Qwen3.8-27B or Qwen3.6-35B-A3B Q8_0 requantized in-turn
+    (recommended: cheapest, and T2 asks a kernel-speed question); (b) authorise porting `qwen4exp` into an ik scratch
+    worktree, plus the source download and a disk reclaim; (c) DROP T2 on the unfavourable prior. Unchanged by the
+    choice: the canonical task-eval 24-item set is not pinned anywhere, so the quality cell records `quality-gap` until
+    an ITEMS file is pinned.
 - [ ] **T3 — Port only if T2 wins.** Gate: IQ4_KT must reach **≥95% of Q4_K_M tg128** under the canonical protocol **and** show a measurable task-eval win (paired per-item flips vs the reference; report PPL/KLD beside it as fidelity context only — a near-baseline KLD/PPL ordering is not a quality ordering, intake-1510, intake-1519#05). Slower than 95% ⇒ **DROP permanently** — 17.5% fewer bytes that decode slower is strictly dominated.
 - NOTE: no `IQ*_KT` GGUF exists under `/mnt/raid0/llm`, and public KT producers (ubergarm, ik-community) cover giant MoEs we do not serve. Viterbi is the **encoding** cost only — at inference the trellis LCG runs forward — so self-quantising is hours on 192 cores plus an imatrix, not prohibitive, but not free.
 

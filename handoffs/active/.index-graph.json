@@ -3799,7 +3799,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T18:39:42Z",
+  "generated_at": "2026-11-02T18:41:23Z",
   "nodes": [
     {
       "age_days": 95,
@@ -5506,14 +5506,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 25,
-      "dispatchable": 5,
+      "dispatchable": 6,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "iqk-iquant-enablement.md",
       "id": "INF-26",
       "last_advanced": "2026-10-27",
       "next_action": "C-L3-Q38FN: profile why GSQ IQ3_XXS decode is 28% slower than UD-IQ4_XS, then a low-bit kernel branch; NEW-8 steps 0-1",
-      "open": 5,
+      "open": 6,
       "priority": 0.8324,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): T3 \u2014 Port only if T2 wins. Gate: IQ4_KT must reach \u226595% of Q4_K_M tg128 under the canonica",
