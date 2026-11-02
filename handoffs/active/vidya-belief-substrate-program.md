@@ -95,6 +95,13 @@ Nothing was deleted: the siblings are the evidence record for every gate this pr
     and a real-loop canary remain open. Raw occupied cells have no invented better direction.
     [no-belief: prospective source and synthetic controls]
 
+- [ ] **VB-KVU-16A-LOAD — prospectively capture shape-matched load samples.** Bind original own-PID
+  sample sequence and phase/coverage gaps, effective registry-rendered argv/environment, model and
+  mapped library identities, resource claim and cleanup at native write; preserve unknowns and label
+  the result a sampled maximum, not a lifetime or runtime peak. Project via the existing measurement
+  carrier and shared grade; no retrospective warrant or new ladder. Prove a planning-context canary.
+  Research producer `artifacts/kvu16a_shape_load/`. [no-belief: prospective source-wiring task]
+
 - [ ] **VB-S0-LOCK-REPRO-WIRE — prospectively capture S0 lock-guard reproduction observations.** At native creation bind the exact guard and authenticated CLI/interpreter, owner identity, private lock FD identities, syscall trace window, per-check outcomes and bracketing probes, and incomplete/refusal dispositions. Project using the existing diagnostic observation carrier and `claim_tuple.grade()`; no new grading ladder or retrospective measurement warrant. Prove the planning-context canary before calling the source wired. The 2026-11-02 pre-hook control is a committed conclusion only. [no-belief: prospective source-wiring task]
 
 - [ ] **VB-HS9-WIRE — prospectively capture and project HS-9 policy-interpreter probe runs.** The producer must bind original trusted trace and per-requirement outcomes including unknowns, errors and denominators to policy, corpus, simulator, evaluator, model and execution identities. Register a strict reader that refuses missing provenance and projects through the existing measurement carrier and `claim_tuple.grade()`; no new ladder or retrospective warrant. Demonstrate the planning-context canary before calling the loop wired. Owner: [HS-9](harness-selection-and-integration.md). [no-belief: prospective source-wiring task]

@@ -52,6 +52,8 @@ validation requires the applicable compute authorization.
   during-decode residency and sequencer/native qualification remain open.
 - KVU-16a source/receipt reconciliation found an idle-slot argv mismatch; the sampled load does
   not justify a registry update or a runtime peak. The exact checklist is in the evidence directory.
+- Research `b1d7e1f77`: registry-rendered KVU-16a load-only producer, six fake-runtime controls;
+  real load and prospective belief capture `VB-KVU-16A-LOAD` remain open.
 - A model-free KVU-19a-2 GPU smoke ran under an exclusive GPU and CPU-region claim, with one
   base/candidate process each; it is not a repeatability result. Prospective belief capture is
   filed as `VB-KVU19A2-WIRE`; the original smoke remains a committed conclusion only. The native

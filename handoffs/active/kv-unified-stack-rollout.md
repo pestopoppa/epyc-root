@@ -288,6 +288,12 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
       `--no-cache-idle-slots`; shape equivalence and its memory effect are unproven. The old combined hygiene
       patch fails against current research. [Receipt hashes and successor checklist](../../progress/evidence/kvu16a-load-result-20261102/RECONCILIATION.md).
       This does not change a registry value or complete the parent. ✅ 2026-11-02 [no-belief: source and receipt reconciliation]
+    - [x] **KVU-16a shape-matched load producer preparation** — research `b1d7e1f77` renders the
+      pinned actual registry shape with only port/slot isolation, records own-process KFD samples,
+      effective argv/environment, identity and coverage gaps, and verifies cleanup. Six fake-runtime
+      controls pass. Real load validation and source-side belief capture (`VB-KVU-16A-LOAD`) remain
+      open; a sampled maximum is not a proven lifetime peak. ✅ 2026-11-02
+      [no-belief: prospective producer and fake-runtime controls]
     - *(2026-11-02, shape-matched load row.)* `handoff-kvu-16a-load-20261102` rc=0: production-store GPU, np4, pool 393216, ubatch 512, Q8 KV; two post-health own-PID HIP/KFD samples and verified cleanup. Maximum sampled own VRAM was 47.812553 GiB; observed target KV was 12.75 GiB, leaving 35.062553 GiB. [Native result and samples](../../progress/evidence/kvu16a-load-result-20261102/result.json). Registry reconciliation, production-shape review and stack-change validation remain; this row does not complete the box. [no-belief: native load result; registry application pending]
     - *(Annotation, workspace-ec, 2026-10-04.)* **PACKAGED, VALID, awaiting the operator's signature** in
       STACKCHG-HYGIENE-20261003 (`/mnt/raid0/llm/tmp/stack-change-hygiene-20261003/PACKAGE.md`; `--validate-only`
