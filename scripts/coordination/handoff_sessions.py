@@ -644,19 +644,26 @@ def turn_report(flags, slug, e):
         return None
 
 
+def landed_ticks(sha, repo=None) -> int:
+    """Boxes ticked by a LANDED wrap-up commit (the sha must resolve; `git show <sha> -- handoffs/`)."""
+    if not sha or not re.fullmatch(r"[0-9a-f]{7,40}", str(sha)):
+        return 0
+    r = subprocess.run(["git", "-C", repo or ROOT, "show", "--format=", sha, "--", "handoffs/"], capture_output=True, text=True)
+    return sum(1 for l in r.stdout.splitlines() if re.match(r"^\+\s*- \[x\]", l, re.I)) if r.returncode == 0 else 0
+
+
 def turn_effect(flags, slug, e, rep=None) -> str:
-    """What the turn changed: a lane commit, a published row, a filing receipt, or report.json rows_published. '' = no-op."""
-    lane = e.get("cwd") or lane_dir(slug)
+    """What the turn COMPLETED (operator 2026-11-02): a landed tick, a published row or a filing. A commit alone is not an
+    effect. '' = no effect."""
     since = _parse(e.get("last_resume") or "") - 1
     out = []
-    r = _git(lane, "rev-parse", "HEAD") if os.path.isdir(lane) else None
-    if r is not None and r.returncode == 0 and e.get("head_at_resume") and r.stdout.strip() != e["head_at_resume"]:
-        out.append(f"commit {r.stdout.strip()[:12]}")
-    for pat in ("ready/*.json", "filing-done/*.FILED", "handoff-sessions/" + slug + "/awaiting/*.json"):
+    n = landed_ticks(e.get("last_wrapup")) if e.get("last_wrapup") and landed(e.get("last_wrapup")) else 0
+    if n:
+        out.append(f"{n} landed tick(s) in {str(e.get('last_wrapup'))[:9]}")
+    for pat, name in (("ready/*.json", "row(s) published"), ("filing-done/*.FILED", "filing(s)")):
         new = [p for p in glob.glob(os.path.join(flags, pat)) if os.path.getmtime(p) >= since]
         if new:
-            out.append(f"{len(new)} {pat.split('/')[0]}")
-            break
+            out.append(f"{len(new)} {name}")
     if rep and rep.get("rows_published"):
         out.append(f"rows_published {len(rep['rows_published'])}")
     return "; ".join(out)
@@ -955,6 +962,7 @@ OWN_TASK_RX = re.compile(r"^- \S+ L\d+ \[(cpu|gpu)\] ", re.M)
 IDLE_RX = re.compile(r"IDLE:\s*(.*)")
 IDLE_REPORT_COOLDOWN_S = 30 * 60  # a session that itself said IDLE: <reason> is re-asked after this long
 MIN_RESUME_GAP_S = 10 * 60        # budget emergency 22:45Z: at most one non-filing resume per session per 10 min
+STUCK_AFTER = 3                     # consecutive no-effect turns -> stuck: run-end / new external events only
 WATCHDOG_MIN_STARTS = 3             # SA-2: alarm when this many starts in an hour produced no ready row
 AUTO_START_COOLDOWN_S = 30 * 60     # SA-1: a handoff is not restarted within this long of its last end/start
 MAX_STARTS_PER_HOUR = 10            # SA-1: global auto-start cap
@@ -1216,11 +1224,15 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 e["dirty_wrap_resume"] = None
             e["last_report"] = {k: rep.get(k) for k in ("state", "wrapped_sha", "question", "rows_published")} if rep else None
             effect = turn_effect(flags, slug, e, rep)
-            if not effect:  # no commit, no row, no filing: pure spend (codex-gen did 3 such turns in a minute, 2026-11-01)
+            if not effect:  # no landed tick, no row, no filing: pure spend
                 e["noop_turns"], e["await_event"] = int(e.get("noop_turns", 0)) + 1, True
-                log(flags, f"NOOP {slug}: turn changed nothing (no commit, no row published, no filing); not resumed until a new event")
+                log(flags, f"NOOP {slug}: turn completed nothing (no landed tick, no row published, no filing) [{e['noop_turns']}/{STUCK_AFTER}]")
+                if e["noop_turns"] >= STUCK_AFTER and not e.get("stuck"):
+                    why = (rep or {}).get("question") or (rep or {}).get("state") or e.get("idle_reported") or e.get("work_reason") or "no report.json reason"
+                    e["stuck"] = f"{e['noop_turns']} consecutive turns without a landed tick, row or filing; last report: {str(why)[:200]}"
+                    log(flags, f"STUCK {slug}: {e['stuck']}; resumed only on a run-end or a new external event")
             else:
-                e["noop_turns"], e["await_event"], e["noop_reason"] = 0, False, None
+                e["noop_turns"], e["await_event"], e["noop_reason"], e["stuck"] = 0, False, None, None
                 e["last_effect"] = effect
             if "FRESH-SESSION-REQUESTED" in tailtxt:
                 e["fresh_next"] = True
@@ -1284,6 +1296,8 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             st.setdefault("queue", []).append({"slug": slug, "rid": rid, "end": p, "kind": kind,
                                                "related": {k: v for k, v in related_ids(flags, rid).items() if k in ("handoff_task", "lineage", "prior_fail", "manifest")}})
             S[slug]["await_event"], S[slug]["noop_reason"] = False, None
+            if kind == "run-end":
+                S[slug]["stuck"] = None  # a run-end is the external event that unsticks a session
             log(flags, f"{'RUN-END' if kind == 'run-end' else 'DRYRUN-RESULT'} {rid} -> {slug}")
     for slug, e in S.items():  # CAF-1: files a session registered as awaited - ALL fired files of a slug ride in ONE event
         fired = []
@@ -1374,6 +1388,8 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             if alive(e.get("pid")) or live >= cap + FILING_SLOTS or not e.get("session_id"):  # DSH-4: filing never queues behind auto-start
                 rest.append(ev)
                 continue
+            if e.get("stuck") and ev.get("kind") in ("awaiting", "dryrun"):
+                continue  # stuck: its own awaited/dry-run events are dropped; only a run-end or a new external event resumes it
             if ev.get("kind") == "dryrun" and not e.get("last_effect") and now - _parse(e.get("last_resume") or "") < MIN_RESUME_GAP_S:
                 rest.append(ev)  # not a filing event: wait for the gap (the next resume carries it with everything else)
                 continue
@@ -1405,6 +1421,8 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 continue
             if e.get("yield"):
                 continue  # outranked: no new work; its slot goes to a higher-ranked handoff
+            if e.get("stuck"):
+                continue  # 3 no-effect turns: only a run-end (or a new external event) resumes it
             if e.get("await_event") and e.get("work_reason") == e.get("noop_reason"):
                 continue  # last turn was a no-op and nothing changed since: wait for an event, not another re-check
             if e.get("idle_reported") and now - _parse(e.get("last_end") or "") < IDLE_REPORT_COOLDOWN_S:
