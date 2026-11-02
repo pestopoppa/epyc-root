@@ -74,6 +74,17 @@ Nothing was deleted: the siblings are the evidence record for every gate this pr
 
 - [ ] **VB-KVU19A2-WIRE — prospectively capture model-free GPU attention repeatability observations.** Bind native case/input and arm/repeat, source/build and mapped library identities, process birth, actual grant, in-window KFD and VRAM, native output and failures at creation; preserve missing custody as UNKNOWN. Project through the existing diagnostic carrier and `claim_tuple.grade()` and prove the planning-context canary. The 2026-11-02 one-pair smoke is pre-hook and does not establish repeatability or a historical measurement warrant. Producer: research `artifacts/kvu19a2-smoke-20261102/producer.py`. [no-belief: prospective source-wiring task]
   - 2026-11-02 source checkpoint: research prospective writer and root `scripts/vidya/adapters/kvu19a2_native.py` bind producer and raw hashes, emit shared-carrier frames, and refuse a false F32 NaN count; missing observations emit no numeric tuple. Two synthetic controls pass. Actual producer deployment, full custody and a real planning-context canary remain open. The original smoke was pre-hook. [no-belief: source and synthetic projection controls]
+  - 2026-11-02 repeated diagnostic: 20 producer-authored sidecar rows ingested to a private ledger
+    as 60 frames with zero refused. Their original capture lacks authored device applicability;
+    planning-context visibility is not established and scope must not be backfilled. A future
+    producer must author verified device scope before a real canary. [no-belief: private ingest checkpoint]
+
+- [ ] **VB-KVU-126-OCCUPANCY — prospectively capture KVU-12.6 occupancy observations.** Bind actual
+  gauge records and sampling windows, frozen plan and wave/request identities, native build/model and
+  mapped DSO custody, resource claim and missing/error states at write time; project using the existing
+  KVU measurement family and shared grade. Do not substitute nominal tokens for physical occupancy or
+  invent historical warrant. Prove a planning-context canary before calling the source wired.
+  [no-belief: prospective source-wiring task]
 
 - [ ] **VB-S0-LOCK-REPRO-WIRE — prospectively capture S0 lock-guard reproduction observations.** At native creation bind the exact guard and authenticated CLI/interpreter, owner identity, private lock FD identities, syscall trace window, per-check outcomes and bracketing probes, and incomplete/refusal dispositions. Project using the existing diagnostic observation carrier and `claim_tuple.grade()`; no new grading ladder or retrospective measurement warrant. Prove the planning-context canary before calling the source wired. The 2026-11-02 pre-hook control is a committed conclusion only. [no-belief: prospective source-wiring task]
 

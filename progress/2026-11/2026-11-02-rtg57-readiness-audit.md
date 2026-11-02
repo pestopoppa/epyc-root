@@ -22,6 +22,8 @@ validation requires the applicable compute authorization.
   loaded endpoint and candidate integration remain open.
 - Research `6dc3606f2`: KVU-12.6 four-cell pre-run plan and post-run evidence separation;
   103 offline tests pass. Runtime custody and decision tolerance still need work.
+- Research `e12529f1d`: original-build and runtime identity capture around occupancy samples;
+  111 offline and real-fake-process controls passed. Real target measurement remains open.
 - Orchestrator through `f3d98dfd`: isolated owner, selection and drain-state foundation for
   KVU-5; 14 tests passed. No live preemption or retry is enabled.
 - Research `bda6ad1cf`: sealed FA-4b response-integrity replay accounted for 2,400 responses;

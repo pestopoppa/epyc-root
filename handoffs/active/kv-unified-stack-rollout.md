@@ -791,6 +791,14 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
         timing, a production defect, or a promotion verdict. Result SHA-256
         `56038798a67cc1b34060a81592369bde040628d0c1635dc99f4dfd4286b44afc`.
         Prospective native sidecars were emitted; ingestion and planning canary remain separate. [belief: cc]
+      - *(2026-11-02, binary-output localization.)* Reopening the 20 raw outputs found zero varying
+        baseline elements, versus 16,384/32,768 candidate elements in D576/512 (maximum spread
+        0.00117275) and 4,096/16,384 in D512 (maximum 0.000696108). The changed 512-float blocks
+        suggest a head/query pattern under the inspected source layout, but the source/build join is
+        unproven. Next: fresh source-bound builds and a predeclared matched-input localization; do not
+        infer kernel causality from the retained pair. Private sidecar ingestion yielded 60 frames
+        from 20 rows, but device applicability was not authored and the planning canary remains open.
+        [belief: cc]
       - *(2026-11-01, binding draft defect.)* Independent review found unreadable directories may be silently omitted and FIFO inspection can block. The draft now propagates traversal errors and rejects FIFOs with nonblocking opens; five offline tests pass. Mutable paths and build-entry custody still prevent using it as an input attestation. [no-belief: offline source review only]
       - *(2026-11-01, ELF inventory defect.)* The inventory may silently omit unreadable subtrees; The draft now propagates traversal errors; five offline tests pass. It still cannot attest source, expected ELF coverage or runtime linkage. [no-belief: offline source review only]
       - *(2026-11-01, ELF inventory draft.)* The [offline component](../../artifacts/compute/kvu19a2-elf-inventory-20261101/README.md) passed four synthetic tests; it cannot establish source identity, expected binary completeness or runtime linkage. A build producer remains open. [no-belief: synthetic tests only]
@@ -1437,6 +1445,12 @@ here: none of the RTG-57 ids remain undefined. The owner named in these texts (w
       missing runtime identity refuses. 103 scoped tests pass. Native identity receipt production,
       tolerance/noise rule, candidate qualification and actual measurements remain open.
       ✅ 2026-11-02 [no-belief: prospective plan and deterministic controls]
+    - [x] **KVU-12.6 prospective build and process custody** — research `e12529f1d` records a fresh
+      build receipt and verifies the process birth, executable, model and mapped llama/ggml/mtmd
+      libraries around in-window occupancy samples. 111 offline/real-fake-process controls pass,
+      including mutation and missing custody. System libraries beyond that set are not covered;
+      real target gauge and decision-grade measurements remain unrun. ✅ 2026-11-02
+      [no-belief: prospective source, build and fake-process controls]
     - *(2026-11-01, matrix preflight.)* The independently reviewed [preflight](../../artifacts/compute/kvu12-6-producer-20261101/README.md) checks the pinned driver and six proposed nominal cells; five offline tests pass. It does not measure live occupancy or provide a runnable producer, and the comparison remains open. [no-belief: offline matrix validation only]
     - *(2026-11-01, prospective length preparation.)* The [source-bound patch draft](../../artifacts/compute/kvu12-6-prep-20261101/README.md) adds the missing 48k and 96k keys to the retained driver; neither is present in its existing length map. Nominal np8×48k and np4×96k do not alone establish equal actual occupancy or resume depth. Producer, native occupancy criteria, qualification and belief capture remain open; no row or measurement was made. [no-belief: offline source preparation only]
 - [ ] **KVU-12.1 — checkpoint-policy arms in the CPU np x ctx matrix.** On the frontdoor Qwen3.6-35B-A3B and the 27B add four hybrid-checkpoint arms to the KVU-12 matrix: dense (today: --checkpoint-min-step spacing plus n-4 / n-4-n_ubatch; record the positions actually materialized, since a chunk spanning several cadence boundaries materializes only its end), tail plus junction only (<=2 recurrent states per request via checkpoint_at on the fork build), fixed-interval with a cap on checkpoints per request, and a coarser grid whose resume is at most I tokens earlier than dense. Record per arm and per context length L: retained checkpoint count per sequence, bytes per checkpoint, resume prompt_n and cache_n, TTFT, and hit length against checkpoint spacing; baseline is the dense count at the current granularity; cite no external figure. Output sizes --ctx-checkpoints and --checkpoint-min-step and answers HYBRID-PREFIX-REUSE (b). Counts and prompt_n are correctness-class (build-role claim, no quiet host); TTFT and throughput wait for the scheduled exclusive window. Controls: frozen manifest = corpus manifest + bank_manifest sha256 + binary sha256; baseline = the dense arm on the same binary; raw per-request rows through the VB-KVU-CPU emitter; holdout = stride and cap chosen at L=32k and evaluated at 64k and 128k; denominator = every request including pool-full and errors; predeclared rule = an alternate arm replaces dense only if its resume prompt_n is within the dense arm's wave-to-wave spread at every L and its checkpoint bytes per sequence are lower at every L, else dense stays.
