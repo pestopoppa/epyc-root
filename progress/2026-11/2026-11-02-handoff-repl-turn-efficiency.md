@@ -23,3 +23,18 @@ Consumed omega-review-20261102-result.json. Omega successor must not be publishe
 - RUS successor keeps the ten-question cohort, raises output cap to 8192 and context to 16384, and retains the original >=8 mixed-question gate. Model digest and seals are completing outside the grant; do not publish until `/mnt/raid0/llm/tmp/repl-turn-efficiency/rus-successor-ready.json` confirms readiness.
 - Strategy-prompt-length ablation: three source-pinned prompt arms and suite passed 12 offline tests, but live producer, protected capture, adapter, tokenizer witness and preregistered protocol still need integration; no row published. Preparation and findings under `/mnt/raid0/llm/tmp/repl-turn-efficiency/strategy`.
 - Frontdoor erroneous republishing remains in parked RTE-LOG-1 lineage; do not retry. Keeper or codex-ni owner must withdraw their manifest. No inference was run and no scientific outcome claimed.
+
+## 01:49Z — Verify corrected Omega publication and recover previous push
+
+- Consumed Omega successor readiness event, but its initial approval was superseded by a post-publication correction: `handoff-s4-omega-isolated-pilot-v2-20261102` was republished at 01:47:35Z with `run/*/driver/native/*.records.jsonl` and `dryrun_native_result=true`. The supervisor emits the attempt-scoped qualification unit only after a complete content-hashed record and owned-backend correlation; offline gating passed with mocked correlation. Launcher digest matches READY. No inference result or qualification verdict claimed; existing lineage carries two failures and a third parks it.
+- Prior wrap-up commit `848b64811e77` failed serialized push (rc 4). A serialized retry succeeded and verified origin/main at `57dfd3dd76de`, including the recovered RUS filing progress and Omega notes.
+- RUS successor readiness and strategy producer work delegated; dispatcher event files registered. Frontdoor row is a mistaken publication of the parked lineage; no retry permitted.
+
+## 01:49Z — Complete Omega correction closeout and record successor blockers
+
+- RUS successor is not publishable: readiness and seals absent; its run-only result glob lacks an attempt-scoped dryrun-native receipt. Implement the receipt, rerun preflight and seal before publishing. Strategy scratch summarizer reports token missingness and paired outcomes with two synthetic tests; its live producer, custody, adapter, tokenizer witness and protocol remain open.
+- Previous wrap-up commit attempt failed because the fast-forward removed the sparsely checked-out tracked observer script; restored it before retry. The preceding progress entry records the Omega correction and recovered serialized push.
+
+## 01:49Z — Preserve observer script across sparse merges
+
+- Added the tracked observer registry target to this worktree sparse patterns so origin/main fast-forwards do not remove it before the commit hook. Earlier attempted wrap-up entries in this file retain the Omega and RUS findings.
