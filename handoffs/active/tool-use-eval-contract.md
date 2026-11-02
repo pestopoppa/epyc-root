@@ -4,6 +4,20 @@
 
 ## Execution map — audited 2026-11-02
 
+**Session checkpoint 2026-11-02:** The scheduled rows `evl46-opencode-schema-20261102`,
+`evl46-crm-fullentry-fixture-20261102`, and `evl46-crm-reader-64-tests-20261102` are
+grantable after their dry runs; `evl46-crm-live-source-tests-20261102` needs a dry run.
+They are fixture/source checks, not inference. The live worker draft is APP
+`codex/evl46-live-worker-20261102` @ `ec063054`; it is not runtime-qualified. Rowflow
+refuses model-weight hashing inside a granted row, so obtain a scheduler-approved claimed
+pre-hash and post-run hash path, qualify the worker and reader, then publish and dry-run the
+actual pair. No live inference row is ready. The scheduler owner maintains the sole keeper;
+respect the other sessions' CPU reservations. [no-belief: operational state]
+
+- [x] Audit the CRM control, render surface and current implementation; document the matched-pair plan. ✅ 2026-11-02 [no-belief: tooling-repair]
+- [x] Prepare source-bound paired CRM fixture, receipt reader and opt-in seed/ledger controls; retain live qualification as open work. ✅ 2026-11-02 [no-belief: tooling-repair]
+- [x] Prepare confined scorer and synthetic OpenCode controls and queue their applicable scheduler checks. ✅ 2026-11-02 [no-belief: tooling-repair]
+
 **Implementation checkpoint 2026-11-02 (candidate branches; not deployed).** APP
 `codex/evl46-seed-ledger-20261102` @ `9c51d450` adds opt-in `--send-seed`, recording
 whether the HTTP seed field was sent while preserving the historical default request, and

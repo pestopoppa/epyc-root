@@ -113,3 +113,17 @@ judicious review. The edit preserves existing task text and history. [no-belief:
 - ROOT `69e9e3d5e` binds the native scorer's reviewed source digest and seals the prepared
   fixture/prompt/oracle hashes; 58 tests and five subtests passed. File permissions are
   owner-reversible and do not prove isolation. [no-belief: software controls]
+# Session wrap-up checkpoint (2026-11-02)
+
+EVL-46 remains active. Pushed candidate tips: ROOT `codex/evl46-readiness-20261102`
+(this checkpoint), APP `codex/evl46-seed-ledger-20261102` @ `d8441118`, APP draft
+`codex/evl46-live-worker-20261102` @ `ec063054`, and research
+`codex/evl46-scorer-isolation-20261102` @ `4068180c9`. They are not deployed to main.
+Three scheduler rows passed dry-run and are grantable: `evl46-opencode-schema-20261102`,
+`evl46-crm-fullentry-fixture-20261102`, and `evl46-crm-reader-64-tests-20261102`.
+`evl46-crm-live-source-tests-20261102` is published but needs dry-run. None is model
+inference. Rowflow refuses model-weight hashing in granted rows; obtain the scheduler owner's
+safe claimed pre-hash and post-hash path, qualify draft worker and real reader, then dry-run
+and publish the live matched pair. Do not infer a model result from the synthetic fixtures.
+The scheduler keeper and recovered peer CPU claims are owned by the scheduler session.
+[no-belief: operational state]
