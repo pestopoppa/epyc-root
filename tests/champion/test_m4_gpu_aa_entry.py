@@ -24,7 +24,7 @@ def fixture():
              'context_size':65536, 'ubatch_size':512, 'kv_type':'q8_0', 'n_predict':256,
              'warmup_prompts':2, 'warmup_n_predict':32, 'startup_timeout':900, 'request_timeout':900,
              'port_base':18070, 'extra_server_args':[], 'no_mlock':True,'no_ttft':True,'allow_host_health_warning':True}
-    cell = {'role':'critic','arm':'BASELINE','source_commit':'c5','model':'/model', 'recipe':{},
+    cell = {'role':'critic','arm':'BASELINE','source_commit':'c'*40,'model':'/model', 'recipe':{},
             'argv':['/bin/server','-m','/model'], 'environment':{},'device':'gpu0','np':4,
             'files':{'binary':{'path':'/bin/server','sha256':'a'},'model':{'path':'/model','sha256':'b'},'prompt':{'path':'/prompts','sha256':'c'}},
             'ggml':{},'grant':{},'request_count':8,'vram_limit_bytes':10,'kfd_vram_file':'vram_0',
@@ -75,6 +75,8 @@ def test_entry_orchestrates_validated_native_pairs(tmp_path, monkeypatch):
     capture_root = tmp_path / 'capture'; capture_root.mkdir()
     for key in ('x','y'):
         native['cells'][key]['watch_result_path'] = str(capture_root / key / 'watch-result.json')
+    aa['row']={'champion_git':'/mnt/raid0/llm/llama.cpp','champion_ref':'refs/heads/ak/champion/llama-cpp-ffc1bac82eec','champion_commit':'c'*40}
+    monkeypatch.setattr(mod, 'check_champion', lambda unused:'c'*40)
     aa['native_plan_sha256'] = 'f'*64
     aa['result_path'] = str(capture_root / 'result.json')
     raw=json.dumps(aa, sort_keys=True).encode(); plan=tmp_path/'plan.json'; plan.write_bytes(raw)
@@ -116,7 +118,7 @@ def test_launcher_binds_actual_row_and_fails_changed_grant(tmp_path, monkeypatch
     spec=importlib.util.spec_from_file_location('aa_launch',ROOT/'scripts/champion/m4/launch_gpu_aa.py')
     launch=importlib.util.module_from_spec(spec); spec.loader.exec_module(launch)
     aa,native=fixture(); cap=tmp_path/'capture'; cap.mkdir(); stop=tmp_path/'STOP'
-    row={'id':'m4-aa','regions':'mi210_0,184-191','stopfile':str(stop),'min_window_s':3600,'port':18070,'dryrun_native_result':True,'cgroup_parent':'/sys/fs/cgroup'}
+    row={'id':'m4-aa','regions':'mi210_0,184-191','stopfile':str(stop),'min_window_s':3600,'port':18070,'dryrun_native_result':True,'cgroup_parent':'/sys/fs/cgroup','champion_git':'/mnt/raid0/llm/llama.cpp','champion_ref':'refs/heads/ak/champion/llama-cpp-ffc1bac82eec','champion_commit':'c'*40}
     aa.update(row=row,result_path=str(cap/'result.json'))
     for cell in native['cells'].values():
         cell['grant']={'id':row['id'],'regions':row['regions'],'stopfile':str(stop)}
@@ -211,7 +213,7 @@ def test_generated_launcher_is_rowflow_parseable(tmp_path, monkeypatch):
     spec=importlib.util.spec_from_file_location('aa_launch_parse',ROOT/'scripts/champion/m4/launch_gpu_aa.py')
     launch=importlib.util.module_from_spec(spec); spec.loader.exec_module(launch)
     aa,native=fixture(); cap=tmp_path/'capture'; cap.mkdir(); stop=tmp_path/'STOP'
-    row={'id':'m4-aa','regions':'mi210_0,184-191','stopfile':str(stop),'min_window_s':3600,'port':18070,'dryrun_native_result':True,'cgroup_parent':'/sys/fs/cgroup'}
+    row={'id':'m4-aa','regions':'mi210_0,184-191','stopfile':str(stop),'min_window_s':3600,'port':18070,'dryrun_native_result':True,'cgroup_parent':'/sys/fs/cgroup','champion_git':'/mnt/raid0/llm/llama.cpp','champion_ref':'refs/heads/ak/champion/llama-cpp-ffc1bac82eec','champion_commit':'c'*40}
     aa.update(row=row,result_path=str(cap/'result.json'))
     for cell in native['cells'].values(): cell['grant']={'id':row['id'],'regions':row['regions'],'stopfile':str(stop)}
     command=launch.launch_spec(aa,native,types.SimpleNamespace(capture_root=cap))
@@ -222,3 +224,11 @@ def test_generated_launcher_is_rowflow_parseable(tmp_path, monkeypatch):
     assert parsed['id']=='m4-aa' and parsed['class']=='gpu'
     assert parsed['min_window']==3600 and parsed['claim_cpus']=='72-95'
     assert parsed['gpu_quiet']=='exclusive' and parsed['complete_cmd'] and parsed['cmd']
+
+
+def test_champion_binding_refuses_ref_movement(monkeypatch):
+    aa={'row':{'champion_git':'/mnt/raid0/llm/llama.cpp','champion_ref':'refs/heads/ak/champion/llama-cpp-ffc1bac82eec','champion_commit':'c'*40}}
+    monkeypatch.setattr(mod.subprocess,'run',lambda *a,**kw:types.SimpleNamespace(stdout='c'*40+'\n'))
+    assert mod.check_champion(aa)=='c'*40
+    monkeypatch.setattr(mod.subprocess,'run',lambda *a,**kw:types.SimpleNamespace(stdout='d'*40+'\n'))
+    with pytest.raises(RuntimeError,match='moved'): mod.check_champion(aa)

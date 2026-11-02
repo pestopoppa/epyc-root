@@ -9,6 +9,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -118,6 +119,20 @@ def command(entry, cell, work):
     return cmd
 
 
+def check_champion(aa):
+    row = aa.get('row', {})
+    repo, ref, expected = row.get('champion_git'), row.get('champion_ref'), row.get('champion_commit')
+    if (repo != '/mnt/raid0/llm/llama.cpp'
+            or ref != 'refs/heads/ak/champion/llama-cpp-ffc1bac82eec'
+            or not isinstance(expected, str) or not re.fullmatch('[0-9a-f]{40}', expected)):
+        raise RuntimeError('invalid independent champion binding')
+    proc = subprocess.run(['git', '-C', repo, 'rev-parse', '--verify', ref],
+                          capture_output=True, text=True, timeout=10, check=True)
+    if proc.stdout.strip() != expected:
+        raise RuntimeError('champion ref moved; recut required')
+    return expected
+
+
 def execute_cell(command_argv, env, qualification_only):
     """Return 75 on the keeper's controlled first-unit qualification stop."""
     stop = Path(env.get('FILLER_STOPFILE', ''))
@@ -169,6 +184,9 @@ def main():
     if aa.get('native_plan_sha256') != trust.plan_sha256:
         raise RuntimeError('native plan is not independently bound')
     selected = validate_plans(aa, native)
+    expected_champion = check_champion(aa)
+    if any(cell['source_commit'] != expected_champion for _, cell in selected):
+        raise RuntimeError('native source is not the bound champion')
     output = Path(aa['result_path'])
     if (not output.is_absolute() or '..' in output.parts or output.exists()
             or output.parent.resolve(strict=True) != output.parent
@@ -176,6 +194,8 @@ def main():
         raise RuntimeError('result path unavailable, noncanonical or outside capture root')
     records = []; reduction_cells = []
     for entry, cell in selected:
+        # Re-resolve immediately before each admitted process.
+        check_champion(aa)
         # grant and STOP/HOLD are enforced again by the actual V2 launcher.
         watch_dir = Path(cell['watch_result_path']).parent
         if (not watch_dir.is_absolute() or '..' in watch_dir.parts
@@ -208,6 +228,7 @@ def main():
         records.append({k: v for k,v in x.items() if k not in ('id','request_count')} | {
             'cell_id': entry['id'], 'plan_sha256': plan_digest, 'status': 'COMPLETE',
             'cleanup_verified': True, 'requests': rows, 'aggregate_decode_tps': value})
+    check_champion(aa)
     result = calibrate_gpu_aa.reduce({'schema':'epyc.m4.gpu.aa.plan.v1', 'intent':'descriptive_only', 'cells':reduction_cells}, records, plan_digest)
     result.update({'qualification_only': qualification_only, 'native_plan_sha256': trust.plan_sha256, 'capture_paths': [str(Path(c['watch_result_path']).parent / 'native/run/capture-v2-0.json') for _,c in selected]})
     with output.open('x') as fh:

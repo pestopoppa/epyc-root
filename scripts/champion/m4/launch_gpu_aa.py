@@ -24,8 +24,10 @@ ENGINE = ROOT / 'scripts/coordination/rowflow/filler_run15.sh'
 def launch_spec(aa, native, trust):
     pairs = run.validate_plans(aa, native)
     row = aa.get('row')
-    if not isinstance(row, dict) or set(row) != {'id', 'regions', 'stopfile', 'min_window_s', 'port', 'dryrun_native_result', 'cgroup_parent'}:
+    if not isinstance(row, dict) or set(row) != {'id', 'regions', 'stopfile', 'min_window_s', 'port', 'dryrun_native_result', 'cgroup_parent', 'champion_git', 'champion_ref', 'champion_commit'}:
         raise ValueError('reviewed row binding required')
+    if any(cell['source_commit'] != row['champion_commit'] for _, cell in pairs):
+        raise ValueError('native source differs from champion')
     rid = row['id']
     if not isinstance(rid, str) or not rid or any(c not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_' for c in rid):
         raise ValueError('invalid row id')
