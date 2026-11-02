@@ -76,6 +76,10 @@ validation requires the applicable compute authorization.
   five runs in each of two cases; the fix did not restore repeatability and was not promoted.
 - Experimental qwentts `aca7032` adds `tts-server --threads`; model-free CPU build, four CLI
   controls, ABI smoke and ggml linkage passed. GPU validation and new-version promotion remain open.
+  Its compile workers were pinned to CPUs 72–75 while a peer's GPU job used siblings 184–191;
+  the brief configure was not pinned. The possible overlap was disclosed to the peer owner.
+- Orchestrator `39920459` prepares an opt-in future TTS launcher transition with digest/flag checks;
+  69 offline tests passed. No current v1 launch or stack configuration was changed.
 
 All implementation branches are prospective source work. No inference or production service change
 was performed. The parent handoff boxes remain open until their complete acceptance criteria are met.

@@ -1678,6 +1678,11 @@ here: none of the RTG-57 ids remain undefined. The owner named in these texts (w
     the public C ABI. CPU build, four model-free CLI controls, C ABI smoke and ggml linkage pass.
     GPU validation, new-version promotion and the launcher shim removal remain open; the frozen
     production speech tree was not changed. ✅ 2026-11-02 [no-belief: source/build controls]
+  - [x] **KVU-11c future launcher preparation** — orchestrator `codex/kvu11c-launch-prep-20261102`
+    at `39920459` adds an absent-by-default TTS-only selection that requires a pinned future binary
+    digest and thread-option marker before replacing the shim with `--threads`. Sixty-nine offline
+    launcher/environment tests pass; the current v1 manifest and live stack remain unchanged.
+    ✅ 2026-11-02 [no-belief: source and deterministic controls]
 
 ## Not filed here (explicit)
 - SSU-F3 structural capacity model (RS, draft KV, compute terms): RTG-19's SSU-F3 is done (2026-09-23,
