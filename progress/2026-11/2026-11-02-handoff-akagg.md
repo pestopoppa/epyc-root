@@ -195,3 +195,7 @@ C3 inherited-lock successor remains unpublishable: its profiler and join hash mo
 ## 10:33Z — Prepare complete C3 pre-grant model identity receipt
 
 C3 draft custody receipt covers Bolt only; the L target and draft and smoke model are also referenced. Started a separate pre-grant seal for all four paths, with completion and failure events registered. It is not yet bound to a successor and no row was published.
+
+## 10:36Z — Implement C3 pre-grant receipt coverage check
+
+Prepared /mnt/raid0/llm/tmp/akagg/c3-custody-check/check_coverage.py to reject missing or malformed model-custody entries without opening weights. Six model-free tests pass, including alias deduplication, a missing role, wrong schema or assurance, bad digest and bad signature. Integration and a completed seal remain prerequisites to a publishable successor.
