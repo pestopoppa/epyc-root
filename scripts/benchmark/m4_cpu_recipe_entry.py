@@ -22,15 +22,16 @@ import m4_cpu_recipe_enrollment as enrollment
 def _sha(path: Path) -> str: return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def check_enrollment(plan_path: Path, expected_sha: str, row_id: str, output: Path) -> None:
+def check_enrollment(plan_path: Path, expected_sha: str, row_id: str, output: Path | None) -> None:
     if not enrollment.ENABLED or not enrollment.SOURCE_SEALS:
         raise ValueError('reviewed diagnostic enrollment absent')
     if (str(plan_path.resolve(strict=True))!=enrollment.PLAN_PATH or expected_sha!=enrollment.PLAN_SHA256
             or row_id!=enrollment.ROW_ID or _sha(plan_path)!=expected_sha):
         raise ValueError('diagnostic plan or row enrollment mismatch')
-    root=Path(enrollment.OUTPUT_ROOT).resolve(strict=True)
-    if output.resolve(strict=True).parent!=root or any(output.iterdir()):
-        raise ValueError('diagnostic output must be a fresh enrolled child')
+    if output is not None:
+        root=Path(enrollment.OUTPUT_ROOT).resolve(strict=True)
+        if output.resolve(strict=True).parent!=root or any(output.iterdir()):
+            raise ValueError('diagnostic output must be a fresh enrolled child')
     producer=ROOT/'scripts/benchmark/m4_cpu_producer'
     required={str(Path(__file__).resolve()),str((ROOT/'scripts/benchmark/m4_cpu_recipe_compare.py').resolve()),
               *(str((OWNERSHIP/name).resolve()) for name in ('entry.py','watch.py','lease_owner.py','m4_cgroup_guard.py','owned.py')),
@@ -42,7 +43,59 @@ def check_enrollment(plan_path: Path, expected_sha: str, row_id: str, output: Pa
             raise ValueError(f'diagnostic source changed: {source}')
 
 
+def qualification_worker() -> int:
+    """One synthetic unit inside the actual watcher; never emits a measurement."""
+    if (os.environ.get('FILLER_DRYRUN') != '1' or os.environ.get('FILLER_SMOKE') != '1'
+            or not os.environ.get('M4_OWNED_CGROUP')):
+        raise ValueError('fixture worker requires guarded smoke')
+    dd=Path(os.environ['FILLER_DRYRUN_DIR']).resolve(strict=True)
+    result=Path(os.environ['FILLER_DRYRUN_RESULT_PATH'])
+    if (not result.is_absolute() or result.name != 'native-result.json'
+            or result.parent.parent != dd/'native-attempts' or not result.parent.name.startswith('attempt-')
+            or result.parent.resolve(strict=True) != result.parent):
+        raise ValueError('invalid qualification nonce path')
+    with result.open('x') as f:
+        json.dump({'schema':'epyc.m4.cpu.recipe.qualification.v1','qualification_only':True,
+                   'measurement':False},f);f.write('\n');f.flush();os.fsync(f.fileno())
+    while True: time.sleep(.1)
+
+
+def qualification(a, row: str) -> int:
+    """Exercise the real ownership watcher with a rowflow-only fixture."""
+    if os.environ.get('FILLER_SMOKE') != '1': raise ValueError('fixture only allowed during smoke')
+    check_enrollment(a.plan,a.plan_sha256,row,None)
+    dd=Path(os.environ['FILLER_DRYRUN_DIR']).resolve(strict=True)
+    if (a.grant != dd/'grants'/(row+'.grant') or a.stop != dd/'stop'
+            or a.hold != Path(os.environ['FILLER_FLAGS_DIR']) or str(a.stop) != os.environ['FILLER_STOPFILE']
+            or int(a.deadline) != int(os.environ['FILLER_DEADLINE'])):
+        raise ValueError('qualification grant or control path mismatch')
+    cpus=os.environ['FILLER_CPUS']
+    entry._grant(a.grant,cpus,a.deadline,allow_dryrun=True,expected_row_id=row)
+    output=dd/'m4-recipe-qualification-watch';output.mkdir()
+    plan=dd/'m4-recipe-qualification-plan.json'
+    payload={'schema':'epyc.m4.cpu_entry_fixture.v1','mode':'fixture','row_id':row,
+             'region':cpus,'fixture':str(Path(__file__).resolve()),'fixture_sha256':_sha(Path(__file__))}
+    with plan.open('x') as f: json.dump(payload,f,sort_keys=True)
+    argv=sys.argv
+    try:
+        sys.argv=['entry.py','--plan',str(plan),'--plan-sha256',_sha(plan),'--grant',str(a.grant),
+                  '--stop',str(a.stop),'--hold',str(a.hold),'--output',str(output),
+                  '--deadline',str(a.deadline),'--owner-pid',str(a.owner_pid),'--owner-birth',str(a.owner_birth)]
+        os.environ['M4_QUALIFICATION_WORKER']='1'
+        rc=entry.main()
+        watch_result=json.loads((output/'watch-result.json').read_bytes())
+        if (a.stop.exists() and watch_result.get('status') == 'closed'
+                and watch_result.get('containment_empty') is True and watch_result.get('reason') == 'STOP'
+                and Path(os.environ['FILLER_DRYRUN_RESULT_PATH']).is_file()):
+            return 75
+        return rc
+    finally:
+        sys.argv=argv;os.environ.pop('M4_QUALIFICATION_WORKER',None)
+
+
 def main() -> int:
+    if os.environ.get('M4_QUALIFICATION_WORKER') == '1':
+        return qualification_worker()
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('plan','grant','stop','hold','output'): p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--plan-sha256',required=True);p.add_argument('--deadline',type=float,required=True)
@@ -52,6 +105,8 @@ def main() -> int:
         row=entry._row_id(os.environ.get('FILLER_ID'))
         if a.owner_pid!=os.getppid() or watch.m4_cgroup_guard.birth(a.owner_pid)!=a.owner_birth:
             raise ValueError('outer lease owner mismatch')
+        if os.environ.get('FILLER_DRYRUN') == '1':
+            return qualification(a,row)
         check_enrollment(a.plan,a.plan_sha256,row,a.output)
         plan=json.loads(a.plan.read_bytes())
         if plan.get('row_id')!=row or plan.get('status')!='REVIEWED_DIAGNOSTIC':
