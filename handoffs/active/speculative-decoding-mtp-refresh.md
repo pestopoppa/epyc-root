@@ -10,15 +10,13 @@
 
 Decide which remaining MTP (multi-token-prediction) speculative-decoding paths are worth operator benches now that production is frozen at `production-consolidated-v8` with native MTP/NEXTN support, and now that the Qwen/native MTP surface has a built experimental checkpoint. The open work is no longer "does our fork have MTP at all"; it is per-model deploy evidence under the v8 native runtime or a future refreshed experimental line started from current production. **All numbers here are OBSERVATIONS (MEASUREMENT.md) — none gate a keep/deploy decision; the operator runs all benches.**
 
-## Start here (2026-09-29)
+## Start here (updated 2026-11-02)
 
 - Production is `production-consolidated-v10` (`ffc1bac82`, binary 10303). Per-role spec-dec is launch-fixed and
   lives in the lean registry's `speculative_decoding_policy` (SW-4). The v5/v6/v8-era state notes that stood here are
   in the [archived history](../archived/speculative-decoding-mtp-refresh-history-through-2026-10-06.md).
-- **Next:** SW-2, the live
-  `n_max` clamp probe (three POSTs); its source lines were re-confirmed at `ffc1bac82` in the retained text of
-  `typed-decision-plane.md` TD-29.M1 (that probe itself was declined 2026-09-29, ruling 6).
-- **Then:** SR-6, SR-7, SW-3, SW-5, SW-6, NG5.
+- **Next:** prepare the SR-6 successor worker, launcher, pins, fresh prompt partitions, repetition metrics and decision rule; the prior single-window diagnostic was inconclusive and cannot authorize a registry edit. See the SR-6 preparation link below.
+- **Also open:** SR-7, SW-3, SW-5 and NG5. SW-2 and SW-6 are complete; see their dated evidence below. The legacy INF-50 native-window row is superseded and must not be republished; its successor completed native proof only (C5 checkpoint below).
 - SW-9 (the MTP accept path fills token probabilities) is on the champion `90c12df42` and bound for v11. SW-9 is now
   exercised on GPU (V6R-4d.2 PASS, 2026-10-01; `autokernel-champion-aggregate.md`).
 
