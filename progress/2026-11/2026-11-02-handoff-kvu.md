@@ -51,3 +51,7 @@ C5 repair was committed as 3d1da56d81eb; the prior wrap-up push failed, so this 
 ## 09:39Z — Prepare fixed synthetic input for VKQ3 diagnostic and publish prior C5 repair
 
 Prepared deterministic synthetic input generator for the VKQ3 tokenizer diagnostic: 4,550,000 bytes, SHA-256 e354df7f35d62a98716b1d0c37ddf1dbedc3ce69f9722286d8f8f19c865d5417; three offline tests pass. This is only a draft input, not a tokenizer run or feasibility result. Grant integration, custody, receipts and pinned runtime remain. C5 repair commit 3d1da56d81eb awaits publication after the prior wrap-up push failed; dispatcher reports keeper qualification underway. No inference was launched. [no-belief: synthetic input identity and offline tests only]
+
+## 09:46Z — Harden KVU-16h draft runner payload custody
+
+Prepared an uninstalled P3/X0 coordinator draft that hashes request payloads before adapter calls, rejects mutation, and isolates authoritative cases and occupancy data. Ten offline tests pass, including payload mutation and cleanup cases. The broader cross-runner lifecycle task remains open; no inference was run. [no-belief: offline draft tests only]
