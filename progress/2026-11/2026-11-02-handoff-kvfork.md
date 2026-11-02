@@ -95,3 +95,7 @@ Diagnosed the CPU successor cross-run preservation failure: its original and ext
 ## 11:37Z — Qualify paired CPU shared-trunk exactness and queue GPU smoke
 
 kvfork17a-cpu-paired publication smoke PASS with two case receipts; row grantable. The paired comparison runs the original and extended harness under the same grant and thread count; no full CPU verdict yet. Fixed preparation to copy the checked-in job, create required directories and refuse existing scratch; isolated fixture and Python AST equivalence checks passed. For kvfork17a-gpu-20261102, set smoke_timeout_s=1500 and invoked the publisher; GPU busy, smoke queued, no PASS or new qualification failure yet. Prior staged handoff findings and row artifacts are preserved in this commit.
+
+## 11:41Z — File instrumented build and prepare bounded GPU layout witness
+
+Filed kvfork174d-build-20261102 PASS under its build-only rule (rc 0, source 6ec877068936588b6d63dbba5842bbd540b92031, parent 84d0a31603d495377dee24e1159bbbf02f1e2f21, server SHA-256 cedf9a3b8cabd0f779c3dcd51962d8961f3759beea37144b17714ffdfe695c27). Prepared predeclared single-cell prospective witness and write-side belief enrollment; 34 unit tests passed. Publisher queued kvfork174d-witness-20261102 smoke because GPU is busy; no PASS or GPU result yet. The historical re-judgment and parent checkbox remain open.
