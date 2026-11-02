@@ -107,6 +107,7 @@ The [measurement constitution](MEASUREMENT.md) is authoritative (protocol annexe
 - `scripts/session/health_check.sh` — system health
 - `scripts/session/verify_llama_cpp.sh` — branch safety
 - `scripts/nightshift/` — autonomous overnight runs
+- **Never stop readying inference tasks** while any un-readied one exists; no gate (park, stuck rule, target, cooldown) may override it — [backlog-churn-flow.md → *The one rule no gate may break*](docs/guides/agent-workflows/backlog-churn-flow.md).
 - **Inference backlog piling up / compute idle while rows are queued?** The packing discipline (bins, derived
   booking class, grant-writer invariants, the operator STATUS/ETA report) is the project skill
   `.claude/skills/inference-backlog-scheduling/` on top of `docs/guides/agent-workflows/compute-fillers.md`;
