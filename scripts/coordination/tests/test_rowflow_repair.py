@@ -58,7 +58,8 @@ class RepairTests(unittest.TestCase):
         self.assertEqual(rc, 2, out)  # the job writes results.jsonl, not RESULT.json: the smoke FAILs in the owner's turn
         self.assertIn("LINT result_path=", out)
         self.assertIn("smoke FAIL for " + rid, out)
-        self.assertEqual(rf.rows(fx.flags)[rid]["result_path"], os.path.join(d, "out", "RESULT.json"))
+        self.assertNotIn(rid, rf.rows(fx.flags))  # ws58: ready/<id>.json survives only a smoke PASS
+        self.assertEqual(rf.load_json(pr.unpublished_path(fx.flags, rid))["result_path"], os.path.join(d, "out", "RESULT.json"))
 
     def test_01b_handoff_task_must_name_an_active_handoff_and_smoke_is_the_dry_run(self):
         fx = self.fx
@@ -82,14 +83,15 @@ class RepairTests(unittest.TestCase):
         rc, out = run([sp, "--flags", fx.flags])
         self.assertEqual(rc, 2, out)
         self.assertIn("launcher_out_tail", out)
-        self.assertEqual(rf.status(fx.flags, bad)["state"], "failed")
+        self.assertNotIn(bad, rf.rows(fx.flags))  # ws58: a failed smoke leaves no ready/ manifest
+        self.assertTrue(rf.fail_paths(fx.flags, bad))
 
     def test_02_class1_fail_is_repaired_and_republished(self):
         fx = self.fx
         rid = "t-repair-20261101"
         d = fx.job(rid)  # writes out/results.jsonl, exits 0 after 10 units
         marker = os.path.join(d, "out", "run.complete")
-        rf.publish(fx.spec(rid, d, result_path=marker, dryrun_timeout_s=60, admission_class="diagnostic", dryrun_whole_host=True), fx.flags)  # pre-lint row, as legacy rows were
+        rf.publish(fx.spec(rid, d, result_path=marker, dryrun_timeout_s=60, admission_class="diagnostic"), fx.flags)  # pre-lint row, as legacy rows were
         v, msg = rf.dryrun_run(fx.flags, rid, "0-23")
         self.assertEqual(v, "FAIL", msg)
         self.assertIn("before writing a unit to " + marker, msg)
@@ -101,7 +103,6 @@ class RepairTests(unittest.TestCase):
         self.assertEqual(row["result_path"], os.path.join(d, "out", "results.jsonl"))
         self.assertEqual(row["result_format"], "jsonl")
         self.assertEqual(row["admission_class"], "diagnostic")
-        self.assertIs(row["dryrun_whole_host"], True)
         self.assertEqual(row["launcher"]["sha256"], rf.sha256(os.path.join(d, "launch.sh")))
         self.assertTrue(row["published_from"].startswith("repair:"))
         self.assertNotEqual(rf.row_sha(fx.flags, rid), old_sha)
