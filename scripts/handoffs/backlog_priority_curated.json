@@ -62,7 +62,6 @@
   "EVL-52": 0.3,
   "REV-03": 0.3,
   "REV-06": 0.3,
-  "RTG-01": 0.3,
   "RTG-41": 0.3,
   "UFH-01": 0.3,
   "PIP-04": 0.3,
@@ -72,14 +71,11 @@
   "EVL-16": 0.25,
   "EVL-25": 0.25,
   "EVL-36": 0.25,
-  "EVL-39": 0.25,
   "REV-07": 0.25,
   "RTG-14": 0.25,
-  "RTG-21": 0.25,
   "RTG-42": 0.25,
   "PIP-01": 0.25,
   "PIP-05": 0.25,
-  "EVL-46": 0.25,
   "INF-09": 0.2,
   "EVL-04": 0.2,
   "EVL-14": 0.2,
@@ -141,7 +137,12 @@
   "RTG-08#rao-redel-substrate-spike": 0.25,
   "RTG-08#reasoning-compression": 0.2,
   "RTG-08#reasoning-effort-levels": 0.25,
-  "RTG-08#tool-output-compression": 0.25
+  "RTG-08#tool-output-compression": 0.25,
+  "EVL-08#agent-world-env-synthesis": 0.3,
+  "EVL-08#mathsmith-hc-formalizer-eval": 0.2,
+  "EVL-08#multi-file-coding-completion-capability": 0.25,
+  "EVL-08#rlm-contested-claims-self-evaluation": 0.25,
+  "EVL-08#tool-use-eval-contract": 0.25
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
@@ -158,7 +159,6 @@
   "EVL-01": "operator decision or approval pending",
   "EVL-15": "operator decision or approval pending",
   "EVL-21": "operator decision or approval pending",
-  "EVL-31": "operator decision or approval pending",
   "EVL-43": "operator decision or approval pending",
   "RTG-24": "operator decision or approval pending",
   "RTG-29": "operator decision or approval pending",
@@ -179,7 +179,8 @@
   "RTG-36#model-stack-single-source-update-pipeline": "",
   "RTG-36#model-stack-update-pipeline-audit": "",
   "RTG-36#standardized-stack-update-pipeline-finalization": "",
-  "RTG-36#wp12-fleet-layer-design": ""
+  "RTG-36#wp12-fleet-layer-design": "",
+  "EVL-08#mathsmith-hc-formalizer-eval": "operator decision or approval pending"
  },
  "park": {
   "INF-06": "MMQ",

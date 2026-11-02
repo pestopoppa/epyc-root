@@ -1,5 +1,9 @@
 {
  "files": {
+  "agent-world-env-synthesis.md": {
+   "target": "benchmark-suites.md",
+   "track": "agent-world-env-synthesis"
+  },
   "amd-ai-lab-website-publication.md": {
    "target": "engineering-hygiene-backlog.md",
    "track": "amd-ai-lab-website-publication"
@@ -15,6 +19,10 @@
   "bulk-inference-campaign.md": {
    "target": "eval-tower-program.md",
    "track": "bulk-inference-campaign"
+  },
+  "canonical-judge-suite-revamp.md": {
+   "target": "benchmark-suites.md",
+   "track": null
   },
   "capability-registry-and-promotion.md": {
    "target": "stack-lifecycle-program.md",
@@ -92,6 +100,10 @@
    "target": "engineering-hygiene-backlog.md",
    "track": "loop-state-offraid-backup"
   },
+  "mathsmith-hc-formalizer-eval.md": {
+   "target": "benchmark-suites.md",
+   "track": "mathsmith-hc-formalizer-eval"
+  },
   "memento-block-reasoning-compression.md": {
    "target": "context-and-token-economy.md",
    "track": "memento-block-reasoning-compression"
@@ -124,6 +136,10 @@
   "model-stack-update-pipeline-audit.md": {
    "target": "stack-lifecycle-program.md",
    "track": "model-stack-update-pipeline-audit"
+  },
+  "multi-file-coding-completion-capability.md": {
+   "target": "benchmark-suites.md",
+   "track": "multi-file-coding-completion-capability"
   },
   "multimodal-pipeline.md": {
    "target": "speech-and-multimodal.md",
@@ -169,6 +185,10 @@
    "target": "engineering-hygiene-backlog.md",
    "track": "repo-readiness-scorer"
   },
+  "rlm-contested-claims-self-evaluation.md": {
+   "target": "benchmark-suites.md",
+   "track": "rlm-contested-claims-self-evaluation"
+  },
   "scoring-infra-standardization.md": {
    "target": "eval-tower-program.md",
    "track": "scoring-infra-standardization"
@@ -201,6 +221,10 @@
   "tool-output-compression.md": {
    "target": "context-and-token-economy.md",
    "track": "tool-output-compression"
+  },
+  "tool-use-eval-contract.md": {
+   "target": "benchmark-suites.md",
+   "track": "tool-use-eval-contract"
   },
   "tq3-quantization-evaluation.md": {
    "target": "quantization-and-low-bit.md",
@@ -240,6 +264,10 @@
    "target": "RTG-22",
    "track": "integration-test-coverage"
   },
+  "EVL-31": {
+   "target": "EVL-08",
+   "track": "mathsmith-hc-formalizer-eval"
+  },
   "EVL-32": {
    "target": "EVL-02",
    "track": "minimax-h3-video-generation-evaluation"
@@ -260,6 +288,10 @@
    "target": "RTG-22",
    "track": "repo-readiness-scorer"
   },
+  "EVL-39": {
+   "target": "EVL-08",
+   "track": "rlm-contested-claims-self-evaluation"
+  },
   "EVL-42": {
    "target": "EVL-14",
    "track": "scoring-infra-standardization"
@@ -267,6 +299,10 @@
   "EVL-45": {
    "target": "EVL-02",
    "track": "strand-rust-coder-rustevo2-verification"
+  },
+  "EVL-46": {
+   "target": "EVL-08",
+   "track": "tool-use-eval-contract"
   },
   "INF-04": {
    "target": "EVL-02",
@@ -316,6 +352,10 @@
    "target": "EVL-02",
    "track": "ernie-image-turbo-evaluation"
   },
+  "RTG-01": {
+   "target": "EVL-08",
+   "track": "agent-world-env-synthesis"
+  },
   "RTG-06": {
    "target": "RTG-36",
    "track": "capability-registry-and-promotion"
@@ -337,6 +377,10 @@
   "RTG-20": {
    "target": "RTG-36",
    "track": "model-stack-update-pipeline-audit"
+  },
+  "RTG-21": {
+   "target": "EVL-08",
+   "track": "multi-file-coding-completion-capability"
   },
   "RTG-27": {
    "target": "EVL-14",

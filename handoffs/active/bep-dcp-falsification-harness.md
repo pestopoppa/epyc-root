@@ -19,7 +19,7 @@ The original BEP-2 read-loop blocker is remediated by the default-off `force_mod
 - [ ] **DCP-6 deploy attestation + inference gate**: launch-code provenance is satisfied (`server_launch_git_sha=eeb8cce`, ancestor of `2e2e0d3` and `756c96b`; current API `git_sha=27e09a1`). Orchestrator `670aab4` records the 2026-06-19 `dcp6a-deploy-boundary-check` attestation with GitNexus drift clean and all 6 API workers sampled, but it is not a clean deploy gate because **feature-flag intent diffs remain** and the run still needs an **operationally clean host-quiet window**. Clear that remaining attestation warning at the next host-quiet boundary, then run inference and record top-up rate, token overhead, and success deltas.
   - **Two of the three original caveats are FALSIFIED — do not re-raise them** (falsified by `mainC` 2026-08-13; annotated here 2026-08-16). Original wording: *"...because ~~llama-server executable paths are deleted~~, feature-flag intent diffs remain, and ~~`AUTOPILOT_TOOL_SENTINELS` is absent from the API parent env~~."* Evidence: (a) `/mnt/raid0/llm/llama.cpp/build/bin/llama-server` **exists**, rebuilt 2026-08-10 22:40; (b) `AUTOPILOT_TOOL_SENTINELS` **is set at launch** — `/mnt/raid0/llm/epyc-orchestrator/scripts/server/orchestrator_stack.py:2198` `env["AUTOPILOT_TOOL_SENTINELS"] = "1"`. The 2026-06-19 attestation text is retained above as the historical record; the blocker list is what changed.
 - [ ] **J8 optional provenance**: run the legacy batch-edit vs interleaved-REPL A/B only if the batch-edit path itself still needs a keep/kill result. It is no longer a blocker for multi-file coding completion.
-- [x] **Cross-handoff cleanup**: keep production rollout decisions in [multi-file-coding-completion-capability.md](multi-file-coding-completion-capability.md), not here. ✅ 2026-07-29 — this handoff records DCP/BEP evidence and gates only; the multi-file capability handoff owns any rollout decision.
+- [x] **Cross-handoff cleanup**: keep production rollout decisions in [multi-file-coding-completion-capability.md](benchmark-suites.md#track-multi-file-coding-completion-capability), not here. ✅ 2026-07-29 — this handoff records DCP/BEP evidence and gates only; the multi-file capability handoff owns any rollout decision.
 
 ## Dependency Forks
 
@@ -55,7 +55,7 @@ The original BEP-2 read-loop blocker is remediated by the default-off `force_mod
 - `/mnt/raid0/llm/epyc-orchestrator/scripts/benchmark/bep_ab.py`
 - [delegation-context-preassembly.md](context-and-token-economy.md#track-delegation-context-preassembly)
 - [batched-edit-parallel-apply.md](batched-edit-parallel-apply.md)
-- [multi-file-coding-completion-capability.md](multi-file-coding-completion-capability.md)
+- [multi-file-coding-completion-capability.md](benchmark-suites.md#track-multi-file-coding-completion-capability)
 - [bulk-inference-campaign.md](eval-tower-program.md#track-bulk-inference-campaign)
 
 ## Reporting Instructions

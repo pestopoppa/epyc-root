@@ -379,7 +379,7 @@ After each waypoint:
 **Created**: 2026-06-12
 **Priority**: READY FOR W3 ATTESTATION — the implementation prerequisites survived the 2026-08-05 code audit, but promotion remains fail-closed until a shadowed live restart supplies the required attestation. W4 remains downstream of that evidence; this audit does not promote any row.
 **Spec**: [fable5-findings-04-impl-plan.md](../completed/fable5-findings-04-impl-plan.md) §C + §D — read before claiming any waypoint
-**Related**: [fable5-findings-04-northstar-portfolio-indices.md](../completed/fable5-findings-04-northstar-portfolio-indices.md) (why backlog→actionable must be a state transition); [multi-file-coding-completion-capability.md](multi-file-coding-completion-capability.md) (edit-transaction = first-cohort member); [moe-spec-cpu-spec-dec-integration.md](moe-spec-cpu-spec-dec-integration.md) (`moe_spec_budget` evidence source)
+**Related**: [fable5-findings-04-northstar-portfolio-indices.md](../completed/fable5-findings-04-northstar-portfolio-indices.md) (why backlog→actionable must be a state transition); [multi-file-coding-completion-capability.md](benchmark-suites.md#track-multi-file-coding-completion-capability) (edit-transaction = first-cohort member); [moe-spec-cpu-spec-dec-integration.md](moe-spec-cpu-spec-dec-integration.md) (`moe_spec_budget` evidence source)
 
 #### Why
 
@@ -415,7 +415,7 @@ interface with the biggest definitional payoff and rides along as W0.
         without executing a reload is now done; this row needs a reload window, not more code. Stated in
         blocker grammar deliberately, so `backlog_row_check.py` refuses to dispatch W3 to a session that
         cannot finish it — the 2026-08-12 dispatch that produced W3-a screened DISPATCHABLE with no blocker.
-- [ ] **W4 — promotion workflow + first cohort** (recurring, ~half day/month): monthly pass per §C.3 — promote operator→autopilot when descriptor/applicator wired + range validated + kill condition written + one shadowed trial passes attestation. First cohort: `moe_spec_budget`, per-role `enable_thinking`, EA compaction profiles (S8/S9), draft_max/p_split where spec-dec is on, and `edit_transaction_auto_routing` (A2 rollout contract prepared in [`multi-file-coding-completion-capability.md`](multi-file-coding-completion-capability.md)). Acceptance: first pass executed and logged; promoted rows flip `actionable_by`.
+- [ ] **W4 — promotion workflow + first cohort** (recurring, ~half day/month): monthly pass per §C.3 — promote operator→autopilot when descriptor/applicator wired + range validated + kill condition written + one shadowed trial passes attestation. First cohort: `moe_spec_budget`, per-role `enable_thinking`, EA compaction profiles (S8/S9), draft_max/p_split where spec-dec is on, and `edit_transaction_auto_routing` (A2 rollout contract prepared in [`multi-file-coding-completion-capability.md`](benchmark-suites.md#track-multi-file-coding-completion-capability)). Acceptance: first pass executed and logged; promoted rows flip `actionable_by`.
 
 ##### First-cohort note: edit transaction auto-routing
 

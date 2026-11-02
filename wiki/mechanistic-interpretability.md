@@ -70,7 +70,7 @@ Qwen-Scope's **Section 8** identifies SAE features causally linked to **endless 
 - `handoffs/active/context-and-token-economy.md` — Section 8 repetition feature as stuck-state precursor signal
 - `handoffs/completed/qwen36-production-upgrade.md` — Qwen3.5-35B-A3B SAE coverage as predecessor diagnostic
 - `handoffs/active/eval-tower-program.md` — Section 4 feature-coverage redundancy as candidate EV-8 work track
-- `handoffs/active/mathsmith-hc-formalizer-eval.md` — Section 4 framework for S4 test-suite construction
+- `handoffs/active/benchmark-suites.md` — Section 4 framework for S4 test-suite construction
 - `handoffs/active/context-and-token-economy.md` — Section 8 mechanism noted alongside Action 9 reasoning-length-alarm
 
 ## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)

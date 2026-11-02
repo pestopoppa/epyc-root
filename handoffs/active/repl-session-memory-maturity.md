@@ -13,7 +13,7 @@ D-e1 (caps default, folded into D-c1), D-d (curation layer; acceptance extended 
 **Parent index**: [research-evaluation-index.md](research-evaluation-index.md)
 **Related**: [repl-turn-efficiency.md](repl-turn-efficiency.md),
 [internal-interaction-lifecycle.md](internal-interaction-lifecycle.md),
-[rlm-contested-claims-self-evaluation.md](rlm-contested-claims-self-evaluation.md) (E2 rescoped
+[rlm-contested-claims-self-evaluation.md](benchmark-suites.md#track-rlm-contested-claims-self-evaluation) (E2 rescoped
 2026-07-27 — the code-log measurement lives here as D-c1, on real traffic, not as a synthetic arm
 there)
 

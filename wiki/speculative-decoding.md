@@ -1715,7 +1715,7 @@ If a coder-role quality A/B is ever authorized, the MTP variant of the candidate
 must be **excluded**: a base-trunk MTP head on a fine-tuned trunk is a separate,
 unmeasured question, and including it confounds the quality axis with a spec-dec
 axis.
-[`multi-file-coding-completion-capability.md`](../handoffs/active/multi-file-coding-completion-capability.md) §2026-07-29 rider
+[`multi-file-coding-completion-capability.md`](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability) §2026-07-29 rider
 
 ### Relevance is asymmetric between planes
 
@@ -1729,7 +1729,7 @@ a reopen trigger for the parked CPU handoff.
 
 - [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — the `config.json`-is-unsound rule; KAT-Coder tokenizer hash and removed MTP head; GGUF header gate (tensor count, not file size); byte-level ThinkingCap MTP identity; CPU/GPU relevance asymmetry
 - [`architect-model-selection-bench.md`](../handoffs/active/model-evaluation-queue.md) — the zero-delta non-LoRA tensor set as a dequant noise-floor control for weight-delta geometry; MTP held constant across bench arms; the EXECUTED probe's ~3,150× signal/noise separation, `cos(L)` vs scale-confounded `p(L)`, and ThinkingCap's MTP-lineage tensor topology
-- [`multi-file-coding-completion-capability.md`](../handoffs/active/multi-file-coding-completion-capability.md) — the exclusion of the MTP variant from any authorized quality A/B
+- [`multi-file-coding-completion-capability.md`](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability) — the exclusion of the MTP variant from any authorized quality A/B
 
 ## Compiled Update — 2026-07-31: production was NOT running the operator's composed recipe, and the naive fix would have been worse than the bug
 

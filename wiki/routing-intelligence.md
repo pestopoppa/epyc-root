@@ -1234,7 +1234,7 @@ The frozen 510-pair JEV-as-a-Judge replay reached 92.5% versus 93.1% for GPT-6 A
 
 - [Typed decision plane](../handoffs/active/typed-decision-plane.md)
 - [Decision-aware routing](../handoffs/active/decision-aware-routing.md)
-- [Canonical judge-suite revamp](../handoffs/active/canonical-judge-suite-revamp.md)
+- [Canonical judge-suite revamp](../handoffs/active/benchmark-suites.md)
 - [Harness selection and integration](../handoffs/active/harness-selection-and-integration.md)
 - [Eval Tower verification](../handoffs/active/eval-tower-program.md)
 
@@ -1255,7 +1255,7 @@ published 510 rows and absent live latency cannot serve as EPYC's baseline.
 
 ### Source References
 
-- [Canonical judge-suite revamp](../handoffs/active/canonical-judge-suite-revamp.md) — CJ-15 local fixture and CJ-16 live shadow.
+- [Canonical judge-suite revamp](../handoffs/active/benchmark-suites.md) — CJ-15 local fixture and CJ-16 live shadow.
 - [Typed decision plane](../handoffs/active/typed-decision-plane.md) — TD-23 shared backend screen.
 - [Decision-aware routing](../handoffs/active/decision-aware-routing.md) — URE-2a observe-only activation gate.
 - [Eval Tower verification](../handoffs/active/eval-tower-program.md) — minimum execution controls and promotion grammar.
@@ -1550,7 +1550,7 @@ Sources: [2026-10-29 delivered routing and scoring](../progress/2026-10/2026-10-
 
 **Confidence: scoped to cited records and source controls.**
 
-- Source-scoped improvements include full objective storage, default-off cutoff retry and strict value-only tool argument shadow selection. They do not establish live quality or adoption. ([learned routing](../handoffs/active/learned-routing-controller.md); [multi-file coding](../handoffs/active/multi-file-coding-completion-capability.md); [typed decisions](../handoffs/active/typed-decision-plane.md))
+- Source-scoped improvements include full objective storage, default-off cutoff retry and strict value-only tool argument shadow selection. They do not establish live quality or adoption. ([learned routing](../handoffs/active/learned-routing-controller.md); [multi-file coding](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability); [typed decisions](../handoffs/active/typed-decision-plane.md))
 - MoE calibration-lag reproduction and the proposed delegation fold replay retain their bounded surrogate and prospective scopes. An empty Pareto archive reflected the current-era boundary and absence of current-era rows, not proof of optimizer behavior. ([MoE](../handoffs/active/moe-routing-tap-and-locality-measurement.md); [routing](../handoffs/active/routing-intelligence.md); [task rate](../handoffs/active/objective-task-rate-goodput.md))
 
 

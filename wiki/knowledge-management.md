@@ -4096,7 +4096,7 @@ Sources: [source enrollment](../scripts/vidya/adapters/README.md), [SC55 tasks](
 
 The bounded 2026-05-27 BEP corpus contains62 real trajectories. Tasks t2–t5 account for47 terminal outcomes:44 harness turn-cap stops and3 errors, with no voluntary stops. These categories describe how the harness ended; they do not explain loop-guard, read-thrash, edit-failure or error causation. Repeated-open, write, loop-halt and repeat-count fields are observations. The legacy bytes do not bind their producer revision, and missing native completion metadata and clipped outputs remain unknown. This is a descriptive finding for the captured roles/models/tasks/arms/date, not a live inference or model-quality result. MAIN independently rebound all72 inputs and recomputed the aggregate from retained originals.
 
-Sources: [diagnostic custody](../artifacts/ni08/mf-fs1-diagnostic-20261008/README.md), [MF-FS-1 scope](../handoffs/active/multi-file-coding-completion-capability.md), [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md), [source-table boundary](../scripts/vidya/adapters/README.md).
+Sources: [diagnostic custody](../artifacts/ni08/mf-fs1-diagnostic-20261008/README.md), [MF-FS-1 scope](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability), [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md), [source-table boundary](../scripts/vidya/adapters/README.md).
 
 
 ### Prospective MF turn scalars and loaded-source limits — 2026-10-08
@@ -4105,7 +4105,7 @@ The MF-FS-1 historical47 t2–t5 outcomes remain44 harness turn-cap stops and3 e
 
 VB-MF-TURN-WRITE is newly enrolled and open. Its source-only candidate and prepared synthetic controls do not supply a runtime trace, efficacy result or new grading ladder. MAIN accepted HG5’s original87 source controls; its canonical source-task closure and publication follow that review. The original MF rate/behavior parents stay open.
 
-Sources: [MF scope and historical limits](../handoffs/active/multi-file-coding-completion-capability.md), [prospective source enrollment](../scripts/vidya/adapters/README.md), [source task](../handoffs/active/vidya-belief-substrate-program.md), [dated source review](../progress/2026-10/2026-10-08-codex-ni-main.md).
+Sources: [MF scope and historical limits](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability), [prospective source enrollment](../scripts/vidya/adapters/README.md), [source task](../handoffs/active/vidya-belief-substrate-program.md), [dated source review](../progress/2026-10/2026-10-08-codex-ni-main.md).
 
 
 ### HG5 original87 source controls and dashboard counting — 2026-10-08
