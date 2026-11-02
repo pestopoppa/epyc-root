@@ -11,3 +11,7 @@ The v3 scorer and Voxtral rows are in keeper qualification, and Ultra is running
 ## 00:14Z — File Ultra engineering25 result and preserve evidence
 
 Filed stt5-ultra-independent25-r1-20261101 inconclusive: rc=0 reason=complete conflicts with terminal harness_failure, counts 7 matches, 7 mismatches, 11 faults and 0 reported unknown; progress includes 14 cases plus one fixture. Full packet copied and source-verified at /mnt/raid0/llm/tmp/h-stt5-ultra25-custody-20261102/; inventory SHA-256 7afad6f2fdb75835a7c2a1ef9b1ab613d8cf0e5e84fdd0d623daae3abc2c9a5b. The filing receipt was issued after custody; parent STT4 remains open, no holdout or HIP conclusion. Delegated fault diagnosis and next HIP/reference row preparations; completion events ULTRA-FAULT-NOW, HIP-AFTER and REF-AFTER registered.
+
+## 00:18Z — Publish Ultra filing and advance successor preparations
+
+Consumed report.json: preparation boundary c983558a0b18 was wrapped at 00:12Z. The later Ultra inconclusive filing commit 2dce9ddf9743 initially failed to push because main advanced; merged and pushed it under the serialized push lease, verified origin/main at 91383dff0375. Fault investigation, Crisp HIP successor preparation and CS-5 row preparation dispatched with FAULT-FIX4, HIP-FIX4 and REF-FIX4 completion events. No row published or compute launched.
