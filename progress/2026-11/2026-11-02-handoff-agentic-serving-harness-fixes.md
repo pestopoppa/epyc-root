@@ -159,3 +159,7 @@ The observer commit hook was repaired by restoring its tracked operator ratifier
 ## 01:01Z — Prepare completed chat proof and recover handoff checks
 
 The observer commit hook was repaired by restoring its tracked operator ratifier missing from this sparse checkout; observer census passes. Pending DEPLOY-EC-2d evidence remains uncommitted until the captured full index check completes and its actual failure is fixed. Started targeted index diagnosis and preparation of an independent keeper row for the open completed /chat proof; registered their result events. Earlier GPU and B1e/B4b treatment patch preparations remain pending. No inference row published in this boundary.
+
+## 01:02Z — Consume index diagnosis and prepare B1g evaluation
+
+Consumed index-cause2.txt: the index check serially scans git history for roughly 187 handoffs and its citation phase may take several minutes; buffered output alone is not evidence of a hang. Handoff files are present despite sparse checkout; the observer-hook omission was a separate issue. The captured full check has not yet emitted its registered completion event, so its actual gate failure remains unclassified; DEPLOY-EC-2d evidence remains uncommitted in the lane. Delegated independent UFH14-B1g evaluation row preparation and registered its result event; prior GPU, B4b/B1e patch and completed-chat row results remain pending. No row published.
