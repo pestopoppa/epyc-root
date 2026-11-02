@@ -10,6 +10,9 @@ SHA = re.compile(r'[0-9a-f]{64}\Z')
 STAMP = re.compile(r'\d{4}-\d\d-\d\dT\d\d:\d\dZ\Z')
 QUARTERS = {f'{n*24}-{n*24+23}': f'{n*24}-{n*24+23}' for n in range(4)}
 QUARTERS.update({f'q{n}': f'{n*24}-{n*24+23},{n*24+96}-{n*24+111}' for n in range(4)})
+# publish_row.smoke_regions selects the first four cores of an available
+# quarter. Only synthetic grants with rowflow's identity may use these shapes.
+SMOKE_CPUS = {f'{n*24}-{n*24+3}' for n in range(4)}
 
 
 def digest(path):
@@ -79,7 +82,8 @@ class GrantGuard:
         self.path = Path(grant_dir) / (expected_id + '.grant')
         self.initial = self.path.read_bytes()
         regions, start, end = parse_grant(self.initial, expected_id, dryrun)
-        allowed_cpus = '0-95' if regions == '0-95' else QUARTERS.get(regions) if dryrun else None
+        allowed_cpus = ('0-95' if regions == '0-95' else
+                        (regions if regions in SMOKE_CPUS else QUARTERS.get(regions)) if dryrun else None)
         if allowed_cpus is None or env.get('FILLER_CPUS') != allowed_cpus:
             raise ValueError('grant CPU shape mismatch')
         try:

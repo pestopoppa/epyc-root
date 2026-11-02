@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from block_controller import BlockError, execute_block
-from native_worker import canonical, digest
+from native_worker import canonical, capture_request, digest
 from server_lifecycle import LifecycleError
 
 class FakeProcess:
@@ -22,7 +22,7 @@ class TestBlockController(unittest.TestCase):
         sampler = {'temperature': 0.3}
         self.kw = dict(output=Path(self.tmp.name), block={'window':'w1', 'block':0,
                        'prompts':[prompt], 'arm_order':['composed3','composed4','mtp3','mtp4','mtp4_repeat']},
-                       sampler=sampler, sampler_sha256=digest(canonical(sampler)), attempts=[],
+                       sampler=sampler, sampler_sha256=digest(canonical(sampler)),
                        admission_check=lambda: True, spawn=self.spawn,
                        verify_ready_and_identity=lambda process, arm: {'server_record_sha256': 'a'*64},
                        post=self.post)
@@ -44,7 +44,19 @@ class TestBlockController(unittest.TestCase):
         with self.assertRaises(BlockError): execute_block(**self.kw)
         self.assertEqual(len(self.spawns), 1)
     def test_existing_attempt_refuses_before_spawn(self):
-        self.kw['attempts'] = [{'prompt_id':'p1','arm':'mtp3','exposure':True,'response':'complete'}]
+        capture_request(self.kw['output'], window='other', block=2, arm='mtp3',
+                        prompt=self.kw['block']['prompts'][0], sampler={'temperature': 0.3},
+                        server_record_sha256='a'*64, post=lambda _: (200, b'ok'))
+        with self.assertRaises(BlockError): execute_block(**self.kw)
+        self.assertFalse(self.spawns)
+    def test_unrelated_exposure_does_not_prevent_fresh_prompt(self):
+        prompt = dict(self.kw['block']['prompts'][0], id='other')
+        capture_request(self.kw['output'], window='other', block=2, arm='mtp3',
+                        prompt=prompt, sampler={'temperature': 0.3},
+                        server_record_sha256='a'*64, post=lambda _: (200, b'ok'))
+        self.assertEqual(execute_block(**self.kw)['state'], 'CAPTURED_ONLY')
+    def test_invalid_inventory_refuses_before_spawn(self):
+        (self.kw['output']/'bad.exposure.json').write_text('{')
         with self.assertRaises(BlockError): execute_block(**self.kw)
         self.assertFalse(self.spawns)
     def test_sampler_mismatch_refuses_before_marker(self):
