@@ -23,3 +23,7 @@ Prepared the P4-1 implementation contract against orchestrator 9e138e3a, includi
 ## 09:58Z — Prepare P3-4 serving comparison measurement design
 
 Delegated a native-MTP versus DFlash2 serving A/B design with measurement-constitution review, pinned candidate identities, duty-mix and launch-bound mode-switch costs. Registered its completion event for owner review. This is preparation only; no compute or promotion is authorized by it.
+
+## 10:00Z — Prepare P3-4 paired serving comparison design
+
+Prepared a P3-4 native-MTP versus DFlash2 serving comparison proposal with common model and binary, paired workload strata, explicit launch-switch economics, quality and latency outcomes, residency and identity proofs, and applicable protocol limits. Candidate identities, sustained-serving protocol and decision thresholds remain to be settled before booking; no measurement or adoption is claimed.

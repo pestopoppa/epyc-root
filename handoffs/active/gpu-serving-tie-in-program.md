@@ -146,6 +146,7 @@ config change with a rehearsed rollback, never a rebuild.
   duty mix (throughput AND the D6 launch-bound mode-toggle economics)? Candidate only — needs its
   own measurement design under MEASUREMENT.md; sequenced behind the champion promotion decision;
   zero compute until an operator grant.
+  - Design proposal: [paired serving comparison](../../docs/design/gpu-serving-mtp-dflash-ab.md). Actual candidate/model identities, applicable sustained-serving protocol, workload weights, decision thresholds and execution authority must be resolved before booking; this is not a measurement verdict.
 
 ### Phase 4 — AutoPilot on the new surface
 - [ ] **P4-1** — Stage-2 typed knobs ONLY: tenant ∈ {stock, FF} + np_ceiling within measured bounds; flag-gate + strategy-store seeding pattern; fail-closed on any 5xx class. **Invariant: autopilot never touches launch plumbing, registry, or lane lifecycle.**
