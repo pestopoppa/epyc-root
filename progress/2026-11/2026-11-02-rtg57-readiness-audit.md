@@ -72,6 +72,8 @@ validation requires the applicable compute authorization.
   planning canary, production quality and promotion remain unestablished.
 - Barrier-fix diagnostic `7a8a2d8fa`: both original and proposed-fix arms remained variable across
   five runs in each of two cases; the fix did not restore repeatability and was not promoted.
+- Experimental qwentts `aca7032` adds `tts-server --threads`; model-free CPU build, four CLI
+  controls, ABI smoke and ggml linkage passed. GPU validation and new-version promotion remain open.
 
 All implementation branches are prospective source work. No inference or production service change
 was performed. The parent handoff boxes remain open until their complete acceptance criteria are met.

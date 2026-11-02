@@ -1646,6 +1646,11 @@ here: none of the RTG-57 ids remain undefined. The owner named in these texts (w
   `get_nprocs()`, orch `scripts/voice/`) is the accepted stopgap (package revision 3 §4.2). Add a thread-count
   flag to qwentts.cpp on an `experimental` branch and promote it as the next speech kernel version; then drop the
   shim and `SHIM_NPROCS` from the launch manifest.
+  - [x] **KVU-11c experimental thread option** — qwentts fork `codex/kvu11c-threads-20261102`
+    at `aca7032` adds `tts-server --threads N`, keeps the old default when omitted and preserves
+    the public C ABI. CPU build, four model-free CLI controls, C ABI smoke and ggml linkage pass.
+    GPU validation, new-version promotion and the launcher shim removal remain open; the frozen
+    production speech tree was not changed. ✅ 2026-11-02 [no-belief: source/build controls]
 
 ## Not filed here (explicit)
 - SSU-F3 structural capacity model (RS, draft KV, compute terms): RTG-19's SSU-F3 is done (2026-09-23,
