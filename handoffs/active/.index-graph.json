@@ -3757,7 +3757,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T11:40:21Z",
+  "generated_at": "2026-11-02T11:50:39Z",
   "nodes": [
     {
       "age_days": 95,
@@ -4853,14 +4853,14 @@
       "blocked": 4,
       "blocked_by": [],
       "closed": 336,
-      "dispatchable": 392,
+      "dispatchable": 395,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-02",
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
-      "open": 396,
+      "open": 399,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -6019,15 +6019,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 58,
-      "dispatchable": 33,
+      "closed": 59,
+      "dispatchable": 32,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding-mtp-refresh.md",
       "id": "INF-50",
       "last_advanced": "2026-11-02",
       "next_action": "Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold",
-      "open": 34,
+      "open": 33,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -8823,15 +8823,15 @@
         "RTG-27",
         "RTG-57"
       ],
-      "closed": 97,
-      "dispatchable": 57,
+      "closed": 98,
+      "dispatchable": 56,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "kv-prefix-fork-and-paged-attention.md",
       "id": "RTG-58",
       "last_advanced": "2026-11-02",
       "next_action": "KPF-64.3: F/FB on q0, EB on q2+q3 from 10-26 03:30Z, then the contrasts; read Codex do_slot_fork code read vs KPF-17.4c",
-      "open": 58,
+      "open": 57,
       "priority": 1.0,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep kpf18-g3-r10-integration-cpu: harness fix: rc1 06:03:31Z, framing_pass=fals",

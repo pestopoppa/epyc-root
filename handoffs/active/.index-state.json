@@ -4,7 +4,7 @@
       "blocked": 59,
       "handoffs": 58,
       "oldest_advance": "2026-07-29",
-      "open": 1034
+      "open": 1033
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -16,7 +16,7 @@
       "blocked": 15,
       "handoffs": 40,
       "oldest_advance": "2026-07-29",
-      "open": 713
+      "open": 716
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -28,7 +28,7 @@
       "blocked": 17,
       "handoffs": 54,
       "oldest_advance": "2026-07-29",
-      "open": 660
+      "open": 659
     },
     "user-facing-harness-index.md": {
       "blocked": 17,
@@ -1353,10 +1353,10 @@
     },
     "kv-prefix-fork-and-paged-attention.md": {
       "blocked": 1,
-      "closed": 97,
+      "closed": 98,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 57,
+      "open": 56,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2457,10 +2457,10 @@
     },
     "speculative-decoding-mtp-refresh.md": {
       "blocked": 1,
-      "closed": 58,
+      "closed": 59,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 33,
+      "open": 32,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2748,7 +2748,7 @@
       "closed": 336,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 392,
+      "open": 395,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2757,7 +2757,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 732
+      "total": 735
     },
     "within-role-placement-state-machine.md": {
       "blocked": 1,
