@@ -83,3 +83,7 @@ The VKQ3 grant repair is being implemented against the keeper serializer: the fi
 ## 10:00Z — Review VKQ3 guard against actual rowflow modes
 
 Independent review found the candidate VKQ3 guard rejects real arming because rowflow removes FILLER_DRYRUN, and rejects valid diagnostic and correctness admission classes. It is not publishable; the mode and serializer checks require repair and integration tests. No inference was run. [no-belief: source contract review only]
+
+## 10:01Z — Repair VKQ3 grant validation against keeper serializers
+
+Repaired the uninstalled VKQ3 guard draft to accept real-arm mode when FILLER_DRYRUN is absent, require the synthetic keeper schema/id/kind in dry runs, verify grant window and CPU shape, and reject revoked or changed grants. Six offline tests pass against actual keeper serializers, including quarter q0 mapping, full mode, identity, stop and deadline. The guard is not integrated with process custody or a launcher and is not a publishable row. The reported origin/main merge conflict did not reproduce; the merge completed. [no-belief: offline grant-guard tests only]
