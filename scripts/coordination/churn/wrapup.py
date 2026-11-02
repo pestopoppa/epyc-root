@@ -275,7 +275,7 @@ def run(rec: dict, lane: str, flags: str, dry_run: bool) -> int:
     if left:
         raise WrapupError(f"cherry origin/main not empty after push: {left.splitlines()[0]}")
     log("cherry", "empty")
-    out = dict(rec, wrapped_sha=sha, wrapped_at=_now().strftime("%Y-%m-%dT%H:%M:%SZ"))
+    out = dict(rec, wrapped=True, wrapped_sha=sha, wrapped_at=_now().strftime("%Y-%m-%dT%H:%M:%SZ"))
     log("report", write_report(flags, slug, out))
     print(f"WRAPPED {sha}", flush=True)
     return 0
@@ -288,15 +288,33 @@ def main(argv=None) -> int:
     ap.add_argument("--flags", default=FLAGS_DEFAULT)
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args(argv)
+    rec = None
     try:
         rec = json.load(open(a.json, encoding="utf-8"))
         if not isinstance(rec, dict):
             raise WrapupError("JSON top level must be an object")
         lane = a.lane or os.path.join(LANES_DIR, f"h-{rec.get('slug', '?')}")
         return run(rec, os.path.abspath(lane), a.flags, a.dry_run)
-    except (WrapupError, CheckboxFlipError, OSError, ValueError) as exc:
+    except Exception as exc:  # noqa: BLE001 - every exit path must leave a report.json (ws58, 2026-11-02)
         print(f"[wrapup] FAIL: {exc}", file=sys.stderr, flush=True)
+        _failure_report(rec, a.flags, a.dry_run, exc)
         return 1
+
+
+def _failure_report(rec, flags: str, dry_run: bool, exc: BaseException) -> None:
+    """A failed wrap-up still tells the dispatcher what comes next; without this the turn ends `next=unreported`."""
+    if dry_run or not isinstance(rec, dict) or not re.fullmatch(r"[a-z0-9][a-z0-9._-]*", str(rec.get("slug", ""))):
+        return
+    nxt = rec.get("next") if rec.get("next") in ("non-inference", "inference", "blocked", "done") else "non-inference"
+    if nxt == "done":  # a completion that did not land is not done; the session must retry the wrap-up
+        nxt = "non-inference"
+    out = {k: rec[k] for k in ("slug", "state", "task_text", "blocked_by", "rows_published") if k in rec}
+    out.update(next=nxt, wrapped=False, failure=f"{type(exc).__name__}: {exc}",
+               failed_at=_now().strftime("%Y-%m-%dT%H:%M:%SZ"))
+    try:
+        log("report", write_report(flags, rec["slug"], out) + " (wrapped=false)")
+    except OSError as werr:
+        print(f"[wrapup] could not write failure report: {werr}", file=sys.stderr, flush=True)
 
 
 def main_detached(argv=None) -> int:
