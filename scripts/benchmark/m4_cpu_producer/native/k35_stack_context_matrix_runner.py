@@ -143,6 +143,7 @@ class Scenario:
     extra_args: tuple[str, ...] = ()
     numa_nodes: str = "all"
     cpu_affinity: str | None = None
+    server_context_size: int | None = None
 
 
 SCENARIOS: tuple[Scenario, ...] = (
@@ -658,7 +659,15 @@ def pick_port(base: int) -> int:
 def server_context(scenario: Scenario, nominal_context: int, max_tokens: int) -> int:
     per_slot_requested = max(2048, nominal_context + max_tokens + 1024)
     requested = per_slot_requested * scenario.parallel
-    capped = min(scenario.max_context, requested)
+    if scenario.server_context_size is not None:
+        # The workload depth and allocated server context are distinct axes.
+        # A production-shaped plan must not silently shrink the server KV pool.
+        explicit = scenario.server_context_size
+        if type(explicit) is not int or explicit < requested or explicit > scenario.max_context:
+            raise ValueError(f"{scenario.name} explicit server context cannot fit workload or exceeds the cap")
+        capped = explicit
+    else:
+        capped = min(scenario.max_context, requested)
     per_slot_capped = capped // scenario.parallel
     if per_slot_capped < max_tokens + 1024:
         raise ValueError(
