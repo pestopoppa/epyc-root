@@ -107,3 +107,7 @@ Prior wrap-ups failed the observer census because the lane sparse checkout omitt
 ## 09:18Z — Resolve wrap-up and remaining row blockers
 
 The observer census hook now passes after restoring the tracked sparse-checkout prerequisite. The prior wrap-up including the CH-26b handoff change failed index_state --check and did not commit it; the full diagnostic is under investigation. CLS and S18 successor repairs were delegated; no publication is asserted.
+
+## 09:29Z — Correct CH-26b filing and triage KVU-16i
+
+Correction to the earlier CH-26b pass and tick in this progress file: later native residency analysis, now merged from origin/main, finds CPU placement and contention unproven for all 48 launches. Refiled `akagg-ch26b-1017-c2-r2-20261101` inconclusive; 3.016% and its 1.94675–4.95% interval are descriptive only, not an admissible decision floor. The owner handoff keeps CH-26b open and preserves evidence. Merged origin/main after stashing the old conflicting local tick (stash retained). `publish_row.py --repair handoff-kvu-16i-c5-replay-20261101` returned UNKNOWN-FAILURE-CLASS; a bounded repair was delegated.
