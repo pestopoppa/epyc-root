@@ -28,7 +28,6 @@ import backlog_gen as bg  # noqa: E402
 import handoff_sessions as hs  # noqa: E402
 
 _REAL_ENSURE_LANE = hs.ensure_lane  # fixtures stub ensure_lane; the lane tests call the real one
-_REAL_UNREADIED = hs.unreadied
 
 
 def _w(p, txt):
@@ -74,14 +73,10 @@ class AutoStartFixture(unittest.TestCase):
         self._lane.start()
         self._disk = patch.object(hs, "free_gib", lambda path="/": 999.0)  # the real disk may be below the floor
         self._disk.start()
-        # no un-readied tasks by default so the park rules are exercised; UN-READIED tests patch it
-        self._inv = patch.object(hs, "unreadied", lambda data: {})
-        self._inv.start()
 
     def tearDown(self):
         self._lane.stop()
         self._disk.stop()
-        self._inv.stop()
         self.td.cleanup()
 
     def runner(self, cmd, prompt_file, out, cwd=None):
@@ -104,38 +99,27 @@ class AutoStartTests(AutoStartFixture):
     def test_ranking_engine_brief_backlog_and_log(self):
         reg, _ = self.dispatch()
         S = reg["sessions"]
-        # gate (operator 23:35Z): only the handoff with a REAL stuck row (mid) is started; zed/alpha are heuristic-only
-        self.assertEqual(sorted(k for k in S if k != "codex-gen"), ["mid"], S.keys())
+        # operator loop 2026-11-02: every handoff with open boxes may get a session; free slots go by handoff priority
+        self.assertEqual(sorted(k for k in S if k != "codex-gen"), ["mid", "zed"], S.keys())
         self.assertTrue(S["codex-gen"]["generalist"], "codex-gen is an ordinary managed session, always registered")
-        self.assertEqual(len(self.calls), 1)
-        self.assertIn("handoffs/active/mid.md", self.calls[0]["prompt"])
-        for slug in ("mid",):
+        self.assertEqual([c["prompt"].split("owns `")[1].split("`")[0] for c in self.calls],
+                         ["handoffs/active/zed.md", "handoffs/active/mid.md"], "backlog-priority.json order: INF-1, INF-5")
+        for slug in ("mid", "zed"):
             e = S[slug]
             self.assertEqual(e["engine"], "claude", "registry default_engine knob")
             self.assertEqual(e["status"], "live")
             self.assertTrue(os.path.exists(e["brief"]))
             self.assertTrue(os.path.exists(os.path.join(self.flags, f"BACKLOG-handoff-{slug}.md")), "backlog written at start")
         self.assertEqual(self.calls[0]["cmd"][:2], ["claude", "-p"])
-        self.assertIn(hs.FANOUT_LINE, self.calls[0]["prompt"])
-        self.assertIn("WRAPPED <sha>", self.calls[0]["prompt"])
+        for marker in (hs.FANOUT_LINE, "WRAPPED <sha>", hs.REPORT_LINE):
+            self.assertIn(marker, self.calls[0]["prompt"])
         self.assertEqual(S["mid"]["auto_start"]["rows"], ["row-gpu-1"])
         self.assertEqual(S["mid"]["handoff_rows"], ["INF-5"])
         log = self.log_text()
         self.assertIn("AUTO-START mid handoff=handoffs/active/mid.md engine=claude", log)
         self.assertIn("rows=row-gpu-1", log)
-        self.assertNotIn("AUTO-START zed", log, "heuristic-only handoffs wait while a real-row handoff needs a session")
-        self.assertNotIn("AUTO-START alpha", log)
-        # SA-1: heuristic-only handoffs (zed, alpha: no real row) NEVER start a session
-        reg, _ = self.dispatch()
-        S = reg["sessions"]
-        self.assertEqual(S["mid"]["session_id"], "claude-sess-1")
-        self.assertNotIn("zed", S)
-        self.assertNotIn("alpha", S)
-        # ... unless pinned
-        reg["pinned"] = ["handoffs/active/zed.md"]
-        hs.save(hs.reg_path(self.flags), reg)
-        reg, _ = self.dispatch()
-        self.assertIn("zed", reg["sessions"])
+        self.assertIn("AUTO-START zed", log)
+        self.assertNotIn("AUTO-START alpha", log, "max_live=2: the third handoff waits for a slot")
         self.assertNotIn("closed", S, "a handoff with no open task never gets a session")
 
     def test_suspended_session_does_not_count_as_live_and_done_frees_slot(self):
@@ -146,19 +130,22 @@ class AutoStartTests(AutoStartFixture):
             "finished": {"handoff": "handoffs/active/closed.md", "engine": "codex", "session_id": "t2", "status": "suspended",
                          "pid": None, "last_wrapup": "abc1234", "last_end": "2026-11-01T10:00:00Z"}}
         hs.save(hs.reg_path(self.flags), self.reg)
-        # `waiting` has nothing open but a running row: the ONLY state in which a session may be paused
-        _w(os.path.join(self.flags, "BACKLOG-handoff-waiting.md"), "## Inference rows\n- [running] cpu rank=1 **row-x**\n\n## Non-inference tasks\n\n- none\n")
+        # `waiting` reported blocked on a readied (granted) row: the ONLY state in which a session may be paused
+        self.reg["sessions"]["waiting"]["last_report"] = {"next": "blocked", "blocked_by": ["row-x"]}
+        self.reg["sessions"]["finished"]["last_report"] = {"next": "done"}
+        hs.save(hs.reg_path(self.flags), self.reg)
+        _w(os.path.join(self.flags, "grants", "row-x.grant"), "regions=0-23\n")
         reg, _ = self.dispatch()
         S = reg["sessions"]
         self.assertEqual(S["finished"]["status"], "done")
-        self.assertIn("DONE finished: nothing open and no rows waiting", self.log_text())
-        self.assertEqual(S["waiting"]["status"], "suspended", "paused: everything left waits on a queued/running row")
-        self.assertIn("PAUSE waiting: waiting on row(s) row-x (queued/running)", self.log_text())
+        self.assertIn("DONE finished: next=done and no open box left", self.log_text())
+        self.assertEqual(S["waiting"]["status"], "suspended", "paused: every blocked_by row is readied")
+        self.assertIn("PAUSE waiting: blocked on readied row(s) row-x [running]", self.log_text())
         self.assertEqual(S["waiting"]["work_state"], "pause")
         # the suspended session holds no slot: with max_live=1 exactly one auto-start happened, for the best candidate
         self.assertEqual(len(self.calls), 1)
-        self.assertIn("mid", S)
-        self.assertEqual(S["mid"]["status"], "live")
+        self.assertIn("zed", S)
+        self.assertEqual(S["zed"]["status"], "live")
         self.assertNotIn("alpha", {k for k, e in S.items() if e.get("auto_started")}, "alpha already has a session (waiting)")
 
     def test_knob_off_and_no_double_start(self):
@@ -171,7 +158,7 @@ class AutoStartTests(AutoStartFixture):
         hs.save(hs.reg_path(self.flags), reg)
         reg, _ = self.dispatch()
         n = len(self.calls)
-        self.assertEqual(n, 1, "only the real-row handoff starts on the first pass")
+        self.assertEqual(n, 2, "max_live=2 handoffs start on the first pass")
         # make the started pids "alive": a second pass must not start the same handoffs again
         with patch.object(hs, "alive", return_value=True):
             reg, _ = self.dispatch()
@@ -182,33 +169,6 @@ class AutoStartTests(AutoStartFixture):
         self.assertEqual(hs.slug_for("handoffs/active/kv-unified-stack-rollout.md", {}), "kv-unified-stack")
         taken = {"yarn-context-extension": {"handoff": "handoffs/active/other.md"}}
         self.assertEqual(hs.slug_for("handoffs/active/yarn-context-extension-research.md", taken), "yarn-context-extension-2")
-
-
-class YieldTests(AutoStartFixture):
-    def test_outranked_session_yields_after_its_turn_and_is_not_resumed_for_new_work(self):
-        # cap 1; alpha (rank 9, score 0) has a live-looking session; mid (score 1.0) outranks it
-        self.reg["max_live"] = 1
-        self.reg["sessions"] = {"alpha": {"handoff": "handoffs/active/alpha.md", "engine": "codex", "session_id": "t1",
-                                          "status": "live", "pid": 99999980, "last_wrapup": "abc1234", "last_end": "2026-11-01T10:00:00Z"}}
-        hs.save(hs.reg_path(self.flags), self.reg)
-        _w(os.path.join(self.flags, "BACKLOG-handoff-alpha.md"), "## Non-inference\n- [M] handoffs/active/alpha.md:10 — alpha big task\n")
-        with patch.object(hs, "alive", return_value=True):
-            reg, _ = self.dispatch()
-        self.assertEqual(self.calls, [], "never killed or replaced mid-task; cap is full")
-        self.assertFalse(reg["sessions"]["alpha"].get("yield"), "sticky: a LIVE session keeps its slot (operator 23:35Z)")
-        # after two consecutive no-op turns it is no longer sticky -> yields to the higher-ranked handoff
-        reg["sessions"]["alpha"].update({"noop_turns": 2, "last_effect": None})
-        hs.save(hs.reg_path(self.flags), reg)
-        with patch.object(hs, "alive", return_value=True):
-            reg, _ = self.dispatch()
-        self.assertTrue(reg["sessions"]["alpha"]["yield"])
-        self.assertIn("YIELD alpha: handoff rank #", self.log_text())
-        # its turn ends (pid gone, wrap-up landed): not resumed for new work although it has advanceable tasks; mid gets the slot
-        reg, _ = self.dispatch()
-        S = reg["sessions"]
-        self.assertEqual(S["alpha"]["status"], "suspended")
-        self.assertEqual([c["prompt"].split("owns `")[1].split("`")[0] for c in self.calls], ["handoffs/active/mid.md"])
-        self.assertIn("mid", S)
 
 
 if __name__ == "__main__":
@@ -294,24 +254,33 @@ class TmuxWindowTests(AutoStartFixture):
 
 
 class PauseRuleTests(AutoStartFixture):
-    def test_work_state_and_pane_status(self):
+    def test_decide_and_pane_status(self):
         e = {"handoff": "handoffs/active/alpha.md", "status": "suspended", "last_end": "2026-11-01T10:00:00Z"}
-        bp = os.path.join(self.flags, "BACKLOG-handoff-a.md")
-        _w(bp, "## Inference rows\n- [blocked] cpu rank=1 **r1**\n- [running] cpu rank=2 **r2**\n\n## Non-inference tasks\n\n- none\n")
-        self.assertEqual(hs.work_state(self.flags, "a", e, self.repo)[0], "continue")
-        _w(bp, "## Inference rows\n- [running] cpu rank=2 **r2**\n\n## Non-inference tasks\n\n- none\n")
-        self.assertEqual(hs.work_state(self.flags, "a", e, self.repo), ("pause", "waiting on row(s) r2 (queued/running)"))
-        _w(bp, "Own inference tasks to publish as rows:\n- a L12 [gpu] run llama-bench\n## Inference rows\n- [running] cpu rank=2 **r2**\n")
-        self.assertEqual(hs.work_state(self.flags, "a", e, self.repo)[0], "continue")
-        _w(bp, "## Inference rows\n\n- none\n\n## Non-inference tasks\n\n- none\n")
-        self.assertEqual(hs.work_state(self.flags, "a", e, self.repo), ("continue", "1 open box(es) in the handoff, none waiting on a row"))
+        d = lambda rep, **kw: hs.decide(self.flags, "a", dict(e, last_report=rep, **kw), self.repo)
+        self.assertEqual(d(None), ("continue", "next=unreported"), "a missing report never stops a session")
+        self.assertEqual(d("garbage"), ("continue", "next=unreported"))
+        self.assertEqual(d({"next": "non-inference"})[0], "continue")
+        self.assertEqual(d({"next": "inference"})[0], "continue")
+        self.assertEqual(d({"next": "blocked"})[0], "continue", "blocked without ids never pauses")
+        self.assertEqual(d({"next": "blocked", "blocked_by": ["r1"]}), ("continue", "r1 is not ready (state: unknown) - make it ready"))
+        _w(os.path.join(self.flags, "dryrun", "r1", "PASS.json"), "{}")
+        _w(os.path.join(self.flags, "grants", "r2.grant"), "")
+        self.assertEqual(d({"next": "blocked", "blocked_by": ["r1", "r2"]}), ("pause", "blocked on readied row(s) r1 [grantable], r2 [running]"))
+        hs.time.sleep(0.02)
+        _w(os.path.join(self.flags, "dryrun", "r1", "FAIL-1.json"), "{}")  # a later FAIL un-readies it: resumed
+        self.assertEqual(d({"next": "blocked", "blocked_by": ["r1", "r2"]}), ("continue", "r1 is not ready (state: failed) - make it ready"))
+        _w(os.path.join(self.flags, "grants", "r2.ended"), "rc=0\n")  # the row ended: resumed
+        self.assertEqual(d({"next": "blocked", "blocked_by": ["r2"]})[1], "r2 is not ready (state: done) - make it ready")
+        self.assertEqual(d({"next": "done"}), ("continue", "you reported next=done but the handoff has 1 open box(es) - finish or tick them"))
         e["handoff"] = "handoffs/active/closed.md"
-        self.assertEqual(hs.work_state(self.flags, "a", e, self.repo)[0], "done")
+        self.assertEqual(d({"next": "done"})[0], "done")
+        self.assertEqual(d({"next": "non-inference"})[0], "continue", "only the session's own next=done closes a handoff")
+        self.assertEqual(hs.decide(self.flags, "codex-gen", {"generalist": True, "last_report": {"next": "done"}})[0], "pause")
         # pane status lines: never "Pane is dead"
         self.assertTrue(hs.pane_status_line({"status": "live", "last_resume": "2026-11-01T10:00:00Z"}).startswith("RUNNING turn"))
-        self.assertEqual(hs.pane_status_line({"status": "suspended", "work_state": "pause", "work_reason": "waiting on row(s) r2 (queued/running)",
+        self.assertEqual(hs.pane_status_line({"status": "suspended", "work_state": "pause", "work_reason": "blocked on readied row(s) r2 [running]",
                                               "last_end": "2026-11-01T10:00:00Z"}),
-                         "PAUSED — waiting on row(s) r2 (queued/running) since 2026-11-01T10:00:00Z")
+                         "PAUSED — blocked on readied row(s) r2 [running] since 2026-11-01T10:00:00Z")
         self.assertTrue(hs.pane_status_line({"status": "suspended", "work_state": "continue", "work_reason": "x"}).startswith("RESUMING"))
         self.assertEqual(hs.pane_status_line({"status": "done"}), "DONE")
         self.assertIn("pane-status", hs.pane_command(["codex"], "p", "o", "/w"))
@@ -325,18 +294,19 @@ class WindowClutterTests(AutoStartFixture):
         self.reg["auto_start"] = False
         self.reg["sessions"] = {"alpha": {"handoff": "handoffs/active/alpha.md", "engine": "codex", "session_id": "t1", "status": "suspended",
                                           "pid": None, "last_wrapup": "abc1234", "last_end": "2026-11-01T10:00:00Z",
-                                          "last_output": os.path.join(self.flags, "handoff-sessions/alpha/old.jsonl")}}
+                                          "last_output": os.path.join(self.flags, "handoff-sessions/alpha/old.jsonl"),
+                                          "last_report": {"next": "blocked", "blocked_by": ["row-x"]}}}
         hs.save(hs.reg_path(self.flags), self.reg)
-        # paused: everything left waits on a running row -> window killed, state line logged with the pause reason
-        _w(os.path.join(self.flags, "BACKLOG-handoff-alpha.md"), "## Inference rows\n- [running] cpu rank=1 **row-x**\n\n## Non-inference tasks\n\n- none\n")
+        # paused: blocked on a readied (granted) row -> window killed, state line logged with the pause reason
+        _w(os.path.join(self.flags, "grants", "row-x.grant"), "regions=0-23\n")
         with patch.object(hs, "tmux", fake), patch.object(hs, "landed", return_value=True), patch.object(hs, "project_cwd", return_value=self.repo):
             reg, _ = hs.dispatch_once(self.flags, repo=self.repo)  # no stub runner: the tmux path is exercised
         self.assertNotIn("h-alpha", windows)
         self.assertIn(("kill-window", "-t", "agent:=h-alpha"), calls)
-        self.assertIn("STATE alpha: paused - waiting on row(s) row-x (queued/running); tmux window h-alpha killed", self.log_text())
+        self.assertIn("STATE alpha: paused - blocked on readied row(s) row-x [running]; tmux window h-alpha killed", self.log_text())
         self.assertEqual(reg["sessions"]["alpha"]["status"], "suspended")
-        # the row ends -> open work again -> resumed; the window is created again BY NAME
-        _w(os.path.join(self.flags, "BACKLOG-handoff-alpha.md"), "## Inference rows\n- [blocked] cpu rank=1 **row-x**\n")
+        # the grant goes away (row no longer readied) -> resumed "row-x is not ready"; the window is created again BY NAME
+        os.remove(os.path.join(self.flags, "grants", "row-x.grant"))
         with patch.object(hs, "tmux", fake), patch.object(hs, "landed", return_value=True), patch.object(hs, "project_cwd", return_value=self.repo):
             reg, _ = hs.dispatch_once(self.flags, repo=self.repo)
         self.assertIn("h-alpha", windows)
@@ -344,6 +314,7 @@ class WindowClutterTests(AutoStartFixture):
         self.assertEqual(len(nw), 1)
         self.assertEqual(nw[0][:6], ("new-window", "-d", "-t", "agent:", "-n", "h-alpha"))
         self.assertEqual(reg["sessions"]["alpha"]["status"], "live")
+        self.assertIn("OPEN alpha: row-x is not ready (state: unknown) - make it ready", self.log_text())
         self.assertFalse(any(c[0] == "send-keys" for c in calls))
 
 
@@ -420,34 +391,13 @@ class DSHTests(_DSHBase):
         self.assertEqual(len(self.calls), 1, "max_live is full, yet the run-end filing resume is dispatched")
         self.assertIn("row `row-a`", self.calls[0]["prompt"])
 
-    def test_dsh3_transient_error_retries_with_backoff_then_fails(self):
+    def test_dsh3_error_resumes_with_go_on(self):
         e = self.session(pid=99999979)
         e["last_output"] = self.turn('{"type":"error","message":"stream disconnected before completion: 502 Bad Gateway"}\n', rc=1)
         hs.save(hs.reg_path(self.flags), self.reg)
-        t0 = 1_800_000_000.0
-        reg, _ = hs.dispatch_once(self.flags, runner=self.runner, repo=self.repo, now=t0)
-        e = reg["sessions"]["alpha"]
-        self.assertEqual((e["status"], e["transient_retries"]), ("retry", 1))
-        self.assertIn("TRANSIENT alpha: rc=1 retry 1/3", self.log_text())
-        self.assertEqual(self.calls, [], "not resumed before the backoff")
-        with patch.object(hs, "landed", return_value=True), patch.object(hs, "project_cwd", return_value=self.repo):
-            reg, _ = hs.dispatch_once(self.flags, runner=self.runner, repo=self.repo, now=t0 + 121)
-        self.assertEqual(len(self.calls), 1)
-        self.assertIn("go on", self.calls[0]["prompt"])
-        self.assertIn("retry 1/3", self.calls[0]["prompt"])
-        for n in (2, 3):  # two more transient failures -> retries 2 and 3
-            reg["sessions"]["alpha"].update({"pid": 99999979, "last_output": self.turn('{"type":"error","message":"connection reset"}\n', rc=1)})
-            hs.save(hs.reg_path(self.flags), reg)
-            reg, _ = hs.dispatch_once(self.flags, runner=self.runner, repo=self.repo, now=t0 + 1000 * n)
-            self.assertEqual(reg["sessions"]["alpha"]["transient_retries"], n)
-        reg["sessions"]["alpha"].update({"pid": 99999979, "last_output": self.turn('{"type":"error","message":"504 gateway timeout"}\n', rc=1)})
-        hs.save(hs.reg_path(self.flags), reg)
-        reg, _ = hs.dispatch_once(self.flags, runner=self.runner, repo=self.repo, now=t0 + 9000)
-        self.assertEqual(reg["sessions"]["alpha"]["status"], "failed")
-        self.assertIn("FAILED alpha: 3 transient retries exhausted", self.log_text())
-        # the backlog shows the failed session
-        data = bg.build(self.flags, os.path.join(self.repo, "handoffs/active/backlog-priority.json"), "nolog", sessions_path=hs.reg_path(self.flags))
-        self.assertIn("[FAILED] session: 3 transient retries exhausted", bg.render("handoff-alpha", data))
+        reg, _ = self.dispatch()
+        self.assertEqual(reg["sessions"]["alpha"]["status"], "live", "an error is a go-on nudge: no backoff, no park")
+        self.assertIn("go on:", self.calls[0]["prompt"])
         # PUSH_PROMPT only when a WRAPPED sha exists but has not landed
         e = self.session(pid=99999979, last_wrapup=None)
         e["last_output"] = self.turn('{"text":"no wrap-up line at all"}\n', rc=0)
@@ -455,8 +405,8 @@ class DSHTests(_DSHBase):
         self.calls.clear()
         with patch.object(hs, "landed", return_value=False):
             reg, _ = self.dispatch()
-        self.assertNotEqual(reg["sessions"]["alpha"]["status"], "unpushed", "no sha -> nothing to push")
-        self.assertFalse(any("NOT on origin/main" in c["prompt"] for c in self.calls))
+        self.assertNotEqual(reg["sessions"]["alpha"]["status"], "unpushed", "no sha -> not marked unpushed")
+        self.assertTrue(any("NOT on origin/main" in c["prompt"] for c in self.calls), "unwrapped: PUSH prompt, never parked")
         e = self.session(pid=99999979, last_wrapup=None)
         e["last_output"] = self.turn('{"text":"WRAPPED feedfacecafe"}\n', rc=0)
         hs.save(hs.reg_path(self.flags), self.reg)
@@ -507,11 +457,11 @@ class CAF1Tests(_DSHBase):
         self.assertIn("DRYRUN-RESULT row-a -> alpha", self.log_text())
         self.assertEqual(len(self.calls), 1)
         self.assertIn("Dry-run FAIL for your row `row-a`", self.calls[0]["prompt"])
+        self.assertIn(hs.REPORT_LINE, self.calls[0]["prompt"])
         self.assertIn("fix the result_path", self.calls[0]["prompt"])
         # an awaited file: registered by the session, fires when it exists
-        e = self.session(await_event=True, last_end=hs.now_iso())  # last turn was a no-op just now: only an event may resume it (for 30 min)
-        e["noop_reason"] = hs.work_state(self.flags, "alpha", e, self.repo)[1]
-        hs.save(hs.reg_path(self.flags), self.reg)
+        self.session(last_report={"next": "blocked", "blocked_by": ["row-a"]})  # paused on a readied row: only an event resumes it
+        _w(os.path.join(self.flags, "grants", "row-a.grant"), "regions=0-23\n")
         self.calls.clear()
         target = os.path.join(self.flags, "subagent-out.json")
         _w(hs.report_path(self.flags, "alpha").replace("report.json", "awaiting/sub1.json"), json.dumps({"path": target, "note": "sub-agent output"}))
@@ -585,18 +535,12 @@ class CAF5Tests(_DSHBase):
 
 
 class BudgetTests(_DSHBase):
-    def test_resume_gap_generalist_orphans_and_rotation(self):
-        # 1. one non-filing resume per MIN_RESUME_GAP_S: a session resumed 1 min ago with open work is NOT resumed again
-        e = self.session(last_resume=hs._dt.datetime.fromtimestamp(hs.time.time() - 60, hs._dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"))
-        reg, _ = self.dispatch()
-        self.assertEqual([c for c in self.calls if "alpha" in c["prompt"] and "FINISH ALL READY ITEMS" in c["prompt"]], [])
-        # ... but a run-end (filing) event still is
-        _w(os.path.join(self.flags, "grants", "row-a.ended"), "rc=0\n")
-        reg, _ = self.dispatch()
-        self.assertTrue(any("row `row-a`" in c["prompt"] for c in self.calls))
-        # 2. codex-gen: registered automatically, resumed on its own backlog (bypasses the cap), never yields
+    def test_generalist_orphans_and_rotation(self):
+        # 2. codex-gen: registered automatically, resumed on its own report (bypasses the cap)
         self.reg["max_live"] = 1
         self.session(status="live", pid=os.getpid())
+        hs.ensure_generalist(self.reg)["last_report"] = {"next": "non-inference"}
+        hs.save(hs.reg_path(self.flags), self.reg)
         _w(os.path.join(self.flags, "BACKLOG-codex-gen.md"), "## Inference rows\n- [blocked] cpu rank=3 **r-orphan** (row r-orphan) — yours (no handoff session)\n\n## Non-inference tasks\n\n- [S] handoffs/active/zed.md:10 — small fix\n")
         _w(os.path.join(self.flags, "GOAL-codex-gen.md"), "# GOAL\nGOAL-MARKER\n")
         self.calls.clear()
@@ -605,8 +549,7 @@ class BudgetTests(_DSHBase):
         g = reg["sessions"]["codex-gen"]
         self.assertEqual(g["status"], "live")
         self.assertIn("GOAL-MARKER", self.calls[0]["prompt"])
-        self.assertIn("codex-gen backlog: 1 row fix(es), 0 filing(s), 1 small task(s)", self.log_text())
-        self.assertFalse(g.get("yield"))
+        self.assertIn("OPEN codex-gen: next=non-inference", self.log_text())
         self.assertTrue(os.path.exists(os.path.join(self.flags, "briefs", "HANDOFF-codex-gen.md")))
         # 3. an ownerless run-end: file_result rc 4 -> routed to codex-gen; rc 0 -> filed, no turn
         _w(os.path.join(self.flags, "grants", "orphan-1.ended"), "rc=0\n")
@@ -639,7 +582,7 @@ class InventoryTests(_DSHBase):
     def test_running_rows_never_leave_slots_empty_and_deficit_ranks_first(self):
         # alpha owns 2 RUNNING rows (grant open, live pid), other handoffs have open blockers -> every slot busy
         self.reg["max_live"] = 3
-        self.session(status="suspended")
+        self.session(status="suspended", last_report={"next": "blocked", "blocked_by": ["run-1", "run-2"]})
         self.reg["auto_start"] = True
         hs.save(hs.reg_path(self.flags), self.reg)
         for rid in ("run-1", "run-2"):
@@ -652,9 +595,9 @@ class InventoryTests(_DSHBase):
             reg, _ = self.dispatch()
         S = reg["sessions"]
         started = [k for k, e in S.items() if e.get("auto_started")]
-        self.assertEqual(sorted(started), ["mid"], "the real-row handoff is started while alpha's rows run (zed is heuristic-only)")
-        self.assertEqual(S["alpha"]["work_state"], "pause")  # nothing open but its own running rows -> paused, slot given away
-        self.assertIn("PAUSE alpha: waiting on row(s) run-1, run-2", self.log_text())
+        self.assertEqual(sorted(started), ["mid", "zed"], "alpha's slot goes to the next handoffs while its rows run")
+        self.assertEqual(S["alpha"]["work_state"], "pause")  # blocked on its own running rows -> paused, slot given away
+        self.assertIn("PAUSE alpha: blocked on readied row(s) run-1 [running], run-2 [running]", self.log_text())
         data = bg.build(self.flags, os.path.join(self.repo, "handoffs/active/backlog-priority.json"), "nolog", sessions_path=hs.reg_path(self.flags))
         inv = data["inventory"]
         self.assertEqual((inv["cpu"]["ready"], inv["cpu"]["target"], inv["gpu"]["deficit"]), (2, 8, 2))
@@ -690,41 +633,24 @@ class InventoryTests(_DSHBase):
         self.assertTrue(os.path.exists(os.path.join(lockdir, "push-abc.json")))
 
 
-class SA1Tests(AutoStartFixture):
-    def test_rows_empty_never_starts_and_just_done_handoff_is_throttled(self):
-        # rows=[] fixture: no ready row anywhere -> no auto-start at all, even with free slots
-        for p in ["row-gpu-1"]:
-            os.remove(os.path.join(self.flags, "ready", p + ".json"))
+class StartGateTests(AutoStartFixture):
+    def test_no_real_row_gate_no_cooldown_no_hourly_cap(self):
+        # a just-done handoff that grew open boxes restarts on the next free slot: no per-handoff cooldown, no hourly cap
+        self.reg["max_live"] = 1
+        self.reg["sessions"]["zed"] = {"handoff": "handoffs/active/zed.md", "engine": "codex", "session_id": "old", "status": "done",
+                                       "pid": None, "done_at": hs.now_iso()}
+        hs.save(hs.reg_path(self.flags), self.reg)
+        hs.save(hs.state_path(self.flags), {"starts": [hs.time.time()] * 50})
         reg, _ = self.dispatch()
-        self.assertEqual([k for k in reg["sessions"] if k != "codex-gen"], [])
-        self.assertEqual(self.calls, [])
-        # a just-done handoff with a real row again is NOT restarted within the cooldown; AUTO-START-THROTTLED is logged
-        _w(os.path.join(self.flags, "ready", "row-gpu-1.json"), json.dumps({"schema": "epyc.row.v3", "id": "row-gpu-1", "owner": "o", "lane": "gpu",
-                                                                           "regions": "mi210_0", "priority_rank": 3, "handoff_task": "handoffs/active/mid.md:INF-5"}))
-        reg["sessions"]["mid"] = {"handoff": "handoffs/active/mid.md", "engine": "codex", "session_id": "old", "status": "done",
-                                  "pid": None, "done_at": hs.now_iso()}
-        hs.save(hs.reg_path(self.flags), reg)
+        self.assertEqual(reg["sessions"]["zed"]["status"], "live")
+        self.assertEqual(reg["sessions"]["zed"]["restarted_from_done"], "old")
+        self.assertNotIn("THROTTLED", self.log_text())
+        # no ready row anywhere: slots are still filled (no real-row gate)
+        os.remove(os.path.join(self.flags, "ready", "row-gpu-1.json"))
+        self.reg["sessions"], self.reg["max_live"] = {}, 2
+        hs.save(hs.reg_path(self.flags), self.reg)
         reg, _ = self.dispatch()
-        self.assertEqual(reg["sessions"]["mid"]["status"], "done")
-        self.assertEqual(self.calls, [])
-        self.assertIn("AUTO-START-THROTTLED mid: per-handoff cooldown", self.log_text())
-        # after the cooldown it restarts (same slug, restarted_from_done)
-        reg["sessions"]["mid"]["done_at"] = "2026-11-01T00:00:00Z"
-        reg["sessions"]["mid"]["throttle_logged"] = "2026-11-01T00:00:00Z"
-        hs.save(hs.reg_path(self.flags), reg)
-        reg, _ = self.dispatch()
-        self.assertEqual(reg["sessions"]["mid"]["status"], "live")
-        self.assertEqual(reg["sessions"]["mid"]["restarted_from_done"], "old")
-        # global cap: with starts already at the cap, nothing more starts this hour
-        st = hs.load(hs.state_path(self.flags), {})
-        st["starts"] = [hs.time.time()] * hs.MAX_STARTS_PER_HOUR
-        hs.save(hs.state_path(self.flags), st)
-        _w(os.path.join(self.flags, "ready", "row-z.json"), json.dumps({"schema": "epyc.row.v3", "id": "row-z", "owner": "o", "lane": "cpu",
-                                                                       "regions": "any-cpu-quarter", "priority_rank": 3, "handoff_task": "handoffs/active/zed.md:INF-1"}))
-        n = len(self.calls)
-        reg, _ = self.dispatch()
-        self.assertNotIn("zed", reg["sessions"])
-        self.assertIn("global cap", self.log_text())
+        self.assertEqual(len([k for k in reg["sessions"] if k != "codex-gen"]), 2)
 
 
 class SA23Tests(_DSHBase):
@@ -835,52 +761,30 @@ class WrappedGateTests(_DSHBase):
         self.assertEqual(self.log_text().count("UNWRAPPED s:"), 1)
 
 
-class StuckTests(_DSHBase):
-    def test_three_no_effect_turns_make_a_session_stuck_until_a_run_end(self):
-        e = self.session(last_wrapup=None)
-        hs.time.sleep(2.2)  # fixture rows were written this second; last_resume has 1 s resolution + 1 s skew allowance
+class NoopLogTests(_DSHBase):
+    def test_noop_turns_are_logged_never_parked(self):
+        reg = None
+        self.session()
         for n in (1, 2, 3):
-            e = self.reg["sessions"]["alpha"] if n == 1 else reg["sessions"]["alpha"]
-            e.update({"pid": 99999979, "last_output": self.turn('{"text":"nothing landed"}\n', rc=0), "status": "live", "last_resume": hs.now_iso()})
-            hs.time.sleep(1.1)  # the fixture rows predate this resume: nothing published during the turn
-            _w(hs.report_path(self.flags, "alpha"), json.dumps({"state": "blocked", "question": "needs the C5 store digest", "rows_published": []}))
-            hs.save(hs.reg_path(self.flags), self.reg if n == 1 else reg)
-            with patch.object(hs, "landed", return_value=True):
-                reg, st = self.dispatch()
-        e = reg["sessions"]["alpha"]
-        self.assertEqual(e["noop_turns"], 3)
-        self.assertIn("3 consecutive turns without a landed tick, row or filing; last report: needs the C5 store digest", e["stuck"])
-        self.assertIn("STUCK alpha:", self.log_text())
-        # its own awaited / dry-run events are dropped while stuck; a continue is not offered
-        self.calls.clear()
-        _w(hs.report_path(self.flags, "alpha").replace("report.json", "awaiting/x.json"), json.dumps({"path": self.flags + "/BACKLOG-codex-gen.md", "allow_existing": True}))
-        _w(os.path.join(self.flags, "BACKLOG-codex-gen.md"), "## Inference rows\n\n- none\n")
-        _w(os.path.join(self.flags, "dryrun", "row-a", "FAIL-9.json"), json.dumps({"reason": "x"}))
-        reg, st = self.dispatch()
-        self.assertEqual([c for c in self.calls if "alpha" in c["prompt"] and "codex-gen" not in c["prompt"][:200]], [])
-        # the backlog carries the stuck line
-        data = bg.build(self.flags, os.path.join(self.repo, "handoffs/active/backlog-priority.json"), "nolog", sessions_path=hs.reg_path(self.flags))
-        self.assertIn("[stuck: 3 consecutive turns", bg.render("handoff-alpha", data))
-        # a run-end unsticks and resumes it (the session has a landed wrap-up, so the UNWRAPPED gate passes)
-        reg["sessions"]["alpha"]["last_wrapup"] = "abc1234"
-        hs.save(hs.reg_path(self.flags), reg)
-        _w(os.path.join(self.flags, "grants", "row-b.ended"), "rc=0\n")
-        with patch.object(hs, "landed", return_value=True):
-            reg, st = self.dispatch()
-        self.assertIsNone(reg["sessions"]["alpha"]["stuck"])
-        self.assertTrue(any("row `row-b`" in c["prompt"] for c in self.calls))
+            r = reg or self.reg
+            r["sessions"]["alpha"].update({"pid": 99999979, "last_output": self.turn('{"text":"nothing landed"}\n', rc=0), "status": "live"})
+            hs.save(hs.reg_path(self.flags), r)
+            self.calls.clear()
+            with patch.object(hs, "turn_effect", return_value=""):
+                reg, _ = self.dispatch()
+            self.assertIn(f"NOOP alpha: turn completed nothing (no landed tick, no row published, no filing) [{n} consecutive]", self.log_text())
+            self.assertEqual(len(self.calls), 1, "a no-op turn is a log line, never a park: resumed at once")
+        self.assertEqual(reg["sessions"]["alpha"]["noop_turns"], 3)
+        self.assertNotIn("STUCK", self.log_text())
         # a landed tick is an effect: turn_effect counts it
         with patch.object(hs, "landed_ticks", lambda sha, repo=None: 2), patch.object(hs, "landed", return_value=True):
             self.assertIn("2 landed tick(s)", hs.turn_effect(self.flags, "alpha", {"last_wrapup": "abc1234", "last_resume": hs.now_iso()}))
         self.assertEqual(hs.turn_effect(self.flags, "alpha", {"last_wrapup": None, "last_resume": "2099-01-01T00:00:00Z"}), "", "a commit alone is not an effect")
 
 
-class LandBeforeParkTests(_DSHBase):
-    def test_noop_warning_text_and_dispatcher_lands_unlanded_ticks(self):
+class LandLaneTests(_DSHBase):
+    def test_dispatcher_lands_unlanded_ticks(self):
         import subprocess, tempfile
-        e = {"handoff": "handoffs/active/alpha.md", "noop_turns": 2}
-        self.assertIn("WARNING: your last 2 turn(s) landed nothing", hs.continue_prompt("alpha", e, self.flags, "x"))
-        self.assertNotIn("WARNING", hs.continue_prompt("alpha", dict(e, noop_turns=0), self.flags, "x"))
         # a clean lane with an unlanded commit that ticks a box: land_lane pushes it and the ticks count as the turn's effect
         origin = tempfile.mkdtemp(); subprocess.run(["git", "init", "-q", "--bare", "-b", "main", origin], check=True)
         lane = tempfile.mkdtemp()
@@ -899,50 +803,3 @@ class LandBeforeParkTests(_DSHBase):
         self.assertEqual(len(landed), 1)
         self.assertEqual(hs.landed_ticks(landed[0], repo=lane), 1)
         self.assertEqual(hs.land_lane(lane), [], "nothing left to land")
-
-
-class DeadlockTests(_DSHBase):
-    def test_await_expires_and_event_rearms_dirty_lane_resume(self):
-        # a no-op session parked 31 min ago with open work is resumed again (await_event expired)
-        old = hs._dt.datetime.fromtimestamp(hs.time.time() - 31 * 60, hs._dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-        e = self.session(await_event=True, noop_turns=1, last_end=old, last_resume=old)
-        e["noop_reason"] = hs.work_state(self.flags, "alpha", e, self.repo)[1]
-        hs.save(hs.reg_path(self.flags), self.reg)
-        reg, _ = self.dispatch()
-        self.assertTrue(any("FINISH ALL READY ITEMS" in c["prompt"] for c in self.calls), "parked no-op session resumed after 30 min")
-        # a queued event clears the dirty-lane one-shot so the owner can come back and wrap up
-        e = self.session(dirty_wrap_resume="2026-11-02T00:00:00Z")
-        _w(os.path.join(self.flags, "grants", "row-a.ended"), "rc=0\n")
-        reg, st = self.dispatch()
-        self.assertIsNone(reg["sessions"]["alpha"].get("dirty_wrap_resume"))
-
-
-class IdleComputeUnparkTests(_DSHBase):
-    def _old(self, minutes):
-        return hs._dt.datetime.fromtimestamp(hs.time.time() - minutes * 60, hs._dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-    def test_stuck_expires_after_await_expiry(self):
-        # 08:22-09:18Z deadlock: `stuck` never expired (only a run-end cleared it) and cands=0 means no run-end ever comes
-        old = self._old(31)
-        self.session(stuck="3 no-op turns", noop_turns=3, last_end=old, last_resume=old)
-        hs.save(hs.reg_path(self.flags), self.reg)
-        with patch.object(hs, "unreadied", return_value={}):  # no un-readied tasks: only the expiry can resume it
-            self.dispatch()
-        self.assertTrue(any("FINISH ALL READY ITEMS" in c["prompt"] for c in self.calls), "stuck session resumed after expiry")
-
-    def test_unreadied_tasks_override_every_park(self):
-        now = hs.now_iso()
-        self.session(stuck="3 no-op turns", noop_turns=3, await_event=True, last_end=now, last_resume=now,
-                     idle_reported="nothing to do")
-        self.reg["sessions"]["alpha"]["yield"] = True
-        hs.save(hs.reg_path(self.flags), self.reg)
-        with patch.object(hs, "unreadied", return_value={}):  # nothing un-readied: parks hold
-            self.dispatch()
-        self.assertEqual([c for c in self.calls if "FINISH ALL READY ITEMS" in c["prompt"]], [])
-        rank = {"handoff_rank": [{"handoff": "handoffs/active/alpha.md", "rows": ["row-a"], "candidate_rows": 2},
-                                 {"handoff": "handoffs/active/zed.md", "rows": [], "candidate_rows": 0}]}
-        self.assertEqual(_REAL_UNREADIED(rank), {"handoffs/active/alpha.md": 3})
-        with patch.object(hs, "unreadied", return_value=_REAL_UNREADIED(rank)):  # un-readied tasks: never parked
-            reg, _ = self.dispatch()
-        self.assertTrue(any("FINISH ALL READY ITEMS" in c["prompt"] for c in self.calls))
-        self.assertIsNone(reg["sessions"]["alpha"]["stuck"])
