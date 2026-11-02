@@ -288,10 +288,21 @@ run_one() {
          else rlargs=(--gpu-quiet "${gq:-shared}"); [ -n "$cc" ] && rlargs=(--cpu-list "$cc" --gpu-quiet "${gq:-shared}"); fi;;
     cpu+gpu) rlargs=(--cpu-list "${cc:-$CPUS}"); [ "$gq" != none ] && rlargs+=(--gpu-quiet "${gq:-shared}");;
   esac
+  # GRANT_CPUS (ws58 2026-11-02): a gpu-class grant locks ONLY the cpus the grant names (its cpus= field, else its
+  # regions list): primary cpus (0-95) as an exact --cpu-list claim, SMT-sibling host threads (184-191) unlocked and
+  # pinned by the inner taskset (FILLER_CPUS). --claim-cpus / --no-fold-siblings no longer widen a gpu claim: the
+  # allocator booked gpu-quiet + exactly these cpus, so the GPU runs beside a whole-q3 / host row.
+  local gcl="" gprim=""
+  if [ "$CLASS" = gpu ]; then
+    gcl=$(sed -n 's/.* cpus=\([^ ]*\).*/\1/p' "$GRANT" | tr -d '\n'); valid_list "$gcl" || gcl=$CPUS
+    gprim=$(expand "$gcl" | awk '$1<96' | sort -un | paste -sd, -)
+    case $gq in exclusive) rlargs=(--gpu-quiet exclusive);; none) rlargs=();; *) rlargs=(--gpu-quiet "${gq:-shared}");; esac
+    [ -n "$gprim" ] && rlargs=(--cpu-list "$gprim" --no-fold-siblings "${rlargs[@]}")
+  fi
   # --no-fold-siblings (2026-10-22): a GPU job's host threads 184-191 must not fold into a whole-q3 claim (MI210 sat idle behind a q3 build)
   # filler_run6 (2026-10-22): region-lock REFUSES --no-fold-siblings for an SMT-only list ("maps to no regions"), so for a
   # GPU job --no-fold-siblings means: claim gpu-quiet ONLY (no CPU region) and let the job taskset its host threads (184-191).
-  if [ $NOFOLD = 1 ]; then
+  if [ $NOFOLD = 1 ] && [ "$CLASS" != gpu ]; then   # GRANT_CPUS: a gpu claim is the grant's cpus (above)
     if [ "$CLASS" = gpu ]; then
       _n=(); _skip=0; for a in "${rlargs[@]}"; do if [ $_skip = 1 ]; then _skip=0; continue; fi; [ "$a" = --cpu-list ] && { _skip=1; continue; }; _n+=("$a"); done
       rlargs=("${_n[@]}"); [[ " ${rlargs[*]} " == *" --gpu-quiet "* ]] || rlargs+=(--gpu-quiet shared)

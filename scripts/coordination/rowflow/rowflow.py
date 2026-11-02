@@ -627,43 +627,83 @@ def ws58_cpus(regions):
 CORES = tuple(f"c{n}" for n in range(96))   # ws58 2026-11-02 sub-quarter packing: one token per physical core
 
 
+THREADS = tuple(f"t{n}" for n in range(96, 192))   # ws58 2026-11-02 18:30Z: one token per SMT-sibling thread
+GRANT_CPUS_MARKER = "GRANT_CPUS"   # an engine containing it locks a GPU grant's own cpus (not --claim-cpus): see engine_grant_cpus
+
+
 def qcores(q):
     lo = int(q[1]) * 24
     return {f"c{n}" for n in range(lo, lo + 24)}
 
 
+def qthreads(q, n=16):
+    """The SMT siblings a whole-quarter grant runs on: the engine's quarter list is a-b,s-(s+15), so the last 8 siblings
+    of a quarter (q3: 184-191, the MI210 host threads) stay outside it. n=24: every sibling (a foreign region-lock hold)."""
+    lo = 96 + int(q[1]) * 24
+    return {f"t{k}" for k in range(lo, lo + n)}
+
+
 def expand(tokens):
-    """A whole quarter also holds its 24 core tokens, so it is free only when no sub-quarter row holds any of its cores."""
+    """A whole quarter also holds its 24 core tokens and the 16 sibling threads it runs on, so it is free only when no
+    sub-quarter row holds any of them. Idempotent."""
     out = set(tokens)
     for t in tokens:
         if t in QUARTERS:
-            out |= qcores(t)
+            out |= qcores(t) | qthreads(t)
     return out
 
 
 def compress(tokens):
-    """Grant/log form: core tokens of a whole quarter folded away; partial cores kept (c48,c49,...)."""
+    """Grant/log form: core/thread tokens of a whole quarter folded away; partial cores/threads kept (c48,t144,...)."""
     qs = {t for t in tokens if t in QUARTERS}
-    cov = set().union(*[qcores(q) for q in qs]) if qs else set()
+    cov = set().union(*[qcores(q) | qthreads(q) for q in qs]) if qs else set()
     return sorted(t for t in tokens if t not in cov)
 
 
-def cpu_tokens(cpus):
-    """Tokens of a cpu list (SMT siblings fold onto their core): a quarter covered fully -> qN, partly -> its core tokens."""
-    cores = set()
+def cpu_tokens(cpus, gpu_threads=False):
+    """Tokens of a cpu list: a quarter covered fully -> qN, partly -> its core tokens plus the sibling threads a
+    sub-quarter grant pins (cN + t(N+96)). gpu_threads=True (a GPU row's explicit host threads): siblings are thread
+    tokens of their own (184-191 -> t184..t191), never folded onto their core / quarter."""
+    cores, sibs = set(), set()
     for tok in str(cpus or "").split(","):
         tok = tok.strip()
         if re.fullmatch(r"\d+(-\d+)?", tok):
             a, b = (tok.split("-") + [tok])[:2]
-            cores |= {c % 96 for c in range(int(a), min(int(b), 191) + 1)}
-    out = set()
+            for c in range(int(a), min(int(b), 191) + 1):
+                if c >= 96 and gpu_threads:
+                    sibs.add(c)
+                else:
+                    cores.add(c % 96)
+    out = {f"t{c}" for c in sibs}
     for q in QUARTERS:
         cs = {c for c in cores if f"q{c // 24}" == q}
         if len(cs) >= 24:
             out.add(q)
         else:
-            out |= {f"c{c}" for c in cs}
+            out |= {f"c{c}" for c in cs} | {f"t{c + 96}" for c in cs}
     return out
+
+
+def engine_grant_cpus(o):
+    """True when the row's engine snapshot locks a GPU grant's own cpus (content check, never a path/version guess)."""
+    try:
+        with open(o.get("engine") or "", errors="replace") as f:
+            return GRANT_CPUS_MARKER in f.read()
+    except OSError:
+        return False
+
+
+def grant_cpus(regions):
+    """The exact cpu list a grant's regions pin (cpus= field): explicit cpus as given, qN as the engine's a-b,s-(s+15)."""
+    out = []
+    for t in str(regions or "").split(","):
+        t = t.strip()
+        if re.fullmatch(r"\d+(-\d+)?", t):
+            out.append(t)
+        elif re.fullmatch(r"q[0-3]", t):
+            a = int(t[1]) * 24
+            out.append(f"{a}-{a + 23},{a + 96}-{a + 111}")
+    return ",".join(out)
 
 
 def tokens_cpus(tokens):
@@ -752,10 +792,16 @@ def row_shape(d):
         extra.add(GPU)
         if not cc and cls == "gpu":
             cc = "0-95"
-    if cc and not (nofold and cls == "gpu"):
+    gpu_row = cls == "gpu" and "mi210" in regs
+    # ws58 2026-11-02 18:30Z: a GPU row holds gpu-quiet + ONLY the cpus its regions name (184-191 -> threads t184..t191,
+    # free beside a whole-q3 / host row; 0-23 -> q0). Its launcher's --claim-cpus books cpus only while the engine
+    # snapshot still locks that claim (pre-GRANT_CPUS engines; a --no-fold-siblings / claim-less one locks no cpu).
+    legacy_claim = gpu_row and cc and not nofold and not engine_grant_cpus(o)
+    if gpu_row and not legacy_claim:
+        extra |= cpu_tokens(ws58_cpus(regs) or "184-191", gpu_threads=True)
+        cc = ""
+    elif cc and not (nofold and cls == "gpu"):
         extra |= cpu_tokens(cc)   # ws58 sub-quarter: a claim covering < 24 cores of a quarter holds only those cores
-    elif cls == "gpu" and "mi210" in regs and not cc:
-        extra |= cpu_tokens(ws58_cpus(regs))   # GPU row: its declared host threads (184-191 -> cores 88-95), not q3
     if not cc and cls == "cpu" and ws58_cpus(regs) and "mi210" not in regs:
         rt = cpu_tokens(ws58_cpus(regs))
         if not (rt & set(QUARTERS)):
@@ -828,7 +874,12 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
     waits; two rows declaring the same port are never co-scheduled.
     Returns (assigned [(cand, option)], idle {region: reason}, pending); plan.last_drain = (cand, T) or None."""
     now = time.time() if now is None else now
-    free = expand(free)
+    free = set(free)
+    if not any(t in CORES or t in THREADS for t in free):
+        # abstract caller (regions only): a free quarter's cores/threads are free, and so are the MI210's host threads
+        free = expand(free) | ({f"t{k}" for k in range(184, 192)} if GPU in free else set())
+    else:   # token-level caller: a quarter is free for a whole-quarter row only when every core/thread it runs on is
+        free = {t for t in free if t not in QUARTERS or expand({t}) <= free}
     for c in cands:   # ws58 sub-quarter: a whole quarter also holds its core tokens
         c["options"] = [frozenset(expand(o)) for o in c["options"]]
     pending = sorted(cands, key=lambda c: (c["lane_count"], float(c["rank"]), 0 if c["kind"] == "grant" else 1, c["id"]))
@@ -1489,7 +1540,9 @@ def admit(flags, rid, d, pid, regions, window_s):
 def write_grant(flags, rid, regions, holds, window_s):
     start = dt.datetime.now(dt.timezone.utc).replace(second=0, microsecond=0) - dt.timedelta(minutes=1)
     end = start + dt.timedelta(seconds=int(window_s))
-    line = f"regions={regions} start={start:%Y-%m-%dT%H:%MZ} end={end:%Y-%m-%dT%H:%MZ} holds={','.join(compress(holds))}\n"
+    cpus = grant_cpus(regions)   # ws58 2026-11-02: the exact cpu list (a GRANT_CPUS engine locks + pins a GPU grant to it)
+    line = (f"regions={regions} start={start:%Y-%m-%dT%H:%MZ} end={end:%Y-%m-%dT%H:%MZ} holds={','.join(compress(holds))}"
+            + (f" cpus={cpus}" if cpus else "") + "\n")
     p = os.path.join(flags, "grants", rid + ".grant")
     with open(p + ".tmp", "w") as f:
         f.write(line)
@@ -1610,13 +1663,18 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     # a quarter held in region-lock by sub-quarter grants (LOCK_SH + per-core locks) is busy only on those cores
     subq = {q for g in grants for q in QUARTERS if q not in g["holds"] and g["holds"] & qcores(q)}
     busy = expand({r for r, (s, _) in rl.items() if s != "free" and r not in subq})
+    gids = {g["id"] for g in grants}
+    for r, (s, t) in rl.items():   # a foreign (non-grant) region-lock hold folds SMT siblings: all 24 of its threads
+        if s != "free" and r in QUARTERS and r not in subq and t[len("filler-"):] not in gids:
+            busy |= qthreads(r, 24)
     holders = {r: t[len("filler-"):] for r, (s, t) in rl.items() if s != "free" and t.startswith("filler-") and r not in subq}
     for g in grants:
         busy |= g["holds"]
         for r in g["holds"]:
             if r in REGIONS:
                 holders.setdefault(r, g["id"])
-    free = (set(REGIONS) | set(CORES)) - busy
+    busy |= {q for q in QUARTERS if expand({q}) & busy}   # a quarter with any held core/thread is not whole-free
+    free = (set(REGIONS) | set(CORES) | set(THREADS)) - busy
     gpu_open = any(GPU in g["holds"] for g in grants)
     if GPU in free and not dry and start_gpu_batch(flags, log):
         free.discard(GPU)  # queued GPU smokes run in the gap before the next GPU grant
