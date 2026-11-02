@@ -6,13 +6,22 @@
   "baseline": "ef81196d5bdd4190b46dff4ae7eecc333a46c8ce",
   "candidate": "2516c9807b8a92d472c8e75a0a1ce8558d2e34a7",
   "patch_sha256": "02ade30871a43157718a3ff96582023efe7e5109390af8ee8edca775132166f0",
-  "candidate_default_on": ["GGML_SCALE_SPLIT", "GGML_SOLO_YIELD_ROWCOL"],
-  "candidate_default_off": ["GGML_TINY_SOLO_CLAMP"],
+  "candidate_default_on": [
+    "GGML_SCALE_SPLIT",
+    "GGML_SOLO_YIELD_ROWCOL"
+  ],
+  "candidate_default_off": [
+    "GGML_TINY_SOLO_CLAMP"
+  ],
   "intended_workloads": {
     "inf70_cpu": {
       "historical_model": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/IQ4_XS-uniform/Qwen3.8-Flash-Next-IQ4_XS-uniform.gguf",
       "model_present_at_preparation": false,
-      "recipe_evidence": "/mnt/raid0/llm/tmp/inf70/agents/retest1/session2.sh"
+      "recipe_evidence": "/mnt/raid0/llm/tmp/inf70/agents/retest1/session2.sh",
+      "historical_sha256": "4bfb98496364f8721c1e3ea084a238d690c52b1042a317e05fb43b756c9f8957",
+      "historical_size_bytes": 98392912256,
+      "digest_evidence": "/mnt/raid0/llm/tmp/inf70/results-c5postbios-20260921T100850Z/artifact.sha256",
+      "custody_note": "Original absent; no matching-size copy found in searched model stores. Historical checksum record is not a fresh verification of a current file."
     },
     "w1": {
       "model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
