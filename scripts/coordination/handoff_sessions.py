@@ -281,6 +281,7 @@ context (rows, open boxes, your handoff's rank), not an order.
   manifest. Never pkill/pgrep by name; kill only PIDs you captured.
 - Git: work ONLY in your lane worktree; never commit in {ROOT}; never `git add -A`/`git add .`; pathspec-limited commits
   only; push only through serialized_push.py (lane -> main). Never `git worktree prune`, never `git gc`.
+- {SCRATCH_LINE}
 - **Scratch never goes in the lane** (disk incident 2026-11-02 00:55Z, 130 GiB leaked): you and your sub-agents write
   scratch to `/mnt/raid0/llm/tmp/{slug}/...` (or the row's scratch_root). The lane is sparse (no `artifacts/`); wrapup.py
   REFUSES to land while untracked files sit under `artifacts/` in the lane; the lane is reaped when you pause and
@@ -1540,6 +1541,45 @@ def transfer(flags, slug, engine, force=False, runner=None, repo=ROOT):
     return e
 
 
+SCRATCH_LINE = ("Scratch: for a source tree use `git worktree add --detach <dir> <ref>` from the repo (shares objects; never "
+                "cp/rsync a checkout), reuse ONE work dir per task, and remove your superseded attempt dirs (`git worktree "
+                "remove`) before your turn ends.")
+TMP_ROOT = "/mnt/raid0/llm/tmp"
+SCRATCH_QUOTA_GIB = 10.0
+SCRATCH_EVERY_S = 600
+
+
+def scratch_roots(slug, e):
+    """The session's declared scratch roots: its row scratch_root(s) plus /mnt/raid0/llm/tmp/<slug>."""
+    roots = [e.get("scratch_root")] + list(e.get("scratch_roots") or []) + [os.path.join(TMP_ROOT, slug)]
+    out = []
+    for r in roots:
+        if r and os.path.isdir(r) and r not in out:
+            out.append(r)
+    return out
+
+
+def du_gib(path) -> float:
+    try:
+        r = subprocess.run(["du", "-sk", path], capture_output=True, text=True, timeout=120)
+        return int(r.stdout.split()[0]) / 1048576.0
+    except (OSError, ValueError, IndexError, subprocess.TimeoutExpired):
+        return 0.0
+
+
+def scratch_lead(flags, slug, e, now=None, du=du_gib) -> str:
+    """Deterministic scratch quota (ws58 2026-11-02): du at most every 10 min; over 10 GiB -> the nudge LEADS with a
+    delete-superseded-dirs order and SCRATCH-OVER is logged. Never deletes anything itself."""
+    now = time.time() if now is None else now
+    if now - float(e.get("scratch_checked") or 0) >= SCRATCH_EVERY_S:
+        e["scratch_checked"] = now
+        e["scratch_over"] = [[r, round(g, 1)] for r in scratch_roots(slug, e) if (g := du(r)) > SCRATCH_QUOTA_GIB]
+        for r, g in e["scratch_over"]:
+            log(flags, f"SCRATCH-OVER {slug}: {r} is {g} GiB (quota {SCRATCH_QUOTA_GIB:g})")
+    return "".join(f"FIRST: your scratch {r} is {g} GiB: delete superseded attempt dirs now, keep only the current one.\n"
+                   for r, g in e.get("scratch_over") or [])
+
+
 def _go(flags, slug, e, prompt, runner, ev, fresh=False):
     if fresh:
         e["session_id"], e["fresh_next"] = None, False
@@ -1561,6 +1601,7 @@ def _go(flags, slug, e, prompt, runner, ev, fresh=False):
     e["head_at_resume"] = r.stdout.strip() if r.returncode == 0 else None
     if sync == "merge-conflict":
         prompt = (f"[{VERSION}] FIRST: `git -C {lane} merge origin/main` conflicts; resolve it in your lane, commit, then continue.\n") + prompt
+    prompt = scratch_lead(flags, slug, e) + prompt + "\n" + SCRATCH_LINE + "\n"
     try:
         pid, out = launch(flags, slug, e, prompt, fresh=fresh, runner=runner)
     except ValueError as exc:  # project_cwd refused: never spawn outside the project
