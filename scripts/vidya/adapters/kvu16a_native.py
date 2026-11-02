@@ -1,6 +1,7 @@
 """Original-run KVU-16a sampled load observations; projection, not grading."""
 from __future__ import annotations
 import json
+import dataclasses
 import os
 import re
 from datetime import datetime, timezone
@@ -14,6 +15,7 @@ from adapters import _native_sidecar as ns
 SCHEMA = 'epyc.vidya.kvu16a.sampled_load.v1'
 SOURCE_KIND = 'kvu16a-sampled-load'
 ADAPTER_ID = 'vidya.adapters.kvu16a_native/v1'
+AUTHORITY = 'measurement'
 SIDECAR_NAME = 'kvu16a_sampled_load.beliefs.jsonl'
 
 
@@ -35,6 +37,12 @@ def _derive(root: Path):
         not runtime or runtime.get('argv') != plan.get('argv') or runtime.get('effective_env') != plan.get('effective_env') or
         not runtime.get('mapped_libraries_sha256') or not plan.get('identities')):
         raise ValueError('incomplete run identity, grant, or cleanup')
+    argv = plan.get('argv', [])
+    if argv.count('-m') != 1 or argv.index('-m') + 1 >= len(argv):
+        raise ValueError('target model path missing')
+    model = str(Path(argv[argv.index('-m') + 1]).resolve())
+    if not ns.SHA256.fullmatch(str(plan['identities'].get(model, ''))):
+        raise ValueError('target model digest missing')
     if not records or any(x.get('status') != 'observed' or x.get('own_vram_b') is None for x in records):
         raise ValueError('missing or unknown original sample')
     if any(not ns.nonneg_int(x.get('own_vram_b')) or x.get('pid') != cleanup.get('pid') or
@@ -114,8 +122,13 @@ def record_run(output_dir: Path):
 def project(native: Any):
     row = native.get('row') if isinstance(native, dict) else None
     if problems := row_problems(row): raise ProjectionError('invalid producer row: ' + '; '.join(problems))
-    return ns.to_claim_tuple(row, source_kind=SOURCE_KIND, locator='kvu16a:' + row['run_id'],
-                             sidecar_path=native.get('sidecar_path', ''))
+    claim = ns.to_claim_tuple(row, source_kind=SOURCE_KIND, locator='kvu16a:' + row['run_id'],
+                              sidecar_path=native.get('sidecar_path', ''))
+    plan = json.loads((Path(row['results_path']).parent / 'plan.json').read_text())
+    model = str(Path(plan['argv'][plan['argv'].index('-m') + 1]).resolve())
+    return dataclasses.replace(claim, applicability={'model_file': Path(model).name,
+                                                     'model_sha256': plan['identities'][model],
+                                                     'backend': 'gpu'})
 
 
 def native_rows(sidecar: Path):
